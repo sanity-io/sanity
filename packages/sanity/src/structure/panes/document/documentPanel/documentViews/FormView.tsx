@@ -20,8 +20,8 @@ import {
   useDocumentPresence,
   useDocumentStore,
   usePerspective,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box} from 'ui5'
 
 import {Delay} from '../../../../../core/components/Delay'

@@ -1,7 +1,8 @@
 import {UnknownIcon} from '@sanity/icons/Unknown'
 import {Menu} from '@sanity/ui/menu'
 import {type MouseEvent, useCallback, useId} from 'react'
-import {StatusButton, useTranslation} from 'sanity'
+import {StatusButton} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {useIntentLink} from 'sanity/router'
 
 import {useI18nText} from '../../../core/i18n/hooks/useI18nText'

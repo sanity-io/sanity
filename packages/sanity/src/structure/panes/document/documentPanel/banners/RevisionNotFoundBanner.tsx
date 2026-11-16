@@ -1,5 +1,5 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'

@@ -1,6 +1,6 @@
 import {useToast} from '@sanity/ui/toast'
 import {useCallback} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {visionLocaleNamespace} from '../../i18n'
 import {type VisionTab} from '../store/types'

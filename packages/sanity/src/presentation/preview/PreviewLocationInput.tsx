@@ -10,7 +10,8 @@ import {
   useRef,
   useState,
 } from 'react'
-import {useActiveWorkspace, useTranslation} from 'sanity'
+import {useActiveWorkspace} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {presentationLocaleNamespace} from '../i18n'
 import {type PreviewUrlRef} from '../machines/preview-url'

@@ -10,11 +10,12 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import {type PerspectiveContextValue, type TFunction, usePerspective, useTranslation} from 'sanity'
+import {type PerspectiveContextValue, type TFunction, usePerspective} from 'sanity'
 import {
   getDefaultVariant,
   getVariantTitle,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex, Grid, VStack} from 'ui5'
 
 import {API_VERSIONS, VARIANTS_API_VERSION} from '../apiVersions'

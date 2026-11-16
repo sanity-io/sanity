@@ -28,9 +28,9 @@ import {
   type TargetPerspective,
   useDocumentVersions,
   useEditState,
-  useTranslation,
   useWorkspace,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex, Icon} from 'ui5'
 
 import {type DocumentLayoutProps} from '../../../../core/config/types'

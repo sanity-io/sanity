@@ -1,6 +1,6 @@
 import {Card, TabList} from '@sanity/ui'
 import {type FunctionComponent, useMemo} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Flex} from 'ui5'
 
 import {Tab} from '../../ui-components/tab/Tab'

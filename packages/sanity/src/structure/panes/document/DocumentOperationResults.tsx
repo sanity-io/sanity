@@ -1,6 +1,7 @@
 import {useToast} from '@sanity/ui/toast'
 import {memo, useEffect, useMemo, useRef} from 'react'
-import {Translate, usePerspective, useTranslation} from 'sanity'
+import {usePerspective} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 
 import {useDocumentOperationEvent} from '../../../core/hooks/useDocumentOperationEvent'
 import {useDocumentLimitsUpsellContext} from '../../../core/limits/context/documents/DocumentLimitUpsellProvider'

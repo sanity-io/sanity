@@ -1,6 +1,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
-import {usePerspective, useTranslation} from 'sanity'
+import {usePerspective} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {useRouter, useRouterState} from 'sanity/router'
 
 import {getDefaultVariant} from '../../../../../core/perspective/getDefaultVariant'

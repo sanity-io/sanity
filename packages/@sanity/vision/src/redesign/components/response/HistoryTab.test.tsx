@@ -27,9 +27,11 @@ vi.mock('./CodeDiff', async () => {
 })
 
 vi.mock('sanity', () => ({
-  defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
   useDateTimeFormat: () => ({format: (date: Date) => date.toISOString().slice(11, 19)}),
+}))
+vi.mock('sanity/i18n', () => ({
+  defineLocaleResourceBundle: (bundle: unknown) => bundle,
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) =>
       options ? `${key}:${JSON.stringify(options)}` : key,

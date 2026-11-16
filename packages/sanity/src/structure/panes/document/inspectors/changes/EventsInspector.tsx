@@ -10,12 +10,11 @@ import {
   isNonSelectableTerminalEvent,
   type ObjectDiff,
   type ObjectSchemaType,
-  Translate,
   useEditState,
   usePerspective,
-  useTranslation,
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box, Grid} from 'ui5'
 
 import {ChangeFieldWrapper} from '../../../../../core/changeIndicators/ChangeFieldWrapper'

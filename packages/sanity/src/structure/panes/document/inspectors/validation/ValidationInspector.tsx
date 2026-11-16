@@ -11,7 +11,8 @@ import {
 } from '@sanity/types'
 import {Card, type CardTone} from '@sanity/ui'
 import {type ErrorInfo, Fragment, type MouseEvent, useCallback, useMemo, useState} from 'react'
-import {type DocumentInspectorProps, useTranslation} from 'sanity'
+import {type DocumentInspectorProps} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box, VStack, Icon} from 'ui5'
 
 import {mergeParseErrors} from '../../../../../core/form/store/utils/mergeParseErrors'

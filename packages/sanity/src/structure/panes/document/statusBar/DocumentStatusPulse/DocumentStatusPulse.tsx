@@ -1,5 +1,6 @@
 import {type ButtonTone} from '@sanity/ui'
-import {TextWithTone, useTranslation} from 'sanity'
+import {TextWithTone} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'

@@ -1,7 +1,8 @@
 import {ReadOnlyIcon} from '@sanity/icons/ReadOnly'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useMemo, useState} from 'react'
-import {Translate, useCurrentUser, useListFormat, useTranslation, useWorkspace} from 'sanity'
+import {useCurrentUser, useListFormat, useWorkspace} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 
 import {AskToEditDialogOpened} from '../../../../components/requestPermissionDialog/__telemetry__/RequestPermissionDialog.telemetry'

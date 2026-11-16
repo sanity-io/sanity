@@ -1,6 +1,7 @@
 import {Menu} from '@sanity/ui/menu'
 import {memo, type ReactNode, useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
-import {type DocumentActionDescription, useTranslation} from 'sanity'
+import {type DocumentActionDescription} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {ContextMenuButton} from '../../../../core/components/contextMenuButton/ContextMenuButton'
 import {LegacyLayerProvider} from '../../../../core/components/transitional/LegacyLayerProvider'

@@ -1,4 +1,4 @@
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Box} from 'ui5'
 
 import {ResultView} from '../../../components/ResultView'

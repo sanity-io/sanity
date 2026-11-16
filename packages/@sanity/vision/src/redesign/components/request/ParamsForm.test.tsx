@@ -26,10 +26,12 @@ const schema = Schema.compile({
 })
 
 vi.mock('sanity', () => ({
-  defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
-  InlineCode: ({children}: {children?: ReactNode}) => <code>{children}</code>,
   useSchema: () => schema,
+}))
+vi.mock('sanity/i18n', () => ({
+  defineLocaleResourceBundle: (bundle: unknown) => bundle,
+  InlineCode: ({children}: {children?: ReactNode}) => <code>{children}</code>,
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) =>
       options ? `${key}:${JSON.stringify(options)}` : key,

@@ -1,5 +1,5 @@
 import {Card} from '@sanity/ui'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, VStack} from 'ui5'
 
 import {structureLocaleNamespace} from '../../i18n'

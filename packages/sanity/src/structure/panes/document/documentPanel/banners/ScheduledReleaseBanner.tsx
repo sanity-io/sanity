@@ -1,5 +1,6 @@
 import {LockIcon} from '@sanity/icons/Lock'
-import {type ReleaseDocument, Translate, useTranslation} from 'sanity'
+import {type ReleaseDocument} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, type TextProps} from 'ui5'
 
 import {useFormatRelativeLocalePublishDate} from '../../../../../core/releases/hooks/useFormatRelativeLocalePublishDate'

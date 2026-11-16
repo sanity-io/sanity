@@ -33,10 +33,12 @@ const mocks = vi.hoisted(() => ({
 }))
 
 vi.mock('sanity', () => ({
-  defineLocaleResourceBundle: (bundle: unknown) => bundle,
-  useTranslation: () => ({t: (key: string) => key}),
   useDateTimeFormat: () => ({format: () => 'a date'}),
   UserAvatar: () => null,
+}))
+vi.mock('sanity/i18n', () => ({
+  defineLocaleResourceBundle: (bundle: unknown) => bundle,
+  useTranslation: () => ({t: (key: string) => key}),
 }))
 vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,

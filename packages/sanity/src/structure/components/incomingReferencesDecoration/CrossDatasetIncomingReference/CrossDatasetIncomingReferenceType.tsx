@@ -2,13 +2,8 @@ import {type SchemaType} from '@sanity/types'
 import {Card} from '@sanity/ui'
 import {Suspense, use, useCallback, useMemo} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
-import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  useClient,
-  useDocumentPreviewStore,
-  useSchema,
-  useTranslation,
-} from 'sanity'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useDocumentPreviewStore, useSchema} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box} from 'ui5'
 
 import {CommandList} from '../../../../core/components/commandList/CommandList'

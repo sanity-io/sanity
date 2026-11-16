@@ -14,7 +14,8 @@ import {
   useRef,
   useState,
 } from 'react'
-import {type Schema, useSchema, useTranslation} from 'sanity'
+import {type Schema, useSchema} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex, Icon} from 'ui5'
 
 import {groqExtensions} from '../../../codemirror/extensions'

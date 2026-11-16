@@ -1,5 +1,6 @@
 import {RestoreIcon} from '@sanity/icons/Restore'
-import {type DocumentInspector, useTranslation} from 'sanity'
+import {type DocumentInspector} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {useStructureTool} from '../../../../useStructureTool'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'

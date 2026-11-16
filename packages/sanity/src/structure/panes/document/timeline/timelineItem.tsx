@@ -7,8 +7,8 @@ import {
   useDateTimeFormat,
   UserAvatar,
   useRelativeTime,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {css, styled} from 'styled-components'
 import {Text, Flex, Box, VStack, Icon, type IconProps} from 'ui5'
 

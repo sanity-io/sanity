@@ -1,5 +1,5 @@
 import {type ClientPerspective, isHttpError} from '@sanity/client'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'

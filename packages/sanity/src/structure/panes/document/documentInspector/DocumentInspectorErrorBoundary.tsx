@@ -2,7 +2,7 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {SyncIcon} from '@sanity/icons/Sync'
 import {Card} from '@sanity/ui'
 import {type ReactNode, useCallback, useState} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box, VStack, Icon} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'

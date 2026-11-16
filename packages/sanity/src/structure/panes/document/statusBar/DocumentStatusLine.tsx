@@ -5,14 +5,8 @@ import {
 } from '@sanity/ui'
 import {AnimatePresence, motion} from 'motion/react'
 import {useEffect, useLayoutEffect, useState} from 'react'
-import {
-  AvatarSkeleton,
-  usePerspective,
-  UserAvatar,
-  useRelativeTime,
-  useSyncState,
-  useTranslation,
-} from 'sanity'
+import {AvatarSkeleton, usePerspective, UserAvatar, useRelativeTime, useSyncState} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box} from 'ui5'
 
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from '../../../../core/field/diff/components/constants'

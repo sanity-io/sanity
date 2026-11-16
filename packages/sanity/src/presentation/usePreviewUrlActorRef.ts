@@ -1,7 +1,8 @@
 import {useToast} from '@sanity/ui/toast'
 import {useActorRef, useSelector} from '@xstate/react'
 import {useEffect} from 'react'
-import {useActiveWorkspace, useClient, useCurrentUser, useGrantsStore, useTranslation} from 'sanity'
+import {useActiveWorkspace, useClient, useCurrentUser, useGrantsStore} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {useRouter} from 'sanity/router'
 import {fromObservable} from 'xstate'
 

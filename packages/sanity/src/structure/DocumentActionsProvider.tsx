@@ -5,9 +5,9 @@ import {
   type DocumentActionProps,
   getReleaseIdFromReleaseDocumentId,
   useCanvasCompanionDoc,
-  useTranslation,
 } from 'sanity'
 import {DocumentActionsStateContext} from 'sanity/_singletons'
+import {useTranslation} from 'sanity/i18n'
 
 import {getDocumentIdForCanvasLink} from '../core/canvas/utils/getDocumentIdForCanvasLink'
 import {GetHookCollectionState} from '../core/components/hookCollection/GetHookCollectionState'

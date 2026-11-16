@@ -1,5 +1,6 @@
 import {type ComponentProps, type ReactNode} from 'react'
-import {InsufficientPermissionsMessage, useCurrentUser, useTranslation} from 'sanity'
+import {InsufficientPermissionsMessage, useCurrentUser} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {structureLocaleNamespace} from '../../i18n'

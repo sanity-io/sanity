@@ -1,5 +1,5 @@
 import {useCallback, useMemo, type MouseEvent, type ReactNode} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Flex, PressArea, Text} from 'ui5'
 
 import {usePane} from '../../../../components/pane/usePane'

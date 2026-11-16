@@ -9,8 +9,8 @@ import {
   type FormNodeValidation,
   isValidationError,
   isValidationWarning,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {mergeParseErrors} from '../../../../../core/form/store/utils/mergeParseErrors'
 import {useParseErrors} from '../../../../../core/form/studio/contexts/ParseErrors'

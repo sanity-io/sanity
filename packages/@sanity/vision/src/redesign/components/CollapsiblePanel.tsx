@@ -1,7 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {Button, Tab, TabList, TabPanel, type ButtonTone} from '@sanity/ui'
 import {type ReactNode, useEffect, useRef} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../i18n'

@@ -66,6 +66,7 @@
       {"category": "sanity/_internal", "pattern": "src/_exports/_internal.ts"},
       {"category": "sanity/cli", "pattern": "src/_exports/cli.ts"},
       {"category": "sanity/desk", "pattern": "src/_exports/desk.ts"},
+      {"category": "sanity/i18n", "pattern": "src/_exports/i18n.ts"},
       {"category": "sanity/router", "pattern": "src/_exports/router.ts"},
       {
         // Leaf router utilities that src/core imports directly, so they can stay off the public
@@ -664,6 +665,10 @@
                 "allow": {"to": {"element": {"type": "sanity__contents"}}}
               },
               {
+                "from": {"file": {"categories": "sanity/i18n"}},
+                "allow": {"to": {"element": {"type": "sanity__contents"}}}
+              },
+              {
                 "from": {"element": {"type": "sanity__contents"}},
                 "allow": {
                   "to": [
@@ -749,6 +754,7 @@
                       "file": {
                         "categories": [
                           "sanity",
+                          "sanity/i18n",
                           "sanity/router",
                           "sanity/router__shared",
                           "sanity/_singletons"
@@ -785,7 +791,9 @@
                 "from": {"element": {"type": "sanity/_singletons__contents"}},
                 "disallow": {
                   "to": {
-                    "file": {"categories": ["sanity", "sanity/structure", "sanity/router"]}
+                    "file": {
+                      "categories": ["sanity", "sanity/i18n", "sanity/structure", "sanity/router"]
+                    }
                   },
                   "dependency": {"kind": "type"}
                 }
@@ -1183,6 +1191,7 @@
               },
               {"name": "sanity", "message": "Use relative type imports instead"},
               {"name": "sanity/presentation", "message": "Use relative type imports instead"},
+              {"name": "sanity/i18n", "message": "Use relative type imports instead"},
               {"name": "sanity/structure", "message": "Use relative type imports instead"},
               {"name": "sanity/router", "message": "Use relative type imports instead"}
             ],

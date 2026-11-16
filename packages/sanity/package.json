@@ -70,6 +70,10 @@
       "monorepo": "./src/_exports/desk.ts",
       "default": "./lib/desk.js"
     },
+    "./i18n": {
+      "monorepo": "./src/_exports/i18n.ts",
+      "default": "./lib/i18n.js"
+    },
     "./media-library": {
       "monorepo": "./src/_exports/media-library.ts",
       "default": "./lib/media-library.js"
@@ -114,6 +118,7 @@
       "./cli": "./lib/cli.js",
       "./dashboard": "./lib/dashboard.js",
       "./desk": "./lib/desk.js",
+      "./i18n": "./lib/i18n.js",
       "./media-library": "./lib/media-library.js",
       "./media-library-island-runtime": "./lib/media-library-island-runtime.js",
       "./migrate": "./lib/migrate.js",

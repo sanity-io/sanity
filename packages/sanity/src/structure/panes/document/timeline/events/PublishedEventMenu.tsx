@@ -9,10 +9,9 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
   type PublishDocumentVersionEvent,
-  Translate,
-  useTranslation,
   useWorkspace,
 } from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {IntentLink} from 'sanity/router'
 import {Text, Flex} from 'ui5'
 

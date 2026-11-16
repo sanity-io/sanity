@@ -18,6 +18,8 @@ const sanityMocks = vi.hoisted(() => ({
 vi.mock('sanity', () => ({
   usePerspective: sanityMocks.usePerspective,
   useWorkspace: () => sanityMocks.workspace,
+}))
+vi.mock('sanity/i18n', () => ({
   useTranslation: () => ({t: (key: string) => key}),
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
 }))

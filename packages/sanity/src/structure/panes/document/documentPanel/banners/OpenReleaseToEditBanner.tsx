@@ -3,11 +3,10 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
   isVersionId,
-  Translate,
   useDocumentVersions,
   useOnlyHasVersions,
-  useTranslation,
 } from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, Flex, type TextProps} from 'ui5'
 
 import {useSetPerspective} from '../../../../../core/perspective/useSetPerspective'

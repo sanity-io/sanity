@@ -12,9 +12,9 @@ import {
   useDocumentVersions,
   useListFormat,
   usePerspective,
-  useTranslation,
   type VersionInfoDocumentStub,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Flex} from 'ui5'
 
 import {useSetVariant} from '../../../../../../../core/perspective/useSetVariant'

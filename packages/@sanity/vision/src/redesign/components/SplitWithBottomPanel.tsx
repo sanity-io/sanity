@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../i18n'

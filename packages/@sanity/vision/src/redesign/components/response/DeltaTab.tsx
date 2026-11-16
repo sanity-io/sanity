@@ -1,7 +1,7 @@
 import {Badge, Button, Card, Label, Select, Stack, TextInput} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback, useEffect, useState} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex, Grid} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'

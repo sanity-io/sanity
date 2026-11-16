@@ -1,5 +1,5 @@
 import {useCallback} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {PUBLISHED} from '../../../../../../../core/releases/util/const'
 import {NavigationBadge} from './NavigationBadge'

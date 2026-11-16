@@ -35,10 +35,12 @@ vi.mock('sanity', () => ({
     ({
       config: () => ({projectId: 'switch-project', dataset: 'test'}),
     }) as unknown as SanityClient,
-  useTranslation: () => ({t: (key: string) => key}),
-  defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
   VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'v2025-08-18'},
+}))
+vi.mock('sanity/i18n', () => ({
+  useTranslation: () => ({t: (key: string) => key}),
+  defineLocaleResourceBundle: (bundle: unknown) => bundle,
 }))
 
 vi.mock('./containers/VisionContainer', () => ({

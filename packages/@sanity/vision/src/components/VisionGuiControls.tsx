@@ -3,7 +3,7 @@ import {RocketIcon} from '@sanity/icons/Rocket'
 import {StopIcon} from '@sanity/icons/Stop'
 import {Button, Card, Hotkeys} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'

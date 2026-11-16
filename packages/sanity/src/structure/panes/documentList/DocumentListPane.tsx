@@ -9,8 +9,8 @@ import {
   useClient,
   usePerspective,
   useSchema,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {keyframes, styled} from 'styled-components'
 import {Box, VStack} from 'ui5'
 

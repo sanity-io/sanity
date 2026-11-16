@@ -1,12 +1,7 @@
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
-import {
-  Translate,
-  useDocumentVersions,
-  useGetDefaultPerspective,
-  usePerspective,
-  useTranslation,
-} from 'sanity'
+import {useDocumentVersions, useGetDefaultPerspective, usePerspective} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 
 import {useConditionalToast} from '../../../../../core/hooks/useConditionalToast'

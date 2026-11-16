@@ -13,8 +13,8 @@ import {
   type SchemaType,
   useDocumentPreviewStore,
   useSchema,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, VStack, type TextProps} from 'ui5'
 
 import {ReleaseTitle} from '../../../core/releases/components/ReleaseTitle'

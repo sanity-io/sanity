@@ -1,5 +1,6 @@
 import {type ComponentProps} from 'react'
-import {getDefaultVariant, usePerspective, useTranslation} from 'sanity'
+import {getDefaultVariant, usePerspective} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {StateLink} from 'sanity/router'
 import {Box, Flex, PressArea} from 'ui5'
 

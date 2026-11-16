@@ -29,7 +29,7 @@ import {
   useEffectEvent,
 } from 'react'
 import {flushSync} from 'react-dom'
-import {Translate, useTranslation} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'

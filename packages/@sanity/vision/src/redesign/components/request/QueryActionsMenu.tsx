@@ -6,7 +6,7 @@ import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {Button} from '@sanity/ui'
 import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
 import {useCallback, useState} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type QueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'

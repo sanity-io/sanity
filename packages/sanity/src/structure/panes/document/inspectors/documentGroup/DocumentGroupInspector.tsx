@@ -6,8 +6,8 @@ import {
   readVersionType,
   useClient,
   useDocumentStore,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Flex} from 'ui5'
 
 import {

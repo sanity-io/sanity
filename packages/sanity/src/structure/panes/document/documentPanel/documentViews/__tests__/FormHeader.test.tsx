@@ -6,7 +6,7 @@ import {describe, expect, it, vi} from 'vitest'
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {FormHeader} from '../FormHeader'
 
-vi.mock('sanity', async (importOriginal) => {
+vi.mock('sanity/i18n', async (importOriginal) => {
   return {
     ...(await importOriginal()),
     useTranslation: vi.fn(() => ({t: (key: string) => key})),

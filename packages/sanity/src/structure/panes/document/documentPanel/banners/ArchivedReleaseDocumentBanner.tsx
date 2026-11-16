@@ -1,10 +1,6 @@
 import {useMemo} from 'react'
-import {
-  getReleaseIdFromReleaseDocumentId,
-  type TargetPerspective,
-  Translate,
-  useTranslation,
-} from 'sanity'
+import {getReleaseIdFromReleaseDocumentId, type TargetPerspective} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 
 import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
