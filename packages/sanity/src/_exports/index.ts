@@ -34,6 +34,10 @@ export {
   type CommentInputHandle,
   type CommentInputProps,
 } from '../core/comments/components/pte/comment-input/CommentInput'
+export {
+  type CommentInputHandle as CommentInputHandleLegacy,
+  type CommentInputProps as CommentInputPropsLegacy,
+} from '../core/comments/components/pte/comment-input/CommentInput'
 export {CommentInlineHighlightSpan} from '../core/comments/components/pte/CommentInlineHighlightSpan'
 export {COMMENTS_INSPECTOR_NAME} from '../core/comments/constants'
 export {CommentsAuthoringPathProvider} from '../core/comments/context/authoring-path/CommentsAuthoringPathProvider'
@@ -45,10 +49,12 @@ export {
 } from '../core/comments/context/intent/CommentsIntentProvider'
 export {CommentsSelectedPathProvider} from '../core/comments/context/selected-path/CommentsSelectedPathProvider'
 export {type CommentsSelectedPath} from '../core/comments/context/selected-path/types'
+export {type CommentsSelectedPath as CommentsSelectedPathLegacy} from '../core/comments/context/selected-path/types'
 export {hasCommentMessageValue, isTextSelectionComment} from '../core/comments/helpers'
 export {useComments} from '../core/comments/hooks/useComments'
 export {useCommentsEnabled} from '../core/comments/hooks/useCommentsEnabled'
 export {useCommentsMode} from '../core/comments/hooks/useCommentsMode'
+export {useCommentsMode as useCommentsModeLegacy} from '../core/comments/hooks/useCommentsMode'
 export {useCommentsSelectedPath} from '../core/comments/hooks/useCommentsSelectedPath'
 export {useCommentsTelemetry} from '../core/comments/hooks/useCommentsTelemetry'
 export {
@@ -77,6 +83,32 @@ export {
   type CommentUpdateOperationOptions,
   type CommentUpdatePayload,
   type Loadable,
+} from '../core/comments/types'
+export {
+  type CommentBaseCreatePayload as CommentBaseCreatePayloadLegacy,
+  type CommentContext as CommentContextLegacy,
+  type CommentCreatePayload as CommentCreatePayloadLegacy,
+  type CommentDocument as CommentDocumentLegacy,
+  type CommentFieldCreatePayload as CommentFieldCreatePayloadLegacy,
+  type CommentListBreadcrumbs as CommentListBreadcrumbsLegacy,
+  type CommentMessage as CommentMessageLegacy,
+  type CommentOperations as CommentOperationsLegacy,
+  type CommentPath as CommentPathLegacy,
+  type CommentPostPayload as CommentPostPayloadLegacy,
+  type CommentReactionItem as CommentReactionItemLegacy,
+  type CommentReactionOption as CommentReactionOptionLegacy,
+  type CommentReactionShortNames as CommentReactionShortNamesLegacy,
+  type CommentsListBreadcrumbItem as CommentsListBreadcrumbItemLegacy,
+  type CommentStatus as CommentStatusLegacy,
+  type CommentsTextSelectionItem as CommentsTextSelectionItemLegacy,
+  type CommentsType as CommentsTypeLegacy,
+  type CommentsUIMode as CommentsUIModeLegacy,
+  type CommentTaskCreatePayload as CommentTaskCreatePayloadLegacy,
+  type CommentTextSelection as CommentTextSelectionLegacy,
+  type CommentThreadItem as CommentThreadItemLegacy,
+  type CommentUpdateOperationOptions as CommentUpdateOperationOptionsLegacy,
+  type CommentUpdatePayload as CommentUpdatePayloadLegacy,
+  type Loadable as LoadableLegacy,
 } from '../core/comments/types'
 export {buildCommentRangeDecorations} from '../core/comments/utils/inline-comments/buildCommentRangeDecorations'
 export {buildRangeDecorationSelectionsFromComments} from '../core/comments/utils/inline-comments/buildRangeDecorationSelectionsFromComments'
