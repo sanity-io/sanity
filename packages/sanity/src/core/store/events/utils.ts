@@ -15,6 +15,7 @@ import {
   isUnpublishDocumentEvent,
   isUnscheduleDocumentVersionEvent,
   isUpdateLiveDocumentEvent,
+  type UpdateLiveDocumentEvent,
 } from './types'
 
 /**
@@ -244,8 +245,7 @@ export function updateVersionEvents(events: DocumentGroupEvent[]) {
 }
 
 /**
- * Merges the events (API events and synthesized edit events) and the expanded edit events into
- * one list sorted newest-first.
+ * Merges remote edits, API events and expanded edit events into one list sorted newest-first.
  *
  * Sorting rules:
  * - Primary: timestamp descending.
@@ -259,13 +259,15 @@ export function updateVersionEvents(events: DocumentGroupEvent[]) {
  * pairs can depend on input order — tracked as a known issue.
  */
 export function sortEvents({
+  remoteEdits,
   events,
   expandedEvents,
 }: {
+  remoteEdits: (UpdateLiveDocumentEvent | EditDocumentVersionEvent)[]
   events: DocumentGroupEvent[]
   expandedEvents: EditDocumentVersionEvent[]
 }): DocumentGroupEvent[] {
-  return [...events, ...expandedEvents].sort(
+  const eventsWithRemoteEdits = [...remoteEdits, ...events, ...expandedEvents].sort(
     // Sort by timestamp, newest first unless is an edit event that has a corresponding publish event
     (a, b) => {
       if (
@@ -286,4 +288,5 @@ export function sortEvents({
       return Date.parse(b.timestamp) - Date.parse(a.timestamp)
     },
   )
+  return eventsWithRemoteEdits
 }

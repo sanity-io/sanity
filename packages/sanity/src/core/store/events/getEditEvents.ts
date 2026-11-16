@@ -6,6 +6,7 @@ import {
 
 import {getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {
+  type DocumentGroupEvent,
   type EditDocumentVersionEvent,
   isEditDocumentVersionEvent,
   type UpdateLiveDocumentEvent,
@@ -47,23 +48,53 @@ function isDeletePatch(patch: MendozaPatch): boolean {
   return patch[0] === 0 && patch[1] === null
 }
 
-/** Whether `transaction` modified `documentId`, rather than creating or deleting it. */
-export function isEditTransaction(
-  transaction: TransactionLogEventWithEffects,
-  documentId: string,
-): boolean {
-  return getEffectState(transaction.effects[documentId]) === 'modified'
-}
+type EditTransaction = EditDocumentVersionEvent['transactions'][number]
 
-const getEditTransaction = (
-  transaction: TransactionLogEventWithEffects,
-): EditDocumentVersionEvent['transactions'][number] => {
+const getEditTransaction = (transaction: TransactionLogEventWithEffects): EditTransaction => {
   return {
     type: 'editTransaction',
     author: transaction.author,
     timestamp: transaction.timestamp,
     revisionId: transaction.id,
   }
+}
+
+/**
+ * Groups edit transactions into `editDocumentVersion` events, newest first: a transaction within
+ * the merge window (5 min) of the *current group's newest* transaction joins that group, otherwise
+ * it starts a new event. Each event takes its id, revision, timestamp and author from its newest
+ * transaction, and lists every distinct author in `contributors`.
+ */
+function groupEditTransactions(
+  transactions: EditTransaction[],
+  documentId: string,
+): EditDocumentVersionEvent[] {
+  const result: EditDocumentVersionEvent[] = []
+  const newestFirst = transactions.toSorted(
+    (a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp),
+  )
+  for (const transaction of newestFirst) {
+    const group = result.at(-1)
+    if (group && isWithinMergeWindow(group.timestamp, transaction.timestamp)) {
+      group.transactions.push(transaction)
+      if (!group.contributors.includes(transaction.author)) {
+        group.contributors.push(transaction.author)
+      }
+      continue
+    }
+    result.push({
+      type: 'editDocumentVersion',
+      documentId,
+      id: transaction.revisionId,
+      timestamp: transaction.timestamp,
+      author: transaction.author,
+      contributors: [transaction.author],
+      revisionId: transaction.revisionId,
+      transactions: [transaction],
+      documentVariantType: getDocumentVariantType(documentId),
+    })
+  }
+  return result
 }
 
 export function getEditEvents(
@@ -85,9 +116,8 @@ export function getEditEvents(
 ): (EditDocumentVersionEvent | UpdateLiveDocumentEvent)[]
 /**
  * Builds synthetic edit events from translog transactions — the events API does not expose edits,
- * so the studio derives them client-side. The events store calls it once over the fetched and the
- * real-time remote transactions together (see `getEditEventsFromTransactions`), so an edit is
- * grouped the same way whichever way it arrived.
+ * so the studio derives them client-side (both for the initial fetch and for real-time remote
+ * mutations, which {@link mergeEditEvents} then regroups together).
  *
  * Behavior:
  * - Only transactions whose effect on `documentId` is `'modified'` are considered
@@ -109,56 +139,66 @@ export function getEditEvents(
   documentId: string,
   liveEdit: boolean,
 ): (EditDocumentVersionEvent | UpdateLiveDocumentEvent)[] {
-  const editTransactions = transactions
-    .filter((tx) => isEditTransaction(tx, documentId))
-    // We sort the transactions by timestamp, newest first
-    .sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
+  const editEvents = groupEditTransactions(
+    transactions
+      // We only care about the transactions that have modified the document
+      .filter((tx) => getEffectState(tx.effects[documentId]) === 'modified')
+      .map(getEditTransaction),
+    documentId,
+  )
+  if (!liveEdit) return editEvents
 
-  const result: (EditDocumentVersionEvent | UpdateLiveDocumentEvent)[] = []
-  for (const transaction of editTransactions) {
-    // If result is empty, add the current event
-    const event = liveEdit
-      ? ({
-          id: transaction.id,
-          timestamp: transaction.timestamp,
-          type: 'updateLiveDocument',
-          documentId: documentId,
-          revisionId: transaction.id,
-          author: transaction.author,
-          documentVariantType: getDocumentVariantType(documentId),
-        } satisfies UpdateLiveDocumentEvent)
-      : ({
-          type: 'editDocumentVersion',
-          documentId: documentId,
-          id: transaction.id,
-          timestamp: transaction.timestamp,
-          author: transaction.author,
-          contributors: [transaction.author],
-          revisionId: transaction.id,
-          transactions: [getEditTransaction(transaction)],
-          documentVariantType: getDocumentVariantType(documentId),
-        } satisfies EditDocumentVersionEvent)
-    if (result.length === 0) {
-      result.push(event)
-      continue
-    }
+  return editEvents.map((event): UpdateLiveDocumentEvent => ({
+    id: event.id,
+    timestamp: event.timestamp,
+    type: 'updateLiveDocument',
+    documentId,
+    revisionId: event.revisionId,
+    author: event.author,
+    documentVariantType: event.documentVariantType,
+  }))
+}
 
-    const lastEvent = result[result.length - 1]
-
-    if (isWithinMergeWindow(lastEvent.timestamp, event.timestamp)) {
-      if (isEditDocumentVersionEvent(lastEvent)) {
-        // Add the transaction event to the transactions
-        lastEvent.transactions.push(getEditTransaction(transaction))
-        if (!lastEvent.contributors.includes(event.author) && lastEvent.author !== event.author) {
-          // Update event the contributors list
-          lastEvent.contributors.push(event.author)
-        }
-      }
+/**
+ * Regroups the edit events of a newest-first event list as if all their transactions had been
+ * grouped by a single {@link getEditEvents} call. The events store gets edit events from two
+ * places, the translog fetched with the events and the transactions received live afterwards,
+ * and each one only groups its own transactions; without this, the same edits would be grouped
+ * differently depending on when the document was loaded.
+ *
+ * Only consecutive edit events are regrouped: any other event between them (a creation, a
+ * publish, a discard) ends the run, so edits are never grouped across a lifecycle change. A
+ * transaction found in more than one event (fetched, and also received live) is kept once. Edit
+ * events nested under an expanded publish (they have a `parentId`) are left as they are.
+ */
+export function mergeEditEvents(events: DocumentGroupEvent[]): DocumentGroupEvent[] {
+  const result: DocumentGroupEvent[] = []
+  let run: EditDocumentVersionEvent[] = []
+  const endRun = () => {
+    if (run.length > 1) {
+      const seen = new Set<string>()
+      const transactions = run
+        .flatMap((event) => event.transactions)
+        .filter((transaction) => {
+          if (seen.has(transaction.revisionId)) return false
+          seen.add(transaction.revisionId)
+          return true
+        })
+      result.push(...groupEditTransactions(transactions, run[0].documentId))
     } else {
-      // If the time difference is greater than the window, add as a new event
-      result.push(event)
+      result.push(...run)
     }
+    run = []
   }
 
+  for (const event of events) {
+    if (isEditDocumentVersionEvent(event) && !event.parentId) {
+      run.push(event)
+      continue
+    }
+    endRun()
+    result.push(event)
+  }
+  endRun()
   return result
 }

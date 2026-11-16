@@ -1,13 +1,13 @@
 import {type SanityClient} from '@sanity/client'
 import {type MendozaPatch, type TransactionLogEventWithEffects} from '@sanity/types'
-import {BehaviorSubject, filter} from 'rxjs'
+import {BehaviorSubject, filter, map} from 'rxjs'
 
 import {getDraftId, getPublishedId, isVersionId} from '../../util/draftUtils'
 import {type DocumentVariantType, getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {type DocumentRemoteMutationEvent} from '../document/buffered-doc/types'
 import {type WithVersion} from '../document/document-pair/checkoutPair'
 import {remoteSnapshots} from '../document/document-pair/remoteSnapshots'
-import {getEffectState} from './getEditEvents'
+import {getEditEvents, getEffectState} from './getEditEvents'
 import {remoteMutationToTransaction} from './utils'
 
 interface GetRemoteTransactionsSubscriptionOptions {
@@ -65,11 +65,12 @@ export function classifyRemoteMutation(
  * - `'refetch'` → `onRefetch()`.
  * - `'refetch-and-clear'` → `onRefetch()` and the accumulated transactions are cleared.
  * - `'append'` → the mutation is converted via `remoteMutationToTransaction` and appended to
- *   `remoteTransactions$`, so it renders as an edit event without refetching.
+ *   `remoteTransactions$`; `remoteEdits$` maps the accumulated transactions through
+ *   `getEditEvents` so they render as (live) edit events without refetching.
  *
- * Returns `remoteTransactions$` (turned into edit events by `createEventsObservable` together with
- * the fetched transactions, and consumed by `getDocumentChanges` for diffing while viewing the
- * latest version), and `subscribe` which activates the listener and returns the rxjs subscription.
+ * Returns `remoteTransactions$` (consumed by `getDocumentChanges` for diffing while viewing the
+ * latest version), `remoteEdits$` (merged into the events list), and `subscribe` which activates
+ * the listener and returns the rxjs subscription.
  *
  * Known quirk: `remoteTransactions$` only resets on created/deleted effects, so it accumulates
  * without bound during long editing sessions (tracked as a known issue).
@@ -82,6 +83,9 @@ export function getRemoteTransactionsSubscription({
   onRefetch,
 }: GetRemoteTransactionsSubscriptionOptions) {
   const remoteTransactions$ = new BehaviorSubject<TransactionLogEventWithEffects[]>([])
+  const remoteEdits$ = remoteTransactions$.pipe(
+    map((transactions) => getEditEvents(transactions, documentId, isLiveEdit)),
+  )
 
   const documentVariantType = getDocumentVariantType(documentId)
   const onMutationReceived = (remoteMutation: WithVersion<DocumentRemoteMutationEvent> | null) => {
@@ -130,6 +134,7 @@ export function getRemoteTransactionsSubscription({
 
   return {
     remoteTransactions$,
+    remoteEdits$,
     subscribe: () => subscription.subscribe(onMutationReceived),
   }
 }

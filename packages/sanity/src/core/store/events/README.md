@@ -86,4 +86,4 @@ The **Edit Event** is a special case. It is not returned directly by the API but
 1. Fetching transactions from the translog.
 2. Processing new transactions as they are received in real-time through change listeners.
 
-Both sets of transactions are turned into edit events together, in `createEventsObservable`, so edits made within the merge window are grouped into the same event whether the studio fetched them or received them live. Edit events never group transactions from both sides of a lifecycle change (a publish, a discard or a recreation of the document).
+Each source groups its own transactions, so `createEventsObservable` regroups consecutive edit events together (`mergeEditEvents`): edits made within the merge window end up in the same event whether the studio fetched them or received them live.
