@@ -12,12 +12,17 @@ import {
   useTranslation,
 } from 'sanity'
 
+import {createLazyComponent} from '../../../../../core/components/lazy/createLazyComponent'
 import {mergeParseErrors} from '../../../../../core/form/store/utils/mergeParseErrors'
 import {useParseErrors} from '../../../../../core/form/studio/contexts/ParseErrors'
 import {isGoingToUnpublish} from '../../../../../core/releases/util/isGoingToUnpublish'
 import {VALIDATION_INSPECTOR_NAME} from '../../constants'
 import {useDocumentPane} from '../../useDocumentPane'
-import {ValidationInspector} from './ValidationInspector'
+
+// The inspector panel renders its component under its own `Suspense` boundary, and the
+// implementation is only needed once the inspector is opened, so it stays out of the static import
+// graph of `structureTool()`, which every studio config loads up front.
+const ValidationInspector = createLazyComponent(() => import('./ValidationInspector.lazy'))
 
 function useMenuItem(_props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
   const {t} = useTranslation('validation')
