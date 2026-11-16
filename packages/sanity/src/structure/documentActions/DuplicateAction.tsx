@@ -9,8 +9,8 @@ import {
   useDocumentOperation,
   useDocumentPairPermissions,
   useDocumentStore,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {useRouter} from 'sanity/router'
 
 import {getPairTarget, getTargetScopeId} from '../../core/hooks/useTargetDocumentState'

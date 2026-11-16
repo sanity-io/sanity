@@ -2,13 +2,8 @@ import {type SanityDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ComponentType, useCallback, useState} from 'react'
-import {
-  type ObjectSchemaType,
-  Translate,
-  useDocumentOperation,
-  usePerspective,
-  useTranslation,
-} from 'sanity'
+import {type ObjectSchemaType, useDocumentOperation, usePerspective} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, Flex} from 'ui5'
 
 import {getTargetSiblings} from '../../../../../core/hooks/useTargetDocumentState'

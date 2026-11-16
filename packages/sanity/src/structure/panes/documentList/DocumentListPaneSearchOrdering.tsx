@@ -1,7 +1,7 @@
 import {SortIcon} from '@sanity/icons/Sort'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {memo, useId} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Box} from 'ui5'
 
 import {useGetI18nText} from '../../../core/i18n/hooks/useGetI18nText'

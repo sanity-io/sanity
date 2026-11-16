@@ -1,4 +1,4 @@
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useDocumentGroupInspectorState} from '../../inspectors/documentGroup/useDocumentGroupInspectorState'

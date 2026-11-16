@@ -1,6 +1,6 @@
 import {ChevronLeftIcon} from '@sanity/icons/ChevronLeft'
 import {type MouseEvent, useCallback} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../i18n'

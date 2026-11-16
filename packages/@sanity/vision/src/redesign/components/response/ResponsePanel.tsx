@@ -4,7 +4,7 @@ import {Badge, Card, Label, Tab, TabList} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {type ReactNode, useCallback, useMemo} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
 import {DelayedSpinner} from '../../../components/DelayedSpinner'

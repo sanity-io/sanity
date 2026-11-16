@@ -6,10 +6,9 @@ import {
   getPublishedId,
   PreviewCard,
   SanityDefaultPreview,
-  Translate,
   useSchema,
-  useTranslation,
 } from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {StateLink} from 'sanity/router'
 import {Text, Flex, Box, Icon} from 'ui5'
 

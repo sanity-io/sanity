@@ -15,12 +15,8 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {
-  type DocumentActionDescription,
-  useDocumentPresence,
-  useTranslation,
-  useWorkspace,
-} from 'sanity'
+import {type DocumentActionDescription, useDocumentPresence, useWorkspace} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 

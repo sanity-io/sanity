@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {useValuePreview} from '../../../core/preview/useValuePreview'
 import {prepareForPreview} from '../../../core/preview/utils/prepareForPreview'

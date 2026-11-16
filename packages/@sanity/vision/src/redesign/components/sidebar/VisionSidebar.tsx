@@ -10,7 +10,7 @@ import {UsersIcon} from '@sanity/icons/Users'
 import {Button} from '@sanity/ui'
 import {Tooltip, TooltipDelayGroupProvider, useTooltipDelayGroup} from '@sanity/ui/tooltip'
 import {type ComponentType, type MouseEvent, useCallback, useRef, useState} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'

@@ -1,6 +1,7 @@
 import {type SanityDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {getPublishedId, Translate, useTranslation} from 'sanity'
+import {getPublishedId} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 
 import {useScheduledDraftDocument} from '../../../../../core/singleDocRelease/hooks/useScheduledDraftDocument'

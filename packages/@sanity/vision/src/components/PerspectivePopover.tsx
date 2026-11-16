@@ -2,7 +2,7 @@ import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 import {Badge, Button, Card, type CardTone, Inline, useClickOutsideEvent} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {type ComponentProps, useCallback, useRef, useState} from 'react'
-import {Translate, useTranslation} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, Box, VStack, Link, type LinkProps} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'

@@ -1,7 +1,7 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {useSelector} from '@xstate/react'
 import {useCallback, useMemo} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'

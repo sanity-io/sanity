@@ -15,9 +15,9 @@ import {
   useRelativeTime,
   useSetImmediateValidation,
   useSyncState,
-  useTranslation,
   useValidationStatus,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 
 import {

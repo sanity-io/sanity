@@ -2,7 +2,7 @@ import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Label, Text, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type ChangeEvent, type ReactElement, type ReactNode, useCallback, useId} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../../../../ui-components/menuButton/MenuButton'

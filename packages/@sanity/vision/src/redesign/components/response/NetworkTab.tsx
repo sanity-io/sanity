@@ -1,6 +1,6 @@
 import {Badge, Stack} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex, Grid} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'

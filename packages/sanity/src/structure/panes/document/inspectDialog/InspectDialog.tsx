@@ -3,7 +3,7 @@ import {type SanityDocument} from '@sanity/types'
 import {Card, TabList, TabPanel} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
-import {Translate, useTranslation} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Flex} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'

@@ -44,9 +44,11 @@ vi.mock('sanity', () => ({
   usePerspective: sanityMocks.usePerspective,
   useClient: sanityMocks.useClient,
   useWorkspace: () => sanityMocks.workspace,
+  getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),
+}))
+vi.mock('sanity/i18n', () => ({
   useTranslation: () => ({t: (key: string) => key}),
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
-  getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),
 }))
 vi.mock(
   'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',

@@ -7,10 +7,9 @@ import {
   getPublishedId,
   isDev,
   SanityDefaultPreview,
-  Translate,
   useSchema,
-  useTranslation,
 } from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box} from 'ui5'
 
 import {CommandList} from '../../../core/components/commandList/CommandList'

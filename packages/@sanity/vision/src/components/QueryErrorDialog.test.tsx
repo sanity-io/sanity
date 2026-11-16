@@ -14,7 +14,7 @@ const sanityMocks = vi.hoisted(() => ({
   variantsApiVersion: 'v2025-08-18',
 }))
 
-vi.mock('sanity', () => ({
+vi.mock('sanity/i18n', () => ({
   useTranslation: () => ({
     t: (key: string, values?: {apiVersion?: string}) =>
       values?.apiVersion ? `${key}:${values.apiVersion}` : key,

@@ -1,5 +1,5 @@
 import {useId} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'

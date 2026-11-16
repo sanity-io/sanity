@@ -1,5 +1,5 @@
 import {type ClientPerspective, type MutationEvent} from '@sanity/client'
-import {Translate, useTranslation} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, Box} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'

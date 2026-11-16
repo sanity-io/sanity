@@ -8,8 +8,8 @@ import {
   isDeleteDocumentVersionEvent,
   isEditDocumentVersionEvent,
   isPublishDocumentVersionEvent,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box} from 'ui5'
 
 import {CommandList} from '../../../../../core/components/commandList/CommandList'

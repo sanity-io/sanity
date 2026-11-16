@@ -6,12 +6,11 @@ import {
   getVersionId,
   type ReleaseDocument,
   type SanityDocumentLike,
-  Translate,
   useDateTimeFormat,
   type UseDateTimeFormatOptions,
   usePerspective,
-  useTranslation,
 } from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, VStack} from 'ui5'
 
 import {VersionChip} from '../../../../../../core/releases/components/documentHeader/VersionChip'

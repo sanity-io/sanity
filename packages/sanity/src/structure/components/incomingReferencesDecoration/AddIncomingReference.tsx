@@ -15,8 +15,8 @@ import {
   useClient,
   useDocumentPreviewStore,
   useSchema,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Grid, Box, Flex} from 'ui5'
 
 import {ReferenceAutocomplete} from '../../../core/form/inputs/ReferenceInput/ReferenceAutocomplete'

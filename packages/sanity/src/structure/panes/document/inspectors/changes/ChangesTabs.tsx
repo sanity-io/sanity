@@ -6,10 +6,9 @@ import {
   type DocumentInspectorProps,
   type TargetPerspective,
   type TFunction,
-  Translate,
   usePerspective,
-  useTranslation,
 } from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box, Icon} from 'ui5'
 
 import {isReleaseDocument} from '../../../../../core/releases/store/types'

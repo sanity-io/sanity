@@ -10,8 +10,8 @@ import {
   useDocumentPairPermissions,
   useDocumentStore,
   useDocumentVersionTypeSortedList,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {getPairTarget, getTargetScopeId} from '../../core/hooks/useTargetDocumentState'
 import {isReleaseScheduledOrScheduling} from '../../core/releases/util/util'

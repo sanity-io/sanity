@@ -1,6 +1,7 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type SanityDocument} from '@sanity/types'
-import {type GeneralPreviewLayoutKey, SanityDefaultPreview, Translate, useTranslation} from 'sanity'
+import {type GeneralPreviewLayoutKey, SanityDefaultPreview} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 
 import {structureLocaleNamespace} from '../i18n'
 

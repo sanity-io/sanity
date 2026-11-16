@@ -1,13 +1,8 @@
 import {DocumentRemoveIcon} from '@sanity/icons/DocumentRemove'
 import {ReadOnlyIcon} from '@sanity/icons/ReadOnly'
 import {useCallback} from 'react'
-import {
-  type ReleaseDocument,
-  Translate,
-  useDocumentOperation,
-  usePerspective,
-  useTranslation,
-} from 'sanity'
+import {type ReleaseDocument, useDocumentOperation, usePerspective} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {useRouter} from 'sanity/router'
 import {Text} from 'ui5'
 

@@ -1,5 +1,5 @@
 import {useCallback, useMemo} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {parseParams} from '../../components/ParamsEditor'
 import {type Params} from '../../components/VisionGui'

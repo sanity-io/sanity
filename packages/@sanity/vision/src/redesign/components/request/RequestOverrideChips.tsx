@@ -1,11 +1,12 @@
 import {Button} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {useMemo} from 'react'
-import {usePerspective, useTranslation} from 'sanity'
+import {usePerspective} from 'sanity'
 import {
   getDefaultVariant,
   getVariantTitle,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'

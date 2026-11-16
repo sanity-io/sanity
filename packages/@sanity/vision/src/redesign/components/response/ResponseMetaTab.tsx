@@ -2,7 +2,7 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {Badge, Button, Stack, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type ReactNode} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex, Grid} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'

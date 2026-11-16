@@ -5,7 +5,7 @@ import {RefreshIcon} from '@sanity/icons/Refresh'
 import {Card, Hotkeys, Switch} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {type RefObject, useCallback, useMemo} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'

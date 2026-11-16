@@ -1,6 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
-import {Translate, usePerspective, useTranslation} from 'sanity'
+import {usePerspective} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, VStack} from 'ui5'
 
 import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'

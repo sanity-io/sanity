@@ -1,5 +1,6 @@
 import {useCallback} from 'react'
-import {usePerspective, useTranslation, useWorkspace} from 'sanity'
+import {usePerspective, useWorkspace} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 
 import {getTargetSiblings} from '../../../../../core/hooks/useTargetDocumentState'

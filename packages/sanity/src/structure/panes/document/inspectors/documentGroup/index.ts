@@ -1,5 +1,6 @@
 import {VersionsIcon} from '@sanity/icons/Versions'
-import {type DocumentInspector, useTranslation} from 'sanity'
+import {type DocumentInspector} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {DOCUMENT_GROUP_INSPECTOR_NAME} from '../../constants'
 import {DocumentGroupInspector} from './DocumentGroupInspector'

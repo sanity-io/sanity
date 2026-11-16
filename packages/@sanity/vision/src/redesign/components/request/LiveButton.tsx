@@ -3,7 +3,7 @@ import {SyncIcon} from '@sanity/icons/Sync'
 import {Button} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {useId} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, VisuallyHidden} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'

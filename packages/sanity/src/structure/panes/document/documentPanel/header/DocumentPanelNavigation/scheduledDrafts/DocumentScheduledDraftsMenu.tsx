@@ -11,8 +11,8 @@ import {
   useDocumentVersions,
   usePerspective,
   useScheduledDraftsEnabled,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {isReleaseDocument} from '../../../../../../../core/releases/store/types'
 import {getReleaseTone} from '../../../../../../../core/releases/util/getReleaseTone'

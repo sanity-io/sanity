@@ -7,8 +7,8 @@ import {
   type ObjectSchemaType,
   useSchema,
   useSource,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {useI18nText} from '../../../core/i18n/hooks/useI18nText'
 import {SourceProvider} from '../../../core/studio/source'

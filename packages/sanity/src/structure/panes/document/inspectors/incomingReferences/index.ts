@@ -1,5 +1,6 @@
 import {SyncIcon} from '@sanity/icons/Sync'
-import {type DocumentInspector, useTranslation} from 'sanity'
+import {type DocumentInspector} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {INCOMING_REFERENCES_INSPECTOR_NAME} from '../../constants'
 import {IncomingReferencesInspector} from './IncomingReferencesInspector'

@@ -1,6 +1,6 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Card, Container} from '@sanity/ui'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box, Icon, Link} from 'ui5'
 
 import {structureLocaleNamespace} from '../../i18n'

@@ -9,8 +9,8 @@ import {
   isScheduleDocumentVersionEvent,
   isUnpublishDocumentEvent,
   isUnscheduleDocumentVersionEvent,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Flex} from 'ui5'
 
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from '../../../../../core/field/diff/components/constants'

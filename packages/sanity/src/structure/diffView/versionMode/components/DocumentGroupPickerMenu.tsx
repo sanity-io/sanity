@@ -13,8 +13,8 @@ import {
   type ReleaseDocument,
   useDocumentVersions,
   useDocumentVersionTitle,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Flex} from 'ui5'
 
 import {DocumentVersionIcons} from '../../../../core/components/documentStatus/DocumentVersionIcons'

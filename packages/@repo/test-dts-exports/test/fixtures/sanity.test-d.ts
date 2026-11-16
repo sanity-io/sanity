@@ -315,8 +315,6 @@ import type {
   defineDocumentFieldAction,
   defineDocumentInspector,
   defineField,
-  defineLocale,
-  defineLocaleResourceBundle,
   defineLocalesResources,
   definePlugin,
   DefineSchemaBase,
@@ -675,7 +673,6 @@ import type {
   InitialValueState,
   InitialValueSuccessMsg,
   InitialValueTemplateItem,
-  InlineCode,
   InlineFieldDefinition,
   InlinePreview,
   InlinePreviewProps,
@@ -1049,7 +1046,6 @@ import type {
   ReleasesNavMenuItemPropsGetter,
   RemoteSnapshotEvent,
   RemoteSnapshotVersionEvent,
-  removeUndefinedLocaleResources,
   RenderAnnotationCallback,
   RenderArrayOfObjectsItemCallback,
   RenderArrayOfPrimitivesItemCallback,
@@ -1290,7 +1286,6 @@ import type {
   TransactionLogEventWithMutations,
   TransactionLogMutation,
   TransformPatches,
-  Translate,
   TranslateComponentMap,
   TranslationProps,
   truncateString,
@@ -1340,7 +1335,6 @@ import type {
   useCommentsMode,
   useCommentsModeLegacy,
   useCopyPaste,
-  useCurrentLocale,
   useCurrentUser,
   useDataset,
   useDateTimeFormat,
@@ -1421,7 +1415,6 @@ import type {
   useTimelineSelector,
   useTimelineStore,
   useTools,
-  useTranslation,
   UseTranslationOptions,
   UseTranslationResponse,
   useUnique,
@@ -2435,12 +2428,6 @@ describe('sanity', () => {
   })
   test('defineField', () => {
     expectTypeOf<typeof defineField>().toBeFunction()
-  })
-  test('defineLocale', () => {
-    expectTypeOf<typeof defineLocale>().toBeFunction()
-  })
-  test('defineLocaleResourceBundle', () => {
-    expectTypeOf<typeof defineLocaleResourceBundle>().toBeFunction()
   })
   test('defineLocalesResources', () => {
     expectTypeOf<typeof defineLocalesResources>().toBeFunction()
@@ -3522,9 +3509,6 @@ describe('sanity', () => {
   })
   test('InitialValueTemplateItem', () => {
     expectTypeOf<InitialValueTemplateItem>().toBeObject()
-  })
-  test('InlineCode', () => {
-    expectTypeOf<typeof InlineCode>().toBeFunction()
   })
   test('InlineFieldDefinition', () => {
     expectTypeOf<InlineFieldDefinition>().not.toBeNever()
@@ -4649,9 +4633,6 @@ describe('sanity', () => {
   test('RemoteSnapshotVersionEvent', () => {
     expectTypeOf<RemoteSnapshotVersionEvent>().not.toBeNever()
   })
-  test('removeUndefinedLocaleResources', () => {
-    expectTypeOf<typeof removeUndefinedLocaleResources>().toBeFunction()
-  })
   test('RenderAnnotationCallback', () => {
     expectTypeOf<RenderAnnotationCallback<any>>().not.toBeNever()
   })
@@ -5376,9 +5357,6 @@ describe('sanity', () => {
   test('TransformPatches', () => {
     expectTypeOf<typeof TransformPatches>().not.toBeNever()
   })
-  test('Translate', () => {
-    expectTypeOf<typeof Translate>().toBeFunction()
-  })
   test('TranslateComponentMap', () => {
     expectTypeOf<TranslateComponentMap<any>>().not.toBeNever()
   })
@@ -5527,9 +5505,6 @@ describe('sanity', () => {
   })
   test('useCopyPaste', () => {
     expectTypeOf<typeof useCopyPaste>().not.toBeNever()
-  })
-  test('useCurrentLocale', () => {
-    expectTypeOf<typeof useCurrentLocale>().toBeFunction()
   })
   test('useCurrentUser', () => {
     expectTypeOf<typeof useCurrentUser>().toBeFunction()
@@ -5771,9 +5746,6 @@ describe('sanity', () => {
   })
   test('useTools', () => {
     expectTypeOf<typeof useTools>().toBeFunction()
-  })
-  test('useTranslation', () => {
-    expectTypeOf<typeof useTranslation>().toBeFunction()
   })
   test('UseTranslationOptions', () => {
     expectTypeOf<UseTranslationOptions<any>>().toBeObject()

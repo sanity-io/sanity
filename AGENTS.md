@@ -567,8 +567,8 @@ File-wide `/* oxlint-disable <rule> */` is reserved for files that are an except
 
 ### Public `sanity` entries never export `@internal` symbols
 
-Everything a studio or plugin can reach through `sanity`, `sanity/structure`, `sanity/router` and
-`sanity/presentation` is public API. Symbols tagged `@internal` are exported from
+Everything a studio or plugin can reach through `sanity`, `sanity/structure`, `sanity/router`,
+`sanity/presentation` and `sanity/i18n` is public API. Symbols tagged `@internal` are exported from
 `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`
 (`packages/sanity/src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts`),
 an entry whose name spells out its contract: anything on it can change or disappear in any
@@ -577,11 +577,18 @@ release. `packages/@repo/test-dts-exports/test/internal-exports.test.ts` (part o
 entry that exports an `@internal` declaration fails, and so does an entry export that is not
 tagged `@internal`.
 
+The public i18n runtime API (`defineLocale`, `defineLocaleResourceBundle`,
+`removeUndefinedLocaleResources`, `useTranslation`, `useCurrentLocale`, `Translate`, `InlineCode`)
+lives on `sanity/i18n` (`src/_exports/i18n.ts`), not on the root: import it from there in
+`src/structure`, `src/presentation`, `@sanity/vision` and the dev studios, and mock
+`sanity/i18n` (not `sanity`) when a test stubs one of them. Its public types are exported from
+both entries, since a type costs nothing at runtime.
+
 Rules that follow from this:
 
 - A new `@internal` export goes into the dangerous internals barrel (grouped by source module,
-  `type` specifiers kept), never into `index.ts`, `structure.ts`, `router.ts` or
-  `presentation.ts`. Consumers outside `packages/sanity` (`@sanity/vision`, the dev studios,
+  `type` specifiers kept), never into `index.ts`, `structure.ts`, `router.ts`, `presentation.ts`
+  or `i18n.ts`. Consumers outside `packages/sanity` (`@sanity/vision`, the dev studios,
   plugins) import it from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
   Inside the package, `src/core`, `src/structure` and `src/router` import internals relatively;
   the boundaries rules in `.oxlintrc.json` only allow the entry itself to import from the three

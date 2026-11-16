@@ -7,8 +7,10 @@ import {afterEach, describe, expect, it, vi} from 'vitest'
 import {CollapsiblePanel, type CollapsiblePanelTab} from './CollapsiblePanel'
 
 vi.mock('sanity', () => ({
-  defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+}))
+vi.mock('sanity/i18n', () => ({
+  defineLocaleResourceBundle: (bundle: unknown) => bundle,
   useTranslation: () => ({t: (key: string) => key}),
 }))
 

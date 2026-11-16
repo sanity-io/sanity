@@ -11,9 +11,9 @@ import {
   useDocumentVersions,
   useGetDefaultPerspective,
   usePerspective,
-  useTranslation,
   useWorkspace,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {useFormatRelativeLocalePublishDate} from '../../../../../../../core/releases/hooks/useFormatRelativeLocalePublishDate'
 import {isReleaseDocument} from '../../../../../../../core/releases/store/types'

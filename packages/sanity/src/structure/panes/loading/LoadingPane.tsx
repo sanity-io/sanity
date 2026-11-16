@@ -3,7 +3,7 @@ import {memo, useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {isObservable, type Observable, of} from 'rxjs'
 import {map} from 'rxjs/operators'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
