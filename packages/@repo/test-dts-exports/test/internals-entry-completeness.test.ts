@@ -17,6 +17,8 @@ import {fileURLToPath} from 'node:url'
 import {type ExportedDeclarations, Node, Project} from 'ts-morph'
 import {describe, expect, test} from 'vitest'
 
+import v7ExportMap from '../v7-export-map/v7-export-map.json' with {type: 'json'}
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const sanityLibDir = path.resolve(__dirname, '../../../sanity/lib')
 
@@ -40,6 +42,14 @@ const PUBLIC_ENTRIES = {
 const PUBLIC_BY_USAGE: Record<string, readonly string[]> = {
   sanity: ['createAuthStore', 'CreateAuthStoreOptions'],
 }
+
+/**
+ * v7 retags some public v6 declarations `@internal` and exports them from the internals entry
+ * (the comments components, for one). They are backported to the v6 internals entry under the
+ * same names with their v6 tags, so a plugin can import them from there on both majors.
+ */
+const V7_INTERNALS_ENTRY =
+  v7ExportMap['sanity/_dangerously_use_private_internals_that_do_not_follow_semver']
 
 function isInternal(declaration: ExportedDeclarations): boolean {
   const docs = Node.isVariableDeclaration(declaration)
@@ -102,6 +112,7 @@ describe('the internals entry exports every @internal declaration of the public 
   test('everything on the internals entry is tagged @internal', () => {
     const notInternal: string[] = []
     for (const [name, declarations] of internalsExports) {
+      if (Object.hasOwn(V7_INTERNALS_ENTRY, name)) continue
       const own = ownDeclarations(declarations)
       if (own.length > 0 && !own.some(isInternal)) notInternal.push(name)
     }
