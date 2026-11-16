@@ -90,11 +90,25 @@ export function createAddonDatasetListenerStore({
  *
  * @internal
  */
-export type AddonDatasetQueryEvent<TDocument> =
+export type AddonDatasetQueryEvent<
+  TDocument,
+  TResult extends Record<string, any> = AddonDatasetDocument,
+> =
   | {type: 'loading'}
   | {type: 'loaded'; documents: TDocument[]}
   | {type: 'error'; error: Error}
-  | MutationEvent<AddonDatasetDocument>
+  | MutationEvent<TResult>
+
+/**
+ * The events {@link followAddonDatasetQuery} follows: those of the shared addon dataset listener
+ * by default, or of another shared listener whose mutations carry `TResult`
+ *
+ * @internal
+ */
+export type QueryListenerEvent<TResult extends Record<string, any> = AddonDatasetDocument> =
+  | WelcomeEvent
+  | ReconnectEvent
+  | MutationEvent<TResult>
 
 /** @internal */
 export type AddonDatasetQueryStatusEvent = Extract<
@@ -102,15 +116,15 @@ export type AddonDatasetQueryStatusEvent = Extract<
   {type: 'loading' | 'error'}
 >
 
-function isConnectionEvent(
-  event: AddonDatasetListenerEvent,
+function isConnectionEvent<TResult extends Record<string, any>>(
+  event: QueryListenerEvent<TResult>,
 ): event is WelcomeEvent | ReconnectEvent {
   return event.type === 'welcome' || event.type === 'reconnect'
 }
 
-function isMutationEvent(
-  event: AddonDatasetListenerEvent,
-): event is MutationEvent<AddonDatasetDocument> {
+function isMutationEvent<TResult extends Record<string, any>>(
+  event: QueryListenerEvent<TResult>,
+): event is MutationEvent<TResult> {
   return event.type === 'mutation'
 }
 
@@ -126,11 +140,15 @@ const MAX_FETCH_RETRIES = 3
  *
  * @internal
  */
-export function followAddonDatasetQuery<TDocument>(
+export function followAddonDatasetQuery<
+  TDocument,
+  TResult extends Record<string, any> = AddonDatasetDocument,
+>(
   fetch: Observable<TDocument[]>,
-): OperatorFunction<AddonDatasetListenerEvent, AddonDatasetQueryEvent<TDocument>> {
-  const loading: AddonDatasetQueryEvent<TDocument> = {type: 'loading'}
-  const toError = (error: Error) => of<AddonDatasetQueryEvent<TDocument>>({type: 'error', error})
+): OperatorFunction<QueryListenerEvent<TResult>, AddonDatasetQueryEvent<TDocument, TResult>> {
+  type QueryEvent = AddonDatasetQueryEvent<TDocument, TResult>
+  const loading: QueryEvent = {type: 'loading'}
+  const toError = (error: Error) => of<QueryEvent>({type: 'error', error})
 
   return (events) =>
     events.pipe(
@@ -146,7 +164,7 @@ export function followAddonDatasetQuery<TDocument>(
                       count: MAX_FETCH_RETRIES,
                       delay: (_error: unknown, attempt) => timer(attempt * 1000),
                     }),
-                    map((documents): AddonDatasetQueryEvent<TDocument> => ({
+                    map((documents): QueryEvent => ({
                       type: 'loaded',
                       documents,
                     })),
