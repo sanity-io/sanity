@@ -47,6 +47,7 @@ export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
             id="vision-option-api-version"
             locked={resolved.isApiVersionLocked}
             onChange={(apiVersion) => onChange({apiVersion})}
+            trackQueryChanges
             value={options.apiVersion}
           />
           <PerspectiveSelect

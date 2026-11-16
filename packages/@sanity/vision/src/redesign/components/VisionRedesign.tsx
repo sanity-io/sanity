@@ -1,9 +1,10 @@
 import {TooltipDelayGroupProvider} from '@sanity/ui/tooltip'
 import {useActorRef, useSelector} from '@xstate/react'
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {Flex} from 'ui5'
 
 import {useSavedQueries} from '../../hooks/useSavedQueries'
+import {useVisionTelemetry} from '../../telemetry/useVisionTelemetry'
 import {type VisionConfig} from '../../types'
 import {useContentSize} from '../hooks/useContentSize'
 import {
@@ -78,6 +79,16 @@ export function VisionRedesign(props: VisionRedesignProps) {
   usePersistVisionState(actorRef, projectId)
 
   const activeTab = useSelector(actorRef, selectActiveTab)
+  const tabCount = useSelector(actorRef, (snapshot) => snapshot.context.tabs.length)
+  const telemetry = useVisionTelemetry()
+  const tabCountRef = useRef<number | null>(null)
+  useEffect(() => {
+    const previous = tabCountRef.current
+    tabCountRef.current = tabCount
+    if (previous === null) telemetry.tabsChanged(tabCount, 'open')
+    else if (tabCount > previous) telemetry.tabsChanged(tabCount, 'add')
+    else if (tabCount < previous) telemetry.tabsChanged(tabCount, 'close')
+  }, [tabCount, telemetry])
   const openDrawer = useSelector(actorRef, selectOpenDrawer)
   const experience = useMemo(
     (): VisionExperience => ({layout, switchToClassic: onSwitchToClassic}),

@@ -11,6 +11,19 @@ import {useScheduledDraftsEnabled} from 'sanity/_dangerously_use_private_interna
 import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
 import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
+import {
+  VisionAgentActionInvoked,
+  VisionApiVersionChanged,
+  VisionCopied,
+  VisionDatasetChanged,
+  VisionLintUsed,
+  VisionParamsUsed,
+  VisionPerspectiveChanged,
+  VisionQueryPrettified,
+  VisionQueryRun,
+  VisionSnippetCopied,
+  VisionTabsChanged,
+} from '../../telemetry/vision.telemetry'
 import {QUERY_URL_SIZE_LIMIT} from '../../util/queryRequestMethod'
 import {resetAiCredits} from '../hooks/useAiCredits'
 import {
@@ -21,6 +34,12 @@ import {
 } from '../store/visionStorage'
 import {parseQueryPaste} from '../util/parseQueryPaste'
 import {VisionRedesign} from './VisionRedesign'
+
+const telemetry = vi.hoisted(() => ({log: vi.fn()}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: () => telemetry,
+}))
 
 const theme = buildTheme()
 
@@ -3133,4 +3152,241 @@ describe('VisionRedesign', () => {
       await waitFor(() => expect(bottomPane.style.flex).toBe('0 0 335px'))
     },
   )
+})
+
+function logged(name: string): unknown[][] {
+  return telemetry.log.mock.calls.filter((call) => call[0]?.name === name)
+}
+
+describe('VisionRedesign adoption telemetry', () => {
+  afterEach(() => {
+    cleanup()
+    vi.clearAllMocks()
+  })
+
+  beforeEach(() => {
+    localStorage.clear()
+    resetAiCredits()
+    sanityMocks.setPerspective(BASE_PERSPECTIVE)
+    sanityMocks.savedQueries = {queries: [], moving: []}
+    sanityMocks.router.state = {}
+    sanityMocks.workspace = {document: {drafts: {enabled: true}}, beta: {variants: {enabled: true}}}
+    editorMocks.visibleColumns = undefined
+  })
+
+  it('records a fetch, a shortcut and Live once each, and params only when the run has them', async () => {
+    const {fetchCalls, setPerspective} = renderRedesign()
+    expect(logged(VisionTabsChanged.name)).toEqual([
+      [VisionTabsChanged, {count: 1, action: 'open'}],
+    ])
+
+    typeQuery('*[_type == "author"]')
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(logged(VisionQueryRun.name)).toEqual([
+      [VisionQueryRun, {mode: 'fetch', trigger: 'button', hasParams: false}],
+    ])
+    expect(logged(VisionParamsUsed.name)).toEqual([])
+
+    const params = within(screen.getByTestId('vision-params-editor')).getByTestId(
+      'codemirror-mock',
+    ) as HTMLTextAreaElement
+    fireEvent.change(params, {target: {value: '{\n  "limit": 1\n}'}})
+    fireEvent.keyDown(getQueryEditor(), {key: 'Enter', ctrlKey: true, which: 13, keyCode: 13})
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(logged(VisionQueryRun.name)).toEqual([
+      [VisionQueryRun, {mode: 'fetch', trigger: 'button', hasParams: false}],
+      [VisionQueryRun, {mode: 'fetch', trigger: 'shortcut', hasParams: true}],
+    ])
+    expect(logged(VisionParamsUsed.name)).toEqual([[VisionParamsUsed, {mode: 'fetch'}]])
+
+    fireEvent.click(screen.getByTestId('vision-auto-refetch'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(3))
+    expect(logged(VisionQueryRun.name).at(-1)).toEqual([
+      VisionQueryRun,
+      {mode: 'listen', trigger: 'button', hasParams: true},
+    ])
+    expect(logged(VisionParamsUsed.name)).toEqual([
+      [VisionParamsUsed, {mode: 'fetch'}],
+      [VisionParamsUsed, {mode: 'listen'}],
+    ])
+
+    // A live refetch, a pasted query and the navbar following along are not query runs
+    const before = logged(VisionQueryRun.name).length
+    setPerspective({...BASE_PERSPECTIVE, selectedPerspective: 'published'})
+    expect(logged(VisionQueryRun.name)).toHaveLength(before)
+    expect(logged(VisionPerspectiveChanged.name)).toEqual([])
+  })
+
+  it('records a dataset, perspective or API version change once, and not the refetch it causes', async () => {
+    renderRedesign()
+    telemetry.log.mockClear()
+    typeQuery('*[_type == "author"]')
+    openRequestTab('options')
+
+    fireEvent.click(screen.getByTestId('vision-option-dataset-pin'))
+    expect(logged(VisionDatasetChanged.name)).toEqual([])
+    pickDataset('staging')
+    expect(logged(VisionDatasetChanged.name)).toEqual([[VisionDatasetChanged]])
+
+    fireEvent.change(screen.getByTestId('vision-option-perspective-select'), {
+      target: {value: 'published'},
+    })
+    fireEvent.change(screen.getByTestId('vision-option-perspective-select'), {
+      target: {value: 'published'},
+    })
+    expect(logged(VisionPerspectiveChanged.name)).toEqual([[VisionPerspectiveChanged]])
+
+    fireEvent.change(screen.getByTestId('vision-option-api-version-select'), {
+      target: {value: 'v1'},
+    })
+    fireEvent.change(screen.getByTestId('vision-option-api-version-select'), {
+      target: {value: 'other'},
+    })
+    const custom = screen.getByTestId('vision-option-api-version-custom')
+    fireEvent.change(custom, {target: {value: 'v2021-03-25'}})
+    fireEvent.change(custom, {target: {value: 'v2021-03-25'}})
+    expect(logged(VisionApiVersionChanged.name)).toEqual([
+      [VisionApiVersionChanged, {custom: false}],
+      [VisionApiVersionChanged, {custom: true}],
+    ])
+    expect(logged(VisionQueryRun.name)).toEqual([])
+
+    // Settings edits the default for a new tab, not the query that is open
+    fireEvent.click(screen.getByTestId('vision-sidebar-settings'))
+    fireEvent.change(await screen.findByTestId('vision-settings-api-version-select'), {
+      target: {value: 'vX'},
+    })
+    fireEvent.change(screen.getByTestId('vision-settings-perspective-select'), {
+      target: {value: 'drafts'},
+    })
+    expect(logged(VisionApiVersionChanged.name)).toHaveLength(2)
+    expect(logged(VisionPerspectiveChanged.name)).toHaveLength(1)
+  })
+
+  it('records a successful copy of the query, the URL and a snippet, and nothing when the copy fails', async () => {
+    const {fetchCalls} = renderRedesign()
+    const writeText = vi.fn(() => Promise.resolve())
+    const clipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
+    Object.defineProperty(navigator, 'clipboard', {value: {writeText}, configurable: true})
+    try {
+      typeQuery('*[_type == "author"]')
+      fireEvent.click(screen.getByTestId('vision-query-menu-button'))
+      fireEvent.click(screen.getByTestId('vision-copy-query'))
+      await waitFor(() =>
+        expect(logged(VisionCopied.name)).toEqual([[VisionCopied, {target: 'query'}]]),
+      )
+
+      fireEvent.click(screen.getByTestId('vision-fetch-button'))
+      await waitFor(() => expect(fetchCalls).toHaveLength(1))
+      fireEvent.click(screen.getByRole('button', {name: 'action.copy-url-to-clipboard'}))
+      await waitFor(() =>
+        expect(logged(VisionCopied.name)).toEqual([
+          [VisionCopied, {target: 'query'}],
+          [VisionCopied, {target: 'url'}],
+        ]),
+      )
+
+      fireEvent.click(screen.getByTestId('vision-query-menu-button'))
+      fireEvent.click(screen.getByTestId('vision-export-query'))
+      const copy = await screen.findByTestId('vision-export-query-copy')
+      fireEvent.click(copy)
+      await waitFor(() =>
+        expect(logged(VisionSnippetCopied.name)).toEqual([
+          [VisionSnippetCopied, {snippet: 'client'}],
+        ]),
+      )
+
+      writeText.mockRejectedValueOnce(new Error('denied'))
+      fireEvent.click(screen.getByTestId('vision-export-query-copy'))
+      await waitFor(() => expect(writeText).toHaveBeenCalledTimes(4))
+      expect(logged(VisionSnippetCopied.name)).toHaveLength(1)
+    } finally {
+      if (clipboard) Object.defineProperty(navigator, 'clipboard', clipboard)
+      else Reflect.deleteProperty(navigator, 'clipboard')
+    }
+  })
+
+  it('records an agent action once when it is submitted, and not an empty prompt or the query plan', async () => {
+    const {replyToPrompts, respondToRequests} = renderRedesign()
+    replyToPrompts(new Error('offline'))
+    respondToRequests({result: [], explain: 'Pipeline {}'})
+
+    fireEvent.click(screen.getByTestId('vision-generate-query'))
+    fireEvent.click(screen.getByTestId('vision-generate-submit'))
+    expect(logged(VisionAgentActionInvoked.name)).toEqual([])
+
+    fireEvent.change(screen.getByTestId('vision-generate-request'), {target: {value: 'Authors'}})
+    fireEvent.click(screen.getByTestId('vision-generate-submit'))
+    expect(logged(VisionAgentActionInvoked.name)).toEqual([
+      [VisionAgentActionInvoked, {action: 'generate-query'}],
+    ])
+
+    typeQuery('*[_type == "author"]')
+    fireEvent.click(document.getElementById('vision-response-explain-tab') as HTMLElement)
+    fireEvent.click(screen.getByTestId('vision-explain-plan-button'))
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-explain-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vision-explain-button'))
+    expect(logged(VisionAgentActionInvoked.name)).toEqual([
+      [VisionAgentActionInvoked, {action: 'generate-query'}],
+      [VisionAgentActionInvoked, {action: 'explain'}],
+    ])
+
+    fireEvent.click(screen.getByTestId('vision-sidebar-mutate'))
+    fireEvent.click(screen.getByTestId('vision-mutate-generate'))
+    fireEvent.change(screen.getByTestId('vision-mutate-generate-request'), {
+      target: {value: 'Rename them'},
+    })
+    fireEvent.click(screen.getByTestId('vision-mutate-generate-submit'))
+    expect(logged(VisionAgentActionInvoked.name).at(-1)).toEqual([
+      VisionAgentActionInvoked,
+      {action: 'generate-mutations'},
+    ])
+    expect(logged(VisionAgentActionInvoked.name)).toHaveLength(3)
+  })
+
+  it('records tabs added and closed, and a prettify and a lint open once each', async () => {
+    renderRedesign()
+    expect(logged(VisionTabsChanged.name)).toEqual([
+      [VisionTabsChanged, {count: 1, action: 'open'}],
+    ])
+
+    fireEvent.click(screen.getByTestId('vision-new-tab'))
+    expect(logged(VisionTabsChanged.name).at(-1)).toEqual([
+      VisionTabsChanged,
+      {count: 2, action: 'add'},
+    ])
+    fireEvent.click(within(screen.getAllByTestId('vision-tab')[1]).getByTestId('vision-tab-close'))
+    expect(logged(VisionTabsChanged.name).at(-1)).toEqual([
+      VisionTabsChanged,
+      {count: 1, action: 'close'},
+    ])
+    fireEvent.click(screen.getByTestId('vision-tab-close'))
+    expect(logged(VisionTabsChanged.name)).toHaveLength(3)
+
+    typeQuery('*[_type == "author"]')
+    fireEvent.click(screen.getByTestId('vision-query-menu-button'))
+    fireEvent.click(screen.getByTestId('vision-prettify'))
+    await waitFor(() =>
+      expect(logged(VisionQueryPrettified.name)).toEqual([
+        [VisionQueryPrettified, {outcome: 'success'}],
+      ]),
+    )
+    typeQuery('*[_type == "author"')
+    fireEvent.click(screen.getByTestId('vision-query-menu-button'))
+    fireEvent.click(screen.getByTestId('vision-prettify'))
+    await waitFor(() =>
+      expect(logged(VisionQueryPrettified.name).at(-1)).toEqual([
+        VisionQueryPrettified,
+        {outcome: 'error'},
+      ]),
+    )
+
+    openRequestTab('lint')
+    await waitFor(() =>
+      expect(logged(VisionLintUsed.name)).toEqual([[VisionLintUsed, {action: 'open'}]]),
+    )
+    openRequestTab('lint')
+    expect(logged(VisionLintUsed.name)).toHaveLength(1)
+  })
 })

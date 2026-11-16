@@ -9,6 +9,8 @@ import {Box, Flex} from 'ui5'
 import {type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
 import {useVariantsEnabled} from '../../../hooks/useVariantsEnabled'
 import {visionLocaleNamespace} from '../../../i18n'
+import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
+import {type VisionQueryRunData} from '../../../telemetry/vision.telemetry'
 import {useContentSize} from '../../hooks/useContentSize'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {useFollowNavbarPerspective} from '../../hooks/useFollowNavbarPerspective'
@@ -25,7 +27,12 @@ import {
   useVisionSelector,
   type VisionLayout,
 } from '../../store/VisionActorContext'
-import {selectDatasets, selectOpenDrawer, selectParamsView} from '../../store/visionMachine'
+import {
+  selectDatasets,
+  selectOpenDrawer,
+  selectParamsView,
+  selectWorkspaceDataset,
+} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
 import {type TextRange} from '../../util/groqFunctions'
 import {type QueryLintFinding} from '../../util/groqLint'
@@ -48,6 +55,31 @@ import {ResponsePanel} from '../response/ResponsePanel'
 import {getQueryTabId, QUERY_TAB_PANEL_ID} from './QueryTabBar'
 
 const MIN_PANE_SIZE = {columns: 280, stacked: 160}
+
+/** Fetch, the fetch shortcut, and starting Live. Reloads and setting changes are not query runs. */
+function recordedQueryRun(reason: FetchReason, hasParams: boolean): VisionQueryRunData | null {
+  switch (reason.type) {
+    case 'manual':
+      return {mode: 'fetch', trigger: 'button', hasParams}
+    case 'shortcut':
+      return {mode: 'fetch', trigger: 'shortcut', hasParams}
+    case 'live-start':
+      return {mode: 'listen', trigger: 'button', hasParams}
+    case 'options':
+    case 'load':
+    case 'resume':
+    case 'generated':
+    case 'paste':
+    case 'link':
+    case 'mutation':
+    case 'live':
+      return null
+    default: {
+      const unhandled: never = reason
+      return unhandled
+    }
+  }
+}
 
 function countLines(text: string): number {
   let lines = 1
@@ -95,6 +127,8 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   const actorRef = useVisionActor()
   const {layout} = useVisionExperience()
   const datasets = useVisionSelector(selectDatasets)
+  const workspaceDataset = useVisionSelector(selectWorkspaceDataset)
+  const telemetry = useVisionTelemetry()
   const runnerRef = useVisionSelector((snapshot) => snapshot.context.runners[tab.id])
   const loadRevision = useVisionSelector((snapshot) => snapshot.context.loadRevisions[tab.id] || 0)
 
@@ -204,12 +238,14 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     (reason: FetchReason): boolean => {
       const current = buildCurrentRequest()
       if (!current) return false
+      const recorded = recordedQueryRun(reason, Object.keys(current.params).length > 0)
+      if (recorded) telemetry.queryRun(recorded)
       runnerRef.send({type: 'fetch', request: current, reason})
       // On a phone the result lives behind the other pane; bring it forward
       if (layout === 'mobile') setMobilePane('response')
       return true
     },
-    [buildCurrentRequest, layout, runnerRef],
+    [buildCurrentRequest, layout, runnerRef, telemetry],
   )
   const cancel = useCallback(() => runnerRef.send({type: 'cancel'}), [runnerRef])
   const refetchAfterMutations = useCallback(() => {
@@ -219,6 +255,22 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     (options: Partial<VisionTabOptions>) =>
       actorRef.send({type: 'tab.setOptions', id: tab.id, options}),
     [actorRef, tab.id],
+  )
+  // The navbar follows through `setOptions` and must not count as the user changing a setting
+  const changeOptions = useCallback(
+    (options: Partial<VisionTabOptions>) => {
+      if (options.datasetMode !== undefined || options.dataset !== undefined) {
+        const mode = options.datasetMode ?? tab.options.datasetMode
+        const dataset =
+          mode === 'workspace' ? workspaceDataset : (options.dataset ?? tab.options.dataset)
+        if (dataset !== resolved.dataset) telemetry.datasetChanged()
+      }
+      if ('perspective' in options && options.perspective !== tab.options.perspective) {
+        telemetry.perspectiveChanged()
+      }
+      setOptions(options)
+    },
+    [resolved.dataset, setOptions, tab.options, telemetry, workspaceDataset],
   )
   // Live is an alternative to Fetch: it fetches the current request (live refetches replay the
   // runner's last one, which may date from before the options or the query changed), and then
@@ -262,7 +314,9 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   const prettify = useCallback(async () => {
     try {
       await formatQuery()
+      telemetry.queryPrettified('success')
     } catch (error) {
+      telemetry.queryPrettified('error')
       toast.push({
         closable: true,
         description: error instanceof GroqSyntaxError ? error.message : undefined,
@@ -270,12 +324,13 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
         title: t('vision.query.prettify.failed'),
       })
     }
-  }, [formatQuery, t, toast])
+  }, [formatQuery, t, telemetry, toast])
 
-  const copyQuery = useCallback(
-    () => void copyToClipboard(tab.query, t('vision.query.copied')),
-    [copyToClipboard, t, tab.query],
-  )
+  const copyQuery = useCallback(() => {
+    void copyToClipboard(tab.query, t('vision.query.copied')).then((copied) => {
+      if (copied) telemetry.copied('query')
+    })
+  }, [copyToClipboard, t, tab.query, telemetry])
 
   // A lint finding or a function declaration picked on a phone, where the editor is `display: none`
   // behind the response pane, or inert under a sidebar drawer, which covers the tool: it cannot
@@ -491,7 +546,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       lintFindings={lintFindings}
       onEditQuery={editQuery}
       onLintFindings={setLintFindings}
-      onOptionsChange={setOptions}
+      onOptionsChange={changeOptions}
       onParamsChange={setParams}
       onParamsFlush={flushParams}
       onParamsReplace={replaceParams}

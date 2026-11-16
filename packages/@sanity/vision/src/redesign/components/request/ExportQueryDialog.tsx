@@ -7,6 +7,7 @@ import {useTranslation} from 'sanity'
 import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
+import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {encodedQuerySize, QUERY_URL_SIZE_LIMIT} from '../../../util/queryRequestMethod'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
@@ -30,6 +31,7 @@ export interface ExportQueryDialogProps {
 export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQueryDialogProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const copyToClipboard = useCopyToClipboard()
+  const telemetry = useVisionTelemetry()
   const projectId = useVisionSelector(selectProjectId)
   const [activeId, setActiveId] = useState<ExportSnippetId>('client')
   // The snippet the copy button last copied, which it confirms with a checkmark for a moment. A
@@ -64,6 +66,7 @@ export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQuery
   const copy = async () => {
     const snippetId = active.id
     if (await copyToClipboard(active.code, t('vision.export-query.copied'))) {
+      telemetry.snippetCopied(snippetId)
       setLastCopy({id: snippetId})
     }
   }

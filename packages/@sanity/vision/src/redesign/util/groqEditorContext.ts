@@ -30,6 +30,8 @@ export interface GroqEditorLabels {
   addFromLibrary: string
   /** The lint action that writes the name a schema finding suggests */
   useSuggestion: (suggestion: string) => string
+  /** Called when a lint suggestion or a library declaration is applied */
+  onApplySuggestion?: () => void
 }
 
 const NO_FUNCTIONS: readonly VisionSavedFunction[] = []

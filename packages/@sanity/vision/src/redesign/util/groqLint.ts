@@ -129,10 +129,12 @@ function functionDiagnostics(
             actions: [
               {
                 name: labels.addFromLibrary,
-                apply: (view: EditorView) =>
+                apply: (view: EditorView) => {
+                  labels.onApplySuggestion?.()
                   view.dispatch({
                     changes: declarationInsertion(view.state.doc.toString(), saved.declaration),
-                  }),
+                  })
+                },
               },
             ],
           }
@@ -163,14 +165,16 @@ function schemaDiagnostics(
             actions: [
               {
                 name: labels.useSuggestion(suggestion.text),
-                apply: (view: EditorView, from: number) =>
+                apply: (view: EditorView, from: number) => {
+                  labels.onApplySuggestion?.()
                   view.dispatch({
                     changes: {
                       from: from + suggestion.from - finding.from,
                       to: from + suggestion.to - finding.from,
                       insert: suggestion.text,
                     },
-                  }),
+                  })
+                },
               },
             ],
           }

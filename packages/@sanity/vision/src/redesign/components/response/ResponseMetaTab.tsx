@@ -6,6 +6,7 @@ import {useTranslation} from 'sanity'
 import {Text, Box, Flex, Grid} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
+import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {formatDuration} from '../../../util/formatDuration'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {type VisionResponseMeta} from '../../store/types'
@@ -31,6 +32,7 @@ export interface ResponseMetaTabProps {
 export function ResponseMetaTab({meta, url}: ResponseMetaTabProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const copyToClipboard = useCopyToClipboard()
+  const telemetry = useVisionTelemetry()
   const notApplicable = t('result.timing-not-applicable')
 
   if (!meta && !url) {
@@ -109,7 +111,11 @@ export function ResponseMetaTab({meta, url}: ResponseMetaTabProps) {
                   aria-label={t('action.copy-url-to-clipboard')}
                   icon={CopyIcon}
                   mode="ghost"
-                  onClick={() => void copyToClipboard(url, t('action.copy-url-to-clipboard'))}
+                  onClick={() =>
+                    void copyToClipboard(url, t('action.copy-url-to-clipboard')).then((copied) => {
+                      if (copied) telemetry.copied('url')
+                    })
+                  }
                   padding={2}
                 />
               </Tooltip>

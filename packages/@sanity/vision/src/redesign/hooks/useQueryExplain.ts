@@ -1,5 +1,6 @@
 import {useCallback, useState} from 'react'
 
+import {useVisionTelemetry} from '../../telemetry/useVisionTelemetry'
 import {type QueryRequest} from '../store/types'
 import {type AiCredits, readAiCreditsLimit} from '../util/aiCredits'
 import {explainQuery, fetchQueryPlan} from '../util/explainQuery'
@@ -52,8 +53,10 @@ export function useQueryExplain(request: QueryRequest | null) {
     if (request) void loadPlan(request)
   }, [loadPlan, request])
 
+  const telemetry = useVisionTelemetry()
   const explain = useCallback(async () => {
     if (!request) return
+    telemetry.agentAction('explain')
     setExplanation({status: 'loading', url: request.url})
     const planText = currentPlan.status === 'done' ? currentPlan.text : await loadPlan(request)
     if (planText === undefined) {
@@ -69,7 +72,7 @@ export function useQueryExplain(request: QueryRequest | null) {
       if (limit) reportAiCreditsLimit(request.client, limit)
       setExplanation({status: 'failed', url: request.url, message: toMessage(error), limit})
     }
-  }, [currentPlan, loadPlan, request])
+  }, [currentPlan, loadPlan, request, telemetry])
 
   return {plan: currentPlan, explanation: currentExplanation, showPlan, explain}
 }

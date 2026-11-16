@@ -12,6 +12,7 @@ import {Text, Box, Flex, VisuallyHidden} from 'ui5'
 import {API_VERSIONS, VARIANTS_API_VERSION} from '../../../apiVersions'
 import {useVariantsEnabled} from '../../../hooks/useVariantsEnabled'
 import {visionLocaleNamespace} from '../../../i18n'
+import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {validateApiVersion} from '../../../util/validateApiVersion'
 import {type VisionPerspective, type VisionVariantMode} from '../../store/types'
 import {getEffectivePerspective} from '../../util/tabPerspective'
@@ -35,10 +36,22 @@ interface ApiVersionFieldProps {
   /** Locked to `VARIANTS_API_VERSION` while a variant is selected in the navbar */
   locked: boolean
   onChange: (apiVersion: string) => void
+  /**
+   * Log when this change is the version a query runs against.
+   * Settings edits the default for new tabs and leaves this off.
+   */
+  trackQueryChanges?: boolean
 }
 
-export function ApiVersionField({id, value, locked, onChange}: ApiVersionFieldProps) {
+export function ApiVersionField({
+  id,
+  value,
+  locked,
+  onChange,
+  trackQueryChanges = false,
+}: ApiVersionFieldProps) {
   const {t} = useTranslation(visionLocaleNamespace)
+  const telemetry = useVisionTelemetry()
   const isCustom = !API_VERSIONS.includes(value)
   const isValid = validateApiVersion(value)
   const lockedHintId = useId()
@@ -46,10 +59,25 @@ export function ApiVersionField({id, value, locked, onChange}: ApiVersionFieldPr
   const handleSelect = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       const next = event.currentTarget.value
+      // "Other" only reveals the text field. A listed version counts once, here.
+      if (trackQueryChanges && next !== 'other' && next !== value) {
+        telemetry.apiVersionChanged(false)
+      }
       // Start the "Other" input with the prefix, so the API version is typed the way it is sent
       onChange(next === 'other' ? 'v' : next)
     },
-    [onChange],
+    [onChange, telemetry, trackQueryChanges, value],
+  )
+
+  const handleCustom = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const next = event.currentTarget.value || 'v'
+      if (trackQueryChanges && validateApiVersion(next) && next !== value) {
+        telemetry.apiVersionChanged(true)
+      }
+      onChange(next)
+    },
+    [onChange, telemetry, trackQueryChanges, value],
   )
 
   return (
@@ -109,9 +137,7 @@ export function ApiVersionField({id, value, locked, onChange}: ApiVersionFieldPr
           data-testid={`${id}-custom`}
           fontSize={1}
           maxLength={11}
-          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            onChange(event.currentTarget.value || 'v')
-          }
+          onChange={handleCustom}
           padding={2}
           placeholder="v2025-02-19"
           value={value}
