@@ -1,6 +1,7 @@
 import {type Role} from '@sanity/types'
 import {type CardProps} from '@sanity/ui'
-import {useListFormat, useTranslation} from 'sanity'
+import {useListFormat} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {ErrorCard} from '../components/ErrorCard'
 import {presentationLocaleNamespace} from '../i18n'
