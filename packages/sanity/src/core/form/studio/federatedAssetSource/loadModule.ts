@@ -3,7 +3,7 @@ import {createRemoteInstance} from '@sanity/sdk-react/dashboard'
 import {
   type FederatedAssetSourceModule,
   type FederatedAssetSourceRef,
-  SUPPORTED_VIEW_CONTRACT_VERSION,
+  SUPPORTED_VIEW_CONTRACT_VERSIONS,
 } from './types'
 
 /**
@@ -36,10 +36,10 @@ export function loadFederatedAssetSourceModule(
     if (typeof module?.render !== 'function') {
       throw new Error(`Loaded ${moduleId} but it does not export a render() function`)
     }
-    if (module.version !== SUPPORTED_VIEW_CONTRACT_VERSION) {
+    if (!SUPPORTED_VIEW_CONTRACT_VERSIONS.includes(module.version)) {
       throw new Error(
         `${moduleId} implements view contract version ${module.version}, ` +
-          `but this Studio supports version ${SUPPORTED_VIEW_CONTRACT_VERSION}`,
+          `but this Studio supports versions ${SUPPORTED_VIEW_CONTRACT_VERSIONS.join(', ')}`,
       )
     }
     return module
