@@ -27,40 +27,35 @@ interface ReleaseDocumentPreviewProps {
   variantId?: string
 }
 
-export function ReleaseDocumentPreview({
+type ReleaseDocumentPreviewContentProps = Pick<
+  ReleaseDocumentPreviewProps,
+  | 'documentId'
+  | 'documentTypeName'
+  | 'releaseId'
+  | 'releaseState'
+  | 'layout'
+  | 'isGoingToUnpublish'
+  | 'variantId'
+>
+
+/**
+ * Renders just the resolved document preview (thumbnail + title), without the enclosing link or
+ * card. Shared between {@link ReleaseDocumentPreview}, which adds an intent link to the document,
+ * and consumers that wrap the preview in their own interactive element (for example an overview
+ * row that navigates to the release, not the document).
+ *
+ * @internal
+ */
+export function ReleaseDocumentPreviewContent({
   documentId,
   documentTypeName,
   releaseId,
   releaseState,
-  isCardinalityOneRelease,
-  documentRevision,
   layout,
   isGoingToUnpublish = false,
   variantId,
-}: ReleaseDocumentPreviewProps) {
+}: ReleaseDocumentPreviewContentProps) {
   const documentPresence = useDocumentPresence(documentId)
-
-  const {params, searchParams} = useMemo(
-    () =>
-      getReleaseDocumentIntent({
-        documentId,
-        documentTypeName,
-        releaseId,
-        releaseState,
-        documentRevision,
-        isCardinalityOneRelease,
-        variantId,
-      }),
-    [
-      documentId,
-      documentTypeName,
-      releaseId,
-      releaseState,
-      documentRevision,
-      isCardinalityOneRelease,
-      variantId,
-    ],
-  )
 
   const previewPresence = useMemo(
     () => documentPresence?.length > 0 && <DocumentPreviewPresence presence={documentPresence} />,
@@ -87,6 +82,49 @@ export function ReleaseDocumentPreview({
   })
 
   return (
+    <SanityDefaultPreview
+      {...(resolvedPreview || {})}
+      status={previewPresence}
+      isPlaceholder={previewLoading}
+      layout={layout}
+    />
+  )
+}
+
+export function ReleaseDocumentPreview({
+  documentId,
+  documentTypeName,
+  releaseId,
+  releaseState,
+  isCardinalityOneRelease,
+  documentRevision,
+  layout,
+  isGoingToUnpublish = false,
+  variantId,
+}: ReleaseDocumentPreviewProps) {
+  const {params, searchParams} = useMemo(
+    () =>
+      getReleaseDocumentIntent({
+        documentId,
+        documentTypeName,
+        releaseId,
+        releaseState,
+        documentRevision,
+        isCardinalityOneRelease,
+        variantId,
+      }),
+    [
+      documentId,
+      documentTypeName,
+      releaseId,
+      releaseState,
+      documentRevision,
+      isCardinalityOneRelease,
+      variantId,
+    ],
+  )
+
+  return (
     <Card
       tone="inherit"
       as={IntentLink}
@@ -96,11 +134,14 @@ export function ReleaseDocumentPreview({
       radius={2}
       data-as="a"
     >
-      <SanityDefaultPreview
-        {...(resolvedPreview || {})}
-        status={previewPresence}
-        isPlaceholder={previewLoading}
+      <ReleaseDocumentPreviewContent
+        documentId={documentId}
+        documentTypeName={documentTypeName}
+        releaseId={releaseId}
+        releaseState={releaseState}
         layout={layout}
+        isGoingToUnpublish={isGoingToUnpublish}
+        variantId={variantId}
       />
     </Card>
   )

@@ -12,10 +12,11 @@ import {getByDataUi} from '../../../../../../test/setup/customQueries'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {mockUseTimeZone, useTimeZoneMockReturn} from '../../../../hooks/__mocks__/useTimeZone.mock'
+import {usePerspectiveMockReturn} from '../../../../perspective/__mocks__/usePerspective.mock'
 import {
-  mockUsePerspective,
-  usePerspectiveMockReturn,
-} from '../../../../perspective/__mocks__/usePerspective.mock'
+  mockUseScheduleDraftOperations,
+  useScheduleDraftOperationsMockReturn,
+} from '../../../../singleDocRelease/hooks/__mocks__/useScheduleDraftOperations.mock'
 import {useScheduledDraftsEnabled} from '../../../../singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {type UpsellDataResult} from '../../../../studio/upsell/types'
 import {
@@ -100,6 +101,28 @@ vi.mock('../../detail/useReleaseDocuments', () => ({
   useReleaseDocuments: vi.fn(() => useReleaseDocumentsMockReturnWithResults),
 }))
 
+// The shared release-name cell renders a real document preview (thumbnail + title)
+// for cardinality-one releases. Mock the preview data/presence hooks it depends on so
+// rows for those releases don't need a fully resolvable document in this suite.
+vi.mock('../../../../tasks/hooks/useDocumentPreviewValues', () => ({
+  useDocumentPreviewValues: vi.fn(() => ({
+    isLoading: false,
+    value: {title: 'Mock document title', subtitle: undefined, media: undefined},
+  })),
+}))
+
+vi.mock('../../../../store/presence/useDocumentPresence', () => ({
+  useDocumentPresence: vi.fn(() => []),
+}))
+
+vi.mock('../../../../preview/components/SanityDefaultPreview', () => ({
+  SanityDefaultPreview: vi.fn(
+    ({title, isPlaceholder}: {title?: string; isPlaceholder?: boolean}) => (
+      <div data-ui={isPlaceholder ? 'Placeholder' : 'Preview'}>{title}</div>
+    ),
+  ),
+}))
+
 vi.mock('../../../store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
@@ -167,6 +190,10 @@ vi.mock('../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
 }))
 
+vi.mock('../../../../singleDocRelease/hooks/useScheduleDraftOperations', () => ({
+  useScheduleDraftOperations: vi.fn(() => useScheduleDraftOperationsMockReturn),
+}))
+
 const getWrapper = async () => {
   const BaseProvider = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
@@ -227,6 +254,19 @@ async function mountAndFlush(...args: Parameters<typeof render>) {
   return view
 }
 
+/**
+ * The month calendar is no longer rendered inline: it now lives behind the `CalendarPopover`
+ * trigger button (name="calendar"). Find that trigger, click it to open the popover, then wait
+ * for the calendar's day tiles to mount before returning the calendar element.
+ */
+async function openCalendar() {
+  const calendarButton = document.querySelector('button[name="calendar"]') as HTMLButtonElement
+  expect(calendarButton).toBeInTheDocument()
+  await userEvent.click(calendarButton)
+
+  return waitFor(() => getByDataUi(document.body, 'Calendar'))
+}
+
 describe('ReleasesOverview', () => {
   beforeEach(() => {
     mockUseActiveReleases.mockRestore()
@@ -265,6 +305,8 @@ describe('ReleasesOverview', () => {
         panelSecondaryClicked: vi.fn(),
       },
     }))
+
+    mockUseScheduleDraftOperations.mockReturnValue(useScheduleDraftOperationsMockReturn)
   })
 
   setupVirtualListEnv()
@@ -299,14 +341,10 @@ describe('ReleasesOverview', () => {
     })
 
     it('does not allow for switching between history modes', async () => {
-      await waitFor(
-        () => {
-          screen.getByText('Active')
-        },
-        {timeout: 4000},
-      )
-      expect(screen.getByText('Active').closest('button')).toBeDisabled()
-      expect(screen.getByText('Archived').closest('button')).toBeDisabled()
+      // The lifecycle picker stays mounted while releases load (no layout shift), but disabled.
+      await screen.findByTestId('group-mode-active', {}, {timeout: 4000})
+      expect(screen.getByTestId('group-mode-active').closest('button')).toBeDisabled()
+      expect(screen.getByTestId('group-mode-archived').closest('button')).toBeDisabled()
     })
 
     it('does show the page heading', () => {
@@ -461,8 +499,12 @@ describe('ReleasesOverview', () => {
 
       expect(screen.queryByText('Cardinality One Release')).not.toBeInTheDocument()
 
-      expect(screen.getByText(activeASAPRelease.metadata.title)).toBeInTheDocument()
-      expect(screen.getByText(activeScheduledRelease.metadata.title)).toBeInTheDocument()
+      // Dated releases (activeScheduledRelease has an intended date TODAY) now also render as a
+      // pill in the timeline strip above the table, so their title appears twice in the document —
+      // scope the assertion to the table itself.
+      const table = screen.getByRole('table')
+      expect(within(table).getByText(activeASAPRelease.metadata.title)).toBeInTheDocument()
+      expect(within(table).getByText(activeScheduledRelease.metadata.title)).toBeInTheDocument()
     })
 
     it('filters out archived releases with cardinality "one"', async () => {
@@ -495,38 +537,43 @@ describe('ReleasesOverview', () => {
     })
 
     it('shows each open release', () => {
+      // Default sort is the Schedule column ascending: dated releases first (by date),
+      // then date-less releases (old asap/undecided) sink to the end via Infinity.
+      // scheduledRelease (2023-10-10, armed) < activeScheduledRelease (TODAY, intended-not-armed)
+      // < activeASAPRelease/activeUndecidedRelease/activeUndecidedErrorRelease (no date, original order).
       const releaseRows = screen.getAllByTestId('table-row')
       expect(releaseRows).toHaveLength(5)
 
       const [unsortedFirstRelease, unsortedSecondRelease, unsortedThirdRelease] = releaseRows
 
-      within(unsortedFirstRelease).getByText(activeASAPRelease.metadata.title)
-      within(unsortedSecondRelease).getByText(scheduledRelease.metadata.title)
-      within(unsortedThirdRelease).getByText(activeScheduledRelease.metadata.title)
+      within(unsortedFirstRelease).getByText(scheduledRelease.metadata.title)
+      within(unsortedSecondRelease).getByText(activeScheduledRelease.metadata.title)
+      within(unsortedThirdRelease).getByText(activeASAPRelease.metadata.title)
 
-      // document count
-      within(unsortedFirstRelease).getByText('2')
-      within(unsortedSecondRelease).getByText('4')
-      within(unsortedThirdRelease).getByText('1')
+      // document count (assigned by original `releases` array index + 1)
+      within(unsortedFirstRelease).getByText('4')
+      within(unsortedSecondRelease).getByText('1')
+      within(unsortedThirdRelease).getByText('2')
     })
 
-    it('shows time as ASAP for asap release types', () => {
-      const asapReleaseRow = screen.getAllByTestId('table-row')[0]
+    it('shows time as Unscheduled for asap release types (no date)', () => {
+      const asapReleaseRow = screen.getAllByTestId('table-row')[2]
 
-      within(asapReleaseRow).getByText('As soon as possible')
+      within(asapReleaseRow).getByText('Unscheduled')
     })
 
-    it('shows time as Undecided for undecided release types', () => {
-      const asapReleaseRow = screen.getAllByTestId('table-row')[3]
+    it('shows time as Unscheduled for undecided release types (no date)', () => {
+      const undecidedReleaseRow = screen.getAllByTestId('table-row')[3]
 
-      within(asapReleaseRow).getByText('Undecided')
+      within(undecidedReleaseRow).getByText('Unscheduled')
     })
 
     it('shows time for scheduled releases', () => {
-      const scheduledReleaseRow = screen.getAllByTestId('table-row')[2]
+      const scheduledReleaseRow = screen.getAllByTestId('table-row')[1]
 
       const date = format(TODAY, 'MMM d, yyyy')
-      within(scheduledReleaseRow).getByText(`${date}, 10:00:00 PM`)
+      // Schedule column renders in `compact` mode: no seconds, no inline tz abbreviation.
+      within(scheduledReleaseRow).getByText(`${date}, 10:00 PM`)
     })
 
     it('has release menu actions for each release', () => {
@@ -537,7 +584,7 @@ describe('ReleasesOverview', () => {
     })
 
     it('shows lock next to scheduled releases', () => {
-      const scheduledReleaseRow = screen.getAllByTestId('table-row')[1]
+      const scheduledReleaseRow = screen.getAllByTestId('table-row')[0]
       within(scheduledReleaseRow).getByTestId('release-avatar-suggest')
 
       within(scheduledReleaseRow).getByTestId('release-lock-icon')
@@ -545,7 +592,8 @@ describe('ReleasesOverview', () => {
 
     it('shows error indicator next to active releases in error state', () => {
       const row = screen.getAllByTestId('table-row')[4]
-      within(row).getByTestId('error-indicator')
+      const readiness = within(row).getByTestId('release-readiness')
+      expect(readiness.querySelector('[data-sanity-icon="error-outline"]')).toBeInTheDocument()
     })
 
     it('allows for switching between history modes', () => {
@@ -553,65 +601,25 @@ describe('ReleasesOverview', () => {
       expect(screen.getByText('Archived').closest('button')).not.toBeDisabled()
     })
 
-    it('allows for pinning perspectives', async () => {
-      mockedSetPerspective.mockClear()
-
-      const rows = screen.getAllByTestId('table-row')
-      const firstRow = rows[0]
-      const pinButton = within(firstRow).getByTestId('pin-release-button')
-
-      expect(pinButton).toBeInTheDocument()
-      const buttonElement = pinButton.closest('button')
-      expect(buttonElement).not.toBeNull()
-      expect(buttonElement).not.toBeDisabled()
-
-      await userEvent.click(buttonElement!)
-
-      await waitFor(() => {
-        expect(mockedSetPerspective).toHaveBeenCalledOnce()
-      })
-    })
-
-    it('will show pinned release in release list', async () => {
-      mockUsePerspective.mockReturnValue({
-        ...usePerspectiveMockReturn,
-        selectedPerspective: activeASAPRelease,
-        selectedReleaseId: 'rASAP',
-      })
-
-      // re-render to apply the update to global bundle id
-      await rerender()
-
-      const releaseRows = screen.getAllByTestId('table-row')
-      const pinnedReleaseRow = releaseRows[0]
-
-      expect(within(pinnedReleaseRow).getByTestId('pin-release-button')).toHaveAttribute(
-        'data-selected',
-        '',
-      )
-    })
-
     describe('calendar filter', () => {
-      const getCalendar = () => getByDataUi(document.body, 'Calendar')
-
-      it('has today in bold to signify that there is a release', () => {
-        const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
-          'day-tile-today',
-        )
+      it('has today in bold to signify that there is a release', async () => {
+        const calendar = await openCalendar()
+        const todayTile = within(calendar).getByTestId('day-tile-today')
         expect(todayTile.firstElementChild!.firstElementChild).toHaveStyle({fontWeight: '700'})
       })
 
       describe('selecting a release date', () => {
         beforeEach(async () => {
-          const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
-            'day-tile-today',
-          )
+          const calendar = await openCalendar()
+          const todayTile = within(calendar).getByTestId('day-tile-today')
           await userEvent.click(todayTile)
         })
 
-        it('does not show open and archive filter group buttons', () => {
-          expect(screen.queryByText('Active')).not.toBeInTheDocument()
-          expect(screen.queryByText('Archived')).not.toBeInTheDocument()
+        it('keeps the lifecycle tabs visible alongside the date filter (decoupled)', () => {
+          // Date filter and lifecycle are independent now — picking a date no longer swaps the tabs
+          // out; both apply together.
+          expect(screen.getByText('Active')).toBeInTheDocument()
+          expect(screen.getByText('Archived')).toBeInTheDocument()
         })
 
         it('filters releases by date', () => {
@@ -622,8 +630,11 @@ describe('ReleasesOverview', () => {
         })
 
         it('clears the filter by clicking the selected date', async () => {
+          // Selecting a date now lives in the command lane, so picking a day remounts the table
+          // (its key switches to `by_date`) and closes the popover — reopen it to clear.
+          const calendar = await openCalendar()
           // not ideal, but the easiest way of finding the now selected date
-          const todayTile = getCalendar().querySelector('[data-selected]')
+          const todayTile = calendar.querySelector('[data-selected]')
           await userEvent.click(todayTile!)
 
           await waitFor(() => {
@@ -652,7 +663,7 @@ describe('ReleasesOverview', () => {
         within(getByDataUi(document.body, 'DialogCard')).getByText('Select time zone')
       })
 
-      it('shows dates with timezone abbreviation when it is not the locale', async () => {
+      it('shows dates in compact format, without an inline timezone abbreviation, even when it is not the locale', async () => {
         mockUseTimeZone.mockReturnValue({
           ...useTimeZoneMockReturn,
           getLocalTimeZone: vi.fn(() => ({
@@ -668,10 +679,13 @@ describe('ReleasesOverview', () => {
 
         await rerender()
 
-        const scheduledReleaseRow = screen.getAllByTestId('table-row')[2]
+        const scheduledReleaseRow = screen.getAllByTestId('table-row')[1]
 
         const date = format(TODAY, 'MMM d, yyyy')
-        within(scheduledReleaseRow).getByText(`${date}, 10:00:00 PM (SCT)`)
+        // The Schedule column renders in `compact` mode: no seconds, and the timezone
+        // abbreviation is no longer shown inline (it lives in the toolbar's TZ button instead).
+        within(scheduledReleaseRow).getByText(`${date}, 10:00 PM`)
+        expect(within(scheduledReleaseRow).queryByText(/\(SCT\)/)).not.toBeInTheDocument()
       })
 
       describe('when a different timezone is selected', () => {
@@ -683,17 +697,15 @@ describe('ReleasesOverview', () => {
           })
         })
 
-        it('shows today as having no releases', () => {
-          const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
-            'day-tile-today',
-          )
+        it('shows today as having no releases', async () => {
+          const calendar = await openCalendar()
+          const todayTile = within(calendar).getByTestId('day-tile-today')
           expect(todayTile.parentNode).not.toHaveStyle('font-weight: 700')
         })
 
         it('shows no releases when filtered by today', async () => {
-          const todayTile = within(getByDataUi(document.body, 'Calendar')).getByTestId(
-            'day-tile-today',
-          )
+          const calendar = await openCalendar()
+          const todayTile = within(calendar).getByTestId('day-tile-today')
           await userEvent.click(todayTile)
 
           expect(screen.queryAllByTestId('table-row')).toHaveLength(0)
@@ -742,12 +754,6 @@ describe('ReleasesOverview', () => {
         within(publishedReleaseRow).getByText('archived Release')
         within(publishedReleaseRow).getByTestId('release-avatar-default')
       })
-
-      it('does not allow for perspective pinning', () => {
-        screen.getAllByTestId('table-row').forEach((row) => {
-          expect(within(row).getByTestId('pin-release-button').closest('button')).toBeDisabled()
-        })
-      })
     })
 
     it('sorts the list of releases', async () => {
@@ -759,27 +765,30 @@ describe('ReleasesOverview', () => {
         unsortedFifthRelease,
       ] = screen.getAllByTestId('table-row')
 
-      // default sort asap, then scheduled by publish asc
-      within(unsortedFirstRelease).getByText(activeASAPRelease.metadata.title)
-      within(unsortedSecondRelease).getByText(scheduledRelease.metadata.title)
-      within(unsortedThirdRelease).getByText(activeScheduledRelease.metadata.title)
+      // default sort: dated releases first (ascending by date); date-less releases
+      // (old asap/undecided types) have no sort key and sink to the end, in original order
+      within(unsortedFirstRelease).getByText(scheduledRelease.metadata.title)
+      within(unsortedSecondRelease).getByText(activeScheduledRelease.metadata.title)
+      within(unsortedThirdRelease).getByText(activeASAPRelease.metadata.title)
       within(unsortedFourthRelease).getByText(activeUndecidedRelease.metadata.title)
       within(unsortedFifthRelease).getByText(activeUndecidedErrorRelease.metadata.title)
 
-      // sort by asc publish at
-      await userEvent.click(screen.getByText('When'))
+      // toggle the Schedule column to descending: dated releases sort latest-to-earliest;
+      // date-less releases still sink to the bottom (in original order) in both directions
+      await userEvent.click(screen.getByText('Schedule'))
       const [
-        descPublishSortedFirstRelease,
-        descPublishSortedSecondRelease,
-        descPublishSortedThirdRelease,
-      ] = screen
-        .getAllByTestId('table-row')
-        // first two releases are undecided
-        .slice(2)
+        descSortedFirstRelease,
+        descSortedSecondRelease,
+        descSortedThirdRelease,
+        descSortedFourthRelease,
+        descSortedFifthRelease,
+      ] = screen.getAllByTestId('table-row')
 
-      within(descPublishSortedFirstRelease).getByText(activeScheduledRelease.metadata.title)
-      within(descPublishSortedSecondRelease).getByText(scheduledRelease.metadata.title)
-      within(descPublishSortedThirdRelease).getByText(activeASAPRelease.metadata.title)
+      within(descSortedFirstRelease).getByText(activeScheduledRelease.metadata.title)
+      within(descSortedSecondRelease).getByText(scheduledRelease.metadata.title)
+      within(descSortedThirdRelease).getByText(activeASAPRelease.metadata.title)
+      within(descSortedFourthRelease).getByText(activeUndecidedRelease.metadata.title)
+      within(descSortedFifthRelease).getByText(activeUndecidedErrorRelease.metadata.title)
     })
 
     it('should navigate to release when row clicked', async () => {
@@ -910,13 +919,13 @@ describe('ReleasesOverview', () => {
           await mountAndFlush(<TestComponent />, {wrapper})
         })
 
-        it('should show the cardinality view dropdown', () => {
-          const releasesButton = screen.getByRole('button', {name: /Releases/i})
-          expect(releasesButton).toBeInTheDocument()
+        it('should show the cardinality view tabs', () => {
+          // Both datasets available -> two side-by-side tabs, not a dropdown
+          expect(screen.getByRole('button', {name: 'Releases'})).toBeInTheDocument()
+          expect(screen.getByRole('button', {name: 'Scheduled drafts'})).toBeInTheDocument()
 
-          // Should find the dropdown menu button by id
-          const dropdownButton = document.getElementById('cardinality-view-menu')
-          expect(dropdownButton).toBeInTheDocument()
+          // The dropdown menu button has been replaced by the tabs
+          expect(document.getElementById('cardinality-view-menu')).not.toBeInTheDocument()
         })
 
         it('should show the create release button', () => {
@@ -928,8 +937,11 @@ describe('ReleasesOverview', () => {
           const releaseRows = screen.getAllByTestId('table-row')
           expect(releaseRows).toHaveLength(2) // Only cardinality many releases
 
-          expect(screen.getByText('active Release')).toBeInTheDocument()
-          expect(screen.getByText('active asap Release')).toBeInTheDocument()
+          // activeScheduledRelease is dated, so it also renders as a timeline pill above the
+          // table — scope these assertions to the table itself to avoid the duplicate match.
+          const table = screen.getByRole('table')
+          expect(within(table).getByText('active Release')).toBeInTheDocument()
+          expect(within(table).getByText('active asap Release')).toBeInTheDocument()
 
           // Should not show cardinality one releases in releases view
           expect(screen.queryByText('Cardinality One Release')).not.toBeInTheDocument()
@@ -973,6 +985,13 @@ describe('ReleasesOverview', () => {
 
       beforeEach(async () => {
         vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+        // Default cardinalityView is now 'all' (both cardinalities combined); these
+        // tests exercise the 'releases'-only filtering, so pin the view explicitly.
+        vi.mocked(useRouter).mockReturnValue({
+          state: {_searchParams: [['view', 'releases']]},
+          navigate: mockNavigate,
+          resolveIntentLink: mockResolveIntentLink,
+        } as unknown as ReturnType<typeof useRouter>)
         mockUseActiveReleases.mockReturnValue({
           ...useActiveReleasesMockReturn,
           data: [
@@ -999,6 +1018,10 @@ describe('ReleasesOverview', () => {
         })
 
         return mountAndFlush(<TestComponent />, {wrapper})
+      })
+
+      afterEach(() => {
+        vi.mocked(useRouter).mockReset()
       })
 
       it('should show the cardinality view dropdown', () => {
@@ -1046,12 +1069,116 @@ describe('ReleasesOverview', () => {
         expect(screen.getAllByTestId('table-row')).toHaveLength(2)
       })
 
-      it('should use different column definitions for drafts view', () => {
-        const table = screen.getByRole('table')
-        expect(table).toBeInTheDocument()
+      it('does not show a Paused sub-tab in the Releases view (cardinality-one only)', () => {
+        expect(screen.queryByText('Paused')).not.toBeInTheDocument()
+      })
+    })
 
-        const releasesButton = screen.getByRole('button', {name: /Releases/i})
-        expect(releasesButton).toBeInTheDocument()
+    describe('drafts view uses the shared release column grammar (Phase B)', () => {
+      const armedDraft: ReleaseDocument = {
+        ...activeScheduledRelease,
+        _id: '_.releases.rArmedDraft',
+        state: 'scheduled',
+        publishAt: '2024-12-25T10:00:00Z',
+        metadata: {
+          ...activeScheduledRelease.metadata,
+          title: 'Armed Draft',
+          cardinality: 'one',
+        },
+      }
+
+      // A "paused" scheduled draft: active state, has an intended (not armed) publish date.
+      const pausedDraft: ReleaseDocument = {
+        ...activeScheduledRelease,
+        _id: '_.releases.rPausedDraft',
+        state: 'active',
+        metadata: {
+          ...activeScheduledRelease.metadata,
+          title: 'Paused Draft',
+          cardinality: 'one',
+          releaseType: 'scheduled',
+          intendedPublishAt: '2024-12-26T10:00:00Z',
+        },
+      }
+
+      beforeEach(async () => {
+        vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+        vi.mocked(useRouter).mockReturnValue({
+          state: {_searchParams: [['view', 'drafts']]},
+          navigate: mockNavigate,
+          resolveIntentLink: mockResolveIntentLink,
+        } as unknown as ReturnType<typeof useRouter>)
+        mockUseActiveReleases.mockReturnValue({
+          ...useActiveReleasesMockReturn,
+          data: [armedDraft, pausedDraft],
+        })
+        mockUseArchivedReleases.mockReturnValue({
+          ...useArchivedReleasesMockReturn,
+          data: [],
+        })
+        mockUseReleasesMetadata.mockReturnValue({
+          ...useReleasesMetadataMockReturn,
+          data: {
+            [armedDraft._id]: {documentCount: 1, updatedAt: null},
+            [pausedDraft._id]: {documentCount: 1, updatedAt: null},
+          },
+        })
+
+        const wrapper = await createTestProvider({
+          resources: [releasesUsEnglishLocaleBundle],
+        })
+
+        return mountAndFlush(<TestComponent />, {wrapper})
+      })
+
+      afterEach(() => {
+        vi.mocked(useRouter).mockReset()
+      })
+
+      it('renders the shared release headers (Schedule/Documents/Edited by), not the old bespoke drafts headers', () => {
+        expect(screen.getByText('Schedule')).toBeInTheDocument()
+        expect(screen.getByText('Documents')).toBeInTheDocument()
+        expect(screen.getByText('Last edited')).toBeInTheDocument()
+        expect(screen.getByText('Edited by')).toBeInTheDocument()
+
+        expect(screen.queryByText('Scheduled for')).not.toBeInTheDocument()
+        expect(screen.queryByText('Intended for')).not.toBeInTheDocument()
+        expect(screen.queryByText('Published at')).not.toBeInTheDocument()
+      })
+
+      it('shows only armed (state=scheduled) drafts in the default Active mode', () => {
+        // Cardinality-one rows render the shared document-preview cell (Phase A), whose title
+        // comes from the mocked document-preview hook rather than release.metadata.title — so
+        // row count + schedule glyph, not the release title, is what distinguishes the fixtures
+        // here. An armed draft renders the 🔒 lock glyph, not the ⚠ warning glyph.
+        const rows = screen.getAllByTestId('table-row')
+        expect(rows).toHaveLength(1)
+        within(rows[0]).getByTestId('release-lock-icon')
+        expect(within(rows[0]).queryByTestId('release-not-scheduled')).not.toBeInTheDocument()
+      })
+
+      it('keeps the Paused sub-tab and filters to paused drafts when selected', async () => {
+        const pausedButton = screen.getByRole('button', {name: 'Paused'})
+        expect(pausedButton).not.toBeDisabled()
+
+        await userEvent.click(pausedButton)
+
+        await waitFor(() => {
+          expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+        })
+
+        // The Schedule column's ⚠ glyph (via ReleaseTime) is what conveys "intended, not
+        // scheduled" for a paused draft — same grammar as any other release, per the unified
+        // column defs; there's no separate "Intended for" header.
+        const [pausedRow] = screen.getAllByTestId('table-row')
+        within(pausedRow).getByTestId('release-not-scheduled')
+      })
+
+      it('leaves the row ⋯ menu untouched (still the scheduled-draft menu; cardinality-aware menu unification is Phase C)', () => {
+        const rows = screen.getAllByTestId('table-row')
+        rows.forEach((row) => {
+          within(row).getByTestId('scheduled-draft-menu-button')
+        })
       })
     })
 
@@ -1081,13 +1208,13 @@ describe('ReleasesOverview', () => {
         await mountAndFlush(<TestComponent />, {wrapper})
       })
 
-      it('should still show the cardinality view dropdown', () => {
-        const releasesButton = screen.getByRole('button', {name: /Releases/i})
-        expect(releasesButton).toBeInTheDocument()
+      it('should still show the cardinality view tabs', () => {
+        // Both datasets available -> two side-by-side tabs, not a dropdown
+        expect(screen.getByRole('button', {name: 'Releases'})).toBeInTheDocument()
+        expect(screen.getByRole('button', {name: 'Scheduled drafts'})).toBeInTheDocument()
 
-        // Should find the dropdown menu button by id
-        const dropdownButton = document.getElementById('cardinality-view-menu')
-        expect(dropdownButton).toBeInTheDocument()
+        // The dropdown menu button has been replaced by the tabs
+        expect(document.getElementById('cardinality-view-menu')).not.toBeInTheDocument()
       })
 
       it('should show the create release button', () => {
@@ -1276,6 +1403,20 @@ describe('ReleasesOverview', () => {
     }
 
     describe('regular releases (cardinalityView === "releases")', () => {
+      // Default cardinalityView is now 'all'; force the query param so this
+      // describe still exercises the 'releases'-specific empty-state/upsell branching.
+      beforeEach(() => {
+        vi.mocked(useRouter).mockReturnValue({
+          state: {_searchParams: [['view', 'releases']]},
+          navigate: mockNavigate,
+          resolveIntentLink: mockResolveIntentLink,
+        } as unknown as ReturnType<typeof useRouter>)
+      })
+
+      afterEach(() => {
+        vi.mocked(useRouter).mockReset()
+      })
+
       describe('when empty and plan requires upsell', () => {
         beforeEach(async () => {
           setupEmptyState()
@@ -1402,6 +1543,252 @@ describe('ReleasesOverview', () => {
           expect(screen.getByTestId('release-illustration')).toBeInTheDocument()
           expect(screen.queryByRole('table')).not.toBeInTheDocument()
         })
+      })
+    })
+  })
+
+  describe('bulk selection', () => {
+    const releases: ReleaseDocument[] = [activeASAPRelease, activeScheduledRelease]
+
+    const setup = async (
+      searchParams: [string, string][] = [],
+      activeReleases: ReleaseDocument[] = releases,
+      archivedReleases: ReleaseDocument[] = [archivedScheduledRelease, publishedASAPRelease],
+    ) => {
+      mockUseActiveReleases.mockReturnValue({
+        ...useActiveReleasesMockReturn,
+        data: activeReleases,
+      })
+      mockUseAllReleases.mockReturnValue({
+        data: activeReleases,
+        error: undefined,
+        loading: false,
+        map: new Map(activeReleases.map((release) => [release._id, release])),
+      })
+      mockUseArchivedReleases.mockReturnValue({
+        ...useArchivedReleasesMockReturn,
+        data: archivedReleases,
+      })
+      mockUseReleasesMetadata.mockReturnValue({
+        ...useReleasesMetadataMockReturn,
+        data: Object.fromEntries(
+          activeReleases.map((release, index) => [
+            release._id,
+            {documentCount: index + 1} as ReleasesMetadata,
+          ]),
+        ),
+      })
+
+      vi.mocked(useRouter).mockReturnValue({
+        state: {_searchParams: searchParams},
+        navigate: mockNavigate,
+        resolveIntentLink: mockResolveIntentLink,
+      } as unknown as ReturnType<typeof useRouter>)
+
+      const wrapper = await getWrapper()
+      return mountAndFlush(<TestComponent />, {wrapper})
+    }
+
+    it('shows a select-all checkbox in the Releases + Active view', async () => {
+      await setup()
+
+      await waitFor(() => {
+        expect(screen.getByTestId('release-bulk-select-all')).toBeInTheDocument()
+      })
+    })
+
+    it('shows a select-all checkbox in the Releases + Archived view', async () => {
+      await setup()
+
+      await userEvent.click(screen.getByText('Archived'))
+
+      await waitFor(() => {
+        expect(screen.getByTestId('release-bulk-select-all')).toBeInTheDocument()
+      })
+    })
+
+    it('shows the archived-mode bulk actions (unarchive + delete) once a row is selected', async () => {
+      await setup()
+
+      await userEvent.click(screen.getByText('Archived'))
+      await screen.findByTestId('release-bulk-select-all')
+
+      const [firstRowCheckbox] = screen.getAllByRole('checkbox').slice(1)
+      await userEvent.click(firstRowCheckbox)
+
+      expect(await screen.findByTestId('release-overview-bulk-unarchive')).toBeInTheDocument()
+      expect(screen.getByTestId('release-overview-bulk-delete')).toBeInTheDocument()
+      expect(screen.queryByTestId('release-overview-bulk-archive')).not.toBeInTheDocument()
+    })
+
+    it('shows the active-mode bulk actions (archive + archive-and-delete) once a row is selected', async () => {
+      await setup()
+
+      await screen.findByTestId('release-bulk-select-all')
+
+      const [firstRowCheckbox] = screen.getAllByRole('checkbox').slice(1)
+      await userEvent.click(firstRowCheckbox)
+
+      expect(await screen.findByTestId('release-overview-bulk-archive')).toBeInTheDocument()
+      expect(screen.getByTestId('release-overview-bulk-archive-and-delete')).toBeInTheDocument()
+      expect(screen.queryByTestId('release-overview-bulk-unarchive')).not.toBeInTheDocument()
+    })
+
+    describe('Scheduled drafts view', () => {
+      const armedDraft: ReleaseDocument = {
+        ...activeScheduledRelease,
+        _id: '_.releases.rArmedDraftBulk',
+        state: 'scheduled',
+        publishAt: '2024-12-25T10:00:00Z',
+        metadata: {
+          ...activeScheduledRelease.metadata,
+          title: 'Armed Draft (bulk)',
+          cardinality: 'one',
+        },
+      }
+
+      const pausedDraft: ReleaseDocument = {
+        ...activeScheduledRelease,
+        _id: '_.releases.rPausedDraftBulk',
+        state: 'active',
+        metadata: {
+          ...activeScheduledRelease.metadata,
+          title: 'Paused Draft (bulk)',
+          cardinality: 'one',
+          releaseType: 'scheduled',
+          intendedPublishAt: '2024-12-26T10:00:00Z',
+        },
+      }
+
+      const archivedDraft: ReleaseDocument = {
+        ...archivedScheduledRelease,
+        _id: '_.releases.rArchivedDraftBulk',
+        state: 'archived',
+        metadata: {
+          ...archivedScheduledRelease.metadata,
+          title: 'Archived Draft (bulk)',
+          cardinality: 'one',
+        },
+      }
+
+      beforeEach(() => {
+        vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+        useScheduleDraftOperationsMockReturn.deleteScheduledDraft.mockClear()
+        useReleaseOperationsMockReturn.archive.mockClear()
+        useReleaseOperationsMockReturn.unarchive.mockClear()
+        useReleaseOperationsMockReturn.deleteRelease.mockClear()
+      })
+
+      it('shows a select-all checkbox once drafts are loaded (Active mode)', async () => {
+        await setup([['view', 'drafts']], [armedDraft, pausedDraft], [])
+
+        await waitFor(() => {
+          expect(screen.getByTestId('release-bulk-select-all')).toBeInTheDocument()
+        })
+      })
+
+      it('shows the single "Delete schedule" bulk action in Active mode once a row is selected', async () => {
+        await setup([['view', 'drafts']], [armedDraft, pausedDraft], [])
+
+        await screen.findByTestId('release-bulk-select-all')
+
+        const [firstRowCheckbox] = screen.getAllByRole('checkbox').slice(1)
+        await userEvent.click(firstRowCheckbox)
+
+        expect(
+          await screen.findByTestId('release-overview-bulk-delete-schedule'),
+        ).toBeInTheDocument()
+        expect(screen.queryByTestId('release-overview-bulk-archive')).not.toBeInTheDocument()
+        expect(
+          screen.queryByTestId('release-overview-bulk-archive-and-delete'),
+        ).not.toBeInTheDocument()
+      })
+
+      it('shows the single "Delete schedule" bulk action in Paused mode once a row is selected', async () => {
+        await setup([['view', 'drafts']], [armedDraft, pausedDraft], [])
+
+        await userEvent.click(await screen.findByRole('button', {name: 'Paused'}))
+        await waitFor(() => {
+          expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+        })
+
+        const [firstRowCheckbox] = screen.getAllByRole('checkbox').slice(1)
+        await userEvent.click(firstRowCheckbox)
+
+        expect(
+          await screen.findByTestId('release-overview-bulk-delete-schedule'),
+        ).toBeInTheDocument()
+      })
+
+      it('runs deleteScheduledDraft for each selected release when confirming Delete schedule (Active mode)', async () => {
+        // The Active tab only shows armed (state 'scheduled') drafts — use two of those to
+        // exercise a multi-row selection within a single mode.
+        const secondArmedDraft: ReleaseDocument = {
+          ...armedDraft,
+          _id: '_.releases.rArmedDraftBulk2',
+        }
+        useScheduleDraftOperationsMockReturn.deleteScheduledDraft.mockResolvedValue(undefined)
+
+        await setup([['view', 'drafts']], [armedDraft, secondArmedDraft], [])
+
+        await screen.findByTestId('release-bulk-select-all')
+        await userEvent.click(screen.getByTestId('release-bulk-select-all'))
+
+        await userEvent.click(await screen.findByTestId('release-overview-bulk-delete-schedule'))
+        await userEvent.click(screen.getByTestId('confirm-button'))
+
+        await waitFor(() => {
+          expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledTimes(2)
+        })
+        expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledWith(
+          armedDraft._id,
+          true,
+        )
+        expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledWith(
+          secondArmedDraft._id,
+          true,
+        )
+      })
+
+      it('runs deleteScheduledDraft for a selected paused draft (Paused mode)', async () => {
+        useScheduleDraftOperationsMockReturn.deleteScheduledDraft.mockResolvedValue(undefined)
+
+        await setup([['view', 'drafts']], [armedDraft, pausedDraft], [])
+
+        await userEvent.click(await screen.findByRole('button', {name: 'Paused'}))
+        await waitFor(() => {
+          expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+        })
+
+        await screen.findByTestId('release-bulk-select-all')
+        await userEvent.click(screen.getByTestId('release-bulk-select-all'))
+
+        await userEvent.click(await screen.findByTestId('release-overview-bulk-delete-schedule'))
+        await userEvent.click(screen.getByTestId('confirm-button'))
+
+        await waitFor(() => {
+          expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledTimes(1)
+        })
+        expect(useScheduleDraftOperationsMockReturn.deleteScheduledDraft).toHaveBeenCalledWith(
+          pausedDraft._id,
+          true,
+        )
+      })
+
+      it('shows the archived-mode bulk actions (unarchive + delete) for archived drafts', async () => {
+        await setup([['view', 'drafts']], [], [archivedDraft])
+
+        await userEvent.click(await screen.findByRole('button', {name: 'Archived'}))
+        await screen.findByTestId('release-bulk-select-all')
+
+        const [firstRowCheckbox] = screen.getAllByRole('checkbox').slice(1)
+        await userEvent.click(firstRowCheckbox)
+
+        expect(await screen.findByTestId('release-overview-bulk-unarchive')).toBeInTheDocument()
+        expect(screen.getByTestId('release-overview-bulk-delete')).toBeInTheDocument()
+        expect(
+          screen.queryByTestId('release-overview-bulk-delete-schedule'),
+        ).not.toBeInTheDocument()
       })
     })
   })

@@ -10,7 +10,7 @@ import {type SystemVariant} from '../../../../variants/types'
 import {activeScheduledRelease} from '../../../__fixtures__/release.fixture'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
 import {ScheduledDraftVariantCell} from '../columnCells/ScheduledDraftVariantCell'
-import {scheduledDraftsOverviewColumnDefs} from '../ScheduledDraftsOverviewColumnDefs'
+import {releasesOverviewColumnDefs} from '../ReleasesOverviewColumnDefs'
 
 vi.mock('../../../../singleDocRelease/hooks/useScheduledDraftDocument', () => ({
   useScheduledDraftDocument: vi.fn(),
@@ -60,14 +60,17 @@ describe('scheduled drafts variant column', () => {
   it('is only added when a variants map is passed', () => {
     const t = ((key: string) => key) as TFunction<'releases'>
 
-    expect(scheduledDraftsOverviewColumnDefs(t, 'active').map(({id}) => id)).toEqual([
-      'documentPreview',
-      'publishAt',
-      'warning',
-    ])
-    expect(
-      scheduledDraftsOverviewColumnDefs(t, 'active', {variantsById}).map(({id}) => id),
-    ).toEqual(['variant', 'documentPreview', 'publishAt', 'warning'])
+    const ids = (columns: ReturnType<typeof releasesOverviewColumnDefs>) =>
+      columns.map(({id}) => id)
+
+    expect(ids(releasesOverviewColumnDefs(t, 'active', 'drafts'))).not.toContain('variant')
+    expect(ids(releasesOverviewColumnDefs(t, 'active', 'drafts', {variantsById}))).toContain(
+      'variant',
+    )
+    // Bundles never target a variant, so the Releases view has no Variant column.
+    expect(ids(releasesOverviewColumnDefs(t, 'active', 'releases', {variantsById}))).not.toContain(
+      'variant',
+    )
   })
 
   it('shows the variant of the scheduled document', async () => {

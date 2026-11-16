@@ -23,7 +23,7 @@ function getMinContentWidth(columns: Column<TableRelease>[]): number {
 
 describe('releasesOverviewColumnDefs', () => {
   it('lets the title column shrink instead of locking it to half the viewport', () => {
-    const titleColumn = releasesOverviewColumnDefs(t, 'active').find(
+    const titleColumn = releasesOverviewColumnDefs(t, 'active', 'releases').find(
       (column) => column.id === 'metadata.title',
     )
 
@@ -33,16 +33,15 @@ describe('releasesOverviewColumnDefs', () => {
     expect(String(titleColumn?.style?.minWidth)).not.toContain('%')
   })
 
-  it('keeps the active-table minimum width inside a 1280px window with the calendar open', () => {
-    const minContentWidth = getMinContentWidth(releasesOverviewColumnDefs(t, 'active'))
+  it('keeps the active-table minimum width inside a 1280px window (the calendar is a popover, not a sidebar)', () => {
+    const minContentWidth = getMinContentWidth(releasesOverviewColumnDefs(t, 'active', 'releases'))
 
-    expect(minContentWidth).toBe(
-      RELEASES_OVERVIEW_TITLE_COLUMN_MIN_WIDTH + 280 + 150 + 40 + 120 + TABLE_ROW_ACTIONS_WIDTH,
-    )
-    expect(minContentWidth).toBeLessThan(1000)
+    expect(minContentWidth).toBeLessThan(1100)
   })
 
   it('keeps the archived-table minimum width inside the same window', () => {
-    expect(getMinContentWidth(releasesOverviewColumnDefs(t, 'archived'))).toBeLessThan(1000)
+    expect(getMinContentWidth(releasesOverviewColumnDefs(t, 'archived', 'releases'))).toBeLessThan(
+      1000,
+    )
   })
 })

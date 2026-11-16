@@ -1,11 +1,10 @@
-import {FilterIcon} from '@sanity/icons/Filter'
-// oxlint-disable-next-line no-restricted-imports
-import {Button, useClickOutsideEvent} from '@sanity/ui'
+import {CalendarIcon} from '@sanity/icons/Calendar'
+import {useClickOutsideEvent} from '@sanity/ui'
 import {type ReactNode, useRef, useState} from 'react'
 
+import {Button} from '../../../../ui-components/button/Button'
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {Popover} from '../../../../ui-components/popover/Popover'
-import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {releasesLocaleNamespace} from '../../i18n'
 
@@ -23,20 +22,17 @@ export function CalendarPopover({content, asDialog}: {content: ReactNode; asDial
   )
 
   const triggerButton = (
-    <Tooltip content={t('overview.calendar.tooltip')}>
-      <Button
-        name="calendar"
-        data-as="a"
-        icon={FilterIcon}
-        mode="bleed"
-        padding={2}
-        radius="full"
-        selected={isCalendarOpen}
-        onClick={() => setIsCalendarOpen((prev) => !prev)}
-        ref={buttonRef}
-        gap={2}
-      />
-    </Tooltip>
+    <Button
+      name="calendar"
+      icon={CalendarIcon}
+      mode="bleed"
+      radius="full"
+      selected={isCalendarOpen}
+      onClick={() => setIsCalendarOpen((prev) => !prev)}
+      ref={buttonRef}
+      aria-label={t('overview.calendar.tooltip')}
+      tooltipProps={{content: t('overview.calendar.tooltip')}}
+    />
   )
 
   if (asDialog) {
@@ -60,7 +56,15 @@ export function CalendarPopover({content, asDialog}: {content: ReactNode; asDial
   }
 
   return (
-    <Popover content={content} placement="bottom" open={isCalendarOpen} ref={popoverRef}>
+    <Popover
+      content={content}
+      placement="bottom-end"
+      fallbackPlacements={['bottom-start', 'top-end', 'top-start']}
+      constrainSize
+      open={isCalendarOpen}
+      portal
+      ref={popoverRef}
+    >
       {triggerButton}
     </Popover>
   )

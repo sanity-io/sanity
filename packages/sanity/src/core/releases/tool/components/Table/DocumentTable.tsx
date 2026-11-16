@@ -13,7 +13,7 @@ import {DocumentTableSelectionContext} from 'sanity/_singletons'
 import {Container, Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
-import {Table} from './Table'
+import {Table, type TableRowProps} from './Table'
 import {type TableSort} from './TableProvider'
 import {
   type Column,
@@ -167,6 +167,8 @@ export function DocumentTable<Row extends object>({
   commandLaneActions,
   selection,
   rowActions,
+  rowProps,
+  hideTableInlinePadding,
   emptyState,
   defaultSort,
   id,
@@ -203,6 +205,9 @@ export function DocumentTable<Row extends object>({
   commandLaneActions?: ReactNode
   selection?: DocumentTableSelection<Row>
   rowActions?: (props: {datum: unknown}) => ReactNode
+  /** Per-row Card props (for example a tone). Forwarded to the underlying Table. */
+  rowProps?: (row: Row) => Partial<TableRowProps>
+  hideTableInlinePadding?: boolean
   emptyState: (() => React.JSX.Element) | string
   defaultSort?: TableSort
   /** id + data-testid for the scroll container (the filter-tab `aria-controls` target). */
@@ -378,9 +383,11 @@ export function DocumentTable<Row extends object>({
             data={displayRows}
             defaultSort={defaultSort}
             emptyState={emptyState}
+            hideTableInlinePadding={hideTableInlinePadding}
             loading={loading}
             rowActions={rowActions}
             rowId={rowId}
+            rowProps={rowProps}
             scrollContainerRef={scrollContainerRef}
           />
         </DocumentTableSelectionContext.Provider>

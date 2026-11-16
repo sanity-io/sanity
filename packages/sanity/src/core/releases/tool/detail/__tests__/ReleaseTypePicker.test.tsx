@@ -1,6 +1,6 @@
 import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getByDataUi, queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -17,6 +17,7 @@ import {
   mockUseReleaseOperations,
   useReleaseOperationsMockReturn,
 } from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
+import {setReleaseLabelMode} from '../../overview/useReleaseLabelMode'
 import {ReleaseTypePicker} from '../ReleaseTypePicker'
 
 vi.mock('../../../store/useReleaseOperations', () => ({
@@ -60,6 +61,8 @@ const mockUpdateRelease = vi.fn()
 describe('ReleaseTypePicker', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    // These assertions cover the labels Studio ships today.
+    setReleaseLabelMode('current')
     mockUseReleaseOperations.mockReturnValue({
       ...useReleaseOperationsMockReturn,
       updateRelease: mockUpdateRelease.mockResolvedValue({}),

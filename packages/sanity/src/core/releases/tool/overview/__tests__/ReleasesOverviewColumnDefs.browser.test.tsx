@@ -52,8 +52,10 @@ function OverviewCell({
 
 function OverviewColumns() {
   const {t} = useTranslation(releasesLocaleNamespace)
-  const activeColumns = releasesOverviewColumnDefs(t, 'active').filter(isVisibleColumn)
-  const archivedColumns = releasesOverviewColumnDefs(t, 'archived').filter(isVisibleColumn)
+  const activeColumns = releasesOverviewColumnDefs(t, 'active', 'releases').filter(isVisibleColumn)
+  const archivedColumns = releasesOverviewColumnDefs(t, 'archived', 'releases').filter(
+    isVisibleColumn,
+  )
   const publishAt = activeColumns.find((column) => column.id === 'publishAt')
   const error = activeColumns.find((column) => column.id === 'error')
   const documentCount = archivedColumns.find((column) => column.id === 'documentCount')

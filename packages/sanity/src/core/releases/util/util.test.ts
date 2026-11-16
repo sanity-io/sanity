@@ -166,6 +166,68 @@ describe('shouldShowReleaseInView', () => {
     // Should not throw and should return false for drafts view
     expect(() => filterFn(releaseWithoutMetadata)).not.toThrow()
   })
+
+  it('should show cardinality "one" releases in "all" view', () => {
+    const release: ReleaseDocument = {
+      ...activeScheduledRelease,
+      metadata: {
+        ...activeScheduledRelease.metadata,
+        cardinality: 'one',
+      },
+    }
+    const filterFn = shouldShowReleaseInView('all')
+    expect(filterFn(release)).toBe(true)
+  })
+
+  it('should show cardinality "many" releases in "all" view', () => {
+    const release: ReleaseDocument = {
+      ...activeScheduledRelease,
+      metadata: {
+        ...activeScheduledRelease.metadata,
+        cardinality: 'many',
+      },
+    }
+    const filterFn = shouldShowReleaseInView('all')
+    expect(filterFn(release)).toBe(true)
+  })
+
+  it('should show undefined cardinality releases in "all" view', () => {
+    const release: ReleaseDocument = {
+      ...activeScheduledRelease,
+      metadata: {
+        ...activeScheduledRelease.metadata,
+        cardinality: undefined,
+      },
+    }
+    const filterFn = shouldShowReleaseInView('all')
+    expect(filterFn(release)).toBe(true)
+  })
+
+  it('should show every cardinality when used as an array filter in "all" view', () => {
+    const releases: ReleaseDocument[] = [
+      {
+        ...activeScheduledRelease,
+        _id: 'release1',
+        metadata: {...activeScheduledRelease.metadata, cardinality: 'one'},
+      },
+      {
+        ...activeScheduledRelease,
+        _id: 'release2',
+        metadata: {...activeScheduledRelease.metadata, cardinality: 'many'},
+      },
+      {
+        ...activeScheduledRelease,
+        _id: 'release3',
+        metadata: {...activeScheduledRelease.metadata, cardinality: undefined},
+      },
+    ]
+
+    const allFilterFn = shouldShowReleaseInView('all')
+    const result = releases.filter(allFilterFn)
+
+    expect(result).toHaveLength(3)
+    expect(result.map((r) => r._id)).toEqual(['release1', 'release2', 'release3'])
+  })
 })
 
 describe('filterReleasesForOverview', () => {
@@ -327,6 +389,45 @@ describe('filterReleasesForOverview', () => {
     expect(activeResult).toHaveLength(2)
     expect(activeResult.map((r) => r._id)).toEqual(['r1', 'r3'])
     expect(archivedResult).toEqual([archivedInRange])
+  })
+
+  it('applies the date filter for the "all" view exactly like the "releases" view (no cardinality/state narrowing)', () => {
+    const dateFilter = {
+      filterDate: new Date('2024-01-15'),
+      getTimezoneAdjustedDateTimeRange: mockDateFilter,
+    }
+
+    const allResult = filterReleasesForOverview({
+      releases: [inRange, outRange, intended],
+      archivedReleases: [],
+      cardinalityView: 'all',
+      releaseGroupMode: 'active',
+      dateFilter,
+    })
+
+    const releasesResult = filterReleasesForOverview({
+      releases: [inRange, outRange, intended],
+      archivedReleases: [],
+      cardinalityView: 'releases',
+      releaseGroupMode: 'active',
+      dateFilter,
+    })
+
+    expect(allResult).toEqual(releasesResult)
+    expect(allResult.map((r) => r._id)).toEqual(['r1', 'r3'])
+  })
+
+  it('does not apply drafts-only state narrowing to the "all" view', () => {
+    // scheduled/scheduling/paused are cardinality-one releases; the drafts view narrows the
+    // active group to only scheduled/scheduling, but 'all' should not apply that narrowing.
+    const allResult = filterReleasesForOverview({
+      releases: [scheduled, scheduling, paused, many],
+      archivedReleases: [],
+      cardinalityView: 'all',
+      releaseGroupMode: 'active',
+    })
+
+    expect(allResult).toEqual([scheduled, scheduling, paused, many])
   })
 
   it('filters by date combined with state filters for drafts', () => {
