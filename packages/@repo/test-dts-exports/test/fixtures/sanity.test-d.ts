@@ -491,6 +491,7 @@ import type {
   DocumentMutationEvent,
   DocumentOptions,
   DocumentPairLoadedEvent,
+  DocumentPairPermissionsListener,
   DocumentPairPermissionsOptions,
   DocumentPairTarget,
   DocumentPermission,
@@ -1830,7 +1831,6 @@ import type {
   ValidationError,
   ValidationErrorClass,
   ValidationErrorOptions,
-  ValidationListener,
   ValidationLocaleResourceKeys,
   ValidationMarker,
   Validator,
@@ -3359,6 +3359,9 @@ describe('sanity', () => {
   })
   test('DocumentPairLoadedEvent', () => {
     expectTypeOf<DocumentPairLoadedEvent>().toBeObject()
+  })
+  test('DocumentPairPermissionsListener', () => {
+    expectTypeOf<DocumentPairPermissionsListener>().not.toBeNever()
   })
   test('DocumentPairPermissionsOptions', () => {
     expectTypeOf<DocumentPairPermissionsOptions>().toBeObject()
@@ -7396,9 +7399,6 @@ describe('sanity', () => {
   })
   test('ValidationErrorOptions', () => {
     expectTypeOf<ValidationErrorOptions>().toBeObject()
-  })
-  test('ValidationListener', () => {
-    expectTypeOf<ValidationListener>().not.toBeNever()
   })
   test('ValidationLocaleResourceKeys', () => {
     expectTypeOf<ValidationLocaleResourceKeys>().not.toBeNever()

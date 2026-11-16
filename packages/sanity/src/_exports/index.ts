@@ -1304,7 +1304,7 @@ export {
   type DocumentVersionSnapshots,
   snapshotPair,
 } from '../core/store/document/document-pair/snapshotPair'
-export {type ValidationListener, validation} from '../core/store/document/document-pair/validation'
+export {validation} from '../core/store/document/document-pair/validation'
 export {
   createDocumentStore,
   type DocumentStore,
@@ -1345,6 +1345,7 @@ export {
 } from '../core/store/document/listenQuery'
 export {selectUpstreamVersion} from '../core/store/document/selectUpstreamVersion'
 export {
+  type DocumentPairPermissionsListener,
   type DocumentPairTarget,
   type IdPair,
   type MutationEvent,

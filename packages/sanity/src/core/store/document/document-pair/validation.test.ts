@@ -24,8 +24,9 @@ import {
 } from '../../../preview/types'
 import {createSchema} from '../../../schema/createSchema'
 import {type ValidationStatus} from '../../../validation'
+import {type DocumentPairPermissionsListener} from '../types'
 import {editState, type EditStateFor} from './editState'
-import {validation, type ValidationListener} from './validation'
+import {validation} from './validation'
 
 // Mock `./editState`
 const mockEditState = editState as Mock<typeof editState>
@@ -80,7 +81,7 @@ function createSubscription(
     typeName?: string
     currentUser?: {id: string} | null
     documentId?: string
-    listener?: ValidationListener
+    listener?: DocumentPairPermissionsListener
     observeDocument?: (id: string) => Observable<SanityDocument | undefined>
   } = {},
 ) {
