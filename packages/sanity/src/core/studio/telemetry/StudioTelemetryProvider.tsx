@@ -22,7 +22,9 @@ import {useClient} from '../../hooks/useClient'
 import {useProjectOrganizationId} from '../../store/project/useProjectOrganizationId'
 import {SANITY_VERSION} from '../../version'
 import {
+  collectDeprecatedConfigFlags,
   collectWorkspaceFeatures,
+  DeprecatedConfigUsageObserved,
   WorkspaceFeaturesObserved,
 } from '../__telemetry__/featureAvailability.telemetry'
 import {StudioLoaded} from '../__telemetry__/studioLoaded.telemetry'
@@ -214,6 +216,8 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   }, [store.logger])
 
   const workspaceFeatures = useMemo(() => collectWorkspaceFeatures(workspace), [workspace])
+  const deprecatedConfigFlags = useMemo(() => collectDeprecatedConfigFlags(workspace), [workspace])
+
   // Why: this component creates the TelemetryProvider, so `useTelemetry()` is
   // unavailable here. Log through `store.logger` directly. The ref dedupes
   // StrictMode's double-invoked mount effect per workspace while still
@@ -225,7 +229,8 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
     if (observedFeaturesKeyRef.current === workspaceKey) return
     observedFeaturesKeyRef.current = workspaceKey
     store.logger.log(WorkspaceFeaturesObserved, workspaceFeatures)
-  }, [store.logger, workspace.name, workspace.projectId, workspaceFeatures])
+    store.logger.log(DeprecatedConfigUsageObserved, deprecatedConfigFlags)
+  }, [store.logger, workspace.name, workspace.projectId, workspaceFeatures, deprecatedConfigFlags])
 
   return (
     <TelemetryProvider store={store}>

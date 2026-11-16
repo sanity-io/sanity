@@ -9,6 +9,7 @@ import {useUserListWithPermissions} from '../../../hooks/useUserListWithPermissi
 import {type ReleaseId} from '../../../perspective/types'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
+import {useAddonDatasetListenerStore} from '../../../studio/addonDataset/useAddonDatasetListenerStore'
 import {useWorkspace} from '../../../studio/workspace'
 import {getPublishedId} from '../../../util/draftUtils'
 import {
@@ -92,6 +93,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   } = props
   const [status, setStatus] = useState<CommentStatus>('open')
   const {client, createAddonDataset, isCreatingDataset} = useAddonDataset()
+  const listenerStore = useAddonDatasetListenerStore()
   const publishedId = getPublishedId(documentId)
 
   const editState = useEditState(publishedId, documentType, 'low', scopeId)
@@ -127,6 +129,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     documentId,
     releaseId: scopeId,
     client,
+    listenerStore,
     transactionsIdMap,
     onLatestTransactionIdReceived: handleOnLatestTransactionIdReceived,
   })

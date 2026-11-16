@@ -77,10 +77,11 @@ export interface DebugProxyConfig {
    * {@link DebugProxyConfig.forceHttp1}). For example, raise
    * `streamResetBurst` / `streamResetRate` (Node defaults: 1000, then 33 per
    * second) for a client that cancels streams faster than that on purpose.
-   * Node closes the whole session when the limit is exceeded.
+   * Node closes the whole session when the limit is exceeded. `settings`
+   * (e.g. `{maxConcurrentStreams: 100}`) caps concurrent streams per session.
    */
   http2Options?:
-    | Pick<http2.ServerSessionOptions, 'streamResetBurst' | 'streamResetRate'>
+    | Pick<http2.ServerSessionOptions, 'settings' | 'streamResetBurst' | 'streamResetRate'>
     | undefined
   /**
    * Ordered list of routes. The first route whose `match` returns true wins.

@@ -1,9 +1,9 @@
 import {type SanityClient} from '@sanity/client'
-import {type CurrentUser, type Schema} from '@sanity/types'
+import {type CurrentUser, type SanityDocument, type Schema} from '@sanity/types'
 import {type ValidationScheduling} from '@sanity/validation/_internal'
 import omit from 'lodash-es/omit.js'
-import {asyncScheduler, BehaviorSubject, combineLatest, merge, Observable} from 'rxjs'
-import {distinctUntilChanged, map, share, shareReplay, throttleTime} from 'rxjs/operators'
+import {asyncScheduler, BehaviorSubject, combineLatest, merge, Observable, of, timer} from 'rxjs'
+import {distinctUntilChanged, map, retry, share, shareReplay, throttleTime} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../../config/types'
 import {type LocaleSource} from '../../../i18n/types'
@@ -20,8 +20,25 @@ import {memoizeKeyGen} from './memoizeKeyGen'
 // throttle delay for document updates (i.e. time between responding to changes in the current document)
 const DOC_UPDATE_DELAY = 200
 
+// Same limit as the preview store's document-count fetch. An unbounded retry would never surface
+// the failure.
+const MAX_GLOBAL_DOCUMENT_LOAD_RETRIES = 3
+
 function shareLatestWithRefCount<T>() {
   return shareReplay<T>({bufferSize: 1, refCount: true})
+}
+
+/**
+ * Where the validated document comes from: `document` checks out the document pair, which opens a
+ * listener for it, and `global` follows the document through the document preview store's shared
+ * global listener.
+ */
+export type ValidationListener = 'document' | 'global'
+
+function getValidationTargetId(idPair: IdPair, validationTarget: DocumentVariantType) {
+  if (validationTarget === 'draft') return idPair.draftId
+  if (validationTarget === 'version') return idPair.versionId
+  return idPair.publishedId
 }
 
 const validationStreams = memoize(
@@ -30,6 +47,7 @@ const validationStreams = memoize(
       client: SanityClient
       getClient: (options: SourceClientOptions) => SanityClient
       observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>
+      observeDocument: (id: string) => Observable<SanityDocument | undefined>
       schema: Schema
       i18n: LocaleSource
       /**
@@ -40,19 +58,38 @@ const validationStreams = memoize(
       pairListenerOptions?: DocumentStoreExtraOptions
       currentUser?: Omit<CurrentUser, 'role'> | null
     },
-    {draftId, publishedId, versionId}: IdPair,
+    idPair: IdPair,
     typeName: string,
     validationTarget: DocumentVariantType,
+    listener: ValidationListener,
   ) => {
-    const document$ = editState(ctx, {draftId, publishedId, versionId}, typeName).pipe(
-      map((state) => {
-        const {version, draft, published} = state
+    const documentId = getValidationTargetId(idPair, validationTarget)
+    const target$: Observable<SanityDocument | null | undefined> =
+      listener === 'global'
+        ? documentId
+          ? ctx.observeDocument(documentId).pipe(
+              // A failed fetch or a dropped global listener would error the validation, which
+              // `useValidationStatus` rethrows during render. Retry three times, the same limit as
+              // the preview store's document-count fetch, then let that error through.
+              retry({
+                count: MAX_GLOBAL_DOCUMENT_LOAD_RETRIES,
+                delay: (_error: unknown, attempt) => timer(Math.min(30_000, attempt * 1000)),
+              }),
+            )
+          : of(undefined)
+        : editState(ctx, idPair, typeName).pipe(
+            map((state) => {
+              const {version, draft, published} = state
 
-        if (validationTarget === 'draft') return draft
-        if (validationTarget === 'version') return version
-        return published
-      }),
+              if (validationTarget === 'draft') return draft
+              if (validationTarget === 'version') return version
+              return published
+            }),
+          )
+    // shared, so the document to validate and the revision below come from the same emission
+    const document$ = target$.pipe(
       throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
+      shareLatestWithRefCount(),
     )
 
     const documentToValidate$ = document$.pipe(
@@ -87,11 +124,23 @@ const validationStreams = memoize(
 
     const scheduling = new BehaviorSubject<ValidationScheduling>('idle')
     const status$ = combineLatest([
-      documentRevision$,
       validateDocumentWithReferences(ctx, documentToValidate$, scheduling),
+      documentToValidate$,
+      // keep last: a new document must reach `documentToValidate` before its revision does
+      documentRevision$,
     ]).pipe(
-      map(([revision, validationStatus]) => {
-        return {...validationStatus, revision}
+      map(([validationStatus, documentToValidate, revision]) => {
+        // A run starts a tick after its document and reports the document's revision as it
+        // starts; until then the previous result would read as final. A document without a
+        // `_type` gets a run that reports no revision, so it's never pending.
+        const isPending =
+          Boolean(documentToValidate?._type) &&
+          validationStatus.revision !== documentToValidate?._rev
+        return {
+          ...validationStatus,
+          isValidating: validationStatus.isValidating || isPending,
+          revision,
+        }
       }),
     )
     // shared: the first subscriber switches to `immediate`, the last one to leave switches back
@@ -102,19 +151,14 @@ const validationStreams = memoize(
 
     return {status$, immediate$: merge(holdImmediate$, status$)}
   },
-  (ctx, idPair, typeName, validationTarget) => {
+  (ctx, idPair, typeName, validationTarget, listener) => {
     // Use the actual document ID being validated in the cache key for explicitness
-    const documentId =
-      validationTarget === 'draft'
-        ? idPair.draftId
-        : validationTarget === 'version'
-          ? idPair.versionId
-          : idPair.publishedId
+    const documentId = getValidationTargetId(idPair, validationTarget)
     // Include the user id so an in-place user switch gets its own cache entry;
     // the module-level memo cache is never cleared, so without this a new user
     // would replay the previous user's validation result.
     const userId = ctx.currentUser?.id ?? ''
-    return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}-${userId}`
+    return `${memoizeKeyGen(ctx.client, idPair, typeName)}-${documentId}-${userId}-${listener}`
   },
 )
 
@@ -134,7 +178,8 @@ export function validation(
    */
   _validatePublishedReferences?: boolean,
   scheduling?: ValidationScheduling,
+  listener: ValidationListener = 'document',
 ): Observable<ValidationStatus> {
-  const {status$, immediate$} = validationStreams(ctx, idPair, typeName, validationTarget)
+  const {status$, immediate$} = validationStreams(ctx, idPair, typeName, validationTarget, listener)
   return scheduling === 'immediate' ? immediate$ : status$
 }

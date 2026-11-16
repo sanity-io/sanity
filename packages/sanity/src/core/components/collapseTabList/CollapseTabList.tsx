@@ -37,6 +37,13 @@ interface CollapseTabListProps {
 export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTMLDivElement>) {
   const {ref, children: childrenProp, gap, menuButtonProps, style, ...rest} = props
   const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null)
+  // Ignores the detach: when a child suspends (a lazy icon), the nearest boundary hides this
+  // subtree and detaches its refs. Dropping the element would unmount the clones that suspended,
+  // so the boundary would reveal the subtree, the ref would mount them again, and they would
+  // suspend again, until "Maximum update depth exceeded". The element survives the hiding.
+  const setRootRef = useCallback((element: HTMLDivElement | null) => {
+    if (element) setRootEl(element)
+  }, [])
   // Whether the measured clone of each child key currently fits in the hidden row,
   // or undefined for keys not measured yet. Entries for keys that have left
   // `children` linger here, so everything rendered must be derived through the
@@ -145,7 +152,7 @@ export function CollapseTabList(props: CollapseTabListProps & RefAttributes<HTML
         className={hiddenRow}
         justifyContent="flex-start"
         gap={gap}
-        ref={setRootEl}
+        ref={setRootRef}
         data-hidden
         aria-hidden="true"
       >
