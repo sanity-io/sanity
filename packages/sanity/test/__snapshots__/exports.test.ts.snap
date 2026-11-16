@@ -72,7 +72,7 @@ exports[`exports snapshot 1`] = `
     "MemberFieldSet": "object",
     "MemberItemError": "function",
     "NumberInput": "function",
-    "ObjectInput": "object",
+    "ObjectInput": "function",
     "ObjectInputMember": "function",
     "ObjectInputMembers": "function",
     "ObjectMembers": "function",

@@ -4,11 +4,24 @@ import {createLazyComponent} from '../components/lazy/createLazyComponent'
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 import {type FormField as FormFieldImplementation} from './components/formField/FormField'
 import {type FormInput as FormInputImplementation} from './components/FormInput'
+import {type BooleanInput as BooleanInputImplementation} from './inputs/BooleanInput'
+import {type DateInput as DateInputImplementation} from './inputs/DateInputs/DateInput'
+import {type DateTimeInput as DateTimeInputImplementation} from './inputs/DateInputs/DateTimeInput'
+import {type ObjectInput as ObjectInputImplementation} from './inputs/ObjectInput/ObjectInput'
+import {type SelectInput as SelectInputImplementation} from './inputs/SelectInput'
+import {type SlugInput as SlugInputImplementation} from './inputs/Slug/SlugInput'
+import {type StringInput as StringInputImplementation} from './inputs/StringInput/StringInput'
+import {type TagsArrayInput as TagsArrayInputImplementation} from './inputs/TagsArrayInput'
 import {type MemberItemProps} from './members/array/items/ArrayOfObjectsItem'
 import {type MemberFieldProps} from './members/object/MemberField'
 import {type ObjectInputMemberProps} from './members/object/ObjectInputMember'
 import {type FieldError} from './store/types/memberErrors'
 import {type FormBuilderProps} from './studio/FormBuilder'
+import {type FormProvider as FormProviderImplementation} from './studio/FormProvider'
+import {type StudioCrossDatasetReferenceInput as StudioCrossDatasetReferenceInputImplementation} from './studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
+import {type StudioReferenceInput as StudioReferenceInputImplementation} from './studio/inputs/reference/StudioReferenceInput'
+import {type StudioFileInput as StudioFileInputImplementation} from './studio/inputs/StudioFileInput'
+import {type StudioImageInput as StudioImageInputImplementation} from './studio/inputs/StudioImageInput'
 import {type PortableTextInputProps} from './types/inputProps'
 
 // Code-split facades for the form components that `sanity` exports. The form runtime is by far
@@ -26,6 +39,12 @@ import {type PortableTextInputProps} from './types/inputProps'
 // subtree around it, wiping local state, and there is no sensible field-sized fallback. They
 // suspend to `FormBuilder`'s boundary, or to the Portable Text per-block one, which is where form
 // nodes are meant to suspend.
+//
+// The input components that `sanity` exports for custom inputs to compose with (`StringInput`,
+// `ObjectInput`, `ImageInput`, `ReferenceInput`, ...) are facades too. `StringInput` alone
+// statically reaches the Portable Text editor through its inline-changes mode, and the image,
+// file and reference inputs each carry their own dialogs and stores. Like the in-form facades
+// they have no boundary: they render inside a form, under `FormBuilder`'s.
 //
 // Four components that `sanity` exports are *not* facaded, because the marginal gzip each keeps
 // off the entry's static closure does not pay for a suspension: `FormFieldValidationStatus`
@@ -92,3 +111,102 @@ export const FormBuilder = createLazyComponent<FormBuilderProps>(
   () => import('./studio/FormBuilder.lazy'),
   {fallback: <LoadingBlock />},
 )
+
+/**
+ * @alpha This API might change.
+ */
+export const FormProvider = createLazyComponent<ComponentProps<typeof FormProviderImplementation>>(
+  () => import('./studio/FormProvider.lazy'),
+  {fallback: <LoadingBlock />},
+)
+
+/**
+ * @hidden
+ * @beta
+ */
+export const StringInput = createLazyComponent<ComponentProps<typeof StringInputImplementation>>(
+  () => import('./inputs/StringInput/StringInput.lazy'),
+)
+
+/**
+ * @hidden
+ * @beta
+ */
+export const BooleanInput = createLazyComponent<ComponentProps<typeof BooleanInputImplementation>>(
+  () => import('./inputs/BooleanInput.lazy'),
+)
+
+/**
+ * @hidden
+ * @beta */
+export const DateInput = createLazyComponent<ComponentProps<typeof DateInputImplementation>>(
+  () => import('./inputs/DateInputs/DateInput.lazy'),
+)
+
+/**
+ * @hidden
+ * @beta */
+export const DateTimeInput = createLazyComponent<
+  ComponentProps<typeof DateTimeInputImplementation>
+>(() => import('./inputs/DateInputs/DateTimeInput.lazy'))
+
+/**
+ * @hidden
+ * @beta */
+export const ObjectInput = createLazyComponent<ComponentProps<typeof ObjectInputImplementation>>(
+  () => import('./inputs/ObjectInput/ObjectInput.lazy'),
+)
+
+/**
+ * @hidden
+ * @beta
+ */
+export const SelectInput = createLazyComponent<ComponentProps<typeof SelectInputImplementation>>(
+  () => import('./inputs/SelectInput.lazy'),
+)
+
+/**
+ * @hidden
+ * @beta
+ */
+export const SlugInput = createLazyComponent<ComponentProps<typeof SlugInputImplementation>>(
+  () => import('./inputs/Slug/SlugInput.lazy'),
+)
+
+/**
+ * @hidden
+ * @beta
+ */
+export const TagsArrayInput = createLazyComponent<
+  ComponentProps<typeof TagsArrayInputImplementation>
+>(() => import('./inputs/TagsArrayInput.lazy'))
+
+/**
+ * @hidden
+ * @beta */
+export const StudioImageInput = createLazyComponent<
+  ComponentProps<typeof StudioImageInputImplementation>
+>(() => import('./studio/inputs/StudioImageInput.lazy'))
+
+/**
+ * @hidden
+ * @beta */
+export const StudioFileInput = createLazyComponent<
+  ComponentProps<typeof StudioFileInputImplementation>
+>(() => import('./studio/inputs/StudioFileInput.lazy'))
+
+/**
+ * @hidden
+ * @beta
+ */
+export const StudioReferenceInput = createLazyComponent<
+  ComponentProps<typeof StudioReferenceInputImplementation>
+>(() => import('./studio/inputs/reference/StudioReferenceInput.lazy'))
+
+/**
+ * @hidden
+ * @beta
+ */
+export const StudioCrossDatasetReferenceInput = createLazyComponent<
+  ComponentProps<typeof StudioCrossDatasetReferenceInputImplementation>
+>(() => import('./studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput.lazy'))
