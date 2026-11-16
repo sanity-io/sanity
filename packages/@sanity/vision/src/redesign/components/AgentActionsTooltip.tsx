@@ -1,7 +1,7 @@
 import {type Placement, Stack} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type ReactElement} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 
 import {visionLocaleNamespace} from '../../i18n'

@@ -1,7 +1,8 @@
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {useEffect, useMemo} from 'react'
-import {useClient, useTranslation} from 'sanity'
+import {useClient} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {visionLocaleNamespace} from '../../i18n'
 import {type QueryRunnerRef} from '../store/queryRunnerMachine'

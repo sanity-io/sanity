@@ -13,8 +13,8 @@ import {
   isVersionId,
   PreviewCard,
   SanityDefaultPreview,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 
 import {ReleaseTitle} from '../../../core/releases/components/ReleaseTitle'

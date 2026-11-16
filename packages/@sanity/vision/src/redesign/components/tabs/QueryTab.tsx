@@ -3,7 +3,7 @@ import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import debounce from 'lodash-es/debounce.js'
 import {useCallback, useEffect, useMemo, useRef, useState, useEffectEvent} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 
 import {type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'

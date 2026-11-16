@@ -61,6 +61,9 @@ vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useDocumentVersions: vi.fn(() => ({data: [], versions: [], loading: false})),
   usePerspective: vi.fn(() => DEFAULT_PERSPECTIVE),
+}))
+vi.mock('sanity/i18n', async (importOriginal) => ({
+  ...(await importOriginal()),
   useTranslation: vi.fn(() => ({
     t: (key: string) => key,
   })),

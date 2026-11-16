@@ -8,8 +8,8 @@ import {
   isScheduleDocumentVersionEvent,
   isUnpublishDocumentEvent,
   isUnscheduleDocumentVersionEvent,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Flex} from 'ui5'
 
 import {LoadingBlock} from '../../../../../core/components/loadingBlock/LoadingBlock'

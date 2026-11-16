@@ -1,8 +1,8 @@
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {format} from 'date-fns/format'
 import {useContext} from 'react'
-import {Translate, useTranslation} from 'sanity'
 import {EventsContext} from 'sanity/_singletons'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {styled} from 'styled-components'
 import {Text, Flex, Box, Icon} from 'ui5'
 

@@ -1,5 +1,6 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {TextWithTone, useTranslation} from 'sanity'
+import {TextWithTone} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Box, Flex, Icon, VStack} from 'ui5'
 
 export function TimelineError({versionError}: {versionError?: boolean}) {

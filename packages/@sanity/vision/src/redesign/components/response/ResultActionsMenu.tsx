@@ -5,7 +5,7 @@ import {PackageIcon} from '@sanity/icons/Package'
 import {Button} from '@sanity/ui'
 import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
 import {useState} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'

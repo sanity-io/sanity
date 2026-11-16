@@ -1,4 +1,4 @@
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Box} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'

@@ -2,7 +2,8 @@ import {type ReleaseDocument} from '@sanity/client'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type ObjectSchemaType} from '@sanity/types'
 import {type ComponentType, type ReactNode, useCallback} from 'react'
-import {type TargetPerspective, Translate, useTranslation, useWorkspace} from 'sanity'
+import {type TargetPerspective, useWorkspace} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, Flex} from 'ui5'
 
 import {

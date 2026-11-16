@@ -1,6 +1,6 @@
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {memo, useMemo} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {CapabilityGate} from '../../../../../core/components/CapabilityGate'
 import {Button} from '../../../../../ui-components/button/Button'

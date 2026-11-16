@@ -136,27 +136,12 @@ vi.mock('sanity', async () => {
   // The project store's organization ID, stable like the real store's
   const organizationId$ = of('org-1')
   return {
-    InlineCode: ({children}: {children?: ReactNode}) => <code>{children}</code>,
     usePerspective: () =>
       useSyncExternalStore(sanityMocks.subscribePerspective, sanityMocks.getPerspective),
     useClient: sanityMocks.useClient,
     useWorkspace: () => sanityMocks.workspace,
     useProjectStore: () => ({getOrganizationId: () => organizationId$}),
     useNumberFormat: () => new Intl.NumberFormat('en'),
-    useTranslation: () => ({
-      t: (
-        key: string,
-        options?: {message?: string; version?: string; quota?: string; used?: string},
-      ) => {
-        if (options?.message) return `${key}:${options.message}`
-        // The AI credits notes carry numbers: shown as given, to read them back
-        if (options?.quota !== undefined || options?.used !== undefined) {
-          return `${key}:${JSON.stringify(options)}`
-        }
-        return options?.version ? `${key}:${options.version}` : key
-      },
-    }),
-    defineLocaleResourceBundle: (bundle: unknown) => bundle,
     getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),
     useSchema: () => undefined,
     useCurrentUser: () => ({id: 'user-1'}),
@@ -164,6 +149,23 @@ vi.mock('sanity', async () => {
     UserAvatar: () => null,
   }
 })
+vi.mock('sanity/i18n', () => ({
+  InlineCode: ({children}: {children?: ReactNode}) => <code>{children}</code>,
+  useTranslation: () => ({
+    t: (
+      key: string,
+      options?: {message?: string; version?: string; quota?: string; used?: string},
+    ) => {
+      if (options?.message) return `${key}:${options.message}`
+      // The AI credits notes carry numbers: shown as given, to read them back
+      if (options?.quota !== undefined || options?.used !== undefined) {
+        return `${key}:${JSON.stringify(options)}`
+      }
+      return options?.version ? `${key}:${options.version}` : key
+    },
+  }),
+  defineLocaleResourceBundle: (bundle: unknown) => bundle,
+}))
 
 // Internals that Vision imports from the internals entry; mocked without the real barrel so the
 // structure modules it re-exports do not load against the partial `sanity` mock above

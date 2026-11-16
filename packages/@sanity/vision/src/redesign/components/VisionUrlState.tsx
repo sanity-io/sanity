@@ -1,6 +1,6 @@
 import {useToast} from '@sanity/ui/toast'
 import {useEffect, useRef, useEffectEvent} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {useRouter} from 'sanity/router'
 
 import {visionLocaleNamespace} from '../../i18n'

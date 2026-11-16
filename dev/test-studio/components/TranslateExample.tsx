@@ -1,7 +1,7 @@
 import {InfoFilledIcon} from '@sanity/icons/InfoFilled'
 import {Card} from '@sanity/ui'
 import {type ReactNode} from 'react'
-import {InlineCode, Translate, useTranslation} from 'sanity'
+import {InlineCode, Translate, useTranslation} from 'sanity/i18n'
 import {Icon, Text, VStack} from 'ui5'
 
 export function TranslateExample() {

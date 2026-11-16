@@ -8,8 +8,10 @@ import {type QueryLintFinding} from '../../util/groqLint'
 import {LintTab} from './LintTab'
 
 vi.mock('sanity', () => ({
-  defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+}))
+vi.mock('sanity/i18n', () => ({
+  defineLocaleResourceBundle: (bundle: unknown) => bundle,
   InlineCode: ({children}: {children?: ReactNode}) => <code>{children}</code>,
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) =>

@@ -2,7 +2,7 @@ import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {type ObjectSchemaType} from '@sanity/types'
 import {Heading, Inline} from '@sanity/ui'
 import {type MouseEvent} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {css, styled} from 'styled-components'
 import {Text, Box, PressArea, VStack} from 'ui5'
 

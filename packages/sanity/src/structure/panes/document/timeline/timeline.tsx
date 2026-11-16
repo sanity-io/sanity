@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {type Chunk, CommandList, LoadingBlock, useTranslation} from 'sanity'
+import {type Chunk, CommandList, LoadingBlock} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Box} from 'ui5'
 
 import {type CommandListRenderItemCallback} from '../../../../core/components/commandList/types'

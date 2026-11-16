@@ -4,8 +4,8 @@ import {
   type DocumentActionComponent,
   type DocumentActionDialogProps,
   useDocumentOperation,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {useRouter} from 'sanity/router'
 
 import {useDocumentOperationEvent} from '../../core/hooks/useDocumentOperationEvent'

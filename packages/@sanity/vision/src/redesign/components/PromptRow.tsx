@@ -2,7 +2,7 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {Button, TextInput} from '@sanity/ui'
 import {type KeyboardEvent} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../i18n'

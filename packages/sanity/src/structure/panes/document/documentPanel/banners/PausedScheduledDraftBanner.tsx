@@ -1,5 +1,5 @@
 import {PauseIcon} from '@sanity/icons/Pause'
-import {Translate, useTranslation} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'

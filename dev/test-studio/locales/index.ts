@@ -1,4 +1,4 @@
-import {defineLocaleResourceBundle} from 'sanity'
+import {defineLocaleResourceBundle} from 'sanity/i18n'
 
 export const testStudioLocaleNamespace = 'testStudio' as const
 

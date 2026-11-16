@@ -1,6 +1,7 @@
 import {Button, Card, Stack} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {type Schema, useSchema, useTranslation} from 'sanity'
+import {type Schema, useSchema} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'

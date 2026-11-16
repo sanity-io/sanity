@@ -45,6 +45,7 @@ const PUBLIC_ENTRIES = {
   'sanity/structure': 'structure.d.ts',
   'sanity/router': 'router.d.ts',
   'sanity/presentation': 'presentation.d.ts',
+  'sanity/i18n': 'i18n.d.ts',
 }
 
 /**

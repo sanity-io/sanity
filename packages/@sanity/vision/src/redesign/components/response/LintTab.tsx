@@ -1,5 +1,6 @@
 import {Badge, Card, Stack} from '@sanity/ui'
-import {InlineCode, type TFunction, useTranslation} from 'sanity'
+import {type TFunction} from 'sanity'
+import {InlineCode, useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'

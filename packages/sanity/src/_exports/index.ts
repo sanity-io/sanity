@@ -774,21 +774,16 @@ export {useValidationStatus} from '../core/hooks/useValidationStatus'
 export {useWorkspaceSchemaId} from '../core/hooks/useWorkspaceSchemaId'
 export {type StudioLocaleResourceKeys} from '../core/i18n/bundles/studio'
 export {type ValidationLocaleResourceKeys} from '../core/i18n/bundles/validation'
-export {InlineCode} from '../core/i18n/components/InlineCode'
 export {
-  defineLocale,
-  defineLocaleResourceBundle, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   defineLocalesResources,
-  removeUndefinedLocaleResources,
 } from '../core/i18n/helpers'
 export {type I18nNode} from '../core/i18n/hooks/useI18nText'
-export {useCurrentLocale} from '../core/i18n/hooks/useLocale'
 export {
-  useTranslation,
   type UseTranslationOptions,
   type UseTranslationResponse,
 } from '../core/i18n/hooks/useTranslation'
-export {Translate, type TranslateComponentMap, type TranslationProps} from '../core/i18n/Translate'
+export {type TranslateComponentMap, type TranslationProps} from '../core/i18n/Translate'
 export {
   type ImplicitLocaleResourceBundle,
   type Locale,

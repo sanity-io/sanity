@@ -5,11 +5,10 @@ import {
   CopyPasteProvider,
   getDefaultVariant,
   getPublishedId,
-  Translate,
   usePerspective,
   useSource,
-  useTranslation,
 } from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, VStack} from 'ui5'
 
 import {ReferenceInputOptionsProvider} from '../../../core/form/studio/contexts/ReferenceInputOptions'

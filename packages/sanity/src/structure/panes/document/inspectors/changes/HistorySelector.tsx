@@ -2,7 +2,8 @@
 import {BoundaryElementProvider, Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
-import {type Chunk, usePerspective, useTranslation} from 'sanity'
+import {type Chunk, usePerspective} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Flex} from 'ui5'
 
 import {ScrollContainer} from '../../../../../core/components/scroll/scrollContainer'

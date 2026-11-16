@@ -7,13 +7,8 @@ import {type ComponentType, memo, useCallback, useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {distinctUntilChanged, map} from 'rxjs/operators'
-import {
-  type EditStateFor,
-  getPublishedId,
-  useDocumentStore,
-  usePerspective,
-  useTranslation,
-} from 'sanity'
+import {type EditStateFor, getPublishedId, useDocumentStore, usePerspective} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 
 import {useTargetScopeId} from '../../../../../core/hooks/useTargetScopeId'

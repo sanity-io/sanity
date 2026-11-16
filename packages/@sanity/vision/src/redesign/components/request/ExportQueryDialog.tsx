@@ -3,7 +3,7 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {Button, Card, Dialog, Stack, Tab, TabList, TabPanel} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useEffect, useMemo, useState} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'

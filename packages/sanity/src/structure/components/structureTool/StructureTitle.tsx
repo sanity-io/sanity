@@ -1,6 +1,6 @@
 import {type SanityDocument, type ObjectSchemaType} from '@sanity/types'
 import {useEffect} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {useValuePreview} from '../../../core/preview/useValuePreview'
 import {LOADING_PANE} from '../../constants'

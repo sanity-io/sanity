@@ -25,7 +25,6 @@ import {
   type PerspectiveStack,
   useClient,
   usePerspective,
-  useTranslation,
   useWorkspace,
 } from 'sanity'
 import {
@@ -36,6 +35,7 @@ import {
   useScheduledDraftsEnabled,
   VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {useTranslation} from 'sanity/i18n'
 import {Flex, Box} from 'ui5'
 
 import {API_VERSIONS, DEFAULT_API_VERSION, VARIANTS_API_VERSION} from '../apiVersions'

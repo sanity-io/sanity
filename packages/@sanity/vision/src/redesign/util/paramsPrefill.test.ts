@@ -5,12 +5,14 @@ import {type visionLocaleNamespace} from '../../i18n'
 import {addMissingParams, missingParamNames} from './paramsPrefill'
 
 // `missingParamNames` pulls in `parseParams` from the (React) ParamsEditor module, which
-// value-imports `useTranslation` from 'sanity' at module scope. Mocked for the same reason every
-// other @sanity/vision unit test mocks 'sanity': the real package index is heavy, and this test
+// value-imports `useTranslation` from 'sanity/i18n' at module scope. Mocked for the same reason
+// every other @sanity/vision unit test mocks 'sanity': the real package index is heavy, and this test
 // never calls useTranslation itself. `missingParamNames` is only ever handed a `t` it was given.
 vi.mock('sanity', () => ({
-  defineLocaleResourceBundle: (bundle: unknown) => bundle,
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+}))
+vi.mock('sanity/i18n', () => ({
+  defineLocaleResourceBundle: (bundle: unknown) => bundle,
   useTranslation: () => ({t: (key: string) => key}),
 }))
 

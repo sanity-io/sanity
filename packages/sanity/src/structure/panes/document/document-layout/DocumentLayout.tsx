@@ -2,12 +2,8 @@ import {DialogProvider, type DialogProviderProps, useElementSize} from '@sanity/
 import {clsx} from 'clsx'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ComponentProps, useCallback, useMemo, useState} from 'react'
-import {
-  type DocumentFieldActionNode,
-  type DocumentInspectorMenuItem,
-  type Path,
-  useTranslation,
-} from 'sanity'
+import {type DocumentFieldActionNode, type DocumentInspectorMenuItem, type Path} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {useRouter} from 'sanity/router'
 import {Flex} from 'ui5'
 

@@ -1,7 +1,7 @@
 import {Button, Stack} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useEffect, useEffectEvent} from 'react'
-import {useTranslation} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../i18n'

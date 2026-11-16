@@ -7,8 +7,8 @@ import {
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
-  useTranslation,
 } from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 
 import {
   getPairTarget,

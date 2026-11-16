@@ -1,13 +1,8 @@
 import {Card} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useState} from 'react'
-import {
-  getReferencePaths,
-  SanityDefaultPreview,
-  type SanityDocument,
-  useSchema,
-  useTranslation,
-} from 'sanity'
+import {getReferencePaths, SanityDefaultPreview, type SanityDocument, useSchema} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box} from 'ui5'
 
 import {structureLocaleNamespace} from '../../i18n'

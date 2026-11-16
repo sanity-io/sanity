@@ -1,4 +1,5 @@
-import {isRecord, Translate, useTranslation} from 'sanity'
+import {isRecord} from 'sanity'
+import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, Box} from 'ui5'
 
 import {Pane} from '../../components/pane/Pane'
