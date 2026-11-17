@@ -464,10 +464,16 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'publish-dialog.confirm-publish.update-drafts-review': 'Open a draft to see what would be lost:',
   /** Description for the dialog confirming the publish of a release with one document */
   'publish-dialog.confirm-publish-description_one':
-    'The document in this release will be published.',
+    'One document in this release will be published.',
   /** Description for the dialog confirming the publish of a release with multiple documents */
   'publish-dialog.confirm-publish-description_other':
-    'All {{releaseDocumentsLength}} documents in this release will be published.',
+    '{{releaseDocumentsLength}} documents in this release will be published.',
+  /** Line in the run release dialog when one document in the release is set to be unpublished */
+  'publish-dialog.confirm-unpublish-description_one':
+    'One document will be unpublished. Its content is kept as a draft.',
+  /** Line in the run release dialog when several documents in the release are set to be unpublished */
+  'publish-dialog.confirm-unpublish-description_other':
+    '{{count}} documents will be unpublished. Their content is kept as drafts.',
   /** Label for the button when the user doesn't have permissions to publish a release */
   'publish-dialog.validation.no-permission': 'You do not have permission to publish',
   /** Label for when documents are being validated */
