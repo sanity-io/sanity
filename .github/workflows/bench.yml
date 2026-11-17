@@ -80,14 +80,15 @@ jobs:
 
   build:
     needs: [listener-stall-changes]
-    # The labeled-event guard keeps unrelated label additions from re-running
+    # The labeled-event guards keep unrelated label additions from re-running
     # the whole suite (the label set still gates via contains()); bench-listener-stall
     # needs this job's bench-dist-customizations artifact without the label
     if: >-
       (github.event_name == 'pull_request' &&
        ((contains(github.event.pull_request.labels.*.name, 'trigger:perf-bench') &&
          (github.event.action != 'labeled' || github.event.label.name == 'trigger:perf-bench')) ||
-        needs.listener-stall-changes.outputs.has_changes == 'true')) ||
+        (needs.listener-stall-changes.outputs.has_changes == 'true' &&
+         github.event.action != 'labeled'))) ||
       github.event_name == 'workflow_dispatch' ||
       github.event_name == 'schedule'
     runs-on: ubuntu-8core
@@ -358,11 +359,14 @@ jobs:
     # The ab_to clause requires build-reference success: on the PR path a
     # broken reference falls back to absolute mode (comparison=skipped, job
     # green), but `prepare-reference --at` fails the job instead — benching
-    # on regardless would produce a comparison-less run wearing an A/B label
+    # on regardless would produce a comparison-less run wearing an A/B label.
+    # On PRs, build-reference carries the label gate; build also runs unlabelled
+    # for bench-listener-stall
     if: >-
       !cancelled() && needs.build.result == 'success' &&
       (inputs.ab_to == '' || needs.build-reference.result == 'success') &&
       ((github.event_name == 'pull_request' &&
+        needs.build-reference.result != 'skipped' &&
         needs.build.outputs.has_code_changes == 'true') ||
        (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
        (github.event_name == 'workflow_dispatch' && (inputs.run_suite || inputs.ab_to != '')))
@@ -468,11 +472,14 @@ jobs:
     # The ab_to clause requires build-reference success: on the PR path a
     # broken reference falls back to absolute mode (comparison=skipped, job
     # green), but `prepare-reference --at` fails the job instead — benching
-    # on regardless would produce a comparison-less run wearing an A/B label
+    # on regardless would produce a comparison-less run wearing an A/B label.
+    # On PRs, build-reference carries the label gate; build also runs unlabelled
+    # for bench-listener-stall
     if: >-
       !cancelled() && needs.build.result == 'success' &&
       (inputs.ab_to == '' || needs.build-reference.result == 'success') &&
       ((github.event_name == 'pull_request' &&
+        needs.build-reference.result != 'skipped' &&
         needs.build.outputs.has_code_changes == 'true') ||
        (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
        (github.event_name == 'workflow_dispatch' && (inputs.run_suite || inputs.ab_to != '')))
