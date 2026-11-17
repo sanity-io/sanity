@@ -89,6 +89,31 @@ export function getReleaseImpact(
 }
 
 /**
+ * Whether two releases that share a document group change the same content in it.
+ *
+ * In the planned model a member points at a lane of a group, and two releases that write
+ * different variants of one group leave each other's content alone. Today's members are all
+ * versions of the whole group, so any two of them collide. An unknown lane counts as colliding:
+ * a missed overwrite costs more than an extra hint.
+ *
+ * {@link findSharedGroups} keys by group only. When membership carries lanes, callers drop the
+ * pairs this returns `false` for.
+ *
+ * @internal
+ */
+export function lanesCollide(a?: ReleaseMemberLane, b?: ReleaseMemberLane): boolean {
+  if (a?.kind === 'variant' && b?.kind === 'variant') return a.variantId === b.variantId
+  // A variant lane and the Default draft lane hold different content in the planned model.
+  if (
+    (a?.kind === 'variant' && b?.kind === 'default-draft') ||
+    (a?.kind === 'default-draft' && b?.kind === 'variant')
+  ) {
+    return false
+  }
+  return true
+}
+
+/**
  * Groups that are members of more than one release, keyed by group id, with the ids of the
  * releases that contain each of them. Input is each release's member group ids.
  *

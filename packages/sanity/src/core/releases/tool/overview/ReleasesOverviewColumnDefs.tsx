@@ -20,6 +20,7 @@ import {ReleaseColumnValidationLoading} from './columnCells/ReleaseColumnValidat
 import {ReleaseDocumentsCounter} from './columnCells/ReleaseDocumentsCounter'
 import {ReleaseNameCell} from './columnCells/ReleaseName'
 import {ScheduledDraftVariantCell} from './columnCells/ScheduledDraftVariantCell'
+import {SharedDocumentsHint} from './columnCells/SharedDocumentsHint'
 import {type CardinalityView, type Mode} from './queryParamUtils'
 import {type TableRelease} from './ReleasesOverview'
 import {type ReleaseLabelMode} from './useReleaseLabelMode'
@@ -360,7 +361,10 @@ export const releasesOverviewColumnDefs: (
             <Headers.SortHeaderButton text={t('table-header.documents')} {...props} />
           </Flex>
         ),
-        cell: ({datum: {isDeleted, state, finalDocumentStates, documentsMetadata}, cellProps}) => (
+        cell: ({
+          datum: {isDeleted, state, finalDocumentStates, documentsMetadata, sharedDocumentCount},
+          cellProps,
+        }) => (
           <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3} gap={2}>
             {!isDeleted && (
               <ReleaseDocumentsCounter
@@ -371,6 +375,7 @@ export const releasesOverviewColumnDefs: (
                 }
               />
             )}
+            {!isDeleted && <SharedDocumentsHint count={sharedDocumentCount} />}
           </Flex>
         ),
       },

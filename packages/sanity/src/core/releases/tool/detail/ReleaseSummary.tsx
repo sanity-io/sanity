@@ -4,6 +4,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type CSSProperties, useCallback, useEffect, useMemo, useState} from 'react'
+import {OtherReleasesContext} from 'sanity/_singletons'
 import {Text, Container, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -17,6 +18,7 @@ import {useAllVariants} from '../../../variants/store/useAllVariants'
 import {AddedVersion} from '../../__telemetry__/releases.telemetry'
 import {useReleasesRedesign} from '../../hooks/useReleasesRedesign'
 import {releasesLocaleNamespace} from '../../i18n'
+import {getOtherReleases, useSharedReleaseGroups} from '../../model/releaseMemberGroups'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {DocumentTable} from '../components/Table/DocumentTable'
@@ -110,6 +112,13 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
       )
     },
     [release.metadata.title, release.state, releaseId, rowVersionType],
+  )
+
+  // Documents this release shares with other active releases: whichever runs last overwrites.
+  const {sharedGroups, releasesById} = useSharedReleaseGroups()
+  const getOtherReleasesForGroup = useCallback(
+    (groupId: string) => getOtherReleases(sharedGroups, releasesById, groupId, release._id),
+    [sharedGroups, releasesById, release._id],
   )
 
   const documentTableColumnDefs = useMemo(
@@ -285,77 +294,79 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
     (isLoading || tableData.length > 0)
 
   return (
-    <Flex flexDirection="column" style={FULL_HEIGHT_STYLE}>
-      {redesign ? (
-        <DocumentTable<DocumentInReleaseDetail>
-          alwaysShowCommandLane
-          columnDefs={documentTableColumnDefs}
-          defaultSort={{column: 'search', direction: 'asc'}}
-          emptyState={t('summary.no-documents')}
-          commandLaneActions={commandLaneActions}
-          filterTabs={
-            showFilterTabs ? (
-              <ReleaseDocumentFilterTabs
-                activeFilter={activeFilter}
-                documents={tableData}
-                inline
-                isLoading={isLoading}
-                onFilterChange={setActiveFilter}
-                releaseState={release.state}
-              />
-            ) : undefined
-          }
-          getRowKey={(row) => row.document._id}
-          id="document-table-card"
-          loading={isLoading}
-          rowActions={renderRowActions}
-          rows={filterTabRows}
-          // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
-          rowId="document._id"
-          searchPlaceholder={t('search-documents-placeholder')}
-          searchPredicate={(row, searchTerm) => searchDocumentRelease(row.document, searchTerm)}
-          searchTestId="release-documents-search"
-        />
-      ) : (
-        <>
-          <ReleaseDocumentFilterTabs
-            documents={tableData}
-            releaseState={release.state}
-            isLoading={isLoading}
-            activeFilter={activeFilter}
-            onFilterChange={setActiveFilter}
+    <OtherReleasesContext.Provider value={getOtherReleasesForGroup}>
+      <Flex flexDirection="column" style={FULL_HEIGHT_STYLE}>
+        {redesign ? (
+          <DocumentTable<DocumentInReleaseDetail>
+            alwaysShowCommandLane
+            columnDefs={documentTableColumnDefs}
+            defaultSort={{column: 'search', direction: 'asc'}}
+            emptyState={t('summary.no-documents')}
+            commandLaneActions={commandLaneActions}
+            filterTabs={
+              showFilterTabs ? (
+                <ReleaseDocumentFilterTabs
+                  activeFilter={activeFilter}
+                  documents={tableData}
+                  inline
+                  isLoading={isLoading}
+                  onFilterChange={setActiveFilter}
+                  releaseState={release.state}
+                />
+              ) : undefined
+            }
+            getRowKey={(row) => row.document._id}
+            id="document-table-card"
+            loading={isLoading}
+            rowActions={renderRowActions}
+            rows={filterTabRows}
+            // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
+            rowId="document._id"
+            searchPlaceholder={t('search-documents-placeholder')}
+            searchPredicate={(row, searchTerm) => searchDocumentRelease(row.document, searchTerm)}
+            searchTestId="release-documents-search"
           />
-          <Card
-            ref={setScrollContainerRef}
-            data-testid="document-table-card"
-            flex={1}
-            borderTop
-            style={SCROLL_CONTAINER_STYLE}
-          >
-            <div style={FIT_CONTENT_STYLE}>
-              <Table<DocumentInReleaseDetail>
-                loading={isLoading}
-                data={tableData}
-                emptyState={t('summary.no-documents')}
-                // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
-                rowId="document._id"
-                columnDefs={documentTableColumnDefs}
-                rowActions={renderRowActions}
-                searchFilter={filterRows}
-                scrollContainerRef={scrollContainerRef}
-                defaultSort={{column: 'search', direction: 'asc'}}
-              />
-            </div>
-          </Card>
-          {addDocumentFooter}
-        </>
-      )}
-      <AddDocumentSearch
-        open={openAddDocumentDialog}
-        onClose={closeAddDialog}
-        releaseId={releaseId}
-        idsInRelease={documents.map(({document}) => document._id)}
-      />
-    </Flex>
+        ) : (
+          <>
+            <ReleaseDocumentFilterTabs
+              documents={tableData}
+              releaseState={release.state}
+              isLoading={isLoading}
+              activeFilter={activeFilter}
+              onFilterChange={setActiveFilter}
+            />
+            <Card
+              ref={setScrollContainerRef}
+              data-testid="document-table-card"
+              flex={1}
+              borderTop
+              style={SCROLL_CONTAINER_STYLE}
+            >
+              <div style={FIT_CONTENT_STYLE}>
+                <Table<DocumentInReleaseDetail>
+                  loading={isLoading}
+                  data={tableData}
+                  emptyState={t('summary.no-documents')}
+                  // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
+                  rowId="document._id"
+                  columnDefs={documentTableColumnDefs}
+                  rowActions={renderRowActions}
+                  searchFilter={filterRows}
+                  scrollContainerRef={scrollContainerRef}
+                  defaultSort={{column: 'search', direction: 'asc'}}
+                />
+              </div>
+            </Card>
+            {addDocumentFooter}
+          </>
+        )}
+        <AddDocumentSearch
+          open={openAddDocumentDialog}
+          onClose={closeAddDialog}
+          releaseId={releaseId}
+          idsInRelease={documents.map(({document}) => document._id)}
+        />
+      </Flex>
+    </OtherReleasesContext.Provider>
   )
 }
