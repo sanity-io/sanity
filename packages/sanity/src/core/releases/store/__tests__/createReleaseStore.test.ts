@@ -2,6 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {defer, of, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {LISTENER_RESET_DELAY} from '../../../preview/constants'
 import {createGlobalListenerStore} from '../../../store/globalListener/createGlobalListenerStore'
 import {createVariantsStore} from '../../../variants/store/createVariantsStore'
 import {activeASAPRelease, activeScheduledRelease} from '../../__fixtures__/release.fixture'
@@ -39,6 +40,12 @@ async function flushScheduled() {
   // Fake timers only flush that work once the clock moves.
   await vi.advanceTimersByTimeAsync(1)
 }
+
+/**
+ * `state$` holds the global listener for its own grace, and the global listener then holds the
+ * socket for {@link LISTENER_RESET_DELAY}. The connection is gone only after both have elapsed.
+ */
+const LISTENER_RELEASE_DELAY = 5_000 + LISTENER_RESET_DELAY
 
 describe('createReleaseStore', () => {
   beforeEach(() => {
@@ -105,5 +112,49 @@ describe('createReleaseStore', () => {
     expect(connections).toEqual(['*'])
 
     subscriptions.forEach((subscription) => subscription.unsubscribe())
+  })
+
+  it('keeps the listener through a brief resubscribe and releases it once nobody is left', async () => {
+    const {client, connections, listener$} = createMockClient()
+    const store = createReleaseStore({
+      client,
+      globalListenerStore: createGlobalListenerStore({client}),
+    })
+
+    const first = store.state$.subscribe()
+    listener$.next({type: 'welcome'})
+    await flushScheduled()
+    expect(listener$.observed).toBe(true)
+
+    // A consumer that remounts within the grace period finds the same listener
+    first.unsubscribe()
+    await vi.advanceTimersByTimeAsync(1000)
+    const second = store.state$.subscribe()
+    expect(connections).toEqual(['*'])
+
+    // A workspace that was switched away from has no consumer left, so its
+    // listener must not outlive the store's grace plus the global listener's
+    second.unsubscribe()
+    await vi.advanceTimersByTimeAsync(LISTENER_RELEASE_DELAY - 1)
+    expect(listener$.observed).toBe(true)
+    await vi.advanceTimersByTimeAsync(1)
+    expect(listener$.observed).toBe(false)
+  })
+
+  it('does not let an errorCount$ consumer prolong the listener beyond the grace period', async () => {
+    const {client, listener$} = createMockClient()
+    const store = createReleaseStore({
+      client,
+      globalListenerStore: createGlobalListenerStore({client}),
+    })
+
+    const subscription = store.errorCount$.subscribe()
+    listener$.next({type: 'welcome'})
+    await flushScheduled()
+    expect(listener$.observed).toBe(true)
+
+    subscription.unsubscribe()
+    await vi.advanceTimersByTimeAsync(LISTENER_RELEASE_DELAY)
+    expect(listener$.observed).toBe(false)
   })
 })
