@@ -72,24 +72,8 @@ function invalidSessionError(projectId: string): ClientError {
   } as never)
 }
 
-type SourceEntry = WorkspaceSummary['__internal']['sources'][number]
-
-function source(projectId: string, logout: () => Promise<void>): SourceEntry {
-  return {projectId, auth: {logout} as AuthStore} as SourceEntry
-}
-
-function workspace(
-  projectId: string,
-  logout: () => Promise<void>,
-  nestedSources: SourceEntry[] = [],
-): WorkspaceSummary {
-  const root = source(projectId, logout)
-  return {
-    projectId,
-    auth: root.auth,
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    __internal: {sources: [root, ...nestedSources]},
-  } as WorkspaceSummary
+function workspace(projectId: string, logout: () => Promise<void>): WorkspaceSummary {
+  return {projectId, auth: {logout} as AuthStore} as WorkspaceSummary
 }
 
 function renderProvider() {
@@ -147,18 +131,6 @@ describe('WorkspacesProvider forced logout', () => {
     await waitFor(() => expect(oauthLogout).toHaveBeenCalledTimes(1))
     expect(legacyLogout).not.toHaveBeenCalled()
     harness.claimAuthStore = undefined
-  })
-
-  it('logs out a nested source whose project differs from every root workspace', async () => {
-    const rootLogout = vi.fn(() => Promise.resolve())
-    const nestedLogout = vi.fn(() => Promise.resolve())
-    harness.workspaces = [workspace('rootproj', rootLogout, [source('nestedproj', nestedLogout)])]
-    harness.claimProjectId = 'nestedproj'
-
-    renderProvider()
-
-    await waitFor(() => expect(nestedLogout).toHaveBeenCalledTimes(1))
-    expect(rootLogout).not.toHaveBeenCalled()
   })
 
   it('does not log out again when a CORS takeover unmounts and remounts the claim provider', async () => {

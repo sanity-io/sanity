@@ -1,4 +1,5 @@
 import {buildTheme} from '@sanity/ui/theme'
+import {NEVER} from 'rxjs'
 
 import {type Workspace, type WorkspaceSummary} from '../../../config/types'
 
@@ -32,7 +33,7 @@ export function createWorkspaceSummary(
     scheduledPublishing: workspace.scheduledPublishing,
     releases: {enabled: false},
     // oxlint-disable-next-line no-deprecated -- required field on WorkspaceSummary
-    __internal: {sources: []},
+    __internal: {source: NEVER},
     ...overrides,
   }
 }

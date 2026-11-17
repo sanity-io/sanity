@@ -17,9 +17,8 @@ interface SingleDocReleaseEnabledProviderProps {
 
 export function SingleDocReleaseEnabledProvider({children}: SingleDocReleaseEnabledProviderProps) {
   const {enabled: featureEnabled, isLoading, error} = useFeatureEnabled(FEATURES.singleDocRelease)
-  // `scheduledDrafts` is a per-source option while the default plugins are added to every source
-  // from the root workspace's options, so a nested source that opted out still loads this plugin
-  // and the source's own resolved flag has to be checked here
+  // `scheduledDrafts` is a plugin option, so a plugin can turn it off after the workspace config
+  // turned it on; the source's resolved flag is the one to check
   const isWorkspaceEnabled = useScheduledDraftsEnabled()
 
   const value: SingleDocReleaseEnabledContextValue = useMemo(() => {

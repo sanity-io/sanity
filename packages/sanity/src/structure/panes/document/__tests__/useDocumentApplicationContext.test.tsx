@@ -47,6 +47,7 @@ beforeAll(async () => {
 })
 
 function OtherSource({children}: {children: ReactNode}) {
+  // oxlint-disable-next-line no-deprecated -- the workspace's only source; core's helper is out of reach here
   const [rootSource] = useWorkspace().unstable_sources
   return (
     <SourceProvider source={{...rootSource, projectId: 'other-project', dataset: 'other-dataset'}}>

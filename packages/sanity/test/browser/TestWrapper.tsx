@@ -23,6 +23,7 @@ import {
   WorkspaceProvider,
 } from 'sanity'
 
+import {getWorkspaceSource} from '../../src/core/config/workspaceSource'
 import {AssetLimitUpsellProvider} from '../../src/core/limits/context/assets/AssetLimitUpsellProvider'
 import {PerspectiveProvider} from '../../src/core/perspective/PerspectiveProvider'
 import {route} from '../../src/router/route'
@@ -133,7 +134,7 @@ const TestWrapperContents = (
           <LayerProvider>
             <WorkspaceProvider workspace={mockWorkspace}>
               <ResourceCacheProvider>
-                <SourceProvider source={mockWorkspace.unstable_sources[0]}>
+                <SourceProvider source={getWorkspaceSource(mockWorkspace)}>
                   <AssetLimitUpsellProvider>
                     <CopyPasteProvider>
                       <ColorSchemeProvider>

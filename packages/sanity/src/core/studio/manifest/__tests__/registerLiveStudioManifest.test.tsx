@@ -100,15 +100,7 @@ describe('registerStudioManifest', () => {
       mediaLibrary,
       auth: mockAuth,
       __internal: {
-        sources: [
-          {
-            name,
-            projectId,
-            dataset,
-            title,
-            source: of(mockSource),
-          },
-        ],
+        source: of(mockSource),
       },
     } as unknown as WorkspaceSummary
   }
@@ -269,20 +261,6 @@ describe('registerStudioManifest', () => {
       const callArgs = mockRequest.mock.calls[0][0]
       expect(callArgs.body.value.workspaces).toHaveLength(1)
       expect(callArgs.body.value.workspaces[0].name).toBe('valid')
-    })
-  })
-
-  describe('workspace source resolution', () => {
-    it('should handle workspace with no sources', async () => {
-      const workspace = createMockWorkspace()
-      // Override to have empty sources
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      workspace.__internal.sources = []
-
-      await registerStudioManifest(mockUserApplication, [workspace], mockTheme)
-
-      // Should skip since no source means no schemaDescriptorId
-      expect(mockRequest).not.toHaveBeenCalled()
     })
   })
 

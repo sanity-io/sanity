@@ -283,32 +283,6 @@ describe('prepareConfig — schema error context', () => {
     })
   })
 
-  it('distinguishes a nested source from its workspace', () => {
-    const error = captureSchemaError([
-      createWorkspace({
-        name: 'broken',
-        basePath: '/broken',
-        projectId: 'riot',
-        dataset: 'live',
-        unstable_sources: [
-          {
-            name: 'secondary',
-            projectId: 'riot',
-            dataset: 'archive',
-            schema: {types: brokenSchemaTypes},
-          },
-        ],
-      }),
-    ])
-
-    expect(error.context).toEqual({
-      workspaceName: 'broken',
-      sourceName: 'secondary',
-      projectId: 'riot',
-      dataset: 'archive',
-    })
-  })
-
   it('falls back to "default" for an unnamed workspace', () => {
     const error = captureSchemaError([
       {
@@ -325,5 +299,65 @@ describe('prepareConfig — schema error context', () => {
       projectId: 'riot',
       dataset: 'live',
     })
+  })
+})
+
+describe('prepareConfig — nested sources', () => {
+  let consoleWarnSpy: ReturnType<typeof vi.spyOn>
+
+  beforeEach(() => {
+    consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    consoleWarnSpy.mockRestore()
+  })
+
+  it('ignores nested sources and warns about them', () => {
+    const workspace = createWorkspace({
+      name: 'with-nested',
+      projectId: 'root-project',
+      dataset: 'root-dataset',
+      // oxlint-disable-next-line no-deprecated -- the deprecated option under test
+      unstable_sources: [
+        {
+          name: 'secondary',
+          projectId: 'other-project',
+          dataset: 'other-dataset',
+          // Fails to compile, so this throws if the nested source is resolved
+          schema: {
+            types: [
+              {
+                type: 'document',
+                name: 'orphan',
+                fields: [{name: 'ref', type: 'reference', to: [{type: 'missing'}]}],
+              },
+            ],
+          },
+        },
+      ],
+    })
+
+    const {workspaces} = prepareConfig([workspace])
+
+    expect(workspaces).toHaveLength(1)
+    expect(workspaces[0]).toMatchObject({
+      name: 'with-nested',
+      projectId: 'root-project',
+      dataset: 'root-dataset',
+    })
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Workspace "with-nested" sets `unstable_sources`'),
+    )
+  })
+
+  it('does not warn when a workspace has no nested sources', () => {
+    prepareConfig([
+      createWorkspace({name: 'plain', basePath: '/plain'}),
+      // oxlint-disable-next-line no-deprecated -- the deprecated option under test
+      createWorkspace({name: 'empty-list', basePath: '/empty', unstable_sources: []}),
+    ])
+
+    expect(consoleWarnSpy).not.toHaveBeenCalledWith(expect.stringContaining('unstable_sources'))
   })
 })

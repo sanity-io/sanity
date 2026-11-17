@@ -7,6 +7,7 @@ import {page} from 'vitest/browser'
 import {testHelpers} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {createMockSanityClientAsClient} from '../../../../../test/mocks/mockSanityClient'
+import {getWorkspaceSource} from '../../../config/workspaceSource'
 import {LocaleProvider} from '../../../i18n/components/LocaleProvider'
 import {clearUnclaimedProjectSnooze} from '../../../store/auth/legacy/unclaimedProjectStorage'
 import {SourceProvider} from '../../source'
@@ -61,7 +62,7 @@ afterEach(() => {
  */
 function UnclaimedProjectNudgeHarness({state}: {state: UnclaimedProjectState}) {
   const workspace = useWorkspace()
-  const source = workspace.unstable_sources[0]
+  const source = getWorkspaceSource(workspace)
   const [copyClient] = useState(() =>
     createMockSanityClientAsClient({requests: {'/journey/unclaimed-project': COPY}}),
   )

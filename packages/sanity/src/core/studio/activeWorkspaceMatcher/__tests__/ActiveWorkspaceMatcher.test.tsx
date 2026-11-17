@@ -2,6 +2,7 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {createMemoryHistory} from 'history'
 import {type ReactNode} from 'react'
+import {NEVER} from 'rxjs'
 import {VisibleWorkspacesContext, WorkspacesContext} from 'sanity/_singletons'
 import {describe, expect, it, vi} from 'vitest'
 
@@ -49,7 +50,7 @@ function createWorkspace(
     customIcon: false,
     auth: {state: {subscribe: vi.fn(), pipe: vi.fn()}} as unknown as WorkspaceSummary['auth'],
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    __internal: {sources: []},
+    __internal: {source: NEVER},
     ...rest,
   } as WorkspaceSummary
 }

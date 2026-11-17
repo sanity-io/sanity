@@ -11,6 +11,7 @@ import {page, server} from 'vitest/browser'
 import {testHelpers} from '../../../../../test/browser/testHelpers'
 import {Button} from '../../../../ui-components/button/Button'
 import {type WorkspaceSummary} from '../../../config/types'
+import {getWorkspaceSource} from '../../../config/workspaceSource'
 import {FormValueProvider} from '../../../form/contexts/FormValue'
 import {type ObjectFieldProps} from '../../../form/types/fieldProps'
 import {type ObjectInputProps, type StringInputProps} from '../../../form/types/inputProps'
@@ -191,7 +192,7 @@ const CREATE_TASK = taskDocument({
 
 function TargetWorkspaceBridge(props: {children: ReactNode}) {
   const workspace = useWorkspace()
-  const rootSource = workspace.unstable_sources[0]
+  const rootSource = getWorkspaceSource(workspace)
   const history = useMemo(() => createMemoryHistory({initialEntries: ['/']}), [])
   const activeWorkspace = useMemo(
     () =>

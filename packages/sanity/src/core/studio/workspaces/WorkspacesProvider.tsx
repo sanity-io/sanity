@@ -295,13 +295,7 @@ function findAuthStoreForProject(
   workspaces: WorkspaceSummary[],
   projectId: string,
 ): AuthStore | undefined {
-  for (const workspace of workspaces) {
-    // The first entry is the root source, so this also covers `ws.projectId`.
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    const source = workspace.__internal.sources.find((s) => s.projectId === projectId)
-    if (source) return source.auth
-  }
-  return undefined
+  return workspaces.find((workspace) => workspace.projectId === projectId)?.auth
 }
 
 function WorkspacesClaimProvider({
@@ -347,9 +341,6 @@ function WorkspacesClaimProvider({
       // project have different stores (an OAuth workspace keeps its own
       // session). Otherwise, the first source matching the projectId: legacy
       // sessions are project-scoped, so any of them has the right logout.
-      // Nested `unstable_sources` can point at another project, and
-      // `prepareConfig` wires this channel into their auth stores too, so
-      // the search covers every source, not only the root one.
       const auth =
         unauthorizedClaim.authStore ??
         (unauthorizedClaim.projectId

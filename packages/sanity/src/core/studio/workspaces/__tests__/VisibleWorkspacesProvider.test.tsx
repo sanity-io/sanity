@@ -1,6 +1,6 @@
 import {act, renderHook} from '@testing-library/react'
 import {type ReactNode} from 'react'
-import {BehaviorSubject, Subject} from 'rxjs'
+import {BehaviorSubject, NEVER, Subject} from 'rxjs'
 import {WorkspacesContext} from 'sanity/_singletons'
 import {describe, expect, it} from 'vitest'
 
@@ -64,7 +64,7 @@ function createWorkspace(options: {
     icon: null,
     customIcon: false,
     auth: {state: subject.asObservable()} as unknown as WorkspaceSummary['auth'],
-    __internal: {sources: []},
+    __internal: {source: NEVER},
   } as unknown as WorkspaceSummary
 
   return Object.assign(workspace, {authSubscriptionCount: () => count})
