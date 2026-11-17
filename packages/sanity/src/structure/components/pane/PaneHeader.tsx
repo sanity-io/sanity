@@ -89,6 +89,7 @@ export function PaneHeader(props: PaneHeaderProps & RefAttributes<HTMLDivElement
 
                 <TitleCard
                   __unstable_focusRing
+                  data-pane-header-title=""
                   flex={1}
                   onClick={handleTitleClick}
                   paddingLeft={backButton ? 1 : 2}
