@@ -294,11 +294,10 @@ export interface BaseIntentParams {
   template?: string
 
   /**
-   * Experimental field path
-   *
-   * @beta
-   * @experimental
-   * @hidden
+   * Path to the field to focus when an `edit` intent opens the document, as a string in
+   * the format of `toString` from `@sanity/util/paths`, for example `title` or
+   * `body[_key=="a1b2c3"].children`. Array items are best selected by `_key`, which keeps
+   * pointing at the same item after the array is reordered.
    */
   path?: string
 
