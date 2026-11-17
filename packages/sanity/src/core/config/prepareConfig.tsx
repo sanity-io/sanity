@@ -1,4 +1,5 @@
 import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
+import {isSystemDocumentTypeName} from '@sanity/schema/_internal'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
@@ -29,7 +30,6 @@ import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
 import {resolveListenerCountingFetch} from '../network/listenerCount'
 import {acceptReleaseMetadataFields} from '../releases/metadata/compileReleaseMetadataType'
-import {RELEASE_DOCUMENT_TYPE} from '../releases/store/constants'
 import {createSchema} from '../schema/createSchema'
 import {createLegacyAuthStore} from '../store/auth/legacy/createLegacyAuthStore'
 import {type AuthStore} from '../store/auth/types'
@@ -733,7 +733,9 @@ function resolveSource({
       reducer: schemaTemplatesReducer,
       initialValue: schema
         .getTypeNames()
-        .filter((typeName) => !typeName.startsWith('sanity.') && typeName !== RELEASE_DOCUMENT_TYPE)
+        .filter(
+          (typeName) => !typeName.startsWith('sanity.') && !isSystemDocumentTypeName(typeName),
+        )
         .map((typeName) => schema.get(typeName))
         .filter(isNonNullable)
         .filter((schemaType) => schemaType.type?.name === 'document')
@@ -993,8 +995,8 @@ function resolveSource({
     i18n: i18n.source,
     document: {
       actions: (partialContext) => {
-        // Releases are written through `sanity.action.release.*`, not document actions.
-        if (partialContext.schemaType === RELEASE_DOCUMENT_TYPE) return []
+        // System documents are written through their own actions API, not document actions.
+        if (isSystemDocumentTypeName(partialContext.schemaType)) return []
 
         const singleton = getSingletonId(partialContext.documentId, partialContext.schemaType)
         const resolvedActions = resolveConfigProperty({
