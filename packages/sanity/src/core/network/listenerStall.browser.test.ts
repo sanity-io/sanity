@@ -49,9 +49,10 @@ function delay(ms: number): Promise<void> {
 
 async function isLockStalled(tabId: string): Promise<boolean> {
   const {held = []} = await navigator.locks.query()
-  return held.some(
-    (lock) => parseStudioTabLock(lock.name ?? '')?.tabId === tabId && lock.name?.endsWith(':s'),
-  )
+  return held.some((lock) => {
+    const tabLock = parseStudioTabLock(lock.name ?? '')
+    return tabLock?.tabId === tabId && tabLock.isStalled
+  })
 }
 
 afterEach(async () => {

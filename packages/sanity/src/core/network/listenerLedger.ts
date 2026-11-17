@@ -1,7 +1,6 @@
 import {hostMatchesScope} from './listenerCount'
 import {getStudioTabId, parseStudioTabLock} from './studioTabs'
 
-const STALLED_SUFFIX = ':s'
 const OLD_TAB_LOCK_PREFIX = 'sanity-studio-tab:'
 
 /** @internal */
@@ -59,9 +58,7 @@ export async function snapshot(host: string): Promise<LedgerSnapshot | undefined
 function entryForLock(lockName: string, host: string): LedgerTab[] {
   const tabLock = parseStudioTabLock(lockName)
   if (!tabLock || !hostMatchesScope(host, tabLock.scope)) return []
-  return [
-    {tabId: tabLock.tabId, count: tabLock.count, isStalled: lockName.endsWith(STALLED_SUFFIX)},
-  ]
+  return [{tabId: tabLock.tabId, count: tabLock.count, isStalled: tabLock.isStalled}]
 }
 
 // Both of a tab's lock names are briefly held while it swaps (the overlap rule in
