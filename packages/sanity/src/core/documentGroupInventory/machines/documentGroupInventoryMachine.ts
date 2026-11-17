@@ -15,6 +15,7 @@ import {type TargetPerspective} from '../../perspective/types'
 import {type DocumentPerspectiveState} from '../../releases/hooks/useDocumentVersions'
 import {type ReleasesReducerState} from '../../releases/store/reducer'
 import {type AgentBundlesState} from '../../store/agent/createAgentBundlesStore'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {type VariantStoreState} from '../../variants/store/reducer'
 import {computeSets} from '../utils/computeSets'
 import {type deletionMachine} from './deletionMachine'
@@ -154,6 +155,23 @@ export const documentGroupInventoryMachine = setup({
               variants: context.sets.flatMap((set) => set.variants),
               loaded: metaIsSettled(meta),
             } as const
+          },
+        ),
+        sendTo(
+          ({context}) => context.deletionRef,
+          ({context}) => {
+            const versions = context.sets.flatMap((set) => set.variants)
+            return {
+              type: 'versions.changed' as const,
+              versionIds: versions.map(({id}) => id),
+              variantIds: [
+                ...new Set(
+                  versions
+                    .map(({document}) => getDocumentVersionVariantId(document))
+                    .filter((variantId) => typeof variantId === 'string'),
+                ),
+              ],
+            }
           },
         ),
       ],

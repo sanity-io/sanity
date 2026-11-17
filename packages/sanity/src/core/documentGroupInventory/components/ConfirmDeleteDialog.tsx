@@ -1,13 +1,13 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {UnknownIcon} from '@sanity/icons/Unknown'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {getPublishedId} from '@sanity/id-utils'
 import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
-import {type ComponentType, type ReactNode, useCallback, useMemo} from 'react'
+import {type ComponentType, type ReactNode, useCallback, useId, useMemo} from 'react'
 import {Text, VStack, Box, Flex, Icon} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
@@ -17,17 +17,24 @@ import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {Translate} from '../../i18n/Translate'
+import {type TFunction} from '../../i18n/types'
+import {type TargetPerspective} from '../../perspective/types'
 import {SanityDefaultPreview} from '../../preview/components/SanityDefaultPreview'
+import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
+import {getReleaseTone} from '../../releases/util/getReleaseTone'
+import {type SystemBundle} from '../../util/draftUtils'
+import {readVersionType} from '../../util/versionsUtils'
 import {
   type CrossDatasetReferences,
   type deletionMachine,
   type InternalReferences,
 } from '../machines/deletionMachine'
-import {type selectionMachine} from '../machines/selectionMachine'
+import {type selectionMachine, type Variant} from '../machines/selectionMachine'
 import {
   type DocumentGroupInventoryComponents,
   type DocumentGroupInventoryReferencePreviewLinkProps,
 } from '../types'
+import {type DeletionDescription, describeDeletion} from '../utils/describeDeletion'
 import {
   ChevronWrapper,
   CrossDatasetReferencesDetails,
@@ -36,6 +43,9 @@ import {
   OtherReferenceCount,
   Table,
 } from './ConfirmDeleteDialog.styles'
+
+const PUBLISHED: SystemBundle = 'published'
+const DRAFTS: SystemBundle = 'drafts'
 
 const EMPTY_INTERNAL_REFERENCES: InternalReferences = {totalCount: 0, references: []}
 const EMPTY_CROSS_DATASET_REFERENCES: CrossDatasetReferences = {totalCount: 0, references: []}
@@ -62,9 +72,12 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
   components,
 }) => {
   const {t} = useTranslation(studioLocaleNamespace)
-  const {DocTitle, ReferencePreviewLink, VersionsPreviewList} = components
+  const {DocTitle, ReferencePreviewLink} = components
+  const blockedReasonId = useId()
 
-  const variantIds = useSelector(selectionRef, ({context}) => context.selectedIds)
+  const selectedIdSet = useSelector(selectionRef, ({context}) => context.selectedIds)
+  const variants = useSelector(selectionRef, ({context}) => context.variants)
+  const variantIds = useSelector(deletionRef, ({context}) => context.variantIds)
 
   const internalReferences =
     useSelector(deletionRef, ({context}) => context.internalReferences) ?? EMPTY_INTERNAL_REFERENCES
@@ -92,9 +105,31 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
   const canConfirmDeletion = useSelector(deletionRef, (snapshot) =>
     snapshot.can({type: 'delete.confirm'}),
   )
+  const canConfirmDeletionExcludingPublished = useSelector(deletionRef, (snapshot) =>
+    snapshot.can({type: 'delete.confirmExcludingPublished'}),
+  )
 
-  const subjectCount = variantIds.size
-  const subject = t('document-group.subject.version', {count: subjectCount})
+  const selectedIds = [...selectedIdSet]
+  const description = describeDeletion({selectedIds, variantIds})
+  const {deletableIds, blockedIds} = description
+  const isDefaultBlocked = blockedIds.length > 0
+
+  const header = getHeader({t, description, selectedCount: selectedIds.length})
+
+  const confirmButton = isDefaultBlocked
+    ? {
+        text:
+          deletableIds.length > 0
+            ? t('document-group.delete.confirm-count-button.text', {count: deletableIds.length})
+            : t('document-group.delete.confirm-button.text'),
+        onClick: () => deletionRef.send({type: 'delete.confirmExcludingPublished'}),
+        disabled: !canConfirmDeletionExcludingPublished,
+      }
+    : {
+        text: t('document-group.delete.confirm-count-button.text', {count: deletableIds.length}),
+        onClick: () => deletionRef.send({type: 'delete.confirm'}),
+        disabled: !canConfirmDeletion,
+      }
 
   const totalCount = internalReferences.totalCount + crossDatasetReferences.totalCount
 
@@ -110,21 +145,27 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
     />
   )
 
+  const variantsById = new Map(variants.map((variant) => [variant.id, variant]))
+
   return (
     <Dialog
       id="confirmVariantDeletion"
       width={1}
+      // The dialog would focus its first focusable element, the close button. Cancel takes the
+      // initial focus instead (below), so Enter never deletes by accident.
+      __unstable_autoFocus={false}
       portal={portalElementName}
-      header={t('document-group.delete.title', {count: subjectCount, subject})}
+      header={header}
       footer={{
         cancelButton: {
           onClick: () => deletionRef.send({type: 'delete.cancel'}),
           text: t('document-group.delete.cancel-button.text'),
+          autoFocus: true,
         },
         confirmButton: {
-          text: t('document-group.delete.confirm-button.text'),
-          onClick: () => deletionRef.send({type: 'delete.confirm'}),
-          disabled: !canConfirmDeletion,
+          ...confirmButton,
+          // The reason a blocked Default stays is read with the button, not only on screen.
+          'aria-describedby': isDefaultBlocked ? blockedReasonId : undefined,
         },
       }}
       onClose={() => deletionRef.send({type: 'delete.cancel'})}
@@ -137,8 +178,16 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
             </Text>
           </Card>
         ) : null}
-        <VersionsPreviewList documentType={documentType} documentVersions={[...variantIds]} />
-        {warnIncomingReferences && (
+        <VersionGroups
+          deletableIds={deletableIds}
+          blockedIds={blockedIds}
+          variantsById={variantsById}
+        />
+        {isDefaultBlocked && (
+          <BlockedNotice id={blockedReasonId} variantCount={description.blockingVariantCount} />
+        )}
+        {/* While the Default is blocked it is not deleted, so the links to it don't apply. */}
+        {warnIncomingReferences && !isDefaultBlocked && (
           <>
             <Card padding={3} radius={2} tone="caution" flex="none">
               <Flex>
@@ -175,6 +224,187 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
         )}
       </VStack>
     </Dialog>
+  )
+}
+
+function getHeader({
+  t,
+  description,
+  selectedCount,
+}: {
+  t: TFunction
+  description: DeletionDescription
+  selectedCount: number
+}): string {
+  const {includesDefault, deletableIds, blockedIds} = description
+  if (blockedIds.length > 0 && deletableIds.length > 0) {
+    // The title counts what the button deletes, out of what was selected.
+    return t('document-group.delete.some-of-title', {
+      count: deletableIds.length,
+      total: selectedCount,
+    })
+  }
+  if (includesDefault) {
+    return selectedCount === 1
+      ? t('document-group.delete.default-title')
+      : t('document-group.delete.with-default-title', {count: selectedCount})
+  }
+  return t('document-group.delete.question-title', {count: selectedCount})
+}
+
+/**
+ * The selected versions, split into the ones the confirm action deletes and the ones that stay
+ * because they can't be deleted yet.
+ */
+function VersionGroups({
+  deletableIds,
+  blockedIds,
+  variantsById,
+}: {
+  deletableIds: string[]
+  blockedIds: string[]
+  variantsById: Map<string, Variant>
+}) {
+  const {t} = useTranslation(studioLocaleNamespace)
+  const showHeadings = blockedIds.length > 0 && deletableIds.length > 0
+
+  return (
+    <VStack gap={3}>
+      {deletableIds.length > 0 && (
+        <VersionGroup
+          heading={showHeadings ? t('document-group.delete.deletable-versions.heading') : undefined}
+          ids={deletableIds}
+          variantsById={variantsById}
+          testId="deletable-versions"
+        />
+      )}
+      {blockedIds.length > 0 && (
+        <VersionGroup
+          heading={t('document-group.delete.blocked-versions.heading')}
+          ids={blockedIds}
+          variantsById={variantsById}
+          testId="blocked-versions"
+        />
+      )}
+    </VStack>
+  )
+}
+
+function VersionGroup({
+  heading,
+  ids,
+  variantsById,
+  testId,
+}: {
+  heading?: string
+  ids: string[]
+  variantsById: Map<string, Variant>
+  testId: string
+}) {
+  const headingId = useId()
+  return (
+    <VStack gap={2} data-testid={testId}>
+      {heading && (
+        <Text size={1} weight="medium" muted as="div" trim={true} id={headingId}>
+          {heading}
+        </Text>
+      )}
+      <Card border radius={2} padding={1}>
+        <VStack as="ul" gap={1} aria-labelledby={heading ? headingId : undefined}>
+          {ids.map((id) => (
+            <Box as="li" key={id} padding={2}>
+              <VersionChipRow id={id} variant={variantsById.get(id)} />
+            </Box>
+          ))}
+        </VStack>
+      </Card>
+    </VStack>
+  )
+}
+
+/**
+ * One version by its variant and bundle, the way the inventory rows name it: "RP de-DE" with a
+ * "Draft" chip, rather than the copy's raw id.
+ */
+function VersionChipRow({id, variant}: {id: string; variant: Variant | undefined}) {
+  const {t} = useTranslation(studioLocaleNamespace)
+  const document = variant?.document
+  const versionType = readVersionType(document)
+  const release = variant?.releaseDocument
+
+  const bundleLabel =
+    versionType === 'published'
+      ? t('release.chip.published')
+      : versionType === 'draft'
+        ? t('release.chip.draft')
+        : versionType === 'agent'
+          ? t('version.agent-bundle.proposed-changes')
+          : (release?.metadata?.title ?? t('release.placeholder-untitled-release'))
+
+  const tone =
+    versionType === 'published'
+      ? 'positive'
+      : versionType === 'draft'
+        ? 'caution'
+        : release
+          ? getReleaseTone(release)
+          : 'default'
+
+  // Without Content Variants, the row's name is the bundle itself, so it is not repeated.
+  const name = variant?.name ?? id
+  const showName = name !== bundleLabel
+
+  return (
+    <Flex alignItems="center" gap={3} data-testid={`delete-version-${id}`}>
+      {showName && (
+        <Box flexBasis="0%" flexGrow={1}>
+          <Text size={1} weight="medium" as="div" trim={true} truncate={1}>
+            {name}
+          </Text>
+        </Box>
+      )}
+      <Flex flexGrow={showName ? 0 : 1}>
+        <Card border radius="full" tone={tone} style={{backgroundColor: 'transparent'}}>
+          <Flex alignItems="center" gap={2} paddingY={2} paddingRight={3} paddingLeft={2}>
+            <ReleaseAvatarIcon release={getAvatarPerspective(versionType, release)} />
+            <Text size={1} weight="medium" as="div" trim={true} truncate={1}>
+              {bundleLabel}
+            </Text>
+          </Flex>
+        </Card>
+      </Flex>
+    </Flex>
+  )
+}
+
+function BlockedNotice({id, variantCount}: {id: string; variantCount: number}) {
+  const {t} = useTranslation(studioLocaleNamespace)
+  return (
+    <Card padding={3} radius={2} tone="critical" flex="none" data-testid="default-blocked" id={id}>
+      <Flex>
+        <Icon
+          icon={WarningOutlineIcon}
+          aria-hidden="true"
+          size={1}
+          style={{margin: '-0.375rem'}}
+          tone="critical"
+        />
+        <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
+          <VStack gap={3}>
+            <Text size={1} as="div" trim={true} weight="medium" tone="critical">
+              {t('document-group.delete.blocked.heading')}
+            </Text>
+            <VStack as="ul" gap={3} style={{paddingInlineStart: 0, listStyle: 'none', margin: 0}}>
+              <li data-testid="blocked-by-variants">
+                <Text size={1} as="div" trim={true}>
+                  {t('document-group.delete.blocked.variants-reason', {count: variantCount})}
+                </Text>
+              </li>
+            </VStack>
+          </VStack>
+        </Box>
+      </Flex>
+    </Card>
   )
 }
 
@@ -404,4 +634,13 @@ const References: ComponentType<ReferencesProps> = ({
       </Card>
     </>
   )
+}
+
+function getAvatarPerspective(
+  versionType: ReturnType<typeof readVersionType>,
+  release: ReleaseDocument | undefined,
+): TargetPerspective {
+  if (versionType === 'published') return PUBLISHED
+  if (versionType === 'release' && release) return release
+  return DRAFTS
 }
