@@ -1041,6 +1041,7 @@ describe('ConfirmDeleteDialog', () => {
 function InventoryHeaderHarness(
   props: ReturnType<typeof startHarness> & {
     components: DocumentGroupInventoryComponents | undefined
+    createVariantSecondary?: boolean
   },
 ) {
   return (
@@ -1048,6 +1049,13 @@ function InventoryHeaderHarness(
       <InventoryHeader {...props} />
     </PanelFrame>
   )
+}
+
+/** The alpha channel of the first `rgb()`/`rgba()` colour in a computed value. */
+function alpha(color: string): number {
+  const match = /rgba?\(([^)]+)\)/.exec(color)
+  const parts = match ? match[1].split(/[\s,/]+/).filter(Boolean) : []
+  return parts.length > 3 ? Number(parts[3]) : 1
 }
 
 describe('InventoryHeader', () => {
@@ -1120,6 +1128,31 @@ describe('InventoryHeader', () => {
     await expect.element(page.getByRole('button', {name: 'Create variant'})).toBeVisible()
     await expect.element(page.getByTestId('compare-versions-action')).toBeVisible()
     await expect.element(page.getByText(/selected$/)).not.toBeInTheDocument()
+  })
+
+  it('keeps Create variant the filled button, and steps it down while Add to release is the filled one', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const refs = startHarness()
+
+    const {rerender} = await render(<InventoryHeaderHarness {...refs} components={COMPONENTS} />)
+
+    const $createVariant = page.getByRole('button', {name: 'Create variant'})
+    await expect.element($createVariant).toBeVisible()
+    const style = () => getComputedStyle($createVariant.element())
+    // Filled: a solid fill and no outline
+    const filledFill = style().backgroundColor
+    expect(alpha(filledFill)).toBe(1)
+    expect(alpha(style().boxShadow)).toBe(0)
+
+    // The document banner's Add to release is the view's one filled button
+    await rerender(
+      <InventoryHeaderHarness {...refs} components={COMPONENTS} createVariantSecondary />,
+    )
+    // Secondary (ghost): the fill goes, and an outline shows instead
+    await expect.poll(() => style().backgroundColor).not.toBe(filledFill)
+    expect(alpha(style().boxShadow)).toBe(1)
+    await expect.element($createVariant).toBeEnabled()
+    await settleChromaticEndState()
   })
 
   it('renders no compare versions action without the consumer components of manage mode', async () => {

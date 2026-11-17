@@ -20,12 +20,18 @@ export function InventoryHeader({
   deletionRef,
   variantCreationRef,
   components,
+  createVariantSecondary = false,
 }: {
   selectionRef: ActorRefFromLogic<typeof selectionMachine>
   deletionRef: ActorRefFromLogic<typeof deletionMachine>
   variantCreationRef: ActorRefFromLogic<typeof variantCreationMachine>
   /** Absent in read-only mode, where the consumer supplies no pane-coupled components. */
   components: DocumentGroupInventoryComponents | undefined
+  /**
+   * Another action in the view is its one filled button (the document banner's Add to release),
+   * so Create variant steps down to a secondary button. Otherwise Create variant is the filled one.
+   */
+  createVariantSecondary?: boolean
 }) {
   const {t} = useTranslation(studioLocaleNamespace)
   const selectedCount = useSelector(selectionRef, ({context}) => context.selectedIds.size)
@@ -61,6 +67,9 @@ export function InventoryHeader({
           {components && <components.CompareVersionsAction />}
           {canCreateVariant && (
             <Button
+              // One filled button per view: filled, unless the banner's Add to release is the
+              // filled one, when Create variant is a secondary (ghost) button.
+              mode={createVariantSecondary ? 'ghost' : 'default'}
               text={t('document-group.create-variant.open-button.text')}
               onClick={() => variantCreationRef.send({type: 'createVariant.request'})}
             />

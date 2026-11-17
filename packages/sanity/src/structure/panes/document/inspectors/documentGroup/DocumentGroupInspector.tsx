@@ -13,6 +13,7 @@ import {
   useClient,
   useDocumentStore,
   useSetVariant,
+  usePerspective,
   useTranslation,
   type VersionInfoDocumentStub,
 } from 'sanity'
@@ -33,6 +34,7 @@ import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspector
 import {useDocumentPane} from '../../useDocumentPane'
 import {CompareVersionsAction} from './CompareVersionsAction'
 import {documentGroupInventoryContainer} from './DocumentGroupInspector.css'
+import {isAddToReleaseShown} from './isAddToReleaseShown'
 
 const documentGroupInventoryComponents: DocumentGroupInventoryComponents = {
   DocTitle,
@@ -45,7 +47,8 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
   const {documentId, documentType, onClose} = props
   const {t} = useTranslation()
   const {t: structureT} = useTranslation(structureLocaleNamespace)
-  const {displayed, editState} = useDocumentPane()
+  const {displayed, editState, ready, targetDocumentState} = useDocumentPane()
+  const {selectedPerspective} = usePerspective()
   const {collapsed: layoutCollapsed} = usePaneLayout()
 
   const perspectiveList = useDocumentPerspectiveList()
@@ -82,6 +85,17 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
       })
     }, 0)
   }
+
+  // One filled button per view: while the pane's banner shows Add to release, that is the filled
+  // button, and the inventory's Create variant steps down to a secondary one.
+  const createVariantSecondary = isAddToReleaseShown({
+    selectedPerspective,
+    targetDocumentState,
+    displayedId: displayed?._id,
+    ready,
+    editState,
+    historyVersion: params.historyVersion,
+  })
 
   // Picking a version in the inventory switches the pane to it.
   function selectDocumentGroupVariant(document: VersionInfoDocumentStub) {
@@ -147,6 +161,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
             onSelect={selectDocumentGroupVariant}
             createVariantId={createVariantId}
             onCreateVariantClose={handleCreateVariantClose}
+            createVariantSecondary={createVariantSecondary}
           />
         )}
       </div>

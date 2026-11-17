@@ -121,6 +121,13 @@ export interface DocumentGroupInventoryManageProps extends DocumentGroupInventor
    * cancelling, or straight away when the form cannot open. The consumer clears its request here.
    */
   onCreateVariantClose?: () => void
+  /**
+   * Whether another action in the view is its one filled button, so the inventory's Create variant
+   * steps down to a secondary button. The structure tool sets it while the document pane's banner
+   * shows Add to release (a release is selected and the document, or the selected variant, is not
+   * in it). Otherwise Create variant is the filled button.
+   */
+  createVariantSecondary?: boolean
 }
 
 /**
@@ -164,6 +171,8 @@ export function DocumentGroupInventory(
   const components = props.mode === 'readOnly' ? undefined : props.components
   const createVariantId = props.mode === 'readOnly' ? undefined : props.createVariantId
   const onCreateVariantClose = props.mode === 'readOnly' ? undefined : props.onCreateVariantClose
+  const createVariantSecondary =
+    props.mode === 'readOnly' ? false : Boolean(props.createVariantSecondary)
 
   const {beta} = useWorkspace()
   const variantsEnabled = beta?.variants?.enabled
@@ -396,6 +405,7 @@ export function DocumentGroupInventory(
               deletionRef={deletionRef}
               variantCreationRef={variantCreationRef}
               components={components}
+              createVariantSecondary={createVariantSecondary}
             />
           )
         )}
