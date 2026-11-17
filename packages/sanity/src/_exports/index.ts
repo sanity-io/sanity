@@ -941,7 +941,6 @@ export {
   useDocumentStore,
   useGrantsStore,
   useHistoryStore,
-  useKeyValueStore,
   usePresenceStore,
   useProjectStore,
   useUserStore,
@@ -1009,6 +1008,7 @@ export {
 } from '../core/store/document/initialValue/types'
 export {type ListenQueryOptions, type ListenQueryParams} from '../core/store/document/listenQuery'
 export {
+  type DocumentPairPermissionsListener,
   type DocumentPairTarget,
   type IdPair,
   type MutationEvent,
@@ -1095,7 +1095,10 @@ export {
   useTimelineStore,
 } from '../core/store/history/useTimelineStore'
 /* oxlint-enable no-deprecated */
+/* oxlint-disable no-deprecated -- the key-value store stays exported while deprecated; removing it is a breaking change deferred to the next major */
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
+export {useKeyValueStore} from '../core/store/key-value/useKeyValueStore'
+/* oxlint-enable no-deprecated */
 export {type PresenceStore} from '../core/store/presence/presence-store'
 export {
   type DocumentPresence,

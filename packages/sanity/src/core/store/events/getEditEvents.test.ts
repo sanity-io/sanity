@@ -1,8 +1,8 @@
 import {describe, expect, it} from 'vitest'
 
-import {DRAFT_ID, minutesAfterBase} from './__fixtures__/events.fixture'
+import {createDocumentVersionEvent, DRAFT_ID, minutesAfterBase} from './__fixtures__/events.fixture'
 import {editTransaction} from './__fixtures__/transactions.fixture'
-import {getEditEvents, getEffectState} from './getEditEvents'
+import {getEditEvents, getEffectState, mergeEditEvents} from './getEditEvents'
 import {type EditDocumentVersionEvent, type UpdateLiveDocumentEvent} from './types'
 
 describe('getEditEvents()', () => {
@@ -338,6 +338,57 @@ describe('getEditEvents()', () => {
       expect(events).toEqual([
         expect.objectContaining({type: 'updateLiveDocument', id: 'tx-2', author: 'author-2'}),
       ])
+    })
+  })
+
+  describe('mergeEditEvents()', () => {
+    const fetchedEdit = editTransaction({id: 'tx-fetched', timestamp: minutesAfterBase(1)})
+    const liveEdit = editTransaction({
+      id: 'tx-live',
+      author: 'author-2',
+      timestamp: minutesAfterBase(2),
+    })
+
+    it('groups consecutive edit events like one getEditEvents call over all their transactions', () => {
+      const transactions = [
+        editTransaction({id: 'tx-0', timestamp: minutesAfterBase(0)}),
+        editTransaction({id: 'tx-4', timestamp: minutesAfterBase(4)}),
+        editTransaction({id: 'tx-8', author: 'author-2', timestamp: minutesAfterBase(8)}),
+      ]
+      // tx-0 and tx-4 were fetched as one event, tx-8 was received live afterwards.
+      const merged = mergeEditEvents([
+        ...getEditEvents(transactions.slice(2), DRAFT_ID, false),
+        ...getEditEvents(transactions.slice(0, 2), DRAFT_ID, false),
+      ])
+      expect(merged).toEqual(getEditEvents(transactions, DRAFT_ID, false))
+      // The window is anchored to the newest transaction, so tx-0 starts its own event again.
+      expect(merged.map((event) => event.id)).toEqual(['tx-8', 'tx-0'])
+    })
+
+    it('never groups edit events on both sides of another event', () => {
+      const events = [
+        ...getEditEvents([liveEdit], DRAFT_ID, false),
+        createDocumentVersionEvent({timestamp: minutesAfterBase(1.5)}),
+        ...getEditEvents([fetchedEdit], DRAFT_ID, false),
+      ]
+      expect(mergeEditEvents(events)).toEqual(events)
+    })
+
+    it('keeps a transaction found in more than one edit event once', () => {
+      const merged = mergeEditEvents([
+        ...getEditEvents([liveEdit, fetchedEdit], DRAFT_ID, false),
+        ...getEditEvents([fetchedEdit], DRAFT_ID, false),
+      ])
+      expect(merged).toEqual(getEditEvents([liveEdit, fetchedEdit], DRAFT_ID, false))
+    })
+
+    it('leaves the edit events nested under an expanded publish as they are', () => {
+      const [expanded] = getEditEvents([fetchedEdit], DRAFT_ID, false)
+      const events = [
+        ...getEditEvents([liveEdit], DRAFT_ID, false),
+        {...expanded, parentId: 'tx-publish'},
+      ]
+      expect(mergeEditEvents(events)).toEqual(events)
     })
   })
 

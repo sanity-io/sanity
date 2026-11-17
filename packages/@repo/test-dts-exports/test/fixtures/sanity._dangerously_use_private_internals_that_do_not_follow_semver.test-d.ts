@@ -865,6 +865,8 @@ import type {
   useSource,
   useStructureTool,
   useStudioFeedbackTags,
+  useStudioPreference,
+  useStudioPreferenceList,
   useStudioUrl,
   useSyncState,
   useTargetDocumentState,
@@ -3527,6 +3529,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useStudioFeedbackTags', () => {
     expectTypeOf<typeof useStudioFeedbackTags>().toBeFunction()
+  })
+  test('useStudioPreference', () => {
+    expectTypeOf<typeof useStudioPreference>().toBeFunction()
+  })
+  test('useStudioPreferenceList', () => {
+    expectTypeOf<typeof useStudioPreferenceList>().toBeFunction()
   })
   test('useStudioUrl', () => {
     expectTypeOf<typeof useStudioUrl>().not.toBeNever()
