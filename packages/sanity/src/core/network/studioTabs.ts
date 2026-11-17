@@ -9,12 +9,14 @@ const TAB_OPENED_MESSAGE = 'opened'
 const REPUBLISH_DEBOUNCE_MS = 250
 const REPUBLISH_MAX_WAIT_MS = 1000
 const UNKNOWN_SCOPE = 'unknown'
+const STALLED_FLAG = 's'
 
 /** @internal */
 export interface StudioTabLock {
   scope: string
   tabId: string
   count: number
+  isStalled: boolean
 }
 
 const studioTabs: {
@@ -77,16 +79,18 @@ export function getStudioTabScope(apiHost: string | undefined): string {
 
 /**
  * Reads a tab lock name written by {@link startTrackingStudioTabs}, or `undefined` for any other
- * lock. Fields after the count are ignored.
+ * lock. Fields after the stalled flag are ignored.
  *
  * @internal
  */
 export function parseStudioTabLock(name: string): StudioTabLock | undefined {
-  const [encodedScope = '', tabId, count = ''] = name.startsWith(TAB_LOCK_PREFIX)
+  const [encodedScope = '', tabId, count = '', flag] = name.startsWith(TAB_LOCK_PREFIX)
     ? name.slice(TAB_LOCK_PREFIX.length).split(':')
     : []
   const scope = decodeScope(encodedScope)
-  return scope && tabId && /^\d+$/.test(count) ? {scope, tabId, count: Number(count)} : undefined
+  return scope && tabId && /^\d+$/.test(count)
+    ? {scope, tabId, count: Number(count), isStalled: flag === STALLED_FLAG}
+    : undefined
 }
 
 function decodeScope(encodedScope: string): string | undefined {
@@ -97,11 +101,9 @@ function decodeScope(encodedScope: string): string | undefined {
   }
 }
 
-const STALLED_SUFFIX = ':s'
-
-function formatStudioTabLock({scope, tabId, count}: StudioTabLock, isStalled: boolean): string {
+function formatStudioTabLock({scope, tabId, count, isStalled}: StudioTabLock): string {
   const name = `${TAB_LOCK_PREFIX}${encodeURIComponent(scope)}:${tabId}:${count}`
-  return isStalled ? `${name}${STALLED_SUFFIX}` : name
+  return isStalled ? `${name}:${STALLED_FLAG}` : name
 }
 
 /**
@@ -191,7 +193,7 @@ async function replaceTabLock(scope: string): Promise<void> {
   if (studioTabs.publishedCount === count && studioTabs.publishedIsStalled === isStalled) return
 
   const releaseNext = await holdLock(
-    formatStudioTabLock({scope, tabId: getStudioTabId(), count}, isStalled),
+    formatStudioTabLock({scope, tabId: getStudioTabId(), count, isStalled}),
   )
   if (releaseNext === undefined) return
 

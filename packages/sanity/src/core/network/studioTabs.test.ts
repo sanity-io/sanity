@@ -49,12 +49,20 @@ describe('parseStudioTabLock', () => {
       scope: 'api.sanity.io',
       tabId: 'tab-1',
       count: 4,
+      isStalled: false,
     })
     expect(parseStudioTabLock('sanity-listener-tab:api.sanity.io:tab-1:4:stalled')).toEqual({
       scope: 'api.sanity.io',
       tabId: 'tab-1',
       count: 4,
+      isStalled: false,
     })
+  })
+
+  it('reads the stalled flag', async () => {
+    const {parseStudioTabLock} = await import('./studioTabs')
+
+    expect(parseStudioTabLock('sanity-listener-tab:api.sanity.io:tab-1:4:s')?.isStalled).toBe(true)
   })
 
   it('round-trips a scope that contains a port', async () => {
@@ -64,6 +72,7 @@ describe('parseStudioTabLock', () => {
       scope: 'localhost:3900',
       tabId: 'tab-1',
       count: 2,
+      isStalled: false,
     })
   })
 
