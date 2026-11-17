@@ -2,13 +2,15 @@ import {type ReactNode} from 'react'
 import {styled} from 'styled-components'
 import {Flex, Icon} from 'ui5'
 
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {getDefaultVariant} from '../../perspective/getDefaultVariant'
 import {type TargetPerspective} from '../../perspective/types'
 import {usePerspective} from '../../perspective/usePerspective'
 import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
+import {getVariantTitle} from '../../variants/tool/util'
 import {CircleSmallIcon} from '../temporary-icons/CircleSmall'
-import {RhombusIcon} from '../temporary-icons/Rhombus'
+import {RhombusIcon, RhombusOutlineIcon} from '../temporary-icons/Rhombus'
 import {RingIcon} from '../temporary-icons/Ring'
 import {type DocumentStatusIconKind, resolveDocumentStatusIcons} from './resolveDocumentStatusIcons'
 
@@ -50,29 +52,16 @@ const IconSlotRoot = styled.div`
 `
 
 /**
- * The cluster when a variant is selected: a leading column for the variant rhombus, empty on rows
- * without one, then the status marks right-aligned in room for two more slots. The fixed width
- * puts the rhombus, and the last status mark, at one x on every row of a list.
+ * The cluster when a variant is selected: room for three slots, packed to the right. Every row ends
+ * with the filled or outline diamond, so the diamond sits at one x down a list and the status marks
+ * sit directly before it.
  */
-const VariantColumnsRoot = styled.div`
-  display: flex;
-  align-items: center;
-  width: ${ICON_SLOT_WIDTH * 3}px;
-  flex-shrink: 0;
-`
-
-const VariantColumnSlot = styled.div`
-  display: flex;
-  width: ${ICON_SLOT_WIDTH}px;
-  flex-shrink: 0;
-`
-
-const StatusMarksColumn = styled.div`
+const VariantClusterRoot = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  flex: 1;
-  min-width: 0;
+  width: ${ICON_SLOT_WIDTH * 3}px;
+  flex-shrink: 0;
 `
 
 /**
@@ -84,38 +73,49 @@ const StatusMarksColumn = styled.div`
  */
 function IconSlot({
   status,
+  label,
   children,
 }: {
   status?: 'published' | 'draft' | 'variant'
+  /** Names the glyph for assistive technology. Unlabelled slots stay unnamed, as before. */
+  label?: string
   children: ReactNode
 }) {
-  return <IconSlotRoot data-status={status}>{children}</IconSlotRoot>
-}
-
-function VariantIcon() {
   return (
-    <IconSlot status="variant">
-      <Icon icon={RhombusIcon} size={2} />
-    </IconSlot>
+    <IconSlotRoot data-status={status} role={label ? 'img' : undefined} aria-label={label}>
+      {children}
+    </IconSlotRoot>
   )
 }
 
 /**
  * A single document status glyph in its 15px slot. `release` is the perspective the release icon
- * is drawn for; the other kinds ignore it.
+ * is drawn for; the other kinds ignore it. `label` names the variant diamonds.
  *
  * @internal
  */
 export function DocumentStatusIcon({
   kind,
   release,
+  label,
 }: {
   kind: DocumentStatusIconKind
   release?: TargetPerspective
+  label?: string
 }) {
   switch (kind) {
     case 'variant':
-      return <VariantIcon />
+      return (
+        <IconSlot status="variant" label={label}>
+          <Icon icon={RhombusIcon} size={2} />
+        </IconSlot>
+      )
+    case 'variant-empty':
+      return (
+        <IconSlot status="variant" label={label}>
+          <Icon icon={RhombusOutlineIcon} size={2} />
+        </IconSlot>
+      )
     case 'release':
       return release ? (
         <IconSlot>
@@ -143,13 +143,14 @@ export function DocumentStatusIcon({
 
 /**
  * Renders icons describing the document's status in the selected perspective and variant. The
- * perspective decides what the icons describe, and the selected variant then narrows it. Icons
- * appear in a fixed order: the rhombus (variant), the release icon, the yellow draft ring, then the
- * green published disc. At most three render at once.
+ * perspective decides what the icons describe, and the selected variant then narrows it.
  *
- * With a variant selected, the rhombus gets a fixed leading column (empty when the row has none)
- * and the other marks are right-aligned after it, so the rhombus and the last status mark line up
- * down a list. With no variant selected, the icons are packed as they come.
+ * The diamond says which audience the status marks describe; it never means "this document has
+ * variants". With no variant selected there is no diamond, the marks describe Default and are
+ * packed as they come. With a variant selected every row ends with a diamond: filled when the
+ * document has a version for that variant (the marks describe that version), outline when it has
+ * none (the marks describe Default). The cluster is a fixed three-slot box packed to the right, so
+ * the diamond sits at one x down a list and the marks sit directly before it.
  *
  * See `resolveDocumentStatusIcons.ts` for the full decision logic.
  *
@@ -158,6 +159,7 @@ export function DocumentStatusIcon({
 export function DocumentVersionsStatusIndicator({documentVersions}: DocumentStatusProps) {
   const {bundle, selectedPerspective, selectedVariants} = usePerspective()
   const selectedVariant = getDefaultVariant(selectedVariants)
+  const {t} = useTranslation()
 
   const icons = resolveDocumentStatusIcons({
     bundle,
@@ -170,16 +172,26 @@ export function DocumentVersionsStatusIndicator({documentVersions}: DocumentStat
   }
 
   if (selectedVariant) {
-    const statusIcons = icons.filter((icon) => icon !== 'variant')
+    const variant = getVariantTitle(selectedVariant)
     return (
-      <VariantColumnsRoot data-testid="document-status-indicator">
-        <VariantColumnSlot>{icons.includes('variant') && <VariantIcon />}</VariantColumnSlot>
-        <StatusMarksColumn>
-          {statusIcons.map((icon) => (
-            <DocumentStatusIcon key={icon} kind={icon} release={selectedPerspective} />
-          ))}
-        </StatusMarksColumn>
-      </VariantColumnsRoot>
+      <VariantClusterRoot data-testid="document-status-indicator">
+        {icons.map((icon) => {
+          let label: string | undefined
+          if (icon === 'variant') {
+            label = t('document-status.variant-mark.version', {variant})
+          } else if (icon === 'variant-empty') {
+            label = t('document-status.variant-mark.no-version', {variant})
+          }
+          return (
+            <DocumentStatusIcon
+              key={icon}
+              kind={icon}
+              release={selectedPerspective}
+              label={label}
+            />
+          )
+        })}
+      </VariantClusterRoot>
     )
   }
 
