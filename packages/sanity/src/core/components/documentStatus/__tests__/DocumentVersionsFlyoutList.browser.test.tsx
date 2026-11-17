@@ -9,6 +9,7 @@ import {activeASAPRelease} from '../../../releases/__fixtures__/release.fixture'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../../../releases/store/types'
 import {useActiveReleases} from '../../../releases/store/useActiveReleases'
+import {type DocumentPresence} from '../../../store/presence/types'
 import {setSnapshot} from '../../../studio/colorSchemeStore'
 import {createMockVariant} from '../../../variants/__fixtures__/createMockVariant'
 import {useAllVariants} from '../../../variants/store/useAllVariants'
@@ -47,13 +48,19 @@ function renderFlyoutList(
   options: {
     onPick?: Mock
     onOpenInventory?: Mock
+    presence?: Omit<DocumentPresence, 'path'>[]
+    /** Whether the studio has Variants on: then every row is an audience with a lead and a detail. */
+    variantsEnabled?: boolean
     /** The audience the studio is in, as the `variant` sticky param holds it. */
     selectedVariantName?: string
     viewingDocument?: boolean
   } = {},
 ) {
   return render(
-    <TestWrapper schemaTypes={[]} betaFeatures={{variants: {enabled: true}}}>
+    <TestWrapper
+      schemaTypes={[]}
+      betaFeatures={{variants: {enabled: options.variantsEnabled ?? true}}}
+    >
       <PerspectiveProvider
         selectedPerspectiveName={undefined}
         selectedVariantName={options.selectedVariantName}
@@ -63,6 +70,7 @@ function renderFlyoutList(
             documentGroupId={GROUP_ID}
             onOpenInventory={options.onOpenInventory ?? vi.fn()}
             onPick={options.onPick ?? vi.fn()}
+            presence={options.presence}
             viewingDocument={options.viewingDocument}
           />
         </div>
@@ -235,7 +243,7 @@ describe('DocumentVersionsFlyoutList', () => {
       const row = germanRow.element() as HTMLElement
       const blue = resolvedColor(row, 'var(--active-background-emphasized)')
       const title = germanRow.getByText('German', {exact: true}).element()
-      const subtitle = germanRow.getByText(/Edited/).element()
+      const subtitle = germanRow.getByTestId('document-versions-flyout-row-line').element()
       const diamond = row.querySelector('[data-testid="document-versions-flyout-row-marks"] svg')!
       await expect.element(germanRow).toHaveStyle({backgroundColor: blue})
       expect(getComputedStyle(title).color).toBe(
@@ -331,5 +339,192 @@ describe('DocumentVersionsFlyoutList', () => {
     expect(Math.abs(left - 8)).toBeLessThanOrEqual(1)
     expect(Math.abs(top - 8)).toBeLessThanOrEqual(1)
     expect(Math.abs(bottom - 8)).toBeLessThanOrEqual(1)
+  })
+
+  describe('who is editing', () => {
+    function person(id: string, displayName: string, documentId: string) {
+      return {
+        user: {id, displayName},
+        sessionId: `session-${id}`,
+        documentId,
+        lastActiveAt: '2026-10-22T11:00:00.000Z',
+      }
+    }
+
+    it('says who is editing in the first line, only when someone is', async () => {
+      await renderFlyoutList()
+      await expect.element(page.getByRole('menuitem', {name: /German/})).toBeVisible()
+      expect(page.getByTestId('document-versions-flyout-presence').elements()).toHaveLength(0)
+      // Nobody editing: no row spends room on an avatar column
+      expect(page.getByTestId('document-versions-flyout-row-presence').elements()).toHaveLength(0)
+    })
+
+    it('puts each avatar on the audience being edited, in one column just before the marks', async () => {
+      await renderFlyoutList({
+        presence: [
+          person('madison', 'Madison Baker', `versions.german.${GROUP_ID}`),
+          person('pedro', 'Pedro Hall', `drafts.${GROUP_ID}`),
+          person('ana', 'Ana Ruiz', `drafts.${GROUP_ID}`),
+        ],
+      })
+      const line = page.getByTestId('document-versions-flyout-presence')
+      await expect.element(line).toBeVisible()
+      await expect.element(line).toMatchTextContent('Madison Baker and 2 others are editing')
+      // The first line is not a menu item: the arrow keys move between the rows below it
+      expect(line.element().closest('[role="menuitem"]')).toBeNull()
+
+      const audienceRows = page.getByTestId('document-versions-flyout-row').elements()
+      const columns = audienceRows.map((row) =>
+        row.querySelector('[data-testid="document-versions-flyout-row-presence"]')!,
+      )
+      expect(columns.every(Boolean)).toBe(true)
+      const [defaultColumn, germanColumn, swedishColumn] = columns
+      // Two people on the default audience's draft, one on the German version, none on Swedish
+      const stackSize = (column: Element) =>
+        column.querySelector('[data-ui="AvatarStack"]')?.children.length ?? 0
+      expect(stackSize(defaultColumn)).toBe(2)
+      expect(stackSize(germanColumn)).toBe(1)
+      expect(germanColumn.textContent).toBe('MB')
+      expect(swedishColumn.childElementCount).toBe(0)
+
+      // One column: the same left and right edge on every row, ending where the marks begin
+      const boxes = columns.map((column) => column.getBoundingClientRect())
+      for (const box of boxes) {
+        expect(box.left).toBeCloseTo(boxes[0].left, 0)
+        expect(box.right).toBeCloseTo(boxes[0].right, 0)
+      }
+      audienceRows.forEach((row, index) => {
+        const marks = row
+          .querySelector('[data-testid="document-versions-flyout-row-marks"]')!
+          .getBoundingClientRect()
+        expect(marks.left - boxes[index].right).toBeLessThanOrEqual(9)
+        expect(marks.left).toBeGreaterThanOrEqual(boxes[index].right - 1)
+      })
+    })
+
+    it('shows at most two avatars, then a count', async () => {
+      await renderFlyoutList({
+        presence: ['a', 'b', 'c', 'd'].map((id) =>
+          person(id, `Person ${id}`, `drafts.${GROUP_ID}`),
+        ),
+      })
+      const line = page.getByTestId('document-versions-flyout-presence')
+      await expect.element(line).toMatchTextContent('Person a and 3 others are editing')
+      const [defaultColumn] = page
+        .getByTestId('document-versions-flyout-row')
+        .elements()
+        .map((row) => row.querySelector('[data-testid="document-versions-flyout-row-presence"]')!)
+      // Two avatars and a counter of 2
+      expect(defaultColumn.textContent).toContain('2')
+      const stackChildren = defaultColumn.querySelector('[data-ui="AvatarStack"]')!.children
+      expect(stackChildren).toHaveLength(3)
+      // The column fits them: the stack does not spill over its left edge
+      const stackBox = defaultColumn
+        .querySelector('[data-ui="AvatarStack"]')!
+        .getBoundingClientRect()
+      expect(stackBox.left).toBeGreaterThanOrEqual(defaultColumn.getBoundingClientRect().left - 1)
+    })
+  })
+
+  describe('audience lines', () => {
+    const scheduledRelease = {
+      ...activeASAPRelease,
+      _id: '_.releases.rFriday',
+      name: 'rFriday',
+      state: 'scheduled' as const,
+      publishAt: '2099-11-27T09:00:00.000Z',
+      metadata: {
+        ...activeASAPRelease.metadata,
+        releaseType: 'scheduled' as const,
+        intendedPublishAt: '2099-11-27T09:00:00.000Z',
+        title: 'A release with a very long name that cannot fit on the line beside the lead',
+      },
+    }
+
+    function releaseVersion(rel: typeof scheduledRelease): VersionInfoDocumentStub {
+      return {
+        ...version(`versions.${rel.name}.${GROUP_ID}`),
+        _system: {
+          bundleId: rel.name,
+          group: {_ref: GROUP_ID, _weak: true},
+          release: {_ref: rel._id, _weak: true},
+        },
+      } as VersionInfoDocumentStub
+    }
+
+    function mockVersions(list: VersionInfoDocumentStub[], releases = [activeASAPRelease]) {
+      ;(useDocumentVersions as Mock<typeof useDocumentVersions>).mockReturnValue({
+        data: list.map((v) => v._id),
+        versions: list,
+        error: null,
+        loading: false,
+      })
+      ;(useActiveReleases as Mock<typeof useActiveReleases>).mockReturnValue({
+        data: releases,
+        byId: new Map(releases.map((rel) => [rel._id, rel])),
+        loading: false,
+        error: undefined,
+      } as ReturnType<typeof useActiveReleases>)
+    }
+
+    it('reads lead · detail, and cuts the detail short before the lead', async () => {
+      mockVersions([releaseVersion(scheduledRelease)], [scheduledRelease])
+      await renderFlyoutList()
+      const row = page.getByRole('menuitem', {name: /Default/})
+      await expect.element(row).toBeVisible()
+
+      const lead = row.getByTestId('document-versions-flyout-row-lead').element()
+      const detail = row.getByTestId('document-versions-flyout-row-detail').element()
+      expect(lead.textContent).toMatch(/^First publish scheduled /)
+      expect(detail.textContent).toContain(scheduledRelease.metadata.title)
+      // The lead and its date show in full; the long release name is the part cut short
+      expect(lead.scrollWidth).toBeLessThanOrEqual(lead.clientWidth)
+      expect(detail.scrollWidth).toBeGreaterThan(detail.clientWidth)
+      expect(getComputedStyle(detail).textOverflow).toBe('ellipsis')
+    })
+
+    it('keeps the latest change on the row without Variants', async () => {
+      mockVersions([version(GROUP_ID), version(`drafts.${GROUP_ID}`)])
+      await renderFlyoutList({variantsEnabled: false})
+      const row = page.getByRole('menuitem', {name: /Default/})
+      await expect.element(row).toBeVisible()
+      await expect.element(row).toMatchTextContent(/Edited/)
+      expect(page.getByTestId('document-versions-flyout-row-line').elements()).toHaveLength(0)
+    })
+  })
+
+  it('shows at most five audiences, then how many more are in the inventory', async () => {
+    const audiences = Array.from({length: 7}, (_, index) => ({
+      ...createMockVariant(`audience-${index}`, index),
+      metadata: {title: `Audience ${index}`},
+    }))
+    const list = audiences.map((audience, index) =>
+      version(`versions.audience${index}.${GROUP_ID}`, audience._id),
+    )
+    ;(useDocumentVersions as Mock<typeof useDocumentVersions>).mockReturnValue({
+      data: list.map((v) => v._id),
+      versions: list,
+      error: null,
+      loading: false,
+    })
+    ;(useAllVariants as Mock<typeof useAllVariants>).mockReturnValue({
+      data: audiences,
+      byId: new Map(audiences.map((audience) => [audience._id, audience])),
+      loading: false,
+      error: undefined,
+    })
+    const onOpenInventory = vi.fn()
+    await renderFlyoutList({onOpenInventory})
+
+    const more = page.getByTestId('document-versions-flyout-more')
+    await expect.element(more).toBeVisible()
+    expect(page.getByTestId('document-versions-flyout-row').elements()).toHaveLength(5)
+    await expect.element(more).toMatchTextContent('2 more in the inventory')
+    // Just above the last row, which keeps opening the inventory
+    const rows = page.getByRole('menuitem').elements()
+    expect(rows.at(-2)).toBe(more.element())
+    expect(rows.at(-1)).toBe(page.getByTestId('document-versions-flyout-inventory').element())
+    await more.click()
+    expect(onOpenInventory).toHaveBeenCalledTimes(1)
   })
 })

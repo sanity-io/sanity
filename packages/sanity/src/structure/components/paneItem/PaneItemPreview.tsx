@@ -75,6 +75,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       documentGroupId={publishedId}
       viewingDocument={Boolean(rowSelected)}
       onOpenInventory={actions.onOpenInventory}
+      presence={presence}
       onPick={(variantId) =>
         actions.onPick(
           variantId,
@@ -124,7 +125,10 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   const status = isLoading ? null : (
     <TooltipDelayGroupProvider>
       <Flex alignItems="center" gap={3}>
-        {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
+        {/* With the flyout on, it is the row's only overlay: who is editing is its first line */}
+        {presence && presence.length > 0 && (
+          <DocumentPreviewPresence presence={presence} tooltip={!versionsLinkChildId} />
+        )}
         {versionsLinkChildId ? (
           <PaneItemVersionsFlyout childId={versionsLinkChildId} renderList={renderFlyoutList}>
             <DocumentVersionsStatusIndicator documentVersions={versions} />

@@ -834,6 +834,32 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Delete {{count}} versions, including the Default?',
   /** The label for the action that clears every selected variant in the document group inventory */
   'document-group.deselect-all': 'Deselect all',
+  /** An audience row in the versions flyout, detail: when the audience was last edited, for one that was never published ("edited 2 hr ago") */
+  'document-group.flyout.audience.detail.edited': 'edited {{date}}',
+  /** An audience row in the versions flyout, detail: the unscheduled release the audience is waiting in, for one that was never published */
+  'document-group.flyout.audience.detail.in-release': 'in {{releaseTitle}}',
+  /** An audience row in the versions flyout, detail: how many other releases the audience is in (singular) */
+  'document-group.flyout.audience.detail.more-releases_one': '+{{count}} release',
+  /** An audience row in the versions flyout, detail: how many other releases the audience is in (plural) */
+  'document-group.flyout.audience.detail.more-releases_other': '+{{count}} releases',
+  /** An audience row in the versions flyout, detail: the release the audience is waiting in has no publish time */
+  'document-group.flyout.audience.detail.no-date-set': 'no date set',
+  /** An audience row in the versions flyout, detail: the audience also has a draft, which does not go out with the scheduled release */
+  'document-group.flyout.audience.detail.unpublished-edits': 'unpublished edits',
+  /** An audience row in the versions flyout, lead: the audience was never published and goes live for the first time when a scheduled release publishes. `date` is the release's publish time */
+  'document-group.flyout.audience.lead.first-publish-scheduled': 'First publish scheduled {{date}}',
+  /** An audience row in the versions flyout, lead: nothing is live for this audience yet */
+  'document-group.flyout.audience.lead.not-published-yet': 'Not published yet',
+  /** An audience row in the versions flyout, lead: published, nothing pending. `date` is a relative time ("3 wk ago") */
+  'document-group.flyout.audience.lead.published': 'Published {{date}}',
+  /** An audience row in the versions flyout, lead: a draft that is not published yet */
+  'document-group.flyout.audience.lead.unpublished-edits': 'Unpublished edits',
+  /** An audience row in the versions flyout, lead: what is published changes when a scheduled release publishes. `date` is the release's publish time */
+  'document-group.flyout.audience.lead.update-scheduled': 'Update scheduled {{date}}',
+  /** An audience row in the versions flyout, lead: a published audience has an update in a release with no publish time */
+  'document-group.flyout.audience.lead.update-waiting': 'Update waiting in {{releaseTitle}}',
+  /** An audience row in the versions flyout, lead: a scheduled release with this audience in it has gone out. `date` is a relative time ("2 hr ago") */
+  'document-group.flyout.audience.lead.updated': 'Updated {{date}}',
   /**
    * The last row of the versions flyout on a document list row, when the document has a single version
    * @deprecated no longer in use
@@ -846,6 +872,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    */
   // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the footer reads `see-all-versions`
   'document-group.flyout.see-all_other': 'See all {{count}} versions in inventory',
+  /** A row of the versions flyout after its first rows, counting the rows it does not show; opens the document group inventory (singular) */
+  'document-group.flyout.more_one': '{{count}} more in the inventory',
+  /** A row of the versions flyout after its first rows, counting the rows it does not show; opens the document group inventory (plural) */
+  'document-group.flyout.more_other': '{{count}} more in the inventory',
+  /** The first line of the versions flyout on a document list row: one person is editing the document */
+  'document-group.flyout.presence.one': '{{displayName}} is editing',
+  /** The first line of the versions flyout on a document list row: more than one person is editing the document. `count` is the number of other people (singular) */
+  'document-group.flyout.presence.other_one': '{{displayName}} and {{count}} other are editing',
+  /** The first line of the versions flyout on a document list row: more than one person is editing the document. `count` is the number of other people (plural) */
+  'document-group.flyout.presence.other_other': '{{displayName}} and {{count}} others are editing',
   /** The last row of the versions flyout on a document list row, whatever versions the document has: opens the document group inventory */
   'document-group.flyout.see-all-versions': 'See all versions in the inventory',
   /** Accessible name of the versions flyout on a document list row */
