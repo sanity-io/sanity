@@ -450,22 +450,24 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Tooltip text for publish release action when there are no documents */
   'publish-action.validation.no-documents': 'There are no documents to publish',
   /** Title for the dialog confirming the publish of a release */
-  'publish-dialog.confirm-publish.title':
-    'Are you sure you want to publish the release and all document versions?',
+  'publish-dialog.confirm-publish.title': "Run the '{{title}}' release?",
   /** Label for the checkbox in the publish confirmation dialog for also updating existing drafts to match the release */
-  'publish-dialog.confirm-publish.update-drafts-checkbox': 'Update existing drafts',
+  'publish-dialog.confirm-publish.update-drafts-checkbox':
+    'Discard drafts that differ from this release',
   /** Description for the update existing drafts checkbox when one document has an existing draft */
   'publish-dialog.confirm-publish.update-drafts-description_one':
-    'The existing draft of {{draftDocumentsLength}} document will be discarded so that drafts match the published release. Unpublished draft changes will be lost.',
+    "{{draftDocumentsLength}} document has draft changes that aren't in this release. Discarding the draft keeps it the same as what you publish. Those draft changes will be lost.",
   /** Description for the update existing drafts checkbox when multiple documents have existing drafts */
   'publish-dialog.confirm-publish.update-drafts-description_other':
-    'The existing drafts of {{draftDocumentsLength}} documents will be discarded so that drafts match the published release. Unpublished draft changes will be lost.',
+    "{{draftDocumentsLength}} documents have draft changes that aren't in this release. Discarding the drafts keeps them the same as what you publish. Those draft changes will be lost.",
+  /** Label above the list of drafts that would be discarded, each of which opens the draft in a new tab */
+  'publish-dialog.confirm-publish.update-drafts-review': 'Open a draft to see what would be lost:',
   /** Description for the dialog confirming the publish of a release with one document */
   'publish-dialog.confirm-publish-description_one':
-    "The '<strong>{{title}}</strong>' release and its document will be published.",
+    'The document in this release will be published.',
   /** Description for the dialog confirming the publish of a release with multiple documents */
   'publish-dialog.confirm-publish-description_other':
-    "The '<strong>{{title}}</strong>' release and its {{releaseDocumentsLength}} documents will be published.",
+    'All {{releaseDocumentsLength}} documents in this release will be published.',
   /** Label for the button when the user doesn't have permissions to publish a release */
   'publish-dialog.validation.no-permission': 'You do not have permission to publish',
   /** Label for when documents are being validated */

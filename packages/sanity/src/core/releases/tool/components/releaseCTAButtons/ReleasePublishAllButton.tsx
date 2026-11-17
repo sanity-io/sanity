@@ -2,9 +2,10 @@ import {type ReleaseDocument} from '@sanity/client'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {PublishIcon} from '@sanity/icons/Publish'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Checkbox} from '@sanity/ui'
+import {Card, Checkbox} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {type ChangeEvent, useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
+import {IntentLink} from 'sanity/router'
 import {Text, Flex, VStack, Icon} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -16,7 +17,10 @@ import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../i18n/Translate'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../../perspective/useSetPerspective'
+import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
 import {useWorkspace} from '../../../../studio/workspace'
+import {useDocumentPreviewValues} from '../../../../tasks/hooks/useDocumentPreviewValues'
+import {getPublishedId} from '../../../../util/draftUtils'
 import {PublishedRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {isReleaseDocument} from '../../../store/types'
@@ -24,6 +28,45 @@ import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {type DocumentInRelease} from '../../detail/types'
+
+const DRAFTS_PERSPECTIVE_STACK = ['drafts']
+const DRAFTS_SEARCH_PARAMS: [string, string][] = [['perspective', 'drafts']]
+
+/**
+ * A draft that would be discarded when the release runs. It opens the draft in a new tab, so the
+ * editor can see what would be lost without closing the dialog.
+ */
+function DraftToDiscardLink({
+  documentId,
+  documentType,
+}: {
+  documentId: string
+  documentType: string
+}) {
+  const publishedId = getPublishedId(documentId)
+  const {isLoading, value} = useDocumentPreviewValues({
+    documentId: publishedId,
+    documentType,
+    perspectiveStack: DRAFTS_PERSPECTIVE_STACK,
+  })
+  const params = useMemo(() => ({id: publishedId, type: documentType}), [publishedId, documentType])
+
+  return (
+    <Card
+      as={IntentLink}
+      data-as="a"
+      intent="edit"
+      params={params}
+      searchParams={DRAFTS_SEARCH_PARAMS}
+      target="_blank"
+      rel="noreferrer"
+      radius={2}
+      tone="inherit"
+    >
+      <SanityDefaultPreview {...(value || {})} isPlaceholder={isLoading} layout="compact" />
+    </Card>
+  )
+}
 
 interface ReleasePublishAllButtonProps {
   release: ReleaseDocument
@@ -65,7 +108,7 @@ export const ReleasePublishAllButton = ({
   // documents that also have an existing draft, which would become outdated once the release
   // is published (documents set to be unpublished are excluded, since publishing intentionally
   // keeps or creates a draft for them so that their content is not lost)
-  const draftDocumentIds = useMemo(
+  const draftDocuments = useMemo(
     () =>
       documents
         .filter(
@@ -73,9 +116,11 @@ export const ReleasePublishAllButton = ({
             releaseDocument.document.draftDocumentExists &&
             !isGoingToUnpublish(releaseDocument.document),
         )
-        .map((releaseDocument) => releaseDocument.document._id),
+        .map((releaseDocument) => releaseDocument.document),
     [documents],
   )
+  const draftDocumentIds = useMemo(() => draftDocuments.map(({_id}) => _id), [draftDocuments])
+  const updateDraftsDescriptionId = useId()
   const draftDocumentsCount = draftDocumentIds.length
   const showUpdateDraftsOption = isDraftModelEnabled && draftDocumentsCount > 0
 
@@ -179,7 +224,9 @@ export const ReleasePublishAllButton = ({
       <Dialog
         id="confirm-publish-dialog"
         data-testid="confirm-publish-dialog"
-        header={t('publish-dialog.confirm-publish.title')}
+        header={t('publish-dialog.confirm-publish.title', {
+          title: release.metadata.title || tCore('release.placeholder-untitled-release'),
+        })}
         onClose={() => {
           onConfirmDialogClose?.()
           setPublishBundleStatus('idle')
@@ -217,17 +264,38 @@ export const ReleasePublishAllButton = ({
                     setShouldUpdateDrafts(event.currentTarget.checked)
                   }
                   data-testid="update-drafts-checkbox"
+                  aria-describedby={updateDraftsDescriptionId}
                 />
                 <Text size={1} as="div" trim={true}>
                   {t('publish-dialog.confirm-publish.update-drafts-checkbox')}
                 </Text>
               </Flex>
-              <Text muted size={1} as="div" trim={true}>
-                {t('publish-dialog.confirm-publish.update-drafts-description', {
-                  count: draftDocumentsCount,
-                  draftDocumentsLength: draftDocumentsCount,
-                })}
-              </Text>
+              <VStack gap={3} id={updateDraftsDescriptionId}>
+                <Text muted size={1} as="p" trim={true}>
+                  {t('publish-dialog.confirm-publish.update-drafts-description', {
+                    count: draftDocumentsCount,
+                    draftDocumentsLength: draftDocumentsCount,
+                  })}
+                </Text>
+                <Text muted size={1} as="p" trim={true}>
+                  {t('publish-dialog.confirm-publish.update-drafts-review')}
+                </Text>
+              </VStack>
+              <VStack
+                gap={1}
+                as="ul"
+                data-testid="update-drafts-list"
+                style={{listStyle: 'none', margin: 0, padding: 0}}
+              >
+                {draftDocuments.map((draftDocument) => (
+                  <li key={draftDocument._id}>
+                    <DraftToDiscardLink
+                      documentId={draftDocument._id}
+                      documentType={draftDocument._type}
+                    />
+                  </li>
+                ))}
+              </VStack>
             </VStack>
           )}
         </VStack>
@@ -243,6 +311,8 @@ export const ReleasePublishAllButton = ({
     showUpdateDraftsOption,
     shouldUpdateDrafts,
     draftDocumentsCount,
+    draftDocuments,
+    updateDraftsDescriptionId,
     onConfirmDialogClose,
   ])
 

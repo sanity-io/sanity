@@ -151,16 +151,6 @@ export interface DocumentTableSelection<Row = unknown> {
  *
  * @internal
  */
-/** Keeps the command lane on the same left edge as the rows: the centred column, or full width. */
-function CommandLaneWidth({fullWidth, children}: {fullWidth?: boolean; children: ReactNode}) {
-  if (fullWidth) return <Box paddingX={3}>{children}</Box>
-  return (
-    <Container flexBasis="auto" flexGrow={0} flexShrink={0} size={3}>
-      {children}
-    </Container>
-  )
-}
-
 export function DocumentTable<Row extends object>({
   rows,
   loading = false,
@@ -179,7 +169,6 @@ export function DocumentTable<Row extends object>({
   rowActions,
   rowProps,
   hideTableInlinePadding,
-  fullWidth,
   emptyState,
   defaultSort,
   id,
@@ -219,8 +208,6 @@ export function DocumentTable<Row extends object>({
   /** Per-row Card props (for example a tone). Forwarded to the underlying Table. */
   rowProps?: (row: Row) => Partial<TableRowProps>
   hideTableInlinePadding?: boolean
-  /** Rows and command lane use the full card width instead of the centred `container[3]` column. */
-  fullWidth?: boolean
   emptyState: (() => React.JSX.Element) | string
   defaultSort?: TableSort
   /** id + data-testid for the scroll container (the filter-tab `aria-controls` target). */
@@ -324,7 +311,7 @@ export function DocumentTable<Row extends object>({
           container[3] + paddingX={2} aligns the lane with the table's row content below. */}
       {showCommandLane && (
         <Card flex="none" borderBottom paddingY={2}>
-          <CommandLaneWidth fullWidth={fullWidth}>
+          <Container flexBasis="auto" flexGrow={0} flexShrink={0} size={3}>
             <Box paddingX={2}>
               <Flex alignItems="center" gap={3} style={{minHeight: commandLaneMinHeight}}>
                 {showBulkToolbar && selection ? (
@@ -386,7 +373,7 @@ export function DocumentTable<Row extends object>({
                 )}
               </Flex>
             </Box>
-          </CommandLaneWidth>
+          </Container>
         </Card>
       )}
       <Card data-testid={id} flex={1} id={id} ref={setScrollContainerRef} style={TABLE_CARD_STYLE}>
@@ -396,7 +383,6 @@ export function DocumentTable<Row extends object>({
             data={displayRows}
             defaultSort={defaultSort}
             emptyState={emptyState}
-            fullWidth={fullWidth}
             hideTableInlinePadding={hideTableInlinePadding}
             loading={loading}
             rowActions={rowActions}
