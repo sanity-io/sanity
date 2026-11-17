@@ -1,7 +1,7 @@
 import {
   type ReactNode,
   useCallback,
-  useContext,
+  use,
   useLayoutEffect,
   useMemo,
   useState,
@@ -18,7 +18,7 @@ export function PresentationDocumentProvider(props: {
   options: PresentationPluginOptions
 }): React.JSX.Element {
   const {children, options} = props
-  const parent = useContext(PresentationDocumentContext)
+  const parent = use(PresentationDocumentContext)
   const parentRegister = parent?.register
 
   // Options registered by nested providers (further presentation plugin instances wrapping the

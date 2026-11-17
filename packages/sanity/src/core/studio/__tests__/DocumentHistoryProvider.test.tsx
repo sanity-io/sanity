@@ -1,6 +1,6 @@
 import {ResourceProvider} from '@sanity/sdk-react'
 import {act, renderHook, waitFor} from '@testing-library/react'
-import {type ComponentType, type ReactNode, StrictMode, useContext} from 'react'
+import {type ComponentType, type ReactNode, StrictMode, use} from 'react'
 import {DocumentHistoryContext} from 'sanity/_singletons'
 import {beforeAll, expect, it, onTestFinished, vi} from 'vitest'
 
@@ -146,7 +146,7 @@ it('drops an event the SDK fails to send and keeps recording', async () => {
   const {activity} = stubHistoryHost()
   const error = vi.spyOn(console, 'error').mockImplementation(() => {})
   onTestFinished(() => error.mockRestore())
-  const {result} = renderHook(() => useContext(DocumentHistoryContext), {wrapper: Wrapper})
+  const {result} = renderHook(() => use(DocumentHistoryContext), {wrapper: Wrapper})
   const withoutResource: DocumentHistoryHandle = {
     documentId: 'book-1',
     documentType: 'book',

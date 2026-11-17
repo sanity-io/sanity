@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {VisibleWorkspacesContext} from 'sanity/_singletons'
 
 import {type WorkspaceSummary} from '../../config/types'
@@ -47,7 +47,7 @@ export function evaluateWorkspaceHidden(
  * @internal
  */
 export function useVisibleWorkspaces(): VisibleWorkspacesContextValue {
-  const context = useContext(VisibleWorkspacesContext)
+  const context = use(VisibleWorkspacesContext)
   if (context === null) {
     throw new Error('useVisibleWorkspaces: missing VisibleWorkspacesProvider in component tree')
   }

@@ -736,6 +736,13 @@ as a prop or key anything on its identity: an effect that depends on it re-runs 
 An older copy of the function still calls the latest callback, so a closure that captured one stays
 correct.
 
+### Context: read it with `use(Context)`, not `useContext`
+
+Read context values with React 19's `use`: `const value = use(MyContext)`. `useContext` is banned
+(`eslint/no-restricted-imports` in `.oxlintrc.json`, repeated in every override that redefines the
+rule). `use` returns the same value and subscribes the same way, but unlike `useContext` it may be
+called inside conditions and loops, so a hook can skip reading a context it does not need.
+
 ### react-rx: stable observables, explicit initial values
 
 `react-rx` v7 never subscribes during render. `useObservable` / `useSyncObservable` render the

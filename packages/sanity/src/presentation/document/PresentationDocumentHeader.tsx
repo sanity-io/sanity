@@ -1,6 +1,6 @@
 import {rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {type ReactNode, useContext} from 'react'
+import {type ReactNode, use} from 'react'
 import {type ObjectSchemaType, type PublishedId} from 'sanity'
 import {PresentationDocumentContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
@@ -31,7 +31,7 @@ export function PresentationDocumentHeader(props: {
   schemaType: ObjectSchemaType
 }): ReactNode {
   const {documentId, options, schemaType, version} = props
-  const context = useContext(PresentationDocumentContext)
+  const context = use(PresentationDocumentContext)
 
   const contextOptions = context?.options || []
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

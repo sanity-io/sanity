@@ -3,7 +3,6 @@ import {
   // oxlint-disable-next-line no-restricted-imports -- a context that exists only in this test
   createContext,
   use,
-  useContext,
   useMemo,
 } from 'react'
 import {useObservablePromise} from 'react-rx'
@@ -34,7 +33,7 @@ function AnswerProvider(props: ProviderProps) {
 
 // Never calls `renderDefault`, so the default studio layout stays out of the test
 function AnswerLayout(_props: LayoutProps) {
-  const promise = useContext(AnswerPromiseContext)
+  const promise = use(AnswerPromiseContext)
   if (!promise) throw new Error('no provider above the layout')
   log.push('layout attempted')
   const answer = use(promise)

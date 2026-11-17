@@ -1,4 +1,4 @@
-import {type ReactNode, useContext, useMemo} from 'react'
+import {type ReactNode, use, useMemo} from 'react'
 import {AppIdCacheContext} from 'sanity/_singletons'
 
 import {type AppIdCache, createAppIdCache} from './appIdCache'
@@ -12,7 +12,7 @@ interface AppIdCacheProviderProps {
  */
 export function AppIdCacheProvider(props: AppIdCacheProviderProps) {
   const {children} = props
-  const parentCache = useContext(AppIdCacheContext)
+  const parentCache = use(AppIdCacheContext)
 
   const cache = useMemo(() => parentCache || createAppIdCache(), [parentCache])
 
@@ -23,7 +23,7 @@ export function AppIdCacheProvider(props: AppIdCacheProviderProps) {
  * @internal
  */
 export function useAppIdCache(): AppIdCache {
-  const cache = useContext(AppIdCacheContext)
+  const cache = use(AppIdCacheContext)
 
   if (!cache) {
     throw new Error(

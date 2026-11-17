@@ -1,4 +1,4 @@
-import {type ReactNode, useContext} from 'react'
+import {type ReactNode, use} from 'react'
 import {ConfigErrorContext} from 'sanity/_singletons'
 
 import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
@@ -23,7 +23,7 @@ import {ConfigErrorScreen} from './ConfigErrorScreen'
  * @internal
  */
 export function ConfigErrorGate({children}: {children: ReactNode}): ReactNode {
-  const configError = useContext(ConfigErrorContext)
+  const configError = use(ConfigErrorContext)
   const {activeWorkspace} = useActiveWorkspace()
 
   const isActiveWorkspaceFailing =

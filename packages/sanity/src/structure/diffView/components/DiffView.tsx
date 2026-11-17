@@ -1,4 +1,4 @@
-import {type ComponentType, useContext, useMemo, useState} from 'react'
+import {type ComponentType, use, useMemo, useState} from 'react'
 import {ReferenceInputOptionsContext} from 'sanity/_singletons'
 
 import {type DocumentLayoutProps} from '../../../core/config/types'
@@ -18,7 +18,7 @@ export const DiffView: ComponentType<Pick<DocumentLayoutProps, 'documentId'>> = 
   const syncChannel = useCreatePathSyncChannel()
   const [previousPaneElement, setPreviousPaneElement] = useState<HTMLElement | null>(null)
   const [nextPaneElement, setNextPaneElement] = useState<HTMLElement | null>(null)
-  const referenceInputOptionsContext = useContext(ReferenceInputOptionsContext)
+  const referenceInputOptionsContext = use(ReferenceInputOptionsContext)
 
   const diffViewReferenceInputOptionsContext = useMemo(
     () => ({

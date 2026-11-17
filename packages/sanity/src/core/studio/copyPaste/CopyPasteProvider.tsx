@@ -4,7 +4,7 @@ import {useToast} from '@sanity/ui/toast'
 import * as PathUtils from '@sanity/util/paths'
 import flatten from 'lodash-es/flatten.js'
 import last from 'lodash-es/last.js'
-import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, use, useMemo, useState} from 'react'
 import {CopyPasteContext} from 'sanity/_singletons'
 
 import {getValueAtPath} from '../../field/paths/helpers'
@@ -368,7 +368,7 @@ export const CopyPasteProvider: React.FC<{
  * @hidden
  */
 export const useCopyPaste = () => {
-  const context = useContext(CopyPasteContext)
+  const context = use(CopyPasteContext)
   if (!context) {
     throw new Error('useCopyPaste must be used within a CopyPasteProvider')
   }

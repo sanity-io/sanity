@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {PresentationParamsContext} from 'sanity/_singletons'
 
 import {type PresentationParamsContextValue} from './types'
@@ -13,7 +13,7 @@ export function usePresentationParams(
 export function usePresentationParams(
   throwOnMissingContext = true,
 ): PresentationParamsContextValue | null {
-  const params = useContext(PresentationParamsContext)
+  const params = use(PresentationParamsContext)
 
   if (throwOnMissingContext && !params) {
     throw new Error('Presentation params context is missing')
