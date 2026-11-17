@@ -28,6 +28,9 @@ describe('shallowEquals', () => {
     expect(shallowEquals({a: 1, b: undefined}, {a: 1})).toBe(false)
     expect(shallowEquals({a: 1}, {a: 1, b: undefined})).toBe(false)
     expect(shallowEquals({a: 1, b: undefined}, {a: 1, b: undefined})).toBe(true)
+    // same number of keys, but one of them swapped for another
+    expect(shallowEquals({_id: 'a', title: undefined}, {_id: 'a', subtitle: 'new'})).toBe(false)
+    expect(shallowEquals({_id: 'a', subtitle: 'new'}, {_id: 'a', title: undefined})).toBe(false)
   })
 
   it('compares nested values by reference only', () => {
