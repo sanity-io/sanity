@@ -277,14 +277,46 @@ describe('DocumentVersionsFlyoutList', () => {
       await settleChromaticEndState()
     })
 
-    it('marks nothing when the row is not the document the pane shows', async () => {
+    it('marks the variant picked in the studio with the pale blue on a document that is not open', async () => {
+      const {settleChromaticEndState} = testHelpers()
       await renderFlyoutList({selectedVariantName: 'variant:german', viewingDocument: false})
+      const germanRow = page.getByRole('menuitem', {name: /German/})
+      await expect.element(germanRow).toBeVisible()
+
+      // The picked audience is the current one, for assistive technology too
+      await expect.element(germanRow).toHaveAttribute('aria-current', 'true')
+      await expect.element(germanRow).toHaveAttribute('data-picked')
+      await expect
+        .element(page.getByRole('menuitem', {name: /Swedish/}))
+        .not.toHaveAttribute('aria-current')
+      await expect
+        .element(page.getByRole('menuitem', {name: /Default/}))
+        .not.toHaveAttribute('aria-current')
+
+      // The quiet checked-row tint, not the open version's strong blue, and the text keeps its colours
+      const row = germanRow.element() as HTMLElement
+      const paleBlue = resolvedColor(row, 'var(--active-background-normal)')
+      await expect.element(germanRow).toHaveStyle({backgroundColor: paleBlue})
+      expect(paleBlue).not.toBe(resolvedColor(row, 'var(--active-background-emphasized)'))
+      expect(row.hasAttribute('data-viewed')).toBe(false)
+
+      // It stays pale blue while hovered
+      await germanRow.hover()
+      await expect.element(germanRow).toHaveAttribute('data-hovered')
+      expect(getComputedStyle(row).backgroundColor).toBe(paleBlue)
+      await userEvent.unhover(germanRow)
+
+      await settleChromaticEndState()
+    })
+
+    it('marks nothing with no variant picked', async () => {
+      await renderFlyoutList({viewingDocument: false})
       await expect.element(page.getByRole('menuitem', {name: /German/})).toBeVisible()
       expect(
         page
           .getByRole('menuitem')
           .elements()
-          .some((r) => r.hasAttribute('aria-current')),
+          .some((r) => r.hasAttribute('aria-current') || r.hasAttribute('data-picked')),
       ).toBe(false)
     })
   })
