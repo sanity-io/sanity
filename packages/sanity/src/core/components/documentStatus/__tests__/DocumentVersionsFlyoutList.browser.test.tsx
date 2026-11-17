@@ -278,7 +278,7 @@ describe('DocumentVersionsFlyoutList', () => {
     })
   })
 
-  it('keeps the rows 8px from the sides and 4px from the top and bottom of the panel', async () => {
+  it('keeps the rows 8px from every side of the panel', async () => {
     await renderFlyoutList()
     const card = page.getByTestId('document-versions-flyout')
     await expect.element(card).toBeVisible()
@@ -301,7 +301,7 @@ describe('DocumentVersionsFlyoutList', () => {
 
     const {left, top, bottom} = geometry()
     expect(Math.abs(left - 8)).toBeLessThanOrEqual(1)
-    expect(Math.abs(top - 4)).toBeLessThanOrEqual(1)
-    expect(Math.abs(bottom - 4)).toBeLessThanOrEqual(1)
+    expect(Math.abs(top - 8)).toBeLessThanOrEqual(1)
+    expect(Math.abs(bottom - 8)).toBeLessThanOrEqual(1)
   })
 })
