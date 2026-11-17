@@ -107,10 +107,13 @@ describe('CreateVariantPicker menu: reopening a scrolled list', () => {
       row.getBoundingClientRect(),
     )
     const visible = rows.filter((row) => row.bottom > box.top + 0.5 && row.top < box.bottom - 0.5)
+    const lastVisible = visible[visible.length - 1]
     return {
       fieldBottom: field.bottom,
       firstVisibleTop: visible[0].top,
-      lastVisibleBottom: visible[visible.length - 1].bottom,
+      lastVisibleTop: lastVisible.top,
+      lastVisibleBottom: lastVisible.bottom,
+      lastVisibleHeight: lastVisible.height,
       listBottom: box.bottom,
     }
   }
@@ -141,7 +144,14 @@ describe('CreateVariantPicker menu: reopening a scrolled list', () => {
     expect(Math.abs(listBottom - lastVisibleBottom - 4)).toBeLessThanOrEqual(1)
   }
 
-  it('reopens at the top with nothing selected', async () => {
+  /** The first row starts 8px below the field, and the list ends half way through a row: it scrolls. */
+  function expectHalfRow() {
+    const {fieldBottom, firstVisibleTop, lastVisibleTop, lastVisibleHeight, listBottom} = geometry()
+    expect(Math.abs(firstVisibleTop - (fieldBottom + 8))).toBeLessThanOrEqual(1)
+    expect(Math.abs(listBottom - lastVisibleTop - lastVisibleHeight / 2)).toBeLessThanOrEqual(1)
+  }
+
+  it('reopens at the top with nothing selected, with half the next row peeking', async () => {
     void render(<PickerHarness options={MANY_OPTIONS} />)
     await open()
     scrollToHalfRow()
@@ -149,7 +159,7 @@ describe('CreateVariantPicker menu: reopening a scrolled list', () => {
     await open()
 
     expect(list().scrollTop).toBe(0)
-    expectWholeRows()
+    expectHalfRow()
   })
 
   it('reopens with the last option, when selected, whole and no row cut at either end', async () => {
