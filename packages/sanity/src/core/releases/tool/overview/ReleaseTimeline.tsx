@@ -15,7 +15,7 @@ import {startOfMonth} from 'date-fns/startOfMonth'
 import {startOfWeek} from 'date-fns/startOfWeek'
 import {Fragment, type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
-import {Box, Container, Flex, Text, VStack} from 'ui5'
+import {Box, Container, Flex, Icon, Text, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
@@ -32,6 +32,7 @@ import {
   type ReleaseDateFilter,
   type ReleaseDateFilterUnit,
 } from '../../util/releaseDateFilter'
+import {OVERVIEW_CONTENT_SIZE} from './overviewLayout'
 import {type TableRelease} from './ReleasesOverview'
 import {SegmentedControl} from './SegmentedControl'
 
@@ -495,13 +496,16 @@ function ReleaseTimelinePill({
         }}
       >
         <Flex alignItems="center" gap={2}>
-          <Text size={1} muted>
-            {intendedNotArmed ? (
-              <ToneIcon icon={WarningOutlineIcon} tone={overdue ? 'critical' : 'caution'} />
-            ) : (
-              <LockIcon data-testid={scheduled ? 'release-timeline-lock-icon' : undefined} />
-            )}
-          </Text>
+          {intendedNotArmed ? (
+            <Icon icon={WarningOutlineIcon} size={1} tone={overdue ? 'critical' : 'caution'} />
+          ) : (
+            <Icon
+              icon={LockIcon}
+              size={1}
+              muted
+              data-testid={scheduled ? 'release-timeline-lock-icon' : undefined}
+            />
+          )}
           {/* No `overflow: hidden` here — the `Text` handles its own ellipsis; an outer clip box
               was cropping the top of the glyphs. `minWidth: 0` lets the flex item shrink so the
               title truncates instead of pushing past the pill's fixed width. The full title lives
@@ -934,8 +938,8 @@ export function ReleaseTimeline({
       paddingTop={2}
       paddingBottom={collapsed ? 2 : 3}
     >
-      {/* Same 1280px column as the toolbar and the table, so the three share one left edge. */}
-      <Container size={3}>
+      {/* Same content column as the toolbar and the table, so the three share one left edge. */}
+      <Container size={OVERVIEW_CONTENT_SIZE}>
         <VStack gap={3}>
           <Flex alignItems="center" gap={3}>
             {/* SET 2 — timeline view config (on/off + density) in ONE bordered rail: the timeline

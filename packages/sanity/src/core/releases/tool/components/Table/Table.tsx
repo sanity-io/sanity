@@ -45,7 +45,15 @@ export interface TableProps<TableData, AdditionalRowTableData> {
   rowProps?: (datum: TableData) => Partial<TableRowProps>
   scrollContainerRef: HTMLDivElement | null
   hideTableInlinePadding?: boolean
+  /**
+   * The width of the content column the rows line up in, as a theme container size: 3 (1280px)
+   * for detail pages, 4 (1600px) for overview pages. Row backgrounds and dividers stay full width.
+   */
+  contentSize?: TableContentSize
 }
+
+/** @internal */
+export type TableContentSize = 3 | 4
 
 const ITEM_HEIGHT = 59
 const LOADING_ROW_COUNT = 3
@@ -101,6 +109,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
   rowProps = () => ({}),
   scrollContainerRef,
   hideTableInlinePadding = false,
+  contentSize = 3,
 }: TableProps<TableData, AdditionalRowTableData>) => {
   const {searchTerm, sort, rowActions} = useTableContext()
 
@@ -225,7 +234,7 @@ const TableInner = <TableData, AdditionalRowTableData>({
   )
 
   const theme = useTheme()
-  const maxInlineSize = (!hideTableInlinePadding && theme.sanity.v2?.container[3]) || 0
+  const maxInlineSize = (!hideTableInlinePadding && theme.sanity.v2?.container[contentSize]) || 0
   const paddingInline = rem(theme.sanity.v2?.space[3] ?? 0)
   const tableInlinePadding = hideTableInlinePadding
     ? '0px'

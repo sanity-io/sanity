@@ -48,9 +48,7 @@ function ReleaseTimeTwoState({release, compact}: ReleaseTimeProps) {
   if (!timing.date) {
     return (
       <Flex gap={2} alignItems="center" data-testid="release-unscheduled">
-        <Text size={1} muted>
-          <CircleIcon />
-        </Text>
+        <Icon icon={CircleIcon} size={1} muted />
         <Text size={1} muted weight="medium" as="div" trim={true} style={{whiteSpace: 'nowrap'}}>
           {t('schedule.unscheduled')}
         </Text>
@@ -63,9 +61,7 @@ function ReleaseTimeTwoState({release, compact}: ReleaseTimeProps) {
     return (
       <Flex gap={2} alignItems="center">
         {/* Sized by Text like the ⚠ below, so every row's date starts at the same x. */}
-        <Text size={1} muted>
-          <LockIcon data-testid="release-lock-icon" />
-        </Text>
+        <Icon icon={LockIcon} size={1} muted data-testid="release-lock-icon" />
         <Text size={1} weight="medium" as="div" trim={true} style={{whiteSpace: 'nowrap'}}>
           {dateLabel}
         </Text>
@@ -84,9 +80,7 @@ function ReleaseTimeTwoState({release, compact}: ReleaseTimeProps) {
       portal
     >
       <Flex gap={2} alignItems="center" data-testid="release-not-scheduled">
-        <Text size={1} as="div" trim={true}>
-          <ToneIcon icon={WarningOutlineIcon} tone="caution" />
-        </Text>
+        <Icon icon={WarningOutlineIcon} size={1} tone="caution" />
         <Text size={1} weight="medium" as="div" trim={true} style={{whiteSpace: 'nowrap'}}>
           {dateLabel}
         </Text>

@@ -13,7 +13,7 @@ import {DocumentTableSelectionContext} from 'sanity/_singletons'
 import {Container, Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
-import {Table, type TableRowProps} from './Table'
+import {Table, type TableContentSize, type TableRowProps} from './Table'
 import {type TableSort} from './TableProvider'
 import {
   type Column,
@@ -38,7 +38,9 @@ const SEARCH_INPUT_STYLE: CSSProperties = {maxWidth: 280}
 // Default command-lane height so the browse↔bulk swap never shifts the rows below. Consumers with a
 // taller browse control (e.g. the variants overview's bordered filter group) raise it via the
 // `commandLaneMinHeight` prop so the shorter bulk toolbar reserves the same height.
-const DEFAULT_COMMAND_LANE_MIN_HEIGHT = 33
+// 35px is the measured height of the filter tabs and the search input (font size 1), the tallest
+// browse controls; 33 left the bulk toolbar 2px shorter, so selecting a row moved the table up.
+const DEFAULT_COMMAND_LANE_MIN_HEIGHT = 35
 
 // Filter-tab strip: scrolls horizontally when the tabs outrun the width, with a subtle right-edge
 // fade cueing the overflow. When the tabs fit, the fade falls over empty space and is invisible.
@@ -169,6 +171,7 @@ export function DocumentTable<Row extends object>({
   rowActions,
   rowProps,
   hideTableInlinePadding,
+  contentSize = 3,
   emptyState,
   defaultSort,
   id,
@@ -208,6 +211,8 @@ export function DocumentTable<Row extends object>({
   /** Per-row Card props (for example a tone). Forwarded to the underlying Table. */
   rowProps?: (row: Row) => Partial<TableRowProps>
   hideTableInlinePadding?: boolean
+  /** The content column the command lane and rows line up in: 3 (1280px, detail) or 4 (1600px, overview). */
+  contentSize?: TableContentSize
   emptyState: (() => React.JSX.Element) | string
   defaultSort?: TableSort
   /** id + data-testid for the scroll container (the filter-tab `aria-controls` target). */
@@ -308,10 +313,10 @@ export function DocumentTable<Row extends object>({
       {/* Command lane (zone 1). Fixed height so the browse↔bulk swap never shifts the rows. Idle:
           filter tabs lead from the left (aligned with the columns), search is right-aligned. On
           selection: selected count + Clear on the left, caller's bulk actions on the right.
-          container[3] + paddingX={2} aligns the lane with the table's row content below. */}
+          container[contentSize] + paddingX={2} aligns the lane with the table's row content below. */}
       {showCommandLane && (
         <Card flex="none" borderBottom paddingY={2}>
-          <Container flexBasis="auto" flexGrow={0} flexShrink={0} size={3}>
+          <Container flexBasis="auto" flexGrow={0} flexShrink={0} size={contentSize}>
             <Box paddingX={2}>
               <Flex alignItems="center" gap={3} style={{minHeight: commandLaneMinHeight}}>
                 {showBulkToolbar && selection ? (
@@ -384,6 +389,7 @@ export function DocumentTable<Row extends object>({
             defaultSort={defaultSort}
             emptyState={emptyState}
             hideTableInlinePadding={hideTableInlinePadding}
+            contentSize={contentSize}
             loading={loading}
             rowActions={rowActions}
             rowId={rowId}
