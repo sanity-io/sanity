@@ -161,13 +161,12 @@ describe('release metadata validation', () => {
 })
 
 describe('compiled release types', () => {
-  test('the release document is live-edit, without versions, read-only and uses the metadata type', () => {
+  test('the release document is live-edit, read-only and uses the metadata type', () => {
     const schema = compile(resolveReleaseTypes([customMetadata]))
     const release = schema.get(RELEASE_DOCUMENT_TYPE_NAME)
     const metadataField = release.fields.find((field: {name: string}) => field.name === 'metadata')
 
     expect(release.liveEdit).toBe(true)
-    expect(release.allowVersions).toBe(false)
     expect(release.readOnly).toBe(true)
     expect(metadataField.type.name).toBe(RELEASE_METADATA_TYPE_NAME)
     expect(
@@ -228,7 +227,6 @@ describe('compiled release types', () => {
     })
 
     expect(schema.get(RELEASE_DOCUMENT_TYPE_NAME).liveEdit).toBe(true)
-    expect(schema.get(RELEASE_DOCUMENT_TYPE_NAME).allowVersions).toBe(false)
     expect(
       schema.get(RELEASE_METADATA_TYPE_NAME).fields.map((field: {name: string}) => field.name),
     ).toEqual([...releaseMetadataCoreFieldNames, 'legalReview', 'signOff'])

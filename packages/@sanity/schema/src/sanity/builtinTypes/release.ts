@@ -11,7 +11,6 @@ export default {
   title: 'Release',
   type: 'document',
   liveEdit: true,
-  allowVersions: false,
   readOnly: true,
   fields: [
     {
