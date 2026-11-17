@@ -198,6 +198,8 @@ describe('DocumentVersionsFlyoutList', () => {
       // React focus state is chromium-only in practice: headless Firefox shares window focus
       // across the test pages, so a row can lose `onFocus` while `document.activeElement` holds
       if (server.browser !== 'firefox') {
+        // Keyboard focus, as the host gives it on ArrowDown: a key press, then focus
+        await userEvent.keyboard('{ArrowDown}')
         ;(rows[2] as HTMLElement).focus()
         await expect
           .element(page.getByRole('menuitem', {name: /Swedish/}))
@@ -256,6 +258,7 @@ describe('DocumentVersionsFlyoutList', () => {
 
       // And over focus, which shows as the focus outline instead (React focus state: chromium only)
       if (server.browser !== 'firefox') {
+        await userEvent.keyboard('{ArrowDown}')
         row.focus()
         await expect.element(germanRow).toHaveAttribute('data-focused')
         expect(getComputedStyle(row).backgroundColor).toBe(blue)
@@ -277,6 +280,31 @@ describe('DocumentVersionsFlyoutList', () => {
       ).toBe(false)
     })
   })
+
+  // React focus state is chromium-only in practice (see above)
+  it.skipIf(server.browser === 'firefox')(
+    'draws the focus outline for keyboard focus only, not for a mouse press',
+    async () => {
+      await renderFlyoutList()
+      const germanRow = page.getByRole('menuitem', {name: /German/})
+      await expect.element(germanRow).toBeVisible()
+      const row = germanRow.element() as HTMLElement
+
+      // A mouse press focuses the button, but draws no outline
+      await germanRow.click()
+      expect(document.activeElement).toBe(row)
+      expect(row.hasAttribute('data-focused')).toBe(false)
+      expect(getComputedStyle(row).outlineStyle).toBe('none')
+      row.blur()
+
+      // Keyboard focus, as the host gives it on ArrowDown, draws the outline
+      const swedishRow = page.getByRole('menuitem', {name: /Swedish/})
+      await userEvent.keyboard('{ArrowDown}')
+      ;(swedishRow.element() as HTMLElement).focus()
+      await expect.element(swedishRow).toHaveAttribute('data-focused')
+      expect(getComputedStyle(swedishRow.element()).outlineStyle).toBe('solid')
+    },
+  )
 
   it('keeps the rows 8px from every side of the panel', async () => {
     await renderFlyoutList()
