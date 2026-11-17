@@ -97,27 +97,35 @@ function groupEditTransactions(
   return result
 }
 
-export function getEditEvents(
-  transactions: TransactionLogEventWithEffects[],
-  documentId: string,
-  liveEdit: true,
-): UpdateLiveDocumentEvent[]
-
-export function getEditEvents(
-  transactions: TransactionLogEventWithEffects[],
-  documentId: string,
-  liveEdit: false,
-): EditDocumentVersionEvent[]
-
-export function getEditEvents(
-  transactions: TransactionLogEventWithEffects[],
-  documentId: string,
-  liveEdit: boolean,
-): (EditDocumentVersionEvent | UpdateLiveDocumentEvent)[]
 /**
- * Builds synthetic edit events from translog transactions — the events API does not expose edits,
- * so the studio derives them client-side (both for the initial fetch and for real-time remote
- * mutations, which {@link mergeEditEvents} then regroups together).
+ * Projects grouped edit events onto the `updateLiveDocument` shape a live-edit document shows.
+ * The remote-edits observable applies this after {@link getEditEvents} when the schema is live
+ * edit.
+ *
+ * Known quirk: merged (in-window) transactions are dropped entirely, including those by other
+ * authors, losing their attribution (tracked as a known issue; contrast with
+ * {@link squashLiveEditEvents}, which only squashes same-author events).
+ */
+export function toUpdateLiveDocumentEvents(
+  events: EditDocumentVersionEvent[],
+): UpdateLiveDocumentEvent[] {
+  return events.map((event) => ({
+    id: event.id,
+    timestamp: event.timestamp,
+    type: 'updateLiveDocument',
+    documentId: event.documentId,
+    revisionId: event.revisionId,
+    author: event.author,
+    documentVariantType: event.documentVariantType,
+  }))
+}
+
+/**
+ * Builds synthetic `editDocumentVersion` events from translog transactions — the events API does
+ * not expose edits, so the studio derives them client-side (both for the initial fetch and for
+ * real-time remote mutations, which {@link mergeEditEvents} then regroups together). Live-edit
+ * documents project these events with {@link toUpdateLiveDocumentEvents} in the remote-edits
+ * observable.
  *
  * Behavior:
  * - Only transactions whose effect on `documentId` is `'modified'` are considered
@@ -126,37 +134,20 @@ export function getEditEvents(
  *   (5 min) of the *current group's newest* transaction is merged into that group; otherwise it
  *   starts a new event. Note the window is anchored to the group head, not the previous
  *   transaction, so a continuous editing session splits every 5 minutes.
- * - `liveEdit: false` produces `editDocumentVersionEvent`s: merged transactions are appended to
- *   `transactions` and distinct authors accumulate in `contributors`. The event id/revisionId is
- *   the *newest* transaction id of the group.
- * - `liveEdit: true` produces `updateLiveDocument` events — one per group. Known quirk: merged
- *   (in-window) transactions are dropped entirely, including those by *other authors*, losing
- *   their attribution (tracked as a known issue; contrast with `squashLiveEditEvents`, which only
- *   squashes same-author events).
+ * - Merged transactions are appended to `transactions` and distinct authors accumulate in
+ *   `contributors`. The event id/revisionId is the *newest* transaction id of the group.
  */
 export function getEditEvents(
   transactions: TransactionLogEventWithEffects[],
   documentId: string,
-  liveEdit: boolean,
-): (EditDocumentVersionEvent | UpdateLiveDocumentEvent)[] {
-  const editEvents = groupEditTransactions(
+): EditDocumentVersionEvent[] {
+  return groupEditTransactions(
     transactions
       // We only care about the transactions that have modified the document
       .filter((tx) => getEffectState(tx.effects[documentId]) === 'modified')
       .map(getEditTransaction),
     documentId,
   )
-  if (!liveEdit) return editEvents
-
-  return editEvents.map((event): UpdateLiveDocumentEvent => ({
-    id: event.id,
-    timestamp: event.timestamp,
-    type: 'updateLiveDocument',
-    documentId,
-    revisionId: event.revisionId,
-    author: event.author,
-    documentVariantType: event.documentVariantType,
-  }))
 }
 
 /**
