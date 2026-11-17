@@ -228,6 +228,8 @@ import type {
   MediaLibraryAssetType,
   MediaLibraryFilter,
   MediaLibraryOptions,
+  MediaLibraryResolver,
+  MediaLibraryResolverContext,
   MediaValidationValue,
   MediaValidator,
   MendozaEffectPair,
@@ -1044,6 +1046,12 @@ describe('@sanity/types', () => {
   })
   test('MediaLibraryOptions', () => {
     expectTypeOf<MediaLibraryOptions>().toBeObject()
+  })
+  test('MediaLibraryResolver', () => {
+    expectTypeOf<MediaLibraryResolver<any>>().not.toBeNever()
+  })
+  test('MediaLibraryResolverContext', () => {
+    expectTypeOf<MediaLibraryResolverContext>().toBeObject()
   })
   test('MediaValidationValue', () => {
     expectTypeOf<MediaValidationValue<any>>().toBeObject()
