@@ -175,7 +175,7 @@ describe('navbar menus: a scrolling list', () => {
     }
   }
 
-  it('runs the rows into the scrollbar track and keeps the row action 8px from the row end', async () => {
+  it('keeps the rows 8px clear of the scrollbar thumb and the row action 8px from the row end', async () => {
     const menu = await openVariantsMenu()
     const before = rowAndAction(menu)
     near(rect(before.row).right - rect(before.action).right, INSET)
@@ -184,10 +184,11 @@ describe('navbar menus: a scrolling list', () => {
     expect(scroller.style.getPropertyValue('--menu-scrollbar-width')).toBe('12px')
     await expectStable(() => String(rect(before.row).right))
 
-    // The rows grow by the 8px inset at most, which puts their end on the 12px track's edge
+    // The rows grow 4px into the inset, so they end 4px before the 12px track: 8px before its
+    // thumb, which sits 4px into the track
     const after = rowAndAction(menu)
     near(rect(after.row).left - rect(menu).left, INSET)
-    near(rect(menu).right - rect(after.row).right, 0)
+    near(rect(menu).right - rect(after.row).right, 4)
     near(rect(after.row).right - rect(after.action).right, INSET)
   })
 
