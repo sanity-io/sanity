@@ -1,6 +1,7 @@
+import {isSystemDocumentTypeName} from '@sanity/schema/_internal'
 import {type SchemaType, type SchemaTypeDefinition} from '@sanity/types'
 
-const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset', 'system.release']
+const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset']
 
 /**
  * @internal
@@ -8,7 +9,10 @@ const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset', 'system.rele
 export function _isSanityDocumentTypeDefinition(
   def: SchemaTypeDefinition,
 ): def is SchemaTypeDefinition<'document'> {
-  return def.type === 'document' && BUNDLED_DOC_TYPES.includes(def.name)
+  return (
+    def.type === 'document' &&
+    (BUNDLED_DOC_TYPES.includes(def.name) || isSystemDocumentTypeName(def.name))
+  )
 }
 
 /**

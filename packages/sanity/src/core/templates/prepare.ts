@@ -1,6 +1,6 @@
+import {isSystemDocumentTypeName} from '@sanity/schema/_internal'
 import {type Schema, type SchemaType} from '@sanity/types'
 
-import {RELEASE_DOCUMENT_TYPE} from '../releases/store/constants'
 import {isBuilder} from './resolve'
 import {type Template} from './types'
 import {validateTemplates} from './validate'
@@ -34,7 +34,7 @@ export function defaultTemplateForType(schemaType: SchemaType): Template {
 export function defaultTemplatesForSchema(schema: Schema): Template[] {
   const schemaTypes = schema
     .getTypeNames()
-    .filter((typeName) => !typeName.startsWith('sanity.') && typeName !== RELEASE_DOCUMENT_TYPE)
+    .filter((typeName) => !typeName.startsWith('sanity.') && !isSystemDocumentTypeName(typeName))
     .map((typeName) => schema.get(typeName))
     .filter(isNonNullable)
     .filter((schemaType) => schemaType.type?.name === 'document')
