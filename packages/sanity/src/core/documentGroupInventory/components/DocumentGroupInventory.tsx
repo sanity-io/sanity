@@ -151,6 +151,13 @@ export interface DocumentGroupInventoryManageProps extends DocumentGroupInventor
    * the document (for example by closing its pane) instead of showing an empty one.
    */
   onAllVersionsDeleted?: () => void
+  /**
+   * Whether another action in the view is its one filled button, so the inventory's Create variant
+   * steps down to a secondary button. The structure tool sets it while the document pane's banner
+   * shows Add to release (a release is selected and the document, or the selected variant, is not
+   * in it). Otherwise Create variant is the filled button.
+   */
+  createVariantSecondary?: boolean
 }
 
 /**
@@ -203,6 +210,8 @@ function DocumentGroupInventoryForMode(
   const components = props.mode === 'readOnly' ? undefined : props.components
   const createVariantId = props.mode === 'readOnly' ? undefined : props.createVariantId
   const onCreateVariantClose = props.mode === 'readOnly' ? undefined : props.onCreateVariantClose
+  const createVariantSecondary =
+    props.mode === 'readOnly' ? false : Boolean(props.createVariantSecondary)
 
   const onAllVersionsDeleted = props.mode === 'readOnly' ? undefined : props.onAllVersionsDeleted
 
@@ -448,6 +457,7 @@ function DocumentGroupInventoryForMode(
               deletionRef={deletionRef}
               variantCreationRef={variantCreationRef}
               components={components}
+              createVariantSecondary={createVariantSecondary}
             />
           )
         )}
