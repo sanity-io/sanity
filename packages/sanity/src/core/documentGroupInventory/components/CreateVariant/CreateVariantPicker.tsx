@@ -296,8 +296,9 @@ export const CreateVariantPicker: ComponentType<{
                 ref={scrollerRef}
               >
                 {/* The 4px top, with the search field's 4px, puts the first row 8px below the field.
-                No bottom padding: the menu's own 4px is the space under the last row. */}
-                <Flex flexDirection="column" flexShrink={0} gap={1} paddingTop={1} paddingX={1}>
+                The 4px bottom, with the menu's own 4px, puts the last row 8px above the menu's
+                edge. */}
+                <Flex flexDirection="column" flexShrink={0} gap={1} paddingX={1} paddingY={1}>
                   {sections.flatMap((section, index) => [
                     ...(index > 0 ? [<MenuDivider key={`${section.key}-divider`} />] : []),
                     ...(section.label
