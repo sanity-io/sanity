@@ -51,6 +51,22 @@ export default {
       title: 'Metadata',
       type: RELEASE_METADATA_TYPE_NAME,
     },
+    {
+      name: 'finalDocumentStates',
+      title: 'Final document states',
+      type: 'array',
+      description: 'List of document IDs that were in a release when it was published or archived.',
+      hidden: true,
+      of: [{type: 'object', fields: [{name: 'id', title: 'Document ID', type: 'string'}]}],
+    },
+    {
+      name: 'userId',
+      title: 'User ID',
+      type: 'string',
+      description:
+        'UserID is the user who took an action on the release. It is set for any action that requires a background process, such as scheduling, unscheduling and publishing. It is empty otherwise.',
+      hidden: true,
+    },
   ],
   preview: {
     select: {
