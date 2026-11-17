@@ -96,10 +96,17 @@ const toggle: CSSProperties = {
 const dot = (color: string): CSSProperties => ({color, marginRight: 4})
 const mib = (bytes?: number): string => ((bytes ?? 0) / 1024 / 1024).toFixed(1)
 
-/** Same shape as Vision's formatDuration: `888ms` under a second, then `1.17s`, `10.5s`, `1.50m` */
+/**
+ * Same shape as Vision's formatMeasuredDuration: `400µs` under a millisecond, `1.84ms` and
+ * `12.3ms` under 100ms, `888ms` under a second, then `1.17s`, `10.5s`, `1.50m`
+ */
 function duration(ms = 0): string {
+  const microseconds = Math.round(Math.max(0, ms) * 1000)
+  if (microseconds < 1000) return `${microseconds}µs`
+  const fine = Number(ms.toPrecision(3))
+  if (fine < 100) return `${fine.toFixed(fine < 10 ? 2 : 1)}ms`
   const rounded = Math.round(ms)
-  if (rounded < 1000) return ms > 0 && rounded === 0 ? '<1ms' : `${rounded}ms`
+  if (rounded < 1000) return `${rounded}ms`
   const [value, unit] = rounded < 59_950 ? [rounded / 1000, 's'] : [rounded / 60_000, 'm']
   return `${value.toFixed(value < 10 ? 2 : value < 100 ? 1 : 0)}${unit}`
 }

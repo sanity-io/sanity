@@ -245,13 +245,13 @@ describe('NetworkTab', () => {
     )
     expect(screen.queryByText('Cache-Control: private, max-age=60')).toBeNull()
     expect(screen.getByTestId('vision-network-timing').textContent).toBe(
-      'vision.network.timing.local:{"e2e":"90ms"}',
+      'vision.network.timing.local:{"e2e":"90.0ms"}',
     )
     expect(screen.getByTestId('vision-network-timing-wasm').textContent).toBe(
-      'vision.network.timing.entry:{"label":"Query in WebAssembly","duration":"2ms"}',
+      'vision.network.timing.entry:{"label":"Query in WebAssembly","duration":"1.84ms"}',
     )
     expect(screen.getByTestId('vision-network-timing-route').textContent).toBe(
-      'vision.network.timing.entry:{"label":"Service worker to store and back","duration":"<1ms"}',
+      'vision.network.timing.entry:{"label":"Service worker to store and back","duration":"400µs"}',
     )
     expect(screen.queryByTestId('vision-network-hint')).toBeNull()
     expect(screen.queryByTestId('vision-network-cdn-blocked')).toBeNull()

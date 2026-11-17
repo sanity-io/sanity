@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {formatDuration} from './formatDuration'
+import {formatDuration, formatMeasuredDuration} from './formatDuration'
 
 describe('formatDuration', () => {
   it('keeps milliseconds under 1000ms', () => {
@@ -36,5 +36,34 @@ describe('formatDuration', () => {
     expect(formatDuration(Number.NaN)).toBe('0ms')
     expect(formatDuration(Number.POSITIVE_INFINITY)).toBe('0ms')
     expect(formatDuration(-1)).toBe('0ms')
+  })
+})
+
+describe('formatMeasuredDuration', () => {
+  it('writes microseconds under a millisecond', () => {
+    expect(formatMeasuredDuration(0)).toBe('0µs')
+    expect(formatMeasuredDuration(0.1)).toBe('100µs')
+    expect(formatMeasuredDuration(0.4)).toBe('400µs')
+    expect(formatMeasuredDuration(0.0004)).toBe('0µs')
+  })
+
+  it('keeps three significant digits up to 100ms', () => {
+    expect(formatMeasuredDuration(0.9996)).toBe('1.00ms')
+    expect(formatMeasuredDuration(1.84)).toBe('1.84ms')
+    expect(formatMeasuredDuration(9.996)).toBe('10.0ms')
+    expect(formatMeasuredDuration(12.43)).toBe('12.4ms')
+    expect(formatMeasuredDuration(90)).toBe('90.0ms')
+  })
+
+  it('is formatDuration from 100ms', () => {
+    expect(formatMeasuredDuration(99.96)).toBe('100ms')
+    expect(formatMeasuredDuration(888.4)).toBe('888ms')
+    expect(formatMeasuredDuration(1_170)).toBe('1.17s')
+    expect(formatMeasuredDuration(90_000)).toBe('1.50m')
+  })
+
+  it('treats a missing or negative duration as zero', () => {
+    expect(formatMeasuredDuration(Number.NaN)).toBe('0µs')
+    expect(formatMeasuredDuration(-1)).toBe('0µs')
   })
 })

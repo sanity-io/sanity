@@ -52,7 +52,10 @@ export interface QueryRunnerContext {
   /** URL of the request `syncTags` were computed for */
   syncTagsUrl: string | undefined
   reason: FetchReason
+  /** When the latest fetch started, as wall-clock time for the history entry */
   startedAt: number
+  /** The same moment on the `performance.now()` clock, which round trips are measured with */
+  startedClock: number
   /** URL of the latest request, available as soon as a fetch starts */
   url: string | undefined
   result: unknown
@@ -153,6 +156,7 @@ export const queryRunnerMachine = setup({
     }),
     markStarted: assign({
       startedAt: () => Date.now(),
+      startedClock: () => performance.now(),
       url: ({context}) => context.request?.url,
       error: undefined,
     }),
@@ -189,6 +193,7 @@ export const queryRunnerMachine = setup({
     syncTagsUrl: undefined,
     reason: {type: 'manual'},
     startedAt: 0,
+    startedClock: 0,
     url: undefined,
     result: undefined,
     error: undefined,
@@ -221,7 +226,7 @@ export const queryRunnerMachine = setup({
               target: 'settled',
               actions: assign(({context, event}) => {
                 const {response, network} = event.output
-                const e2eMs = Date.now() - context.startedAt
+                const e2eMs = performance.now() - context.startedClock
                 const meta: VisionResponseMeta = {
                   url: context.request?.url || '',
                   method:
@@ -287,7 +292,7 @@ export const queryRunnerMachine = setup({
                     params: context.request?.params ?? {},
                     status: 'error',
                     ms: undefined,
-                    e2eMs: Date.now() - context.startedAt,
+                    e2eMs: performance.now() - context.startedClock,
                     errorMessage: error.message,
                     network: undefined,
                     result: undefined,

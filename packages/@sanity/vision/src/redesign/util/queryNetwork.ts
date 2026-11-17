@@ -5,6 +5,7 @@ import {
   type UnfilteredResponseQueryOptions,
 } from '@sanity/client'
 
+import {formatDuration, formatMeasuredDuration} from '../../util/formatDuration'
 import {isApiCdnHost} from '../../util/parseQueryUrl'
 import {type QueryRequestMethod} from '../../util/queryRequestMethod'
 
@@ -134,6 +135,20 @@ function count(value: string | null): number | undefined {
   if (value === null || value.trim() === '') return undefined
   const number = Number(value.trim())
   return Number.isFinite(number) && number >= 0 ? number : undefined
+}
+
+/**
+ * The query's execution time, formatted. The API reports whole milliseconds (`888ms`); an answer
+ * groq-store-wasm gave on this device has its `wasm` timing, measured finer (`1.84ms`, `400µs`),
+ * where the response's own whole-millisecond `ms` would mostly read `0ms`
+ */
+export function formatExecutionTime(
+  ms: number | undefined,
+  network: QueryNetwork | undefined,
+): string | undefined {
+  const wasm = network?.local?.timings.find((timing) => timing.name === 'wasm')?.dur
+  if (wasm !== undefined) return formatMeasuredDuration(wasm)
+  return ms === undefined ? undefined : formatDuration(ms)
 }
 
 /** groq-store-wasm's account of an answer it gave, when it gave it */

@@ -67,6 +67,32 @@ describe('ResponseMetaTab', () => {
     expect(screen.getByTestId('vision-meta-payload').textContent).toBe('354 kB')
   })
 
+  it('shows an answer given on this device in fractions of a millisecond', () => {
+    renderTab({
+      url: queryUrl,
+      meta: {
+        ...meta,
+        ms: 1,
+        e2eMs: 12.43,
+        network: {
+          method: 'GET',
+          viaCdn: false,
+          cacheHit: false,
+          shard: undefined,
+          traceId: undefined,
+          cacheControl: undefined,
+          local: {
+            documents: 51226,
+            memoryBytes: undefined,
+            timings: [{name: 'wasm', dur: 0.62, desc: 'Query in WebAssembly'}],
+          },
+        },
+      },
+    })
+    expect(screen.getByTestId('vision-meta-execution').textContent).toBe('620µs')
+    expect(screen.getByTestId('vision-meta-e2e').textContent).toBe('12.4ms')
+  })
+
   it('says when there is no response yet', () => {
     renderTab({url: queryUrl})
     expect(screen.getByTestId('vision-meta-execution').textContent).toBe(

@@ -5,7 +5,7 @@ import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex, Grid} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
-import {formatDuration} from '../../../util/formatDuration'
+import {formatDuration, formatMeasuredDuration} from '../../../util/formatDuration'
 import {isApiCdnHost} from '../../../util/parseQueryUrl'
 import {encodedQuerySizeOfUrl, QUERY_URL_SIZE_LIMIT} from '../../../util/queryRequestMethod'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
@@ -34,11 +34,6 @@ function isCdnUrl(url: string): boolean {
   } catch {
     return false
   }
-}
-
-/** Like formatDuration, but wasm often answers in a fraction of a millisecond, which would read 0ms */
-function formatTimingEntry(milliseconds: number): string {
-  return milliseconds < 1 ? '<1ms' : formatDuration(milliseconds)
 }
 
 /** The local copy's size: how many documents, in how much WebAssembly memory, as far as known */
@@ -212,7 +207,7 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
                 {local ? (
                   <Stack gap={2}>
                     <Text data-testid="vision-network-timing" size={1} as="div" trim={true}>
-                      {t('vision.network.timing.local', {e2e: formatDuration(meta.e2eMs)})}
+                      {t('vision.network.timing.local', {e2e: formatMeasuredDuration(meta.e2eMs)})}
                     </Text>
                     {local.timings.map((timing) => (
                       <Box
@@ -228,7 +223,7 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
                         >
                           {t('vision.network.timing.entry', {
                             label: timing.desc || timing.name,
-                            duration: formatTimingEntry(timing.dur ?? 0),
+                            duration: formatMeasuredDuration(timing.dur ?? 0),
                           })}
                         </Text>
                       </Box>
@@ -237,7 +232,7 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
                 ) : (
                   <Text size={1} as="div" trim={true}>
                     {t('vision.network.timing.value', {
-                      e2e: formatDuration(meta.e2eMs),
+                      e2e: formatMeasuredDuration(meta.e2eMs),
                       server: formatDuration(meta.ms),
                     })}
                   </Text>

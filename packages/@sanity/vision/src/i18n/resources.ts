@@ -638,9 +638,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.network.region.unknown': 'Not reported',
   /** In the Network panel: the round trip and the time on the server */
   'vision.network.timing': 'Time',
-  /** One of groq-store-wasm's Server-Timing entries: its description and duration, already formatted (`2ms`, `<1ms`) */
+  /** One of groq-store-wasm's Server-Timing entries: its description and duration, already formatted (`1.84ms`, `400µs`) */
   'vision.network.timing.entry': '{{label}}: {{duration}}',
-  /** The round trip of a query groq-store-wasm answered on this device, already formatted (`90ms`) */
+  /** The round trip of a query groq-store-wasm answered on this device, already formatted (`12.4ms`) */
   'vision.network.timing.local': '{{e2e}} round trip',
   /** The round trip and the server's time for the query, already formatted (`1.17s`, `888ms`) */
   'vision.network.timing.value': '{{e2e}} round trip, {{server}} on the server',
