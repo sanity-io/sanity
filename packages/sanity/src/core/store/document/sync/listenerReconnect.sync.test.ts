@@ -79,7 +79,7 @@ describe('listener reconnect in the middle of a two-event transaction', () => {
     expectConverged(world)
   })
 
-  // The late second half of the transaction waits forever for its sibling, so the form stays locked.
+  // A reset clears the transaction buffer without ending the pending lock, so the form stays locked.
   test.fails('LSN-RECONNECT-MID-TX-RESET: B releases the pending-transaction lock after a reset', async () => {
     world = await runSyncTest(reconnectMidTransaction(false))
     expectHealthy(world)

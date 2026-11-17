@@ -352,6 +352,9 @@ export class FakeContentLake {
         this.deliver(connection, missed)
         return
       }
+      // Events still in flight belonged to the dead connection; a reset stream starts from now.
+      connection.held.splice(0)
+      connection.queued.splice(0)
       connection.emit({type: 'reset'})
     })
   }
