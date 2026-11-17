@@ -40,6 +40,15 @@ export const variantMark = css({
       '--icon-color': 'var(--card-fg-color)',
       '--card-icon-color': 'var(--card-fg-color)',
     },
+  // A document list row's status slot (`data-status="variant"`) is different: next to the draft
+  // ring and published dot, which keep a paler version of their own colour on a selected row, the
+  // diamond does the same instead of turning to the row's text colour. Four classes beat the
+  // selected rule above.
+  ':where([data-selected]) :where([data-status="variant"]) &&&&': {
+    'color': 'var(--card-badge-suggest-dot-color)',
+    '--icon-color': 'var(--card-badge-suggest-dot-color)',
+    '--card-icon-color': 'var(--card-badge-suggest-dot-color)',
+  },
 })
 
 /** Tip to tip. */
