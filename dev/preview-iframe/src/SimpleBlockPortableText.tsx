@@ -3,7 +3,7 @@ import {stegaClean} from '@sanity/client/stega'
 import {type PortableTextBlock} from '@sanity/types'
 import {Spinner} from '@sanity/ui'
 import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
-import {createContext, useContext, useMemo} from 'react'
+import {createContext, use, useMemo} from 'react'
 import {Flex} from 'ui5'
 
 import {imageBuilder, useQuery} from './loader'
@@ -19,7 +19,7 @@ const TableDocumentContext = createContext<{id: string; type: string} | null>(nu
 // the element itself, so empty cells stay clickable (stega needs
 // rendered text, and an empty cell has none).
 function TableComponent({value}: {value: any}) {
-  const document = useContext(TableDocumentContext)
+  const document = use(TableDocumentContext)
   if (!document) {
     throw new Error('TableComponent must be rendered inside TableDocumentContext')
   }

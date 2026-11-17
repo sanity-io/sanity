@@ -7,7 +7,7 @@ import {
   type ReactNode,
   Suspense,
   useCallback,
-  useContext,
+  use,
   useEffect,
   useRef,
   useState,
@@ -111,7 +111,7 @@ export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.J
     path: currentPath,
   })
 
-  const parentScrollToTop = useContext(EnhancedObjectDialogScrollContext)
+  const parentScrollToTop = use(EnhancedObjectDialogScrollContext)
   const scrollToTop = useCallback(
     (targetPath: Path) => {
       if (currentPath && isEqual(targetPath, currentPath)) {

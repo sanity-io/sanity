@@ -1,5 +1,5 @@
 import {isSameDay} from 'date-fns/isSameDay'
-import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, use, useMemo, useState} from 'react'
 import {SchedulesContext} from 'sanity/_singletons'
 
 import {useTimeZone} from '../../../hooks/useTimeZone'
@@ -136,7 +136,7 @@ function SchedulesProvider({
 
 function useSchedules() {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const context = useContext(SchedulesContext)
+  const context = use(SchedulesContext)
   if (context === undefined) {
     throw new Error('useSchedules must be used within a SchedulesProvider')
   }

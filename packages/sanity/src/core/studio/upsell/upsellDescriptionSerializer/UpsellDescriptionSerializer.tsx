@@ -9,7 +9,7 @@ import {LinkIcon} from '@sanity/icons/Link'
 import {type PortableTextBlock} from '@sanity/types'
 import {Card, Heading} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {type ReactNode, useContext, useEffect, useMemo, useState} from 'react'
+import {type ReactNode, use, useEffect, useMemo, useState} from 'react'
 import {UpsellDescriptionSerializerContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 import {Text, Flex, Box, Icon} from 'ui5'
@@ -193,7 +193,7 @@ export interface UpsellDescriptionSerializerContextValue {
 const EMPTY_CONTEXT_VALUE: UpsellDescriptionSerializerContextValue = {}
 
 function useUpsellDescriptionSerializer(): UpsellDescriptionSerializerContextValue {
-  return useContext(UpsellDescriptionSerializerContext) ?? EMPTY_CONTEXT_VALUE
+  return use(UpsellDescriptionSerializerContext) ?? EMPTY_CONTEXT_VALUE
 }
 
 function interpolateChildren(children: ReactNode, interpolation?: InterpolationProp): ReactNode {

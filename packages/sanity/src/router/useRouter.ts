@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {RouterContext} from 'sanity/_singletons'
 
 import {type RouterContextValue} from './types'
@@ -21,7 +21,7 @@ export {RouterContext}
  * ```
  */
 export function useRouter(): RouterContextValue {
-  const router = useContext(RouterContext)
+  const router = use(RouterContext)
 
   if (!router) {
     throw new Error('Router: missing context value')
