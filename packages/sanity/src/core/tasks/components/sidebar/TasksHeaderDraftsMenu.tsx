@@ -32,13 +32,14 @@ interface TasksDraftsMenuItemProps {
 
 function TasksDraftsMenuItem(props: TasksDraftsMenuItemProps) {
   const {isSelected, item, onSelect} = props
+  const {t} = useTranslation(tasksLocaleNamespace)
 
   const handleClick = useCallback(() => {
     onSelect(item._id)
   }, [item._id, onSelect])
 
   const iconRight = isSelected ? CheckmarkIcon : undefined
-  const text = item.title || 'Untitled'
+  const text = item.title || t('panel.drafts.untitled')
 
   return (
     <MenuItem

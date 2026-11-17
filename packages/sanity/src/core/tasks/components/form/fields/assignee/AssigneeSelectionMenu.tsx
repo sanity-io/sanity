@@ -65,16 +65,17 @@ const IGNORED_KEYS = [
   'CapsLock',
 ]
 
-const NO_ASSIGNEE_OPTION: UserWithPermission = {
-  id: '',
-  displayName: 'No assignee',
-  granted: true,
-}
 function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; value?: string}) {
   const [searchTerm, setSearchTerm] = useState<string>('')
   const {mentionOptions} = useMentionUser()
   const inputRef = useRef<HTMLInputElement | null>(null)
-  const options = [NO_ASSIGNEE_OPTION].concat(mentionOptions.data || [])
+  const {t} = useTranslation(tasksLocaleNamespace)
+  const noAssigneeOption: UserWithPermission = {
+    id: '',
+    displayName: t('form.input.assignee.no-assignee.text'),
+    granted: true,
+  }
+  const options = [noAssigneeOption].concat(mentionOptions.data || [])
   const handleSearchChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.currentTarget.value)
   }, [])
@@ -132,8 +133,6 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
       inputRef.current?.focus()
     }
   }, [])
-
-  const {t} = useTranslation(tasksLocaleNamespace)
 
   if (mentionOptions.loading) {
     return (

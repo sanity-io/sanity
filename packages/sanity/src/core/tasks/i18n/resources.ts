@@ -100,6 +100,8 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'form.input.assignee.user-assigned.tooltip': 'Change assignee',
   /** Text used in the assignee input when user is not found */
   'form.input.assignee.user-not-found.text': 'User not found',
+  /** Text used in the assignee menu for the option that removes the assignee */
+  'form.input.assignee.no-assignee.text': 'No assignee',
   /** The label used in the create more toggle */
   'form.input.create-more.text': 'Create more',
   /** The label used in the date input button tooltip when it's empty */
@@ -112,6 +114,10 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'form.input.description.placeholder': 'Add description',
   /**  Text used in the tooltip in the status change button  */
   'form.input.status.button.tooltip': 'Change status',
+  /** The label for the closed status in the status menu */
+  'form.input.status.closed.text': 'Done',
+  /** The label for the open status in the status menu */
+  'form.input.status.open.text': 'To Do',
   /** The label used in the target input to remove the current value */
   'form.input.target.buttons.remove.text': 'Remove target content',
   /** The text used in the target input when encountering a schema error */
@@ -152,6 +158,8 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'panel.comment.placeholder.upsell': 'Upgrade to comment on tasks',
   /** The title used in the task panel when showing the create task form */
   'panel.create.title': 'Create',
+  /** The title used in the drafts pulldown for a draft task that has no title */
+  'panel.drafts.untitled': 'Untitled',
   /** The title used in the drafts pulldown */
   'panel.drafts.title': 'Drafts',
   /** The tooltip for the task navigation component */

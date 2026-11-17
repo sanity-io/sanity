@@ -6,6 +6,7 @@ import {type SchemaType} from '@sanity/types'
 import {use} from 'react'
 import {ScheduledPublishingModePromiseContext} from 'sanity/_singletons'
 
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useDocumentPairPermissions} from '../../../store/grants/documentPairPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
@@ -42,6 +43,7 @@ const ContextMenuItems = (props: Props) => {
   const mode = modePromise ? use(modePromise) : null
   const firstDocument = getScheduledDocument(schedule)
 
+  const {t} = useTranslation()
   const currentUser = useCurrentUser()
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id: firstDocument.documentId,
@@ -78,7 +80,7 @@ const ContextMenuItems = (props: Props) => {
           icon={CalendarIcon}
           onClick={handleEdit}
           permissionsOperationLabel="edit-schedules"
-          title="Edit schedule"
+          title={t('scheduled-publishing.context-menu.edit-schedule')}
           disabled={mode === 'upsell'}
         />
       )}
@@ -89,7 +91,7 @@ const ContextMenuItems = (props: Props) => {
           icon={PublishIcon}
           onClick={handleExecute}
           permissionsOperationLabel="execute-schedules"
-          title="Publish now"
+          title={t('scheduled-publishing.context-menu.publish-now')}
           disabled={mode === 'upsell'}
         />
       )}
@@ -100,7 +102,7 @@ const ContextMenuItems = (props: Props) => {
           icon={TrashIcon}
           onClick={handleDelete}
           permissionsOperationLabel="delete-schedules"
-          title="Delete schedule"
+          title={t('scheduled-publishing.context-menu.delete-schedule')}
           tone="critical"
           disabled={mode === 'upsell'}
         />
@@ -112,7 +114,7 @@ const ContextMenuItems = (props: Props) => {
           icon={CheckmarkCircleIcon}
           onClick={handleDelete}
           permissionsOperationLabel="delete-schedules"
-          title="Clear completed schedule"
+          title={t('scheduled-publishing.context-menu.clear-completed-schedule')}
           disabled={mode === 'upsell'}
         />
       )}
