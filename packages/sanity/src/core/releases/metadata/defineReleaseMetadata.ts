@@ -1,6 +1,8 @@
 import {RELEASE_METADATA_TYPE_NAME} from '@sanity/schema/_internal'
 import {type ObjectDefinition} from '@sanity/types'
 
+import {extendBuiltinType} from '../../schema/extendBuiltinType'
+
 /**
  * Release metadata definition without the `name` and `type` that
  * {@link defineReleaseMetadata} sets.
@@ -34,5 +36,5 @@ export type ReleaseMetadataDefinition = Omit<ObjectDefinition, 'name' | 'type' |
 export function defineReleaseMetadata(
   definition: ReleaseMetadataDefinition,
 ): ObjectDefinition & {name: typeof RELEASE_METADATA_TYPE_NAME} {
-  return {fields: [], ...definition, name: RELEASE_METADATA_TYPE_NAME, type: 'object'}
+  return extendBuiltinType(RELEASE_METADATA_TYPE_NAME, definition)
 }
