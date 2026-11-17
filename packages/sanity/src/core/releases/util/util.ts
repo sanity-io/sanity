@@ -130,10 +130,10 @@ export interface FilterReleasesOptions<T extends ReleaseDocument> {
   archivedReleases: T[]
   cardinalityView: CardinalityView
   releaseGroupMode: Mode
-  dateFilter?: {
-    filterDate: Date
-    getTimezoneAdjustedDateTimeRange: (date: Date) => [Date, Date]
-  }
+  /** Keeps only releases this returns `true` for: the overview's day, week, month or "unscheduled"
+   * filter, built with `releaseMatchesDateFilter` (`releaseDateFilter.ts`). Passed as a predicate
+   * so this module does not import the timing seam, which imports it. */
+  dateFilter?: (release: T) => boolean
 }
 
 /** @internal */
@@ -146,17 +146,7 @@ export function filterReleasesForOverview<T extends ReleaseDocument>(
 
   const applyDateFilter = (items: T[]): T[] => {
     if (!dateFilter) return items
-
-    const [startOfDayForTimeZone, endOfDayForTimeZone] =
-      dateFilter.getTimezoneAdjustedDateTimeRange(dateFilter.filterDate)
-
-    return items.filter((release) => {
-      const publishAt = release.publishAt || release.metadata.intendedPublishAt
-      if (!publishAt || release.metadata.releaseType !== 'scheduled') return false
-
-      const publishDateUTC = new Date(publishAt)
-      return publishDateUTC >= startOfDayForTimeZone && publishDateUTC <= endOfDayForTimeZone
-    })
+    return items.filter(dateFilter)
   }
 
   const dateFiltered = applyDateFilter(sourceReleases)

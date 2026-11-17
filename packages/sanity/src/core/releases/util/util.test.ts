@@ -6,6 +6,7 @@ import {
   archivedScheduledRelease,
   scheduledRelease,
 } from '../__fixtures__/release.fixture'
+import {releaseMatchesDateFilter} from './releaseDateFilter'
 import {
   filterReleasesForOverview,
   getDocumentIsInPerspective,
@@ -318,13 +319,12 @@ describe('filterReleasesForOverview', () => {
     publishAt: '2024-01-20T12:00:00Z',
   }
 
-  const mockDateFilter = (date: Date) => {
-    const start = new Date(date)
-    start.setUTCHours(0, 0, 0, 0)
-    const end = new Date(date)
-    end.setUTCHours(23, 59, 59, 999)
-    return [start, end] as [Date, Date]
-  }
+  // 15 Jan 2024 as a one-day range, resolved to instants (UTC for the test).
+  const dateFilter = (release: ReleaseDocument) =>
+    releaseMatchesDateFilter(release, {
+      kind: 'range',
+      range: {from: new Date('2024-01-15T00:00:00Z'), to: new Date('2024-01-16T00:00:00Z')},
+    })
 
   it('filters by mode for releases and drafts views', () => {
     expect(
@@ -365,11 +365,6 @@ describe('filterReleasesForOverview', () => {
   })
 
   it('filters by date with intendedPublishAt fallback and archived mode', () => {
-    const dateFilter = {
-      filterDate: new Date('2024-01-15'),
-      getTimezoneAdjustedDateTimeRange: mockDateFilter,
-    }
-
     const activeResult = filterReleasesForOverview({
       releases: [inRange, outRange, intended],
       archivedReleases: [],
@@ -392,11 +387,6 @@ describe('filterReleasesForOverview', () => {
   })
 
   it('applies the date filter for the "all" view exactly like the "releases" view (no cardinality/state narrowing)', () => {
-    const dateFilter = {
-      filterDate: new Date('2024-01-15'),
-      getTimezoneAdjustedDateTimeRange: mockDateFilter,
-    }
-
     const allResult = filterReleasesForOverview({
       releases: [inRange, outRange, intended],
       archivedReleases: [],
@@ -431,11 +421,6 @@ describe('filterReleasesForOverview', () => {
   })
 
   it('filters by date combined with state filters for drafts', () => {
-    const dateFilter = {
-      filterDate: new Date('2024-01-15'),
-      getTimezoneAdjustedDateTimeRange: mockDateFilter,
-    }
-
     const activeResult = filterReleasesForOverview({
       releases: [scheduledWithDate, pausedWithDate],
       archivedReleases: [],

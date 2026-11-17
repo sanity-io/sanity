@@ -2,9 +2,11 @@ import {format} from 'date-fns/format'
 import {type RouterContextValue} from 'sanity/router'
 import {describe, expect, it} from 'vitest'
 
+import {type ReleaseDateFilter} from '../../../util/releaseDateFilter'
 import {
   buildReleasesSearchParams,
   getInitialCardinalityView,
+  getInitialDateFilter,
   getInitialReleaseNotFound,
 } from '../queryParamUtils'
 
@@ -124,8 +126,28 @@ describe('queryParamUtils', () => {
     it('should include date param when filter date is provided', () => {
       const date = new Date(2024, 0, 15)
       const expectedDateString = format(date, 'yyyy-MM-dd')
-      const result = buildReleasesSearchParams(date, 'active', 'all')
+      const result = buildReleasesSearchParams(
+        {kind: 'range', unit: 'day', start: date},
+        'active',
+        'all',
+      )
       expect(result).toEqual([['date', expectedDateString]])
+    })
+
+    it('should include the range size for a week or month filter', () => {
+      const start = new Date(2024, 0, 15)
+      expect(
+        buildReleasesSearchParams({kind: 'range', unit: 'week', start}, 'active', 'all'),
+      ).toEqual([
+        ['date', '2024-01-15'],
+        ['dateRange', 'week'],
+      ])
+    })
+
+    it('should write the unscheduled filter as date=unscheduled', () => {
+      expect(buildReleasesSearchParams({kind: 'unscheduled'}, 'active', 'all')).toEqual([
+        ['date', 'unscheduled'],
+      ])
     })
 
     it('should include group param when mode is archived', () => {
@@ -160,6 +182,34 @@ describe('queryParamUtils', () => {
       })()
 
       expect(result).toBe('all')
+    })
+  })
+
+  describe('getInitialDateFilter', () => {
+    const roundTrip = (filter: ReleaseDateFilter) => {
+      const params = buildReleasesSearchParams(filter, 'active', 'all')
+      const searchParams = new URLSearchParams(params as [string, string][])
+      return getInitialDateFilter(createMockRouter(searchParams.toString()))()
+    }
+
+    it('returns undefined without a date param', () => {
+      expect(getInitialDateFilter(createMockRouter(''))()).toBeUndefined()
+    })
+
+    it('ignores a malformed date', () => {
+      expect(getInitialDateFilter(createMockRouter('date=not-a-date'))()).toBeUndefined()
+    })
+
+    it.each(['day', 'week', 'month'] as const)(
+      'round-trips a %s range as local date components',
+      (unit) => {
+        const start = new Date(2024, 0, 15)
+        expect(roundTrip({kind: 'range', unit, start})).toEqual({kind: 'range', unit, start})
+      },
+    )
+
+    it('round-trips the unscheduled filter', () => {
+      expect(roundTrip({kind: 'unscheduled'})).toEqual({kind: 'unscheduled'})
     })
   })
 })

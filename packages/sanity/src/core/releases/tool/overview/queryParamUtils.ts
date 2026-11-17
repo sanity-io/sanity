@@ -1,5 +1,9 @@
 import {format} from 'date-fns/format'
+import {isValid} from 'date-fns/isValid'
+import {parse} from 'date-fns/parse'
 import {type RouterContextValue, type SearchParam} from 'sanity/router'
+
+import {type ReleaseDateFilter} from '../../util/releaseDateFilter'
 
 export type Mode = 'active' | 'paused' | 'archived'
 export type CardinalityView = 'releases' | 'drafts' | 'all'
@@ -7,6 +11,10 @@ export type CardinalityView = 'releases' | 'drafts' | 'all'
 export const GROUP_SEARCH_PARAM_KEY = 'group'
 export const RELEASE_NOT_FOUND_SEARCH_PARAM_KEY = 'releaseNotFound'
 const DATE_SEARCH_PARAM_KEY = 'date'
+/** Size of the date bucket: absent means a single day (the calendar filter), else `week`/`month`. */
+const DATE_RANGE_SEARCH_PARAM_KEY = 'dateRange'
+/** `date=unscheduled` filters to releases with no date. */
+const UNSCHEDULED_DATE_SEARCH_PARAM_VALUE = 'unscheduled'
 const VIEW_SEARCH_PARAM_KEY = 'view'
 
 const DATE_SEARCH_PARAM_VALUE_FORMAT = 'yyyy-MM-dd'
@@ -18,13 +26,21 @@ export function getInitialReleaseNotFound(router: RouterContextValue): boolean {
   )
 }
 
-export const getInitialFilterDate = (router: RouterContextValue) => () => {
-  const activeFilterDate = new URLSearchParams(router.state._searchParams).get(
-    DATE_SEARCH_PARAM_KEY,
-  )
+export const getInitialDateFilter =
+  (router: RouterContextValue) => (): ReleaseDateFilter | undefined => {
+    const params = new URLSearchParams(router.state._searchParams)
+    const value = params.get(DATE_SEARCH_PARAM_KEY)
+    if (!value) return undefined
+    if (value === UNSCHEDULED_DATE_SEARCH_PARAM_VALUE) return {kind: 'unscheduled'}
 
-  return activeFilterDate ? new Date(activeFilterDate) : undefined
-}
+    // Parsed as wall-clock components (local midnight), the same shape the calendar produces.
+    const start = parse(value, DATE_SEARCH_PARAM_VALUE_FORMAT, new Date())
+    if (!isValid(start)) return undefined
+
+    const range = params.get(DATE_RANGE_SEARCH_PARAM_KEY)
+    const unit = range === 'week' || range === 'month' ? range : 'day'
+    return {kind: 'range', unit, start}
+  }
 
 export const getInitialReleaseGroupMode = (router: RouterContextValue) => (): Mode => {
   const activeGroupMode = new URLSearchParams(router.state._searchParams).get(
@@ -68,14 +84,22 @@ export const getInitialCardinalityView =
   }
 
 export const buildReleasesSearchParams = (
-  releaseFilterDate: Date | undefined,
+  releaseDateFilter: ReleaseDateFilter | undefined,
   releaseGroupMode: Mode,
   cardinalityView: CardinalityView,
 ): SearchParam[] => {
   const params: SearchParam[] = []
 
-  if (releaseFilterDate) {
-    params.push([DATE_SEARCH_PARAM_KEY, format(releaseFilterDate, DATE_SEARCH_PARAM_VALUE_FORMAT)])
+  if (releaseDateFilter?.kind === 'unscheduled') {
+    params.push([DATE_SEARCH_PARAM_KEY, UNSCHEDULED_DATE_SEARCH_PARAM_VALUE])
+  } else if (releaseDateFilter) {
+    params.push([
+      DATE_SEARCH_PARAM_KEY,
+      format(releaseDateFilter.start, DATE_SEARCH_PARAM_VALUE_FORMAT),
+    ])
+    if (releaseDateFilter.unit !== 'day') {
+      params.push([DATE_RANGE_SEARCH_PARAM_KEY, releaseDateFilter.unit])
+    }
   } else if (releaseGroupMode !== 'active') {
     // Add group param when there's no date filter and it's not 'active' (default)
     params.push([GROUP_SEARCH_PARAM_KEY, releaseGroupMode])
