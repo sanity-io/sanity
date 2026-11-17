@@ -52,9 +52,10 @@ export const createVariantPickerMutedGlyph = css(glyphBox, {
 })
 
 /**
- * The menu: as wide as its select, never narrower than `MIN_MENU_WIDTH` (set inline), at most
- * 320px high. The search field stays pinned above the list, which scrolls. Long names end in an
- * ellipsis instead of widening the menu.
+ * The menu: as wide as its select, never narrower than `MIN_MENU_WIDTH` (set inline). Its height
+ * is the search field plus the list, which `useMenuOverflow` caps at a whole number of rows, as in
+ * every other studio menu. The search field stays pinned above the list, which scrolls. Long names
+ * end in an ellipsis instead of widening the menu.
  */
 export const createVariantPickerMenu = css({
   '&&&': {
@@ -63,7 +64,6 @@ export const createVariantPickerMenu = css({
     flexDirection: 'column',
     flex: 1,
     minHeight: 0,
-    maxHeight: '320px',
     overflow: 'hidden',
   },
   '&&& [data-ui="MenuItem"]': {
