@@ -629,7 +629,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.create-variant.filter-placeholder': 'Find',
   /** The tooltip of the info button after the "Start from" title in the variant creation form: what the new version copies, and which version "Nearest version" picks */
   'document-group.create-variant.form.base-info':
-    "What the new version copies. Nearest version copies this variant's published version, or if there is none, the Default version in Drafts or the chosen release. You then change only what should differ, or pick another version to start from.",
+    "What the new version copies. Nearest version copies this variant's published version. If there is none, it copies the Default: in Drafts its draft, or else its published version; in a release, its version in that release. You then change only what should differ, or pick another version to start from.",
   /** The accessible name of the info button after the "Start from" title in the variant creation form */
   'document-group.create-variant.form.base-info-label': 'About Start from',
   /** The title of the variant creation form's picker for the version the new variant starts from */
