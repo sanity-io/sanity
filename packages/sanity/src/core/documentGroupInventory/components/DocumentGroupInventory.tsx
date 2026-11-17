@@ -41,6 +41,7 @@ import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
 import {useAgentBundlesStore} from '../../store/agent/useAgentBundles'
+import {useDocumentPresence} from '../../store/presence/useDocumentPresence'
 import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
@@ -66,6 +67,11 @@ import {
   type DocumentGroupInventoryComponents,
   type DocumentGroupInventoryPerspectiveList,
 } from '../types'
+import {
+  getVersionPresence,
+  groupPresenceByVersion,
+  type VersionPresence,
+} from '../utils/groupPresenceByVersion'
 import {resolveServedVersion, type ServedStatus} from '../utils/resolveServedVersion'
 import {
   getBlockedSelectedIds,
@@ -450,6 +456,7 @@ function DocumentGroupInventoryForMode(
             <Select
               // Groups collapse per document, for the session
               key={documentId}
+              documentId={documentId}
               machine={selectionRef}
               inventoryRef={inventoryRef}
               selectedId={selectedId}
@@ -488,6 +495,8 @@ function DocumentGroupInventoryForMode(
 }
 
 const Select: ComponentType<{
+  /** Any id in the document group. Presence is read for every version of the group. */
+  documentId: string
   machine: ActorRefFromLogic<typeof selectionMachine>
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
   selectedId: string | null
@@ -496,9 +505,24 @@ const Select: ComponentType<{
   readOnly: boolean
   /** Absent in read-only mode, where the version context menu is not rendered. */
   perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
-}> = ({machine, inventoryRef, selectedId, documentType, onSelect, readOnly, perspectiveList}) => {
+}> = ({
+  documentId,
+  machine,
+  inventoryRef,
+  selectedId,
+  documentType,
+  onSelect,
+  readOnly,
+  perspectiveList,
+}) => {
   const {t} = useTranslation(studioLocaleNamespace)
   const sets = useSelector(inventoryRef, ({context}) => context.sets)
+  // Everyone in any version of the group, grouped by the exact version each person has open
+  const documentPresence = useDocumentPresence(documentId)
+  const presenceByVersion = useMemo(
+    () => groupPresenceByVersion(documentPresence),
+    [documentPresence],
+  )
   const variantsEnabled = useSelector(inventoryRef, ({context}) => context.variantsEnabled)
   const perspective = usePerspective()
 
@@ -603,6 +627,7 @@ const Select: ComponentType<{
                 <ReadOnlyVariantRow
                   key={variant.id}
                   variant={variant}
+                  presence={getVersionPresence(presenceByVersion, variant.id)}
                   documentVersions={documentVersions}
                   inventoryRef={inventoryRef}
                   onSelect={onSelect}
@@ -612,6 +637,7 @@ const Select: ComponentType<{
                 <ManagedVariantRow
                   key={variant.id}
                   variant={variant}
+                  presence={getVersionPresence(presenceByVersion, variant.id)}
                   documentVersions={documentVersions}
                   machine={machine}
                   inventoryRef={inventoryRef}
@@ -638,11 +664,12 @@ const Select: ComponentType<{
  */
 const ReadOnlyVariantRow: ComponentType<{
   variant: Variant
+  presence: VersionPresence
   documentVersions: VersionInfoDocumentStub[]
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
   onSelect: (document: VersionInfoDocumentStub) => void
   isSelected: boolean
-}> = ({variant, documentVersions, inventoryRef, onSelect, isSelected}) => {
+}> = ({variant, presence, documentVersions, inventoryRef, onSelect, isSelected}) => {
   const releases = useSelector(inventoryRef, ({context}) => context.releases)
 
   return (
@@ -651,6 +678,7 @@ const ReadOnlyVariantRow: ComponentType<{
       releases={releases}
       documentVersions={documentVersions}
       isSelected={isSelected}
+      presence={presence}
       onPrimaryAction={() => onSelect(variant.document)}
     />
   )
@@ -658,6 +686,7 @@ const ReadOnlyVariantRow: ComponentType<{
 
 const ManagedVariantRow: ComponentType<{
   variant: Variant
+  presence: VersionPresence
   documentVersions: VersionInfoDocumentStub[]
   machine: ActorRefFromLogic<typeof selectionMachine>
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
@@ -676,6 +705,7 @@ const ManagedVariantRow: ComponentType<{
   onToggleSelection: (shiftKey: boolean) => void
 }> = ({
   variant,
+  presence,
   documentVersions,
   machine,
   inventoryRef,
@@ -749,6 +779,7 @@ const ManagedVariantRow: ComponentType<{
         releases={releases}
         documentVersions={documentVersions}
         isSelected={isSelected}
+        presence={presence}
         servedStatus={servedStatus}
         primaryActionRef={setReferenceElement}
         onContextMenu={contextMenuHandler}
