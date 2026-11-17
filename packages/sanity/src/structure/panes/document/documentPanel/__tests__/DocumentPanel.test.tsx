@@ -447,9 +447,9 @@ const summerRelease: ReleaseDocument = {
 
 /**
  * With an open release selected and the document (or the selected variant of it) not in that
- * release, the pane always shows an enabled Add to release: filled while the document inventory
- * is closed, a secondary (ghost) button while it is open, where the inventory's Create variant is
- * the view's one filled button.
+ * release, the pane always shows an enabled, filled Add to release, whether or not the document
+ * inventory is open: it is the view's one filled button, and the inventory's Create variant steps
+ * down to a secondary button while it shows.
  */
 describe('DocumentPanel Add to release', () => {
   beforeEach(() => {
@@ -565,7 +565,7 @@ describe('DocumentPanel Add to release', () => {
       const buttons = await screen.findAllByRole('button', {name: 'Add to release'})
       expect(buttons).toHaveLength(1)
       expect(buttons[0]).toBeEnabled()
-      expect(buttons[0]).toHaveAttribute('data-mode', inventoryOpen ? 'ghost' : 'default')
+      expect(buttons[0]).toHaveAttribute('data-mode', 'default')
       expect(screen.queryByRole('button', {name: 'Create variant'})).toBeNull()
       expect(
         screen.queryByRole('button', {name: 'Create it in the document inventory.'}),
