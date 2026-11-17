@@ -148,8 +148,8 @@ export const CreateVariantPicker: ComponentType<{
   const [menuWidth, setMenuWidth] = useState<number | undefined>(undefined)
   const focusSearchField = useFocusSearchOnOpen()
   const overflowRef = useMenuOverflow()
-  // The list stays mounted while the menu is closed, so it keeps its scroll position. Each open,
-  // and each change to the search, starts it at the top again.
+  // The list stays mounted while the menu is closed, so it keeps its scroll position. Each change
+  // to the search starts it at the top again; each open is handled by `useMenuOverflow`.
   const listElement = useRef<HTMLDivElement | null>(null)
   const scrollListToTop = useCallback(() => {
     if (listElement.current) listElement.current.scrollTop = 0
@@ -206,11 +206,8 @@ export const CreateVariantPicker: ComponentType<{
           // The menu is as wide as its select, and never narrower than MIN_MENU_WIDTH.
           const trigger = document.getElementById(id)
           setMenuWidth(trigger ? trigger.getBoundingClientRect().width : undefined)
-          // A hidden list can't be scrolled, so this waits until the menu is showing.
-          requestAnimationFrame(() => {
-            scrollListToTop()
-            requestAnimationFrame(scrollListToTop)
-          })
+          // Where the list is scrolled as it opens is `useMenuOverflow`'s: the top, or the
+          // selected option
         }}
         button={
           <UIButton
