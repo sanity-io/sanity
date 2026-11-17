@@ -1,26 +1,15 @@
-import {releaseMetadataCoreFieldNames} from '../../builtinTypes/releaseMetadata'
+import {
+  releaseMetadataCoreFieldNames,
+  releaseMetadataCoreFields,
+} from '../../builtinTypes/releaseMetadata'
 import {error} from '../createValidationResult'
 
-const CORE_FIELD_JSON_TYPE = 'string'
-
-function resolveJsonType(typeName: unknown, visitorContext: any): string | undefined {
-  const seen = new Set<string>()
-  let current = typeName
-  while (typeof current === 'string' && !seen.has(current)) {
-    seen.add(current)
-    const type = visitorContext.getType(current)
-    if (!type) return undefined
-    if (typeof type.jsonType === 'string') return type.jsonType
-    current = type.type
-  }
-  return undefined
-}
-
 /**
- * A schema may replace `sanity.releaseMetadata`, but the release actions and
- * the releases tool still read and write its core fields as strings.
+ * A schema may replace `sanity.releaseMetadata` to add fields, but the release
+ * actions and the releases tool read and write its core fields, so those always
+ * come from the built-in definition, like the asset fields of `image`.
  */
-export default (typeDef: any, visitorContext: any) => {
+export default (typeDef: any) => {
   if (typeDef.type !== 'object') {
     return {
       ...typeDef,
@@ -31,19 +20,23 @@ export default (typeDef: any, visitorContext: any) => {
   }
 
   const fields: unknown[] = Array.isArray(typeDef.fields) ? typeDef.fields : []
-  const problems = fields.flatMap((field: any) => {
-    if (!field || !releaseMetadataCoreFieldNames.includes(field.name)) return []
-    const jsonType = resolveJsonType(field.type, visitorContext)
-    if (jsonType === undefined || jsonType === CORE_FIELD_JSON_TYPE) return []
-    return [
-      error(
-        `The "${field.name}" field of "${typeDef.name}" must store a ${CORE_FIELD_JSON_TYPE}, but its type "${field.type}" stores ${jsonType === 'object' || jsonType === 'array' ? 'an' : 'a'} ${jsonType}.`,
-      ),
-    ]
-  })
+  // `resolveReleaseTypes` adds the built-in core field definitions, so a field with a
+  // core name that is not one of those objects was declared by the schema.
+  const redeclaresCoreField = fields.some(
+    (field: any) =>
+      field &&
+      releaseMetadataCoreFieldNames.includes(field.name) &&
+      !releaseMetadataCoreFields.includes(field),
+  )
 
   return {
     ...typeDef,
-    _problems: problems,
+    _problems: redeclaresCoreField
+      ? [
+          error(
+            `The names \`${releaseMetadataCoreFieldNames.join('`, `')}\` are invalid field names for type \`${typeDef.name}\`. These core fields are always included.`,
+          ),
+        ]
+      : [],
   }
 }

@@ -1,8 +1,9 @@
-import {defineField, defineType} from '@sanity/types'
+import {defineField, defineType, type Schema as SanitySchema} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
 import {Schema} from '../../src/legacy/Schema'
 import {createSchemaFromManifestTypes} from '../../src/manifest/createSchemaFromManifestTypes'
+import {extractManifestSchemaTypes} from '../../src/manifest/extractManifestSchemaTypes'
 import {builtinTypes} from '../../src/sanity/builtinTypes'
 import {
   defaultReleaseTypes,
@@ -57,6 +58,11 @@ function compile(types: unknown[]) {
   return Schema.compile({name: 'test', types, parent: builtinSchema})
 }
 
+function extractManifest(types: unknown[]): unknown[] {
+  const schema = compile(resolveReleaseTypes(types)) as SanitySchema
+  return JSON.parse(JSON.stringify(extractManifestSchemaTypes(schema)))
+}
+
 describe('resolveReleaseTypes', () => {
   test('adds the release document and default metadata types', () => {
     const types = resolveReleaseTypes([book])
@@ -71,8 +77,12 @@ describe('resolveReleaseTypes', () => {
     const types = resolveReleaseTypes([customMetadata, book])
     const metadata = findType(types, RELEASE_METADATA_TYPE_NAME)
 
-    expect(types.filter((typeDef) => typeDef === customMetadata)).toHaveLength(0)
-    expect(types.at(-1)).toBe(metadata)
+    expect(types).not.toContain(customMetadata)
+    expect(types.map((typeDef) => (typeDef as {name: string}).name)).toEqual([
+      RELEASE_METADATA_TYPE_NAME,
+      'book',
+      RELEASE_DOCUMENT_TYPE_NAME,
+    ])
     expect(fieldNames(metadata)).toEqual([
       ...releaseMetadataCoreFieldNames,
       'legalReview',
@@ -80,26 +90,15 @@ describe('resolveReleaseTypes', () => {
     ])
   })
 
-  test('keeps a redeclared core field where the custom type declares it', () => {
-    const title = defineField({name: 'title', title: 'Release name', type: 'string'})
+  test('gives a custom metadata type without fields the core fields', () => {
     const types = resolveReleaseTypes([
-      defineType({
-        name: RELEASE_METADATA_TYPE_NAME,
-        type: 'object',
-        fields: [defineField({name: 'legalReview', type: 'string'}), title],
-      }),
+      {name: RELEASE_METADATA_TYPE_NAME, type: 'object', title: 'Release details'},
     ])
-    const metadata = findType(types, RELEASE_METADATA_TYPE_NAME) as {fields: unknown[]}
 
-    expect(fieldNames(metadata)).toEqual([
-      'description',
-      'releaseType',
-      'intendedPublishAt',
-      'cardinality',
-      'legalReview',
-      'title',
-    ])
-    expect(metadata.fields.at(-1)).toBe(title)
+    expect(fieldNames(findType(types, RELEASE_METADATA_TYPE_NAME))).toEqual(
+      releaseMetadataCoreFieldNames,
+    )
+    expect(errorMessages(types)).toEqual([])
   })
 
   test('does not treat a type named `releaseMetadata` as the release metadata type', () => {
@@ -121,39 +120,20 @@ describe('release metadata validation', () => {
     expect(errorMessages(resolveReleaseTypes([customMetadata, book]))).toEqual([])
   })
 
-  test('accepts a core field redeclared with a type that stores a string', () => {
+  test('rejects a custom metadata type that declares a core field', () => {
     const types = resolveReleaseTypes([
-      defineType({name: 'shortText', type: 'text'}),
-      defineType({
-        name: RELEASE_METADATA_TYPE_NAME,
-        type: 'object',
-        fields: [defineField({name: 'description', type: 'shortText'})],
-      }),
-    ])
-
-    expect(errorMessages(types)).toEqual([])
-  })
-
-  test('rejects a core field redeclared with a type that stores something else', () => {
-    const types = resolveReleaseTypes([
-      defineType({
-        name: 'titleObject',
-        type: 'object',
-        fields: [defineField({name: 'text', type: 'string'})],
-      }),
       defineType({
         name: RELEASE_METADATA_TYPE_NAME,
         type: 'object',
         fields: [
-          defineField({name: 'title', type: 'titleObject'}),
-          defineField({name: 'releaseType', type: 'number'}),
+          defineField({name: 'legalReview', type: 'string'}),
+          defineField({name: 'title', title: 'Release name', type: 'string'}),
         ],
       }),
     ])
 
     expect(errorMessages(types)).toEqual([
-      `The "title" field of "${RELEASE_METADATA_TYPE_NAME}" must store a string, but its type "titleObject" stores an object.`,
-      `The "releaseType" field of "${RELEASE_METADATA_TYPE_NAME}" must store a string, but its type "number" stores a number.`,
+      `The names \`title\`, \`description\`, \`releaseType\`, \`intendedPublishAt\`, \`cardinality\` are invalid field names for type \`${RELEASE_METADATA_TYPE_NAME}\`. These core fields are always included.`,
     ])
   })
 
@@ -252,5 +232,36 @@ describe('compiled release types', () => {
     expect(
       schema.get(RELEASE_METADATA_TYPE_NAME).fields.map((field: {name: string}) => field.name),
     ).toEqual([...releaseMetadataCoreFieldNames, 'legalReview', 'signOff'])
+  })
+
+  test('a manifest carries only the custom metadata fields and the core fields are rebuilt from code', () => {
+    const manifest = extractManifest([customMetadata, book])
+    expect(fieldNames(findType(manifest, RELEASE_METADATA_TYPE_NAME))).toEqual([
+      'legalReview',
+      'signOff',
+    ])
+
+    const metadata = createSchemaFromManifestTypes({name: 'manifest', types: manifest}).get(
+      RELEASE_METADATA_TYPE_NAME,
+    )
+    expect(fieldNames(metadata)).toEqual([
+      ...releaseMetadataCoreFieldNames,
+      'legalReview',
+      'signOff',
+    ])
+    const intendedPublishAt = metadata.fields.find(
+      (field: {name: string}) => field.name === 'intendedPublishAt',
+    )
+    expect(intendedPublishAt.type.hidden).toBeTypeOf('function')
+  })
+
+  test('a manifest of the default metadata type carries no fields', () => {
+    const manifest = extractManifest([book])
+    expect(findType(manifest, RELEASE_METADATA_TYPE_NAME)).not.toHaveProperty('fields')
+
+    const metadata = createSchemaFromManifestTypes({name: 'manifest', types: manifest}).get(
+      RELEASE_METADATA_TYPE_NAME,
+    )
+    expect(fieldNames(metadata)).toEqual(releaseMetadataCoreFieldNames)
   })
 })
