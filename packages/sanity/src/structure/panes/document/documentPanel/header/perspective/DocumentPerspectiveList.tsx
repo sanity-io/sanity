@@ -145,7 +145,9 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
           disabled: !editState?.published,
         }}
       />
-      {isDraftModelEnabled && (
+      {/* Live edit types have no drafts, so the chip is hidden unless a draft already exists
+      (e.g. the type was switched to live edit later), which keeps that draft reachable. */}
+      {isDraftModelEnabled && (!isLiveEdit || editState?.draft) && (
         <VersionChip
           tooltipContent={
             <Text size={1} as="div" trim={true}>
@@ -166,11 +168,7 @@ export const DocumentPerspectiveList = memo(function DocumentPerspectiveList() {
                   )}
                 </>
               ) : (
-                <>
-                  {isLiveEdit
-                    ? t('release.chip.tooltip.draft-disabled.live-edit')
-                    : t('release.chip.tooltip.no-edits')}
-                </>
+                <>{t('release.chip.tooltip.no-edits')}</>
               )}
             </Text>
           }
