@@ -421,7 +421,7 @@ describe('isUsingLegacyHttp', () => {
         getUrl: (path: string) => `https://test.api.sanity.io/v2025-02-19${path}`,
       } as unknown as SanityClient
 
-      await firstValueFrom(getApiProtocol(client))
+      await firstValueFrom(isUsingLegacyHttp(client))
 
       expect(getMeasuredApiProtocol('abc123.api.sanity.example')).toBe('h3')
       expect(getMeasuredApiProtocol('sanity.example')).toBeUndefined()
