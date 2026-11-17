@@ -61,7 +61,7 @@ jobs:
 
       - name: Run Chromatic
         if: steps.changes.outputs.has_changes == 'true'
-        uses: chromaui/action@5d18868345f53a8f61258ad393396c7e169100fd # v18.14.4
+        uses: chromaui/action@6efa19d4a40404313897de5a6d516e0333a2a787 # v18.14.5
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_STORYBOOK }}
           workingDir: dev/storybook
@@ -152,7 +152,7 @@ jobs:
 
       - name: Upload archives to Chromatic
         if: steps.changes.outputs.has_changes == 'true'
-        uses: chromaui/action@5d18868345f53a8f61258ad393396c7e169100fd # v18.14.4
+        uses: chromaui/action@6efa19d4a40404313897de5a6d516e0333a2a787 # v18.14.5
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN_VITEST }}
           workingDir: packages/sanity
