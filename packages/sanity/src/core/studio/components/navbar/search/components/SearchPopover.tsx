@@ -130,8 +130,6 @@ export function SearchPopover({
 
               <SearchMotionCard
                 animate="open"
-                // The box the versions flyout of a result's status marks opens beside
-                data-search-dialog=""
                 exit="closed"
                 initial="closed"
                 overflow="hidden"
