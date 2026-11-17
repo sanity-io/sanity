@@ -1,3 +1,4 @@
+import {type ApplicationInterface} from '@sanity/sdk'
 import {getApplicationOrigin} from '@sanity/sdk/_internal'
 import {type DashboardTopics, type ValueOf} from '@sanity/sdk/dashboard'
 
@@ -37,18 +38,10 @@ function toManifestUrl(origin: string): string {
   return new URL(MANIFEST_FILENAME, origin.endsWith('/') ? origin : `${origin}/`).href
 }
 
-/** The subset of a deployment's interface records the mapping reads. */
-interface InterfaceRecord {
-  moduleId: string
-  name: string
-  title: string
-  type: string
-}
-
 function toViews(
   application: {id: string; name: string; title: string},
   origin: string | null,
-  interfaces: readonly InterfaceRecord[] | null | undefined,
+  interfaces: readonly ApplicationInterface[] | null | undefined,
 ): FederatedAssetSourceView[] {
   if (origin === null) return []
   const views: FederatedAssetSourceView[] = []
@@ -61,6 +54,7 @@ function toViews(
       applicationTitle: application.title,
       name: extension.name,
       title: extension.title,
+      interface: extension,
       remote: {name: application.id, entry: toManifestUrl(origin)},
       // Deployed interface records carry `views/<name>`; the expose path adds
       // the component slot (`asset_source` is its only component).
