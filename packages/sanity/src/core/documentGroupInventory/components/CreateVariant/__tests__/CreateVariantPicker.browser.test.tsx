@@ -42,7 +42,7 @@ function PickerHarness() {
 }
 
 describe('CreateVariantPicker menu', () => {
-  it('puts the first row 8px below the search field, 8px from the sides, the last 4px from the bottom', async () => {
+  it('puts the first row 8px below the search field, 8px from the sides, the last 8px from the bottom', async () => {
     void render(<PickerHarness />)
     const field = page.getByTestId('picker-field')
     await expect.element(field).toBeVisible()
@@ -82,6 +82,6 @@ describe('CreateVariantPicker menu', () => {
     expect(Math.abs(searchGap - 8)).toBeLessThanOrEqual(1)
     expect(Math.abs(left - 8)).toBeLessThanOrEqual(1)
     expect(Math.abs(right - 8)).toBeLessThanOrEqual(1)
-    expect(Math.abs(below - 4)).toBeLessThanOrEqual(1)
+    expect(Math.abs(below - 8)).toBeLessThanOrEqual(1)
   })
 })
