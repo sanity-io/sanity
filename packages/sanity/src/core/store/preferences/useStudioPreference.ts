@@ -67,29 +67,21 @@ export function useStudioPreferenceList<K extends PreferenceListKey>(key: K) {
   }, [instance, userId, key, nextCursor])
   const set = useCallback(
     async (itemId: string, value: PreferenceListItemValue<K> | undefined) => {
-      await updateUserPreferenceListItem<PreferenceListKey>(instance, {userId, key, itemId, value})
-      // The SDK refetches the list after a change without waiting for it
-      await userPreferenceList.refetch(instance, userId, key)
+      const {invalidated} = await updateUserPreferenceListItem<PreferenceListKey>(instance, {
+        userId,
+        key,
+        itemId,
+        value,
+      })
+      await invalidated
     },
     [instance, userId, key],
   )
   const clear = useCallback(async () => {
     let all = await userPreferenceList.resolveState(instance, userId, key)
     while (all.at(-1)?.nextCursor) all = await userPreferenceList.loadMore(instance, userId, key)
-    await Promise.all(
-      all.flatMap((page) =>
-        page.data.map(({itemId}) =>
-          updateUserPreferenceListItem<PreferenceListKey>(instance, {
-            userId,
-            key,
-            itemId,
-            value: undefined,
-          }),
-        ),
-      ),
-    )
-    await userPreferenceList.refetch(instance, userId, key)
-  }, [instance, userId, key])
+    await Promise.all(all.flatMap((page) => page.data.map(({itemId}) => set(itemId, undefined))))
+  }, [instance, userId, key, set])
   const items = useMemo(
     // The fetcher cache holds every key's items in one type; `key` picks this one
     () =>
