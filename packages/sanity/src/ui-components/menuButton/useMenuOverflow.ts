@@ -74,6 +74,9 @@ function updateScrollPadding(scroller: HTMLElement, groups: HTMLElement[]) {
  * scrolls just far enough to show it whole above the bottom edge. The scroll then rounds up to the
  * next row, so the top visible row starts at the list's edge, 8px below the search field, rather
  * than being cut in half.
+ *
+ * Near the end of the list there may be no such row to round to, because the list cannot scroll
+ * past its end. The selected row is still shown whole, but the top visible row can then be cut.
  */
 function scrollToSelection(scroller: HTMLElement, groups: HTMLElement[]) {
   scroller.scrollTop = 0
