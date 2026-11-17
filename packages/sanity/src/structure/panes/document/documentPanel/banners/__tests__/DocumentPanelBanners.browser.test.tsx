@@ -441,7 +441,7 @@ describe('document panel banners', () => {
     await settleChromaticEndState()
   })
 
-  it('follows the document inventory opening and closing while it is on screen', async () => {
+  it('keeps Add to release filled while the document inventory opens and closes', async () => {
     function Toggling() {
       const [open, setOpen] = useState(false)
       return (
@@ -465,7 +465,7 @@ describe('document panel banners', () => {
 
     const $button = page.getByRole('button', {name: 'Add to release'})
     const host = () => page.getByTestId('banner-host').element()
-    // A filled button's fill stands out from the banner; a ghost button's barely departs from it
+    // A filled button's fill stands out from the banner
     const filled = () => {
       const element = $button.element()
       return (
@@ -477,23 +477,20 @@ describe('document panel banners', () => {
     }
 
     const heights: Record<string, number> = {}
-    for (const [step, open] of [
-      ['closed', false],
-      ['open', true],
-      ['closed again', false],
-      ['open again', true],
-    ] as const) {
+    for (const step of ['closed', 'open', 'closed again', 'open again'] as const) {
       if (step !== 'closed') await page.getByRole('button', {name: 'Toggle inventory'}).click()
-      await expect.poll(filled, {message: step}).toBe(!open)
+      // Filled at every step: Add to release is the view's one filled button, and the inventory's
+      // Create variant is the one that steps down
+      await expect.poll(filled, {message: step}).toBe(true)
       await expect.element($button).toBeEnabled()
       heights[step] = host().getBoundingClientRect().height
     }
-    // The same banner stays mounted, and swapping the button's mode does not move the form below
+    // The same banner stays mounted, and the inventory opening does not move the form below
     expect(new Set(Object.values(heights)).size, JSON.stringify(heights)).toBe(1)
     await settleChromaticEndState()
   })
 
-  it('steps Add to release down to a secondary button while the document inventory is open', async () => {
+  it('keeps Add to release the filled button while the document inventory is open, in light and dark', async () => {
     const inventoryOpen = {params: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME}}
     await render(
       <TestWrapper schemaTypes={schemaTypes}>
@@ -532,12 +529,14 @@ describe('document panel banners', () => {
     for (const scheme of ['light', 'dark'] as const) {
       const element = button(`open-${scheme}`).element()
       await expect.element(button(`open-${scheme}`)).toBeEnabled()
-      // Open: a ghost (outlined) button: its fill barely departs from the banner, it has an
-      // outline, and its text keeps at least 3:1 (it reaches 4.5:1)
-      expect(fillContrast(element), `${scheme} fill`).toBeLessThan(1.5)
-      expect(getComputedStyle(element).boxShadow, `${scheme} outline`).not.toBe('none')
+      // Open: still the filled default primary, a solid block against the banner, with its label
+      // at 4.5:1 or more against the fill. The inventory's Create variant is the one that steps down.
+      expect(fillContrast(element), `${scheme} fill`).toBeGreaterThanOrEqual(3)
       const label = element.querySelector('[data-ui="Text"]') ?? element
-      const ratio = contrastRatio(getComputedStyle(label).color, backgroundBehind(element))
+      const ratio = contrastRatio(
+        getComputedStyle(label).color,
+        getComputedStyle(element).backgroundColor,
+      )
       expect(ratio, `${scheme} text`).toBeGreaterThanOrEqual(4.5)
     }
     await settleChromaticEndState()
