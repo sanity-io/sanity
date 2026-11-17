@@ -63,19 +63,28 @@ export const SelectBaseVersion: ComponentType<Props> = ({
       })),
   )
 
+  // Where "Nearest version" copies from: the second line of its menu row, and the line under the
+  // select while it is the chosen value.
+  const nearestSource = nearestBase
+    ? t('document-group.create-variant.form.nearest-subtitle', nearestBase)
+    : t('document-group.create-variant.form.nearest-subtitle-empty')
+
   const nearestVersionOption: CreateVariantPickerOption = {
     key: NEAREST_VERSION_KEY,
     text: t('document-group.create-variant.base-option-nearest'),
     icon: DocumentsIcon,
     selectIcon: <DocumentsGlyph />,
-    subtitle: nearestBase
-      ? t('document-group.create-variant.form.nearest-subtitle', nearestBase)
-      : t('document-group.create-variant.form.nearest-subtitle-empty'),
+    subtitle: nearestSource,
   }
 
   return (
     <CreateVariantPicker
       label={t('document-group.create-variant.form.base-label')}
+      info={{
+        text: t('document-group.create-variant.form.base-info'),
+        label: t('document-group.create-variant.form.base-info-label'),
+      }}
+      description={typeof value === 'undefined' ? nearestSource : undefined}
       testId="create-variant-base-menu"
       emptyIcon={<DocumentsGlyph />}
       leadingOptions={[nearestVersionOption]}

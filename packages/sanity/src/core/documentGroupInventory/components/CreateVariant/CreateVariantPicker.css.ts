@@ -7,6 +7,40 @@ export const createVariantPickerField = css({
   gap: '8px',
 })
 
+/** The title and its info button, 4px apart, on the title's text line. */
+export const createVariantPickerTitleRow = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
+})
+
+/**
+ * The info button's box: zero high with visible overflow, so the 25px button is centred on the
+ * 13px title line without making the line taller. It reaches 6px above and below the line, inside
+ * the 8px gap above the select.
+ */
+export const createVariantPickerInfo = css({
+  display: 'inline-flex',
+  alignItems: 'center',
+  height: 0,
+  overflow: 'visible',
+})
+
+/**
+ * The info glyph takes the muted foreground, the chevron's colour (about 4.5:1 light, 5.3:1 dark),
+ * rather than the bleed button's icon colour.
+ */
+export const createVariantPickerInfoButton = css({
+  '&&&:not(:hover)': {
+    '--card-icon-color': 'var(--card-muted-fg-color)',
+  },
+})
+
+/** The quieter line under a select, such as where "Nearest version" copies from. */
+export const createVariantPickerDescription = css({
+  minWidth: 0,
+})
+
 /**
  * The select, the size of the "Create variant definition" dialog's condition inputs: 13px text
  * in a 33px box, 12px in at the sides.
