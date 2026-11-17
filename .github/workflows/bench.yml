@@ -68,7 +68,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
-      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4
         id: filter
         with:
           filters: |
@@ -600,9 +600,11 @@ jobs:
     if: >-
       !cancelled() && needs.build.result == 'success' &&
       ((github.event_name == 'pull_request' &&
-        needs.listener-stall-changes.outputs.has_changes == 'true') ||
+        needs.listener-stall-changes.outputs.has_changes == 'true' &&
+        needs.build.outputs.has_code_changes == 'true') ||
        (github.event_name == 'schedule' && github.event.schedule == '0 5 * * *') ||
-       (github.event_name == 'workflow_dispatch' && inputs.run_suite))
+       (github.event_name == 'workflow_dispatch' && inputs.run_suite &&
+        inputs.ab_to == '' && needs.build.outputs.backfill_sha == ''))
     runs-on: ubuntu-8core
     timeout-minutes: 15
     permissions:
@@ -1209,7 +1211,17 @@ jobs:
   # `cancelled` is included because job timeouts conclude as cancelled, not
   # failure (see the report job's note).
   alert-scheduled-failure:
-    needs: [build, bench-interaction, bench-pageload, self-test, track-main, sqrl-score]
+    needs:
+      [
+        listener-stall-changes,
+        build,
+        bench-interaction,
+        bench-pageload,
+        bench-listener-stall,
+        self-test,
+        track-main,
+        sqrl-score,
+      ]
     if: >-
       always() && github.event_name == 'schedule' &&
       (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') ||
