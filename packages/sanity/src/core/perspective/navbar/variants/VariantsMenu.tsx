@@ -51,8 +51,11 @@ import {
 import {useStableMenuWidth} from '../useStableMenuWidth'
 import {conditionMismatchIcon, variantMenuItemRow, variantsMenu} from './VariantsMenu.css'
 
-/** Where the variant diamond's 21px box starts, from the row's left edge. */
-const VARIANT_MARK_BOX_INSET = 6
+/**
+ * The space between the end of a row and the button at its end: 8px, the same as between the
+ * menu's edge and its rows.
+ */
+const ROW_END_INSET = 8
 
 /**
  * Passed to the menu item as a component, not as an element in a wrapper, so the menu item's
@@ -120,10 +123,9 @@ function VariantMenuItem(props: {
         intent={VARIANTS_INTENT}
         onNavigate={onNavigate}
         params={{id: variantId}}
-        // The link's box sits as far from the row's right edge as the diamond's box does from its
-        // left edge (6px: the diamond bleeds that far into the menu item's 12px padding), and
-        // the menu item's 12px gap then separates it from a mismatch icon
-        style={{paddingRight: VARIANT_MARK_BOX_INSET}}
+        // The link's box sits 8px from the row's right edge, inside the menu item's 12px padding,
+        // and the menu item's 12px gap then separates it from a mismatch icon
+        style={{paddingRight: ROW_END_INSET}}
         tooltip={t('navbar.variant.menu.view-variant')}
       />
     </div>
