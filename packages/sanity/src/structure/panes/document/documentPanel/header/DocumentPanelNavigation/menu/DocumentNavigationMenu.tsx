@@ -136,8 +136,9 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
               ref={scrollerRef}
             >
               {/* Menu items are flex children with min-height: 0, so they collapse when they sit
-              directly in this scroller. Keep them in a column that sizes to its content. */}
-              <Flex flexDirection="column" flexShrink={0} gap={1} paddingBottom={1} paddingX={1}>
+              directly in this scroller. Keep them in a column that sizes to its content. The 4px
+              top, with the search field's 4px, puts the first row 8px below the field. */}
+              <Flex flexDirection="column" flexShrink={0} gap={1} paddingX={1} paddingY={1}>
                 {leadingItems}
                 {visibleSections.map((section) => (
                   <MenuSection
@@ -152,8 +153,9 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
               </Flex>
             </Flex>
           ) : (
-            // The two boxes of the navbar menus' `FilterNoMatches`, with paddings that account for this menu's tighter search field
-            <Box paddingBottom={2} paddingTop={3} paddingX={2}>
+            // The two boxes of the navbar menus' `FilterNoMatches`, with paddings that account for
+            // this menu's tighter search field: 8px below the field, as the first row is
+            <Box paddingBottom={2} paddingTop={1} paddingX={2}>
               <Box data-testid={`${testId}-no-matches`} padding={2}>
                 <Text muted size={1}>
                   {t('navbar.filter.no-matches', {filter: filterQuery.trim()})}
