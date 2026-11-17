@@ -174,12 +174,9 @@ export function DocumentReleasesMenu() {
           label: t('document-panel-navigation.releases.section.in-releases', {
             count: documentReleaseCount,
           }),
+          // Shown only when the document is in a release: an "In 0 releases" header above the
+          // other releases says nothing the list doesn't.
           items: documentReleases.map(renderReleaseItem),
-          alwaysShow: true,
-          tooltip:
-            documentReleaseCount === 0
-              ? t('document-panel-navigation.releases.section.no-releases-tooltip')
-              : undefined,
         },
         {
           key: 'other',
