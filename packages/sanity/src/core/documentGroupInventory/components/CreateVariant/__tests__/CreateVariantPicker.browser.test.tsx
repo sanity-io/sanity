@@ -13,15 +13,20 @@ import {CreateVariantPicker} from '../CreateVariantPicker'
 // The open menu is a measurement, not a visual state worth archiving.
 configure({disableAutoSnapshot: true})
 
-const OPTIONS = ['German', 'Swedish', 'Norwegian'].map((text) => ({
+const toOption = (text: string) => ({
   key: text,
   text,
   icon: DocumentIcon,
   // What the select shows once the option is chosen
   selectIcon: <DocumentIcon />,
-}))
+})
 
-function PickerHarness() {
+const OPTIONS = ['German', 'Swedish', 'Norwegian'].map(toOption)
+
+/** Enough options to fill the list to its whole-row cap and scroll. */
+const MANY_OPTIONS = Array.from({length: 20}, (_, index) => toOption(`Option ${index + 1}`))
+
+function PickerHarness({options = OPTIONS}: {options?: typeof OPTIONS}) {
   const [value, setValue] = useState<string | undefined>()
   return (
     <TestWrapper schemaTypes={[]}>
@@ -33,9 +38,9 @@ function PickerHarness() {
             emptyIcon={null}
             label="Release"
             onChange={setValue}
-            options={OPTIONS}
+            options={options}
             testId="picker"
-            value={OPTIONS.find((option) => option.key === value)}
+            value={options.find((option) => option.key === value)}
           />
         </div>
       </BoundaryElementProvider>
@@ -101,13 +106,20 @@ describe('CreateVariantPicker menu: reopening a scrolled list', () => {
     const rows = [...list().querySelectorAll('[data-ui="MenuItem"]')].map((row) =>
       row.getBoundingClientRect(),
     )
-    const firstVisible = rows.find((row) => row.bottom > box.top + 0.5)!
-    return {fieldBottom: field.bottom, firstVisibleTop: firstVisible.top, listBottom: box.bottom}
+    const visible = rows.filter((row) => row.bottom > box.top + 0.5 && row.top < box.bottom - 0.5)
+    return {
+      fieldBottom: field.bottom,
+      firstVisibleTop: visible[0].top,
+      lastVisibleBottom: visible[visible.length - 1].bottom,
+      listBottom: box.bottom,
+    }
   }
 
+  /** Waits past the opening animation, after which the list is fitted for the last time. */
   async function open() {
     await page.getByTestId('picker-field').getByRole('button').click()
     await expect.element(page.getByTestId('picker')).toBeVisible()
+    await new Promise((resolve) => setTimeout(resolve, 400))
     await expectStable(() => `${list().scrollTop}|${JSON.stringify(geometry())}`)
   }
 
@@ -116,42 +128,48 @@ describe('CreateVariantPicker menu: reopening a scrolled list', () => {
     await expect.element(page.getByTestId('picker')).not.toBeVisible()
   }
 
-  /** Keeps the list short enough to scroll, then leaves a row cut in half at its top. */
+  /** Leaves the list scrolled so a row is cut in half at its top. */
   function scrollToHalfRow() {
-    list().style.maxHeight = '80px'
     const row = list().querySelector('[data-ui="MenuItem"]')!.getBoundingClientRect()
-    list().scrollTop = row.height / 2
+    list().scrollTop = row.height * 3 + row.height / 2
+  }
+
+  /** No row is cut at either end: the list ends 4px below a row, and starts 8px below the field. */
+  function expectWholeRows() {
+    const {fieldBottom, firstVisibleTop, lastVisibleBottom, listBottom} = geometry()
+    expect(Math.abs(firstVisibleTop - (fieldBottom + 8))).toBeLessThanOrEqual(1)
+    expect(Math.abs(listBottom - lastVisibleBottom - 4)).toBeLessThanOrEqual(1)
   }
 
   it('reopens at the top with nothing selected', async () => {
-    void render(<PickerHarness />)
+    void render(<PickerHarness options={MANY_OPTIONS} />)
     await open()
     scrollToHalfRow()
     await close()
     await open()
 
     expect(list().scrollTop).toBe(0)
-    const {fieldBottom, firstVisibleTop} = geometry()
-    expect(Math.abs(firstVisibleTop - (fieldBottom + 8))).toBeLessThanOrEqual(1)
+    expectWholeRows()
   })
 
-  it('reopens with the selected option whole and no row half under the search field', async () => {
-    void render(<PickerHarness />)
+  it('reopens with the last option, when selected, whole and no row cut at either end', async () => {
+    void render(<PickerHarness options={MANY_OPTIONS} />)
     await open()
-    await page.getByRole('menuitemradio', {name: 'Norwegian'}).click()
+    list().scrollTop = list().scrollHeight
+    await page.getByRole('menuitemradio', {name: 'Option 20'}).click()
     await expect.element(page.getByTestId('picker')).not.toBeVisible()
     await open()
     scrollToHalfRow()
     await close()
     await open()
 
-    const {fieldBottom, firstVisibleTop, listBottom} = geometry()
-    expect(firstVisibleTop).toBeGreaterThanOrEqual(fieldBottom + 8 - 1)
+    expectWholeRows()
     const selected = page
-      .getByRole('menuitemradio', {name: 'Norwegian'})
+      .getByRole('menuitemradio', {name: 'Option 20'})
       .element()
       .getBoundingClientRect()
+    const {fieldBottom, listBottom} = geometry()
     expect(selected.top).toBeGreaterThanOrEqual(fieldBottom + 8 - 1)
-    expect(selected.bottom).toBeLessThanOrEqual(listBottom + 1)
+    expect(selected.bottom).toBeLessThanOrEqual(listBottom - 4 + 1)
   })
 })
