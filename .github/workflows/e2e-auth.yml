@@ -4,6 +4,20 @@ on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_endform:
+        description: "Run the Endform comparison (requires separately approved org and API key)"
+        type: boolean
+        default: false
+      repeat_each:
+        description: "Run each test N times on both runners"
+        type: number
+        default: 1
+      retries:
+        description: "Override the config's retries (empty keeps the config value)"
+        type: string
+        default: ""
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -11,8 +25,12 @@ concurrency:
 
 jobs:
   auth-e2e:
-    timeout-minutes: 15
+    name: Auth E2E (Playwright)
+    timeout-minutes: ${{ github.event_name == 'workflow_dispatch' && 45 || 15 }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -21,19 +39,20 @@ jobs:
 
       - uses: ./.github/actions/detect-code-changes
         id: changes
+        if: github.event_name != 'workflow_dispatch'
 
       - uses: ./.github/actions/setup
-        if: steps.changes.outputs.has_changes == 'true'
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.has_changes == 'true'
 
       - name: Store Playwright's Version
-        if: steps.changes.outputs.has_changes == 'true'
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.has_changes == 'true'
         id: playwright-version
         run: |
           PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           echo "version=${PLAYWRIGHT_VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Playwright Browsers
-        if: steps.changes.outputs.has_changes == 'true'
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.has_changes == 'true'
         id: cache-playwright-browsers
         uses: actions/cache@v6
         with:
@@ -41,15 +60,69 @@ jobs:
           key: ${{ steps.playwright-version.outputs.version }}-playwright-browsers-chromium
 
       - name: Install Playwright Browsers
-        if: steps.changes.outputs.has_changes == 'true' && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
+        if: (github.event_name == 'workflow_dispatch' || steps.changes.outputs.has_changes == 'true') && steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Build packages and auth-test-studio
-        if: steps.changes.outputs.has_changes == 'true'
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.has_changes == 'true'
         run: pnpm build --filter=auth-test-studio...
 
-      - name: Run auth E2E tests
-        if: steps.changes.outputs.has_changes == 'true'
-        run: pnpm --filter e2e test:auth
+      - name: Run auth E2E tests (Playwright)
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.has_changes == 'true'
+        working-directory: e2e
+        run: |
+          args=(--repeat-each "${REPEAT_EACH:-1}")
+          if [ -n "$RETRIES" ]; then args+=(--retries "$RETRIES"); fi
+          pnpm exec playwright test --config=playwright.auth.config.ts "${args[@]}"
         env:
           CI: "true"
+          REPEAT_EACH: ${{ inputs.repeat_each }}
+          RETRIES: ${{ inputs.retries }}
+
+  # Never runs on PRs or pushes. After the workflow is on the default branch,
+  # a separately approved dispatch is required to send tests to Endform.
+  endform-auth-e2e:
+    name: Auth E2E (Endform; opt-in)
+    if: github.event_name == 'workflow_dispatch' && inputs.run_endform
+    timeout-minutes: 45
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Verify separately configured Endform access
+        env:
+          ENDFORM_API_KEY: ${{ secrets.ENDFORM_API_KEY }}
+          ENDFORM_ORGANIZATION_ID: ${{ vars.ENDFORM_ORGANIZATION_ID }}
+        run: |
+          if [ -z "$ENDFORM_API_KEY" ] || [ -z "$ENDFORM_ORGANIZATION_ID" ]; then
+            echo 'Endform API key and organization ID must be configured before an approved opt-in run.' >&2
+            exit 1
+          fi
+
+      - uses: ./.github/actions/setup
+
+      - name: Build packages and auth-test-studio
+        run: pnpm build --filter=auth-test-studio...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+      # The mock-auth suite does not require staging credentials. Endform credentials stay in
+      # this opt-in job, never the ordinary Playwright PR job; vocabulary travels to its runners.
+      - name: Run auth E2E tests (Endform)
+        working-directory: e2e
+        run: |
+          pnpm run dom-prop-vocabulary
+          args=(--repeat-each "${REPEAT_EACH:-1}")
+          if [ -n "$RETRIES" ]; then args+=(--retries "$RETRIES"); fi
+          npx --yes endform@0.81.5 test --organization-id "$ENDFORM_ORGANIZATION_ID" --config=playwright.auth.config.ts "${args[@]}"
+        env:
+          CI: "true"
+          ENDFORM_API_KEY: ${{ secrets.ENDFORM_API_KEY }}
+          ENDFORM_ORGANIZATION_ID: ${{ vars.ENDFORM_ORGANIZATION_ID }}
+          REPEAT_EACH: ${{ inputs.repeat_each }}
+          RETRIES: ${{ inputs.retries }}

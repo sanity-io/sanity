@@ -10,6 +10,7 @@
     "cleanup": "tsx -r dotenv-flow/config scripts/cleanupDatasets",
     "codegen": "node -r dotenv-flow/config ./node_modules/.bin/sanity-test codegen",
     "dev": "pnpm --filter studio-e2e-testing dev",
+    "dom-prop-vocabulary": "tsx scripts/writeDomPropVocabulary.ts",
     "extract-diagnostics": "tsx scripts/flakeReport/extractDiagnostics.ts",
     "flake-report": "tsx scripts/flakeReport/index.ts",
     "preview": "pnpm e2e:build && pnpm --filter studio-e2e-testing preview",
