@@ -179,7 +179,6 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', (
   sortReleases: <T,>(releases: T[]) => releases,
   getVariantTitle: (variant: {title?: string}) => variant.title,
   getDefaultVariant: <T,>(selected?: readonly T[]) => selected?.[0],
-  useKeyValueStore: () => ({getKey: vi.fn(), setKey: vi.fn()}),
   useWorkspaces: () => [
     {name: 'default', title: 'Test', projectId: 'test-project', dataset: 'test'},
     {name: 'staging', title: 'Staging', projectId: 'test-project', dataset: 'staging'},
