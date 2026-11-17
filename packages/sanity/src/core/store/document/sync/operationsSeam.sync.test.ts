@@ -56,6 +56,7 @@ describe('editOperations and editState, two clients', () => {
       id: 'OPS-AUTOCOMMIT-CONCURRENT',
       title: 'A types a title and B appends an item within the same autocommit window',
       seam: 'operations',
+      evidence: 'L2',
       initial: [document(PUBLISHED_ID, 'Published'), document(DRAFT_ID, 'Draft')],
       idPair,
       clients: ['A', 'B'],
@@ -95,6 +96,7 @@ describe('editOperations and editState, two clients', () => {
       id: 'OPS-EDIT-WITHOUT-DRAFT',
       title: 'Only a published document exists; A edits it and B watches',
       seam: 'operations',
+      evidence: 'L1',
       initial: [document(PUBLISHED_ID, 'Published')],
       idPair,
       clients: ['A', 'B'],
@@ -110,6 +112,7 @@ describe('editOperations and editState, two clients', () => {
     expectRevisionsAgree(world)
     expect(world.lake.get(DRAFT_ID)?.title).toBe('Edited by A')
     expect(world.lake.get(PUBLISHED_ID)?.title).toBe('Published')
+    expect(world.lake.get(DRAFT_ID)?._system).toEqual({base: {id: PUBLISHED_ID, rev: 'seed'}})
     expect(world.clients.B.localDocument(DRAFT_ID)?.title).toBe('Edited by A')
   })
 })

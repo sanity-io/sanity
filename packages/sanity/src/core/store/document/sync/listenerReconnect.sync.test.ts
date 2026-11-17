@@ -37,14 +37,15 @@ function reconnectMidTransaction(resume: boolean): SyncTestDefinition {
     id: resume ? 'LSN-RECONNECT-MID-TX-RESUME' : 'LSN-RECONNECT-MID-TX-RESET',
     title: `B receives event 1 of 2, the connection drops, and comes back with ${resume ? 'welcomeback' : 'reset'}`,
     seam: 'pair',
+    evidence: 'L2',
     initial: [document(PUBLISHED_ID, 'Published title'), document(DRAFT_ID, 'Draft title')],
     idPair,
     clients: ['A', 'B'],
     steps: [
-      {client: 'B', do: 'listener', mode: 'hold'},
+      {client: 'B', do: 'listener', mode: 'hold', represents: 'listener latency'},
       publishFromOutside,
       {client: 'B', do: 'releaseEvents', count: 1},
-      {client: 'B', do: 'disconnect'},
+      {client: 'B', do: 'disconnect', represents: 'a network drop'},
       {client: 'B', do: 'reconnect', resume},
       {client: 'B', do: 'listener', mode: 'auto'},
       {client: 'B', do: 'releaseEvents'},
@@ -69,7 +70,7 @@ describe('listener reconnect in the middle of a two-event transaction', () => {
 
   // The listener drops the first half of a publish when the connection resumes mid transaction, so B keeps the deleted draft.
   test.fails('LSN-RECONNECT-MID-TX-RESUME: B converges after a resumed reconnect', async () => {
-    world = await runSyncTest(reconnectMidTransaction(true))
+    world = await runSyncTest({...reconnectMidTransaction(true), knownBug: 'C2'})
     expectConverged(world)
     expectHealthy(world)
   })
@@ -81,7 +82,7 @@ describe('listener reconnect in the middle of a two-event transaction', () => {
 
   // A reset clears the transaction buffer without ending the pending lock, so the form stays locked.
   test.fails('LSN-RECONNECT-MID-TX-RESET: B releases the pending-transaction lock after a reset', async () => {
-    world = await runSyncTest(reconnectMidTransaction(false))
+    world = await runSyncTest({...reconnectMidTransaction(false), knownBug: 'C1'})
     expectHealthy(world)
   })
 })

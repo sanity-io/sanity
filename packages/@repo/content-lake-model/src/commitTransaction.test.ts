@@ -1,5 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
+import {actionsToMutations} from './actionsToMutations'
 import {commitTransaction} from './commitTransaction'
 import {ContentLakeError} from './contentLakeError'
 import {type DocumentIndex, type MutationPayload} from './types'
@@ -14,6 +15,16 @@ function commit(index: DocumentIndex, mutations: MutationPayload[], transactionI
     identity: 'user',
     timestamp: TIMESTAMP,
   })
+}
+
+function errorOf(run: () => unknown): ContentLakeError {
+  try {
+    run()
+  } catch (error) {
+    if (error instanceof ContentLakeError) return error
+    throw error
+  }
+  throw new Error('Expected a ContentLakeError')
 }
 
 describe('commitTransaction', () => {
@@ -145,10 +156,26 @@ describe('commitTransaction', () => {
 
   it('rejects a patch whose ifRevisionID does not match with a 409', () => {
     const index = {a: {_id: 'a', _type: 'doc', _rev: 'seed'}}
-    const mismatch = () =>
-      commit(index, [{patch: {id: 'a', ifRevisionID: 'stale', set: {title: 'x'}}}], 'tx-1')
-    expect(mismatch).toThrow(ContentLakeError)
-    expect(mismatch).toThrow(expect.objectContaining({statusCode: 409}))
+    const error = errorOf(() =>
+      commit(index, [{patch: {id: 'a', ifRevisionID: 'stale', set: {title: 'x'}}}], 'tx-1'),
+    )
+    expect(error.statusCode).toBe(409)
+    expect(error.body).toEqual({
+      description:
+        'Mutation failed: Document "a" has unexpected revision ID ("seed"), expected "stale"',
+      items: [
+        {
+          error: {
+            currentRevisionID: 'seed',
+            description: 'Document "a" has unexpected revision ID ("seed"), expected "stale"',
+            expectedRevisionID: 'stale',
+            type: 'documentRevisionIDDoesNotMatchError',
+          },
+          index: 0,
+        },
+      ],
+      type: 'mutationError',
+    })
   })
 
   it('applies a patch whose ifRevisionID matches', () => {
@@ -158,5 +185,100 @@ describe('commitTransaction', () => {
       'tx-1',
     )
     expect(index.a?.title).toBe('x')
+  })
+
+  it('rejects a patch on a missing document with a 404, even with an ifRevisionID', () => {
+    const error = errorOf(() =>
+      commit(
+        {a: {_id: 'a', _type: 'doc', _rev: 'seed'}},
+        [
+          {patch: {id: 'a', set: {title: 'x'}}},
+          {patch: {id: 'missing', ifRevisionID: 'whatever', set: {title: 'x'}}},
+        ],
+        'tx-1',
+      ),
+    )
+    expect(error.statusCode).toBe(404)
+    expect(error.body).toEqual({
+      description: 'Mutation failed: The document with the ID "missing" was not found',
+      items: [
+        {
+          error: {
+            description: 'The document with the ID "missing" was not found',
+            id: 'missing',
+            type: 'documentNotFoundError',
+          },
+          index: 1,
+        },
+      ],
+      type: 'mutationError',
+    })
+  })
+
+  it('rejects a create of an existing document with a 409', () => {
+    const error = errorOf(() =>
+      commit(
+        {a: {_id: 'a', _type: 'doc', _rev: 'seed'}},
+        [{create: {_id: 'a', _type: 'doc'}}],
+        'tx-1',
+      ),
+    )
+    expect(error.statusCode).toBe(409)
+    expect(error.body).toMatchObject({
+      description: 'Mutation failed: Document by ID "a" already exists',
+      items: [{error: {id: 'a', type: 'documentAlreadyExistsError'}, index: 0}],
+      type: 'mutationError',
+    })
+  })
+
+  it('patches a document created earlier in the same transaction', () => {
+    const {index, results} = commit(
+      {},
+      [{create: {_id: 'a', _type: 'doc', title: 'a'}}, {patch: {id: 'a', set: {title: 'b'}}}],
+      'tx-1',
+    )
+    expect(index.a?.title).toBe('b')
+    expect(results).toEqual([{id: 'a', operation: 'create'}])
+  })
+
+  it.each(['set', 'setIfMissing'])('creates missing parent objects for a dotted %s path', (op) => {
+    const {index} = commit(
+      {a: {_id: 'a', _type: 'doc', _rev: 'seed'}},
+      [{patch: {id: 'a', [op]: {'outer.inner.leaf': 'v'}}}],
+      'tx-1',
+    )
+    expect(index.a?.outer).toEqual({inner: {leaf: 'v'}})
+  })
+
+  it('materialises a draft from published through an edit action like Content Lake', () => {
+    const published = {
+      _id: 'a',
+      _type: 'doc',
+      _rev: 'published-rev',
+      _createdAt: '2025-06-01T00:00:00.000Z',
+      _updatedAt: '2025-06-01T00:00:00.000Z',
+      title: 'published',
+    }
+    const mutations = actionsToMutations({a: published}, [
+      {
+        actionType: 'sanity.action.document.edit',
+        draftId: 'drafts.a',
+        publishedId: 'a',
+        patch: {set: {title: 'edited'}},
+      },
+    ])
+    const {index, events} = commit({a: published}, mutations, 'tx-1')
+    expect(index['drafts.a']).toEqual({
+      _id: 'drafts.a',
+      _type: 'doc',
+      _rev: 'tx-1',
+      _createdAt: '2025-06-01T00:00:00.000Z',
+      _updatedAt: TIMESTAMP,
+      _system: {base: {id: 'a', rev: 'published-rev'}},
+      title: 'edited',
+    })
+    expect(index.a).toEqual(published)
+    expect(events).toHaveLength(1)
+    expect(events[0]).toMatchObject({documentId: 'drafts.a', transition: 'appear', mutations})
   })
 })

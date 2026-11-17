@@ -1,6 +1,6 @@
 export {actionsToMutations} from './actionsToMutations'
 export {commitTransaction} from './commitTransaction'
-export {ContentLakeError} from './contentLakeError'
+export {ContentLakeError, type ContentLakeErrorBody} from './contentLakeError'
 export type {
   CommitResult,
   ContentLakeAction,

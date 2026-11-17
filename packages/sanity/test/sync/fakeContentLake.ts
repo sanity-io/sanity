@@ -4,6 +4,7 @@ import {
   commitTransaction,
   type ContentLakeAction,
   ContentLakeError,
+  type ContentLakeErrorBody,
   type DocumentIndex,
   type MutationEventPayload,
 } from '@repo/content-lake-model'
@@ -75,31 +76,28 @@ export interface ClientControls {
 
 const SEED_TIMESTAMP = '2026-01-01T00:00:00.000Z'
 
-function httpError(statusCode: number, description: string): ClientError {
+function httpError(statusCode: number, body: ContentLakeErrorBody): ClientError {
   return new ClientError({
     statusCode,
     headers: {},
     method: 'POST',
     url: 'fake://content-lake/data/actions',
-    body: {error: {type: 'mutationError', description, items: []}},
+    body: {error: body},
   })
+}
+
+function mutationError(description: string): ContentLakeErrorBody {
+  return {type: 'mutationError', description, items: []}
 }
 
 function toClientError(error: unknown): ClientError {
   if (error instanceof ClientError) return error
-  if (error instanceof ContentLakeError) return httpError(error.statusCode, error.message)
-  return httpError(400, String(error))
+  if (error instanceof ContentLakeError) return httpError(error.statusCode, error.body)
+  return httpError(400, mutationError(String(error)))
 }
 
 function toListenerEvent(event: MutationEventPayload): MutationEvent {
   return {type: 'mutation', ...event, messageReceivedAt: event.timestamp} as MutationEvent
-}
-
-function stripSystemFields(
-  document: SanityDocument,
-): Omit<SanityDocument, '_rev' | '_updatedAt' | '_createdAt'> {
-  const {_rev, _updatedAt, _createdAt, ...rest} = document
-  return rest
 }
 
 export class FakeContentLake {
@@ -128,11 +126,6 @@ export class FakeContentLake {
     return (this.documents[id] as SanityDocument | undefined) ?? null
   }
 
-  content(id: string): ReturnType<typeof stripSystemFields> | null {
-    const document = this.get(id)
-    return document ? stripSystemFields(document) : null
-  }
-
   client(clientId: string): ClientControls {
     const existing = this.controls.get(clientId)
     if (existing) return existing
@@ -141,7 +134,7 @@ export class FakeContentLake {
       listener: {mode: 'auto', latencyMs: 0},
       acceptNextCommit: () => this.settleNextCommit(clientId, undefined),
       rejectNextCommit: (statusCode, description = `Rejected with ${statusCode}`) =>
-        this.settleNextCommit(clientId, httpError(statusCode, description)),
+        this.settleNextCommit(clientId, httpError(statusCode, mutationError(description))),
       releaseHeldEvents: (options) => this.releaseHeld(clientId, options),
       dropNextHeldEvent: () =>
         this.connectionsOf(clientId).forEach((connection) => connection.held.shift()),

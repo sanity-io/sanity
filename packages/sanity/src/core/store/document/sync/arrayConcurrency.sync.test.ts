@@ -50,12 +50,23 @@ describe('array of objects, two clients', () => {
       id: 'ARR-INSERT-CONCURRENT',
       title: 'A inserts after b while B inserts before a, neither has seen the other',
       seam: 'pair',
+      evidence: 'L2',
       initial: [draftWithItems(['a', 'b', 'c'])],
       idPair,
       clients: ['A', 'B'],
       steps: [
-        {client: 'A', do: 'listener', mode: 'hold'},
-        {client: 'B', do: 'listener', mode: 'hold'},
+        {
+          client: 'A',
+          do: 'listener',
+          mode: 'hold',
+          represents: 'both edits in flight before either client sees the other',
+        },
+        {
+          client: 'B',
+          do: 'listener',
+          mode: 'hold',
+          represents: 'both edits in flight before either client sees the other',
+        },
         {
           client: 'A',
           do: 'patch',
@@ -94,12 +105,23 @@ describe('array of objects, two clients', () => {
       id: 'ARR-REORDER-VS-EDIT',
       title: 'A drags c to the top and then a to the bottom while B renames b',
       seam: 'pair',
+      evidence: 'L2',
       initial: [draftWithItems(['a', 'b', 'c', 'd'])],
       idPair,
       clients: ['A', 'B'],
       steps: [
-        {client: 'A', do: 'listener', mode: 'hold'},
-        {client: 'B', do: 'listener', mode: 'hold'},
+        {
+          client: 'A',
+          do: 'listener',
+          mode: 'hold',
+          represents: 'both edits in flight before either client sees the other',
+        },
+        {
+          client: 'B',
+          do: 'listener',
+          mode: 'hold',
+          represents: 'both edits in flight before either client sees the other',
+        },
         {
           client: 'B',
           do: 'patch',
@@ -135,12 +157,23 @@ describe('array of objects, two clients', () => {
       id: 'ARR-REORDER-VS-EDIT-SAME-ITEM',
       title: 'A moves b to the end while B renames b',
       seam: 'pair',
+      evidence: 'L2',
       initial: [draftWithItems(['a', 'b', 'c'])],
       idPair,
       clients: ['A', 'B'],
       steps: [
-        {client: 'A', do: 'listener', mode: 'hold'},
-        {client: 'B', do: 'listener', mode: 'hold'},
+        {
+          client: 'A',
+          do: 'listener',
+          mode: 'hold',
+          represents: 'both edits in flight before either client sees the other',
+        },
+        {
+          client: 'B',
+          do: 'listener',
+          mode: 'hold',
+          represents: 'both edits in flight before either client sees the other',
+        },
         {
           client: 'B',
           do: 'patch',

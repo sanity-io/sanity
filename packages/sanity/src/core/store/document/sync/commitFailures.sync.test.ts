@@ -33,23 +33,36 @@ afterEach(() => {
   world = undefined
 })
 
-function rejectedCommit(statusCode: number, typingDuringFlight: boolean): SyncTestDefinition {
+interface Rejection {
+  statusCode: number
+  represents: string
+}
+
+const PERMISSION_REVOKED: Rejection = {
+  statusCode: 403,
+  represents: 'permission revoked mid-session',
+}
+const TRANSIENT_FAILURE: Rejection = {statusCode: 500, represents: 'a transient server error'}
+
+function rejectedCommit(rejection: Rejection, typingDuringFlight: boolean): SyncTestDefinition {
+  const {statusCode, represents} = rejection
   const typed: Step[] = typingDuringFlight
     ? [{client: 'A', do: 'patch', id: DRAFT_ID, patches: [{set: {title: 'two'}}]}]
     : []
   return {
-    id: `CMT-REJECT-${statusCode}${typingDuringFlight ? '-TYPING' : ''}`,
+    id: `CMT-${statusCode < 500 ? 'REJECT' : 'RETRY'}-${statusCode}${typingDuringFlight ? '-TYPING' : ''}`,
     title: `A commits "one"${typingDuringFlight ? ', types "two" while it is in flight,' : ''} and the server answers ${statusCode}`,
     seam: 'pair',
+    evidence: 'L2',
     initial: [initial],
     idPair,
     clients: ['A'],
     steps: [
-      {client: 'A', do: 'commits', mode: 'hold'},
+      {client: 'A', do: 'commits', mode: 'hold', represents: 'a save request still in flight'},
       {client: 'A', do: 'patch', id: DRAFT_ID, patches: [{set: {title: 'one'}}]},
       {client: 'A', do: 'commit'},
       ...typed,
-      {client: 'A', do: 'rejectCommit', statusCode},
+      {client: 'A', do: 'rejectCommit', statusCode, represents},
       {client: 'A', do: 'commits', mode: 'auto'},
       {do: 'advance', ms: 10},
       {client: 'A', do: 'commit'},
@@ -59,28 +72,28 @@ function rejectedCommit(statusCode: number, typingDuringFlight: boolean): SyncTe
 }
 
 describe('commit failures', () => {
-  test('CMT-REJECT-409: a terminal rejection resets the client to the server copy', async () => {
-    world = await runSyncTest(rejectedCommit(409, false))
+  test('CMT-REJECT-403: a terminal rejection resets the client to the server copy', async () => {
+    world = await runSyncTest(rejectedCommit(PERMISSION_REVOKED, false))
 
     expectHealthy(world)
     expectConverged(world)
     expectRevisionsAgree(world)
     expect(world.lake.transactions).toHaveLength(0)
     expect(world.lake.rejectedCommits).toEqual([
-      {clientId: 'A', transactionId: expect.any(String), statusCode: 409},
+      {clientId: 'A', transactionId: expect.any(String), statusCode: 403},
     ])
     expect(world.clients.A.localDocument(DRAFT_ID)?.title).toBe('seed')
   })
 
   // The edit typed while the rejected save was in flight stays on screen, is never sent, and the document never becomes consistent again.
-  test.fails('CMT-REJECT-409-TYPING: a terminal rejection while typing leaves the client converged and consistent', async () => {
-    world = await runSyncTest(rejectedCommit(409, true))
+  test.fails('CMT-REJECT-403-TYPING: a terminal rejection while typing leaves the client converged and consistent', async () => {
+    world = await runSyncTest({...rejectedCommit(PERMISSION_REVOKED, true), knownBug: 'B1'})
     expectHealthy(world)
     expectConverged(world)
   })
 
   test('CMT-RETRY-500-TYPING: a transient failure is retried and every edit lands', async () => {
-    world = await runSyncTest(rejectedCommit(500, true))
+    world = await runSyncTest(rejectedCommit(TRANSIENT_FAILURE, true))
 
     expectHealthy(world)
     expectConverged(world)
@@ -95,11 +108,17 @@ describe('commit failures', () => {
       id: 'CMT-UNACKED-REMOTE-FLOOD',
       title: 'A commits and the server does not answer; B lands five edits before it does',
       seam: 'pair',
+      evidence: 'L2',
       initial: [initial],
       idPair,
       clients: ['A', 'B'],
       steps: [
-        {client: 'A', do: 'commits', mode: 'hold'},
+        {
+          client: 'A',
+          do: 'commits',
+          mode: 'hold',
+          represents: 'a slow save response',
+        },
         {client: 'A', do: 'patch', id: DRAFT_ID, patches: [{set: {title: 'from A'}}]},
         {client: 'A', do: 'commit'},
         ...[1, 2, 3, 4, 5].flatMap((step): Step[] => [
