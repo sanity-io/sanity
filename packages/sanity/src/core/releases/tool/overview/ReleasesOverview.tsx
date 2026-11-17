@@ -29,6 +29,7 @@ import {isReleaseDocument} from '../../store/types'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
+import {getReleaseAttention} from '../../util/getReleaseAttention'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {
   filterReleasesForOverview,
@@ -42,6 +43,7 @@ import {CalendarPopover} from './CalendarPopover'
 import {CardinalityViewPicker} from './CardinalityViewPicker'
 import {ConfirmActiveScheduledDraftsBanner} from './ConfirmActiveScheduledDraftsBanner'
 import {DraftsDisabledBanner} from './DraftsDisabledBanner'
+import {NeedsDecisionFilter} from './NeedsDecisionFilter'
 import {
   buildReleasesSearchParams,
   type CardinalityView,
@@ -111,6 +113,10 @@ export function ReleasesOverview() {
     getInitialReleaseNotFound(router),
   )
   const [isCreateReleaseDialogOpen, setIsCreateReleaseDialogOpen] = useState(false)
+  // "N releases need a decision" filter. Off on load; it and the date filter exclude each other.
+  const [needsDecisionOnly, setNeedsDecisionOnly] = useState(false)
+  // Captured once per mount, like the timeline axis, so the count does not shift on re-render.
+  const [now] = useState(() => new Date())
 
   // Filter releases based on cardinality view
   // 'releases' view shows releases with cardinality 'many' or undefined
@@ -211,14 +217,25 @@ export function ReleasesOverview() {
   )
 
   const handleSelectFilterDate = useCallback(
-    (date?: Date) =>
+    (date?: Date) => {
+      setNeedsDecisionOnly(false)
       setReleaseFilterDate((prevFilterDate) => {
         if (!date) return undefined
         const normalized = toLocalDateComponents(date, utcToCurrentZoneDate)
         return prevFilterDate && isSameDay(prevFilterDate, normalized) ? undefined : normalized
-      }),
+      })
+    },
     [utcToCurrentZoneDate],
   )
+
+  const handleToggleNeedsDecision = useCallback(() => {
+    if (!needsDecisionOnly) {
+      // Only open releases can need a decision, and the date filter would hide some of them.
+      setReleaseFilterDate(undefined)
+      setReleaseGroupMode('active')
+    }
+    setNeedsDecisionOnly(!needsDecisionOnly)
+  }, [needsDecisionOnly])
 
   const clearFilterDate = useCallback(() => {
     // Date filter and lifecycle are independent now — clearing the date leaves the current
@@ -367,6 +384,22 @@ export function ReleasesOverview() {
     [releaseGroupMode],
   )
 
+  // Open releases in this view that need a decision. Counted without the date filter, so the
+  // button shows the same number whatever day is picked.
+  const needsDecisionIds = useMemo(() => {
+    const openInView = filterReleasesForOverview({
+      releases: tableReleases,
+      archivedReleases,
+      cardinalityView,
+      releaseGroupMode: 'active',
+    })
+    return new Set(
+      openInView
+        .filter((release) => getReleaseAttention(release, now) !== null)
+        .map((release) => release._id),
+    )
+  }, [tableReleases, archivedReleases, cardinalityView, now])
+
   const filteredReleases = useMemo(() => {
     // The date filter is managed from the timeline (a non-archived surface), so it only applies
     // outside Archived — no invisible filtering of the archived list, which has no calendar control.
@@ -378,13 +411,17 @@ export function ReleasesOverview() {
           }
         : undefined
 
-    return filterReleasesForOverview({
+    const result = filterReleasesForOverview({
       releases: tableReleases,
       archivedReleases,
       cardinalityView,
       releaseGroupMode,
       dateFilter,
     })
+
+    return needsDecisionOnly && releaseGroupMode !== 'archived'
+      ? result.filter((release) => needsDecisionIds.has(release._id))
+      : result
   }, [
     tableReleases,
     archivedReleases,
@@ -392,6 +429,8 @@ export function ReleasesOverview() {
     releaseGroupMode,
     releaseFilterDate,
     getTimezoneAdjustedDateTimeRange,
+    needsDecisionOnly,
+    needsDecisionIds,
   ])
 
   const showConfirmActiveScheduledDraftsBanner =
@@ -582,6 +621,11 @@ export function ReleasesOverview() {
               {releaseFilterDate && (
                 <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
               )}
+              <NeedsDecisionFilter
+                count={needsDecisionIds.size}
+                active={needsDecisionOnly}
+                onToggle={handleToggleNeedsDecision}
+              />
             </Flex>
           }
         />
@@ -592,7 +636,9 @@ export function ReleasesOverview() {
       ) : (
         <DocumentTable<TableRelease>
           // reset search/selection/sort when the filter axis changes
-          key={releaseFilterDate ? 'by_date' : releaseGroupMode}
+          key={
+            releaseFilterDate ? 'by_date' : needsDecisionOnly ? 'needs_decision' : releaseGroupMode
+          }
           alwaysShowCommandLane
           columnDefs={tableColumns}
           defaultSort={defaultTableSort}
