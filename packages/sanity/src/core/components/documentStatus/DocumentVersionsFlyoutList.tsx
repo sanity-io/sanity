@@ -83,7 +83,9 @@ function FlyoutRow(props: {
       data-viewed={viewed ? '' : undefined}
       onBlur={() => setFocused(false)}
       onClick={props.onClick}
-      onFocus={() => setFocused(true)}
+      // Only keyboard focus draws the outline and the grey: a mouse press also focuses the button,
+      // and the row should not show an outline while the button is held down
+      onFocus={(event) => setFocused(event.currentTarget.matches(':focus-visible'))}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       radius={2}
