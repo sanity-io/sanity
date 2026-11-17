@@ -110,6 +110,12 @@ const COLORS = {
   /** Its variant diamond: the suggest tone's `--foreground-low-emphasized` (purple-100 / purple-900). */
   viewedMark: 'light-dark(var(--purple-100), var(--purple-900))',
   /**
+   * The row of the variant picked in the studio, on a document that is not open: the inventory's
+   * checked-row tint, `--active-background-normal` (blue-50 / blue-950). Quieter than the open
+   * version's blue, since nothing is open there yet; picking the row opens it in that variant.
+   */
+  pickedBackground: 'var(--active-background-normal)',
+  /**
    * A hovered or focused row: `--background-low` (gray-50) in light. In dark that token is gray-950,
    * the panel's own background, so dark takes the next step, gray-900.
    */
@@ -140,24 +146,32 @@ function FlyoutRow(props: {
   onClick: () => void
   /** The version the pane is viewing: the strong selected blue, also while hovered or focused. */
   viewed?: boolean
+  /**
+   * The audience picked in the studio (the navbar's variant), on a document that is not open: the
+   * pale selected blue, also while hovered or focused. Ignored on a viewed row.
+   */
+  picked?: boolean
 }) {
   const viewed = Boolean(props.viewed)
+  const picked = !viewed && Boolean(props.picked)
   // Hover and keyboard focus are the grey of moving through the rows; the open version keeps its
   // blue, and focus also draws the focus outline, so it shows on the blue row too.
   const [hovered, setHovered] = useState(false)
   const [focused, setFocused] = useState(false)
   let backgroundColor: string | undefined
   if (viewed) backgroundColor = COLORS.viewedBackground
+  else if (picked) backgroundColor = COLORS.pickedBackground
   else if (hovered || focused) backgroundColor = COLORS.hoverBackground
 
   return (
     <PreviewCard
-      aria-current={viewed ? 'true' : undefined}
+      aria-current={viewed || picked ? 'true' : undefined}
       as="button"
       data-testid={props.testId}
       data-focused={focused ? '' : undefined}
       data-hovered={hovered ? '' : undefined}
       data-viewed={viewed ? '' : undefined}
+      data-picked={picked ? '' : undefined}
       onBlur={() => setFocused(false)}
       onClick={props.onClick}
       // Only keyboard focus draws the outline and the grey: a mouse press also focuses the button,
@@ -343,6 +357,7 @@ function AudienceRow({
   presence,
   variantsEnabled,
   viewed,
+  picked,
 }: {
   group: DocumentVersionStatusGroup
   now: number
@@ -350,6 +365,7 @@ function AudienceRow({
   presence?: RowPresence[]
   variantsEnabled: boolean
   viewed: boolean
+  picked: boolean
 }) {
   const {t} = useTranslation()
   const schema = useSchema()
@@ -385,6 +401,7 @@ function AudienceRow({
         )
       }
       viewed={viewed}
+      picked={picked}
       testId="document-versions-flyout-row"
       renderTrailing={(isViewed) => (
         <span style={{display: 'flex', height: 25, alignItems: 'center'}}>
@@ -508,6 +525,14 @@ export function DocumentVersionsFlyoutList(props: {
             viewed={
               viewingDocument &&
               (group.variantId ? getVariantId(group.variantId) : undefined) === viewedVariantId
+            }
+            // With a variant picked in the studio, its row is marked on every document, so the
+            // flyout says which audience a pick opens. Default is not marked: with no variant
+            // picked, a studio without variants would tint every flyout's only row.
+            picked={
+              viewedVariantId !== undefined &&
+              group.variantId !== undefined &&
+              getVariantId(group.variantId) === viewedVariantId
             }
           />
         ))}
