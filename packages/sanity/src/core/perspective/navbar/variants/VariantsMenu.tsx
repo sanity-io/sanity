@@ -262,7 +262,8 @@ export function VariantsMenu({
             ref={menuRef}
             style={menuStyle}
           >
-            <Box flexShrink={0} padding={2}>
+            {/* 4px below the field plus the list's 4px top padding: an 8px gap to the first row */}
+            <Box flexShrink={0} paddingX={2} paddingTop={2} paddingBottom={1}>
               <TextInput
                 aria-label={t('navbar.variant.filter-placeholder')}
                 fontSize={1}
