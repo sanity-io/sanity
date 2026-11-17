@@ -266,6 +266,7 @@ const harnessMachine = setup({
           referringDocuments: fromObservable(() => new BehaviorSubject(input.referringDocuments)),
           deleteVariants: fromPromise(async ({input: {ids}}) => {
             deletedIds.push(ids)
+            await deleteGate
             return {} as MultipleMutationResult
           }),
         },
@@ -300,6 +301,17 @@ type HarnessActor = ReturnType<typeof createActor<typeof harnessMachine>>
 let harness: HarnessActor | undefined
 /** What the harness's delete actor was asked to delete, one entry per confirmed delete. */
 let deletedIds: string[][] = []
+/** While set, a confirmed delete stays in flight until it settles. */
+let deleteGate: Promise<void> | undefined
+
+/** Keeps confirmed deletes in flight; call the returned function to let them settle. */
+function holdDeletes(): () => void {
+  let settle: (() => void) | undefined
+  deleteGate = new Promise<void>((resolve) => {
+    settle = resolve
+  })
+  return () => settle?.()
+}
 
 function startHarness(
   referringDocuments: ReferringDocuments = REFERRING_DOCUMENTS,
@@ -327,6 +339,7 @@ afterEach(() => {
   harness?.stop()
   harness = undefined
   deletedIds = []
+  deleteGate = undefined
 })
 
 function PanelFrame({children}: {children: React.ReactNode}) {
@@ -843,6 +856,51 @@ describe('ConfirmDeleteDialog, open beta baseline', () => {
     )
 
     await settleChromaticEndState()
+  })
+
+  it('shows Delete busy, not greyed out without a reason, while the delete runs', async () => {
+    configure({disableAutoSnapshot: true})
+    const settleDelete = holdDeletes()
+    const refs = startHarness(NO_LINKS, WITH_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id, DRAFT.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
+    )
+
+    const $delete = $dialog.getByRole('button', {name: 'Delete 1 version', exact: true})
+    // Opened on the blocked Default and its Draft: Delete is ready at once.
+    await expect.element($delete).toBeEnabled()
+    expect($delete.element().querySelector('[data-ui="Spinner"]')).toBeNull()
+
+    await userEvent.click($delete)
+    await expect.poll(() => deletedIds).toEqual([[DRAFT.id]])
+    // In flight: disabled, and the spinner says why.
+    await expect.element($delete).toBeDisabled()
+    expect($delete.element().querySelector('[data-ui="Spinner"]')).not.toBeNull()
+
+    settleDelete()
+    await expect.poll(() => refs.deletionRef.getSnapshot().matches('idle')).toBe(true)
+  })
+
+  it('shows Delete busy while the links to a selected Default are read', async () => {
+    configure({disableAutoSnapshot: true})
+    const refs = startHarness({...NO_LINKS, isLoading: true}, WITHOUT_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
+    )
+
+    const $delete = $dialog.getByRole('button', {name: 'Delete 1 version', exact: true})
+    await expect.element($delete).toBeDisabled()
+    expect($delete.element().querySelector('[data-ui="Spinner"]')).not.toBeNull()
   })
 
   it('reports a delete that leaves the document with no versions (D1)', async () => {
