@@ -1,4 +1,5 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 // oxlint-disable-next-line no-restricted-imports -- the select is a ghost Button holding its own layout (glyph, value, chevron); Studio's Button only takes text and icons
 import {Button as UIButton, Label, TextInput} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
@@ -20,14 +21,19 @@ import {menuOverflowScroller} from '../../../../ui-components/menuButton/menuOve
 import {useFocusSearchOnOpen} from '../../../../ui-components/menuButton/useFocusSearchOnOpen'
 import {useMenuOverflow} from '../../../../ui-components/menuButton/useMenuOverflow'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {
+  createVariantPickerDescription,
   createVariantPickerField,
   createVariantPickerGlyph,
+  createVariantPickerInfo,
+  createVariantPickerInfoButton,
   createVariantPickerMenu,
   createVariantPickerMutedGlyph,
   createVariantPickerSelect,
+  createVariantPickerTitleRow,
 } from './CreateVariantPicker.css'
 
 /**
@@ -111,6 +117,13 @@ const TRIMMED_STYLE: CSSProperties = {
  */
 export const CreateVariantPicker: ComponentType<{
   label: string
+  /**
+   * What the field is for, shown in a tooltip from an info button after the title, on hover and
+   * on keyboard focus. `infoLabel` names the button.
+   */
+  info?: {text: string; label: string}
+  /** A quieter line under the select, which the select is described by. */
+  description?: string
   leadingOptions?: CreateVariantPickerOption[]
   /** A heading above `leadingOptions`, shown while they have a match. */
   leadingLabel?: string
@@ -129,6 +142,8 @@ export const CreateVariantPicker: ComponentType<{
   testId: string
 }> = ({
   label,
+  info,
+  description,
   leadingOptions = NO_OPTIONS,
   leadingLabel,
   options,
@@ -144,6 +159,7 @@ export const CreateVariantPicker: ComponentType<{
   const {t} = useTranslation(studioLocaleNamespace)
   const id = useId()
   const titleId = useId()
+  const descriptionId = useId()
   const [filterQuery, setFilterQuery] = useState('')
   const [menuWidth, setMenuWidth] = useState<number | undefined>(undefined)
   const focusSearchField = useFocusSearchOnOpen()
@@ -196,9 +212,12 @@ export const CreateVariantPicker: ComponentType<{
     <div className={createVariantPickerField} data-testid={`${testId}-field`}>
       {/* A plain title, not a <label>: clicking a label for a button clicks the button, which
           would open the menu from the title. The select takes its name from the title instead. */}
-      <Text size={1} weight="medium" id={titleId} data-testid={`${testId}-title`}>
-        {label}
-      </Text>
+      <div className={createVariantPickerTitleRow} data-testid={`${testId}-title-row`}>
+        <Text size={1} weight="medium" id={titleId} data-testid={`${testId}-title`}>
+          {label}
+        </Text>
+        {info && <InfoButton info={info} testId={`${testId}-info`} />}
+      </div>
       <MenuButton
         id={id}
         onClose={() => setFilterQuery('')}
@@ -212,6 +231,7 @@ export const CreateVariantPicker: ComponentType<{
         button={
           <UIButton
             aria-labelledby={`${titleId} ${id}`}
+            aria-describedby={description ? descriptionId : undefined}
             className={createVariantPickerSelect}
             data-testid={`${testId}-button`}
             disabled={disabled || leadingOptions.length + options.length === 0}
@@ -331,6 +351,60 @@ export const CreateVariantPicker: ComponentType<{
           preventOverflow: true,
         }}
       />
+      {description && (
+        <Text
+          className={createVariantPickerDescription}
+          data-testid={`${testId}-description`}
+          id={descriptionId}
+          muted
+          size={1}
+        >
+          {description}
+        </Text>
+      )}
     </div>
   )
 }
+
+/**
+ * A small info button after a field's title. Its tooltip opens above it, on hover and on keyboard
+ * focus, so it never covers the field's own select. The button sits in a zero-high box, so it
+ * does not change the height of the title line.
+ */
+function InfoButton({info, testId}: {info: {text: string; label: string}; testId: string}) {
+  return (
+    <span className={createVariantPickerInfo}>
+      <Tooltip
+        content={
+          <Box padding={1} style={INFO_TOOLTIP_STYLE}>
+            <Text size={1} data-testid={`${testId}-tooltip`}>
+              {info.text}
+            </Text>
+          </Box>
+        }
+        fallbackPlacements={INFO_TOOLTIP_FALLBACKS}
+        placement="top"
+        portal
+      >
+        <UIButton
+          aria-label={info.label}
+          className={createVariantPickerInfoButton}
+          data-testid={testId}
+          fontSize={1}
+          icon={InfoOutlineIcon}
+          mode="bleed"
+          padding={1}
+          radius={2}
+        />
+      </Tooltip>
+    </span>
+  )
+}
+
+/** About two short lines of 13px text, wide enough that a tooltip is not a tall column. */
+const INFO_TOOLTIP_STYLE: CSSProperties = {maxWidth: 280}
+
+const INFO_TOOLTIP_FALLBACKS: ComponentProps<typeof Tooltip>['fallbackPlacements'] = [
+  'top-start',
+  'top-end',
+]

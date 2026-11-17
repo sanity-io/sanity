@@ -22,7 +22,9 @@ configure({disableAutoSnapshot: true})
  * WCAG 2.x contrast of every text node and glyph of the Create variant form, light and dark, in
  * each state the form shows: empty, a variant chosen, a select hovered and keyboard focused,
  * Cancel and Create hovered and focused, Create disabled. Text needs 4.5:1 (13px is normal text),
- * glyphs and the selects' boundaries need 3:1 (1.4.3 and 1.4.11). A disabled control is exempt;
+ * glyphs and the selects' boundaries need 3:1 (1.4.3 and 1.4.11). The info buttons after the
+ * field titles and the line under Start from naming where Nearest version copies from are
+ * measured with the rest, and in their own hovered and focused states. A disabled control is exempt;
  * its ratio is reported, not asserted.
  */
 
@@ -398,6 +400,9 @@ describe.each(['light', 'dark'] as const)('Create variant form contrast (%s)', (
     // Off the select and back with the keyboard, so it shows its keyboard focus
     ;(document.activeElement as HTMLElement | null)?.blur()
     await userEvent.click(page.getByTestId('create-variant-header'))
+    // The Variant info button, then the select
+    await userEvent.keyboard('{Tab}')
+    await expect.element(page.getByTestId('create-variant-variant-menu-info')).toHaveFocus()
     await userEvent.keyboard('{Tab}')
     await expect.element(variantSelect()).toHaveFocus()
     await settle()
@@ -405,6 +410,47 @@ describe.each(['light', 'dark'] as const)('Create variant form contrast (%s)', (
       ...measure(scheme, 'select focus', variantSelect().element()),
       ...measureFocusRing(scheme, 'select focus'),
     ])
+  })
+
+  it('the info buttons and the Start from source line', async () => {
+    await open()
+    const infoIds = ['variant', 'target', 'base'].map(
+      (field) => `create-variant-${field}-menu-info`,
+    )
+    const line = page.getByTestId('create-variant-base-menu-description')
+    await expect.element(line).toHaveTextContent('Starts empty')
+
+    // At rest: each info glyph (3:1) and the source line (4.5:1)
+    const rest = measure(scheme, 'info at rest')
+    for (const id of infoIds) {
+      expect(
+        rest.some(
+          (row) => row.item === `${id.replace(/^create-variant-/, '').replace(/-menu/, '')} icon`,
+        ),
+      ).toBe(true)
+    }
+    expect(rest.some((row) => row.kind === 'text' && row.item.includes('Starts empty'))).toBe(true)
+
+    // Hovered and keyboard focused: the glyph and the focus ring
+    const info = page.getByTestId('create-variant-base-menu-info')
+    await userEvent.hover(info)
+    await settle()
+    const hovered = measure(scheme, 'info hover', info.element())
+    expect(hovered).toHaveLength(1)
+
+    await userEvent.unhover(info)
+    ;(document.activeElement as HTMLElement | null)?.blur()
+    await userEvent.click(page.getByTestId('create-variant-header'))
+    await userEvent.keyboard('{Tab}')
+    const variantInfo = page.getByTestId('create-variant-variant-menu-info')
+    await expect.element(variantInfo).toHaveFocus()
+    await settle()
+    const focused = [
+      ...measure(scheme, 'info focus', variantInfo.element()),
+      ...measureFocusRing(scheme, 'info focus'),
+    ]
+
+    expectPasses([...rest, ...hovered, ...focused])
   })
 
   it('Cancel and Create hovered and focused', async () => {

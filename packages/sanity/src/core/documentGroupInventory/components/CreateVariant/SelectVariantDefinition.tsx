@@ -36,6 +36,10 @@ export const SelectVariantDefinition: ComponentType<Props> = ({
   return (
     <CreateVariantPicker
       label={t('document-group.create-variant.variant-label')}
+      info={{
+        text: t('document-group.create-variant.form.variant-info'),
+        label: t('document-group.create-variant.form.variant-info-label'),
+      }}
       testId="create-variant-variant-menu"
       placeholder={t('document-group.create-variant.form.variant-hint')}
       emptyIcon={<VariantMark />}

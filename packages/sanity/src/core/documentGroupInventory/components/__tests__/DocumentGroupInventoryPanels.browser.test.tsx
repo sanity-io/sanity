@@ -721,11 +721,12 @@ describe('CreateVariant', () => {
       await userEvent.click($title)
       await expect.poll(() => isOpen($menu)).toBe(false)
 
-      // The empty space right of the title, on the same line.
-      const titleBox = $title.element().getBoundingClientRect()
+      // The empty space right of the title and its info button, on the same line.
+      const $titleRow = page.getByTestId(title.replace(/-title$/, '-title-row'))
+      const rowBox = $titleRow.element().getBoundingClientRect()
       const triggerBox = $trigger.element().getBoundingClientRect()
-      await userEvent.click($title, {
-        position: {x: triggerBox.right - titleBox.left - 4, y: titleBox.height / 2},
+      await userEvent.click($titleRow, {
+        position: {x: triggerBox.right - rowBox.left - 4, y: rowBox.height / 2},
       })
       await expect.poll(() => isOpen($menu)).toBe(false)
 

@@ -26,6 +26,10 @@ export const SelectBundle: ComponentType<Props> = ({bundles, value, onChange, di
   return (
     <CreateVariantPicker
       label={t('document-group.create-variant.form.target-label')}
+      info={{
+        text: t('document-group.create-variant.form.target-info'),
+        label: t('document-group.create-variant.form.target-info-label'),
+      }}
       testId="create-variant-target-menu"
       placeholder={t('document-group.create-variant.form.target-hint')}
       emptyIcon={
