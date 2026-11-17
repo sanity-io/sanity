@@ -7,7 +7,7 @@ export default defineConfig({
     exclude: ['./dist/**', './results/**', './node_modules/**'],
   },
   resolve: {
-    // Resolve workspace packages (@sanity/mutator, @sanity/types) to their
+    // Resolve workspace packages (sanity, @sanity/types) to their
     // TS source so the tests run without a prior build — same condition the
     // CLI's tsx invocations use (see package.json scripts)
     conditions: ['monorepo', ...defaultServerConditions],

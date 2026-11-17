@@ -1,7 +1,7 @@
 import {applyPatch} from 'mendoza'
 import {describe, expect, it} from 'vitest'
 
-import {wholeValueEffects} from '../mendoza'
+import {wholeValueEffects} from './mendoza'
 
 describe('wholeValueEffects', () => {
   it('applies to produce the after value regardless of before', () => {
