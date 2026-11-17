@@ -1,5 +1,5 @@
 import {configure} from '@chromatic-com/vitest'
-import {Button} from '@sanity/ui'
+import {BoundaryElementProvider, Button} from '@sanity/ui'
 import {useState} from 'react'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
@@ -22,21 +22,24 @@ function MenuStory({withLeadingItem}: {withLeadingItem: boolean}) {
   const showLeading = withLeadingItem && 'default'.includes(filterQuery.toLowerCase())
   return (
     <TestWrapper schemaTypes={[]}>
-      <DocumentNavigationMenu
-        button={<Button data-testid="open-menu" text="Open" />}
-        filterPlaceholder="Search"
-        filterQuery={filterQuery}
-        leadingItems={showLeading ? <MenuItem data-testid="leading-row" text="Default" /> : null}
-        onFilterChange={setFilterQuery}
-        sections={[
-          {
-            key: 'rows',
-            label: 'Rows',
-            items: matching.map((row) => <MenuItem key={row} text={row} />),
-          },
-        ]}
-        testId="pill-menu"
-      />
+      {/* The page, not the short test pane, bounds the popover, so it opens at its full height */}
+      <BoundaryElementProvider element={document.documentElement}>
+        <DocumentNavigationMenu
+          button={<Button data-testid="open-menu" text="Open" />}
+          filterPlaceholder="Search"
+          filterQuery={filterQuery}
+          leadingItems={showLeading ? <MenuItem data-testid="leading-row" text="Default" /> : null}
+          onFilterChange={setFilterQuery}
+          sections={[
+            {
+              key: 'rows',
+              label: 'Rows',
+              items: matching.map((row) => <MenuItem key={row} text={row} />),
+            },
+          ]}
+          testId="pill-menu"
+        />
+      </BoundaryElementProvider>
     </TestWrapper>
   )
 }
@@ -83,5 +86,42 @@ describe('DocumentNavigationMenu: gap below the search field', () => {
       () => fieldOf(menu.element()),
       () => noMatches.element(),
     )
+  })
+})
+
+describe('DocumentNavigationMenu: inset around the rows', () => {
+  it('keeps the rows 8px from the sides and the last row 4px from the bottom', async () => {
+    void render(<MenuStory withLeadingItem />)
+    await page.getByTestId('open-menu').click()
+    const menu = page.getByTestId('pill-menu')
+    await expect.element(menu).toBeVisible()
+    await expect.element(page.getByTestId('leading-row')).toBeVisible()
+
+    const geometry = () => {
+      const menuElement = menu.element()
+      const rows = [...menuElement.querySelectorAll('[data-ui="MenuItem"]')]
+      const first = rows[0].getBoundingClientRect()
+      const last = rows[rows.length - 1]
+      const box = menuElement.getBoundingClientRect()
+      // The column inside the scroller that holds every row; its padding and the menu's own make
+      // the space under the last row. Read from the column, not the menu's box, which the popover
+      // may cut short to fit
+      let column: Element | null = last
+      while (column?.parentElement && getComputedStyle(column.parentElement).overflowY !== 'auto') {
+        column = column.parentElement
+      }
+      if (!column?.parentElement) throw new Error('row column not found')
+      const below =
+        column.getBoundingClientRect().bottom -
+        last.getBoundingClientRect().bottom +
+        parseFloat(getComputedStyle(menuElement).paddingBottom)
+      return {left: first.left - box.left, right: box.right - first.right, below}
+    }
+    await expectStable(() => JSON.stringify(geometry()))
+
+    const {left, right, below} = geometry()
+    expect(Math.abs(left - 8)).toBeLessThanOrEqual(1)
+    expect(Math.abs(right - 8)).toBeLessThanOrEqual(1)
+    expect(Math.abs(below - 4)).toBeLessThanOrEqual(1)
   })
 })
