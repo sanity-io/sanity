@@ -658,8 +658,6 @@ export {
 export {
   useComlinkStore,
   useConnectionStatusStore,
-  // oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
-  useKeyValueStore,
   useRenderingContextStore,
 } from '../core/store/datastores'
 export {
@@ -759,10 +757,6 @@ export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useTimelineStore,
 } from '../core/store/history/useTimelineStore'
-// oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
-export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
-// oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
-export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
 export {
   useStudioPreference,
   useStudioPreferenceList,

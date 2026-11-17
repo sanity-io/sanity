@@ -1,4 +1,3 @@
-import {type SanityClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo} from 'react'
@@ -47,8 +46,6 @@ import {
 import {createGrantsStore} from './grants/grantsStore'
 import {type GrantsStore} from './grants/types'
 import {createHistoryStore, type HistoryStore} from './history/createHistoryStore'
-import {createKeyValueStore} from './key-value/keyValueStore'
-import {type KeyValueStore} from './key-value/types'
 import {createPresenceStore, type PresenceStore} from './presence/presence-store'
 import {createProjectStore} from './project/projectStore'
 import {type ProjectStore} from './project/types'
@@ -448,51 +445,6 @@ export function useProjectStore(): ProjectStore {
     return projectStore
   }, [client, resourceCache])
 }
-
-/* oxlint-disable no-deprecated -- the deprecated key-value store stays until the next major */
-/**
- * Module-level cache for KeyValueStore instances, keyed by project identity.
- * Uses a simple Map with string keys since the ResourceCache's WeakMap
- * doesn't support primitive-based cache keys.
- */
-const keyValueStoreCache = new Map<string, KeyValueStore>()
-
-/**
- * Generates a cache key for KeyValueStore based on project identity.
- * The /users/me/keyvalue endpoint is project-scoped, so we only need
- * projectId and apiHost (not dataset) to identify unique stores.
- */
-function getKeyValueStoreCacheKey(client: SanityClient): string {
-  const config = client.config()
-  return `${config.projectId}:${config.apiHost || 'default'}`
-}
-
-/**
- * Returns a KeyValueStore instance for storing user preferences.
- *
- * The store is cached by project identity (projectId + apiHost) rather than
- * workspace, because the /users/me/keyvalue endpoint is project-scoped -
- * user preferences are shared across all datasets within a project.
- *
- * @internal
- * @deprecated The Studio keeps its preferences through the App SDK now: use
- * `useStudioPreference` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`
- * instead. `useKeyValueStore` will be removed in Sanity Studio v7.
- */
-export function useKeyValueStore(): KeyValueStore {
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-
-  return useMemo(() => {
-    const cacheKey = getKeyValueStoreCacheKey(client)
-    const cached = keyValueStoreCache.get(cacheKey)
-    if (cached) return cached
-
-    const keyValueStore = createKeyValueStore({client})
-    keyValueStoreCache.set(cacheKey, keyValueStore)
-    return keyValueStore
-  }, [client])
-}
-/* oxlint-enable no-deprecated */
 
 /** @internal */
 export function useRenderingContextStore(): RenderingContextStore {
