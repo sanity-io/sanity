@@ -103,8 +103,8 @@ function Harness() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={3}>
-        {/* Room above the form for the tooltips, which open upwards */}
-        <div style={{width: 360, paddingTop: 120}}>
+        {/* Room left of the form for the tooltips, as the document pane gives it in the studio */}
+        <div style={{width: 360, marginLeft: 320}}>
           <CreateVariant
             variantCreationRef={createVariantCreationRef()}
             sets={SETS}
@@ -141,7 +141,7 @@ const FIELDS = [
 
 describe('Create variant form: info buttons', () => {
   it.each(FIELDS)(
-    '$name is named and shows its tooltip on focus, above the select',
+    '$name is named and shows its tooltip on focus, beside the form',
     async (field) => {
       await open()
       const button = page.getByRole('button', {name: field.name, exact: true})
@@ -153,10 +153,11 @@ describe('Create variant form: info buttons', () => {
       await expect.element(tooltip).toBeVisible()
       await expect.element(tooltip).toHaveTextContent(field.text)
 
-      // The tooltip opens above the button and never covers the select
+      // The tooltip opens to the left of the form and never covers any of its fields
       const select = page.getByTestId(`${field.testId}-button`).element().getBoundingClientRect()
+      const form = page.getByTestId('create-variant-form').element().getBoundingClientRect()
       const box = tooltip.element().getBoundingClientRect()
-      expect(box.bottom).toBeLessThanOrEqual(select.top)
+      expect(box.right).toBeLessThanOrEqual(form.left)
 
       // The button stays within the gap above its select
       const buttonBox = button.element().getBoundingClientRect()
