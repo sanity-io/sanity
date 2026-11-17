@@ -184,13 +184,14 @@ export const CreateVariant: ComponentType<Props> = ({
   const baseVersion = existingVersions.find(({_id}) => _id === selectedBaseId)
 
   // The version "Nearest version" resolves to for the picked variant and bundle, named in its row.
-  const nearestBaseVersion = bundle
-    ? getNearestBaseVersion({
-        variantId: variantDefinition?._id,
-        bundle: toVariantCreationBundle(bundle),
-        versions: existingVersions,
-      })
-    : undefined
+  // With Add to empty, only the variant's own published version can be named yet.
+  const nearestBaseVersion = getNearestBaseVersion({
+    variantId: variantDefinition?._id,
+    bundle: bundle ? toVariantCreationBundle(bundle) : undefined,
+    versions: existingVersions,
+  })
+  // Nothing to name until Add to is picked: the line says so instead of "Starts empty"
+  const nearestPending = typeof bundle === 'undefined' && typeof nearestBaseVersion === 'undefined'
   const nearestBaseSet = nearestBaseVersion
     ? sets.find((set) => set.variants.some(({id}) => id === nearestBaseVersion._id))
     : undefined
@@ -299,6 +300,7 @@ export const CreateVariant: ComponentType<Props> = ({
             releases={releases ?? NO_RELEASES}
             value={baseVersion}
             nearestBase={nearestBase}
+            nearestPending={nearestPending}
             onChange={(baseId) =>
               variantCreationRef.send({type: 'createVariant.selectBase', baseId})
             }

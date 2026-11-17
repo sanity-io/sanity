@@ -6,7 +6,9 @@ import {type VariantCreationBundle} from '../../machines/variantCreationMachine'
 
 /**
  * The version a new variant starts from when no other is picked. With no variant (the form
- * before a variant is picked), it is the Default variant's version for the bundle.
+ * before a variant is picked), it is the Default variant's version for the bundle. With no bundle
+ * (Add to not picked yet), only the variant's own published version can be named: the Default's
+ * version depends on the bundle, so there is no answer until one is picked.
  */
 export function getNearestBaseVersion({
   variantId,
@@ -14,7 +16,7 @@ export function getNearestBaseVersion({
   versions,
 }: {
   variantId: VariantId | undefined
-  bundle: VariantCreationBundle
+  bundle: VariantCreationBundle | undefined
   versions: VersionInfoDocumentStub[]
 }): VersionInfoDocumentStub | undefined {
   const publishedVariant =
@@ -24,6 +26,10 @@ export function getNearestBaseVersion({
 
   if (publishedVariant) {
     return publishedVariant
+  }
+
+  if (typeof bundle === 'undefined') {
+    return undefined
   }
 
   if (bundle.type === 'drafts') {

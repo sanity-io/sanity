@@ -30,6 +30,8 @@ interface Props {
    * second line of its menu row. `undefined` when there is none and the variant starts empty.
    */
   nearestBase?: {variantName: string; bundleName: string}
+  /** Whether what Nearest version copies depends on an Add to that is not picked yet. */
+  nearestPending?: boolean
 }
 
 const NEAREST_VERSION_KEY = '#nearest-version'
@@ -41,6 +43,7 @@ export const SelectBaseVersion: ComponentType<Props> = ({
   onChange,
   disabled,
   nearestBase,
+  nearestPending = false,
 }) => {
   const {t} = useTranslation(studioLocaleNamespace)
 
@@ -65,9 +68,12 @@ export const SelectBaseVersion: ComponentType<Props> = ({
 
   // Where "Nearest version" copies from: the second line of its menu row, and the line under the
   // select while it is the chosen value.
-  const nearestSource = nearestBase
-    ? t('document-group.create-variant.form.nearest-subtitle', nearestBase)
-    : t('document-group.create-variant.form.nearest-subtitle-empty')
+  let nearestSource = t('document-group.create-variant.form.nearest-subtitle-empty')
+  if (nearestBase) {
+    nearestSource = t('document-group.create-variant.form.nearest-subtitle', nearestBase)
+  } else if (nearestPending) {
+    nearestSource = t('document-group.create-variant.form.nearest-subtitle-pending')
+  }
 
   const nearestVersionOption: CreateVariantPickerOption = {
     key: NEAREST_VERSION_KEY,
