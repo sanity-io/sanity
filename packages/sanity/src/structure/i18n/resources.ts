@@ -515,7 +515,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'document-panel-navigation.releases.section.in-releases_one': 'In {{count}} release',
   /** Section header listing the releases the document has a version in */
   'document-panel-navigation.releases.section.in-releases_other': 'In {{count}} releases',
-  /** Tooltip on the "In 0 releases" section header of the releases menu in the document header */
+  /**
+   * Tooltip on the "In 0 releases" section header of the releases menu in the document header
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-panel-navigation.releases.section.no-releases-tooltip':
     "This document isn't in any release yet. Pick one below to add it.",
   /** Section header listing the releases the document has no version in */
