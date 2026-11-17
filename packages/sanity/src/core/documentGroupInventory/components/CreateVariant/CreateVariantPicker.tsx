@@ -56,6 +56,11 @@ export interface CreateVariantPickerOption {
   selectIcon?: ReactNode
   /** A second, quieter line under the text of the option's menu row. */
   subtitle?: string
+  /**
+   * Listed but not pickable. The row stays in its usual place, so an option that is taken for the
+   * picked values does not look like it is missing; `subtitle` says why.
+   */
+  disabled?: boolean
 }
 
 const NO_OPTIONS: CreateVariantPickerOption[] = []
@@ -201,6 +206,7 @@ export const CreateVariantPicker: ComponentType<{
       role="menuitemradio"
       text={option.text}
       pressed={option.key === value?.key}
+      disabled={option.disabled}
       onClick={() => onChange(option.key)}
     />
   )
@@ -234,7 +240,10 @@ export const CreateVariantPicker: ComponentType<{
             aria-describedby={description ? descriptionId : undefined}
             className={createVariantPickerSelect}
             data-testid={`${testId}-button`}
-            disabled={disabled || leadingOptions.length + options.length === 0}
+            disabled={
+              disabled ||
+              [...leadingOptions, ...options].every((option) => option.disabled === true)
+            }
             mode="ghost"
             padding={3}
             radius={2}
