@@ -252,7 +252,7 @@
     "xstate": "^5.33.4"
   },
   "devDependencies": {
-    "@chromatic-com/vitest": "^1.0.2",
+    "@chromatic-com/vitest": "^1.0.3",
     "@pandacss/dev": "catalog:",
     "@pandacss/vite": "catalog:",
     "@repo/package.bundle": "workspace:*",
