@@ -138,6 +138,11 @@ export const CreateVariant: ComponentType<Props> = ({
     existingVariants: pickedVariantDefinition ? existingVariants : [],
   })
 
+  // Whether the picked variant already has a draft, so Drafts is not offered.
+  const draftsTaken =
+    typeof pickedVariantDefinition !== 'undefined' &&
+    !bundleOptions.some((option) => option.type === 'drafts')
+
   // Add to starts on the current perspective: the release in view, or Drafts.
   const currentPerspectiveBundle = bundleOptions.find((option) =>
     typeof selectedPerspective === 'object'
@@ -152,7 +157,10 @@ export const CreateVariant: ComponentType<Props> = ({
         getBundleKey(option) === getBundleKey(selectedBundle),
     ) ??
     currentPerspectiveBundle ??
-    bundleOptions[0]
+    // Where the current perspective is not offered, Add to falls back to Drafts. It never falls
+    // back to a release: a release nobody picked is a surprising place for a new variant, so
+    // with Drafts taken too, Add to stays empty until a release is picked.
+    bundleOptions.find((option) => option.type === 'drafts')
 
   // Until a variant is picked, Variant starts on the selected variant when the document has no
   // version of it in the Add to bundle yet. Where it already has one, Variant stays empty rather
@@ -281,6 +289,7 @@ export const CreateVariant: ComponentType<Props> = ({
           />
           <SelectBundle
             bundles={bundleOptions}
+            draftsTaken={draftsTaken}
             value={bundle}
             onChange={handleSelectBundle}
             disabled={isVariantCreationPending}

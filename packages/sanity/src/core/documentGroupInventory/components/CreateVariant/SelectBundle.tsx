@@ -13,15 +13,37 @@ import {type CreateVariantBundleOption, getBundleKey} from './getAvailableBundle
 
 interface Props {
   bundles: CreateVariantBundleOption[]
+  /**
+   * Whether the picked variant already has a draft. Drafts then stays first in the list, but
+   * cannot be picked and says why, so it does not look as if Drafts went missing.
+   */
+  draftsTaken?: boolean
   value: CreateVariantBundleOption | undefined
   onChange: (bundleKey: string) => void
   disabled: boolean
 }
 
 /** "Add to": the draft or release the variant is created in. */
-export const SelectBundle: ComponentType<Props> = ({bundles, value, onChange, disabled}) => {
+export const SelectBundle: ComponentType<Props> = ({
+  bundles,
+  draftsTaken = false,
+  value,
+  onChange,
+  disabled,
+}) => {
   const {t} = useTranslation(studioLocaleNamespace)
-  const options = bundles.map((bundle) => toOption(bundle, t))
+  const options = [
+    ...(draftsTaken
+      ? [
+          {
+            ...toOption({type: 'drafts'}, t),
+            disabled: true,
+            subtitle: t('document-group.create-variant.form.drafts-taken'),
+          },
+        ]
+      : []),
+    ...bundles.map((bundle) => toOption(bundle, t)),
+  ]
 
   return (
     <CreateVariantPicker
