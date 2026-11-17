@@ -130,6 +130,24 @@ describe('navbar menus: 8px inset', () => {
   })
 })
 
+describe('navbar menus: scroll padding', () => {
+  it("keeps rows scrolled into view clear of the perspective menu's pinned groups", async () => {
+    const menu = await openPerspectiveMenu()
+    const scroller = visible(menu, '*').find(
+      (element) => getComputedStyle(element).overflowY === 'auto',
+    )!
+    const pinned = visible(scroller, '*').filter(
+      (element) => getComputedStyle(element).position === 'sticky',
+    )
+    const header = pinned.find((element) => getComputedStyle(element).top !== 'auto')!
+    const footer = pinned.find((element) => getComputedStyle(element).bottom !== 'auto')!
+    const style = getComputedStyle(scroller)
+    // The pinned group plus the list's 4px edge gap at each end
+    near(parseFloat(style.scrollPaddingTop), header.offsetHeight + 4)
+    near(parseFloat(style.scrollPaddingBottom), footer.offsetHeight + 4)
+  })
+})
+
 describe('navbar menus: a scrolling list', () => {
   async function overflowVariantList(menu: HTMLElement, options: {trackWidth?: number} = {}) {
     const scroller = visible(menu, '*').find(
