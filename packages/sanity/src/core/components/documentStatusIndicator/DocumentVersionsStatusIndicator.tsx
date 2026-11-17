@@ -16,11 +16,13 @@ interface DocumentStatusProps {
   documentVersions: VersionInfoDocumentStub[]
 }
 
+const ICON_SLOT_WIDTH = 15
+
 const IconSlotRoot = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 15px;
+  width: ${ICON_SLOT_WIDTH}px;
   flex-shrink: 0;
 
   &[data-status='published'] {
@@ -45,6 +47,32 @@ const IconSlotRoot = styled.div`
   & svg {
     flex-shrink: 0;
   }
+`
+
+/**
+ * The cluster when a variant is selected: a leading column for the variant rhombus, empty on rows
+ * without one, then the status marks right-aligned in room for two more slots. The fixed width
+ * puts the rhombus, and the last status mark, at one x on every row of a list.
+ */
+const VariantColumnsRoot = styled.div`
+  display: flex;
+  align-items: center;
+  width: ${ICON_SLOT_WIDTH * 3}px;
+  flex-shrink: 0;
+`
+
+const VariantColumnSlot = styled.div`
+  display: flex;
+  width: ${ICON_SLOT_WIDTH}px;
+  flex-shrink: 0;
+`
+
+const StatusMarksColumn = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+  min-width: 0;
 `
 
 /**
@@ -119,6 +147,10 @@ export function DocumentStatusIcon({
  * appear in a fixed order: the rhombus (variant), the release icon, the yellow draft ring, then the
  * green published disc. At most three render at once.
  *
+ * With a variant selected, the rhombus gets a fixed leading column (empty when the row has none)
+ * and the other marks are right-aligned after it, so the rhombus and the last status mark line up
+ * down a list. With no variant selected, the icons are packed as they come.
+ *
  * See `resolveDocumentStatusIcons.ts` for the full decision logic.
  *
  * @internal
@@ -137,8 +169,22 @@ export function DocumentVersionsStatusIndicator({documentVersions}: DocumentStat
     return null
   }
 
+  if (selectedVariant) {
+    const statusIcons = icons.filter((icon) => icon !== 'variant')
+    return (
+      <VariantColumnsRoot data-testid="document-status-indicator">
+        <VariantColumnSlot>{icons.includes('variant') && <VariantIcon />}</VariantColumnSlot>
+        <StatusMarksColumn>
+          {statusIcons.map((icon) => (
+            <DocumentStatusIcon key={icon} kind={icon} release={selectedPerspective} />
+          ))}
+        </StatusMarksColumn>
+      </VariantColumnsRoot>
+    )
+  }
+
   return (
-    <Flex alignItems="center">
+    <Flex alignItems="center" data-testid="document-status-indicator">
       {icons.map((icon) => (
         <DocumentStatusIcon key={icon} kind={icon} release={selectedPerspective} />
       ))}
