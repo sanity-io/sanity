@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {classifyReferrer, hasStrongReferenceTo} from '../useReferringDocuments'
+import {classifyReferrer, hasStrongReferenceTo} from './withReferenceStrength'
 
 const TARGET = 'book-lighthouse'
 

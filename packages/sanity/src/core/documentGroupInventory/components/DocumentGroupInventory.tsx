@@ -47,6 +47,14 @@ import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
 import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
+import {
+  type DeleteMode,
+  DeleteModeDialog,
+  deletionMachineForMode,
+  referringDocumentsForMode,
+  useDeleteMode,
+  useReopenAfterModeSwitch,
+} from '../__deleteModes__'
 import {deletionMachine, type ReferringDocuments} from '../machines/deletionMachine'
 import {documentGroupInventoryMachine} from '../machines/documentGroupInventoryMachine'
 import {selectionMachine, type Variant} from '../machines/selectionMachine'
@@ -68,7 +76,6 @@ import {
   type SelectionBlockedReason,
 } from '../utils/selection'
 import {Body} from './Body'
-import {ConfirmDeleteDialog} from './ConfirmDeleteDialog'
 import {Container} from './Container'
 import {CreateVariant} from './CreateVariant/CreateVariant'
 import {getNearestBaseVersion} from './CreateVariant/getNearestBaseVersion'
@@ -171,7 +178,16 @@ export interface DocumentGroupInventoryHandle {
 export function DocumentGroupInventory(
   props: DocumentGroupInventoryProps & RefAttributes<DocumentGroupInventoryHandle | null>,
 ) {
-  const {ref, documentId, documentType, selectedId = documentId, onSelect} = props
+  // REVIEW BUILD ONLY: each delete mode runs its own deletion machine, so a switch remounts.
+  const deleteMode = useDeleteMode()
+  return <DocumentGroupInventoryForMode key={deleteMode} {...props} deleteMode={deleteMode} />
+}
+
+function DocumentGroupInventoryForMode(
+  props: DocumentGroupInventoryProps &
+    RefAttributes<DocumentGroupInventoryHandle | null> & {deleteMode: DeleteMode},
+) {
+  const {ref, documentId, documentType, selectedId = documentId, onSelect, deleteMode} = props
   const readOnly = props.mode === 'readOnly'
 
   // Read the manage-only props into locals
@@ -249,9 +265,11 @@ export function DocumentGroupInventory(
         () =>
           typeof referringDocuments$ === 'undefined'
             ? deletionMachine
-            : deletionMachine.provide({
+            : deletionMachineForMode(deleteMode, deletionMachine).provide({
                 actors: {
-                  referringDocuments: fromObservable(() => referringDocuments$),
+                  referringDocuments: fromObservable(() =>
+                    referringDocumentsForMode(deleteMode, referringDocuments$, documentId, client),
+                  ),
                   deleteVariants: fromPromise(({input, signal}) => {
                     return input.ids
                       .reduce(
@@ -266,7 +284,7 @@ export function DocumentGroupInventory(
                   }),
                 },
               }),
-        [referringDocuments$, client],
+        [referringDocuments$, client, deleteMode, documentId],
       ),
       variantCreationMachine: useMemo(
         () =>
@@ -380,6 +398,7 @@ export function DocumentGroupInventory(
   }, [deletionRef])
 
   const isDeletionActive = useSelector(deletionRef, (snapshot) => snapshot.matches('active'))
+  useReopenAfterModeSwitch({documentId, selectionRef, deletionRef})
   const isFeedbackActive = useSelector(inventoryRef, (snapshot) => snapshot.matches('feedback'))
 
   const isVariantCreationActive = useSelector(inventoryRef, (snapshot) =>
@@ -445,7 +464,8 @@ export function DocumentGroupInventory(
       {isDeletionActive &&
         typeof portalElementName !== 'undefined' &&
         typeof components !== 'undefined' && (
-          <ConfirmDeleteDialog
+          <DeleteModeDialog
+            mode={deleteMode}
             documentId={documentId}
             documentType={documentType}
             deletionRef={deletionRef}
