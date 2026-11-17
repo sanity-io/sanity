@@ -7,10 +7,7 @@ import {
   type SchemaType,
 } from '@sanity/types'
 
-import {
-  RELEASE_METADATA_TYPE_NAME,
-  releaseMetadataCoreFieldNames,
-} from '../sanity/builtinTypes/releaseMetadata'
+import {extendableTypes} from '../sanity/builtinTypes/extendableTypes'
 
 const DEFAULT_IMAGE_FIELDS = ['asset', 'hotspot', 'crop', 'media']
 const DEFAULT_FILE_FIELDS = ['asset', 'media']
@@ -47,8 +44,10 @@ export function getCustomFields(type: ObjectSchemaType): (ObjectField & {fieldse
   if (isType(type, 'file')) {
     return fields.filter((f) => !DEFAULT_FILE_FIELDS.includes(f.name))
   }
-  if (isType(type, RELEASE_METADATA_TYPE_NAME)) {
-    return fields.filter((f) => !releaseMetadataCoreFieldNames.includes(f.name))
+  const extendable = extendableTypes.find((extendableType) => isType(type, extendableType.name))
+  if (extendable) {
+    const coreFieldNames = extendable.fields.map((field) => field.name)
+    return fields.filter((f) => !coreFieldNames.includes(f.name))
   }
   return fields
 }

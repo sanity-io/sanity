@@ -11,7 +11,6 @@ import type {
   createStoredWorkspaceSchemaPayload,
   CreateWorkspaceManifest,
   DEFAULT_MAX_FIELD_DEPTH,
-  defaultReleaseTypes,
   DefaultWorkspaceSchemaId,
   DescriptorConverter,
   DescriptorRequester,
@@ -25,6 +24,7 @@ import type {
   IconResolver,
   isActionEnabled,
   isInternalValidator,
+  isSystemDocumentTypeName,
   ManifestSchemaType,
   ManifestWorkspaceFile,
   markInternalValidator,
@@ -39,10 +39,8 @@ import type {
   ProblemPathSegment,
   ProblemPathTypeSegment,
   processSchemaSynchronization,
-  RELEASE_DOCUMENT_TYPE_NAME,
   RELEASE_METADATA_TYPE_NAME,
-  releaseMetadataCoreFieldNames,
-  resolveReleaseTypes,
+  resolveExtendableTypes,
   resolveSearchConfig,
   resolveSearchConfigForBaseFieldPaths,
   SchemaSynchronizationRequest,
@@ -88,9 +86,6 @@ describe('@sanity/schema/_internal', () => {
   test('DEFAULT_MAX_FIELD_DEPTH', () => {
     expectTypeOf<typeof DEFAULT_MAX_FIELD_DEPTH>().not.toBeNever()
   })
-  test('defaultReleaseTypes', () => {
-    expectTypeOf<typeof defaultReleaseTypes>().not.toBeNever()
-  })
   test('DefaultWorkspaceSchemaId', () => {
     expectTypeOf<DefaultWorkspaceSchemaId>().not.toBeNever()
   })
@@ -129,6 +124,9 @@ describe('@sanity/schema/_internal', () => {
   })
   test('isInternalValidator', () => {
     expectTypeOf<typeof isInternalValidator>().toBeFunction()
+  })
+  test('isSystemDocumentTypeName', () => {
+    expectTypeOf<typeof isSystemDocumentTypeName>().toBeFunction()
   })
   test('ManifestSchemaType', () => {
     expectTypeOf<ManifestSchemaType>().toBeObject()
@@ -172,17 +170,11 @@ describe('@sanity/schema/_internal', () => {
   test('processSchemaSynchronization', () => {
     expectTypeOf<typeof processSchemaSynchronization>().toBeFunction()
   })
-  test('RELEASE_DOCUMENT_TYPE_NAME', () => {
-    expectTypeOf<typeof RELEASE_DOCUMENT_TYPE_NAME>().not.toBeNever()
-  })
   test('RELEASE_METADATA_TYPE_NAME', () => {
     expectTypeOf<typeof RELEASE_METADATA_TYPE_NAME>().not.toBeNever()
   })
-  test('releaseMetadataCoreFieldNames', () => {
-    expectTypeOf<typeof releaseMetadataCoreFieldNames>().not.toBeNever()
-  })
-  test('resolveReleaseTypes', () => {
-    expectTypeOf<typeof resolveReleaseTypes>().toBeFunction()
+  test('resolveExtendableTypes', () => {
+    expectTypeOf<typeof resolveExtendableTypes>().toBeFunction()
   })
   test('resolveSearchConfig', () => {
     expectTypeOf<typeof resolveSearchConfig>().toBeFunction()

@@ -51,12 +51,10 @@ export {
 } from '../manifest/workspaceSchemaId'
 export {builtinTypes} from '../sanity/builtinTypes'
 export {
-  defaultReleaseTypes,
-  RELEASE_DOCUMENT_TYPE_NAME,
-  RELEASE_METADATA_TYPE_NAME,
-  releaseMetadataCoreFieldNames,
-  resolveReleaseTypes,
-} from '../sanity/builtinTypes/releaseTypes'
+  isSystemDocumentTypeName,
+  resolveExtendableTypes,
+} from '../sanity/builtinTypes/extendableTypes'
+export {RELEASE_METADATA_TYPE_NAME} from '../sanity/builtinTypes/releaseMetadata'
 export {extractSchema} from '../sanity/extractSchema'
 export {groupProblems} from '../sanity/groupProblems'
 export {
