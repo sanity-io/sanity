@@ -15,6 +15,12 @@ import {isNonNullable} from '../util/isNonNullable'
 /** @internal */
 export interface DocumentPreviewPresenceProps {
   presence: Omit<DocumentPresence, 'path'>[]
+  /**
+   * Whether hovering the avatars opens a tooltip that says who is editing. Document list rows with
+   * the versions flyout pass `false`: the flyout is the row's only overlay, and says who is editing
+   * in its first line. Defaults to `true`.
+   */
+  tooltip?: boolean
 }
 
 const PRESENCE_MENU_POPOVER_PROPS: TooltipProps = {
@@ -31,7 +37,7 @@ const AvatarStackBox = styled.div((props) => {
 
 /** @internal */
 export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
-  const {presence} = props
+  const {presence, tooltip = true} = props
   // Previews render in every studio, with or without the releases plugin, so these strings live
   // in the always registered `studio` namespace
   const {t} = useTranslation()
@@ -74,15 +80,23 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
     return undefined
   }, [releases, t, uniquePresence])
 
+  const avatars = (
+    <AvatarStackBox>
+      <AvatarStack maxLength={2} aria-label={tooltipContent} size={0}>
+        {uniquePresence.map((item) => (
+          <UserAvatar key={item.user.id} size={0} user={item.user} />
+        ))}
+      </AvatarStack>
+    </AvatarStackBox>
+  )
+
+  if (!tooltip) {
+    return avatars
+  }
+
   return (
     <Tooltip content={tooltipContent} {...PRESENCE_MENU_POPOVER_PROPS}>
-      <AvatarStackBox>
-        <AvatarStack maxLength={2} aria-label={tooltipContent} size={0}>
-          {uniquePresence.map((item) => (
-            <UserAvatar key={item.user.id} size={0} user={item.user} />
-          ))}
-        </AvatarStack>
-      </AvatarStackBox>
+      {avatars}
     </Tooltip>
   )
 }
