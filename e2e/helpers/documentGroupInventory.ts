@@ -20,9 +20,10 @@ export async function openDocumentGroupInventory(page: Page) {
   await expect(contextMenuButton).toBeVisible()
   await contextMenuButton.click()
 
-  const manageVersionsMenuItem = page.getByTestId('action-manageversions')
-  await expect(manageVersionsMenuItem).toBeVisible()
-  await manageVersionsMenuItem.click()
+  // The test id comes from the menu item's title, "Document inventory"
+  const inventoryMenuItem = page.getByTestId('action-documentinventory')
+  await expect(inventoryMenuItem).toBeVisible()
+  await inventoryMenuItem.click()
 
   await expect(getDocumentGroupInventory(page)).toBeVisible()
 }
