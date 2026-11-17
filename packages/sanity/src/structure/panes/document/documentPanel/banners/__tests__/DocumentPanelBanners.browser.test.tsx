@@ -593,7 +593,9 @@ describe('document panel banners', () => {
       .toBe(5)
     await expect
       .poll(() => page.getByRole('button', {name: 'Create variant'}).elements().length)
-      .toBe(3)
+      .toBe(2)
+    // In an open release the action is Add to release, as on the not-in-release banner
+    await expect.element(page.getByRole('button', {name: 'Add to release'})).toBeEnabled()
     await expect.element(page.getByRole('button', {name: 'Open release'})).toBeEnabled()
     await expect.element(page.getByRole('button', {name: 'Switch to Drafts'})).toBeEnabled()
     await expect.element(page.getByText('The selected variant no longer exists.')).toBeVisible()
@@ -620,11 +622,11 @@ describe('document panel banners', () => {
         const [step, setStep] = useState<Step>('closed')
         return (
           <BannerHarness
-            perspective={withVariant(releasePerspective(springRelease))}
+            perspective={withVariant(draftsPerspective)}
             router={{params: paramsFor[step]}}
           >
             <div data-testid="banner-host">
-              <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'release'}} />
+              <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'drafts'}} />
             </div>
             {(['closed', 'open', 'form'] as const).map((next) => (
               <button key={next} type="button" onClick={() => setStep(next)}>
@@ -664,6 +666,63 @@ describe('document panel banners', () => {
     },
   )
 
+  it('keeps Add to release in an open release while the document inventory and its form open and close', async () => {
+    vi.mocked(useDocumentVersions).mockReturnValue({
+      data: [],
+      versions: [],
+      loading: false,
+      error: null,
+    })
+    type Step = 'closed' | 'open' | 'form'
+    const paramsFor: Record<Step, Record<string, string>> = {
+      closed: {},
+      open: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME},
+      form: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME, [CREATE_VARIANT_PARAM]: alphaVariant._id},
+    }
+    function Toggling() {
+      const [step, setStep] = useState<Step>('closed')
+      return (
+        <BannerHarness
+          perspective={withVariant(releasePerspective(springRelease))}
+          router={{params: paramsFor[step]}}
+        >
+          <div data-testid="banner-host">
+            <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'release'}} />
+          </div>
+          {(['closed', 'open', 'form'] as const).map((next) => (
+            <button key={next} type="button" onClick={() => setStep(next)}>
+              {`Go ${next}`}
+            </button>
+          ))}
+        </BannerHarness>
+      )
+    }
+    await render(
+      <TestWrapper schemaTypes={schemaTypes}>
+        <Toggling />
+      </TestWrapper>,
+    )
+
+    const $host = page.getByTestId('banner-host')
+    const $add = $host.getByRole('button', {name: 'Add to release'})
+    for (const step of ['closed', 'open', 'form', 'open', 'closed'] as const) {
+      await page.getByRole('button', {name: `Go ${step}`}).click()
+      await expect.element($add).toBeVisible()
+      await expect.element($add).toBeEnabled()
+      // Filled with the inventory closed; secondary while the inventory's Create variant is the filled one
+      await expect
+        .element($add)
+        .toHaveAttribute('data-mode', step === 'closed' ? 'default' : 'ghost')
+      await expect
+        .element($host.getByRole('button', {name: 'Create it in the document inventory.'}))
+        .not.toBeInTheDocument()
+      await expect
+        .element($host.getByTestId('document-not-in-variant-banner-hand-off'))
+        .not.toBeInTheDocument()
+    }
+    await settleChromaticEndState()
+  })
+
   it('yields its create action to the open document inventory, in light and dark', async () => {
     vi.mocked(useDocumentVersions).mockReturnValue({
       data: [],
@@ -672,14 +731,14 @@ describe('document panel banners', () => {
       error: null,
     })
     const setParams = vi.fn()
-    const releaseBanner = (scheme: 'light' | 'dark', testId: string) => (
+    const draftsBanner = (scheme: 'light' | 'dark', testId: string) => (
       <ThemeColorProvider scheme={scheme}>
         <div data-testid={testId}>
           <BannerHarness
-            perspective={withVariant(releasePerspective(springRelease))}
+            perspective={withVariant(draftsPerspective)}
             router={{params: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME}, setParams}}
           >
-            <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'release'}} />
+            <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'drafts'}} />
           </BannerHarness>
         </div>
       </ThemeColorProvider>
@@ -688,15 +747,15 @@ describe('document panel banners', () => {
     await render(
       <TestWrapper schemaTypes={schemaTypes}>
         {/* Closed inventory: the filled button */}
-        <BannerHarness perspective={withVariant(releasePerspective(springRelease))}>
-          <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'release'}} />
+        <BannerHarness perspective={withVariant(draftsPerspective)}>
+          <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'drafts'}} />
         </BannerHarness>
         {/* Open inventory: the link, in both schemes */}
-        {releaseBanner('light', 'light-banner')}
-        {releaseBanner('dark', 'dark-banner')}
+        {draftsBanner('light', 'light-banner')}
+        {draftsBanner('dark', 'dark-banner')}
         {/* Open inventory with its Create variant form open: the pointer only */}
         <BannerHarness
-          perspective={withVariant(releasePerspective(springRelease))}
+          perspective={withVariant(draftsPerspective)}
           router={{
             params: {
               inspect: DOCUMENT_GROUP_INSPECTOR_NAME,
@@ -704,7 +763,7 @@ describe('document panel banners', () => {
             },
           }}
         >
-          <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'release'}} />
+          <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'drafts'}} />
         </BannerHarness>
       </TestWrapper>,
     )

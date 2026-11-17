@@ -6,6 +6,7 @@ import {
   getReleaseIdFromReleaseDocumentId,
   getReleaseTone,
   getVariantTitle,
+  isAgentBundleName,
   isDraftPerspective,
   isReleaseDocument,
   RELEASES_INTENT,
@@ -182,10 +183,20 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
   }, [navigateIntent, release])
 
   const busy = status === 'in-progress' || status === 'success'
+  // In an open release the action adds the variant's version to the release, so it is Add to
+  // release, as on the not-in-release banner, and it follows that banner's rule: it is always
+  // shown and enabled, filled while the document inventory is closed, and a secondary (ghost)
+  // button while the inventory is open, where the inventory's Create variant is the view's one
+  // filled button. It never yields to the inventory: Add to release is not in the inventory.
+  const addsToRelease = bannerCase.kind === 'create' && bannerCase.perspective === 'release'
   const createAction = {
-    text: t('banners.variant.action.add-to-variant'),
+    text: addsToRelease
+      ? isAgentBundleName(selectedPerspective)
+        ? t('banners.release.action.add-to-bundle')
+        : t('banners.release.action.add-to-release')
+      : t('banners.variant.action.add-to-variant'),
     // A filled action: Banner draws it as the default primary; the variant chip carries the purple.
-    mode: 'default' as const,
+    mode: addsToRelease && inventoryOpen ? ('ghost' as const) : ('default' as const),
     disabled: busy,
     onClick: handleCreate,
   }
@@ -227,14 +238,15 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
       break
   }
 
-  const yields = inventoryOpen && action === createAction
+  const yields = inventoryOpen && action === createAction && !addsToRelease
   const handleCreateInInventory = () => {
     if (!selectedVariant) return
     setParams({...params, [CREATE_VARIANT_PARAM]: selectedVariant._id})
   }
   // While it yields, the sentence stops before its own instruction ("Create one to start editing"),
-  // and the link or the pointer says where to do it instead.
-  const sentenceKey = yields ? (STATEMENT_KEYS[i18nKey] ?? i18nKey) : i18nKey
+  // and the link or the pointer says where to do it instead. In an open release the sentence also
+  // stops there, and Add to release is the instruction.
+  const sentenceKey = yields || addsToRelease ? (STATEMENT_KEYS[i18nKey] ?? i18nKey) : i18nKey
 
   return (
     <Banner
