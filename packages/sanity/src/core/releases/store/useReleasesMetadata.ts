@@ -11,6 +11,11 @@ export interface ReleasesMetadata {
    * The last time a document in the release was edited
    */
   updatedAt: string | null
+  /**
+   * The published id of each document in the release, newest edit first. Read it through
+   * `getMemberGroupIdsByRelease` in `releases/model`, not directly.
+   */
+  documentIds?: string[]
 }
 
 export const useReleasesMetadata = (releaseIds: string[]) => {

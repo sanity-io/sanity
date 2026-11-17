@@ -880,6 +880,21 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
 
   /** Toast error message when bulk scheduling of active drafts fails */
   'toast.confirm-active-scheduled-drafts.error': 'Failed to schedule drafts: {{error}}',
+
+  /** Button on a release document row when the document is also in one other active release */
+  'shared-documents.badge_one': 'Also in {{count}} other release',
+  /** Button on a release document row when the document is also in other active releases */
+  'shared-documents.badge_other': 'Also in {{count}} other releases',
+  /** Heading of the menu that lists the other releases a document is in */
+  'shared-documents.menu-title': 'Also in',
+  /** Note in the menu that lists the other releases a document is in */
+  'shared-documents.menu-description': 'The release that runs last overwrites the others.',
+  /** Name in the other releases menu for a scheduled draft that has no title */
+  'shared-documents.scheduled-draft': 'Scheduled draft',
+  /** Accessible label and tooltip for the overview hint when one document is in another release */
+  'shared-documents.overview-label_one': '{{count}} document is also in another release',
+  /** Accessible label and tooltip for the overview hint when documents are in other releases */
+  'shared-documents.overview-label_other': '{{count}} documents are also in other releases',
 })
 
 /**

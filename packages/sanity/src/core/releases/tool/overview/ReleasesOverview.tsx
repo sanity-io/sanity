@@ -25,6 +25,7 @@ import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {useCreateReleaseAvailability} from '../../hooks/useCreateReleaseAvailability'
 import {releasesLocaleNamespace} from '../../i18n'
+import {countSharedGroups, useSharedReleaseGroups} from '../../model/releaseMemberGroups'
 import {isReleaseDocument} from '../../store/types'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
@@ -68,6 +69,8 @@ import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRan
 export interface TableRelease extends ReleaseDocument {
   documentsMetadata?: ReleasesMetadata
   isDeleted?: boolean
+  /** How many of the release's documents are also in another active release. */
+  sharedDocumentCount?: number
 }
 
 const DEFAULT_RELEASES_OVERVIEW_SORT: TableSort = {column: 'publishAt', direction: 'asc'}
@@ -134,6 +137,8 @@ export function ReleasesOverview() {
   )
 
   const releaseIds = useMemo(() => releases.map((release) => release._id), [releases])
+  // Across every active release, both views: a scheduled draft can share a document with a release.
+  const {sharedGroups} = useSharedReleaseGroups()
   const {data: releasesMetadata, loading: loadingReleasesMetadata} = useReleasesMetadata(releaseIds)
   const loading = loadingReleases || (loadingReleasesMetadata && !releasesMetadata)
   const loadingTableData = loading || (!releasesMetadata && Boolean(releaseIds.length))
@@ -184,8 +189,9 @@ export function ReleasesOverview() {
       ...release,
       publishAt: release.publishAt || release.metadata.intendedPublishAt,
       documentsMetadata: releasesMetadata[release._id] || {},
+      sharedDocumentCount: countSharedGroups(sharedGroups, release._id),
     }))
-  }, [hasReleases, releasesMetadata, releases])
+  }, [hasReleases, releasesMetadata, releases, sharedGroups])
 
   // switch to open mode if on archived mode and there are no archived releases
   if (releaseGroupMode === 'archived' && !loadingReleases && !archivedReleases.length) {

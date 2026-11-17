@@ -21,6 +21,7 @@ import {SanityDefaultPreview} from '../../../../preview/components/SanityDefault
 import {getDocumentVersionVariantId} from '../../../../util/getDocumentVersionVariant'
 import {getVariantId, getVariantTitle} from '../../../../variants/tool/util'
 import {type SystemVariant} from '../../../../variants/types'
+import {getReleaseMemberImpact} from '../../../model/releaseImpact'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {getReleaseDocumentIntent} from '../../components/getReleaseDocumentIntent'
@@ -31,6 +32,7 @@ import {MemoVariantCell} from '../../components/VariantCell'
 import {getDocumentActionType, getReleaseDocumentActionConfig} from '../releaseDocumentActions'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 import {type DocumentInRelease} from '../types'
+import {AlsoInOtherReleasesForGroup} from './AlsoInOtherReleases'
 import {useReleaseHistory} from './useReleaseHistory'
 
 const MemoReleaseDocumentPreview = memo(
@@ -192,8 +194,14 @@ const documentActionColumn: (
     }
 
     return (
-      <Flex alignItems="center" {...cellProps}>
+      <Flex alignItems="center" gap={1} {...cellProps}>
         <Box paddingX={2}>{actionBadge()}</Box>
+        {!datum.isPending && !datum.isLoading && (
+          <AlsoInOtherReleasesForGroup
+            documentId={datum.document._id}
+            groupId={getReleaseMemberImpact(datum.document).groupId}
+          />
+        )}
       </Flex>
     )
   },
