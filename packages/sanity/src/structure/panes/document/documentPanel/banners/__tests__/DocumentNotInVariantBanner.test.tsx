@@ -263,15 +263,18 @@ describe('DocumentNotInVariantBanner', () => {
       )
     })
 
-    it('open release: names the release and offers Create variant', async () => {
+    it('open release: names the release and offers a filled Add to release', async () => {
       mockUsePerspective.mockReturnValue(perspectiveState(titledRelease, 'rSummer'))
 
       await renderBanner({kind: 'create', perspective: 'release'})
 
       await expectBannerMessage(
-        'This document has no version for the variant Alpha audience in the ASAP release Summer release yet. Create one to start editing.',
+        'This document has no version for the variant Alpha audience in the ASAP release Summer release yet.',
       )
-      expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
+      const button = screen.getByRole('button', {name: 'Add to release'})
+      expect(button).toBeEnabled()
+      expect(button).toHaveAttribute('data-mode', 'default')
+      expect(screen.queryByRole('button', {name: 'Create variant'})).not.toBeInTheDocument()
     })
 
     it('open release: falls back to Untitled release', async () => {
@@ -280,7 +283,7 @@ describe('DocumentNotInVariantBanner', () => {
       await renderBanner({kind: 'create', perspective: 'release'})
 
       await expectBannerMessage(
-        'This document has no version for the variant Alpha audience in the ASAP release Untitled release yet. Create one to start editing.',
+        'This document has no version for the variant Alpha audience in the ASAP release Untitled release yet.',
       )
     })
 
@@ -493,9 +496,9 @@ describe('DocumentNotInVariantBanner', () => {
       await renderBanner({kind: 'create', perspective: 'release'})
 
       await waitFor(() => {
-        expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
+        expect(screen.getByRole('button', {name: 'Add to release'})).toBeInTheDocument()
       })
-      await userEvent.click(screen.getByRole('button', {name: 'Create variant'}))
+      await userEvent.click(screen.getByRole('button', {name: 'Add to release'}))
 
       await waitFor(() => {
         expect(createVariantDocument).toHaveBeenCalledWith({
@@ -532,9 +535,9 @@ describe('DocumentNotInVariantBanner', () => {
       await renderBanner({kind: 'create', perspective: 'release'})
 
       await waitFor(() => {
-        expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
+        expect(screen.getByRole('button', {name: 'Add to release'})).toBeInTheDocument()
       })
-      await userEvent.click(screen.getByRole('button', {name: 'Create variant'}))
+      await userEvent.click(screen.getByRole('button', {name: 'Add to release'}))
 
       await waitFor(() => {
         expect(createVariantDocument).toHaveBeenCalledWith({
@@ -590,33 +593,47 @@ describe('DocumentNotInVariantBanner', () => {
     }
 
     beforeEach(() => {
-      mockUsePerspective.mockReturnValue(perspectiveState(titledRelease, 'rSummer'))
+      mockUsePerspective.mockReturnValue(perspectiveState('drafts', undefined))
     })
 
     it('states what is missing, drops Create variant and points to the form in the document inventory', async () => {
-      await renderBanner(CREATE_IN_RELEASE, CREATING)
+      await renderBanner(CREATE_IN_DRAFTS, CREATING)
 
       await expectBannerMessage(
-        'This document has no version for the variant Alpha audience in the ASAP release Summer release yet. Finish creating it in the document inventory.',
+        'This document has no draft for the variant Alpha audience yet. Finish creating it in the document inventory.',
       )
       expect(screen.getByTestId('document-not-in-variant-banner-hand-off')).toBeInTheDocument()
       expect(screen.queryByRole('button', {name: 'Create variant'})).not.toBeInTheDocument()
       expect(screen.queryByRole('button', {name: /document inventory/})).not.toBeInTheDocument()
     })
 
-    it('drops the create action in Drafts too', async () => {
-      mockUsePerspective.mockReturnValue(perspectiveState('drafts', undefined))
-      await renderBanner(CREATE_IN_DRAFTS, CREATING)
+    it('in an open release, keeps Add to release, enabled, as a secondary button', async () => {
+      mockUsePerspective.mockReturnValue(perspectiveState(titledRelease, 'rSummer'))
+      for (const params of [CREATING, {inspect: DOCUMENT_GROUP_INSPECTOR_NAME}]) {
+        const {unmount} = await renderBanner(CREATE_IN_RELEASE, params)
 
-      expect(screen.queryByRole('button', {name: 'Create variant'})).not.toBeInTheDocument()
-      expect(screen.getByTestId('document-not-in-variant-banner-hand-off')).toBeInTheDocument()
+        await expectBannerMessage(
+          'This document has no version for the variant Alpha audience in the ASAP release Summer release yet.',
+        )
+        const button = screen.getByRole('button', {name: 'Add to release'})
+        expect(button).toBeEnabled()
+        // The inventory's Create variant is the view's one filled button
+        expect(button).toHaveAttribute('data-mode', 'ghost')
+        expect(
+          screen.queryByTestId('document-not-in-variant-banner-hand-off'),
+        ).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('button', {name: 'Create it in the document inventory.'}),
+        ).not.toBeInTheDocument()
+        unmount()
+      }
     })
 
     it('with the inventory open, ends its sentence with a link into the inventory instead of the filled button', async () => {
-      await renderBanner(CREATE_IN_RELEASE, {inspect: DOCUMENT_GROUP_INSPECTOR_NAME})
+      await renderBanner(CREATE_IN_DRAFTS, {inspect: DOCUMENT_GROUP_INSPECTOR_NAME})
 
       await expectBannerMessage(
-        'This document has no version for the variant Alpha audience in the ASAP release Summer release yet. Create it in the document inventory.',
+        'This document has no draft for the variant Alpha audience yet. Create it in the document inventory.',
       )
       expect(screen.queryByRole('button', {name: 'Create variant'})).not.toBeInTheDocument()
       const link = screen.getByRole('button', {name: 'Create it in the document inventory.'})
@@ -629,7 +646,7 @@ describe('DocumentNotInVariantBanner', () => {
     it('the link opens the Create variant form for the variant, from the keyboard too', async () => {
       const user = userEvent.setup()
       const params = {inspect: DOCUMENT_GROUP_INSPECTOR_NAME, view: 'editor'}
-      await renderBanner(CREATE_IN_RELEASE, params)
+      await renderBanner(CREATE_IN_DRAFTS, params)
 
       await user.tab()
       expect(
@@ -656,7 +673,7 @@ describe('DocumentNotInVariantBanner', () => {
     })
 
     it('keeps the filled Create variant while the document inventory is closed, even with the param', async () => {
-      await renderBanner(CREATE_IN_RELEASE, {[CREATE_VARIANT_PARAM]: variantAlphaAudience._id})
+      await renderBanner(CREATE_IN_DRAFTS, {[CREATE_VARIANT_PARAM]: variantAlphaAudience._id})
 
       expect(screen.getByRole('button', {name: 'Create variant'})).toBeInTheDocument()
       expect(

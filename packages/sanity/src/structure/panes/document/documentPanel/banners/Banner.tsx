@@ -118,6 +118,8 @@ export function Banner(props: BannerProps) {
                   <Card tone="default" style={NEUTRAL_ACTION_STYLE}>
                     <Button
                       {...action}
+                      // Which style the action has, filled or secondary, for tests to read: one filled button per view.
+                      data-mode="default"
                       mode="default"
                       tone={action.tone === 'critical' ? 'critical' : 'default'}
                     />
@@ -126,6 +128,7 @@ export function Banner(props: BannerProps) {
                   // A ghost or bleed (secondary) action keeps its tone and the banner's tint
                   <Button
                     {...action}
+                    data-mode={action.mode || 'ghost'}
                     mode={action.mode || 'ghost'}
                     tone={action.tone || 'default'}
                   />
