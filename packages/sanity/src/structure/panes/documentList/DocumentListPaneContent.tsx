@@ -98,7 +98,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   const schema = useSchema()
 
   const {collapsed: layoutCollapsed} = usePaneLayout()
-  const {collapsed, index} = usePane()
+  const {collapsed} = usePane()
   const [shouldRender, setShouldRender] = useState(!collapsed)
   const {t} = useTranslation(structureLocaleNamespace)
 
@@ -268,14 +268,10 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       return null
     }
 
-    // prevents bug when panes won't render if first rendered while collapsed
-    const key = `${index}-${collapsed}`
-
     return (
       <Box overflow="hidden" height="100%" className={clsx(rootBox, muted && rootBoxMuted)}>
         <Box className={commandListBox}>
           <CommandList
-            key={key}
             activeItemDataAttr="data-hovered"
             ariaLabel={paneTitle}
             canReceiveFocus
@@ -297,10 +293,8 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   }, [
     autoRetry,
     canRetry,
-    collapsed,
     error,
     handleEndReached,
-    index,
     isConnected,
     isLoading,
     isRetrying,
