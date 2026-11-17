@@ -61,7 +61,7 @@ function ScrollContainerComponent<T extends ElementType = 'div'>(
     })
 
     return () => {
-      el.removeEventListener('scroll', handleScroll)
+      el.removeEventListener('scroll', handleScroll, {capture: true})
     }
   }, [childContext, ref])
 

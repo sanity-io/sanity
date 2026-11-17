@@ -22,9 +22,13 @@ export const SharedStateProvider: FunctionComponent<
   const sharedState = useRef<SerializableObject>({})
 
   useEffect(() => {
-    return comlink?.on('visual-editing/shared-state', () => {
+    if (!comlink) return undefined
+    const unsubscribe = comlink.on('visual-editing/shared-state', () => {
       return {state: sharedState.current}
     })
+    return () => {
+      unsubscribe()
+    }
   }, [comlink])
 
   const setValue = useCallback(
