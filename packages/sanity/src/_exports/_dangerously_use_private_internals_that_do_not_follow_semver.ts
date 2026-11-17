@@ -691,6 +691,7 @@ export {
 export {
   useComlinkStore,
   useConnectionStatusStore,
+  useKeyValueStore,
   useRenderingContextStore,
 } from '../core/store/datastores'
 export {
@@ -793,6 +794,8 @@ export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useTimelineStore,
 } from '../core/store/history/useTimelineStore'
+export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
+export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
 export {
   useStudioPreference,
   useStudioPreferenceList,
