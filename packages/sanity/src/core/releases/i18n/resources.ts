@@ -861,6 +861,8 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'shared-documents.menu-description': 'The release that runs last overwrites the others.',
   /** Name in the other releases menu for a scheduled draft that has no title */
   'shared-documents.scheduled-draft': 'Scheduled draft',
+  /** Badge after a release's document count on the overview: how many of its documents are also in other active releases. Its tooltip is the overview-label text */
+  'shared-documents.overview-badge': '{{count}} shared',
   /** Accessible label and tooltip for the overview hint when one document is in another release */
   'shared-documents.overview-label_one': '{{count}} document is also in another release',
   /** Accessible label and tooltip for the overview hint when documents are in other releases */
