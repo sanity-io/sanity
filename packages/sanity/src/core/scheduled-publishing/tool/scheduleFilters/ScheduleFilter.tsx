@@ -5,7 +5,8 @@ import {
 import {useStateLink} from 'sanity/router'
 import {Text, Flex} from 'ui5'
 
-import {SCHEDULE_STATE_DICTIONARY} from '../../constants'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {SCHEDULE_STATE_TITLE_KEYS} from '../../constants'
 import {useFilteredSchedules} from '../../hooks/useFilteredSchedules'
 import {type Schedule, type ScheduleState} from '../../types'
 
@@ -18,6 +19,7 @@ interface Props {
 const ScheduleFilter = (props: Props) => {
   const {selected, schedules, state} = props
 
+  const {t} = useTranslation()
   const count = useFilteredSchedules(schedules, state).length
 
   const hasItems = count > 0
@@ -46,7 +48,7 @@ const ScheduleFilter = (props: Props) => {
           trim={true}
           tone={critical ? 'critical' : undefined}
         >
-          {SCHEDULE_STATE_DICTIONARY[state].title}
+          {t(SCHEDULE_STATE_TITLE_KEYS[state])}
         </Text>
         {hasItems && (
           <Text size={0} as="div" trim={true} tone={critical ? 'critical' : undefined}>

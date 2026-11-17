@@ -87,7 +87,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
               mode="bleed"
               paddingY={3}
               tabIndex={focused ? 0 : 1}
-              tooltipProps={{content: 'Open menu'}}
+              tooltipProps={{content: t('inputs.portable-text.block.open-menu-aria-label')}}
             />
           }
           ref={menuButton}

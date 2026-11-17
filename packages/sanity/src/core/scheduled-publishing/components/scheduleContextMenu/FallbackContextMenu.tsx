@@ -4,6 +4,7 @@ import {Menu} from '@sanity/ui/menu'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
 import {type Schedule} from '../../types'
 
@@ -23,6 +24,7 @@ interface Props {
 export const FallbackContextMenu = (props: Props) => {
   const {onDelete, schedule} = props
   const {deleteSchedule} = useScheduleOperation()
+  const {t} = useTranslation()
 
   const handleDelete = () => {
     void deleteSchedule({schedule}).then(() => onDelete?.())
@@ -37,7 +39,7 @@ export const FallbackContextMenu = (props: Props) => {
           <MenuItem
             icon={TrashIcon}
             onClick={handleDelete}
-            text="Delete schedule"
+            text={t('scheduled-publishing.context-menu.delete-schedule')}
             tone="critical"
           />
         </Menu>
