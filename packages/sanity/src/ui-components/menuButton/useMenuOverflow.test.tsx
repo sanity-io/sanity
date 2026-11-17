@@ -71,6 +71,21 @@ describe('useMenuOverflow', () => {
     expect(scroller).not.toHaveAttribute('data-overflowing')
   })
 
+  it('measures the width the scrollbar takes from the contents while the list overflows', async () => {
+    render(<Probe items={2} />)
+    const scroller = screen.getByTestId('scroller')
+    Object.defineProperty(scroller, 'offsetWidth', {configurable: true, value: 280})
+    Object.defineProperty(scroller, 'clientWidth', {configurable: true, value: 268})
+
+    setSize(scroller, {clientHeight: 100, scrollHeight: 240})
+    await resize()
+    expect(scroller.style.getPropertyValue('--menu-scrollbar-width')).toBe('12px')
+
+    setSize(scroller, {clientHeight: 100, scrollHeight: 100})
+    await resize()
+    expect(scroller.style.getPropertyValue('--menu-scrollbar-width')).toBe('')
+  })
+
   it('observes the scroller and its children, and re-observes when the children change', async () => {
     const {rerender} = render(<Probe items={2} />)
     const scroller = screen.getByTestId('scroller')
