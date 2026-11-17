@@ -23,10 +23,10 @@ import {useDocumentPreviewValues} from '../../../../tasks/hooks/useDocumentPrevi
 import {getPublishedId} from '../../../../util/draftUtils'
 import {PublishedRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
+import {getReleaseImpact} from '../../../model/releaseImpact'
 import {isReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
-import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
 import {type DocumentInRelease} from '../../detail/types'
 
 const DRAFTS_PERSPECTIVE_STACK = ['drafts']
@@ -105,18 +105,16 @@ export const ReleasePublishAllButton = ({
 
   const [publishPermission, setPublishPermission] = useState<boolean>(false)
 
-  // documents that also have an existing draft, which would become outdated once the release
-  // is published (documents set to be unpublished are excluded, since publishing intentionally
-  // keeps or creates a draft for them so that their content is not lost)
+  // Members whose draft holds changes the release does not contain. Read from the model-neutral
+  // impact, so this keeps working when releases point at lanes instead of holding versions.
   const draftDocuments = useMemo(
     () =>
-      documents
-        .filter(
-          (releaseDocument) =>
-            releaseDocument.document.draftDocumentExists &&
-            !isGoingToUnpublish(releaseDocument.document),
-        )
-        .map((releaseDocument) => releaseDocument.document),
+      getReleaseImpact(documents)
+        .filter((impact) => impact.draftDiffers)
+        .map((impact) => ({
+          _id: impact.lane.kind === 'release-version' ? impact.lane.versionId : impact.groupId,
+          _type: impact.documentType,
+        })),
     [documents],
   )
   const draftDocumentIds = useMemo(() => draftDocuments.map(({_id}) => _id), [draftDocuments])
