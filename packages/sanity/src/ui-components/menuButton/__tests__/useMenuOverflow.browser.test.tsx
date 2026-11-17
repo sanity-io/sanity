@@ -27,6 +27,7 @@ function SearchMenuHarness({
   pinnedFooter = false,
   rows = 30,
   selected,
+  contentPaddingX = 2,
 }: {
   offsetTop?: number
   /** The side the menu opens on; it is kept there, so the tests choose which edge it meets. */
@@ -35,6 +36,8 @@ function SearchMenuHarness({
   pinnedFooter?: boolean
   rows?: number
   selected?: string
+  /** The list contents' own side padding: 2 (8px) as in the navbar menus, 1 (4px) as in the pill menus. */
+  contentPaddingX?: 1 | 2
 }) {
   const scrollerRef = useMenuOverflow()
   const names = Array.from({length: rows}, (_, index) => `Row ${index + 1}`)
@@ -60,7 +63,13 @@ function SearchMenuHarness({
                     overflowY="auto"
                     ref={scrollerRef}
                   >
-                    <Flex flexDirection="column" flexShrink={0} gap={1} paddingX={2} paddingY={1}>
+                    <Flex
+                      flexDirection="column"
+                      flexShrink={0}
+                      gap={1}
+                      paddingX={contentPaddingX}
+                      paddingY={1}
+                    >
                       {names.map((row) => (
                         <MenuItem
                           key={row}
@@ -343,4 +352,36 @@ describe('useMenuOverflow: the fades at an edge with rows beyond it', () => {
       Math.abs(parseFloat(getComputedStyle(list(), '::after').bottom) - footer.offsetHeight),
     ).toBeLessThanOrEqual(0.5)
   })
+})
+
+describe('useMenuOverflow: rows and the scrollbar', () => {
+  it.each([
+    {contentPaddingX: 2 as const, padding: 8, trim: 4},
+    {contentPaddingX: 1 as const, padding: 4, trim: 0},
+  ])(
+    'ends a row 4px before a 12px track with $padding px of list padding',
+    async ({contentPaddingX, trim}) => {
+      void render(<SearchMenuHarness contentPaddingX={contentPaddingX} />)
+      await userEvent.click(page.getByRole('button', {name: 'Open menu'}))
+      const list = page.getByTestId('search-menu-list')
+      await expect.element(list).toBeVisible()
+      const scroller = list.element() as HTMLElement
+
+      // Headless Chromium hides scrollbars, so stand in for the studio's 12px track the way the
+      // hook reads it, then make it measure again
+      Object.defineProperty(scroller, 'clientWidth', {
+        configurable: true,
+        get: () => scroller.offsetWidth - 12,
+      })
+      scroller.style.width = `${scroller.offsetWidth - 1}px`
+      await expect.poll(() => scroller.style.getPropertyValue('--menu-row-trim')).toBe(`${trim}px`)
+
+      // Without a real track the contents keep the full width, so the track's left edge is 12px
+      // in from the scroller's right: the row ends 4px before it whatever the list's padding
+      const row = scroller.querySelector('[data-ui="MenuItem"]')!
+      await expectStable(() => String(row.getBoundingClientRect().right))
+      const gap = scroller.getBoundingClientRect().right - row.getBoundingClientRect().right
+      expect(Math.abs(gap - 4)).toBeLessThanOrEqual(0.5)
+    },
+  )
 })
