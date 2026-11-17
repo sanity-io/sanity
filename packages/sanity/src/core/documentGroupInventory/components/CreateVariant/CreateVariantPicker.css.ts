@@ -21,6 +21,17 @@ export const createVariantPickerSelect = css({
   '&& > span': {
     paddingBlock: 0,
   },
+  /*
+   * The select's 1px edge is the button's `--card-border-color`, about 1.25:1 against the card in
+   * both schemes, and its fill is barely darker than the card, so nothing marked the field (WCAG
+   * 1.4.11 asks 3:1 for a component's boundary). The edge takes the muted foreground instead, the
+   * chevron's colour (about 4.5:1 light, 5.3:1 dark). Four classes beat the button's own hover and
+   * pressed rules, which set the border colour again; the focus ring replaces the edge as before,
+   * and a disabled select keeps its disabled border.
+   */
+  '&&&&:not(:disabled)': {
+    '--card-border-color': 'var(--card-muted-fg-color)',
+  },
 })
 
 /**
