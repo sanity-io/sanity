@@ -6,7 +6,7 @@ import {Card, useMediaIndex} from '@sanity/ui'
 import {isSameDay} from 'date-fns/isSameDay'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
-import {Box, Flex} from 'ui5'
+import {Box, Container, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -527,29 +527,33 @@ export function ReleasesOverview() {
           FILTERS (calendar date, lifecycle tabs, search) live below in the timeline zone / command
           lane. */}
       <Card flex="none" padding={3}>
-        <Flex alignItems="center" gap={3} flexWrap="wrap">
-          <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2}>
-            <Button
-              icon={EarthGlobeIcon}
-              mode="bleed"
-              onClick={dialogTimeZoneShow}
-              {...timeZoneButtonProps}
+        {/* Toolbar, timeline and table share the table's 1280px column, so on wide screens they
+            read as one page rather than spreading to the edges. */}
+        <Container size={3}>
+          <Flex alignItems="center" gap={3} flexWrap="wrap">
+            <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2}>
+              <Button
+                icon={EarthGlobeIcon}
+                mode="bleed"
+                onClick={dialogTimeZoneShow}
+                {...timeZoneButtonProps}
+              />
+              {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
+            </Flex>
+            <CardinalityViewPicker
+              cardinalityView={cardinalityView}
+              loading={loading}
+              onCardinalityViewChange={handleCardinalityViewChange}
+              isScheduledDraftsEnabled={isScheduledDraftsEnabled}
+              allReleases={allReleases}
+              isReleasesEnabled={isReleasesEnabled}
+              isDraftModelEnabled={isDraftModelEnabled}
             />
-            {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
+            <Flex alignItems="center" flexBasis="0%" flexGrow={1} justifyContent="flex-end" gap={2}>
+              {loadingOrHasReleases && createReleaseButton}
+            </Flex>
           </Flex>
-          <CardinalityViewPicker
-            cardinalityView={cardinalityView}
-            loading={loading}
-            onCardinalityViewChange={handleCardinalityViewChange}
-            isScheduledDraftsEnabled={isScheduledDraftsEnabled}
-            allReleases={allReleases}
-            isReleasesEnabled={isReleasesEnabled}
-            isDraftModelEnabled={isDraftModelEnabled}
-          />
-          <Flex alignItems="center" flexBasis="0%" flexGrow={1} justifyContent="flex-end" gap={2}>
-            {loadingOrHasReleases && createReleaseButton}
-          </Flex>
-        </Flex>
+        </Container>
       </Card>
 
       {showReleaseNotFound && <ReleaseNotFoundBanner onDismiss={handleDismissReleaseNotFound} />}
@@ -594,8 +598,6 @@ export function ReleasesOverview() {
           defaultSort={defaultTableSort}
           emptyState={tableEmptyState}
           filterTabs={filterTabsNode}
-          // The toolbar and timeline above run full width; keep the table on the same left edge.
-          fullWidth
           getRowKey={getReleaseKey}
           id="releases-overview-table"
           loading={loadingTableData}

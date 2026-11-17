@@ -14,7 +14,7 @@ import {startOfMonth} from 'date-fns/startOfMonth'
 import {startOfWeek} from 'date-fns/startOfWeek'
 import {Fragment, type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
-import {Box, Flex, Text, VStack} from 'ui5'
+import {Box, Container, Flex, Text, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
@@ -743,100 +743,105 @@ export function ReleaseTimeline({
       paddingTop={2}
       paddingBottom={collapsed ? 2 : 3}
     >
-      <VStack gap={3}>
-        <Flex alignItems="center" gap={3}>
-          {/* SET 2 — timeline view config (on/off + density) in ONE bordered rail: the timeline
+      {/* Same 1280px column as the toolbar and the table, so the three share one left edge. */}
+      <Container size={3}>
+        <VStack gap={3}>
+          <Flex alignItems="center" gap={3}>
+            {/* SET 2 — timeline view config (on/off + density) in ONE bordered rail: the timeline
               toggle (TimelineIcon, deliberately not a clock so it doesn't read as time-of-day),
               then a hairline, then the compact/detailed density toggles — "living together as
               toggles". When off, the rail is just the toggle, so the whole band is a thin line. */}
-          <Card radius={3} border padding={1}>
-            <Flex alignItems="center" gap={1}>
-              <Button
-                data-testid="release-timeline-toggle"
-                mode={collapsed ? 'bleed' : 'ghost'}
-                selected={!collapsed}
-                icon={TimelineIcon}
-                onClick={handleToggleCollapsed}
-                aria-label={t(collapsed ? 'timeline.expand' : 'timeline.collapse')}
-                tooltipProps={{content: t(collapsed ? 'timeline.expand' : 'timeline.collapse')}}
-              />
-              {!collapsed && (
-                <>
-                  <Box
-                    style={{
-                      alignSelf: 'stretch',
-                      width: 1,
-                      margin: '2px 2px',
-                      backgroundColor: 'var(--card-border-color)',
-                    }}
-                  />
-                  <Button
-                    data-testid="release-timeline-density-compact"
-                    mode={density === 'compact' ? 'ghost' : 'bleed'}
-                    selected={density === 'compact'}
-                    icon={StackCompactIcon}
-                    onClick={() => setDensity('compact')}
-                    aria-label={t('timeline.density-compact-tooltip')}
-                    tooltipProps={{content: t('timeline.density-compact-tooltip')}}
-                  />
-                  <Button
-                    data-testid="release-timeline-density-detailed"
-                    mode={density === 'detailed' ? 'ghost' : 'bleed'}
-                    selected={density === 'detailed'}
-                    icon={StackIcon}
-                    onClick={() => setDensity('detailed')}
-                    aria-label={t('timeline.density-detailed-tooltip')}
-                    tooltipProps={{content: t('timeline.density-detailed-tooltip')}}
-                  />
-                </>
-              )}
-            </Flex>
-          </Card>
-          {/* SET 1 — navigate / access dates (the most-used controls): zoom scale + the calendar
+            <Card radius={3} border padding={1}>
+              <Flex alignItems="center" gap={1}>
+                <Button
+                  data-testid="release-timeline-toggle"
+                  mode={collapsed ? 'bleed' : 'ghost'}
+                  selected={!collapsed}
+                  icon={TimelineIcon}
+                  onClick={handleToggleCollapsed}
+                  aria-label={t(collapsed ? 'timeline.expand' : 'timeline.collapse')}
+                  tooltipProps={{content: t(collapsed ? 'timeline.expand' : 'timeline.collapse')}}
+                />
+                {!collapsed && (
+                  <>
+                    <Box
+                      style={{
+                        alignSelf: 'stretch',
+                        width: 1,
+                        margin: '2px 2px',
+                        backgroundColor: 'var(--card-border-color)',
+                      }}
+                    />
+                    <Button
+                      data-testid="release-timeline-density-compact"
+                      mode={density === 'compact' ? 'ghost' : 'bleed'}
+                      selected={density === 'compact'}
+                      icon={StackCompactIcon}
+                      onClick={() => setDensity('compact')}
+                      aria-label={t('timeline.density-compact-tooltip')}
+                      tooltipProps={{content: t('timeline.density-compact-tooltip')}}
+                    />
+                    <Button
+                      data-testid="release-timeline-density-detailed"
+                      mode={density === 'detailed' ? 'ghost' : 'bleed'}
+                      selected={density === 'detailed'}
+                      icon={StackIcon}
+                      onClick={() => setDensity('detailed')}
+                      aria-label={t('timeline.density-detailed-tooltip')}
+                      tooltipProps={{content: t('timeline.density-detailed-tooltip')}}
+                    />
+                  </>
+                )}
+              </Flex>
+            </Card>
+            {/* SET 1 — navigate / access dates (the most-used controls): zoom scale + the calendar
               (go to a specific date). The calendar is a filter, so it stays visible even when the
               axis is collapsed; zoom is meaningless without the axis, so it hides when collapsed. */}
-          {!collapsed && (
-            <SegmentedControl
-              data-testid="release-timeline-zoom"
-              value={granularity}
-              onChange={setGranularity}
-              items={GRANULARITIES.map((g) => ({
-                value: g,
-                label: t(`timeline.granularity.${g}`),
-                testId: `release-timeline-granularity-${g}`,
-              }))}
-            />
-          )}
-          {dateControl}
-        </Flex>
-        {/* Collapse/expand animates height (grid-rows 0fr↔1fr) instead of snapping in/out, so the
+            {!collapsed && (
+              <SegmentedControl
+                data-testid="release-timeline-zoom"
+                value={granularity}
+                onChange={setGranularity}
+                items={GRANULARITIES.map((g) => ({
+                  value: g,
+                  label: t(`timeline.granularity.${g}`),
+                  testId: `release-timeline-granularity-${g}`,
+                }))}
+              />
+            )}
+            {dateControl}
+          </Flex>
+          {/* Collapse/expand animates height (grid-rows 0fr↔1fr) instead of snapping in/out, so the
             table below eases rather than lurching. The content stays mounted but clipped when
             collapsed; its scroll effects no-op at zero width. */}
-        <Box
-          data-testid="release-timeline-body"
-          aria-hidden={collapsed}
-          style={{
-            display: 'grid',
-            gridTemplateRows: collapsed ? '0fr' : '1fr',
-            transition: 'grid-template-rows 200ms ease',
-          }}
-        >
-          <Box style={{overflow: 'hidden', minHeight: 0}}>
-            <VStack gap={3}>
-              <ReleaseTimelineRoadmap
-                dated={dated}
-                granularity={granularity}
-                density={density}
-                collapsed={collapsed}
-                now={now}
-                toZoned={utcToCurrentZoneDate}
-                onNavigate={handleNavigate}
-              />
-              <UnscheduledChip count={unscheduledCount} />
-            </VStack>
+          <Box
+            data-testid="release-timeline-body"
+            aria-hidden={collapsed}
+            // The pills are links: inert keeps them out of the tab order while the band is hidden.
+            inert={collapsed}
+            style={{
+              display: 'grid',
+              gridTemplateRows: collapsed ? '0fr' : '1fr',
+              transition: 'grid-template-rows 200ms ease',
+            }}
+          >
+            <Box style={{overflow: 'hidden', minHeight: 0}}>
+              <VStack gap={3}>
+                <ReleaseTimelineRoadmap
+                  dated={dated}
+                  granularity={granularity}
+                  density={density}
+                  collapsed={collapsed}
+                  now={now}
+                  toZoned={utcToCurrentZoneDate}
+                  onNavigate={handleNavigate}
+                />
+                <UnscheduledChip count={unscheduledCount} />
+              </VStack>
+            </Box>
           </Box>
-        </Box>
-      </VStack>
+        </VStack>
+      </Container>
     </Card>
   )
 }
