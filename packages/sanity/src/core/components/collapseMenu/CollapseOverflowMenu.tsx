@@ -1,6 +1,7 @@
-import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {MenuDivider} from '@sanity/ui/menu'
 import {Fragment, type RefAttributes} from 'react'
 
+import {Menu} from '../../../ui-components/menu/Menu'
 import {MenuButton, type MenuButtonProps} from '../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {type CollapseMenuProps} from './CollapseMenu'

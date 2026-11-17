@@ -1,7 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 // oxlint-disable-next-line no-restricted-imports -- the select is a ghost Button holding its own layout (glyph, value, chevron); Studio's Button only takes text and icons
 import {Button as UIButton, Label, TextInput} from '@sanity/ui'
-import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {MenuDivider} from '@sanity/ui/menu'
 import {
   type ComponentProps,
   type ComponentType,
@@ -15,6 +15,7 @@ import {
 } from 'react'
 import {Box, Flex, Text} from 'ui5'
 
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {menuOverflowScroller} from '../../../../ui-components/menuButton/menuOverflow.css'
 import {useFocusSearchOnOpen} from '../../../../ui-components/menuButton/useFocusSearchOnOpen'

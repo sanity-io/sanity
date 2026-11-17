@@ -10,7 +10,6 @@ import {
   type ButtonTone,
 } from '@sanity/ui'
 import {
-  Menu,
   // oxlint-disable-next-line no-restricted-imports -- the `VersionModeHeader` component needs more control over how the `MenuItem` component is rendered
   MenuItem,
 } from '@sanity/ui/menu'
@@ -43,6 +42,7 @@ import {
 } from 'sanity'
 import {Text, Box, Flex, Icon} from 'ui5'
 
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useDiffViewRouter} from '../../hooks/useDiffViewRouter'

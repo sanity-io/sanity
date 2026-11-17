@@ -1,5 +1,4 @@
 import {AddIcon} from '@sanity/icons/Add'
-import {Menu} from '@sanity/ui/menu'
 import {useMemo} from 'react'
 import {
   type InitialValueTemplateItem,
@@ -16,6 +15,7 @@ import {
 import {IntentLink, type IntentLinkProps} from 'sanity/router'
 
 import {Button} from '../../../ui-components/button/Button'
+import {Menu} from '../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {type PopoverProps} from '../../../ui-components/popover/Popover'

@@ -6,7 +6,6 @@ import {
   isGlobalDocumentReference,
 } from '@sanity/types'
 import {Card, Inline, useClickOutsideEvent} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {
   type FocusEvent,
@@ -22,6 +21,7 @@ import {
 import {type Observable} from 'rxjs'
 import {Box, Flex, VStack} from 'ui5'
 
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'

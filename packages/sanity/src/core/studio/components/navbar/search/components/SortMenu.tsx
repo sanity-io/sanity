@@ -1,11 +1,12 @@
 import {SortIcon} from '@sanity/icons/Sort'
 import {Card} from '@sanity/ui'
-import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {MenuDivider} from '@sanity/ui/menu'
 import {dequal as isEqual} from 'dequal/lite'
 import {useCallback, useId, useMemo} from 'react'
 import {Flex} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
+import {Menu} from '../../../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'

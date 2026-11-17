@@ -1,4 +1,3 @@
-import {Menu} from '@sanity/ui/menu'
 import {type Dispatch, type SetStateAction, useCallback, useState} from 'react'
 import {
   ContextMenuButton,
@@ -9,6 +8,7 @@ import {
 } from 'sanity'
 import {Box} from 'ui5'
 
+import {Menu} from '../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
 import {ActionStateDialog} from '../../panes/document/statusBar/ActionStateDialog'
