@@ -50,6 +50,7 @@ import {
   getRowToggle,
   getSetSelection,
   type RangeAnchor,
+  SELECTION_BLOCKED_NOTE_KEYS,
   SELECTION_BLOCKED_REASON_KEYS,
 } from '../../utils/selection'
 import {Body} from '../Body'
@@ -1618,6 +1619,11 @@ function SelectionSets({
             ? t(SELECTION_BLOCKED_REASON_KEYS[selection.groupBlockedReason])
             : undefined
         }
+        blockedNote={
+          selection.groupBlockedReason
+            ? t(SELECTION_BLOCKED_NOTE_KEYS[selection.groupBlockedReason])
+            : undefined
+        }
         onCheckedChange={(checked) =>
           selectionRef.send(
             checked
@@ -2283,6 +2289,21 @@ describe('Inventory selection', () => {
 
     // Nothing in the group can be selected, so the group checkbox is blocked for the same reason
     expect(groupCheckbox(setName).getAttribute('aria-disabled')).toBe('true')
+    // The header says why on screen, without hovering, and describes its toggle with it
+    const note = selectionSet(setName).querySelector<HTMLElement>(
+      '[data-testid="variant-set-blocked-note"]',
+    )!
+    await expect.element(page.elementLocator(note)).toBeVisible()
+    await expect
+      .element(page.elementLocator(note))
+      .toHaveTextContent("Scheduled, so it can't be changed")
+    await expect
+      .element(page.elementLocator(groupToggle(setName)))
+      .toHaveAccessibleDescription("Scheduled, so it can't be changed")
+    // Sets that can be selected have no note
+    expect(
+      selectionSet('Draft').querySelector('[data-testid="variant-set-blocked-note"]'),
+    ).toBeNull()
     await pointAt(groupCheckbox(setName))
     await userEvent.click(page.elementLocator(groupCheckbox(setName)), {force: true})
     expect(selected(refs)).toEqual([])

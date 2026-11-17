@@ -78,6 +78,7 @@ import {
   getRowToggle,
   getSetSelection,
   type RangeAnchor,
+  SELECTION_BLOCKED_NOTE_KEYS,
   SELECTION_BLOCKED_REASON_KEYS,
   type SelectionBlockedReason,
 } from '../utils/selection'
@@ -618,6 +619,11 @@ const Select: ComponentType<{
             blockedReason={
               setSelection.groupBlockedReason
                 ? t(SELECTION_BLOCKED_REASON_KEYS[setSelection.groupBlockedReason])
+                : undefined
+            }
+            blockedNote={
+              setSelection.groupBlockedReason
+                ? t(SELECTION_BLOCKED_NOTE_KEYS[setSelection.groupBlockedReason])
                 : undefined
             }
             onCheckedChange={(checked) =>

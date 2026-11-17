@@ -941,6 +941,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.select-group': 'Select all in {{name}}',
   /** Accessible name of a version's checkbox in the document group inventory */
   'document-group.select-version': 'Select {{name}}',
+  /** The second line of a set header in the document group inventory when none of its versions can be selected because its release is scheduled. Short, so it fits the narrow panel; the checkbox's tooltip has the full reason */
+  'document-group.select.blocked.scheduled-release-note': "Scheduled, so it can't be changed",
   /** Why a version in a scheduled release cannot be selected for deletion in the document group inventory */
   'document-group.select.blocked.scheduled-release':
     'This version is in a scheduled release. Unschedule the release to delete it.',
