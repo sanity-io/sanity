@@ -125,6 +125,8 @@ export interface ListItem {
    * effect. See {@link ListItemCount}
    */
   count?: ListItemCount
+  /** Id of the singleton document this item opens. Set by `singleton()` */
+  singletonDocumentId?: string
 }
 
 /**
@@ -150,6 +152,8 @@ export interface UnserializedListItem {
   displayOptions?: ListItemDisplayOptions
   /** List item schema. See {@link SchemaType} */
   schemaType?: SchemaType | string
+  /** Set by `singleton()`: id of the singleton document, used to show its status in the list */
+  singletonDocumentId?: string
 }
 
 /**
@@ -159,18 +163,6 @@ export interface UnserializedListItem {
 export type PartialListItem = Partial<UnserializedListItem>
 
 /**
- * Internal extension of PartialListItem that tracks singleton-specific data.
- * Not part of the public API.
- */
-interface InternalPartialListItem extends PartialListItem {
-  /**
-   * When set via `singleton()`, holds the singleton's document ID so that
-   * `serialize()` can include `_id` for status icon rendering.
-   */
-  _singletonDocumentId?: string
-}
-
-/**
  * Class for building list items
  *
  * @public */
@@ -178,7 +170,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
   /** Brand consumed by `isSerializable` (avoids circular `instanceof` imports) */
   readonly [serializableMarker] = true
   /** List item option object. See {@link PartialListItem} */
-  protected spec: InternalPartialListItem
+  protected spec: PartialListItem
 
   protected _context: StructureContext
 
@@ -364,7 +356,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
       schemaType: definition.schemaType,
       child:
         this.spec.child ?? this._context.getStructureBuilder().document().singleton(definition.id),
-      _singletonDocumentId: definition.documentId,
+      singletonDocumentId: definition.documentId,
     })
   }
 
@@ -443,10 +435,6 @@ export class ListItemBuilder implements Serializable<ListItem> {
       ? resolveListItemCount(child, schemaType, id)
       : undefined
 
-    // Include _id when this item was created via singleton() so that the UI
-    // can render draft/published status icons.
-    const singletonDocumentId = this.spec._singletonDocumentId
-
     return {
       ...this.spec,
       id: validateId(id, options.path, options.index),
@@ -455,7 +443,6 @@ export class ListItemBuilder implements Serializable<ListItem> {
       title,
       type: 'listItem',
       count,
-      ...(singletonDocumentId !== undefined && {_id: singletonDocumentId}),
     }
   }
 
@@ -463,7 +450,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
    * @param withSpec - partial list item options. See {@link PartialListItem}
    * @returns list item builder based on context and spec provided. See {@link ListItemBuilder}
    */
-  clone(withSpec?: InternalPartialListItem): ListItemBuilder {
+  clone(withSpec?: PartialListItem): ListItemBuilder {
     const builder = new ListItemBuilder(this._context)
     builder.spec = {...this.spec, ...withSpec}
     return builder

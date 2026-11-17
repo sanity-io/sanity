@@ -22,11 +22,13 @@ import {
 import {
   type FIXME,
   type GeneralPreviewLayoutKey,
+  DocumentVersionsStatusIndicator,
   getPublishedId,
   PreviewCard,
   SanityDefaultPreview,
   useDocumentPresence,
   useDocumentPreviewStore,
+  useDocumentVersions,
   useEditState,
   useNumberFormat,
   useSchema,
@@ -45,6 +47,7 @@ interface PaneItemProps {
   pressed?: boolean
   selected?: boolean
   sortOrder?: Pick<SortOrdering, 'by'>
+  singletonDocumentId?: string
   title?: string
   value?: PreviewValue | SanityDocument
   schemaType?: SchemaType
@@ -79,6 +82,7 @@ export function PaneItem(props: PaneItemProps) {
     schemaType,
     selected,
     sortOrder,
+    singletonDocumentId,
     title,
     value,
     margin,
@@ -120,6 +124,7 @@ export function PaneItem(props: PaneItemProps) {
             {typeof count === 'number' && (
               <Badge data-testid="pane-item-count">{numberFormat.format(count)}</Badge>
             )}
+            {singletonDocumentId && <SingletonStatusIndicator documentId={singletonDocumentId} />}
             <Box style={{opacity: 0.5}}>
               <Icon muted size={1} icon={ChevronRightIcon} style={{margin: '-0.375rem'}} />
             </Box>
@@ -138,6 +143,7 @@ export function PaneItem(props: PaneItemProps) {
     layout,
     numberFormat,
     schemaType,
+    singletonDocumentId,
     sortOrder,
     title,
     value,
@@ -194,6 +200,12 @@ export function PaneItem(props: PaneItemProps) {
       )}
     </PreviewCard>
   )
+}
+
+function SingletonStatusIndicator(props: {documentId: string}) {
+  const {versions} = useDocumentVersions({documentId: getPublishedId(props.documentId)})
+
+  return <DocumentVersionsStatusIndicator documentVersions={versions} />
 }
 
 function PreloadDocumentPane(props: {documentId: string; documentType: string}) {

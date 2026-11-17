@@ -1,10 +1,27 @@
 import {render, screen} from '@testing-library/react'
+import {createSchema} from 'sanity'
 import {PaneRouterContext, type PaneRouterContextValue} from 'sanity/structure'
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
 import {PaneItem} from '../PaneItem'
+
+vi.mock('../../../../core/releases/hooks/useDocumentVersions', () => ({
+  useDocumentVersions: () => ({
+    versions: [
+      {
+        _id: 'siteSettings',
+        _rev: 'rev',
+        _createdAt: '2026-01-01T00:00:00Z',
+        _updatedAt: '2026-01-01T00:00:00Z',
+        _type: 'siteSettings',
+        _system: {},
+      },
+    ],
+    loading: false,
+  }),
+}))
 
 const mockPaneRouterContextValue: PaneRouterContextValue = {
   index: 0,
@@ -60,5 +77,37 @@ describe('PaneItem count badge', () => {
     await renderPaneItem({id: 'species', title: 'Species'})
 
     expect(screen.queryByTestId('pane-item-count')).not.toBeInTheDocument()
+  })
+})
+
+describe('PaneItem singleton', () => {
+  const settingsType = createSchema({
+    name: 'default',
+    types: [{name: 'siteSettings', type: 'document', fields: [{name: 'logo', type: 'string'}]}],
+  }).get('siteSettings')
+
+  it('keeps the configured title and chevron and shows the document status', async () => {
+    const {container} = await renderPaneItem({
+      id: 'settings',
+      title: 'Site settings',
+      schemaType: settingsType,
+      singletonDocumentId: 'siteSettings',
+    })
+
+    expect(await screen.findByText('Site settings')).toBeInTheDocument()
+    expect(screen.queryByText('Untitled')).not.toBeInTheDocument()
+    expect(container.querySelector('[data-sanity-icon="chevron-right"]')).toBeInTheDocument()
+    expect(container.querySelector('[data-status="published"]')).toBeInTheDocument()
+  })
+
+  it('shows no status when there is no singleton document id', async () => {
+    const {container} = await renderPaneItem({
+      id: 'settings',
+      title: 'Site settings',
+      schemaType: settingsType,
+    })
+
+    expect(await screen.findByText('Site settings')).toBeInTheDocument()
+    expect(container.querySelector('[data-status]')).not.toBeInTheDocument()
   })
 })

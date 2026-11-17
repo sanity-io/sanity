@@ -159,21 +159,19 @@ describe('ListItemBuilder.singleton()', () => {
     expect((item.child as DocumentNode).options.id).toBe('settingsDocument')
   })
 
-  it('includes _id equal to the singleton document id for status icon rendering', async () => {
+  it('carries the singleton document id without setting _id', async () => {
     const S = await createBuilder()
     const item = S.listItem().singleton('settingsSingleton').serialize()
 
-    // The _id should be the document id, not the definition id, so the UI
-    // can correctly check draft/published status.
-    expect((item as DocumentListItem)._id).toBe('settingsDocument')
+    expect(item.singletonDocumentId).toBe('settingsDocument')
+    expect((item as DocumentListItem)._id).toBeUndefined()
   })
 
-  it('includes _id equal to the document id when id equals documentId', async () => {
+  it('carries the document id when id equals documentId', async () => {
     const S = await createBuilder()
     const item = S.listItem().singleton('siteSettings').serialize()
 
-    // For siteSettings, id === documentId === schemaType, so _id should be 'siteSettings'
-    expect((item as DocumentListItem)._id).toBe('siteSettings')
+    expect(item.singletonDocumentId).toBe('siteSettings')
   })
 })
 
