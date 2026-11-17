@@ -3,10 +3,7 @@ import {Badge, Inline} from '@sanity/ui'
 import {useMemo} from 'react'
 import {Box} from 'ui5'
 
-import {
-  DocumentVersionsMarksFlyout,
-  REFERENCE_MARKS_SURFACE,
-} from '../../../components/documentStatus/DocumentVersionsMarksFlyout'
+import {DocumentVersionsMarks} from '../../../components/documentStatus/DocumentVersionsMarks'
 import {DocumentVersionsStatus} from '../../../components/documentStatus/DocumentVersionsStatus'
 import {DocumentVersionsStatusIndicator} from '../../../components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {type PreviewLayoutKey} from '../../../components/previews/types'
@@ -27,15 +24,15 @@ export function ReferencePreview(props: {
   renderPreview: RenderPreviewCallback
   showTypeLabel?: boolean
   /**
-   * Whether the status marks may open the versions flyout (with the document group inventory
-   * enabled), in place of the read-only versions tooltip on the preview. Set for the field's own
-   * value, not for the options of its search.
+   * With the document group inventory enabled: no versions tooltip on the preview (it opened below
+   * the reference, over the next item and the next field), and the marks carry a spoken summary of
+   * the versions instead. Set for the field's own value, not for the options of its search.
    */
-  versionsFlyout?: boolean
+  quietVersionsStatus?: boolean
 }) {
-  const {id, layout, refType, renderPreview, showTypeLabel, versionsFlyout = false} = props
+  const {id, layout, refType, renderPreview, showTypeLabel, quietVersionsStatus = false} = props
   const inventoryEnabled = useWorkspace().beta?.documentGroupInventory?.enabled === true
-  const withFlyout = versionsFlyout && inventoryEnabled
+  const quiet = quietVersionsStatus && inventoryEnabled
 
   const documentPresence = useDocumentPresence(id)
 
@@ -58,16 +55,10 @@ export function ReferencePreview(props: {
             )}
 
             {/* The variant diamond is for document lists and search results only */}
-            {withFlyout ? (
-              <DocumentVersionsMarksFlyout
-                documentId={id}
-                documentType={refType.name}
-                presence={documentPresence}
-                surface={REFERENCE_MARKS_SURFACE}
-                versionCount={versions.length}
-              >
+            {quiet ? (
+              <DocumentVersionsMarks versionCount={versions.length}>
                 <DocumentVersionsStatusIndicator documentVersions={versions} variantMarks={false} />
-              </DocumentVersionsMarksFlyout>
+              </DocumentVersionsMarks>
             ) : (
               <DocumentVersionsStatusIndicator documentVersions={versions} variantMarks={false} />
             )}
@@ -76,12 +67,10 @@ export function ReferencePreview(props: {
       ),
       layout,
       schemaType: refType,
-      // With the flyout on the marks, the read-only tooltip goes: it opened below the reference,
-      // over the next item and the next field
-      tooltip: withFlyout ? undefined : <DocumentVersionsStatus documentGroupId={id} />,
+      tooltip: quiet ? undefined : <DocumentVersionsStatus documentGroupId={id} />,
       value: previewStub,
     }),
-    [documentPresence, id, layout, previewStub, refType, showTypeLabel, versions, withFlyout],
+    [documentPresence, id, layout, previewStub, quiet, refType, showTypeLabel, versions],
   )
 
   return renderPreview(previewProps)

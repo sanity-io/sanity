@@ -151,7 +151,7 @@ export function PreviewReferenceValue(props: {
       refType={refType}
       renderPreview={renderPreview}
       showTypeLabel={showTypeLabel}
-      versionsFlyout
+      quietVersionsStatus
     />
   )
 }
