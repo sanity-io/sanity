@@ -155,7 +155,8 @@ export function ReleasesMenu({
             padding={0}
             style={menuStyle}
           >
-            <Box flexShrink={0} padding={2} borderBottom>
+            {/* 4px below the field plus the first section's 4px top padding: an 8px gap to the first row */}
+            <Box flexShrink={0} paddingX={2} paddingTop={2} paddingBottom={1} borderBottom>
               <TextInput
                 data-testid="global-perspective-filter"
                 fontSize={1}
