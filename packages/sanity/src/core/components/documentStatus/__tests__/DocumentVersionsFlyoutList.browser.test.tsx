@@ -2,7 +2,7 @@ import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest
 import {render} from 'vitest-browser-react'
 import {page, server, userEvent} from 'vitest/browser'
 
-import {testHelpers} from '../../../../../test/browser/testHelpers'
+import {expectStable, testHelpers} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {PerspectiveProvider} from '../../../perspective/PerspectiveProvider'
 import {activeASAPRelease} from '../../../releases/__fixtures__/release.fixture'
@@ -276,5 +276,32 @@ describe('DocumentVersionsFlyoutList', () => {
           .some((r) => r.hasAttribute('aria-current')),
       ).toBe(false)
     })
+  })
+
+  it('keeps the rows 8px from the sides and 4px from the top and bottom of the panel', async () => {
+    await renderFlyoutList()
+    const card = page.getByTestId('document-versions-flyout')
+    await expect.element(card).toBeVisible()
+
+    const geometry = () => {
+      const panel = card.element()
+      const rows = [...panel.querySelectorAll('[role="menuitem"]')]
+      const first = rows[0].getBoundingClientRect()
+      const last = rows[rows.length - 1].getBoundingClientRect()
+      const box = panel.getBoundingClientRect()
+      // From inside the panel's border
+      const border = panel.clientLeft
+      return {
+        left: first.left - box.left - border,
+        top: first.top - box.top - panel.clientTop,
+        bottom: box.bottom - last.bottom - panel.clientTop,
+      }
+    }
+    await expectStable(() => JSON.stringify(geometry()))
+
+    const {left, top, bottom} = geometry()
+    expect(Math.abs(left - 8)).toBeLessThanOrEqual(1)
+    expect(Math.abs(top - 4)).toBeLessThanOrEqual(1)
+    expect(Math.abs(bottom - 4)).toBeLessThanOrEqual(1)
   })
 })
