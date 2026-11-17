@@ -125,7 +125,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   const status = isLoading ? null : (
     <TooltipDelayGroupProvider>
       <Flex alignItems="center" gap={3}>
-        {/* With the flyout on, it is the row's only overlay: who is editing is its first line */}
+        {/* With the flyout on, it is the row's only overlay: who is editing shows on its rows */}
         {presence && presence.length > 0 && (
           <DocumentPreviewPresence presence={presence} tooltip={!versionsLinkChildId} />
         )}

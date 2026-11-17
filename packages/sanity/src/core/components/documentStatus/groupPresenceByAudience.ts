@@ -18,7 +18,7 @@ export function audienceKey(group: DocumentVersionStatusGroup): string {
  * person has open (`DocumentPresence.documentId`); the person goes on the audience row that holds
  * that version. The draft and published ids of the document are always the default audience's,
  * even before that version exists. A version that is in no row (a variant version that was just
- * created, say) puts the person on no row; they are still in the flyout's first line.
+ * created, say) puts the person on no row; the flyout puts them on its footer row.
  *
  * Returns the people per audience key, each person once, in the order they are reported.
  *

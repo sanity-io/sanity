@@ -351,12 +351,52 @@ describe('DocumentVersionsFlyoutList', () => {
       }
     }
 
-    it('says who is editing in the first line, only when someone is', async () => {
+    it('spends no room on avatars when nobody is editing', async () => {
       await renderFlyoutList()
       await expect.element(page.getByRole('menuitem', {name: /German/})).toBeVisible()
-      expect(page.getByTestId('document-versions-flyout-presence').elements()).toHaveLength(0)
-      // Nobody editing: no row spends room on an avatar column
       expect(page.getByTestId('document-versions-flyout-row-presence').elements()).toHaveLength(0)
+    })
+
+    it('shows who is editing once, on the rows, with no first line', async () => {
+      await renderFlyoutList({
+        presence: [person('madison', 'Madison Baker', `versions.german.${GROUP_ID}`)],
+      })
+      await expect.element(page.getByRole('menuitem', {name: /German/})).toBeVisible()
+      expect(page.getByTestId('document-versions-flyout-presence').elements()).toHaveLength(0)
+      expect(page.getByText(/are editing|is editing/).elements()).toHaveLength(0)
+      expect(page.getByTestId('document-versions-flyout-avatars').elements()).toHaveLength(1)
+    })
+
+    it('names the people on the avatars in a tooltip, on the avatars and not the row', async () => {
+      await renderFlyoutList({
+        presence: [
+          person('pedro', 'Pedro Hall', `drafts.${GROUP_ID}`),
+          person('ana', 'Ana Ruiz', `drafts.${GROUP_ID}`),
+        ],
+      })
+      const avatars = page.getByRole('img', {name: 'Pedro Hall and 1 other are editing'})
+      await expect.element(avatars).toBeVisible()
+
+      const tooltip = page.getByText('Pedro Hall and 1 other are editing')
+      // Hovering the row's title shows no tooltip
+      await page
+        .getByRole('menuitem', {name: /Default/})
+        .getByText('Default')
+        .hover()
+      await new Promise((resolve) => setTimeout(resolve, 600))
+      expect(tooltip.elements().some((element) => element.getBoundingClientRect().width > 0)).toBe(
+        false,
+      )
+
+      await avatars.hover()
+      await expect
+        .poll(() => tooltip.elements().some((element) => element.getBoundingClientRect().width > 0))
+        .toBe(true)
+      const shown = tooltip.elements().find((element) => element.getBoundingClientRect().width > 0)!
+      // To the left of the avatars, so it covers no other row
+      expect(shown.getBoundingClientRect().right).toBeLessThanOrEqual(
+        avatars.element().getBoundingClientRect().left + 1,
+      )
     })
 
     it('puts each avatar on the audience being edited, in one column just before the marks', async () => {
@@ -367,11 +407,10 @@ describe('DocumentVersionsFlyoutList', () => {
           person('ana', 'Ana Ruiz', `drafts.${GROUP_ID}`),
         ],
       })
-      const line = page.getByTestId('document-versions-flyout-presence')
-      await expect.element(line).toBeVisible()
-      await expect.element(line).toMatchTextContent('Madison Baker and 2 others are editing')
-      // The first line is not a menu item: the arrow keys move between the rows below it
-      expect(line.element().closest('[role="menuitem"]')).toBeNull()
+      await expect.element(page.getByRole('img', {name: 'Madison Baker is editing'})).toBeVisible()
+      await expect
+        .element(page.getByRole('img', {name: 'Pedro Hall and 1 other are editing'}))
+        .toBeVisible()
 
       const audienceRows = page.getByTestId('document-versions-flyout-row').elements()
       const columns = audienceRows.map((row) =>
@@ -408,8 +447,9 @@ describe('DocumentVersionsFlyoutList', () => {
           person(id, `Person ${id}`, `drafts.${GROUP_ID}`),
         ),
       })
-      const line = page.getByTestId('document-versions-flyout-presence')
-      await expect.element(line).toMatchTextContent('Person a and 3 others are editing')
+      await expect
+        .element(page.getByRole('img', {name: 'Person a and 3 others are editing'}))
+        .toBeVisible()
       const [defaultColumn] = page
         .getByTestId('document-versions-flyout-row')
         .elements()
@@ -530,5 +570,55 @@ describe('DocumentVersionsFlyoutList', () => {
 
     await footer.click()
     expect(onOpenInventory).toHaveBeenCalledTimes(1)
+  })
+
+  it('puts the people on audiences it leaves out on the footer row, so nobody disappears', async () => {
+    const audiences = Array.from({length: 7}, (_, index) => ({
+      ...createMockVariant(`audience-${index}`, index),
+      metadata: {title: `Audience ${index}`},
+    }))
+    const list = audiences.map((audience, index) =>
+      version(`versions.audience${index}.${GROUP_ID}`, audience._id),
+    )
+    ;(useDocumentVersions as Mock<typeof useDocumentVersions>).mockReturnValue({
+      data: list.map((v) => v._id),
+      versions: list,
+      error: null,
+      loading: false,
+    })
+    ;(useAllVariants as Mock<typeof useAllVariants>).mockReturnValue({
+      data: audiences,
+      byId: new Map(audiences.map((audience) => [audience._id, audience])),
+      loading: false,
+      error: undefined,
+    })
+    const editing = (id: string, displayName: string, documentId: string) => ({
+      user: {id, displayName},
+      sessionId: `session-${id}`,
+      documentId,
+      lastActiveAt: '2026-10-22T11:00:00.000Z',
+    })
+    await renderFlyoutList({
+      presence: [
+        editing('listed', 'Listed Person', list[0]._id),
+        editing('six', 'Sixth Person', list[5]._id),
+        editing('seven', 'Seventh Person', list[6]._id),
+        editing('other', 'Other Person', list[6]._id),
+      ],
+    })
+
+    const footer = page.getByTestId('document-versions-flyout-inventory')
+    await expect.element(footer).toMatchTextContent(/See 2 more in the inventory/)
+    const footerAvatars = footer.getByTestId('document-versions-flyout-avatars')
+    await expect.element(footerAvatars).toBeVisible()
+    expect(footerAvatars.element().getAttribute('aria-label')).toBe(
+      'Sixth Person and 2 others are editing',
+    )
+    // At most two avatars, then a count
+    expect(footerAvatars.element().querySelector('[data-ui="AvatarStack"]')!.children).toHaveLength(
+      3,
+    )
+    // The person on a listed row stays on that row only
+    expect(page.getByRole('img', {name: 'Listed Person is editing'}).elements()).toHaveLength(1)
   })
 })
