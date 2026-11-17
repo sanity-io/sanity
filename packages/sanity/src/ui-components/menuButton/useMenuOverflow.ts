@@ -6,6 +6,18 @@ const MENU_OVERFLOWING_ATTRIBUTE = 'data-overflowing'
 /** The width the scroller's scrollbar takes from its contents, 0px for an overlay scrollbar. */
 const MENU_SCROLLBAR_WIDTH_PROPERTY = '--menu-scrollbar-width'
 
+/** The list's height, set to a whole number of rows; read by `menuOverflowScroller`. */
+const MENU_LIST_MAX_HEIGHT_PROPERTY = '--menu-list-max-height'
+
+/**
+ * The most a menu list grows to, in px, wherever the menu opens: it holds as many whole rows as
+ * fit in this height. Groups pinned to the list's ends, and the search field, come on top.
+ */
+export const MENU_LIST_MAX_HEIGHT = 400
+
+/** The space a popover keeps from the viewport edge it grows towards. */
+const VIEWPORT_CLEARANCE = 16
+
 /**
  * The space a menu list keeps between its edge and its rows. The search field above the list
  * keeps another 4px below itself, so a row scrolled to the list's top edge sits 8px below the
@@ -27,7 +39,7 @@ function selectedRow(scroller: HTMLElement): HTMLElement | null {
 /** How long after the menu opens its own focus handling is put right (see `handleFocusIn`). */
 const OPENING_DURATION = 500
 
-/** A row of the list, for lining the top visible row up with the list's edge. */
+/** A row of the list: the unit the list's height is counted in. */
 const ROW_SELECTOR = '[data-ui="MenuItem"]'
 
 function isSticky(element: Element): boolean {
@@ -67,45 +79,155 @@ function updateScrollPadding(scroller: HTMLElement, groups: HTMLElement[]) {
   scroller.style.scrollPaddingBottom = `${bottom + LIST_EDGE_GAP}px`
 }
 
+/** The rows of the list that scroll, in order: not those of a pinned group. */
+function scrollingRows(scroller: HTMLElement, groups: HTMLElement[]): HTMLElement[] {
+  return Array.from(scroller.querySelectorAll<HTMLElement>(ROW_SELECTOR)).filter(
+    (row) => !groups.some((group) => group.contains(row)),
+  )
+}
+
+/** Layout pixels per screen pixel: below 1 while the popover scales in as it opens. */
+function scaleOf(element: HTMLElement): number {
+  return element.offsetHeight > 0
+    ? element.getBoundingClientRect().height / element.offsetHeight || 1
+    : 1
+}
+
 /**
- * Where the list is scrolled when the menu opens. A closed menu stays mounted, so without this
- * the list would reopen wherever it was left, possibly with a row cut in half under the search
- * field. Instead the list starts at the top, and when a row is selected and does not fit there,
- * scrolls just far enough to show it whole above the bottom edge. The scroll then rounds up to the
- * next row, so the top visible row starts at the list's edge, 8px below the search field, rather
- * than being cut in half.
- *
- * Near the end of the list there may be no such row to round to, because the list cannot scroll
- * past its end. The selected row is still shown whole, but the top visible row can then be cut.
+ * An element's top in layout pixels, from the offsets of its positioned ancestors. Unlike a screen
+ * position, it ignores transforms (the popover scales as it opens and as it changes size) and
+ * scrolling, so measurements made mid-animation agree with those made after it.
  */
-function scrollToSelection(scroller: HTMLElement, groups: HTMLElement[]) {
-  scroller.scrollTop = 0
-  const selected = selectedRow(scroller)
-  if (!selected || groups.some((group) => group.contains(selected))) return
+function layoutTop(element: HTMLElement): number {
+  let top = 0
+  for (
+    let node: HTMLElement | null = element;
+    node;
+    node = node.offsetParent as HTMLElement | null
+  ) {
+    top += node.offsetTop + (node === element ? 0 : node.clientTop)
+  }
+  return top
+}
+
+/** An element's top within the scroller's content, which `scrollTop` counts in. */
+function contentTop(scroller: HTMLElement, element: HTMLElement): number {
+  return layoutTop(element) - layoutTop(scroller) - scroller.clientTop
+}
+
+/**
+ * The most the list may be tall: `MENU_LIST_MAX_HEIGHT` of rows plus any pinned groups, and near
+ * the viewport edge the popover grows towards, less, so the popover keeps `VIEWPORT_CLEARANCE`
+ * from that edge (the edge below for a popover under its trigger, above for one that flipped
+ * over it).
+ */
+function heightLimit(scroller: HTMLElement, groups: HTMLElement[]): number {
+  const pinned = groups.reduce((sum, group) => sum + group.offsetHeight, 0)
+  let limit = MENU_LIST_MAX_HEIGHT + pinned
+  // The popover root carries its placement; its `data-ui` names the component that opened it
+  const popover = scroller.closest<HTMLElement>('[data-placement]')
+  // Positions on screen are only exact once the popover has finished scaling in; until then the
+  // cap alone applies, and the height is fitted again when the opening settles
+  if (!popover || Math.abs(scaleOf(popover) - 1) >= 0.005) return limit
+
+  // The popover scales from the edge at its trigger, so that edge's screen position holds
+  const box = popover.getBoundingClientRect()
+  // The rest of the popover: the search field, a footer, the popover's own padding
+  const above = layoutTop(scroller) - layoutTop(popover)
+  const below =
+    layoutTop(popover) + popover.offsetHeight - layoutTop(scroller) - scroller.offsetHeight
+  const besidesList = above + Math.max(0, below)
+  const room = popover.dataset.placement?.startsWith('top')
+    ? box.bottom - VIEWPORT_CLEARANCE
+    : window.innerHeight - VIEWPORT_CLEARANCE - box.top
+  limit = Math.min(limit, room - besidesList)
+  // A popover that constrains its size (`constrainSize`) can be held shorter still, by the
+  // boundary it opens in; the list then fits that, rather than being squeezed mid-row
+  const popoverMaxHeight = parseFloat(getComputedStyle(popover).maxHeight)
+  if (Number.isFinite(popoverMaxHeight)) limit = Math.min(limit, popoverMaxHeight - besidesList)
+  return limit
+}
+
+/**
+ * Sets the list's height to a whole number of rows and, when the menu opens, where it is
+ * scrolled, so the list never shows a row cut in half at either end.
+ *
+ * The list shows a run of whole rows: it starts with the space the list keeps clear at its top
+ * (4px, plus a pinned header), then rows, then the space it keeps clear at its bottom (4px, plus a
+ * pinned footer, or after the last row whatever follows it). As many rows as fit `heightLimit`;
+ * a list with fewer rows than that keeps its natural height.
+ *
+ * When the menu opens (`toSelection`), the run starts at the top. If a row is selected and does
+ * not fit in that run, the run starts at the first row that lets it end on the selected row, and
+ * the list is scrolled there: the top visible row starts 8px below the search field and the
+ * selected row is whole, also when it is the last one. Otherwise the run starts at the top
+ * visible row, so a list that changes size while open (a filter) keeps its scroll.
+ *
+ * Rows of different heights in one list (a section heading between them) make the height differ
+ * from run to run, so the height is fitted to the run that shows.
+ */
+function fitWholeRows(scroller: HTMLElement, groups: HTMLElement[], toSelection: boolean) {
+  const rows = scrollingRows(scroller, groups)
+  const setHeight = (value: string) => {
+    if (scroller.style.getPropertyValue(MENU_LIST_MAX_HEIGHT_PROPERTY) === value) return
+    if (value) scroller.style.setProperty(MENU_LIST_MAX_HEIGHT_PROPERTY, value)
+    else scroller.style.removeProperty(MENU_LIST_MAX_HEIGHT_PROPERTY)
+  }
+  if (rows.length === 0) {
+    setHeight('')
+    if (toSelection) scroller.scrollTop = 0
+    return
+  }
 
   const style = getComputedStyle(scroller)
-  const paddingTop = parseFloat(style.scrollPaddingTop) || 0
-  const paddingBottom = parseFloat(style.scrollPaddingBottom) || 0
-  // The popover scales in while it opens, so screen positions are divided by that scale to get
-  // layout pixels, the unit of `scrollTop`
-  const box = scroller.getBoundingClientRect()
-  const scale = scroller.offsetHeight > 0 ? box.height / scroller.offsetHeight || 1 : 1
-  const origin = box.top + scroller.clientTop * scale
-  const offsetOf = (element: Element) => (element.getBoundingClientRect().top - origin) / scale
-  const view = scroller.clientHeight
-  const rowTop = offsetOf(selected)
-  const rowBottom = rowTop + selected.offsetHeight
+  const clearTop = parseFloat(style.scrollPaddingTop) || 0
+  const clearBottom = parseFloat(style.scrollPaddingBottom) || 0
+  const tops = rows.map((row) => contentTop(scroller, row))
+  const bottoms = rows.map((row, index) => tops[index] + row.offsetHeight)
+  const last = rows.length - 1
+  // What follows the last row: the list's own padding, a pinned footer
+  const end = scroller.scrollHeight - bottoms[last]
+  let limit = heightLimit(scroller, groups)
+  // Whatever holds the list can cap it too (a menu with a max-height of its own). Measured without
+  // the height set here, as the list would be without it, so a list held short is fitted to that
+  const fitted = scroller.style.getPropertyValue(MENU_LIST_MAX_HEIGHT_PROPERTY)
+  const scrollTop = scroller.scrollTop
+  if (fitted) scroller.style.removeProperty(MENU_LIST_MAX_HEIGHT_PROPERTY)
+  if (scroller.scrollHeight > scroller.clientHeight + 0.5) {
+    limit = Math.min(limit, scroller.offsetHeight)
+  }
+  if (fitted) {
+    scroller.style.setProperty(MENU_LIST_MAX_HEIGHT_PROPERTY, fitted)
+    // Taller for a moment, the list may have lost its scroll
+    scroller.scrollTop = scrollTop
+  }
 
-  if (rowBottom <= view - paddingBottom) return
+  /** Where the list is scrolled to for a run starting at row `m`. */
+  const startOf = (m: number) => (m === 0 ? 0 : tops[m] - clearTop)
+  const heightOf = (m: number, k: number) =>
+    bottoms[k] - startOf(m) + (k === last ? end : clearBottom)
+  /** The last row of the longest run from row `m` that fits; at least row `m` itself. */
+  const runEnd = (m: number) => {
+    let k = m
+    while (k < last && heightOf(m, k + 1) <= limit + 0.5) k += 1
+    return k
+  }
 
-  const nearest = rowBottom + paddingBottom - view
-  const latest = Math.min(rowTop - paddingTop, scroller.scrollHeight - view)
-  const rowStarts = Array.from(scroller.querySelectorAll(ROW_SELECTOR))
-    .filter((row) => !groups.some((group) => group.contains(row)))
-    .map((row) => offsetOf(row) - paddingTop)
-    .filter((start) => start >= nearest - 0.5 && start <= latest + 0.5)
+  let m = 0
+  if (toSelection) {
+    const selected = selectedRow(scroller)
+    const j = selected ? rows.indexOf(selected) : -1
+    if (j > 0) while (m < j && runEnd(m) < j) m += 1
+  } else {
+    const found = tops.findIndex(
+      (top, index) => index > 0 && top - clearTop >= scroller.scrollTop - 0.5,
+    )
+    m = scroller.scrollTop <= 0.5 || found === -1 ? 0 : found
+  }
 
-  scroller.scrollTop = rowStarts.length > 0 ? Math.min(...rowStarts) : nearest
+  const k = runEnd(m)
+  setHeight(m === 0 && k === last ? '' : `${Math.round(heightOf(m, k) * 100) / 100}px`)
+  if (toSelection) scroller.scrollTop = startOf(m)
 }
 
 /**
@@ -120,8 +242,10 @@ function scrollToSelection(scroller: HTMLElement, groups: HTMLElement[]) {
  *   than the inset.
  * - Keeps the scroller's `scroll-padding` at the space the list keeps clear at each end, so a row
  *   scrolled into view is never hidden under the search field or a pinned group.
- * - Every time the menu opens, scrolls the list to the top, or to the selected row (see
- *   `scrollToSelection`).
+ * - Keeps the list a whole number of rows tall, up to `MENU_LIST_MAX_HEIGHT` and clear of the
+ *   viewport edge, and every time the menu opens, scrolls it to the top, or to the selected row
+ *   (see `fitWholeRows`). A closed menu stays mounted, so without this the list would reopen
+ *   wherever it was left, possibly with a row cut in half under the search field.
  *
  * The attribute and styles are set on the node directly, not through state, so they never
  * re-render the menu. The scroller and each of its children are observed, so they follow the
@@ -136,14 +260,20 @@ export function useMenuOverflow<T extends HTMLElement = HTMLDivElement>(): (
 
     let shown = false
     let frame: number | undefined
+    let settleTimer: ReturnType<typeof setTimeout> | undefined
     /** Until when, after the menu opens, its own focus handling may still scroll the list. */
     let openingUntil = 0
 
-    const scrollToSelectionNextFrame = () => {
+    /** Fits the list to whole rows and, while the menu is opening, scrolls it to the selection. */
+    const settle = () => {
+      fitWholeRows(element, stickyGroups(element), performance.now() < openingUntil)
+    }
+
+    const settleNextFrame = () => {
       if (frame !== undefined) cancelAnimationFrame(frame)
       frame = requestAnimationFrame(() => {
         frame = undefined
-        scrollToSelection(element, stickyGroups(element))
+        settle()
       })
     }
 
@@ -151,7 +281,7 @@ export function useMenuOverflow<T extends HTMLElement = HTMLDivElement>(): (
     // browser scrolls a focused row it judges out of view to the middle of the list, cutting the
     // top row in half. While the menu is opening, put the list back once that focus lands.
     const handleFocusIn = () => {
-      if (performance.now() < openingUntil) scrollToSelectionNextFrame()
+      if (performance.now() < openingUntil) settleNextFrame()
     }
     // Any key or pointer use of the list ends the opening: from then on, scrolling is the user's
     const endOpening = () => {
@@ -178,12 +308,22 @@ export function useMenuOverflow<T extends HTMLElement = HTMLDivElement>(): (
 
       const wasShown = shown
       shown = element.getClientRects().length > 0
-      if (shown && !wasShown) {
+      if (!shown) return
+
+      if (!wasShown) {
         openingUntil = performance.now() + OPENING_DURATION
-        scrollToSelection(element, groups)
+        fitWholeRows(element, groups, true)
         // Once more after the popover has settled its size, which can still change in the
-        // frame it opens in
-        scrollToSelectionNextFrame()
+        // frame it opens in, and once its opening animation is over, when its position on screen
+        // is final and the room to the viewport edge can be measured
+        settleNextFrame()
+        if (settleTimer !== undefined) clearTimeout(settleTimer)
+        settleTimer = setTimeout(() => {
+          settleTimer = undefined
+          settle()
+        }, OPENING_DURATION / 2)
+      } else {
+        fitWholeRows(element, groups, false)
       }
     }
 
@@ -210,6 +350,7 @@ export function useMenuOverflow<T extends HTMLElement = HTMLDivElement>(): (
 
     return () => {
       if (frame !== undefined) cancelAnimationFrame(frame)
+      if (settleTimer !== undefined) clearTimeout(settleTimer)
       element.removeEventListener('focusin', handleFocusIn)
       element.removeEventListener('keydown', endOpening)
       element.removeEventListener('pointerdown', endOpening)
@@ -221,6 +362,7 @@ export function useMenuOverflow<T extends HTMLElement = HTMLDivElement>(): (
       element.style.removeProperty(MENU_SCROLLBAR_WIDTH_PROPERTY)
       element.style.removeProperty('scroll-padding-top')
       element.style.removeProperty('scroll-padding-bottom')
+      element.style.removeProperty(MENU_LIST_MAX_HEIGHT_PROPERTY)
     }
   }, [])
 }
