@@ -1,7 +1,7 @@
 import {useEditor} from '@portabletext/editor'
 import {defineBehavior, effect, forward, raise} from '@portabletext/editor/behaviors'
-import {BehaviorPlugin} from '@portabletext/editor/plugins'
-import {useEffect, useMemo, useRef} from 'react'
+import {useEffect} from 'react'
+import {useEffectEvent} from 'use-effect-event'
 
 import {type OnPasteFn} from '../../types/inputProps'
 import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
@@ -11,29 +11,25 @@ export function PastePlugin(props: {onPaste?: OnPasteFn}) {
   const {onPaste} = props
   const editor = useEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
-  // Read the callbacks through a ref so a new callback never registers the Behavior again.
-  // A new registration would run after the other plugins.
-  // This ref contains props only, never a browser or Behavior event.
-  const handlersRef = useRef({onPaste, schemaTypes})
+  const handlePaste = useEffectEvent((input: Omit<Parameters<OnPasteFn>[0], 'schemaTypes'>) =>
+    onPaste?.({...input, schemaTypes}),
+  )
+  // Keyed on the editor only: registering again would put this Behavior after the other plugins.
   useEffect(() => {
-    handlersRef.current = {onPaste, schemaTypes}
-  }, [onPaste, schemaTypes])
-  const behaviors = useMemo(() => {
     // Skip the handler when an asynchronous paste resumes the editor's default path.
     const fallbackPastes = new WeakSet<DataTransfer>()
-    return [
-      defineBehavior({
+    const unregister = editor.registerBehavior({
+      behavior: defineBehavior({
         on: 'clipboard.paste',
         guard: ({snapshot, event}) => {
           const dataTransfer = event.originEvent.dataTransfer
           if (fallbackPastes.has(dataTransfer)) {
             return false
           }
-          const result = handlersRef.current.onPaste?.({
+          const result = handlePaste({
             path: snapshot.context.selection?.focus.path ?? [],
             value: snapshot.context.value,
             event: createClipboardEventLike('paste', dataTransfer),
-            schemaTypes: handlersRef.current.schemaTypes,
           })
           return result ? {result} : false
         },
@@ -69,8 +65,10 @@ export function PastePlugin(props: {onPaste?: OnPasteFn}) {
           },
         ],
       }),
-    ]
+    })
+    return unregister
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
   }, [editor])
 
-  return <BehaviorPlugin behaviors={behaviors} />
+  return null
 }

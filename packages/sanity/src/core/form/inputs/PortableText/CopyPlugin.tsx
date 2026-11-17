@@ -1,35 +1,32 @@
+import {useEditor} from '@portabletext/editor'
 import {defineBehavior} from '@portabletext/editor/behaviors'
-import {BehaviorPlugin} from '@portabletext/editor/plugins'
-import {useEffect, useMemo, useRef} from 'react'
+import {useEffect} from 'react'
+import {useEffectEvent} from 'use-effect-event'
 
 import {type OnCopyFn} from '../../types/inputProps'
 import {createClipboardEventLike} from './eventLike'
 
 export function CopyPlugin(props: {onCopy?: OnCopyFn}) {
   const {onCopy} = props
-  // Read the callbacks through a ref so a new callback never registers the Behavior again.
-  // A new registration would run after the other plugins.
-  // This ref contains props only, never a browser or Behavior event.
-  const onCopyRef = useRef(onCopy)
+  const editor = useEditor()
+  const handleCopy = useEffectEvent((event: Parameters<OnCopyFn>[0]) => onCopy?.(event))
+  // Keyed on the editor only: registering again would put this Behavior after the other plugins.
   useEffect(() => {
-    onCopyRef.current = onCopy
-  }, [onCopy])
-  const behaviors = useMemo(
-    () => [
-      // oxlint-disable-next-line react/refs -- defineBehavior stores this guard; the editor calls it outside render
-      defineBehavior({
+    const unregister = editor.registerBehavior({
+      behavior: defineBehavior({
         on: 'clipboard.copy',
         guard: ({event}) => {
-          const result = onCopyRef.current?.(
+          const result = handleCopy(
             createClipboardEventLike('copy', event.originEvent.dataTransfer),
           )
           return result !== undefined
         },
         actions: [],
       }),
-    ],
-    [],
-  )
+    })
+    return unregister
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
+  }, [editor])
 
-  return <BehaviorPlugin behaviors={behaviors} />
+  return null
 }

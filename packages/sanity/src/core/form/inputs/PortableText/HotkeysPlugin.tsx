@@ -1,4 +1,4 @@
-import {usePortableTextEditor} from '@portabletext/editor'
+import {useEditor, usePortableTextEditor} from '@portabletext/editor'
 import {
   type BehaviorEvent,
   defineBehavior,
@@ -6,8 +6,8 @@ import {
   forward,
   raise,
 } from '@portabletext/editor/behaviors'
-import {BehaviorPlugin} from '@portabletext/editor/plugins'
-import {useEffect, useMemo, useRef} from 'react'
+import {useEffect} from 'react'
+import {useEffectEvent} from 'use-effect-event'
 
 import {type HotkeyOptions} from '../../types/inputProps'
 import {createEventLike} from './eventLike'
@@ -98,25 +98,22 @@ function matchesHotkey(hotkey: string, event: KeyboardOriginEvent, keyCode: numb
 
 export function HotkeysPlugin(props: {hotkeys?: HotkeyOptions; onToggleFullscreen: () => void}) {
   const {hotkeys, onToggleFullscreen} = props
+  const editor = useEditor()
   // oxlint-disable-next-line no-deprecated -- the public custom hotkey callback receives this legacy editor
   const portableTextEditor = usePortableTextEditor()
   const editorHotkeys = useHotkeys({
     ...hotkeys,
     custom: {'mod+enter': onToggleFullscreen, ...hotkeys?.custom},
   })
-  // Read the hotkeys through a ref so a schema change never registers the Behavior again.
-  // A new registration would run after paste-link and the other plugins.
-  const hotkeysRef = useRef(editorHotkeys)
+  const getHotkeys = useEffectEvent(() => editorHotkeys)
+  const getPortableTextEditor = useEffectEvent(() => portableTextEditor)
+  // Keyed on the editor only: registering again would put this Behavior after the other plugins.
   useEffect(() => {
-    hotkeysRef.current = editorHotkeys
-  }, [editorHotkeys])
-  const behaviors = useMemo(
-    () => [
-      // oxlint-disable-next-line react/refs -- defineBehavior stores this guard; the editor calls it outside render
-      defineBehavior({
+    const unregister = editor.registerBehavior({
+      behavior: defineBehavior({
         on: 'keyboard.keydown',
         guard: ({event}) => {
-          const current = hotkeysRef.current
+          const current = getHotkeys()
           const keys = new Set([
             ...Object.keys(current.marks ?? {}),
             ...Object.keys(current.custom ?? {}),
@@ -151,15 +148,15 @@ export function HotkeysPlugin(props: {hotkeys?: HotkeyOptions; onToggleFullscree
             })
             // Several spellings can match one key press.
             // Run every matching mark and custom callback, not only the first.
-            const decorators = Object.entries(hotkeysRef.current.marks ?? {})
+            const decorators = Object.entries(getHotkeys().marks ?? {})
               .filter(([key]) => matchesHotkey(key, event.originEvent, keyCode))
               .map(([, decorator]) => decorator)
-            const handlers = Object.entries(hotkeysRef.current.custom ?? {})
+            const handlers = Object.entries(getHotkeys().custom ?? {})
               .filter(([key]) => matchesHotkey(key, event.originEvent, keyCode))
               .map(([, handler]) => handler)
             const runHandlers = () => {
               for (const handler of handlers) {
-                handler(eventLike, portableTextEditor)
+                handler(eventLike, getPortableTextEditor())
               }
             }
             if (decorators.length > 0) {
@@ -174,9 +171,10 @@ export function HotkeysPlugin(props: {hotkeys?: HotkeyOptions; onToggleFullscree
           },
         ],
       }),
-    ],
-    [portableTextEditor],
-  )
+    })
+    return unregister
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
+  }, [editor])
 
-  return <BehaviorPlugin behaviors={behaviors} />
+  return null
 }
