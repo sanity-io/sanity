@@ -2,10 +2,9 @@ import {type ReleaseDocument} from '@sanity/client'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {DocumentsIcon} from '@sanity/icons/Documents'
-import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {UnknownIcon} from '@sanity/icons/Unknown'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Badge, Card} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {type ComponentType, type ReactNode, useCallback, useId, useMemo} from 'react'
@@ -28,7 +27,6 @@ import {readVersionType} from '../../util/versionsUtils'
 import {
   type CrossDatasetReferences,
   type deletionMachine,
-  type IncomingReference,
   type InternalReferences,
 } from '../machines/deletionMachine'
 import {type selectionMachine, type Variant} from '../machines/selectionMachine'
@@ -94,9 +92,8 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
     deletionRef,
     ({context}) => context.hasUnknownDatasetNames,
   )
-  const hasCheckedReferences = useSelector(
-    deletionRef,
-    ({context}) => context.incomingReferencesChecked,
+  const warnIncomingReferences = useSelector(deletionRef, (snapshot) =>
+    snapshot.hasTag('warnIncomingReferences'),
   )
   const isDeletionError = useSelector(deletionRef, (snapshot) =>
     snapshot.matches({active: {deletion: 'error'}}),
@@ -113,15 +110,9 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
   )
 
   const selectedIds = [...selectedIdSet]
-  const description = describeDeletion({
-    selectedIds,
-    variantIds,
-    internalReferences,
-    crossDatasetReferences,
-  })
-  const {includesDefault, deletableIds, blockedIds, strength} = description
+  const description = describeDeletion({selectedIds, variantIds})
+  const {deletableIds, blockedIds} = description
   const isDefaultBlocked = blockedIds.length > 0
-  const hasLinks = description.totalLinkCount > 0
 
   const header = getHeader({t, description, selectedCount: selectedIds.length})
 
@@ -139,6 +130,8 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
         onClick: () => deletionRef.send({type: 'delete.confirm'}),
         disabled: !canConfirmDeletion,
       }
+
+  const totalCount = internalReferences.totalCount + crossDatasetReferences.totalCount
 
   const documentTitle = (
     <DocTitle
@@ -179,7 +172,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
     >
       <VStack gap={4}>
         {error ? (
-          <Card tone="critical" padding={3} radius={2}>
+          <Card tone="critical" padding={3}>
             <Text size={1} as="div" trim={true} tone="critical">
               {t('document-group.delete.error.message')}
             </Text>
@@ -191,81 +184,36 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
           variantsById={variantsById}
         />
         {isDefaultBlocked && (
-          <BlockedNotice
-            id={blockedReasonId}
-            variantCount={description.blockingVariantCount}
-            requiredLinkCount={description.requiredLinkCount}
-          />
+          <BlockedNotice id={blockedReasonId} variantCount={description.blockingVariantCount} />
         )}
-        {!includesDefault && (
-          <Notice
-            tone="neutral"
-            title={t('document-group.delete.no-links.title')}
-            description={t('document-group.delete.no-links.description')}
-            testId="no-links"
-          />
-        )}
-        {includesDefault && hasCheckedReferences && (
+        {/* While the Default is blocked it is not deleted, so the links to it don't apply. */}
+        {warnIncomingReferences && !isDefaultBlocked && (
           <>
-            {description.failsLaterCount > 0 && (
-              <Notice
-                tone="caution"
-                title={t('document-group.delete.fails-later.text', {
-                  count: description.failsLaterCount,
-                })}
-                testId="fails-later"
-              />
-            )}
-            {!isDefaultBlocked && strength === 'partial' && hasLinks && (
-              <Notice
-                tone="caution"
-                title={t('document-group.delete.partial-links.text', {
-                  count: description.totalLinkCount,
-                })}
-                testId="partial-links"
-              />
-            )}
-            {!isDefaultBlocked && strength === 'known' && description.optionalLinkCount > 0 && (
-              <Card padding={3} radius={2} tone="caution" flex="none" data-testid="optional-links">
-                <Text size={1} as="div" trim={true} tone="caution">
-                  <Translate
-                    i18nKey="document-group.delete.optional-links.text"
-                    components={{DocumentTitle}}
-                    componentProps={{documentTitle}}
-                    t={t}
-                    values={{count: description.optionalLinkCount}}
-                  />
-                </Text>
-              </Card>
-            )}
-            {strength === 'unknown' && hasLinks && (
-              <Card padding={3} radius={2} tone="caution" flex="none" data-testid="unknown-links">
-                <Flex>
-                  <Icon
-                    icon={WarningOutlineIcon}
-                    aria-hidden="true"
-                    size={1}
-                    style={{margin: '-0.375rem'}}
-                    tone="caution"
-                  />
-                  <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
-                    <Text size={1} as="div" trim={true} tone="caution">
-                      <Translate
-                        i18nKey="document-group.delete.referring-document-count.text"
-                        components={{DocumentTitle}}
-                        componentProps={{documentTitle}}
-                        t={t}
-                        values={{count: description.totalLinkCount}}
-                      />
-                    </Text>
-                  </Box>
-                </Flex>
-              </Card>
-            )}
+            <Card padding={3} radius={2} tone="caution" flex="none">
+              <Flex>
+                <Icon
+                  icon={WarningOutlineIcon}
+                  aria-hidden="true"
+                  size={1}
+                  style={{margin: '-0.375rem'}}
+                  tone="caution"
+                />
+                <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
+                  <Text size={1} as="div" trim={true} tone="caution">
+                    <Translate
+                      i18nKey="document-group.delete.referring-document-count.text"
+                      components={{DocumentTitle}}
+                      componentProps={{documentTitle}}
+                      t={t}
+                      values={{count: totalCount}}
+                    />
+                  </Text>
+                </Box>
+              </Flex>
+            </Card>
             <References
               documentId={documentId}
               documentTitle={documentTitle}
-              isStrengthKnown={strength !== 'unknown'}
               internalReferences={internalReferences}
               crossDatasetReferences={crossDatasetReferences}
               datasetNames={datasetNames}
@@ -429,15 +377,7 @@ function VersionChipRow({id, variant}: {id: string; variant: Variant | undefined
   )
 }
 
-function BlockedNotice({
-  id,
-  variantCount,
-  requiredLinkCount,
-}: {
-  id: string
-  variantCount: number
-  requiredLinkCount: number
-}) {
+function BlockedNotice({id, variantCount}: {id: string; variantCount: number}) {
   const {t} = useTranslation(studioLocaleNamespace)
   return (
     <Card padding={3} radius={2} tone="critical" flex="none" data-testid="default-blocked" id={id}>
@@ -454,22 +394,12 @@ function BlockedNotice({
             <Text size={1} as="div" trim={true} weight="medium" tone="critical">
               {t('document-group.delete.blocked.heading')}
             </Text>
-            {/* Variants first: they are the reason that can always be resolved from here. */}
             <VStack as="ul" gap={3} style={{paddingInlineStart: 0, listStyle: 'none', margin: 0}}>
-              {variantCount > 0 && (
-                <li data-testid="blocked-by-variants">
-                  <Text size={1} as="div" trim={true}>
-                    {t('document-group.delete.blocked.variants-reason', {count: variantCount})}
-                  </Text>
-                </li>
-              )}
-              {requiredLinkCount > 0 && (
-                <li data-testid="blocked-by-links">
-                  <Text size={1} as="div" trim={true}>
-                    {t('document-group.delete.blocked.links-reason', {count: requiredLinkCount})}
-                  </Text>
-                </li>
-              )}
+              <li data-testid="blocked-by-variants">
+                <Text size={1} as="div" trim={true}>
+                  {t('document-group.delete.blocked.variants-reason', {count: variantCount})}
+                </Text>
+              </li>
             </VStack>
           </VStack>
         </Box>
@@ -478,65 +408,9 @@ function BlockedNotice({
   )
 }
 
-function Notice({
-  tone,
-  title,
-  description,
-  testId,
-}: {
-  tone: 'neutral' | 'caution' | 'critical'
-  title: string
-  description?: string
-  testId?: string
-}) {
-  return (
-    <Card padding={3} radius={2} tone={tone} flex="none" data-testid={testId}>
-      <Flex>
-        <Icon
-          icon={tone === 'neutral' ? InfoOutlineIcon : WarningOutlineIcon}
-          aria-hidden="true"
-          size={1}
-          style={{margin: '-0.375rem'}}
-          tone={tone === 'neutral' ? undefined : tone}
-        />
-        <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
-          <VStack gap={3}>
-            <Text
-              size={1}
-              as="div"
-              trim={true}
-              weight="medium"
-              tone={tone === 'neutral' ? undefined : tone}
-            >
-              {title}
-            </Text>
-            {description ? (
-              <Text size={1} as="div" trim={true} muted>
-                {description}
-              </Text>
-            ) : null}
-          </VStack>
-        </Box>
-      </Flex>
-    </Card>
-  )
-}
-
-/**
- * Required references first, so the ones that block the delete lead the list, then the release
- * copies that make a release fail later, then the optional ones.
- */
-function sortRequiredFirst(references: IncomingReference[]): IncomingReference[] {
-  const rank = (reference: IncomingReference) =>
-    reference.required === true ? 0 : reference.failsLater === true ? 1 : 2
-  return [...references].sort((a, b) => rank(a) - rank(b))
-}
-
 interface ReferencesProps {
   documentId: string
   documentTitle: ReactNode
-  /** Whether each link's strength was read, so the list can tag it. */
-  isStrengthKnown: boolean
   internalReferences: InternalReferences
   crossDatasetReferences: CrossDatasetReferences
   datasetNames: string[]
@@ -548,7 +422,6 @@ interface ReferencesProps {
 const References: ComponentType<ReferencesProps> = ({
   documentId,
   documentTitle,
-  isStrengthKnown,
   internalReferences,
   crossDatasetReferences,
   datasetNames,
@@ -561,27 +434,10 @@ const References: ComponentType<ReferencesProps> = ({
   const {t} = useTranslation(studioLocaleNamespace)
 
   const renderPreviewItem = useCallback(
-    (item: IncomingReference) => {
+    (item: {_id: string; _type: string}) => {
       const type = schema.get(item._type)
       if (type) {
-        const preview = (
-          <ReferencePreviewLink
-            type={type}
-            value={{_id: item._id, _type: item._type}}
-            onClick={onReferenceLinkClick}
-          />
-        )
-        if (typeof item.required !== 'boolean') return preview
-        return (
-          <Flex alignItems="center" gap={2}>
-            <Box flexBasis="0%" flexGrow={1}>
-              {preview}
-            </Box>
-            <Box paddingRight={2} flexShrink={0}>
-              <ReferenceTag reference={item} />
-            </Box>
-          </Flex>
-        )
+        return <ReferencePreviewLink type={type} value={item} onClick={onReferenceLinkClick} />
       }
 
       return (
@@ -623,13 +479,7 @@ const References: ComponentType<ReferencesProps> = ({
       <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
         <Text size={1} as="div" trim={true}>
           <Translate
-            // Main's descriptor ("You may not be able to delete …") only stays while the
-            // strength of the links is unknown: otherwise the notices above say what happens.
-            i18nKey={
-              isStrengthKnown
-                ? 'document-group.delete.linked-from.text'
-                : 'document-group.delete.referring-documents-descriptor.text'
-            }
+            i18nKey="document-group.delete.referring-documents-descriptor.text"
             t={t}
             components={{DocumentTitle}}
             componentProps={{documentTitle}}
@@ -640,7 +490,7 @@ const References: ComponentType<ReferencesProps> = ({
         <Flex flexDirection="column">
           {internalReferences.totalCount > 0 && (
             <VStack as="ul" gap={2} data-testid="internal-references">
-              {sortRequiredFirst(internalReferences.references).map((item) => (
+              {internalReferences.references.map((item) => (
                 <Box key={item._id} as="li">
                   {renderPreviewItem(item)}
                 </Box>
@@ -783,20 +633,6 @@ const References: ComponentType<ReferencesProps> = ({
         </Flex>
       </Card>
     </>
-  )
-}
-
-function ReferenceTag({reference}: {reference: IncomingReference}) {
-  const {t} = useTranslation(studioLocaleNamespace)
-  const [tone, key] = reference.required
-    ? (['critical', 'document-group.delete.reference-tag.required'] as const)
-    : reference.failsLater
-      ? (['caution', 'document-group.delete.reference-tag.fails-later'] as const)
-      : (['default', 'document-group.delete.reference-tag.optional'] as const)
-  return (
-    <Badge radius={2} tone={tone} data-testid={`reference-tag-${reference._id}`}>
-      {t(key)}
-    </Badge>
   )
 }
 

@@ -72,51 +72,12 @@ function start(
   return {actor, parent, deleted, emitted}
 }
 
-const REQUIRED: IncomingReference = {_id: 'homepage', _type: 'page', required: true}
-const OPTIONAL: IncomingReference = {_id: 'gift-guide', _type: 'page', required: false}
+const LINK: IncomingReference = {_id: 'homepage', _type: 'page'}
+const DE_DE = '_.variants.de-DE'
 
 describe('deletionMachine', () => {
-  it('blocks deleting the published Default while required links point at it', async () => {
-    const {actor, parent} = start([REQUIRED, OPTIONAL], [PUBLISHED_ID])
-    await waitFor(actor, (snapshot) => snapshot.context.incomingReferencesChecked)
-
-    expect(actor.getSnapshot().can({type: 'delete.confirm'})).toBe(false)
-    // Only the Default is selected, so there is nothing else to delete instead.
-    expect(actor.getSnapshot().can({type: 'delete.confirmExcludingPublished'})).toBe(false)
-    parent.stop()
-  })
-
-  it('deletes the other selected versions and leaves the blocked Default', async () => {
-    const {actor, parent, deleted} = start([REQUIRED], [PUBLISHED_ID, VARIANT_DRAFT_ID, DRAFT_ID])
-    await waitFor(actor, (snapshot) => snapshot.context.incomingReferencesChecked)
-
-    expect(actor.getSnapshot().can({type: 'delete.confirm'})).toBe(false)
-    actor.send({type: 'delete.confirmExcludingPublished'})
-    await waitFor(actor, (snapshot) => snapshot.matches('idle'))
-
-    expect(deleted).toEqual([[VARIANT_DRAFT_ID, DRAFT_ID]])
-    parent.stop()
-  })
-
-  it('keeps the Default blocked when deleting the others fails and is retried', async () => {
-    const {actor, parent, deleted} = start([REQUIRED], [PUBLISHED_ID, VARIANT_DRAFT_ID], {
-      failFirstDelete: true,
-    })
-    await waitFor(actor, (snapshot) => snapshot.context.incomingReferencesChecked)
-
-    actor.send({type: 'delete.confirmExcludingPublished'})
-    await waitFor(actor, (snapshot) => snapshot.matches({active: {deletion: 'error'}}))
-
-    expect(actor.getSnapshot().can({type: 'delete.confirm'})).toBe(false)
-    actor.send({type: 'delete.confirmExcludingPublished'})
-    await waitFor(actor, (snapshot) => snapshot.matches('idle'))
-
-    expect(deleted).toEqual([[VARIANT_DRAFT_ID], [VARIANT_DRAFT_ID]])
-    parent.stop()
-  })
-
-  it('allows deleting the Default when only optional links point at it', async () => {
-    const {actor, parent, deleted} = start([OPTIONAL], [PUBLISHED_ID])
+  it('leaves links to the Content Lake: the Default can be confirmed once they are read', async () => {
+    const {actor, parent, deleted} = start([LINK], [PUBLISHED_ID])
     await waitFor(actor, (snapshot) => snapshot.context.incomingReferencesChecked)
 
     expect(actor.getSnapshot().can({type: 'delete.confirm'})).toBe(true)
@@ -128,47 +89,50 @@ describe('deletionMachine', () => {
     parent.stop()
   })
 
-  it('allows deleting the Default when the strength of its links is unknown, as before', async () => {
-    const {actor, parent} = start([{_id: 'homepage', _type: 'page'}], [PUBLISHED_ID])
+  it('never blocks deleting versions other than the Default', () => {
+    const {actor, parent} = start([LINK], [VARIANT_DRAFT_ID], {variantIds: [DE_DE]})
+
+    expect(actor.getSnapshot().can({type: 'delete.confirm'})).toBe(true)
+    parent.stop()
+  })
+
+  it('blocks deleting the published Default while variants exist', async () => {
+    const {actor, parent} = start([], [PUBLISHED_ID], {variantIds: [DE_DE]})
     await waitFor(actor, (snapshot) => snapshot.context.incomingReferencesChecked)
 
-    expect(actor.getSnapshot().can({type: 'delete.confirm'})).toBe(true)
-    parent.stop()
-  })
-
-  it('never blocks deleting versions other than the Default', async () => {
-    const {actor, parent} = start([REQUIRED], [VARIANT_DRAFT_ID])
-
-    expect(actor.getSnapshot().can({type: 'delete.confirm'})).toBe(true)
-    parent.stop()
-  })
-
-  it('blocks deleting the published Default while variants exist, whatever links it has', () => {
-    const {actor, parent} = start([OPTIONAL], [PUBLISHED_ID], {variantIds: ['_.variants.de-DE']})
-
     expect(actor.getSnapshot().can({type: 'delete.confirm'})).toBe(false)
+    // Only the Default is selected, so there is nothing else to delete instead.
     expect(actor.getSnapshot().can({type: 'delete.confirmExcludingPublished'})).toBe(false)
     parent.stop()
   })
 
-  it('deletes the variant versions and leaves the Default while variants exist', async () => {
-    const {actor, parent, deleted} = start([], [PUBLISHED_ID, VARIANT_DRAFT_ID], {
-      variantIds: ['_.variants.de-DE'],
+  it('deletes the other selected versions and leaves the Default while variants exist', async () => {
+    const {actor, parent, deleted} = start([], [PUBLISHED_ID, VARIANT_DRAFT_ID, DRAFT_ID], {
+      variantIds: [DE_DE],
     })
 
     expect(actor.getSnapshot().can({type: 'delete.confirm'})).toBe(false)
     actor.send({type: 'delete.confirmExcludingPublished'})
     await waitFor(actor, (snapshot) => snapshot.matches('idle'))
 
-    expect(deleted).toEqual([[VARIANT_DRAFT_ID]])
+    expect(deleted).toEqual([[VARIANT_DRAFT_ID, DRAFT_ID]])
     parent.stop()
   })
 
-  it('follows the link rules for the Default once no variants exist', async () => {
-    const {actor, parent} = start([OPTIONAL], [PUBLISHED_ID], {variantIds: []})
-    await waitFor(actor, (snapshot) => snapshot.context.incomingReferencesChecked)
+  it('keeps the Default blocked when deleting the others fails and is retried', async () => {
+    const {actor, parent, deleted} = start([], [PUBLISHED_ID, VARIANT_DRAFT_ID], {
+      failFirstDelete: true,
+      variantIds: [DE_DE],
+    })
 
-    expect(actor.getSnapshot().can({type: 'delete.confirm'})).toBe(true)
+    actor.send({type: 'delete.confirmExcludingPublished'})
+    await waitFor(actor, (snapshot) => snapshot.matches({active: {deletion: 'error'}}))
+
+    expect(actor.getSnapshot().can({type: 'delete.confirm'})).toBe(false)
+    actor.send({type: 'delete.confirmExcludingPublished'})
+    await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+
+    expect(deleted).toEqual([[VARIANT_DRAFT_ID], [VARIANT_DRAFT_ID]])
     parent.stop()
   })
 
@@ -186,12 +150,12 @@ describe('deletionMachine', () => {
   })
 
   it('does not report an empty document while versions remain', async () => {
-    const {actor, parent, emitted} = start([REQUIRED], [PUBLISHED_ID, DRAFT_ID], {
-      versionIds: [PUBLISHED_ID, DRAFT_ID],
+    const {actor, parent, emitted} = start([], [PUBLISHED_ID, VARIANT_DRAFT_ID], {
+      versionIds: [PUBLISHED_ID, VARIANT_DRAFT_ID],
+      variantIds: [DE_DE],
     })
-    await waitFor(actor, (snapshot) => snapshot.context.incomingReferencesChecked)
 
-    // The Default is blocked, so only the draft goes and the Default remains.
+    // The Default is blocked by the variant, so only the variant goes and the Default remains.
     actor.send({type: 'delete.confirmExcludingPublished'})
     await waitFor(actor, (snapshot) => snapshot.matches('idle'))
 

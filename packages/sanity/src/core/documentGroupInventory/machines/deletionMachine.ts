@@ -10,26 +10,6 @@ import {isPublishedId} from '../../util/draftUtils'
 export interface IncomingReference {
   _id: string
   _type: string
-  /**
-   * Whether the referring document holds a strong (required) reference. Content Lake refuses to
-   * delete the published document while one exists. `undefined` when the strength is unknown.
-   * A strong reference stored only in a release copy is not required (see `failsLater`).
-   */
-  required?: boolean
-  /**
-   * Whether the referring document is a release copy with a strong reference. The Content Lake
-   * allows the delete, and the release fails when it is published.
-   */
-  failsLater?: boolean
-}
-
-/**
- * Whether any of the references is known to be strong.
- *
- * @internal
- */
-function hasRequiredReferences(internalReferences: InternalReferences | undefined): boolean {
-  return internalReferences?.references.some((reference) => reference.required === true) ?? false
 }
 
 /**
@@ -99,7 +79,7 @@ interface DeletionContext {
 type DeletionEvents =
   | {type: 'delete.request'}
   | {type: 'delete.confirm'}
-  /** Deletes the selected versions except the published document, which required links block. */
+  /** Deletes the selected versions except the published document, which variants block. */
   | {type: 'delete.confirmExcludingPublished'}
   | {type: 'delete.cancel'}
   | {type: 'selection.changed'; selectedIds: Set<string>}
@@ -133,14 +113,9 @@ export const deletionMachine = setup({
     selectionExcludesPublished: ({context}) => !context.ids.some(isPublishedId),
     hasCheckedIncomingReferences: ({context}) => context.incomingReferencesChecked,
     canRequestDeletion: and(['hasSelection', 'isMutable']),
-    publishedBlockedByRequiredReferences: ({context}) =>
-      context.ids.some(isPublishedId) && hasRequiredReferences(context.internalReferences),
-    publishedBlockedByVariants: ({context}) =>
+    /** The published Default can't be deleted while the document has variants: they need it. */
+    publishedBlocked: ({context}) =>
       context.ids.some(isPublishedId) && context.variantIds.length > 0,
-    publishedBlocked: or([
-      'publishedBlockedByVariants',
-      and(['hasCheckedIncomingReferences', 'publishedBlockedByRequiredReferences']),
-    ]),
     hasUnpublishedSelection: ({context}) => context.ids.some((id) => !isPublishedId(id)),
     canConfirmDeletion: and([
       'hasSelection',
