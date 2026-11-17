@@ -24,12 +24,15 @@ configure({disableAutoSnapshot: true})
 function SearchMenuHarness({
   offsetTop = 0,
   placement = 'bottom-start',
+  pinnedFooter = false,
   rows = 30,
   selected,
 }: {
   offsetTop?: number
   /** The side the menu opens on; it is kept there, so the tests choose which edge it meets. */
   placement?: 'bottom-start' | 'top-start'
+  /** A group pinned to the list's bottom, as the navbar perspective menu's footer. */
+  pinnedFooter?: boolean
   rows?: number
   selected?: string
 }) {
@@ -66,6 +69,20 @@ function SearchMenuHarness({
                           text={row}
                         />
                       ))}
+                      {pinnedFooter ? (
+                        <Flex
+                          data-testid="search-menu-footer"
+                          flexDirection="column"
+                          style={{
+                            position: 'sticky',
+                            bottom: 0,
+                            zIndex: 2,
+                            background: 'var(--card-bg-color)',
+                          }}
+                        >
+                          <MenuItem text="Pinned action" />
+                        </Flex>
+                      ) : null}
                     </Flex>
                   </Flex>
                 </Flex>
@@ -91,16 +108,25 @@ function geometry() {
   const menu = page.getByTestId('search-menu').element()
   const field = rect(menu.querySelector('[data-ui="TextInput"]')!)
   const box = rect(list())
-  const rows = [...menu.querySelectorAll('[data-ui="MenuItem"]')].map(rect)
+  const footer = menu.querySelector('[data-testid="search-menu-footer"]')
+  const rows = [...menu.querySelectorAll('[data-ui="MenuItem"]')]
+    .filter((row) => !footer?.contains(row))
+    .map(rect)
+  // The rows' visible area ends at a pinned footer
+  const rowsBottom = footer ? rect(footer).top : box.bottom
   // Rows any part of which shows in the list
-  const visible = rows.filter((row) => row.bottom > box.top + 0.5 && row.top < box.bottom - 0.5)
+  const visible = rows.filter((row) => row.bottom > box.top + 0.5 && row.top < rowsBottom - 0.5)
+  const lastVisible = visible[visible.length - 1]
   return {
     fieldBottom: field.bottom,
     listTop: box.top,
     listBottom: box.bottom,
     listHeight: box.height,
+    rowsBottom,
     firstVisibleTop: visible[0].top,
-    lastVisibleBottom: visible[visible.length - 1].bottom,
+    lastVisibleTop: lastVisible.top,
+    lastVisibleBottom: lastVisible.bottom,
+    lastVisibleHeight: lastVisible.height,
     visibleRows: visible.length,
     popoverTop: rect(menu.closest('[data-placement]')!).top,
     popoverBottom: rect(menu.closest('[data-placement]')!).bottom,
@@ -126,26 +152,58 @@ function scrollToHalfRow() {
   list().scrollTop = row.height * 3 + row.height / 2
 }
 
-/** The list ends 4px (its edge gap) below a row: no row is cut at the bottom. */
-function expectWholeRows(geo: ReturnType<typeof geometry>) {
-  expect(Math.abs(geo.listBottom - geo.lastVisibleBottom - 4)).toBeLessThanOrEqual(1)
+/** The first visible row starts 8px below the search field: no row is cut at the top. */
+function expectWholeTop(geo: ReturnType<typeof geometry>) {
   expect(Math.abs(geo.firstVisibleTop - (geo.fieldBottom + 8))).toBeLessThanOrEqual(1)
 }
 
-describe('useMenuOverflow: a whole number of rows', () => {
-  it('caps a long list at the most whole rows that fit in 400px', async () => {
+/** The list ends 4px (its edge gap) below a row: no row is cut at the bottom. */
+function expectWholeRows(geo: ReturnType<typeof geometry>) {
+  expect(Math.abs(geo.listBottom - geo.lastVisibleBottom - 4)).toBeLessThanOrEqual(1)
+  expectWholeTop(geo)
+}
+
+/** The rows' visible area ends half way through a row: the next row peeks, so the list scrolls. */
+function expectHalfRow(geo: ReturnType<typeof geometry>) {
+  expect(
+    Math.abs(geo.rowsBottom - geo.lastVisibleTop - geo.lastVisibleHeight / 2),
+  ).toBeLessThanOrEqual(1)
+  expectWholeTop(geo)
+}
+
+/** The fades on the list: the opacity of its top (`::before`) and bottom (`::after`) fade. */
+function fades() {
+  return {
+    top: getComputedStyle(list(), '::before').opacity,
+    bottom: getComputedStyle(list(), '::after').opacity,
+  }
+}
+
+describe('useMenuOverflow: whole rows and half the next one', () => {
+  it('caps a long list at the most whole rows, plus half a row, that fit in 400px', async () => {
     void render(<SearchMenuHarness />)
     await open()
 
     const geo = geometry()
-    expectWholeRows(geo)
+    expectHalfRow(geo)
     const pitch = rect(list().querySelectorAll('[data-ui="MenuItem"]')[1]).top - geo.firstVisibleTop
     expect(geo.listHeight).toBeLessThanOrEqual(MENU_LIST_MAX_HEIGHT)
     // One more row would not fit
     expect(geo.listHeight + pitch).toBeGreaterThan(MENU_LIST_MAX_HEIGHT)
-    // 4px + 10 rows of 33.5px with 4px between them + 4px
-    expect(geo.visibleRows).toBe(10)
-    expect(Math.abs(geo.listHeight - 379)).toBeLessThanOrEqual(1)
+    // 4px + 10 rows of 33.5px with 4px between them, 4px + half of the 11th row (16.75px)
+    expect(geo.visibleRows).toBe(11)
+    expect(Math.abs(geo.listHeight - 395.75)).toBeLessThanOrEqual(1)
+  })
+
+  it('drops a whole row when the half row would not fit otherwise', async () => {
+    // 10 rows end at 379px, so 11 rows (416.5px) do not fit, but 10 rows and half the 11th do
+    void render(<SearchMenuHarness rows={11} />)
+    await open()
+
+    const geo = geometry()
+    expectHalfRow(geo)
+    expect(geo.visibleRows).toBe(11)
+    expect(geo.listHeight).toBeLessThanOrEqual(MENU_LIST_MAX_HEIGHT)
   })
 
   it('keeps a short list at its natural height', async () => {
@@ -156,6 +214,7 @@ describe('useMenuOverflow: a whole number of rows', () => {
     expect(list().scrollHeight).toBe(list().clientHeight)
     expect(geo.visibleRows).toBe(3)
     expectWholeRows(geo)
+    expect(fades()).toEqual({top: '0', bottom: '0'})
   })
 
   it('shows fewer whole rows near the viewport bottom, 16px or more clear of it', async () => {
@@ -163,9 +222,9 @@ describe('useMenuOverflow: a whole number of rows', () => {
     await open()
 
     const geo = geometry()
-    expect(geo.visibleRows).toBeGreaterThan(0)
-    expect(geo.visibleRows).toBeLessThan(10)
-    expectWholeRows(geo)
+    expect(geo.visibleRows).toBeGreaterThan(1)
+    expect(geo.visibleRows).toBeLessThan(11)
+    expectHalfRow(geo)
     expect(window.innerHeight - geo.popoverBottom).toBeGreaterThanOrEqual(16 - 0.5)
   })
 
@@ -174,9 +233,9 @@ describe('useMenuOverflow: a whole number of rows', () => {
     await open()
 
     const geo = geometry()
-    expect(geo.visibleRows).toBeGreaterThan(0)
-    expect(geo.visibleRows).toBeLessThan(10)
-    expectWholeRows(geo)
+    expect(geo.visibleRows).toBeGreaterThan(1)
+    expect(geo.visibleRows).toBeLessThan(11)
+    expectHalfRow(geo)
     expect(geo.popoverTop).toBeGreaterThanOrEqual(16 - 0.5)
   })
 })
@@ -190,25 +249,37 @@ describe('useMenuOverflow: where a reopened menu is scrolled', () => {
     await open()
 
     expect(list().scrollTop).toBe(0)
-    expectWholeRows(geometry())
+    expectHalfRow(geometry())
   })
 
-  it.each(['Row 15', 'Row 30'])(
-    'shows %s, when it is selected, whole with no row cut at either end',
-    async (selected) => {
-      void render(<SearchMenuHarness selected={selected} />)
-      await open()
-      scrollToHalfRow()
-      await close()
-      await open()
+  it('shows a selected row in the middle whole, with half the next row below it', async () => {
+    void render(<SearchMenuHarness selected="Row 15" />)
+    await open()
+    scrollToHalfRow()
+    await close()
+    await open()
 
-      const geo = geometry()
-      expectWholeRows(geo)
-      const row = rect(page.getByRole('menuitem', {name: selected, exact: true}).element())
-      expect(row.top).toBeGreaterThanOrEqual(geo.fieldBottom + 8 - 1)
-      expect(row.bottom).toBeLessThanOrEqual(geo.listBottom - 4 + 1)
-    },
-  )
+    const geo = geometry()
+    expectHalfRow(geo)
+    const row = rect(page.getByRole('menuitem', {name: 'Row 15', exact: true}).element())
+    expect(row.top).toBeGreaterThanOrEqual(geo.fieldBottom + 8 - 1)
+    // Whole: the half row is the one after it
+    expect(row.bottom).toBeLessThanOrEqual(geo.lastVisibleTop + 0.5)
+  })
+
+  it('shows the last row, when it is selected, whole with no row cut at either end', async () => {
+    void render(<SearchMenuHarness selected="Row 30" />)
+    await open()
+    scrollToHalfRow()
+    await close()
+    await open()
+
+    const geo = geometry()
+    expectWholeRows(geo)
+    const row = rect(page.getByRole('menuitem', {name: 'Row 30', exact: true}).element())
+    expect(row.top).toBeGreaterThanOrEqual(geo.fieldBottom + 8 - 1)
+    expect(row.bottom).toBeLessThanOrEqual(geo.listBottom - 4 + 1)
+  })
 
   it('pads the list so a row scrolled into view stops 8px below the search field', async () => {
     void render(<SearchMenuHarness />)
@@ -222,5 +293,54 @@ describe('useMenuOverflow: where a reopened menu is scrolled', () => {
     const {fieldBottom} = geometry()
     const row = rect(page.getByRole('menuitem', {name: 'Row 2', exact: true}).element())
     expect(Math.abs(row.top - (fieldBottom + 8))).toBeLessThanOrEqual(1)
+  })
+})
+
+describe('useMenuOverflow: the fades at an edge with rows beyond it', () => {
+  it('fades the bottom at the top of a long list, both edges in the middle, the top at the end', async () => {
+    void render(<SearchMenuHarness />)
+    await open()
+
+    expect(list()).toHaveAttribute('data-scroll-down')
+    expect(list()).not.toHaveAttribute('data-scroll-up')
+    expect(fades()).toEqual({top: '0', bottom: '1'})
+    const after = getComputedStyle(list(), '::after')
+    expect(after.height).toBe('24px')
+    expect(after.pointerEvents).toBe('none')
+    expect(after.position).toBe('sticky')
+    expect(after.backgroundImage).toMatch(/^linear-gradient\(/)
+
+    list().scrollTop = 100
+    await expect.poll(() => list().hasAttribute('data-scroll-up')).toBe(true)
+    expect(list()).toHaveAttribute('data-scroll-down')
+    expect(fades()).toEqual({top: '1', bottom: '1'})
+
+    list().scrollTop = list().scrollHeight
+    await expect.poll(() => list().hasAttribute('data-scroll-down')).toBe(false)
+    expect(list()).toHaveAttribute('data-scroll-up')
+    expect(fades()).toEqual({top: '1', bottom: '0'})
+  })
+
+  it('takes no room in the list', async () => {
+    void render(<SearchMenuHarness rows={3} />)
+    await open()
+
+    // 4px + 3 rows of 33.5px with 4px between them + 4px, as without the fades
+    expect(Math.abs(list().scrollHeight - 116.5)).toBeLessThanOrEqual(1)
+  })
+
+  it('sits above a pinned footer, not over it, with half a row peeking above the footer', async () => {
+    void render(<SearchMenuHarness pinnedFooter />)
+    await open()
+
+    const geo = geometry()
+    expectHalfRow(geo)
+    const footer = page.getByTestId('search-menu-footer').element() as HTMLElement
+    expect(Math.abs(rect(footer).bottom - geo.listBottom)).toBeLessThanOrEqual(1)
+    expect(fades().bottom).toBe('1')
+    // Stuck as far up from the list's bottom as the footer is tall
+    expect(
+      Math.abs(parseFloat(getComputedStyle(list(), '::after').bottom) - footer.offsetHeight),
+    ).toBeLessThanOrEqual(0.5)
   })
 })
