@@ -75,7 +75,7 @@ Every row is labelled `nav:<step label> / <metric>`, e.g. `nav:document-open / s
 
 `pnpm bench listener-stall` checks the Studio's `Studio Listener Stall Detected` telemetry over one HTTP/2 connection capped at 100 concurrent streams, the API's real cap, so the classifier's budget of 80 applies unchanged. It runs against the customization build (`pnpm --filter bench build:customizations`), which holds the `listenerStall` workspace and its listener tool, and starts the mock with `maxConcurrentStreams: 100`. The checks pass or fail; nothing is reported or stored.
 
-- **too-many-tabs:** desk tabs (`singleString`, 9 listeners each) open until the listeners outnumber the streams, about 12 tabs. One event per stalled tab, kind `too-many-tabs`, with `listenersAllTabs` equal to the presence locks' sum and `knownStudioTabs` equal to the open tabs.
+- **too-many-tabs:** desk tabs (`singleString`) open until the listeners outnumber the streams, up to 24 tabs. One event per stalled tab, kind `too-many-tabs`, with `listenersAllTabs` equal to the presence locks' sum and `knownStudioTabs` equal to the open tabs.
 - **this-tab-over-limit** and **second-occurrence:** one listener tool tab opens 105 listeners, closes them, and opens them again. Two events, the second with `stallOccurrence: 2`.
 - **this-tab-heavy:** a desk tab plus a listener tool tab with 95 listeners.
 - **single-default-tab:** one desk tab never sends an event with a listener-limit kind.
