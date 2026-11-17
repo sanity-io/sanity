@@ -296,6 +296,7 @@ import type {
   createHistoryStore,
   createHookFromObservableFactory,
   CreateIfNotExistsMutation,
+  createKeyValueStore,
   CreateLiveDocumentEvent,
   createMockAuthStore,
   CreateMutation,
@@ -985,6 +986,8 @@ import type {
   joinPath,
   KeyedObject,
   KeyedSegment,
+  KeyValueStore,
+  KeyValueStoreValue,
   LatencyReportEvent,
   LATEST,
   LayoutProps,
@@ -1702,6 +1705,7 @@ import type {
   useInStudioFeedback,
   UseInStudioFeedbackReturn,
   useIsReleaseActive,
+  useKeyValueStore,
   useListFormat,
   UseListFormatOptions,
   useLoadable,
@@ -2766,6 +2770,9 @@ describe('sanity', () => {
   })
   test('CreateIfNotExistsMutation', () => {
     expectTypeOf<CreateIfNotExistsMutation>().toBeObject()
+  })
+  test('createKeyValueStore', () => {
+    expectTypeOf<typeof createKeyValueStore>().toBeFunction()
   })
   test('CreateLiveDocumentEvent', () => {
     expectTypeOf<CreateLiveDocumentEvent>().toBeObject()
@@ -4843,6 +4850,12 @@ describe('sanity', () => {
   })
   test('KeyedSegment', () => {
     expectTypeOf<KeyedSegment>().not.toBeNever()
+  })
+  test('KeyValueStore', () => {
+    expectTypeOf<KeyValueStore>().toBeObject()
+  })
+  test('KeyValueStoreValue', () => {
+    expectTypeOf<KeyValueStoreValue>().not.toBeNever()
   })
   test('LatencyReportEvent', () => {
     expectTypeOf<LatencyReportEvent>().toBeObject()
@@ -7004,6 +7017,9 @@ describe('sanity', () => {
   })
   test('useIsReleaseActive', () => {
     expectTypeOf<typeof useIsReleaseActive>().not.toBeNever()
+  })
+  test('useKeyValueStore', () => {
+    expectTypeOf<typeof useKeyValueStore>().toBeFunction()
   })
   test('useListFormat', () => {
     expectTypeOf<typeof useListFormat>().toBeFunction()
