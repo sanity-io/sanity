@@ -702,6 +702,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.flyout.audience.lead.update-waiting': 'Update waiting in {{releaseTitle}}',
   /** An audience row in the versions flyout, lead: a scheduled release with this audience in it has gone out. `date` is a relative time ("2 hr ago") */
   'document-group.flyout.audience.lead.updated': 'Updated {{date}}',
+  /** Tooltip and accessible name of the avatars on a row of the versions flyout: one person is editing that audience */
+  'document-group.flyout.avatars.one': '{{displayName}} is editing',
+  /** Tooltip and accessible name of the avatars on a row of the versions flyout: more than one person is editing that audience. `count` is the number of other people (singular) */
+  'document-group.flyout.avatars.other_one': '{{displayName}} and {{count}} other are editing',
+  /** Tooltip and accessible name of the avatars on a row of the versions flyout: more than one person is editing that audience. `count` is the number of other people (plural) */
+  'document-group.flyout.avatars.other_other': '{{displayName}} and {{count}} others are editing',
   /** The last row of the versions flyout on a document list row, when it lists only its first audiences: counts the ones it does not show and opens the document group inventory (singular) */
   'document-group.flyout.footer.see-more_one': 'See {{count}} more in the inventory',
   /** The last row of the versions flyout on a document list row, when it lists only its first audiences: counts the ones it does not show and opens the document group inventory (plural) */
@@ -730,11 +736,23 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    */
   // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the footer reads `footer.see-more`
   'document-group.flyout.more_other': '{{count}} more in the inventory',
-  /** The first line of the versions flyout on a document list row: one person is editing the document */
+  /**
+   * The first line of the versions flyout on a document list row: one person is editing the document
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the avatars read `avatars.*`
   'document-group.flyout.presence.one': '{{displayName}} is editing',
-  /** The first line of the versions flyout on a document list row: more than one person is editing the document. `count` is the number of other people (singular) */
+  /**
+   * The first line of the versions flyout on a document list row: more than one person is editing the document. `count` is the number of other people (singular)
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the avatars read `avatars.*`
   'document-group.flyout.presence.other_one': '{{displayName}} and {{count}} other are editing',
-  /** The first line of the versions flyout on a document list row: more than one person is editing the document. `count` is the number of other people (plural) */
+  /**
+   * The first line of the versions flyout on a document list row: more than one person is editing the document. `count` is the number of other people (plural)
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the avatars read `avatars.*`
   'document-group.flyout.presence.other_other': '{{displayName}} and {{count}} others are editing',
   /** The last row of the versions flyout on a document list row, when it lists every audience: opens the document group inventory */
   'document-group.flyout.see-all-versions': 'See all versions in the inventory',

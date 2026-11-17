@@ -5,6 +5,7 @@ import {AvatarCounter, AvatarStack, Card} from '@sanity/ui'
 import {type CSSProperties, type ReactNode, useMemo, useState} from 'react'
 import {Flex, Icon, Text} from 'ui5'
 
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useCompactTimeAgo} from '../../hooks/useRelativeTime'
 import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -53,18 +54,41 @@ const AVATAR_COLUMN_WIDTH = 52
 /** At most this many avatars, then a count of the others. */
 const MAX_AVATARS = 2
 
-/** People as overlapping avatars: at most two, then a count of the others. */
+/**
+ * People as overlapping avatars: at most two, then a count of the others. Who they are is the
+ * stack's accessible name, and a tooltip on the avatars themselves (not the row): to the left of
+ * them, so it does not cover the rows above and below.
+ */
 function PresenceAvatars({people}: {people: RowPresence[]}) {
+  const {t} = useTranslation()
   const shown = people.slice(0, MAX_AVATARS)
   const hidden = people.length - shown.length
+  const [first] = people
+  const names =
+    people.length === 1
+      ? t('document-group.flyout.avatars.one', {displayName: first.user.displayName})
+      : t('document-group.flyout.avatars.other', {
+          displayName: first.user.displayName,
+          count: people.length - 1,
+        })
   return (
-    // `maxLength` above the number of children, so the stack draws exactly what is given
-    <AvatarStack maxLength={MAX_AVATARS + 2} size={0}>
-      {shown.map((person) => (
-        <UserAvatar key={person.user.id} size={0} user={person.user} />
-      ))}
-      {hidden > 0 ? <AvatarCounter count={hidden} /> : null}
-    </AvatarStack>
+    <Tooltip content={names} fallbackPlacements={['top']} placement="left">
+      <span
+        aria-label={names}
+        data-testid="document-versions-flyout-avatars"
+        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- can't be an img: the stack is markup, named as one image for screen readers
+        role="img"
+        style={{display: 'inline-flex'}}
+      >
+        {/* `maxLength` above the number of children, so the stack draws exactly what is given */}
+        <AvatarStack maxLength={MAX_AVATARS + 2} size={0}>
+          {shown.map((person) => (
+            <UserAvatar key={person.user.id} size={0} user={person.user} />
+          ))}
+          {hidden > 0 ? <AvatarCounter count={hidden} /> : null}
+        </AvatarStack>
+      </span>
+    </Tooltip>
   )
 }
 
@@ -100,9 +124,10 @@ function FlyoutRow(props: {
   subtitle?: ReactNode
   renderMedia?: () => ReactNode
   /**
-   * The people editing this row's audience, in a column just before the marks column. Set on every
-   * audience row (an empty array for nobody), so the column is as wide on every row; left unset
-   * when nobody is editing the document, so no row spends the room.
+   * The people editing this row's audience (on the footer, everyone not on a listed row), in a
+   * column just before the marks column. Set on every row (an empty array for nobody), so the
+   * column is as wide on every row; left unset when nobody is editing the document, so no row
+   * spends the room.
    */
   presence?: RowPresence[]
   /**
@@ -388,39 +413,6 @@ function AudienceRow({
 }
 
 /**
- * The flyout's first line: who is editing the document, any version. Not a menu item: arrow keys
- * move between the rows below it.
- */
-function PresenceLine({people}: {people: RowPresence[]}) {
-  const {t} = useTranslation()
-  const [first] = people
-  const text =
-    people.length === 1
-      ? t('document-group.flyout.presence.one', {displayName: first.user.displayName})
-      : t('document-group.flyout.presence.other', {
-          displayName: first.user.displayName,
-          count: people.length - 1,
-        })
-  return (
-    <Flex
-      alignItems="center"
-      data-testid="document-versions-flyout-presence"
-      gap={2}
-      paddingX={3}
-      paddingY={2}
-      role="none"
-    >
-      <Flex flexShrink={0}>
-        <PresenceAvatars people={people} />
-      </Flex>
-      <Text as="div" muted size={1} style={{minWidth: 0}} trim truncate={1}>
-        {text}
-      </Text>
-    </Flex>
-  )
-}
-
-/**
  * The content of the versions flyout on a document list row: one row per audience, with its latest
  * event as the subtitle and the variant diamond in a trailing column at the right edge, and a last row that opens the document group
  * inventory. When there are more audiences than the flyout lists, that last row counts the others
@@ -434,8 +426,9 @@ export function DocumentVersionsFlyoutList(props: {
   onPick: (variantId: string | null) => void
   onOpenInventory: () => void
   /**
-   * Who is editing the document, any version. With someone in it, the flyout's first line says who,
-   * and each person's avatar sits on the audience row that holds the version they have open.
+   * Who is editing the document, any version. Each person's avatar sits on the audience row that
+   * holds the version they have open; a person on an audience the flyout does not list, or on no
+   * audience row, sits on the footer row, so everyone editing shows once.
    */
   presence?: RowPresence[]
   /** Whether the document of this row is the one open in the pane, which marks the version it shows. */
@@ -462,6 +455,17 @@ export function DocumentVersionsFlyoutList(props: {
     () => groupPresenceByAudience(groups, people),
     [groups, people],
   )
+  const shownGroups = groups.slice(0, MAX_AUDIENCES)
+  // Everyone not on a listed row goes on the footer, which opens the inventory where they are
+  const footerPeople = useMemo(() => {
+    const onRows = new Set<string>()
+    for (const group of groups.slice(0, MAX_AUDIENCES)) {
+      for (const person of presenceByAudience.get(audienceKey(group)) ?? []) {
+        onRows.add(person.user.id)
+      }
+    }
+    return people.filter((person) => !onRows.has(person.user.id))
+  }, [groups, people, presenceByAudience])
 
   // Audiences past the first ones: the footer counts them, since that is where they are
   const hiddenCount = Math.max(0, groups.length - MAX_AUDIENCES)
@@ -491,8 +495,7 @@ export function DocumentVersionsFlyoutList(props: {
       role="menu"
     >
       <div className={root}>
-        {people.length > 0 ? <PresenceLine people={people} /> : null}
-        {groups.slice(0, MAX_AUDIENCES).map((group) => (
+        {shownGroups.map((group) => (
           <AudienceRow
             group={group}
             key={audienceKey(group)}
@@ -511,6 +514,7 @@ export function DocumentVersionsFlyoutList(props: {
         <FlyoutRow
           renderMedia={() => <Icon icon={DocumentsIcon} size={2} />}
           onClick={onOpenInventory}
+          presence={people.length > 0 ? footerPeople : undefined}
           testId="document-versions-flyout-inventory"
           title={
             <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
