@@ -4,7 +4,7 @@ import {BoundaryElementProvider} from '@sanity/ui'
 import {useState} from 'react'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page} from 'vitest/browser'
+import {page, userEvent} from 'vitest/browser'
 
 import {expectStable} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
@@ -17,6 +17,8 @@ const OPTIONS = ['German', 'Swedish', 'Norwegian'].map((text) => ({
   key: text,
   text,
   icon: DocumentIcon,
+  // What the select shows once the option is chosen
+  selectIcon: <DocumentIcon />,
 }))
 
 function PickerHarness() {
@@ -83,5 +85,73 @@ describe('CreateVariantPicker menu', () => {
     expect(Math.abs(left - 8)).toBeLessThanOrEqual(1)
     expect(Math.abs(right - 8)).toBeLessThanOrEqual(1)
     expect(Math.abs(below - 8)).toBeLessThanOrEqual(1)
+  })
+})
+
+describe('CreateVariantPicker menu: reopening a scrolled list', () => {
+  const menu = () => page.getByTestId('picker').element() as HTMLElement
+  const list = () =>
+    [...menu().querySelectorAll<HTMLElement>('*')].find(
+      (element) => getComputedStyle(element).overflowY === 'auto',
+    )!
+
+  function geometry() {
+    const field = menu().querySelector('[data-ui="TextInput"]')!.getBoundingClientRect()
+    const box = list().getBoundingClientRect()
+    const rows = [...list().querySelectorAll('[data-ui="MenuItem"]')].map((row) =>
+      row.getBoundingClientRect(),
+    )
+    const firstVisible = rows.find((row) => row.bottom > box.top + 0.5)!
+    return {fieldBottom: field.bottom, firstVisibleTop: firstVisible.top, listBottom: box.bottom}
+  }
+
+  async function open() {
+    await page.getByTestId('picker-field').getByRole('button').click()
+    await expect.element(page.getByTestId('picker')).toBeVisible()
+    await expectStable(() => `${list().scrollTop}|${JSON.stringify(geometry())}`)
+  }
+
+  async function close() {
+    await userEvent.keyboard('{Escape}')
+    await expect.element(page.getByTestId('picker')).not.toBeVisible()
+  }
+
+  /** Keeps the list short enough to scroll, then leaves a row cut in half at its top. */
+  function scrollToHalfRow() {
+    list().style.maxHeight = '80px'
+    const row = list().querySelector('[data-ui="MenuItem"]')!.getBoundingClientRect()
+    list().scrollTop = row.height / 2
+  }
+
+  it('reopens at the top with nothing selected', async () => {
+    void render(<PickerHarness />)
+    await open()
+    scrollToHalfRow()
+    await close()
+    await open()
+
+    expect(list().scrollTop).toBe(0)
+    const {fieldBottom, firstVisibleTop} = geometry()
+    expect(Math.abs(firstVisibleTop - (fieldBottom + 8))).toBeLessThanOrEqual(1)
+  })
+
+  it('reopens with the selected option whole and no row half under the search field', async () => {
+    void render(<PickerHarness />)
+    await open()
+    await page.getByRole('menuitemradio', {name: 'Norwegian'}).click()
+    await expect.element(page.getByTestId('picker')).not.toBeVisible()
+    await open()
+    scrollToHalfRow()
+    await close()
+    await open()
+
+    const {fieldBottom, firstVisibleTop, listBottom} = geometry()
+    expect(firstVisibleTop).toBeGreaterThanOrEqual(fieldBottom + 8 - 1)
+    const selected = page
+      .getByRole('menuitemradio', {name: 'Norwegian'})
+      .element()
+      .getBoundingClientRect()
+    expect(selected.top).toBeGreaterThanOrEqual(fieldBottom + 8 - 1)
+    expect(selected.bottom).toBeLessThanOrEqual(listBottom + 1)
   })
 })
