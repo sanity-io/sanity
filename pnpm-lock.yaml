@@ -588,7 +588,7 @@ importers:
         version: 8.16.0(vitest@5.1.0)
       '@sanity/image-url':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.2.0
       '@sanity/react-loader':
         specifier: ^2.3.0
         version: 2.3.0(@sanity/types@packages+@sanity+types)(react@19.3.1)(typescript@7.0.2)(vitest@5.1.0)
@@ -976,7 +976,7 @@ importers:
         version: 5.3.0(react@19.3.1)
       '@sanity/image-url':
         specifier: ^2.1.1
-        version: 2.1.1
+        version: 2.2.0
       '@sanity/logos':
         specifier: ^2.2.6
         version: 2.2.6(react@19.3.1)
@@ -2367,8 +2367,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0
       '@sanity/image-url':
-        specifier: ^2.1.1
-        version: 2.1.1
+        specifier: ^2.2.0
+        version: 2.2.0
       '@sanity/logos':
         specifier: ^2.2.6
         version: 2.2.6(react@19.3.1)
@@ -8833,8 +8833,8 @@ packages:
     resolution: {integrity: sha512-A+DujVHCO3/+0DuzinmfCRQacIWVIherK0AHqFDoDOSgxx+Bur1kLhzX8fn7PdB2uZilxu2zWOr+UaGcj5zGbA==}
     engines: {node: '>=18'}
 
-  '@sanity/image-url@2.1.1':
-    resolution: {integrity: sha512-qVXsF1teWR6FO3ZFAz46HDcRU+E6EQkpyncPnkGOzeJ1PgnaOiWMVbiSrZtX10s3txzzu/tAjKwbxbGHfDWgGw==}
+  '@sanity/image-url@2.2.0':
+    resolution: {integrity: sha512-6uJnWhDJMlfwsnHwlnHpUgXCo5kmH3Wv/ERXalgRJHiBhChO/UYhIBTOxdwXTP01EkeoDARn6/+e3Vf+db+JIA==}
     engines: {node: '>=20.19.0'}
 
   '@sanity/import@7.1.0':
@@ -22815,7 +22815,7 @@ snapshots:
       '@sanity/uuid': 3.0.3
       ts-brand: 0.2.0
 
-  '@sanity/image-url@2.1.1':
+  '@sanity/image-url@2.2.0':
     dependencies:
       '@sanity/signed-urls': 2.0.5
 
@@ -23040,7 +23040,7 @@ snapshots:
       '@sanity/diff-match-patch': 3.2.1
       '@sanity/diff-patch': 7.0.0
       '@sanity/id-utils': 1.1.0
-      '@sanity/image-url': 2.1.1
+      '@sanity/image-url': 2.2.0
       '@sanity/json-match': 1.0.5
       '@sanity/message-protocol': 0.24.0
       '@sanity/mutate': 0.18.2(vitest@5.1.0)(xstate@5.33.4)
@@ -30595,7 +30595,7 @@ snapshots:
     dependencies:
       '@sanity/asset-utils': 2.3.0
       '@sanity/icons': 5.3.0(react@19.3.1)
-      '@sanity/image-url': 2.1.1
+      '@sanity/image-url': 2.2.0
       '@sanity/ui': 4.4.12(react-dom@19.3.1)(react@19.3.1)(styled-components@6.6.0)
       dequal: 2.0.3
       react: 19.3.1
