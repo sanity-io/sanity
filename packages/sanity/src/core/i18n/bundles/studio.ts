@@ -647,6 +647,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The second line of the "Nearest version" option: the variant and the draft or release the new variant is copied from */
   'document-group.create-variant.form.nearest-subtitle':
     'Copies from {{variantName}} in {{bundleName}}',
+  /** The second line of the "Nearest version" option while "Add to" is not picked yet and the variant has no published version, so what it copies depends on where the variant goes */
+  'document-group.create-variant.form.nearest-subtitle-pending': 'Depends on where it goes',
   /** The second line of the "Nearest version" option when there is no version to copy from */
   'document-group.create-variant.form.nearest-subtitle-empty': 'Starts empty',
   /** The hint of the variant creation form's picker for the draft or release, shown while nothing is picked */

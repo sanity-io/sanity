@@ -143,6 +143,10 @@ describe('Create variant form: Add to for a variant that already has a draft', (
       .element(page.getByTestId('create-variant-target-menu-value'))
       .toHaveTextContent('Choose where it goes')
     await expect.element(page.getByTestId('create-variant-confirm')).toBeDisabled()
+    // Nearest version still names the variant's own published version, which needs no Add to
+    await expect
+      .element(page.getByTestId('create-variant-base-menu-description'))
+      .toHaveTextContent('Copies from Nordic region in Published')
 
     await userEvent.click(page.getByTestId('create-variant-target-menu-button'))
     const menu = page.getByTestId('create-variant-target-menu')
