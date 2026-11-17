@@ -462,6 +462,30 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
     "{{draftDocumentsLength}} documents have draft changes that aren't in this release. Discarding the drafts keeps them the same as what you publish. Those draft changes will be lost.",
   /** Label above the list of drafts that would be discarded, each of which opens the draft in a new tab */
   'publish-dialog.confirm-publish.update-drafts-review': 'Open a draft to see what would be lost:',
+  /** Heading in the run release dialog above the documents that running the release publishes for the first time, when there is one */
+  'publish-dialog.run-preview.group.add_one': '{{count}} new',
+  /** Heading in the run release dialog above the documents that running the release publishes for the first time, when there are several */
+  'publish-dialog.run-preview.group.add_other': '{{count}} new',
+  /** Heading in the run release dialog above the documents whose published version running the release replaces, when there is one */
+  'publish-dialog.run-preview.group.update_one': '{{count}} updated',
+  /** Heading in the run release dialog above the documents whose published version running the release replaces, when there are several */
+  'publish-dialog.run-preview.group.update_other': '{{count}} updated',
+  /** Heading in the run release dialog above the documents that running the release unpublishes, when there is one */
+  'publish-dialog.run-preview.group.unpublish_one': '{{count}} unpublished',
+  /** Heading in the run release dialog above the documents that running the release unpublishes, when there are several */
+  'publish-dialog.run-preview.group.unpublish_other': '{{count}} unpublished',
+  /** Short explanation next to the "new" heading in the run release dialog */
+  'publish-dialog.run-preview.hint.add': 'Published for the first time',
+  /** Short explanation next to the "updated" heading in the run release dialog */
+  'publish-dialog.run-preview.hint.update': 'Replaces the published version',
+  /** Short explanation next to the "unpublished" heading in the run release dialog */
+  'publish-dialog.run-preview.hint.unpublish': 'Removed from published, kept as a draft',
+  /** Button in the run release dialog that shows every document in a long group. `count` is the size of the group */
+  'publish-dialog.run-preview.show-all': 'Show all {{count}}',
+  /** Button in the run release dialog that collapses a long group again */
+  'publish-dialog.run-preview.show-fewer': 'Show fewer',
+  /** Note in the run release dialog that the document links open in a new tab */
+  'publish-dialog.run-preview.links-open-in-new-tab': 'Documents open in a new tab.',
   /** Description for the dialog confirming the publish of a release with one document */
   'publish-dialog.confirm-publish-description_one':
     'One document in this release will be published.',

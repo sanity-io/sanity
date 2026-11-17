@@ -89,6 +89,51 @@ export function getReleaseImpact(
 }
 
 /**
+ * The document to preview or open for a member, read from its lane. Today that is the version in
+ * the release. For a pointer-based member it is the group (Default draft), plus the variant when
+ * the member points at one.
+ *
+ * @internal
+ */
+export function getReleaseMemberTarget(impact: ReleaseMemberImpact): {
+  documentId: string
+  variantId?: string
+} {
+  switch (impact.lane.kind) {
+    case 'release-version':
+      return {documentId: impact.lane.versionId}
+    case 'variant':
+      return {documentId: impact.groupId, variantId: impact.lane.variantId}
+    default:
+      return {documentId: impact.groupId}
+  }
+}
+
+/** The order effects are listed in, when a release's members are grouped by what running it does. */
+const EFFECT_ORDER: ReadonlyArray<ReleaseMemberEffect> = ['add', 'update', 'unpublish']
+
+/** @internal */
+export interface ReleaseEffectGroup {
+  effect: ReleaseMemberEffect
+  members: ReleaseMemberImpact[]
+}
+
+/**
+ * Groups members by effect, in a fixed order (add, update, unpublish). Empty groups are left out.
+ * Members keep their order inside each group.
+ *
+ * @internal
+ */
+export function groupReleaseImpactByEffect(
+  impacts: ReadonlyArray<ReleaseMemberImpact>,
+): ReleaseEffectGroup[] {
+  return EFFECT_ORDER.map((effect) => ({
+    effect,
+    members: impacts.filter((impact) => impact.effect === effect),
+  })).filter((group) => group.members.length > 0)
+}
+
+/**
  * Groups that are members of more than one release, keyed by group id, with the ids of the
  * releases that contain each of them. Input is each release's member group ids.
  *
