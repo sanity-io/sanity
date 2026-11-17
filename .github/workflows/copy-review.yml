@@ -1,0 +1,96 @@
+# Product copy review on locale changes. Non-blocking: the review job always passes and this
+# workflow must not be added to the required checks. The script and its rules live in
+# packages/@repo/oxlint-plugin-i18n/src/copy-review (see "Product copy review" in AGENTS.md).
+name: Product copy review
+
+on:
+  pull_request:
+    paths:
+      # Keep in sync with LOCALE_RESOURCE_PATHSPECS in src/copy-review/extract.ts
+      - "packages/**/i18n/resources.ts"
+      - "packages/**/i18n/bundles/*.ts"
+      - "packages/@repo/oxlint-plugin-i18n/src/copy-review/**"
+      - ".github/workflows/copy-review.yml"
+
+concurrency:
+  group: copy-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  review:
+    name: Review changed strings
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          # The pull request merge commit and its first parent, the base branch tip
+          fetch-depth: 2
+
+      - uses: ./.github/actions/setup
+        with:
+          node-version: lts
+
+      - name: Run copy review
+        env:
+          # Optional. Without it the report says the model pass was skipped. The script sends
+          # only the changed strings and their TSDoc comments.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          node packages/@repo/oxlint-plugin-i18n/src/copy-review/cli.ts \
+            --base HEAD^1 --head HEAD --output "$RUNNER_TEMP/copy-review.md" > /dev/null
+          cat "$RUNNER_TEMP/copy-review.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: copy-review-report
+          path: ${{ runner.temp }}/copy-review.md
+          retention-days: 7
+
+  comment:
+    name: Post report
+    needs: review
+    # Pull requests from forks get a read-only token, so there is nothing to post with
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: copy-review-report
+          path: ${{ runner.temp }}/copy-review
+
+      - name: Post or update the sticky comment
+        uses: actions/github-script@v9
+        env:
+          REPORT_PATH: ${{ runner.temp }}/copy-review/copy-review.md
+        with:
+          script: |
+            const fs = require('fs');
+            const MARKER = '<!-- copy-review-report -->';
+            const report = fs.readFileSync(process.env.REPORT_PATH, 'utf-8');
+            const issue_number = context.payload.pull_request.number;
+            const {owner, repo} = context.repo;
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100,
+            });
+            const existing = comments.find((comment) => comment.body?.includes(MARKER));
+            const body = `${MARKER}\n${report}`;
+
+            if (existing) {
+              await github.rest.issues.updateComment({owner, repo, comment_id: existing.id, body});
+              core.info('Updated the copy review comment');
+            } else if (report.includes('No added or changed English strings.')) {
+              core.info('No changed strings and no earlier comment, so nothing to post');
+            } else {
+              await github.rest.issues.createComment({owner, repo, issue_number, body});
+              core.info('Posted the copy review comment');
+            }

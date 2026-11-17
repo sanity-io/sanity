@@ -717,6 +717,35 @@ Changing a key's value is fine. When a key falls out of use, keep it and add
 `@deprecated no longer in use` to its TSDoc comment, as the existing ones do. Renaming a key
 counts as deleting it: add the new key and deprecate the old one.
 
+### Product copy review on locale changes
+
+A pull request that adds or changes an English string in a locale resource file (the
+`bundles/*.ts` studio bundles, any `i18n/resources.ts`) gets one sticky comment from the
+`Product copy review` workflow (`.github/workflows/copy-review.yml`). It is non-blocking and not a
+required check. The script lives in `packages/@repo/oxlint-plugin-i18n/src/copy-review/`: it diffs
+the resource files from the merge base to the branch, reads each added or changed string with the
+TSDoc comment above it, and runs pattern rules from `rules.ts`. `no-are-you-sure` and
+`no-unpublished-draft` are errors; `long-sentence` (over 25 words, the Simplified Technical
+English limit), `passive-will-be` and `consistent-terms` are warnings. `consistent-terms` reads its
+term pairs (run versus publish for a release, sign in versus log in) from `TERM_GROUPS`; add a
+pair there when a review finds a concept named two ways. When `ANTHROPIC_API_KEY` is set (the
+`ANTHROPIC_API_KEY` repository secret in CI), it also sends the changed strings, their keys and
+TSDoc comments, and nothing else, to `claude-sonnet-5-5` with a product copy rubric and appends the
+suggestions. Fork pull requests get the report in the job summary only.
+
+```bash
+# Report for this branch (no network access with --no-llm)
+node packages/@repo/oxlint-plugin-i18n/src/copy-review/cli.ts --base origin/main --no-llm
+# Any range, written to a file; --strict exits 1 when an error rule hits
+node packages/@repo/oxlint-plugin-i18n/src/copy-review/cli.ts --base <ref> --head <ref> --output report.md --strict
+# Unit tests
+pnpm vitest run --project=@repo/oxlint-plugin-i18n test/copyReview.test.ts
+```
+
+The script runs on Node's native TypeScript support (Node 24 or later), so its relative imports
+keep their `.ts` extension. Keep the `paths:` filter in the workflow in sync with
+`LOCALE_RESOURCE_PATHSPECS` in `extract.ts`.
+
 ### `<Activity mode="hidden">`: effects are torn down, DOM and state stay
 
 React's `<Activity>` is used for closed `@sanity/ui` overlays, collapsed document lists, and the
