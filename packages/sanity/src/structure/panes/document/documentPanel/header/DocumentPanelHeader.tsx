@@ -51,6 +51,7 @@ import {DocumentPaneCollapsed, DocumentPaneMaximized} from './__telemetry__/focu
 import {CopyDocumentActions} from './CopyDocumentActions'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {DocumentPanelNavigation} from './DocumentPanelNavigation/DocumentPanelNavigation'
+import {getHeaderPresence} from './getHeaderPresence'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
 
@@ -109,6 +110,7 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
     views,
     unstable_languageFilter,
     documentId,
+    value,
   } = useDocumentPane()
   const {features} = useStructureTool()
   const {beta} = useWorkspace()
@@ -164,9 +166,10 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
 
   const {t} = useTranslation(structureLocaleNamespace)
   const presence = useDocumentPresence(documentId)
+  // Only the people on the version this pane displays, not on any version of the document.
   const documentLevelPresence = useMemo(
-    () => presence.filter((p) => p.path.length === 0),
-    [presence],
+    () => getHeaderPresence(presence, value._id),
+    [presence, value._id],
   )
 
   const isMaximizedPane = useMemo(() => {
