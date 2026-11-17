@@ -9,7 +9,10 @@ import {
   type CalendarDayProps,
 } from '../../../components/inputs/DateFilters/calendar/CalendarDay'
 import {type CalendarProps} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {releasesLocaleNamespace} from '../../i18n'
 import {useActiveReleases} from '../../store/useActiveReleases'
+import {type ReleaseDateFilter} from '../../util/releaseDateFilter'
 import {shouldShowReleaseInView} from '../../util/util'
 import {type CardinalityView} from './queryParamUtils'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
@@ -78,14 +81,31 @@ export const RELEASE_CALENDAR_FILTER_DAY: Record<
 
 const MotionButton = motion.create(Button)
 
+/** The chip text for a date filter: the day, "Week of 16 Nov 2026", "November 2026", or
+ * "Unscheduled". */
+export function useReleaseDateFilterLabel(filter: ReleaseDateFilter): string {
+  const {t} = useTranslation(releasesLocaleNamespace)
+  if (filter.kind === 'unscheduled') return t('filter-chip.unscheduled')
+  if (filter.unit === 'week')
+    return t('filter-chip.week', {date: format(filter.start, 'd MMM yyyy')})
+  if (filter.unit === 'month') return format(filter.start, 'MMMM yyyy')
+  return format(filter.start, 'PPP')
+}
+
+/**
+ * The clearable chip next to the calendar that shows the active date filter, whether it came from
+ * the calendar (a day) or the timeline (a week, a month, or Unscheduled). There is one filter at a
+ * time, so one chip.
+ */
 export const DateFilterButton = ({
-  filterDate,
+  filter,
   onClear,
 }: {
-  filterDate: Date
+  filter: ReleaseDateFilter
   onClear: () => void
 }) => {
   const [isExiting, setIsExiting] = useState(false)
+  const text = useReleaseDateFilterLabel(filter)
 
   const handleOnExitComplete = useMemo(
     () => () => {
@@ -94,8 +114,6 @@ export const DateFilterButton = ({
     },
     [onClear],
   )
-
-  if (!filterDate) return null
 
   return (
     <AnimatePresence onExitComplete={handleOnExitComplete}>
@@ -110,7 +128,7 @@ export const DateFilterButton = ({
           mode="bleed"
           onClick={() => setIsExiting(true)}
           selected
-          text={format(filterDate, 'PPP')}
+          text={text}
         />
       )}
     </AnimatePresence>

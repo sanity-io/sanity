@@ -1,6 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
+import {format} from 'date-fns/format'
+import {startOfMonth} from 'date-fns/startOfMonth'
+import {startOfWeek} from 'date-fns/startOfWeek'
 import {type ComponentProps} from 'react'
 import type * as SanityRouter from 'sanity/router'
 import {beforeAll, describe, expect, it, vi} from 'vitest'
@@ -248,5 +251,96 @@ describe('ReleaseTimeline', () => {
     const pillB = screen.getByTestId(`release-timeline-pill-${sameDayB._id}`)
     expect(pillA).not.toHaveAttribute('data-collides')
     expect(pillB).not.toHaveAttribute('data-collides')
+  })
+
+  describe('as navigation for the date filter', () => {
+    // The mocked time zone is the identity, so the current month's column starts on its first day.
+    const thisMonth = startOfMonth(new Date())
+    const thisMonthName = `Show releases in ${format(thisMonth, 'MMMM yyyy')}`
+
+    it('keeps the column headings as plain text when it has no filter handler', async () => {
+      await renderTimeline({releases: [datedArmed, datedIntended]})
+      expect(screen.queryByRole('button', {name: thisMonthName})).not.toBeInTheDocument()
+    })
+
+    it('makes each month heading a toggle button that selects its range', async () => {
+      const onSelectDateFilter = vi.fn()
+      await renderTimeline({releases: [datedArmed, datedIntended], onSelectDateFilter})
+
+      const heading = screen.getByRole('button', {name: thisMonthName})
+      expect(heading).toHaveAttribute('aria-pressed', 'false')
+      expect(screen.queryByTestId('release-timeline-selected-range')).not.toBeInTheDocument()
+
+      await userEvent.click(heading)
+      expect(onSelectDateFilter).toHaveBeenCalledWith({
+        kind: 'range',
+        unit: 'month',
+        start: thisMonth,
+      })
+    })
+
+    it('shows the active range as pressed and highlighted on the axis', async () => {
+      await renderTimeline({
+        releases: [datedArmed, datedIntended],
+        onSelectDateFilter: vi.fn(),
+        dateFilter: {kind: 'range', unit: 'month', start: thisMonth},
+      })
+
+      expect(screen.getByRole('button', {name: thisMonthName})).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      )
+      expect(screen.getByTestId('release-timeline-selected-range')).toBeInTheDocument()
+    })
+
+    it('does not highlight a column for a single day picked in the calendar', async () => {
+      await renderTimeline({
+        releases: [datedArmed, datedIntended],
+        onSelectDateFilter: vi.fn(),
+        dateFilter: {kind: 'range', unit: 'day', start: thisMonth},
+      })
+      expect(screen.queryByTestId('release-timeline-selected-range')).not.toBeInTheDocument()
+    })
+
+    it('selects weeks in the Week zoom', async () => {
+      const onSelectDateFilter = vi.fn()
+      await renderTimeline({releases: [datedArmed, datedIntended], onSelectDateFilter})
+      await userEvent.click(screen.getByTestId('release-timeline-granularity-week'))
+
+      const thisWeek = startOfWeek(new Date(), {weekStartsOn: 1})
+      await userEvent.click(
+        screen.getByRole('button', {name: `Show releases in week of ${format(thisWeek, 'd MMM')}`}),
+      )
+      expect(onSelectDateFilter).toHaveBeenCalledWith({
+        kind: 'range',
+        unit: 'week',
+        start: thisWeek,
+      })
+    })
+
+    it('makes the Unscheduled chip a toggle for releases with no date', async () => {
+      const onSelectDateFilter = vi.fn()
+      const {rerender} = await renderTimeline({
+        releases: [datedArmed, undated],
+        onSelectDateFilter,
+      })
+
+      const chip = screen.getByRole('button', {name: 'Unscheduled: 1'})
+      expect(chip).toHaveAttribute('aria-pressed', 'false')
+      await userEvent.click(chip)
+      expect(onSelectDateFilter).toHaveBeenCalledWith({kind: 'unscheduled'})
+
+      rerender(
+        <ReleaseTimeline
+          releases={[datedArmed, undated]}
+          onSelectDateFilter={onSelectDateFilter}
+          dateFilter={{kind: 'unscheduled'}}
+        />,
+      )
+      expect(screen.getByRole('button', {name: 'Unscheduled: 1'})).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      )
+    })
   })
 })

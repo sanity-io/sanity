@@ -652,6 +652,29 @@ describe('ReleasesOverview', () => {
       })
     })
 
+    describe('timeline as navigation', () => {
+      it('filters to undated releases from the Unscheduled chip, shows the filter chip, and clears it', async () => {
+        const unscheduledToggle = screen.getByRole('button', {name: 'Unscheduled: 3'})
+        await userEvent.click(unscheduledToggle)
+
+        await waitFor(() => {
+          expect(screen.getAllByTestId('table-row')).toHaveLength(3)
+        })
+        // The timeline keeps every release (it is the navigator), and the chip stays pressed.
+        expect(screen.getByRole('button', {name: 'Unscheduled: 3'})).toHaveAttribute(
+          'aria-pressed',
+          'true',
+        )
+        expect(screen.getByTestId('selected-date-filter')).toHaveTextContent('Unscheduled')
+
+        // Pressing the active chip again clears the filter.
+        await userEvent.click(screen.getByRole('button', {name: 'Unscheduled: 3'}))
+        await waitFor(() => {
+          expect(screen.getAllByTestId('table-row')).toHaveLength(5)
+        })
+      })
+    })
+
     describe('timezone selection', () => {
       it('shows the selected timezone', () => {
         screen.getByText('SCT (Sanity/Oslo)')

@@ -3,7 +3,6 @@ import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
 import {Card, useMediaIndex} from '@sanity/ui'
-import {isSameDay} from 'date-fns/isSameDay'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
 import {Box, Container, Flex} from 'ui5'
@@ -31,6 +30,12 @@ import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
 import {getReleaseTone} from '../../util/getReleaseTone'
 import {
+  isSameReleaseDateFilter,
+  type ReleaseDateFilter,
+  releaseMatchesDateFilter,
+  resolveReleaseDateFilter,
+} from '../../util/releaseDateFilter'
+import {
   filterReleasesForOverview,
   getReleaseDefaults,
   shouldShowReleaseInView,
@@ -46,7 +51,7 @@ import {
   buildReleasesSearchParams,
   type CardinalityView,
   getInitialCardinalityView,
-  getInitialFilterDate,
+  getInitialDateFilter,
   getInitialReleaseGroupMode,
   getInitialReleaseNotFound,
   type Mode,
@@ -63,7 +68,6 @@ import {ScheduledDraftsEmptyState} from './ScheduledDraftsEmptyState'
 import {SchedulesUpsell} from './SchedulesUpsell'
 import {SegmentedControl} from './SegmentedControl'
 import {useReleaseLabelMode} from './useReleaseLabelMode'
-import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
 
 export interface TableRelease extends ReleaseDocument {
   documentsMetadata?: ReleasesMetadata
@@ -104,8 +108,10 @@ export function ReleasesOverview() {
     [router, isScheduledDraftsEnabled, isReleasesEnabled],
   )
 
-  const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
-    getInitialFilterDate(router),
+  // One date filter for the overview: a day from the calendar, a week or month from a timeline
+  // column heading, or Unscheduled from the timeline chip. Picking any one replaces the others.
+  const [releaseDateFilter, setReleaseDateFilter] = useState<ReleaseDateFilter | undefined>(
+    getInitialDateFilter(router),
   )
   const [showReleaseNotFound, setShowReleaseNotFound] = useState<boolean>(() =>
     getInitialReleaseNotFound(router),
@@ -140,10 +146,9 @@ export function ReleasesOverview() {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
   const timeZoneScope = CONTENT_RELEASES_TIME_ZONE_SCOPE
-  const {timeZone, utcToCurrentZoneDate} = useTimeZone(timeZoneScope)
+  const {timeZone, utcToCurrentZoneDate, zoneDateToUtc} = useTimeZone(timeZoneScope)
   const {selectedPerspective} = usePerspective()
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
-  const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
 
   const createReleaseAvailability = useCreateReleaseAvailability()
 
@@ -204,30 +209,44 @@ export function ReleasesOverview() {
   const handleCardinalityViewChange = useCallback(
     (view: CardinalityView) => () => {
       router.navigate({
-        _searchParams: buildReleasesSearchParams(releaseFilterDate, releaseGroupMode, view),
+        _searchParams: buildReleasesSearchParams(releaseDateFilter, releaseGroupMode, view),
       })
     },
-    [router, releaseFilterDate, releaseGroupMode],
+    [router, releaseDateFilter, releaseGroupMode],
   )
 
   const handleSelectFilterDate = useCallback(
     (date?: Date) =>
-      setReleaseFilterDate((prevFilterDate) => {
+      setReleaseDateFilter((prevFilter) => {
         if (!date) return undefined
-        const normalized = toLocalDateComponents(date, utcToCurrentZoneDate)
-        return prevFilterDate && isSameDay(prevFilterDate, normalized) ? undefined : normalized
+        const next: ReleaseDateFilter = {
+          kind: 'range',
+          unit: 'day',
+          start: toLocalDateComponents(date, utcToCurrentZoneDate),
+        }
+        return isSameReleaseDateFilter(prevFilter, next) ? undefined : next
       }),
     [utcToCurrentZoneDate],
+  )
+
+  // From the timeline: a column heading (week/month) or the Unscheduled chip. Pressing the active
+  // one again clears it.
+  const handleSelectTimelineFilter = useCallback(
+    (next: ReleaseDateFilter) =>
+      setReleaseDateFilter((prevFilter) =>
+        isSameReleaseDateFilter(prevFilter, next) ? undefined : next,
+      ),
+    [],
   )
 
   const clearFilterDate = useCallback(() => {
     // Date filter and lifecycle are independent now — clearing the date leaves the current
     // lifecycle view (Active/Paused/Archived) untouched.
-    setReleaseFilterDate(undefined)
+    setReleaseDateFilter(undefined)
   }, [])
 
   const handleNavigateToPaused = useCallback(() => {
-    setReleaseFilterDate(undefined)
+    setReleaseDateFilter(undefined)
     setReleaseGroupMode('paused')
   }, [])
 
@@ -240,14 +259,14 @@ export function ReleasesOverview() {
     navigateRef.current(
       {
         _searchParams: buildReleasesSearchParams(
-          releaseFilterDate,
+          releaseDateFilter,
           releaseGroupMode,
           isScheduledDraftsEnabled ? cardinalityView : 'releases',
         ),
       },
       {replace: true},
     )
-  }, [releaseFilterDate, releaseGroupMode, cardinalityView, isScheduledDraftsEnabled])
+  }, [releaseDateFilter, releaseGroupMode, cardinalityView, isScheduledDraftsEnabled])
 
   const currentArchivedPicker = useMemo(() => {
     // Lifecycle is a "pick one of N" filter → the shared SegmentedControl (same widget as the
@@ -370,13 +389,13 @@ export function ReleasesOverview() {
   const filteredReleases = useMemo(() => {
     // The date filter is managed from the timeline (a non-archived surface), so it only applies
     // outside Archived — no invisible filtering of the archived list, which has no calendar control.
-    const dateFilter =
-      releaseFilterDate && releaseGroupMode !== 'archived'
-        ? {
-            filterDate: releaseFilterDate,
-            getTimezoneAdjustedDateTimeRange,
-          }
+    const resolvedDateFilter =
+      releaseDateFilter && releaseGroupMode !== 'archived'
+        ? resolveReleaseDateFilter(releaseDateFilter, zoneDateToUtc)
         : undefined
+    const dateFilter = resolvedDateFilter
+      ? (release: TableRelease) => releaseMatchesDateFilter(release, resolvedDateFilter)
+      : undefined
 
     return filterReleasesForOverview({
       releases: tableReleases,
@@ -390,9 +409,22 @@ export function ReleasesOverview() {
     archivedReleases,
     cardinalityView,
     releaseGroupMode,
-    releaseFilterDate,
-    getTimezoneAdjustedDateTimeRange,
+    releaseDateFilter,
+    zoneDateToUtc,
   ])
+
+  // The timeline is the navigator for the date filter, so it keeps showing every release the
+  // lifecycle and view allow: filtering to a week must not collapse the axis to that week.
+  const timelineReleases = useMemo(
+    () =>
+      filterReleasesForOverview({
+        releases: tableReleases,
+        archivedReleases,
+        cardinalityView,
+        releaseGroupMode,
+      }),
+    [tableReleases, archivedReleases, cardinalityView, releaseGroupMode],
+  )
 
   const showConfirmActiveScheduledDraftsBanner =
     cardinalityView === 'drafts' &&
@@ -403,12 +435,16 @@ export function ReleasesOverview() {
       <CalendarFilter
         disabled={loading || releases.length === 0}
         renderCalendarDay={RELEASE_CALENDAR_FILTER_DAY[cardinalityView]}
-        selectedDate={releaseFilterDate}
+        selectedDate={
+          releaseDateFilter?.kind === 'range' && releaseDateFilter.unit === 'day'
+            ? releaseDateFilter.start
+            : undefined
+        }
         onSelect={handleSelectFilterDate}
         timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
       />
     ),
-    [loading, releases, releaseFilterDate, handleSelectFilterDate, cardinalityView],
+    [loading, releases, releaseDateFilter, handleSelectFilterDate, cardinalityView],
   )
 
   const tableColumns = useMemo(
@@ -568,19 +604,21 @@ export function ReleasesOverview() {
         <ConfirmActiveScheduledDraftsBanner
           releases={releases}
           releaseGroupMode={releaseGroupMode}
-          hasDateFilter={Boolean(releaseFilterDate)}
+          hasDateFilter={Boolean(releaseDateFilter)}
           onNavigateToPaused={handleNavigateToPaused}
         />
       )}
 
       {!hasNoReleases && releaseGroupMode !== 'archived' && (
         <ReleaseTimeline
-          releases={filteredReleases}
+          releases={timelineReleases}
+          dateFilter={releaseDateFilter}
+          onSelectDateFilter={handleSelectTimelineFilter}
           dateControl={
             <Flex alignItems="center" gap={1}>
               <CalendarPopover content={calendarFilterContent} asDialog={isNarrowViewport} />
-              {releaseFilterDate && (
-                <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
+              {releaseDateFilter && (
+                <DateFilterButton filter={releaseDateFilter} onClear={clearFilterDate} />
               )}
             </Flex>
           }
@@ -592,7 +630,7 @@ export function ReleasesOverview() {
       ) : (
         <DocumentTable<TableRelease>
           // reset search/selection/sort when the filter axis changes
-          key={releaseFilterDate ? 'by_date' : releaseGroupMode}
+          key={releaseDateFilter ? 'by_date' : releaseGroupMode}
           alwaysShowCommandLane
           columnDefs={tableColumns}
           defaultSort={defaultTableSort}

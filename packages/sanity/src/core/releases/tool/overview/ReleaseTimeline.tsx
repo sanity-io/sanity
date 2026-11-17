@@ -10,6 +10,7 @@ import {addDays} from 'date-fns/addDays'
 import {addMonths} from 'date-fns/addMonths'
 import {addWeeks} from 'date-fns/addWeeks'
 import {format} from 'date-fns/format'
+import {startOfDay} from 'date-fns/startOfDay'
 import {startOfMonth} from 'date-fns/startOfMonth'
 import {startOfWeek} from 'date-fns/startOfWeek'
 import {Fragment, type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
@@ -26,6 +27,11 @@ import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {releasesLocaleNamespace} from '../../i18n'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTiming} from '../../util/getReleaseTiming'
+import {
+  isSameReleaseDateFilter,
+  type ReleaseDateFilter,
+  type ReleaseDateFilterUnit,
+} from '../../util/releaseDateFilter'
 import {type TableRelease} from './ReleasesOverview'
 import {SegmentedControl} from './SegmentedControl'
 
@@ -173,12 +179,122 @@ function zonedFormat(date: Date, toZoned: ToZonedDate, fmtStr: string): string {
   return format(toZoned(date), fmtStr)
 }
 
+/** The bucket a column heading stands for: weeks in the Week zoom, months in Month and Quarter
+ * (whose ticks are monthly). */
+function columnUnit(granularity: ReleaseTimelineGranularity): ReleaseDateFilterUnit {
+  return granularity === 'week' ? 'week' : 'month'
+}
+
+/** A clickable time bucket on the axis: from one tick to the next (the last runs to the edge). */
+interface TimelineColumn {
+  key: string
+  x: number
+  width: number
+  label: string
+  filter: Extract<ReleaseDateFilter, {kind: 'range'}>
+}
+
+function getColumns(
+  granularity: ReleaseTimelineGranularity,
+  ticks: {date: Date; label: string}[],
+  start: Date,
+  end: Date,
+  toZoned: ToZonedDate,
+): TimelineColumn[] {
+  const unit = columnUnit(granularity)
+  // The axis usually starts part-way through a bucket (padding before the earliest item), and
+  // `getTicks` drops the tick before the range start. Give that leading stretch a column too, so
+  // every visible part of the axis — often the one with "now" in it — can be selected.
+  const leading =
+    granularity === 'week' ? startOfWeek(start, {weekStartsOn: 1}) : startOfMonth(start)
+  const all =
+    leading < start && (ticks.length === 0 || ticks[0].date > start)
+      ? [
+          {date: leading, label: zonedFormat(leading, toZoned, unit === 'week' ? 'd MMM' : 'MMM')},
+          ...ticks,
+        ]
+      : ticks
+  return all.map((tick, i) => {
+    const x = xPct(tick.date, start, end)
+    const nextX = i + 1 < all.length ? xPct(all[i + 1].date, start, end) : 100
+    return {
+      key: tick.date.toISOString(),
+      x,
+      width: nextX - x,
+      label: tick.label,
+      // Wall-clock day the column starts on, in the content-releases time zone — the same shape the
+      // calendar filter stores, so both resolve to instants the same way.
+      filter: {kind: 'range', unit, start: startOfDay(toZoned(tick.date))},
+    }
+  })
+}
+
+/**
+ * A column heading that filters the releases table to its week or month. A real toggle button:
+ * `aria-pressed` carries the selected state, and pressing it again clears the filter.
+ */
+function TimelineColumnHeading({
+  column,
+  selected,
+  onSelect,
+}: {
+  column: TimelineColumn
+  selected: boolean
+  onSelect: (filter: ReleaseDateFilter) => void
+}) {
+  const {t} = useTranslation(releasesLocaleNamespace)
+  const {filter} = column
+  const accessibleName =
+    filter.unit === 'week'
+      ? t('timeline.filter-week', {date: format(filter.start, 'd MMM')})
+      : t('timeline.filter-month', {date: format(filter.start, 'MMMM yyyy')})
+  return (
+    <Card
+      data-testid={`release-timeline-column-${column.key}`}
+      as="button"
+      type="button"
+      aria-pressed={selected}
+      aria-label={accessibleName}
+      selected={selected}
+      radius={2}
+      onClick={() => onSelect(filter)}
+      style={{
+        position: 'absolute',
+        left: `${column.x}%`,
+        width: `${column.width}%`,
+        top: 2,
+        height: BASELINE_TOP - 4,
+        padding: '0 4px',
+        textAlign: 'left',
+        cursor: 'pointer',
+        // Above the "Now" label's background, below the diamonds.
+        zIndex: 3,
+      }}
+    >
+      <Text
+        size={0}
+        weight={selected ? 'semibold' : undefined}
+        style={{
+          // Selectable v4 cards swap these on hover/selected; static ui5 colours would not.
+          color: selected ? 'var(--card-fg-color)' : 'var(--card-muted-fg-color)',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {column.label}
+      </Text>
+    </Card>
+  )
+}
+
 function Axis({
   start,
   end,
   now,
   height,
   ticks,
+  columns,
+  selectedFilter,
+  onSelectColumn,
   nowLabel,
 }: {
   start: Date
@@ -186,11 +302,34 @@ function Axis({
   now: Date
   height: number
   ticks: {date: Date; label: string}[]
+  columns: TimelineColumn[]
+  selectedFilter?: ReleaseDateFilter
+  /** When set, the column headings are buttons that filter the table to their range. */
+  onSelectColumn?: (filter: ReleaseDateFilter) => void
   nowLabel: string
 }) {
   const nowX = xPct(now, start, end)
+  const selectedColumn = columns.find((column) =>
+    isSameReleaseDateFilter(column.filter, selectedFilter),
+  )
   return (
     <>
+      {/* Band behind the selected column, so the active range reads on the axis itself. */}
+      {selectedColumn && (
+        <Box
+          data-testid="release-timeline-selected-range"
+          aria-hidden
+          style={{
+            position: 'absolute',
+            left: `${selectedColumn.x}%`,
+            width: `${selectedColumn.width}%`,
+            top: 0,
+            bottom: 0,
+            backgroundColor: 'var(--card-muted-bg-color)',
+            zIndex: 0,
+          }}
+        />
+      )}
       {ticks.map((tick) => {
         const x = xPct(tick.date, start, end)
         return (
@@ -205,16 +344,27 @@ function Axis({
                 opacity: 0.5,
               }}
             />
-            <Text
-              size={0}
-              muted
-              style={{position: 'absolute', left: `calc(${x}% + 4px)`, top: AXIS_LABEL_TOP}}
-            >
-              {tick.label}
-            </Text>
+            {!onSelectColumn && (
+              <Text
+                size={0}
+                muted
+                style={{position: 'absolute', left: `calc(${x}% + 4px)`, top: AXIS_LABEL_TOP}}
+              >
+                {tick.label}
+              </Text>
+            )}
           </Fragment>
         )
       })}
+      {onSelectColumn &&
+        columns.map((column) => (
+          <TimelineColumnHeading
+            key={column.key}
+            column={column}
+            selected={column === selectedColumn}
+            onSelect={onSelectColumn}
+          />
+        ))}
       {/* now marker + label. The label carries its own background so it stays legible where it
           lands on top of a tick label/gridline; rendered after the ticks so it paints over them. */}
       <Box
@@ -477,6 +627,8 @@ function ReleaseTimelineRoadmap({
   now,
   toZoned,
   onNavigate,
+  selectedFilter,
+  onSelectFilter,
 }: {
   dated: DatedRelease[]
   granularity: ReleaseTimelineGranularity
@@ -485,6 +637,8 @@ function ReleaseTimelineRoadmap({
   now: Date
   toZoned: ToZonedDate
   onNavigate: (release: TableRelease) => void
+  selectedFilter?: ReleaseDateFilter
+  onSelectFilter?: (filter: ReleaseDateFilter) => void
 }) {
   const compact = density === 'compact'
   const {t} = useTranslation(releasesLocaleNamespace)
@@ -503,6 +657,10 @@ function ReleaseTimelineRoadmap({
   const ticks = useMemo(
     () => getTicks(granularity, start, end, toZoned),
     [granularity, start, end, toZoned],
+  )
+  const columns = useMemo(
+    () => getColumns(granularity, ticks, start, end, toZoned),
+    [ticks, start, end, granularity, toZoned],
   )
 
   const spanDays = (end.getTime() - start.getTime()) / MS_PER_DAY
@@ -619,6 +777,9 @@ function ReleaseTimelineRoadmap({
               now={now}
               height={innerHeight}
               ticks={ticks}
+              columns={columns}
+              selectedFilter={selectedFilter}
+              onSelectColumn={onSelectFilter}
               nowLabel={t('timeline.now-marker')}
             />
             {/* baseline the diamonds sit on (and pills hang off), so they read as points on a line */}
@@ -666,14 +827,36 @@ function ReleaseTimelineRoadmap({
  * a release is either dated (shown above, armed or merely intended) or unscheduled (no date,
  * list-only). Hidden entirely when there's nothing to report.
  */
-function UnscheduledChip({count}: {count: number}) {
+function UnscheduledChip({
+  count,
+  selected,
+  onSelect,
+}: {
+  count: number
+  selected: boolean
+  /** When set, the chip is a toggle button that filters the table to undated releases. */
+  onSelect?: (filter: ReleaseDateFilter) => void
+}) {
   const {t} = useTranslation(releasesLocaleNamespace)
   if (count === 0) return null
+  const text = t('timeline.unscheduled-count', {count})
   return (
     <Flex gap={2} alignItems="center" data-testid="release-timeline-unscheduled-chip">
-      <Badge tone="default" fontSize={0}>
-        {t('timeline.unscheduled-count', {count})}
-      </Badge>
+      {onSelect ? (
+        <Button
+          data-testid="release-timeline-unscheduled-filter"
+          mode="ghost"
+          selected={selected}
+          aria-pressed={selected}
+          text={text}
+          onClick={() => onSelect({kind: 'unscheduled'})}
+          tooltipProps={{content: t('timeline.filter-unscheduled')}}
+        />
+      ) : (
+        <Badge tone="default" fontSize={0}>
+          {text}
+        </Badge>
+      )}
     </Flex>
   )
 }
@@ -690,8 +873,16 @@ function UnscheduledChip({count}: {count: number}) {
 export function ReleaseTimeline({
   releases,
   dateControl,
+  dateFilter,
+  onSelectDateFilter,
 }: {
   releases: TableRelease[]
+  /** The overview's active date filter, highlighted on the axis (a week/month column) or on the
+   * Unscheduled chip. */
+  dateFilter?: ReleaseDateFilter
+  /** When set, column headings and the Unscheduled chip filter the table. Pressing the active one
+   * again passes the same filter, which the overview treats as "clear". */
+  onSelectDateFilter?: (filter: ReleaseDateFilter) => void
   /** The calendar date-filter trigger, rendered in the timeline header (the date-access controls
    * belong with the timeline). Optional so the component still works standalone / in tests. */
   dateControl?: ReactNode
@@ -835,8 +1026,14 @@ export function ReleaseTimeline({
                   now={now}
                   toZoned={utcToCurrentZoneDate}
                   onNavigate={handleNavigate}
+                  selectedFilter={dateFilter}
+                  onSelectFilter={onSelectDateFilter}
                 />
-                <UnscheduledChip count={unscheduledCount} />
+                <UnscheduledChip
+                  count={unscheduledCount}
+                  selected={dateFilter?.kind === 'unscheduled'}
+                  onSelect={onSelectDateFilter}
+                />
               </VStack>
             </Box>
           </Box>

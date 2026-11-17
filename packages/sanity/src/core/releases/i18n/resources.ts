@@ -755,6 +755,21 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'timeline.status-overdue': 'Overdue — the intended date has passed and it isn’t scheduled',
   /** Tooltip line on a timeline pill that shares its publish day with another release */
   'timeline.status-stagger': 'Publishes the same day as another release',
+  /** Accessible name of a week column heading on the timeline. Pressing it filters the releases
+   * table to that week; pressing it again clears the filter. `date` is the first day, e.g. "16 Nov". */
+  'timeline.filter-week': 'Show releases in week of {{date}}',
+  /** Accessible name of a month column heading on the timeline. Pressing it filters the releases
+   * table to that month; pressing it again clears the filter. `date` is e.g. "November 2026". */
+  'timeline.filter-month': 'Show releases in {{date}}',
+  /** Accessible name of the timeline's "Unscheduled" chip. Pressing it filters the releases table to
+   * releases with no date; pressing it again clears the filter. */
+  'timeline.filter-unscheduled': 'Show unscheduled releases',
+  /** Text of the clearable filter chip next to the calendar when the table is filtered to a week
+   * from the timeline. `date` is the first day, e.g. "16 Nov 2026". */
+  'filter-chip.week': 'Week of {{date}}',
+  /** Text of the clearable filter chip next to the calendar when the table is filtered to releases
+   * with no date, from the timeline's "Unscheduled" chip. */
+  'filter-chip.unscheduled': 'Unscheduled',
 
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
