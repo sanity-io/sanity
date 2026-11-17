@@ -88,8 +88,10 @@ export function useNavigationBadges(): NavigationBadges {
         isPublishedPerspective(selectedPerspectiveName ?? '') ||
         (isLiveEdit && isDraftsPerspective),
     },
+    // Live-edit types have no drafts, so the badge is hidden unless a draft already exists
+    // (e.g. the type was switched to live edit later), which keeps that draft reachable.
     draft:
-      isDraftModelEnabled || (isLiveEdit && state.hasDraft)
+      (isDraftModelEnabled && !isLiveEdit) || (isLiveEdit && state.hasDraft)
         ? {active: state.hasDraft, selected: isDraftsPerspective && !isLiveEdit}
         : undefined,
     agent,
