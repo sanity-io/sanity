@@ -1,5 +1,7 @@
 import {expect, test} from 'vitest'
 
+import {BufferedDocument} from '../src/document/BufferedDocument'
+import {Mutation} from '../src/document/Mutation'
 import {BufferedDocumentTester} from './util/BufferedDocumentTester'
 
 test('simple edit cycle', () => {
@@ -340,4 +342,23 @@ test('pending local patch on an array index removed by a remote patch rebases cl
     })
     .didRebase()
     .assertLOCAL('items', [{title: 'one'}])
+})
+
+test.fails('ARRIVE-UNSET-UNDER-DMP (K2, L3): a remote unset of a field with a buffered string edit reaches HEAD', () => {
+  const doc = new BufferedDocument({_id: 'a', _type: 't', _rev: '1', title: 'Hello'})
+  doc.add(
+    new Mutation({
+      mutations: [{patch: {id: 'a', diffMatchPatch: {title: '@@ -1,5 +1,6 @@\n Hello\n+!\n'}}}],
+    }),
+  )
+  doc.arrive(
+    new Mutation({
+      transactionId: '2',
+      resultRev: '2',
+      previousRev: '1',
+      mutations: [{patch: {id: 'a', unset: ['title']}}],
+    }),
+  )
+
+  expect(doc.document.HEAD).toEqual({_id: 'a', _type: 't', _rev: '2'})
 })

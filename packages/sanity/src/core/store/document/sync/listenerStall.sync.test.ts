@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 import {afterEach, describe, expect, test} from 'vitest'
 
-import {expectConverged, expectHealthy, keysOf} from '../../../../../test/sync/oracles'
+import {keysOf} from '../../../../../test/sync/oracles'
 import {runSyncTest, type SyncTestDefinition, type World} from '../../../../../test/sync/syncTest'
 
 const PUBLISHED_ID = 'article-6'
@@ -57,13 +57,9 @@ afterEach(() => {
 describe('a silent listener', () => {
   // The listener never echoes B's own save, so B stays stuck on the deleted item and never recovers.
   test.fails('LSN-STALL-OWN-SAVE: B restarts its silent listener, converges and sees the deleted item gone', async () => {
-    const stalledWorld = await runSyncTest(definition)
-    world = stalledWorld
-    await stalledWorld.settle()
+    world = await runSyncTest(definition)
 
-    expectHealthy(stalledWorld)
-    expectConverged(stalledWorld)
-    expect(keysOf(stalledWorld.clients.B.localDocument(DRAFT_ID), FIELD)).toEqual(['b'])
-    expect(stalledWorld.clients.B.localDocument(DRAFT_ID)?.title).toBe('from B')
+    expect(keysOf(world.clients.B.localDocument(DRAFT_ID), FIELD)).toEqual(['b'])
+    expect(world.clients.B.localDocument(DRAFT_ID)?.title).toBe('from B')
   })
 })

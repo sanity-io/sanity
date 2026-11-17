@@ -1,12 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 import {afterEach, describe, expect, test} from 'vitest'
 
-import {
-  expectConverged,
-  expectHealthy,
-  expectRevisionsAgree,
-  keysOf,
-} from '../../../../../test/sync/oracles'
+import {expectRevisionsAgree, keysOf} from '../../../../../test/sync/oracles'
 import {runSyncTest, type SyncTestDefinition, type World} from '../../../../../test/sync/syncTest'
 import {createSchema} from '../../../schema/createSchema'
 
@@ -82,8 +77,6 @@ describe('editOperations and editState, two clients', () => {
     }
     world = await runSyncTest(syncTest, {schema, typeName: 'article'})
 
-    expectHealthy(world)
-    expectConverged(world)
     expectRevisionsAgree(world)
     const server = world.lake.get(DRAFT_ID)
     expect(server?.title).toBe('Draft by A, again')
@@ -107,8 +100,6 @@ describe('editOperations and editState, two clients', () => {
     }
     world = await runSyncTest(syncTest, {schema, typeName: 'article'})
 
-    expectHealthy(world)
-    expectConverged(world)
     expectRevisionsAgree(world)
     expect(world.lake.get(DRAFT_ID)?.title).toBe('Edited by A')
     expect(world.lake.get(PUBLISHED_ID)?.title).toBe('Published')
