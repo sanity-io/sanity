@@ -1,4 +1,5 @@
 import {configure} from '@chromatic-com/vitest'
+import {AddIcon} from '@sanity/icons/Add'
 import {BoundaryElementProvider, Button} from '@sanity/ui'
 import {useState} from 'react'
 import {describe, expect, it} from 'vitest'
@@ -28,13 +29,18 @@ function MenuStory({withLeadingItem}: {withLeadingItem: boolean}) {
           button={<Button data-testid="open-menu" text="Open" />}
           filterPlaceholder="Search"
           filterQuery={filterQuery}
-          leadingItems={showLeading ? <MenuItem data-testid="leading-row" text="Default" /> : null}
+          // Every row of the pill menus has an icon, so every row reserves the icon slot
+          leadingItems={
+            showLeading ? (
+              <MenuItem data-testid="leading-row" icon={AddIcon} text="Default" />
+            ) : null
+          }
           onFilterChange={setFilterQuery}
           sections={[
             {
               key: 'rows',
               label: 'Rows',
-              items: matching.map((row) => <MenuItem key={row} text={row} />),
+              items: matching.map((row) => <MenuItem icon={AddIcon} key={row} text={row} />),
             },
           ]}
           testId="pill-menu"
@@ -90,7 +96,7 @@ describe('DocumentNavigationMenu: gap below the search field', () => {
 })
 
 describe('DocumentNavigationMenu: inset around the rows', () => {
-  it('keeps the rows 8px from the sides and the last row 4px from the bottom', async () => {
+  it('keeps the rows 8px from the sides and the last row 8px from the bottom', async () => {
     void render(<MenuStory withLeadingItem />)
     await page.getByTestId('open-menu').click()
     const menu = page.getByTestId('pill-menu')
@@ -122,6 +128,41 @@ describe('DocumentNavigationMenu: inset around the rows', () => {
     const {left, right, below} = geometry()
     expect(Math.abs(left - 8)).toBeLessThanOrEqual(1)
     expect(Math.abs(right - 8)).toBeLessThanOrEqual(1)
-    expect(Math.abs(below - 4)).toBeLessThanOrEqual(1)
+    expect(Math.abs(below - 8)).toBeLessThanOrEqual(1)
+  })
+})
+
+/** The innermost element that holds exactly this text. */
+function textOf(root: Element, text: string): Element {
+  const match = [...root.querySelectorAll('*')].findLast(
+    (element) => element.textContent === text && element.getBoundingClientRect().width > 0,
+  )
+  if (!match) throw new Error(`"${text}" not found`)
+  return match
+}
+
+describe('DocumentNavigationMenu: section labels', () => {
+  it("start where the rows' text starts, past the icon slot", async () => {
+    void render(<MenuStory withLeadingItem />)
+    await page.getByTestId('open-menu').click()
+    const menu = page.getByTestId('pill-menu')
+    await expect.element(menu).toBeVisible()
+    const section = page.getByTestId('pill-menu-section-rows')
+    await expect.element(section).toBeVisible()
+
+    const offsets = () => {
+      const box = menu.element().getBoundingClientRect()
+      return {
+        label: textOf(section.element(), 'Rows').getBoundingClientRect().left - box.left,
+        rowText: textOf(menu.element(), 'Alpha').getBoundingClientRect().left - box.left,
+        leadingText: textOf(menu.element(), 'Default').getBoundingClientRect().left - box.left,
+      }
+    }
+    await expectStable(() => JSON.stringify(offsets()))
+
+    const {label, rowText, leadingText} = offsets()
+    expect(Math.abs(label - rowText)).toBeLessThanOrEqual(1)
+    expect(Math.abs(rowText - leadingText)).toBeLessThanOrEqual(1)
+    expect(Math.abs(label - 41)).toBeLessThanOrEqual(1)
   })
 })

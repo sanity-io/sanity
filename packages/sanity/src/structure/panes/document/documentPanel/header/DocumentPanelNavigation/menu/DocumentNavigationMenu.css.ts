@@ -37,3 +37,14 @@ export const documentNavigationMenu = css({
     overflow: 'hidden',
   },
 })
+
+/**
+ * A section's label starts where its rows' text does, past the icon slot every row of these menus
+ * reserves: 33px from the row's edge (the menu item's padding, icon slot and gap), so 41px from the
+ * menu's. The browser test checks that the label and the row text line up.
+ */
+export const menuSectionLabel = css({
+  '&&': {
+    paddingLeft: '33px',
+  },
+})
