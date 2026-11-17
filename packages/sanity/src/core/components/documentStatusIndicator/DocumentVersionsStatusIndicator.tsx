@@ -16,7 +16,15 @@ import {type DocumentStatusIconKind, resolveDocumentStatusIcons} from './resolve
 
 interface DocumentStatusProps {
   documentVersions: VersionInfoDocumentStub[]
+  /**
+   * Whether the row ends with the filled or outline variant diamond while a variant is selected.
+   * Document lists and search results show it; reference field previews pass `false`, so a
+   * reference shows only the status marks of the version it resolves to.
+   */
+  variantMarks?: boolean
 }
+
+const VARIANT_MARKS: ReadonlySet<DocumentStatusIconKind> = new Set(['variant', 'variant-empty'])
 
 const ICON_SLOT_WIDTH = 15
 
@@ -156,22 +164,28 @@ export function DocumentStatusIcon({
  *
  * @internal
  */
-export function DocumentVersionsStatusIndicator({documentVersions}: DocumentStatusProps) {
+export function DocumentVersionsStatusIndicator({
+  documentVersions,
+  variantMarks = true,
+}: DocumentStatusProps) {
   const {bundle, selectedPerspective, selectedVariants} = usePerspective()
   const selectedVariant = getDefaultVariant(selectedVariants)
   const {t} = useTranslation()
 
-  const icons = resolveDocumentStatusIcons({
+  const resolvedIcons = resolveDocumentStatusIcons({
     bundle,
     variantId: selectedVariant?._id,
     documentVersions,
   })
+  const icons = variantMarks
+    ? resolvedIcons
+    : resolvedIcons.filter((icon) => !VARIANT_MARKS.has(icon))
 
   if (icons.length === 0) {
     return null
   }
 
-  if (selectedVariant) {
+  if (selectedVariant && variantMarks) {
     const variant = getVariantTitle(selectedVariant)
     return (
       <VariantClusterRoot data-testid="document-status-indicator">
