@@ -1,10 +1,10 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {type ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
-import {Menu} from '@sanity/ui/menu'
 import {useCallback, useId, useMemo} from 'react'
 import {Grid} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
+import {Menu} from '../../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'

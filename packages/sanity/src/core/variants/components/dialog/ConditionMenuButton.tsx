@@ -5,10 +5,10 @@ import {
   Button as UIButton,
   Spinner,
 } from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
 import {type ComponentProps, type ComponentType, type CSSProperties, useId} from 'react'
 import {Text, Box, Flex, Icon} from 'ui5'
 
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {menuButton} from './ConditionMenuButton.css.ts'

@@ -2,7 +2,6 @@ import {useEditor} from '@portabletext/editor'
 import {isActiveStyle} from '@portabletext/editor/selectors'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {
-  Menu,
   // oxlint-disable-next-line no-restricted-imports
   MenuItem,
 } from '@sanity/ui/menu'
@@ -11,6 +10,7 @@ import {styled} from 'styled-components'
 import {Text} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
+import {Menu} from '../../../../../ui-components/menu/Menu'
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'

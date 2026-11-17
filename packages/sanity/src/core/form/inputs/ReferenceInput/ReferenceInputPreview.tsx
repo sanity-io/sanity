@@ -3,7 +3,7 @@ import {SyncIcon as ReplaceIcon} from '@sanity/icons/Sync'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Reference} from '@sanity/types'
 import {Card, type CardTone} from '@sanity/ui'
-import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {MenuDivider} from '@sanity/ui/menu'
 import {
   type ComponentProps,
   type FocusEvent,
@@ -17,6 +17,7 @@ import {
 import {IntentLink} from 'sanity/router'
 import {Box, Flex, VStack} from 'ui5'
 
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'

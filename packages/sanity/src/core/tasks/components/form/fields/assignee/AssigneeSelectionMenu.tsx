@@ -1,7 +1,6 @@
 import {UserIcon} from '@sanity/icons/User'
 import {Badge, TextInput, VirtualList} from '@sanity/ui'
 import {
-  Menu,
   // oxlint-disable-next-line no-restricted-imports
   MenuItem,
 } from '@sanity/ui/menu'
@@ -9,6 +8,7 @@ import deburr from 'lodash-es/deburr.js'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {Text, Container, Flex, Box} from 'ui5'
 
+import {Menu} from '../../../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
 import {LoadingBlock} from '../../../../../components/loadingBlock/LoadingBlock'
 import {type UserWithPermission} from '../../../../../hooks/useUserListWithPermissions'

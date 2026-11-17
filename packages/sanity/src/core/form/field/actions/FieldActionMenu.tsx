@@ -1,9 +1,9 @@
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {Card} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
 import {memo, type PointerEvent, useCallback, useId, useMemo, useState} from 'react'
 
 import {Button, type ButtonProps} from '../../../../ui-components/button/Button'
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton/MenuButton'
 import {
   type DocumentFieldActionGroup,
