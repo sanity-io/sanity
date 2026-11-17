@@ -248,6 +248,7 @@ export {
 export {
   type FileDefinition,
   type FileOptions,
+  type SchemaAssetSources,
   type FileRule,
   type FileValue,
   type MediaLibraryFilter,

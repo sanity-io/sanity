@@ -1,8 +1,14 @@
-interface Options {
+/**
+ * @internal
+ */
+export interface Options {
   errorLabel: string
 }
 
-type Parser<Type> = (line: string) => Type
+/**
+ * @internal
+ */
+export type Parser<Type> = (line: string) => Type
 
 /**
  * Create a safe JSON parser that is able to handle lines interrupted by an error object.

@@ -1,5 +1,5 @@
-import {Box} from '@sanity/ui'
 import {css, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 export const CustomTextInputBox = styled(Box)<{
   $background?: boolean

@@ -1,4 +1,4 @@
-import {memo, useCallback, useMemo} from 'react'
+import {memo, useMemo} from 'react'
 
 import {Panel} from './panels/Panel'
 import {PanelResizer} from './panels/PanelResizer'
@@ -28,7 +28,7 @@ export interface PresentationNavigatorProps {
 /** @internal */
 export function usePresentationNavigator(
   props: UsePresentationNavigatorProps,
-): [UsePresentationNavigatorState, (props: PresentationNavigatorProps) => React.JSX.Element] {
+): UsePresentationNavigatorState {
   const {unstable_navigator} = props
 
   const navigatorProvided = !!unstable_navigator?.component
@@ -43,14 +43,22 @@ export function usePresentationNavigator(
     return () => setNavigatorEnabled((enabled) => !enabled)
   }, [navigatorProvided, setNavigatorEnabled])
 
-  const Component = useCallback(
-    function PresentationNavigator(componentProps: PresentationNavigatorProps) {
-      return <>{navigatorEnabled && <Navigator {...unstable_navigator!} {...componentProps} />}</>
-    },
-    [navigatorEnabled, unstable_navigator],
-  )
+  return {navigatorEnabled, toggleNavigator}
+}
 
-  return [{navigatorEnabled, toggleNavigator}, Component]
+/**
+ * Renders the configured navigator panel while it is enabled. A module-scope component rather
+ * than one returned from `usePresentationNavigator`, so its identity does not change with the
+ * state it renders.
+ *
+ * @internal
+ */
+export function PresentationNavigator(
+  props: PresentationNavigatorProps & UsePresentationNavigatorProps & {navigatorEnabled: boolean},
+) {
+  const {navigatorEnabled, unstable_navigator, ...navigatorProps} = props
+  if (!navigatorEnabled || !unstable_navigator) return null
+  return <Navigator {...unstable_navigator} {...navigatorProps} />
 }
 
 function NavigatorComponent(props: NavigatorOptions & PresentationNavigatorProps) {

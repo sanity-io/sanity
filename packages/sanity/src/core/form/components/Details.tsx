@@ -1,20 +1,14 @@
 import {ToggleArrowRightIcon} from '@sanity/icons/ToggleArrowRight'
-import {Box, Flex, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
+import {Text, Flex, Box, type MarginProps, Icon, type TextProps} from 'ui5'
 
-interface DetailsProps {
+interface DetailsProps extends MarginProps {
   children?: ReactNode
-  margin?: number | number[]
-  marginX?: number | number[]
-  marginY?: number | number[]
-  marginTop?: number | number[]
-  marginRight?: number | number[]
-  marginBottom?: number | number[]
-  marginLeft?: number | number[]
   open?: boolean
   icon?: ReactNode
   title?: ReactNode
+  tone?: TextProps['tone']
 }
 
 const HeaderButton = styled.button`
@@ -31,8 +25,8 @@ const HeaderButton = styled.button`
   outline: none;
 `
 
-const ToggleArrow = styled(ToggleArrowRightIcon)<{open: boolean}>`
-  transform: ${(props) => (props.open ? 'rotate(90deg)' : '')};
+const ToggleArrow = styled(ToggleArrowRightIcon)<{$open: boolean}>`
+  transform: ${(props) => (props.$open ? 'rotate(90deg)' : 'none')};
 `
 
 const Header = styled(Flex)`
@@ -41,38 +35,42 @@ const Header = styled(Flex)`
 `
 
 const IconBox = styled(Flex)`
-  & > div > svg {
+  & > svg {
     transform: rotate(0);
     transition: transform 100ms;
   }
 
-  &[data-open] > div > svg {
+  &[data-open] > svg {
     transform: rotate(90deg);
   }
 `
 
 export function Details(props: DetailsProps) {
-  const {children, open: openProp, icon, title = 'Details', ...restProps} = props
+  const {children, open: openProp, icon, title = 'Details', tone, ...restProps} = props
   const [open, setOpen] = useState(openProp || false)
 
   const handleToggle = useCallback(() => setOpen((v) => !v), [])
 
-  // oxlint-disable-next-line react/react-compiler
+  // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
   useEffect(() => setOpen(openProp || false), [openProp])
 
   return (
     <Box {...restProps}>
       <HeaderButton type="button" onClick={handleToggle}>
         <Header>
-          <Flex align="center">
+          <Flex alignItems="center">
             <IconBox data-open={open ? '' : undefined}>
-              <Text size={1}>
-                <ToggleArrow open={open} />
-              </Text>
+              <Icon
+                size={1}
+                muted
+                icon={<ToggleArrow $open={open} />}
+                tone={tone}
+                style={{margin: '-0.375rem'}}
+              />
             </IconBox>
             {icon && <Box marginLeft={1}>{icon}</Box>}
-            <Box flex={1} marginLeft={1}>
-              <Text textOverflow="ellipsis" size={1} weight="medium">
+            <Box flexBasis="0%" flexGrow={1} marginLeft={1}>
+              <Text truncate={1} size={1} weight="medium" as="div" trim={true} tone={tone}>
                 {title}
               </Text>
             </Box>

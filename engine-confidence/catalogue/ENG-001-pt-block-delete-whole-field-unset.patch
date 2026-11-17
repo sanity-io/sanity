@@ -1,0 +1,13 @@
+diff --git a/packages/sanity/src/core/form/members/object/fields/ArrayOfObjectsField.tsx b/packages/sanity/src/core/form/members/object/fields/ArrayOfObjectsField.tsx
+index 290c7649bb..466db90260 100644
+--- a/packages/sanity/src/core/form/members/object/fields/ArrayOfObjectsField.tsx
++++ b/packages/sanity/src/core/form/members/object/fields/ArrayOfObjectsField.tsx
+@@ -158,7 +158,7 @@ export function ArrayOfObjectsField(props: {
+         (patch) => patch.type === 'unset' && patch.path.length === 1,
+       )
+ 
+-      if (isRemovingLastItem && !isPortableTextArray) {
++      if (isRemovingLastItem) {
+         // apply the patch to the current value
+         valueRef.current = applyAll(valueRef.current || [], patches)
+ 

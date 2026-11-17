@@ -7,9 +7,10 @@ import {
   type SlugSourceFn,
   type SlugValue,
 } from '@sanity/types'
-import {Box, Card, Flex, Stack, TextInput} from '@sanity/ui'
+import {Card, TextInput} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {type FormEvent, useCallback, useImperativeHandle, useMemo, useRef} from 'react'
+import {Box, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -144,9 +145,9 @@ export function SlugInput(props: SlugInputProps) {
   useImperativeHandle(elementProps.ref, () => inputRef.current)
 
   return (
-    <Stack gap={3}>
+    <VStack gap={3}>
       <Flex gap={1}>
-        <Box flex={1}>
+        <Box flexBasis="0%" flexGrow={1}>
           <TextInput
             customValidity={errors.length > 0 ? errors[0].message : ''}
             disabled={isUpdating}
@@ -179,6 +180,6 @@ export function SlugInput(props: SlugInputProps) {
           />
         )}
       </Flex>
-    </Stack>
+    </VStack>
   )
 }

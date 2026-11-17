@@ -170,6 +170,7 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
   })
 
   useEffect(() => {
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
     scheduleUpdate()
   }, [allReportedValues, hovered, isReviewChangesOpen, rootElement])
 
@@ -187,11 +188,13 @@ export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
     const observer = new ResizeObserver(() => scheduleUpdate())
     observer.observe(rootElement)
     return () => observer.disconnect()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [rootElement])
 
   const scrollContext = use(ScrollContext)
   useEffect(() => {
     return scrollContext?.subscribe(() => scheduleUpdate())
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [scrollContext])
 
   const visibleConnector = useMemo(() => {

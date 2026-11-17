@@ -9,7 +9,7 @@ function isPortableTextInputProps(
   return isArrayOfBlocksSchemaType(inputProps.schemaType)
 }
 
-export function CommentsInput(props: InputProps) {
+export default function CommentsInput(props: InputProps) {
   if (isPortableTextInputProps(props)) {
     return <CommentsPortableTextInput {...props} />
   }

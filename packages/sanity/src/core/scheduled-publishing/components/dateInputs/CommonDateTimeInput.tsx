@@ -56,8 +56,9 @@ export function CommonDateTimeInput(props: Props & RefAttributes<HTMLInputElemen
   const [localValue, setLocalValue] = useState<string | null>(null)
 
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setLocalValue(null)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [value])
 
   const {zoneDateToUtc} = useTimeZone(timeZoneScope)
@@ -149,6 +150,7 @@ export function CommonDateTimeInput(props: Props & RefAttributes<HTMLInputElemen
           id={id}
           selectTime={selectTime}
           timeStep={timeStep}
+          // oxlint-disable-next-line react/purity -- the example placeholder shows the current date and time
           placeholder={placeholder || `e.g. ${formatInputValue(new Date())}`}
           ref={inputRef}
           value={parseResult?.date}

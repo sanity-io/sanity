@@ -1,4 +1,4 @@
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 
 import {debug} from './debug'
 import {Document} from './Document'

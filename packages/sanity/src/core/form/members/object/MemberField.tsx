@@ -1,6 +1,8 @@
+import {rem, Skeleton} from '@sanity/ui'
 import {memo} from 'react'
 
 import {type FIXME} from '../../../FIXME'
+import {FormRow} from '../../components/layout/FormRow'
 import {type FieldMember} from '../../store/types/members'
 import {
   type RenderAnnotationCallback,
@@ -10,6 +12,7 @@ import {
   type RenderInputCallback,
   type RenderPreviewCallback,
 } from '../../types/renderCallback'
+import {FormNodeSuspense, type FormNodeComponentKey} from '../common/FormNodeSuspense'
 import {ArrayOfObjectsField} from './fields/ArrayOfObjectsField'
 import {ArrayOfPrimitivesField} from './fields/ArrayOfPrimitivesField'
 import {
@@ -33,8 +36,33 @@ export interface MemberFieldProps {
   renderPreview: RenderPreviewCallback
 }
 
+const FIELD_COMPONENTS: readonly FormNodeComponentKey[] = ['field', 'input']
+
+// In a `FormRow`, so it lines up with the field it stands in for
+function FieldBestEffortFallback() {
+  return (
+    <FormRow>
+      <Skeleton data-testid="custom-field-fallback" radius={1} animated style={{height: rem(35)}} />
+    </FormRow>
+  )
+}
+
 /** @internal */
 export const MemberField = memo(function MemberField(props: MemberFieldProps) {
+  const {member} = props
+  return (
+    <FormNodeSuspense
+      fallback={<FieldBestEffortFallback />}
+      schemaType={member.field.schemaType}
+      path={member.field.path}
+      components={FIELD_COMPONENTS}
+    >
+      <FieldOfMemberType {...props} />
+    </FormNodeSuspense>
+  )
+})
+
+function FieldOfMemberType(props: MemberFieldProps) {
   const {
     member,
     renderAnnotation,
@@ -98,4 +126,4 @@ export const MemberField = memo(function MemberField(props: MemberFieldProps) {
   }
 
   return null
-})
+}

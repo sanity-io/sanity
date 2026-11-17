@@ -1,6 +1,7 @@
 import {type AssetSource} from '@sanity/types'
-import {Box, Card} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
+import {Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../core/changeIndicators/ChangeIndicator'
 import {AssetSourceBrowser} from '../../../core/form/inputs/files/common/AssetSourceBrowser'

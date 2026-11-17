@@ -1,8 +1,8 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type Schema, type SchemaType} from '@sanity/types'
 import {useMemo} from 'react'
-import {combineLatest, type Observable, of} from 'rxjs'
-import {map, shareReplay, switchMap} from 'rxjs/operators'
+import {combineLatest, type Observable, of, throwError} from 'rxjs'
+import {distinctUntilChanged, map, shareReplay, switchMap} from 'rxjs/operators'
 
 import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
@@ -10,10 +10,14 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {createHookFromObservableFactory} from '../../util/createHookFromObservableFactory'
 import {getDraftId, getPublishedId, getIdPair} from '../../util/draftUtils'
 import {type PartialExcept} from '../../util/PartialExcept'
-import {useGrantsStore} from '../datastores'
+import {shallowEquals} from '../../util/shallowEquals'
+import {useDocumentPreviewStore, useGrantsStore} from '../datastores'
 import {snapshotPair} from '../document/document-pair/snapshotPair'
 import {type DocumentStoreExtraOptions} from '../document/getPairListener'
+import {type DocumentPairPermissionsListener} from '../document/types'
 import {memoize} from '../document/utils/createMemoizer'
+import {createMemoKey, getClientCredentialSegments} from '../document/utils/memoKey'
+import {retryGlobalDocumentLoad} from '../document/utils/retryGlobalDocumentLoad'
 import {useCurrentUser} from '../user/hooks'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 
@@ -31,12 +35,15 @@ function getSchemaType(schema: Schema, typeName: string): SchemaType {
   return type
 }
 
-interface PairPermissionsOptions {
-  grantsStore: GrantsStore
-  permission: DocumentPermission
+interface PairDocuments {
   draft: SanityDocument | null
   version: SanityDocument | null
   published: SanityDocument | null
+}
+
+interface PairPermissionsOptions extends PairDocuments {
+  grantsStore: GrantsStore
+  permission: DocumentPermission
   liveEdit: boolean
 }
 
@@ -184,6 +191,21 @@ export interface DocumentPairPermissionsOptions {
   version?: string
   permission: DocumentPermission
   /**
+   * Where the documents the permissions are checked against come from. `document`, the default,
+   * checks out the document pair: that opens a listener for the document, and sees local edits as
+   * they are made. `global` follows the draft, published and version documents through the
+   * document preview store's shared global listener instead, so it opens no listener of its own,
+   * but sees a change only once the server has it. Use it where nobody edits the document, like a
+   * list or a table of documents.
+   */
+  listener?: DocumentPairPermissionsListener
+  /**
+   * Follows a document through the global listener, `unstable_observeDocument` of the document
+   * preview store. Required when `listener` is `global`. `useDocumentPairPermissions` takes it
+   * from the studio's document preview store.
+   */
+  observeDocument?: (id: string) => Observable<SanityDocument | undefined>
+  /**
    * Identity of the current user. Included in the memoization key so that an
    * in-place user switch (same project, no reload) does not replay a previous
    * user's grants from the module-level memo cache.
@@ -213,6 +235,8 @@ function getDocumentPairPermissionsUncached({
   type,
   version: v,
   pairListenerOptions,
+  listener = 'document',
+  observeDocument,
 }: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> {
   // this case was added to fix a crash that would occur if the `schemaType` was
   // omitted from `S.documentList()`
@@ -224,21 +248,38 @@ function getDocumentPairPermissionsUncached({
   }
 
   const liveEdit = Boolean(getSchemaType(schema, type).liveEdit)
+  const idPair = getIdPair(id, {version: v})
 
-  return snapshotPair(
-    client,
-    getIdPair(id, {version: v}),
-    type,
-    undefined,
-    pairListenerOptions,
-  ).pipe(
-    switchMap((pair) =>
-      combineLatest([
-        pair.draft.snapshots$,
-        pair.published.snapshots$,
-        pair.version?.snapshots$ || of(null),
-      ]).pipe(map(([draft, published, version]) => ({draft, published, version}))),
-    ),
+  let documents$: Observable<PairDocuments>
+  if (listener === 'global') {
+    if (!observeDocument) {
+      return throwError(
+        () => new Error('Checking permissions through the global listener needs `observeDocument`'),
+      )
+    }
+    const observe = (documentId: string) =>
+      observeDocument(documentId).pipe(
+        retryGlobalDocumentLoad(),
+        map((document) => document ?? null),
+      )
+    documents$ = combineLatest([
+      observe(idPair.draftId),
+      observe(idPair.publishedId),
+      idPair.versionId ? observe(idPair.versionId) : of(null),
+    ]).pipe(map(([draft, published, version]) => ({draft, published, version})))
+  } else {
+    documents$ = snapshotPair(client, idPair, type, undefined, pairListenerOptions).pipe(
+      switchMap((pair) =>
+        combineLatest([
+          pair.draft.snapshots$,
+          pair.published.snapshots$,
+          pair.version?.snapshots$ || of(null),
+        ]).pipe(map(([draft, published, version]) => ({draft, published, version}))),
+      ),
+    )
+  }
+
+  return documents$.pipe(
     switchMap(({draft, published, version}) => {
       const pairPermissions = getPairPermissions({
         grantsStore,
@@ -279,7 +320,10 @@ function getDocumentPairPermissionsUncached({
 
 export const getDocumentPairPermissions = memoize(
   (options: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> =>
-    getDocumentPairPermissionsUncached(options).pipe(shareLatestWithRefCount()),
+    getDocumentPairPermissionsUncached(options).pipe(
+      distinctUntilChanged(shallowEquals),
+      shareLatestWithRefCount(),
+    ),
   ({
     client,
     schema,
@@ -288,8 +332,12 @@ export const getDocumentPairPermissions = memoize(
     version,
     permission,
     userId,
+    listener = 'document',
   }: DocumentPairPermissionsOptions): string => {
-    const {dataset = '', projectId = ''} = client.config()
+    // Keyed by the credential: this captures `client` and issues grants
+    // requests through it, so a re-login must build a fresh entry instead of
+    // replaying the stale-token client, which would 401 (see
+    // getClientCredentialSegments).
     // `liveEdit` is derived from the schema and branches the resulting permission
     // observable, so it must be part of the key: workspaces sharing a
     // project/dataset can define the same `type` with a different `liveEdit`.
@@ -298,16 +346,17 @@ export const getDocumentPairPermissions = memoize(
     // (id, version) to `getIdPair(id, {version})`, a pure function of
     // (getPublishedId(id), version). The raw `version` string is kept as-is;
     // never call getIdPair here (it throws on version 'drafts'|'published').
-    return [
-      dataset,
-      projectId,
+    // `listener` decides where the documents come from, so each listener gets its own entry.
+    return createMemoKey([
+      ...getClientCredentialSegments(client),
       getPublishedId(id),
-      version ?? '',
-      userId ?? '',
+      version,
+      userId,
       type,
       permission,
-      liveEdit,
-    ].join('-')
+      String(liveEdit),
+      listener,
+    ])
   },
 )
 
@@ -349,12 +398,15 @@ export function useDocumentPairPermissions({
   schema: overrideSchema,
   grantsStore: overrideGrantsStore,
   pairListenerOptions,
-}: PartialExcept<DocumentPairPermissionsOptions, 'id' | 'type' | 'permission'>): ReturnType<
-  typeof useDocumentPairPermissionsFromHookFactory
-> {
+  listener = 'document',
+}: PartialExcept<
+  Omit<DocumentPairPermissionsOptions, 'observeDocument'>,
+  'id' | 'type' | 'permission'
+>): ReturnType<typeof useDocumentPairPermissionsFromHookFactory> {
   const defaultClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const defaultSchema = useSchema()
   const defaultGrantsStore = useGrantsStore()
+  const observeDocument = useDocumentPreviewStore().unstable_observeDocument
   const currentUser = useCurrentUser()
 
   const client = useMemo(() => overrideClient || defaultClient, [defaultClient, overrideClient])
@@ -377,8 +429,22 @@ export function useDocumentPairPermissions({
         pairListenerOptions,
         version,
         userId,
+        listener,
+        observeDocument,
       }),
-      [client, schema, grantsStore, id, permission, type, pairListenerOptions, version, userId],
+      [
+        client,
+        schema,
+        grantsStore,
+        id,
+        permission,
+        type,
+        pairListenerOptions,
+        version,
+        userId,
+        listener,
+        observeDocument,
+      ],
     ),
   )
 }

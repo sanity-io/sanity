@@ -11,9 +11,18 @@ import {
 import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {getAllByDataUi, getByDataUi} from '../../../../../../test/setup/customQueries'
+import {
+  mockUseDocumentPairPermissions,
+  useDocumentPairPermissionsMockReturn,
+} from '../../../../../../test/mocks/useDocumentPairPermissions.mock'
+import {
+  getAllByDataUi,
+  getByDataUi,
+  queryByDataUi,
+} from '../../../../../../test/setup/customQueries'
 import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {type DocumentActionsResolver} from '../../../../config/types'
 import type * as ConnectionStatusStoreMod from '../../../../store/connection-status/connection-status-store'
 import {
   activeASAPRelease,
@@ -21,7 +30,9 @@ import {
   archivedScheduledRelease,
   scheduledRelease,
 } from '../../../__fixtures__/release.fixture'
+import {mockUseDocumentVersions} from '../../../hooks/__tests__/__mocks__/useDocumentVersions.mock'
 import {releasesUsEnglishLocaleBundle} from '../../../i18n'
+import {type VersionInfoDocumentStub} from '../../../store/types'
 import {ReleaseSummary, type ReleaseSummaryProps} from '../ReleaseSummary'
 import {
   documentsInRelease,
@@ -101,6 +112,37 @@ vi.mock('../../../../store/connection-status/connection-status-store', async (im
   }
 })
 
+vi.mock('../../../hooks/useDocumentVersions', () => ({
+  useDocumentVersions: vi.fn(),
+}))
+
+vi.mock('../../../../store/grants/documentPairPermissions', () => ({
+  useDocumentPairPermissions: vi.fn(() => useDocumentPairPermissionsMockReturn),
+}))
+
+const VARIANT_ID = '_.variants.nordic'
+
+const variantPublishedSibling = {
+  _id: 'versions.p3n8xw2.123',
+  _rev: 'abc',
+  _type: 'document',
+  _createdAt: '',
+  _updatedAt: '',
+  _system: {
+    scopeId: 'p3n8xw2',
+    variants: [{_ref: VARIANT_ID, _key: 'nordic'}],
+    group: {_ref: '123', _weak: true as const},
+  },
+} as VersionInfoDocumentStub
+
+const setDocumentVersions = (versions: VersionInfoDocumentStub[], loading = false) =>
+  mockUseDocumentVersions.mockReturnValue({
+    data: versions.map(({_id}) => _id),
+    versions,
+    error: null,
+    loading,
+  })
+
 const releaseDocuments = [
   {
     ...documentsInRelease,
@@ -129,6 +171,28 @@ const releaseDocuments = [
   },
 ]
 
+// A variant release version. `publishedDocumentExists` addresses the base published document, so
+// it is set against the variant's own publish state to keep the two apart.
+const variantRow = {
+  ...releaseDocuments[0],
+  document: {
+    ...releaseDocuments[0].document,
+    _id: 'versions.k7fh2qzs9m.123',
+    publishedDocumentExists: false,
+    _system: {
+      bundleId: 'activeASAPRelease',
+      scopeId: 'k7fh2qzs9m',
+      variants: [{_ref: VARIANT_ID, _key: 'nordic'}],
+      group: {_ref: '123', _weak: true as const},
+    },
+  },
+}
+
+const publishedBaseVariantRow = {
+  ...variantRow,
+  document: {...variantRow.document, publishedDocumentExists: true},
+}
+
 const ScrollContainer: FC<PropsWithChildren> = ({children}) => {
   const [ref, setRef] = useState<HTMLDivElement | null>(null)
 
@@ -144,11 +208,14 @@ const ScrollContainer: FC<PropsWithChildren> = ({children}) => {
 
 const renderTest = async (
   props: Partial<ReleaseSummaryProps>,
-  options?: {variantsEnabled?: boolean},
+  options?: {variantsEnabled?: boolean; documentActions?: DocumentActionsResolver},
 ) => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
-    ...(options?.variantsEnabled ? {config: {beta: {variants: {enabled: true}}}} : undefined),
+    config: {
+      ...(options?.variantsEnabled ? {beta: {variants: {enabled: true}}} : undefined),
+      ...(options?.documentActions ? {document: {actions: options.documentActions}} : undefined),
+    },
   })
 
   return render(
@@ -169,8 +236,30 @@ const renderTest = async (
   )
 }
 
+const getUnpublishMenuItem = (openMenu: HTMLElement) =>
+  within(openMenu).getByRole('menuitem', {name: /Unpublish/, hidden: true})
+
+const publishOnly: DocumentActionsResolver = (prev) =>
+  prev.filter(({action}) => action === 'publish')
+
+// Every row keeps its menu mounted, and closed ones are hidden with `display: none`. Runtime
+// styles are disabled in jsdom, so the open menu does not read as visible to `getByRole` either,
+// which is why it is picked by the absence of that hidden style.
+const getOpenRowMenu = () => {
+  const [openMenu] = getAllByDataUi(document.body, 'MenuButton__popover').filter(
+    (popover) => popover.style.display !== 'none',
+  )
+
+  return openMenu
+}
+
 describe('ReleaseSummary', () => {
   setupVirtualListEnv()
+
+  beforeEach(() => {
+    mockUseDocumentPairPermissions.mockReturnValue(useDocumentPairPermissionsMockReturn)
+    setDocumentVersions([])
+  })
 
   describe('for an active release', () => {
     const prerenderTest = async () => {
@@ -197,15 +286,8 @@ describe('ReleaseSummary', () => {
 
       await userEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
 
-      // Every row keeps its menu mounted, and closed ones are hidden with `display: none`.
-      // Runtime styles are disabled in jsdom, so the open menu does not read as visible to
-      // `getByRole` either, which is why it is picked by the absence of that hidden style.
-      const [openMenu] = getAllByDataUi(document.body, 'MenuButton__popover').filter(
-        (popover) => popover.style.display !== 'none',
-      )
-
       await userEvent.click(
-        within(openMenu).getByRole('menuitem', {name: 'Discard version', hidden: true}),
+        within(getOpenRowMenu()).getByRole('menuitem', {name: 'Discard version', hidden: true}),
       )
 
       expect(await screen.findByRole('dialog')).toBeInTheDocument()
@@ -356,6 +438,94 @@ describe('ReleaseSummary', () => {
       expect(screen.queryAllByTestId('table-row')).toHaveLength(0)
       expect(screen.getByRole('tab', {name: /all/i})).toBeInTheDocument()
       expect(searchInput).toHaveFocus()
+    })
+  })
+
+  // Both table shapes share one `renderRowActions`, so the document.actions gate has to hold for
+  // the default table and the beta.variants DocumentTable alike.
+  describe.each([
+    {tableShape: 'default table', variantsEnabled: false},
+    {tableShape: 'variants DocumentTable', variantsEnabled: true},
+  ])('row action menu in the $tableShape', ({variantsEnabled}) => {
+    beforeEach(() => {
+      setDocumentVersions([variantPublishedSibling])
+    })
+
+    const findFirstRowMenuButton = async (documentActions?: DocumentActionsResolver) => {
+      await renderTest({}, {variantsEnabled, documentActions})
+      await screen.findByTestId('document-table-card')
+
+      const [firstDocumentRow] = screen.getAllByTestId('table-row')
+      return queryByDataUi(firstDocumentRow, 'MenuButton')
+    }
+
+    const openFirstRowMenu = async (props: Partial<ReleaseSummaryProps> = {}) => {
+      await renderTest(props, {variantsEnabled})
+      await screen.findByTestId('document-table-card')
+
+      const [firstDocumentRow] = screen.getAllByTestId('table-row')
+      await userEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
+
+      return getOpenRowMenu()
+    }
+
+    it('renders while discardVersion and unpublishVersion are configured', async () => {
+      expect(await findFirstRowMenuButton()).toBeInTheDocument()
+    })
+
+    it('is gone once both action ids are omitted from document.actions', async () => {
+      expect(await findFirstRowMenuButton(publishOnly)).not.toBeInTheDocument()
+    })
+
+    it('drops unpublish for a cardinality-one release row', async () => {
+      await renderTest({release: activeCardinalityOneRelease}, {variantsEnabled})
+      await screen.findByTestId('document-table-card')
+
+      const [firstDocumentRow] = screen.getAllByTestId('table-row')
+      await userEvent.click(getByDataUi(firstDocumentRow, 'MenuButton'))
+
+      const openMenu = getOpenRowMenu()
+
+      expect(
+        within(openMenu).getByRole('menuitem', {name: 'Discard version', hidden: true}),
+      ).toBeInTheDocument()
+      expect(
+        within(openMenu).queryByRole('menuitem', {name: 'Unpublish', hidden: true}),
+      ).not.toBeInTheDocument()
+    })
+
+    it('enables unpublish for a variant row whose variant is published', async () => {
+      setDocumentVersions([variantPublishedSibling])
+
+      expect(getUnpublishMenuItem(await openFirstRowMenu({documents: [variantRow]}))).toBeEnabled()
+    })
+
+    it('disables unpublish for a variant row with no published sibling', async () => {
+      setDocumentVersions([])
+
+      expect(
+        getUnpublishMenuItem(await openFirstRowMenu({documents: [publishedBaseVariantRow]})),
+      ).toBeDisabled()
+    })
+
+    // The sibling is present, so the readiness gate is the only thing disabling the item.
+    it('disables unpublish while the variant publish state resolves', async () => {
+      setDocumentVersions([variantPublishedSibling], true)
+
+      expect(
+        getUnpublishMenuItem(await openFirstRowMenu({documents: [publishedBaseVariantRow]})),
+      ).toBeDisabled()
+    })
+
+    it('explains a denied unpublish with the roles message', async () => {
+      mockUseDocumentPairPermissions.mockReturnValue([{granted: false, reason: 'nope'}, false])
+
+      const openMenu = await openFirstRowMenu({documents: [releaseDocuments[0]]})
+
+      expect(getUnpublishMenuItem(openMenu)).toBeDisabled()
+      expect(
+        screen.getByText('You do not have permission to unpublish this document.'),
+      ).toBeInTheDocument()
     })
   })
 

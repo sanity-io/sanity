@@ -1,6 +1,7 @@
 import {type Browser, type BrowserContext, chromium, type CDPSession, type Page} from 'playwright'
 
-import {type BenchSide, EXPERIMENT, FAKE_TOKEN, REFERENCE} from '../constants'
+import {type BenchSide, EXPERIMENT, FAKE_SESSION_ID, FAKE_TOKEN, REFERENCE} from '../constants'
+import {AUTH_PROVIDERS} from '../mock-api/project'
 import {TINY_PNG_BASE64} from '../scenarios/fixtures/assets'
 
 const TINY_PNG = Buffer.from(TINY_PNG_BASE64, 'base64')
@@ -24,6 +25,36 @@ const SILENCED_EXTERNAL = [
  * violation, not silently measure a studio doing less work than production.
  */
 const API_INTAKE_PATH = /^\/v[^/]+\/intake\//
+
+/** Hosts of the mock's login providers (project.ts AUTH_PROVIDERS). */
+const LOGIN_PROVIDER_HOSTS = new Set(
+  AUTH_PROVIDERS.providers.map((provider) => new URL(provider.url).hostname),
+)
+
+/**
+ * The fake login provider: where a click on a login button lands. Answers
+ * like the real API does after a successful dual-mode login, a redirect back
+ * to the studio's `origin` with the session id in the hash, which the studio
+ * exchanges for a token at the mock's /auth/fetch. Undefined for any URL
+ * that isn't a provider login, or whose origin isn't the local studio (the
+ * bench never redirects anywhere else).
+ */
+export function loginRedirectUrl(url: URL): string | undefined {
+  if (!LOGIN_PROVIDER_HOSTS.has(url.hostname) || !url.pathname.startsWith('/auth/login/')) {
+    return undefined
+  }
+  const origin = url.searchParams.get('origin')
+  if (!origin) return undefined
+  let target: URL
+  try {
+    target = new URL(origin)
+  } catch {
+    return undefined
+  }
+  if (target.hostname !== 'localhost' && target.hostname !== '127.0.0.1') return undefined
+  target.hash = `sid=${FAKE_SESSION_ID}`
+  return target.href
+}
 
 export function launchBrowser(headless: boolean, certSpki?: string): Promise<Browser> {
   return chromium.launch({
@@ -50,7 +81,14 @@ export async function createSessionContext(
   browser: Browser,
   side: BenchSide,
   studioUrl: string,
-  options: {cpuThrottleRate?: number} = {},
+  options: {
+    cpuThrottleRate?: number
+    /**
+     * `logged-out` seeds no token, so the studio boots to its login screen
+     * (pair with the mock's setRequireToken). Default `authenticated`.
+     */
+    auth?: 'authenticated' | 'logged-out'
+  } = {},
 ): Promise<SessionContext> {
   const context = await browser.newContext({
     // No ignoreHTTPSErrors here: the bench cert is made *valid* via the
@@ -58,18 +96,21 @@ export async function createSessionContext(
     // cert would disable the browser HTTP cache and break warm loads
     storageState: {
       cookies: [],
-      origins: [
-        {
-          origin: studioUrl,
-          // Seed tokens for both project ids: the served dist's baked
-          // projectId decides which one it reads, and both sides must use
-          // the same (token) auth path for a symmetric comparison
-          localStorage: [EXPERIMENT.projectId, REFERENCE.projectId].map((projectId) => ({
-            name: `__studio_auth_token_${projectId}`,
-            value: JSON.stringify({token: FAKE_TOKEN, time: new Date().toISOString()}),
-          })),
-        },
-      ],
+      origins:
+        options.auth === 'logged-out'
+          ? []
+          : [
+              {
+                origin: studioUrl,
+                // Seed tokens for both project ids: the served dist's baked
+                // projectId decides which one it reads, and both sides must use
+                // the same (token) auth path for a symmetric comparison
+                localStorage: [EXPERIMENT.projectId, REFERENCE.projectId].map((projectId) => ({
+                  name: `__studio_auth_token_${projectId}`,
+                  value: JSON.stringify({token: FAKE_TOKEN, time: new Date().toISOString()}),
+                })),
+              },
+            ],
     },
   })
 
@@ -103,6 +144,12 @@ export async function createSessionContext(
           })
         }
         return route.abort('blockedbyclient')
+      }
+      // Login button click (logged-out scenarios): the fake provider
+      // redirects straight back with a session id
+      const loginRedirect = loginRedirectUrl(url)
+      if (loginRedirect) {
+        return route.fulfill({status: 302, headers: {location: loginRedirect}})
       }
       // Scenario fixtures reference cdn.sanity.io asset URLs (see
       // scenarios/fixtures/assets.ts) — fulfill images with constant bytes

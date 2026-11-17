@@ -1,0 +1,845 @@
+/* oxlint-disable typescript/no-deprecated -- these tests cover legacy Rule and marker compatibility */
+import {type SanityClient} from '@sanity/client'
+import {Schema as SchemaBuilder} from '@sanity/schema'
+import {builtinTypes} from '@sanity/schema/_internal'
+import {type ObjectSchemaType, type Rule, type SanityDocument} from '@sanity/types'
+import has from 'lodash-es/has.js'
+import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
+
+import {validationMarkerCodes} from '../src'
+import {
+  getFallbackLocaleSource,
+  hasValidationContext,
+  inferFromSchema,
+  type ValidateDocumentInternalOptions,
+  validateDocumentInternal,
+} from '../src/_internal'
+import {assetMatchesAccept} from '../src/validators/assetAcceptValidator'
+import {createMockSanityClient} from './mocks/mockSanityClient'
+
+const client = createMockSanityClient()
+const sanityClient = client as unknown as SanityClient
+const getClient = (): SanityClient => sanityClient
+const builtinSchema = inferFromSchema(SchemaBuilder.compile({name: 'studio', types: builtinTypes}))
+
+function createSchema(schemaDef: {name: string; types: any[]}) {
+  return inferFromSchema(SchemaBuilder.compile({...schemaDef, parent: builtinSchema}))
+}
+
+function validateDocument({
+  client: documentClient,
+  ...options
+}: Omit<ValidateDocumentInternalOptions, 'environment' | 'getClient' | 'i18n'> & {
+  client: SanityClient
+}) {
+  return validateDocumentInternal({
+    ...options,
+    environment: 'studio',
+    validateReferenceTypes: false,
+    getClient: (clientOptions) => documentClient.withConfig(clientOptions),
+    i18n: getFallbackLocaleSource(),
+  })
+}
+
+describe('schema validation inference', () => {
+  describe('object with `options.list` and `value` field', () => {
+    const listOptions = [
+      {value: '#f00', title: 'Red'},
+      {value: '#0f0', title: 'Green'},
+      {value: '#00f', title: 'Blue'},
+    ]
+
+    const schema = SchemaBuilder.compile({
+      types: [
+        {
+          name: 'colorList',
+          type: 'object',
+          fields: [
+            {name: 'value', type: 'string'},
+            {name: 'title', type: 'string'},
+          ],
+          options: {
+            list: listOptions,
+          },
+        },
+      ],
+    })
+
+    test('allowed value', async () => {
+      const type = inferFromSchema(schema).get('colorList')!
+      await expectNoError(type.validation as Rule[], listOptions[0])
+    })
+
+    test('disallowed value', async () => {
+      const type = inferFromSchema(schema).get('colorList')!
+
+      await expectError(
+        type.validation as Rule[],
+        {value: '#ccc', title: 'Gray'},
+        'Value did not match any allowed value',
+      )
+    })
+  })
+
+  describe('field validations', () => {
+    const fieldValidationInferReproDoc = {
+      name: 'fieldValidationInferReproDoc',
+      type: 'document',
+      title: 'FieldValidationRepro',
+      validation: (Rule: Rule) =>
+        Rule.fields({
+          stringField: (fieldRule) => fieldRule.required(),
+        }),
+
+      fields: [
+        {
+          name: 'stringField',
+          type: 'string',
+          title: 'Field of someObjectType with validation',
+          description: 'First field should be required',
+        },
+      ],
+    }
+
+    const schema = SchemaBuilder.compile({
+      types: [fieldValidationInferReproDoc],
+    })
+
+    test('field validations defined on an object type does not affect the field type validation', () => {
+      const documentType = inferFromSchema(schema).get(
+        'fieldValidationInferReproDoc',
+      ) as ObjectSchemaType
+      const fieldWithoutValidation = documentType.fields.find(
+        (field) => field.name === 'stringField',
+      )
+
+      // The first field should only have the validation rules that comes with its type
+      expect(
+        (fieldWithoutValidation?.type.validation as Rule[]).flatMap(
+          (validation) => validation['_rules'],
+        ),
+      ).toEqual([{flag: 'type', constraint: 'String'}])
+    })
+  })
+
+  describe('media validation', () => {
+    const documentWithImage = {
+      type: 'document',
+      name: 'documentWithImage',
+      title: 'Document with Image',
+      fields: [
+        {
+          name: 'imageField',
+          type: 'image',
+          validation: (Rule: Rule) =>
+            Rule.required().media(async ({media}) => {
+              // Validate that the image is a summer image when the document topic is summer
+              if (media.asset.assetType === 'sanity.imageAsset') {
+                const aspects = media.asset.aspects
+                if (has(aspects, 'season') && aspects.season === 'summer') {
+                  return true
+                }
+                return 'Image must be a summer image'
+              }
+              return true
+            }),
+        },
+      ],
+    }
+    const schema = createSchema({
+      name: 'default',
+      types: [documentWithImage],
+    })
+
+    const mockDocument: SanityDocument = {
+      _id: 'mockDocument',
+      _type: 'documentWithImage',
+      imageField: {
+        _type: 'image',
+        asset: {
+          _ref: 'image-12345-67890-png',
+          _type: 'reference',
+        },
+        media: {
+          _type: 'globalDocumentReference',
+          _ref: 'media-library:abc:def',
+        },
+      },
+      _createdAt: '2021-08-26T18:47:55.497Z',
+      _updatedAt: '2021-08-26T18:47:55.497Z',
+      _rev: 'example-rev',
+    }
+
+    afterEach(() => {
+      client.fetch.mockReset()
+    })
+
+    test("gives error if media can't be found", async () => {
+      vi.spyOn(console, 'warn').mockImplementation(() => {
+        // Intentionally silence the expected warning.
+      })
+      client.fetch.mockImplementation(() => Promise.resolve(false))
+
+      await expect(
+        validateDocument({
+          client: sanityClient,
+          document: mockDocument,
+          getDocumentExists: () => Promise.resolve(true),
+          schema,
+        }),
+      ).resolves.toEqual([
+        {
+          __internal_metadata: undefined,
+          code: validationMarkerCodes.mediaNotFound,
+          details: {referenceId: 'media-library:abc:def'},
+          item: {
+            message: 'The asset could not be found in the Media Library',
+          },
+          level: 'error',
+          message: 'The asset could not be found in the Media Library',
+          path: ['imageField'],
+        },
+      ])
+      expect(console.warn).toHaveBeenCalledWith(
+        expect.stringContaining('The asset could not be found in the Media Library'),
+      )
+    })
+
+    test("gives error if media doesn't validate according to media validation rule", async () => {
+      client.fetch.mockImplementation(() =>
+        Promise.resolve({
+          _id: 'image-12345-67890-png',
+          assetType: 'sanity.imageAsset',
+          aspects: {season: 'winter'}, // Not a summer image
+        }),
+      )
+
+      await expect(
+        validateDocument({
+          client: sanityClient,
+          document: mockDocument,
+          getDocumentExists: () => Promise.resolve(true),
+          schema,
+        }),
+      ).resolves.toEqual([
+        {
+          __internal_metadata: {
+            name: 'media',
+          },
+          code: validationMarkerCodes.mediaCustom,
+          item: {
+            message: 'Image must be a summer image',
+          },
+          level: 'error',
+          message: 'Image must be a summer image',
+          path: ['imageField'],
+        },
+      ])
+    })
+
+    test('passes cancellation to media asset fetches', async () => {
+      const controller = new AbortController()
+      client.fetch.mockResolvedValue({
+        _id: 'image-12345-67890-png',
+        assetType: 'sanity.imageAsset',
+        aspects: {season: 'summer'},
+      })
+
+      await validateDocument({
+        client: sanityClient,
+        document: mockDocument,
+        getDocumentExists: () => Promise.resolve(true),
+        schema,
+        signal: controller.signal,
+      })
+
+      expect(client.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        {id: 'def'},
+        {signal: controller.signal},
+      )
+    })
+  })
+
+  describe('slug validation', () => {
+    const slugField = {
+      type: 'document',
+      name: 'documentWithSlug',
+      title: 'Document with Slug',
+      fields: [
+        {
+          name: 'slugField',
+          type: 'slug',
+        },
+      ],
+    }
+
+    const schema = createSchema({
+      name: 'default',
+      types: [slugField],
+    })
+
+    const mockDocument: SanityDocument = {
+      _id: 'mockDocument',
+      _type: 'documentWithSlug',
+      slugField: {current: 'example-value'},
+      _createdAt: '2021-08-26T18:47:55.497Z',
+      _updatedAt: '2021-08-26T18:47:55.497Z',
+      _rev: 'example-rev',
+    }
+
+    afterEach(() => {
+      client.fetch.mockReset()
+    })
+
+    test('reports the actual type for an invalid slug value', async () => {
+      await expect(
+        validateDocument({
+          client: sanityClient,
+          document: {...mockDocument, slugField: []},
+          getDocumentExists: () => Promise.resolve(true),
+          schema,
+        }),
+      ).resolves.toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            code: validationMarkerCodes.slugInvalidType,
+            details: {actualType: 'Array'},
+            path: ['slugField'],
+          }),
+        ]),
+      )
+      expect(client.fetch).not.toHaveBeenCalled()
+    })
+
+    test('slug is valid if uniqueness queries returns true', async () => {
+      client.fetch.mockImplementation(() =>
+        Promise.resolve(
+          // return true to mock a unique result (valid)
+          true,
+        ),
+      )
+
+      await expect(
+        validateDocument({
+          client: sanityClient,
+          document: mockDocument,
+          getDocumentExists: () => Promise.resolve(true),
+          schema,
+        }),
+      ).resolves.toEqual([])
+
+      expect(client.fetch).toHaveBeenCalledTimes(1)
+      expect(client.fetch.mock.calls[0]).toEqual([
+        '!defined(*[_type == $docType && !sanity::versionOf($published) && slugField.current == $slug][0]._id)',
+        {
+          docType: 'documentWithSlug',
+          published: 'mockDocument',
+          slug: 'example-value',
+        },
+        {
+          tag: 'validation.slug-is-unique',
+        },
+      ])
+    })
+
+    test('slug is invalid if uniqueness queries returns false', async () => {
+      client.fetch.mockReset()
+      client.fetch.mockImplementation(() =>
+        Promise.resolve(
+          // return false to mock a non-unique result (invalid)
+          false,
+        ),
+      )
+
+      await expect(
+        validateDocument({
+          client: sanityClient,
+          document: mockDocument,
+          getDocumentExists: () => Promise.resolve(true),
+          schema,
+        }),
+      ).resolves.toMatchObject([
+        {
+          code: validationMarkerCodes.slugNotUnique,
+          details: {slug: 'example-value'},
+          path: ['slugField'],
+          level: 'error',
+          message: 'Slug is already in use',
+        },
+      ])
+
+      expect(client.fetch).toHaveBeenCalledTimes(1)
+      expect(client.fetch.mock.calls[0]).toEqual([
+        '!defined(*[_type == $docType && !sanity::versionOf($published) && slugField.current == $slug][0]._id)',
+        {
+          docType: 'documentWithSlug',
+          published: 'mockDocument',
+          slug: 'example-value',
+        },
+        {
+          tag: 'validation.slug-is-unique',
+        },
+      ])
+    })
+  })
+
+  describe('reference validation', () => {
+    const documentWithReference = {
+      type: 'document',
+      name: 'documentWithReference',
+      title: 'Document with Reference',
+      fields: [
+        {
+          name: 'referenceField',
+          type: 'reference',
+          to: [{type: 'documentWithReference'}],
+        },
+        {
+          name: 'referenceFieldWeak',
+          type: 'reference',
+          weak: true,
+          to: [{type: 'documentWithReference'}],
+        },
+      ],
+    }
+
+    const schema = createSchema({
+      name: 'default',
+      types: [documentWithReference],
+    })
+
+    const mockDocument: SanityDocument = {
+      _id: 'mockDocument',
+      _type: 'documentWithReference',
+      _createdAt: '2021-08-26T18:47:55.497Z',
+      _updatedAt: '2021-08-26T18:47:55.497Z',
+      _rev: 'example-rev',
+    }
+
+    afterEach(() => {
+      client.fetch.mockReset()
+    })
+
+    test('reference is invalid if no _ref is present', async () => {
+      await expect(
+        validateDocument({
+          client: sanityClient,
+          document: {
+            ...mockDocument,
+            referenceField: {
+              _type: 'not-a-reference',
+            },
+          },
+          schema,
+        }),
+      ).resolves.toMatchObject([
+        {
+          code: validationMarkerCodes.referenceInvalid,
+          details: {actualType: 'Object'},
+          message: 'Must be a reference to a document',
+          level: 'error',
+          path: ['referenceField'],
+        },
+      ])
+    })
+
+    test('referenced document must exist (unless weak)', async () => {
+      const mockGetDocumentExists = vi.fn(() => Promise.resolve(false))
+      await expect(
+        validateDocument({
+          client: sanityClient,
+          document: {
+            ...mockDocument,
+            referenceField: {
+              _ref: 'example-id',
+            },
+          },
+          getDocumentExists: mockGetDocumentExists,
+          schema,
+        }),
+      ).resolves.toMatchObject([
+        {
+          code: validationMarkerCodes.referenceNotPublished,
+          details: {referenceId: 'example-id'},
+          message: /.+/,
+          level: 'error',
+          path: ['referenceField'],
+        },
+      ])
+
+      expect(mockGetDocumentExists.mock.calls).toMatchObject([[{id: 'example-id'}]])
+    })
+
+    test('reference is valid if schema type is marked as weak', async () => {
+      await expect(
+        validateDocument({
+          client: sanityClient,
+          document: {
+            ...mockDocument,
+            referenceFieldWeak: {_ref: 'example-id'},
+          },
+          schema,
+        }),
+      ).resolves.toEqual([])
+    })
+
+    test('reference is valid if schema type is strong and document does exists', async () => {
+      const mockGetDocumentExists = vi.fn(() => Promise.resolve(true))
+      await expect(
+        validateDocument({
+          client: sanityClient,
+          document: {
+            ...mockDocument,
+            referenceField: {
+              _ref: 'example-id',
+            },
+          },
+          getDocumentExists: mockGetDocumentExists,
+          schema,
+        }),
+      ).resolves.toEqual([])
+
+      expect(mockGetDocumentExists.mock.calls).toMatchObject([[{id: 'example-id'}]])
+    })
+  })
+})
+
+describe('asset `accept` inference', () => {
+  const schema = createSchema({
+    name: 'default',
+    types: [
+      {name: 'pngImage', type: 'image', options: {accept: 'image/png'}},
+      {
+        name: 'assetDocument',
+        type: 'document',
+        fields: [
+          {name: 'pngOnly', type: 'image', options: {accept: 'image/png'}},
+          {
+            name: 'requiredPngOnly',
+            type: 'image',
+            options: {accept: 'image/png'},
+            validation: (rule: Rule) => rule.required(),
+          },
+          {name: 'namedPngOnly', type: 'pngImage'},
+          {name: 'anyImage', type: 'image'},
+          {name: 'pdfOrWord', type: 'file', options: {accept: '.pdf, application/msword'}},
+        ],
+      },
+    ],
+  })
+
+  const assetFileTypes: Record<
+    string,
+    {mimeType: string | null; extension: string | null; originalFilename?: string}
+  > = {
+    'image-jpeg1-10x10-jpg': {mimeType: 'image/jpeg', extension: 'jpg'},
+    'image-jpeg2-10x10-jpg': {mimeType: 'image/jpeg', extension: 'jpg'},
+    'image-jpeg3-10x10-jpg': {mimeType: 'image/jpeg', extension: 'jpg'},
+    'image-jpeg4-10x10-jpg': {mimeType: 'image/jpeg', extension: 'jpg'},
+    'image-png1-10x10-png': {mimeType: 'image/png', extension: 'png'},
+    'file-pdf1-pdf': {mimeType: 'application/pdf', extension: 'pdf', originalFilename: 'brief.pdf'},
+    'file-pdf-no-suffix-pdf': {
+      mimeType: 'application/pdf',
+      extension: 'pdf',
+      originalFilename: 'Financial Release',
+    },
+    'file-pdf-wrong-suffix-pdf': {
+      mimeType: 'application/pdf',
+      extension: 'pdf',
+      originalFilename: 'Financial Release.bin',
+    },
+    'file-zip1-zip': {
+      mimeType: 'application/zip',
+      extension: 'zip',
+      originalFilename: 'archive.zip',
+    },
+    'image-nomime1-10x10-png': {mimeType: null, extension: 'png'},
+    'image-notype1-10x10-png': {mimeType: null, extension: null},
+    'file-noext1-pdf': {mimeType: 'application/zip', extension: null},
+    'file-noname1-zip': {mimeType: 'application/zip', extension: 'zip'},
+  }
+
+  function assetValue(ref: string) {
+    return {_type: 'image', asset: {_type: 'reference', _ref: ref}}
+  }
+
+  function validateFields(fields: Record<string, unknown>) {
+    return validateDocument({
+      client: sanityClient,
+      document: {
+        _id: 'assetDocument',
+        _type: 'assetDocument',
+        _createdAt: '2021-08-26T18:47:55.497Z',
+        _updatedAt: '2021-08-26T18:47:55.497Z',
+        _rev: 'example-rev',
+        requiredPngOnly: assetValue('image-png1-10x10-png'),
+        ...fields,
+      },
+      getDocumentExists: () => Promise.resolve(true),
+      schema,
+    })
+  }
+
+  beforeEach(() => {
+    client.fetch.mockImplementation((_query, params) =>
+      Promise.resolve(assetFileTypes[String(params?.id)] ?? null),
+    )
+  })
+
+  afterEach(() => {
+    client.fetch.mockReset()
+  })
+
+  test('warns when an image asset does not match `accept`', async () => {
+    await expect(validateFields({pngOnly: assetValue('image-jpeg1-10x10-jpg')})).resolves.toEqual([
+      {
+        __internal_metadata: undefined,
+        code: validationMarkerCodes.assetNotAccepted,
+        details: {accept: 'image/png', mimeType: 'image/jpeg', extension: 'jpg'},
+        item: {message: 'Image type "image/jpeg" is not accepted'},
+        level: 'warning',
+        message: 'Image type "image/jpeg" is not accepted',
+        path: ['pngOnly'],
+      },
+    ])
+  })
+
+  test('passes an image asset that matches `accept`', async () => {
+    await expect(validateFields({pngOnly: assetValue('image-png1-10x10-png')})).resolves.toEqual([])
+  })
+
+  test('stays a warning when the field has authored error rules', async () => {
+    const markers = await validateFields({requiredPngOnly: assetValue('image-jpeg2-10x10-jpg')})
+    expect(markers).toMatchObject([
+      {code: validationMarkerCodes.assetNotAccepted, level: 'warning', path: ['requiredPngOnly']},
+    ])
+  })
+
+  test('applies `accept` inherited from a named type', async () => {
+    const markers = await validateFields({namedPngOnly: assetValue('image-jpeg3-10x10-jpg')})
+    expect(markers).toMatchObject([
+      {code: validationMarkerCodes.assetNotAccepted, path: ['namedPngOnly']},
+    ])
+  })
+
+  test('skips fields without `accept`', async () => {
+    await expect(validateFields({anyImage: assetValue('image-jpeg4-10x10-jpg')})).resolves.toEqual(
+      [],
+    )
+    expect(client.fetch).not.toHaveBeenCalled()
+  })
+
+  test('matches file assets by extension and MIME type', async () => {
+    await expect(validateFields({pdfOrWord: assetValue('file-pdf1-pdf')})).resolves.toEqual([])
+    await expect(validateFields({pdfOrWord: assetValue('file-zip1-zip')})).resolves.toMatchObject([
+      {
+        code: validationMarkerCodes.assetNotAccepted,
+        level: 'warning',
+        message: 'File type "application/zip" is not accepted',
+      },
+    ])
+  })
+
+  test.each(['file-pdf-no-suffix-pdf', 'file-pdf-wrong-suffix-pdf'])(
+    'accepts a stored PDF regardless of its original filename (%s)',
+    async (ref) => {
+      await expect(validateFields({pdfOrWord: assetValue(ref)})).resolves.toEqual([])
+    },
+  )
+
+  test('warns on the extension when the asset has no MIME type', async () => {
+    await expect(validateFields({pngOnly: assetValue('image-nomime1-10x10-png')})).resolves.toEqual(
+      [
+        {
+          __internal_metadata: undefined,
+          code: validationMarkerCodes.assetNotAccepted,
+          details: {accept: 'image/png', mimeType: null, extension: 'png'},
+          item: {message: 'Image type "png" is not accepted'},
+          level: 'warning',
+          message: 'Image type "png" is not accepted',
+          path: ['pngOnly'],
+        },
+      ],
+    )
+  })
+
+  test('passes when neither the MIME type nor the extension is known', async () => {
+    await expect(validateFields({pngOnly: assetValue('image-notype1-10x10-png')})).resolves.toEqual(
+      [],
+    )
+  })
+
+  test('passes extension tokens when the asset has neither an original filename nor an extension, like uploads', async () => {
+    await expect(validateFields({pdfOrWord: assetValue('file-noext1-pdf')})).resolves.toEqual([])
+  })
+
+  test('checks the stored extension against extension tokens when the asset has no original filename', async () => {
+    await expect(
+      validateFields({pdfOrWord: assetValue('file-noname1-zip')}),
+    ).resolves.toMatchObject([
+      {code: validationMarkerCodes.assetNotAccepted, level: 'warning', path: ['pdfOrWord']},
+    ])
+  })
+
+  test('passes when the asset document cannot be found', async () => {
+    await expect(validateFields({pngOnly: assetValue('image-missing-10x10-jpg')})).resolves.toEqual(
+      [],
+    )
+  })
+})
+
+describe('assetMatchesAccept', () => {
+  test.each([
+    [{mimeType: 'image/png'}, 'image/*', true],
+    [{mimeType: 'image/png'}, 'IMAGE/PNG', true],
+    [{mimeType: 'image/jpeg', originalFilename: 'photo.JPEG'}, '.jpeg', true],
+    [{mimeType: 'application/pdf', originalFilename: 'brief.docx'}, '.pdf', false],
+    [{mimeType: 'application/pdf'}, '.pdf', true],
+    [{mimeType: null, extension: 'png'}, 'image/png', false],
+    [{mimeType: 'image/png', originalFilename: 'photo.png'}, 'image/jpeg, .webp', false],
+    [{mimeType: 'application/pdf'}, 'image/*', false],
+    [{mimeType: 'application/zip', extension: 'zip'}, '.pdf', false],
+    [{mimeType: 'application/pdf', extension: 'pdf'}, '.pdf', true],
+    [{mimeType: 'application/pdf', extension: 'pdf', originalFilename: 'brief'}, '.pdf', true],
+    [{mimeType: 'application/pdf', extension: 'pdf', originalFilename: 'brief.bin'}, '.pdf', true],
+    [{extension: 'PDF', originalFilename: 'brief'}, ' .png, .pdf ', true],
+    [{extension: 'zip', originalFilename: 'archive'}, '.pdf', false],
+    [{extension: 'jpg', originalFilename: 'photo.JPEG'}, '.jpeg', true],
+    [{extension: 'gz', originalFilename: 'archive.tar.gz'}, '.tar.gz', true],
+  ])('%o against %s is %s', (fileType, accept, expected) => {
+    expect(assetMatchesAccept(fileType, accept)).toBe(expected)
+  })
+})
+
+async function expectNoError(validations: Rule[], value: unknown) {
+  const errors = (
+    await Promise.all(
+      validations.map((rule) =>
+        rule.validate(value, {
+          getClient,
+          schema: {} as any,
+          i18n: getFallbackLocaleSource(),
+          environment: 'studio',
+        }),
+      ),
+    )
+  ).flat()
+  if (errors.length === 0) {
+    // This shouldn't actually be needed, but counts against an assertion in jest-terms
+    expect(errors).toHaveLength(0)
+    return
+  }
+
+  const messages = errors.map((err) => err.item && err.item.message).join('\n\n- ')
+  throw new Error(`Expected no errors, but found ${errors.length}:\n- ${messages}`)
+}
+
+async function expectError(
+  validations: Rule[],
+  value: unknown,
+  message: string | undefined,
+  level = 'error',
+) {
+  const errors = (
+    await Promise.all(
+      validations.map((rule) =>
+        rule.validate(value, {
+          getClient,
+          schema: {} as any,
+          i18n: getFallbackLocaleSource(),
+          environment: 'studio',
+        }),
+      ),
+    )
+  ).flat()
+  if (!errors.length) {
+    throw new Error(`Expected error matching "${message}", but no errors were returned.`)
+  }
+
+  const matches = errors.filter((err) => err.item && err.item.message.includes(message!))
+  if (matches.length === 0) {
+    const messages = errors.map((err) => err.item && err.item.message).join('\n\n- ')
+    throw new Error(`Expected error matching "${message}" not found. Errors found:\n- ${messages}`)
+  }
+
+  const levelMatch = matches.find((err) => err.level === level)
+  if (!levelMatch) {
+    throw new Error(`Expected error to have level "${level}", got ${matches[0].level}`)
+  }
+
+  // This shouldn't actually be needed, but counts against an assertion in jest-terms
+  expect(levelMatch.message).toMatch(message!)
+}
+
+describe('hasValidationContext', () => {
+  describe('returns false for non-context-aware validation', () => {
+    test('undefined', () => {
+      expect(hasValidationContext(undefined)).toBe(false)
+    })
+
+    test('false', () => {
+      expect(hasValidationContext(false)).toBe(false)
+    })
+
+    test('Rule instance', () => {
+      const rule = {} as Rule
+      expect(hasValidationContext(rule)).toBe(false)
+    })
+
+    test('function with 0 parameters', () => {
+      const validation = () => ({}) as Rule
+      expect(hasValidationContext(validation)).toBe(false)
+    })
+
+    test('function with 1 parameter (rule only)', () => {
+      const validation = (_rule: Rule) => _rule
+      expect(hasValidationContext(validation)).toBe(false)
+    })
+
+    test('array with no context-aware functions', () => {
+      const validation = [(_rule: Rule) => _rule, (_rule: Rule) => _rule]
+      expect(hasValidationContext(validation)).toBe(false)
+    })
+  })
+
+  describe('returns true for context-aware validation', () => {
+    test('function with 2 parameters (rule and context)', () => {
+      const validation = (_rule: Rule, _context: unknown) => _rule
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('arrow function with destructured context parameter', () => {
+      // Destructuring in parameter list should still report length === 2
+      const validation = (_rule: Rule, {hidden}: {hidden?: boolean}) => _rule
+      expect(validation.length).toBe(2)
+      // @ts-expect-error -- validation context detection intentionally accepts this legacy signature
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('regular function with destructured context parameter', () => {
+      // Regular functions should behave the same as arrow functions
+      function validation(_rule: Rule, {hidden}: {hidden?: boolean}) {
+        return _rule
+      }
+      expect(validation.length).toBe(2)
+      // @ts-expect-error -- validation context detection intentionally accepts this legacy signature
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('function with rest parameters after rule', () => {
+      const validation = (_rule: Rule, ..._args: unknown[]) => _rule
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('array containing at least one context-aware function', () => {
+      const validation = [(_rule: Rule) => _rule, (_rule: Rule, _context: unknown) => _rule]
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+
+    test('nested array with context-aware function', () => {
+      const validation = [[(_rule: Rule, _context: unknown) => _rule]]
+      expect(hasValidationContext(validation)).toBe(true)
+    })
+  })
+})

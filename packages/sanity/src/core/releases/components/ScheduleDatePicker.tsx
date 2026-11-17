@@ -1,9 +1,9 @@
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {Flex} from '@sanity/ui'
 import {format} from 'date-fns/format'
 import {isValid} from 'date-fns/isValid'
 import {parse} from 'date-fns/parse'
 import {useCallback, useMemo} from 'react'
+import {Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {MONTH_PICKER_VARIANT} from '../../components/inputs/DateInputs/calendar/Calendar'
@@ -48,7 +48,7 @@ export const ScheduleDatePicker = ({value, onChange, timeZoneScope}: ScheduleDat
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
 
   return (
-    <Flex flex={1} justify="space-between">
+    <Flex flexBasis="0%" flexGrow={1} justifyContent="space-between">
       <DateTimeInput
         selectTime
         monthPickerVariant={MONTH_PICKER_VARIANT.carousel}

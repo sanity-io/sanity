@@ -29,7 +29,6 @@ sanity/
 │   │   ├── util/              # Shared utilities
 │   │   └── vision/            # GROQ query tool (Studio plugin)
 │   └── @repo/                  # Internal monorepo tooling (not published)
-│       ├── eslint-config/     # Shared ESLint configuration
 │       ├── test-config/       # Shared test configuration
 │       ├── tsconfig/          # Shared TypeScript configuration
 │       ├── tsdown.config/     # Build configuration utilities

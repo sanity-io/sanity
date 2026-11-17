@@ -54,17 +54,38 @@ export interface PerspectiveContextValue {
   /* The excluded perspectives */
   excludedPerspectives: string[]
   /**
-   * The raw variant name requested via the router sticky param, available synchronously and
-   * regardless of whether it has resolved to a variant definition yet.
+   * Short ids requested via the `variant` sticky param, in param order.
+   * Empty when no variant is requested. A bare id is type `variant`.
+   * Each id is available synchronously, before its definition has resolved.
+   * Document editing uses the first id only until multi variants are supported.
+   * @beta
+   * @internal
+   */
+  selectedVariantNames: string[]
+  /**
+   * Resolved definitions aligned with {@link PerspectiveContextValue.selectedVariantNames}.
+   * An entry is undefined while definitions are loading (see `useAllVariants().loading`) or
+   * when that id matches no definition.
+   * Document editing uses the first entry only until multi variants are supported.
+   * @beta
+   * @internal
+   */
+  selectedVariants: (SystemVariant | undefined)[]
+  /**
+   * The first `selectedVariantNames` entry.
    * Undefined when no variant is requested.
+   *
+   * @deprecated Use `selectedVariantNames`. This is the first selected id.
    * @beta
    * @internal
    */
   selectedVariantName: string | undefined
   /**
-   * Resolved variant definition; undefined when no variant is requested, while definitions are
-   * still loading (see `useAllVariants().loading`), or when `selectedVariantName` matches no
-   * definition.
+   * The first `selectedVariants` entry.
+   * Undefined when no variant is requested, while definitions are loading, or when the first id
+   * matches no definition.
+   *
+   * @deprecated Use `selectedVariants`. This is the first selected definition.
    * @beta
    * @internal
    */

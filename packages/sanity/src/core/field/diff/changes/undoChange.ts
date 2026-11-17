@@ -1,10 +1,5 @@
-import {
-  diffItem,
-  type DiffOptions,
-  type InsertAfterPatch,
-  type SetPatch,
-  type UnsetPatch,
-} from '@sanity/diff-patch'
+import {diffValue, type SanityPatchOperations} from '@sanity/diff-patch'
+import {extractWithPath} from '@sanity/mutator'
 import {
   isIndexSegment,
   isKeyedObject,
@@ -31,10 +26,6 @@ import {
   type ObjectDiff,
 } from '../../types'
 import {flattenChangeNode, isAddedAction, isSubpathOf, pathSegmentOfCorrectType} from './helpers'
-
-const diffOptions: DiffOptions = {
-  diffMatchPatch: {enabled: false, lengthThresholdAbsolute: 30, lengthThresholdRelative: 1.2},
-}
 
 export function undoChange(
   change: ChangeNode,
@@ -205,37 +196,65 @@ function buildUndoPatches(
   path: Path,
   stubbedPaths: Set<string>,
 ): PatchOperations[] {
-  const patches = diffItem(diff.toValue, diff.fromValue, diffOptions, path)
+  const operations = diffValue(diff.toValue, diff.fromValue, path)
 
-  const inserts = patches
-    .filter((patch): patch is InsertAfterPatch => patch.op === 'insert')
-    .map(({after, items}) => ({insert: {after: pathToString(after), items}}) as any)
+  // diff-patch expresses a reordered keyed array as `set`s that move the items through predictable
+  // temporary `_key`s, and an item that already carries such a key gets caught up in the second
+  // pass. A revert that would rewrite keys restores the whole previous value instead, which is
+  // exact regardless. Everything else is kept in the groups and order diff-patch emits.
+  const patches: PatchOperations[] = operations.some(rewritesKeys)
+    ? [{set: {[pathToString(path)]: diff.fromValue}}]
+    : operations.map((operation) => restorePreviousStrings(operation, rootDiff.fromValue))
 
-  const unsets = patches
-    .filter((patch): patch is UnsetPatch => patch.op === 'unset')
-    .reduce((acc, patch) => acc.concat(pathToString(patch.path)), [] as string[])
+  // diff-patch only descends into containers present in both the current and the previous value,
+  // so every parent below `path` already exists in the document. The ancestors of `path` itself
+  // are the only ones a `set` may need stubbed in.
+  const stubs = patches.some((patch) => patch.set)
+    ? getParentStubs(path, rootDiff, stubbedPaths)
+    : []
 
-  const stubs: PatchOperations[] = []
+  return [...stubs, ...patches]
+}
 
-  let hasSets = false
-  const sets = patches
-    .filter((patch): patch is SetPatch => patch.op === 'set')
-    .reduce(
-      (acc, patch) => {
-        hasSets = true
-        stubs.push(...getParentStubs(patch.path, rootDiff, stubbedPaths))
-        acc[pathToString(patch.path)] = patch.value
-        return acc
-      },
-      {} as Record<string, unknown>,
-    )
+const KEYED_SELECTOR_SUFFIX = /\[_key=="([^"]*)"\]$/
 
-  return [
-    ...stubs,
-    ...inserts,
-    ...(unsets.length > 0 ? [{unset: unsets}] : []),
-    ...(hasSets ? [{set: sets}] : []),
-  ]
+/**
+ * Whether a `set` writes a keyed object under a `_key` selector for another key, which is how
+ * diff-patch moves the items of a reordered array.
+ */
+function rewritesKeys(operation: SanityPatchOperations): boolean {
+  return Object.entries(operation.set ?? {}).some(([pathString, value]) => {
+    const selectedKey = KEYED_SELECTOR_SUFFIX.exec(pathString)?.[1]
+    return selectedKey !== undefined && isKeyedObject(value) && value._key !== selectedKey
+  })
+}
+
+/**
+ * Since v6, `@sanity/diff-patch` emits `diffMatchPatch` operations for changed strings and no
+ * longer offers an option to turn that off. A revert must restore the exact previous value rather
+ * than fuzzy-patch whatever the field holds by then, so each entry is rewritten to a `set` of the
+ * previous string. The serialized path is resolved against the previous document with the same
+ * JSONMatch engine that applies the patch, so every path diff-patch can emit resolves, including
+ * `_key` values containing dots.
+ */
+function restorePreviousStrings(
+  operation: SanityPatchOperations,
+  previousDocument: unknown,
+): PatchOperations {
+  if (!operation.diffMatchPatch) {
+    return operation
+  }
+
+  const set: Record<string, unknown> = {}
+  for (const pathString of Object.keys(operation.diffMatchPatch)) {
+    const previous = extractWithPath(pathString, previousDocument).at(0)?.value
+    if (typeof previous !== 'string') {
+      throw new Error(`Cannot revert "${pathString}": the previous value could not be resolved`)
+    }
+    set[pathString] = previous
+  }
+
+  return {set}
 }
 
 function getParentStubs(path: Path, rootDiff: ObjectDiff, stubbed: Set<string>): PatchOperations[] {
@@ -255,11 +274,12 @@ function getParentStubs(path: Path, rootDiff: ObjectDiff, stubbed: Set<string>):
     const itemValue = getValueAtPath(value, subPath)
     const stub = getStubValue(itemValue)
 
-    // If the next array element does not exist, we need to inject an insert stub here
+    // If the next array element does not exist, we need to inject an insert stub here. Only a
+    // missing element counts: a falsy item (`0`, `''`, `false`, `null`) is still an element.
     if (
       nextIsArrayElement &&
       Array.isArray(itemValue) &&
-      !getValueAtPath(nextValue, path.slice(0, i + 1))
+      getValueAtPath(nextValue, path.slice(0, i + 1)) === undefined
     ) {
       const indexAtPrev = findIndex(itemValue, nextSegment)
       const nextItem = getValueAtPath(value, subPath.concat(nextSegment))

@@ -1,10 +1,12 @@
-import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
+import {BoundaryElementProvider, PortalProvider, usePortal} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
   isCardinalityOneRelease,
   isDraftId,
+  isDraftVersion,
   isGoingToUnpublish,
   isNewDocument,
   isPausedCardinalityOneRelease,
@@ -13,21 +15,24 @@ import {
   isReleaseScheduledOrScheduling,
   isSystemBundle,
   LegacyLayerProvider,
+  PortalBoundaryProvider,
   type ReleaseDocument,
   ScrollContainer,
   useArchivedReleases,
+  useDocumentVersions,
   useFilteredReleases,
   usePausedScheduledDraft,
   usePerspective,
   useWorkspace,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
-import {css, styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 import {PaneContent} from '../../../components/pane/PaneContent'
 import {usePane} from '../../../components/pane/usePane'
 import {usePaneLayout} from '../../../components/pane/usePaneLayout'
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
+import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {hasObsoleteDraft} from '../../../hasObsoleteDraft'
 import {mustChooseNewDocumentDestination} from '../../../mustChooseNewDocumentDestination'
 import {useStructureTool} from '../../../useStructureTool'
@@ -49,9 +54,12 @@ import {ReferenceChangedBanner} from './banners/ReferenceChangedBanner'
 import {RevisionNotFoundBanner} from './banners/RevisionNotFoundBanner'
 import {ScheduledDraftOverrideBanner} from './banners/ScheduledDraftOverrideBanner'
 import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
+import {SeeDraftBanner} from './banners/SeeDraftBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {VariantDefinitionNotFoundBanner} from './banners/VariantDefinitionNotFoundBanner'
+import {documentBox, scroller, scrollerEnabled} from './DocumentPanel.css'
 import {FormView} from './documentViews/FormView'
+import {getNavigationBadges} from './header/DocumentPanelNavigation/badges/getNavigationBadges'
 import {DocumentPanelSubHeader} from './header/DocumentPanelSubHeader'
 
 interface DocumentPanelProps {
@@ -62,24 +70,6 @@ interface DocumentPanelProps {
   setDocumentPanelPortalElement: (el: HTMLElement | null) => void
   footer: React.ReactNode
 }
-
-const DocumentBox = styled(Box)({
-  position: 'relative',
-})
-
-const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => {
-  if ($disabled) {
-    return {height: '100%'}
-  }
-
-  return css`
-    height: 100%;
-    overflow: auto;
-    position: relative;
-    scroll-behavior: smooth;
-    outline: none;
-  `
-})
 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {
@@ -122,10 +112,18 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     [activeViewId, views],
   )
 
-  // Use a local portal container when split panes is supported
-  const portalElement: HTMLElement | null = features.splitPanes
-    ? _portalElement || parentPortal.element
-    : parentPortal.element
+  const showInspector = Boolean(!collapsed && inspector)
+  // Keep the form mounted when the inspector takes over a collapsed layout.
+  // Unmounting FormBuilder resets FullscreenPTEProvider, so a PTE that was in
+  // full-pane mode comes back inline after the window is widened again.
+  const showFormView = features.resizablePanes || !showInspector
+
+  // Fullscreen PTE portals to this element. When the form is hidden, keep that
+  // target inside the hidden subtree so the editor cannot cover the inspector.
+  const portalElement: HTMLElement | null =
+    features.splitPanes || !showFormView
+      ? _portalElement || parentPortal.element
+      : parentPortal.element
 
   // Calculate the height of the header
   const margins: [number, number, number, number] = useMemo(() => {
@@ -192,7 +190,6 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     ) : null
   }, [isInspectOpen, displayed, value])
 
-  const showInspector = Boolean(!collapsed && inspector)
   const {selectedReleaseId, selectedPerspectiveName, selectedPerspective} = usePerspective()
 
   const hasDocumentInRelease =
@@ -205,6 +202,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     displayed,
     documentId,
   })
+  const {versions: documentVersions} = useDocumentVersions({documentId})
 
   const {isPaused: isPausedDraft} = usePausedScheduledDraft()
 
@@ -234,13 +232,25 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       return <ArchivedReleaseDocumentBanner releaseId={archivedReleaseId} />
     }
 
+    const deletedDocumentBanners = activeView.type === 'form' ? <DeletedDocumentBanners /> : null
+
     const isScheduledRelease =
       isReleaseDocument(selectedPerspective) && isReleaseScheduledOrScheduling(selectedPerspective)
+
+    // Variant versions have opaque ids, so whether a variant document is displayed comes from the
+    // resolved target rather than from the id.
+    const displayedVariantTarget =
+      targetDocumentState.status === 'ready' &&
+      targetDocumentState.variant &&
+      displayed?._id &&
+      targetDocumentState.targetDocument?._id === displayed._id
+        ? targetDocumentState.targetDocument
+        : undefined
 
     const documentInScheduledRelease = Boolean(
       isScheduledRelease &&
       displayed?._id &&
-      getVersionFromId(displayed?._id) === selectedReleaseId,
+      (getVersionFromId(displayed?._id) === selectedReleaseId || displayedVariantTarget),
     )
 
     const isSelectedPerspectiveWriteable = isPerspectiveWriteable({
@@ -256,13 +266,16 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       })
     ) {
       return (
-        !isSelectedPerspectiveWriteable.result && (
-          <ChooseNewDocumentDestinationBanner
-            schemaType={schemaType}
-            selectedPerspective={selectedPerspective}
-            reason={isSelectedPerspectiveWriteable.reason}
-          />
-        )
+        <>
+          {!isSelectedPerspectiveWriteable.result && (
+            <ChooseNewDocumentDestinationBanner
+              schemaType={schemaType}
+              selectedPerspective={selectedPerspective}
+              reason={isSelectedPerspectiveWriteable.reason}
+            />
+          )}
+          {deletedDocumentBanners}
+        </>
       )
     }
 
@@ -278,13 +291,23 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       ...filteredReleases.currentReleases,
       ...filteredReleases.notCurrentReleases,
     ]
+    // A document can have one scheduled draft per variant, so only the releases the current lane
+    // (the selected variant, or the base document) has a version in are considered.
+    const laneReleaseIds = new Set(
+      getNavigationBadges({
+        versions: documentVersions,
+        variantId:
+          targetDocumentState.status === 'ready' ? targetDocumentState.variant?._id : undefined,
+      }).releaseIds,
+    )
     // if the scheduled draft is paused then it will be available in notCurrentReleases
     // otherwise a locked-in scheduled draft will be available in currentReleases
     // so must look across both to find the scheduled draft release
     const scheduledCardinalityOneRelease = allFilteredReleases.find(
       (release) =>
         isCardinalityOneRelease(release) &&
-        (isReleaseScheduledOrScheduling(release) || isPausedCardinalityOneRelease(release)),
+        (isReleaseScheduledOrScheduling(release) || isPausedCardinalityOneRelease(release)) &&
+        laneReleaseIds.has(getReleaseIdFromReleaseDocumentId(release._id)),
     )
 
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
@@ -326,11 +349,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
       )
     }
 
-    const displayedHasObsoleteDraft = hasObsoleteDraft({
-      editState,
-      workspace,
-      schemaType,
-    })
+    const displayedHasObsoleteDraft = hasObsoleteDraft({targetDocumentState, workspace, schemaType})
 
     if (activeView.type === 'form' && !selectedReleaseId && displayedHasObsoleteDraft.result) {
       if (displayedHasObsoleteDraft.reason === 'DRAFT_MODEL_INACTIVE') {
@@ -358,7 +377,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     }
 
     if (activeView.type !== 'form' || isPermissionsLoading) return null
-    const displayedIsDraft = displayed?._id && isDraftId(displayed._id)
+    const displayedIsDraft =
+      displayed?._id &&
+      (isDraftId(displayed._id) ||
+        (displayedVariantTarget && isDraftVersion(displayedVariantTarget)))
 
     return (
       <>
@@ -375,8 +397,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
         <ReferenceChangedBanner />
         <DeprecatedDocumentTypeBanner />
         <CanvasLinkedBanner />
-        <DeletedDocumentBanners />
+        {deletedDocumentBanners}
         <UnpublishedDocumentBanner />
+        <SeeDraftBanner />
         <OpenReleaseToEditBanner
           documentId={displayed?._id ?? documentId}
           isPinnedDraftOrPublished={isPinnedDraftOrPublish}
@@ -401,6 +424,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     value._id,
     schemaType,
     filteredReleases,
+    documentVersions,
     workspace,
     isPausedDraft,
     targetDocumentState,
@@ -409,58 +433,76 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     () => ({documentScrollElement: documentScrollElement}),
     [documentScrollElement],
   )
-  const showFormView = features.resizablePanes || !showInspector
+
+  const inspectorPortalElements = {
+    ...parentPortal.elements,
+    [DOCUMENT_PANEL_PORTAL_ELEMENT]: showFormView ? portalElement : parentPortal.element,
+  }
+
   return (
     <PaneContent>
-      <Flex height="fill">
-        {showFormView && (
-          <Flex height="fill" direction="column" flex={2}>
+      <Flex height="100%">
+        <div
+          data-testid="document-panel-form-view"
+          hidden={!showFormView}
+          style={{display: showFormView ? 'contents' : 'none'}}
+        >
+          <Flex height="100%" flexDirection="column" flexBasis="0%" flexGrow={2}>
             <LegacyLayerProvider zOffset="paneHeader">
               {banners}
               <DocumentPanelSubHeader />
             </LegacyLayerProvider>
-            <DocumentBox flex={2}>
-              <PortalProvider element={portalElement} __unstable_elements={portalElements}>
-                <BoundaryElementProvider element={documentScrollElement}>
-                  <VirtualizerScrollInstanceProvider
-                    scrollElement={documentScrollElement}
-                    containerElement={formContainerElement}
-                  >
-                    <Scroller
-                      $disabled={layoutCollapsed || false}
-                      data-testid="document-panel-scroller"
-                      ref={setDocumentScrollElement}
+            <Box className={documentBox} flexBasis="0%" flexGrow={2}>
+              {/* The scroll container is the visible region for everything portaled into the pane
+                  (between the sticky header and footer): popovers that escape dialogs use it as
+                  their boundary, see PortalBoundaryProvider. */}
+              <PortalBoundaryProvider element={documentScrollElement} portalElement={portalElement}>
+                <PortalProvider element={portalElement} __unstable_elements={portalElements}>
+                  <BoundaryElementProvider element={documentScrollElement}>
+                    <VirtualizerScrollInstanceProvider
+                      scrollElement={documentScrollElement}
+                      containerElement={formContainerElement}
                     >
-                      <FormView
-                        hidden={formViewHidden}
-                        margins={margins}
-                        ref={formContainerElement}
-                      />
-                      {activeViewNode}
-                    </Scroller>
+                      <ScrollContainer
+                        className={clsx(scroller, !layoutCollapsed && scrollerEnabled)}
+                        data-testid="document-panel-scroller"
+                        ref={setDocumentScrollElement}
+                      >
+                        <FormView
+                          hidden={formViewHidden}
+                          margins={margins}
+                          ref={formContainerElement}
+                        />
+                        {activeViewNode}
+                      </ScrollContainer>
 
-                    {inspectDialog}
+                      {inspectDialog}
 
-                    <div data-testid="document-panel-portal" ref={setPortalElement} />
-                  </VirtualizerScrollInstanceProvider>
-                </BoundaryElementProvider>
-              </PortalProvider>
-            </DocumentBox>
+                      <div data-testid="document-panel-portal" ref={setPortalElement} />
+                    </VirtualizerScrollInstanceProvider>
+                  </BoundaryElementProvider>
+                </PortalProvider>
+              </PortalBoundaryProvider>
+            </Box>
 
             {footer}
           </Flex>
-        )}
+        </div>
         {showInspector && (
           <BoundaryElementProvider element={rootElement}>
-            <DocumentInspectorPanel
-              documentId={documentId}
-              documentType={schemaType.name}
-              flex={1}
-            />
+            <PortalProvider
+              element={parentPortal.element}
+              __unstable_elements={inspectorPortalElements}
+            >
+              <DocumentInspectorPanel
+                documentId={documentId}
+                documentType={schemaType.name}
+                flex={1}
+              />
+            </PortalProvider>
           </BoundaryElementProvider>
         )}
       </Flex>
     </PaneContent>
   )
 }
-DocumentPanel.displayName = 'DocumentPanel'

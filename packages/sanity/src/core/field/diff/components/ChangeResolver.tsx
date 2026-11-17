@@ -1,6 +1,5 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ConditionalProperty, type SanityDocument} from '@sanity/types'
-import {Stack, Text} from '@sanity/ui'
 import {
   Fragment,
   type HTMLAttributes,
@@ -12,7 +11,7 @@ import {
   useState,
 } from 'react'
 import {DiffContext} from 'sanity/_singletons'
-import {Box} from 'ui5'
+import {Text, VStack, Box} from 'ui5'
 
 import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
 import {
@@ -93,7 +92,7 @@ export function ChangeResolver(props: ChangeResolverProps) {
   }
 
   return (
-    <Text>
+    <Text as="div" trim={true}>
       Unknown change type: <code>{(change as any).type || 'undefined'}</code>
     </Text>
   )
@@ -176,14 +175,14 @@ export function GroupChange(
     () =>
       hidden ? null : (
         <>
-          <Stack
+          <VStack
             gap={1}
             as={GroupChangeContainer}
             data-ui="group-change-content"
             data-revert-group-hover={isRevertButtonHovered ? '' : undefined}
             data-portable-text={isPortableText ? '' : undefined}
           >
-            <Stack as={ChangeListWrapper} gap={5} data-ui="group-change-list">
+            <VStack as={ChangeListWrapper} gap={5} data-ui="group-change-list">
               {changes.map((change) => (
                 <ChangeResolver
                   key={change.key}
@@ -195,13 +194,12 @@ export function GroupChange(
                   addParentWrapper={change.path.length - group.path.length > 1}
                 />
               ))}
-            </Stack>
+            </VStack>
             {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
               <Box>
                 <RevertChangesButton
                   changeCount={changes.length}
                   onClick={handleRevertChangesConfirm}
-                  // oxlint-disable-next-line react/react-compiler
                   ref={setRevertButtonElement}
                   selected={confirmRevertOpen}
                   disabled={readOnly || !isTargetReady}
@@ -209,7 +207,7 @@ export function GroupChange(
                 />
               </Box>
             )}
-          </Stack>
+          </VStack>
 
           <RevertChangesConfirmDialog
             open={confirmRevertOpen}
@@ -220,6 +218,7 @@ export function GroupChange(
           />
         </>
       ),
+    // oxlint-disable-next-line react/memo-dependencies -- pre-existing violation, to be fixed in a follow-up
     [
       changes,
       confirmRevertOpen,
@@ -245,7 +244,7 @@ export function GroupChange(
     group.schemaType.of.some((ofType) => ofType.name === 'block')
 
   return hidden ? null : (
-    <Stack gap={1} {...restProps}>
+    <VStack gap={1} {...restProps}>
       <ChangeBreadcrumb titlePath={titlePath} />
       {isNestedInDiff || isPortableTextGroupArray ? (
         content
@@ -254,7 +253,7 @@ export function GroupChange(
           {content}
         </FieldWrapper>
       )}
-    </Stack>
+    </VStack>
   )
 }
 

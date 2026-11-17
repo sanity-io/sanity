@@ -115,7 +115,8 @@ export default defineType({
       name: 'pngImage',
       title: 'PNG image',
       type: 'image',
-      description: 'Should not accept other image types than png',
+      description:
+        'Should not accept other image types than png. Selecting a non-png from the Media Library shows a warning.',
       options: {
         hotspot: true,
         accept: 'image/png',

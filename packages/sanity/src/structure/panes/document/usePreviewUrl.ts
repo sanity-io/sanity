@@ -37,5 +37,5 @@ export function usePreviewUrl(value: Partial<SanityDocument> | undefined): strin
     )
   }, [resolveProductionUrl, subject])
 
-  return useObservable(resolvedUrlObservable)
+  return useObservable(resolvedUrlObservable, undefined)
 }

@@ -1,8 +1,8 @@
 import {DocumentIcon} from '@sanity/icons/Document'
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {useUnitFormatter} from '../../../../hooks/useUnitFormatter'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -65,7 +65,7 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
         title={prev.originalFilename || t('changes.file.meta-info-fallback-title')}
         icon={DocumentIcon}
       >
-        <Text size={0} style={{color: 'inherit'}}>
+        <Text size={0} style={{color: 'inherit'}} as="div" trim={true}>
           {prevSize}
         </Text>
       </MetaInfo>
@@ -78,13 +78,18 @@ export const FileFieldDiff: DiffComponent<ObjectDiff<File>> = ({diff, schemaType
         title={next.originalFilename || t('changes.file.meta-info-fallback-title')}
         icon={DocumentIcon}
       >
-        <Flex align="center">
-          <Text size={0} style={{color: 'inherit'}}>
+        <Flex alignItems="center">
+          <Text size={0} style={{color: 'inherit'}} as="div" trim={true}>
             {nextSize}
           </Text>
           {pctDiff !== 0 && (
             <Card radius={2} padding={1} as={SizeDiff} marginLeft={2}>
-              <Text size={0} data-number={pctDiff > 0 ? 'positive' : 'negative'}>
+              <Text
+                size={0}
+                data-number={pctDiff > 0 ? 'positive' : 'negative'}
+                as="div"
+                trim={true}
+              >
                 {pctDiff > 0 ? '+' : '-'}
                 {pctDiff}%
               </Text>

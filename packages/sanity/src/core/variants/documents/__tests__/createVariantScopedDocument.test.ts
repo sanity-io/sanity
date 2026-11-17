@@ -31,11 +31,18 @@ const releaseDocument: ReleaseDocument = {
   },
 }
 
+function mockClient() {
+  const client = {
+    action: vi.fn().mockResolvedValue(ACTION_RESULT),
+    withConfig: vi.fn(() => client),
+  }
+
+  return client
+}
+
 describe('createVariantScopedDocument', () => {
   it('creates a variant document from a base document in the published perspective', async () => {
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+    const client = mockClient()
 
     await expect(
       createVariantScopedDocument({
@@ -66,9 +73,7 @@ describe('createVariantScopedDocument', () => {
   })
 
   it('creates a variant document from an in-memory document', async () => {
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+    const client = mockClient()
 
     await expect(
       createVariantScopedDocument({
@@ -98,9 +103,7 @@ describe('createVariantScopedDocument', () => {
   })
 
   it('passes release bundleId when creating from a release perspective string', async () => {
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+    const client = mockClient()
 
     await createVariantScopedDocument({
       client: client as unknown as SanityClient,
@@ -128,9 +131,7 @@ describe('createVariantScopedDocument', () => {
   })
 
   it('passes release bundleId when creating from a release document perspective', async () => {
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+    const client = mockClient()
 
     await createVariantScopedDocument({
       client: client as unknown as SanityClient,
@@ -153,9 +154,7 @@ describe('createVariantScopedDocument', () => {
   })
 
   it('passes drafts bundleId when creating from the drafts perspective', async () => {
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+    const client = mockClient()
 
     await createVariantScopedDocument({
       client: client as unknown as SanityClient,
@@ -178,9 +177,7 @@ describe('createVariantScopedDocument', () => {
   })
 
   it('forwards the abort signal to the action request when creating from a base document', async () => {
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+    const client = mockClient()
     const controller = new AbortController()
 
     await createVariantScopedDocument({
@@ -199,9 +196,7 @@ describe('createVariantScopedDocument', () => {
   })
 
   it('forwards the abort signal to the action request when creating from an in-memory document', async () => {
-    const client = {
-      action: vi.fn().mockResolvedValue(ACTION_RESULT),
-    }
+    const client = mockClient()
     const controller = new AbortController()
 
     await createVariantScopedDocument({

@@ -293,6 +293,7 @@ import type {
   SanityDocument,
   SanityDocumentLike,
   Schema,
+  SchemaAssetSources,
   SchemaType,
   SchemaTypeDefinition,
   SchemaValidationError,
@@ -1238,6 +1239,9 @@ describe('@sanity/types', () => {
   })
   test('Schema', () => {
     expectTypeOf<Schema>().toBeObject()
+  })
+  test('SchemaAssetSources', () => {
+    expectTypeOf<SchemaAssetSources>().not.toBeNever()
   })
   test('SchemaType', () => {
     expectTypeOf<SchemaType>().not.toBeNever()

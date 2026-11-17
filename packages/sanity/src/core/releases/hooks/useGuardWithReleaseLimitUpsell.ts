@@ -9,7 +9,7 @@ export function useGuardWithReleaseLimitUpsell() {
   const {guardWithReleaseLimitUpsell} = useReleasesUpsell()
 
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setIsPendingGuardResponse(true)
 
     const promise = new Promise<boolean>((resolve) => {
@@ -19,6 +19,7 @@ export function useGuardWithReleaseLimitUpsell() {
     })
 
     setReleasePromise(promise)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [guardWithReleaseLimitUpsell, isPendingGuardResponse])
 
   return {

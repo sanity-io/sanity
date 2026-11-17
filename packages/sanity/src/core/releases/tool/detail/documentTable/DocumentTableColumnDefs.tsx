@@ -2,14 +2,14 @@ import {type ReleaseState} from '@sanity/client'
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Badge, Card, Flex, Skeleton, Text} from '@sanity/ui'
+import {Badge, Skeleton} from '@sanity/ui'
 import {toString as pathToString} from '@sanity/util/paths'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
-import {type CSSProperties, memo, useCallback, useEffect, useRef, useState} from 'react'
+import {memo, useCallback, useEffect, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -18,12 +18,8 @@ import {RelativeTime} from '../../../../components/RelativeTime'
 import {AvatarSkeleton, UserAvatar} from '../../../../components/userAvatar/UserAvatar'
 import {useSchema} from '../../../../hooks/useSchema'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
-import {RhombusIcon} from '../../../../variants/plugin/components/PersonalizationIcons'
-import {
-  getVariantConditionsText,
-  getVariantIdFromDocument,
-  getVariantTitle,
-} from '../../../../variants/tool/util'
+import {getDocumentVersionVariantId} from '../../../../util/getDocumentVersionVariant'
+import {getVariantId, getVariantTitle} from '../../../../variants/tool/util'
 import {type SystemVariant} from '../../../../variants/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../../../util/isGoingToUnpublish'
@@ -31,6 +27,7 @@ import {getReleaseDocumentIntent} from '../../components/getReleaseDocumentInten
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {Headers} from '../../components/Table/TableHeader'
 import {type Column, type InjectedTableProps} from '../../components/Table/types'
+import {MemoVariantCell} from '../../components/VariantCell'
 import {getDocumentActionType, getReleaseDocumentActionConfig} from '../releaseDocumentActions'
 import {type BundleDocumentRow} from '../ReleaseSummary'
 import {type DocumentInRelease} from '../types'
@@ -49,8 +46,8 @@ const MemoReleaseDocumentPreview = memo(
     documentRevision?: string
   }) {
     const willUnpublish = isGoingToUnpublish(item.document)
-    const variantId = getVariantIdFromDocument(item.document)
-
+    const variantRef = getDocumentVersionVariantId({_system: item.document._system})
+    const variantId = variantRef ? getVariantId(variantRef) : undefined
     return (
       <ReleaseDocumentPreview
         documentId={item.document._id}
@@ -124,17 +121,25 @@ export function DocumentType({type}: {type: string}) {
   // A title change rewrites the text without resizing the box, so re-measure on title change.
   useEffect(() => {
     checkTruncation()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [title, checkTruncation])
 
   const textElement = (
-    <Text size={1}>
+    <Text size={1} as="div" trim={true}>
       <TruncatedSpan ref={measureRef}>{title}</TruncatedSpan>
     </Text>
   )
 
   if (isTruncated) {
     return (
-      <Tooltip portal content={<Text size={1}>{title}</Text>}>
+      <Tooltip
+        portal
+        content={
+          <Text size={1} as="div" trim={true}>
+            {title}
+          </Text>
+        }
+      >
         {textElement}
       </Tooltip>
     )
@@ -159,11 +164,11 @@ const documentActionColumn: (
   sortTransform: variantsEnabled ? (value) => getDocumentActionType(value) || '' : undefined,
   header: (props) =>
     variantsEnabled ? (
-      <Flex {...props.headerProps} paddingY={3} sizing="border">
+      <Flex {...props.headerProps} paddingY={3}>
         <Headers.SortHeaderButton text={t('table-header.action')} {...props} />
       </Flex>
     ) : (
-      <Flex {...props.headerProps} paddingY={3} sizing="border">
+      <Flex {...props.headerProps} paddingY={3}>
         <Headers.BasicHeader text={t('table-header.action')} />
       </Flex>
     ),
@@ -187,74 +192,33 @@ const documentActionColumn: (
     }
 
     return (
-      <Flex align="center" {...cellProps}>
+      <Flex alignItems="center" {...cellProps}>
         <Box paddingX={2}>{actionBadge()}</Box>
       </Flex>
     )
   },
 })
 
-// Purple, matching the perspective bar's variant motif. The perspective bar gets its purple from a
-// `tone="suggest"` Card context (which defines --card-icon-color as the suggest purple); the
-// --card-badge-* vars only exist inside a Badge, so we replicate the Card approach: a transparent
-// suggest-toned wrapper, with the RhombusIcon (stroke=currentColor) picking up --card-icon-color.
-const VARIANT_ICON_CARD_STYLE: CSSProperties = {backgroundColor: 'transparent'}
-const VARIANT_ICON_STYLE: CSSProperties = {color: 'var(--card-icon-color)'}
-
-/** Resolves a document's variant definition from its `_system.variant._ref` (full variant id). */
+/** Resolves a document's variant definition from its `_system.variants[0]._ref` (full variant id). */
 function resolveDocumentVariant(
   document: BundleDocumentRow['document'],
   variantsById: Map<string, SystemVariant>,
 ): SystemVariant | undefined {
-  const variantRef = (document as {_system?: {variant?: {_ref?: string}}})._system?.variant?._ref
-  return variantRef ? variantsById.get(variantRef) : undefined
+  const variantId = getDocumentVersionVariantId(document)
+  return variantId ? variantsById.get(variantId) : undefined
 }
 
-// Which variant a release document targets: ◆ diamond + the variant title, with the full
-// conditions ("flags") on hover. Empty for base (non-variant) documents.
-const VariantCell = memo(
-  function VariantCell({
-    document,
-    variantsById,
-  }: {
-    document: BundleDocumentRow['document']
-    variantsById: Map<string, SystemVariant>
-  }) {
-    const variant = resolveDocumentVariant(document, variantsById)
-    if (!variant) return null
-
-    const conditions = getVariantConditionsText(variant.conditions)
-
-    return (
-      <Tooltip
-        portal
-        placement="bottom-start"
-        disabled={!conditions}
-        content={
-          conditions ? (
-            <Box padding={2}>
-              <Text size={1}>{conditions}</Text>
-            </Box>
-          ) : undefined
-        }
-      >
-        <Flex align="center" gap={2} style={{minWidth: 0}}>
-          <Card tone="suggest" padding={0} style={VARIANT_ICON_CARD_STYLE}>
-            <Text size={1} style={VARIANT_ICON_STYLE}>
-              <RhombusIcon />
-            </Text>
-          </Card>
-          {/* flex + min-width:0 lets the label shrink below its content width so a long variant name
-              truncates with an ellipsis instead of overflowing the column. */}
-          <Text size={1} textOverflow="ellipsis" weight="medium" style={{flex: 1, minWidth: 0}}>
-            {getVariantTitle(variant)}
-          </Text>
-        </Flex>
-      </Tooltip>
-    )
-  },
-  (prev, next) => prev.document === next.document && prev.variantsById === next.variantsById,
-)
+// Empty for base (non-variant) documents.
+function DocumentVariantCell({
+  document,
+  variantsById,
+}: {
+  document: BundleDocumentRow['document']
+  variantsById: Map<string, SystemVariant>
+}) {
+  const variant = resolveDocumentVariant(document, variantsById)
+  return variant ? <MemoVariantCell variant={variant} /> : null
+}
 
 export const getDocumentTableColumnDefs: (
   releaseId: string,
@@ -298,13 +262,13 @@ export const getDocumentTableColumnDefs: (
       width: variantsEnabled ? 120 : 150,
       sorting: true,
       header: (props) => (
-        <Flex {...props.headerProps} paddingY={3} sizing="border">
+        <Flex {...props.headerProps} paddingY={3}>
           <Headers.SortHeaderButton text={t('table-header.type')} {...props} />
         </Flex>
       ),
       cell: ({cellProps, datum}) => (
-        <Flex align="center" {...cellProps}>
-          <Box paddingX={2} style={{minWidth: 0}}>
+        <Flex alignItems="center" {...cellProps}>
+          <Box paddingX={2}>
             {!datum.isLoading && <MemoDocumentType type={datum.document._type} />}
           </Box>
         </Flex>
@@ -325,18 +289,21 @@ export const getDocumentTableColumnDefs: (
               return variant ? getVariantTitle(variant).toLowerCase() : ''
             },
             header: (props) => (
-              <Flex {...props.headerProps} paddingY={3} sizing="border">
+              <Flex {...props.headerProps} paddingY={3}>
                 <Headers.SortHeaderButton text={t('table-header.variant')} {...props} />
               </Flex>
             ),
             cell: ({cellProps, datum}) => (
-              <Flex align="center" {...cellProps}>
-                <Box paddingX={2} style={{minWidth: 0}}>
+              <Flex alignItems="center" {...cellProps}>
+                <Box paddingX={2}>
                   {!datum.isLoading &&
                     (variantsLoading ? (
                       <Skeleton animated radius={1} style={{width: 60, height: 11}} />
                     ) : (
-                      <VariantCell document={datum.document} variantsById={options.variantsById!} />
+                      <DocumentVariantCell
+                        document={datum.document}
+                        variantsById={options.variantsById!}
+                      />
                     ))}
                 </Box>
               </Flex>
@@ -364,7 +331,7 @@ export const getDocumentTableColumnDefs: (
         options?.searchInCommandLane ? (
           // Search moved to the command lane; the header is a plain sortable "Document" label that
           // grows to fill (flex) in both header and body.
-          <Flex {...props.headerProps} flex={1} paddingY={3} sizing="border">
+          <Flex {...props.headerProps} flexBasis="0%" flexGrow={1} paddingY={3}>
             <Headers.SortHeaderButton text={t('table-header.document')} {...props} />
           </Flex>
         ) : (
@@ -398,7 +365,7 @@ export const getDocumentTableColumnDefs: (
             sorting: true,
             width: 130,
             header: (props) => (
-              <Flex {...props.headerProps} paddingY={3} sizing="border">
+              <Flex {...props.headerProps} paddingY={3}>
                 <Headers.SortHeaderButton
                   paddingLeft={2}
                   text={t('table-header.last-edited')}
@@ -409,14 +376,15 @@ export const getDocumentTableColumnDefs: (
             cell: ({cellProps, datum}) => (
               <Flex
                 {...cellProps}
-                align="center"
+                alignItems="center"
                 paddingX={2}
                 paddingY={3}
-                style={{minWidth: 130}}
-                sizing="border"
+                style={{
+                  minWidth: 130,
+                }}
               >
                 {!datum.isLoading && datum.document._updatedAt && (
-                  <Text muted size={1}>
+                  <Text muted size={1} as="div" trim={true}>
                     <RelativeTime time={datum.document._updatedAt} useTemporalPhrase minimal />
                   </Text>
                 )}
@@ -432,8 +400,8 @@ export const getDocumentTableColumnDefs: (
             width: 170,
             style: {minWidth: 44, maxWidth: 170},
             header: ({headerProps}) => (
-              <Flex {...headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
-                <Text muted size={1} textOverflow="ellipsis" weight="medium">
+              <Flex {...headerProps} alignItems="center" paddingX={2} paddingY={3}>
+                <Text muted size={1} truncate={1} weight="medium" as="div" trim={true}>
                   {t('table-header.edited-by')}
                 </Text>
               </Flex>
@@ -447,7 +415,7 @@ export const getDocumentTableColumnDefs: (
             sorting: true,
             width: 130,
             header: (props) => (
-              <Flex {...props.headerProps} paddingY={3} sizing="border">
+              <Flex {...props.headerProps} paddingY={3}>
                 <Headers.SortHeaderButton text={t('table-header.edited')} {...props} />
               </Flex>
             ),
@@ -460,7 +428,7 @@ export const getDocumentTableColumnDefs: (
       sorting: false,
       width: 50,
       header: ({headerProps}) => (
-        <Flex {...headerProps} paddingY={3} sizing="border">
+        <Flex {...headerProps} paddingY={3}>
           <Headers.BasicHeader text={''} />
         </Flex>
       ),
@@ -477,13 +445,15 @@ export const getDocumentTableColumnDefs: (
         // and focuses the field when the document opens.
         const firstError = errors.find((error) => error.path.length > 0) ?? errors[0]
         const focusPath = firstError ? pathToString(firstError.path) : undefined
+        const variantRef = getDocumentVersionVariantId({_system: datum.document._system})
+        const variantId = variantRef ? getVariantId(variantRef) : undefined
         const intent = getReleaseDocumentIntent({
           documentId: datum.document._id,
           documentTypeName: datum.document._type,
           releaseId,
           releaseState,
           documentRevision: datum.document._rev,
-          variantId: getVariantIdFromDocument(datum.document),
+          variantId: variantId,
           path: focusPath,
         })
         const errorLabel = t(
@@ -498,26 +468,29 @@ export const getDocumentTableColumnDefs: (
           // width (flex:1 here would split the free space with Document and misalign the header/body).
           <Flex
             {...cellProps}
-            flex={options?.searchInCommandLane ? undefined : 1}
+            {...(options?.searchInCommandLane ? {} : {flexBasis: '0%', flexGrow: 1})}
             padding={1}
-            justify="center"
-            align="center"
-            sizing="border"
+            justifyContent="center"
+            alignItems="center"
           >
             {datum.validation.hasError && (
               <Tooltip
                 portal
                 placement="bottom-end"
                 content={
-                  <Text muted size={1}>
-                    <Flex align={'center'} gap={3} padding={1}>
-                      <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+                  <Text muted size={1} as="div" trim={true}>
+                    <Flex alignItems={'center'} gap={3} padding={1}>
+                      <Icon
+                        size={1}
+                        style={{margin: '-0.375rem'}}
+                        icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
+                      />
                       {errorLabel}
                     </Flex>
                   </Text>
                 }
               >
-                <Text size={1}>
+                <Text size={1} as="div" trim={true}>
                   <IntentLink
                     intent="edit"
                     params={intent.params}
@@ -525,7 +498,11 @@ export const getDocumentTableColumnDefs: (
                     aria-label={errorLabel}
                     data-testid={`validation-error-link-${datum.document._id}`}
                   >
-                    <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+                    <Icon
+                      size={1}
+                      style={{margin: '-0.375rem'}}
+                      icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
+                    />
                   </IntentLink>
                 </Text>
               </Tooltip>
@@ -537,14 +514,18 @@ export const getDocumentTableColumnDefs: (
                 portal
                 placement="bottom-end"
                 content={
-                  <Text muted size={1}>
+                  <Text muted size={1} as="div" trim={true}>
                     <Box padding={1}>{t('dashboard.details.metadata.status-validating')}</Box>
                   </Text>
                 }
               >
-                <Text muted size={1} data-testid={`validation-validating-${datum.document._id}`}>
-                  <ToneIcon icon={ClockIcon} tone="default" />
-                </Text>
+                <Icon
+                  muted
+                  size={1}
+                  style={{margin: '-0.375rem'}}
+                  icon={<ToneIcon icon={ClockIcon} tone="default" />}
+                  data-testid={`validation-validating-${datum.document._id}`}
+                />
               </Tooltip>
             )}
             {variantsEnabled && !datum.validation.hasError && !datum.validation.isValidating && (
@@ -552,14 +533,17 @@ export const getDocumentTableColumnDefs: (
                 portal
                 placement="bottom-end"
                 content={
-                  <Text muted size={1}>
+                  <Text muted size={1} as="div" trim={true}>
                     <Box padding={1}>{t('document-validation.valid')}</Box>
                   </Text>
                 }
               >
-                <Text muted size={1} data-testid={`validation-valid-${datum.document._id}`}>
-                  <ToneIcon icon={CheckmarkCircleIcon} tone="positive" />
-                </Text>
+                <Icon
+                  size={1}
+                  style={{margin: '-0.375rem'}}
+                  icon={<ToneIcon icon={CheckmarkCircleIcon} tone="positive" />}
+                  data-testid={`validation-valid-${datum.document._id}`}
+                />
               </Tooltip>
             )}
           </Flex>
@@ -590,13 +574,14 @@ function UpdatedAtCell({
   return (
     <Flex
       {...cellProps}
-      align="center"
+      alignItems="center"
       paddingX={2}
       paddingY={3}
-      style={{minWidth: 130}}
-      sizing="border"
+      style={{
+        minWidth: 130,
+      }}
     >
-      <Flex align="center" gap={2}>
+      <Flex alignItems="center" gap={2}>
         {/* Skeleton only while the history is actually loading — NOT whenever there is no editor.
             A settled-but-empty or failed history has loading:false and no lastEditedBy, and must
             render just the timestamp (or nothing) rather than an endless skeleton. */}
@@ -606,7 +591,7 @@ function UpdatedAtCell({
             {documentHistory?.lastEditedBy && (
               <UserAvatar size={0} user={documentHistory.lastEditedBy} />
             )}
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               <RelativeTime time={document._updatedAt} useTemporalPhrase minimal />
             </Text>
           </>
@@ -635,7 +620,7 @@ function EditedByReleaseCell({
   const {documentHistory, loading} = useReleaseHistory(historyDocumentId, bundleId, document?._rev)
 
   return (
-    <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+    <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
       <EditedByAvatar loading={isLoading || loading} userId={documentHistory?.lastEditedBy} />
     </Flex>
   )

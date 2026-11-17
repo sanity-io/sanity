@@ -1,5 +1,6 @@
-import {Box, Flex, Select, TextInput} from '@sanity/ui'
+import {Select, TextInput} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useRef, useState} from 'react'
+import {Flex, Box} from 'ui5'
 
 import {type StudioLocaleResourceKeys} from '../../../../../../../../../i18n/bundles/studio'
 import {useTranslation} from '../../../../../../../../../i18n/hooks/useTranslation'
@@ -57,7 +58,7 @@ export function SearchFilterDateLastInput({
 
   return (
     <Flex gap={2}>
-      <Box flex={1}>
+      <Box flexBasis="0%" flexGrow={1}>
         <TextInput
           aria-label={t('search.filter-date-value-aria-label')}
           fontSize={fullscreen ? 2 : 1}
@@ -69,7 +70,7 @@ export function SearchFilterDateLastInput({
           value={uncontrolledValue}
         />
       </Box>
-      <Box flex={1}>
+      <Box flexBasis="0%" flexGrow={1}>
         <Select
           aria-label={t('search.filter-date-unit-aria-label')}
           fontSize={fullscreen ? 2 : 1}

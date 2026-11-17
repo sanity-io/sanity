@@ -1,11 +1,14 @@
 import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {type Ref, type HTMLProps} from 'react'
+import {act, type Ref, type HTMLProps} from 'react'
+import {VariantsModePromiseContext} from 'sanity/_singletons'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {type SingleWorkspace} from '../../../config/types'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../__fixtures__/variants.fixture'
+import {type VariantsMode} from '../../contexts/mode/types'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
 import {type EditableSystemVariant, type SystemVariant} from '../../types'
 import {VariantsOverview} from '../overview/VariantsOverview'
@@ -28,6 +31,10 @@ const variantOperationsMock = vi.hoisted(() => ({
   createVariant: vi.fn(),
   updateVariant: vi.fn(),
   deleteVariant: vi.fn(),
+}))
+
+const variantPermissionsMock = vi.hoisted(() => ({
+  checkWithPermissionGuard: vi.fn(),
 }))
 
 const documentCountsMock = vi.hoisted(() => ({
@@ -79,6 +86,10 @@ vi.mock('../../store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
 }))
 
+vi.mock('../../store/useVariantPermissions', () => ({
+  useVariantPermissions: vi.fn(() => variantPermissionsMock),
+}))
+
 vi.mock('../../hooks/useVariantsDocumentCounts', () => ({
   useVariantsDocumentCounts: vi.fn(() => ({
     data: documentCountsMock.data,
@@ -111,22 +122,37 @@ describe('VariantsOverview', () => {
       }),
     )
     variantOperationsMock.deleteVariant.mockResolvedValue(undefined)
+    variantPermissionsMock.checkWithPermissionGuard.mockResolvedValue(true)
   })
 
   afterEach(() => {
     vi.clearAllMocks()
   })
 
-  const renderOverview = async () => {
+  const renderOverview = async (config?: Partial<SingleWorkspace>) => {
     const wrapper = await createTestProvider({
+      config,
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const view = render(<VariantsOverview />, {wrapper})
+    const mode = Object.assign(Promise.resolve<VariantsMode>('default'), {
+      status: 'fulfilled' as const,
+      value: 'default' as const,
+    })
+    // The overview reads the mode with `use()`; a sync `render` act drops the commit's passive
+    // effects once a render has called `use()` on a thenable, so mount inside an awaited act
+    // oxlint-disable-next-line testing-library/no-unnecessary-act -- see above
+    await act(async () => {
+      render(
+        <VariantsModePromiseContext value={mode}>
+          <VariantsOverview />
+        </VariantsModePromiseContext>,
+        {wrapper},
+      )
+    })
     // Wait on the always-present page description rather than the search box (search now lives in the
     // shared DocumentTable command lane, which only renders once there are rows) — and not on the
     // title, which the empty state duplicates as its own h1.
     await screen.findByText(/Manage variant definitions/, {}, {timeout: 5000})
-    return view
   }
 
   const setVariants = (variants: SystemVariant[]) => {
@@ -325,6 +351,44 @@ describe('VariantsOverview', () => {
     expect(screen.queryByTestId('variants-empty-state')).not.toBeInTheDocument()
   })
 
+  it('exposes the add filter popover state, its toggles, and returns focus on Escape', async () => {
+    setVariants([variantAlphaAudience, variantNorwegianMarket])
+    const user = userEvent.setup()
+
+    await renderOverview()
+
+    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(2))
+
+    const trigger = screen.getByRole('button', {name: 'Add filter'})
+    expect(trigger).toHaveAttribute('aria-haspopup', 'dialog')
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+
+    await user.click(trigger)
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    const search = await screen.findByLabelText('Find a dimension…')
+    await waitFor(() => expect(search).toHaveFocus())
+    expect(document.getElementById(trigger.getAttribute('aria-controls') ?? '')).toHaveAttribute(
+      'role',
+      'dialog',
+    )
+
+    const dimension = screen.getByTestId('variant-filter-dimension-audience')
+    await user.click(dimension)
+    expect(dimension).toHaveAttribute('aria-current', 'true')
+
+    const value = screen.getByTestId('variant-filter-value-audience-alpha')
+    expect(value).toHaveAttribute('aria-pressed', 'false')
+    await user.click(value)
+    expect(value).toHaveAttribute('aria-pressed', 'true')
+
+    await user.keyboard('{Escape}')
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    expect(trigger).toHaveFocus()
+    expect(screen.getByRole('button', {name: 'Remove filter Audience: alpha'})).toBeInTheDocument()
+  })
+
   it('shows empty state when there are no variants', async () => {
     variantsMock.data = []
 
@@ -340,9 +404,12 @@ describe('VariantsOverview', () => {
     expect(
       within(emptyState).getByRole('button', {name: 'New variant definition'}),
     ).toBeInTheDocument()
-    expect(within(emptyState).getByRole('link', {name: 'Documentation'})).toHaveAttribute(
-      'href',
-      'https://www.sanity.io/docs/content-variants',
+    expect(
+      within(emptyState).getByRole('link', {name: 'Documentation (opens in a new tab)'}),
+    ).toHaveAttribute('href', 'https://www.sanity.io/docs/content-variants')
+    expect(screen.getAllByRole('heading', {level: 1})).toHaveLength(1)
+    expect(within(emptyState).getByRole('heading', {level: 2})).toHaveTextContent(
+      'Variant definitions',
     )
   })
 
@@ -383,6 +450,58 @@ describe('VariantsOverview', () => {
         variantId: getVariantId(createdVariant._id),
       })
     })
+  })
+
+  it('shows a mismatch error when a stored condition is not in the configured list', async () => {
+    setVariants([variantAlphaAudience])
+
+    await renderOverview({
+      beta: {
+        variants: {
+          enabled: true,
+          types: {variant: {conditions: [{name: 'locale', values: ['en-US']}]}},
+        },
+      },
+    })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+
+    expect(screen.getByTestId('variant-condition-mismatch')).toHaveAccessibleName(
+      'The condition "audience" is not in the configured list. Edit the variant to fix it.',
+    )
+  })
+
+  it('does not show a mismatch error in freeform mode', async () => {
+    setVariants([variantAlphaAudience])
+
+    await renderOverview()
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+
+    expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
+  })
+
+  it('does not show a mismatch error while configured conditions are loading', async () => {
+    setVariants([variantAlphaAudience])
+
+    await renderOverview({
+      beta: {
+        variants: {
+          enabled: true,
+          types: {variant: {conditions: () => new Promise(() => undefined)}},
+        },
+      },
+    })
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+    })
+
+    expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
   })
 
   it('shows error copy in the table empty state when load fails with no data', async () => {

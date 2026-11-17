@@ -1,6 +1,5 @@
 import {
   type I18nTextRecord,
-  type Path,
   type PreviewValue,
   type Reference,
   type ReferenceSchemaType,
@@ -55,12 +54,6 @@ export interface CreateReferenceOption {
   }
 }
 
-export interface ReferenceSearchState {
-  hits: ReferenceSearchHit[]
-  searchString?: string
-  isLoading: boolean
-}
-
 export type ReferenceSearchFunction = (query: string) => Observable<ReferenceSearchHit[]>
 
 export interface ReferenceSearchHit {
@@ -78,13 +71,6 @@ export interface ReferenceInputProps<Value = Reference> extends ObjectInputProps
   onSearch: ReferenceSearchFunction
   selectedState?: 'selected' | 'pressed' | 'none'
   createOptions: CreateReferenceOption[]
-  editReferenceLinkComponent: ComponentType<{
-    children: ReactNode
-    documentId: string
-    documentType: string
-    parentRefPath: Path
-  }>
-
   onEditReference: (event: EditReferenceEvent) => void
   getReferenceInfo: (id: string, type: ReferenceSchemaType) => Observable<ReferenceInfo>
 }

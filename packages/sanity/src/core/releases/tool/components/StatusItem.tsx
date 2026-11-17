@@ -1,6 +1,6 @@
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ReactNode} from 'react'
-import {Box} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 export function StatusItem(props: {avatar?: ReactNode; text: ReactNode; testId?: string}) {
   const {avatar, text, testId} = props
@@ -14,7 +14,7 @@ export function StatusItem(props: {avatar?: ReactNode; text: ReactNode; testId?:
           </Box>
         )}
         <Box padding={2} paddingLeft={avatar ? 1 : undefined}>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {text}
           </Text>
         </Box>

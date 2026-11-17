@@ -146,8 +146,8 @@ export const colorVariantType = defineType({
 3. Add the new types to your schema in `sanity.config.ts`:
 
 ```typescript
-import {productMapType} from './schemaTypes/productMap'
 import {colorVariantType} from './schemaTypes/colorVariant'
+import {productMapType} from './schemaTypes/productMap'
 
 export default defineConfig({
   // ... other config

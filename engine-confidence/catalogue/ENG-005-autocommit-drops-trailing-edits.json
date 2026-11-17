@@ -1,0 +1,13 @@
+{
+  "id": "ENG-005",
+  "title": "Autocommit throttle loses its trailing commit, so edits made within 1 s of the previous commit are never sent unless another edit follows",
+  "severity": "S1",
+  "failureClass": "lost edit when switching documents shortly after typing",
+  "source": "Issue 15261 class (repro e2e in PR 15342); gap 12c in 01-context.md",
+  "sourceUrl": "https://github.com/sanity-io/sanity/issues/15261",
+  "filesTouched": ["packages/sanity/src/core/store/document/document-pair/operationEvents.ts"],
+  "userVisibleEffect": "Type a burst, then open another document within about 1 s: the tail of the burst stays in the in-memory buffered document, which is discarded when the pair is torn down; the server never receives it",
+  "notApplicableSuites": ["unit:mutator", "fuzz:pt"],
+  "expectedCaughtBy": [],
+  "addedOn": "2026-10-16"
+}

@@ -1,12 +1,13 @@
 import {type SanityDocument} from '@sanity/types'
 import {useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
-import {map} from 'rxjs/operators'
+import {of} from 'rxjs'
+import {catchError, map} from 'rxjs/operators'
 
 import {useDocumentPreviewStore} from '../store/datastores'
 import {type ObserveDocumentAPIConfig} from './createObserveDocument'
 
-const INITIAL_STATE = {loading: true, document: null}
+const INITIAL_STATE = {loading: true, document: null, error: null}
 
 /**
  * @internal
@@ -21,13 +22,23 @@ export function useUnstableObserveDocument<T extends SanityDocument>(
 ): {
   document: T | null
   loading: boolean
+  error: unknown
 } {
   const documentPreviewStore = useDocumentPreviewStore()
   const observable = useMemo(
     () =>
-      documentPreviewStore
-        .unstable_observeDocument(documentId, apiConfig)
-        .pipe(map((document) => ({loading: false, document: document as T}))),
+      documentPreviewStore.unstable_observeDocument(documentId, apiConfig).pipe(
+        map((document) => ({
+          loading: false,
+          document: (document ?? null) as T | null,
+          error: null,
+        })),
+        // react-rx rethrows source errors during render, so catch and surface them.
+        catchError((error) => {
+          console.error(`Failed to observe document ${documentId}:`, error)
+          return of({loading: false, document: null, error})
+        }),
+      ),
     [documentId, documentPreviewStore, apiConfig],
   )
   // Kept synchronous: the observable is keyed to the live `documentId`, so a

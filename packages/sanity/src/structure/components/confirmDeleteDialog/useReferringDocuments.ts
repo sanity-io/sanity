@@ -1,4 +1,5 @@
 import {type ClientError, type SanityClient} from '@sanity/client'
+import {dequal} from 'dequal/lite'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest, concat, EMPTY, fromEvent, type Observable, of, timer} from 'rxjs'
@@ -95,7 +96,7 @@ function getDocumentExistence(
   const draftId = getDraftId(documentId)
   const publishedId = getPublishedId(documentId)
   const requestOptions = {
-    uri: versionedClient.getDataUrl('doc', `${draftId},${publishedId}`),
+    url: versionedClient.getDataUrl('doc', `${draftId},${publishedId}`),
     json: true,
     query: {excludeContent: 'true'},
     tag: 'use-referring-documents.document-existence',
@@ -156,6 +157,7 @@ export function fetchCrossDatasetReferences(
           }),
         )
     }),
+    distinctUntilChanged(dequal),
   )
 }
 

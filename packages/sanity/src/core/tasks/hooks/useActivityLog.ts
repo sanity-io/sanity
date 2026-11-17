@@ -54,6 +54,7 @@ export function useActivityLog(task: TaskDocument): {
   useEffect(() => {
     // Task is updated on every change, wait until the revision changes to update the activity log.
     void handleFetchAndParse(task._rev)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [task._rev])
   return {changes}
 }

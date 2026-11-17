@@ -1,6 +1,9 @@
 import {expect, type Request} from '@playwright/test'
 
+import {clearPreference, isPreferenceWrite} from '../../helpers/preferences'
 import {test} from '../../studio-test'
+
+const SORT_KEY = 'studio.structure-tool.sort-order.author'
 
 function getListenEventType(request: Request): string | null | undefined {
   if (request.url().includes('data/listen')) {
@@ -11,9 +14,15 @@ function getListenEventType(request: Request): string | null | undefined {
   return undefined
 }
 
-test(`navigating document creates only one listener connection`, async ({page, browserName}) => {
+test(`navigating document creates only one listener connection`, async ({
+  page,
+  browserName,
+  sanityClient,
+}) => {
   // For now, only test in other browsers except firefox due to flakiness in Firefox with the requests
   test.skip(browserName === 'firefox')
+  // The sort below only writes when it changes the stored one
+  await clearPreference(sanityClient, SORT_KEY)
 
   await page.goto('/content')
 
@@ -54,7 +63,7 @@ test(`navigating document creates only one listener connection`, async ({page, b
 
   // Scroll the items to click into view.
   await page.evaluate(() => {
-    document.querySelector('[data-testid="pane-content"] > *:first-of-type')?.scrollBy(0, 250)
+    document.querySelector('[data-testid="pane-content"] > *:first-of-type')?.scrollBy(0, 750)
   })
 
   // NOTE: clicks are intentionally not `force: true`: a forced click dispatches
@@ -68,9 +77,12 @@ test(`navigating document creates only one listener connection`, async ({page, b
     (request) => request.url().includes('data/listen') && request.url().includes('author'),
     {timeout: 30000},
   )
-  const keyValueRequest = page.waitForResponse((response) => response.url().includes('keyvalue'), {
-    timeout: 30000,
-  })
+  const preferenceWrite = page.waitForResponse(
+    (response) => isPreferenceWrite(response, SORT_KEY),
+    {
+      timeout: 30000,
+    },
+  )
 
   await page.getByTestId('pane-item-Author').click()
   await expect(page.locator('#author-author-0')).toBeVisible()
@@ -82,7 +94,7 @@ test(`navigating document creates only one listener connection`, async ({page, b
   // We change the sort order to not be default, to ensure that the listener is not re-created
   await page.getByTestId('pane-context-menu-button').click()
   await page.getByRole('menuitem', {name: 'Sort by Name'}).click()
-  await keyValueRequest
+  await preferenceWrite
 
   const bookRequest = page.waitForRequest(
     (request) => request.url().includes('data/listen') && request.url().includes('book'),

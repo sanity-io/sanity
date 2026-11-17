@@ -1,5 +1,7 @@
 dist
+dist-customizations
 results
 .certs
 .reference
 .sanity
+studio-customizations/.sanity

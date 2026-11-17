@@ -2,9 +2,9 @@ import {type ReleaseDocument} from '@sanity/client'
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Flex, Text} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {useCallback, useMemo} from 'react'
+import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
@@ -88,9 +88,9 @@ export const CardinalityViewPicker = ({
   //  If only one is enabled, show the label
   if (pickerView === 'contentReleases' || pickerView === 'singleDocReleases') {
     return (
-      <Flex align="center" gap={2}>
+      <Flex alignItems="center" gap={2}>
         <CalendarIcon />
-        <Text size={1} weight="semibold">
+        <Text size={1} weight="semibold" as="div" trim={true}>
           {pickerView === 'contentReleases' ? t('action.releases') : t('action.drafts')}
         </Text>
       </Flex>

@@ -113,8 +113,11 @@ test.describe('maximized document', () => {
     await expect(page.locator('[data-testid="pane-header"]')).toHaveCount(1)
     await expect(page.getByTestId('document-header-breadcrumb')).toBeVisible()
 
-    await expect(page.getByRole('button', {name: 'Reference test'})).toBeVisible()
-    await page.getByRole('button', {name: 'Reference test'}).click()
+    const breadcrumbItem = page
+      .getByTestId('document-header-breadcrumb')
+      .getByRole('button', {name: 'Reference test'})
+    await expect(breadcrumbItem).toBeVisible()
+    await breadcrumbItem.click()
 
     await expect(page.locator('[data-testid="pane-header"]')).toHaveCount(3)
   })

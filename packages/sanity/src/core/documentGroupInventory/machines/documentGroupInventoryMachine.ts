@@ -11,6 +11,7 @@ import {
 } from 'xstate'
 
 import {type TFunction} from '../../i18n/types'
+import {type TargetPerspective} from '../../perspective/types'
 import {type DocumentPerspectiveState} from '../../releases/hooks/useDocumentVersions'
 import {type ReleasesReducerState} from '../../releases/store/reducer'
 import {type AgentBundlesState} from '../../store/agent/createAgentBundlesStore'
@@ -31,9 +32,22 @@ export interface Meta {
   agentBundles: AgentBundlesState
 }
 
+/**
+ * The bundle every version in a set belongs to: the user's content agent
+ * bundle, or the perspective (`drafts`, `published` or a release document).
+ */
+export type VariantSetBundle =
+  | {type: 'agent'}
+  | {type: 'perspective'; perspective: TargetPerspective}
+
 export interface VariantSet {
   key: string
   name: string
+  /**
+   * Absent when the set's versions span several bundles, as the single set
+   * shown while Content Variants is switched off does.
+   */
+  bundle?: VariantSetBundle
   variants: Variant[]
 }
 
@@ -46,6 +60,12 @@ interface DocumentGroupInventoryContext {
   t: TFunction
   variantsEnabled: boolean | undefined
   metaState: 'pending' | 'ready'
+  /**
+   * Whether this instance only presents the document group's versions. Every
+   * mutative action is refused by the spawned machines, so the UI can hide the
+   * affordances behind `can` checks.
+   */
+  readOnly: boolean
 }
 
 type DocumentGroupInventoryEvents =
@@ -65,6 +85,7 @@ export const documentGroupInventoryMachine = setup({
       variantCreationMachine: VariantCreationLogic
       t: TFunction
       variantsEnabled: boolean | undefined
+      readOnly?: boolean
     }
     context: DocumentGroupInventoryContext
     events: DocumentGroupInventoryEvents
@@ -77,27 +98,29 @@ export const documentGroupInventoryMachine = setup({
   },
   guards: {
     isCreatingVariant: stateIn('creatingVariant'),
+    isMutable: ({context}) => !context.readOnly,
   },
 }).createMachine({
   id: 'documentGroupInventory',
   context: ({input, spawn}) => ({
     selectionRef: spawn(input.selectionMachine, {
       systemId: 'selection',
-      input: undefined,
+      input: {readOnly: input.readOnly},
     }),
     deletionRef: spawn(input.deletionMachine, {
       systemId: 'deletion',
-      input: undefined,
+      input: {readOnly: input.readOnly},
     }),
     variantCreationRef: spawn(input.variantCreationMachine, {
       systemId: 'variantCreation',
-      input: undefined,
+      input: {readOnly: input.readOnly, enabled: input.variantsEnabled ?? false},
     }),
     sets: [],
     releases: new Map(),
     t: input.t,
     variantsEnabled: input.variantsEnabled,
     metaState: 'pending' as const,
+    readOnly: input.readOnly ?? false,
   }),
   invoke: {
     src: 'meta',
@@ -157,15 +180,25 @@ export const documentGroupInventoryMachine = setup({
       guard: 'isCreatingVariant',
       target: '.idle',
     },
-    'feedback.begin': '.feedback',
-    'feedback.end': '.idle',
   },
   initial: 'idle',
   states: {
-    idle: {},
+    idle: {
+      on: {
+        // Feedback can only begin from `idle`: ending it returns to `idle`, which would abandon
+        // any other flow (such as variant creation) that was active when it began.
+        'feedback.begin': {
+          guard: 'isMutable',
+          target: 'feedback',
+        },
+      },
+    },
     creatingVariant: {},
     feedback: {
       entry: 'onFeedbackBegin',
+      on: {
+        'feedback.end': 'idle',
+      },
     },
   },
 })

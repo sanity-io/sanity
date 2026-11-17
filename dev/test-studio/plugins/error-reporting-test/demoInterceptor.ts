@@ -1,29 +1,29 @@
 /**
  * Dev-only client wrapper for the error playground. Composes the studio's
- * workspace `_requestHandler` so the full classification pipeline runs,
- * but substitutes a synthetic `defaultRequester` for matching demo URLs.
+ * workspace transport so the full classification pipeline runs, while
+ * retaining the synthetic request shapes used by the demo scenarios.
  *
  * Why not patch XHR / fetch directly? get-it can swap transport adapters
  * (xhr in browsers, fetch in workers, possibly more in the future). A
- * client-layer composition is transport-agnostic — it sees only the
- * rxjs Observable<HttpRequestEvent> contract, which is stable.
- *
- * Why not just override `_requestHandler` with synthesis? Because
- * `_requestHandler` is a single slot — overriding it replaces the
- * workspace handler. The classification + dialog pipeline disappears.
- * Composing means we delegate to the workspace handler, only substituting
- * the underlying HTTP at its `defaultRequester` callback.
+ * client-layer composition is transport-agnostic and uses the same parsed
+ * response and normalized-error contract as normal client requests.
  */
 
-import {
-  ClientError,
-  type HttpRequestEvent,
-  type RequestHandler,
-  type RequestOptions,
-  type SanityClient,
-  ServerError,
-} from '@sanity/client'
-import {defer, Observable, throwError} from 'rxjs'
+import {ClientError, type RequestHandler, type SanityClient, ServerError} from '@sanity/client'
+import {firstValueFrom, Observable, throwError} from 'rxjs'
+
+type RequestOptions = {method?: string; url: string}
+type HttpRequestEvent =
+  | {type: 'progress'; stage: 'upload' | 'download'; percent: number; lengthComputable: boolean}
+  | {
+      type: 'response'
+      body: unknown
+      headers: Record<string, string>
+      method: string
+      statusCode: number
+      statusMessage: string
+      url: string
+    }
 
 const DEMO_PATH_PREFIX = '/demo/global-error/'
 
@@ -248,39 +248,26 @@ function responseObservable(
  * responses. Non-matching requests fall through to the workspace request
  * handler unchanged.
  *
- * `_requestHandler` lives on the underlying `ClientConfig` (it's how
- * `withConfig` propagates handlers) but isn't on the public TypeScript
- * surface for `client.config()` / `withConfig`. The two casts below
- * launder that single internal field.
- *
  * @internal
  */
 export function makeDemoClient(baseClient: SanityClient): SanityClient {
-  // Capture the workspace handler so we can delegate to it for both demo
-  // and non-demo requests. The workspace handler owns the classification +
-  // dialog pipeline; we just substitute its inner `defaultRequester`
-  // callback for matched URLs.
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const workspaceHandler = (baseClient.config() as unknown as {_requestHandler?: RequestHandler})
-    ._requestHandler
+  const demoRequestHandler: RequestHandler = async (request, next) => {
+    const synthetic = synthesize(request)
+    if (!synthetic) return next(request)
 
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const handler: RequestHandler = (req, defaultRequester, client) => {
-    const synthRequester = (opts: RequestOptions & {url: string}) => {
-      const synthetic = synthesize(opts)
-      return synthetic ?? defer(() => defaultRequester(opts))
+    const event = await firstValueFrom(synthetic)
+    if (event.type !== 'response') {
+      throw new Error('Synthetic request completed without a response')
     }
-    if (workspaceHandler) {
-      return workspaceHandler(req, synthRequester, client)
-    }
-    // No workspace handler attached → just synthesize directly. Used in
-    // tests / standalone client setups.
-    return synthRequester(req)
+    return event.body
   }
 
+  const workspaceRequestHandler = baseClient.config().requestHandler
   return baseClient.withConfig({
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    _requestHandler: handler,
+    requestHandler: workspaceRequestHandler
+      ? (request, next) =>
+          workspaceRequestHandler(request, (nextRequest) => demoRequestHandler(nextRequest, next))
+      : demoRequestHandler,
   })
 }
 

@@ -296,12 +296,6 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Tooltip label when the user doesn't have permission to unarchive release */
   'permissions.error.unarchive': 'You do not have permission to unarchive this release',
 
-  /** Tooltip text for when one user is editing a document in a release */
-  'presence.tooltip.one':
-    '{{displayName}} is editing this document in the "{{releaseTitle}}" release right now',
-  /** Tooltip text for when multiple users are editing a document in a release */
-  'presence.tooltip.other': '{{count}} people are editing this document right now',
-
   /** Tooltip text for publish release action when there are no documents */
   'publish-action.validation.no-documents': 'There are no documents to publish',
   /** Title for the dialog confirming the publish of a release */
@@ -346,6 +340,32 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
     'This will revert {{releaseDocumentsLength}} document versions.',
   /** Title for the dialog confirming the revert of a release */
   'revert-dialog.confirm-revert.title': "Are you sure you want to revert the '{{title}}' release?",
+  /** Shown in the revert dialog while the previous state of each document is being looked up */
+  'revert-dialog.confirm-revert.resolving': 'Checking document history…',
+  /** Revert dialog summary line for documents that will be restored to a previous revision */
+  'revert-dialog.confirm-revert.summary-restore_one':
+    '{{count}} document will be restored to its last published revision from before this release.',
+  /** Revert dialog summary line for documents that will be restored to a previous revision */
+  'revert-dialog.confirm-revert.summary-restore_other':
+    '{{count}} documents will be restored to their last published revision from before this release.',
+  /** Revert dialog summary line for documents that will be unpublished because they were not published right before the release */
+  'revert-dialog.confirm-revert.summary-unpublish_one':
+    '{{count}} document will be unpublished because it was not published before this release.',
+  /** Revert dialog summary line for documents that will be unpublished because they were not published right before the release */
+  'revert-dialog.confirm-revert.summary-unpublish_other':
+    '{{count}} documents will be unpublished because they were not published before this release.',
+  /** Error card in the revert dialog when the history needed to revert some documents is no longer available */
+  'revert-dialog.confirm-revert.history-unavailable-card_one':
+    'The previous state of {{count}} document is no longer available in the document history, so the release cannot be reverted.',
+  /** Error card in the revert dialog when the history needed to revert some documents is no longer available */
+  'revert-dialog.confirm-revert.history-unavailable-card_other':
+    'The previous state of {{count}} documents is no longer available in the document history, so the release cannot be reverted.',
+  /** Error card in the revert dialog when the previous state of some documents could not be determined */
+  'revert-dialog.confirm-revert.unresolved-card_one':
+    'The previous state of {{count}} document could not be determined, so the release cannot be reverted.',
+  /** Error card in the revert dialog when the previous state of some documents could not be determined */
+  'revert-dialog.confirm-revert.unresolved-card_other':
+    'The previous state of {{count}} documents could not be determined, so the release cannot be reverted.',
   /** Checkbox label to confirm whether to create a staged release for revert or immediately revert */
   'revert-dialog.confirm-revert.stage-revert-checkbox-label': 'Immediately revert the release',
   /** Warning card text for when immediately revert a release with history */

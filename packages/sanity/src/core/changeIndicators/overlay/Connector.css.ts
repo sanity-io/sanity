@@ -1,35 +1,34 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const debugRect = style({
+export const debugRect = css({
   stroke: '#ccc',
   fill: 'none',
   pointerEvents: 'none',
   strokeLinecap: 'round',
 })
 
-export const connectorPath = style({
+export const connectorPath = css({
   fill: 'none',
   pointerEvents: 'none',
   strokeLinejoin: 'round',
   stroke: 'var(--card-badge-caution-dot-color)',
 })
 
-export const interactivePath = style({
-  fill: 'none',
-  pointerEvents: 'stroke',
-  stroke: 'transparent',
-  cursor: 'pointer',
-  strokeLinecap: 'round',
-  strokeLinejoin: 'round',
-  opacity: 0,
-  selectors: {
-    '&:hover': {
-      opacity: 0.2,
-    },
+export const interactivePath = css({
+  'fill': 'none',
+  'pointerEvents': 'stroke',
+  'stroke': 'transparent',
+  'cursor': 'pointer',
+  'strokeLinecap': 'round',
+  'strokeLinejoin': 'round',
+  'opacity': 0,
+
+  '&:hover': {
+    opacity: 0.2,
   },
 })
 
-export const rightBarWrapper = style({
+export const rightBarWrapper = css({
   stroke: 'none',
   pointerEvents: 'none',
   fill: 'var(--card-badge-caution-dot-color)',

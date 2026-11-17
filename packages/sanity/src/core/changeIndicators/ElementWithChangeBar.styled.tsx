@@ -8,10 +8,6 @@ import {
   changeBarButtonWithHoverEffect,
   changeBarMarker,
   changeBarWrapper,
-  changeBarWrapperDisabled,
-  changeBarWrapperFocused,
-  changeBarWrapperNotChanged,
-  changeBarWrapperReviewOpen,
   fieldWrapper,
 } from './ElementWithChangeBar.css'
 
@@ -25,17 +21,16 @@ export function ChangeBarWrapper(
 ) {
   const {changed, className, disabled, hasFocus, isReviewChangeOpen, ...restProps} = props
 
+  // The marker's and the button's rules in ElementWithChangeBar.css.ts key on these attributes
   return (
     <div
       {...restProps}
-      className={clsx(
-        changeBarWrapper,
-        disabled && changeBarWrapperDisabled,
-        hasFocus && changeBarWrapperFocused,
-        !changed && changeBarWrapperNotChanged,
-        isReviewChangeOpen && changeBarWrapperReviewOpen,
-        className,
-      )}
+      className={clsx(changeBarWrapper, className)}
+      data-change-bar-wrapper=""
+      data-changed={changed ? '' : undefined}
+      data-disabled={disabled ? '' : undefined}
+      data-focused={hasFocus ? '' : undefined}
+      data-review-changes-open={isReviewChangeOpen ? '' : undefined}
     />
   )
 }

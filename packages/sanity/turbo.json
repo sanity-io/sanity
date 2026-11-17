@@ -4,8 +4,9 @@
   "tasks": {
     "build": {
       // Read by tsdown.config.ts to override the `__PKG_VERSION__` define for preview releases
-      // (see pkg-pr-new.yml), so it must invalidate this package's cached build
-      "env": ["PKG_VERSION"],
+      // (see pkg-pr-new.yml), so it must invalidate this package's cached build.
+      // `ENABLE_BUNDLE_ANALYZER` opts into Rolldown's markdown bundle report (`lib/analyze-data.md`).
+      "env": ["PKG_VERSION", "ENABLE_BUNDLE_ANALYZER"],
       "outputs": [
         "lib/**"
       ]

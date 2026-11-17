@@ -1,4 +1,4 @@
-import {type BaseActionOptions, type ReleaseDocument} from '@sanity/client'
+import {type Action, type BaseActionOptions, type ReleaseDocument} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback} from 'react'
 
@@ -10,35 +10,64 @@ import {createReleaseId} from '../../releases/util/createReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {isReleaseScheduledOrScheduling} from '../../releases/util/util'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {getDraftId, getVersionId} from '../../util/draftUtils'
+import {getDraftId, getPublishedId, getVersionId} from '../../util/draftUtils'
 import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
+import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../variants/store/constants'
+import {getVariantId} from '../../variants/tool/util'
+import {type VariantId} from '../../variants/types'
 import {
   ScheduledDraftCancelled,
   ScheduledDraftCreated,
   ScheduledDraftRescheduled,
 } from '../__telemetry__/scheduledDrafts.telemetry'
 
+/**
+ * The draft variant to schedule instead of the base draft.
+ */
+export interface ScheduledDraftVariantSource {
+  /** The id of the variant draft (`versions.<scopeId>.<groupId>`) the scheduled version is created from. */
+  baseId: string
+  variantId: VariantId
+}
+
+/**
+ * The scheduled version of a draft variant, copied back into the variant draft when the
+ * scheduled draft is deleted.
+ */
+export interface ScheduledDraftVariantCopy {
+  variantId: VariantId
+  /** The id of the scheduled variant version (`versions.<scopeId>.<groupId>`). */
+  versionId: string
+  /** Whether the variant has a draft, which the copy replaces. */
+  hasDraft: boolean
+}
+
 export interface ScheduleDraftOperationsValue {
   /**
-   * Create a scheduled draft release
+   * Create a scheduled draft release. Pass `variant` to schedule a draft variant instead of the
+   * base draft.
    */
   createScheduledDraft: (
     documentId: string,
     publishAt: Date,
     opts?: BaseActionOptions,
+    variant?: ScheduledDraftVariantSource,
   ) => Promise<string>
   /**
    * Immediately publishes a scheduled draft
    */
   publishScheduledDraft: (release: ReleaseDocument, opts?: BaseActionOptions) => Promise<void>
   /**
-   * Deletes a scheduled draft
+   * Deletes a scheduled draft. Pass `variant` when the scheduled draft holds a draft variant, so
+   * the copy goes to the variant draft instead of the base draft.
    */
   deleteScheduledDraft: (
     releaseDocumentId: string,
     shouldCopyToDraft: boolean,
     publishedId?: string,
     opts?: BaseActionOptions,
+    variant?: ScheduledDraftVariantCopy,
   ) => Promise<void>
   /**
    * Reschedules a draft to a new publish time
@@ -60,8 +89,10 @@ export interface ScheduleDraftOperationsValue {
 export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
   const {t} = useTranslation()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const variantsClient = useClient(VARIANTS_STUDIO_CLIENT_OPTIONS)
   const releaseOperations = useReleaseOperations()
   const {data: allReleases} = useAllReleases()
+  const {createVariantDocument} = useVariantDocumentOperations()
   const telemetry = useTelemetry()
 
   const createScheduledDraftRelease = useCallback(
@@ -88,15 +119,30 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
   )
 
   const handleCreateScheduledDraft = useCallback(
-    async (documentId: string, publishAt: Date, opts?: BaseActionOptions): Promise<string> => {
+    async (
+      documentId: string,
+      publishAt: Date,
+      opts?: BaseActionOptions,
+      variant?: ScheduledDraftVariantSource,
+    ): Promise<string> => {
       // Create the release (but don't schedule it yet)
       const releaseTitle = t('scheduled-drafts.release.title')
       const releaseDocumentId = await createScheduledDraftRelease(releaseTitle, publishAt, opts)
 
       // Create a version of the document in the release (using draft as base)
-      const draftId = getDraftId(documentId)
       const releaseId = getReleaseIdFromReleaseDocumentId(releaseDocumentId)
-      await releaseOperations.createVersion(releaseId, draftId, opts)
+      if (variant) {
+        // A variant version can only be created through the variant action, otherwise
+        // the new version would not belong to the variant.
+        await createVariantDocument({
+          baseId: variant.baseId,
+          documentGroupId: getPublishedId(documentId),
+          variant: {_id: variant.variantId},
+          selectedPerspective: releaseId,
+        })
+      } else {
+        await releaseOperations.createVersion(releaseId, getDraftId(documentId), opts)
+      }
 
       // Now schedule the release after adding the document
       await releaseOperations.schedule(releaseDocumentId, publishAt, opts)
@@ -105,7 +151,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
 
       return releaseDocumentId
     },
-    [releaseOperations, createScheduledDraftRelease, t, telemetry],
+    [releaseOperations, createScheduledDraftRelease, createVariantDocument, t, telemetry],
   )
 
   // used to immediately publish a scheduled draft
@@ -130,6 +176,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
       shouldCopyToDraft: boolean,
       publishedId?: string,
       opts?: BaseActionOptions,
+      variant?: ScheduledDraftVariantCopy,
     ): Promise<void> => {
       // Look up the release to get its current state
       const release = allReleases.find((r) => r._id === releaseDocumentId)
@@ -138,7 +185,28 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
         throw new Error(`Release with ID ${releaseDocumentId} not found`)
       }
 
-      if (shouldCopyToDraft && publishedId) {
+      if (shouldCopyToDraft && publishedId && variant) {
+        // Variant drafts have opaque ids and can only be written through the variant actions,
+        // the same way copy to drafts replaces them.
+        const variantId = getVariantId(variant.variantId)
+        const actions: Action[] = []
+        if (variant.hasDraft) {
+          actions.push({
+            actionType: 'sanity.action.document.variant.delete',
+            bundleId: 'drafts',
+            publishedId,
+            variantId,
+          })
+        }
+        actions.push({
+          actionType: 'sanity.action.document.variant.create',
+          bundleId: 'drafts',
+          publishedId,
+          variantId,
+          baseId: variant.versionId,
+        })
+        await variantsClient.action(actions, {tag: 'scheduled-draft.copy-to-draft'})
+      } else if (shouldCopyToDraft && publishedId) {
         const releaseId = getReleaseIdFromReleaseDocumentId(releaseDocumentId)
         const scheduledDraftId = getVersionId(publishedId, releaseId)
 
@@ -167,7 +235,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
 
       telemetry.log(ScheduledDraftCancelled, {keptAsDraft: shouldCopyToDraft})
     },
-    [releaseOperations, allReleases, client, telemetry],
+    [releaseOperations, allReleases, client, variantsClient, telemetry],
   )
 
   const handleRescheduleScheduledDraft = useCallback(

@@ -1,12 +1,13 @@
 import {type ReleaseType} from '@sanity/client'
 import {PublishIcon} from '@sanity/icons/Publish'
-import {Card, Flex, Spinner, Stack, TabList, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Spinner, TabList, useClickOutsideEvent} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {isBefore} from 'date-fns/isBefore'
 import {startOfMinute} from 'date-fns/startOfMinute'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
@@ -73,7 +74,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
   const publishDate = useMemo(() => getPublishDateFromRelease(release), [release])
   const [isUpdating, setIsUpdating] = useState(false)
   const [isIntendedScheduleDateInPast, setIsIntendedScheduleDateInPast] = useState(
-    publishDate && isBefore(new Date(publishDate), new Date()),
+    () => publishDate && isBefore(new Date(publishDate), new Date()),
   )
 
   const [intendedPublishAt, setIntendedPublishAt] = useState<Date | undefined>(
@@ -139,6 +140,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
     datePickerRef.current,
   ])
 
+  // oxlint-disable-next-line react/purity -- intentionally compares against the current time on every render
   const isPublishDateInPast = !!publishDate && isBefore(new Date(publishDate), new Date())
   const isReleaseScheduled = isReleaseScheduledOrScheduling(release)
 
@@ -207,7 +209,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
 
   const productionLabelContent = useMemo(
     () => (
-      <Flex flex={1} gap={2} align={'center'}>
+      <Flex flexBasis="0%" flexGrow={1} gap={2} alignItems={'center'}>
         {releaseTypeIcon}
         <span data-testid="release-type-label">{publishDateLabel}</span>
       </Flex>
@@ -216,7 +218,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
   )
 
   const popoverContent = (
-    <Stack gap={1}>
+    <VStack gap={1}>
       <TabList gap={0.5}>
         <Tab
           aria-controls="release-timing-asap"
@@ -244,7 +246,9 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
         <>
           {isIntendedScheduleDateInPast && (
             <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
-              <Text size={1}>{t('release.schedule-dialog.publish-date-in-past-warning')}</Text>
+              <Text size={1} as="div" trim={true} tone="critical">
+                {t('release.schedule-dialog.publish-date-in-past-warning')}
+              </Text>
             </Card>
           )}
           <ReleaseDateInput
@@ -266,7 +270,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
           />
         </>
       )}
-    </Stack>
+    </VStack>
   )
 
   if (!variantsEnabled) {
@@ -314,9 +318,12 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
       data-testid="release-type-label"
       size={1}
       weight="medium"
-      textOverflow="ellipsis"
+      truncate={1}
       title={compactLabel}
       style={{opacity: isUpdating ? 0.5 : 1}}
+      as="div"
+      trim={true}
+      tone={tone === 'default' || tone === 'neutral' || tone === 'primary' ? undefined : tone}
     >
       {compactLabel}
     </Text>

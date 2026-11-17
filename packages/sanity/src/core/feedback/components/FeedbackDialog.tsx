@@ -1,7 +1,7 @@
 import {FaceHappyIcon} from '@sanity/icons/FaceHappy'
 import {FaceIndifferentIcon} from '@sanity/icons/FaceIndifferent'
 import {FaceSadIcon} from '@sanity/icons/FaceSad'
-import {Card, Flex, Stack, Switch, Text, TextArea} from '@sanity/ui'
+import {Card, Switch, TextArea} from '@sanity/ui'
 import {
   type ChangeEvent,
   type ClipboardEvent,
@@ -11,6 +11,7 @@ import {
   useState,
 } from 'react'
 import {FeedbackContext} from 'sanity/_singletons'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {Dialog} from '../../../ui-components/dialog/Dialog'
@@ -214,9 +215,9 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
       padding={false}
     >
       <Card paddingX={4} paddingY={5} borderTop onPaste={handlePaste}>
-        <Stack gap={5}>
-          <Stack gap={2}>
-            <Text size={1} weight="medium">
+        <VStack gap={5}>
+          <VStack gap={2}>
+            <Text size={1} weight="medium" as="div" trim={true}>
               {sentimentLabel ?? t('feedback.sentiment.label')}
             </Text>
             <Flex gap={2}>
@@ -236,10 +237,10 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
                 )
               })}
             </Flex>
-          </Stack>
+          </VStack>
 
-          <Stack gap={3}>
-            <Text as="label" htmlFor={messageId} size={1} weight="medium">
+          <VStack gap={3}>
+            <Text as="label" htmlFor={messageId} size={1} weight="medium" trim={true}>
               {t('feedback.message.label')}
             </Text>
             <TextArea
@@ -265,35 +266,35 @@ export function FeedbackDialog(props: FeedbackDialogProps) {
               }}
               onExpand={() => setShowAttachment(true)}
             />
-          </Stack>
+          </VStack>
 
           {(message.trim() || imageFile) && (resolvedName || resolvedEmail) && (
-            <Stack gap={4}>
-              <Stack gap={3} paddingRight={3}>
-                <Text as="label" htmlFor={contactConsentId} size={1} weight="medium">
+            <VStack gap={4}>
+              <Flex gap={3} paddingRight={3} flexDirection="column" flexShrink={0}>
+                <Text as="label" htmlFor={contactConsentId} size={1} weight="medium" trim={true}>
                   {t('feedback.consent.label')}
                 </Text>
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {t('feedback.consent.disclaimer')}
                 </Text>
-              </Stack>
-              <Flex align="center" gap={2}>
+              </Flex>
+              <Flex alignItems="center" gap={2}>
                 <Switch
                   id={contactConsentId}
                   checked={contactConsent}
                   onChange={() => setContactConsent((prev) => !prev)}
                 />
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {contactConsent ? t('feedback.consent.yes') : t('feedback.consent.no')}
                 </Text>
               </Flex>
-            </Stack>
+            </VStack>
           )}
-        </Stack>
+        </VStack>
       </Card>
 
       <Card padding={3} borderTop>
-        <Flex gap={2} justify="flex-end">
+        <Flex gap={2} justifyContent="flex-end">
           <Button mode="ghost" text={t('feedback.cancel')} onClick={handleDismiss} />
           <Button
             tone="primary"

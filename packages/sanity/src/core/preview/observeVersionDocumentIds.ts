@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import {concat, from, type Observable, of, type OperatorFunction, retry, Subject, timer} from 'rxjs'
 import {
   bufferWhen,
@@ -120,7 +120,7 @@ export function createObserveVersionDocumentIds(options: {
  *
  * @internal
  */
-export function bufferByByteSize<Type extends string>(
+export function bufferByByteSize<Type>(
   byteSize: (value: Type) => number,
   maxBytes: number,
 ): OperatorFunction<Type, Type[]> {

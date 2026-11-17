@@ -1,6 +1,7 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Flex, Grid, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type CSSProperties} from 'react'
+import {Text, Flex, Grid, Icon} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../i18n/Translate'
@@ -32,12 +33,19 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
   if (hasResults) {
     return (
       <Card tone="caution" padding={[3, 3, 4]} border radius={2} marginBottom={3}>
-        <Grid gridTemplateColumns={3} gap={[2, 3, 4]}>
-          <Flex gap={[3, 4]} align="center" style={{gridColumn: isImage ? 'span 2' : 'span 3'}}>
-            <Text>
-              <WarningOutlineIcon />
-            </Text>
-            <Text size={1}>
+        <Grid gridTemplateColumns="repeat(3, minmax(0, 1fr))" gap={[2, 3, 4]}>
+          <Flex
+            gap={[3, 4]}
+            alignItems="center"
+            style={{gridColumn: isImage ? 'span 2' : 'span 3'}}
+          >
+            <Icon
+              muted
+              icon={WarningOutlineIcon}
+              tone="caution"
+              style={{margin: '-0.4375rem', flexShrink: 0}}
+            />
+            <Text size={1} as="div" trim={true} tone="caution">
               {t(`asset-source.delete-dialog.usage-list.warning-${assetType}-is-in-use`, {
                 context: asset.originalFilename ? 'named' : 'unnamed',
                 filename: asset.originalFilename,
@@ -46,11 +54,11 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
           </Flex>
           {isImage && (
             <Card __unstable_checkered border radius={1} style={STYLE_CONFIRM_CARD}>
-              <Flex align="center" justify="center" style={STYLE_IMAGE_WRAPPER}>
+              <Flex alignItems="center" justifyContent="center" style={STYLE_IMAGE_WRAPPER}>
                 <img
                   src={`${asset.url}?w=200`}
                   style={STYLE_ASSET_IMAGE}
-                  alt={t('asset-source.usage-list.image-alt')}
+                  alt={t('asset-source.delete-dialog.usage-list.image-preview-alt')}
                   referrerPolicy="strict-origin-when-cross-origin"
                 />
               </Flex>
@@ -63,9 +71,9 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
 
   return (
     <Card paddingX={[2, 3, 4]} paddingY={[3, 3, 3, 4]}>
-      <Grid gridTemplateColumns={3} gap={3}>
-        <Flex style={{gridColumn: isImage ? 'span 2' : 'span 3'}} align="center">
-          <Text>
+      <Grid gridTemplateColumns="repeat(3, minmax(0, 1fr))" gap={3}>
+        <Flex style={{gridColumn: isImage ? 'span 2' : 'span 3'}} alignItems="center">
+          <Text as="div" trim={true}>
             <Translate
               t={t}
               i18nKey={`asset-source.delete-dialog.usage-list.confirm-delete-${assetType}`}
@@ -76,11 +84,11 @@ export const ConfirmMessage = ({asset, assetType, hasResults = false}: ConfirmMe
         </Flex>
         {isImage && (
           <Card __unstable_checkered border radius={1} style={STYLE_CONFIRM_CARD}>
-            <Flex align="center" justify="center" style={STYLE_IMAGE_WRAPPER}>
+            <Flex alignItems="center" justifyContent="center" style={STYLE_IMAGE_WRAPPER}>
               <img
                 src={`${asset.url}?w=200`}
                 style={STYLE_ASSET_IMAGE}
-                alt={t('asset-source.asset-list.table.preview-alt')}
+                alt={t('asset-source.delete-dialog.usage-list.image-preview-alt')}
                 referrerPolicy="strict-origin-when-cross-origin"
               />
             </Flex>

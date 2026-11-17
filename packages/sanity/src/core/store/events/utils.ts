@@ -1,8 +1,5 @@
 import {type MendozaPatch, type TransactionLogEventWithEffects} from '@sanity/types'
 
-import {type ReleasesReducerState} from '../../releases/store/reducer'
-import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
-import {getVersionFromId} from '../../util/draftUtils'
 import {type DocumentVariantType} from '../../util/getDocumentVariantType'
 import {type DocumentRemoteMutationEvent} from '../document/buffered-doc/types'
 import {
@@ -21,6 +18,24 @@ import {
   type UpdateLiveDocumentEvent,
 } from './types'
 
+/**
+ * Merges two event lists (existing first, then incoming) into one, removing duplicates by event id.
+ *
+ * Main cases covered:
+ * - Events with unseen ids are appended in encounter order.
+ * - If an existing *edit* event shares its id with an incoming *non-edit* event, the non-edit event
+ *   replaces it — a publish or delete event and the last edit before that event share the same id
+ *   (delete events reuse the last edit's `versionRevisionId`).
+ * - If two *non-edit* events share an id but have *different* types, both are kept: the second one
+ *   is stored under a synthetic `${id}-${type}` map key (can happen when a document is created and
+ *   published with the same revision id, e.g. in e2e tests).
+ *
+ * Known quirks (current behavior, relied upon by tests):
+ * - Events with an empty-string id (see {@link addEventId}) all collide on the same map key, so
+ *   only the first one survives unless their types differ.
+ * - The synthetic `${id}-${type}` key only disambiguates one extra event per id; a third event
+ *   with the same id and same type as the second overwrites it.
+ */
 export function removeDupes(
   events: DocumentGroupEvent[],
   newEvents: DocumentGroupEvent[],
@@ -29,8 +44,10 @@ export function removeDupes(
     if (acc.has(event.id)) {
       const existingEvent = acc.get(event.id) as DocumentGroupEvent
       if (isEditDocumentVersionEvent(existingEvent) && !isEditDocumentVersionEvent(event)) {
-        // Replaces the edit event with the none edit event, the publish event and the last edit event before the publish have the same id.
+        // Replaces the edit event with the non-edit event; the publish/delete event and the last
+        // edit event before it has the same id.
         acc.set(event.id, event)
+        return acc
       }
 
       if (existingEvent.type !== event.type) {
@@ -45,6 +62,25 @@ export function removeDupes(
   return Array.from(noDupes.values())
 }
 
+/**
+ * Assigns a client-side `id` to an API event. The id doubles as the *revision selector* used in
+ * URLs and by `getDocumentAtRevision`, so it must point at a revision that exists for the variant
+ * the user is looking at:
+ *
+ * - `createDocumentVersion`: published → `revisionId` (or a synthetic `publishCreation--<ts>` when
+ *   missing); draft/version → `versionRevisionId`.
+ * - `deleteDocumentVersion`: published → synthetic `deleteAt-<ts>`; draft/version → `versionRevisionId`.
+ * - `publishDocumentVersion`: published → `revisionId`; draft/version → `versionRevisionId`
+ *   (falls back to `revisionId` when the publish wasn't triggered by a Publish action).
+ * - `unpublishDocument`: published → synthetic `unpublishAt-<ts>`; **empty string otherwise**.
+ * - `scheduleDocumentVersion` / `unscheduleDocumentVersion`: draft/version → `versionRevisionId`;
+ *   **empty string on published**.
+ * - `deleteDocumentGroup`: synthetic `deleted-<ts>` for all variants.
+ * - `createLiveDocument` / `updateLiveDocument` / `editDocumentVersion`: `revisionId`.
+ *
+ * Known quirk: the empty-string ids collide in {@link removeDupes} (only the first such event
+ * survives) and cannot be selected as a revision in the UI.
+ */
 export function addEventId(
   event: Omit<DocumentGroupEvent, 'id'>,
   documentVariantType: DocumentVariantType,
@@ -84,6 +120,25 @@ export function addEventId(
   return {...event, id} as DocumentGroupEvent
 }
 
+/**
+ * Draft-variant post-processing: links publish/delete events to the edit and create events that
+ * produced them, so the UI can render those as an expandable group under the publish event.
+ *
+ * For every `publishDocumentVersion` / `deleteDocumentVersion` event (scanning newest → oldest):
+ * - Rewrites its `documentId` to the `versionId` (the draft id).
+ * - Walks the *older* events: every `editDocumentVersion` on the way gets `parentId` set to the
+ *   publish/delete event id; the first `createDocumentVersion` found is attached as
+ *   `creationEvent` (and gets `parentId` too), then the walk stops.
+ *
+ * For `editDocumentVersion` events whose id equals their own `parentId` (the last edit before a
+ * publish shares the publish event's id), the id is re-pointed at the second transaction's
+ * revision so the edit remains individually selectable.
+ *
+ * Notes on current behavior:
+ * - Operates on a `JSON.parse(JSON.stringify(...))` deep clone (runs on every pipeline emission
+ *   for drafts — known perf cost, tracked as a known issue).
+ * - Assumes `events` is sorted newest-first (as produced by {@link sortEvents}).
+ */
 export function addParentToEvents(events: DocumentGroupEvent[]): DocumentGroupEvent[] {
   const eventsWithParent = JSON.parse(JSON.stringify(events)) as DocumentGroupEvent[]
   eventsWithParent.forEach((event, index) => {
@@ -115,10 +170,21 @@ export function addParentToEvents(events: DocumentGroupEvent[]): DocumentGroupEv
 
 const MERGE_WINDOW = 5 * 60 * 1000 // 5 minutes
 
+/**
+ * True when two ISO timestamps are less than 5 minutes apart (absolute difference).
+ * Used to decide whether consecutive edit transactions belong to the same logical edit event.
+ */
 export function isWithinMergeWindow(a: string, b: string): boolean {
   return Math.abs(Date.parse(a) - Date.parse(b)) < MERGE_WINDOW
 }
 
+/**
+ * Collapses consecutive `updateLiveDocument` events into one when they are within the merge
+ * window **and** by the same author — the later (newer) event in the list survives.
+ *
+ * Only adjacent events are considered: a different event type or author in between breaks the run.
+ * Temporary client-side squashing until the API squashes live edit events itself.
+ */
 export function squashLiveEditEvents(events: DocumentGroupEvent[]): DocumentGroupEvent[] {
   return events.reduce((acc: DocumentGroupEvent[], event) => {
     if (isUpdateLiveDocumentEvent(event)) {
@@ -138,6 +204,12 @@ export function squashLiveEditEvents(events: DocumentGroupEvent[]): DocumentGrou
   }, [])
 }
 
+/**
+ * Converts a remote mutation (received through the document-pair listener) into the translog
+ * transaction shape, so real-time edits can flow through the same pipeline as fetched
+ * transactions ({@link getEditEvents}, diff calculation). `documentIDs` is intentionally left
+ * empty; the effects map is keyed by the mutated document's id.
+ */
 export function remoteMutationToTransaction(
   event: DocumentRemoteMutationEvent,
 ): TransactionLogEventWithEffects {
@@ -156,7 +228,9 @@ export function remoteMutationToTransaction(
 }
 
 /**
- * Updates the version publish document id.
+ * Version-variant post-processing: rewrites `documentId` to the `versionId` on
+ * `publishDocumentVersion` events, so the UI attributes the publish to the version document the
+ * user is viewing instead of the published id. All other events pass through untouched.
  */
 export function updateVersionEvents(events: DocumentGroupEvent[]) {
   return events.map((event) => {
@@ -171,29 +245,19 @@ export function updateVersionEvents(events: DocumentGroupEvent[]) {
 }
 
 /**
- * Adds the release information to the publish event.
+ * Merges remote edits, API events and expanded edit events into one list sorted newest-first.
+ *
+ * Sorting rules:
+ * - Primary: timestamp descending.
+ * - Special case: a `publishDocumentVersion` event always sorts *before* the `editDocumentVersion`
+ *   event it published (`publish.versionRevisionId === edit.revisionId`), regardless of their
+ *   timestamps — the publish's API timestamp has seconds granularity and can tie with or trail the
+ *   edit's transaction timestamp.
+ *
+ * Known quirk: the special case makes the comparator non-transitive (the publish sorts before its
+ * paired edit while both compare by timestamp against everything else), so ordering around such
+ * pairs can depend on input order — tracked as a known issue.
  */
-export function updatePublishedEvents(
-  events: DocumentGroupEvent[],
-  releases: ReleasesReducerState,
-) {
-  return events.map((event) => {
-    if (isPublishDocumentVersionEvent(event)) {
-      const releaseId = getVersionFromId(event.versionId)
-      if (releaseId) {
-        const releaseDocumentId = getReleaseDocumentIdFromReleaseId(releaseId)
-        const release = releases.releases.get(releaseDocumentId)
-        return {
-          ...event,
-          release: release || {_id: releaseDocumentId},
-        }
-      }
-      return event
-    }
-    return event
-  })
-}
-
 export function sortEvents({
   remoteEdits,
   events,

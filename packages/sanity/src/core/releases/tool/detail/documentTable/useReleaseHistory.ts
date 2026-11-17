@@ -3,7 +3,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {useClient} from '../../../../hooks/useClient'
 import {getTransactionsLogs} from '../../../../store/translog/getTransactionsLogs'
-import {getVersionId} from '../../../../util/draftUtils'
+import {getVersionId, isVersionId} from '../../../../util/draftUtils'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../../util/releasesClient'
 
 const historyCache: Record<string, {transactions: TransactionLogEventWithEffects[]}> =
@@ -48,7 +48,11 @@ export function useReleaseHistory(
 
   const versionId = useMemo(() => {
     if (!releaseDocumentId || !releaseId) return ''
-    return getVersionId(releaseDocumentId, releaseId)
+    // A variant version's id carries its own opaque scope instead of the release id, so a version
+    // id is used as is rather than rebuilt from the release.
+    return isVersionId(releaseDocumentId)
+      ? releaseDocumentId
+      : getVersionId(releaseDocumentId, releaseId)
   }, [releaseDocumentId, releaseId])
 
   // Reset to the loading state during render when the (versionId, documentRevision) identity
@@ -120,7 +124,7 @@ export function useReleaseHistory(
 
   useEffect(() => {
     cancelledRef.current = false
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     void fetchAndParse()
     return () => {
       cancelledRef.current = true

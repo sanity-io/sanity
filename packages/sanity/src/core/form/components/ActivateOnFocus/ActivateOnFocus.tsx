@@ -1,6 +1,6 @@
-// This is transitional in order to track usage of the ActivateOnFocusPart part from within the form-builder package
-import {Text} from '@sanity/ui'
 import {type KeyboardEvent, type ReactNode, useCallback, useMemo, useState} from 'react'
+// This is transitional in order to track usage of the ActivateOnFocusPart part from within the form-builder package
+import {Text} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {
@@ -86,7 +86,11 @@ export function ActivateOnFocus(props: ActivateOnFocusProps) {
       t('inputs.portable-text.activate-on-focus-message', {
         context: messageContext,
       })
-    return <Text weight="medium">{text}</Text>
+    return (
+      <Text weight="medium" as="div" trim={true}>
+        {text}
+      </Text>
+    )
   }, [focused, message, t])
 
   return (
@@ -98,7 +102,12 @@ export function ActivateOnFocus(props: ActivateOnFocusProps) {
       onDragEnter={handleDragEnter}
     >
       {isOverlayActive && (
-        <FlexContainer data-testid="activate-overlay" tabIndex={0} align="center" justify="center">
+        <FlexContainer
+          data-testid="activate-overlay"
+          tabIndex={0}
+          alignItems="center"
+          justifyContent="center"
+        >
           <CardContainer
             // Almost all input elements have radius=1, and this component is
             // typically used for overlaying input elements.

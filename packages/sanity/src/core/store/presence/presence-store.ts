@@ -1,8 +1,8 @@
-import {type BifurClient} from '@sanity/bifur-client'
+import {type BifurClient, ERROR_CODES, RpcError, WebSocketError} from '@sanity/bifur-client'
 import {type User} from '@sanity/types'
+import {dequal as isEqual} from 'dequal/lite'
 import flatten from 'lodash-es/flatten.js'
 import groupBy from 'lodash-es/groupBy.js'
-import isEqual from 'lodash-es/isEqual.js'
 import omit from 'lodash-es/omit.js'
 import uniq from 'lodash-es/uniq.js'
 import {nanoid} from 'nanoid'
@@ -12,24 +12,26 @@ import {
   defer,
   EMPTY,
   from,
-  fromEvent,
   merge,
   NEVER,
   type Observable,
+  ReplaySubject,
+  throwError,
   timer,
 } from 'rxjs'
 import {
   auditTime,
+  catchError,
   distinctUntilChanged,
   filter,
   map,
   mergeMapTo,
+  retry,
   scan,
   share,
   shareReplay,
   switchMap,
   switchMapTo,
-  takeUntil,
   tap,
   withLatestFrom,
 } from 'rxjs/operators'
@@ -85,6 +87,23 @@ export interface PresenceStore {
    * @internal
    */
   debugPresenceParam$: Observable<string[]>
+
+  /**
+   * Debug helpers for exercising presence from a single browser. Fake sessions go through the
+   * same code path as real ones (user lookup, document presence, form routing, overlay).
+   * @internal
+   */
+  debug: PresenceDebugApi
+}
+
+/** @internal */
+export interface PresenceDebugApi {
+  /** The locations this session currently reports as its own, including any editor selection */
+  ownLocation$: Observable<PresenceLocation[]>
+  /** Shows `userId` as present at `locations`; calling it again for the same user moves them */
+  fakePresence: (userId: string, locations: PresenceLocation[]) => void
+  /** Removes the fake presence of `userId`, or of every faked user when omitted */
+  removeFakePresence: (userId?: string) => void
 }
 
 const KEY = 'presence_session_id'
@@ -98,7 +117,7 @@ const generate = () => nanoid(16)
 //      which differs from how session cookies work.
 //      More at https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage
 //  This is _probably_ a quite marginal case and not going to be much of a issue in practice
-function getSessionId() {
+function readStoredSessionId() {
   try {
     return window.sessionStorage.getItem(KEY)
   } catch {
@@ -107,7 +126,7 @@ function getSessionId() {
   return null
 }
 
-function setSessionId(id: string) {
+function storeSessionId(id: string) {
   try {
     window.sessionStorage.setItem(KEY, id)
   } catch {
@@ -116,8 +135,38 @@ function setSessionId(id: string) {
   return id
 }
 
-/** @internal */
-export const SESSION_ID = getSessionId() || setSessionId(generate())
+/** How long document presence keeps running after the last document stops using it. */
+const DOCUMENT_PRESENCE_GRACE = 5_000
+
+let sessionId: string | undefined
+
+/**
+ * The presence session id of this browsing context, created on first call rather than at import
+ * so that importing `sanity` doesn't need random values (Cloudflare Workers forbid them there).
+ *
+ * @internal
+ */
+export function getSessionId(): string {
+  sessionId ??= readStoredSessionId() || storeSessionId(generate())
+  return sessionId
+}
+
+const isBifurError = (error: unknown): error is RpcError | WebSocketError =>
+  error instanceof RpcError || error instanceof WebSocketError
+
+const warnIfRejected = (error: RpcError | WebSocketError) => {
+  // A closed socket is expected (the server dropped it, or the page is entering the back/forward
+  // cache), so only a reply the server sent is worth a warning
+  if (error instanceof RpcError)
+    console.warn('Presence: the server returned an error: %s', error.message)
+}
+
+/** Presence requests are fire-and-forget: a failed one must not end presence */
+const dropBifurError = (error: unknown) => {
+  if (!isBifurError(error)) return throwError(() => error)
+  warnIfRejected(error)
+  return EMPTY
+}
 
 /** @internal */
 export function createPresenceStore(context: {
@@ -126,8 +175,26 @@ export function createPresenceStore(context: {
   userStore: UserStore
 }): PresenceStore {
   const {bifur, connectionStatusStore, userStore} = context
+  const ownSessionId = getSessionId()
 
-  const [presenceEvents$, sendMessage] = createBifurTransport(bifur, SESSION_ID)
+  const [transportEvents$, sendMessage] = createBifurTransport(bifur, ownSessionId)
+
+  // A closed socket ends the presence subscription. In bifur-client v3 the same close also takes
+  // the connection status through `error`, and the presence store subscribes again on reconnect.
+  // Listening again after a delay as well is defensive, so presence doesn't depend on that. Not
+  // after a rejected token, which the connection status store stops retrying, and not after a
+  // subscription the server rejects, which would be rejected again: both wait for a reconnect.
+  const presenceEvents$ = transportEvents$.pipe(
+    retry({
+      delay: (error: unknown, retryCount) =>
+        error instanceof WebSocketError && error.code !== ERROR_CODES.UNAUTHORIZED
+          ? timer(Math.min(1000 * 2 ** (retryCount - 1), 60_000))
+          : throwError(() => error),
+      resetOnSuccess: true,
+    }),
+    catchError(dropBifurError),
+    share(),
+  )
 
   const currentLocation$ = new BehaviorSubject<PresenceLocation[]>([])
   const locationChange$ = currentLocation$.pipe(distinctUntilChanged())
@@ -138,15 +205,17 @@ export function createPresenceStore(context: {
   }
 
   // export
+  // A request that fails is dropped: the next announcement, at most REPORT_MIN_INTERVAL later,
+  // sends the same state again.
   const reportLocations = (locations: PresenceLocation[]) =>
-    sendMessage({type: 'state', locations: locations})
+    sendMessage({type: 'state', locations: locations}).pipe(catchError(dropBifurError))
 
-  const requestRollCall = () => sendMessage({type: 'rollCall'})
+  const requestRollCall = () => sendMessage({type: 'rollCall'}).pipe(catchError(dropBifurError))
 
   const rollCallRequests$ = presenceEvents$.pipe(
     filter((event: TransportEvent): event is RollCallEvent => event.type === 'rollCall'),
     // do not respond to my own rollcall requests
-    filter((event: RollCallEvent) => event.sessionId !== SESSION_ID),
+    filter((event: RollCallEvent) => event.sessionId !== ownSessionId),
   )
 
   const REPORT_MIN_INTERVAL = 30000
@@ -202,6 +271,37 @@ export function createPresenceStore(context: {
 
   const debugIntrospect$ = debugPresenceParam$.pipe(map((args) => args.includes('show_own')))
 
+  // Fake sessions placed explicitly through the debug API (e.g. the test studio's field action).
+  // Replayed so that sessions faked before anyone subscribed to presence are not lost.
+  const debugEvents$ = new ReplaySubject<StateEvent | DisconnectEvent>()
+  const fakedUserIds = new Set<string>()
+  const fakeSessionId = (userId: string) => `fake-${userId}`
+  const debug: PresenceDebugApi = {
+    ownLocation$: currentLocation$.asObservable(),
+    fakePresence: (userId, locations) => {
+      fakedUserIds.add(userId)
+      debugEvents$.next({
+        type: 'state',
+        userId,
+        sessionId: fakeSessionId(userId),
+        timestamp: new Date().toISOString(),
+        locations,
+      })
+    },
+    removeFakePresence: (userId) => {
+      const userIds = userId === undefined ? Array.from(fakedUserIds) : [userId]
+      for (const id of userIds) {
+        fakedUserIds.delete(id)
+        debugEvents$.next({
+          type: 'disconnect',
+          userId: id,
+          sessionId: fakeSessionId(id),
+          timestamp: new Date().toISOString(),
+        })
+      }
+    },
+  }
+
   const syncEvent$ = merge(myRollCall$, presenceEvents$).pipe(
     filter(
       (event: TransportEvent): event is StateEvent | DisconnectEvent =>
@@ -218,7 +318,11 @@ export function createPresenceStore(context: {
     }
   }
 
-  const states$: Observable<{[sessionId: string]: Session}> = merge(syncEvent$, useMock$).pipe(
+  const states$: Observable<{[sessionId: string]: Session}> = merge(
+    syncEvent$,
+    useMock$,
+    debugEvents$,
+  ).pipe(
     scan(
       (keyed, event: StateEvent | DisconnectEvent): {[sessionId: string]: Session} =>
         event.type === 'disconnect'
@@ -245,9 +349,6 @@ export function createPresenceStore(context: {
         ),
       )
     }),
-    takeUntil(
-      fromEvent(window, 'beforeunload').pipe(switchMap(() => sendMessage({type: 'disconnect'}))),
-    ),
     shareReplay({refCount: true, bufferSize: 1}),
   )
 
@@ -272,7 +373,8 @@ export function createPresenceStore(context: {
     map(([userAndSessions, debugIntrospect]) =>
       userAndSessions.filter(
         (userAndSession) =>
-          debugIntrospect || !userAndSession.sessions.some((sess) => sess.sessionId === SESSION_ID),
+          debugIntrospect ||
+          !userAndSession.sessions.some((sess) => sess.sessionId === ownSessionId),
       ),
     ),
     map((userAndSessions) =>
@@ -312,9 +414,15 @@ export function createPresenceStore(context: {
             },
           })),
         )
-        .filter((item) => debugIntrospect || item.presence.sessionId !== SESSION_ID),
+        .filter((item) => debugIntrospect || item.presence.sessionId !== ownSessionId),
     ),
-    shareReplay(1),
+    // Presence stops once no document has used it for a while, as when the login screen replaces
+    // the studio after a session ends. The delay keeps it running while switching documents, when
+    // the previous pane unmounts before the next one mounts.
+    share({
+      connector: () => new ReplaySubject(1),
+      resetOnRefCountZero: () => timer(DOCUMENT_PRESENCE_GRACE),
+    }),
   )
 
   /**
@@ -344,5 +452,12 @@ export function createPresenceStore(context: {
     )
   }
 
-  return {setLocation, reportLocations, debugPresenceParam$, globalPresence$, documentPresence}
+  return {
+    setLocation,
+    reportLocations,
+    debugPresenceParam$,
+    globalPresence$,
+    documentPresence,
+    debug,
+  }
 }

@@ -1,22 +1,13 @@
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
+import {Badge} from '@sanity/ui'
 import {memo, type ReactNode} from 'react'
-import {styled} from 'styled-components'
+import {Text, Box, Flex, VStack, type TextProps} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
+import {labelSuffix} from './FormFieldHeaderText.css'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
-
-const LabelSuffix = styled(Flex)`
-  /*
-       * Prevent the block size of appended elements (such as the deprecated field badge) affecting
-       * the intrinsic block size of the label, while still allowing the inline size (width) to
-       * expand naturally to fit its content.
-       */
-  height: 0;
-  overflow: visible;
-`
 
 /** @internal */
 export interface FormFieldHeaderTextProps {
@@ -37,6 +28,7 @@ export interface FormFieldHeaderTextProps {
    * Additional content to be rendered alongside the title
    */
   suffix?: ReactNode
+  tone?: TextProps['tone']
 }
 
 const EMPTY_ARRAY: never[] = []
@@ -45,15 +37,15 @@ const EMPTY_ARRAY: never[] = []
 export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   props: FormFieldHeaderTextProps,
 ) {
-  const {description, inputId, title, deprecated, validation = EMPTY_ARRAY, suffix} = props
+  const {description, inputId, title, deprecated, validation = EMPTY_ARRAY, suffix, tone} = props
   const {t} = useTranslation()
   const hasValidations = validation.length > 0
 
   return (
-    <Stack gap={3}>
-      <Flex align="center" paddingY={1}>
-        <Flex align="center">
-          <Text as="label" htmlFor={inputId} weight="medium" size={1}>
+    <VStack gap={3}>
+      <Flex alignItems="center" paddingY={1}>
+        <Flex alignItems="center">
+          <Text as="label" htmlFor={inputId} weight="medium" size={1} trim={true} tone={tone}>
             {title || (
               <span style={{color: 'var(--card-muted-fg-color)'}}>
                 {t('form.field.untitled-field-label')}
@@ -69,7 +61,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
         )}
 
         {(deprecated || hasValidations) && (
-          <LabelSuffix align="center">
+          <Flex alignItems="center" className={labelSuffix}>
             {deprecated && (
               <Box marginLeft={2}>
                 <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
@@ -88,7 +80,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
                 />
               </Box>
             )}
-          </LabelSuffix>
+          </Flex>
         )}
       </Flex>
 
@@ -99,10 +91,17 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
       )}
 
       {description && (
-        <Text muted size={1} id={createDescriptionId(inputId, description)}>
+        <Text
+          muted
+          size={1}
+          id={createDescriptionId(inputId, description)}
+          as="div"
+          trim={true}
+          tone={tone}
+        >
           {description}
         </Text>
       )}
-    </Stack>
+    </VStack>
   )
 })

@@ -42,7 +42,7 @@ const MENTION_DATA: UserListWithPermissionsHookValue = {
  * field root that is a single line tall, and that root is the boundary element
  * the composer inherits.
  */
-function InlineComposerStory() {
+function InlineComposerHarness() {
   const [value, setValue] = useState<PortableTextBlock[] | null>(null)
   const [fieldElement, setFieldElement] = useState<HTMLDivElement | null>(null)
   const [referenceElement, setReferenceElement] = useState<HTMLSpanElement | null>(null)
@@ -76,7 +76,8 @@ function InlineComposerStory() {
 
 describe('Inline comment composer', () => {
   it('keeps the mentions menu sized when the field boundary is one line tall (SAPP-4093)', async () => {
-    void render(<InlineComposerStory />)
+    const {settleChromaticEndState} = testHelpers()
+    void render(<InlineComposerHarness />)
 
     const $editable = page.getByTestId('comment-input-editable')
     await expect.element($editable).toBeVisible()
@@ -93,10 +94,12 @@ describe('Inline comment composer', () => {
     const rect = $mentionsMenu.element().getBoundingClientRect()
     expect(rect.width).toBeGreaterThan(0)
     expect(rect.height).toBeGreaterThan(0)
+    await settleChromaticEndState()
   })
 
   it('does not treat picking a mention as a click outside the composer', async () => {
-    void render(<InlineComposerStory />)
+    const {settleChromaticEndState} = testHelpers()
+    void render(<InlineComposerHarness />)
 
     const $editable = page.getByTestId('comment-input-editable')
     await expect.element($editable).toBeVisible()
@@ -109,20 +112,22 @@ describe('Inline comment composer', () => {
     await expect.element(page.getByTestId('comment-mentions-loading-skeleton')).toBeVisible()
     await expect.element(page.getByText('Discard comment?')).not.toBeInTheDocument()
     await expect.element($editable).toBeVisible()
+    await settleChromaticEndState()
   })
 
   it('asks to discard when clicking outside the composer with a draft value', async () => {
-    const {insertPortableText} = testHelpers()
-    void render(<InlineComposerStory />)
+    const {insertPortableText, settleChromaticEndState} = testHelpers()
+    void render(<InlineComposerHarness />)
 
     const $editable = page.getByTestId('comment-input-editable')
     await expect.element($editable).toBeVisible()
     await insertPortableText('hello', $editable)
-    await expect.element($editable).toHaveTextContent('hello')
+    await expect.element($editable).toMatchTextContent('hello')
     // The draft value has reached the composer once submitting is possible.
     await expect.element(page.getByTestId('comment-input-send-button')).toBeEnabled()
 
     await userEvent.click(page.getByTestId('outside-area'))
     await expect.element(page.getByText('Discard comment?')).toBeVisible()
+    await settleChromaticEndState()
   })
 })

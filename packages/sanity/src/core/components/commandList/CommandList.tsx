@@ -1,4 +1,4 @@
-import {Box, rem, Stack} from '@sanity/ui'
+import {rem} from '@sanity/ui'
 import {
   measureElement,
   type ScrollToOptions,
@@ -21,6 +21,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
+import {Box, VStack} from 'ui5'
 
 import {type FIXME} from '../../FIXME'
 import {focusRingStyle} from '../../form/components/formField/styles'
@@ -40,15 +41,15 @@ const LIST_ITEM_INTERACTIVE_SELECTOR = 'a,button'
 /**
  * Conditionally render a focus ring overlay over the command list, with adjustable offset
  */
-const FocusOverlayDiv = styled.div<{offset: number}>(({theme, offset}) => {
+const FocusOverlayDiv = styled.div<{$offset: number}>(({theme, $offset}) => {
   return css`
-    bottom: ${-offset}px;
+    bottom: ${-$offset}px;
     border-radius: ${rem(theme.sanity.radius[1]) /* oxlint-disable-line no-deprecated -- will fix in follow up PR */};
-    left: ${-offset}px;
+    left: ${-$offset}px;
     pointer-events: none;
     position: absolute;
-    right: ${-offset}px;
-    top: ${-offset}px;
+    right: ${-$offset}px;
+    top: ${-$offset}px;
     z-index: 2;
 
     ${VirtualListBox}:focus-visible & {
@@ -109,6 +110,7 @@ function CommandListComponent({
   ariaMultiselectable = false,
   autoFocus,
   canReceiveFocus,
+  className,
   fixedHeight,
   focusRingOffset = 0,
   getItemDisabled,
@@ -126,7 +128,7 @@ function CommandListComponent({
   renderItem,
   testId,
   wrapAround = true,
-  ...responsivePaddingProps
+  ...paddingProps
 }: CommandListProps & RefAttributes<CommandListHandle>) {
   const isMountedRef = useRef(false)
   const [commandListId] = useState(useId())
@@ -156,6 +158,7 @@ function CommandListComponent({
   )
 
   // This will trigger a re-render whenever its internal state changes
+  // oxlint-disable-next-line react/incompatible-library -- pre-existing violation, to be fixed in a follow-up
   const virtualizer = useVirtualizer({
     count: items.length,
     getItemKey,
@@ -569,16 +572,16 @@ function CommandListComponent({
 
   return (
     <VirtualListBox
+      className={className}
       id={getCommandListChildrenId()}
       onMouseEnter={handleVirtualListMouseEnter}
       onMouseLeave={handleVirtualListMouseLeave}
       ref={setVirtualListElement}
-      sizing="border"
       tabIndex={rootTabIndex}
       data-testid={testId}
-      {...responsivePaddingProps}
+      {...paddingProps}
     >
-      {canReceiveFocus && <FocusOverlayDiv offset={focusRingOffset} />}
+      {canReceiveFocus && <FocusOverlayDiv $offset={focusRingOffset} />}
       <PointerOverlayDiv aria-hidden="true" data-enabled="false" ref={setPointerOverlayElement} />
       {virtualizer && (
         <VirtualListChildBox
@@ -586,7 +589,8 @@ function CommandListComponent({
           $height={virtualizer.getTotalSize()}
           aria-label={ariaLabel}
           aria-multiselectable={ariaMultiselectable}
-          flex={1}
+          flexBasis="0%"
+          flexGrow={1}
           ref={setChildContainerElement}
           role="listbox"
         >
@@ -646,7 +650,6 @@ function CommandListComponent({
  * @internal
  */
 export const CommandList = memo(CommandListComponent)
-CommandList.displayName = 'Memo(CommandList)'
 
 function CommandListItemComponent(
   props: {
@@ -711,7 +714,7 @@ function CommandListItemComponent(
   )
 
   return (
-    <Stack
+    <VStack
       as="li"
       data-index={virtualIndex}
       ref={forwardedRef}
@@ -721,12 +724,11 @@ function CommandListItemComponent(
       onMouseEnter={onMouseEnter}
     >
       {children}
-    </Stack>
+    </VStack>
   )
 }
 
 const CommandListItem = memo(CommandListItemComponent)
-CommandListItem.displayName = 'Memo(CommandListItem)'
 
 function getItemIndicies(
   items: FIXME[],

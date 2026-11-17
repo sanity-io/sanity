@@ -2,11 +2,10 @@ import {type ReleaseDocument} from '@sanity/client'
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {memo} from 'react'
-import {Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {ToneIcon} from '../../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -55,7 +54,11 @@ const MemoDocumentType = memo(
     const schema = useSchema()
     const schemaType = schema.get(type)
 
-    return <Text size={1}>{schemaType?.title || type}</Text>
+    return (
+      <Text size={1} as="div" trim={true}>
+        {schemaType?.title || type}
+      </Text>
+    )
   },
   (prev, next) => prev.type === next.type,
 )
@@ -82,9 +85,9 @@ function ValidationStatusIndicator({
         portal
         placement="bottom-end"
         content={
-          <Text muted size={1}>
-            <Flex align="center" gap={3} padding={1}>
-              <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
+          <Text muted size={1} as="div" trim={true}>
+            <Flex alignItems="center" gap={3} padding={1}>
+              <Icon size={1} icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />} />
               {t(
                 validationErrorCount === 1
                   ? 'detail.documents.table.validation.error_one'
@@ -95,9 +98,11 @@ function ValidationStatusIndicator({
           </Text>
         }
       >
-        <Text size={1} data-testid="variant-document-validation-error">
-          <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-        </Text>
+        <Icon
+          size={1}
+          icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
+          data-testid="variant-document-validation-error"
+        />
       </Tooltip>
     )
   }
@@ -108,14 +113,16 @@ function ValidationStatusIndicator({
         portal
         placement="bottom-end"
         content={
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             <Box padding={1}>{t('detail.documents.table.validation.validating')}</Box>
           </Text>
         }
       >
-        <Text muted size={1} data-testid="variant-document-validation-validating">
-          <ToneIcon icon={ClockIcon} tone="default" />
-        </Text>
+        <Icon
+          size={1}
+          icon={<ToneIcon icon={ClockIcon} tone="default" />}
+          data-testid="variant-document-validation-validating"
+        />
       </Tooltip>
     )
   }
@@ -125,14 +132,16 @@ function ValidationStatusIndicator({
       portal
       placement="bottom-end"
       content={
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           <Box padding={1}>{t('detail.documents.table.validation.valid')}</Box>
         </Text>
       }
     >
-      <Text muted size={1} data-testid="variant-document-validation-valid">
-        <ToneIcon icon={CheckmarkCircleIcon} tone="positive" />
-      </Text>
+      <Icon
+        size={1}
+        icon={<ToneIcon icon={CheckmarkCircleIcon} tone="positive" />}
+        data-testid="variant-document-validation-valid"
+      />
     </Tooltip>
   )
 }
@@ -161,7 +170,7 @@ export const getVariantDocumentTableColumnDefs = (
     sorting: true,
     sortTransform: (row) => getRowBundleSortKey(row, releasesById),
     header: (props) => (
-      <Flex {...props.headerProps} paddingY={3} sizing="border">
+      <Flex {...props.headerProps} paddingY={3}>
         <Headers.SortHeaderButton
           paddingLeft={2}
           text={t('detail.documents.table.appears-in')}
@@ -171,7 +180,7 @@ export const getVariantDocumentTableColumnDefs = (
     ),
     cell: ({cellProps, datum}) => (
       <Flex
-        align="center"
+        alignItems="center"
         {...cellProps}
         style={{...cellProps.style, flex: '0 1 auto', minWidth: 0, overflow: 'hidden'}}
       >
@@ -190,7 +199,7 @@ export const getVariantDocumentTableColumnDefs = (
     style: {minWidth: 110, maxWidth: 130},
     sorting: true,
     header: (props) => (
-      <Flex {...props.headerProps} paddingY={3} sizing="border">
+      <Flex {...props.headerProps} paddingY={3}>
         <Headers.SortHeaderButton
           paddingLeft={2}
           text={t('detail.documents.table.type')}
@@ -199,7 +208,7 @@ export const getVariantDocumentTableColumnDefs = (
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
-      <Flex align="center" {...cellProps}>
+      <Flex alignItems="center" {...cellProps}>
         <Box paddingX={2}>
           {!datum.isLoading && <MemoDocumentType type={datum.document._type} />}
         </Box>
@@ -219,7 +228,7 @@ export const getVariantDocumentTableColumnDefs = (
     sorting: true,
     sortTransform: ({document}) => getDocumentPreviewTitle(document).toLowerCase(),
     header: (props) => (
-      <Flex {...props.headerProps} flex={1} paddingY={3} sizing="border">
+      <Flex {...props.headerProps} flexBasis="0%" flexGrow={1} paddingY={3}>
         <Headers.SortHeaderButton
           paddingLeft={2}
           text={t('detail.documents.table.document')}
@@ -230,12 +239,12 @@ export const getVariantDocumentTableColumnDefs = (
     cell: ({cellProps, datum}) => (
       <Flex
         {...cellProps}
-        align="center"
-        flex={1}
+        alignItems="center"
+        flexBasis="0%"
+        flexGrow={1}
         gap={2}
         padding={1}
         paddingRight={2}
-        sizing="border"
       >
         <Box flexBasis="0%" flexGrow={1} style={{minWidth: 0}}>
           {datum.isLoading ? (
@@ -260,7 +269,7 @@ export const getVariantDocumentTableColumnDefs = (
     sorting: true,
     width: 130,
     header: (props) => (
-      <Flex {...props.headerProps} paddingY={3} sizing="border">
+      <Flex {...props.headerProps} paddingY={3}>
         <Headers.SortHeaderButton
           paddingLeft={2}
           text={t('detail.documents.table.last-edited')}
@@ -271,14 +280,15 @@ export const getVariantDocumentTableColumnDefs = (
     cell: ({cellProps, datum}) => (
       <Flex
         {...cellProps}
-        align="center"
+        alignItems="center"
         paddingX={2}
         paddingY={3}
-        style={{minWidth: 130}}
-        sizing="border"
+        style={{
+          minWidth: 130,
+        }}
       >
         {!datum.isLoading && datum.document._updatedAt && (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             <RelativeTime time={datum.document._updatedAt} useTemporalPhrase minimal />
           </Text>
         )}
@@ -294,14 +304,14 @@ export const getVariantDocumentTableColumnDefs = (
     width: 170,
     style: {minWidth: 44, maxWidth: 170},
     header: (props) => (
-      <Flex {...props.headerProps} align="center" paddingX={2} paddingY={3} sizing="border">
-        <Text muted size={1} textOverflow="ellipsis" weight="medium">
+      <Flex {...props.headerProps} alignItems="center" paddingX={2} paddingY={3}>
+        <Text muted size={1} truncate={1} weight="medium" as="div" trim={true}>
           {t('detail.documents.table.edited-by')}
         </Text>
       </Flex>
     ),
     cell: ({cellProps, datum}) => (
-      <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border">
+      <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
         {!datum.isLoading && (
           <EditedByCell documentId={datum.document._id} revision={datum.document._rev} />
         )}
@@ -318,9 +328,9 @@ export const getVariantDocumentTableColumnDefs = (
     style: {minWidth: 44, maxWidth: 44},
     sorting: true,
     sortTransform: (row) => (row.validation.hasError ? 0 : 1),
-    header: (props) => <Flex {...props.headerProps} paddingY={3} sizing="border" />,
+    header: (props) => <Flex {...props.headerProps} paddingY={3} />,
     cell: ({cellProps, datum}) => (
-      <Flex {...cellProps} align="center" justify="center" paddingY={3} sizing="border">
+      <Flex {...cellProps} alignItems="center" justifyContent="center" paddingY={3}>
         {!datum.isLoading && <ValidationStatusIndicator datum={datum} t={t} />}
       </Flex>
     ),

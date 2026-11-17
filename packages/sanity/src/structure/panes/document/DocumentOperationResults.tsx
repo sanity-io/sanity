@@ -5,6 +5,7 @@ import {
   Translate,
   useDocumentLimitsUpsellContext,
   useDocumentOperationEvent,
+  usePerspective,
   useTranslation,
 } from 'sanity'
 
@@ -15,6 +16,24 @@ import {useDocumentPaneInfo} from './useDocumentPaneInfo'
 import {useDocumentTitle} from './useDocumentTitle'
 
 const IGNORE_OPS = ['patch', 'commit']
+
+/**
+ * The i18n context selecting the success copy for an operation. Publish and unpublish need
+ * version-scoped variants:
+ * - publishing a version whose document also has a draft would report the draft's title, so the
+ *   version copy leaves the title out
+ * - unpublishing inside a release only stages the removal, so the base copy ("a draft has been
+ *   created from the latest published revision") would be wrong. A variant unpublish outside a
+ *   release is a real unpublish, hence the release check rather than `idPair.versionId`.
+ */
+function getSuccessContext(
+  event: {op: string; idPair: {versionId?: string}},
+  selectedReleaseId: string | undefined,
+): string {
+  if (event.op === 'publish' && event.idPair.versionId) return 'publishVersion'
+  if (event.op === 'unpublish' && selectedReleaseId) return 'unpublishVersion'
+  return event.op
+}
 
 export const DocumentOperationResults = memo(function DocumentOperationResults() {
   const {push: pushToast} = useToast()
@@ -27,6 +46,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
   const paneRouter = usePaneRouter()
   const {t} = useTranslation(structureLocaleNamespace)
   const {handleOpenDialog} = useDocumentLimitsUpsellContext()
+  const {selectedReleaseId} = usePerspective()
 
   const title = useMemo(() => {
     // If title isn't set from document preview, use the title from the document pane value
@@ -77,12 +97,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
         status: 'success',
         title: (
           <Translate
-            context={
-              // When we publish a version and a draft exists, the document title will be the draft
-              // title. So in this case we will just say "Version was published" and not the document title
-              // So we use this special operation key which doesn't use the documentTitle
-              event.op === 'publish' && event.idPair.versionId ? 'publishVersion' : event.op
-            }
+            context={getSuccessContext(event, selectedReleaseId)}
             i18nKey="panes.document-operation-results.operation-success"
             t={t}
             values={{
@@ -109,7 +124,7 @@ export const DocumentOperationResults = memo(function DocumentOperationResults()
 
     // oxlint-disable-next-line consistent-return
     return () => clearTimeout(cleanupId)
-  }, [event, paneRouter, pushToast, t, documentTitle, handleOpenDialog])
+  }, [event, paneRouter, pushToast, t, documentTitle, handleOpenDialog, selectedReleaseId])
 
   return null
 })

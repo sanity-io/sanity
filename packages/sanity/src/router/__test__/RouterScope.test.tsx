@@ -1,4 +1,5 @@
-import {act, renderHook} from '@testing-library/react'
+import {act, render, renderHook} from '@testing-library/react'
+import {useEffect} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {RouterProvider} from '../RouterProvider'
@@ -37,14 +38,18 @@ interface WrapperProps {
 }
 
 const createWrapper = (disableScopedSearchParams = false) => {
-  const Wrapper = ({children}: WrapperProps) => (
-    <RouterProvider onNavigate={mockOnNavigate} router={mockRouter} state={initialState}>
-      <RouteScope scope="testScope" __unsafe_disableScopedSearchParams={disableScopedSearchParams}>
-        {children}
-      </RouteScope>
-    </RouterProvider>
-  )
-  Wrapper.displayName = 'TestWrapper'
+  function Wrapper({children}: WrapperProps) {
+    return (
+      <RouterProvider onNavigate={mockOnNavigate} router={mockRouter} state={initialState}>
+        <RouteScope
+          scope="testScope"
+          __unsafe_disableScopedSearchParams={disableScopedSearchParams}
+        >
+          {children}
+        </RouteScope>
+      </RouterProvider>
+    )
+  }
   return Wrapper
 }
 
@@ -193,16 +198,54 @@ describe('RouteScope', () => {
     })
   })
 
+  describe('parent state tracking', () => {
+    it('merges onto the parent state of the current commit when a child navigates from an effect', () => {
+      function NavigateFromEffect({when}: {when: boolean}) {
+        const router = useRouter()
+        useEffect(() => {
+          if (when) router.navigate({scopedKey: 'scopedValue'})
+        }, [router, when])
+        return null
+      }
+      function Tree({state, when}: {state: RouterState; when: boolean}) {
+        return (
+          <RouterProvider onNavigate={mockOnNavigate} router={mockRouter} state={state}>
+            <RouteScope scope="testScope">
+              <NavigateFromEffect when={when} />
+            </RouteScope>
+          </RouterProvider>
+        )
+      }
+      const {rerender} = render(<Tree state={initialState} when={false} />)
+
+      // The parent state changes in the same commit that makes the child navigate. Passive effects
+      // run child first, so the scope must have picked the new parent state up before then.
+      rerender(<Tree state={{...initialState, tool: 'other'}} when />)
+
+      expect(mockOnNavigate).toHaveBeenCalledWith({
+        path: {
+          _searchParams: [['stickyParam', 'stickyValue']],
+          tool: 'other',
+          testScope: {
+            scopedKey: 'scopedValue',
+          },
+        },
+        replace: undefined,
+      })
+    })
+  })
+
   describe('nested scopes', () => {
     it('should handle nested route scopes correctly', () => {
-      const NestedWrapper = ({children}: WrapperProps) => (
-        <RouterProvider onNavigate={mockOnNavigate} router={mockRouter} state={initialState}>
-          <RouteScope scope="parentScope">
-            <RouteScope scope="childScope">{children}</RouteScope>
-          </RouteScope>
-        </RouterProvider>
-      )
-      NestedWrapper.displayName = 'NestedWrapper'
+      function NestedWrapper({children}: WrapperProps) {
+        return (
+          <RouterProvider onNavigate={mockOnNavigate} router={mockRouter} state={initialState}>
+            <RouteScope scope="parentScope">
+              <RouteScope scope="childScope">{children}</RouteScope>
+            </RouteScope>
+          </RouterProvider>
+        )
+      }
 
       const {result} = renderHook(() => useRouter(), {wrapper: NestedWrapper})
 

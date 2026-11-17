@@ -26,8 +26,8 @@ const failingClient = {
 // Mock client which always throws 403 Forbidden errors on `request`
 const getClient = () => {
   const client = {
-    request: vi.fn((options: {uri: string}) => {
-      const userIds = options.uri.slice(options.uri.lastIndexOf('/') + 1).split(',')
+    request: vi.fn((options: {url: string}) => {
+      const userIds = options.url.slice(options.url.lastIndexOf('/') + 1).split(',')
       return Promise.resolve(
         userIds
           // Skip IDs that do not start with a `p`, to allow us to test the case where some users are not returned
@@ -113,7 +113,7 @@ describe('userStore', () => {
       await expect(getUserStore({client}).getUsers(userIds)).resolves.toHaveLength(userIds.length)
       expect(client.request).toHaveBeenCalledTimes(4) // Math.ceil(1500 / 400) = 4, eg 4 batches
       expect(client.request).toHaveBeenLastCalledWith({
-        uri: `/users/${lastBatch.join(',')}`,
+        url: `/users/${lastBatch.join(',')}`,
         tag: 'users.get',
       })
     })

@@ -16,7 +16,7 @@ export function ImageLoader(props: ImageLoaderProps) {
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setImage(null)
     setError(null)
     setIsLoading(true)

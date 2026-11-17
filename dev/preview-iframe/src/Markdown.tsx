@@ -1,9 +1,10 @@
 import {stegaClean} from '@sanity/client/stega'
-import {Box, Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
 import {registerLanguage} from 'react-refractor'
 import markdown from 'refractor/markdown'
+import {Text, Box, VStack} from 'ui5'
 
 import {useQuery} from './loader'
 
@@ -33,8 +34,10 @@ export function Markdown(): React.JSX.Element {
         const dataAttribute = createDataAttribute({id: item._id, type: item._type})
         return (
           <Card key={item._id} padding={4}>
-            <Stack gap={4}>
-              <Text weight={'bold'}>{item.title}</Text>
+            <VStack gap={4}>
+              <Text weight={'bold'} as="div" trim={true}>
+                {item.title}
+              </Text>
               <Code
                 data-sanity={dataAttribute('markdown')}
                 language="markdown"
@@ -42,7 +45,7 @@ export function Markdown(): React.JSX.Element {
               >
                 {stegaClean(item.markdown)}
               </Code>
-            </Stack>
+            </VStack>
           </Card>
         )
       })}

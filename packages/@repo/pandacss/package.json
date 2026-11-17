@@ -1,0 +1,23 @@
+{
+  "name": "@repo/pandacss",
+  "version": "6.9.2",
+  "private": true,
+  "description": "Panda CSS for the apps that build the sanity package from source",
+  "type": "module",
+  "exports": {
+    "./vite": "./src/vite.ts",
+    "./panda.css": {
+      "types": "./src/panda.css.d.ts",
+      "default": "./src/panda.css"
+    }
+  },
+  "dependencies": {
+    "@pandacss/vite": "catalog:",
+    "@sanity/pandacss-tsdown-plugin": "catalog:",
+    "vite": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*",
+    "@types/node": "catalog:"
+  }
+}

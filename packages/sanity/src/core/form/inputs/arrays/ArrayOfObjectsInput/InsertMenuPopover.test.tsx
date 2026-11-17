@@ -1,21 +1,21 @@
 /**
  * Ensures the array insert menu popover picks the correct Floating UI boundary.
  *
- * Edit dialogs (`EditPortal`, `EnhancedObjectDialog`, PTE object modals) constrain their
+ * Dialogs (`EditPortal`, `EnhancedObjectDialog`, PTE object modals) constrain their
  * descendant popovers to the dialog's scroll container via a generic `BoundaryElementProvider`
- * (#12721). The insert menu is deliberately allowed to overflow the dialog: inside a dialog it
- * uses the boundary captured by `EditDialogOuterBoundaryProvider` (typically the document pane's
- * scroll container, so the menu stays below the sticky pane header), and outside a dialog it
- * keeps using the ambient boundary.
+ * (#12721). The insert menu is deliberately allowed to overflow the dialog: when the hosting
+ * surface declares a `PortalBoundaryProvider` (the document pane does, with its scroll container)
+ * the menu uses that, so it stays below the sticky pane header no matter how deeply it is nested
+ * in dialogs. Without a declared portal boundary, or when the menu renders into a different
+ * portal than the one the boundary was declared for, it keeps using the ambient boundary.
  */
-import {BoundaryElementProvider} from '@sanity/ui'
+import {BoundaryElementProvider, PortalProvider} from '@sanity/ui'
 import {render, waitFor} from '@testing-library/react'
-import {useLayoutEffect, type RefAttributes} from 'react'
-import {EditDialogOuterBoundaryContext} from 'sanity/_singletons'
+import {type ReactNode, type RefAttributes, useLayoutEffect, useState} from 'react'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {type PopoverProps as UIPopoverProps} from '../../../../../ui-components/popover/Popover'
-import {EditDialogOuterBoundaryProvider} from '../../../components/EditDialogOuterBoundaryProvider'
+import {PortalBoundaryProvider} from '../../../../components/portalBoundary/PortalBoundaryProvider'
 import {useInsertMenuPopover} from './InsertMenuPopover'
 
 type PopoverBoundaryCapture = Pick<UIPopoverProps, 'floatingBoundary'>
@@ -47,12 +47,24 @@ function Harness() {
   return popover
 }
 
+/** Stand-in for the document pane: a `PortalProvider` plus the boundary it declares for it. */
+function DeclaredPortal(props: {boundary: HTMLElement | null; children: ReactNode}) {
+  const [portalElement] = useState(() => document.body.appendChild(document.createElement('div')))
+  return (
+    <PortalProvider element={portalElement}>
+      <PortalBoundaryProvider element={props.boundary} portalElement={portalElement}>
+        {props.children}
+      </PortalBoundaryProvider>
+    </PortalProvider>
+  )
+}
+
 describe('useInsertMenuPopover floating boundary', () => {
   beforeEach(() => {
     lastPopoverProps = null
   })
 
-  test('uses the ambient boundary outside edit dialogs', async () => {
+  test('uses the ambient boundary when no portal boundary is declared', async () => {
     render(<Harness />)
 
     await waitFor(() => {
@@ -61,25 +73,11 @@ describe('useInsertMenuPopover floating boundary', () => {
     expect(lastPopoverProps?.floatingBoundary).toBeUndefined()
   })
 
-  test('uses the boundary outside the edit dialog when inside one', async () => {
-    const outerBoundary = document.createElement('div')
-
+  test('uses the ambient boundary when the declared portal boundary has no element yet', async () => {
     render(
-      <EditDialogOuterBoundaryContext.Provider value={{element: outerBoundary}}>
+      <DeclaredPortal boundary={null}>
         <Harness />
-      </EditDialogOuterBoundaryContext.Provider>,
-    )
-
-    await waitFor(() => {
-      expect(lastPopoverProps?.floatingBoundary).toBe(outerBoundary)
-    })
-  })
-
-  test('uses the ambient boundary when the edit dialog captured no outer boundary', async () => {
-    render(
-      <EditDialogOuterBoundaryContext.Provider value={{element: null}}>
-        <Harness />
-      </EditDialogOuterBoundaryContext.Provider>,
+      </DeclaredPortal>,
     )
 
     await waitFor(() => {
@@ -88,25 +86,53 @@ describe('useInsertMenuPopover floating boundary', () => {
     expect(lastPopoverProps?.floatingBoundary).toBeUndefined()
   })
 
-  test('stacked edit dialogs inherit the outermost captured boundary', async () => {
+  test('uses the declared portal boundary', async () => {
+    const paneBoundary = document.createElement('div')
+
+    render(
+      <DeclaredPortal boundary={paneBoundary}>
+        <Harness />
+      </DeclaredPortal>,
+    )
+
+    await waitFor(() => {
+      expect(lastPopoverProps?.floatingBoundary).toBe(paneBoundary)
+    })
+  })
+
+  test('ignores the declared portal boundary when rendering into a different portal', async () => {
+    const paneBoundary = document.createElement('div')
+    const customPortal = document.body.appendChild(document.createElement('div'))
+
+    render(
+      <DeclaredPortal boundary={paneBoundary}>
+        <PortalProvider element={customPortal}>
+          <Harness />
+        </PortalProvider>
+      </DeclaredPortal>,
+    )
+
+    await waitFor(() => {
+      expect(lastPopoverProps).not.toBeNull()
+    })
+    expect(lastPopoverProps?.floatingBoundary).toBeUndefined()
+  })
+
+  test('dialog scroll boxes do not shadow the declared portal boundary, however deeply nested', async () => {
     const paneBoundary = document.createElement('div')
     const outerDialogBoundary = document.createElement('div')
     const nestedDialogBoundary = document.createElement('div')
 
     render(
-      <BoundaryElementProvider element={paneBoundary}>
-        {/* Outermost edit dialog captures the pane boundary … */}
-        <EditDialogOuterBoundaryProvider>
+      <DeclaredPortal boundary={paneBoundary}>
+        <BoundaryElementProvider element={paneBoundary}>
           <BoundaryElementProvider element={outerDialogBoundary}>
-            {/* … and a nested edit dialog inherits it instead of capturing the parent dialog. */}
-            <EditDialogOuterBoundaryProvider>
-              <BoundaryElementProvider element={nestedDialogBoundary}>
-                <Harness />
-              </BoundaryElementProvider>
-            </EditDialogOuterBoundaryProvider>
+            <BoundaryElementProvider element={nestedDialogBoundary}>
+              <Harness />
+            </BoundaryElementProvider>
           </BoundaryElementProvider>
-        </EditDialogOuterBoundaryProvider>
-      </BoundaryElementProvider>,
+        </BoundaryElementProvider>
+      </DeclaredPortal>,
     )
 
     await waitFor(() => {

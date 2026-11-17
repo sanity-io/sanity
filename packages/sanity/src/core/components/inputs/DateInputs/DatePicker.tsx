@@ -12,7 +12,7 @@ export function DatePicker(
     timeStep?: number
     calendarLabels: CalendarLabels
     monthPickerVariant?: CalendarProps['monthPickerVariant']
-    padding?: number
+    padding?: CalendarProps['padding']
     showTimeZone?: boolean
     isPastDisabled?: boolean
     timeZoneScope: TimeZoneScope
@@ -33,6 +33,7 @@ export function DatePicker(
 
   const value = useMemo(() => {
     if (_value) return _value
+    // oxlint-disable-next-line react/purity -- the default is re-derived from the current time whenever the value is cleared
     const now = new Date()
     // If no value is provided initialize the date with seconds and milliseconds set to 0
     now.setSeconds(0, 0)

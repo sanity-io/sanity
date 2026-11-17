@@ -1,13 +1,8 @@
 import {
-  type BlockDecoratorRenderProps,
   type EditorSelection,
-  type HotkeyOptions,
-  type OnCopyFn,
-  type OnPasteFn,
   PortableTextEditable,
   type PortableTextEditableProps,
   type RangeDecoration,
-  type RenderAnnotationFunction,
 } from '@portabletext/editor'
 import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
@@ -17,11 +12,22 @@ import {css, styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {PresenceOverlay} from '../../../presence/overlay/PresenceOverlay'
+import {type OnPasteFn, type PortableTextInputProps} from '../../types/inputProps'
 import {useFormBuilder} from '../../useFormBuilder'
-import {EditableCard, EditableWrapper, Root, Scroller, ToolbarCard} from './Editor.styles'
+import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
+import {
+  EditableCard,
+  EditableContent,
+  EditableWrapper,
+  Root,
+  Scroller,
+  ToolbarCard,
+} from './Editor.styles'
+import {type PortableTextInputHotkeys} from './hooks/useHotKeys'
+import {useInitialSelection} from './hooks/useInitialSelection'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 import {useSpellCheck} from './hooks/useSpellCheck'
-import {Decorator} from './text/Decorator'
 import {Toolbar} from './toolbar/Toolbar'
 
 const noOutlineStyle = {outline: 'none'} as const
@@ -40,19 +46,18 @@ const PlaceholderWrapper = styled.span((props) => {
 interface EditorProps {
   elementRef: React.RefObject<HTMLDivElement | null>
   hideToolbar?: boolean
-  hotkeys: HotkeyOptions
+  hotkeys: PortableTextInputHotkeys
   initialSelection?: EditorSelection
   isActive: boolean
   isFullscreen: boolean
   isOneLine: boolean
-  onCopy?: OnCopyFn
+  onCopy?: PortableTextInputProps['onCopy']
   onItemOpen: (path: Path) => void
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
   path: Path
   readOnly?: boolean
   rangeDecorations?: RangeDecoration[]
-  renderAnnotation: RenderAnnotationFunction
   scrollElement: HTMLElement | null
   setPortalElement?: (portalElement: HTMLDivElement | null) => void
   setScrollElement: (scrollElement: HTMLElement | null) => void
@@ -78,7 +83,6 @@ export function Editor(props: EditorProps): ReactNode {
     path,
     readOnly,
     rangeDecorations,
-    renderAnnotation,
     scrollElement,
     setPortalElement,
     setScrollElement,
@@ -115,25 +119,26 @@ export function Editor(props: EditorProps): ReactNode {
     [t],
   )
   const spellCheck = useSpellCheck()
-  const renderDecorator = useCallback((decoratorProps: BlockDecoratorRenderProps) => {
-    return <Decorator {...decoratorProps} />
-  }, [])
 
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
+  const schemaTypes = usePortableTextMemberSchemaTypes()
+
+  useInitialSelection(initialSelection)
 
   const editable = useMemo(() => {
     const editableProps = {
       'aria-describedby': ariaDescribedBy,
+      // oxlint-disable-next-line no-deprecated -- custom hotkeys receive the React event and a PortableTextEditor, which keyboard.keydown Behaviors do not carry
       hotkeys,
+      // oxlint-disable-next-line no-deprecated -- the deprecated onCopy input prop receives the React clipboard event, which clipboard.copy Behaviors do not carry
       onCopy,
-      onPaste,
+      // Hands the deprecated onPaste input prop Studio's schema types instead of the editor's schema
+      // oxlint-disable-next-line no-deprecated -- that handler receives the React clipboard event, which clipboard.paste Behaviors do not carry
+      'onPaste': onPaste && ((data) => onPaste({...data, schemaTypes})),
       rangeDecorations,
       'ref': elementRef,
-      renderAnnotation,
-      renderDecorator,
       renderPlaceholder,
       scrollSelectionIntoView,
-      'selection': initialSelection,
       spellCheck,
       'style': noOutlineStyle,
     } satisfies PortableTextEditableProps
@@ -143,13 +148,11 @@ export function Editor(props: EditorProps): ReactNode {
     ariaDescribedBy,
     elementRef,
     hotkeys,
-    initialSelection,
     onCopy,
     onPaste,
     rangeDecorations,
-    renderAnnotation,
-    renderDecorator,
     renderPlaceholder,
+    schemaTypes,
     scrollSelectionIntoView,
     spellCheck,
   ])
@@ -163,6 +166,20 @@ export function Editor(props: EditorProps): ReactNode {
 
   // Always collapse toolbars at smaller container widths when in 'default' (document pane) FormBuilder instances
   const collapsibleToolbar = id === FORM_BUILDER_DEFAULT_ID
+
+  const editableContent = (
+    <EditableContent $isFullscreen={isFullscreen}>
+      <EditableWrapper
+        $isFullscreen={isFullscreen}
+        $isOneLine={isOneLine}
+        tone={readOnly ? 'transparent' : 'default'}
+      >
+        <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
+          {editable}
+        </BoundaryElementProvider>
+      </EditableWrapper>
+    </EditableContent>
+  )
 
   return (
     <Root
@@ -189,18 +206,14 @@ export function Editor(props: EditorProps): ReactNode {
       )}
 
       <EditableCard flex={1} tone={readOnly ? 'transparent' : 'default'}>
-        <Scroller ref={setScrollElement}>
-          <div>
-            <EditableWrapper
-              $isFullscreen={isFullscreen}
-              $isOneLine={isOneLine}
-              tone={readOnly ? 'transparent' : 'default'}
-            >
-              <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
-                {editable}
-              </BoundaryElementProvider>
-            </EditableWrapper>
-          </div>
+        <Scroller ref={setScrollElement} data-testid="pt-editor__scroller">
+          {/*
+           * The presence cursors of other users register with the surrounding presence overlay
+           * (the document pane's), which shows their avatar at the edge of this scroller when a
+           * cursor is scrolled out of it. In fullscreen the editor is portaled out of the pane, so
+           * it gets its own overlay inside the scroller instead.
+           */}
+          {isFullscreen ? <PresenceOverlay>{editableContent}</PresenceOverlay> : editableContent}
         </Scroller>
 
         <div data-portal="" ref={setPortalElement} />

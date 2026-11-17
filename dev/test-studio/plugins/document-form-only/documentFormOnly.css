@@ -1,0 +1,6 @@
+/* Scoped to this tool so the other test-studio workspaces in the same bundle keep their toolbar.
+   `!important` is required: the attribute sits on a styled-components Card whose generated
+   `.hash:not([hidden]) { display: block }` has equal specificity and is injected later. */
+.document-form-only-tool [data-sanity-document-toolbar] {
+  display: none !important;
+}

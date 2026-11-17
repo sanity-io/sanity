@@ -18,14 +18,28 @@ export default defineConfig({
     'presentation.js',
     'router.js',
     'structure.js',
-    'workbench.js',
+    'dashboard.js',
   ],
-  reactCompiler: {target: '19'},
+  // `transform: 'oxc'` runs the React Compiler through `oxc-transform-react` (the native Rust
+  // port) in the same pass that strips TypeScript and lowers JSX, instead of a separate
+  // `babel-plugin-react-compiler` pass
+  reactCompiler: {transform: 'oxc', target: '19'},
   styledComponents: true,
-  // Extracts the CSS from vanilla-extract `.css.ts` files into `lib/bundle.css` and wires up the
-  // conditional `./bundle.css` export pattern (self-referential import + node shim), like the
-  // `rollup: {vanillaExtract: true}` option in `@sanity/pkg-utils` did
-  vanillaExtract: true,
+  // Rewrites the `css()` calls of the Panda CSS `.css.ts` files (panda.config.ts) into class
+  // names, extracts their CSS into `lib/bundle.css` and wires up the conditional `./bundle.css`
+  // export pattern (self-referential import + node shim), like the `rollup: {vanillaExtract: true}`
+  // option in `@sanity/pkg-utils` did for vanilla-extract.
+  // The `import 'sanity/bundle.css'` this injects into the entry barrels is also why package.json
+  // declares `sideEffects: true`: with `false` or a `*.css` allowlist, bundlers bypass the
+  // side-effect-free barrels and eliminate the bare CSS import together with them, before the
+  // stylesheet's own side-effect status is ever consulted (see #13322 and #13332).
+  // The stylesheet stays unminified so the diff between two published versions is readable, and
+  // ships without Panda's cascade layers: CSS outside any layer beats every layered rule
+  // regardless of specificity, so a layered stylesheet would lose its hover, focus and selected
+  // states to any unlayered rule of a consumer — styled-components output, a reset like
+  // Tailwind's preflight, the studio's own GlobalStyle. `cascadeLayers: false` orders the rules
+  // the way the layers did and leaves every selector as specific as it was.
+  panda: {minify: false, cascadeLayers: false},
   define: {
     // Injects the version `SANITY_VERSION` reports (see `src/core/version.ts`). An explicit
     // env var wins so preview releases can attach their own version (see pkg-pr-new.yml),
@@ -36,4 +50,7 @@ export default defineConfig({
   // `sanity/_singletons`), which must stay external so they resolve through the exports map at
   // runtime instead of being inlined into every chunk that imports them
   deps: {neverBundle: [/^sanity(\/|$)/]},
+  // Emits `lib/analyze-data.md` (LLM-friendly module/chunk breakdown). Opt-in because analysis
+  // adds work to the tsdown build. Usage: `pnpm analyze:sanity` from the repo root (see AGENTS.md).
+  bundleAnalyzer: process.env.ENABLE_BUNDLE_ANALYZER === 'true',
 })

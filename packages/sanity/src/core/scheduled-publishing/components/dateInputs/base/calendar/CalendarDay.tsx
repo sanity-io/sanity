@@ -1,6 +1,7 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {endOfDay} from 'date-fns/endOfDay'
 import {useCallback, useMemo} from 'react'
+import {Text} from 'ui5'
 
 interface CalendarDayProps {
   date: Date
@@ -50,8 +51,13 @@ export function CalendarDay(props: CalendarDayProps) {
       >
         <Text
           muted={!selected && !isCurrentMonth}
-          style={{textAlign: 'center'}}
+          style={{
+            textAlign: 'center',
+            color: `var(--card${!selected && !isCurrentMonth ? '-muted' : ''}-fg-color)`,
+          }}
           weight={isCurrentMonth ? 'medium' : 'regular'}
+          as="div"
+          trim={true}
         >
           {date.getDate()}
         </Text>

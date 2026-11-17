@@ -54,6 +54,10 @@ const AB_RUN: BenchRunDocument = {
         experiment: {requestCount: 10, requestBytes: 1000, byClass: {listen: 3}},
         reference: {requestCount: 12, requestBytes: 1200, byClass: {listen: 4}},
       },
+      styles: {
+        experiment: {ui5Available: true, styledComponentsVersion: '6.5.3', sessions: 6},
+        reference: {ui5Available: false, sessions: 6},
+      },
     },
   ],
   bundle: {
@@ -83,12 +87,23 @@ describe('toAbsolute', () => {
     expect(absolute.scenarios[0].metrics[0].experiment).toEqual(AB_METRIC.experiment)
   })
 
-  it('keeps only the experiment side of interruptions and resources', () => {
+  it('keeps only the experiment side of interruptions, resources and style context', () => {
     const absolute = toAbsolute(AB_RUN)
     expect(absolute.scenarios[0].interruptions).toEqual({experiment: {count: 1, totalMs: 200}})
     expect(absolute.scenarios[0].resources).toEqual({
       experiment: {requestCount: 10, requestBytes: 1000, byClass: {listen: 3}},
     })
+    expect(absolute.scenarios[0].styles).toEqual({
+      experiment: {ui5Available: true, styledComponentsVersion: '6.5.3', sessions: 6},
+    })
+  })
+
+  it('omits the style context when the scenario has none', () => {
+    const withoutStyles: BenchRunDocument = {
+      ...AB_RUN,
+      scenarios: [{...AB_RUN.scenarios[0], styles: undefined}],
+    }
+    expect(toAbsolute(withoutStyles).scenarios[0].styles).toBeUndefined()
   })
 
   it('keeps only the experiment bundle', () => {
@@ -126,6 +141,9 @@ describe('toAbsolute', () => {
           metrics: [{...AB_METRIC, reference: undefined, comparison: undefined}],
           interruptions: {experiment: {count: 1, totalMs: 200}},
           resources: {experiment: {requestCount: 10, requestBytes: 1000, byClass: {listen: 3}}},
+          styles: {
+            experiment: {ui5Available: true, styledComponentsVersion: '6.5.3', sessions: 6},
+          },
         },
       ],
       bundle: {experiment: {initialJsBytes: 100, totalJsBytes: 200, chunkCount: 3}},
@@ -184,7 +202,7 @@ describe('documentIdForRun', () => {
   // doc per run so the time series accumulates
 
   it('gives a PR run a per-PR id (latest push overwrites)', () => {
-    expect(documentIdForRun(AB_RUN)).toBe('benchRun-pr-777')
+    expect(documentIdForRun(AB_RUN)).toBe('bench-run-pr-777')
   })
 
   it('gives a main run a per-run id (sha + CI run id) so the series accumulates', () => {
@@ -192,7 +210,7 @@ describe('documentIdForRun', () => {
       ...AB_RUN,
       git: {sha: 'abcdef1234567890', branch: 'main'},
     }
-    expect(documentIdForRun(mainRun)).toBe('benchRun-abcdef1234567890-424242')
+    expect(documentIdForRun(mainRun)).toBe('bench-run-abcdef1234567890-424242')
   })
 
   it('falls back to a local suffix without a CI run id', () => {
@@ -201,6 +219,6 @@ describe('documentIdForRun', () => {
       git: {sha: 'abcdef1234567890', branch: 'main'},
       runner: {...AB_RUN.runner, runId: undefined},
     }
-    expect(documentIdForRun(localRun)).toBe('benchRun-abcdef1234567890-local')
+    expect(documentIdForRun(localRun)).toBe('bench-run-abcdef1234567890-local')
   })
 })

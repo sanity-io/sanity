@@ -1,12 +1,12 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {type SchemaType} from '@sanity/types'
-import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
 import {memo, useCallback} from 'react'
+import {Box, type MarginProps, type PaddingProps} from 'ui5'
 
 import {Button} from '../../../../../../../../../ui-components/button/Button'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 
-interface DocumentTypeFilterItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
+interface DocumentTypeFilterItemProps extends MarginProps, PaddingProps {
   selected: boolean
   type: SchemaType
 }

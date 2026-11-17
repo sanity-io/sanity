@@ -1,12 +1,12 @@
 import {type Path, type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Stack} from '@sanity/ui'
 import {type HTMLProps, memo, type ReactNode} from 'react'
+import {Box, VStack} from 'ui5'
 
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
 import {type FormNodePresence} from '../../../presence/types'
 import {useFieldActions} from '../../field/actions/useFieldActions'
 import {type FieldCommentsProps} from '../../types/fieldProps'
-import {FormDivergenceIndicator} from '../FormDivergenceIndicator'
+import {FormFieldGutter} from '../FormFieldGutter'
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
 import {FormRow} from '../layout/FormRow'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
@@ -48,6 +48,10 @@ export interface FormFieldProps {
   validation?: FormNodeValidation[]
   deprecated?: DeprecatedProperty
   path: Path
+  /**
+   * Whether the value differs to the document's base variant.
+   */
+  changedFromBaseVariant?: boolean
 }
 
 /** @internal */
@@ -62,6 +66,7 @@ export const FormField = memo(function FormField(
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     __internal_comments: comments,
     children,
+    changedFromBaseVariant = false,
     description,
     inputId,
     level,
@@ -76,8 +81,12 @@ export const FormField = memo(function FormField(
 
   return (
     <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
-      <FormRow gutterStartCell={<FormDivergenceIndicator path={path} />}>
-        <Stack
+      <FormRow
+        gutterStartCell={
+          <FormFieldGutter path={path} changedFromBaseVariant={changedFromBaseVariant} />
+        }
+      >
+        <VStack
           {...restProps}
           data-level={level}
           onMouseEnter={onMouseEnter}
@@ -108,8 +117,8 @@ export const FormField = memo(function FormField(
               }
             />
           )}
-          <div>{children}</div>
-        </Stack>
+          <Box>{children}</Box>
+        </VStack>
       </FormRow>
     </FormNodeDivergenceDetail>
   )

@@ -1,11 +1,13 @@
-import {Flex} from '@sanity/ui'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
+import {Flex} from 'ui5'
 
+import {type SystemVariant} from '../../../variants/types'
 import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
 import {ScheduledDraftDocumentPreview} from './columnCells/ScheduledDraftDocumentPreview'
 import {ScheduledDraftMetadataCell} from './columnCells/ScheduledDraftMetadataCell'
+import {ScheduledDraftVariantCell} from './columnCells/ScheduledDraftVariantCell'
 import {ScheduledDraftWarningCell} from './columnCells/ScheduledDraftWarningCell'
 import {type Mode} from './queryParamUtils'
 import {type TableRelease} from './ReleasesOverview'
@@ -13,15 +15,46 @@ import {type TableRelease} from './ReleasesOverview'
 export const scheduledDraftsOverviewColumnDefs: (
   t: TFunction<'releases'>,
   releaseGroupMode: Mode,
-) => Column<TableRelease>[] = (t, releaseGroupMode) => {
+  options?: {
+    /** Present when variants are enabled: adds the "Variant" column. */
+    variantsById?: Map<string, SystemVariant>
+    variantsLoading?: boolean
+  },
+) => Column<TableRelease>[] = (t, releaseGroupMode, options) => {
+  const variantsById = options?.variantsById
+  const variantsLoading = Boolean(options?.variantsLoading)
+
   return [
+    ...(variantsById
+      ? [
+          {
+            id: 'variant',
+            sorting: false,
+            width: 180,
+            style: {minWidth: 120, maxWidth: 180},
+            header: (props) => (
+              <Flex {...props.headerProps} paddingX={2} paddingY={3}>
+                <Headers.BasicHeader text={t('table-header.variant')} />
+              </Flex>
+            ),
+            cell: ({cellProps, datum}) => (
+              <ScheduledDraftVariantCell
+                release={datum}
+                cellProps={cellProps}
+                variantsById={variantsById}
+                variantsLoading={variantsLoading}
+              />
+            ),
+          } satisfies Column<TableRelease>,
+        ]
+      : []),
     {
       id: 'documentPreview',
       sorting: false,
       width: null,
       style: {flex: 1},
       header: (props) => (
-        <Flex {...props.headerProps} paddingLeft={2} paddingRight={2} paddingY={3} sizing="border">
+        <Flex {...props.headerProps} paddingLeft={2} paddingRight={2} paddingY={3}>
           <Headers.BasicHeader text={t('table-header.document')} />
         </Flex>
       ),
@@ -32,7 +65,7 @@ export const scheduledDraftsOverviewColumnDefs: (
       sorting: true,
       width: 300,
       header: (props) => (
-        <Flex {...props.headerProps} paddingY={3} paddingX={2} sizing="border">
+        <Flex {...props.headerProps} paddingY={3} paddingX={2}>
           <Headers.SortHeaderButton
             {...props}
             text={
@@ -51,7 +84,7 @@ export const scheduledDraftsOverviewColumnDefs: (
       id: 'warning',
       sorting: false,
       width: 40,
-      header: ({headerProps}) => <Flex {...headerProps} paddingY={3} sizing="border" />,
+      header: ({headerProps}) => <Flex {...headerProps} paddingY={3} />,
       cell: ScheduledDraftWarningCell,
     },
   ]

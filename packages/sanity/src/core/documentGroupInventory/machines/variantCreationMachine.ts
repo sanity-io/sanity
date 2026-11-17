@@ -19,7 +19,16 @@ interface VariantCreationContext {
   releases: ReleasesReducerState | undefined
   selectedVariantId: string | undefined
   selectedBundle: VariantCreationBundle | undefined
+  /**
+   * The id of the version the variant starts from. When absent, creation starts from the version
+   * nearest to the selected variant and bundle.
+   */
+  selectedBaseId: string | undefined
   error?: unknown
+  /** Whether this instance may never create a variant. */
+  readOnly: boolean
+  /** Whether the variants feature is switched on for this workspace. */
+  enabled: boolean
 }
 
 type VariantCreationEvents =
@@ -27,35 +36,46 @@ type VariantCreationEvents =
   | {type: 'createVariant.cancel'}
   | {type: 'createVariant.selectVariant'; variantId: string | undefined}
   | {type: 'createVariant.selectBundle'; bundle: VariantCreationBundle | undefined}
+  | {type: 'createVariant.selectBase'; baseId: string | undefined}
   | {type: 'createVariant.confirm'}
 
 export const variantCreationMachine = setup({
   types: {} as {
     context: VariantCreationContext
     events: VariantCreationEvents
+    input: {readOnly?: boolean; enabled?: boolean} | undefined
   },
   actors: {
     variants: fromObservable<VariantStoreState, unknown>(() => EMPTY),
     releases: fromObservable<ReleasesReducerState, unknown>(() => EMPTY),
     createVariant: fromPromise<
       void,
-      {variantDefinition: SystemVariant; bundle: Exclude<TargetPerspective, 'published'>}
+      {
+        variantDefinition: SystemVariant
+        bundle: Exclude<TargetPerspective, 'published'>
+        baseId: string | undefined
+      }
     >(() => Promise.reject(new Error('`createVariant` actor must be provided.'))),
   },
   guards: {
     hasSelectedVariant: ({context}) => typeof context.selectedVariantId !== 'undefined',
     hasSelectedBundle: ({context}) => typeof context.selectedBundle !== 'undefined',
-    canConfirmCreation: and(['hasSelectedVariant', 'hasSelectedBundle']),
+    isMutable: ({context}) => !context.readOnly && context.enabled,
+    canRequestCreation: and(['isMutable']),
+    canConfirmCreation: and(['isMutable', 'hasSelectedVariant', 'hasSelectedBundle']),
   },
 }).createMachine({
   id: 'variantCreation',
-  context: {
+  context: ({input}) => ({
     variants: undefined,
     releases: undefined,
     selectedVariantId: undefined,
     selectedBundle: undefined,
+    selectedBaseId: undefined,
     error: undefined,
-  },
+    readOnly: input?.readOnly ?? false,
+    enabled: input?.enabled ?? true,
+  }),
   invoke: [
     {
       src: 'variants',
@@ -74,7 +94,10 @@ export const variantCreationMachine = setup({
   states: {
     idle: {
       on: {
-        'createVariant.request': 'active',
+        'createVariant.request': {
+          guard: 'canRequestCreation',
+          target: 'active',
+        },
       },
     },
     active: {
@@ -84,6 +107,7 @@ export const variantCreationMachine = setup({
         assign({
           selectedVariantId: undefined,
           selectedBundle: undefined,
+          selectedBaseId: undefined,
           error: undefined,
         }),
       ],
@@ -96,6 +120,10 @@ export const variantCreationMachine = setup({
         'createVariant.selectBundle': {
           guard: not(stateIn('#variantCreation.active.creating')),
           actions: assign({selectedBundle: ({event}) => event.bundle}),
+        },
+        'createVariant.selectBase': {
+          guard: not(stateIn('#variantCreation.active.creating')),
+          actions: assign({selectedBaseId: ({event}) => event.baseId}),
         },
       },
       initial: 'configuring',
@@ -128,6 +156,7 @@ export const variantCreationMachine = setup({
               return {
                 variantDefinition,
                 bundle,
+                baseId: context.selectedBaseId,
               }
             },
             onDone: {

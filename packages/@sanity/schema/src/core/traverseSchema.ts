@@ -1,6 +1,3 @@
-import flatten from 'lodash-es/flatten.js'
-import uniq from 'lodash-es/uniq.js'
-
 import {getDupes} from '../sanity/validation/utils/getDupes'
 
 type SchemaType = Record<string, any>
@@ -30,24 +27,37 @@ class UnknownType {
 
 const TYPE_TYPE = {name: 'type', type: null}
 
-const FUTURE_RESERVED = ['any', 'time', 'date']
+const FUTURE_RESERVED = ['any', 'time']
 
 export function traverseSchema(
   types: SchemaTypeDef[] = [],
   coreTypes: SchemaTypeDef[] = [],
   visitor: Visitor = NOOP_VISITOR,
+  parentTypes: SchemaTypeDef[] = [],
 ) {
   const coreTypesRegistry = Object.create(null)
   const registry = Object.create(null)
+  const parentTypesRegistry = Object.create(null)
 
   const coreTypeNames = coreTypes.map((typeDef) => typeDef.name)
 
-  const reservedTypeNames = FUTURE_RESERVED.concat(coreTypeNames)
+  const parentTypeNames = parentTypes.map((typeDef) => typeDef.name)
+
+  const reservedTypeNames = new Set([
+    'type',
+    ...FUTURE_RESERVED,
+    ...coreTypeNames,
+    ...parentTypeNames,
+  ])
 
   const typeNames = types.map((typeDef) => typeDef && typeDef.name).filter(Boolean)
 
   coreTypes.forEach((coreType) => {
     coreTypesRegistry[coreType.name] = coreType
+  })
+
+  parentTypes.forEach((type) => {
+    parentTypesRegistry[type.name] = {}
   })
 
   types.forEach((type, i) => {
@@ -58,19 +68,19 @@ export function traverseSchema(
   function getType(typeName: any) {
     return typeName === 'type'
       ? TYPE_TYPE
-      : coreTypesRegistry[typeName] || registry[typeName] || null
+      : coreTypesRegistry[typeName] || registry[typeName] || parentTypesRegistry[typeName] || null
   }
 
-  const duplicateNames = uniq(flatten(getDupes(typeNames)))
+  const duplicateNames = new Set(getDupes(typeNames).flat())
 
   function isDuplicate(typeName: any) {
-    return duplicateNames.includes(typeName)
+    return duplicateNames.has(typeName)
   }
   function getTypeNames() {
-    return typeNames.concat(coreTypeNames)
+    return typeNames.concat(parentTypeNames, coreTypeNames)
   }
-  function isReserved(typeName: any) {
-    return typeName === 'type' || reservedTypeNames.includes(typeName)
+  function isReserved(typeName: unknown): typeName is string {
+    return reservedTypeNames.has(typeName)
   }
 
   const visitType = (isRoot: any) => (typeDef: any, index: any) => {
@@ -89,6 +99,10 @@ export function traverseSchema(
     Object.assign(coreTypesRegistry[coreTypeDef.name], visitType(coreTypeDef))
   })
 
+  parentTypes.forEach((typeDef, i) => {
+    Object.assign(parentTypesRegistry[typeDef.name], visitType(false)(typeDef, i))
+  })
+
   types.forEach((typeDef, i) => {
     Object.assign(
       registry[(typeDef && typeDef.name) || `__unnamed_${i}`],
@@ -98,14 +112,16 @@ export function traverseSchema(
 
   return {
     get(typeName: string) {
-      const res = registry[typeName] || coreTypesRegistry[typeName]
+      const res = registry[typeName] || parentTypesRegistry[typeName] || coreTypesRegistry[typeName]
       if (res) {
         return res
       }
       throw new Error(`No such type: ${typeName}`)
     },
     has(typeName: string): boolean {
-      return typeName in registry || typeName in coreTypesRegistry
+      return (
+        typeName in registry || typeName in parentTypesRegistry || typeName in coreTypesRegistry
+      )
     },
     getTypeNames(): string[] {
       return Object.keys(registry)

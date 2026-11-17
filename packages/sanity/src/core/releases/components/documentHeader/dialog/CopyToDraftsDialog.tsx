@@ -1,5 +1,5 @@
-import {Text} from '@sanity/ui'
 import {memo, useCallback, useTransition} from 'react'
+import {Text} from 'ui5'
 
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -44,7 +44,9 @@ export const CopyToDraftsDialog = memo(function CopyToDraftsDialog(props: CopyTo
         },
       }}
     >
-      <Text size={1}>{tReleases('copy-to-draft-dialog.description')}</Text>
+      <Text size={1} as="div" trim={true}>
+        {tReleases('copy-to-draft-dialog.description')}
+      </Text>
     </Dialog>
   )
 })

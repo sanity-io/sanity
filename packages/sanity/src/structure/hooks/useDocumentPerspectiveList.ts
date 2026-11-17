@@ -1,6 +1,7 @@
 import {type BadgeTone} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {
+  getDocumentVersionVariantId,
   getVariantTitle,
   getVersionFromId,
   isDraftId,
@@ -19,7 +20,6 @@ import {
   useAllVariants,
   type VersionInfoDocumentStub,
   useSetVariant,
-  getTargetDocument,
 } from 'sanity'
 
 import {isLiveEditEnabled} from '../components/paneItem/helpers'
@@ -60,8 +60,6 @@ interface DocumentPerspectiveList {
   variantVersions: VersionInfoDocumentStub[]
   /** Handles the selection of a variant. */
   handleVariantSelectionChange: (version: VersionInfoDocumentStub) => void
-  /** Display props for the currently selected variant in the active bundle, if any. */
-  selectedVariantDisplay: {displayName: string; tone: BadgeTone} | null
 }
 
 /**
@@ -75,7 +73,7 @@ interface DocumentPerspectiveList {
  * @internal
  */
 export function useDocumentPerspectiveList(): DocumentPerspectiveList {
-  const {selectedReleaseId, selectedPerspectiveName, selectedVariant, bundle} = usePerspective()
+  const {selectedReleaseId, selectedPerspectiveName} = usePerspective()
   const {params} = usePaneRouter()
   const schema = useSchema()
   const {editState, displayed} = useDocumentPane()
@@ -220,13 +218,12 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
   )
   const getVersionDisplay = useCallback(
     (version: VersionInfoDocumentStub) => {
-      const isVariantVersion = Boolean(version._system.variant)
-      if (!isVariantVersion) {
+      const variantId = getDocumentVersionVariantId(version)
+      if (!variantId) {
         return getAgentVersionDisplay(version._id)
       }
-      const variantId = version._system.variant?._ref
-      const variant = variantId ? variants.get(variantId) : undefined
-      const variantTitle = variant ? getVariantTitle(variant) : (variantId ?? '')
+      const variant = variants.get(variantId)
+      const variantTitle = variant ? getVariantTitle(variant) : variantId
       return {
         displayName: `${variantTitle} [${version._system.bundleId || 'published'}]`,
         tone: version._system.bundleId ? ('caution' as const) : ('positive' as const),
@@ -242,20 +239,20 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
           return false
         }
         const hasRelease = Boolean(version._system.release)
-        const hasVariant = Boolean(version._system.variant)
+        const hasVariant = Boolean(getDocumentVersionVariantId(version))
         return !hasRelease && !hasVariant
       }),
     [filteredVersions],
   )
 
   const variantVersions = useMemo(
-    () => filteredVersions.filter((version) => Boolean(version._system.variant)),
+    () => filteredVersions.filter((version) => Boolean(getDocumentVersionVariantId(version))),
     [filteredVersions],
   )
   const setVariant = useSetVariant()
   const handleVariantSelectionChange = useCallback(
     (version: VersionInfoDocumentStub) => {
-      const variantId = version._system.variant?._ref
+      const variantId = getDocumentVersionVariantId(version)
       const variant = variantId ? variants.get(variantId) : undefined
       // Published version documents omit `bundleId`, so treat a missing bundle as published.
       // Passing the perspective alongside the variant updates both sticky params atomically.
@@ -265,24 +262,6 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     },
     [setVariant, variants],
   )
-
-  // Temporarily display the selected variant in the header; this will be replaced by the inventory.
-  const selectedVariantDisplay = useMemo(() => {
-    if (!selectedVariant) {
-      return null
-    }
-
-    const targetVariantDocument = getTargetDocument({
-      bundle,
-      variant: selectedVariant._id,
-      documentVersions,
-    })
-
-    if (targetVariantDocument) {
-      return getVersionDisplay(targetVariantDocument)
-    }
-    return null
-  }, [selectedVariant, bundle, documentVersions, getVersionDisplay])
 
   return {
     filteredReleases,
@@ -299,6 +278,5 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     nonReleaseVersions,
     variantVersions,
     handleVariantSelectionChange,
-    selectedVariantDisplay,
   }
 }

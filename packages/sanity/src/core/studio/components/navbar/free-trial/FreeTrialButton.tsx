@@ -1,18 +1,12 @@
 import {purple, yellow} from '@sanity/color'
 import {BoltIcon} from '@sanity/icons/Bolt'
-import {Card, Text} from '@sanity/ui'
-import {type Ref, type RefAttributes} from 'react'
-import {styled} from 'styled-components'
+import {Card} from '@sanity/ui'
+import {type RefAttributes} from 'react'
+import {Icon} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-
-const CenteredStroke = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-`
+import {centeredStroke} from './FreeTrialButton.css'
 
 interface OutlineProps {
   daysLeft: number
@@ -31,7 +25,7 @@ const SvgFilledOutline = ({daysLeft, totalDays}: OutlineProps) => {
 
   return (
     <Card>
-      <CenteredStroke>
+      <div className={centeredStroke}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width={size}
@@ -58,7 +52,7 @@ const SvgFilledOutline = ({daysLeft, totalDays}: OutlineProps) => {
             strokeDashoffset={strokeDashOffset}
           />
         </svg>
-      </CenteredStroke>
+      </div>
     </Card>
   )
 }
@@ -86,9 +80,7 @@ export function FreeTrialButtonTopbar({
           : t('free-trial.tooltip.trial-finished'),
       }}
     >
-      <Text size={0}>
-        <BoltIcon />
-      </Text>
+      <Icon size={0} icon={BoltIcon} style={{margin: '-0.3125rem'}} />
       {daysLeft > 0 && <SvgFilledOutline daysLeft={daysLeft} totalDays={totalDays} />}
     </Button>
   )

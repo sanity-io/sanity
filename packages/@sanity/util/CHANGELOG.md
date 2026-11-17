@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.21.0](https://github.com/sanity-io/sanity/compare/v6.20.0...v6.21.0) (2026-10-28)
+
+### Bug Fixes
+
+* **util:** keep keyed paths with periods or brackets from crashing the structure tool ([#15463](https://github.com/sanity-io/sanity/issues/15463)) ([9b447f8](https://github.com/sanity-io/sanity/commit/9b447f8f14abd1260d50e0f631cd6e4c3ceb260b))
+## [6.19.0](https://github.com/sanity-io/sanity/compare/v6.18.0...v6.19.0) (2026-10-13)
+
+### Bug Fixes
+
+* **deps:** update typescript-tooling ([#15260](https://github.com/sanity-io/sanity/issues/15260)) ([00c8963](https://github.com/sanity-io/sanity/commit/00c89636c48d4f8b9f03781fee1e0a8f0e1a943e))
+## [6.13.0](https://github.com/sanity-io/sanity/compare/v6.12.0...v6.13.0) (2026-09-08)
+
+### Features
+
+* **validation:** add cancellation support ([#14307](https://github.com/sanity-io/sanity/issues/14307)) ([b528986](https://github.com/sanity-io/sanity/commit/b528986e6dbf91f8d3edb505428fc284ca3131eb))
+
+### Bug Fixes
+
+* **util:** use get-it/any-signal so cancellation works on Safari 17 ([#14641](https://github.com/sanity-io/sanity/issues/14641)) ([c7feba7](https://github.com/sanity-io/sanity/commit/c7feba775f070f7076bb93413a06ff3e70b149f1))
 ## [6.0.0](https://github.com/sanity-io/sanity/compare/v5.31.0...v6.0.0) (2026-06-11)
 
 ### ⚠ BREAKING CHANGES

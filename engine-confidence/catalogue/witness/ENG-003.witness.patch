@@ -1,0 +1,68 @@
+diff --git a/packages/sanity/src/core/form/inputs/PortableText/__tests__/syncFuzz/rebaseWitness.fuzz.test.tsx b/packages/sanity/src/core/form/inputs/PortableText/__tests__/syncFuzz/rebaseWitness.fuzz.test.tsx
+new file mode 100644
+index 0000000000..dc43399ac1
+--- /dev/null
++++ b/packages/sanity/src/core/form/inputs/PortableText/__tests__/syncFuzz/rebaseWitness.fuzz.test.tsx
+@@ -0,0 +1,62 @@
++import {type PortableTextBlock} from '@sanity/types'
++import {afterEach, beforeAll, expect, test} from 'vitest'
++
++import {
++  createFuzzTestProvider,
++  createHarness,
++  FIELD,
++  type FuzzTestProvider,
++  type Harness,
++} from './harness'
++import {type Operation, runOperation} from './operations'
++
++const INITIAL_BODY: PortableTextBlock[] = [
++  {
++    _key: 'b1',
++    _type: 'block',
++    style: 'normal',
++    markDefs: [],
++    children: [{_key: 's1', _type: 'span', text: 'hello', marks: []}],
++  },
++  {
++    _key: 'b2',
++    _type: 'block',
++    style: 'normal',
++    markDefs: [],
++    children: [{_key: 's2', _type: 'span', text: 'world', marks: []}],
++  },
++]
++
++let TestProvider: FuzzTestProvider
++let harness: Harness | undefined
++
++beforeAll(async () => {
++  TestProvider = await createFuzzTestProvider()
++})
++
++afterEach(() => {
++  harness?.unmount()
++  harness = undefined
++})
++
++test('ENG-003 witness: local typing survives a remote mutation that lands before the commit', {timeout: 60_000}, async () => {
++  harness = await createHarness(INITIAL_BODY, TestProvider)
++  await harness.settle()
++  const operations: Operation[] = [
++    {type: 'local.selectEdge', block: 1, edge: 'end'},
++    {type: 'local.insertText', text: 'xyz'},
++    {type: 'time.advance', ms: 1000},
++    {type: 'remote.setStyle', client: 0, block: 0, style: 'h1'},
++    {type: 'remote.send', client: 0},
++    {type: 'sync.deliverListenerEvent'},
++  ]
++  for (const operation of operations) {
++    await runOperation(harness, operation)
++  }
++  await harness.settle()
++  const serverText = JSON.stringify(harness.server.head[FIELD])
++  expect({hasLocalText: serverText.includes('worldxyz'), hasRemoteStyle: serverText.includes('"h1"')}).toEqual({
++    hasLocalText: true,
++    hasRemoteStyle: true,
++  })
++})

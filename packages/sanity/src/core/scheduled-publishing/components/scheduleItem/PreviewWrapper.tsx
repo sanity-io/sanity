@@ -1,60 +1,59 @@
 import {type SchemaType} from '@sanity/types'
-import {Badge, Card, Flex, Stack, Text} from '@sanity/ui'
-import {type ElementType, type ReactNode, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Badge, Card} from '@sanity/ui'
+import {type ComponentPropsWithoutRef, type ElementType, type ReactNode, use, useState} from 'react'
+import {ScheduledPublishingModePromiseContext} from 'sanity/_singletons'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
-import {DocumentStatus} from '../../../components/documentStatus/DocumentStatus'
-import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator/DocumentStatusIndicator'
+import {DocumentVersionsStatus} from '../../../components/documentStatus/DocumentVersionsStatus'
+import {DocumentVersionsStatusIndicator} from '../../../components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
-import {getDocumentVersionInfoFromVersions} from '../../../releases/util/getDocumentVersionInfoFromVersions'
-import {useScheduledPublishingEnabled} from '../../../scheduledPublishing/contexts/ScheduledPublishingEnabledProvider'
+import {type DocumentPairPermissionsListener} from '../../../store/document/types'
 import {
   DOCUMENT_HAS_ERRORS_TEXT,
   DOCUMENT_HAS_WARNINGS_TEXT,
   SCHEDULE_ACTION_DICTIONARY,
 } from '../../constants'
 import {type Schedule} from '../../types'
-import {type PaneItemPreviewState} from '../../utils/paneItemHelpers'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {EMPTY_VALIDATION_STATUS, useValidationState} from '../../utils/validationUtils'
 import {ValidateScheduleDoc} from '../validation/SchedulesValidation'
 import {ValidationInfo} from '../validation/ValidationInfo'
 import DateWithTooltip from './dateWithTooltip/DateWithTooltip'
+import {statusDotPlaceholder} from './PreviewWrapper.css'
 import StateReasonFailedInfo from './StateReasonFailedInfo'
 import User from './User'
 
-const StatusDotPlaceholder = styled(Box)`
-  width: 9px;
-`
-interface Props {
+interface Props<TLink extends ElementType | undefined = undefined> {
   children?: ReactNode
   contextMenu?: ReactNode
-  linkComponent?: ElementType | keyof React.JSX.IntrinsicElements
+  linkComponent?: TLink
+  linkProps?: TLink extends ElementType ? ComponentPropsWithoutRef<TLink> : undefined
   onClick?: () => void
-  previewState?: PaneItemPreviewState
   publishedDocumentId?: string
   schedule: Schedule
   schemaType?: SchemaType
   useElementQueries?: boolean
+  validationListener: DocumentPairPermissionsListener
 }
 
-const PreviewWrapper = (props: Props) => {
+function PreviewWrapper<TLink extends ElementType | undefined = undefined>(props: Props<TLink>) {
   const {
     children,
     contextMenu,
     linkComponent,
+    linkProps,
     onClick,
-    previewState,
     publishedDocumentId,
     schedule,
     schemaType,
     useElementQueries,
+    validationListener,
   } = props
-  const {mode} = useScheduledPublishingEnabled()
+  const modePromise = use(ScheduledPublishingModePromiseContext)
+  const mode = modePromise ? use(modePromise) : null
   const [validationStatus, setValidationStatus] = useState(EMPTY_VALIDATION_STATUS)
   const {validation} = validationStatus
   const {hasError, validationTone} = useValidationState(validation)
@@ -71,18 +70,21 @@ const PreviewWrapper = (props: Props) => {
       tone={validationTone}
       style={mode === 'upsell' && schedule.state === 'scheduled' ? {opacity: 0.7} : undefined}
     >
-      <Flex align="center" gap={1} justify="space-between">
+      <Flex alignItems="center" gap={1} justifyContent="space-between">
         <Tooltip
           delay={{open: 400}}
           placement="bottom-end"
           content={
-            <DocumentStatus draft={previewState?.draft} published={previewState?.published} />
+            publishedDocumentId ? (
+              <DocumentVersionsStatus documentGroupId={publishedDocumentId} />
+            ) : null
           }
-          disabled={!previewState?.draft && !previewState?.published}
+          disabled={!publishedDocumentId}
         >
           <Card
+            {...(linkProps as object | undefined)}
             __unstable_focusRing
-            as={linkComponent ? linkComponent : undefined}
+            as={linkComponent ? (linkComponent as ElementType) : undefined}
             data-as={onClick || linkComponent ? 'a' : undefined}
             flex={1}
             onClick={onClick}
@@ -91,7 +93,12 @@ const PreviewWrapper = (props: Props) => {
             tabIndex={0}
             tone={validationTone}
           >
-            <Flex align="center" gap={3} justify="flex-start" paddingLeft={children ? 0 : [1, 2]}>
+            <Flex
+              alignItems="center"
+              gap={3}
+              justifyContent="flex-start"
+              paddingLeft={children ? 0 : [1, 2]}
+            >
               {children && <Box style={{flexBasis: 'auto', flexGrow: 1}}>{children}</Box>}
 
               {/* Badge */}
@@ -105,20 +112,28 @@ const PreviewWrapper = (props: Props) => {
 
               {/* Schedule date */}
               <Box display={['block', 'none']} style={{flexShrink: 0, width: '90px'}}>
-                <Stack gap={2}>
+                <VStack gap={2}>
                   {scheduleDate ? (
                     <>
-                      <Text size={1}>
+                      <Text size={1} as="div" trim={true} tone={hasError ? 'critical' : undefined}>
                         {formatDateTz({date: scheduleDate, format: 'dd/MM/yyyy'})}
                       </Text>
-                      <Text size={1}>{formatDateTz({date: scheduleDate, format: 'p'})}</Text>
+                      <Text size={1} as="div" trim={true} tone={hasError ? 'critical' : undefined}>
+                        {formatDateTz({date: scheduleDate, format: 'p'})}
+                      </Text>
                     </>
                   ) : (
-                    <Text muted size={1}>
+                    <Text
+                      muted
+                      size={1}
+                      as="div"
+                      trim={true}
+                      tone={hasError ? 'critical' : undefined}
+                    >
                       <em>No date specified</em>
                     </Text>
                   )}
-                </Stack>
+                </VStack>
               </Box>
               <Box
                 display={['none', 'block']}
@@ -127,7 +142,13 @@ const PreviewWrapper = (props: Props) => {
                 {scheduleDate ? (
                   <DateWithTooltip date={scheduleDate} useElementQueries={useElementQueries} />
                 ) : (
-                  <Text muted size={1}>
+                  <Text
+                    muted
+                    size={1}
+                    as="div"
+                    trim={true}
+                    tone={hasError ? 'critical' : undefined}
+                  >
                     <em>No date specified</em>
                   </Text>
                 )}
@@ -140,7 +161,7 @@ const PreviewWrapper = (props: Props) => {
                 </Box>
               )}
 
-              <Flex align="center" style={{flexShrink: 0, marginLeft: 'auto'}}>
+              <Flex alignItems="center" style={{flexShrink: 0, marginLeft: 'auto'}}>
                 {/* Avatar */}
                 <Box display={['none', 'none', 'block']} marginX={3} style={{flexShrink: 0}}>
                   <User id={schedule?.author} />
@@ -149,9 +170,9 @@ const PreviewWrapper = (props: Props) => {
                 {/* Document status */}
                 <Box display={['none', 'block']} marginX={[2, 2, 3]} style={{flexShrink: 0}}>
                   {publishedDocumentId ? (
-                    <DocumentVersionsStatus publishedDocumentId={publishedDocumentId} />
+                    <ScheduleItemStatusIndicator publishedDocumentId={publishedDocumentId} />
                   ) : (
-                    <StatusDotPlaceholder />
+                    <Box className={statusDotPlaceholder} />
                   )}
                 </Box>
               </Flex>
@@ -159,18 +180,22 @@ const PreviewWrapper = (props: Props) => {
           </Card>
         </Tooltip>
 
-        <Flex justify="center" style={{width: '38px'}}>
+        <Flex justifyContent="center" style={{width: '38px'}}>
           {/* Validation status (only displayed on upcoming schedules) */}
           {schedule.state === 'scheduled' && (
             <Box>
-              <ValidateScheduleDoc schedule={schedule} updateValidation={setValidationStatus} />
+              <ValidateScheduleDoc
+                schedule={schedule}
+                updateValidation={setValidationStatus}
+                listener={validationListener}
+              />
               <ValidationInfo
                 markers={validation}
                 type={schemaType}
                 documentId={publishedDocumentId}
                 menuHeader={
                   <Box padding={2}>
-                    <Text size={1}>
+                    <Text size={1} as="div" trim={true} tone={hasError ? 'critical' : undefined}>
                       {hasError ? DOCUMENT_HAS_ERRORS_TEXT : DOCUMENT_HAS_WARNINGS_TEXT}
                     </Text>
                   </Box>
@@ -203,8 +228,7 @@ const PreviewWrapper = (props: Props) => {
 
 export default PreviewWrapper
 
-function DocumentVersionsStatus({publishedDocumentId}: {publishedDocumentId: string}) {
+function ScheduleItemStatusIndicator({publishedDocumentId}: {publishedDocumentId: string}) {
   const {versions} = useDocumentVersions({documentId: publishedDocumentId})
-  const versionsInfo = useMemo(() => getDocumentVersionInfoFromVersions(versions), [versions])
-  return <DocumentStatusIndicator draft={versionsInfo.draft} published={versionsInfo.published} />
+  return <DocumentVersionsStatusIndicator documentVersions={versions} />
 }

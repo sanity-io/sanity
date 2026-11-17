@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
-import {Stack, Text} from '@sanity/ui'
 import isPlainObject from 'lodash-es/isPlainObject.js'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {isDev} from '../../../../environment'
@@ -41,26 +41,31 @@ export function MixedArrayAlert(props: Props) {
       <Alert
         status="error"
         suffix={
-          <Stack padding={2}>
+          <Flex padding={2} flexDirection="column">
             <Button
               onClick={handleRemoveNonObjectValues}
               text={t('form.error.mixed-array-alert.remove-button.text')}
               tone="critical"
             />
-          </Stack>
+          </Flex>
         }
         title={t('form.error.mixed-array-alert.title')}
       >
-        <Text as="p" muted size={1}>
+        <Text as="p" muted size={1} trim={true} tone="critical">
           {t('form.error.mixed-array-alert.summary')}
         </Text>
 
-        <Details marginTop={4} open={isDev} title={t('form.error.mixed-array-alert.details.title')}>
-          <Stack gap={3}>
-            <Text as="p" muted size={1}>
+        <Details
+          marginTop={4}
+          open={isDev}
+          title={t('form.error.mixed-array-alert.details.title')}
+          tone="critical"
+        >
+          <VStack gap={3}>
+            <Text as="p" muted size={1} trim={true} tone="critical">
               {t('form.error.mixed-array-alert.details.description')}
             </Text>
-          </Stack>
+          </VStack>
           {/* TODO: render array items and highlight the wrong items (sc-26255) */}
         </Details>
       </Alert>

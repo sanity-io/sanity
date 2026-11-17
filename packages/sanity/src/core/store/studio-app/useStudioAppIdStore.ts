@@ -2,6 +2,7 @@ import {useEffect, useMemo, useState} from 'react'
 
 import {useClient} from '../../hooks/useClient'
 import {useSource} from '../../studio/source'
+import {useRenderingContextStore} from '../datastores'
 import {type AppIdCache, type AppIdFetcher} from './appIdCache'
 import {useAppIdCache} from './AppIdCacheProvider'
 import {type CompatibleStudioAppId, fetchCreateCompatibleAppId} from './fetchCreateCompatibleAppId'
@@ -24,6 +25,13 @@ export function useStudioAppIdStore(config: {
   const cache = useAppIdCache()
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {projectId} = useSource()
+  const connection = useRenderingContextStore().getMessageBusConnection()
+  // With a message bus host the page's origin is the host's, so the origin lookup finds nothing.
+  const messageBusAppId = config.enabled ? connection?.appId : undefined
+  const messageBusStudioApp = useMemo(
+    () => (messageBusAppId ? {appId: messageBusAppId, studioApps: []} : undefined),
+    [messageBusAppId],
+  )
 
   const appIdFetcher: AppIdFetcher = useMemo(() => {
     return (pId) =>
@@ -34,12 +42,14 @@ export function useStudioAppIdStore(config: {
       })
   }, [client, config.fallbackStudioOrigin])
 
-  return useStudioAppIdStoreInner({
+  const fetchedStudioApp = useStudioAppIdStoreInner({
     projectId,
     cache,
     appIdFetcher,
-    enabled: config.enabled,
+    enabled: config.enabled && !messageBusAppId,
   })
+
+  return messageBusStudioApp ? {loading: false, studioApp: messageBusStudioApp} : fetchedStudioApp
 }
 
 export function useStudioAppIdStoreInner(props: {

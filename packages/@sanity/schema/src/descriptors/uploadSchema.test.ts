@@ -1,22 +1,18 @@
+import {encode} from '@sanity/descriptors'
 import {describe, expect, test} from 'vitest'
 
 import {Schema} from '../legacy/Schema'
 import {builtinTypes} from '../sanity/builtinTypes'
 import {groupProblems} from '../sanity/groupProblems'
 import {validateSchema} from '../sanity/validateSchema'
-import {defaultShouldRetry, type DescriptorRequestOptions} from './transport'
-import {prepareSchemaUpload, uploadSchema, type UploadSchemaPhase} from './uploadSchema'
-
-describe('defaultShouldRetry', () => {
-  test('retries on 429 and 5xx, not on 4xx or non-http errors', () => {
-    expect(defaultShouldRetry({response: {statusCode: 429}})).toBe(true)
-    expect(defaultShouldRetry({response: {statusCode: 503}})).toBe(true)
-    expect(defaultShouldRetry({response: {statusCode: 404}})).toBe(false)
-    expect(defaultShouldRetry({response: {statusCode: 200}})).toBe(false)
-    expect(defaultShouldRetry(new Error('boom'))).toBe(false)
-    expect(defaultShouldRetry(undefined)).toBe(false)
-  })
-})
+import {type DescriptorRequestOptions} from './transport'
+import {
+  prepareEncodedSchemaUpload,
+  prepareSchemaUpload,
+  uploadEncodedSchema,
+  uploadSchema,
+  type UploadSchemaPhase,
+} from './uploadSchema'
 
 // taken from sanity/src/core/schema/createSchema.ts
 function createSchema(schemaDef: {name: string; types: any[]}, skipBuiltins = false) {
@@ -39,6 +35,20 @@ function makeSchema() {
     name: 'test',
     types: [{name: 'author', type: 'document', fields: [{name: 'name', type: 'string'}]}],
   })
+}
+
+function makeEncodedSchema() {
+  const namedType = encode('sanity.schema.namedType', {
+    name: 'author',
+    typeDef: {extends: 'document'},
+  })
+  const registry = encode('sanity.schema.registry', {keys: [namedType.id]})
+  return {
+    descriptorId: registry.id,
+    descriptors: {[registry.id]: registry, [namedType.id]: namedType},
+    namedType,
+    registry,
+  }
 }
 
 /** Build an uploadSchema caller backed by a recording fake requester. */
@@ -127,7 +137,9 @@ describe('header merging', () => {
       token: 'tok',
       headers: {authorization: 'Bearer other'},
     })
-    const sent = calls[0]!.headers!
+    // The recorded `headers` value is the plain record uploadSchema merged;
+    // narrow it away from the `FetchHeaders` union for property access.
+    const sent = calls[0]!.headers as Record<string, string>
     expect(sent['authorization']).toBe('Bearer other')
     expect(sent['Authorization']).toBeUndefined()
   })
@@ -307,6 +319,69 @@ describe('uploadSchema', () => {
 
     const commitCall = calls.find((c) => c.url.endsWith('/commit'))!
     expect(commitCall.body).toEqual({contextKey: 'studio:1', id: 'c1'})
+  })
+})
+
+describe('encoded schema uploads', () => {
+  test('synchronizes the supplied descriptors without converting a schema', async () => {
+    const encoded = makeEncodedSchema()
+    const {requester, calls} = recording((opts) => {
+      if (opts.url.endsWith('/claim')) {
+        return {
+          synchronization: {
+            type: 'incomplete',
+            missingIds: [encoded.registry.id, encoded.namedType.id],
+          },
+          commitId: 'c1',
+        }
+      }
+      if (opts.url.endsWith('/synchronize')) return {type: 'complete'}
+      if (opts.url.endsWith('/commit')) return {}
+      throw new Error(`unexpected call to ${opts.url}`)
+    })
+
+    await expect(uploadEncodedSchema(encoded, {contextKey: 'studio:1', requester})).resolves.toBe(
+      encoded.descriptorId,
+    )
+    expect(calls[1]!.body).toEqual({
+      id: encoded.descriptorId,
+      descriptors: [encoded.registry, encoded.namedType],
+    })
+  })
+
+  test('fails when synchronization requests a descriptor absent from the graph', async () => {
+    const encoded = makeEncodedSchema()
+    const {requester} = recording((opts) => {
+      if (opts.url.endsWith('/claim')) {
+        return {
+          synchronization: {type: 'incomplete', missingIds: ['uEi-missing']},
+          expiresAt: 'soon',
+        }
+      }
+      throw new Error(`unexpected call to ${opts.url}`)
+    })
+
+    await expect(
+      prepareEncodedSchemaUpload(encoded, {
+        contextKey: 'studio:1',
+        requester,
+        claim: 'temporary',
+      }),
+    ).rejects.toThrow(/unknown descriptor uEi-missing/)
+  })
+
+  test('omits the convert phase for a pre-encoded graph', async () => {
+    const encoded = makeEncodedSchema()
+    const {requester} = recording(permanentComplete)
+    const events: UploadSchemaPhase[] = []
+
+    await uploadEncodedSchema(encoded, {
+      contextKey: 'studio:1',
+      requester,
+      onPhaseComplete: (event) => events.push(event),
+    })
+
+    expect(events.map((event) => event.phase)).toEqual(['claim', 'commit', 'total'])
   })
 })
 

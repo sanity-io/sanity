@@ -12,7 +12,12 @@ import {useWorkspace} from '../../studio/workspace'
 import {SANITY_VERSION} from '../../version'
 import {type BaseFeedbackTags, type DynamicFeedbackTags} from '../types'
 
-const sessionId = uuid()
+let sessionId: string | undefined
+
+function getSessionId(): string {
+  sessionId ??= uuid()
+  return sessionId
+}
 
 interface PluginEntry {
   name: string
@@ -58,7 +63,7 @@ export function useStudioFeedbackTags(): {
   const {value: orgId} = useProjectOrganizationId()
   const {value: orgData} = useProjectOrganizationData()
   const orgName = orgData?.name ?? ''
-  const {value: projectData} = useProject()
+  const projectData = useProject()
   const {projectSubscriptions} = useProjectSubscriptions()
 
   const activeTool = useRouterState(
@@ -90,7 +95,7 @@ export function useStudioFeedbackTags(): {
       orgId: orgId ?? '',
       orgName,
       planTier: projectSubscriptions?.plan?.name ?? '',
-      sessionId,
+      sessionId: getSessionId(),
       userId,
       plugins: pluginNames.join(','),
       pluginsCount: pluginNames.length,

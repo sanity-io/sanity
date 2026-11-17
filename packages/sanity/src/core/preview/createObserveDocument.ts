@@ -3,20 +3,35 @@ import {type SanityDocument} from '@sanity/types'
 import memoize from 'lodash-es/memoize.js'
 import uniq from 'lodash-es/uniq.js'
 import {type RawPatch} from 'mendoza'
-import {EMPTY, finalize, type Observable, of} from 'rxjs'
-import {concatMap, map, scan, shareReplay} from 'rxjs/operators'
+import {EMPTY, finalize, type Observable, of, throwError} from 'rxjs'
+import {catchError, concatMap, map, scan, shareReplay, skipWhile} from 'rxjs/operators'
 
+import {
+  OutOfSyncError,
+  sequentializeListenerEvents,
+} from '../store/document/utils/sequentializeListenerEvents'
 import {applyMutationEventEffects} from './utils/applyMendozaPatch'
 import {debounceCollect} from './utils/debounceCollect'
 
 export type ListenerMutationEventLike = Pick<
   MutationEvent,
-  'type' | 'documentId' | 'previousRev' | 'resultRev'
+  'type' | 'documentId' | 'previousRev' | 'resultRev' | 'transition'
 > & {
   effects?: {
     apply: unknown[]
   }
 }
+
+/**
+ * How long mutations that don't chain onto the document's revision wait for the ones missing
+ * between them, before the document is fetched again. A fetch is a single batched query, so this
+ * is far shorter than the document pair's deadline.
+ */
+const RESOLVE_CHAIN_DEADLINE_MS = 5_000
+
+type DocumentEvent =
+  | {type: 'snapshot'; document: SanityDocument | null}
+  | (ListenerMutationEventLike & {resultRev: string; messageReceivedAt: string})
 export interface ObserveDocumentAPIConfig {
   dataset?: string
   projectId?: string
@@ -54,22 +69,38 @@ export function createObserveDocument({
     }
     const fetchDocument = getBatchFetcher(_apiConfig)
     return mutationChannel.pipe(
-      concatMap((event) => {
+      concatMap((event): Observable<DocumentEvent> => {
         if (event.type === 'welcome') {
-          return fetchDocument(id).pipe(map((document) => ({type: 'sync' as const, document})))
+          return fetchDocument(id).pipe(
+            map((document) => ({type: 'snapshot' as const, document: document ?? null})),
+          )
         }
-        return event.documentId === id ? of(event) : EMPTY
+        // every mutation the listener reports has a `resultRev`, the client types it as optional
+        if (event.documentId !== id || event.resultRev === undefined) {
+          return EMPTY
+        }
+        return of({
+          ...event,
+          resultRev: event.resultRev,
+          messageReceivedAt: new Date().toISOString(),
+        })
       }),
-      scan((current: SanityDocument | undefined, event) => {
-        if (event.type === 'sync') {
-          return event.document
-        }
-        if (event.type === 'mutation') {
-          return applyMutationEvent(current, event)
-        }
-        //@ts-expect-error - this should never happen
-        throw new Error(`Unexpected event type: "${event.type}"`)
-      }, undefined),
+      // mutations are put in sequence on top of a fetched document
+      skipWhile((event) => event.type !== 'snapshot'),
+      sequentializeListenerEvents<DocumentEvent>({
+        resolveChainDeadline: RESOLVE_CHAIN_DEADLINE_MS,
+      }),
+      scan(
+        (current: SanityDocument | undefined, event) =>
+          event.type === 'snapshot'
+            ? (event.document ?? undefined)
+            : applyMutationEvent(current, event),
+        undefined,
+      ),
+      // a resubscription gets the listener's latest welcome replayed, which fetches the document again
+      catchError((error, caught$) =>
+        error instanceof OutOfSyncError ? caught$ : throwError(() => error),
+      ),
     )
   }
   return function memoizedObserveDocument(id: string, apiConfig?: ObserveDocumentAPIConfig) {
@@ -85,10 +116,6 @@ export function createObserveDocument({
 }
 
 function applyMutationEvent(current: SanityDocument | undefined, event: ListenerMutationEventLike) {
-  if (event.previousRev !== current?._rev) {
-    console.warn('Document out of sync, skipping mutation')
-    return current
-  }
   if (!event.effects) {
     throw new Error(
       'Mutation event is missing effects. Is the listener set up with effectFormat=mendoza?',

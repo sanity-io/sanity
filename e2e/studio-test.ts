@@ -1,8 +1,9 @@
 // oxlint-disable-next-line no-restricted-imports
 import {expect, test as baseTest} from '@playwright/test'
-import {createClient, type SanityClient, type SanityDocument} from '@sanity/client'
+import {createClient, type SanityClient} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
 
+import {captureStudioDiagnosticsOnFailure} from './helpers/failureDiagnostics'
 import {watchForStudioErrors} from './helpers/studioErrors'
 
 class _TestSanityContext {
@@ -25,8 +26,10 @@ class _TestSanityContext {
   }
 
   // TODO: confirm we want this teardown, datasets are at the end, deleted (not in main), persisting the document could help us debug
-  teardown(sanityClient: SanityClient): Promise<SanityDocument<Record<string, unknown>>> {
-    return sanityClient.delete({
+  async teardown(sanityClient: SanityClient): Promise<void> {
+    // The `context` fixture sets this up for every test, and most tests create no document.
+    if (this.documentIds.size === 0) return
+    await sanityClient.delete({
       query: '*[_id in $ids]',
       params: {ids: [...this.documentIds].map((id) => `drafts.${id}`)},
     })
@@ -62,13 +65,27 @@ interface SanityFixtures {
    * ```
    */
   createDraftDocument: (navigationPath: string) => Promise<string>
+  /**
+   * Auto fixture that attaches a Studio diagnostics report
+   * (`studio-diagnostics.json`) to failed test attempts, so CI artifacts show
+   * how the Sanity API behaved from the failing browser.
+   *
+   * @internal
+   */
+  _failureDiagnostics: void
 }
 
 export const test = baseTest.extend<SanityFixtures>({
+  // `_testContext` comes first so that it is set up before the browser context and deletes the
+  // drafts of the test only after the context has closed every page: a studio that still shows a
+  // draft reacts to its deletion, and edits it has not saved yet fail to rebase onto it.
+  async context({_testContext, context}, _use) {
+    await _use(context)
+  },
   // Extends the goto function to preserve the base pathname if it exists in the baseURL
   // This is used to ensure the navigation goes to the correct workspace.
   async page({page, context, baseURL}, _use) {
-    watchForStudioErrors(context)
+    const studioErrors = await watchForStudioErrors(context)
 
     const originalGoto = page.goto.bind(page)
     const baseUrl = new URL(baseURL || '')
@@ -102,6 +119,8 @@ export const test = baseTest.extend<SanityFixtures>({
     )
 
     await _use(page)
+
+    await studioErrors.flush()
   },
   async createDraftDocument({page, _testContext}, _use) {
     async function createDraftDocument(navigationPath: string) {
@@ -132,6 +151,15 @@ export const test = baseTest.extend<SanityFixtures>({
 
     await _use(createDraftDocument)
   },
+
+  _failureDiagnostics: [
+    async ({page}, _use, testInfo) => {
+      await _use()
+
+      await captureStudioDiagnosticsOnFailure(page, testInfo)
+    },
+    {auto: true},
+  ],
 
   async _testContext({sanityClient}, _use) {
     const _testContext = new _TestSanityContext()

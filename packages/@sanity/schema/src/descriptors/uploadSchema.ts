@@ -1,3 +1,4 @@
+import {type EncodableObject, type Encoded, type SynchronizationRequest} from '@sanity/descriptors'
 import {type Schema} from '@sanity/types'
 
 import {DescriptorConverter} from './convert'
@@ -71,11 +72,11 @@ export interface UploadSchemaPhase {
    * - `claim`       — the claim request (permanent or temporary).
    * - `synchronize` — one synchronize iteration (see `iteration`).
    * - `commit`      — the commit request that pins a permanent claim. Emitted by
-   *   the `commit()` thunk returned from `prepareSchemaUpload`, or inline by
-   *   `uploadSchema`. Never emitted for a temporary claim.
-   * - `total`       — the whole `uploadSchema` call; emitted last, on success
-   *   only. `prepareSchemaUpload` does not emit `total` (a standalone caller can
-   *   time the awaited promise itself).
+   *   the `commit()` thunk returned from a prepare function, or inline by an
+   *   upload function. Never emitted for a temporary claim.
+   * - `total`       — the whole upload call; emitted last, on success only.
+   *   Prepare functions do not emit `total` (a standalone caller can time the
+   *   awaited promise itself).
    */
   phase: 'convert' | 'claim' | 'synchronize' | 'commit' | 'total'
   /** Elapsed wall-clock time for this phase, in seconds. */
@@ -169,6 +170,16 @@ export interface PreparedSchemaUpload {
   commit?: () => Promise<void>
 }
 
+/**
+ * A pre-encoded schema descriptor graph ready for synchronization.
+ *
+ * @internal
+ */
+export interface EncodedSchemaDescriptor {
+  descriptorId: string
+  descriptors: Readonly<Record<string, Encoded<string>>>
+}
+
 function resolveRequester(options: TransportOptions): DescriptorRequester {
   // The union type already forbids "both"/"neither" for typed callers; these
   // guards keep clear errors for untyped (JS) callers. The property checks also
@@ -210,18 +221,14 @@ function makeEmit(onPhaseComplete: ((event: UploadSchemaPhase) => void) | undefi
   }
 }
 
-/**
- * Convert a Sanity schema to a descriptor set, claim its id, and synchronize
- * until complete — but do **not** commit. For a permanent claim, the returned
- * `commit()` thunk finalizes the claim when the caller is ready (e.g. after a
- * dependent write succeeds); for a temporary claim no thunk is returned. This is
- * the building block `uploadSchema` is built on, exposed for callers that need
- * to control the claim/commit lifecycle.
- *
- * @internal
- */
-export async function prepareSchemaUpload(
-  schema: Schema,
+/** Claim and synchronize a prepared descriptor source without committing it. */
+async function prepareDescriptorUpload(
+  source: {
+    descriptorId: string
+    nextSynchronizationRequest: (
+      result: SchemaSynchronizationResult,
+    ) => SynchronizationRequest | null
+  },
   options: PrepareSchemaUploadOptions,
 ): Promise<PreparedSchemaUpload> {
   const requester = resolveRequester(options)
@@ -248,10 +255,7 @@ export async function prepareSchemaUpload(
 
   const emit = makeEmit(options.onPhaseComplete)
 
-  const startedConvert = performance.now()
-  const sync = await sharedConverter.get(schema)
-  const descriptorId = sync.set.id
-  emit('convert', startedConvert)
+  const {descriptorId} = source
 
   // A permanent claim returns a `commitId` (the descriptor is not pinned until
   // it is committed); a temporary claim returns `expiresAt` and has nothing to
@@ -279,7 +283,7 @@ export async function prepareSchemaUpload(
   // `maxSyncIterations` is 0. The `<=` lets the final pass detect completeness
   // (or break) after the last synchronize request.
   for (let i = 0; i <= maxSyncIterations; i++) {
-    const syncRequest = processSchemaSynchronization(sync, syncResult)
+    const syncRequest = source.nextSynchronizationRequest(syncResult)
     if (syncRequest === null) {
       // Synchronization is complete. For a permanent claim, hand back a `commit`
       // thunk so the caller can pin the descriptor when ready; for a temporary
@@ -314,6 +318,58 @@ export async function prepareSchemaUpload(
 }
 
 /**
+ * Convert a Sanity schema to a descriptor set, claim its id, and synchronize
+ * until complete — but do **not** commit.
+ *
+ * @internal
+ */
+export async function prepareSchemaUpload(
+  schema: Schema,
+  options: PrepareSchemaUploadOptions,
+): Promise<PreparedSchemaUpload> {
+  const emit = makeEmit(options.onPhaseComplete)
+  const startedConvert = performance.now()
+  const sync = await sharedConverter.get(schema)
+  emit('convert', startedConvert)
+
+  return prepareDescriptorUpload(
+    {
+      descriptorId: sync.set.id,
+      nextSynchronizationRequest: (result) => processSchemaSynchronization(sync, result),
+    },
+    options,
+  )
+}
+
+/**
+ * Synchronize a pre-encoded schema descriptor graph without recompiling it.
+ *
+ * @internal
+ */
+export async function prepareEncodedSchemaUpload(
+  encoded: EncodedSchemaDescriptor,
+  options: PrepareSchemaUploadOptions,
+): Promise<PreparedSchemaUpload> {
+  return prepareDescriptorUpload(
+    {
+      descriptorId: encoded.descriptorId,
+      nextSynchronizationRequest: (result) => {
+        if (result.type === 'complete') return null
+        const descriptors = result.missingIds.map((id) => {
+          const descriptor = encoded.descriptors[id]
+          if (!descriptor) {
+            throw new Error(`uploadSchema: synchronization requested unknown descriptor ${id}`)
+          }
+          return descriptor
+        })
+        return {id: encoded.descriptorId, descriptors}
+      },
+    },
+    options,
+  )
+}
+
+/**
  * Convert a Sanity schema to a descriptor set and upload it permanently:
  * permanently claim the id, run the synchronization loop until complete, then
  * commit the claim to pin the descriptor. Returns the content-addressed
@@ -334,6 +390,26 @@ export async function uploadSchema(schema: Schema, options: UploadSchemaOptions)
   // that invariant rather than guarding a reachable branch.
   await commit!()
 
+  emit('total', startedTotal)
+  return descriptorId
+}
+
+/**
+ * Upload and permanently claim a pre-encoded schema descriptor graph.
+ *
+ * @internal
+ */
+export async function uploadEncodedSchema(
+  encoded: EncodedSchemaDescriptor,
+  options: UploadSchemaOptions,
+): Promise<string> {
+  const startedTotal = performance.now()
+  const emit = makeEmit(options.onPhaseComplete)
+  const {descriptorId, commit} = await prepareEncodedSchemaUpload(encoded, {
+    ...options,
+    claim: 'permanent',
+  })
+  await commit!()
   emit('total', startedTotal)
   return descriptorId
 }

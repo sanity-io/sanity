@@ -5,6 +5,7 @@ import {useClient} from '../../../hooks/useClient'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useDocumentPreviewStore} from '../../../store/datastores'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+import {resolveSchemaAssetSources} from '../../inputs/files/common/resolveSchemaAssetSources'
 import {BaseImageInput} from '../../inputs/files/ImageInput/ImageInput'
 import {type BaseImageInputProps} from '../../inputs/files/ImageInput/types'
 import {useFormBuilder} from '../../useFormBuilder'
@@ -35,7 +36,13 @@ export function StudioImageInput(props: ImageInputProps) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const supportsImageUploads = imageConfig.directUploads
 
-  const assetSources = sourcesFromSchema || imageConfig.assetSources
+  // Memoized so fields with `options.sources` keep a stable array identity
+  // across renders, as the pre-resolution code did (downstream useMemos key
+  // on it).
+  const assetSources = useMemo(
+    () => resolveSchemaAssetSources(sourcesFromSchema, imageConfig.assetSources),
+    [sourcesFromSchema, imageConfig.assetSources],
+  )
 
   const builder = useMemo(() => createImageUrlBuilder(client), [client])
 

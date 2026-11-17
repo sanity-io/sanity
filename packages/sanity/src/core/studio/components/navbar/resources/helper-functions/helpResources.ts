@@ -21,6 +21,5 @@ export function getHelpResources(
       */
     query: {m: [`sanity@${SANITY_VERSION}`], locale},
     tag: 'module.version-check',
-    json: true,
   })
 }

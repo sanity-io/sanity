@@ -1,4 +1,6 @@
 export {
+  createFederatedSanityMediaLibraryFileSource,
+  createFederatedSanityMediaLibraryImageSource,
   createSanityMediaLibraryFileSource,
   createSanityMediaLibraryImageSource,
   sourceName,

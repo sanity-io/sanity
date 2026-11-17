@@ -1,9 +1,9 @@
 import {styled} from 'styled-components'
 
-const DecoratorWrapper = styled.span<{decoration: string}>`
+const DecoratorWrapper = styled.span<{$decoration: string}>`
   display: inline;
-  ${({theme, decoration}) => {
-    switch (decoration) {
+  ${({theme, $decoration}) => {
+    switch ($decoration) {
       case 'strong':
         return 'font-weight: bold;'
       case 'em':
@@ -26,5 +26,5 @@ const DecoratorWrapper = styled.span<{decoration: string}>`
 `
 
 export function Decorator({mark, children}: {mark: string; children: React.JSX.Element}) {
-  return <DecoratorWrapper decoration={mark}>{children}</DecoratorWrapper>
+  return <DecoratorWrapper $decoration={mark}>{children}</DecoratorWrapper>
 }

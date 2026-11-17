@@ -1,7 +1,7 @@
-import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ElementType} from 'react'
 import {css, styled} from 'styled-components'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 
@@ -50,19 +50,20 @@ export function DetailIdentity(props: {
   const {title, titlePlaceholder, description, titleAs, titleTestId, descriptionTestId} = props
 
   return (
-    <Stack gap={3}>
-      <Flex align="center" gap={2}>
-        {/* Box flex={1} + min-width:0 lets the title shrink and truncate instead of overflowing its
+    <VStack gap={3}>
+      <Flex alignItems="center" gap={2}>
+        {/* Box flex={1} lets the title shrink and truncate instead of overflowing its
             zone; the full title is available on hover. */}
-        <Box flex={1} style={{minWidth: 0}}>
+        <Box flexBasis="0%" flexGrow={1}>
           <Text
             as={titleAs}
             size={4}
             weight="bold"
-            textOverflow="ellipsis"
+            truncate={1}
             title={title || undefined}
             style={title ? undefined : {opacity: 0.5}}
             data-testid={titleTestId}
+            trim={true}
           >
             {title || titlePlaceholder}
           </Text>
@@ -74,7 +75,7 @@ export function DetailIdentity(props: {
           placement="bottom-start"
           content={
             <Box padding={2} style={{maxWidth: DESCRIPTION_TOOLTIP_MAX_WIDTH}}>
-              <Text muted size={1} style={{whiteSpace: 'pre-wrap'}}>
+              <Text muted size={1} style={{whiteSpace: 'pre-wrap'}} as="div" trim={true}>
                 {description}
               </Text>
             </Box>
@@ -83,6 +84,6 @@ export function DetailIdentity(props: {
           <ClampedDescription data-testid={descriptionTestId}>{description}</ClampedDescription>
         </Tooltip>
       )}
-    </Stack>
+    </VStack>
   )
 }

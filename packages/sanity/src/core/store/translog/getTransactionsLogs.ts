@@ -4,7 +4,7 @@ import {
   type TransactionLogEventWithEffects,
 } from '@sanity/types'
 
-import {getJsonStream} from '../history/history/getJsonStream'
+import {getJsonStream} from '../events/getJsonStream'
 
 /**
  * Fetches transaction logs for the specified document IDs from the translog
@@ -93,7 +93,9 @@ export async function getTransactionsLogs(
     }?${queryParams.toString()}`,
   )
 
-  const stream = await getJsonStream(transactionsUrl, clientConfig.token)
+  // `getAuth()` waits for a renewal in progress; `config().token` could hand out a stale one.
+  const {token} = await client.getAuth()
+  const stream = await getJsonStream(transactionsUrl, token)
   const transactions: (TransactionLogEventWithEffects & TransactionLogEventWithMutations)[] = []
 
   const reader = stream.getReader()

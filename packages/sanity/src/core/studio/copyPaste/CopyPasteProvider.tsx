@@ -3,7 +3,6 @@ import {isIndexSegment, isKeySegment, type Path, type PathSegment} from '@sanity
 import {useToast} from '@sanity/ui/toast'
 import * as PathUtils from '@sanity/util/paths'
 import flatten from 'lodash-es/flatten.js'
-import isEqual from 'lodash-es/isEqual.js'
 import last from 'lodash-es/last.js'
 import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
 import {CopyPasteContext} from 'sanity/_singletons'
@@ -56,7 +55,13 @@ export const CopyPasteProvider: React.FC<{
       }
 
       setDocumentMetaState((prevMeta) => {
-        if (isEqual(prevMeta, processedMeta)) {
+        if (
+          prevMeta &&
+          prevMeta.documentId === processedMeta.documentId &&
+          prevMeta.documentType === processedMeta.documentType &&
+          prevMeta.schemaType === processedMeta.schemaType &&
+          prevMeta.onChange === processedMeta.onChange
+        ) {
           return prevMeta // No update if the new meta is the same as the current
         }
         return processedMeta

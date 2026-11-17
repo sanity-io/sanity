@@ -1,5 +1,5 @@
 import {isKeySegment} from '@sanity/types'
-import {Box, Card, Flex, Stack} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {
   DEFAULT_DATE_FORMAT,
   DEFAULT_TIME_FORMAT,
@@ -13,7 +13,7 @@ import {getMinutes} from 'date-fns/getMinutes'
 import {parseISO} from 'date-fns/parseISO'
 import {setMinutes} from 'date-fns/setMinutes'
 import {useCallback, useMemo, useState} from 'react'
-import {styled} from 'styled-components'
+import {Box, Flex, VStack} from 'ui5'
 
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
 import {type CalendarLabels} from '../../../components/inputs/DateInputs/calendar/types'
@@ -33,11 +33,12 @@ import {set, unset} from '../../patch/patch'
 import {useReportParseError} from '../../studio/contexts/ParseErrors'
 import {type StringInputProps} from '../../types/inputProps'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
+import {root} from './DateTimeInput.css'
 import {getCalendarLabels, isValidDate} from './utils'
 
 /**
  * Sanitizes an input ID for use in timezone storage keys.
- * The backend key-value API rejects keys containing special characters like `[`, `]`, `=`, and `"`.
+ * The preferences API rejects keys containing special characters like `[`, `]`, `=`, and `"`.
  * This function parses the path string and converts it to a safe format using dots and "key-" prefix.
  *
  * @internal
@@ -61,10 +62,6 @@ export function sanitizeTimeZoneKeyId(id: string): string {
     return id.replace(/[[\]="']/g, '-')
   }
 }
-
-const Root = styled(Card)`
-  line-height: 1;
-`
 
 interface ParsedOptions {
   dateFormat: string
@@ -184,7 +181,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
       type: 'input' as TimeZoneScopeType,
       defaultTimeZone: displayTimeZone,
       // we want to make sure that if allowTimeZoneSwitch is switched to false that we respect the default only
-      // sanitize the id to remove special characters that the backend key-value API rejects
+      // sanitize the id to remove special characters that the preferences API rejects
       id: `${published}.${sanitizeTimeZoneKeyId(id)}${allowTimeZoneSwitch ? '' : '.fixed'}`,
       relativeDate: value ? new Date(value) : undefined,
     }),
@@ -219,14 +216,15 @@ export function DateTimeInput(props: DateTimeInputProps) {
   )
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
   return (
-    <Root
+    <Card
+      className={root}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       data-testid={`field-${id}`}
       radius={2}
     >
-      <Flex direction={'column'}>
-        <Box flex={1} paddingY={2}>
+      <Flex flexDirection={'column'}>
+        <Box flexBasis="0%" flexGrow={1} paddingY={2}>
           <FormFieldBaseHeader
             __internal_comments={comments}
             __internal_slot={slot}
@@ -236,7 +234,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
             presence={presence}
             inputId={id}
             content={
-              <Stack gap={2}>
+              <VStack gap={2}>
                 <FormFieldHeaderText
                   deprecated={schemaType.deprecated}
                   description={schemaType.description}
@@ -268,7 +266,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
                     )
                   }
                 />
-              </Stack>
+              </VStack>
             }
           />
         </Box>
@@ -297,6 +295,6 @@ export function DateTimeInput(props: DateTimeInputProps) {
           </div>
         </ChangeIndicator>
       </Flex>
-    </Root>
+    </Card>
   )
 }

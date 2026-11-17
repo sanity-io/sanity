@@ -1,8 +1,11 @@
 import {TextInput} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-export const TimeInput = styled(TextInput).attrs(() => ({
-  type: 'time',
-}))`
-  line-height: 1;
-`
+import {timeInput} from './TimeInput.css'
+
+export function TimeInput(props: ComponentProps<typeof TextInput>) {
+  const {className, ...rest} = props
+
+  return <TextInput {...rest} type="time" className={clsx(timeInput, className)} />
+}

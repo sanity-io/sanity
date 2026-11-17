@@ -1,4 +1,4 @@
-import {Box, Text} from '@sanity/ui'
+import {Text, Box} from 'ui5'
 
 import {type LogoProps} from '../../../config/studio/types'
 
@@ -10,7 +10,9 @@ export function StudioLogo(props: LogoProps) {
 
   return (
     <Box padding={3} data-testid="studio-logo">
-      <Text weight="medium">{title}</Text>
+      <Text weight="medium" as="div" trim={true}>
+        {title}
+      </Text>
     </Box>
   )
 }

@@ -76,6 +76,21 @@ const examples: PatchExample[] = [
       a: null,
     },
   },
+  {
+    name: 'Diff match patch descending past an out-of-range index',
+    before: {
+      body: [{children: [{text: 'The rabid dog'}]}],
+    },
+    patch: {
+      id: 'a',
+      diffMatchPatch: {
+        'body[4].children[0].text': '@@ -1,13 +1,12 @@\n The \n-rabid\n+nice\n  dog\n',
+      },
+    },
+    after: {
+      body: [{children: [{text: 'The rabid dog'}]}],
+    },
+  },
 ]
 
 export default examples

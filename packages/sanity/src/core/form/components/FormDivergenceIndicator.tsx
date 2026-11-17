@@ -31,7 +31,6 @@ const FormDivergenceIndicatorEnabled: ComponentType<
     <AnimatePresence>
       {divergence && divergence.divergences[0][1].status === 'unresolved' && (
         <DivergenceIndicator
-          path={path}
           divergenceNavigator={divergenceNavigator}
           divergence={divergence}
           upstreamBundle={upstreamBundle}

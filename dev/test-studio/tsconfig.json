@@ -1,6 +1,19 @@
 {
   "extends": "../tsconfig.dev",
+  // The first two are what `../tsconfig.dev.json` includes (all of `dev/`), written relative to this
+  // file; the CSS modules are included for css-modules-kit (`pnpm css:types`), which reads this
+  // file's `include`, while TypeScript itself only picks up the `.ts`/`.tsx` files
+  "include": ["../**/*.ts", "../**/*.tsx", "**/*.module.css"],
   "compilerOptions": {
-    "isolatedModules": false
+    "isolatedModules": false,
+    // Resolves `./X.module.css` to the `X.module.css.d.ts` css-modules-kit writes under the
+    // gitignored `generated/` (`pnpm css:types`; also run by `pnpm install` and `pnpm lint`)
+    "rootDirs": [".", "generated"]
+  },
+  // The options of packages/@sanity/vision/tsconfig.json
+  "cmkOptions": {
+    "enabled": true,
+    "container": true,
+    "namedExports": true
   }
 }

@@ -4,6 +4,7 @@ import {
   type BundleDocument,
   useBundleDocuments,
 } from '../../releases/tool/detail/useBundleDocuments'
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../store/constants'
 import {type DocumentInVariant} from '../tool/detail/types'
 import {toVariantDocumentVersion} from '../tool/detail/variantDocumentVersion'
 import {getVariantId} from '../tool/util'
@@ -29,6 +30,7 @@ export function useVariantDocuments(variantId: string | undefined): {
     params,
     cacheKey: enabled ? `variant-${variantId}` : 'variant-disabled',
     enabled,
+    apiVersion: VARIANTS_STUDIO_CLIENT_OPTIONS.apiVersion,
   })
 
   const variantResults = useMemo(

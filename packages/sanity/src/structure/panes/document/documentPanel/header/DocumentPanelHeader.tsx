@@ -4,7 +4,7 @@ import {CollapseIcon} from '@sanity/icons/Collapse'
 import {ExpandIcon} from '@sanity/icons/Expand'
 import {SplitVerticalIcon} from '@sanity/icons/SplitVertical'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Box, Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {
   memo,
@@ -25,6 +25,7 @@ import {
   useWorkspace,
 } from 'sanity'
 import {css, styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -48,9 +49,9 @@ import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMen
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentPaneCollapsed, DocumentPaneMaximized} from './__telemetry__/focus.telemetry'
 import {CopyDocumentActions} from './CopyDocumentActions'
-import {DocumentGroupInventoryHint} from './documentGroupInventoryHint/DocumentGroupInventoryHint'
+import {DocumentGroupInventoryButton} from './DocumentGroupInventoryButton'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
-import {DocumentTargetBadges} from './DocumentTargetBadges'
+import {DocumentPanelNavigation} from './DocumentPanelNavigation/DocumentPanelNavigation'
 import {useChipScrollPosition} from './hook/useChipScrollPosition'
 import {DocumentPerspectiveList} from './perspective/DocumentPerspectiveList'
 
@@ -62,11 +63,12 @@ const HorizontalScroller = styled(Card)<{$showGradient: boolean}>((props) => {
   const theme = getTheme_v2(props.theme)
 
   return css`
-    scrollbar-width: none;
     z-index: 1;
     flex: 1;
     position: relative;
     > div {
+      /* scrollbar-width is not inherited, so it has to be set on the element that scrolls */
+      scrollbar-width: none;
       &::-webkit-scrollbar {
         width: 0;
         height: 0;
@@ -216,48 +218,50 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
         />
       ) : (
         <Card
+          // Stable CSS hook for hiding the toolbar. Public contract: do not rename or remove.
+          data-sanity-document-toolbar=""
           hidden={collapsed}
           style={{lineHeight: 0, position: 'relative', zIndex: paneHeaderZIndex}}
           borderBottom
         >
-          <Flex gap={3} paddingY={3} justify="space-between" align="center">
-            {!hasDocumentGroupInventory && (
-              <HorizontalScroller $showGradient={showGradient}>
-                <Flex
-                  flex={1}
-                  gap={1}
-                  overflow="auto"
-                  paddingX={3}
-                  data-testid="document-perspective-list"
-                  ref={scrollContainerRef}
-                >
-                  <DocumentPerspectiveList />
-                </Flex>
-              </HorizontalScroller>
-            )}
-            {hasDocumentGroupInventory && (
-              <HorizontalScroller $showGradient={false}>
-                <Flex
-                  flex={1}
-                  gap={2}
-                  align="center"
-                  overflow="auto"
-                  paddingX={3}
-                  data-testid="document-target-badges"
-                  style={{minWidth: 0}}
-                >
-                  <Box flex="none">
-                    <DocumentTargetBadges />
-                  </Box>
-                  <Box flex="none">
-                    <DocumentGroupInventoryHint />
-                  </Box>
-                </Flex>
-              </HorizontalScroller>
-            )}
+          <Flex gap={3} paddingY={3} justifyContent="space-between" alignItems="center">
+            {
+              // Variants switch the inventory on today; checking both keeps the navigation for variants if
+              // that coupling is ever removed.
+              beta?.variants?.enabled === true || hasDocumentGroupInventory ? (
+                <HorizontalScroller $showGradient={showGradient}>
+                  <Flex
+                    flexBasis="0%"
+                    flexGrow={1}
+                    alignItems="center"
+                    overflow="auto"
+                    paddingX={3}
+                    data-testid="document-panel-navigation"
+                    ref={scrollContainerRef}
+                    style={{minWidth: 0}}
+                  >
+                    <DocumentPanelNavigation />
+                  </Flex>
+                </HorizontalScroller>
+              ) : (
+                <HorizontalScroller $showGradient={showGradient}>
+                  <Flex
+                    flexBasis="0%"
+                    flexGrow={1}
+                    gap={1}
+                    overflow="auto"
+                    paddingX={3}
+                    data-testid="document-perspective-list"
+                    ref={scrollContainerRef}
+                  >
+                    <DocumentPerspectiveList />
+                  </Flex>
+                </HorizontalScroller>
+              )
+            }
 
-            <Box flex="none" paddingRight={3}>
-              <Flex align="center" gap={1}>
+            <Box flexBasis="auto" flexGrow={0} flexShrink={0} paddingRight={3}>
+              <Flex alignItems="center" gap={1}>
                 {documentLevelPresence.length > 0 && (
                   <Box data-testid="document-level-presence" marginRight={2}>
                     <FieldPresenceInner presence={documentLevelPresence} stack />
@@ -276,6 +280,7 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
                   </>
                 )}
 
+                {hasDocumentGroupInventory && <DocumentGroupInventoryButton />}
                 <CopyDocumentActions />
                 {menuButtonNodes.map((item) => (
                   <PaneHeaderActionButton key={item.key} node={item} />

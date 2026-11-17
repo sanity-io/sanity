@@ -1,5 +1,6 @@
-import {Card, Grid} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {styled} from 'styled-components'
+import {Grid} from 'ui5'
 
 // The negative margins here removes the extra space between the tabs and the fields when inside of a grid
 export const FieldGroupTabsWrapper = styled(Card)<{$level?: number}>`

@@ -1,5 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
+import {DRAFT_ID, publishDocumentVersionEvent} from './__fixtures__/events.fixture'
+import {editTransaction} from './__fixtures__/transactions.fixture'
 import {calculateDiff} from './calculateDiff'
 import {type DocumentGroupEvent} from './types'
 
@@ -386,5 +388,67 @@ describe('calculateDiff', () => {
         "type": "object",
       }
     `)
+  })
+
+  it('attaches the matching non-edit event to the annotation', () => {
+    const initialDoc = {
+      _createdAt: '2024-01-01T00:00:00Z',
+      _updatedAt: '2024-01-01T00:00:00Z',
+      _id: DRAFT_ID,
+      _rev: 'rev-0',
+      _type: 'author',
+      name: 'foo',
+    }
+    const before = {
+      _createdAt: '2024-01-01T00:00:00Z',
+      _updatedAt: '2024-01-01T00:00:00Z',
+      _id: DRAFT_ID,
+      _type: 'author',
+      name: 'foo',
+    }
+    const after = {...before, _updatedAt: '2024-01-01T00:05:00Z', name: 'bar'}
+    const publishEvent = publishDocumentVersionEvent({revisionId: 'tx-with-event'})
+    const transactions = [editTransaction({id: 'tx-with-event', before, after})]
+
+    const diff = calculateDiff({
+      initialDoc,
+      documentId: DRAFT_ID,
+      transactions,
+      events: [publishEvent],
+    })
+
+    expect(diff.isChanged).toBe(true)
+    const nameField = diff.fields.name
+    expect(nameField).toMatchObject({
+      action: 'changed',
+      fromValue: 'foo',
+      toValue: 'bar',
+      annotation: {
+        author: 'author-1',
+        event: publishEvent,
+      },
+    })
+  })
+
+  it('skips transactions that have no effect for the documentId', () => {
+    const initialDoc = {
+      _createdAt: '2024-01-01T00:00:00Z',
+      _updatedAt: '2024-01-01T00:00:00Z',
+      _id: DRAFT_ID,
+      _rev: 'rev-0',
+      _type: 'author',
+      name: 'foo',
+    }
+    // The transaction only carries effects for another document id.
+    const transactions = [editTransaction({id: 'tx-other', documentId: 'drafts.other-doc'})]
+
+    const diff = calculateDiff({
+      initialDoc,
+      documentId: DRAFT_ID,
+      transactions,
+      events: [],
+    })
+
+    expect(diff.isChanged).toBe(false)
   })
 })

@@ -1,11 +1,8 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {DocumentActionProps} from '../../core/config/document/actions'
 
 /**
  * @internal
  */
-export const DocumentActionPropsContext = createContext<DocumentActionProps | undefined>(
-  'sanity/_singletons/context/document-action-props',
-  undefined,
-)
+export const DocumentActionPropsContext = createContext<DocumentActionProps | undefined>(undefined)

@@ -5,7 +5,7 @@ import {lastDayOfMonth} from 'date-fns/lastDayOfMonth'
 import {startOfMonth} from 'date-fns/startOfMonth'
 
 import {useCurrentLocale} from '../../../../i18n/hooks/useLocale'
-import {TAIL_WEEKDAYS} from './constants'
+import {DEFAULT_WEEK_DAY_NAMES, TAIL_WEEKDAYS} from './constants'
 
 /**
  * NOTE: `weekStartsOn` uses 1 for Monday, 7 for Sunday. date-fns wants 0 for Sunday, 6 for Saturday.
@@ -43,6 +43,14 @@ export const useWeeksOfMonth = (date: Date): Week[] => {
       days,
     }),
   )
+}
+
+export const getWeekDayNames = (weekStartsOn: 1 | 2 | 3 | 4 | 5 | 6 | 7): readonly string[] => {
+  const firstDayIndex = weekStartsOn % 7
+  return [
+    ...DEFAULT_WEEK_DAY_NAMES.slice(firstDayIndex),
+    ...DEFAULT_WEEK_DAY_NAMES.slice(0, firstDayIndex),
+  ]
 }
 
 export const formatTime = (hours: number, minutes: number): string =>

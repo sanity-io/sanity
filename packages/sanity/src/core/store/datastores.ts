@@ -1,8 +1,6 @@
-import {type SanityClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useMemo} from 'react'
-import {useSyncObservable} from 'react-rx'
+import {useCallback, useEffect, useMemo} from 'react'
 
 import {useClient} from '../hooks/useClient'
 import {useSchema} from '../hooks/useSchema'
@@ -22,35 +20,45 @@ import {
   type ConnectionStatusStore,
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
+import {DocumentCommitCancelled} from './document/__telemetry__/commitCancelled.telemetry'
+import {DocumentCommitRetriesEnded} from './document/__telemetry__/commitRetries.telemetry'
 import {DocumentDesynced} from './document/__telemetry__/documentOutOfSyncEvents.telemetry'
 import {DocumentPairLoadingMeasured} from './document/__telemetry__/documentPairLoading.telemetry'
 import {DocumentRebaseOccurred} from './document/__telemetry__/documentRebase.telemetry'
 import {HighListenerLatencyOccurred} from './document/__telemetry__/listenerLatency.telemetry'
 import {MutationPerformanceMeasured} from './document/__telemetry__/mutationPerformance.telemetry'
+import {DocumentPairTornDownWithPendingMutations} from './document/__telemetry__/pendingMutations.telemetry'
 import {createDocumentStore, type DocumentStore} from './document/document-store'
 import {
+  type CommitCancelledTelemetryEvent,
+  type CommitRetriesEndedTelemetryEvent,
   type DocumentPairLoadedEvent,
   type DocumentRebaseTelemetryEvent,
   type LatencyReportEvent,
   type MutationPerformanceEvent,
+  type SyncErrorRecoveryTelemetryInfo,
 } from './document/getPairListener'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
+import {
+  createGlobalListenerStore,
+  type GlobalListenerStore,
+} from './globalListener/createGlobalListenerStore'
 import {createGrantsStore} from './grants/grantsStore'
 import {type GrantsStore} from './grants/types'
 import {createHistoryStore, type HistoryStore} from './history/createHistoryStore'
-import {createKeyValueStore} from './key-value/keyValueStore'
-import {type KeyValueStore} from './key-value/types'
 import {createPresenceStore, type PresenceStore} from './presence/presence-store'
 import {createProjectStore} from './project/projectStore'
 import {type ProjectStore} from './project/types'
 import {createRenderingContextStore} from './renderingContext/createRenderingContextStore'
-import {type RenderingContextStore} from './renderingContext/types'
+import {type CapabilityRecord, type RenderingContextStore} from './renderingContext/types'
 import {useResourceCache} from './ResourceCacheProvider'
 import {createUserStore, type UserStore} from './user/userStore'
 
 /**
  * Latencies below this value will not be logged
  */
+const EMPTY_CAPABILITIES: CapabilityRecord = {}
+
 const IGNORE_LATENCY_BELOW_MS = 1000
 
 /** Minimum time between slow commit toast notifications */
@@ -137,27 +145,55 @@ export function useHistoryStore(): HistoryStore {
 }
 
 /**
+ * The workspace's shared listener on every document in its dataset. Prefer it to opening a
+ * listener of your own: every listener holds one of the browser's limited connections.
+ *
+ * @internal
+ */
+export function useGlobalListenerStore(): GlobalListenerStore {
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const resourceCache = useResourceCache()
+
+  return useMemo(() => {
+    const globalListenerStore =
+      resourceCache.get<GlobalListenerStore>({
+        namespace: 'globalListenerStore',
+        dependencies: [client],
+      }) || createGlobalListenerStore({client})
+
+    resourceCache.set({
+      namespace: 'globalListenerStore',
+      dependencies: [client],
+      value: globalListenerStore,
+    })
+
+    return globalListenerStore
+  }, [client, resourceCache])
+}
+
+/**
  * @hidden
  * @beta */
 export function useDocumentPreviewStore(): DocumentPreviewStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const globalListenerStore = useGlobalListenerStore()
   const resourceCache = useResourceCache()
 
   return useMemo(() => {
     const documentPreviewStore =
       resourceCache.get<DocumentPreviewStore>({
         namespace: 'documentPreviewStore',
-        dependencies: [client],
-      }) || createDocumentPreviewStore({client})
+        dependencies: [client, globalListenerStore],
+      }) || createDocumentPreviewStore({client, globalListenerStore})
 
     resourceCache.set({
       namespace: 'documentPreviewStore',
-      dependencies: [client],
+      dependencies: [client, globalListenerStore],
       value: documentPreviewStore,
     })
 
     return documentPreviewStore
-  }, [client, resourceCache])
+  }, [client, globalListenerStore, resourceCache])
 }
 
 /**
@@ -178,8 +214,11 @@ export function useDocumentStore(): DocumentStore {
   const errorHandler = useStudioErrorHandler()
 
   const handleSyncErrorRecovery = useCallback(
-    (error: OutOfSyncError) => {
-      telemetry.log(DocumentDesynced, {errorName: error.name})
+    (error: OutOfSyncError, info?: SyncErrorRecoveryTelemetryInfo) => {
+      telemetry.log(DocumentDesynced, {
+        errorName: error.name,
+        hadPendingMutations: info?.hadPendingMutations,
+      })
     },
     [telemetry],
   )
@@ -235,6 +274,24 @@ export function useDocumentStore(): DocumentStore {
     [telemetry],
   )
 
+  const handleCommitCancelled = useCallback(
+    (event: CommitCancelledTelemetryEvent) => {
+      telemetry.log(DocumentCommitCancelled, event)
+    },
+    [telemetry],
+  )
+
+  const handleCommitRetriesEnded = useCallback(
+    (event: CommitRetriesEndedTelemetryEvent) => {
+      telemetry.log(DocumentCommitRetriesEnded, event)
+    },
+    [telemetry],
+  )
+
+  const handlePairTornDownWithPendingMutations = useCallback(() => {
+    telemetry.log(DocumentPairTornDownWithPendingMutations)
+  }, [telemetry])
+
   return useMemo(() => {
     const documentStore =
       resourceCache.get<DocumentStore>({
@@ -265,6 +322,9 @@ export function useDocumentStore(): DocumentStore {
           onDocumentPairLoaded: handleDocumentPairLoaded,
           onReportMutationPerformance: handleReportMutationPerformance,
           onDocumentRebase: handleDocumentRebase,
+          onCommitCancelled: handleCommitCancelled,
+          onCommitRetriesEnded: handleCommitRetriesEnded,
+          onPairTornDownWithPendingMutations: handlePairTornDownWithPendingMutations,
           snapshotFetchErrorHandler: errorHandler,
         },
       })
@@ -301,6 +361,9 @@ export function useDocumentStore(): DocumentStore {
     handleDocumentPairLoaded,
     handleReportMutationPerformance,
     handleDocumentRebase,
+    handleCommitCancelled,
+    handleCommitRetriesEnded,
+    handlePairTornDownWithPendingMutations,
     errorHandler,
   ])
 }
@@ -308,24 +371,26 @@ export function useDocumentStore(): DocumentStore {
 /** @internal */
 export function useConnectionStatusStore(): ConnectionStatusStore {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {bifur} = useSource().__internal
+  const source = useSource()
+  const {bifur} = source.__internal
+  const token$ = source.auth.token
   const resourceCache = useResourceCache()
 
   return useMemo(() => {
     const connectionStatusStore =
       resourceCache.get<ConnectionStatusStore>({
         namespace: 'connectionStatusStore',
-        dependencies: [bifur],
-      }) || createConnectionStatusStore({bifur})
+        dependencies: [bifur, token$ ?? null],
+      }) || createConnectionStatusStore({bifur, token$})
 
     resourceCache.set({
       namespace: 'connectionStatusStore',
-      dependencies: [bifur],
+      dependencies: [bifur, token$ ?? null],
       value: connectionStatusStore,
     })
 
     return connectionStatusStore
-  }, [bifur, resourceCache])
+  }, [bifur, token$, resourceCache])
 }
 
 /**
@@ -381,46 +446,6 @@ export function useProjectStore(): ProjectStore {
   }, [client, resourceCache])
 }
 
-/**
- * Module-level cache for KeyValueStore instances, keyed by project identity.
- * Uses a simple Map with string keys since the ResourceCache's WeakMap
- * doesn't support primitive-based cache keys.
- */
-const keyValueStoreCache = new Map<string, KeyValueStore>()
-
-/**
- * Generates a cache key for KeyValueStore based on project identity.
- * The /users/me/keyvalue endpoint is project-scoped, so we only need
- * projectId and apiHost (not dataset) to identify unique stores.
- */
-function getKeyValueStoreCacheKey(client: SanityClient): string {
-  const config = client.config()
-  return `${config.projectId}:${config.apiHost || 'default'}`
-}
-
-/**
- * Returns a KeyValueStore instance for storing user preferences.
- *
- * The store is cached by project identity (projectId + apiHost) rather than
- * workspace, because the /users/me/keyvalue endpoint is project-scoped -
- * user preferences are shared across all datasets within a project.
- *
- * @internal
- */
-export function useKeyValueStore(): KeyValueStore {
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-
-  return useMemo(() => {
-    const cacheKey = getKeyValueStoreCacheKey(client)
-    const cached = keyValueStoreCache.get(cacheKey)
-    if (cached) return cached
-
-    const keyValueStore = createKeyValueStore({client})
-    keyValueStoreCache.set(cacheKey, keyValueStore)
-    return keyValueStore
-  }, [client])
-}
-
 /** @internal */
 export function useRenderingContextStore(): RenderingContextStore {
   const resourceCache = useResourceCache()
@@ -446,25 +471,31 @@ export function useRenderingContextStore(): RenderingContextStore {
 export function useComlinkStore(): ComlinkStore {
   const resourceCache = useResourceCache()
   const renderingContext = useRenderingContextStore()
-  // Kept synchronous: `createComlinkStore` starts the comlink node when
-  // `capabilities.comlink` flips true, so a deferred snapshot would delay
-  // comlink initialization. Capabilities emit once at boot; there is nothing
-  // to gain from deferring them.
-  const capabilities = useSyncObservable(renderingContext.capabilities, {})
 
-  return useMemo(() => {
-    const comlinkStore =
+  const comlinkStore = useMemo(() => {
+    const store =
       resourceCache.get<ComlinkStore>({
-        dependencies: [capabilities],
+        dependencies: [renderingContext],
         namespace: 'ComlinkStore',
-      }) || createComlinkStore({capabilities})
+      }) ||
+      // Read once: Comlink only comes from the URL, which doesn't change.
+      createComlinkStore({capabilities: renderingContext.getCapabilities() ?? EMPTY_CAPABILITIES})
 
     resourceCache.set({
-      dependencies: [capabilities],
+      dependencies: [renderingContext],
       namespace: 'ComlinkStore',
-      value: comlinkStore,
+      value: store,
     })
 
-    return comlinkStore
-  }, [capabilities, resourceCache])
+    return store
+  }, [renderingContext, resourceCache])
+
+  // The store is created during render, which React may abandon; the node is
+  // only held once a consumer commits. Holding is idempotent, so every
+  // consumer may ask for it.
+  useEffect(() => {
+    comlinkStore.start()
+  }, [comlinkStore])
+
+  return comlinkStore
 }

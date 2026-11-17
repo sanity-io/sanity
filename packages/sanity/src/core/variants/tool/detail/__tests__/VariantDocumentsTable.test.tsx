@@ -40,6 +40,7 @@ vi.mock('../../../../components/documentTable/EditedByCell', () => ({
 vi.mock('../../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => ({
     data: [],
+    byId: new Map(),
     loading: false,
     error: null,
   })),

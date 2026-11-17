@@ -18,6 +18,7 @@ function variant(id: string, name: string): Variant {
       _rev: 'rev',
       _createdAt: '2026-01-01T00:00:00.000Z',
       _updatedAt: '2026-01-01T00:00:00.000Z',
+      _type: 'article',
       _system: isDraftId(id) ? {bundleId: 'drafts', group} : {group},
     },
   }
@@ -45,6 +46,7 @@ function createSelectionActor({
       // covered in documentGroupInventoryMachine.test.ts.
       actions: {notifySelectionChanged: () => {}},
     }),
+    {input: undefined},
   )
   actor.start()
   if (variants) {
@@ -103,6 +105,28 @@ describe('selectionMachine', () => {
     expect(selection.getSnapshot().matches('error')).toBe(true)
   })
 
+  it('adds every given variant to the selection, keeping those already selected', () => {
+    const selection = createSelectionActor()
+
+    selection.send({type: 'selection.add', variantId: 'drafts.foo'})
+    selection.send({type: 'selection.addMany', variantIds: ['drafts.foo', 'foo']})
+
+    expect([...selection.getSnapshot().context.selectedIds]).toEqual(['drafts.foo', 'foo'])
+  })
+
+  it('removes every given variant from the selection, even when only some are selected', () => {
+    const selection = createSelectionActor({
+      variants: [...DEFAULT_VARIANTS, variant('drafts.bar', 'Other draft')],
+    })
+
+    selection.send({type: 'selection.add', variantId: 'drafts.bar'})
+    selection.send({type: 'selection.add', variantId: 'foo'})
+    selection.send({type: 'selection.removeMany', variantIds: ['drafts.foo', 'foo']})
+
+    // Ids outside the removed group keep their selection.
+    expect([...selection.getSnapshot().context.selectedIds]).toEqual(['drafts.bar'])
+  })
+
   it('toggles selection on and off', () => {
     const selection = createSelectionActor()
 
@@ -141,7 +165,7 @@ describe('selectionMachine', () => {
 
     selection.send({type: 'selection.add', variantId: 'drafts.foo'})
     selection.send({type: 'selection.lock'})
-    expect(selection.getSnapshot().matches('readonly')).toBe(true)
+    expect(selection.getSnapshot().matches('locked')).toBe(true)
 
     // Selection mutations are dropped while locked.
     selection.send({type: 'selection.add', variantId: 'foo'})

@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {type BadgeTone, Text} from '@sanity/ui'
+import {type BadgeTone} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
@@ -19,6 +19,7 @@ import {
   useTranslation,
   VersionInlineBadge,
 } from 'sanity'
+import {Text} from 'ui5'
 
 export interface LinkToExistingPreviewProps {
   documentPreviewStore: DocumentPreviewStore
@@ -54,10 +55,6 @@ export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
     )
   }, [props.documentPreviewStore, schemaType, value._id])
 
-  // Deferred: react-rx v5's deferral is identity-coherent, so when this
-  // component is reused for a new document id the live snapshot wins and the
-  // previous document's title/media never renders beside the new document's
-  // version badge.
   const {snapshot, original, isLoading} = useObservable(
     previewStateObservable,
     INITIAL_PREVIEW_STATE,
@@ -112,7 +109,7 @@ export function LinkToExistingPreview(props: LinkToExistingPreviewProps) {
         layout="default"
         status={
           badgeProps ? (
-            <Text size={0}>
+            <Text size={0} as="div" trim={true}>
               {badgeProps.kind === 'release' ? (
                 <ReleaseTitle title={badgeProps.releaseTitle} fallback={badgeProps.releaseFallback}>
                   {({displayTitle}) => (

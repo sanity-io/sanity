@@ -17,7 +17,7 @@ export function useRefValue<T extends Record<string, any> = Record<string, any>>
   // Kept synchronous: the falsy-ref guard below reads the live `refId`, so a
   // deferred snapshot could return the previously referenced document under a
   // newly selected ref.
-  const value = useSyncObservable(document$)
+  const value = useSyncObservable(document$, undefined)
 
   // Always return undefined in the case of a falsey ref to prevent bug
   // when going from an ID to an undefined state

@@ -1,12 +1,26 @@
 import {SearchIcon} from '@sanity/icons/Search'
-import {Badge, Card, Checkbox, Container, Flex, TextInput, useMediaIndex} from '@sanity/ui'
-import {type CSSProperties, type ReactNode, useCallback, useMemo, useState} from 'react'
-import {Box} from 'ui5'
+import {Badge, Card, Checkbox, TextInput, useMediaIndex} from '@sanity/ui'
+import {
+  type CSSProperties,
+  type MouseEvent,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react'
+import {DocumentTableSelectionContext} from 'sanity/_singletons'
+import {Container, Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Table} from './Table'
 import {type TableSort} from './TableProvider'
-import {type Column} from './types'
+import {
+  type Column,
+  type DocumentTableSelectionContextValue,
+  type HeaderProps,
+  type InjectedTableProps,
+} from './types'
 
 const TABLE_CARD_STYLE: CSSProperties = {
   height: '100%',
@@ -32,6 +46,69 @@ const FILTER_TABS_STYLE: CSSProperties = {
   overflowX: 'auto',
   maskImage: 'linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%)',
   WebkitMaskImage: 'linear-gradient(to right, #000 0, #000 calc(100% - 24px), transparent 100%)',
+}
+
+function useDocumentTableSelection(): DocumentTableSelectionContextValue {
+  const value = useContext(DocumentTableSelectionContext)
+  if (!value) {
+    throw new Error('DocumentTable: missing selection context')
+  }
+  return value
+}
+
+// Select-all lives in the column-header row (above the row checkboxes it governs), not the
+// command lane. Doubles as clear.
+function SelectHeader({headerProps}: HeaderProps) {
+  const {labels, selectAllTestId, allSelected, someSelected, toggleAll} =
+    useDocumentTableSelection()
+
+  return (
+    <Flex {...headerProps} alignItems="center" justifyContent="center" paddingY={3}>
+      <Checkbox
+        aria-label={labels.selectAll}
+        checked={allSelected}
+        data-testid={selectAllTestId}
+        indeterminate={someSelected && !allSelected}
+        onChange={toggleAll}
+      />
+    </Flex>
+  )
+}
+
+function stopPropagation(event: MouseEvent<HTMLInputElement>) {
+  event.stopPropagation()
+}
+
+function SelectCell(props: {
+  datum: {isLoading?: boolean}
+  cellProps: InjectedTableProps
+  sorting: boolean
+}) {
+  const {datum, cellProps} = props
+  const {labels, selectedKeys, selectableKeys, toggleRow, rowKey} = useDocumentTableSelection()
+  const key = datum.isLoading ? null : rowKey(datum)
+
+  return (
+    <Flex {...cellProps} alignItems="center" justifyContent="center" paddingX={2}>
+      {key !== null && selectableKeys.has(key) && (
+        <Checkbox
+          aria-label={labels.selectRow}
+          checked={selectedKeys.has(key)}
+          onChange={() => toggleRow(key)}
+          onClick={stopPropagation}
+        />
+      )}
+    </Flex>
+  )
+}
+
+const SELECT_COLUMN_DEF: Column = {
+  id: 'select',
+  width: 44,
+  style: {minWidth: 44, maxWidth: 44},
+  sorting: false,
+  header: SelectHeader,
+  cell: SelectCell,
 }
 
 /**
@@ -179,45 +256,33 @@ export function DocumentTable<Row extends object>({
 
   const clearSelection = useCallback(() => setSelectedKeys(new Set()), [])
 
-  const selectColumn = useMemo<Column<Row> | null>(() => {
+  const selectionContext = useMemo<DocumentTableSelectionContextValue | null>(() => {
     if (!selection) return null
-    const {labels, selectAllTestId} = selection
     return {
-      id: 'select',
-      width: 44,
-      style: {minWidth: 44, maxWidth: 44},
-      sorting: false,
-      // Select-all lives in the column-header row (above the row checkboxes it governs), not the
-      // command lane. Doubles as clear.
-      header: ({headerProps}) => (
-        <Flex {...headerProps} align="center" justify="center" paddingY={3} sizing="border">
-          <Checkbox
-            aria-label={labels.selectAll}
-            checked={allSelected}
-            data-testid={selectAllTestId}
-            indeterminate={someSelected && !allSelected}
-            onChange={toggleAll}
-          />
-        </Flex>
-      ),
-      cell: ({cellProps, datum}) => (
-        <Flex {...cellProps} align="center" justify="center" paddingX={2} sizing="border">
-          {!datum.isLoading && (selection?.isRowSelectable?.(datum) ?? true) && (
-            <Checkbox
-              aria-label={labels.selectRow}
-              checked={selectedKeys.has(getRowKey(datum))}
-              onChange={() => toggleRow(getRowKey(datum))}
-              onClick={(event) => event.stopPropagation()}
-            />
-          )}
-        </Flex>
-      ),
+      labels: selection.labels,
+      selectAllTestId: selection.selectAllTestId,
+      allSelected,
+      someSelected,
+      toggleAll,
+      selectedKeys,
+      selectableKeys,
+      toggleRow,
+      rowKey: getRowKey,
     }
-  }, [selection, allSelected, someSelected, toggleAll, selectedKeys, getRowKey, toggleRow])
+  }, [
+    selection,
+    allSelected,
+    someSelected,
+    toggleAll,
+    selectedKeys,
+    selectableKeys,
+    toggleRow,
+    getRowKey,
+  ])
 
   const amalgamatedColumnDefs = useMemo(
-    () => (selectColumn ? [selectColumn, ...columnDefs] : columnDefs),
-    [selectColumn, columnDefs],
+    () => (selection ? [SELECT_COLUMN_DEF, ...columnDefs] : columnDefs),
+    [selection, columnDefs],
   )
 
   const selectedKeyList = useMemo(
@@ -234,16 +299,16 @@ export function DocumentTable<Row extends object>({
   const showBulkToolbar = Boolean(selection) && selectedVisibleCount > 0
 
   return (
-    <Flex direction="column" flex={1} height="fill" overflow="hidden" style={{minHeight: 0}}>
+    <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%" overflow="hidden">
       {/* Command lane (zone 1). Fixed height so the browse↔bulk swap never shifts the rows. Idle:
           filter tabs lead from the left (aligned with the columns), search is right-aligned. On
           selection: selected count + Clear on the left, caller's bulk actions on the right.
           container[3] + paddingX={2} aligns the lane with the table's row content below. */}
       {showCommandLane && (
         <Card flex="none" borderBottom paddingY={2}>
-          <Container flex="none" width={3}>
+          <Container flexBasis="auto" flexGrow={0} flexShrink={0} size={3}>
             <Box paddingX={2}>
-              <Flex align="center" gap={3} style={{minHeight: commandLaneMinHeight}}>
+              <Flex alignItems="center" gap={3} style={{minHeight: commandLaneMinHeight}}>
                 {showBulkToolbar && selection ? (
                   <>
                     <Badge data-testid="document-table-selected-count" fontSize={1} tone="primary">
@@ -307,16 +372,18 @@ export function DocumentTable<Row extends object>({
         </Card>
       )}
       <Card data-testid={id} flex={1} id={id} ref={setScrollContainerRef} style={TABLE_CARD_STYLE}>
-        <Table<Row>
-          columnDefs={amalgamatedColumnDefs}
-          data={displayRows}
-          defaultSort={defaultSort}
-          emptyState={emptyState}
-          loading={loading}
-          rowActions={rowActions}
-          rowId={rowId}
-          scrollContainerRef={scrollContainerRef}
-        />
+        <DocumentTableSelectionContext.Provider value={selectionContext}>
+          <Table<Row>
+            columnDefs={amalgamatedColumnDefs}
+            data={displayRows}
+            defaultSort={defaultSort}
+            emptyState={emptyState}
+            loading={loading}
+            rowActions={rowActions}
+            rowId={rowId}
+            scrollContainerRef={scrollContainerRef}
+          />
+        </DocumentTableSelectionContext.Provider>
       </Card>
     </Flex>
   )

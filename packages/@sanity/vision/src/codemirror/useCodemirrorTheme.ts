@@ -42,6 +42,18 @@ function createTheme(theme: Theme) {
         lineHeight: 'inherit',
       },
 
+      // The gutter shares the editor's background, set apart only by a subtle border; its line
+      // numbers are muted, and the focused editor's active line number takes the text color
+      // instead of a background highlight
+      '.cm-gutters': {
+        backgroundColor: card.bg,
+        color: card.muted.fg,
+        border: 'none',
+        borderRight: `1px solid ${card.border}`,
+      },
+      '.cm-activeLineGutter': {backgroundColor: 'transparent'},
+      '&.cm-focused .cm-activeLineGutter': {color: card.fg},
+
       '.cm-cursor, .cm-dropCursor': {borderLeftColor: cursor},
       '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': {
         backgroundColor: selection,
@@ -50,6 +62,40 @@ function createTheme(theme: Theme) {
       '.cm-panels': {backgroundColor: card.bg, color: card.fg},
       '.cm-panels.cm-panels-top': {borderBottom: `2px solid ${card.border}`},
       '.cm-panels.cm-panels-bottom': {borderTop: `2px solid ${card.border}`},
+
+      // Lint diagnostics hover tooltips and the lint panel's entries
+      '.cm-tooltip': {
+        backgroundColor: card.bg,
+        color: card.fg,
+        border: `1px solid ${card.border}`,
+        borderRadius: '3px',
+      },
+      // Rule messages quote whole rewrites of the query; wrap them rather than span the screen
+      // (in a hover tooltip the lint content is a section of the shared tooltip element)
+      '.cm-tooltip-lint': {fontFamily: fonts.text.family, maxWidth: '520px'},
+      '.cm-panel.cm-panel-lint ul [aria-selected]': {backgroundColor: selection},
+      '.cm-panel.cm-panel-lint ul [aria-selected] .cm-diagnostic': {color: card.fg},
+
+      // Function documentation on hover and next to completions, and the extract button
+      '.cm-vision-function-doc, .cm-vision-extract-button': {
+        fontFamily: fonts.text.family,
+        fontSize: rem(fonts.text.sizes[1].fontSize),
+      },
+      '.cm-vision-function-code, .cm-vision-function-doc code': {
+        fontFamily: fonts.code.family,
+        fontSize: rem(fonts.code.sizes[1].fontSize),
+      },
+      '.cm-vision-function-note': {color: card.muted.fg},
+      '.cm-vision-function-link': {color: card.link.fg},
+      '.cm-vision-extract-button:hover, .cm-vision-extract-button:focus-visible': {
+        backgroundColor: selection,
+      },
+      '.cm-tooltip.cm-tooltip-autocomplete > ul': {fontFamily: fonts.code.family},
+      '.cm-tooltip.cm-tooltip-autocomplete > ul > li[aria-selected]': {
+        backgroundColor: selection,
+        color: card.fg,
+      },
+      '.cm-completionDetail': {color: card.muted.fg, fontStyle: 'normal', marginLeft: '1em'},
     },
     {dark: color.dark},
   )

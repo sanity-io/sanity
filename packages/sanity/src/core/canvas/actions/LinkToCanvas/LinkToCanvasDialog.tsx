@@ -1,9 +1,9 @@
 import {type SanityDocument} from '@sanity/client'
 import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {useCallback, useId} from 'react'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
@@ -80,7 +80,7 @@ export const LinkToCanvasDialog = ({
             transition={{duration: 0.3}}
           >
             <Card border tone="critical" padding={4} radius={3}>
-              <Text size={1} weight="medium">
+              <Text size={1} weight="medium" as="div" trim={true} tone="critical">
                 {error || t('dialog.link-to-canvas.error')}
               </Text>
             </Card>

@@ -1,0 +1,388 @@
+import {ClientError, type PromptRequest} from '@sanity/client'
+import {LayerProvider, ThemeProvider} from '@sanity/ui'
+import {buildTheme} from '@sanity/ui/theme'
+import {cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
+import {type RefAttributes, useImperativeHandle, useRef} from 'react'
+import {afterEach, describe, expect, it, vi} from 'vitest'
+
+import {type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
+import {type AiCreditsClient} from '../../util/aiCredits'
+import {type GenerateMutationsClient} from '../../util/generateMutations'
+import {type MutateClient} from '../../util/mutations'
+import {MutateTab, useMutatePanel} from './MutateTab'
+
+type MutateTabClient = GenerateMutationsClient & AiCreditsClient
+
+vi.mock('./CodeDiff', () => ({
+  default: (props: {previous: string; next: string}) => (
+    <pre data-testid="code-diff">
+      {JSON.stringify({previous: props.previous, next: props.next})}
+    </pre>
+  ),
+}))
+
+vi.mock('sanity', () => ({
+  defineLocaleResourceBundle: (bundle: unknown) => bundle,
+  defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+  useSchema: () => undefined,
+  useTranslation: () => ({
+    t: (key: string, options?: Record<string, unknown>) =>
+      options ? `${key}:${JSON.stringify(options)}` : key,
+  }),
+}))
+
+vi.mock('../../../codemirror/VisionCodeMirror', () => ({
+  VisionCodeMirror: function VisionCodeMirrorMock({
+    initialValue,
+    onChange,
+    ref,
+  }: {initialValue?: string; onChange?: (value: string) => void} & RefAttributes<
+    Partial<VisionCodeMirrorHandle>
+  >) {
+    const textareaRef = useRef<HTMLTextAreaElement>(null)
+    useImperativeHandle(ref, () => ({
+      resetEditorContent: (content: string) => {
+        if (textareaRef.current) textareaRef.current.value = content
+      },
+    }))
+    return (
+      <textarea
+        defaultValue={initialValue}
+        onChange={(event) => onChange?.(event.target.value)}
+        ref={textareaRef}
+      />
+    )
+  },
+}))
+
+// @sanity/ui's ThemeProvider reads the color scheme preference
+vi.stubGlobal(
+  'matchMedia',
+  vi.fn((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+)
+
+const theme = buildTheme()
+
+const CURRENT = [
+  {_id: 'a', _rev: 'r1', _type: 'post', _updatedAt: '2026-10-14T10:00:00Z', title: 'Old'},
+  {_id: 'b', _rev: 'r1', _type: 'post', _updatedAt: '2026-10-14T10:00:00Z', title: 'Same'},
+]
+
+const DRY_RUN = {
+  transactionId: 'dry',
+  results: [
+    {id: 'a', operation: 'update', document: {...CURRENT[0], _rev: 'dry', title: 'New'}},
+    {id: 'b', operation: 'update', document: {...CURRENT[1], _rev: 'dry'}},
+    {id: 'c', operation: 'create', document: {_id: 'c', _rev: 'dry', _type: 'post'}},
+  ],
+}
+
+type RequestOptions = Parameters<MutateClient['request']>[0]
+
+function createClient(respond: (options: RequestOptions) => unknown, replies: unknown[] = []) {
+  const request = vi.fn((options: RequestOptions) => {
+    try {
+      return Promise.resolve(respond(options))
+    } catch (error) {
+      return Promise.reject(error)
+    }
+  })
+  const prompt = vi.fn((_request: PromptRequest) => Promise.resolve(replies.shift()))
+  const client: MutateTabClient = {
+    // Without a project, the AI credits are not read
+    config: () => ({}),
+    getDataUrl: (operation) => `/v2025-02-19/data/${operation}/test`,
+    request,
+    getDocuments: (ids) =>
+      Promise.resolve(ids.map((id) => CURRENT.find((document) => document._id === id) ?? null)),
+    withConfig: () => ({agent: {action: {prompt}}, request: () => Promise.resolve(undefined)}),
+  }
+  return {client, request, prompt}
+}
+
+function Harness(props: {
+  client: MutateTabClient
+  dataset?: string
+  result?: unknown
+  onApplied?: () => void
+}) {
+  const mutate = useMutatePanel()
+  return (
+    <MutateTab
+      canRequest
+      client={props.client}
+      dataset={props.dataset ?? 'test'}
+      hiddenFields={['_rev', '_updatedAt']}
+      mutate={mutate}
+      onApplied={props.onApplied ?? (() => undefined)}
+      result={props.result}
+    />
+  )
+}
+
+function renderTab(props: Parameters<typeof Harness>[0]) {
+  const ui = (next: Parameters<typeof Harness>[0]) => (
+    <ThemeProvider theme={theme}>
+      <LayerProvider>
+        <Harness {...next} />
+      </LayerProvider>
+    </ThemeProvider>
+  )
+  const view = render(ui(props))
+  return {...view, rerenderWith: (next: Parameters<typeof Harness>[0]) => view.rerender(ui(next))}
+}
+
+function editor(): HTMLTextAreaElement {
+  return within(screen.getByTestId('vision-mutate-editor')).getByRole('textbox')
+}
+
+function write(text: string) {
+  fireEvent.change(editor(), {target: {value: text}})
+}
+
+function button(testId: string): HTMLButtonElement {
+  return screen.getByTestId(testId) as HTMLButtonElement
+}
+
+const PATCH = JSON.stringify([{patch: {query: '*[_type == "post"]', set: {title: 'New'}}}])
+
+describe('MutateTab', () => {
+  afterEach(() => cleanup())
+
+  it('shows what a dry run would change in each document, and applies exactly that', async () => {
+    const {client, request} = createClient((options) =>
+      options.query.dryRun ? DRY_RUN : {transactionId: 'tx-1', results: DRY_RUN.results},
+    )
+    const onApplied = vi.fn()
+    renderTab({client, onApplied})
+
+    write(PATCH)
+    expect(button('vision-mutate-apply').disabled).toBe(true)
+    fireEvent.click(button('vision-mutate-preview'))
+    const preview = await screen.findByTestId('vision-mutate-preview-result')
+
+    expect(
+      within(preview)
+        .getAllByTestId('vision-mutate-operation')
+        .map((badge) => badge.textContent),
+    ).toEqual([
+      'vision.mutate.operation.update',
+      'vision.mutate.operation.none',
+      'vision.mutate.operation.create',
+    ])
+    expect(screen.getByTestId('vision-mutate-summary').textContent).toBe(
+      'vision.mutate.summary:{"changed":2,"unchanged":1}',
+    )
+    // The changed documents' diffs are open (once the lazy diff has loaded), without the fields
+    // that change with every write
+    await waitFor(() => expect(within(preview).getAllByTestId('code-diff')).toHaveLength(2))
+    const diffs = within(preview).getAllByTestId('code-diff')
+    const first = JSON.parse(diffs[0].textContent ?? '{}')
+    expect(JSON.parse(first.previous)).toEqual({_id: 'a', _type: 'post', title: 'Old'})
+    expect(JSON.parse(first.next)).toEqual({_id: 'a', _type: 'post', title: 'New'})
+    expect(JSON.parse(diffs[1].textContent ?? '{}').previous).toBe('')
+
+    fireEvent.click(button('vision-mutate-apply'))
+    await screen.findByTestId('vision-mutate-applied')
+    expect(request).toHaveBeenCalledTimes(2)
+    expect(request.mock.calls[1][0]).toMatchObject({
+      method: 'POST',
+      body: {mutations: JSON.parse(PATCH)},
+      query: {returnIds: 'true', visibility: 'sync', autoGenerateArrayKeys: 'true'},
+    })
+    expect(request.mock.calls[1][0].query).not.toHaveProperty('dryRun')
+    expect(onApplied).toHaveBeenCalledTimes(1)
+    expect(screen.getByTestId('vision-mutate-applied').textContent).toBe(
+      'vision.mutate.applied:{"dataset":"test","transactionId":"tx-1","count":3}',
+    )
+    expect(screen.queryByTestId('vision-mutate-preview-result')).toBeNull()
+  })
+
+  it('only applies a dry run of the mutations, dataset and options as they are', async () => {
+    const {client} = createClient(() => DRY_RUN)
+    const {rerenderWith} = renderTab({client})
+    write(PATCH)
+    fireEvent.click(button('vision-mutate-preview'))
+    await screen.findByTestId('vision-mutate-preview-result')
+    expect(button('vision-mutate-apply').disabled).toBe(false)
+
+    write(PATCH.replace('New', 'Newer'))
+    expect(screen.getByTestId('vision-mutate-stale')).toBeTruthy()
+    expect(button('vision-mutate-apply').disabled).toBe(true)
+    write(PATCH)
+    expect(button('vision-mutate-apply').disabled).toBe(false)
+
+    fireEvent.click(screen.getByTestId('vision-mutate-auto-keys'))
+    expect(button('vision-mutate-apply').disabled).toBe(true)
+    fireEvent.click(screen.getByTestId('vision-mutate-auto-keys'))
+    expect(button('vision-mutate-apply').disabled).toBe(false)
+
+    rerenderWith({client, dataset: 'production'})
+    expect(button('vision-mutate-apply').disabled).toBe(true)
+    expect(button('vision-mutate-apply').textContent).toBe(
+      'vision.mutate.apply:{"dataset":"production"}',
+    )
+  })
+
+  it('applies nothing when the dry run changes nothing', async () => {
+    const {client} = createClient(() => ({results: [DRY_RUN.results[1]]}))
+    renderTab({client})
+    write(PATCH)
+    fireEvent.click(button('vision-mutate-preview'))
+    await screen.findByTestId('vision-mutate-preview-result')
+    expect(button('vision-mutate-apply').disabled).toBe(true)
+    expect(screen.queryAllByTestId('code-diff')).toHaveLength(0)
+  })
+
+  it('explains mutations that cannot run, and what the API says is wrong with them', async () => {
+    const {client} = createClient(() => {
+      throw new ClientError({
+        statusCode: 409,
+        headers: {},
+        body: {
+          error: {
+            type: 'mutationError',
+            description: 'Mutation failed: Document by ID "a" already exists',
+            items: [{index: 0, error: {description: 'Document by ID "a" already exists'}}],
+          },
+        },
+        url: 'https://test.api.sanity.io/v2025-02-19/data/mutate/test',
+        method: 'POST',
+      })
+    })
+    renderTab({client})
+
+    write('[{"create": ')
+    expect(screen.getByTestId('vision-mutate-invalid').textContent).toContain(
+      'vision.mutate.invalid-json',
+    )
+    expect(button('vision-mutate-preview').disabled).toBe(true)
+    write('[{"create": {"_id": "a"}}, {"upsert": {}}]')
+    expect(screen.getByTestId('vision-mutate-invalid').textContent).toBe(
+      'vision.mutate.invalid-mutation:{"index":2}',
+    )
+
+    write('[{"create": {"_id": "a", "_type": "post"}}]')
+    fireEvent.click(button('vision-mutate-preview'))
+    const failure = await screen.findByTestId('vision-mutate-failure')
+    expect(failure.textContent).toContain('vision.mutate.preview-failed')
+    expect(failure.textContent).toContain('Mutation failed: Document by ID "a" already exists')
+    expect(failure.textContent).toContain(
+      'vision.mutate.failure-item:{"index":1,"message":"Document by ID \\"a\\" already exists"}',
+    )
+  })
+
+  it('adds mutations aimed at the documents of the result, by the IDs they are stored under', () => {
+    const {client} = createClient(() => DRY_RUN)
+    renderTab({
+      client,
+      result: [
+        {_id: 'a', _originalId: 'drafts.a', _type: 'post'},
+        {_id: 'b', _type: 'post'},
+      ],
+    })
+    fireEvent.click(screen.getByTestId('vision-mutate-add'))
+    const patch = screen.getByTestId('vision-mutate-add-patch')
+    expect(patch.textContent).toBe('vision.mutate.add.patch-result')
+    fireEvent.click(patch)
+    fireEvent.click(screen.getByTestId('vision-mutate-add'))
+    fireEvent.click(screen.getByTestId('vision-mutate-add-create'))
+    expect(JSON.parse(editor().value)).toEqual([
+      {patch: {query: '*[_id in $ids]', params: {ids: ['drafts.a', 'b']}, set: {}}},
+      {create: {_type: 'post'}},
+    ])
+  })
+
+  it('writes mutations from a description, with the dry run that checked them, to apply', async () => {
+    const generated = [{patch: {id: 'a', set: {title: 'foobar'}}}]
+    const dryRun = {
+      results: [
+        {id: 'a', operation: 'update', document: {...CURRENT[0], _rev: 'dry', title: 'foobar'}},
+      ],
+    }
+    const {client, request, prompt} = createClient(
+      (options) =>
+        options.query.dryRun ? dryRun : {transactionId: 'tx-2', results: dryRun.results},
+      [{mutations: generated}],
+    )
+    const onApplied = vi.fn()
+    renderTab({client, onApplied, result: [{_id: 'a', _type: 'post', title: 'Old'}]})
+    write('[{"delete": {"id": "b"}}]')
+
+    fireEvent.click(screen.getByTestId('vision-mutate-generate'))
+    const field = screen.getByTestId('vision-mutate-generate-request')
+    expect(field.getAttribute('autocomplete')).toBe('off')
+    fireEvent.change(field, {
+      target: {value: 'Change the title of the documents I am looking at to foobar'},
+    })
+    fireEvent.keyDown(field, {key: 'Enter'})
+
+    await waitFor(() => expect(screen.queryByTestId('vision-mutate-generate-bar')).toBeNull())
+    expect(prompt.mock.calls[0][0].instructionParams).toMatchObject({
+      request: 'Change the title of the documents I am looking at to foobar',
+      documents: '- a (post)',
+    })
+    // The generated mutations replace the ones written, and their dry run is the one shown
+    expect(JSON.parse(editor().value)).toEqual(generated)
+    const preview = screen.getByTestId('vision-mutate-preview-result')
+    expect(
+      within(preview)
+        .getAllByTestId('vision-mutate-operation')
+        .map((badge) => badge.textContent),
+    ).toEqual(['vision.mutate.operation.update'])
+    expect(request).toHaveBeenCalledTimes(1)
+
+    fireEvent.click(button('vision-mutate-apply'))
+    await screen.findByTestId('vision-mutate-applied')
+    expect(request.mock.calls[1][0]).toMatchObject({body: {mutations: generated}})
+    expect(request.mock.calls[1][0].query).not.toHaveProperty('dryRun')
+    expect(onApplied).toHaveBeenCalledTimes(1)
+  })
+
+  it('offers the last attempt when the dry run turns every generated one down', async () => {
+    const rejected = [{delete: {id: 'a'}}]
+    const {client, prompt} = createClient(
+      () => {
+        throw new ClientError({
+          statusCode: 409,
+          headers: {},
+          body: {
+            error: {
+              type: 'mutationError',
+              description:
+                'Mutation failed: Document "a" cannot be deleted as there are references to it',
+            },
+          },
+          url: 'https://test.api.sanity.io/v2025-02-19/data/mutate/test',
+          method: 'POST',
+        })
+      },
+      Array.from({length: 3}, () => ({mutations: rejected})),
+    )
+    renderTab({client, result: [{_id: 'a', _type: 'post'}]})
+
+    fireEvent.click(screen.getByTestId('vision-mutate-generate'))
+    fireEvent.change(screen.getByTestId('vision-mutate-generate-request'), {
+      target: {value: 'Delete them'},
+    })
+    fireEvent.click(button('vision-mutate-generate-submit'))
+    const error = await screen.findByTestId('vision-mutate-generate-error')
+    expect(error.textContent).toContain('vision.mutate.generate.failed')
+    expect(error.textContent).toContain('cannot be deleted as there are references to it')
+    expect(prompt).toHaveBeenCalledTimes(3)
+
+    fireEvent.click(within(error).getByTestId('vision-mutate-generate-open-anyway'))
+    expect(screen.queryByTestId('vision-mutate-generate-bar')).toBeNull()
+    expect(JSON.parse(editor().value)).toEqual(rejected)
+    expect(screen.queryByTestId('vision-mutate-preview-result')).toBeNull()
+  })
+})

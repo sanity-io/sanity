@@ -1,6 +1,6 @@
-import {Box} from '@sanity/ui'
 import {useEffect, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+import {Box} from 'ui5'
 
 const Hr = styled.hr<{$show: boolean}>`
   height: 1px;

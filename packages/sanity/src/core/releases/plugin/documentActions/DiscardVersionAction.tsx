@@ -69,6 +69,9 @@ export const useDiscardVersionAction: DocumentActionComponent = (
           documentType={type}
           onClose={() => setDialogOpen(false)}
           fromPerspective={selectedPerspective}
+          // In the document pane `DocumentOperationResults` already toasts the discard
+          // operation events this dialog would report.
+          showCompletionToasts={false}
         />
       ),
     },

@@ -19,6 +19,11 @@ function createMockPresenceStore(): PresenceStore {
     reportLocations: vi.fn(() => of(undefined)),
     setLocation: vi.fn(),
     debugPresenceParam$: of([]),
+    debug: {
+      ownLocation$: of([]),
+      fakePresence: vi.fn(),
+      removeFakePresence: vi.fn(),
+    },
   }
 }
 

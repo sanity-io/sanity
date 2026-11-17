@@ -10,14 +10,16 @@
     "test": "vitest run"
   },
   "devDependencies": {
+    "@pandacss/vite": "catalog:",
+    "@repo/css-modules-kit": "workspace:*",
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@rolldown/plugin-babel": "catalog:",
-    "@sanity/vanilla-extract-vite-plugin": "catalog:",
+    "@sanity/pandacss-tsdown-plugin": "catalog:",
     "@types/lodash-es": "^4.17.12",
     "@vitejs/plugin-react": "catalog:",
-    "babel-plugin-react-compiler": "catalog:",
+    "lightningcss": "^1.33.0",
     "lodash-es": "^4.18.1",
+    "oxc-transform-react": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   }

@@ -1,5 +1,5 @@
-import {Box, Card, type CardTone, Checkbox, Flex, Switch} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {Card, type CardTone, Checkbox, Switch} from '@sanity/ui'
+import {Flex, Box} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -8,10 +8,7 @@ import {FormFieldHeaderText} from '../components/formField/FormFieldHeaderText'
 import {FormFieldStatus} from '../components/formField/FormFieldStatus'
 import {useFieldActions} from '../field/actions/useFieldActions'
 import {type BooleanInputProps} from '../types/inputProps'
-
-const CenterAlignedBox = styled(Box)`
-  align-self: center;
-`
+import {centerAlignedBox} from './BooleanInput.css'
 
 /**
  *
@@ -57,7 +54,13 @@ export function BooleanInput(props: BooleanInputProps) {
     <Card border data-testid="boolean-input" radius={2} tone={tone}>
       <Flex style={props.elementProps.style}>
         {readOnly ? <Tooltip content={t('inputs.boolean.disabled')}>{input}</Tooltip> : input}
-        <Box flex={1} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} paddingY={2}>
+        <Box
+          flexBasis="0%"
+          flexGrow={1}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+          paddingY={2}
+        >
           <FormFieldBaseHeader
             __internal_comments={comments}
             __internal_slot={slot}
@@ -73,15 +76,16 @@ export function BooleanInput(props: BooleanInputProps) {
                 inputId={id}
                 validation={validation}
                 title={schemaType.title}
+                tone={hasErrors ? 'critical' : undefined}
               />
             }
           />
         </Box>
-        <CenterAlignedBox paddingX={3} paddingY={1}>
+        <Box className={centerAlignedBox} paddingX={3} paddingY={1}>
           <FormFieldStatus maxAvatars={1} position="top">
             {/*<FieldPresence maxAvatars={1} presence={presence} />*/}
           </FormFieldStatus>
-        </CenterAlignedBox>
+        </Box>
       </Flex>
     </Card>
   )

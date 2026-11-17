@@ -1,8 +1,8 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ArraySchemaType} from '@sanity/types'
-import {Grid} from '@sanity/ui'
 import {useCallback, useState} from 'react'
+import {Grid} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'

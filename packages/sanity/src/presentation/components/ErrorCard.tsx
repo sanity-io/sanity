@@ -1,6 +1,7 @@
-import {Box, Card, type CardProps, Container, Flex, Inline, Stack, Text} from '@sanity/ui'
+import {Card, type CardProps, Inline} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {useTranslation} from 'sanity'
+import {Text, Container, Flex, Box, VStack} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'
 import {presentationLocaleNamespace} from '../i18n'
@@ -8,12 +9,15 @@ import {presentationLocaleNamespace} from '../i18n'
 export function ErrorCard(
   props: {
     children?: ReactNode
+    title?: string
     message: string
+    continueAnywayText?: string
     onRetry?: () => void
     onContinueAnyway?: () => void
   } & CardProps,
 ): React.JSX.Element {
-  const {children, message, onRetry, onContinueAnyway, ...restProps} = props
+  const {children, title, message, continueAnywayText, onRetry, onContinueAnyway, ...restProps} =
+    props
 
   const {t} = useTranslation(presentationLocaleNamespace)
 
@@ -25,23 +29,23 @@ export function ErrorCard(
       mode="ghost"
       tone="critical"
       onClick={onContinueAnyway}
-      text={t('error-card.continue-button.text')}
+      text={continueAnywayText ?? t('error-card.continue-button.text')}
     />
   )
 
   return (
     <Card height="fill" {...restProps}>
-      <Flex align="center" height="fill" justify="center">
-        <Container padding={4} sizing="border" width={0}>
-          <Stack gap={4}>
-            <Stack gap={3}>
-              <Text size={1} weight="semibold">
-                {t('error-card.title')}
+      <Flex alignItems="center" height="100%" justifyContent="center">
+        <Container padding={4} size={0}>
+          <VStack gap={4}>
+            <VStack gap={3}>
+              <Text size={1} weight="semibold" as="div" trim={true}>
+                {title ?? t('error-card.title')}
               </Text>
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 {message}
               </Text>
-            </Stack>
+            </VStack>
 
             {children}
 
@@ -55,7 +59,7 @@ export function ErrorCard(
             ) : onContinueAnyway ? (
               <Box>{continueAnywayButton}</Box>
             ) : null}
-          </Stack>
+          </VStack>
         </Container>
       </Flex>
     </Card>

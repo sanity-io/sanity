@@ -1,8 +1,9 @@
 import {type ArraySchemaType} from '@sanity/types'
-import {Box, Checkbox, Flex, Grid, Text} from '@sanity/ui'
+import {Checkbox} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import startCase from 'lodash-es/startCase.js'
 import {useMemo} from 'react'
+import {Text, Grid, Flex, Box} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {set, unset} from '../../../patch/patch'
@@ -79,7 +80,7 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
     <ChangeIndicator path={path} isChanged={changed} hasFocus={false}>
       <Grid
         gap={2}
-        gridTemplateColumns={isGrid ? Math.min(options.length, 4) : 1}
+        gridTemplateColumns={`repeat(${isGrid ? Math.min(options.length, 4) : 1}, minmax(0, 1fr))`}
         {...elementProps}
       >
         {options.map((option, index) => {
@@ -90,7 +91,7 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
 
           return (
             // oxlint-disable-next-line no-array-index-key
-            <Flex key={index} align="center" as="label">
+            <Flex key={index} alignItems="center" as="label">
               <Checkbox
                 disabled={disabled}
                 checked={checked}
@@ -100,7 +101,9 @@ export function ArrayOfPrimitiveOptionsInput(props: ArrayOfPrimitivesInputProps)
               />
 
               <Box padding={2}>
-                <Text>{option.title}</Text>
+                <Text as="div" trim={true}>
+                  {option.title}
+                </Text>
               </Box>
 
               {!optionType && (

@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "pinnedHash": "66509d3510778a0861b1626cc40beef94603f40a4dddd16dc79c9fefb3f3a819",
+  "stryker": {
+    "timeoutMs": 60000,
+    "concurrency": 4,
+    "dryRunFloor": {"sanity": 395, "mutator": 145}
+  },
+  "catalogue": {
+    "suites": {
+      "unit:mutator": {"project": "@sanity/mutator", "paths": []},
+      "unit:engine": {
+        "project": "sanity",
+        "paths": [
+          "packages/sanity/src/core/store/document",
+          "packages/sanity/src/core/form/patch",
+          "packages/sanity/src/core/form/utils",
+          "packages/sanity/src/core/form/members",
+          "packages/sanity/src/core/form/inputs/PortableText",
+          "packages/sanity/src/core/form/inputs/arrays",
+          "packages/sanity/src/structure/panes/document/documentPanel"
+        ]
+      },
+      "fuzz:pt": {
+        "file": "src/core/form/inputs/PortableText/__tests__/syncFuzz/PortableTextSync.fuzz.test.tsx",
+        "seeds": [1, 2, 3],
+        "runs": 150
+      }
+    }
+  }
+}

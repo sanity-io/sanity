@@ -50,7 +50,6 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
     return (
       <MenuItem
         as={IntentLink}
-        // @ts-expect-error - `intent` is valid when using `IntentLink`
         intent="edit"
         params={{
           id: getPublishedId(lastActiveLocation.documentId),

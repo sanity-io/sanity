@@ -4,6 +4,7 @@ import {message} from '@optique/core/message'
 import {command, constant, option} from '@optique/core/primitives'
 
 import {SCENARIOS} from '../../scenarios'
+import {type BenchScenario} from '../../scenarios/types'
 
 export const scenariosCommand = command(
   'scenarios',
@@ -23,11 +24,16 @@ export function listScenarios(json: boolean): void {
   }
   const width = Math.max(...SCENARIOS.map((scenario) => scenario.name.length))
   for (const scenario of SCENARIOS) {
-    const fields = scenario.interactions
-      .map((target) => target.label ?? target.fieldPath)
-      .join(', ')
     console.log(
-      `${scenario.name.padEnd(width)}  ${scenario.documentType} document — types into: ${fields}`,
+      `${scenario.name.padEnd(width)}  ${scenario.documentType ? `${scenario.documentType} document` : 'no document'} — ${describeScenario(scenario)}`,
     )
   }
+}
+
+function describeScenario(scenario: BenchScenario): string {
+  const fields = scenario.interactions.map((target) => target.label ?? target.fieldPath).join(', ')
+  if (fields) return `types into: ${fields}`
+  if (scenario.load) return 'pageload only (load steps)'
+  if (scenario.softNav) return `softnav only (${scenario.softNav.steps.length} steps)`
+  return 'settle only (no typing targets)'
 }

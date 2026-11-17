@@ -1,9 +1,9 @@
 import {white} from '@sanity/color'
 import {CloseIcon} from '@sanity/icons/Close'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Box, Stack} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {Dialog} from '../../../ui-components/dialog/Dialog'
@@ -63,7 +63,7 @@ export function UpsellDialog(props: UpsellDialogProps) {
       onClose={onClose}
       onClickOutside={onClose}
       __unstable_hideCloseButton
-      bodyHeight="fill"
+      bodyHeight="100%"
       padding={false}
       zOffset={800}
       footer={{
@@ -105,13 +105,13 @@ export function UpsellDialog(props: UpsellDialogProps) {
         tooltipProps={null}
       />
       {data.image && <Image src={data.image.asset.url} alt={data.image.asset.altText ?? ''} />}
-      <Box padding={3} marginTop={2}>
-        <Stack gap={4} paddingBottom={2}>
+      <Box padding={3} marginTop={data.image ? 2 : 0} paddingTop={data.image ? 0 : 4}>
+        <Flex gap={4} paddingBottom={2} flexDirection="column">
           <UpsellDescriptionSerializer
             blocks={data.descriptionText}
             interpolation={interpolation}
           />
-        </Stack>
+        </Flex>
       </Box>
     </Dialog>
   )

@@ -55,6 +55,11 @@ export interface ReleaseOperationsStore {
     documentId: string,
     opts?: BaseActionOptions,
   ) => Promise<SingleActionResult>
+  /**
+   * Prefer `useDocumentOperation(publishedId, type, releaseId).unpublish`, which routes release
+   * versions through the same operation pipeline as draft and published edits. Kept for
+   * backwards compatibility; no studio code calls it any more.
+   */
   unpublishVersion: (documentId: string, opts?: BaseActionOptions) => Promise<SingleActionResult>
   revertUnpublishVersion: (
     documentId: string,

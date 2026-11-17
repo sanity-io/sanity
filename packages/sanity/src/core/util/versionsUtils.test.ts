@@ -12,6 +12,7 @@ function createVersion(
     _rev: 'rev',
     _createdAt: '2026-01-01T00:00:00.000Z',
     _updatedAt: '2026-01-01T00:00:00.000Z',
+    _type: 'article',
     _system: {
       group: {
         _ref: 'doc1',
@@ -25,17 +26,19 @@ function createVersion(
 const publishedBase = createVersion('doc1')
 
 const publishedVariant = createVersion('variant-doc', {
-  variant: {_ref: '_.variants.a', _weak: true},
+  variants: [{_ref: '_.variants.a', _key: 'k-123'}],
 })
 
 const draftBase = createVersion('drafts.doc1', {bundleId: 'drafts'})
 
 const draftVariant = createVersion('drafts.variant-doc', {
   bundleId: 'drafts',
-  variant: {
-    _ref: '_.variants.a',
-    _weak: true,
-  },
+  variants: [
+    {
+      _ref: '_.variants.a',
+      _key: 'k-123',
+    },
+  ],
 })
 
 const releaseVersion = createVersion('versions.a.doc1', {

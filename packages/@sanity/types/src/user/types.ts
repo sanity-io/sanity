@@ -40,6 +40,7 @@ export interface CurrentUser {
   email: string
   profileImage?: string
   provider?: string
+  sanityUserId?: string | null
   /** @deprecated use `roles` instead */
   role: string
   roles: Role[]
@@ -56,4 +57,5 @@ export interface User {
   displayName?: string
   imageUrl?: string
   email?: string
+  sanityUserId?: string
 }

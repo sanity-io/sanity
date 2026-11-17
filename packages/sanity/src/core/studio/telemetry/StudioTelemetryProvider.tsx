@@ -1,7 +1,11 @@
+import portableTextEditorManifest from '@portabletext/editor/package.json' with {type: 'json'}
+import appSdkManifest from '@sanity/sdk-react/package.json' with {type: 'json'}
 import {
+  type ConsentStatus,
   createBatchedStore,
   type CreateBatchedStoreOptions,
   createSessionId,
+  type SessionId,
 } from '@sanity/telemetry'
 import {TelemetryProvider} from '@sanity/telemetry/react'
 import {
@@ -16,20 +20,29 @@ import {useRouterState} from 'sanity/router'
 
 import {isProd} from '../../environment'
 import {useClient} from '../../hooks/useClient'
+import {PROTOCOL_CHECK_API_VERSION} from '../../network/isUsingLegacyHttp'
 import {useProjectOrganizationId} from '../../store/project/useProjectOrganizationId'
 import {SANITY_VERSION} from '../../version'
 import {
+  collectDeprecatedConfigFlags,
   collectWorkspaceFeatures,
+  DeprecatedConfigUsageObserved,
   WorkspaceFeaturesObserved,
 } from '../__telemetry__/featureAvailability.telemetry'
 import {StudioLoaded} from '../__telemetry__/studioLoaded.telemetry'
 import {useWorkspace} from '../workspace'
 import {useWorkspaces} from '../workspaces/useWorkspaces'
+import {ListenerPeakTelemetry} from './ListenerPeakTelemetry'
 import {PerformanceTelemetryTracker} from './PerformanceTelemetry'
 import {type TelemetryContext} from './types'
-import {debugLoggingStore} from './utils/debugLoggingStore'
+import {debugLoggingStore, isDebugTelemetryEnabled} from './utils/debugLoggingStore'
 
-const sessionId = createSessionId()
+let sessionId: SessionId | undefined
+
+function getSessionId(): SessionId {
+  sessionId ??= createSessionId()
+  return sessionId
+}
 
 /** Telemetry only runs on client */
 const isClient = typeof window !== 'undefined'
@@ -97,6 +110,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   // Ref to hold current context - allows sendEvents to always access latest values
   // without causing re-memoization of the store
   const contextRef = useRef<TelemetryContext | null>(null)
+  const consentStatusRef = useRef<ConsentStatus | undefined>(undefined)
 
   // Update context ref when dynamic values change
   // Telemetry only runs on client - no SSR fallbacks needed
@@ -117,6 +131,8 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
       },
       studioVersion: SANITY_VERSION,
       reactVersion,
+      portableTextEditorVersion: portableTextEditorManifest.version,
+      appSdkVersion: appSdkManifest.version,
       environment: isProd ? 'production' : 'development',
       connection: getConnection(),
 
@@ -142,15 +158,18 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
   ])
 
   const storeOptions = useMemo((): CreateBatchedStoreOptions => {
-    const debugTelemetry = import.meta && import.meta.env?.SANITY_STUDIO_DEBUG_TELEMETRY === 'true'
-
-    if (debugTelemetry) {
+    if (isDebugTelemetryEnabled()) {
       return debugLoggingStore
     }
     return {
       flushInterval: 30000,
       resolveConsent: () =>
-        client.request({uri: '/intake/telemetry-status', tag: 'telemetry-consent.studio'}),
+        client
+          .request({url: '/intake/telemetry-status', tag: 'telemetry-consent.studio'})
+          .then((consent: {status: ConsentStatus}) => {
+            consentStatusRef.current = consent.status
+            return consent
+          }),
 
       // Each event is enriched with the current context
       sendEvents: (batch) => {
@@ -161,31 +180,34 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
           context,
         }))
         return client.request({
-          uri: '/intake/batch',
+          url: '/intake/batch',
           method: 'POST',
-          json: true,
           body: {projectId, batch: enrichedBatch},
         })
       },
+      // The batched store checks consent before every flush but not before the closing beacon.
       sendBeacon: (batch) => {
-        if (!isClient || !contextRef.current) return false
         const context = contextRef.current
-        const enrichedBatch = batch.map((event) => ({
-          ...event,
-          context,
-        }))
-        return navigator.sendBeacon(
-          client.getUrl('/intake/batch'),
-          JSON.stringify({projectId, batch: enrichedBatch}),
-        )
+        const canSend = isClient && context && consentStatusRef.current === 'granted'
+        if (canSend) {
+          const enrichedBatch = batch.map((event) => ({
+            ...event,
+            context,
+          }))
+          return navigator.sendBeacon(
+            client.getUrl('/intake/batch'),
+            JSON.stringify({projectId, batch: enrichedBatch}),
+          )
+        }
+        return false
       },
     }
   }, [client, projectId])
 
   // The storeOptions callbacks access contextRef.current, but only when called
   // asynchronously (on flush), not during render. Suppress the lint warning.
-  // oxlint-disable-next-line react/react-compiler
-  const store = useMemo(() => createBatchedStore(sessionId, storeOptions), [storeOptions])
+  // oxlint-disable-next-line react/refs -- pre-existing violation, to be fixed in a follow-up
+  const store = useMemo(() => createBatchedStore(getSessionId(), storeOptions), [storeOptions])
 
   // Per-instance guard so StrictMode's double-invoked mount effect logs StudioLoaded once.
   const studioLoadedFiredRef = useRef(false)
@@ -206,7 +228,11 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
     })
   }, [store.logger])
 
+  const protocolCheckClient = useClient({apiVersion: PROTOCOL_CHECK_API_VERSION})
+
   const workspaceFeatures = useMemo(() => collectWorkspaceFeatures(workspace), [workspace])
+  const deprecatedConfigFlags = useMemo(() => collectDeprecatedConfigFlags(workspace), [workspace])
+
   // Why: this component creates the TelemetryProvider, so `useTelemetry()` is
   // unavailable here. Log through `store.logger` directly. The ref dedupes
   // StrictMode's double-invoked mount effect per workspace while still
@@ -218,10 +244,12 @@ export function StudioTelemetryProvider(props: {children: ReactNode}) {
     if (observedFeaturesKeyRef.current === workspaceKey) return
     observedFeaturesKeyRef.current = workspaceKey
     store.logger.log(WorkspaceFeaturesObserved, workspaceFeatures)
-  }, [store.logger, workspace.name, workspace.projectId, workspaceFeatures])
+    store.logger.log(DeprecatedConfigUsageObserved, deprecatedConfigFlags)
+  }, [store.logger, workspace.name, workspace.projectId, workspaceFeatures, deprecatedConfigFlags])
 
   return (
     <TelemetryProvider store={store}>
+      <ListenerPeakTelemetry telemetry={store.logger} protocolCheckClient={protocolCheckClient} />
       <PerformanceTelemetryTracker>{props.children}</PerformanceTelemetryTracker>
     </TelemetryProvider>
   )

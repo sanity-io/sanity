@@ -58,3 +58,17 @@ export function getActivePerspective({
   }
   return visionPerspective
 }
+
+/**
+ * The navbar variant is only sent with Vision queries when the virtual "Pinned release"
+ * perspective is selected. Other Vision perspectives stay local and do not attach a variant.
+ */
+export function getActiveVariant(
+  visionPerspective: ClientPerspective | SupportedPerspective | undefined,
+  selectedVariantName: string | undefined,
+): string | undefined {
+  if (visionPerspective !== 'pinnedRelease') {
+    return undefined
+  }
+  return selectedVariantName
+}

@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Flex, Stack, type StackProps, useLayer} from '@sanity/ui'
+import {type AvatarSize, useLayer} from '@sanity/ui'
 import {
   type KeyboardEvent,
   memo,
@@ -11,6 +11,7 @@ import {
   useState,
 } from 'react'
 import {css, styled} from 'styled-components'
+import {type PaddingProps, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
@@ -101,7 +102,7 @@ export interface CommentsListItemProps {
   canReply?: boolean
   currentUser: CurrentUser
   hasReferencedValue?: boolean
-  innerPadding?: StackProps['padding']
+  innerPadding?: PaddingProps['padding']
   isSelected: boolean
   mentionOptions: UserListWithPermissionsHookValue
   mode: CommentsUIMode
@@ -261,15 +262,16 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
         aria-label={t('list-item.go-to-field-button.aria-label')}
       />
 
-      <Stack
+      <Flex
         as="ul"
         padding={innerPadding}
         // Add some extra padding to the bottom if there is no reply input.
         // This is to make the UI look more balanced.
         paddingBottom={canReply ? undefined : 1}
         gap={4}
+        flexDirection="column"
       >
-        <Stack as="li" {...applyCommentIdAttr(parentComment._id)}>
+        <VStack as="li" {...applyCommentIdAttr(parentComment._id)}>
           <CommentsListItemLayout
             avatarSize={avatarConfig.avatarSize}
             canDelete={parentComment.authorId === currentUser.id}
@@ -293,10 +295,10 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
             readOnly={readOnly}
             withAvatar={avatarConfig.parentCommentAvatar}
           />
-        </Stack>
+        </VStack>
 
         {showCollapseButton && collapsed && (
-          <Flex gap={1} paddingY={1} sizing="border">
+          <Flex gap={1} paddingY={1}>
             <SpacerAvatar />
 
             <ExpandButton
@@ -309,7 +311,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
         )}
 
         {splicedReplies.map((reply) => (
-          <Stack key={reply._id} as="li" {...applyCommentIdAttr(reply._id)}>
+          <VStack key={reply._id} as="li" {...applyCommentIdAttr(reply._id)}>
             <CommentsListItemLayout
               avatarSize={avatarConfig.avatarSize}
               canDelete={reply.authorId === currentUser.id}
@@ -330,7 +332,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
               readOnly={readOnly}
               withAvatar={avatarConfig.threadCommentsAvatar}
             />
-          </Stack>
+          </VStack>
         ))}
 
         {canReply && (
@@ -355,8 +357,7 @@ export const CommentsListItem = memo(function CommentsListItem(props: CommentsLi
             withAvatar={avatarConfig.replyAvatar}
           />
         )}
-      </Stack>
+      </Flex>
     </StyledThreadCard>
   )
 })
-CommentsListItem.displayName = 'Memo(CommentsListItem)'

@@ -89,6 +89,35 @@ function classifyRelease(
   return getReleaseIdFromReleaseDocumentId(releaseRef)
 }
 
+/**
+ * The edit state before any snapshot has arrived. `editState` emits it first, and `useEditState`
+ * renders it until the pipeline emits.
+ *
+ * @internal
+ */
+export function getInitialEditState(
+  schema: Schema,
+  idPair: IdPair,
+  typeName: string,
+): EditStateFor {
+  const liveEditSchemaType = isLiveEditEnabled(schema, typeName)
+  const scopeId = idPair.versionId ? getVersionFromId(idPair.versionId) : undefined
+
+  return {
+    id: idPair.publishedId,
+    type: typeName,
+    draft: null,
+    published: null,
+    version: null,
+    liveEdit: typeof idPair.versionId !== 'undefined' || liveEditSchemaType,
+    liveEditSchemaType,
+    ready: false,
+    transactionSyncLock: null,
+    release: scopeId,
+    scopeId,
+  }
+}
+
 // How long to keep the pipeline alive after the last subscriber unsubscribes.
 // Subscriber churn (e.g. a React commit that unsubscribes every consumer before
 // the replacements subscribe) can momentarily drop the refcount to zero. A bare
@@ -115,9 +144,8 @@ export const editState = memoize(
     idPair: IdPair,
     typeName: string,
   ): Observable<EditStateFor> => {
-    const liveEditSchemaType = isLiveEditEnabled(ctx.schema, typeName)
-    const liveEdit = typeof idPair.versionId !== 'undefined' || liveEditSchemaType
-    const scopeId = idPair.versionId ? getVersionFromId(idPair.versionId) : undefined
+    const initialState = getInitialEditState(ctx.schema, idPair, typeName)
+    const {liveEdit, liveEditSchemaType, scopeId} = initialState
 
     return snapshotPair(ctx.client, idPair, typeName, undefined, ctx.extraOptions).pipe(
       switchMap((versions) =>
@@ -168,19 +196,7 @@ export const editState = memoize(
           scopeId,
         }),
       ),
-      startWith({
-        id: idPair.publishedId,
-        type: typeName,
-        draft: null,
-        published: null,
-        version: null,
-        liveEdit,
-        liveEditSchemaType,
-        ready: false,
-        transactionSyncLock: null,
-        release: scopeId,
-        scopeId,
-      }),
+      startWith(initialState),
       // Unlike `publishReplay(1) + refCount()`, this resets the replay subject
       // when the pipeline is torn down, so a later cold subscriber won't get a
       // stale `ready: true` replayed before the cold-start emissions (and an

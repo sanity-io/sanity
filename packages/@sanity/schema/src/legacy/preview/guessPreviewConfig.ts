@@ -1,6 +1,4 @@
 import arrify from 'arrify'
-import isUndefined from 'lodash-es/isUndefined.js'
-import omitBy from 'lodash-es/omitBy.js'
 
 import {createFallbackPrepare} from './fallbackPrepare'
 import {isBlockField} from './portableText'
@@ -76,7 +74,9 @@ export default function guessPreviewFields(
     descField = stringFieldNames[1] || blockFieldNames[1]
   }
 
-  const mediaField = objectTypeDef.fields.find((field: any) => field.type === 'image')
+  const mediaField =
+    objectTypeDef.fields.find((field: any) => field.type === 'image') ||
+    objectTypeDef.fields.find((field: any) => field.type === 'sanity.video')
 
   const imageAssetPath = resolveImageAssetPath(objectTypeDef)
 
@@ -104,13 +104,12 @@ export default function guessPreviewFields(
     }
   }
 
-  const select = omitBy(
-    {
+  const select = Object.fromEntries(
+    Object.entries({
       title: titleField,
       description: descField,
       media: mediaField ? mediaField.name : imageAssetPath,
-    },
-    isUndefined,
+    }).filter(([, value]) => value !== undefined),
   )
 
   return {

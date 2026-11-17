@@ -1,0 +1,81 @@
+import {useCallback} from 'react'
+import {Text, VStack} from 'ui5'
+
+import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {TextWithTone} from '../../components/textWithTone/TextWithTone'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {type TFunction} from '../../i18n/types'
+import {commentsLocaleNamespace} from '../i18n'
+
+function getDialogCopy(
+  t: TFunction,
+): Record<'thread' | 'comment', {title: string; body: string; confirmButtonText: string}> {
+  return {
+    thread: {
+      title: t('delete-thread.title'),
+      body: t('delete-thread.body'),
+      confirmButtonText: t('delete-thread.confirm'),
+    },
+    comment: {
+      title: t('delete-comment.title'),
+      body: t('delete-comment.body'),
+      confirmButtonText: t('delete-comment.confirm'),
+    },
+  }
+}
+
+/**
+ * @beta
+ * @hidden
+ */
+export interface CommentDeleteDialogProps {
+  commentId: string
+  error: Error | null
+  isParent: boolean
+  loading: boolean
+  onClose: () => void
+  onConfirm: (id: string) => void
+}
+
+/**
+ * @beta
+ * @hidden
+ */
+export function CommentDeleteDialog(props: CommentDeleteDialogProps) {
+  const {isParent, onClose, commentId, onConfirm, loading, error} = props
+  const {t} = useTranslation(commentsLocaleNamespace)
+  const dialogCopy = getDialogCopy(t)
+  const {title, body, confirmButtonText} = dialogCopy[isParent ? 'thread' : 'comment']
+
+  const handleDelete = useCallback(() => {
+    onConfirm(commentId)
+  }, [commentId, onConfirm])
+
+  return (
+    <Dialog
+      footer={{
+        cancelButton: {
+          onClick: onClose,
+        },
+        confirmButton: {
+          loading,
+          onClick: handleDelete,
+          text: confirmButtonText,
+          tone: 'critical',
+        },
+      }}
+      header={title}
+      id="delete-comment-dialog"
+      onClose={onClose}
+      width={0}
+    >
+      <VStack gap={4}>
+        <Text size={1} as="div" trim={true}>
+          {body}
+        </Text>
+
+        {error && <TextWithTone tone="critical">{t('delete-dialog.error')}</TextWithTone>}
+      </VStack>
+    </Dialog>
+  )
+}

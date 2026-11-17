@@ -146,6 +146,7 @@ export function useMainDocument(props: {
    */
   if (resolvers.length > 0) {
     if (typeof URLPattern === 'undefined') {
+      // oxlint-disable-next-line react/todo -- pre-existing violation, to be fixed in a follow-up
       urlPatternPolyfillPromise ??= import('urlpattern-polyfill')
     }
     // Once a load has started, keep unwrapping the same promise on every render: the resolved
@@ -157,7 +158,7 @@ export function useMainDocument(props: {
   }
 
   const {state: routerState} = useRouter()
-  // Fetching with a variant requires the `vX` API version for now
+  // Fetching with a variant requires the variants API version
   const client = useClient(variant ? VARIANTS_STUDIO_CLIENT_OPTIONS : {apiVersion: API_VERSION})
   const relativeUrl =
     path || routerState._searchParams?.find(([key]) => key === 'preview')?.[1] || ''
@@ -236,10 +237,11 @@ export function useMainDocument(props: {
         }
       }
     }
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setMainDocumentState(undefined)
     mainDocumentIdRef.current = undefined
     return undefined
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [client, perspective, relativeUrl, resolvers, targetOrigin, variant])
 
   return mainDocumentState

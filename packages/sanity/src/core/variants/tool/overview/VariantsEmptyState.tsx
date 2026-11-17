@@ -1,4 +1,5 @@
-import {Flex, rem, Text} from '@sanity/ui'
+import {rem} from '@sanity/ui'
+import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -16,24 +17,26 @@ export const VariantsEmptyState = ({createVariantButton}: VariantsEmptyStateProp
 
   return (
     <Flex
-      align="center"
+      alignItems="center"
       data-testid="variants-empty-state"
-      flex={1}
-      direction="column"
+      flexBasis="0%"
+      flexGrow={1}
+      flexDirection="column"
       gap={3}
       style={{maxWidth: rem(300)}}
       paddingBottom={5}
     >
       <VariantIllustration />
-      <Text as="h1" size={1} weight="semibold" data-testid="no-variants-info-text">
+      <Text as="h2" size={1} weight="semibold" data-testid="no-variants-info-text" trim={true}>
         {t('overview.title')}
       </Text>
-      <Text size={1} muted style={{textAlign: 'center'}}>
+      <Text size={1} muted align="center" as="div" trim={true}>
         {t('overview.empty-state.description')}
       </Text>
       <Flex gap={2}>
         {createVariantButton}
         <Button
+          aria-label={t('overview.action.documentation.aria-label')}
           as="a"
           href={VARIANTS_DOCUMENTATION_URL}
           target="_blank"

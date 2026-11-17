@@ -1,0 +1,55 @@
+import {type LiveEvent, type SyncTag} from '@sanity/client'
+
+/** The API version that introduced sync tags (and the Live Content API) */
+export const SYNC_TAGS_API_VERSION = 'v2021-03-25'
+
+/**
+ * The API version used for the live events subscription. Events are dataset-wide and tag-based,
+ * so the query's own API version does not need to match.
+ */
+export const LIVE_EVENTS_API_VERSION = 'v2025-02-19'
+
+const tagCollator = new Intl.Collator('en')
+
+/**
+ * Sync tags in alphabetical order, for showing them: the API lists a response's tags in no
+ * particular order, so as they come the list shifts from one fetch to the next
+ */
+export function sortSyncTags(tags: readonly SyncTag[]): SyncTag[] {
+  return tags.toSorted(tagCollator.compare)
+}
+
+/** Sync tags shared by a live event and the last query response, in the order the event lists them */
+export function getMatchingSyncTags(
+  eventTags: readonly SyncTag[],
+  responseTags: readonly SyncTag[] | undefined,
+): SyncTag[] {
+  if (!responseTags || responseTags.length === 0 || eventTags.length === 0) {
+    return []
+  }
+  const known = new Set(responseTags)
+  return eventTags.filter((tag) => known.has(tag))
+}
+
+/**
+ * Whether a live event should trigger a refetch of a query whose last response carried
+ * `responseTags`. `restart` events always do (the server asks every client to resync), and so do
+ * `reconnect` events: changes made while the connection was down sent no message. Presentation's
+ * loader resets on both too.
+ */
+export function getLiveRefetchTags(
+  event: LiveEvent | undefined,
+  responseTags: readonly SyncTag[] | undefined,
+): SyncTag[] | null {
+  if (!event) {
+    return null
+  }
+  if (event.type === 'restart' || event.type === 'reconnect') {
+    return []
+  }
+  if (event.type !== 'message') {
+    return null
+  }
+  const matched = getMatchingSyncTags(event.tags, responseTags)
+  return matched.length > 0 ? matched : null
+}

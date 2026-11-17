@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {PresentationDisplayedDocumentContextValue} from '../../presentation/loader/types'
 
@@ -6,7 +6,4 @@ import type {PresentationDisplayedDocumentContextValue} from '../../presentation
  * @internal
  */
 export const PresentationDisplayedDocumentContext =
-  createContext<PresentationDisplayedDocumentContextValue | null>(
-    'sanity/_singletons/context/presentation/displayed-document',
-    null,
-  )
+  createContext<PresentationDisplayedDocumentContextValue | null>(null)

@@ -1,10 +1,11 @@
 import {BulbOutlineIcon} from '@sanity/icons/BulbOutline'
 import {UnknownIcon} from '@sanity/icons/Unknown'
-import {Box, Card, Flex, Stack, Text, type Theme, useClickOutsideEvent} from '@sanity/ui'
+import {Card, type Theme, useClickOutsideEvent} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {resolveTypeName} from '@sanity/util/content'
 import {type FocusEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
+import {Text, VStack, Flex, Box, Icon} from 'ui5'
 
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -53,18 +54,18 @@ export function IncompatibleItemType(props: Props) {
       tone="default"
       content={
         <PopoverCard margin={1} padding={3} onKeyDown={handleKeyDown} tabIndex={0} overflow="auto">
-          <Stack gap={4}>
-            <Text weight="medium">
+          <VStack gap={4}>
+            <Text weight="medium" as="div" trim={true}>
               <Translate
                 t={t}
                 i18nKey="inputs.array.error.type-is-incompatible-prompt"
                 values={{typeName}}
               />
             </Text>
-            <Text size={1} weight="medium">
+            <Text size={1} weight="medium" as="div" trim={true}>
               {t('inputs.array.error.type-is-incompatible-title')}
             </Text>
-            <Text size={1}>
+            <Text size={1} as="div" trim={true}>
               <Translate
                 t={t}
                 i18nKey="inputs.array.error.current-schema-not-declare-description"
@@ -72,12 +73,17 @@ export function IncompatibleItemType(props: Props) {
               />
             </Text>
             <Box>
-              <Text size={1}>
-                <BulbOutlineIcon /> {t('inputs.array.error.can-delete-but-no-edit-description')}
+              <Text size={1} as="div" trim={true}>
+                <Icon
+                  size={1}
+                  icon={<BulbOutlineIcon />}
+                  style={{margin: '-0.375rem', display: 'inline'}}
+                />{' '}
+                {t('inputs.array.error.can-delete-but-no-edit-description')}
               </Text>
             </Box>
-            <Stack gap={2}>
-              <Text size={1} weight="medium">
+            <VStack gap={2}>
+              <Text size={1} weight="medium" as="div" trim={true}>
                 {t('inputs.array.error.json-representation-description')}
               </Text>
               <Card padding={2} overflow="auto" border>
@@ -85,8 +91,8 @@ export function IncompatibleItemType(props: Props) {
                   {JSON.stringify(value, null, 2)}
                 </Code>
               </Card>
-            </Stack>
-          </Stack>
+            </VStack>
+          </VStack>
         </PopoverCard>
       }
     >
@@ -104,15 +110,13 @@ export function IncompatibleItemType(props: Props) {
         __unstable_focusRing
         {...rest}
       >
-        <Flex align="center">
+        <Flex alignItems="center">
           <Box marginRight={3}>
-            <Text>
-              <UnknownIcon />
-            </Text>
+            <Icon icon={<UnknownIcon />} style={{margin: '-0.4375rem'}} />
           </Box>
 
-          <Box flex={1}>
-            <Text size={1} textOverflow="ellipsis">
+          <Box flexBasis="0%" flexGrow={1}>
+            <Text size={1} truncate={1} as="div" trim={true}>
               <Translate
                 t={t}
                 i18nKey="inputs.array.error.type-is-incompatible-prompt"

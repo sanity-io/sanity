@@ -1,5 +1,6 @@
 import {type ArraySchemaType, type FormNodeValidation} from '@sanity/types'
-import {Card, type CardTone, Text} from '@sanity/ui'
+import {Card, type CardTone} from '@sanity/ui'
+import {Text} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 
@@ -22,7 +23,7 @@ export function NoItemsPlaceholder({
 
   return (
     <Card padding={3} border radius={2} tone={tone}>
-      <Text align="center" muted size={1}>
+      <Text align="center" muted size={1} as="div" trim={true} tone={tone}>
         {/* oxlint-disable-next-line no-deprecated -- will fix in follow up PR */}
         {schemaType.placeholder || t('inputs.array.no-items-label')}
       </Text>

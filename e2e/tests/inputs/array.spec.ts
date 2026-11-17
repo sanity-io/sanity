@@ -49,11 +49,18 @@ test(`file drop event should not propagate to dialog parent`, async ({
   // Ensure the list contains one item.
   await expect(item).toHaveCount(1)
 
-  // Open the dialog. The button stays disabled until the asset finishes
-  // uploading, which can exceed the default click timeout under CI load.
-  const fileButton = page.getByRole('button', {name: fileName})
-  await expect(fileButton).toBeEnabled({timeout: 30_000})
-  await fileButton.click()
+  // Open the item's edit dialog via its preview button, located structurally
+  // rather than by accessible name. The button is only named after the file
+  // ("capybara.jpg") once the asset has fully resolved — sha1 dedupe query,
+  // asset upload, mutation commit, and the preview store dereferencing the
+  // new asset document — a chain of round trips against the live API that can
+  // exceed any reasonable timeout when the API is slow (until then the button
+  // is named "Untitled" or "The image currently being uploaded"). The behavior
+  // under test — drop events not propagating out of the dialog — does not
+  // depend on the upload having settled.
+  const itemButton = item.first().locator('button[data-as="button"]')
+  await expect(itemButton).toBeEnabled()
+  await itemButton.click()
   await expect(page.getByRole('dialog')).toBeVisible()
 
   // Drop the file again; this time, while the dialog is open.
@@ -62,8 +69,10 @@ test(`file drop event should not propagate to dialog parent`, async ({
   // - Therefore, the drop event should not cause the image to be added to the list again.
   await page.getByRole('dialog').dispatchEvent('drop', {dataTransfer})
 
-  // Close the dialog.
-  await page.keyboard.press('Escape')
+  // Close the dialog with its close button. Escape-close depends on layer and
+  // focus state, which keeps shifting while the upload settles in the
+  // background, so a single key press can be ignored.
+  await page.getByRole('dialog').getByLabel('Close dialog').click()
   await expect(page.getByRole('dialog')).not.toBeVisible()
 
   // Ensure the list still contains one item.

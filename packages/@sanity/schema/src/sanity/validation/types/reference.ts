@@ -1,4 +1,3 @@
-import flatten from 'lodash-es/flatten.js'
 import isPlainObject from 'lodash-es/isPlainObject.js'
 
 import {type SchemaValidationResult} from '../../typedefs'
@@ -16,7 +15,7 @@ export default (typeDef: any, visitorContext: any) => {
   const isValidTo = Array.isArray(typeDef.to) || isPlainObject(typeDef.to)
   const normalizedTo = normalizeToProp(typeDef)
 
-  const problems = flatten([
+  const problems = [
     isValidTo
       ? getDupes(normalizedTo, (t) => `${t.name};${t.type}`).map((dupes) =>
           error(
@@ -28,7 +27,7 @@ export default (typeDef: any, visitorContext: any) => {
           'The reference type is missing or having an invalid value for the required "to" property. It should be an array of accepted types.',
           HELP_IDS.REFERENCE_TO_INVALID,
         ),
-  ])
+  ].flat()
 
   if (isValidTo && normalizedTo.length === 0) {
     problems.push(

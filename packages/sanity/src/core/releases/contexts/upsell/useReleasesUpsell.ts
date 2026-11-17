@@ -21,7 +21,7 @@ const FALLBACK_CONTEXT_VALUE = {
   onReleaseLimitReached: () => null,
   guardWithReleaseLimitUpsell: async () => undefined,
   handleOpenDialog: () => null,
-  upsellData: null,
+  upsellDataPromise: null,
   telemetryLogs: {
     dialogSecondaryClicked: () => null,
     dialogPrimaryClicked: () => null,

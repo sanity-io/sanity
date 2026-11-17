@@ -13,10 +13,12 @@ import {LocationsBanner} from '../LocationsBanner'
 // Mock useDocumentLocations hook
 vi.mock('../../useDocumentLocations')
 
+const paneRouterParams = vi.hoisted(() => ({current: {} as Record<string, string>}))
+
 // Mock usePaneRouter from sanity/structure
 vi.mock('sanity/structure', async (importOriginal) => ({
   ...(await importOriginal()),
-  usePaneRouter: vi.fn(() => ({params: {}})),
+  usePaneRouter: vi.fn(() => ({params: paneRouterParams.current})),
 }))
 
 // Mock useIntentLink from sanity/router
@@ -79,6 +81,7 @@ const mockLocations: DocumentLocation[] = [
 describe('LocationsBanner', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    paneRouterParams.current = {}
   })
 
   describe('rendering conditions', () => {
@@ -643,6 +646,57 @@ describe('LocationsBanner', () => {
             type: 'locationResolverTest',
             mode: 'presentation',
             presentation: 'presentation',
+            preview: '/home',
+          }),
+        }),
+      )
+    })
+
+    it('targets its own presentation tool when pane params come from structure mode', async () => {
+      const user = userEvent.setup()
+      const mockUseIntentLink = vi.mocked((await import('sanity/router')).useIntentLink)
+      paneRouterParams.current = {
+        mode: 'structure',
+        presentation: 'otherPresentation',
+        scheduledDraft: 'scheduled-release-id',
+      }
+
+      mockUseDocumentLocations.mockReturnValue({
+        state: {
+          locations: [{title: 'Homepage', href: '/home'}],
+        },
+        status: 'resolved',
+      })
+
+      const wrapper = await createTestProvider({
+        resources: [presentationUsEnglishLocaleBundle],
+      })
+
+      render(
+        <LocationsBanner
+          documentId="test-doc-id"
+          options={mockOptions}
+          resolvers={{}}
+          schemaType={mockSchemaType}
+          showPresentationTitle={false}
+          version={undefined}
+        />,
+        {wrapper},
+      )
+
+      await user.click(screen.getByText(/used on one page/i))
+
+      await waitFor(() => {
+        expect(screen.getByText('Homepage')).toBeVisible()
+      })
+
+      expect(mockUseIntentLink).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          intent: 'edit',
+          params: expect.objectContaining({
+            mode: 'presentation',
+            presentation: 'presentation',
+            scheduledDraft: 'scheduled-release-id',
             preview: '/home',
           }),
         }),

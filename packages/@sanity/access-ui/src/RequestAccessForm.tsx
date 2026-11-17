@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Avatar, Box, Button, Card, Flex, Spinner, Stack, Text, TextArea} from '@sanity/ui'
+import {Avatar, Button, Card, Spinner, TextArea} from '@sanity/ui'
 import {
   type ReactNode,
   type SubmitEvent,
@@ -10,17 +10,22 @@ import {
   useState,
   useTransition,
 } from 'react'
+import {type ObservablePromise, useObservablePromise} from 'react-rx'
+import {catchError, combineLatest, defer, of} from 'rxjs'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {
+  fetchAccessRequestStatus,
   listMyAccessRequests,
   MAX_ACCESS_REQUEST_NOTE_LENGTH,
   submitAccessRequest,
 } from './accessRequests'
 import {deriveAccessRequestState} from './deriveAccessRequestState'
-import {defaultLabels, type RequestAccessLabels} from './labels'
+import {defaultLabels, type RequestAccessLabels, type ResolvedRequestAccessLabels} from './labels'
 import {getProviderTitle} from './providerTitle'
 import {
   type AccessRequest,
+  type AccessRequestEligibilityState,
   type AccessResourceType,
   type AccessUser,
   type SubmitAccessRequestResult,
@@ -60,34 +65,56 @@ export interface RequestAccessFormProps {
  * access, lets the user request it with an optional note, and reflects the
  * request lifecycle (pending, denied, expired, over-limit, SSO-enforced).
  *
- * Fetches the caller's existing requests on mount and suspends while loading;
- * an internal `Suspense` boundary renders a spinner, so hosts can mount it
- * directly. Remount with a `key` when `client` or `resourceId` change.
+ * Fetches the caller's existing requests once it is mounted and suspends while
+ * loading; an internal `Suspense` boundary renders a spinner, so hosts can
+ * mount it directly. The fetch starts when the card commits, not while it
+ * renders, so a host whose own `Suspense` boundary retries around it does not
+ * refetch, and the result is kept while a hidden `<Activity>` conceals the
+ * card. Remount with a `key` when `client` or `resourceId` change.
  *
  * @public
  */
 export function RequestAccessForm(props: RequestAccessFormProps) {
-  const {client} = props
+  const {client, resourceType = 'project', resourceId} = props
 
-  // Created once (lazy init): recreating the promise per render would refetch
-  // and re-suspend forever. Callers remount with `key` to reset.
-  const [requestsPromise] = useState(() =>
-    listMyAccessRequests(client).catch((): AccessRequest[] | null => null),
+  const [createLoad] = useState(
+    () => () =>
+      combineLatest({
+        accessRequestsHistory: defer(() => listMyAccessRequests(client)).pipe(
+          catchError(() => of(null)),
+        ),
+        accessRequestEligibilityState: defer(() =>
+          fetchAccessRequestStatus({client, resourceType, resourceId, origin: getRequestUrl()}),
+        ),
+      }),
   )
+  const [load$, setLoad$] = useState(createLoad)
+  // Read with `use()` in the child below the boundary, never here: suspending
+  // this component would stop the commit that starts the fetch.
+  const loadPromise = useObservablePromise(load$)
 
   return (
     <Card border height="fill" overflow="hidden" radius={3} tone="default">
       <Suspense
         fallback={
-          <Flex align="center" height="fill" justify="center" padding={5}>
+          <Flex alignItems="center" height="100%" justifyContent="center" padding={5}>
             <Spinner muted />
           </Flex>
         }
       >
-        <RequestAccessFormContent {...props} requestsPromise={requestsPromise} />
+        <RequestAccessFormContent
+          {...props}
+          loadPromise={loadPromise}
+          onRetry={() => setLoad$(createLoad())}
+        />
       </Suspense>
     </Card>
   )
+}
+
+interface LoadedAccessRequestData {
+  accessRequestsHistory: AccessRequest[] | null
+  accessRequestEligibilityState: AccessRequestEligibilityState
 }
 
 /**
@@ -97,42 +124,144 @@ export function RequestAccessForm(props: RequestAccessFormProps) {
  */
 export type RequestAccessView = 'form' | 'sent' | 'pending' | 'blocked' | 'sso-enforced'
 
-type ViewState =
+/**
+ * Everything the card renders, copy included: the same state that picks a view
+ * is the only thing that knows which words that view needs. Keying copy off
+ * `view` alone cannot work, because `blocked` covers a prior decline, a gone
+ * resource and four submit failures, each with its own copy.
+ */
+type ViewState = {title: ReactNode; description: ReactNode | null} & (
   | {view: 'form'; expired: boolean}
   | {view: 'sent'}
   | {view: 'pending'}
-  | {view: 'blocked'; title: ReactNode; message: ReactNode}
-  | {view: 'sso-enforced'; redirectUrl?: string}
+  | {view: 'blocked'; message: ReactNode; retryable?: boolean}
+  | {view: 'sso-enforced'; message: ReactNode; redirectUrl?: string}
+)
+
+/**
+ * The server's verdict. `null` hands the decision back to the caller's own
+ * request history, which resolves the states this endpoint does not.
+ */
+function deriveServerViewState(
+  status: AccessRequestEligibilityState,
+  labels: ResolvedRequestAccessLabels,
+  providerTitle?: string,
+  signedInWithSso?: boolean,
+): ViewState | null {
+  switch (status.state) {
+    case 'saml-required':
+      return ssoEnforcedState({
+        labels,
+        providerTitle,
+        signedInWithSso,
+        redirectUrl: status.redirectUrl,
+      })
+    case 'resource-not-available':
+      // Nothing was submitted, so the submit-failure copy would misdescribe it.
+      return {
+        view: 'blocked',
+        title: labels.resourceNotAvailableTitle,
+        description: null,
+        message: labels.resourceNotAvailableMessage,
+      }
+    case 'already-member':
+      return blockedState(labels.alreadyMemberTitle, labels.alreadyMemberMessage)
+    case 'pending':
+      return {view: 'pending', title: labels.sentTitle, description: labels.pendingMessage}
+    case 'recently-declined':
+      return blockedState(labels.deniedTitle, labels.deniedMessage({}))
+    case 'requests-disabled':
+      return blockedState(labels.requestsDisabledTitle, labels.requestsDisabledMessage)
+    case 'saml-roles-managed':
+      return {
+        view: 'sso-enforced',
+        title: labels.samlRolesManagedTitle,
+        description: null,
+        message: labels.samlRolesManagedMessage(),
+        redirectUrl: status.redirectUrl,
+      }
+    case 'temporarily-unavailable':
+      return unavailableState(labels)
+    case 'eligible':
+      return null
+    default:
+      return unavailableState(labels)
+  }
+}
+
+function unavailableState(labels: ResolvedRequestAccessLabels): ViewState {
+  return {
+    ...blockedState(labels.temporarilyUnavailableTitle, labels.temporarilyUnavailableMessage),
+    retryable: true,
+  }
+}
+
+function blockedState(title: ReactNode, message: ReactNode): Extract<ViewState, {view: 'blocked'}> {
+  return {view: 'blocked', title, description: null, message}
+}
+
+// Reached on mount and after a submit 403, so the title claims neither.
+function ssoEnforcedState(options: {
+  labels: ResolvedRequestAccessLabels
+  providerTitle?: string
+  signedInWithSso?: boolean
+  redirectUrl?: string
+}): ViewState {
+  const {labels, providerTitle, signedInWithSso, redirectUrl} = options
+  return {
+    view: 'sso-enforced',
+    title: labels.ssoEnforcedTitle,
+    description: null,
+    message: labels.ssoEnforcedMessage({providerTitle, signedInWithSso}),
+    redirectUrl,
+  }
+}
 
 function deriveViewState(options: {
-  fetchedRequests: AccessRequest[] | null
+  accessRequestsHistory: AccessRequest[] | null
+  accessRequestEligibilityState: AccessRequestEligibilityState
   resourceId: string
-  submitResult: SubmitAccessRequestResult | null
-  labels: RequestAccessLabels
+  submitAccessRequestResult: SubmitAccessRequestResult | null
+  currentUser?: AccessUser | null
+  providerTitle?: string
+  signedInWithSso?: boolean
+  labels: ResolvedRequestAccessLabels
 }): ViewState {
-  const {fetchedRequests, resourceId, submitResult, labels} = options
+  const {
+    accessRequestsHistory,
+    accessRequestEligibilityState,
+    resourceId,
+    submitAccessRequestResult,
+    currentUser,
+    providerTitle,
+    signedInWithSso,
+    labels,
+  } = options
+  const submitFailure = (message: ReactNode): ViewState => ({
+    view: 'blocked',
+    title: labels.errorTitle,
+    description: null,
+    message,
+  })
 
-  if (submitResult) {
-    switch (submitResult.type) {
+  if (submitAccessRequestResult) {
+    switch (submitAccessRequestResult.type) {
       case 'submitted':
-        return {view: 'sent'}
+        return {view: 'sent', title: labels.sentTitle, description: labels.sentDescription}
       case 'sso-enforced':
-        return {view: 'sso-enforced', redirectUrl: submitResult.redirectUrl}
+        return ssoEnforcedState({
+          labels,
+          providerTitle,
+          signedInWithSso,
+          redirectUrl: submitAccessRequestResult.redirectUrl,
+        })
       case 'denied':
-        return {
-          view: 'blocked',
-          title: labels.errorTitle,
-          message: labels.deniedMessage({message: submitResult.message}),
-        }
+        return submitFailure(labels.deniedMessage({message: submitAccessRequestResult.message}))
       case 'over-limit':
-        return {
-          view: 'blocked',
-          title: labels.errorTitle,
-          message: labels.overLimitMessage({message: submitResult.message}),
-        }
+        return submitFailure(labels.overLimitMessage({message: submitAccessRequestResult.message}))
       case 'email-domain-blocked':
       case 'requests-disabled':
-        return {view: 'blocked', title: labels.errorTitle, message: submitResult.message}
+        return submitFailure(submitAccessRequestResult.message)
       case 'error':
         // Fall through to the fetched state; the form stays up with an inline error.
         break
@@ -140,19 +269,44 @@ function deriveViewState(options: {
     }
   }
 
-  const state = deriveAccessRequestState(fetchedRequests, resourceId)
-  if (state === 'pending') return {view: 'pending'}
+  // The server's verdict outranks the request history: a pending request in an
+  // enforced org is already dead, so "pending approval" would be a false
+  // promise. It answers `eligible` when it has nothing to say.
+  const serverState = deriveServerViewState(
+    accessRequestEligibilityState,
+    labels,
+    providerTitle,
+    signedInWithSso,
+  )
+  if (serverState) return serverState
+
+  // TODO: `pending` and `denied` will be replaced by future content in `accessRequestEligibilityState`
+  const state = deriveAccessRequestState(accessRequestsHistory, resourceId)
+  if (state === 'pending') {
+    return {view: 'pending', title: labels.sentTitle, description: labels.pendingMessage}
+  }
   // Derived from prefetch: the user hasn't submitted anything this session,
   // so the title must describe the prior decline, not a failed send.
   if (state === 'denied') {
-    return {view: 'blocked', title: labels.deniedTitle, message: labels.deniedMessage({})}
+    return {
+      view: 'blocked',
+      title: labels.deniedTitle,
+      description: null,
+      message: labels.deniedMessage({}),
+    }
   }
-  return {view: 'form', expired: state === 'expired'}
+  return {
+    view: 'form',
+    title: labels.title,
+    description: labels.describeNoAccess({email: currentUser?.email}),
+    expired: state === 'expired',
+  }
 }
 
 function RequestAccessFormContent(
   props: RequestAccessFormProps & {
-    requestsPromise: Promise<AccessRequest[] | null>
+    loadPromise: ObservablePromise<LoadedAccessRequestData>
+    onRetry: () => void
   },
 ) {
   const {
@@ -164,40 +318,35 @@ function RequestAccessFormContent(
     onRequestSubmitted,
     preview,
     renderAction,
-    requestsPromise,
+    loadPromise,
+    onRetry,
   } = props
+  const {accessRequestsHistory, accessRequestEligibilityState} = use(loadPromise)
 
-  const labels = {...defaultLabels, ...props.labels}
-  const fetchedRequests = use(requestsPromise)
+  // New labels are optional in the public type so existing complete label maps
+  // remain source-compatible; the defaults make them present at runtime.
+  const labels = {...defaultLabels, ...props.labels} as ResolvedRequestAccessLabels
   const titleId = useId()
 
   const [note, setNote] = useState('')
-  const [submitResult, setSubmitResult] = useState<SubmitAccessRequestResult | null>(null)
+  const [submitAccessRequestResult, setSubmitAccessRequestResult] =
+    useState<SubmitAccessRequestResult | null>(null)
   const [isSubmitting, startSubmit] = useTransition()
 
+  const providerTitle = getProviderTitle(currentUser?.provider)
+  const signedInWithSso = currentUser?.provider?.startsWith('saml-') === true
   const state = deriveViewState({
-    fetchedRequests,
+    accessRequestsHistory,
+    accessRequestEligibilityState,
     resourceId,
-    submitResult,
+    submitAccessRequestResult,
+    currentUser,
+    providerTitle: signedInWithSso ? undefined : providerTitle,
+    signedInWithSso,
     labels,
   })
-  const providerTitle = getProviderTitle(currentUser?.provider)
-  const submitFailed = submitResult?.type === 'error'
 
-  const heading: Record<
-    Exclude<ViewState['view'], 'blocked'>,
-    {title: ReactNode; description: ReactNode | null}
-  > = {
-    'form': {
-      title: labels.title,
-      description: labels.describeNoAccess({email: currentUser?.email}),
-    },
-    'sent': {title: labels.sentTitle, description: labels.sentDescription},
-    'pending': {title: labels.sentTitle, description: labels.pendingMessage},
-    'sso-enforced': {title: labels.errorTitle, description: null},
-  }
-  const {title, description} =
-    state.view === 'blocked' ? {title: state.title, description: null} : heading[state.view]
+  const submitFailed = submitAccessRequestResult?.type === 'error'
 
   const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -211,46 +360,38 @@ function RequestAccessFormContent(
         note: trimmedNote,
         requestUrl: getRequestUrl(),
       })
-      setSubmitResult(result)
+      setSubmitAccessRequestResult(result)
       if (result.type === 'submitted') onRequestSubmitted?.({note: trimmedNote})
     })
   }
 
   return (
-    <Flex direction="column" height="fill">
-      <Flex direction="column" flex={1} gap={4} padding={4}>
+    <Flex flexDirection="column" height="100%">
+      <Flex flexDirection="column" flexBasis="0%" flexGrow={1} gap={4} padding={4}>
         {preview ? (
-          <Flex justify="center" padding={2}>
+          <Flex justifyContent="center" padding={2}>
             {preview}
           </Flex>
         ) : null}
 
-        <Text as="h1" id={titleId} size={2} weight="semibold">
-          {title}
+        <Text as="h1" id={titleId} size={2} weight="semibold" trim={true}>
+          {state.title}
         </Text>
 
-        {description !== null ? (
-          <Text as="p" muted size={1}>
-            {description}
+        {state.description !== null ? (
+          <Text as="p" muted size={1} trim={true}>
+            {state.description}
           </Text>
         ) : null}
 
-        {state.view === 'blocked' ? (
-          <Card border padding={3} radius={2} role="alert" tone="caution">
-            <Text as="p" muted size={1}>
-              {state.message}
-            </Text>
-          </Card>
-        ) : null}
-
-        {state.view === 'sso-enforced' ? (
-          <Stack gap={4}>
+        {state.view === 'blocked' || state.view === 'sso-enforced' ? (
+          <VStack gap={4}>
             <Card border padding={3} radius={2} role="alert" tone="caution">
-              <Text as="p" muted size={1}>
-                {labels.ssoEnforcedMessage({providerTitle})}
+              <Text as="p" muted size={1} trim={true} tone="caution">
+                {state.message}
               </Text>
             </Card>
-            {state.redirectUrl ? (
+            {state.view === 'sso-enforced' && state.redirectUrl ? (
               <Button
                 as="a"
                 href={state.redirectUrl}
@@ -260,19 +401,22 @@ function RequestAccessFormContent(
                 width="fill"
               />
             ) : null}
-          </Stack>
+            {state.view === 'blocked' && state.retryable ? (
+              <Button mode="ghost" onClick={onRetry} text={labels.retry} width="fill" />
+            ) : null}
+          </VStack>
         ) : null}
 
         {state.view === 'form' ? (
-          <Stack as="form" aria-labelledby={titleId} onSubmit={handleSubmit} gap={4}>
-            <Text as="p" size={1}>
+          <VStack as="form" aria-labelledby={titleId} onSubmit={handleSubmit} gap={4}>
+            <Text as="p" size={1} trim={true}>
               {state.expired
                 ? labels.expiredMessage
                 : resourceType === 'organization'
                   ? labels.promptOrganization
                   : labels.promptProject}
             </Text>
-            <Stack gap={2}>
+            <VStack gap={2}>
               <TextArea
                 aria-label={labels.noteAriaLabel}
                 disabled={isSubmitting}
@@ -283,13 +427,13 @@ function RequestAccessFormContent(
                 rows={3}
                 value={note}
               />
-              <Text align="right" muted size={0}>
+              <Text align="right" muted size={0} as="div" trim={true}>
                 {`${note.length}/${MAX_ACCESS_REQUEST_NOTE_LENGTH}`}
               </Text>
-            </Stack>
+            </VStack>
             {submitFailed ? (
               <Card border padding={3} radius={2} role="alert" tone="critical">
-                <Text as="p" muted size={1}>
+                <Text as="p" muted size={1} trim={true} tone="critical">
                   {labels.submitFailedMessage}
                 </Text>
               </Card>
@@ -301,7 +445,7 @@ function RequestAccessFormContent(
               type="submit"
               width="fill"
             />
-          </Stack>
+          </VStack>
         ) : null}
 
         {renderAction?.({view: state.view})}
@@ -309,11 +453,11 @@ function RequestAccessFormContent(
 
       {currentUser ? (
         <Card borderTop padding={3}>
-          <Flex align="center" direction="column" gap={3}>
-            <Flex align="center" gap={2} justify="center">
+          <Flex alignItems="center" flexDirection="column" gap={3}>
+            <Flex alignItems="center" gap={2} justifyContent="center">
               <Avatar initials={getInitials(currentUser)} size={0} src={currentUser.profileImage} />
               <Box>
-                <Text muted size={1} textOverflow="ellipsis">
+                <Text muted size={1} truncate={1} as="div" trim={true}>
                   {currentUser.email ?? currentUser.name}
                   {providerTitle ? ` · ${providerTitle}` : ''}
                 </Text>
@@ -327,7 +471,7 @@ function RequestAccessFormContent(
                 padding={2}
                 textWeight="regular"
               >
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {labels.wrongAccount} <strong>{labels.signOut}</strong>
                 </Text>
               </Button>

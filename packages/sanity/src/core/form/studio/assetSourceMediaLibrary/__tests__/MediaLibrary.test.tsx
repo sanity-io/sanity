@@ -85,7 +85,7 @@ describe('provisioning', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     const client = createMockSanityClient({
       requestCallback: (request) => {
-        switch (request.uri) {
+        switch (request.url) {
           case '/projects/mock-project-id':
             return {
               statusCode: 200,

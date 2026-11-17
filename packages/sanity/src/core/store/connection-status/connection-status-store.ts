@@ -1,7 +1,16 @@
-import {type BifurClient} from '@sanity/bifur-client'
+import {type BifurClient, ERROR_CODES, RpcError, WebSocketError} from '@sanity/bifur-client'
 import {observableCallback} from 'observable-callback'
-import {concat, fromEvent, merge, NEVER, type Observable, of, throwError, timer} from 'rxjs'
-import {map, mergeMapTo, startWith, take, takeUntil} from 'rxjs/operators'
+import {concat, EMPTY, fromEvent, merge, type Observable, of, throwError, timer} from 'rxjs'
+import {
+  distinctUntilChanged,
+  map,
+  mergeMap,
+  mergeMapTo,
+  shareReplay,
+  startWith,
+  switchMap,
+  take,
+} from 'rxjs/operators'
 
 import {catchWithCount} from '../../util/catchWithCount'
 
@@ -15,6 +24,11 @@ const onOffline$ = typeof window === 'undefined' ? of({}) : fromEvent(window, 'o
 
 const expBackoff = (retryCount: number) => Math.pow(2, retryCount) * 100
 
+/** The server rejected the token, by closing the socket or by answering `authorization` */
+const isUnauthorized = (error: unknown) =>
+  (error instanceof WebSocketError || error instanceof RpcError) &&
+  error.code === ERROR_CODES.UNAUTHORIZED
+
 /** @internal */
 export type ConnectingStatus = {
   type: 'connecting'
@@ -26,7 +40,8 @@ export type ErrorStatus = {
   error: Error
   attemptNo: number
   isOffline: boolean
-  retryAt: Date
+  /** Null when retrying requires changed credentials or an explicit retry. */
+  retryAt: Date | null
 }
 
 /** @internal */
@@ -59,7 +74,7 @@ const createErrorStatus = ({
   error: Error
   isOffline: boolean
   attemptNo: number
-  retryAt: Date
+  retryAt: Date | null
 }): ErrorStatus => ({
   type: 'error',
   error,
@@ -71,6 +86,8 @@ const createErrorStatus = ({
 /** @internal */
 export interface ConnectionStatusStoreOptions {
   bifur: BifurClient
+  /** The token bifur authorizes with. A new one starts a fresh attempt, with a fresh backoff. */
+  token$?: Observable<string | null>
 }
 
 /**
@@ -80,32 +97,58 @@ export interface ConnectionStatusStoreOptions {
  */
 export function createConnectionStatusStore({
   bifur,
+  token$,
 }: ConnectionStatusStoreOptions): ConnectionStatusStore {
-  const connectionStatus$: Observable<ConnectionStatus> = merge(
-    bifur.heartbeats,
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    onOffline$.pipe(mergeMapTo(throwError(new Error('The browser went offline')))),
-  ).pipe(
-    map((ts): ConnectionStatus => ({type: 'connected', lastHeartbeat: ts})),
-    catchWithCount((error, successiveErrorsCount, caught) => {
-      const timeUntilRetry = Math.min(1000 * 240, expBackoff(successiveErrorsCount))
-      const retryAt = new Date(new Date().getTime() + timeUntilRetry)
-      const expiry$ = timer(retryAt)
-      const isOffline = !navigator.onLine
-      const initialErrorStatus = createErrorStatus({
-        error: error as Error,
-        retryAt,
-        isOffline,
-        attemptNo: successiveErrorsCount,
-      })
+  // `isRenewal`: the token replaced an earlier one, and a rejection may still be the server
+  // answering the token before it
+  const attempt = (isRenewal: boolean): Observable<ConnectionStatus> =>
+    merge(
+      bifur.heartbeats,
+      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+      onOffline$.pipe(mergeMapTo(throwError(new Error('The browser went offline')))),
+    ).pipe(
+      map((ts): ConnectionStatus => ({type: 'connected', lastHeartbeat: ts})),
+      catchWithCount((error, successiveErrorsCount, caught) => {
+        // A rejected token is rejected again on every retry, so wait for a new token or an
+        // explicit retry instead. The first rejection after a renewal is retried once on the
+        // usual delay, in case the server closed the socket for the previous token.
+        const waitForNewToken = isUnauthorized(error) && !(isRenewal && successiveErrorsCount === 1)
+        const timeUntilRetry = Math.min(1000 * 240, expBackoff(successiveErrorsCount))
+        const retryAt = waitForNewToken ? null : new Date(Date.now() + timeUntilRetry)
+        const isOffline = !navigator.onLine
+        const initialErrorStatus = createErrorStatus({
+          error: error instanceof Error ? error : new Error(String(error)),
+          retryAt,
+          isOffline,
+          attemptNo: successiveErrorsCount,
+        })
 
-      const triggerRetry$ = NEVER.pipe(
-        takeUntil(isOffline ? onOnline$ : merge(expiry$, onOnline$, onRetry$)),
-      )
+        const retry$ =
+          retryAt === null
+            ? onRetry$
+            : isOffline
+              ? onOnline$
+              : merge(timer(retryAt), onOnline$, onRetry$)
 
-      return concat(of(initialErrorStatus), triggerRetry$.pipe(take(1)), caught)
-    }),
+        return concat(
+          of(initialErrorStatus),
+          retry$.pipe(
+            take(1),
+            mergeMap(() => EMPTY),
+          ),
+          caught,
+        )
+      }),
+    )
+
+  const connectionStatus$: Observable<ConnectionStatus> = (token$ ?? of(null)).pipe(
+    distinctUntilChanged(),
+    // A new token starts over, also after a rejection. The open socket, if any, stays: bifur
+    // authorizes it with the new token.
+    switchMap((_token, index) => attempt(index > 0)),
     startWith(CONNECTING),
+    // One retry cycle for every consumer (presence, the status indicator)
+    shareReplay({bufferSize: 1, refCount: true}),
   )
 
   return {connectionStatus$}

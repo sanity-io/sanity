@@ -1,6 +1,6 @@
-import {type MutationEvent} from '@sanity/client'
-import {Box, Text} from '@sanity/ui'
+import {type ClientPerspective, type MutationEvent} from '@sanity/client'
 import {Translate, useTranslation} from 'sanity'
+import {Text, Box} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'
 import {getCsvBlobUrl, getJsonBlobUrl} from '../util/getBlobUrl'
@@ -24,6 +24,9 @@ import {
 
 interface VisionGuiResultProps {
   error?: Error | undefined
+  apiVersion: string
+  perspective: ClientPerspective | undefined
+  variant: string | undefined
   queryInProgress: boolean
   queryResult?: unknown | undefined
   listenInProgress: boolean
@@ -36,6 +39,9 @@ interface VisionGuiResultProps {
 
 export function VisionGuiResult({
   error,
+  apiVersion,
+  perspective,
+  variant,
   queryInProgress,
   queryResult,
   listenInProgress,
@@ -48,12 +54,9 @@ export function VisionGuiResult({
   const {t} = useTranslation(visionLocaleNamespace)
   const hasResult = !error && !queryInProgress && typeof queryResult !== 'undefined'
 
-  const jsonUrl = hasResult ? getJsonBlobUrl(queryResult) : ''
-  const csvUrl = hasResult ? getCsvBlobUrl(queryResult) : ''
-
   return (
-    <ResultOuterContainer direction="column" data-testid="vision-result">
-      <ResultInnerContainer flex={1}>
+    <ResultOuterContainer flexDirection="column" data-testid="vision-result">
+      <ResultInnerContainer flexBasis="0%" flexGrow={1}>
         <ResultContainer
           flex={1}
           overflow="hidden"
@@ -72,7 +75,14 @@ export function VisionGuiResult({
                   <DelayedSpinner />
                 </Box>
               )}
-              {error && <QueryErrorDialog error={error} />}
+              {error && (
+                <QueryErrorDialog
+                  apiVersion={apiVersion}
+                  error={error}
+                  perspective={perspective}
+                  variant={variant}
+                />
+              )}
               {hasResult && <ResultView data={queryResult} datasetName={dataset} />}
               {listenInProgress && listenMutations.length > 0 && (
                 <ResultView data={listenMutations} datasetName={dataset} />
@@ -83,9 +93,9 @@ export function VisionGuiResult({
       </ResultInnerContainer>
       {/* Execution time */}
       <ResultFooter
-        justify={compactFooter ? 'flex-start' : 'space-between'}
-        align={compactFooter ? 'stretch' : undefined}
-        direction={compactFooter ? 'column' : ['column', 'column', 'row']}
+        justifyContent={compactFooter ? 'flex-start' : 'space-between'}
+        alignItems={compactFooter ? 'stretch' : undefined}
+        flexDirection={compactFooter ? 'column' : ['column', 'column', 'row']}
       >
         <TimingsCard
           paddingX={compactFooter ? 3 : 4}
@@ -93,9 +103,9 @@ export function VisionGuiResult({
           sizing="border"
           style={compactFooter ? {width: '100%'} : {minWidth: 0}}
         >
-          <TimingsTextContainer align="center">
+          <TimingsTextContainer alignItems="center">
             <Box>
-              <Text muted size={compactFooter ? 1 : 2}>
+              <Text muted size={compactFooter ? 1 : 2} as="div" trim={true}>
                 {t('result.execution-time-label')}:{' '}
                 {typeof queryTime === 'number'
                   ? `${queryTime}ms`
@@ -103,7 +113,7 @@ export function VisionGuiResult({
               </Text>
             </Box>
             <Box marginLeft={compactFooter ? 3 : 4}>
-              <Text muted size={compactFooter ? 1 : 2}>
+              <Text muted size={compactFooter ? 1 : 2} as="div" trim={true}>
                 {t('result.end-to-end-time-label')}:{' '}
                 {typeof e2eTime === 'number' ? `${e2eTime}ms` : t('result.timing-not-applicable')}
               </Text>
@@ -120,14 +130,8 @@ export function VisionGuiResult({
           >
             <SaveResultLabel muted size={compactFooter ? 1 : 2}>
               <Translate
-                components={{
-                  SaveResultButtons: () => (
-                    <>
-                      <SaveJsonButton blobUrl={jsonUrl} />
-                      <SaveCsvButton blobUrl={csvUrl} />
-                    </>
-                  ),
-                }}
+                components={{SaveResultButtons}}
+                componentProps={{queryResult}}
                 i18nKey="result.save-result-as-format"
                 t={t}
               />
@@ -136,5 +140,19 @@ export function VisionGuiResult({
         )}
       </ResultFooter>
     </ResultOuterContainer>
+  )
+}
+
+function SaveResultButtons({queryResult}: {queryResult: unknown}) {
+  // This only renders when `hasResult` is true, and falsy values like `null`, `0`, `false` or ''
+  // are valid GROQ results — the resolvers themselves return `undefined` for non-encodable input.
+  const jsonUrl = getJsonBlobUrl(queryResult)
+  const csvUrl = getCsvBlobUrl(queryResult)
+
+  return (
+    <>
+      <SaveJsonButton blobUrl={jsonUrl} />
+      <SaveCsvButton blobUrl={csvUrl} />
+    </>
   )
 }

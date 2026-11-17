@@ -112,9 +112,10 @@ npx sanity blueprints add function --example telegram-notify
 5. **Add configuration to your blueprint**
 
 ```ts
+import process from 'node:process'
+
 // sanity.blueprint.ts
 import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
-import process from 'node:process'
 
 const {TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID} = process.env
 if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {

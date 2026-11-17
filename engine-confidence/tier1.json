@@ -1,0 +1,39 @@
+{
+  "sanity": {
+    "packageDir": "packages/sanity",
+    "mutate": [
+      "src/core/store/document/buffered-doc/createBufferedDocument.ts",
+      "src/core/store/document/buffered-doc/createObservableBufferedDocument.ts",
+      "src/core/store/document/getPairListener.ts",
+      "src/core/store/document/utils/sequentializeListenerEvents.ts",
+      "src/core/store/document/utils/dedupeListenerEvents.ts",
+      "src/core/store/document/utils/eventChainUtils.ts",
+      "src/core/store/document/document-pair/checkoutPair.ts",
+      "src/core/store/document/document-pair/memoizedPair.ts",
+      "src/core/store/document/document-pair/snapshotPair.ts",
+      "src/core/store/document/document-pair/consistencyStatus.ts",
+      "src/core/store/document/document-pair/operationEvents.ts",
+      "src/core/store/document/document-pair/operationArgs.ts",
+      "src/core/store/document/document-pair/editOperations.ts",
+      "src/core/store/document/document-pair/operations/commit.ts",
+      "src/core/store/document/document-pair/operations/helpers.ts",
+      "src/core/store/document/document-pair/serverOperations/patch.ts",
+      "src/core/store/document/document-pair/utils/actionsApiClient.ts",
+      "src/core/store/document/document-pair/utils/operationsApiClient.ts",
+      "src/core/store/document/document-pair/utils/isLiveEditEnabled.ts",
+      "src/core/form/patch/PatchChannel.ts",
+      "src/core/form/patch/PatchEvent.ts",
+      "src/core/form/patch/applyPatch.ts",
+      "src/core/form/patch/arrayInsert.ts",
+      "src/core/form/patch/patch.ts",
+      "src/core/form/patch/primitive.ts",
+      "src/core/form/patch/string.ts",
+      "src/core/form/utils/mutationPatch.ts",
+      "src/core/form/utils/path.ts"
+    ]
+  },
+  "mutator": {
+    "packageDir": "packages/@sanity/mutator",
+    "mutate": ["src/**/*.ts", "!src/**/index.ts", "!src/**/types.ts", "!src/document/debug.ts"]
+  }
+}

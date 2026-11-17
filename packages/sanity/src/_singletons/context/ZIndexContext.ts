@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {ZIndexContextValue} from '../../core/components/zOffsets/types'
 
@@ -40,7 +40,4 @@ export const zIndexContextDefaults: ZIndexContextValue = {
  *
  * @internal
  */
-export const ZIndexContext = createContext<ZIndexContextValue>(
-  'sanity/_singletons/context/z-index',
-  zIndexContextDefaults,
-)
+export const ZIndexContext = createContext<ZIndexContextValue>(zIndexContextDefaults)

@@ -15,7 +15,7 @@ const fileExtensions = [
   '.woff2',
 ]
 
-export async function load(url, context, nextLoad) {
+export function load(url, context, nextLoad) {
   if (fileExtensions.some((extension) => url.endsWith(extension))) {
     return {
       format: 'module',

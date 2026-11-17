@@ -17,11 +17,13 @@ interface AuthStateStub {
   client: SanityClient
 }
 
-function makeClient(projectId: string): SanityClient {
+function makeClient(projectId: string, stateResponse: unknown = {state: 'eligible'}): SanityClient {
   const client = {
     config: () => ({projectId}),
     withConfig: (): unknown => client,
-    request: vi.fn(() => Promise.resolve([])),
+    request: vi.fn(({url}: {url?: string}) =>
+      Promise.resolve(url?.endsWith('/requests/state') ? stateResponse : []),
+    ),
   }
   return client as unknown as SanityClient
 }
@@ -71,6 +73,17 @@ describe('RequestAccessScreen', () => {
     })
 
     expect(await screen.findByRole('form', {name: 'Request access'})).toBeInTheDocument()
+  })
+
+  it('keeps the request form closed when the state response is malformed', async () => {
+    await renderScreen()
+    await act(async () => {
+      authState$.next({currentUser, client: makeClient('projectA', [])})
+    })
+
+    expect(await screen.findByText('Access request unavailable')).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: 'Try again'})).toBeInTheDocument()
+    expect(screen.queryByRole('form', {name: 'Request access'})).not.toBeInTheDocument()
   })
 
   it('keeps in-progress form state when auth re-emits a new client for the same project', async () => {

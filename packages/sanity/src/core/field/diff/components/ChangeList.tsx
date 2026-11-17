@@ -2,9 +2,10 @@ import {type SanityDocument} from '@sanity/client'
 import {RevertIcon} from '@sanity/icons/Revert'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type ObjectSchemaType} from '@sanity/types'
-import {Card, Stack} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {startTransition, useCallback, useContext, useMemo, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
+import {VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
@@ -128,8 +129,8 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
 
   return (
     <Card>
-      <Stack gap={5}>
-        <Stack as={ChangeListWrapper} gap={5}>
+      <VStack gap={5}>
+        <VStack as={ChangeListWrapper} gap={5}>
           {changes.map((change) => (
             <div key={change.key}>
               <ChangeResolver
@@ -144,10 +145,10 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
               />
             </div>
           ))}
-        </Stack>
+        </VStack>
 
         {showFooter && isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
-          <Stack>
+          <VStack>
             <Button
               tone="critical"
               mode="ghost"
@@ -160,9 +161,9 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
               size="large"
               ref={setButtonElement}
             />
-          </Stack>
+          </VStack>
         )}
-      </Stack>
+      </VStack>
 
       <RevertChangesConfirmDialog
         open={confirmRevertAllOpen}

@@ -272,8 +272,9 @@ test('verifies drag visual feedback', async ({page}) => {
 ## File Drop Zone
 
 ```typescript
-import {test, expect} from '@playwright/test'
 import path from 'path'
+
+import {test, expect} from '@playwright/test'
 
 test('uploads file via drop zone', async ({page}) => {
   await page.goto('/upload')

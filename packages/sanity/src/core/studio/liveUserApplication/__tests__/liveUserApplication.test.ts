@@ -2,6 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {of} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {stubMessageBusHost} from '../../../../../test/testUtils/stubMessageBusHost'
 import {type WorkspaceSummary} from '../../../config/types'
 import {type UserApplicationCache} from '../../../store/userApplications'
 import {findUserApplication} from '../liveUserApplication'
@@ -370,6 +371,35 @@ describe('findUserApplication', () => {
           {id: 'app-2', urlType: 'external', appHost: 'https://external.com'},
         ],
       })
+
+      const result = await findUserApplication(cache, createWorkspacesFromIds(['proj1']))
+
+      expect(result).toBeUndefined()
+    })
+  })
+
+  describe('with a message bus host', () => {
+    // The app id `stubMessageBusHost` connects Studio as.
+    const CONNECTED_APP_ID = 'studio'
+    const HOST_APP = {id: 'other-app', urlType: 'external', appHost: 'https://workbench.sanity.run'}
+
+    beforeEach(() => {
+      stubMessageBusHost()
+      mockWindowLocation('https://workbench.sanity.run', `/studios/${CONNECTED_APP_ID}`)
+    })
+
+    it('matches the application Studio connected as, not the host origin', async () => {
+      const cache = createMockCache({
+        proj1: [HOST_APP, {id: CONNECTED_APP_ID, urlType: 'internal', appHost: 'my-studio'}],
+      })
+
+      const result = await findUserApplication(cache, createWorkspacesFromIds(['proj1']))
+
+      expect(result?.id).toBe(CONNECTED_APP_ID)
+    })
+
+    it('does not fall back to the host origin when the connected application is not listed', async () => {
+      const cache = createMockCache({proj1: [HOST_APP]})
 
       const result = await findUserApplication(cache, createWorkspacesFromIds(['proj1']))
 

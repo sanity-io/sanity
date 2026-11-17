@@ -44,7 +44,7 @@ export function useOptimisticDiff({
   )
 
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setCurrentSignal('definitive')
     // Ensure the optimistic value is synced with the definitive value.
     setOptimisticValue(definitiveValue)

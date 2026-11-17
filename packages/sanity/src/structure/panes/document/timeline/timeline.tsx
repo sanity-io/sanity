@@ -1,4 +1,3 @@
-import {Box, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type Chunk,
@@ -7,6 +6,7 @@ import {
   LoadingBlock,
   useTranslation,
 } from 'sanity'
+import {Text, Box} from 'ui5'
 
 import {TIMELINE_LIST_WRAPPER_ID} from '../constants'
 import {ExpandableTimelineItemButton} from './expandableTimelineItemButton'
@@ -61,7 +61,7 @@ export const Timeline = ({
       const selected = chunksWithMetadata.find((chunk) => chunk.id === selectedChunkId)
       if (selected && isNonPublishChunk(selected) && selected.parentId) {
         const parentId = selected.parentId
-        // oxlint-disable-next-line react/react-compiler
+        // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
         setExpandedParents((prev) => {
           if (prev.has(parentId)) return prev
           const next = new Set(prev)
@@ -159,7 +159,7 @@ export const Timeline = ({
     ],
   )
 
-  // oxlint-disable-next-line react/react-compiler
+  // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
   useEffect(() => setMounted(true), [])
 
   return (
@@ -177,17 +177,21 @@ export const Timeline = ({
     >
       {filteredChunks.length === 0 && (
         <StackWrapper padding={3} gap={3}>
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {t('timeline.error.no-document-history-title')}
           </Text>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {t('timeline.error.no-document-history-description')}
           </Text>
         </StackWrapper>
       )}
 
       {filteredChunks.length > 0 && (
-        <ListWrapper direction="column" $maxHeight={listMaxHeight} id={TIMELINE_LIST_WRAPPER_ID}>
+        <ListWrapper
+          flexDirection="column"
+          $maxHeight={listMaxHeight}
+          id={TIMELINE_LIST_WRAPPER_ID}
+        >
           <CommandList
             activeItemDataAttr="data-hovered"
             ariaLabel={t('timeline.list.aria-label')}

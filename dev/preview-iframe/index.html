@@ -28,10 +28,6 @@
       window.onerror = function (err) {
         console.error('[preview] Uncaught error:', err)
       }
-
-      if (window.parent !== window) {
-        window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.parent.__REACT_DEVTOOLS_GLOBAL_HOOK__
-      }
     </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -1,9 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CloseCircleIcon} from '@sanity/icons/CloseCircle'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
+import {Text} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -44,7 +44,7 @@ export const ReleaseUnscheduleButton = ({
         toast.push({
           status: 'error',
           title: (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               <Translate
                 t={t}
                 i18nKey="toast.unschedule.error"
@@ -84,7 +84,7 @@ export const ReleaseUnscheduleButton = ({
           },
         }}
       >
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           {
             <Translate
               t={t}

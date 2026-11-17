@@ -414,3 +414,46 @@ describe('sortAndCleanupVersions()', () => {
     expect(sortAndCleanupVersions([])).toEqual([])
   })
 })
+
+describe('cleanupVersions() with deprecations', () => {
+  it('keeps the highest non-deprecated outside-TTL version per major', () => {
+    const now = currentUnixTime()
+
+    const deprecatedHighest = {timestamp: now - STALE_TAGS_EXPIRY_SECONDS - 100, version: '1.3.0'}
+    const goodBelow = {timestamp: now - STALE_TAGS_EXPIRY_SECONDS - 200, version: '1.2.0'}
+    const goodLower = {timestamp: now - STALE_TAGS_EXPIRY_SECONDS - 300, version: '1.1.0'}
+    const newest = {timestamp: now, version: '2.0.0'}
+
+    const result = cleanupVersions([deprecatedHighest, goodBelow, goodLower, newest], {
+      deprecated: {'1.3.0': {timestamp: now - 50}},
+    })
+
+    expect(result).toEqual([newest, goodBelow])
+  })
+
+  it('still keeps deprecated versions within the TTL window', () => {
+    const now = currentUnixTime()
+
+    const deprecatedInTtl = {timestamp: now - 100, version: '1.3.0'}
+    const goodOutsideTtl = {timestamp: now - STALE_TAGS_EXPIRY_SECONDS - 200, version: '1.2.0'}
+
+    const result = cleanupVersions([deprecatedInTtl, goodOutsideTtl], {
+      deprecated: {'1.3.0': {timestamp: now - 50}},
+    })
+
+    expect(result).toEqual([deprecatedInTtl, goodOutsideTtl])
+  })
+
+  it('falls back to the highest outside-TTL version when all are deprecated', () => {
+    const now = currentUnixTime()
+
+    const deprecatedHighest = {timestamp: now - STALE_TAGS_EXPIRY_SECONDS - 100, version: '1.3.0'}
+    const deprecatedLower = {timestamp: now - STALE_TAGS_EXPIRY_SECONDS - 200, version: '1.2.0'}
+
+    const result = cleanupVersions([deprecatedHighest, deprecatedLower], {
+      deprecated: {'1.3.0': {timestamp: now - 50}, '1.2.0': {timestamp: now - 50}},
+    })
+
+    expect(result).toEqual([deprecatedHighest])
+  })
+})

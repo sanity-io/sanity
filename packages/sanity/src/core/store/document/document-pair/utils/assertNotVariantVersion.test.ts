@@ -7,7 +7,9 @@ import {
   VARIANT_VERSION_DISABLED,
 } from './assertNotVariantVersion'
 
-function variantVersionDoc(): SanityDocument {
+const variantRef = {_ref: '_.variants.french', _key: 'k-123'} as const
+
+function variantVersionDoc(system: SanityDocument['_system'] = {variants: [variantRef]}) {
   return {
     _id: 'versions.varscope.article-1',
     _type: 'article',
@@ -16,16 +18,25 @@ function variantVersionDoc(): SanityDocument {
     _updatedAt: '2024-01-01T00:00:00Z',
     _system: {
       bundleId: 'drafts',
-      variant: {_ref: '_.variants.french', _weak: true},
       group: {_ref: 'article-1', _weak: true},
       scopeId: 'varscope',
+      ...system,
     },
-  }
+  } satisfies SanityDocument
 }
+
+/** An unmigrated document still carrying the legacy single `_system.variant` reference. */
+const legacyVariantVersionDoc = () =>
+  // oxlint-disable-next-line typescript/no-deprecated -- unmigrated snapshot under test.
+  variantVersionDoc({variant: variantRef})
 
 describe('disabledForVariantVersion', () => {
   it('returns VARIANT_VERSION for a variant-scoped version snapshot', () => {
     expect(disabledForVariantVersion(variantVersionDoc())).toBe(VARIANT_VERSION_DISABLED)
+  })
+
+  it('returns VARIANT_VERSION for an unmigrated variant-scoped version snapshot', () => {
+    expect(disabledForVariantVersion(legacyVariantVersionDoc())).toBe(VARIANT_VERSION_DISABLED)
   })
 
   it('returns false for non-variant versions', () => {
@@ -42,6 +53,12 @@ describe('disabledForVariantVersion', () => {
 describe('assertNotVariantVersion', () => {
   it('throws for a variant-scoped version snapshot', () => {
     expect(() => assertNotVariantVersion(variantVersionDoc(), 'publish')).toThrow(
+      /variant-scoped version/,
+    )
+  })
+
+  it('throws for an unmigrated variant-scoped version snapshot', () => {
+    expect(() => assertNotVariantVersion(legacyVariantVersionDoc(), 'publish')).toThrow(
       /variant-scoped version/,
     )
   })

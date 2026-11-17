@@ -1,13 +1,14 @@
 import {PublishIcon} from '@sanity/icons/Publish'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
-import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
+  getDefaultVariant,
   getPairTarget,
   getTargetScopeId,
+  getTargetSiblings,
   InsufficientPermissionsMessage,
   isPublishedPerspective,
   type TFunction,
@@ -17,12 +18,14 @@ import {
   useEditState,
   usePerspective,
   useRelativeTime,
+  useSetImmediateValidation,
   useSyncState,
   useTranslation,
   useValidationStatus,
 } from 'sanity'
+import {Text} from 'ui5'
 
-import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18n'
+import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {
   DocumentPublished,
@@ -30,40 +33,37 @@ import {
   PublishButtonDisabledStart,
   PublishButtonClicked,
 } from './__telemetry__/documentActions.telemetry'
-
-const DISABLED_REASON_TITLE_KEY: Record<string, StructureLocaleResourceKeys> = {
-  LIVE_EDIT_ENABLED: 'action.publish.live-edit.publish-disabled',
-  ALREADY_PUBLISHED: 'action.publish.already-published.no-time-ago.tooltip',
-  NO_CHANGES: 'action.publish.no-changes.tooltip',
-  NOT_READY: 'action.publish.disabled.not-ready',
-  NOT_PUBLISHABLE: 'action.publish.disabled.not-publishable',
-  TARGET_NOT_FOUND: 'action.publish.disabled.target-not-found',
-} as const
+import {PUBLISH_DISABLED_REASON} from './operationDisabledReasons'
 
 const PUBLISHED_STATE = {status: 'published'} as const
 
 function getDisabledReason(
-  reason: keyof typeof DISABLED_REASON_TITLE_KEY,
+  reason: keyof typeof PUBLISH_DISABLED_REASON,
   publishedAt: string | undefined,
   t: TFunction,
 ) {
   if (reason === 'ALREADY_PUBLISHED' && publishedAt) {
     return <AlreadyPublished publishedAt={publishedAt} />
   }
-  return t(DISABLED_REASON_TITLE_KEY[reason])
+  return t(PUBLISH_DISABLED_REASON[reason])
 }
 
 function AlreadyPublished({publishedAt}: {publishedAt: string}) {
   const {t} = useTranslation(structureLocaleNamespace)
   const timeSincePublished = useRelativeTime(publishedAt, {useTemporalPhrase: true})
-  return <Text>{t('action.publish.already-published.tooltip', {timeSincePublished})}</Text>
+  return (
+    <Text as="div" trim={true}>
+      {t('action.publish.already-published.tooltip', {timeSincePublished})}
+    </Text>
+  )
 }
 
 // React Compiler needs functions that are hooks to have the `use` prefix, pascal case are treated as a component, these are hooks even though they're confusingly named `DocumentActionComponent`
 /** @internal */
 export const usePublishAction: DocumentActionComponent = (props) => {
   const {id, type, liveEdit, draft, published, release, version} = props
-  const {selectedPerspective, selectedVariantName} = usePerspective()
+  const {selectedPerspective, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const [publishState, setPublishState] = useState<
     {status: 'publishing'; publishRevision: string | undefined} | {status: 'published'} | null
   >(null)
@@ -75,18 +75,16 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const isTargetReady = targetDocumentState.status === 'ready'
   const scopeId = getTargetScopeId(targetDocumentState)
   const isVariantTarget = isTargetReady && targetDocumentState.variant !== undefined
-  // For variant targets, publish state (already-published timestamps, publish-completion revision
-  // tracking) lives on the variant-of-published sibling — the base `published` document says
-  // nothing about whether the *variant* is published.
-  const publishedInfo = isVariantTarget ? targetDocumentState.publishedSibling : published
-  // Variant publish locks need the sibling revision (not in any pair snapshot). Base draft
-  // publish omits this and keeps using `snapshots.published._rev` inside the operation.
-  const publishedRevisionId = isVariantTarget
-    ? targetDocumentState.publishedSibling?._rev
-    : undefined
+  const siblings = getTargetSiblings(targetDocumentState)
+  // Publish-state timestamps and completion tracking live on the current lane's published sibling.
+  // (While the target is resolving, the action is disabled below.)
+  const publishedInfo = siblings?.published
+  // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
+  const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
 
   const {publish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
-  const validationStatus = useValidationStatus(value._id, type, !release)
+  const validationStatus = useValidationStatus(value._id, type, {listener: 'document'})
+  useSetImmediateValidation(value._id, type, !release, {enabled: publishScheduled})
   const syncState = useSyncState(id, type, scopeId)
   const editState = useEditState(documentId, documentType, 'default', scopeId)
   const {t} = useTranslation(structureLocaleNamespace)
@@ -95,8 +93,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const toast = useToast()
 
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
-  // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
-  const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
+
   const isSyncing = syncState.isSyncing
   const isValidating = validationStatus.isValidating
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
@@ -119,10 +116,10 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const telemetry = useTelemetry()
 
   const doPublish = useCallback(() => {
-    publish.execute(isVariantTarget ? {publishedRevisionId} : undefined)
+    publish.execute(isVariantTarget ? {publishedRevisionId: currentPublishRevision} : undefined)
     telemetry.log(PublishButtonClicked, {documentId: id, stage: 'started'})
     setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
-  }, [publish, isVariantTarget, publishedRevisionId, currentPublishRevision, telemetry, id])
+  }, [publish, isVariantTarget, currentPublishRevision, telemetry, id])
 
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
@@ -134,7 +131,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     }
 
     if (!hasValidationErrors) {
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       doPublish()
     } else {
       // User tried to publish before validation was complete
@@ -152,6 +149,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     publishScheduled,
     validationStatus.revision,
     revision,
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
     isValidating,
     validationStatus.isValidating,
     toast,
@@ -182,6 +180,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
       setPublishState(nextState)
     }, delay)
     return () => clearTimeout(timer)
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [changesOpen, publishState, currentPublishRevision, telemetry, id])
 
   const isWaitingToPublish = Boolean(
@@ -203,30 +202,29 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     }
   }, [isWaitingToPublish, telemetry, id, editState?.transactionSyncLock?.enabled])
 
+  const publishedImmediately = !draft?._createdAt
+  const previouslyPublished = Boolean(publishedInfo)
+  const shouldSetPublishScheduled =
+    isSyncing || isValidating || validationStatus.revision !== revision
+
+  // This value flips on every keystroke (`isSyncing`), so it lives in a ref to keep `handle`
+  // stable; the hook collection compares the action description by reference for functions.
+  const shouldSetPublishScheduledRef = useRef(shouldSetPublishScheduled)
+  useEffect(() => {
+    shouldSetPublishScheduledRef.current = shouldSetPublishScheduled
+  }, [shouldSetPublishScheduled])
+
   const handle = useCallback(() => {
     telemetry.log(DocumentPublished, {
-      publishedImmediately: !draft?._createdAt,
-      previouslyPublished: Boolean(publishedInfo),
+      publishedImmediately,
+      previouslyPublished,
     })
-    if (
-      syncState.isSyncing ||
-      validationStatus.isValidating ||
-      validationStatus.revision !== revision
-    ) {
+    if (shouldSetPublishScheduledRef.current) {
       setPublishScheduled(true)
     } else {
       doPublish()
     }
-  }, [
-    telemetry,
-    draft?._createdAt,
-    publishedInfo,
-    syncState.isSyncing,
-    validationStatus.isValidating,
-    validationStatus.revision,
-    revision,
-    doPublish,
-  ])
+  }, [publishedImmediately, previouslyPublished, telemetry, setPublishScheduled, doPublish])
 
   return useMemo(() => {
     if (isPublishedPerspective(selectedPerspective)) {

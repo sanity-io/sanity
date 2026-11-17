@@ -5,7 +5,7 @@ import {render, screen} from '@testing-library/react'
 import {type ReactNode, type RefObject, useEffect} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
-import {Item} from './list'
+import {Item, List} from './list'
 import {useArrayItemRootElementRef} from './useArrayItemRootElementRef'
 
 type ObservedRef = RefObject<HTMLDivElement | null> | null
@@ -22,6 +22,23 @@ function renderWithTheme(children: ReactNode) {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   return render(<ThemeProvider theme={studioTheme}>{children}</ThemeProvider>)
 }
+
+describe('List', () => {
+  it.each([false, true])('keeps the sorting props off the grid when sortable is %s', (sortable) => {
+    renderWithTheme(
+      <List axis="y" items={['item-1']} sortable={sortable} data-testid="list">
+        <Item id="item-1" sortable={sortable}>
+          item
+        </Item>
+      </List>,
+    )
+
+    const list = screen.getByTestId('list')
+    expect(list).toHaveTextContent('item')
+    expect(list).not.toHaveAttribute('axis')
+    expect(list).not.toHaveAttribute('items')
+  })
+})
 
 describe('Item', () => {
   it('provides its root element to descendants when not sortable', () => {

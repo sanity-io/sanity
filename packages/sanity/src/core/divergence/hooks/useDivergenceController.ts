@@ -2,7 +2,7 @@ import {SanityEncoder} from '@sanity/mutate'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type SanityDocument} from '@sanity/types'
 import {fromString, get} from '@sanity/util/paths'
-import {useContext, useEffect, useState} from 'react'
+import {useContext, useEffect, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {
   type Observable,
@@ -100,64 +100,72 @@ export function useDivergenceController(
 
   const [upstreamId, upstreamRevisionId] = sinceRevisionId.split('@')
 
-  const readUpstreamBase: Observable<HydratedSnapshot> = getDocumentAtRevision({
-    client,
-    documentId: upstreamId,
-    revisionId: upstreamRevisionId,
-  }).pipe(
-    switchMap((state) => {
-      if (state?.loading) {
-        return of({
-          isLoading: true,
-        })
-      }
-      return of(state).pipe(
-        filter((revision) => revision !== null),
-        map(({document}) => document),
-        switchMap((document) => {
-          if (!document) {
-            return EMPTY
+  const readUpstreamBase: Observable<HydratedSnapshot> = useMemo(
+    () =>
+      getDocumentAtRevision({
+        client,
+        documentId: upstreamId,
+        revisionId: upstreamRevisionId,
+      }).pipe(
+        switchMap((state) => {
+          if (state?.loading) {
+            return of({
+              isLoading: true,
+            })
           }
+          return of(state).pipe(
+            filter((revision) => revision !== null),
+            map(({document}) => document),
+            switchMap((document) => {
+              if (!document) {
+                return EMPTY
+              }
 
-          return of(get(document, path)).pipe(
-            map((value) => ({value, document})),
-            startWith(undefined),
+              return of(get(document, path)).pipe(
+                map((value) => ({value, document})),
+                startWith(undefined),
+              )
+            }),
+            map((value) => ({isLoading: false, value})),
           )
         }),
-        map((value) => ({isLoading: false, value})),
-      )
-    }),
+      ),
+    [client, path, upstreamId, upstreamRevisionId],
   )
 
   // No `getTargetScopeId(useTargetDocumentState())` here: the version is derived from the divergence's own
   // document id, independent of the selected perspective.
-  const readUpstreamHead: Observable<HydratedSnapshot> = documentStore.pair
-    .editState(getPublishedId(documentId), documentType, getVersionFromId(documentId))
-    .pipe(
-      switchMap((state) => {
-        if (!state.ready) {
-          return of({
-            isLoading: true,
-          })
-        }
-
-        return of(state).pipe(
-          map(selectUpstreamVersion),
-          find((document) => document !== null),
-          switchMap((document) => {
-            if (typeof document === 'undefined') {
-              return EMPTY
+  const readUpstreamHead: Observable<HydratedSnapshot> = useMemo(
+    () =>
+      documentStore.pair
+        .editState(getPublishedId(documentId), documentType, getVersionFromId(documentId))
+        .pipe(
+          switchMap((state) => {
+            if (!state.ready) {
+              return of({
+                isLoading: true,
+              })
             }
 
-            return of(get(document, path)).pipe(
-              map((value) => ({value, document})),
-              startWith(undefined),
+            return of(state).pipe(
+              map(selectUpstreamVersion),
+              find((document) => document !== null),
+              switchMap((document) => {
+                if (typeof document === 'undefined') {
+                  return EMPTY
+                }
+
+                return of(get(document, path)).pipe(
+                  map((value) => ({value, document})),
+                  startWith(undefined),
+                )
+              }),
+              map((value) => ({isLoading: false, value})),
             )
           }),
-          map((value) => ({isLoading: false, value})),
-        )
-      }),
-    )
+        ),
+    [documentId, documentStore.pair, documentType, path],
+  )
 
   // Kept synchronous: `markResolved` / `takeUpstreamValue` build and execute
   // patches from `upstreamHead.value.document` (and gate on `isLoading`), so a

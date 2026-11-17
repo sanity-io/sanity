@@ -9,13 +9,13 @@ import {useUserListWithPermissions} from '../../../hooks/useUserListWithPermissi
 import {type ReleaseId} from '../../../perspective/types'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {useAddonDataset} from '../../../studio/addonDataset/useAddonDataset'
+import {useAddonDatasetListenerStore} from '../../../studio/addonDataset/useAddonDatasetListenerStore'
 import {useWorkspace} from '../../../studio/workspace'
 import {getPublishedId} from '../../../util/draftUtils'
 import {
   type CommentOperationsHookOptions,
   useCommentOperations,
 } from '../../hooks/use-comment-operations/useCommentOperations'
-import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
 import {useCommentsStore} from '../../store/useCommentsStore'
 import {
   type CommentPostPayload,
@@ -91,9 +91,9 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     releaseId: scopeId,
     mentionsDisabled,
   } = props
-  const commentsEnabled = useCommentsEnabled()
   const [status, setStatus] = useState<CommentStatus>('open')
   const {client, createAddonDataset, isCreatingDataset} = useAddonDataset()
+  const listenerStore = useAddonDatasetListenerStore()
   const publishedId = getPublishedId(documentId)
 
   const editState = useEditState(publishedId, documentType, 'low', scopeId)
@@ -129,6 +129,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     documentId,
     releaseId: scopeId,
     client,
+    listenerStore,
     transactionsIdMap,
     onLatestTransactionIdReceived: handleOnLatestTransactionIdReceived,
   })
@@ -144,17 +145,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       transactionsIdMap.set(commentDocumentId, transactionId)
     },
     [transactionsIdMap],
-  )
-
-  const handleSetStatus = useCallback(
-    (newStatus: CommentStatus) => {
-      // Avoids going to "resolved" when using links to comments
-      if (commentsEnabled.mode === 'upsell' && newStatus === 'resolved') {
-        return null
-      }
-      return setStatus(newStatus)
-    },
-    [setStatus, commentsEnabled],
   )
 
   const mentionOptions = useUserListWithPermissions(
@@ -308,7 +298,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
 
       isCreatingDataset,
       status,
-      setStatus: handleSetStatus,
+      setStatus,
       getComment,
       getCommentLink,
       onClearSelectedComment,
@@ -343,7 +333,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       documentType,
       isCreatingDataset,
       status,
-      handleSetStatus,
+      setStatus,
       getComment,
       getCommentLink,
       onClearSelectedComment,

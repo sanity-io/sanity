@@ -1,4 +1,3 @@
-import {Box} from '@sanity/ui'
 import {motion, type VariantLabels, type Variants} from 'motion/react'
 import {
   type ReactEventHandler,
@@ -8,6 +7,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {createGlobalStyle, styled} from 'styled-components'
+import {Box} from 'ui5'
 
 import {useId} from '../useId'
 

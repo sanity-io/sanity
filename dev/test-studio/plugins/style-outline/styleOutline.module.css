@@ -1,0 +1,257 @@
+/*
+ * The widget's own styles, a CSS module Vite compiles without further setup. The outlines the
+ * widget paints over the page (one rule per style system) are not here: StyleOutlinePanel.tsx
+ * writes them from STYLE_SYSTEMS, the one place that defines each system's selector and color.
+ */
+
+.glass {
+  background: rgba(18, 18, 22, 0.92);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/*
+ * The corner it is docked in lives in a transform written by Motion (see corners.ts), so the
+ * widget itself only ever sits at the viewport origin.
+ */
+.root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color-scheme: dark;
+}
+
+.rootDragging {
+  user-select: none;
+}
+
+/*
+ * Worn by the panel or the trigger rather than by the wrapper around them, so the shadow of a
+ * widget being carried keeps the shape it belongs to — the panel's rounded corners, the collapsed
+ * trigger's circle.
+ */
+.lifted {
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
+}
+
+/*
+ * Worn by whichever element starts a drag: the panel header when open, the trigger when
+ * collapsed. `touch-action: none` so a touch drag moves the widget instead of scrolling the studio
+ * behind it, and no text selection to swallow a quick drag.
+ */
+.handle {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+/* Declared after .handle so its cursor wins while a drag is live. */
+.handleDragging {
+  cursor: grabbing;
+}
+
+.trigger {
+  composes: glass handle;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.panel {
+  composes: glass;
+  margin: 0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  width: 320px;
+  color: #ececf1;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0 8px;
+}
+
+.header {
+  composes: handle;
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.header:hover {
+  color: #ffffff;
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: rgba(236, 236, 241, 0.55);
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  color: #ffffff;
+}
+
+.closeButton:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.72);
+  outline-offset: 1px;
+}
+
+.group {
+  padding: 4px 0;
+}
+
+.groupHeading {
+  margin: 0;
+  padding: 2px 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(236, 236, 241, 0.55);
+}
+
+.sectionDivider {
+  height: 1px;
+  margin: 7px 0;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 26px;
+  cursor: pointer;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.rowLabel {
+  flex: 1;
+}
+
+.rowCount {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: rgba(236, 236, 241, 0.55);
+}
+
+.adoption {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.donut {
+  position: relative;
+  display: grid;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  place-items: center;
+}
+
+.donut::after {
+  content: '';
+  position: absolute;
+  inset: 11px;
+  border-radius: 50%;
+  background: #202024;
+}
+
+.donutValue {
+  position: relative;
+  z-index: 1;
+  font-size: 13px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.legend {
+  flex: 1;
+}
+
+.escapeDetails {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.escapeCount {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.escapeCountValue {
+  font-size: 18px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.metricLabel {
+  font-size: 12px;
+  color: rgba(236, 236, 241, 0.72);
+}
+
+.cssMeter {
+  height: 5px;
+  margin-top: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.cssMeterFill {
+  display: block;
+  height: 100%;
+  min-width: 1px;
+  border-radius: inherit;
+  background: #ff4fa3;
+  transition: width 150ms ease-out;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #5e6ad2;
+}

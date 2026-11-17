@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {type ButtonMode, Card, Flex, Inline, useMediaIndex} from '@sanity/ui'
+import {type ButtonMode, Card, Inline, useMediaIndex} from '@sanity/ui'
 import {isSameDay} from 'date-fns/isSameDay'
 import {AnimatePresence, motion} from 'motion/react'
 import {
@@ -15,7 +15,7 @@ import {
   useState,
 } from 'react'
 import {useRouter} from 'sanity/router'
-import {Box} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -29,22 +29,18 @@ import {useScheduledDraftsEnabled} from '../../../singleDocRelease/hooks/useSche
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {useWorkspace} from '../../../studio/workspace'
 import {isCardinalityOneRelease, isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
+import {useAllVariants} from '../../../variants/store/useAllVariants'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
+import {useCreateReleaseAvailability} from '../../hooks/useCreateReleaseAvailability'
 import {releasesLocaleNamespace} from '../../i18n'
 import {isReleaseDocument} from '../../store/types'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
-import {useReleaseOperations} from '../../store/useReleaseOperations'
-import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
 import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {
-  filterReleasesForOverview,
-  getReleaseDefaults,
-  shouldShowReleaseInView,
-} from '../../util/util'
+import {filterReleasesForOverview, shouldShowReleaseInView} from '../../util/util'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
 import {CalendarPopover} from './CalendarPopover'
@@ -60,7 +56,7 @@ import {
   getInitialReleaseNotFound,
   type Mode,
 } from './queryParamUtils'
-import {createReleaseCalendarFilterDay, DateFilterButton} from './ReleaseCalendarFilter'
+import {DateFilterButton, RELEASE_CALENDAR_FILTER_DAY} from './ReleaseCalendarFilter'
 import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
 import {ReleaseNotFoundBanner} from './ReleaseNotFoundBanner'
 import {ReleasesEmptyState} from './ReleasesEmptyState'
@@ -96,9 +92,11 @@ export function ReleasesOverview() {
     useReleasesUpsell()
   const {mode: scheduledDraftsMode} = useSingleDocReleaseEnabled()
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
-  const {document, releases: releasesConfig} = useWorkspace()
+  const {document, releases: releasesConfig, beta} = useWorkspace()
   const isReleasesEnabled = Boolean(releasesConfig?.enabled)
   const isDraftModelEnabled = document?.drafts?.enabled
+  const variantsEnabled = Boolean(beta?.variants?.enabled)
+  const {byId: variantsById, loading: variantsLoading} = useAllVariants()
 
   const router = useRouter()
   const navigateRef = useRef(router.navigate)
@@ -150,9 +148,7 @@ export function ReleasesOverview() {
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
   const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
 
-  const {createRelease} = useReleaseOperations()
-  const {checkWithPermissionGuard} = useReleasePermissions()
-  const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
+  const createReleaseAvailability = useCreateReleaseAvailability()
 
   const mediaIndex = useMediaIndex()
   const isNarrowViewport = mediaIndex < 2
@@ -205,18 +201,6 @@ export function ReleasesOverview() {
       documentsMetadata: releasesMetadata[release._id] || {},
     }))
   }, [hasReleases, releasesMetadata, releases])
-
-  const isMounted = useRef(false)
-  useEffect(() => {
-    isMounted.current = true
-    void checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
-      if (isMounted.current) setHasCreatePermission(hasPermissions)
-    })
-
-    return () => {
-      isMounted.current = false
-    }
-  }, [checkWithPermissionGuard, createRelease])
 
   // switch to open mode if on archived mode and there are no archived releases
   if (releaseGroupMode === 'archived' && !loadingReleases && !archivedReleases.length) {
@@ -289,7 +273,7 @@ export function ReleasesOverview() {
   const [hasMounted, setHasMounted] = useState(false)
 
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setHasMounted(true)
   }, [])
 
@@ -382,18 +366,19 @@ export function ReleasesOverview() {
     return (
       <Button
         icon={AddIcon}
-        disabled={!hasCreatePermission || isCreateReleaseDialogOpen}
+        disabled={createReleaseAvailability.disabled || isCreateReleaseDialogOpen}
         onClick={handleOnClickCreateRelease}
         text={tCore('release.action.create-new')}
         tooltipProps={{
-          disabled: hasCreatePermission === true,
-          content: tCore('release.action.permission.error'),
+          disabled: createReleaseAvailability.tooltip === undefined,
+          content: createReleaseAvailability.tooltip,
         }}
       />
     )
   }, [
     cardinalityView,
-    hasCreatePermission,
+    createReleaseAvailability.disabled,
+    createReleaseAvailability.tooltip,
     isCreateReleaseDialogOpen,
     handleOnClickCreateRelease,
     tCore,
@@ -469,7 +454,7 @@ export function ReleasesOverview() {
     () => (
       <CalendarFilter
         disabled={loading || releases.length === 0}
-        renderCalendarDay={createReleaseCalendarFilterDay(cardinalityView)}
+        renderCalendarDay={RELEASE_CALENDAR_FILTER_DAY[cardinalityView]}
         selectedDate={releaseFilterDate}
         onSelect={handleSelectFilterDate}
         timeZoneScope={CONTENT_RELEASES_TIME_ZONE_SCOPE}
@@ -480,7 +465,7 @@ export function ReleasesOverview() {
 
   const renderCalendarFilter = useMemo(
     () => (
-      <Flex flex="none">
+      <Flex flexBasis="auto" flexGrow={0} flexShrink={0}>
         <Card borderRight flex="none" disabled>
           {calendarFilterContent}
         </Card>
@@ -491,10 +476,13 @@ export function ReleasesOverview() {
 
   const tableColumns = useMemo(() => {
     if (cardinalityView === 'drafts') {
-      return scheduledDraftsOverviewColumnDefs(t, releaseGroupMode)
+      return scheduledDraftsOverviewColumnDefs(t, releaseGroupMode, {
+        variantsById: variantsEnabled ? variantsById : undefined,
+        variantsLoading: variantsEnabled && variantsLoading,
+      })
     }
     return releasesOverviewColumnDefs(t, releaseGroupMode)
-  }, [cardinalityView, releaseGroupMode, t])
+  }, [cardinalityView, releaseGroupMode, t, variantsEnabled, variantsById, variantsLoading])
 
   const hasBannerAboveTable =
     showReleaseNotFound || showDraftsDisabledBanner || showConfirmActiveScheduledDraftsBanner
@@ -538,13 +526,13 @@ export function ReleasesOverview() {
   }
 
   return (
-    <Flex direction="row" flex={1} style={{height: '100%'}}>
-      <Flex flex={1}>
+    <Flex flexDirection="row" flexBasis="0%" flexGrow={1} style={{height: '100%'}}>
+      <Flex flexBasis="0%" flexGrow={1}>
         {showCalendar && renderCalendarFilter}
 
-        <Flex direction="column" flex={1} style={{position: 'relative'}}>
+        <Flex flexDirection="column" flexBasis="0%" flexGrow={1} style={{position: 'relative'}}>
           <Card flex="none" padding={3}>
-            <Flex align="center" flex={1} gap={3} wrap="wrap">
+            <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={3} flexWrap="wrap">
               <Inline>
                 {!showCalendar && (
                   <CalendarPopover content={calendarFilterContent} asDialog={isNarrowViewport} />
@@ -560,7 +548,7 @@ export function ReleasesOverview() {
                 />
               </Inline>
 
-              <Flex flex={1} gap={1} style={narrowFilterStyle}>
+              <Flex flexBasis="0%" flexGrow={1} gap={1} style={narrowFilterStyle}>
                 {loadingOrHasReleases &&
                   (releaseFilterDate ? (
                     <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
@@ -568,7 +556,13 @@ export function ReleasesOverview() {
                     currentArchivedPicker
                   ))}
               </Flex>
-              <Flex flex="none" gap={2} style={narrowTimezoneStyle}>
+              <Flex
+                flexBasis="auto"
+                flexGrow={0}
+                flexShrink={0}
+                gap={2}
+                style={narrowTimezoneStyle}
+              >
                 <Button
                   icon={EarthGlobeIcon}
                   mode="bleed"

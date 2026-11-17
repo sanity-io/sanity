@@ -1,5 +1,5 @@
-import {Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {UserAvatar} from '../components/userAvatar/UserAvatar'
@@ -21,17 +21,19 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
 
   const content = useMemo(
     () => (
-      <Stack sizing="border">
+      <VStack>
         {items.map((item) => (
-          <Flex key={item.user.id} align="center" gap={2}>
+          <Flex key={item.user.id} alignItems="center" gap={2}>
             <div>
               <UserAvatar user={item.user} status="online" />
             </div>
 
-            <Text size={1}>{item.user.displayName}</Text>
+            <Text size={1} as="div" trim={true}>
+              {item.user.displayName}
+            </Text>
           </Flex>
         ))}
-      </Stack>
+      </VStack>
     ),
     [items],
   )

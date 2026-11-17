@@ -1,5 +1,6 @@
 import {EXPERIMENT} from '../constants'
 import {type BenchDocument} from '../mock-api/types'
+import {DEFAULT_READY_SELECTOR} from '../runner/session/navigation'
 import {fileAsset, fileRef, imageAsset, imageRef} from './fixtures/assets'
 import {createFixtureRng, keyGenerator, wordPicker} from './fixtures/prng'
 import {defineScenario} from './types'
@@ -76,6 +77,16 @@ export const synthetic = defineScenario({
   // session without adding power: 16 measured x 6 sessions is still ~100
   // samples for a very stable median
   keystrokes: {warmup: 4, measured: 16, burst: 12},
+  // Pageload: the usual time to editable, then until every field type in
+  // the form is interactive — synthetic has nearly every built-in type, so a
+  // field component lazy-loaded below the first field shows up here
+  load: {
+    steps: [
+      {kind: 'awaitVisible', selector: {css: DEFAULT_READY_SELECTOR}},
+      {kind: 'awaitEditable', field: 'title'},
+      {kind: 'awaitAllFieldsEditable', milestone: 'all fields editable', minFields: 3},
+    ],
+  },
 })
 
 /**

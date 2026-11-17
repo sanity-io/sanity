@@ -1,6 +1,6 @@
-import {PortableTextEditor, usePortableTextEditor} from '@portabletext/editor'
+import {useEditor} from '@portabletext/editor'
+import {isActiveStyle} from '@portabletext/editor/selectors'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {Text} from '@sanity/ui'
 import {
   Menu,
   // oxlint-disable-next-line no-restricted-imports
@@ -8,6 +8,7 @@ import {
 } from '@sanity/ui/menu'
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
 import {styled} from 'styled-components'
+import {Text} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
@@ -76,8 +77,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
 ): React.JSX.Element {
   const {disabled, items: itemsProp, boundaryElement} = props
   const applicable = useApplicableSchema()
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const editor = usePortableTextEditor()
+  const editor = useEditor()
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const focusBlock = useFocusBlock()
   const {t} = useTranslation()
@@ -121,12 +121,18 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
 
   const handleChange = useCallback(
     (item: BlockStyleItem): void => {
-      if (focusBlock && item.style !== focusBlock.style) {
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        PortableTextEditor.toggleBlockStyle(editor, item.style)
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        PortableTextEditor.focus(editor)
+      if (!focusBlock) return
+
+      editor.send({type: 'focus'})
+
+      if (isActiveStyle(item.style)(editor.getSnapshot())) {
+        // Without this no-op, `style.add` writes the default style onto
+        // blocks that carry none: a patch with no visible change.
+        return
       }
+
+      // `style.add`, never `style.toggle`: a select must not unset.
+      editor.send({type: 'style.add', style: item.style})
     },
     [editor, focusBlock],
   )
@@ -150,7 +156,11 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
         return <CustomComponent>{title}</CustomComponent>
       }
 
-      return <Text>{title}</Text>
+      return (
+        <Text as="div" trim={true}>
+          {title}
+        </Text>
+      )
     },
     [t],
   )

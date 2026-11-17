@@ -111,14 +111,22 @@ const Spacer = ({height, ...rest}: {height: number; style?: CSSProperties}) => (
 
 const DEFAULT_MARGINS: Margins = [0, 0, 0, 0]
 
+/**
+ * Position of `source` relative to `target`, as it is currently laid out: the scroll offsets of
+ * the scroll containers in between are accounted for.
+ */
 const getOffsetsTo = (source: HTMLElement, target: HTMLElement) => {
   let el: HTMLElement | null = source
-  let top = -el.scrollTop
+  let top = 0
   let left = 0
   while (el && el !== target) {
-    top += el.offsetTop - el.scrollTop
+    top += el.offsetTop
     left += el.offsetLeft
     el = el.offsetParent instanceof HTMLElement ? el.offsetParent : null
+    if (el && el !== target) {
+      top -= el.scrollTop
+      left -= el.scrollLeft
+    }
   }
   return {top, left}
 }
@@ -131,21 +139,106 @@ function getRelativeRect(element: HTMLElement, parent: HTMLElement): Rect {
   }
 }
 
+// Where an avatar sits when it is clamped to the edge of its clip element: aligned to the right,
+// with the same distance from the edge as an avatar in the docks
+const CLAMPED_EDGE_OFFSET = AVATAR_ARROW_HEIGHT + 1
+
+/**
+ * Computes the rect of a region. When the region's element is scrolled out of its `clipElement`,
+ * the rect is clamped to the spot at the clip element's top or bottom edge where the presence is
+ * shown instead, and `clampedTo` says which edge.
+ */
+function computeRegion(
+  id: string,
+  region: FieldPresenceData,
+  parent: HTMLElement,
+): ReportedRegionWithRect<FieldPresenceData> | null {
+  const {element, clipElement} = region
+  // Elements rendered through a portal outside the overlay (e.g. the fullscreen Portable Text
+  // editor) cannot be positioned relative to it, so they are left out.
+  if (!element || !parent.contains(element)) {
+    return null
+  }
+
+  const rect = getRelativeRect(element, parent)
+
+  // A clip element outside the overlay is the overlay's own scroll container (or one of its
+  // ancestors), which the intersection logic already handles.
+  if (!clipElement || clipElement === element || !parent.contains(clipElement)) {
+    return {...region, id, rect}
+  }
+
+  const clip = getRelativeRect(clipElement, parent)
+  const clampedTo =
+    rect.top < clip.top
+      ? 'top'
+      : rect.top + rect.height > clip.top + clip.height
+        ? 'bottom'
+        : undefined
+
+  if (!clampedTo) {
+    return {...region, id, rect}
+  }
+
+  return {
+    ...region,
+    id,
+    clampedTo,
+    // The spot at the edge behaves like a dock: several clamped regions get merged into it
+    maxAvatars: MAX_AVATARS_DOCK,
+    rect: {
+      top:
+        clampedTo === 'top'
+          ? clip.top + CLAMPED_EDGE_OFFSET
+          : clip.top + clip.height - CLAMPED_EDGE_OFFSET - AVATAR_SIZE,
+      // `clientWidth` leaves out the clip element's scrollbar
+      left: clip.left + clipElement.clientWidth - AVATAR_SIZE - CLAMPED_EDGE_OFFSET,
+      width: AVATAR_SIZE,
+      height: AVATAR_SIZE,
+    },
+  }
+}
+
+/**
+ * Regions clamped to the same edge of the same clip element share one spot, so they are merged
+ * into a single region with the combined presence (rendered stacked, like a dock).
+ */
+function mergeClampedRegions(
+  regions: ReportedRegionWithRect<FieldPresenceData>[],
+): ReportedRegionWithRect<FieldPresenceData>[] {
+  const merged = new Map<HTMLElement, Partial<Record<'top' | 'bottom', number>>>()
+  const result: ReportedRegionWithRect<FieldPresenceData>[] = []
+
+  for (const region of regions) {
+    const {clampedTo, clipElement} = region
+    if (!clampedTo || !clipElement) {
+      result.push(region)
+      continue
+    }
+    const edges = merged.get(clipElement) ?? {}
+    const existingIndex = edges[clampedTo]
+    if (existingIndex === undefined) {
+      edges[clampedTo] = result.length
+      merged.set(clipElement, edges)
+      result.push({...region, id: `${region.id}:${clampedTo}`})
+    } else {
+      const existing = result[existingIndex]
+      result[existingIndex] = {...existing, presence: [...existing.presence, ...region.presence]}
+    }
+  }
+
+  return result
+}
+
 function regionsWithComputedRects(
   regions: ReportedPresenceData[],
   parent: HTMLElement,
 ): ReportedRegionWithRect<FieldPresenceData>[] {
-  return regions
-    .map(([id, region]) =>
-      region.element
-        ? {
-            ...region,
-            id,
-            rect: getRelativeRect(region.element, parent),
-          }
-        : null,
-    )
-    .filter(Boolean) as ReportedRegionWithRect<FieldPresenceData>[]
+  return mergeClampedRegions(
+    regions
+      .map(([id, region]) => computeRegion(id, region, parent))
+      .filter((region) => region !== null),
+  )
 }
 
 type Props = {margins: Margins; children: ReactNode}
@@ -168,8 +261,15 @@ export function StickyOverlay(props: Props) {
         [...grouped.inside, ...grouped.bottom].map((n) => n.region.rect.height + n.spacerHeight),
       )
 
+      // Inline presence (e.g. Portable Text cursors) is already rendered by the field itself
+      // while in view, so it is only rendered here when clamped to the edge of its clip element
+      // or docked.
+      const fieldLevelRegions = grouped.inside.filter(
+        (item) => !item.region.inline || item.region.clampedTo,
+      )
+
       // todo: this needs cleaning up, should process all the needed layout data in one go
-      const counts = grouped.inside.reduce(
+      const counts = fieldLevelRegions.reduce(
         (_counts, withIntersection) => {
           const {distanceTop, distanceBottom} = withIntersection
 
@@ -195,7 +295,7 @@ export function StickyOverlay(props: Props) {
           <Spacer height={topSpacing} />
           <PresenceInside
             containerWidth={containerWidth}
-            regionsWithIntersectionDetails={grouped.inside}
+            regionsWithIntersectionDetails={fieldLevelRegions}
           />
           <Spacer height={bottomSpacing} />
           <PresenceDock
@@ -294,7 +394,9 @@ function PresenceInside(props: {
 
         const diffRight = containerWidth - originalLeft - withIntersection.region.rect.width
 
-        const {presence, maxAvatars} = withIntersection.region
+        const {presence, maxAvatars, clampedTo} = withIntersection.region
+        // A region clamped to the edge of its clip element points towards the hidden element
+        const position = nearTop ? 'top' : nearBottom ? 'bottom' : (clampedTo ?? 'inside')
         return (
           <Fragment key={withIntersection.region.id}>
             <div
@@ -311,7 +413,7 @@ function PresenceInside(props: {
               <DebugValue value={() => `⤒${distanceTop} | ${distanceBottom}⤓`}>
                 <FieldPresenceInner
                   stack={!nearTop && !nearBottom}
-                  position={nearTop ? 'top' : nearBottom ? 'bottom' : 'inside'}
+                  position={position}
                   maxAvatars={maxAvatars}
                   presence={presence}
                 />

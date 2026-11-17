@@ -14,6 +14,7 @@ export function DatePicker(
   } & RefAttributes<HTMLDivElement>,
 ) {
   const {ref, value: _value, onChange, customValidation, timeZoneScope, ...rest} = props
+  // oxlint-disable-next-line react/purity -- defaults to the current time while no value is set
   const value = _value ?? new Date()
   const {utcToCurrentZoneDate} = useTimeZone(timeZoneScope)
   const [focusedDate, setFocusedDay] = useState<Date>()

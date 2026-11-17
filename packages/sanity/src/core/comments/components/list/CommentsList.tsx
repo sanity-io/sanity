@@ -1,6 +1,7 @@
 import {type CurrentUser} from '@sanity/types'
-import {BoundaryElementProvider, Flex, Stack} from '@sanity/ui'
+import {BoundaryElementProvider} from '@sanity/ui'
 import {memo, useMemo, useState, type RefAttributes} from 'react'
+import {Flex} from 'ui5'
 
 import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {type CommentsSelectedPath} from '../../context/selected-path/types'
@@ -107,12 +108,12 @@ function CommentsListInner(props: CommentsListProps & RefAttributes<HTMLUListEle
   return (
     <Flex
       data-testid="comments-list"
-      direction="column"
-      flex={1}
-      height="fill"
+      flexDirection="column"
+      flexBasis="0%"
+      flexGrow={1}
+      height="100%"
       overflow="hidden"
       ref={setBoundaryElement}
-      sizing="border"
     >
       {mode !== 'upsell' && (
         <CommentsListStatus
@@ -124,16 +125,17 @@ function CommentsListInner(props: CommentsListProps & RefAttributes<HTMLUListEle
       )}
 
       {(showComments || beforeListNode) && (
-        <Stack
+        <Flex
           as="ul"
-          flex={1}
+          flexBasis="0%"
+          flexGrow={1}
           overflow="auto"
           padding={3}
           paddingTop={1}
           paddingBottom={6}
-          sizing="border"
           gap={1}
           ref={ref}
+          flexDirection="column"
         >
           {beforeListNode}
 
@@ -154,11 +156,13 @@ function CommentsListInner(props: CommentsListProps & RefAttributes<HTMLUListEle
                 selectedPath?.fieldPath === fieldPath && !selectedPath.threadId
 
               return (
-                <Stack
+                <Flex
                   key={fieldPath}
                   as="li"
                   paddingTop={3}
                   {...applyCommentsGroupAttr(firstThreadId)}
+                  flexDirection="column"
+                  flexShrink={0}
                 >
                   <CommentThreadLayout
                     key={fieldPath}
@@ -215,11 +219,11 @@ function CommentsListInner(props: CommentsListProps & RefAttributes<HTMLUListEle
                       )
                     })}
                   </CommentThreadLayout>
-                </Stack>
+                </Flex>
               )
             })}
           </BoundaryElementProvider>
-        </Stack>
+        </Flex>
       )}
     </Flex>
   )

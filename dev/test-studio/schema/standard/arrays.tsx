@@ -758,20 +758,30 @@ export default defineType({
       title: 'Deeply nested body',
       type: 'deepNested.body',
     }),
+    defineField({
+      name: 'gridOfObjects',
+      type: 'array',
+      options: {layout: 'grid'},
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'objectInGrid',
+          fields: [
+            defineField({name: 'title', type: 'internationalizedArrayString'}),
+            defineField({
+              name: 'description',
+              type: 'internationalizedArrayString',
+            }),
+          ],
+        }),
+      ],
+    }),
   ],
   preview: {
     select: {
       title: 'title',
-      strings: 'arrayOfStrings',
-      firstItem: 'arrayOfStrings.0',
-      length: 'arrayOfStrings.length',
     },
-    prepare({title, strings, firstItem, length}) {
-      console.log('arraysTest preview.prepare', {
-        strings,
-        firstItem,
-        length,
-      })
+    prepare({title}) {
       return {title}
     },
   },

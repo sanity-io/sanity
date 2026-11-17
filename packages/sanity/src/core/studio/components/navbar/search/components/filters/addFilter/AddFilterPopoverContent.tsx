@@ -1,5 +1,5 @@
-import {Box, Flex, Text} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useMemo, useState} from 'react'
+import {Text, Flex, Box} from 'ui5'
 
 import {CommandList} from '../../../../../../../components/commandList/CommandList'
 import {
@@ -101,7 +101,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
   )
 
   return (
-    <Flex direction="column" style={POPOVER_STYLES}>
+    <Flex flexDirection="column" style={POPOVER_STYLES}>
       {/* Filter header */}
       <FilterPopoverContentHeader
         ariaInputLabel={t('search.filter-by-title-aria-label')}
@@ -132,7 +132,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
         {/* No results */}
         {filteredMenuItems.length == 0 && (
           <Box padding={3}>
-            <Text muted size={1} textOverflow="ellipsis">
+            <Text muted size={1} truncate={1} as="div" trim={true}>
               {t('search.filter-no-matches-found', {filter: titleFilter})}
             </Text>
           </Box>

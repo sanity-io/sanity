@@ -3,9 +3,19 @@ import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CloseIcon} from '@sanity/icons/Close'
 import {FilterIcon} from '@sanity/icons/Filter'
 import {SearchIcon} from '@sanity/icons/Search'
-import {Card, Flex, Stack, Text, TextInput, useClickOutsideEvent} from '@sanity/ui'
-import {type ComponentType, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Box} from 'ui5'
+import {Card, TextInput, useClickOutsideEvent} from '@sanity/ui'
+import {
+  type ComponentType,
+  type CSSProperties,
+  type KeyboardEvent,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {Text, Flex, Box, VStack, Icon} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
@@ -41,6 +51,8 @@ function AddFilterMenu({
   const [query, setQuery] = useState('')
   const [buttonEl, setButtonEl] = useState<HTMLButtonElement | null>(null)
   const [popoverEl, setPopoverEl] = useState<HTMLElement | null>(null)
+  const searchInputRef = useRef<HTMLInputElement | null>(null)
+  const contentId = useId()
 
   const close = useCallback(() => {
     setOpen(false)
@@ -49,6 +61,20 @@ function AddFilterMenu({
   }, [])
 
   useClickOutsideEvent(close, () => [buttonEl, popoverEl])
+
+  useEffect(() => {
+    if (open) searchInputRef.current?.focus()
+  }, [open])
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || !open) return
+      event.stopPropagation()
+      close()
+      buttonEl?.focus()
+    },
+    [buttonEl, close, open],
+  )
 
   const activeFacet = facets.find((facet) => facet.key === dimensionKey)
 
@@ -61,14 +87,23 @@ function AddFilterMenu({
   // Master-detail: dimensions on the left, the selected dimension's values on the right — both panes
   // visible at once, so choosing a dimension and toggling its values needs no back-and-forth.
   const content = (
-    <Stack gap={0} style={{width: 520}}>
+    <VStack
+      aria-label={t('overview.filter.add')}
+      gap={0}
+      id={contentId}
+      onKeyDown={handleKeyDown}
+      role="dialog"
+      style={{width: 520}}
+    >
       <Box padding={2} style={{borderBottom: '1px solid var(--card-border-color)'}}>
         <TextInput
+          aria-label={t('overview.filter.find-dimension')}
           fontSize={1}
           icon={SearchIcon}
           onChange={(event) => setQuery(event.currentTarget.value)}
           placeholder={t('overview.filter.find-dimension')}
           radius={2}
+          ref={searchInputRef}
           value={query}
         />
       </Box>
@@ -76,10 +111,10 @@ function AddFilterMenu({
         {/* Left: dimensions — icon + label grouped left (flex-start); the highlighted row and the
             live value pane convey the drill, so no trailing chevron is needed. */}
         <Box style={{width: 240, borderRight: '1px solid var(--card-border-color)'}}>
-          <Stack padding={2} gap={1}>
+          <Flex padding={2} gap={1} flexDirection="column">
             {matchingFacets.length === 0 ? (
               <Box padding={3}>
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {t('overview.filter.no-dimensions')}
                 </Text>
               </Box>
@@ -89,6 +124,7 @@ function AddFilterMenu({
                 return (
                   <Button
                     key={facet.key}
+                    aria-current={facet.key === dimensionKey ? 'true' : undefined}
                     data-testid={`variant-filter-dimension-${facet.key}`}
                     icon={getVariantConditionIcon(facet.key)}
                     justify="flex-start"
@@ -100,15 +136,28 @@ function AddFilterMenu({
                 )
               })
             )}
-          </Stack>
+          </Flex>
         </Box>
         {/* Right: values of the selected dimension — a muted header names the dimension, then the
             values (text left, selected checkmark pinned right via space-between). */}
         <Box style={{flex: 1}}>
           {activeFacet ? (
-            <Stack padding={2} gap={1}>
+            <Flex
+              aria-labelledby={`${contentId}-values`}
+              flexDirection="column"
+              gap={1}
+              padding={2}
+              role="group"
+            >
               <Box paddingBottom={1} paddingTop={1} paddingX={2}>
-                <Text muted size={0} weight="medium">
+                <Text
+                  as="div"
+                  id={`${contentId}-values`}
+                  muted
+                  size={0}
+                  trim={true}
+                  weight="medium"
+                >
                   {facetLabel(activeFacet.key)}
                 </Text>
               </Box>
@@ -117,6 +166,7 @@ function AddFilterMenu({
                 return (
                   <Button
                     key={val}
+                    aria-pressed={isSelected}
                     data-testid={`variant-filter-value-${activeFacet.key}-${val}`}
                     iconRight={isSelected ? CheckmarkIcon : undefined}
                     justify="space-between"
@@ -127,25 +177,29 @@ function AddFilterMenu({
                   />
                 )
               })}
-            </Stack>
+            </Flex>
           ) : (
-            <Flex align="center" height="fill" justify="center" padding={4}>
-              <Text align="center" muted size={1}>
+            <Flex alignItems="center" height="100%" justifyContent="center" padding={4}>
+              <Text align="center" muted size={1} as="div" trim={true}>
                 {t('overview.filter.pick-dimension-hint')}
               </Text>
             </Flex>
           )}
         </Box>
       </Flex>
-    </Stack>
+    </VStack>
   )
 
   return (
     <Popover ref={setPopoverEl} content={content} open={open} placement="bottom-start" portal>
       <Button
         ref={setButtonEl}
+        aria-controls={contentId}
+        aria-expanded={open}
+        aria-haspopup="dialog"
         icon={AddIcon}
         mode="ghost"
+        onKeyDown={handleKeyDown}
         onClick={() => {
           if (open) {
             close()
@@ -188,21 +242,36 @@ function FilterChip({
   onRemove: () => void
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
-  const Icon = chip.icon
+  const ChipIcon = chip.icon
   const body = (
     <Card border padding={1} radius={2} style={{flex: 'none'}} tone="primary">
-      <Flex align="center" gap={2}>
+      <Flex alignItems="center" gap={2}>
         <Box paddingLeft={1}>
-          <Text size={1}>
-            <Icon />
-          </Text>
+          <Icon
+            icon={ChipIcon}
+            size={1}
+            style={
+              {
+                '--icon-color': 'var(--card-icon-color)',
+                'margin': '-0.375rem',
+                'display': 'block',
+              } as CSSProperties
+            }
+          />
         </Box>
         {!iconOnly && (
-          <Text muted size={1} style={{whiteSpace: 'nowrap'}}>
+          <Text
+            muted
+            size={1}
+            style={{whiteSpace: 'nowrap', color: 'var(--card-muted-fg-color)'}}
+            as="div"
+            trim={true}
+          >
             {chip.label}
           </Text>
         )}
         <Button
+          aria-label={t('overview.filter.remove-value.aria-label', {title: chip.title})}
           icon={CloseIcon}
           mode="bleed"
           onClick={onRemove}
@@ -215,7 +284,14 @@ function FilterChip({
 
   // Collapsed chips are just an icon; the tooltip carries the dimension + value.
   return iconOnly ? (
-    <Tooltip content={<Text size={1}>{chip.title}</Text>} portal>
+    <Tooltip
+      content={
+        <Text size={1} as="div" trim={true}>
+          {chip.title}
+        </Text>
+      }
+      portal
+    >
       <Box style={{flex: 'none'}}>{body}</Box>
     </Tooltip>
   ) : (
@@ -259,7 +335,7 @@ function ActiveChips({
       ref={containerRef}
       style={{minWidth: 0, overflow: 'hidden', position: 'relative'}}
     >
-      <Flex align="center" gap={2} wrap="nowrap">
+      <Flex alignItems="center" gap={2} flexWrap="nowrap">
         {chips.map((chip) => (
           <FilterChip
             chip={chip}
@@ -281,7 +357,7 @@ function ActiveChips({
           top: 0,
           visibility: 'hidden',
         }}
-        wrap="nowrap"
+        flexWrap="nowrap"
       >
         {chips.map((chip) => (
           <FilterChip
@@ -345,12 +421,8 @@ export function VariantConditionFilters({
     // Fill the lane when there are chips (so Clear pins right and the chips zone can measure its
     // available width); shrink to content when there are none, so the empty bar stays compact.
     <Card border padding={1} radius={2} style={hasActive ? undefined : {display: 'inline-flex'}}>
-      <Flex align="center" gap={2} wrap="nowrap">
-        <Box paddingX={1} style={{flex: 'none'}}>
-          <Text muted size={1}>
-            <FilterIcon />
-          </Text>
-        </Box>
+      <Flex alignItems="center" gap={2} flexWrap="nowrap">
+        <Icon icon={FilterIcon} muted size={1} marginRight={-1} />
 
         <Box style={{flex: 'none'}}>
           <AddFilterMenu facets={facets} onToggleValue={toggleValue} value={value} />

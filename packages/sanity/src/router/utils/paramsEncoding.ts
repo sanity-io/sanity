@@ -8,7 +8,11 @@ export function decodeParams(pathSegment: string): Record<string, string> {
   }, {})
 }
 
-export function encodeParams(params: Record<string, string | undefined | null>): string {
+export function encodeParams(params?: Record<string, string | undefined | null> | null): string {
+  if (!params) {
+    return ''
+  }
+
   return Object.entries(params)
     .filter(([, value]) => value !== undefined && value !== null)
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value as string)}`)

@@ -1,7 +1,7 @@
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Box} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {useId} from 'react'
+import {Box} from 'ui5'
 
 import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../../ui-components/menuItem/MenuItem'
@@ -49,7 +49,7 @@ export function ErrorItem(props: {
         }
       >
         {member.error.type === 'INVALID_ITEM_TYPE' ? (
-          <IncompatibleItemType value={member.error.value} />
+          <IncompatibleItemType value={member.error.value} tone="caution" />
         ) : (
           <div>{t('inputs.array.error.unexpected-error', {error: member.error.type})}</div>
         )}

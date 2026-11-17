@@ -4,11 +4,26 @@ import {WithIntersection} from './WithIntersection'
 
 interface StyleProps {
   $debug: boolean
-  margins?: [number, number, number, number]
+  $margins?: [number, number, number, number]
 }
 
+/**
+ * The in-flow children are the top sentinel, the content wrapper and the bottom sentinel. Laying
+ * them out as a flex column lets the content wrapper fill the root when the root is given a
+ * definite height (e.g. inside the fullscreen Portable Text editor), so `height: 100%` chains
+ * through it. With an auto height root this is equivalent to normal block flow. A flex column
+ * rather than a grid: a grid item's containing block is its grid area, which would pin the sticky
+ * sentinels to their own 1px rows, while a flex item's is the whole container.
+ */
 export const RootWrapper = styled.div`
   position: relative;
+  display: flex;
+  flex-direction: column;
+`
+
+/** Wraps the overlay's children; grows to fill the root, never shrinks below its content */
+export const ContentWrapper = styled.div`
+  flex: 1 1 auto;
 `
 
 export const OverlayWrapper = styled.div`
@@ -28,15 +43,16 @@ const RegionWrapper = css`
   position: absolute;
 `
 
-export const TopRegionWrapper = styled(WithIntersection)<StyleProps>(({$debug, margins}) => {
+export const TopRegionWrapper = styled(WithIntersection)<StyleProps>(({$debug, $margins}) => {
   return css`
     ${RegionWrapper}
 
     z-index: 100;
     position: sticky;
+    flex: none;
     height: 1px;
-    top: ${margins ? `${margins[0] - 1}px` : undefined};
-    background-color: ${$debug ? 'red' : 'none'};
+    top: ${$margins ? `${$margins[0] - 1}px` : 'auto'};
+    background-color: ${$debug ? 'red' : 'transparent'};
   `
 })
 
@@ -62,6 +78,7 @@ export const BottomRegionWrapper = styled(WithIntersection)<StyleProps>(({$debug
     ${RegionWrapper}
 
     position: sticky;
+    flex: none;
     bottom: -1px;
     height: 1px;
     background-color: ${$debug ? 'blue' : 'transparent'};

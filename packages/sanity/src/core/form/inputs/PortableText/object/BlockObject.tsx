@@ -6,7 +6,6 @@ import {
   type PortableTextBlock,
   type UploadState,
 } from '@sanity/types'
-import {Box, Flex, type ResponsivePaddingProps} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
 import {
   type MouseEvent,
@@ -17,6 +16,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import {Flex, Box, type PaddingProps} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useHoveredChange} from '../../../../changeIndicators/useHoveredChange'
@@ -185,7 +185,7 @@ export function BlockObject(props: BlockObjectProps) {
     [editor],
   )
 
-  const innerPaddingProps: ResponsivePaddingProps = useMemo(() => {
+  const innerPaddingProps: PaddingProps = useMemo(() => {
     if (nested) {
       // A nested block sits inside a container that owns horizontal spacing
       // (e.g. a table cell's padding), so the root gutter is dropped.
@@ -321,7 +321,7 @@ export function BlockObject(props: BlockObjectProps) {
     <Box ref={setRef} contentEditable={false}>
       <Flex paddingBottom={1} marginY={3} style={debugRender()}>
         <PreviewContainer {...innerPaddingProps}>
-          <Box flex={1}>
+          <Box flexBasis="0%" flexGrow={1}>
             <Tooltip
               placement="top"
               portal="editor"
@@ -382,6 +382,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
     __unstable_floatingBoundary,
     __unstable_referenceBoundary,
     __unstable_referenceElement,
+    changed,
     children,
     focused,
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -446,6 +447,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
               value={value}
             />
           ),
+          changed,
           progress: uploadProgress,
           layout: isImagePreview ? 'blockImage' : 'block',
           schemaType,

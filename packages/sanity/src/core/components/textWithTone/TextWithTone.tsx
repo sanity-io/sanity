@@ -1,30 +1,31 @@
-import {type ButtonTone, Text, type TextProps} from '@sanity/ui'
-import {type Ref, type RefAttributes} from 'react'
+import {type ButtonTone} from '@sanity/ui'
+import {type ComponentPropsWithRef, type Ref, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
+import {Text, type TextProps} from 'ui5'
 
 /** @internal */
-export type TextWithToneProps = TextProps & {
+export type TextWithToneProps = Omit<TextProps<'div'>, 'tone' | 'as'> & {
   tone: ButtonTone
   dimmed?: boolean
-}
+} & Omit<ComponentPropsWithRef<'div'>, keyof TextProps<'div'> | 'tone' | 'as'>
 
 /** @internal */
 const TextWithToneStyle = styled(Text)`
   &:not([data-muted]) {
     &[data-tone='default'] {
-      --card-fg-color: var(--card-badge-default-fg-color);
+      --text-color: var(--card-badge-default-fg-color);
     }
     &[data-tone='primary'] {
-      --card-fg-color: var(--card-badge-primary-fg-color);
+      --text-color: var(--card-badge-primary-fg-color);
     }
     &[data-tone='positive'] {
-      --card-fg-color: var(--card-badge-positive-fg-color);
+      --text-color: var(--card-badge-positive-fg-color);
     }
     &[data-tone='caution'] {
-      --card-fg-color: var(--card-badge-caution-fg-color);
+      --text-color: var(--card-badge-caution-fg-color);
     }
     &[data-tone='critical'] {
-      --card-fg-color: var(--card-badge-critical-fg-color);
+      --text-color: var(--card-badge-critical-fg-color);
     }
   }
 
@@ -46,6 +47,8 @@ export function TextWithTone(props: TextWithToneProps & RefAttributes<HTMLDivEle
       muted={muted}
       ref={ref}
       {...rest}
+      forwardedAs="div"
+      trim={true}
     />
   )
 }

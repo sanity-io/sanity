@@ -2,9 +2,10 @@ import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {ControlsIcon} from '@sanity/icons/Controls'
 import {SearchIcon} from '@sanity/icons/Search'
 import {SpinnerIcon} from '@sanity/icons/Spinner'
-import {Box, Card, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ChangeEvent, useCallback, useEffect, useRef, type RefAttributes} from 'react'
 import {keyframes, styled} from 'styled-components'
+import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../../ui-components/button/Button'
 import {StatusButton} from '../../../../../components/StatusButton'
@@ -24,6 +25,8 @@ const rotate = keyframes`
 
 const AnimatedSpinnerIcon = styled(SpinnerIcon)`
   animation: ${rotate} 500ms linear infinite;
+  height: round(1em, 2px);
+  width: round(1em, 2px);
 `
 
 const FilterDiv = styled.div`
@@ -95,7 +98,13 @@ export function SearchHeader({
 
   return (
     <Card flex="none">
-      <Flex align="center" flex={1} gap={fullscreen ? 2 : 1} padding={fullscreen ? 2 : 1}>
+      <Flex
+        alignItems="center"
+        flexBasis="0%"
+        flexGrow={1}
+        gap={fullscreen ? 2 : 1}
+        padding={fullscreen ? 2 : 1}
+      >
         {/* (Fullscreen) Close button */}
         {fullscreen && (
           <Button
@@ -109,7 +118,7 @@ export function SearchHeader({
         )}
 
         {/* Search field */}
-        <Box flex={1}>
+        <Box flexBasis="0%" flexGrow={1}>
           <CustomTextInput
             __unstable_disableFocusRing
             $background={fullscreen}

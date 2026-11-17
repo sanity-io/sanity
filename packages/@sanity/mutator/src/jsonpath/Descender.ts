@@ -1,5 +1,3 @@
-import flatten from 'lodash-es/flatten.js'
-
 import {Expression} from './Expression'
 import {type Probe} from './Probe'
 
@@ -25,11 +23,9 @@ export class Descender {
       let anyConstraints = true
       // Keep rewriting constraints until there are none left
       while (anyConstraints) {
-        result = flatten(
-          result.map((descender) => {
-            return descender.iterateConstraints(probe)
-          }),
-        )
+        result = result.flatMap((descender) => {
+          return descender.iterateConstraints(probe)
+        })
         anyConstraints = result.some((descender) => {
           return descender.head && descender.head.isConstraint()
         })

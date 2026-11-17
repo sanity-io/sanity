@@ -1,6 +1,6 @@
 import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {
   EMPTY_ARRAY,
@@ -30,8 +30,6 @@ import {
 } from './helpers'
 import {PaneHeader} from './PaneHeader'
 import {type SortOrder, type StaticSortOrder} from './types'
-import {useShallowUnique} from './useShallowUnique'
-
 /**
  * Type for custom menu item state storage.
  * Maps menu item IDs to their current state values.
@@ -179,15 +177,18 @@ export const PaneContainer = memo(function PaneContainer(
   const {name: parentSourceName} = useSource()
 
   const {
+    currentMaxWidth = 350,
     defaultLayout = 'default',
     initialValueTemplates = EMPTY_ARRAY,
+    maxWidth = 640,
     menuItemGroups,
     menuItems,
+    minWidth = 320,
     options,
     suppressRestoreDefaultMenuItems,
   } = pane
   const {defaultOrdering = EMPTY_ARRAY, filter} = options
-  const params = useShallowUnique(options.params || EMPTY_RECORD)
+  const params = options.params || EMPTY_RECORD
   const sourceName = pane.source
   const typeName = useMemo(() => {
     const staticTypes = findStaticTypesInFilter(filter, params)
@@ -309,9 +310,9 @@ export const PaneContainer = memo(function PaneContainer(
       <Pane
         data-ui="DocumentListPane"
         id={paneKey}
-        minWidth={320}
-        currentMaxWidth={350}
-        maxWidth={640}
+        minWidth={minWidth}
+        currentMaxWidth={currentMaxWidth}
+        maxWidth={maxWidth}
         selected={isSelected}
       >
         {_DEBUG && (
@@ -338,4 +339,3 @@ export const PaneContainer = memo(function PaneContainer(
     </SourceProvider>
   )
 })
-PaneContainer.displayName = 'Memo(PaneContainer)'

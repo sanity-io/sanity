@@ -126,6 +126,28 @@ describe('DocumentTable selection', () => {
     expect(screen.getByTestId('test-select-all')).toBeInTheDocument()
   })
 
+  it('keeps the same row checkbox mounted and focused when its selection toggles', async () => {
+    const user = userEvent.setup()
+    await renderWithProvider({selection: buildSelection()})
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('table-row')).toHaveLength(3)
+    })
+
+    const [checkbox] = screen.getAllByRole('checkbox', {name: 'Select row'})
+    await user.click(checkbox)
+
+    expect(await screen.findByTestId('document-table-selected-count')).toHaveTextContent(
+      '1 selected',
+    )
+    // A select column whose cell component is recreated on every selection change would
+    // unmount this input and mount a fresh one, dropping focus along with it.
+    expect(checkbox).toBeChecked()
+    expect(checkbox.isConnected).toBe(true)
+    expect(screen.getAllByRole('checkbox', {name: 'Select row'})[0]).toBe(checkbox)
+    expect(checkbox).toHaveFocus()
+  })
+
   it('excludes non-selectable rows from select-all via isRowSelectable', async () => {
     const user = userEvent.setup()
     await renderWithProvider({

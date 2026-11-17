@@ -5,22 +5,28 @@ export {
   type SchemaSynchronizationResult,
 } from '../descriptors/sync'
 export {
+  type EncodedSchemaDescriptor,
   type PreparedSchemaUpload,
   prepareSchemaUpload,
   type PrepareSchemaUploadOptions,
+  uploadEncodedSchema,
   uploadSchema,
   type UploadSchemaOptions,
   type UploadSchemaPhase,
 } from '../descriptors/uploadSchema'
 export type {DescriptorRequester} from '../descriptors/transport'
 export {isActionEnabled} from '../legacy/actionUtils'
+export {isInternalValidator, markInternalValidator} from '../legacy/internalValidators'
 export {
   DEFAULT_MAX_FIELD_DEPTH,
   resolveSearchConfig,
   resolveSearchConfigForBaseFieldPaths,
 } from '../legacy/searchConfig/resolve'
 export {ALL_FIELDS_GROUP_NAME} from '../legacy/types/constants'
-export {createSchemaFromManifestTypes} from '../manifest/createSchemaFromManifestTypes'
+export {
+  createSchemaFromManifestTypes,
+  type CreateSchemaFromManifestTypesOptions,
+} from '../manifest/createSchemaFromManifestTypes'
 export {
   extractCreateWorkspaceManifest,
   extractManifestSchemaTypes,

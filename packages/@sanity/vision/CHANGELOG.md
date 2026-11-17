@@ -2,6 +2,124 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.23.0](https://github.com/sanity-io/sanity/compare/v6.22.0...v6.23.0) (2026-11-10)
+
+### Features
+
+* **vision:** send oversized queries as a post body, load pasted curl commands, and drop the vista codename ([#15499](https://github.com/sanity-io/sanity/issues/15499)) ([ac255a8](https://github.com/sanity-io/sanity/commit/ac255a8d93a8f8b8b5a3e4c57d4c0a2aa652be0e))
+
+### Bug Fixes
+
+* **vision:** restore the redesign without groq-wasm top-level await ([#15803](https://github.com/sanity-io/sanity/issues/15803)) ([f625557](https://github.com/sanity-io/sanity/commit/f625557de3f875b97dcd0a4d4a56f66834677a43))
+## [6.22.0](https://github.com/sanity-io/sanity/compare/v6.21.0...v6.22.0) (2026-11-03)
+
+### Bug Fixes
+
+* **deps:** update dependency groq-js to ^2.0.1 ([#15645](https://github.com/sanity-io/sanity/issues/15645)) ([19a70eb](https://github.com/sanity-io/sanity/commit/19a70eb429008f872ee2f47ddc69bd52e37d1c61))
+* **deps:** update dependency xstate to ^5.33.3 ([#15591](https://github.com/sanity-io/sanity/issues/15591)) ([2990658](https://github.com/sanity-io/sanity/commit/2990658c3552a564387a5d75b678eae4d1b596b2))
+* **variants:** use dated api version instead of vX ([#15568](https://github.com/sanity-io/sanity/issues/15568)) ([1ada254](https://github.com/sanity-io/sanity/commit/1ada2542e6260e6df781c7054b198f6dac0ca469))
+* **vision:** temporarily remove Vista imports ([128cce1](https://github.com/sanity-io/sanity/commit/128cce1e6878ff69602dcc7d60fcf942446a5afe))
+## [6.21.0](https://github.com/sanity-io/sanity/compare/v6.20.0...v6.21.0) (2026-10-28)
+
+### Features
+
+* **vision:** prefill query params from the referenced $names in the JSON editor ([#15578](https://github.com/sanity-io/sanity/issues/15578)) ([60f7c5b](https://github.com/sanity-io/sanity/commit/60f7c5ba65eea71b3fdd3948a68b8aec2fe5612f))
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#15590](https://github.com/sanity-io/sanity/issues/15590)) ([69f0921](https://github.com/sanity-io/sanity/commit/69f09215f665f3f54e326246bc70f81726c0efcb))
+* **deps:** update dependency motion to ^14.3.0 ([#15440](https://github.com/sanity-io/sanity/issues/15440)) ([e5066fc](https://github.com/sanity-io/sanity/commit/e5066fc7b5ea675fa53dfd871069e69456f46200))
+* **deps:** update dependency motion to ^14.6.0 ([#15595](https://github.com/sanity-io/sanity/issues/15595)) ([3d2966f](https://github.com/sanity-io/sanity/commit/3d2966f4e22d5dd2b6157e2e5768f34f588896d4))
+* **lint:** keep empty export in css typing stubs from being autofixed away ([#15601](https://github.com/sanity-io/sanity/issues/15601)) ([829ca0a](https://github.com/sanity-io/sanity/commit/829ca0a1a9207d1b7bb10ccb1392bcc48305e354))
+* **vision:** hide the variant option where the workspace has variants switched off ([#15459](https://github.com/sanity-io/sanity/issues/15459)) ([3b3cd7b](https://github.com/sanity-io/sanity/commit/3b3cd7b2354a09d11a0dfeeb0f857f90c86c2a9e))
+* **vision:** run pasted and linked query URLs right away and show AI credits in the redesign ([#15446](https://github.com/sanity-io/sanity/issues/15446)) ([b647163](https://github.com/sanity-io/sanity/commit/b6471631aa85acba59192cae8004c372b77caeaf))
+## [6.20.0](https://github.com/sanity-io/sanity/compare/v6.19.0...v6.20.0) (2026-10-19)
+
+### Features
+
+* **vision:** add an opt-in redesigned vision experience behind beta.redesign ([#14894](https://github.com/sanity-io/sanity/issues/14894)) ([3b90dc9](https://github.com/sanity-io/sanity/commit/3b90dc9414ff02cdeb12119931204a036f558104))
+
+### Bug Fixes
+
+* **core:** stop non-DOM props leaking to DOM elements and guard against regressions ([#15109](https://github.com/sanity-io/sanity/issues/15109)) ([5b64bab](https://github.com/sanity-io/sanity/commit/5b64bab347d6474e4f0fb537435b4f818c60cc38))
+* **css:** salt published vanilla-extract class names with the package version ([#15353](https://github.com/sanity-io/sanity/issues/15353)) ([bea9faa](https://github.com/sanity-io/sanity/commit/bea9faa386b4b93e4c377ecde54898903dd1db4a))
+## [6.19.0](https://github.com/sanity-io/sanity/compare/v6.18.0...v6.19.0) (2026-10-13)
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#15229](https://github.com/sanity-io/sanity/issues/15229)) ([ccdaec4](https://github.com/sanity-io/sanity/commit/ccdaec4b6a6a9fa31b3cdc80a5fdd3cea2db1db6))
+* **vision:** align sanity peer dependency with workspace version ([#15108](https://github.com/sanity-io/sanity/issues/15108)) ([338f3b1](https://github.com/sanity-io/sanity/commit/338f3b1faf08b9418959b02225a31ecc445cc193))
+## [6.18.0](https://github.com/sanity-io/sanity/compare/v6.17.0...v6.18.0) (2026-10-06)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^5.2.3 ([#15086](https://github.com/sanity-io/sanity/issues/15086)) ([5ecaf30](https://github.com/sanity-io/sanity/commit/5ecaf300efa8821379892e4eb12c9accd7d15f55))
+## [6.17.0](https://github.com/sanity-io/sanity/compare/v6.16.0...v6.17.0) (2026-09-29)
+
+### Features
+
+* **core:** add beta.reactActivityMode to keep recent tools mounted ([#14901](https://github.com/sanity-io/sanity/issues/14901)) ([f5821c3](https://github.com/sanity-io/sanity/commit/f5821c33bf77f836610b8b636f4f388630b54dd2))
+* **core:** read every selected variant from perspective ([#14918](https://github.com/sanity-io/sanity/issues/14918)) ([b15b556](https://github.com/sanity-io/sanity/commit/b15b556a3eff6fabd2414c1a71147ba70fd84335))
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#14976](https://github.com/sanity-io/sanity/issues/14976)) ([abe61ba](https://github.com/sanity-io/sanity/commit/abe61ba08396a88f1f0f80703c913b3d0c7530bc))
+## [6.16.0](https://github.com/sanity-io/sanity/compare/v6.15.0...v6.16.0) (2026-09-22)
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#14815](https://github.com/sanity-io/sanity/issues/14815)) ([a75baf8](https://github.com/sanity-io/sanity/commit/a75baf823ed5fdcf8e820cc68ec635d0cb8cc151))
+## [6.13.2](https://github.com/sanity-io/sanity/compare/v6.13.1...v6.13.2) (2026-09-11)
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^5.2.2 ([#14697](https://github.com/sanity-io/sanity/issues/14697)) ([77313bb](https://github.com/sanity-io/sanity/commit/77313bba37b99b05f1d353fffc4e998866542f5a))
+## [6.13.1](https://github.com/sanity-io/sanity/compare/v6.13.0...v6.13.1) (2026-09-09)
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#14605](https://github.com/sanity-io/sanity/issues/14605)) ([a991f45](https://github.com/sanity-io/sanity/commit/a991f4541434fd53d529ebeed7e67aacb8f99191))
+## [6.13.0](https://github.com/sanity-io/sanity/compare/v6.12.0...v6.13.0) (2026-09-08)
+
+### Performance Improvements
+
+* **core:** consolidate equality checks on dequal/lite and domain comparators ([#14501](https://github.com/sanity-io/sanity/issues/14501)) ([fccc674](https://github.com/sanity-io/sanity/commit/fccc67448c5f5777ecdeb2e7690ca4a8f85ca229))
+## [6.12.0](https://github.com/sanity-io/sanity/compare/v6.11.0...v6.12.0) (2026-09-01)
+
+### Features
+
+* **i18n:** add componentProps to translate component ([#13368](https://github.com/sanity-io/sanity/issues/13368)) ([df297bc](https://github.com/sanity-io/sanity/commit/df297bc887b475ab9597765b607db50d5cf8e46f))
+
+### Bug Fixes
+
+* **deps:** update codemirror ([#14479](https://github.com/sanity-io/sanity/issues/14479)) ([eb710d9](https://github.com/sanity-io/sanity/commit/eb710d9afc1f7ce4c73d719f6ba8acce719fc0b6))
+* **deps:** update dependency @sanity/cli to ^8.5.0 ([#14428](https://github.com/sanity-io/sanity/issues/14428)) ([393c97d](https://github.com/sanity-io/sanity/commit/393c97d648c1f46192bdde8680db54166acc6541))
+* **vision:** explain incompatible release perspective errors ([#14272](https://github.com/sanity-io/sanity/issues/14272)) ([3887d9b](https://github.com/sanity-io/sanity/commit/3887d9bb3c751c5c6f975ea1baa0183505e70f1d))
+## [6.11.0](https://github.com/sanity-io/sanity/compare/v6.10.1...v6.11.0) (2026-08-25)
+
+### Bug Fixes
+
+* **core:** declare sideEffects true to silence publint suggestion ([#14129](https://github.com/sanity-io/sanity/issues/14129)) ([0a8ed7a](https://github.com/sanity-io/sanity/commit/0a8ed7a9b91d591e248331d4637766c2f421b508))
+* **deps:** update codemirror ([#14291](https://github.com/sanity-io/sanity/issues/14291)) ([37e757a](https://github.com/sanity-io/sanity/commit/37e757a810e33a516af331e8b714e297b3bb7577))
+* **pkg:** add missing engines.node fields ([#14126](https://github.com/sanity-io/sanity/issues/14126)) ([7009966](https://github.com/sanity-io/sanity/commit/7009966be9aa012efbb1da24926bd4e102f275dc))
+
+### Performance Improvements
+
+* **build:** run react compiler on oxc instead of babel ([#14199](https://github.com/sanity-io/sanity/issues/14199)) ([822c6ad](https://github.com/sanity-io/sanity/commit/822c6ad446de99e60d13af37fe7652273774c871))
+## [6.10.1](https://github.com/sanity-io/sanity/compare/v6.10.0...v6.10.1) (2026-08-18)
+
+### Bug Fixes
+
+* **build:** bake correct package version into cdn module bundles ([#14155](https://github.com/sanity-io/sanity/issues/14155)) ([3e5a82e](https://github.com/sanity-io/sanity/commit/3e5a82e1a10b7247a92db4cd6f2388406bd1db5b))
+## [6.10.0](https://github.com/sanity-io/sanity/compare/v6.9.2...v6.10.0) (2026-08-18)
+
+### Features
+
+* **vision:** pass navbar variant with pinned release queries ([#14063](https://github.com/sanity-io/sanity/issues/14063)) ([ee6ebee](https://github.com/sanity-io/sanity/commit/ee6ebee9f5b48aa933905dec06ea658b8d6405ba))
+
+### Bug Fixes
+
+* **vision:** stop swallowing paste events outside vision ([#14016](https://github.com/sanity-io/sanity/issues/14016)) ([75de447](https://github.com/sanity-io/sanity/commit/75de4472819f2c9ccc64fc0916b8ea8345cfa0e0))
 ## [6.9.0](https://github.com/sanity-io/sanity/compare/v6.8.0...v6.9.0) (2026-08-04)
 
 ### Bug Fixes

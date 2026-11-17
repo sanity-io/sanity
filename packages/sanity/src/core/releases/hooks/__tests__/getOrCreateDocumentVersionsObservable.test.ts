@@ -23,6 +23,7 @@ describe('getOrCreateDocumentVersionsObservable', () => {
         of({
           _id: 'drafts.article-1',
           _rev: 'rev-1',
+          _type: 'article',
           _createdAt: '2024-01-01T00:00:00.000Z',
           _updatedAt: '2024-01-02T00:00:00.000Z',
           _system: {
@@ -64,6 +65,7 @@ describe('getOrCreateDocumentVersionsObservable', () => {
           {
             _id: 'drafts.article-1',
             _rev: 'rev-1',
+            _type: 'article',
             _createdAt: '2024-01-01T00:00:00.000Z',
             _updatedAt: '2024-01-02T00:00:00.000Z',
             _system: {
@@ -91,6 +93,7 @@ function createSystemlessPreviewStore(versionIds: string[]) {
       of({
         _id: '_id' in value ? value._id : '',
         _rev: '',
+        _type: 'article',
         _createdAt: '',
         _updatedAt: '',
       }),
@@ -112,6 +115,27 @@ describe('getOrCreateDocumentVersionsWithSystemObservable', () => {
   beforeEach(() => {
     observableCache.clear()
     withSystemCache.clear()
+  })
+
+  it('creates no cache entries until subscribed', () => {
+    const {documentPreviewStore} = createSystemlessPreviewStore(['versions.rASAP.lazy-document'])
+
+    const observable = getOrCreateDocumentVersionsWithSystemObservable({
+      documentPreviewStore,
+      publishedId: 'lazy-document',
+      projectId: 'test-project',
+      dataset: 'test',
+      releases$: new BehaviorSubject<ReleaseDocument[]>([asapReleaseDocument]),
+    })
+
+    expect(observableCache.size).toBe(0)
+    expect(withSystemCache.size).toBe(0)
+
+    const subscription = observable.subscribe()
+
+    expect(withSystemCache.size).toBe(1)
+
+    subscription.unsubscribe()
   })
 
   it('runs the derivation once for N subscribers', () => {

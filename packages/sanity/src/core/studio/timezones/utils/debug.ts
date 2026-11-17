@@ -1,11 +1,11 @@
-import debug from 'debug'
+import {createDebug, enabled, type Debugger} from 'obug'
 
 const rootName = 'scheduled-publishing:'
 
-export function debugWithName(name: string): debug.Debugger {
+export function debugWithName(name: string): Debugger {
   const namespace = `${rootName}${name}`
-  if (debug && debug.enabled(namespace)) {
-    return debug(namespace)
+  if (enabled(namespace)) {
+    return createDebug(namespace)
   }
-  return debug(rootName)
+  return createDebug(rootName)
 }

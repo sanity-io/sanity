@@ -11,6 +11,13 @@ export interface BundleSizeReport {
   /** Gzipped bytes of every JS chunk in the build. */
   totalJsBytes: number
   chunkCount: number
+  /**
+   * Gzipped bytes per chunk, keyed by served path ('/static/foo.js') — joined
+   * with each boot-cold sample's fetched paths to compute the "boot JS" metric
+   * (what booting actually downloads). Not part of the stored report: callers
+   * strip it before persisting, it's ~400 entries of noise in a document.
+   */
+  sizesByPath: Map<string, number>
 }
 
 /**
@@ -31,14 +38,16 @@ export async function measureBundleSize(distDir: string): Promise<BundleSizeRepo
 
   let initialJsBytes = 0
   let totalJsBytes = 0
+  const sizesByPath = new Map<string, number>()
   for (const file of chunkFiles) {
     const contents = await fs.promises.readFile(path.join(staticDir, file))
     const gzippedBytes = (await gzip(contents)).byteLength
+    sizesByPath.set(`/static/${file}`, gzippedBytes)
     totalJsBytes += gzippedBytes
     if (initialPaths.has(`/static/${file}`)) {
       initialJsBytes += gzippedBytes
     }
   }
 
-  return {initialJsBytes, totalJsBytes, chunkCount: chunkFiles.length}
+  return {initialJsBytes, totalJsBytes, chunkCount: chunkFiles.length, sizesByPath}
 }

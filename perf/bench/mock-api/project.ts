@@ -1,7 +1,6 @@
 /**
  * Static project/auth fixtures. Shapes verified against their consumers:
- * - /users/me: createAuthStore.ts (must be 200 — a 401 loops; see
- *   e2e/tests/auth/helpers.ts for the precedent and rationale)
+ * - /users/me, /auth/*: createAuthStore.ts, answered by mock-api/auth.ts
  * - /projects/<id>/datasets/<ds>/acl: grantsStore.ts evaluates each grant's
  *   `filter` with groq-js — the filter below matches every document, and the
  *   permissions include everything needed for an editable form

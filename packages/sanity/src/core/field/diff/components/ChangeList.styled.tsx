@@ -1,6 +1,10 @@
-import {styled} from 'styled-components'
+import {clsx} from 'clsx'
+import {type ComponentProps} from 'react'
 
-export const ChangeListWrapper = styled.div`
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-`
+import {changeListWrapper} from './ChangeList.css'
+
+export function ChangeListWrapper(props: ComponentProps<'div'>) {
+  const {className, ...rest} = props
+
+  return <div {...rest} className={clsx(changeListWrapper, className)} />
+}

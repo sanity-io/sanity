@@ -13,8 +13,8 @@ import {
   useState,
 } from 'react'
 import {PresentationPanelsContext} from 'sanity/_singletons'
-import {styled} from 'styled-components'
 
+import {panelsWrapper} from './Panels.css'
 import {
   type ElementMap,
   type InitialDragState,
@@ -34,14 +34,6 @@ import {
   isResizer,
   validateWidths,
 } from './util'
-
-const PanelsWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  height: 100%;
-  overflow: hidden;
-  width: 100%;
-`
 
 export const Panels: FunctionComponent<PropsWithChildren> = function ({children}) {
   const panelsEl = useRef<HTMLDivElement | null>(null)
@@ -203,7 +195,7 @@ export const Panels: FunctionComponent<PropsWithChildren> = function ({children}
 
     if (storedWidths) {
       const validatedStoredWidths = validateWidths(panels, storedWidths, window.innerWidth)
-      // oxlint-disable-next-line react/react-compiler
+      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setWidths(validatedStoredWidths)
       return
     }
@@ -263,7 +255,9 @@ export const Panels: FunctionComponent<PropsWithChildren> = function ({children}
 
   return (
     <PresentationPanelsContext.Provider value={context}>
-      <PanelsWrapper ref={panelsEl}>{children}</PanelsWrapper>
+      <div className={panelsWrapper} ref={panelsEl}>
+        {children}
+      </div>
     </PresentationPanelsContext.Provider>
   )
 }

@@ -1,5 +1,5 @@
 import {type HotspotPreview, type Image, type ImageSchemaType} from '@sanity/types'
-import {Box, Card, Flex, Grid, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Heading} from '@sanity/ui'
 import {
   type ReactNode,
   useCallback,
@@ -9,7 +9,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import {styled} from 'styled-components'
+import {Text, Box, Flex, Grid, VStack} from 'ui5'
 
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {LoadingBlock} from '../../../../components/loadingBlock/LoadingBlock'
@@ -25,6 +25,7 @@ import {RatioBox} from '../common/RatioBox'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './imagetool/constants'
 import {HotspotImage} from './imagetool/HotspotImage'
 import {ImageTool} from './imagetool/ImageTool'
+import {placeholder} from './ImageToolInput.css'
 import {useLoadImage} from './useLoadImage'
 
 export interface ImageToolInputProps extends Omit<
@@ -32,6 +33,18 @@ export interface ImageToolInputProps extends Omit<
   'markers' | 'renderDefault'
 > {
   imageUrl: string
+}
+
+function ImageUrlDocumentationLink({children}: {children?: ReactNode}) {
+  return <a href="https://www.sanity.io/docs/image-urls#fm-048ba39d9e88">{children}</a>
+}
+
+function ImageUrlPackageDocumentationLink({children}: {children?: ReactNode}) {
+  return (
+    <a href="https://www.sanity.io/docs/image-urls#fm-048ba39d9e88">
+      <code>{children}</code>
+    </a>
+  )
 }
 
 const HOTSPOT_PATH = ['hotspot']
@@ -48,13 +61,14 @@ const DEFAULT_VALUE: Partial<Image> = {
   hotspot: DEFAULT_HOTSPOT,
 }
 
-const Placeholder = styled.div`
-  min-height: 6em;
-`
-
 function LoadStatus(props: {children: ReactNode}) {
   return (
-    <Flex align="center" justify="center" padding={4} style={{overflowWrap: 'break-word'}}>
+    <Flex
+      alignItems="center"
+      justifyContent="center"
+      padding={4}
+      style={{overflowWrap: 'break-word'}}
+    >
       {props.children}
     </Flex>
   )
@@ -87,7 +101,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
   }, [onPathFocus])
 
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler
+    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
     setLocalValue(value || DEFAULT_VALUE)
   }, [value])
 
@@ -147,29 +161,23 @@ export function ImageToolInput(props: ImageToolInputProps) {
       {isSvg ? (
         <>
           <Card padding={3} marginY={3} tone="caution" radius={2}>
-            <Stack gap={4}>
-              <Text size={1}>{t('inputs.imagetool.vector-warning.title')}</Text>
-              <Details title={t('inputs.imagetool.vector-warning.expand-developer-info')}>
-                <Text size={1}>
+            <VStack gap={4}>
+              <Text size={1} as="div" trim={true} tone="caution">
+                {t('inputs.imagetool.vector-warning.title')}
+              </Text>
+              <Details
+                title={t('inputs.imagetool.vector-warning.expand-developer-info')}
+                tone="caution"
+              >
+                <Text size={1} as="div" trim={true} tone="caution">
                   <Translate
                     t={t}
                     i18nKey="inputs.imagetool.vector-warning.developer-info"
-                    components={{
-                      ImageUrlDocumentationLink: ({children}) => (
-                        <a href="https://www.sanity.io/docs/image-urls#fm-048ba39d9e88">
-                          {children}
-                        </a>
-                      ),
-                      ImageUrlPackageDocumentationLink: ({children}) => (
-                        <a href="https://www.sanity.io/docs/image-urls#fm-048ba39d9e88">
-                          <code>{children}</code>
-                        </a>
-                      ),
-                    }}
+                    components={{ImageUrlDocumentationLink, ImageUrlPackageDocumentationLink}}
                   />
                 </Text>
               </Details>
-            </Stack>
+            </VStack>
           </Card>
         </>
       ) : null}
@@ -188,12 +196,12 @@ export function ImageToolInput(props: ImageToolInputProps) {
             hasFocus={focusPath[0] === 'hotspot'}
             isChanged={changed}
           >
-            <RatioBox ratio={3 / 2}>
+            <RatioBox $ratio={3 / 2}>
               {(isImageLoading || imageLoadError) && (
                 <LoadStatus>
                   {imageLoadError ? (
                     <Card padding={4} radius={2} tone="critical" border>
-                      <Text>
+                      <Text as="div" trim={true} tone="critical">
                         {t('inputs.imagetool.load-error', {
                           errorMessage: imageLoadError.message,
                         })}
@@ -221,14 +229,14 @@ export function ImageToolInput(props: ImageToolInputProps) {
 
         {hotspotPreviews.length > 0 ? (
           <Box marginTop={2}>
-            <Grid gridTemplateColumns={4} gap={1}>
+            <Grid gridTemplateColumns="repeat(4, minmax(0, 1fr))" gap={1}>
               {hotspotPreviews.map(({title, aspectRatio}) => (
                 <Box key={title} marginTop={2}>
                   <Heading as="h4" size={0}>
                     {title}
                   </Heading>
                   <Box marginTop={2}>
-                    <RatioBox ratio={aspectRatio}>
+                    <RatioBox $ratio={aspectRatio}>
                       <Card __unstable_checkered border>
                         {!isImageLoading && image ? (
                           <HotspotImage
@@ -239,7 +247,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
                             crop={localValue.crop || DEFAULT_CROP}
                           />
                         ) : (
-                          <Placeholder />
+                          <div className={placeholder} />
                         )}
                       </Card>
                     </RatioBox>

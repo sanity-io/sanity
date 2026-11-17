@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 /**
  * @internal
@@ -15,7 +15,5 @@ const DEFAULT: SingleDocReleaseEnabledContextValue = {
 /**
  * @internal
  */
-export const SingleDocReleaseEnabledContext = createContext<SingleDocReleaseEnabledContextValue>(
-  'sanity/_singletons/context/single-doc-release-enabled',
-  DEFAULT,
-)
+export const SingleDocReleaseEnabledContext =
+  createContext<SingleDocReleaseEnabledContextValue>(DEFAULT)

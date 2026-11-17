@@ -64,6 +64,9 @@ export const VersionContextMenuDialogs = memo(function VersionContextMenuDialogs
           fromPerspective={title}
           documentType={documentType}
           isGoingToUnpublish={isGoingToUnpublish}
+          // Rendered from the document header, where `DocumentOperationResults` already toasts
+          // the discard operation events this dialog would report.
+          showCompletionToasts={false}
         />
       )}
 

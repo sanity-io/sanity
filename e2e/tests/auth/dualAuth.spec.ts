@@ -1,7 +1,7 @@
 // oxlint-disable-next-line no-restricted-imports -- auth tests use raw Playwright (no studio-test fixtures)
 import {expect, type Page, test} from '@playwright/test'
 
-import {watchForStudioErrors} from '../../helpers/studioErrors'
+import {watchEachTestForStudioErrors} from '../../helpers/studioErrors'
 import {BASE_URL, MOCK_TOKEN, PROJECT_ID, setupMockAuth} from './helpers'
 
 // Dual auth (loginMethod: 'dual') tries cookie first, falls back to token.
@@ -28,9 +28,7 @@ async function seedToken(page: Page) {
 // cookie auth — the auth store uses withCredentials and never touches tokens.
 
 test.describe('Dual auth (cookie path): cross-tab sync', () => {
-  test.beforeEach(async ({context}) => {
-    watchForStudioErrors(context)
-  })
+  watchEachTestForStudioErrors(test)
 
   test('logout in one tab reflects in another tab via BroadcastChannel', async ({context}) => {
     const page1 = await context.newPage()
@@ -116,9 +114,7 @@ test.describe('Dual auth (cookie path): cross-tab sync', () => {
 // it in the Authorization header instead of withCredentials.
 
 test.describe('Dual auth (token fallback): cross-tab sync', () => {
-  test.beforeEach(async ({context}) => {
-    watchForStudioErrors(context)
-  })
+  watchEachTestForStudioErrors(test)
 
   test('logout in one tab reflects in another tab via BroadcastChannel', async ({context}) => {
     const page1 = await context.newPage()

@@ -1,0 +1,16 @@
+diff --git a/packages/@sanity/mutator/src/document/BufferedDocument.ts b/packages/@sanity/mutator/src/document/BufferedDocument.ts
+index 92c170f424..c0aeb04578 100644
+--- a/packages/@sanity/mutator/src/document/BufferedDocument.ts
++++ b/packages/@sanity/mutator/src/document/BufferedDocument.ts
+@@ -228,11 +228,6 @@ export class BufferedDocument {
+         debug('Commit failed')
+         // Re stage commit
+         commit.tries += 1
+-        if (this.LOCAL !== null) {
+-          // Only schedule this commit for a retry of the document still exist to avoid looping
+-          // indefinitely when the document was deleted from under our noses
+-          this.commits.unshift(commit)
+-        }
+         docResponder.failure()
+ 
+         // Todo: Need better error handling (i.e. propagate to user and provide means of retrying)

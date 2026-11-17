@@ -25,9 +25,6 @@ export function ReferencePreviewTitle({
     () => getPreviewStateObservable(documentPreviewStore, schemaType, documentId),
     [documentId, documentPreviewStore, schemaType],
   )
-  // Deferred: react-rx v5's deferral is identity-coherent, so on a document
-  // id change the live snapshot wins and the previous document's title never
-  // renders for the new id.
   const {snapshot, original, isLoading} = useObservable(observable, INITIAL_PREVIEW_STATE)
 
   if (isLoading) {

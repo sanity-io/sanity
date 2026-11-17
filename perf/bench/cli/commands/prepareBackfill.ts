@@ -1,8 +1,10 @@
 /**
  * `bench prepare-backfill` — build the *experiment* dist from an older
- * main-history commit's packages with HEAD's committed perf/bench tree
- * overlaid: the same worktree/overlay recipe as `prepare-reference`, aimed
- * at `perf/bench/dist` instead of `.reference/dist`.
+ * main-history commit's packages with HEAD's committed perf/bench harness: the same
+ * recipe as `prepare-reference` (see buildDistAtCommit.ts), aimed at
+ * `perf/bench/dist` instead of `.reference/dist` — plus the customization
+ * studio at `perf/bench/dist-customizations`, so the backfilled run covers
+ * settle mode too.
  *
  * Exists to repair holes in the daily main-branch time series after a
  * harness outage: dispatch the bench workflow with `backfill_sha` for each
@@ -23,16 +25,14 @@ import {command, constant, option} from '@optique/core/primitives'
 import {string} from '@optique/core/valueparser'
 
 import {BENCH_ROOT} from '../benchRoot'
-import {buildDistAtCommit, git, setOutput} from './prepareReference'
-
-const REPO_ROOT = path.dirname(path.dirname(BENCH_ROOT))
+import {buildDistAtCommit, git, REPO_ROOT, setOutput} from './buildDistAtCommit'
 
 export const prepareBackfillCommand = command(
   'prepare-backfill',
   object({
     action: constant('prepare-backfill'),
     sha: option('--sha', string({metavar: 'SHA'}), {
-      description: message`Full 40-char sha of the commit whose packages to build (the harness and scenarios come from HEAD)`,
+      description: message`Full 40-char sha of the commit whose packages to build (the harness and scenarios come from HEAD's committed perf/bench)`,
     }),
   }),
   {
@@ -58,5 +58,7 @@ export function prepareBackfill(argv: PrepareBackfillArgs): void {
   // Resolved here because this is the only job with full history; the shard
   // jobs are depth-1 checkouts of HEAD and cannot resolve the historical sha.
   setOutput('committed_at', git(['show', '-s', '--format=%cI', argv.sha], REPO_ROOT))
-  buildDistAtCommit(argv.sha, path.join(BENCH_ROOT, 'dist'))
+  buildDistAtCommit(argv.sha, path.join(BENCH_ROOT, 'dist'), {
+    customizationsDist: path.join(BENCH_ROOT, 'dist-customizations'),
+  })
 }

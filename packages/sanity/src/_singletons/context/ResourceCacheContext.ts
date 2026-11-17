@@ -1,11 +1,8 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {ResourceCache} from '../../core/store/ResourceCacheProvider'
 
 /**
  * @internal
  */
-export const ResourceCacheContext = createContext<ResourceCache | null>(
-  'sanity/_singletons/context/resource-cache',
-  null,
-)
+export const ResourceCacheContext = createContext<ResourceCache | null>(null)

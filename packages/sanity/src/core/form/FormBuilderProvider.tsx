@@ -42,6 +42,7 @@ export interface FormBuilderProviderProps {
   children?: ReactNode
   collapsedFieldSets: StateTree<boolean> | undefined
   collapsedPaths: StateTree<boolean> | undefined
+  documentId?: string
   file: Source['form']['file']
   filterField?: FormBuilderFilterFieldFn
   focusPath: Path
@@ -91,6 +92,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
     children,
     collapsedFieldSets,
     collapsedPaths,
+    documentId,
     file,
     filterField,
     focusPath,
@@ -211,7 +213,7 @@ export function FormBuilderProvider(props: FormBuilderProviderProps) {
         onSetPathCollapsed={onSetPathCollapsed}
         onSetFieldSetCollapsed={onSetFieldSetCollapsed}
       >
-        <DocumentIdProvider id={id}>
+        <DocumentIdProvider id={documentId ?? id}>
           <PresenceProvider presence={presence}>
             <ValidationProvider validation={validation}>
               <HoveredFieldProvider>{children}</HoveredFieldProvider>

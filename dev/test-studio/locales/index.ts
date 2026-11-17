@@ -38,7 +38,6 @@ const nbNO = defineLocaleResourceBundle({
     'translate.with-xml-in-value':
       'Denne verdien har XML i en interpolert verdi: <strong>{{value}}</strong>',
     'use-translation.with-html': 'Faktisk er <code>code</code> et HTML-element?',
-
     // Used by `fieldGroupsWithI18n` debug schema type
     'field-groups.group-1': '🇳🇴 Gruppe 1',
     'field-groups.group-2': '🇳🇴 Gruppe 2',

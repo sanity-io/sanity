@@ -1,9 +1,6 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {ArrayValidationState} from '../../core/form/inputs/arrays/common/ArrayValidationContext'
 
 /** @internal */
-export const ArrayValidationContext = createContext<ArrayValidationState | null>(
-  'sanity/_singletons/context/array-validation',
-  null,
-)
+export const ArrayValidationContext = createContext<ArrayValidationState | null>(null)

@@ -7,12 +7,12 @@ import {
   type ReferenceSchemaType,
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {type ComponentProps, useCallback, useMemo, type RefAttributes} from 'react'
+import {useCallback, useMemo} from 'react'
 import {combineLatest, from, of, throwError} from 'rxjs'
 import {catchError, map, mergeMap, switchMap} from 'rxjs/operators'
-import {useEffectEvent} from 'use-effect-event'
 
 import {useSchema} from '../../../../hooks/useSchema'
+import {getDefaultVariant} from '../../../../perspective/getDefaultVariant'
 import {usePerspective} from '../../../../perspective/usePerspective'
 import {createSearch} from '../../../../search/search'
 import {useDocumentPreviewStore} from '../../../../store/datastores'
@@ -70,18 +70,17 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
   const searchClient = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const schema = useSchema()
-  const maxFieldDepth = useSearchMaxFieldDepth()
+  const {maxFieldDepth, fieldPaths: partialIndexFieldPaths} = useSearchMaxFieldDepth(
+    undefined,
+    true,
+  )
   const documentPreviewStore = useDocumentPreviewStore()
   const {path, schemaType} = props
-  const {
-    EditReferenceLinkComponent,
-    onEditReference,
-    activePath,
-    initialValueTemplateItems,
-    ...inheritedOptions
-  } = useReferenceInputOptions()
+  const {onEditReference, activePath, initialValueTemplateItems, ...inheritedOptions} =
+    useReferenceInputOptions()
   const {strategy: searchStrategy} = source.search
 
   const documentValue = useFormValue([]) as SanityDocument
@@ -93,7 +92,9 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const disableNew = inheritedOptions.disableNew ?? schemaType.options?.disableNew === true
   const getClient = source.getClient
 
-  const handleSearch = useEffectEvent((searchString: string) =>
+  // Plain function: useSearchMachine reads the latest onSearch on each call.
+  // oxlint's react-hooks/rules-of-hooks flags passing a useEffectEvent result as a prop.
+  const handleSearch = (searchString: string) =>
     from(
       resolveUserDefinedFilter({
         options: schemaType.options,
@@ -129,6 +130,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         const search = createSearch(schemaType.to, searchClient, {
           ...options,
           maxDepth: options.maxFieldDepth || DEFAULT_MAX_FIELD_DEPTH,
+          partialIndexFieldPaths,
         })
 
         return search(searchString, {
@@ -174,28 +176,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         }
         return throwError(() => err)
       }),
-    ),
-  )
-
-  const template = props.value?._strengthenOnPublish?.template
-  const EditReferenceLink = useMemo(
-    () =>
-      function EditReferenceLink_(
-        _props: ComponentProps<NonNullable<typeof EditReferenceLinkComponent>> &
-          RefAttributes<HTMLAnchorElement>,
-      ) {
-        const {ref: forwardedRef, ...rest} = _props
-        return EditReferenceLinkComponent ? (
-          <EditReferenceLinkComponent
-            {...rest}
-            ref={forwardedRef}
-            parentRefPath={path}
-            template={template}
-          />
-        ) : null
-      },
-    [EditReferenceLinkComponent, path, template],
-  )
+    )
 
   const handleEditReference = useCallback(
     (event: EditReferenceEvent) => {
@@ -267,15 +248,10 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   return (
     <ReferenceInput
       {...props}
-      onSearch={
-        // TODO(oxlint): remove this suppression in a follow-up once useEffectEvent support is fixed
-        // oxlint-disable-next-line react-hooks/rules-of-hooks
-        handleSearch
-      }
+      onSearch={handleSearch}
       liveEdit={isDocumentLiveEdit}
       getReferenceInfo={getReferenceInfo}
       selectedState={selectedState}
-      editReferenceLinkComponent={EditReferenceLink}
       createOptions={createOptions}
       onEditReference={handleEditReference}
     />

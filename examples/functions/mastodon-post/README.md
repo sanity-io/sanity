@@ -101,7 +101,9 @@ defineField({
    ```ts
    // sanity.blueprint.ts
    import 'dotenv/config'
+
    import process from 'node:process'
+
    import {defineBlueprint, defineDocumentFunction} from '@sanity/blueprints'
 
    const {MASTODON_TOKEN, MASTODON_HOST} = process.env

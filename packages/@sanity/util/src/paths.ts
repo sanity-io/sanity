@@ -8,8 +8,10 @@ import {
   type PathSegment,
 } from '@sanity/types'
 
+// `toString` writes keys unescaped, so a keyed segment ends at its first closing quote followed by
+// `]`. Keys may contain `.`, `[`, `]` and quotes, but not a quote directly followed by `]`.
 const rePropName =
-  /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
+  /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|\[\s*_key\s*==\s*(["'])(?:(?!\4\s*\]).)*\4\s*\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
 const reKeySegment = /_key\s*==\s*['"](.*)['"]/
 const EMPTY_PATH: Path = []
 

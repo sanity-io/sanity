@@ -1,0 +1,56 @@
+import {Card} from '@sanity/ui'
+import noop from 'lodash-es/noop.js'
+import {Text, VStack} from 'ui5'
+
+import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {
+  DocumentListPaneSearchOrdering,
+  RELEVANCE_ORDERING_ID,
+} from '../DocumentListPaneSearchOrdering'
+import {ORDERINGS} from './DocumentListPaneSearchOrdering.fixture'
+
+/**
+ * Chromatic sentinel for ui5 Box padding on the document-list search
+ * ordering control. The menu stays closed (MenuButton animates). Grid
+ * harness for the co-located Storybook CSF file.
+ */
+export function DocumentListPaneSearchOrderingStory() {
+  return (
+    <TestWrapper schemaTypes={[]}>
+      <Card padding={4} style={{maxWidth: 360}}>
+        <VStack gap={5}>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
+              no configured orderings
+            </Text>
+            <DocumentListPaneSearchOrdering
+              onChange={noop}
+              orderings={[]}
+              value={RELEVANCE_ORDERING_ID}
+            />
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
+              relevance selected
+            </Text>
+            <DocumentListPaneSearchOrdering
+              onChange={noop}
+              orderings={ORDERINGS}
+              value={RELEVANCE_ORDERING_ID}
+            />
+          </VStack>
+          <VStack gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
+              configured ordering selected
+            </Text>
+            <DocumentListPaneSearchOrdering
+              onChange={noop}
+              orderings={ORDERINGS}
+              value="updated-desc"
+            />
+          </VStack>
+        </VStack>
+      </Card>
+    </TestWrapper>
+  )
+}

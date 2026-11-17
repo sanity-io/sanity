@@ -1,12 +1,12 @@
 import {
   _responsive,
-  Container,
-  type ContainerProps,
   rem,
+  type ResponsiveWidthProps,
   type ResponsiveWidthStyleProps,
 } from '@sanity/ui'
-import {type ReactNode, type Ref, type RefAttributes} from 'react'
+import {type ReactNode, type RefAttributes} from 'react'
 import {styled} from 'styled-components'
+import {Container, type ContainerProps} from 'ui5'
 
 // This is a workaround to make sure that the Container gets the correct width when used inside a popover.
 // The default Container uses `maxWidth` which doesn't work well with popovers because the popover
@@ -24,8 +24,9 @@ const StyledContainer = styled(Container)<ResponsiveWidthStyleProps>((props) => 
   }))
 })
 
-interface PopoverContainerProps extends ContainerProps {
+interface PopoverContainerProps extends Omit<ContainerProps, 'width'> {
   children: ReactNode
+  width?: ResponsiveWidthProps['width']
 }
 
 export function PopoverContainer(props: PopoverContainerProps & RefAttributes<HTMLDivElement>) {

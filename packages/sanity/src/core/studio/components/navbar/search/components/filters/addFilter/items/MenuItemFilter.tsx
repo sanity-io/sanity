@@ -1,11 +1,9 @@
 import {
-  Box,
   // oxlint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children.
-  type ResponsiveMarginProps,
-  type ResponsivePaddingProps,
 } from '@sanity/ui'
 import {memo, useCallback} from 'react'
+import {Box, type MarginProps, type PaddingProps} from 'ui5'
 
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {type FilterMenuItemFilter} from '../../../../types'
@@ -13,7 +11,7 @@ import {getFilterKey} from '../../../../utils/filterUtils'
 import {FilterDetails} from '../../common/FilterDetails'
 import {FilterTooltip} from './FilterTooltip'
 
-interface FilterMenuItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
+interface FilterMenuItemProps extends MarginProps, PaddingProps {
   item: FilterMenuItemFilter
   onClose: () => void
 }

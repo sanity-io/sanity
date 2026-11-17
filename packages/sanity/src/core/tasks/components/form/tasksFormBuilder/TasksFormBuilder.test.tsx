@@ -10,9 +10,12 @@ import {TasksFormBuilder} from './TasksFormBuilder'
 // task form would be mounted with, without rendering the (heavy) form itself.
 vi.mock('../addonWorkspace/TasksAddOnWorkspaceProvider', async () => {
   const {usePerspective} = await import('../../../../perspective/usePerspective')
+  const {getDefaultVariant} = await import('../../../../perspective/getDefaultVariant')
 
   function TasksAddonWorkspaceProvider() {
-    const {selectedVariantName, selectedVariant, selectedPerspectiveName} = usePerspective()
+    const {selectedVariantNames, selectedVariants, selectedPerspectiveName} = usePerspective()
+    const selectedVariantName = getDefaultVariant(selectedVariantNames)
+    const selectedVariant = getDefaultVariant(selectedVariants)
     return (
       <div
         data-testid="addon-workspace"
@@ -80,7 +83,11 @@ function createOuterPerspective(
     selectedPerspective: 'drafts',
     perspectiveStack: ['drafts'],
     excludedPerspectives: [],
+    selectedVariantNames: [],
+    selectedVariants: [],
+    // oxlint-disable-next-line typescript/no-deprecated -- context fixture fills the deprecated alias
     selectedVariantName: undefined,
+    // oxlint-disable-next-line typescript/no-deprecated -- context fixture fills the deprecated alias
     selectedVariant: undefined,
     bundle: 'drafts',
     ...overrides,
@@ -99,8 +106,8 @@ describe('TasksFormBuilder', () => {
   it('does not let the task form inherit the selected variant', () => {
     renderWithPerspective(
       createOuterPerspective({
-        selectedVariantName: 'alpha-audience',
-        selectedVariant: variant,
+        selectedVariantNames: ['alpha-audience'],
+        selectedVariants: [variant],
       }),
     )
 
@@ -118,8 +125,8 @@ describe('TasksFormBuilder', () => {
         selectedReleaseId: 'rSomeRelease',
         selectedPerspective: 'rSomeRelease',
         perspectiveStack: ['rSomeRelease', 'drafts'],
-        selectedVariantName: 'alpha-audience',
-        selectedVariant: variant,
+        selectedVariantNames: ['alpha-audience'],
+        selectedVariants: [variant],
       }),
     )
 

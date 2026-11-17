@@ -8,12 +8,12 @@ import {
   defaultStackParser,
   type ErrorEvent,
   type Event,
+  eventFiltersIntegration,
   functionToStringIntegration,
   getClient,
   getCurrentScope,
   globalHandlersIntegration,
   httpContextIntegration,
-  inboundFiltersIntegration,
   init,
   isInitialized as sentryIsInitialized,
   linkedErrorsIntegration,
@@ -28,12 +28,15 @@ import {globalScope} from '../../util/globalScope'
 import {supportsLocalStorage} from '../../util/supportsLocalStorage'
 import {SANITY_VERSION} from '../../version'
 import {type ErrorInfo, type ErrorReporter} from '../errorReporter'
+import {scrubAutomaticPii, studioSentryDataCollection} from './sentryPrivacy'
 
 /** @internal
  * The Sentry project DSN for the Sanity Studio project in Sentry.
  */
 export const STUDIO_DSN =
   'https://8914c8dde7e1ebce191f15af8bf6b7b9@sentry.sanity.io/4507342122123264'
+
+const STUDIO_TUNNEL = 'https://api.sanity.io/vX/intake/tracing'
 
 const IS_EMBEDDED_STUDIO = !('__sanityErrorChannel' in globalScope)
 
@@ -42,21 +45,25 @@ const DEBUG_ERROR_REPORTING =
 
 const IS_BROWSER = typeof window !== 'undefined'
 
-const clientOptions: BrowserOptions = {
+// Keep this inferred. Annotating it as `BrowserOptions` widens `tunnel` to
+// `string | true | BrowserTunnelOptions`, which `BrowserClient` does not accept.
+const clientOptions = {
   dsn: STUDIO_DSN,
-  tunnel: 'https://api.sanity.io/vX/intake/tracing',
+  tunnel: STUDIO_TUNNEL,
   release: SANITY_VERSION,
   environment: isDev ? 'development' : 'production',
   debug: DEBUG_ERROR_REPORTING,
   enabled: IS_BROWSER && (!isDev || DEBUG_ERROR_REPORTING),
-}
+  dataCollection: studioSentryDataCollection,
+} satisfies BrowserOptions
 
 const integrations = [
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  inboundFiltersIntegration(),
+  eventFiltersIntegration(),
   functionToStringIntegration(),
   browserApiErrorsIntegration({eventTarget: false}),
-  breadcrumbsIntegration({console: false}),
+  // Console breadcrumbs moved to `consoleIntegration` in v11. Studio disabled
+  // them (`console: false`); leaving that integration out keeps them off.
+  breadcrumbsIntegration(),
   globalHandlersIntegration({onerror: true, onunhandledrejection: true}),
   linkedErrorsIntegration(),
   dedupeIntegration(),
@@ -113,6 +120,7 @@ export function getSentryErrorReporter(): ErrorReporter {
     if (hasThirdPartySentry) {
       client = new BrowserClient({
         ...clientOptions,
+        tunnel: STUDIO_TUNNEL,
         stackParser: defaultStackParser,
         integrations,
         beforeSend,
@@ -280,35 +288,63 @@ function setAsUnhandled(event: ErrorEvent) {
 }
 
 /**
- * "Before send" event handler, which sets the error as unhandled.
- * @see setAsUnhandled for a clearer rationale.
+ * "Before send" event handler, which drops teardown aborts and sets the error as unhandled.
+ * @see isTeardownAbort and setAsUnhandled for clearer rationales.
  *
  * @param event - The event to be sent
- * @returns The event to be sent
+ * @returns The event to be sent, or `null` to drop it
  * @internal
  */
-function beforeSend(event: ErrorEvent): ErrorEvent {
+export function beforeSend(event: ErrorEvent): ErrorEvent | null {
+  if (isTeardownAbort(event)) {
+    return null
+  }
+
   setAsUnhandled(event)
-  return scrubPii(event)
+  return scrubAutomaticPii(event)
 }
 
 /**
- * Strips personally identifiable information from a Sentry event so that
- * error reports never contain data that could identify a user.
+ * Aborting an in-flight request on teardown is routine, not a crash: `AbortController.abort()`
+ * rejects the pending fetch with an `AbortError`, and our abort sites handle it. Chrome still
+ * fires `unhandledrejection` at the microtask checkpoint and only retracts it afterwards with
+ * `rejectionhandled`, which the Sentry SDK never listens for, so the rejection gets reported
+ * even though it was handled. These reports have no user impact and drown out real errors.
  *
- * @param event - The event to scrub
- * @returns The scrubbed event
+ * Matched on the mechanism and the `DOMException.code` tag rather than the message, because
+ * the message is engine-specific: "signal is aborted without reason" (Chromium), "The operation
+ * was aborted." (Firefox), "Fetch is aborted" (WebKit).
+ *
+ * @param event - The event to check
+ * @returns True if the event is an abort surfaced as an unhandled rejection, false otherwise
  * @internal
  */
-function scrubPii<T extends ErrorEvent>(event: T): T {
-  delete event.user
-  // kept out due to concerns around headers being sent to Sentry
-  delete event.request
+function isTeardownAbort(event: ErrorEvent): boolean {
+  const exceptions = event.exception?.values || []
 
-  // Prevent Sentry from inferring IP from the HTTP request
-  event.user = {ip_address: '0.0.0.0'}
+  // Suffix match because the mechanism has been renamed across SDK majors (`onunhandledrejection`
+  // in v8, `auto.browser.global_handlers.onunhandledrejection` in v10). Checking every entry
+  // because `linkedErrors` splits a cause chain across several of them. Deliberate reports go
+  // through `captureException` with a `generic` mechanism and are intentionally left alone.
+  const fromUnhandledRejection = exceptions.some((exception) =>
+    exception.mechanism?.type?.endsWith('onunhandledrejection'),
+  )
 
-  return event
+  if (!fromUnhandledRejection) {
+    return false
+  }
+
+  // `DOMException.code` 20 is `ABORT_ERR`. Sentry tags it for both shapes an abort takes: the
+  // DOMException that `abort()` creates carries a stack and is typed `AbortError`, while one
+  // without a stack is flattened into `Error` with the name folded into the value. The type and
+  // value checks are a fallback in case the tag ever stops being set.
+  return (
+    event.tags?.['DOMException.code'] === '20' ||
+    exceptions.some(
+      (exception) =>
+        exception.type === 'AbortError' || (exception.value || '').startsWith('AbortError:'),
+    )
+  )
 }
 
 /**

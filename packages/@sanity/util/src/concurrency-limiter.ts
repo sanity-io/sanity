@@ -4,7 +4,12 @@
  */
 export class ConcurrencyLimiter {
   current = 0
-  resolvers: Array<() => void> = []
+  resolvers: Array<{
+    resolve: () => void
+    reject: (reason?: unknown) => void
+    signal?: AbortSignal
+    onAbort: () => void
+  }> = []
   public max: number
   constructor(max: number) {
     this.max = max
@@ -14,7 +19,8 @@ export class ConcurrencyLimiter {
    * Indicates when a slot for a new operation is ready.
    * If under the limit, it resolves immediately; otherwise, it waits until a slot is free.
    */
-  ready = (): Promise<void> => {
+  ready = (signal?: AbortSignal): Promise<void> => {
+    if (signal?.aborted) return Promise.reject(signal.reason)
     if (this.max === Infinity) return Promise.resolve()
 
     if (this.current < this.max) {
@@ -22,9 +28,27 @@ export class ConcurrencyLimiter {
       return Promise.resolve()
     }
 
-    return new Promise<void>((resolve) => {
-      this.resolvers.push(resolve)
+    return new Promise<void>((resolve, reject) => {
+      const pending = {resolve, reject, signal, onAbort: () => {}}
+      pending.onAbort = () => {
+        const index = this.resolvers.indexOf(pending)
+        if (index !== -1) this.resolvers.splice(index, 1)
+        if (signal) reject(signal.reason)
+      }
+      signal?.addEventListener('abort', pending.onAbort, {once: true})
+      this.resolvers.push(pending)
     })
+  }
+
+  /** Runs an operation when a concurrency slot is available. */
+  run = async <T>(work: () => PromiseLike<T> | T, signal?: AbortSignal): Promise<T> => {
+    await this.ready(signal)
+    try {
+      signal?.throwIfAborted()
+      return await work()
+    } finally {
+      this.release()
+    }
   }
 
   /**
@@ -34,9 +58,15 @@ export class ConcurrencyLimiter {
   release = (): void => {
     if (this.max === Infinity) return
 
-    const nextResolver = this.resolvers.shift()
-    if (nextResolver) {
-      nextResolver()
+    let next = this.resolvers.shift()
+    while (next) {
+      next.signal?.removeEventListener('abort', next.onAbort)
+      if (next.signal?.aborted) {
+        next.reject(next.signal.reason)
+        next = this.resolvers.shift()
+        continue
+      }
+      next.resolve()
       return
     }
 

@@ -1,10 +1,7 @@
 import {MenuIcon} from '@sanity/icons/Menu'
 import {
   BoundaryElementProvider,
-  Box,
   Card,
-  Flex,
-  Grid,
   Layer,
   LayerProvider,
   PortalProvider,
@@ -14,6 +11,7 @@ import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'rea
 import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
+import {Grid, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -21,7 +19,8 @@ import {CapabilityGate} from '../../../components/CapabilityGate'
 import {type NavbarProps} from '../../../config/studio/types'
 import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {ReleasesNav} from '../../../perspective/navbar/ReleasesNav'
+import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
+import {GlobalPerspectiveNav} from '../../../perspective/navbar/GlobalPerspectiveNav'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {useToolMenuComponent} from '../../studio-components-hooks/useToolMenuComponent'
@@ -39,6 +38,7 @@ import {SearchPopover} from './search/components/SearchPopover'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {SearchButton} from './search/SearchButton'
 import {SearchDialog} from './search/SearchDialog'
+import {navbar, navGrid, navTools} from './StudioNavbar.css'
 import {UserMenu} from './userMenu/UserMenu'
 import {WorkspaceMenuButton} from './workspace/WorkspaceMenuButton'
 
@@ -56,13 +56,6 @@ const RootLayer = styled(Layer)`
 
 const RootCard = styled(Card)`
   line-height: 0;
-`
-
-const NavGrid = styled(Grid)`
-  grid-template-columns: auto auto auto;
-  @media screen and (min-width: ${({theme}) => `${theme.sanity.media[4] /* oxlint-disable-line no-deprecated -- will fix in follow up PR */}px`}) {
-    grid-template-columns: 1fr auto 1fr;
-  }
 `
 
 /**
@@ -87,7 +80,10 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     searchOpen,
   } = useContext(NavbarContext)
 
-  const {selectedPerspective, perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedPerspective, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
+  // Variants beta keeps one navbar color. Otherwise the bar follows the release tone.
+  const variantsEnabled = Boolean(beta?.variants?.enabled)
 
   const ToolMenu = useToolMenuComponent()
 
@@ -118,6 +114,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
       configIssues: mediaIndex > 1 && isDev,
       newDocumentFullscreen: mediaIndex <= 1,
       tools: mediaIndex >= 3,
+      perspectivesInDrawer: mediaIndex <= 1,
     }),
     [mediaIndex],
   )
@@ -191,18 +188,19 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     <FreeTrialProvider>
       <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
         <RootCard
-          tone={getReleaseTone(selectedPerspective)}
-          borderBottom
+          className={navbar}
+          tone={variantsEnabled ? 'default' : getReleaseTone(selectedPerspective)}
           data-testid="studio-navbar"
           data-ui="Navbar"
           padding={3}
+          shadow={1}
           sizing="border"
         >
-          <NavGrid gap={1}>
+          <Grid className={navGrid} gap={1}>
             {/** Left flex */}
             <TooltipDelayGroupProvider>
-              <Flex align="center" gap={2} justify="flex-start">
-                <Flex align="center" gap={2}>
+              <Flex alignItems="center" gap={2} justifyContent="flex-start">
+                <Flex alignItems="center" gap={2}>
                   {/* Menu button */}
                   {!shouldRender.tools && (
                     <Button
@@ -233,9 +231,9 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
             </TooltipDelayGroupProvider>
 
             {/** Center flex */}
-            <Flex align="center" justify="center">
+            <Flex alignItems="center" className={navTools} justifyContent="center">
               {shouldRender.tools && (
-                // oxlint-disable-next-line react/react-compiler -- this is intentional and how the middleware components has to work
+                // oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work
                 <ToolMenu
                   activeToolName={activeToolName}
                   closeSidebar={handleCloseDrawer}
@@ -248,7 +246,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
 
             {/** Right flex */}
             <TooltipDelayGroupProvider>
-              <Flex align="center" gap={1} justify="flex-end">
+              <Flex alignItems="center" gap={1} justifyContent="flex-end">
                 {/* Search */}
                 <LayerProvider>
                   <SearchProvider fullscreen={shouldRender.searchFullscreen}>
@@ -276,7 +274,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                   </SearchProvider>
                 </LayerProvider>
 
-                {!beta?.variants?.enabled && <ReleasesNav withReleasesToolButton />}
+                {!shouldRender.perspectivesInDrawer && <GlobalPerspectiveNav />}
                 {actionNodes}
                 {shouldRender.tools && <FreeTrial type="topbar" />}
                 <PresenceMenu />
@@ -290,14 +288,14 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
 
                 {shouldRender.tools && (
                   <CapabilityGate capability="globalUserMenu">
-                    <Box flex="none" marginLeft={1}>
+                    <Box flexBasis="auto" flexGrow={0} flexShrink={0} marginLeft={1}>
                       <UserMenu />
                     </Box>
                   </CapabilityGate>
                 )}
               </Flex>
             </TooltipDelayGroupProvider>
-          </NavGrid>
+          </Grid>
         </RootCard>
 
         {!shouldRender.tools && (
@@ -306,6 +304,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
             activeToolName={activeToolName}
             isOpen={drawerOpen}
             onClose={handleCloseDrawer}
+            showPerspectives={shouldRender.perspectivesInDrawer}
             tools={tools}
           />
         )}

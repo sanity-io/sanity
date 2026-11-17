@@ -1,4 +1,4 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {
   PresenceTrackerContextStoreType,
@@ -6,13 +6,7 @@ import type {
 } from '../../core/presence/overlay/PresenceTrackerContexts'
 
 /** @internal */
-export const PresenceTrackerContextStore = createContext<PresenceTrackerContextStoreType>(
-  'sanity/_singletons/context/presence-tracker-store',
-  null,
-)
+export const PresenceTrackerContextStore = createContext<PresenceTrackerContextStoreType>(null)
 
 /** @internal */
-export const PresenceTrackerContextGetSnapshot = createContext<PresenceTrackerGetSnapshotType>(
-  'sanity/_singletons/context/presence-tracker-get-snapshot',
-  null,
-)
+export const PresenceTrackerContextGetSnapshot = createContext<PresenceTrackerGetSnapshotType>(null)

@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@sanity/vision": "workspace:*",
-    "babel-plugin-react-compiler": "catalog:",
+    "oxc-transform-react": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-icons": "^5.7.0",
@@ -20,7 +20,6 @@
     "styled-components": "catalog:"
   },
   "devDependencies": {
-    "rimraf": "catalog:",
-    "vite": "catalog:"
+    "rimraf": "catalog:"
   }
 }

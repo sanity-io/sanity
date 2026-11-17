@@ -30,12 +30,12 @@ import {
 import {
   type ClipboardEventHandler,
   type ComponentType,
+  type CSSProperties,
   type FocusEvent as ReactFocusEvent,
   type FocusEventHandler,
   type FormEventHandler,
   type RefObject,
 } from 'react'
-import {type CSSProperties} from 'styled-components'
 
 import {type PatchEvent} from '../patch/PatchEvent'
 import {type FormPatch} from '../patch/types'
@@ -546,7 +546,10 @@ export interface PortableTextInputProps extends ArrayOfObjectsInputProps<
   hideToolbar?: boolean
   /**
    * Assign hotkeys that can be attached to custom editing functions
+   * @deprecated Register a `keyboard.keydown` Behavior instead, with `BehaviorPlugin` from
+   * `@portabletext/editor/plugins` rendered in `form.components.portableText.plugins`.
    */
+  // oxlint-disable-next-line no-deprecated -- the deprecated prop keeps the editor's type until it is removed
   hotkeys?: HotkeyOptions
   /**
    * Whether the input is activated and should receive events on mount.
@@ -577,10 +580,15 @@ export interface PortableTextInputProps extends ArrayOfObjectsInputProps<
   onFullScreenChange?: (isFullScreen: boolean) => void
   /**
    * Custom copy function
+   * @deprecated Register a `clipboard.copy` Behavior instead, with `BehaviorPlugin` from
+   * `@portabletext/editor/plugins` rendered in `form.components.portableText.plugins`.
    */
+  // oxlint-disable-next-line no-deprecated -- the deprecated prop keeps the editor's type until it is removed
   onCopy?: OnCopyFn
   /**
    * Custom paste function
+   * @deprecated Register a `clipboard.paste` Behavior instead, with `BehaviorPlugin` from
+   * `@portabletext/editor/plugins` rendered in `form.components.portableText.plugins`.
    */
   onPaste?: OnPasteFn
   /**
@@ -631,6 +639,7 @@ export type InputProps =
  * The `schemaTypes` field contains Sanity-specific
  * `PortableTextMemberSchemaTypes` instead of the editor's `EditorSchema`.
  */
+// oxlint-disable-next-line no-deprecated -- mirrors the editor's deprecated paste data for the deprecated `onPaste` prop
 export type PasteData = Omit<EditorPasteData, 'schemaTypes'> & {
   schemaTypes: PortableTextMemberSchemaTypes
 }
@@ -644,6 +653,7 @@ export type PasteData = Omit<EditorPasteData, 'schemaTypes'> & {
  * a mechanism to fall back to the native paste behaviour. This doesn't work in
  * all cases. Always return plain `undefined` if possible.
  */
+// oxlint-disable-next-line no-deprecated -- mirrors the editor's deprecated paste result for the deprecated `onPaste` prop
 export type OnPasteFn = (data: PasteData) => OnPasteResultOrPromise
 
 /**
@@ -653,6 +663,9 @@ export type OnPasteFn = (data: PasteData) => OnPasteResultOrPromise
  * to decouple Studio's public callback interface from the editor's internals.
  * The `EditorChangePlugin` in `PortableTextInput.tsx` translates
  * `EditorEmittedEvent`s into these change types.
+ *
+ * `error` and `loading` stay in the union for compatibility. `@portabletext/editor`
+ * v8 no longer emits the events that produced them.
  *
  * @beta
  */

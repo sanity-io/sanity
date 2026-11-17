@@ -7,15 +7,15 @@ import {
 } from '@repo/debug-proxy'
 import {Subscription} from 'rxjs'
 
-import {BENCH_USER} from '../constants'
+import {handleAuth} from './auth'
 import {handleActions, handleDoc, handleDocRevision, handleMutate, handleQuery} from './data'
 import {RequestLedger} from './ledger'
-import {AUTH_PROBE, AUTH_PROVIDERS, DATASET_ACL, DATASETS, projectData} from './project'
+import {PresenceHub} from './presence'
+import {DATASET_ACL, DATASETS, projectData} from './project'
 import {corsHeaders, handlePreflight, json, readBody} from './respond'
 import {ListenHub} from './sse'
 import {DocumentStore} from './store'
 import {type BenchDocument} from './types'
-import {parkWebSocket} from './websocket'
 
 export interface MockApiConfig {
   port: number
@@ -33,6 +33,14 @@ export interface MockApiServer {
   store: DocumentStore
   hub: ListenHub
   ledger: RequestLedger
+  /**
+   * Logged-out mode (see mock-api/auth.ts `requireToken`): from now on only
+   * requests carrying the bench token are signed in. Set per session before
+   * the page loads; `/_bench/reset` turns it off.
+   */
+  setRequireToken: (requireToken: boolean) => void
+  /** The bifur presence socket: parked unless a session switches it live (see presence.ts). */
+  presence: PresenceHub
 }
 
 /** Strip the `/vX.Y` API-version prefix @sanity/client puts on every path. */
@@ -54,6 +62,10 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
   const store = new DocumentStore()
   const hub = new ListenHub()
   const ledger = new RequestLedger()
+  const presence = new PresenceHub()
+  let requireToken = false
+  // See mock-api/auth.ts `hasSession`; reset with requireToken
+  let hasSession = false
 
   async function handle(req: ProxyRequest, res: ProxyResponse): Promise<void> {
     const url = new URL(req.url ?? '/', 'http://localhost')
@@ -82,6 +94,9 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
       hub.closeAll()
       store.reset()
       ledger.reset()
+      presence.reset()
+      requireToken = false
+      hasSession = false
       json(req, res, 200, {ok: true})
       return
     }
@@ -99,49 +114,34 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
     }
 
     // --- auth / user ---------------------------------------------------------
+    const authResponse = handleAuth({
+      method,
+      path,
+      query: url.searchParams,
+      authorization: req.headers.authorization,
+      requireToken,
+      hasSession,
+    })
+    if (authResponse) {
+      if (authResponse.startsSession) hasSession = true
+      record('auth', json(req, res, authResponse.status, authResponse.body))
+      return
+    }
     if (path.startsWith('/users/me')) {
-      if (path === '/users/me') {
-        record('auth', json(req, res, 200, BENCH_USER))
-        return
-      }
-      const keyvalueMatch = path.match(/^\/users\/me\/keyvalue(?:\/(.*))?$/)
-      if (keyvalueMatch) {
-        // UI-state persistence (serverStorage.ts). GET answers null for every
-        // requested key; PUT echoes the submitted pairs. Nothing persists —
-        // sessions must not inherit UI state from each other.
-        if (method === 'GET') {
-          const keys = decodeURIComponent(keyvalueMatch[1] ?? '')
-            .split(',')
-            .filter(Boolean)
-          record(
-            'keyvalue',
-            json(
-              req,
-              res,
-              200,
-              keys.map((key) => ({key, value: null})),
-            ),
-          )
-          return
-        }
-        const body = JSON.parse((await readBody(req)).toString('utf8'))
-        record('keyvalue', json(req, res, 200, body))
-        return
-      }
       ledger.recordUnexpected(method, rawPath)
       record('auth', json(req, res, 404, {error: 'not implemented in bench mock'}))
       return
     }
-    if (path === '/auth/id') {
-      record('auth', json(req, res, 200, AUTH_PROBE()))
-      return
-    }
-    if (path === '/auth/providers') {
-      record('auth', json(req, res, 200, AUTH_PROVIDERS))
-      return
-    }
-    if (path === '/auth/logout') {
-      record('auth', json(req, res, 200, {ok: true}))
+    // User profiles (userStore.ts batches ids into one path) — only the live
+    // presence peer is known; anything else stays an unexpected endpoint
+    const usersMatch = path.match(/^\/users\/([^/]+)$/)
+    const peerProfiles = usersMatch
+      ? decodeURIComponent(usersMatch[1])
+          .split(',')
+          .map((userId) => presence.userProfile(userId))
+      : []
+    if (peerProfiles.length > 0 && peerProfiles.every((profile) => profile !== null)) {
+      record('users', json(req, res, 200, peerProfiles))
       return
     }
 
@@ -149,6 +149,33 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
     const aclMatch = path.match(/^\/projects\/([^/]+)\/datasets\/([^/]+)\/acl$/)
     if (aclMatch) {
       record('project', json(req, res, 200, DATASET_ACL))
+      return
+    }
+    // UI-state persistence through the App SDK's preferences. Nothing is stored and writes are
+    // echoed: sessions must not inherit UI state from each other.
+    const preferencesMatch = path.match(
+      /^\/projects\/[^/]+\/users\/me\/preferences(?:\/([^/]+)(\/items(?:\/[^/]+)?)?)?$/,
+    )
+    if (preferencesMatch) {
+      const [, key, items] = preferencesMatch
+      const unset = (name: string) => ({key: name, activeValue: null, activeLevel: 'default'})
+      if (items) {
+        record('preferences', json(req, res, 200, {data: [], nextCursor: null}))
+        return
+      }
+      if (method === 'PUT') {
+        const {value} = JSON.parse((await readBody(req)).toString('utf8')) as {value: unknown}
+        record(
+          'preferences',
+          json(req, res, 200, {key, value, activeValue: value, activeLevel: 'user@project'}),
+        )
+        return
+      }
+      if (key) {
+        record('preferences', json(req, res, 200, unset(decodeURIComponent(key))))
+        return
+      }
+      record('preferences', json(req, res, 200, {data: url.searchParams.getAll('keys').map(unset)}))
       return
     }
     const projectSubMatch = path.match(/^\/projects\/([^/]+)(\/.*)?$/)
@@ -282,9 +309,17 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
     // and `benchexp.127.0.0.1` is not a valid URL host.)
     apiHost: 'bench.invalid',
     tls: config.tls,
+    // Node's HTTP/2 rapid reset protection closes the whole session when a
+    // client cancels more than 1000 streams in a burst (then 33 per second).
+    // A studio that builds a listenQuery during render (the listenQueryPane
+    // scenario) cancels a /data/listen stream on every render, so the session
+    // closed mid-run and every other listener failed with
+    // ERR_CONNECTION_CLOSED. The mock only listens on loopback, so the
+    // protection is not needed here.
+    http2Options: {streamResetBurst: 1_000_000, streamResetRate: 1_000_000},
     routes: [],
-    // bifur presence socket: accept-and-park (see websocket.ts)
-    upgradeHandler: parkWebSocket,
+    // bifur presence socket: parked unless a soak goes live (see presence.ts)
+    upgradeHandler: presence.handleUpgrade,
     defaultHandler: (req, res) => {
       handle(req, res).catch((error) => {
         console.error('[bench-mock] handler error:', error)
@@ -306,11 +341,17 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
     },
     close: async () => {
       hub.closeAll()
+      presence.reset()
       await proxy.close()
     },
     url: `${protocol}://localhost:${config.port}`,
     store,
     hub,
     ledger,
+    presence,
+    setRequireToken: (next) => {
+      requireToken = next
+      hasSession = false
+    },
   }
 }

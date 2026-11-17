@@ -1,0 +1,495 @@
+.root {
+  position: relative;
+}
+
+/* `ResizableSplit`: two panes and the divider between them */
+.splitRoot {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.splitRootRow {
+  flex-direction: row;
+}
+
+.splitRootColumn {
+  flex-direction: column;
+}
+
+/* A pane of the split; the primary one gets its size inline, the other takes what is left */
+.splitPane {
+  position: relative;
+  flex: 1 1 0%;
+  min-width: 0;
+  min-height: 0;
+}
+
+/*
+ * The divider: the visible border line, with a hit area straddling it (the same 11px as the
+ * params handle) that shows while hovered, focused or dragged. Above the panes so the whole hit
+ * area can be grabbed, below the sidebar (20).
+ */
+.splitHandle {
+  position: relative;
+  flex: 0 0 1px;
+  background: var(--card-border-color);
+  z-index: 11;
+  touch-action: none;
+  outline: none;
+}
+
+.splitHandle::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+}
+
+.splitHandle:hover::after,
+.splitHandle[data-dragging='true']::after {
+  background: var(--card-shadow-ambient-color);
+}
+
+.splitHandle:focus-visible::after {
+  background: var(--card-shadow-ambient-color);
+  outline: 2px solid var(--card-focus-ring-color);
+  outline-offset: -2px;
+}
+
+.splitHandleVertical {
+  cursor: col-resize;
+}
+
+.splitHandleVertical::after {
+  top: 0;
+  bottom: 0;
+}
+
+.splitHandleHorizontal {
+  cursor: row-resize;
+}
+
+.splitHandleHorizontal::after {
+  left: 0;
+  right: 0;
+}
+
+.splitHandleDisabled {
+  cursor: default;
+}
+
+.splitHandleDisabled:hover::after {
+  background: transparent;
+}
+
+/* Fills the pane it is rendered into */
+.paneFill {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.splitPaneContainer {
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+  flex: 1 1 0%;
+}
+
+/* Editor label floating above CodeMirror's gutter, aligned with its line numbers */
+.editorLabel {
+  position: absolute;
+  top: 1rem;
+  left: 33px;
+  right: 0;
+  z-index: 10;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Result label at the same height as the editor label, aligned with the result's own padding */
+.resultLabel {
+  composes: editorLabel;
+  left: 12px;
+}
+
+/* Controls in an editor or result label's row: unlike the label they take the pointer */
+.labelActions {
+  pointer-events: auto;
+  margin-right: 12px;
+  margin-top: -0.5rem;
+}
+
+/* The result's JSON view fills the result pane, its editor scrolling on its own */
+.resultJson {
+  height: 100%;
+}
+
+/*
+ * The box of a JSON editor (a document in Delta, the mutations in Mutate): it takes the height
+ * the drawer leaves over to it, and its document scrolls inside
+ */
+.jsonEditorBox {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/*
+ * The part of a drawer section that gives up height first and scrolls (the changes of a dry run,
+ * the value delta mode returned), so the section's heading and notes stay in view
+ */
+.drawerScroller {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+/* Tab headers of the bottom panels scroll sideways rather than wrap when space is tight */
+.panelTabs {
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+/*
+ * TabList is an Inline (inline-block children), so it wraps like text unless told otherwise; the
+ * panel scrolls horizontally instead
+ */
+.panelTabs [data-ui='TabList'] {
+  white-space: nowrap;
+}
+
+/* The query editor takes whatever height the panels below leave over, and never less than this */
+.querySection {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 120px;
+}
+
+/*
+ * A collapsible panel below the query editor: a header row and, while expanded, a body that
+ * scrolls once the panel hits its cap. The panel is as tall as its content wants, so the
+ * stacking distributes the column's height by need.
+ */
+.collapsibleSection {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 0 1 auto;
+  min-height: 0;
+  border-top: 1px solid var(--card-border-color);
+}
+
+/* Params grow with their JSON until they would claim too much of the column */
+.paramsSection {
+  max-height: 40%;
+}
+
+/* A dragged params height replaces the automatic one; the cap is enforced while dragging */
+.paramsSectionResized {
+  max-height: none;
+}
+
+/* The options are finite and rarely reach this; when they do, they scroll */
+.optionsSection {
+  max-height: 45%;
+}
+
+.sectionBody {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+/*
+ * Drag handle straddling the params panel's top border, laid out like the split pane resizers:
+ * an 11px hit area whose visible part is the border itself.
+ */
+.sectionResizer {
+  position: absolute;
+  top: -6px;
+  left: 0;
+  right: 0;
+  height: 11px;
+  cursor: row-resize;
+  /* Above the editor label (10) so the whole width can be grabbed, below the sidebar (20) */
+  z-index: 11;
+  touch-action: none;
+}
+
+.sectionResizer:hover,
+.sectionResizer[data-dragging='true'] {
+  background: var(--card-shadow-ambient-color);
+}
+
+.sectionResizer:focus-visible {
+  background: var(--card-shadow-ambient-color);
+  outline: 2px solid var(--card-focus-ring-color);
+  outline-offset: -2px;
+}
+
+/* Option fields flow into as many columns as fit the request column */
+.optionsGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+/* Hides the request or response pane in the single-column phone layout */
+.hiddenPane.hiddenPane {
+  display: none;
+}
+
+.editorContainer {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.scrollArea {
+  min-height: 0;
+  overflow: auto;
+}
+
+.sidebarRail {
+  flex-shrink: 0;
+  transition: width 120ms ease-out;
+}
+
+/* The collapsed rail's width, which `.sidebarSlot` reserves too */
+.sidebarRailCollapsed {
+  width: 49px;
+}
+
+.sidebarRailExpanded {
+  width: 224px;
+}
+
+/* On phones the expanded rail floats over the content instead of squeezing it */
+.sidebarRailOverlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  /* Above the floating editor labels (10) and the split pane resizers */
+  z-index: 21;
+  background: var(--card-bg-color);
+  box-shadow: 0 0 0 1px var(--card-border-color);
+}
+
+/* A sidebar item, which a count can sit on */
+.sidebarItem {
+  position: relative;
+}
+
+/* A count on a sidebar item: on the icon's corner in the collapsed rail */
+.sidebarItemBadge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  pointer-events: none;
+}
+
+/* At the end of the item's row in the expanded rail */
+.sidebarItemBadgeExpanded {
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+}
+
+/* Keeps the collapsed rail's room reserved while the expanded rail floats over the content */
+.sidebarSlot {
+  position: relative;
+  flex-shrink: 0;
+  width: 49px;
+}
+
+.sidebarDrawer {
+  width: 300px;
+  flex-shrink: 0;
+  min-height: 0;
+  background: var(--card-bg-color);
+}
+
+/* The tab's tools and the settings take more room than a list of queries */
+.sidebarDrawerWide {
+  width: min(480px, 45vw);
+}
+
+/*
+ * On phones the drawer covers the whole width, rail included, instead of leaving the tabs area a
+ * sliver: it closes from its own header, and an expanded rail floating over it would otherwise
+ * hide most of its list.
+ */
+.sidebarDrawerOverlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: auto;
+  /* Above the expanded rail (21) */
+  z-index: 22;
+}
+
+/*
+ * The tab strip: a tinted band whose bottom rule is an inset shadow, so the selected tab's
+ * background can cover it and merge with the panel below (a border would be clipped away by the
+ * strip's overflow instead).
+ */
+.tabBar {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  flex-shrink: 0;
+  background: var(--card-bg2-color);
+  box-shadow: inset 0 -1px 0 var(--card-border-color);
+}
+
+/* Bleed buttons paint the card background, which reads as white boxes on the tinted strip */
+.tabBar [data-ui='Button']:not(:hover) {
+  background-color: transparent;
+}
+
+/* The reorderable list of tabs (a motion Reorder.Group rendered as a div) */
+.tabList {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+}
+
+/* The draggable wrapper around each tab; motion positions it while dragging and reordering */
+.tabItem {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+}
+
+.tabItem[data-dragging='true'] {
+  z-index: 1;
+}
+
+.tab {
+  position: relative;
+  flex-shrink: 0;
+  max-width: 240px;
+  margin-top: 4px;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+  transition: background-color 100ms;
+}
+
+.tab:hover {
+  background: var(--card-muted-bg-color);
+}
+
+.tab[data-selected='true'] {
+  background: var(--card-bg-color);
+  border-color: var(--card-border-color);
+}
+
+.tabItem[data-dragging='true'] .tab {
+  box-shadow: 0 2px 6px var(--card-shadow-umbra-color);
+}
+
+.tabTitleButton {
+  min-width: 0;
+  flex-shrink: 1;
+  overflow: hidden;
+}
+
+.tabCloseButton {
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 100ms;
+}
+
+.tab:hover .tabCloseButton,
+.tab:focus-within .tabCloseButton,
+.tab[data-selected='true'] .tabCloseButton {
+  opacity: 1;
+}
+
+.tabTitleInput {
+  min-width: 120px;
+}
+
+.resultContainer {
+  position: relative;
+  flex: 1 1 0%;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+.codeBlock {
+  max-height: 50vh;
+  overflow: auto;
+}
+
+/*
+ * Single-line, ellipsized query preview. @sanity/ui's Code trims its line box with
+ * pseudo-elements, so the ellipsis is applied to a wrapper with the code rendered inline.
+ */
+.previewCode {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.previewCode pre,
+.previewCode code {
+  display: inline;
+  white-space: inherit;
+}
+
+.previewCode pre::before,
+.previewCode pre::after {
+  content: none;
+}
+
+/* A lint finding is a full-width button that reads as a list row */
+.lintFindingButton {
+  display: block;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lintFindingButton:hover {
+  background: var(--card-muted-bg-color);
+}
+
+/* A flex item whose content truncates instead of widening it past the row */
+.shrinkable {
+  min-width: 0;
+}
+
+/* A bleed button holding a stack of texts that must truncate rather than overflow the list */
+.listItemButton {
+  min-width: 0;
+}
+
+.listItemButton [data-ui='Box'],
+.listItemButton [data-ui='Flex'] {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.listItemButton > [data-ui='Box'] {
+  width: 100%;
+}

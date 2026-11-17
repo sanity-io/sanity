@@ -60,7 +60,7 @@ describe('createWeightedSearch', () => {
       }),
     )
 
-    expect(client.withConfig).toHaveBeenCalledWith({apiVersion: 'X'})
+    expect(client.withConfig).toHaveBeenCalledWith({apiVersion: 'v2025-08-18'})
 
     const versionedClient = (client.withConfig as Mock).mock.results.at(-1)?.value as {
       observable: {fetch: Mock}

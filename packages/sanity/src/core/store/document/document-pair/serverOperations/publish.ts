@@ -3,7 +3,7 @@ import {type OperationImpl, type PublishOptions} from '../operations/types'
 import {actionsApiClient} from '../utils/actionsApiClient'
 import {assertNotVariantVersion} from '../utils/assertNotVariantVersion'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
-import {variantActionsApiClient} from '../utils/variantActionsApiClient'
+import {variantsApiClient} from '../utils/variantsApiClient'
 
 type DisabledReason = 'LIVE_EDIT_ENABLED' | 'ALREADY_PUBLISHED' | 'NO_CHANGES' | 'NOT_PUBLISHABLE'
 
@@ -58,7 +58,7 @@ export const publish: OperationImpl<[options?: PublishOptions], DisabledReason> 
       // `ifSourceRevisionId` is still omitted: the deployed action rejects it
       // (`json: unknown field`).
       // TODO(SAPP): send `ifSourceRevisionId: snapshots.version?._rev` once the action supports it.
-      return variantActionsApiClient(client).observable.action(
+      return variantsApiClient(client).observable.action(
         {
           actionType: 'sanity.action.document.variant.publish',
           publishedId: idPair.publishedId,

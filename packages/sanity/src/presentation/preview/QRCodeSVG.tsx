@@ -256,6 +256,5 @@ function QRCodeSVGComponent(props: QRProps) {
   )
 }
 const QRCodeSVG = memo(QRCodeSVGComponent)
-QRCodeSVG.displayName = 'Memo(QRCodeSVG)'
 
 export default QRCodeSVG

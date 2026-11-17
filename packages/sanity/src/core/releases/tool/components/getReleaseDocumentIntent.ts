@@ -1,6 +1,7 @@
 import {type ReleaseState} from '@sanity/client'
 
 import {getPublishedId} from '../../../util/draftUtils'
+import {encodeVariantLinkParam} from '../../../variants/util/variantSelection'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
 
 const isArchivedRelease = (releaseState: ReleaseState | undefined) =>
@@ -13,7 +14,7 @@ interface ReleaseDocumentIntentOptions {
   releaseState?: ReleaseState
   documentRevision?: string
   isCardinalityOneRelease?: boolean
-  /** Short variant id for the sticky `variant` search param. */
+  /** Variant id. Written on the link as `variant:<shortId>`. */
   variantId?: string
   /** Optional field path (stringified) to focus when the document opens. */
   path?: string
@@ -61,13 +62,22 @@ export function getReleaseDocumentIntent({
     }
   }
 
-  const searchParams: [string, string][] | undefined =
-    isCardinalityOneRelease || isArchivedRelease(releaseState)
-      ? undefined
-      : [
-          ...(variantId ? [['variant', variantId] as [string, string]] : []),
-          ['perspective', releaseState === 'published' ? 'published' : releaseName],
-        ]
+  const variantSearchParams: [string, string][] = variantId
+    ? [['variant', encodeVariantLinkParam(variantId)]]
+    : []
+
+  let searchParams: [string, string][] | undefined
+  if (isArchivedRelease(releaseState)) {
+    searchParams = undefined
+  } else if (isCardinalityOneRelease) {
+    // The scheduled draft perspective comes from the `scheduledDraft` param, only the variant is sticky.
+    searchParams = variantId ? variantSearchParams : undefined
+  } else {
+    searchParams = [
+      ...variantSearchParams,
+      ['perspective', releaseState === 'published' ? 'published' : releaseName],
+    ]
+  }
 
   return {
     params: {

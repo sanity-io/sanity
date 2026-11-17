@@ -163,7 +163,7 @@ describe('ReleaseDocumentPreview', () => {
     // @ts-expect-error -- pre-existing, fix later
     const searchParams = JSON.parse(link.getAttribute('data-search-params'))
     expect(searchParams).toEqual([
-      ['variant', 'alpha-audience'],
+      ['variant', 'variant:alpha-audience'],
       ['perspective', 'rActive'],
     ])
   })
@@ -181,6 +181,23 @@ describe('ReleaseDocumentPreview', () => {
         documentId: 'versions.rActive.doc123',
         documentType: 'post',
         perspectiveStack: ['rActive'],
+      })
+    })
+
+    it('resolves the version of a variant through that variant', async () => {
+      await renderTest({
+        documentId: 'versions.buz.doc123',
+        documentTypeName: 'post',
+        releaseId: activeScheduledRelease._id,
+        releaseState: 'active',
+        variantId: 'alpha-audience',
+      })
+
+      expect(useDocumentPreviewValues).toHaveBeenLastCalledWith({
+        documentId: 'versions.buz.doc123',
+        documentType: 'post',
+        perspectiveStack: ['rActive'],
+        variant: 'alpha-audience',
       })
     })
 

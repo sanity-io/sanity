@@ -1,5 +1,5 @@
 import type {PortableTextMemberSchemaTypes} from '@portabletext/sanity-bridge'
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 /**
  * Context for Sanity-specific schema types for Portable Text.
@@ -10,7 +10,4 @@ import {createContext} from 'sanity/_createContext'
  * @internal
  */
 export const PortableTextMemberSchemaTypesContext =
-  createContext<PortableTextMemberSchemaTypes | null>(
-    'sanity/_singletons/context/portable-text-member-schema-types',
-    null,
-  )
+  createContext<PortableTextMemberSchemaTypes | null>(null)

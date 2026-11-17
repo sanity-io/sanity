@@ -7,7 +7,8 @@ import {
 } from '@sanity/client'
 import pMap from 'p-map'
 
-import {type PortableTextBlock, type PortableTextMarkdownBlock} from './portabletext-markdown/types'
+import {hoistInlineImages} from './hoistInlineImages'
+import {type PortableTextMarkdownBlock} from './portabletext-markdown/types'
 
 export type ClientLike = {assets: {upload: SanityClient['assets']['upload']}}
 
@@ -16,10 +17,12 @@ export async function uploadImages(
   blocks: PortableTextMarkdownBlock[],
   options: {dryRun?: boolean},
 ) {
-  return pMap(blocks, async (block) => {
-    if (block._type === 'block') {
-      return uploadInlineImages(client, block, {dryRun: options.dryRun})
-    }
+  // The changelog schema has no inline images, so an image that markdown put
+  // inside a paragraph becomes a block-level image before it is uploaded.
+  const blockLevel = blocks.flatMap((block): PortableTextMarkdownBlock[] =>
+    block._type === 'block' ? hoistInlineImages(block) : [block],
+  )
+  return pMap(blockLevel, async (block) => {
     if (block._type !== 'image') {
       return block
     }
@@ -43,39 +46,6 @@ export async function uploadImages(
       _key: block._key,
     }
   })
-}
-
-async function uploadInlineImages(
-  client: ClientLike,
-  block: PortableTextBlock,
-  {dryRun}: {dryRun?: boolean},
-) {
-  const children = await pMap(block.children, async (span) => {
-    if (span._type === 'image') {
-      let asset = {_id: 'placehoder'}
-      if (!dryRun) {
-        asset = await uploadImage(client, span.src, {
-          preserveFilename: false,
-          tag: 'release-note-image',
-          source: {
-            id: span._key,
-            name: 'studio-release-automation',
-            url: span.src,
-          },
-        })
-      }
-      return {
-        _type: 'image' as const,
-        asset: {_ref: asset._id, _type: 'reference'},
-        _key: span._key,
-      }
-    }
-    return span
-  })
-  return {
-    ...block,
-    children,
-  }
 }
 
 async function uploadImage(

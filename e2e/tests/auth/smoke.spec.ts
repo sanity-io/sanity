@@ -1,13 +1,11 @@
 // oxlint-disable-next-line no-restricted-imports -- auth tests use raw Playwright (no studio-test fixtures)
 import {expect, test} from '@playwright/test'
 
-import {watchForStudioErrors} from '../../helpers/studioErrors'
+import {watchEachTestForStudioErrors} from '../../helpers/studioErrors'
 import {BASE_URL, setupMockAuth} from './helpers'
 
 test.describe('Auth smoke test', () => {
-  test.beforeEach(async ({context}) => {
-    watchForStudioErrors(context)
-  })
+  watchEachTestForStudioErrors(test)
 
   test('studio loads with mocked auth', async ({context}) => {
     const page = await context.newPage()

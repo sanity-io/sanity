@@ -1,11 +1,8 @@
-import {createContext} from 'sanity/_createContext'
+import {createContext} from 'react'
 
 import type {UserApplicationCache} from '../../core/store/userApplications/userApplicationCache'
 
 /**
  * @internal
  */
-export const UserApplicationCacheContext = createContext<UserApplicationCache | null>(
-  'sanity/_singletons/context/user-application-cache',
-  null,
-)
+export const UserApplicationCacheContext = createContext<UserApplicationCache | null>(null)

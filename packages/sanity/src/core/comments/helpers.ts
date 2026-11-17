@@ -1,6 +1,6 @@
 import {isPortableTextSpan, isPortableTextTextBlock, type Path} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import isEqual from 'lodash-es/isEqual.js'
+import {dequal as isEqual} from 'dequal/lite'
 import {useMemo, useState} from 'react'
 
 import {type CommentContext, type CommentDocument, type CommentMessage} from './types'

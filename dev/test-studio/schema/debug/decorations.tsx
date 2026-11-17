@@ -1,13 +1,15 @@
 import {ConfettiIcon} from '@sanity/icons/Confetti'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {defineField, defineType} from 'sanity'
+import {Icon, Text} from 'ui5'
 
 export function Decoration({title}: {title: string}) {
   return (
     <Card padding={2} paddingY={3} radius={2} border>
-      <Text>
-        <ConfettiIcon />
-        {'  '} {title} {'  '} <ConfettiIcon />
+      <Text trim={true}>
+        <Icon icon={ConfettiIcon} style={{margin: '-0.4375rem'}} />
+        {'  '} {title} {'  '}
+        <Icon icon={ConfettiIcon} style={{margin: '-0.4375rem'}} />
       </Text>
     </Card>
   )

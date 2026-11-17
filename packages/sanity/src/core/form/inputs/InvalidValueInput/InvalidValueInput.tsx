@@ -1,7 +1,8 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import isPlainObject from 'lodash-es/isPlainObject.js'
 import {useCallback, useImperativeHandle, useMemo, type RefAttributes} from 'react'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {isDev} from '../../../environment'
@@ -78,25 +79,30 @@ export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focu
   }
 
   const suffix = (
-    <Stack padding={2}>
+    <Flex padding={2} flexDirection="column">
       <Button
         onClick={handleClearClick}
         tone="critical"
         text={t('inputs.invalid-value.reset-button.text')}
       />
-    </Stack>
+    </Flex>
   )
 
   return (
     <Alert status="error" suffix={suffix} title={t('inputs.invalid-value.title')}>
-      <Text as="p" muted size={1}>
+      <Text as="p" muted size={1} trim={true} tone="critical">
         {t('inputs.invalid-value.description')}
       </Text>
 
-      <Details marginTop={4} open={isDev} title={t('inputs.invalid-value.details.title')}>
-        <Stack gap={3}>
+      <Details
+        marginTop={4}
+        open={isDev}
+        title={t('inputs.invalid-value.details.title')}
+        tone="critical"
+      >
+        <VStack gap={3}>
           {validTypes.length === 1 && (
-            <Text as="p" muted size={1}>
+            <Text as="p" muted size={1} trim={true} tone="critical">
               <Translate
                 t={t}
                 i18nKey="inputs.invalid-value.details.description"
@@ -108,29 +114,29 @@ export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focu
           )}
 
           {validTypes.length === 1 && (
-            <Text as="p" muted size={1}>
+            <Text as="p" muted size={1} trim={true} tone="critical">
               {t('inputs.invalid-value.details.possible-reason')}
             </Text>
           )}
 
           {validTypes.length !== 1 && (
-            <Text as="p" muted size={1}>
+            <Text as="p" muted size={1} trim={true} tone="critical">
               {t('inputs.invalid-value.details.multi-type-description')}
             </Text>
           )}
 
           {validTypes.length !== 1 && (
-            <Stack as="ul" gap={2}>
+            <VStack as="ul" gap={2}>
               {validTypes.map((validType) => (
-                <Text key={validType} as="li">
+                <Text key={validType} as="li" trim={true} tone="critical">
                   <code>{validType}</code>
                 </Text>
               ))}
-            </Stack>
+            </VStack>
           )}
 
-          <Stack marginTop={2} gap={2}>
-            <Text size={1} weight="medium">
+          <Flex marginTop={2} gap={2} flexDirection="column">
+            <Text size={1} weight="medium" as="div" trim={true} tone="critical">
               <Translate
                 t={t}
                 i18nKey="inputs.invalid-value.current-type"
@@ -145,10 +151,10 @@ export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focu
                 {JSON.stringify(value, null, 2)}
               </Code>
             </Card>
-          </Stack>
+          </Flex>
 
           {converters.length > 0 && (
-            <Stack gap={1}>
+            <VStack gap={1}>
               {converters.map((converter) => (
                 <ConvertButton
                   key={`${converter.from}-${converter.to}`}
@@ -157,9 +163,9 @@ export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focu
                   value={value}
                 />
               ))}
-            </Stack>
+            </VStack>
           )}
-        </Stack>
+        </VStack>
       </Details>
     </Alert>
   )

@@ -1,5 +1,7 @@
-import {type HTMLProps, type ReactNode, useCallback, type RefAttributes} from 'react'
-import {StateLink, useRouterState} from 'sanity/router'
+import {type HTMLProps, type ReactNode, useMemo, type RefAttributes} from 'react'
+import {StateLink} from 'sanity/router'
+
+import {useInactiveToolState} from '../../../mountedTools/useInactiveToolState'
 
 /**
  * @hidden
@@ -18,15 +20,17 @@ export function ToolLink(
     RefAttributes<HTMLAnchorElement>,
 ) {
   const {ref, name, ...rest} = props
-  const state = useRouterState(
-    useCallback(
-      () => ({
+  // A tool kept mounted while inactive (`beta.reactActivityMode`) links back to the
+  // state it was last at, so returning to it restores its URL rather than its start page.
+  const inactiveToolState = useInactiveToolState(name)
+  const state = useMemo(
+    () =>
+      inactiveToolState ?? {
         tool: name,
         // make sure to clear tool state when navigating to another tool
         [name]: undefined,
-      }),
-      [name],
-    ),
+      },
+    [inactiveToolState, name],
   )
 
   return <StateLink state={state} {...rest} ref={ref} />

@@ -1,9 +1,10 @@
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Flex, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
+import {Text, Flex, Icon} from 'ui5'
 
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -18,6 +19,12 @@ import {ReleaseDocumentsCounter} from './columnCells/ReleaseDocumentsCounter'
 import {ReleaseNameCell} from './columnCells/ReleaseName'
 import {type Mode} from './queryParamUtils'
 import {type TableRelease} from './ReleasesOverview'
+
+export const RELEASES_OVERVIEW_TITLE_COLUMN_MIN_WIDTH = 200
+
+const RELEASES_OVERVIEW_TITLE_COLUMN_STYLE = {
+  minWidth: RELEASES_OVERVIEW_TITLE_COLUMN_MIN_WIDTH,
+} as const
 
 const enableColumnFormMode =
   (currentMode: Mode) => (column: Column<TableRelease>, expectedMode: Mode | 'all') => {
@@ -39,16 +46,15 @@ export const releasesOverviewColumnDefs: (
         id: 'metadata.title',
         sorting: true,
         width: null,
-        style: {minWidth: 'min(50%, calc(100vw - 80px))', maxWidth: 'min(50%, calc(100vw - 80px))'},
+        style: RELEASES_OVERVIEW_TITLE_COLUMN_STYLE,
         header: (props) => (
           <Flex
             {...props.headerProps}
-            flex={1}
+            flexBasis="0%"
+            flexGrow={1}
             paddingLeft={6}
-            width={3}
             paddingRight={2}
             paddingY={3}
-            sizing="border"
           >
             <Headers.SortHeaderButton {...props} text={t('table-header.title')} />
           </Flex>
@@ -71,7 +77,7 @@ export const releasesOverviewColumnDefs: (
         },
         width: 280,
         header: (props) => (
-          <Flex {...props.headerProps} paddingY={3} sizing="border">
+          <Flex {...props.headerProps} paddingY={3}>
             <Headers.SortHeaderButton text={t('table-header.when')} {...props} />
           </Flex>
         ),
@@ -79,7 +85,7 @@ export const releasesOverviewColumnDefs: (
           if (release.isLoading) return null
 
           return (
-            <Flex {...cellProps} align="center" paddingX={2} paddingY={3} gap={2} sizing="border">
+            <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3} gap={2}>
               <ReleaseTime release={release} />
             </Flex>
           )
@@ -118,13 +124,13 @@ export const releasesOverviewColumnDefs: (
         },
         width: 250,
         header: (props) => (
-          <Flex {...props.headerProps} paddingY={3} sizing="border">
+          <Flex {...props.headerProps} paddingY={3}>
             <Headers.SortHeaderButton text={t('table-header.published-at')} {...props} />
           </Flex>
         ),
         cell: ({cellProps, datum: release}) => (
-          <Flex {...cellProps} align="center" paddingX={2} paddingY={3} gap={2} sizing="border">
-            <Text muted size={1}>
+          <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3} gap={2}>
+            <Text muted size={1} as="div" trim={true}>
               {release.publishedAt ? (
                 // Assuming releases are not updated after archiving.
                 // If we realize this is miss leading for customers and they have edited the release after archiving
@@ -153,13 +159,13 @@ export const releasesOverviewColumnDefs: (
         },
         width: 250,
         header: (props) => (
-          <Flex {...props.headerProps} paddingY={3} sizing="border">
+          <Flex {...props.headerProps} paddingY={3}>
             <Headers.SortHeaderButton text={t('table-header.archivedAt')} {...props} />
           </Flex>
         ),
         cell: ({cellProps, datum: release}) => (
-          <Flex {...cellProps} align="center" paddingX={2} paddingY={3} gap={2} sizing="border">
-            <Text muted size={1}>
+          <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3} gap={2}>
+            <Text muted size={1} as="div" trim={true}>
               {release.state === 'archived' ? (
                 // Assuming releases are not updated after archiving.
                 // If we later realize this is miss leading for customers and they have edited the release after archiving
@@ -180,15 +186,15 @@ export const releasesOverviewColumnDefs: (
         sorting: true,
         width: 150,
         header: (props) => (
-          <Flex {...props.headerProps} paddingY={3} sizing="border">
+          <Flex {...props.headerProps} paddingY={3}>
             <Headers.SortHeaderButton text={t('table-header.edited')} {...props} />
           </Flex>
         ),
         cell: ({datum: {documentsMetadata, _updatedAt}, cellProps}) => {
           const updatedAtDate = documentsMetadata?.updatedAt ?? _updatedAt
           return (
-            <Flex {...cellProps} align="center" gap={2} paddingX={2} paddingY={3} sizing="border">
-              <Text muted size={1}>
+            <Flex {...cellProps} alignItems="center" gap={2} paddingX={2} paddingY={3}>
+              <Text muted size={1} as="div" trim={true}>
                 {updatedAtDate ? (
                   <RelativeTime time={updatedAtDate} useTemporalPhrase minimal />
                 ) : (
@@ -206,7 +212,7 @@ export const releasesOverviewColumnDefs: (
         id: 'error',
         sorting: false,
         width: 40,
-        header: ({headerProps}) => <Flex {...headerProps} paddingY={3} sizing="border" />,
+        header: ({headerProps}) => <Flex {...headerProps} paddingY={3} />,
         cell: ({datum, cellProps}) => {
           const {error, state} = datum
           const hasError = typeof error !== 'undefined' && state === 'active'
@@ -215,25 +221,42 @@ export const releasesOverviewColumnDefs: (
           return (
             <Flex
               {...cellProps}
-              align="center"
+              alignItems="center"
               gap={2}
               paddingX={2}
               paddingY={3}
-              sizing="border"
               data-testid="error-indicator"
             >
               {hasError && (
-                <Tooltip content={<Text size={1}>{t('failed-publish-title')}</Text>} portal>
-                  <Text size={1}>
-                    <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-                  </Text>
+                <Tooltip
+                  content={
+                    <Text size={1} as="div" trim={true}>
+                      {t('failed-publish-title')}
+                    </Text>
+                  }
+                  portal
+                >
+                  <Icon
+                    size={1}
+                    style={{margin: '-0.375rem'}}
+                    icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
+                  />
                 </Tooltip>
               )}
               {hasWarning && (
-                <Tooltip content={<Text size={1}>{t('passed-intended-publish-date')}</Text>} portal>
-                  <Text size={1}>
-                    <ToneIcon icon={WarningOutlineIcon} tone="caution" />
-                  </Text>
+                <Tooltip
+                  content={
+                    <Text size={1} as="div" trim={true}>
+                      {t('passed-intended-publish-date')}
+                    </Text>
+                  }
+                  portal
+                >
+                  <Icon
+                    size={1}
+                    style={{margin: '-0.375rem'}}
+                    icon={<ToneIcon icon={WarningOutlineIcon} tone="caution" />}
+                  />
                 </Tooltip>
               )}
             </Flex>
@@ -248,7 +271,7 @@ export const releasesOverviewColumnDefs: (
         sorting: false,
         width: 120,
         header: ({headerProps}) => (
-          <Flex {...headerProps} paddingY={3} sizing="border">
+          <Flex {...headerProps} paddingY={3}>
             <Headers.BasicHeader text={t('table-header.documents')} />
           </Flex>
         ),
@@ -257,7 +280,7 @@ export const releasesOverviewColumnDefs: (
           cellProps,
         }) => {
           return (
-            <Flex {...cellProps} align="center" paddingX={2} paddingY={3} sizing="border" gap={2}>
+            <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3} gap={2}>
               {state === 'active' && <ReleaseColumnValidationLoading releaseId={_id} />}
 
               {/**
@@ -276,9 +299,9 @@ export const releasesOverviewColumnDefs: (
                   }}
                 >
                   <Flex gap={2}>
-                    <Text size={1}>
+                    <Text size={1} as="div" trim={true}>
                       <Tooltip content={t('summary.all-documents-validated')}>
-                        <CheckmarkCircleIcon />
+                        <Icon size={1} style={{margin: '-0.375rem'}} icon={CheckmarkCircleIcon} />
                       </Tooltip>
                     </Text>
                   </Flex>

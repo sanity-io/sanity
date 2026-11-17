@@ -4,20 +4,13 @@ import {DocumentIcon} from '@sanity/icons/Document'
 import {LinkIcon} from '@sanity/icons/Link'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type Asset as AssetType} from '@sanity/types'
-import {
-  Box,
-  // oxlint-disable-next-line no-restricted-imports
-  Button,
-  Card,
-  Flex,
-  Grid,
-  Stack,
-  Text,
-} from '@sanity/ui'
+// oxlint-disable-next-line no-restricted-imports
+import {Button, Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import {css, styled} from 'styled-components'
+import {Text, Flex, Grid, Box, VStack, Icon} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {getHumanFriendlyBytes} from '../../../../field/types/file/diff/helpers'
@@ -49,16 +42,25 @@ const CardIconWrapper = styled.span`
 // These are here because using vanilla UI components caused a type issue inside of styled-components
 const CustomFlex = styled(Flex)``
 
-const CustomCard = styled(Card)<RowProps>`
+interface SelectableStyleProps {
+  $isSelected?: boolean
+}
+
+const CustomCard = styled(Card)<SelectableStyleProps>`
   ${(props) =>
-    props.isSelected &&
+    props.$isSelected &&
     css`
       --card-muted-fg-color: var(--card-bg-color);
       --card-fg-color: var(--card-bg-color);
+
+      [data-ui='Text'] {
+        --text-color: var(--card-bg-color);
+        --text-color-muted: var(--card-bg-color);
+      }
     `}
 `
 
-const RowButton = styled(Button)<RowProps>`
+const RowButton = styled(Button)<SelectableStyleProps>`
   box-shadow: none;
   min-width: 0;
   cursor: pointer;
@@ -82,13 +84,18 @@ const RowButton = styled(Button)<RowProps>`
   }
 
   ${(props) =>
-    props.isSelected &&
+    props.$isSelected &&
     css`
       --card-muted-fg-color: var(--card-bg-color);
       --card-fg-color: var(--card-bg-color);
 
       &:before {
         background-color: var(--card-focus-ring-color);
+      }
+
+      [data-ui='Text'] {
+        --text-color: var(--card-bg-color);
+        --text-color-muted: var(--card-bg-color);
       }
 
       ${CardIconWrapper} {
@@ -102,7 +109,7 @@ const RowButton = styled(Button)<RowProps>`
     `}
 
   ${(props) =>
-    !props.isSelected &&
+    !props.$isSelected &&
     css`
       &:hover:before {
         background-color: var(--card-bg-color);
@@ -253,7 +260,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
     return (
       <Card paddingBottom={2} style={STYLES_ROW_CARD}>
         <Grid
-          gridTemplateColumns={4}
+          gridTemplateColumns="repeat(4, minmax(0, 1fr))"
           gap={1}
           style={{
             position: 'relative',
@@ -262,26 +269,45 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
           }}
         >
           <RowButton
-            asset={asset}
             mode="bleed"
             padding={0}
             data-id={_id}
             onClick={onClick}
             paddingY={1}
             radius={2}
+            $isSelected={isSelected}
           >
-            <Flex gap={2} flex={2} align="center">
+            <Flex gap={2} flexBasis="0%" flexGrow={2} alignItems="center">
               <Card as={CardIconWrapper} padding={2} tone="transparent" radius={2}>
-                <Text muted size={2} style={STYLES_ICON_CARD}>
-                  <DocumentIcon />
-                </Text>
+                <Icon
+                  muted
+                  size={2}
+                  icon={DocumentIcon}
+                  style={{
+                    ...STYLES_ICON_CARD,
+                    margin: '-0.4375rem',
+                    ...(isSelected && {color: 'var(--card-bg-color)'}),
+                  }}
+                />
               </Card>
-              <Text size={1} align="left" textOverflow="ellipsis" style={STYLES_BUTTON_TEXT}>
+              <Text
+                size={1}
+                align="left"
+                truncate={1}
+                style={STYLES_BUTTON_TEXT}
+                as="div"
+                trim={true}
+              >
                 {originalFilename}
               </Text>
             </Flex>
           </RowButton>
-          <Flex justify="flex-end" align="center" paddingRight={1} style={STYLES_ASSETMENU_WRAPPER}>
+          <Flex
+            justifyContent="flex-end"
+            alignItems="center"
+            paddingRight={1}
+            style={STYLES_ASSETMENU_WRAPPER}
+          >
             <Button
               mode="bleed"
               fontSize={1}
@@ -293,33 +319,33 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
         </Grid>
         {isOpen && (
           <>
-            <Grid marginTop={3} gridTemplateColumns={3} gap={1}>
-              <Stack gap={2}>
-                <Text size={1} muted weight="medium">
+            <Grid marginTop={3} gridTemplateColumns="repeat(3, minmax(0, 1fr))" gap={1}>
+              <VStack gap={2}>
+                <Text size={1} muted weight="medium" as="div" trim={true}>
                   {t('asset-source.file.asset-list.header.size')}
                 </Text>
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {formattedSize}
                 </Text>
-              </Stack>
-              <Stack gap={2}>
-                <Text size={1} muted weight="medium">
+              </VStack>
+              <VStack gap={2}>
+                <Text size={1} muted weight="medium" as="div" trim={true}>
                   {t('asset-source.file.asset-list.header.type')}
                 </Text>
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {formattedMimeType}
                 </Text>
-              </Stack>
-              <Stack gap={2}>
-                <Text size={1} muted weight="medium">
+              </VStack>
+              <VStack gap={2}>
+                <Text size={1} muted weight="medium" as="div" trim={true}>
                   {t('asset-source.file.asset-list.header.date-added')}
                 </Text>
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {formattedTime}
                 </Text>
-              </Stack>
+              </VStack>
             </Grid>
-            <Stack gap={2} marginTop={3}>
+            <Flex gap={2} marginTop={3} flexDirection="column">
               <Button
                 fontSize={1}
                 tone="default"
@@ -343,7 +369,7 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
                 )}
                 onClick={handleConfirmDelete}
               />
-            </Stack>
+            </Flex>
           </>
         )}
         {usageDialog || deleteDialog}
@@ -353,16 +379,15 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
 
   return (
     <CustomCard
-      asset={asset}
       paddingBottom={1}
       style={STYLES_ROW_CARD}
       radius={0}
       overflow={'hidden'}
-      isSelected={isSelected}
-      aria-selected="true"
+      $isSelected={isSelected}
+      aria-selected={Boolean(isSelected)}
     >
       <Grid
-        gridTemplateColumns={4}
+        gridTemplateColumns="repeat(4, minmax(0, 1fr))"
         gap={1}
         data-id={_id}
         paddingY={1}
@@ -373,23 +398,23 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
         }}
       >
         <RowButton
-          asset={asset}
           mode="bleed"
           data-id={_id}
           onClick={onClick}
           padding={0}
           onKeyPress={onKeyPress}
-          title={t('asset-source.file.asset-list.item.select-file-tooltip', {
+          title={t('asset-source.file.asset-list.action.select-file.title', {
             filename: originalFilename,
           })}
-          isSelected={isSelected}
+          $isSelected={isSelected}
           radius={2}
         >
           <CustomFlex
             gap={2}
-            flex={2}
+            flexBasis="0%"
+            flexGrow={2}
             paddingRight={1}
-            align="center"
+            alignItems="center"
             onClick={onClick}
             onKeyPress={onKeyPress}
             data-id={_id}
@@ -401,45 +426,62 @@ export const AssetRow = (props: RowProps): React.JSX.Element => {
               radius={2}
               style={STYLES_ICON_CARD}
             >
-              <Text muted size={2}>
-                <DocumentIcon />
-              </Text>
+              <Icon
+                muted
+                size={2}
+                icon={DocumentIcon}
+                style={{margin: '-0.4375rem', ...(isSelected && {color: 'var(--card-bg-color)'})}}
+              />
             </Card>
             {showTooltip && (
               <Tooltip content={originalFilename}>
-                <Text size={1} align="left" textOverflow="ellipsis" style={STYLES_BUTTON_TEXT}>
+                <Text
+                  size={1}
+                  align="left"
+                  truncate={1}
+                  style={STYLES_BUTTON_TEXT}
+                  as="div"
+                  trim={true}
+                >
                   {originalFilename}
                 </Text>
               </Tooltip>
             )}
 
             {!showTooltip && (
-              <Text size={1} align="left" textOverflow="ellipsis" style={STYLES_BUTTON_TEXT}>
+              <Text
+                size={1}
+                align="left"
+                truncate={1}
+                style={STYLES_BUTTON_TEXT}
+                as="div"
+                trim={true}
+              >
                 {originalFilename}
               </Text>
             )}
           </CustomFlex>
         </RowButton>
-        <CustomFlex align="center">
-          <Text size={1} muted>
+        <CustomFlex alignItems="center">
+          <Text size={1} muted as="div" trim={true}>
             {formattedSize}
           </Text>
         </CustomFlex>
-        <CustomFlex align="center">
+        <CustomFlex alignItems="center">
           <Box>
-            <TypeText size={1} muted textOverflow="ellipsis">
+            <TypeText size={1} muted truncate={1} forwardedAs="div" trim={true}>
               {formattedMimeType}
             </TypeText>
           </Box>
         </CustomFlex>
-        <CustomFlex align="center">
-          <Text as="time" size={1} muted dateTime={_createdAt}>
+        <CustomFlex alignItems="center">
+          <Text as="time" size={1} muted dateTime={_createdAt} trim={true}>
             {formattedTime}
           </Text>
         </CustomFlex>
         <CustomFlex
-          justify="flex-end"
-          align="center"
+          justifyContent="flex-end"
+          alignItems="center"
           paddingX={1}
           paddingY={1}
           style={STYLES_ASSETMENU_WRAPPER}

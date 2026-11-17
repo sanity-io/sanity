@@ -1,0 +1,1476 @@
+[
+  {
+    "file": "packages/@sanity/mutator/src/document/BufferedDocument.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "doc",
+    "reason": "Condition only selects which debug message is logged."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/BufferedDocument.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n      debug('Document state reset to revision %s', doc._rev)\n    }",
+    "reason": "Block contains only a debug call."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/BufferedDocument.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n      debug('Document state reset to being deleted')\n    }",
+    "reason": "Block contains only a debug call."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "ArrayDeclaration",
+    "replacement": "[\"Stryker was here\"]",
+    "originalSnippet": "[]",
+    "contextHash": "ee3bc97af2",
+    "reason": "Constructor calls reset(), which reassigns incoming, submitted and pending to [] before any read."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "ArrayDeclaration",
+    "replacement": "[\"Stryker was here\"]",
+    "originalSnippet": "[]",
+    "contextHash": "9806375921",
+    "reason": "Constructor calls reset(), which reassigns incoming, submitted and pending to [] before any read."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "ArrayDeclaration",
+    "replacement": "[\"Stryker was here\"]",
+    "originalSnippet": "[]",
+    "contextHash": "48bcc99c33",
+    "reason": "Constructor calls reset(), which reassigns incoming, submitted and pending to [] before any read."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "CallExpression",
+    "replacement": ";",
+    "originalSnippet": "this.reset(doc)",
+    "reason": "Without reset the field initializers already give empty arrays and null inconsistentAt; constructor sets HEAD and EDGE; considerIncoming on empty incoming is a no-op."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "CallExpression",
+    "replacement": ";",
+    "originalSnippet": "this.considerIncoming()",
+    "contextHash": "a5b819630c",
+    "reason": "reset empties incoming just before, so considerIncoming finds no mutation, sets nothing and never rebases."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "CallExpression",
+    "replacement": ";",
+    "originalSnippet": "this.updateConsistencyFlag()",
+    "contextHash": "0e869c2c24",
+    "reason": "reset already set inconsistentAt null and emptied all arrays, so updateConsistencyFlag sees consistent-to-consistent and does nothing."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "this.incoming.length > 0 && debug.enabled",
+    "reason": "Condition and block only gate a debug call; the map over transactionId getters has no side effects."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "this.incoming.length > 0 && debug.enabled",
+    "reason": "Condition and block only gate a debug call; the map over transactionId getters has no side effects."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "LogicalOperator",
+    "replacement": "this.incoming.length > 0 || debug.enabled",
+    "originalSnippet": "this.incoming.length > 0 && debug.enabled",
+    "reason": "Condition and block only gate a debug call; the map over transactionId getters has no side effects."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "this.incoming.length > 0",
+    "reason": "Condition and block only gate a debug call; the map over transactionId getters has no side effects."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "EqualityOperator",
+    "replacement": "this.incoming.length >= 0",
+    "originalSnippet": "this.incoming.length > 0",
+    "reason": "Condition and block only gate a debug call; the map over transactionId getters has no side effects."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "EqualityOperator",
+    "replacement": "this.incoming.length <= 0",
+    "originalSnippet": "this.incoming.length > 0",
+    "reason": "Condition and block only gate a debug call; the map over transactionId getters has no side effects."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n      debug(\n        'Unable to apply mutations %s',\n        this.incoming.map((mut) => mut.transactionId).join(', '),\n      )\n    }",
+    "reason": "Condition and block only gate a debug call; the map over transactionId getters has no side effects."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "isConsistent",
+    "contextHash": "577d142451",
+    "reason": "Condition only selects which debug message is logged; onConsistencyChanged is called after the if either way."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "isConsistent",
+    "contextHash": "577d142451",
+    "reason": "Condition only selects which debug message is logged; onConsistencyChanged is called after the if either way."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n        debug('Buffered document is inconsistent')\n      }",
+    "reason": "Block contains only a debug call."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n        debug('Buffered document is consistent')\n      }",
+    "reason": "Block contains only a debug call."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "debug.enabled",
+    "reason": "debug.enabled only gates debug calls; their template arguments read arrays without side effects."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "debug.enabled",
+    "reason": "debug.enabled only gates debug calls; their template arguments read arrays without side effects."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n        debug(\n          `Incoming mutation ${mut.transactionId} appeared while there were pending or submitted local mutations`,\n        )\n        debug(`Submitted txnIds: ${this.submitted.map((m) => m.transactionId).join(', ')}`)\n        debug(`Pending txnIds: ${this.pending.map((m) => m.transactionId).join(', ')}`)\n        debug(`needRebase === %s`, needRebase)\n      }",
+    "reason": "debug.enabled only gates debug calls; their template arguments read arrays without side effects."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "this.pending.length > 0",
+    "reason": "Line 324 returns when both queues are empty; in this else branch submitted is empty, so pending.length > 0 is always true."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Document.ts",
+    "mutatorName": "EqualityOperator",
+    "replacement": "this.pending.length >= 0",
+    "originalSnippet": "this.pending.length > 0",
+    "contextHash": "9279d90fca",
+    "reason": "Line 324 returns when both queues are empty; in this else branch submitted is empty, so pending.length > 0 is always true."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Mutation.ts",
+    "mutatorName": "OptionalChaining",
+    "replacement": "doc._createdAt",
+    "originalSnippet": "doc?._createdAt",
+    "reason": "getGuaranteedCreatedAt is only called with create, createIfNotExists or createOrReplace, each guarded truthy or defaulted to {}, never nullish."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/Mutation.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "mutation.patch",
+    "reason": "Throws either way; a Mut with no known operation reaches 'query' in undefined and throws TypeError instead of Unsupported mutation."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/SquashingBuffer.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "doc",
+    "reason": "Condition only selects which debug message is logged."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/SquashingBuffer.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n      debug('Reset mutation buffer to rev %s', doc._rev)\n    }",
+    "reason": "Block contains only a debug call."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/SquashingBuffer.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n      debug('Reset mutation buffer state to document being deleted')\n    }",
+    "reason": "Block contains only a debug call."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/SquashingBuffer.ts",
+    "mutatorName": "OptionalChaining",
+    "replacement": "this.PRESTAGE._id",
+    "originalSnippet": "this.PRESTAGE?._id",
+    "reason": "Throws either way; with null PRESTAGE the original stashes the set and Patcher on null throws getAttribute only applies to plain objects."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/document/SquashingBuffer.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n      // If new and old values are equal, we optimise this by deleting the operation\n      // console.log(\"Omitting operation\")\n      op = null\n    }",
+    "reason": "op is initialised to null on line 192, so emptying the block that sets op = null changes nothing."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/arrayToJSONMatchPath.ts",
+    "mutatorName": "Regex",
+    "replacement": "/^[a-z_$]/",
+    "originalSnippet": "/^[a-z_$]+/",
+    "reason": "Regex used only with test(); /^[a-z_$]+/ and /^[a-z_$]/ match exactly the same strings."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/arrayToJSONMatchPath.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "default:",
+    "originalSnippet": "default:\n      return false",
+    "reason": "isPrimitiveValue result is only used as a ternary condition on line 34; undefined and false are both falsy."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/descend.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "!head",
+    "reason": "Throws either way; a null head makes spreadIfUnionHead read null.type. Parser output never yields a null head."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/descend.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n    throw new Error('Head cannot be null')\n  }",
+    "reason": "Throws either way; a null head makes spreadIfUnionHead read null.type. Parser output never yields a null head."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/descend.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "node.type === 'path'",
+    "reason": "For a non-path node splitIfPath gives [node, null] and concatPaths(null, tail) is a deep copy of tail or null, same as tail."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Descender.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "this.head && this.head.isConstraint()",
+    "reason": "Entering the loop with a non-constraint or null head: iterateConstraints returns [this], anyConstraints is false, result stays [this]."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Descender.ts",
+    "mutatorName": "EqualityOperator",
+    "replacement": "i <= length",
+    "originalSnippet": "i < length",
+    "reason": "getIndex(length) returns null on both PlainProbe and ImmutableAccessor, so the extra iteration pushes nothing."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Descender.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "probe.containerType() === 'object'",
+    "reason": "Only primitive probes with attribute constraints reach here; constraintTargetIsSelf is false and testConstraint returns false, giving the same []."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Descender.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "head.constraintTargetIsSelf()",
+    "reason": "Self-target constraint on an object probe: testConstraint returns false for non-primitive probes, so result [] is returned as before."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Descender.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n        // There are no matches for target self ('@') on a plain object\n        return []\n      }",
+    "reason": "Falling through, testConstraint returns false for a self target on an object probe, so result [] is returned anyway."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "this.expr.type === 'constraint'",
+    "contextHash": "b38dbb1677",
+    "reason": "Only caller is testConstraint line 187, after expr.type === constraint is already known, so the check is always true there."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "!probe",
+    "contextHash": "235d8dd472",
+    "reason": "Throws either way; without a probe the next line probe.length() raises a TypeError. Every caller also passes a probe."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n        throw new Error('expandRange() required a probe that was not passed')\n      }",
+    "reason": "Throws either way; without a probe the next line probe.length() raises a TypeError. Every caller also passes a probe."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "LogicalOperator",
+    "replacement": "this.expr.type === 'alias' || this.expr.target === 'self'",
+    "originalSnippet": "this.expr.type === 'alias' && this.expr.target === 'self'",
+    "reason": "Only AliasExpr has a target field and it is always self, so dropping or or-ing the alias check gives the same result."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "this.expr.type === 'alias'",
+    "reason": "Only AliasExpr has a target field and it is always self, so dropping or or-ing the alias check gives the same result."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "this.expr.target === 'self'",
+    "reason": "AliasExpr.target is typed as the literal 'self' and the parser only sets 'self', so the check is always true for aliases."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "LogicalOperator",
+    "replacement": "this.expr.type === 'constraint' && this.expr.lhs.type === 'alias' || this.expr.lhs.target === 'self'",
+    "originalSnippet": "this.expr.type === 'constraint' &&\n      this.expr.lhs.type === 'alias' &&\n      this.expr.lhs.target === 'self'",
+    "reason": "Only called on constraint heads (Descender lines 62, 85 after the line-55 guard); there lhs.target is self only for alias LHS."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "this.expr.type === 'constraint' &&\n      this.expr.lhs.type === 'alias'",
+    "reason": "Only called on constraint heads (Descender lines 62, 85 after the line-55 guard); there lhs.target is self only for alias LHS."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "LogicalOperator",
+    "replacement": "this.expr.type === 'constraint' || this.expr.lhs.type === 'alias'",
+    "originalSnippet": "this.expr.type === 'constraint' &&\n      this.expr.lhs.type === 'alias'",
+    "reason": "Only called on constraint heads (Descender lines 62, 85 after the line-55 guard); there lhs.target is self only for alias LHS."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "this.expr.type === 'constraint'",
+    "contextHash": "399ad0837f",
+    "reason": "Only called on constraint heads (Descender lines 62, 85 after the line-55 guard); there lhs.target is self only for alias LHS."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "this.expr.lhs.type === 'alias'",
+    "reason": "Only called on constraint heads (Descender lines 62, 85 after the line-55 guard); there lhs.target is self only for alias LHS."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "this.expr.lhs.target === 'self'",
+    "reason": "AliasExpr.target is typed as the literal 'self' and the parser only sets 'self', so the check is always true for aliases."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "LogicalOperator",
+    "replacement": "expr.type === 'constraint' && expr.lhs.type === 'alias' || expr.lhs.target === 'self'",
+    "originalSnippet": "expr.type === 'constraint' && expr.lhs.type === 'alias' && expr.lhs.target === 'self'",
+    "reason": "testConstraint only runs on constraints; attribute and path LHS have no target field, so the target self test alone decides."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "expr.type === 'constraint' && expr.lhs.type === 'alias'",
+    "reason": "testConstraint only runs on constraints; attribute and path LHS have no target field, so the target self test alone decides."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "LogicalOperator",
+    "replacement": "expr.type === 'constraint' || expr.lhs.type === 'alias'",
+    "originalSnippet": "expr.type === 'constraint' && expr.lhs.type === 'alias'",
+    "reason": "testConstraint only runs on constraints; attribute and path LHS have no target field, so the target self test alone decides."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "expr.type === 'constraint'",
+    "contextHash": "a1fd40f3c9",
+    "reason": "testConstraint only runs on constraints; attribute and path LHS have no target field, so the target self test alone decides."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "expr.lhs.type === 'alias'",
+    "reason": "testConstraint only runs on constraints; attribute and path LHS have no target field, so the target self test alone decides."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "expr.lhs.target === 'self'",
+    "reason": "AliasExpr.target is typed as the literal 'self' and the parser only sets 'self', so the check is always true for aliases."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "expr.type === 'constraint'",
+    "contextHash": "cd037dfcbc",
+    "reason": "Inside the line-116 branch expr.type is already constraint, so replacing the repeated check with true changes nothing."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "probe.containerType() !== 'object'",
+    "reason": "For a non-object probe the cursor checks on lines 167 and 177 return false for the same probe, so the result is false either way."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n      return false\n    }",
+    "contextHash": "a0adb5db9f",
+    "reason": "For a non-object probe the cursor checks on lines 167 and 177 return false for the same probe, so the result is false either way."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "lhsValue === undefined",
+    "reason": "getAttribute on PlainProbe and ImmutableAccessor returns a probe or null, never undefined, so the undefined check never decides."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "EqualityOperator",
+    "replacement": "range.step <= 0",
+    "originalSnippet": "range.step < 0",
+    "reason": "expandRange line 80 turns a 0 step into 1, so step is never 0 and < 0 equals <= 0."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "this.expr.type === 'attribute'",
+    "contextHash": "1983fa154f",
+    "reason": "Throws either way; a nested-union head on a primitive, eg 'x[[a,b]].c' on {x: 5}, throws here or later in extractAccessors and Patcher."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "!probe",
+    "contextHash": "eb400deac0",
+    "reason": "Throws either way; without a probe the next line probe.length() raises a TypeError. Callers always pass a probe."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Expression.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n    throw new Error('interpretNegativeIndex() must have a probe when < 0')\n  }",
+    "reason": "Throws either way; without a probe the next line probe.length() raises a TypeError. Callers always pass a probe."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/extractAccessors.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "typeof delivery.payload === 'function'",
+    "reason": "Root matcher payload is set to appendResult and every derived Matcher copies parent.payload, so payload is always a function."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/Matcher.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "probe.containerType() === 'object'",
+    "contextHash": "cd336a9e1b",
+    "reason": "Primitive probes return [] from attributeKeys on both probe implementations, so the else branch adds no leads."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/parse.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n    return this.i >= this.length\n  }",
+    "reason": "EOF used at lines 42 and 304. Past the end peek yields undefined, and the parsePath loop breaks via the parseRecursive else."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/parse.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "this.i >= this.length",
+    "reason": "Past the end peek yields undefined, same as null; the parsePath loop then breaks via the parseRecursive else branch."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/parse.ts",
+    "mutatorName": "EqualityOperator",
+    "replacement": "this.i > this.length",
+    "originalSnippet": "this.i >= this.length",
+    "reason": "At i == length peek yields tokens[length] = undefined, same as null; the parsePath loop then breaks via the else branch."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/parse.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "this.EOF()",
+    "reason": "peek returns tokens[i] = undefined at EOF instead of null; probe checks !token and consume runs only after a successful probe."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/parse.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n      return null\n    }",
+    "contextHash": "7dbf202506",
+    "reason": "peek returns tokens[i] = undefined at EOF instead of null; probe checks !token and consume runs only after a successful probe."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/parse.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "token.type === 'identifier'",
+    "reason": "match({type: 'identifier'}) only returns a token whose type is 'identifier', so the check is always true."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/parse.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "quoted.type === 'quoted'",
+    "reason": "match({type: 'quoted', ...}) only returns a token whose type is 'quoted', so the check is always true."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/parse.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "token.type === 'number'",
+    "reason": "match({type: 'number'}) only returns a token whose type is 'number', so the check is always true."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/parse.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "literalString.type === 'quoted'",
+    "reason": "match({type: 'quoted', ...}) only returns a token whose type is 'quoted', so the check is always true."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/parse.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "literalBoolean.type === 'boolean'",
+    "reason": "match({type: 'boolean'}) only returns a token whose type is 'boolean', so the check is always true."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/parse.ts",
+    "mutatorName": "ObjectLiteral",
+    "replacement": "{}",
+    "originalSnippet": "{type: 'comparator'}",
+    "reason": "match({}) consumes any token, but a non-comparator fails the type check on line 226 and i is rewound to start."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/parse.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "binOp.type !== 'comparator'",
+    "reason": "match({type: 'comparator'}) only returns a token whose type is 'comparator', so the check is always false."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/parse.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "!union",
+    "reason": "parseUnion is called right after probing '[' at the same index, so it never returns null and !union is always false."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/tokenize.ts",
+    "mutatorName": "Regex",
+    "replacement": "/[a-zA-Z0-9_]$/",
+    "originalSnippet": "/^[a-zA-Z0-9_]$/",
+    "reason": "attributeCharMatcher is only applied to single characters (lines 120, 124, 177), so the ^ anchor is redundant."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/tokenize.ts",
+    "mutatorName": "Regex",
+    "replacement": "/^[a-zA-Z0-9_]/",
+    "originalSnippet": "/^[a-zA-Z0-9_]$/",
+    "reason": "attributeCharMatcher is only applied to single characters (lines 120, 124, 177), so the $ anchor is redundant."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/tokenize.ts",
+    "mutatorName": "Regex",
+    "replacement": "/[a-zA-Z_]$/",
+    "originalSnippet": "/^[a-zA-Z_]$/",
+    "reason": "attributeFirstCharMatcher is only applied to single characters from takeWhile (line 175), so the ^ anchor is redundant."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/tokenize.ts",
+    "mutatorName": "Regex",
+    "replacement": "/^[a-zA-Z_]/",
+    "originalSnippet": "/^[a-zA-Z_]$/",
+    "reason": "attributeFirstCharMatcher is only applied to single characters from takeWhile (line 175), so the $ anchor is redundant."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/tokenize.ts",
+    "mutatorName": "LogicalOperator",
+    "replacement": "!found && !token",
+    "originalSnippet": "!found || !token",
+    "reason": "some() stops at the first truthy token, so found is true exactly when token is truthy; || and && agree."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/tokenize.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "this.EOF()",
+    "reason": "peek returns source[i] = undefined at EOF instead of null; both callers compare it to quote or '-' characters only."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/tokenize.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n      return null\n    }",
+    "contextHash": "4d176cd708",
+    "reason": "peek returns source[i] = undefined at EOF instead of null; both callers compare it to quote or '-' characters only."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/tokenize.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "this.i + str.length > this.length",
+    "contextHash": "40132b588a",
+    "reason": "Throws either way; unterminated quote \"a['abc\" then fails the slice comparison and throws the mismatch error instead."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/tokenize.ts",
+    "mutatorName": "ArithmeticOperator",
+    "replacement": "this.i - str.length",
+    "originalSnippet": "this.i + str.length",
+    "contextHash": "40132b588a",
+    "reason": "Throws either way; i - len never exceeds length, so an unterminated quote throws the mismatch error instead."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/tokenize.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n      throw new Error(`Expected ${str} at end of jsonpath`)\n    }",
+    "reason": "Throws either way; unterminated quote \"a['abc\" then fails the slice comparison and throws the mismatch error instead."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/tokenize.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "this.i + str.length > this.length",
+    "contextHash": "7ba86e6271",
+    "reason": "All symbols are non-empty, so a slice shorter than str never equals it and the function returns null anyway."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/tokenize.ts",
+    "mutatorName": "ArithmeticOperator",
+    "replacement": "this.i - str.length",
+    "originalSnippet": "this.i + str.length",
+    "contextHash": "7ba86e6271",
+    "reason": "i - len never exceeds length, so the guard just never fires; a short slice never equals str and null is returned anyway."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/tokenize.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n      return null\n    }",
+    "contextHash": "9499d9829c",
+    "reason": "All symbols are non-empty, so a slice shorter than str never equals it and the function returns null anyway."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/tokenize.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "this.length > this.i + str.length",
+    "reason": "Past the end nextChar is undefined, and the nextChar && guard on line 124 rejects it."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/tokenize.ts",
+    "mutatorName": "EqualityOperator",
+    "replacement": "this.length >= this.i + str.length",
+    "originalSnippet": "this.length > this.i + str.length",
+    "reason": "At equality nextChar is source[length] = undefined, and the nextChar && guard rejects it."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/tokenize.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"Stryker was here!\"",
+    "originalSnippet": "''",
+    "contextHash": "de5bbe9fab",
+    "reason": "chompWhitespace discards takeWhile's result; any non-null string still advances i identically."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/toPath.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "expr.target === 'self'",
+    "reason": "AliasExpr.target is typed 'self' only and every alias is built with 'self', so the condition is always true."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/jsonpath/toPath.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "node",
+    "reason": "The loop runs while nodes.length > 0, so shift() returns an Expr object, which is never falsy."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/DiffMatchPatch.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "!attribute",
+    "reason": "Line 49 already required hasAttribute(name), so getAttribute never returns null here and !attribute is always false."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/ImmutableAccessor.ts",
+    "mutatorName": "ArrayDeclaration",
+    "replacement": "[\"Stryker was here\"]",
+    "originalSnippet": "[]",
+    "contextHash": "81de23e01d",
+    "reason": "ImmutableAccessor.path is never read except to build child paths; Patcher and patches only use get() and container methods."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/ImmutableAccessor.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "!isRecord(this._value)",
+    "contextHash": "94b288110b",
+    "reason": "Throws either way; only non-record reaching getAttribute is a null doc root, where mutant returns null and Patcher throws 'no _id' instead."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/ImmutableAccessor.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n      throw new Error('getAttribute only applies to plain objects')\n    }",
+    "reason": "Throws either way; only non-record reaching getAttribute is a null doc root, where mutant returns null and Patcher throws 'no _id' instead."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/ImmutableAccessor.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "value !== null",
+    "reason": "Throws either way; mutant only changes isRecord(null), and every null reaching it (null doc root, SetIfMissing on null) then throws TypeError."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/IncPatch.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "typeof previousValue !== 'number'",
+    "reason": "Number.isFinite returns false for every non-number without coercion, so !Number.isFinite alone covers the typeof clause."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/InsertPatch.ts",
+    "mutatorName": "EqualityOperator",
+    "replacement": "start <= result",
+    "originalSnippet": "start < result",
+    "reason": "start <= result only differs when start equals result, where result = start assigns the same value."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/InsertPatch.ts",
+    "mutatorName": "EqualityOperator",
+    "replacement": "end >= result",
+    "originalSnippet": "end > result",
+    "reason": "end >= result only differs when end equals result, where result = end assigns the same value."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/Patcher.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "!idAccessor",
+    "reason": "Throws either way; a doc without _id throws 'Cannot apply patch' today and TypeError on idAccessor.get() with the mutant."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/Patcher.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n      throw new Error('Cannot apply patch to document with no _id')\n    }",
+    "reason": "Throws either way; a doc without _id throws 'Cannot apply patch' today and TypeError on idAccessor.get() with the mutant."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/Patcher.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "oldValueAccessor !== newValueAccessor",
+    "reason": "Unchanged accessor goes to setAttribute with the value just read from result, so Object.is matches and it returns result unchanged."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/Patcher.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "payload &&\n    typeof payload === 'object' &&\n    payload !== null &&\n    'apply' in payload &&\n    typeof (payload as PatchTypes).apply === 'function'",
+    "reason": "Delivery payload is always the patch instance set at Patcher.ts:45 and copied to child matchers, so isPatcher is true either way."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/Patcher.ts",
+    "mutatorName": "LogicalOperator",
+    "replacement": "payload && typeof payload === 'object' && payload !== null && 'apply' in payload || typeof (payload as PatchTypes).apply === 'function'",
+    "originalSnippet": "payload &&\n    typeof payload === 'object' &&\n    payload !== null &&\n    'apply' in payload &&\n    typeof (payload as PatchTypes).apply === 'function'",
+    "reason": "Delivery payload is always the patch instance set at Patcher.ts:45 and copied to child matchers, so isPatcher is true either way."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/Patcher.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "payload &&\n    typeof payload === 'object' &&\n    payload !== null &&\n    'apply' in payload",
+    "reason": "Delivery payload is always the patch instance set at Patcher.ts:45 and copied to child matchers, so isPatcher is true either way."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/Patcher.ts",
+    "mutatorName": "LogicalOperator",
+    "replacement": "payload && typeof payload === 'object' && payload !== null || 'apply' in payload",
+    "originalSnippet": "payload &&\n    typeof payload === 'object' &&\n    payload !== null &&\n    'apply' in payload",
+    "reason": "Delivery payload is always the patch instance set at Patcher.ts:45 and copied to child matchers, so isPatcher is true either way."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/Patcher.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "payload &&\n    typeof payload === 'object' &&\n    payload !== null",
+    "reason": "Delivery payload is always the patch instance set at Patcher.ts:45 and copied to child matchers, so isPatcher is true either way."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/Patcher.ts",
+    "mutatorName": "LogicalOperator",
+    "replacement": "payload && typeof payload === 'object' || payload !== null",
+    "originalSnippet": "payload &&\n    typeof payload === 'object' &&\n    payload !== null",
+    "reason": "Delivery payload is always the patch instance set at Patcher.ts:45 and copied to child matchers, so isPatcher is true either way."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/Patcher.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "payload &&\n    typeof payload === 'object'",
+    "reason": "Delivery payload is always the patch instance set at Patcher.ts:45 and copied to child matchers, so isPatcher is true either way."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/Patcher.ts",
+    "mutatorName": "LogicalOperator",
+    "replacement": "payload || typeof payload === 'object'",
+    "originalSnippet": "payload &&\n    typeof payload === 'object'",
+    "reason": "Delivery payload is always the patch instance set at Patcher.ts:45 and copied to child matchers, so isPatcher is true either way."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/Patcher.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "typeof payload === 'object'",
+    "reason": "Delivery payload is always the patch instance set at Patcher.ts:45 and copied to child matchers, so isPatcher is true either way."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/Patcher.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "payload !== null",
+    "reason": "Delivery payload is always the patch instance set at Patcher.ts:45 and copied to child matchers, so isPatcher is true either way."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/Patcher.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "typeof (payload as PatchTypes).apply === 'function'",
+    "reason": "Delivery payload is always the patch instance set at Patcher.ts:45 and copied to child matchers, so isPatcher is true either way."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/patch/UnsetPatch.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "default:",
+    "originalSnippet": "default:\n        // A primitive value has nothing to unset\n        break",
+    "reason": "Removing the break from the last default clause changes nothing; control leaves the switch either way."
+  },
+  {
+    "file": "packages/@sanity/mutator/src/util.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "value !== null",
+    "reason": "Throws either way; only null differs, and null reaches isRecord only via extract on a null value, which throws TypeError instead."
+  },
+  {
+    "file": "packages/sanity/src/core/form/patch/applyPatch.ts",
+    "mutatorName": "MethodExpression",
+    "replacement": "arr",
+    "originalSnippet": "arr.slice()",
+    "reason": "move is only called at line 83 with nextValue, a fresh slice of value; splicing that copy in place is unobservable."
+  },
+  {
+    "file": "packages/sanity/src/core/form/patch/applyPatch.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "value === undefined",
+    "contextHash": "1e930211e5",
+    "reason": "_arrayApply is only called after Array.isArray(value) is true, so value is never undefined and the ternary always returns value."
+  },
+  {
+    "file": "packages/sanity/src/core/form/patch/applyPatch.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "typeof index !== 'number'",
+    "reason": "index is always a number here: findTargetIndex returns number or false, and false already returned at line 93."
+  },
+  {
+    "file": "packages/sanity/src/core/form/patch/applyPatch.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "value === undefined",
+    "contextHash": "38a6933004",
+    "reason": "_objectApply is only called after isObject(value) is true, so value is never undefined."
+  },
+  {
+    "file": "packages/sanity/src/core/form/patch/primitive.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n    return undefined\n  }",
+    "reason": "Emptied unset body returns undefined, identical to return undefined."
+  },
+  {
+    "file": "packages/sanity/src/core/form/patch/string.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "currentValue === undefined",
+    "reason": "_stringApply is only called from _applyPatch after isString(value), so currentValue is never undefined."
+  },
+  {
+    "file": "packages/sanity/src/core/form/patch/string.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n    return undefined\n  }",
+    "reason": "Emptied unset body returns undefined, identical to return undefined."
+  },
+  {
+    "file": "packages/sanity/src/core/form/utils/path.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "current",
+    "contextHash": "22ce5a44fc",
+    "reason": "Only caller parseGradientPath applies filter(Boolean), so empty tokens pushed by the mutant are dropped."
+  },
+  {
+    "file": "packages/sanity/src/core/form/utils/path.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "current",
+    "contextHash": "bf40558ae6",
+    "reason": "Only caller parseGradientPath applies filter(Boolean), so empty tokens pushed by the mutant are dropped."
+  },
+  {
+    "file": "packages/sanity/src/core/form/utils/path.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "current",
+    "contextHash": "7a38e81fa8",
+    "reason": "Only caller parseGradientPath applies filter(Boolean), so empty tokens pushed by the mutant are dropped."
+  },
+  {
+    "file": "packages/sanity/src/core/form/utils/path.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "current",
+    "contextHash": "360c2df935",
+    "reason": "Only caller parseGradientPath applies filter(Boolean), so empty tokens pushed by the mutant are dropped."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/buffered-doc/createObservableBufferedDocument.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "bufferedDocument === null",
+    "reason": "With false, scan returns bufferedDocument, which is null in that case; only the console.warn is skipped."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/buffered-doc/createObservableBufferedDocument.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n        console.warn(\n          'Ignoring event of type \"%s\" since buffered document has not yet been set up with snapshot',\n          listenerEvent.type,\n        )\n        return null\n      }",
+    "reason": "Block holds only console.warn and return null; emptied, scan falls through to return bufferedDocument, which is null here."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/buffered-doc/createObservableBufferedDocument.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "action.type === 'mutation'",
+    "reason": "actions$ is private and only fed by addMutations with type 'mutation', so the condition is always true."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/checkoutPair.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "typeof error.statusCode === 'number'",
+    "reason": "A non-number statusCode is never in the all-number TERMINAL_COMMIT_STATUSES set, so the same failure path runs."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/checkoutPair.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "statusCode !== undefined",
+    "reason": "TERMINAL_COMMIT_STATUSES.has(undefined) is false, so the same failure path runs."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/checkoutPair.ts",
+    "mutatorName": "ObjectLiteral",
+    "replacement": "{}",
+    "originalSnippet": "{type: 'cancel', error}",
+    "reason": "Attempt results are only read via type === 'success' and type === 'failure'; an empty object falls through like cancel, error unread."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/checkoutPair.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'cancel'",
+    "reason": "Attempt results are only read via type === 'success' and type === 'failure'; 'cancel' and empty string both fall through identically."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/checkoutPair.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "submitEvent.type === 'submit'",
+    "reason": "Entries are only submit or receive and a match needs differing types, so submitEvent is always the submit entry."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/checkoutPair.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "i !== matchingIndex",
+    "reason": "The matched entry has the same transactionId as event, so the second clause already removes it."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/checkoutPair.ts",
+    "mutatorName": "OptionalChaining",
+    "replacement": "onReportLatency({\n  latencyMs: event.deltaMs,\n  shard,\n  transactionId: event.transactionId\n})",
+    "originalSnippet": "onReportLatency?.({latencyMs: event.deltaMs, shard, transactionId: event.transactionId})",
+    "reason": "Calling an undefined onReportLatency throws inside the surrounding try/catch, which swallows it; nothing else changes."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/editOperations.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"Stryker was here!\"",
+    "originalSnippet": "''",
+    "reason": "Keys become '-allow-create' and '-Stryker was here!', still distinct per allowCreate, so memoization is unchanged."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operationEvents.ts",
+    "mutatorName": "BooleanLiteral",
+    "replacement": "false",
+    "originalSnippet": "true",
+    "contextHash": "57ff843b05",
+    "reason": "ready$ value is ignored by switchMap(() => execute(...)); of(false) still triggers execution once."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'commit'",
+    "contextHash": "32dd0a2997",
+    "reason": "Message text only; opName in createOperationGuard is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'delete'",
+    "contextHash": "713cfcf3ef",
+    "reason": "Message text only; opName in createOperationGuard is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'del'",
+    "contextHash": "10d2ae989d",
+    "reason": "Message text only; opName in createOperationGuard is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'publish'",
+    "contextHash": "91c5c5bd78",
+    "reason": "Message text only; opName in createOperationGuard is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'patch'",
+    "contextHash": "e1c7a678cf",
+    "reason": "Message text only; opName in createOperationGuard is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'discardChanges'",
+    "contextHash": "42167524a8",
+    "reason": "Message text only; opName in createOperationGuard is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'unpublish'",
+    "contextHash": "9d5b597ce5",
+    "reason": "Message text only; opName in createOperationGuard is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'duplicate'",
+    "contextHash": "53c0c51b84",
+    "reason": "Message text only; opName in createOperationGuard is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'restore'",
+    "contextHash": "2c565b9757",
+    "reason": "Message text only; opName in createOperationGuard is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'commit'",
+    "contextHash": "3d435cd7e3",
+    "reason": "Message text only; opName in createTargetNotFoundOperation is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'delete'",
+    "contextHash": "167f9808f3",
+    "reason": "Message text only; opName in createTargetNotFoundOperation is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'del'",
+    "contextHash": "5cdabd0051",
+    "reason": "Message text only; opName in createTargetNotFoundOperation is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'publish'",
+    "contextHash": "6f56f9fb62",
+    "reason": "Message text only; opName in createTargetNotFoundOperation is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'patch'",
+    "contextHash": "4e8704992d",
+    "reason": "Message text only; opName in createTargetNotFoundOperation is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'discardChanges'",
+    "contextHash": "66bf2ad608",
+    "reason": "Message text only; opName in createTargetNotFoundOperation is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'unpublish'",
+    "contextHash": "641b3c8c7d",
+    "reason": "Message text only; opName in createTargetNotFoundOperation is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'duplicate'",
+    "contextHash": "9690b8f311",
+    "reason": "Message text only; opName in createTargetNotFoundOperation is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'restore'",
+    "contextHash": "fff5999d3b",
+    "reason": "Message text only; opName in createTargetNotFoundOperation is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'commit'",
+    "contextHash": "0bb26b8c36",
+    "reason": "Message text only; opName in createTargetNotFoundOperation is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'patch'",
+    "contextHash": "aae71d1375",
+    "reason": "Message text only; opName in createTargetNotFoundOperation is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'publish'",
+    "contextHash": "a3f86b9091",
+    "reason": "Message text only; opName in createTargetNotFoundOperation is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'unpublish'",
+    "contextHash": "554799843c",
+    "reason": "Message text only; opName in createTargetNotFoundOperation is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'discardChanges'",
+    "contextHash": "4dd63f116d",
+    "reason": "Message text only; opName in createTargetNotFoundOperation is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/document-pair/operations/helpers.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'restore'",
+    "contextHash": "769741840e",
+    "reason": "Message text only; opName in createTargetNotFoundOperation is used only inside the thrown Error message; disabled is a fixed literal, Object.keys reads keys not values."
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/getPairListener.ts",
+    "mutatorName": "MethodExpression",
+    "replacement": "listenerEvents",
+    "originalSnippet": "listenerEvents.filter((ev): ev is MutationEvent => ev.type === 'mutation')",
+    "reason": "Buffer only ever holds MutationEvents: line 205 returns for every non-mutation before any concat, seed buffer is empty"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/getPairListener.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "ev.type === 'mutation'",
+    "reason": "Buffer only ever holds MutationEvents: line 205 returns for every non-mutation before any concat, seed buffer is empty"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/getPairListener.ts",
+    "mutatorName": "ArrayDeclaration",
+    "replacement": "[\"Stryker was here\"]",
+    "originalSnippet": "[]",
+    "contextHash": "3870c65ff4",
+    "reason": "scan seed is never emitted and the accumulator reads only acc.buffer, so seed next is never read"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/getPairListener.ts",
+    "mutatorName": "OptionalChaining",
+    "replacement": "options.onSyncErrorRecovery",
+    "originalSnippet": "options?.onSyncErrorRecovery",
+    "contextHash": "7ab1ff3736",
+    "reason": "options has default {} and the type excludes null, so options is never nullish here"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/getPairListener.ts",
+    "mutatorName": "OptionalChaining",
+    "replacement": "options.onSyncErrorRecovery",
+    "originalSnippet": "options?.onSyncErrorRecovery",
+    "contextHash": "40cbc03fc6",
+    "reason": "Inside branch where typeof options?.onSyncErrorRecovery is function, so options is defined"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/getPairListener.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n          console.error(err)\n        }",
+    "reason": "Block holds only console.error(err); err is a caught value, reading it cannot throw. Logging only"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/dedupeListenerEvents.ts",
+    "mutatorName": "ArrayDeclaration",
+    "replacement": "[\"Stryker was here\"]",
+    "originalSnippet": "[]",
+    "contextHash": "cff1d5b442",
+    "reason": "scan seed is never emitted and the accumulator destructures only seen, so seed emit is never read"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/eventChainUtils.ts",
+    "mutatorName": "OptionalChaining",
+    "replacement": "current.resultRev",
+    "originalSnippet": "current?.resultRev",
+    "reason": "Callback runs inside while (current) before the reassignment, so current is always defined when read"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "event.type === 'mutation' && !state.base",
+    "reason": "Throws either way; without the guard discardChainTo reads state.base!.revision on undefined base, TypeError. Only a self-loop rev pair escapes"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'mutation'",
+    "contextHash": "eec159d49a",
+    "reason": "Throws either way; without the guard discardChainTo reads state.base!.revision on undefined base, TypeError. Only a self-loop rev pair escapes"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n            throw new Error('Invalid state. Cannot create a sequence without a base')\n          }",
+    "reason": "Throws either way; without the guard discardChainTo reads state.base!.revision on undefined base, TypeError. Only a self-loop rev pair escapes"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "discarded.length > 0",
+    "reason": "Condition or block only gates debug() calls whose arguments are plain length or array reads that cannot throw"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "discarded.length > 0",
+    "reason": "Condition or block only gates debug() calls whose arguments are plain length or array reads that cannot throw"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "EqualityOperator",
+    "replacement": "discarded.length >= 0",
+    "originalSnippet": "discarded.length > 0",
+    "reason": "Condition or block only gates debug() calls whose arguments are plain length or array reads that cannot throw"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "EqualityOperator",
+    "replacement": "discarded.length <= 0",
+    "originalSnippet": "discarded.length > 0",
+    "reason": "Condition or block only gates debug() calls whose arguments are plain length or array reads that cannot throw"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n                debug('Discarded %d mutations already applied to document', discarded.length)\n              }",
+    "reason": "Condition or block only gates debug() calls whose arguments are plain length or array reads that cannot throw"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "OptionalChaining",
+    "replacement": "lastMutation.resultRev",
+    "originalSnippet": "lastMutation?.resultRev",
+    "reason": "lastMutation is at(-1) of a chain checked non-empty on line 95, and line 102 already reads lastMutation.transition"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "state.buffer.length > 0",
+    "contextHash": "1895dac505",
+    "reason": "Condition or block only gates debug() calls whose arguments are plain length or array reads that cannot throw"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "state.buffer.length > 0",
+    "contextHash": "1895dac505",
+    "reason": "Condition or block only gates debug() calls whose arguments are plain length or array reads that cannot throw"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "EqualityOperator",
+    "replacement": "state.buffer.length >= 0",
+    "originalSnippet": "state.buffer.length > 0",
+    "contextHash": "1895dac505",
+    "reason": "Condition or block only gates debug() calls whose arguments are plain length or array reads that cannot throw"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "EqualityOperator",
+    "replacement": "state.buffer.length <= 0",
+    "originalSnippet": "state.buffer.length > 0",
+    "contextHash": "1895dac505",
+    "reason": "Condition or block only gates debug() calls whose arguments are plain length or array reads that cannot throw"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n                // we went from having unresolved chains to resolved\n                debug(\n                  `Resolved chain: %s => %s`,\n                  resolvedChains[0][0].previousRev,\n                  resolvedChains[0].at(-1)?.resultRev,\n                )\n                if (nextBuffer.length > 0) {\n                  debug(`There are still %d unchainable mutations`, nextBuffer.length)\n                } else {\n                  debug(`All chains were resolved`)\n                }\n              }",
+    "reason": "Condition or block only gates debug() calls whose arguments are plain length or array reads that cannot throw"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "true",
+    "originalSnippet": "nextBuffer.length > 0",
+    "reason": "Condition or block only gates debug() calls whose arguments are plain length or array reads that cannot throw"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "ConditionalExpression",
+    "replacement": "false",
+    "originalSnippet": "nextBuffer.length > 0",
+    "reason": "Condition or block only gates debug() calls whose arguments are plain length or array reads that cannot throw"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "EqualityOperator",
+    "replacement": "nextBuffer.length >= 0",
+    "originalSnippet": "nextBuffer.length > 0",
+    "reason": "Condition or block only gates debug() calls whose arguments are plain length or array reads that cannot throw"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "EqualityOperator",
+    "replacement": "nextBuffer.length <= 0",
+    "originalSnippet": "nextBuffer.length > 0",
+    "reason": "Condition or block only gates debug() calls whose arguments are plain length or array reads that cannot throw"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n                  debug(`There are still %d unchainable mutations`, nextBuffer.length)\n                }",
+    "reason": "Condition or block only gates debug() calls whose arguments are plain length or array reads that cannot throw"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "BlockStatement",
+    "replacement": "{}",
+    "originalSnippet": "{\n                  debug(`All chains were resolved`)\n                }",
+    "reason": "Condition or block only gates debug() calls whose arguments are plain length or array reads that cannot throw"
+  },
+  {
+    "file": "packages/sanity/src/core/store/document/utils/sequentializeListenerEvents.ts",
+    "mutatorName": "StringLiteral",
+    "replacement": "\"\"",
+    "originalSnippet": "'OutOfSyncError'",
+    "reason": "OutOfSyncError is never instantiated directly; both subclasses overwrite name right after super, nothing reads it between"
+  }
+]

@@ -1,12 +1,11 @@
 import {useEffect} from 'react'
 
 import {getPublishedId, isVersionId} from '../../../util/draftUtils'
-import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
 import {useIsLastPane} from '../../context/isLastPane/useIsLastPane'
 import {type ActiveDocument} from '../../context/tasks/types'
 import {useTasks} from '../../context/tasks/useTasks'
 
-function SetActiveDocumentInner(document: ActiveDocument) {
+export default function SetActiveDocument(document: ActiveDocument) {
   const {documentId, documentType} = document
   const isLast = useIsLastPane()
   const {setActiveDocument} = useTasks()
@@ -28,10 +27,4 @@ function SetActiveDocumentInner(document: ActiveDocument) {
   }, [documentId, documentType, isLast, setActiveDocument])
 
   return null
-}
-
-export function SetActiveDocument(document: ActiveDocument) {
-  const {enabled} = useTasksEnabled()
-  if (!enabled) return null
-  return <SetActiveDocumentInner {...document} />
 }

@@ -1,5 +1,5 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Box, Card, Flex, isHTMLElement, rem, Text, type Theme} from '@sanity/ui'
+import {Card, isHTMLElement, rem, type Theme} from '@sanity/ui'
 import {
   type ChangeEvent,
   type FocusEvent,
@@ -14,6 +14,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, type CSSObject, styled} from 'styled-components'
+import {Text, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -140,7 +141,11 @@ const Placeholder = styled(Box)((props: {theme: Theme}) => {
     left: 0;
     right: 0;
     pointer-events: none;
-    --card-fg-color: ${color.default.enabled.placeholder};
+
+    [data-ui='Text'] {
+      --card-fg-color: ${color.default.enabled.placeholder};
+      --text-color: ${color.default.enabled.placeholder};
+    }
   `
 })
 
@@ -248,6 +253,7 @@ export function TagInput(
       inputElement.style.width = '0'
       inputElement.style.width = `calc(${inputElement.scrollWidth}px + 1rem)`
     }
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [inputValue])
 
   return (
@@ -263,7 +269,7 @@ export function TagInput(
     >
       {enabled && (
         <Placeholder hidden={Boolean(inputValue || value.length)} padding={3}>
-          <Text textOverflow="ellipsis">
+          <Text truncate={1} as="div" trim={true}>
             {placeholderProp
               ? placeholderProp
               : t('inputs.tags.placeholder', {
@@ -320,9 +326,15 @@ function Tag(props: {
 
   return (
     <Card data-ui="Tag" radius={2} tone="transparent">
-      <Flex align="center" gap={1}>
-        <Box flex={1} paddingY={2} paddingLeft={2} paddingRight={enabled ? undefined : 2}>
-          <Text muted={muted} textOverflow="ellipsis">
+      <Flex alignItems="center" gap={1}>
+        <Box
+          flexBasis="0%"
+          flexGrow={1}
+          paddingY={2}
+          paddingLeft={2}
+          paddingRight={enabled ? undefined : 2}
+        >
+          <Text muted={muted} truncate={1} as="div" trim={true}>
             {tag.value}
           </Text>
         </Box>

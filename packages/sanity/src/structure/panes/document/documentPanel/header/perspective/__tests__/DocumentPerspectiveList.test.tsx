@@ -43,7 +43,7 @@ vi.mock('sanity', async (importOriginal) => ({
     loading: true,
     versions: [],
   }),
-  useActiveReleases: vi.fn().mockReturnValue({data: [], loading: false}),
+  useActiveReleases: vi.fn().mockReturnValue({data: [], byId: new Map(), loading: false}),
   useAllVariants: vi.fn().mockReturnValue({
     data: [],
     byId: new Map(),
@@ -212,6 +212,7 @@ describe('DocumentPerspectiveList', () => {
     mockUseActiveReleases.mockReturnValue({
       loading: false,
       data: [mockCurrent],
+      byId: new Map([[mockCurrent._id, mockCurrent]]),
       dispatch: vi.fn(),
     })
 

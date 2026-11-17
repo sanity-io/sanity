@@ -1,5 +1,5 @@
-import {type AsyncExpectationResult, type MatcherState} from '@vitest/expect'
 import {firstValueFrom, type OperatorFunction, Subject, toArray} from 'rxjs'
+import {type AsyncMatcherResult as AsyncExpectationResult, type MatcherState} from 'vitest'
 
 export const NO_EMISSION = Symbol('NO_EMISSION')
 

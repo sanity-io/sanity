@@ -1,7 +1,13 @@
 // @vitest-environment node
 import {describe, expect, it} from 'vitest'
 
-import {deriveAuthMilestones, unionDurationMs} from '../session/pageLoad'
+import {defineScenario} from '../../scenarios/types'
+import {
+  collectMilestones,
+  defaultLoadSteps,
+  deriveAuthMilestones,
+  unionDurationMs,
+} from '../session/pageLoad'
 
 describe('unionDurationMs', () => {
   it('sums disjoint windows', () => {
@@ -37,12 +43,16 @@ describe('deriveAuthMilestones', () => {
         {url: `${API}/v2025-02-19/users/me`, startTime: 100, responseEnd: 140},
         {url: `${API}/v2025-02-19/auth/providers`, startTime: 150, responseEnd: 170},
         {url: `${API}/v2025-02-19/data/query/bench?query=x`, startTime: 90, responseEnd: 300},
-        {url: `${API}/v2025-02-19/users/me/keyvalue/foo`, startTime: 200, responseEnd: 220},
+        {
+          url: `${API}/v2026-11-07/projects/bench/users/me/preferences/foo`,
+          startTime: 200,
+          responseEnd: 220,
+        },
         {url: 'https://localhost:4310/static/sanity-abc.js', startTime: 10, responseEnd: 50},
       ],
       1000,
     )
-    // keyvalue is UI-state persistence, not auth (mirrors the mock's classes)
+    // preferences are UI-state persistence, not auth (mirrors the mock's classes)
     expect(auth).toEqual({trips: 2, firstRequestMs: 100, inFlightMs: 60})
   })
 
@@ -63,5 +73,46 @@ describe('deriveAuthMilestones', () => {
       firstRequestMs: null,
       inFlightMs: 0,
     })
+  })
+})
+
+describe('collectMilestones', () => {
+  it('keeps milestone measures only, first hit per name, in reached order', () => {
+    expect(
+      collectMilestones([
+        {name: 'bench:milestone:tool visible', duration: 2400},
+        {name: 'bench:time-to-editable', duration: 3000},
+        {name: 'bench:milestone:login clickable', duration: 900},
+        {name: 'bench:milestone:tool visible', duration: 5000},
+      ]),
+    ).toEqual([
+      {name: 'login clickable', atMs: 900},
+      {name: 'tool visible', atMs: 2400},
+    ])
+  })
+})
+
+describe('defaultLoadSteps', () => {
+  const base = {
+    name: 'x',
+    sourceFile: 'perf/bench/scenarios/x.ts',
+    documentType: 'x',
+    documentId: 'x',
+    fixture: () => [],
+  }
+
+  it('probes the first interaction target', () => {
+    const scenario = defineScenario({
+      ...base,
+      interactions: [
+        {fieldPath: 'title', kind: 'string'},
+        {fieldPath: 'body', kind: 'pte'},
+      ],
+    })
+    expect(defaultLoadSteps(scenario)).toEqual([{kind: 'awaitEditable', field: 'title'}])
+  })
+
+  it('is empty without interaction targets', () => {
+    expect(defaultLoadSteps(defineScenario({...base, interactions: []}))).toEqual([])
   })
 })

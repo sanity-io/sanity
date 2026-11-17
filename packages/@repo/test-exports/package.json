@@ -15,13 +15,13 @@
     "@sanity/schema": "workspace:*",
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
+    "@sanity/validation": "workspace:*",
     "@sanity/vision": "workspace:*",
     "groq": "workspace:*",
     "sanity": "workspace:*"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
-    "@types/node": "catalog:",
-    "node-test-github-reporter": "^1.3.2"
+    "@types/node": "catalog:"
   }
 }

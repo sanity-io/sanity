@@ -1,7 +1,8 @@
 import {RequestAccessForm} from '@sanity/access-ui'
-import {Card, Container, Flex} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useSyncObservable} from 'react-rx'
+import {Container, Flex} from 'ui5'
 
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher/useActiveWorkspace'
@@ -31,8 +32,8 @@ export function RequestAccessScreen() {
 
   return (
     <Card height="fill">
-      <Flex align="center" height="fill" justify="center" padding={4}>
-        <Container width={0}>
+      <Flex alignItems="center" height="100%" justifyContent="center" padding={4}>
+        <Container size={0}>
           <RequestAccessForm
             // Keyed by project so a same-project auth re-emission (new client
             // instance) keeps in-progress form state, while a project switch

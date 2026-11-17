@@ -25,6 +25,7 @@ import {
 } from 'sanity/structure'
 
 import {DebugPane} from '../components/panes/debug/DebugPane'
+import {RenderLoopRepro} from '../components/panes/debug/RenderLoopRepro'
 import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
 import {PerspectiveExample} from '../components/PerspectiveExample'
 import {TranslateExample} from '../components/TranslateExample'
@@ -41,6 +42,8 @@ import {
 } from './constants'
 import {typesInOptionGroup} from './groupByOption'
 
+const COUNT_DEMO_TYPES = ['author', 'book', 'species']
+
 export const structure: StructureResolver = (
   S,
   {schema, documentStore, i18n, perspectiveStack, selectedVariantName},
@@ -49,7 +52,22 @@ export const structure: StructureResolver = (
   return S.list()
     .title(t('testStudio:structure.root.title' as const) || 'Content')
     .items([
-      S.documentListItem().id('validation').schemaType('allTypes'),
+      S.listItem().singleton('singletonSettings'),
+      S.listItem()
+        .id('campaigns')
+        .title('Campaigns (singletons)')
+        .child(
+          S.list()
+            .id('campaigns')
+            .title('Campaigns')
+            .singletons(['springCampaign', 'summerCampaign']),
+        ),
+      S.listItem().singleton('currentlyReading'),
+      S.listItem().singleton('validation'),
+      S.listItem()
+        .id('singletons')
+        .title('Singletons')
+        .child(S.list().id('singletons').title('Singletons').singletons()),
       S.listItem()
         .title('Sections by perspective')
         .id('sections-by-perspective')
@@ -154,6 +172,14 @@ export const structure: StructureResolver = (
             .id('custom')
             .title('Custom panes')
             .items([
+              S.listItem()
+                .id('render-loop-repro')
+                .title('useDocumentValues render loop (repro)')
+                .child(
+                  S.component(RenderLoopRepro)
+                    .id('render-loop-repro')
+                    .title('useDocumentValues render loop'),
+                ),
               S.listItem()
                 .id('component1')
                 .title('Component pane (1)')
@@ -261,24 +287,19 @@ export const structure: StructureResolver = (
                   }).apiVersion('2023-07-28'),
                 ),
 
-              // A singleton not using `documentListItem`, eg no built-in preview
+              // A singleton not using `documentListItem`, e.g. no built-in preview.
               S.listItem()
                 .title('Singleton?')
                 .child(
                   delayValue(
-                    S.editor({
-                      id: 'editor',
-                      options: {id: 'circular', type: 'referenceTest'},
-                    }).title('Specific title!'),
+                    S.document().singleton('circular').id('editor').title('Specific title!'),
                   ) as any,
                 )
                 .showIcon(false),
 
-              // A "singleton" which overrides the title, and provides a custom child
-              S.documentListItem()
-                .id('grrm')
-                .title('GRRM')
-                .schemaType('author')
+              // A singleton that overrides the title, and provides a custom child.
+              S.listItem()
+                .singleton('grrm')
                 .child(
                   // @ts-expect-error -- pre-existing, fix later
                   S.component(JsonDocumentDump)
@@ -294,8 +315,8 @@ export const structure: StructureResolver = (
                     ]),
                 ),
 
-              // A "singleton" which should use a default preview
-              S.documentListItem().id('jrr-tolkien').schemaType('author'),
+              // A singleton that uses a built-in document preview.
+              S.documentListItem().singleton('jrr-tolkien'),
               S.listItem()
                 .id('field-groups-test-1')
                 .title('Field groups test 1')
@@ -531,12 +552,16 @@ export const structure: StructureResolver = (
           const listItemId = listItem.getId()
           if (!listItemId) return listItem
 
-          return listItem.child(
-            S.documentTypeList(listItemId).menuItems([
-              ...(S.documentTypeList(listItemId).getMenuItems() || []),
-            ]),
-          )
+          return listItem
+            .showCount(COUNT_DEMO_TYPES.includes(listItemId))
+            .child(
+              S.documentTypeList(listItemId).menuItems([
+                ...(S.documentTypeList(listItemId).getMenuItems() || []),
+              ]),
+            )
         }),
+      S.documentTypeListItem('author'),
+      S.documentTypeListItem('referenceTest'),
       S.divider(),
       S.documentTypeListItem('sanity.imageAsset').icon(ImagesIcon),
       S.documentTypeListItem('sanity.fileAsset').icon(BinaryDocumentIcon),

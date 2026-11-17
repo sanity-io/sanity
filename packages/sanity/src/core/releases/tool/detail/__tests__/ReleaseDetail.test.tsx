@@ -1,4 +1,4 @@
-import {render, screen, waitFor, within} from '@testing-library/react'
+import {act, render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {route, RouterProvider} from 'sanity/router'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -98,18 +98,24 @@ const renderTest = async () => {
   const wrapper = await createTestProvider({
     resources: [releasesUsEnglishLocaleBundle],
   })
-  const result = render(
-    <RouterProvider
-      state={{
-        releaseId: activeASAPRelease._id,
-      }}
-      onNavigate={mockRouterNavigate}
-      router={route.create('/', [route.create('/:releaseId')])}
-    >
-      <ReleaseDetail />
-    </RouterProvider>,
-    {wrapper},
-  )
+  // The studio tree suspends while mounting, and React parks work that suspended inside an
+  // unawaited synchronous `act` scope: the mount has to happen inside an awaited async one.
+  let result!: ReturnType<typeof render>
+  // oxlint-disable-next-line testing-library/no-unnecessary-act -- see above
+  await act(async () => {
+    result = render(
+      <RouterProvider
+        state={{
+          releaseId: activeASAPRelease._id,
+        }}
+        onNavigate={mockRouterNavigate}
+        router={route.create('/', [route.create('/:releaseId')])}
+      >
+        <ReleaseDetail />
+      </RouterProvider>,
+      {wrapper},
+    )
+  })
 
   await flushMicrotasksThisIsACodeSmell()
 

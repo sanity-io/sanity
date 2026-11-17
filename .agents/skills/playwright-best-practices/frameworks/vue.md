@@ -124,6 +124,7 @@ export default defineConfig({
 ```typescript
 // tests/components/Stepper.ct.ts
 import {test, expect} from '@playwright/experimental-ct-vue'
+
 import Stepper from '../../src/components/Stepper.vue'
 
 test('increments value on button click', async ({mount}) => {

@@ -11,7 +11,7 @@ import {
   urlSearchParamVercelSetBypassCookie,
   type VercelSetBypassCookieValue,
 } from '@sanity/preview-url-secret/constants'
-import {Card, Flex, Label, Spinner, Stack, Text, usePrefersReducedMotion} from '@sanity/ui'
+import {Card, Label, Spinner, usePrefersReducedMotion} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
@@ -28,14 +28,15 @@ import {
   type RefAttributes,
 } from 'react'
 import {flushSync} from 'react-dom'
-import {Translate, useTranslation} from 'sanity'
+import {Translate, useCurrentUser, useTranslation} from 'sanity'
+import {Text, Flex, VStack} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {Button} from '../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {ErrorCard} from '../components/ErrorCard'
-import {MAX_TIME_TO_IFRAME_LOAD, MAX_TIME_TO_OVERLAYS_CONNECTION} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
+import {type OpenPreviewUrlRef} from '../machines/open-preview-url'
 import {type PresentationMachineRef} from '../machines/presentation-machine'
 import {type PreviewUrlRef} from '../machines/preview-url'
 import {
@@ -49,6 +50,7 @@ import {usePresentationNavigate} from '../usePresentationNavigate'
 import {usePresentationTool} from '../usePresentationTool'
 import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
 import {IFrame} from './IFrame'
+import {MissingPreviewAccessCard} from './MissingPreviewAccessCard'
 import {PreviewHeader} from './PreviewHeader'
 
 const MotionFlex = motion.create(Flex)
@@ -65,6 +67,10 @@ export interface PreviewProps {
   onPathChange: (nextPath: string) => void
   onRefresh: (fallback: () => void) => void
   openPopup: (url: string) => void
+  /**
+   * Resolves preview mode for the current target origin and keeps a valid preview secret for the "Open preview" link
+   */
+  openPreviewUrlRef: OpenPreviewUrlRef
   overlaysConnection: ConnectionStatus
   presentationRef: PresentationMachineRef
   perspective: PresentationPerspective
@@ -101,6 +107,7 @@ export const Preview = memo(function PreviewComponent(
     previewUrlRef,
     handlesPerspectiveChange,
     handlesVariantChange,
+    targetOrigin,
   } = props
 
   const [stablePerspective, setStablePerspective] = useState<typeof perspective | null>(null)
@@ -155,7 +162,6 @@ export const Preview = memo(function PreviewComponent(
       /**
        * Only set the stable perspective if it hasn't been set yet.
        */
-      // oxlint-disable-next-line react/react-compiler
       setStablePerspective((prev) => (prev === null ? perspective : prev))
     }
   }, [handlesPerspectiveChange, perspective])
@@ -167,7 +173,6 @@ export const Preview = memo(function PreviewComponent(
      * variant changes in `src` so they no longer cause a full page reload.
      */
     if (handlesVariantChange) {
-      // oxlint-disable-next-line react/react-compiler
       setStableVariant((prev) => (prev === null ? variant : prev))
     }
   }, [handlesVariantChange, variant])
@@ -189,127 +194,78 @@ export const Preview = memo(function PreviewComponent(
     presentationRef,
     (state) => state.matches('loading') || state.matches({loaded: 'reloading'}),
   )
-
-  const [timedOut, setTimedOut] = useState(false)
   const isRefreshing = useSelector(presentationRef, (state) =>
     state.matches({loaded: 'refreshing'}),
   )
-  const [somethingIsWrong, setSomethingIsWrong] = useState(false)
-  const iframeIsBusy = isLoading || isRefreshing || overlaysConnection === 'connecting'
-
   /**
-   * If the iframe never fires its `load` event — for example when the preview is stuck in a
-   * reload loop, like Next.js dev servers before 16.3.0 get in Firefox when embedded cross-origin
-   * (vercel/next.js#94128) — the presentation machine stays in `loading` forever. Surface the
-   * connection error UI after a deadline instead of spinning indefinitely.
+   * The presentation machine models the iframe load and overlays connection lifecycle — the load
+   * timeout, the escalating overlays connection status, and "continue anyway" dismissals — so the
+   * loading and error UI is derived from its state tags instead of ad-hoc timers.
    */
-  const [loadTimedOut, setLoadTimedOut] = useState(false)
-
-  const [continueAnyway, setContinueAnyway] = useState(false)
+  const _showLoadingOverlay = useSelector(presentationRef, (state) =>
+    state.hasTag('show loading overlay'),
+  )
+  const _showOverlaysConnectionStatus = useSelector(presentationRef, (state) =>
+    state.hasTag('show overlays connection status'),
+  )
+  const overlaysConnectionTimedOut = useSelector(presentationRef, (state) =>
+    state.hasTag('overlays connection timed out'),
+  )
+  const showErrorCard = useSelector(presentationRef, (state) => state.hasTag('show error card'))
+  const _preventIframeInteraction = useSelector(presentationRef, (state) =>
+    state.hasTag('prevent iframe interaction'),
+  )
+  // Read the machine's classification rather than the raw `overlaysConnection` aggregate: a new
+  // connection on a page whose overlays already connected (a recreated channel) reports
+  // `connecting` but is modelled as a reconnect, and the preview is interactive meanwhile.
+  const _overlaysConnectingForTheFirstTime = useSelector(presentationRef, (state) =>
+    state.matches({loaded: {idle: 'connecting'}}),
+  )
   /**
-   * Whether the current `continueAnyway` dismissal was for a load timeout, as opposed to an
-   * overlays connection error. The two are cleared at different times.
+   * Without a preview secret the page loads without preview mode, where visual editing usually
+   * isn't rendered at all. Waiting for its first connection would end in a misleading
+   * "Unable to connect", so the missing access is reported instead.
    */
-  const dismissedLoadTimeoutRef = useRef(false)
+  const missingPreviewSecretAccess = useSelector(
+    previewUrlRef,
+    (state) => state.context.missingPreviewSecretAccess,
+  )
+  const [missingPreviewSecretAccessDismissed, setMissingPreviewSecretAccessDismissed] =
+    useState(false)
+  const showMissingPreviewSecretAccess =
+    missingPreviewSecretAccess && !missingPreviewSecretAccessDismissed
+  const handleContinueWithoutPreviewSecret = useCallback(() => {
+    setMissingPreviewSecretAccessDismissed(true)
+  }, [])
+  const currentUser = useCurrentUser()
+  const ignoreFirstOverlaysConnection =
+    missingPreviewSecretAccess && _overlaysConnectingForTheFirstTime
+  const overlaysConnectingForTheFirstTime =
+    _overlaysConnectingForTheFirstTime && !ignoreFirstOverlaysConnection
+  const showLoadingOverlay = _showLoadingOverlay && !ignoreFirstOverlaysConnection
+  const showOverlaysConnectionStatus =
+    _showOverlaysConnectionStatus && !ignoreFirstOverlaysConnection
+  const preventIframeInteraction =
+    showMissingPreviewSecretAccess || (_preventIframeInteraction && !ignoreFirstOverlaysConnection)
+  const iframeIsBusy = isLoading || isRefreshing || overlaysConnectingForTheFirstTime
+
   const handleContinueAnyway = useCallback(() => {
-    dismissedLoadTimeoutRef.current = loadTimedOut
-    setContinueAnyway(true)
-  }, [loadTimedOut])
-
-  useEffect(() => {
-    /**
-     * Only `loading` waits on the iframe `load` event. `refreshing` waits for a
-     * `visual-editing/refreshed` ack from an already loaded preview, so it must not arm this
-     * deadline — a slow mutation or manual refresh is not a failed load.
-     */
-    if (!isLoading) {
-      // oxlint-disable-next-line react/react-compiler
-      setLoadTimedOut(false)
-      /**
-       * A load-timeout dismissal has to be cleared here, since `continueAnyway` is otherwise only
-       * reset once the overlays reconnect — which never happens in this scenario, leaving the
-       * loading and error UI suppressed for the rest of the session. Only clear our own dismissal:
-       * an overlays-error dismissal must survive reloads until the overlays reconnect.
-       */
-      setContinueAnyway((prev) => (dismissedLoadTimeoutRef.current ? false : prev))
-      dismissedLoadTimeoutRef.current = false
-      return undefined
-    }
-    if (loadTimedOut) {
-      return undefined
-    }
-    const timeout = setTimeout(() => {
-      setLoadTimedOut(true)
-      console.error(
-        `The preview iframe hasn't finished loading after ${MAX_TIME_TO_IFRAME_LOAD}ms. If the preview keeps reloading itself, note that Next.js dev servers older than 16.3.0 enter an infinite reload loop in Firefox when embedded cross-origin (https://github.com/vercel/next.js/pull/94128) — upgrade Next.js, or add \`experimental: {reactDebugChannel: false}\` to your Next.js config as a workaround.`,
-      )
-    }, MAX_TIME_TO_IFRAME_LOAD)
-    return () => clearTimeout(timeout)
-  }, [isLoading, loadTimedOut])
+    presentationRef.send({type: 'continue anyway'})
+  }, [presentationRef])
 
   const handleRetry = useCallback(() => {
     if (!ref.current) {
       return
     }
 
-    setLoadTimedOut(false)
     ref.current.src = previewUrl.toString()
 
     presentationRef.send({type: 'iframe reload'})
   }, [presentationRef, previewUrl])
 
-  const [showOverlaysConnectionStatus, setShowOverlaysConnectionState] = useState(false)
-  useEffect(() => {
-    if (isLoading || isRefreshing) {
-      return undefined
-    }
-
-    if (overlaysConnection === 'connecting' || overlaysConnection === 'reconnecting') {
-      const timeout = setTimeout(() => {
-        setShowOverlaysConnectionState(true)
-      }, 5_000)
-      return () => clearTimeout(timeout)
-    }
-    return undefined
-  }, [overlaysConnection, isLoading, isRefreshing])
-
-  useEffect(() => {
-    if (isLoading || isRefreshing || !showOverlaysConnectionStatus) {
-      return undefined
-    }
-    if (overlaysConnection === 'connected') {
-      // oxlint-disable-next-line react/react-compiler
-      setSomethingIsWrong(false)
-      setShowOverlaysConnectionState(false)
-      setTimedOut(false)
-      setContinueAnyway(false)
-    }
-    if (overlaysConnection === 'connecting') {
-      const timeout = setTimeout(() => {
-        setTimedOut(true)
-        console.error(
-          `Unable to connect to visual editing. Make sure you've setup '@sanity/visual-editing' correctly`,
-        )
-      }, MAX_TIME_TO_OVERLAYS_CONNECTION)
-      return () => clearTimeout(timeout)
-    }
-    if (overlaysConnection === 'reconnecting') {
-      const timeout = setTimeout(() => {
-        setTimedOut(true)
-        setSomethingIsWrong(true)
-      }, MAX_TIME_TO_OVERLAYS_CONNECTION)
-      return () => clearTimeout(timeout)
-    }
-    return undefined
-  }, [isLoading, overlaysConnection, isRefreshing, showOverlaysConnectionStatus])
-
   const onIFrameLoad = useCallback(() => {
     presentationRef.send({type: 'iframe loaded'})
   }, [presentationRef])
-
-  const preventIframeInteraction = useMemo(() => {
-    return (isLoading || (overlaysConnection === 'connecting' && !isRefreshing)) && !continueAnyway
-  }, [continueAnyway, isLoading, isRefreshing, overlaysConnection])
 
   const canUseViewTransition = useSyncExternalStore(
     useCallback(() => () => {}, []),
@@ -321,11 +277,10 @@ export const Preview = memo(function PreviewComponent(
       isLoading ? 'reloading' : 'idle',
       // If CSS View Transitions are supported, then transition iframe viewport dimensions with that instead of Motion
       canUseViewTransition ? '' : viewport,
-      showOverlaysConnectionStatus && !continueAnyway ? 'timedOut' : '',
+      showOverlaysConnectionStatus ? 'timedOut' : '',
     ]
   }, [
     canUseViewTransition,
-    continueAnyway,
     isLoading,
     preventIframeInteraction,
     showOverlaysConnectionStatus,
@@ -360,6 +315,15 @@ export const Preview = memo(function PreviewComponent(
   const [checkOrigin, setCheckOrigin] = useState<false | string>(false)
   const [reportedMismatches] = useState(new Set<string>())
   const reportMismatchingOrigin = useEffectEvent((reportedOrigin: string) => {
+    if (reportedOrigin === targetOrigin) {
+      // The reported origin is the one the visual editing channel already
+      // targets, so there is no misconfiguration to recover from — the
+      // pending handshake can complete on its own. Connecting the recovery
+      // channel here would open a second `presentation` channel to the same
+      // node, and the two channels would fight over the node's single
+      // connection (#14344).
+      return
+    }
     if (allowOrigins.some((allow) => allow.test(reportedOrigin))) {
       setCheckOrigin(reportedOrigin)
       return
@@ -467,7 +431,7 @@ export const Preview = memo(function PreviewComponent(
       }
     }
     return undefined
-  }, [overlaysConnection, timedOut])
+  }, [overlaysConnection])
 
   return (
     <MotionConfig transition={prefersReducedMotion ? {duration: 0} : undefined}>
@@ -475,39 +439,55 @@ export const Preview = memo(function PreviewComponent(
         {previewHeader}
         <Card flex={1} tone="transparent">
           <Flex
-            align="center"
-            height="fill"
-            justify="center"
+            alignItems="center"
+            height="100%"
+            justifyContent="center"
             padding={(canUseViewTransition ? currentViewport : viewport) === 'desktop' ? 0 : 2}
-            sizing="border"
             style={{
               position: 'relative',
               cursor: iframeIsBusy ? 'wait' : undefined,
             }}
           >
             <AnimatePresence>
-              {!somethingIsWrong &&
-              !isLoading &&
-              !isRefreshing &&
-              // viewport, // using CSS View Transitions instead of framer motion to drive this
-              showOverlaysConnectionStatus &&
-              !continueAnyway ? (
+              {showMissingPreviewSecretAccess ? (
+                <MotionFlex
+                  key="missing-preview-secret-access"
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={errorVariants}
+                  justifyContent="center"
+                  alignItems="center"
+                  style={{
+                    background: 'var(--card-bg-color)',
+                    inset: '0',
+                    position: 'absolute',
+                    zIndex: 1,
+                  }}
+                >
+                  <MissingPreviewAccessCard
+                    flex={1}
+                    roles={currentUser?.roles}
+                    onContinueAnyway={handleContinueWithoutPreviewSecret}
+                  />
+                </MotionFlex>
+              ) : showOverlaysConnectionStatus ? (
                 <MotionFlex
                   initial="initial"
                   animate="animate"
                   exit="exit"
                   variants={spinnerVariants}
-                  justify="center"
-                  align="center"
+                  justifyContent="center"
+                  alignItems="center"
                   style={{
                     inset: '0',
                     position: 'absolute',
-                    backdropFilter: timedOut
+                    backdropFilter: overlaysConnectionTimedOut
                       ? 'blur(16px) saturate(0.5) grayscale(0.5)'
                       : 'blur(2px)',
                     ['transition' as string]: 'backdrop-filter 0.2s ease-in-out',
                     // @TODO Because of Safari we have to do this
-                    WebkitBackdropFilter: timedOut
+                    WebkitBackdropFilter: overlaysConnectionTimedOut
                       ? 'blur(16px) saturate(0.5) grayscale(0.5)'
                       : 'blur(2px)',
                     WebkitTransition: '-webkit-backdrop-filter 0.2s ease-in-out',
@@ -516,12 +496,12 @@ export const Preview = memo(function PreviewComponent(
                 >
                   <Flex
                     style={{...sizes[viewport]}}
-                    justify="center"
-                    align="center"
-                    direction="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    flexDirection="column"
                     gap={4}
                   >
-                    {timedOut && (
+                    {overlaysConnectionTimedOut && (
                       <Button
                         disabled
                         mode="ghost"
@@ -529,17 +509,33 @@ export const Preview = memo(function PreviewComponent(
                         style={{opacity: 0}}
                       />
                     )}
-                    <Card radius={2} tone={timedOut ? 'caution' : 'inherit'} padding={4} shadow={1}>
-                      <Flex justify="center" align="center" direction="column" gap={4}>
+                    <Card
+                      radius={2}
+                      tone={overlaysConnectionTimedOut ? 'caution' : 'inherit'}
+                      padding={4}
+                      shadow={1}
+                    >
+                      <Flex
+                        justifyContent="center"
+                        alignItems="center"
+                        flexDirection="column"
+                        gap={4}
+                      >
                         <Spinner muted />
-                        <Text muted size={1}>
-                          {timedOut
+                        <Text
+                          muted
+                          size={1}
+                          as="div"
+                          trim={true}
+                          tone={overlaysConnectionTimedOut ? 'caution' : undefined}
+                        >
+                          {overlaysConnectionTimedOut
                             ? t('preview-frame.status', {context: 'timeout'})
                             : t('preview-frame.status', {context: 'connecting'})}
                         </Text>
                       </Flex>
                     </Card>
-                    {timedOut && (
+                    {overlaysConnectionTimedOut && (
                       <Button
                         // mode="ghost"
                         tone="critical"
@@ -549,16 +545,14 @@ export const Preview = memo(function PreviewComponent(
                     )}
                   </Flex>
                 </MotionFlex>
-              ) : (isLoading || (overlaysConnection === 'connecting' && !isRefreshing)) &&
-                !loadTimedOut &&
-                !continueAnyway ? (
+              ) : showLoadingOverlay ? (
                 <MotionFlex
                   initial="initial"
                   animate="animate"
                   exit="exit"
                   variants={spinnerVariants}
-                  justify="center"
-                  align="center"
+                  justifyContent="center"
+                  alignItems="center"
                   style={{
                     inset: '0',
                     position: 'absolute',
@@ -567,25 +561,25 @@ export const Preview = memo(function PreviewComponent(
                 >
                   <Flex
                     style={{...sizes[viewport]}}
-                    justify="center"
-                    align="center"
-                    direction="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    flexDirection="column"
                     gap={4}
                   >
                     <Spinner muted />
-                    <Text muted size={1}>
+                    <Text muted size={1} as="div" trim={true}>
                       {t('preview-frame.status', {context: 'loading'})}
                     </Text>
                   </Flex>
                 </MotionFlex>
-              ) : (somethingIsWrong || (loadTimedOut && isLoading)) && !continueAnyway ? (
+              ) : showErrorCard ? (
                 <MotionFlex
                   initial="initial"
                   animate="animate"
                   exit="exit"
                   variants={errorVariants}
-                  justify="center"
-                  align="center"
+                  justifyContent="center"
+                  alignItems="center"
                   style={{
                     background: 'var(--card-bg-color)',
                     inset: '0',
@@ -605,27 +599,27 @@ export const Preview = memo(function PreviewComponent(
                       <>
                         {overlaysConnection !== 'connected' && (
                           <Card padding={3} radius={2} tone="critical">
-                            <Stack gap={3}>
+                            <VStack gap={3}>
                               <Label muted size={0}>
                                 {t('preview-frame.overlay.connection-status.label')}
                               </Label>
                               <Code size={1}>
                                 {t('channel.status', {context: overlaysConnection})}
                               </Code>
-                            </Stack>
+                            </VStack>
                           </Card>
                         )}
 
                         {loadersConnection !== 'connected' && (
                           <Card padding={3} radius={2} tone="critical">
-                            <Stack gap={3}>
+                            <VStack gap={3}>
                               <Label muted size={0}>
                                 {t('preview-frame.loader.connection-status.label')}
                               </Label>
                               <Code size={1}>
                                 {t('channel.status', {context: loadersConnection})}
                               </Code>
-                            </Stack>
+                            </VStack>
                           </Card>
                         )}
                       </>
@@ -650,7 +644,6 @@ export const Preview = memo(function PreviewComponent(
     </MotionConfig>
   )
 })
-Preview.displayName = 'Memo(Preview)'
 
 const sizes = {
   desktop: {

@@ -33,9 +33,9 @@ export function useMemberValidation(member: BaseFormNode | undefined) {
     [validation],
   )
 
-  // oxlint-disable-next-line react/react-compiler -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
+  // oxlint-disable-next-line react/refs -- @todo fix later, requires research to avoid perf degradation, for now "this is fine"
   const reconciled = immutableReconcile(prev.current, validation)
-  // oxlint-disable-next-line react/react-compiler -- see above
+  // oxlint-disable-next-line react/refs -- see above
   prev.current = reconciled
 
   return useMemo(() => {

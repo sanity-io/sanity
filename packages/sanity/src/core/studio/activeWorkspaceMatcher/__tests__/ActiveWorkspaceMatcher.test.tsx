@@ -6,10 +6,11 @@ import {VisibleWorkspacesContext, WorkspacesContext} from 'sanity/_singletons'
 import {describe, expect, it, vi} from 'vitest'
 
 import {type WorkspaceSummary} from '../../../config/types'
-import {type AuthState} from '../../../store/authStore/types'
+import {type AuthState} from '../../../store/auth/types'
 import {evaluateWorkspaceHidden} from '../../workspaces/useVisibleWorkspaces'
 import {type VisibleWorkspacesContextValue} from '../../workspaces/VisibleWorkspacesProvider'
 import {ActiveWorkspaceMatcher} from '../ActiveWorkspaceMatcher'
+import {useActiveWorkspace} from '../useActiveWorkspace'
 
 function LoadingComponent() {
   return <div data-testid="loading">Loading</div>
@@ -558,6 +559,35 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
     expect(screen.queryByTestId('not-found')).toBeNull()
   })
 
+  it('does not carry auth params from a stale hash into the redirect', async () => {
+    // The auth modules remove `#sid=` with `window.history.replaceState`, which a `history`
+    // instance created earlier (`unstable_history`) never sees, so its location still has it.
+    const workspaces = [createWorkspace({name: 'a', basePath: '/a'})]
+    const contextValue = createContextValue(workspaces, {a: createAuthState()})
+
+    const history = createMemoryHistory({
+      initialEntries: ['/?foo=bar#sid=12345678901234567890&token=t&claim=c&keep=me'],
+    })
+
+    render(
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <div data-testid="children">Workspace content</div>
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
+    )
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/a')
+    })
+    expect(history.location.search).toBe('?foo=bar')
+    expect(history.location.hash).toBe('#keep=me')
+  })
+
   it('navigates to root when go-to-default is clicked from NotFoundComponent', async () => {
     const visible = createWorkspace({name: 'visible', basePath: '/common/visible'})
 
@@ -590,4 +620,43 @@ describe('ActiveWorkspaceMatcher hidden workspace behaviour', () => {
     expect(screen.getByTestId('children')).toBeDefined()
     expect(screen.queryByTestId('not-found')).toBeNull()
   })
+
+  it('navigates to the chosen workspace when a child switches workspace', async () => {
+    const a = createWorkspace({name: 'a', basePath: '/a'})
+    const b = createWorkspace({name: 'b', basePath: '/b'})
+    const workspaces = [a, b]
+    const contextValue = createContextValue(workspaces, {
+      a: createAuthState(),
+      b: createAuthState(),
+    })
+    const history = createMemoryHistory({initialEntries: ['/a']})
+
+    render(
+      <TestWrapper contextValue={contextValue} allWorkspaces={workspaces}>
+        <ActiveWorkspaceMatcher
+          unstable_history={history}
+          LoadingComponent={LoadingComponent}
+          NotFoundComponent={NotFoundComponent}
+        >
+          <SwitchToWorkspace name="b" />
+        </ActiveWorkspaceMatcher>
+      </TestWrapper>,
+    )
+
+    await userEvent.click(screen.getByRole('button', {name: 'Switch to b'}))
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/b')
+    })
+  })
 })
+
+function SwitchToWorkspace({name}: {name: string}) {
+  const {setActiveWorkspace} = useActiveWorkspace()
+
+  return (
+    <button type="button" onClick={() => setActiveWorkspace(name)}>
+      Switch to {name}
+    </button>
+  )
+}

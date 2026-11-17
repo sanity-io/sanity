@@ -1,21 +1,8 @@
 /* oxlint-disable no-restricted-imports */
-import {
-  Box,
-  type BoxHeight,
-  Button as UIButton,
-  Dialog as UIDialog,
-  type DialogProps as UIDialogProps,
-  Flex,
-  Text,
-} from '@sanity/ui'
-import {
-  type ComponentProps,
-  type HTMLProps,
-  type ReactNode,
-  type Ref,
-  type RefAttributes,
-} from 'react'
+import {Button as UIButton, Dialog as UIDialog, type DialogProps as UIDialogProps} from '@sanity/ui'
+import {type ComponentProps, type HTMLProps, type ReactNode, type RefAttributes} from 'react'
 import {useTranslation} from 'react-i18next'
+import {Text, Flex, Box, type BoxProps} from 'ui5'
 
 /** @internal */
 export type DialogProps = Pick<
@@ -36,10 +23,10 @@ export type DialogProps = Pick<
 > & {
   /**
    * Dialog body height.
-   * Set this to 'fill' (i.e. 100%) if you want overflow body content to be contained
+   * Set this to '100%' if you want overflow body content to be contained
    * and not trigger dynamic border visibility.
    */
-  bodyHeight?: BoxHeight
+  bodyHeight?: BoxProps['height']
   children?: ReactNode
   zOffset?: number
   footer?: {
@@ -71,7 +58,7 @@ export function Dialog({
   zOffset,
   ...props
 }: DialogProps &
-  Pick<HTMLProps<HTMLDivElement>, 'onDragEnter' | 'onDrop'> &
+  Pick<HTMLProps<HTMLDivElement>, 'className' | 'onDragEnter' | 'onDrop'> &
   RefAttributes<HTMLDivElement>) {
   const {t} = useTranslation()
 
@@ -83,10 +70,10 @@ export function Dialog({
       ref={ref}
       footer={
         (footer?.confirmButton || footer?.cancelButton) && (
-          <Flex gap={3} justify="flex-end" padding={3} align="center">
+          <Flex gap={3} justifyContent="flex-end" padding={3} alignItems="center">
             {footer?.description && (
-              <Box flex={1} paddingLeft={1}>
-                <Text size={1} muted>
+              <Box flexBasis="0%" flexGrow={1} paddingLeft={1}>
+                <Text size={1} muted as="div" trim={true}>
                   {footer.description}
                 </Text>
               </Box>
@@ -116,7 +103,12 @@ export function Dialog({
         )
       }
     >
-      <Box height={bodyHeight} padding={padding ? 4 : 0}>
+      <Box
+        height={bodyHeight}
+        //  oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
+        minHeight={bodyHeight === undefined ? 'min-content' : undefined}
+        padding={padding ? 4 : 0}
+      >
         {children}
       </Box>
     </UIDialog>

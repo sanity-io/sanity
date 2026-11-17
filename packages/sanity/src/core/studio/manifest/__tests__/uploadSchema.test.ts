@@ -64,7 +64,7 @@ describe('uploadSchema', () => {
     expect(client.request).toHaveBeenCalledTimes(1)
     expect(client.request).toHaveBeenCalledWith(
       expect.objectContaining({
-        uri: '/descriptors/claim',
+        url: '/descriptors/claim',
         method: 'POST',
       }),
     )

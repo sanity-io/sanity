@@ -1,20 +1,25 @@
 import {DesktopIcon} from '@sanity/icons/Desktop'
 import {MoonIcon} from '@sanity/icons/Moon'
 import {SunIcon} from '@sanity/icons/Sun'
+import {type MessageBusConnection} from '@sanity/sdk/dashboard'
 import {studioTheme, type ThemeColorSchemeKey, ThemeProvider, usePrefersDark} from '@sanity/ui'
 import {
   type ComponentType,
   type ReactNode,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useSyncExternalStore,
 } from 'react'
+import {useSyncObservable} from 'react-rx'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
 
 import {type TFunction} from '../i18n/types'
+import {getMessageBusConnection} from '../store/messageBus/getMessageBusConnection'
 import {type StudioThemeColorSchemeKey} from '../theme/types'
-import {getSnapshot, setSnapshot, subscribe} from './colorSchemeStore'
+import {getSnapshot, LOCAL_STORAGE_KEY, setSnapshot, subscribe} from './colorSchemeStore'
+import {setDocumentColorScheme} from './documentColorScheme'
 
 /** @internal */
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -26,13 +31,29 @@ function useSystemScheme(): ThemeColorSchemeKey {
 function ColorThemeProvider({
   children,
   scheme: _scheme,
+  pinsColorScheme = true,
 }: {
   children: ReactNode
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   scheme: StudioThemeColorSchemeKey
+  pinsColorScheme?: boolean
 }) {
   const systemScheme = useSystemScheme()
   const scheme = _scheme === 'system' ? systemScheme : _scheme
+
+  useLayoutEffect(() => {
+    // Act only on an explicitly pinned scheme. In system mode the browser's own
+    // `prefers-color-scheme` resolution is already correct for both native and down-leveled
+    // `light-dark()`, and on a cold mount the store snapshot is undefined until the subscribe
+    // effect initialises it - writing then would pin a scheme nobody chose.
+    if (pinsColorScheme && (_scheme === 'light' || _scheme === 'dark')) {
+      return setDocumentColorScheme(_scheme)
+    }
+    return undefined
+    // systemScheme is deliberate: the helper's mismatch check reads matchMedia, so an OS flip
+    // while the appearance is pinned must re-run the write
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- see above
+  }, [_scheme, pinsColorScheme, systemScheme])
 
   return (
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -45,8 +66,6 @@ function ColorThemeProvider({
     </ThemeProvider>
   )
 }
-
-const LOCAL_STORAGE_KEY = 'sanityStudio:ui:colorScheme'
 
 /** @internal */
 export interface ColorSchemeProviderProps {
@@ -68,6 +87,18 @@ export function ColorSchemeProvider({
       <ColorSchemeCustomProvider scheme={schemeProp} onSchemeChange={onSchemeChange}>
         {children}
       </ColorSchemeCustomProvider>
+    )
+  }
+
+  const messageBusConnection = getMessageBusConnection()
+  if (messageBusConnection) {
+    return (
+      <ColorSchemeMessageBusProvider
+        connection={messageBusConnection}
+        onSchemeChange={onSchemeChange}
+      >
+        {children}
+      </ColorSchemeMessageBusProvider>
     )
   }
 
@@ -106,6 +137,34 @@ export function ColorSchemeLocalStorageProvider({
     <ColorSchemeSetValueContext.Provider value={setSnapshot}>
       <ColorSchemeValueContext.Provider value={scheme}>
         <ColorThemeProvider scheme={scheme}>{children}</ColorThemeProvider>
+      </ColorSchemeValueContext.Provider>
+    </ColorSchemeSetValueContext.Provider>
+  )
+}
+
+// The message bus host owns the appearance, so Studio offers no way to change it.
+function ColorSchemeMessageBusProvider({
+  children,
+  connection,
+  onSchemeChange,
+}: Pick<ColorSchemeProviderProps, 'children' | 'onSchemeChange'> & {
+  connection: MessageBusConnection
+}) {
+  const colorScheme = useMemo(() => connection.subscribe('preferences.color-scheme'), [connection])
+  const scheme = useSyncObservable(colorScheme, colorScheme.getCurrent() ?? 'system')
+
+  useEffect(() => {
+    if (typeof onSchemeChange === 'function') {
+      onSchemeChange(scheme)
+    }
+  }, [onSchemeChange, scheme])
+
+  return (
+    <ColorSchemeSetValueContext.Provider value={false}>
+      <ColorSchemeValueContext.Provider value={scheme}>
+        <ColorThemeProvider scheme={scheme} pinsColorScheme={false}>
+          {children}
+        </ColorThemeProvider>
       </ColorSchemeValueContext.Provider>
     </ColorSchemeSetValueContext.Provider>
   )

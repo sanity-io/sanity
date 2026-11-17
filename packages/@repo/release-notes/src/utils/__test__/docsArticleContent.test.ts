@@ -231,4 +231,55 @@ After.`
     const callout = blocks.find((block) => block._type === 'docsCallout')
     expect(callout).toMatchObject({_type: 'docsCallout', type: 'warning'})
   })
+
+  it('hoists inline images out of text blocks, since the docs schema has no inline objects', () => {
+    // Shape of a Cursor PR footer after uploadImages() ran: two linked badge
+    // images separated by a space, with the links left as unreferenced markDefs.
+    const badgeRow = {
+      _type: 'block' as const,
+      _key: 'badges',
+      style: 'normal' as const,
+      markDefs: [
+        {_key: 'link-1', _type: 'link', href: 'https://cursor.com/agents/1'},
+        {_key: 'link-2', _type: 'link', href: 'https://cursor.com/agents/2'},
+      ],
+      children: [
+        {_type: 'image' as const, _key: 'badge-1', asset: {_ref: 'image-1', _type: 'reference'}},
+        {_type: 'span' as const, _key: 'space', text: ' ', marks: []},
+        {_type: 'image' as const, _key: 'badge-2', asset: {_ref: 'image-2', _type: 'reference'}},
+      ],
+    } as unknown as NormalizedMarkdownBlock
+
+    expect(toDocsArticleContent(badgeRow, {style: 'normal', listItem: 'bullet', level: 1})).toEqual(
+      [
+        {_type: 'image', _key: 'badge-1', asset: {_ref: 'image-1', _type: 'reference'}},
+        {_type: 'image', _key: 'badge-2', asset: {_ref: 'image-2', _type: 'reference'}},
+      ],
+    )
+  })
+
+  it('applies list overrides and link normalization to the text around a hoisted image', () => {
+    const [before, image, after] = toDocsArticleContent(
+      textBlock({
+        _key: 'b',
+        markDefs: [{_key: 'link-1', _type: 'link', href: 'https://example.com'}],
+        children: [
+          {_type: 'span', _key: 's1', text: 'Some gifs: ', marks: ['link-1']},
+          {_type: 'image', _key: 'gif', src: 'https://example.com/x.gif'},
+          {_type: 'span', _key: 's2', text: 'and more', marks: []},
+        ],
+      } as Partial<NormalizedMarkdownBlock>),
+      {style: 'normal', listItem: 'bullet', level: 1},
+    )
+
+    expect(before).toMatchObject({
+      _type: 'block',
+      _key: 'b',
+      listItem: 'bullet',
+      level: 1,
+      markDefs: [{_key: 'link-1', _type: 'link', url: 'https://example.com'}],
+    })
+    expect(image).toEqual({_type: 'image', _key: 'gif', src: 'https://example.com/x.gif'})
+    expect(after).toMatchObject({_type: 'block', _key: 'b-2', listItem: 'bullet', markDefs: []})
+  })
 })

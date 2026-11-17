@@ -12,12 +12,14 @@ import {resolveInitialValueTemplates} from 'sanity-test-studio/initialValueTempl
 import {customInspector} from 'sanity-test-studio/inspectors/custom'
 import {languageFilter} from 'sanity-test-studio/plugins/language-filter/plugin'
 import {newDocumentOptions} from 'sanity-test-studio/structure/resolveNewDocumentOptions'
+import {singletons} from 'sanity-test-studio/structure/resolveSingletons'
 import {structure} from 'sanity-test-studio/structure/resolveStructure'
 import {defaultDocumentNode} from 'sanity-test-studio/structure/resolveStructureDocumentNode'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
 import {customComponents} from './components-api'
+import {diagnosticsBridge} from './diagnosticsBridge'
 import {e2eI18nBundles} from './i18n/bundles'
 import {schemaTypes} from './schemaTypes'
 
@@ -79,8 +81,10 @@ const defaultConfig = defineConfig({
       return prev
     },
     newDocumentOptions,
+    singletons,
   },
   plugins: [
+    diagnosticsBridge(),
     customComponents(),
     structureTool({
       icon: BookIcon,

@@ -1,4 +1,7 @@
+import {type HttpError} from '@sanity/client'
 import {type Observable} from 'rxjs'
+
+import {type AuthStore} from '../../store/auth/types'
 
 /**
  * Options for delegating a request error to the studio's error UI.
@@ -32,9 +35,15 @@ export interface RequestErrorReportOptions {
  */
 export type RequestErrorClaim =
   | {type: 'networkError'; error: Error; retryable: boolean}
-  | {type: 'serverError'; error: Error; retryable: boolean}
-  | {type: 'rateLimited'; error: Error; retryAfterSeconds?: number; retryable: boolean}
-  | {type: 'unauthorized'; error: Error; projectId?: string}
+  | {type: 'serverError'; error: HttpError; retryable: boolean}
+  | {type: 'rateLimited'; error: HttpError; retryAfterSeconds?: number; retryable: boolean}
+  | {
+      type: 'unauthorized'
+      error: HttpError
+      projectId?: string
+      /** The auth store of the client the session was rejected for, when known. */
+      authStore?: AuthStore
+    }
 
 /**
  * Call-site API for delegating unrecoverable request errors to the
@@ -51,7 +60,7 @@ export type RequestErrorClaim =
  *
  * // 1. Thunk wrapper — the dialog's "Try again" re-invokes the thunk.
  * //    The thunk may return a promise or a (single-shot) observable:
- * const user = await attempt(() => client.request({uri: '/users/me'}), {
+ * const user = await attempt(() => client.request({url: '/users/me'}), {
  *   retryable: true,
  * })
  *
@@ -129,6 +138,11 @@ export interface StudioErrorHandler {
  * @internal
  */
 export interface RequestErrorChannel extends StudioErrorHandler {
+  /**
+   * `handle`, for a request of a client that `authStore` created: an invalid session logs out
+   * that store.
+   */
+  handle(err: unknown, owner?: {authStore?: AuthStore}): Promise<never>
   /** Currently active claim (undefined → no dialog). */
   claim$: Observable<RequestErrorClaim | undefined>
   /** Re-runs all parked retryable requests and clears the claim. */

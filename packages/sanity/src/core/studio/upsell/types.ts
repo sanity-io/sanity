@@ -27,3 +27,14 @@ export interface UpsellData {
     text: string
   }
 }
+
+/**
+ * The settled outcome of an upsell data request: the data, or `hasError` when the request failed
+ * or returned nothing. Never both.
+ *
+ * @internal
+ */
+export interface UpsellDataResult {
+  upsellData: UpsellData | null
+  hasError: boolean
+}

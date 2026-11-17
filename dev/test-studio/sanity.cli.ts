@@ -1,4 +1,5 @@
-import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
+import {viteCssModules} from '@repo/css-modules-kit'
+import {studioPandaCss} from '@repo/pandacss/vite'
 import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig} from 'vite'
 
@@ -8,7 +9,8 @@ const isStaging = process.env.SANITY_INTERNAL_ENV == 'staging'
 // the DevTools dock in a running `sanity dev` server without restarting it.
 // Usage: `pnpm devtools:test-studio` from the repo root (see AGENTS.md).
 const isViteDevToolsEnabled = process.env.ENABLE_VITE_DEVTOOLS === 'true'
-const reactCompilerAllowList = /\/(?:sanity|@sanity\/vision)\/src\/.*\.tsx?$/
+// React DevTools profiling via agent-react-devtools. Usage: `pnpm react-devtools:test-studio` (see AGENTS.md).
+const isReactDevtoolsEnabled = process.env.ENABLE_REACT_DEVTOOLS === 'true'
 
 export default defineCliConfig({
   api: isStaging
@@ -31,43 +33,32 @@ export default defineCliConfig({
   // {@link https://vite.dev/guide/rolldown#full-bundle-mode}
   unstable_bundledDev: true,
   reactCompiler: {
+    // `transform: 'oxc'` runs React Compiler through `oxc-transform-react` (the native Rust
+    // port): one native pass handles React Compiler, TypeScript/JSX and Fast Refresh — no babel
+    transform: 'oxc',
     target: '19',
-    // By default the compiler is loaded up on all workspace files, even sanity/lib/structure.js which is pre-compiled with `tsdown`,
-    // and so we filter by just studio files
-    sources: (filename) => {
-      // The default behavior is to always skip node_modules: https://github.com/facebook/react/blob/d6cae440e34c6250928e18bed4a16480f83ae18a/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Options.ts#L326
-      if (filename.indexOf('node_modules') !== -1) {
-        return false
-      }
-      // Compile files in the test studio itself
-      if (filename.indexOf('dev/test-studio') !== -1) {
-        return true
-      }
-      // If the file is `.ts` or `.tsx` then we should run the compiler (it's resolved with the `monorepo` condition during `sanity dev`)
-      // otherwise it's likely resolving a built file that had react compiler already applied during its build process
-      return reactCompilerAllowList.test(filename)
-    },
+    // By default the compiler runs on all workspace files, even sanity/lib/structure.js which is
+    // pre-compiled with `tsdown`, and so we filter by just studio files. oxc `sources` are
+    // substring filters (function filters can't cross the native boundary): the studio's own
+    // files, plus workspace sources resolved via the `monorepo` condition during `sanity dev` —
+    // pre-compiled output lives under `lib/`, never `src/`, so it can't match. node_modules is
+    // already excluded by @vitejs/plugin-react's default `exclude` before the compiler runs.
+    sources: ['dev/test-studio', '/sanity/src/', '/@sanity/vision/src/'],
   },
   async vite(viteConfig, {command, mode}) {
     const reactProductionProfiling = process.env.REACT_PRODUCTION_PROFILING === 'true'
 
     let nextConfig = mergeConfig(viteConfig, {
-      plugins: [vanillaExtractPlugin()],
+      // `sanity dev` resolves the workspace packages to their sources (the `monorepo` condition
+      // below), so the Panda CSS `.css.ts` modules of `sanity` are built here, and the CSS modules
+      // of `@sanity/vision` with the `css` options below; `sanity build` uses the built packages
+      // and their `bundle.css`
+      plugins: command === 'serve' ? studioPandaCss() : [],
       // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
       optimizeDeps: {exclude: ['sanity']},
-      // With experimental.bundledDev, shared chunks can evaluate before the entry
-      // chunk's react-refresh preamble, causing:
-      // "@vitejs/plugin-react can't detect preamble". Force entry-first order.
-      // See https://github.com/vitejs/vite-plugin-react/issues/1191
-      ...(command === 'serve'
-        ? {
-            build: {
-              rolldownOptions: {
-                output: {strictExecutionOrder: true},
-              },
-            },
-          }
-        : {}),
+      // One upfront stylesheet, the way a studio that installs `sanity` from npm loads its
+      // `bundle.css`, instead of a sheet per lazy chunk. Needs @sanity/cli-build >= 7.0.1 to link it
+      build: {cssCodeSplit: false},
     })
 
     if (isViteDevToolsEnabled) {
@@ -78,6 +69,11 @@ export default defineCliConfig({
         // `devtools: {}` makes `sanity build` emit a Rolldown build session that the DevTools dock can inspect
         build: {rolldownOptions: {devtools: {}}},
       })
+    }
+
+    if (isReactDevtoolsEnabled) {
+      const {reactDevtools} = await import('agent-react-devtools/vite')
+      nextConfig = mergeConfig(nextConfig, {plugins: [reactDevtools()]})
     }
 
     // Support React Production Profiling on deployed studios
@@ -105,6 +101,9 @@ export default defineCliConfig({
     if (mode !== 'production' && command === 'serve') {
       return mergeConfig(nextConfig, {
         resolve: {conditions: ['monorepo', ...defaultClientConditions]},
+        // `@sanity/vision` resolves to its sources here, so its `*.module.css` files compile with
+        // the Lightning CSS scoping and class names of its package build
+        css: viteCssModules,
       })
     }
 

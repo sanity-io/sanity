@@ -6,8 +6,9 @@ import {useClient} from '../../hooks/useClient'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getDraftId} from '../../util/draftUtils'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {getTargetDocument} from '../../util/getTargetDocument'
-import {type VariantDocumentAction} from '../../variants/store/variantsClient'
+import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../variants/store/constants'
 import {getVariantId} from '../../variants/tool/util'
 import {type VersionInfoDocumentStub} from '../store/types'
 import {useDocumentVersions} from './useDocumentVersions'
@@ -30,11 +31,12 @@ export interface UseCopyToDraftsReturn {
 export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraftsReturn {
   const {onNavigate, onConfirmationRequest, documentVersionInfoStub, documentGroupId} = options
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const variantsClient = useClient(VARIANTS_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
   const {t} = useTranslation()
 
   const {versions} = useDocumentVersions({documentId: documentGroupId})
-  const variantRef = documentVersionInfoStub?._system.variant?._ref
+  const variantRef = getDocumentVersionVariantId(documentVersionInfoStub)
   const hasDraftVersion = useMemo(
     () =>
       Boolean(
@@ -64,9 +66,9 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraft
         if (documentVersionInfoStub._system.bundleId === 'drafts') {
           throw new Error('Cannot copy a draft onto itself')
         }
-        const actions: (Action | VariantDocumentAction)[] = []
+        const actions: Action[] = []
 
-        const variantRef = documentVersionInfoStub._system.variant?._ref
+        const variantRef = getDocumentVersionVariantId(documentVersionInfoStub)
         if (variantRef) {
           const variantId = getVariantId(variantRef)
 
@@ -104,8 +106,8 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraft
           })
         }
 
-        // `client.action` is not typed for variant actions yet; see `variantsClient`.
-        await client.action(actions as Action[], {
+        const actionClient = variantRef ? variantsClient : client
+        await actionClient.action(actions, {
           tag: 'document.copy-to-drafts',
         })
 
@@ -124,6 +126,7 @@ export function useCopyToDrafts(options: UseCopyToDraftsOptions): UseCopyToDraft
     },
     [
       client,
+      variantsClient,
       documentVersionInfoStub,
       hasDraftVersion,
       documentGroupId,

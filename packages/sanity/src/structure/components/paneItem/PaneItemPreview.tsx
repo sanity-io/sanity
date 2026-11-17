@@ -4,22 +4,24 @@ import {
   type SchemaType,
   type SortOrdering,
 } from '@sanity/types'
-import {Flex} from '@sanity/ui'
 import {type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
   type DocumentPresence,
   DocumentPreviewPresence,
   type DocumentPreviewStore,
-  DocumentStatus,
-  DocumentStatusIndicator,
+  DocumentVersionsStatus,
+  DocumentVersionsStatusIndicator,
   type GeneralPreviewLayoutKey,
+  getDefaultVariant,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
+  getPublishedId,
   SanityDefaultPreview,
-  useDocumentVersionInfo,
+  useDocumentVersions,
   usePerspective,
 } from 'sanity'
+import {Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 
@@ -49,10 +51,11 @@ const INITIAL_PREVIEW_STATE = {
 export function PaneItemPreview(props: PaneItemPreviewProps) {
   const {icon, layout, presence, schemaType, sortOrder, value} = props
 
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const versionsInfo = useDocumentVersionInfo(value._id)
+  const publishedId = getPublishedId(value._id)
+  const {versions} = useDocumentVersions({documentId: publishedId})
 
-  const {perspectiveStack, selectedVariantName} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
+  const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const viewOptions = useMemo((): PrepareViewOptions | undefined => {
     if (!sortOrder) return undefined
     return {
@@ -81,10 +84,6 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     selectedVariantName,
   ])
 
-  // Deferred: react-rx v5's deferral is identity-coherent, so when a
-  // (recycled) list item switches to a new document id the live snapshot for
-  // the new id wins and the previous document's title/media never renders
-  // next to the new document's version badges.
   const {
     snapshot,
     original,
@@ -95,24 +94,14 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   const status = isLoading ? null : (
     <TooltipDelayGroupProvider>
-      <Flex align="center" gap={3}>
+      <Flex alignItems="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <DocumentStatusIndicator
-          draft={versionsInfo.draft}
-          published={versionsInfo.published}
-          versions={versionsInfo.versions}
-        />
+        <DocumentVersionsStatusIndicator documentVersions={versions} />
       </Flex>
     </TooltipDelayGroupProvider>
   )
 
-  const tooltip = (
-    <DocumentStatus
-      draft={versionsInfo.draft}
-      published={versionsInfo.published}
-      versions={versionsInfo.versions}
-    />
-  )
+  const tooltip = <DocumentVersionsStatus documentGroupId={publishedId} />
 
   return (
     <SanityDefaultPreview
@@ -122,6 +111,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       layout={layout}
       status={status}
       tooltip={tooltip}
+      tooltipPlacement="beside"
     />
   )
 }

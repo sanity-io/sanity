@@ -75,10 +75,6 @@ export const createBifurTransport = (bifur: BifurClient, sessionId: string): Tra
       })
     }
 
-    if (message.type === 'disconnect') {
-      return bifur.request('presence_disconnect', {session: sessionId})
-    }
-
     return EMPTY
   }
 

@@ -3,7 +3,9 @@ import {type Dispatch} from 'react'
 import {catchError, concatWith, merge, type Observable, of, scan, shareReplay, Subject} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
-import {listenQuery} from '../../store/document/listenQuery'
+import {listenQueryOnGlobalListener} from '../../store/document/listenQuery'
+import {type GlobalListenerStore} from '../../store/globalListener/createGlobalListenerStore'
+import {isVariantId, type SystemVariant} from '../types'
 import {VARIANT_DOCUMENTS_PATH, VARIANT_DOCUMENT_TYPE} from './constants'
 import {variantStoreReducer, type VariantStoreAction, type VariantStoreState} from './reducer'
 
@@ -33,12 +35,17 @@ const INITIAL_STATE: VariantStoreState = {
 
 export interface VariantStore {
   state$: Observable<VariantStoreState>
+  /**
+   * What `state$` emits first; hooks render it until the subscription started on commit emits.
+   */
+  initialState: VariantStoreState
   dispatch: Dispatch<VariantStoreAction>
 }
 
 /**
  * The variants store is initialised lazily when first subscribed to. Upon subscription, it will
- * fetch a list of variants and create a listener to keep the locally held state fresh.
+ * fetch a list of variants, and fetch it again whenever the global listener reports a change to a
+ * variant definition document.
  *
  * The store is not disposed of when all subscriptions are closed. After it has been initialised,
  * it will keep listening for the duration of the app's lifecycle. Subsequent subscriptions will be
@@ -46,9 +53,10 @@ export interface VariantStore {
  */
 export function createVariantsStore(context: {
   client: SanityClient
+  globalListenerStore: GlobalListenerStore
   enabled: boolean
 }): VariantStore {
-  const {client, enabled} = context
+  const {client, globalListenerStore, enabled} = context
 
   if (!enabled) {
     const disabledState: VariantStoreState = {
@@ -58,6 +66,7 @@ export function createVariantsStore(context: {
 
     return {
       state$: of(disabledState),
+      initialState: disabledState,
       dispatch: () => {
         // noop
       },
@@ -78,7 +87,11 @@ export function createVariantsStore(context: {
     },
   }).pipe(
     concatWith(
-      listenQuery(client, QUERY, {}, {tag: 'variants.listen'}).pipe(
+      listenQueryOnGlobalListener<SystemVariant[]>(client, QUERY, {
+        invalidationChannel: globalListenerStore.invalidationChannel,
+        shouldRefetch: ({documentId}) => isVariantId(documentId),
+        fetchTag: 'variants.store.fetch',
+      }).pipe(
         map((variants): VariantStoreAction => ({type: 'FETCH_SUCCEEDED', payload: variants})),
       ),
     ),
@@ -102,6 +115,7 @@ export function createVariantsStore(context: {
 
   return {
     state$,
+    initialState: INITIAL_STATE,
     dispatch,
   }
 }

@@ -1,5 +1,4 @@
 import {type SchemaType} from '@sanity/types'
-import {type ReactNode, useCallback} from 'react'
 import {
   getPublishedId,
   PreviewCard,
@@ -26,22 +25,17 @@ export function ReferencePreviewLink(props: ReferencePreviewLinkProps) {
   const documentPreviewStore = useDocumentPreviewStore()
   const {ReferenceChildLink} = usePaneRouter()
 
-  const Link = useCallback(
-    function LinkComponent(linkProps: {children: ReactNode}) {
-      return (
-        <ReferenceChildLink
-          documentId={value?._id}
-          documentType={type?.name}
-          parentRefPath={EMPTY_ARRAY}
-          {...linkProps}
-        />
-      )
-    },
-    [ReferenceChildLink, type?.name, value?._id],
-  )
-
   return (
-    <PreviewCard __unstable_focusRing as={Link} data-as="a" onClick={onClick} radius={2}>
+    <PreviewCard
+      __unstable_focusRing
+      as={ReferenceChildLink}
+      documentId={value?._id}
+      documentType={type?.name}
+      parentRefPath={EMPTY_ARRAY}
+      data-as="a"
+      onClick={onClick}
+      radius={2}
+    >
       <PaneItemPreview
         documentPreviewStore={documentPreviewStore}
         icon={type?.icon}

@@ -15,7 +15,7 @@ interface SearchWeightEntry {
   type?: 'string' | 'pt'
 }
 
-const CACHE = new WeakMap<SchemaType | CrossDatasetType, SearchSpec>()
+const CACHE = new WeakMap<SchemaType | CrossDatasetType, Map<string, SearchSpec>>()
 
 const PREVIEW_FIELD_WEIGHT_MAP = {
   title: 10,
@@ -97,6 +97,8 @@ function getLeafWeights(
     }
 
     if (isSlugField(type)) {
+      // The weight applies to `<path>.current`, one level below the slug field itself.
+      if (depth + 1 > maxDepth) return accumulator
       const weight = getWeight(type, path)
       if (typeof weight === 'number') {
         accumulator.push({
@@ -235,7 +237,11 @@ export function deriveSearchWeightsFromType2024({
   isCrossDataset,
   processPaths = (paths) => paths,
 }: DeriveSearchWeightsFromTypeOptions): SearchSpec {
-  const cached = CACHE.get(schemaType)
+  // The dataset's partial index settings can lower `maxDepth` after a first search at the default.
+  const cacheKey = `${maxDepth}:${Boolean(isCrossDataset)}`
+  const cachedByOptions = CACHE.get(schemaType) ?? new Map<string, SearchSpec>()
+  CACHE.set(schemaType, cachedByOptions)
+  const cached = cachedByOptions.get(cacheKey)
   if (cached) return cached
 
   const userSetWeights = getLeafWeights(schemaType, maxDepth, getUserSetWeight)
@@ -261,6 +267,6 @@ export function deriveSearchWeightsFromType2024({
     ),
   }
 
-  CACHE.set(schemaType, result)
+  cachedByOptions.set(cacheKey, result)
   return result
 }

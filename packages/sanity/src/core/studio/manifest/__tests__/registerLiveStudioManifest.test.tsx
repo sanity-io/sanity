@@ -3,7 +3,7 @@ import {of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type Source, type WorkspaceSummary} from '../../../config/types'
-import {type AuthStore} from '../../../store/authStore/types'
+import {type AuthStore} from '../../../store/auth/types'
 import {type UserApplication} from '../../../store/userApplications'
 import {fetchCanDeployStudio} from '../canDeployStudio'
 import {registerStudioManifest} from '../registerLiveStudioManifest'
@@ -133,7 +133,7 @@ describe('registerStudioManifest', () => {
 
       expect(mockRequest).toHaveBeenCalledWith({
         method: 'POST',
-        uri: '/projects/app-project/user-applications/app-123/config/live-manifest',
+        url: '/projects/app-project/user-applications/app-123/config/live-manifest',
         body: {
           value: expect.objectContaining({
             workspaces: expect.any(Array),
