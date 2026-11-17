@@ -56,11 +56,6 @@ export interface UserAvatarProps {
   tone?: 'navbar'
   user: User | string
   withTooltip?: boolean
-  /**
-   * Leaves out the avatar's native `title`, for avatars whose names are given another way, such
-   * as an accessible name on the stack that holds them.
-   */
-  hideTitle?: boolean
 }
 
 const symbols = /[^\p{Alpha}\p{White_Space}]/gu
