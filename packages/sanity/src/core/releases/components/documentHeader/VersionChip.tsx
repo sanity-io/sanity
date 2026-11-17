@@ -11,6 +11,7 @@ import {INITIAL_COMPANION_DOCS} from '../../../canvas/store/createCanvasCompanio
 import {useCanvasCompanionDocsStore} from '../../../canvas/store/useCanvasCompanionDocsStore'
 import {useSchema} from '../../../hooks/useSchema'
 import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
+import {isReleaseVersionAllowed} from '../../../util/documentVersions'
 import {getDraftId, getPublishedId, getVersionId} from '../../../util/draftUtils'
 import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useVersionContextMenu} from '../../hooks/useVersionContextMenu'
@@ -119,8 +120,8 @@ export const VersionChip = memo(function VersionChip(props: {
   })
 
   // Copying to a release is the only option on the published chip.
-  const versionsAllowed = useSchema().get(documentType)?.allowVersions !== false
-  const hasContextMenu = versionsAllowed || bundleId !== 'published'
+  const hasContextMenu =
+    isReleaseVersionAllowed(useSchema().get(documentType)) || bundleId !== 'published'
   const contextMenuHandler =
     disabled || !releasesToolAvailable || !hasContextMenu ? undefined : handleContextMenu
 

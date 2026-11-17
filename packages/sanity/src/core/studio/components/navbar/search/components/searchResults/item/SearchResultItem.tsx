@@ -14,6 +14,7 @@ import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {useValuePreview} from '../../../../../../../preview/useValuePreview'
 import {useGrantsStore} from '../../../../../../../store/datastores'
 import {useDocumentPresence} from '../../../../../../../store/presence/useDocumentPresence'
+import {isReleaseVersionAllowed} from '../../../../../../../util/documentVersions'
 import {getPublishedId} from '../../../../../../../util/draftUtils'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {SearchResultItemPreview} from './SearchResultItemPreview'
@@ -79,10 +80,10 @@ export function SearchResultItem({
   const existsInRelease = state.disabledDocumentIds?.some((id) =>
     id.includes(getPublishedId(documentId)),
   )
-  const versionsNotSupported = state.canDisableAction && type?.allowVersions === false
+  const releasesNotSupported = state.canDisableAction && !isReleaseVersionAllowed(type)
   // should the search items be disasabled
   const disabledAction =
-    (!hasCreatePermission && state.canDisableAction) || existsInRelease || versionsNotSupported
+    (!hasCreatePermission && state.canDisableAction) || existsInRelease || releasesNotSupported
 
   const documentStub = useMemo(
     () => ({_id: documentId, _type: documentType}),
@@ -138,8 +139,8 @@ export function SearchResultItem({
   )
 
   let tooltipContent = t('release.action.permission.error')
-  if (versionsNotSupported) {
-    tooltipContent = t('release.action.versions-not-supported')
+  if (releasesNotSupported) {
+    tooltipContent = t('release.action.releases-not-supported')
   } else if (existsInRelease) {
     tooltipContent = t('release.action.already-exists-in-release')
   }

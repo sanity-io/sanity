@@ -1621,11 +1621,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'new-document.no-results': 'No results for <strong>{{searchQuery}}</strong>',
   /** Aria label for the button that opens the "Create new document" popover/dialog */
   'new-document.open-dialog-aria-label': 'Create new document',
+  /** Tooltip on a document type that can't be created while a release is selected, because it doesn't allow releases */
+  'new-document.releases-not-supported': "Documents of this type can't be created in a release",
   /** Title for "Create new document" dialog */
   'new-document.title': 'Create new document',
-  /** Tooltip on a document type that can't be created while a release or variant is selected, because it doesn't allow versions */
-  'new-document.versions-not-supported':
-    "Documents of this type can't be created in a release or variant",
+  /** Tooltip on a document type that can't be created while a variant is selected, because it doesn't allow variants */
+  'new-document.variants-not-supported': "Documents of this type can't be created in a variant",
   /** @deprecated Label for button that will make the browser reload when users' studio version is out-of-date */
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   'package-version.new-package-available.reload-button': 'Push to reload',
@@ -1717,6 +1718,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.action.permission.error': 'You do not have permission to perform this action',
   /** Action message for running a scheduled draft immediately */
   'release.action.publish-now': 'Publish now',
+  /** Tooltip for a document that can't be added to a release because its schema type doesn't allow releases */
+  'release.action.releases-not-supported': "Documents of this type can't be added to releases",
   /** Error message description for when a version is reverted from being unpublished */
   'release.action.revert-unpublish-version.failure.description':
     'Please try again or check your connection. The document is still going to be unpublished upon release.',
@@ -1735,8 +1738,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Action message for when a version is set to be unpublished successfully */
   'release.action.unpublish-version.success':
     'Successfully set <strong>{{title}}</strong> to be unpublished on release',
-  /** Tooltip for a document that can't be added to a release because its schema type doesn't allow versions */
-  'release.action.versions-not-supported': "Documents of this type can't be added to releases",
   /** Action message for when the view release is pressed */
   'release.action.view-release': 'View release',
   /** Action message for when the view scheduled drafts is pressed */

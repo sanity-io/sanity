@@ -568,7 +568,7 @@ describe('DocumentNotInVariantBanner', () => {
       expect(button).not.toBeDisabled()
     })
 
-    it('disables the action when the document type does not allow versions', async () => {
+    it('disables the action when the document type does not allow variants', async () => {
       mockUseDocumentPane.mockReturnValue({
         documentId: DOCUMENT_ID,
         value: existingDocumentValue,
@@ -578,7 +578,7 @@ describe('DocumentNotInVariantBanner', () => {
             defineType({
               name: 'article',
               type: 'document',
-              allowVersions: false,
+              versions: ['releases'],
               fields: [{name: 'title', type: 'string'}],
             }),
           ],

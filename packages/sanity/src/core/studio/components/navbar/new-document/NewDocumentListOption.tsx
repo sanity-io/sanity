@@ -10,6 +10,7 @@ import {useSchema} from '../../../../hooks/useSchema'
 import {useI18nText} from '../../../../i18n/hooks/useI18nText'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {usePerspective} from '../../../../perspective/usePerspective'
+import {isReleaseVersionAllowed, isVariantVersionAllowed} from '../../../../util/documentVersions'
 import {type NewDocumentOption, type PreviewLayout} from './types'
 
 // This value is used to calculate the max-height of the popover and for the virtual list item size.
@@ -29,11 +30,14 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
   const {option, currentUser, onClick, preview} = props
   const {selectedReleaseId, selectedVariantNames} = usePerspective()
   const {t} = useTranslation()
-  const schema = useSchema()
-  const isVersionSelected = Boolean(selectedReleaseId) || selectedVariantNames.length > 0
-  const versionsNotSupported =
-    isVersionSelected && schema.get(option.schemaType)?.allowVersions === false
-  const canCreate = option.hasPermission && !versionsNotSupported
+  const schemaType = useSchema().get(option.schemaType)
+  let unsupportedReason: string | undefined
+  if (selectedReleaseId && !isReleaseVersionAllowed(schemaType)) {
+    unsupportedReason = t('new-document.releases-not-supported')
+  } else if (selectedVariantNames.length > 0 && !isVariantVersionAllowed(schemaType)) {
+    unsupportedReason = t('new-document.variants-not-supported')
+  }
+  const canCreate = option.hasPermission && !unsupportedReason
   const params = useMemo(
     () => ({template: option.templateId, type: option.schemaType, version: selectedReleaseId}),
     [option.schemaType, option.templateId, selectedReleaseId],
@@ -87,9 +91,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
       disabled={canCreate}
       portal
       content={
-        versionsNotSupported ? (
-          t('new-document.versions-not-supported')
-        ) : (
+        unsupportedReason ?? (
           <InsufficientPermissionsMessage currentUser={currentUser} context="create-document" />
         )
       }

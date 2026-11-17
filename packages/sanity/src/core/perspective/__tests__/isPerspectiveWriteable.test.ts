@@ -15,13 +15,19 @@ const schema = createSchema({
       name: 'noVersionsLiveEdit',
       type: 'document',
       liveEdit: true,
-      allowVersions: false,
+      versions: [],
       fields: [{name: 'title', type: 'string'}],
     }),
     defineType({
-      name: 'noVersions',
+      name: 'variantsOnly',
       type: 'document',
-      allowVersions: false,
+      versions: ['variants'],
+      fields: [{name: 'title', type: 'string'}],
+    }),
+    defineType({
+      name: 'releasesOnly',
+      type: 'document',
+      versions: ['releases'],
       fields: [{name: 'title', type: 'string'}],
     }),
     defineType({
@@ -36,7 +42,7 @@ const schema = createSchema({
 const getType = (name: string) => schema.get(name) as ObjectSchemaType
 
 describe('isPerspectiveWriteable', () => {
-  test.each(['noVersionsLiveEdit', 'noVersions'])(
+  test.each(['noVersionsLiveEdit', 'variantsOnly'])(
     'does not allow writing a `%s` document to a release',
     (typeName) => {
       expect(
@@ -45,30 +51,43 @@ describe('isPerspectiveWriteable', () => {
           isDraftModelEnabled: true,
           schemaType: getType(typeName),
         }),
-      ).toEqual({result: false, reason: 'VERSIONS_NOT_SUPPORTED'})
+      ).toEqual({result: false, reason: 'RELEASES_NOT_SUPPORTED'})
     },
   )
 
-  test('does not allow writing a type without versions to a bare release id or agent bundle', () => {
+  test.each(['releasesOnly', 'liveEditPost'])(
+    'allows writing a `%s` document to a release',
+    (typeName) => {
+      expect(
+        isPerspectiveWriteable({
+          selectedPerspective: activeASAPRelease,
+          isDraftModelEnabled: true,
+          schemaType: getType(typeName),
+        }),
+      ).toEqual({result: true})
+    },
+  )
+
+  test('does not allow writing a type without releases to a bare release id or agent bundle', () => {
     for (const selectedPerspective of ['rASAP', 'agent-abc123']) {
       expect(
         isPerspectiveWriteable({
           selectedPerspective,
           isDraftModelEnabled: true,
-          schemaType: getType('noVersions'),
+          schemaType: getType('variantsOnly'),
         }),
-      ).toEqual({result: false, reason: 'VERSIONS_NOT_SUPPORTED'})
+      ).toEqual({result: false, reason: 'RELEASES_NOT_SUPPORTED'})
     }
   })
 
-  test('reports `VERSIONS_NOT_SUPPORTED` before `RELEASE_NOT_ACTIVE`', () => {
+  test('reports `RELEASES_NOT_SUPPORTED` before `RELEASE_NOT_ACTIVE`', () => {
     expect(
       isPerspectiveWriteable({
         selectedPerspective: archivedScheduledRelease,
         isDraftModelEnabled: true,
-        schemaType: getType('noVersions'),
+        schemaType: getType('variantsOnly'),
       }),
-    ).toEqual({result: false, reason: 'VERSIONS_NOT_SUPPORTED'})
+    ).toEqual({result: false, reason: 'RELEASES_NOT_SUPPORTED'})
   })
 
   test('allows a live-edit type without versions to be written to published and drafts', () => {
@@ -83,30 +102,20 @@ describe('isPerspectiveWriteable', () => {
     }
   })
 
-  test('keeps the draft rules for a type without versions that is not live-edit', () => {
+  test('keeps the draft rules for a type without releases that is not live-edit', () => {
     expect(
       isPerspectiveWriteable({
         selectedPerspective: 'drafts',
         isDraftModelEnabled: true,
-        schemaType: getType('noVersions'),
+        schemaType: getType('variantsOnly'),
       }),
     ).toEqual({result: true})
     expect(
       isPerspectiveWriteable({
         selectedPerspective: 'published',
         isDraftModelEnabled: true,
-        schemaType: getType('noVersions'),
+        schemaType: getType('variantsOnly'),
       }),
     ).toEqual({result: false, reason: 'PUBLISHED_NOT_WRITEABLE'})
-  })
-
-  test('still allows other types to be written to a release', () => {
-    expect(
-      isPerspectiveWriteable({
-        selectedPerspective: activeASAPRelease,
-        isDraftModelEnabled: true,
-        schemaType: getType('liveEditPost'),
-      }),
-    ).toEqual({result: true})
   })
 })

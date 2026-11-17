@@ -1,5 +1,6 @@
 import {type DocumentActionComponent} from '../../../config/document/actions'
 import {type DocumentActionsContext} from '../../../config/types'
+import {isReleaseVersionAllowed} from '../../../util/documentVersions'
 import {
   DeleteScheduledDraftAction,
   PauseToEditScheduledDraftAction,
@@ -23,7 +24,7 @@ export default function resolveDocumentActions(
   }
 
   // Scheduling a draft creates a release version of it.
-  if (context.schema.get(context.schemaType)?.allowVersions === false) {
+  if (!isReleaseVersionAllowed(context.schema.get(context.schemaType))) {
     return existingActions
   }
 

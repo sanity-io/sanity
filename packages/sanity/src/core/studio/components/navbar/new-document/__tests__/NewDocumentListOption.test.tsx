@@ -1,4 +1,4 @@
-import {defineType} from '@sanity/types'
+import {defineType, type DocumentVersionKind} from '@sanity/types'
 import {render, screen} from '@testing-library/react'
 import {PerspectiveContext} from 'sanity/_singletons'
 import {describe, expect, test, vi} from 'vitest'
@@ -71,8 +71,14 @@ describe('NewDocumentListOption', () => {
     expect(screen.queryByTestId('template-icon')).toBeNull()
   })
 
-  describe('a type that does not allow versions', () => {
-    async function renderOption(perspective: Partial<PerspectiveContextValue>) {
+  describe('versions', () => {
+    const inRelease = {selectedReleaseId: 'rA', selectedPerspectiveName: 'rA'}
+    const inVariant = {selectedVariantNames: ['alpha']}
+
+    async function renderOption(
+      versions: DocumentVersionKind[],
+      perspective: Partial<PerspectiveContextValue>,
+    ) {
       const wrapper = await createTestProvider({
         config: {
           schema: {
@@ -80,7 +86,7 @@ describe('NewDocumentListOption', () => {
               defineType({
                 name: 'settings',
                 type: 'document',
-                allowVersions: false,
+                versions,
                 fields: [{name: 'title', type: 'string'}],
               }),
             ],
@@ -96,21 +102,27 @@ describe('NewDocumentListOption', () => {
         </PerspectiveContext.Provider>,
         {wrapper},
       )
+      return screen.getByTestId('create-new-test-template')
     }
 
-    test.each([
-      ['a release', {selectedReleaseId: 'rA', selectedPerspectiveName: 'rA'}],
-      ['a variant', {selectedVariantName: 'alpha', selectedVariantNames: ['alpha']}],
-    ])('is disabled while %s is selected', async (_label, perspective) => {
-      await renderOption(perspective)
-
-      expect(screen.getByTestId('create-new-test-template')).toBeDisabled()
+    test.each<[DocumentVersionKind[], string, Partial<PerspectiveContextValue>]>([
+      [['variants'], 'a release', inRelease],
+      [[], 'a release', inRelease],
+      [['releases'], 'a variant', inVariant],
+      [[], 'a variant', inVariant],
+    ])('disables a `versions: %j` type while %s is selected', async (versions, _l, perspective) => {
+      expect(await renderOption(versions, perspective)).toBeDisabled()
     })
 
-    test('can be created outside releases and variants', async () => {
-      await renderOption({})
-
-      expect(screen.getByTestId('create-new-test-template')).toHaveAttribute('href', '/test')
-    })
+    test.each<[DocumentVersionKind[], string, Partial<PerspectiveContextValue>]>([
+      [['releases'], 'a release', inRelease],
+      [['variants'], 'a variant', inVariant],
+      [[], 'neither', {}],
+    ])(
+      'lets a `versions: %j` type be created while %s is selected',
+      async (versions, _l, perspective) => {
+        expect(await renderOption(versions, perspective)).toHaveAttribute('href', '/test')
+      },
+    )
   })
 })

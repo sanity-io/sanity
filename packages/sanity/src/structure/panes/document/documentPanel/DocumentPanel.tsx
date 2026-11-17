@@ -13,7 +13,9 @@ import {
   isPerspectiveWriteable,
   isReleaseDocument,
   isReleaseScheduledOrScheduling,
+  isReleaseVersionAllowed,
   isSystemBundle,
+  isVariantVersionAllowed,
   LegacyLayerProvider,
   PortalBoundaryProvider,
   type ReleaseDocument,
@@ -315,10 +317,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     // A creatable missing draft variant renders no banner: the form is simply editable — typing
     // creates the document at the server-advertised id — matching the base draft/published
     // experience where editing the published fallback creates the draft. Types that don't allow
-    // versions are read-only in a variant, so they keep the banner.
+    // variants are read-only in a variant, so they keep the banner.
     if (
       targetDocumentState.status === 'variant-missing' &&
-      (!targetDocumentState.creatableTarget || schemaType.allowVersions === false)
+      (!targetDocumentState.creatableTarget || !isVariantVersionAllowed(schemaType))
     ) {
       return <DocumentNotInVariantBanner />
     }
@@ -349,7 +351,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
           documentId={value._id}
           currentRelease={selectedPerspective}
           isScheduledRelease={isScheduledRelease}
-          versionsAllowed={schemaType.allowVersions !== false}
+          releasesAllowed={isReleaseVersionAllowed(schemaType)}
         />
       )
     }

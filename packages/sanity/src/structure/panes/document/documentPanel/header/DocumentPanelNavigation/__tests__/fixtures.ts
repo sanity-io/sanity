@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {defineType, type ObjectSchemaType} from '@sanity/types'
+import {defineType, type DocumentVersionKind, type ObjectSchemaType} from '@sanity/types'
 import {
   createSchema,
   type PerspectiveContextValue,
@@ -10,15 +10,15 @@ import {
 /** The document every fixture version belongs to. */
 export const GROUP_ID = 'article-1'
 
-/** A compiled `article` type with `allowVersions: false`. */
-export function createNoVersionsSchemaType(): ObjectSchemaType {
+/** A compiled `article` type with the given `versions`. */
+export function createArticleSchemaType(versions: DocumentVersionKind[]): ObjectSchemaType {
   return createSchema({
     name: 'default',
     types: [
       defineType({
         name: 'article',
         type: 'document',
-        allowVersions: false,
+        versions,
         fields: [{name: 'title', type: 'string'}],
       }),
     ],
