@@ -42,26 +42,21 @@ describe('createSchema: release types', () => {
       name: 'default',
       types: [
         defineReleaseMetadata({
-          fields: [
-            defineField({name: 'legalReview', type: 'string'}),
-            defineField({name: 'title', type: 'string', title: 'Release name'}),
-          ],
+          fields: [defineField({name: 'legalReview', type: 'string'})],
         }),
       ],
     })
 
     expect(hasErrors(schema)).toBe(false)
 
-    const metadata = schema.get('sanity.releaseMetadata') as ObjectSchemaType
-    expect(fieldNames(metadata)).toEqual([
+    expect(fieldNames(schema.get('sanity.releaseMetadata'))).toEqual([
+      'title',
       'description',
       'releaseType',
       'intendedPublishAt',
       'cardinality',
       'legalReview',
-      'title',
     ])
-    expect(metadata.fields.find((field) => field.name === 'title')?.type.title).toBe('Release name')
 
     const release = schema.get('system.release') as ObjectSchemaType
     expect(fieldNames(release.fields.find((field) => field.name === 'metadata')?.type)).toContain(
@@ -69,12 +64,23 @@ describe('createSchema: release types', () => {
     )
   })
 
-  it('reports an error when a core field does not store a string', () => {
+  it('accepts a custom `sanity.releaseMetadata` without fields', () => {
+    const schema = createSchema({
+      name: 'default',
+      types: [defineReleaseMetadata({title: 'Release details'})],
+    })
+
+    expect(hasErrors(schema)).toBe(false)
+    expect(schema.get('sanity.releaseMetadata')?.title).toBe('Release details')
+    expect(fieldNames(schema.get('sanity.releaseMetadata'))).toContain('releaseType')
+  })
+
+  it('reports an error when a custom `sanity.releaseMetadata` declares a core field', () => {
     const schema = createSchema({
       name: 'default',
       types: [
         defineReleaseMetadata({
-          fields: [defineField({name: 'releaseType', type: 'number'})],
+          fields: [defineField({name: 'title', type: 'string', title: 'Release name'})],
         }),
       ],
     })
@@ -84,7 +90,7 @@ describe('createSchema: release types', () => {
       group.problems.map((problem) => problem.message),
     )
     expect(messages).toContain(
-      'The "releaseType" field of "sanity.releaseMetadata" must store a string, but its type "number" stores a number.',
+      'The names `title`, `description`, `releaseType`, `intendedPublishAt`, `cardinality` are invalid field names for type `sanity.releaseMetadata`. These core fields are always included.',
     )
   })
 
