@@ -69,6 +69,16 @@ export const SELECTION_BLOCKED_REASON_KEYS = {
 } as const satisfies Record<SelectionBlockedReason, string>
 
 /**
+ * The short words for each reason, shown as the second line of a set header whose versions are
+ * all blocked, as studio locale keys.
+ *
+ * @internal
+ */
+export const SELECTION_BLOCKED_NOTE_KEYS = {
+  'scheduled-release': 'document-group.select.blocked.scheduled-release-note',
+} as const satisfies Record<SelectionBlockedReason, string>
+
+/**
  * @internal
  */
 export function getSelectionBlockedReason(

@@ -1,5 +1,12 @@
 import {type BadgeTone} from '@sanity/ui'
-import {type ComponentType, type MouseEvent, type ReactNode, useId, useState} from 'react'
+import {
+  type ComponentType,
+  type CSSProperties,
+  type MouseEvent,
+  type ReactNode,
+  useId,
+  useState,
+} from 'react'
 import {Flex, Text} from 'ui5'
 
 import {type StatusMarkName} from '../../../ui-components/statusMark/statusMarkGeometry'
@@ -36,6 +43,11 @@ export const DocumentGroupSet: ComponentType<{
   onCheckedChange: (checked: boolean) => void
   /** Why no version in the set can be selected. Shown on the group checkbox. */
   blockedReason?: string
+  /**
+   * The same reason in a few words, shown as the header's second line, so the reason is on screen
+   * without hovering the checkbox. It also describes the header's toggle.
+   */
+  blockedNote?: string
   /** Whether the set's versions can never be selected, as in the picker. Omits the checkbox. */
   readOnly?: boolean
   /** Whether the selection is frozen, as it is while a deletion is in flight. */
@@ -51,6 +63,7 @@ export const DocumentGroupSet: ComponentType<{
   selectionState,
   onCheckedChange,
   blockedReason,
+  blockedNote,
   readOnly,
   locked,
   containsOpen,
@@ -61,6 +74,8 @@ export const DocumentGroupSet: ComponentType<{
   const rowsId = useId()
   const nameId = useId()
   const countId = useId()
+  const noteId = useId()
+  const note = readOnly ? undefined : blockedNote
 
   return (
     <VariantSet data-variant-set={name} data-selectable={!readOnly}>
@@ -76,6 +91,7 @@ export const DocumentGroupSet: ComponentType<{
           aria-expanded={expanded}
           aria-controls={rowsId}
           aria-labelledby={typeof count === 'number' ? `${nameId} ${countId}` : nameId}
+          aria-describedby={note ? noteId : undefined}
           onClick={() => setExpanded((current) => !current)}
         />
         {!readOnly && (
@@ -122,6 +138,18 @@ export const DocumentGroupSet: ComponentType<{
               </Text>
             )}
           </Flex>
+          {note && (
+            <Text
+              size={1}
+              muted
+              as="div"
+              id={noteId}
+              data-testid="variant-set-blocked-note"
+              style={NOTE_STYLE}
+            >
+              {note}
+            </Text>
+          )}
           {headerActions && <div className="header-actions">{headerActions}</div>}
         </div>
       </VariantSetHeader>
@@ -131,6 +159,9 @@ export const DocumentGroupSet: ComponentType<{
     </VariantSet>
   )
 }
+
+/** The second line sits 8px under the name, as a row's second line does. */
+const NOTE_STYLE: CSSProperties = {marginTop: 8}
 
 function stopPropagation(event: MouseEvent) {
   event.stopPropagation()
