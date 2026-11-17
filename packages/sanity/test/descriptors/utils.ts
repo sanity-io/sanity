@@ -11,6 +11,7 @@ import cloneDeep from 'lodash-es/cloneDeep.js'
 import startCase from 'lodash-es/startCase.js'
 import {expect} from 'vitest'
 
+import {findExtendableType} from '../../../@sanity/schema/src/sanity/builtinTypes/extendableTypes'
 import {DESCRIPTOR_CONVERTER} from '../../src/core/schema/descriptors'
 
 export async function expectManifestSchemaConversion(
@@ -44,10 +45,28 @@ export async function expectManifestSchemaConversion(
     const titles = extractTitleMap(convertedObjectValue.typeDef)
     // @ts-expect-error -- pre-existing, fix later
     const stype = cloneDeep(schemaObjectValue?.typeDef)
+    const original = cloneDeep(stype)
 
     normalizeSchemaDescriptorTypeDef(stype, titles)
+    restoreCoreFields(stype, original, convertedObjectValue.name)
     expect(convertedObjectValue.typeDef).toStrictEqual(stype)
   }
+}
+
+// The core fields of an extendable type are rebuilt from the built-in definition rather than
+// from the manifest, so they keep everything the manifest drops and are compared as they were.
+function restoreCoreFields(normalized: unknown, original: unknown, typeName: unknown) {
+  const extendable = findExtendableType(typeName)
+  if (!extendable || !isRecord(normalized) || !isRecord(original)) return
+  const normalizedFields = normalized.fields
+  const originalFields = original.fields
+  if (!Array.isArray(normalizedFields) || !Array.isArray(originalFields)) return
+
+  const coreFieldNames = new Set<unknown>(extendable.fields.map((field) => field.name))
+  normalized.fields = normalizedFields.map((field) => {
+    if (!isRecord(field) || !coreFieldNames.has(field.name)) return field
+    return originalFields.find((entry) => isRecord(entry) && entry.name === field.name) ?? field
+  })
 }
 
 function extractTitleMap(data: unknown) {

@@ -1,6 +1,6 @@
 import {DescriptorConverter} from '@sanity/schema/_internal'
 import {defineArrayMember, defineField, defineType, type Schema} from '@sanity/types'
-import {createSchema} from 'sanity'
+import {createSchema, defineReleaseMetadata} from 'sanity'
 import {describe, test} from 'vitest'
 
 import {expectManifestSchemaConversion} from './utils'
@@ -1060,6 +1060,33 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
                   name: 'reusedObjectName',
                   fields: [{name: 'string', type: 'string'}],
                 }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    })
+
+    await validate(schema)
+  })
+
+  test('release document and default release metadata', async () => {
+    await validate(createSchema({name: 'test', types: []}))
+  })
+
+  test('release metadata extended with defineReleaseMetadata', async () => {
+    const schema = createSchema({
+      name: 'test',
+      types: [
+        defineReleaseMetadata({
+          fields: [
+            defineField({name: 'legalReview', type: 'string'}),
+            defineField({
+              name: 'signOff',
+              type: 'object',
+              fields: [
+                defineField({name: 'reviewer', type: 'string'}),
+                defineField({name: 'approved', type: 'boolean'}),
               ],
             }),
           ],
