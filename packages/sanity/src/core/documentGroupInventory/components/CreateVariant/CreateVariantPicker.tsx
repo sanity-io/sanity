@@ -295,7 +295,9 @@ export const CreateVariantPicker: ComponentType<{
                 overflowY="auto"
                 ref={scrollerRef}
               >
-                <Flex flexDirection="column" flexShrink={0} gap={1} paddingBottom={1} paddingX={1}>
+                {/* The 4px top, with the search field's 4px, puts the first row 8px below the field.
+                No bottom padding: the menu's own 4px is the space under the last row. */}
+                <Flex flexDirection="column" flexShrink={0} gap={1} paddingTop={1} paddingX={1}>
                   {sections.flatMap((section, index) => [
                     ...(index > 0 ? [<MenuDivider key={`${section.key}-divider`} />] : []),
                     ...(section.label
@@ -303,7 +305,8 @@ export const CreateVariantPicker: ComponentType<{
                           <Box
                             key={`${section.key}-label`}
                             paddingX={3}
-                            paddingTop={3}
+                            // The column's 4px top already sits above the first heading
+                            paddingTop={index === 0 ? 2 : 3}
                             paddingBottom={2}
                           >
                             <Label muted size={1} style={{textTransform: 'uppercase'}}>
