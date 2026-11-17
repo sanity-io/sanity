@@ -18,7 +18,7 @@ import {MenuButton} from '../MenuButton'
  * which enforces popover animation. The caller composes the trigger and the
  * `Menu`; the wrapper takes care of the popover wiring (open/close, focus,
  * dismissal) following the WAI-ARIA menu button pattern. `Menu` is the studio
- * wrapper (8px across, 4px down); `MenuDivider` is used raw from `@sanity/ui`.
+ * wrapper (8px on every side); `MenuDivider` is used raw from `@sanity/ui`.
  * The `play` function opens the menu so the snapshot captures the portaled
  * popover, not just the trigger.
  */
