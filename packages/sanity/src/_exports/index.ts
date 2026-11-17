@@ -1250,6 +1250,7 @@ export {
   useDocumentStore,
   useGrantsStore,
   useHistoryStore,
+  // oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
   useKeyValueStore,
   usePresenceStore,
   useProjectStore,
@@ -1448,8 +1449,10 @@ export {
   useTimelineStore,
 } from '../core/store/history/useTimelineStore'
 /* oxlint-enable no-deprecated */
+/* oxlint-disable no-deprecated -- the key-value store stays exported while deprecated; removing it is a breaking change deferred to the next major */
 export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
+/* oxlint-enable no-deprecated */
 export {createPresenceStore, type PresenceStore} from '../core/store/presence/presence-store'
 export {
   type DocumentPresence,
