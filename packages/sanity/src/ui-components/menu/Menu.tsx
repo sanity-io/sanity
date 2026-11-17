@@ -4,9 +4,12 @@ import {type ComponentProps, type RefAttributes} from 'react'
 /** @internal */
 export type MenuProps = ComponentProps<typeof UIMenu> & RefAttributes<HTMLDivElement>
 
-// The `@sanity/ui` 5 popover inset: `{space-2}` (8px) across and `{space-1}` (4px) down.
+// The studio menu inset: `{space-2}` (8px) on every side, so the highlight of the first and last
+// rows sits as far from the menu's edge as the sides do.
 const MENU_PADDING_X = 2
-const MENU_PADDING_Y = 1
+// The `@sanity/ui` 5 popover pads 4px vertically (8px across, 4px down). When the studio moves to
+// UI 5, this becomes a 4px vertical wrapper inside the popover that makes up the difference.
+const MENU_PADDING_Y = 2
 
 const PADDING_PROPS = [
   'padding',
@@ -19,9 +22,9 @@ const PADDING_PROPS = [
 ] as const
 
 /**
- * Customized Sanity UI <Menu> that applies the `@sanity/ui` 5 menu inset, 8px across and 4px
- * down, instead of the v4 default of 4px all round. A caller that passes any padding prop keeps
- * full control of the padding.
+ * Customized Sanity UI <Menu> that applies the studio menu inset, 8px on every side, instead of the
+ * v4 default of 4px all round. A caller that passes any padding prop keeps full control of the
+ * padding.
  *
  * @internal
  */

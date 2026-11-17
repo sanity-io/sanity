@@ -35,21 +35,28 @@ async function openAndMeasure() {
 
   const menu = page.getByTestId('menu-inset-menu').element().getBoundingClientRect()
   const row = firstItem.element().getBoundingClientRect()
-  return {left: row.left - menu.left, top: row.top - menu.top, right: menu.right - row.right}
+  const lastRow = page.getByRole('menuitem', {name: 'Delete'}).element().getBoundingClientRect()
+  return {
+    left: row.left - menu.left,
+    top: row.top - menu.top,
+    right: menu.right - row.right,
+    bottom: menu.bottom - lastRow.bottom,
+  }
 }
 
 /**
- * The studio `Menu` applies the `@sanity/ui` 5 menu inset: 8px across, 4px down.
+ * The studio `Menu` applies the studio menu inset: 8px on every side.
  */
 describe('Menu', () => {
-  test('insets rows 8px across and 4px down by default', async () => {
+  test('insets rows 8px on every side by default', async () => {
     const {settleChromaticEndState} = testHelpers()
     await render(<MenuHarness />)
 
     const inset = await openAndMeasure()
     expect(Math.abs(inset.left - 8)).toBeLessThanOrEqual(1)
     expect(Math.abs(inset.right - 8)).toBeLessThanOrEqual(1)
-    expect(Math.abs(inset.top - 4)).toBeLessThanOrEqual(1)
+    expect(Math.abs(inset.top - 8)).toBeLessThanOrEqual(1)
+    expect(Math.abs(inset.bottom - 8)).toBeLessThanOrEqual(1)
 
     await settleChromaticEndState()
   })
