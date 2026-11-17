@@ -8,7 +8,11 @@ import {
 
 import {Schema} from '../legacy/Schema'
 import {builtinTypes} from '../sanity/builtinTypes'
-import {RELEASE_DOCUMENT_TYPE_NAME, resolveReleaseTypes} from '../sanity/builtinTypes/releaseTypes'
+import {
+  isSystemDocumentTypeName,
+  resolveExtendableTypes,
+  withoutCoreFields,
+} from '../sanity/builtinTypes/extendableTypes'
 import {groupProblems} from '../sanity/groupProblems'
 import {type SchemaValidationResult} from '../sanity/typedefs'
 import {validateSchema} from '../sanity/validateSchema'
@@ -44,15 +48,19 @@ export interface CreateSchemaFromManifestTypesOptions {
 }
 
 /**
- * Manifests carry the release types the Studio compiled. The release document
- * type is always replaced by the built-in definition, so a manifest can't change
- * how releases are stored or edited. A serialized `sanity.releaseMetadata` is kept.
+ * Serialized schemas carry the system document types, and descriptors also carry
+ * the core fields of extendable types. Both are always replaced by the built-in
+ * definitions, so a serialized schema can't change how those documents and
+ * fields are stored or edited. The fields a schema added to an extendable type
+ * are kept.
  */
-function withReleaseTypes(types: unknown[]): unknown[] {
-  return resolveReleaseTypes(
-    types.filter(
-      (type) => !isObject(type) || !('name' in type) || type.name !== RELEASE_DOCUMENT_TYPE_NAME,
-    ),
+function withExtendableTypes(types: unknown[]): unknown[] {
+  return resolveExtendableTypes(
+    types
+      .filter(
+        (type) => !isObject(type) || !('name' in type) || !isSystemDocumentTypeName(type.name),
+      )
+      .map(withoutCoreFields),
   )
 }
 
@@ -61,7 +69,7 @@ export function createSchemaFromManifestTypes(
   options: CreateSchemaFromManifestTypesOptions = {},
 ) {
   if (options.validate !== false) {
-    const validated = validateSchema(withReleaseTypes(schemaDef.types), {
+    const validated = validateSchema(withExtendableTypes(schemaDef.types), {
       parentTypes: builtinTypes,
     }).getTypes()
     const validation = groupProblems(validated)
@@ -76,7 +84,7 @@ export function createSchemaFromManifestTypes(
 
   return Schema.compile({
     name: schemaDef.name,
-    types: withReleaseTypes(
+    types: withExtendableTypes(
       schemaDef.types.map((type) => coerceType(type, options.cloneTypes !== false)).filter(Boolean),
     ),
     parent: builtinSchema,
