@@ -60,9 +60,18 @@ function getParamsFromResult(
 /**
  * Route matching is backed by URLPattern, which needs a polyfill in runtimes without a native
  * implementation. The promise is kept at module level so its identity is stable across render
- * attempts, as `use()` requires.
+ * attempts, as `use()` requires. The load lives in a plain function: an `import()` inside the
+ * hook is syntax the React Compiler cannot lower, and assigning this binding from the hook is a
+ * render side effect.
  */
 let urlPatternPolyfillPromise: Promise<unknown> | undefined
+
+function loadUrlPatternPolyfill(): Promise<unknown> | undefined {
+  if (typeof URLPattern === 'undefined') {
+    urlPatternPolyfillPromise ??= import('urlpattern-polyfill')
+  }
+  return urlPatternPolyfillPromise
+}
 
 /**
  * Compiling a URLPattern is not free and the route is resolved again on every preview URL change,
@@ -143,17 +152,15 @@ export function useMainDocument(props: {
    * and neither does a studio without `mainDocuments` resolvers. `use()` suspends rendering until
    * the polyfill has loaded, caught by the studio's tool-level `Suspense` boundary, like the
    * tool's own lazy chunk.
+   *
+   * Once a load has started, keep unwrapping the same promise on every render: the resolved
+   * import installs the `URLPattern` global, so gating `use()` on that check alone would skip
+   * the call on React's replay of the suspended render and break the hook sequence.
    */
   if (resolvers.length > 0) {
-    if (typeof URLPattern === 'undefined') {
-      // oxlint-disable-next-line react/todo -- pre-existing violation, to be fixed in a follow-up
-      urlPatternPolyfillPromise ??= import('urlpattern-polyfill')
-    }
-    // Once a load has started, keep unwrapping the same promise on every render: the resolved
-    // import installs the `URLPattern` global, so gating `use()` on the `typeof` check alone
-    // would change the hook sequence between the suspended attempt and React's replay of it
-    if (urlPatternPolyfillPromise !== undefined) {
-      use(urlPatternPolyfillPromise)
+    const polyfillPromise = loadUrlPatternPolyfill()
+    if (polyfillPromise !== undefined) {
+      use(polyfillPromise)
     }
   }
 
