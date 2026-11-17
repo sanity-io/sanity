@@ -6,6 +6,8 @@
     "rootDir": ".",
     "noEmit": true,
     "module": "Preserve",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    // The copy review CLI runs on Node's native TypeScript support, which needs `.ts` specifiers
+    "allowImportingTsExtensions": true
   }
 }
