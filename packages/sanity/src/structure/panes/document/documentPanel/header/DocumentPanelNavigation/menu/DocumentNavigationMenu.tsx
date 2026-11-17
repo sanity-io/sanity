@@ -11,7 +11,7 @@ import {useFocusSearchOnOpen} from '../../../../../../../ui-components/menuButto
 import {useMenuOverflow} from '../../../../../../../ui-components/menuButton/useMenuOverflow'
 import {useStableMenuWidth} from '../../../../../../../ui-components/menuButton/useStableMenuWidth'
 import {Tooltip} from '../../../../../../../ui-components/tooltip/Tooltip'
-import {documentNavigationMenu} from './DocumentNavigationMenu.css'
+import {documentNavigationMenu, menuSectionLabel} from './DocumentNavigationMenu.css'
 
 /** @internal */
 export interface DocumentNavigationMenuSection {
@@ -49,7 +49,14 @@ function MenuSection(props: {
   const {children, label, testId, tooltip} = props
   return (
     <Flex borderTop data-testid={testId} flexDirection="column" gap={1} paddingTop={1}>
-      <Flex alignItems="center" gap={2} paddingX={3} paddingTop={3} paddingBottom={2}>
+      <Flex
+        alignItems="center"
+        className={menuSectionLabel}
+        gap={2}
+        paddingBottom={2}
+        paddingRight={3}
+        paddingTop={3}
+      >
         <Label muted size={1} style={{textTransform: 'uppercase'}}>
           {label}
         </Label>
@@ -137,9 +144,9 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
             >
               {/* Menu items are flex children with min-height: 0, so they collapse when they sit
               directly in this scroller. Keep them in a column that sizes to its content. The 4px
-              top, with the search field's 4px, puts the first row 8px below the field. No bottom
-              padding: the menu's own 4px is the space under the last row. */}
-              <Flex flexDirection="column" flexShrink={0} gap={1} paddingTop={1} paddingX={1}>
+              top, with the search field's 4px, puts the first row 8px below the field. The 4px
+              bottom, with the menu's own 4px, puts the last row 8px above the menu's edge. */}
+              <Flex flexDirection="column" flexShrink={0} gap={1} paddingX={1} paddingY={1}>
                 {leadingItems}
                 {visibleSections.map((section) => (
                   <MenuSection
