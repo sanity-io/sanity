@@ -1,6 +1,6 @@
 import {type DocumentActionComponent} from '../../../config/document/actions'
 import {type DocumentActionsContext} from '../../../config/types'
-import {isReleaseVersionAllowed} from '../../../util/documentVersions'
+import {isScheduledDraftVersionAllowed} from '../../../util/documentVersions'
 import {
   DeleteScheduledDraftAction,
   PauseToEditScheduledDraftAction,
@@ -23,16 +23,15 @@ export default function resolveDocumentActions(
     ]
   }
 
-  // Scheduling a draft creates a release version of it.
-  if (!isReleaseVersionAllowed(context.schema.get(context.schemaType))) {
-    return existingActions
-  }
-
   // Add SchedulePublishAction only for draft documents
   if (context.versionType === 'draft') {
     const actionsExcludingOriginalSchedule = existingActions.filter(
       ({action}) => action !== 'schedule',
     )
+    // Types without scheduled drafts don't fall back to the scheduled publishing action either.
+    if (!isScheduledDraftVersionAllowed(context.schema.get(context.schemaType))) {
+      return actionsExcludingOriginalSchedule
+    }
     const publishActionIndex = actionsExcludingOriginalSchedule.findIndex(
       ({action}) => action === 'publish',
     )

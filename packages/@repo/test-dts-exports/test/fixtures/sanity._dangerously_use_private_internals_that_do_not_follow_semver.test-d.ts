@@ -439,6 +439,7 @@ import type {
   isReleaseScheduledOrScheduling,
   isReleaseVersionAllowed,
   isRemovedItemDiff,
+  isScheduledDraftVersionAllowed,
   isString,
   isSystemBundle,
   isSystemBundleName,
@@ -2218,6 +2219,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('isRemovedItemDiff', () => {
     expectTypeOf<typeof isRemovedItemDiff>().toBeFunction()
+  })
+  test('isScheduledDraftVersionAllowed', () => {
+    expectTypeOf<typeof isScheduledDraftVersionAllowed>().toBeFunction()
   })
   test('isString', () => {
     expectTypeOf<typeof isString>().toBeFunction()

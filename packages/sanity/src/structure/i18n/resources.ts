@@ -151,6 +151,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The explanation displayed when a user attempts to create a new document in a release, but the schema type doesn't allow releases */
   'banners.choose-new-document-destination.releases-not-supported':
     "Documents of this type can't be added to releases.",
+  /** The explanation displayed when a user attempts to create a new document in a scheduled draft, but the schema type doesn't allow scheduled drafts */
+  'banners.choose-new-document-destination.scheduled-drafts-not-supported':
+    "Documents of this type can't be scheduled.",
   /** The text for the restore button on the deleted document banner */
   'banners.deleted-document-banner.restore-button.text': 'Restore most recent revision',
   /** The text content for the deleted document banner */

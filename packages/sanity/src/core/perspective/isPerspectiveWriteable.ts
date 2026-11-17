@@ -2,7 +2,8 @@ import {type ObjectSchemaType} from '@sanity/types'
 
 import {isReleaseDocument} from '../releases/store/types'
 import {isDraftPerspective, isPublishedPerspective} from '../releases/util/util'
-import {isReleaseVersionAllowed} from '../util/documentVersions'
+import {isReleaseVersionAllowed, isScheduledDraftVersionAllowed} from '../util/documentVersions'
+import {isCardinalityOnePerspective} from '../util/releaseUtils'
 import {type TargetPerspective} from './types'
 
 /**
@@ -14,12 +15,13 @@ export type PerspectiveNotWriteableReason =
   | 'PUBLISHED_NOT_WRITEABLE'
   | 'DRAFTS_NOT_WRITEABLE'
   | 'RELEASES_NOT_SUPPORTED'
+  | 'SCHEDULED_DRAFTS_NOT_SUPPORTED'
 
 /**
  * Check whether the provided schema type can be written to the provided perspective. This depends
- * on factors such as whether the schema type supports live-editing or releases, whether the
- * perspective represents an inactive release, and whether the perspective represents a special
- * group (e.g. published documents).
+ * on factors such as whether the schema type supports live-editing, releases or scheduled drafts,
+ * whether the perspective represents an inactive release, and whether the perspective represents a
+ * special group (e.g. published documents).
  *
  * @internal
  */
@@ -39,14 +41,21 @@ export function isPerspectiveWriteable({
     }
   }
 
-  if (
-    !isReleaseVersionAllowed(schemaType) &&
-    !isPublishedPerspective(selectedPerspective) &&
-    !isDraftPerspective(selectedPerspective)
-  ) {
-    return {
-      result: false,
-      reason: 'RELEASES_NOT_SUPPORTED',
+  if (!isPublishedPerspective(selectedPerspective) && !isDraftPerspective(selectedPerspective)) {
+    const isScheduledDraft = isCardinalityOnePerspective(selectedPerspective)
+
+    if (isScheduledDraft && !isScheduledDraftVersionAllowed(schemaType)) {
+      return {
+        result: false,
+        reason: 'SCHEDULED_DRAFTS_NOT_SUPPORTED',
+      }
+    }
+
+    if (!isScheduledDraft && !isReleaseVersionAllowed(schemaType)) {
+      return {
+        result: false,
+        reason: 'RELEASES_NOT_SUPPORTED',
+      }
     }
   }
 

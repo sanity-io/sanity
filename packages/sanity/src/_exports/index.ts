@@ -1726,7 +1726,11 @@ export {
   type LoadingTuple,
   type ReactHook,
 } from '../core/util/createHookFromObservableFactory'
-export {isReleaseVersionAllowed, isVariantVersionAllowed} from '../core/util/documentVersions'
+export {
+  isReleaseVersionAllowed,
+  isScheduledDraftVersionAllowed,
+  isVariantVersionAllowed,
+} from '../core/util/documentVersions'
 export {
   collate,
   type CollatedHit,

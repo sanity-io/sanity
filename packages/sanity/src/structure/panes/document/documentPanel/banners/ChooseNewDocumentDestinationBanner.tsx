@@ -96,6 +96,8 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
               t('banners.choose-new-document-destination.cannot-create-draft-document')}
             {reason === 'RELEASES_NOT_SUPPORTED' &&
               t('banners.choose-new-document-destination.releases-not-supported')}
+            {reason === 'SCHEDULED_DRAFTS_NOT_SUPPORTED' &&
+              t('banners.choose-new-document-destination.scheduled-drafts-not-supported')}
             {reason === 'RELEASE_NOT_ACTIVE' && releaseDoc && releaseTitle && (
               <Translate
                 t={t}

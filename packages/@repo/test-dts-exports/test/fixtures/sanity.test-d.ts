@@ -952,6 +952,7 @@ import type {
   isRemovedItemDiff,
   isSanityDefinedAction,
   isSanityDocument,
+  isScheduledDraftVersionAllowed,
   isScheduleDocumentVersionEvent,
   isSearchStrategy,
   isSlug,
@@ -4750,6 +4751,9 @@ describe('sanity', () => {
   })
   test('isSanityDocument', () => {
     expectTypeOf<typeof isSanityDocument>().toBeFunction()
+  })
+  test('isScheduledDraftVersionAllowed', () => {
+    expectTypeOf<typeof isScheduledDraftVersionAllowed>().toBeFunction()
   })
   test('isScheduleDocumentVersionEvent', () => {
     expectTypeOf<typeof isScheduleDocumentVersionEvent>().not.toBeNever()

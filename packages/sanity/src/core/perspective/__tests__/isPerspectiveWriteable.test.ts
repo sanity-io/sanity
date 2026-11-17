@@ -3,6 +3,7 @@ import {describe, expect, test} from 'vitest'
 
 import {
   activeASAPRelease,
+  activeCardinalityOneRelease,
   archivedScheduledRelease,
 } from '../../releases/__fixtures__/release.fixture'
 import {createSchema} from '../../schema/createSchema'
@@ -31,6 +32,12 @@ const schema = createSchema({
       fields: [{name: 'title', type: 'string'}],
     }),
     defineType({
+      name: 'scheduledDraftsOnly',
+      type: 'document',
+      versions: ['scheduled-drafts'],
+      fields: [{name: 'title', type: 'string'}],
+    }),
+    defineType({
       name: 'liveEditPost',
       type: 'document',
       liveEdit: true,
@@ -42,7 +49,7 @@ const schema = createSchema({
 const getType = (name: string) => schema.get(name) as ObjectSchemaType
 
 describe('isPerspectiveWriteable', () => {
-  test.each(['noVersionsLiveEdit', 'variantsOnly'])(
+  test.each(['noVersionsLiveEdit', 'variantsOnly', 'scheduledDraftsOnly'])(
     'does not allow writing a `%s` document to a release',
     (typeName) => {
       expect(
@@ -118,4 +125,30 @@ describe('isPerspectiveWriteable', () => {
       }),
     ).toEqual({result: false, reason: 'PUBLISHED_NOT_WRITEABLE'})
   })
+
+  test.each(['noVersionsLiveEdit', 'variantsOnly', 'releasesOnly'])(
+    'does not allow writing a `%s` document to a scheduled draft',
+    (typeName) => {
+      expect(
+        isPerspectiveWriteable({
+          selectedPerspective: activeCardinalityOneRelease,
+          isDraftModelEnabled: true,
+          schemaType: getType(typeName),
+        }),
+      ).toEqual({result: false, reason: 'SCHEDULED_DRAFTS_NOT_SUPPORTED'})
+    },
+  )
+
+  test.each(['scheduledDraftsOnly', 'liveEditPost'])(
+    'allows writing a `%s` document to a scheduled draft',
+    (typeName) => {
+      expect(
+        isPerspectiveWriteable({
+          selectedPerspective: activeCardinalityOneRelease,
+          isDraftModelEnabled: true,
+          schemaType: getType(typeName),
+        }),
+      ).toEqual({result: true})
+    },
+  )
 })
