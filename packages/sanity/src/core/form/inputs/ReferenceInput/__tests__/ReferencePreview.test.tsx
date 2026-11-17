@@ -64,4 +64,56 @@ describe('ReferencePreview', () => {
     expect(container.querySelector('[data-sanity-icon="rhombus-outline"]')).toBeNull()
     expect(container.querySelector('[data-sanity-icon="rhombus"]')).toBeNull()
   })
+
+  describe('versions flyout', () => {
+    async function renderPreview(options: {inventory: boolean; versionsFlyout: boolean}) {
+      mockUsePerspective.mockReturnValue(usePerspectiveMockReturn)
+      ;(useDocumentVersions as Mock<typeof useDocumentVersions>).mockReturnValue({
+        data: [published._id],
+        versions: [published],
+        error: null,
+        loading: false,
+      })
+      const wrapper = await createTestProvider({
+        config: {beta: {documentGroupInventory: {enabled: options.inventory}}},
+      })
+      let tooltip: unknown
+      const {container} = render(
+        <ReferencePreview
+          id="author-1"
+          layout="default"
+          refType={schema.get('author') as ObjectSchemaType}
+          renderPreview={(props) => {
+            // ReferencePreview hands the tooltip to the preview next to the typed props
+            tooltip = 'tooltip' in props ? props.tooltip : undefined
+            return props.children as ReactNode
+          }}
+          versionsFlyout={options.versionsFlyout}
+        />,
+        {wrapper},
+      )
+      return {container, tooltip}
+    }
+
+    it('puts the flyout on the marks, with a summary, and drops the read-only tooltip', async () => {
+      const {container, tooltip} = await renderPreview({inventory: true, versionsFlyout: true})
+      const marks = container.querySelector('[data-testid="document-versions-marks"]')
+      expect(marks).not.toBeNull()
+      expect(marks?.getAttribute('aria-label')).toBe('1 version')
+      expect(marks?.querySelector('[data-sanity-icon="circle-small"]')).not.toBeNull()
+      expect(tooltip).toBeUndefined()
+    })
+
+    it("keeps main's tooltip without the inventory", async () => {
+      const {container, tooltip} = await renderPreview({inventory: false, versionsFlyout: true})
+      expect(container.querySelector('[data-testid="document-versions-marks"]')).toBeNull()
+      expect(tooltip).toBeTruthy()
+    })
+
+    it("keeps main's tooltip where the flyout is not asked for (the search's options)", async () => {
+      const {container, tooltip} = await renderPreview({inventory: true, versionsFlyout: false})
+      expect(container.querySelector('[data-testid="document-versions-marks"]')).toBeNull()
+      expect(tooltip).toBeTruthy()
+    })
+  })
 })

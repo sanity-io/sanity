@@ -57,7 +57,7 @@ export function SearchResultItem({
     intent: 'edit',
     params,
   })
-  const {state} = useSearchState()
+  const {onClose: closeSearch, state} = useSearchState()
   const {t} = useTranslation()
   const grantsStore = useGrantsStore()
 
@@ -115,6 +115,7 @@ export function SearchResultItem({
         flex={1}
         href={disabledAction || disableIntentLink ? undefined : href}
         onClick={handleClick}
+        data-search-result-row=""
         radius={2}
         tabIndex={-1}
         style={{
@@ -130,6 +131,10 @@ export function SearchResultItem({
           variant={previewVariant}
           presence={documentPresence}
           schemaType={type}
+          // The versions flyout opens the document, so only results that open their document get
+          // it: not a picker that hands the result to `onItemSelect` instead
+          versionsFlyout={!disabledAction && !disableIntentLink && !onItemSelect}
+          onVersionsFlyoutNavigate={closeSearch ?? undefined}
         />
       </PreviewCard>
     </Box>

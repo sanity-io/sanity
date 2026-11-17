@@ -3,12 +3,17 @@ import {Badge, Inline} from '@sanity/ui'
 import {useMemo} from 'react'
 import {Box} from 'ui5'
 
+import {
+  DocumentVersionsMarksFlyout,
+  REFERENCE_MARKS_SURFACE,
+} from '../../../components/documentStatus/DocumentVersionsMarksFlyout'
 import {DocumentVersionsStatus} from '../../../components/documentStatus/DocumentVersionsStatus'
 import {DocumentVersionsStatusIndicator} from '../../../components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {type PreviewLayoutKey} from '../../../components/previews/types'
 import {DocumentPreviewPresence} from '../../../presence/DocumentPreviewPresence'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
 import {useDocumentPresence} from '../../../store/presence/useDocumentPresence'
+import {useWorkspace} from '../../../studio/workspace'
 import {type RenderPreviewCallback} from '../../types/renderCallback'
 
 /**
@@ -21,8 +26,16 @@ export function ReferencePreview(props: {
   layout: PreviewLayoutKey
   renderPreview: RenderPreviewCallback
   showTypeLabel?: boolean
+  /**
+   * Whether the status marks may open the versions flyout (with the document group inventory
+   * enabled), in place of the read-only versions tooltip on the preview. Set for the field's own
+   * value, not for the options of its search.
+   */
+  versionsFlyout?: boolean
 }) {
-  const {id, layout, refType, renderPreview, showTypeLabel} = props
+  const {id, layout, refType, renderPreview, showTypeLabel, versionsFlyout = false} = props
+  const inventoryEnabled = useWorkspace().beta?.documentGroupInventory?.enabled === true
+  const withFlyout = versionsFlyout && inventoryEnabled
 
   const documentPresence = useDocumentPresence(id)
 
@@ -45,16 +58,30 @@ export function ReferencePreview(props: {
             )}
 
             {/* The variant diamond is for document lists and search results only */}
-            <DocumentVersionsStatusIndicator documentVersions={versions} variantMarks={false} />
+            {withFlyout ? (
+              <DocumentVersionsMarksFlyout
+                documentId={id}
+                documentType={refType.name}
+                presence={documentPresence}
+                surface={REFERENCE_MARKS_SURFACE}
+                versionCount={versions.length}
+              >
+                <DocumentVersionsStatusIndicator documentVersions={versions} variantMarks={false} />
+              </DocumentVersionsMarksFlyout>
+            ) : (
+              <DocumentVersionsStatusIndicator documentVersions={versions} variantMarks={false} />
+            )}
           </Inline>
         </Box>
       ),
       layout,
       schemaType: refType,
-      tooltip: <DocumentVersionsStatus documentGroupId={id} />,
+      // With the flyout on the marks, the read-only tooltip goes: it opened below the reference,
+      // over the next item and the next field
+      tooltip: withFlyout ? undefined : <DocumentVersionsStatus documentGroupId={id} />,
       value: previewStub,
     }),
-    [documentPresence, id, layout, previewStub, refType, showTypeLabel, versions],
+    [documentPresence, id, layout, previewStub, refType, showTypeLabel, versions, withFlyout],
   )
 
   return renderPreview(previewProps)
