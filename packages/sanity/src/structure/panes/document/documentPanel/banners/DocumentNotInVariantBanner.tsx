@@ -185,9 +185,9 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
   const busy = status === 'in-progress' || status === 'success'
   // In an open release the action adds the variant's version to the release, so it is Add to
   // release, as on the not-in-release banner, and it follows that banner's rule: it is always
-  // shown and enabled, filled while the document inventory is closed, and a secondary (ghost)
-  // button while the inventory is open, where the inventory's Create variant is the view's one
-  // filled button. It never yields to the inventory: Add to release is not in the inventory.
+  // shown, enabled and filled, whether or not the document inventory is open. It is the view's one
+  // filled button: while it shows, the inventory's Create variant steps down to a secondary button.
+  // It never yields to the inventory: Add to release is not in the inventory.
   const addsToRelease = bannerCase.kind === 'create' && bannerCase.perspective === 'release'
   const createAction = {
     text: addsToRelease
@@ -196,7 +196,7 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
         : t('banners.release.action.add-to-release')
       : t('banners.variant.action.add-to-variant'),
     // A filled action: Banner draws it as the default primary; the variant chip carries the purple.
-    mode: addsToRelease && inventoryOpen ? ('ghost' as const) : ('default' as const),
+    mode: 'default' as const,
     disabled: busy,
     onClick: handleCreate,
   }

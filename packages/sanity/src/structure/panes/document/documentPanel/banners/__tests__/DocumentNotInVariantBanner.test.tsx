@@ -607,7 +607,7 @@ describe('DocumentNotInVariantBanner', () => {
       expect(screen.queryByRole('button', {name: /document inventory/})).not.toBeInTheDocument()
     })
 
-    it('in an open release, keeps Add to release, enabled, as a secondary button', async () => {
+    it('in an open release, keeps Add to release, enabled, as the filled button', async () => {
       mockUsePerspective.mockReturnValue(perspectiveState(titledRelease, 'rSummer'))
       for (const params of [CREATING, {inspect: DOCUMENT_GROUP_INSPECTOR_NAME}]) {
         const {unmount} = await renderBanner(CREATE_IN_RELEASE, params)
@@ -617,8 +617,8 @@ describe('DocumentNotInVariantBanner', () => {
         )
         const button = screen.getByRole('button', {name: 'Add to release'})
         expect(button).toBeEnabled()
-        // The inventory's Create variant is the view's one filled button
-        expect(button).toHaveAttribute('data-mode', 'ghost')
+        // Add to release is the view's one filled button; the inventory's Create variant steps down
+        expect(button).toHaveAttribute('data-mode', 'default')
         expect(
           screen.queryByTestId('document-not-in-variant-banner-hand-off'),
         ).not.toBeInTheDocument()

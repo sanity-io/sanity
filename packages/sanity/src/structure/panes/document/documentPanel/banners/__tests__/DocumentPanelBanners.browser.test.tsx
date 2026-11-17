@@ -708,10 +708,8 @@ describe('document panel banners', () => {
       await page.getByRole('button', {name: `Go ${step}`}).click()
       await expect.element($add).toBeVisible()
       await expect.element($add).toBeEnabled()
-      // Filled with the inventory closed; secondary while the inventory's Create variant is the filled one
-      await expect
-        .element($add)
-        .toHaveAttribute('data-mode', step === 'closed' ? 'default' : 'ghost')
+      // Filled at every step: the inventory's Create variant is the one that steps down
+      await expect.element($add).toHaveAttribute('data-mode', 'default')
       await expect
         .element($host.getByRole('button', {name: 'Create it in the document inventory.'}))
         .not.toBeInTheDocument()
