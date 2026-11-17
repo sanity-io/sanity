@@ -23,6 +23,7 @@ import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {GlobalPerspectiveNav} from '../../../perspective/navbar/GlobalPerspectiveNav'
 import {usePerspective} from '../../../perspective/usePerspective'
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
+import {useId} from '../../../util/useId'
 import {useToolMenuComponent} from '../../studio-components-hooks/useToolMenuComponent'
 import {useWorkspace} from '../../workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
@@ -86,6 +87,11 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   const variantsEnabled = Boolean(beta?.variants?.enabled)
 
   const ToolMenu = useToolMenuComponent()
+
+  // Instance-unique so Themer's split-screen view transition can track each
+  // cluster. A shared static name would collide across the two studios.
+  const leftViewTransitionName = useId()
+  const rightViewTransitionName = useId()
 
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
 
@@ -199,7 +205,12 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
           <Grid className={navGrid} gap={1}>
             {/** Left flex */}
             <TooltipDelayGroupProvider>
-              <Flex alignItems="center" gap={2} justifyContent="flex-start">
+              <Flex
+                alignItems="center"
+                gap={2}
+                justifyContent="flex-start"
+                style={{viewTransitionName: leftViewTransitionName}}
+              >
                 <Flex alignItems="center" gap={2}>
                   {/* Menu button */}
                   {!shouldRender.tools && (
@@ -246,7 +257,12 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
 
             {/** Right flex */}
             <TooltipDelayGroupProvider>
-              <Flex alignItems="center" gap={1} justifyContent="flex-end">
+              <Flex
+                alignItems="center"
+                gap={1}
+                justifyContent="flex-end"
+                style={{viewTransitionName: rightViewTransitionName}}
+              >
                 {/* Search */}
                 <LayerProvider>
                   <SearchProvider fullscreen={shouldRender.searchFullscreen}>
