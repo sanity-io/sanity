@@ -1,4 +1,3 @@
-import {type SanityClient} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo} from 'react'
@@ -40,11 +39,13 @@ import {
   type SyncErrorRecoveryTelemetryInfo,
 } from './document/getPairListener'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
+import {
+  createGlobalListenerStore,
+  type GlobalListenerStore,
+} from './globalListener/createGlobalListenerStore'
 import {createGrantsStore} from './grants/grantsStore'
 import {type GrantsStore} from './grants/types'
 import {createHistoryStore, type HistoryStore} from './history/createHistoryStore'
-import {createKeyValueStore} from './key-value/keyValueStore'
-import {type KeyValueStore} from './key-value/types'
 import {createPresenceStore, type PresenceStore} from './presence/presence-store'
 import {createProjectStore} from './project/projectStore'
 import {type ProjectStore} from './project/types'
@@ -144,27 +145,55 @@ export function useHistoryStore(): HistoryStore {
 }
 
 /**
+ * The workspace's shared listener on every document in its dataset. Prefer it to opening a
+ * listener of your own: every listener holds one of the browser's limited connections.
+ *
+ * @internal
+ */
+export function useGlobalListenerStore(): GlobalListenerStore {
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const resourceCache = useResourceCache()
+
+  return useMemo(() => {
+    const globalListenerStore =
+      resourceCache.get<GlobalListenerStore>({
+        namespace: 'globalListenerStore',
+        dependencies: [client],
+      }) || createGlobalListenerStore({client})
+
+    resourceCache.set({
+      namespace: 'globalListenerStore',
+      dependencies: [client],
+      value: globalListenerStore,
+    })
+
+    return globalListenerStore
+  }, [client, resourceCache])
+}
+
+/**
  * @hidden
  * @beta */
 export function useDocumentPreviewStore(): DocumentPreviewStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const globalListenerStore = useGlobalListenerStore()
   const resourceCache = useResourceCache()
 
   return useMemo(() => {
     const documentPreviewStore =
       resourceCache.get<DocumentPreviewStore>({
         namespace: 'documentPreviewStore',
-        dependencies: [client],
-      }) || createDocumentPreviewStore({client})
+        dependencies: [client, globalListenerStore],
+      }) || createDocumentPreviewStore({client, globalListenerStore})
 
     resourceCache.set({
       namespace: 'documentPreviewStore',
-      dependencies: [client],
+      dependencies: [client, globalListenerStore],
       value: documentPreviewStore,
     })
 
     return documentPreviewStore
-  }, [client, resourceCache])
+  }, [client, globalListenerStore, resourceCache])
 }
 
 /**
@@ -415,46 +444,6 @@ export function useProjectStore(): ProjectStore {
 
     return projectStore
   }, [client, resourceCache])
-}
-
-/**
- * Module-level cache for KeyValueStore instances, keyed by project identity.
- * Uses a simple Map with string keys since the ResourceCache's WeakMap
- * doesn't support primitive-based cache keys.
- */
-const keyValueStoreCache = new Map<string, KeyValueStore>()
-
-/**
- * Generates a cache key for KeyValueStore based on project identity.
- * The /users/me/keyvalue endpoint is project-scoped, so we only need
- * projectId and apiHost (not dataset) to identify unique stores.
- */
-function getKeyValueStoreCacheKey(client: SanityClient): string {
-  const config = client.config()
-  return `${config.projectId}:${config.apiHost || 'default'}`
-}
-
-/**
- * Returns a KeyValueStore instance for storing user preferences.
- *
- * The store is cached by project identity (projectId + apiHost) rather than
- * workspace, because the /users/me/keyvalue endpoint is project-scoped -
- * user preferences are shared across all datasets within a project.
- *
- * @internal
- */
-export function useKeyValueStore(): KeyValueStore {
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-
-  return useMemo(() => {
-    const cacheKey = getKeyValueStoreCacheKey(client)
-    const cached = keyValueStoreCache.get(cacheKey)
-    if (cached) return cached
-
-    const keyValueStore = createKeyValueStore({client})
-    keyValueStoreCache.set(cacheKey, keyValueStore)
-    return keyValueStore
-  }, [client])
 }
 
 /** @internal */

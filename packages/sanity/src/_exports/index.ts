@@ -770,6 +770,7 @@ export {
   type UserWithPermission,
   useUserListWithPermissions,
 } from '../core/hooks/useUserListWithPermissions'
+// oxlint-disable-next-line no-deprecated -- only the boolean overload is deprecated
 export {useValidationStatus} from '../core/hooks/useValidationStatus'
 export {useWorkspaceSchemaId} from '../core/hooks/useWorkspaceSchemaId'
 export {type StudioLocaleResourceKeys} from '../core/i18n/bundles/studio'
@@ -940,7 +941,6 @@ export {
   useDocumentStore,
   useGrantsStore,
   useHistoryStore,
-  useKeyValueStore,
   usePresenceStore,
   useProjectStore,
   useUserStore,
@@ -1008,6 +1008,7 @@ export {
 } from '../core/store/document/initialValue/types'
 export {type ListenQueryOptions, type ListenQueryParams} from '../core/store/document/listenQuery'
 export {
+  type DocumentPairPermissionsListener,
   type DocumentPairTarget,
   type IdPair,
   type MutationEvent,
@@ -1094,7 +1095,6 @@ export {
   useTimelineStore,
 } from '../core/store/history/useTimelineStore'
 /* oxlint-enable no-deprecated */
-export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
 export {type PresenceStore} from '../core/store/presence/presence-store'
 export {
   type DocumentPresence,

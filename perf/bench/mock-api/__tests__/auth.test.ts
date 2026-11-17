@@ -56,8 +56,8 @@ describe('handleAuth', () => {
     ).toBe(401)
   })
 
-  it('leaves non-auth paths (including keyvalue) to the caller', () => {
-    expect(handleAuth(request({path: '/users/me/keyvalue/a'}))).toBeUndefined()
+  it('leaves non-auth paths (including preferences) to the caller', () => {
+    expect(handleAuth(request({path: '/users/me/preferences/a'}))).toBeUndefined()
     expect(handleAuth(request({path: '/projects/x'}))).toBeUndefined()
   })
 })

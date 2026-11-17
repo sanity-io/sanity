@@ -92,7 +92,6 @@ const KEPT_FOR_COMPATIBILITY: Record<string, Readonly<Record<string, string>>> =
     useDocumentValuePermissions: 'sanity-plugin-trash',
     useInitialValueResolverContext: '@sanity/workflow-studio-plugin',
     useIsReleaseActive: '@sanity/workflow-studio-plugin',
-    useKeyValueStore: '@sanity/vision',
     useScheduledDraftsEnabled: '@sanity/vision',
     useSource: '@sanity/workflow-studio, sanity-plugin-prefixed-slug',
     useUserColor: 'sanity-plugin-google-maps-zoom',

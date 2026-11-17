@@ -2,7 +2,7 @@ import {PinIcon} from '@sanity/icons/Pin'
 import {PinFilledIcon} from '@sanity/icons/PinFilled'
 import {Card, Skeleton} from '@sanity/ui'
 import {useCallback} from 'react'
-import {useRouter} from 'sanity/router'
+import {IntentLink} from 'sanity/router'
 import {Text, Box, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
@@ -17,8 +17,8 @@ import {useWorkspace} from '../../../../studio/workspace'
 import {ReleaseAvatar} from '../../../components/ReleaseAvatar'
 import {ReleaseTitle} from '../../../components/ReleaseTitle'
 import {releasesLocaleNamespace} from '../../../i18n'
+import {RELEASES_INTENT} from '../../../plugin'
 import {getReleaseIdFromReleaseDocumentId} from '../../../util/getReleaseIdFromReleaseDocumentId'
-import {type TableRowProps} from '../../components/Table/Table'
 import {type VisibleColumn} from '../../components/Table/types'
 import {type TableRelease} from '../ReleasesOverview'
 
@@ -26,7 +26,6 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
   cellProps,
   datum: release,
 }) => {
-  const router = useRouter()
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
   const {selectedReleaseId} = usePerspective()
@@ -59,17 +58,24 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
     )
   }
 
-  const cardProps: TableRowProps = release.isDeleted
-    ? {tone: 'transparent'}
-    : {
-        as: 'a',
-        // navigate to release detail
-        onClick: () => router.navigate({releaseId: releaseId}),
-        tone: 'inherit',
-      }
-
   const pinButtonIcon = isReleasePinned ? PinFilledIcon : PinIcon
   const releaseTitle = release.metadata.title || tCore('release.placeholder-untitled-release')
+  const title = (
+    <Flex alignItems="center" gap={2}>
+      <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+        <ReleaseAvatar release={release} size="small" fontSize={2} />
+      </Box>
+      <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
+        <Flex alignItems="center" gap={2}>
+          <ReleaseTitle
+            title={release.metadata.title}
+            fallback={tCore('release.placeholder-untitled-release')}
+            textProps={{size: 1, weight: 'medium', style: {minWidth: 0}}}
+          />
+        </Flex>
+      </Flex>
+    </Flex>
+  )
 
   return (
     <Box {...cellProps} paddingLeft={3} flexBasis="0%" flexGrow={1} paddingY={1} paddingRight={2}>
@@ -103,22 +109,24 @@ export const ReleaseNameCell: VisibleColumn<TableRelease>['cell'] = ({
             }
             aria-live="assertive"
           />
-          <Card {...cardProps} padding={2} radius={2} flex={1}>
-            <Flex alignItems="center" gap={2}>
-              <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-                <ReleaseAvatar release={release} size="small" fontSize={2} />
-              </Box>
-              <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
-                <Flex alignItems="center" gap={2}>
-                  <ReleaseTitle
-                    title={release.metadata.title}
-                    fallback={tCore('release.placeholder-untitled-release')}
-                    textProps={{size: 1, weight: 'medium', style: {minWidth: 0}}}
-                  />
-                </Flex>
-              </Flex>
-            </Flex>
-          </Card>
+          {release.isDeleted ? (
+            <Card flex={1} padding={2} radius={2} tone="transparent">
+              {title}
+            </Card>
+          ) : (
+            <Card
+              as={IntentLink}
+              data-as="a"
+              flex={1}
+              intent={RELEASES_INTENT}
+              padding={2}
+              params={{id: releaseId}}
+              radius={2}
+              tone="inherit"
+            >
+              {title}
+            </Card>
+          )}
         </Flex>
       </Tooltip>
     </Box>
