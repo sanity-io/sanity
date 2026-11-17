@@ -103,6 +103,67 @@ function LateFlyout() {
   return mounted ? <PaneItemVersionsFlyout childId="winterhold" renderList={renderList} /> : null
 }
 
+/** A flyout as tall as one with many audiences, so it cannot fit below a row near the bottom. */
+function renderTallList({onPick}: PaneItemVersionsFlyoutActions) {
+  return (
+    <div role="menu" aria-label="Versions">
+      {Array.from({length: 12}, (_, index) => (
+        <button
+          key={index}
+          role="menuitem"
+          style={{display: 'block', height: 32, width: 200}}
+          type="button"
+          onClick={() => onPick(null)}
+        >
+          Audience {index + 1}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+/** A row pinned near the bottom of the viewport, on the left or the right edge. */
+function renderBottomRow(edge: 'left' | 'right') {
+  void render(
+    <TestWrapper schemaTypes={[]}>
+      <PaneRouterContext.Provider value={paneRouterContextValue}>
+        <a
+          data-pane-item-row=""
+          data-testid="row"
+          href="#row"
+          style={{position: 'fixed', bottom: 24, [edge]: 24, width: 320, height: 51}}
+          tabIndex={-1}
+        >
+          Winterhold
+          <PaneItemVersionsFlyout childId="winterhold" renderList={renderTallList} />
+        </a>
+      </PaneRouterContext.Provider>
+    </TestWrapper>,
+  )
+}
+
+/** Opens the bottom row's flyout and returns where the row and the flyout ended up. */
+async function openBottomRowFlyout() {
+  const row = page.getByTestId('row')
+  await row.hover()
+  const menu = page.getByRole('menu', {name: 'Versions'})
+  await expect.element(menu).toBeVisible()
+  const rowRect = () => (row.element() as HTMLElement).getBoundingClientRect()
+  const flyoutRect = () => (menu.element() as HTMLElement).getBoundingClientRect()
+  // Wait for Floating UI to settle on a placement before reading it
+  let last = ''
+  await expect
+    .poll(() => {
+      const {left, top} = flyoutRect()
+      const next = `${left},${top}`
+      const stable = next === last
+      last = next
+      return stable
+    })
+    .toBe(true)
+  return {row: rowRect(), flyout: flyoutRect()}
+}
+
 function renderRow(onRowClick = vi.fn()) {
   void render(
     <TestWrapper schemaTypes={[]}>
@@ -470,6 +531,22 @@ describe('PaneItemVersionsFlyout', () => {
     expect(decodeNavigation(onNavigate).panes?.[1]?.[0]).toMatchObject({
       id: 'riften',
       params: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME},
+    })
+  })
+
+  describe('near the bottom of the screen', () => {
+    it('opens beside the row on the right and slides up, never over the rows above', async () => {
+      renderBottomRow('left')
+      const {row, flyout} = await openBottomRowFlyout()
+      expect(flyout.left).toBeGreaterThanOrEqual(row.right)
+      expect(flyout.bottom).toBeLessThanOrEqual(window.innerHeight)
+    })
+
+    it('opens beside the row on the left when there is no room on the right', async () => {
+      renderBottomRow('right')
+      const {row, flyout} = await openBottomRowFlyout()
+      expect(flyout.right).toBeLessThanOrEqual(row.left)
+      expect(flyout.bottom).toBeLessThanOrEqual(window.innerHeight)
     })
   })
 })

@@ -467,7 +467,11 @@ export function PaneItemVersionsFlyout(props: {
               <RenderList onOpenInventory={openInventory} onPick={pick} renderList={renderList} />
             </div>
           }
-          fallbackPlacements={['left-start', 'bottom-start', 'top-start']}
+          // Beside the row only, never over the rows above or below it. `flip` checks the cross
+          // axis too, so near the bottom of the screen it rejects every side placement and would
+          // take a top or bottom one if it were listed. With only sides to pick from it keeps
+          // one, and `shift` slides the flyout up to stay on screen.
+          fallbackPlacements={['right-end', 'left-start', 'left-end']}
           floatingBoundary={document.body}
           open
           padding={0}
