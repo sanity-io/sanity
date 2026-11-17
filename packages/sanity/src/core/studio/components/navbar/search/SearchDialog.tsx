@@ -53,6 +53,9 @@ export function SearchDialog({
             <Box className={searchDialogBox}>
               <Card
                 className={innerCard}
+                // The box the versions flyout of a result's status marks opens beside (a
+                // full-screen search leaves no room, so the flyout does not open here)
+                data-search-dialog=""
                 display="flex"
                 height="fill"
                 scheme={scheme}

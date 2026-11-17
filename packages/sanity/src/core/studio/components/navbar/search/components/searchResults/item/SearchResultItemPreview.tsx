@@ -5,6 +5,10 @@ import {useObservable} from 'react-rx'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
+import {
+  DocumentVersionsMarksFlyout,
+  SEARCH_RESULT_MARKS_SURFACE,
+} from '../../../../../../../components/documentStatus/DocumentVersionsMarksFlyout'
 import {DocumentVersionsStatus} from '../../../../../../../components/documentStatus/DocumentVersionsStatus'
 import {DocumentVersionsStatusIndicator} from '../../../../../../../components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {type GeneralPreviewLayoutKey} from '../../../../../../../components/previews/types'
@@ -16,6 +20,7 @@ import {getPreviewValueWithFallback} from '../../../../../../../preview/utils/ge
 import {useDocumentVersions} from '../../../../../../../releases/hooks/useDocumentVersions'
 import {useDocumentPreviewStore} from '../../../../../../../store/datastores'
 import {type DocumentPresence} from '../../../../../../../store/presence/types'
+import {useWorkspace} from '../../../../../../workspace'
 
 interface SearchResultItemPreviewProps {
   documentId: string
@@ -29,6 +34,13 @@ interface SearchResultItemPreviewProps {
   variant?: string
   schemaType: SchemaType
   showBadge?: boolean
+  /**
+   * Whether the result's status marks may open the versions flyout (with the document group
+   * inventory enabled), in place of the read-only versions tooltip on the row.
+   */
+  versionsFlyout?: boolean
+  /** Runs after the versions flyout opened the document: closes the search. */
+  onVersionsFlyoutNavigate?: () => void
 }
 
 const INITIAL_PREVIEW_STATE = {
@@ -61,8 +73,12 @@ export function SearchResultItemPreview({
   showBadge = true,
   perspective,
   variant,
+  versionsFlyout = false,
+  onVersionsFlyoutNavigate,
 }: SearchResultItemPreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
+  const inventoryEnabled = useWorkspace().beta?.documentGroupInventory?.enabled === true
+  const withFlyout = versionsFlyout && inventoryEnabled
 
   const observable = useMemo(() => {
     return getPreviewStateObservable(
@@ -90,12 +106,37 @@ export function SearchResultItemPreview({
       <Flex alignItems="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
         {showBadge && <Badge>{schemaType.title}</Badge>}
-        <DocumentVersionsStatusIndicator documentVersions={versions} />
+        {withFlyout ? (
+          <DocumentVersionsMarksFlyout
+            documentId={documentId}
+            documentType={documentType}
+            onNavigate={onVersionsFlyoutNavigate}
+            presence={presence}
+            surface={SEARCH_RESULT_MARKS_SURFACE}
+            versionCount={versions.length}
+          >
+            <DocumentVersionsStatusIndicator documentVersions={versions} />
+          </DocumentVersionsMarksFlyout>
+        ) : (
+          <DocumentVersionsStatusIndicator documentVersions={versions} />
+        )}
       </Flex>
     )
-  }, [isLoading, presence, schemaType.title, showBadge, versions])
+  }, [
+    documentId,
+    documentType,
+    isLoading,
+    onVersionsFlyoutNavigate,
+    presence,
+    schemaType.title,
+    showBadge,
+    versions,
+    withFlyout,
+  ])
 
-  const tooltip = <DocumentVersionsStatus documentGroupId={documentId} />
+  // With the flyout on the marks, the read-only tooltip on the row goes: it opened below the row,
+  // over the other results
+  const tooltip = withFlyout ? undefined : <DocumentVersionsStatus documentGroupId={documentId} />
 
   return (
     <SearchResultItemPreviewBox>
