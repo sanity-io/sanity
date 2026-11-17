@@ -493,7 +493,7 @@ describe('DocumentVersionsFlyoutList', () => {
     })
   })
 
-  it('shows at most five audiences, then how many more are in the inventory', async () => {
+  it('shows at most five audiences, and the footer counts the others it opens in the inventory', async () => {
     const audiences = Array.from({length: 7}, (_, index) => ({
       ...createMockVariant(`audience-${index}`, index),
       metadata: {title: `Audience ${index}`},
@@ -516,15 +516,19 @@ describe('DocumentVersionsFlyoutList', () => {
     const onOpenInventory = vi.fn()
     await renderFlyoutList({onOpenInventory})
 
-    const more = page.getByTestId('document-versions-flyout-more')
-    await expect.element(more).toBeVisible()
+    const footer = page.getByTestId('document-versions-flyout-inventory')
+    await expect.element(footer).toBeVisible()
     expect(page.getByTestId('document-versions-flyout-row').elements()).toHaveLength(5)
-    await expect.element(more).toMatchTextContent('2 more in the inventory')
-    // Just above the last row, which keeps opening the inventory
+    // One footer row: it counts the audiences the flyout leaves out, with no separate count row
+    await expect.element(footer).toMatchTextContent('See 2 more in the inventory')
+    expect(page.getByTestId('document-versions-flyout-more').elements()).toHaveLength(0)
+    expect(page.getByText('See all versions in the inventory').elements()).toHaveLength(0)
     const rows = page.getByRole('menuitem').elements()
-    expect(rows.at(-2)).toBe(more.element())
-    expect(rows.at(-1)).toBe(page.getByTestId('document-versions-flyout-inventory').element())
-    await more.click()
+    expect(rows).toHaveLength(6)
+    // Still the last menu item, so the host's arrow keys reach it after the audience rows
+    expect(rows.at(-1)).toBe(footer.element())
+
+    await footer.click()
     expect(onOpenInventory).toHaveBeenCalledTimes(1)
   })
 })

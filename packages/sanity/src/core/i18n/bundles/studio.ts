@@ -860,6 +860,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.flyout.audience.lead.update-waiting': 'Update waiting in {{releaseTitle}}',
   /** An audience row in the versions flyout, lead: a scheduled release with this audience in it has gone out. `date` is a relative time ("2 hr ago") */
   'document-group.flyout.audience.lead.updated': 'Updated {{date}}',
+  /** The last row of the versions flyout on a document list row, when it lists only its first audiences: counts the ones it does not show and opens the document group inventory (singular) */
+  'document-group.flyout.footer.see-more_one': 'See {{count}} more in the inventory',
+  /** The last row of the versions flyout on a document list row, when it lists only its first audiences: counts the ones it does not show and opens the document group inventory (plural) */
+  'document-group.flyout.footer.see-more_other': 'See {{count}} more in the inventory',
   /**
    * The last row of the versions flyout on a document list row, when the document has a single version
    * @deprecated no longer in use
@@ -872,9 +876,17 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    */
   // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the footer reads `see-all-versions`
   'document-group.flyout.see-all_other': 'See all {{count}} versions in inventory',
-  /** A row of the versions flyout after its first rows, counting the rows it does not show; opens the document group inventory (singular) */
+  /**
+   * A row of the versions flyout after its first rows, counting the rows it does not show; opens the document group inventory (singular)
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the footer reads `footer.see-more`
   'document-group.flyout.more_one': '{{count}} more in the inventory',
-  /** A row of the versions flyout after its first rows, counting the rows it does not show; opens the document group inventory (plural) */
+  /**
+   * A row of the versions flyout after its first rows, counting the rows it does not show; opens the document group inventory (plural)
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the footer reads `footer.see-more`
   'document-group.flyout.more_other': '{{count}} more in the inventory',
   /** The first line of the versions flyout on a document list row: one person is editing the document */
   'document-group.flyout.presence.one': '{{displayName}} is editing',
@@ -882,7 +894,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.flyout.presence.other_one': '{{displayName}} and {{count}} other are editing',
   /** The first line of the versions flyout on a document list row: more than one person is editing the document. `count` is the number of other people (plural) */
   'document-group.flyout.presence.other_other': '{{displayName}} and {{count}} others are editing',
-  /** The last row of the versions flyout on a document list row, whatever versions the document has: opens the document group inventory */
+  /** The last row of the versions flyout on a document list row, when it lists every audience: opens the document group inventory */
   'document-group.flyout.see-all-versions': 'See all versions in the inventory',
   /** Accessible name of the versions flyout on a document list row */
   'document-group.flyout.title': 'Versions',

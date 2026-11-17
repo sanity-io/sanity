@@ -38,7 +38,7 @@ import {type DocumentVersionStatusGroup} from './sortDocumentVersionsForStatus'
 
 type RowPresence = Omit<DocumentPresence, 'path'>
 
-/** Audiences the flyout lists before its last rows. */
+/** Audiences the flyout lists before its footer row. */
 const MAX_AUDIENCES = 5
 
 /** The trailing column of status marks: as wide on every row, so the marks line up at the right edge. */
@@ -418,7 +418,8 @@ function PresenceLine({people}: {people: RowPresence[]}) {
 /**
  * The content of the versions flyout on a document list row: one row per audience, with its latest
  * event as the subtitle and the variant diamond in a trailing column at the right edge, and a last row that opens the document group
- * inventory. Rows are menu items, so the host can move focus between them with the arrow keys.
+ * inventory. When there are more audiences than the flyout lists, that last row counts the others
+ * ("See 2 more in the inventory"). Rows are menu items, so the host can move focus between them with the arrow keys.
  *
  * @internal
  */
@@ -456,6 +457,9 @@ export function DocumentVersionsFlyoutList(props: {
     () => groupPresenceByAudience(groups, people),
     [groups, people],
   )
+
+  // Audiences past the first ones: the footer counts them, since that is where they are
+  const hiddenCount = Math.max(0, groups.length - MAX_AUDIENCES)
 
   if (loading) {
     return (
@@ -499,24 +503,15 @@ export function DocumentVersionsFlyoutList(props: {
             }
           />
         ))}
-        {groups.length > MAX_AUDIENCES ? (
-          <FlyoutRow
-            onClick={onOpenInventory}
-            testId="document-versions-flyout-more"
-            title={
-              <Text as="div" muted size={1} style={{color: 'inherit'}} trim truncate={1}>
-                {t('document-group.flyout.more', {count: groups.length - MAX_AUDIENCES})}
-              </Text>
-            }
-          />
-        ) : null}
         <FlyoutRow
           renderMedia={() => <Icon icon={DocumentsIcon} size={2} />}
           onClick={onOpenInventory}
           testId="document-versions-flyout-inventory"
           title={
             <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
-              {t('document-group.flyout.see-all-versions')}
+              {hiddenCount > 0
+                ? t('document-group.flyout.footer.see-more', {count: hiddenCount})
+                : t('document-group.flyout.see-all-versions')}
             </Text>
           }
           renderTrailing={() => <Icon icon={ChevronRightIcon} size={1} />}
