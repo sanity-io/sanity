@@ -6,7 +6,7 @@ import {
   QUERY_URL_SIZE_LIMIT,
   queryRequestMethod,
 } from '../../util/queryRequestMethod'
-import {fetchWithNetwork, parseServerTiming, readLocalAnswer} from './queryNetwork'
+import {fetchWithNetwork, localRoundTrip, parseServerTiming, readLocalAnswer} from './queryNetwork'
 
 function respond(body: unknown, headers: Record<string, string>, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -56,7 +56,9 @@ describe('fetchWithNetwork', () => {
       shard: 'gcp-eu-w1-01-prod-1028',
       traceId: 'aaaa1111',
       cacheControl: 'private, max-age=60, stale-while-revalidate=15',
+      headersMs: expect.any(Number),
     })
+    expect(first.network?.headersMs).toBeGreaterThanOrEqual(0)
     const [url, init] = fetchMock.mock.calls[0]
     expect(String(url)).toMatch(
       /^https:\/\/abc123\.apicdn\.sanity\.io\/v2025-02-19\/data\/query\/production\?/,
@@ -238,5 +240,46 @@ describe('readLocalAnswer', () => {
         }),
       ),
     ).toEqual({documents: undefined, memoryBytes: undefined, timings: []})
+  })
+})
+
+describe('localRoundTrip', () => {
+  const timings = [
+    {name: 'wasm', dur: 1.8, desc: 'Query in WebAssembly'},
+    {name: 'execute', dur: 1.2},
+    {name: 'route', dur: 2.5, desc: 'Service worker to store and back'},
+  ]
+
+  it('splits the round trip into rows that add up to it, with the query inside the route', () => {
+    const rows = localRoundTrip(10, {timings}, 7)
+    expect(rows).toEqual([
+      {name: 'browser', dur: 4.5, depth: 0},
+      {name: 'route', dur: 2.5, desc: 'Service worker to store and back', depth: 0},
+      {name: 'wasm', dur: 1.8, desc: 'Query in WebAssembly', depth: 1},
+      {name: 'execute', dur: 1.2, depth: 2},
+      {name: 'page', dur: 3, depth: 0},
+    ])
+    const top = rows.filter((row) => row.depth === 0).reduce((sum, row) => sum + row.dur, 0)
+    expect(top).toBeCloseTo(10)
+  })
+
+  it('leaves out what it cannot work out', () => {
+    // Headers not timed: only groq-store-wasm's own rows
+    expect(localRoundTrip(10, {timings}, undefined).map((row) => row.name)).toEqual([
+      'route',
+      'wasm',
+      'execute',
+    ])
+    // A groq-store-wasm without the route timing: the query is the top level, and no browser row
+    expect(localRoundTrip(10, {timings: timings.slice(0, 2)}, 7)).toEqual([
+      {name: 'wasm', dur: 1.8, desc: 'Query in WebAssembly', depth: 0},
+      {name: 'execute', dur: 1.2, depth: 1},
+      {name: 'page', dur: 3, depth: 0},
+    ])
+  })
+
+  it('never shows a negative duration from clocks that disagree', () => {
+    expect(localRoundTrip(5, {timings}, 2)[0]).toEqual({name: 'browser', dur: 0, depth: 0})
+    expect(localRoundTrip(1, {timings}, 2).at(-1)).toEqual({name: 'page', dur: 0, depth: 0})
   })
 })

@@ -39,6 +39,11 @@ export interface QueryNetwork {
    * this device (`X-Groq-Wasm: hit`) rather than letting the request through to the API
    */
   local?: LocalAnswer
+  /**
+   * From `fetch()` until the response's headers arrived, measured in this page: the request
+   * there and the answer back, without reading the body
+   */
+  headersMs?: number
 }
 
 /** One `Server-Timing` entry: `wasm;dur=1.84;desc="Query in WebAssembly"` */
@@ -59,15 +64,15 @@ export interface LocalAnswer {
   /** Bytes of that store's WebAssembly linear memory */
   memoryBytes?: number
   /**
-   * The store's timings, in the order to show them: `wasm`, the parts of it (`parse`, `execute`,
-   * `serialize`) and `route`. Other names are ignored.
+   * The store's timings in this order: `wasm`, the parts of it (`parse`, `execute`, `serialize`)
+   * and `route`, which `wasm` is inside. Other names are ignored. `localRoundTrip` arranges them.
    */
   timings: ServerTiming[]
 }
 
 /** The `Server-Timing` names groq-store-wasm sends; `parse`, `execute` and `serialize` are parts of `wasm` */
 export const LOCAL_TIMING_NAMES = ['wasm', 'parse', 'execute', 'serialize', 'route'] as const
-export const LOCAL_TIMING_PARTS: ReadonlySet<string> = new Set(['parse', 'execute', 'serialize'])
+const LOCAL_TIMING_PARTS: ReadonlySet<string> = new Set(['parse', 'execute', 'serialize'])
 
 /** Splits on `separator` where it is not inside a quoted string */
 function splitOutsideQuotes(value: string, separator: string): string[] {
@@ -164,6 +169,50 @@ export function readLocalAnswer(headers: Headers): LocalAnswer | undefined {
   }
 }
 
+/** One line of a local answer's round trip, `depth` levels inside the line above it */
+export interface LocalTimingRow {
+  /**
+   * A `Server-Timing` name, or what Vision measured around them: `browser` (the request to the
+   * service worker and its response back) and `page` (the client in this page before the request,
+   * and reading the response)
+   */
+  name: string
+  /** Milliseconds */
+  dur: number
+  /** The `Server-Timing` description, when it has one */
+  desc?: string
+  depth: number
+}
+
+/**
+ * A local answer's round trip, split so the top-level rows add up to it: `browser`, then `route`
+ * (the service worker asking the store and the reply coming back) with the `wasm` query and its
+ * parts inside it, then `page`. A row Vision cannot work out is left out: `browser` needs `route`
+ * and `headersMs`, `page` needs `headersMs`. Clocks that disagree never show a negative row.
+ */
+export function localRoundTrip(
+  e2eMs: number,
+  local: LocalAnswer,
+  headersMs: number | undefined,
+): LocalTimingRow[] {
+  const route = local.timings.find((timing) => timing.name === 'route')
+  const wasmDepth = route ? 1 : 0
+  const rows: LocalTimingRow[] = []
+  if (route && headersMs !== undefined) {
+    rows.push({name: 'browser', dur: Math.max(0, headersMs - (route.dur ?? 0)), depth: 0})
+  }
+  if (route) rows.push({...route, dur: route.dur ?? 0, depth: 0})
+  for (const timing of local.timings) {
+    if (timing.name === 'route') continue
+    const depth = LOCAL_TIMING_PARTS.has(timing.name) ? wasmDepth + 1 : wasmDepth
+    rows.push({...timing, dur: timing.dur ?? 0, depth})
+  }
+  if (headersMs !== undefined) {
+    rows.push({name: 'page', dur: Math.max(0, e2eMs - headersMs), depth: 0})
+  }
+  return rows
+}
+
 /** Enough to tell this session's cache hits; the oldest traces are forgotten past it */
 const MAX_REMEMBERED_TRACES = 500
 const rememberedTraces = new Set<string>()
@@ -238,8 +287,12 @@ export async function fetchWithNetwork(
     const tapped = {
       ...request,
       fetch: async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+        const sent = performance.now()
         const response = await globalThis.fetch(input, {...init, cache: 'no-cache'})
-        network = readQueryNetwork(input, init, response.headers)
+        network = {
+          ...readQueryNetwork(input, init, response.headers),
+          headersMs: performance.now() - sent,
+        }
         return response
       },
     }

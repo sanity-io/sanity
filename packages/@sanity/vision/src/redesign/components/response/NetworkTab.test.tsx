@@ -221,6 +221,7 @@ describe('NetworkTab', () => {
         {name: 'route', dur: 0.4, desc: 'Service worker to store and back'},
       ],
     },
+    headersMs: 6.4,
   }
 
   it('shows an answer groq-store-wasm gave on this device, with a crab for you and no way anywhere', async () => {
@@ -253,6 +254,18 @@ describe('NetworkTab', () => {
     expect(screen.getByTestId('vision-network-timing-route').textContent).toBe(
       'vision.network.timing.entry:{"label":"Service worker to store and back","duration":"400µs"}',
     )
+    expect(screen.getByTestId('vision-network-timing-browser').textContent).toBe(
+      'vision.network.timing.entry:{"label":"vision.network.timing.local-browser","duration":"6.00ms"}',
+    )
+    expect(screen.getByTestId('vision-network-timing-page').textContent).toBe(
+      'vision.network.timing.entry:{"label":"vision.network.timing.local-page","duration":"83.6ms"}',
+    )
+    // The rows add up to the round trip: the query is inside the route that carried it
+    expect(
+      screen
+        .getAllByTestId(/^vision-network-timing-/)
+        .map((node) => node.dataset.testid?.replace('vision-network-timing-', '')),
+    ).toEqual(['browser', 'route', 'wasm', 'page'])
     expect(screen.queryByTestId('vision-network-hint')).toBeNull()
     expect(screen.queryByTestId('vision-network-cdn-blocked')).toBeNull()
     expect(screen.getByTestId('vision-network-crab').textContent).toBe('🦀')

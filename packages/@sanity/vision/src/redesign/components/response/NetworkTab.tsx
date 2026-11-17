@@ -12,7 +12,7 @@ import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {type VisionResponseMeta} from '../../store/types'
 import {regionOfShard} from '../../util/apiRegions'
 import {formatBytes} from '../../util/payloadSize'
-import {type LocalAnswer, LOCAL_TIMING_PARTS} from '../../util/queryNetwork'
+import {type LocalAnswer, localRoundTrip} from '../../util/queryNetwork'
 import {browserLocation, offsetLocation} from '../../util/timeZoneLocation'
 import {CdnBlockedNotice} from '../CdnBlockedNotice'
 import {NetworkGlobe} from './NetworkGlobe'
@@ -26,6 +26,16 @@ function Row({label, children}: {label: string; children: ReactNode}) {
       <Box minWidth="0">{children}</Box>
     </>
   )
+}
+
+/** Space scale steps for each level of a local answer's timing rows */
+const ROW_INDENT = [0, 3, 4] as const
+
+/** The rows of a local answer's round trip that Vision measured itself, around groq-store-wasm's */
+function measuredRowKey(name: string): string | undefined {
+  if (name === 'browser') return 'vision.network.timing.local-browser'
+  if (name === 'page') return 'vision.network.timing.local-page'
+  return undefined
 }
 
 function isCdnUrl(url: string): boolean {
@@ -209,25 +219,25 @@ export function NetworkTab({meta, resolved, perspectiveName}: NetworkTabProps) {
                     <Text data-testid="vision-network-timing" size={1} as="div" trim={true}>
                       {t('vision.network.timing.local', {e2e: formatMeasuredDuration(meta.e2eMs)})}
                     </Text>
-                    {local.timings.map((timing) => (
-                      <Box
-                        key={timing.name}
-                        paddingLeft={LOCAL_TIMING_PARTS.has(timing.name) ? 3 : 0}
-                      >
-                        <Text
-                          data-testid={`vision-network-timing-${timing.name}`}
-                          muted
-                          size={0}
-                          as="div"
-                          trim={true}
-                        >
-                          {t('vision.network.timing.entry', {
-                            label: timing.desc || timing.name,
-                            duration: formatMeasuredDuration(timing.dur ?? 0),
-                          })}
-                        </Text>
-                      </Box>
-                    ))}
+                    {localRoundTrip(meta.e2eMs, local, network?.headersMs).map((row) => {
+                      const key = measuredRowKey(row.name)
+                      return (
+                        <Box key={row.name} paddingLeft={ROW_INDENT[row.depth]}>
+                          <Text
+                            data-testid={`vision-network-timing-${row.name}`}
+                            muted
+                            size={0}
+                            as="div"
+                            trim={true}
+                          >
+                            {t('vision.network.timing.entry', {
+                              label: key ? t(key) : row.desc || row.name,
+                              duration: formatMeasuredDuration(row.dur),
+                            })}
+                          </Text>
+                        </Box>
+                      )
+                    })}
                   </Stack>
                 ) : (
                   <Text size={1} as="div" trim={true}>

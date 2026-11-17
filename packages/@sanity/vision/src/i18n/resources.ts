@@ -642,6 +642,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.network.timing.entry': '{{label}}: {{duration}}',
   /** The round trip of a query groq-store-wasm answered on this device, already formatted (`12.4ms`) */
   'vision.network.timing.local': '{{e2e}} round trip',
+  /** In a local answer's round trip: the browser handing the request to groq-store-wasm's service worker, and the response back to this page */
+  'vision.network.timing.local-browser': 'Browser to service worker and back',
+  /** In a local answer's round trip: the client in this page before the request, and reading the response */
+  'vision.network.timing.local-page': 'In this page: the client and reading the response',
   /** The round trip and the server's time for the query, already formatted (`1.17s`, `888ms`) */
   'vision.network.timing.value': '{{e2e}} round trip, {{server}} on the server',
   /** In the Network panel: the trace of the request, for Sanity support */
