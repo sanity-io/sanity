@@ -19,6 +19,7 @@ import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {useGetDefaultPerspective} from '../../useGetDefaultPerspective'
 import {useSetPerspective} from '../../useSetPerspective'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
+import {MenuSectionDivider} from '../MenuSectionDivider'
 import {usePerspectiveDetailLinkTrigger} from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
 import {ReleasesList} from './ReleasesList'
@@ -155,8 +156,9 @@ export function ReleasesMenu({
             padding={0}
             style={menuStyle}
           >
-            {/* 4px below the field plus the first section's 4px top padding: an 8px gap to the first row */}
-            <Box flexShrink={0} paddingX={2} paddingTop={2} paddingBottom={1} borderBottom>
+            {/* 4px below the field, the rule, then the first section's 4px top padding: an 8px gap
+            to the first row */}
+            <Box flexShrink={0} paddingX={2} paddingTop={2} paddingBottom={1}>
               <TextInput
                 data-testid="global-perspective-filter"
                 fontSize={1}
@@ -166,6 +168,7 @@ export function ReleasesMenu({
                 radius={2}
                 value={filterQuery}
               />
+              <MenuSectionDivider placement="end" />
             </Box>
             <Flex
               className={menuOverflowScroller}

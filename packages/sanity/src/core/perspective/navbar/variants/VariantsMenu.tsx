@@ -41,6 +41,7 @@ import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../../variants/util/v
 import {usePerspective} from '../../usePerspective'
 import {useSetVariant} from '../../useSetVariant'
 import {FilterNoMatches} from '../FilterNoMatches'
+import {MenuSectionDivider} from '../MenuSectionDivider'
 import {
   PerspectiveDetailLink,
   renderWithDetailLinkSpace,
@@ -231,6 +232,7 @@ export function VariantsMenu({
   const {triggerRef, handleNavigate: handleNavigateToVariant} = usePerspectiveDetailLinkTrigger()
 
   const isDefaultSelected = !selectedVariant
+  const isFiltering = filterQuery.trim().length > 0
 
   const {href: viewAllHref, onClick: handleViewAll} = useIntentLink({
     intent: VARIANTS_INTENT,
@@ -302,7 +304,15 @@ export function VariantsMenu({
                 {/* Menu items are flex children with min-height: 0, so they collapse
                 when they sit directly in this scroller. Keep them in a column
                 that sizes to its content. */}
-                <Flex flexDirection="column" flexShrink={0} gap={1} paddingX={2} paddingY={1}>
+                <Flex
+                  flexDirection="column"
+                  flexShrink={0}
+                  gap={1}
+                  paddingX={2}
+                  paddingTop={1}
+                  // With the footer hidden by a filter, the last row is 8px from the menu's bottom
+                  paddingBottom={isFiltering ? 2 : 1}
+                >
                   {filteredVariants.map((variant) =>
                     isDefaultVariant(variant) ? (
                       <MenuItem
@@ -330,29 +340,25 @@ export function VariantsMenu({
                 </Flex>
               </Flex>
             )}
-            <Flex
-              flexDirection="column"
-              flexShrink={0}
-              gap={1}
-              borderTop
-              paddingX={2}
-              paddingY={1}
-              hidden={filterQuery.trim().length > 0}
-            >
-              <MenuItem
-                as="a"
-                data-testid="view-all"
-                href={viewAllHref}
-                icon={RhombusIconLarge}
-                onClick={handleViewAll}
-                text={t('navbar.variant.menu.view-all')}
-              />
-              {allowCreate && (
-                <Suspense fallback={null}>
-                  <NewVariantMenuItem onCreate={handleNewAudience} />
-                </Suspense>
-              )}
-            </Flex>
+            {/* 8px below the last row: the menu's bottom inset */}
+            <Box flexShrink={0} paddingX={2} paddingTop={1} paddingBottom={2} hidden={isFiltering}>
+              <MenuSectionDivider placement="start" />
+              <Flex flexDirection="column" gap={1}>
+                <MenuItem
+                  as="a"
+                  data-testid="view-all"
+                  href={viewAllHref}
+                  icon={RhombusIconLarge}
+                  onClick={handleViewAll}
+                  text={t('navbar.variant.menu.view-all')}
+                />
+                {allowCreate && (
+                  <Suspense fallback={null}>
+                    <NewVariantMenuItem onCreate={handleNewAudience} />
+                  </Suspense>
+                )}
+              </Flex>
+            </Box>
           </Menu>
         }
         popover={{

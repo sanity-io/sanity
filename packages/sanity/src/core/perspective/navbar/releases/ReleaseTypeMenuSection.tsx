@@ -7,6 +7,7 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {type ReleaseId, type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {usePerspective} from '../../usePerspective'
+import {MenuSectionDivider} from '../MenuSectionDivider'
 import {ReleasesMenuLabelIndicator} from './ReleasesLayerIndicator'
 import {getRangePosition, ReleasesMenuItem, type LayerRange} from './ReleasesMenuItem'
 import {type ScrollElement} from './useScrollIndicatorVisibility'
@@ -24,6 +25,7 @@ export function ReleaseTypeMenuSection({
   currentGlobalBundleMenuItemRef,
   menuItemProps,
   onNavigateToRelease,
+  showDivider = false,
   showStackLine = true,
 }: {
   releaseType: ReleaseType
@@ -32,6 +34,8 @@ export function ReleaseTypeMenuSection({
   currentGlobalBundleMenuItemRef: React.RefObject<ScrollElement>
   menuItemProps?: ReleasesNavMenuItemPropsGetter
   onNavigateToRelease?: () => void
+  /** Draws the rule above the section, for a section with another group above it. */
+  showDivider?: boolean
   /** The stack line joins the selected perspective to the releases under it. A filter hides it. */
   showStackLine?: boolean
 }): React.JSX.Element | null {
@@ -53,7 +57,8 @@ export function ReleaseTypeMenuSection({
   const labelWithinStack = showStackLine && releaseTypeOffset > 0 && lastIndex >= releaseTypeOffset
 
   return (
-    <Card paddingX={2} paddingY={1} borderBottom>
+    <Card paddingX={2} paddingY={1}>
+      {showDivider && <MenuSectionDivider placement="start" />}
       <VStack gap={1}>
         <ReleasesMenuLabelIndicator
           $withinRange={labelWithinStack}
