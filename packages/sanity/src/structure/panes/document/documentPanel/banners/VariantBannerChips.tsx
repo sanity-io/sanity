@@ -20,7 +20,8 @@ export interface VariantBannerChipProps {
 
 function Lead({lead, children}: {lead?: string; children: ReactNode}) {
   if (!lead) return children
-  // A no-break space ties the lead to the start of the chip; the chip can still wrap, so a long name never overflows the text column.
+  // A no-break space ties the lead to the chip, which wraps as a unit and truncates a name longer
+  // than the line, so a long name never overflows the text column.
   return (
     <>
       {lead}&nbsp;{children}
@@ -32,9 +33,11 @@ function Lead({lead, children}: {lead?: string; children: ReactNode}) {
 export function VariantBadge({children, variantLead}: VariantBannerChipProps) {
   return (
     <Lead lead={variantLead}>
-      <VersionInlineBadge $tone="suggest" data-testid="variant-banner-variant-chip">
-        {/* 4px to the label, the glyph gap of the other chips in the banner sentence */}
-        <VariantMark size="inline" style={{marginInlineEnd: '4px'}} />
+      <VersionInlineBadge
+        $tone="suggest"
+        data-testid="variant-banner-variant-chip"
+        icon={<VariantMark size="inline" />}
+      >
         {children}
       </VersionInlineBadge>
     </Lead>

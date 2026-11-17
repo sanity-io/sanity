@@ -551,6 +551,160 @@ describe('document panel banners', () => {
     await settleChromaticEndState()
   })
 
+  describe.each([320, 480])('keeps every inline chip whole at %ipx', (width) => {
+    const germany = {
+      ...alphaVariant,
+      _id: '_.variants.germany',
+      metadata: {title: 'Germany', description: []},
+    } as SystemVariant
+    const longVariant = {
+      ...alphaVariant,
+      _id: '_.variants.long',
+      metadata: {
+        title: 'Returning customers in the German-speaking markets during the winter sale',
+        description: [],
+      },
+    } as SystemVariant
+    const autumnCatalogue = release('rAutumnCatalogue', {
+      title: 'Autumn catalogue',
+      releaseType: 'undecided',
+    })
+    const longRelease = release('rLong', {
+      title: 'Spring collection launch for every storefront in the Nordic region',
+      releaseType: 'scheduled',
+      intendedPublishAt: FAR_FUTURE,
+    })
+
+    function withVariantNamed(perspective: PerspectiveContextValue, variant: SystemVariant) {
+      return {
+        ...perspective,
+        selectedVariantNames: [variant._id.replace('_.variants.', '')],
+        selectedVariants: [variant],
+      }
+    }
+
+    function Banners({variant}: {variant: SystemVariant}) {
+      const schemaType = useSchema().get('article') as ObjectSchemaType
+      return (
+        <>
+          <BannerHarness perspective={withVariantNamed(draftsPerspective, variant)}>
+            <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'drafts'}} />
+          </BannerHarness>
+          {[autumnCatalogue, springRelease, longRelease].map((item) => (
+            <BannerHarness
+              key={item._id}
+              perspective={withVariantNamed(releasePerspective(item), variant)}
+            >
+              <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'release'}} />
+            </BannerHarness>
+          ))}
+          <BannerHarness
+            perspective={withVariantNamed(releasePerspective(scheduledRelease), variant)}
+          >
+            <DocumentNotInVariantBanner bannerCase={{kind: 'locked-release'}} />
+          </BannerHarness>
+          <BannerHarness perspective={withVariantNamed(publishedPerspective, variant)}>
+            <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'published'}} />
+            <DocumentNotInVariantBanner bannerCase={{kind: 'create-in-drafts'}} />
+            <DocumentNotInVariantBanner bannerCase={{kind: 'switch-to-drafts'}} />
+          </BannerHarness>
+          <BannerHarness>
+            {[autumnCatalogue, springRelease, longRelease].map((item) => (
+              <DocumentNotInReleaseBanner
+                key={item._id}
+                documentId={DOCUMENT_ID}
+                currentRelease={item}
+              />
+            ))}
+            <ChooseNewDocumentDestinationBanner
+              schemaType={schemaType}
+              selectedPerspective={scheduledRelease}
+              reason="RELEASE_NOT_ACTIVE"
+            />
+            <ChooseNewDocumentDestinationBanner
+              schemaType={schemaType}
+              selectedPerspective={longRelease}
+              reason="RELEASE_NOT_ACTIVE"
+            />
+          </BannerHarness>
+        </>
+      )
+    }
+
+    it.each([
+      ['a short variant name', germany],
+      ['a variant name longer than the line', longVariant],
+    ])('with %s', async (_label, variant) => {
+      vi.mocked(useDocumentVersions).mockReturnValue({
+        data: [],
+        versions: [],
+        loading: false,
+        error: null,
+      })
+
+      await render(
+        <TestWrapper schemaTypes={schemaTypes}>
+          <div data-testid="narrow-banners" style={{width}}>
+            <Banners variant={variant} />
+          </div>
+        </TestWrapper>,
+      )
+
+      const visibleChips = () =>
+        [
+          ...document
+            .querySelector('[data-testid="narrow-banners"]')!
+            .querySelectorAll<HTMLElement>('[data-inline-chip]'),
+        ].filter((chip) => chip.checkVisibility({visibilityProperty: true}))
+
+      // Every banner's sentence is on screen, the variant chip with its diamond in each variant one
+      await expect.poll(() => visibleChips().length).toBeGreaterThanOrEqual(14)
+      await expect
+        .poll(
+          () =>
+            visibleChips().filter((chip) => chip.querySelector('[data-inline-chip-icon] svg'))
+              .length,
+        )
+        .toBeGreaterThanOrEqual(7)
+
+      for (const chip of visibleChips()) {
+        const label = chip.textContent ?? ''
+        // One box on one line: the chip never breaks between lines
+        expect(chip.getClientRects(), `${label}: line boxes`).toHaveLength(1)
+        const box = chip.getBoundingClientRect()
+        const name = chip.querySelector('[data-inline-chip-name]')!.getBoundingClientRect()
+        const icon = chip.querySelector('[data-inline-chip-icon]')?.getBoundingClientRect()
+        if (icon) {
+          // The glyph is on the name's line, centred on it
+          const iconCentre = icon.top + icon.height / 2
+          expect(iconCentre, `${label}: glyph on the name's line`).toBeGreaterThanOrEqual(name.top)
+          expect(iconCentre, `${label}: glyph on the name's line`).toBeLessThanOrEqual(name.bottom)
+          expect(icon.right, `${label}: glyph before the name`).toBeLessThanOrEqual(name.left + 1)
+        }
+        // The chip stays inside the banner, which stays inside the narrow pane
+        const bounds = document
+          .querySelector('[data-testid="narrow-banners"]')!
+          .getBoundingClientRect()
+        expect(box.left, `${label}: left edge`).toBeGreaterThanOrEqual(bounds.left - 0.5)
+        expect(box.right, `${label}: right edge`).toBeLessThanOrEqual(bounds.right + 0.5)
+      }
+
+      // A name longer than the line is cut short with an ellipsis, and the chip names it in full
+      const truncated = visibleChips().filter((chip) => {
+        const nameElement = chip.querySelector<HTMLElement>('[data-inline-chip-name]')!
+        return nameElement.scrollWidth > nameElement.clientWidth
+      })
+      if (variant === longVariant) expect(truncated.length, 'chips cut short').toBeGreaterThan(0)
+      for (const chip of truncated) {
+        const nameElement = chip.querySelector<HTMLElement>('[data-inline-chip-name]')!
+        expect(getComputedStyle(nameElement).textOverflow).toBe('ellipsis')
+        await userEvent.hover(chip)
+        await expect.poll(() => chip.title).toBe(nameElement.textContent)
+      }
+      await settleChromaticEndState()
+    })
+  })
+
   it('explains a missing variant version in each perspective', async () => {
     vi.mocked(useDocumentVersions).mockReturnValue({
       data: [],
