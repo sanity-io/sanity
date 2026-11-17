@@ -110,6 +110,7 @@ export const DEBUG_INPUT_TYPES = [
   'noVersionsLiveEdit',
   'releasesOnly',
   'variantsOnly',
+  'noScheduledDrafts',
   'typeWithNoToplevelStrings',
   'uploadsTest',
   'validationTest',
