@@ -17,7 +17,7 @@ configure({disableAutoSnapshot: true})
 const ROWS = ['Alpha', 'Bravo', 'Charlie']
 
 /** The Variants pill leads with a row; the Releases pill starts with a section. */
-function MenuStory({withLeadingItem}: {withLeadingItem: boolean}) {
+function MenuStory({selected, withLeadingItem}: {selected?: string; withLeadingItem: boolean}) {
   const [filterQuery, setFilterQuery] = useState('')
   const matching = ROWS.filter((row) => row.toLowerCase().includes(filterQuery.toLowerCase()))
   const showLeading = withLeadingItem && 'default'.includes(filterQuery.toLowerCase())
@@ -40,7 +40,15 @@ function MenuStory({withLeadingItem}: {withLeadingItem: boolean}) {
             {
               key: 'rows',
               label: 'Rows',
-              items: matching.map((row) => <MenuItem icon={AddIcon} key={row} text={row} />),
+              items: matching.map((row) => (
+                <MenuItem
+                  icon={AddIcon}
+                  key={row}
+                  pressed={row === selected}
+                  selected={row === selected}
+                  text={row}
+                />
+              )),
             },
           ]}
           testId="pill-menu"
@@ -164,5 +172,69 @@ describe('DocumentNavigationMenu: section labels', () => {
     expect(Math.abs(label - rowText)).toBeLessThanOrEqual(1)
     expect(Math.abs(rowText - leadingText)).toBeLessThanOrEqual(1)
     expect(Math.abs(label - 41)).toBeLessThanOrEqual(1)
+  })
+})
+
+describe('DocumentNavigationMenu: reopening a scrolled list', () => {
+  const menu = () => page.getByTestId('pill-menu').element() as HTMLElement
+  const list = () =>
+    [...menu().querySelectorAll<HTMLElement>('*')].find(
+      (element) => getComputedStyle(element).overflowY === 'auto',
+    )!
+
+  function geometry() {
+    const field = fieldOf(menu()).getBoundingClientRect()
+    const box = list().getBoundingClientRect()
+    const rows = [...list().querySelectorAll('[data-ui="MenuItem"]')].map((row) =>
+      row.getBoundingClientRect(),
+    )
+    const firstVisible = rows.find((row) => row.bottom > box.top + 0.5)!
+    return {fieldBottom: field.bottom, firstVisibleTop: firstVisible.top, listBottom: box.bottom}
+  }
+
+  async function open() {
+    await page.getByTestId('open-menu').click()
+    await expect.element(page.getByTestId('pill-menu')).toBeVisible()
+    await expectStable(() => `${list().scrollTop}|${JSON.stringify(geometry())}`)
+  }
+
+  async function close() {
+    await userEvent.keyboard('{Escape}')
+    await expect.element(page.getByTestId('pill-menu')).not.toBeVisible()
+  }
+
+  /** Keeps the list short enough to scroll, then leaves a row cut in half at its top. */
+  function scrollToHalfRow() {
+    list().style.maxHeight = '90px'
+    const row = list().querySelector('[data-ui="MenuItem"]')!.getBoundingClientRect()
+    list().scrollTop = row.height / 2
+  }
+
+  it('reopens at the top with nothing selected', async () => {
+    void render(<MenuStory withLeadingItem />)
+    await open()
+    scrollToHalfRow()
+    await close()
+    await open()
+
+    expect(list().scrollTop).toBe(0)
+    const {fieldBottom, firstVisibleTop} = geometry()
+    expect(Math.abs(firstVisibleTop - (fieldBottom + 8))).toBeLessThanOrEqual(1)
+  })
+
+  it('reopens with the selected row whole and no row half under the search field', async () => {
+    // Not the last row: at the very end of the list, where it cannot scroll any further, the
+    // top row may be cut (see `scrollToSelection` in `useMenuOverflow`)
+    void render(<MenuStory selected="Bravo" withLeadingItem />)
+    await open()
+    scrollToHalfRow()
+    await close()
+    await open()
+
+    const {fieldBottom, firstVisibleTop, listBottom} = geometry()
+    expect(firstVisibleTop).toBeGreaterThanOrEqual(fieldBottom + 8 - 1)
+    const selected = page.getByRole('menuitem', {name: 'Bravo'}).element().getBoundingClientRect()
+    expect(selected.top).toBeGreaterThanOrEqual(fieldBottom + 8 - 1)
+    expect(selected.bottom).toBeLessThanOrEqual(listBottom + 1)
   })
 })
