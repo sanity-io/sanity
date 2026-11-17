@@ -363,7 +363,14 @@ describe('DocumentVersionsFlyoutList', () => {
       })
       await expect.element(page.getByRole('menuitem', {name: /German/})).toBeVisible()
       expect(page.getByTestId('document-versions-flyout-presence').elements()).toHaveLength(0)
-      expect(page.getByText(/are editing|is editing/).elements()).toHaveLength(0)
+      // The avatars' closed tooltip stays mounted (hidden) with the same words: only text on screen
+      // would be a first line
+      expect(
+        page
+          .getByText(/are editing|is editing/)
+          .elements()
+          .filter((element) => element.checkVisibility()),
+      ).toHaveLength(0)
       expect(page.getByTestId('document-versions-flyout-avatars').elements()).toHaveLength(1)
     })
 
