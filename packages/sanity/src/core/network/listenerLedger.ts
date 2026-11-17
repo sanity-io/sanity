@@ -26,7 +26,8 @@ export interface LedgerSnapshot {
  * A point-in-time read of every Studio tab's published listener count in the scope `host` falls
  * under (a root API host, or a request host such as `<projectId>.<root>`), from the
  * presence locks {@link startTrackingStudioTabs} publishes. `undefined` where the browser has no
- * Web Locks to read, in which case the classifier reports `unmeasured`.
+ * Web Locks to read or refuses the query (a sandboxed frame, blocked site data), in which case the
+ * classifier reports `unmeasured`.
  *
  * @internal
  */
@@ -35,7 +36,9 @@ export async function snapshot(host: string): Promise<LedgerSnapshot | undefined
     return undefined
   }
 
-  const {held = []} = await navigator.locks.query()
+  const locks = await navigator.locks.query().catch(() => undefined)
+  if (locks === undefined) return undefined
+  const {held = []} = locks
   const tabsByTabId = latestEntryPerTab(held.flatMap((lock) => entryForLock(lock.name ?? '', host)))
   const selfTabId = getStudioTabId()
   const self = tabsByTabId.get(selfTabId)

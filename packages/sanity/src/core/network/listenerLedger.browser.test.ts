@@ -1,4 +1,4 @@
-import {afterEach, describe, expect, test} from 'vitest'
+import {afterEach, describe, expect, test, vi} from 'vitest'
 
 import type * as ListenerCountExports from './listenerCount'
 import type * as ListenerLedgerExports from './listenerLedger'
@@ -174,5 +174,17 @@ describe('listener ledger snapshot (real Web Locks)', () => {
     const snapshotTaken = await watcher.listenerLedger.snapshot(scope)
     expect(snapshotTaken?.others).toEqual([{tabId: 'other-tab', count: 3, isStalled: true}])
     expect(snapshotTaken?.stalledOtherTabCount).toBe(1)
+  })
+
+  test('a rejected lock query reads as unmeasured', async () => {
+    const tab = await openTab()
+    const tabLocks = (tab.frame.contentWindow as Window).navigator.locks
+    const querySpy = vi
+      .spyOn(tabLocks, 'query')
+      .mockRejectedValue(new DOMException('Site data is blocked', 'SecurityError'))
+
+    await expect(tab.listenerLedger.snapshot(uniqueScope())).resolves.toBeUndefined()
+
+    querySpy.mockRestore()
   })
 })
