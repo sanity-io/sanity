@@ -761,6 +761,17 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'timeline.unscheduled-count_one': 'Unscheduled: {{count}}',
   /** Plural form of `timeline.unscheduled-count_one`. */
   'timeline.unscheduled-count_other': 'Unscheduled: {{count}}',
+  /** Overview filter button: open releases that are not scheduled and whose intended date has
+   * passed or is close. Pressing it shows only those releases. Singular form. */
+  'overview.needs-decision_one': '{{count}} release needs a decision',
+  /** Plural form of `overview.needs-decision_one`. */
+  'overview.needs-decision_other': '{{count}} releases need a decision',
+  /** Tooltip on the "needs a decision" filter button while the filter is off. `{{days}}` is the
+   * look-ahead window in days. */
+  'overview.needs-decision-tooltip':
+    'Show releases that aren’t scheduled and have an intended date in the next {{days}} days, or one that has passed',
+  /** Tooltip on the "needs a decision" filter button while the filter is on. */
+  'overview.needs-decision-clear': 'Show all releases',
   /** Left-edge scroll signpost: count of dated releases currently off the left of the scroll
    * viewport (earlier in time). Clicking scrolls the timeline back toward them. Singular form. */
   'timeline.overflow-earlier_one': '{{count}} earlier',

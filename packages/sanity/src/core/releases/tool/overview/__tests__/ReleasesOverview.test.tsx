@@ -652,6 +652,38 @@ describe('ReleasesOverview', () => {
       })
     })
 
+    describe('needs a decision filter', () => {
+      it('counts the open releases that have an intended date but are not scheduled', () => {
+        // Only activeScheduledRelease qualifies: intended for today, not armed. The armed
+        // release and the releases with no date do not count.
+        expect(screen.getByTestId('needs-decision-filter')).toHaveTextContent(
+          '1 release needs a decision',
+        )
+        expect(screen.getByRole('status')).toHaveTextContent('1 release needs a decision')
+      })
+
+      it('filters the table to those releases, and clears again', async () => {
+        const filter = screen.getByTestId('needs-decision-filter')
+        expect(filter).toHaveAttribute('aria-pressed', 'false')
+
+        await userEvent.click(filter)
+
+        await waitFor(() => {
+          expect(screen.getAllByTestId('table-row')).toHaveLength(1)
+        })
+        within(screen.getByTestId('table-row')).getByText(activeScheduledRelease.metadata.title)
+        // The row keeps the caution glyph whose tooltip says why it needs a decision.
+        within(screen.getByTestId('table-row')).getByTestId('release-not-scheduled')
+        expect(screen.getByTestId('needs-decision-filter')).toHaveAttribute('aria-pressed', 'true')
+
+        await userEvent.click(screen.getByTestId('needs-decision-filter'))
+
+        await waitFor(() => {
+          expect(screen.getAllByTestId('table-row')).toHaveLength(5)
+        })
+      })
+    })
+
     describe('timezone selection', () => {
       it('shows the selected timezone', () => {
         screen.getByText('SCT (Sanity/Oslo)')
