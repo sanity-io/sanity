@@ -30,7 +30,7 @@ const READY_TIMEOUT_MS = 30_000
 const STALL_FLAG_TIMEOUT_MS = STALL_TRIGGER_MS + 20_000
 // The Studio's telemetry store flushes 30s after the first event it buffers
 const EVENT_TIMEOUT_MS = 50_000
-const MAX_DESK_TABS = 16
+const MAX_DESK_TABS = 24
 const OVER_LIMIT_LISTENERS = 105
 const HEAVY_TAB_LISTENERS = 95
 
