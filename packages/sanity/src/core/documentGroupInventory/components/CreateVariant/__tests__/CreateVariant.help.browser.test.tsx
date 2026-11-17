@@ -135,7 +135,7 @@ const FIELDS = [
   {
     testId: 'create-variant-base-menu',
     name: 'About Start from',
-    text: "What the new version copies. Nearest version copies this variant's published version, or if there is none, the Default version in Drafts or the chosen release. You then change only what should differ, or pick another version to start from.",
+    text: "What the new version copies. Nearest version copies this variant's published version. If there is none, it copies the Default: in Drafts its draft, or else its published version; in a release, its version in that release. You then change only what should differ, or pick another version to start from.",
   },
 ]
 
