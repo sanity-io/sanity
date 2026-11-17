@@ -3,12 +3,13 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {EditIcon} from '@sanity/icons/Edit'
 import {PublishIcon} from '@sanity/icons/Publish'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {MenuDivider} from '@sanity/ui/menu'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {expect, userEvent, waitFor, within} from 'storybook/test'
 import {Flex} from 'ui5'
 
 import {Button} from '../../button/Button'
+import {Menu} from '../../menu/Menu'
 import {MenuItem} from '../../menuItem/MenuItem'
 import {MenuButton} from '../MenuButton'
 
@@ -16,8 +17,8 @@ import {MenuButton} from '../MenuButton'
  * The studio's `ui-components` wrapper around the `@sanity/ui` MenuButton,
  * which enforces popover animation. The caller composes the trigger and the
  * `Menu`; the wrapper takes care of the popover wiring (open/close, focus,
- * dismissal) following the WAI-ARIA menu button pattern. `Menu` and
- * `MenuDivider` are used raw from `@sanity/ui` (no studio wrapper exists).
+ * dismissal) following the WAI-ARIA menu button pattern. `Menu` is the studio
+ * wrapper (8px across, 4px down); `MenuDivider` is used raw from `@sanity/ui`.
  * The `play` function opens the menu so the snapshot captures the portaled
  * popover, not just the trigger.
  */
