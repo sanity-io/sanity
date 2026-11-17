@@ -758,6 +758,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.flyout.see-all-versions': 'See all versions in the inventory',
   /** Accessible name of the versions flyout on a document list row */
   'document-group.flyout.title': 'Versions',
+  /** Accessible summary of a search result's or reference preview's status marks, which open the versions flyout on hover (one version) */
+  'document-group.marks.label_one': '{{count}} version',
+  /** Accessible summary of a search result's or reference preview's status marks, which open the versions flyout on hover (several versions) */
+  'document-group.marks.label_other': '{{count}} versions',
   /** The number of variants currently selected in the document group inventory */
   'document-group.selected-count': '{{count}} selected',
   /** Last line of the document versions popover, counting the versions it does not list (singular) */
