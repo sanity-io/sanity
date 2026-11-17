@@ -793,16 +793,6 @@ export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useTimelineStore,
 } from '../core/store/history/useTimelineStore'
-// oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
-export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
-export {
-  // oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
-  type KeyValueStore,
-  // oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
-  type KeyValueStoreValue,
-} from '../core/store/key-value/types'
-// oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
-export {useKeyValueStore} from '../core/store/key-value/useKeyValueStore'
 export {
   useStudioPreference,
   useStudioPreferenceList,
