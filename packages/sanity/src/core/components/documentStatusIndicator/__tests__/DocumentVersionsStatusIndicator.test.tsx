@@ -84,9 +84,15 @@ function wrapper({children}: {children: ReactNode}) {
 }
 
 /** The rendered indicators, in DOM order. */
-function renderIndicator(documentVersions: VersionInfoDocumentStub[]): string[] {
+function renderIndicator(
+  documentVersions: VersionInfoDocumentStub[],
+  options: {variantMarks?: boolean} = {},
+): string[] {
   const {container} = render(
-    <DocumentVersionsStatusIndicator documentVersions={documentVersions} />,
+    <DocumentVersionsStatusIndicator
+      documentVersions={documentVersions}
+      variantMarks={options.variantMarks}
+    />,
     {
       wrapper,
     },
@@ -172,6 +178,21 @@ describe('DocumentVersionsStatusIndicator', () => {
         'document-status.variant-mark.version',
         'document-status.variant-mark.no-version',
       ])
+    })
+
+    it('leaves out the filled rhombus where variant marks are off, as in reference fields', () => {
+      expect(renderIndicator([publishedVariant, draftVariant], {variantMarks: false})).toEqual([
+        YELLOW_RING,
+        GREEN_DISC,
+      ])
+    })
+
+    it('leaves out the outline rhombus where variant marks are off, as in reference fields', () => {
+      expect(renderIndicator([publishedDefault], {variantMarks: false})).toEqual([GREEN_DISC])
+    })
+
+    it('renders nothing for a document with no versions where variant marks are off', () => {
+      expect(renderIndicator([], {variantMarks: false})).toEqual([])
     })
 
     it('falls back to the default documents while the variants store is still resolving', () => {

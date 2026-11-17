@@ -44,7 +44,8 @@ export function ReferencePreview(props: {
               <DocumentPreviewPresence presence={documentPresence} />
             )}
 
-            <DocumentVersionsStatusIndicator documentVersions={versions} />
+            {/* The variant diamond is for document lists and search results only */}
+            <DocumentVersionsStatusIndicator documentVersions={versions} variantMarks={false} />
           </Inline>
         </Box>
       ),
