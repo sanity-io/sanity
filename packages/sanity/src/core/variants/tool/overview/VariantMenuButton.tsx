@@ -1,8 +1,9 @@
 import {EditIcon} from '@sanity/icons/Edit'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {MenuDivider} from '@sanity/ui/menu'
 import {useState} from 'react'
 
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {ContextMenuButton} from '../../../components/contextMenuButton/ContextMenuButton'

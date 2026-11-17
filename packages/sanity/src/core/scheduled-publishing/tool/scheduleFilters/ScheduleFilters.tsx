@@ -1,12 +1,12 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CloseIcon} from '@sanity/icons/Close'
 import {SelectIcon} from '@sanity/icons/Select'
-import {Menu} from '@sanity/ui/menu'
 import {format} from 'date-fns/format'
 import {useRouter} from 'sanity/router'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {SCHEDULE_FILTERS, SCHEDULE_STATE_DICTIONARY} from '../../constants'

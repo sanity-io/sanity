@@ -1,10 +1,11 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {Card, Label} from '@sanity/ui'
-import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {MenuDivider} from '@sanity/ui/menu'
 import {memo, useMemo, useState} from 'react'
 import {Box} from 'ui5'
 
+import {Menu} from '../../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {ContextMenuButton} from '../../../../components/contextMenuButton/ContextMenuButton'

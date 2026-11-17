@@ -1,8 +1,8 @@
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Menu} from '@sanity/ui/menu'
 import {useId} from 'react'
 import {Box} from 'ui5'
 
+import {Menu} from '../../../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../../ui-components/menuItem/MenuItem'
 import {ContextMenuButton} from '../../../../../components/contextMenuButton/ContextMenuButton'
