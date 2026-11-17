@@ -8,7 +8,9 @@ import {css} from '#styled-system/css'
  * the 8px on the left; running the rows up to the track would leave a selected row 4px from the
  * thumb, so it looks cut off by it. The contents grow into the track's room by 4px less than the
  * inset: the rows end 4px before the track, which is 8px before the thumb, the list's visible
- * right edge. That is the same 8px the rows keep from the menu's left edge.
+ * right edge. That is the same 8px the rows keep from the menu's left edge. How far that is
+ * depends on the contents' own right padding (8px in the navbar menus, 4px where the menu adds the
+ * rest), so `useMenuOverflow` measures it into `--menu-row-trim`.
  *
  * Only the row moves. Whatever sits at the end of a row (an icon, the view action) stays 8px from
  * the row's end while the list scrolls, the same as when it fits.
@@ -31,7 +33,7 @@ export const menuOverflowScroller = css({
   // Whole rows plus half the next one when it scrolls, measured by `useMenuOverflow`
   'maxHeight': 'var(--menu-list-max-height, none)',
   '&[data-overflowing] > *': {
-    marginRight: 'calc(-1 * max(0px, min(var(--menu-scrollbar-width, 0px), 8px) - 4px))',
+    marginRight: 'calc(-1 * var(--menu-row-trim, 0px))',
   },
   '&::before, &::after': {
     content: '""',
