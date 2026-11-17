@@ -25,6 +25,8 @@ function valueOf(preference: StoredPreference | undefined): KeyValueStoreValue |
  * A {@link KeyValueStore} that reads and writes the current user's Studio preferences in the
  * client's project. It has no access to the Studio's App SDK instance, so it calls the preferences
  * API itself, and doesn't see changes made through `useStudioPreference` until it reads a key again.
+ * Vision's saved queries, which the API keeps as separate items, are only available through
+ * `useKeyValueStore`.
  *
  * @internal
  * @deprecated The Studio keeps its preferences through the App SDK now: use

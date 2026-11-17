@@ -2,9 +2,13 @@ import {
   createSanityInstance,
   PreferenceError,
   type SanityInstance,
+  type StateSource,
   updateUserPreference,
+  updateUserPreferenceListItem,
   type UserPreference,
   userPreference,
+  userPreferenceList,
+  type UserPreferenceListPage,
 } from '@sanity/sdk'
 import {BehaviorSubject, lastValueFrom} from 'rxjs'
 import {toArray} from 'rxjs/operators'
@@ -17,14 +21,23 @@ vi.mock(import('@sanity/sdk'), async (importOriginal) => {
   return {
     ...sdk,
     userPreference: {...sdk.userPreference, getState: vi.fn()},
+    userPreferenceList: {
+      ...sdk.userPreferenceList,
+      getState: vi.fn(),
+      loadMore: vi.fn(),
+      resolveState: vi.fn(),
+      refetch: vi.fn(),
+    },
     updateUserPreference: vi.fn(),
+    updateUserPreferenceListItem: vi.fn(),
   }
 })
 
-type PreferenceState = ReturnType<typeof userPreference.getState>
-type Snapshot = ReturnType<PreferenceState['getCurrent']>
+type Snapshot = ReturnType<ReturnType<typeof userPreference.getState>['getCurrent']>
+type ListSnapshot = ReturnType<ReturnType<typeof userPreferenceList.getState>['getCurrent']>
 
 const LAYOUT = 'studio.structure-tool.layout.book'
+const SAVED_QUERIES = 'studio.vision-tool.saved-queries'
 const USER_ID = 'user-1'
 
 const own = (value: string): UserPreference => ({
@@ -43,29 +56,43 @@ const unset: UserPreference = {
   shared: false,
 }
 
-const pending: Snapshot = {
+const pending = {
   status: 'pending',
   data: undefined,
   error: undefined,
   isFetching: true,
   dataUpdatedAt: undefined,
-}
-const loaded = (data: UserPreference): Snapshot => ({
-  status: 'success',
-  data,
-  error: undefined,
-  isFetching: false,
-  dataUpdatedAt: 1,
-})
-const failed: Snapshot = {
+} as const
+const loaded = <T>(data: T) =>
+  ({status: 'success', data, error: undefined, isFetching: false, dataUpdatedAt: 1}) as const
+const failed = {
   status: 'error',
   data: undefined,
   error: new Error('Network error'),
   isFetching: false,
   dataUpdatedAt: undefined,
-}
+} as const
 
-function preferenceState(snapshots: BehaviorSubject<Snapshot>): PreferenceState {
+const query = (key: string, title: string) => ({
+  _key: key,
+  title,
+  url: `https://project-1.api.sanity.io/v2026-11-07/data/query/production?query=${title}`,
+  savedAt: '2026-11-01T00:00:00.000Z',
+})
+const page = (
+  queries: ReturnType<typeof query>[],
+  nextCursor: string | null = null,
+): UserPreferenceListPage => ({
+  data: queries.map((value) => ({
+    itemId: value._key,
+    value,
+    addedAt: value.savedAt,
+    updatedAt: value.savedAt,
+  })),
+  nextCursor,
+})
+
+function stateOf<T>(snapshots: BehaviorSubject<T>): StateSource<T> {
   return {
     observable: snapshots,
     getCurrent: () => snapshots.getValue(),
@@ -89,7 +116,7 @@ describe('createPreferenceKeyValueStore', () => {
 
   test("reads the user's value from the SDK's preference once it's known", async () => {
     const snapshots = new BehaviorSubject<Snapshot>(pending)
-    vi.mocked(userPreference.getState).mockReturnValue(preferenceState(snapshots))
+    vi.mocked(userPreference.getState).mockReturnValue(stateOf(snapshots))
     const store = createPreferenceKeyValueStore(instance, USER_ID)
 
     const emitted = lastValueFrom(store.getKey(LAYOUT).pipe(toArray()))
@@ -104,7 +131,7 @@ describe('createPreferenceKeyValueStore', () => {
 
   test('reads a key nobody has set, and one that failed to load, as null', async () => {
     const snapshots = new BehaviorSubject<Snapshot>(loaded(unset))
-    vi.mocked(userPreference.getState).mockReturnValue(preferenceState(snapshots))
+    vi.mocked(userPreference.getState).mockReturnValue(stateOf(snapshots))
     const store = createPreferenceKeyValueStore(instance, USER_ID)
 
     const emitted = lastValueFrom(store.getKey(LAYOUT).pipe(toArray()))
@@ -163,5 +190,61 @@ describe('createPreferenceKeyValueStore', () => {
       'Unable to store the preference "my-plugin.setting"',
       refusal,
     )
+  })
+
+  describe("older Vision's saved queries", () => {
+    const books = query('books', 'books')
+    const authors = query('authors', 'authors')
+    const posts = query('posts', 'posts')
+
+    test('read as one list once every page of items is read', async () => {
+      const snapshots = new BehaviorSubject<ListSnapshot>(pending)
+      vi.mocked(userPreferenceList.getState).mockReturnValue(stateOf(snapshots))
+      vi.mocked(userPreferenceList.loadMore).mockResolvedValue([])
+      const store = createPreferenceKeyValueStore(instance, USER_ID)
+
+      const emitted = lastValueFrom(store.getKey(SAVED_QUERIES).pipe(toArray()))
+      snapshots.next(loaded([page([books], 'cursor-1')]))
+      expect(userPreferenceList.loadMore).toHaveBeenCalledWith(instance, USER_ID, SAVED_QUERIES)
+      snapshots.next(loaded([page([books], 'cursor-1'), page([authors])]))
+      snapshots.complete()
+
+      expect(await emitted).toEqual([{queries: [books, authors]}])
+    })
+
+    test('write the queries that changed as items, and remove the ones left out', async () => {
+      vi.mocked(userPreferenceList.resolveState).mockResolvedValue([page([books], 'cursor-1')])
+      vi.mocked(userPreferenceList.loadMore).mockResolvedValue([
+        page([books], 'cursor-1'),
+        page([authors]),
+      ])
+      vi.mocked(userPreferenceList.refetch).mockResolvedValue([])
+      vi.mocked(updateUserPreferenceListItem).mockResolvedValue()
+      const store = createPreferenceKeyValueStore(instance, USER_ID)
+      const renamedBooks = {...books, title: 'all books'}
+
+      await expect(store.setKey(SAVED_QUERIES, {queries: [renamedBooks, posts]})).resolves.toEqual({
+        queries: [renamedBooks, posts],
+      })
+      expect(vi.mocked(updateUserPreferenceListItem).mock.calls).toEqual([
+        [instance, {userId: USER_ID, key: SAVED_QUERIES, itemId: 'books', value: renamedBooks}],
+        [instance, {userId: USER_ID, key: SAVED_QUERIES, itemId: 'posts', value: posts}],
+        [instance, {userId: USER_ID, key: SAVED_QUERIES, itemId: 'authors', value: undefined}],
+      ])
+      expect(userPreferenceList.refetch).toHaveBeenCalledWith(instance, USER_ID, SAVED_QUERIES)
+    })
+
+    test('are all removed when set to null', async () => {
+      vi.mocked(userPreferenceList.resolveState).mockResolvedValue([page([books, authors])])
+      vi.mocked(userPreferenceList.refetch).mockResolvedValue([])
+      vi.mocked(updateUserPreferenceListItem).mockResolvedValue()
+      const store = createPreferenceKeyValueStore(instance, USER_ID)
+
+      await expect(store.setKey(SAVED_QUERIES, null)).resolves.toEqual({queries: []})
+      expect(vi.mocked(updateUserPreferenceListItem).mock.calls).toEqual([
+        [instance, {userId: USER_ID, key: SAVED_QUERIES, itemId: 'books', value: undefined}],
+        [instance, {userId: USER_ID, key: SAVED_QUERIES, itemId: 'authors', value: undefined}],
+      ])
+    })
   })
 })
