@@ -17,9 +17,17 @@ configure({disableAutoSnapshot: true})
 const ROWS = ['Alpha', 'Bravo', 'Charlie']
 
 /** The Variants pill leads with a row; the Releases pill starts with a section. */
-function MenuStory({selected, withLeadingItem}: {selected?: string; withLeadingItem: boolean}) {
+function MenuStory({
+  rows = ROWS,
+  selected,
+  withLeadingItem,
+}: {
+  rows?: string[]
+  selected?: string
+  withLeadingItem: boolean
+}) {
   const [filterQuery, setFilterQuery] = useState('')
-  const matching = ROWS.filter((row) => row.toLowerCase().includes(filterQuery.toLowerCase()))
+  const matching = rows.filter((row) => row.toLowerCase().includes(filterQuery.toLowerCase()))
   const showLeading = withLeadingItem && 'default'.includes(filterQuery.toLowerCase())
   return (
     <TestWrapper schemaTypes={[]}>
@@ -175,6 +183,9 @@ describe('DocumentNavigationMenu: section labels', () => {
   })
 })
 
+/** Enough rows to fill the list to its whole-row cap and scroll. */
+const MANY_ROWS = Array.from({length: 20}, (_, index) => `Row ${index + 1}`)
+
 describe('DocumentNavigationMenu: reopening a scrolled list', () => {
   const menu = () => page.getByTestId('pill-menu').element() as HTMLElement
   const list = () =>
@@ -188,13 +199,20 @@ describe('DocumentNavigationMenu: reopening a scrolled list', () => {
     const rows = [...list().querySelectorAll('[data-ui="MenuItem"]')].map((row) =>
       row.getBoundingClientRect(),
     )
-    const firstVisible = rows.find((row) => row.bottom > box.top + 0.5)!
-    return {fieldBottom: field.bottom, firstVisibleTop: firstVisible.top, listBottom: box.bottom}
+    const visible = rows.filter((row) => row.bottom > box.top + 0.5 && row.top < box.bottom - 0.5)
+    return {
+      fieldBottom: field.bottom,
+      firstVisibleTop: visible[0].top,
+      lastVisibleBottom: visible[visible.length - 1].bottom,
+      listBottom: box.bottom,
+    }
   }
 
+  /** Waits past the opening animation, after which the list is fitted for the last time. */
   async function open() {
     await page.getByTestId('open-menu').click()
     await expect.element(page.getByTestId('pill-menu')).toBeVisible()
+    await new Promise((resolve) => setTimeout(resolve, 400))
     await expectStable(() => `${list().scrollTop}|${JSON.stringify(geometry())}`)
   }
 
@@ -203,38 +221,48 @@ describe('DocumentNavigationMenu: reopening a scrolled list', () => {
     await expect.element(page.getByTestId('pill-menu')).not.toBeVisible()
   }
 
-  /** Keeps the list short enough to scroll, then leaves a row cut in half at its top. */
+  /** Leaves the list scrolled so a row is cut in half at its top. */
   function scrollToHalfRow() {
-    list().style.maxHeight = '90px'
     const row = list().querySelector('[data-ui="MenuItem"]')!.getBoundingClientRect()
-    list().scrollTop = row.height / 2
+    list().scrollTop = row.height * 3 + row.height / 2
+  }
+
+  /** No row is cut at either end: the list ends 4px below a row, and starts 8px below the field. */
+  function expectWholeRows() {
+    const {fieldBottom, firstVisibleTop, lastVisibleBottom, listBottom} = geometry()
+    expect(Math.abs(firstVisibleTop - (fieldBottom + 8))).toBeLessThanOrEqual(1)
+    expect(Math.abs(listBottom - lastVisibleBottom - 4)).toBeLessThanOrEqual(1)
   }
 
   it('reopens at the top with nothing selected', async () => {
-    void render(<MenuStory withLeadingItem />)
+    void render(<MenuStory rows={MANY_ROWS} withLeadingItem />)
     await open()
     scrollToHalfRow()
     await close()
     await open()
 
     expect(list().scrollTop).toBe(0)
-    const {fieldBottom, firstVisibleTop} = geometry()
-    expect(Math.abs(firstVisibleTop - (fieldBottom + 8))).toBeLessThanOrEqual(1)
+    expectWholeRows()
   })
 
-  it('reopens with the selected row whole and no row half under the search field', async () => {
-    // Not the last row: at the very end of the list, where it cannot scroll any further, the
-    // top row may be cut (see `scrollToSelection` in `useMenuOverflow`)
-    void render(<MenuStory selected="Bravo" withLeadingItem />)
-    await open()
-    scrollToHalfRow()
-    await close()
-    await open()
+  it.each(['Row 12', 'Row 20'])(
+    'reopens with %s, when selected, whole and no row cut at either end',
+    async (selected) => {
+      // A leading row and a section heading above the rows, as in the Variants pill
+      void render(<MenuStory rows={MANY_ROWS} selected={selected} withLeadingItem />)
+      await open()
+      scrollToHalfRow()
+      await close()
+      await open()
 
-    const {fieldBottom, firstVisibleTop, listBottom} = geometry()
-    expect(firstVisibleTop).toBeGreaterThanOrEqual(fieldBottom + 8 - 1)
-    const selected = page.getByRole('menuitem', {name: 'Bravo'}).element().getBoundingClientRect()
-    expect(selected.top).toBeGreaterThanOrEqual(fieldBottom + 8 - 1)
-    expect(selected.bottom).toBeLessThanOrEqual(listBottom + 1)
-  })
+      expectWholeRows()
+      const row = page
+        .getByRole('menuitem', {name: selected, exact: true})
+        .element()
+        .getBoundingClientRect()
+      const {fieldBottom, listBottom} = geometry()
+      expect(row.top).toBeGreaterThanOrEqual(fieldBottom + 8 - 1)
+      expect(row.bottom).toBeLessThanOrEqual(listBottom - 4 + 1)
+    },
+  )
 })

@@ -19,6 +19,8 @@ import {css} from '#styled-system/css'
  */
 export const menuOverflowScroller = css({
   'overflowX': 'hidden',
+  // A whole number of rows, measured by `useMenuOverflow`
+  'maxHeight': 'var(--menu-list-max-height, none)',
   '&[data-overflowing] > *': {
     marginRight: 'calc(-1 * min(var(--menu-scrollbar-width, 0px), 8px))',
   },
