@@ -285,6 +285,10 @@ export function ReleasesMenuItem(
         {...detailLinkMenuItemProps}
         onClick={handleOnReleaseClick}
         padding={1}
+        // With a link at the row's end, the item ends its content 8px from the row's edge, where
+        // the link's box ends: the link sits 8px from the row's edge, as the row sits from the
+        // menu's edge, and the space the item reserves stays under the link
+        paddingRight={hasDetailLink ? 2 : 1}
         pressed={active}
         selected={active}
         data-testid={`release-${releaseId}`}
@@ -302,6 +306,7 @@ export function ReleasesMenuItem(
           intent={RELEASES_INTENT}
           onNavigate={onNavigateToRelease}
           padding={1}
+          paddingRight={2}
           params={{id: releaseId}}
           tooltip={t('release.action.view-release')}
         />

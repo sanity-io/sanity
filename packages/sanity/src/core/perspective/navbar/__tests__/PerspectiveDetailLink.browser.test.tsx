@@ -7,7 +7,17 @@ import {page} from 'vitest/browser'
 import {expectStable} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {scheduledRelease} from '../../../releases/__fixtures__/release.fixture'
+import {variantAlphaAudience} from '../../../variants/__fixtures__/variants.fixture'
+import {getVariantId} from '../../../variants/tool/util'
 import {ReleasesMenuItem} from '../releases/ReleasesMenuItem'
+import {VariantsMenuStory} from '../variants/__tests__/VariantsMenuStory'
+
+/** The space between the link's box and the end of its row: 8px, as the row sits in the menu. */
+function linkGapToRowEnd(link: Element): number {
+  const row = link.closest('[data-detail-link-row]')
+  if (!row) throw new Error('row not found')
+  return row.getBoundingClientRect().right - link.getBoundingClientRect().right
+}
 
 describe('PerspectiveDetailLink', () => {
   it('centres the link on a two-line row and reserves exactly its width', async () => {
@@ -51,6 +61,20 @@ describe('PerspectiveDetailLink', () => {
     expect(itemHeight).toBeGreaterThan(40)
     expect(Math.abs(linkCentre - itemCentre)).toBeLessThanOrEqual(1)
     expect(spaceWidth).toBe(linkWidth)
+    // The link covers the space the item reserves for it, 8px from the row's end
+    expect(Math.abs(linkGapToRowEnd(link.element()) - 8)).toBeLessThanOrEqual(1)
+    expect(
+      Math.abs(space.getBoundingClientRect().right - link.element().getBoundingClientRect().right),
+    ).toBeLessThanOrEqual(1)
     expect(link.element().querySelector('[data-sanity-icon="arrow-top-right"]')).not.toBeNull()
+  })
+
+  it('keeps the view variant link 8px from the end of its row', async () => {
+    void render(<VariantsMenuStory />)
+    await page.getByTestId('variants-nav-menu-button').click()
+    await expect.element(page.getByTestId('variants-nav-menu')).toBeVisible()
+    const link = page.getByTestId(`variant-detail-link-${getVariantId(variantAlphaAudience._id)}`)
+    await expectStable(() => String(linkGapToRowEnd(link.element())))
+    expect(Math.abs(linkGapToRowEnd(link.element()) - 8)).toBeLessThanOrEqual(1)
   })
 })
