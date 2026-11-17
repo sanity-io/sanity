@@ -40,15 +40,22 @@ function versionStub(
   }
 }
 
-// Row A: [variant, draft, published]
+// With a variant selected:
+// Row A: [draft, published, filled diamond], two marks, the variant's version
 const rowA = [
   versionStub('a', 'published.alpha.a', {variants: [variantRef]}),
   versionStub('a', 'drafts.alpha.a', {bundleId: 'drafts', variants: [variantRef]}),
 ]
-// Row B: [variant, published]
+// Row B: [published, filled diamond], one mark, the variant's version
 const rowB = [versionStub('b', 'published.alpha.b', {variants: [variantRef]})]
-// Row C: no variant document, [draft, published]
+// Row C: [draft, published, outline diamond], two marks describing Default
 const rowC = [versionStub('c', 'c', {}), versionStub('c', 'drafts.c', {bundleId: 'drafts'})]
+// Row D: [published, outline diamond], one mark describing Default
+const rowD = [versionStub('d', 'd', {})]
+// Row E: [outline diamond], no marks at all
+const rowE: VersionInfoDocumentStub[] = []
+
+const ICON_SLOT_WIDTH = 15
 
 function mockPerspective(override: Partial<PerspectiveContextValue> = {}) {
   mockUsePerspective.mockReturnValue({...usePerspectiveMockReturn, ...override})
@@ -73,18 +80,34 @@ function Rows({rows}: {rows: VersionInfoDocumentStub[][]}) {
   )
 }
 
-function rowIconX(row: number, icon: string): number | undefined {
-  const el = document.querySelector(`[data-testid="row-${row}"] [data-sanity-icon="${icon}"]`)
-  if (!el) return undefined
-  const rect = el.getBoundingClientRect()
-  return rect.left + rect.width / 2
+function cluster(row: number): Element | null {
+  return document.querySelector(
+    `[data-testid="row-${row}"] [data-testid="document-status-indicator"]`,
+  )
 }
 
 function clusterWidth(row: number): number {
-  const el = document.querySelector(
-    `[data-testid="row-${row}"] [data-testid="document-status-indicator"]`,
-  )
+  const el = cluster(row)
   return el ? el.getBoundingClientRect().width : 0
+}
+
+/** The diamond glyph of a row, filled or outline. */
+function diamond(row: number): {kind: 'filled' | 'outline'; x: number} | undefined {
+  const el = document.querySelector(
+    `[data-testid="row-${row}"] [data-ui="VariantMark"]`,
+  )
+  if (!el) return undefined
+  const rect = el.getBoundingClientRect()
+  return {
+    kind: el.getAttribute('data-fill') === 'outline' ? 'outline' : 'filled',
+    x: rect.left + rect.width / 2,
+  }
+}
+
+/** The 15px slots of a row, in DOM order. */
+function slotRects(row: number): DOMRect[] {
+  const el = cluster(row)
+  return el ? Array.from(el.children).map((child) => child.getBoundingClientRect()) : []
 }
 
 describe('DocumentVersionsStatusIndicator alignment', () => {
@@ -92,32 +115,54 @@ describe('DocumentVersionsStatusIndicator alignment', () => {
     mockPerspective()
   })
 
-  it('keeps the variant rhombus and the published disc in one column with a variant selected', async () => {
+  it('ends every row with a filled or outline diamond in one column with a variant selected', async () => {
     mockPerspective({
       selectedVariants: [variantAlphaAudience],
       selectedVariantNames: ['alpha-audience'],
     })
-    await render(<Rows rows={[rowA, rowB, rowC]} />)
+    await render(<Rows rows={[rowA, rowB, rowC, rowD, rowE]} />)
 
-    const diamondA = rowIconX(0, 'rhombus')
-    const diamondB = rowIconX(1, 'rhombus')
-    expect(diamondA).toBeDefined()
-    expect(diamondB).toBeDefined()
-    expect(Math.abs(diamondA! - diamondB!)).toBeLessThanOrEqual(0.5)
-    expect(rowIconX(2, 'rhombus')).toBeUndefined()
+    const rows = [
+      {row: 0, kind: 'filled', marks: 2},
+      {row: 1, kind: 'filled', marks: 1},
+      {row: 2, kind: 'outline', marks: 2},
+      {row: 3, kind: 'outline', marks: 1},
+      {row: 4, kind: 'outline', marks: 0},
+    ]
 
-    const discs = [0, 1, 2].map((row) => rowIconX(row, 'circle-small')!)
-    expect(Math.abs(discs[0] - discs[1])).toBeLessThanOrEqual(0.5)
-    expect(Math.abs(discs[0] - discs[2])).toBeLessThanOrEqual(0.5)
+    const diamonds = rows.map(({row}) => diamond(row))
+    rows.forEach(({kind}, index) => {
+      expect(diamonds[index]?.kind).toBe(kind)
+    })
 
-    expect(clusterWidth(0)).toBe(45)
-    expect(clusterWidth(1)).toBe(45)
-    expect(clusterWidth(2)).toBe(45)
+    const firstX = diamonds[0]!.x
+    for (const found of diamonds) {
+      expect(Math.abs(found!.x - firstX)).toBeLessThanOrEqual(0.5)
+    }
+
+    for (const {row, marks} of rows) {
+      const slots = slotRects(row)
+      expect(slots).toHaveLength(marks + 1)
+      // The marks sit directly before the diamond: each slot starts where the previous one ends.
+      for (let index = 1; index < slots.length; index++) {
+        expect(Math.abs(slots[index].left - slots[index - 1].right)).toBeLessThanOrEqual(0.5)
+        expect(
+          Math.abs(
+            slots[index].left +
+              slots[index].width / 2 -
+              (slots[index - 1].left + slots[index - 1].width / 2),
+          ),
+        ).toBeLessThanOrEqual(ICON_SLOT_WIDTH + 0.5)
+      }
+      expect(clusterWidth(row)).toBe(ICON_SLOT_WIDTH * 3)
+    }
   })
 
-  it('packs the icons with no variant selected', async () => {
-    await render(<Rows rows={[rowC, [versionStub('d', 'd', {})]]} />)
+  it('packs the icons with no diamond and no variant selected', async () => {
+    await render(<Rows rows={[rowC, rowD]} />)
 
+    expect(diamond(0)).toBeUndefined()
+    expect(diamond(1)).toBeUndefined()
     expect(clusterWidth(0)).toBe(30)
     expect(clusterWidth(1)).toBe(15)
   })

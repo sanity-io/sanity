@@ -1,6 +1,6 @@
 import {type DocumentSystem} from '@sanity/types'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
-import {render} from '@testing-library/react'
+import {render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -74,7 +74,7 @@ function mockPerspective(...overrides: Partial<PerspectiveContextValue>[]) {
   mockUsePerspective.mockReturnValue(Object.assign({...usePerspectiveMockReturn}, ...overrides))
 }
 
-// Temporary icons expose stable `data-sanity-icon` names, the variant mark `data-ui`; release avatars use test ids.
+// Temporary icons expose stable `data-sanity-icon` names, the variant mark `data-ui` plus `data-fill`; release avatars use test ids.
 const INDICATOR_SELECTOR =
   '[data-ui="VariantMark"], [data-sanity-icon="ring"], [data-sanity-icon="circle-small"], [data-testid^="release-avatar-"]'
 
@@ -96,14 +96,18 @@ function renderIndicator(documentVersions: VersionInfoDocumentStub[]): string[] 
     (element) =>
       element.getAttribute('data-testid') ??
       element.getAttribute('data-sanity-icon') ??
-      element.getAttribute('data-ui') ??
-      '',
+      (element.getAttribute('data-ui') === 'VariantMark'
+        ? element.getAttribute('data-fill') === 'outline'
+          ? 'rhombus-outline'
+          : 'rhombus'
+        : ''),
   )
 }
 
 const GREEN_DISC = 'circle-small'
 const YELLOW_RING = 'ring'
-const RHOMBUS = 'VariantMark'
+const RHOMBUS = 'rhombus'
+const OUTLINE_RHOMBUS = 'rhombus-outline'
 // `activeASAPRelease` is an asap release, and asap maps to the caution tone.
 const RELEASE_ICON = 'release-avatar-caution'
 // Agent bundles have no release document, so they fall back to the suggest-toned dot.
@@ -120,31 +124,54 @@ describe('DocumentVersionsStatusIndicator', () => {
       mockPerspective(VARIANT_SELECTED)
     })
 
-    it('renders the rhombus, yellow ring and green disc when the variant is published with draft edits', () => {
+    it('renders the yellow ring, green disc and filled rhombus when the variant is published with draft edits', () => {
       expect(renderIndicator([publishedVariant, draftVariant])).toEqual([
-        RHOMBUS,
         YELLOW_RING,
         GREEN_DISC,
+        RHOMBUS,
       ])
     })
 
-    it('renders the rhombus and green disc when the variant is published without draft edits', () => {
-      expect(renderIndicator([publishedVariant])).toEqual([RHOMBUS, GREEN_DISC])
+    it('renders the green disc and filled rhombus when the variant is published without draft edits', () => {
+      expect(renderIndicator([publishedVariant])).toEqual([GREEN_DISC, RHOMBUS])
     })
 
-    it('renders the rhombus and yellow ring when the variant has never been published', () => {
-      expect(renderIndicator([draftVariant])).toEqual([RHOMBUS, YELLOW_RING])
+    it('renders the yellow ring and filled rhombus when the variant has never been published', () => {
+      expect(renderIndicator([draftVariant])).toEqual([YELLOW_RING, RHOMBUS])
     })
 
     it('takes over from the default documents when the document exists in the variant', () => {
       expect(renderIndicator([publishedDefault, draftDefault, draftVariant])).toEqual([
-        RHOMBUS,
         YELLOW_RING,
+        RHOMBUS,
       ])
     })
 
-    it('falls back to the default documents when the document is not in the variant', () => {
-      expect(renderIndicator([publishedDefault, draftDefault])).toEqual([YELLOW_RING, GREEN_DISC])
+    it('describes the default documents and ends with the outline rhombus when the document is not in the variant', () => {
+      expect(renderIndicator([publishedDefault, draftDefault])).toEqual([
+        YELLOW_RING,
+        GREEN_DISC,
+        OUTLINE_RHOMBUS,
+      ])
+    })
+
+    it('renders the outline rhombus alone when the document has no versions', () => {
+      expect(renderIndicator([])).toEqual([OUTLINE_RHOMBUS])
+    })
+
+    it('names the filled and outline rhombus for assistive technology', () => {
+      render(
+        <>
+          <DocumentVersionsStatusIndicator documentVersions={[publishedVariant]} />
+          <DocumentVersionsStatusIndicator documentVersions={[publishedDefault]} />
+        </>,
+        {wrapper},
+      )
+      const labels = screen.getAllByRole('img').map((element) => element.getAttribute('aria-label'))
+      expect(labels).toEqual([
+        'document-status.variant-mark.version',
+        'document-status.variant-mark.no-version',
+      ])
     })
 
     it('falls back to the default documents while the variants store is still resolving', () => {
@@ -194,23 +221,24 @@ describe('DocumentVersionsStatusIndicator', () => {
       mockPerspective(RELEASE_PERSPECTIVE, VARIANT_SELECTED)
     })
 
-    it('renders the rhombus and release icon when the release holds the variant and a default version', () => {
-      expect(renderIndicator([releaseDefault, releaseVariant])).toEqual([RHOMBUS, RELEASE_ICON])
+    it('renders the release icon and filled rhombus when the release holds the variant and a default version', () => {
+      expect(renderIndicator([releaseDefault, releaseVariant])).toEqual([RELEASE_ICON, RHOMBUS])
     })
 
-    it('renders the rhombus and release icon when the release holds the variant only', () => {
-      expect(renderIndicator([releaseVariant])).toEqual([RHOMBUS, RELEASE_ICON])
+    it('renders the release icon and filled rhombus when the release holds the variant only', () => {
+      expect(renderIndicator([releaseVariant])).toEqual([RELEASE_ICON, RHOMBUS])
     })
 
-    it('renders the release icon alone when the release holds the default version only', () => {
+    it('renders the release icon and outline rhombus when the release holds the default version only', () => {
       // The publish state of the default documents is never described under a release.
       expect(renderIndicator([publishedDefault, draftDefault, releaseDefault])).toEqual([
         RELEASE_ICON,
+        OUTLINE_RHOMBUS,
       ])
     })
 
-    it('renders nothing when the document is not in the release', () => {
-      expect(renderIndicator([publishedDefault, draftDefault])).toEqual([])
+    it('renders the outline rhombus alone when the document is not in the release', () => {
+      expect(renderIndicator([publishedDefault, draftDefault])).toEqual([OUTLINE_RHOMBUS])
     })
 
     it('describes the release alone while the variants store is still resolving', () => {

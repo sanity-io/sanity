@@ -901,6 +901,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Label to show in the document footer indicating that the revision was not found */
   'document-status.revision-not-found': 'Revision not found',
+  /** Accessible label of the outline diamond on a document list row: the document has no version for the selected variant, so its status marks describe the Default version. `variant` is the variant's title */
+  'document-status.variant-mark.no-version': 'No {{variant}} version, showing Default',
+  /** Accessible label of the filled diamond on a document list row: the status marks describe the document's version for the selected variant. `variant` is the variant's title */
+  'document-status.variant-mark.version': '{{variant}} version',
 
   /** Toast description shown when saving changes is taking longer than expected */
   'document-store.slow-commit.description': 'Your changes are still being saved.',
