@@ -199,5 +199,15 @@ describe('ReleasePublishAllButton', () => {
 
       expect(screen.queryByTestId('update-drafts-checkbox')).not.toBeInTheDocument()
     })
+
+    test('counts the unpublished document apart from the published one', async () => {
+      await openConfirmPublishDialog(documents)
+
+      const dialog = screen.getByTestId('confirm-publish-dialog')
+      expect(dialog).toHaveTextContent('One document in this release will be published.')
+      expect(dialog).toHaveTextContent(
+        'One document will be unpublished. Its content is kept as a draft.',
+      )
+    })
   })
 })

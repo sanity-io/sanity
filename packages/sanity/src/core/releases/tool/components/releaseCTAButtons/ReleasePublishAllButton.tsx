@@ -120,6 +120,9 @@ export const ReleasePublishAllButton = ({
   const draftDocumentIds = useMemo(() => draftDocuments.map(({_id}) => _id), [draftDocuments])
   const updateDraftsDescriptionId = useId()
   const draftDocumentsCount = draftDocumentIds.length
+  // Documents set to be unpublished are removed from published, so they are not counted as published.
+  const unpublishCount = documents.filter(({document: doc}) => isGoingToUnpublish(doc)).length
+  const publishCount = documents.length - unpublishCount
   const showUpdateDraftsOption = isDraftModelEnabled && draftDocumentsCount > 0
 
   const isValidatingDocuments = documents.some(({validation}) => validation.isValidating)
@@ -240,19 +243,19 @@ export const ReleasePublishAllButton = ({
         }}
       >
         <VStack gap={4}>
-          <Text muted size={1} as="div" trim={true}>
-            {
-              <Translate
-                t={t}
-                i18nKey="publish-dialog.confirm-publish-description"
-                values={{
-                  title: release.metadata.title || tCore('release.placeholder-untitled-release'),
-                  releaseDocumentsLength: documents.length,
-                  count: documents.length,
-                }}
-              />
-            }
-          </Text>
+          {publishCount > 0 && (
+            <Text muted size={1} as="p" trim={true}>
+              {t('publish-dialog.confirm-publish-description', {
+                releaseDocumentsLength: publishCount,
+                count: publishCount,
+              })}
+            </Text>
+          )}
+          {unpublishCount > 0 && (
+            <Text muted size={1} as="p" trim={true}>
+              {t('publish-dialog.confirm-unpublish-description', {count: unpublishCount})}
+            </Text>
+          )}
           {showUpdateDraftsOption && (
             <VStack gap={3}>
               <Flex alignItems="center" gap={3} as="label">
@@ -305,7 +308,8 @@ export const ReleasePublishAllButton = ({
     handleConfirmPublishAll,
     release.metadata.title,
     tCore,
-    documents.length,
+    publishCount,
+    unpublishCount,
     showUpdateDraftsOption,
     shouldUpdateDrafts,
     draftDocumentsCount,
