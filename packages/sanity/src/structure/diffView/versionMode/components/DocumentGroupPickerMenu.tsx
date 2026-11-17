@@ -27,6 +27,7 @@ import {Flex} from 'ui5'
 
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {structureLocaleNamespace} from '../../../i18n'
+import {documentGroupPickerMenuPopover} from './DocumentGroupPickerMenu.css'
 
 /**
  * A document selector driven by the document group inventory's sets: lists every version of the
@@ -79,16 +80,18 @@ export const DocumentGroupPickerMenu: ComponentType<{
       <Popover
         ref={popoverRef}
         content={
-          <DocumentGroupInventory
-            mode="readOnly"
-            documentId={document.id}
-            documentType={document.type}
-            selectedId={document.id}
-            onSelect={(selected) => {
-              setOpen(false)
-              onSelectDocument(selected._id)
-            }}
-          />
+          <div className={documentGroupPickerMenuPopover}>
+            <DocumentGroupInventory
+              mode="readOnly"
+              documentId={document.id}
+              documentType={document.type}
+              selectedId={document.id}
+              onSelect={(selected) => {
+                setOpen(false)
+                onSelectDocument(selected._id)
+              }}
+            />
+          </div>
         }
         placement="bottom-start"
         padding={0}

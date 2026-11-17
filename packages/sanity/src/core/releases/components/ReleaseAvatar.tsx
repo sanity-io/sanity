@@ -2,7 +2,9 @@ import {type ReleaseType} from '@sanity/client'
 import {BoltIcon} from '@sanity/icons/Bolt'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {DotIcon} from '@sanity/icons/Dot'
+import SparkleIcon from '@sanity/icons/Sparkle'
 import {type BadgeTone} from '@sanity/ui'
+import {clsx} from 'clsx'
 import {type CSSProperties} from 'react'
 import {Flex, Icon, type IconProps as UIIconProps, type Space} from 'ui5'
 
@@ -69,6 +71,7 @@ type ReleaseAvatarIconProps =
       releaseType?: never
       size?: IconSize
       fontSize?: UIIconProps['size']
+      className?: string
     }
   | {
       releaseType: ReleaseType
@@ -76,6 +79,7 @@ type ReleaseAvatarIconProps =
       release?: never
       size?: IconSize
       fontSize?: UIIconProps['size']
+      className?: string
     }
   | {
       /**
@@ -86,6 +90,7 @@ type ReleaseAvatarIconProps =
       releaseType?: never
       size?: IconSize
       fontSize?: UIIconProps['size']
+      className?: string
     }
 
 export const ReleaseAvatarIcon = ({
@@ -95,6 +100,7 @@ export const ReleaseAvatarIcon = ({
   releaseType,
   size = 'default',
   fontSize = 1,
+  className = '',
 }: ReleaseAvatarIconProps) => {
   const resolvedTone =
     tone ??
@@ -109,7 +115,7 @@ export const ReleaseAvatarIcon = ({
 
   const iconProps: IconProps = {
     'data-testid': `release-avatar-${resolvedTone}`,
-    'className': releaseAvatarIcon,
+    'className': clsx(releaseAvatarIcon, className),
     'style': {
       '--card-icon-color': `var(--card-badge-${resolvedTone}-icon-color)`,
       '--icon-color': `var(--card-badge-${resolvedTone}-icon-color)`,
@@ -117,7 +123,7 @@ export const ReleaseAvatarIcon = ({
     },
     'size': fontSize,
   }
-  if (isAgentBundleName(release)) return <Icon icon={CircleXsIcon} {...iconProps} />
+  if (isAgentBundleName(release)) return <Icon icon={SparkleIcon} {...iconProps} />
 
   if (releaseType) {
     return renderReleaseTypeIcon(releaseType, iconProps, size)

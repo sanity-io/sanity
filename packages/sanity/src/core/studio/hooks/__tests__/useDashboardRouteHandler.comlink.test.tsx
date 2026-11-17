@@ -23,12 +23,20 @@ it("pushes the Dashboard's change-path over Comlink, whatever its type", async (
   // Comlink needs Studio to be rendered in a frame; jsdom's parent is the window itself.
   vi.spyOn(window, 'top', 'get').mockReturnValue(null)
   // jsdom's `postMessage` takes no options object and leaves `source` unset, which Comlink needs.
+  const posted: unknown[] = []
+  const deliveries = new Set<Promise<void>>()
   vi.spyOn(window, 'postMessage').mockImplementation((data: unknown) => {
-    setTimeout(() =>
-      window.dispatchEvent(
-        new MessageEvent('message', {data, origin: location.origin, source: window}),
-      ),
+    posted.push(data)
+    const delivery = new Promise<void>((resolve) =>
+      setTimeout(() => {
+        window.dispatchEvent(
+          new MessageEvent('message', {data, origin: location.origin, source: window}),
+        )
+        resolve()
+      }),
     )
+    deliveries.add(delivery)
+    void delivery.then(() => deliveries.delete(delivery))
   })
   const controller = createController({targetOrigin: '*'})
   controller.addTarget(window)
@@ -44,7 +52,16 @@ it("pushes the Dashboard's change-path over Comlink, whatever its type", async (
     reports.push(data)
     return {success: true}
   })
-  onTestFinished(() => controller.destroy())
+  // Vitest restores the `postMessage` spy once the file ends, and jsdom's own implementation throws
+  // on Comlink's options object. Comlink sends its disconnect after `destroy()` returns, so wait for
+  // it, and for every delivery, before the test lets go of the window.
+  onTestFinished(async () => {
+    controller.destroy()
+    await vi.waitFor(() =>
+      expect(posted).toContainEqual(expect.objectContaining({type: 'comlink/disconnect'})),
+    )
+    while (deliveries.size) await Promise.all(deliveries)
+  })
 
   const history = createBrowserHistory()
   const navigations: Array<{path: string; replace?: boolean}> = []

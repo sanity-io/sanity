@@ -47,6 +47,37 @@ function createClient(omitted: Array<{id: string; reason: 'existence' | 'permiss
 
 const referenceFields = [{name: 'author', type: 'reference', to: [{type: 'article'}]}]
 
+function createReleaseClient(existing: string[], unpublished: string[] = []) {
+  const {client, request} = createClient()
+  request.mockImplementation(async ({url = ''}) => {
+    if (url.includes('/data/doc/')) {
+      const ids = decodeURIComponent(url.split('/').pop()!.split('?')[0]).split(',')
+      return {
+        omitted: ids
+          .filter((id) => !existing.includes(id))
+          .map((id) => ({id, reason: 'existence'})),
+      }
+    }
+    const id = new URL(url, 'https://api.sanity.io').searchParams.get('$id')
+    return {result: unpublished.includes(JSON.parse(id!))}
+  })
+  return client
+}
+
+async function validateReference(
+  client: SanityClient,
+  documentId: string,
+  _system?: SanityDocument['_system'],
+) {
+  const [{markers}] = await validateDocuments({
+    client,
+    schema: createSchema(referenceFields),
+    validateReferenceTypes: false,
+    documents: [document(documentId, {_system, author: {_type: 'reference', _ref: 'author'}})],
+  })
+  return markers.map(({code}) => code)
+}
+
 describe('validateDocuments', () => {
   it('shares reference requests across documents and preserves input order and permission omissions', async () => {
     const {client, request} = createClient([
@@ -54,6 +85,7 @@ describe('validateDocuments', () => {
       {id: 'restricted', reason: 'permission'},
     ])
     const results = await validateDocuments({
+      validateReferenceTypes: false,
       client,
       schema: createSchema(referenceFields),
       documents: ['shared', 'missing', 'shared', 'restricted'].map((ref, index) =>
@@ -65,7 +97,8 @@ describe('validateDocuments', () => {
     expect(request.mock.calls[0][0]).toMatchObject({
       url: expect.stringContaining('/data/doc/production/shared,missing,restricted'),
     })
-    expect(results.map(({status}) => status)).toEqual(['passed', 'failed', 'passed', 'passed'])
+    expect(results.map(({markers}) => markers.length)).toEqual([0, 1, 0, 0])
+    expect(results.every(({complete}) => complete)).toBe(true)
     expect(results[1].markers).toEqual([
       expect.objectContaining({
         code: validationMarkerCodes.referenceNotPublished,
@@ -81,6 +114,7 @@ describe('validateDocuments', () => {
     const {client, request} = createClient()
     request.mockReturnValueOnce(firstValueFrom(firstResponse))
     const validation = validateDocuments({
+      validateReferenceTypes: false,
       client,
       schema: createSchema(referenceFields),
       documents: refs.map((ref, index) =>
@@ -93,7 +127,7 @@ describe('validateDocuments', () => {
     firstResponse.complete()
     const results = await validation
 
-    expect(results.every(({status}) => status === 'passed')).toBe(true)
+    expect(results.every(({complete, markers}) => complete && markers.length === 0)).toBe(true)
     expect(request.mock.calls.map(([options]) => new URL(options.url || '').pathname)).toEqual([
       `/v2025-02-19/data/doc/production/${refs.slice(0, 100).join(',')}`,
       `/v2025-02-19/data/doc/production/${refs.slice(100, 200).join(',')}`,
@@ -124,7 +158,7 @@ describe('validateDocuments', () => {
 
     expect(fetch).toHaveBeenCalledTimes(8)
     expect(peak).toBe(2)
-    expect(results.every(({status}) => status === 'passed')).toBe(true)
+    expect(results.every(({complete, markers}) => complete && markers.length === 0)).toBe(true)
   })
 
   it('reports a failed reference request for every affected document', async () => {
@@ -140,12 +174,15 @@ describe('validateDocuments', () => {
 
     expect(request).toHaveBeenCalledOnce()
     for (const result of results) {
-      expect(result.markers).toEqual([
-        expect.objectContaining({
-          code: validationMarkerCodes.validationException,
-          path: ['author'],
-        }),
-      ])
+      expect(result).toMatchObject({
+        complete: false,
+        markers: [
+          expect.objectContaining({
+            code: validationMarkerCodes.validationException,
+            path: ['author'],
+          }),
+        ],
+      })
     }
   })
 
@@ -157,19 +194,33 @@ describe('validateDocuments', () => {
       documents: [document('valid', {title: 'Hello'}), document('invalid', {})],
     })
 
-    expect(results[0]).toEqual({status: 'passed', markers: []})
+    expect(results[0]).toEqual({status: 'passed', complete: true, markers: []})
     expect(results[1]).toMatchObject({
-      status: 'failed',
       markers: [
         expect.objectContaining({code: validationMarkerCodes.valueRequired, path: ['title']}),
       ],
     })
   })
 
+  it('keeps completeness isolated to each document', async () => {
+    const results = await validateDocuments({
+      schema: createSchema(referenceFields),
+      documents: [
+        document('skipped', {author: {_type: 'reference', _ref: 'author'}}),
+        document('complete', {}),
+        document('invalid', {author: 'invalid'}),
+      ],
+    })
+
+    expect(results.map(({complete}) => complete)).toEqual([false, true, true])
+    expect(results.map(({markers}) => markers.length > 0)).toEqual([false, false, true])
+  })
+
   it('uses a supplied reference checker instead of requesting availability', async () => {
     const {client, request} = createClient()
     const getDocumentExists = vi.fn(async () => true)
     await validateDocuments({
+      validateReferenceTypes: false,
       client,
       schema: createSchema(referenceFields),
       documents: [document('article', {author: {_type: 'reference', _ref: 'author'}})],
@@ -228,5 +279,46 @@ describe('validateDocuments', () => {
       validateDocuments({client, schema: createSchema(), documents: []}),
     ).resolves.toEqual([])
     expect(client.withConfig).not.toHaveBeenCalled()
+  })
+
+  describe('release documents', () => {
+    it.each([
+      {variants: [{_ref: '_.variants.variant-a', _key: 'variant-a'}]},
+      {variant: {_ref: '_.variants.variant-a'}},
+    ])('requires published references for variants with metadata %j', async (_system) => {
+      const client = createReleaseClient(['versions.scopeA.author'])
+      await expect(validateReference(client, 'versions.scopeA.article', _system)).resolves.toEqual([
+        validationMarkerCodes.referenceNotPublished,
+      ])
+    })
+
+    it('accepts references to unpublished documents in the same release', async () => {
+      const client = createReleaseClient(['versions.release.author'])
+      await expect(validateReference(client, 'versions.release.article')).resolves.toEqual([])
+    })
+
+    it('rejects references to documents only in another release or a draft', async () => {
+      const client = createReleaseClient(['versions.other.author', 'drafts.author'])
+      await expect(validateReference(client, 'versions.release.article')).resolves.toEqual([
+        validationMarkerCodes.referenceNotPublished,
+      ])
+    })
+
+    it('rejects references to documents the release unpublishes', async () => {
+      const client = createReleaseClient(
+        ['author', 'versions.release.author'],
+        ['versions.release.author'],
+      )
+      await expect(validateReference(client, 'versions.release.article')).resolves.toEqual([
+        validationMarkerCodes.referenceNotPublished,
+      ])
+    })
+
+    it('still requires drafts to reference published documents', async () => {
+      const client = createReleaseClient(['versions.release.author'])
+      await expect(validateReference(client, 'drafts.article')).resolves.toEqual([
+        validationMarkerCodes.referenceNotPublished,
+      ])
+    })
   })
 })

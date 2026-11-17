@@ -1,7 +1,6 @@
 import {ComposeIcon} from '@sanity/icons/Compose'
 import {DropIcon} from '@sanity/icons/Drop'
 import {ImageIcon} from '@sanity/icons/Image'
-import {Text} from '@sanity/ui'
 import {
   BlockEditor,
   defineArrayMember,
@@ -9,7 +8,7 @@ import {
   defineType,
   type PortableTextInputProps,
 } from 'sanity'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 function CustomEditor(props: PortableTextInputProps) {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -25,7 +24,10 @@ function CustomEditor(props: PortableTextInputProps) {
 function CustomObjectPreview(props: any) {
   return (
     <Box padding={1}>
-      <Text>Custom preview block:</Text> {props.renderDefault({...props})}
+      <Text as="div" trim={true}>
+        Custom preview block:
+      </Text>{' '}
+      {props.renderDefault({...props})}
     </Box>
   )
 }

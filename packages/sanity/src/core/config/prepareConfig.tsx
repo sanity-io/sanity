@@ -1,4 +1,3 @@
-import {fromUrl} from '@sanity/bifur-client'
 import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
@@ -28,6 +27,8 @@ import {
 } from '../form/studio/federatedAssetSource'
 import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
+import {resolveListenerCountingFetch} from '../network/listenerCount'
+import {acceptReleaseMetadataFields} from '../releases/metadata/compileReleaseMetadataType'
 import {createSchema} from '../schema/createSchema'
 import {createLegacyAuthStore} from '../store/auth/legacy/createLegacyAuthStore'
 import {type AuthStore} from '../store/auth/types'
@@ -96,9 +97,11 @@ import {
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {recordConfigWarning} from './configWarnings'
+import {createBifurClient} from './createBifurClient'
 import {createDefaultIcon} from './createDefaultIcon'
 import {initialDocumentFieldActions} from './document/fieldActions'
 import {documentFieldActionsReducer} from './document/fieldActions/reducer'
+import {resolveReleaseMetadataFields} from './releases/metadataFields'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
 import {resolveSchemaTypes} from './resolveSchemaTypes'
@@ -122,6 +125,8 @@ import {
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
 const debug = createDebug('sanity:config')
+
+const isBrowser = typeof window === 'object'
 
 const isError = (p: SchemaValidationProblem) => p.severity === 'error'
 
@@ -270,7 +275,9 @@ const notifyFederatedFallbackOnce = (reason: string) => {
 const createMediaLibraryAssetSources = (config: PluginOptions) => {
   const libraryId = mediaLibraryLibraryIdReducer({config, initialValue: undefined})
   const enabled = mediaLibraryEnabledReducer({config, initialValue: false})
-  const federated = mediaLibraryFederatedAssetSourceReducer({config, initialValue: false})
+  // Default-on: an enabled Media Library automatically uses the federated
+  // view where one is brokered; the internal flag remains as an opt-out.
+  const federated = mediaLibraryFederatedAssetSourceReducer({config, initialValue: true})
   // Third-party brokered views have their own gate (`federatedAssetSources`),
   // decoupled from the Media Library's internal rollout flag.
   const federatedSourcesConfig = federatedAssetSourcesReducer({config, initialValue: undefined})
@@ -281,20 +288,25 @@ const createMediaLibraryAssetSources = (config: PluginOptions) => {
   // the workbench; on a cold start in which the workbench has not published
   // its application list yet, `[]` — either way every brokered source is
   // simply absent and the Media Library keeps its iframe select dialog, so
-  // the race can never cost the Media Library source itself.
+  // the race can never cost the Media Library source itself. Only consult
+  // the bus when a source could use the result — with `federated` defaulting
+  // on, reading it unconditionally would open a message-bus connection in
+  // every workspace, Media Library or not.
   const viewsFromBus =
-    federated || brokeredSourcesEnabled ? getCurrentFederatedAssetSourceViews() : undefined
+    (federated && enabled) || brokeredSourcesEnabled
+      ? getCurrentFederatedAssetSourceViews()
+      : undefined
   const brokeredViews = viewsFromBus ?? []
 
   // The Media Library's own view replaces the select dialog of the built-in
   // source below; views from other applications become their own sources.
   const mediaLibraryView = federated ? brokeredViews.find(isMediaLibraryView) : undefined
 
-  if (federated && enabled && !mediaLibraryView) {
+  // Outside the workbench (`viewsFromBus === undefined`) the iframe dialog is
+  // the normal path, not a degraded one — stay quiet there.
+  if (federated && enabled && !mediaLibraryView && viewsFromBus !== undefined) {
     notifyFederatedFallbackOnce(
-      viewsFromBus === undefined
-        ? 'no workbench message bus'
-        : 'no Media Library asset_source view in the brokered application list',
+      'no Media Library asset_source view in the brokered application list',
     )
   }
   const viewFilter = federatedSourcesConfig?.filter
@@ -373,7 +385,10 @@ export function prepareConfig(
   config: Config | MissingConfigFile,
   options?: {
     basePath?: string
-    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
+    createStudioRequestHandler?: (
+      getClient: () => SanityClient,
+      getAuthStore?: () => AuthStore | undefined,
+    ) => RequestHandler
     requestErrorChannel?: StudioErrorHandler
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
@@ -545,7 +560,10 @@ function getAuthStore(
     requestErrorChannel,
     requestFailureDiagnostics,
   }: {
-    createStudioRequestHandler?: (getClient: () => SanityClient) => RequestHandler
+    createStudioRequestHandler?: (
+      getClient: () => SanityClient,
+      getAuthStore?: () => AuthStore | undefined,
+    ) => RequestHandler
     requestErrorChannel?: StudioErrorHandler
     requestFailureDiagnostics?: RequestFailureDiagnostics
   },
@@ -557,15 +575,22 @@ function getAuthStore(
   const clientFactory = source.unstable_clientFactory ?? createClient
 
   const {projectId, dataset, apiHost} = source
-  return createLegacyAuthStore({
+  // The store creates its clients, so their request handlers read it lazily.
+  const authStore: AuthStore = createLegacyAuthStore({
     apiHost,
     ...source.auth,
     clientFactory: (config) => {
       let client: SanityClient
       client = clientFactory({
+        ...(isBrowser ? {resolveFetch: resolveListenerCountingFetch} : {}),
         ...config,
         ...(createStudioRequestHandler
-          ? {requestHandler: createStudioRequestHandler(() => client)}
+          ? {
+              requestHandler: createStudioRequestHandler(
+                () => client,
+                () => authStore,
+              ),
+            }
           : {}),
       })
       return client
@@ -577,6 +602,7 @@ function getAuthStore(
     dataset,
     projectId,
   })
+  return authStore
 }
 
 interface ResolveSourceOptions {
@@ -589,17 +615,6 @@ interface ResolveSourceOptions {
   i18n: {i18next: i18n; source: LocaleSource}
 }
 
-function getBifurClient(client: SanityClient, auth: AuthStore) {
-  const bifurVersionedClient = client.withConfig({apiVersion: '2022-06-30'})
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {dataset, url: baseUrl, requestTagPrefix = 'sanity.studio'} = bifurVersionedClient.config()
-  const url = `${baseUrl.replace(/\/+$/, '')}/socket/${dataset}`.replace(/^http/, 'ws')
-  const urlWithTag = `${url}?tag=${requestTagPrefix}`
-
-  const options = auth.token ? {token$: auth.token} : {}
-  return fromUrl(urlWithTag, options)
-}
-
 function resolveSource({
   config,
   client,
@@ -610,7 +625,7 @@ function resolveSource({
   i18n,
 }: ResolveSourceOptions): Source {
   const {dataset, projectId} = config
-  const bifur = getBifurClient(client, auth)
+  const bifur = createBifurClient(client, auth.token)
   const errors: unknown[] = []
   const clients: Record<string, SanityClient> = {}
   const getClient = (options: SourceClientOptions): SanityClient => {
@@ -671,9 +686,10 @@ function resolveSource({
     errors.push(error)
   }
 
-  validateSingletons(singletons, schema, errors)
+  const singletonOnlySchemaTypeNames = getSingletonOnlySchemaTypeNames(singletons)
 
-  const singletonSchemaTypeNames = new Set(singletons.map((singleton) => singleton.schemaType))
+  validateSingletons(singletons, singletonOnlySchemaTypeNames, schema, errors)
+
   const singletonsByDocumentId = new Map(
     singletons.map((singleton) => [singleton.documentId, singleton]),
   )
@@ -720,7 +736,7 @@ function resolveSource({
         .map((typeName) => schema.get(typeName))
         .filter(isNonNullable)
         .filter((schemaType) => schemaType.type?.name === 'document')
-        .filter((schemaType) => !singletonSchemaTypeNames.has(schemaType.name))
+        .filter((schemaType) => !singletonOnlySchemaTypeNames.has(schemaType.name))
         .map((schemaType) => {
           const template: Template = {
             id: schemaType.name,
@@ -954,6 +970,11 @@ function resolveSource({
         return undefined
       })
     : Promise.resolve(undefined)
+
+  const releaseMetadataFields = acceptReleaseMetadataFields(
+    resolveReleaseMetadataFields(config),
+    schema,
+  )
 
   const source: Source = {
     type: 'source',
@@ -1191,7 +1212,7 @@ function resolveSource({
         frontendHost: mediaLibraryFrontendHostReducer({config, initialValue: undefined}),
         federatedAssetSource: mediaLibraryFederatedAssetSourceReducer({
           config,
-          initialValue: false,
+          initialValue: true,
         }),
       },
     },
@@ -1221,8 +1242,9 @@ function resolveSource({
               propertyName: 'releases.actions',
               reducer: releaseActionsReducer,
             }),
+          metadata: {fields: releaseMetadataFields},
         }
-      : {enabled: true},
+      : {enabled: true, metadata: {fields: releaseMetadataFields}},
   }
 
   return source
@@ -1273,11 +1295,32 @@ function joinBasePath(rootPath: string, basePath?: string) {
 }
 
 /**
+ * Returns the names of the schema types used exclusively for singletons: those
+ * claimed by at least one singleton definition, none of which sets
+ * `allowNonSingletonDocuments`. These types get no plain per-type template and
+ * are hidden from the default document type lists.
+ */
+function getSingletonOnlySchemaTypeNames(singletons: SingletonDefinition[]): Set<string> {
+  const allowsNonSingletonDocuments = new Set(
+    singletons
+      .filter((singleton) => singleton.allowNonSingletonDocuments)
+      .map((singleton) => singleton.schemaType),
+  )
+
+  return new Set(
+    singletons
+      .map((singleton) => singleton.schemaType)
+      .filter((schemaType) => !allowsNonSingletonDocuments.has(schemaType)),
+  )
+}
+
+/**
  * Validates the resolved singleton definitions, pushing every problem onto the
  * shared `errors` array.
  */
 function validateSingletons(
   singletons: SingletonDefinition[],
+  singletonOnlySchemaTypeNames: ReadonlySet<string>,
   schema: Schema,
   errors: unknown[],
 ): void {
@@ -1324,10 +1367,8 @@ function validateSingletons(
     )
   }
 
-  const singletonSchemaTypeNames = new Set(singletons.map((singleton) => singleton.schemaType))
-
   const typeNameCollisions = [...new Set(ids)].filter(
-    (id) => !singletonSchemaTypeNames.has(id) && schema.get(id)?.type?.name === 'document',
+    (id) => !singletonOnlySchemaTypeNames.has(id) && schema.get(id)?.type?.name === 'document',
   )
 
   if (typeNameCollisions.length !== 0) {

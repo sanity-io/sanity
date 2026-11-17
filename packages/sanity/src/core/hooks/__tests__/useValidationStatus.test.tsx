@@ -30,7 +30,7 @@ let validationSubject: Subject<ValidationStatus>
 // the validation observable on `documentStore.pair`, and a fresh object per
 // render would rebuild + resubscribe every render (losing subject emissions).
 const mockDocumentStore = {
-  pair: {validation: () => validationSubject.asObservable()},
+  pair: {validation: vi.fn(() => validationSubject.asObservable())},
 }
 
 vi.mock('../../store/datastores', () => ({
@@ -51,12 +51,12 @@ describe('useValidationStatus', () => {
   it('returns the initial status until the observable emits', () => {
     const results: ValidationStatus[] = []
     function Probe() {
-      results.push(useValidationStatus('doc-1', 'author', false))
+      results.push(useValidationStatus('doc-1', 'author'))
       return null
     }
     render(<Probe />)
 
-    expect(results[results.length - 1]).toEqual({validation: [], isValidating: false})
+    expect(results[results.length - 1]).toEqual({validation: [], isValidating: true})
   })
 
   it('commits validation emissions on the first frame, even batched with urgent updates', () => {
@@ -64,7 +64,7 @@ describe('useValidationStatus', () => {
     let bumpTick: (() => void) | null = null
 
     function Probe() {
-      const status = useValidationStatus('doc-1', 'author', false)
+      const status = useValidationStatus('doc-1', 'author')
       const [tick, setTick] = useState(0)
       useEffect(() => {
         bumpTick = () => setTick((current) => current + 1)
@@ -100,5 +100,40 @@ describe('useValidationStatus', () => {
     expect(frames.filter((frame) => frame.tick === 1)).toEqual([
       {tick: 1, isValidating: false, errorCount: 1},
     ])
+  })
+
+  it.each([
+    {name: 'no options', options: undefined, listener: 'document'},
+    {name: 'the document listener', options: {listener: 'document'}, listener: 'document'},
+    {name: 'the global listener', options: {listener: 'global'}, listener: 'global'},
+  ] as const)('validates through the $listener listener given $name', ({options, listener}) => {
+    function Probe() {
+      useValidationStatus('doc-1', 'author', options)
+      return null
+    }
+    render(<Probe />)
+
+    expect(mockDocumentStore.pair.validation).toHaveBeenCalledExactlyOnceWith(
+      'doc-1',
+      'author',
+      false,
+      {listener},
+    )
+  })
+
+  it('still accepts the deprecated boolean, and validates through the document listener', () => {
+    function Probe() {
+      // oxlint-disable-next-line no-deprecated -- the deprecated signature is what this test covers
+      useValidationStatus('doc-1', 'author', true)
+      return null
+    }
+    render(<Probe />)
+
+    expect(mockDocumentStore.pair.validation).toHaveBeenCalledExactlyOnceWith(
+      'doc-1',
+      'author',
+      false,
+      {listener: 'document'},
+    )
   })
 })

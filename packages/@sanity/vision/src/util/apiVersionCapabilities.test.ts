@@ -8,7 +8,7 @@ import {
 
 const sanityMocks = vi.hoisted(() => ({
   releasesApiVersion: 'v2099-01-01',
-  variantsApiVersion: 'X',
+  variantsApiVersion: 'v2025-08-18',
 }))
 
 vi.mock('sanity', () => ({
@@ -87,7 +87,7 @@ describe('getUnsatisfiedApiVersionCapability', () => {
   it('returns the variant capability when a dated version is below the variants floor', () => {
     const capability = getUnsatisfiedApiVersionCapability({
       statusCode: 400,
-      apiVersion: 'v2030-01-01',
+      apiVersion: 'v2025-02-19',
       perspective: ['published'],
       variant: 'french',
     })

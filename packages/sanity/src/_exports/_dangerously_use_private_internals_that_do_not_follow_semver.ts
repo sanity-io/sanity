@@ -188,8 +188,13 @@ export {
 export {useDivergenceNavigator} from '../core/divergence/divergenceNavigator'
 export {
   DocumentGroupInventory,
+  type DocumentGroupInventoryHandle,
   type DocumentGroupInventoryProps,
 } from '../core/documentGroupInventory/components/DocumentGroupInventory'
+export {
+  DocumentGroupInventoryFeedbackAction,
+  type DocumentGroupInventoryFeedbackActionProps,
+} from '../core/documentGroupInventory/components/DocumentGroupInventoryFeedbackAction'
 export {
   type DocumentGroupInventoryComponents,
   type DocumentGroupInventoryPerspectiveList,
@@ -500,6 +505,8 @@ export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useTimeAgo,
 } from '../core/hooks/useTimeAgo'
+export {useTimeZone} from '../core/hooks/useTimeZone'
+// oxlint-disable-next-line no-deprecated -- only the boolean overload is deprecated
 export {useValidationStatus} from '../core/hooks/useValidationStatus'
 export {useVersionRelease} from '../core/hooks/useVersionRelease'
 export {LocaleProvider, LocaleProviderBase} from '../core/i18n/components/LocaleProvider'
@@ -519,7 +526,7 @@ export {
   isPerspectiveWriteable,
   type PerspectiveNotWriteableReason,
 } from '../core/perspective/isPerspectiveWriteable'
-export {ReleasesNav} from '../core/perspective/navbar/ReleasesNav'
+export {ReleasesNav} from '../core/perspective/navbar/releases/ReleasesNav'
 export {PerspectiveProvider} from '../core/perspective/PerspectiveProvider'
 export {type ReleasesNavMenuItemPropsGetter} from '../core/perspective/types'
 export {useExcludedPerspective} from '../core/perspective/useExcludedPerspective'
@@ -616,6 +623,7 @@ export {
 export {EditScheduleForm} from '../core/scheduled-publishing/components/editScheduleForm/EditScheduleForm'
 // oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
 export {SchedulesContext} from '../core/scheduled-publishing/tool/contexts/schedules'
+export {useReleasesToolAvailable} from '../core/schedules/hooks/useReleasesToolAvailable'
 export {getSchemaTypeTitle} from '../core/schema/helpers'
 export {compileFieldPath} from '../core/search/common/compileFieldPath'
 export {getSearchableTypes} from '../core/search/common/getSearchableTypes'
@@ -683,6 +691,7 @@ export {
 export {
   useComlinkStore,
   useConnectionStatusStore,
+  // oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
   useKeyValueStore,
   useRenderingContextStore,
 } from '../core/store/datastores'
@@ -786,9 +795,15 @@ export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useTimelineStore,
 } from '../core/store/history/useTimelineStore'
+// oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
 export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
+// oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
-export {createPresenceStore, SESSION_ID} from '../core/store/presence/presence-store'
+export {
+  useStudioPreference,
+  useStudioPreferenceList,
+} from '../core/store/preferences/useStudioPreference'
+export {createPresenceStore, getSessionId} from '../core/store/presence/presence-store'
 export {
   type DocumentPresence,
   type GlobalPresence,
@@ -855,6 +870,7 @@ export {
 } from '../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 export {SearchButton} from '../core/studio/components/navbar/search/SearchButton'
 export {SearchDialog} from '../core/studio/components/navbar/search/SearchDialog'
+export {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../core/studio/constants'
 export {type StudioDiagnostics} from '../core/studio/diagnostics/gatherStudioDiagnostics'
 export {parseStudioDiagnostics} from '../core/studio/diagnostics/parseStudioDiagnostics'
 export {
@@ -909,6 +925,11 @@ export {
 } from '../core/studio/studioAnnouncements/utils'
 export {type NavbarContextValue} from '../core/studio/StudioLayout'
 export {StudioLayoutComponent} from '../core/studio/StudioLayoutComponent'
+export {
+  recordStructurePaneKind,
+  recordStructureTool,
+  type StructurePaneKind,
+} from '../core/studio/telemetry/paneKindRegistry'
 export {useTelemetryConsent} from '../core/studio/telemetry/useTelemetryConsent'
 export {
   UpsellDialogDismissed,
@@ -1063,8 +1084,13 @@ export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatab
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'
 export {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../core/variants/store/constants'
 export {useAllVariants} from '../core/variants/store/useAllVariants'
-export {getVariantTitle} from '../core/variants/tool/util'
+export {
+  filterVariantsForSearch,
+  getVariantTitle,
+  isDefaultVariant,
+} from '../core/variants/tool/util'
 export {encodeVariantLinkParam} from '../core/variants/util/variantSelection'
+export {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../core/variants/util/variantType'
 export {isVariantId} from '../core/variants/types'
 
 // From `sanity/structure`

@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {Schema as SchemaBuilder} from '@sanity/schema'
 import {builtinTypes} from '@sanity/schema/_internal'
 import {type Rule, type SanityDocument, type SchemaTypeDefinition} from '@sanity/types'
-import {BehaviorSubject, lastValueFrom, of} from 'rxjs'
+import {BehaviorSubject, lastValueFrom} from 'rxjs'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {validationMarkerCodes} from './codes'
@@ -81,7 +81,7 @@ function createMockClient() {
   const client = {
     fetch: vi.fn(async (): Promise<unknown> => null),
     getDataUrl: vi.fn(() => '/doc'),
-    observable: {request: vi.fn(() => of({omitted: []}))},
+    request: vi.fn(async () => ({omitted: []})),
     withConfig: vi.fn(() => client),
   } as unknown as SanityClient
   return client
@@ -157,6 +157,22 @@ describe('validation scheduling', () => {
     vi.resetModules()
   })
 
+  it('does not wait for browser idle time in the public promise API', async () => {
+    const page = createStalledPage()
+    vi.stubGlobal('window', page)
+    vi.resetModules()
+    const {validateDocument} = await import('./index')
+
+    const result = await validateDocument({
+      customValidation: false,
+      document: createDocument(20),
+      schema: createSchema(),
+    })
+
+    expect(result.complete).toBe(false)
+    expect(page.requestIdleCallback).not.toHaveBeenCalled()
+  })
+
   it('waits for idle callbacks by default and cancels them on unsubscribe', async () => {
     const page = createStalledPage()
     const {evaluateDocumentObservable, getFallbackLocaleSource} = await importValidation(page)
@@ -213,7 +229,7 @@ describe('validation scheduling', () => {
     // 200 blocks are a few thousand nodes: a yield per hundred of them, and far from one per node
     expect(scheduler.yield.mock.calls.length).toBeGreaterThan(5)
     expect(scheduler.yield.mock.calls.length).toBeLessThan(200)
-    expect(result.status).toBe('failed')
+    expect(result.complete).toBe(true)
     expect(result.markers).toHaveLength(1 + 20)
   })
 
@@ -268,7 +284,7 @@ describe('validation scheduling', () => {
     }))
 
     expect(page.requestIdleCallback).not.toHaveBeenCalled()
-    expect(result.status).toBe('failed')
+    expect(result.complete).toBe(true)
     expect(sortMarkers(result.markers).map(markerIdentity)).toEqual(
       sortMarkers([TITLE_TOO_SHORT, ...linkMarkers]).map(markerIdentity),
     )
@@ -308,7 +324,7 @@ describe('validation scheduling', () => {
     const requested = page.requestIdleCallback.mock.results.map(({value}) => value)
 
     scheduling.next('immediate')
-    const {status, markers} = await result
+    const {complete, markers} = await result
 
     // The stalled page never ran an idle callback: the nodes that were waiting for one went ahead,
     // and nothing after the switch asked for one.
@@ -322,7 +338,7 @@ describe('validation scheduling', () => {
       code: validationMarkerCodes.custom,
       message: 'Link requires a URL',
     }))
-    expect(status).toBe('failed')
+    expect(complete).toBe(true)
     expect(sortMarkers(markers).map(markerIdentity)).toEqual(
       sortMarkers([TITLE_TOO_SHORT, ...linkMarkers]).map(markerIdentity),
     )
@@ -358,7 +374,7 @@ describe('validation scheduling', () => {
 
     expect(idlePage.requestIdleCallback).toHaveBeenCalled()
     expect(immediatePage.requestIdleCallback).not.toHaveBeenCalled()
-    expect(immediate.status).toBe(idle.status)
+    expect(immediate.complete).toBe(idle.complete)
     expect(sortMarkers(immediate.markers)).toEqual(sortMarkers(idle.markers))
   })
 
@@ -390,7 +406,7 @@ describe('validation scheduling', () => {
           },
         ],
       })
-      // Enough items with rules to fill the 40-wide `mergeMap` window, then a run that completes synchronously
+      // Enough items with rules to fill the 40-worker pool, then a run that completes synchronously
       const items = [
         ...Array.from({length: 45}, (_, index) => ({
           _type: 'item',
@@ -421,7 +437,7 @@ describe('validation scheduling', () => {
       expect(page.requestIdleCallback).not.toHaveBeenCalled()
       expect(scheduler.yield.mock.calls.length > 0).toBe(hasSchedulerYield)
       expect(setImmediate.mock.calls.length > 0).toBe(!hasSchedulerYield)
-      expect(result).toEqual({status: 'passed', markers: []})
+      expect(result).toEqual({status: 'passed', complete: true, markers: []})
     },
   )
 })

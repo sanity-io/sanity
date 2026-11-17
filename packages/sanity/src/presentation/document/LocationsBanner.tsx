@@ -3,17 +3,18 @@ import {DesktopIcon} from '@sanity/icons/Desktop'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Spinner, Text} from '@sanity/ui'
+import {Card, Spinner} from '@sanity/ui'
 import {type ComponentType, type ReactNode, useCallback, useContext, useState} from 'react'
 import {type ObjectSchemaType, useTranslation} from 'sanity'
 import {PresentationContext} from 'sanity/_singletons'
 import {useIntentLink} from 'sanity/router'
 import {usePaneRouter} from 'sanity/structure'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {DEFAULT_TOOL_NAME, DEFAULT_TOOL_TITLE} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
 import {
+  type DocumentLocationsState,
   type DocumentLocation,
   type DocumentLocationResolver,
   type DocumentLocationResolvers,
@@ -73,13 +74,11 @@ export function LocationsBanner(props: {
           <Flex alignItems="flex-start" gap={3} padding={3}>
             {tone && ToneIcon && (
               <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-                <Text size={1}>
-                  <ToneIcon />
-                </Text>
+                <Icon size={1} muted icon={ToneIcon} tone={tone} style={{margin: '-0.375rem'}} />
               </Box>
             )}
             <Box flexBasis="0%" flexGrow={1}>
-              <Text size={1} weight="medium">
+              <Text size={1} weight="medium" as="div" trim={true} tone={tone}>
                 {showPresentationTitle && <>{options.title || DEFAULT_TOOL_TITLE} &middot; </>}
                 {title}
               </Text>
@@ -99,23 +98,28 @@ export function LocationsBanner(props: {
                 <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
                   {isResolving ? (
                     <Spinner size={1} />
+                  ) : locationsCount === 0 ? (
+                    <Icon
+                      size={1}
+                      icon={InfoOutlineIcon}
+                      tone={tone}
+                      style={{margin: '-0.375rem'}}
+                    />
                   ) : (
-                    <Text size={1}>
-                      {locationsCount === 0 ? (
-                        <InfoOutlineIcon />
-                      ) : (
-                        <ChevronRightIcon
-                          style={{
-                            transform: `rotate(${expanded ? '90deg' : 0})`,
-                            transition: 'transform 100ms ease-in-out',
-                          }}
-                        />
-                      )}
-                    </Text>
+                    <Icon
+                      size={1}
+                      icon={ChevronRightIcon}
+                      tone={tone}
+                      style={{
+                        transform: `rotate(${expanded ? '90deg' : 0})`,
+                        transition: 'transform 100ms ease-in-out',
+                        margin: '-0.375rem',
+                      }}
+                    />
                   )}
                 </Box>
                 <Box flexBasis="0%" flexGrow={1}>
-                  <Text size={1} weight="medium">
+                  <Text size={1} weight="medium" as="div" trim={true} tone={tone}>
                     {showPresentationTitle && <>{options.title || DEFAULT_TOOL_TITLE} &middot; </>}
                     {title}
                   </Text>
@@ -140,6 +144,7 @@ export function LocationsBanner(props: {
                     documentType={schemaType.name}
                     node={l}
                     toolName={options.name || DEFAULT_TOOL_NAME}
+                    tone={tone}
                   />
                 )
               })}
@@ -157,8 +162,9 @@ function LocationItem(props: {
   documentType: string
   node: DocumentLocation
   toolName: string
+  tone?: DocumentLocationsState['tone']
 }) {
-  const {documentId, documentType, node, active, toolName} = props
+  const {documentId, documentType, node, active, toolName, tone} = props
   const presentation = useContext(PresentationContext)
   const currentPresentationToolName = useCurrentPresentationToolName()
   const isCurrentTool = toolName === currentPresentationToolName
@@ -182,7 +188,7 @@ function LocationItem(props: {
     navigate?.({params: {preview: node.href}})
   }, [node.href, navigate])
 
-  const Icon = node.icon ?? DesktopIcon
+  const IconComponent = node.icon ?? DesktopIcon
 
   return (
     <Card
@@ -197,16 +203,14 @@ function LocationItem(props: {
     >
       <Flex gap={3}>
         <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-          <Text size={1}>
-            <Icon />
-          </Text>
+          <Icon size={1} icon={IconComponent} tone={tone} style={{margin: '-0.375rem'}} />
         </Box>
         <Flex flexBasis="0%" flexGrow={1} gap={2} flexDirection="column">
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true} tone={tone}>
             {node.title}
           </Text>
           {node.showHref !== false && (
-            <Text muted size={1} textOverflow="ellipsis">
+            <Text muted size={1} truncate={1} as="div" trim={true} tone={tone}>
               {node.href}
             </Text>
           )}

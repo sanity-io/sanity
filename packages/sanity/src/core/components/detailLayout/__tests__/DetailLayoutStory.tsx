@@ -1,7 +1,7 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {Card, Text} from '@sanity/ui'
-import {Flex, VStack} from 'ui5'
+import {Card} from '@sanity/ui'
+import {Text, Flex, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {DetailIdentity} from '../DetailIdentity'
@@ -29,7 +29,7 @@ export function DetailLayoutStory() {
       <Card padding={4} style={{maxWidth: 720}}>
         <VStack gap={5}>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               titled with description
             </Text>
             <Flex alignItems="flex-start" gap={4} justifyContent="space-between">
@@ -57,7 +57,7 @@ export function DetailLayoutStory() {
             </Flex>
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               placeholder title
             </Text>
             <DetailIdentity title={undefined} titlePlaceholder="Untitled release" />

@@ -1,7 +1,7 @@
 import {type ValidationContext as BaseValidationContext} from '@sanity/types'
-import {type Observable} from 'rxjs'
 
 import {type LocaleSource} from './i18n/types'
+import {type Pace} from './util/pace'
 
 declare module '@sanity/types' {
   /**
@@ -32,6 +32,7 @@ export type {ValidationContext} from '@sanity/types'
 
 export interface InternalValidationContext extends BaseValidationContext {
   __internal?: {
+    getDocumentType?: (id: string) => Promise<string | undefined>
     customValidation?: boolean
     customValidationConcurrencyLimiter?: {
       ready: (signal?: AbortSignal) => Promise<void>
@@ -40,6 +41,6 @@ export interface InternalValidationContext extends BaseValidationContext {
     }
     markIncomplete?: () => void
     /** The run's pacer: what every node of the run waits for before it runs. */
-    pace?: () => Observable<never>
+    pace?: Pace
   }
 }

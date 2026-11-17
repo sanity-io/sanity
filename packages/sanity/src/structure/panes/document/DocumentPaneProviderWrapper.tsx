@@ -1,5 +1,5 @@
 import {memo, useCallback} from 'react'
-import {SingleDocReleaseProvider, useSource} from 'sanity'
+import {getPublishedId, SingleDocReleaseProvider, useSource} from 'sanity'
 
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentEventsPane} from './DocumentEventsPane'
@@ -29,7 +29,7 @@ export const DocumentPaneProviderWrapper = memo((props: DocumentPaneProviderProp
   )
 
   return (
-    <DocumentPerspectiveProvider>
+    <DocumentPerspectiveProvider documentId={getPublishedId(props.pane.options.id)}>
       <SingleDocReleaseProvider onSetScheduledDraftPerspective={handleSetScheduledDraftPerspective}>
         {/* oxlint-disable-next-line no-deprecated -- the legacy timeline opt-out keeps working until the next major */}
         {source.beta?.eventsAPI?.documents ? (

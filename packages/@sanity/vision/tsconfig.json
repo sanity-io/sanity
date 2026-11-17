@@ -1,9 +1,22 @@
 {
   "extends": "@repo/tsconfig/base.json",
-  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
+  // The CSS modules are included for css-modules-kit (`pnpm css:types`), which reads this file's
+  // `include`; TypeScript itself only picks up the `.ts`/`.tsx` files
+  "include": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts", "src/**/*.module.css"],
   "exclude": ["dist", "lib", "node_modules"],
   "compilerOptions": {
     "rootDir": ".",
+    // Resolves `./X.module.css` to the `X.module.css.d.ts` css-modules-kit writes under the
+    // gitignored `generated/` (`pnpm css:types`; also run by `pnpm install`, `pnpm lint` and `build`)
+    "rootDirs": [".", "generated"],
     "customConditions": ["monorepo"]
+  },
+  "cmkOptions": {
+    "enabled": true,
+    // Lightning CSS exports container names along with the class and keyframes names
+    "container": true,
+    // Named exports only, no default: the typings then match the `import * as styles` / named
+    // imports that Lightning CSS can tree-shake
+    "namedExports": true
   }
 }

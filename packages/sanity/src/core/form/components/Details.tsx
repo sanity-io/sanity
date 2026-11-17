@@ -1,14 +1,14 @@
 import {ToggleArrowRightIcon} from '@sanity/icons/ToggleArrowRight'
-import {Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
-import {Flex, Box, type MarginProps} from 'ui5'
+import {Text, Flex, Box, type MarginProps, Icon, type TextProps} from 'ui5'
 
 interface DetailsProps extends MarginProps {
   children?: ReactNode
   open?: boolean
   icon?: ReactNode
   title?: ReactNode
+  tone?: TextProps['tone']
 }
 
 const HeaderButton = styled.button`
@@ -35,18 +35,18 @@ const Header = styled(Flex)`
 `
 
 const IconBox = styled(Flex)`
-  & > div > svg {
+  & > svg {
     transform: rotate(0);
     transition: transform 100ms;
   }
 
-  &[data-open] > div > svg {
+  &[data-open] > svg {
     transform: rotate(90deg);
   }
 `
 
 export function Details(props: DetailsProps) {
-  const {children, open: openProp, icon, title = 'Details', ...restProps} = props
+  const {children, open: openProp, icon, title = 'Details', tone, ...restProps} = props
   const [open, setOpen] = useState(openProp || false)
 
   const handleToggle = useCallback(() => setOpen((v) => !v), [])
@@ -60,13 +60,17 @@ export function Details(props: DetailsProps) {
         <Header>
           <Flex alignItems="center">
             <IconBox data-open={open ? '' : undefined}>
-              <Text size={1}>
-                <ToggleArrow $open={open} />
-              </Text>
+              <Icon
+                size={1}
+                muted
+                icon={<ToggleArrow $open={open} />}
+                tone={tone}
+                style={{margin: '-0.375rem'}}
+              />
             </IconBox>
             {icon && <Box marginLeft={1}>{icon}</Box>}
             <Box flexBasis="0%" flexGrow={1} marginLeft={1}>
-              <Text textOverflow="ellipsis" size={1} weight="medium">
+              <Text truncate={1} size={1} weight="medium" as="div" trim={true} tone={tone}>
                 {title}
               </Text>
             </Box>

@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const sticky = style({
+export const sticky = css({
   position: 'sticky',
   top: 0,
   bottom: 0,

@@ -1,4 +1,4 @@
-import {Box, Button, Card, Dialog, Spinner, Text} from '@sanity/ui'
+import {Box, Button, Card, Dialog, Spinner} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {
   pathToString,
@@ -8,7 +8,7 @@ import {
   usePresenceStore,
   useUserListWithPermissions,
 } from 'sanity'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {type PresenceDebugTarget} from './context'
 
@@ -74,9 +74,9 @@ export function PresenceDebugDialog(props: PresenceDebugDialogProps) {
     >
       <Flex padding={3} gap={3} flexDirection="column">
         <Card padding={2} radius={2} tone="transparent" border>
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             Present at{' '}
-            <Text as="span" size={1} style={{fontFamily: 'monospace'}}>
+            <Text as="span" size={1} style={{fontFamily: 'monospace'}} trim={true}>
               {where}
             </Text>
           </Text>
@@ -105,13 +105,13 @@ export function PresenceDebugDialog(props: PresenceDebugDialogProps) {
                   <Flex alignItems="center" gap={2}>
                     <UserAvatar user={user} size={0} />
                     <Box flex={1}>
-                      <Text size={1} textOverflow="ellipsis">
+                      <Text size={1} truncate={1} as="div" trim={true}>
                         {user.displayName}
                         {isMe ? ' (you)' : ''}
                       </Text>
                     </Box>
                     {isPlaced && (
-                      <Text size={0} muted>
+                      <Text size={0} muted as="div" trim={true}>
                         placed
                       </Text>
                     )}

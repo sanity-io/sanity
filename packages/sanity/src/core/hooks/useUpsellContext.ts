@@ -2,12 +2,16 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {type ObservablePromise, preloadObservablePromise, useObservablePromise} from 'react-rx'
 
 import {type UpsellDialogViewedInfo} from '../studio/upsell/__telemetry__/upsell.telemetry'
-import {type UpsellDataResult} from '../studio/upsell/types'
+import {type UpsellData, type UpsellDataResult} from '../studio/upsell/types'
 import {type UpsellTelemetryLogs, useUpsellData} from './useUpsellData'
 
 interface UseUpsellContextOptions {
   dataUri: string
   feature: string
+  /** When `false`, the request is skipped and the upsellData$ observable settles with `fallbackData`. */
+  enabled?: boolean
+  /** Content used while `enabled` is `false`. */
+  fallbackData?: UpsellData
 }
 
 export interface UpsellContextValue {
@@ -24,8 +28,8 @@ export interface UpsellContextValue {
 }
 
 /**
- * Creates context value for simple upsell providers.
- * Handles data fetching, dialog state management, and error handling with toast notifications.
+ * Shared upsell dialog state: the content request, open and close, and telemetry.
+ * A failed request is reported from `UpsellContextDialog`, which toasts and closes again.
  *
  * The request starts when the provider commits (`preloadObservablePromise` in an effect, which
  * also keeps the answer cached across a remount) and is read with `use()` where its answer is
@@ -33,13 +37,23 @@ export interface UpsellContextValue {
  * and the upsell panels. The provider itself never suspends on it and does not re-render when it
  * arrives.
  *
- * For complex providers with custom logic, use useUpsellData directly.
+ * Providers with extra behavior compose this value with their own state. `ReleasesUpsellProvider`
+ * does that for the release-limit guard, the misconfiguration dialog, and `{{releaseLimit}}` in
+ * the copy.
+ *
+ * Pass `enabled: false` with `fallbackData` to settle that fixture. A leaf reads it the same way
+ * it will read the endpoint once that is published.
  *
  * @internal
  */
-export function useUpsellContext({dataUri, feature}: UseUpsellContextOptions): UpsellContextValue {
+export function useUpsellContext({
+  dataUri,
+  feature,
+  enabled,
+  fallbackData,
+}: UseUpsellContextOptions): UpsellContextValue {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
-  const {upsellData$, telemetryLogs} = useUpsellData({dataUri, feature})
+  const {upsellData$, telemetryLogs} = useUpsellData({dataUri, feature, enabled, fallbackData})
   const upsellDataPromise = useObservablePromise(upsellData$)
   useEffect(() => {
     void preloadObservablePromise(upsellData$)

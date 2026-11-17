@@ -1,6 +1,6 @@
-import {Badge, Card, Text} from '@sanity/ui'
+import {Badge, Card} from '@sanity/ui'
 import {useFormValue} from 'sanity'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {platformConfig, type Platform} from '../schemaTypes/documents/socialPost'
 
@@ -38,7 +38,7 @@ export function CharacterCount(props: any) {
 
             return (
               <Flex key={platform} gap={2} flexDirection="row" alignItems="center">
-                <Text size={1} weight="medium">
+                <Text size={1} weight="medium" as="div" trim={true}>
                   {label}
                 </Text>
                 <Badge tone={isOverLimit ? 'critical' : 'default'}>

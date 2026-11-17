@@ -14,6 +14,13 @@ vi.mock('../../../../../i18n/hooks/useTranslation', () => ({
   useTranslation: () => ({t: (key: string) => key}),
 }))
 
+function MockItemComponent() {
+  return null
+}
+vi.mock('../../../../form-components-hooks/useItemComponent', () => ({
+  useItemComponent: () => MockItemComponent,
+}))
+
 vi.mock('../../../files/common/uploadTarget/UploadTargetCard', () => ({
   UploadTargetCard: ({children}: {children: ReactNode}) => <div>{children}</div>,
 }))

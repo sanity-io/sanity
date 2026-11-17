@@ -1,7 +1,7 @@
 import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Container, Heading, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Container, Heading, useClickOutsideEvent} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {
   getDocumentVariantType,
@@ -10,7 +10,7 @@ import {
   useNavigateToCanvasDoc,
   useTranslation,
 } from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover} from '../../../../../ui-components/popover/Popover'
@@ -49,18 +49,18 @@ const CanvasPopoverContent = ({
         <img className={image} src={CANVAS_IMAGE_URL} alt={'Canvas'} />
         <Flex paddingX={4} paddingBottom={4} paddingTop={3} flexDirection={'column'}>
           <Flex paddingY={1} gap={2}>
-            <Text size={1} weight="semibold">
+            <Text size={1} weight="semibold" as="div" trim={true}>
               {CANVAS_APP_NAME}
             </Text>
-            <Text size={1} muted>
-              <ComposeSparklesIcon />
-            </Text>
+            <Icon size={1} muted icon={ComposeSparklesIcon} style={{margin: '-0.375rem'}} />
           </Flex>
           <Box paddingTop={3}>
             <Heading size={1}>{popoverHeading}</Heading>
           </Box>
           <Box paddingTop={4}>
-            <Text size={1}>{popoverDescription}</Text>
+            <Text size={1} as="div" trim={true}>
+              {popoverDescription}
+            </Text>
           </Box>
         </Flex>
         <Flex gap={3} justifyContent="flex-end" paddingX={4} paddingBottom={4}>
@@ -106,7 +106,7 @@ const CanvasLinkedBannerContent = ({documentId}: {documentId: string}) => {
   const onClose = useCallback(() => setOpen(false), [])
   return (
     <Flex alignItems={'center'} gap={2}>
-      <Text size={1} weight="medium">
+      <Text size={1} weight="medium" as="div" trim={true}>
         {variantText}
       </Text>
       <Popover

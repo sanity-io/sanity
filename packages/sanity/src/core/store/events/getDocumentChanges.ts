@@ -23,6 +23,8 @@ import {
   type EventsObservableValue,
   type EventsStoreRevision,
   isCreateDocumentVersionEvent,
+  isNonSelectableTerminalEvent,
+  isPublishDocumentVersionEvent,
 } from './types'
 
 /**
@@ -218,6 +220,23 @@ export function getDocumentChanges({
           const getTransactions = (): Observable<TransactionLogEventWithEffects[]> => {
             if (sinceDoc._rev === HISTORY_CLEARED_EVENT_ID) {
               return of([])
+            }
+            if (viewingLatest && events[0] && isNonSelectableTerminalEvent(events[0])) {
+              // The discarded version's transactions are not part of the live document, so the
+              // range is capped at the last publish rather than dropped — an older "since" still
+              // has real changes to show.
+              const liveRevisionId = events.find(isPublishDocumentVersionEvent)?.id
+              if (liveRevisionId === undefined || liveRevisionId === sinceDoc._rev) {
+                return of([])
+              }
+              return from(
+                getDocumentTransactions({
+                  documentId,
+                  client,
+                  toTransaction: liveRevisionId,
+                  fromTransaction: sinceDoc._rev,
+                }),
+              )
             }
             const cached = transactionsCache.get({
               sinceRev: sinceDoc._rev,

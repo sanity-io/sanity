@@ -64,6 +64,10 @@ export {DocumentTableSelectionContext} from '../_singletons/context/DocumentTabl
 export {EditDialogOuterBoundaryContext} from '../_singletons/context/EditDialogOuterBoundaryContext'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {EnhancedObjectDialogContext} from '../_singletons/context/EnhancedObjectDialogContext'
+export {
+  EnhancedObjectDialogScrollContext,
+  type EnhancedObjectDialogScrollToTop,
+} from '../_singletons/context/EnhancedObjectDialogScrollContext'
 export {EventsContext} from '../_singletons/context/EventsContext'
 export {FeedbackContext, type FeedbackContextValue} from '../_singletons/context/FeedbackContext'
 export {
@@ -73,6 +77,7 @@ export {
 export {FormBuilderContext} from '../_singletons/context/FormBuilderContext'
 export {FormCallbacksContext} from '../_singletons/context/FormCallbacksContext'
 export {FormFieldPresenceContext} from '../_singletons/context/FormFieldPresenceContext'
+export {FormRowGutterSuppressedContext} from '../_singletons/context/FormRowGutterSuppressedContext'
 export {FormValueContext} from '../_singletons/context/FormValueContext'
 export {FreeTrialContext} from '../_singletons/context/FreeTrialContext'
 export {FullscreenPTEContext} from '../_singletons/context/FullscreenPTEContext'
@@ -193,6 +198,8 @@ export {
   type UnclaimedProjectContextValue,
 } from '../_singletons/context/UnclaimedProjectContext'
 export {ValidationContext} from '../_singletons/context/ValidationContext'
+export {VariantsModePromiseContext} from '../_singletons/context/VariantsModePromiseContext'
+export {VariantsUpsellContext} from '../_singletons/context/VariantsUpsellContext'
 export {VirtualizerScrollInstanceContext} from '../_singletons/context/VirtualizerScrollInstanceContext'
 export {VisibleWorkspacesContext} from '../_singletons/context/VisibleWorkspacesContext'
 export {WorkspaceContext} from '../_singletons/context/WorkspaceContext'

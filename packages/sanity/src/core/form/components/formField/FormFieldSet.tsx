@@ -5,7 +5,7 @@ import {
   type DeprecatedProperty,
   type FormNodeValidation,
 } from '@sanity/types'
-import {Badge, Text, type Theme} from '@sanity/ui'
+import {Badge, type Theme} from '@sanity/ui'
 import {
   type FocusEvent,
   type HTMLProps,
@@ -17,7 +17,7 @@ import {
   type RefAttributes,
 } from 'react'
 import {css, styled} from 'styled-components'
-import {VStack, Flex, Box} from 'ui5'
+import {Text, VStack, Flex, Box} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
@@ -145,6 +145,16 @@ const Content = styled(Box)<{
   `
 })
 
+/* Anchors the collapsible legend's hit area (see FormFieldSetLegend) to the whole row */
+const HeaderRow = styled(Flex)`
+  position: relative;
+`
+
+/* Keeps interactive header items above the legend's hit area */
+const HeaderRowItem = styled(Box)`
+  position: relative;
+`
+
 const EMPTY_ARRAY: never[] = []
 
 /** @internal */
@@ -245,7 +255,7 @@ export function FormFieldSet(
             inputId={inputId}
             content={
               <VStack gap={3}>
-                <Flex alignItems="center">
+                <HeaderRow alignItems="center">
                   {title && (
                     <FormFieldSetLegend
                       collapsed={Boolean(collapsed)}
@@ -262,20 +272,20 @@ export function FormFieldSet(
                     </Box>
                   )}
                   {isArraySchemaType(schemaType) && Array.isArray(path) && (
-                    <Box marginLeft={2}>
+                    <HeaderRowItem marginLeft={2}>
                       <FormNodeDivergenceCollectionIndicator path={path} />
-                    </Box>
+                    </HeaderRowItem>
                   )}
                   {hasValidationMarkers && (
-                    <Box marginLeft={2}>
+                    <HeaderRowItem marginLeft={2}>
                       <FormFieldValidationStatus
                         fontSize={1}
                         placement="top"
                         validation={validation}
                       />
-                    </Box>
+                    </HeaderRowItem>
                   )}
-                </Flex>
+                </HeaderRow>
 
                 {deprecated && (
                   <TextWithTone data-testid={`deprecated-message-${title}`} tone="caution" size={1}>
@@ -284,7 +294,13 @@ export function FormFieldSet(
                 )}
 
                 {description && (
-                  <Text muted size={1} id={createDescriptionId(inputId, description)}>
+                  <Text
+                    muted
+                    size={1}
+                    id={createDescriptionId(inputId, description)}
+                    as="div"
+                    trim={true}
+                  >
                     {description}
                   </Text>
                 )}

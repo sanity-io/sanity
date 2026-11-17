@@ -8,10 +8,10 @@ import {
   type ObjectSchemaType,
   type UploadState,
 } from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {type CSSProperties, useRef} from 'react'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {Button} from '../../../../../ui-components/button/Button'
@@ -88,7 +88,7 @@ function UploadChrome() {
     <Card padding={4} style={{maxWidth: 640}}>
       <VStack gap={5}>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             image placeholder (row layout at 440px and up)
           </Text>
           <ImageInputUploadPlaceholder
@@ -101,7 +101,7 @@ function UploadChrome() {
           />
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             browse only (disableNew)
           </Text>
           <ImageInputUploadPlaceholder
@@ -115,7 +115,7 @@ function UploadChrome() {
           />
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             file placeholder collapsed below 440px
           </Text>
           <div style={{maxWidth: 360}}>
@@ -131,7 +131,7 @@ function UploadChrome() {
           </div>
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             placeholder text (read-only, uploads disabled, rejected drop)
           </Text>
           <Card border paddingX={3} paddingY={3} radius={2} tone="transparent">
@@ -150,13 +150,13 @@ function UploadChrome() {
           </Card>
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             upload progress
           </Text>
           <UploadProgress onCancel={noop} uploadState={UPLOAD_STATE} />
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             file asset row (editable, private read-only) and skeleton
           </Text>
           <FileRow />
@@ -166,7 +166,7 @@ function UploadChrome() {
           </Card>
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             image preview access warning
           </Text>
           <ImagePreview

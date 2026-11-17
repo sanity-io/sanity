@@ -1,16 +1,19 @@
 import {type SanityClient} from '@sanity/client'
+import {type SanityDocument} from '@sanity/types'
 import {
   concat,
   type ConnectableObservable,
+  defer,
   EMPTY,
   firstValueFrom,
   lastValueFrom,
   type Observable,
   of,
   Subject,
+  throwError,
   timer,
 } from 'rxjs'
-import {buffer, publish, takeWhile} from 'rxjs/operators'
+import {buffer, filter, map, publish, takeWhile} from 'rxjs/operators'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
@@ -20,6 +23,8 @@ import {
   type DraftsModelDocumentAvailability,
 } from '../../../preview/types'
 import {createSchema} from '../../../schema/createSchema'
+import {type ValidationStatus} from '../../../validation'
+import {type DocumentPairPermissionsListener} from '../types'
 import {editState, type EditStateFor} from './editState'
 import {validation} from './validation'
 
@@ -72,24 +77,40 @@ const NOT_FOUND: DocumentAvailability = {available: false, reason: 'NOT_FOUND'}
 function createSubscription(
   client: SanityClient,
   observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>,
-  options: {typeName?: string; currentUser?: {id: string} | null; documentId?: string} = {},
+  options: {
+    typeName?: string
+    currentUser?: {id: string} | null
+    documentId?: string
+    listener?: DocumentPairPermissionsListener
+    observeDocument?: (id: string) => Observable<SanityDocument | undefined>
+  } = {},
 ) {
   const getClient = () => client
-  const {typeName = 'movie', currentUser, documentId = 'example-id'} = options
+  const {
+    typeName = 'movie',
+    currentUser,
+    documentId = 'example-id',
+    listener,
+    observeDocument = () => EMPTY,
+  } = options
 
-  // @ts-expect-error -- pre-existing, fix later
   const stream = validation(
     {
       client,
       getClient,
       schema,
       observeDocumentPairAvailability,
+      observeDocument,
       i18n: getFallbackLocaleSource(),
+      // @ts-expect-error -- pre-existing, fix later
       currentUser,
     },
     {publishedId: documentId, draftId: `drafts.${documentId}`},
     typeName,
     'draft',
+    undefined,
+    undefined,
+    listener,
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   ).pipe(publish())
 
@@ -109,6 +130,25 @@ function createSubscription(
     doneValidating: () => {
       return lastValueFrom(stream.pipe(takeWhile((e) => e.isValidating, true)))
     },
+    waitFor: (predicate: (status: ValidationStatus) => boolean) =>
+      firstValueFrom(stream.pipe(filter(predicate))),
+  }
+}
+
+// The edit state the document pair reports for the draft of a movie, deleted when `undefined`
+function draftEditState(publishedId: string, draft: SanityDocument | undefined): EditStateFor {
+  return {
+    id: publishedId,
+    type: 'movie',
+    transactionSyncLock: null,
+    draft: draft ?? null,
+    published: null,
+    version: null,
+    liveEdit: false,
+    liveEditSchemaType: false,
+    ready: true,
+    release: undefined,
+    scopeId: undefined,
   }
 }
 
@@ -120,13 +160,13 @@ function createVersionSubscription(
 ) {
   const getClient = () => client
 
-  // @ts-expect-error -- pre-existing, fix later
   const stream = validation(
     {
       client,
       getClient,
       schema,
       observeDocumentPairAvailability,
+      observeDocument: () => EMPTY,
       i18n: getFallbackLocaleSource(),
     },
     {publishedId: 'example-id', draftId: 'drafts.example-id', versionId},
@@ -369,13 +409,13 @@ describe('validation', () => {
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
     const subscription = lastValueFrom(
-      // @ts-expect-error -- pre-existing, fix later
       validation(
         {
           client,
           schema,
           getClient: () => client,
           observeDocumentPairAvailability: vi.fn(() => EMPTY),
+          observeDocument: () => EMPTY,
           i18n: getFallbackLocaleSource(),
         },
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
@@ -423,7 +463,6 @@ describe('validation', () => {
     ])
 
     const immediatePlayback = await firstValueFrom(
-      // @ts-expect-error -- pre-existing, fix later
       validation(
         {client, schema} as any,
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
@@ -433,7 +472,6 @@ describe('validation', () => {
     )
 
     const immediatePlaybackAgain = await firstValueFrom(
-      // @ts-expect-error -- pre-existing, fix later
       validation(
         {client, schema} as any,
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
@@ -667,18 +705,19 @@ describe('validation', () => {
         getClient: () => client,
         schema,
         observeDocumentPairAvailability: () => EMPTY,
+        observeDocument: () => EMPTY,
         i18n: getFallbackLocaleSource(),
       }
 
-      // @ts-expect-error -- pre-existing, fix later
       const observableUserA = validation(
+        // @ts-expect-error -- pre-existing, fix later
         {...sharedCtx, currentUser: {id: 'user-a'}},
         idPair,
         'movie',
         'draft',
       )
-      // @ts-expect-error -- pre-existing, fix later
       const observableUserB = validation(
+        // @ts-expect-error -- pre-existing, fix later
         {...sharedCtx, currentUser: {id: 'user-b'}},
         idPair,
         'movie',
@@ -688,7 +727,7 @@ describe('validation', () => {
       expect(observableUserA).not.toBe(observableUserB)
     })
 
-    it('returns the SAME observable for the same currentUser id', () => {
+    it('returns the SAME observable for the same currentUser id regardless of the deprecated reference flag', () => {
       const client = getMockClient()
       const mockEditStateSubject = new Subject<EditStateFor>()
       mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
@@ -700,14 +739,15 @@ describe('validation', () => {
         getClient: () => client,
         schema,
         observeDocumentPairAvailability: () => EMPTY,
+        observeDocument: () => EMPTY,
         i18n: getFallbackLocaleSource(),
         currentUser: {id: 'user-c'},
       }
 
       // @ts-expect-error -- pre-existing, fix later
-      const firstObservable = validation(sharedCtx, idPair, 'movie', 'draft')
+      const firstObservable = validation(sharedCtx, idPair, 'movie', 'draft', true)
       // @ts-expect-error -- pre-existing, fix later
-      const secondObservable = validation(sharedCtx, idPair, 'movie', 'draft')
+      const secondObservable = validation(sharedCtx, idPair, 'movie', 'draft', false)
 
       expect(firstObservable).toBe(secondObservable)
     })
@@ -724,17 +764,17 @@ describe('validation', () => {
         getClient: () => client,
         schema,
         observeDocumentPairAvailability: () => EMPTY,
+        observeDocument: () => EMPTY,
         i18n: getFallbackLocaleSource(),
       }
 
-      // @ts-expect-error -- pre-existing, fix later
       const observableWithUser = validation(
+        // @ts-expect-error -- pre-existing, fix later
         {...sharedCtx, currentUser: {id: 'user-d'}},
         idPair,
         'movie',
         'draft',
       )
-      // @ts-expect-error -- pre-existing, fix later
       const observableWithoutUser = validation(
         {...sharedCtx, currentUser: null},
         idPair,
@@ -743,6 +783,221 @@ describe('validation', () => {
       )
 
       expect(observableWithUser).not.toBe(observableWithoutUser)
+    })
+  })
+
+  describe('global listener', () => {
+    const movie = {
+      _createdAt: '2021-09-07T16:23:52.256Z',
+      _type: 'movie',
+      _updatedAt: '2021-09-07T16:23:52.256Z',
+    }
+
+    it('validates the document `observeDocument` reports, without checking out the document pair', async () => {
+      const client = getMockClient()
+      const documentId = `movie-${Math.random().toString(36).slice(2)}`
+      const document$ = new Subject<SanityDocument>()
+      const observeDocument = vi.fn((_id: string) => document$.asObservable())
+
+      const {subscription, closeSubscription, doneValidating} = createSubscription(
+        client,
+        () => EMPTY,
+        {documentId, listener: 'global', observeDocument},
+      )
+
+      document$.next({...movie, _id: `drafts.${documentId}`, _rev: 'globalRev1', title: 5})
+      await doneValidating()
+      closeSubscription()
+
+      await expect(subscription).resolves.toMatchObject([
+        {isValidating: true, validation: [], revision: 'globalRev1'},
+        {
+          isValidating: false,
+          validation: [
+            {
+              item: {message: 'Expected type "String", got "Number"'},
+              level: 'error',
+              path: ['title'],
+            },
+          ],
+          revision: 'globalRev1',
+        },
+      ])
+      expect(observeDocument).toHaveBeenCalledWith(`drafts.${documentId}`)
+      expect(mockEditState).not.toHaveBeenCalled()
+      document$.complete()
+    })
+
+    it('retries a failed `observeDocument` instead of erroring the validation', async () => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
+      try {
+        const client = getMockClient()
+        const documentId = `movie-${Math.random().toString(36).slice(2)}`
+        let attempts = 0
+        const observeDocument = () =>
+          defer(() => {
+            attempts += 1
+            return attempts === 1
+              ? throwError(() => new Error('503 Service Unavailable'))
+              : of({...movie, _id: `drafts.${documentId}`, _rev: 'globalRev1', title: 5})
+          })
+
+        const {subscription, closeSubscription, doneValidating} = createSubscription(
+          client,
+          () => EMPTY,
+          {documentId, listener: 'global', observeDocument},
+        )
+        const done = doneValidating()
+        await vi.advanceTimersByTimeAsync(1000)
+        const status = await done
+        closeSubscription()
+
+        expect(attempts).toBe(2)
+        expect(status).toMatchObject({
+          isValidating: false,
+          validation: [{item: {message: 'Expected type "String", got "Number"'}}],
+          revision: 'globalRev1',
+        })
+        await expect(subscription).resolves.toBeDefined()
+      } finally {
+        vi.useRealTimers()
+      }
+    })
+
+    it('stops retrying a global document load after three failures and errors the validation', async () => {
+      vi.useFakeTimers({shouldAdvanceTime: true})
+      try {
+        const client = getMockClient()
+        const documentId = `movie-${Math.random().toString(36).slice(2)}`
+        let attempts = 0
+        const observeDocument = () =>
+          defer(() => {
+            attempts += 1
+            return throwError(() => new Error('503 Service Unavailable'))
+          })
+
+        const {subscription, closeSubscription} = createSubscription(client, () => EMPTY, {
+          documentId,
+          listener: 'global',
+          observeDocument,
+        })
+        // Attach before the retries elapse. The stream rejects during the timer
+        // flush, and a handler attached afterwards is already too late.
+        const rejected = expect(subscription).rejects.toThrow('503 Service Unavailable')
+        // one attempt plus three retries, delayed 1s + 2s + 3s
+        await vi.advanceTimersByTimeAsync(6_000)
+        closeSubscription()
+
+        await rejected
+        expect(attempts).toBe(4)
+        expect(mockEditState).not.toHaveBeenCalled()
+      } finally {
+        vi.useRealTimers()
+      }
+    })
+
+    it.each(['document', 'global'] as const)(
+      'reads a changed document as validating until its own result arrives (%s listener)',
+      async (listener) => {
+        const client = getMockClient()
+        const documentId = `movie-${Math.random().toString(36).slice(2)}`
+        const draftId = `drafts.${documentId}`
+        const document$ = new Subject<SanityDocument>()
+        mockEditState.mockImplementation(() =>
+          document$.pipe(map((draft) => draftEditState(documentId, draft))),
+        )
+
+        const {subscription, closeSubscription, doneValidating, waitFor} = createSubscription(
+          client,
+          () => EMPTY,
+          {documentId, listener, observeDocument: () => document$.asObservable()},
+        )
+
+        document$.next({...movie, _id: draftId, _rev: 'rev1', title: 5})
+        await doneValidating()
+
+        // a change that arrives from the server changes the content and the revision at once
+        document$.next({...movie, _id: draftId, _rev: 'rev2', title: 'A valid title'})
+        await waitFor((status) => !status.isValidating && status.validation.length === 0)
+        closeSubscription()
+
+        const statuses = await subscription
+        const afterChange = statuses.slice(statuses.findIndex((status) => !status.isValidating) + 1)
+        expect(afterChange.slice(0, -1).filter((status) => !status.isValidating)).toEqual([])
+        expect(afterChange).toContainEqual(
+          expect.objectContaining({isValidating: true, revision: 'rev2'}),
+        )
+        expect(afterChange[afterChange.length - 1]).toMatchObject({
+          isValidating: false,
+          validation: [],
+          revision: 'rev2',
+        })
+        document$.complete()
+      },
+    )
+
+    it.each(['document', 'global'] as const)(
+      'reads a deleted document as done validating (%s listener)',
+      async (listener) => {
+        const client = getMockClient()
+        const documentId = `movie-${Math.random().toString(36).slice(2)}`
+        const document$ = new Subject<SanityDocument | undefined>()
+        mockEditState.mockImplementation(() =>
+          document$.pipe(map((draft) => draftEditState(documentId, draft))),
+        )
+
+        const {closeSubscription, doneValidating, waitFor} = createSubscription(
+          client,
+          () => EMPTY,
+          {documentId, listener, observeDocument: () => document$.asObservable()},
+        )
+
+        document$.next({...movie, _id: `drafts.${documentId}`, _rev: 'rev1', title: 5})
+        await doneValidating()
+
+        // the run for a document without a `_type` reports no revision
+        document$.next(undefined)
+        const status = await waitFor((next) => next.validation.length === 0)
+        closeSubscription()
+
+        expect(status).toEqual({isValidating: false, validation: [], revision: undefined})
+        document$.complete()
+      },
+    )
+
+    it('keeps the document pair and the global listener in separate cache entries', () => {
+      const client = getMockClient()
+      mockEditState.mockImplementation(() => EMPTY)
+      const publishedId = `movie-${Math.random().toString(36).slice(2)}`
+      const idPair = {publishedId, draftId: `drafts.${publishedId}`}
+      const ctx = {
+        client,
+        getClient: () => client,
+        schema,
+        observeDocumentPairAvailability: () => EMPTY,
+        observeDocument: () => EMPTY,
+        i18n: getFallbackLocaleSource(),
+        currentUser: null,
+      }
+
+      const pairValidation = validation(ctx, idPair, 'movie', 'draft')
+      const globalValidation = validation(
+        ctx,
+        idPair,
+        'movie',
+        'draft',
+        undefined,
+        undefined,
+        'global',
+      )
+
+      expect(globalValidation).not.toBe(pairValidation)
+      expect(validation(ctx, idPair, 'movie', 'draft', undefined, undefined, 'document')).toBe(
+        pairValidation,
+      )
+      expect(validation(ctx, idPair, 'movie', 'draft', undefined, undefined, 'global')).toBe(
+        globalValidation,
+      )
     })
   })
 })

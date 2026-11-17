@@ -1,14 +1,10 @@
+import {pandacss} from '@pandacss/vite'
 import {defineConfig} from '@repo/test-config/vitest'
-import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
 import viteReact from '@vitejs/plugin-react'
 
 /** Slow fuzz tests. Left out here and run with `vitest.fuzz.config.mts` instead. */
 export const FUZZ_TESTS = '**/*.fuzz.test.*'
 
-// The vanilla-extract plugin is still required in jsdom: `.css.ts` modules need its transform
-// for file scoping (they throw "Styles were unable to be assigned to a file" without it). Style
-// *injection* is skipped via `disableRuntimeStyles` in `test/setup/environment.ts`, since no
-// jsdom test asserts on styles or vanilla-extract class names.
 export default defineConfig({
   test: {
     environment: 'jsdom',
@@ -32,7 +28,12 @@ export default defineConfig({
     },
   },
   plugins: [
-    vanillaExtractPlugin(),
+    // Rewrites the `css()` calls of the Panda CSS `.css.ts` modules to the class names the
+    // package build ships (`transform`), so the source under test imports nothing from the
+    // generated `styled-system` runtime. No stylesheet is loaded in jsdom: no jsdom test asserts
+    // on computed styles or class names. `cwd` is explicit because the root `pnpm test` runs this
+    // project from the repository root.
+    pandacss({cwd: import.meta.dirname, transform: true}),
     // `compiler` runs React Compiler through `oxc-transform-react`, in the same native pass
     // as the TypeScript/JSX transform (no babel in the pipeline)
     ...viteReact({compiler: {target: '19'}}),

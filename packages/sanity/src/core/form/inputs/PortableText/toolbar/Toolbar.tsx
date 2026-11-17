@@ -1,5 +1,4 @@
 import {
-  type HotkeyOptions,
   PortableTextEditor,
   usePortableTextEditor,
   usePortableTextEditorSelection,
@@ -17,6 +16,7 @@ import {Button} from '../../../../../ui-components/button/Button'
 import {useRovingFocus} from '../../../../components/rovingFocus/useRovingFocus'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useResolveInitialValueForType} from '../../../../store/document/useResolveInitialValueForType'
+import {type PortableTextInputHotkeys} from '../hooks/useHotKeys'
 import {ActionMenu} from './ActionMenu'
 import {BlockStyleSelect} from './BlockStyleSelect'
 import {getBlockStyles, getInsertMenuItems} from './helpers'
@@ -28,7 +28,7 @@ import {useToolbarSchemaTypes} from './useToolbarSchemaTypes'
 interface ToolbarProps {
   /** Whether annotation and block menu buttons should fully collapse at smaller element widths */
   collapsible?: boolean
-  hotkeys: HotkeyOptions
+  hotkeys: PortableTextInputHotkeys
   isFullscreen: boolean
   onMemberOpen: (relativePath: Path) => void
   onToggleFullscreen: () => void

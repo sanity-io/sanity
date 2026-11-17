@@ -5,6 +5,7 @@ import {css, styled} from 'styled-components'
 import {VStack} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {getDescriptionText} from '../../../util/getDescriptionText'
 import {useReleaseFormOptimisticUpdating} from '../../hooks/useReleaseFormOptimisticUpdating'
 
 // Cap the description height and let it scroll internally past this point, so the dialog stays a
@@ -118,7 +119,7 @@ export function TitleDescriptionForm({
       extractData: useCallback(
         ({metadata}: EditableReleaseDocument) => ({
           title: metadata.title,
-          description: metadata.description,
+          description: getDescriptionText(metadata.description),
         }),
         [],
       ),

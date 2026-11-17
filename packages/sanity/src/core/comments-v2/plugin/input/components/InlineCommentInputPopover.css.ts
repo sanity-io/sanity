@@ -1,5 +1,5 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const rootStack = style({
+export const rootStack = css({
   width: '250px',
 })

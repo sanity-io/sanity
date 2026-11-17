@@ -204,7 +204,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
         title: 'stock',
         remote: {
           name: 'installation-1',
-          entry: 'https://installed-app-apps-publisher-org.sanity.run/mf-manifest.json',
+          entry: 'https://installed-app--apps--publisher-org.sanity.run/mf-manifest.json',
         },
         moduleId: 'installation-1/views/stock/asset_source',
       },

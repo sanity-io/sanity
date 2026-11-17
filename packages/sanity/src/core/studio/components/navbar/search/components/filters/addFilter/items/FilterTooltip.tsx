@@ -89,7 +89,7 @@ export function FilterTooltip({
                   size={1}
                   style={{fontFamily: 'monospace'}}
                   tone="primary"
-                  textOverflow="ellipsis"
+                  truncate={1}
                 >
                   {fieldDefinition?.name}
                 </TextWithTone>

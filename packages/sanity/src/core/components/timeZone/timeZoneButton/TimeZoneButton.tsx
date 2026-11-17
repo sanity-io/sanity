@@ -1,8 +1,8 @@
 import {EarthAmericasIcon} from '@sanity/icons/EarthAmericas'
-import {Inline, Text} from '@sanity/ui'
+import {Inline} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {type ReactNode} from 'react'
-import {Box} from 'ui5'
+import {Text, Box, Icon} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -29,7 +29,9 @@ export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
       <Tooltip
         content={
           <Box flexBasis="0%" flexGrow={1} padding={1}>
-            <Text size={1}>{tooltipContent}</Text>
+            <Text size={1} as="div" trim={true}>
+              {tooltipContent}
+            </Text>
           </Box>
         }
         portal
@@ -53,10 +55,13 @@ export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
                   />
                 ) : (
                   <Inline gap={2} padding={2}>
-                    <Text weight={'medium'} size={1}>
-                      <EarthAmericasIcon />
-                    </Text>
-                    <Text weight={'medium'} size={1}>{`${timeZone.city}`}</Text>
+                    <Icon size={1} muted icon={EarthAmericasIcon} style={{margin: '-0.375rem'}} />
+                    <Text
+                      weight={'medium'}
+                      size={1}
+                      as="div"
+                      trim={true}
+                    >{`${timeZone.city}`}</Text>
                   </Inline>
                 )}
               </Box>
@@ -72,12 +77,12 @@ export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
                   />
                 ) : (
                   <Inline gap={2} padding={2}>
-                    <Text weight={'medium'} size={1}>
-                      <EarthAmericasIcon />
-                    </Text>
+                    <Icon size={1} muted icon={EarthAmericasIcon} style={{margin: '-0.375rem'}} />
                     <Text
                       weight={'medium'}
                       size={1}
+                      as="div"
+                      trim={true}
                     >{`${timeZone.alternativeName} (${timeZone.namePretty})`}</Text>
                   </Inline>
                 )}
@@ -95,12 +100,12 @@ export const TimeZoneButton = (props: TimeZoneButtonZoneProps) => {
                 />
               ) : (
                 <Inline gap={2} padding={2}>
-                  <Text weight={'medium'} size={1}>
-                    <EarthAmericasIcon />
-                  </Text>
+                  <Icon size={1} muted icon={EarthAmericasIcon} style={{margin: '-0.375rem'}} />
                   <Text
                     weight={'medium'}
                     size={1}
+                    as="div"
+                    trim={true}
                   >{`${timeZone.alternativeName} (${timeZone.namePretty})`}</Text>
                 </Inline>
               )}

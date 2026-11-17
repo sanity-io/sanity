@@ -272,6 +272,7 @@ import type {
   ConnectionStatusStore,
   ConnectionStatusStoreOptions,
   ConnectorContextValue,
+  CONTENT_RELEASES_TIME_ZONE_SCOPE,
   ContextMenuButton,
   CookielessCompatibleLoginMethod,
   CopyOptions,
@@ -357,6 +358,7 @@ import type {
   DEFAULT_LIST_TYPES,
   DEFAULT_MAX_RECURSION_DEPTH,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
+  DEFAULT_VARIANT_TYPE_KEY,
   defaultLocale,
   DefaultPluginsWorkspaceOptions,
   DefaultPreview,
@@ -465,8 +467,10 @@ import type {
   DocumentFormNode,
   DocumentGroupEvent,
   DocumentGroupInventory,
-  DocumentGroupInventoryAction,
   DocumentGroupInventoryComponents,
+  DocumentGroupInventoryFeedbackAction,
+  DocumentGroupInventoryFeedbackActionProps,
+  DocumentGroupInventoryHandle,
   DocumentGroupInventoryPerspectiveList,
   DocumentGroupInventoryProps,
   DocumentGroupInventoryReferencePreviewLinkProps,
@@ -487,6 +491,7 @@ import type {
   DocumentMutationEvent,
   DocumentOptions,
   DocumentPairLoadedEvent,
+  DocumentPairPermissionsListener,
   DocumentPairPermissionsOptions,
   DocumentPairTarget,
   DocumentPermission,
@@ -625,6 +630,7 @@ import type {
   FileSchemaType,
   FileValue,
   Filters,
+  filterVariantsForSearch,
   findIndex,
   FIXME,
   flattenConfig,
@@ -747,6 +753,7 @@ import type {
   getValueError,
   getVariantPublishedSibling,
   getVariantTitle,
+  getVariantType,
   getVersionFromId,
   getVersionId,
   getVersionInlineBadge,
@@ -829,6 +836,7 @@ import type {
   InitialValueState,
   InitialValueSuccessMsg,
   InitialValueTemplateItem,
+  InlineCode,
   InlineFieldDefinition,
   InlinePreview,
   InlinePreviewProps,
@@ -881,6 +889,7 @@ import type {
   isCrossDatasetReference,
   isCrossDatasetReferenceSchemaType,
   isDateTimeSchemaType,
+  isDefaultVariant,
   isDeleteDocumentGroupEvent,
   isDeleteDocumentVersionEvent,
   isDeleteMutation,
@@ -913,6 +922,7 @@ import type {
   isNetworkError,
   isNewDocument,
   isNonNullable,
+  isNonSelectableTerminalEvent,
   isNumberInputProps,
   isNumberSchemaType,
   isObjectInputProps,
@@ -1403,7 +1413,6 @@ import type {
   Serializeable,
   serializeError,
   Session,
-  SESSION_ID,
   set,
   SetActiveGroupOperation,
   setAtPath,
@@ -1738,6 +1747,7 @@ import type {
   useReferringDocuments,
   useRelativeTime,
   useReleasesIds,
+  useReleasesToolAvailable,
   useRenderingContextStore,
   useReportParseError,
   useResolveInitialValueForType,
@@ -1780,6 +1790,7 @@ import type {
   useTimeAgo,
   useTimelineSelector,
   useTimelineStore,
+  useTimeZone,
   useTools,
   useTrackerStore,
   useTrackerStoreReporter,
@@ -2687,6 +2698,9 @@ describe('sanity', () => {
   test('ConnectorContextValue', () => {
     expectTypeOf<ConnectorContextValue>().toBeObject()
   })
+  test('CONTENT_RELEASES_TIME_ZONE_SCOPE', () => {
+    expectTypeOf<typeof CONTENT_RELEASES_TIME_ZONE_SCOPE>().not.toBeNever()
+  })
   test('ContextMenuButton', () => {
     expectTypeOf<typeof ContextMenuButton>().toBeFunction()
   })
@@ -2945,6 +2959,9 @@ describe('sanity', () => {
   })
   test('DEFAULT_STUDIO_CLIENT_OPTIONS', () => {
     expectTypeOf<typeof DEFAULT_STUDIO_CLIENT_OPTIONS>().not.toBeNever()
+  })
+  test('DEFAULT_VARIANT_TYPE_KEY', () => {
+    expectTypeOf<typeof DEFAULT_VARIANT_TYPE_KEY>().not.toBeNever()
   })
   test('defaultLocale', () => {
     expectTypeOf<typeof defaultLocale>().not.toBeNever()
@@ -3269,13 +3286,19 @@ describe('sanity', () => {
     expectTypeOf<DocumentGroupEvent>().not.toBeNever()
   })
   test('DocumentGroupInventory', () => {
-    expectTypeOf<typeof DocumentGroupInventory>().not.toBeNever()
-  })
-  test('DocumentGroupInventoryAction', () => {
-    expectTypeOf<typeof DocumentGroupInventoryAction>().not.toBeNever()
+    expectTypeOf<typeof DocumentGroupInventory>().toBeFunction()
   })
   test('DocumentGroupInventoryComponents', () => {
     expectTypeOf<DocumentGroupInventoryComponents>().toBeObject()
+  })
+  test('DocumentGroupInventoryFeedbackAction', () => {
+    expectTypeOf<typeof DocumentGroupInventoryFeedbackAction>().toBeFunction()
+  })
+  test('DocumentGroupInventoryFeedbackActionProps', () => {
+    expectTypeOf<DocumentGroupInventoryFeedbackActionProps>().toBeObject()
+  })
+  test('DocumentGroupInventoryHandle', () => {
+    expectTypeOf<DocumentGroupInventoryHandle>().toBeObject()
   })
   test('DocumentGroupInventoryPerspectiveList', () => {
     expectTypeOf<DocumentGroupInventoryPerspectiveList>().toBeObject()
@@ -3336,6 +3359,9 @@ describe('sanity', () => {
   })
   test('DocumentPairLoadedEvent', () => {
     expectTypeOf<DocumentPairLoadedEvent>().toBeObject()
+  })
+  test('DocumentPairPermissionsListener', () => {
+    expectTypeOf<DocumentPairPermissionsListener>().not.toBeNever()
   })
   test('DocumentPairPermissionsOptions', () => {
     expectTypeOf<DocumentPairPermissionsOptions>().toBeObject()
@@ -3754,6 +3780,9 @@ describe('sanity', () => {
   test('Filters', () => {
     expectTypeOf<typeof Filters>().toBeFunction()
   })
+  test('filterVariantsForSearch', () => {
+    expectTypeOf<typeof filterVariantsForSearch>().toBeFunction()
+  })
   test('findIndex', () => {
     expectTypeOf<typeof findIndex>().toBeFunction()
   })
@@ -4122,6 +4151,9 @@ describe('sanity', () => {
   test('getVariantTitle', () => {
     expectTypeOf<typeof getVariantTitle>().toBeFunction()
   })
+  test('getVariantType', () => {
+    expectTypeOf<typeof getVariantType>().toBeFunction()
+  })
   test('getVersionFromId', () => {
     expectTypeOf<typeof getVersionFromId>().toBeFunction()
   })
@@ -4369,6 +4401,9 @@ describe('sanity', () => {
   test('InitialValueTemplateItem', () => {
     expectTypeOf<InitialValueTemplateItem>().toBeObject()
   })
+  test('InlineCode', () => {
+    expectTypeOf<typeof InlineCode>().toBeFunction()
+  })
   test('InlineFieldDefinition', () => {
     expectTypeOf<InlineFieldDefinition>().not.toBeNever()
   })
@@ -4525,6 +4560,9 @@ describe('sanity', () => {
   test('isDateTimeSchemaType', () => {
     expectTypeOf<typeof isDateTimeSchemaType>().toBeFunction()
   })
+  test('isDefaultVariant', () => {
+    expectTypeOf<typeof isDefaultVariant>().toBeFunction()
+  })
   test('isDeleteDocumentGroupEvent', () => {
     expectTypeOf<typeof isDeleteDocumentGroupEvent>().not.toBeNever()
   })
@@ -4620,6 +4658,9 @@ describe('sanity', () => {
   })
   test('isNonNullable', () => {
     expectTypeOf<typeof isNonNullable>().toBeFunction()
+  })
+  test('isNonSelectableTerminalEvent', () => {
+    expectTypeOf<typeof isNonSelectableTerminalEvent>().not.toBeNever()
   })
   test('isNumberInputProps', () => {
     expectTypeOf<typeof isNumberInputProps>().toBeFunction()
@@ -6096,9 +6137,6 @@ describe('sanity', () => {
   test('Session', () => {
     expectTypeOf<Session>().toBeObject()
   })
-  test('SESSION_ID', () => {
-    expectTypeOf<typeof SESSION_ID>().not.toBeNever()
-  })
   test('set', () => {
     expectTypeOf<typeof set>().toBeFunction()
   })
@@ -7107,6 +7145,9 @@ describe('sanity', () => {
   test('useReleasesIds', () => {
     expectTypeOf<typeof useReleasesIds>().toBeFunction()
   })
+  test('useReleasesToolAvailable', () => {
+    expectTypeOf<typeof useReleasesToolAvailable>().toBeFunction()
+  })
   test('useRenderingContextStore', () => {
     expectTypeOf<typeof useRenderingContextStore>().toBeFunction()
   })
@@ -7234,6 +7275,9 @@ describe('sanity', () => {
   test('useTimelineStore', () => {
     expectTypeOf<typeof useTimelineStore>().toBeFunction()
   })
+  test('useTimeZone', () => {
+    expectTypeOf<typeof useTimeZone>().not.toBeNever()
+  })
   test('useTools', () => {
     expectTypeOf<typeof useTools>().toBeFunction()
   })
@@ -7280,6 +7324,7 @@ describe('sanity', () => {
     expectTypeOf<typeof useUserStore>().toBeFunction()
   })
   test('useValidationStatus', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof useValidationStatus>().toBeFunction()
   })
   test('useValuePreview', () => {

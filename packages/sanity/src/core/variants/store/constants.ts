@@ -10,9 +10,9 @@ export const VARIANT_DOCUMENTS_PATH: '_.variants' = '_.variants'
 
 /**
  * @internal
- * This is the client options used for the variants studio client, using the `X` API version for now
- * TODO: Replace with a dated version once we have a stable API version
+ * The client options used for the variants studio client. `v2025-08-18` is the minimum API version
+ * that supports content variants.
  */
 export const VARIANTS_STUDIO_CLIENT_OPTIONS: SourceClientOptions = {
-  apiVersion: 'X',
+  apiVersion: 'v2025-08-18',
 }

@@ -1,5 +1,5 @@
-import {Card, Text} from '@sanity/ui'
-import {VStack} from 'ui5'
+import {Card} from '@sanity/ui'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {IncompatibleItemType} from '../ArrayOfObjectsInput/List/IncompatibleItemType'
@@ -18,19 +18,19 @@ export function IncompatibleItemTypeStory() {
       <Card padding={4} style={{maxWidth: 420}}>
         <VStack gap={5}>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               object value
             </Text>
             <IncompatibleItemType value={{_type: 'legacyBlock', title: 'Legacy block'}} />
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               string value
             </Text>
             <IncompatibleItemType value="legacy-string-item" />
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               long type name (ellipsis)
             </Text>
             <div style={{maxWidth: 240}}>

@@ -25,6 +25,8 @@ interface SelectionContext {
 
 type SelectionEvents =
   | {type: 'selection.toggle'; variantId: string}
+  | {type: 'selection.addMany'; variantIds: string[]}
+  | {type: 'selection.removeMany'; variantIds: string[]}
   | {type: 'selection.add'; variantId: string}
   | {type: 'selection.remove'; variantId: string}
   | {type: 'selection.clear'}
@@ -125,6 +127,28 @@ export const selectionMachine = setup({
                 // oxlint-disable-next-line no-unused-expressions
                 next.delete(event.variantId) || next.add(event.variantId)
                 return next
+              },
+            }),
+            'notifySelectionChanged',
+          ],
+        },
+        'selection.addMany': {
+          guard: 'isMutable',
+          actions: [
+            assign({
+              selectedIds: ({context, event}) =>
+                new Set([...context.selectedIds, ...event.variantIds]),
+            }),
+            'notifySelectionChanged',
+          ],
+        },
+        'selection.removeMany': {
+          guard: 'isMutable',
+          actions: [
+            assign({
+              selectedIds: ({context, event}) => {
+                const removed = new Set(event.variantIds)
+                return new Set([...context.selectedIds].filter((id) => !removed.has(id)))
               },
             }),
             'notifySelectionChanged',

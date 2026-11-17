@@ -11,7 +11,7 @@ import {
   urlSearchParamVercelSetBypassCookie,
   type VercelSetBypassCookieValue,
 } from '@sanity/preview-url-secret/constants'
-import {Card, Label, Spinner, Text, usePrefersReducedMotion} from '@sanity/ui'
+import {Card, Label, Spinner, usePrefersReducedMotion} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
@@ -28,8 +28,8 @@ import {
   type RefAttributes,
 } from 'react'
 import {flushSync} from 'react-dom'
-import {Translate, useTranslation} from 'sanity'
-import {Flex, VStack} from 'ui5'
+import {Translate, useCurrentUser, useTranslation} from 'sanity'
+import {Text, Flex, VStack} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {Button} from '../../ui-components/button/Button'
@@ -50,6 +50,7 @@ import {usePresentationNavigate} from '../usePresentationNavigate'
 import {usePresentationTool} from '../usePresentationTool'
 import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
 import {IFrame} from './IFrame'
+import {MissingPreviewAccessCard} from './MissingPreviewAccessCard'
 import {PreviewHeader} from './PreviewHeader'
 
 const MotionFlex = motion.create(Flex)
@@ -161,7 +162,6 @@ export const Preview = memo(function PreviewComponent(
       /**
        * Only set the stable perspective if it hasn't been set yet.
        */
-      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setStablePerspective((prev) => (prev === null ? perspective : prev))
     }
   }, [handlesPerspectiveChange, perspective])
@@ -173,7 +173,6 @@ export const Preview = memo(function PreviewComponent(
      * variant changes in `src` so they no longer cause a full page reload.
      */
     if (handlesVariantChange) {
-      // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
       setStableVariant((prev) => (prev === null ? variant : prev))
     }
   }, [handlesVariantChange, variant])
@@ -203,25 +202,51 @@ export const Preview = memo(function PreviewComponent(
    * timeout, the escalating overlays connection status, and "continue anyway" dismissals — so the
    * loading and error UI is derived from its state tags instead of ad-hoc timers.
    */
-  const showLoadingOverlay = useSelector(presentationRef, (state) =>
+  const _showLoadingOverlay = useSelector(presentationRef, (state) =>
     state.hasTag('show loading overlay'),
   )
-  const showOverlaysConnectionStatus = useSelector(presentationRef, (state) =>
+  const _showOverlaysConnectionStatus = useSelector(presentationRef, (state) =>
     state.hasTag('show overlays connection status'),
   )
   const overlaysConnectionTimedOut = useSelector(presentationRef, (state) =>
     state.hasTag('overlays connection timed out'),
   )
   const showErrorCard = useSelector(presentationRef, (state) => state.hasTag('show error card'))
-  const preventIframeInteraction = useSelector(presentationRef, (state) =>
+  const _preventIframeInteraction = useSelector(presentationRef, (state) =>
     state.hasTag('prevent iframe interaction'),
   )
   // Read the machine's classification rather than the raw `overlaysConnection` aggregate: a new
   // connection on a page whose overlays already connected (a recreated channel) reports
   // `connecting` but is modelled as a reconnect, and the preview is interactive meanwhile.
-  const overlaysConnectingForTheFirstTime = useSelector(presentationRef, (state) =>
+  const _overlaysConnectingForTheFirstTime = useSelector(presentationRef, (state) =>
     state.matches({loaded: {idle: 'connecting'}}),
   )
+  /**
+   * Without a preview secret the page loads without preview mode, where visual editing usually
+   * isn't rendered at all. Waiting for its first connection would end in a misleading
+   * "Unable to connect", so the missing access is reported instead.
+   */
+  const missingPreviewSecretAccess = useSelector(
+    previewUrlRef,
+    (state) => state.context.missingPreviewSecretAccess,
+  )
+  const [missingPreviewSecretAccessDismissed, setMissingPreviewSecretAccessDismissed] =
+    useState(false)
+  const showMissingPreviewSecretAccess =
+    missingPreviewSecretAccess && !missingPreviewSecretAccessDismissed
+  const handleContinueWithoutPreviewSecret = useCallback(() => {
+    setMissingPreviewSecretAccessDismissed(true)
+  }, [])
+  const currentUser = useCurrentUser()
+  const ignoreFirstOverlaysConnection =
+    missingPreviewSecretAccess && _overlaysConnectingForTheFirstTime
+  const overlaysConnectingForTheFirstTime =
+    _overlaysConnectingForTheFirstTime && !ignoreFirstOverlaysConnection
+  const showLoadingOverlay = _showLoadingOverlay && !ignoreFirstOverlaysConnection
+  const showOverlaysConnectionStatus =
+    _showOverlaysConnectionStatus && !ignoreFirstOverlaysConnection
+  const preventIframeInteraction =
+    showMissingPreviewSecretAccess || (_preventIframeInteraction && !ignoreFirstOverlaysConnection)
   const iframeIsBusy = isLoading || isRefreshing || overlaysConnectingForTheFirstTime
 
   const handleContinueAnyway = useCallback(() => {
@@ -361,7 +386,6 @@ export const Preview = memo(function PreviewComponent(
       stop()
       controller.destroy()
     }
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [checkOrigin])
   useEffect(() => {
     if (overlaysConnection === 'connecting' || overlaysConnection === 'reconnecting') {
@@ -407,7 +431,6 @@ export const Preview = memo(function PreviewComponent(
       }
     }
     return undefined
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [overlaysConnection])
 
   return (
@@ -426,7 +449,29 @@ export const Preview = memo(function PreviewComponent(
             }}
           >
             <AnimatePresence>
-              {showOverlaysConnectionStatus ? (
+              {showMissingPreviewSecretAccess ? (
+                <MotionFlex
+                  key="missing-preview-secret-access"
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  variants={errorVariants}
+                  justifyContent="center"
+                  alignItems="center"
+                  style={{
+                    background: 'var(--card-bg-color)',
+                    inset: '0',
+                    position: 'absolute',
+                    zIndex: 1,
+                  }}
+                >
+                  <MissingPreviewAccessCard
+                    flex={1}
+                    roles={currentUser?.roles}
+                    onContinueAnyway={handleContinueWithoutPreviewSecret}
+                  />
+                </MotionFlex>
+              ) : showOverlaysConnectionStatus ? (
                 <MotionFlex
                   initial="initial"
                   animate="animate"
@@ -477,7 +522,13 @@ export const Preview = memo(function PreviewComponent(
                         gap={4}
                       >
                         <Spinner muted />
-                        <Text muted size={1}>
+                        <Text
+                          muted
+                          size={1}
+                          as="div"
+                          trim={true}
+                          tone={overlaysConnectionTimedOut ? 'caution' : undefined}
+                        >
                           {overlaysConnectionTimedOut
                             ? t('preview-frame.status', {context: 'timeout'})
                             : t('preview-frame.status', {context: 'connecting'})}
@@ -516,7 +567,7 @@ export const Preview = memo(function PreviewComponent(
                     gap={4}
                   >
                     <Spinner muted />
-                    <Text muted size={1}>
+                    <Text muted size={1} as="div" trim={true}>
                       {t('preview-frame.status', {context: 'loading'})}
                     </Text>
                   </Flex>

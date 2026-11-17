@@ -1,9 +1,7 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const menuButton = style({
-  selectors: {
-    'button&': {
-      background: 'transparent',
-    },
+export const menuButton = css({
+  'button&': {
+    background: 'transparent',
   },
 })

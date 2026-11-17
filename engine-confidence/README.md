@@ -1,10 +1,17 @@
 # Engine confidence
 
-Produces the weekly Engine Confidence Score for the document sync engine (`@sanity/mutator` and the document store and form patch code in `packages/sanity`). The result is one `engineConfidenceRun` document per ISO week, shown in the Radar "Engine confidence" tab.
+Produces the weekly engine confidence scores for the document sync engine (`@sanity/mutator` and the document store and form patch code in `packages/sanity`). The result is one `engineConfidenceRun` document per ISO week, shown in the Radar "Engine confidence" tab.
 
-The score is Stryker's mutation score, stored as `score.ratio`: (killed + timeout) / (killed + timeout + survived + no coverage). Stryker mutates the tier 1 engine files (`tier1.json`) and runs the unit tests; the score is the share of planted bugs a test fails on. Reporting that reads the dataset directly (BigQuery, Omni) should read `score.ratio`: one field, no blending.
+Each run stores two scores, and both are Stryker's mutation score: (killed + timeout) / (killed + timeout + survived + no coverage). Stryker mutates the tier 1 engine files (`tier1.json`) and runs the unit tests, so a score is the share of planted bugs a test fails on.
 
-The catalogue (`knownBugs`) is replayed alongside it and stored for its own sake: each entry is a patch that reintroduces a past or plausible bug, and Radar shows how many of the active entries at least one suite catches. It is supporting detail only and never feeds `score`. The e2e suite is recorded as `not-run` in every catalogue entry.
+| Field               | Score                    | Covers                                                                                |
+| ------------------- | ------------------------ | ------------------------------------------------------------------------------------- |
+| `score.ratio`       | Total engine score       | Both targets: the `sanity` files and `@sanity/mutator`                                |
+| `studioScore.ratio` | Core Studio engine score | The `sanity` target only: the document store and form patch code in `packages/sanity` |
+
+Both come from the same run. Every file in `score.files` carries its target, and `studioScore` sums the `sanity` files. Reporting that reads the dataset directly (BigQuery, Omni) should read these two fields. Documents with `schemaVersion` 1 have no `studioScore`.
+
+The catalogue (`knownBugs`) is replayed alongside it and stored for its own sake: each entry is a patch that reintroduces a past or plausible bug, and Radar shows how many of the active entries at least one suite catches. It is supporting detail only and never feeds `score` or `studioScore`. The e2e suite is recorded as `not-run` in every catalogue entry.
 
 Stryker ignores the message of `new SomeError(...)` / `SomeError(...)` calls and every `console.*(...)` and `debug(...)` call (`stryker/messageIgnorer.ts`), so message text and log lines do not count as generated bugs. Only the message is ignored: the `throw` statement, the condition and block around it and strings such as action names stay scored, because deleting a throw lets bad input through silently. Ignored mutants show up as `counts.ignored` and stay out of the ratio.
 

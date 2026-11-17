@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react'
 import {SourceProvider, type Tool, useWorkspace} from 'sanity'
+import {recordStructureTool} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
 import {setActivePanes} from '../../getIntentState'
@@ -13,7 +14,9 @@ interface StructureToolBoundaryProps {
   tool: Tool<StructureToolOptions>
 }
 
-export function StructureToolBoundary({tool: {options}}: StructureToolBoundaryProps) {
+export function StructureToolBoundary({
+  tool: {name: toolName, options},
+}: StructureToolBoundaryProps) {
   const {unstable_sources: sources} = useWorkspace()
   const [firstSource] = sources
   const {source, defaultDocumentNode, structure} = options || {}
@@ -24,6 +27,10 @@ export function StructureToolBoundary({tool: {options}}: StructureToolBoundaryPr
     return () => setActivePanes([])
   }, [])
 
+  useEffect(() => {
+    recordStructureTool(toolName)
+  }, [toolName])
+
   const [{error}, setError] = useState<{error: unknown}>({error: null})
 
   // this re-throws if the error it catches is not a PaneResolutionError
@@ -33,7 +40,7 @@ export function StructureToolBoundary({tool: {options}}: StructureToolBoundaryPr
     <ErrorBoundary onCatch={setError}>
       <SourceProvider name={source || firstSource.name}>
         <StructureToolProvider defaultDocumentNode={defaultDocumentNode} structure={structure}>
-          <StructureTool onPaneChange={setActivePanes} />
+          <StructureTool onPaneChange={setActivePanes} toolName={toolName} />
           <IntentResolver />
         </StructureToolProvider>
       </SourceProvider>

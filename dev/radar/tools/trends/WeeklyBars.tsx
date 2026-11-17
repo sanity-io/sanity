@@ -1,5 +1,5 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
-import {Badge, Button, Card, Text, useClickOutsideEvent} from '@sanity/ui'
+import {Badge, Button, Card, useClickOutsideEvent} from '@sanity/ui'
 import {Popover} from '@sanity/ui/popover'
 import {AxisBottom, AxisLeft} from '@visx/axis'
 import {Group} from '@visx/group'
@@ -7,7 +7,7 @@ import {ParentSize} from '@visx/responsive'
 import {scaleBand, scaleLinear} from '@visx/scale'
 import {Bar} from '@visx/shape'
 import {useRef, useState} from 'react'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {
   formatTick,
@@ -324,22 +324,22 @@ export function WeeklyBars(props: {
         >
           <Card radius={2} shadow={2} padding={2}>
             <VStack gap={2}>
-              <Text size={0} muted>
+              <Text size={0} muted as="div" trim={true}>
                 week of {weekLabel(hovered.weekStart)}
               </Text>
               {hovered.value === null ? (
-                <Text size={0} muted>
+                <Text size={0} muted as="div" trim={true}>
                   no run this week
                 </Text>
               ) : (
                 <>
                   <Flex alignItems="center" gap={2}>
-                    <Text size={0} weight="semibold">
+                    <Text size={0} weight="semibold" as="div" trim={true}>
                       {variant.kind === 'share' ? `${variant.fill.label} ` : ''}
                       {formatValue(hovered.value, unit)}
                     </Text>
                     {variant.kind === 'share' && (
-                      <Text size={0} muted>
+                      <Text size={0} muted as="div" trim={true}>
                         {variant.remainder.label} {formatValue(100 - hovered.value, unit)}
                       </Text>
                     )}
@@ -348,13 +348,13 @@ export function WeeklyBars(props: {
                     const previous = previousMeasured(hoverIndex!)
                     if (!previous || previous.value === null) return null
                     return (
-                      <Text size={0} muted>
+                      <Text size={0} muted as="div" trim={true}>
                         {formatDelta(hovered.value - previous.value, unit)} vs week of{' '}
                         {weekLabel(previous.weekStart)}
                       </Text>
                     )
                   })()}
-                  <Text size={0} muted>
+                  <Text size={0} muted as="div" trim={true}>
                     median of {hovered.runs} {hovered.runs === 1 ? 'run' : 'runs'}
                   </Text>
                 </>
@@ -446,7 +446,7 @@ export function WeeklyCard(props: {
       <VStack gap={3}>
         <Flex alignItems="center" justifyContent="space-between" gap={3}>
           <Box flexBasis="0%" flexGrow={1} style={{minWidth: 0}}>
-            <Text size={1} weight="medium">
+            <Text size={1} weight="medium" as="div" trim={true}>
               {title}
             </Text>
           </Box>
@@ -457,7 +457,7 @@ export function WeeklyCard(props: {
               constrainSize
               content={
                 <Box ref={setInfoEl} padding={3} style={{maxWidth: 260}}>
-                  <Text size={1} muted>
+                  <Text size={1} muted as="div" trim={true}>
                     {description}
                   </Text>
                 </Box>
@@ -483,6 +483,8 @@ export function WeeklyCard(props: {
               size={1}
               muted
               aria-label={`Latest week: ${formatValue(latest.value, series.unit)}`}
+              as="div"
+              trim={true}
             >
               {formatValue(latest.value, series.unit)}
             </Text>
@@ -495,7 +497,7 @@ export function WeeklyCard(props: {
           </Flex>
         )}
         {buckets.length === 0 ? (
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             No measured weeks in this range.
           </Text>
         ) : (
@@ -521,7 +523,7 @@ export function WeeklyCard(props: {
                   aria-hidden="true"
                   style={{width: 10, height: 10, borderRadius: 2, background: variant.fill.color}}
                 />
-                <Text size={0} muted>
+                <Text size={0} muted as="div" trim={true}>
                   {variant.fill.label}
                 </Text>
               </Flex>
@@ -536,7 +538,7 @@ export function WeeklyCard(props: {
                     opacity: 0.35,
                   }}
                 />
-                <Text size={0} muted>
+                <Text size={0} muted as="div" trim={true}>
                   {variant.remainder.label}
                 </Text>
               </Flex>
@@ -547,12 +549,12 @@ export function WeeklyCard(props: {
                 aria-hidden="true"
                 style={{width: 10, height: 10, borderRadius: 2, background: variant.color}}
               />
-              <Text size={0} muted>
+              <Text size={0} muted as="div" trim={true}>
                 median per week
               </Text>
             </Flex>
           )}
-          <Text size={0} muted>
+          <Text size={0} muted as="div" trim={true}>
             {goal} is better
           </Text>
         </Flex>

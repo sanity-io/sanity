@@ -1,15 +1,14 @@
-import {createVar, style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const formFieldAnchorPath = createVar()
+/** The custom property `FormFieldGutter` sets inline to the anchor name of its field's input. */
+export const formFieldAnchorPath = '--form-field-anchor-path'
 
-export const formFieldAnchor = style({
-  '@supports': {
-    '(position-anchor: --anchor)': {
-      position: 'absolute',
-      positionAnchor: formFieldAnchorPath,
-      insetBlockStart: 'anchor(center)',
-      transform: 'translateY(-50%)',
-      lineHeight: 0,
-    },
+export const formFieldAnchor = css({
+  '@supports (position-anchor: --anchor)': {
+    position: 'absolute',
+    positionAnchor: `var(${formFieldAnchorPath})`,
+    insetBlockStart: 'anchor(center)',
+    transform: 'translateY(-50%)',
+    lineHeight: 0,
   },
 })

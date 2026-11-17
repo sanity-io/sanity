@@ -1,6 +1,6 @@
-import {Badge, type BadgeTone, Card, Text} from '@sanity/ui'
+import {Badge, type BadgeTone, Card} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 const TONES: BadgeTone[] = ['default', 'primary', 'positive', 'caution', 'critical']
 
@@ -22,7 +22,7 @@ export const AllTones: Story = {
     <Card padding={4}>
       <VStack gap={4}>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             fontSize 1
           </Text>
           <Flex gap={2} flexWrap="wrap">
@@ -34,7 +34,7 @@ export const AllTones: Story = {
           </Flex>
         </VStack>
         <VStack gap={2}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             fontSize 0 (menu badges)
           </Text>
           <Flex gap={2} flexWrap="wrap">

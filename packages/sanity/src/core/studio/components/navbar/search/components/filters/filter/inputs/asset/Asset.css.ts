@@ -1,5 +1,5 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const containerBox = style({
+export const containerBox = css({
   width: 'min(calc(100vw - 40px), 320px)',
 })

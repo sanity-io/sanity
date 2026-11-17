@@ -1,5 +1,6 @@
-import {rem, Text, type Theme} from '@sanity/ui'
+import {rem, type Theme} from '@sanity/ui'
 import {css, styled} from 'styled-components'
+import {Text} from 'ui5'
 
 export const RootSpan = styled.span`
   display: inline-flex;
@@ -65,13 +66,6 @@ export const TextSpan = styled(Text).attrs({forwardedAs: 'span'})(({theme}: {the
     padding-left: 0.5em;
     padding-right: calc(0.5em - 2px);
     min-width: 0;
-
-    & > span {
-      display: block;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      overflow: clip;
-    }
+    color: var(--card-fg-color);
   `
 })

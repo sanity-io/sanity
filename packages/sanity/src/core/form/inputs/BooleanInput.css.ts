@@ -1,5 +1,5 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const centerAlignedBox = style({
+export const centerAlignedBox = css({
   alignSelf: 'center',
 })

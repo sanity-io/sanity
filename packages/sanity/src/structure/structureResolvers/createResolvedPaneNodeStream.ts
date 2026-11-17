@@ -1,6 +1,14 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {dequal as isEqual} from 'dequal/lite'
-import {concat, NEVER, type Observable, of as observableOf} from 'rxjs'
+import {
+  combineLatest,
+  concat,
+  defer,
+  type MonoTypeOperatorFunction,
+  NEVER,
+  type Observable,
+  of as observableOf,
+} from 'rxjs'
 import {distinctUntilChanged, map, pairwise, scan, startWith, switchMap} from 'rxjs/operators'
 
 import {type StructureContext} from '../structureBuilder/types'
@@ -21,13 +29,14 @@ import {
 } from './createPaneResolver'
 import {memoBind} from './memoBind'
 import {PaneResolutionError} from './PaneResolutionError'
+import {getDocumentIdFromPaneId, isFallbackEditorPaneId, isResolvingPaneId} from './resolvingPane'
 
 /**
  * the fallback editor child that is implicitly inserted into the structure tree
- * if the id starts with `__edit__`
+ * if the id starts with `__edit__` or `__resolve__`
  */
 const fallbackEditorChild: PaneNodeResolver = (nodeId, context): DocumentPaneNode => {
-  const id = nodeId.replace(/^__edit__/, '')
+  const id = getDocumentIdFromPaneId(nodeId)
   const {
     params,
     payload,
@@ -84,6 +93,7 @@ const hashResolvedPaneMeta = (meta: ResolvedPaneMeta): string => {
     siblingIndex: meta.siblingIndex,
     path: meta.path,
     paneNode: meta.type === 'resolvedMeta' ? assignId(meta.paneNode) : null,
+    handoffKey: meta.handoffKey ?? null,
   }
 
   return `metaHash(${JSON.stringify(normalized)})`
@@ -153,6 +163,8 @@ export type ResolvedPaneMeta = {
   flatIndex: number
   routerPaneSibling: RouterPaneSibling
   path: string[]
+  /** Stable while the resolving document moves to its resolved position, so React keeps the pane mounted. */
+  handoffKey?: string
 } & ({type: 'loading'; paneNode: null} | {type: 'resolvedMeta'; paneNode: PaneNode})
 
 interface ResolvePaneTreeOptions {
@@ -162,6 +174,23 @@ interface ResolvePaneTreeOptions {
   parent: PaneNode | null
   path: string[]
   structureContext: StructureContext
+}
+
+function createLoadingPanes(
+  flattenedRouterPanes: FlattenedRouterPane[],
+  parentPath: string[],
+): ResolvedPaneMeta[] {
+  return flattenedRouterPanes.map((i, index) => ({
+    type: 'loading',
+    path: [
+      ...parentPath,
+      ...flattenedRouterPanes
+        .slice(index)
+        .map((_, currentIndex) => `[${i.flatIndex + currentIndex}]`),
+    ],
+    paneNode: null,
+    ...i,
+  }))
 }
 
 /**
@@ -192,6 +221,40 @@ function resolvePaneTree({
   }
 
   try {
+    if (
+      next &&
+      next.groupIndex !== current.groupIndex &&
+      isResolvingPaneId(next.routerPaneSibling.id)
+    ) {
+      // the resolving document doesn't depend on this pane, which may be the slow one
+      const current$ = resolvePane(unresolvedPane, context, current.flatIndex).pipe(
+        map((paneNode): ResolvedPaneMeta => ({
+          type: 'resolvedMeta',
+          ...current,
+          paneNode,
+          path: context.path,
+        })),
+        startWith<ResolvedPaneMeta>({
+          type: 'loading',
+          ...current,
+          paneNode: null,
+          path: context.path,
+        }),
+      )
+      const rest$ = resolvePaneTree({
+        unresolvedPane: fallbackEditorChild,
+        flattenedRouterPanes: rest,
+        parent,
+        path: context.path,
+        resolvePane,
+        structureContext,
+      }).pipe(startWith(createLoadingPanes(rest, context.path)))
+
+      return combineLatest([current$, rest$]).pipe(
+        map(([currentPane, restPanes]) => [currentPane, ...restPanes]),
+      )
+    }
+
     return resolvePane(unresolvedPane, context, current.flatIndex).pipe(
       // this switch map receives a resolved pane
       switchMap((paneNode) => {
@@ -204,21 +267,7 @@ function resolvePaneTree({
         }
 
         // for the other unresolved panes, we can create "loading panes"
-        const loadingPanes = rest.map((i, restIndex) => {
-          const loadingPanePath = [
-            ...context.path,
-            ...rest.slice(restIndex).map((_, currentIndex) => `[${i.flatIndex + currentIndex}]`),
-          ]
-
-          const loadingPane: ResolvedPaneMeta = {
-            type: 'loading',
-            path: loadingPanePath,
-            paneNode: null,
-            ...i,
-          }
-
-          return loadingPane
-        })
+        const loadingPanes = createLoadingPanes(rest, context.path)
 
         if (!rest.length) {
           return observableOf([resolvedPaneMeta])
@@ -228,7 +277,8 @@ function resolvePaneTree({
 
         if (
           // the fallback editor case
-          next?.routerPaneSibling.id.startsWith('__edit__')
+          next &&
+          isFallbackEditorPaneId(next.routerPaneSibling.id)
         ) {
           nextStream = resolvePaneTree({
             unresolvedPane: fallbackEditorChild,
@@ -297,6 +347,93 @@ function resolvePaneTree({
 
     throw e
   }
+}
+
+// a list item can share the document's id; it's an ancestor, so the document is the last match
+function findCarriedGroupIndex(panes: ResolvedPaneMeta[], documentId: string): number {
+  const skippedGroups = new Set<number>()
+  const candidates: number[] = []
+
+  for (const pane of panes) {
+    if (getDocumentIdFromPaneId(pane.routerPaneSibling.id) !== documentId) continue
+    if (pane.type === 'resolvedMeta' && pane.paneNode.type !== 'document') {
+      skippedGroups.add(pane.groupIndex)
+    } else {
+      candidates.push(pane.groupIndex)
+    }
+  }
+
+  return candidates.findLast((groupIndex) => !skippedGroups.has(groupIndex)) ?? -1
+}
+
+function getResolvedPanePath(panes: ResolvedPaneMeta[], pane: ResolvedPaneMeta): string[] {
+  const lastSiblingIds: string[] = []
+  for (const other of panes) {
+    if (other.groupIndex < pane.groupIndex) {
+      lastSiblingIds[other.groupIndex] = other.routerPaneSibling.id
+    }
+  }
+  return [...lastSiblingIds, pane.routerPaneSibling.id]
+}
+
+/**
+ * The resolved path loads from the root again, so the document's new slot starts
+ * as a loading pane. Fill it with the already-open document until the real one resolves.
+ */
+function carryOptimisticDocument(): MonoTypeOperatorFunction<ResolvedPaneMeta[]> {
+  return (source) =>
+    defer(() => {
+      let carried: {documentId: string; paneNode: PaneNode} | null = null
+
+      return source.pipe(
+        map((panes) => {
+          const resolvingPane = panes.find(
+            (pane) =>
+              pane.type === 'resolvedMeta' &&
+              pane.paneNode.type === 'document' &&
+              isResolvingPaneId(pane.routerPaneSibling.id),
+          )
+          if (resolvingPane?.type === 'resolvedMeta') {
+            carried = {
+              documentId: getDocumentIdFromPaneId(resolvingPane.routerPaneSibling.id),
+              paneNode: resolvingPane.paneNode,
+            }
+          }
+
+          const current = carried
+          if (!current) return panes
+
+          const groupIndex = findCarriedGroupIndex(panes, current.documentId)
+          if (groupIndex === -1) {
+            carried = null
+            return panes
+          }
+
+          return panes.map((pane): ResolvedPaneMeta => {
+            if (
+              pane.groupIndex !== groupIndex ||
+              getDocumentIdFromPaneId(pane.routerPaneSibling.id) !== current.documentId
+            ) {
+              return pane
+            }
+
+            const handoffKey = `handoff-${current.documentId}-${pane.siblingIndex}`
+            if (pane.type === 'loading') {
+              return {
+                ...pane,
+                type: 'resolvedMeta',
+                paneNode: current.paneNode,
+                path: getResolvedPanePath(panes, pane),
+                handoffKey,
+              }
+            }
+
+            current.paneNode = pane.paneNode
+            return {...pane, handoffKey}
+          })
+        }),
+      )
+    })
 }
 
 /**
@@ -431,6 +568,7 @@ export function createResolvedPaneNodeStream({
         }),
       [] as ResolvedPaneMeta[],
     ),
+    carryOptimisticDocument(),
     // this prevents duplicate emissions
     distinctUntilChanged((prev, next) => {
       if (prev.length !== next.length) return false

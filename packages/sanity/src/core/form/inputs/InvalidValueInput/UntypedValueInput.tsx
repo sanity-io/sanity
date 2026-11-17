@@ -95,7 +95,7 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
         </>
       }
     >
-      <Details open={isDev} title={t('inputs.untyped-value.details.title')}>
+      <Details open={isDev} title={t('inputs.untyped-value.details.title')} tone="caution">
         <VStack gap={3}>
           <Text as="p" muted size={1} trim={true} tone="caution">
             <Translate t={t} i18nKey="inputs.untyped-value.description" />

@@ -1,7 +1,10 @@
+import {PortalProvider} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import {type ReactElement} from 'react'
+import {type PerspectiveContextValue, type ReleaseDocument, type SystemVariant} from 'sanity'
 import {PerspectiveContext} from 'sanity/_singletons'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {test as baseTest, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {perspectiveContextValueMock} from '../../../../__mocks__/usePerspective.mock'
@@ -38,6 +41,10 @@ vi.mock('../header/DocumentPanelSubHeader', () => ({
   DocumentPanelSubHeader: () => null,
 }))
 
+vi.mock('../../useDocumentTitle', () => ({
+  useDocumentTitle: () => ({title: 'Test document'}),
+}))
+
 const portalBoundaryCapture = vi.hoisted(() => ({current: null as HTMLElement | null}))
 
 vi.mock('../documentViews/FormView', async () => {
@@ -69,13 +76,33 @@ vi.mock('../documentViews/FormView', async () => {
   }
 })
 
-vi.mock('../../documentInspector/DocumentInspectorPanel', () => ({
-  DocumentInspectorPanel: () => <aside data-ui="DocumentInspectorPanel">Inspector</aside>,
-}))
+// A portal element named by a provider above the document panel.
+const ANCESTOR_PORTAL_ELEMENT = vi.hoisted(() => 'test-ancestor-portal')
+
+// Portals by name, as `ConfirmDeleteDialog` in the document group inspector does.
+vi.mock('../../documentInspector/DocumentInspectorPanel', async () => {
+  const {Portal} = await import('@sanity/ui')
+  const {DOCUMENT_PANEL_PORTAL_ELEMENT} = await import('../../../../constants')
+
+  return {
+    DocumentInspectorPanel: () => (
+      <aside data-ui="DocumentInspectorPanel">
+        Inspector
+        <Portal __unstable_name={DOCUMENT_PANEL_PORTAL_ELEMENT}>
+          <div data-testid="inspector-dialog">Inspector dialog</div>
+        </Portal>
+        <Portal __unstable_name={ANCESTOR_PORTAL_ELEMENT}>
+          <div data-testid="inspector-ancestor-portal-content">Ancestor portal content</div>
+        </Portal>
+      </aside>
+    ),
+  }
+})
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   useArchivedReleases: vi.fn(() => ({data: []})),
+  useDocumentVersions: vi.fn(() => ({data: [], versions: [], loading: false})),
   useFilteredReleases: vi.fn(() => ({currentReleases: [], notCurrentReleases: []})),
   usePausedScheduledDraft: vi.fn(() => ({isPaused: false})),
 }))
@@ -121,10 +148,10 @@ function renderDocumentPanel() {
   )
 }
 
-async function renderPanel() {
+async function renderPanel(ui: ReactElement = renderDocumentPanel()) {
   mockUseDocumentPane.mockReturnValue(documentPaneValue())
   const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
-  return render(renderDocumentPanel(), {wrapper})
+  return render(ui, {wrapper})
 }
 
 describe('DocumentPanel form persistence', () => {
@@ -186,6 +213,63 @@ describe('DocumentPanel portal boundary', () => {
   })
 })
 
+const inspectorPortalTest = baseTest
+  .extend('features', () => splitPanesFeatures)
+  .extend('renderPanelWithFeatures', ({features}) => {
+    mockUseStructureTool.mockReturnValue({features} as ReturnType<typeof useStructureTool>)
+    return renderPanel
+  })
+
+describe('DocumentPanel inspector portal', () => {
+  inspectorPortalTest(
+    'renders dialogs portaled from an inspector into the document panel portal',
+    async ({renderPanelWithFeatures}) => {
+      await renderPanelWithFeatures()
+
+      expect(screen.getByTestId('document-panel-portal')).toContainElement(
+        screen.getByTestId('inspector-dialog'),
+      )
+    },
+  )
+
+  inspectorPortalTest(
+    'keeps portal elements named above the document panel reachable from an inspector',
+    async ({renderPanelWithFeatures, onTestFinished}) => {
+      const ancestorPortalElement = document.createElement('div')
+      document.body.append(ancestorPortalElement)
+      onTestFinished(() => ancestorPortalElement.remove())
+
+      await renderPanelWithFeatures(
+        <PortalProvider __unstable_elements={{[ANCESTOR_PORTAL_ELEMENT]: ancestorPortalElement}}>
+          {renderDocumentPanel()}
+        </PortalProvider>,
+      )
+
+      expect(ancestorPortalElement).toContainElement(
+        screen.getByTestId('inspector-ancestor-portal-content'),
+      )
+      expect(screen.getByTestId('document-panel-portal')).toContainElement(
+        screen.getByTestId('inspector-dialog'),
+      )
+    },
+  )
+
+  describe('in a collapsed layout', () => {
+    inspectorPortalTest.override('features', () => collapsedLayoutFeatures)
+
+    inspectorPortalTest(
+      'renders dialogs portaled from an inspector outside the hidden form view when the inspector takes over a collapsed layout',
+      async ({renderPanelWithFeatures}) => {
+        await renderPanelWithFeatures()
+
+        const inspectorDialog = screen.getByTestId('inspector-dialog')
+        expect(screen.getByTestId('document-panel-form-view')).not.toContainElement(inspectorDialog)
+        expect(inspectorDialog).toBeVisible()
+      },
+    )
+  })
+})
+
 describe('DocumentPanel banners', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -229,5 +313,120 @@ describe('DocumentPanel banners', () => {
 
     expect(screen.getByTestId('choose-new-document-destination-banner')).toBeInTheDocument()
     expect(screen.queryByTestId('deleted-document-banner')).toBeNull()
+  })
+})
+
+const loyalVariant: SystemVariant = {
+  _id: '_.variants.loyal',
+  _type: 'system.variant',
+  _createdAt: '2026-01-01T00:00:00Z',
+  _updatedAt: '2026-01-01T00:00:00Z',
+  _rev: 'rev-loyal',
+  conditions: {audience: 'loyal'},
+  priority: 0,
+  metadata: {title: 'Loyal'},
+}
+
+const scheduledDraftRelease: ReleaseDocument = {
+  _id: '_.releases.rScheduled',
+  _type: 'system.release',
+  _rev: 'rev-scheduled',
+  _createdAt: '2026-01-01T00:00:00Z',
+  _updatedAt: '2026-01-01T00:00:00Z',
+  name: 'rScheduled',
+  state: 'scheduled',
+  publishAt: '2026-12-01T10:00:00Z',
+  metadata: {
+    title: 'Scheduled publish',
+    releaseType: 'scheduled',
+    intendedPublishAt: '2026-12-01T10:00:00Z',
+    cardinality: 'one',
+  },
+}
+
+describe('DocumentPanel scheduled draft banners', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockUseStructureTool.mockReturnValue({
+      features: splitPanesFeatures,
+    } as ReturnType<typeof useStructureTool>)
+  })
+
+  function renderInPerspective(perspective: Partial<PerspectiveContextValue>) {
+    return renderBannersIn({...perspectiveContextValueMock, ...perspective})
+  }
+
+  async function renderBannersIn(perspective: PerspectiveContextValue) {
+    const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
+    return render(
+      <PerspectiveContext.Provider value={perspective}>
+        {renderDocumentPanel()}
+      </PerspectiveContext.Provider>,
+      {wrapper},
+    )
+  }
+
+  function versionPaneValue(version: {_id: string; _system: object}, variant?: SystemVariant) {
+    const document = {...version, _type: 'simpleBlock', _createdAt: '2026-01-01T00:00:00Z'}
+    return {
+      ...documentPaneValue(),
+      displayed: document,
+      value: document,
+      editState: {ready: true, draft: null, published: null, version: document},
+      targetDocumentState: {
+        status: 'ready',
+        targetDocument: version,
+        scopeId: version._id.split('.')[1],
+        variant,
+        siblings: {published: undefined, draft: undefined, version},
+      },
+    } as unknown as ReturnType<typeof useDocumentPane>
+  }
+
+  const scheduledDraftPerspective: Partial<PerspectiveContextValue> = {
+    selectedPerspective: scheduledDraftRelease,
+    selectedPerspectiveName: 'rScheduled',
+    selectedReleaseId: 'rScheduled',
+    perspectiveStack: ['rScheduled', 'drafts'],
+    bundle: 'rScheduled',
+  }
+
+  it('shows the scheduled banner for the scheduled version of the base document', async () => {
+    mockUseDocumentPane.mockReturnValue(
+      versionPaneValue({
+        _id: 'versions.rScheduled.doc-1',
+        _system: {bundleId: 'rScheduled', group: {_ref: 'doc-1', _weak: true}},
+      }),
+    )
+
+    await renderInPerspective(scheduledDraftPerspective)
+
+    expect(screen.getByTestId('scheduled-release-banner')).toBeInTheDocument()
+  })
+
+  it('shows the scheduled banner for the scheduled version of a variant', async () => {
+    mockUseDocumentPane.mockReturnValue(
+      versionPaneValue(
+        {
+          _id: 'versions.scope-loyal.doc-1',
+          _system: {
+            bundleId: 'rScheduled',
+            scopeId: 'scope-loyal',
+            group: {_ref: 'doc-1', _weak: true},
+            release: {_ref: scheduledDraftRelease._id, _weak: true},
+            variants: [{_ref: loyalVariant._id, _key: 'loyal'}],
+          },
+        },
+        loyalVariant,
+      ),
+    )
+
+    await renderInPerspective({
+      ...scheduledDraftPerspective,
+      selectedVariantNames: ['loyal'],
+      selectedVariants: [loyalVariant],
+    })
+
+    expect(screen.getByTestId('scheduled-release-banner')).toBeInTheDocument()
   })
 })

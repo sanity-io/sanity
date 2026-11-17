@@ -9,7 +9,6 @@ import {
   SourceProvider,
   useI18nText,
   useSchema,
-  useShallowUnique,
   useSource,
   useTranslation,
 } from 'sanity'
@@ -189,7 +188,7 @@ export const PaneContainer = memo(function PaneContainer(
     suppressRestoreDefaultMenuItems,
   } = pane
   const {defaultOrdering = EMPTY_ARRAY, filter} = options
-  const params = useShallowUnique(options.params || EMPTY_RECORD)
+  const params = options.params || EMPTY_RECORD
   const sourceName = pane.source
   const typeName = useMemo(() => {
     const staticTypes = findStaticTypesInFilter(filter, params)

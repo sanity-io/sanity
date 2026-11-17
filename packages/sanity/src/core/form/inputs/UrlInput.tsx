@@ -18,8 +18,8 @@ export type UrlInputProps = StringInputProps
 export function UrlInput(props: UrlInputProps) {
   const {schemaType, validationError, elementProps} = props
 
-  const uriRule = getValidationRule(schemaType, 'uri')
-  const inputType = uriRule?.constraint?.options?.allowRelative ? 'text' : 'url'
+  const uriOptions = getValidationRule(schemaType, 'uri')?.constraint?.options
+  const inputType = uriOptions?.allowRelative || uriOptions?.relativeOnly ? 'text' : 'url'
   return (
     <TextInput
       type={inputType}

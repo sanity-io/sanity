@@ -20,6 +20,8 @@ type FireAndForgetTopic = {[K in EventTopic]: [ReplyOf<K>] extends [never] ? K :
 export interface MessageBusHostStub {
   /** Writes a state topic to every connection, including the ones that open later. */
   publish: <K extends StateTopic>(topic: K, value: ValueOf<K>) => void
+  /** The open connections, as the host sees them, in the order they joined. */
+  connections: () => MessageBusClient[]
   /** Returns a live list of the payloads emitted on a fire-and-forget event topic. */
   capture: <K extends FireAndForgetTopic>(topic: K) => PayloadOf<K>[]
   /** Answers an event topic with `message.reply(...)`. A throw here only rejects the emitter. */
@@ -74,5 +76,5 @@ export function stubMessageBusHost(): MessageBusHostStub {
     clients.forEach(write)
   }
 
-  return {publish, capture, respond}
+  return {publish, capture, respond, connections: () => [...clients]}
 }

@@ -758,6 +758,24 @@ export default defineType({
       title: 'Deeply nested body',
       type: 'deepNested.body',
     }),
+    defineField({
+      name: 'gridOfObjects',
+      type: 'array',
+      options: {layout: 'grid'},
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'objectInGrid',
+          fields: [
+            defineField({name: 'title', type: 'internationalizedArrayString'}),
+            defineField({
+              name: 'description',
+              type: 'internationalizedArrayString',
+            }),
+          ],
+        }),
+      ],
+    }),
   ],
   preview: {
     select: {

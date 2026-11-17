@@ -1,9 +1,8 @@
 import {type CurrentUser} from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
-import {isValidElement, type MouseEvent, useCallback, useMemo} from 'react'
-import {isValidElementType} from 'react-is'
+import {Card} from '@sanity/ui'
+import {type MouseEvent, useCallback, useMemo} from 'react'
 import {useIntentLink} from 'sanity/router'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon, type IconProps} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
@@ -45,19 +44,32 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
   )
 
   const {title} = useI18nText(option)
-  const {icon: Icon} = option
+  const cardIcon = option.icon
 
   const cardContent = (
     <Flex alignItems="center" gap={3}>
-      {Icon && (
+      {cardIcon && (
         <Box>
-          <Text size={preview === 'inline' ? 1 : undefined}>
-            {isValidElement(Icon) && Icon}
-            {isValidElementType(Icon) && <Icon />}
-          </Text>
+          <Icon
+            icon={cardIcon as IconProps['icon']}
+            size={preview === 'inline' ? 1 : 2}
+            style={{
+              margin: preview === 'inline' ? '-0.375rem' : '-0.4375rem',
+              ...(!option.hasPermission && {
+                color: 'var(--card-fg-color)',
+              }),
+            }}
+          />
         </Box>
       )}
-      <Text size={preview === 'inline' ? 1 : undefined}>{title}</Text>
+      <Text
+        size={preview === 'inline' ? 1 : undefined}
+        as="div"
+        trim={true}
+        style={option.hasPermission ? {} : {color: 'var(--card-fg-color)'}}
+      >
+        {title}
+      </Text>
     </Flex>
   )
 

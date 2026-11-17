@@ -19,6 +19,9 @@ export const validationLocaleStrings = {
   'number.maximum-precision': 'Max precision is {{limit}}',
   'number.minimum': 'Must be greater than or equal to {{minNumber}}',
   'number.non-integer': 'Must be an integer',
+  'object.asset-not-accepted': 'File type "{{mimeType}}" is not accepted',
+  'object.asset-not-accepted_file': 'File type "{{mimeType}}" is not accepted',
+  'object.asset-not-accepted_image': 'Image type "{{mimeType}}" is not accepted',
   'object.asset-required': 'Asset is required',
   'object.asset-required_file': 'File is required',
   'object.asset-required_image': 'Image is required',
@@ -26,6 +29,8 @@ export const validationLocaleStrings = {
   'object.not-media-library-asset': 'Must be a reference to a Media Library asset',
   'object.not-reference': 'Must be a reference to a document',
   'object.reference-not-published': 'Referenced document must be published',
+  'object.reference-target-type-mismatch':
+    'Referenced document has type "{{actualType}}"; expected one of: {{allowedTypes}}',
   'slug.missing-current': 'Slug must have a value',
   'slug.not-object': 'Slug must be an object',
   'slug.not-unique': 'Slug is already in use',

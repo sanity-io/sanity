@@ -1,4 +1,3 @@
-import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useState} from 'react'
 import {
@@ -15,6 +14,7 @@ import {
   useVersionOperations,
   VersionInlineBadge,
 } from 'sanity'
+import {Text, type TextProps} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
@@ -113,7 +113,7 @@ export function DocumentNotInReleaseBanner({
     <Banner
       tone={tone}
       content={
-        <Text size={1}>
+        <Text size={1} as="div" trim={true} tone={tone as TextProps['tone']}>
           <Translate
             i18nKey="banners.release.not-in-release"
             t={t}

@@ -3,11 +3,22 @@ import {useCallback} from 'react'
 
 const RELEASE_FORM_STORAGE_KEY = 'studio.release-form.recovery'
 
-interface ReleaseFormDraft {
+export interface ReleaseFormDraft {
   title?: string
   description?: string
   releaseType?: ReleaseType
   intendedPublishAt?: string
+  fields?: Record<string, unknown>
+}
+
+export function hasStoredReleaseData(stored: ReleaseFormDraft): boolean {
+  return (
+    stored.title !== undefined ||
+    stored.description !== undefined ||
+    stored.releaseType !== undefined ||
+    stored.intendedPublishAt !== undefined ||
+    Object.keys(stored.fields ?? {}).length > 0
+  )
 }
 
 /**

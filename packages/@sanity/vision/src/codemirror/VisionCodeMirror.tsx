@@ -6,8 +6,8 @@ import CodeMirror, {
   type ReactCodeMirrorProps,
   type ReactCodeMirrorRef,
 } from '@uiw/react-codemirror'
-import {assignInlineVars} from '@vanilla-extract/dynamic'
 import {
+  type CSSProperties,
   type ReactNode,
   useCallback,
   useEffect,
@@ -19,13 +19,13 @@ import {
 
 import {useCodemirrorTheme} from './useCodemirrorTheme'
 import {getVisibleColumns} from './visibleColumns'
-import {
-  contentBorderRightWidthVar,
-  contentPaddingTopVar,
-  editorRoot,
-  editorRootAutoHeight,
-  linePaddingLeftVar,
-} from './VisionCodeMirror.css'
+import * as styles from './VisionCodeMirror.module.css'
+
+interface EditorRootStyle extends CSSProperties {
+  '--vision-editor-line-padding-left': string
+  '--vision-editor-content-border-right-width': string
+  '--vision-editor-content-padding-top': string
+}
 
 function EditorRoot({
   autoHeight,
@@ -37,19 +37,22 @@ function EditorRoot({
   children: ReactNode
 }) {
   const {sanity} = useTheme()
+  const style: EditorRootStyle = {
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+    '--vision-editor-line-padding-left': `${rem(sanity.space[3])}`,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+    '--vision-editor-content-border-right-width': `${rem(sanity.space[4])}`,
+    // The tall top padding makes room for the label floating over a pane-filling editor
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+    '--vision-editor-content-padding-top': `${rem(sanity.space[underHeader ? 3 : 5])}`,
+  }
 
   return (
     <div
-      className={autoHeight ? `${editorRoot} ${editorRootAutoHeight}` : editorRoot}
-      style={assignInlineVars({
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        [linePaddingLeftVar]: `${rem(sanity.space[3])}`,
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        [contentBorderRightWidthVar]: `${rem(sanity.space[4])}`,
-        // The tall top padding makes room for the label floating over a pane-filling editor
-        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        [contentPaddingTopVar]: `${rem(sanity.space[underHeader ? 3 : 5])}`,
-      })}
+      className={
+        autoHeight ? `${styles.editorRoot} ${styles.editorRootAutoHeight}` : styles.editorRoot
+      }
+      style={style}
     >
       {children}
     </div>

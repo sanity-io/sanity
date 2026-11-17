@@ -1,5 +1,6 @@
-import {Card, Stack, Text} from '@sanity/ui'
+import {Card, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Text} from 'ui5'
 
 import {ErrorBoundary} from '../ErrorBoundary'
 
@@ -22,7 +23,9 @@ const meta = {
     (Story) => (
       <Stack gap={3} padding={4} style={{maxWidth: 480}}>
         <Card border padding={3} radius={2}>
-          <Text size={1}>A healthy sibling, unaffected by the crash below.</Text>
+          <Text size={1} as="div" trim={true}>
+            A healthy sibling, unaffected by the crash below.
+          </Text>
         </Card>
         <Card border padding={3} radius={2}>
           <Story />

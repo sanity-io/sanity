@@ -242,6 +242,79 @@ describe('RequestAccessForm', () => {
     expect(screen.queryByRole('form')).not.toBeInTheDocument()
   })
 
+  it.each([
+    {
+      state: 'already-member',
+      message: /already a member, but it may not have access.*contact an administrator/i,
+    },
+    {
+      state: 'recently-declined',
+      message: /request to access this content has been declined/i,
+    },
+    {
+      state: 'requests-disabled',
+      message: /does not accept access requests.*contact an administrator/i,
+    },
+    {
+      state: 'temporarily-unavailable',
+      message: /couldn’t check whether access can be requested.*try again later/i,
+    },
+  ] as const)('shows no form for the $state state', async ({state, message}) => {
+    const client = createClientStub({status: () => Promise.resolve({state})})
+    await renderForm({client})
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(message)
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+  })
+
+  it('uses the server pending state instead of local history fallback', async () => {
+    const client = createClientStub({status: () => Promise.resolve({state: 'pending'})})
+    await renderForm({client})
+
+    expect(
+      await screen.findByText('Your request to access this content is pending approval.'),
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+  })
+
+  it('shows conditional SSO role guidance over pending history without a redirect URL', async () => {
+    const client = createClientStub({
+      status: () => Promise.resolve({state: 'saml-roles-managed'}),
+      list: () => Promise.resolve([createAccessRequest()]),
+    })
+    await renderForm({
+      client,
+      currentUser: {email: 'ada@example.com', provider: 'google'},
+    })
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(/Signing in through SSO again may reapply mapped roles/)
+    expect(alert).not.toHaveTextContent(/SSO \(Google\)/)
+    expect(alert).toHaveTextContent(/does not guarantee access/)
+    expect(alert).toHaveTextContent(/contact your organization’s administrator/)
+    expect(alert).not.toHaveTextContent(/sign out, then sign in again/i)
+    expect(screen.queryByText(/pending approval/)).not.toBeInTheDocument()
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', {name: 'Sign in with SSO'})).not.toBeInTheDocument()
+  })
+
+  it('shows the SSO sign-in action for managed roles when a redirect URL exists', async () => {
+    const redirectUrl = 'https://www.sanity.io/login/sso/confirm?provider=acme'
+    const client = createClientStub({
+      status: () => Promise.resolve({state: 'saml-roles-managed', redirectUrl}),
+    })
+    await renderForm({client})
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(/Signing in through SSO again may reapply mapped roles/)
+    expect(alert).toHaveTextContent(/does not guarantee access/)
+    expect(screen.getByRole('link', {name: 'Sign in with SSO'})).toHaveAttribute(
+      'href',
+      redirectUrl,
+    )
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+  })
+
   it('keeps the form when the server says eligible', async () => {
     const client = createClientStub({status: () => Promise.resolve({state: 'eligible'})})
     await renderForm({client})
@@ -249,11 +322,56 @@ describe('RequestAccessForm', () => {
     expect(await screen.findByRole('form', {name: 'Request access'})).toBeInTheDocument()
   })
 
-  it('keeps the form when the state fetch fails, leaving the submit gate as the backstop', async () => {
+  it('fails closed without a form when the state fetch fails', async () => {
     const client = createClientStub({status: () => Promise.reject(new Error('offline'))})
     await renderForm({client})
 
-    expect(await screen.findByRole('form', {name: 'Request access'})).toBeInTheDocument()
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /couldn’t check whether access can be requested/i,
+    )
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+  })
+
+  it.each([
+    {given: 'a null response', response: null},
+    {given: 'an unknown wire state', response: {state: 'future-state'}},
+  ])('fails closed without a form for $given', async ({response}) => {
+    const client = createClientStub({status: () => Promise.resolve(response)})
+    await renderForm({client})
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /couldn’t check whether access can be requested/i,
+    )
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+  })
+
+  it('refetches an unavailable state and only shows the form after an eligible response', async () => {
+    let statusCalls = 0
+    const client = createClientStub({
+      status: () =>
+        Promise.resolve(
+          ++statusCalls === 1 ? {state: 'temporarily-unavailable'} : {state: 'eligible'},
+        ),
+    })
+    await renderForm({client})
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /couldn’t check whether access can be requested/i,
+    )
+    expect(screen.queryByRole('form')).not.toBeInTheDocument()
+
+    const previousActEnvironment = globalThis.IS_REACT_ACT_ENVIRONMENT
+    globalThis.IS_REACT_ACT_ENVIRONMENT = true
+    try {
+      await act(async () => {
+        await userEvent.click(screen.getByRole('button', {name: 'Try again'}))
+      })
+      expect(await screen.findByRole('form', {name: 'Request access'})).toBeInTheDocument()
+    } finally {
+      globalThis.IS_REACT_ACT_ENVIRONMENT = previousActEnvironment
+    }
+
+    expect(statusCalls).toBe(2)
   })
 
   it('renders the sent state and reports the submission after a successful submit', async () => {

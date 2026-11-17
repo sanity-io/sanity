@@ -1,8 +1,9 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useMemo} from 'react'
 import {
   getPreviewValueWithFallback,
+  getPublishedId,
   PreviewCard,
   SanityDefaultPreview,
   Translate,
@@ -10,7 +11,7 @@ import {
   useTranslation,
 } from 'sanity'
 import {StateLink} from 'sanity/router'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {presentationLocaleNamespace} from '../i18n'
 import {
@@ -20,6 +21,7 @@ import {
   type PresentationStateParams,
   type StructureDocumentPaneParams,
 } from '../types'
+import {DocumentBreadcrumb} from './DocumentBreadcrumb'
 import {DocumentListPane} from './DocumentListPane'
 import {DocumentPanel} from './DocumentPanel'
 import usePreviewState from './usePreviewState'
@@ -80,7 +82,7 @@ export function ContentEditor(props: {
         schemaType={schemaType}
         status={
           <Card padding={1} radius={2} shadow={1}>
-            <Text muted size={0} weight="medium">
+            <Text muted size={0} weight="medium" as="div" trim={true}>
               {t('main-document.label')}
             </Text>
           </Card>
@@ -89,17 +91,51 @@ export function ContentEditor(props: {
     )
   }, [mainDocumentState, schemaType, t, previewState])
 
+  const mainDocumentLink = (
+    <PreviewCard
+      __unstable_focusRing
+      as={StateLink}
+      state={mainDocumentLinkState}
+      data-as="a"
+      data-testid="presentation-main-document-link"
+      radius={2}
+      sizing="border"
+      tone="inherit"
+    >
+      {preview}
+    </PreviewCard>
+  )
+
   if (documentId && documentType) {
+    const mainDocument = mainDocumentState?.document
+    const isOtherThanMainDocument =
+      mainDocument !== undefined && getPublishedId(documentId) !== getPublishedId(mainDocument._id)
+
     return (
-      <DocumentPanel
-        documentId={documentId}
-        documentType={documentType}
-        onEditReference={onEditReference}
-        onFocusPath={onFocusPath}
-        onStructureParams={onStructureParams}
-        searchParams={searchParams}
-        structureParams={structureParams}
-      />
+      <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
+        <Card padding={3} borderBottom>
+          <DocumentBreadcrumb
+            documentId={documentId}
+            documentType={documentType}
+            mainDocument={
+              mainDocument && isOtherThanMainDocument
+                ? {id: mainDocument._id, type: mainDocument._type, linkState: mainDocumentLinkState}
+                : undefined
+            }
+          />
+        </Card>
+        <Flex flexDirection="column" flexBasis="0%" flexGrow={1} minHeight="0">
+          <DocumentPanel
+            documentId={documentId}
+            documentType={documentType}
+            onEditReference={onEditReference}
+            onFocusPath={onFocusPath}
+            onStructureParams={onStructureParams}
+            searchParams={searchParams}
+            structureParams={structureParams}
+          />
+        </Flex>
+      </Flex>
     )
   }
 
@@ -108,27 +144,25 @@ export function ContentEditor(props: {
       {mainDocumentState && (
         <Card padding={3} tone={mainDocumentState.document ? 'inherit' : 'caution'}>
           {mainDocumentState.document ? (
-            <PreviewCard
-              __unstable_focusRing
-              as={StateLink}
-              state={mainDocumentLinkState}
-              data-as="a"
-              radius={2}
-              sizing="border"
-              tone="inherit"
-            >
-              {preview}
-            </PreviewCard>
+            mainDocumentLink
           ) : (
             <Card padding={2} radius={2} tone="inherit">
               <Flex gap={3}>
                 <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-                  <Text size={1}>
-                    <WarningOutlineIcon />
-                  </Text>
+                  <Icon
+                    size={1}
+                    icon={WarningOutlineIcon}
+                    tone={mainDocumentState.document ? undefined : 'caution'}
+                    style={{margin: '-0.375rem'}}
+                  />
                 </Box>
                 <Box flexBasis="0%" flexGrow={1}>
-                  <Text size={1}>
+                  <Text
+                    size={1}
+                    as="div"
+                    trim={true}
+                    tone={mainDocumentState.document ? undefined : 'caution'}
+                  >
                     <Translate
                       t={t}
                       i18nKey="main-document.missing.text"

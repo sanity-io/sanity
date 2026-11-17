@@ -8,6 +8,7 @@ import {variantAlphaAudience, variantNorwegianMarket} from '../../../__fixtures_
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {VARIANTS_INTENT} from '../../../plugin'
 import {type SystemVariant} from '../../../types'
+import {DEFAULT_VARIANT_TYPE_KEY} from '../../../util/variantType'
 import {CreateVariantDialog} from '../CreateVariantDialog'
 
 const variantOperationsMock = vi.hoisted(() => ({
@@ -53,13 +54,14 @@ describe('CreateVariantDialog', () => {
     variantOperationsMock.createVariant.mockResolvedValue(undefined)
   })
 
-  const renderDialog = async () => {
+  const renderDialog = async (type?: string) => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const result = render(<CreateVariantDialog onCancel={onCancel} onSubmit={onSubmit} />, {
-      wrapper,
-    })
+    const result = render(
+      <CreateVariantDialog onCancel={onCancel} onSubmit={onSubmit} type={type} />,
+      {wrapper},
+    )
     await screen.findByRole('dialog', {name: 'Create variant definition'})
     return result
   }
@@ -322,11 +324,11 @@ describe('CreateVariantDialog', () => {
     expect(screen.getByTestId('variant-form-title-error')).toHaveTextContent('Title is required')
   })
 
-  it('renders the priority field with a help tooltip', async () => {
+  it('renders the priority field with its help text', async () => {
     await renderDialog()
 
     expect(screen.getByTestId('variant-form-priority')).toHaveValue(0)
-    expect(screen.getByTestId('variant-form-priority-help')).toBeInTheDocument()
+    expect(screen.getByTestId('variant-form-priority-description')).toBeVisible()
   })
 
   it('rejects an empty priority value', async () => {
@@ -384,7 +386,28 @@ describe('CreateVariantDialog', () => {
     const createdVariant = variantOperationsMock.createVariant.mock.calls[0]![0]
 
     expect(onCancel).not.toHaveBeenCalled()
-    expect(onSubmit).toHaveBeenCalledWith(createdVariant._id)
+    expect(onSubmit).toHaveBeenCalledWith(createdVariant._id, DEFAULT_VARIANT_TYPE_KEY)
+    expect(createdVariant.metadata.type).toBe(DEFAULT_VARIANT_TYPE_KEY)
+  })
+
+  it('creates a variant of the type passed to the dialog', async () => {
+    const user = userEvent.setup()
+
+    await renderDialog('language')
+
+    await user.type(screen.getByTestId('variant-form-title'), 'Spanish readers')
+    await user.type(screen.getByTestId('variant-form-condition-key'), 'locale')
+    await user.type(screen.getByTestId('variant-form-condition-value'), 'es')
+    await user.click(screen.getByTestId('submit-variant-button'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.createVariant).toHaveBeenCalledTimes(1)
+    })
+
+    const createdVariant = variantOperationsMock.createVariant.mock.calls[0]![0]
+
+    expect(createdVariant.metadata.type).toBe('language')
+    expect(onSubmit).toHaveBeenCalledWith(createdVariant._id, 'language')
   })
 
   // Real IntentLink: TestProvider only has /intent routes, not a variants tool — the crash path this change fixes.

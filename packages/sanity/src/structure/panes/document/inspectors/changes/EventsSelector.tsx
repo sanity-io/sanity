@@ -44,6 +44,7 @@ export function EventsSelector({showList}: {showList: boolean}) {
     loading,
     error,
     revision,
+    lastNonDeletedRevId,
     loadMoreEvents,
     findRangeForRevision,
     expandEvent,
@@ -100,8 +101,7 @@ export function EventsSelector({showList}: {showList: boolean}) {
                   events={events}
                   fetchEventChildren={expandEvent}
                   hasMoreEvents={Boolean(nextCursor)}
-                  // If we have a revision, we select it, otherwise we select the first event
-                  selectedEventId={revision?.revisionId || events[0]?.id}
+                  selectedEventId={revision?.revisionId || lastNonDeletedRevId || undefined}
                   onLoadMore={loadMoreEvents}
                   onSelect={selectRev}
                   listMaxHeight={`${listHeight}px`}

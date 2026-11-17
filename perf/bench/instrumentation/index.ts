@@ -9,11 +9,14 @@ import {
   type BenchCollector,
   type BenchEntries,
   type EventTimingSample,
+  type InteractionContentfulPaintSample,
   type LayoutShiftSample,
   type LoafSample,
   type MeasureSample,
+  type PaintedElementKind,
   type PaintSample,
   type ResourceSample,
+  type SoftNavigationSample,
 } from './types'
 
 /**
@@ -23,6 +26,8 @@ import {
  */
 const EVENT_DURATION_THRESHOLD = 16
 
+const PAINTED_ELEMENT_MAX_LENGTH = 120
+
 function install(): void {
   const events: EventTimingSample[] = []
   const loafs: LoafSample[] = []
@@ -30,6 +35,8 @@ function install(): void {
   const layoutShifts: LayoutShiftSample[] = []
   const measures: MeasureSample[] = []
   const resources: ResourceSample[] = []
+  const softNavigations: SoftNavigationSample[] = []
+  const largestPaintByInteraction = new Map<number, InteractionContentfulPaintSample>()
   let largestContentfulPaint: PaintSample | null = null
 
   function observe(
@@ -46,6 +53,10 @@ function install(): void {
     }
   }
 
+  function navigationIdOf(entry: PerformanceEntry): number {
+    return (entry as PerformanceEntry & {navigationId?: number}).navigationId ?? 0
+  }
+
   observe(
     'event',
     (entries) => {
@@ -58,6 +69,7 @@ function install(): void {
           processingStart: event.processingStart,
           processingEnd: event.processingEnd,
           duration: event.duration,
+          navigationId: navigationIdOf(event),
         })
       }
     },
@@ -125,6 +137,7 @@ function install(): void {
         value: shift.value,
         hadRecentInput: shift.hadRecentInput,
         sources: (shift.sources ?? []).map((source) => describeShiftedNode(source.node)),
+        navigationId: navigationIdOf(shift),
       })
     }
   })
@@ -148,8 +161,64 @@ function install(): void {
     }
   })
 
+  observe('soft-navigation', (entries) => {
+    for (const entry of entries) {
+      const softNavigation = entry as PerformanceEntry & {
+        navigationType: string
+        interactionId: number
+      }
+      softNavigations.push({
+        url: softNavigation.name,
+        navigationType: softNavigation.navigationType,
+        navigationId: navigationIdOf(softNavigation),
+        interactionId: softNavigation.interactionId,
+        startTime: softNavigation.startTime,
+        duration: softNavigation.duration,
+      })
+    }
+  })
+
+  // Capped because every keystroke emits a paint entry
+  function describePaintedElement(element: Element | null | undefined): string {
+    if (element == null) return '(detached)'
+    const tag = element.tagName.toLowerCase()
+    const testId = element.closest('[data-testid]')?.getAttribute('data-testid')
+    const description = testId ? `${tag} in [data-testid="${testId}"]` : tag
+    return description.slice(0, PAINTED_ELEMENT_MAX_LENGTH)
+  }
+
+  function classifyPaintedElement(element: Element | null | undefined): PaintedElementKind {
+    if (element?.closest('[data-testid^="document-panel-document-title"]')) return 'title'
+    if (element instanceof HTMLImageElement || element instanceof SVGImageElement) return 'image'
+    if (element?.closest('[data-testid^="field-"]')) return 'field'
+    return 'other'
+  }
+
+  // Chrome emits a candidate per larger paint; keep the largest per interaction
+  observe('interaction-contentful-paint', (entries) => {
+    for (const entry of entries) {
+      const paint = entry as PerformanceEntry & {
+        interactionId: number
+        largestContentfulPaint?: {size: number; element: Element | null}
+      }
+      const size = paint.largestContentfulPaint?.size ?? 0
+      const element = paint.largestContentfulPaint?.element
+      const kept = largestPaintByInteraction.get(paint.interactionId)
+      if (kept && kept.size >= size) continue
+      largestPaintByInteraction.set(paint.interactionId, {
+        interactionId: paint.interactionId,
+        navigationId: navigationIdOf(paint),
+        startTime: paint.startTime,
+        duration: paint.duration,
+        size,
+        element: describePaintedElement(element),
+        elementKind: classifyPaintedElement(element),
+      })
+    }
+  })
+
   const collector: BenchCollector = {
-    version: 1,
+    version: 2,
     take(): BenchEntries {
       const navigation = performance.getEntriesByType('navigation')[0] as
         | PerformanceNavigationTiming
@@ -169,7 +238,10 @@ function install(): void {
           : null,
         measures: measures.splice(0),
         resources: resources.splice(0),
+        softNavigations: softNavigations.splice(0),
+        interactionContentfulPaints: [...largestPaintByInteraction.values()],
       }
+      largestPaintByInteraction.clear()
       return taken
     },
   }

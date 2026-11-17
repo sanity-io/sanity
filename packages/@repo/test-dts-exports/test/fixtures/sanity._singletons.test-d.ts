@@ -55,6 +55,8 @@ import type {
   DocumentTableSelectionContext,
   EditDialogOuterBoundaryContext,
   EnhancedObjectDialogContext,
+  EnhancedObjectDialogScrollContext,
+  EnhancedObjectDialogScrollToTop,
   EventsContext,
   FeedbackContext,
   FeedbackContextValue,
@@ -63,6 +65,7 @@ import type {
   FormBuilderContext,
   FormCallbacksContext,
   FormFieldPresenceContext,
+  FormRowGutterSuppressedContext,
   FormValueContext,
   FreeTrialContext,
   FullscreenPTEContext,
@@ -151,6 +154,8 @@ import type {
   UserApplicationCacheContext,
   UserColorManagerContext,
   ValidationContext,
+  VariantsModePromiseContext,
+  VariantsUpsellContext,
   VirtualizerScrollInstanceContext,
   VisibleWorkspacesContext,
   WorkspaceContext,
@@ -317,6 +322,12 @@ describe('sanity/_singletons', () => {
   test('EnhancedObjectDialogContext', () => {
     expectTypeOf<typeof EnhancedObjectDialogContext>().not.toBeNever()
   })
+  test('EnhancedObjectDialogScrollContext', () => {
+    expectTypeOf<typeof EnhancedObjectDialogScrollContext>().not.toBeNever()
+  })
+  test('EnhancedObjectDialogScrollToTop', () => {
+    expectTypeOf<EnhancedObjectDialogScrollToTop>().not.toBeNever()
+  })
   test('EventsContext', () => {
     expectTypeOf<typeof EventsContext>().not.toBeNever()
   })
@@ -340,6 +351,9 @@ describe('sanity/_singletons', () => {
   })
   test('FormFieldPresenceContext', () => {
     expectTypeOf<typeof FormFieldPresenceContext>().not.toBeNever()
+  })
+  test('FormRowGutterSuppressedContext', () => {
+    expectTypeOf<typeof FormRowGutterSuppressedContext>().not.toBeNever()
   })
   test('FormValueContext', () => {
     expectTypeOf<typeof FormValueContext>().not.toBeNever()
@@ -604,6 +618,12 @@ describe('sanity/_singletons', () => {
   })
   test('ValidationContext', () => {
     expectTypeOf<typeof ValidationContext>().not.toBeNever()
+  })
+  test('VariantsModePromiseContext', () => {
+    expectTypeOf<typeof VariantsModePromiseContext>().not.toBeNever()
+  })
+  test('VariantsUpsellContext', () => {
+    expectTypeOf<typeof VariantsUpsellContext>().not.toBeNever()
   })
   test('VirtualizerScrollInstanceContext', () => {
     expectTypeOf<typeof VirtualizerScrollInstanceContext>().not.toBeNever()

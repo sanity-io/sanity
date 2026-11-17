@@ -1,6 +1,6 @@
 import {useCallback, useMemo, type MouseEvent, type ReactNode} from 'react'
 import {useTranslation} from 'sanity'
-import {Box, PressArea, Text} from 'ui5'
+import {Flex, PressArea, Text} from 'ui5'
 
 import {usePane} from '../../../../components/pane/usePane'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
@@ -115,7 +115,7 @@ function TitleFieldButton(props: {focus: () => void; children: ReactNode}) {
   // Sized to the title, so a click beside it still collapses the pane.
   return (
     // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- a CSS length, not copy
-    <Box as="span" maxWidth="100%" width="fit-content">
+    <Flex as="span" maxWidth="100%" width="fit-content" alignItems="center">
       <PressArea
         data-testid="document-pane-title-field"
         onClick={handleClick}
@@ -124,10 +124,10 @@ function TitleFieldButton(props: {focus: () => void; children: ReactNode}) {
       >
         {/* A button is an atomic inline box, so the header's own ellipsis cannot reach into
         it. `trim` keeps the line box as short as the header's own trimmed title text. */}
-        <Text as="span" size={1} trim truncate={1} weight="semibold">
+        <Text as="span" size={1} truncate={1} weight="semibold">
           {children}
         </Text>
       </PressArea>
-    </Box>
+    </Flex>
   )
 }

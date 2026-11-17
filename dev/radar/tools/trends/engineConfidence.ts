@@ -19,13 +19,19 @@ import {
 import {type DriftWindows, type SeriesBreak, type TrendPoint, type TrendSeries} from './data'
 
 export const ENGINE_CONFIDENCE_EXPLAINER =
-  'The engine confidence score is the share of planted bugs the tests catch. Stryker plants ' +
-  'small bugs in the document sync engine files and runs the test suites against each one; the ' +
-  'score is the share a test fails on. It cannot reach 100% because some planted bugs change no ' +
-  'behaviour. A known-bug catalogue of realistic engine bugs is also replayed against the test ' +
-  'suites and shown below as supporting detail; it does not feed the score. A change to the ' +
-  'pinned measurement config bumps its version and breaks the series: scores either side of the ' +
-  'dashed rule are not comparable.'
+  'The total engine confidence score is the share of planted bugs the tests catch. Stryker plants ' +
+  'small bugs in the document sync engine files, in Studio and in @sanity/mutator, and runs the ' +
+  'test suites against each one; the score is the share a test fails on. It cannot reach 100% ' +
+  'because some planted bugs change no behaviour. A known-bug catalogue of realistic engine bugs ' +
+  'is also replayed against the test suites and shown below as supporting detail; it does not ' +
+  'feed the score. A change to the pinned measurement config bumps its version and breaks the ' +
+  'series: scores either side of the dashed rule are not comparable.'
+
+export const ENGINE_STUDIO_CONFIDENCE_EXPLAINER =
+  'The core Studio engine confidence score is the same Stryker score over the Studio document ' +
+  'store and form patch files in packages/sanity only, leaving out @sanity/mutator. It comes ' +
+  'from the same weekly run as the total. A week recorded before this score existed has no ' +
+  'point, never a zero.'
 
 export const ENGINE_CONFIDENCE_QUERY = `*[_type == "${ENGINE_CONFIDENCE_RUN_TYPE}"] | order(startedAt asc) {
   _id,
@@ -36,6 +42,7 @@ export const ENGINE_CONFIDENCE_QUERY = `*[_type == "${ENGINE_CONFIDENCE_RUN_TYPE
   runner{runId, runAttempt, cpuModel, imageOs},
   config{version},
   score{status, reason, ratio, counts, targets[]{target, mode, reusedMutants}},
+  studioScore{status, reason, ratio, counts},
   knownBugs{status, reason, activeEntries, caughtEntries}
 }`
 
@@ -63,6 +70,11 @@ export interface EngineScoreSummary extends EngineStatusSummary {
   targets?: Pick<StrykerTargetRun, 'target' | 'mode' | 'reusedMutants'>[] | null
 }
 
+export interface EngineStudioScoreSummary extends EngineStatusSummary {
+  ratio?: number | null
+  counts?: MutantCounts | null
+}
+
 export interface EngineKnownBugsSummary extends EngineStatusSummary {
   activeEntries?: number | null
   caughtEntries?: number | null
@@ -82,6 +94,8 @@ export interface EngineConfidenceRunSummary {
   } | null
   config: {version: number}
   score: EngineScoreSummary
+  /** Absent on schema version 1 documents. */
+  studioScore?: EngineStudioScoreSummary | null
   knownBugs: EngineKnownBugsSummary
 }
 
@@ -111,6 +125,7 @@ export const ENGINE_DRIFT_WINDOWS: DriftWindows = {
 }
 
 export const ENGINE_SCORE_KEY = 'engine:score'
+export const ENGINE_STUDIO_SCORE_KEY = 'engine:studio-score'
 
 /** Engine cards mount from their own query, so a deep link to one waits for that query. */
 export function deepLinkTargetLoaded(options: {
@@ -166,10 +181,40 @@ function pointOf(run: EngineConfidenceRunSummary, ratio: number): TrendPoint {
   }
 }
 
+function ratioSeries(options: {
+  key: string
+  title: string
+  description: string
+  breaks: SeriesBreak[]
+  runs: readonly EngineConfidenceRunSummary[]
+  ratioOf: (run: EngineConfidenceRunSummary) => number | null | undefined
+}): TrendSeries {
+  const {key, title, description, breaks, runs, ratioOf} = options
+  return {
+    key,
+    title,
+    unit: 'percent',
+    description,
+    goal: 'higher',
+    group: 'engine',
+    drift: ENGINE_DRIFT_WINDOWS,
+    breaks,
+    lines: [
+      {
+        branch: 'main',
+        points: runs.flatMap((run) => {
+          const ratio = ratioOf(run)
+          return typeof ratio === 'number' ? [pointOf(run, ratio)] : []
+        }),
+      },
+    ],
+  }
+}
+
 /**
- * The engine confidence score as a single series, a single `main` line. A
- * week where the score was not measured has no point: an honest gap, never a
- * zero.
+ * The total and core Studio engine confidence scores, each a single `main`
+ * line. A week where a score was not measured, or was recorded before it
+ * existed, has no point: an honest gap, never a zero.
  */
 export function engineConfidenceSeries(runs: readonly EngineConfidenceRunSummary[]): TrendSeries[] {
   const ordered = [...runs].sort(byStartedAt)
@@ -178,25 +223,22 @@ export function engineConfidenceSeries(runs: readonly EngineConfidenceRunSummary
     label: `config v${entry.toVersion}`,
   }))
   return [
-    {
+    ratioSeries({
       key: ENGINE_SCORE_KEY,
-      title: 'Engine confidence',
-      unit: 'percent',
+      title: 'Total engine confidence',
       description: ENGINE_CONFIDENCE_EXPLAINER,
-      goal: 'higher',
-      group: 'engine',
-      drift: ENGINE_DRIFT_WINDOWS,
       breaks,
-      lines: [
-        {
-          branch: 'main',
-          points: ordered.flatMap((run) => {
-            const {ratio} = run.score
-            return typeof ratio === 'number' ? [pointOf(run, ratio)] : []
-          }),
-        },
-      ],
-    },
+      runs: ordered,
+      ratioOf: (run) => run.score.ratio,
+    }),
+    ratioSeries({
+      key: ENGINE_STUDIO_SCORE_KEY,
+      title: 'Core Studio engine confidence',
+      description: ENGINE_STUDIO_CONFIDENCE_EXPLAINER,
+      breaks,
+      runs: ordered,
+      ratioOf: (run) => run.studioScore?.ratio,
+    }),
   ]
 }
 

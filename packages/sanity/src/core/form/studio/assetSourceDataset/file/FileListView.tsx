@@ -1,7 +1,7 @@
 import {type Asset} from '@sanity/types'
-import {Card, Spinner, Text, useMediaIndex} from '@sanity/ui'
+import {Card, Spinner, useMediaIndex} from '@sanity/ui'
 import {type KeyboardEvent, type MouseEvent} from 'react'
-import {VStack, Flex, Grid, Box} from 'ui5'
+import {Text, VStack, Flex, Grid, Box} from 'ui5'
 
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {AssetRow} from './AssetRow'
@@ -30,7 +30,7 @@ export function FileListView(props: Props) {
         {isMobile ? (
           <Grid style={STYLES_GRID}>
             <Box flexBasis="0%" flexGrow={2} paddingLeft={5}>
-              <Text muted size={1} weight="medium">
+              <Text muted size={1} weight="medium" as="div" trim={true}>
                 {t('asset-source.file.asset-list.header.filename')}
               </Text>
             </Box>
@@ -38,22 +38,22 @@ export function FileListView(props: Props) {
         ) : (
           <Grid gap={1} style={STYLES_GRID}>
             <Box flexBasis="0%" flexGrow={2} style={STYLES_FILENAME}>
-              <Text muted size={1} weight="medium">
+              <Text muted size={1} weight="medium" as="div" trim={true}>
                 {t('asset-source.file.asset-list.header.filename')}
               </Text>
             </Box>
             <Box flexBasis="0%" flexGrow={1}>
-              <Text muted size={1} weight="medium">
+              <Text muted size={1} weight="medium" as="div" trim={true}>
                 {t('asset-source.file.asset-list.header.size')}
               </Text>
             </Box>
             <Box flexBasis="0%" flexGrow={1}>
-              <Text muted size={1} weight="medium">
+              <Text muted size={1} weight="medium" as="div" trim={true}>
                 {t('asset-source.file.asset-list.header.type')}
               </Text>
             </Box>
             <Box flexBasis="0%" flexGrow={1}>
-              <Text muted size={1} weight="medium">
+              <Text muted size={1} weight="medium" as="div" trim={true}>
                 {t('asset-source.file.asset-list.header.date-added')}
               </Text>
             </Box>

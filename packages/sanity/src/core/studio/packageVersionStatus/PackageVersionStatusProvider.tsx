@@ -58,13 +58,19 @@ const getSanityImportMapEntryValue = memoize(() =>
 // but for now, we only care about the `sanity`-package
 const REFERENCE_PACKAGE = 'sanity'
 
-export function PackageVersionStatusProvider({children}: {children: ReactNode}) {
+export function PackageVersionStatusProvider({
+  children,
+  importMapUrl,
+}: {
+  children: ReactNode
+  importMapUrl?: string
+}) {
   const importMapInfo = useMemo(() => {
-    const importMapUrl = getSanityImportMapEntryValue()
-    if (!importMapUrl) {
+    const sanityImportMapUrl = importMapUrl ?? getSanityImportMapEntryValue()
+    if (!sanityImportMapUrl) {
       return undefined
     }
-    const result = parseImportMapModuleCdnUrl(importMapUrl)
+    const result = parseImportMapModuleCdnUrl(sanityImportMapUrl)
     if (!result.valid) {
       console.warn(
         new Error(
@@ -76,7 +82,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
     return result.valid
       ? {...result, minVersion: semver.coerce(result.minVersion, {includePrerelease: true})!}
       : result
-  }, [])
+  }, [importMapUrl])
   const currentVersion = useMemo(() => getCurrentVersion(), [])
 
   const isAutoUpdating = Boolean(importMapInfo)
@@ -126,6 +132,9 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
     lastCheckedAt: null,
     checking: false,
   })
+  // The version poll outlives the provider. Skip the setStates once it has unmounted: after a
+  // jsdom test tears `window` down, a late `setState` rejects with "window is not defined".
+  const mountedRef = useRef(true)
 
   const fetchNewVersions = useCallback(async () => {
     if (
@@ -166,6 +175,7 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
 
     void Promise.all([resolveLatestTaggedVersion, resolveAutoUpdatingVersion])
       .then(([nextLatestVersion, nextAutoUpdatingVersion]) => {
+        if (!mountedRef.current) return
         // `fetchLatestVersions` resolves `undefined` on a failed fetch (rather
         // than rejecting), so only overwrite state when we actually got a value.
         // This keeps the previously known versions on a transient failure and
@@ -189,10 +199,15 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
         // and try again on the next tick.
         console.warn('[sanity] Failed to check for new studio versions:', err)
       })
-      .finally(() => setVersionCheckStatus({lastCheckedAt: new Date(), checking: false}))
+      .finally(() => {
+        if (!mountedRef.current) return
+        setVersionCheckStatus({lastCheckedAt: new Date(), checking: false})
+      })
   }, [currentVersion, importMapInfo])
 
   useEffect(() => {
+    mountedRef.current = true
+
     async function poll() {
       await fetchNewVersions()
     }
@@ -203,7 +218,10 @@ export function PackageVersionStatusProvider({children}: {children: ReactNode}) 
     // Set interval for subsequent runs
     const intervalId = setInterval(poll, POLL_INTERVAL_MS)
 
-    return () => clearInterval(intervalId)
+    return () => {
+      mountedRef.current = false
+      clearInterval(intervalId)
+    }
   }, [fetchNewVersions])
 
   const contextValue = useMemo(

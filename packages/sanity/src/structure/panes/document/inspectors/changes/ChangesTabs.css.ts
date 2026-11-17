@@ -1,11 +1,10 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const fadeInFlex = style({
-  opacity: 0,
-  transition: 'opacity 200ms',
-  selectors: {
-    '&[data-ready]': {
-      opacity: 1,
-    },
+export const fadeInFlex = css({
+  'opacity': 0,
+  'transition': 'opacity 200ms',
+
+  '&[data-ready]': {
+    opacity: 1,
   },
 })

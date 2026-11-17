@@ -1,12 +1,12 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronUpIcon} from '@sanity/icons/ChevronUp'
-import {Badge, Button, Card, Spinner, Text} from '@sanity/ui'
+import {Badge, Button, Card, Spinner} from '@sanity/ui'
 import {ParentSize} from '@visx/responsive'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, type Observable, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
-import {Flex, Grid, VStack} from 'ui5'
+import {Text, Flex, Grid, VStack, Link} from 'ui5'
 
 import {CALIBRATION_EXPLAINER, type TrendTag} from './data'
 import {type DebugSource} from './debugData'
@@ -78,7 +78,7 @@ function ChangeRow(props: {change: SqrlChange | null; label: string}) {
   const {change, label} = props
   if (change === null) {
     return (
-      <Text size={1} muted>
+      <Text size={1} muted as="div" trim={true}>
         {label}: no earlier score
       </Text>
     )
@@ -88,7 +88,7 @@ function ChangeRow(props: {change: SqrlChange | null; label: string}) {
       <Badge tone={changeTone(change.points)} fontSize={1}>
         {formatSignedPoints(change.points)}
       </Badge>
-      <Text size={1} muted>
+      <Text size={1} muted as="div" trim={true}>
         {label}
       </Text>
     </Flex>
@@ -108,11 +108,16 @@ function Headline(props: {latest: SqrlLatest; series: SqrlPoint[]; asOfMs: numbe
         {formatScore(latest.score)}
       </div>
       <ChangeRow change={changes.sinceThirtyDays} label="since 30 days ago" />
-      <Text size={1} muted>
+      <Text size={1} muted as="div" trim={true}>
         Commit{' '}
-        <a href={commitUrl(latest.git.sha)} target="_blank" rel="noreferrer">
+        <Link
+          href={commitUrl(latest.git.sha)}
+          openInNewTab
+          underlined={false}
+          style={{color: 'var(--card-link-color)'}}
+        >
           {latest.git.sha.slice(0, 7)}
-        </a>
+        </Link>
         {Number.isFinite(committedMs) ? ` · ${formatCommitDate(committedMs)}` : ''}
       </Text>
     </VStack>
@@ -140,13 +145,13 @@ function PillarBreakdown(props: {latest: SqrlLatest}) {
           data-testid={`sqrl-pillar-${pillar.key}`}
         >
           <VStack gap={2}>
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               {pillar.label}
             </Text>
-            <Text size={3} weight="semibold">
+            <Text size={3} weight="semibold" as="div" trim={true}>
               {formatScore(pillar.score)}
             </Text>
-            <Text size={0} muted>
+            <Text size={0} muted as="div" trim={true}>
               {Math.round(pillar.weight * 100)}% of score
             </Text>
           </VStack>
@@ -161,7 +166,7 @@ function RegressedInputs(props: {latest: SqrlLatest}) {
   const regressed = regressedInputs(latest.inputs)
   if (regressed.length === 0) {
     return (
-      <Text size={1} muted>
+      <Text size={1} muted as="div" trim={true}>
         No inputs are regressing.
       </Text>
     )
@@ -169,23 +174,30 @@ function RegressedInputs(props: {latest: SqrlLatest}) {
   return (
     <Card tone="critical" border padding={3} radius={2} data-testid="sqrl-regressed-inputs">
       <VStack gap={3}>
-        <Text size={1} weight="semibold">
+        <Text size={1} weight="semibold" as="div" trim={true} tone="critical">
           Regressed inputs ({regressed.length})
         </Text>
         <VStack gap={2}>
           {regressed.map((input) => (
             <Flex key={input.key} alignItems="center" justifyContent="space-between" gap={3}>
-              <Text size={1}>
+              <Text size={1} as="div" trim={true} tone="critical">
                 {input.label}{' '}
                 <span style={{opacity: 0.7}}>· {pillarLabelFor(latest, input.pillar)}</span>
               </Text>
-              <Text size={1} weight="semibold" style={{fontVariantNumeric: 'tabular-nums'}}>
+              <Text
+                size={1}
+                weight="semibold"
+                style={{fontVariantNumeric: 'tabular-nums'}}
+                as="div"
+                trim={true}
+                tone="critical"
+              >
                 {formatSignedPoints(input.contributionPoints)} pts
               </Text>
             </Flex>
           ))}
         </VStack>
-        <Text size={0} muted>
+        <Text size={0} muted as="div" trim={true} tone="critical">
           Last 7 runs worse than the prior 21; points are the input&apos;s contribution against the
           reference.
         </Text>
@@ -197,14 +209,14 @@ function RegressedInputs(props: {latest: SqrlLatest}) {
 function Explainer(props: {latest: SqrlLatest | null}) {
   return (
     <VStack gap={2}>
-      <Text size={1} muted>
+      <Text size={1} muted as="div" trim={true}>
         Higher is better. 100 is the late-June 2026 reference.
       </Text>
-      <Text size={0} muted>
+      <Text size={0} muted as="div" trim={true}>
         Chart: the line is the 7-commit median, faint dots are each commit alone, dashed is the 100
         reference.
       </Text>
-      <Text size={0} muted>
+      <Text size={0} muted as="div" trim={true}>
         {hostNote(props.latest)} {CALIBRATION_EXPLAINER}
       </Text>
     </VStack>
@@ -221,10 +233,10 @@ function BannerHeader(props: {
   return (
     <Flex alignItems="center" justifyContent="space-between" gap={3}>
       <Flex alignItems="center" gap={2}>
-        <Text size={2} weight="bold">
+        <Text size={2} weight="bold" as="div" trim={true}>
           SQRL
         </Text>
-        <Text size={1} muted>
+        <Text size={1} muted as="div" trim={true}>
           Studio Quality: Reliability &amp; Latency
         </Text>
         {regressedCount > 0 && (
@@ -280,7 +292,7 @@ function Summary(props: {
     >
       <Headline latest={latest} series={series} asOfMs={asOfMs} />
       {visibleSeries.length === 0 ? (
-        <Text size={1} muted>
+        <Text size={1} muted as="div" trim={true}>
           No SQRL scores in this range. Try a longer range.
         </Text>
       ) : (
@@ -329,7 +341,7 @@ export function SqrlBanner(props: {
         )}
         {state.status === 'error' && (
           <Card tone="critical" border padding={3} radius={2}>
-            <Text size={1}>
+            <Text size={1} as="div" trim={true} tone="critical">
               Couldn&apos;t load SQRL scores: {state.message}. Reload the page to try again.
             </Text>
           </Card>
@@ -337,7 +349,7 @@ export function SqrlBanner(props: {
         {state.status === 'ready' && latest === null && (
           <>
             <Card tone="transparent" border padding={4} radius={2} data-testid="sqrl-empty">
-              <Text size={1} muted>
+              <Text size={1} muted as="div" trim={true}>
                 No SQRL scores yet. CI scores every main commit the nightly benchmark measures; the
                 first score appears here once that run lands.
               </Text>

@@ -10,10 +10,8 @@ import {Text, Container, VStack, Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isDev} from '../../environment'
+import {reloadStudio} from '../reloadStudio'
 
-function reloadPage() {
-  window.location.reload()
-}
 const COUNTDOWN_SECONDS = 5
 export function ImportErrorScreen(props: {error: Error; eventId?: string; autoReload?: boolean}) {
   const {error, eventId, autoReload} = props
@@ -36,7 +34,7 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
   )
 
   useEffect(() => {
-    if (autoReload && countdownSeconds < 1) reloadPage()
+    if (autoReload && countdownSeconds < 1) reloadStudio()
   }, [autoReload, countdownSeconds])
 
   return (
@@ -77,7 +75,7 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
               ) : null}
               <Inline gap={3}>
                 <Button
-                  onClick={reloadPage}
+                  onClick={reloadStudio}
                   text={autoReload ? 'Reload now' : 'Reload'}
                   tone="primary"
                   icon={SyncIcon}

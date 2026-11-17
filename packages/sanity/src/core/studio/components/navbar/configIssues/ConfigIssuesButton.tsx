@@ -1,8 +1,8 @@
 /* oxlint-disable i18next/no-literal-string */
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useCallback, useId, useState} from 'react'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
 import {StatusButton} from '../../../../components/StatusButton'
@@ -69,10 +69,10 @@ export function ConfigIssuesButton() {
         >
           <VStack gap={4}>
             <VStack gap={3}>
-              <Text as="h2" size={1} weight="medium">
+              <Text as="h2" size={1} weight="medium" trim={true}>
                 Found {totalWarnings} configuration warning{totalWarnings === 1 ? '' : 's'}
               </Text>{' '}
-              <Text muted size={1}>
+              <Text muted size={1} as="div" trim={true}>
                 Configuration checks are only performed during development and will not be visible
                 in production builds
               </Text>
@@ -89,10 +89,16 @@ export function ConfigIssuesButton() {
                     tone="caution"
                   >
                     <VStack gap={2}>
-                      <Text size={1} weight="medium">
+                      <Text size={1} weight="medium" tone="caution" as="div" trim={true}>
                         Divergent auth config
                       </Text>
-                      <Text size={1} style={{whiteSpace: 'pre-wrap'}}>
+                      <Text
+                        size={1}
+                        tone="caution"
+                        style={{whiteSpace: 'pre-wrap'}}
+                        as="div"
+                        trim={true}
+                      >
                         {warning.message}
                       </Text>
                     </VStack>

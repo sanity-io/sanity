@@ -1,10 +1,10 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Button, Card, Text} from '@sanity/ui'
+import {Badge, Button, Card} from '@sanity/ui'
 import {MenuButton, Menu, MenuItem} from '@sanity/ui/menu'
 import {useState} from 'react'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack, type TextProps} from 'ui5'
 
 import {idSlug, SNOOZE_DAYS} from './acks'
 import {formatValue} from './data'
@@ -19,8 +19,9 @@ function DriftRow(props: {
   onAck: (state: 'silenced' | 'snoozed' | 'fixed') => void
   onClear: () => void
   onFocus: () => void
+  tone?: TextProps['tone']
 }) {
-  const {entry, showBranch, acked, onAck, onClear, onFocus} = props
+  const {entry, showBranch, acked, onAck, onClear, onFocus, tone} = props
   const worst = entry.baseline
   return (
     <Flex alignItems="center" gap={2} flexWrap="wrap">
@@ -33,12 +34,14 @@ function DriftRow(props: {
           Back returns) — looks like a button, behaves like a link */}
       <Button mode="bleed" padding={1} onClick={onFocus} title="Go to chart" text={entry.title} />
       {showBranch && (
-        <Text size={1} muted>
+        <Text size={1} muted as="div" trim={true} tone={tone}>
           ({entry.branch})
         </Text>
       )}
-      <Text size={1}>{deltaLabel(worst, entry.unit)}</Text>
-      <Text size={0} muted>
+      <Text size={1} as="div" trim={true} tone={tone}>
+        {deltaLabel(worst, entry.unit)}
+      </Text>
+      <Text size={0} muted as="div" trim={true} tone={tone}>
         {formatValue(worst.baseline, entry.unit)} → {formatValue(worst.recent, entry.unit)}
         {' · '}
         {baselineDetail(worst)}
@@ -136,7 +139,13 @@ export function DriftFeed(props: {
         >
           <Flex alignItems="center" gap={2} paddingY={1}>
             {expanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
-            <Text size={1} weight="semibold">
+            <Text
+              size={1}
+              weight="semibold"
+              as="div"
+              trim={true}
+              tone={active.length === 0 ? undefined : regressionCount > 0 ? 'caution' : 'positive'}
+            >
               {summary}
             </Text>
           </Flex>
@@ -153,6 +162,9 @@ export function DriftFeed(props: {
                 onAck={(state) => drift.ack(entry, state)}
                 onClear={() => drift.clear(entry)}
                 onFocus={() => onFocusMetric(entry.seriesKey)}
+                tone={
+                  active.length === 0 ? undefined : regressionCount > 0 ? 'caution' : 'positive'
+                }
               />
             ))}
           </VStack>
@@ -180,6 +192,9 @@ export function DriftFeed(props: {
                   onAck={(state) => drift.ack(entry, state)}
                   onClear={() => drift.clear(entry)}
                   onFocus={() => onFocusMetric(entry.seriesKey)}
+                  tone={
+                    active.length === 0 ? undefined : regressionCount > 0 ? 'caution' : 'positive'
+                  }
                 />
               ))}
           </VStack>

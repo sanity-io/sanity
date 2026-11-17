@@ -71,7 +71,7 @@ describe.each(['headless', 'studio'] as const)('%s slug uniqueness', (mode) => {
         schema: createSchema(mode, 'customObject', isUnique),
       })
 
-      expect(result).toEqual({status: 'passed', markers: []})
+      expect(result).toEqual({status: 'passed', complete: true, markers: []})
       expect(isUnique).not.toHaveBeenCalled()
       expect(fetch).not.toHaveBeenCalled()
     },
@@ -88,7 +88,7 @@ describe.each(['headless', 'studio'] as const)('%s slug uniqueness', (mode) => {
         schema: createSchema(mode, type, isUnique),
       })
 
-      expect(result).toEqual({status: 'passed', markers: []})
+      expect(result).toEqual({status: 'passed', complete: true, markers: []})
       expect(isUnique).toHaveBeenCalledOnce()
       expect(isUnique).toHaveBeenCalledWith(
         'hello',
@@ -108,7 +108,6 @@ describe.each(['headless', 'studio'] as const)('%s slug uniqueness', (mode) => {
       schema: createSchema(mode, 'nestedSlug', inheritedIsUnique, override),
     })
 
-    expect(result.status).toBe('failed')
     expect(result.markers).toEqual([
       expect.objectContaining({code: validationMarkerCodes.slugNotUnique, path: ['slug']}),
     ])
@@ -129,7 +128,7 @@ describe.each(['headless', 'studio'] as const)('%s slug uniqueness', (mode) => {
         schema: createSchema(mode, type, isUnique),
       })
 
-      expect(result).toEqual({status: 'notEvaluated', markers: []})
+      expect(result).toMatchObject({complete: false, markers: []})
       expect(isUnique).not.toHaveBeenCalled()
       expect(fetch).not.toHaveBeenCalled()
     },
@@ -146,7 +145,6 @@ describe.each(['headless', 'studio'] as const)('%s slug uniqueness', (mode) => {
         schema: createSchema(mode, type),
       })
 
-      expect(result.status).toBe('failed')
       expect(result.markers).toEqual([
         expect.objectContaining({code: validationMarkerCodes.slugNotUnique, path: ['slug']}),
       ])

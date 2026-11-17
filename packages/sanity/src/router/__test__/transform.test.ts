@@ -3,6 +3,11 @@ import {expect, test} from 'vitest'
 import {route} from '../route'
 import {decodeParams, encodeParams} from '../utils/paramsEncoding'
 
+test('encodeParams tolerates a missing params object', () => {
+  expect(encodeParams(undefined)).toBe('')
+  expect(encodeParams(null)).toBe('')
+})
+
 test('transform config on regular routes', () => {
   const router = route.create(
     '/some/:section/:settings',

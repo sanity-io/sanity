@@ -1,7 +1,7 @@
-import {Box, Button, Card, Heading, Text, TextArea} from '@sanity/ui'
+import {Box, Button, Card, Heading, TextArea} from '@sanity/ui'
 import {type SyntheticEvent, useCallback, useId, useRef, useState} from 'react'
 import {DiagnosticsReport, parseStudioDiagnostics, type StudioDiagnostics} from 'sanity'
-import {Container, Flex, VStack} from 'ui5'
+import {Text, Container, Flex, VStack} from 'ui5'
 
 /**
  * The in-studio twin of dev/studio-diagnostics-viewer: paste the JSON copied
@@ -52,14 +52,14 @@ export function DiagnosticsTool() {
                     <Heading as="h2" size={2}>
                       Paste diagnostics output
                     </Heading>
-                    <Text muted size={1}>
+                    <Text muted size={1} as="div" trim={true}>
                       Copy the JSON from Studio diagnostics and paste it below. The data stays in
                       this browser and is not uploaded anywhere.
                     </Text>
                   </VStack>
 
                   <VStack gap={3}>
-                    <Text as="label" htmlFor={inputId} size={1} weight="medium">
+                    <Text as="label" htmlFor={inputId} size={1} weight="medium" trim={true}>
                       Diagnostics JSON
                     </Text>
                     <TextArea
@@ -75,7 +75,9 @@ export function DiagnosticsTool() {
 
                   {error ? (
                     <Card padding={3} radius={2} tone="critical">
-                      <Text size={1}>{error}</Text>
+                      <Text size={1} as="div" trim={true} tone="critical">
+                        {error}
+                      </Text>
                     </Card>
                   ) : null}
 

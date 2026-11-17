@@ -4,7 +4,8 @@ import {ChangeTitleSegmentStory} from './ChangeTitleSegmentStory'
 
 /**
  * Reuses the in-package harness: Box padding on review-changes array index
- * segments (unchanged / added / removed / moved). Tooltips stay closed.
+ * segments (unchanged / added / removed / moved) and the bare
+ * ChangeTitleSegment variants. Tooltips stay closed.
  */
 const meta = {
   title: 'Field/Change Title Segment',

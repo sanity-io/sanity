@@ -47,7 +47,10 @@ import {useRouterState} from 'sanity/router'
 
 import {useClient} from '../../../hooks/useClient'
 import {useProjectOrganizationId} from '../../../store/project/useProjectOrganizationId'
-import {WorkspaceFeaturesObserved} from '../../__telemetry__/featureAvailability.telemetry'
+import {
+  DeprecatedConfigUsageObserved,
+  WorkspaceFeaturesObserved,
+} from '../../__telemetry__/featureAvailability.telemetry'
 import {StudioLoaded} from '../../__telemetry__/studioLoaded.telemetry'
 import {useWorkspace} from '../../workspace'
 import {useWorkspaces} from '../../workspaces/useWorkspaces'
@@ -63,6 +66,7 @@ describe('StudioTelemetryProvider', () => {
   let capturedStoreOptions: {
     sendEvents?: (batch: unknown[]) => Promise<void>
     sendBeacon?: (batch: unknown[]) => boolean
+    resolveConsent?: () => Promise<unknown>
   }
 
   const mockLog = vi.fn()
@@ -148,6 +152,21 @@ describe('StudioTelemetryProvider', () => {
     })
   })
 
+  it('creates the session id on first render rather than on import, and keeps it across remounts', async () => {
+    vi.resetModules()
+    const {StudioTelemetryProvider: FreshProvider} = await import('../StudioTelemetryProvider')
+    expect(createSessionId).not.toHaveBeenCalled()
+
+    render(<FreshProvider>child</FreshProvider>).unmount()
+    render(<FreshProvider>child</FreshProvider>)
+
+    expect(createSessionId).toHaveBeenCalledTimes(1)
+    expect(vi.mocked(createBatchedStore).mock.calls.map(([sessionId]) => sessionId)).toEqual([
+      'test-session-id',
+      'test-session-id',
+    ])
+  })
+
   it('enriches events with context in sendEvents callback', async () => {
     render(
       <DeferredTelemetryProvider>
@@ -207,7 +226,7 @@ describe('StudioTelemetryProvider', () => {
     )
   })
 
-  it('enriches events with context in sendBeacon callback', () => {
+  it('enriches events with context in sendBeacon callback', async () => {
     // Mock navigator.sendBeacon
     const mockSendBeacon = vi.fn().mockReturnValue(true)
     vi.stubGlobal('navigator', {
@@ -225,8 +244,10 @@ describe('StudioTelemetryProvider', () => {
     )
 
     // Get the captured sendBeacon callback
-    const {sendBeacon} = capturedStoreOptions
+    const {sendBeacon, resolveConsent} = capturedStoreOptions
     expect(sendBeacon).toBeDefined()
+    mockClient.request.mockResolvedValueOnce({status: 'granted'})
+    await resolveConsent!()
 
     // Create test batch
     const testBatch = [{name: 'Beacon Event', properties: {test: true}}]
@@ -250,6 +271,48 @@ describe('StudioTelemetryProvider', () => {
       pluginCount: 3,
       schemaTypeCount: 3,
     })
+
+    vi.unstubAllGlobals()
+  })
+
+  it.each([['denied'], ['unset'], [undefined]])(
+    'does not send the beacon when consent is %s',
+    async (status) => {
+      const mockSendBeacon = vi.fn().mockReturnValue(true)
+      vi.stubGlobal('navigator', {...navigator, sendBeacon: mockSendBeacon})
+
+      render(
+        <DeferredTelemetryProvider>
+          <StudioTelemetryProvider>
+            <div>Test Child</div>
+          </StudioTelemetryProvider>
+        </DeferredTelemetryProvider>,
+      )
+      const {sendBeacon, resolveConsent} = capturedStoreOptions
+      mockClient.request.mockResolvedValueOnce(status === undefined ? {} : {status})
+      await resolveConsent!()
+
+      expect(sendBeacon!([{name: 'Beacon Event'}])).toBe(false)
+      expect(mockSendBeacon).not.toHaveBeenCalled()
+
+      vi.unstubAllGlobals()
+    },
+  )
+
+  it('does not send the beacon before consent has resolved', () => {
+    const mockSendBeacon = vi.fn().mockReturnValue(true)
+    vi.stubGlobal('navigator', {...navigator, sendBeacon: mockSendBeacon})
+
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    expect(capturedStoreOptions.sendBeacon!([{name: 'Beacon Event'}])).toBe(false)
+    expect(mockSendBeacon).not.toHaveBeenCalled()
 
     vi.unstubAllGlobals()
   })
@@ -374,6 +437,8 @@ describe('StudioTelemetryProvider', () => {
     // Mock window properties
     vi.stubGlobal('window', {
       ...window,
+      addEventListener: window.addEventListener.bind(window),
+      removeEventListener: window.removeEventListener.bind(window),
       devicePixelRatio: 2,
       innerHeight: 800,
       innerWidth: 1200,
@@ -713,6 +778,45 @@ describe('StudioTelemetryProvider', () => {
       fileDirectUploadsEnabled: true,
       imageDirectUploadsEnabled: true,
       searchStrategy: 'groq2024',
+    })
+  })
+
+  it('emits DeprecatedConfigUsageObserved with all deprecated config flags', () => {
+    render(
+      <DeferredTelemetryProvider>
+        <StudioTelemetryProvider>
+          <div>Test Child</div>
+        </StudioTelemetryProvider>
+      </DeferredTelemetryProvider>,
+    )
+
+    expect(mockLog).toHaveBeenCalledWith(DeprecatedConfigUsageObserved, {
+      deprecatedWorkspaceLogo: false,
+      deprecatedStudioComponentsLogo: false,
+      deprecatedBetaCreate: false,
+      deprecatedBetaFormEnhancedObjectDialog: false,
+      deprecatedScheduledPublishingShowReleasesBanner: false,
+      deprecatedThemeAvatar: false,
+      deprecatedThemeButton: false,
+      deprecatedThemeContainer: false,
+      deprecatedThemeFocusRing: false,
+      deprecatedThemeInput: false,
+      deprecatedThemeLayer: false,
+      deprecatedThemeMedia: false,
+      deprecatedThemeRadius: false,
+      deprecatedThemeShadows: false,
+      deprecatedThemeSpace: false,
+      deprecatedThemeStyles: false,
+      deprecatedLegacyThemeScreenMediumBreak: false,
+      deprecatedLegacyThemeScreenDefaultBreak: false,
+      deprecatedLegacyThemeScreenLargeBreak: false,
+      deprecatedLegacyThemeScreenXlargeBreak: false,
+      deprecatedPresentationPreviewModeCheck: false,
+      deprecatedPresentationPreviewModeDisable: false,
+      deprecatedPresentationUnstableShowUnsafeShareUrl: false,
+      deprecatedArrayOptionsDirection: false,
+      deprecatedArrayOptionsTreeEditing: false,
+      deprecatedCrossDatasetReferenceExperimentalSearch: false,
     })
   })
 })

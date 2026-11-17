@@ -14,7 +14,9 @@ import {
 } from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
-import {listenQuery} from '../../store/document/listenQuery'
+import {listenQueryOnGlobalListener} from '../../store/document/listenQuery'
+import {type GlobalListenerStore} from '../../store/globalListener/createGlobalListenerStore'
+import {isVariantId, type SystemVariant} from '../types'
 import {VARIANT_DOCUMENTS_PATH, VARIANT_DOCUMENT_TYPE} from './constants'
 import {variantStoreReducer, type VariantStoreAction, type VariantStoreState} from './reducer'
 
@@ -61,17 +63,19 @@ export interface VariantStore {
 
 /**
  * The variants store is initialised lazily when first subscribed to. Upon subscription, it will
- * fetch a list of variants and create a listener to keep the locally held state fresh.
+ * fetch a list of variants, and fetch it again whenever the global listener reports a change to a
+ * variant definition document.
  *
- * The store is not disposed of when all subscriptions are closed. After it has been initialised,
- * it will keep listening for the duration of the app's lifecycle. Subsequent subscriptions will be
- * given the latest state upon subscription.
+ * While subscribed, subsequent subscriptions are given the latest state upon subscription. Once
+ * the last subscription is closed the store keeps listening for {@link TEARDOWN_GRACE_PERIOD}
+ * and then releases the global listener; the next subscription initialises it again.
  */
 export function createVariantsStore(context: {
   client: SanityClient
+  globalListenerStore: GlobalListenerStore
   enabled: boolean
 }): VariantStore {
-  const {client, enabled} = context
+  const {client, globalListenerStore, enabled} = context
 
   if (!enabled) {
     const disabledState: VariantStoreState = {
@@ -102,7 +106,11 @@ export function createVariantsStore(context: {
     },
   }).pipe(
     concatWith(
-      listenQuery(client, QUERY, {}, {tag: 'variants.listen'}).pipe(
+      listenQueryOnGlobalListener<SystemVariant[]>(client, QUERY, {
+        invalidationChannel: globalListenerStore.invalidationChannel,
+        shouldRefetch: ({documentId}) => isVariantId(documentId),
+        fetchTag: 'variants.store.fetch',
+      }).pipe(
         map((variants): VariantStoreAction => ({type: 'FETCH_SUCCEEDED', payload: variants})),
       ),
     ),

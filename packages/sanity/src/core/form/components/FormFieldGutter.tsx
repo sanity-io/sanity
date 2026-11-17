@@ -1,5 +1,4 @@
-import {assignInlineVars} from '@vanilla-extract/dynamic'
-import {type ComponentType} from 'react'
+import {type ComponentType, type CSSProperties} from 'react'
 
 import {type BaseFieldProps} from '../types/fieldProps'
 import {pathToAnchorIdent} from '../utils/pathToAnchorIdent'
@@ -34,7 +33,7 @@ export const FormFieldGutter: ComponentType<FormFieldGutterProps> = ({
       className={hasPath ? `${formFieldAnchor} ${formFieldGutter}` : formFieldGutter}
       style={
         hasPath
-          ? assignInlineVars({[formFieldAnchorPath]: pathToAnchorIdent('input', path)})
+          ? ({[formFieldAnchorPath]: pathToAnchorIdent('input', path)} as CSSProperties)
           : undefined
       }
     >

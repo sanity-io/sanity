@@ -1,8 +1,9 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {PublishIcon} from '@sanity/icons/Publish'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {type ButtonTone, Card, Stack, Text} from '@sanity/ui'
+import {type ButtonTone, Card, Stack} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {Text} from 'ui5'
 
 import {MenuItem} from '../MenuItem'
 
@@ -30,7 +31,7 @@ export function MenuItemStory() {
         </Menu>
       </Card>
       <Stack gap={2} marginTop={4}>
-        <Text muted size={1}>
+        <Text muted size={1} as="div" trim={true}>
           tones, badge, hotkeys, selected, disabled, subtitle
         </Text>
       </Stack>

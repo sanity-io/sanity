@@ -1,7 +1,7 @@
 import {BinaryDocumentIcon} from '@sanity/icons/BinaryDocument'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ReactNode, type RefObject} from 'react'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex, Icon} from 'ui5'
 
 import {formatBytes} from '../../common/helper'
 import {AccessPolicyBadge} from '../common/AccessPolicyBadge'
@@ -48,21 +48,21 @@ export function FileActionsMenu(props: Props) {
         {/* todo: consider replacing with <SanityDefaultPreview> */}
         <Flex flexWrap="nowrap" alignItems="center">
           <Card padding={3} tone="transparent" shadow={1} radius={1}>
-            <Text muted={muted}>
-              <BinaryDocumentIcon />
-            </Text>
+            <Icon muted={muted} icon={BinaryDocumentIcon} style={{margin: '-0.4375rem'}} />
           </Card>
           <Flex flexBasis="0%" flexGrow={1} gap={2} marginLeft={3} flexDirection="column">
             <Text
               size={1}
-              textOverflow="ellipsis"
+              truncate={1}
               muted={muted}
               data-testid="file-name"
               weight="medium"
+              as="div"
+              trim={true}
             >
               {originalFilename}
             </Text>
-            <Text size={1} muted data-testid="file-size">
+            <Text size={1} muted data-testid="file-size" as="div" trim={true}>
               {formatBytes(size)}
             </Text>
           </Flex>

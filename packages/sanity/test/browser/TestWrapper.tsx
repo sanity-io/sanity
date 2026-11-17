@@ -31,9 +31,9 @@ import {Pane} from '../../src/structure/components/pane/Pane'
 import {PaneContent} from '../../src/structure/components/pane/PaneContent'
 import {PaneLayout} from '../../src/structure/components/pane/PaneLayout'
 import {structureUsEnglishLocaleBundle} from '../../src/structure/i18n'
+import {changeConnectorRoot} from '../../src/structure/panes/document/document-layout/DocumentLayout.css'
 import {createMockSanityClient} from '../../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../../test/testUtils/getMockWorkspaceFromConfig'
-import {changeConnectorRoot} from './TestWrapper.css'
 
 interface TestWrapperProps {
   children?: ReactNode

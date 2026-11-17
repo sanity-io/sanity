@@ -1,7 +1,7 @@
 import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {Badge, Text} from '@sanity/ui'
+import {Badge} from '@sanity/ui'
 import {memo, type ReactNode} from 'react'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack, type TextProps} from 'ui5'
 
 import {TextWithTone} from '../../../components/textWithTone/TextWithTone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -28,6 +28,7 @@ export interface FormFieldHeaderTextProps {
    * Additional content to be rendered alongside the title
    */
   suffix?: ReactNode
+  tone?: TextProps['tone']
 }
 
 const EMPTY_ARRAY: never[] = []
@@ -36,7 +37,7 @@ const EMPTY_ARRAY: never[] = []
 export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   props: FormFieldHeaderTextProps,
 ) {
-  const {description, inputId, title, deprecated, validation = EMPTY_ARRAY, suffix} = props
+  const {description, inputId, title, deprecated, validation = EMPTY_ARRAY, suffix, tone} = props
   const {t} = useTranslation()
   const hasValidations = validation.length > 0
 
@@ -44,7 +45,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
     <VStack gap={3}>
       <Flex alignItems="center" paddingY={1}>
         <Flex alignItems="center">
-          <Text as="label" htmlFor={inputId} weight="medium" size={1}>
+          <Text as="label" htmlFor={inputId} weight="medium" size={1} trim={true} tone={tone}>
             {title || (
               <span style={{color: 'var(--card-muted-fg-color)'}}>
                 {t('form.field.untitled-field-label')}
@@ -90,7 +91,14 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
       )}
 
       {description && (
-        <Text muted size={1} id={createDescriptionId(inputId, description)}>
+        <Text
+          muted
+          size={1}
+          id={createDescriptionId(inputId, description)}
+          as="div"
+          trim={true}
+          tone={tone}
+        >
           {description}
         </Text>
       )}

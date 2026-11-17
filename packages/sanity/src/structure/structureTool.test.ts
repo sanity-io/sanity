@@ -4,12 +4,15 @@ import {
   defaultLocale,
   type DocumentBadgeComponent,
   type DocumentBadgesContext,
+  type DocumentInspector,
+  type DocumentInspectorContext,
   type LocaleSource,
 } from 'sanity'
 import {describe, expect, it} from 'vitest'
 
 import {useLiveEditBadge} from './documentBadges/LiveEditBadge'
 import {useSingletonBadge} from './documentBadges/SingletonBadge'
+import {documentGroupInspector} from './panes/document/inspectors/documentGroup'
 import {structureTool} from './structureTool'
 
 const stubContext: ConfigContext = {
@@ -69,6 +72,65 @@ describe('badges', () => {
     expect(secondTool.filter((badge) => badge === useLiveEditBadge)).toHaveLength(1)
   })
 })
+
+const inspectorContext: DocumentInspectorContext = {
+  ...stubContext,
+  documentType: 'article',
+  documentId: 'someArticle',
+}
+
+const documentGroupInventoryContext: DocumentInspectorContext = {
+  ...inspectorContext,
+  beta: {documentGroupInventory: {enabled: true}},
+}
+
+const pluginInspector: DocumentInspector = {
+  name: 'test/plugin-inspector',
+  component: () => null,
+}
+
+describe('inspectors', () => {
+  it('omits the document group inspector when the document group inventory is disabled', () => {
+    expect(resolveInspectors([], inspectorContext)).not.toContain(documentGroupInspector)
+    expect(
+      resolveInspectors([], {
+        ...inspectorContext,
+        beta: {documentGroupInventory: {enabled: false}},
+      }),
+    ).not.toContain(documentGroupInspector)
+  })
+
+  it('adds the document group inspector when the document group inventory is enabled', () => {
+    expect(resolveInspectors([], documentGroupInventoryContext)).toContain(documentGroupInspector)
+  })
+
+  it('preserves inspectors added by other plugins', () => {
+    expect(resolveInspectors([pluginInspector], documentGroupInventoryContext)[0]).toBe(
+      pluginInspector,
+    )
+  })
+
+  it('adds the document group inspector exactly once when several structure tools are configured', () => {
+    const firstTool = resolveInspectors([], documentGroupInventoryContext)
+    const secondTool = resolveInspectors(firstTool, documentGroupInventoryContext)
+
+    expect(secondTool).toEqual(firstTool)
+    expect(secondTool.filter((inspector) => inspector === documentGroupInspector)).toHaveLength(1)
+  })
+})
+
+function resolveInspectors(
+  prevInspectors: DocumentInspector[],
+  context: DocumentInspectorContext,
+): DocumentInspector[] {
+  const inspectors = structureTool().document?.inspectors
+
+  if (typeof inspectors !== 'function') {
+    throw new TypeError('Expected `structureTool` to declare `document.inspectors` as a resolver')
+  }
+
+  return inspectors(prevInspectors, context)
+}
 
 function resolveBadges(
   prevBadges: DocumentBadgeComponent[],

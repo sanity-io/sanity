@@ -1,17 +1,6 @@
-import {
-  Badge,
-  Box,
-  Button,
-  Card,
-  Checkbox,
-  Dialog,
-  Select,
-  Text,
-  TextArea,
-  TextInput,
-} from '@sanity/ui'
-import {useMemo, useState} from 'react'
-import {Flex, VStack} from 'ui5'
+import {Badge, Box, Button, Card, Checkbox, Dialog, Select, TextArea, TextInput} from '@sanity/ui'
+import {type CSSProperties, useMemo, useState} from 'react'
+import {Text, Flex, VStack, Link} from 'ui5'
 
 import {compareUrl} from '../trends/links'
 import {AuthorAvatar} from './AuthorAvatar'
@@ -27,6 +16,12 @@ interface Endpoint {
   sha: string
   label?: string
 }
+
+/**
+ * @sanity/ui v5 removes styling for nested a tags. As a stop gap, apply the
+ * current v4 color as an inline style.
+ */
+const LINK_IN_TEXT: CSSProperties = {color: 'var(--card-link-color)'}
 
 function shortLabel(endpoint: Endpoint): string {
   return endpoint.label ?? endpoint.sha.slice(0, 7)
@@ -77,7 +72,7 @@ export function NewSessionDialog(props: {
       <Box padding={4}>
         <VStack gap={5}>
           <VStack gap={3}>
-            <Text size={1} weight="medium">
+            <Text size={1} weight="medium" as="div" trim={true}>
               Describe the issue
             </Text>
             <TextArea
@@ -87,7 +82,7 @@ export function NewSessionDialog(props: {
               value={description}
               onChange={(event) => setDescription(event.currentTarget.value)}
             />
-            <Text size={0} muted>
+            <Text size={0} muted as="div" trim={true}>
               Shown on the session and on the regression it pins on a release; a follow-up bisect
               that narrows this one down inherits it.
             </Text>
@@ -116,7 +111,7 @@ export function NewSessionDialog(props: {
             <Card padding={3} radius={2} tone="caution">
               <Flex alignItems="center" gap={3}>
                 <Box flex={1}>
-                  <Text size={1}>
+                  <Text size={1} as="div" trim={true} tone="caution">
                     Good ({shortLabel(good)}) is newer than bad ({shortLabel(bad)}) — the endpoints
                     look swapped.
                   </Text>
@@ -135,17 +130,22 @@ export function NewSessionDialog(props: {
           )}
           {good && bad && chainCheck && !chainCheck.ok && !isSwapped && (
             <Card padding={3} radius={2} tone="caution">
-              <Text size={1}>
+              <Text size={1} as="div" trim={true} tone="caution">
                 {chainErrorCopy(chainCheck.reason, shortLabel(good), shortLabel(bad))}
               </Text>
             </Card>
           )}
           {good && bad && chainCheck?.ok && (
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               {pluralize(chainCheck.chain.length - 2, 'commit')} between good and bad —{' '}
-              <a href={compareUrl(good.sha, bad.sha)} target="_blank" rel="noreferrer">
+              <Link
+                href={compareUrl(good.sha, bad.sha)}
+                openInNewTab
+                underlined={false}
+                style={LINK_IN_TEXT}
+              >
                 compare on GitHub
-              </a>
+              </Link>
             </Text>
           )}
 
@@ -160,7 +160,9 @@ export function NewSessionDialog(props: {
               checked={releasesOnly}
               onChange={(event) => setReleasesOnly(event.currentTarget.checked)}
             />
-            <Text size={1}>Bisect released versions only</Text>
+            <Text size={1} as="div" trim={true}>
+              Bisect released versions only
+            </Text>
           </Flex>
 
           <Flex gap={2} justifyContent="flex-end">
@@ -211,7 +213,7 @@ function EndpointPicker(props: {
         <Badge tone={tone} fontSize={0}>
           {badge}
         </Badge>
-        <Text size={1} weight="medium">
+        <Text size={1} weight="medium" as="div" trim={true}>
           {title}
         </Text>
       </Flex>
@@ -221,13 +223,13 @@ function EndpointPicker(props: {
           <Flex alignItems="center" gap={3}>
             <Box flex={1} style={{minWidth: 0}}>
               <VStack gap={2}>
-                <Text size={1}>
+                <Text size={1} as="div" trim={true} tone={tone}>
                   <code>{value.sha.slice(0, 10)}</code>
                   {value.label && value.label !== value.sha.slice(0, 7) ? ` (${value.label})` : ''}
                 </Text>
                 {selected ? (
                   <>
-                    <Text size={1} textOverflow="ellipsis">
+                    <Text size={1} truncate={1} as="div" trim={true} tone={tone}>
                       {selected.subject}
                     </Text>
                     <Flex alignItems="center" gap={2}>
@@ -242,7 +244,7 @@ function EndpointPicker(props: {
                         }
                       />
                       {selected.authorName && (
-                        <Text size={0} muted>
+                        <Text size={0} muted as="div" trim={true} tone={tone}>
                           {selected.authorName} ·
                         </Text>
                       )}
@@ -252,7 +254,7 @@ function EndpointPicker(props: {
                 ) : (
                   // A tag can point off-mainline (release-branch cut) — the
                   // chain check below is what decides if it's usable
-                  <Text size={0} muted>
+                  <Text size={0} muted as="div" trim={true} tone={tone}>
                     not on the synced mainline
                   </Text>
                 )}
@@ -286,7 +288,7 @@ function EndpointPicker(props: {
           />
           <VStack gap={1}>
             {results.length === 0 && (
-              <Text size={1} muted>
+              <Text size={1} muted as="div" trim={true}>
                 No commits match “{query.trim()}”.
               </Text>
             )}
@@ -306,13 +308,13 @@ function EndpointPicker(props: {
                   {/* flex + minWidth 0 so the ellipsis truncates the subject
                       instead of letting it overlap its siblings */}
                   <Box flex={1} style={{minWidth: 0}}>
-                    <Text size={1} textOverflow="ellipsis">
+                    <Text size={1} truncate={1} as="div" trim={true}>
                       {commit.subject}
                     </Text>
                   </Box>
                   {!commit.testStudioUrl && (
                     <Box style={{flexShrink: 0}}>
-                      <Text size={0} muted>
+                      <Text size={0} muted as="div" trim={true}>
                         no preview build
                       </Text>
                     </Box>

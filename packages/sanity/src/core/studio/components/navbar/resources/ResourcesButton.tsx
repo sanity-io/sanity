@@ -17,7 +17,7 @@ import {usePackageVersionStatus} from '../../../packageVersionStatus/usePackageV
 import {DiagnosticsDialog} from './DiagnosticsDialog'
 import {DiagnosticsMenuItem} from './DiagnosticsMenuItem'
 import {FeedbackMenuItem} from './FeedbackMenuItem'
-import {useGetHelpResources} from './helper-functions/hooks'
+import {useHelpResourcesPromise} from './helper-functions/hooks'
 import {ResourcesMenuItems} from './ResourcesMenuItems'
 import {StudioInfoDialog} from './StudioInfoDialog'
 
@@ -34,7 +34,7 @@ export function ResourcesButton() {
   const feedbackAvailable = useFeedbackAvailable({dsn: STUDIO_DSN, skip: isInDashboard})
   const {userApplication, isLoading: isLoadingUserApplication} = useLiveUserApplication()
 
-  const {value, error, isLoading} = useGetHelpResources()
+  const resourcesPromise = useHelpResourcesPromise()
 
   const {
     autoUpdatingVersion: autoUpdatingVersionStr,
@@ -115,9 +115,7 @@ export function ResourcesButton() {
               latestTaggedVersion={latestTaggedVersion}
               newAutoUpdateVersion={newAutoUpdateVersionAvailable ? autoUpdatingVersion : undefined}
               deprecatedVersion={versionDeprecation?.version}
-              error={error}
-              isLoading={isLoading}
-              value={value}
+              resourcesPromise={resourcesPromise}
               onOpenStudioVersionDialog={handleOpenVersionDialog}
             />
           </StyledMenu>

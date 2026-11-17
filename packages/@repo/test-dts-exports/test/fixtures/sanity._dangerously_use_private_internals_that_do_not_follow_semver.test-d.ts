@@ -108,6 +108,7 @@ import type {
   ConnectionStatusStore,
   ConnectionStatusStoreOptions,
   ConnectorContextValue,
+  CONTENT_RELEASES_TIME_ZONE_SCOPE,
   ContextMenuButton,
   CookielessCompatibleLoginMethod,
   CorsCheckResult,
@@ -149,6 +150,7 @@ import type {
   DEFAULT_INTENT_HANDLER,
   DEFAULT_MAX_RECURSION_DEPTH,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
+  DEFAULT_VARIANT_TYPE_KEY,
   defaultInitialValueTemplateItems,
   defaultIntentChecker,
   defaultLocale,
@@ -197,6 +199,9 @@ import type {
   documentFromEditorWithInitialValue,
   DocumentGroupInventory,
   DocumentGroupInventoryComponents,
+  DocumentGroupInventoryFeedbackAction,
+  DocumentGroupInventoryFeedbackActionProps,
+  DocumentGroupInventoryHandle,
   DocumentGroupInventoryPerspectiveList,
   DocumentGroupInventoryProps,
   DocumentGroupInventoryReferencePreviewLinkProps,
@@ -281,6 +286,7 @@ import type {
   FieldStatusProps,
   FieldValueError,
   Filters,
+  filterVariantsForSearch,
   findIndex,
   FIXME,
   flattenConfig,
@@ -356,6 +362,7 @@ import type {
   getSchemaTypeTitle,
   getSearchableTypes,
   getSelectedVariant,
+  getSessionId,
   getTargetDocument,
   getTargetScopeId,
   getTargetSiblings,
@@ -365,6 +372,7 @@ import type {
   getValueError,
   getVariantPublishedSibling,
   getVariantTitle,
+  getVariantType,
   getVersionInlineBadge,
   getWorkspaceIdentifier,
   GlobalCopyPasteElementHandler,
@@ -403,6 +411,7 @@ import type {
   isCardinalityOneRelease,
   isClientRequestError,
   isCookielessCompatibleLoginMethod,
+  isDefaultVariant,
   isDev,
   isDocumentInSelectedVariant,
   isDocumentLimitError,
@@ -556,6 +565,8 @@ import type {
   PrimitiveFieldProps,
   PUBLISHED,
   ReactHook,
+  recordStructurePaneKind,
+  recordStructureTool,
   Rect,
   ReferenceAutocomplete,
   ReferenceDiff,
@@ -636,7 +647,6 @@ import type {
   serializeError,
   SerializeError,
   Session,
-  SESSION_ID,
   SetActiveGroupOperation,
   setAtPath,
   shallowIntentChecker,
@@ -659,6 +669,7 @@ import type {
   stringToPath,
   StructureBuilderOptions,
   StructureNodeIdValidationResult,
+  StructurePaneKind,
   StructureToolContextValue,
   StructureToolFeatures,
   StructureToolPaneActionHandler,
@@ -802,6 +813,7 @@ import type {
   useReferenceInputOptions,
   useRelativeTime,
   useReleasesIds,
+  useReleasesToolAvailable,
   useRenderingContextStore,
   useReportParseError,
   useResolveInitialValueForType,
@@ -824,6 +836,8 @@ import type {
   useSource,
   useStructureTool,
   useStudioFeedbackTags,
+  useStudioPreference,
+  useStudioPreferenceList,
   useStudioUrl,
   useSyncState,
   useTargetDocumentState,
@@ -835,6 +849,7 @@ import type {
   useTimeAgo,
   useTimelineSelector,
   useTimelineStore,
+  useTimeZone,
   useTrackerStore,
   useTrackerStoreReporter,
   useUnique,
@@ -1209,6 +1224,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('ConnectorContextValue', () => {
     expectTypeOf<ConnectorContextValue>().toBeObject()
   })
+  test('CONTENT_RELEASES_TIME_ZONE_SCOPE', () => {
+    expectTypeOf<typeof CONTENT_RELEASES_TIME_ZONE_SCOPE>().not.toBeNever()
+  })
   test('ContextMenuButton', () => {
     expectTypeOf<typeof ContextMenuButton>().toBeFunction()
   })
@@ -1332,6 +1350,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('DEFAULT_STUDIO_CLIENT_OPTIONS', () => {
     expectTypeOf<typeof DEFAULT_STUDIO_CLIENT_OPTIONS>().not.toBeNever()
+  })
+  test('DEFAULT_VARIANT_TYPE_KEY', () => {
+    expectTypeOf<typeof DEFAULT_VARIANT_TYPE_KEY>().not.toBeNever()
   })
   test('defaultInitialValueTemplateItems', () => {
     expectTypeOf<typeof defaultInitialValueTemplateItems>().toBeFunction()
@@ -1472,10 +1493,19 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
     expectTypeOf<typeof documentFromEditorWithInitialValue>().toBeFunction()
   })
   test('DocumentGroupInventory', () => {
-    expectTypeOf<typeof DocumentGroupInventory>().not.toBeNever()
+    expectTypeOf<typeof DocumentGroupInventory>().toBeFunction()
   })
   test('DocumentGroupInventoryComponents', () => {
     expectTypeOf<DocumentGroupInventoryComponents>().toBeObject()
+  })
+  test('DocumentGroupInventoryFeedbackAction', () => {
+    expectTypeOf<typeof DocumentGroupInventoryFeedbackAction>().toBeFunction()
+  })
+  test('DocumentGroupInventoryFeedbackActionProps', () => {
+    expectTypeOf<DocumentGroupInventoryFeedbackActionProps>().toBeObject()
+  })
+  test('DocumentGroupInventoryHandle', () => {
+    expectTypeOf<DocumentGroupInventoryHandle>().toBeObject()
   })
   test('DocumentGroupInventoryPerspectiveList', () => {
     expectTypeOf<DocumentGroupInventoryPerspectiveList>().toBeObject()
@@ -1729,6 +1759,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('Filters', () => {
     expectTypeOf<typeof Filters>().toBeFunction()
   })
+  test('filterVariantsForSearch', () => {
+    expectTypeOf<typeof filterVariantsForSearch>().toBeFunction()
+  })
   test('findIndex', () => {
     expectTypeOf<typeof findIndex>().toBeFunction()
   })
@@ -1955,6 +1988,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('getSelectedVariant', () => {
     expectTypeOf<typeof getSelectedVariant>().toBeFunction()
   })
+  test('getSessionId', () => {
+    expectTypeOf<typeof getSessionId>().toBeFunction()
+  })
   test('getTargetDocument', () => {
     expectTypeOf<typeof getTargetDocument>().toBeFunction()
   })
@@ -1981,6 +2017,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('getVariantTitle', () => {
     expectTypeOf<typeof getVariantTitle>().toBeFunction()
+  })
+  test('getVariantType', () => {
+    expectTypeOf<typeof getVariantType>().toBeFunction()
   })
   test('getVersionInlineBadge', () => {
     expectTypeOf<typeof getVersionInlineBadge>().not.toBeNever()
@@ -2095,6 +2134,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('isCookielessCompatibleLoginMethod', () => {
     expectTypeOf<typeof isCookielessCompatibleLoginMethod>().toBeFunction()
+  })
+  test('isDefaultVariant', () => {
+    expectTypeOf<typeof isDefaultVariant>().toBeFunction()
   })
   test('isDev', () => {
     expectTypeOf<typeof isDev>().not.toBeNever()
@@ -2555,6 +2597,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('ReactHook', () => {
     expectTypeOf<ReactHook<any, any>>().not.toBeNever()
   })
+  test('recordStructurePaneKind', () => {
+    expectTypeOf<typeof recordStructurePaneKind>().toBeFunction()
+  })
+  test('recordStructureTool', () => {
+    expectTypeOf<typeof recordStructureTool>().toBeFunction()
+  })
   test('Rect', () => {
     expectTypeOf<Rect>().toBeObject()
   })
@@ -2796,9 +2844,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('Session', () => {
     expectTypeOf<Session>().toBeObject()
   })
-  test('SESSION_ID', () => {
-    expectTypeOf<typeof SESSION_ID>().not.toBeNever()
-  })
   test('SetActiveGroupOperation', () => {
     expectTypeOf<SetActiveGroupOperation>().toBeObject()
   })
@@ -2864,6 +2909,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('StructureNodeIdValidationResult', () => {
     expectTypeOf<StructureNodeIdValidationResult>().not.toBeNever()
+  })
+  test('StructurePaneKind', () => {
+    expectTypeOf<StructurePaneKind>().not.toBeNever()
   })
   test('StructureToolContextValue', () => {
     expectTypeOf<StructureToolContextValue>().toBeObject()
@@ -3295,6 +3343,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useReleasesIds', () => {
     expectTypeOf<typeof useReleasesIds>().toBeFunction()
   })
+  test('useReleasesToolAvailable', () => {
+    expectTypeOf<typeof useReleasesToolAvailable>().toBeFunction()
+  })
   test('useRenderingContextStore', () => {
     expectTypeOf<typeof useRenderingContextStore>().toBeFunction()
   })
@@ -3362,6 +3413,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useStudioFeedbackTags', () => {
     expectTypeOf<typeof useStudioFeedbackTags>().toBeFunction()
   })
+  test('useStudioPreference', () => {
+    expectTypeOf<typeof useStudioPreference>().toBeFunction()
+  })
+  test('useStudioPreferenceList', () => {
+    expectTypeOf<typeof useStudioPreferenceList>().toBeFunction()
+  })
   test('useStudioUrl', () => {
     expectTypeOf<typeof useStudioUrl>().not.toBeNever()
   })
@@ -3395,6 +3452,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useTimelineStore', () => {
     expectTypeOf<typeof useTimelineStore>().toBeFunction()
   })
+  test('useTimeZone', () => {
+    expectTypeOf<typeof useTimeZone>().not.toBeNever()
+  })
   test('useTrackerStore', () => {
     expectTypeOf<typeof useTrackerStore>().toBeFunction()
   })
@@ -3417,6 +3477,7 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
     expectTypeOf<typeof useUserColorManager>().toBeFunction()
   })
   test('useValidationStatus', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof useValidationStatus>().toBeFunction()
   })
   test('useValuePreview', () => {

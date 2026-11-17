@@ -1,10 +1,10 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {SearchIcon} from '@sanity/icons/Search'
 import {isDeprecatedSchemaType} from '@sanity/types'
-import {Card, Text, TextInput, type TextInputProps, useClickOutsideEvent} from '@sanity/ui'
+import {Card, TextInput, type TextInputProps, useClickOutsideEvent} from '@sanity/ui'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Button, type ButtonProps} from '../../../../../ui-components/button/Button'
 import {Tooltip, type TooltipProps} from '../../../../../ui-components/tooltip/Tooltip'
@@ -171,11 +171,19 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   // Tooltip content for the open button
   const tooltipContent: TooltipProps['content'] = useMemo(() => {
     if (!hasNewDocumentOptions) {
-      return <Text size={1}>{t('new-document.no-document-types-label')}</Text>
+      return (
+        <Text size={1} as="div" trim={true}>
+          {t('new-document.no-document-types-label')}
+        </Text>
+      )
     }
 
     if (canCreateDocument) {
-      return <Text size={1}>{t('new-document.create-new-document-label')}</Text>
+      return (
+        <Text size={1} as="div" trim={true}>
+          {t('new-document.create-new-document-label')}
+        </Text>
+      )
     }
 
     return (

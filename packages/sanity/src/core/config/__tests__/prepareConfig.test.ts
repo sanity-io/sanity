@@ -208,6 +208,34 @@ describe('prepareConfig — studio request handler', () => {
       expect(config.requestHandler).toBe(requestHandler)
     }
   })
+
+  it('gives the handler of each client the auth store that created it', () => {
+    const projectId = `test-${Math.random().toString(36).slice(2)}`
+    const authStoreGetters: Array<() => unknown> = []
+
+    const {workspaces} = prepareConfig(
+      [
+        createWorkspace({name: 'cookie', basePath: '/cookie', projectId}),
+        createWorkspace({
+          name: 'token',
+          basePath: '/token',
+          projectId,
+          auth: {loginMethod: 'token'},
+        }),
+      ],
+      {
+        createStudioRequestHandler: (_getClient, getAuthStore) => {
+          if (getAuthStore) authStoreGetters.push(getAuthStore)
+          return (request, next) => next(request)
+        },
+      },
+    )
+
+    expect(authStoreGetters.length).toBeGreaterThan(0)
+    expect(new Set(authStoreGetters.map((getAuthStore) => getAuthStore()))).toEqual(
+      new Set(workspaces.map((workspace) => workspace.auth)),
+    )
+  })
 })
 
 describe('prepareConfig — schema error context', () => {

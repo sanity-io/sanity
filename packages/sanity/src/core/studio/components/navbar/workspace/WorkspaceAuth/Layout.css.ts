@@ -1,9 +1,7 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const footerLink = style({
-  selectors: {
-    '&&': {
-      color: 'inherit',
-    },
+export const footerLink = css({
+  '&&': {
+    color: 'inherit',
   },
 })

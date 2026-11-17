@@ -1,4 +1,3 @@
-import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {
   CommandList,
@@ -8,7 +7,7 @@ import {
   useI18nText,
 } from 'sanity'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {paneCommandList} from '../../components/pane/PaneCommandList.css'
 import {PaneContent} from '../../components/pane/PaneContent'
@@ -55,7 +54,7 @@ function DividerItem({item}: DividerItemProps) {
   const {title: dividerTitle} = useI18nText(item)
   return (
     <DividerContainer>
-      <DividerTitle weight="semibold" muted size={1}>
+      <DividerTitle weight="semibold" muted size={1} forwardedAs="div" trim={true}>
         {dividerTitle}
       </DividerTitle>
 

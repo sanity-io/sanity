@@ -1,5 +1,5 @@
 import {chromaticPlugin} from '@chromatic-com/vitest/plugin'
-import {vanillaExtractPlugin} from '@sanity/vanilla-extract-vite-plugin'
+import {sanityPandaCss} from '@repo/pandacss/vite'
 import viteReact from '@vitejs/plugin-react'
 import {playwright} from '@vitest/browser-playwright'
 import {defaultClientConditions, defineConfig} from 'vite'
@@ -54,7 +54,11 @@ if (chromaticEnabled && selectedBrowser !== 'chromium') {
 
 export default defineConfig({
   plugins: [
-    vanillaExtractPlugin(),
+    // Panda CSS for the `.css.ts` modules of this package (panda.config.ts): the `css()` calls
+    // are rewritten to class names and the generated CSS fills `@repo/pandacss/panda.css`, which
+    // test/setup/browser.ts loads — without Panda's cascade layers, like the published
+    // `bundle.css`
+    ...sanityPandaCss(),
     // `compiler` runs React Compiler through `oxc-transform-react`, in the same native pass
     // as the TypeScript/JSX transform (no babel in the pipeline)
     viteReact({compiler: {target: '19'}}),
@@ -121,6 +125,15 @@ export default defineConfig({
     expect: {poll: {timeout: 10_000}},
     browser: {
       enabled: true,
+      // On Linux, Chromium keeps a shared-memory file descriptor open for every module
+      // revalidated with a `304`, and only a garbage collection releases them. Each test file
+      // loads the module graph into a fresh iframe, so a page that goes a few files without a
+      // collection reaches ~16k descriptors and its renderer exits, which Vitest reports as
+      // "Browser connection was closed". Vitest collects garbage after a file only when the
+      // temp directory has less free space than `VITEST_CHROMIUM_GC_DISK_THRESHOLD_GB`, and the
+      // files are sparse, so the `test:browser` script sets the threshold high enough for it to
+      // collect after every file (https://issues.chromium.org/issues/530892387). Running
+      // `vitest -c vitest.browser.config.mts` directly skips it.
       provider: playwright(),
       headless: true,
       commands: {holdRequests, readFileAsBase64, releaseRequests},

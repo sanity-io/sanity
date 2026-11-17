@@ -1,5 +1,5 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const datetimeWrapper = style({
+export const datetimeWrapper = css({
   wordWrap: 'break-word',
 })

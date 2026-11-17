@@ -1,14 +1,16 @@
-import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
-import {css, styled} from 'styled-components'
+import {styled} from 'styled-components'
 
-export const Container = styled.div(({theme}) => {
-  const {container, space} = getThemeV2(theme)
+import {inventoryContainerName} from './CreateVariant/CreateVariant.css'
 
-  return css`
-    display: grid;
-    grid-template-rows: min-content 1fr min-content;
-    inline-size: min(calc(${container[0]}px * 1.5), calc(100vw - (${space[3]}px * 2)));
-    max-block-size: 75vh;
-    block-size: var(--intrinsic-block-size, auto);
-  `
-})
+/**
+ * A flex column that fills its host and lets `Body` scroll. The host must be a flex column with
+ * a bounded block size (a height, or a max-height).
+ */
+export const Container = styled.div`
+  container-name: ${inventoryContainerName};
+  container-type: inline-size;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-block-size: 0;
+`

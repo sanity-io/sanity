@@ -62,7 +62,7 @@ describe.each(['object', 'array'] as const)('lazy %s child validation', (shape) 
     const result = await validation
     expect(hidden).toHaveBeenCalledTimes(50)
     expect(getDocumentExists).toHaveBeenCalledTimes(50)
-    expect(result.status).toBe('failed')
+    expect(result.complete).toBe(true)
     expect(result.markers).toHaveLength(50)
     expect(
       result.markers.every(({code}) => code === validationMarkerCodes.referenceNotPublished),

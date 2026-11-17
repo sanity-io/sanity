@@ -1,7 +1,7 @@
 import {black, blue, gray, green, red, white, yellow} from '@sanity/color'
 import {studioTheme as defaults} from '@sanity/ui'
 
-import {type StudioTheme} from '../types'
+import {type LegacyThemeDeprecatedFlags, type StudioTheme} from '../types'
 import {buildColor} from './color'
 import {buildFonts} from './fonts'
 import {_isDark} from './helpers'
@@ -34,6 +34,15 @@ import {type LegacyThemeProps} from './types'
  */
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export function buildLegacyTheme(partialLegacyTheme: Partial<LegacyThemeProps>): StudioTheme {
+  // Track customer usage of deprecated --screen-*-break keys on the theme object
+  // This avoids module-level state issues in multi-workspace setups
+  const deprecatedKeys: LegacyThemeDeprecatedFlags = {
+    screenMediumBreak: '--screen-medium-break' in partialLegacyTheme,
+    screenDefaultBreak: '--screen-default-break' in partialLegacyTheme,
+    screenLargeBreak: '--screen-large-break' in partialLegacyTheme,
+    screenXlargeBreak: '--screen-xlarge-break' in partialLegacyTheme,
+  }
+
   const legacyTheme = resolveLegacyTheme(partialLegacyTheme)
   const legacyPalette = buildLegacyPalette(legacyTheme)
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -47,6 +56,7 @@ export function buildLegacyTheme(partialLegacyTheme: Partial<LegacyThemeProps>):
   return {
     __dark: _isDark(color.light.default.base.bg, color.light.default.base.fg),
     __legacy: true,
+    __deprecatedLegacyThemeKeys: deprecatedKeys,
     color,
     fonts,
   }

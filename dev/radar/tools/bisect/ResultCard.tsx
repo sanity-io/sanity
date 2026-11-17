@@ -1,7 +1,8 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {UndoIcon} from '@sanity/icons/Undo'
-import {Badge, Box, Button, Card, Text, TextArea} from '@sanity/ui'
-import {Flex, VStack} from 'ui5'
+import {Badge, Box, Button, Card, TextArea} from '@sanity/ui'
+import {type CSSProperties} from 'react'
+import {Text, Flex, VStack, Link} from 'ui5'
 
 import {commitUrl, compareUrl} from '../trends/links'
 import {type deriveBisectState} from './bisect'
@@ -13,6 +14,12 @@ import {withReproPath} from './reproPath'
 import {type ResultAnnotations} from './sessions'
 import {SEVERITIES, SEVERITY_LABEL, SEVERITY_TONE} from './severity'
 import {pluralize} from './text'
+
+/**
+ * @sanity/ui v5 removes styling for nested a tags. As a stop gap, apply the
+ * current v4 color as an inline style.
+ */
+const LINK_IN_TEXT: CSSProperties = {color: 'var(--card-link-color)'}
 
 /**
  * The verdict, rendered in place in the timeline: the first bad commit with
@@ -136,7 +143,7 @@ export function ResultCard(props: {
           selected step clears it, so an unrated regression stays possible */}
       {annotations.regression && (
         <Flex alignItems="center" gap={2} flexWrap="wrap">
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true} tone="critical">
             Severity
           </Text>
           {SEVERITIES.map((severity) => {
@@ -159,7 +166,7 @@ export function ResultCard(props: {
       {state.suspects.length > 0 && (
         <Card padding={3} radius={2} tone="caution">
           <VStack gap={3}>
-            <Text size={1} weight="semibold">
+            <Text size={1} weight="semibold" as="div" trim={true} tone="caution">
               {/* Two different reasons the range stays untested: a releases-only
                   session never proposes non-release commits (most have builds —
                   the drill-down below tests them), while in a commit-granular
@@ -171,10 +178,15 @@ export function ResultCard(props: {
               — any of these could be the culprit:
             </Text>
             {state.suspects.map((suspect) => (
-              <Text key={suspect.sha} size={1}>
-                <a href={commitUrl(suspect.sha)} target="_blank" rel="noreferrer">
+              <Text key={suspect.sha} size={1} as="div" trim={true} tone="caution">
+                <Link
+                  href={commitUrl(suspect.sha)}
+                  openInNewTab
+                  underlined={false}
+                  style={LINK_IN_TEXT}
+                >
                   <code>{suspect.sha.slice(0, 10)}</code> {suspect.subject}
-                </a>
+                </Link>
               </Text>
             ))}
             {onContinue && (

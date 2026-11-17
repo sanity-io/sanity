@@ -19,6 +19,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useRef,
   useState,
 } from 'react'
 import {Text, Flex, VStack, Icon} from 'ui5'
@@ -27,48 +28,80 @@ import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
-import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
+import {useWorkspace} from '../../../studio/workspace'
+import {hasStoredReleaseData, useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
+import {asReleaseMetadata, toReleaseMetadataRecord} from '../../metadata/mergeReleaseMetadata'
+import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadataFieldsEnabled'
 import {isReleaseType} from '../../store/types'
 import {DEFAULT_RELEASE_TYPE, RELEASE_TYPES_TONES} from '../../util/const'
 import {ReleaseAvatar} from '../ReleaseAvatar'
 import {ScheduleDatePicker} from '../ScheduleDatePicker'
+import {ReleaseMetadataForm} from './ReleaseMetadataForm'
 import {TitleDescriptionForm} from './TitleDescriptionForm'
+
+const NO_METADATA_FIELDS: readonly [] = []
 
 /** @internal */
 export function ReleaseForm(props: {
   onChange: (params: EditableReleaseDocument) => void
+  onValidityChange?: (valid: boolean) => void
   value: EditableReleaseDocument
 }): React.JSX.Element {
-  const {onChange, value} = props
+  const {onChange, onValidityChange, value} = props
   const {releaseType = DEFAULT_RELEASE_TYPE, intendedPublishAt} = value.metadata || {}
   const {t} = useTranslation()
   const {getStoredReleaseData, saveReleaseDataToStorage} = useReleaseFormStorage()
+  const metadataFieldsEnabled = useReleaseMetadataFieldsEnabled()
+  const configuredFields = useWorkspace().releases?.metadata?.fields ?? NO_METADATA_FIELDS
+  const metadataFields = metadataFieldsEnabled ? configuredFields : NO_METADATA_FIELDS
 
   const id = value._id
+  // Recovery is a mount action. A parent that passes a new onChange each render
+  // must not restore again after seeding writes the same draft back to storage.
+  const didRestore = useRef(false)
 
   useEffect(() => {
+    if (metadataFieldsEnabled) return
+    // The form is not mounted. Create must not stay disabled waiting for it.
+    onValidityChange?.(true)
+  }, [metadataFieldsEnabled, onValidityChange])
+
+  useEffect(() => {
+    if (didRestore.current) return
+    didRestore.current = true
     const storedData = getStoredReleaseData()
-    if (storedData) {
-      const updatedValue = {
-        metadata: {
-          title: storedData.title,
-          description: storedData.description,
-          releaseType: storedData.releaseType ?? DEFAULT_RELEASE_TYPE,
-          intendedPublishAt: storedData.intendedPublishAt,
-        },
-      }
-      onChange({_id: id, ...updatedValue})
-    }
-  }, [getStoredReleaseData, id, onChange])
+    if (!storedData || !hasStoredReleaseData(storedData)) return
+    onChange({
+      _id: id,
+      metadata: asReleaseMetadata({
+        title: storedData.title,
+        description: storedData.description,
+        releaseType: storedData.releaseType ?? DEFAULT_RELEASE_TYPE,
+        intendedPublishAt: storedData.intendedPublishAt,
+        ...(metadataFieldsEnabled ? storedData.fields : {}),
+      }),
+    })
+  }, [getStoredReleaseData, id, metadataFieldsEnabled, onChange])
 
   const handleOnChangeAndStorage = useCallback(
     (updatedValue: EditableReleaseDocument) => {
       onChange(updatedValue)
+      const record = toReleaseMetadataRecord(updatedValue.metadata)
+      const fields = Object.fromEntries(
+        metadataFields.flatMap((field) => {
+          const fieldValue = record[field.name]
+          return fieldValue === undefined ? [] : [[field.name, fieldValue]]
+        }),
+      )
       saveReleaseDataToStorage({
-        ...updatedValue.metadata,
+        title: updatedValue.metadata.title,
+        description: updatedValue.metadata.description,
+        releaseType: updatedValue.metadata.releaseType,
+        intendedPublishAt: updatedValue.metadata.intendedPublishAt,
+        fields,
       })
     },
-    [onChange, saveReleaseDataToStorage],
+    [metadataFields, onChange, saveReleaseDataToStorage],
   )
 
   const handleBundlePublishAtCalendarChange = useCallback(
@@ -114,6 +147,16 @@ export function ReleaseForm(props: {
           title: updatedRelease.metadata.title,
           description: updatedRelease.metadata.description,
         },
+      })
+    },
+    [handleOnChangeAndStorage, value],
+  )
+
+  const handleMetadataChange = useCallback(
+    (metadata: EditableReleaseDocument['metadata']) => {
+      handleOnChangeAndStorage({
+        ...value,
+        metadata,
       })
     },
     [handleOnChangeAndStorage, value],
@@ -202,6 +245,13 @@ export function ReleaseForm(props: {
         </VStack>
       </VStack>
       <TitleDescriptionForm release={value} onChange={handleTitleDescriptionChange} />
+      {metadataFieldsEnabled ? (
+        <ReleaseMetadataForm
+          metadata={value.metadata}
+          onChange={handleMetadataChange}
+          onValidityChange={onValidityChange}
+        />
+      ) : null}
     </VStack>
   )
 }

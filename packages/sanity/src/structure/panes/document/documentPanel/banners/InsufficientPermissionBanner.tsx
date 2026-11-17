@@ -1,8 +1,8 @@
 import {ReadOnlyIcon} from '@sanity/icons/ReadOnly'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Text} from '@sanity/ui'
 import {useMemo, useState} from 'react'
 import {Translate, useCurrentUser, useListFormat, useTranslation, useWorkspace} from 'sanity'
+import {Text} from 'ui5'
 
 import {AskToEditDialogOpened} from '../../../../components/requestPermissionDialog/__telemetry__/RequestPermissionDialog.telemetry'
 import {RequestPermissionDialog} from '../../../../components/requestPermissionDialog/RequestPermissionDialog'
@@ -67,7 +67,7 @@ export function InsufficientPermissionBanner({
     <>
       <Banner
         content={
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             <Translate
               t={t}
               i18nKey="banners.permission-check-banner.missing-permission"

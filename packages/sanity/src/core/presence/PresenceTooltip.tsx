@@ -1,6 +1,5 @@
-import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {UserAvatar} from '../components/userAvatar/UserAvatar'
@@ -29,7 +28,9 @@ export function PresenceTooltip(props: PresenceTooltipProps) {
               <UserAvatar user={item.user} status="online" />
             </div>
 
-            <Text size={1}>{item.user.displayName}</Text>
+            <Text size={1} as="div" trim={true}>
+              {item.user.displayName}
+            </Text>
           </Flex>
         ))}
       </VStack>

@@ -1,5 +1,5 @@
 import {CopyIcon} from '@sanity/icons/Copy'
-import {Button, Card, Inline, Select, Text, TextInput} from '@sanity/ui'
+import {Button, Card, Inline, Select, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {
   type ChangeEvent,
@@ -18,9 +18,10 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {Box, Flex, Grid, VStack} from 'ui5'
+import {Text, Box, Flex, Grid, VStack} from 'ui5'
 
-import {API_VERSIONS} from '../apiVersions'
+import {API_VERSIONS, VARIANTS_API_VERSION} from '../apiVersions'
+import {useVariantsEnabled} from '../hooks/useVariantsEnabled'
 import {visionLocaleNamespace} from '../i18n'
 import {
   getActiveVariant,
@@ -33,16 +34,14 @@ import {Header, QueryCopyLink, StyledLabel} from './VisionGui.styled'
 
 const PinnedReleasePerspectiveOption: ComponentType<{
   pinnedPerspective: PerspectiveContextValue
+  /** The navbar's variant, where the workspace has variants switched on */
+  variantTitle: string | undefined
   t: TFunction
-}> = ({pinnedPerspective, t}) => {
+}> = ({pinnedPerspective, variantTitle, t}) => {
   const name =
     typeof pinnedPerspective.selectedPerspective === 'object'
       ? pinnedPerspective.selectedPerspective.metadata.title
       : pinnedPerspective.selectedPerspectiveName
-
-  const variant = getDefaultVariant(pinnedPerspective.selectedVariants)
-  const variantName = getDefaultVariant(pinnedPerspective.selectedVariantNames)
-  const variantTitle = variant ? getVariantTitle(variant) : variantName
 
   const label = hasPinnedPerspective(pinnedPerspective)
     ? `(${t('settings.perspectives.pinned-release-label')})`
@@ -77,6 +76,7 @@ export interface VisionGuiHeaderProps {
   url?: string
   perspective?: SupportedPerspective
   isScheduledDraftsEnabled: boolean
+  onCopyUrl: () => void
 }
 
 export function VisionGuiHeader({
@@ -93,11 +93,20 @@ export function VisionGuiHeader({
   url,
   perspective,
   isScheduledDraftsEnabled,
+  onCopyUrl,
 }: VisionGuiHeaderProps) {
   const pinnedPerspective = usePerspective()
-  const isApiVersionLocked = Boolean(
-    getActiveVariant(perspective, getDefaultVariant(pinnedPerspective.selectedVariantNames)),
-  )
+  const isVariantsEnabled = useVariantsEnabled()
+  // The navbar has no variant selector where the workspace has variants switched off, so a
+  // variant its URL still carries is not one the studio shows
+  const navbarVariantName = isVariantsEnabled
+    ? getDefaultVariant(pinnedPerspective.selectedVariantNames)
+    : undefined
+  const navbarVariant = isVariantsEnabled
+    ? getDefaultVariant(pinnedPerspective.selectedVariants)
+    : undefined
+  const navbarVariantTitle = navbarVariant ? getVariantTitle(navbarVariant) : navbarVariantName
+  const isApiVersionLocked = Boolean(getActiveVariant(perspective, navbarVariantName))
   const {t} = useTranslation(visionLocaleNamespace)
   const operationUrlElement = useRef<HTMLInputElement | null>(null)
   const handleCopyUrl = useCallback(() => {
@@ -108,10 +117,11 @@ export function VisionGuiHeader({
       el.select()
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       document.execCommand('copy')
+      onCopyUrl()
     } catch {
       console.error('Unable to copy to clipboard :(')
     }
-  }, [])
+  }, [onCopyUrl])
 
   return (
     <Header paddingX={3} paddingY={2}>
@@ -145,7 +155,11 @@ export function VisionGuiHeader({
             </Card>
             <Tooltip
               animate
-              content={<Text size={1}>{t('settings.api-version-locked-for-variant')}</Text>}
+              content={
+                <Text size={1} as="div" trim={true}>
+                  {t('settings.api-version-locked-for-variant', {apiVersion: VARIANTS_API_VERSION})}
+                </Text>
+              }
               disabled={!isApiVersionLocked}
               placement="bottom"
               portal
@@ -215,7 +229,11 @@ export function VisionGuiHeader({
                 if (perspectiveName === 'pinnedRelease') {
                   return (
                     <Fragment key="pinnedRelease">
-                      <PinnedReleasePerspectiveOption pinnedPerspective={pinnedPerspective} t={t} />
+                      <PinnedReleasePerspectiveOption
+                        pinnedPerspective={pinnedPerspective}
+                        t={t}
+                        variantTitle={navbarVariantTitle}
+                      />
                       <option key="default" value="default">
                         {t('settings.perspectives.default')}
                       </option>

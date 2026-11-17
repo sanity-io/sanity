@@ -40,6 +40,7 @@ export const FEATURES: Record<string, string> = {
   scheduledPublishing: 'scheduledPublishing',
   sanityTasks: 'sanityTasks',
   singleDocRelease: 'singleDocRelease',
+  contentVariants: 'contentVariants',
 }
 /**
  * fetches all the enabled features for this project

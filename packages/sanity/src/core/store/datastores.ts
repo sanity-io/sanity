@@ -21,19 +21,29 @@ import {
   type ConnectionStatusStore,
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
+import {DocumentCommitCancelled} from './document/__telemetry__/commitCancelled.telemetry'
+import {DocumentCommitRetriesEnded} from './document/__telemetry__/commitRetries.telemetry'
 import {DocumentDesynced} from './document/__telemetry__/documentOutOfSyncEvents.telemetry'
 import {DocumentPairLoadingMeasured} from './document/__telemetry__/documentPairLoading.telemetry'
 import {DocumentRebaseOccurred} from './document/__telemetry__/documentRebase.telemetry'
 import {HighListenerLatencyOccurred} from './document/__telemetry__/listenerLatency.telemetry'
 import {MutationPerformanceMeasured} from './document/__telemetry__/mutationPerformance.telemetry'
+import {DocumentPairTornDownWithPendingMutations} from './document/__telemetry__/pendingMutations.telemetry'
 import {createDocumentStore, type DocumentStore} from './document/document-store'
 import {
+  type CommitCancelledTelemetryEvent,
+  type CommitRetriesEndedTelemetryEvent,
   type DocumentPairLoadedEvent,
   type DocumentRebaseTelemetryEvent,
   type LatencyReportEvent,
   type MutationPerformanceEvent,
+  type SyncErrorRecoveryTelemetryInfo,
 } from './document/getPairListener'
 import {type OutOfSyncError} from './document/utils/sequentializeListenerEvents'
+import {
+  createGlobalListenerStore,
+  type GlobalListenerStore,
+} from './globalListener/createGlobalListenerStore'
 import {createGrantsStore} from './grants/grantsStore'
 import {type GrantsStore} from './grants/types'
 import {createHistoryStore, type HistoryStore} from './history/createHistoryStore'
@@ -138,27 +148,55 @@ export function useHistoryStore(): HistoryStore {
 }
 
 /**
+ * The workspace's shared listener on every document in its dataset. Prefer it to opening a
+ * listener of your own: every listener holds one of the browser's limited connections.
+ *
+ * @internal
+ */
+export function useGlobalListenerStore(): GlobalListenerStore {
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const resourceCache = useResourceCache()
+
+  return useMemo(() => {
+    const globalListenerStore =
+      resourceCache.get<GlobalListenerStore>({
+        namespace: 'globalListenerStore',
+        dependencies: [client],
+      }) || createGlobalListenerStore({client})
+
+    resourceCache.set({
+      namespace: 'globalListenerStore',
+      dependencies: [client],
+      value: globalListenerStore,
+    })
+
+    return globalListenerStore
+  }, [client, resourceCache])
+}
+
+/**
  * @hidden
  * @beta */
 export function useDocumentPreviewStore(): DocumentPreviewStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const globalListenerStore = useGlobalListenerStore()
   const resourceCache = useResourceCache()
 
   return useMemo(() => {
     const documentPreviewStore =
       resourceCache.get<DocumentPreviewStore>({
         namespace: 'documentPreviewStore',
-        dependencies: [client],
-      }) || createDocumentPreviewStore({client})
+        dependencies: [client, globalListenerStore],
+      }) || createDocumentPreviewStore({client, globalListenerStore})
 
     resourceCache.set({
       namespace: 'documentPreviewStore',
-      dependencies: [client],
+      dependencies: [client, globalListenerStore],
       value: documentPreviewStore,
     })
 
     return documentPreviewStore
-  }, [client, resourceCache])
+  }, [client, globalListenerStore, resourceCache])
 }
 
 /**
@@ -179,8 +217,11 @@ export function useDocumentStore(): DocumentStore {
   const errorHandler = useStudioErrorHandler()
 
   const handleSyncErrorRecovery = useCallback(
-    (error: OutOfSyncError) => {
-      telemetry.log(DocumentDesynced, {errorName: error.name})
+    (error: OutOfSyncError, info?: SyncErrorRecoveryTelemetryInfo) => {
+      telemetry.log(DocumentDesynced, {
+        errorName: error.name,
+        hadPendingMutations: info?.hadPendingMutations,
+      })
     },
     [telemetry],
   )
@@ -236,6 +277,24 @@ export function useDocumentStore(): DocumentStore {
     [telemetry],
   )
 
+  const handleCommitCancelled = useCallback(
+    (event: CommitCancelledTelemetryEvent) => {
+      telemetry.log(DocumentCommitCancelled, event)
+    },
+    [telemetry],
+  )
+
+  const handleCommitRetriesEnded = useCallback(
+    (event: CommitRetriesEndedTelemetryEvent) => {
+      telemetry.log(DocumentCommitRetriesEnded, event)
+    },
+    [telemetry],
+  )
+
+  const handlePairTornDownWithPendingMutations = useCallback(() => {
+    telemetry.log(DocumentPairTornDownWithPendingMutations)
+  }, [telemetry])
+
   return useMemo(() => {
     const documentStore =
       resourceCache.get<DocumentStore>({
@@ -266,6 +325,9 @@ export function useDocumentStore(): DocumentStore {
           onDocumentPairLoaded: handleDocumentPairLoaded,
           onReportMutationPerformance: handleReportMutationPerformance,
           onDocumentRebase: handleDocumentRebase,
+          onCommitCancelled: handleCommitCancelled,
+          onCommitRetriesEnded: handleCommitRetriesEnded,
+          onPairTornDownWithPendingMutations: handlePairTornDownWithPendingMutations,
           snapshotFetchErrorHandler: errorHandler,
         },
       })
@@ -302,6 +364,9 @@ export function useDocumentStore(): DocumentStore {
     handleDocumentPairLoaded,
     handleReportMutationPerformance,
     handleDocumentRebase,
+    handleCommitCancelled,
+    handleCommitRetriesEnded,
+    handlePairTornDownWithPendingMutations,
     errorHandler,
   ])
 }
@@ -309,24 +374,26 @@ export function useDocumentStore(): DocumentStore {
 /** @internal */
 export function useConnectionStatusStore(): ConnectionStatusStore {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const {bifur} = useSource().__internal
+  const source = useSource()
+  const {bifur} = source.__internal
+  const token$ = source.auth.token
   const resourceCache = useResourceCache()
 
   return useMemo(() => {
     const connectionStatusStore =
       resourceCache.get<ConnectionStatusStore>({
         namespace: 'connectionStatusStore',
-        dependencies: [bifur],
-      }) || createConnectionStatusStore({bifur})
+        dependencies: [bifur, token$ ?? null],
+      }) || createConnectionStatusStore({bifur, token$})
 
     resourceCache.set({
       namespace: 'connectionStatusStore',
-      dependencies: [bifur],
+      dependencies: [bifur, token$ ?? null],
       value: connectionStatusStore,
     })
 
     return connectionStatusStore
-  }, [bifur, resourceCache])
+  }, [bifur, token$, resourceCache])
 }
 
 /**
@@ -382,6 +449,7 @@ export function useProjectStore(): ProjectStore {
   }, [client, resourceCache])
 }
 
+/* oxlint-disable no-deprecated -- the deprecated key-value store stays until the next major */
 /**
  * Module-level cache for KeyValueStore instances, keyed by project identity.
  * Uses a simple Map with string keys since the ResourceCache's WeakMap
@@ -407,6 +475,9 @@ function getKeyValueStoreCacheKey(client: SanityClient): string {
  * user preferences are shared across all datasets within a project.
  *
  * @internal
+ * @deprecated The Studio keeps its preferences through the App SDK now: use
+ * `useStudioPreference` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`
+ * instead. `useKeyValueStore` will be removed in Sanity Studio v7.
  */
 export function useKeyValueStore(): KeyValueStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -421,6 +492,7 @@ export function useKeyValueStore(): KeyValueStore {
     return keyValueStore
   }, [client])
 }
+/* oxlint-enable no-deprecated */
 
 /** @internal */
 export function useRenderingContextStore(): RenderingContextStore {

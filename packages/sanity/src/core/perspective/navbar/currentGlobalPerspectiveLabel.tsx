@@ -1,9 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
 // oxlint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
-import {Button, Text} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {ReleaseTitle} from '../../releases/components/ReleaseTitle'
@@ -57,11 +57,15 @@ export function CurrentGlobalPerspectiveLabel({
 
   return (
     <AnimatedTextWidth
-      text={isReleaseDocument(selectedPerspective) ? selectedPerspective._id : selectedPerspective}
+      text={
+        isReleaseDocument(selectedPerspective)
+          ? selectedPerspective.metadata.title || selectedPerspective._id
+          : selectedPerspective
+      }
     >
       {isPublishedPerspective(selectedPerspective) || isDraftPerspective(selectedPerspective) ? (
         <Box padding={2} style={{userSelect: 'none', overflow: 'hidden'}}>
-          <Text size={1} textOverflow="ellipsis" weight="medium">
+          <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
             {isPublishedPerspective(selectedPerspective)
               ? t('release.chip.published')
               : t('release.chip.global.drafts')}
@@ -71,10 +75,10 @@ export function CurrentGlobalPerspectiveLabel({
         <ReleasesLink selectedPerspective={selectedPerspective} />
       ) : (
         <Box padding={2} style={{userSelect: 'none', overflow: 'hidden'}}>
-          <Text size={1} textOverflow="ellipsis" weight="medium">
+          <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
             {isAgentBundleName(selectedPerspective)
               ? t(
-                  bundles.some((b) => b.id === selectedPerspective)
+                  bundles.some((bundle) => bundle.id === selectedPerspective)
                     ? 'version.agent-bundle.proposed-changes'
                     : 'version.agent-bundle.agent-changes',
                 )

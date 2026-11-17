@@ -1,7 +1,8 @@
 import {purple, yellow} from '@sanity/color'
 import {BoltIcon} from '@sanity/icons/Bolt'
-import {Card, Text} from '@sanity/ui'
-import {type Ref, type RefAttributes} from 'react'
+import {Card} from '@sanity/ui'
+import {type RefAttributes} from 'react'
+import {Icon} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -79,9 +80,7 @@ export function FreeTrialButtonTopbar({
           : t('free-trial.tooltip.trial-finished'),
       }}
     >
-      <Text size={0}>
-        <BoltIcon />
-      </Text>
+      <Icon size={0} icon={BoltIcon} style={{margin: '-0.3125rem'}} />
       {daysLeft > 0 && <SvgFilledOutline daysLeft={daysLeft} totalDays={totalDays} />}
     </Button>
   )

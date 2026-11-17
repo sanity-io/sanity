@@ -120,6 +120,10 @@ export function createMockSanityClient(
 
     withConfig: () => mockClient,
 
+    // No credential (the mock has neither a token nor cookies), reported as the real client
+    // reports a static one: one value, then complete.
+    observeAuth: () => of({}),
+
     request: (opts: {url: string; tag?: string; withCredentials?: boolean; method: HTTPMethod}) => {
       $log.request.push(opts)
 

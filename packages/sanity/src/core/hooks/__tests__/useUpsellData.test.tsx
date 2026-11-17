@@ -64,9 +64,17 @@ function Leaf({promise}: {promise: ObservablePromise<UpsellDataResult>}) {
 
 // The way a provider consumes the hook: the observable becomes a promise for a leaf, and the
 // request starts when the provider commits
-function Harness({dataUri = '/journey/test'}: {dataUri?: string}) {
+function Harness({
+  dataUri = '/journey/test',
+  enabled = true,
+  fallbackData,
+}: {
+  dataUri?: string
+  enabled?: boolean
+  fallbackData?: UpsellData
+}) {
   onHarnessRender()
-  const {upsellData$} = useUpsellData({dataUri, feature: 'test'})
+  const {upsellData$} = useUpsellData({dataUri, feature: 'test', enabled, fallbackData})
   const promise = useObservablePromise(upsellData$)
   useEffect(() => {
     void preloadObservablePromise(upsellData$)
@@ -136,6 +144,23 @@ describe('useUpsellData', () => {
     })
 
     expect(await screen.findByTestId('settled')).toHaveTextContent('error')
+  })
+
+  it('answers with the fallback and skips the request when disabled', async () => {
+    // A fresh copy: an earlier test's response is interpolated in place, which would rewrite a shared fixture
+    const fallbackData: UpsellData = {
+      ...upsellData,
+      ctaButton: {text: 'Upgrade', url: '{{baseUrl}}/manage/project/{{projectId}}/plan'},
+      secondaryButton: {text: 'Learn more', url: '{{baseUrl}}/docs/test'},
+    }
+
+    await mount(<Harness enabled={false} fallbackData={fallbackData} />)
+
+    expect(requestedUrls).toEqual([])
+    expect(screen.getByTestId('settled')).toHaveTextContent(
+      '{{baseUrl}}/manage/project/{{projectId}}/plan | {{baseUrl}}/docs/test',
+    )
+    expect(screen.queryByTestId('pending')).not.toBeInTheDocument()
   })
 
   it('settles with hasError instead of erroring when the request fails', async () => {

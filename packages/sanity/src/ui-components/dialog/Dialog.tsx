@@ -1,13 +1,8 @@
 /* oxlint-disable no-restricted-imports */
-import {
-  Button as UIButton,
-  Dialog as UIDialog,
-  type DialogProps as UIDialogProps,
-  Text,
-} from '@sanity/ui'
+import {Button as UIButton, Dialog as UIDialog, type DialogProps as UIDialogProps} from '@sanity/ui'
 import {type ComponentProps, type HTMLProps, type ReactNode, type RefAttributes} from 'react'
 import {useTranslation} from 'react-i18next'
-import {Flex, Box, type BoxProps} from 'ui5'
+import {Text, Flex, Box, type BoxProps} from 'ui5'
 
 /** @internal */
 export type DialogProps = Pick<
@@ -78,7 +73,7 @@ export function Dialog({
           <Flex gap={3} justifyContent="flex-end" padding={3} alignItems="center">
             {footer?.description && (
               <Box flexBasis="0%" flexGrow={1} paddingLeft={1}>
-                <Text size={1} muted>
+                <Text size={1} muted as="div" trim={true}>
                   {footer.description}
                 </Text>
               </Box>

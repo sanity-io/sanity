@@ -65,7 +65,12 @@ const GroupTabs = ({
             autoFocus={shouldAutoFocus && group.selected}
             disabled={disabled || group.disabled}
             icon={group?.icon}
-            iconRight={validationLevel ? <StatusIcon status={validationLevel} /> : undefined}
+            iconRight={
+              validationLevel ? (
+                // Align validation icon with tab label until ui5 Tab migration
+                <StatusIcon status={validationLevel} style={{transform: 'translateY(-1px)'}} />
+              ) : undefined
+            }
             name={group.name}
             onClick={onClick}
             selected={Boolean(group.selected)}

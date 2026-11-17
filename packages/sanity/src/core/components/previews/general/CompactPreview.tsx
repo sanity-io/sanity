@@ -1,6 +1,6 @@
-import {rem, Skeleton, Text, TextSkeleton} from '@sanity/ui'
+import {rem, Skeleton, TextSkeleton} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -97,7 +97,14 @@ export function CompactPreview(props: CompactPreviewProps) {
           gap={2}
           flexDirection="column"
         >
-          <Text size={1} style={{color: 'inherit'}} textOverflow="ellipsis" weight="medium">
+          <Text
+            size={1}
+            style={{color: 'inherit'}}
+            truncate={1}
+            weight="medium"
+            as="div"
+            trim={true}
+          >
             {title && renderPreviewNode(title, 'compact')}
             {!title && (
               <span style={{color: 'var(--card-muted-fg-color)'}}>

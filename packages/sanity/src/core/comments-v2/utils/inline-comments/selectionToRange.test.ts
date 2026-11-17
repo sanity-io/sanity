@@ -35,6 +35,7 @@ describe('comments: selectionToRange', () => {
     const range = selectionToRange(selection, [block])
 
     expect(range).toEqual({
+      type: 'portable-text',
       start: {_key: 'b1', offset: 0},
       end: {_key: 'b1', offset: 5},
     })
@@ -49,6 +50,7 @@ describe('comments: selectionToRange', () => {
     const range = selectionToRange(selection, [block])
 
     expect(range).toEqual({
+      type: 'portable-text',
       start: {_key: 'b1', offset: 6},
       end: {_key: 'b1', offset: 11},
     })
@@ -64,6 +66,7 @@ describe('comments: selectionToRange', () => {
     const range = selectionToRange(selection, [block])
 
     expect(range).toEqual({
+      type: 'portable-text',
       start: {_key: 'b1', offset: 0},
       end: {_key: 'b1', offset: 5},
     })
@@ -78,6 +81,7 @@ describe('comments: selectionToRange', () => {
     const range = selectionToRange(selection, multiBlock)
 
     expect(range).toEqual({
+      type: 'portable-text',
       start: {_key: 'b1', offset: 6},
       end: {_key: 'b2', offset: 6},
     })
@@ -105,6 +109,7 @@ describe('comments: selectionToRange', () => {
     }
 
     expect(selectionsToRange([second, first], multiBlock)).toEqual({
+      type: 'portable-text',
       start: {_key: 'b1', offset: 6},
       end: {_key: 'b2', offset: 6},
     })

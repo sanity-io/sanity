@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
 
 import {useClient} from '../../hooks/useClient'
-import {useDocumentPreviewStore} from '../../store/datastores'
+import {useGlobalListenerStore} from '../../store/datastores'
 import {useResourceCache} from '../../store/ResourceCacheProvider'
 import {useWorkspace} from '../../studio/workspace'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../util/releasesClient'
@@ -12,26 +12,26 @@ import {type ReleaseStore} from './types'
 export function useReleasesStore(): ReleaseStore {
   const resourceCache = useResourceCache()
   const workspace = useWorkspace()
-  const previewStore = useDocumentPreviewStore()
+  const globalListenerStore = useGlobalListenerStore()
   const studioClient = useClient(RELEASES_STUDIO_CLIENT_OPTIONS)
 
   return useMemo(() => {
     const releaseStore =
       resourceCache.get<ReleaseStore>({
-        dependencies: [workspace, previewStore],
+        dependencies: [workspace, globalListenerStore],
         namespace: 'ReleasesStore',
       }) ||
       createReleaseStore({
         client: studioClient,
-        previewStore,
+        globalListenerStore,
       })
 
     resourceCache.set({
-      dependencies: [workspace, previewStore],
+      dependencies: [workspace, globalListenerStore],
       namespace: 'ReleasesStore',
       value: releaseStore,
     })
 
     return releaseStore
-  }, [resourceCache, workspace, studioClient, previewStore])
+  }, [resourceCache, workspace, studioClient, globalListenerStore])
 }

@@ -1,8 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useState} from 'react'
-import {Box, Flex} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {LoadingBlock} from '../../components/loadingBlock/LoadingBlock'
@@ -107,7 +106,7 @@ export function PublishScheduledDraftDialog(
           <LoadingBlock />
         )}
         <Box paddingX={2}>
-          <Text size={1} muted>
+          <Text size={1} muted as="div" trim={true}>
             {t('release.dialog.publish-scheduled-draft.body')}
           </Text>
         </Box>

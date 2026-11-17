@@ -54,7 +54,7 @@ describe.each([false, true])('list validation with compiled schema=%s', (compile
     for (const faqTags of [undefined, [], [{...option, _key: 'auto-generated-0'}]]) {
       await expect(
         validateDocument({schema, document: {...document, faqTags}}),
-      ).resolves.toMatchObject({status: 'passed', markers: []})
+      ).resolves.toMatchObject({complete: true, markers: []})
     }
 
     for (const invalid of [
@@ -66,7 +66,7 @@ describe.each([false, true])('list validation with compiled schema=%s', (compile
         schema,
         document: {...document, faqTags: [{...invalid, _key: 'selected-key'}]},
       })
-      expect(result.status).toBe('failed')
+      expect(result.complete).toBe(true)
       expect(result.markers).toEqual([
         expect.objectContaining({
           code: validationMarkerCodes.valueNotAllowed,
@@ -102,7 +102,7 @@ describe.each([false, true])('list validation with compiled schema=%s', (compile
         schema,
         document: {...document, faqTags: [{...featured, _key: 'selected-key'}]},
       }),
-    ).resolves.toMatchObject({status: 'passed', markers: []})
+    ).resolves.toMatchObject({complete: true, markers: []})
     const invalid = await validateDocument({
       schema,
       document: {...document, faqTags: [{...popular, _key: 'selected-key'}]},
@@ -133,7 +133,7 @@ describe.each([false, true])('list validation with compiled schema=%s', (compile
 
     await expect(
       validateDocument({schema, document: {...document, choices: [allowed]}}),
-    ).resolves.toMatchObject({status: 'passed', markers: []})
+    ).resolves.toMatchObject({complete: true, markers: []})
     const invalid = await validateDocument({schema, document: {...document, choices: [disallowed]}})
     expect(invalid.markers).toEqual([
       expect.objectContaining({code: validationMarkerCodes.valueNotAllowed, path: ['choices', 0]}),

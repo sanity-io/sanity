@@ -1,7 +1,6 @@
 import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
-import {Text} from '@sanity/ui'
 import {Fragment} from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {LOADING_PANE} from '../../../../constants'
 import {type Panes} from '../../../../structureResolvers/useResolvedPanes'
@@ -29,7 +28,9 @@ export function DocumentHeaderBreadcrumb({
                   <ArrowRightIcon />
                 </Box>
               ) : (
-                <Text>/</Text>
+                <Text as="div" trim={true}>
+                  /
+                </Text>
               ))}
           </Fragment>
         )

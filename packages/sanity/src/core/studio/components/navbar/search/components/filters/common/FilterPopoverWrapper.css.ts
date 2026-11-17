@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const hiddenOverlay = style({
+export const hiddenOverlay = css({
   background: 'transparent',
   height: '100%',
   left: 0,

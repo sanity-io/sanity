@@ -1,12 +1,11 @@
-import {style} from '@vanilla-extract/css'
+import {css, firstThatWorks} from '#styled-system/css'
 
-export const containerFlex = style({
-  maxWidth: '480px',
-  overflow: ['hidden', 'clip'],
-  width: '100%',
-  selectors: {
-    '&&': {
-      minWidth: '150px',
-    },
+export const containerFlex = css({
+  'maxWidth': '480px',
+  'overflow': firstThatWorks('clip', 'hidden'),
+  'width': '100%',
+
+  '&&': {
+    minWidth: '150px',
   },
 })

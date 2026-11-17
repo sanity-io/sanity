@@ -1,8 +1,7 @@
 import {type Path} from '@sanity/types'
-import {Text} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {useCallback} from 'react'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {isDev} from '../../../../environment'
@@ -50,7 +49,7 @@ export function MissingKeysAlert(props: Props) {
         }
         title={t('form.error.missing-keys-alert.title')}
       >
-        <Text as="p" muted size={1}>
+        <Text as="p" muted size={1} trim={true} tone="caution">
           {t('form.error.missing-keys-alert.summary')}
         </Text>
 
@@ -58,13 +57,14 @@ export function MissingKeysAlert(props: Props) {
           marginTop={4}
           open={isDev}
           title={t('form.error.missing-keys-alert.details.title')}
+          tone="caution"
         >
           <VStack gap={3}>
-            <Text as="p" muted size={1}>
+            <Text as="p" muted size={1} trim={true} tone="caution">
               <Translate t={t} i18nKey="form.error.missing-keys-alert.details.description" />
             </Text>
 
-            <Text as="p" muted size={1}>
+            <Text as="p" muted size={1} trim={true} tone="caution">
               <Translate
                 t={t}
                 i18nKey="form.error.missing-keys-alert.details.additional-description"

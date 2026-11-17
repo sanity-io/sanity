@@ -1,8 +1,8 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {Fragment, type ReactNode} from 'react'
 import {css, styled} from 'styled-components'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 // At or above this many rows, a `multiColumn` section splits into two side-by-side columns so a
 // long list (e.g. six targeting conditions) reads as a compact block instead of a tall stack.
@@ -98,14 +98,14 @@ function PropertyRowsGrid({
         // oxlint-disable-next-line no-array-index-key
         <Fragment key={rowIndex}>
           {hasGlyphs && <GlyphCell>{row.icon}</GlyphCell>}
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             {row.label}
           </Text>
           {/* Pure-text value on one left edge; a long value truncates (title tooltip shows the full
               text) rather than wrapping and breaking the single-line grid. */}
           <Box>
             {typeof row.value === 'string' ? (
-              <Text size={1} textOverflow="ellipsis" title={row.value}>
+              <Text size={1} truncate={1} title={row.value} as="div" trim={true}>
                 {row.value}
               </Text>
             ) : (
@@ -163,7 +163,14 @@ export function DetailPropertiesPanel(props: {
             // oxlint-disable-next-line no-array-index-key
             <VStack key={sectionIndex} gap={2}>
               {section.title && (
-                <Text muted size={0} weight="semibold" style={{textTransform: 'uppercase'}}>
+                <Text
+                  muted
+                  size={0}
+                  weight="semibold"
+                  style={{textTransform: 'uppercase'}}
+                  as="div"
+                  trim={true}
+                >
                   {section.title}
                 </Text>
               )}

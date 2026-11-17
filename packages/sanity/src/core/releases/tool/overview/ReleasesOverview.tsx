@@ -29,22 +29,18 @@ import {useScheduledDraftsEnabled} from '../../../singleDocRelease/hooks/useSche
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {useWorkspace} from '../../../studio/workspace'
 import {isCardinalityOneRelease, isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
+import {useAllVariants} from '../../../variants/store/useAllVariants'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
+import {useCreateReleaseAvailability} from '../../hooks/useCreateReleaseAvailability'
 import {releasesLocaleNamespace} from '../../i18n'
 import {isReleaseDocument} from '../../store/types'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
-import {useReleaseOperations} from '../../store/useReleaseOperations'
-import {useReleasePermissions} from '../../store/useReleasePermissions'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
 import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {
-  filterReleasesForOverview,
-  getReleaseDefaults,
-  shouldShowReleaseInView,
-} from '../../util/util'
+import {filterReleasesForOverview, shouldShowReleaseInView} from '../../util/util'
 import {Table, type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
 import {CalendarPopover} from './CalendarPopover'
@@ -96,9 +92,11 @@ export function ReleasesOverview() {
     useReleasesUpsell()
   const {mode: scheduledDraftsMode} = useSingleDocReleaseEnabled()
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
-  const {document, releases: releasesConfig} = useWorkspace()
+  const {document, releases: releasesConfig, beta} = useWorkspace()
   const isReleasesEnabled = Boolean(releasesConfig?.enabled)
   const isDraftModelEnabled = document?.drafts?.enabled
+  const variantsEnabled = Boolean(beta?.variants?.enabled)
+  const {byId: variantsById, loading: variantsLoading} = useAllVariants()
 
   const router = useRouter()
   const navigateRef = useRef(router.navigate)
@@ -150,9 +148,7 @@ export function ReleasesOverview() {
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone(timeZoneScope)
   const getTimezoneAdjustedDateTimeRange = useTimezoneAdjustedDateTimeRange()
 
-  const {createRelease} = useReleaseOperations()
-  const {checkWithPermissionGuard} = useReleasePermissions()
-  const [hasCreatePermission, setHasCreatePermission] = useState<boolean | null>(null)
+  const createReleaseAvailability = useCreateReleaseAvailability()
 
   const mediaIndex = useMediaIndex()
   const isNarrowViewport = mediaIndex < 2
@@ -205,18 +201,6 @@ export function ReleasesOverview() {
       documentsMetadata: releasesMetadata[release._id] || {},
     }))
   }, [hasReleases, releasesMetadata, releases])
-
-  const isMounted = useRef(false)
-  useEffect(() => {
-    isMounted.current = true
-    void checkWithPermissionGuard(createRelease, getReleaseDefaults()).then((hasPermissions) => {
-      if (isMounted.current) setHasCreatePermission(hasPermissions)
-    })
-
-    return () => {
-      isMounted.current = false
-    }
-  }, [checkWithPermissionGuard, createRelease])
 
   // switch to open mode if on archived mode and there are no archived releases
   if (releaseGroupMode === 'archived' && !loadingReleases && !archivedReleases.length) {
@@ -382,18 +366,19 @@ export function ReleasesOverview() {
     return (
       <Button
         icon={AddIcon}
-        disabled={!hasCreatePermission || isCreateReleaseDialogOpen}
+        disabled={createReleaseAvailability.disabled || isCreateReleaseDialogOpen}
         onClick={handleOnClickCreateRelease}
         text={tCore('release.action.create-new')}
         tooltipProps={{
-          disabled: hasCreatePermission === true,
-          content: tCore('release.action.permission.error'),
+          disabled: createReleaseAvailability.tooltip === undefined,
+          content: createReleaseAvailability.tooltip,
         }}
       />
     )
   }, [
     cardinalityView,
-    hasCreatePermission,
+    createReleaseAvailability.disabled,
+    createReleaseAvailability.tooltip,
     isCreateReleaseDialogOpen,
     handleOnClickCreateRelease,
     tCore,
@@ -491,10 +476,13 @@ export function ReleasesOverview() {
 
   const tableColumns = useMemo(() => {
     if (cardinalityView === 'drafts') {
-      return scheduledDraftsOverviewColumnDefs(t, releaseGroupMode)
+      return scheduledDraftsOverviewColumnDefs(t, releaseGroupMode, {
+        variantsById: variantsEnabled ? variantsById : undefined,
+        variantsLoading: variantsEnabled && variantsLoading,
+      })
     }
     return releasesOverviewColumnDefs(t, releaseGroupMode)
-  }, [cardinalityView, releaseGroupMode, t])
+  }, [cardinalityView, releaseGroupMode, t, variantsEnabled, variantsById, variantsLoading])
 
   const hasBannerAboveTable =
     showReleaseNotFound || showDraftsDisabledBanner || showConfirmActiveScheduledDraftsBanner

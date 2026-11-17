@@ -1,10 +1,10 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {Label, Text} from '@sanity/ui'
+import {Label} from '@sanity/ui'
 import {MenuDivider} from '@sanity/ui/menu'
 import {type MouseEvent, useCallback} from 'react'
 import {TooltipOfDisabled, useGetI18nText, useI18nText} from 'sanity'
 import {useIntentLink} from 'sanity/router'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {MenuGroup} from '../../../ui-components/menuGroup/MenuGroup'
 import {MenuItem} from '../../../ui-components/menuItem/MenuItem'
@@ -102,7 +102,9 @@ function PaneContextMenuItemResolver(props: {disabled?: boolean; node: _PaneMenu
 function PaneContextMenuItem(props: {disabled?: boolean; node: _PaneMenuItem}) {
   const {disabled, node} = props
   const tooltipContent = typeof node.disabled === 'object' && (
-    <Text size={1}>{node.disabled.reason}</Text>
+    <Text size={1} as="div" trim={true}>
+      {node.disabled.reason}
+    </Text>
   )
   const {title} = useI18nText(node)
 
@@ -132,7 +134,9 @@ function PaneContextIntentMenuItem(props: {
 }) {
   const {disabled, intent, node} = props
   const tooltipContent = typeof node.disabled === 'object' && (
-    <Text size={1}>{node.disabled.reason}</Text>
+    <Text size={1} as="div" trim={true}>
+      {node.disabled.reason}
+    </Text>
   )
   const intentLink = useIntentLink({intent: intent.type, params: intent.params})
 

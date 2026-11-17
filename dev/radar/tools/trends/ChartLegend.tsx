@@ -1,5 +1,4 @@
-import {Text} from '@sanity/ui'
-import {Flex} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {CALIBRATION_EXPLAINER, formatValue, lineName, type TrendSeries, type TrendTag} from './data'
 import {baselineDetail, baselineLabel, type DriftResult} from './drift'
@@ -46,7 +45,13 @@ function LegendItem(props: {
   const content = (
     <Flex gap={1} alignItems="center">
       <Swatch dimmed={hidden}>{swatch}</Swatch>
-      <Text size={0} muted style={hidden ? {textDecoration: 'line-through'} : undefined}>
+      <Text
+        size={0}
+        muted
+        style={hidden ? {textDecoration: 'line-through'} : undefined}
+        as="div"
+        trim={true}
+      >
         {label}
       </Text>
     </Flex>
@@ -122,7 +127,7 @@ export function ChartLegend(props: {
           opacity={0.7}
         />
       </Swatch>
-      <Text size={0} muted>
+      <Text size={0} muted as="div" trim={true}>
         good ≤ {formatValue(series.goodThreshold, series.unit)}
       </Text>
     </Flex>
@@ -206,7 +211,7 @@ export function ChartLegend(props: {
                 strokeDasharray={lineDashFor(series, index)}
               />
             </Swatch>
-            <Text size={0} muted>
+            <Text size={0} muted as="div" trim={true}>
               {lineName(series, line)}
             </Text>
           </Flex>
@@ -215,7 +220,7 @@ export function ChartLegend(props: {
         {releasesItem}
         {goodItem}
         {series.goal !== 'context' && (
-          <Text size={0} muted>
+          <Text size={0} muted as="div" trim={true}>
             · {series.goal} is better
           </Text>
         )}
@@ -292,7 +297,7 @@ export function ChartLegend(props: {
       {releasesItem}
       {goodItem}
       {series.goal !== 'context' && (
-        <Text size={0} muted>
+        <Text size={0} muted as="div" trim={true}>
           {series.goal} is better
         </Text>
       )}

@@ -1,7 +1,7 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
-import {Box, Container, Flex} from 'ui5'
+import {Text, Box, Container, Flex} from 'ui5'
 
 interface Document {
   string?: string
@@ -15,7 +15,7 @@ export const PerspectiveExample = (props: {options: {doc$: Observable<Document>}
 
   return (
     <Container padding={4}>
-      <Text size={4} weight="bold">
+      <Text size={4} weight="bold" as="div" trim={true}>
         PerspectiveExample
       </Text>
       <Card paddingTop={2}>
@@ -24,7 +24,7 @@ export const PerspectiveExample = (props: {options: {doc$: Observable<Document>}
       </Card>
       <Flex marginTop={4}>
         <Box width="50%">
-          <Text size={3} weight="bold">
+          <Text size={3} weight="bold" as="div" trim={true}>
             Title and Number
           </Text>
           <pre>title: {JSON.stringify(doc?.string, null, 2)}</pre>
@@ -32,7 +32,7 @@ export const PerspectiveExample = (props: {options: {doc$: Observable<Document>}
           <pre>number: {JSON.stringify(doc?.number, null, 2)}</pre>
         </Box>
         <Box width="50%">
-          <Text size={3} weight="bold">
+          <Text size={3} weight="bold" as="div" trim={true}>
             Full JSON
           </Text>
           <pre>{JSON.stringify(doc, null, 2)}</pre>

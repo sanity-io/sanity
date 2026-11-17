@@ -2,11 +2,11 @@ import {DesktopIcon} from '@sanity/icons/Desktop'
 import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
 import {PanelLeftIcon} from '@sanity/icons/PanelLeft'
 import {RefreshIcon} from '@sanity/icons/Refresh'
-import {Card, Hotkeys, Switch, Text} from '@sanity/ui'
+import {Card, Hotkeys, Switch} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
 import {type RefObject, useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
@@ -107,7 +107,11 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
           onClick={toggleNavigator}
           selected={navigatorEnabled}
           tooltipProps={{
-            content: <Text size={1}>{t('preview-frame.navigator.toggle-button.tooltip')}</Text>,
+            content: (
+              <Text size={1} as="div" trim={true}>
+                {t('preview-frame.navigator.toggle-button.tooltip')}
+              </Text>
+            ),
             fallbackPlacements: ['bottom-start'],
             placement: 'bottom',
           }}
@@ -119,7 +123,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
         content={
           <Flex alignItems="center" style={{whiteSpace: 'nowrap'}}>
             <Box padding={1}>
-              <Text size={1}>
+              <Text size={1} as="div" trim={true}>
                 {t('preview-frame.overlay.toggle-button.tooltip', {
                   context: overlaysEnabled ? 'disable' : 'enable',
                 })}
@@ -156,7 +160,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
               />
             </div>
             <Box>
-              <Text muted={!overlaysEnabled} size={1} weight="medium">
+              <Text muted={!overlaysEnabled} size={1} weight="medium" as="div" trim={true}>
                 {t('preview-frame.overlay.toggle-button.text')}
               </Text>
             </Box>
@@ -172,7 +176,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
               <Tooltip
                 animate
                 content={
-                  <Text size={1}>
+                  <Text size={1} as="div" trim={true}>
                     {isLoaded
                       ? t('preview-frame.refresh-button.tooltip')
                       : t('preview-frame.status', {
@@ -226,7 +230,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
             node?.style.setProperty('view-transition-name', perspectiveToggleTooltipId)
           }}
           content={
-            <Text size={1}>
+            <Text size={1} as="div" trim={true}>
               {t('preview-frame.viewport-button.tooltip', {
                 context: viewport === 'desktop' ? 'narrow' : 'full',
               })}

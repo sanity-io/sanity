@@ -1,6 +1,7 @@
-import {PortalProvider, Text, usePortal} from '@sanity/ui'
+import {PortalProvider, usePortal} from '@sanity/ui'
 import {type ReactNode, useId} from 'react'
 import {type DocumentActionDialogProps} from 'sanity'
+import {Text} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
@@ -60,7 +61,7 @@ export function ActionStateDialog(props: ActionStateDialogProps) {
       width={1}
     >
       {unknownModal.content || (
-        <Text size={1}>
+        <Text size={1} as="div" trim={true}>
           Unexpected modal type (<code>{unknownModal.type}</code>)
         </Text>
       )}

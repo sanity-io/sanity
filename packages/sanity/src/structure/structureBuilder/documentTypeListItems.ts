@@ -31,15 +31,23 @@ function isList(collection: Collection): collection is List {
 
 function getDocumentTypes({schema, document}: StructureContext): string[] {
   // Schema types used by at least one singleton definition are excluded from
-  // default document lists. Developers surface singletons explicitly via
+  // default document lists, unless one of those definitions sets
+  // `allowNonSingletonDocuments`. Developers surface singletons explicitly via
   // `S.document().singleton()`, `S.listItem().singleton()`, or
   // `S.list().singletons()`.
   //
   // `S.documentTypeList(typeName)`, which is never filtered, can be used to
   // create document list showing singleton and non-singleton documents that
   // share a schema type.
+  const allowsNonSingletonDocuments = new Set(
+    document.singletons
+      .filter((singleton) => singleton.allowNonSingletonDocuments)
+      .map((singleton) => singleton.schemaType),
+  )
   const singletonSchemaTypeNames = new Set(
-    document.singletons.map((singleton) => singleton.schemaType),
+    document.singletons
+      .map((singleton) => singleton.schemaType)
+      .filter((schemaType) => !allowsNonSingletonDocuments.has(schemaType)),
   )
 
   return schema

@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {defer, isObservable, map, of, tap} from 'rxjs'
+import {defer, isObservable, map, type Observable, of, tap} from 'rxjs'
 import {startWith} from 'rxjs/operators'
 import {
   type ObjectSchemaType,
@@ -23,6 +23,23 @@ const INITIAL_STATE: DocumentLocationsState = {locations: []}
 type DocumentLocationsResult = {
   state: DocumentLocationsState
   status: DocumentLocationsStatus
+}
+
+/**
+ * Only a subscription that has never seen `source$` emit starts out with `initial`. The same
+ * observable is unsubscribed and subscribed again without a remount when the tool is hidden and
+ * shown inside an `<Activity>` boundary (`beta.reactActivityMode`); `useObservable` keeps the last
+ * value across that, and re-emitting the initial status would flash "Resolving locations..." over
+ * locations that are already known.
+ */
+function startWithUntilEmitted<T>(source$: Observable<T>, initial: T): Observable<T> {
+  let hasEmitted = false
+  const emitted$ = source$.pipe(
+    tap(() => {
+      hasEmitted = true
+    }),
+  )
+  return defer(() => (hasEmitted ? emitted$ : emitted$.pipe(startWith(initial))))
 }
 
 export function useDocumentLocations(props: {
@@ -81,22 +98,15 @@ export function useDocumentLocations(props: {
   const locationsResult$ = useMemo(() => {
     if (!result) return of(initialResult)
 
-    let hasResolved = false
-    const resolved$ = result.pipe(
-      map((state): DocumentLocationsResult => ({
-        state: state || INITIAL_STATE,
-        status: state ? 'resolved' : 'empty',
-      })),
-      tap(() => {
-        hasResolved = true
-      }),
+    return startWithUntilEmitted(
+      result.pipe(
+        map((state): DocumentLocationsResult => ({
+          state: state || INITIAL_STATE,
+          status: state ? 'resolved' : 'empty',
+        })),
+      ),
+      initialResult,
     )
-    // Only a subscription that has never seen the resolver emit starts out `resolving`. The same
-    // observable is unsubscribed and subscribed again without a remount when the tool is hidden
-    // and shown inside an `<Activity>` boundary (`beta.reactActivityMode`); `useObservable`
-    // keeps the last value across that, and re-emitting the initial status would flash
-    // "Resolving locations..." over locations that are already known.
-    return defer(() => (hasResolved ? resolved$ : resolved$.pipe(startWith(initialResult))))
   }, [result, initialResult])
 
   const {state, status} = useObservable(locationsResult$, initialResult)

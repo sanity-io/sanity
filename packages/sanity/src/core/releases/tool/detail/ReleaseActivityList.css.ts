@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const virtualContainer = style({
+export const virtualContainer = css({
   height: '100%',
   overflow: 'scroll',
 })

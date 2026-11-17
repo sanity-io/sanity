@@ -1,5 +1,5 @@
-import {Card, Heading, Text} from '@sanity/ui'
-import {Flex, Box, VStack} from 'ui5'
+import {Card, Heading} from '@sanity/ui'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {useQuery} from './loader'
 
@@ -46,9 +46,13 @@ export function InitialValues(): React.JSX.Element {
               <Heading as="h1" size={1}>
                 {item.title}
               </Heading>
-              <Text size={1}>{item.author?.name || 'No Author'}</Text>
+              <Text size={1} as="div" trim={true}>
+                {item.author?.name || 'No Author'}
+              </Text>
             </VStack>
-            <Text size={1}>{i + 1}</Text>
+            <Text size={1} as="div" trim={true}>
+              {i + 1}
+            </Text>
           </Flex>
         </Card>
       ))}

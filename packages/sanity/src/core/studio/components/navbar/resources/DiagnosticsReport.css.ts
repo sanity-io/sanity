@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const codeValue = style({
+export const codeValue = css({
   fontFamily: 'var(--card-code-family, monospace)',
   overflowWrap: 'anywhere',
 })

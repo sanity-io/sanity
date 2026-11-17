@@ -1,9 +1,9 @@
 'use client'
 import {EditIcon} from '@sanity/icons/Edit'
-import {Button, Card, Dialog, Text} from '@sanity/ui'
+import {Button, Card, Dialog} from '@sanity/ui'
 import {useState} from 'react'
 import {type InputProps} from 'sanity'
-import {Box, VStack} from 'ui5'
+import {Text, Box, VStack} from 'ui5'
 
 export function ModalObjectInput(props: InputProps) {
   const {value, renderDefault, schemaType, readOnly} = props
@@ -19,7 +19,7 @@ export function ModalObjectInput(props: InputProps) {
         <VStack gap={3}>
           <Box>
             {hasValue && (
-              <Text size={1} muted>
+              <Text size={1} muted as="div" trim={true}>
                 Configured
               </Text>
             )}

@@ -2,6 +2,7 @@ import {useNavigate} from '@sanity/sdk-react/dashboard'
 import {useEffect} from 'react'
 import {useRouter} from 'sanity/router'
 
+import {removeAuthHashParams} from '../../store/auth/legacy/authHashParams'
 import {useRenderingContextStore} from '../../store/datastores'
 import {useRouterHistory} from '../router/RouterHistoryContext'
 
@@ -25,7 +26,7 @@ export function useDashboardRouteHandler(): void {
     // The host has already pushed its URL onto the browser history it shares with Studio.
     const {pathname, search, hash} = window.location
     const hostUrl = `${pathname}${search}${hash}`
-    const studioUrl = `${history.location.pathname}${history.location.search}${history.location.hash}`
+    const studioUrl = `${history.location.pathname}${history.location.search}${removeAuthHashParams(history.location.hash)}`
     if (hostUrl !== studioUrl) navigateUrl({path: hostUrl, replace: true})
   })
 
@@ -33,8 +34,10 @@ export function useDashboardRouteHandler(): void {
     if (!isMessageBusHost) return undefined
     // Studio has already pushed its entry, so the host replaces its URL rather than pushing again.
     const report = () => {
+      // The cached location can still hold auth params the auth modules removed from the URL
       const {pathname, search, hash} = history.location
-      reportNavigation({path: `${pathname}${search}${hash}`, type: 'replace', scope: 'dashboard'})
+      const path = `${pathname}${search}${removeAuthHashParams(hash)}`
+      reportNavigation({path, type: 'replace', scope: 'dashboard'})
     }
     report()
     return history.listen(report)

@@ -1,10 +1,10 @@
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {AxisBottom, AxisLeft} from '@visx/axis'
 import {Group} from '@visx/group'
 import {scaleLinear, scaleTime} from '@visx/scale'
 import {LinePath} from '@visx/shape'
 import {useState} from 'react'
-import {VStack} from 'ui5'
+import {Text, VStack} from 'ui5'
 
 import {resolveTagPositions, type TrendTag} from './data'
 import {
@@ -157,13 +157,13 @@ export function SqrlChart(props: {
         >
           <Card radius={2} shadow={2} padding={2}>
             <VStack gap={1}>
-              <Text size={0} weight="semibold">
+              <Text size={0} weight="semibold" as="div" trim={true}>
                 SQRL {formatScore(hovered.score)}
               </Text>
-              <Text size={0} muted>
+              <Text size={0} muted as="div" trim={true}>
                 This commit {formatScore(hovered.scoreCommit)}
               </Text>
-              <Text size={0} muted>
+              <Text size={0} muted as="div" trim={true}>
                 {hovered.sha.slice(0, 7)} · {formatCommitDate(hovered.ms)}
               </Text>
             </VStack>

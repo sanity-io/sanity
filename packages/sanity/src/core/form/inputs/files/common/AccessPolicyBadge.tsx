@@ -1,6 +1,6 @@
 import {LockIcon} from '@sanity/icons/Lock'
-import {Card, Text} from '@sanity/ui'
-import {Flex, Box} from 'ui5'
+import {Card} from '@sanity/ui'
+import {Text, Flex, Box, Icon} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -11,10 +11,8 @@ export function AccessPolicyBadge(props: {hideBackground?: boolean}) {
 
   const content = (
     <Flex alignItems="center" justifyContent="center" gap={2}>
-      <Text size={1}>
-        <LockIcon />
-      </Text>
-      <Text size={1} weight="medium" muted>
+      <Icon size={1} muted icon={LockIcon} style={{margin: '-0.375rem'}} />
+      <Text size={1} weight="medium" muted as="div" trim={true}>
         {t('inputs.files.common.access-policy.private.label')}
       </Text>
     </Flex>

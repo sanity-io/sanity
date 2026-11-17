@@ -1,7 +1,6 @@
 import {type ClientPerspective, type MutationEvent} from '@sanity/client'
-import {Text} from '@sanity/ui'
 import {Translate, useTranslation} from 'sanity'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {visionLocaleNamespace} from '../i18n'
 import {getCsvBlobUrl, getJsonBlobUrl} from '../util/getBlobUrl'
@@ -106,7 +105,7 @@ export function VisionGuiResult({
         >
           <TimingsTextContainer alignItems="center">
             <Box>
-              <Text muted size={compactFooter ? 1 : 2}>
+              <Text muted size={compactFooter ? 1 : 2} as="div" trim={true}>
                 {t('result.execution-time-label')}:{' '}
                 {typeof queryTime === 'number'
                   ? `${queryTime}ms`
@@ -114,7 +113,7 @@ export function VisionGuiResult({
               </Text>
             </Box>
             <Box marginLeft={compactFooter ? 3 : 4}>
-              <Text muted size={compactFooter ? 1 : 2}>
+              <Text muted size={compactFooter ? 1 : 2} as="div" trim={true}>
                 {t('result.end-to-end-time-label')}:{' '}
                 {typeof e2eTime === 'number' ? `${e2eTime}ms` : t('result.timing-not-applicable')}
               </Text>

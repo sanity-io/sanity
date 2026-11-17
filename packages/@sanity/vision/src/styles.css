@@ -1,0 +1,4 @@
+/* Shows that the Vision stylesheet is loaded, which auto-updating studios serve as a static file */
+#sanity {
+  --static-css-file-loaded-vision: true;
+}

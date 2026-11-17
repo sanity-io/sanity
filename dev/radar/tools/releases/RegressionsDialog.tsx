@@ -1,11 +1,11 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Badge, Box, Button, Card, Dialog, Select, Text} from '@sanity/ui'
+import {Badge, Box, Button, Card, Dialog, Select} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useMemo, useState} from 'react'
+import {type CSSProperties, useMemo, useState} from 'react'
 import {type SanityClient} from 'sanity'
 import {useLink} from 'sanity/router'
-import {Flex, VStack} from 'ui5'
+import {Text, Flex, VStack, Icon, Link} from 'ui5'
 
 import {type SessionSummary, type TagSlice} from '../bisect/data'
 import {RelativeDate} from '../bisect/RelativeDate'
@@ -13,6 +13,12 @@ import {deleteSessions, updateResults} from '../bisect/sessions'
 import {isSeverity, SEVERITIES, SEVERITY_LABEL, SEVERITY_TONE} from '../bisect/severity'
 import {pluralize} from '../bisect/text'
 import {bisectSessionPath, compareTagsSemverDesc, type ReleaseRegressions} from './releaseInfo'
+
+/**
+ * @sanity/ui v5 removes styling for nested a tags. As a stop gap, apply the
+ * current v4 color as an inline style.
+ */
+const LINK_IN_TEXT: CSSProperties = {color: 'var(--card-link-color)'}
 
 /** A confirmed regression with the release that gets the blame for it. */
 export interface ReleaseRegression {
@@ -57,10 +63,10 @@ export function RegressionsDialog(props: {
     entries.length > 0 && (
       <VStack gap={3}>
         <VStack gap={2}>
-          <Text size={1} weight="semibold">
+          <Text size={1} weight="semibold" as="div" trim={true}>
             {title}
           </Text>
-          <Text size={0} muted>
+          <Text size={0} muted as="div" trim={true}>
             {hint}
           </Text>
         </VStack>
@@ -85,7 +91,7 @@ export function RegressionsDialog(props: {
       <Box padding={4}>
         <VStack gap={5}>
           {total === 0 && (
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               No regressions touch {tag} any more.
             </Text>
           )}
@@ -187,7 +193,14 @@ function RegressionRow(props: {
         <Box>
           <VStack gap={2}>
             <Flex alignItems="center" gap={2} flexWrap="wrap">
-              <Text size={1} weight="medium" style={{overflowWrap: 'anywhere'}}>
+              <Text
+                size={1}
+                weight="medium"
+                style={{overflowWrap: 'anywhere'}}
+                as="div"
+                trim={true}
+                tone={confirming ? 'critical' : undefined}
+              >
                 {session.description || session.title || session._id}
               </Text>
               {isSeverity(session.result?.severity) && (
@@ -212,34 +225,72 @@ function RegressionRow(props: {
               )}
             </Flex>
             {session.resultSubject && (
-              <Text size={1} muted textOverflow="ellipsis">
+              <Text
+                size={1}
+                muted
+                truncate={1}
+                as="div"
+                trim={true}
+                tone={confirming ? 'critical' : undefined}
+              >
                 {session.result?.firstBadSha?.slice(0, 7)} {session.resultSubject}
               </Text>
             )}
             {session.result?.note && (
-              <Text size={1} muted style={{overflowWrap: 'anywhere'}}>
+              <Text
+                size={1}
+                muted
+                style={{overflowWrap: 'anywhere'}}
+                as="div"
+                trim={true}
+                tone={confirming ? 'critical' : undefined}
+              >
                 {session.result.note}
               </Text>
             )}
             <Flex alignItems="center" gap={2} flexWrap="wrap">
               {session.result?.linearIssue && (
-                <Text size={0} muted>
+                <Text
+                  size={0}
+                  muted
+                  as="div"
+                  trim={true}
+                  tone={confirming ? 'critical' : undefined}
+                >
                   {session.result.linearIssue} ·
                 </Text>
               )}
               {session.createdBy && (
-                <Text size={0} muted>
+                <Text
+                  size={0}
+                  muted
+                  as="div"
+                  trim={true}
+                  tone={confirming ? 'critical' : undefined}
+                >
                   {session.createdBy} ·
                 </Text>
               )}
               {session.createdAt && <RelativeDate dateTime={session.createdAt} size={0} muted />}
-              <Text size={0} muted>
+              <Text size={0} muted as="div" trim={true} tone={confirming ? 'critical' : undefined}>
                 ·
               </Text>
-              <Text size={0}>
-                <a href={sessionHref} onClick={sessionLink.onClick}>
-                  Open in Bisect <LaunchIcon />
-                </a>
+              <Text size={0} as="div" trim={true} tone={confirming ? 'critical' : undefined}>
+                <Link
+                  href={sessionHref}
+                  onClick={sessionLink.onClick}
+                  underlined={false}
+                  style={LINK_IN_TEXT}
+                >
+                  Open in Bisect{' '}
+                  <Icon
+                    size={0}
+                    muted
+                    icon={LaunchIcon}
+                    tone={confirming ? 'critical' : undefined}
+                    style={{margin: '-0.3125rem', display: 'inline'}}
+                  />
+                </Link>
               </Text>
             </Flex>
           </VStack>

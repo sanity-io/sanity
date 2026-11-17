@@ -4,7 +4,7 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {UsersIcon} from '@sanity/icons/Users'
-import {Badge, Button, Card, Dialog, Tab, TabList, Text, TextInput} from '@sanity/ui'
+import {Badge, Button, Card, Dialog, Tab, TabList, TextInput} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
@@ -12,16 +12,16 @@ import {Tooltip} from '@sanity/ui/tooltip'
 import {dequal as isEqual} from 'dequal/lite'
 import {type ComponentProps, type ReactElement, useCallback, useState} from 'react'
 import {ContextMenuButton, UserAvatar, useDateTimeFormat, useTranslation} from 'sanity'
-import {Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
-import {fixedHeader, queryList, scrollContainer} from './QueryRecall.css'
+import * as styles from './QueryRecall.module.css'
 import {type ParsedUrlState} from './VisionGui'
 import {StyledLabel} from './VisionGui.styled'
 
 function FixedHeader(props: ComponentProps<typeof VStack>) {
-  return <VStack {...props} className={fixedHeader} />
+  return <VStack {...props} className={styles.fixedHeader} />
 }
 
 function ScrollContainer(props: ComponentProps<typeof Flex>) {
@@ -32,13 +32,13 @@ function ScrollContainer(props: ComponentProps<typeof Flex>) {
       flexBasis="0%"
       flexGrow={1}
       overflow="hidden"
-      className={scrollContainer}
+      className={styles.scrollContainer}
     />
   )
 }
 
 function QueryList(props: ComponentProps<typeof Box>) {
-  return <Box {...props} flexBasis="0%" flexGrow={1} overflow="auto" className={queryList} />
+  return <Box {...props} flexBasis="0%" flexGrow={1} overflow="auto" className={styles.queryList} />
 }
 
 export function QueryRecall({
@@ -463,7 +463,7 @@ export function QueryRecall({
                         <Text
                           weight="bold"
                           size={compactMode ? 2 : 3}
-                          textOverflow="ellipsis"
+                          truncate={1}
                           style={{
                             maxWidth: compactMode ? '180px' : '220px',
                             cursor: canMutateQuery ? 'pointer' : 'default',
@@ -482,6 +482,8 @@ export function QueryRecall({
                                 }
                               : undefined
                           }
+                          as="div"
+                          trim={true}
                         >
                           {optimisticTitles[q._key] ||
                             q.title ||
@@ -622,7 +624,7 @@ export function QueryRecall({
                           {q.shared ? t('label.shared') : t('label.personal')}
                         </Badge>
                       </Flex>
-                      <Text size={1} muted>
+                      <Text size={1} muted as="div" trim={true}>
                         {formatDate.format(new Date(q.savedAt || ''))}
                       </Text>
                     </VStack>
@@ -667,10 +669,10 @@ export function QueryRecall({
                       >
                         {q.shared ? t('label.shared') : t('label.personal')}
                       </Badge>
-                      <Text size={1} muted>
+                      <Text size={1} muted as="div" trim={true}>
                         •
                       </Text>
-                      <Text size={1} muted>
+                      <Text size={1} muted as="div" trim={true}>
                         {formatDate.format(new Date(q.savedAt || ''))}
                       </Text>
                     </Flex>
@@ -726,7 +728,9 @@ export function QueryRecall({
           }
         >
           <Box padding={4}>
-            <Text size={2}>{t('save-query.share-warning')}</Text>
+            <Text size={2} as="div" trim={true}>
+              {t('save-query.share-warning')}
+            </Text>
           </Box>
         </Dialog>
       )}

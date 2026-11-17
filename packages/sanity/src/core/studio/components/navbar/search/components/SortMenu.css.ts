@@ -1,5 +1,5 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const sortMenuContentFlex = style({
+export const sortMenuContentFlex = css({
   boxSizing: 'border-box',
 })

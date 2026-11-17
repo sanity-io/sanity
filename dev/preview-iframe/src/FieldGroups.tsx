@@ -1,5 +1,5 @@
-import {Card, Spinner, Text} from '@sanity/ui'
-import {Flex, Box, VStack} from 'ui5'
+import {Card, Spinner} from '@sanity/ui'
+import {Text, Flex, Box, VStack} from 'ui5'
 
 import {useQuery} from './loader'
 
@@ -57,18 +57,34 @@ export function FieldGroups(): React.JSX.Element {
         return (
           <Card key={item._id} padding={4}>
             <VStack gap={4}>
-              <Text weight={'bold'}>{item.field1 || 'N/A'}</Text>
-              <Text weight={'bold'}>{item.field2 || 'N/A'}</Text>
+              <Text weight={'bold'} as="div" trim={true}>
+                {item.field1 || 'N/A'}
+              </Text>
+              <Text weight={'bold'} as="div" trim={true}>
+                {item.field2 || 'N/A'}
+              </Text>
               {item.nested && (
                 <Flex gap={4} paddingLeft={2} flexDirection="column">
-                  <Text>{item.nested.field3 || 'N/A'}</Text>
-                  <Text>{item.nested.field4 || 'N/A'}</Text>
-                  <Text>{item.nested.field5 || 'N/A'}</Text>
+                  <Text as="div" trim={true}>
+                    {item.nested.field3 || 'N/A'}
+                  </Text>
+                  <Text as="div" trim={true}>
+                    {item.nested.field4 || 'N/A'}
+                  </Text>
+                  <Text as="div" trim={true}>
+                    {item.nested.field5 || 'N/A'}
+                  </Text>
                   {item.nested.nested && (
                     <Flex gap={4} paddingLeft={2} flexDirection="column">
-                      <Text>{item.nested.nested.field6 || 'N/A'}</Text>
-                      <Text>{item.nested.nested.field7 || 'N/A'}</Text>
-                      <Text>{item.nested.nested.field8 || 'N/A'}</Text>
+                      <Text as="div" trim={true}>
+                        {item.nested.nested.field6 || 'N/A'}
+                      </Text>
+                      <Text as="div" trim={true}>
+                        {item.nested.nested.field7 || 'N/A'}
+                      </Text>
+                      <Text as="div" trim={true}>
+                        {item.nested.nested.field8 || 'N/A'}
+                      </Text>
                     </Flex>
                   )}
                 </Flex>
@@ -76,8 +92,12 @@ export function FieldGroups(): React.JSX.Element {
               <Flex gap={4} paddingLeft={2} flexDirection="column">
                 {item.objectArray?.map((object) => (
                   <Flex key={object._key} gap={4} paddingLeft={2} flexDirection="column">
-                    <Text>{object.stringAlpha || 'N/A'}</Text>
-                    <Text>{object.stringBeta || 'N/A'}</Text>
+                    <Text as="div" trim={true}>
+                      {object.stringAlpha || 'N/A'}
+                    </Text>
+                    <Text as="div" trim={true}>
+                      {object.stringBeta || 'N/A'}
+                    </Text>
                   </Flex>
                 ))}
               </Flex>

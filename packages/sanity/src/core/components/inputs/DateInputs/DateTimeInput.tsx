@@ -1,5 +1,5 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
-import {Card, LayerProvider, Text, useClickOutsideEvent, useLayer} from '@sanity/ui'
+import {Card, LayerProvider, useClickOutsideEvent, useLayer} from '@sanity/ui'
 import {isPast} from 'date-fns/isPast'
 import {
   type FocusEvent,
@@ -14,7 +14,7 @@ import {
   type RefAttributes,
 } from 'react'
 import FocusLock from 'react-focus-lock'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Popover} from '../../../../ui-components/popover/Popover'
@@ -187,7 +187,9 @@ export function DateTimeInput(props: DateTimeInputProps & RefAttributes<HTMLInpu
                       <FocusLock onDeactivation={handleDeactivation}>
                         {isDateInPastWarningShown && (
                           <Card margin={1} padding={2} radius={2} shadow={1} tone="critical">
-                            <Text size={1}>{t('inputs.dateTime.past-date-warning')}</Text>
+                            <Text size={1} as="div" trim={true} tone="critical">
+                              {t('inputs.dateTime.past-date-warning')}
+                            </Text>
                           </Card>
                         )}
                         <DatePicker

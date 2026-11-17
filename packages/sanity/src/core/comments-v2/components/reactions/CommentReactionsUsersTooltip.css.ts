@@ -1,20 +1,20 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const contentStack = style({
+export const contentStack = css({
   maxWidth: '180px',
 })
 
-export const textGroup = style({
+export const textGroup = css({
   display: 'inline-block',
 })
 
-export const inlineText = style({
+export const inlineText = css({
   /** `!important` is carried over from the original rule. */
   display: 'inline-block !important',
   whiteSpace: 'break-spaces',
 })
 
-export const textBox = style({
+export const textBox = css({
   lineHeight: 1,
   textAlign: 'center',
 })

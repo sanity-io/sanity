@@ -2,10 +2,12 @@
 import {type TFunction} from 'i18next'
 import {Flex} from 'ui5'
 
+import {type SystemVariant} from '../../../variants/types'
 import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
 import {ScheduledDraftDocumentPreview} from './columnCells/ScheduledDraftDocumentPreview'
 import {ScheduledDraftMetadataCell} from './columnCells/ScheduledDraftMetadataCell'
+import {ScheduledDraftVariantCell} from './columnCells/ScheduledDraftVariantCell'
 import {ScheduledDraftWarningCell} from './columnCells/ScheduledDraftWarningCell'
 import {type Mode} from './queryParamUtils'
 import {type TableRelease} from './ReleasesOverview'
@@ -13,8 +15,39 @@ import {type TableRelease} from './ReleasesOverview'
 export const scheduledDraftsOverviewColumnDefs: (
   t: TFunction<'releases'>,
   releaseGroupMode: Mode,
-) => Column<TableRelease>[] = (t, releaseGroupMode) => {
+  options?: {
+    /** Present when variants are enabled: adds the "Variant" column. */
+    variantsById?: Map<string, SystemVariant>
+    variantsLoading?: boolean
+  },
+) => Column<TableRelease>[] = (t, releaseGroupMode, options) => {
+  const variantsById = options?.variantsById
+  const variantsLoading = Boolean(options?.variantsLoading)
+
   return [
+    ...(variantsById
+      ? [
+          {
+            id: 'variant',
+            sorting: false,
+            width: 180,
+            style: {minWidth: 120, maxWidth: 180},
+            header: (props) => (
+              <Flex {...props.headerProps} paddingX={2} paddingY={3}>
+                <Headers.BasicHeader text={t('table-header.variant')} />
+              </Flex>
+            ),
+            cell: ({cellProps, datum}) => (
+              <ScheduledDraftVariantCell
+                release={datum}
+                cellProps={cellProps}
+                variantsById={variantsById}
+                variantsLoading={variantsLoading}
+              />
+            ),
+          } satisfies Column<TableRelease>,
+        ]
+      : []),
     {
       id: 'documentPreview',
       sorting: false,

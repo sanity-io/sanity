@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {Suspense, use, useCallback, useMemo} from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {map} from 'rxjs'
@@ -14,7 +14,7 @@ import {
   useSource,
   useTranslation,
 } from 'sanity'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import {CrossDatasetIncomingReferenceDocumentPreview} from '../../../../components/incomingReferencesDecoration/CrossDatasetIncomingReference/CrossDatasetIncomingReferenceDocumentPreview'
 import {
@@ -54,7 +54,7 @@ function TypeSection<T>({
     <Flex key={type} padding={2} gap={1} marginBottom={2} flexDirection="column">
       <Flex alignItems="center" justifyContent="space-between" paddingBottom={2} gap={2}>
         <Box padding={2}>
-          <Text size={1} weight="medium">
+          <Text size={1} weight="medium" as="div" trim={true}>
             {title}
           </Text>
         </Box>
@@ -81,7 +81,7 @@ function TypeSection<T>({
         <Box padding={0}>
           <Card border radius={3} padding={1} tone="default">
             <Box paddingY={3} paddingX={2}>
-              <Text size={1} muted>
+              <Text size={1} muted as="div" trim={true}>
                 {emptyMessage}
               </Text>
             </Box>
@@ -182,7 +182,7 @@ function LoadedIncomingReferencesList({
       {showEmptyState && (
         <Card border radius={3} padding={1} tone="default">
           <Box paddingY={3} paddingX={2}>
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               {t('incoming-references-pane.no-references')}
             </Text>
           </Box>

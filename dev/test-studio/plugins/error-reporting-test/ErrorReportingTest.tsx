@@ -1,10 +1,10 @@
 import {type ClientError, ServerError} from '@sanity/client'
-import {Button, Card, Heading, Tab, TabList, TabPanel, Text} from '@sanity/ui'
+import {Button, Card, Heading, Tab, TabList, TabPanel} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {lazy, type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {CorsOriginErrorScreen, useClient, useProjectId, useStudioErrorHandler} from 'sanity'
 import {useRouter} from 'sanity/router'
-import {Container, Flex, Box, VStack} from 'ui5'
+import {Text, Container, Flex, Box, VStack} from 'ui5'
 
 import {
   installCheckCorsFetchInterceptor,
@@ -16,9 +16,15 @@ function triggerCustomErrorOnEvent() {
   throw new Error('Custom error triggered')
 }
 
+// Rolldown 1.2.15 folds `import(variable)` when the variable is a string literal,
+// then fails `sanity build` on the missing module. A call keeps the specifier
+// dynamic; the demo still requests a URL that 404s.
+function missingModuleSpecifier(): string {
+  return '/does-not-exist.js'
+}
+
 function triggerImportError() {
-  const filename = '/does-not-exist.js'
-  void import(/* @vite-ignore */ filename)
+  void import(/* @vite-ignore */ missingModuleSpecifier())
 }
 
 function triggerTypeErrorOnEvent(evt: any) {
@@ -157,10 +163,7 @@ export function ErrorReportingTest() {
   )
 }
 
-const ReactLazyError = lazy(() => {
-  const name = '/does-not-exist.js'
-  return import(/* @vite-ignore */ name)
-})
+const ReactLazyError = lazy(() => import(/* @vite-ignore */ missingModuleSpecifier()))
 
 function WithRenderError({text}: any) {
   return <div>{text.toUpperCase()}</div>
@@ -226,7 +229,7 @@ function DemoSection(props: {heading: string; description?: ReactNode; demos: De
         <VStack gap={3}>
           <Heading size={2}>{props.heading}</Heading>
           {props.description && (
-            <Text muted size={1}>
+            <Text muted size={1} as="div" trim={true}>
               {props.description}
             </Text>
           )}
@@ -249,15 +252,15 @@ function DemoRow({demo}: {demo: DemoEntry}) {
           <Box flexBasis="0%" flexGrow={1} style={{minWidth: 240}}>
             {demo.description ? (
               <VStack gap={3}>
-                <Text size={1} weight="medium">
+                <Text size={1} weight="medium" as="div" trim={true}>
                   {demo.label}
                 </Text>
-                <Text muted size={1}>
+                <Text muted size={1} as="div" trim={true}>
                   {demo.description}
                 </Text>
               </VStack>
             ) : (
-              <Text size={1} weight="medium">
+              <Text size={1} weight="medium" as="div" trim={true}>
                 {demo.label}
               </Text>
             )}
@@ -273,7 +276,7 @@ function DemoRow({demo}: {demo: DemoEntry}) {
         {demo.result && (
           <Card padding={3} radius={2} tone="transparent" border>
             <VStack gap={2}>
-              <Text muted size={0} weight="semibold">
+              <Text muted size={0} weight="semibold" as="div" trim={true}>
                 Result
               </Text>
               <Code size={1} style={{whiteSpace: 'pre-wrap'}}>
@@ -536,7 +539,7 @@ function RequestErrorsDemo() {
             invalid-session code (<InlineCode>SIO-401-AEX</InlineCode> expired,{' '}
             <InlineCode>SIO-401-ANF</InlineCode> not found); this one isn&apos;t tagged →
             resource-level denial → propagated to the local catch.{' '}
-            <Text as="span" weight="semibold">
+            <Text as="span" weight="semibold" trim={true}>
               You will NOT be logged out.
             </Text>
           </>
@@ -554,7 +557,7 @@ function RequestErrorsDemo() {
             <InlineCode>client.request()</InlineCode>: invalid-session 401s are claimed globally by
             the workspace request handler, no delegation needed. Expect the login screen with the
             &quot;Your session is no longer valid&quot; toast (not &quot;expired&quot;).{' '}
-            <Text as="span" weight="semibold">
+            <Text as="span" weight="semibold" trim={true}>
               You WILL be logged out and have to sign in again.
             </Text>
           </>
@@ -621,7 +624,7 @@ function RequestErrorsDemo() {
         <Flex flexDirection="column" height="100%">
           <Card padding={3} shadow={1} tone="transparent">
             <Flex alignItems="center" justifyContent="space-between" gap={3}>
-              <Text size={1} weight="medium">
+              <Text size={1} weight="medium" as="div" trim={true}>
                 CORS preview · custom domain, unregistered Studio
               </Text>
               <Button
@@ -651,7 +654,7 @@ function RequestErrorsDemo() {
       <VStack gap={4}>
         <VStack gap={3}>
           <Heading size={2}>Request errors</Heading>
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             Each button issues a real request through the studio&apos;s client pipeline. The call
             site decides per request whether to handle errors locally or delegate them to the
             studio&apos;s error UI via <InlineCode>useStudioErrorHandler()</InlineCode>. Locally

@@ -1,17 +1,29 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
-import {of, Subject} from 'rxjs'
+import {renderHook, waitFor} from '@testing-library/react'
+import {defer, firstValueFrom, of, Subject, throwError} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
+import {
+  createMockSanityClient,
+  createMockSanityClientAsClient,
+} from '../../../../../test/mocks/mockSanityClient'
+import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {createDocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {createSchema} from '../../../schema/createSchema'
+import {useDocumentPreviewStore} from '../../datastores'
 import {snapshotPair} from '../../document/document-pair/snapshotPair'
-import {getDocumentPairPermissions} from '../documentPairPermissions'
+import {getDocumentPairPermissions, useDocumentPairPermissions} from '../documentPairPermissions'
 import {type GrantsStore, type PermissionCheckResult} from '../types'
 
 vi.mock('../../document/document-pair/snapshotPair', () => ({snapshotPair: vi.fn()}))
+vi.mock('../../datastores', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useDocumentPreviewStore: vi.fn(),
+}))
 
 const mockedSnapshotPair = vi.mocked(snapshotPair)
+const mockedUseDocumentPreviewStore = vi.mocked(useDocumentPreviewStore)
 
 const schema = createSchema({
   name: 'default',
@@ -231,4 +243,241 @@ describe('getDocumentPairPermissions (Pattern-B memoization)', () => {
 
     subscription.unsubscribe()
   })
+})
+
+describe('getDocumentPairPermissions global listener', () => {
+  beforeEach(() => {
+    mockedSnapshotPair.mockReset()
+  })
+
+  const book = (_id: string): SanityDocument => ({
+    _id,
+    _type: 'book',
+    _rev: 'r1',
+    _createdAt: '2024-01-01T00:00:00Z',
+    _updatedAt: '2024-01-01T00:00:00Z',
+  })
+
+  it('checks the documents `observeDocument` reports, without checking out the document pair', () => {
+    const grantsStore = createGrantsStore()
+    const id = `book-${Math.random().toString(36).slice(2)}`
+    const documents = new Map<string, Subject<SanityDocument | undefined>>()
+    const observeDocument = vi.fn((documentId: string) => {
+      const document$ = new Subject<SanityDocument | undefined>()
+      documents.set(documentId, document$)
+      return document$.asObservable()
+    })
+
+    const results: PermissionCheckResult[] = []
+    const subscription = getDocumentPairPermissions({
+      client,
+      schema,
+      grantsStore,
+      id,
+      version: 'rABC',
+      type: 'book',
+      permission: 'discardVersion',
+      listener: 'global',
+      observeDocument,
+    }).subscribe((result) => results.push(result))
+
+    expect(observeDocument.mock.calls.map(([documentId]) => documentId)).toEqual([
+      `drafts.${id}`,
+      id,
+      `versions.rABC.${id}`,
+    ])
+    const version = book(`versions.rABC.${id}`)
+    documents.get(`drafts.${id}`)?.next(undefined)
+    documents.get(id)?.next(book(id))
+    documents.get(`versions.rABC.${id}`)?.next(version)
+
+    expect(grantsStore.checkDocumentPermission).toHaveBeenCalledExactlyOnceWith('update', version)
+    expect(results).toEqual([{granted: true, reason: ''}])
+    expect(mockedSnapshotPair).not.toHaveBeenCalled()
+    subscription.unsubscribe()
+  })
+
+  it('checks a document `observeDocument` reports as missing as `null`', () => {
+    const grantsStore = createGrantsStore()
+    const id = `book-${Math.random().toString(36).slice(2)}`
+
+    const subscription = getDocumentPairPermissions({
+      client,
+      schema,
+      grantsStore,
+      id,
+      type: 'book',
+      permission: 'publish',
+      listener: 'global',
+      observeDocument: (documentId) => of(documentId === id ? book(id) : undefined),
+    }).subscribe()
+
+    expect(grantsStore.checkDocumentPermission).toHaveBeenCalledWith('update', book(id))
+    expect(grantsStore.checkDocumentPermission).toHaveBeenCalledWith('update', null)
+    expect(grantsStore.checkDocumentPermission).toHaveBeenCalledWith('create', null)
+    subscription.unsubscribe()
+  })
+
+  it('retries a failed `observeDocument` instead of erroring the permission check', async () => {
+    vi.useFakeTimers({shouldAdvanceTime: true})
+    try {
+      const grantsStore = createGrantsStore()
+      const id = `book-${Math.random().toString(36).slice(2)}`
+      let attempts = 0
+      const observeDocument = (documentId: string) =>
+        documentId === id
+          ? defer(() => {
+              attempts += 1
+              return attempts === 1
+                ? throwError(() => new Error('503 Service Unavailable'))
+                : of(book(id))
+            })
+          : of(undefined)
+
+      const result = firstValueFrom(
+        getDocumentPairPermissions({
+          client,
+          schema,
+          grantsStore,
+          id,
+          type: 'book',
+          permission: 'publish',
+          listener: 'global',
+          observeDocument,
+        }),
+      )
+      await vi.advanceTimersByTimeAsync(1000)
+
+      await expect(result).resolves.toEqual({granted: true, reason: ''})
+      expect(attempts).toBe(2)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('stops retrying a global document load after three failures and errors the permission check', async () => {
+    vi.useFakeTimers({shouldAdvanceTime: true})
+    try {
+      const id = `book-${Math.random().toString(36).slice(2)}`
+      let attempts = 0
+      const observeDocument = (documentId: string) =>
+        documentId === id
+          ? defer(() => {
+              attempts += 1
+              return throwError(() => new Error('503 Service Unavailable'))
+            })
+          : of(undefined)
+
+      const result = firstValueFrom(
+        getDocumentPairPermissions({
+          client,
+          schema,
+          grantsStore: createGrantsStore(),
+          id,
+          type: 'book',
+          permission: 'publish',
+          listener: 'global',
+          observeDocument,
+        }),
+      )
+      // Attach before the retries elapse. The stream rejects during the timer
+      // flush, and a handler attached afterwards is already too late.
+      const rejected = expect(result).rejects.toThrow('503 Service Unavailable')
+      // one attempt plus three retries, delayed 1s + 2s + 3s
+      await vi.advanceTimersByTimeAsync(6_000)
+
+      await rejected
+      expect(attempts).toBe(4)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('errors without an `observeDocument` to follow the documents through', async () => {
+    const id = `book-${Math.random().toString(36).slice(2)}`
+
+    await expect(
+      firstValueFrom(
+        getDocumentPairPermissions({
+          client,
+          schema,
+          grantsStore: createGrantsStore(),
+          id,
+          type: 'book',
+          permission: 'publish',
+          listener: 'global',
+        }),
+      ),
+    ).rejects.toThrow('needs `observeDocument`')
+    expect(mockedSnapshotPair).not.toHaveBeenCalled()
+  })
+
+  it('keeps the document pair and the global listener in separate cache entries', () => {
+    createSnapshotPairMock()
+    const grantsStore = createGrantsStore()
+    const id = `book-${Math.random().toString(36).slice(2)}`
+    const shared = {client, schema, grantsStore, id, type: 'book', permission: 'publish'} as const
+
+    const withoutListener = getDocumentPairPermissions(shared)
+    const documentListener = getDocumentPairPermissions({...shared, listener: 'document'})
+    const globalListener = getDocumentPairPermissions({
+      ...shared,
+      listener: 'global',
+      observeDocument: () => of(undefined),
+    })
+
+    expect(documentListener).toBe(withoutListener)
+    expect(globalListener).not.toBe(documentListener)
+  })
+})
+
+describe('useDocumentPairPermissions', () => {
+  beforeEach(() => {
+    mockedSnapshotPair.mockReset()
+  })
+
+  it.each([
+    {name: 'no listener', listener: undefined, global: false},
+    {name: 'the document listener', listener: 'document', global: false},
+    {name: 'the global listener', listener: 'global', global: true},
+  ] as const)(
+    'checks out the document pair only off the global listener, given $name',
+    async ({listener, global}) => {
+      createSnapshotPairMock()
+      const documentPreviewStore = createDocumentPreviewStore({
+        client: createMockSanityClientAsClient(),
+      })
+      const observeDocument = vi
+        .spyOn(documentPreviewStore, 'unstable_observeDocument')
+        .mockImplementation(() => of(undefined))
+      mockedUseDocumentPreviewStore.mockReturnValue(documentPreviewStore)
+      const grantsStore = createGrantsStore()
+      const id = `book-${Math.random().toString(36).slice(2)}`
+      const wrapper = await createTestProvider({
+        client,
+        config: {
+          schema: {
+            types: [{name: 'book', type: 'document', fields: [{name: 'title', type: 'string'}]}],
+          },
+        },
+      })
+
+      renderHook(
+        () =>
+          useDocumentPairPermissions({
+            id,
+            type: 'book',
+            permission: 'publish',
+            grantsStore,
+            listener,
+          }),
+        {wrapper},
+      )
+
+      await waitFor(() => {
+        expect(mockedSnapshotPair).toHaveBeenCalledTimes(global ? 0 : 1)
+        expect(observeDocument).toHaveBeenCalledTimes(global ? 2 : 0)
+      })
+    },
+  )
 })

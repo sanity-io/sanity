@@ -1,6 +1,5 @@
-import {Text} from '@sanity/ui'
 import {MenuDivider} from '@sanity/ui/menu'
-import {Box} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {MenuGroup, type MenuGroupProps} from '../../../../ui-components/menuGroup/MenuGroup'
 import {
@@ -56,7 +55,7 @@ function FieldActionMenuGroup(props: {group: DocumentFieldActionGroup}) {
     return (
       <>
         <Box padding={2} paddingTop={3}>
-          <Text muted size={1} weight="medium">
+          <Text muted size={1} weight="medium" as="div" trim={true}>
             {title}
           </Text>
         </Box>

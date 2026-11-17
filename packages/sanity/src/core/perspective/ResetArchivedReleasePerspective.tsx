@@ -1,7 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Text} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useEffect} from 'react'
+import {Text} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {useTranslation} from '../i18n/hooks/useTranslation'
@@ -70,7 +70,7 @@ export function ResetArchivedReleasePerspective() {
         id: `bundle-deleted-toast-${perspectiveName}`,
         status: 'warning',
         title: (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             <Translate
               t={t}
               i18nKey={title}
@@ -79,7 +79,7 @@ export function ResetArchivedReleasePerspective() {
           </Text>
         ),
         description: description && (
-          <Text muted size={1}>
+          <Text muted size={1} as="div" trim={true}>
             <Translate t={t} i18nKey={description} />
           </Text>
         ),

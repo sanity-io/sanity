@@ -1,6 +1,6 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const root = style({
+export const root = css({
   overflow: 'hidden',
   flexBasis: 0,
   flexShrink: 1,

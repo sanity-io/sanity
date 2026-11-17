@@ -62,6 +62,7 @@ export const structure: StructureResolver = (
             .title('Campaigns')
             .singletons(['springCampaign', 'summerCampaign']),
         ),
+      S.listItem().singleton('currentlyReading'),
       S.listItem().singleton('validation'),
       S.listItem()
         .id('singletons')

@@ -21,6 +21,15 @@ export const singletons: UnresolvedSingletonDefinition[] = [
       headline: 'Summer 🌞',
     },
   }),
+  // A singleton over the `book` schema type, which is also used for ordinary
+  // documents. `allowNonSingletonDocuments` keeps the type's default "create
+  // new" template and its default document type list item.
+  defineSingleton({
+    documentId: 'currentlyReading',
+    schemaType: 'book',
+    title: 'Currently reading',
+    allowNonSingletonDocuments: true,
+  }),
   defineSingleton({
     id: 'validation',
     documentId: 'validation',

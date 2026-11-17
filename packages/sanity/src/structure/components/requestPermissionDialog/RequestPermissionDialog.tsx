@@ -1,11 +1,11 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Card, DialogProvider, Text, TextInput} from '@sanity/ui'
+import {Card, DialogProvider, TextInput} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useId, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {catchError, map, type Observable, of, startWith} from 'rxjs'
 import {type Role, useClient, useProjectId, useTranslation, useZIndex} from 'sanity'
-import {Box, Flex, VStack} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
 import {structureLocaleNamespace} from '../../i18n'
@@ -137,10 +137,12 @@ export function RequestPermissionDialog({
       >
         <Box className={dialogBody}>
           <VStack gap={4}>
-            <Text>{t('request-permission-dialog.description.text')}</Text>
+            <Text as="div" trim={true}>
+              {t('request-permission-dialog.description.text')}
+            </Text>
             {hasTooManyRequests || hasBeenDenied ? (
               <Card tone={'caution'} padding={3} radius={2} shadow={1}>
-                <Text size={1}>
+                <Text size={1} as="div" trim={true} tone="caution">
                   {hasTooManyRequests && (
                     <>{msgError ?? t('request-permission-dialog.warning.limit-reached.text')}</>
                   )}
@@ -164,7 +166,13 @@ export function RequestPermissionDialog({
                   }}
                 />
 
-                <Text align="right" muted size={1}>{`${note.length}/${MAX_NOTE_LENGTH}`}</Text>
+                <Text
+                  align="right"
+                  muted
+                  size={1}
+                  as="div"
+                  trim={true}
+                >{`${note.length}/${MAX_NOTE_LENGTH}`}</Text>
               </Flex>
             )}
           </VStack>

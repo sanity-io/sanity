@@ -1,9 +1,9 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const activityChildrenRoot = style({
+export const activityChildrenRoot = css({
   height: '100%',
 })
 
-export const activityItemChildrenContainer = style({
+export const activityItemChildrenContainer = css({
   width: '100%',
 })

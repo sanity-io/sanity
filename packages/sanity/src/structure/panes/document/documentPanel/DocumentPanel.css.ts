@@ -1,14 +1,14 @@
-import {style} from '@vanilla-extract/css'
+import {css} from '#styled-system/css'
 
-export const documentBox = style({
+export const documentBox = css({
   position: 'relative',
 })
 
-export const scroller = style({
+export const scroller = css({
   height: '100%',
 })
 
-export const scrollerEnabled = style({
+export const scrollerEnabled = css({
   overflow: 'auto',
   position: 'relative',
   scrollBehavior: 'smooth',

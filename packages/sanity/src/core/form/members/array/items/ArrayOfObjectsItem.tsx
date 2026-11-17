@@ -1,5 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type Path} from '@sanity/types'
+import {rem, Skeleton} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useRef} from 'react'
 import {tap} from 'rxjs/operators'
@@ -39,6 +40,7 @@ import {createProtoValue} from '../../../utils/createProtoValue'
 import {ensureKey} from '../../../utils/ensureKey'
 import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
 import {createDescriptionId} from '../../common/createDescriptionId'
+import {FormNodeSuspense, type FormNodeComponentKey} from '../../common/FormNodeSuspense'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
 
 /**
@@ -52,6 +54,12 @@ export interface MemberItemProps {
   renderBlock?: RenderBlockCallback
   renderInlineBlock?: RenderBlockCallback
   renderItem: RenderArrayOfObjectsItemCallback
+  /**
+   * Item renderer forwarded into the item input. Defaults to `renderItem`.
+   * Grid items render their own card, but nested arrays must keep the resolved
+   * item component instead of inheriting that card.
+   */
+  renderInputItem?: RenderArrayOfObjectsItemCallback
   renderField: RenderFieldCallback
   renderInput: RenderInputCallback
   renderPreview: RenderPreviewCallback
@@ -72,8 +80,10 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     renderInlineBlock,
     renderInput,
     renderItem,
+    renderInputItem,
     renderPreview,
   } = props
+  const inputRenderItem = renderInputItem ?? renderItem
   const {t} = useTranslation()
 
   const {
@@ -347,7 +357,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       renderField,
       renderInlineBlock,
       renderInput,
-      renderItem,
+      renderItem: inputRenderItem,
       renderPreview,
       schemaType: member.item.schemaType,
       validation: member.item.validation,
@@ -392,7 +402,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     renderField,
     renderInlineBlock,
     renderInput,
-    renderItem,
+    inputRenderItem,
     renderPreview,
   ])
 
@@ -406,53 +416,70 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
       onPathBlur={onPathBlur}
       onPathFocus={onPathFocus}
     >
-      <RenderItem
-        key={member.key}
-        index={member.index}
-        level={member.item.level}
-        value={member.item.value}
-        compareValue={member.item.compareValue}
-        __unstable_computeDiff={member.item.__unstable_computeDiff}
-        hasUpstreamVersion={member.item.hasUpstreamVersion}
-        changedFromBaseVariant={member.item.changedFromBaseVariant}
-        baseVariantValue={member.item.baseVariantValue}
-        hasBaseVariant={member.item.hasBaseVariant}
-        title={member.item.schemaType.title}
-        description={member.item.schemaType.description}
-        collapsible={member.collapsible}
-        collapsed={member.collapsed}
+      <FormNodeSuspense
+        fallback={<ObjectItemBestEffortFallback />}
         schemaType={member.item.schemaType}
-        parentSchemaType={member.parentSchemaType}
-        onInsert={handleInsert}
-        onCopy={handleCopy}
-        onRemove={onRemove}
-        presence={member.item.presence}
-        validation={member.item.validation}
-        open={member.open}
-        onOpen={handleOpen}
-        onClose={handleClose}
-        onExpand={handleExpand}
-        onCollapse={handleCollapse}
-        readOnly={member.item.readOnly}
-        focused={member.item.focused}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        inputId={member.item.id}
         path={member.item.path}
-        changed={member.item.changed}
-        inputProps={inputProps}
-        render={renderItem}
+        components={OBJECT_ITEM_COMPONENTS}
       >
-        <RenderInput
-          {...inputProps}
-          render={(...renderProps) => (
-            <FormNodeDivergenceDetail path={member.item.path} readOnly={member.item.readOnly}>
-              {renderInput(...renderProps)}
-            </FormNodeDivergenceDetail>
-          )}
-        />
-      </RenderItem>
+        <RenderItem
+          key={member.key}
+          index={member.index}
+          level={member.item.level}
+          value={member.item.value}
+          compareValue={member.item.compareValue}
+          __unstable_computeDiff={member.item.__unstable_computeDiff}
+          hasUpstreamVersion={member.item.hasUpstreamVersion}
+          changedFromBaseVariant={member.item.changedFromBaseVariant}
+          baseVariantValue={member.item.baseVariantValue}
+          hasBaseVariant={member.item.hasBaseVariant}
+          title={member.item.schemaType.title}
+          description={member.item.schemaType.description}
+          collapsible={member.collapsible}
+          collapsed={member.collapsed}
+          schemaType={member.item.schemaType}
+          parentSchemaType={member.parentSchemaType}
+          onInsert={handleInsert}
+          onCopy={handleCopy}
+          onRemove={onRemove}
+          presence={member.item.presence}
+          validation={member.item.validation}
+          open={member.open}
+          onOpen={handleOpen}
+          onClose={handleClose}
+          onExpand={handleExpand}
+          onCollapse={handleCollapse}
+          readOnly={member.item.readOnly}
+          focused={member.item.focused}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          inputId={member.item.id}
+          path={member.item.path}
+          changed={member.item.changed}
+          inputProps={inputProps}
+          render={renderItem}
+        >
+          <RenderInput
+            {...inputProps}
+            render={(...renderProps) => (
+              <FormNodeDivergenceDetail path={member.item.path} readOnly={member.item.readOnly}>
+                {renderInput(...renderProps)}
+              </FormNodeDivergenceDetail>
+            )}
+          />
+        </RenderItem>
+      </FormNodeSuspense>
     </FormCallbacksProvider>
+  )
+}
+
+// The item's input opens in a dialog or popover, which has a boundary of its own
+const OBJECT_ITEM_COMPONENTS: readonly FormNodeComponentKey[] = ['item']
+
+// The height of a default preview row
+function ObjectItemBestEffortFallback() {
+  return (
+    <Skeleton data-testid="custom-item-fallback" radius={1} animated style={{height: rem(59)}} />
   )
 }
 
