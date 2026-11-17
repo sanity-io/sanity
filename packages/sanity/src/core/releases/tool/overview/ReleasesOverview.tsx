@@ -42,6 +42,7 @@ import {CalendarPopover} from './CalendarPopover'
 import {CardinalityViewPicker} from './CardinalityViewPicker'
 import {ConfirmActiveScheduledDraftsBanner} from './ConfirmActiveScheduledDraftsBanner'
 import {DraftsDisabledBanner} from './DraftsDisabledBanner'
+import {OVERVIEW_CONTENT_SIZE} from './overviewLayout'
 import {
   buildReleasesSearchParams,
   type CardinalityView,
@@ -527,9 +528,9 @@ export function ReleasesOverview() {
           FILTERS (calendar date, lifecycle tabs, search) live below in the timeline zone / command
           lane. */}
       <Card flex="none" padding={3}>
-        {/* Toolbar, timeline and table share the table's 1280px column, so on wide screens they
-            read as one page rather than spreading to the edges. */}
-        <Container size={3}>
+        {/* Toolbar, timeline and table share one content column (OVERVIEW_CONTENT_SIZE), so on
+            wide screens they read as one page rather than spreading to the edges. */}
+        <Container size={OVERVIEW_CONTENT_SIZE}>
           <Flex alignItems="center" gap={3} flexWrap="wrap">
             <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2}>
               <Button
@@ -594,6 +595,7 @@ export function ReleasesOverview() {
           // reset search/selection/sort when the filter axis changes
           key={releaseFilterDate ? 'by_date' : releaseGroupMode}
           alwaysShowCommandLane
+          contentSize={OVERVIEW_CONTENT_SIZE}
           columnDefs={tableColumns}
           defaultSort={defaultTableSort}
           emptyState={tableEmptyState}

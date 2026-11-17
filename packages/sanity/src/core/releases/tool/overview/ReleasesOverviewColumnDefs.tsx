@@ -149,9 +149,7 @@ export const releasesOverviewColumnDefs: (
               const isDocument = isCardinalityOneRelease(release)
               return (
                 <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3} gap={2}>
-                  <Text muted size={1}>
-                    {isDocument ? <DocumentIcon /> : <DocumentsIcon />}
-                  </Text>
+                  <Icon icon={isDocument ? DocumentIcon : DocumentsIcon} size={1} muted />
                   <Text muted size={1}>
                     {isDocument ? t('overview.kind.document') : t('overview.kind.release')}
                   </Text>
@@ -401,9 +399,7 @@ export const releasesOverviewColumnDefs: (
             >
               {!isDeleted && hasError && (
                 <Tooltip content={<Text size={1}>{t('failed-publish-title')}</Text>} portal>
-                  <Text size={1}>
-                    <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-                  </Text>
+                  <Icon icon={ErrorOutlineIcon} size={1} tone="critical" />
                 </Tooltip>
               )}
               {!isDeleted && !hasError && state === 'active' && (
@@ -412,11 +408,7 @@ export const releasesOverviewColumnDefs: (
               {!isDeleted && state === 'scheduled' && (
                 // Same size and colour as the validation check on active rows.
                 <Tooltip content={t('summary.all-documents-validated')}>
-                  <Icon
-                    size={1}
-                    style={{margin: '-0.375rem', color: 'var(--card-icon-color)'}}
-                    icon={CheckmarkCircleIcon}
-                  />
+                  <Icon size={1} muted icon={CheckmarkCircleIcon} />
                 </Tooltip>
               )}
             </Flex>
