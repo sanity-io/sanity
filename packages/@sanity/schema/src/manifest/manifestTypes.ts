@@ -54,6 +54,8 @@ export interface ManifestSchemaType {
   }
   readOnly?: boolean | 'conditional'
   hidden?: boolean | 'conditional'
+  /** The kinds of versions documents of the type can have. Unset allows all of them. */
+  versions?: string[]
   validation?: ManifestValidationGroup[]
   fields?: ManifestField[]
   to?: ManifestReferenceMember[]

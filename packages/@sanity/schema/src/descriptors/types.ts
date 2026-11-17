@@ -23,7 +23,7 @@ export interface CommonTypeDef extends EncodableObject {
   fieldsets?: ObjectFieldset[]
 
   liveEdit?: true
-  allowVersions?: false
+  versions?: Array<'releases' | 'variants'>
   hidden?: true | FunctionMarker
   readOnly?: true | FunctionMarker
   options?: EncodableValue

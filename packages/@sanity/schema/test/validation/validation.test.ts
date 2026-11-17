@@ -797,4 +797,33 @@ describe('Validation test', () => {
       expect(collapseErrors(value)).toHaveLength(1)
     })
   })
+
+  describe('versions', () => {
+    const documentWith = (versions: unknown) => [
+      {
+        name: 'settings',
+        type: 'document',
+        versions,
+        fields: [{name: 'title', type: 'string'}],
+      },
+    ]
+
+    test.each([undefined, [], ['releases'], ['variants'], ['releases', 'variants']])(
+      'accepts %j',
+      (value) => {
+        const problems = validateSchema(documentWith(value)).get('settings')._problems
+        expect(problems).toEqual([])
+      },
+    )
+
+    test.each(['releases', ['release'], ['releases', 'drafts'], true])('rejects %j', (value) => {
+      const problems = validateSchema(documentWith(value)).get('settings')._problems
+      expect(problems).toEqual([
+        expect.objectContaining({
+          severity: 'error',
+          message: expect.stringContaining('The "versions" property must be'),
+        }),
+      ])
+    })
+  })
 })

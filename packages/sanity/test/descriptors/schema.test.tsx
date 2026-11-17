@@ -2,6 +2,7 @@ import {createSchemaFromManifestTypes, ValidationError} from '@sanity/schema/_in
 import {
   defineArrayMember,
   defineField,
+  type DocumentVersionKind,
   type FieldGroupDefinition,
   type FieldsetDefinition,
   type SchemaTypeDefinition,
@@ -1592,20 +1593,21 @@ describe('Document', () => {
     })
   })
 
-  describe('allowVersions', () => {
-    test.each([
+  describe('versions', () => {
+    test.each<[string, DocumentVersionKind[] | undefined, DocumentVersionKind[] | undefined]>([
       ['undefined', undefined, undefined],
-      ['true', true, undefined],
-      ['false', false, false],
-      ['non-boolean', 0 as unknown as boolean, undefined],
-    ])('%s', async (_label, allowVersions, expected) => {
+      ['empty', [], []],
+      ['variants', ['variants'], ['variants']],
+      ['both', ['releases', 'variants'], ['releases', 'variants']],
+      ['both, in another order', ['variants', 'releases'], ['releases', 'variants']],
+    ])('%s', async (_label, versions, expected) => {
       const {typeDef} = await convertType({
         name: 'foo',
         type: 'document',
         fields: [{name: 'title', type: 'string'}],
-        allowVersions,
+        versions,
       })
-      expect(typeDef.allowVersions).toBe(expected)
+      expect(typeDef.versions).toEqual(expected)
     })
   })
 })

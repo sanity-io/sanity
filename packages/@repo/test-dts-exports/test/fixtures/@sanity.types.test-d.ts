@@ -95,6 +95,7 @@ import type {
   DocumentRule,
   DocumentSystem,
   DocumentSystemRef,
+  DocumentVersionKind,
   EmailDefinition,
   EmailOptions,
   EmailRule,
@@ -645,6 +646,9 @@ describe('@sanity/types', () => {
   })
   test('DocumentSystemRef', () => {
     expectTypeOf<DocumentSystemRef>().toBeObject()
+  })
+  test('DocumentVersionKind', () => {
+    expectTypeOf<DocumentVersionKind>().not.toBeNever()
   })
   test('EmailDefinition', () => {
     expectTypeOf<EmailDefinition>().toBeObject()

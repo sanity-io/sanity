@@ -249,7 +249,7 @@ function convertCommonTypeDef(schemaType: SchemaType, path: string, opts: Option
     readOnly: conditionalTrue(ownProps.readOnly),
     hidden: conditionalTrue(ownProps.hidden),
     liveEdit: maybeTrue(ownProps.liveEdit),
-    allowVersions: maybeFalse(ownProps.allowVersions),
+    versions: maybeVersions(ownProps.versions),
     options: convertUnknown(ownProps.options),
     initialValue: convertUnknown(ownProps.initialValue),
     deprecated: typeof reason === 'string' ? {reason} : undefined,
@@ -396,9 +396,12 @@ function maybeTrue(val: unknown): true | undefined {
   return val === true ? true : undefined
 }
 
-/** Returns `false` for `false` and undefined for everything else. */
-function maybeFalse(val: unknown): false | undefined {
-  return val === false ? false : undefined
+const VERSION_KINDS = ['releases', 'variants'] as const
+
+/** Returns the known `versions` entries in a stable order, and undefined for a non-array. */
+function maybeVersions(val: unknown): Array<'releases' | 'variants'> | undefined {
+  if (!Array.isArray(val)) return undefined
+  return VERSION_KINDS.filter((kind) => val.includes(kind))
 }
 
 function conditionalTrue(val: unknown): true | undefined | FunctionMarker {
