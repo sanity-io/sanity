@@ -11,8 +11,8 @@ vi.mock('../../../../components/pane/usePane', () => ({
   usePane: vi.fn(() => ({collapsed: false})),
 }))
 
-vi.mock('../../../../useStructureTool', () => ({
-  useStructureTool: vi.fn(() => ({features: {resizablePanes: false}})),
+vi.mock('../useInspectorBesideForm', () => ({
+  useInspectorBesideForm: vi.fn(() => false),
 }))
 
 vi.mock('../../useDocumentPane', () => ({
@@ -20,6 +20,7 @@ vi.mock('../../useDocumentPane', () => ({
 }))
 
 const {useDocumentPane} = vi.mocked(await import('../../useDocumentPane'))
+const {useInspectorBesideForm} = vi.mocked(await import('../useInspectorBesideForm'))
 
 const closeInspector = vi.fn()
 
@@ -84,5 +85,23 @@ describe('DocumentInspectorPanel', () => {
 
     expect(await screen.findByText('Inspector contents')).toBeInTheDocument()
     expect(screen.queryByText('Something went wrong')).not.toBeInTheDocument()
+  })
+
+  it('renders a resizable panel with width limits when it sits beside the form', async () => {
+    useInspectorBesideForm.mockReturnValue(true)
+    await renderInspectorPanel(() => <div>Inspector contents</div>)
+
+    const panel = (await screen.findByText('Inspector contents')).closest('aside')
+    expect(panel).toHaveStyle({minWidth: '320px', maxWidth: '540px'})
+  })
+
+  it('renders a panel without width limits when it takes the place of the form', async () => {
+    useInspectorBesideForm.mockReturnValue(false)
+    await renderInspectorPanel(() => <div>Inspector contents</div>)
+
+    const panel = (await screen.findByText('Inspector contents')).closest('aside')
+    expect(panel).toHaveAttribute('data-ui', 'DocumentInspectorPanel')
+    expect(panel?.style.minWidth).toBe('')
+    expect(panel?.style.maxWidth).toBe('')
   })
 })

@@ -66,8 +66,9 @@ export function PaneLayout(
       panes: state.panes,
       resize: controller.resize,
       resizing: state.resizing,
+      rootWidth: width,
     }),
-    [collapsed, controller, state.expandedElement, state.panes, state.resizing],
+    [collapsed, controller, state.expandedElement, state.panes, state.resizing, width],
   )
 
   return (

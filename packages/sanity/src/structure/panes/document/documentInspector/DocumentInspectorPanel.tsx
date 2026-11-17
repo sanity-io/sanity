@@ -3,10 +3,10 @@ import {Resizable} from 'sanity'
 import {Box} from 'ui5'
 
 import {usePane} from '../../../components/pane/usePane'
-import {useStructureTool} from '../../../useStructureTool'
 import {DOCUMENT_INSPECTOR_MAX_WIDTH, DOCUMENT_INSPECTOR_MIN_WIDTH} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentInspectorErrorBoundary} from './DocumentInspectorErrorBoundary'
+import {useInspectorBesideForm} from './useInspectorBesideForm'
 
 interface DocumentInspectorPanelProps {
   documentId: string
@@ -20,7 +20,7 @@ export function DocumentInspectorPanel(
   const {documentId, documentType, flex} = props
   const {collapsed} = usePane()
   const {closeInspector, inspector} = useDocumentPane()
-  const {features} = useStructureTool()
+  const besideForm = useInspectorBesideForm()
 
   const handleClose = useCallback(() => {
     if (inspector) closeInspector(inspector.name)
@@ -38,7 +38,7 @@ export function DocumentInspectorPanel(
     </DocumentInspectorErrorBoundary>
   )
 
-  if (features.resizablePanes) {
+  if (besideForm) {
     return (
       <Resizable
         as="aside"
