@@ -12,11 +12,13 @@ import {useFormatRelativeLocalePublishDate} from '../../releases/hooks/useFormat
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {type Variant} from '../machines/selectionMachine'
+import {type VersionPresence as VersionPresenceList} from '../utils/groupPresenceByVersion'
 import {isNeverPublishedDraft} from '../utils/isNeverPublishedDraft'
 import {type ServedStatus} from '../utils/resolveServedVersion'
 import {LeadingGlyph} from './VariantSet/LeadingGlyph'
 import {StatusBadge} from './VariantSet/StatusBadge'
 import {VariantSetEntry} from './VariantSet/VariantSetEntry'
+import {VersionPresence} from './VariantSet/VersionPresence'
 
 /**
  * Shared row chrome for a document group version.
@@ -36,6 +38,7 @@ export function DocumentGroupEntry({
   selectionBlockedReason,
   onContextMenu,
   primaryActionRef,
+  presence,
 }: {
   variant: Variant
   releases: Map<string, ReleaseDocument>
@@ -68,6 +71,11 @@ export function DocumentGroupEntry({
   selectionBlockedReason?: string
   onContextMenu?: MouseEventHandler<HTMLButtonElement>
   primaryActionRef?: Ref<HTMLButtonElement>
+  /**
+   * The people who have this exact version open. Omitted where presence is not shown, which
+   * leaves the presence column empty.
+   */
+  presence?: VersionPresenceList
 }) {
   const {t} = useTranslation(studioLocaleNamespace)
   const {document} = variant
@@ -89,6 +97,8 @@ export function DocumentGroupEntry({
       data-served={servedStatus}
     >
       {leading !== undefined && <div className="atom">{leading}</div>}
+      {/* Before the row's primary action in the tree, so a click on an avatar opens the version */}
+      <VersionPresence presence={presence ?? NO_PRESENCE} />
       {/* The glyph's box is trimmed to the glyph, like an icon beside text anywhere else */}
       <LeadingGlyph
         className="variant-mark"
@@ -166,6 +176,8 @@ export function DocumentGroupEntry({
     </VariantSetEntry>
   )
 }
+
+const NO_PRESENCE: VersionPresenceList = []
 
 /**
  * Space on a focused row toggles its checkbox rather than activating the row's primary action,

@@ -703,6 +703,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.subject.version_other': 'versions',
   /** A version that was never published: its status line, with `status` the usual edited text, followed by a note */
   'document-group.version.not-published-yet': '{{status}} · not published yet',
+  /** Accessible name of the avatars on a version row in the document group inventory, naming the people who have that version open (singular) */
+  'document-group.version.presence_one': '{{names}} has this version open',
+  /** Accessible name of the avatars on a version row in the document group inventory, naming the people who have that version open (plural) */
+  'document-group.version.presence_other': '{{names}} have this version open',
   /** The label text that indicates a version in the document group is served for the selected perspective and variant */
   'document-group.version.served': 'Served',
   /** The label text that indicates a base version in the document group is served because the selected variant has no version */

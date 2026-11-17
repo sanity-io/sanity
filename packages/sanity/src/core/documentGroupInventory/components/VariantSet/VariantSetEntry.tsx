@@ -3,7 +3,7 @@ import {css, styled} from 'styled-components'
 
 import {mixToContrast} from '../../utils/contrast'
 import {SELECTION} from './selectionTokens'
-import {MARK_COLUMN_WIDTH} from './VariantSet'
+import {MARK_COLUMN_WIDTH, PRESENCE_COLUMN_WIDTH} from './VariantSet'
 
 /** The contrast of a resting checkbox's border against the row: the 3:1 minimum for a control. */
 const CHECKBOX_REST_CONTRAST = 3
@@ -40,12 +40,13 @@ export const VariantSetEntry = styled.div(({theme}) => {
     }
 
     /*
-     * The text column keeps at least 140px with the mark column and its gap, the same minimum as
-     * before the mark moved into the shared leading column.
+     * The text column keeps at least 140px with the presence and mark columns and its gap, the same
+     * minimum as before the mark moved into the shared leading column.
      */
     --version-text-min: 140px;
     --version-lines-min: calc(
-      var(--version-text-min) - ${MARK_COLUMN_WIDTH}px - var(--inventory-column-gap)
+      var(--version-text-min) - ${PRESENCE_COLUMN_WIDTH}px - ${MARK_COLUMN_WIDTH}px -
+        var(--inventory-column-gap)
     );
 
     /* The selection checkbox, at the far left of every row and every group header. */
@@ -137,6 +138,20 @@ export const VariantSetEntry = styled.div(({theme}) => {
       align-items: center;
       align-self: stretch;
       justify-content: center;
+    }
+
+    /*
+     * The presence column, just before the mark column: the avatars of the people who have this
+     * version open. The stack sits at the column's end, next to the mark, so a lone avatar has the
+     * same centre line on every row, with or without a diamond. A row nobody has open keeps the
+     * cell empty.
+     */
+    .version-presence {
+      display: flex;
+      grid-column: presence;
+      align-items: center;
+      justify-content: flex-end;
+      min-inline-size: 0;
     }
 
     /*

@@ -21,8 +21,18 @@ const CHECKBOX_COLUMN_WIDTH = 17
 export const MARK_COLUMN_WIDTH = 21
 
 /**
+ * The presence column, just before the mark column, for the avatars of the people who have a
+ * version open. It is as wide as the most it holds: two size 0 avatars, or the count of the rest
+ * and one avatar. It is reserved on every row, so a row does not move when someone opens it.
+ *
+ * @internal
+ */
+export const PRESENCE_COLUMN_WIDTH = 40
+
+/**
  * One grid for a set's header and its rows, which are subgrids of it: the row padding, the
- * checkbox gutter, a gap, the text, a gap, the mark column, then the row padding. Every header and
+ * checkbox gutter, a gap, the text, a gap, the presence column, the mark column, then the row
+ * padding. The header's text also takes the presence column, since a header has no avatars. Every header and
  * row text starts right after the checkbox gutter, at the same x, and every mark sits in the same
  * trailing column. The checkbox gutter is always there, so rows never move when the checkboxes
  * show. A set whose versions can never be selected, as in the picker, has no gutter.
@@ -45,7 +55,8 @@ export const VariantSet = styled(Card)(({theme}) => {
     [check-end] var(--inventory-column-gap)
     [text-start] minmax(0, 1fr)
     [text-end] var(--inventory-column-gap)
-    [mark-start] ${MARK_COLUMN_WIDTH}px
+    [presence-start] ${PRESENCE_COLUMN_WIDTH}px
+    [presence-end mark-start] ${MARK_COLUMN_WIDTH}px
     [mark-end] var(--inventory-row-padding)
     [row-end];
 
@@ -54,7 +65,8 @@ export const VariantSet = styled(Card)(({theme}) => {
       [row-start] var(--inventory-row-padding)
       [text-start] minmax(0, 1fr)
       [text-end] var(--inventory-column-gap)
-      [mark-start] ${MARK_COLUMN_WIDTH}px
+      [presence-start] ${PRESENCE_COLUMN_WIDTH}px
+      [presence-end mark-start] ${MARK_COLUMN_WIDTH}px
       [mark-end] var(--inventory-row-padding)
       [row-end];
   }

@@ -74,8 +74,9 @@ export const VariantSetHeader = styled(VariantSetEntry)(({theme}) => {
       justify-content: center;
     }
 
+    /* A header has no avatars, so its text also takes the presence column */
     .variant-set-text {
-      grid-column: text;
+      grid-column: text-start / presence-end;
       min-inline-size: 0;
     }
   `

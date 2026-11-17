@@ -130,7 +130,7 @@ function measure(variant: Variant) {
   return {
     row,
     lines,
-    /** The text column: the title and the meta, then the trailing mark column. */
+    /** The text column: the title and the meta, then the trailing presence and mark columns. */
     textColumnWidth: mark.right - lines.left,
     group: group.getBoundingClientRect(),
     badges,
@@ -205,7 +205,8 @@ describe('DocumentGroupEntry in a narrow panel', () => {
 
   /*
    * One 12px padding, the 17px checkbox gutter and an 8px gap: the text starts 37px in, right after
-   * the gutter, in the group header and in every row alike. The mark column trails on the right.
+   * the gutter, in the group header and in every row alike. The presence and mark columns trail
+   * on the right.
    */
   it('starts header and row text 37px in at a 300px panel, right after the checkbox gutter', async () => {
     const {settleChromaticEndState} = testHelpers()
@@ -226,13 +227,13 @@ describe('DocumentGroupEntry in a narrow panel', () => {
       expect(Math.abs(lines.left - panelLeft - 37)).toBeLessThanOrEqual(1)
     }
 
-    // 300 - 37 - 8 (gap) - 21 (mark) - 12 = 222px for the text
-    const mark = getRow(DEFAULT_ROW).querySelector<HTMLElement>('.variant-mark')!
+    // 300 - 37 - 8 (gap) - 40 (presence) - 21 (mark) - 12 = 182px for the text
+    const presence = getRow(DEFAULT_ROW).querySelector<HTMLElement>('.version-presence')!
     const textWidth =
-      mark.getBoundingClientRect().left -
+      presence.getBoundingClientRect().left -
       8 -
       getPart(getRow(DEFAULT_ROW), 'version-lines').getBoundingClientRect().left
-    expect(Math.abs(textWidth - 222)).toBeLessThanOrEqual(1)
+    expect(Math.abs(textWidth - 182)).toBeLessThanOrEqual(1)
   })
 
   it('trims the padding to 8px below 240px, so the text starts 33px in', async () => {
