@@ -35,6 +35,7 @@ import {
 } from './getAudienceLine'
 import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
 import {audienceKey, groupPresenceByAudience} from './groupPresenceByAudience'
+import {hasMoreInInventory} from './hasMoreInInventory'
 import {type DocumentVersionStatusGroup} from './sortDocumentVersionsForStatus'
 
 type RowPresence = Omit<DocumentPresence, 'path'>
@@ -411,7 +412,8 @@ function AudienceRow({
  * The content of the versions flyout on a document list row: one row per audience, with its latest
  * event as the subtitle and the variant diamond in a trailing column at the right edge, and a last row that opens the document group
  * inventory. When there are more audiences than the flyout lists, that last row counts the others
- * ("See 2 more in the inventory"). Rows are menu items, so the host can move focus between them with the arrow keys.
+ * ("See 2 more in the inventory"). The last row shows only when the inventory has more to see: a
+ * document with only Published and/or Draft has none (see `hasMoreInInventory`). Rows are menu items, so the host can move focus between them with the arrow keys.
  *
  * @internal
  */
@@ -464,6 +466,9 @@ export function DocumentVersionsFlyoutList(props: {
 
   // Audiences past the first ones: the footer counts them, since that is where they are
   const hiddenCount = Math.max(0, groups.length - MAX_AUDIENCES)
+  // The footer opens the inventory only when it has more to show than these rows: releases,
+  // variants or rows past the cap. People who sit on no listed row keep it, so everyone shows once.
+  const showFooter = hasMoreInInventory(groups, hiddenCount) || footerPeople.length > 0
 
   if (loading) {
     return (
@@ -506,20 +511,22 @@ export function DocumentVersionsFlyoutList(props: {
             }
           />
         ))}
-        <FlyoutRow
-          renderMedia={() => <Icon icon={DocumentsIcon} size={2} />}
-          onClick={onOpenInventory}
-          presence={people.length > 0 ? footerPeople : undefined}
-          testId="document-versions-flyout-inventory"
-          title={
-            <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
-              {hiddenCount > 0
-                ? t('document-group.flyout.footer.see-more', {count: hiddenCount})
-                : t('document-group.flyout.see-all-versions')}
-            </Text>
-          }
-          renderTrailing={() => <Icon icon={ChevronRightIcon} size={1} />}
-        />
+        {showFooter ? (
+          <FlyoutRow
+            renderMedia={() => <Icon icon={DocumentsIcon} size={2} />}
+            onClick={onOpenInventory}
+            presence={people.length > 0 ? footerPeople : undefined}
+            testId="document-versions-flyout-inventory"
+            title={
+              <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
+                {hiddenCount > 0
+                  ? t('document-group.flyout.footer.see-more', {count: hiddenCount})
+                  : t('document-group.flyout.see-all-versions')}
+              </Text>
+            }
+            renderTrailing={() => <Icon icon={ChevronRightIcon} size={1} />}
+          />
+        ) : null}
       </div>
     </Card>
   )

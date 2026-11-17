@@ -60,16 +60,28 @@ describe('DocumentVersionsFlyoutList footer', () => {
     })
   })
 
-  it('offers to see all versions for a single version, with the same words', async () => {
-    await renderList([version(`drafts.${GROUP_ID}`, 'drafts')])
-    expect(await screen.findByText('See all versions in the inventory')).toBeTruthy()
-    expect(screen.queryByText('Manage versions in inventory')).toBeNull()
+  it('leaves the footer out for a document with only Published and Draft', async () => {
+    await renderList([version(GROUP_ID), version(`drafts.${GROUP_ID}`, 'drafts')])
+    expect(await screen.findByTestId('document-versions-flyout')).toBeTruthy()
+    expect(screen.queryByTestId('document-versions-flyout-inventory')).toBeNull()
+    expect(screen.queryByText('See all versions in the inventory')).toBeNull()
   })
 
-  it('offers to see all versions, without a count, for more than one', async () => {
-    await renderList([version(GROUP_ID), version(`drafts.${GROUP_ID}`, 'drafts')])
+  it('leaves the footer out for a draft alone', async () => {
+    await renderList([version(`drafts.${GROUP_ID}`, 'drafts')])
+    expect(await screen.findByTestId('document-versions-flyout')).toBeTruthy()
+    expect(screen.queryByTestId('document-versions-flyout-inventory')).toBeNull()
+  })
+
+  it('offers to see all versions, without a count, when the document is in a release', async () => {
+    await renderList([
+      version(GROUP_ID),
+      version(`drafts.${GROUP_ID}`, 'drafts'),
+      version(`versions.${activeASAPRelease.name}.${GROUP_ID}`, activeASAPRelease.name),
+    ])
     expect(await screen.findByText('See all versions in the inventory')).toBeTruthy()
-    expect(screen.queryByText(/\d versions/)).toBeNull()
+    expect(screen.queryByText(/\d more/)).toBeNull()
+    expect(screen.queryByText('Manage versions in inventory')).toBeNull()
   })
 
   it('shows a loading state, not an empty panel, while the versions load', async () => {
