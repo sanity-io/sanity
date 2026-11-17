@@ -19,18 +19,19 @@ export interface DocumentRule extends RuleDef<DocumentRule, SanityDocument> {}
  *
  * @beta
  */
-export type DocumentVersionKind = 'releases' | 'variants'
+export type DocumentVersionKind = 'releases' | 'scheduled-drafts' | 'variants'
 
 /** @public */
 export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
   type: 'document'
   liveEdit?: boolean
   /**
-   * The kinds of versions documents of this type can have. Leave it unset to allow all of them,
-   * use `['variants']` for variants only, or `[]` for none. Combine `[]` with `liveEdit: true` to
-   * also skip drafts, so the document is only ever edited in place.
+   * The kinds of versions documents of this type can have: `'releases'`, `'scheduled-drafts'`
+   * and `'variants'`. Leave it unset to allow all of them, list the ones to allow (for example
+   * `['variants']`), or use `[]` for none. Combine `[]` with `liveEdit: true` to also skip drafts,
+   * so the document is only ever edited in place.
    *
-   * @defaultValue ['releases', 'variants']
+   * @defaultValue ['releases', 'scheduled-drafts', 'variants']
    * @beta
    */
   versions?: DocumentVersionKind[]

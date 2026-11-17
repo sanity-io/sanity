@@ -1598,8 +1598,12 @@ describe('Document', () => {
       ['undefined', undefined, undefined],
       ['empty', [], []],
       ['variants', ['variants'], ['variants']],
-      ['both', ['releases', 'variants'], ['releases', 'variants']],
-      ['both, in another order', ['variants', 'releases'], ['releases', 'variants']],
+      ['scheduled drafts', ['scheduled-drafts'], ['scheduled-drafts']],
+      [
+        'all, in another order',
+        ['variants', 'scheduled-drafts', 'releases'],
+        ['releases', 'scheduled-drafts', 'variants'],
+      ],
     ])('%s', async (_label, versions, expected) => {
       const {typeDef} = await convertType({
         name: 'foo',

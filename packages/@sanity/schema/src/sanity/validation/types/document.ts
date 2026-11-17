@@ -4,7 +4,7 @@ import inspect from '../../inspect'
 import {error} from '../createValidationResult'
 import object from './object'
 
-const VERSION_KINDS = ['releases', 'variants']
+const VERSION_KINDS = ['releases', 'scheduled-drafts', 'variants']
 
 export default (typeDefinition: any, visitorContext: any) => {
   const typeDef = object(typeDefinition, visitorContext)
@@ -27,7 +27,7 @@ export default (typeDefinition: any, visitorContext: any) => {
   if (!isValidVersions) {
     typeDef._problems.push(
       error(
-        `The "versions" property must be an array of "releases" and "variants". Saw ${inspect(versions)}`,
+        `The "versions" property must be an array of "releases", "scheduled-drafts" and "variants". Saw ${inspect(versions)}`,
       ),
     )
   }

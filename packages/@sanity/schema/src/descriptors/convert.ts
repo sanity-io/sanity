@@ -396,10 +396,10 @@ function maybeTrue(val: unknown): true | undefined {
   return val === true ? true : undefined
 }
 
-const VERSION_KINDS = ['releases', 'variants'] as const
+const VERSION_KINDS = ['releases', 'scheduled-drafts', 'variants'] as const
 
 /** Returns the known `versions` entries in a stable order, and undefined for a non-array. */
-function maybeVersions(val: unknown): Array<'releases' | 'variants'> | undefined {
+function maybeVersions(val: unknown): Array<(typeof VERSION_KINDS)[number]> | undefined {
   if (!Array.isArray(val)) return undefined
   return VERSION_KINDS.filter((kind) => val.includes(kind))
 }

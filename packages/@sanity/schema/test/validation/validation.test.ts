@@ -808,22 +808,29 @@ describe('Validation test', () => {
       },
     ]
 
-    test.each([undefined, [], ['releases'], ['variants'], ['releases', 'variants']])(
-      'accepts %j',
+    test.each([
+      undefined,
+      [],
+      ['releases'],
+      ['scheduled-drafts'],
+      ['variants'],
+      ['releases', 'scheduled-drafts', 'variants'],
+    ])('accepts %j', (value) => {
+      const problems = validateSchema(documentWith(value)).get('settings')._problems
+      expect(problems).toEqual([])
+    })
+
+    test.each(['releases', ['release'], ['scheduledDrafts'], ['releases', 'drafts'], true])(
+      'rejects %j',
       (value) => {
         const problems = validateSchema(documentWith(value)).get('settings')._problems
-        expect(problems).toEqual([])
+        expect(problems).toEqual([
+          expect.objectContaining({
+            severity: 'error',
+            message: expect.stringContaining('The "versions" property must be'),
+          }),
+        ])
       },
     )
-
-    test.each(['releases', ['release'], ['releases', 'drafts'], true])('rejects %j', (value) => {
-      const problems = validateSchema(documentWith(value)).get('settings')._problems
-      expect(problems).toEqual([
-        expect.objectContaining({
-          severity: 'error',
-          message: expect.stringContaining('The "versions" property must be'),
-        }),
-      ])
-    })
   })
 })
