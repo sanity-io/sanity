@@ -45,6 +45,11 @@ export const AvatarSkeleton = styled(Skeleton)<AvatarSkeletonProps>((props) => {
 export interface UserAvatarProps {
   __unstable_hideInnerStroke?: AvatarProps['__unstable_hideInnerStroke']
   animateArrowFrom?: AvatarPosition
+  /**
+   * Leaves out the browser's own name tooltip. For an avatar whose name another label already
+   * gives, such as an avatar stack with its own tooltip and `aria-label`.
+   */
+  hideTitle?: boolean
   position?: AvatarPosition
   size?: AvatarSize
   status?: AvatarStatus
@@ -109,7 +114,6 @@ function TooltipUserAvatar(props: Omit<UserAvatarProps, 'user'> & {user: User}) 
 function StaticUserAvatar(
   props: Omit<UserAvatarProps, 'user'> & {
     user: User
-    hideTitle?: boolean
   } & RefAttributes<HTMLDivElement>,
 ) {
   const {ref, user, animateArrowFrom, hideTitle, position, size, status, tone, ...restProps} = props
