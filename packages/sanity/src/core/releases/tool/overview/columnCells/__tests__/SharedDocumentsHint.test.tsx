@@ -15,11 +15,9 @@ describe('SharedDocumentsHint', () => {
     expect(screen.queryByTestId('shared-documents-hint')).not.toBeInTheDocument()
   })
 
-  it('names the count in text, not only with an icon', async () => {
+  it('labels the count in text, so it does not read as a second document count', async () => {
     const wrapper = await createTestProvider({resources})
     render(<SharedDocumentsHint count={3} />, {wrapper})
-    expect(
-      screen.getByRole('img', {name: '3 documents are also in other releases'}),
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('shared-documents-hint')).toHaveTextContent('3 shared')
   })
 })

@@ -1,5 +1,4 @@
-import {DocumentsIcon} from '@sanity/icons/Documents'
-import {Flex, Text} from 'ui5'
+import {Badge, Text} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
@@ -29,20 +28,13 @@ export function SharedDocumentsHint({count}: {count: number | undefined}) {
         </Text>
       }
     >
-      <Flex
-        alignItems="center"
-        gap={1}
-        role="img"
-        aria-label={label}
+      {/* A labelled badge, not an icon and a bare number: the count next to the document count
+          read as a second count. The tooltip says what "shared" means. */}
+      <Badge
+        tone="neutral"
+        text={t('shared-documents.overview-badge', {count})}
         data-testid="shared-documents-hint"
-      >
-        <Text muted size={1} as="div" trim={true}>
-          <DocumentsIcon aria-hidden />
-        </Text>
-        <Text muted size={1} as="div" trim={true} aria-hidden>
-          {count}
-        </Text>
-      </Flex>
+      />
     </Tooltip>
   )
 }
