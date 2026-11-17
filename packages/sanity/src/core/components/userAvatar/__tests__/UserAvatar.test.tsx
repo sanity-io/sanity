@@ -193,6 +193,14 @@ describe('UserAvatar', () => {
     expect(getUser).toHaveBeenCalledTimes(1)
   })
 
+  it('names the user in the browser tooltip unless hideTitle is set', () => {
+    const {container, rerender} = render(<UserAvatar user={ada} />, {wrapper})
+    expect(container.querySelector(AVATAR)).toHaveAttribute('title', 'Ada Lovelace')
+
+    rerender(<UserAvatar hideTitle user={ada} />)
+    expect(container.querySelector(AVATAR)).not.toHaveAttribute('title')
+  })
+
   it("shows the next user's image after the previous user's image failed to load", () => {
     const {container, rerender} = render(
       <UserAvatar user={{...ada, imageUrl: 'https://images.test/ada.png'}} />,
