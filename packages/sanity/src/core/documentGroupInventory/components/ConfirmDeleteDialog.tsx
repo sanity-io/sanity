@@ -134,6 +134,17 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
     snapshot.can({type: 'delete.confirmExcludingPublished'}),
   )
 
+  // While a confirmed delete runs, or while the links to a selected Default are read, Delete is
+  // disabled. It shows a spinner then, so it is never greyed out without a reason.
+  const isDeleting = useSelector(deletionRef, (snapshot) =>
+    snapshot.matches({active: {deletion: 'deleting'}}),
+  )
+  const isCheckingIncomingReferences = useSelector(deletionRef, (snapshot) =>
+    snapshot.matches({
+      active: {deletion: {preparing: {checkingIncomingReferences: 'checking'}}},
+    }),
+  )
+
   const selectedIds = [...selectedIdSet]
   const description = describeDeletion({
     selectedIds,
@@ -155,11 +166,14 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
             : t('document-group.delete.confirm-button.text'),
         onClick: () => deletionRef.send({type: 'delete.confirmExcludingPublished'}),
         disabled: !canConfirmDeletionExcludingPublished,
+        // The blocked Default is left, so its links are not waited for.
+        loading: isDeleting,
       }
     : {
         text: t('document-group.delete.confirm-count-button.text', {count: deletableIds.length}),
         onClick: () => deletionRef.send({type: 'delete.confirm'}),
         disabled: !canConfirmDeletion,
+        loading: isDeleting || (description.includesDefault && isCheckingIncomingReferences),
       }
 
   const documentTitle = (
