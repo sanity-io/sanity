@@ -281,9 +281,9 @@ function fitRows(scroller: HTMLElement, groups: HTMLElement[], toSelection: bool
  * `menuOverflowScroller` class.
  *
  * - Marks the scroller with `data-overflowing` while its content overflows, so styles can react
- *   to the studio's standard scrollbar taking up room: the class drops the rows' right padding
- *   while the scrollbar shows, so rows run up to its track and the thumb is the list's right
- *   edge. The width the scrollbar takes is measured into `--menu-scrollbar-width`, so the rows
+ *   to the studio's standard scrollbar taking up room: the class trims the rows' right padding
+ *   while the scrollbar shows, so rows end 4px before its track, 8px before the thumb that is
+ *   the list's right edge. The width the scrollbar takes is measured into `--menu-scrollbar-width`, so the rows
  *   move only as far as a real track needs (none for an overlay scrollbar), and never by more
  *   than the inset.
  * - Keeps the scroller's `scroll-padding` at the space the list keeps clear at each end, so a row
