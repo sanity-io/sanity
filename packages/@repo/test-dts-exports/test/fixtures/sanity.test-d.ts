@@ -785,6 +785,8 @@ import type {
   ItemProps,
   KeyedObject,
   KeyedSegment,
+  KeyValueStore,
+  KeyValueStoreValue,
   LatencyReportEvent,
   LayoutProps,
   LegacyThemeProps,
@@ -1368,6 +1370,7 @@ import type {
   useInitialValueResolverContext,
   UseInStudioFeedbackReturn,
   useIsReleaseActive,
+  useKeyValueStore,
   useListFormat,
   UseListFormatOptions,
   UseManageFavoriteProps,
@@ -3844,6 +3847,12 @@ describe('sanity', () => {
   test('KeyedSegment', () => {
     expectTypeOf<KeyedSegment>().not.toBeNever()
   })
+  test('KeyValueStore', () => {
+    expectTypeOf<KeyValueStore>().toBeObject()
+  })
+  test('KeyValueStoreValue', () => {
+    expectTypeOf<KeyValueStoreValue>().not.toBeNever()
+  })
   test('LatencyReportEvent', () => {
     expectTypeOf<LatencyReportEvent>().toBeObject()
   })
@@ -5602,6 +5611,9 @@ describe('sanity', () => {
   })
   test('useIsReleaseActive', () => {
     expectTypeOf<typeof useIsReleaseActive>().not.toBeNever()
+  })
+  test('useKeyValueStore', () => {
+    expectTypeOf<typeof useKeyValueStore>().toBeFunction()
   })
   test('useListFormat', () => {
     expectTypeOf<typeof useListFormat>().toBeFunction()
