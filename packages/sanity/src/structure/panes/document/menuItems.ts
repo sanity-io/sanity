@@ -1,5 +1,5 @@
-import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {EarthAmericasIcon} from '@sanity/icons/EarthAmericas'
+import {HighlightIcon} from '@sanity/icons/Highlight'
 import {JsonIcon} from '@sanity/icons/Json'
 import {TransferIcon} from '@sanity/icons/Transfer'
 import {
@@ -10,7 +10,6 @@ import {
 } from 'sanity'
 
 import {type PaneMenuItem, type StructureToolFeatures} from '../../types'
-import {HiddenCheckmarkIcon} from './components/HiddenCheckmarkIcon'
 import {INSPECT_ACTION_PREFIX} from './constants'
 
 interface GetMenuItemsParams {
@@ -85,9 +84,9 @@ function getInlineChangesItem({displayInlineChanges, t}: GetMenuItemsParams): Pa
     action: 'toggleInlineChanges',
     group: 'inspectors',
     title: t('toggle-inline-changes.menu-item.title'),
-    // The simplest way to render no icon, while preserving an icon-sized space, is to render a
-    // hidden icon.
-    icon: displayInlineChanges ? CheckmarkIcon : HiddenCheckmarkIcon,
+    icon: HighlightIcon,
+    // On shows as a selected row with a checkmark at its end, like the inspector toggles
+    selected: displayInlineChanges,
   }
 }
 
