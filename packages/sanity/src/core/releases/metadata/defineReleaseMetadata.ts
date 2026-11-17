@@ -7,16 +7,18 @@ import {type ObjectDefinition} from '@sanity/types'
  *
  * @beta
  */
-export type ReleaseMetadataDefinition = Omit<ObjectDefinition, 'name' | 'type'>
+export type ReleaseMetadataDefinition = Omit<ObjectDefinition, 'name' | 'type' | 'fields'> & {
+  fields?: ObjectDefinition['fields']
+}
 
 /**
  * Defines the `sanity.releaseMetadata` schema type, which replaces the default
  * metadata stored on content releases.
  *
  * The core fields (`title`, `description`, `releaseType`, `intendedPublishAt`
- * and `cardinality`) are added when they are not declared, so the definition
- * only has to list the fields it adds. A core field can be redeclared to change
- * how it is presented, as long as it still stores a string.
+ * and `cardinality`) are always included, the way `image` always includes its
+ * asset fields, so the definition only lists the fields it adds. Declaring a
+ * field with one of those names is a schema error.
  *
  * @example
  * ```ts
@@ -32,5 +34,5 @@ export type ReleaseMetadataDefinition = Omit<ObjectDefinition, 'name' | 'type'>
 export function defineReleaseMetadata(
   definition: ReleaseMetadataDefinition,
 ): ObjectDefinition & {name: typeof RELEASE_METADATA_TYPE_NAME} {
-  return {...definition, name: RELEASE_METADATA_TYPE_NAME, type: 'object'}
+  return {fields: [], ...definition, name: RELEASE_METADATA_TYPE_NAME, type: 'object'}
 }

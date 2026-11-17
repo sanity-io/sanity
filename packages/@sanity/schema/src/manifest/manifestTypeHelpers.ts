@@ -7,6 +7,11 @@ import {
   type SchemaType,
 } from '@sanity/types'
 
+import {
+  RELEASE_METADATA_TYPE_NAME,
+  releaseMetadataCoreFieldNames,
+} from '../sanity/builtinTypes/releaseMetadata'
+
 const DEFAULT_IMAGE_FIELDS = ['asset', 'hotspot', 'crop', 'media']
 const DEFAULT_FILE_FIELDS = ['asset', 'media']
 const DEFAULT_GEOPOINT_FIELDS = ['lat', 'lng', 'alt']
@@ -41,6 +46,9 @@ export function getCustomFields(type: ObjectSchemaType): (ObjectField & {fieldse
   }
   if (isType(type, 'file')) {
     return fields.filter((f) => !DEFAULT_FILE_FIELDS.includes(f.name))
+  }
+  if (isType(type, RELEASE_METADATA_TYPE_NAME)) {
+    return fields.filter((f) => !releaseMetadataCoreFieldNames.includes(f.name))
   }
   return fields
 }
