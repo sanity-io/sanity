@@ -135,6 +135,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
         applicationTitle: 'Media Library',
         name: 'select',
         title: 'select',
+        local: false,
         remote: {name: 'media-app', entry: 'https://media.example/mf-manifest.json'},
         moduleId: 'media-app/views/select/asset_source',
       },
@@ -180,11 +181,44 @@ describe('getCurrentFederatedAssetSourceViews', () => {
         applicationTitle: 'Example',
         name: 'picker',
         title: 'picker',
+        local: true,
         remote: {name: 'dev-app', entry: 'http://localhost:3334/mf-manifest.json'},
         moduleId: 'dev-app/views/picker/asset_source',
       },
     ])
     expect(views?.some(isMediaLibraryView)).toBe(false)
+  })
+
+  it('prefers a locally served application over its deployed records', () => {
+    publish([
+      application({
+        id: 'deployed-media-app',
+        name: 'media-library',
+        title: 'Media Library',
+        externalUrl: 'https://media.example',
+        config: {mfManifest: {}} as ListedApplication['config'],
+        activeDeployment: deployment([
+          assetSourceInterface({name: 'library', moduleId: 'views/library'}),
+        ]),
+      }),
+      {
+        ...application({
+          id: 'media',
+          name: 'media-library',
+          title: 'Media Library',
+          externalUrl: 'http://localhost:3336',
+          activeDeployment: deployment([
+            assetSourceInterface({name: 'library', moduleId: 'views/library'}),
+          ]),
+        }),
+        local: {host: 'localhost', port: 3336},
+      } as ListedEntry,
+    ])
+
+    const views = getCurrentFederatedAssetSourceViews()
+    expect(views?.map((view) => ({id: view.applicationId, local: view.local}))).toEqual([
+      {id: 'media', local: true},
+    ])
   })
 
   it('maps a third-party installation via its singleton origin', () => {
@@ -202,6 +236,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
         applicationTitle: 'Installed app',
         name: 'stock',
         title: 'stock',
+        local: false,
         remote: {
           name: 'installation-1',
           entry: 'https://installed-app-apps-publisher-org.sanity.run/mf-manifest.json',

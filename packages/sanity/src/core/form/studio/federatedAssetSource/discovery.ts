@@ -49,6 +49,7 @@ function toViews(
   application: {id: string; name: string; title: string},
   origin: string | null,
   interfaces: readonly InterfaceRecord[] | null | undefined,
+  local: boolean,
 ): FederatedAssetSourceView[] {
   if (origin === null) return []
   const views: FederatedAssetSourceView[] = []
@@ -61,6 +62,7 @@ function toViews(
       applicationTitle: application.title,
       name: extension.name,
       title: extension.title,
+      local,
       remote: {name: application.id, entry: toManifestUrl(origin)},
       // Deployed interface records carry `views/<name>`; the expose path adds
       // the component slot (`asset_source` is its only component).
@@ -73,12 +75,27 @@ function toViews(
 }
 
 /**
+ * Drops each deployed view that a local dev server also serves (same
+ * application name and view name): `sanity dev` registers the app with the
+ * shell precisely so its live code shadows the deployment. Deployed views
+ * with no local counterpart are kept.
+ */
+function preferLocallyServedViews(views: FederatedAssetSourceView[]): FederatedAssetSourceView[] {
+  const locallyServed = new Set(
+    views.filter((view) => view.local).map((view) => `${view.applicationName}/${view.name}`),
+  )
+  return views.filter(
+    (view) => view.local || !locallyServed.has(`${view.applicationName}/${view.name}`),
+  )
+}
+
+/**
  * Every `asset_source` view among the published applications, mapped the same
  * way `useApplications()` in `@sanity/sdk-react` derives each view's loadable
  * module ref (which needs an SDK instance context the Studio does not have).
  */
 function findAssetSourceViews(entries: ApplicationsList): FederatedAssetSourceView[] {
-  return entries.flatMap((entry) => {
+  const views = entries.flatMap((entry) => {
     if ('type' in entry) {
       // An application (`'studio' | 'coreApp'`), deployed or served locally.
       // Deployed interface records are only loadable once the application is
@@ -88,6 +105,7 @@ function findAssetSourceViews(entries: ApplicationsList): FederatedAssetSourceVi
         entry,
         getApplicationOrigin(entry),
         loadable ? entry.activeDeployment?.interfaces : null,
+        'local' in entry,
       )
     }
     // A third-party installation: interfaces live on the record itself and
@@ -102,8 +120,10 @@ function findAssetSourceViews(entries: ApplicationsList): FederatedAssetSourceVi
         organizationId: application.organizationId,
       }),
       entry.interfaces,
+      false,
     )
   })
+  return preferLocallyServedViews(views)
 }
 
 /**
