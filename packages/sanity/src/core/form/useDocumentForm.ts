@@ -59,6 +59,7 @@ import {getBaseComparisonTarget} from '../util/getTargetDocument'
 import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
 import {type PatchEvent} from './patch/PatchEvent'
+import {shouldCompareWithBaseVariant} from './shouldCompareWithBaseVariant'
 import {type NodeChronologyProps} from './store/types/nodes'
 import {type StateTree} from './store/types/state'
 import {type FormState, useFormState} from './store/useFormState'
@@ -271,7 +272,10 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     getVersionFromId(upstreamId ?? ''),
   )
 
-  const shouldCompareBaseVariant = isVariantTarget && !isOlderRevision
+  const shouldCompareBaseVariant = shouldCompareWithBaseVariant(
+    targetDocumentState,
+    isOlderRevision,
+  )
 
   const baseVariantTarget = useMemo(
     () =>
