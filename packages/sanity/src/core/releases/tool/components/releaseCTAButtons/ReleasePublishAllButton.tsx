@@ -23,11 +23,12 @@ import {useDocumentPreviewValues} from '../../../../tasks/hooks/useDocumentPrevi
 import {getPublishedId} from '../../../../util/draftUtils'
 import {PublishedRelease} from '../../../__telemetry__/releases.telemetry'
 import {releasesLocaleNamespace} from '../../../i18n'
-import {getReleaseImpact} from '../../../model/releaseImpact'
+import {getReleaseImpact, getReleaseMemberTarget} from '../../../model/releaseImpact'
 import {isReleaseDocument} from '../../../store/types'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
 import {type DocumentInRelease} from '../../detail/types'
+import {CollapsibleList, RunReleasePreview} from './RunReleasePreview'
 
 const DRAFTS_PERSPECTIVE_STACK = ['drafts']
 const DRAFTS_SEARCH_PARAMS: [string, string][] = [['perspective', 'drafts']]
@@ -68,6 +69,11 @@ function DraftToDiscardLink({
   )
 }
 
+const getDraftDocumentKey = (draftDocument: {_id: string}) => draftDocument._id
+const renderDraftToDiscard = (draftDocument: {_id: string; _type: string}) => (
+  <DraftToDiscardLink documentId={draftDocument._id} documentType={draftDocument._type} />
+)
+
 interface ReleasePublishAllButtonProps {
   release: ReleaseDocument
   documents: DocumentInRelease[]
@@ -107,15 +113,16 @@ export const ReleasePublishAllButton = ({
 
   // Members whose draft holds changes the release does not contain. Read from the model-neutral
   // impact, so this keeps working when releases point at lanes instead of holding versions.
+  const impacts = useMemo(() => getReleaseImpact(documents), [documents])
   const draftDocuments = useMemo(
     () =>
-      getReleaseImpact(documents)
+      impacts
         .filter((impact) => impact.draftDiffers)
         .map((impact) => ({
-          _id: impact.lane.kind === 'release-version' ? impact.lane.versionId : impact.groupId,
+          _id: getReleaseMemberTarget(impact).documentId,
           _type: impact.documentType,
         })),
-    [documents],
+    [impacts],
   )
   const draftDocumentIds = useMemo(() => draftDocuments.map(({_id}) => _id), [draftDocuments])
   const updateDraftsDescriptionId = useId()
@@ -253,6 +260,7 @@ export const ReleasePublishAllButton = ({
               />
             }
           </Text>
+          <RunReleasePreview release={release} impacts={impacts} />
           {showUpdateDraftsOption && (
             <VStack gap={3}>
               <Flex alignItems="center" gap={3} as="label">
@@ -279,21 +287,12 @@ export const ReleasePublishAllButton = ({
                   {t('publish-dialog.confirm-publish.update-drafts-review')}
                 </Text>
               </VStack>
-              <VStack
-                gap={1}
-                as="ul"
+              <CollapsibleList
+                items={draftDocuments}
+                getKey={getDraftDocumentKey}
+                renderItem={renderDraftToDiscard}
                 data-testid="update-drafts-list"
-                style={{listStyle: 'none', margin: 0, padding: 0}}
-              >
-                {draftDocuments.map((draftDocument) => (
-                  <li key={draftDocument._id}>
-                    <DraftToDiscardLink
-                      documentId={draftDocument._id}
-                      documentType={draftDocument._type}
-                    />
-                  </li>
-                ))}
-              </VStack>
+              />
             </VStack>
           )}
         </VStack>
@@ -303,9 +302,10 @@ export const ReleasePublishAllButton = ({
     publishBundleStatus,
     t,
     handleConfirmPublishAll,
-    release.metadata.title,
+    release,
     tCore,
     documents.length,
+    impacts,
     showUpdateDraftsOption,
     shouldUpdateDrafts,
     draftDocumentsCount,

@@ -200,4 +200,68 @@ describe('ReleasePublishAllButton', () => {
       expect(screen.queryByTestId('update-drafts-checkbox')).not.toBeInTheDocument()
     })
   })
+  describe('the preview of what running the release does', () => {
+    test('groups the documents by effect: new, updated, unpublished', async () => {
+      await openConfirmPublishDialog([
+        createDocumentInRelease('versions.rASAP.new1', {publishedDocumentExists: false}),
+        createDocumentInRelease('versions.rASAP.upd1'),
+        createDocumentInRelease('versions.rASAP.upd2'),
+        createDocumentInRelease('versions.rASAP.gone1', {_system: {delete: true}}),
+      ])
+
+      const preview = screen.getByTestId('run-release-preview')
+      const groups = within(preview).getAllByTestId(/^run-preview-group-/)
+      expect(groups.map((group) => group.dataset.testid)).toEqual([
+        'run-preview-group-add',
+        'run-preview-group-update',
+        'run-preview-group-unpublish',
+      ])
+      expect(
+        within(screen.getByTestId('run-preview-group-update')).getByRole('list', {
+          name: '2 updated',
+        }),
+      ).toBeInTheDocument()
+      expect(
+        within(screen.getByTestId('run-preview-group-add')).getAllByRole('listitem'),
+      ).toHaveLength(1)
+      expect(
+        within(screen.getByTestId('run-preview-group-unpublish')).getAllByRole('listitem'),
+      ).toHaveLength(1)
+    })
+
+    test('links each document to the release perspective in a new tab', async () => {
+      await openConfirmPublishDialog([createDocumentInRelease('versions.rASAP.doc1')])
+
+      const link = within(screen.getByTestId('run-preview-group-update')).getByRole('link')
+      expect(link).toHaveAttribute('target', '_blank')
+      expect(link.getAttribute('href')).toContain('perspective=rASAP')
+    })
+
+    test('collapses a group beyond five documents behind a "Show all" button', async () => {
+      await openConfirmPublishDialog(
+        Array.from({length: 7}, (_, index) =>
+          createDocumentInRelease(`versions.rASAP.doc${index}`),
+        ),
+      )
+
+      const group = screen.getByTestId('run-preview-group-update')
+      expect(within(group).getAllByRole('listitem')).toHaveLength(5)
+
+      const toggle = within(group).getByRole('button', {name: 'Show all 7'})
+      expect(toggle).toHaveAttribute('aria-expanded', 'false')
+      await userEvent.click(toggle)
+
+      expect(within(group).getAllByRole('listitem')).toHaveLength(7)
+      expect(within(group).getByRole('button', {name: 'Show fewer'})).toHaveAttribute(
+        'aria-expanded',
+        'true',
+      )
+    })
+
+    test('does not show a toggle for short groups', async () => {
+      await openConfirmPublishDialog([createDocumentInRelease('versions.rASAP.doc1')])
+
+      expect(screen.queryByTestId('run-preview-toggle')).not.toBeInTheDocument()
+    })
+  })
 })
