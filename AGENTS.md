@@ -647,6 +647,30 @@ each dropped name before regenerating:
 Regenerating needs a full `pnpm build` first: the generator reads each package's built
 `lib/**/*.d.ts`.
 
+### Extendable built-in types
+
+`packages/@sanity/schema/src/sanity/builtinTypes/extendableTypes.ts` holds two lists that every
+schema gets through `resolveExtendableTypes`, which `createSchema` and
+`createSchemaFromManifestTypes` call:
+
+- `extendableTypes`: built-in object types a schema extends by declaring a type with the same
+  name (`sanity.releaseMetadata`). The declaration lists only the fields it adds. The core fields
+  of the built-in definition are always prepended, the way `image` prepends `asset`, and
+  redeclaring one is a schema error (`validation/types/extendableType.ts`). Manifests carry only
+  the added fields; a rebuilt schema takes the core fields from code, also when a descriptor
+  carried them.
+- `systemDocumentTypes`: documents Content Lake owns that reference an extendable type
+  (`system.release`). They are local types of every schema rather than part of the built-in
+  parent schema, because a parent type resolves its field types against the parent and would
+  never see a schema's extension. A schema can't declare them, and `isSystemDocumentTypeName`
+  keeps them out of templates, search, the default Structure lists, the empty-schema check and
+  document actions.
+
+To add one (variant metadata, for example): add the default type to `extendableTypes` and its
+document to `systemDocumentTypes`, then export a `defineVariantMetadata` from `sanity` built on
+the internal `extendBuiltinType` (`core/schema/extendBuiltinType.ts`), as `defineReleaseMetadata`
+is. Nothing else needs a per-type check.
+
 ### Effect events: use `use-effect-event`, not React's native hook
 
 Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook
