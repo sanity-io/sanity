@@ -522,7 +522,7 @@ function GroqStoreDebugBar() {
         {status.enabled && status.guardOff ? (
           <span style={{color: '#f59e0b'}}> · guard off</span>
         ) : null}
-        {status.enabled && status.globalSearch ? (
+        {status.enabled && status.globalSearchOn ? (
           <span style={{color: '#38bdf8'}}> · global search on</span>
         ) : null}
         {status.enabled && status.persistence ? <span> · snapshots on</span> : null}

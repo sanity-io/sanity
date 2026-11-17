@@ -1,6 +1,7 @@
 import {
   bootGroqStore,
   type BootResult,
+  isConstrainedDevice,
   type Metric,
   storeLabel,
   type StoresMetric,
@@ -55,8 +56,10 @@ export type GroqStoreStatus = {
   /** A problem no single store row shows: a trap restart, or drafts being passthrough-only. */
   storeError?: string
   guardOff: boolean
-  /** Answers prefix-only global searches in the browser (`?groqGlobalSearch=on`). */
-  globalSearch: boolean
+  /** The `?groqGlobalSearch` override; `undefined` lets the host choose by device tier. */
+  globalSearch: 'on' | 'off' | undefined
+  /** Whether the host answers prefix-only global searches in the browser. */
+  globalSearchOn: boolean
   /** Local snapshots for warm starts (on unless `?groqPersist=off`). */
   persistence: boolean
   /** Whether the browser granted persistent storage, once asked (only with snapshots on). */
@@ -156,15 +159,27 @@ function initialGuardOff(): boolean {
 }
 
 /**
- * Local global search: `?groqGlobalSearch=on|off`, remembered per browser, off by default.
- * When on, the store answers Studio's global search when every term is a prefix term (one typed
- * word). Exact words and phrases still go to Content Lake, which ranks them with BM25.
+ * Local global search: `?groqGlobalSearch=on|off|auto`, remembered per browser. Unset (auto)
+ * leaves it to the host: on for desktop tiers, declined on phones and devices with 4 GiB of RAM
+ * or less. When on, the store answers Studio's global search when every term is a prefix term
+ * (one typed word). Exact words and phrases still go to Content Lake, which ranks them with BM25.
  */
-function initialGlobalSearch(): boolean {
+function initialGlobalSearch(): 'on' | 'off' | undefined {
   const override = searchParam('groqGlobalSearch')
-  if (override === 'on') writeStorage('localStorage', GLOBAL_SEARCH_KEY, 'on')
-  if (override === 'off') writeStorage('localStorage', GLOBAL_SEARCH_KEY, null)
-  return readStorage('localStorage', GLOBAL_SEARCH_KEY) === 'on'
+  if (override === 'on' || override === 'off') {
+    writeStorage('localStorage', GLOBAL_SEARCH_KEY, override)
+  }
+  if (override === 'auto' || override === '') writeStorage('localStorage', GLOBAL_SEARCH_KEY, null)
+  const stored = readStorage('localStorage', GLOBAL_SEARCH_KEY)
+  return stored === 'on' || stored === 'off' ? stored : undefined
+}
+
+/** Whether the host will answer global searches, given the override and this device's tier. */
+function globalSearchOn(override: 'on' | 'off' | undefined): boolean {
+  if (override !== undefined) return override === 'on'
+  if (typeof navigator === 'undefined') return false
+  const deviceMemory = (navigator as Navigator & {deviceMemory?: number}).deviceMemory
+  return !isConstrainedDevice(deviceMemory, navigator.userAgent)
 }
 
 /**
@@ -199,10 +214,10 @@ function initialPersistence(): {enabled: boolean; maxMb: string; backend: string
 const persistence = initialPersistence()
 
 /** The store host's URL. Its parameters configure the host worker. */
-function hostUrl(guardOff: boolean, globalSearch: boolean): string {
+function hostUrl(guardOff: boolean, globalSearch: 'on' | 'off' | undefined): string {
   const params = new URLSearchParams({wasm: '/groq_wasm_bg.wasm'})
   if (guardOff) params.set('guard', 'off')
-  if (globalSearch) params.set('globalSearch', '1')
+  if (globalSearch) params.set('globalSearch', globalSearch === 'on' ? '1' : '0')
   params.set('persist', persistence.enabled ? '1' : '0')
   if (persistence.enabled && persistence.maxMb !== '') params.set('persistMaxMB', persistence.maxMb)
   if (persistence.enabled && persistence.backend !== 'auto') {
@@ -248,6 +263,7 @@ let status: GroqStoreStatus = {
   exportBytes: {},
   guardOff: initialGuardOff(),
   globalSearch: initialGlobalSearch(),
+  globalSearchOn: false,
   persistence: persistence.enabled,
   lastStopped:
     previousRun && previousRun.phase !== 'live' && previousRun.phase !== 'guarded'
@@ -524,13 +540,13 @@ export function startGroqStore(): void {
       // A SharedWorker name is bound to one URL, so each host variant gets its own name.
       hostName:
         status.guardOff || status.globalSearch
-          ? `groq-store-wasm${status.guardOff ? '-guard-off' : ''}${status.globalSearch ? '-global-search' : ''}`
+          ? `groq-store-wasm${status.guardOff ? '-guard-off' : ''}${status.globalSearch ? `-global-search-${status.globalSearch}` : ''}`
           : undefined,
       // `navigator.storage.persist()` only exists on the page, so boot asks for it here.
       requestPersistentStorage: persistence.enabled,
       onMetric,
     })
-    update({boot})
+    update({boot, globalSearchOn: globalSearchOn(status.globalSearch)})
     if (!boot.started) {
       console.warn(`[groq-store-wasm] not started: ${boot.reason}`)
       return
