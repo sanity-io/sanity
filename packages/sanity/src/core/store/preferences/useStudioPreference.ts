@@ -101,7 +101,7 @@ export function useStudioPreferenceList<K extends PreferenceListKey>(key: K) {
   return {items, error, set, clear}
 }
 
-function usePreferenceOwner() {
+export function usePreferenceOwner() {
   const instance = useSanityInstance()
   // The workspace is authenticated before anything below it renders
   const userId = useCurrentUser()?.id ?? ''
