@@ -8,16 +8,26 @@ export const noVersionsLiveEditType = defineType({
   description: 'No drafts, releases or variants: edited in place only',
   icon: LockIcon,
   liveEdit: true,
-  allowVersions: false,
+  versions: [],
   fields: [defineField({name: 'title', type: 'string'})],
 })
 
-export const noVersionsType = defineType({
-  name: 'noVersions',
-  title: 'No versions (drafts)',
+export const releasesOnlyType = defineType({
+  name: 'releasesOnly',
+  title: 'Releases only',
   type: 'document',
-  description: 'Drafts, but no releases or variants',
+  description: 'Can be added to releases, but has no variants',
   icon: LockIcon,
-  allowVersions: false,
+  versions: ['releases'],
+  fields: [defineField({name: 'title', type: 'string'})],
+})
+
+export const variantsOnlyType = defineType({
+  name: 'variantsOnly',
+  title: 'Variants only',
+  type: 'document',
+  description: 'Can have variants, but cannot be added to releases',
+  icon: LockIcon,
+  versions: ['variants'],
   fields: [defineField({name: 'title', type: 'string'})],
 })

@@ -7,7 +7,6 @@ import validationTest from './ci/validationCI'
 import actions from './debug/actions'
 import {allFieldsGroupHidden} from './debug/allFieldsGroupHidden'
 import {allNativeInputComponents} from './debug/allNativeInputComponents'
-import {noVersionsLiveEditType, noVersionsType} from './debug/allowVersions'
 import {
   annotationCustomTypeTest,
   ctaType,
@@ -45,6 +44,7 @@ import {
   namedDeprecatedObject,
 } from './debug/deprecatedFields'
 import documentActions from './debug/documentActions'
+import {noVersionsLiveEditType, releasesOnlyType, variantsOnlyType} from './debug/documentVersions'
 import {domAttrsAsFieldNames} from './debug/domAttrsAsFieldNames'
 import empty from './debug/empty'
 import experiment from './debug/experiment'
@@ -304,7 +304,8 @@ export function createSchemaTypes(projectId: string) {
     locationResolverTest,
     liveEdit,
     noVersionsLiveEditType,
-    noVersionsType,
+    releasesOnlyType,
+    variantsOnlyType,
     localeString,
     manyFieldsTest,
     manyViewsType,
