@@ -1,6 +1,6 @@
 import {configure} from '@chromatic-com/vitest'
 import {type DocumentSystem} from '@sanity/types'
-import {ThemeProvider} from '@sanity/ui'
+import {Card, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
@@ -93,9 +93,7 @@ function clusterWidth(row: number): number {
 
 /** The diamond glyph of a row, filled or outline. */
 function diamond(row: number): {kind: 'filled' | 'outline'; x: number} | undefined {
-  const el = document.querySelector(
-    `[data-testid="row-${row}"] [data-ui="VariantMark"]`,
-  )
+  const el = document.querySelector(`[data-testid="row-${row}"] [data-ui="VariantMark"]`)
   if (!el) return undefined
   const rect = el.getBoundingClientRect()
   return {
@@ -165,5 +163,38 @@ describe('DocumentVersionsStatusIndicator alignment', () => {
     expect(diamond(1)).toBeUndefined()
     expect(clusterWidth(0)).toBe(30)
     expect(clusterWidth(1)).toBe(15)
+  })
+})
+
+describe('DocumentVersionsStatusIndicator on a selected row', () => {
+  it('paints the diamond a paler version of its own colour, like the other marks, not white', async () => {
+    mockPerspective({
+      selectedVariants: [variantAlphaAudience],
+      selectedVariantNames: ['alpha-audience'],
+    })
+    await render(
+      <ThemeProvider theme={theme}>
+        <Card as="button" selected data-testid="selected-row" padding={2}>
+          <DocumentVersionsStatusIndicator documentVersions={rowA} />
+        </Card>
+      </ThemeProvider>,
+    )
+
+    const row = document.querySelector('[data-testid="selected-row"]')!
+    expect(row.hasAttribute('data-selected')).toBe(true)
+    const mark = row.querySelector('[data-ui="VariantMark"]')!
+    const slot = mark.closest('[data-status="variant"]')!
+
+    // Resolve the two tokens on the selected card to colours the browser can compare
+    const probe = document.createElement('span')
+    slot.append(probe)
+    probe.style.color = 'var(--card-badge-suggest-dot-color)'
+    const dotColor = getComputedStyle(probe).color
+    probe.style.color = 'var(--card-fg-color)'
+    const fgColor = getComputedStyle(probe).color
+    probe.remove()
+
+    expect(dotColor).not.toBe(fgColor)
+    expect(getComputedStyle(mark).color).toBe(dotColor)
   })
 })
