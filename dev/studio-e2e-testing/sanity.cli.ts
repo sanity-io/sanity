@@ -23,6 +23,9 @@ export default defineCliConfig({
     },
     // Allows running React Profiler and better debugging
     resolve: {alias: {'react-dom/client': require.resolve('react-dom/profiling')}},
+    // Same as dev/test-studio/sanity.cli.ts: prebundling plugins that import `sanity` gives them a
+    // second copy of its context providers under `sanity dev`
+    optimizeDeps: {exclude: ['sanity']},
     build: {
       sourcemap: true,
       rolldownOptions: {
