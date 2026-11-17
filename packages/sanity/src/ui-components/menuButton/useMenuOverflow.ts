@@ -5,6 +5,13 @@ const MENU_OVERFLOWING_ATTRIBUTE = 'data-overflowing'
 
 /** The width the scroller's scrollbar takes from its contents, 0px for an overlay scrollbar. */
 const MENU_SCROLLBAR_WIDTH_PROPERTY = '--menu-scrollbar-width'
+/**
+ * How far the list's contents move into the scrollbar's room: so a row ends 4px before the track,
+ * 8px before the thumb (4px into the 12px track), whatever right padding the contents carry.
+ */
+const MENU_ROW_TRIM_PROPERTY = '--menu-row-trim'
+/** The gap a row keeps before the scrollbar track. */
+const ROW_GAP_BEFORE_TRACK = 4
 
 /** The list's height, set to whole rows and half the next one; read by `menuOverflowScroller`. */
 const MENU_LIST_MAX_HEIGHT_PROPERTY = '--menu-list-max-height'
@@ -283,7 +290,8 @@ function fitRows(scroller: HTMLElement, groups: HTMLElement[], toSelection: bool
  * - Marks the scroller with `data-overflowing` while its content overflows, so styles can react
  *   to the studio's standard scrollbar taking up room: the class trims the rows' right padding
  *   while the scrollbar shows, so rows end 4px before its track, 8px before the thumb that is
- *   the list's right edge. The width the scrollbar takes is measured into `--menu-scrollbar-width`, so the rows
+ *   the list's right edge. The trim is measured from the contents' own padding into
+ *   `--menu-row-trim`, since menus pad their lists differently. The width the scrollbar takes is measured into `--menu-scrollbar-width`, so the rows
  *   move only as far as a real track needs (none for an overlay scrollbar), and never by more
  *   than the inset.
  * - Keeps the scroller's `scroll-padding` at the space the list keeps clear at each end, so a row
@@ -351,10 +359,24 @@ export function useMenuOverflow<T extends HTMLElement = HTMLDivElement>(): (
           element.clientWidth -
           (parseFloat(style.borderLeftWidth) || 0) -
           (parseFloat(style.borderRightWidth) || 0)
-        element.style.setProperty(MENU_SCROLLBAR_WIDTH_PROPERTY, `${Math.max(0, scrollbarWidth)}px`)
+        const trackWidth = Math.max(0, scrollbarWidth)
+        element.style.setProperty(MENU_SCROLLBAR_WIDTH_PROPERTY, `${trackWidth}px`)
+        // The contents' own right padding differs between menus (8px in the navbar menus, 4px
+        // where the menu itself adds the rest), so the trim is measured, not fixed. An overlay
+        // scrollbar takes no room, so the rows keep their inset there.
+        const contents = element.firstElementChild
+        const contentsPadding = contents
+          ? parseFloat(getComputedStyle(contents).paddingRight) || 0
+          : 0
+        const trim =
+          trackWidth > 0
+            ? Math.min(trackWidth, Math.max(0, contentsPadding - ROW_GAP_BEFORE_TRACK))
+            : 0
+        element.style.setProperty(MENU_ROW_TRIM_PROPERTY, `${trim}px`)
         element.setAttribute(MENU_OVERFLOWING_ATTRIBUTE, '')
       } else {
         element.style.removeProperty(MENU_SCROLLBAR_WIDTH_PROPERTY)
+        element.style.removeProperty(MENU_ROW_TRIM_PROPERTY)
         element.removeAttribute(MENU_OVERFLOWING_ATTRIBUTE)
       }
 
@@ -422,6 +444,7 @@ export function useMenuOverflow<T extends HTMLElement = HTMLDivElement>(): (
       element.removeAttribute(MENU_SCROLL_UP_ATTRIBUTE)
       element.removeAttribute(MENU_SCROLL_DOWN_ATTRIBUTE)
       element.style.removeProperty(MENU_SCROLLBAR_WIDTH_PROPERTY)
+      element.style.removeProperty(MENU_ROW_TRIM_PROPERTY)
       element.style.removeProperty(MENU_PINNED_TOP_PROPERTY)
       element.style.removeProperty(MENU_PINNED_BOTTOM_PROPERTY)
       element.style.removeProperty('scroll-padding-top')
