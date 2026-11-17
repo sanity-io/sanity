@@ -137,8 +137,9 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
             >
               {/* Menu items are flex children with min-height: 0, so they collapse when they sit
               directly in this scroller. Keep them in a column that sizes to its content. The 4px
-              top, with the search field's 4px, puts the first row 8px below the field. */}
-              <Flex flexDirection="column" flexShrink={0} gap={1} paddingX={1} paddingY={1}>
+              top, with the search field's 4px, puts the first row 8px below the field. No bottom
+              padding: the menu's own 4px is the space under the last row. */}
+              <Flex flexDirection="column" flexShrink={0} gap={1} paddingTop={1} paddingX={1}>
                 {leadingItems}
                 {visibleSections.map((section) => (
                   <MenuSection
