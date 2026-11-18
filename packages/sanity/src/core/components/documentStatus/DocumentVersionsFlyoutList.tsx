@@ -89,7 +89,8 @@ function PresenceAvatars({people}: {people: RowPresence[]}) {
         {/* `maxLength` above the number of children, so the stack draws exactly what is given */}
         <AvatarStack maxLength={MAX_AVATARS + 2} size={0}>
           {shown.map((person) => (
-            <UserAvatar key={person.user.id} size={0} user={person.user} />
+            // The stack has its own tooltip, so the avatars set no browser title on top of it
+            <UserAvatar hideTitle key={person.user.id} size={0} user={person.user} />
           ))}
           {hidden > 0 ? <AvatarCounter count={hidden} /> : null}
         </AvatarStack>
