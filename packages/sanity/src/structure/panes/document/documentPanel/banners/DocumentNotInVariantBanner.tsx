@@ -75,9 +75,14 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
   // Both read from the pane's router params on every render, never copied into local state, so
   // the banner follows the inventory and its form opening and closing while it is on screen.
   const inventoryOpen = params?.inspect === DOCUMENT_GROUP_INSPECTOR_NAME
-  const formOpen = inventoryOpen && Boolean(params?.[CREATE_VARIANT_PARAM])
   const {selectedPerspective, selectedVariants} = usePerspective()
   const selectedVariant = getDefaultVariant(selectedVariants)
+  // The form counts only while it is for the selected variant: after a switch to another variant,
+  // the banner offers the link again, which retargets the form.
+  const formOpen =
+    inventoryOpen &&
+    Boolean(selectedVariant) &&
+    params?.[CREATE_VARIANT_PARAM] === selectedVariant?._id
   const {versions} = useDocumentVersions({documentId})
   const setPerspective = useSetPerspective()
   const {navigateIntent} = useRouter()

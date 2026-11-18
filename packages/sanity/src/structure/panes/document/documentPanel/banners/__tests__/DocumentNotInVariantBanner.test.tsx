@@ -607,6 +607,20 @@ describe('DocumentNotInVariantBanner', () => {
       expect(screen.queryByRole('button', {name: /document inventory/})).not.toBeInTheDocument()
     })
 
+    it('offers the link again when the form is for another variant', async () => {
+      await renderBanner(CREATE_IN_DRAFTS, {
+        ...CREATING,
+        [CREATE_VARIANT_PARAM]: '_.variants.another-variant',
+      })
+
+      await expectBannerMessage(
+        'This document has no draft for the variant Alpha audience yet. Create it in the document inventory.',
+      )
+      expect(
+        screen.queryByTestId('document-not-in-variant-banner-hand-off'),
+      ).not.toBeInTheDocument()
+    })
+
     it('in an open release, keeps Add to release, enabled, as the filled button', async () => {
       mockUsePerspective.mockReturnValue(perspectiveState(titledRelease, 'rSummer'))
       for (const params of [CREATING, {inspect: DOCUMENT_GROUP_INSPECTOR_NAME}]) {
