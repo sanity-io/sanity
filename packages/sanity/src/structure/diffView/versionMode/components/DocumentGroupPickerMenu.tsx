@@ -51,7 +51,11 @@ export const DocumentGroupPickerMenu: ComponentType<{
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const groupId = groupDocumentId ?? document.id ?? ''
-  const {versions} = useDocumentVersions({documentId: getPublishedId(groupId)})
+  // The version list loads apart from the variants and releases. Until it has, the picked version
+  // is not found, and the button would fall back to the raw scope id from the URL.
+  const {versions, loading: versionsLoading} = useDocumentVersions({
+    documentId: getPublishedId(groupId),
+  })
   const version = versions.find((v) => v._id === document.id)
   const {loading: variantsLoading, error: variantsError} = useAllVariants()
   const {byId: releasesById, loading: releasesLoading, error: releasesError} = useActiveReleases()
@@ -125,7 +129,7 @@ export const DocumentGroupPickerMenu: ComponentType<{
             text={
               document.id === undefined
                 ? tStructure('compare-versions.picker.placeholder')
-                : variantsLoading || releasesLoading
+                : variantsLoading || releasesLoading || versionsLoading
                   ? tCore('common.loading')
                   : (getVersionFromId(document.id) ?? document.id)
             }
