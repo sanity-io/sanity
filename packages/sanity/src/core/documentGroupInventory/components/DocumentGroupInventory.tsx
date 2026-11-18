@@ -7,6 +7,7 @@ import {
   useImperativeHandle,
   useMemo,
   useRef,
+  useState,
 } from 'react'
 import {
   combineLatest,
@@ -472,10 +473,18 @@ const Select: ComponentType<{
 }) => {
   const {t} = useTranslation(studioLocaleNamespace)
   const versionSets = useSelector(inventoryRef, ({context}) => context.sets)
+  // The first edit creates the draft, and the pane can learn that before the version list has it.
+  // The ghost row then stays, while the open version is still that draft, until the real row takes
+  // its place, so the row changes in place rather than going and coming back.
+  const [heldDraft, setHeldDraft] = useState(pendingDraft)
+  if (pendingDraft && pendingDraft.id !== heldDraft?.id) {
+    setHeldDraft(pendingDraft)
+  }
+  const shownDraft = pendingDraft ?? (heldDraft?.id === selectedId ? heldDraft : undefined)
   // The draft the form is about to create joins the Draft set as a ghost row
   const sets = useMemo(
-    () => withPendingDraft(versionSets, pendingDraft, t('release.chip.draft')),
-    [versionSets, pendingDraft, t],
+    () => withPendingDraft(versionSets, shownDraft, t('release.chip.draft')),
+    [versionSets, shownDraft, t],
   )
   // Everyone in any version of the group, grouped by the exact version each person has open
   const documentPresence = useDocumentPresence(documentId)
