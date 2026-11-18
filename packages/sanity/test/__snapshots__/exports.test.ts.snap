@@ -1271,7 +1271,7 @@ exports[`exports snapshot 1`] = `
     "DocumentInspectorHeader": "function",
     "DocumentListBuilder": "function",
     "DocumentListItemBuilder": "function",
-    "DocumentPaneProvider": "object",
+    "DocumentPaneProvider": "function",
     "DocumentTypeListBuilder": "function",
     "FormViewBuilder": "function",
     "GenericListBuilder": "function",
