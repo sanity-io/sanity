@@ -47,7 +47,6 @@ import {
   getRowToggle,
   getSetSelection,
   type RangeAnchor,
-  SELECTION_BLOCKED_NOTE_KEYS,
   SELECTION_BLOCKED_REASON_KEYS,
 } from '../../utils/selection'
 import {Body} from '../Body'
@@ -870,8 +869,8 @@ const SELECTION_RELEASES = new Map<string, ReleaseDocument>([
   [scheduledRelease._id, scheduledRelease],
 ])
 
-const SCHEDULED_REASON =
-  'This version is in a scheduled release. Unschedule the release to delete it.'
+const SCHEDULED_REASON = 'Scheduled · unschedule the release to change this version'
+const SCHEDULED_GROUP_REASON = 'Scheduled · unschedule the release to change these versions'
 
 /**
  * The inventory panel at 300px: the header, then every set and its rows, wired to a real selection
@@ -952,12 +951,7 @@ function SelectionSets({
         selectionState={selection.state}
         blockedReason={
           selection.groupBlockedReason
-            ? t(SELECTION_BLOCKED_REASON_KEYS[selection.groupBlockedReason])
-            : undefined
-        }
-        blockedNote={
-          selection.groupBlockedReason
-            ? t(SELECTION_BLOCKED_NOTE_KEYS[selection.groupBlockedReason])
+            ? t('document-group.select.blocked.scheduled-release-group')
             : undefined
         }
         onCheckedChange={(checked) =>
@@ -1393,7 +1387,7 @@ describe('Inventory selection', () => {
     const refs = startSelectionHarness()
     void render(<SelectionPanel refs={refs} />)
 
-    const $create = page.getByRole('button', {name: 'Create version'})
+    const $create = page.getByRole('button', {name: 'Create variant'})
     await expect.element($create).toBeVisible()
     const group = groupCheckbox('Published')
     const restShadow = getComputedStyle(group.nextElementSibling!).boxShadow
@@ -1586,7 +1580,7 @@ describe('Inventory selection', () => {
     expect(selected(refs)).toEqual([PUBLISHED.id, DRAFT.id].toSorted())
   })
 
-  it('keeps a disabled checkbox on a row that cannot be selected, with the reason in a tooltip', async () => {
+  it('shows a lock in place of the checkbox on a scheduled release, with the reason in a tooltip', async () => {
     const {settleChromaticEndState} = testHelpers()
     const refs = startSelectionHarness()
     void render(<SelectionPanel refs={refs} />)
@@ -1594,21 +1588,18 @@ describe('Inventory selection', () => {
     const setName = scheduledRelease.metadata.title
     await expect.element(page.getByText(setName, {exact: true})).toBeVisible()
 
-    const checkbox = rowCheckbox(setName, 'Default')
-    await pointAt(checkbox)
-    await expect.poll(() => isShown(checkbox)).toBe(true)
-    expect(checkbox.getAttribute('aria-disabled')).toBe('true')
-    // Not natively disabled, so it still takes focus and shows its tooltip
-    expect(checkbox.disabled).toBe(false)
-
+    // The row: a lock instead of a checkbox, named with the reason
+    const row = selectionRow(setName, 'Default')
+    expect(row.querySelector('input[type="checkbox"]')).toBeNull()
+    const lock = row.querySelector<HTMLElement>('[data-testid="selection-lock"]')!
+    expect(lock.getAttribute('aria-label')).toBe(`Select Default. ${SCHEDULED_REASON}`)
     // The row is the keyboard's tab stop, and carries the reason as its description
     await expect
-      .element(
-        page.elementLocator(selectionRow(setName, 'Default').querySelector('.primary-action')!),
-      )
+      .element(page.elementLocator(row.querySelector('.primary-action')!))
       .toHaveAccessibleDescription(SCHEDULED_REASON)
 
-    await userEvent.hover(page.elementLocator(checkbox))
+    await pointAt(lock)
+    await userEvent.hover(page.elementLocator(lock))
     // Closed tooltips stay mounted, so look for the open one
     await expect
       .poll(() =>
@@ -1617,32 +1608,18 @@ describe('Inventory selection', () => {
           .map((tooltip) => tooltip.textContent),
       )
       .toEqual([SCHEDULED_REASON])
-
-    // A blocked checkbox reads as disabled, so the pointer has to be forced onto it
-    await userEvent.click(page.elementLocator(checkbox), {force: true})
+    await userEvent.click(page.elementLocator(lock))
     expect(selected(refs)).toEqual([])
-    expect(checkbox.checked).toBe(false)
 
-    // Nothing in the group can be selected, so the group checkbox is blocked for the same reason
-    expect(groupCheckbox(setName).getAttribute('aria-disabled')).toBe('true')
-    // The header says why on screen, without hovering, and describes its toggle with it
-    const note = selectionSet(setName).querySelector<HTMLElement>(
-      '[data-testid="variant-set-blocked-note"]',
-    )!
-    await expect.element(page.elementLocator(note)).toBeVisible()
-    await expect
-      .element(page.elementLocator(note))
-      .toHaveTextContent("Scheduled, so it can't be changed")
-    await expect
-      .element(page.elementLocator(groupToggle(setName)))
-      .toHaveAccessibleDescription("Scheduled, so it can't be changed")
-    // Sets that can be selected have no note
-    expect(
-      selectionSet('Draft').querySelector('[data-testid="variant-set-blocked-note"]'),
-    ).toBeNull()
-    await pointAt(groupCheckbox(setName))
-    await userEvent.click(page.elementLocator(groupCheckbox(setName)), {force: true})
-    expect(selected(refs)).toEqual([])
+    // The header: the same lock with the reason for the whole set, and no second line
+    const header = selectionSet(setName).querySelector('header')!
+    expect(header.querySelector('input[type="checkbox"]')).toBeNull()
+    expect(header.querySelector('[data-testid="selection-lock"]')!.getAttribute('aria-label')).toBe(
+      `Select all in ${setName}. ${SCHEDULED_GROUP_REASON}`,
+    )
+    expect(header.querySelector('[data-testid="variant-set-blocked-note"]')).toBeNull()
+    // Sets that can be selected keep their checkbox
+    expect(groupCheckbox('Draft')).not.toBeNull()
 
     await settleChromaticEndState()
   })

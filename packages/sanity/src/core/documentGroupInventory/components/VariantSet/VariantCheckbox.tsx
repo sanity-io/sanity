@@ -1,5 +1,7 @@
+import {LockIcon} from '@sanity/icons/Lock'
 import {Checkbox} from '@sanity/ui'
 import {type MouseEvent} from 'react'
+import {Icon} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 
@@ -10,9 +12,9 @@ import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
  * A row's checkbox is not a tab stop of its own: the row is, and Space on it toggles the checkbox.
  * A group header has nothing else to focus, so its checkbox is a tab stop.
  *
- * A row that cannot be selected keeps its checkbox, dimmed and with a tooltip giving the reason,
- * so the column keeps its shape. It uses `aria-disabled` rather than `disabled`, so it still takes
- * focus and shows the reason; it only refuses to change. Keyboard users also get the reason as the
+ * A row or group that cannot be selected (its release is scheduled) shows a lock in the checkbox's
+ * place, with a tooltip giving the reason and what to do, so the column keeps its shape. It keeps
+ * the checkbox's name and tab stop, read with the reason; keyboard users also get the reason as the
  * row's description.
  *
  * @internal
@@ -42,17 +44,15 @@ export function VariantCheckbox({
   if (blockedReason) {
     return (
       <Tooltip content={blockedReason}>
-        <span className="selection-checkbox" data-blocked="">
-          <Checkbox
-            aria-label={label}
-            aria-disabled="true"
-            checked={false}
-            tabIndex={tabbable ? undefined : -1}
-            // Read-only styling, without `disabled`, which would take it out of the tab order
-            data-read-only=""
-            onClick={preventDefault}
-            onChange={noop}
-          />
+        <span
+          aria-label={`${label}. ${blockedReason}`}
+          className="selection-checkbox"
+          data-blocked=""
+          data-testid="selection-lock"
+          role="img"
+          tabIndex={tabbable ? 0 : -1}
+        >
+          <Icon icon={LockIcon} muted size={1} />
         </span>
       </Tooltip>
     )
