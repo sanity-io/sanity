@@ -57,7 +57,7 @@ function DiffersFromMark() {
         aria-label={`${t('changes.from-base-variant.differs-from')} ${t('document-group.base-variant')} ${slotName}`}
         data-testid="base-variant-diff-mark"
       >
-        <VariantMark size="inline" />
+        <VariantMark size="row" />
       </button>
     </Tooltip>
   )
