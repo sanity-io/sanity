@@ -1,4 +1,9 @@
-import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
+import {
+  type ClientConfig as SanityClientConfig,
+  createClient,
+  type RequestHandler,
+  type SanityClient,
+} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type i18n} from 'i18next'
@@ -26,9 +31,11 @@ import {
 } from '../form/studio/federatedAssetSource'
 import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
+import {resolveListenerCountingFetch} from '../network/listenerCount'
 import {acceptReleaseMetadataFields} from '../releases/metadata/compileReleaseMetadataType'
 import {createSchema} from '../schema/createSchema'
 import {createLegacyAuthStore} from '../store/auth/legacy/createLegacyAuthStore'
+import {createOAuthAuthStore} from '../store/auth/oauth/createOAuthAuthStore'
 import {type AuthStore} from '../store/auth/types'
 import {isAuthStore} from '../store/auth/utils/asserters'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
@@ -54,6 +61,8 @@ import {
   type StructureNodeIdValidationResult,
   validateStructureNodeId,
 } from '../util/validateStructureNodeId'
+import {type AuthConfig} from './auth/types'
+import {composeRequestHandlers} from './composeRequestHandlers'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
@@ -125,6 +134,8 @@ type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
 const debug = createDebug('sanity:config')
 
+const isBrowser = typeof window === 'object'
+
 const isError = (p: SchemaValidationProblem) => p.severity === 'error'
 
 function normalizeIcon(
@@ -171,6 +182,9 @@ function warnOnDivergentProjectAuth(
   for (const workspace of workspaces) {
     const {projectId, auth, name} = workspace as WorkspaceOptions & {auth?: unknown}
     if (!projectId || auth === undefined) continue
+    // OAuth tokens are stored per project and OAuth client, so an OAuth workspace does not share
+    // its session with the other workspaces of the project.
+    if (!isAuthStore(auth) && (auth as AuthConfig | null)?.experimental_oauth) continue
     const list = byProject.get(projectId) ?? []
     list.push({name: name ?? 'default', auth})
     byProject.set(projectId, list)
@@ -486,6 +500,7 @@ export function prepareConfig(
       }
 
       const auth = getAuthStore(source, {
+        basePath: joinBasePath(rootPath, rootSource.basePath),
         createStudioRequestHandler: options?.createStudioRequestHandler,
         requestErrorChannel: options?.requestErrorChannel,
         requestFailureDiagnostics: options?.requestFailureDiagnostics,
@@ -552,10 +567,13 @@ export function prepareConfig(
 function getAuthStore(
   source: SourceOptions,
   {
+    basePath,
     createStudioRequestHandler,
     requestErrorChannel,
     requestFailureDiagnostics,
   }: {
+    /** The workspace base path, joined with the root path. */
+    basePath: string
     createStudioRequestHandler?: (
       getClient: () => SanityClient,
       getAuthStore?: () => AuthStore | undefined,
@@ -571,25 +589,47 @@ function getAuthStore(
   const clientFactory = source.unstable_clientFactory ?? createClient
 
   const {projectId, dataset, apiHost} = source
-  // The store creates its clients, so their request handlers read it lazily.
-  const authStore: AuthStore = createLegacyAuthStore({
+  // Set once the store is created below. Its clients are created by the store, so their request
+  // handlers read it lazily.
+  let authStore: AuthStore | undefined
+  const authClientFactory = (config: SanityClientConfig) => {
+    let client: SanityClient
+    const studioRequestHandler = createStudioRequestHandler?.(
+      () => client,
+      () => authStore,
+    )
+    // A handler the auth store installs (the OAuth store renews its token on
+    // an invalid session) runs inside the studio handler, closest to the
+    // network, so the studio only sees the 401s that survive it.
+    const authRequestHandler = config.requestHandler
+    client = clientFactory({
+      ...(isBrowser ? {resolveFetch: resolveListenerCountingFetch} : {}),
+      ...config,
+      ...(studioRequestHandler
+        ? {requestHandler: composeRequestHandlers(studioRequestHandler, authRequestHandler)}
+        : {}),
+    })
+    return client
+  }
+
+  if (source.auth?.experimental_oauth) {
+    authStore = createOAuthAuthStore({
+      apiHost: source.auth.apiHost ?? apiHost,
+      ...source.auth.experimental_oauth,
+      basePath,
+      clientFactory: authClientFactory,
+      getRequestErrorHandler: () => requestErrorChannel,
+      getRequestFailureDiagnostics: () => requestFailureDiagnostics,
+      dataset,
+      projectId,
+    })
+    return authStore
+  }
+
+  authStore = createLegacyAuthStore({
     apiHost,
     ...source.auth,
-    clientFactory: (config) => {
-      let client: SanityClient
-      client = clientFactory({
-        ...config,
-        ...(createStudioRequestHandler
-          ? {
-              requestHandler: createStudioRequestHandler(
-                () => client,
-                () => authStore,
-              ),
-            }
-          : {}),
-      })
-      return client
-    },
+    clientFactory: authClientFactory,
     // Passed as getters so this unhashable runtime wiring stays out of the
     // auth-store memo key.
     getRequestErrorHandler: () => requestErrorChannel,

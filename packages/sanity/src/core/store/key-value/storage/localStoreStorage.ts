@@ -1,3 +1,4 @@
+/* oxlint-disable no-deprecated -- this module implements the deprecated key-value store */
 import {supportsLocalStorage} from '../../../util/supportsLocalStorage'
 import {type KeyValueStoreValue} from '../types'
 import {createMemoryStorage} from './memoryStorage'

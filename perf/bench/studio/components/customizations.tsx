@@ -121,7 +121,7 @@ export function StatusBarInput(props: InputProps) {
   const editState = useEditState(documentId, documentType)
   const connectionState = useConnectionState(documentId, documentType)
   const syncState = useSyncState(documentId, documentType)
-  const validation = useValidationStatus(documentId, documentType, false)
+  const validation = useValidationStatus(documentId, documentType)
   const client = useClient({apiVersion: '2024-01-01'})
   return (
     <>

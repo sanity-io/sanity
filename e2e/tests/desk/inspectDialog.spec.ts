@@ -1,6 +1,6 @@
 import {expect} from '@playwright/test'
 
-import {clearKeyValueKey} from '../../helpers/clearKeyValueKey'
+import {clearPreference, isPreferenceWrite} from '../../helpers/preferences'
 import {test} from '../../studio-test'
 
 const INSPECT_KEY = 'studio.structure-tool.inspect-view-mode'
@@ -18,7 +18,7 @@ test('clicking inspect mode sets value in storage', async ({
   // is stored per user (shared across CI runs) — if a previous run left it as
   // 'raw', the Raw JSON tab is already active, clicking it changes nothing, no
   // PUT is issued and the test times out.
-  await clearKeyValueKey(sanityClient, INSPECT_KEY)
+  await clearPreference(sanityClient, INSPECT_KEY)
 
   // Create document and wait for it to be fully loaded
   await createDraftDocument('/content/book')
@@ -40,30 +40,30 @@ test('clicking inspect mode sets value in storage', async ({
   await rawJsonTab.waitFor({state: 'visible', ...WAIT_OPTIONS})
 
   // Set up listener for the first network request before clicking
-  const keyValueRequest = page.waitForResponse(async (response) => {
-    return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
+  const preferenceWrite = page.waitForResponse(async (response) => {
+    return isPreferenceWrite(response, INSPECT_KEY)
   })
 
   // Click Raw JSON tab
   await rawJsonTab.click()
 
   // Wait for and verify the response
-  const keyValueResponse = await keyValueRequest
-  const responseBody = await keyValueResponse.json()
-  expect(responseBody[0]).toMatchObject({
+  const preferenceResponse = await preferenceWrite
+  const responseBody = await preferenceResponse.json()
+  expect(responseBody).toMatchObject({
     key: INSPECT_KEY,
     value: 'raw',
   })
 
   // Set up listener for the second network request before clicking.
   // Match on the response body to avoid catching a late duplicate of the first PUT.
-  const keyValueRequest2 = page.waitForResponse(async (response) => {
-    if (!response.url().includes('/users/me/keyvalue') || response.request().method() !== 'PUT') {
+  const preferenceWrite2 = page.waitForResponse(async (response) => {
+    if (!isPreferenceWrite(response, INSPECT_KEY)) {
       return false
     }
     try {
       const body = await response.json()
-      return body[0]?.value === 'parsed'
+      return body?.value === 'parsed'
     } catch {
       return false
     }
@@ -75,9 +75,9 @@ test('clicking inspect mode sets value in storage', async ({
   await parsedTab.click()
 
   // Wait for and verify the second response
-  const response2 = await keyValueRequest2
+  const response2 = await preferenceWrite2
   const responseBody2 = await response2.json()
-  expect(responseBody2[0]).toMatchObject({
+  expect(responseBody2).toMatchObject({
     key: INSPECT_KEY,
     value: 'parsed',
   })

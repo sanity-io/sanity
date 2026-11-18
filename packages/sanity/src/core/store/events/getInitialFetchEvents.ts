@@ -185,7 +185,7 @@ export function getInitialFetchEvents({client, documentId}: InitialFetchEventsOp
       }),
     ).pipe(
       map((transactions) =>
-        withHistoryClearedEvent(getEditEvents(transactions, documentId, false), {
+        withHistoryClearedEvent(getEditEvents(transactions, documentId), {
           apiEvents: events,
           transactions,
           documentId,

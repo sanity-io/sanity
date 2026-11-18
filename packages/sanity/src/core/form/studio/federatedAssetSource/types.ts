@@ -1,9 +1,5 @@
-import {type FederationRemote} from '@sanity/sdk-react/dashboard'
-import {
-  type AssetFromSource,
-  type AssetSourceComponentProps,
-  type ValidationMarker,
-} from '@sanity/types'
+import {type FederationRemote, type useAssetSource} from '@sanity/sdk-react/dashboard'
+import {type AssetFromSource, type ValidationMarker} from '@sanity/types'
 
 /**
  * The props the host passes to a mounted federated view: Studio's asset-source
@@ -72,7 +68,7 @@ import {
  *
  * @internal
  */
-export interface FederatedAssetSourceViewProps extends AssetSourceComponentProps {
+export interface FederatedAssetSourceViewProps extends ReturnType<typeof useAssetSource> {
   /** The Studio's resolved color scheme, so the view matches the host theme. */
   scheme?: 'light' | 'dark'
   /** The hosting workspace's project id, for project-scoped source APIs. */
@@ -114,7 +110,15 @@ export interface FederatedAssetSourceViewProps extends AssetSourceComponentProps
  *
  * @internal
  */
-export const SUPPORTED_VIEW_CONTRACT_VERSION = 1
+export const SUPPORTED_VIEW_CONTRACT_VERSION = 2
+
+/**
+ * The view contract `unstable_defineView` builds.
+ * TODO(SDK-3210): remove with `unstable_defineView`, with every branch that reads it.
+ *
+ * @internal
+ */
+export const V1_VIEW_CONTRACT_VERSION = 1
 
 /**
  * The handle returned by a federated view's `render()`.
@@ -178,4 +182,5 @@ export interface FederatedAssetSourceView extends FederatedAssetSourceRef {
   name: string
   /** Human-readable view title. */
   title: string
+  interface: FederatedAssetSourceViewProps['view']
 }
