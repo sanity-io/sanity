@@ -72,6 +72,8 @@ interface DeletionContext {
    * keeps the whole selection, so a failed attempt that is retried still sees the Default blocked.
    */
   leavePublished: boolean
+  /** The ids the delete in flight removes, fixed when it starts: selection changes meanwhile don't move it. */
+  deletingIds: string[]
   /** Whether this instance may never delete anything. */
   readOnly: boolean
 }
@@ -129,7 +131,7 @@ export const deletionMachine = setup({
       'hasUnpublishedSelection',
     ]),
     deletedEveryVersion: ({context}) => {
-      const deleted = new Set(deletedIds(context))
+      const deleted = new Set(context.deletingIds)
       return context.versionIds.length > 0 && context.versionIds.every((id) => deleted.has(id))
     },
     shouldWarnIncomingReferences: ({context}) =>
@@ -151,6 +153,7 @@ export const deletionMachine = setup({
     error: undefined,
     incomingReferencesChecked: false,
     leavePublished: false,
+    deletingIds: [],
     readOnly: input?.readOnly ?? false,
   }),
   on: {
@@ -243,9 +246,10 @@ export const deletionMachine = setup({
               },
             },
             deleting: {
+              entry: assign({deletingIds: ({context}) => deletedIds(context)}),
               invoke: {
                 src: 'deleteVariants',
-                input: ({context}) => ({ids: deletedIds(context)}),
+                input: ({context}) => ({ids: context.deletingIds}),
                 onDone: [
                   {
                     guard: 'deletedEveryVersion',

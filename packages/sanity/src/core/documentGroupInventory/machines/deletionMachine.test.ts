@@ -162,4 +162,21 @@ describe('deletionMachine', () => {
     expect(emitted).toEqual([])
     parent.stop()
   })
+
+  it('keeps the Default when the selection or versions change while the delete is in flight', async () => {
+    const {actor, parent, emitted, deleted} = start([], [PUBLISHED_ID, VARIANT_DRAFT_ID], {
+      versionIds: [PUBLISHED_ID, VARIANT_DRAFT_ID],
+      variantIds: [DE_DE],
+    })
+
+    actor.send({type: 'delete.confirmExcludingPublished'})
+    // A refresh mid-delete: the selection is re-sent and the variant is gone
+    actor.send({type: 'selection.changed', selectedIds: new Set([PUBLISHED_ID, VARIANT_DRAFT_ID])})
+    actor.send({type: 'versions.changed', versionIds: [PUBLISHED_ID], variantIds: []})
+    await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+
+    expect(deleted).toEqual([[VARIANT_DRAFT_ID]])
+    expect(emitted).toEqual([])
+    parent.stop()
+  })
 })
