@@ -708,10 +708,26 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.flyout.avatars.other_one': '{{displayName}} and {{count}} other are editing',
   /** Tooltip and accessible name of the avatars on a row of the versions flyout: more than one person is editing that audience. `count` is the number of other people (plural) */
   'document-group.flyout.avatars.other_other': '{{displayName}} and {{count}} others are editing',
-  /** The last row of the versions flyout on a document list row, when it lists only its first audiences: counts the ones it does not show and opens the document group inventory (singular) */
+  /** The count at the end of the versions flyout's last row, when the flyout lists only its first audiences: how many it does not show */
+  'document-group.flyout.footer.hidden-count': '+{{count}}',
+  /** The accessible name of that count (singular) */
+  'document-group.flyout.footer.hidden-count.aria-label_one': '{{count}} more',
+  /** The accessible name of that count (plural) */
+  'document-group.flyout.footer.hidden-count.aria-label_other': '{{count}} more',
+  /**
+   * The last row of the versions flyout on a document list row, when it lists only its first audiences: counts the ones it does not show and opens the document group inventory (singular)
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-group.flyout.footer.see-more_one': 'See {{count}} more in the inventory',
-  /** The last row of the versions flyout on a document list row, when it lists only its first audiences: counts the ones it does not show and opens the document group inventory (plural) */
+  /**
+   * The last row of the versions flyout on a document list row, when it lists only its first audiences: counts the ones it does not show and opens the document group inventory (plural)
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-group.flyout.footer.see-more_other': 'See {{count}} more in the inventory',
+  /** The last row of the versions flyout on a document list row, when the inventory has more than the flyout shows: opens the document group inventory */
+  'document-group.flyout.manage-all-versions': 'Manage all versions',
   /**
    * The last row of the versions flyout on a document list row, when the document has a single version
    * @deprecated no longer in use
@@ -754,7 +770,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    */
   // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the avatars read `avatars.*`
   'document-group.flyout.presence.other_other': '{{displayName}} and {{count}} others are editing',
-  /** The last row of the versions flyout on a document list row, when it lists every audience: opens the document group inventory */
+  /**
+   * The last row of the versions flyout on a document list row, when it lists every audience: opens the document group inventory
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-group.flyout.see-all-versions': 'See all versions in the inventory',
   /** Accessible name of the versions flyout on a document list row */
   'document-group.flyout.title': 'Versions',

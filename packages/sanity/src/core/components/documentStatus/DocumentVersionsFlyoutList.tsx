@@ -489,15 +489,13 @@ export function DocumentVersionsFlyoutList(props: {
   // Audiences past the first ones: the footer counts them, since that is where they are
   const hiddenCount = Math.max(0, groups.length - MAX_AUDIENCES)
   // The footer always opens the inventory, which is also where variants are created and versions
-  // compared or deleted. Its words say whether the inventory lists more than these rows: rows past
-  // the cap, a release version or a variant. With nothing more to list it reads "Manage versions",
-  // the name of the document's own button for the inventory.
-  const footerTitle =
-    hiddenCount > 0
-      ? t('document-group.flyout.footer.see-more', {count: hiddenCount})
-      : hasMoreInInventory(groups, hiddenCount)
-        ? t('document-group.flyout.see-all-versions')
-        : t('document-group-inventory.action.manage-versions')
+  // compared or deleted. "Manage all versions" when the inventory lists more than these rows (rows
+  // past the cap, a release version or a variant), and "Manage versions", the name of the
+  // document's own button for the inventory, when it does not. Rows past the cap are counted
+  // apart, at the row's end, so the words stay the same.
+  const footerTitle = hasMoreInInventory(groups, hiddenCount)
+    ? t('document-group.flyout.manage-all-versions')
+    : t('document-group-inventory.action.manage-versions')
 
   if (loading) {
     return (
@@ -554,9 +552,25 @@ export function DocumentVersionsFlyoutList(props: {
           presence={people.length > 0 ? footerPeople : undefined}
           testId="document-versions-flyout-inventory"
           title={
-            <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
-              {footerTitle}
-            </Text>
+            <Flex alignItems="center" gap={2} justifyContent="space-between">
+              <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
+                {footerTitle}
+              </Text>
+              {hiddenCount > 0 ? (
+                <Text
+                  as="span"
+                  aria-label={t('document-group.flyout.footer.hidden-count.aria-label', {
+                    count: hiddenCount,
+                  })}
+                  data-testid="document-versions-flyout-hidden-count"
+                  muted
+                  size={1}
+                  trim
+                >
+                  {t('document-group.flyout.footer.hidden-count', {count: hiddenCount})}
+                </Text>
+              ) : null}
+            </Flex>
           }
           renderTrailing={() => <Icon icon={ChevronRightIcon} size={1} />}
         />

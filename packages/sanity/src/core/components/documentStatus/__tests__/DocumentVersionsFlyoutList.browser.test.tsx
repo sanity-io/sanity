@@ -145,9 +145,7 @@ describe('DocumentVersionsFlyoutList', () => {
     expect(onPick).toHaveBeenLastCalledWith(german._id)
     await page.getByRole('menuitem', {name: /Default/}).click()
     expect(onPick).toHaveBeenLastCalledWith(null)
-    await page
-      .getByRole('menuitem', {name: 'See all versions in the inventory', exact: true})
-      .click()
+    await page.getByRole('menuitem', {name: 'Manage all versions', exact: true}).click()
     expect(onOpenInventory).toHaveBeenCalledTimes(1)
   })
 
@@ -598,8 +596,15 @@ describe('DocumentVersionsFlyoutList', () => {
     const footer = page.getByTestId('document-versions-flyout-inventory')
     await expect.element(footer).toBeVisible()
     expect(page.getByTestId('document-versions-flyout-row').elements()).toHaveLength(5)
-    // One footer row: it counts the audiences the flyout leaves out, with no separate count row
-    await expect.element(footer).toMatchTextContent('See 2 more in the inventory')
+    // One footer row: the same words as always, with the audiences the flyout leaves out counted
+    // at its end, and no separate count row
+    await expect.element(footer).toMatchTextContent(/^Manage all versions/)
+    await expect
+      .element(footer.getByTestId('document-versions-flyout-hidden-count'))
+      .toHaveTextContent('+2')
+    await expect
+      .element(footer.getByTestId('document-versions-flyout-hidden-count'))
+      .toHaveAccessibleName('2 more')
     expect(page.getByTestId('document-versions-flyout-more').elements()).toHaveLength(0)
     expect(page.getByText('See all versions in the inventory').elements()).toHaveLength(0)
     const rows = page.getByRole('menuitem').elements()
@@ -647,7 +652,7 @@ describe('DocumentVersionsFlyoutList', () => {
     })
 
     const footer = page.getByTestId('document-versions-flyout-inventory')
-    await expect.element(footer).toMatchTextContent(/See 2 more in the inventory/)
+    await expect.element(footer).toMatchTextContent(/Manage all versions/)
     const footerAvatars = footer.getByTestId('document-versions-flyout-avatars')
     await expect.element(footerAvatars).toBeVisible()
     expect(footerAvatars.element().getAttribute('aria-label')).toBe(
