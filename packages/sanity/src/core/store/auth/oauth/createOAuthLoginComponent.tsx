@@ -91,6 +91,12 @@ export function createOAuthLoginComponent({
                 {t('login.oauth.authorization-failed')}
               </Text>
               <Text size={1}>{callbackError.description ?? callbackError.error}</Text>
+              {callbackError.error === 'invalid_target' && (
+                // The server's description does not say why it refused the project, on purpose.
+                <Text data-testid="oauth-login-error-hint" size={1}>
+                  {t('login.oauth.invalid-target-hint')}
+                </Text>
+              )}
               {callbackError.description && (
                 <Text muted size={0}>
                   {callbackError.error}
