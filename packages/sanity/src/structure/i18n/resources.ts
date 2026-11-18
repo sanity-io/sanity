@@ -460,6 +460,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'compare-versions.panel.history': 'History',
   /** The button that loads older history in the comparison view's panel */
   'compare-versions.panel.load-more': 'Load more',
+  /** The comparison view's Changes tab when a side names a version that does not exist */
+  'compare-versions.panel.missing-side': 'Pick two versions that exist to see what changed.',
   /** The comparison view's History tab when the compared side has no history */
   'compare-versions.panel.no-history': 'No history for this version yet.',
   /** The header button that shows or hides the comparison view's Changes and History panel */

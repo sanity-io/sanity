@@ -318,7 +318,7 @@ export function useCompareValue({
 }
 
 /** The document an id names, out of the version, draft and published of its edit state. */
-function pickVersion(
+export function pickVersion(
   id: string,
   editState: Pick<EditStateFor, 'version' | 'draft' | 'published'>,
 ): SanityDocument | undefined {

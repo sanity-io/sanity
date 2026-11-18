@@ -4,10 +4,13 @@ import {type ReactNode, useMemo, useState} from 'react'
 import {
   ChangeList,
   type DocumentGroupEvent,
+  getPublishedId,
+  getVersionFromId,
   LoadingBlock,
   NoChanges,
   type ObjectDiff,
   type ObjectSchemaType,
+  useEditState,
   useEventsStore,
   useSchema,
   useTranslation,
@@ -23,7 +26,7 @@ import {
   comparisonChangesPanelBody,
   comparisonChangesPanelTabs,
 } from './ComparisonChangesPanel.css'
-import {useCompareValue} from './DiffViewPane'
+import {pickVersion} from './DiffViewPane'
 
 interface ComparisonSide {
   type: string
@@ -97,9 +100,12 @@ function ComparisonChanges({
   reference: ComparisonSide
   comparing: ComparisonSide
 }) {
+  const {t} = useTranslation(structureLocaleNamespace)
   const schemaType = useSchema().get(comparing.type) as ObjectSchemaType | undefined
-  const referenceValue = useCompareValue({compareDocument: reference})
-  const comparingValue = useCompareValue({compareDocument: comparing})
+  const referenceSide = useSide(reference)
+  const comparingSide = useSide(comparing)
+  const referenceValue = referenceSide.value
+  const comparingValue = comparingSide.value
 
   const diff = useMemo(
     () =>
@@ -112,8 +118,12 @@ function ComparisonChanges({
     [referenceValue, comparingValue],
   )
 
-  if (!schemaType || !referenceValue || !comparingValue) {
+  if (!schemaType || !referenceSide.ready || !comparingSide.ready) {
     return <LoadingBlock showText />
+  }
+  if (!referenceValue || !comparingValue) {
+    // A side names a version that does not exist; that side already says so
+    return <PanelMessage>{t('compare-versions.panel.missing-side')}</PanelMessage>
   }
   if (!diff.isChanged) {
     return <NoChanges />
@@ -122,7 +132,8 @@ function ComparisonChanges({
   return (
     <DocumentChangeContext.Provider
       value={{
-        documentId: comparing.id,
+        // The document group's id, as Review changes passes it; the store refuses a draft id here
+        documentId: getPublishedId(comparing.id),
         schemaType,
         rootDiff: diff,
         // Not comparing against the current document, so no revert controls
@@ -134,6 +145,27 @@ function ComparisonChanges({
     >
       <ChangeList diff={diff} schemaType={schemaType} />
     </DocumentChangeContext.Provider>
+  )
+}
+
+/** A side's document, and whether its edit state has loaded (so missing is not mistaken for loading). */
+function useSide(side: ComparisonSide) {
+  const editState = useEditState(
+    getPublishedId(side.id),
+    side.type,
+    'low',
+    getVersionFromId(side.id),
+  )
+  return {value: pickVersion(side.id, editState), ready: editState.ready}
+}
+
+function PanelMessage({children}: {children: ReactNode}) {
+  return (
+    <Box padding={2}>
+      <Text muted size={1}>
+        {children}
+      </Text>
+    </Box>
   )
 }
 
@@ -149,13 +181,7 @@ function ComparisonHistory({comparing}: {comparing: ComparisonSide}) {
     return <LoadingBlock showText />
   }
   if (events.length === 0) {
-    return (
-      <Box padding={2}>
-        <Text muted size={1}>
-          {t('compare-versions.panel.no-history')}
-        </Text>
-      </Box>
-    )
+    return <PanelMessage>{t('compare-versions.panel.no-history')}</PanelMessage>
   }
 
   return (
