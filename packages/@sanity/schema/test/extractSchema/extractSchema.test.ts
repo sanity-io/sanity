@@ -227,12 +227,14 @@ describe('Extract schema test', () => {
 
     const extracted = extractSchema(schema)
 
-    expect(extracted.length).toBe(31)
+    expect(extracted.length).toBe(33)
     expect(extracted.map((v) => v.name)).toStrictEqual([
       'sanity.imageAsset.reference',
       'author.reference',
       'deep',
       'recursive',
+      'system.variant',
+      'sanity.variantMetadata',
       'system.release',
       'sanity.releaseMetadata',
       'sanity.imagePaletteSwatch',
@@ -364,6 +366,8 @@ describe('Extract schema test', () => {
 
       const extracted = extractSchema(schema)
       expect(extracted.map((v) => v.name)).toStrictEqual([
+        'system.variant',
+        'sanity.variantMetadata',
         'system.release',
         'sanity.releaseMetadata',
         'sanity.imagePaletteSwatch',
@@ -517,6 +521,8 @@ describe('Extract schema test', () => {
       const extracted = extractSchema(schema)
       expect(extracted.map((v) => v.name)).toStrictEqual([
         'myAwesomeType1',
+        'system.variant',
+        'sanity.variantMetadata',
         'system.release',
         'sanity.releaseMetadata',
         'sanity.imagePaletteSwatch',
@@ -640,6 +646,8 @@ describe('Extract schema test', () => {
     })
 
     expect(extractSchema(schema1).map((v) => v.name)).toStrictEqual([
+      'system.variant',
+      'sanity.variantMetadata',
       'system.release',
       'sanity.releaseMetadata',
       'sanity.imagePaletteSwatch',

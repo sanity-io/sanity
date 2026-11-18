@@ -232,6 +232,207 @@ exports[`Extract schema test > Can hoist types > Hoist repeated objects 1`] = `
         "type": "objectAttribute",
         "value": {
           "type": "string",
+          "value": "system.variant",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "metadata": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "sanity.variantMetadata",
+          "type": "inline",
+        },
+      },
+      "name": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "priority": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "number",
+        },
+      },
+    },
+    "name": "system.variant",
+    "type": "document",
+  },
+  {
+    "name": "sanity.variantMetadata",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "sanity.variantMetadata",
+          },
+        },
+        "description": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "of": {
+              "attributes": {
+                "_type": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                    "value": "block",
+                  },
+                },
+                "children": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "of": {
+                      "attributes": {
+                        "_type": {
+                          "type": "objectAttribute",
+                          "value": {
+                            "type": "string",
+                            "value": "span",
+                          },
+                        },
+                        "marks": {
+                          "optional": true,
+                          "type": "objectAttribute",
+                          "value": {
+                            "of": {
+                              "type": "string",
+                            },
+                            "type": "array",
+                          },
+                        },
+                        "text": {
+                          "optional": true,
+                          "type": "objectAttribute",
+                          "value": {
+                            "type": "string",
+                          },
+                        },
+                      },
+                      "rest": {
+                        "attributes": {
+                          "_key": {
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                            },
+                          },
+                        },
+                        "type": "object",
+                      },
+                      "type": "object",
+                    },
+                    "type": "array",
+                  },
+                },
+                "level": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "number",
+                  },
+                },
+                "listItem": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "of": [],
+                    "type": "union",
+                  },
+                },
+                "markDefs": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "null",
+                  },
+                },
+                "style": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "of": [
+                      {
+                        "type": "string",
+                        "value": "normal",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                },
+              },
+              "rest": {
+                "attributes": {
+                  "_key": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string",
+                    },
+                  },
+                },
+                "type": "object",
+              },
+              "type": "object",
+            },
+            "type": "array",
+          },
+        },
+        "title": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "type": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
           "value": "system.release",
         },
       },
@@ -1467,6 +1668,207 @@ exports[`Extract schema test > Can hoist types > hoisted inline types should not
     "value": {
       "attributes": {
         "title": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "system.variant",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "metadata": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "sanity.variantMetadata",
+          "type": "inline",
+        },
+      },
+      "name": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "priority": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "number",
+        },
+      },
+    },
+    "name": "system.variant",
+    "type": "document",
+  },
+  {
+    "name": "sanity.variantMetadata",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "sanity.variantMetadata",
+          },
+        },
+        "description": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "of": {
+              "attributes": {
+                "_type": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                    "value": "block",
+                  },
+                },
+                "children": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "of": {
+                      "attributes": {
+                        "_type": {
+                          "type": "objectAttribute",
+                          "value": {
+                            "type": "string",
+                            "value": "span",
+                          },
+                        },
+                        "marks": {
+                          "optional": true,
+                          "type": "objectAttribute",
+                          "value": {
+                            "of": {
+                              "type": "string",
+                            },
+                            "type": "array",
+                          },
+                        },
+                        "text": {
+                          "optional": true,
+                          "type": "objectAttribute",
+                          "value": {
+                            "type": "string",
+                          },
+                        },
+                      },
+                      "rest": {
+                        "attributes": {
+                          "_key": {
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                            },
+                          },
+                        },
+                        "type": "object",
+                      },
+                      "type": "object",
+                    },
+                    "type": "array",
+                  },
+                },
+                "level": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "number",
+                  },
+                },
+                "listItem": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "of": [],
+                    "type": "union",
+                  },
+                },
+                "markDefs": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "null",
+                  },
+                },
+                "style": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "of": [
+                      {
+                        "type": "string",
+                        "value": "normal",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                },
+              },
+              "rest": {
+                "attributes": {
+                  "_key": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string",
+                    },
+                  },
+                },
+                "type": "object",
+              },
+              "type": "object",
+            },
+            "type": "array",
+          },
+        },
+        "title": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "type": {
           "optional": true,
           "type": "objectAttribute",
           "value": {
@@ -3492,6 +3894,207 @@ exports[`Extract schema test > Extracts schema general 1`] = `
               "type": "union",
             },
             "type": "array",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "system.variant",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "metadata": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "sanity.variantMetadata",
+          "type": "inline",
+        },
+      },
+      "name": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "priority": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "number",
+        },
+      },
+    },
+    "name": "system.variant",
+    "type": "document",
+  },
+  {
+    "name": "sanity.variantMetadata",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "sanity.variantMetadata",
+          },
+        },
+        "description": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "of": {
+              "attributes": {
+                "_type": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                    "value": "block",
+                  },
+                },
+                "children": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "of": {
+                      "attributes": {
+                        "_type": {
+                          "type": "objectAttribute",
+                          "value": {
+                            "type": "string",
+                            "value": "span",
+                          },
+                        },
+                        "marks": {
+                          "optional": true,
+                          "type": "objectAttribute",
+                          "value": {
+                            "of": {
+                              "type": "string",
+                            },
+                            "type": "array",
+                          },
+                        },
+                        "text": {
+                          "optional": true,
+                          "type": "objectAttribute",
+                          "value": {
+                            "type": "string",
+                          },
+                        },
+                      },
+                      "rest": {
+                        "attributes": {
+                          "_key": {
+                            "type": "objectAttribute",
+                            "value": {
+                              "type": "string",
+                            },
+                          },
+                        },
+                        "type": "object",
+                      },
+                      "type": "object",
+                    },
+                    "type": "array",
+                  },
+                },
+                "level": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "number",
+                  },
+                },
+                "listItem": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "of": [],
+                    "type": "union",
+                  },
+                },
+                "markDefs": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "null",
+                  },
+                },
+                "style": {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": {
+                    "of": [
+                      {
+                        "type": "string",
+                        "value": "normal",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                },
+              },
+              "rest": {
+                "attributes": {
+                  "_key": {
+                    "type": "objectAttribute",
+                    "value": {
+                      "type": "string",
+                    },
+                  },
+                },
+                "type": "object",
+              },
+              "type": "object",
+            },
+            "type": "array",
+          },
+        },
+        "title": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "type": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
           },
         },
       },
