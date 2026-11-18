@@ -649,27 +649,30 @@ Regenerating needs a full `pnpm build` first: the generator reads each package's
 
 ### Extendable built-in types
 
-`packages/@sanity/schema/src/sanity/systemTypes/extendableTypes.ts` holds two lists that every
-schema gets through `resolveExtendableTypes`, which `createSchema` and
-`createSchemaFromManifestTypes` call:
+Two folders in `packages/@sanity/schema/src/sanity/builtinTypes/` hold built-in types whose lists
+(exported from each folder's `index.ts`) are part of `builtinTypes`, so a schema that declares
+nothing has no local types:
 
-- `extendableTypes`: built-in object types a schema extends by declaring a type with the same
-  name (`sanity.releaseMetadata`). The declaration lists only the fields it adds. The core fields
-  of the built-in definition are always prepended, the way `image` prepends `asset`, and
-  redeclaring one is a schema error (`validation/types/extendableType.ts`). A manifest carries
-  an extendable type only when the schema added fields to it, and then only those fields; a
-  rebuilt schema takes the core fields from code, also when a descriptor carried them.
-- `systemDocumentTypes`: documents Content Lake owns that reference an extendable type
-  (`system.release`). They are local types of every schema rather than part of the built-in
-  parent schema, because a parent type resolves its field types against the parent and would
-  never see a schema's extension. A schema can't declare them, and `isSystemDocumentTypeName`
-  keeps them out of manifests (a rebuilt schema adds them back), templates, search, the default
-  Structure lists, the empty-schema check and document actions.
+- `extendableTypes/` (`extendableTypes`): object types a schema extends by declaring a type with
+  the same name (`sanity.releaseMetadata`). The declaration lists only the fields it adds:
+  `resolveExtendableTypes`, which `createSchema` and `createSchemaFromManifestTypes` call,
+  prepends the core fields of the built-in definition, the way `image` prepends `asset`, and
+  redeclaring one is a schema error (`validation/types/extendableType.ts`). The compiler
+  (`compileRegistry` in `legacy/Schema.ts`) lets the declaration replace the built-in type, so it
+  is a local type of that schema. Manifests carry the schema's local types, so an extension is
+  written with only its added fields, and a rebuilt schema takes the core fields from code, also
+  when a descriptor carried them.
+- `systemTypes/` (`systemDocumentTypes`): documents Content Lake owns that reference an
+  extendable type (`system.release`). When a schema extends a type, the compiler compiles these
+  again in that schema so they use the extension, without making them local types: a parent type
+  resolves its field types against the parent and would otherwise keep the built-in version. A
+  schema can't declare them, and `isSystemDocumentTypeName` keeps them out of templates, search,
+  the default Structure lists and document actions, like the asset types.
 
-To add one (variant metadata, for example): add the default type to `extendableTypes` and its
-document to `systemDocumentTypes`, then export a `defineVariantMetadata` from `sanity` built on
-the internal `extendBuiltinType` (`core/schema/extendBuiltinType.ts`), as `defineReleaseMetadata`
-is. Nothing else needs a per-type check.
+To add one (variant metadata, for example): add the default type to `extendableTypes/` and its
+list, and its document to `systemTypes/` and its list, then export a `defineVariantMetadata` from
+`sanity` built on the internal `extendBuiltinType` (`core/schema/extendBuiltinType.ts`), as
+`defineReleaseMetadata` is. Nothing else needs a per-type check.
 
 ### Effect events: use `use-effect-event`, not React's native hook
 

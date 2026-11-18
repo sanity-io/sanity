@@ -7,7 +7,7 @@ import {
   type SchemaType,
 } from '@sanity/types'
 
-import {extendableTypes} from '../sanity/systemTypes/extendableTypes'
+import {extendableTypes} from '../sanity/builtinTypes/extendableTypes'
 
 const DEFAULT_IMAGE_FIELDS = ['asset', 'hotspot', 'crop', 'media']
 const DEFAULT_FILE_FIELDS = ['asset', 'media']

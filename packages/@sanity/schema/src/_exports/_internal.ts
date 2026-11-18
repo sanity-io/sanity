@@ -50,14 +50,12 @@ export {
   validForNamesPattern,
 } from '../manifest/workspaceSchemaId'
 export {builtinTypes} from '../sanity/builtinTypes'
-export {
-  isSystemDocumentTypeName,
-  resolveExtendableTypes,
-} from '../sanity/systemTypes/extendableTypes'
+export {resolveExtendableTypes} from '../sanity/builtinTypes/extendableTypes'
 export {
   RELEASE_METADATA_CORE_FIELDS,
   RELEASE_METADATA_TYPE_NAME,
-} from '../sanity/systemTypes/releaseMetadata'
+} from '../sanity/builtinTypes/extendableTypes/releaseMetadata'
+export {isSystemDocumentTypeName} from '../sanity/builtinTypes/systemTypes'
 export {extractSchema} from '../sanity/extractSchema'
 export {groupProblems} from '../sanity/groupProblems'
 export {

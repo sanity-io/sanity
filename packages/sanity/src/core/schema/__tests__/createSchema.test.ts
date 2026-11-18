@@ -13,7 +13,7 @@ const hasErrors = (schema: ReturnType<typeof createSchema>) =>
   )
 
 describe('createSchema: release types', () => {
-  it('includes `system.release` and the default `sanity.releaseMetadata`', () => {
+  it('includes `system.release` and the default `sanity.releaseMetadata` as built-in types', () => {
     const schema = createSchema({name: 'default', types: []})
 
     expect(hasErrors(schema)).toBe(false)
@@ -32,9 +32,7 @@ describe('createSchema: release types', () => {
       'intendedPublishAt',
       'cardinality',
     ])
-    expect(schema.getLocalTypeNames()).toEqual(
-      expect.arrayContaining(['system.release', 'sanity.releaseMetadata']),
-    )
+    expect(schema.getLocalTypeNames()).toEqual([])
   })
 
   it('uses a custom `sanity.releaseMetadata` and keeps the core fields', () => {
@@ -62,6 +60,7 @@ describe('createSchema: release types', () => {
     expect(fieldNames(release.fields.find((field) => field.name === 'metadata')?.type)).toContain(
       'legalReview',
     )
+    expect(schema.getLocalTypeNames()).toEqual(['sanity.releaseMetadata'])
   })
 
   it('accepts a custom `sanity.releaseMetadata` without fields', () => {

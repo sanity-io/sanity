@@ -1,3 +1,5 @@
+import {findExtendableType} from '../../builtinTypes/extendableTypes'
+import {isSystemDocumentTypeName} from '../../builtinTypes/systemTypes'
 import {error, HELP_IDS, warning} from '../createValidationResult'
 import {validateComponent} from '../utils/validateComponent'
 
@@ -26,7 +28,14 @@ export default (typeDef: any, visitorContext: any) => {
     )
   } else if (!hasName) {
     problems.push(error('Missing type name', HELP_IDS.TYPE_MISSING_NAME))
-  } else if (visitorContext.isReserved(typeDef.name)) {
+  } else if (isSystemDocumentTypeName(typeDef.name)) {
+    problems.push(
+      error(
+        `Invalid type name: "${typeDef.name}" is a system document type and can't be declared in a schema.`,
+        HELP_IDS.TYPE_NAME_RESERVED,
+      ),
+    )
+  } else if (visitorContext.isReserved(typeDef.name) && !findExtendableType(typeDef.name)) {
     problems.push(
       error(
         `Invalid type name: "${typeDef.name}" is a reserved name.`,

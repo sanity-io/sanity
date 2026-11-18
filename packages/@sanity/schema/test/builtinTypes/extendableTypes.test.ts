@@ -5,22 +5,17 @@ import {Schema} from '../../src/legacy/Schema'
 import {createSchemaFromManifestTypes} from '../../src/manifest/createSchemaFromManifestTypes'
 import {extractManifestSchemaTypes} from '../../src/manifest/extractManifestSchemaTypes'
 import {builtinTypes} from '../../src/sanity/builtinTypes'
-import {extractSchema} from '../../src/sanity/extractSchema'
-import {groupProblems} from '../../src/sanity/groupProblems'
-import {
-  extendableTypes,
-  isSystemDocumentTypeName,
-  resolveExtendableTypes,
-  systemDocumentTypes,
-} from '../../src/sanity/systemTypes/extendableTypes'
-import {RELEASE_DOCUMENT_TYPE_NAME} from '../../src/sanity/systemTypes/release'
+import {resolveExtendableTypes} from '../../src/sanity/builtinTypes/extendableTypes'
 import releaseMetadata, {
   RELEASE_METADATA_TYPE_NAME,
-} from '../../src/sanity/systemTypes/releaseMetadata'
+} from '../../src/sanity/builtinTypes/extendableTypes/releaseMetadata'
+import {isSystemDocumentTypeName} from '../../src/sanity/builtinTypes/systemTypes'
+import {RELEASE_DOCUMENT_TYPE_NAME} from '../../src/sanity/builtinTypes/systemTypes/release'
+import {extractSchema} from '../../src/sanity/extractSchema'
+import {groupProblems} from '../../src/sanity/groupProblems'
 import {validateSchema} from '../../src/sanity/validateSchema'
 
 const releaseMetadataCoreFieldNames = releaseMetadata.fields.map((field) => field.name)
-const defaultTypes = [...systemDocumentTypes, ...extendableTypes]
 
 const book = defineType({
   name: 'book',
@@ -46,12 +41,22 @@ function fieldNames(typeDef: unknown): unknown[] {
   return fields.map((field) => field.name)
 }
 
+function typeNames(types: unknown[]): unknown[] {
+  return types.map((typeDef) => (typeDef as {name: string}).name)
+}
+
 function findType(types: unknown[], name: string): unknown {
   return types.find((typeDef) => (typeDef as {name?: string}).name === name)
 }
 
-function errorMessages(types: unknown[]): string[] {
-  return groupProblems(validateSchema(types).getTypes()).flatMap((group) =>
+function metadataFieldType(schema: Schema) {
+  return schema
+    .get(RELEASE_DOCUMENT_TYPE_NAME)
+    .fields.find((field: {name: string}) => field.name === 'metadata').type
+}
+
+function errorMessages(types: unknown[], options?: Parameters<typeof validateSchema>[1]): string[] {
+  return groupProblems(validateSchema(types, options).getTypes()).flatMap((group) =>
     group.problems
       .filter((problem) => problem.severity === 'error')
       .map((problem) => problem.message),
@@ -70,33 +75,23 @@ function extractManifest(types: unknown[]): unknown[] {
 }
 
 describe('resolveExtendableTypes', () => {
-  test('adds the release document and default metadata types', () => {
-    const types = resolveExtendableTypes([book])
-
-    expect(types).toEqual([book, ...defaultTypes])
-    expect(fieldNames(findType(types, RELEASE_METADATA_TYPE_NAME))).toEqual(
-      releaseMetadataCoreFieldNames,
-    )
+  test('returns a schema without extendable types as it is', () => {
+    expect(resolveExtendableTypes([book])).toEqual([book])
   })
 
-  test('replaces the default metadata type with a custom one and prepends the core fields', () => {
+  test('prepends the core fields to a declared extendable type', () => {
     const types = resolveExtendableTypes([customMetadata, book])
-    const metadata = findType(types, RELEASE_METADATA_TYPE_NAME)
 
     expect(types).not.toContain(customMetadata)
-    expect(types.map((typeDef) => (typeDef as {name: string}).name)).toEqual([
-      RELEASE_METADATA_TYPE_NAME,
-      'book',
-      RELEASE_DOCUMENT_TYPE_NAME,
-    ])
-    expect(fieldNames(metadata)).toEqual([
+    expect(typeNames(types)).toEqual([RELEASE_METADATA_TYPE_NAME, 'book'])
+    expect(fieldNames(findType(types, RELEASE_METADATA_TYPE_NAME))).toEqual([
       ...releaseMetadataCoreFieldNames,
       'legalReview',
       'signOff',
     ])
   })
 
-  test('gives a custom metadata type without fields the core fields', () => {
+  test('gives a declared extendable type without fields the core fields', () => {
     const types = resolveExtendableTypes([
       {name: RELEASE_METADATA_TYPE_NAME, type: 'object', title: 'Release details'},
     ])
@@ -113,10 +108,8 @@ describe('resolveExtendableTypes', () => {
       type: 'object',
       fields: [defineField({name: 'note', type: 'string'})],
     })
-    const types = resolveExtendableTypes([userType])
 
-    expect(types).toEqual([userType, ...defaultTypes])
-    expect(errorMessages(types)).toEqual([])
+    expect(resolveExtendableTypes([userType])).toEqual([userType])
   })
 })
 
@@ -130,12 +123,18 @@ describe('isSystemDocumentTypeName', () => {
 })
 
 describe('extendable type validation', () => {
-  test('accepts the default and custom metadata types', () => {
+  test('accepts a schema with and without an extension', () => {
     expect(errorMessages(resolveExtendableTypes([book]))).toEqual([])
     expect(errorMessages(resolveExtendableTypes([customMetadata, book]))).toEqual([])
   })
 
-  test('rejects a custom metadata type that declares a core field', () => {
+  test('accepts an extension when the built-in types are the parent types', () => {
+    expect(
+      errorMessages(resolveExtendableTypes([customMetadata]), {parentTypes: builtinTypes}),
+    ).toEqual([])
+  })
+
+  test('rejects an extension that declares a core field', () => {
     const types = resolveExtendableTypes([
       defineType({
         name: RELEASE_METADATA_TYPE_NAME,
@@ -152,7 +151,7 @@ describe('extendable type validation', () => {
     ])
   })
 
-  test('rejects a metadata type that is not an object', () => {
+  test('rejects an extension that is not an object', () => {
     const types = resolveExtendableTypes([{name: RELEASE_METADATA_TYPE_NAME, type: 'string'}])
 
     expect(errorMessages(types)).toContain(
@@ -160,35 +159,76 @@ describe('extendable type validation', () => {
     )
   })
 
-  test('reports a schema that also declares the release document type', () => {
-    const types = resolveExtendableTypes([
+  test('rejects a schema that declares a system document type', () => {
+    const types = [
       defineType({
         name: RELEASE_DOCUMENT_TYPE_NAME,
         type: 'document',
         fields: [defineField({name: 'name', type: 'string'})],
       }),
-    ])
+    ]
 
     expect(errorMessages(types)).toContain(
-      `Invalid type name: A type with name "${RELEASE_DOCUMENT_TYPE_NAME}" is already defined in the schema.`,
+      `Invalid type name: "${RELEASE_DOCUMENT_TYPE_NAME}" is a system document type and can't be declared in a schema.`,
     )
   })
 })
 
-describe('compiled release types', () => {
-  test('the release document is live-edit, read-only and uses the metadata type', () => {
-    const schema = compile(resolveExtendableTypes([customMetadata]))
-    const release = schema.get(RELEASE_DOCUMENT_TYPE_NAME)
-    const metadataField = release.fields.find((field: {name: string}) => field.name === 'metadata')
+describe('compiling with the built-in schema', () => {
+  test('a schema without an extension inherits the release types and has none of its own', () => {
+    const schema = compile([book])
 
-    expect(release.liveEdit).toBe(true)
-    expect(release.readOnly).toBe(true)
-    expect(metadataField.type.name).toBe(RELEASE_METADATA_TYPE_NAME)
-    expect(
-      schema.get(RELEASE_METADATA_TYPE_NAME).fields.map((field: {name: string}) => field.name),
-    ).toEqual([...releaseMetadataCoreFieldNames, 'legalReview', 'signOff'])
+    expect(schema.getLocalTypeNames()).toEqual(['book'])
+    expect(schema.get(RELEASE_DOCUMENT_TYPE_NAME)).toBe(
+      builtinSchema.get(RELEASE_DOCUMENT_TYPE_NAME),
+    )
+    expect(fieldNames(schema.get(RELEASE_METADATA_TYPE_NAME))).toEqual(
+      releaseMetadataCoreFieldNames,
+    )
   })
 
+  test('an extension replaces the built-in metadata type as a local type', () => {
+    const schema = compile(resolveExtendableTypes([customMetadata]))
+
+    expect(schema.getLocalTypeNames()).toEqual([RELEASE_METADATA_TYPE_NAME])
+    expect(fieldNames(schema.get(RELEASE_METADATA_TYPE_NAME))).toEqual([
+      ...releaseMetadataCoreFieldNames,
+      'legalReview',
+      'signOff',
+    ])
+    expect(fieldNames(builtinSchema.get(RELEASE_METADATA_TYPE_NAME))).toEqual(
+      releaseMetadataCoreFieldNames,
+    )
+  })
+
+  test('the release document is compiled again to use the extension, without becoming local', () => {
+    const schema = compile(resolveExtendableTypes([customMetadata]))
+    const release = schema.get(RELEASE_DOCUMENT_TYPE_NAME)
+
+    expect(release).not.toBe(builtinSchema.get(RELEASE_DOCUMENT_TYPE_NAME))
+    expect(release.liveEdit).toBe(true)
+    expect(release.readOnly).toBe(true)
+    expect(fieldNames(metadataFieldType(schema))).toEqual([
+      ...releaseMetadataCoreFieldNames,
+      'legalReview',
+      'signOff',
+    ])
+    expect(fieldNames(metadataFieldType(builtinSchema))).toEqual(releaseMetadataCoreFieldNames)
+  })
+
+  test('a type declared before the extension it uses resolves to the extension', () => {
+    const schema = compile(
+      resolveExtendableTypes([
+        {name: 'usesMetadata', type: RELEASE_METADATA_TYPE_NAME},
+        customMetadata,
+      ]),
+    )
+
+    expect(fieldNames(schema.get('usesMetadata'))).toContain('legalReview')
+  })
+})
+
+describe('exporting the schema', () => {
   test('extractSchema includes the release document and the custom metadata fields', () => {
     const extracted = extractSchema(compile(resolveExtendableTypes([customMetadata, book])))
     const release = extracted.find((type) => type.name === RELEASE_DOCUMENT_TYPE_NAME)
@@ -227,6 +267,54 @@ describe('compiled release types', () => {
     })
   })
 
+  test('a manifest carries the extension with only its added fields, and no release document', () => {
+    const manifest = extractManifest([customMetadata, book])
+
+    expect(typeNames(manifest)).toEqual([RELEASE_METADATA_TYPE_NAME, 'book'])
+    expect(fieldNames(findType(manifest, RELEASE_METADATA_TYPE_NAME))).toEqual([
+      'legalReview',
+      'signOff',
+    ])
+
+    const rebuilt = createSchemaFromManifestTypes({name: 'manifest', types: manifest})
+    const metadata = rebuilt.get(RELEASE_METADATA_TYPE_NAME)
+    expect(fieldNames(metadata)).toEqual([
+      ...releaseMetadataCoreFieldNames,
+      'legalReview',
+      'signOff',
+    ])
+    expect(fieldNames(metadataFieldType(rebuilt))).toEqual([
+      ...releaseMetadataCoreFieldNames,
+      'legalReview',
+      'signOff',
+    ])
+    const intendedPublishAt = metadata.fields.find(
+      (field: {name: string}) => field.name === 'intendedPublishAt',
+    )
+    expect(intendedPublishAt.type.hidden).toBeTypeOf('function')
+  })
+
+  test('a manifest of a schema without an extension leaves both release types out', () => {
+    const manifest = extractManifest([book])
+    expect(typeNames(manifest)).toEqual(['book'])
+
+    const rebuilt = createSchemaFromManifestTypes({name: 'manifest', types: manifest})
+    expect(rebuilt.get(RELEASE_DOCUMENT_TYPE_NAME).liveEdit).toBe(true)
+    expect(fieldNames(rebuilt.get(RELEASE_METADATA_TYPE_NAME))).toEqual(
+      releaseMetadataCoreFieldNames,
+    )
+  })
+
+  test('a manifest carries an extension that only changes type options', () => {
+    const manifest = extractManifest([
+      {name: RELEASE_METADATA_TYPE_NAME, type: 'object', title: 'Release details'},
+    ])
+    const metadata = findType(manifest, RELEASE_METADATA_TYPE_NAME)
+
+    expect(metadata).toMatchObject({name: RELEASE_METADATA_TYPE_NAME, title: 'Release details'})
+    expect(metadata).not.toHaveProperty('fields')
+  })
+
   test('a schema built from a manifest uses the built-in release document type', () => {
     const schema = createSchemaFromManifestTypes({
       name: 'manifest',
@@ -242,34 +330,11 @@ describe('compiled release types', () => {
     })
 
     expect(schema.get(RELEASE_DOCUMENT_TYPE_NAME).liveEdit).toBe(true)
-    expect(
-      schema.get(RELEASE_METADATA_TYPE_NAME).fields.map((field: {name: string}) => field.name),
-    ).toEqual([...releaseMetadataCoreFieldNames, 'legalReview', 'signOff'])
-  })
-
-  test('a manifest carries only the added metadata fields and the rebuild adds the rest from code', () => {
-    const manifest = extractManifest([customMetadata, book])
-    expect(manifest.map((type) => (type as {name: string}).name)).toEqual([
-      RELEASE_METADATA_TYPE_NAME,
-      'book',
-    ])
-    expect(fieldNames(findType(manifest, RELEASE_METADATA_TYPE_NAME))).toEqual([
-      'legalReview',
-      'signOff',
-    ])
-
-    const rebuilt = createSchemaFromManifestTypes({name: 'manifest', types: manifest})
-    expect(rebuilt.get(RELEASE_DOCUMENT_TYPE_NAME).liveEdit).toBe(true)
-    const metadata = rebuilt.get(RELEASE_METADATA_TYPE_NAME)
-    expect(fieldNames(metadata)).toEqual([
+    expect(fieldNames(schema.get(RELEASE_METADATA_TYPE_NAME))).toEqual([
       ...releaseMetadataCoreFieldNames,
       'legalReview',
       'signOff',
     ])
-    const intendedPublishAt = metadata.fields.find(
-      (field: {name: string}) => field.name === 'intendedPublishAt',
-    )
-    expect(intendedPublishAt.type.hidden).toBeTypeOf('function')
   })
 
   test('a serialized metadata type that still carries the core fields gets them from code', () => {
@@ -293,16 +358,5 @@ describe('compiled release types', () => {
       (field: {name: string}) => field.name === 'intendedPublishAt',
     )
     expect(intendedPublishAt.type.hidden).toBeTypeOf('function')
-  })
-
-  test('a manifest leaves out the release types when the metadata is not extended', () => {
-    const manifest = extractManifest([book])
-    expect(manifest.map((type) => (type as {name: string}).name)).toEqual(['book'])
-
-    const rebuilt = createSchemaFromManifestTypes({name: 'manifest', types: manifest})
-    expect(rebuilt.get(RELEASE_DOCUMENT_TYPE_NAME).liveEdit).toBe(true)
-    expect(fieldNames(rebuilt.get(RELEASE_METADATA_TYPE_NAME))).toEqual(
-      releaseMetadataCoreFieldNames,
-    )
   })
 })

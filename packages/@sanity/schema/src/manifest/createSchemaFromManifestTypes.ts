@@ -8,12 +8,9 @@ import {
 
 import {Schema} from '../legacy/Schema'
 import {builtinTypes} from '../sanity/builtinTypes'
+import {resolveExtendableTypes, withoutCoreFields} from '../sanity/builtinTypes/extendableTypes'
+import {isSystemDocumentTypeName} from '../sanity/builtinTypes/systemTypes'
 import {groupProblems} from '../sanity/groupProblems'
-import {
-  isSystemDocumentTypeName,
-  resolveExtendableTypes,
-  withoutCoreFields,
-} from '../sanity/systemTypes/extendableTypes'
 import {type SchemaValidationResult} from '../sanity/typedefs'
 import {validateSchema} from '../sanity/validateSchema'
 import {ValidationError} from '../sanity/validation/ValidationError'

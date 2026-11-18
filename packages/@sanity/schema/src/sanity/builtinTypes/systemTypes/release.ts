@@ -1,4 +1,4 @@
-import {RELEASE_METADATA_TYPE_NAME} from './releaseMetadata'
+import {RELEASE_METADATA_TYPE_NAME} from '../extendableTypes/releaseMetadata'
 
 export const RELEASE_DOCUMENT_TYPE_NAME = 'system.release'
 

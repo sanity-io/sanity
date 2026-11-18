@@ -1,4 +1,4 @@
-import {findExtendableType} from './systemTypes/extendableTypes'
+import {findExtendableType} from './builtinTypes/extendableTypes'
 import {traverseSanitySchema} from './traverseSchema'
 import {type _FIXME_} from './typedefs'
 import array from './validation/types/array'

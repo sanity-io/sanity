@@ -1,4 +1,4 @@
-import {findExtendableType} from '../../systemTypes/extendableTypes'
+import {findExtendableType} from '../../builtinTypes/extendableTypes'
 import {error} from '../createValidationResult'
 
 /**

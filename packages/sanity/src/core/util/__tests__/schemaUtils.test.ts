@@ -5,10 +5,11 @@ import {createSchema} from '../../schema/createSchema'
 import {_isCustomDocumentTypeDefinition} from '../schemaUtils'
 
 describe('_isCustomDocumentTypeDefinition', () => {
-  it('finds no custom document types in a schema that only has the built-in release types', () => {
+  it('finds no document types in a schema that declares none, even though it has system.release', () => {
     const schema = createSchema({name: 'default', types: []})
 
-    expect(schema._original?.types.map((type) => type.name)).toContain('system.release')
+    expect(schema.get('system.release')).toBeDefined()
+    expect(schema._original?.types).toEqual([])
     expect(schema._original?.types.some(_isCustomDocumentTypeDefinition)).toBe(false)
   })
 
