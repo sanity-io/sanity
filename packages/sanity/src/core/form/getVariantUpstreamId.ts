@@ -38,5 +38,11 @@ export function getVariantUpstreamId(
   if (published && displayedId === published._id) {
     return null
   }
+  // A creatable draft that does not exist yet: the form shows its stand-in under the draft's
+  // advertised id (or the group id), and the first edit creates it. That draft compares with the
+  // variant's published version, also in the moment before the version stubs list it.
+  if (!draft && getCreatableVariantTarget(targetState)) {
+    return published?._id ?? null
+  }
   return undefined
 }
