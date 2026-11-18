@@ -672,7 +672,8 @@ function resolveSource({
 
     if (!clients[options.apiVersion]) {
       const versionedClient = client.withConfig(options)
-      clients[options.apiVersion] = isDev ? attributeListeners(versionedClient) : versionedClient
+      clients[options.apiVersion] =
+        isDev && isBrowser ? attributeListeners(versionedClient) : versionedClient
     }
 
     return clients[options.apiVersion]

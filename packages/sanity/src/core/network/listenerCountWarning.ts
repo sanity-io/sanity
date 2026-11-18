@@ -60,26 +60,40 @@ const attributionCounts = new Map<string, number>()
 let watcherStarted = false
 let hasWarned = false
 
+interface ListenableClient {
+  listen?: unknown
+  withConfig?: unknown
+}
+
+function isListenable(candidate: ListenableClient | undefined): boolean {
+  return typeof candidate?.listen === 'function' && typeof candidate.withConfig === 'function'
+}
+
 /** @internal */
 export function attributeListeners(client: SanityClient): SanityClient {
-  startListenerCountWatcher()
-  const withOriginalConfig = client.withConfig.bind(client)
-  client.listen = ((...args: ListenArgs): ListenResult =>
-    withOriginalConfig(attributedFetchConfig(args[2])).listen(...args)) as SanityClient['listen']
-  client.withConfig = (config) => attributeListeners(withOriginalConfig(config))
-  attributeObservableListeners(client.observable)
+  if (isListenable(client) && isListenable(client.observable)) {
+    startListenerCountWatcher()
+    const withOriginalConfig = client.withConfig.bind(client)
+    client.listen = ((...args: ListenArgs): ListenResult =>
+      withOriginalConfig(attributedFetchConfig(args[2])).listen(...args)) as SanityClient['listen']
+    client.withConfig = (config) => attributeListeners(withOriginalConfig(config))
+    attributeObservableListeners(client.observable)
+  }
   return client
 }
 
 function attributeObservableListeners(
   observableClient: ObservableSanityClient,
 ): ObservableSanityClient {
-  const withOriginalConfig = observableClient.withConfig.bind(observableClient)
-  observableClient.listen = ((...args: ListenArgs): ListenResult =>
-    withOriginalConfig(attributedFetchConfig(args[2])).listen(
-      ...args,
-    )) as ObservableSanityClient['listen']
-  observableClient.withConfig = (config) => attributeObservableListeners(withOriginalConfig(config))
+  if (isListenable(observableClient)) {
+    const withOriginalConfig = observableClient.withConfig.bind(observableClient)
+    observableClient.listen = ((...args: ListenArgs): ListenResult =>
+      withOriginalConfig(attributedFetchConfig(args[2])).listen(
+        ...args,
+      )) as ObservableSanityClient['listen']
+    observableClient.withConfig = (config) =>
+      attributeObservableListeners(withOriginalConfig(config))
+  }
   return observableClient
 }
 
