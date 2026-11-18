@@ -50,4 +50,70 @@ describe('GlobalPerspectiveButton', () => {
       trigger.element().getBoundingClientRect().right,
     )
   })
+  it('cuts a long label so the chip does not push the navbar aside, and keeps it in full for the tooltip', async () => {
+    const longName = 'Regional Marketing Launch: birmingham / rich-customers / brand-z'
+    void render(
+      <TestWrapper schemaTypes={[]}>
+        <GlobalPerspectiveButton
+          data-testid="cut-trigger"
+          icon={<RhombusIcon className={suggestIconColor} />}
+          text={longName}
+          pickerLabel="Variant"
+        />
+      </TestWrapper>,
+    )
+
+    const trigger = page.getByTestId('cut-trigger')
+    await expect.element(trigger).toHaveTextContent('Regional Marketing Launch: birmi…')
+    await expect.element(trigger).toHaveAccessibleName(longName)
+    await trigger.hover()
+    await expect.element(page.getByText('Variant', {exact: true})).toBeVisible()
+    await expect.element(page.getByText(longName)).toBeVisible()
+  })
+
+  it('shows the picker and its current value in the tooltip when the label is short', async () => {
+    void render(
+      <TestWrapper schemaTypes={[]}>
+        <GlobalPerspectiveButton
+          data-testid="short-trigger"
+          icon={<RhombusIcon className={suggestIconColor} />}
+          text="Default"
+          pickerLabel="Variant"
+        />
+      </TestWrapper>,
+    )
+
+    const trigger = page.getByTestId('short-trigger')
+    await expect.element(trigger).toHaveTextContent('Default')
+    await trigger.hover()
+    await expect.element(page.getByText('Variant', {exact: true})).toBeVisible()
+    // The chip's label and the tooltip's current value
+    await expect.poll(() => page.getByText('Default', {exact: true}).elements()).toHaveLength(2)
+  })
+
+  it("keeps the tooltip off while the chip's menu is open, so it does not cover the menu", async () => {
+    void render(
+      <TestWrapper schemaTypes={[]}>
+        <GlobalPerspectiveButton
+          aria-expanded
+          data-testid="open-trigger"
+          icon={<RhombusIcon className={suggestIconColor} />}
+          text="Default"
+          pickerLabel="Variant"
+        />
+      </TestWrapper>,
+    )
+
+    const trigger = page.getByTestId('open-trigger')
+    await expect.element(trigger).toHaveTextContent('Default')
+    await trigger.hover()
+    // Past the tooltip's hover delay, the picker's name still has not appeared
+    await new Promise((resolve) => setTimeout(resolve, 1_000))
+    expect(
+      page
+        .getByText('Variant', {exact: true})
+        .elements()
+        .filter((el) => el.getBoundingClientRect().width > 0),
+    ).toHaveLength(0)
+  })
 })

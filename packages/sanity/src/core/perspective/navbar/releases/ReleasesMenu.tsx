@@ -9,11 +9,13 @@ import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {menuOverflowScroller} from '../../../../ui-components/menuButton/menuOverflow.css'
+import {useFocusSearchOnOpen} from '../../../../ui-components/menuButton/useFocusSearchOnOpen'
 import {useMenuOverflow} from '../../../../ui-components/menuButton/useMenuOverflow'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {CreateReleaseDialog} from '../../../releases/components/dialog/CreateReleaseDialog'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
 import {useReleasesUpsell} from '../../../releases/contexts/upsell/useReleasesUpsell'
+import {isReleaseDocument} from '../../../releases/store/types'
 import {oversizedButtonStyle} from '../../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {useGetDefaultPerspective} from '../../useGetDefaultPerspective'
@@ -39,12 +41,18 @@ function ReleasesMenuChip({
   fullWidth,
   ...rest
 }: {fullWidth?: boolean} & React.HTMLAttributes<HTMLButtonElement>) {
+  const {t} = useTranslation()
   const setPerspective = useSetPerspective()
   const defaultPerspective = useGetDefaultPerspective()
   const {displayTitle, fullTitle, selectedPerspective} = useReleasesLabel()
   // Drafts disabled coerces the default name to `published`, so a truthy name
   // is not enough to tell a selection from the default perspective.
   const canClearPerspective = selectedPerspective !== defaultPerspective
+  // The tooltip names what kind of value the chip shows, as the variants chip names its type:
+  // a release, or a version of the document (Drafts, Published)
+  const pickerLabel = isReleaseDocument(selectedPerspective)
+    ? t('release.navbar.chip-label.release')
+    : t('release.navbar.chip-label.version')
 
   const handleClearPerspective = useCallback(() => {
     setPerspective(undefined)
@@ -64,6 +72,7 @@ function ReleasesMenuChip({
         />
       }
       text={displayTitle}
+      pickerLabel={pickerLabel}
       {...rest}
     />
   )
@@ -100,6 +109,7 @@ export function ReleasesMenu({
     useReleasesUpsell()
   const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
   const scrollerRef = useMenuOverflow()
+  const focusSearchField = useFocusSearchOnOpen()
 
   const {isRangeVisible, resetRangeVisibility, setScrollContainer, scrollElementRef} =
     useScrollIndicatorVisibility()
@@ -160,12 +170,14 @@ export function ReleasesMenu({
             to the first row */}
             <Box flexShrink={0} paddingX={2} paddingTop={2} paddingBottom={1}>
               <TextInput
+                aria-label={t('release.navbar.filter-placeholder')}
                 data-testid="global-perspective-filter"
                 fontSize={1}
                 icon={SearchIcon}
                 onChange={handleFilterChange}
                 placeholder={t('release.navbar.filter-placeholder')}
                 radius={2}
+                ref={focusSearchField}
                 value={filterQuery}
               />
               <MenuSectionDivider placement="end" />

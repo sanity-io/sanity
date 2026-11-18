@@ -20,6 +20,7 @@ import {Text, Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {menuOverflowScroller} from '../../../../ui-components/menuButton/menuOverflow.css'
+import {useFocusSearchOnOpen} from '../../../../ui-components/menuButton/useFocusSearchOnOpen'
 import {useMenuOverflow} from '../../../../ui-components/menuButton/useMenuOverflow'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
@@ -187,6 +188,7 @@ export function VariantsMenu({
   const [filterQuery, setFilterQuery] = useState('')
   const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
   const scrollerRef = useMenuOverflow()
+  const focusSearchField = useFocusSearchOnOpen()
   const {selectedVariants} = usePerspective()
   const typeVariants = useMemo(
     () => variants.filter((variant) => getVariantType(variant) === typeKey),
@@ -286,6 +288,7 @@ export function VariantsMenu({
                 onChange={handleFilterChange}
                 placeholder={t('navbar.variant.filter-placeholder')}
                 radius={2}
+                ref={focusSearchField}
                 value={filterQuery}
               />
             </Box>

@@ -230,7 +230,8 @@ describe('ReleasesNav', () => {
 
       await renderVariants()
 
-      const truncated = `${'A'.repeat(50)}\u2026`
+      // The navbar chip cuts its label at 32 characters
+      const truncated = `${'A'.repeat(32)}\u2026`
       screen.getByText(truncated)
       screen.getByRole('button', {name: longTitle})
       screen.getByText(longTitle)
@@ -488,7 +489,7 @@ describe('ReleasesNav', () => {
           expect(releaseMenuElement.querySelector('[data-stack-line="true"]')).toBeTruthy()
 
           await userEvent.type(
-            releaseMenu.getByPlaceholderText('Find a version or release'),
+            releaseMenu.getByPlaceholderText('Search versions and releases…'),
             'ACTIVE',
           )
 
@@ -513,7 +514,7 @@ describe('ReleasesNav', () => {
           const releaseMenu = within(releaseMenuElement)
 
           await userEvent.type(
-            releaseMenu.getByPlaceholderText('Find a version or release'),
+            releaseMenu.getByPlaceholderText('Search versions and releases…'),
             'draft',
           )
 
@@ -523,7 +524,7 @@ describe('ReleasesNav', () => {
           expect(releaseMenu.queryByText('active Release')).toBeNull()
           expect(releaseMenuElement.querySelector('[data-stack-line="true"]')).toBeNull()
 
-          await userEvent.clear(releaseMenu.getByPlaceholderText('Find a version or release'))
+          await userEvent.clear(releaseMenu.getByPlaceholderText('Search versions and releases…'))
 
           releaseMenu.getByText('Published')
           releaseMenu.getByText('Drafts')
