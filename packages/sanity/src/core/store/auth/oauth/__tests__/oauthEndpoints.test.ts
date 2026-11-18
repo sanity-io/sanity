@@ -91,6 +91,19 @@ describe('oauthEndpoints', () => {
     expect(url.searchParams.getAll('resource')).toEqual(['urn:io.sanity:project:p1'])
   })
 
+  it('asks for the login form only when told to', () => {
+    const params = {clientId: 'oc-1', redirectUri: 'http://localhost:3333', codeChallenge: 'c'}
+    const endpoints = createOAuthEndpoints(HOSTS)
+    expect(
+      new URL(endpoints.authorizeUrl({...params, state: 's'})).searchParams.has('prompt'),
+    ).toBe(false)
+    expect(
+      new URL(endpoints.authorizeUrl({...params, state: 's', prompt: 'login'})).searchParams.getAll(
+        'prompt',
+      ),
+    ).toEqual(['login'])
+  })
+
   it('leaves the resource indicator off the token, refresh and revoke requests', async () => {
     // The server keeps the resource with the grant and applies it to every token it issues
     // from it, so only the authorization request names it.

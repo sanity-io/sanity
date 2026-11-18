@@ -235,6 +235,49 @@ describe('OAuth login component', () => {
     expect(flow).toMatchObject({redirectUri: ORIGIN, redirectPath: '/structure'})
   })
 
+  it('asks for the login form after a logout in this tab when the pair is private to the tab', async () => {
+    // jsdom reports no localStorage support to the store, so the pair and the pending login
+    // prompt are kept in this tab's memory.
+    function createTab() {
+      const navigate = vi.fn()
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: 'test-dataset',
+        clientId: 'oc-test-client',
+        clientFactory: createAnonymousClient,
+        endpoints: createOAuthEndpoints({issuer: 'https://api.sanity.io', projectId: PROJECT_ID}),
+        getLocation: () => ({origin: ORIGIN, pathname: '/', search: ''}),
+        navigate,
+        replaceUrl: vi.fn(),
+        withLock: (_name, task) => task(),
+        locksAvailable: false,
+      })
+      return {store, navigate}
+    }
+    const TestProvider = await createTestProvider()
+    async function signIn({store, navigate}: ReturnType<typeof createTab>) {
+      const {LoginComponent} = store
+      if (!LoginComponent) throw new Error('expected a LoginComponent')
+      const {unmount} = render(
+        <TestProvider>
+          <LoginComponent projectId={PROJECT_ID} redirectPath="/structure" />
+        </TestProvider>,
+      )
+      await userEvent.click(screen.getByRole('button', {name: 'Sign in with Sanity'}))
+      await waitFor(() => expect(navigate).toHaveBeenCalledTimes(1))
+      unmount()
+      return new URL(navigate.mock.calls[0][0]).searchParams.get('prompt')
+    }
+
+    const thisTab = createTab()
+    const otherTab = createTab()
+    await thisTab.store.logout!()
+
+    expect(await signIn(thisTab)).toBe('login')
+    // Nothing is shared with other tabs.
+    expect(await signIn(otherTab)).toBeNull()
+  })
+
   it('starts one sign-in for a double click', async () => {
     // Both clicks land before React disables the button. Two sign-ins would each store a flow, and
     // the response to whichever navigation the browser follows could meet the other one's.
