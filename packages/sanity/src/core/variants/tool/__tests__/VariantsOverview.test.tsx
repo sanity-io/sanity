@@ -351,6 +351,44 @@ describe('VariantsOverview', () => {
     expect(screen.queryByTestId('variants-empty-state')).not.toBeInTheDocument()
   })
 
+  it('exposes the add filter popover state, its toggles, and returns focus on Escape', async () => {
+    setVariants([variantAlphaAudience, variantNorwegianMarket])
+    const user = userEvent.setup()
+
+    await renderOverview()
+
+    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(2))
+
+    const trigger = screen.getByRole('button', {name: 'Add filter'})
+    expect(trigger).toHaveAttribute('aria-haspopup', 'dialog')
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+
+    await user.click(trigger)
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    const search = await screen.findByLabelText('Find a dimension…')
+    await waitFor(() => expect(search).toHaveFocus())
+    expect(document.getElementById(trigger.getAttribute('aria-controls') ?? '')).toHaveAttribute(
+      'role',
+      'dialog',
+    )
+
+    const dimension = screen.getByTestId('variant-filter-dimension-audience')
+    await user.click(dimension)
+    expect(dimension).toHaveAttribute('aria-current', 'true')
+
+    const value = screen.getByTestId('variant-filter-value-audience-alpha')
+    expect(value).toHaveAttribute('aria-pressed', 'false')
+    await user.click(value)
+    expect(value).toHaveAttribute('aria-pressed', 'true')
+
+    await user.keyboard('{Escape}')
+
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    expect(trigger).toHaveFocus()
+    expect(screen.getByRole('button', {name: 'Remove filter Audience: alpha'})).toBeInTheDocument()
+  })
+
   it('shows empty state when there are no variants', async () => {
     variantsMock.data = []
 
@@ -366,9 +404,12 @@ describe('VariantsOverview', () => {
     expect(
       within(emptyState).getByRole('button', {name: 'New variant definition'}),
     ).toBeInTheDocument()
-    expect(within(emptyState).getByRole('link', {name: 'Documentation'})).toHaveAttribute(
-      'href',
-      'https://www.sanity.io/docs/content-variants',
+    expect(
+      within(emptyState).getByRole('link', {name: 'Documentation (opens in a new tab)'}),
+    ).toHaveAttribute('href', 'https://www.sanity.io/docs/content-variants')
+    expect(screen.getAllByRole('heading', {level: 1})).toHaveLength(1)
+    expect(within(emptyState).getByRole('heading', {level: 2})).toHaveTextContent(
+      'Variant definitions',
     )
   })
 

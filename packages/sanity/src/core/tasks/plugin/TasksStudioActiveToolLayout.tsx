@@ -23,6 +23,15 @@ const RootFlex = styled(Flex)(({theme}) => {
     }
   `
 })
+// The collapsed structure layout scrolls itself (`PaneLayout` is `overflow: auto`). Hiding
+// overflow on this box then no longer stops that scroll, so the fullscreen sidebar has to lock
+// the layout directly. The sidebar is a sibling of this box, so its own scroller stays usable.
+const ToolFrame = styled(Box)`
+  &[data-scroll-lock] [data-ui='PaneLayout'] {
+    overflow: hidden;
+  }
+`
+
 const SidebarMotionLayer = styled(Layer)(({theme}) => {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const media = theme.sanity.media
@@ -76,9 +85,15 @@ export default function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps
   const scrollLock = mediaIndex <= FULLSCREEN_MEDIA_INDEX && isOpen
   return (
     <RootFlex height="100%">
-      <Box flexBasis="0%" flexGrow={1} height="100%" overflow={scrollLock ? 'hidden' : 'auto'}>
+      <ToolFrame
+        data-scroll-lock={scrollLock ? '' : undefined}
+        flexBasis="0%"
+        flexGrow={1}
+        height="100%"
+        overflow={scrollLock ? 'hidden' : 'auto'}
+      >
         {props.renderDefault(props)}
-      </Box>
+      </ToolFrame>
 
       <AnimatePresence initial={false}>
         {isOpen && (

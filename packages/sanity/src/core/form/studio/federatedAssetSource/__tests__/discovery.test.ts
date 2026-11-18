@@ -104,6 +104,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
   })
 
   it('maps a deployed application with a federation manifest, appending the component slot', () => {
+    const select = assetSourceInterface({name: 'select', moduleId: 'views/select'})
     publish([
       application({
         id: 'media-app',
@@ -112,7 +113,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
         externalUrl: 'https://media.example/path-is-ignored',
         config: {mfManifest: {}} as ListedApplication['config'],
         activeDeployment: deployment([
-          assetSourceInterface({name: 'select', moduleId: 'views/select'}),
+          select,
           // Non-asset_source interfaces must be ignored.
           {
             id: 'interface-app',
@@ -137,6 +138,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
         title: 'select',
         remote: {name: 'media-app', entry: 'https://media.example/mf-manifest.json'},
         moduleId: 'media-app/views/select/asset_source',
+        interface: select,
       },
     ])
     expect(views?.every(isMediaLibraryView)).toBe(true)
@@ -157,6 +159,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
   })
 
   it('maps a local dev server regardless of manifest config, keeping a full moduleId as-is', () => {
+    const picker = assetSourceInterface({name: 'picker', moduleId: 'views/picker/asset_source'})
     publish([
       {
         ...application({
@@ -164,9 +167,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
           name: 'example-asset-source',
           title: 'Example',
           externalUrl: 'http://localhost:3334',
-          activeDeployment: deployment([
-            assetSourceInterface({name: 'picker', moduleId: 'views/picker/asset_source'}),
-          ]),
+          activeDeployment: deployment([picker]),
         }),
         local: {host: 'localhost', port: 3334},
       } as ListedEntry,
@@ -182,16 +183,18 @@ describe('getCurrentFederatedAssetSourceViews', () => {
         title: 'picker',
         remote: {name: 'dev-app', entry: 'http://localhost:3334/mf-manifest.json'},
         moduleId: 'dev-app/views/picker/asset_source',
+        interface: picker,
       },
     ])
     expect(views?.some(isMediaLibraryView)).toBe(false)
   })
 
   it('maps a third-party installation via its singleton origin', () => {
+    const stock = assetSourceInterface({name: 'stock', moduleId: 'views/stock'})
     publish([
       installation({
         id: 'installation-1',
-        interfaces: [assetSourceInterface({name: 'stock', moduleId: 'views/stock'})],
+        interfaces: [stock],
       }),
     ])
 
@@ -204,9 +207,10 @@ describe('getCurrentFederatedAssetSourceViews', () => {
         title: 'stock',
         remote: {
           name: 'installation-1',
-          entry: 'https://installed-app-apps-publisher-org.sanity.run/mf-manifest.json',
+          entry: 'https://installed-app--apps--publisher-org.sanity.run/mf-manifest.json',
         },
         moduleId: 'installation-1/views/stock/asset_source',
+        interface: stock,
       },
     ])
   })

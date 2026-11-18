@@ -1,9 +1,10 @@
 import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
-import {render, screen} from '@testing-library/react'
-import {type CSSProperties} from 'react'
+import {act, render, screen} from '@testing-library/react'
+import {type ComponentType, type CSSProperties, lazy, Suspense} from 'react'
 import {expect, it} from 'vitest'
 
+import {Button} from '../../../ui-components/button/Button'
 import {CollapseTabList} from './CollapseTabList'
 
 const theme = buildTheme()
@@ -37,4 +38,40 @@ it('lets consumer style override overlapping layout keys', () => {
 
   expect(root.style.position).toBe('relative')
   expect(root.style.minWidth).toBe('40px')
+})
+
+// Tool icons can be `React.lazy` components (the `icons` map of `@sanity/icons`), and the navbar
+// lays out the tools through a CollapseTabList.
+it('falls back while a child icon loads instead of hiding and revealing in a loop', async () => {
+  let load!: (module: {default: ComponentType}) => void
+  const Icon = lazy(
+    () =>
+      new Promise<{default: ComponentType}>((resolve) => {
+        load = resolve
+      }),
+  )
+
+  // oxlint-disable-next-line testing-library/no-unnecessary-act -- the icon suspends during mount, and React only resumes work that suspended inside an awaited async `act`
+  await act(async () => {
+    render(
+      <ThemeProvider theme={theme}>
+        <Suspense fallback={<div data-testid="fallback" />}>
+          <CollapseTabList data-testid="collapse-tab-list">
+            <Button icon={Icon} key="tool" mode="bleed" text="Tool" tooltipProps={null} />
+          </CollapseTabList>
+        </Suspense>
+      </ThemeProvider>,
+    )
+  })
+
+  expect(screen.getByTestId('fallback')).toBeInTheDocument()
+  expect(screen.getByTestId('collapse-tab-list')).not.toBeVisible()
+
+  await act(async () => {
+    load({default: () => <svg data-testid="lazy-icon" />})
+  })
+
+  expect(screen.queryByTestId('fallback')).not.toBeInTheDocument()
+  expect(screen.getByTestId('collapse-tab-list')).toBeVisible()
+  expect(screen.getAllByTestId('lazy-icon').length).toBeGreaterThan(0)
 })

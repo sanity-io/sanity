@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/client'
 import noop from 'lodash-es/noop.js'
 import {type ReactNode, useState} from 'react'
-import {of} from 'rxjs'
+import {NEVER, of} from 'rxjs'
 import {route, RouterProvider} from 'sanity/router'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
@@ -12,6 +12,7 @@ import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {useClient} from '../../../../hooks/useClient'
 import {LocaleProvider} from '../../../../i18n/components/LocaleProvider'
 import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
+import {type GlobalListenerStore} from '../../../../store/globalListener/createGlobalListenerStore'
 import {ResourceCacheProvider, useResourceCache} from '../../../../store/ResourceCacheProvider'
 import {useWorkspace} from '../../../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
@@ -97,7 +98,7 @@ const PREVIEWS: Record<string, {title: string; subtitle?: string}> = {
 /**
  * The mock studio's client answers every query with `null`, which the real preview store cannot
  * turn into documents, so the document set, the documents and their previews are served from the
- * fixtures above instead. Only the methods `useBundleDocuments` and the preview column call.
+ * fixtures above instead. Only the members `useBundleDocuments` and the preview column use.
  */
 const STUB_PREVIEW_STORE: Pick<
   DocumentPreviewStore,
@@ -137,23 +138,35 @@ const VARIANTS_STORE: VariantStore = {
   dispatch: noop,
 }
 
+// Connects once, so the releases store `VariantDocumentsTable` builds fetches its (empty) list once.
+const STUB_GLOBAL_LISTENER_STORE: GlobalListenerStore = {
+  globalListener: NEVER,
+  invalidationChannel: of({type: 'connected' as const}),
+}
+
 function SeededStores(props: {children: ReactNode}) {
   const {children} = props
   const workspace = useWorkspace()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const resourceCache = useResourceCache()
-  // Seeded during the first render so `useVariantsStore` and `useDocumentPreviewStore` in the
-  // children find the stubs instead of creating the real stores.
+  // Seeded during the first render so the store hooks in the children find the stubs instead of
+  // creating the real stores. The preview and variants stores are cached per global listener
+  // store, so they are seeded against the stub one.
   useState(() => {
     resourceCache.set({
-      namespace: 'VariantsStore',
-      dependencies: [workspace],
-      value: VARIANTS_STORE,
+      namespace: 'globalListenerStore',
+      dependencies: [client],
+      value: STUB_GLOBAL_LISTENER_STORE,
     })
     resourceCache.set({
       namespace: 'documentPreviewStore',
-      dependencies: [client],
+      dependencies: [client, STUB_GLOBAL_LISTENER_STORE],
       value: STUB_PREVIEW_STORE,
+    })
+    resourceCache.set({
+      namespace: 'VariantsStore',
+      dependencies: [workspace, STUB_GLOBAL_LISTENER_STORE],
+      value: VARIANTS_STORE,
     })
     return null
   })
