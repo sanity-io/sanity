@@ -55,6 +55,17 @@ export const VariantSetHeader = styled(VariantSetEntry)(({theme}) => {
     }
 
     /*
+     * A set that exists only for the ghost row of a draft not created yet (a Draft set before the
+     * first edit) is not there yet either: the ghost row's pale blue and dashed outline, and no
+     * hover, since there is nothing in it to collapse onto or select.
+     */
+    &&&[data-pending] {
+      background-color: ${SELECTION.checkedBackground};
+      outline: 1px dashed ${SELECTION.openBackground};
+      outline-offset: -2px;
+    }
+
+    /*
      * A checked header stays a band of its own, one step stronger on the blue ladder than its
      * checked rows, so it still reads as the group's header when the whole group is checked.
      */

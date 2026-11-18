@@ -89,6 +89,7 @@ export const DocumentGroupSet: ComponentType<{
         as="header"
         data-collapsed={expanded ? undefined : ''}
         data-open-inside={!expanded && containsOpen ? '' : undefined}
+        data-pending={nothingToSelect ? '' : undefined}
       >
         {/* The toggle covers the header; the checkbox and header actions sit above it */}
         <button
@@ -120,44 +121,49 @@ export const DocumentGroupSet: ComponentType<{
           {...(bundle ? bundleMark(bundle) : {})}
         />
         <div className="variant-set-text">
-          {/* Read once, as the toggle's name */}
-          <Flex gap={2} alignItems="center" aria-hidden>
-            <Text
-              size={1}
-              weight="medium"
-              as="div"
-              trim={true}
-              id={nameId}
-              data-testid="variant-set-name"
-            >
-              {name}
-            </Text>
-            {typeof count === 'number' && (
-              <Text
-                size={1}
-                muted
-                as="div"
-                trim={true}
-                id={countId}
-                data-testid="variant-set-count"
-              >
-                {count}
-              </Text>
-            )}
+          {/* The name and count, then any header action on the same line, at the end */}
+          <Flex alignItems="center" gap={2}>
+            <div style={TEXT_STYLE}>
+              {/* Read once, as the toggle's name */}
+              <Flex gap={2} alignItems="center" aria-hidden>
+                <Text
+                  size={1}
+                  weight="medium"
+                  as="div"
+                  trim={true}
+                  id={nameId}
+                  data-testid="variant-set-name"
+                >
+                  {name}
+                </Text>
+                {typeof count === 'number' && (
+                  <Text
+                    size={1}
+                    muted
+                    as="div"
+                    trim={true}
+                    id={countId}
+                    data-testid="variant-set-count"
+                  >
+                    {count}
+                  </Text>
+                )}
+              </Flex>
+              {note && (
+                <Text
+                  size={1}
+                  muted
+                  as="div"
+                  id={noteId}
+                  data-testid="variant-set-blocked-note"
+                  style={NOTE_STYLE}
+                >
+                  {note}
+                </Text>
+              )}
+            </div>
+            {headerActions && <div className="header-actions">{headerActions}</div>}
           </Flex>
-          {note && (
-            <Text
-              size={1}
-              muted
-              as="div"
-              id={noteId}
-              data-testid="variant-set-blocked-note"
-              style={NOTE_STYLE}
-            >
-              {note}
-            </Text>
-          )}
-          {headerActions && <div className="header-actions">{headerActions}</div>}
         </div>
       </VariantSetHeader>
       <VariantSetRows id={rowsId} hidden={!expanded}>
@@ -166,6 +172,9 @@ export const DocumentGroupSet: ComponentType<{
     </VariantSet>
   )
 }
+
+/** The name and count take the room left by a header action. */
+const TEXT_STYLE: CSSProperties = {flex: 1, minWidth: 0}
 
 /** The second line sits 8px under the name, as a row's second line does. */
 const NOTE_STYLE: CSSProperties = {marginTop: 8}

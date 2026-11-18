@@ -1646,9 +1646,10 @@ describe('Inventory selection', () => {
 })
 
 function checkboxVisibility(): string[] {
-  return [...document.querySelectorAll('[data-variant-set] .selection-checkbox')].map(
-    (box) => getComputedStyle(box).visibility,
-  )
+  // Checkboxes only: a lock (a version that cannot be selected) always shows
+  return [
+    ...document.querySelectorAll('[data-variant-set] .selection-checkbox:not([data-blocked])'),
+  ].map((box) => getComputedStyle(box).visibility)
 }
 
 /** Row heights and title positions, which must not change as the checkboxes show and hide. */
@@ -1673,6 +1674,10 @@ describe('Inventory layout C: checkboxes on demand', () => {
     await userEvent.hover(page.getByTestId('chromatic-pointer-park'))
     const rest = layoutSnapshot()
     expect(new Set(checkboxVisibility())).toEqual(new Set(['hidden']))
+    // Locks show at rest: they say why a version cannot be selected
+    const locks = [...document.querySelectorAll('[data-testid="selection-lock"]')]
+    expect(locks.length).toBeGreaterThan(0)
+    expect(locks.every((lock) => getComputedStyle(lock).visibility === 'visible')).toBe(true)
 
     // Hover shows that row's checkbox, and the header's on the header
     await userEvent.hover(page.elementLocator(selectionRow('Draft', 'VIP users')))

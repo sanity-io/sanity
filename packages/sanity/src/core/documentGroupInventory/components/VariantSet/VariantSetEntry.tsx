@@ -81,6 +81,11 @@ export const VariantSetEntry = styled.div(({theme}) => {
       visibility: hidden;
     }
 
+    /* A lock (a version that cannot be selected) always shows: it says why, not what you can do */
+    .selection-checkbox[data-blocked] {
+      visibility: visible;
+    }
+
     &:hover .selection-checkbox,
     &:focus-within .selection-checkbox {
       visibility: visible;
