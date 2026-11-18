@@ -571,11 +571,25 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'divergence.unresolved-divergence_other':
     '{{count}} unresolved changes in {{versionName}} version',
 
+  /** --- Content Variants open beta feedback --- */
+
+  /** The label and tooltip for the icons that open the Content Variants feedback dialog */
+  'content-variants.feedback.action': 'Send feedback to Sanity',
+  /** The question in the Content Variants feedback dialog that asks how easy the feature is to use */
+  'content-variants.feedback.sentiment-label':
+    'How easy or difficult is it to create and manage document versions and variants?',
+  /** The title of the Content Variants feedback dialog */
+  'content-variants.feedback.title': 'Share feedback with Sanity on versions and variants',
+
   /** --- Document inventory --- */
 
   /** The label for the button that opens the document group inventory */
   'document-group-inventory.action.manage-versions': 'Manage versions',
-  /** The label used in the feedback dialog asking how easy the document group inventory is to use */
+  /**
+   * The label used in the feedback dialog asking how easy the document group inventory is to use
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-group-inventory.feedback.sentiment-label':
     'How easy or difficult is the new version inventory to use?',
   /** The label for the input that filters the variants in the document group inventory */

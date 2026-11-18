@@ -255,7 +255,7 @@ describe('DocumentGroupInspector', () => {
   test('renders the feedback action before the close button', async ({renderInspector}) => {
     await renderInspector()
 
-    const feedbackButton = await screen.findByRole('button', {name: 'Send feedback'})
+    const feedbackButton = await screen.findByRole('button', {name: 'Send feedback to Sanity'})
     const closeButton = screen.getByRole('button', {name: 'Close panel'})
 
     expect(
@@ -268,14 +268,14 @@ describe('DocumentGroupInspector', () => {
   }) => {
     const {lastInventoryHandle} = await renderInspector()
 
-    await userEvent.click(await screen.findByRole('button', {name: 'Send feedback'}))
+    await userEvent.click(await screen.findByRole('button', {name: 'Send feedback to Sanity'}))
 
     expect(lastInventoryHandle().inventory.getSnapshot().matches('feedback')).toBe(true)
-    expect(screen.getByRole('button', {name: 'Send feedback'})).toBeDisabled()
+    expect(screen.getByRole('button', {name: 'Send feedback to Sanity'})).toBeDisabled()
 
     act(() => lastInventoryHandle().inventory.send({type: 'feedback.end'}))
 
-    expect(screen.getByRole('button', {name: 'Send feedback'})).toBeEnabled()
+    expect(screen.getByRole('button', {name: 'Send feedback to Sanity'})).toBeEnabled()
   })
 
   test('disables the feedback action while the inventory refuses to begin feedback', async ({
@@ -283,7 +283,7 @@ describe('DocumentGroupInspector', () => {
   }) => {
     const {lastInventoryHandle} = await renderInspector()
 
-    const feedbackButton = await screen.findByRole('button', {name: 'Send feedback'})
+    const feedbackButton = await screen.findByRole('button', {name: 'Send feedback to Sanity'})
     expect(feedbackButton).toBeEnabled()
 
     const {inventory} = lastInventoryHandle()
@@ -309,7 +309,9 @@ describe('DocumentGroupInspector', () => {
       await renderInspector()
 
       expect(screen.queryByTestId('document-group-inventory')).not.toBeInTheDocument()
-      expect(screen.queryByRole('button', {name: 'Send feedback'})).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', {name: 'Send feedback to Sanity'}),
+      ).not.toBeInTheDocument()
     })
   })
 })
