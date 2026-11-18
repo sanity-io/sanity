@@ -1,6 +1,9 @@
 import {ClientError, isHttpError, ServerError} from '@sanity/client'
+import {filter, firstValueFrom, take} from 'rxjs'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
+import {createRequestErrorChannel} from '../../studio/requestErrors/createRequestErrorChannel'
+import {createStudioRequestHandler} from '../../studio/requestErrors/createStudioRequestHandler'
 import {isInvalidSessionError} from '../../util/apiErrors'
 import {getJsonStream} from './getJsonStream'
 
@@ -91,6 +94,54 @@ describe('getJsonStream', () => {
     expect(error).toBeInstanceOf(ClientError)
     expect(isInvalidSessionError(error)).toBe(true)
     expect(error.message).toBe('Authentication required')
+    expect(error.response.body.error).toEqual({
+      description: 'Authentication required',
+      type: 'unauthenticatedError',
+    })
     expect(requestHandler).toHaveBeenCalledWith({url: URL, method: 'GET'}, expect.any(Function))
+  })
+
+  it('logs the user out through the studio request handler on a no-credentials 401', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            error: {description: 'Authentication required', type: 'unauthenticatedError'},
+          }),
+          {status: 401, headers: {'content-type': 'application/json'}},
+        ),
+      ),
+    )
+    const channel = createRequestErrorChannel()
+
+    await getJsonStream(URL, undefined, createStudioRequestHandler({channel})).catch(() => {})
+
+    const claim = await firstValueFrom(
+      channel.claim$.pipe(
+        filter((current) => current !== undefined),
+        take(1),
+      ),
+    )
+    expect(claim).toMatchObject({type: 'unauthorized'})
+  })
+
+  it('keeps a 401 without a session signal from the studio request handler', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({error: 'Unauthorized', message: 'Missing grant'}), {
+          status: 401,
+          headers: {'content-type': 'application/json'},
+        }),
+      ),
+    )
+    const requestHandler = vi.fn(() => new Promise(() => {}))
+
+    const error = await getJsonStream(URL, 'token', requestHandler).catch((err) => err)
+
+    expect(error).toBeInstanceOf(ClientError)
+    expect(isInvalidSessionError(error)).toBe(false)
+    expect(requestHandler).not.toHaveBeenCalled()
   })
 })

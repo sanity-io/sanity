@@ -36,55 +36,19 @@ export function isConnectionSessionError(err: unknown): err is ConnectionFailedE
 const INVALID_SESSION_ERROR_CODES = ['SIO-401-AEX', 'SIO-401-ANF']
 
 /**
- * Whether a 401 positively signals that no valid session exists. Two shapes:
- *
- * - {@link INVALID_SESSION_ERROR_CODES} on the usual API error body (expired
- *   or unknown session), from any endpoint.
- * - `error.type === "unauthenticatedError"` on a `/data/history` response,
- *   which is how history answers a request that carried no credentials at all
- *   (`"Authentication required"`). That body has no `errorCode`. Only history
- *   responses count: from any other endpoint the same body stays
- *   caller-domain, so a request sent without credentials elsewhere can't log
- *   the user out.
- *
- * A 401 without either signal is a resource-level denial (an authenticated
- * user lacking a grant — some endpoints answer those with 401, not 403) and
- * must stay caller-domain rather than force a logout. Grant denials only
- * happen with a valid session, so they never carry these signals.
+ * Whether a 401 positively signals an invalid session (see
+ * {@link INVALID_SESSION_ERROR_CODES}). A 401 *without* one of these codes is
+ * a resource-level denial (e.g. an authenticated user lacking a grant —
+ * some endpoints answer those with 401, not 403) and must stay
+ * caller-domain rather than force a logout; grant denials only happen with
+ * a valid session, so they never carry these codes.
  *
  * @internal
  */
 export function isInvalidSessionError(err: unknown): err is HttpError {
   if (!isUnauthorizedError(err)) return false
   const code = getApiErrorCode(err)
-  if (code !== undefined && INVALID_SESSION_ERROR_CODES.includes(code)) return true
-  return isHistoryResponse(err) && isUnauthenticatedError(err)
-}
-
-const HISTORY_PATH = /\/data\/history\//
-
-function isHistoryResponse(err: HttpError): boolean {
-  try {
-    return HISTORY_PATH.test(new URL(err.response.url).pathname)
-  } catch {
-    return false
-  }
-}
-
-/**
- * Content Lake's no-credentials 401. `error.type` is a structured
- * discriminator, same as the session `errorCode`s — not message text.
- */
-function isUnauthenticatedError(err: HttpError): boolean {
-  const body = err.response.body
-  if (typeof body !== 'object' || body === null || !('error' in body)) return false
-  const error = body.error
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'type' in error &&
-    error.type === 'unauthenticatedError'
-  )
+  return code !== undefined && INVALID_SESSION_ERROR_CODES.includes(code)
 }
 
 /**

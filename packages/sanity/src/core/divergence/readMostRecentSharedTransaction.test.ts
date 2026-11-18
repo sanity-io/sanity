@@ -110,7 +110,7 @@ describe('readMostRecentSharedTransaction', () => {
             statusCode: 401,
             statusMessage: 'Unauthorized',
             headers: {},
-            body: {error: {description: 'Authentication required', type: 'unauthenticatedError'}},
+            body: {error: 'Unauthorized', errorCode: 'SIO-401-ANF', message: 'Session not found'},
             url: 'https://x.api.sanity.io/v2025-02-19/data/history/x/transactions/unauthenticated-a',
             method: 'GET',
           })
@@ -135,14 +135,14 @@ describe('readMostRecentSharedTransaction', () => {
               statusCode: 401,
               statusMessage: 'Unauthorized',
               headers: {},
-              body: {error: {description: 'Authentication required', type: 'unauthenticatedError'}},
+              body: {error: 'Unauthorized', errorCode: 'SIO-401-ANF', message: 'Session not found'},
               url: 'https://x.api.sanity.io/v2025-02-19/data/history/x/transactions/unauthenticated-no-handler-a',
               method: 'GET',
             })
           },
         }),
       ),
-    ).rejects.toThrow('Authentication required')
+    ).rejects.toThrow('Session not found')
   })
 })
 
