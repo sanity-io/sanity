@@ -46,3 +46,13 @@ export const DatasetNotFound: Story = {
 export const DatasetNotFoundChooseAnother: Story = {
   args: {error: {type: 'datasetNotFound'}, multipleWorkspaces: true, isStaging: true},
 }
+
+/** Archived, disabled or suspended project named in the message, with the Manage link. */
+export const ProjectDisabled: Story = {
+  args: {error: {type: 'projectDisabled'}},
+}
+
+/** Disabled project with no ID to name: the generic message. */
+export const ProjectDisabledWithoutId: Story = {
+  args: {error: {type: 'projectDisabled'}, projectId: undefined},
+}

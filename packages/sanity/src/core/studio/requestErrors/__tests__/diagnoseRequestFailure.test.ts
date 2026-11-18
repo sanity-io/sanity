@@ -59,6 +59,18 @@ describe('createRequestFailureProbe', () => {
     expect(await probe(err)).toEqual({type: 'dataset-not-found'})
   })
 
+  it('classifies a Project Disabled 402 without probing /check/cors', async () => {
+    const fetchSpy = vi.fn()
+    globalThis.fetch = fetchSpy as never
+    const probe = createRequestFailureProbe(fakeClient(), makeCache())
+    const err = clientError(402, {
+      error: 'Project Disabled',
+      message: 'This project has been disabled by a project administrator',
+    })
+    expect(await probe(err)).toEqual({type: 'project-disabled'})
+    expect(fetchSpy).not.toHaveBeenCalled()
+  })
+
   it('probes /check/cors on a network error and reports project-not-found', async () => {
     mockCorsFetch(404, {errorCode: 'SIO-404-PNF', message: 'Project not found'})
     const probe = createRequestFailureProbe(fakeClient(), makeCache())

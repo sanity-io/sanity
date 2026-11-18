@@ -25,7 +25,7 @@ import {useEffectEvent} from 'use-effect-event'
 import {prepareConfig} from '../../config/prepareConfig'
 import {type Config, type WorkspaceSummary} from '../../config/types'
 import {type AuthStore} from '../../store/auth/types'
-import {getApiErrorCode} from '../requestErrors/classify'
+import {type ConfigErrorClassification, getApiErrorCode} from '../requestErrors/classify'
 import {createRequestErrorChannel} from '../requestErrors/createRequestErrorChannel'
 import {createStudioRequestHandler as createStudioRequestHandlerFactory} from '../requestErrors/createStudioRequestHandler'
 import {
@@ -37,6 +37,15 @@ import {type RequestErrorChannel, type RequestErrorClaim} from '../requestErrors
 import {type CorsCheckCache, checkCors} from './corsCheck'
 import {CorsOriginErrorView} from './CorsOriginErrorView'
 import {type WorkspacesContextValue} from './WorkspacesContext'
+
+const CONFIG_ERROR_TYPES = {
+  'project-not-found': 'projectNotFound',
+  'dataset-not-found': 'datasetNotFound',
+  'project-disabled': 'projectDisabled',
+} as const satisfies Record<
+  Exclude<RequestFailureResult['type'], 'cors' | 'unknown'>,
+  ConfigErrorClassification['type']
+>
 
 /** @internal */
 export interface WorkspacesProviderProps {
@@ -137,13 +146,11 @@ export function WorkspacesProvider({
         })
         return
       }
-      // A configuration error (missing project/dataset) makes the whole
-      // workspace unusable and can't be recovered by retry — the user has to
-      // fix their config. Take over the screen with guidance.
+      // A configuration error (missing project/dataset, disabled project)
+      // makes the whole workspace unusable and can't be recovered by retry.
+      // Take over the screen with guidance.
       setConfigError({
-        error: {
-          type: result.type === 'dataset-not-found' ? 'datasetNotFound' : 'projectNotFound',
-        },
+        error: {type: CONFIG_ERROR_TYPES[result.type]},
         isStaging,
         projectId: clientConfig.projectId,
         dataset: clientConfig.dataset,
