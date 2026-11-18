@@ -9,7 +9,7 @@ interface ExtendableTypeDefinition {
 /**
  * Built-in object types that a schema extends by declaring a type with the same
  * name. The declaration only lists the fields it adds: the core fields of the
- * built-in definition are always prepended, the way `image` prepends its asset
+ * built-in definition are always prepended, the way object types like `image` prepends its asset
  * fields, and schema validation rejects a declaration that redeclares one.
  */
 export const extendableTypes: readonly ExtendableTypeDefinition[] = [releaseMetadata]

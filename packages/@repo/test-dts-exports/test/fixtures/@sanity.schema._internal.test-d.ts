@@ -39,6 +39,7 @@ import type {
   ProblemPathSegment,
   ProblemPathTypeSegment,
   processSchemaSynchronization,
+  RELEASE_METADATA_CORE_FIELDS,
   RELEASE_METADATA_TYPE_NAME,
   resolveExtendableTypes,
   resolveSearchConfig,
@@ -169,6 +170,9 @@ describe('@sanity/schema/_internal', () => {
   })
   test('processSchemaSynchronization', () => {
     expectTypeOf<typeof processSchemaSynchronization>().toBeFunction()
+  })
+  test('RELEASE_METADATA_CORE_FIELDS', () => {
+    expectTypeOf<typeof RELEASE_METADATA_CORE_FIELDS>().not.toBeNever()
   })
   test('RELEASE_METADATA_TYPE_NAME', () => {
     expectTypeOf<typeof RELEASE_METADATA_TYPE_NAME>().not.toBeNever()

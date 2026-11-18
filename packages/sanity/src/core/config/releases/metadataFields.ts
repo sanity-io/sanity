@@ -1,3 +1,4 @@
+import {RELEASE_METADATA_CORE_FIELDS} from '@sanity/schema/_internal'
 import {type FieldDefinition} from '@sanity/types'
 
 import {getPrintableType} from '../../util/getPrintableType'
@@ -12,13 +13,9 @@ import {type PluginOptions} from '../types'
  *
  * @internal
  */
-export const RESERVED_RELEASE_METADATA_NAMES: ReadonlySet<string> = new Set([
-  'title',
-  'description',
-  'releaseType',
-  'intendedPublishAt',
-  'cardinality',
-])
+export const RESERVED_RELEASE_METADATA_NAMES: ReadonlySet<string> = new Set(
+  RELEASE_METADATA_CORE_FIELDS.map((field) => field.name),
+)
 
 const FIELD_NAME = /^[A-Za-z][A-Za-z0-9_]*$/
 
