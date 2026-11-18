@@ -159,8 +159,8 @@ describe('createEventsObservable', () => {
 
     const observable = createEventsObservable({
       documentId: DRAFT_ID,
-      events$: of(eventsValue([...getEditEvents([fetchedEdit], DRAFT_ID, false), create])),
-      remoteEdits$: of(getEditEvents([liveEdit], DRAFT_ID, false)),
+      events$: of(eventsValue([...getEditEvents([fetchedEdit], DRAFT_ID), create])),
+      remoteEdits$: of(getEditEvents([liveEdit], DRAFT_ID)),
       expandedEvents$: of([]),
     })
     const {values, subscription} = collectEmissions(observable)

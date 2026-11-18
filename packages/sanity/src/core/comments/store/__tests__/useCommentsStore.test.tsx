@@ -153,6 +153,50 @@ describe('useCommentsStore', () => {
     expect(onLatestTransactionIdReceived).toHaveBeenCalledWith('c-a')
   })
 
+  it('clears a fetch error once a later connection loads the comments', async () => {
+    vi.useFakeTimers()
+    const testClient = createAddonDatasetTestClient({comments: [comment('c-a', 'doc-a')]})
+    // One attempt plus the three retries `followAddonDatasetQuery` makes before it reports the error.
+    testClient.fetchControl.failuresRemaining = 4
+    const {result, unmount} = renderHook(
+      () => {
+        const {client} = useAddonDataset()
+        const listenerStore = useAddonDatasetListenerStore()
+        return useCommentsStore({
+          client,
+          listenerStore,
+          documentId: 'doc-a',
+          transactionsIdMap,
+          onLatestTransactionIdReceived,
+        })
+      },
+      {wrapper: testClient.wrapper},
+    )
+
+    try {
+      await act(async () => {
+        testClient.server.next(WELCOME)
+        await vi.advanceTimersByTimeAsync(6_000)
+      })
+
+      expect(result.current.error?.message).toBe('fetch failed')
+      expect(result.current.loading).toBe(false)
+      expect(result.current.data).toEqual([])
+
+      await act(async () => {
+        testClient.server.next(WELCOME)
+      })
+
+      expect(result.current.error).toBeNull()
+      expect(result.current.loading).toBe(false)
+      expect(ids(result.current.data)).toEqual(['c-a'])
+    } finally {
+      unmount()
+      vi.clearAllTimers()
+      vi.useRealTimers()
+    }
+  })
+
   it('shows optimistic updates, and applies the listener’s changes on top of them', async () => {
     const {result, server} = await renderConnected({})
 

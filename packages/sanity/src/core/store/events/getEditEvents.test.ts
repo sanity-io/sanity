@@ -2,7 +2,12 @@ import {describe, expect, it} from 'vitest'
 
 import {createDocumentVersionEvent, DRAFT_ID, minutesAfterBase} from './__fixtures__/events.fixture'
 import {editTransaction} from './__fixtures__/transactions.fixture'
-import {getEditEvents, getEffectState, mergeEditEvents} from './getEditEvents'
+import {
+  getEditEvents,
+  getEffectState,
+  mergeEditEvents,
+  toUpdateLiveDocumentEvents,
+} from './getEditEvents'
 import {type EditDocumentVersionEvent, type UpdateLiveDocumentEvent} from './types'
 
 describe('getEditEvents()', () => {
@@ -82,7 +87,6 @@ describe('getEditEvents()', () => {
       const events = getEditEvents(
         editTransactions,
         'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183',
-        false,
       )
       expect(events).toEqual([expectedEvent])
     })
@@ -121,7 +125,6 @@ describe('getEditEvents()', () => {
       const events = getEditEvents(
         [...editTransactions, newTransaction],
         'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183',
-        false,
       )
       expect(events).toEqual([newEvent, expectedEvent])
     })
@@ -165,7 +168,6 @@ describe('getEditEvents()', () => {
       const events = getEditEvents(
         [deleteTx, ...editTransactions, undefinedTx, creationTransaction],
         'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183',
-        false,
       )
       expect(events).toEqual([expectedEvent])
     })
@@ -189,7 +191,7 @@ describe('getEditEvents()', () => {
         },
       }
 
-      const events = getEditEvents([variantTx], variantDocumentId, false)
+      const events = getEditEvents([variantTx], variantDocumentId)
 
       expect(events).toHaveLength(1)
       expect(events[0]).toMatchObject({
@@ -200,7 +202,7 @@ describe('getEditEvents()', () => {
       expect(events[0]).not.toHaveProperty('releaseId')
     })
   })
-  describe('when the document is liveEdit', () => {
+  describe('toUpdateLiveDocumentEvents()', () => {
     const expectedEvent: UpdateLiveDocumentEvent = {
       type: 'updateLiveDocument',
       id: 'edit-tx-2',
@@ -211,10 +213,8 @@ describe('getEditEvents()', () => {
       documentVariantType: 'version',
     }
     it('should merge the events if they are in the time window.', () => {
-      const events = getEditEvents(
-        editTransactions,
-        'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183',
-        true,
+      const events = toUpdateLiveDocumentEvents(
+        getEditEvents(editTransactions, 'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183'),
       )
       expect(events).toEqual([expectedEvent])
     })
@@ -241,10 +241,11 @@ describe('getEditEvents()', () => {
         revisionId: 'new-tx',
         documentVariantType: 'version',
       }
-      const events = getEditEvents(
-        [...editTransactions, newTransaction],
-        'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183',
-        true,
+      const events = toUpdateLiveDocumentEvents(
+        getEditEvents(
+          [...editTransactions, newTransaction],
+          'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183',
+        ),
       )
       expect(events).toEqual([newEvent, expectedEvent])
     })
@@ -285,12 +286,26 @@ describe('getEditEvents()', () => {
           'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183': undefined,
         },
       }
-      const events = getEditEvents(
-        [deleteTx, ...editTransactions, undefinedTx, creationTransaction],
-        'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183',
-        true,
+      const events = toUpdateLiveDocumentEvents(
+        getEditEvents(
+          [deleteTx, ...editTransactions, undefinedTx, creationTransaction],
+          'versions.rkaihDvC1.f8dece19-c458-4cff-bf76-732b00617183',
+        ),
       )
       expect(events).toEqual([expectedEvent])
+    })
+
+    it('drops merged in-window transactions entirely, including other authors', () => {
+      const transactions = [
+        editTransaction({id: 'tx-1', timestamp: minutesAfterBase(0), author: 'author-1'}),
+        editTransaction({id: 'tx-2', timestamp: minutesAfterBase(1), author: 'author-2'}),
+      ]
+
+      const events = toUpdateLiveDocumentEvents(getEditEvents(transactions, DRAFT_ID))
+      // Only the newest transaction survives; author-1's edit leaves no trace.
+      expect(events).toEqual([
+        expect.objectContaining({type: 'updateLiveDocument', id: 'tx-2', author: 'author-2'}),
+      ])
     })
   })
 
@@ -305,12 +320,10 @@ describe('getEditEvents()', () => {
         editTransaction({id: 'tx-8', timestamp: minutesAfterBase(8)}),
       ]
 
-      const events = getEditEvents(transactions, DRAFT_ID, false)
+      const events = getEditEvents(transactions, DRAFT_ID)
       expect(events).toHaveLength(2)
       expect(events[0].id).toBe('tx-8')
-      expect(
-        (events[0] as EditDocumentVersionEvent).transactions.map((tx) => tx.revisionId),
-      ).toEqual(['tx-8', 'tx-4'])
+      expect(events[0].transactions.map((tx) => tx.revisionId)).toEqual(['tx-8', 'tx-4'])
       expect(events[1].id).toBe('tx-0')
     })
 
@@ -320,24 +333,10 @@ describe('getEditEvents()', () => {
         editTransaction({id: 'tx-2', timestamp: minutesAfterBase(1), author: 'author-2'}),
       ]
 
-      const [event] = getEditEvents(transactions, DRAFT_ID, false) as EditDocumentVersionEvent[]
+      const [event] = getEditEvents(transactions, DRAFT_ID)
       expect(event.author).toBe('author-2')
       expect(event.contributors).toEqual(['author-2', 'author-1'])
       expect(event.transactions.map((tx) => tx.revisionId)).toEqual(['tx-2', 'tx-1'])
-    })
-
-    it('liveEdit drops merged in-window transactions entirely, including other authors', () => {
-      // Live edit checks for the events received from the events api, not the transactions.
-      const transactions = [
-        editTransaction({id: 'tx-1', timestamp: minutesAfterBase(0), author: 'author-1'}),
-        editTransaction({id: 'tx-2', timestamp: minutesAfterBase(1), author: 'author-2'}),
-      ]
-
-      const events = getEditEvents(transactions, DRAFT_ID, true)
-      // Only the newest transaction survives; author-1's edit leaves no trace.
-      expect(events).toEqual([
-        expect.objectContaining({type: 'updateLiveDocument', id: 'tx-2', author: 'author-2'}),
-      ])
     })
   })
 
@@ -357,37 +356,34 @@ describe('getEditEvents()', () => {
       ]
       // tx-0 and tx-4 were fetched as one event, tx-8 was received live afterwards.
       const merged = mergeEditEvents([
-        ...getEditEvents(transactions.slice(2), DRAFT_ID, false),
-        ...getEditEvents(transactions.slice(0, 2), DRAFT_ID, false),
+        ...getEditEvents(transactions.slice(2), DRAFT_ID),
+        ...getEditEvents(transactions.slice(0, 2), DRAFT_ID),
       ])
-      expect(merged).toEqual(getEditEvents(transactions, DRAFT_ID, false))
+      expect(merged).toEqual(getEditEvents(transactions, DRAFT_ID))
       // The window is anchored to the newest transaction, so tx-0 starts its own event again.
       expect(merged.map((event) => event.id)).toEqual(['tx-8', 'tx-0'])
     })
 
     it('never groups edit events on both sides of another event', () => {
       const events = [
-        ...getEditEvents([liveEdit], DRAFT_ID, false),
+        ...getEditEvents([liveEdit], DRAFT_ID),
         createDocumentVersionEvent({timestamp: minutesAfterBase(1.5)}),
-        ...getEditEvents([fetchedEdit], DRAFT_ID, false),
+        ...getEditEvents([fetchedEdit], DRAFT_ID),
       ]
       expect(mergeEditEvents(events)).toEqual(events)
     })
 
     it('keeps a transaction found in more than one edit event once', () => {
       const merged = mergeEditEvents([
-        ...getEditEvents([liveEdit, fetchedEdit], DRAFT_ID, false),
-        ...getEditEvents([fetchedEdit], DRAFT_ID, false),
+        ...getEditEvents([liveEdit, fetchedEdit], DRAFT_ID),
+        ...getEditEvents([fetchedEdit], DRAFT_ID),
       ])
-      expect(merged).toEqual(getEditEvents([liveEdit, fetchedEdit], DRAFT_ID, false))
+      expect(merged).toEqual(getEditEvents([liveEdit, fetchedEdit], DRAFT_ID))
     })
 
     it('leaves the edit events nested under an expanded publish as they are', () => {
-      const [expanded] = getEditEvents([fetchedEdit], DRAFT_ID, false)
-      const events = [
-        ...getEditEvents([liveEdit], DRAFT_ID, false),
-        {...expanded, parentId: 'tx-publish'},
-      ]
+      const [expanded] = getEditEvents([fetchedEdit], DRAFT_ID)
+      const events = [...getEditEvents([liveEdit], DRAFT_ID), {...expanded, parentId: 'tx-publish'}]
       expect(mergeEditEvents(events)).toEqual(events)
     })
   })
