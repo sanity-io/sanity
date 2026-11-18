@@ -366,7 +366,7 @@ describe('VariantsOverview', () => {
     await user.click(trigger)
 
     expect(trigger).toHaveAttribute('aria-expanded', 'true')
-    const search = await screen.findByLabelText('Find a dimension…')
+    const search = await screen.findByLabelText('Search dimensions…')
     await waitFor(() => expect(search).toHaveFocus())
     expect(document.getElementById(trigger.getAttribute('aria-controls') ?? '')).toHaveAttribute(
       'role',
