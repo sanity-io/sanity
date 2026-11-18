@@ -11,6 +11,7 @@ import {type MouseEvent, useCallback, useMemo, type RefAttributes} from 'react'
 import {css, styled} from 'styled-components'
 import {Text, Box, Flex, Icon} from 'ui5'
 
+import {MENU_CURRENT_ROW_ATTRIBUTE} from '../../../../ui-components/menuButton/useMenuOverflow'
 import {MenuLeadingColumn} from '../../../../ui-components/menuLeadingColumn/MenuLeadingColumn'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -291,6 +292,7 @@ export function ReleasesMenuItem(
         paddingRight={hasDetailLink ? 2 : 1}
         pressed={active}
         selected={active}
+        {...{[MENU_CURRENT_ROW_ATTRIBUTE]: active ? '' : undefined}}
         data-testid={`release-${releaseId}`}
         {...props.menuItemProps?.({perspective: release})}
       >
