@@ -130,17 +130,20 @@ export const DocumentGroupSet: ComponentType<{
           <Flex alignItems="center" gap={2}>
             <div style={TEXT_STYLE}>
               {/* Read once, as the toggle's name */}
-              <Flex gap={2} alignItems="center" aria-hidden>
-                <Text
-                  size={1}
-                  weight="medium"
-                  as="div"
-                  trim={true}
-                  id={nameId}
-                  data-testid="variant-set-name"
-                >
-                  {name}
-                </Text>
+              <Flex gap={2} alignItems="center" aria-hidden style={NAME_LINE_STYLE}>
+                {/* A long name ends in an ellipsis, like a row's; the count stays whole */}
+                <div className="version-title">
+                  <Text
+                    size={1}
+                    weight="medium"
+                    as="div"
+                    trim={true}
+                    id={nameId}
+                    data-testid="variant-set-name"
+                  >
+                    {name}
+                  </Text>
+                </div>
                 {typeof count === 'number' && (
                   <Text
                     size={1}
@@ -180,6 +183,7 @@ export const DocumentGroupSet: ComponentType<{
 
 /** The name and count take the room left by a header action. */
 const TEXT_STYLE: CSSProperties = {flex: 1, minWidth: 0}
+const NAME_LINE_STYLE: CSSProperties = {minWidth: 0}
 
 /** The second line sits 8px under the name, as a row's second line does. */
 const NOTE_STYLE: CSSProperties = {marginTop: 8}
