@@ -181,7 +181,13 @@ export function DocumentReleasesMenu() {
         },
         {
           key: 'other',
-          label: t('document-panel-navigation.releases.section.other'),
+          // Invites the pick: picking a release opens it, where the banner offers to add the
+          // document. "More" once the section above lists releases the document is already in.
+          label: t(
+            documentReleaseCount > 0
+              ? 'document-panel-navigation.releases.section.add-to-more'
+              : 'document-panel-navigation.releases.section.add-to',
+          ),
           items: otherReleases.map(renderReleaseItem),
         },
       ]}

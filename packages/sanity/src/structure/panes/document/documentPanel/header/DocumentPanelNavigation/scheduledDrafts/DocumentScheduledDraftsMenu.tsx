@@ -27,6 +27,7 @@ import {ClockSmallIcon} from '../ClockSmallIcon'
 import {DropdownButton} from '../DropdownButton'
 import {DocumentNavigationMenu} from '../menu/DocumentNavigationMenu'
 import {useSelectedVariant} from '../variants/useSelectedVariant'
+import {pausedIcon} from './DocumentScheduledDraftsMenu.css'
 import {getPublishDate, useFormatPublishDateTime} from './useFormatPublishDateTime'
 
 /** When a scheduled draft goes out. Undated ones sort last. */
@@ -129,7 +130,13 @@ export function DocumentScheduledDraftsMenu() {
       button={
         <DropdownButton
           data-testid="document-scheduled-drafts-menu-button"
-          icon={isPausedCardinalityOneRelease(selectedScheduledDraft) ? UnlockIcon : ClockSmallIcon}
+          icon={
+            isPausedCardinalityOneRelease(selectedScheduledDraft) ? (
+              <UnlockIcon className={pausedIcon} />
+            ) : (
+              ClockSmallIcon
+            )
+          }
           onClear={selectedScheduledDraft ? handleClear : undefined}
           tone={selectedScheduledDraft ? getReleaseTone(selectedScheduledDraft) : undefined}
           text={

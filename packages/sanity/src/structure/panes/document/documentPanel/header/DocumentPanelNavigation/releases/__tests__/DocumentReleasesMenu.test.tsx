@@ -153,7 +153,7 @@ describe('DocumentReleasesMenu', () => {
     expect(navigate).toHaveBeenCalledWith('drafts')
   })
 
-  it('lists the releases the document is in apart from the others, leaving out scheduled drafts', async () => {
+  it('lists the releases the document is in apart from the ones to add it to, leaving out scheduled drafts', async () => {
     await renderMenu()
 
     const menu = await openMenu()
@@ -163,7 +163,7 @@ describe('DocumentReleasesMenu', () => {
     expect(within(documentSection).getByTestId('document-release-rA')).toBeInTheDocument()
 
     const otherSection = within(menu).getByTestId('document-releases-menu-section-other')
-    expect(otherSection).toHaveTextContent('Other releases')
+    expect(otherSection).toHaveTextContent('Add to more releases')
     expect(within(otherSection).getByTestId('document-release-rB')).toBeInTheDocument()
     expect(within(otherSection).getByTestId('document-release-rHalloween').textContent).toMatch(
       /^Halloween · .+/,
@@ -182,7 +182,7 @@ describe('DocumentReleasesMenu', () => {
     expect(within(documentSection).queryByTestId('document-release-rA')).toBeNull()
   })
 
-  it('hides the empty first section and its info icon when the document is in none', async () => {
+  it('hides the empty first section and invites adding the document when it is in none', async () => {
     mockVersions([createVersion({bundle: 'published'})])
     await renderMenu()
 
@@ -194,7 +194,7 @@ describe('DocumentReleasesMenu', () => {
     expect(menu).not.toHaveTextContent('Releases with this document')
 
     const otherSection = within(menu).getByTestId('document-releases-menu-section-other')
-    expect(otherSection).toHaveTextContent('Other releases')
+    expect(otherSection).toHaveTextContent('Add this document to')
     expect(within(otherSection).getByTestId('document-release-rA')).toBeInTheDocument()
     expect(within(otherSection).getByTestId('document-release-rB')).toBeInTheDocument()
   })
