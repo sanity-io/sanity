@@ -7,8 +7,11 @@ import {
   DocumentGroupInventoryFeedbackAction,
   type DocumentGroupInventoryHandle,
   type DocumentInspectorProps,
+  type EditStateFor,
   getDefaultVariant,
+  getDraftId,
   getDocumentVersionVariantId,
+  getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   isGoingToUnpublish,
   readVersionType,
@@ -138,11 +141,23 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
       ? editState.version._id
       : displayed?._id
 
-  const selectedId = getSelectedVersionId({
+  const variantSelected = Boolean(getDefaultVariant(selectedVariantNames))
+  // In Drafts, a draft the first edit will create shows in the inventory as a ghost row, marked open
+  const pendingDraft = getPendingDraft({
     targetDocumentState,
-    variantSelected: Boolean(getDefaultVariant(selectedVariantNames)),
-    targetDocumentId,
+    variantSelected,
+    draftsSelected: selectedPerspective === 'drafts',
+    editState,
+    documentId,
+    defaultName: t('document-group.base-variant'),
   })
+  const selectedId =
+    pendingDraft?.id ??
+    getSelectedVersionId({
+      targetDocumentState,
+      variantSelected,
+      targetDocumentId,
+    })
 
   return (
     <Flex flexDirection="column" height="100%" overflow="hidden">
@@ -172,6 +187,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
             mode="manage"
             documentId={targetDocumentId}
             selectedId={selectedId}
+            pendingDraft={pendingDraft}
             documentType={documentType}
             portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
             perspectiveList={perspectiveList}
@@ -187,6 +203,53 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
       </div>
     </Flex>
   )
+}
+
+/**
+ * The draft the form is about to create, if any. In Drafts, when the open audience has no draft
+ * yet, the form shows its published version and the first edit creates the draft: for a variant,
+ * at the id the target state reserves (`creatableTarget`); for Default, at the document's draft
+ * id. Live-edit documents have no drafts, so they never have one.
+ */
+function getPendingDraft({
+  targetDocumentState,
+  variantSelected,
+  draftsSelected,
+  editState,
+  documentId,
+  defaultName,
+}: {
+  targetDocumentState: TargetDocumentState
+  variantSelected: boolean
+  draftsSelected: boolean
+  editState: EditStateFor | null
+  documentId: string
+  defaultName: string
+}): {id: string; variantId?: string; name: string} | undefined {
+  if (!draftsSelected) {
+    return undefined
+  }
+  if (variantSelected) {
+    if (targetDocumentState.status !== 'variant-missing' || !targetDocumentState.creatableTarget) {
+      return undefined
+    }
+    const {variant, creatableTarget} = targetDocumentState
+    return {
+      id: creatableTarget.id,
+      variantId: variant._id,
+      name: variant.metadata?.title ?? variant.name ?? variant._id,
+    }
+  }
+  if (
+    !editState?.ready ||
+    editState.liveEdit ||
+    editState.draft ||
+    editState.version ||
+    !editState.published
+  ) {
+    return undefined
+  }
+  return {id: getDraftId(getPublishedId(documentId)), name: defaultName}
 }
 
 /**

@@ -248,11 +248,27 @@ export const VariantSetEntry = styled.div(({theme}) => {
       background-color: ${SELECTION.openBackground};
     }
 
-    &[data-current] [data-testid='version-title'] {
+    /*
+     * The ghost row of a draft not created yet: open, but not there yet. The pale checked blue
+     * with a dashed outline in the open row's blue, under the row's own text colours, so it reads
+     * as the open row without claiming a version exists.
+     */
+    &&&[data-current][data-pending] {
+      background-color: ${SELECTION.checkedBackground};
+      outline: 1px dashed ${SELECTION.openBackground};
+      outline-offset: -2px;
+    }
+
+    &&&[data-pending]:has(.primary-action:focus-visible) {
+      outline: 2px solid ${color.focusRing};
+    }
+
+    /* A ghost row keeps the row's own text colours on its pale background */
+    &[data-current]:not([data-pending]) [data-testid='version-title'] {
       color: ${SELECTION.openTitle};
     }
 
-    &[data-current] [data-testid='version-secondary-line'] {
+    &[data-current]:not([data-pending]) [data-testid='version-secondary-line'] {
       color: ${SELECTION.openSubtitle};
     }
 

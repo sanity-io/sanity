@@ -993,6 +993,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.subject.version_other': 'versions',
   /** A version that was never published: its status line, with `status` the usual edited text, followed by a note */
   'document-group.version.not-published-yet': '{{status}} · not published yet',
+  /**
+   * The second line of the inventory's ghost row: in Drafts, the open audience has no draft yet, and
+   * the first edit in the form creates it
+   */
+  'document-group.version.pending-draft': 'Not created yet',
+  /** The tooltip on the inventory's ghost row, which says how its draft gets created */
+  'document-group.version.pending-draft.tooltip': 'Edit the form to create this draft',
   /** Accessible name of the avatars on a version row in the document group inventory, naming the people who have that version open (singular) */
   'document-group.version.presence_one': '{{names}} has this version open',
   /** Accessible name of the avatars on a version row in the document group inventory, naming the people who have that version open (plural) */
