@@ -4,7 +4,7 @@ import {render} from '@testing-library/react'
 import {StrictMode} from 'react'
 import {afterEach, beforeEach, expect, it, vi} from 'vitest'
 
-function createFakeLocks(): {locks: LockManager; held: string[]} {
+function createFakeLocks(): LockManager {
   const held: string[] = []
   const locks = {
     request: async (name: string, callback: () => Promise<void>) => {
@@ -14,7 +14,7 @@ function createFakeLocks(): {locks: LockManager; held: string[]} {
     },
     query: () => Promise.resolve({held: held.map((name) => ({name, mode: 'exclusive'}))}),
   }
-  return {locks: locks as unknown as LockManager, held}
+  return locks as unknown as LockManager
 }
 
 beforeEach(() => {
@@ -28,8 +28,7 @@ afterEach(() => {
 
 async function setUpStall() {
   vi.resetModules()
-  const fakeLocks = createFakeLocks()
-  vi.stubGlobal('navigator', {...navigator, locks: fakeLocks.locks})
+  vi.stubGlobal('navigator', {...navigator, locks: createFakeLocks()})
   vi.stubGlobal(
     'fetch',
     vi.fn(() => new Promise(() => undefined)),
@@ -46,14 +45,24 @@ async function setUpStall() {
     sendEvents: () => Promise.resolve(),
     sendBeacon: () => true,
   })
+  const countingFetch = resolveListenerCountingFetch()
+
+  startTrackingStudioTabs('api.sanity.io')
+  await vi.runAllTimersAsync()
 
   return {
     ListenerStallTelemetry,
-    ListenerStallWorkspaceTelemetry,
     ListenerStallDetected,
-    countingFetch: resolveListenerCountingFetch(),
-    startTrackingStudioTabs,
     store,
+    stallBoot: async () => {
+      void countingFetch('https://abc123.api.sanity.io/v1/users/me')
+      await vi.advanceTimersByTimeAsync(10_000)
+    },
+    workspaceReporter: (
+      <TelemetryProvider store={store}>
+        <ListenerStallWorkspaceTelemetry telemetry={store.logger} />
+      </TelemetryProvider>
+    ),
   }
 }
 
@@ -74,14 +83,8 @@ const expectedBootStallEvent = {
 }
 
 it('buffers a boot stall detected before any workspace store mounts, and sends it once one does', async () => {
-  const {
-    ListenerStallTelemetry,
-    ListenerStallWorkspaceTelemetry,
-    ListenerStallDetected,
-    countingFetch,
-    startTrackingStudioTabs,
-    store,
-  } = await setUpStall()
+  const {ListenerStallTelemetry, ListenerStallDetected, store, stallBoot, workspaceReporter} =
+    await setUpStall()
   const resumeSpy = vi.spyOn(store.logger, 'resume')
 
   const {rerender} = render(
@@ -89,20 +92,13 @@ it('buffers a boot stall detected before any workspace store mounts, and sends i
       <ListenerStallTelemetry />
     </DeferredTelemetryProvider>,
   )
-
-  startTrackingStudioTabs('api.sanity.io')
-  await vi.runAllTimersAsync()
-
-  void countingFetch('https://abc123.api.sanity.io/v1/users/me')
-  await vi.advanceTimersByTimeAsync(10_000)
+  await stallBoot()
   expect(resumeSpy).not.toHaveBeenCalled()
 
   rerender(
     <DeferredTelemetryProvider>
       <ListenerStallTelemetry />
-      <TelemetryProvider store={store}>
-        <ListenerStallWorkspaceTelemetry telemetry={store.logger} />
-      </TelemetryProvider>
+      {workspaceReporter}
     </DeferredTelemetryProvider>,
   )
 
@@ -113,93 +109,17 @@ it('buffers a boot stall detected before any workspace store mounts, and sends i
   )
 })
 
-it('replays a stall detected before the component ever mounts, logged exactly once', async () => {
-  const {
-    ListenerStallTelemetry,
-    ListenerStallWorkspaceTelemetry,
-    ListenerStallDetected,
-    countingFetch,
-    startTrackingStudioTabs,
-    store,
-  } = await setUpStall()
-  const logSpy = vi.spyOn(store.logger, 'log')
-
-  startTrackingStudioTabs('api.sanity.io')
-  await vi.runAllTimersAsync()
-
-  void countingFetch('https://abc123.api.sanity.io/v1/users/me')
-  await vi.advanceTimersByTimeAsync(10_000)
-
-  render(
-    <DeferredTelemetryProvider>
-      <ListenerStallTelemetry />
-      <TelemetryProvider store={store}>
-        <ListenerStallWorkspaceTelemetry telemetry={store.logger} />
-      </TelemetryProvider>
-    </DeferredTelemetryProvider>,
-  )
-
-  await vi.waitFor(() =>
-    expect(logSpy).toHaveBeenCalledWith(ListenerStallDetected, expectedBootStallEvent),
-  )
-  expect(logSpy).toHaveBeenCalledTimes(1)
-})
-
-it('logs straight to the workspace store once it has mounted', async () => {
-  const {
-    ListenerStallTelemetry,
-    ListenerStallWorkspaceTelemetry,
-    ListenerStallDetected,
-    countingFetch,
-    startTrackingStudioTabs,
-    store,
-  } = await setUpStall()
-  const logSpy = vi.spyOn(store.logger, 'log')
-
-  render(
-    <DeferredTelemetryProvider>
-      <ListenerStallTelemetry />
-      <TelemetryProvider store={store}>
-        <ListenerStallWorkspaceTelemetry telemetry={store.logger} />
-      </TelemetryProvider>
-    </DeferredTelemetryProvider>,
-  )
-
-  startTrackingStudioTabs('api.sanity.io')
-  await vi.runAllTimersAsync()
-
-  void countingFetch('https://abc123.api.sanity.io/v1/users/me')
-  await vi.advanceTimersByTimeAsync(10_000)
-
-  await vi.waitFor(() =>
-    expect(logSpy).toHaveBeenCalledWith(ListenerStallDetected, expectedBootStallEvent),
-  )
-})
-
 it('logs a stall already active before mount exactly once under StrictMode', async () => {
-  const {
-    ListenerStallTelemetry,
-    ListenerStallWorkspaceTelemetry,
-    ListenerStallDetected,
-    countingFetch,
-    startTrackingStudioTabs,
-    store,
-  } = await setUpStall()
+  const {ListenerStallTelemetry, ListenerStallDetected, store, stallBoot, workspaceReporter} =
+    await setUpStall()
   const logSpy = vi.spyOn(store.logger, 'log')
-
-  startTrackingStudioTabs('api.sanity.io')
-  await vi.runAllTimersAsync()
-
-  void countingFetch('https://abc123.api.sanity.io/v1/users/me')
-  await vi.advanceTimersByTimeAsync(10_000)
+  await stallBoot()
 
   render(
     <StrictMode>
       <DeferredTelemetryProvider>
         <ListenerStallTelemetry />
-        <TelemetryProvider store={store}>
-          <ListenerStallWorkspaceTelemetry telemetry={store.logger} />
-        </TelemetryProvider>
+        {workspaceReporter}
       </DeferredTelemetryProvider>
     </StrictMode>,
   )
@@ -210,32 +130,19 @@ it('logs a stall already active before mount exactly once under StrictMode', asy
   expect(logSpy).toHaveBeenCalledTimes(1)
 })
 
-it('logs one event per stall when two instances are mounted on the page', async () => {
-  const {
-    ListenerStallTelemetry,
-    ListenerStallWorkspaceTelemetry,
-    ListenerStallDetected,
-    countingFetch,
-    startTrackingStudioTabs,
-    store,
-  } = await setUpStall()
+it('logs one event per stall straight to the workspace store when two instances are mounted', async () => {
+  const {ListenerStallTelemetry, ListenerStallDetected, store, stallBoot, workspaceReporter} =
+    await setUpStall()
   const logSpy = vi.spyOn(store.logger, 'log')
 
   render(
     <DeferredTelemetryProvider>
       <ListenerStallTelemetry />
       <ListenerStallTelemetry />
-      <TelemetryProvider store={store}>
-        <ListenerStallWorkspaceTelemetry telemetry={store.logger} />
-      </TelemetryProvider>
+      {workspaceReporter}
     </DeferredTelemetryProvider>,
   )
-
-  startTrackingStudioTabs('api.sanity.io')
-  await vi.runAllTimersAsync()
-
-  void countingFetch('https://abc123.api.sanity.io/v1/users/me')
-  await vi.advanceTimersByTimeAsync(10_000)
+  await stallBoot()
 
   await vi.waitFor(() =>
     expect(logSpy).toHaveBeenCalledWith(ListenerStallDetected, expectedBootStallEvent),

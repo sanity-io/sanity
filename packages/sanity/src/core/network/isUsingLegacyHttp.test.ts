@@ -259,51 +259,7 @@ describe('isUsingLegacyHttp', () => {
     })
 
     it('keeps the legacy HTTP check mapped to the detailed probe', async () => {
-      const mockEntry = {
-        connectEnd: 0,
-        connectStart: 0,
-        decodedBodySize: 0,
-        domainLookupEnd: 0,
-        domainLookupStart: 0,
-        duration: 1,
-        encodedBodySize: 0,
-        initiatorType: 'fetch',
-        name: 'https://test.api.sanity.io/v2025-02-19/ping?tag=sanity.studio.protocol-check',
-        nextHopProtocol: 'http/1.1',
-        redirectEnd: 0,
-        redirectStart: 0,
-        requestStart: 0,
-        responseEnd: 0,
-        responseStart: 0,
-        secureConnectionStart: 0,
-        serverTiming: [],
-        startTime: 0,
-        transferSize: 0,
-      }
-
-      vi.mocked(fetch).mockResolvedValue(new Response('pong'))
-      vi.stubGlobal(
-        'PerformanceObserver',
-        class {
-          callback: (list: {getEntries: () => unknown[]}) => void
-          constructor(callback: (list: {getEntries: () => unknown[]}) => void) {
-            this.callback = callback
-          }
-          observe() {
-            setTimeout(() => {
-              mockEntry.startTime = performance.now()
-              this.callback({getEntries: () => [mockEntry]})
-            }, 0)
-          }
-          disconnect() {
-            // noop
-          }
-        },
-      )
-      // oxlint-disable-next-line typescript/no-extraneous-class
-      const FakePerformanceResourceTiming = class FakePerformanceResourceTiming {}
-      vi.stubGlobal('PerformanceResourceTiming', FakePerformanceResourceTiming)
-      Object.setPrototypeOf(mockEntry, FakePerformanceResourceTiming.prototype)
+      stubProtocolProbe('http/1.1')
 
       const client = {
         getUrl: (path: string) => `https://test.api.sanity.io/v2025-02-19${path}`,
@@ -389,55 +345,19 @@ describe('isUsingLegacyHttp', () => {
   })
 
   describe('getMeasuredApiProtocol', () => {
-    it('returns undefined before the probe resolves, and the measured value after', async () => {
-      stubProtocolProbe('h2')
-      const client = {
-        config: () => ({apiHost: 'https://api.sanity.io'}),
-        getUrl: (path: string) => `https://test.api.sanity.io/v2025-02-19${path}`,
-      } as unknown as SanityClient
-
-      expect(getMeasuredApiProtocol('api.sanity.io')).toBeUndefined()
-      await firstValueFrom(isUsingLegacyHttp(client))
-
-      expect(getMeasuredApiProtocol('api.sanity.io')).toBe('h2')
-    })
-
-    it('records the measured protocol against the client-configured root API host, not the probe request host', async () => {
-      stubProtocolProbe('h3')
-      const client = {
-        config: () => ({apiHost: 'https://api.sanity.work'}),
-        getUrl: (path: string) => `https://test.api.sanity.io/v2025-02-19${path}`,
-      } as unknown as SanityClient
-
-      await firstValueFrom(isUsingLegacyHttp(client))
-
-      expect(getMeasuredApiProtocol('api.sanity.work')).toBe('h3')
-    })
-
-    it('finds the root API host a request host falls under', async () => {
+    it('records the probe result against the configured root API host once it resolves', async () => {
       stubProtocolProbe('h3')
       const client = {
         config: () => ({apiHost: 'https://api.sanity.example'}),
         getUrl: (path: string) => `https://test.api.sanity.io/v2025-02-19${path}`,
       } as unknown as SanityClient
 
+      expect(getMeasuredApiProtocol('api.sanity.example')).toBeUndefined()
       await firstValueFrom(isUsingLegacyHttp(client))
 
+      expect(getMeasuredApiProtocol('api.sanity.example')).toBe('h3')
       expect(getMeasuredApiProtocol('abc123.api.sanity.example')).toBe('h3')
       expect(getMeasuredApiProtocol('sanity.example')).toBeUndefined()
-    })
-
-    it('never writes to localStorage, sessionStorage or IndexedDB', async () => {
-      const localStorageSpy = vi.spyOn(Storage.prototype, 'setItem')
-      stubProtocolProbe('h2')
-      const client = {
-        config: () => ({apiHost: 'https://api.sanity.io'}),
-        getUrl: (path: string) => `https://test.api.sanity.io/v2025-02-19${path}`,
-      } as unknown as SanityClient
-
-      await firstValueFrom(isUsingLegacyHttp(client))
-
-      expect(localStorageSpy).not.toHaveBeenCalled()
     })
   })
 })

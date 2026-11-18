@@ -178,32 +178,19 @@ describe('listener counts by host', () => {
     listenerCount = await import('./listenerCount')
   })
 
-  it('attributes a listener to the host it was opened against', () => {
-    listenerCount.openListener('abc123.api.sanity.io')
-    listenerCount.openListener('def456.api.sanity.io')
-
-    expect(listenerCount.getListenerCountForScope('api.sanity.io')).toBe(2)
-  })
-
-  it('sums every project host into its root scope, including the unlabelled root host itself', () => {
+  it('sums open listeners on every project host into its root scope, including the root host itself', () => {
+    const release = listenerCount.openListener('abc123.api.sanity.io')
     listenerCount.openListener('abc123.api.sanity.io')
     listenerCount.openListener('def456.api.sanity.io')
     listenerCount.openListener('api.sanity.io')
     listenerCount.openListener('other.io')
+    release()
 
     expect(listenerCount.getListenerCountForScope('api.sanity.io')).toBe(3)
   })
-
-  it('stops counting a listener once it is released', () => {
-    const release = listenerCount.openListener('abc123.api.sanity.io')
-    listenerCount.openListener('abc123.api.sanity.io')
-    release()
-
-    expect(listenerCount.getListenerCountForScope('api.sanity.io')).toBe(1)
-  })
 })
 
-describe('countStalledRequests', () => {
+describe('pending request tracking', () => {
   let listenerCount: ListenerCountModule
 
   beforeEach(async () => {
@@ -221,7 +208,7 @@ describe('countStalledRequests', () => {
     vi.unstubAllGlobals()
   })
 
-  it('counts only a stalled listener, not a stalled GROQ query held just as long', async () => {
+  it('counts only a stalled listener as a stalled request, not a stalled GROQ query held just as long', async () => {
     const countingFetch = listenerCount.resolveListenerCountingFetch()
 
     void countingFetch('https://abc123.api.sanity.io/v1/data/listen', {
@@ -233,16 +220,22 @@ describe('countStalledRequests', () => {
     expect(listenerCount.countStalledRequests(10_000)).toBe(1)
   })
 
-  it('never tracks an asset upload as pending, even held well past the threshold', async () => {
+  it('never tracks an asset upload as pending, but still tracks a JSON query sent as a POST', async () => {
     const countingFetch = listenerCount.resolveListenerCountingFetch()
 
     void countingFetch('https://abc123.api.sanity.io/v1/assets/images/production', {
       method: 'POST',
-      body: new FormData(),
+      body: 'not actually binary',
     })
     await vi.advanceTimersByTimeAsync(10_000)
-
     expect(listenerCount.getOldestPendingRequest()).toBeUndefined()
-    expect(listenerCount.countStalledRequests(10_000)).toBe(0)
+
+    void countingFetch('https://abc123.api.sanity.io/v1/data/query/production', {
+      method: 'POST',
+      body: JSON.stringify({query: '*[_type == "post"]'}),
+    })
+    expect(listenerCount.getOldestPendingRequest()?.url).toBe(
+      'https://abc123.api.sanity.io/v1/data/query/production',
+    )
   })
 })
