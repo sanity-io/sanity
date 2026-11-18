@@ -294,8 +294,11 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   }, [enhancedObjectDialogEnabled, onPathOpen, member.item.path, telemetry])
 
   const isEmptyValue = !member.item.value || isEmptyItem(member.item.value)
+  const itemReadOnly = Boolean(member.item.readOnly)
   const handleClose = useCallback(() => {
-    if (isEmptyValue) {
+    // Closing an empty item removes it, unless the form is read-only: a read-only form cannot be
+    // patched (the comparison view's sides, a version that cannot be edited)
+    if (isEmptyValue && !itemReadOnly) {
       onRemove()
     }
 
@@ -303,7 +306,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     onPathOpen(parentPath)
     // @todo fix issue where the focus is on the item and not the parent
     onPathFocus(parentPath)
-  }, [isEmptyValue, onPathOpen, member.item.path, onPathFocus, onRemove])
+  }, [isEmptyValue, itemReadOnly, onPathOpen, member.item.path, onPathFocus, onRemove])
 
   const handleSelectFieldGroup = useCallback(
     (groupName: string) => {
