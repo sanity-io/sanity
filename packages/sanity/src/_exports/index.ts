@@ -230,6 +230,9 @@ export {
   type AuthProvider,
   type CookielessCompatibleLoginMethod,
   type LoginMethod,
+  type OAuthAuthConfig,
+  type OAuthConfig,
+  type LegacyAuthConfig,
 } from '../core/config/auth/types'
 export {useMiddlewareComponents} from '../core/config/components/useMiddlewareComponents'
 export {
@@ -986,6 +989,7 @@ export {
   type UserWithPermission,
   useUserListWithPermissions,
 } from '../core/hooks/useUserListWithPermissions'
+// oxlint-disable-next-line no-deprecated -- only the boolean overload is deprecated
 export {useValidationStatus} from '../core/hooks/useValidationStatus'
 export {useVersionRelease} from '../core/hooks/useVersionRelease'
 export {useWorkspaceSchemaId} from '../core/hooks/useWorkspaceSchemaId'
@@ -1227,6 +1231,8 @@ export {
   type AuthStore,
   type HandleCallbackResult,
   type LoginComponentProps,
+  type OAuthCallbackResult,
+  type LegacyCallbackResult,
 } from '../core/store/auth/types'
 export {isCookielessCompatibleLoginMethod} from '../core/store/auth/legacy/asserters'
 export {isAuthStore} from '../core/store/auth/utils/asserters'
@@ -1249,6 +1255,7 @@ export {
   useDocumentStore,
   useGrantsStore,
   useHistoryStore,
+  // oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
   useKeyValueStore,
   usePresenceStore,
   useProjectStore,
@@ -1344,6 +1351,7 @@ export {
 } from '../core/store/document/listenQuery'
 export {selectUpstreamVersion} from '../core/store/document/selectUpstreamVersion'
 export {
+  type DocumentPairPermissionsListener,
   type DocumentPairTarget,
   type IdPair,
   type MutationEvent,
@@ -1446,8 +1454,10 @@ export {
   useTimelineStore,
 } from '../core/store/history/useTimelineStore'
 /* oxlint-enable no-deprecated */
+/* oxlint-disable no-deprecated -- the key-value store stays exported while deprecated; removing it is a breaking change deferred to the next major */
 export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
+/* oxlint-enable no-deprecated */
 export {createPresenceStore, type PresenceStore} from '../core/store/presence/presence-store'
 export {
   type DocumentPresence,

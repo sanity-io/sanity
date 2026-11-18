@@ -12,16 +12,20 @@ import {
   of,
   type OperatorFunction,
   pipe,
+  ReplaySubject,
   scan,
+  share,
   shareReplay,
   Subject,
   switchMap,
   tap,
+  timer,
 } from 'rxjs'
 import {distinctUntilChanged, map, startWith} from 'rxjs/operators'
 
-import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
-import {listenQuery} from '../../store/document/listenQuery'
+import {listenQueryOnGlobalListener} from '../../store/document/listenQuery'
+import {type GlobalListenerStore} from '../../store/globalListener/createGlobalListenerStore'
+import {isReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {RELEASE_DOCUMENT_TYPE, RELEASE_DOCUMENTS_PATH} from './constants'
 import {createReleaseMetadataAggregator} from './createReleaseMetadataAggregator'
 import {releasesReducer, type ReleasesReducerAction, type ReleasesReducerState} from './reducer'
@@ -73,18 +77,27 @@ export const INITIAL_RELEASES_STATE: ReleasesReducerState = {
 }
 
 /**
+ * How long the listener outlives its last subscriber. Covers a consumer that
+ * unsubscribes and resubscribes (a remount, StrictMode) without a refetch,
+ * while a store left behind by a workspace switch still lets go of its
+ * `/listen` stream.
+ */
+const TEARDOWN_GRACE_PERIOD = 5_000
+
+/**
  * The releases store is initialised lazily when first subscribed to. Upon subscription, it will
- * fetch a list of releases and create a listener to keep the locally held state fresh.
+ * fetch a list of releases, and fetch it again whenever the global listener reports a change to a
+ * release document.
  *
- * The store is not disposed of when all subscriptions are closed. After it has been initialised,
- * it will keep listening for the duration of the app's lifecycle. Subsequent subscriptions will be
- * given the latest state upon subscription.
+ * While subscribed, subsequent subscriptions are given the latest state upon subscription. Once
+ * the last subscription is closed the store keeps listening for {@link TEARDOWN_GRACE_PERIOD}
+ * and then releases the listener; the next subscription initialises it again.
  */
 export function createReleaseStore(context: {
-  previewStore: DocumentPreviewStore
+  globalListenerStore: GlobalListenerStore
   client: SanityClient
 }): ReleaseStore {
-  const {client} = context
+  const {client, globalListenerStore} = context
 
   const dispatch$ = new Subject<ReleasesReducerAction>()
   const fetchPending$ = new BehaviorSubject<boolean>(false)
@@ -106,7 +119,11 @@ export function createReleaseStore(context: {
     filter(() => !fetchPending$.value),
     tap(() => fetchPending$.next(true)),
     concatWith(
-      listenQuery(client, QUERY, {}, {tag: 'releases.listen'}).pipe(
+      listenQueryOnGlobalListener<ReleaseDocument[]>(client, QUERY, {
+        invalidationChannel: globalListenerStore.invalidationChannel,
+        shouldRefetch: ({documentId}) => isReleaseDocumentId(documentId),
+        fetchTag: 'releases.store.fetch',
+      }).pipe(
         tap(() => fetchPending$.next(false)),
         map((releases) => ({response: releases})),
       ),
@@ -147,10 +164,18 @@ export function createReleaseStore(context: {
     filter((action): action is ReleasesReducerAction => typeof action !== 'undefined'),
     scan((state, action) => releasesReducer(state, action), INITIAL_RELEASES_STATE),
     startWith(INITIAL_RELEASES_STATE),
-    shareReplay(1),
+    share({
+      connector: () => new ReplaySubject(1),
+      resetOnRefCountZero: () => timer(TEARDOWN_GRACE_PERIOD),
+    }),
   )
 
-  const errorCount$ = state$.pipe(releaseStoreErrorCount(), shareReplay(1))
+  // Derived from the replayed state, so it can let go of `state$` right away:
+  // a grace period of its own would stack on top of the listener's.
+  const errorCount$ = state$.pipe(
+    releaseStoreErrorCount(),
+    shareReplay({bufferSize: 1, refCount: true}),
+  )
 
   const getMetadataStateForSlugs$ = createReleaseMetadataAggregator(client)
 

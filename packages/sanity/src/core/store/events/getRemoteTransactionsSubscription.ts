@@ -7,7 +7,7 @@ import {type DocumentVariantType, getDocumentVariantType} from '../../util/getDo
 import {type DocumentRemoteMutationEvent} from '../document/buffered-doc/types'
 import {type WithVersion} from '../document/document-pair/checkoutPair'
 import {remoteSnapshots} from '../document/document-pair/remoteSnapshots'
-import {getEditEvents, getEffectState} from './getEditEvents'
+import {getEditEvents, getEffectState, toUpdateLiveDocumentEvents} from './getEditEvents'
 import {remoteMutationToTransaction} from './utils'
 
 interface GetRemoteTransactionsSubscriptionOptions {
@@ -65,8 +65,8 @@ export function classifyRemoteMutation(
  * - `'refetch'` → `onRefetch()`.
  * - `'refetch-and-clear'` → `onRefetch()` and the accumulated transactions are cleared.
  * - `'append'` → the mutation is converted via `remoteMutationToTransaction` and appended to
- *   `remoteTransactions$`; `remoteEdits$` maps the accumulated transactions through
- *   `getEditEvents` so they render as (live) edit events without refetching.
+ *   `remoteTransactions$`; `remoteEdits$` groups those transactions with `getEditEvents`, then
+ *   projects them to `updateLiveDocument` events when the document is live edit.
  *
  * Returns `remoteTransactions$` (consumed by `getDocumentChanges` for diffing while viewing the
  * latest version), `remoteEdits$` (merged into the events list), and `subscribe` which activates
@@ -84,7 +84,8 @@ export function getRemoteTransactionsSubscription({
 }: GetRemoteTransactionsSubscriptionOptions) {
   const remoteTransactions$ = new BehaviorSubject<TransactionLogEventWithEffects[]>([])
   const remoteEdits$ = remoteTransactions$.pipe(
-    map((transactions) => getEditEvents(transactions, documentId, isLiveEdit)),
+    map((transactions) => getEditEvents(transactions, documentId)),
+    map((events) => (isLiveEdit ? toUpdateLiveDocumentEvents(events) : events)),
   )
 
   const documentVariantType = getDocumentVariantType(documentId)

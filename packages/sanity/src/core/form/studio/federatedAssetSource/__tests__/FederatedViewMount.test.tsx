@@ -1,4 +1,4 @@
-import {type AssetSource, type AssetSourceComponentProps} from '@sanity/types'
+import {type AssetSource} from '@sanity/types'
 import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {render} from '@testing-library/react'
@@ -8,7 +8,7 @@ import {beforeEach, expect, test, vi} from 'vitest'
 import {stubMessageBusHost} from '../../../../../../test/testUtils/stubMessageBusHost'
 import {FederatedViewMount} from '../FederatedViewMount'
 import {loadFederatedAssetSourceModule} from '../loadModule'
-import {type FederatedAssetSourceView} from '../types'
+import {type FederatedAssetSourceView, type FederatedAssetSourceViewProps} from '../types'
 
 vi.mock('../loadModule', () => ({
   loadFederatedAssetSourceModule: vi.fn(),
@@ -24,6 +24,15 @@ const VIEW: FederatedAssetSourceView = {
   title: 'Stock photos',
   remote: {name: 'stock-app', entry: 'https://stock.example/mf-manifest.json'},
   moduleId: 'stock-app/views/stock/asset_source',
+  interface: {
+    id: 'stock-app-stock',
+    type: 'asset_source',
+    name: 'stock',
+    title: 'Stock photos',
+    version: '1',
+    moduleId: 'views/stock',
+    metadata: null,
+  },
 }
 
 const ASSET_SOURCE: AssetSource = {
@@ -33,7 +42,8 @@ const ASSET_SOURCE: AssetSource = {
   component: () => null,
 }
 
-const VIEW_PROPS: AssetSourceComponentProps = {
+const VIEW_PROPS: FederatedAssetSourceViewProps = {
+  view: VIEW.interface,
   action: 'select',
   assetSource: ASSET_SOURCE,
   assetType: 'image',
@@ -52,7 +62,7 @@ test('renders the view with its module id and the studio connection as its paren
   const host = stubMessageBusHost()
   const renderView = vi.fn(() => ({dispose: noop}))
   vi.mocked(loadFederatedAssetSourceModule).mockResolvedValue({version: 1, render: renderView})
-  const mount = (viewProps: AssetSourceComponentProps) => (
+  const mount = (viewProps: FederatedAssetSourceViewProps) => (
     <ThemeProvider theme={theme}>
       <FederatedViewMount onUnavailable={noop} view={VIEW} viewProps={viewProps} />
     </ThemeProvider>

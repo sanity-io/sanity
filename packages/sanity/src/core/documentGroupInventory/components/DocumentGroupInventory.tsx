@@ -446,7 +446,8 @@ export function DocumentGroupInventory(
           feedbackVersion="1"
           source="document-group-inventory"
           onClose={() => inventoryRef.send({type: 'feedback.end'})}
-          sentimentLabel={t('document-group-inventory.feedback.sentiment-label')}
+          sentimentLabel={t('content-variants.feedback.sentiment-label')}
+          title={t('content-variants.feedback.title')}
         />
       )}
     </>
