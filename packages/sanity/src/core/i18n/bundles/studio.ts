@@ -990,11 +990,32 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.select-group': 'Select all in {{name}}',
   /** Accessible name of a version's checkbox in the document group inventory */
   'document-group.select-version': 'Select {{name}}',
-  /** The second line of a set header in the document group inventory when none of its versions can be selected because its release is scheduled. Short, so it fits the narrow panel; the checkbox's tooltip has the full reason */
+  /**
+   * The second line of a set header in the document group inventory when none of its versions can be selected because its release is scheduled. Short, so it fits the narrow panel; the checkbox's tooltip has the full reason
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-group.select.blocked.scheduled-release-note': "Scheduled, so it can't be changed",
   /** Why a version in a scheduled release cannot be selected for deletion in the document group inventory */
   'document-group.select.blocked.scheduled-release':
-    'This version is in a scheduled release. Unschedule the release to delete it.',
+    'Scheduled · unschedule the release to change this version',
+  /** The tooltip on the lock of a set header whose release is scheduled, so none of its versions can be selected */
+  'document-group.select.blocked.scheduled-release-group':
+    'Scheduled · unschedule the release to change these versions',
+  /** The action in the header of a scheduled release's set in the inventory: opens a dialog that unschedules the release */
+  'document-group.release.unschedule.action': 'Unschedule to edit',
+  /** The tooltip of that action */
+  'document-group.release.unschedule.tooltip':
+    'Unschedule the release so its versions can be changed',
+  /** The title of the dialog that unschedules a release from the inventory. `title` is the release's title */
+  'document-group.release.unschedule.title': 'Unschedule {{title}}?',
+  /** The text of that dialog: unscheduling acts on every document in the release */
+  'document-group.release.unschedule.description':
+    'Every document in this release stops being scheduled, not only this one. You can schedule the release again from Releases.',
+  /** The confirm button of that dialog */
+  'document-group.release.unschedule.confirm': 'Unschedule release',
+  /** The toast when unscheduling a release from the inventory fails. `title` is the release's title */
+  'document-group.release.unschedule.error': 'Could not unschedule {{title}}',
   /** The number of variants currently selected in the document group inventory */
   'document-group.selected-count': '{{count}} selected',
   /** Last line of the document versions popover, counting the versions it does not list (singular) */

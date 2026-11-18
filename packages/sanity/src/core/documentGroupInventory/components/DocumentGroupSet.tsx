@@ -50,6 +50,11 @@ export const DocumentGroupSet: ComponentType<{
   blockedNote?: string
   /** Whether the set's versions can never be selected, as in the picker. Omits the checkbox. */
   readOnly?: boolean
+  /**
+   * Whether the set has no version to select yet, as a Draft set that holds only the ghost row of a
+   * draft not created yet. Its checkbox cell stays, empty, so the set lines up with the others.
+   */
+  nothingToSelect?: boolean
   /** Whether the selection is frozen, as it is while a deletion is in flight. */
   locked?: boolean
   /** Whether the version open in the form is in this set. A collapsed set then says so. */
@@ -65,6 +70,7 @@ export const DocumentGroupSet: ComponentType<{
   blockedReason,
   blockedNote,
   readOnly,
+  nothingToSelect,
   locked,
   containsOpen,
 }) => {
@@ -94,7 +100,8 @@ export const DocumentGroupSet: ComponentType<{
           aria-describedby={note ? noteId : undefined}
           onClick={() => setExpanded((current) => !current)}
         />
-        {!readOnly && (
+        {!readOnly && nothingToSelect && <div className="atom" />}
+        {!readOnly && !nothingToSelect && (
           // The checkbox never toggles the group
           <div className="atom" onClick={stopPropagation}>
             <VariantCheckbox

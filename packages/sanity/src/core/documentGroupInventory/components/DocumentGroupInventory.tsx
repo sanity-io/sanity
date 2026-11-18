@@ -36,7 +36,7 @@ import {VersionContextMenuDialogs} from '../../releases/components/documentHeade
 import {VersionContextMenuPopover} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuPopover'
 import {useDocumentVersionsObservable} from '../../releases/hooks/useDocumentVersions'
 import {useVersionContextMenu} from '../../releases/hooks/useVersionContextMenu'
-import {type VersionInfoDocumentStub} from '../../releases/store/types'
+import {isReleaseDocument, type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
@@ -79,7 +79,6 @@ import {
   getRowToggle,
   getSetSelection,
   type RangeAnchor,
-  SELECTION_BLOCKED_NOTE_KEYS,
   SELECTION_BLOCKED_REASON_KEYS,
   type SelectionBlockedReason,
 } from '../utils/selection'
@@ -97,6 +96,7 @@ import {DocumentGroupEntry, resolveVariantRelease} from './DocumentGroupEntry'
 import {DocumentGroupSet} from './DocumentGroupSet'
 import {InventoryHeader} from './InventoryHeader'
 import {PendingDraftEntry} from './PendingDraftEntry'
+import {UnscheduleReleaseAction} from './UnscheduleReleaseAction'
 import {useVariantPendingReleases} from './useVariantPendingReleases'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
 
@@ -657,19 +657,25 @@ const Select: ComponentType<{
             // ghost row shows no count and has nothing to select.
             count={set.bundle && set.variants.length > 0 ? set.variants.length : undefined}
             bundle={set.bundle}
-            readOnly={readOnly || set.variants.length === 0}
+            readOnly={readOnly}
+            nothingToSelect={set.variants.length === 0}
             locked={isLocked}
             containsOpen={Boolean(set.pending) || set.variants.some(({id}) => id === selectedId)}
             selectionState={setSelection.state}
+            // A scheduled release's set: a lock in place of the checkbox, the reason on hover, and a
+            // way to unschedule the release, rather than a second line under the name
             blockedReason={
-              setSelection.groupBlockedReason
-                ? t(SELECTION_BLOCKED_REASON_KEYS[setSelection.groupBlockedReason])
+              setSelection.groupBlockedReason === 'scheduled-release'
+                ? t('document-group.select.blocked.scheduled-release-group')
                 : undefined
             }
-            blockedNote={
-              setSelection.groupBlockedReason
-                ? t(SELECTION_BLOCKED_NOTE_KEYS[setSelection.groupBlockedReason])
-                : undefined
+            headerActions={
+              !readOnly &&
+              setSelection.groupBlockedReason === 'scheduled-release' &&
+              set.bundle?.type === 'perspective' &&
+              isReleaseDocument(set.bundle.perspective) ? (
+                <UnscheduleReleaseAction release={set.bundle.perspective} />
+              ) : undefined
             }
             onCheckedChange={(checked) =>
               machine.send(

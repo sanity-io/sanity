@@ -143,4 +143,53 @@ describe('PendingDraftEntry', () => {
     await expect.element(row.getByTestId('version-title')).toHaveTextContent('Default')
     expect(row.element().querySelector('[data-testid="variant-mark"]')).toBeNull()
   })
+
+  it('keeps a Draft set that holds only the ghost row in line with the other sets', async () => {
+    await render(
+      <TestWrapper schemaTypes={SCHEMA_TYPES}>
+        <DocumentGroupSet
+          name="Published"
+          count={1}
+          bundle={{type: 'perspective', perspective: 'published'}}
+          selectionState="unchecked"
+          onCheckedChange={NOOP}
+        >
+          <DocumentGroupEntry
+            variant={GERMANY_DRAFT}
+            releases={new Map()}
+            onPrimaryAction={NOOP}
+            leading={
+              <VariantCheckbox
+                label="Select Germany"
+                tabbable={false}
+                checked={false}
+                onChange={NOOP}
+              />
+            }
+          />
+        </DocumentGroupSet>
+        <DocumentGroupSet
+          name="Draft"
+          bundle={{type: 'perspective', perspective: 'drafts'}}
+          selectionState="unchecked"
+          onCheckedChange={NOOP}
+          nothingToSelect
+          containsOpen
+        >
+          <PendingDraftEntry draft={DE_DE_DRAFT} selectable />
+        </DocumentGroupSet>
+      </TestWrapper>,
+    )
+
+    await expect.element(page.getByTestId('pending-draft-row')).toBeVisible()
+    const names = page.getByTestId('variant-set-name').elements()
+    expect(names).toHaveLength(2)
+    // The set names and the row titles start at the same x in both sets
+    expect(names[1].getBoundingClientRect().left).toBe(names[0].getBoundingClientRect().left)
+    const titles = page.getByTestId('version-title').elements()
+    expect(titles[1].getBoundingClientRect().left).toBe(titles[0].getBoundingClientRect().left)
+    // Nothing to select: the empty cell holds no checkbox
+    const draftSet = names[1].closest('[data-variant-set]')!
+    expect(draftSet.querySelector('header input[type="checkbox"]')).toBeNull()
+  })
 })
