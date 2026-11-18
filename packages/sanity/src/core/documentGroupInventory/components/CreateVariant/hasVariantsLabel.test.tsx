@@ -8,7 +8,7 @@ function Header({count}: {count: number}) {
   const {t} = useTranslation()
   return (
     <div data-testid="header">
-      {t('document-group.create-variant.variant-section.has-variants', {count})}
+      {t('document-group.create-variant.variant-section.of-document', {count})}
     </div>
   )
 }
@@ -20,16 +20,11 @@ beforeAll(async () => {
 })
 
 describe('variant section header', () => {
-  it('says "Has no variants" for a count of zero, not "Has 0 variants"', () => {
-    render(<Header count={0} />, {wrapper})
-    expect(screen.getByTestId('header').textContent).toBe('Has no variants')
-  })
-
-  it('keeps the one and many forms', () => {
+  it('names the variants of this document with how many there are', () => {
     const {rerender} = render(<Header count={1} />, {wrapper})
-    expect(screen.getByTestId('header').textContent).toBe('Has 1 variant')
+    expect(screen.getByTestId('header').textContent).toBe('Variants of this document (1)')
 
-    rerender(<Header count={2} />)
-    expect(screen.getByTestId('header').textContent).toBe('Has 2 variants')
+    rerender(<Header count={9} />)
+    expect(screen.getByTestId('header').textContent).toBe('Variants of this document (9)')
   })
 })

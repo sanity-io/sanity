@@ -17,8 +17,8 @@ interface Props {
 }
 
 /**
- * The variant picker groups the definitions the way the Variants pill menu does: "Has N variants"
- * (a new version can still go to another draft or release), then "Other variants". There is no
+ * The variant picker groups the definitions the way the Variants pill menu does: "Variants of this
+ * document (N)" (a new version can still go to another draft or release), then "Other variants". There is no
  * Default row, since Default is not a variant one creates. It starts empty, showing a muted
  * variant mark and a hint.
  */
@@ -45,7 +45,7 @@ export const SelectVariantDefinition: ComponentType<Props> = ({
       emptyIcon={<VariantMark />}
       filterPlaceholder={t('document-group.create-variant.variant-filter-placeholder')}
       leadingOptions={existing.map((definition) => toOption(definition, true))}
-      leadingLabel={t('document-group.create-variant.variant-section.has-variants', {
+      leadingLabel={t('document-group.create-variant.variant-section.of-document', {
         count: existing.length,
       })}
       options={other.map((definition) => toOption(definition, false))}

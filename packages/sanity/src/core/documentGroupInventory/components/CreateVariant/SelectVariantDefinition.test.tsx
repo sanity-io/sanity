@@ -156,9 +156,9 @@ describe('SelectVariantDefinition', () => {
     const menu = await openMenu(new Set([GERMAN._id]))
     const text = menu.textContent ?? ''
 
-    expect(within(menu).getByText('Has 1 variant')).toBeInTheDocument()
+    expect(within(menu).getByText('Variants of this document (1)')).toBeInTheDocument()
     expect(within(menu).getByText('Other variants')).toBeInTheDocument()
-    expect(text.indexOf('Has 1 variant')).toBeLessThan(text.indexOf('German'))
+    expect(text.indexOf('Variants of this document (1)')).toBeLessThan(text.indexOf('German'))
     expect(text.indexOf('German')).toBeLessThan(text.indexOf('Other variants'))
     expect(text.indexOf('Other variants')).toBeLessThan(text.indexOf('Nordic region'))
   })
@@ -166,7 +166,7 @@ describe('SelectVariantDefinition', () => {
   it('shows no headings when the document has no variants yet', async () => {
     const menu = await openMenu(new Set())
 
-    expect(within(menu).queryByText(/^Has \d+ variants?$/)).not.toBeInTheDocument()
+    expect(within(menu).queryByText(/^Variants of this document/)).not.toBeInTheDocument()
     expect(within(menu).queryByText('Other variants')).not.toBeInTheDocument()
     expect(within(menu).getByText('Nordic region')).toBeInTheDocument()
   })
