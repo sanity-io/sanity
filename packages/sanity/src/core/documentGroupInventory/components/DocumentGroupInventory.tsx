@@ -714,6 +714,13 @@ const Select: ComponentType<{
   )
 }
 
+/**
+ * Whether a version row opens the version context menu on right-click. Off for the open beta: the
+ * menu was cut off at the panel's edge and duplicated actions found elsewhere, so it returns once
+ * it is designed for the inventory.
+ */
+const INVENTORY_ROW_CONTEXT_MENU = false
+
 /** The rows of a set in order, with a pending draft's ghost row at its place. */
 function withPendingRow(
   variants: Variant[],
@@ -836,7 +843,8 @@ const ManagedVariantRow: ComponentType<{
     onCopyToDraftsComplete: clearScheduledDraftPerspective,
   })
 
-  const contextMenuHandler = isLocked || !releasesToolAvailable ? undefined : handleContextMenu
+  const contextMenuHandler =
+    INVENTORY_ROW_CONTEXT_MENU && !isLocked && releasesToolAvailable ? handleContextMenu : undefined
 
   return (
     <>
