@@ -131,7 +131,8 @@ export const DocumentGroupPickerMenu: ComponentType<{
                 ? tStructure('compare-versions.picker.placeholder')
                 : variantsLoading || releasesLoading || versionsLoading
                   ? tCore('common.loading')
-                  : (getVersionFromId(document.id) ?? document.id)
+                  : // Loaded, and the URL names no version of this document
+                    tStructure('compare-versions.picker.missing')
             }
           />
         )}
