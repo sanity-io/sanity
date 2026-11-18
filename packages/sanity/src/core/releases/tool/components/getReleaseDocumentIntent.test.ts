@@ -65,6 +65,16 @@ describe('getReleaseDocumentIntent', () => {
     expect(searchParams).toBeUndefined()
   })
 
+  it('includes only the variant sticky param for a cardinality-one release document in a variant', () => {
+    const {params, searchParams} = getReleaseDocumentIntent({
+      ...base,
+      isCardinalityOneRelease: true,
+      variantId: 'alpha-audience',
+    })
+    expect(params).toMatchObject({scheduledDraft: RELEASE_NAME})
+    expect(searchParams).toEqual([['variant', 'variant:alpha-audience']])
+  })
+
   it('includes the variant sticky param when the document belongs to a variant', () => {
     const {searchParams} = getReleaseDocumentIntent({...base, variantId: 'alpha-audience'})
     expect(searchParams).toEqual([

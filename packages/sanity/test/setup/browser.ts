@@ -1,6 +1,8 @@
 // Browser test setup - runs in a real browser, so no need for
 // IntersectionObserver/ResizeObserver/matchMedia mocks.
 
+// oxlint-disable-next-line no-unassigned-import
+import './preferences'
 // The studio's own static styles: the `.css.ts` modules under test resolve to class names, and
 // `@repo/pandacss` (vitest.browser.config.mts) fills this stylesheet with their CSS — the
 // counterpart of the `sanity/bundle.css` import the built entry chunks carry, loaded first like it.

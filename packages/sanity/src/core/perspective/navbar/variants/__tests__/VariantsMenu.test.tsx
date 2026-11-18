@@ -119,10 +119,22 @@ describe('VariantsMenu', () => {
 
     await renderMenu()
 
-    expect(screen.getByTestId(`variant-${getVariantId(variantAlphaAudience._id)}`)).toHaveAttribute(
-      'data-selected',
+    const selectedItem = screen.getByTestId(`variant-${getVariantId(variantAlphaAudience._id)}`)
+    expect(selectedItem).toHaveAttribute('data-selected')
+    expect(selectedItem).toHaveAttribute('role', 'menuitemradio')
+    expect(selectedItem).toHaveAttribute('aria-checked', 'true')
+    const defaultItem = screen.getByTestId('variant-default')
+    expect(defaultItem).not.toHaveAttribute('data-selected')
+    expect(defaultItem).toHaveAttribute('role', 'menuitemradio')
+    expect(defaultItem).toHaveAttribute('aria-checked', 'false')
+  })
+
+  it('labels the filter input', async () => {
+    await renderMenu()
+
+    expect(screen.getByLabelText('Find audience')).toBe(
+      screen.getByPlaceholderText('Find audience'),
     )
-    expect(screen.getByTestId('variant-default')).not.toHaveAttribute('data-selected')
   })
 
   it('links view all to the variants tool overview', async () => {

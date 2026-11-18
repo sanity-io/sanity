@@ -17,13 +17,20 @@ import {
   createTranslogFetchStub,
   type RecordedRequest,
 } from './__fixtures__/mockClient'
-import {editTransaction, remoteMutationEvent} from './__fixtures__/transactions.fixture'
+import {
+  createTransaction,
+  deleteTransaction,
+  editTransaction,
+  remoteMutationEvent,
+  type TranslogEntry,
+} from './__fixtures__/transactions.fixture'
 import {createEventsStore} from './createEventsStore'
 import {clearDocumentRevisionCache} from './getDocumentAtRevision'
 import {clearDocumentTransactionsCache} from './getDocumentTransactions'
 import {
   type DocumentGroupEvent,
   type EventsStoreRevision,
+  isEditDocumentVersionEvent,
   isPublishDocumentVersionEvent,
 } from './types'
 
@@ -108,6 +115,86 @@ const revision = (revisionId: string, document: SanityDocument): EventsStoreRevi
   loading: false,
   document,
 })
+
+/**
+ * A draft as the backend sees it: the events API and the translog answer from the current state,
+ * and every committed transaction reaches the listener of every open store, the way two panes
+ * showing the same document both receive it.
+ */
+function createDraftBackend(
+  draftId: string,
+  snapshots$: Subject<WithVersion<DocumentRemoteMutationEvent>>,
+) {
+  let events: DocumentGroupEvent[] = []
+  const translog: TranslogEntry[] = []
+  vi.stubGlobal(
+    'fetch',
+    createTranslogFetchStub((url) => {
+      const params = new URL(url).searchParams
+      const from = translog.findIndex((entry) => entry.id === params.get('fromTransaction'))
+      const to = translog.findIndex((entry) => entry.id === params.get('toTransaction'))
+      return translog.slice(Math.max(from, 0), to === -1 ? undefined : to + 1)
+    }).fetch,
+  )
+
+  return {
+    /** Opens the draft: a store that fetches the current state and listens from now on. */
+    open() {
+      const {client} = createMockClient({
+        respond: () => ({events: {[draftId]: events}, nextCursor: ''}),
+      })
+      const store = createEventsStore({
+        client,
+        documentId: draftId,
+        documentType: 'author',
+        isLiveEdit: false,
+      })
+      const {values, subscription} = collectEmissions(store.eventsObservable$)
+      const listener = store.remoteTransactionsListener()
+      return {
+        values,
+        close: () => {
+          listener.unsubscribe()
+          subscription.unsubscribe()
+        },
+      }
+    },
+    /** Commits `transaction`; `nextEvents` is what the events API lists from then on. */
+    commit(transaction: TranslogEntry, nextEvents: DocumentGroupEvent[] = events) {
+      translog.push(transaction)
+      events = nextEvents
+      snapshots$.next(
+        remoteMutationEvent({
+          version: 'draft',
+          transactionId: transaction.id,
+          author: transaction.author,
+          timestamp: new Date(transaction.timestamp),
+          head: {
+            _id: draftId,
+            _type: 'author',
+            _createdAt: BASE_TIME,
+            _updatedAt: transaction.timestamp,
+            _rev: transaction.id,
+          },
+          effects: transaction.effects[draftId]!,
+        }),
+      )
+    },
+  }
+}
+
+/** The events as the timeline lists them, edit events with the transactions they group. */
+function timeline(events: DocumentGroupEvent[] | undefined) {
+  return events?.map((event) =>
+    isEditDocumentVersionEvent(event)
+      ? {
+          type: event.type,
+          id: event.id,
+          transactions: event.transactions.map((tx) => tx.revisionId),
+        }
+      : {type: event.type, id: event.id},
+  )
+}
 
 describe('createEventsStore (integration)', () => {
   let snapshots$: Subject<WithVersion<DocumentRemoteMutationEvent>>
@@ -443,5 +530,107 @@ describe('createEventsStore (integration)', () => {
       'createDocumentVersion',
     ])
     expect(values.at(-1)?.events[1]).toMatchObject({id: 'tx-mid', parentId: publish.id})
+  })
+
+  it('groups fetched and live edits the same way, whenever the store loaded them', async () => {
+    const draftId = 'drafts.int-two-panes'
+    const backend = createDraftBackend(draftId, snapshots$)
+    const createdEvent = createDocumentVersionEvent({
+      documentId: 'int-two-panes',
+      versionId: draftId,
+      versionRevisionId: 'tx-create',
+    })
+
+    // One pane is open before the document exists and creates it, with an edit right after.
+    const creatorPane = backend.open()
+    await vi.waitFor(() => expect(creatorPane.values.at(-1)?.loading).toBe(false))
+    backend.commit(createTransaction({id: 'tx-create', documentId: draftId}), [createdEvent])
+    await vi.waitFor(() => expect(creatorPane.values.at(-1)?.events).toHaveLength(1))
+    backend.commit(
+      editTransaction({id: 'tx-edit-1', documentId: draftId, timestamp: minutesAfterBase(1)}),
+    )
+
+    // The other pane opens the document afterwards, fetching that edit, and edits it again.
+    const otherPane = backend.open()
+    await vi.waitFor(() => expect(otherPane.values.at(-1)?.loading).toBe(false))
+    backend.commit(
+      editTransaction({
+        id: 'tx-edit-2',
+        documentId: draftId,
+        author: 'author-2',
+        timestamp: minutesAfterBase(2),
+      }),
+    )
+
+    // Both edits are within the merge window, so both panes show them as a single edit event.
+    const expected = [
+      {type: 'editDocumentVersion', id: 'tx-edit-2', transactions: ['tx-edit-2', 'tx-edit-1']},
+      {type: 'createDocumentVersion', id: 'tx-create'},
+    ]
+    await vi.waitFor(() => {
+      expect(timeline(creatorPane.values.at(-1)?.events)).toEqual(expected)
+      expect(timeline(otherPane.values.at(-1)?.events)).toEqual(expected)
+    })
+    creatorPane.close()
+    otherPane.close()
+  })
+
+  it('never groups edits on both sides of a publish, even within the merge window', async () => {
+    const draftId = 'drafts.int-republish'
+    const backend = createDraftBackend(draftId, snapshots$)
+    const createdEvent = createDocumentVersionEvent({
+      documentId: 'int-republish',
+      versionId: draftId,
+      versionRevisionId: 'tx-create',
+    })
+    const publishedEvent = publishDocumentVersionEvent({
+      documentId: 'int-republish',
+      versionId: draftId,
+      versionRevisionId: 'tx-edit-2',
+      revisionId: 'tx-publish',
+      timestamp: minutesAfterBase(3),
+    })
+    const recreatedEvent = createDocumentVersionEvent({
+      documentId: 'int-republish',
+      versionId: draftId,
+      versionRevisionId: 'tx-recreate',
+      timestamp: minutesAfterBase(4),
+    })
+
+    backend.commit(createTransaction({id: 'tx-create', documentId: draftId}), [createdEvent])
+    backend.commit(
+      editTransaction({id: 'tx-edit-1', documentId: draftId, timestamp: minutesAfterBase(1)}),
+    )
+    const pane = backend.open()
+    await vi.waitFor(() => expect(pane.values.at(-1)?.loading).toBe(false))
+    backend.commit(
+      editTransaction({id: 'tx-edit-2', documentId: draftId, timestamp: minutesAfterBase(2)}),
+    )
+
+    // Publishing deletes the draft, and the next edit creates it again.
+    backend.commit(
+      deleteTransaction({id: 'tx-publish', documentId: draftId, timestamp: minutesAfterBase(3)}),
+      [publishedEvent, createdEvent],
+    )
+    await vi.waitFor(() => expect(pane.values.at(-1)?.events).toHaveLength(3))
+    backend.commit(
+      createTransaction({id: 'tx-recreate', documentId: draftId, timestamp: minutesAfterBase(4)}),
+      [recreatedEvent, publishedEvent, createdEvent],
+    )
+    await vi.waitFor(() => expect(pane.values.at(-1)?.events).toHaveLength(4))
+    backend.commit(
+      editTransaction({id: 'tx-edit-3', documentId: draftId, timestamp: minutesAfterBase(5)}),
+    )
+
+    await vi.waitFor(() =>
+      expect(timeline(pane.values.at(-1)?.events)).toEqual([
+        {type: 'editDocumentVersion', id: 'tx-edit-3', transactions: ['tx-edit-3']},
+        {type: 'createDocumentVersion', id: 'tx-recreate'},
+        {type: 'publishDocumentVersion', id: 'tx-edit-2'},
+        {type: 'editDocumentVersion', id: 'tx-edit-1', transactions: ['tx-edit-1']},
+        {type: 'createDocumentVersion', id: 'tx-create'},
+      ]),
+    )
+    pane.close()
   })
 })

@@ -454,6 +454,7 @@ import type {
   KeyValueStoreValue,
   LatencyReportEvent,
   LATEST,
+  LegacyCallbackResult,
   LegacyLayerProvider,
   LegacyThemeTints,
   ListenerEvent,
@@ -507,6 +508,7 @@ import type {
   normalizePathSegment,
   NullDiff,
   NumberDiff,
+  OAuthCallbackResult,
   ObjectDiff,
   ObjectInputMember,
   ObjectInputMemberProps,
@@ -836,6 +838,8 @@ import type {
   useSource,
   useStructureTool,
   useStudioFeedbackTags,
+  useStudioPreference,
+  useStudioPreferenceList,
   useStudioUrl,
   useSyncState,
   useTargetDocumentState,
@@ -2262,6 +2266,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('LATEST', () => {
     expectTypeOf<typeof LATEST>().not.toBeNever()
   })
+  test('LegacyCallbackResult', () => {
+    expectTypeOf<LegacyCallbackResult>().toBeObject()
+  })
   test('LegacyLayerProvider', () => {
     expectTypeOf<typeof LegacyLayerProvider>().toBeFunction()
   })
@@ -2420,6 +2427,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('NumberDiff', () => {
     expectTypeOf<NumberDiff>().not.toBeNever()
+  })
+  test('OAuthCallbackResult', () => {
+    expectTypeOf<OAuthCallbackResult>().toBeObject()
   })
   test('ObjectDiff', () => {
     expectTypeOf<ObjectDiff<any>>().not.toBeNever()
@@ -3411,6 +3421,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useStudioFeedbackTags', () => {
     expectTypeOf<typeof useStudioFeedbackTags>().toBeFunction()
   })
+  test('useStudioPreference', () => {
+    expectTypeOf<typeof useStudioPreference>().toBeFunction()
+  })
+  test('useStudioPreferenceList', () => {
+    expectTypeOf<typeof useStudioPreferenceList>().toBeFunction()
+  })
   test('useStudioUrl', () => {
     expectTypeOf<typeof useStudioUrl>().not.toBeNever()
   })
@@ -3469,6 +3485,7 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
     expectTypeOf<typeof useUserColorManager>().toBeFunction()
   })
   test('useValidationStatus', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof useValidationStatus>().toBeFunction()
   })
   test('useValuePreview', () => {

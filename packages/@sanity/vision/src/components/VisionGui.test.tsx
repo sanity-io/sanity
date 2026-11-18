@@ -8,9 +8,23 @@ import {of} from 'rxjs'
 import {type PerspectiveContextValue} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {
+  VisionApiVersionChanged,
+  VisionCopied,
+  VisionDatasetChanged,
+  VisionParamsUsed,
+  VisionPerspectiveChanged,
+  VisionQueryRun,
+} from '../telemetry/vision.telemetry'
 import {VisionGui} from './VisionGui'
 
 const theme = buildTheme()
+
+const telemetry = vi.hoisted(() => ({log: vi.fn()}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: () => telemetry,
+}))
 
 const sanityMocks = vi.hoisted(() => ({
   usePerspective: vi.fn(),
@@ -129,6 +143,7 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19'}): 
           return of({result: [{title: 'Variant title'}], ms: 12})
         }),
       },
+      listen: vi.fn(() => ({subscribe: () => ({unsubscribe: vi.fn()})})),
     } as unknown as SanityClient
   }
 
@@ -147,7 +162,10 @@ function seedVisionStorage(state: Record<string, unknown>) {
   )
 }
 
-function renderVision(perspective: PerspectiveContextValue = BASE_PERSPECTIVE) {
+function renderVision(
+  perspective: PerspectiveContextValue = BASE_PERSPECTIVE,
+  options: {datasets?: string[]} = {},
+) {
   const mockClient = createMockClient()
   sanityMocks.usePerspective.mockReturnValue(perspective)
   sanityMocks.useClient.mockReturnValue(mockClient.client)
@@ -159,7 +177,7 @@ function renderVision(perspective: PerspectiveContextValue = BASE_PERSPECTIVE) {
           <VisionGui
             client={mockClient.client}
             config={{defaultApiVersion: '2025-02-19'}}
-            datasets={['test']}
+            datasets={options.datasets ?? ['test']}
             projectId="test-project"
             defaultDataset="test"
           />
@@ -194,6 +212,7 @@ describe('VisionGui pinned release and variant', () => {
 
   beforeEach(() => {
     localStorage.clear()
+    telemetry.log.mockClear()
     sanityMocks.usePerspective.mockReturnValue(BASE_PERSPECTIVE)
     sanityMocks.workspace = {document: {drafts: {enabled: true}}, beta: {variants: {enabled: true}}}
   })
@@ -367,5 +386,144 @@ describe('VisionGui pinned release and variant', () => {
       }),
     )
     expect(fetchConfigs.at(-1)?.variant).toBeUndefined()
+  })
+})
+
+const NO_STACK: PerspectiveContextValue = {
+  ...BASE_PERSPECTIVE,
+  perspectiveStack: [],
+  selectedPerspective: 'drafts',
+  selectedPerspectiveName: undefined,
+}
+
+function events(name: string) {
+  return telemetry.log.mock.calls.filter((call) => call[0]?.name === name)
+}
+
+describe('VisionGui adoption telemetry', () => {
+  afterEach(() => {
+    cleanup()
+  })
+
+  beforeEach(() => {
+    localStorage.clear()
+    telemetry.log.mockClear()
+    // oxlint-disable-next-line typescript/no-deprecated -- the copy button still calls execCommand
+    document.execCommand = vi.fn(() => true)
+    sanityMocks.usePerspective.mockReturnValue(NO_STACK)
+    sanityMocks.workspace = {document: {drafts: {enabled: true}}, beta: {variants: {enabled: true}}}
+  })
+
+  it('records one fetch, and params only when the run sent some', () => {
+    seedVisionStorage({
+      query: '*[_id == $id]',
+      params: '{"id":"book-1"}',
+      apiVersion: 'v2025-02-19',
+    })
+    renderVision(NO_STACK)
+
+    fireEvent.click(screen.getByRole('button', {name: 'action.query-execute'}))
+
+    expect(events('Vision Query Run')).toEqual([
+      [VisionQueryRun, {mode: 'fetch', trigger: 'button', hasParams: true}],
+    ])
+    expect(events('Vision Params Used')).toEqual([[VisionParamsUsed, {mode: 'fetch'}]])
+  })
+
+  it('records a fetch without parameters once, and not a params event', () => {
+    seedVisionStorage({query: '*[_type == "book"]', params: '{}', apiVersion: 'v2025-02-19'})
+    renderVision(NO_STACK)
+
+    fireEvent.click(screen.getByRole('button', {name: 'action.query-execute'}))
+
+    expect(events('Vision Query Run')).toEqual([
+      [VisionQueryRun, {mode: 'fetch', trigger: 'button', hasParams: false}],
+    ])
+    expect(events('Vision Params Used')).toEqual([])
+  })
+
+  it('records the keyboard shortcut as its own trigger, still once', () => {
+    seedVisionStorage({query: '*[_type == "book"]', params: '{}', apiVersion: 'v2025-02-19'})
+    renderVision(NO_STACK)
+
+    fireEvent.keyDown(screen.getByTestId('vision-root'), {
+      key: 'Enter',
+      ctrlKey: true,
+      keyCode: 13,
+      which: 13,
+    })
+
+    expect(events('Vision Query Run')).toEqual([
+      [VisionQueryRun, {mode: 'fetch', trigger: 'shortcut', hasParams: false}],
+    ])
+  })
+
+  it('records one listen, and does not record cancelling it', () => {
+    seedVisionStorage({query: '*[_type == "book"]', params: '{}', apiVersion: 'v2025-02-19'})
+    renderVision(NO_STACK)
+
+    const listen = screen.getByRole('button', {name: 'action.listen-execute'})
+    fireEvent.click(listen)
+    fireEvent.click(screen.getByRole('button', {name: 'action.listen-cancel'}))
+
+    expect(events('Vision Query Run')).toEqual([
+      [VisionQueryRun, {mode: 'listen', trigger: 'button', hasParams: false}],
+    ])
+  })
+
+  it('does not record a fetch that never starts', () => {
+    seedVisionStorage({query: '   ', params: '{}', apiVersion: 'v2025-02-19'})
+    renderVision(NO_STACK)
+
+    fireEvent.click(screen.getByRole('button', {name: 'action.query-execute'}))
+
+    expect(telemetry.log).not.toHaveBeenCalled()
+  })
+
+  it('records a dataset, perspective, or API version change once, and not as a query run', () => {
+    seedVisionStorage({
+      query: '*[_type == "book"]',
+      params: '{}',
+      dataset: 'test',
+      perspective: 'raw',
+      apiVersion: 'v2025-02-19',
+    })
+    renderVision(NO_STACK, {datasets: ['test', 'staging']})
+
+    fireEvent.change(screen.getAllByRole('combobox')[0], {target: {value: 'staging'}})
+    expect(events('Vision Dataset Changed')).toEqual([[VisionDatasetChanged]])
+
+    fireEvent.change(getPerspectiveSelector(), {target: {value: 'published'}})
+    expect(events('Vision Perspective Changed')).toEqual([[VisionPerspectiveChanged]])
+
+    fireEvent.change(getApiVersionSelector(), {target: {value: 'v1'}})
+    expect(events('Vision API Version Changed')).toEqual([
+      [VisionApiVersionChanged, {custom: false}],
+    ])
+
+    fireEvent.change(getApiVersionSelector(), {target: {value: 'other'}})
+    expect(events('Vision API Version Changed')).toHaveLength(1)
+
+    const customVersion = screen.getByDisplayValue('v')
+    fireEvent.change(customVersion, {target: {value: 'v2021-03-25'}})
+    fireEvent.change(customVersion, {target: {value: 'v2021-03-25'}})
+    expect(events('Vision API Version Changed')).toEqual([
+      [VisionApiVersionChanged, {custom: false}],
+      [VisionApiVersionChanged, {custom: true}],
+    ])
+
+    expect(events('Vision Query Run')).toEqual([])
+  })
+
+  it('records one copy of the query URL', async () => {
+    seedVisionStorage({query: '*[_type == "book"]', params: '{}', apiVersion: 'v2025-02-19'})
+    renderVision(NO_STACK)
+
+    fireEvent.click(screen.getByRole('button', {name: 'action.query-execute'}))
+    telemetry.log.mockClear()
+
+    fireEvent.click(await screen.findByRole('button', {name: 'action.copy-url-to-clipboard'}))
+
+    expect(events('Vision Copied')).toEqual([[VisionCopied, {target: 'url'}]])
   })
 })

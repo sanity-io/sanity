@@ -132,6 +132,9 @@ export function PackageVersionStatusProvider({
     lastCheckedAt: null,
     checking: false,
   })
+  // The version poll outlives the provider. Skip the setStates once it has unmounted: after a
+  // jsdom test tears `window` down, a late `setState` rejects with "window is not defined".
+  const mountedRef = useRef(true)
 
   const fetchNewVersions = useCallback(async () => {
     if (
@@ -172,6 +175,7 @@ export function PackageVersionStatusProvider({
 
     void Promise.all([resolveLatestTaggedVersion, resolveAutoUpdatingVersion])
       .then(([nextLatestVersion, nextAutoUpdatingVersion]) => {
+        if (!mountedRef.current) return
         // `fetchLatestVersions` resolves `undefined` on a failed fetch (rather
         // than rejecting), so only overwrite state when we actually got a value.
         // This keeps the previously known versions on a transient failure and
@@ -195,10 +199,15 @@ export function PackageVersionStatusProvider({
         // and try again on the next tick.
         console.warn('[sanity] Failed to check for new studio versions:', err)
       })
-      .finally(() => setVersionCheckStatus({lastCheckedAt: new Date(), checking: false}))
+      .finally(() => {
+        if (!mountedRef.current) return
+        setVersionCheckStatus({lastCheckedAt: new Date(), checking: false})
+      })
   }, [currentVersion, importMapInfo])
 
   useEffect(() => {
+    mountedRef.current = true
+
     async function poll() {
       await fetchNewVersions()
     }
@@ -209,7 +218,10 @@ export function PackageVersionStatusProvider({
     // Set interval for subsequent runs
     const intervalId = setInterval(poll, POLL_INTERVAL_MS)
 
-    return () => clearInterval(intervalId)
+    return () => {
+      mountedRef.current = false
+      clearInterval(intervalId)
+    }
   }, [fetchNewVersions])
 
   const contextValue = useMemo(

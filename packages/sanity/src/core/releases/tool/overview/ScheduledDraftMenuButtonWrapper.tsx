@@ -16,8 +16,11 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useScheduledDraftDocument} from '../../../singleDocRelease/hooks/useScheduledDraftDocument'
 import {useScheduledDraftMenuActions} from '../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {getPublishedId} from '../../../util/draftUtils'
+import {getDocumentVersionVariantId} from '../../../util/getDocumentVersionVariant'
 import {isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
+import {getVariantId} from '../../../variants/tool/util'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
+import {getReleaseDocumentIntent} from '../components/getReleaseDocumentIntent'
 
 export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocument}) => {
   const {t} = useTranslation()
@@ -31,11 +34,15 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
   const handleActionComplete = useCallback(() => {
     if (!scheduledDraftDocument) return
 
-    router.navigateIntent('edit', {
-      id: getPublishedId(scheduledDraftDocument._id),
-      type: scheduledDraftDocument._type,
-      scheduledDraft: getReleaseIdFromReleaseDocumentId(release._id),
+    const variantRef = getDocumentVersionVariantId({_system: scheduledDraftDocument._system})
+    const {params, searchParams} = getReleaseDocumentIntent({
+      documentId: scheduledDraftDocument._id,
+      documentTypeName: scheduledDraftDocument._type,
+      releaseId: release._id,
+      isCardinalityOneRelease: true,
+      variantId: variantRef ? getVariantId(variantRef) : undefined,
     })
+    router.navigateUrl({path: router.resolveIntentLink('edit', params, searchParams)})
   }, [router, scheduledDraftDocument, release._id])
 
   const {actions, dialogs, isPerformingOperation} = useScheduledDraftMenuActions({

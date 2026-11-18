@@ -1,0 +1,1403 @@
+import {
+  type Auth as ClientAuthState,
+  type ClientConfig as SanityClientConfig,
+  createClient as createSanityClient,
+  type RequestHandler,
+  type RequestHandlerOptions,
+  type SanityClient,
+} from '@sanity/client'
+import memoize from 'lodash-es/memoize.js'
+import QuickLRU from 'quick-lru'
+import {
+  BehaviorSubject,
+  connectable,
+  defer,
+  EMPTY,
+  firstValueFrom,
+  from,
+  fromEvent,
+  merge,
+  type Observable,
+  of,
+  race,
+  ReplaySubject,
+  Subject,
+  timer,
+} from 'rxjs'
+import {
+  catchError,
+  distinctUntilChanged,
+  filter,
+  ignoreElements,
+  map,
+  mergeMap,
+  share,
+  switchMap,
+  tap,
+  timeout,
+} from 'rxjs/operators'
+
+import {type OAuthConfig} from '../../../config/auth/types'
+import {isStaging} from '../../../environment/isStaging'
+import {type RequestFailureDiagnostics} from '../../../studio/requestErrors/diagnoseRequestFailure'
+import {type StudioErrorHandler} from '../../../studio/requestErrors/types'
+import {checkCors} from '../../../studio/workspaces/corsCheck'
+import {isInvalidSessionError} from '../../../util/apiErrors'
+import {canonicalHash} from '../../../util/canonicalHash'
+import {supportsLocalStorage} from '../../../util/supportsLocalStorage'
+import {type AuthState, type AuthStore} from '../types'
+import {createAuthIdProbe} from '../utils/createAuthIdProbe'
+import {createLocalStorageStorage} from '../utils/createBroadcastState'
+import {getCurrentUser} from '../utils/getCurrentUser'
+import {
+  keepAuthorizationResponse,
+  OAUTH_RESPONSE_PARAMS,
+  pathWithoutAuthorizationResponse,
+  peekStashedAuthorizationResponse,
+  takeStashedAuthorizationResponse,
+} from './authorizationResponse'
+import {
+  AUTH_CLIENT_OPTIONS,
+  AUTH_STATE_SETTLE_TIMEOUT_MS,
+  getOAuthFlowStorageKey,
+  getOAuthTokensStorageKey,
+} from './constants'
+import {createOAuthLoginComponent, type OAuthCallbackError} from './createOAuthLoginComponent'
+import {debug, describeTokens, refreshTokenTag, tokenTag} from './debug'
+import {
+  createOAuthEndpoints,
+  OAUTH_ERROR_CODE,
+  type OAuthEndpoints,
+  OAuthRequestError,
+  OAuthRequestTimeoutError,
+  type OAuthTokenResponse,
+} from './oauthEndpoints'
+import {createCodeChallenge, createCodeVerifier, createState, stateWithReturnTo} from './pkce'
+import {
+  failureOf,
+  type OAuthFailure,
+  type OAuthRenewalOutcome,
+  type OAuthRenewalTrigger,
+  type OAuthSessionEndReason,
+  type OAuthTelemetryEvent,
+  sessionAgeBucket,
+  tokenLifetimeBucket,
+} from './telemetry'
+import {createOAuthTokenStorage} from './tokenStorage'
+import {type OAuthCallbackResult} from './types'
+
+/** How long before expiry the access token is renewed, unless configured. */
+const DEFAULT_RENEW_BEFORE_EXPIRY_MS = 60_000
+
+/** Never renew sooner than this after a token was issued, so a very short lifetime can't spin. */
+const MIN_REFRESH_DELAY_MS = 5_000
+
+/**
+ * How long a refused refresh token waits for another tab's rotation to land before it is taken
+ * as the end of the session. Only waited for without an exclusive cross-tab lock, where two tabs
+ * can redeem the same refresh token at once and the loser's `invalid_grant` is caused by the
+ * winner's rotation, not by a dead session.
+ */
+const INVALID_GRANT_GRACE_MS = 1_000
+
+/**
+ * The token pair a signed-in Studio holds, persisted per project and client.
+ *
+ * @internal
+ */
+export interface OAuthTokens {
+  accessToken: string
+  /** Single-use: every refresh returns a new one and invalidates this one. */
+  refreshToken?: string
+  /** Epoch milliseconds when the access token expires. */
+  expiresAt: number
+  /** Epoch milliseconds when the Studio renews the access token, ahead of `expiresAt`. */
+  refreshAt: number
+  /**
+   * Epoch milliseconds of the sign-in this pair descends from, kept across renewals. Only ever
+   * reported as a coarse session age. Missing for pairs stored before it was recorded.
+   */
+  signedInAt?: number
+}
+
+/** The authorization request in flight between leaving for the authorization server and returning. */
+interface OAuthFlow {
+  codeVerifier: string
+  state: string
+  redirectUri: string
+  redirectPath?: string
+}
+
+/** @internal */
+export interface OAuthAuthStoreOptions extends OAuthConfig {
+  projectId: string
+  dataset: string
+  apiHost?: string
+  /**
+   * Base path of the workspace. The default redirect URL is the Studio origin followed by it, so
+   * the authorization response lands on this workspace and its `handleCallbackUrl`.
+   */
+  basePath?: string
+  clientFactory?: (options: SanityClientConfig) => SanityClient
+  /** See `AuthStoreOptions.getRequestErrorHandler`. */
+  getRequestErrorHandler?: () => StudioErrorHandler | undefined
+  /** See `AuthStoreOptions.getRequestFailureDiagnostics`. */
+  getRequestFailureDiagnostics?: () => RequestFailureDiagnostics | undefined
+}
+
+/**
+ * Browser dependencies of the OAuth auth store, injected so tests can drive the flow.
+ *
+ * @internal
+ */
+export interface OAuthAuthStoreEnvironment {
+  endpoints?: OAuthEndpoints
+  /** The current URL. Read for the Studio origin and the authorization response. */
+  getLocation: () => Pick<Location, 'origin' | 'pathname' | 'search'> & {hash?: string}
+  /** Leaves the Studio for the authorization server. */
+  navigate: (url: string) => void
+  /** Replaces the current history entry, e.g. to drop the authorization response from the URL. */
+  replaceUrl: (path: string) => void
+  /**
+   * Runs `task` while holding the lock called `name`, exclusively across the tabs of this origin.
+   * Refresh tokens are single-use, so two tabs redeeming the same one would sign one of them out.
+   */
+  withLock: <T>(name: string, task: () => Promise<T>) => Promise<T>
+  /**
+   * Emits when the tab becomes visible again. A renewal that fell due while the tab was hidden
+   * or the machine asleep starts on it, ahead of the requests the UI makes on wake.
+   */
+  visible$?: Observable<unknown>
+  /**
+   * Whether the tab is hidden. The scheduled renewal is skipped then: a tab left open in the
+   * background would otherwise keep the session alive past the refresh token's idle timeout.
+   * `visible$` renews on return, and a request with an expired token renews on its own.
+   */
+  isHidden?: () => boolean
+  /** Whether `withLock` is exclusive across tabs (Web Locks). */
+  locksAvailable: boolean
+}
+
+/**
+ * Marks the stores `createOAuthAuthStore` creates. Not exported from the package, so no other
+ * store can carry it.
+ *
+ * @internal
+ */
+export const OAUTH_AUTH_STORE = Symbol('sanity.oauthAuthStore')
+
+/**
+ * The OAuth store, with the telemetry it reports. `AuthBoundary` logs the events.
+ *
+ * @internal
+ */
+export interface OAuthAuthStore extends AuthStore {
+  [OAUTH_AUTH_STORE]: true
+  telemetryEvents: Observable<OAuthTelemetryEvent>
+}
+
+/**
+ * Whether `auth` was created by `createOAuthAuthStore`.
+ *
+ * @internal
+ */
+export function isOAuthAuthStore(auth: AuthStore): auth is OAuthAuthStore {
+  return OAUTH_AUTH_STORE in auth
+}
+
+/**
+ * The pair a token response yields. `previous` is the pair a refresh renews: its refresh token
+ * stays in use when the server did not rotate it.
+ */
+function toTokens(
+  response: OAuthTokenResponse,
+  renewBeforeExpiryMs: number,
+  previous?: OAuthTokens,
+): OAuthTokens {
+  const issuedAt = Date.now()
+  const lifetimeMs = response.expires_in * 1000
+  return {
+    accessToken: response.access_token,
+    refreshToken: response.refresh_token ?? previous?.refreshToken,
+    expiresAt: issuedAt + lifetimeMs,
+    refreshAt: issuedAt + renewAfterMs(lifetimeMs, renewBeforeExpiryMs),
+    signedInAt: previous ? previous.signedInAt : issuedAt,
+  }
+}
+
+/**
+ * How long after issue a token with `lifetimeMs` left is renewed: the margin before expiry, but
+ * never earlier than halfway through the lifetime (a margin longer than a short-lived token would
+ * otherwise renew at once) and never sooner than the floor after issue.
+ */
+function renewAfterMs(lifetimeMs: number, renewBeforeExpiryMs: number): number {
+  return Math.max(lifetimeMs - renewBeforeExpiryMs, lifetimeMs / 2, MIN_REFRESH_DELAY_MS)
+}
+
+/**
+ * Whether two auth states describe the same signed-in user with the same roles, which is all
+ * the studio builds its workspace from. The client is the store's one client in both.
+ */
+function isSameAuthState(a: AuthState, b: AuthState): boolean {
+  if (a.authenticated !== b.authenticated) return false
+  if (a.currentUser?.id !== b.currentUser?.id) return false
+  const rolesOf = (state: AuthState) => (state.currentUser?.roles ?? []).map((role) => role.name)
+  const [rolesA, rolesB] = [rolesOf(a), rolesOf(b)]
+  return rolesA.length === rolesB.length && rolesA.every((name, i) => name === rolesB[i])
+}
+
+/**
+ * The telemetry `failureReason` of a failed code exchange: the RFC 6749 error code, or a fixed
+ * category. Never the error message, which carries the server's free-text description and URLs.
+ */
+function exchangeFailureReason(err: unknown): string {
+  if (err instanceof OAuthRequestError) {
+    return err.error ?? `token endpoint error (${err.statusCode})`
+  }
+  if (err instanceof OAuthRequestTimeoutError) return 'token endpoint timeout'
+  return 'code exchange failed'
+}
+
+/**
+ * Refuses a redirect URL the authorization server would reject, before the flow is stored: it has
+ * to be absolute and without a fragment (RFC 6749 section 3.1.2). `redirectUri` also has to be on
+ * the Studio `origin`, because the verifier and `state` live in this origin's sessionStorage and
+ * the response has to come back here to be exchanged. `redirectRelayUri` is on another origin,
+ * since the relay sends the response back here, and has to be `https`.
+ */
+function assertRedirectUrl(
+  option: 'redirectUri' | 'redirectRelayUri',
+  value: string,
+  rules: {origin?: string; https?: boolean},
+): void {
+  const name = `auth.experimental_oauth.${option}`
+  if (!URL.canParse(value)) throw new Error(`${name} must be an absolute URL, got ${value}`)
+  if (value.includes('#')) throw new Error(`${name} must not have a fragment, got ${value}`)
+  const url = new URL(value)
+  if (rules.https && url.protocol !== 'https:') {
+    throw new Error(`${name} must be an https URL, got ${value}`)
+  }
+  if (rules.origin !== undefined && url.origin !== rules.origin) {
+    throw new Error(`${name} must be on the Studio origin (${rules.origin}), got ${value}`)
+  }
+}
+
+function bearerTokenOf(request: RequestHandlerOptions): string | undefined {
+  const header = Object.entries(request.headers ?? {}).find(
+    ([name]) => name.toLowerCase() === 'authorization',
+  )?.[1]
+  return header?.startsWith('Bearer ') ? header.slice('Bearer '.length) : undefined
+}
+
+function withBearerToken(request: RequestHandlerOptions, token: string): RequestHandlerOptions {
+  const headers = Object.fromEntries(
+    Object.entries(request.headers ?? {}).filter(
+      ([name]) => name.toLowerCase() !== 'authorization',
+    ),
+  )
+  return {...request, headers: {...headers, Authorization: `Bearer ${token}`}}
+}
+
+/**
+ * `path` without the parameters of an authorization response. A response this tab did not request
+ * stays in the URL, and returning to it after the next sign-in would bring the old code back.
+ */
+function withoutResponseParams(path: string, origin: string): string {
+  const url = new URL(path, origin)
+  for (const name of OAUTH_RESPONSE_PARAMS) url.searchParams.delete(name)
+  return `${url.pathname}${url.search}${url.hash}`
+}
+
+function readFlow(key: string): OAuthFlow | undefined {
+  try {
+    const value = sessionStorage.getItem(key)
+    return value ? (JSON.parse(value) as OAuthFlow) : undefined
+  } catch {
+    return undefined
+  }
+}
+
+/**
+ * Throws when the flow can't be stored: the verifier and `state` must survive the redirect, so a
+ * login that goes ahead without them is bound to fail on return.
+ */
+function writeFlow(key: string, flow: OAuthFlow): void {
+  sessionStorage.setItem(key, JSON.stringify(flow))
+}
+
+/** Best-effort: a flow left behind is harmless, it only matches its own `state`. */
+function clearFlow(key: string): void {
+  try {
+    sessionStorage.removeItem(key)
+  } catch {
+    // Storage unavailable, so there is nothing to clear either.
+  }
+}
+
+/**
+ * An auth store that signs users in with OAuth 2.1: the authorization code flow with PKCE, as a
+ * public client of an OAuth application registered for the Studio in Manage.
+ *
+ * - The token pair lives in localStorage and is broadcast to other tabs, so a rotation or a
+ *   sign-out in one tab reaches the others.
+ * - The access token is renewed ahead of expiry, and again whenever a request is rejected with an
+ *   invalid session. Renewals are serialised across tabs, because each refresh token works once.
+ * - Only a refresh that the server refuses ends the session. The 401 that follows reaches the
+ *   Studio's request handler, which logs the user out as it does for any other auth store.
+ *
+ * @internal
+ */
+export function _createOAuthAuthStore({
+  clientId,
+  redirectUri: redirectUriOption,
+  redirectRelayUri,
+  renewBeforeExpiryMs = DEFAULT_RENEW_BEFORE_EXPIRY_MS,
+  projectId,
+  dataset,
+  apiHost,
+  basePath = '',
+  clientFactory: clientFactoryOption,
+  getRequestErrorHandler,
+  getRequestFailureDiagnostics,
+  endpoints: endpointsOption,
+  getLocation,
+  navigate,
+  replaceUrl,
+  withLock,
+  visible$ = defaultEnvironment.visible$,
+  isHidden = defaultEnvironment.isHidden,
+  locksAvailable,
+}: OAuthAuthStoreOptions & OAuthAuthStoreEnvironment): OAuthAuthStore {
+  if (redirectRelayUri !== undefined) {
+    assertRedirectUrl('redirectRelayUri', redirectRelayUri, {https: true})
+  }
+  if (!Number.isFinite(renewBeforeExpiryMs) || renewBeforeExpiryMs < 0) {
+    throw new Error(
+      `auth.experimental_oauth.renewBeforeExpiryMs must be a non-negative number of milliseconds, got ${renewBeforeExpiryMs}`,
+    )
+  }
+
+  const resolvedApiHost = apiHost || (isStaging ? 'https://api.sanity.work' : undefined)
+  const hostOptions = resolvedApiHost ? {apiHost: resolvedApiHost} : {}
+
+  // The authorization server's issuer identifier is the API origin it is served from, without a
+  // trailing slash. Canonicalized once here, so the callback can compare `iss` exactly.
+  const issuer = (resolvedApiHost ?? 'https://api.sanity.io').replace(/\/+$/, '')
+  const endpoints = endpointsOption ?? createOAuthEndpoints({issuer, projectId})
+  const clientFactory = clientFactoryOption ?? createSanityClient
+  const flowStorageKey = getOAuthFlowStorageKey(projectId, clientId)
+
+  // With localStorage, the pair is shared by the tabs of this origin, and the storage is kept
+  // alongside the broadcast state so a refresh can read what another tab wrote before that tab's
+  // broadcast has arrived here. See `latestTokens`.
+  //
+  // Without it, the pair stays private to this tab. A broadcast is delivered asynchronously and
+  // is not ordered with the refresh lock, so a tab waiting for the lock could still hold a pair
+  // another tab already rotated, redeem its used refresh token, and sign both tabs out.
+  const tokensStorageKey = getOAuthTokensStorageKey(projectId, clientId)
+  const persistedTokens = createLocalStorageStorage<OAuthTokens>(tokensStorageKey)
+  const tokenStorage = createOAuthTokenStorage({
+    broadcastKey: `${tokensStorageKey}_broadcast`,
+    persisted: supportsLocalStorage ? persistedTokens : undefined,
+    onDiscard: (tokens) => {
+      debug('a pair from a session this tab signed out of was stored, clearing and revoking it')
+      void revokeTokens(tokens)
+    },
+  })
+
+  debug('store created for project %s, client %s, issuer %s', projectId, clientId, issuer)
+
+  /**
+   * The latest pair any tab wrote. localStorage is shared, so it can be ahead of this tab's
+   * broadcast state. Without it, this tab's own state is all there is.
+   */
+  const latestTokens = (): OAuthTokens | undefined =>
+    supportsLocalStorage ? persistedTokens.load() : tokenStorage.get()
+
+  /** The access token this tab holds, once per change. */
+  const accessToken$ = tokenStorage.value.pipe(
+    map((tokens) => tokens?.accessToken),
+    distinctUntilChanged(),
+  )
+
+  let inflightRefresh: Promise<OAuthTokens | undefined> | undefined
+
+  /** Telemetry the store reports; see `./telemetry` for what may go in it. */
+  const telemetryEvents$ = new Subject<OAuthTelemetryEvent>()
+  const reportSessionEnded = (reason: OAuthSessionEndReason, tokens: OAuthTokens | undefined) => {
+    const signedInAt = tokens?.signedInAt
+    telemetryEvents$.next({
+      type: 'session-ended',
+      reason,
+      ...(signedInAt === undefined ? {} : {sessionAge: sessionAgeBucket(Date.now() - signedInAt)}),
+    })
+  }
+  /**
+   * Every renewal this tab starts, as it starts. The session credentials hand it to the client,
+   * so a request made while it is out waits for the new token instead of sending the old one.
+   */
+  const renewalStarted$ = new Subject<{
+    rejected: OAuthTokens
+    renewal: Promise<OAuthTokens | undefined>
+  }>()
+
+  // Changed by every `logout`. A refresh or code exchange that started before a logout must not
+  // write its result back, or it would sign the user in again. The local counter covers this tab,
+  // also when Web Locks are unavailable and the lock is not exclusive. The stored epoch covers a
+  // logout in another tab, which the lock alone does not: that tab can take the lock, clear the
+  // pair, and release it while a request here is still out.
+  let sessionGeneration = 0
+  const logoutEpochKey = `${tokensStorageKey}_logout`
+  const sessionEpoch = (): string => {
+    let shared: string | null = null
+    try {
+      shared = supportsLocalStorage ? localStorage.getItem(logoutEpochKey) : null
+    } catch {
+      // Unreadable storage: only this tab's logouts are seen.
+    }
+    return `${sessionGeneration}:${shared ?? ''}`
+  }
+  const refreshLockName = `${tokensStorageKey}_refresh`
+
+  /**
+   * Redeems the refresh token of `rejected`, the pair that just failed or is due for renewal, and
+   * returns the pair to use from now on. Resolves `undefined` when the session is over.
+   *
+   * Runs under a cross-tab lock. The tab that waited for the lock reads the stored pair first: if
+   * another tab rotated it in the meantime, that pair is adopted instead of redeeming a refresh
+   * token that no longer works.
+   */
+  function refresh(
+    rejected: OAuthTokens,
+    trigger: OAuthRenewalTrigger,
+  ): Promise<OAuthTokens | undefined> {
+    const epoch = sessionEpoch()
+    if (inflightRefresh) {
+      debug('refresh requested for %s: joining the refresh in flight', describeTokens(rejected))
+      return inflightRefresh
+    }
+    debug('refresh requested for %s, waiting for the lock', describeTokens(rejected))
+    const startedAt = performance.now()
+    // How the renewal ended, for telemetry; set on every path that returns.
+    let outcome: OAuthRenewalOutcome = 'failed'
+    let lifetimeMs: number | undefined
+    let failure: OAuthFailure | undefined
+    /**
+     * Takes over a pair another tab stored. A renewal can keep the access token and change only
+     * the refresh token or the expiry, so the whole pair is compared.
+     */
+    const adopt = (tokens: OAuthTokens): OAuthTokens => {
+      const current = tokenStorage.get()
+      if (
+        tokens.accessToken !== current?.accessToken ||
+        tokens.refreshToken !== current.refreshToken ||
+        tokens.expiresAt !== current.expiresAt ||
+        tokens.refreshAt !== current.refreshAt
+      ) {
+        tokenStorage.update(tokens)
+      }
+      outcome = 'adopted-other-tab'
+      return tokens
+    }
+    const renewal = withLock(refreshLockName, async () => {
+      const stored = latestTokens()
+      if (!stored) {
+        debug('refresh: no stored pair (signed out meanwhile), clearing')
+        tokenStorage.update(undefined)
+        outcome = 'session-ended'
+        return undefined
+      }
+      if (stored.refreshToken !== rejected.refreshToken) {
+        debug('refresh: another tab already rotated, adopting %s', describeTokens(stored))
+        return adopt(stored)
+      }
+      if (!stored.refreshToken) {
+        debug('refresh: no refresh token to redeem, signing out')
+        tokenStorage.update(undefined)
+        reportSessionEnded('refresh-refused', stored)
+        outcome = 'session-ended'
+        return undefined
+      }
+      try {
+        debug('refresh: redeeming refresh token %s', refreshTokenTag(stored.refreshToken))
+        const response = await endpoints.refresh({clientId, refreshToken: stored.refreshToken})
+        // The session this renewed ended while the request was out: the user logged out, or a
+        // sign-in replaced the pair (a code exchange does not wait for this lock). The pair it
+        // obtained is valid on the server and known only here, so revoke it rather than drop it
+        // or publish it over the current one. The check and the write below are synchronous, so
+        // nothing in this tab can slip in between. Revoked without waiting, so the lock is not
+        // held for as long as the revocation takes.
+        if (epoch !== sessionEpoch()) {
+          debug('refresh: logged out while the request was out, revoking the pair it returned')
+          void revokeTokens(toTokens(response, renewBeforeExpiryMs))
+          outcome = 'session-ended'
+          return undefined
+        }
+        const latest = latestTokens()
+        if (latest && latest.refreshToken !== stored.refreshToken) {
+          debug('refresh: pair replaced while the request was out, revoking the pair it returned')
+          void revokeTokens(toTokens(response, renewBeforeExpiryMs))
+          outcome = 'adopted-other-tab'
+          return latest
+        }
+        // `latest` may be gone without a logout: without an exclusive lock, a tab that redeemed
+        // the same refresh token after us was refused and cleared the pair. Our renewal is the
+        // one that succeeded, so publishing it signs that tab back in.
+        const next = toTokens(response, renewBeforeExpiryMs, stored)
+        debug('refresh: renewed, %s', describeTokens(next))
+        tokenStorage.update(next)
+        outcome = 'renewed'
+        lifetimeMs = response.expires_in * 1000
+        return next
+      } catch (err) {
+        // `invalid_grant`: the refresh token expired, was used already, or its session was
+        // revoked in Manage. Anything else (a request or client error, network, 5xx) says
+        // nothing about the session, so keep the tokens and let the caller see the failure.
+        if (err instanceof OAuthRequestError && err.error === 'invalid_grant') {
+          // Without an exclusive lock, another tab may have redeemed this refresh token first,
+          // in which case its rotation is what made ours invalid. Give that pair a moment to
+          // land and adopt it; only then is the refusal the end of the session.
+          const rotated = locksAvailable
+            ? undefined
+            : await rotationBy(stored, INVALID_GRANT_GRACE_MS)
+          if (rotated) {
+            debug(
+              'refresh: refused because another tab rotated first, adopting %s',
+              describeTokens(rotated),
+            )
+            return adopt(rotated)
+          }
+          debug('refresh: refresh token refused (invalid_grant), signing out: %s', err.message)
+          tokenStorage.update(undefined)
+          reportSessionEnded('refresh-refused', stored)
+          outcome = 'session-ended'
+          failure = failureOf(err)
+          return undefined
+        }
+        debug('refresh: failed, keeping the pair: %s', err instanceof Error ? err.message : err)
+        outcome = 'failed'
+        failure = failureOf(err)
+        throw err
+      }
+    }).finally(() => {
+      inflightRefresh = undefined
+      telemetryEvents$.next({
+        type: 'token-renewed',
+        trigger,
+        outcome,
+        durationMs: Math.round(performance.now() - startedAt),
+        lockAvailable: locksAvailable,
+        ...(lifetimeMs === undefined ? {} : {accessTokenLifetime: tokenLifetimeBucket(lifetimeMs)}),
+        ...(failure ? {failure} : {}),
+      })
+    })
+    inflightRefresh = renewal
+    renewalStarted$.next({rejected, renewal})
+    return renewal
+  }
+
+  /**
+   * A pair, from any tab, whose refresh token differs from `previous`'s: one already stored, or
+   * one that lands within `withinMs`. Resolves `undefined` when none does.
+   */
+  function rotationBy(previous: OAuthTokens, withinMs: number): Promise<OAuthTokens | undefined> {
+    const rotated = (tokens: OAuthTokens | undefined): tokens is OAuthTokens =>
+      Boolean(tokens && tokens.refreshToken !== previous.refreshToken)
+    const stored = latestTokens()
+    if (rotated(stored)) return Promise.resolve(stored)
+    return firstValueFrom(
+      tokenStorage.value.pipe(
+        filter(rotated),
+        timeout(withinMs),
+        catchError(() => of(undefined)),
+      ),
+    )
+  }
+
+  /**
+   * Renews the access token when a request is rejected with an invalid session, and retries the
+   * request once. Only a request that carried one of this store's tokens is retried: one with a
+   * credential of its own, or none, is passed on as it is. Installed inside the Studio's request
+   * handler (see `getAuthStore` in `prepareConfig`), so a 401 that survives the retry still
+   * reaches it and ends the session.
+   */
+  const refreshOnInvalidSession: RequestHandler = async (request, next) => {
+    try {
+      return await next(request)
+    } catch (err) {
+      if (!isInvalidSessionError(err)) throw err
+      const current = tokenStorage.get()
+      const sent = bearerTokenOf(request)
+      debug(
+        'request rejected as invalid session: %s (sent %s, current %s)',
+        request.url,
+        tokenTag(sent),
+        tokenTag(current?.accessToken),
+      )
+      if (!current) throw err
+      // The request came from a client with a credential of its own: a `token` on the request,
+      // or a `withConfig({token})`, `withConfig({withCredentials: true})` or anonymous copy of a
+      // studio client. Retrying with the user's token would send it where it wasn't meant to go.
+      const session = sent === undefined ? null : tokenStorage.sessionOf(sent)
+      if (session === null) {
+        debug('request rejected: %s did not carry a token of ours, not retrying', request.url)
+        throw err
+      }
+      // The request was sent in a session that has since ended: a logout and a new sign-in,
+      // possibly as someone else. Retrying it with the current token would run it as them. Its
+      // rejection says nothing about the current session either, so it is not passed on as an
+      // invalid session: the Studio would take it for the current one and sign the user out.
+      if (session !== current.signedInAt) {
+        debug('request rejected: %s was sent in an earlier session, not retrying', request.url)
+        throw new Error('The request was sent in an OAuth session that has since ended', {
+          cause: err,
+        })
+      }
+      // A request that went out before a renewal only needs the pair that replaced its token,
+      // unless that one has expired too.
+      const needsRenewal = sent === current.accessToken || Date.now() >= current.expiresAt
+      const tokens = needsRenewal ? await refresh(current, 'rejected-request') : current
+      if (!tokens) {
+        debug('request rejected: session is over, giving up on %s', request.url)
+        throw err
+      }
+      debug('request rejected: retrying %s with %s', request.url, tokenTag(tokens.accessToken))
+      try {
+        const response = await next(withBearerToken(request, tokens.accessToken))
+        telemetryEvents$.next({type: 'request-retried', renewed: needsRenewal, recovered: true})
+        return response
+      } catch (retryErr) {
+        telemetryEvents$.next({type: 'request-retried', renewed: needsRenewal, recovered: false})
+        throw retryErr
+      }
+    }
+  }
+
+  /**
+   * The store's credential, in the shape the client's reactive `auth` takes: a promise per
+   * emission. One for the store's lifetime: a rotation and a re-login are both just the next
+   * token on it, and signed out is `undefined` (anonymous).
+   *
+   * Signing out does not end the client's streams from here: the studio's login screen unmounts
+   * everything that subscribed to them, which is what ends them. Nothing may stay subscribed to
+   * an anonymous client while signed out.
+   */
+  const stored$ = tokenStorage.value.pipe(
+    tap((tokens) => debug('tokens now: %s', describeTokens(tokens))),
+    distinctUntilChanged((a, b) => a?.accessToken === b?.accessToken),
+    // An access token that expired while the Studio was closed goes out as it is until the probe
+    // renews it (`probeToken`); the renewal then becomes the credential through `renewing$`.
+    map((tokens): Promise<ClientAuthState> =>
+      Promise.resolve(tokens ? {token: tokens.accessToken} : undefined),
+    ),
+  )
+  const renewing$ = renewalStarted$.pipe(
+    map(({rejected, renewal}) => credentialAfter(renewal, rejected)),
+  )
+  // Connected now, ahead of everything else that reads `tokenStorage`, so a request made in the
+  // same tick a new pair lands (the probe `authState$` starts for it) resolves the new token and
+  // not the one being replaced. Lives as long as the store.
+  const auth$ = connectable(merge(stored$, renewing$), {
+    connector: () => new ReplaySubject<Promise<ClientAuthState>>(1),
+    resetOnDisconnect: false,
+  })
+  auth$.connect()
+
+  /**
+   * The credential a renewal yields: the new token; `undefined` when the renewal ended the
+   * session (the cleared pair follows through `tokenStorage`); or, when the renewal failed and
+   * the pair was kept, the token that was to be replaced, so the failure surfaces as a 401 on
+   * the request rather than a hang.
+   */
+  function credentialAfter(
+    renewal: Promise<OAuthTokens | undefined>,
+    rejected: OAuthTokens,
+  ): Promise<ClientAuthState> {
+    return renewal.then(
+      (renewed) => (renewed ? {token: renewed.accessToken} : undefined),
+      () => ({token: rejected.accessToken}),
+    )
+  }
+
+  const clientConfig = {
+    ...AUTH_CLIENT_OPTIONS,
+    ...hostOptions,
+    projectId,
+    dataset,
+    auth: auth$,
+    ignoreBrowserTokenWarning: true,
+    requestHandler: refreshOnInvalidSession,
+  }
+  // Probes `/users/me` and serves the signed-out state.
+  const client = clientFactory(clientConfig)
+
+  /**
+   * The client a signed-in state hands to the studio. Studio caches key on the credential source,
+   * `config().auth`, by reference (`getClientCredentialSegments`), so each signed-in user gets a
+   * source of their own: what was cached for one user (document pairs, project grants) is never
+   * served to the next, whether they signed in here or in another tab. It reads the same `auth$`,
+   * so a rotation within the session changes nothing; the state only emits for a new user, new
+   * roles or a sign-in after sign-out, and those all get a new source.
+   */
+  function sessionClient(): SanityClient {
+    return clientFactory({...clientConfig, auth: defer(() => auth$)})
+  }
+
+  const unauthenticated: AuthState = {client, authenticated: false, currentUser: null}
+
+  async function probeClient(): Promise<AuthState> {
+    debug('probing /users/me')
+    const currentUser = await getCurrentUser(
+      client,
+      'oauth',
+      getRequestErrorHandler,
+      getRequestFailureDiagnostics?.(),
+    )
+    debug(
+      'probe result: %s',
+      currentUser?.id ? `authenticated as ${currentUser.id}` : 'not authenticated',
+    )
+    return {client, authenticated: Boolean(currentUser?.id), currentUser: currentUser || null}
+  }
+
+  /** The access token a probe-triggered renewal produced, so its own rejection renews no further. */
+  let tokenRenewedByProbe: string | undefined
+
+  /**
+   * The auth state behind `accessToken`, probed once. An access token that expired while the
+   * Studio was closed is renewed before the probe goes out. Only probes renew it, and only a
+   * workspace the user opens is probed: every workspace gets a store when the Studio starts, and
+   * one the user never opens must not rotate its refresh token. If the API still rejects the
+   * token the store believed valid (revoked, clock skew, or expired while the probe waited), one
+   * renewal. Either way, the token a renewal yields re-enters `authState$` and is probed there. A
+   * second rejection means the pair cannot be used, and the signed-out state is shown with the
+   * pair kept, rather than rotating the refresh token for every rejection.
+   */
+  async function probeToken(accessToken: string): Promise<AuthState> {
+    const stored = tokenStorage.get()
+    if (
+      stored?.accessToken === accessToken &&
+      stored.refreshToken &&
+      Date.now() >= stored.expiresAt
+    ) {
+      debug('access token %s has expired, renewing before use', tokenTag(accessToken))
+      const renewed = await renewAtBoot(stored, 'expired')
+      // A failure keeps the pair (`renewAtBoot` has shown it) and shows the signed-out state.
+      if (!renewed) return unauthenticated
+      // One renewal per token: if the API rejects the renewed token too, it is not renewed again.
+      tokenRenewedByProbe = renewed.accessToken
+      // A new access token is probed in its own turn. A renewal that kept the access token (a new
+      // expiry or refresh token only) emits no new token, so it is probed here.
+      if (renewed.accessToken !== accessToken) return unauthenticated
+    }
+    const state = await probeClient()
+    if (state.authenticated) return state
+    const tokens = tokenStorage.get()
+    if (!tokens || tokens.accessToken !== accessToken || !tokens.refreshToken) return state
+    if (accessToken === tokenRenewedByProbe) return state
+    const renewed = await renewAtBoot(tokens, 'rejected-probe')
+    if (renewed && renewed.accessToken !== accessToken) tokenRenewedByProbe = renewed.accessToken
+    // A new token has replaced this probe through `authState$`; otherwise this is the answer.
+    return state
+  }
+
+  /**
+   * The renewal behind the auth state itself. A refused refresh token ends the session, which
+   * `refresh` reports as `undefined`. Anything else says nothing about the session and must not
+   * error the state, which would take the studio down: network failures and timeouts go to the
+   * studio's retryable error dialog like the `/users/me` probe's do, and a failure the handler
+   * does not claim (a token endpoint 5xx, an unexpected 4xx) keeps the pair for the next attempt
+   * and shows the signed-out state.
+   */
+  async function renewAtBoot(
+    tokens: OAuthTokens,
+    trigger: 'expired' | 'rejected-probe',
+  ): Promise<OAuthTokens | undefined> {
+    const errorHandler = getRequestErrorHandler?.()
+    debug('access token rejected at boot, renewing %s', describeTokens(tokens))
+    try {
+      return errorHandler
+        ? await errorHandler.attempt(() => refresh(tokens, trigger), {retryable: true})
+        : await refresh(tokens, trigger)
+    } catch (err) {
+      debug(
+        'renewal at boot failed, keeping the pair and showing signed out: %s',
+        err instanceof Error ? err.message : err,
+      )
+      return undefined
+    }
+  }
+
+  // The schedule follows the refresh token and the expiry, which a renewal can change while
+  // keeping the access token.
+  const renewals$ = tokenStorage.value.pipe(
+    distinctUntilChanged(
+      (a, b) => a?.refreshToken === b?.refreshToken && a?.refreshAt === b?.refreshAt,
+    ),
+  )
+
+  // Whether the last settled probe found the user signed in.
+  let signedIn = false
+  // Set from the moment a sign-in stores its new token until a probe of the stored token settles,
+  // also when the sign-in stopped waiting for it after the settle timeout. A failed probe then
+  // shows the signed-out state, and the login screen says why, instead of erroring the state,
+  // which would take the Studio down.
+  let settlingSignIn = false
+
+  // Every access token is probed once: a sign-in, a renewal, or a pair another tab wrote, which
+  // may belong to a different user. A probe that fails for a reason other than a rejected token
+  // is skipped while the user is signed in: a steady session must not land on the login screen
+  // because one renewal's probe hit a network error. Signed out, there is no session to keep, so
+  // the failure reaches the state. Shared by the state and by the callback's settle wait, which
+  // needs every probe, not only those that change the state.
+  const probes$ = accessToken$.pipe(
+    switchMap(
+      (accessToken): Observable<{accessToken?: string; state: AuthState; failed?: true}> => {
+        if (!accessToken) return of({accessToken, state: unauthenticated})
+        return from(probeToken(accessToken)).pipe(
+          map((probed) => ({accessToken, state: probed})),
+          catchError((err: unknown) => {
+            if (settlingSignIn && accessToken === tokenStorage.get()?.accessToken) {
+              settlingSignIn = false
+              debug(
+                'probe of the new token failed during sign-in, showing signed out: %s',
+                err instanceof Error ? err.message : err,
+              )
+              return of({accessToken, state: unauthenticated, failed: true as const})
+            }
+            if (!signedIn) throw err
+            debug(
+              'probe failed after a renewal, keeping the current state: %s',
+              err instanceof Error ? err.message : err,
+            )
+            return EMPTY
+          }),
+        )
+      },
+    ),
+    tap(({accessToken, state: probed}) => {
+      signedIn = probed.authenticated
+      if (accessToken === tokenStorage.get()?.accessToken) settlingSignIn = false
+    }),
+    share({connector: () => new ReplaySubject(1), resetOnRefCountZero: () => timer(1000)}),
+  )
+
+  // Emits only when what the studio builds its workspace from changes, the signed-in user and
+  // their roles, so a rotation that keeps both changes nothing above the store, while a re-login
+  // as someone else, or a role change seen at a renewal, does.
+  const authState$ = probes$.pipe(
+    map(({state: probed}) => probed),
+    distinctUntilChanged(isSameAuthState),
+    map((probed) => (probed.authenticated ? {...probed, client: sessionClient()} : probed)),
+  )
+
+  /**
+   * Renews `tokens` in the background. A failure keeps the pair and is left to the invalid-session
+   * handler, which renews again on the next rejected request.
+   */
+  function renewQuietly(
+    tokens: OAuthTokens,
+    reason: 'scheduled' | 'tab-visible',
+  ): Observable<never> {
+    return defer(() => refresh(tokens, reason)).pipe(
+      ignoreElements(),
+      catchError((err: unknown) => {
+        debug(
+          '%s renewal failed, next request will retry: %s',
+          reason,
+          err instanceof Error ? err.message : err,
+        )
+        return EMPTY
+      }),
+    )
+  }
+
+  // Whether the tab has renewed on the schedule since it was last hidden. A hidden tab renews
+  // once: leaving just before a renewal then still leaves the full idle timeout of the refresh
+  // token, while a tab left open in the background stops renewing after that and lets the session
+  // reach its idle timeout. Reset when the tab is shown.
+  let renewedWhileHidden = false
+
+  // Renews ahead of expiry while anything is subscribed to the state: always while the tab is
+  // shown, once while it is hidden. Failures are left to the invalid-session handler above, which
+  // retries on the next rejected request.
+  const scheduledRefresh$ = renewals$.pipe(
+    switchMap((tokens) => {
+      if (!tokens?.refreshToken) return EMPTY
+      const delay = Math.max(tokens.refreshAt - Date.now(), 0)
+      debug('scheduling renewal in %ds', Math.round(delay / 1000))
+      return timer(delay).pipe(
+        filter(() => {
+          if (!isHidden()) return true
+          if (!renewedWhileHidden) {
+            renewedWhileHidden = true
+            debug('scheduled renewal due while the tab is hidden, renewing once')
+            return true
+          }
+          debug('scheduled renewal due while the tab is hidden, waiting until it is shown')
+          return false
+        }),
+        tap(() => debug('scheduled renewal due')),
+        switchMap(() => renewQuietly(tokens, 'scheduled')),
+      )
+    }),
+    ignoreElements(),
+  )
+
+  // A renewal that fell due while the tab was hidden (throttled timers) or the machine asleep
+  // starts the moment the tab is shown, so the requests the UI makes on wake wait for the new
+  // token instead of going out with the expired one and earning a 401 each. Nothing to do when
+  // the renewal is not due; the schedule covers that.
+  // `refresh` joins a renewal already in flight, so overlapping wakes start one.
+  const wake$ = visible$.pipe(
+    tap(() => {
+      renewedWhileHidden = false
+    }),
+    map(() => tokenStorage.get()),
+    filter((tokens): tokens is OAuthTokens =>
+      Boolean(tokens?.refreshToken && Date.now() >= tokens.refreshAt),
+    ),
+    tap((tokens) =>
+      debug('tab visible with a renewal overdue, renewing %s', describeTokens(tokens)),
+    ),
+    mergeMap((tokens) => renewQuietly(tokens, 'tab-visible')),
+  )
+
+  // Every request this store makes carries a bearer token, which the API gateway accepts from
+  // localhost without a CORS entry, so nothing else would tell the user that the origin is not
+  // set up, whether they are signed in or about to sign in. Checked once per store, without
+  // holding up the boot: a missing entry takes over the screen through `onRequestFailure`. A
+  // bearer studio sends no cookie, so it does not need the credentials allowance.
+  const originCheck$ = defer(() => {
+    const diagnostics = getRequestFailureDiagnostics?.()
+    if (!diagnostics) return EMPTY
+    return from(checkCors(client, new QuickLRU({maxSize: 1}))).pipe(
+      tap((cors) => {
+        if (cors === 'project-not-found') {
+          telemetryEvents$.next({type: 'origin-check-failed', result: 'project-not-found'})
+          diagnostics.onRequestFailure({type: 'project-not-found'}, client)
+        } else if (cors && !cors.allowed) {
+          telemetryEvents$.next({type: 'origin-check-failed', result: 'origin-not-allowed'})
+          diagnostics.onRequestFailure(
+            {type: 'cors', allowed: cors.allowed, withCredentials: cors.withCredentials},
+            client,
+          )
+        }
+      }),
+    )
+  }).pipe(
+    ignoreElements(),
+    // Once per store: a later subscriber finds it done, and one that leaves while it is out does
+    // not start it over.
+    share({resetOnComplete: false, resetOnError: false, resetOnRefCountZero: false}),
+  )
+
+  const state = merge(originCheck$, authState$, scheduledRefresh$, wake$).pipe(
+    share({connector: () => new ReplaySubject(1), resetOnRefCountZero: () => timer(1000)}),
+  )
+
+  /** The authorization server's refusal of this tab's last request, for the login screen. */
+  const callbackError$ = new BehaviorSubject<OAuthCallbackError | undefined>(undefined)
+
+  // The sign-in that is starting. A second click before the button is disabled joins it: two
+  // sign-ins would each store a flow, and the response to whichever navigation the browser
+  // follows could meet the other one's and be ignored.
+  let startingLogin: Promise<void> | undefined
+
+  function login(redirectPath: string): Promise<void> {
+    startingLogin ??= startLogin(redirectPath).finally(() => {
+      startingLogin = undefined
+    })
+    return startingLogin
+  }
+
+  async function startLogin(redirectPath: string): Promise<void> {
+    callbackError$.next(undefined)
+    telemetryEvents$.next({type: 'sign-in-started'})
+    const codeVerifier = createCodeVerifier()
+    const oauthState = createState()
+    const {origin} = getLocation()
+    const studioUri = redirectUriOption ?? `${origin}${basePath.replace(/\/+$/, '')}`
+    assertRedirectUrl('redirectUri', studioUri, {origin})
+    // Through a relay, the authorization server redirects to the relay, which redirects on to the
+    // Studio URL it reads from `state`. The code is then redeemed with the relay URL, the redirect
+    // URL it was issued for.
+    const redirectUri = redirectRelayUri ?? studioUri
+    const state = redirectRelayUri ? stateWithReturnTo(oauthState, studioUri) : oauthState
+    writeFlow(flowStorageKey, {
+      codeVerifier,
+      state,
+      redirectUri,
+      redirectPath: withoutResponseParams(redirectPath, origin),
+    })
+    debug(
+      'login: leaving for the authorization server, redirect_uri %s, will return to %s',
+      redirectUri,
+      redirectPath,
+    )
+    navigate(
+      endpoints.authorizeUrl({
+        clientId,
+        redirectUri,
+        codeChallenge: await createCodeChallenge(codeVerifier),
+        state,
+      }),
+    )
+  }
+
+  // Shared with concurrent callers (StrictMode runs the callback effect twice): the authorization
+  // code is single-use, so a second call must join the exchange, not start another.
+  let inflightCallback: Promise<OAuthCallbackResult> | undefined
+
+  function failedCallback(
+    startTime: number,
+    failureReason: string,
+    exchangeDurationMs?: number,
+  ): OAuthCallbackResult {
+    return {
+      loginMethod: 'oauth',
+      flow: 'exchange',
+      success: false,
+      durationMs: Math.round(performance.now() - startTime),
+      exchangeDurationMs,
+      failureReason,
+      error: {
+        type: 'auth-failed',
+        message: 'Signing in did not complete. Try signing in again.',
+      },
+    }
+  }
+
+  /** The authorization response in the URL, once it is out of the address bar and history. */
+  function takeAuthorizationResponseFromUrl(): URLSearchParams | undefined {
+    const currentLocation = getLocation()
+    const cleanPath = pathWithoutAuthorizationResponse(currentLocation)
+    if (cleanPath === undefined) return undefined
+    const response = new URLSearchParams(currentLocation.search)
+    // Out of the address bar, history, and Referer before anything else can read the code.
+    replaceUrl(cleanPath)
+    return response
+  }
+
+  function handleCallbackUrl(): Promise<OAuthCallbackResult> {
+    const startTime = performance.now()
+    // `ActiveWorkspaceMatcher` takes the response out of the URL before the router reads it. Where
+    // nothing did, the store does it itself. Either way the response stays stashed until the
+    // store whose request it answers takes it: with several OAuth workspaces it can land on one
+    // that did not start the sign-in.
+    const fromUrl = takeAuthorizationResponseFromUrl()
+    if (fromUrl) keepAuthorizationResponse(fromUrl)
+    const params = peekStashedAuthorizationResponse()
+    if (!params) {
+      return (
+        inflightCallback ??
+        Promise.resolve({
+          loginMethod: 'oauth',
+          flow: 'already-authenticated',
+          success: true,
+          durationMs: Math.round(performance.now() - startTime),
+        })
+      )
+    }
+
+    if (inflightCallback) {
+      debug('callback: joining the exchange already in flight')
+      return inflightCallback
+    }
+
+    // The response has to belong to the request this tab made, whether it carries a code or an
+    // error. A mismatch leaves the stored flow alone, since it may still be waiting for its own
+    // response.
+    const flow = readFlow(flowStorageKey)
+    if (!flow) {
+      debug('callback: authorization response but no pending request in this tab, ignoring')
+      return Promise.resolve(failedCallback(startTime, 'no authorization request'))
+    }
+    if (params.get('state') !== flow.state) {
+      debug('callback: state does not match the pending request, ignoring')
+      return Promise.resolve(failedCallback(startTime, 'state mismatch'))
+    }
+    debug(
+      'callback: authorization response for our request (%s)',
+      params.has('code') ? 'code' : 'error',
+    )
+    takeStashedAuthorizationResponse()
+    clearFlow(flowStorageKey)
+
+    const callbackProcessed = processCallback(params, flow, startTime).finally(() => {
+      if (inflightCallback === callbackProcessed) inflightCallback = undefined
+    })
+    inflightCallback = callbackProcessed
+    return callbackProcessed
+  }
+
+  async function processCallback(
+    params: URLSearchParams,
+    flow: OAuthFlow,
+    startTime: number,
+  ): Promise<OAuthCallbackResult> {
+    const fail = (failureReason: string, exchangeDurationMs?: number) =>
+      failedCallback(startTime, failureReason, exchangeDurationMs)
+    // A failure the user did not cause: the login screen says sign-in did not complete, with the
+    // same fixed reason telemetry gets.
+    const failVisibly = (failureReason: string, exchangeDurationMs?: number) => {
+      callbackError$.next({error: failureReason})
+      return fail(failureReason, exchangeDurationMs)
+    }
+
+    // Report the RFC 6749 error code only. `error_description` is free text from the URL, and
+    // telemetry is no place for it. The login screen shows both: the response was matched to
+    // this tab's request by `state` above, so it is the authorization server's own answer.
+    const error = params.get('error')
+    if (error) {
+      const description = params.get('error_description') ?? undefined
+      debug(
+        'callback: authorization server refused: %s (%s)',
+        error,
+        description ?? 'no description',
+      )
+      const code = OAUTH_ERROR_CODE.test(error) ? error : 'authorization server error'
+      callbackError$.next({error: code, description})
+      return fail(code)
+    }
+
+    // RFC 9207: a response that names an issuer must name this one, or it may be a code from
+    // another authorization server replayed at this Studio. A response without `iss` is accepted,
+    // since the server does not advertise support for it.
+    const iss = params.get('iss')
+    if (iss !== null && iss !== issuer) {
+      debug('callback: iss %s does not match issuer %s, refusing', iss, issuer)
+      return failVisibly('issuer mismatch')
+    }
+
+    // Captured before the exchange, like in `refresh`: a logout while it is out must win.
+    const epoch = sessionEpoch()
+    const exchangeStart = performance.now()
+    let tokens: OAuthTokens
+    try {
+      tokens = toTokens(
+        await endpoints.exchangeCode({
+          clientId,
+          redirectUri: flow.redirectUri,
+          code: params.get('code') as string,
+          codeVerifier: flow.codeVerifier,
+        }),
+        renewBeforeExpiryMs,
+      )
+    } catch (err) {
+      debug('callback: code exchange failed: %s', err instanceof Error ? err.message : err)
+      return failVisibly(exchangeFailureReason(err), Math.round(performance.now() - exchangeStart))
+    }
+    const exchangeDurationMs = Math.round(performance.now() - exchangeStart)
+    debug('callback: code exchanged in %dms, %s', exchangeDurationMs, describeTokens(tokens))
+    // Snapshot before the settle wait, with the same meaning as in `createLegacyAuthStore`.
+    const durationMs = Math.round(performance.now() - startTime)
+
+    settlingSignIn = true
+    try {
+      return await publishAndSettle()
+    } catch (err) {
+      settlingSignIn = false
+      throw err
+    }
+
+    async function publishAndSettle(): Promise<OAuthCallbackResult> {
+      // Under the refresh lock, so a logout or refresh in another tab finishes before this pair
+      // lands, and cannot clear or overwrite it halfway.
+      const published = await withLock(refreshLockName, async () => {
+        if (epoch !== sessionEpoch()) return false
+        const replaced = latestTokens()
+        tokenStorage.update(tokens)
+        // The pair this sign-in replaces is no longer used by any tab. Revoked in the background,
+        // so the sign-in does not wait for it.
+        if (replaced && replaced.refreshToken !== tokens.refreshToken) void revokeTokens(replaced)
+        return true
+      })
+      if (!published) {
+        // The user logged out while the code was being exchanged. The pair is valid on the server
+        // and known only here, so revoke it rather than drop it.
+        debug('callback: logged out during the exchange, revoking the new pair')
+        settlingSignIn = false
+        void revokeTokens(tokens)
+        return fail('logged out during sign-in', exchangeDurationMs)
+      }
+      const {outcome, ...settle} = await waitForProbeOfStoredToken()
+      debug(
+        'callback: probe of the new token %s after %dms, returning to %s',
+        outcome,
+        settle.stateSettleDurationMs,
+        flow.redirectPath ?? 'current path',
+      )
+      if (flow.redirectPath) replaceUrl(flow.redirectPath)
+      // The API refused the new token, also after a renewal, or the probe itself failed: the
+      // sign-in did not complete, and the login screen says so instead of waiting out the timeout.
+      if (outcome === 'refused' || outcome === 'failed') {
+        return {
+          ...failVisibly(
+            outcome === 'refused' ? 'token not accepted' : 'probe failed',
+            exchangeDurationMs,
+          ),
+          ...settle,
+        }
+      }
+
+      return {
+        loginMethod: 'oauth',
+        flow: 'exchange',
+        success: true,
+        durationMs,
+        exchangeDurationMs,
+        ...settle,
+      }
+    }
+  }
+
+  /**
+   * Waits for the first probe of the stored pair, so the AuthBoundary does not open onto a stale
+   * logged-out state, and the callback can tell a refused token from a slow one. Bounded like the
+   * callback settle wait in `createLegacyAuthStore`.
+   *
+   * Matched on a probe of the token now stored, not on `state`: the state replays its last value
+   * and does not emit when the same user signs in again, so a user who was already signed in
+   * would otherwise settle on the previous probe, or never. The token now stored is the exchanged
+   * one, or the one a renewal replaced it with when the API rejected it; a probe of a token that
+   * a renewal has since replaced is not the answer.
+   */
+  async function waitForProbeOfStoredToken(): Promise<{
+    outcome: 'authenticated' | 'refused' | 'failed' | 'timeout'
+    stateSettleDurationMs: number
+    stateSettleTimedOut: boolean
+  }> {
+    const start = performance.now()
+    // Raced as observables, so whichever loses is unsubscribed. A promise race would keep the
+    // subscription alive after a timeout, for a token that may never authenticate. `state` is
+    // subscribed alongside so the probe runs even if nothing else holds the state yet.
+    const outcome = await firstValueFrom(
+      race(
+        merge(
+          probes$.pipe(
+            filter((probe) => probe.accessToken === tokenStorage.get()?.accessToken),
+            map((probe) => {
+              if (probe.failed) return 'failed' as const
+              return probe.state.authenticated ? ('authenticated' as const) : ('refused' as const)
+            }),
+          ),
+          state.pipe(ignoreElements()),
+        ),
+        timer(AUTH_STATE_SETTLE_TIMEOUT_MS).pipe(map(() => 'timeout' as const)),
+      ).pipe(catchError(() => of('failed' as const))),
+    )
+    return {
+      outcome,
+      stateSettleDurationMs: Math.round(performance.now() - start),
+      stateSettleTimedOut: outcome === 'timeout',
+    }
+  }
+
+  /** Best-effort revocation of both tokens (RFC 7009 answers 200 whatever happened). */
+  function revokeTokens(tokens: OAuthTokens): Promise<unknown> {
+    return Promise.allSettled(
+      [tokens.accessToken, tokens.refreshToken]
+        .filter((token): token is string => Boolean(token))
+        .map((token) => endpoints.revoke({clientId, token})),
+    )
+  }
+
+  async function logout(options?: {
+    reason?: 'session-expired' | 'session-not-found'
+  }): Promise<void> {
+    debug('logout requested')
+    sessionGeneration++
+    try {
+      if (supportsLocalStorage) localStorage.setItem(logoutEpochKey, createState())
+    } catch {
+      // Best-effort: when storage refuses the write, only this tab's requests in flight see the
+      // logout.
+    }
+    // Cleared right away, not under the refresh lock: another tab can hold that lock for as long
+    // as a token request takes, and a tab closed while waiting for it would leave the pair for the
+    // next person to open the Studio in this browser. A refresh or code exchange in flight sees
+    // the epoch change above and revokes the pair it obtains instead of storing it.
+    const tokens = latestTokens() ?? tokenStorage.get()
+    if (tokens) tokenStorage.endSession(tokens)
+    clearFlow(flowStorageKey)
+    tokenStorage.update(undefined)
+    // Best-effort and not awaited, like `createLegacyAuthStore`: a forced logout reacting to a 401
+    // revokes tokens that are already dead, and a slow or failed revocation must not keep the
+    // user signed in.
+    if (tokens) {
+      reportSessionEnded(options?.reason ?? 'user-signed-out', tokens)
+      debug('logout: revoking %s', describeTokens(tokens))
+      void revokeTokens(tokens)
+    }
+    debug('logout: done')
+  }
+
+  /**
+   * The lightweight signed-in check: the user `/auth/id` answers for the access token this store
+   * holds, on a plain client. Not on the store's own client, whose request handler would answer a
+   * rejected token with a renewal, and not with the API cookie, which belongs to the project's
+   * other workspaces. Asks again when the access token changes, here or in another tab.
+   */
+  const currentUserId = createAuthIdProbe(
+    accessToken$.pipe(
+      map((accessToken) =>
+        accessToken
+          ? {
+              ...AUTH_CLIENT_OPTIONS,
+              ...hostOptions,
+              projectId,
+              dataset,
+              token: accessToken,
+              ignoreBrowserTokenWarning: true,
+            }
+          : undefined,
+      ),
+    ),
+  )
+
+  return {
+    [OAUTH_AUTH_STORE]: true,
+    handleCallbackUrl,
+    state,
+    token: accessToken$.pipe(map((accessToken) => accessToken ?? null)),
+    LoginComponent: createOAuthLoginComponent({login, callbackError$}),
+    logout,
+    currentUserId,
+    telemetryEvents: telemetryEvents$.asObservable(),
+  }
+}
+
+const defaultEnvironment: OAuthAuthStoreEnvironment &
+  Required<Pick<OAuthAuthStoreEnvironment, 'visible$' | 'isHidden'>> = {
+  getLocation: () => window.location,
+  navigate: (url) => window.location.assign(url),
+  replaceUrl: (path) => window.history.replaceState(window.history.state, '', path),
+  // Browsers without Web Locks fall back to the in-tab single flight in `refresh`.
+  withLock: (name, task) =>
+    typeof navigator !== 'undefined' && navigator.locks
+      ? navigator.locks.request(name, task)
+      : task(),
+  visible$:
+    typeof document === 'undefined'
+      ? EMPTY
+      : fromEvent(document, 'visibilitychange').pipe(
+          filter(() => document.visibilityState === 'visible'),
+        ),
+  isHidden: () => typeof document !== 'undefined' && document.visibilityState === 'hidden',
+  locksAvailable: typeof navigator !== 'undefined' && Boolean(navigator.locks),
+}
+
+/**
+ * @internal
+ */
+export const createOAuthAuthStore: (options: OAuthAuthStoreOptions) => OAuthAuthStore = memoize(
+  (options: OAuthAuthStoreOptions): OAuthAuthStore =>
+    _createOAuthAuthStore({...options, ...defaultEnvironment}),
+  // Same cache key rule as `createLegacyAuthStore`: the lazy getters are runtime wiring, not identity.
+  ({
+    getRequestErrorHandler: _getRequestErrorHandler,
+    getRequestFailureDiagnostics: _getRequestFailureDiagnostics,
+    ...options
+  }: OAuthAuthStoreOptions) => canonicalHash(options),
+)

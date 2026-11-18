@@ -16,7 +16,7 @@ import {
   validateDocumentWithWorkspace,
   validationMarkerCodes,
 } from '../src'
-import {getFallbackLocaleSource} from '../src/_internal'
+import {getFallbackLocaleSource, inferFromSchema} from '../src/_internal'
 import {runValidationTasks} from '../src/validateDocument'
 
 const builtinSchema = SchemaBuilder.compile({name: 'studio', types: builtinTypes})
@@ -1465,5 +1465,104 @@ describe('validateDocument', () => {
     })
 
     expect(peak).toBe(2)
+  })
+})
+
+const builtinStudioSchema = inferFromSchema(builtinSchema)
+
+describe.each([
+  {compile: createSchema, name: 'a compiled schema'},
+  {
+    compile: (types: SchemaTypeDefinition[]) =>
+      inferFromSchema(SchemaBuilder.compile({name: 'test', parent: builtinStudioSchema, types})),
+    name: 'a schema with inferred validation',
+  },
+])('rule levels next to the unknown-field check, with $name', ({compile}) => {
+  it('keeps errors on slug, image and object fields as errors', async () => {
+    const schema = compile([
+      {name: 'meta', type: 'object', fields: [{name: 'note', type: 'string'}]},
+      {
+        name: 'post',
+        type: 'document',
+        fields: [
+          {name: 'title', type: 'string', validation: (rule: Rule) => rule.required()},
+          {name: 'slug', type: 'slug', validation: (rule: Rule) => rule.required()},
+          {name: 'image', type: 'image', validation: (rule: Rule) => rule.required()},
+          {
+            name: 'meta',
+            type: 'meta',
+            validation: (rule: Rule) => [
+              rule.required().error(),
+              rule.custom(() => 'Add a note').warning(),
+            ],
+          },
+        ],
+      },
+    ])
+    const {client, fetch} = createMockClient()
+    // The slug uniqueness query returns `false`, so the slug is taken
+    fetch.mockResolvedValue(false)
+
+    const markers = await validateMarkers({
+      client,
+      document: createDocument({
+        _type: 'post',
+        slug: {_type: 'slug', current: 'hello'},
+        unexpected: true,
+      }),
+      getDocumentExists: async () => true,
+      schema,
+    })
+
+    expect(markers.map(({level, message, path}) => ({level, message, path}))).toEqual(
+      expect.arrayContaining([
+        {level: 'error', message: 'Required', path: ['title']},
+        {level: 'error', message: 'Slug is already in use', path: ['slug']},
+        {level: 'error', message: 'Required', path: ['image']},
+        {level: 'error', message: 'Required', path: ['meta']},
+        {level: 'warning', message: 'Add a note', path: ['meta']},
+        {
+          level: 'warning',
+          message: "Field 'unexpected' does not exist on type 'post'",
+          path: ['unexpected'],
+        },
+      ]),
+    )
+    expect(markers).toHaveLength(6)
+  })
+
+  it('keeps the level of rules set with Rule.fields() and checks the field against its own type', async () => {
+    const schema = compile([
+      {name: 'meta', type: 'object', fields: [{name: 'note', type: 'string'}]},
+      {
+        name: 'post',
+        type: 'document',
+        fields: [
+          {name: 'meta', type: 'meta'},
+          {name: 'image', type: 'image'},
+        ],
+        validation: (rule: Rule) =>
+          rule.fields({
+            meta: (fieldRule) => fieldRule.required(),
+            image: (fieldRule) => fieldRule.required(),
+          }),
+      },
+    ])
+    const {client} = createMockClient()
+
+    const markers = await validateMarkers({
+      client,
+      document: createDocument({_type: 'post', meta: {note: 'Hi', unexpected: true}}),
+      schema,
+    })
+
+    expect(markers.map(({level, message, path}) => ({level, message, path}))).toEqual([
+      {level: 'error', message: 'Required', path: ['image']},
+      {
+        level: 'warning',
+        message: "Field 'unexpected' does not exist on type 'meta'",
+        path: ['meta', 'unexpected'],
+      },
+    ])
   })
 })
