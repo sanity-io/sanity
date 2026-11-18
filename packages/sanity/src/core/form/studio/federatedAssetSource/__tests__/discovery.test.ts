@@ -230,6 +230,8 @@ describe('getCurrentFederatedAssetSourceViews', () => {
   })
 
   describe('when an application is also served by a local dev server', () => {
+    const libraryInterface = assetSourceInterface({name: 'library', moduleId: 'views/library'})
+
     const localMediaLibrary = {
       ...application({
         id: 'local-media',
@@ -237,9 +239,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
         name: 'media-library',
         title: 'Media Library',
         externalUrl: 'http://localhost:3337',
-        activeDeployment: deployment([
-          assetSourceInterface({name: 'library', moduleId: 'views/library'}),
-        ]),
+        activeDeployment: deployment([libraryInterface]),
       }),
       local: {host: 'localhost', port: 3337},
     } as ListedEntry
@@ -252,6 +252,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
       title: 'library',
       remote: {name: 'local-media', entry: 'http://localhost:3337/mf-manifest.json'},
       moduleId: 'local-media/views/library/asset_source',
+      interface: libraryInterface,
     }
 
     it('prefers the local dev server over an installation listed before it', () => {
