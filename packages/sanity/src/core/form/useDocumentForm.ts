@@ -58,6 +58,7 @@ import {EMPTY_ARRAY} from '../util/empty'
 import {getBaseComparisonTarget} from '../util/getTargetDocument'
 import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
+import {getVariantUpstreamId} from './getVariantUpstreamId'
 import {type PatchEvent} from './patch/PatchEvent'
 import {shouldCompareWithBaseVariant} from './shouldCompareWithBaseVariant'
 import {type NodeChronologyProps} from './store/types/nodes'
@@ -246,7 +247,9 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onlyHasVersions,
   ])
 
-  const {validation: validationRaw} = useValidationStatus(value._id, documentType)
+  const {validation: validationRaw} = useValidationStatus(value._id, documentType, {
+    listener: 'document',
+  })
 
   // Validation is computed against the live editable document (draft/published/
   // version). When viewing a historical revision those markers don't describe
@@ -256,20 +259,33 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     isOlderRevision ? (EMPTY_ARRAY as ValidationMarker[]) : validationRaw,
   )
 
-  const {previousId: upstreamId} = useDocumentIdStack({
+  const {previousId: stackUpstreamId} = useDocumentIdStack({
     strict: true,
     displayed: value,
     documentId,
     editState,
   })
+  // A variant's draft and published version have the variant's own upstream, which the id stack,
+  // built on the base pair, cannot see: it would compare them with the base published version.
+  const variantUpstreamId = getVariantUpstreamId(targetDocumentState, value._id)
+  const upstreamId = variantUpstreamId === undefined ? stackUpstreamId : variantUpstreamId
 
   // No `getTargetScopeId(useTargetDocumentState())` here: this targets the upstream document in the document id
   // stack (derived from `upstreamId`), not the document targeted by the selected perspective.
-  const upstreamEditState = useEditState(
+  const upstreamEditStateRaw = useEditState(
     documentId,
     documentType,
     'default',
     getVersionFromId(upstreamId ?? ''),
+  )
+  // With no upstream version at all, nothing is compared: the base pair the edit state falls back
+  // to is not this document's upstream.
+  const upstreamEditState = useMemo(
+    () =>
+      upstreamId === null
+        ? {...upstreamEditStateRaw, draft: null, published: null, version: null}
+        : upstreamEditStateRaw,
+    [upstreamEditStateRaw, upstreamId],
   )
 
   const shouldCompareBaseVariant = shouldCompareWithBaseVariant(

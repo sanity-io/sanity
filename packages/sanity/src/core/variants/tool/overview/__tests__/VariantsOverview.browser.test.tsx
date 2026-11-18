@@ -9,6 +9,7 @@ import {page, userEvent} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
+import {useGlobalListenerStore} from '../../../../store/datastores'
 import {ResourceCacheProvider, useResourceCache} from '../../../../store/ResourceCacheProvider'
 import {useWorkspace} from '../../../../studio/workspace'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../../__fixtures__/variants.fixture'
@@ -45,13 +46,16 @@ const DEFAULT_MODE = Object.assign(Promise.resolve<VariantsMode>('default'), {
 function SeededVariantsStore(props: {children: ReactNode}) {
   const {children} = props
   const workspace = useWorkspace()
+  const globalListenerStore = useGlobalListenerStore()
   const resourceCache = useResourceCache()
   // Seeded during the first render so `useVariantsStore` in the children finds the settled store
-  // instead of creating the real one.
+  // instead of creating the real one. The cache key includes the global listener store: the real
+  // store refetches on its listener, so two global listener stores must not share one variants
+  // store.
   useState(() => {
     resourceCache.set({
       namespace: 'VariantsStore',
-      dependencies: [workspace],
+      dependencies: [workspace, globalListenerStore],
       value: VARIANTS_STORE,
     })
     return null
@@ -101,6 +105,28 @@ describe('VariantsOverview', () => {
     expect(
       page.getByTestId('variant-definitions-table').getByTestId('table-row').elements(),
     ).toHaveLength(2)
+  })
+
+  it('moves focus into the add filter popover and back to its trigger on Escape', async () => {
+    void render(<VariantsOverviewHarness />)
+
+    await expectRowsSettled(2)
+    const trigger = page.getByRole('button', {name: 'Add filter'})
+    await userEvent.click(trigger)
+
+    const search = page.getByLabelText('Find a dimension…')
+    await expect.element(search).toBeVisible()
+    await expect.element(search).toHaveFocus()
+    await expect.element(trigger).toHaveAttribute('aria-expanded', 'true')
+
+    await userEvent.keyboard('{Escape}')
+
+    await expect.element(search).not.toBeVisible()
+    await expect.element(trigger).toHaveFocus()
+    await expect.element(trigger).toHaveAttribute('aria-expanded', 'false')
+
+    await settleChromaticEndState()
+    await expect.element(trigger).toHaveFocus()
   })
 
   it('narrows the list from the search box in the command lane', async () => {

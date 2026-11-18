@@ -325,7 +325,7 @@ Object.entries(expected).forEach(([format, expectedValue]) => {
 })
 
 // Tests for sanitizeTimeZoneKeyId - fixes SAPP-2883
-// The backend key-value API rejects keys containing special characters like `[`, `]`, `=`, and `"`
+// The preferences API rejects keys containing special characters like `[`, `]`, `=`, and `"`
 describe('sanitizeTimeZoneKeyId', () => {
   test('returns simple paths unchanged', () => {
     expect(sanitizeTimeZoneKeyId('myField')).toBe('myField')

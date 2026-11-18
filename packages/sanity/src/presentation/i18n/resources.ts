@@ -2,6 +2,8 @@ import {defineLocalesResources} from 'sanity'
 
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export default defineLocalesResources('presentation', {
+  /** The text shown in the breadcrumb for a document without a title */
+  'document-breadcrumb.untitled.text': 'Untitled',
   /** The title shown above the document list */
   'document-list-pane.document-list.title': 'Documents on this page',
   /** The text shown if the document list is unable to render */
@@ -112,9 +114,16 @@ export default defineLocalesResources('presentation', {
   'share-url.clipboard.status_unsupported': 'Clipboard not supported',
   /** The share URL menu item text for opening a preview window */
   'share-url.menu-item.open.text': 'Open preview',
-  /** Error toast that notifies that URL Preview Secrets can't be generated as the user lacks ACL grants */
-  'preview-url-secret.missing-grants':
-    "You don't have permission to create URL Preview Secrets. This will likely cause the preview to fail loading.",
+  /** The title of the card shown over the preview when the current user can't create the secret that enables preview mode, and preview sharing is off */
+  'preview-frame.missing-permissions.title': "You don't have access to the preview",
+  /** The message of the card shown over the preview when the current user can't create the secret that enables preview mode, and preview sharing is off */
+  'preview-frame.missing-permissions.description':
+    "You don't have permission to open the preview with draft content. Ask a project administrator for a role that can edit documents, or to share this preview.",
+  /** The message of the card shown over the preview when the current user can't create the secret that enables preview mode, and preview sharing is off. `roles` is a list of the user's role titles */
+  'preview-frame.missing-permissions.description_roles':
+    "Your role ({{roles}}) can't open the preview with draft content. Ask a project administrator for a role that can edit documents, or to share this preview.",
+  /** The text shown on the button that dismisses the missing permissions card and shows the preview without draft content */
+  'preview-frame.missing-permissions.continue-button.text': 'Continue without drafts',
   /** The `aria-label` for the button that opens the share menu */
   'preview-frame.share-button.aria-label': 'Share this preview',
   /** The <title> for the QR Code SVG that shows a link to the current preview */

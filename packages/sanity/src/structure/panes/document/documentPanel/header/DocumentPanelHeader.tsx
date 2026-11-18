@@ -63,11 +63,12 @@ const HorizontalScroller = styled(Card)<{$showGradient: boolean}>((props) => {
   const theme = getTheme_v2(props.theme)
 
   return css`
-    scrollbar-width: none;
     z-index: 1;
     flex: 1;
     position: relative;
     > div {
+      /* scrollbar-width is not inherited, so it has to be set on the element that scrolls */
+      scrollbar-width: none;
       &::-webkit-scrollbar {
         width: 0;
         height: 0;

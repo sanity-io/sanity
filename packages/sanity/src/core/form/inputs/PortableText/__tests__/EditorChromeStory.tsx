@@ -1,4 +1,4 @@
-import {EditorProvider, type HotkeyOptions} from '@portabletext/editor'
+import {EditorProvider} from '@portabletext/editor'
 import {sanitySchemaToPortableTextSchema} from '@portabletext/sanity-bridge'
 import {
   type ArraySchemaType,
@@ -17,6 +17,7 @@ import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
 import {useSchema} from '../../../../hooks/useSchema'
 import {PortableTextMemberSchemaTypesProvider} from '../contexts/PortableTextMemberSchemaTypes'
 import {ToolbarCard} from '../Editor.styles'
+import {type PortableTextInputHotkeys} from '../hooks/useHotKeys'
 import {PopoverEditDialog} from '../object/modals/PopoverModal'
 import {Toolbar} from '../toolbar/Toolbar'
 
@@ -49,7 +50,7 @@ const SCHEMA_TYPES = [
   }),
 ]
 
-const NO_HOTKEYS: HotkeyOptions = {}
+const NO_HOTKEYS: PortableTextInputHotkeys = {}
 
 function Toolbars({schemaType}: {schemaType: ArraySchemaType<PortableTextBlock>}) {
   const initialConfig = useMemo(
