@@ -38,6 +38,12 @@ export interface PaneItemPreviewProps {
    * inventory open.
    */
   inventoryChildId?: string
+  /**
+   * With the document group inventory enabled and no row link: no versions popover on hover, as
+   * on search results and reference previews. Set where the row is a link to the document only,
+   * like the delete dialog's list of documents that refer to it.
+   */
+  quietVersionsStatus?: boolean
   icon: ComponentType | false
   layout: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
@@ -60,7 +66,16 @@ const INITIAL_PREVIEW_STATE = {
  * and are rendered by `<SanityDefaultPreview>`.
  */
 export function PaneItemPreview(props: PaneItemPreviewProps) {
-  const {icon, inventoryChildId, layout, presence, schemaType, sortOrder, value} = props
+  const {
+    icon,
+    inventoryChildId,
+    layout,
+    presence,
+    quietVersionsStatus = false,
+    schemaType,
+    sortOrder,
+    value,
+  } = props
   const inventoryEnabled = useWorkspace().beta?.documentGroupInventory?.enabled === true
   const versionsLinkChildId = inventoryEnabled ? inventoryChildId : undefined
 
@@ -140,10 +155,12 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     </TooltipDelayGroupProvider>
   )
 
-  // With the inventory on, the flyout of the row replaces the read-only versions popover.
-  const tooltip = versionsLinkChildId ? undefined : (
-    <DocumentVersionsStatus documentGroupId={publishedId} />
-  )
+  // With the inventory on, the flyout of the row replaces the read-only versions popover, and a
+  // quiet row shows neither.
+  const tooltip =
+    versionsLinkChildId || (inventoryEnabled && quietVersionsStatus) ? undefined : (
+      <DocumentVersionsStatus documentGroupId={publishedId} />
+    )
 
   return (
     <SanityDefaultPreview
