@@ -138,6 +138,8 @@ import type {
   SingleDocReleaseEnabledContextValue,
   SingleDocReleaseUpsellContext,
   SingleDocReleaseUpsellContextValue,
+  SortableItemHandleContext,
+  SortableItemHandleContextValue,
   SortableItemIdContext,
   SourceContext,
   StructureToolContext,
@@ -570,6 +572,12 @@ describe('sanity/_singletons', () => {
   })
   test('SingleDocReleaseUpsellContextValue', () => {
     expectTypeOf<SingleDocReleaseUpsellContextValue>().toBeObject()
+  })
+  test('SortableItemHandleContext', () => {
+    expectTypeOf<typeof SortableItemHandleContext>().not.toBeNever()
+  })
+  test('SortableItemHandleContextValue', () => {
+    expectTypeOf<SortableItemHandleContextValue>().toBeObject()
   })
   test('SortableItemIdContext', () => {
     expectTypeOf<typeof SortableItemIdContext>().not.toBeNever()

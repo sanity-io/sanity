@@ -506,6 +506,7 @@ export {
   useTimeAgo,
 } from '../core/hooks/useTimeAgo'
 export {useTimeZone} from '../core/hooks/useTimeZone'
+// oxlint-disable-next-line no-deprecated -- only the boolean overload is deprecated
 export {useValidationStatus} from '../core/hooks/useValidationStatus'
 export {useVersionRelease} from '../core/hooks/useVersionRelease'
 export {LocaleProvider, LocaleProviderBase} from '../core/i18n/components/LocaleProvider'
@@ -672,7 +673,11 @@ export {
   createMockAuthStore,
   type MockAuthStoreOptions,
 } from '../core/store/auth/mock/createMockAuthStore'
-export {type HandleCallbackResult} from '../core/store/auth/types'
+export {
+  type LegacyCallbackResult,
+  type HandleCallbackResult,
+  type OAuthCallbackResult,
+} from '../core/store/auth/types'
 export {isCookielessCompatibleLoginMethod} from '../core/store/auth/legacy/asserters'
 export {isAuthStore} from '../core/store/auth/utils/asserters'
 export {
@@ -690,6 +695,7 @@ export {
 export {
   useComlinkStore,
   useConnectionStatusStore,
+  // oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
   useKeyValueStore,
   useRenderingContextStore,
 } from '../core/store/datastores'
@@ -793,8 +799,14 @@ export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   useTimelineStore,
 } from '../core/store/history/useTimelineStore'
+// oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
 export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
+// oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
+export {
+  useStudioPreference,
+  useStudioPreferenceList,
+} from '../core/store/preferences/useStudioPreference'
 export {createPresenceStore, getSessionId} from '../core/store/presence/presence-store'
 export {
   type DocumentPresence,

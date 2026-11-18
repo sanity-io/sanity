@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.24.0](https://github.com/sanity-io/sanity/compare/v6.23.0...v6.24.0) (2026-11-17)
+
+### Features
+
+* **core:** read and write Studio preferences through the App SDK ([#16061](https://github.com/sanity-io/sanity/issues/16061)) ([d50d964](https://github.com/sanity-io/sanity/commit/d50d96424b3978196c75d0a291d9725ec85fa67f))
+* **vision:** record adoption of classic query operations ([#16074](https://github.com/sanity-io/sanity/issues/16074)) ([8dd2263](https://github.com/sanity-io/sanity/commit/8dd226352f995c5ddc1e23e8817eea8e15c7df72))
+
+### Bug Fixes
+
+* **deps:** update dependency @sanity/icons to ^5.3.0 ([#16010](https://github.com/sanity-io/sanity/issues/16010)) ([d55268c](https://github.com/sanity-io/sanity/commit/d55268cfd8cf0a76d1fada5daae1df00e2c674ee))
+* **deps:** update dependency @sanity/icons to ^5.4.0 ([#16130](https://github.com/sanity-io/sanity/issues/16130)) ([7c3b7e7](https://github.com/sanity-io/sanity/commit/7c3b7e75df4c7c5304e0c626020995563afdf96c))
+* **deps:** update dependency motion to ^14.12.0 ([#15961](https://github.com/sanity-io/sanity/issues/15961)) ([b06551e](https://github.com/sanity-io/sanity/commit/b06551ee1a48c310e9c213f75f511dd4b1f55f39))
+* **deps:** update dependency motion to ^14.13.0 ([#16054](https://github.com/sanity-io/sanity/issues/16054)) ([dd1106a](https://github.com/sanity-io/sanity/commit/dd1106af21de8d21661ed9e6016a21eb81350280))
+* **deps:** update dependency motion to ^14.14.0 ([#16125](https://github.com/sanity-io/sanity/issues/16125)) ([76ac983](https://github.com/sanity-io/sanity/commit/76ac983a24bc7fb1c46e81f7ed500e3b69219e6d))
+* **deps:** update dependency xstate to ^5.33.4 ([#15938](https://github.com/sanity-io/sanity/issues/15938)) ([91510b1](https://github.com/sanity-io/sanity/commit/91510b17258eec4a18e8ba2d1baf8c34b004ca69))
+* **vision:** match gutter background to editor and only highlight active line number ([#15577](https://github.com/sanity-io/sanity/issues/15577)) ([ca01867](https://github.com/sanity-io/sanity/commit/ca01867f20199060315a2a77405ab92c7877c383))
 ## [6.23.0](https://github.com/sanity-io/sanity/compare/v6.22.0...v6.23.0) (2026-11-10)
 
 ### Features

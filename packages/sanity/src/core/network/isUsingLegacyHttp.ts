@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {defer, firstValueFrom, map, type Observable, of} from 'rxjs'
+import {defer, firstValueFrom, map, type Observable, of, tap} from 'rxjs'
 
 /**
  * The /ping route is special in that it allows any origin to access it, and crucially
@@ -13,10 +13,23 @@ const checkRequestTag = 'protocol-check'
 
 const DEFAULT_TIMEOUT = 2_500
 
-// The background warning is a one-shot check per client. Cache its promise so observable
-// warm-up, remounts, and multiple subscribers cannot start duplicate requests. The detailed
-// diagnostics API below remains uncached so an explicit rerun always captures a fresh result.
-const legacyHttpChecks = new WeakMap<SanityClient, Promise<boolean | undefined>>()
+/**
+ * The API version of the client the protocol check runs with. Callers share it so they share the
+ * client, and with it the cached probe.
+ *
+ * @internal
+ */
+export const PROTOCOL_CHECK_API_VERSION = '2025-03-01'
+
+interface ProtocolCheck {
+  promise: Promise<string>
+  protocol: string | undefined
+}
+
+// The background warning runs a one-shot check per client and telemetry reads its result. Cache it
+// so observable warm-up, remounts, and multiple subscribers cannot start duplicate requests. The
+// detailed diagnostics API below remains uncached so an explicit rerun always captures a fresh result.
+const protocolChecks = new WeakMap<SanityClient, ProtocolCheck>()
 
 /** @internal */
 export interface ApiNetworkResourceTiming {
@@ -62,26 +75,46 @@ export interface ApiNetworkDiagnosticOptions {
  * @internal
  */
 export function isUsingLegacyHttp(client: SanityClient): Observable<boolean | undefined> {
+  return getApiProtocol(client).pipe(
+    map((protocol) => {
+      if (protocol === 'unknown') {
+        return undefined
+      }
+
+      // Typical values are "http/0.9", "http/1.0", "http/1.1", "h2", "h2c", "h3", etc.
+      return protocol.startsWith('http/0') || protocol.startsWith('http/1')
+    }),
+  )
+}
+
+/**
+ * The `nextHopProtocol` the warning's probe found for this client, or `undefined` while the probe
+ * has not run or settled. Never starts a request.
+ *
+ * @internal
+ */
+export function getCachedApiProtocol(client: SanityClient): string | undefined {
+  return protocolChecks.get(client)?.protocol
+}
+
+function getApiProtocol(client: SanityClient): Observable<string> {
   return defer(() => {
-    let check = legacyHttpChecks.get(client)
+    const cachedCheck = protocolChecks.get(client)
+    if (cachedCheck) return cachedCheck.promise
 
-    if (!check) {
-      check = firstValueFrom(
+    const check: ProtocolCheck = {
+      protocol: undefined,
+      promise: firstValueFrom(
         getApiNetworkDiagnostic(client).pipe(
-          map(({protocol}) => {
-            if (protocol === 'unknown') {
-              return undefined
-            }
-
-            // Typical values are "http/0.9", "http/1.0", "http/1.1", "h2", "h2c", "h3", etc.
-            return protocol.startsWith('http/0') || protocol.startsWith('http/1')
+          map((diagnostic) => diagnostic.protocol),
+          tap((protocol) => {
+            check.protocol = protocol
           }),
         ),
-      )
-      legacyHttpChecks.set(client, check)
+      ),
     }
-
-    return check
+    protocolChecks.set(client, check)
+    return check.promise
   })
 }
 

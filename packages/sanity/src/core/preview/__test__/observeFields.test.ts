@@ -143,6 +143,36 @@ describe('observeFields', () => {
     expect(nonNullResults).toHaveLength(documentIds.length)
   })
 
+  it('treats a null query result as missing documents instead of throwing', async () => {
+    const documentIds = ['doc-1', 'doc-2']
+    const client: ClientLike = {
+      observable: {
+        fetch: () => of(null),
+      },
+      withConfig: () => client,
+    }
+    const invalidationChannel = new Subject<InvalidationChannelEvent>()
+    const observeFields = createObserveFields({
+      invalidationChannel,
+      client: client as unknown as SanityClient,
+    })
+
+    const results: Record<string, unknown> = {}
+    const subscriptions = documentIds.map((id) =>
+      observeFields(id, ['title'])
+        .pipe(take(1))
+        .subscribe((value) => {
+          results[id] = value
+        }),
+    )
+
+    invalidationChannel.next({type: 'connected'})
+    await new Promise((resolve) => setTimeout(resolve, 200))
+    subscriptions.forEach((sub) => sub.unsubscribe())
+
+    expect(results).toEqual({'doc-1': null, 'doc-2': null})
+  })
+
   it('should merge results correctly when selections are chunked (multiple chunks)', async () => {
     // Create IDs that will trigger chunking when batched together
     // Each ID is ~1000 chars, so 15 IDs will exceed MAX_DOCUMENT_ID_CHUNK_SIZE (11164)

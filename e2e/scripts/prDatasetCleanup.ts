@@ -3,8 +3,8 @@
  *
  * A workflow run creates `pr-<number>-chromium-<run-id>` and
  * `pr-<number>-firefox-<run-id>`. Run ids increase, so an open pull request
- * keeps the datasets from its highest run id when that run is younger than 5
- * days, and deletes every earlier run. A run that is 5 days old or older is
+ * keeps the datasets from its highest run id when that run is younger than 3
+ * days, and deletes every earlier run. A run that is 3 days old or older is
  * deleted even when the pull request is still open. A closed pull request loses
  * all of them. `-comments` addons are left alone: deleting the dataset they
  * attach to removes them.

@@ -64,7 +64,7 @@ export const useSchedulePublishAction: DocumentActionComponent = (
   const validationTargetId = isVariantSelected
     ? (variantDraftId ?? resolvedTargetId ?? getDraftId(id))
     : getDraftId(id)
-  const validationStatus = useValidationStatus(validationTargetId, type)
+  const validationStatus = useValidationStatus(validationTargetId, type, {listener: 'document'})
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
 
   // Check if the document (or the selected variant) has versions in cardinality one releases

@@ -42,9 +42,7 @@ const getCompanionDocs = memoize(
     client: SanityClient,
     previewStore: DocumentPreviewStore,
   ): Observable<CompanionDocs> => {
-    const allVersionIds$ = previewStore
-      .unstable_observeDocumentIdSet(`sanity::versionOf($publishedId)`, {publishedId})
-      .pipe(map((result) => result.documentIds))
+    const allVersionIds$ = previewStore.unstable_observeVersionDocumentIds(publishedId)
 
     const companionDocsIdsListener$ = allVersionIds$.pipe(
       switchMap((versionIds) =>
