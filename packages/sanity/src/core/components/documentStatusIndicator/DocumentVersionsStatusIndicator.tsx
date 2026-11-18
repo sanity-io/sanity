@@ -2,13 +2,13 @@ import {type ReactNode} from 'react'
 import {styled} from 'styled-components'
 import {Flex, Icon} from 'ui5'
 
+import {VariantMark} from '../../../ui-components/variantMark'
 import {getDefaultVariant} from '../../perspective/getDefaultVariant'
 import {type TargetPerspective} from '../../perspective/types'
 import {usePerspective} from '../../perspective/usePerspective'
 import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {CircleSmallIcon} from '../temporary-icons/CircleSmall'
-import {RhombusIcon} from '../temporary-icons/Rhombus'
 import {RingIcon} from '../temporary-icons/Ring'
 import {type DocumentStatusIconKind, resolveDocumentStatusIcons} from './resolveDocumentStatusIcons'
 
@@ -67,7 +67,7 @@ function IconSlot({
 function VariantIcon() {
   return (
     <IconSlot status="variant">
-      <Icon icon={RhombusIcon} size={2} />
+      <VariantMark size="inline" />
     </IconSlot>
   )
 }
