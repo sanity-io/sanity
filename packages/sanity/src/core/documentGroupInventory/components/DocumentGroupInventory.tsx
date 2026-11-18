@@ -46,6 +46,7 @@ import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
 import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
+import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
 import {deletionMachine, type ReferringDocuments} from '../machines/deletionMachine'
@@ -70,6 +71,7 @@ import {
   getRowToggle,
   getSetSelection,
   type RangeAnchor,
+  SELECTION_BLOCKED_GROUP_KEYS,
   SELECTION_BLOCKED_REASON_KEYS,
   type SelectionBlockedReason,
 } from '../utils/selection'
@@ -87,6 +89,7 @@ import {DocumentGroupEntry, resolveVariantRelease} from './DocumentGroupEntry'
 import {DocumentGroupSet} from './DocumentGroupSet'
 import {InventoryHeader} from './InventoryHeader'
 import {PendingDraftEntry} from './PendingDraftEntry'
+import {ScheduleDraftAction} from './ScheduleDraftAction'
 import {UnscheduleReleaseAction} from './UnscheduleReleaseAction'
 import {useVariantPendingReleases} from './useVariantPendingReleases'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
@@ -582,19 +585,25 @@ const Select: ComponentType<{
             locked={isLocked}
             containsOpen={Boolean(set.pending) || set.variants.some(({id}) => id === selectedId)}
             selectionState={setSelection.state}
-            // A scheduled release's set: a lock in place of the checkbox, the reason on hover, and a
-            // way to unschedule the release, rather than a second line under the name
+            // A scheduled release's or scheduled draft's set: a lock in place of the checkbox, the
+            // reason on hover, and a way to unschedule (or pause) it, rather than a second line
+            // under the name
             blockedReason={
-              setSelection.groupBlockedReason === 'scheduled-release'
-                ? t('document-group.select.blocked.scheduled-release-group')
+              setSelection.groupBlockedReason
+                ? t(SELECTION_BLOCKED_GROUP_KEYS[setSelection.groupBlockedReason])
                 : undefined
             }
             headerActions={
+              // Scheduled: a way to unschedule (pause). A paused scheduled draft: a way to
+              // schedule it again, so both directions happen where the lock shows
               !readOnly &&
-              setSelection.groupBlockedReason === 'scheduled-release' &&
               set.bundle?.type === 'perspective' &&
               isReleaseDocument(set.bundle.perspective) ? (
-                <UnscheduleReleaseAction release={set.bundle.perspective} />
+                setSelection.groupBlockedReason !== undefined ? (
+                  <UnscheduleReleaseAction release={set.bundle.perspective} />
+                ) : isPausedCardinalityOneRelease(set.bundle.perspective) ? (
+                  <ScheduleDraftAction release={set.bundle.perspective} />
+                ) : undefined
               ) : undefined
             }
             onCheckedChange={(checked) =>
