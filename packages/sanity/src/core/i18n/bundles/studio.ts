@@ -1002,6 +1002,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The tooltip on the lock of a set header whose release is scheduled, so none of its versions can be selected */
   'document-group.select.blocked.scheduled-release-group':
     'Scheduled · unschedule the release to change these versions',
+  /** Why a version in a scheduled draft (a release of one document) cannot be selected for deletion in the document group inventory */
+  'document-group.select.blocked.scheduled-draft':
+    'Scheduled to publish · pause the schedule to change this version',
+  /** The tooltip on the lock of a set header whose scheduled draft is scheduled, so none of its versions can be selected */
+  'document-group.select.blocked.scheduled-draft-group':
+    'Scheduled to publish · pause the schedule to change these versions',
   /** The action in the header of a scheduled release's set in the inventory: opens a dialog that unschedules the release */
   'document-group.release.unschedule.action': 'Unschedule',
   /** The tooltip of that action */
@@ -1016,6 +1022,26 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.release.unschedule.confirm': 'Unschedule release',
   /** The toast when unscheduling a release from the inventory fails. `title` is the release's title */
   'document-group.release.unschedule.error': 'Could not unschedule {{title}}',
+  /** The action in the header of a scheduled draft's set in the inventory: opens a dialog that pauses its schedule, as Studio calls unscheduling a scheduled draft */
+  'document-group.scheduled-draft.pause.action': 'Pause',
+  /** The tooltip of that action */
+  'document-group.scheduled-draft.pause.tooltip':
+    'Pause the schedule so this document can be changed',
+  /** The title of the dialog that pauses a scheduled draft from the inventory */
+  'document-group.scheduled-draft.pause.title': 'Pause the scheduled publish?',
+  /** The text of that dialog: only this document is affected, and the publish date is kept */
+  'document-group.scheduled-draft.pause.description':
+    'This document stops being scheduled. Its publish date is kept, so you can schedule it again from Scheduled drafts.',
+  /** The confirm button of that dialog */
+  'document-group.scheduled-draft.pause.confirm': 'Pause schedule',
+  /** The toast when pausing a scheduled draft from the inventory fails */
+  'document-group.scheduled-draft.pause.error': 'Could not pause the scheduled publish',
+  /** The action in the header of a paused scheduled draft's set in the inventory: opens the schedule dialog to schedule it again */
+  'document-group.scheduled-draft.schedule.action': 'Schedule',
+  /** The tooltip of that action */
+  'document-group.scheduled-draft.schedule.tooltip': 'Schedule this document to publish again',
+  /** The toast when scheduling a paused scheduled draft from the inventory fails */
+  'document-group.scheduled-draft.schedule.error': 'Could not schedule the publish',
   /** The number of variants currently selected in the document group inventory */
   'document-group.selected-count': '{{count}} selected',
   /** Last line of the document versions popover, counting the versions it does not list (singular) */

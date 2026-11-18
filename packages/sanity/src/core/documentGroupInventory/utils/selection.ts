@@ -1,6 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 
 import {isReleaseScheduledOrScheduling} from '../../releases/util/util'
+import {isCardinalityOneRelease} from '../../util/releaseUtils'
 
 /**
  * The state of a group checkbox, from the rows it governs. It follows the Releases tool's
@@ -57,7 +58,7 @@ export function getRangeIds(
  *
  * @internal
  */
-export type SelectionBlockedReason = 'scheduled-release'
+export type SelectionBlockedReason = 'scheduled-release' | 'scheduled-draft'
 
 /**
  * The words for each reason a version cannot be selected, as studio locale keys.
@@ -66,6 +67,7 @@ export type SelectionBlockedReason = 'scheduled-release'
  */
 export const SELECTION_BLOCKED_REASON_KEYS = {
   'scheduled-release': 'document-group.select.blocked.scheduled-release',
+  'scheduled-draft': 'document-group.select.blocked.scheduled-draft',
 } as const satisfies Record<SelectionBlockedReason, string>
 
 /**
@@ -76,6 +78,18 @@ export const SELECTION_BLOCKED_REASON_KEYS = {
  */
 export const SELECTION_BLOCKED_NOTE_KEYS = {
   'scheduled-release': 'document-group.select.blocked.scheduled-release-note',
+  'scheduled-draft': 'document-group.select.blocked.scheduled-release-note',
+} as const satisfies Record<SelectionBlockedReason, string>
+
+/**
+ * The words for a set header whose versions are all blocked, as studio locale keys: the lock's
+ * tooltip.
+ *
+ * @internal
+ */
+export const SELECTION_BLOCKED_GROUP_KEYS = {
+  'scheduled-release': 'document-group.select.blocked.scheduled-release-group',
+  'scheduled-draft': 'document-group.select.blocked.scheduled-draft-group',
 } as const satisfies Record<SelectionBlockedReason, string>
 
 /**
@@ -84,7 +98,10 @@ export const SELECTION_BLOCKED_NOTE_KEYS = {
 export function getSelectionBlockedReason(
   release: ReleaseDocument | undefined,
 ): SelectionBlockedReason | undefined {
-  return release && isReleaseScheduledOrScheduling(release) ? 'scheduled-release' : undefined
+  if (!release || !isReleaseScheduledOrScheduling(release)) return undefined
+  // A scheduled draft (a release of one document) is paused, not unscheduled, in the words the
+  // rest of Studio uses for it
+  return isCardinalityOneRelease(release) ? 'scheduled-draft' : 'scheduled-release'
 }
 
 /**

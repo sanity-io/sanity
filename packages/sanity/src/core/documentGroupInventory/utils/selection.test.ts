@@ -37,6 +37,16 @@ describe('getSelectionBlockedReason', () => {
     expect(getSelectionBlockedReason(activeASAPRelease)).toBeUndefined()
     expect(getSelectionBlockedReason(undefined)).toBeUndefined()
   })
+
+  it('names a scheduled draft apart, since Studio pauses it rather than unscheduling it', () => {
+    const scheduledDraft: ReleaseDocument = {
+      ...scheduledRelease,
+      metadata: {...scheduledRelease.metadata, cardinality: 'one'},
+    }
+    const pausedDraft: ReleaseDocument = {...scheduledDraft, state: 'active'}
+    expect(getSelectionBlockedReason(scheduledDraft)).toBe('scheduled-draft')
+    expect(getSelectionBlockedReason(pausedDraft)).toBeUndefined()
+  })
 })
 
 describe('getSetSelection', () => {
