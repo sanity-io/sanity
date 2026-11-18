@@ -34,7 +34,7 @@ const published: VersionInfoDocumentStub = {
 }
 
 describe('ReferencePreview', () => {
-  it('shows no variant diamond, filled or outline, while a variant is selected', async () => {
+  it('ends with the outline diamond when the referenced document has no version for the selected variant', async () => {
     mockUsePerspective.mockReturnValue({
       ...usePerspectiveMockReturn,
       selectedVariants: [variantAlphaAudience],
@@ -58,10 +58,9 @@ describe('ReferencePreview', () => {
       {wrapper},
     )
 
-    // The document is not in the variant: a document list would end the row with the outline
-    // diamond; the reference shows only the published mark
+    // The document is not in the variant, so the reference says it shows Default, as a list row does
     expect(container.querySelector('[data-sanity-icon="circle-small"]')).not.toBeNull()
-    expect(container.querySelector('[data-sanity-icon="rhombus-outline"]')).toBeNull()
+    expect(container.querySelector('[data-sanity-icon="rhombus-outline"]')).not.toBeNull()
     expect(container.querySelector('[data-sanity-icon="rhombus"]')).toBeNull()
   })
 
