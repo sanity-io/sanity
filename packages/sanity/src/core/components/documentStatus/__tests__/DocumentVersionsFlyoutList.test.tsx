@@ -60,17 +60,23 @@ describe('DocumentVersionsFlyoutList footer', () => {
     })
   })
 
-  it('leaves the footer out for a document with only Published and Draft', async () => {
+  it('offers Manage versions for a document with only Published and Draft', async () => {
     await renderList([version(GROUP_ID), version(`drafts.${GROUP_ID}`, 'drafts')])
-    expect(await screen.findByTestId('document-versions-flyout')).toBeTruthy()
-    expect(screen.queryByTestId('document-versions-flyout-inventory')).toBeNull()
+    const footer = await screen.findByTestId('document-versions-flyout-inventory')
+    expect(footer.textContent).toBe('Manage versions')
     expect(screen.queryByText('See all versions in the inventory')).toBeNull()
   })
 
-  it('leaves the footer out for a draft alone', async () => {
+  it('offers Manage versions for a published document alone, as on a live-edit type', async () => {
+    await renderList([version(GROUP_ID)])
+    const footer = await screen.findByTestId('document-versions-flyout-inventory')
+    expect(footer.textContent).toBe('Manage versions')
+  })
+
+  it('offers Manage versions for a draft alone', async () => {
     await renderList([version(`drafts.${GROUP_ID}`, 'drafts')])
-    expect(await screen.findByTestId('document-versions-flyout')).toBeTruthy()
-    expect(screen.queryByTestId('document-versions-flyout-inventory')).toBeNull()
+    const footer = await screen.findByTestId('document-versions-flyout-inventory')
+    expect(footer.textContent).toBe('Manage versions')
   })
 
   it('offers to see all versions, without a count, when the document is in a release', async () => {
@@ -81,7 +87,7 @@ describe('DocumentVersionsFlyoutList footer', () => {
     ])
     expect(await screen.findByText('See all versions in the inventory')).toBeTruthy()
     expect(screen.queryByText(/\d more/)).toBeNull()
-    expect(screen.queryByText('Manage versions in inventory')).toBeNull()
+    expect(screen.queryByText('Manage versions')).toBeNull()
   })
 
   it('shows a loading state, not an empty panel, while the versions load', async () => {
