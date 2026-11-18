@@ -71,6 +71,9 @@ interface DiffViewPaneProps {
     type: string
     id: string
   }
+  /** Opens the Changes and History panel; the change bars on this side open it. */
+  onOpenReviewChanges?: () => void
+  isReviewChangesOpen?: boolean
 }
 
 export function DiffViewPane({
@@ -81,6 +84,8 @@ export function DiffViewPane({
   scrollElement,
   syncChannel,
   compareDocument,
+  onOpenReviewChanges,
+  isReviewChangesOpen = false,
 }: DiffViewPaneProps & RefAttributes<HTMLDivElement>) {
   const containerElement = useRef<HTMLDivElement | null>(null)
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
@@ -106,12 +111,12 @@ export function DiffViewPane({
   return (
     <ReviewChangesContext.Provider
       value={{
-        // Render the change indicators inertly, because the diff view modal does not currently
-        // provide a way to display document inspectors.
-        isInteractive: false,
-        onOpenReviewChanges: noop,
+        // The Comparing with side's change bars open the Changes and History panel. The Reference
+        // side has no marks, so its bars stay inert.
+        isInteractive: Boolean(onOpenReviewChanges),
+        onOpenReviewChanges: onOpenReviewChanges ?? noop,
         onSetFocus: noop,
-        isReviewChangesOpen: false,
+        isReviewChangesOpen,
       }}
     >
       <ChangeIndicatorsTracker>
@@ -294,7 +299,9 @@ type UseCompareValueOptions = Pick<DiffViewPaneProps, 'compareDocument'>
 /**
  * Fetch the contents of `compareDocument` for comparison with another version of the document.
  */
-function useCompareValue({compareDocument}: UseCompareValueOptions): SanityDocument | undefined {
+export function useCompareValue({
+  compareDocument,
+}: UseCompareValueOptions): SanityDocument | undefined {
   // No `getTargetScopeId(useTargetDocumentState())` here: the version is derived from the specific
   // compare-document id being diffed, not from the selected perspective.
   const compareDocumentEditState = useEditState(
