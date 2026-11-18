@@ -55,6 +55,20 @@ export default defineType({
       title: 'Title',
       type: 'string',
     },
+    // A hidden field renders nothing, not even the missing keys alert when its items lack `_key`
+    defineField({
+      name: 'hiddenArrayOfObjects',
+      title: 'Hidden array of objects',
+      type: 'array',
+      hidden: true,
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'hiddenItem',
+          fields: [defineField({name: 'title', type: 'string'})],
+        }),
+      ],
+    }),
     // Example demonstrating schema validation error for issue #3631
     // This array contains multiple types that resolve to JSON type "string"
     // which is not allowed because there's no way to distinguish between them

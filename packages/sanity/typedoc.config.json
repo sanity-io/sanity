@@ -6,6 +6,7 @@
     "./src/_exports/structure.ts",
     "./src/_exports/presentation.ts",
     "./src/_exports/router.ts",
+    "./src/_exports/i18n.ts",
     "./src/_exports/media-library.ts"
   ],
   "entryPointStrategy": "expand",
