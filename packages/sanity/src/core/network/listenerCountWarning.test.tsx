@@ -185,27 +185,47 @@ describe('listener count warning', () => {
     const attributedClient = listenerCountWarning.attributeListeners(createFakeClient())
     const subscriber = getListenerCountSubscriber()
 
-    render(<Parent client={attributedClient} />)
+    render(
+      <>
+        {Array.from({length: ABOVE_THRESHOLD}, (_value, index) => (
+          <Parent key={index} client={attributedClient} />
+        ))}
+      </>,
+    )
     subscriber({open: ABOVE_THRESHOLD, peak: ABOVE_THRESHOLD})
 
-    expect(warnSpy.mock.calls[0]?.[0]).toContain('and 1 of them come from <Parent>.')
+    expect(warnSpy.mock.calls[0]?.[0]).toContain(
+      `and ${ABOVE_THRESHOLD} of them come from <Parent>.`,
+    )
   })
 
   it('attributes subscriptions on a derived observable client', () => {
     const attributedClient = listenerCountWarning.attributeListeners(createFakeClient())
     const subscriber = getListenerCountSubscriber()
-    const subscription = attributedClient.observable
+    const derivedObservableClient = attributedClient.observable
       .withConfig({apiVersion: '2025-02-07'})
       .withConfig({apiVersion: '2025-06-01'})
-      .listen('*', {}, {tag: 'derived-source'})
-      .subscribe()
+    const subscriptions = Array.from({length: ABOVE_THRESHOLD}, () =>
+      derivedObservableClient.listen('*', {}, {tag: 'derived-source'}).subscribe(),
+    )
 
     subscriber({open: ABOVE_THRESHOLD, peak: ABOVE_THRESHOLD})
 
     expect(warnSpy.mock.calls[0]?.[0]).toContain(
-      'and 1 of them come from listeners tagged "derived-source".',
+      `and ${ABOVE_THRESHOLD} of them come from listeners tagged "derived-source".`,
     )
-    subscription.unsubscribe()
+    subscriptions.forEach((subscription) => subscription.unsubscribe())
+  })
+
+  it('names no source when the unlabelled listeners outnumber the biggest source', () => {
+    const attribution = new Map([
+      ['<TasksStudioLayout> (tag "addon-dataset.listen")', 2],
+      ['listeners tagged "other"', 2],
+    ])
+
+    expect(listenerCountWarning.buildListenerWarningMessage(ABOVE_THRESHOLD, attribution)).toBe(
+      `[sanity] This tab has ${ABOVE_THRESHOLD} open listeners. A Studio tab usually has about 12. Too many can stall requests in every open Studio tab.`,
+    )
   })
 
   it('returns a client without observable.withConfig unchanged', () => {

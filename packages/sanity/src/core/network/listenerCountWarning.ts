@@ -241,9 +241,15 @@ export function buildListenerWarningMessage(
   attribution: ReadonlyMap<string, number>,
 ): string {
   const topSource = findTopSource(attribution)
-  const sourceClause = topSource
-    ? `, and ${topSource.count} of them come from ${topSource.label}`
-    : ''
+  const attributedCount = Array.from(attribution.values()).reduce(
+    (total, count) => total + count,
+    0,
+  )
+  const unlabelledCount = open - attributedCount
+  const sourceClause =
+    topSource && topSource.count > unlabelledCount
+      ? `, and ${topSource.count} of them come from ${topSource.label}`
+      : ''
   return `[sanity] This tab has ${open} open listeners${sourceClause}. A Studio tab usually has about ${TYPICAL_STUDIO_TAB_LISTENER_COUNT}. Too many can stall requests in every open Studio tab.`
 }
 
