@@ -1,6 +1,6 @@
-import {expect, type Request} from '@playwright/test'
+import {expect} from '@playwright/test'
 
-import {clearKeyValueKey} from '../../helpers/clearKeyValueKey'
+import {clearPreference, isPreferenceWrite} from '../../helpers/preferences'
 import {test} from '../../studio-test'
 
 const SEARCH_KEY = 'studio.search.recent'
@@ -10,7 +10,7 @@ interface StoredSearchItem {
   terms: {query: string}
 }
 
-interface KeyValuePair {
+interface StoredSearchPreference {
   key: string
   value: {recentSearches: StoredSearchItem[]}
 }
@@ -59,11 +59,11 @@ test('searching creates unique saved searches', async ({page, sanityClient, _tes
     title,
   })
 
-  // Recent searches are stored per user in the server key-value store, so they
+  // Recent searches are stored per user in the preferences API, so they
   // outlive the browser context and are shared with previous runs and retries.
   // Clear them before the studio loads, so no reload is needed to pick the
   // cleared state up.
-  await clearKeyValueKey(sanityClient, storedSearchKey)
+  await clearPreference(sanityClient, storedSearchKey)
 
   // The studio only re-runs a search when the terms change, so a document that
   // isn't matchable yet is missing from the results for as long as the query
@@ -84,14 +84,6 @@ test('searching creates unique saved searches', async ({page, sanityClient, _tes
   const searchInput = page.getByPlaceholder('Search', {exact: true})
   const searchResults = page.getByTestId('search-results')
   const seededResult = searchResults.getByRole('option', {name: title}).first()
-
-  function isStoredSearchWrite(request: Request): boolean {
-    if (request.method() !== 'PUT' || !request.url().includes('/users/me/keyvalue')) {
-      return false
-    }
-    const body: {key?: string}[] | null = request.postDataJSON()
-    return Array.isArray(body) && body[0]?.key === storedSearchKey
-  }
 
   /**
    * Opens the search popover, unless it is already open: clicking the button
@@ -133,15 +125,15 @@ test('searching creates unique saved searches', async ({page, sanityClient, _tes
     // the studio rebuilds recent searches from the value it last saw, so the
     // next search must not start before this write has come back.
     const storedSearchWrite = page.waitForResponse(
-      (response) => isStoredSearchWrite(response.request()),
+      (response) => isPreferenceWrite(response, storedSearchKey),
       {timeout: 30_000},
     )
     await seededResult.click()
-    const written: KeyValuePair[] = await (await storedSearchWrite).json()
+    const written: StoredSearchPreference = await (await storedSearchWrite).json()
 
     await expect(searchInput).toBeHidden()
 
-    return written[0].value.recentSearches
+    return written.value.recentSearches
   }
 
   expect(queriesOf(await performSearch(firstQuery))).toEqual([firstQuery])

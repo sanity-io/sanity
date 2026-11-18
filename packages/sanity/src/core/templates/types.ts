@@ -73,7 +73,7 @@ export interface Template<Params = any, Value = any> {
  * omitted from the authoring type.
  *
  * @hidden
- * @beta
+ * @public
  */
 export interface ResolvedTemplate<Params = any, Value = any> extends Template<Params, Value> {
   /**

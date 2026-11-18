@@ -38,7 +38,7 @@ import {getCalendarLabels, isValidDate} from './utils'
 
 /**
  * Sanitizes an input ID for use in timezone storage keys.
- * The backend key-value API rejects keys containing special characters like `[`, `]`, `=`, and `"`.
+ * The preferences API rejects keys containing special characters like `[`, `]`, `=`, and `"`.
  * This function parses the path string and converts it to a safe format using dots and "key-" prefix.
  *
  * @internal
@@ -181,7 +181,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
       type: 'input' as TimeZoneScopeType,
       defaultTimeZone: displayTimeZone,
       // we want to make sure that if allowTimeZoneSwitch is switched to false that we respect the default only
-      // sanitize the id to remove special characters that the backend key-value API rejects
+      // sanitize the id to remove special characters that the preferences API rejects
       id: `${published}.${sanitizeTimeZoneKeyId(id)}${allowTimeZoneSwitch ? '' : '.fixed'}`,
       relativeDate: value ? new Date(value) : undefined,
     }),

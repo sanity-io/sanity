@@ -104,6 +104,8 @@ export function tasksReducer(
     }
 
     case 'TASK_DELETED': {
+      if (!Object.hasOwn(state.tasks, action.id)) return state
+
       const {[action.id]: _, ...restTasks} = state.tasks
 
       return {

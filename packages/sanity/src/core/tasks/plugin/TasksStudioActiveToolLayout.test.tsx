@@ -1,15 +1,24 @@
-import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
+import {LayerProvider, studioTheme, ThemeProvider, useMediaIndex} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
 import {act} from 'react'
 import {TasksModePromiseContext, TasksNavigationContext} from 'sanity/_singletons'
-import {describe, expect, it, vi} from 'vitest'
+import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {type Tool} from '../../config/types'
 import {type TasksMode} from '../context/enabled/types'
 import {type TasksNavigationContextValue} from '../context/navigation/types'
 import TasksStudioActiveToolLayout from './TasksStudioActiveToolLayout'
 
+vi.mock(import('@sanity/ui'), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {...actual, useMediaIndex: vi.fn(() => 2)}
+})
+
 const tool: Tool = {name: 'structure', title: 'Structure', component: () => null}
+
+afterEach(() => {
+  vi.mocked(useMediaIndex).mockReturnValue(2)
+})
 
 const openSidebar = {
   state: {
@@ -53,5 +62,34 @@ describe('TasksStudioActiveToolLayout', () => {
 
     expect(screen.getByTestId('tool')).toBeInTheDocument()
     expect(screen.getByTestId('tasks-sidebar-loading')).toBeInTheDocument()
+  })
+
+  it('locks the structure pane layout while the fullscreen sidebar is open', async () => {
+    vi.mocked(useMediaIndex).mockReturnValue(0)
+    const pending = new Promise<TasksMode>(() => {})
+
+    // oxlint-disable-next-line testing-library/no-unnecessary-act -- the sidebar suspends on the mode promise
+    await act(async () => {
+      render(
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        <ThemeProvider theme={studioTheme}>
+          <style>{'.scrolls { overflow: auto }'}</style>
+          <LayerProvider>
+            <TasksModePromiseContext value={pending}>
+              <TasksNavigationContext value={openSidebar}>
+                <TasksStudioActiveToolLayout
+                  activeTool={tool}
+                  renderDefault={() => (
+                    <div className="scrolls" data-testid="pane-layout" data-ui="PaneLayout" />
+                  )}
+                />
+              </TasksNavigationContext>
+            </TasksModePromiseContext>
+          </LayerProvider>
+        </ThemeProvider>,
+      )
+    })
+
+    expect(getComputedStyle(screen.getByTestId('pane-layout')).overflow).toBe('hidden')
   })
 })

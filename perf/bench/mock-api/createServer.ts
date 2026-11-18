@@ -128,30 +128,6 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
       return
     }
     if (path.startsWith('/users/me')) {
-      const keyvalueMatch = path.match(/^\/users\/me\/keyvalue(?:\/(.*))?$/)
-      if (keyvalueMatch) {
-        // UI-state persistence (serverStorage.ts). GET answers null for every
-        // requested key; PUT echoes the submitted pairs. Nothing persists —
-        // sessions must not inherit UI state from each other.
-        if (method === 'GET') {
-          const keys = decodeURIComponent(keyvalueMatch[1] ?? '')
-            .split(',')
-            .filter(Boolean)
-          record(
-            'keyvalue',
-            json(
-              req,
-              res,
-              200,
-              keys.map((key) => ({key, value: null})),
-            ),
-          )
-          return
-        }
-        const body = JSON.parse((await readBody(req)).toString('utf8'))
-        record('keyvalue', json(req, res, 200, body))
-        return
-      }
       ledger.recordUnexpected(method, rawPath)
       record('auth', json(req, res, 404, {error: 'not implemented in bench mock'}))
       return
@@ -173,6 +149,33 @@ export function createMockApi(config: MockApiConfig): MockApiServer {
     const aclMatch = path.match(/^\/projects\/([^/]+)\/datasets\/([^/]+)\/acl$/)
     if (aclMatch) {
       record('project', json(req, res, 200, DATASET_ACL))
+      return
+    }
+    // UI-state persistence through the App SDK's preferences. Nothing is stored and writes are
+    // echoed: sessions must not inherit UI state from each other.
+    const preferencesMatch = path.match(
+      /^\/projects\/[^/]+\/users\/me\/preferences(?:\/([^/]+)(\/items(?:\/[^/]+)?)?)?$/,
+    )
+    if (preferencesMatch) {
+      const [, key, items] = preferencesMatch
+      const unset = (name: string) => ({key: name, activeValue: null, activeLevel: 'default'})
+      if (items) {
+        record('preferences', json(req, res, 200, {data: [], nextCursor: null}))
+        return
+      }
+      if (method === 'PUT') {
+        const {value} = JSON.parse((await readBody(req)).toString('utf8')) as {value: unknown}
+        record(
+          'preferences',
+          json(req, res, 200, {key, value, activeValue: value, activeLevel: 'user@project'}),
+        )
+        return
+      }
+      if (key) {
+        record('preferences', json(req, res, 200, unset(decodeURIComponent(key))))
+        return
+      }
+      record('preferences', json(req, res, 200, {data: url.searchParams.getAll('keys').map(unset)}))
       return
     }
     const projectSubMatch = path.match(/^\/projects\/([^/]+)(\/.*)?$/)
