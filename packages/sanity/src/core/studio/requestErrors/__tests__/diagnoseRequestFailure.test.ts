@@ -59,6 +59,16 @@ describe('createRequestFailureProbe', () => {
     expect(await probe(err)).toEqual({type: 'dataset-not-found'})
   })
 
+  it('classifies a 402 Project Disabled error', async () => {
+    const probe = createRequestFailureProbe(fakeClient(), makeCache())
+    const err = clientError(402, {
+      statusCode: 402,
+      message: 'This project has been disabled by a project administrator',
+      error: 'Project Disabled',
+    })
+    expect(await probe(err)).toEqual({type: 'project-disabled'})
+  })
+
   it('probes /check/cors on a network error and reports project-not-found', async () => {
     mockCorsFetch(404, {errorCode: 'SIO-404-PNF', message: 'Project not found'})
     const probe = createRequestFailureProbe(fakeClient(), makeCache())

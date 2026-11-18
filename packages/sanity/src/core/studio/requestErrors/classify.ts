@@ -104,11 +104,11 @@ export function classifyRequestError(err: unknown): RequestErrorClassification |
 
 /**
  * A workspace-level configuration error: the project or dataset the
- * studio is pointed at doesn't exist. Unlike the infrastructure errors
- * above, these are not transient and not recoverable by retry — the user
- * has to fix `projectId`/`dataset` in their config (or create the missing
- * resource). The studio surfaces these as a full-screen takeover rather
- * than the retry/reload dialog.
+ * studio is pointed at doesn't exist, or the project is disabled. Unlike
+ * the infrastructure errors above, these are not transient and not
+ * recoverable by retry — the user has to fix their config (or create the
+ * missing resource, or re-enable the project). The studio surfaces these
+ * as a full-screen takeover rather than the retry/reload dialog.
  *
  * Which variant we can report depends on what the failing endpoint tells
  * us. Only the project/dataset management API carries a structured
@@ -116,9 +116,16 @@ export function classifyRequestError(err: unknown): RequestErrorClassification |
  * missing-dataset apart, so it isn't classified as a config error at all
  * (see {@link classifyConfigError}).
  *
+ * `projectDisabled` is returned for a 402 response with
+ * `error: "Project Disabled"` — archived, disabled or suspended projects
+ * all return this same error code.
+ *
  * @internal
  */
-export type ConfigErrorClassification = {type: 'projectNotFound'} | {type: 'datasetNotFound'}
+export type ConfigErrorClassification =
+  | {type: 'projectNotFound'}
+  | {type: 'datasetNotFound'}
+  | {type: 'projectDisabled'}
 
 /** Shape of the structured fields we read off a 404 response body. */
 interface NotFoundBody {
@@ -140,6 +147,42 @@ function notFoundBody(err: HttpError): NotFoundBody | undefined {
   }
 }
 
+/** Shape of the structured fields we read off a 402 response body. */
+interface ProjectDisabledBody {
+  error?: unknown
+}
+
+function projectDisabledBody(err: HttpError): ProjectDisabledBody | undefined {
+  const body = err.response.body
+  if (!body || typeof body !== 'object') return undefined
+
+  return {
+    error: 'error' in body ? body.error : undefined,
+  }
+}
+
+/**
+ * Classify a 402 as a studio-configuration error — the project the studio
+ * points at is disabled (archived, suspended, or manually disabled by an
+ * administrator).
+ *
+ * Recognized structured signal:
+ *  - `error === 'Project Disabled'` → `projectDisabled`
+ *
+ * @internal
+ */
+export function classifyProjectDisabledError(err: unknown): ConfigErrorClassification | null {
+  if (!isHttpError(err) || err.statusCode !== 402) return null
+  const body = projectDisabledBody(err)
+  if (!body) return null
+
+  if (body.error === 'Project Disabled') {
+    return {type: 'projectDisabled'}
+  }
+
+  return null
+}
+
 /**
  * Classify a 404 as a studio-configuration error — the project or dataset
  * the studio points at doesn't exist — using only structured response
@@ -159,6 +202,10 @@ function notFoundBody(err: HttpError): NotFoundBody | undefined {
  * @internal
  */
 export function classifyConfigError(err: unknown): ConfigErrorClassification | null {
+  // Check for 402 Project Disabled first
+  const disabledClassification = classifyProjectDisabledError(err)
+  if (disabledClassification) return disabledClassification
+
   if (!isHttpError(err) || err.statusCode !== 404) return null
   const body = notFoundBody(err)
   if (!body) return null

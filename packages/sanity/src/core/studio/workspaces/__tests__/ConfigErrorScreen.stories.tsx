@@ -37,6 +37,21 @@ export const ProjectNotFoundChooseAnother: Story = {
   args: {multipleWorkspaces: true},
 }
 
+/** Disabled project with ID named in the message; single workspace, so no chooser button. */
+export const ProjectDisabled: Story = {
+  args: {error: {type: 'projectDisabled'}},
+}
+
+/** Disabled project with no ID to name: the generic message. */
+export const ProjectDisabledWithoutId: Story = {
+  args: {error: {type: 'projectDisabled'}, projectId: undefined},
+}
+
+/** Disabled project with the chooser button. */
+export const ProjectDisabledChooseAnother: Story = {
+  args: {error: {type: 'projectDisabled'}, multipleWorkspaces: true},
+}
+
 /** Dataset rows for project ID and dataset, "Manage datasets" deep link. */
 export const DatasetNotFound: Story = {
   args: {error: {type: 'datasetNotFound'}},

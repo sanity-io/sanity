@@ -137,13 +137,20 @@ export function WorkspacesProvider({
         })
         return
       }
-      // A configuration error (missing project/dataset) makes the whole
-      // workspace unusable and can't be recovered by retry — the user has to
-      // fix their config. Take over the screen with guidance.
+      // A configuration error (missing project/dataset, or disabled project)
+      // makes the whole workspace unusable and can't be recovered by retry —
+      // the user has to fix their config (or an admin must re-enable the
+      // project). Take over the screen with guidance.
+      let errorType: 'datasetNotFound' | 'projectNotFound' | 'projectDisabled'
+      if (result.type === 'dataset-not-found') {
+        errorType = 'datasetNotFound'
+      } else if (result.type === 'project-disabled') {
+        errorType = 'projectDisabled'
+      } else {
+        errorType = 'projectNotFound'
+      }
       setConfigError({
-        error: {
-          type: result.type === 'dataset-not-found' ? 'datasetNotFound' : 'projectNotFound',
-        },
+        error: {type: errorType},
         isStaging,
         projectId: clientConfig.projectId,
         dataset: clientConfig.dataset,

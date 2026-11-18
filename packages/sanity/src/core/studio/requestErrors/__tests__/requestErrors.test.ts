@@ -5,6 +5,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {
   classifyConfigError,
+  classifyProjectDisabledError,
   classifyRequestError,
   getApiErrorCode,
   isInvalidSessionError,
@@ -155,6 +156,41 @@ describe('classifyRequestError', () => {
   })
 })
 
+describe('classifyProjectDisabledError', () => {
+  it('classifies a 402 with error "Project Disabled" as projectDisabled', () => {
+    const err = clientErrorWith({
+      statusCode: 402,
+      body: {
+        statusCode: 402,
+        message: 'This project has been disabled by a project administrator',
+        error: 'Project Disabled',
+      },
+    })
+    expect(classifyProjectDisabledError(err)).toEqual({type: 'projectDisabled'})
+  })
+
+  it('leaves 402s without the "Project Disabled" error unclassified', () => {
+    expect(classifyProjectDisabledError(clientErrorWith({statusCode: 402, body: {}}))).toBeNull()
+    expect(
+      classifyProjectDisabledError(
+        clientErrorWith({statusCode: 402, body: {error: 'Payment Required'}}),
+      ),
+    ).toBeNull()
+  })
+
+  it('leaves non-402 client errors unclassified', () => {
+    expect(
+      classifyProjectDisabledError(
+        clientErrorWith({statusCode: 403, body: {error: 'Project Disabled'}}),
+      ),
+    ).toBeNull()
+  })
+
+  it('leaves non-client errors unclassified', () => {
+    expect(classifyProjectDisabledError(new Error('nope'))).toBeNull()
+  })
+})
+
 describe('classifyConfigError', () => {
   it('classifies project-not-found via attributes.type', () => {
     const err = clientErrorWith({
@@ -181,6 +217,18 @@ describe('classifyConfigError', () => {
     expect(classifyConfigError(err)).toEqual({type: 'datasetNotFound'})
   })
 
+  it('classifies 402 Project Disabled as projectDisabled', () => {
+    const err = clientErrorWith({
+      statusCode: 402,
+      body: {
+        statusCode: 402,
+        message: 'This project has been disabled by a project administrator',
+        error: 'Project Disabled',
+      },
+    })
+    expect(classifyConfigError(err)).toEqual({type: 'projectDisabled'})
+  })
+
   it('leaves generic 404s (no structured discriminator) unclassified', () => {
     // e.g. a /data 404 or a missing-document 404 — caller-domain.
     expect(classifyConfigError(clientErrorWith({statusCode: 404, body: {}}))).toBeNull()
@@ -199,7 +247,7 @@ describe('classifyConfigError', () => {
     expect(classifyConfigError(err)).toBeNull()
   })
 
-  it('ignores non-404 client errors and non-client errors', () => {
+  it('ignores non-404/non-402 client errors and non-client errors', () => {
     expect(
       classifyConfigError(
         clientErrorWith({statusCode: 403, body: {attributes: {type: 'project'}}}),

@@ -11,6 +11,10 @@ import {classifyConfigError, isNetworkError, isRequestTimeoutError} from './clas
  *  - `project-not-found` / `dataset-not-found` — a configuration error: the
  *    project or dataset the studio points at doesn't exist. Unrecoverable by
  *    retry; the studio takes over the screen with guidance.
+ *  - `project-disabled` — the project is disabled (archived, suspended, or
+ *    manually disabled by an administrator). The API returns 402 with
+ *    `error: "Project Disabled"`. Unrecoverable by retry; the user or an
+ *    admin must re-enable the project.
  *  - `cors` — the origin isn't allowed (or can't send credentials) by the
  *    project's CORS allowlist. The studio shows the CORS-origin screen. This
  *    can begin at any time (e.g. an admin editing the allowlist in Manage),
@@ -24,6 +28,7 @@ import {classifyConfigError, isNetworkError, isRequestTimeoutError} from './clas
 export type RequestFailureResult =
   | {type: 'project-not-found'}
   | {type: 'dataset-not-found'}
+  | {type: 'project-disabled'}
   | {type: 'cors'; allowed: boolean; withCredentials: boolean}
   | {type: 'unknown'}
 
@@ -59,12 +64,17 @@ export function createRequestFailureProbe(
   corsCache: CorsCheckCache,
 ): RequestFailureProbe {
   return async (err) => {
-    // Structured 404 from the project/dataset management API.
+    // Structured 404 from the project/dataset management API, or 402 from
+    // a disabled project.
     const configClassification = classifyConfigError(err)
     if (configClassification) {
-      return configClassification.type === 'datasetNotFound'
-        ? {type: 'dataset-not-found'}
-        : {type: 'project-not-found'}
+      if (configClassification.type === 'datasetNotFound') {
+        return {type: 'dataset-not-found'}
+      }
+      if (configClassification.type === 'projectDisabled') {
+        return {type: 'project-disabled'}
+      }
+      return {type: 'project-not-found'}
     }
 
     // Opaque network/CORS failure — probe `/check/cors` to learn why. Skip

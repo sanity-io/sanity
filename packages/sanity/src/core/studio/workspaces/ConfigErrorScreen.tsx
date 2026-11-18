@@ -116,6 +116,15 @@ export function ConfigErrorScreen(props: ConfigErrorScreenProps): React.ReactEle
       />
     )
   }
+  if (error.type === 'projectDisabled') {
+    return (
+      <ProjectDisabledScreen
+        projectId={projectId}
+        manageBaseUrl={manageBaseUrl}
+        onChooseAnotherWorkspace={onChooseAnotherWorkspace}
+      />
+    )
+  }
   return (
     <DatasetNotFoundScreen
       projectId={projectId}
@@ -276,6 +285,49 @@ function ProjectNotFoundScreen(props: {
         <Button
           as="a"
           href={`${manageBaseUrl}/manage`}
+          iconRight={LaunchIcon}
+          rel="noopener noreferrer"
+          size="large"
+          target="_blank"
+          text="Open Manage"
+        />
+      }
+    />
+  )
+}
+
+function ProjectDisabledScreen(props: {
+  projectId?: string
+  manageBaseUrl: string
+  onChooseAnotherWorkspace?: () => void
+}) {
+  const {projectId, manageBaseUrl, onChooseAnotherWorkspace} = props
+
+  const manageUrl = useMemo(
+    () => (projectId ? `${manageBaseUrl}/manage/project/${projectId}` : `${manageBaseUrl}/manage`),
+    [manageBaseUrl, projectId],
+  )
+
+  return (
+    <ConfigErrorLayout
+      errorLabel="Project disabled"
+      heading="Project disabled"
+      onChooseAnotherWorkspace={onChooseAnotherWorkspace}
+      message={
+        projectId ? (
+          <>
+            The project <InlineCode>{projectId}</InlineCode> has been disabled.
+          </>
+        ) : (
+          'The Studio is configured for a project that has been disabled.'
+        )
+      }
+      details={null}
+      hint="This project may have been archived, suspended, or disabled by an administrator. Contact your project administrator to re-enable it."
+      action={
+        <Button
+          as="a"
+          href={manageUrl}
           iconRight={LaunchIcon}
           rel="noopener noreferrer"
           size="large"
