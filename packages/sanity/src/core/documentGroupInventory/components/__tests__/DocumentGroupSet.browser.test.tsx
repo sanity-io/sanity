@@ -606,7 +606,15 @@ describe('DocumentGroupSet header action', () => {
           bundle={{type: 'perspective', perspective: activeASAPRelease}}
           selectionState="unchecked"
           onCheckedChange={NOOP}
-          headerActions={<Button mode="ghost" text="Unschedule" data-testid="header-action" />}
+          headerActions={
+            // With a tooltip, as the real action has: Studio wraps the button for it
+            <Button
+              mode="ghost"
+              text="Unschedule"
+              data-testid="header-action"
+              tooltipProps={{content: 'Unschedule the release'}}
+            />
+          }
         >
           {null}
         </DocumentGroupSet>
@@ -620,6 +628,9 @@ describe('DocumentGroupSet header action', () => {
     const centre = (rect: DOMRect) => rect.top + rect.height / 2
     expect(Math.abs(centre(box) - centre(mark))).toBeLessThanOrEqual(0.5)
     expect(Math.abs(centre(box) - centre(header))).toBeLessThanOrEqual(0.5)
+    // Its box is the button's own height: nothing pushes the button off the centre inside it
+    const actionBox = action.element().closest('.header-actions')!.getBoundingClientRect()
+    expect(Math.abs(actionBox.height - box.height)).toBeLessThanOrEqual(0.5)
     // The action does not make the header taller than one without it
     expect(header.height).toBe(plainHeight)
     // It ends before the mark, with room between them
