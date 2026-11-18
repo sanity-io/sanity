@@ -27,7 +27,12 @@ export const ScheduleItem = (props: Props) => {
 
   const preview = useMemo(() => {
     if (!schemaType || invalidDocument) {
-      return <NoSchemaItem schedule={schedule} />
+      return (
+        <NoSchemaItem
+          schedule={schedule}
+          validationListener={type === 'tool' ? 'global' : 'document'}
+        />
+      )
     }
 
     if (type === 'document') {

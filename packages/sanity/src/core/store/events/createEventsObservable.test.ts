@@ -12,7 +12,9 @@ import {
   updateLiveDocumentEvent,
   VERSION_ID,
 } from './__fixtures__/events.fixture'
+import {editTransaction} from './__fixtures__/transactions.fixture'
 import {applyVariantTransforms, createEventsObservable} from './createEventsObservable'
+import {getEditEvents} from './getEditEvents'
 import {type DocumentGroupEvent, type EventsObservableValue} from './types'
 
 function eventsValue(events: DocumentGroupEvent[]): EventsObservableValue {
@@ -144,6 +146,38 @@ describe('createEventsObservable', () => {
     subscription.unsubscribe()
 
     expect(values[0].events.map((event) => event.id)).toEqual(['live-2'])
+  })
+
+  it('groups fetched and live edit events within the merge window into one edit event', () => {
+    const fetchedEdit = editTransaction({id: 'tx-fetched', timestamp: minutesAfterBase(1)})
+    const liveEdit = editTransaction({
+      id: 'tx-live',
+      author: 'author-2',
+      timestamp: minutesAfterBase(2),
+    })
+    const create = createDocumentVersionEvent()
+
+    const observable = createEventsObservable({
+      documentId: DRAFT_ID,
+      events$: of(eventsValue([...getEditEvents([fetchedEdit], DRAFT_ID), create])),
+      remoteEdits$: of(getEditEvents([liveEdit], DRAFT_ID)),
+      expandedEvents$: of([]),
+    })
+    const {values, subscription} = collectEmissions(observable)
+    subscription.unsubscribe()
+
+    expect(values[0].events).toEqual([
+      expect.objectContaining({
+        type: 'editDocumentVersion',
+        id: 'tx-live',
+        contributors: ['author-2', 'author-1'],
+        transactions: [
+          expect.objectContaining({revisionId: 'tx-live'}),
+          expect.objectContaining({revisionId: 'tx-fetched'}),
+        ],
+      }),
+      expect.objectContaining({type: 'createDocumentVersion', id: create.id}),
+    ])
   })
 
   it('recomputes only when an event source emits', () => {

@@ -5,7 +5,13 @@ import {type DocumentRemoteMutationEvent} from '../document/buffered-doc/types'
 import {type WithVersion} from '../document/document-pair/checkoutPair'
 import {remoteSnapshots} from '../document/document-pair/remoteSnapshots'
 import {collectEmissions} from './__fixtures__/collect.fixture'
-import {DOCUMENT_ID, DRAFT_ID, minutesAfterBase, VERSION_ID} from './__fixtures__/events.fixture'
+import {
+  BASE_TIME,
+  DOCUMENT_ID,
+  DRAFT_ID,
+  minutesAfterBase,
+  VERSION_ID,
+} from './__fixtures__/events.fixture'
 import {createMockClient} from './__fixtures__/mockClient'
 import {effectPair, remoteMutationEvent} from './__fixtures__/transactions.fixture'
 import {
@@ -175,12 +181,29 @@ describe('getRemoteTransactionsSubscription', () => {
   })
 
   it('live edit: published-document modifications accumulate instead of refetching', () => {
-    const {remoteTransactions$, subscription} = setup(DOCUMENT_ID, true)
+    const {remoteTransactions$, remoteEdits$, subscription} = setup(DOCUMENT_ID, true)
+    const {values: edits, subscription: editsSubscription} = collectEmissions(remoteEdits$)
 
-    snapshots$.next(remoteMutationEvent({version: 'published', transactionId: 'tx-live'}))
+    snapshots$.next(
+      remoteMutationEvent({
+        version: 'published',
+        transactionId: 'tx-live',
+        head: {
+          _id: DOCUMENT_ID,
+          _type: 'testDocument',
+          _createdAt: BASE_TIME,
+          _updatedAt: BASE_TIME,
+          _rev: 'tx-live',
+        },
+      }),
+    )
     expect(onRefetch).not.toHaveBeenCalled()
     expect(remoteTransactions$.value.map((tx) => tx.id)).toEqual(['tx-live'])
+    expect(edits.at(-1)).toEqual([
+      expect.objectContaining({type: 'updateLiveDocument', id: 'tx-live', documentId: DOCUMENT_ID}),
+    ])
 
+    editsSubscription.unsubscribe()
     subscription.unsubscribe()
   })
 

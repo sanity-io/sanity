@@ -22,6 +22,15 @@ const VIEW: FederatedAssetSourceView = {
   title: 'Stock photos',
   remote: {name: 'stock-app', entry: 'https://stock.example/mf-manifest.json'},
   moduleId: 'stock-app/views/stock/asset_source',
+  interface: {
+    id: 'stock-app-stock',
+    type: 'asset_source',
+    name: 'stock',
+    title: 'Stock photos',
+    version: '1',
+    moduleId: 'views/stock',
+    metadata: null,
+  },
 }
 
 const ASSET_SOURCE: AssetSource = {

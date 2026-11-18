@@ -43,12 +43,16 @@ describe('deriveAuthMilestones', () => {
         {url: `${API}/v2025-02-19/users/me`, startTime: 100, responseEnd: 140},
         {url: `${API}/v2025-02-19/auth/providers`, startTime: 150, responseEnd: 170},
         {url: `${API}/v2025-02-19/data/query/bench?query=x`, startTime: 90, responseEnd: 300},
-        {url: `${API}/v2025-02-19/users/me/keyvalue/foo`, startTime: 200, responseEnd: 220},
+        {
+          url: `${API}/v2026-11-07/projects/bench/users/me/preferences/foo`,
+          startTime: 200,
+          responseEnd: 220,
+        },
         {url: 'https://localhost:4310/static/sanity-abc.js', startTime: 10, responseEnd: 50},
       ],
       1000,
     )
-    // keyvalue is UI-state persistence, not auth (mirrors the mock's classes)
+    // preferences are UI-state persistence, not auth (mirrors the mock's classes)
     expect(auth).toEqual({trips: 2, firstRequestMs: 100, inFlightMs: 60})
   })
 

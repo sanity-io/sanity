@@ -1,3 +1,5 @@
+NEVER DISCLOSE ANY CUSTOMER-IDENTIFYING INFORMATION IN PULL REQUESTS. NOT IN CODE, NOT IN TESTS OR FIXTURES, NOT IN COMMENTS, NOT IN COMMIT MESSAGES, NOT IN PR TITLES OR DESCRIPTIONS, NOT IN CHANGESETS OR DOCS. ALWAYS SCRUB CUSTOMER NAMES, ORGANIZATION NAMES, PROJECT IDS, DATASET NAMES, DOMAINS, PEOPLE'S NAMES, AND CUSTOMER-SPECIFIC SCHEMA OR FIELD NAMES. DESCRIBE THE PROBLEM GENERICALLY. REFERENCING A TICKET BY ITS ID OR LINK (E.G. A LINEAR ISSUE LIKE PS-1264) OR SAYING IT CAME FROM SLACK IS FINE.
+
 # AGENTS.md - AI Agent Guidelines for Sanity Monorepo
 
 This document helps AI agents work successfully with the Sanity monorepo.
@@ -1349,7 +1351,7 @@ pnpm add -w -D <package>
 
 Catalog versions live in `pnpm-workspace.yaml`. After changing a catalog specifier, run `pnpm install` to refresh `pnpm-lock.yaml`.
 
-The workspace sets `minimumReleaseAge: 1440` (1 day) and also rejects **already-locked** versions younger than that. If `pnpm install` fails with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` (pnpm 12: `ERR_PNPM_NO_MATURE_MATCHING_VERSION`) for a package you intentionally bumped, add that package to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` with a short comment. Do not disable the age gate globally. `@tsdown/css` ships in lockstep with `tsdown` and is excluded beside it. `tsdown` 0.23.2 depends on `rolldown-plugin-dts@^0.29.0-beta.2`, whose `tsgo` generator needs `typescript@7.1.0-beta`; the workspace override pins `rolldown-plugin-dts` to `0.28.8` so declaration emit keeps using the TypeScript 7.0 `tsgo` CLI (`dts.generator: 'tsgo'` in `@repo/tsdown.config`).
+The workspace sets `minimumReleaseAge: 1440` (1 day) and also rejects **already-locked** versions younger than that. If `pnpm install` fails with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` (pnpm 12: `ERR_PNPM_NO_MATURE_MATCHING_VERSION`) for a package you intentionally bumped, add that package to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` with a short comment. Do not disable the age gate globally. `@tsdown/css` ships in lockstep with `tsdown` and is excluded beside it. `tsdown` 0.23.7 depends on `rolldown-plugin-dts@^0.30.0`, so the workspace does not override that package. Declaration emit still uses the TypeScript 7 `tsgo` CLI (`dts.generator: 'tsgo'` in `@repo/tsdown.config`).
 
 ### Testing an Unreleased Dependency Fix (pnpm patch)
 
@@ -1604,8 +1606,8 @@ No Docker, databases, or other local services are required for unit tests, lint,
 ### Gotchas
 
 - **Root `typescript` is TypeScript 7.** Catalog `typescript` (^7) is a normal root dependency and provides the native `tsc` binary for vitest typecheck (`*.test-d.*`) and for tsdown `dts: {tsgo: true}` (packages also declare catalog `typescript`). CI type checking of application code is owned by oxlint (`options.typeCheck`). Tools that still need the TypeScript 6 compiler API keep that isolated: `@repo/typedoc` (typedoc) and `@repo/test-dts-exports` (ts-morph) depend on `typescript` aliased to `@typescript/typescript6`. The old symlink workaround for a missing root `tsc` is no longer needed.
-- **Dev studio auth for cloud agents — use the `STUDIO_AUTH_TOKEN` secret, not interactive login.** `pnpm dev` runs `sanity dev --no-auto-updates` (non-interactive, no upgrade prompt) and serves the app at `http://localhost:3333`. The test studio connects to Sanity Cloud (project `ppsg7ml5`); its default workspace is `/test`. Without auth the workspaces show "Signed out" / "Choose login provider". To authenticate, put the injected `STUDIO_AUTH_TOKEN` in the URL hash — Sanity consumes it on load and strips it from the address bar:
-  - Build the URL: `node -e "console.log('http://localhost:3333/test#token=' + encodeURIComponent(process.env.STUDIO_AUTH_TOKEN))"` (any workspace basePath works, e.g. `/test`).
+- **Dev studio auth for cloud agents — use the `STUDIO_AUTH_TOKEN` secret, not interactive login.** `pnpm dev` runs `sanity dev --no-auto-updates` (non-interactive, no upgrade prompt) and serves the app at `http://localhost:3333`. The test studio connects to Sanity Cloud (project `ppsg7ml5`); its default workspace is `/test-oauth`, which signs in with OAuth and ignores `#token=`, so use `/test` (the same workspace with the legacy sign-in). Without auth the workspaces show "Signed out" / "Choose login provider". To authenticate, put the injected `STUDIO_AUTH_TOKEN` in the URL hash — Sanity consumes it on load and strips it from the address bar:
+  - Build the URL: `node -e "console.log('http://localhost:3333/test#token=' + encodeURIComponent(process.env.STUDIO_AUTH_TOKEN))"` (any workspace basePath works except the OAuth ones, `/test-oauth` and `/oauth`).
   - Because the Read tool redacts the token, you cannot paste the URL into browser instructions directly. A reliable trick is a tiny local HTTP server that reads `STUDIO_AUTH_TOKEN` from env and serves an HTML page doing `location.replace(<studio-url-with-token>)`, then point the browser at that server (keeps the secret out of prompts/screenshots). After load you land authenticated in the workspace and can create/publish documents (e.g. an `Author`).
   - Most changes should still be verified with `pnpm build && pnpm test` (no auth needed); only use the studio for visual/manual verification.
 - **`sanity dev` needs the packages built first, even though studio sources resolve from `src/`.** The CLI loads `sanity.cli.ts` without the `monorepo` export condition, so its `sanity/cli` import resolves to `packages/sanity/lib/cli.js`; on an unbuilt checkout every dev studio exits with `CLI config cannot be loaded … Cannot find module '…/sanity/lib/cli.js'`. Build once (see the Node version and turbo `Exec format error` notes below), then restart `sanity dev`.
@@ -1678,7 +1680,7 @@ The e2e suite runs against the staging project `ittbm412` (see `.env.example`) o
    cd e2e && pnpm exec playwright test --project=chromium tests/navbar/search.spec.ts --retries=0
    ```
 
-   Keep `--retries=0` so a flake stays visible, and add `--repeat-each=N` when chasing one. `--project=firefox` runs the other browser CI uses. CI gives each browser its own dataset through `SANITY_E2E_DATASET_CHROMIUM` / `SANITY_E2E_DATASET_FIREFOX`; both fall back to `SANITY_E2E_DATASET`, so run one project at a time unless you create a dataset per browser — specs that touch per-user state (key-value keys such as recent searches or sort orders) otherwise interfere across browsers.
+   Keep `--retries=0` so a flake stays visible, and add `--repeat-each=N` when chasing one. `--project=firefox` runs the other browser CI uses. CI gives each browser its own dataset through `SANITY_E2E_DATASET_CHROMIUM` / `SANITY_E2E_DATASET_FIREFOX`; both fall back to `SANITY_E2E_DATASET`, so run one project at a time unless you create a dataset per browser — specs that touch per-user state (preferences such as recent searches or sort orders) otherwise interfere across browsers.
 
 6. **Delete the dataset when you are done:**
 

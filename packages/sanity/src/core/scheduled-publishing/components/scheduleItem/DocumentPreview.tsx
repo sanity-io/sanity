@@ -48,6 +48,8 @@ const DocumentPreview = (props: Props) => {
         publishedDocumentId={publishedId}
         schedule={schedule}
         schemaType={schemaType}
+        // the document's pane has its pair checked out, so share the pane's validation
+        validationListener="document"
       />
     </>
   )
