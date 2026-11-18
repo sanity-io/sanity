@@ -94,6 +94,8 @@ interface DeletionContext {
   leavePublished: boolean
   /** The ids the delete in flight removes, fixed when it starts: selection changes meanwhile don't move it. */
   deletingIds: string[]
+  /** The document's versions when that delete started, so live updates meanwhile don't move them. */
+  versionIdsAtDelete: string[]
   /** Whether this instance may never delete anything. */
   readOnly: boolean
 }
@@ -157,7 +159,10 @@ export const deletionMachine = setup({
     ]),
     deletedEveryVersion: ({context}) => {
       const deleted = new Set(context.deletingIds)
-      return context.versionIds.length > 0 && context.versionIds.every((id) => deleted.has(id))
+      return (
+        context.versionIdsAtDelete.length > 0 &&
+        context.versionIdsAtDelete.every((id) => deleted.has(id))
+      )
     },
     shouldWarnIncomingReferences: ({context}) =>
       context.ids.some(isPublishedId) &&
@@ -179,6 +184,7 @@ export const deletionMachine = setup({
     incomingReferencesChecked: false,
     leavePublished: false,
     deletingIds: [],
+    versionIdsAtDelete: [],
     readOnly: input?.readOnly ?? false,
   }),
   on: {
@@ -271,7 +277,10 @@ export const deletionMachine = setup({
               },
             },
             deleting: {
-              entry: assign({deletingIds: ({context}) => deletedIds(context)}),
+              entry: assign({
+                deletingIds: ({context}) => deletedIds(context),
+                versionIdsAtDelete: ({context}) => context.versionIds,
+              }),
               invoke: {
                 src: 'deleteVariants',
                 input: ({context}) => ({ids: context.deletingIds}),
