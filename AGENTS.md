@@ -722,6 +722,20 @@ code off that path. Measure it on the CDN build, not on `sanity build` output:
   `const` to a function, so the generated fixtures in `@repo/test-dts-exports` switch from
   `not.toBeNever()` to `toBeFunction()`; regenerate both.
 
+### v7 export map: v6 exports everything at the path v7 uses
+
+Plugins support Studio v6 (`main`) and v7 (`next-major`) with one version by importing from the
+paths v7 uses, so `main` exports each name at the entry `next-major` exports it from (`sanity/i18n`,
+the `*Legacy` comments names, …), re-exported from the same module as the v6 path. The list is
+`packages/@repo/test-dts-exports/v7-export-map/v7-export-map.json`, generated on `next-major` from
+the built `.d.ts` files (`v7-export-map/exportMap.mjs` is identical on both branches) and copied
+to `main` unchanged. On `main`, `test/v7-exports-on-v6.test.ts` (types) and
+`@repo/test-exports`'s `test/v7-export-map.test.mjs` (runtime values) fail when an entry or name
+in it is missing. On `next-major`, a test fails when the built export map differs from the file,
+and another when the file has entries `origin/main`'s copy lacks. When either fails, add the
+export to `main` first (a re-export, never a copy of the module), then copy the file over.
+On `main`, the internals entry's completeness test accepts the non-`@internal` names v7 puts there.
+
 ### Effect events: native `useEffectEvent`, never in dependency arrays
 
 Import `useEffectEvent` from `react`. The studio requires React `^19.3.1`: that is the first
