@@ -54,13 +54,14 @@ export function ReferencePreview(props: {
               <DocumentPreviewPresence presence={documentPresence} />
             )}
 
-            {/* The variant diamond is for document lists and search results only */}
+            {/* While a variant is picked, the diamond says whether the referenced document has its
+                own version for it (filled) or shows Default (outline), as in lists and search */}
             {quiet ? (
               <DocumentVersionsMarks versionCount={versions.length}>
-                <DocumentVersionsStatusIndicator documentVersions={versions} variantMarks={false} />
+                <DocumentVersionsStatusIndicator documentVersions={versions} />
               </DocumentVersionsMarks>
             ) : (
-              <DocumentVersionsStatusIndicator documentVersions={versions} variantMarks={false} />
+              <DocumentVersionsStatusIndicator documentVersions={versions} />
             )}
           </Inline>
         </Box>
