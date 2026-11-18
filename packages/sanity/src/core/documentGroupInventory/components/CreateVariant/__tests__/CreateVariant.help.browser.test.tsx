@@ -125,17 +125,17 @@ const FIELDS = [
   {
     testId: 'create-variant-variant-menu',
     name: 'About Variant',
-    text: 'Who will see this version. Each variant is an audience, set up in a variant definition.',
+    text: 'The audience this version is for.',
   },
   {
     testId: 'create-variant-target-menu',
     name: 'About Add to',
-    text: 'The draft or release the new version goes into. It is published with that draft or release.',
+    text: 'The draft or release this version joins.',
   },
   {
     testId: 'create-variant-base-menu',
     name: 'About Start from',
-    text: "What the new version copies. Nearest version copies this variant's published version. If there is none, it copies the Default: in Drafts its draft, or else its published version; in a release, its version in that release. You then change only what should differ, or pick another version to start from.",
+    text: 'Pick a version to copy, then change only what should differ.',
   },
 ]
 
