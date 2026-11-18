@@ -333,6 +333,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The variant banner in an undecided release */
   'banners.variant.not-in-variant-release-undecided':
     'This document has no version for the <VariantBadge>{{variantTitle}}</VariantBadge> in the undecided <ReleaseBadge>{{releaseTitle}}</ReleaseBadge> yet. Create one to start editing.',
+  /** The variant banner in Drafts when the variant is published but has no draft: the form shows the published variant until the first edit creates the draft */
+  'banners.variant.stand-in':
+    'Showing the published <VariantBadge>{{variantTitle}}</VariantBadge> version. Your first edit creates its draft.',
   /**
    * The variant banner's sentence in Drafts without its instruction, followed by the link into the
    * document inventory while the inventory is open

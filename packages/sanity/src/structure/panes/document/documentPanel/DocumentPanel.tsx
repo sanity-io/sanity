@@ -61,6 +61,7 @@ import {ScheduledReleaseBanner} from './banners/ScheduledReleaseBanner'
 import {SeeDraftBanner} from './banners/SeeDraftBanner'
 import {UnpublishedDocumentBanner} from './banners/UnpublishedDocumentBanner'
 import {VariantDefinitionNotFoundBanner} from './banners/VariantDefinitionNotFoundBanner'
+import {VariantStandInBanner} from './banners/VariantStandInBanner'
 import {documentBox, scroller, scrollerEnabled} from './DocumentPanel.css'
 import {FormView} from './documentViews/FormView'
 import {getNavigationBadges} from './header/DocumentPanelNavigation/badges/getNavigationBadges'
@@ -318,9 +319,9 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
 
     const isPinnedDraftOrPublish = isSystemBundle(selectedPerspective)
 
-    // A creatable missing draft variant renders no banner: the form is simply editable — typing
-    // creates the document at the server-advertised id — matching the base draft/published
-    // experience where editing the published fallback creates the draft.
+    // A creatable missing draft variant is editable: typing creates the document at the
+    // server-advertised id. Its banner (stand-in) only says that the form shows the published
+    // variant until then.
     const variantBannerCase = getVariantBannerCase({
       targetDocumentState,
       perspective: isPublishedPerspective(selectedPerspective)
@@ -339,6 +340,10 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
           requestedVariantName={variantBannerCase.requestedVariantName}
         />
       )
+    }
+
+    if (variantBannerCase.kind === 'stand-in') {
+      return <VariantStandInBanner />
     }
 
     if (variantBannerCase.kind !== 'none') {

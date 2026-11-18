@@ -32,14 +32,16 @@ export interface VariantBannerCaseInput {
  * - `definition-not-found`: the selected variant matches no variant definition (it was
  *   deleted, or the URL names one that never existed). The banner goes back to Default.
  *
- * A variant that is published but has no draft is editable in Drafts (typing creates the
- * draft), so it has no banner: that is `variant-missing` with a `creatableTarget`.
+ * - `stand-in`: Drafts, the variant is published but has no draft (`variant-missing` with a
+ *   `creatableTarget`). The form is editable and shows the published variant as a stand-in;
+ *   typing creates the draft. The banner says so and has no action.
  *
  * @internal
  */
 export type VariantBannerCase =
   | {kind: 'none'}
   | {kind: 'create'; perspective: 'drafts' | 'published' | 'release'}
+  | {kind: 'stand-in'}
   | {kind: 'create-in-drafts'}
   | {kind: 'switch-to-drafts'}
   | {kind: 'locked-release'}
@@ -63,9 +65,14 @@ export function getVariantBannerCase(input: VariantBannerCaseInput): VariantBann
     }
   }
 
-  // A version is here, the target is still resolving, or the missing draft is created by typing.
-  if (targetDocumentState.status !== 'variant-missing' || targetDocumentState.creatableTarget) {
+  // A version is here, or the target is still resolving.
+  if (targetDocumentState.status !== 'variant-missing') {
     return NONE
+  }
+
+  // The missing draft is created by typing: the form shows the published variant meanwhile.
+  if (targetDocumentState.creatableTarget) {
+    return perspective === 'drafts' ? {kind: 'stand-in'} : NONE
   }
 
   switch (perspective) {
