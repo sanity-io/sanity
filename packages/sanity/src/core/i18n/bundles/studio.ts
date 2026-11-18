@@ -677,12 +677,27 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.create-variant.target-label': 'Target',
   /** The search field placeholder in the variant creation form's picker for the variant definition */
   'document-group.create-variant.variant-filter-placeholder': 'Search variant definitions…',
-  /** The heading above the variants the document already has a version in, in the variant creation form's picker */
+  /**
+   * The heading above the variants the document already has a version in, in the variant creation form's picker
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-group.create-variant.variant-section.has-variants_one': 'Has {{count}} variant',
-  /** The heading above the variants the document already has a version in, in the variant creation form's picker */
+  /**
+   * The heading above the variants the document already has a version in, in the variant creation form's picker
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-group.create-variant.variant-section.has-variants_other': 'Has {{count}} variants',
-  /** Section header of the variant picker when the document has no variants; "Has 0 variants" reads like the letter O */
+  /**
+   * Section header of the variant picker when the document has no variants; "Has 0 variants" reads like the letter O
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-group.create-variant.variant-section.has-variants_zero': 'Has no variants',
+  /** The heading above the variants the document already has a version in, with how many, in the variant creation form's picker */
+  'document-group.create-variant.variant-section.of-document':
+    'Variants of this document ({{count}})',
   /** The heading above the variants the document has no version in yet, in the variant creation form's picker */
   'document-group.create-variant.variant-section.other': 'Other variants',
   /**
