@@ -112,6 +112,85 @@ describe('OAuth login component', () => {
     )
   })
 
+  it('suggests why the project was refused when the authorization server answers invalid_target', async () => {
+    // The server's description is deliberately generic: it does not say whether the user lacks
+    // access to the project or the OAuth application is not allowed on it.
+    sessionStorage.setItem(
+      FLOW_KEY,
+      JSON.stringify({codeVerifier: 'v', state: 'expected-state', redirectUri: ORIGIN}),
+    )
+    const store = _createOAuthAuthStore({
+      projectId: PROJECT_ID,
+      dataset: 'test-dataset',
+      clientId: 'oc-test-client',
+      clientFactory: createAnonymousClient,
+      endpoints: createOAuthEndpoints({issuer: 'https://api.sanity.io', projectId: PROJECT_ID}),
+      getLocation: () => ({
+        origin: ORIGIN,
+        pathname: '/',
+        search:
+          '?error=invalid_target&error_description=The+requested+resource+is+invalid&state=expected-state',
+      }),
+      navigate: vi.fn(),
+      replaceUrl: vi.fn(),
+      withLock: (_name, task) => task(),
+      locksAvailable: false,
+    })
+    await expect(store.handleCallbackUrl!()).resolves.toMatchObject({success: false})
+    const {LoginComponent} = store
+    if (!LoginComponent) throw new Error('expected a LoginComponent')
+    const TestProvider = await createTestProvider()
+
+    render(
+      <TestProvider>
+        <LoginComponent projectId={PROJECT_ID} redirectPath="/structure" />
+      </TestProvider>,
+    )
+
+    const notice = await screen.findByTestId('oauth-login-error')
+    expect(notice).toHaveTextContent('The requested resource is invalid')
+    expect(notice).toHaveTextContent('invalid_target')
+    expect(screen.getByTestId('oauth-login-error-hint')).toHaveTextContent(
+      "You don't have access to this project",
+    )
+  })
+
+  it('shows no project hint for other refusals', async () => {
+    sessionStorage.setItem(
+      FLOW_KEY,
+      JSON.stringify({codeVerifier: 'v', state: 'expected-state', redirectUri: ORIGIN}),
+    )
+    const store = _createOAuthAuthStore({
+      projectId: PROJECT_ID,
+      dataset: 'test-dataset',
+      clientId: 'oc-test-client',
+      clientFactory: createAnonymousClient,
+      endpoints: createOAuthEndpoints({issuer: 'https://api.sanity.io', projectId: PROJECT_ID}),
+      getLocation: () => ({
+        origin: ORIGIN,
+        pathname: '/',
+        search: '?error=access_denied&state=expected-state',
+      }),
+      navigate: vi.fn(),
+      replaceUrl: vi.fn(),
+      withLock: (_name, task) => task(),
+      locksAvailable: false,
+    })
+    await expect(store.handleCallbackUrl!()).resolves.toMatchObject({success: false})
+    const {LoginComponent} = store
+    if (!LoginComponent) throw new Error('expected a LoginComponent')
+    const TestProvider = await createTestProvider()
+
+    render(
+      <TestProvider>
+        <LoginComponent projectId={PROJECT_ID} redirectPath="/structure" />
+      </TestProvider>,
+    )
+
+    expect(await screen.findByTestId('oauth-login-error')).toHaveTextContent('access_denied')
+    expect(screen.queryByTestId('oauth-login-error-hint')).toBeNull()
+  })
+
   it('sends the user to the authorization server with a PKCE challenge', async () => {
     const navigate = vi.fn()
     const store = _createOAuthAuthStore({
@@ -119,7 +198,7 @@ describe('OAuth login component', () => {
       dataset: 'test-dataset',
       clientId: 'oc-test-client',
       clientFactory: createAnonymousClient,
-      endpoints: createOAuthEndpoints({issuer: 'https://api.sanity.io', projectId: 'p1'}),
+      endpoints: createOAuthEndpoints({issuer: 'https://api.sanity.io', projectId: PROJECT_ID}),
       getLocation: () => ({origin: ORIGIN, pathname: '/', search: ''}),
       navigate,
       replaceUrl: vi.fn(),
@@ -151,6 +230,7 @@ describe('OAuth login component', () => {
       code_challenge: expect.stringMatching(/^[A-Za-z0-9_-]{43}$/),
       code_challenge_method: 'S256',
       state: flow.state,
+      resource: `urn:io.sanity:project:${PROJECT_ID}`,
     })
     expect(flow).toMatchObject({redirectUri: ORIGIN, redirectPath: '/structure'})
   })

@@ -34,6 +34,18 @@ describe('oauthEndpoints', () => {
     })
   })
 
+  it('posts the refresh as a form without credentials', async () => {
+    const fetchImpl = respond(200, {access_token: 'a', token_type: 'bearer', expires_in: 3600})
+    await createOAuthEndpoints(HOSTS, fetchImpl).refresh({clientId: 'oc-1', refreshToken: 'r'})
+
+    const [, init] = fetchImpl.mock.calls[0]
+    expect(Object.fromEntries(new URLSearchParams(String(init?.body)))).toEqual({
+      grant_type: 'refresh_token',
+      client_id: 'oc-1',
+      refresh_token: 'r',
+    })
+  })
+
   it('sends token and revoke requests to the project host, which applies its CORS origins', async () => {
     // The issuer's own host only allows a fixed list of origins (localhost, sanity.studio), so a
     // studio anywhere else could never exchange its code there, whatever the project allows.
@@ -63,6 +75,36 @@ describe('oauthEndpoints', () => {
       }),
     )
     expect(`${url.origin}${url.pathname}`).toBe('https://api.sanity.work/v1/auth/oauth/authorize')
+  })
+
+  it('asks for a token limited to the project with an RFC 8707 resource indicator', () => {
+    // Without it the server applies the OAuth application's default resources, which may be
+    // another project: the user signs in and then gets 401s from this one.
+    const url = new URL(
+      createOAuthEndpoints(HOSTS).authorizeUrl({
+        clientId: 'oc-1',
+        redirectUri: 'http://localhost:3333',
+        codeChallenge: 'c',
+        state: 's',
+      }),
+    )
+    expect(url.searchParams.getAll('resource')).toEqual(['urn:io.sanity:project:p1'])
+  })
+
+  it('leaves the resource indicator off the token, refresh and revoke requests', async () => {
+    // The server keeps the resource with the grant and applies it to every token it issues
+    // from it, so only the authorization request names it.
+    const fetchImpl = respond(200, {access_token: 'a', token_type: 'bearer', expires_in: 3600})
+    const endpoints = createOAuthEndpoints(HOSTS, fetchImpl)
+    await endpoints.exchangeCode(EXCHANGE)
+    await endpoints.refresh({clientId: 'oc-1', refreshToken: 'r'})
+    await endpoints.revoke({clientId: 'oc-1', token: 't'})
+
+    expect(fetchImpl).toHaveBeenCalledTimes(3)
+    for (const [url, init] of fetchImpl.mock.calls) {
+      expect(new URL(String(url)).searchParams.has('resource')).toBe(false)
+      expect(new URLSearchParams(String(init?.body)).has('resource')).toBe(false)
+    }
   })
 
   it.each([

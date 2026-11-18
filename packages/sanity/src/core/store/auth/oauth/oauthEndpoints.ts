@@ -221,6 +221,11 @@ export function createOAuthEndpoints(
         code_challenge: codeChallenge,
         code_challenge_method: 'S256',
         state,
+        // RFC 8707: ask for a token limited to this project. Without it the server applies the
+        // OAuth application's default resources, which may be another project. The server keeps
+        // the resource with the grant and reuses it for the code exchange and every refresh, so
+        // only this request names it.
+        resource: `urn:io.sanity:project:${projectId}`,
       }).toString()
       return url.toString()
     },
