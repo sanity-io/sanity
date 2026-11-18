@@ -67,4 +67,19 @@ describe('getLinkStrength', () => {
       getLinkStrength({internalReferences: internal(), crossDatasetReferences: noCrossDataset}),
     ).toBe('unknown')
   })
+
+  it('does not block for a required link held only in a release copy', () => {
+    // Content Lake allows that delete; the release fails later, which the dialog says separately
+    expect(
+      getLinkStrength({
+        internalReferences: {
+          totalCount: 1,
+          references: [
+            {_id: 'versions.r1.publisher', _type: 'publisher', required: false, failsLater: true},
+          ],
+        },
+        crossDatasetReferences: noCrossDataset,
+      }),
+    ).toBe('optional')
+  })
 })

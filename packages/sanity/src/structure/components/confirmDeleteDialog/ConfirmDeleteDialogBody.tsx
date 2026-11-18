@@ -74,23 +74,33 @@ export function ConfirmDeleteDialogBody({
   const schema = useSchema()
   const toast = useToast()
   const {t} = useTranslation(structureLocaleNamespace)
+  const {t: tCore} = useTranslation()
 
   const renderPreviewItem = useCallback(
-    (item: {_id: string; _type: string; required?: boolean}) => {
+    (item: {_id: string; _type: string; required?: boolean; failsLater?: boolean}) => {
       const type = schema.get(item._type)
       if (type) {
         const link = (
           <ReferencePreviewLink type={type} value={item} onClick={onReferenceLinkClick} />
         )
-        // When the links block the action, the ones that do are tagged
-        return linkStrength === 'required' && item.required ? (
+        // A link that blocks the action is tagged Required. A required link held only in a release
+        // copy does not block the delete, but that release fails when published: Fails later
+        const tag =
+          linkStrength === 'required' && item.required ? (
+            <Badge data-testid="required-reference-badge" tone="critical">
+              {t('confirm-delete-dialog.preview-item.required-badge')}
+            </Badge>
+          ) : action === 'delete' && item.failsLater ? (
+            <Badge data-testid="fails-later-reference-badge" tone="caution">
+              {tCore('document-group.delete.reference-tag.fails-later')}
+            </Badge>
+          ) : null
+        return tag ? (
           <Flex alignItems="center" gap={2}>
             <Box flexBasis="0%" flexGrow={1} style={{minWidth: 0}}>
               {link}
             </Box>
-            <Badge data-testid="required-reference-badge" tone="critical">
-              {t('confirm-delete-dialog.preview-item.required-badge')}
-            </Badge>
+            {tag}
           </Flex>
         ) : (
           link
@@ -111,13 +121,19 @@ export function ConfirmDeleteDialogBody({
         </Box>
       )
     },
-    [schema, t, onReferenceLinkClick, linkStrength],
+    [schema, t, tCore, onReferenceLinkClick, linkStrength, action],
   )
   // Required links first: they are the ones to remove before the action can go through
+  const failsLaterCount = (internalReferences?.references ?? []).filter(
+    (reference) => reference.failsLater,
+  ).length
   const sortedReferences = useMemo(
     () =>
       [...(internalReferences?.references ?? [])].sort(
-        (a, b) => Number(Boolean(b.required)) - Number(Boolean(a.required)),
+        (a, b) =>
+          Number(Boolean(b.required)) * 2 +
+          Number(Boolean(b.failsLater)) -
+          (Number(Boolean(a.required)) * 2 + Number(Boolean(a.failsLater))),
       ),
     [internalReferences],
   )
@@ -361,6 +377,13 @@ export function ConfirmDeleteDialogBody({
           )}
         </Flex>
       </Card>
+      {action === 'delete' && linkStrength !== 'required' && failsLaterCount > 0 ? (
+        <Card padding={3} radius={2} tone="caution" data-testid="fails-later-note">
+          <Text size={1} as="div" trim={true} tone="caution">
+            {tCore('document-group.delete.fails-later.text', {count: failsLaterCount})}
+          </Text>
+        </Card>
+      ) : null}
       {/* A blocked action needs no warning about what it would do */}
       {linkStrength === 'required' ? null : (
         <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
