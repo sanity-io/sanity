@@ -70,14 +70,23 @@ function toViews(
  * Every `asset_source` view among the published applications, mapped the same
  * way `useApplications()` in `@sanity/sdk-react` derives each view's loadable
  * module ref (which needs an SDK instance context the Studio does not have).
+ *
+ * An application served by a local dev server shadows deployed applications
+ * and installations with the same name, so a developer running an app locally
+ * gets its local views instead of (not alongside) the deployed ones.
  */
 function findAssetSourceViews(entries: ApplicationsList): FederatedAssetSourceView[] {
+  const localNames = new Set(
+    entries.flatMap((entry) => ('type' in entry && 'local' in entry ? [entry.name] : [])),
+  )
   return entries.flatMap((entry) => {
     if ('type' in entry) {
+      const local = 'local' in entry
+      if (!local && localNames.has(entry.name)) return []
       // An application (`'studio' | 'coreApp'`), deployed or served locally.
       // Deployed interface records are only loadable once the application is
       // built with a federation manifest; local dev servers always are.
-      const loadable = 'local' in entry || entry.config?.mfManifest !== undefined
+      const loadable = local || entry.config?.mfManifest !== undefined
       return toViews(
         entry,
         getApplicationOrigin(entry),
@@ -87,6 +96,7 @@ function findAssetSourceViews(entries: ApplicationsList): FederatedAssetSourceVi
     // A third-party installation: interfaces live on the record itself and
     // the origin derives from the installed application.
     const {application} = entry
+    if (localNames.has(application.name)) return []
     return toViews(
       {id: entry.id, name: application.name, title: application.title},
       getApplicationOrigin({

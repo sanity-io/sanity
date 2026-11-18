@@ -228,4 +228,86 @@ describe('getCurrentFederatedAssetSourceViews', () => {
 
     expect(getCurrentFederatedAssetSourceViews()).toEqual([])
   })
+
+  describe('when an application is also served by a local dev server', () => {
+    const libraryInterface = assetSourceInterface({name: 'library', moduleId: 'views/library'})
+
+    const localMediaLibrary = {
+      ...application({
+        id: 'local-media',
+        type: 'coreApp',
+        name: 'media-library',
+        title: 'Media Library',
+        externalUrl: 'http://localhost:3337',
+        activeDeployment: deployment([libraryInterface]),
+      }),
+      local: {host: 'localhost', port: 3337},
+    } as ListedEntry
+
+    const expectedLocalView = {
+      applicationId: 'local-media',
+      applicationName: 'media-library',
+      applicationTitle: 'Media Library',
+      name: 'library',
+      title: 'library',
+      remote: {name: 'local-media', entry: 'http://localhost:3337/mf-manifest.json'},
+      moduleId: 'local-media/views/library/asset_source',
+      interface: libraryInterface,
+    }
+
+    it('prefers the local dev server over an installation listed before it', () => {
+      publish([
+        installation({
+          id: 'installed-media',
+          application: {
+            title: 'Media Library',
+            name: 'media-library',
+            reference: 'sanity/media-library',
+            slug: 'media',
+            icon: null,
+            organizationId: 'org-1',
+            config: {},
+          },
+          interfaces: [assetSourceInterface({name: 'library', moduleId: 'views/library'})],
+        }),
+        localMediaLibrary,
+      ])
+
+      expect(getCurrentFederatedAssetSourceViews()).toEqual([expectedLocalView])
+    })
+
+    it('prefers the local dev server over a deployed application listed after it', () => {
+      publish([
+        localMediaLibrary,
+        application({
+          id: 'deployed-media',
+          type: 'coreApp',
+          name: 'media-library',
+          title: 'Media Library',
+          externalUrl: 'https://media.example',
+          config: {mfManifest: {}} as ListedApplication['config'],
+          activeDeployment: deployment([
+            assetSourceInterface({name: 'library', moduleId: 'views/library'}),
+          ]),
+        }),
+      ])
+
+      expect(getCurrentFederatedAssetSourceViews()).toEqual([expectedLocalView])
+    })
+
+    it('keeps deployed applications with a different name', () => {
+      publish([
+        localMediaLibrary,
+        installation({
+          id: 'installation-1',
+          interfaces: [assetSourceInterface({name: 'stock', moduleId: 'views/stock'})],
+        }),
+      ])
+
+      expect(getCurrentFederatedAssetSourceViews()?.map((view) => view.applicationId)).toEqual([
+        'local-media',
+        'installation-1',
+      ])
+    })
+  })
 })

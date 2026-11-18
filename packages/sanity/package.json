@@ -70,6 +70,10 @@
       "monorepo": "./src/_exports/desk.ts",
       "default": "./lib/desk.js"
     },
+    "./i18n": {
+      "monorepo": "./src/_exports/i18n.ts",
+      "default": "./lib/i18n.js"
+    },
     "./media-library": {
       "monorepo": "./src/_exports/media-library.ts",
       "default": "./lib/media-library.js"
@@ -114,6 +118,7 @@
       "./cli": "./lib/cli.js",
       "./dashboard": "./lib/dashboard.js",
       "./desk": "./lib/desk.js",
+      "./i18n": "./lib/i18n.js",
       "./media-library": "./lib/media-library.js",
       "./media-library-island-runtime": "./lib/media-library-island-runtime.js",
       "./migrate": "./lib/migrate.js",
@@ -198,7 +203,7 @@
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.3",
     "@sanity/validation": "workspace:*",
-    "@sentry/react": "^11.12.0",
+    "@sentry/react": "^11.13.0",
     "@tanstack/react-virtual": "^3.14.26",
     "@xstate/react": "^6.1.0",
     "clsx": "^2.1.1",
