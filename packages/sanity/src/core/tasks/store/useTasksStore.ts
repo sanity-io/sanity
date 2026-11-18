@@ -93,7 +93,14 @@ function tasksStoreReducer(state: TasksStoreState, action: TasksStoreAction): Ta
     case 'error':
       return {...state, error: action.error, isLoading: false}
     case 'TASKS_SET':
-      return {...state, tasks: tasksReducer(state, action).tasks, isLoading: false}
+      // A later connection's fetch replaces the list. Drop the previous fetch error, or a
+      // consumer keeps treating the tasks that just loaded as failed.
+      return {
+        ...state,
+        tasks: tasksReducer(state, action).tasks,
+        isLoading: false,
+        error: null,
+      }
     case 'TASK_ADDED':
     case 'TASK_DELETED':
     case 'TASK_RECEIVED':

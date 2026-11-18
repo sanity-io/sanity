@@ -296,6 +296,7 @@ import type {
   createHistoryStore,
   createHookFromObservableFactory,
   CreateIfNotExistsMutation,
+  createKeyValueStore,
   CreateLiveDocumentEvent,
   createMockAuthStore,
   CreateMutation,
@@ -985,9 +986,13 @@ import type {
   joinPath,
   KeyedObject,
   KeyedSegment,
+  KeyValueStore,
+  KeyValueStoreValue,
   LatencyReportEvent,
   LATEST,
   LayoutProps,
+  LegacyAuthConfig,
+  LegacyCallbackResult,
   LegacyLayerProvider,
   LegacyThemeProps,
   LegacyThemeTints,
@@ -1100,6 +1105,9 @@ import type {
   NumberOptions,
   NumberRule,
   NumberSchemaType,
+  OAuthAuthConfig,
+  OAuthCallbackResult,
+  OAuthConfig,
   ObjectArrayFormNode,
   ObjectComponents,
   ObjectDefinition,
@@ -1702,6 +1710,7 @@ import type {
   useInStudioFeedback,
   UseInStudioFeedbackReturn,
   useIsReleaseActive,
+  useKeyValueStore,
   useListFormat,
   UseListFormatOptions,
   useLoadable,
@@ -2131,7 +2140,7 @@ describe('sanity', () => {
     expectTypeOf<AsyncConfigPropertyReducer<any, any>>().not.toBeNever()
   })
   test('AuthConfig', () => {
-    expectTypeOf<AuthConfig>().toBeObject()
+    expectTypeOf<AuthConfig>().not.toBeNever()
   })
   test('AuthProbeResult', () => {
     expectTypeOf<AuthProbeResult>().not.toBeNever()
@@ -2766,6 +2775,9 @@ describe('sanity', () => {
   })
   test('CreateIfNotExistsMutation', () => {
     expectTypeOf<CreateIfNotExistsMutation>().toBeObject()
+  })
+  test('createKeyValueStore', () => {
+    expectTypeOf<typeof createKeyValueStore>().toBeFunction()
   })
   test('CreateLiveDocumentEvent', () => {
     expectTypeOf<CreateLiveDocumentEvent>().toBeObject()
@@ -4844,6 +4856,12 @@ describe('sanity', () => {
   test('KeyedSegment', () => {
     expectTypeOf<KeyedSegment>().not.toBeNever()
   })
+  test('KeyValueStore', () => {
+    expectTypeOf<KeyValueStore>().toBeObject()
+  })
+  test('KeyValueStoreValue', () => {
+    expectTypeOf<KeyValueStoreValue>().not.toBeNever()
+  })
   test('LatencyReportEvent', () => {
     expectTypeOf<LatencyReportEvent>().toBeObject()
   })
@@ -4852,6 +4870,12 @@ describe('sanity', () => {
   })
   test('LayoutProps', () => {
     expectTypeOf<LayoutProps>().toBeObject()
+  })
+  test('LegacyAuthConfig', () => {
+    expectTypeOf<LegacyAuthConfig>().toBeObject()
+  })
+  test('LegacyCallbackResult', () => {
+    expectTypeOf<LegacyCallbackResult>().toBeObject()
   })
   test('LegacyLayerProvider', () => {
     expectTypeOf<typeof LegacyLayerProvider>().toBeFunction()
@@ -5190,6 +5214,15 @@ describe('sanity', () => {
   })
   test('NumberSchemaType', () => {
     expectTypeOf<NumberSchemaType>().toBeObject()
+  })
+  test('OAuthAuthConfig', () => {
+    expectTypeOf<OAuthAuthConfig>().toBeObject()
+  })
+  test('OAuthCallbackResult', () => {
+    expectTypeOf<OAuthCallbackResult>().toBeObject()
+  })
+  test('OAuthConfig', () => {
+    expectTypeOf<OAuthConfig>().toBeObject()
   })
   test('ObjectArrayFormNode', () => {
     expectTypeOf<ObjectArrayFormNode<any, any>>().toBeObject()
@@ -7004,6 +7037,9 @@ describe('sanity', () => {
   })
   test('useIsReleaseActive', () => {
     expectTypeOf<typeof useIsReleaseActive>().not.toBeNever()
+  })
+  test('useKeyValueStore', () => {
+    expectTypeOf<typeof useKeyValueStore>().toBeFunction()
   })
   test('useListFormat', () => {
     expectTypeOf<typeof useListFormat>().toBeFunction()

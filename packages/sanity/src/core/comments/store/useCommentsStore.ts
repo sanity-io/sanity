@@ -193,7 +193,14 @@ function commentsStoreReducer(
     case 'error':
       return {...state, error: action.error, loading: false}
     case 'COMMENTS_SET':
-      return {...state, comments: commentsReducer(state, action).comments, loading: false}
+      // A later connection's fetch replaces the list. Drop the previous fetch error, or
+      // CommentsList keeps hiding the comments that just loaded.
+      return {
+        ...state,
+        comments: commentsReducer(state, action).comments,
+        loading: false,
+        error: null,
+      }
     case 'COMMENT_ADDED':
     case 'COMMENT_DELETED':
     case 'COMMENT_RECEIVED':
