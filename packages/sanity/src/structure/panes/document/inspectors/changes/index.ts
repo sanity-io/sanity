@@ -2,9 +2,14 @@ import {RestoreIcon} from '@sanity/icons/Restore'
 import {type DocumentInspector} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 
+import {createLazyComponent} from '../../../../../core/components/lazy/createLazyComponent'
 import {useStructureTool} from '../../../../useStructureTool'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'
-import {ChangesTabs} from './ChangesTabs'
+
+// The inspector panel renders its component under its own `Suspense` boundary, and the
+// implementation is only needed once the inspector is opened, so it stays out of the static import
+// graph of `structureTool()`, which every studio config loads up front.
+const ChangesTabs = createLazyComponent(() => import('./ChangesTabs.lazy'))
 
 export const changesInspector: DocumentInspector = {
   name: HISTORY_INSPECTOR_NAME,
