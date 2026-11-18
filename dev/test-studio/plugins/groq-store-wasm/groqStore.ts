@@ -184,7 +184,7 @@ function globalSearchOn(override: 'on' | 'off' | undefined): boolean {
 
 /**
  * Local snapshots for warm starts: `?groqPersist=on|off`, remembered per browser, on by default.
- * `?groqPersistMaxMB=<n>|off` overrides the host's 512 MiB snapshot cap (empty resets it).
+ * `?groqPersistMaxMB=<n>|off` caps snapshot size per store; by default the host has no size cap, only the storage quota (empty resets it).
  * `?groqPersistBackend=opfs|idb` pins the snapshot storage; `auto` (the default) prefers OPFS
  * and falls back to IndexedDB.
  * Turning snapshots off makes the host delete the ones a previous opt-in left behind.
