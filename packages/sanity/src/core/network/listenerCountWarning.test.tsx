@@ -75,17 +75,6 @@ function createFakeClient(
   } as SanityClient
 }
 
-function countsInMessage(message: string): {total: number; sourceSum: number} {
-  const total = Number(message.match(/This tab has (\d+) open listeners/)?.[1])
-  const sourceList = message.match(/by source: (.*?)\.(?: |$)/)?.[1] ?? ''
-  const otherClients = Number(message.match(/other clients: (\d+)/)?.[1] ?? 0)
-  const attributed = Array.from(sourceList.matchAll(/\((\d+)\)/g)).reduce(
-    (sum, match) => sum + Number(match[1]),
-    0,
-  )
-  return {total, sourceSum: attributed + otherClients}
-}
-
 function getListenerCountSubscriber(): ListenerCountSubscriber {
   const subscriber = subscribeListenerCountsMock.mock.calls[0]?.[0] as
     | ListenerCountSubscriber
@@ -135,12 +124,11 @@ describe('formatListenerLabel', () => {
   const callSite = '/plugins/listener-flood/ListenerFlood.tsx:12'
 
   it.each([
-    [{callSite, owner: 'Parent', tag: 'my-tag'}, `${callSite} (under Parent)`],
-    [{callSite, owner: undefined, tag: 'my-tag'}, callSite],
-    [{callSite: undefined, owner: 'Parent', tag: 'my-tag'}, 'under Parent, tag my-tag'],
-    [{callSite: undefined, owner: 'Parent', tag: undefined}, 'under Parent'],
-    [{callSite: undefined, owner: undefined, tag: 'my-tag'}, 'tag my-tag'],
-    [{callSite: undefined, owner: undefined, tag: undefined}, 'unknown'],
+    [{callSite, owner: 'Parent', tag: 'my-tag'}, callSite],
+    [{callSite: undefined, owner: 'Parent', tag: 'my-tag'}, '<Parent> (tag "my-tag")'],
+    [{callSite: undefined, owner: 'Parent', tag: undefined}, '<Parent>'],
+    [{callSite: undefined, owner: undefined, tag: 'my-tag'}, 'tag "my-tag"'],
+    [{callSite: undefined, owner: undefined, tag: undefined}, undefined],
   ])('labels %o as %s', (parts, expectedLabel) => {
     expect(formatListenerLabel(parts)).toBe(expectedLabel)
   })
@@ -172,6 +160,9 @@ describe('listener count warning', () => {
     subscriber({open: ABOVE_THRESHOLD, peak: ABOVE_THRESHOLD})
     subscriber({open: ABOVE_THRESHOLD + 10, peak: ABOVE_THRESHOLD + 10})
     expect(warnSpy).toHaveBeenCalledTimes(1)
+    expect(warnSpy.mock.calls[0]?.[0]).toBe(
+      `[sanity] This tab has ${ABOVE_THRESHOLD} open listeners. A Studio tab usually has about 12. Too many can stall requests in every open Studio tab.`,
+    )
   })
 
   it('re-arms only once the open count falls to half the threshold', () => {
@@ -195,7 +186,7 @@ describe('listener count warning', () => {
     render(<Parent client={attributedClient} />)
     subscriber({open: ABOVE_THRESHOLD, peak: ABOVE_THRESHOLD})
 
-    expect(warnSpy.mock.calls[0]?.[0]).toContain('under Parent (1)')
+    expect(warnSpy.mock.calls[0]?.[0]).toContain('and 1 of them come from <Parent>.')
   })
 
   it('attributes subscriptions on a derived observable client', () => {
@@ -209,7 +200,7 @@ describe('listener count warning', () => {
 
     subscriber({open: ABOVE_THRESHOLD, peak: ABOVE_THRESHOLD})
 
-    expect(warnSpy.mock.calls[0]?.[0]).toContain('tag derived-source (1)')
+    expect(warnSpy.mock.calls[0]?.[0]).toContain('and 1 of them come from tag "derived-source".')
     subscription.unsubscribe()
   })
 
@@ -224,6 +215,15 @@ describe('listener count warning', () => {
     expect(listenerCountWarning.attributeListeners(partialClient)).toBe(partialClient)
     expect(partialClient.listen).toBe(listen)
     expect(subscribeListenerCountsMock).toHaveBeenCalledTimes(0)
+  })
+
+  it('falls back to the original listen when withConfig returns the same client', () => {
+    const selfConfiguringClient = createFakeClient()
+    selfConfiguringClient.withConfig = () => selfConfiguringClient
+    const attributedClient = listenerCountWarning.attributeListeners(selfConfiguringClient)
+
+    expect(attributedClient.withConfig({})).toBe(attributedClient)
+    attributedClient.listen('*').subscribe().unsubscribe()
   })
 })
 
@@ -252,7 +252,7 @@ describe('listener count warning against the real open count', () => {
     vi.unstubAllGlobals()
   })
 
-  it('breaks the total down into sources that sum to it while subscriptions wait to connect', async () => {
+  it('attributes every open listener to its source while subscriptions wait to connect', async () => {
     vi.resetModules()
     vi.doUnmock('./listenerCount')
     vi.stubGlobal('fetch', () => new Promise<never>(() => undefined))
@@ -268,10 +268,9 @@ describe('listener count warning against the real open count', () => {
     )
     pendingConnections.forEach((openConnection) => openConnection())
 
-    const message = String(warnSpy.mock.calls[0]?.[0])
-    expect(message).toContain(`This tab has ${ABOVE_THRESHOLD} open listeners`)
-    const {total, sourceSum} = countsInMessage(message)
-    expect(sourceSum).toBe(total)
+    expect(warnSpy.mock.calls[0]?.[0]).toContain(
+      `This tab has ${ABOVE_THRESHOLD} open listeners, and ${ABOVE_THRESHOLD} of them come from tag "flood".`,
+    )
 
     subscriptions.forEach((subscription) => subscription.unsubscribe())
     warnSpy.mockRestore()

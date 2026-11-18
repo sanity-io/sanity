@@ -15,10 +15,7 @@ import {resolveAttributedListenerFetch, subscribeListenerCounts} from './listene
 export const LISTENER_WARNING_THRESHOLD = 30
 
 const LISTENER_WARNING_REARM_THRESHOLD = LISTENER_WARNING_THRESHOLD / 2
-const TOP_SOURCE_COUNT = 5
-const SHARED_CONNECTION_STREAM_CAPACITY = 100
 const TYPICAL_STUDIO_TAB_LISTENER_COUNT = 12
-const UNKNOWN_SOURCE_LABEL = 'unknown'
 const STACK_TRACE_LIMIT = 50
 const LIBRARY_FRAME_URL_PATTERNS = [
   '/node_modules/',
@@ -39,13 +36,6 @@ type ListenResult = ReturnType<SanityClient['listen']>
 export interface ListenerWarningSource {
   label: string
   count: number
-}
-
-/** @internal */
-export interface ListenerWarningMessage {
-  message: string
-  open: number
-  sources: ListenerWarningSource[]
 }
 
 /** @internal */
@@ -73,10 +63,18 @@ function isListenable(candidate: ListenableClient | undefined): boolean {
 export function attributeListeners(client: SanityClient): SanityClient {
   if (isListenable(client) && isListenable(client.observable)) {
     startListenerCountWatcher()
+    const originalListen = client.listen.bind(client)
     const withOriginalConfig = client.withConfig.bind(client)
-    client.listen = ((...args: ListenArgs): ListenResult =>
-      withOriginalConfig(attributedFetchConfig(args[2])).listen(...args)) as SanityClient['listen']
-    client.withConfig = (config) => attributeListeners(withOriginalConfig(config))
+    client.listen = ((...args: ListenArgs): ListenResult => {
+      const configuredClient = withOriginalConfig(attributedFetchConfig(args[2]))
+      return configuredClient === client
+        ? originalListen(...args)
+        : configuredClient.listen(...args)
+    }) as SanityClient['listen']
+    client.withConfig = (config) => {
+      const configuredClient = withOriginalConfig(config)
+      return configuredClient === client ? client : attributeListeners(configuredClient)
+    }
     attributeObservableListeners(client.observable)
   }
   return client
@@ -86,13 +84,20 @@ function attributeObservableListeners(
   observableClient: ObservableSanityClient,
 ): ObservableSanityClient {
   if (isListenable(observableClient)) {
+    const originalListen = observableClient.listen.bind(observableClient)
     const withOriginalConfig = observableClient.withConfig.bind(observableClient)
-    observableClient.listen = ((...args: ListenArgs): ListenResult =>
-      withOriginalConfig(attributedFetchConfig(args[2])).listen(
-        ...args,
-      )) as ObservableSanityClient['listen']
-    observableClient.withConfig = (config) =>
-      attributeObservableListeners(withOriginalConfig(config))
+    observableClient.listen = ((...args: ListenArgs): ListenResult => {
+      const configuredClient = withOriginalConfig(attributedFetchConfig(args[2]))
+      return configuredClient === observableClient
+        ? originalListen(...args)
+        : configuredClient.listen(...args)
+    }) as ObservableSanityClient['listen']
+    observableClient.withConfig = (config) => {
+      const configuredClient = withOriginalConfig(config)
+      return configuredClient === observableClient
+        ? observableClient
+        : attributeObservableListeners(configuredClient)
+    }
   }
   return observableClient
 }
@@ -102,7 +107,9 @@ function attributedFetchConfig(
   options: ListenOptions | ResumableListenOptions | undefined,
 ): Partial<ClientConfig> {
   const label = resolveListenerLabel(options)
-  return {resolveFetch: () => resolveAttributedListenerFetch(() => attributeListener(label))}
+  return label
+    ? {resolveFetch: () => resolveAttributedListenerFetch(() => attributeListener(label))}
+    : {}
 }
 
 // Raised only for this capture so nested wrappers don't push the real caller out of the stack
@@ -116,7 +123,9 @@ function captureStack(): string {
   }
 }
 
-function resolveListenerLabel(options: ListenOptions | ResumableListenOptions | undefined): string {
+function resolveListenerLabel(
+  options: ListenOptions | ResumableListenOptions | undefined,
+): string | undefined {
   const callSite = parseCallSite(captureStack())
   const ownerStack = React.captureOwnerStack?.() ?? null
   const owner = ownerStack ? parseOwnerName(ownerStack) : undefined
@@ -124,13 +133,15 @@ function resolveListenerLabel(options: ListenOptions | ResumableListenOptions | 
 }
 
 /** @internal */
-export function formatListenerLabel({callSite, owner, tag}: ListenerLabelParts): string {
-  if (callSite && owner) return `${callSite} (under ${owner})`
+export function formatListenerLabel({
+  callSite,
+  owner,
+  tag,
+}: ListenerLabelParts): string | undefined {
   if (callSite) return callSite
-  if (owner && tag) return `under ${owner}, tag ${tag}`
-  if (owner) return `under ${owner}`
-  if (tag) return `tag ${tag}`
-  return UNKNOWN_SOURCE_LABEL
+  const tagLabel = tag ? `tag "${tag}"` : undefined
+  if (owner && tagLabel) return `<${owner}> (${tagLabel})`
+  return owner ? `<${owner}>` : tagLabel
 }
 
 function isDefaultLibraryFrame(frameUrl: string): boolean {
@@ -219,38 +230,28 @@ function checkListenerCount(open: number): void {
   }
   if (hasWarned || open <= LISTENER_WARNING_THRESHOLD) return
   hasWarned = true
-  console.warn(buildListenerWarningMessage(open, attributionCounts).message)
+  console.warn(buildListenerWarningMessage(open, attributionCounts))
 }
 
 /** @internal */
 export function buildListenerWarningMessage(
   open: number,
   attribution: ReadonlyMap<string, number>,
-): ListenerWarningMessage {
-  const sources = Array.from(attribution, ([label, count]) => ({label, count})).sort(
-    (sourceA, sourceB) => sourceB.count - sourceA.count,
-  )
-  const attributedCount = sources.reduce((total, source) => total + source.count, 0)
-  const otherClientsCount = Math.max(0, open - attributedCount)
-  const topSources = sources.slice(0, TOP_SOURCE_COUNT)
-  const additionalSourceCount = sources.length - topSources.length
-
-  const sentences = [
-    `[Sanity] This tab has ${open} open listeners. A Studio tab usually holds about ${TYPICAL_STUDIO_TAB_LISTENER_COUNT}.`,
-    `Studio tabs share one HTTP/2 connection of about ${SHARED_CONNECTION_STREAM_CAPACITY} streams to the API, so a tab this heavy can stall requests in this tab and others.`,
-    ...(topSources.length > 0
-      ? [`Open listeners by source: ${formatSourceList(topSources, additionalSourceCount)}.`]
-      : []),
-    ...(otherClientsCount > 0 ? [`Listeners from other clients: ${otherClientsCount}.`] : []),
-  ]
-
-  return {message: sentences.join(' '), open, sources}
+): string {
+  const topSource = findTopSource(attribution)
+  const sourceClause = topSource
+    ? `, and ${topSource.count} of them come from ${topSource.label}`
+    : ''
+  return `[sanity] This tab has ${open} open listeners${sourceClause}. A Studio tab usually has about ${TYPICAL_STUDIO_TAB_LISTENER_COUNT}. Too many can stall requests in every open Studio tab.`
 }
 
-function formatSourceList(
-  topSources: ListenerWarningSource[],
-  additionalSourceCount: number,
-): string {
-  const sourceList = topSources.map((source) => `${source.label} (${source.count})`).join(', ')
-  return additionalSourceCount > 0 ? `${sourceList}, and ${additionalSourceCount} more` : sourceList
+function findTopSource(
+  attribution: ReadonlyMap<string, number>,
+): ListenerWarningSource | undefined {
+  return Array.from(attribution, ([label, count]) => ({label, count})).reduce<
+    ListenerWarningSource | undefined
+  >(
+    (topSource, source) => (topSource && topSource.count >= source.count ? topSource : source),
+    undefined,
+  )
 }
