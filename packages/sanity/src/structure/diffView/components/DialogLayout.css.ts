@@ -11,11 +11,4 @@ export const dialogLayout = css({
     'previous-document next-document'`,
   'gridTemplateColumns': '1fr 1fr',
   'gridTemplateRows': 'min-content minmax(0, 1fr)',
-
-  // With the Changes and History panel open, a third column beside the Comparing with side
-  '&[data-changes-panel]': {
-    gridTemplateAreas: `'header header header'
-    'previous-document next-document changes-panel'`,
-    gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr) minmax(320px, 0.7fr)',
-  },
 })

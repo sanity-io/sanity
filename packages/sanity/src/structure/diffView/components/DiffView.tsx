@@ -8,7 +8,6 @@ import {useDiffViewRouter} from '../hooks/useDiffViewRouter'
 import {useDiffViewState} from '../hooks/useDiffViewState'
 import {useScrollMirror} from '../hooks/useScrollMirror'
 import {VersionModeHeader} from '../versionMode/components/VersionModeHeader'
-import {ComparisonChangesPanel} from './ComparisonChangesPanel'
 import {DialogLayout} from './DialogLayout'
 import {DiffViewPane} from './DiffViewPane'
 import {EditReferenceLinkComponent} from './EditReferenceLinkComponent'
@@ -21,7 +20,6 @@ export const DiffView: ComponentType<Pick<DocumentLayoutProps, 'documentId'>> = 
   const [previousPaneElement, setPreviousPaneElement] = useState<HTMLElement | null>(null)
   const [nextPaneElement, setNextPaneElement] = useState<HTMLElement | null>(null)
   const referenceInputOptionsContext = useContext(ReferenceInputOptionsContext)
-  const [changesPanelOpen, setChangesPanelOpen] = useState(false)
 
   const diffViewReferenceInputOptionsContext = useMemo(
     () => ({
@@ -43,15 +41,8 @@ export const DiffView: ComponentType<Pick<DocumentLayoutProps, 'documentId'>> = 
         padding={false}
         __unstable_hideCloseButton
       >
-        <DialogLayout data-changes-panel={changesPanelOpen && documents?.next ? '' : undefined}>
-          {mode === 'version' && (
-            <VersionModeHeader
-              documentId={documentId}
-              state={state}
-              changesPanelOpen={changesPanelOpen}
-              onToggleChangesPanel={() => setChangesPanelOpen((open) => !open)}
-            />
-          )}
+        <DialogLayout>
+          {mode === 'version' && <VersionModeHeader documentId={documentId} state={state} />}
           {state === 'ready' && (
             <>
               <DiffViewPane
@@ -73,18 +64,10 @@ export const DiffView: ComponentType<Pick<DocumentLayoutProps, 'documentId'>> = 
                   syncChannel={syncChannel}
                   // The previous document's edit state is used to calculate the diff inroduced by the next document.
                   compareDocument={documents.previous}
-                  onOpenReviewChanges={() => setChangesPanelOpen(true)}
-                  isReviewChangesOpen={changesPanelOpen}
                 />
               ) : (
                 <EmptyDiffViewPane />
               )}
-              {changesPanelOpen && documents.next ? (
-                <ComparisonChangesPanel
-                  comparing={documents.next}
-                  onClose={() => setChangesPanelOpen(false)}
-                />
-              ) : null}
             </>
           )}
         </DialogLayout>

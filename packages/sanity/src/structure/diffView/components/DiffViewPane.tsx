@@ -71,9 +71,6 @@ interface DiffViewPaneProps {
     type: string
     id: string
   }
-  /** Opens the Changes and History panel; the change bars on this side open it. */
-  onOpenReviewChanges?: () => void
-  isReviewChangesOpen?: boolean
 }
 
 export function DiffViewPane({
@@ -84,8 +81,6 @@ export function DiffViewPane({
   scrollElement,
   syncChannel,
   compareDocument,
-  onOpenReviewChanges,
-  isReviewChangesOpen = false,
 }: DiffViewPaneProps & RefAttributes<HTMLDivElement>) {
   const containerElement = useRef<HTMLDivElement | null>(null)
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
@@ -111,12 +106,12 @@ export function DiffViewPane({
   return (
     <ReviewChangesContext.Provider
       value={{
-        // The Comparing with side's change bars open the Changes and History panel. The Reference
-        // side has no marks, so its bars stay inert.
-        isInteractive: Boolean(onOpenReviewChanges),
-        onOpenReviewChanges: onOpenReviewChanges ?? noop,
+        // Render the change indicators inertly, because the diff view modal does not currently
+        // provide a way to display document inspectors.
+        isInteractive: false,
+        onOpenReviewChanges: noop,
         onSetFocus: noop,
-        isReviewChangesOpen,
+        isReviewChangesOpen: false,
       }}
     >
       <ChangeIndicatorsTracker>
@@ -299,9 +294,7 @@ type UseCompareValueOptions = Pick<DiffViewPaneProps, 'compareDocument'>
 /**
  * Fetch the contents of `compareDocument` for comparison with another version of the document.
  */
-export function useCompareValue({
-  compareDocument,
-}: UseCompareValueOptions): SanityDocument | undefined {
+function useCompareValue({compareDocument}: UseCompareValueOptions): SanityDocument | undefined {
   // No `getTargetScopeId(useTargetDocumentState())` here: the version is derived from the specific
   // compare-document id being diffed, not from the selected perspective.
   const compareDocumentEditState = useEditState(
@@ -318,7 +311,7 @@ export function useCompareValue({
 }
 
 /** The document an id names, out of the version, draft and published of its edit state. */
-export function pickVersion(
+function pickVersion(
   id: string,
   editState: Pick<EditStateFor, 'version' | 'draft' | 'published'>,
 ): SanityDocument | undefined {

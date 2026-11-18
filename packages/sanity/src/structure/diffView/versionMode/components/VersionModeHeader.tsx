@@ -1,7 +1,6 @@
 import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
 import {CloseIcon} from '@sanity/icons/Close'
 import {LockIcon} from '@sanity/icons/Lock'
-import {RestoreIcon} from '@sanity/icons/Restore'
 import {
   Badge,
   // oxlint-disable-next-line no-restricted-imports -- we need more control over how the `Button` component is rendered
@@ -61,11 +60,8 @@ import {versionModeHeaderLayout, versionModeHeaderLayoutSection} from './Version
 export const VersionModeHeader: ComponentType<
   {
     state: 'pending' | 'ready' | 'error'
-    /** Whether the Changes and History panel is open, and the header button that toggles it */
-    changesPanelOpen?: boolean
-    onToggleChangesPanel?: () => void
   } & Pick<DocumentLayoutProps, 'documentId'>
-> = ({documentId, state, changesPanelOpen = false, onToggleChangesPanel}) => {
+> = ({documentId, state}) => {
   const {t} = useTranslation(structureLocaleNamespace)
   const {data: documentVersions} = useDocumentVersions({documentId})
   const {exitDiffView, navigateDiffView} = useDiffViewRouter()
@@ -175,29 +171,14 @@ export const VersionModeHeader: ComponentType<
             )
           )}
         </Flex>
-        <Flex
+        <Box
           padding={3}
-          gap={2}
-          alignItems="center"
           style={{
             justifySelf: 'end',
           }}
         >
-          {onToggleChangesPanel ? (
-            <Button
-              aria-pressed={changesPanelOpen}
-              data-testid="comparison-changes-panel-toggle"
-              disabled={typeof documents?.next === 'undefined'}
-              icon={RestoreIcon}
-              mode="ghost"
-              onClick={onToggleChangesPanel}
-              padding={2}
-              selected={changesPanelOpen}
-              text={t('compare-versions.panel.toggle')}
-            />
-          ) : null}
           <Button icon={CloseIcon} mode="bleed" onClick={exitDiffView} padding={2} />
-        </Flex>
+        </Box>
       </div>
     </header>
   )
