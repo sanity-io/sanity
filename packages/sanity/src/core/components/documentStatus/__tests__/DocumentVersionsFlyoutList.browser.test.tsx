@@ -436,7 +436,7 @@ describe('DocumentVersionsFlyoutList', () => {
       )
     })
 
-    it('puts each avatar on the audience being edited, in one column just before the marks', async () => {
+    it('puts each avatar on the audience being edited, just before the marks, and leaves other rows alone', async () => {
       await renderFlyoutList({
         presence: [
           person('madison', 'Madison Baker', `versions.german.${GROUP_ID}`),
@@ -451,26 +451,35 @@ describe('DocumentVersionsFlyoutList', () => {
 
       const audienceRows = page.getByTestId('document-versions-flyout-row').elements()
       const columns = audienceRows.map((row) =>
-        row.querySelector('[data-testid="document-versions-flyout-row-presence"]')!,
+        row.querySelector('[data-testid="document-versions-flyout-row-presence"]'),
       )
-      expect(columns.every(Boolean)).toBe(true)
       const [defaultColumn, germanColumn, swedishColumn] = columns
-      // Two people on the default audience's draft, one on the German version, none on Swedish
+      // Two people on the default audience's draft, one on the German version, none on Swedish:
+      // a row with no one has no avatar column, so nothing on it moves
       const stackSize = (column: Element) =>
         column.querySelector('[data-ui="AvatarStack"]')?.children.length ?? 0
-      expect(stackSize(defaultColumn)).toBe(2)
-      expect(stackSize(germanColumn)).toBe(1)
-      expect(germanColumn.textContent).toBe('MB')
-      expect(swedishColumn.childElementCount).toBe(0)
+      expect(stackSize(defaultColumn!)).toBe(2)
+      expect(stackSize(germanColumn!)).toBe(1)
+      expect(germanColumn!.textContent).toBe('MB')
+      expect(swedishColumn).toBeNull()
+      // Nor does the footer, with no one editing the audiences it counts
+      expect(
+        page
+          .getByTestId('document-versions-flyout-inventory')
+          .element()
+          .querySelector('[data-testid="document-versions-flyout-row-presence"]'),
+      ).toBeNull()
 
-      // One column: the same left and right edge on every row, ending where the marks begin
-      const boxes = columns.map((column) => column.getBoundingClientRect())
+      // The columns that are there line up, and end where the marks begin
+      const present = [defaultColumn!, germanColumn!]
+      const boxes = present.map((column) => column.getBoundingClientRect())
       for (const box of boxes) {
         expect(box.left).toBeCloseTo(boxes[0].left, 0)
         expect(box.right).toBeCloseTo(boxes[0].right, 0)
       }
-      audienceRows.forEach((row, index) => {
-        const marks = row
+      present.forEach((column, index) => {
+        const marks = column
+          .closest('[data-testid="document-versions-flyout-row"]')!
           .querySelector('[data-testid="document-versions-flyout-row-marks"]')!
           .getBoundingClientRect()
         expect(marks.left - boxes[index].right).toBeLessThanOrEqual(9)

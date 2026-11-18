@@ -47,10 +47,15 @@ const MAX_AUDIENCES = 5
 const MARK_COLUMN_WIDTH = 25
 
 /**
- * The avatar column just before the marks: as wide on every audience row, so the avatars line up.
- * Wide enough for two avatars and a count.
+ * The avatar column just before the marks, on a row with someone on it. Wide enough for two avatars
+ * and a count. A row with no one has no column, so its trailing text keeps its place.
  */
 const AVATAR_COLUMN_WIDTH = 52
+
+/** The people on a row, or none: only a row with someone on it gets the avatar column. */
+function nonEmpty(people: RowPresence[] | undefined): RowPresence[] | undefined {
+  return people && people.length > 0 ? people : undefined
+}
 
 /** At most this many avatars, then a count of the others. */
 const MAX_AVATARS = 2
@@ -528,9 +533,7 @@ export function DocumentVersionsFlyoutList(props: {
             key={audienceKey(group)}
             now={now}
             onClick={() => onPick(group.variantId ?? null)}
-            presence={
-              people.length > 0 ? (presenceByAudience.get(audienceKey(group)) ?? []) : undefined
-            }
+            presence={nonEmpty(presenceByAudience.get(audienceKey(group)))}
             variantsEnabled={variantsEnabled}
             viewed={
               viewingDocument &&
@@ -549,7 +552,7 @@ export function DocumentVersionsFlyoutList(props: {
         <FlyoutRow
           renderMedia={() => <Icon icon={DocumentsIcon} size={2} />}
           onClick={onOpenInventory}
-          presence={people.length > 0 ? footerPeople : undefined}
+          presence={nonEmpty(footerPeople)}
           testId="document-versions-flyout-inventory"
           title={
             <Flex alignItems="center" gap={2} justifyContent="space-between">
