@@ -160,6 +160,20 @@ describe('toVersionStub', () => {
       })
     })
 
+    it('reads a release version resolved while its release had not loaded', () => {
+      // useDocumentVersions resolves _system with the loaded releases: the group, but no release.
+      const system = {
+        bundleId: 'rSpring',
+        group: {_ref: 'jane', _weak: true as const},
+        scopeId: 'rSpring',
+      }
+      expect(toVersionStub({...raw, _id: 'versions.rSpring.jane', _system: system})).toMatchObject({
+        groupId: 'jane',
+        kind: 'release',
+        bundle: '_.releases.rSpring',
+      })
+    })
+
     it('keeps the dots of a group id inside a release version id', () => {
       expect(
         toVersionStub({...raw, _id: 'versions.rSpring.authors.jane', _system: null}),

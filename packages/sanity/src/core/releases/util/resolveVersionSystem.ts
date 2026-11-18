@@ -102,7 +102,17 @@ export function resolveVersionSystem(
   releases: ReleaseDocument[] | undefined,
 ): DocumentSystem {
   const group = version._system?.group
-  if (group) return normalizeVariants({...version._system, group})
+  if (group) {
+    const system = normalizeVariants({...version._system, group})
+    // A release version resolved once while its release had not loaded carries the group and its
+    // bundle, but no release. Name the release from the id, so it still reads as a release version.
+    const versionId = getVersionFromId(version._id)
+    if (system.release || system.variants?.[0] || !versionId || system.bundleId !== versionId) {
+      return system
+    }
+    const release = getReleaseRef(versionId, releases)
+    return release ? {...system, release} : system
+  }
 
   return normalizeVariants({
     ...version._system,
