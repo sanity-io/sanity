@@ -296,7 +296,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
    * @returns list item builder based on child provided. See {@link ListItemBuilder}
    */
   child(child: UnserializedListItemChild): ListItemBuilder {
-    return this.clone({child})
+    return this.clone({child, singletonDocumentId: undefined})
   }
 
   /**
@@ -313,7 +313,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
    * @returns list item builder based on schema type provided. See {@link ListItemBuilder}
    */
   schemaType(schemaType: SchemaType | string): ListItemBuilder {
-    return this.clone({schemaType})
+    return this.clone({schemaType, singletonDocumentId: undefined})
   }
 
   /**

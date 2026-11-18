@@ -93,7 +93,8 @@ export function PaneItem(props: PaneItemProps) {
   const documentPreviewStore = useDocumentPreviewStore()
   const numberFormat = useNumberFormat()
   const {ChildLink} = usePaneRouter()
-  const documentPresence = useDocumentPresence(id)
+  const documentId = singletonDocumentId ?? id
+  const documentPresence = useDocumentPresence(documentId)
   const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
   const [clicked, setClicked] = useState<boolean>(false)
 
@@ -195,9 +196,11 @@ export function PaneItem(props: PaneItemProps) {
       tone="inherit"
     >
       {preview}
-      {preloading && schemaType?.name && value && isSanityDocument(value) && (
-        <PreloadDocumentPane documentId={id} documentType={schemaType.name} />
-      )}
+      {preloading &&
+        schemaType?.name &&
+        (singletonDocumentId || (value && isSanityDocument(value))) && (
+          <PreloadDocumentPane documentId={documentId} documentType={schemaType.name} />
+        )}
     </PreviewCard>
   )
 }
