@@ -17,10 +17,11 @@ type NavigateDiffView = (
   } & Partial<
     Record<
       'previousDocument' | 'nextDocument',
+      // null removes that side, so a side left over from before cannot linger
       {
         type: string
         id: string
-      }
+      } | null
     >
   >,
 ) => void
@@ -61,6 +62,9 @@ export function useDiffViewRouter(): DiffViewRouter {
             }
           : {}),
       }
+
+      if (nextDocument === null) delete next[DIFF_VIEW_NEXT_DOCUMENT_SEARCH_PARAMETER]
+      if (previousDocument === null) delete next[DIFF_VIEW_PREVIOUS_DOCUMENT_SEARCH_PARAMETER]
 
       navigate({
         ...routerState,

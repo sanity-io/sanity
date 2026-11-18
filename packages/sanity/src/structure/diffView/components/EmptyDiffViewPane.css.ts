@@ -12,3 +12,13 @@ export const emptyDiffViewPane = css({
   borderLeft: '1px solid var(--card-border-color)',
   textAlign: 'center',
 })
+
+/** A side whose version no longer exists: its message, centred in the pane. */
+export const missingVersion = css({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '100%',
+  padding: '2rem',
+  textAlign: 'center',
+})

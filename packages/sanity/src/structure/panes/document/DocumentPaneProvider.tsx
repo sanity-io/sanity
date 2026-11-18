@@ -517,6 +517,8 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
             type: documentType,
             id: value._id,
           },
+          // Clear a right side left in the URL, so the view opens empty on that side
+          nextDocument: null,
         })
         return true
       }
