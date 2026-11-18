@@ -125,23 +125,33 @@ const FIELDS = [
   {
     testId: 'create-variant-variant-menu',
     name: 'About Variant',
-    text: 'The audience this version is for.',
+    text: 'The audience this version is for',
   },
   {
     testId: 'create-variant-target-menu',
     name: 'About Add to',
-    text: 'The draft or release this version joins.',
+    text: 'The draft or release this version joins',
   },
   {
     testId: 'create-variant-base-menu',
     name: 'About Start from',
-    text: 'Pick a version to copy, then change only what should differ.',
+    text: 'Pick a version to copy, then change only what should differ',
   },
 ]
 
+// Closed tooltips stay mounted, so look only at the open ones
+function openTooltips(): HTMLElement[] {
+  return [...document.querySelectorAll<HTMLElement>('[data-ui="Tooltip"]')].filter((tooltip) =>
+    tooltip.checkVisibility({visibilityProperty: true}),
+  )
+}
+function openTooltipTexts(): string[] {
+  return openTooltips().map((tooltip) => tooltip.textContent ?? '')
+}
+
 describe('Create variant form: info buttons', () => {
   it.each(FIELDS)(
-    '$name is named and shows its tooltip on focus, beside the form',
+    '$name is named and shows its tooltip on focus, above its button',
     async (field) => {
       await open()
       const button = page.getByRole('button', {name: field.name, exact: true})
@@ -149,15 +159,13 @@ describe('Create variant form: info buttons', () => {
       await expect.element(button).toHaveAttribute('data-testid', `${field.testId}-info`)
 
       button.element().focus()
-      const tooltip = page.getByTestId(`${field.testId}-info-tooltip`)
-      await expect.element(tooltip).toBeVisible()
-      await expect.element(tooltip).toHaveTextContent(field.text)
+      await expect.poll(() => openTooltipTexts()).toEqual([field.text])
+      const tooltip = page.elementLocator(openTooltips()[0])
 
-      // The tooltip opens to the left of the form and never covers any of its fields
+      // Studio's standard tooltip, above the button, so it never covers the select under it
       const select = page.getByTestId(`${field.testId}-button`).element().getBoundingClientRect()
-      const form = page.getByTestId('create-variant-form').element().getBoundingClientRect()
       const box = tooltip.element().getBoundingClientRect()
-      expect(box.right).toBeLessThanOrEqual(form.left)
+      expect(box.bottom).toBeLessThanOrEqual(button.element().getBoundingClientRect().top)
 
       // The button stays within the gap above its select
       const buttonBox = button.element().getBoundingClientRect()
@@ -171,9 +179,7 @@ describe('Create variant form: info buttons', () => {
   it('shows a tooltip on hover', async () => {
     await open()
     await userEvent.hover(page.getByRole('button', {name: 'About Start from', exact: true}))
-    await expect
-      .element(page.getByTestId('create-variant-base-menu-info-tooltip'))
-      .toHaveTextContent(FIELDS[2].text)
+    await expect.poll(() => openTooltipTexts()).toEqual([FIELDS[2].text])
   })
 
   it('leaves the selects named by their titles alone', async () => {

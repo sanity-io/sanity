@@ -649,7 +649,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.create-variant.filter-placeholder': 'Search…',
   /** The tooltip of the info button after the "Start from" title in the variant creation form: what the new version copies, and which version "Nearest version" picks */
   'document-group.create-variant.form.base-info':
-    'Pick a version to copy, then change only what should differ.',
+    'Pick a version to copy, then change only what should differ',
   /** The accessible name of the info button after the "Start from" title in the variant creation form */
   'document-group.create-variant.form.base-info-label': 'About Start from',
   /** The title of the variant creation form's picker for the version the new variant starts from */
@@ -668,7 +668,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The hint of the variant creation form's picker for the draft or release, shown while nothing is picked */
   'document-group.create-variant.form.target-hint': 'Choose where it goes',
   /** The tooltip of the info button after the "Add to" title in the variant creation form: where the new version goes and when it is published */
-  'document-group.create-variant.form.target-info': 'The draft or release this version joins.',
+  'document-group.create-variant.form.target-info': 'The draft or release this version joins',
   /** The accessible name of the info button after the "Add to" title in the variant creation form */
   'document-group.create-variant.form.target-info-label': 'About Add to',
   /** The title of the variant creation form's picker for the draft or release to create the variant in */
@@ -676,7 +676,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The hint of the variant creation form's picker for the variant definition, shown while nothing is picked */
   'document-group.create-variant.form.variant-hint': 'Choose who sees it',
   /** The tooltip of the info button after the "Variant" title in the variant creation form: who sees the new version */
-  'document-group.create-variant.form.variant-info': 'The audience this version is for.',
+  'document-group.create-variant.form.variant-info': 'The audience this version is for',
   /** The accessible name of the info button after the "Variant" title in the variant creation form */
   'document-group.create-variant.form.variant-info-label': 'About Variant',
   /** The text of the inventory header button that opens the variant creation form */
