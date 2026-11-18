@@ -18,4 +18,20 @@ export const readOnlyPane = css({
   '& textarea, & textarea[data-as="textarea"]': {
     resize: 'none',
   },
+  // The field marks say which fields differ; the change bar beside a field would open a history
+  // this view does not have
+  '& [data-testid="change-bar"]': {
+    display: 'none',
+  },
+  // What differs from the Reference: added text in green and removed text in red, whoever made
+  // the change and whatever release it is in. User colours leave out green and red, so these
+  // never read as a person. Light and dark tints are Sanity's green and red 100/700 and 900/200.
+  '& ins': {
+    backgroundColor: 'light-dark(#c5fce8, #06231a)',
+    color: 'light-dark(#015133, #a9f9dc)',
+  },
+  '& del': {
+    backgroundColor: 'light-dark(#ffe7e5, #321615)',
+    color: 'light-dark(#8b2018, #ffdedc)',
+  },
 })
