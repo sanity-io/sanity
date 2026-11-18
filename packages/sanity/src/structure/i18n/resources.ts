@@ -613,8 +613,16 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Section header listing the releases the document has a version in, with how many */
   'document-panel-navigation.releases.section.with-document':
     'Releases with this document ({{count}})',
-  /** Section header listing the releases the document has no version in */
+  /**
+   * Section header listing the releases the document has no version in
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-panel-navigation.releases.section.other': 'Other releases',
+  /** Section header listing the releases the document can be added to, when it is in none yet */
+  'document-panel-navigation.releases.section.add-to': 'Add this document to',
+  /** Section header listing the releases the document can be added to, below the ones it is already in */
+  'document-panel-navigation.releases.section.add-to-more': 'Add to more releases',
   /** Placeholder of the search field in the scheduled drafts menu of the document header */
   'document-panel-navigation.scheduled-drafts.filter-placeholder': 'Search scheduled drafts…',
   /** Label of the scheduled drafts menu trigger in the document header when none is open */
