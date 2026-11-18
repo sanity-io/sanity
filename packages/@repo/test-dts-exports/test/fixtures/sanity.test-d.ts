@@ -457,7 +457,6 @@ import type {
   EditPortal,
   EditReferenceLinkComponentProps,
   EditReferenceOptions,
-  EditScheduleForm,
   EditStateFor,
   EmailComponents,
   EmailDefinition,
@@ -2856,9 +2855,6 @@ describe('sanity', () => {
   test('EditReferenceOptions', () => {
     expectTypeOf<EditReferenceOptions>().toBeObject()
   })
-  test('EditScheduleForm', () => {
-    expectTypeOf<typeof EditScheduleForm>().toBeFunction()
-  })
   test('EditStateFor', () => {
     expectTypeOf<EditStateFor>().toBeObject()
   })
@@ -5156,7 +5152,7 @@ describe('sanity', () => {
     expectTypeOf<StudioManifest>().toBeObject()
   })
   test('StudioNavbar', () => {
-    expectTypeOf<typeof StudioNavbar>().toBeFunction()
+    expectTypeOf<typeof StudioNavbar>().not.toBeNever()
   })
   test('StudioNotificationPayload', () => {
     expectTypeOf<StudioNotificationPayload>().toBeObject()

@@ -103,7 +103,6 @@ const KEPT_FOR_COMPATIBILITY: Record<string, Readonly<Record<string, string>>> =
     // several say "the next major" in so many words — rather than by the internals moving, which
     // is the reasoning #14842 established for a deprecated export.
     defaultTheme: 'deprecated; removal governed by its deprecation',
-    EditScheduleForm: 'deprecated; removal governed by its deprecation',
     ImperativeToast: 'deprecated; removal governed by its deprecation',
     isPerspectiveRaw: 'deprecated; removal governed by its deprecation',
     ObjectMembers: 'deprecated; removal governed by its deprecation',
