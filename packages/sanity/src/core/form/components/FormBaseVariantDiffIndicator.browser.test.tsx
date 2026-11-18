@@ -10,10 +10,6 @@ import {FormBaseVariantDiffIndicator} from './FormBaseVariantDiffIndicator'
 const LABEL = 'Differs from'
 
 /** Shrinks the glyph below the target, as a smaller mark would, so the button's own minimum is what is measured. */
-function SmallGlyph() {
-  return <style>{'[data-testid="base-variant-diff-mark"] > * { width: 8px; height: 8px; }'}</style>
-}
-
 function Fixture({changedFromBaseVariant}: {changedFromBaseVariant: boolean}) {
   return (
     <TestWrapper schemaTypes={[]}>
@@ -63,21 +59,28 @@ describe('FormBaseVariantDiffIndicator', () => {
     expect(document.activeElement).toBe(button)
   })
 
-  it('has a hit area of at least 24x24 pixels, even with an 8px glyph', async () => {
-    void render(
-      <>
-        <SmallGlyph />
-        <Fixture changedFromBaseVariant />
-      </>,
-    )
+  it('takes the pointer anywhere in a 32x32 area around its centre', async () => {
+    void render(<Fixture changedFromBaseVariant />)
 
     const mark = page.getByRole('button', {name: 'Differs from Default Draft'})
     await expect.element(mark).toBeVisible()
-    const glyph = mark.element().firstElementChild?.getBoundingClientRect()
-    expect(glyph?.width).toBeLessThanOrEqual(8)
-    const {width, height} = mark.element().getBoundingClientRect()
-    expect(width).toBeGreaterThanOrEqual(24)
-    expect(height).toBeGreaterThanOrEqual(24)
+    const button = mark.element()
+    const rect = button.getBoundingClientRect()
+    const centreX = rect.left + rect.width / 2
+    const centreY = rect.top + rect.height / 2
+    // 15px from the centre on each side lands inside a 32x32 target, outside the 24x24 box
+    for (const [x, y] of [
+      [centreX - 15, centreY],
+      [centreX + 15, centreY],
+      [centreX, centreY - 15],
+      [centreX, centreY + 15],
+    ]) {
+      expect(button.contains(document.elementFromPoint(x, y))).toBe(true)
+    }
+    // The layout box stays 24x24, so the field title row keeps its height
+    expect(rect.height).toBe(24)
+    // The glyph is the row size, a step up from the inline size
+    expect(button.querySelector('[data-size]')?.getAttribute('data-size')).toBe('row')
   })
 
   it('shows the tooltip on hover as well as focus', async () => {

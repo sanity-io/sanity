@@ -39,15 +39,22 @@ export const chipGlyph = css({
  * icon so a keyboard user can see where focus is.
  */
 export const markButton = css({
-  // A 24x24 target (WCAG 2.5.8) whatever the glyph's own size: the inline variant mark is 8px.
-  'minWidth': '24px',
-  'minHeight': '24px',
+  'position': 'relative',
   'display': 'inline-flex',
   'alignItems': 'center',
   'justifyContent': 'center',
-  // A 24x24 target whatever the glyph's size (WCAG 2.5.8): the drawn rhombus can be smaller.
+  // A 24x24 box in the layout whatever the glyph's size (WCAG 2.5.8), so the field title row keeps
+  // its height. The drawn rhombus is smaller.
   'minWidth': '24px',
   'minHeight': '24px',
+  // The pointer target reaches 32x32 past that box, so the tooltip is easy to reach with a mouse
+  // without moving anything around the mark.
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    inset: '-4px',
+    borderRadius: '50%',
+  },
   'padding': 0,
   'border': 0,
   'background': 'transparent',
