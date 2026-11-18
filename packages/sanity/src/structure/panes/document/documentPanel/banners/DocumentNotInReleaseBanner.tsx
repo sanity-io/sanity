@@ -144,7 +144,10 @@ export function DocumentNotInReleaseBanner({
             componentProps={{
               currentRelease,
               fallbackTitle: tCore('release.placeholder-untitled-release'),
-              lead: isAnonymousBundle ? undefined : t('banners.release.lead.release'),
+              // The kind before the chip: a bundle with no release document is a bundle
+              lead: isAnonymousBundle
+                ? t('banners.release.lead.bundle')
+                : t('banners.release.lead.release'),
             }}
           />
         </Text>
