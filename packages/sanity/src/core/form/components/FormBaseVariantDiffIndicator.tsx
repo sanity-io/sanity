@@ -48,13 +48,18 @@ export const FormBaseVariantDiffIndicator: ComponentType<Props> = ({changedFromB
  */
 function DiffersFromMark() {
   const {t} = useTranslation()
+  const {isReferenceSlot} = useComparedSlot()
   const slotName = useComparedSlotName()
   return (
     <Tooltip content={<DiffersFrom />} placement="left">
       <button
         type="button"
         className={markButton}
-        aria-label={`${t('changes.from-base-variant.differs-from')} ${t('document-group.base-variant')} ${slotName}`}
+        aria-label={
+          isReferenceSlot
+            ? `${t('changes.from-base-variant.differs-from')} ${slotName}`
+            : `${t('changes.from-base-variant.differs-from')} ${t('document-group.base-variant')} ${slotName}`
+        }
         data-testid="base-variant-diff-mark"
       >
         <Icon
@@ -82,7 +87,10 @@ function useComparedSlot() {
   // `compared` is `'drafts'`, `'published'` or a release id. The release comes from the perspective
   // when it is that release, and otherwise from the active releases, so the chip never reads Draft
   // for a comparison that was not the draft.
-  const isReleaseSlot = Boolean(compared) && compared !== 'drafts' && compared !== 'published'
+  // `'reference'`: the comparison view, whose marks compare with its Reference side
+  const isReferenceSlot = compared === 'reference'
+  const isReleaseSlot =
+    Boolean(compared) && !isReferenceSlot && compared !== 'drafts' && compared !== 'published'
   const comparedReleaseDocumentId = isReleaseSlot
     ? getReleaseDocumentIdFromReleaseId(compared as string)
     : undefined
@@ -93,12 +101,13 @@ function useComparedSlot() {
           selectedPerspective._id === comparedReleaseDocumentId
         ? selectedPerspective
         : activeReleases.get(comparedReleaseDocumentId)
-  return {compared, isReleaseSlot, release}
+  return {compared, isReferenceSlot, isReleaseSlot, release}
 }
 
 function useComparedSlotName(): string {
   const {t} = useTranslation()
-  const {compared, isReleaseSlot, release} = useComparedSlot()
+  const {compared, isReferenceSlot, isReleaseSlot, release} = useComparedSlot()
+  if (isReferenceSlot) return t('changes.from-reference.reference')
   if (release) return release.metadata.title || t('release.placeholder-untitled-release')
   if (isReleaseSlot) return compared ?? ''
   if (compared === 'published') return t('release.chip.published')
@@ -121,7 +130,28 @@ function ChipGlyph({children}: {children: ReactNode}) {
  */
 function DiffersFrom() {
   const {t} = useTranslation()
-  const {compared, isReleaseSlot, release} = useComparedSlot()
+  const {compared, isReferenceSlot, isReleaseSlot, release} = useComparedSlot()
+  if (isReferenceSlot) {
+    // The comparison view: the Reference can be any version, so the chip names its role
+    return (
+      <Flex
+        alignItems="center"
+        data-testid="base-variant-diff-tooltip"
+        gap={1}
+        padding={1}
+        flexWrap="wrap"
+      >
+        <Text muted size={1}>
+          {t('changes.from-base-variant.differs-from')}
+        </Text>
+        <Text size={1}>
+          <VersionInlineBadge $tone="default" className={chip}>
+            {t('changes.from-reference.reference')}
+          </VersionInlineBadge>
+        </Text>
+      </Flex>
+    )
+  }
   const slot = release ? (
     <VersionInlineBadge $tone={getReleaseTone(release)} className={chip}>
       <ChipGlyph>
