@@ -33,6 +33,7 @@ import {
 import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
 import {resolveListenerCountingFetch} from '../network/listenerCount'
+import {attributeListeners} from '../network/listenerCountWarning'
 import {acceptReleaseMetadataFields} from '../releases/metadata/compileReleaseMetadataType'
 import {createSchema} from '../schema/createSchema'
 import {createLegacyAuthStore} from '../store/auth/legacy/createLegacyAuthStore'
@@ -670,7 +671,8 @@ function resolveSource({
     }
 
     if (!clients[options.apiVersion]) {
-      clients[options.apiVersion] = client.withConfig(options)
+      const versionedClient = client.withConfig(options)
+      clients[options.apiVersion] = isDev ? attributeListeners(versionedClient) : versionedClient
     }
 
     return clients[options.apiVersion]
