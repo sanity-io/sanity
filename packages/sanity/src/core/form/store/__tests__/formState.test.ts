@@ -581,7 +581,7 @@ describe('hidden', () => {
       expectedCalls: {
         prepareArrayOfObjectsInputState: 0,
         prepareArrayOfObjectsMember: 0,
-        prepareArrayOfPrimitivesInputState: 1,
+        prepareArrayOfPrimitivesInputState: 0,
         prepareArrayOfPrimitivesMember: 0,
         prepareFieldMember: 8,
         prepareObjectInputState: 1,

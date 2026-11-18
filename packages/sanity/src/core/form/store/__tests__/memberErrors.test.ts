@@ -9,6 +9,10 @@ import {beforeEach, describe, expect, test} from 'vitest'
 
 import {pathToString} from '../../../field/paths/helpers'
 import {createSchema} from '../../../schema/createSchema'
+import {
+  createCallbackResolver,
+  type RootCallbackResolver,
+} from '../conditional-property/createCallbackResolver'
 import {MAX_FIELD_DEPTH} from '../constants'
 import {
   createPrepareFormState,
@@ -19,7 +23,7 @@ import {isObjectFormNode} from '../types/asserters'
 import {type FieldError} from '../types/memberErrors'
 import {type FieldMember} from '../types/members'
 import {type ObjectFormNode} from '../types/nodes'
-import {DEFAULT_PROPS} from './shared'
+import {DEFAULT_PROPS, MOCK_USER} from './shared'
 
 function nestObjectField(remaining: number): FieldDefinition {
   if (remaining === 1) {
@@ -67,6 +71,30 @@ const schema = createSchema({
           ],
         }),
         nestObjectField(MAX_FIELD_DEPTH),
+        defineField({
+          name: 'archivedQuotes',
+          type: 'array',
+          hidden: true,
+          of: [{type: 'object', fields: [defineField({name: 'quoteText', type: 'string'})]}],
+        }),
+        defineField({
+          name: 'archivedTags',
+          type: 'array',
+          hidden: true,
+          of: [{type: 'string'}],
+        }),
+        defineField({
+          name: 'archivedAuthor',
+          type: 'object',
+          hidden: true,
+          fields: [defineField({name: 'firstName', type: 'string'})],
+        }),
+        defineField({
+          name: 'reviews',
+          type: 'array',
+          hidden: ({parent}) => !parent?.title,
+          of: [{type: 'object', fields: [defineField({name: 'reviewText', type: 'string'})]}],
+        }),
       ],
     }),
   ],
@@ -79,14 +107,17 @@ if (!compiledBook || compiledBook.jsonType !== 'object') {
 const bookType: ObjectSchemaType = compiledBook
 
 let prepareFormState!: PrepareFormState
+let prepareHiddenState!: RootCallbackResolver<'hidden'>
 
 beforeEach(() => {
   prepareFormState = createPrepareFormState()
+  prepareHiddenState = createCallbackResolver({property: 'hidden'})
 })
 
 function prepare(documentValue: Record<string, unknown>): ObjectFormNode {
   const options: RootFormStateOptions = {
     ...DEFAULT_PROPS,
+    hidden: prepareHiddenState({currentUser: MOCK_USER, documentValue, schemaType: bookType}),
     schemaType: bookType,
     documentValue,
     comparisonValue: documentValue,
@@ -311,6 +342,56 @@ describe('object member errors', () => {
         value: 'Ada',
       }),
     )
+  })
+})
+
+describe('hidden field member errors', () => {
+  function memberNames(node: ObjectFormNode): string[] {
+    return node.members.flatMap((member) => {
+      if (member.kind === 'error') return [member.fieldName]
+      if (member.kind === 'field') return [member.name]
+      return []
+    })
+  }
+
+  test.each([
+    ['items missing _key', [{_key: 'q1', quoteText: 'has a key'}, {quoteText: 'missing a key'}]],
+    [
+      'duplicate _key values',
+      [
+        {_key: 'shared', quoteText: 'first'},
+        {_key: 'shared', quoteText: 'second'},
+      ],
+    ],
+    ['a primitive among objects', [{_key: 'q1', quoteText: 'ok'}, 'bare string']],
+    ['a non-array value', 'not-an-array'],
+  ])('renders nothing for a hidden array of objects holding %s', (_, archivedQuotes) => {
+    const state = prepare({_id: 'book-1', _type: 'book', archivedQuotes})
+
+    expect(memberNames(state)).not.toContain('archivedQuotes')
+    expect(fieldMember(state, 'title').kind).toBe('field')
+  })
+
+  test('renders nothing for a hidden array of primitives holding a non-array value', () => {
+    const state = prepare({_id: 'book-1', _type: 'book', archivedTags: {not: 'an array'}})
+
+    expect(memberNames(state)).not.toContain('archivedTags')
+  })
+
+  test('renders nothing for a hidden object field holding a non-object value', () => {
+    const state = prepare({_id: 'book-1', _type: 'book', archivedAuthor: 'Ada'})
+
+    expect(memberNames(state)).not.toContain('archivedAuthor')
+  })
+
+  test('reports MISSING_KEYS once a conditionally hidden array becomes visible', () => {
+    const reviews = [{reviewText: 'missing a key'}]
+
+    const hiddenState = prepare({_id: 'book-1', _type: 'book', reviews})
+    expect(memberNames(hiddenState)).not.toContain('reviews')
+
+    const visibleState = prepare({_id: 'book-1', _type: 'book', title: 'Dune', reviews})
+    expect(errorMember(visibleState, 'reviews').error.type).toBe('MISSING_KEYS')
   })
 })
 

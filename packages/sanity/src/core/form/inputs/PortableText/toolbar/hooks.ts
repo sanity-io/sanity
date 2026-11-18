@@ -1,5 +1,4 @@
 import {
-  type HotkeyOptions,
   PortableTextEditor,
   usePortableTextEditor,
   usePortableTextEditorSelection,
@@ -15,6 +14,7 @@ import {useCallback, useMemo} from 'react'
 import {type FIXME} from '../../../../FIXME'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useUnique} from '../../../../util/useUnique'
+import {type PortableTextInputHotkeys} from '../hooks/useHotKeys'
 import {getPTEToolbarActionGroups} from './helpers'
 import {type BlockStyleItem, type PTEToolbarAction, type PTEToolbarActionGroup} from './types'
 import {useApplicableSchema} from './useApplicableSchema'
@@ -52,7 +52,7 @@ export function useActionGroups({
   resolveInitialValue,
   disabled,
 }: {
-  hotkeys: HotkeyOptions
+  hotkeys: PortableTextInputHotkeys
   onMemberOpen: (relativePath: Path) => void
   resolveInitialValue: (type: ObjectSchemaType) => FIXME
   disabled: boolean

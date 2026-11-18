@@ -3,8 +3,15 @@ import {useMemo, useState} from 'react'
 
 import {usePortableTextMemberSchemaTypes} from '../contexts/PortableTextMemberSchemaTypes'
 
+/**
+ * The hotkeys the input hands to the editor's `hotkeys` prop: the default decorator hotkeys, the
+ * fullscreen toggle and the deprecated `hotkeys` input prop.
+ */
+// oxlint-disable-next-line no-deprecated -- custom hotkeys receive the React event and a PortableTextEditor, and the defaults match by key code; keyboard.keydown Behaviors offer neither
+export type PortableTextInputHotkeys = HotkeyOptions
+
 // This hook will create final hotkeys for the editor based on those from props.
-export function useHotkeys(hotkeys: HotkeyOptions): HotkeyOptions {
+export function useHotkeys(hotkeys: PortableTextInputHotkeys): PortableTextInputHotkeys {
   const schemaTypes = usePortableTextMemberSchemaTypes()
   const [initialHotkeys] = useState(() => hotkeys)
 

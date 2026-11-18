@@ -31,8 +31,7 @@ import {type UnresolvedSingletonDefinition} from './types'
  * })
  * ```
  *
- * @hidden
- * @beta
+ * @public
  */
 export function defineSingleton<const Type extends Exclude<UnresolvedSingletonDefinition, string>>(
   definition: Type,

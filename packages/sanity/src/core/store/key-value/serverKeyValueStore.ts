@@ -1,3 +1,4 @@
+/* oxlint-disable no-deprecated -- this module implements the deprecated key-value store */
 import {type SanityClient} from '@sanity/client'
 import {dequal as isEqual} from 'dequal/lite'
 import {concat, type Observable, Subject} from 'rxjs'

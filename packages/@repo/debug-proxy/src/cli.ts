@@ -107,9 +107,26 @@ const flags = run(
       }),
       3051,
     ),
-    forceHttp1: repeatableFlag('--force-http1', {
-      description: message`don't offer h2 in the TLS handshake, forcing clients down to HTTP/1.1 over TLS — useful for testing legacy-protocol handling`,
-    }),
+    // or() makes the parser itself reject passing both flags: a stream cap needs h2
+    tlsProtocol: optional(
+      or(
+        mapValue(
+          multiple(
+            option('--force-http1', {
+              description: message`don't offer h2 in the TLS handshake, forcing clients down to HTTP/1.1 over TLS — useful for testing legacy-protocol handling. Mutually exclusive with --max-streams`,
+            }),
+            {min: 1},
+          ),
+          () => ({kind: 'http1' as const}),
+        ),
+        mapValue(
+          option('--max-streams', integer({min: 1, metavar: 'N'}), {
+            description: message`cap concurrent HTTP/2 streams per session (no cap by default). Mutually exclusive with --force-http1`,
+          }),
+          (maxStreams) => ({kind: 'h2' as const, maxStreams}),
+        ),
+      ),
+    ),
     http1: repeatableFlag('--http1', {
       description: message`also serve a plain (cleartext) HTTP/1.1 listener`,
     }),
@@ -189,7 +206,13 @@ const flags = run(
             }),
             {min: 1},
           ),
-          () => ({kind: 'withholdWelcome' as const}),
+          () => ({kind: 'withholdWelcome' as const, probability: 1}),
+        ),
+        mapValue(
+          option('--withhold-welcome-probability', probability(), {
+            description: message`like --withhold-welcome, but only for this share of listen requests: each one is left unwelcomed at this probability while the rest work normally`,
+          }),
+          (value) => ({kind: 'withholdWelcome' as const, probability: value}),
         ),
       ),
     ),
@@ -235,11 +258,12 @@ const flags = run(
 )
 
 const TLS_PORT = flags.port
-const FORCE_HTTP1 = flags.forceHttp1
+const FORCE_HTTP1 = flags.tlsProtocol?.kind === 'http1'
 const ENABLE_HTTP1 = flags.http1
 const HTTP1_PORT = flags.http1Port
 const API_HOST = flags.apiHost
 const LISTENER_TTL_MS = flags.listenerTtl * 1000
+const MAX_STREAMS = flags.tlsProtocol?.kind === 'h2' ? flags.tlsProtocol.maxStreams : undefined
 const FLAP = flags.flap
 const LATENCY = flags.latency
 const ERROR_PROBABILITY = flags.errorProbability
@@ -250,12 +274,13 @@ const FORCE_ORG_401 = flags.org401
 const LISTENER_ERROR_PROBABILITY = flags.listenerErrorProbability
 const LISTENER_CHANNEL_ERROR_AFTER_MS =
   flags.listenerFault?.kind === 'channelError' ? flags.listenerFault.afterMs : undefined
-const WITHHOLD_WELCOME = flags.listenerFault?.kind === 'withholdWelcome'
+const WITHHOLD_WELCOME_PROBABILITY =
+  flags.listenerFault?.kind === 'withholdWelcome' ? flags.listenerFault.probability : 0
 // Any scenario that changes what the listen endpoint answers
 const LISTENER_FAULTS =
   LISTENER_ERROR_PROBABILITY > 0 ||
   LISTENER_CHANNEL_ERROR_AFTER_MS !== undefined ||
-  WITHHOLD_WELCOME
+  WITHHOLD_WELCOME_PROBABILITY > 0
 const EXPIRE_TOKEN_AFTER_MS =
   flags.tokenFault?.kind === 'expire' ? flags.tokenFault.afterMs : undefined
 const REVOKE_TOKEN_AFTER_MS =
@@ -428,7 +453,7 @@ const listenEndpointProxy = createSSEProxy((events$) =>
     LISTENER_CHANNEL_ERROR_AFTER_MS === undefined
       ? tap()
       : channelErrorAfterWelcome(LISTENER_CHANNEL_ERROR_AFTER_MS),
-    WITHHOLD_WELCOME ? withholdWelcome() : tap(),
+    WITHHOLD_WELCOME_PROBABILITY > 0 ? withholdWelcome(WITHHOLD_WELCOME_PROBABILITY) : tap(),
     LISTENER_TTL_MS ? takeUntil(timer(LISTENER_TTL_MS)) : tap(),
   ),
 )
@@ -582,6 +607,7 @@ const tlsProxy = createDebugProxy({
   port: TLS_PORT,
   tls: await loadTlsConfig(),
   forceHttp1: FORCE_HTTP1,
+  http2Options: MAX_STREAMS ? {settings: {maxConcurrentStreams: MAX_STREAMS}} : undefined,
 })
 
 await tlsProxy.listen()
@@ -620,6 +646,10 @@ if (ERROR_PROBABILITY > 0) {
   )
 }
 
+if (MAX_STREAMS) {
+  console.info(`Max concurrent HTTP/2 streams: ${MAX_STREAMS} (the ${TLS_PORT} listener only)`)
+}
+
 if (LISTENER_ERROR_PROBABILITY > 0) {
   console.info(
     `Failing listeners: ${Math.round(LISTENER_ERROR_PROBABILITY * 100)}% of listen requests fail with a random 5xx`,
@@ -634,8 +664,12 @@ if (LISTENER_CHANNEL_ERROR_AFTER_MS !== undefined) {
   )
 }
 
-if (WITHHOLD_WELCOME) {
+if (WITHHOLD_WELCOME_PROBABILITY === 1) {
   console.info('Failing listeners: listen requests stay open and are never welcomed')
+} else if (WITHHOLD_WELCOME_PROBABILITY > 0) {
+  console.info(
+    `Failing listeners: ${Math.round(WITHHOLD_WELCOME_PROBABILITY * 100)}% of listen requests stay open and are never welcomed`,
+  )
 }
 
 if (INVALIDATE_SESSION_AFTER_MS !== undefined) {

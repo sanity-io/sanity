@@ -144,18 +144,22 @@ const DocumentActionsInner = memo(
     const version = getVersionFromId(document.document._id)
     const variantId = getDocumentVersionVariantId(document.document)
 
+    // Every row of the table checks permissions, and nobody edits the documents here: the global
+    // listener keeps the table from opening a listener per row.
     const [discardVersionPermission, isDiscardVersionPermissionsLoading] =
       useDocumentPairPermissions({
         id: publishedId,
         type,
         version,
         permission: 'discardVersion',
+        listener: 'global',
       })
     const [unpublishPermission, isUnpublishPermissionsLoading] = useDocumentPairPermissions({
       id: publishedId,
       type,
       version,
       permission: 'unpublish',
+      listener: 'global',
     })
 
     const hasDiscardVersionPermission = Boolean(discardVersionPermission?.granted)

@@ -3,6 +3,7 @@ import {
   bufferTime,
   concatMap,
   connect,
+  defer,
   delay,
   filter,
   merge,
@@ -144,9 +145,17 @@ export function channelErrorAfterWelcome<T extends SSEEvent>(
  * Withholds the events a listener opens its connection with (`welcome`, `welcomeback`, `reset`),
  * keeping the stream open: the listener is connected but never set up, as when the API hangs while
  * setting it up. Mutations never reach a listener in that state, so they are withheld too.
+ *
+ * `probability` decides once per listener whether it is withheld, so at 0.5 about half of the
+ * listeners never get set up and the rest work normally.
  */
-export function withholdWelcome<T extends SSEEvent>(): MonoTypeOperatorFunction<T> {
-  return filter((event: T) => event.type !== 'message')
+export function withholdWelcome<T extends SSEEvent>(probability = 1): MonoTypeOperatorFunction<T> {
+  return (events$) =>
+    defer(() =>
+      Math.random() < probability
+        ? events$.pipe(filter((event: T) => event.type !== 'message'))
+        : events$,
+    )
 }
 
 /**

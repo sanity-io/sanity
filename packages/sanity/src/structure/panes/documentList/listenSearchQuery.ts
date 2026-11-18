@@ -10,8 +10,10 @@ import {
   of,
   partition,
   share,
+  skipWhile,
   throttleTime,
   throwError,
+  timeout,
   timer,
 } from 'rxjs'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
@@ -67,6 +69,12 @@ export interface SearchQueryState {
   connected: boolean
   fromCache: boolean
   documents: SanityDocumentLike[]
+}
+
+const CONNECT_TIMEOUT_MS = 30_000
+
+class TimeoutError extends Error {
+  readonly name = 'TimeoutError'
 }
 
 const swr = createSWR<{connected: boolean; documents: SanityDocumentLike[]}>({maxSize: 100})
@@ -151,17 +159,23 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
       tag: 'listen-search-query',
     })
   }).pipe(
+    // A 'reconnect' before 'welcome' means the client is retrying the connection, so keep waiting
+    skipWhile((ev) => ev.type === 'reconnect'),
+    timeout({
+      first: CONNECT_TIMEOUT_MS,
+      with: () =>
+        throwError(
+          () =>
+            new TimeoutError(
+              `Timed out after ${CONNECT_TIMEOUT_MS}ms waiting for the listener to connect`,
+            ),
+        ),
+    }),
     mergeMap((ev, i) => {
       const isFirst = i === 0
-      // If we can't establish a connection to the /listen endpoint, the first event we receive will be 'reconnect'
-      // So if we get "reconnect" as the first event actually means "Connection can't be established"
-      if (isFirst && ev.type === 'reconnect') {
-        // if it's neither welcome nor reconnect, something unexpected has happened.
-        return throwError(() => new Error(`Failed to establish EventSource connection`))
-      }
       // When a connection is successfully established, the first event will be 'welcome'
       if (isFirst && ev.type !== 'welcome') {
-        // if it's neither welcome nor reconnect, something unexpected has happened.
+        // if it's not, something unexpected has happened.
         return throwError(() => new Error(`Received unexpected type of first event "${ev.type}"`))
       }
       return of(ev)
