@@ -35,7 +35,13 @@ function referringDocuments(references: IncomingReference[]): ReferringDocuments
 function start(
   references: IncomingReference[],
   selectedIds: string[],
-  options?: {failFirstDelete?: boolean; versionIds?: string[]; variantIds?: string[]},
+  options?: {
+    failFirstDelete?: boolean
+    versionIds?: string[]
+    variantIds?: string[]
+    /** Resolves each in-flight delete when called; omit for an immediate delete. */
+    holdDelete?: () => Promise<void>
+  },
 ) {
   const deleted: string[][] = []
   const deletion = deletionMachine.provide({
@@ -43,6 +49,7 @@ function start(
       referringDocuments: fromObservable(() => new BehaviorSubject(referringDocuments(references))),
       deleteVariants: fromPromise(async ({input}) => {
         deleted.push(input.ids)
+        if (options?.holdDelete) await options.holdDelete()
         if (options?.failFirstDelete && deleted.length === 1) throw new Error('network')
         return {} as MultipleMutationResult
       }),
@@ -70,6 +77,14 @@ function start(
   actor.send({type: 'selection.changed', selectedIds: new Set(selectedIds)})
   actor.send({type: 'delete.request'})
   return {actor, parent, deleted, emitted}
+}
+
+function deferred(): {promise: Promise<void>; resolve: () => void} {
+  let resolve!: () => void
+  const promise = new Promise<void>((r) => {
+    resolve = r
+  })
+  return {promise, resolve}
 }
 
 const REQUIRED: IncomingReference = {_id: 'homepage', _type: 'page', required: true}
@@ -196,6 +211,52 @@ describe('deletionMachine', () => {
     await waitFor(actor, (snapshot) => snapshot.matches('idle'))
 
     expect(emitted).toEqual([])
+    parent.stop()
+  })
+
+  it('does not report empty when live updates prune the selection during a leave-Default delete', async () => {
+    const hold = deferred()
+    const {actor, parent, deleted, emitted} = start([REQUIRED], [PUBLISHED_ID, DRAFT_ID], {
+      versionIds: [PUBLISHED_ID, DRAFT_ID],
+      holdDelete: () => hold.promise,
+    })
+    await waitFor(actor, (snapshot) => snapshot.context.incomingReferencesChecked)
+
+    actor.send({type: 'delete.confirmExcludingPublished'})
+    await waitFor(actor, (snapshot) => snapshot.matches({active: {deletion: 'deleting'}}))
+    expect(deleted).toEqual([[DRAFT_ID]])
+
+    // Listener drops the deleted draft; selection prune + versions.changed arrive while still deleting.
+    actor.send({type: 'versions.changed', versionIds: [PUBLISHED_ID], variantIds: []})
+    actor.send({type: 'selection.changed', selectedIds: new Set([PUBLISHED_ID])})
+    expect(actor.getSnapshot().context.leavePublished).toBe(false)
+
+    hold.resolve()
+    await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+
+    expect(emitted).toEqual([])
+    parent.stop()
+  })
+
+  it('still reports empty when live updates clear versionIds during a full delete', async () => {
+    const hold = deferred()
+    const {actor, parent, deleted, emitted} = start([], [PUBLISHED_ID, DRAFT_ID], {
+      versionIds: [PUBLISHED_ID, DRAFT_ID],
+      holdDelete: () => hold.promise,
+    })
+    await waitFor(actor, (snapshot) => snapshot.context.incomingReferencesChecked)
+
+    actor.send({type: 'delete.confirm'})
+    await waitFor(actor, (snapshot) => snapshot.matches({active: {deletion: 'deleting'}}))
+    expect(deleted).toEqual([[PUBLISHED_ID, DRAFT_ID]])
+
+    actor.send({type: 'versions.changed', versionIds: [], variantIds: []})
+    actor.send({type: 'selection.changed', selectedIds: new Set()})
+
+    hold.resolve()
+    await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+
+    expect(emitted).toEqual(['allVersionsDeleted'])
     parent.stop()
   })
 })
