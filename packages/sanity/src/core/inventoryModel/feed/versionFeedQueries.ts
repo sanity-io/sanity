@@ -50,11 +50,13 @@ export function buildFeedGroupIdsQuery(filter: string): FeedQuery {
 }
 
 /**
- * One page of a feed: every version of the page's documents (`sanity::versionOf`, one parameter
- * per document), whatever `filter` the feed was built with, since the lenses read a document's
- * whole version set. The listener covers the same documents, so one listener keeps the whole page
- * live. `sanity::versionOf` matches published documents, classic drafts and release versions
- * alike, whether or not they store `_system.group`.
+ * One page of a feed: every version of the page's documents (one parameter per document),
+ * whatever `filter` the feed was built with, since the lenses read a document's whole version
+ * set. The listener covers the same documents, so one listener keeps the whole page live.
+ * `sanity::versionOf` matches published documents, classic drafts and release versions by id
+ * prefix, whether or not they store `_system.group`. Variant versions (`drafts.<scope>.<id>`,
+ * `published.<scope>.<id>`, `versions.<release>.<scope>.<id>`) do not match that prefix, so each
+ * clause also matches `_system.group._ref` — the same key the list query uses for group ids.
  *
  * @internal
  */
@@ -62,7 +64,7 @@ export function buildFeedPageQuery(groupIds: string[]): FeedQuery & {params: Lis
   const params: ListenQueryParams = {}
   const filters = groupIds.map((groupId, index) => {
     params[`g${index}`] = groupId
-    return `sanity::versionOf($g${index})`
+    return `sanity::versionOf($g${index}) || _system.group._ref == $g${index}`
   })
   // An empty page matches nothing.
   const scope = filters.length > 0 ? filters.join(' || ') : 'false'
