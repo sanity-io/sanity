@@ -80,7 +80,11 @@ export const DiffView: ComponentType<Pick<DocumentLayoutProps, 'documentId'>> = 
                 <EmptyDiffViewPane />
               )}
               {changesPanelOpen && documents.next ? (
-                <ComparisonChangesPanel reference={documents.previous} comparing={documents.next} />
+                <ComparisonChangesPanel
+                  reference={documents.previous}
+                  comparing={documents.next}
+                  onClose={() => setChangesPanelOpen(false)}
+                />
               ) : null}
             </>
           )}
