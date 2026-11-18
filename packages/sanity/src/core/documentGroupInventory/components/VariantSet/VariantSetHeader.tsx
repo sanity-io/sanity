@@ -3,6 +3,7 @@ import {css, styled} from 'styled-components'
 
 import {mixToContrast} from '../../utils/contrast'
 import {SELECTION} from './selectionTokens'
+import {MARK_COLUMN_WIDTH} from './VariantSet'
 import {VariantSetEntry} from './VariantSetEntry'
 
 /**
@@ -36,11 +37,21 @@ export const VariantSetHeader = styled(VariantSetEntry)(({theme}) => {
       cursor: pointer;
     }
 
+    /*
+     * A header action is centred on the header itself, not on the name's trimmed text box, which
+     * sat the button about 3px low. It ends 8px before the set's mark, and the name keeps clear of
+     * it.
+     */
     .header-actions {
-      position: relative;
+      position: absolute;
       z-index: 1;
-      /* Room between an action and the set's mark at the end of the line */
-      margin-inline-end: 8px;
+      inset-block-start: 50%;
+      inset-inline-end: calc(var(--inventory-row-padding) + ${MARK_COLUMN_WIDTH}px + 8px);
+      transform: translateY(-50%);
+    }
+
+    .variant-set-text:has(.header-actions) {
+      padding-inline-end: 112px;
     }
 
     /* Focus shows as the header's focus ring, not as a row's focus tint */
