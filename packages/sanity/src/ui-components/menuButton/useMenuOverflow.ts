@@ -53,11 +53,22 @@ const VIEWPORT_CLEARANCE = 16
 const LIST_EDGE_GAP = 4
 
 /**
- * The row the menu marks as the current choice: a checked radio row, or else a row rendered with
- * `selected` (`data-selected`). A `pressed` button row carries no attribute of its own.
+ * Marks a menu's current choice when its row is neither a radio nor reliably `data-selected`: a
+ * `pressed` button row carries no attribute of its own, and `data-selected` follows the menu's
+ * active row, which moves to nothing once the search field takes focus.
+ *
+ * @internal
+ */
+export const MENU_CURRENT_ROW_ATTRIBUTE = 'data-menu-current'
+
+/**
+ * The row the menu marks as the current choice: a row marked with
+ * {@link MENU_CURRENT_ROW_ATTRIBUTE}, a checked radio row, or else a row rendered with `selected`
+ * (`data-selected`).
  */
 function selectedRow(scroller: HTMLElement): HTMLElement | null {
   return (
+    scroller.querySelector<HTMLElement>(`[${MENU_CURRENT_ROW_ATTRIBUTE}]`) ??
     scroller.querySelector<HTMLElement>('[aria-checked="true"]') ??
     scroller.querySelector<HTMLElement>('[data-ui="MenuItem"][data-selected]')
   )
@@ -124,6 +135,21 @@ function scrollingRows(scroller: HTMLElement, groups: HTMLElement[]): HTMLElemen
   return Array.from(scroller.querySelectorAll<HTMLElement>(ROW_SELECTOR)).filter(
     (row) => !groups.some((group) => group.contains(row)),
   )
+}
+
+/**
+ * The right padding between a row and the scroller: every box from the row's parent up to the
+ * scroller. The inset can sit on the contents (the variants menu) or on a group inside them (the
+ * releases menu). Without a row, the contents' own padding.
+ */
+function rowInset(scroller: HTMLElement, row: HTMLElement | undefined): number {
+  const paddingOf = (element: Element) => parseFloat(getComputedStyle(element).paddingRight) || 0
+  if (!row) return scroller.firstElementChild ? paddingOf(scroller.firstElementChild) : 0
+  let inset = 0
+  for (let box = row.parentElement; box && box !== scroller; box = box.parentElement) {
+    inset += paddingOf(box)
+  }
+  return inset
 }
 
 /** Layout pixels per screen pixel: below 1 while the popover scales in as it opens. */
@@ -364,10 +390,7 @@ export function useMenuOverflow<T extends HTMLElement = HTMLDivElement>(): (
         // The contents' own right padding differs between menus (8px in the navbar menus, 4px
         // where the menu itself adds the rest), so the trim is measured, not fixed. An overlay
         // scrollbar takes no room, so the rows keep their inset there.
-        const contents = element.firstElementChild
-        const contentsPadding = contents
-          ? parseFloat(getComputedStyle(contents).paddingRight) || 0
-          : 0
+        const contentsPadding = rowInset(element, scrollingRows(element, groups)[0])
         const trim =
           trackWidth > 0
             ? Math.min(trackWidth, Math.max(0, contentsPadding - ROW_GAP_BEFORE_TRACK))
