@@ -1,5 +1,5 @@
 import {Stack, Text} from '@sanity/ui'
-import {useMemo} from 'react'
+import {Suspense, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {type StringInputProps, useDocumentStore} from 'sanity'
 
@@ -28,9 +28,11 @@ export function ListenerFloodInput(props: StringInputProps) {
       <Text size={1} muted>
         {`This input holds ${LISTEN_QUERY_COUNT} listeners through documentStore.listenQuery`}
       </Text>
-      {LISTEN_QUERY_INDEXES.map((index) => (
-        <ListenQueryItem key={index} index={index} />
-      ))}
+      <Suspense fallback={null}>
+        {LISTEN_QUERY_INDEXES.map((index) => (
+          <ListenQueryItem key={index} index={index} />
+        ))}
+      </Suspense>
     </Stack>
   )
 }
