@@ -233,6 +233,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the banner that appears when there are multiple versions but no drafts or published, more than one extra releases */
   'banners.release.navigate-to-edit-description-multiple_other':
     'This document is part of the <VersionBadge/> release and {{count}} more releases',
+  /** The kind of an anonymous bundle, before its chip in the not-in-release banner */
+  'banners.release.lead.bundle': 'bundle',
   /**
    * The word before a release's chip in the release banners ("the release [Winter sale]"). The chip renders it on one line
    * with the name, so the sentences leave it out.
