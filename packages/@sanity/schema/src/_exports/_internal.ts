@@ -53,11 +53,11 @@ export {builtinTypes} from '../sanity/builtinTypes'
 export {
   isSystemDocumentTypeName,
   resolveExtendableTypes,
-} from '../sanity/builtinTypes/extendableTypes'
+} from '../sanity/systemTypes/extendableTypes'
 export {
   RELEASE_METADATA_CORE_FIELDS,
   RELEASE_METADATA_TYPE_NAME,
-} from '../sanity/builtinTypes/releaseMetadata'
+} from '../sanity/systemTypes/releaseMetadata'
 export {extractSchema} from '../sanity/extractSchema'
 export {groupProblems} from '../sanity/groupProblems'
 export {

@@ -5,18 +5,18 @@ import {Schema} from '../../src/legacy/Schema'
 import {createSchemaFromManifestTypes} from '../../src/manifest/createSchemaFromManifestTypes'
 import {extractManifestSchemaTypes} from '../../src/manifest/extractManifestSchemaTypes'
 import {builtinTypes} from '../../src/sanity/builtinTypes'
+import {extractSchema} from '../../src/sanity/extractSchema'
+import {groupProblems} from '../../src/sanity/groupProblems'
 import {
   extendableTypes,
   isSystemDocumentTypeName,
   resolveExtendableTypes,
   systemDocumentTypes,
-} from '../../src/sanity/builtinTypes/extendableTypes'
-import {RELEASE_DOCUMENT_TYPE_NAME} from '../../src/sanity/builtinTypes/release'
+} from '../../src/sanity/systemTypes/extendableTypes'
+import {RELEASE_DOCUMENT_TYPE_NAME} from '../../src/sanity/systemTypes/release'
 import releaseMetadata, {
   RELEASE_METADATA_TYPE_NAME,
-} from '../../src/sanity/builtinTypes/releaseMetadata'
-import {extractSchema} from '../../src/sanity/extractSchema'
-import {groupProblems} from '../../src/sanity/groupProblems'
+} from '../../src/sanity/systemTypes/releaseMetadata'
 import {validateSchema} from '../../src/sanity/validateSchema'
 
 const releaseMetadataCoreFieldNames = releaseMetadata.fields.map((field) => field.name)

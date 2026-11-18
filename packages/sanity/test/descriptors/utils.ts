@@ -11,7 +11,7 @@ import cloneDeep from 'lodash-es/cloneDeep.js'
 import startCase from 'lodash-es/startCase.js'
 import {expect} from 'vitest'
 
-import {findExtendableType} from '../../../@sanity/schema/src/sanity/builtinTypes/extendableTypes'
+import {findExtendableType} from '../../../@sanity/schema/src/sanity/systemTypes/extendableTypes'
 import {DESCRIPTOR_CONVERTER} from '../../src/core/schema/descriptors'
 
 export async function expectManifestSchemaConversion(

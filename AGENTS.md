@@ -649,7 +649,7 @@ Regenerating needs a full `pnpm build` first: the generator reads each package's
 
 ### Extendable built-in types
 
-`packages/@sanity/schema/src/sanity/builtinTypes/extendableTypes.ts` holds two lists that every
+`packages/@sanity/schema/src/sanity/systemTypes/extendableTypes.ts` holds two lists that every
 schema gets through `resolveExtendableTypes`, which `createSchema` and
 `createSchemaFromManifestTypes` call:
 
