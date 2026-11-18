@@ -103,10 +103,17 @@ export function createAddonDatasetTestClient(documents: {
     }),
   )
 
+  // Each fetch attempt, retries included, consumes one. Left at 0, every fetch returns the documents.
+  const fetchControl = {failuresRemaining: 0}
+
   function fakeFetch(
     query: string,
     params?: {documentId?: string | null; documentVersionId?: string},
   ) {
+    if (fetchControl.failuresRemaining > 0) {
+      fetchControl.failuresRemaining -= 1
+      return Promise.reject(new Error('fetch failed'))
+    }
     if (query.includes('"tasks.task"')) {
       return Promise.resolve(documents.tasks ?? [])
     }
@@ -140,5 +147,5 @@ export function createAddonDatasetTestClient(documents: {
     )
   }
 
-  return {client, server, connections, observableFetch, wrapper}
+  return {client, server, connections, observableFetch, fetchControl, wrapper}
 }

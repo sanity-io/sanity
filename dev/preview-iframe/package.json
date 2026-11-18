@@ -15,7 +15,7 @@
   "dependencies": {
     "@portabletext/react": "^8.0.1",
     "@sanity/client": "catalog:",
-    "@sanity/image-url": "^2.1.1",
+    "@sanity/image-url": "^2.2.0",
     "@sanity/react-loader": "^2.3.0",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "catalog:",

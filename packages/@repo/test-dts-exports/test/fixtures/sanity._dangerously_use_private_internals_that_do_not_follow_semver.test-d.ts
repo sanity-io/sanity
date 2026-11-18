@@ -455,6 +455,7 @@ import type {
   KeyValueStoreValue,
   LatencyReportEvent,
   LATEST,
+  LegacyCallbackResult,
   LegacyLayerProvider,
   LegacyThemeTints,
   ListenerEvent,
@@ -508,6 +509,7 @@ import type {
   normalizePathSegment,
   NullDiff,
   NumberDiff,
+  OAuthCallbackResult,
   ObjectDiff,
   ObjectInputMember,
   ObjectInputMemberProps,
@@ -2268,6 +2270,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('LATEST', () => {
     expectTypeOf<typeof LATEST>().not.toBeNever()
   })
+  test('LegacyCallbackResult', () => {
+    expectTypeOf<LegacyCallbackResult>().toBeObject()
+  })
   test('LegacyLayerProvider', () => {
     expectTypeOf<typeof LegacyLayerProvider>().toBeFunction()
   })
@@ -2426,6 +2431,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('NumberDiff', () => {
     expectTypeOf<NumberDiff>().not.toBeNever()
+  })
+  test('OAuthCallbackResult', () => {
+    expectTypeOf<OAuthCallbackResult>().toBeObject()
   })
   test('ObjectDiff', () => {
     expectTypeOf<ObjectDiff<any>>().not.toBeNever()

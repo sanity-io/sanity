@@ -398,7 +398,13 @@ export function createPresenceStore(context: {
     ),
   )
 
-  // Create a single shared observable for all documents
+  // Shared across documents, and released `DOCUMENT_PRESENCE_GRACE` after the last one stops
+  // using it. Without the reset the first document subscriber pins `allSessions$` (the bifur
+  // listener, the heartbeat watcher and the 30s location announcements) for the lifetime of the
+  // page, so a workspace that has been switched away from keeps its socket open and keeps
+  // announcing itself to the old dataset. The grace keeps it running while switching documents,
+  // when the previous pane unmounts before the next one mounts, and while the login screen
+  // replaces the studio after a session ends.
   const allDocumentsPresence$ = combineLatest([allSessions$, debugIntrospect$]).pipe(
     map(([userAndSessions, debugIntrospect]) =>
       userAndSessions
@@ -416,9 +422,6 @@ export function createPresenceStore(context: {
         )
         .filter((item) => debugIntrospect || item.presence.sessionId !== ownSessionId),
     ),
-    // Presence stops once no document has used it for a while, as when the login screen replaces
-    // the studio after a session ends. The delay keeps it running while switching documents, when
-    // the previous pane unmounts before the next one mounts.
     share({
       connector: () => new ReplaySubject(1),
       resetOnRefCountZero: () => timer(DOCUMENT_PRESENCE_GRACE),

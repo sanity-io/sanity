@@ -1,12 +1,18 @@
 import {type ClientPerspective, type SanityClient} from '@sanity/client'
 import {asyncScheduler, defer, merge, type Observable, of, partition, throwError, timer} from 'rxjs'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {filter, mergeMap, share, take, throttleTime} from 'rxjs/operators'
+import {filter, mergeMap, share, skipWhile, take, throttleTime, timeout} from 'rxjs/operators'
 
 import {type InvalidationChannelEvent} from '../../preview/types'
 import {versionedClient} from '../../studioClient'
 import {variantApiVersion} from '../../variants/util/variantApiVersion'
 import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from './types'
+
+const CONNECT_TIMEOUT_MS = 30_000
+
+class TimeoutError extends Error {
+  readonly name = 'TimeoutError'
+}
 
 /** @internal */
 export type ListenQueryParams = Record<string, string | number | boolean | string[]>
@@ -106,19 +112,23 @@ export function listenQuery(
   const listenerQuery = typeof query === 'string' ? query : query.listen
 
   const events$ = listen(client, listenerQuery, params, options).pipe(
+    // A 'reconnect' before 'welcome' means the client is retrying the connection, so keep waiting
+    skipWhile((ev) => ev.type === 'reconnect'),
+    timeout({
+      first: CONNECT_TIMEOUT_MS,
+      with: () =>
+        throwError(
+          () =>
+            new TimeoutError(
+              `Timed out after ${CONNECT_TIMEOUT_MS}ms waiting for the listener to connect`,
+            ),
+        ),
+    }),
     mergeMap((ev, i) => {
       const isFirst = i === 0
       if (isFirst && !isWelcomeEvent(ev)) {
-        // if the first event is not welcome, it is most likely a reconnect and
-        // if it's not a reconnect something is very wrong
-        return throwError(
-          () =>
-            new Error(
-              ev.type === 'reconnect'
-                ? 'Could not establish EventSource connection'
-                : `Received unexpected type of first event "${ev.type}"`,
-            ),
-        )
+        // if the first event is not welcome, something is very wrong
+        return throwError(() => new Error(`Received unexpected type of first event "${ev.type}"`))
       }
       return of(ev)
     }),

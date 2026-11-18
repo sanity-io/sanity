@@ -1,6 +1,17 @@
 import {type SanityClient} from '@sanity/client'
 import {type Dispatch} from 'react'
-import {catchError, concatWith, merge, type Observable, of, scan, shareReplay, Subject} from 'rxjs'
+import {
+  catchError,
+  concatWith,
+  merge,
+  type Observable,
+  of,
+  ReplaySubject,
+  scan,
+  share,
+  Subject,
+  timer,
+} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
 import {listenQueryOnGlobalListener} from '../../store/document/listenQuery'
@@ -33,6 +44,14 @@ const INITIAL_STATE: VariantStoreState = {
   state: 'initialising' as const,
 }
 
+/**
+ * How long the listener outlives its last subscriber. Covers a consumer that
+ * unsubscribes and resubscribes (a remount, StrictMode) without a refetch,
+ * while a store left behind by a workspace switch still lets go of its
+ * `/listen` stream.
+ */
+const TEARDOWN_GRACE_PERIOD = 5_000
+
 export interface VariantStore {
   state$: Observable<VariantStoreState>
   /**
@@ -47,9 +66,9 @@ export interface VariantStore {
  * fetch a list of variants, and fetch it again whenever the global listener reports a change to a
  * variant definition document.
  *
- * The store is not disposed of when all subscriptions are closed. After it has been initialised,
- * it will keep listening for the duration of the app's lifecycle. Subsequent subscriptions will be
- * given the latest state upon subscription.
+ * While subscribed, subsequent subscriptions are given the latest state upon subscription. Once
+ * the last subscription is closed the store keeps listening for {@link TEARDOWN_GRACE_PERIOD}
+ * and then releases the global listener; the next subscription initialises it again.
  */
 export function createVariantsStore(context: {
   client: SanityClient
@@ -110,7 +129,10 @@ export function createVariantsStore(context: {
   const state$ = merge(listFetch$, dispatch$).pipe(
     scan((state, action) => variantStoreReducer(state, action), INITIAL_STATE),
     startWith(INITIAL_STATE),
-    shareReplay(1),
+    share({
+      connector: () => new ReplaySubject(1),
+      resetOnRefCountZero: () => timer(TEARDOWN_GRACE_PERIOD),
+    }),
   )
 
   return {
