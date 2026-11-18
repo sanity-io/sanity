@@ -2,6 +2,11 @@ import {createBrowserHistory, createMemoryHistory} from 'history'
 import {type ComponentType, type ReactNode, useCallback, useEffect, useMemo} from 'react'
 
 import {removeAuthHashParams} from '../../store/auth/legacy/authHashParams'
+import {
+  pathWithoutAuthorizationResponse,
+  stashAuthorizationResponse,
+} from '../../store/auth/oauth/authorizationResponse'
+import {isOAuthAuthStore} from '../../store/auth/oauth/createOAuthAuthStore'
 import {type RouterHistory} from '../router/types'
 import {useVisibleWorkspaces} from '../workspaces/useVisibleWorkspaces'
 import {useWorkspaces} from '../workspaces/useWorkspaces'
@@ -29,6 +34,16 @@ export function ActiveWorkspaceMatcher({
   const allWorkspaces = useWorkspaces()
   const {visibleWorkspaces, workspaceAuthStates} = useVisibleWorkspaces()
   const history = useMemo(() => historyProp || createHistory(), [historyProp])
+
+  // During render, before anything reads the router's location, so no redirect, link or tool ever
+  // sees an OAuth code. Does nothing once the response is gone.
+  if (allWorkspaces.some((workspace) => isOAuthAuthStore(workspace.auth))) {
+    stashAuthorizationResponse()
+    // The history read the URL before the stash: a custom `unstable_history`, or one created on an
+    // earlier render.
+    const cleanPath = pathWithoutAuthorizationResponse(history.location)
+    if (cleanPath !== undefined) history.replace(cleanPath)
+  }
 
   const setActiveWorkspaceName = useCallback(
     (workspaceName: string) => {
