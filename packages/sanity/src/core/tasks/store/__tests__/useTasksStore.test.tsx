@@ -1,5 +1,5 @@
 import {act, renderHook, waitFor} from '@testing-library/react'
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 
 import {
   comment,
@@ -50,6 +50,37 @@ describe('useTasksStore', () => {
       server.next(mutation('disappear', 't-2'))
     })
     expect(titles(result.current.data)).toEqual([['t-1', 'Renamed']])
+  })
+
+  it('clears a fetch error once a later connection loads the tasks', async () => {
+    vi.useFakeTimers()
+    const testClient = createAddonDatasetTestClient({tasks: [task('t-1')]})
+    // One attempt plus the three retries `followAddonDatasetQuery` makes before it reports the error.
+    testClient.fetchControl.failuresRemaining = 4
+    const {result, unmount} = renderHook(useTasks, {wrapper: testClient.wrapper})
+
+    try {
+      await act(async () => {
+        testClient.server.next(WELCOME)
+        await vi.advanceTimersByTimeAsync(6_000)
+      })
+
+      expect(result.current.error?.message).toBe('fetch failed')
+      expect(result.current.isLoading).toBe(false)
+      expect(result.current.data).toEqual([])
+
+      await act(async () => {
+        testClient.server.next(WELCOME)
+      })
+
+      expect(result.current.error).toBeNull()
+      expect(result.current.isLoading).toBe(false)
+      expect(titles(result.current.data)).toEqual([['t-1', 'A task']])
+    } finally {
+      unmount()
+      vi.clearAllTimers()
+      vi.useRealTimers()
+    }
   })
 
   it('ignores the comments the shared listener also reports', async () => {
