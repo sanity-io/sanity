@@ -227,7 +227,7 @@ describe('DocumentGroupInspector', () => {
   }) => {
     await renderInspector()
 
-    const heading = screen.getByRole('heading', {name: 'Manage versions'})
+    const heading = screen.getByRole('heading', {name: 'Document inventory'})
     const icon = heading.parentElement?.querySelector('[data-sanity-icon="documents"]')
 
     expect(icon).not.toBeNull()
