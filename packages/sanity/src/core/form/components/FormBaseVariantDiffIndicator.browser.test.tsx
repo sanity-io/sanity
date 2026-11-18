@@ -125,9 +125,12 @@ describe.each(['light', 'dark'] as const)('the tooltip chips in %s mode', (schem
       expect(Math.abs(slot.height - base.height)).toBeLessThanOrEqual(0.5)
       expect(Math.abs(centre(slot) - centre(base))).toBeLessThanOrEqual(0.5)
 
-      // The slot chip's glyph sits on the chip's centre line, not raised above it.
-      const glyph = chips[1].querySelector('[aria-hidden]')?.getBoundingClientRect()
-      if (!glyph) throw new Error('The slot chip has no glyph')
+      // The slot chip's glyph is the chip's icon, not part of its name, and the drawn glyph (not
+      // only its box) sits on the chip's centre line. A glyph passed inside the name rode up with
+      // the name's text box while its wrapper still measured centred.
+      expect(chips[1].querySelector('[data-inline-chip-name] svg')).toBeNull()
+      const glyph = chips[1].querySelector('[data-inline-chip-icon] svg')?.getBoundingClientRect()
+      if (!glyph) throw new Error('The slot chip has no glyph in its icon slot')
       expect(Math.abs(centre(glyph) - centre(slot))).toBeLessThanOrEqual(0.5)
 
       // Both chips have the same padding.
