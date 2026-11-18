@@ -79,13 +79,13 @@ describe('DocumentVersionsFlyoutList footer', () => {
     expect(footer.textContent).toBe('Manage versions')
   })
 
-  it('offers to see all versions, without a count, when the document is in a release', async () => {
+  it('offers to manage all versions, without a count, when the document is in a release', async () => {
     await renderList([
       version(GROUP_ID),
       version(`drafts.${GROUP_ID}`, 'drafts'),
       version(`versions.${activeASAPRelease.name}.${GROUP_ID}`, activeASAPRelease.name),
     ])
-    expect(await screen.findByText('See all versions in the inventory')).toBeTruthy()
+    expect(await screen.findByText('Manage all versions')).toBeTruthy()
     expect(screen.queryByText(/\d more/)).toBeNull()
     expect(screen.queryByText('Manage versions')).toBeNull()
   })
