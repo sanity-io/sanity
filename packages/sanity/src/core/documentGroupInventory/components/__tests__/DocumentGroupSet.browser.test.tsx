@@ -6,6 +6,7 @@ import {page, userEvent} from 'vitest/browser'
 
 import {isShown, testHelpers} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {Button} from '../../../../ui-components/button/Button'
 import {activeASAPRelease} from '../../../releases/__fixtures__/release.fixture'
 import {type VersionInfoDocumentStub} from '../../../releases/store/types'
 import {type Variant} from '../../machines/selectionMachine'
@@ -573,5 +574,55 @@ describe('DocumentGroupSet', () => {
     expect(Math.abs(diamond.top + diamond.height / 2 - (text.top + text.height / 2))).toBeLessThan(
       1,
     )
+  })
+})
+
+describe('DocumentGroupSet header action', () => {
+  it('centres the action on the header, level with the set mark, without growing the header', async () => {
+    const plain = await render(
+      <TestWrapper schemaTypes={SCHEMA_TYPES}>
+        <DocumentGroupSet
+          name={SET_NAME}
+          count={1}
+          bundle={{type: 'perspective', perspective: activeASAPRelease}}
+          selectionState="unchecked"
+          onCheckedChange={NOOP}
+        >
+          {null}
+        </DocumentGroupSet>
+      </TestWrapper>,
+    )
+    await expect.element(page.getByTestId('variant-set-name')).toBeVisible()
+    const plainHeight = document
+      .querySelector('[data-variant-set] header')!
+      .getBoundingClientRect().height
+    await plain.unmount()
+
+    await render(
+      <TestWrapper schemaTypes={SCHEMA_TYPES}>
+        <DocumentGroupSet
+          name={SET_NAME}
+          count={1}
+          bundle={{type: 'perspective', perspective: activeASAPRelease}}
+          selectionState="unchecked"
+          onCheckedChange={NOOP}
+          headerActions={<Button mode="ghost" text="Unschedule" data-testid="header-action" />}
+        >
+          {null}
+        </DocumentGroupSet>
+      </TestWrapper>,
+    )
+    const action = page.getByTestId('header-action')
+    await expect.element(action).toBeVisible()
+    const header = document.querySelector('[data-variant-set] header')!.getBoundingClientRect()
+    const mark = page.getByTestId('variant-set-icon').element().getBoundingClientRect()
+    const box = action.element().getBoundingClientRect()
+    const centre = (rect: DOMRect) => rect.top + rect.height / 2
+    expect(Math.abs(centre(box) - centre(mark))).toBeLessThanOrEqual(0.5)
+    expect(Math.abs(centre(box) - centre(header))).toBeLessThanOrEqual(0.5)
+    // The action does not make the header taller than one without it
+    expect(header.height).toBe(plainHeight)
+    // It ends before the mark, with room between them
+    expect(mark.left - box.right).toBeGreaterThanOrEqual(8)
   })
 })
