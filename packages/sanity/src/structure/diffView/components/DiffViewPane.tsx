@@ -269,6 +269,7 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
         baseVariantValue={formState.baseVariantValue}
         hasBaseVariant={formState.hasBaseVariant}
         presence={formState.presence}
+        readOnly={formState.readOnly}
         schemaType={schemaType}
         value={value}
         compareValue={compareValue}
