@@ -59,11 +59,13 @@ export const DocumentGroupSet: ComponentType<{
           {bundle?.type === 'perspective' && <ReleaseAvatarIcon release={bundle.perspective} />}
         </div>
       </div>
-      <div>
-        <Flex gap={2} alignItems="center">
-          <Text size={1} weight="medium" as="div" trim={true}>
-            {name}
-          </Text>
+      <div className="row-content">
+        <Flex className="variant-set-title" gap={2} alignItems="center">
+          <div className="version-title">
+            <Text size={1} weight="medium" as="div" trim={true}>
+              {name}
+            </Text>
+          </div>
           {typeof count === 'number' && (
             <Text size={1} muted as="div" trim={true} data-testid="variant-set-count">
               {count}
