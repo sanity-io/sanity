@@ -76,7 +76,7 @@ const rows: Array<{
     name: 'drafts: variant published, no draft (creatable by typing)',
     perspective: 'drafts',
     state: missing({published: true}, true),
-    expected: NONE,
+    expected: {kind: 'stand-in'},
   },
   {
     name: 'drafts: variant published, no draft, draft id not advertised',
