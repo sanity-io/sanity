@@ -27,6 +27,7 @@ const LIBRARY_FRAME_URL_PATTERNS = [
   'internal/',
 ]
 const CHROME_STACK_FRAME_PATTERN = /^\s*at (?:.*? \()?(.+?):(\d+):\d+\)?$/
+const COMPILER_GENERATED_OWNER_PATTERN = /^_temp\d*(\$\d+)?$/
 const FIREFOX_STACK_FRAME_PATTERN = /^(?:[^@\s]*@)?(.+?):(\d+):\d+$/
 
 type ListenArgs = Parameters<SanityClient['listen']>
@@ -139,9 +140,10 @@ export function formatListenerLabel({
   tag,
 }: ListenerLabelParts): string | undefined {
   if (callSite) return callSite
-  const tagLabel = tag ? `tag "${tag}"` : undefined
-  if (owner && tagLabel) return `<${owner}> (${tagLabel})`
-  return owner ? `<${owner}>` : tagLabel
+  const ownerName = owner && COMPILER_GENERATED_OWNER_PATTERN.test(owner) ? undefined : owner
+  if (ownerName && tag) return `<${ownerName}> (tag "${tag}")`
+  if (ownerName) return `<${ownerName}>`
+  return tag ? `listeners tagged "${tag}"` : undefined
 }
 
 function isDefaultLibraryFrame(frameUrl: string): boolean {

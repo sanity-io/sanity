@@ -127,7 +127,9 @@ describe('formatListenerLabel', () => {
     [{callSite, owner: 'Parent', tag: 'my-tag'}, callSite],
     [{callSite: undefined, owner: 'Parent', tag: 'my-tag'}, '<Parent> (tag "my-tag")'],
     [{callSite: undefined, owner: 'Parent', tag: undefined}, '<Parent>'],
-    [{callSite: undefined, owner: undefined, tag: 'my-tag'}, 'tag "my-tag"'],
+    [{callSite: undefined, owner: undefined, tag: 'my-tag'}, 'listeners tagged "my-tag"'],
+    [{callSite: undefined, owner: '_temp$13', tag: 'my-tag'}, 'listeners tagged "my-tag"'],
+    [{callSite: undefined, owner: '_temp2', tag: undefined}, undefined],
     [{callSite: undefined, owner: undefined, tag: undefined}, undefined],
   ])('labels %o as %s', (parts, expectedLabel) => {
     expect(formatListenerLabel(parts)).toBe(expectedLabel)
@@ -200,7 +202,9 @@ describe('listener count warning', () => {
 
     subscriber({open: ABOVE_THRESHOLD, peak: ABOVE_THRESHOLD})
 
-    expect(warnSpy.mock.calls[0]?.[0]).toContain('and 1 of them come from tag "derived-source".')
+    expect(warnSpy.mock.calls[0]?.[0]).toContain(
+      'and 1 of them come from listeners tagged "derived-source".',
+    )
     subscription.unsubscribe()
   })
 
@@ -269,7 +273,7 @@ describe('listener count warning against the real open count', () => {
     pendingConnections.forEach((openConnection) => openConnection())
 
     expect(warnSpy.mock.calls[0]?.[0]).toContain(
-      `This tab has ${ABOVE_THRESHOLD} open listeners, and ${ABOVE_THRESHOLD} of them come from tag "flood".`,
+      `This tab has ${ABOVE_THRESHOLD} open listeners, and ${ABOVE_THRESHOLD} of them come from listeners tagged "flood".`,
     )
 
     subscriptions.forEach((subscription) => subscription.unsubscribe())
