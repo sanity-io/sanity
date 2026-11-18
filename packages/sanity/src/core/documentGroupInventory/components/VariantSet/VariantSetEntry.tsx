@@ -85,6 +85,11 @@ export const VariantSetEntry = styled.div(({theme}) => {
     .selection-checkbox[data-blocked] {
       visibility: visible;
       display: inline-flex;
+      /* The checkbox's own 17px box, so a locked header or row is exactly as tall as the others */
+      inline-size: 17px;
+      block-size: 17px;
+      align-items: center;
+      justify-content: center;
     }
 
     /* On the open row's strong blue the lock takes the inverted text colour, like the row's marks */
