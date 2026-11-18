@@ -16,7 +16,7 @@ import {variantsLocaleNamespace} from '../../i18n'
  * The `source` tag on feedback sent from the Variants tool. The version inventory sends
  * `document-group-inventory`, so each surface can be told apart where the feedback arrives.
  */
-export const VARIANTS_TOOL_FEEDBACK_SOURCE = 'variants-tool'
+const VARIANTS_TOOL_FEEDBACK_SOURCE = 'variants-tool'
 
 const DISMISSED_KEY = 'sanityStudio:variants:open-beta-feedback-banner:dismissed:v1'
 

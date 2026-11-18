@@ -76,7 +76,7 @@ export const SELECTION_BLOCKED_REASON_KEYS = {
  *
  * @internal
  */
-export const SELECTION_BLOCKED_NOTE_KEYS = {
+const SELECTION_BLOCKED_NOTE_KEYS = {
   'scheduled-release': 'document-group.select.blocked.scheduled-release-note',
   'scheduled-draft': 'document-group.select.blocked.scheduled-release-note',
 } as const satisfies Record<SelectionBlockedReason, string>
