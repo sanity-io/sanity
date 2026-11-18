@@ -159,7 +159,7 @@ describe('DocumentReleasesMenu', () => {
     const menu = await openMenu()
 
     const documentSection = within(menu).getByTestId('document-releases-menu-section-document')
-    expect(documentSection).toHaveTextContent('In 1 release')
+    expect(documentSection).toHaveTextContent('Releases with this document (1)')
     expect(within(documentSection).getByTestId('document-release-rA')).toBeInTheDocument()
 
     const otherSection = within(menu).getByTestId('document-releases-menu-section-other')
@@ -182,7 +182,7 @@ describe('DocumentReleasesMenu', () => {
     expect(within(documentSection).queryByTestId('document-release-rA')).toBeNull()
   })
 
-  it('hides the "In 0 releases" section and its info icon when the document is in none', async () => {
+  it('hides the empty first section and its info icon when the document is in none', async () => {
     mockVersions([createVersion({bundle: 'published'})])
     await renderMenu()
 
@@ -191,6 +191,7 @@ describe('DocumentReleasesMenu', () => {
     expect(within(menu).queryByTestId('document-releases-menu-section-document')).toBeNull()
     expect(within(menu).queryByTestId('document-releases-menu-section-document-tooltip')).toBeNull()
     expect(menu).not.toHaveTextContent('In 0 releases')
+    expect(menu).not.toHaveTextContent('Releases with this document')
 
     const otherSection = within(menu).getByTestId('document-releases-menu-section-other')
     expect(otherSection).toHaveTextContent('Other releases')

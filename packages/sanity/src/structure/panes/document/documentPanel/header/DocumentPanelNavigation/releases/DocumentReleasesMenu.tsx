@@ -173,7 +173,7 @@ export function DocumentReleasesMenu() {
       sections={[
         {
           key: 'document',
-          label: t('document-panel-navigation.releases.section.in-releases', {
+          label: t('document-panel-navigation.releases.section.with-document', {
             count: documentReleaseCount,
           }),
           // Shown only when the document is in a release: an "In 0 releases" header above the

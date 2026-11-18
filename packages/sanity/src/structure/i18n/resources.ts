@@ -591,9 +591,17 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'document-panel-navigation.releases.button.text': 'Releases',
   /** A scheduled release in the releases menu of the document header: its title and publish date */
   'document-panel-navigation.releases.item.title-with-date': '{{title}} · {{date}}',
-  /** Section header listing the releases the document has a version in */
+  /**
+   * Section header listing the releases the document has a version in
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-panel-navigation.releases.section.in-releases_one': 'In {{count}} release',
-  /** Section header listing the releases the document has a version in */
+  /**
+   * Section header listing the releases the document has a version in
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-panel-navigation.releases.section.in-releases_other': 'In {{count}} releases',
   /**
    * Tooltip on the "In 0 releases" section header of the releases menu in the document header
@@ -602,6 +610,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-panel-navigation.releases.section.no-releases-tooltip':
     "This document isn't in any release yet. Pick one below to add it.",
+  /** Section header listing the releases the document has a version in, with how many */
+  'document-panel-navigation.releases.section.with-document':
+    'Releases with this document ({{count}})',
   /** Section header listing the releases the document has no version in */
   'document-panel-navigation.releases.section.other': 'Other releases',
   /** Placeholder of the search field in the scheduled drafts menu of the document header */
@@ -614,15 +625,33 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'document-panel-navigation.variants.filter-placeholder': 'Search variant definitions…',
   /** Label of the variants menu trigger in the document header when no variant is selected */
   'document-panel-navigation.variants.button.text': 'Variants',
-  /** Section header listing the variants the document has versions in */
+  /**
+   * Section header listing the variants the document has versions in
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-panel-navigation.variants.section.has-variants_one': 'Has {{count}} variant',
-  /** Section header listing the variants the document has versions in */
+  /**
+   * Section header listing the variants the document has versions in
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-panel-navigation.variants.section.has-variants_other': 'Has {{count}} variants',
-  /** Section header when the document has no variants; "Has 0 variants" reads like the letter O */
+  /**
+   * Section header when the document has no variants; "Has 0 variants" reads like the letter O
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-panel-navigation.variants.section.has-variants_zero': 'Has no variants',
-  /** Tooltip on the "Has no variants" section header of the variants menu in the document header */
+  /**
+   * Tooltip on the "Has no variants" section header of the variants menu in the document header
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-panel-navigation.variants.section.no-variants-tooltip':
     "This document doesn't have any variants yet. Pick one below to create a variant",
+  /** Section header listing the variants the document has versions in, with how many */
+  'document-panel-navigation.variants.section.of-document': 'Variants of this document ({{count}})',
   /** Section header listing the variants the document has no version in */
   'document-panel-navigation.variants.section.other': 'Other variants',
   /** Tooltip on the version count of a variants menu item. `{{bundles}}` lists the bundle titles */
