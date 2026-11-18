@@ -93,7 +93,9 @@ export const DocumentGroupPickerMenu: ComponentType<{
               mode="readOnly"
               documentId={groupId}
               documentType={document.type}
-              selectedId={document.id}
+              // A side with no pick yet highlights nothing; without an id the inventory would
+              // highlight the document itself, the Reference's version
+              selectedId={document.id ?? ''}
               onSelect={(selected) => {
                 setOpen(false)
                 onSelectDocument(selected._id)
