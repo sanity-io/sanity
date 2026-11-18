@@ -448,6 +448,14 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'confirm-delete-dialog.preview-item.preview-unavailable.subtitle': 'ID: {{documentId}}',
   /** Appears when unable to render a document preview in the referring document list */
   'confirm-delete-dialog.preview-item.preview-unavailable.title': 'Preview unavailable',
+  /** The tag on a referring document whose link is required, so it blocks the delete or unpublish */
+  'confirm-delete-dialog.preview-item.required-badge': 'Required',
+  /** After the list of documents with only optional links to the one being deleted */
+  'confirm-delete-dialog.referential-integrity-disclaimer.optional.text_delete':
+    'If you delete it, these links will point at nothing.',
+  /** After the list of documents with only optional links to the one being unpublished */
+  'confirm-delete-dialog.referential-integrity-disclaimer.optional.text_unpublish':
+    'If you unpublish it, these links will point at nothing until it is published again.',
   /** Warns the user of affects to other documents if the action is confirmed (delete) */
   'confirm-delete-dialog.referential-integrity-disclaimer.text_delete':
     'If you delete this document, documents that refer to it will no longer be able to access it.',
@@ -460,6 +468,18 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Tells the user the count of how many other referring documents there are before listing them. (plural) */
   'confirm-delete-dialog.referring-document-count.text_other':
     '{{count}} documents refer to “<DocumentTitle/>”',
+  /** Introduces the documents that link to the one being deleted, when every link is optional */
+  'confirm-delete-dialog.referring-documents-descriptor.optional.text_delete':
+    'These documents link to “<DocumentTitle/>”:',
+  /** Introduces the documents that link to the one being unpublished, when every link is optional */
+  'confirm-delete-dialog.referring-documents-descriptor.optional.text_unpublish':
+    'These documents link to “<DocumentTitle/>”:',
+  /** Says the document cannot be deleted while documents hold a required link to it */
+  'confirm-delete-dialog.referring-documents-descriptor.required.text_delete':
+    'You can’t delete “<DocumentTitle/>” while these documents require it. Remove it from them first:',
+  /** Says the document cannot be unpublished while documents hold a required link to it */
+  'confirm-delete-dialog.referring-documents-descriptor.required.text_unpublish':
+    'You can’t unpublish “<DocumentTitle/>” while these documents require it. Remove it from them first:',
   /** Describes the list of documents that refer to the one trying to be deleted (delete) */
   'confirm-delete-dialog.referring-documents-descriptor.text_delete':
     'You may not be able to delete “<DocumentTitle/>” because the following documents refer to it:',

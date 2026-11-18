@@ -3,9 +3,9 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {UnknownIcon} from '@sanity/icons/Unknown'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card} from '@sanity/ui'
+import {Badge, Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback} from 'react'
+import {useCallback, useMemo} from 'react'
 import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
 import {Text, Flex, Box, VStack, Icon} from 'ui5'
 
@@ -19,6 +19,7 @@ import {
   OtherReferenceCount,
   Table,
 } from './ConfirmDeleteDialogBody.styles'
+import {type LinkStrength} from './getLinkStrength'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
 import {type ReferringDocuments} from './useReferringDocuments'
 import {VersionsPreviewList} from './VersionsPreviewList'
@@ -30,6 +31,8 @@ type DeletionConfirmationDialogBodyProps = Required<ReferringDocuments> & {
   documentId: string
   documentType: string
   documentVersions: string[]
+  /** Whether the links block the action, let it through, or are not known for every link */
+  linkStrength?: LinkStrength
 }
 
 function DocumentTitle({
@@ -66,16 +69,32 @@ export function ConfirmDeleteDialogBody({
   documentType,
   onReferenceLinkClick,
   documentVersions,
+  linkStrength = 'unknown',
 }: DeletionConfirmationDialogBodyProps) {
   const schema = useSchema()
   const toast = useToast()
   const {t} = useTranslation(structureLocaleNamespace)
 
   const renderPreviewItem = useCallback(
-    (item: {_id: string; _type: string}) => {
+    (item: {_id: string; _type: string; required?: boolean}) => {
       const type = schema.get(item._type)
       if (type) {
-        return <ReferencePreviewLink type={type} value={item} onClick={onReferenceLinkClick} />
+        const link = (
+          <ReferencePreviewLink type={type} value={item} onClick={onReferenceLinkClick} />
+        )
+        // When the links block the action, the ones that do are tagged
+        return linkStrength === 'required' && item.required ? (
+          <Flex alignItems="center" gap={2}>
+            <Box flexBasis="0%" flexGrow={1} style={{minWidth: 0}}>
+              {link}
+            </Box>
+            <Badge data-testid="required-reference-badge" tone="critical">
+              {t('confirm-delete-dialog.preview-item.required-badge')}
+            </Badge>
+          </Flex>
+        ) : (
+          link
+        )
       }
 
       return (
@@ -92,7 +111,15 @@ export function ConfirmDeleteDialogBody({
         </Box>
       )
     },
-    [schema, t, onReferenceLinkClick],
+    [schema, t, onReferenceLinkClick, linkStrength],
+  )
+  // Required links first: they are the ones to remove before the action can go through
+  const sortedReferences = useMemo(
+    () =>
+      [...(internalReferences?.references ?? [])].sort(
+        (a, b) => Number(Boolean(b.required)) - Number(Boolean(a.required)),
+      ),
+    [internalReferences],
   )
   const confirmationMessage = useCallback(
     () => (
@@ -167,7 +194,13 @@ export function ConfirmDeleteDialogBody({
       <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
         <Text size={1} as="div" trim={true}>
           <Translate
-            i18nKey="confirm-delete-dialog.referring-documents-descriptor.text"
+            i18nKey={
+              linkStrength === 'required'
+                ? 'confirm-delete-dialog.referring-documents-descriptor.required.text'
+                : linkStrength === 'optional'
+                  ? 'confirm-delete-dialog.referring-documents-descriptor.optional.text'
+                  : 'confirm-delete-dialog.referring-documents-descriptor.text'
+            }
             t={t}
             context={action}
             components={{DocumentTitle}}
@@ -179,7 +212,7 @@ export function ConfirmDeleteDialogBody({
         <Flex flexDirection="column">
           {internalReferences.totalCount > 0 && (
             <VStack as="ul" gap={2} data-testid="internal-references">
-              {internalReferences?.references.map((item) => (
+              {sortedReferences.map((item) => (
                 <Box key={item._id} as="li">
                   {renderPreviewItem(item)}
                 </Box>
@@ -325,17 +358,24 @@ export function ConfirmDeleteDialogBody({
           )}
         </Flex>
       </Card>
-      <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-        <Text size={1} as="div" trim={true}>
-          <Translate
-            i18nKey="confirm-delete-dialog.referential-integrity-disclaimer.text"
-            t={t}
-            context={action}
-            components={{DocumentTitle}}
-            componentProps={{documentTitle}}
-          />
-        </Text>
-      </Box>
+      {/* A blocked action needs no warning about what it would do */}
+      {linkStrength === 'required' ? null : (
+        <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+          <Text size={1} as="div" trim={true}>
+            <Translate
+              i18nKey={
+                linkStrength === 'optional'
+                  ? 'confirm-delete-dialog.referential-integrity-disclaimer.optional.text'
+                  : 'confirm-delete-dialog.referential-integrity-disclaimer.text'
+              }
+              t={t}
+              context={action}
+              components={{DocumentTitle}}
+              componentProps={{documentTitle}}
+            />
+          </Text>
+        </Box>
+      )}
     </Flex>
   )
 }
