@@ -408,8 +408,10 @@ export function DocumentGroupInventory(
         <Body>
           {schema && (
             <Select
-              // Groups collapse per document, for the session
-              key={documentId}
+              // Groups collapse per document, for the session. Keyed by the document group, not the
+              // open version: the first edit turns the open version from a published one into a
+              // new draft, and a key on the version would rebuild the whole list at that moment.
+              key={getPublishedId(documentId)}
               documentId={documentId}
               machine={selectionRef}
               inventoryRef={inventoryRef}
@@ -473,14 +475,18 @@ const Select: ComponentType<{
 }) => {
   const {t} = useTranslation(studioLocaleNamespace)
   const versionSets = useSelector(inventoryRef, ({context}) => context.sets)
-  // The first edit creates the draft, and the pane can learn that before the version list has it.
-  // The ghost row then stays, while the open version is still that draft, until the real row takes
-  // its place, so the row changes in place rather than going and coming back.
+  // The first edit creates the draft, and the pane can learn that before the version list has it,
+  // with a moment in between where it marks no version open while it resolves the new draft. The
+  // ghost row stays through both, until the real row takes its place (`withPendingDraft` then
+  // leaves the sets alone) or another version is opened, so the row changes in place rather than
+  // going and coming back.
   const [heldDraft, setHeldDraft] = useState(pendingDraft)
   if (pendingDraft && pendingDraft.id !== heldDraft?.id) {
     setHeldDraft(pendingDraft)
   }
-  const shownDraft = pendingDraft ?? (heldDraft?.id === selectedId ? heldDraft : undefined)
+  const shownDraft =
+    pendingDraft ??
+    (heldDraft && (selectedId === null || selectedId === heldDraft.id) ? heldDraft : undefined)
   // The draft the form is about to create joins the Draft set as a ghost row
   const sets = useMemo(
     () => withPendingDraft(versionSets, shownDraft, t('release.chip.draft')),
