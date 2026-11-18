@@ -36,6 +36,14 @@ export default {
       },
     },
     {
+      name: 'error',
+      title: 'Error',
+      type: 'object',
+      description: 'Set when an action on the release failed, such as publishing or scheduling.',
+      hidden: true,
+      fields: [{name: 'message', title: 'Message', type: 'string'}],
+    },
+    {
       name: 'publishAt',
       title: 'Publish at',
       type: 'datetime',

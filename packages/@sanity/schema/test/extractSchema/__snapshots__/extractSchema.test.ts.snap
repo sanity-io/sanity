@@ -241,6 +241,22 @@ exports[`Extract schema test > Can hoist types > Hoist repeated objects 1`] = `
           "type": "string",
         },
       },
+      "error": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "attributes": {
+            "message": {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": {
+                "type": "string",
+              },
+            },
+          },
+          "type": "object",
+        },
+      },
       "finalDocumentStates": {
         "optional": true,
         "type": "objectAttribute",
@@ -1492,6 +1508,22 @@ exports[`Extract schema test > Can hoist types > hoisted inline types should not
         "type": "objectAttribute",
         "value": {
           "type": "string",
+        },
+      },
+      "error": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "attributes": {
+            "message": {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": {
+                "type": "string",
+              },
+            },
+          },
+          "type": "object",
         },
       },
       "finalDocumentStates": {
@@ -3497,6 +3529,22 @@ exports[`Extract schema test > Extracts schema general 1`] = `
         "type": "objectAttribute",
         "value": {
           "type": "string",
+        },
+      },
+      "error": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "attributes": {
+            "message": {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": {
+                "type": "string",
+              },
+            },
+          },
+          "type": "object",
         },
       },
       "finalDocumentStates": {

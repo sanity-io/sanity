@@ -240,6 +240,14 @@ describe('exporting the schema', () => {
     expect(release).toMatchObject({
       type: 'document',
       attributes: {
+        error: {
+          type: 'objectAttribute',
+          optional: true,
+          value: {
+            type: 'object',
+            attributes: {message: {type: 'objectAttribute', value: {type: 'string'}}},
+          },
+        },
         metadata: {
           type: 'objectAttribute',
           value: {type: 'inline', name: RELEASE_METADATA_TYPE_NAME},
