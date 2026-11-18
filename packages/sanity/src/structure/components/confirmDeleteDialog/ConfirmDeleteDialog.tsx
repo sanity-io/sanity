@@ -7,6 +7,7 @@ import {structureLocaleNamespace} from '../../i18n'
 import {DocTitle} from '../DocTitle'
 import {dialogBody, loadingContainer} from './ConfirmDeleteDialog.css'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
+import {getLinkStrength} from './getLinkStrength'
 import {useReferringDocuments} from './useReferringDocuments'
 
 /**
@@ -81,7 +82,10 @@ export function ConfirmDeleteDialog({
   // Wait for the version count too, so the button copy doesn't flash from
   // "Delete all versions" to "Delete document" while the count loads. If incoming
   // references are disabled, show the confirm button immediately.
-  const showConfirmButton = !checkIncomingReferences || (!isLoading && !versionsLoading)
+  const linkStrength = getLinkStrength({internalReferences, crossDatasetReferences})
+  // Content Lake refuses the action while a required link points at the document: no button
+  const showConfirmButton =
+    !checkIncomingReferences || (!isLoading && !versionsLoading && linkStrength !== 'required')
 
   const handleConfirm = useCallback(() => {
     onConfirm(documentVersions, {
@@ -104,7 +108,8 @@ export function ConfirmDeleteDialog({
         confirmButton: showConfirmButton
           ? {
               text:
-                totalCount > 0
+                // Only links that may not let the action through earn the "anyway"
+                totalCount > 0 && linkStrength === 'unknown'
                   ? t('confirm-delete-dialog.confirm-anyway-button.text', {
                       context: action,
                       count: documentVersions.length,
@@ -136,6 +141,7 @@ export function ConfirmDeleteDialog({
             documentId={id}
             documentType={type}
             documentVersions={documentVersions}
+            linkStrength={linkStrength}
           />
         ) : (
           <Flex
