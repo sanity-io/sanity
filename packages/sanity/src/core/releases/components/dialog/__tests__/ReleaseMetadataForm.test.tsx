@@ -7,6 +7,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type InputProps} from '../../../../form/types/inputProps'
+import {defineReleaseMetadata} from '../../../metadata/defineReleaseMetadata'
 import {
   asReleaseMetadata,
   toReleaseMetadataRecord,
@@ -101,7 +102,7 @@ async function renderWithFields(
       projectId: 'test',
       dataset: 'test',
       beta: {variants: {enabled: variantsEnabled}},
-      releases: {metadata: {fields}},
+      schema: {types: [defineReleaseMetadata({fields})]},
     },
   })
   return render(ui, {wrapper})

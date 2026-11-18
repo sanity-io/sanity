@@ -1517,6 +1517,37 @@ export type DefaultPluginsWorkspaceOptions = {
      * Structure. Studio renders them on create and in the edit-release dialog while
      * `beta.variants` is enabled. This is not a component slot.
      *
+     * @deprecated Declare the fields on the `sanity.releaseMetadata` schema type with
+     * `defineReleaseMetadata` instead, and add it to `schema.types`. When the schema adds
+     * fields to release metadata, these are ignored.
+     *
+     * Before:
+     * ```ts
+     * defineConfig({
+     *   releases: {
+     *     metadata: {
+     *       fields: [defineField({name: 'legalReview', type: 'string'})],
+     *     },
+     *   },
+     * })
+     * ```
+     *
+     * After:
+     * ```ts
+     * import {defineConfig, defineField, defineReleaseMetadata} from 'sanity'
+     *
+     * defineConfig({
+     *   schema: {
+     *     types: [
+     *       defineReleaseMetadata({
+     *         fields: [defineField({name: 'legalReview', type: 'string'})],
+     *       }),
+     *     ],
+     *   },
+     * })
+     * ```
+     *
+     *
      * @beta
      */
     metadata?: {

@@ -7,6 +7,7 @@ import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {ReleaseDescriptionSet} from '../../../__telemetry__/releases.telemetry'
+import {defineReleaseMetadata} from '../../../metadata/defineReleaseMetadata'
 import {
   mockUseReleasePermissions,
   useReleasePermissionsMockReturn,
@@ -280,17 +281,19 @@ describe('ReleaseDetailsEditor', () => {
       vi.useFakeTimers({shouldAdvanceTime: true})
       const wrapper = await createTestProvider({
         config: {
-          releases: {
-            metadata: {
-              fields: [
-                defineField({
-                  name: 'reviewNote',
-                  title: 'Review note',
-                  type: 'string',
-                  validation: (rule) => rule.required(),
-                }),
-              ],
-            },
+          schema: {
+            types: [
+              defineReleaseMetadata({
+                fields: [
+                  defineField({
+                    name: 'reviewNote',
+                    title: 'Review note',
+                    type: 'string',
+                    validation: (rule) => rule.required(),
+                  }),
+                ],
+              }),
+            ],
           },
         },
       })

@@ -4,6 +4,7 @@ import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {defineReleaseMetadata} from '../../../../metadata/defineReleaseMetadata'
 import {useReleaseOperationsMockReturn} from '../../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {CopyToNewReleaseDialog} from '../CopyToNewReleaseDialog'
 
@@ -54,7 +55,7 @@ describe('CopyToNewReleaseDialog metadata fields', () => {
         projectId: 'test',
         dataset: 'test',
         beta: {variants: {enabled: true}},
-        releases: {metadata: {fields: [reviewNote]}},
+        schema: {types: [defineReleaseMetadata({fields: [reviewNote]})]},
       },
     })
     render(
@@ -94,7 +95,7 @@ describe('CopyToNewReleaseDialog metadata fields', () => {
         projectId: 'test',
         dataset: 'test',
         beta: {variants: {enabled: true}},
-        releases: {metadata: {fields: [legalReviewField]}},
+        schema: {types: [defineReleaseMetadata({fields: [legalReviewField]})]},
       },
     })
     render(
@@ -135,7 +136,7 @@ describe('CopyToNewReleaseDialog metadata fields', () => {
         projectId: 'test',
         dataset: 'test',
         beta: {variants: {enabled: true}},
-        releases: {metadata: {fields: [legalReviewField]}},
+        schema: {types: [defineReleaseMetadata({fields: [legalReviewField]})]},
       },
     })
     render(

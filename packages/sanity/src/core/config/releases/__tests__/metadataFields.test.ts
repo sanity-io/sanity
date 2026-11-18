@@ -1,3 +1,4 @@
+/* oxlint-disable typescript/no-deprecated -- every test here covers the deprecated `releases.metadata.fields` option */
 import {type FieldDefinition} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
