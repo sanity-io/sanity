@@ -698,7 +698,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.select.blocked.scheduled-release-group':
     'Scheduled · unschedule the release to change these versions',
   /** The action in the header of a scheduled release's set in the inventory: opens a dialog that unschedules the release */
-  'document-group.release.unschedule.action': 'Unschedule to edit',
+  'document-group.release.unschedule.action': 'Unschedule',
   /** The tooltip of that action */
   'document-group.release.unschedule.tooltip':
     'Unschedule the release so its versions can be changed',
