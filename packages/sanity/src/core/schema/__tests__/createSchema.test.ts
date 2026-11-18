@@ -74,23 +74,45 @@ describe('createSchema: release types', () => {
     expect(fieldNames(schema.get('sanity.releaseMetadata'))).toContain('releaseType')
   })
 
-  it('reports an error when a custom `sanity.releaseMetadata` declares a core field', () => {
+  it('throws when `defineReleaseMetadata` is given a core field', () => {
+    expect(() =>
+      defineReleaseMetadata({
+        fields: [
+          defineField({name: 'legalReview', type: 'string'}),
+          defineField({name: 'title', type: 'string', title: 'Release name'}),
+        ],
+      }),
+    ).toThrow(
+      "Can't declare `title` on `sanity.releaseMetadata`. Its core fields (`title`, `description`, `releaseType`, `intendedPublishAt`, `cardinality`) are always included, so only list the fields you add.",
+    )
+  })
+
+  it('uses the built-in core field when a `sanity.releaseMetadata` declared without the helper redeclares one', () => {
     const schema = createSchema({
       name: 'default',
       types: [
-        defineReleaseMetadata({
-          fields: [defineField({name: 'title', type: 'string', title: 'Release name'})],
+        defineType({
+          name: 'sanity.releaseMetadata',
+          type: 'object',
+          fields: [
+            defineField({name: 'title', type: 'number', title: 'Release name'}),
+            defineField({name: 'legalReview', type: 'string'}),
+          ],
         }),
       ],
     })
 
-    expect(hasErrors(schema)).toBe(true)
-    const messages = (schema._validation ?? []).flatMap((group) =>
-      group.problems.map((problem) => problem.message),
-    )
-    expect(messages).toContain(
-      'The names `title`, `description`, `releaseType`, `intendedPublishAt`, `cardinality` are invalid field names for type `sanity.releaseMetadata`. These core fields are always included.',
-    )
+    expect(hasErrors(schema)).toBe(false)
+    const metadata = schema.get('sanity.releaseMetadata') as ObjectSchemaType
+    expect(fieldNames(metadata)).toEqual([
+      'title',
+      'description',
+      'releaseType',
+      'intendedPublishAt',
+      'cardinality',
+      'legalReview',
+    ])
+    expect(metadata.fields[0].type.name).toBe('string')
   })
 
   it('does not collide with a user type named `releaseMetadata`', () => {

@@ -9,7 +9,7 @@ export interface ExtendableTypeDefinition {
  * Built-in object types that a schema extends by declaring a type with the same
  * name. The declaration only lists the fields it adds: the core fields of the
  * built-in definition are always prepended, the way object types like `image` prepends its asset
- * fields, and schema validation rejects a declaration that redeclares one.
+ * fields, and replace a declared field with the same name.
  * The declaration becomes a local type of that schema, replacing the built-in one.
  */
 export const extendableTypes: readonly ExtendableTypeDefinition[] = [releaseMetadata]
@@ -26,35 +26,23 @@ function fieldName(field: unknown): unknown {
   return isRecord(field) ? field.name : undefined
 }
 
-/**
- * Drops the core fields from a serialized extendable type, so they are added
- * again from the built-in definition.
- */
-export function withoutCoreFields(typeDef: unknown): unknown {
-  const extendable = isRecord(typeDef) ? findExtendableType(typeDef.name) : undefined
-  if (!isRecord(typeDef) || !extendable || !Array.isArray(typeDef.fields)) return typeDef
-  const coreFieldNames = new Set<unknown>(extendable.fields.map((field) => field.name))
-  return {
-    ...typeDef,
-    fields: typeDef.fields.filter((field) => !coreFieldNames.has(fieldName(field))),
-  }
-}
-
 function withCoreFields(
   typeDef: Record<string, unknown>,
   extendable: ExtendableTypeDefinition,
 ): Record<string, unknown> {
   const fields = typeDef.fields ?? []
   if (!Array.isArray(fields)) return typeDef
-  const declared = new Set(fields.map(fieldName))
-  const missing = extendable.fields.filter((field) => !declared.has(field.name))
-  return {...typeDef, fields: [...missing, ...fields]}
+  const coreFieldNames = new Set<unknown>(extendable.fields.map((field) => field.name))
+  const addedFields = fields.filter((field) => !coreFieldNames.has(fieldName(field)))
+  return {...typeDef, fields: [...extendable.fields, ...addedFields]}
 }
 
 /**
  * Prepends the core fields to the extendable types declared in `types`, so a
- * declaration only has to list the fields it adds. Other types are returned as
- * they are.
+ * declaration only has to list the fields it adds. A declared field with a core
+ * field's name is replaced by the core field, which is what lets a serialized
+ * schema (a manifest or a descriptor) that carries the core fields rebuild the
+ * same type. Other types are returned as they are.
  */
 export function resolveExtendableTypes(types: unknown[]): unknown[] {
   const declared = new Set<string>()

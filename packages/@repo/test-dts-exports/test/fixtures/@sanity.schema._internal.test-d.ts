@@ -18,6 +18,7 @@ import type {
   extractCreateWorkspaceManifest,
   extractManifestSchemaTypes,
   extractSchema,
+  findExtendableType,
   FIXME,
   getWorkspaceSchemaId,
   groupProblems,
@@ -107,6 +108,9 @@ describe('@sanity/schema/_internal', () => {
   })
   test('extractSchema', () => {
     expectTypeOf<typeof extractSchema>().toBeFunction()
+  })
+  test('findExtendableType', () => {
+    expectTypeOf<typeof findExtendableType>().toBeFunction()
   })
   test('FIXME', () => {
     expectTypeOf<FIXME>().not.toBeNever()

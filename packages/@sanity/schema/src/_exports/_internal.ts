@@ -50,7 +50,7 @@ export {
   validForNamesPattern,
 } from '../manifest/workspaceSchemaId'
 export {builtinTypes} from '../sanity/builtinTypes'
-export {resolveExtendableTypes} from '../sanity/builtinTypes/extendableTypes'
+export {findExtendableType, resolveExtendableTypes} from '../sanity/builtinTypes/extendableTypes'
 export {
   RELEASE_METADATA_CORE_FIELDS,
   RELEASE_METADATA_TYPE_NAME,

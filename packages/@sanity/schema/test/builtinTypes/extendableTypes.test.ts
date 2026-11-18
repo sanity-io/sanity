@@ -102,6 +102,26 @@ describe('resolveExtendableTypes', () => {
     expect(errorMessages(types)).toEqual([])
   })
 
+  test('replaces a declared core field with the built-in one', () => {
+    const declaredTitle = defineField({name: 'title', title: 'Release name', type: 'string'})
+    const types = resolveExtendableTypes([
+      defineType({
+        name: RELEASE_METADATA_TYPE_NAME,
+        type: 'object',
+        fields: [defineField({name: 'legalReview', type: 'string'}), declaredTitle],
+      }),
+    ])
+    const fields = (findType(types, RELEASE_METADATA_TYPE_NAME) as {fields: unknown[]}).fields
+
+    expect(fieldNames(findType(types, RELEASE_METADATA_TYPE_NAME))).toEqual([
+      ...releaseMetadataCoreFieldNames,
+      'legalReview',
+    ])
+    expect(fields).not.toContain(declaredTitle)
+    expect(fields[0]).toBe(releaseMetadata.fields[0])
+    expect(errorMessages(types)).toEqual([])
+  })
+
   test('does not treat a type named `releaseMetadata` as the release metadata type', () => {
     const userType = defineType({
       name: 'releaseMetadata',
@@ -132,23 +152,6 @@ describe('extendable type validation', () => {
     expect(
       errorMessages(resolveExtendableTypes([customMetadata]), {parentTypes: builtinTypes}),
     ).toEqual([])
-  })
-
-  test('rejects an extension that declares a core field', () => {
-    const types = resolveExtendableTypes([
-      defineType({
-        name: RELEASE_METADATA_TYPE_NAME,
-        type: 'object',
-        fields: [
-          defineField({name: 'legalReview', type: 'string'}),
-          defineField({name: 'title', title: 'Release name', type: 'string'}),
-        ],
-      }),
-    ])
-
-    expect(errorMessages(types)).toEqual([
-      `The names \`title\`, \`description\`, \`releaseType\`, \`intendedPublishAt\`, \`cardinality\` are invalid field names for type \`${RELEASE_METADATA_TYPE_NAME}\`. These core fields are always included.`,
-    ])
   })
 
   test('rejects an extension that is not an object', () => {

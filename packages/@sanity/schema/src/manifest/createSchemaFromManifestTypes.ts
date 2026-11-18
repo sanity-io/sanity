@@ -8,7 +8,7 @@ import {
 
 import {Schema} from '../legacy/Schema'
 import {builtinTypes} from '../sanity/builtinTypes'
-import {resolveExtendableTypes, withoutCoreFields} from '../sanity/builtinTypes/extendableTypes'
+import {resolveExtendableTypes} from '../sanity/builtinTypes/extendableTypes'
 import {isSystemDocumentTypeName} from '../sanity/builtinTypes/systemTypes'
 import {groupProblems} from '../sanity/groupProblems'
 import {type SchemaValidationResult} from '../sanity/typedefs'
@@ -53,11 +53,9 @@ export interface CreateSchemaFromManifestTypesOptions {
  */
 function withExtendableTypes(types: unknown[]): unknown[] {
   return resolveExtendableTypes(
-    types
-      .filter(
-        (type) => !isObject(type) || !('name' in type) || !isSystemDocumentTypeName(type.name),
-      )
-      .map(withoutCoreFields),
+    types.filter(
+      (type) => !isObject(type) || !('name' in type) || !isSystemDocumentTypeName(type.name),
+    ),
   )
 }
 

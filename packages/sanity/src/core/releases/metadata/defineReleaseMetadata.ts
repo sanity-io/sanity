@@ -19,8 +19,8 @@ export type ReleaseMetadataDefinition = Omit<ObjectDefinition, 'name' | 'type' |
  *
  * The core fields (`title`, `description`, `releaseType`, `intendedPublishAt`
  * and `cardinality`) are always included, the way `image` always includes its
- * asset fields, so the definition only lists the fields it adds. Declaring a
- * field with one of those names is a schema error.
+ * asset fields, so the definition only lists the fields it adds. Passing a
+ * field with one of those names throws.
  *
  * @example
  * ```ts

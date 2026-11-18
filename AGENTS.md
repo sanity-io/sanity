@@ -656,8 +656,10 @@ nothing has no local types:
 - `extendableTypes/` (`extendableTypes`): object types a schema extends by declaring a type with
   the same name (`sanity.releaseMetadata`). The declaration lists only the fields it adds:
   `resolveExtendableTypes`, which `createSchema` and `createSchemaFromManifestTypes` call,
-  prepends the core fields of the built-in definition, the way `image` prepends `asset`, and
-  redeclaring one is a schema error (`validation/types/extendableType.ts`). The compiler
+  prepends the core fields of the built-in definition, the way `image` prepends `asset`, and a
+  declared field with a core field's name is replaced by the built-in one, so a descriptor that
+  carries the core fields rebuilds through `createSchema` too. The `define*` helpers throw on a
+  core field name instead (`extendBuiltinType`). The compiler
   (`compileRegistry` in `legacy/Schema.ts`) lets the declaration replace the built-in type, so it
   is a local type of that schema. Manifests carry the schema's local types, so an extension is
   written with only its added fields, and a rebuilt schema takes the core fields from code, also
