@@ -10,7 +10,6 @@ import {
   previewHeavyWorkspace,
   structurePaneWorkspace,
 } from '../studio/schemas/customizations'
-import {listenerStallWorkspace} from '../studio/schemas/listenerStall'
 import {wrappedFormWorkspace} from '../studio/schemas/wrappedForm'
 
 /**
@@ -43,5 +42,4 @@ export default defineConfig([
   {basePath: '/structurePane', ...common, ...structurePaneWorkspace},
   {basePath: '/listenQueryPane', ...common, ...listenQueryPaneWorkspace},
   {basePath: '/wrappedForm', ...common, ...wrappedFormWorkspace},
-  {basePath: '/listenerStall', ...common, ...listenerStallWorkspace},
 ])
