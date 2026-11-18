@@ -2282,6 +2282,15 @@ describe('Inventory selection', () => {
       `Select all in ${setName}. ${SCHEDULED_GROUP_REASON}`,
     )
     expect(header.querySelector('[data-testid="variant-set-blocked-note"]')).toBeNull()
+    // A locked header is exactly as tall as a header with a checkbox
+    expect(header.getBoundingClientRect().height).toBe(
+      selectionSet('Draft').querySelector('header')!.getBoundingClientRect().height,
+    )
+    // So is a locked row, compared with a row of the same shape in the same set
+    expect(
+      row.querySelector<HTMLElement>('[data-testid="selection-lock"]')!.getBoundingClientRect()
+        .height,
+    ).toBe(17)
     // Sets that can be selected keep their checkbox
     expect(groupCheckbox('Draft')).not.toBeNull()
 
