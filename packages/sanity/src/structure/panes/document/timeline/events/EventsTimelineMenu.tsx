@@ -26,6 +26,11 @@ interface TimelineMenuProps {
   event: DocumentGroupEvent | null
   events: DocumentGroupEvent[]
   mode: 'rev' | 'since'
+  /**
+   * Receives the picked range instead of the document pane, for a timeline that is not the pane's
+   * own (the comparison view's panel). Defaults to the pane's `setTimelineRange`.
+   */
+  onRangeChange?: (since: string | null, rev: string | null) => void
   placement?: Placement
 }
 
@@ -35,8 +40,15 @@ const formatParams = {
   timestamp: {dateStyle: 'medium', timeStyle: 'short'},
 }
 
-export function EventsTimelineMenu({event, events, mode, placement}: TimelineMenuProps) {
-  const {setTimelineRange} = useDocumentPane()
+export function EventsTimelineMenu({
+  event,
+  events,
+  mode,
+  placement,
+  onRangeChange,
+}: TimelineMenuProps) {
+  const {setTimelineRange: setPaneTimelineRange} = useDocumentPane()
+  const setTimelineRange = onRangeChange ?? setPaneTimelineRange
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [popoverRef, setPopoverRef] = useState<HTMLElement | null>(null)

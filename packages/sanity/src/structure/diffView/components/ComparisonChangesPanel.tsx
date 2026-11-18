@@ -1,24 +1,32 @@
-import {diffInput, wrap} from '@sanity/diff'
+import {hues} from '@sanity/color'
 import {CloseIcon} from '@sanity/icons/Close'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, Card, TabList, TabPanel} from '@sanity/ui'
-import {type ReactNode, useMemo, useState} from 'react'
+import {type CSSProperties, type ReactNode, useCallback, useMemo, useState} from 'react'
+import {useSyncObservable} from 'react-rx'
 import {
   ChangeList,
+  ChangesError,
+  type DocumentChangeContextInstance,
   type DocumentGroupEvent,
-  DocumentVersionIcons,
+  EventsProvider,
   getPublishedId,
-  getVersionFromId,
+  isDeleteDocumentGroupEvent,
+  isDeleteDocumentVersionEvent,
+  isNonSelectableTerminalEvent,
+  isScheduleDocumentVersionEvent,
+  isUnpublishDocumentEvent,
+  isUnscheduleDocumentVersionEvent,
   LoadingBlock,
   NoChanges,
-  type ObjectDiff,
   type ObjectSchemaType,
   ScrollContainer,
   Translate,
+  useColorSchemeValue,
   useDocumentVersions,
   useDocumentVersionTitle,
-  useEditState,
+  useEvents,
   useEventsStore,
   useSchema,
   useTranslation,
@@ -32,9 +40,9 @@ import {Tab} from '../../../ui-components/tab/Tab'
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {structureLocaleNamespace} from '../../i18n'
 import {scroller} from '../../panes/document/inspectors/changes/Scroller.css'
-import {EventTimelineItem} from '../../panes/document/timeline/events/EventTimelineItem'
+import {EventsTimeline} from '../../panes/document/timeline/events/EventsTimeline'
+import {EventsTimelineMenu} from '../../panes/document/timeline/events/EventsTimelineMenu'
 import {comparisonChangesPanel} from './ComparisonChangesPanel.css'
-import {pickVersion} from './DiffViewPane'
 
 interface ComparisonSide {
   type: string
@@ -51,36 +59,111 @@ function PassThroughFieldWrapper(props: FieldWrapperProps): ReactNode {
   return props.children
 }
 
-const noop = () => undefined
+const EMPTY_VALUE = {}
+
+const DIFF_INITIAL_VALUE = {diff: null, loading: true, error: null}
 
 type PanelTab = 'history' | 'review'
 
+interface TimelineRange {
+  since: string | undefined
+  rev: string | undefined
+}
+
+/** The inspector opens Review changes from the last publish; so does this panel. */
+const INITIAL_RANGE: TimelineRange = {since: '@lastPublished', rev: undefined}
+
+interface ActionColorStyle extends CSSProperties {
+  '--comparison-added-bg': string
+  '--comparison-added-fg': string
+  '--comparison-removed-bg': string
+  '--comparison-removed-fg': string
+}
+
 /**
- * History and Review changes inside the comparison view. It is the document pane's History
- * inspector (same tabs, banner, From and To rows, spacing), pointed at the two sides of the
- * comparison: History lists the compared side's events, Review changes lists what differs from the
- * reference. Read only: no revert, no restore.
+ * Added in green and removed in red, whoever made the change. User colours leave out green and
+ * red for this reason, so these never read as a person.
+ */
+function useActionColorStyle(): ActionColorStyle {
+  const scheme = useColorSchemeValue()
+  return useMemo(() => {
+    const background = scheme === 'dark' ? 900 : 100
+    const text = scheme === 'dark' ? 200 : 700
+    return {
+      '--comparison-added-bg': hues.green[background].hex,
+      '--comparison-added-fg': hues.green[text].hex,
+      '--comparison-removed-bg': hues.red[background].hex,
+      '--comparison-removed-fg': hues.red[text].hex,
+    }
+  }, [scheme])
+}
+
+/**
+ * The document pane's History inspector inside the comparison view, pointed at the version on the
+ * right: its own events, and its own changes between two points in its timeline (From and To),
+ * with who made them. Read only: no revert, no restore.
  *
  * @internal
  */
 export function ComparisonChangesPanel({
-  reference,
   comparing,
   onClose,
 }: {
-  reference: ComparisonSide
   comparing: ComparisonSide
   onClose: () => void
 }) {
+  const [range, setRange] = useState<TimelineRange>(INITIAL_RANGE)
+  const eventsStore = useEventsStore({
+    documentId: comparing.id,
+    documentType: comparing.type,
+    rev: range.rev,
+    since: range.since,
+  })
+
+  return (
+    <EventsProvider value={eventsStore}>
+      <ComparisonInspector comparing={comparing} onClose={onClose} setRange={setRange} />
+    </EventsProvider>
+  )
+}
+
+function ComparisonInspector({
+  comparing,
+  onClose,
+  setRange,
+}: {
+  comparing: ComparisonSide
+  onClose: () => void
+  setRange: (range: TimelineRange) => void
+}) {
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
-  // Review changes is what the comparison is for, so it opens there
   const [tab, setTab] = useState<PanelTab>('review')
   const [parentRef, setParentRef] = useState<HTMLDivElement | null>(null)
   const comparingVersion = useVersionStub(comparing)
+  const actionColorStyle = useActionColorStyle()
+
+  const handleRangeChange = useCallback(
+    (since: string | null, rev: string | null) =>
+      setRange({since: since ?? undefined, rev: rev ?? undefined}),
+    [setRange],
+  )
+
+  // Picking an event in History shows what it changed
+  const handleSelectEvent = useCallback(
+    (since: string | null, rev: string | null) => {
+      handleRangeChange(since, rev)
+      setTab('review')
+    },
+    [handleRangeChange],
+  )
 
   return (
-    <aside className={comparisonChangesPanel} data-testid="comparison-changes-panel">
+    <aside
+      className={comparisonChangesPanel}
+      data-testid="comparison-changes-panel"
+      style={actionColorStyle}
+    >
       <Flex flexDirection="column" padding={0} height="100%" ref={setParentRef}>
         <Card paddingBottom={1}>
           <Flex alignItems="center" padding={3} gap={2}>
@@ -139,7 +222,7 @@ export function ComparisonChangesPanel({
           hidden={tab !== 'history'}
           id="comparison-history-panel"
         >
-          {tab === 'history' ? <ComparisonHistory comparing={comparing} /> : null}
+          {tab === 'history' ? <ComparisonHistory onSelectRange={handleSelectEvent} /> : null}
         </TabPanel>
 
         <TabPanel
@@ -149,11 +232,7 @@ export function ComparisonChangesPanel({
           id="comparison-review-panel"
         >
           {tab === 'review' ? (
-            <ComparisonChanges
-              reference={reference}
-              comparing={comparing}
-              comparingVersion={comparingVersion}
-            />
+            <ComparisonReviewChanges comparing={comparing} onRangeChange={handleRangeChange} />
           ) : null}
         </TabPanel>
       </Flex>
@@ -174,96 +253,90 @@ function BannerDescription({version}: {version: VersionInfoDocumentStub}) {
   return <Translate t={t} values={{perspective: title}} i18nKey="changes.banner.description" />
 }
 
-/** A side's name in the From and To rows: its icons and title, as the picker shows them. */
-function VersionName({version}: {version: VersionInfoDocumentStub | undefined}) {
-  const {t} = useTranslation(structureLocaleNamespace)
-  if (!version) {
-    return (
-      <Text size={1} muted as="div" trim={true}>
-        {t('compare-versions.picker.missing')}
-      </Text>
-    )
-  }
-  return <KnownVersionName version={version} />
-}
-
-function KnownVersionName({version}: {version: VersionInfoDocumentStub}) {
-  const {title} = useDocumentVersionTitle({version})
-  return (
-    <Flex gap={1} alignItems="center" paddingX={2} paddingY={2} style={{minWidth: 0}}>
-      <DocumentVersionIcons version={version} />
-      <Text
-        size={1}
-        weight="medium"
-        as="div"
-        trim={true}
-        style={{overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}
-      >
-        {title}
-      </Text>
-    </Flex>
-  )
-}
-
-/** Every field that differs between the two sides, laid out as the Review changes tab. */
-function ComparisonChanges({
-  reference,
+/** Review changes for the compared version, laid out as the inspector's Review changes tab. */
+function ComparisonReviewChanges({
   comparing,
-  comparingVersion,
+  onRangeChange,
 }: {
-  reference: ComparisonSide
   comparing: ComparisonSide
-  comparingVersion: VersionInfoDocumentStub | undefined
+  onRangeChange: (since: string | null, rev: string | null) => void
 }) {
-  const {t} = useTranslation(structureLocaleNamespace)
-  const {t: tCore} = useTranslation()
+  const {t} = useTranslation('studio')
   const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
   const schemaType = useSchema().get(comparing.type) as ObjectSchemaType | undefined
-  const referenceVersion = useVersionStub(reference)
-  const referenceSide = useSide(reference)
-  const comparingSide = useSide(comparing)
-  const referenceValue = referenceSide.value
-  const comparingValue = comparingSide.value
+  const {events, revision, sinceRevision, getChangesList, error: eventsError} = useEvents()
+  const changesList$ = useMemo(() => getChangesList(), [getChangesList])
+  const {
+    diff,
+    loading: diffLoading,
+    error: diffError,
+  } = useSyncObservable(changesList$, DIFF_INITIAL_VALUE)
 
-  const diff = useMemo(
+  const [sinceEvent, toEvent] = useMemo(() => {
+    const [lastEvent] = events
+    const revisionEvent = events.find((e) => e.id === revision?.revisionId)
+    const fallbackToEvent =
+      lastEvent && isNonSelectableTerminalEvent(lastEvent) ? null : lastEvent || null
+    return [
+      events.find((e) => e.id === sinceRevision?.revisionId) || null,
+      revisionEvent || fallbackToEvent,
+    ]
+  }, [events, revision?.revisionId, sinceRevision?.revisionId])
+
+  const sinceEvents = useMemo(() => {
+    // Only events older than the To event can be the From event
+    if (!toEvent) return events.slice(1)
+    return events.slice(events.indexOf(toEvent) + 1).map((event) => {
+      if (
+        ('parentId' in toEvent && 'parentId' in event && event.parentId === toEvent.parentId) ||
+        ('parentId' in event && toEvent.id === event.parentId)
+      ) {
+        return {...event, parentId: undefined}
+      }
+      return event
+    })
+  }, [events, toEvent])
+
+  const documentContext: DocumentChangeContextInstance | null = useMemo(
     () =>
-      // Two separate versions share no edit history, so the diff carries no authors, the same
-      // as the inspector's Compare with published view: the changes show without author colours
-      diffInput(
-        wrap(referenceValue ?? {}, {author: ''}),
-        wrap(comparingValue ?? {}, {author: ''}),
-      ) as ObjectDiff,
-    [referenceValue, comparingValue],
+      schemaType && diff
+        ? {
+            // The document group's id, as Review changes passes it; the store refuses a draft id
+            documentId: getPublishedId(comparing.id),
+            schemaType,
+            rootDiff: diff,
+            // Read only: no revert controls
+            isComparingCurrent: false,
+            FieldWrapper: PassThroughFieldWrapper,
+            value: revision?.document ?? EMPTY_VALUE,
+            showFromValue: true,
+          }
+        : null,
+    [comparing.id, diff, revision?.document, schemaType],
   )
 
+  if (!events.length) {
+    return <NoHistory />
+  }
+
+  const error = eventsError || diffError
   let content: ReactNode
-  if (!schemaType || !referenceSide.ready || !comparingSide.ready) {
+  if (error) {
+    content = <ChangesError error={error} />
+  } else if (revision?.loading || sinceRevision?.loading || diffLoading || !schemaType) {
     content = <LoadingBlock showText />
-  } else if (!referenceValue || !comparingValue) {
-    // A side names a version that does not exist; that side already says so
-    content = <PanelMessage>{t('compare-versions.panel.missing-side')}</PanelMessage>
-  } else if (!diff.isChanged) {
-    content = <NoChanges />
-  } else {
+  } else if (sinceEvent && toEvent && sinceEvent.id === toEvent.id) {
+    content = <SameRevisionSelected />
+  } else if (documentContext?.rootDiff && schemaType) {
     content = (
-      <DocumentChangeContext.Provider
-        value={{
-          // The document group's id, as Review changes passes it; the store refuses a draft id
-          documentId: getPublishedId(comparing.id),
-          schemaType,
-          rootDiff: diff,
-          // Not comparing against the current document, so no revert controls
-          isComparingCurrent: false,
-          FieldWrapper: PassThroughFieldWrapper,
-          value: comparingValue,
-          showFromValue: true,
-        }}
-      >
+      <DocumentChangeContext.Provider value={documentContext}>
         <Box paddingY={1}>
-          <ChangeList diff={diff} schemaType={schemaType} />
+          <ChangeList diff={documentContext.rootDiff} schemaType={schemaType} />
         </Box>
       </DocumentChangeContext.Provider>
     )
+  } else {
+    content = <NoChanges />
   }
 
   return (
@@ -281,13 +354,25 @@ function ComparisonChanges({
           style={{alignItems: 'center', gap: '0.25em'}}
         >
           <Text size={1} muted as="div" trim={true}>
-            {tCore('changes.inspector.from-label')}
+            {t('changes.inspector.from-label')}
           </Text>
-          <VersionName version={referenceVersion} />
+          <EventsTimelineMenu
+            event={sinceEvent}
+            events={sinceEvents}
+            mode="since"
+            placement="bottom-start"
+            onRangeChange={onRangeChange}
+          />
           <Text size={1} muted as="div" trim={true}>
-            {tCore('changes.inspector.to-label')}
+            {t('changes.inspector.to-label')}
           </Text>
-          <VersionName version={comparingVersion} />
+          <EventsTimelineMenu
+            event={toEvent}
+            events={events}
+            mode="rev"
+            placement="bottom-end"
+            onRangeChange={onRangeChange}
+          />
         </Grid>
       </Box>
       <Card flex={1} paddingX={2} paddingY={2}>
@@ -303,45 +388,10 @@ function ComparisonChanges({
   )
 }
 
-/** A side's document, and whether its edit state has loaded (so missing is not mistaken for loading). */
-function useSide(side: ComparisonSide) {
-  const editState = useEditState(
-    getPublishedId(side.id),
-    side.type,
-    'low',
-    getVersionFromId(side.id),
-  )
-  return {value: pickVersion(side.id, editState), ready: editState.ready}
-}
-
-function PanelMessage({children}: {children: ReactNode}) {
-  return (
-    <Box paddingY={2}>
-      <Text muted size={1}>
-        {children}
-      </Text>
-    </Box>
-  )
-}
-
-/**
- * The compared side's own history, laid out as the History tab's timeline. No item menus and no
- * selection, so nothing here restores or changes the comparison.
- */
-function ComparisonHistory({comparing}: {comparing: ComparisonSide}) {
+function NoHistory() {
   const {t} = useTranslation('studio')
-  const {t: tStructure} = useTranslation(structureLocaleNamespace)
-  const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
-  const {events, loading, nextCursor, loadMoreEvents} = useEventsStore({
-    documentId: comparing.id,
-    documentType: comparing.type,
-  })
-
-  let content: ReactNode
-  if (loading && events.length === 0) {
-    content = <LoadingBlock />
-  } else if (events.length === 0) {
-    content = (
+  return (
+    <Box paddingX={2}>
       <Flex padding={3} gap={3} flexDirection="column">
         <Text size={1} weight="medium" as="div" trim={true}>
           {t('timeline.error.no-document-history-title')}
@@ -350,26 +400,86 @@ function ComparisonHistory({comparing}: {comparing: ComparisonSide}) {
           {t('timeline.error.no-document-history-description')}
         </Text>
       </Flex>
-    )
-  } else {
-    content = (
-      <>
-        {events.map((event: DocumentGroupEvent) => (
-          <Box key={event.id} paddingBottom={1} paddingX={1}>
-            <EventTimelineItem event={event} isSelected={false} onSelect={noop} />
-          </Box>
-        ))}
-        {nextCursor ? (
-          <Box padding={1}>
-            <Button
-              mode="bleed"
-              text={tStructure('compare-versions.panel.load-more')}
-              onClick={loadMoreEvents}
-              loading={loading}
-            />
-          </Box>
-        ) : null}
-      </>
+    </Box>
+  )
+}
+
+function SameRevisionSelected() {
+  const {t} = useTranslation('studio')
+  return (
+    <Flex gap={3} paddingTop={2} flexDirection="column">
+      <Text size={1} weight="medium" as="h3" trim={true}>
+        {t('changes.same-revision-selected-title')}
+      </Text>
+      <Text as="p" size={1} muted trim={true}>
+        <Translate i18nKey="changes.same-revision-selected-description" t={t} />
+      </Text>
+    </Flex>
+  )
+}
+
+/** The compared version's timeline, laid out as the inspector's History tab. */
+function ComparisonHistory({
+  onSelectRange,
+}: {
+  onSelectRange: (since: string | null, rev: string | null) => void
+}) {
+  const {
+    events,
+    nextCursor,
+    loading,
+    revision,
+    lastNonDeletedRevId,
+    loadMoreEvents,
+    findRangeForRevision,
+    expandEvent,
+  } = useEvents()
+  const [listHeight, setListHeight] = useState(0)
+  const [scrollRef, setScrollRef] = useState<HTMLDivElement | null>(null)
+
+  // The virtual list needs a fixed height, taken from its scroller once, as the inspector does
+  const getScrollerRef = useCallback(
+    (el: HTMLDivElement | null) => {
+      if (!listHeight && el) {
+        setListHeight(el.clientHeight ? el.clientHeight - 1 : 0)
+        setScrollRef(el)
+      }
+    },
+    [listHeight],
+  )
+
+  const selectEvent = useCallback(
+    (event: DocumentGroupEvent) => {
+      if (
+        isDeleteDocumentVersionEvent(event) ||
+        isDeleteDocumentGroupEvent(event) ||
+        isUnpublishDocumentEvent(event) ||
+        isScheduleDocumentVersionEvent(event) ||
+        isUnscheduleDocumentVersionEvent(event)
+      ) {
+        return
+      }
+      const [since, rev] = findRangeForRevision(event.id)
+      onSelectRange(since, rev)
+    },
+    [findRangeForRevision, onSelectRange],
+  )
+
+  const initialLoad = loading && !events.length
+  let list: ReactNode = null
+  if (listHeight && !initialLoad) {
+    list = events.length ? (
+      <EventsTimeline
+        events={events}
+        fetchEventChildren={expandEvent}
+        hasMoreEvents={Boolean(nextCursor)}
+        selectedEventId={revision?.revisionId || lastNonDeletedRevId || undefined}
+        onLoadMore={loadMoreEvents}
+        onSelect={selectEvent}
+        listMaxHeight={`${listHeight}px`}
+      />
+    ) : (
+      <NoHistory />
     )
   }
 
@@ -377,8 +487,9 @@ function ComparisonHistory({comparing}: {comparing: ComparisonSide}) {
     <Flex data-testid="comparison-history" flexDirection="column" height="100%">
       <Card flex={1} padding={2} paddingTop={0}>
         <BoundaryElementProvider element={scrollRef}>
-          <ScrollContainer className={scroller} data-ui="Scroller" ref={setScrollRef}>
-            {content}
+          <ScrollContainer className={scroller} data-ui="Scroller" ref={getScrollerRef}>
+            {list}
+            {loading && <LoadingBlock />}
           </ScrollContainer>
         </BoundaryElementProvider>
       </Card>

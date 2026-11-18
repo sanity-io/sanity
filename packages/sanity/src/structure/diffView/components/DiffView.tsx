@@ -81,7 +81,6 @@ export const DiffView: ComponentType<Pick<DocumentLayoutProps, 'documentId'>> = 
               )}
               {changesPanelOpen && documents.next ? (
                 <ComparisonChangesPanel
-                  reference={documents.previous}
                   comparing={documents.next}
                   onClose={() => setChangesPanelOpen(false)}
                 />
