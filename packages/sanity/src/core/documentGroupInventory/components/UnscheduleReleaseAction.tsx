@@ -41,7 +41,8 @@ export function UnscheduleReleaseAction({release}: {release: ReleaseDocument}) {
     <>
       <Button
         data-testid="unschedule-release-action"
-        mode="bleed"
+        // Outlined, so it has a visible edge on the header band in light and dark
+        mode="ghost"
         // Above the header's toggle, so a click opens the dialog, not the set
         onClick={(event: MouseEvent) => {
           event.stopPropagation()

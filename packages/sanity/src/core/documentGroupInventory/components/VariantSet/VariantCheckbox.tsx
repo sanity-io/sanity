@@ -1,7 +1,6 @@
 import {LockIcon} from '@sanity/icons/Lock'
 import {Checkbox} from '@sanity/ui'
 import {type MouseEvent} from 'react'
-import {Icon} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 
@@ -52,7 +51,8 @@ export function VariantCheckbox({
           role="img"
           tabIndex={tabbable ? 0 : -1}
         >
-          <Icon icon={LockIcon} muted size={1} />
+          {/* Drawn in currentColor, so the row decides its colour: muted, or inverted on the open row */}
+          <LockIcon />
         </span>
       </Tooltip>
     )

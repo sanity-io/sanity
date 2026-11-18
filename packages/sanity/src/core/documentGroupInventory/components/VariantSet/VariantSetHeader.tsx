@@ -39,6 +39,8 @@ export const VariantSetHeader = styled(VariantSetEntry)(({theme}) => {
     .header-actions {
       position: relative;
       z-index: 1;
+      /* Room between an action and the set's mark at the end of the line */
+      margin-inline-end: 8px;
     }
 
     /* Focus shows as the header's focus ring, not as a row's focus tint */

@@ -84,6 +84,14 @@ export const VariantSetEntry = styled.div(({theme}) => {
     /* A lock (a version that cannot be selected) always shows: it says why, not what you can do */
     .selection-checkbox[data-blocked] {
       visibility: visible;
+      display: inline-flex;
+      font-size: 17px;
+      color: var(--card-muted-fg-color);
+    }
+
+    /* On the open row's strong blue the lock takes the inverted text colour, like the row's marks */
+    &[data-current] .selection-checkbox[data-blocked] {
+      color: ${SELECTION.openSubtitle};
     }
 
     &:hover .selection-checkbox,
