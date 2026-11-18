@@ -120,6 +120,26 @@ describe('withholdWelcome', () => {
     const out = await firstValueFrom(from(input).pipe(withholdWelcome(), toArray()))
     expect(out).toEqual([keepalive])
   })
+
+  test('decides once per listener whether to withhold it', async () => {
+    const input = [welcome(), mutation('a'), mutation('b')]
+    const random = vi.spyOn(Math, 'random')
+
+    random.mockReturnValue(0.3)
+    expect(await firstValueFrom(from(input).pipe(withholdWelcome(0.5), toArray()))).toEqual([])
+
+    random.mockReturnValue(0.7)
+    expect(await firstValueFrom(from(input).pipe(withholdWelcome(0.5), toArray()))).toEqual(input)
+
+    expect(random).toHaveBeenCalledTimes(2)
+    random.mockRestore()
+  })
+
+  test('passes every listener through at probability 0', async () => {
+    const input = [welcome(), mutation('a')]
+    const out = await firstValueFrom(from(input).pipe(withholdWelcome(0), toArray()))
+    expect(out).toEqual(input)
+  })
 })
 
 describe('sendReset', () => {

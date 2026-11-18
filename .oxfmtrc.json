@@ -32,6 +32,25 @@
     "pnpm-workspace.yaml",
     "**/CHANGELOG.md",
     "**/turbo.json",
-    "**/generated/**/*.module.css.d.ts"
+    "**/generated/**/*.module.css.d.ts",
+    ".agents/skills/animate/**",
+    ".agents/skills/animation-performance/**",
+    ".agents/skills/animation-vocabulary/**",
+    ".agents/skills/apple-design/**",
+    ".agents/skills/ask-emil/**",
+    ".agents/skills/ask-sonner/**",
+    ".agents/skills/break-ui/**",
+    ".agents/skills/choreograph/**",
+    ".agents/skills/emil-design-eng/**",
+    ".agents/skills/find-animation-opportunities/**",
+    ".agents/skills/gestures/**",
+    ".agents/skills/improve-animations/**",
+    ".agents/skills/learn-taste/**",
+    ".agents/skills/mobile-native/**",
+    ".agents/skills/modern-web-guidance/**",
+    ".agents/skills/pick-ui-library/**",
+    ".agents/skills/prototype/**",
+    ".agents/skills/remove-animations/**",
+    ".agents/skills/review-animations/**"
   ]
 }

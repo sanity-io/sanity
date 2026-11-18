@@ -162,6 +162,20 @@ describe('DocumentActions', () => {
     expect(screen.getByText('Unpublish')).toBeInTheDocument()
   })
 
+  it('checks permissions through the global listener, without a listener per row', async () => {
+    await renderDocumentActions()
+
+    for (const permission of ['discardVersion', 'unpublish']) {
+      expect(mockUseDocumentPairPermissions).toHaveBeenCalledWith({
+        id: 'doc1',
+        type: 'author',
+        version: 'release1',
+        permission,
+        listener: 'global',
+      })
+    }
+  })
+
   // A variant row's id carries a scope hash, not the release id the document footer resolves against.
   it('resolves row actions for the release id on a variant row', async () => {
     const documentActions = vi.fn<DocumentActionsResolver>((prev) => prev)

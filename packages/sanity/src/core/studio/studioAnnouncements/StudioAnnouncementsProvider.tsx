@@ -1,7 +1,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {catchError, combineLatest, map, type Observable, startWith} from 'rxjs'
+import {catchError, map, type Observable} from 'rxjs'
 import {StudioAnnouncementContext} from 'sanity/_singletons'
 
 import {useClient} from '../../hooks/useClient'
@@ -27,50 +27,43 @@ interface StudioAnnouncementsProviderProps {
   children: React.ReactNode
 }
 const CLIENT_OPTIONS = {apiVersion: 'v2024-09-19'}
+const EMPTY: StudioAnnouncementDocument[] = []
 
 function StudioAnnouncementsProviderInner({children}: StudioAnnouncementsProviderProps) {
   const telemetry = useTelemetry()
   const [dialogMode, setDialogMode] = useState<DialogMode | null>(null)
   const [isCardDismissed, setIsCardDismissed] = useState(false)
-  const [seenAnnouncements$, setSeenAnnouncements] = useSeenAnnouncements()
+  const [seenAnnouncements, setSeenAnnouncements] = useSeenAnnouncements()
   const {currentUser} = useWorkspace()
   const client = useClient(CLIENT_OPTIONS)
 
-  const getAnnouncements$: Observable<{
-    unseen: StudioAnnouncementDocument[]
-    all: StudioAnnouncementDocument[]
-  }> = useMemo(() => {
-    const allAnnouncements$ = client.observable
-      .request<StudioAnnouncementDocument[] | null>({url: '/journey/announcements'})
-      .pipe(
-        map((docs) => {
-          if (!docs) return []
-          const validDocs = docs.filter(
-            (doc) =>
-              isValidAnnouncementAudience(
-                {audience: doc.audience, studioVersion: doc.studioVersion},
-                SANITY_VERSION,
-              ) && isValidAnnouncementRole(doc.audienceRole, currentUser?.roles),
-          )
-          return validDocs
-        }),
-        catchError(() => []),
-        startWith([]),
-      )
+  const announcements$: Observable<StudioAnnouncementDocument[]> = useMemo(
+    () =>
+      client.observable
+        .request<StudioAnnouncementDocument[] | null>({url: '/journey/announcements'})
+        .pipe(
+          map((docs) =>
+            (docs ?? []).filter(
+              (doc) =>
+                isValidAnnouncementAudience(
+                  {audience: doc.audience, studioVersion: doc.studioVersion},
+                  SANITY_VERSION,
+                ) && isValidAnnouncementRole(doc.audienceRole, currentUser?.roles),
+            ),
+          ),
+          catchError(() => []),
+        ),
+    [client.observable, currentUser?.roles],
+  )
 
-    return combineLatest([allAnnouncements$, seenAnnouncements$]).pipe(
-      map(([all, seen]) => {
-        if (seen.loading || seen.error) return {unseen: [], all: all}
-        if (!seen.value) return {unseen: all, all: all}
-        const unseen = all.filter((doc) => !seen.value?.includes(doc._id))
-        return {unseen: unseen, all: all}
-      }),
-    )
-  }, [client.observable, currentUser?.roles, seenAnnouncements$])
-
-  const announcements = useObservable(getAnnouncements$, {unseen: [], all: []})
-  const unseenAnnouncements = announcements.unseen
-  const studioAnnouncements = announcements.all
+  const studioAnnouncements = useObservable(announcements$, EMPTY)
+  const unseenAnnouncements = useMemo(
+    () =>
+      seenAnnouncements
+        ? studioAnnouncements.filter((doc) => !seenAnnouncements.includes(doc._id))
+        : EMPTY,
+    [seenAnnouncements, studioAnnouncements],
+  )
 
   const saveSeenAnnouncements = useCallback(() => {
     // Mark all the announcements as seen

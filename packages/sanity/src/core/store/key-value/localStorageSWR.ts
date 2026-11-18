@@ -1,3 +1,4 @@
+/* oxlint-disable no-deprecated -- this module implements the deprecated key-value store */
 import {dequal as isEqual} from 'dequal/lite'
 import {merge, of} from 'rxjs'
 import {distinctUntilChanged, tap} from 'rxjs/operators'

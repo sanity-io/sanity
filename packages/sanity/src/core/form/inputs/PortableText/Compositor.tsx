@@ -9,11 +9,7 @@ import {
   defineSpan,
   defineTextBlock,
   type EditorSelection,
-  type HotkeyOptions,
   type InlineObjectRenderProps,
-  type OnCopyFn,
-  type OnPasteFn as EditorOnPasteFn,
-  type PasteData as EditorPasteData,
   type RangeDecoration,
   type RegistrableNode,
   type SpanRenderProps,
@@ -43,7 +39,11 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {type RenderCustomMarkers, type RenderBlockActionsCallback} from '../../types/_transitional'
-import {type ArrayOfObjectsInputProps, type OnPasteFn} from '../../types/inputProps'
+import {
+  type ArrayOfObjectsInputProps,
+  type OnPasteFn,
+  type PortableTextInputProps,
+} from '../../types/inputProps'
 import {pathToAnchorIdent} from '../../utils/pathToAnchorIdent'
 import {UploadTargetCard} from '../files/common/uploadTarget/UploadTargetCard'
 import {BlockObjectFallback, TextBlockFallback} from './BlockFallback'
@@ -52,7 +52,7 @@ import {useSetPortableTextMemberItemElementRef} from './contexts/PortableTextMem
 import {usePortableTextMemberSchemaTypes} from './contexts/PortableTextMemberSchemaTypes'
 import {SelectedAnnotationsProvider} from './contexts/SelectedAnnotationsContext'
 import {Editor} from './Editor'
-import {useHotkeys} from './hooks/useHotKeys'
+import {type PortableTextInputHotkeys, useHotkeys} from './hooks/useHotKeys'
 import {useTrackFocusPath} from './hooks/useTrackFocusPath'
 import {Annotation} from './object/Annotation'
 import {BlockObject} from './object/BlockObject'
@@ -70,11 +70,11 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   elementRef: React.RefObject<HTMLDivElement | null>
   hasFocusWithin: boolean
   hideToolbar?: boolean
-  hotkeys?: HotkeyOptions
+  hotkeys?: PortableTextInputHotkeys
   isActive: boolean
   isFullscreen: boolean
   onActivate: () => void
-  onCopy?: OnCopyFn
+  onCopy?: PortableTextInputProps['onCopy']
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
   path: Path
@@ -153,23 +153,16 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     onItemClose()
   }, [onItemClose])
 
-  // Wrap the consumer's onPaste to enrich PasteData.schemaTypes with
-  // Sanity-specific PortableTextMemberSchemaTypes instead of the editor's
-  // EditorSchema. This shields Studio consumers from the PTE v6 type change.
-  const wrappedOnPaste: EditorOnPasteFn | undefined = useMemo(() => {
-    if (!onPaste) {
-      return undefined
-    }
-    return (data: EditorPasteData) => {
-      return onPaste({
-        ...data,
-        schemaTypes,
-      })
-    }
-  }, [onPaste, schemaTypes])
-
   const boundaryElement = useBoundaryElement().element
   const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
+  // Ignores the detach: the editor renders through a portal into this element, and when something
+  // in it suspends (a lazy schema type icon in the toolbar), the field's boundary hides it and
+  // detaches its refs. Dropping the element would unmount the editor, so the boundary would reveal
+  // it, the ref would mount the editor again, and it would suspend again, until "Maximum update
+  // depth exceeded". The element survives the hiding.
+  const setWrapperRef = useCallback((element: HTMLDivElement | null) => {
+    if (element) setWrapperElement(element)
+  }, [])
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null)
   const floatingBoundary = isFullscreen ? scrollElement : boundaryElement
   // In fullscreen the editor covers the pane's content area and its own scroll element is the
@@ -669,7 +662,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
             isOneLine={isOneLineEditor}
             onItemOpen={handleItemOpen}
             onCopy={onCopy}
-            onPaste={wrappedOnPaste}
+            onPaste={onPaste}
             onToggleFullscreen={handleToggleFullscreen}
             path={path}
             rangeDecorations={rangeDecorations}
@@ -699,7 +692,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       isOneLineEditor,
       handleItemOpen,
       onCopy,
-      wrappedOnPaste,
+      onPaste,
       handleToggleFullscreen,
       path,
       rangeDecorations,
@@ -751,7 +744,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
                       data-focused={editorFocused ? '' : undefined}
                       data-read-only={readOnly ? '' : undefined}
                     >
-                      <Box data-wrapper="" ref={setWrapperElement}>
+                      <Box data-wrapper="" ref={setWrapperRef}>
                         <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
                           {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
                           <AnnotationObjectEditModal

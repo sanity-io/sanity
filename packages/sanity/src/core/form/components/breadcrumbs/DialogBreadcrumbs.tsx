@@ -62,7 +62,7 @@ interface BreadcrumbItemData {
 
 type BreadcrumbItem = BreadcrumbItemData | BreadcrumbItemData[]
 
-function SeparatorItem(props: PropsWithChildren & RefAttributes<HTMLDivElement>) {
+export function SeparatorItem(props: PropsWithChildren & RefAttributes<HTMLDivElement>) {
   const {ref, children} = props
 
   return (
@@ -70,6 +70,55 @@ function SeparatorItem(props: PropsWithChildren & RefAttributes<HTMLDivElement>)
       <Text size={1} muted as="div" trim={true}>
         {children}
       </Text>
+    </Box>
+  )
+}
+
+/**
+ * The crumb surface shared by the dialog breadcrumbs and the Presentation document
+ * breadcrumb. The caller wraps it in the interactive element, if the crumb has one.
+ */
+export function BreadcrumbItemContent({
+  title,
+  isSelected = false,
+  index,
+  capitalize = true,
+}: {
+  title?: string
+  isSelected?: boolean
+  /** Position among array siblings; shown as the `#n` badge when given. */
+  index?: number
+  /** Field titles are capitalized; user-authored titles such as document names must not be. */
+  capitalize?: boolean
+}) {
+  return (
+    <Box className={breadcrumbSurface} padding={1} radius={2}>
+      <Flex alignItems="center" style={{minWidth: 0}}>
+        {index !== undefined && (
+          <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+            <Badge>#{index}</Badge>
+          </Box>
+        )}
+        <Box
+          padding={1}
+          style={{
+            minWidth: 0,
+            overflow: 'hidden',
+          }}
+        >
+          <Text
+            muted={!isSelected}
+            size={1}
+            weight={isSelected ? 'bold' : 'medium'}
+            truncate={1}
+            style={{whiteSpace: 'nowrap', textTransform: capitalize ? 'capitalize' : undefined}}
+            as="div"
+            trim={true}
+          >
+            {title}
+          </Text>
+        </Box>
+      </Flex>
     </Box>
   )
 }
@@ -114,34 +163,7 @@ function BreadcrumbButton({
         aria-current={isSelected ? 'location' : false}
         data-testid={`breadcrumb-item-${title?.toLowerCase().replace(/ /g, '-')}`}
       >
-        <Box className={breadcrumbSurface} padding={1} radius={2}>
-          <Flex alignItems="center" style={{minWidth: 0}}>
-            {siblingInfo && (
-              <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-                <Badge>#{siblingInfo.index}</Badge>
-              </Box>
-            )}
-            <Box
-              padding={1}
-              style={{
-                minWidth: 0,
-                overflow: 'hidden',
-              }}
-            >
-              <Text
-                muted={!isSelected}
-                size={1}
-                weight={isSelected ? 'bold' : 'medium'}
-                truncate={1}
-                style={{whiteSpace: 'nowrap', textTransform: 'capitalize'}}
-                as="div"
-                trim={true}
-              >
-                {title}
-              </Text>
-            </Box>
-          </Flex>
-        </Box>
+        <BreadcrumbItemContent title={title} isSelected={isSelected} index={siblingInfo?.index} />
       </PressArea>
     </Box>
   )

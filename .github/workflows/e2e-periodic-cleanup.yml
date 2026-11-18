@@ -1,4 +1,4 @@
-name: "Cleanup E2E Datasets for Closed PRs"
+name: "Cleanup E2E Datasets"
 
 on:
   schedule:
@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
-      - name: Delete E2E datasets for closed PRs
+      - name: Delete stale E2E datasets
         env:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_WRITE_TOKEN }}
           SANITY_E2E_PROJECT_ID: ${{ vars.SANITY_E2E_PROJECT_ID_STAGING }}

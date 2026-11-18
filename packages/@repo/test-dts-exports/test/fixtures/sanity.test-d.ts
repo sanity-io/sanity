@@ -491,6 +491,7 @@ import type {
   DocumentMutationEvent,
   DocumentOptions,
   DocumentPairLoadedEvent,
+  DocumentPairPermissionsListener,
   DocumentPairPermissionsOptions,
   DocumentPairTarget,
   DocumentPermission,
@@ -990,6 +991,8 @@ import type {
   LatencyReportEvent,
   LATEST,
   LayoutProps,
+  LegacyAuthConfig,
+  LegacyCallbackResult,
   LegacyLayerProvider,
   LegacyThemeProps,
   LegacyThemeTints,
@@ -1102,6 +1105,9 @@ import type {
   NumberOptions,
   NumberRule,
   NumberSchemaType,
+  OAuthAuthConfig,
+  OAuthCallbackResult,
+  OAuthConfig,
   ObjectArrayFormNode,
   ObjectComponents,
   ObjectDefinition,
@@ -2134,7 +2140,7 @@ describe('sanity', () => {
     expectTypeOf<AsyncConfigPropertyReducer<any, any>>().not.toBeNever()
   })
   test('AuthConfig', () => {
-    expectTypeOf<AuthConfig>().toBeObject()
+    expectTypeOf<AuthConfig>().not.toBeNever()
   })
   test('AuthProbeResult', () => {
     expectTypeOf<AuthProbeResult>().not.toBeNever()
@@ -3358,6 +3364,9 @@ describe('sanity', () => {
   })
   test('DocumentPairLoadedEvent', () => {
     expectTypeOf<DocumentPairLoadedEvent>().toBeObject()
+  })
+  test('DocumentPairPermissionsListener', () => {
+    expectTypeOf<DocumentPairPermissionsListener>().not.toBeNever()
   })
   test('DocumentPairPermissionsOptions', () => {
     expectTypeOf<DocumentPairPermissionsOptions>().toBeObject()
@@ -4862,6 +4871,12 @@ describe('sanity', () => {
   test('LayoutProps', () => {
     expectTypeOf<LayoutProps>().toBeObject()
   })
+  test('LegacyAuthConfig', () => {
+    expectTypeOf<LegacyAuthConfig>().toBeObject()
+  })
+  test('LegacyCallbackResult', () => {
+    expectTypeOf<LegacyCallbackResult>().toBeObject()
+  })
   test('LegacyLayerProvider', () => {
     expectTypeOf<typeof LegacyLayerProvider>().toBeFunction()
   })
@@ -5199,6 +5214,15 @@ describe('sanity', () => {
   })
   test('NumberSchemaType', () => {
     expectTypeOf<NumberSchemaType>().toBeObject()
+  })
+  test('OAuthAuthConfig', () => {
+    expectTypeOf<OAuthAuthConfig>().toBeObject()
+  })
+  test('OAuthCallbackResult', () => {
+    expectTypeOf<OAuthCallbackResult>().toBeObject()
+  })
+  test('OAuthConfig', () => {
+    expectTypeOf<OAuthConfig>().toBeObject()
   })
   test('ObjectArrayFormNode', () => {
     expectTypeOf<ObjectArrayFormNode<any, any>>().toBeObject()
@@ -7320,6 +7344,7 @@ describe('sanity', () => {
     expectTypeOf<typeof useUserStore>().toBeFunction()
   })
   test('useValidationStatus', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof useValidationStatus>().toBeFunction()
   })
   test('useValuePreview', () => {

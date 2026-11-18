@@ -139,8 +139,8 @@ export function DocumentListPane(props: {
       ],
       suppressRestoreDefaultMenuItems: true,
     }),
-    // Pane id drives the keyvalue persistence key (global across pages). Avoid
-    // `$` — the keyvalue store rejects it as a key segment.
+    // Pane id drives the preference key (global across pages). Avoid `$`: the
+    // preferences API rejects it in a key.
     [ids, t],
   )
 

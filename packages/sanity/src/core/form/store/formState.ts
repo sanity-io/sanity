@@ -531,7 +531,22 @@ export function createPrepareFormState({
       parent.selectedGroup,
     )
 
+    // Resolved before any value check: a hidden field renders nothing, not even the alert for an
+    // invalid value (array items missing `_key`, an object stored on an array field).
+    const hidden =
+      parent.hidden === true || parent.hidden?.value || parent.hidden?.children?.[field.name]?.value
+
     if (isObjectSchemaType(field.type)) {
+      if (hidden) {
+        return {
+          kind: 'hidden',
+          key: `field-${field.name}`,
+          name: field.name,
+          index: index,
+          path: fieldPath,
+        }
+      }
+
       const fieldValue = parentValue?.[field.name]
       const fieldComparisonValue = isRecord(parentComparisonValue)
         ? parentComparisonValue?.[field.name]
@@ -552,21 +567,6 @@ export function createPrepareFormState({
             resolvedValueType: resolveTypeName(fieldValue),
             value: fieldValue,
           },
-        }
-      }
-
-      const hidden =
-        parent.hidden === true ||
-        parent?.hidden?.value ||
-        parent.hidden?.children?.[field.name]?.value
-
-      if (hidden) {
-        return {
-          kind: 'hidden',
-          key: `field-${field.name}`,
-          name: field.name,
-          index: index,
-          path: fieldPath,
         }
       }
 
@@ -644,6 +644,10 @@ export function createPrepareFormState({
         collapsible: defaultCollapsedState.collapsible,
       }
     } else if (isArraySchemaType(field.type)) {
+      if (hidden) {
+        return null
+      }
+
       const fieldValue = parentValue?.[field.name] as unknown[] | undefined
       const fieldComparisonValue = isRecord(parentComparisonValue)
         ? parentComparisonValue?.[field.name]
@@ -866,12 +870,6 @@ export function createPrepareFormState({
       const fieldBaseVariantValue = isRecord(parentBaseVariantValue)
         ? parentBaseVariantValue?.[field.name]
         : undefined
-
-      // note: we *only* want to call the conditional props here, as it's handled by the prepare<Object|Array>InputProps otherwise
-      const hidden =
-        parent.hidden === true ||
-        parent.hidden?.value ||
-        parent.hidden?.children?.[field.name]?.value
 
       if (hidden) {
         return null
