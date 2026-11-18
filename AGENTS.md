@@ -656,15 +656,15 @@ schema gets through `resolveExtendableTypes`, which `createSchema` and
 - `extendableTypes`: built-in object types a schema extends by declaring a type with the same
   name (`sanity.releaseMetadata`). The declaration lists only the fields it adds. The core fields
   of the built-in definition are always prepended, the way `image` prepends `asset`, and
-  redeclaring one is a schema error (`validation/types/extendableType.ts`). Manifests carry only
-  the added fields; a rebuilt schema takes the core fields from code, also when a descriptor
-  carried them.
+  redeclaring one is a schema error (`validation/types/extendableType.ts`). A manifest carries
+  an extendable type only when the schema added fields to it, and then only those fields; a
+  rebuilt schema takes the core fields from code, also when a descriptor carried them.
 - `systemDocumentTypes`: documents Content Lake owns that reference an extendable type
   (`system.release`). They are local types of every schema rather than part of the built-in
   parent schema, because a parent type resolves its field types against the parent and would
   never see a schema's extension. A schema can't declare them, and `isSystemDocumentTypeName`
-  keeps them out of templates, search, the default Structure lists, the empty-schema check and
-  document actions.
+  keeps them out of manifests (a rebuilt schema adds them back), templates, search, the default
+  Structure lists, the empty-schema check and document actions.
 
 To add one (variant metadata, for example): add the default type to `extendableTypes` and its
 document to `systemDocumentTypes`, then export a `defineVariantMetadata` from `sanity` built on

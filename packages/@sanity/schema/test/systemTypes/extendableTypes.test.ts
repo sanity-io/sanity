@@ -247,16 +247,20 @@ describe('compiled release types', () => {
     ).toEqual([...releaseMetadataCoreFieldNames, 'legalReview', 'signOff'])
   })
 
-  test('a manifest carries only the custom metadata fields and the core fields are rebuilt from code', () => {
+  test('a manifest carries only the added metadata fields and the rebuild adds the rest from code', () => {
     const manifest = extractManifest([customMetadata, book])
+    expect(manifest.map((type) => (type as {name: string}).name)).toEqual([
+      RELEASE_METADATA_TYPE_NAME,
+      'book',
+    ])
     expect(fieldNames(findType(manifest, RELEASE_METADATA_TYPE_NAME))).toEqual([
       'legalReview',
       'signOff',
     ])
 
-    const metadata = createSchemaFromManifestTypes({name: 'manifest', types: manifest}).get(
-      RELEASE_METADATA_TYPE_NAME,
-    )
+    const rebuilt = createSchemaFromManifestTypes({name: 'manifest', types: manifest})
+    expect(rebuilt.get(RELEASE_DOCUMENT_TYPE_NAME).liveEdit).toBe(true)
+    const metadata = rebuilt.get(RELEASE_METADATA_TYPE_NAME)
     expect(fieldNames(metadata)).toEqual([
       ...releaseMetadataCoreFieldNames,
       'legalReview',
@@ -291,13 +295,14 @@ describe('compiled release types', () => {
     expect(intendedPublishAt.type.hidden).toBeTypeOf('function')
   })
 
-  test('a manifest of the default metadata type carries no fields', () => {
+  test('a manifest leaves out the release types when the metadata is not extended', () => {
     const manifest = extractManifest([book])
-    expect(findType(manifest, RELEASE_METADATA_TYPE_NAME)).not.toHaveProperty('fields')
+    expect(manifest.map((type) => (type as {name: string}).name)).toEqual(['book'])
 
-    const metadata = createSchemaFromManifestTypes({name: 'manifest', types: manifest}).get(
-      RELEASE_METADATA_TYPE_NAME,
+    const rebuilt = createSchemaFromManifestTypes({name: 'manifest', types: manifest})
+    expect(rebuilt.get(RELEASE_DOCUMENT_TYPE_NAME).liveEdit).toBe(true)
+    expect(fieldNames(rebuilt.get(RELEASE_METADATA_TYPE_NAME))).toEqual(
+      releaseMetadataCoreFieldNames,
     )
-    expect(fieldNames(metadata)).toEqual(releaseMetadataCoreFieldNames)
   })
 })

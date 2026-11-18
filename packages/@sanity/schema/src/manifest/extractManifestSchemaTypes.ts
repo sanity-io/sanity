@@ -26,6 +26,7 @@ import {isGuessedPreview} from '../legacy/preview/createPreviewGetter'
 import {Rule as ConcreteRuleClass} from '../legacy/Rule'
 import {Schema as SchemaBuilder} from '../legacy/Schema'
 import {builtinTypes} from '../sanity/builtinTypes'
+import {findExtendableType, isSystemDocumentTypeName} from '../sanity/systemTypes/extendableTypes'
 import {
   getCustomFields,
   getDefinedTypeName,
@@ -130,8 +131,12 @@ export async function extractCreateWorkspaceManifest(
 
 /**
  * Extracts all serializable properties from userland schema types,
- * so they best-effort can be used as definitions for Schema.compile
- . */
+ * so they best-effort can be used as definitions for Schema.compile.
+ *
+ * Like the built-in types, system document types and extendable types the
+ * schema did not add fields to are left out: they are the same in every schema
+ * and `createSchemaFromManifestTypes` adds them back.
+ */
 export function extractManifestSchemaTypes(schema: Schema): ManifestSchemaType[] {
   const typeNames = schema.getTypeNames()
   const context = {schema}
@@ -142,9 +147,13 @@ export function extractManifestSchemaTypes(schema: Schema): ManifestSchemaType[]
   }).getTypeNames()
 
   return typeNames
-    .filter((typeName) => !studioDefaultTypeNames.includes(typeName))
+    .filter(
+      (typeName) =>
+        !studioDefaultTypeNames.includes(typeName) && !isSystemDocumentTypeName(typeName),
+    )
     .map((typeName) => schema.get(typeName))
     .filter((type): type is SchemaType => typeof type !== 'undefined')
+    .filter((type) => !findExtendableType(type.name) || isCustomized(type))
     .map((type) => transformType(type, context))
 }
 
