@@ -68,7 +68,7 @@ function pageGroupIds(params: Record<string, unknown>): string[] {
 }
 
 function isPageQuery(query: string): boolean {
-  return query.startsWith('*[sanity::versionOf(')
+  return query.startsWith('*[(sanity::versionOf(')
 }
 
 const GROUP_IDS_QUERY = buildFeedGroupIdsQuery('_type == "product"')
