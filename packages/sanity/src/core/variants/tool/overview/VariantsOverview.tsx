@@ -27,6 +27,12 @@ import {
 import {VariantVersionsView} from '../versions/VariantVersionsView'
 import {VariantConditionFilters} from './VariantConditionFilters'
 import {VariantMenuButton} from './VariantMenuButton'
+import {
+  useVariantsBetaFeedback,
+  VariantsBetaBanner,
+  VariantsFeedbackButton,
+  VariantsFeedbackDialog,
+} from './VariantsBetaFeedback'
 import {VariantsEmptyState} from './VariantsEmptyState'
 import {type TableVariant, variantsOverviewColumnDefs} from './VariantsOverviewColumnDefs'
 
@@ -51,6 +57,8 @@ export function VariantsOverview(): React.JSX.Element {
   const [conditionFilters, setConditionFilters] = useState<Record<string, string[]>>({})
   // Definitions (the default) or every version across documents (the Document lens).
   const [view, setView] = useState<'definitions' | 'versions'>('definitions')
+  // Open beta: a banner invites feedback until dismissed, then an icon in the header takes over
+  const betaFeedback = useVariantsBetaFeedback()
 
   const handleCreateVariant = useCallback(() => {
     if (mode === null) {
@@ -199,9 +207,21 @@ export function VariantsOverview(): React.JSX.Element {
                   {t('overview.description')}
                 </Text>
               </VStack>
-              {createVariantButton}
+              <Flex alignItems="center" flexShrink={0} gap={2}>
+                {betaFeedback.bannerDismissed && (
+                  <VariantsFeedbackButton onClick={betaFeedback.openDialog} />
+                )}
+                {createVariantButton}
+              </Flex>
             </Flex>
           </Card>
+
+          {!betaFeedback.bannerDismissed && (
+            <VariantsBetaBanner
+              onDismiss={betaFeedback.dismissBanner}
+              onFeedback={betaFeedback.openDialog}
+            />
+          )}
 
           <Card flex="none" paddingBottom={3}>
             <TabList gap={1}>
@@ -289,6 +309,8 @@ export function VariantsOverview(): React.JSX.Element {
           onSubmit={handleOnCreateVariant}
         />
       )}
+
+      {betaFeedback.dialogOpen && <VariantsFeedbackDialog onClose={betaFeedback.closeDialog} />}
     </Flex>
   )
 }
