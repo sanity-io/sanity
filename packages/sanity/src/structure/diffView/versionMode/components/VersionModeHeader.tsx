@@ -92,10 +92,13 @@ export const VersionModeHeader: ComponentType<
   }
 
   const onSelectNextRelease = (selectedDocumentId: string): void => {
-    if (typeof documents?.next !== 'undefined') {
+    // Before anything is picked the next side has no document; it compares within the same group,
+    // so it takes the previous side's type
+    const nextType = documents?.next?.type ?? documents?.previous?.type
+    if (typeof nextType !== 'undefined') {
       navigateDiffView({
         nextDocument: {
-          ...documents.next,
+          type: nextType,
           id: selectedDocumentId,
         },
       })
@@ -134,14 +137,16 @@ export const VersionModeHeader: ComponentType<
         <Icon size={1} icon={TransferIcon} style={{margin: '-0.375rem'}} />
       </Flex>
       <div className={versionModeHeaderLayoutSection}>
-        {typeof documents?.next !== 'undefined' &&
-          (hasDocumentGroupInventory ? (
-            <DocumentGroupPickerMenu
-              role="next"
-              document={documents.next}
-              onSelectDocument={onSelectNextRelease}
-            />
-          ) : (
+        {hasDocumentGroupInventory && typeof documents?.previous !== 'undefined' ? (
+          <DocumentGroupPickerMenu
+            role="next"
+            // Empty until something is picked: the picker lists the previous side's group
+            document={documents.next ?? {type: documents.previous.type}}
+            groupDocumentId={documents.previous.id}
+            onSelectDocument={onSelectNextRelease}
+          />
+        ) : (
+          typeof documents?.next !== 'undefined' && (
             // oxlint-disable-next-line no-deprecated -- Remove once `beta.documentGroupInventory.enabled` is not optional.
             <VersionMenu
               releases={releases}
@@ -152,7 +157,8 @@ export const VersionModeHeader: ComponentType<
               state={state}
               document={documents.next}
             />
-          ))}
+          )
+        )}
         <Box
           padding={3}
           style={{

@@ -367,6 +367,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'compare-versions.status.published': 'Published',
   /** The title used when comparing versions of a document */
   'compare-versions.title': 'Compare versions',
+  /** The next side of Compare versions before a version is picked to compare with */
+  'compare-versions.empty.description': 'Pick a version above to compare with',
+  /** The next side's picker in Compare versions before a version is picked */
+  'compare-versions.picker.placeholder': 'Pick a version',
 
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action and closes the dialog */
   'confirm-delete-dialog.cancel-button.text': 'Cancel',

@@ -54,6 +54,27 @@ const it = baseIt.extend<Fixtures>({
 })
 
 describe('useDiffViewState', () => {
+  describe('documents', () => {
+    it('opens with only the previous side while nothing is picked for the next side', ({
+      setRouterState,
+    }) => {
+      setRouterState({diffView: 'version', previousDocument: 'article,doc-1'})
+      const {result} = renderHook(() => useDiffViewState())
+
+      expect(result.current.isActive).toBe(true)
+      expect(result.current.documents).toEqual({previous: {type: 'article', id: 'doc-1'}})
+    })
+
+    it('stays closed when the next side is present but malformed', ({setRouterState}) => {
+      const onParamsError = vi.fn()
+      setRouterState({diffView: 'version', previousDocument: 'article,doc-1', nextDocument: 'x'})
+      const {result} = renderHook(() => useDiffViewState({onParamsError}))
+
+      expect(result.current.isActive).toBe(false)
+      expect(onParamsError).toHaveBeenCalledWith([['invalidNextDocumentParam', 'x']])
+    })
+  })
+
   describe('onActiveChanged', () => {
     it('is called with undefined previous state and the inactive next state on initial render when diff view is inactive', ({
       setRouterState,

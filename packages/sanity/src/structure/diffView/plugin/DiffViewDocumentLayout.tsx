@@ -60,7 +60,7 @@ export const DiffViewDocumentLayout: ComponentType<
         log(DiffViewEntered, {
           documentVariantTypes: documentIdsToVariantTypes([
             state.documents?.previous.id,
-            state.documents?.next.id,
+            state.documents?.next?.id,
           ]),
         })
         return
@@ -73,7 +73,7 @@ export const DiffViewDocumentLayout: ComponentType<
         log(DiffViewExited, {
           documentVariantTypes: documentIdsToVariantTypes([
             previousState.documents?.previous.id,
-            previousState.documents?.next.id,
+            previousState.documents?.next?.id,
           ]),
         })
       }
@@ -86,11 +86,11 @@ export const DiffViewDocumentLayout: ComponentType<
       log(DiffViewDocumentSelectionChanged, {
         previousDocumentVariantTypes: documentIdsToVariantTypes([
           previousState.documents?.previous.id,
-          previousState.documents?.next.id,
+          previousState.documents?.next?.id,
         ]),
         documentVariantTypes: documentIdsToVariantTypes([
           state.documents?.previous.id,
-          state.documents?.next.id,
+          state.documents?.next?.id,
         ]),
       })
     },

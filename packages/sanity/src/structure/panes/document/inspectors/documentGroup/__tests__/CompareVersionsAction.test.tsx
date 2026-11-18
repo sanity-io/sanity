@@ -76,12 +76,15 @@ describe('CompareVersionsAction', () => {
   describe('when the displayed version has no earlier version to compare with', () => {
     test.override('hasDraft', () => false)
 
-    test('is disabled', async ({renderAction}) => {
+    // The comparison opens with this version alone, and the other side is picked in the view
+    test('still opens the comparison', async ({renderAction}) => {
       const {button, onMenuAction} = await renderAction()
 
-      expect(button).toBeDisabled()
+      expect(button).toBeEnabled()
       await userEvent.click(button)
-      expect(onMenuAction).not.toHaveBeenCalled()
+      expect(onMenuAction).toHaveBeenCalledWith(
+        expect.objectContaining({action: 'compareVersions'}),
+      )
     })
   })
 })

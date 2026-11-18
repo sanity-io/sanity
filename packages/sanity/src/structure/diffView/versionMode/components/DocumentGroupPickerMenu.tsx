@@ -36,18 +36,22 @@ import {documentGroupPickerMenuPopover} from './DocumentGroupPickerMenu.css'
  */
 export const DocumentGroupPickerMenu: ComponentType<{
   role: 'previous' | 'next'
+  /** The picked document. Without an id, nothing is picked yet and the button asks for a pick. */
   document: {
     type: string
-    id: string
+    id?: string
   }
+  /** The document whose group is listed. Defaults to the picked document; needed when none is picked. */
+  groupDocumentId?: string
   onSelectDocument: (documentId: string) => void
-}> = ({role, document, onSelectDocument}) => {
+}> = ({role, document, groupDocumentId, onSelectDocument}) => {
   const {t: tCore} = useTranslation()
   const {t: tStructure} = useTranslation(structureLocaleNamespace)
   const [open, setOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)
-  const {versions} = useDocumentVersions({documentId: getPublishedId(document.id)})
+  const groupId = groupDocumentId ?? document.id ?? ''
+  const {versions} = useDocumentVersions({documentId: getPublishedId(groupId)})
   const version = versions.find((v) => v._id === document.id)
   const {loading: variantsLoading, error: variantsError} = useAllVariants()
   const {byId: releasesById, loading: releasesLoading, error: releasesError} = useActiveReleases()
@@ -83,7 +87,7 @@ export const DocumentGroupPickerMenu: ComponentType<{
           <div className={documentGroupPickerMenuPopover}>
             <DocumentGroupInventory
               mode="readOnly"
-              documentId={document.id}
+              documentId={groupId}
               documentType={document.type}
               selectedId={document.id}
               onSelect={(selected) => {
@@ -119,9 +123,11 @@ export const DocumentGroupPickerMenu: ComponentType<{
             }
             tone={'neutral'}
             text={
-              variantsLoading || releasesLoading
-                ? tCore('common.loading')
-                : (getVersionFromId(document.id) ?? document.id)
+              document.id === undefined
+                ? tStructure('compare-versions.picker.placeholder')
+                : variantsLoading || releasesLoading
+                  ? tCore('common.loading')
+                  : (getVersionFromId(document.id) ?? document.id)
             }
           />
         )}
