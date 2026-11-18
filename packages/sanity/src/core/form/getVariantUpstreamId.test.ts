@@ -73,6 +73,30 @@ describe('getVariantUpstreamId', () => {
     expect(getVariantUpstreamId(state, VARIANT_PUBLISHED._id)).toBeNull()
   })
 
+  it("compares a creatable draft's stand-in with the variant's published version", () => {
+    const state: TargetDocumentState = {
+      status: 'variant-missing',
+      variant: STUDENTS,
+      bundle: 'drafts',
+      siblings: {published: VARIANT_PUBLISHED, draft: undefined, version: undefined},
+      creatableTarget: {id: VARIANT_DRAFT._id, scopeId: 'd-students'},
+    }
+    // The form shows the stand-in under the draft's advertised id, or under the group id
+    expect(getVariantUpstreamId(state, VARIANT_DRAFT._id)).toBe(VARIANT_PUBLISHED._id)
+    expect(getVariantUpstreamId(state, 'book')).toBe(VARIANT_PUBLISHED._id)
+  })
+
+  it('compares a creatable draft of a never-published variant with nothing', () => {
+    const state: TargetDocumentState = {
+      status: 'variant-missing',
+      variant: STUDENTS,
+      bundle: 'drafts',
+      siblings: {published: undefined, draft: undefined, version: undefined},
+      creatableTarget: {id: VARIANT_DRAFT._id, scopeId: 'd-students'},
+    }
+    expect(getVariantUpstreamId(state, VARIANT_DRAFT._id)).toBeNull()
+  })
+
   it('leaves documents with no variant selected to the id stack', () => {
     expect(
       getVariantUpstreamId(
