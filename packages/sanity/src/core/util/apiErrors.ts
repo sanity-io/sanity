@@ -39,10 +39,13 @@ const INVALID_SESSION_ERROR_CODES = ['SIO-401-AEX', 'SIO-401-ANF']
  * Whether a 401 positively signals that no valid session exists. Two shapes:
  *
  * - {@link INVALID_SESSION_ERROR_CODES} on the usual API error body (expired
- *   or unknown session).
- * - `error.type === "unauthenticatedError"` from Content Lake endpoints such
- *   as `/data/history` when the request carried no credentials at all
- *   (`"Authentication required"`). That body has no `errorCode`.
+ *   or unknown session), from any endpoint.
+ * - `error.type === "unauthenticatedError"` on a `/data/history` response,
+ *   which is how history answers a request that carried no credentials at all
+ *   (`"Authentication required"`). That body has no `errorCode`. Only history
+ *   responses count: from any other endpoint the same body stays
+ *   caller-domain, so a request sent without credentials elsewhere can't log
+ *   the user out.
  *
  * A 401 without either signal is a resource-level denial (an authenticated
  * user lacking a grant — some endpoints answer those with 401, not 403) and
@@ -55,7 +58,17 @@ export function isInvalidSessionError(err: unknown): err is HttpError {
   if (!isUnauthorizedError(err)) return false
   const code = getApiErrorCode(err)
   if (code !== undefined && INVALID_SESSION_ERROR_CODES.includes(code)) return true
-  return isUnauthenticatedError(err)
+  return isHistoryResponse(err) && isUnauthenticatedError(err)
+}
+
+const HISTORY_PATH = /\/data\/history\//
+
+function isHistoryResponse(err: HttpError): boolean {
+  try {
+    return HISTORY_PATH.test(new URL(err.response.url).pathname)
+  } catch {
+    return false
+  }
 }
 
 /**

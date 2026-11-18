@@ -27,6 +27,13 @@ function clientErrorWith(response: Record<string, unknown>): ClientError {
   } as never)
 }
 
+/** How `/data/history` answers a request with no token and no cookie. It has no `errorCode`. */
+const UNAUTHENTICATED_BODY = {
+  error: {description: 'Authentication required', type: 'unauthenticatedError'},
+}
+const HISTORY_URL =
+  'https://abc123.api.sanity.io/v2025-02-19/data/history/production/transactions/a'
+
 function serverError(): ServerError {
   return new ServerError({
     statusCode: 503,
@@ -246,15 +253,21 @@ describe('isInvalidSessionError', () => {
     expect(isInvalidSessionError(err)).toBe(true)
   })
 
-  it('matches a 401 whose body is Content Lake unauthenticatedError (no credentials)', () => {
-    // `/data/history` answers a request with no token and no cookie as
-    // `{error: {description: "Authentication required", type: "unauthenticatedError"}}`,
-    // with no errorCode. That is "there is no session".
-    const err = clientErrorWith({
-      statusCode: 401,
-      body: {error: {description: 'Authentication required', type: 'unauthenticatedError'}},
-    })
+  it('matches a no-credentials 401 (unauthenticatedError) from /data/history', () => {
+    const err = clientErrorWith({statusCode: 401, body: UNAUTHENTICATED_BODY, url: HISTORY_URL})
     expect(isInvalidSessionError(err)).toBe(true)
+  })
+
+  it('rejects a no-credentials 401 (unauthenticatedError) from any other endpoint', () => {
+    const otherEndpoints = [
+      'https://abc123.api.sanity.io/v1/foo',
+      'https://abc123.api.sanity.io/v2025-02-19/data/query/production?query=*',
+      'https://abc123.api.sanity.io/v2025-02-19/data/query/production?tag=/data/history/',
+    ]
+    for (const url of otherEndpoints) {
+      const err = clientErrorWith({statusCode: 401, body: UNAUTHENTICATED_BODY, url})
+      expect(isInvalidSessionError(err), url).toBe(false)
+    }
   })
 
   it('rejects a 401 without the code (resource-level denial)', () => {
@@ -447,14 +460,11 @@ describe('createRequestErrorChannel', () => {
       })
     })
 
-    it('claims a no-credentials 401 (unauthenticatedError) as unauthorized', async () => {
+    it('claims a no-credentials 401 (unauthenticatedError) from /data/history as unauthorized', async () => {
       const channel = createRequestErrorChannel()
       void channel.attempt(() =>
         Promise.reject(
-          clientErrorWith({
-            statusCode: 401,
-            body: {error: {description: 'Authentication required', type: 'unauthenticatedError'}},
-          }),
+          clientErrorWith({statusCode: 401, body: UNAUTHENTICATED_BODY, url: HISTORY_URL}),
         ),
       )
       await new Promise((resolve) => setTimeout(resolve, 0))
@@ -462,6 +472,14 @@ describe('createRequestErrorChannel', () => {
         type: 'unauthorized',
         projectId: 'abc123',
       })
+    })
+
+    it('re-throws a no-credentials 401 (unauthenticatedError) from outside /data/history', async () => {
+      const channel = createRequestErrorChannel()
+      const err = clientErrorWith({statusCode: 401, body: UNAUTHENTICATED_BODY})
+      await expect(channel.attempt(() => Promise.reject(err))).rejects.toBe(err)
+      await expect(Promise.reject(err).catch(channel.handle)).rejects.toBe(err)
+      expect(await latestClaim(channel)).toBeUndefined()
     })
 
     it('re-throws 401s without an invalid-session code (resource-level denials)', async () => {
