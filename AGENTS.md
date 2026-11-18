@@ -654,7 +654,8 @@ Two folders in `packages/@sanity/schema/src/sanity/builtinTypes/` hold built-in 
 nothing has no local types:
 
 - `extendableTypes/` (`extendableTypes`): object types a schema extends by declaring a type with
-  the same name (`sanity.releaseMetadata`). The declaration lists only the fields it adds:
+  the same name (`sanity.releaseMetadata`, `sanity.variantMetadata`). The declaration lists only
+  the fields it adds:
   `resolveExtendableTypes`, which `createSchema` and `createSchemaFromManifestTypes` call,
   prepends the core fields of the built-in definition, the way `image` prepends `asset`, and a
   declared field with a core field's name is replaced by the built-in one, so a descriptor that
@@ -665,19 +666,25 @@ nothing has no local types:
   written with only its added fields, and a rebuilt schema takes the core fields from code, also
   when a descriptor carried them.
 - `systemTypes/` (`systemDocumentTypes`): documents Content Lake owns that reference an
-  extendable type (`system.release`). When a schema extends a type, the compiler compiles these
-  again in that schema so they use the extension, without making them local types: a parent type
-  resolves its field types against the parent and would otherwise keep the built-in version. A
-  schema can't declare them, and `isSystemDocumentTypeName` keeps them out of templates, search,
-  the default Structure lists and document actions, like the asset types.
+  extendable type (`system.release`, `system.variant`). When a schema extends a type, the
+  compiler compiles these again in that schema so they use the extension, without making them
+  local types: a parent type resolves its field types against the parent and would otherwise
+  keep the built-in version. A schema can't declare them, and `isSystemDocumentTypeName` keeps
+  them out of templates, search, the default Structure lists and document actions, like the asset
+  types. A stored field that no schema type can describe stays undeclared: `system.variant` leaves
+  out `conditions`, whose keys differ per definition.
 
-To add one (variant metadata, for example): add the default type to `extendableTypes/` and its
-list, and its document to `systemTypes/` and its list, then export a `defineVariantMetadata` from
-`sanity` built on the internal `extendBuiltinType` (`core/schema/extendBuiltinType.ts`), as
-`defineReleaseMetadata` is. Nothing else needs a per-type check. Only the types in
-`systemDocumentTypes` are compiled again when a schema extends a type: any other built-in that uses
-an extendable type silently keeps the default, so a built-in that isn't a system document needs
-`compileRegistry` to compile it again too.
+To add one: add the default type to `extendableTypes/` and its list, and its document to
+`systemTypes/` and its list, then export a `define…Metadata` helper from `sanity` built on the
+internal `extendBuiltinType` (`core/schema/extendBuiltinType.ts`), as `defineReleaseMetadata` and
+`defineVariantMetadata` are. Nothing else needs a per-type check. Keep a core field with block
+content to what Studio writes (the variant `description` allows no annotations): once a schema
+extends the type, it is a local type in the schema's descriptor, and the default `link`
+annotation doesn't survive the manifest round trip unchanged, so the descriptor tests in
+`packages/sanity/test/descriptors` fail for an extension next to a block type of the schema's own.
+Only the types in `systemDocumentTypes` are compiled again when a schema extends a type: any other
+built-in that uses an extendable type silently keeps the default, so a built-in that isn't a system
+document needs `compileRegistry` to compile it again too.
 
 ### Effect events: use `use-effect-event`, not React's native hook
 
