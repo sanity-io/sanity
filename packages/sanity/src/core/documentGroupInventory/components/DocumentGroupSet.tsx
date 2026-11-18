@@ -84,7 +84,12 @@ export const DocumentGroupSet: ComponentType<{
   const note = readOnly ? undefined : blockedNote
 
   return (
-    <VariantSet data-variant-set={name} data-selectable={!readOnly}>
+    <VariantSet
+      data-variant-set={name}
+      data-selectable={!readOnly}
+      // A set that exists only for a ghost row is outlined as one not-yet-created whole
+      data-ghost-set={nothingToSelect ? '' : undefined}
+    >
       <VariantSetHeader
         as="header"
         data-collapsed={expanded ? undefined : ''}

@@ -276,6 +276,11 @@ export const VariantSetEntry = styled.div(({theme}) => {
       outline-offset: -2px;
     }
 
+    /* Inside a ghost-only set, the set's one outline stands for the header and the row */
+    [data-ghost-set] &&&&[data-pending]:not(:has(.primary-action:focus-visible)) {
+      outline: none;
+    }
+
     &&&[data-pending]:has(.primary-action:focus-visible) {
       outline: 2px solid ${color.focusRing};
     }

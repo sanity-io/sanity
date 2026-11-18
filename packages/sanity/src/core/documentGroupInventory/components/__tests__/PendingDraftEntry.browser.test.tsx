@@ -191,9 +191,15 @@ describe('PendingDraftEntry', () => {
     // Nothing to select: the empty cell holds no checkbox
     const draftSet = names[1].closest('[data-variant-set]')!
     expect(draftSet.querySelector('header input[type="checkbox"]')).toBeNull()
-    // The set exists only for the ghost row, so its header is drawn as not there yet too
-    const draftHeader = draftSet.querySelector('header')!
-    expect(getComputedStyle(draftHeader).outlineStyle).toBe('dashed')
-    expect(getComputedStyle(names[0].closest('header')!).outlineStyle).not.toBe('dashed')
+    // The set exists only for the ghost row: one dashed outline goes around the header and the
+    // row together, and neither draws its own
+    expect(getComputedStyle(draftSet, '::after').borderTopStyle).toBe('dashed')
+    expect(getComputedStyle(draftSet.querySelector('header')!).outlineStyle).toBe('none')
+    expect(
+      getComputedStyle(draftSet.querySelector('[data-testid="pending-draft-row"]')!).outlineStyle,
+    ).toBe('none')
+    // The set with a real version has no such outline
+    const publishedSet = names[0].closest('[data-variant-set]')!
+    expect(getComputedStyle(publishedSet, '::after').borderTopStyle).not.toBe('dashed')
   })
 })

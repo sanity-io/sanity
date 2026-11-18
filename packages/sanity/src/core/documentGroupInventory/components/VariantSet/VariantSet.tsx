@@ -49,6 +49,24 @@ export const VariantSet = styled(Card)(({theme}) => {
   --inventory-column-gap: ${space[2]}px;
 
   display: grid !important;
+
+  /*
+   * A Draft set that exists only for the ghost row of a draft not created yet: one dashed outline
+   * around its header and the ghost row together, drawn over them (the sticky header would paint
+   * over an outline on the set itself). The header and row drop their own outlines inside it.
+   */
+  &[data-ghost-set] {
+    position: relative;
+  }
+
+  &[data-ghost-set]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    border: 1px dashed var(--active-background-emphasized);
+    pointer-events: none;
+  }
   grid-template-columns:
     [row-start] var(--inventory-row-padding)
     [check-start] ${CHECKBOX_COLUMN_WIDTH}px
