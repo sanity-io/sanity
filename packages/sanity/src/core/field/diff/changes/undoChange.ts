@@ -77,9 +77,7 @@ export function undoChange(
 }
 
 function buildUnsetPatch(rootDiff: ObjectDiff, path: Path, concurrentUnsetPaths: Path[]): Path {
-  const previousValue = rootDiff.toValue as Record<string, unknown>
-
-  return furthestEmptyAncestor(previousValue, path, concurrentUnsetPaths)
+  return furthestEmptyAncestor(rootDiff.toValue, rootDiff.fromValue, path, concurrentUnsetPaths)
 }
 
 function buildUnsetPatches(rootDiff: ObjectDiff, paths: Path[]): PatchOperations[] {
@@ -99,15 +97,19 @@ function buildUnsetPatches(rootDiff: ObjectDiff, paths: Path[]): PatchOperations
 }
 
 /**
- * Find the path to the furthest empty ancestor that's also a stub.
+ * Find the path to the furthest ancestor that was created by the change and is only a stub.
  *
  * Used for removing all stubs when unsetting a nested value.
  */
 function furthestEmptyAncestor(
   /**
+   * The state of the tree after the change was made, which the unset is applied to.
+   */
+  currentValue: unknown,
+  /**
    * The state of the tree before the change was made.
    */
-  previousValue: Record<string, unknown>,
+  previousValue: unknown,
   /**
    * Path of the value to unset. Used for recursing.
    */
@@ -116,28 +118,22 @@ function furthestEmptyAncestor(
    * An optional list of path to forcefully mark as a stub regardless of what it actually is.
    */
   ignorePaths: Path[] = [],
-  /**
-   * Same as the first value of currentPath.
-   */
-  initialPath?: Path,
 ): Path {
   if (currentPath.length <= 0) {
-    /*
-     * This means we are at root and no ancestors are stubs. We
-     * can therefore safely unset only the actual value.
-     */
-    if (!initialPath) {
-      /*
-       * Will happen if the function is started with `currentPath = []`.
-       */
-      throw new Error('Root has no ancestor')
-    }
-
-    return initialPath
+    throw new Error('Root has no ancestor')
   }
 
   const ancestorPath = currentPath.slice(0, -1)
-  const ancestorValue = getValueAtPath(previousValue, ancestorPath)
+
+  /*
+   * The document itself is never unset, and an ancestor that existed before
+   * the change is part of what the revert has to restore, stub or not.
+   */
+  if (ancestorPath.length <= 0 || getValueAtPath(previousValue, ancestorPath) !== undefined) {
+    return currentPath
+  }
+
+  const ancestorValue = getValueAtPath(currentValue, ancestorPath)
 
   /*
    * If the ancestor also is a stub we can add it to the ignore-list
@@ -156,7 +152,7 @@ function furthestEmptyAncestor(
   ]
 
   return isStub(ancestorValue, ancestorPath, ignorePaths)
-    ? furthestEmptyAncestor(previousValue, ancestorPath, updatedIgnorePaths, initialPath)
+    ? furthestEmptyAncestor(currentValue, previousValue, ancestorPath, updatedIgnorePaths)
     : currentPath
 }
 
@@ -334,16 +330,11 @@ function onlyContainsStubs(
    * or an array we're checking a string for example and it they cannot
    * contain stubs.
    */
-  if (!isRecord(item) || !Array.isArray(item)) {
+  if (!isRecord(item) && !Array.isArray(item)) {
     return false
   }
 
-  // oxlint-disable-next-line no-for-in-array - a bit risky to refactor this to no longer use for-in, do it later
-  for (const child in item) {
-    if (!Object.prototype.hasOwnProperty.call(item, child)) {
-      continue
-    }
-
+  for (const [child, value] of Object.entries(item)) {
     /*
      * _type or _key field alone doesn't affect whether the field is a stub or
      * not.
@@ -352,9 +343,9 @@ function onlyContainsStubs(
       continue
     }
 
-    const nextPath = [...path, pathSegmentOfCorrectType(item as Record<string, unknown>, child)]
+    const nextPath = [...path, pathSegmentOfCorrectType(item, child)]
 
-    if (!isStub(item[child], nextPath, ignorePaths)) {
+    if (!isStub(value, nextPath, ignorePaths)) {
       return false
     }
   }

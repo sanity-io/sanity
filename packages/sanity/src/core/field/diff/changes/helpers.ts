@@ -38,16 +38,16 @@ const isSubpathOf = (subPath: Path, parentPath: Path): boolean => {
   return true
 }
 
-const pathSegmentOfCorrectType = (item: Record<string, unknown>, child: string): PathSegment => {
-  const nextItem = item[child]
-
-  const key = getItemKey(nextItem)
+const pathSegmentOfCorrectType = (
+  item: Record<string, unknown> | unknown[],
+  child: string,
+): PathSegment => {
+  const isArray = Array.isArray(item)
+  const key = getItemKey(isArray ? item[parseInt(child, 10)] : item[child])
 
   if (key) {
     return {_key: key}
   }
-
-  const isArray = Array.isArray(item)
 
   if (isArray) {
     return parseInt(child, 10)
