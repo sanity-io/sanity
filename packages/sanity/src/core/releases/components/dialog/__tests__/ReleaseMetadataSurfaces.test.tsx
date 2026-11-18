@@ -7,6 +7,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {defineReleaseMetadata} from '../../../metadata/defineReleaseMetadata'
 import {useReleaseOperationsMockReturn} from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {
   mockUseReleasePermissions,
@@ -64,7 +65,7 @@ async function renderDialog(ui: ReactElement, variantsEnabled = true) {
       projectId: 'test',
       dataset: 'test',
       beta: {variants: {enabled: variantsEnabled}},
-      releases: {metadata: {fields}},
+      schema: {types: [defineReleaseMetadata({fields})]},
     },
   })
   const view = render(ui, {wrapper})
@@ -99,6 +100,127 @@ describe('release metadata on create and edit', () => {
     })
   })
 
+  it('renders the configured fields when the schema adds none to release metadata', async () => {
+    const wrapper = await createTestProvider({
+      config: {
+        name: 'default',
+        projectId: 'test',
+        dataset: 'test',
+        beta: {variants: {enabled: true}},
+        // oxlint-disable-next-line typescript/no-deprecated -- covers the deprecated config fallback
+        releases: {metadata: {fields}},
+      },
+    })
+    render(<CreateReleaseDialog onCancel={vi.fn()} onSubmit={vi.fn()} />, {wrapper})
+
+    expect(await screen.findByTestId('field-reviewNote')).toBeInTheDocument()
+  })
+
+  it('shows the fields the schema adds to release metadata instead of the configured ones', async () => {
+    const wrapper = await createTestProvider({
+      config: {
+        name: 'default',
+        projectId: 'test',
+        dataset: 'test',
+        beta: {variants: {enabled: true}},
+        // oxlint-disable-next-line typescript/no-deprecated -- covers the schema winning over the deprecated config
+        releases: {metadata: {fields}},
+        schema: {
+          types: [
+            defineReleaseMetadata({
+              fields: [defineField({name: 'legalNote', title: 'Legal note', type: 'string'})],
+            }),
+          ],
+        },
+      },
+    })
+    render(<CreateReleaseDialog onCancel={vi.fn()} onSubmit={vi.fn()} />, {wrapper})
+
+    expect(await screen.findByTestId('field-legalNote')).toBeInTheDocument()
+    expect(screen.queryByTestId('field-reviewNote')).toBeNull()
+    expect(screen.queryByTestId('field-releaseType')).toBeNull()
+  })
+
+  it('keeps the fieldsets, groups and object-level validation the schema declares', async () => {
+    const wrapper = await createTestProvider({
+      config: {
+        name: 'default',
+        projectId: 'test',
+        dataset: 'test',
+        beta: {variants: {enabled: true}},
+        schema: {
+          types: [
+            defineReleaseMetadata({
+              fieldsets: [{name: 'review', title: 'Review'}],
+              groups: [
+                {name: 'legal', title: 'Legal'},
+                {name: 'other', title: 'Other'},
+              ],
+              fields: [
+                defineField({
+                  name: 'legalNote',
+                  title: 'Legal note',
+                  type: 'string',
+                  fieldset: 'review',
+                  group: 'legal',
+                }),
+                defineField({
+                  name: 'signedOff',
+                  title: 'Signed off',
+                  type: 'boolean',
+                  group: 'other',
+                }),
+              ],
+              validation: (rule) =>
+                rule.custom((value: {legalNote?: string} | undefined) =>
+                  value?.legalNote ? true : 'Add a legal note',
+                ),
+            }),
+          ],
+        },
+      },
+    })
+    render(<CreateReleaseDialog onCancel={vi.fn()} onSubmit={vi.fn()} />, {wrapper})
+
+    const fieldset = await screen.findByTestId('fieldset-review')
+    const legalNote = within(fieldset).getByTestId('field-legalNote')
+    expect(screen.getByTestId('group-tab-legal')).toBeInTheDocument()
+    expect(screen.getByTestId('group-tab-other')).toBeInTheDocument()
+
+    const submit = screen.getByTestId('submit-release-button')
+    await waitFor(() => expect(submit).toBeDisabled())
+    await userEvent.type(within(legalNote).getByRole('textbox'), 'Cleared')
+    await waitFor(() => expect(submit).toBeEnabled())
+  })
+
+  it('drops a schema field whose type the release dialog cannot edit', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    const wrapper = await createTestProvider({
+      config: {
+        name: 'default',
+        projectId: 'test',
+        dataset: 'test',
+        beta: {variants: {enabled: true}},
+        schema: {
+          types: [
+            defineReleaseMetadata({
+              fields: [
+                defineField({name: 'legalNote', title: 'Legal note', type: 'string'}),
+                defineField({name: 'cover', title: 'Cover', type: 'image'}),
+              ],
+            }),
+          ],
+        },
+      },
+    })
+    render(<CreateReleaseDialog onCancel={vi.fn()} onSubmit={vi.fn()} />, {wrapper})
+
+    expect(await screen.findByTestId('field-legalNote')).toBeInTheDocument()
+    expect(screen.queryByTestId('field-cover')).toBeNull()
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('Dropped field "cover"'))
+    warn.mockRestore()
+  })
+
   it('keeps create blocked when the value changes before validation settles', async () => {
     const gates: Array<(result: true | string) => void> = []
     const deferredNote = defineField({
@@ -119,7 +241,7 @@ describe('release metadata on create and edit', () => {
         projectId: 'test',
         dataset: 'test',
         beta: {variants: {enabled: true}},
-        releases: {metadata: {fields: [deferredNote]}},
+        schema: {types: [defineReleaseMetadata({fields: [deferredNote]})]},
       },
     })
     render(<CreateReleaseDialog onCancel={vi.fn()} onSubmit={vi.fn()} />, {wrapper})

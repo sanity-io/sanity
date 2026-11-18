@@ -1,7 +1,11 @@
 import {Schema} from '@sanity/schema'
+import {ALL_FIELDS_GROUP_NAME} from '@sanity/schema/_internal'
 import {
   type FieldDefinition,
+  type FieldGroup,
+  type Fieldset,
   isObjectSchemaType,
+  type ObjectField,
   type ObjectSchemaType,
   type Schema as SchemaType,
   type SchemaType as SanitySchemaType,
@@ -197,6 +201,50 @@ export function acceptReleaseMetadataFields(
     const accepted = acceptField(field, parent, field.name)
     return accepted ? [accepted] : []
   })
+}
+
+/** {@link acceptReleaseMetadataFields} for fields that are already compiled. */
+export function acceptCompiledReleaseMetadataFields(fields: readonly ObjectField[]): ObjectField[] {
+  return fields.filter((field) => {
+    const reason = rejectionReason(field.type)
+    if (reason) warnRejectedReleaseMetadataField(field.name, reason)
+    return !reason
+  })
+}
+
+/**
+ * The object type the release metadata form edits: `fields`, with the fieldsets,
+ * groups and object-level validation `source` declares for them.
+ * Object-level rules only see these fields, since the dialog edits the core fields itself.
+ */
+export function createReleaseMetadataFormType(
+  source: ObjectSchemaType,
+  fields: readonly ObjectField[],
+  schema: SchemaType,
+): ObjectSchemaType {
+  const names = new Set(fields.map((field) => field.name))
+  const isKept = (field: ObjectField) => names.has(field.name)
+
+  return {
+    name: RELEASE_METADATA_TYPE_NAME,
+    title: source.title,
+    jsonType: 'object',
+    type: schema.get('object'),
+    validation: source.validation,
+    fields: [...fields],
+    fieldsets: source.fieldsets?.flatMap((fieldset): Fieldset[] => {
+      if (fieldset.single) return isKept(fieldset.field) ? [fieldset] : []
+      const kept = fieldset.fields.filter(isKept)
+      return kept.length > 0 ? [{...fieldset, fields: kept}] : []
+    }),
+    groups: source.groups?.flatMap((group): FieldGroup[] => {
+      if (!group.fields) return [group]
+      const kept = group.fields.filter(isKept)
+      return kept.length > 0 || group.name === ALL_FIELDS_GROUP_NAME
+        ? [{...group, fields: kept}]
+        : []
+    }),
+  }
 }
 
 export function compileReleaseMetadataSchema(

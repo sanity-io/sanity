@@ -79,6 +79,7 @@ export function resolveReleaseMetadataFields(config: PluginOptions): FieldDefini
   const flattened = flattenConfig(config, [])
 
   return flattened.reduce((fields, {config: innerConfig}) => {
+    // oxlint-disable-next-line typescript/no-deprecated -- resolves the deprecated option for the studios that still set it
     const configured = innerConfig.releases?.metadata?.fields
     if (typeof configured === 'undefined') return fields
     if (!Array.isArray(configured)) {

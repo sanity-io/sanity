@@ -9,13 +9,7 @@ import {PresentationIcon} from '@sanity/icons/Presentation'
 import {SanityMonogram} from '@sanity/logos'
 import {themerTool} from '@sanity/themer/tool'
 import {visionTool} from '@sanity/vision'
-import {
-  defineConfig,
-  defineField,
-  definePlugin,
-  type AuthProvider,
-  type WorkspaceOptions,
-} from 'sanity'
+import {defineConfig, definePlugin, type AuthProvider, type WorkspaceOptions} from 'sanity'
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {media} from 'sanity-plugin-media'
@@ -57,7 +51,6 @@ import {presenceDebug} from './plugins/presence-debug/plugin'
 import {routerDebugTool} from './plugins/router-debug/plugin'
 import {styleOutline} from './plugins/style-outline/plugin'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
-import {releaseMetadataFields} from './releases/releaseMetadata'
 import {createSchemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {CustomNavigator} from './schema/presentation/CustomNavigator'
@@ -351,11 +344,6 @@ const defaultWorkspace = defineConfig({
       }
       return prev
     },
-    metadata: {
-      // The release dialogs still read `releases.metadata.fields`. The same fields are
-      // declared on the `sanity.releaseMetadata` schema type in `./releases/releaseMetadata`.
-      fields: releaseMetadataFields,
-    },
   },
   beta: {
     variants: {
@@ -409,24 +397,7 @@ export default defineConfig([
     basePath: '/default-hidden',
     hidden: true,
   },
-  {
-    ...defaultWorkspace,
-    releases: {
-      ...defaultWorkspace.releases,
-      metadata: {
-        ...defaultWorkspace.releases?.metadata,
-        fields: [
-          ...(defaultWorkspace.releases?.metadata?.fields ?? []),
-          defineField({
-            name: 'reviewNote',
-            title: 'Review note',
-            type: 'string',
-            validation: (rule) => rule.required().min(3),
-          }),
-        ],
-      },
-    },
-  },
+  defaultWorkspace,
   {
     ...defaultWorkspace,
     title: 'Test Studio (variants disabled)',
