@@ -24,7 +24,11 @@ describe('default document type list menu groups', () => {
 
     const groups = S.documentTypeList('article').getMenuItemGroups() ?? []
     const headingKeyById = Object.fromEntries(
-      groups.map((group) => [group.id, group.i18n?.title?.key]),
+      groups.map((group) => {
+        // A group can also be a builder, whose `i18n` is a setter: plain groups carry the record
+        const i18n = typeof group.i18n === 'function' ? undefined : group.i18n
+        return [group.id, i18n?.title?.key]
+      }),
     )
 
     expect(headingKeyById).toEqual({
