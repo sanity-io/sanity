@@ -4,7 +4,7 @@ import {getMockSource} from '../../../../test/testUtils/getMockWorkspaceFromConf
 import {createStructureBuilder} from '../createStructureBuilder'
 
 describe('S.documentTypeListItems()', () => {
-  it('does not list the release document type that every schema includes', async () => {
+  it('does not list the system document types that every schema includes', async () => {
     const source = await getMockSource({
       config: {
         schema: {
@@ -17,7 +17,9 @@ describe('S.documentTypeListItems()', () => {
     const ids = S.documentTypeListItems().map((item) => item.getId())
 
     expect(source.schema.get('system.release')).toBeDefined()
+    expect(source.schema.get('system.variant')).toBeDefined()
     expect(ids).toContain('article')
     expect(ids).not.toContain('system.release')
+    expect(ids).not.toContain('system.variant')
   })
 })
