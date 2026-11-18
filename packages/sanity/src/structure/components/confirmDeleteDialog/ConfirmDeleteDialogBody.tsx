@@ -124,22 +124,25 @@ export function ConfirmDeleteDialogBody({
   const confirmationMessage = useCallback(
     () => (
       <VStack gap={4}>
-        <Text as="p" size={1} trim={true}>
-          <Translate
-            t={t}
-            i18nKey="confirm-delete-dialog.confirmation.text"
-            context={action}
-            values={{count: documentVersions.length}}
-            components={{DocumentTitle: StrongDocumentTitle}}
-            componentProps={{documentTitle}}
-          />
-        </Text>
+        {/* A blocked action asks nothing: the links below say why it can't go through */}
+        {linkStrength === 'required' ? null : (
+          <Text as="p" size={1} trim={true}>
+            <Translate
+              t={t}
+              i18nKey="confirm-delete-dialog.confirmation.text"
+              context={action}
+              values={{count: documentVersions.length}}
+              components={{DocumentTitle: StrongDocumentTitle}}
+              componentProps={{documentTitle}}
+            />
+          </Text>
+        )}
         {action === 'delete' && (
           <VersionsPreviewList documentType={documentType} documentVersions={documentVersions} />
         )}
       </VStack>
     ),
-    [t, action, documentTitle, documentType, documentVersions],
+    [t, action, documentTitle, documentType, documentVersions, linkStrength],
   )
 
   if (internalReferences?.totalCount === 0 && crossDatasetReferences?.totalCount === 0) {
