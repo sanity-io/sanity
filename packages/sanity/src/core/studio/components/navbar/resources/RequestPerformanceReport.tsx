@@ -495,7 +495,6 @@ function InteractiveChart({
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
-        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- can't be an img (svg)
         role="img"
         style={{
           cursor: dragSelection ? 'grabbing' : 'crosshair',

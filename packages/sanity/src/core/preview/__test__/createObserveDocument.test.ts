@@ -5,11 +5,11 @@ import {
   type WelcomeEvent,
 } from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
-import {filter, firstValueFrom, of, skip, Subject, throwError} from 'rxjs'
+import {firstValueFrom, of, skip, Subject, throwError} from 'rxjs'
 import {take} from 'rxjs/operators'
 import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
-import {createGlobalListener} from '../createGlobalListener'
+import {createGlobalListenerStore} from '../../store/globalListener/createGlobalListenerStore'
 import {createObserveDocument, type ListenerMutationEventLike} from '../createObserveDocument'
 
 /** How long the documents to fetch are collected before they are fetched in one query */
@@ -102,12 +102,7 @@ function observeThroughGlobalListener() {
   vi.spyOn(client, 'listen').mockReturnValue(listenerEvents)
   const observeDocument = createObserveDocument({
     client,
-    mutationChannel: createGlobalListener(client).pipe(
-      filter(
-        (event): event is MutationEvent | WelcomeEvent =>
-          event.type === 'mutation' || event.type === 'welcome',
-      ),
-    ),
+    mutationChannel: createGlobalListenerStore({client}).globalListener,
   })
 
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)

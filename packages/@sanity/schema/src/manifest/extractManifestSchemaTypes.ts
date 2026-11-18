@@ -22,6 +22,7 @@ import startCase from 'lodash-es/startCase.js'
 import {type ComponentType, type ReactNode} from 'react'
 
 import {isInternalValidator} from '../legacy/internalValidators'
+import {isGuessedPreview} from '../legacy/preview/createPreviewGetter'
 import {Rule as ConcreteRuleClass} from '../legacy/Rule'
 import {Schema as SchemaBuilder} from '../legacy/Schema'
 import {builtinTypes} from '../sanity/builtinTypes'
@@ -185,7 +186,27 @@ function transformCommonTypeFields(
     // fieldset prop gets instrumented via getCustomFields
     ...ensureString('fieldset', type.fieldset),
     ...transformBlockType(type, context),
+    ...transformPreview(type),
   }
+}
+
+/**
+ * Only `select` is serializable: `prepare` and `component` are functions. A consumer that finds
+ * `preview` on a type can resolve title, subtitle and media from the selected paths, but should
+ * treat the result as approximate, since a `prepare` function may have reshaped it.
+ * Previews inferred by the schema compiler are left out, so `preview` only exists when the
+ * type declared one.
+ */
+function transformPreview(type: SchemaType): Pick<ManifestSchemaType, 'preview'> {
+  if (type.jsonType !== 'object' || !('preview' in type) || isGuessedPreview(type.preview)) {
+    return {}
+  }
+  const select = Object.fromEntries(
+    Object.entries(type.preview?.select ?? {}).filter(
+      (entry): entry is [string, string] => isString(entry[1]) && entry[1] !== '',
+    ),
+  )
+  return Object.keys(select).length ? {preview: {select}} : {}
 }
 
 function transformFieldsets(
