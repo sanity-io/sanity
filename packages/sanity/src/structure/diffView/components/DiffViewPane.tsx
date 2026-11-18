@@ -48,6 +48,7 @@ import {pickDocumentLayoutComponent} from '../../panes/document/document-layout/
 import {usePathSyncChannel} from '../hooks/usePathSyncChannel'
 import {type PathSyncChannel} from '../types/pathSyncChannel'
 import {findRelease} from '../utils/findRelease'
+import {readOnlyPane} from './DiffViewPane.css'
 import {missingVersion} from './EmptyDiffViewPane.css'
 import {Scroller} from './Scroller'
 
@@ -120,6 +121,7 @@ export function DiffViewPane({
         >
           <BoundaryElementProvider element={boundaryElement}>
             <DiffViewPaneLayout
+              className={readOnlyPane}
               ref={setBoundaryElement}
               style={{
                 '--grid-area': `${role}-document`,
