@@ -96,6 +96,7 @@ export function FieldChange(
     type: schemaType.name,
     version: scopeId,
     permission: 'update',
+    listener: 'document',
   })
 
   const handleRevertChanges = useCallback(() => {

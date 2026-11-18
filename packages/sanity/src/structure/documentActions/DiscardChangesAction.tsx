@@ -41,6 +41,7 @@ export const useDiscardChangesAction: DocumentActionComponent = ({id, type, vers
     type,
     version: scopeId,
     permission: 'discardDraft',
+    listener: 'document',
   })
   const currentUser = useCurrentUser()
 

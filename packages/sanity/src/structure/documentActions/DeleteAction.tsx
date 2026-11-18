@@ -110,6 +110,7 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft}) => {
     type,
     version: scopeId,
     permission: 'delete',
+    listener: 'document',
   })
 
   const currentUser = useCurrentUser()

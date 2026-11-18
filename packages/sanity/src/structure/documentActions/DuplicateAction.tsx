@@ -43,6 +43,7 @@ export const useDuplicateAction: DuplicateDocumentActionComponent = ({id, type, 
     type,
     version: scopeId,
     permission: 'duplicate',
+    listener: 'document',
   })
 
   const {t} = useTranslation(structureLocaleNamespace)

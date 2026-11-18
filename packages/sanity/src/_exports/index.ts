@@ -770,6 +770,7 @@ export {
   type UserWithPermission,
   useUserListWithPermissions,
 } from '../core/hooks/useUserListWithPermissions'
+// oxlint-disable-next-line no-deprecated -- only the boolean overload is deprecated
 export {useValidationStatus} from '../core/hooks/useValidationStatus'
 export {useWorkspaceSchemaId} from '../core/hooks/useWorkspaceSchemaId'
 export {type StudioLocaleResourceKeys} from '../core/i18n/bundles/studio'
@@ -1008,6 +1009,7 @@ export {
 } from '../core/store/document/initialValue/types'
 export {type ListenQueryOptions, type ListenQueryParams} from '../core/store/document/listenQuery'
 export {
+  type DocumentPairPermissionsListener,
   type DocumentPairTarget,
   type IdPair,
   type MutationEvent,

@@ -92,6 +92,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     // version. Discarding is never available for the published document version. Therefore, the
     // parameters provided here are not configured to handle published document versions.
     permission: fromRelease === 'draft' ? 'discardDraft' : 'discardVersion',
+    listener: 'document',
   })
   const hasDiscardPermission = !isPermissionsLoading && permissions?.granted
 

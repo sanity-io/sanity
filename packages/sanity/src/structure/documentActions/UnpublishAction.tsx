@@ -57,6 +57,7 @@ export const useUnpublishAction: DocumentActionComponent = ({
     type,
     version: scopeId,
     permission: 'unpublish',
+    listener: 'document',
   })
   const currentUser = useCurrentUser()
   const {t} = useTranslation(structureLocaleNamespace)
