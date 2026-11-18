@@ -142,6 +142,32 @@ describe('useNavigationBadges', () => {
     expect(result.current.draft?.selected).toBe(false)
   })
 
+  it('hides the Draft badge for a live-edit document with no draft', () => {
+    mockSchemaType(true)
+    mockVersions(versions.filter((version) => version._system.bundleId !== 'drafts'))
+
+    const {result} = renderHook(() => useNavigationBadges(), {wrapper})
+
+    expect(result.current.draft).toBeUndefined()
+  })
+
+  it('hides the Draft badge for a live-edit document when the selected variant has no draft', () => {
+    mockSchemaType(true)
+    mockUsePerspective.mockReturnValue(createPerspective({selectedVariants: [variantA]}))
+
+    const {result} = renderHook(() => useNavigationBadges(), {wrapper})
+
+    expect(result.current.draft).toBeUndefined()
+  })
+
+  it('keeps the Draft badge for a live-edit document that already has a draft', () => {
+    mockSchemaType(true)
+
+    const {result} = renderHook(() => useNavigationBadges(), {wrapper})
+
+    expect(result.current.draft).toEqual({active: true, selected: false})
+  })
+
   it('shows the own agent bundle only in the variant it has a version in', () => {
     mockVersions([
       ...versions,
