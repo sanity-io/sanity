@@ -3,6 +3,7 @@ import {type ReactNode} from 'react'
 import {VersionInlineBadge} from 'sanity'
 
 import {VariantMark} from '../../../../../ui-components/variantMark'
+import {variantChipMark} from './VariantBannerChips.css'
 
 /**
  * The props `<Translate>` forwards to every chip in a variant banner's sentence (it passes the
@@ -36,7 +37,7 @@ export function VariantBadge({children, variantLead}: VariantBannerChipProps) {
       <VersionInlineBadge
         $tone="suggest"
         data-testid="variant-banner-variant-chip"
-        icon={<VariantMark size="inline" />}
+        icon={<VariantMark className={variantChipMark} size="inline" />}
       >
         {children}
       </VersionInlineBadge>
