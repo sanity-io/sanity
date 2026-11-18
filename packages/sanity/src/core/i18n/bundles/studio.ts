@@ -735,6 +735,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.scheduled-draft.schedule.action': 'Schedule',
   /** The tooltip of that action */
   'document-group.scheduled-draft.schedule.tooltip': 'Schedule this document to publish again',
+  /** The tooltip of that action while the version has validation errors, which keep it from being scheduled */
+  'document-group.scheduled-draft.schedule.validation-errors':
+    'Fix the validation errors in this version before you schedule it',
   /** The toast when scheduling a paused scheduled draft from the inventory fails */
   'document-group.scheduled-draft.schedule.error': 'Could not schedule the publish',
   /** The number of variants currently selected in the document group inventory */

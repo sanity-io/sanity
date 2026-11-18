@@ -601,8 +601,12 @@ const Select: ComponentType<{
               isReleaseDocument(set.bundle.perspective) ? (
                 setSelection.groupBlockedReason !== undefined ? (
                   <UnscheduleReleaseAction release={set.bundle.perspective} />
-                ) : isPausedCardinalityOneRelease(set.bundle.perspective) ? (
-                  <ScheduleDraftAction release={set.bundle.perspective} />
+                ) : isPausedCardinalityOneRelease(set.bundle.perspective) && set.variants[0] ? (
+                  <ScheduleDraftAction
+                    documentType={documentType}
+                    release={set.bundle.perspective}
+                    versionId={set.variants[0].id}
+                  />
                 ) : undefined
               ) : undefined
             }
