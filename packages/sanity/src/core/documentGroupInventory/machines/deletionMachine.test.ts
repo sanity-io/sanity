@@ -179,4 +179,18 @@ describe('deletionMachine', () => {
     expect(emitted).toEqual([])
     parent.stop()
   })
+
+  it('reports an emptied document when the live versions empty before the delete finishes', async () => {
+    const {actor, parent, emitted} = start([], [PUBLISHED_ID, DRAFT_ID], {
+      versionIds: [PUBLISHED_ID, DRAFT_ID],
+    })
+    await waitFor(actor, (snapshot) => snapshot.context.incomingReferencesChecked)
+
+    actor.send({type: 'delete.confirm'})
+    actor.send({type: 'versions.changed', versionIds: [], variantIds: []})
+    await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+
+    expect(emitted).toEqual(['allVersionsDeleted'])
+    parent.stop()
+  })
 })
