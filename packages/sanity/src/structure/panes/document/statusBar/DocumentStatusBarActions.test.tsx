@@ -119,6 +119,17 @@ describe('DocumentStatusBarActions', () => {
     expect(screen.queryByTestId('action-menu-button')).not.toBeInTheDocument()
   })
 
+  it('greys every action when the bar is disabled', () => {
+    render(
+      <DocumentActionsStateContext.Provider value={[PUBLISH_ACTION]}>
+        <DocumentStatusBarActions disabled />
+      </DocumentActionsStateContext.Provider>,
+      {wrapper: TestProvider},
+    )
+
+    expect(screen.getByTestId('action-publish')).toBeDisabled()
+  })
+
   describe('live-edit documents', () => {
     beforeEach(() => {
       const value = buildDocumentPaneValue()
