@@ -36,6 +36,7 @@ import {
   type RenderInputCallback,
   type RenderPreviewCallback,
 } from '../../../types/renderCallback'
+import {useFormBuilder} from '../../../useFormBuilder'
 import {createProtoValue} from '../../../utils/createProtoValue'
 import {ensureKey} from '../../../utils/ensureKey'
 import {pathToAnchorIdent} from '../../../utils/pathToAnchorIdent'
@@ -294,11 +295,13 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
   }, [enhancedObjectDialogEnabled, onPathOpen, member.item.path, telemetry])
 
   const isEmptyValue = !member.item.value || isEmptyItem(member.item.value)
-  const itemReadOnly = Boolean(member.item.readOnly)
+  // The whole form's read-only, not the item's: an item type can be read-only in a form that is
+  // edited, and an empty item added there is still discarded on close
+  const formReadOnly = Boolean(useFormBuilder().readOnly)
   const handleClose = useCallback(() => {
     // Closing an empty item removes it, unless the form is read-only: a read-only form cannot be
     // patched (the comparison view's sides, a version that cannot be edited)
-    if (isEmptyValue && !itemReadOnly) {
+    if (isEmptyValue && !formReadOnly) {
       onRemove()
     }
 
@@ -306,7 +309,7 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
     onPathOpen(parentPath)
     // @todo fix issue where the focus is on the item and not the parent
     onPathFocus(parentPath)
-  }, [isEmptyValue, itemReadOnly, onPathOpen, member.item.path, onPathFocus, onRemove])
+  }, [isEmptyValue, formReadOnly, onPathOpen, member.item.path, onPathFocus, onRemove])
 
   const handleSelectFieldGroup = useCallback(
     (groupName: string) => {
