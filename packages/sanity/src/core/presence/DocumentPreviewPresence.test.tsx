@@ -16,7 +16,9 @@ vi.mock('../releases/store/useActiveReleases', () => ({
 }))
 
 vi.mock('../components/userAvatar/UserAvatar', () => ({
-  UserAvatar: () => <span data-testid="user-avatar" />,
+  UserAvatar: (props: {hideTitle?: boolean}) => (
+    <span data-hide-title={String(Boolean(props.hideTitle))} data-testid="user-avatar" />
+  ),
 }))
 
 const presence = (
@@ -74,5 +76,11 @@ describe('DocumentPreviewPresence', () => {
         'Nancy Du is editing this document in the "Untitled" release right now',
       ),
     ).toBeInTheDocument()
+  })
+
+  it('leaves out the browser name tooltip on each avatar, since the stack names everyone', async () => {
+    await renderPresence('drafts.thesis-1')
+
+    expect(screen.getByTestId('user-avatar')).toHaveAttribute('data-hide-title', 'true')
   })
 })

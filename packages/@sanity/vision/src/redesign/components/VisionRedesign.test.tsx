@@ -148,7 +148,6 @@ vi.mock('sanity', async () => {
     getVariantTitle: (variant: {title?: string}) => variant.title,
     getDefaultVariant: <T,>(selected?: readonly T[]) => selected?.[0],
     useSchema: () => undefined,
-    useKeyValueStore: () => ({getKey: vi.fn(), setKey: vi.fn()}),
     useCurrentUser: () => ({id: 'user-1'}),
     useDateTimeFormat: () => ({format: () => 'a date'}),
     ContextMenuButton: (props: Record<string, unknown>) => <button type="button" {...props} />,

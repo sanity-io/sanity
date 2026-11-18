@@ -412,7 +412,9 @@ describe('FormBuilder', () => {
       pane: true,
     })
 
-    expect(screen.getByTestId('custom-field-fallback')).toBeInTheDocument()
+    expect(
+      await screen.findByTestId('custom-field-fallback', {}, {timeout: 10_000}),
+    ).toBeInTheDocument()
     expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
     expect(screen.getByTestId('pane')).toBeInTheDocument()
     expect(screen.queryByTestId('pane-fallback')).not.toBeInTheDocument()
@@ -739,6 +741,67 @@ describe('FormBuilder', () => {
     expect(screen.queryByTestId('custom-field-fallback')).not.toBeInTheDocument()
     warn.mockRestore()
   })
+
+  // The `icons` map of `@sanity/icons` holds `React.lazy` components, and the Portable Text
+  // toolbar renders a block object's icon in its insert menu.
+  it(
+    "falls back while a Portable Text block object's lazy schema icon loads",
+    {timeout: 30_000},
+    async () => {
+      mockedUseEnhancedObjectDialog.mockImplementation(() => ({enabled: false}))
+      const warn = vi.spyOn(console, 'warn').mockImplementation(noop)
+      const icon = deferredComponent<Record<string, never>>()
+
+      await renderFormBuilder({
+        documentValue: {_id: 'test', _type: 'test'},
+        config: {
+          schema: {
+            types: [
+              defineType({
+                type: 'object',
+                name: 'videoEmbed',
+                title: 'Video embed',
+                icon: icon.Lazy,
+                fields: [{type: 'url', name: 'url', title: 'URL'}],
+              }),
+              defineType({
+                type: 'document',
+                name: 'test',
+                title: 'Test',
+                fields: [
+                  {type: 'string', name: 'title', title: 'Title'},
+                  {
+                    type: 'array',
+                    name: 'body',
+                    title: 'Body',
+                    of: [{type: 'block'}, {type: 'videoEmbed'}],
+                  },
+                ],
+              }),
+            ],
+          },
+        },
+        pane: true,
+      })
+
+      expect(await screen.findByTestId('field-title', {}, {timeout: 10_000})).toBeInTheDocument()
+
+      await act(async () => {
+        icon.resolve(() => <svg data-testid="video-embed-icon" />)
+      })
+
+      // The insert menu renders each option more than once to measure it
+      const insertButtons = await screen.findAllByTestId(
+        'videoEmbed-insert-menu-button',
+        {},
+        {timeout: 10_000},
+      )
+      for (const insertButton of insertButtons) {
+        expect(within(insertButton).getByTestId('video-embed-icon')).toBeInTheDocument()
+      }
+      warn.mockRestore()
+    },
+  )
 })
 
 function customComponentTestType(components: {

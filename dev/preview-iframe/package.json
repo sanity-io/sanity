@@ -19,7 +19,7 @@
     "@sanity/react-loader": "^2.3.0",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "catalog:",
-    "@sanity/visual-editing": "^6.2.0",
+    "@sanity/visual-editing": "^6.2.1",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-refractor": "^4.0.0",

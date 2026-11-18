@@ -23,7 +23,13 @@ export interface DocumentPreviewPresenceProps {
   tooltip?: boolean
 }
 
+/**
+ * The tooltip opens to the left of the avatars, over its own row's title, so it never covers the
+ * next row in a document list. Above or below only when there is no room on the left.
+ */
 const PRESENCE_MENU_POPOVER_PROPS: TooltipProps = {
+  fallbackPlacements: ['top', 'bottom'],
+  placement: 'left',
   portal: true,
 }
 
@@ -84,7 +90,9 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
     <AvatarStackBox>
       <AvatarStack maxLength={2} aria-label={tooltipContent} size={0}>
         {uniquePresence.map((item) => (
-          <UserAvatar key={item.user.id} size={0} user={item.user} />
+          // The tooltip and the stack's `aria-label` name everyone, so each avatar leaves out the
+          // browser's own name tooltip, which would show as a third layer over the row
+          <UserAvatar hideTitle key={item.user.id} size={0} user={item.user} />
         ))}
       </AvatarStack>
     </AvatarStackBox>

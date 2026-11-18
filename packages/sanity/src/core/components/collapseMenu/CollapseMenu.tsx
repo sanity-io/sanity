@@ -152,6 +152,13 @@ export function AutoCollapseMenu(
   // against it would judge the expanded options by a width they only have while the button is
   // provisionally there, and flip to expanded once it is gone.
   const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null)
+  // Ignores the detach: when an option suspends (a lazy icon), the nearest boundary hides this
+  // subtree and detaches its refs. Dropping the element would unmount the measurement rows that
+  // suspended, so the boundary would reveal the subtree, the ref would mount them again, and they
+  // would suspend again, until "Maximum update depth exceeded". The element survives the hiding.
+  const setRootRef = useCallback((element: HTMLDivElement | null) => {
+    if (element) setRootEl(element)
+  }, [])
   // The handle is the root element once it is known; typed nullable for the first commit
   useImperativeHandle<HTMLDivElement | null, HTMLDivElement | null>(ref, () => rootEl, [rootEl])
 
@@ -296,7 +303,7 @@ export function AutoCollapseMenu(
       alignItems="center"
       data-ui="CollapseMenu"
       overflow="hidden"
-      ref={setRootEl}
+      ref={setRootRef}
       {...rest}
     >
       <RootFlex flexDirection="column" flexBasis="0%" flexGrow={1} justifyContent="center">

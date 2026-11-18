@@ -492,6 +492,7 @@ import type {
   DocumentMutationEvent,
   DocumentOptions,
   DocumentPairLoadedEvent,
+  DocumentPairPermissionsListener,
   DocumentPairPermissionsOptions,
   DocumentPairTarget,
   DocumentPermission,
@@ -3362,6 +3363,9 @@ describe('sanity', () => {
   })
   test('DocumentPairLoadedEvent', () => {
     expectTypeOf<DocumentPairLoadedEvent>().toBeObject()
+  })
+  test('DocumentPairPermissionsListener', () => {
+    expectTypeOf<DocumentPairPermissionsListener>().not.toBeNever()
   })
   test('DocumentPairPermissionsOptions', () => {
     expectTypeOf<DocumentPairPermissionsOptions>().toBeObject()
@@ -7324,6 +7328,7 @@ describe('sanity', () => {
     expectTypeOf<typeof useUserStore>().toBeFunction()
   })
   test('useValidationStatus', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof useValidationStatus>().toBeFunction()
   })
   test('useValuePreview', () => {
