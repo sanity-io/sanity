@@ -151,7 +151,7 @@ describe('DocumentVariantsMenu', () => {
     expect(setVariant).toHaveBeenCalledWith({type: 'variant', variantId: undefined})
   })
 
-  it('shows an empty "Has no variants" section when the document is in no variant', async () => {
+  it('hides the empty first section when the document is in no variant', async () => {
     mockVersions([createVersion({bundle: 'published'}), createVersion({bundle: 'drafts'})])
     render(<DocumentVariantsMenu />, {wrapper})
 
@@ -161,14 +161,10 @@ describe('DocumentVariantsMenu', () => {
     expect(defaultItem).toHaveTextContent('Default')
     expect(within(defaultItem).getByTestId('variant-version-count')).toHaveTextContent('2')
 
-    const documentSection = within(menu).getByTestId('document-variants-menu-section-document')
-    expect(documentSection).toHaveTextContent('Has no variants')
-    expect(within(documentSection).queryAllByRole('menuitemradio', {hidden: true})).toHaveLength(0)
-    expect(
-      within(documentSection).getByTestId('document-variants-menu-section-document-tooltip'),
-    ).toHaveAccessibleName(
-      "This document doesn't have any variants yet. Pick one below to create a variant",
-    )
+    // No empty header and no info icon: the menu lists the other variants only.
+    expect(within(menu).queryByTestId('document-variants-menu-section-document')).toBeNull()
+    expect(menu).not.toHaveTextContent('Variants of this document')
+    expect(menu).not.toHaveTextContent('Has no variants')
 
     const otherSection = within(menu).getByTestId('document-variants-menu-section-other')
     expect(otherSection).toHaveTextContent('Other variants')
@@ -190,7 +186,7 @@ describe('DocumentVariantsMenu', () => {
     const menu = await openMenu()
 
     const documentSection = within(menu).getByTestId('document-variants-menu-section-document')
-    expect(documentSection).toHaveTextContent('Has 1 variant')
+    expect(documentSection).toHaveTextContent('Variants of this document (1)')
     expect(
       within(documentSection).queryByTestId('document-variants-menu-section-document-tooltip'),
     ).toBeNull()
@@ -242,7 +238,7 @@ describe('DocumentVariantsMenu', () => {
     expect(await screen.findByText('2 versions: Published, Proposed changes')).toBeInTheDocument()
 
     const documentSection = within(menu).getByTestId('document-variants-menu-section-document')
-    expect(documentSection).toHaveTextContent('Has 1 variant')
+    expect(documentSection).toHaveTextContent('Variants of this document (1)')
     expect(within(documentSection).queryByTestId(`document-variant-${firstTime._id}`)).toBeNull()
     const lapsedItem = within(documentSection).getByTestId(`document-variant-${lapsed._id}`)
     expect(within(lapsedItem).getByTestId('variant-version-count')).toHaveTextContent('1')
@@ -288,7 +284,7 @@ describe('DocumentVariantsMenu', () => {
     expect(within(menu).getByTestId(`document-variant-${lapsed._id}`)).toBeInTheDocument()
     expect(within(menu).queryByTestId(`document-variant-${firstTime._id}`)).toBeNull()
     expect(within(menu).queryByTestId('document-variant-default')).toBeNull()
-    // A filter hides the sections it leaves empty, the "Has no variants" one included.
+    // A filter hides the sections it leaves empty, the variants of this document included.
     expect(within(menu).queryByTestId('document-variants-menu-section-document')).toBeNull()
 
     await userEvent.clear(input)

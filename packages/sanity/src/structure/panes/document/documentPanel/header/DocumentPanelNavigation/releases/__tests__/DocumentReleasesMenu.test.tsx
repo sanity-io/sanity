@@ -159,7 +159,7 @@ describe('DocumentReleasesMenu', () => {
     const menu = await openMenu()
 
     const documentSection = within(menu).getByTestId('document-releases-menu-section-document')
-    expect(documentSection).toHaveTextContent('In 1 release')
+    expect(documentSection).toHaveTextContent('Releases with this document (1)')
     expect(within(documentSection).getByTestId('document-release-rA')).toBeInTheDocument()
 
     const otherSection = within(menu).getByTestId('document-releases-menu-section-other')
@@ -182,17 +182,21 @@ describe('DocumentReleasesMenu', () => {
     expect(within(documentSection).queryByTestId('document-release-rA')).toBeNull()
   })
 
-  it('shows an empty "In 0 releases" section with a tooltip when the document is in none', async () => {
+  it('hides the empty first section and its info icon when the document is in none', async () => {
     mockVersions([createVersion({bundle: 'published'})])
     await renderMenu()
 
     const menu = await openMenu()
 
-    const documentSection = within(menu).getByTestId('document-releases-menu-section-document')
-    expect(documentSection).toHaveTextContent('In 0 releases')
-    expect(
-      within(documentSection).getByTestId('document-releases-menu-section-document-tooltip'),
-    ).toHaveAccessibleName("This document isn't in any release yet. Pick one below to add it.")
+    expect(within(menu).queryByTestId('document-releases-menu-section-document')).toBeNull()
+    expect(within(menu).queryByTestId('document-releases-menu-section-document-tooltip')).toBeNull()
+    expect(menu).not.toHaveTextContent('In 0 releases')
+    expect(menu).not.toHaveTextContent('Releases with this document')
+
+    const otherSection = within(menu).getByTestId('document-releases-menu-section-other')
+    expect(otherSection).toHaveTextContent('Other releases')
+    expect(within(otherSection).getByTestId('document-release-rA')).toBeInTheDocument()
+    expect(within(otherSection).getByTestId('document-release-rB')).toBeInTheDocument()
   })
 
   it('changes the global perspective to the release picked', async () => {

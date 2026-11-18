@@ -173,15 +173,11 @@ export function DocumentReleasesMenu() {
       sections={[
         {
           key: 'document',
-          label: t('document-panel-navigation.releases.section.in-releases', {
+          label: t('document-panel-navigation.releases.section.with-document', {
             count: documentReleaseCount,
           }),
+          // Hidden when the document is in no release: the menu then lists "Other releases" only.
           items: documentReleases.map(renderReleaseItem),
-          alwaysShow: true,
-          tooltip:
-            documentReleaseCount === 0
-              ? t('document-panel-navigation.releases.section.no-releases-tooltip')
-              : undefined,
         },
         {
           key: 'other',

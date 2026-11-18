@@ -312,15 +312,11 @@ export function DocumentVariantsMenu() {
         sections={[
           {
             key: 'document',
-            label: t('document-panel-navigation.variants.section.has-variants', {
+            label: t('document-panel-navigation.variants.section.of-document', {
               count: documentVariantCount,
             }),
+            // Hidden when the document has no variants: the menu then lists "Other variants" only.
             items: documentVariants.map(renderVariantItem),
-            alwaysShow: true,
-            tooltip:
-              documentVariantCount === 0
-                ? t('document-panel-navigation.variants.section.no-variants-tooltip')
-                : undefined,
           },
           {
             key: 'other',
