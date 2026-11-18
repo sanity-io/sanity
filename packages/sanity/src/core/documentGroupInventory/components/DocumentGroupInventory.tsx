@@ -73,6 +73,11 @@ import {
   SELECTION_BLOCKED_REASON_KEYS,
   type SelectionBlockedReason,
 } from '../utils/selection'
+import {
+  type DisplayedVariantSet,
+  type PendingDraft,
+  withPendingDraft,
+} from '../utils/withPendingDraft'
 import {Body} from './Body'
 import {ConfirmDeleteDialog} from './ConfirmDeleteDialog'
 import {Container} from './Container'
@@ -81,6 +86,7 @@ import {getNearestBaseVersion} from './CreateVariant/getNearestBaseVersion'
 import {DocumentGroupEntry, resolveVariantRelease} from './DocumentGroupEntry'
 import {DocumentGroupSet} from './DocumentGroupSet'
 import {InventoryHeader} from './InventoryHeader'
+import {PendingDraftEntry} from './PendingDraftEntry'
 import {useVariantPendingReleases} from './useVariantPendingReleases'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
 
@@ -93,6 +99,12 @@ interface DocumentGroupInventoryBaseProps {
    * viewed version is not known yet.
    */
   selectedId?: string | null
+  /**
+   * A draft the form is about to create: in Drafts, the open audience has no draft yet and the
+   * first edit creates it. Drawn as a ghost row in the Draft set, marked open. Pass its id as
+   * `selectedId` too.
+   */
+  pendingDraft?: PendingDraft
   /**
    * Called when a version's primary action fires. What "picking" a version
    * means is the consumer's decision: switching the studio's perspective,
@@ -159,7 +171,7 @@ export interface DocumentGroupInventoryHandle {
 export function DocumentGroupInventory(
   props: DocumentGroupInventoryProps & RefAttributes<DocumentGroupInventoryHandle | null>,
 ) {
-  const {ref, documentId, documentType, selectedId = documentId, onSelect} = props
+  const {ref, documentId, documentType, selectedId = documentId, onSelect, pendingDraft} = props
   const readOnly = props.mode === 'readOnly'
 
   // Read the manage-only props into locals
@@ -401,6 +413,7 @@ export function DocumentGroupInventory(
               machine={selectionRef}
               inventoryRef={inventoryRef}
               selectedId={selectedId}
+              pendingDraft={pendingDraft}
               documentType={documentType}
               readOnly={readOnly}
               perspectiveList={perspectiveList}
@@ -440,6 +453,7 @@ const Select: ComponentType<{
   machine: ActorRefFromLogic<typeof selectionMachine>
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
   selectedId: string | null
+  pendingDraft: PendingDraft | undefined
   documentType: string
   onSelect: (document: VersionInfoDocumentStub) => void
   readOnly: boolean
@@ -450,13 +464,19 @@ const Select: ComponentType<{
   machine,
   inventoryRef,
   selectedId,
+  pendingDraft,
   documentType,
   onSelect,
   readOnly,
   perspectiveList,
 }) => {
   const {t} = useTranslation(studioLocaleNamespace)
-  const sets = useSelector(inventoryRef, ({context}) => context.sets)
+  const versionSets = useSelector(inventoryRef, ({context}) => context.sets)
+  // The draft the form is about to create joins the Draft set as a ghost row
+  const sets = useMemo(
+    () => withPendingDraft(versionSets, pendingDraft, t('release.chip.draft')),
+    [versionSets, pendingDraft, t],
+  )
   // Everyone in any version of the group, grouped by the exact version each person has open
   const documentPresence = useDocumentPresence(documentId)
   const presenceByVersion = useMemo(
@@ -538,12 +558,13 @@ const Select: ComponentType<{
             key={set.key}
             name={set.name}
             // The single set shown while Content Variants is off has no bundle, and its name
-            // already carries the count.
-            count={set.bundle ? set.variants.length : undefined}
+            // already carries the count. A ghost row is not counted, and a set that holds only a
+            // ghost row shows no count and has nothing to select.
+            count={set.bundle && set.variants.length > 0 ? set.variants.length : undefined}
             bundle={set.bundle}
-            readOnly={readOnly}
+            readOnly={readOnly || set.variants.length === 0}
             locked={isLocked}
-            containsOpen={set.variants.some(({id}) => id === selectedId)}
+            containsOpen={Boolean(set.pending) || set.variants.some(({id}) => id === selectedId)}
             selectionState={setSelection.state}
             blockedReason={
               setSelection.groupBlockedReason
@@ -565,8 +586,18 @@ const Select: ComponentType<{
               )
             }
           >
-            {visibleVariants.map((variant) =>
-              // The version context menu is a hook, so the two rows have to be
+            {withPendingRow(
+              visibleVariants,
+              // Hidden while the list is filtered: it is not a version the filter can match
+              hasFilterString ? undefined : set.pending,
+            ).map((variant) =>
+              'pendingDraft' in variant ? (
+                <PendingDraftEntry
+                  key={variant.pendingDraft.id}
+                  draft={variant.pendingDraft}
+                  selectable={!readOnly}
+                />
+              ) : // The version context menu is a hook, so the two rows have to be
               // separate components rather than one row that skips the actions.
               readOnly ? (
                 <ReadOnlyVariantRow
@@ -601,6 +632,16 @@ const Select: ComponentType<{
       })}
     </>
   )
+}
+
+/** The rows of a set in order, with a pending draft's ghost row at its place. */
+function withPendingRow(
+  variants: Variant[],
+  pending: DisplayedVariantSet['pending'],
+): Array<Variant | {pendingDraft: PendingDraft}> {
+  if (!pending) return variants
+  const index = Math.min(pending.index, variants.length)
+  return [...variants.slice(0, index), {pendingDraft: pending.draft}, ...variants.slice(index)]
 }
 
 /**
