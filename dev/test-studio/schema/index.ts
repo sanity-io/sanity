@@ -125,6 +125,7 @@ import {virtualizationInObject} from './debug/virtualizationInObject'
 import {v3docs} from './docs/v3'
 import {documentInternationalizationTest} from './externalPlugins/documentInternationalization'
 import internationalizedArray from './externalPlugins/internationalizedArray'
+import {groqLintPlaygroundTypes} from './groqLintPost'
 import house from './house'
 import playlist from './playlist'
 import playlistTrack from './playlistTrack'
@@ -369,6 +370,7 @@ export function createSchemaTypes(projectId: string) {
     // Other documents
     author,
     book,
+    ...groqLintPlaygroundTypes,
     species,
     house,
     playlist,
