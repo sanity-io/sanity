@@ -1828,6 +1828,10 @@ export {type ValidationContext} from '@sanity/validation/_internal'
 export {isDocumentInSelectedVariant} from '../core/variants/documents/isDocumentInSelectedVariant'
 export {useCreatableVariantInitialValue} from '../core/variants/hooks/useCreatableVariantInitialValue'
 export {useVariantDocumentOperations} from '../core/variants/hooks/useVariantDocumentOperations'
+export {
+  defineVariantMetadata,
+  type VariantMetadataDefinition,
+} from '../core/variants/metadata/defineVariantMetadata'
 export {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../core/variants/store/constants'
 export {useAllVariants} from '../core/variants/store/useAllVariants'
 export {encodeVariantLinkParam} from '../core/variants/util/variantSelection'

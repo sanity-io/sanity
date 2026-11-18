@@ -394,6 +394,7 @@ import type {
   defineSearchOperator,
   defineSingleton,
   defineType,
+  defineVariantMetadata,
   Delay,
   DeleteDocumentGroupEvent,
   DeleteDocumentVersionEvent,
@@ -1849,6 +1850,7 @@ import type {
   VariantConditions,
   VariantConditionsContext,
   VariantConditionValue,
+  VariantMetadataDefinition,
   VARIANTS_STUDIO_CLIENT_OPTIONS,
   VariantTypeConfig,
   VariantTypeContext,
@@ -3074,6 +3076,9 @@ describe('sanity', () => {
   })
   test('defineType', () => {
     expectTypeOf<typeof defineType>().toBeFunction()
+  })
+  test('defineVariantMetadata', () => {
+    expectTypeOf<typeof defineVariantMetadata>().toBeFunction()
   })
   test('Delay', () => {
     expectTypeOf<typeof Delay>().toBeFunction()
@@ -7460,6 +7465,9 @@ describe('sanity', () => {
   })
   test('VariantConditionValue', () => {
     expectTypeOf<VariantConditionValue>().toBeObject()
+  })
+  test('VariantMetadataDefinition', () => {
+    expectTypeOf<VariantMetadataDefinition>().not.toBeNever()
   })
   test('VARIANTS_STUDIO_CLIENT_OPTIONS', () => {
     expectTypeOf<typeof VARIANTS_STUDIO_CLIENT_OPTIONS>().not.toBeNever()

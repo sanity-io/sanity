@@ -338,6 +338,7 @@ exports[`exports snapshot 1`] = `
     "defineSearchOperator": "function",
     "defineSingleton": "function",
     "defineType": "function",
+    "defineVariantMetadata": "function",
     "deriveDocumentSyncState": "function",
     "diffMatchPatch": "function",
     "documentFieldActionsReducer": "function",
