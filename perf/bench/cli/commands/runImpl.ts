@@ -121,7 +121,7 @@ function logStyleCensus(sessions: {styles: StyleCensus | null}[]): void {
 }
 
 /** Flags stamped into a dist by its build script (absent = pristine build). */
-function readBuildFlags(dist: string): {customizations?: boolean} {
+export function readBuildFlags(dist: string): {customizations?: boolean} {
   try {
     return JSON.parse(fs.readFileSync(path.join(dist, 'bench-build-flags.json'), 'utf8'))
   } catch {
