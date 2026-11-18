@@ -22,6 +22,7 @@ import {useFocusSearchOnOpen} from '../../../../ui-components/menuButton/useFocu
 import {useMenuOverflow} from '../../../../ui-components/menuButton/useMenuOverflow'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {Popover} from '../../../../ui-components/popover/Popover'
+import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {
@@ -376,95 +377,30 @@ export const CreateVariantPicker: ComponentType<{
 }
 
 /**
- * A small info button after a field's title. Its text opens on hover and on keyboard focus, beside
- * the form at the height of the button: to the left of the form's edge, where the document pane
- * is in the studio, so it never covers the fields it explains (a tooltip anchored on the button
- * opened over them). Where there is no room on the left, it opens above.
- *
- * It is a popover, not a `Tooltip`, because it anchors to a point on the form's edge rather than
- * to the button: a zero-wide anchor in the button's box, moved to the form's left edge as it opens.
- * The button sits in a zero-high box, so it does not change the height of the title line.
+ * A small info button after a field's title. Its text shows in Studio's standard tooltip, on hover
+ * and on keyboard focus, above the button. The button sits in a zero-high box, so it does not change
+ * the height of the title line.
  */
 function InfoButton({info, testId}: {info: {text: string; label: string}; testId: string}) {
-  const contentId = useId()
-  const [open, setOpen] = useState(false)
-  const [anchor, setAnchor] = useState<HTMLSpanElement | null>(null)
-  // How far left of the button's box the form's edge is, measured as the text opens
-  const [anchorLeft, setAnchorLeft] = useState(0)
-
-  const show = (button: HTMLElement) => {
-    const form = button.closest('[data-testid="create-variant-form"]')
-    const box = button.parentElement
-    if (form && box) {
-      setAnchorLeft(form.getBoundingClientRect().left - box.getBoundingClientRect().left)
-    }
-    setOpen(true)
-  }
-
   return (
-    <span className={createVariantPickerInfo} style={INFO_BOX_STYLE}>
-      <span ref={setAnchor} style={{...INFO_ANCHOR_STYLE, left: anchorLeft}} aria-hidden />
-      <Popover
-        content={
-          <Box padding={2} style={INFO_TOOLTIP_STYLE}>
-            <Text size={1} data-testid={`${testId}-tooltip`} id={contentId}>
-              {info.text}
-            </Text>
-          </Box>
-        }
-        fallbackPlacements={INFO_TOOLTIP_FALLBACKS}
-        open={open}
-        placement="left"
-        portal
-        radius={2}
-        referenceElement={anchor}
-        role="tooltip"
-        shadow={2}
-      />
-      <UIButton
-        aria-describedby={open ? contentId : undefined}
-        aria-label={info.label}
-        className={createVariantPickerInfoButton}
-        data-testid={testId}
-        fontSize={1}
-        icon={InfoOutlineIcon}
-        mode="bleed"
-        onBlur={() => setOpen(false)}
-        onFocus={(event) => show(event.currentTarget)}
-        onKeyDown={(event) => {
-          if (event.key === 'Escape' && open) {
-            event.stopPropagation()
-            setOpen(false)
-          }
-        }}
-        onMouseEnter={(event) => show(event.currentTarget)}
-        onMouseLeave={(event) => {
-          if (document.activeElement !== event.currentTarget) setOpen(false)
-        }}
-        padding={1}
-        radius={2}
-      />
+    <span className={createVariantPickerInfo}>
+      <Tooltip
+        // Plain text, so it takes the standard tooltip's text size like every other tooltip
+        content={info.text}
+        placement="top"
+        fallbackPlacements={['bottom']}
+      >
+        <UIButton
+          aria-label={info.label}
+          className={createVariantPickerInfoButton}
+          data-testid={testId}
+          fontSize={1}
+          icon={InfoOutlineIcon}
+          mode="bleed"
+          padding={1}
+          radius={2}
+        />
+      </Tooltip>
     </span>
   )
 }
-
-const INFO_BOX_STYLE: CSSProperties = {position: 'relative'}
-
-/** The point the text opens from: zero wide, as tall as the button, moved to the form's edge. */
-const INFO_ANCHOR_STYLE: CSSProperties = {
-  position: 'absolute',
-  top: '50%',
-  height: 24,
-  marginTop: -12,
-  width: 0,
-  pointerEvents: 'none',
-}
-
-/** About two short lines of 13px text, wide enough that a tooltip is not a tall column. */
-const INFO_TOOLTIP_STYLE: CSSProperties = {maxWidth: 280}
-
-const INFO_TOOLTIP_FALLBACKS: ComponentProps<typeof Popover>['fallbackPlacements'] = [
-  'left-start',
-  'left-end',
-  'top-start',
-]
