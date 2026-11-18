@@ -483,9 +483,16 @@ export function DocumentVersionsFlyoutList(props: {
 
   // Audiences past the first ones: the footer counts them, since that is where they are
   const hiddenCount = Math.max(0, groups.length - MAX_AUDIENCES)
-  // The footer opens the inventory only when it has more to show than these rows: releases,
-  // variants or rows past the cap. People who sit on no listed row keep it, so everyone shows once.
-  const showFooter = hasMoreInInventory(groups, hiddenCount) || footerPeople.length > 0
+  // The footer always opens the inventory, which is also where variants are created and versions
+  // compared or deleted. Its words say whether the inventory lists more than these rows: rows past
+  // the cap, a release version or a variant. With nothing more to list it reads "Manage versions",
+  // the name of the document's own button for the inventory.
+  const footerTitle =
+    hiddenCount > 0
+      ? t('document-group.flyout.footer.see-more', {count: hiddenCount})
+      : hasMoreInInventory(groups, hiddenCount)
+        ? t('document-group.flyout.see-all-versions')
+        : t('document-group-inventory.action.manage-versions')
 
   if (loading) {
     return (
@@ -536,22 +543,18 @@ export function DocumentVersionsFlyoutList(props: {
             }
           />
         ))}
-        {showFooter ? (
-          <FlyoutRow
-            renderMedia={() => <Icon icon={DocumentsIcon} size={2} />}
-            onClick={onOpenInventory}
-            presence={people.length > 0 ? footerPeople : undefined}
-            testId="document-versions-flyout-inventory"
-            title={
-              <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
-                {hiddenCount > 0
-                  ? t('document-group.flyout.footer.see-more', {count: hiddenCount})
-                  : t('document-group.flyout.see-all-versions')}
-              </Text>
-            }
-            renderTrailing={() => <Icon icon={ChevronRightIcon} size={1} />}
-          />
-        ) : null}
+        <FlyoutRow
+          renderMedia={() => <Icon icon={DocumentsIcon} size={2} />}
+          onClick={onOpenInventory}
+          presence={people.length > 0 ? footerPeople : undefined}
+          testId="document-versions-flyout-inventory"
+          title={
+            <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
+              {footerTitle}
+            </Text>
+          }
+          renderTrailing={() => <Icon icon={ChevronRightIcon} size={1} />}
+        />
       </div>
     </Card>
   )

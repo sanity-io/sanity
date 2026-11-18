@@ -5,7 +5,8 @@ import {type DocumentVersionStatusGroup} from './sortDocumentVersionsForStatus'
  * Whether the document group inventory shows more than the versions flyout does: the document has a
  * variant or any version besides Published and Draft (a release version, for one), or the flyout
  * lists fewer audiences than there are (`hiddenCount` above 0). A document with only Published
- * and/or Draft has nothing more to see there, so the flyout leaves out its footer row.
+ * and/or Draft has nothing more to see there, so the flyout's footer row reads "Manage versions"
+ * instead of "See all versions in the inventory".
  *
  * @internal
  */
