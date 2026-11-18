@@ -453,14 +453,27 @@ export {ArrayOfObjectsInput} from '../core/form/inputs/arrays/ArrayOfObjectsInpu
 // form runtime and the Portable Text editor are not in the login screen's import graph.
 export {
   ArrayOfObjectsItem,
+  BooleanInput,
+  DateInput,
+  DateTimeInput,
   FormBuilder,
   FormField,
   FormInput,
+  FormProvider,
   MemberField,
   MemberFieldError,
+  ObjectInput,
   ObjectInputMember,
   PortableTextInput as BlockEditor,
   PortableTextInput,
+  SelectInput,
+  SlugInput,
+  StringInput,
+  StudioCrossDatasetReferenceInput as CrossDatasetReferenceInput,
+  StudioFileInput as FileInput,
+  StudioImageInput as ImageInput,
+  StudioReferenceInput as ReferenceInput,
+  TagsArrayInput,
 } from '../core/form/lazy'
 export {type VirtualizerScrollInstance} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/useVirtualizerScrollInstance'
 export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
@@ -470,19 +483,15 @@ export {ArrayOfPrimitiveOptionsInput} from '../core/form/inputs/arrays/ArrayOfOp
 export {ArrayOfPrimitivesFunctions} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesFunctions'
 export {ArrayOfPrimitivesInput} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesInput'
 export {UniversalArrayInput} from '../core/form/inputs/arrays/UniversalArrayInput'
-export {BooleanInput} from '../core/form/inputs/BooleanInput'
-export {DateInput, type DateInputProps} from '../core/form/inputs/DateInputs/DateInput'
-export {DateTimeInput, type DateTimeInputProps} from '../core/form/inputs/DateInputs/DateTimeInput'
+export {type DateInputProps} from '../core/form/inputs/DateInputs/DateInput'
+export {type DateTimeInputProps} from '../core/form/inputs/DateInputs/DateTimeInput'
 export {EmailInput, type EmailInputProps} from '../core/form/inputs/EmailInput'
 export {type AssetAccessPolicy} from '../core/form/inputs/files/types'
 export {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
-export {ObjectInput} from '../core/form/inputs/ObjectInput/ObjectInput'
 export {type PortableTextMemberItem} from '../core/form/inputs/PortableText/PortableTextInput'
 export {type CreateReferenceOption} from '../core/form/inputs/ReferenceInput/types'
-export {SelectInput} from '../core/form/inputs/SelectInput'
-export {SlugInput, type SlugInputProps} from '../core/form/inputs/Slug/SlugInput'
-export {StringInput} from '../core/form/inputs/StringInput/StringInput'
-export {TagsArrayInput, type TagsArrayInputProps} from '../core/form/inputs/TagsArrayInput'
+export {type SlugInputProps} from '../core/form/inputs/Slug/SlugInput'
+export {type TagsArrayInputProps} from '../core/form/inputs/TagsArrayInput'
 export {TelephoneInput, type TelephoneInputProps} from '../core/form/inputs/TelephoneInput'
 export {TextInput, type TextInputProps} from '../core/form/inputs/TextInput'
 export {UrlInput, type UrlInputProps} from '../core/form/inputs/UrlInput'
@@ -605,23 +614,11 @@ export {
   type TemplateOption,
 } from '../core/form/studio/contexts/ReferenceInputOptions'
 export {type FormBuilderProps} from '../core/form/studio/FormBuilder'
-export {FormProvider, type FormProviderProps} from '../core/form/studio/FormProvider'
-export {
-  StudioCrossDatasetReferenceInput as CrossDatasetReferenceInput,
-  type StudioCrossDatasetReferenceInputProps as CrossDatasetReferenceInputProps,
-} from '../core/form/studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
-export {
-  StudioReferenceInput as ReferenceInput,
-  type StudioReferenceInputProps as ReferenceInputProps,
-} from '../core/form/studio/inputs/reference/StudioReferenceInput'
-export {
-  StudioFileInput as FileInput,
-  type FileInputProps,
-} from '../core/form/studio/inputs/StudioFileInput'
-export {
-  StudioImageInput as ImageInput,
-  type ImageInputProps,
-} from '../core/form/studio/inputs/StudioImageInput'
+export {type FormProviderProps} from '../core/form/studio/FormProvider'
+export {type StudioCrossDatasetReferenceInputProps as CrossDatasetReferenceInputProps} from '../core/form/studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
+export {type StudioReferenceInputProps as ReferenceInputProps} from '../core/form/studio/inputs/reference/StudioReferenceInput'
+export {type FileInputProps} from '../core/form/studio/inputs/StudioFileInput'
+export {type ImageInputProps} from '../core/form/studio/inputs/StudioImageInput'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useEnhancedObjectDialog} from '../core/form/studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 export {
