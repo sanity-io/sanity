@@ -176,10 +176,10 @@ catalogs:
   default:
     '@optique/core':
       specifier: ^1.3.6
-      version: 1.3.6
+      version: 1.3.7
     '@optique/run':
-      specifier: ^1.3.6
-      version: 1.3.6
+      specifier: ^1.3.7
+      version: 1.3.7
     '@pandacss/dev':
       specifier: ^2.5.0
       version: 2.5.0
@@ -1310,10 +1310,10 @@ importers:
         version: 7.22.0(supports-color@8.1.1)
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.6
+        version: 1.3.7
       '@optique/run':
         specifier: 'catalog:'
-        version: 1.3.6
+        version: 1.3.7
       '@repo/utils':
         specifier: workspace:*
         version: link:../utils
@@ -1362,10 +1362,10 @@ importers:
     dependencies:
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.6
+        version: 1.3.7
       '@optique/run':
         specifier: 'catalog:'
-        version: 1.3.6
+        version: 1.3.7
       '@vitejs/plugin-basic-ssl':
         specifier: ^2.3.0
         version: 2.3.0(vite@8.3.8)
@@ -1491,10 +1491,10 @@ importers:
         version: 22.0.1
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.6
+        version: 1.3.7
       '@optique/run':
         specifier: 'catalog:'
-        version: 1.3.6
+        version: 1.3.7
       '@portabletext/toolkit':
         specifier: ^6.0.0
         version: 6.0.0
@@ -2723,10 +2723,10 @@ importers:
     dependencies:
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.6
+        version: 1.3.7
       '@optique/run':
         specifier: 'catalog:'
-        version: 1.3.6
+        version: 1.3.7
       '@repo/debug-proxy':
         specifier: workspace:*
         version: link:../../packages/@repo/debug-proxy
@@ -2888,10 +2888,10 @@ importers:
     devDependencies:
       '@optique/core':
         specifier: 'catalog:'
-        version: 1.3.6
+        version: 1.3.7
       '@optique/run':
         specifier: 'catalog:'
-        version: 1.3.6
+        version: 1.3.7
       '@repo/tsconfig':
         specifier: workspace:*
         version: link:../packages/@repo/tsconfig
@@ -6313,12 +6313,12 @@ packages:
     resolution: {integrity: sha512-eSYWTm620tTk45EKSedaUL8MFYI8hW164hIXsgIHyxu3VobUB3fFCu5t0hQby6OoWRPsG1KkKUG2M5UadiLiVg==}
     engines: {node: '>=14'}
 
-  '@optique/core@1.3.6':
-    resolution: {integrity: sha512-BXVuVyxP9bg8FbyvBYrSHisnAeG3XTf1xcuUjAWgDWKfzZssMGbSrMdiv4tA+BK3+CrSo6no+uHWpiHh4HMKeg==}
+  '@optique/core@1.3.7':
+    resolution: {integrity: sha512-pD/17kPw/UQfFwNNFtyCG0S79dSutqiJSr13w6vwFcjWV6tckFwmKpJFAG2leSJHPX+hNOaI9cxF0xsCdTSoIg==}
     engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
 
-  '@optique/run@1.3.6':
-    resolution: {integrity: sha512-uxlHO8vG/5ni1V+t+jdmYqiyYYY5uOevO/6U866oBpnlOxOGn2ZWIlPpDXAU3e5GRu4VecbeXoNff18yRDGoQw==}
+  '@optique/run@1.3.7':
+    resolution: {integrity: sha512-5SlZffjwAqg2vZ+R+V9QZXpGDhdiKiIF/mUeQDAGgLNIb53G5XqcH0TCdJUDGMMGXlLVIuRWdoNY7oLg4uXihA==}
     engines: {bun: '>=1.2.0', deno: '>=2.3.0', node: '>=20.0.0'}
 
   '@oxc-parser/binding-android-arm-eabi@0.127.0':
@@ -20899,11 +20899,11 @@ snapshots:
 
   '@opentelemetry/semantic-conventions@1.43.0': {}
 
-  '@optique/core@1.3.6': {}
+  '@optique/core@1.3.7': {}
 
-  '@optique/run@1.3.6':
+  '@optique/run@1.3.7':
     dependencies:
-      '@optique/core': 1.3.6
+      '@optique/core': 1.3.7
 
   '@oxc-parser/binding-android-arm-eabi@0.127.0':
     optional: true
