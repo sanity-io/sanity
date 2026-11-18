@@ -175,27 +175,29 @@ export const VersionModeHeader: ComponentType<
             )
           )}
         </Flex>
-        <Box
+        <Flex
           padding={3}
+          gap={2}
+          alignItems="center"
           style={{
             justifySelf: 'end',
           }}
         >
           {onToggleChangesPanel ? (
             <Button
-              aria-label={t('compare-versions.panel.toggle')}
               aria-pressed={changesPanelOpen}
               data-testid="comparison-changes-panel-toggle"
               disabled={typeof documents?.next === 'undefined'}
               icon={RestoreIcon}
-              mode="bleed"
+              mode="ghost"
               onClick={onToggleChangesPanel}
               padding={2}
               selected={changesPanelOpen}
+              text={t('compare-versions.panel.toggle')}
             />
           ) : null}
           <Button icon={CloseIcon} mode="bleed" onClick={exitDiffView} padding={2} />
-        </Box>
+        </Flex>
       </div>
     </header>
   )

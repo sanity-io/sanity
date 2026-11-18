@@ -454,18 +454,12 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'compare-versions.picker.placeholder': 'Pick a version',
   /** A side's picker in Compare versions when the URL names a version that does not exist */
   'compare-versions.picker.missing': 'Missing version',
-  /** The tab of the comparison view's panel listing what differs between the two sides */
-  'compare-versions.panel.changes': 'Changes',
-  /** The tab of the comparison view's panel with the compared side's history */
-  'compare-versions.panel.history': 'History',
   /** The button that loads older history in the comparison view's panel */
   'compare-versions.panel.load-more': 'Load more',
   /** The comparison view's Changes tab when a side names a version that does not exist */
   'compare-versions.panel.missing-side': 'Pick two versions that exist to see what changed.',
-  /** The comparison view's History tab when the compared side has no history */
-  'compare-versions.panel.no-history': 'No history for this version yet.',
-  /** The header button that shows or hides the comparison view's Changes and History panel */
-  'compare-versions.panel.toggle': 'Changes and history',
+  /** The header button that shows or hides the comparison view's History and Review changes panel */
+  'compare-versions.panel.toggle': 'History and changes',
   /** A side of Compare versions whose version no longer exists */
   'compare-versions.missing-version': 'This version no longer exists. Pick another one above.',
   /** The label before the left side's picker in Compare versions: the version the other side is compared against */
