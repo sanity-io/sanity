@@ -55,10 +55,11 @@ import {
   isSystemBundle,
 } from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
-import {getTargetDocument} from '../util/getTargetDocument'
+import {getBaseComparisonTarget} from '../util/getTargetDocument'
 import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
 import {type PatchEvent} from './patch/PatchEvent'
+import {shouldCompareWithBaseVariant} from './shouldCompareWithBaseVariant'
 import {type NodeChronologyProps} from './store/types/nodes'
 import {type StateTree} from './store/types/state'
 import {type FormState, useFormState} from './store/useFormState'
@@ -271,12 +272,17 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     getVersionFromId(upstreamId ?? ''),
   )
 
-  const shouldCompareBaseVariant = isVariantTarget && !isOlderRevision
+  const shouldCompareBaseVariant = shouldCompareWithBaseVariant(
+    targetDocumentState,
+    isOlderRevision,
+  )
 
   const baseVariantTarget = useMemo(
     () =>
       shouldCompareBaseVariant
-        ? getTargetDocument({bundle, variant: undefined, documentVersions: documentVersionStubs})
+        ? // The nearest base version, not only the base in the exact slot: a variant draft of a
+          // published-only document compares with the base published version.
+          getBaseComparisonTarget({bundle, documentVersions: documentVersionStubs})
         : undefined,
     [bundle, shouldCompareBaseVariant, documentVersionStubs],
   )
