@@ -14,18 +14,24 @@ function isDiffViewMode(maybeDiffViewMode: unknown): maybeDiffViewMode is DiffVi
   return diffViewModes.includes(maybeDiffViewMode as DiffViewMode)
 }
 
+interface DiffViewDocument {
+  type: string
+  id: string
+}
+
 type DiffViewState =
   | {
       isActive: true
       state: 'ready'
       mode: DiffViewMode
-      documents: Record<
-        'previous' | 'next',
-        {
-          type: string
-          id: string
-        }
-      >
+      documents: {
+        previous: DiffViewDocument
+        /**
+         * Absent while nothing has been picked to compare with: the view opens with only the
+         * previous side, and the next side asks for a pick.
+         */
+        next?: DiffViewDocument
+      }
     }
   | {
       isActive: true
@@ -107,9 +113,9 @@ export function useDiffViewState({
       !isEqual(
         [
           previousState?.current?.documents?.previous.id,
-          previousState?.current?.documents?.next.id,
+          previousState?.current?.documents?.next?.id,
         ],
-        [state.documents?.previous.id, state.documents?.next.id],
+        [state.documents?.previous.id, state.documents?.next?.id],
       )
     ) {
       onTargetDocumentsChanged(previousState.current, state)
@@ -167,7 +173,13 @@ function parseParams({
     errors.push(['invalidPreviousDocumentParam', previousDocument])
   }
 
-  if (typeof nextDocumentType === 'undefined' || typeof nextDocumentId === 'undefined') {
+  // An absent next document is allowed: the view opens with only the previous side. A next
+  // document that is present but malformed is still an error.
+  const hasNextDocument = nextDocument !== ''
+  if (
+    hasNextDocument &&
+    (typeof nextDocumentType === 'undefined' || typeof nextDocumentId === 'undefined')
+  ) {
     errors.push(['invalidNextDocumentParam', nextDocument])
   }
 
@@ -187,10 +199,7 @@ function parseParams({
           type: previousDocumentType,
           id: previousDocumentId,
         },
-        next: {
-          type: nextDocumentType,
-          id: nextDocumentId,
-        },
+        ...(hasNextDocument ? {next: {type: nextDocumentType, id: nextDocumentId}} : {}),
       },
     },
   } as ParamsSuccess
