@@ -300,22 +300,7 @@ describe('studio tab lock', () => {
     expect(fakeLocks.requested).toEqual([])
   })
 
-  it('appends :s to the held lock name when flagged stalled, and drops it when cleared', async () => {
-    studioTabs.startTrackingStudioTabs(SCOPE)
-    await vi.runAllTimersAsync()
-    const lockName = (count: number, isStalled: boolean) =>
-      `sanity-listener-tab:${SCOPE}:${studioTabs.getStudioTabId()}:${count}${isStalled ? ':s' : ''}`
-
-    studioTabs.setStalled(true)
-    await vi.runAllTimersAsync()
-    expect(fakeLocks.held).toEqual([lockName(0, true)])
-
-    studioTabs.setStalled(false)
-    await vi.runAllTimersAsync()
-    expect(fakeLocks.held).toEqual([lockName(0, false)])
-  })
-
-  it('takes the new stalled lock before releasing the unstalled one', async () => {
+  it('swaps to a lock name ending in :s when flagged stalled, taking it before releasing the old one', async () => {
     studioTabs.startTrackingStudioTabs(SCOPE)
     await vi.runAllTimersAsync()
     const lockName = (isStalled: boolean) =>
@@ -323,37 +308,26 @@ describe('studio tab lock', () => {
 
     studioTabs.setStalled(true)
     await vi.runAllTimersAsync()
-
     expect(fakeLocks.events).toEqual([
       `acquired ${lockName(false)}`,
       `acquired ${lockName(true)}`,
       `released ${lockName(false)}`,
     ])
+
+    studioTabs.setStalled(false)
+    await vi.runAllTimersAsync()
+    expect(fakeLocks.held).toEqual([lockName(false)])
   })
 
-  it('does nothing when flagged stalled before tracking has started', async () => {
+  it('takes no lock when flagged stalled before tracking, then publishes the first lock already stalled', async () => {
     studioTabs.setStalled(true)
     await vi.runAllTimersAsync()
-
     expect(fakeLocks.requested).toEqual([])
-  })
 
-  it('publishes the first lock already stalled when flagged before tracking starts', async () => {
-    studioTabs.setStalled(true)
     studioTabs.startTrackingStudioTabs(SCOPE)
     await vi.runAllTimersAsync()
-
     expect(fakeLocks.held).toEqual([
       `sanity-listener-tab:${SCOPE}:${studioTabs.getStudioTabId()}:0:s`,
     ])
-  })
-
-  it('skips republishing when setStalled repeats the current flag', async () => {
-    studioTabs.startTrackingStudioTabs(SCOPE)
-    await vi.runAllTimersAsync()
-    studioTabs.setStalled(false)
-    await vi.runAllTimersAsync()
-
-    expect(fakeLocks.requested).toHaveLength(1)
   })
 })

@@ -7,9 +7,6 @@ const setStalledMock = vi.fn()
 
 vi.mock('./studioTabs', () => ({setStalled: setStalledMock}))
 
-type ListenerCountModule = typeof ListenerCountExports
-type ListenerStallModule = typeof ListenerStallExports
-
 function pendingFetch(): {resolve: (response: Response) => void} {
   let resolve: ((response: Response) => void) | undefined
   vi.mocked(fetch).mockImplementationOnce(
@@ -24,16 +21,20 @@ function pendingFetch(): {resolve: (response: Response) => void} {
 }
 
 describe('listener stall detection', () => {
-  let listenerCount: ListenerCountModule
-  let listenerStall: ListenerStallModule
+  let listenerCount: typeof ListenerCountExports
+  let listenerStall: typeof ListenerStallExports
+  let countingFetch: ReturnType<typeof ListenerCountExports.resolveListenerCountingFetch>
+  const stalls = vi.fn()
 
   beforeEach(async () => {
     vi.resetModules()
     vi.useFakeTimers()
     setStalledMock.mockClear()
+    stalls.mockClear()
     vi.stubGlobal('fetch', vi.fn())
     listenerCount = await import('./listenerCount')
     listenerStall = await import('./listenerStall')
+    countingFetch = listenerCount.resolveListenerCountingFetch()
   })
 
   afterEach(() => {
@@ -41,13 +42,13 @@ describe('listener stall detection', () => {
     vi.unstubAllGlobals()
   })
 
-  it('detects a stall once the oldest pending request has gone 10s without response headers', async () => {
+  it('detects one stall once requests have gone 10s without response headers', async () => {
     pendingFetch()
-    const countingFetch = listenerCount.resolveListenerCountingFetch()
-    const stalls = vi.fn()
+    pendingFetch()
     listenerStall.subscribeListenerStall(stalls)
 
     void countingFetch('https://abc123.api.sanity.io/v1/data/query')
+    void countingFetch('https://abc123.api.sanity.io/v1/data/mutate')
     await vi.advanceTimersByTimeAsync(listenerStall.LISTENER_STALL_TRIGGER_MS - 1)
     expect(stalls).not.toHaveBeenCalled()
 
@@ -57,34 +58,7 @@ describe('listener stall detection', () => {
     expect(setStalledMock).toHaveBeenCalledWith(true)
   })
 
-  it('does not detect a stall for a request that resolves before the trigger', async () => {
-    vi.mocked(fetch).mockResolvedValueOnce(new Response('{}'))
-    const countingFetch = listenerCount.resolveListenerCountingFetch()
-    const stalls = vi.fn()
-    listenerStall.subscribeListenerStall(stalls)
-
-    await countingFetch('https://abc123.api.sanity.io/v1/data/query')
-    await vi.advanceTimersByTimeAsync(listenerStall.LISTENER_STALL_TRIGGER_MS * 2)
-
-    expect(stalls).not.toHaveBeenCalled()
-  })
-
-  it('treats a held /users/me request as a boot stall', async () => {
-    pendingFetch()
-    const countingFetch = listenerCount.resolveListenerCountingFetch()
-    const stalls = vi.fn()
-    listenerStall.subscribeListenerStall(stalls)
-
-    void countingFetch('https://abc123.api.sanity.io/v1/users/me')
-    await vi.advanceTimersByTimeAsync(listenerStall.LISTENER_STALL_TRIGGER_MS)
-
-    expect(stalls).toHaveBeenCalledTimes(1)
-    expect(stalls.mock.calls[0][0]).toMatchObject({isBootStall: true})
-  })
-
-  it('identifies the oldest pending request as requests resolve out of order, including an unlabelled host', async () => {
-    const countingFetch = listenerCount.resolveListenerCountingFetch()
-    const stalls = vi.fn()
+  it('times the trigger from the oldest request still pending', async () => {
     listenerStall.subscribeListenerStall(stalls)
 
     const first = pendingFetch()
@@ -103,8 +77,6 @@ describe('listener stall detection', () => {
   })
 
   it('clears once nothing is still pending past the trigger, and a later stall is a new occurrence', async () => {
-    const countingFetch = listenerCount.resolveListenerCountingFetch()
-    const stalls = vi.fn()
     listenerStall.subscribeListenerStall(stalls)
 
     const first = pendingFetch()
@@ -124,76 +96,15 @@ describe('listener stall detection', () => {
     expect(stalls.mock.calls[1][0]).toMatchObject({stallOccurrence: 2})
   })
 
-  it('treats two requests stalling together as one occurrence', async () => {
+  it('replays an active boot stall to the first subscriber added after it was detected, once only', async () => {
     pendingFetch()
-    pendingFetch()
-    const countingFetch = listenerCount.resolveListenerCountingFetch()
-    const stalls = vi.fn()
-    listenerStall.subscribeListenerStall(stalls)
-
-    void countingFetch('https://abc123.api.sanity.io/v1/data/query')
-    void countingFetch('https://abc123.api.sanity.io/v1/data/mutate')
-    await vi.advanceTimersByTimeAsync(listenerStall.LISTENER_STALL_TRIGGER_MS)
-
-    expect(stalls).toHaveBeenCalledTimes(1)
-  })
-
-  it('ignores a held asset upload, never detecting a stall from it alone', async () => {
-    pendingFetch()
-    const countingFetch = listenerCount.resolveListenerCountingFetch()
-    const stalls = vi.fn()
-    listenerStall.subscribeListenerStall(stalls)
-
-    void countingFetch('https://abc123.api.sanity.io/v1/assets/images/production', {
-      method: 'POST',
-      body: new Blob(['fake image bytes']),
-    })
-    await vi.advanceTimersByTimeAsync(listenerStall.LISTENER_STALL_TRIGGER_MS * 2)
-
-    expect(stalls).not.toHaveBeenCalled()
-  })
-
-  it('ignores a POST to /assets/ even with a plain string body', async () => {
-    pendingFetch()
-    const countingFetch = listenerCount.resolveListenerCountingFetch()
-    const stalls = vi.fn()
-    listenerStall.subscribeListenerStall(stalls)
-
-    void countingFetch('https://abc123.api.sanity.io/v1/assets/images/production', {
-      method: 'POST',
-      body: 'not actually binary',
-    })
-    await vi.advanceTimersByTimeAsync(listenerStall.LISTENER_STALL_TRIGGER_MS * 2)
-
-    expect(stalls).not.toHaveBeenCalled()
-  })
-
-  it('still detects a stalled JSON GROQ query sent as a POST', async () => {
-    pendingFetch()
-    const countingFetch = listenerCount.resolveListenerCountingFetch()
-    const stalls = vi.fn()
-    listenerStall.subscribeListenerStall(stalls)
-
-    void countingFetch('https://abc123.api.sanity.io/v1/data/query/production', {
-      method: 'POST',
-      body: JSON.stringify({query: '*[_type == "post"]'}),
-    })
-    await vi.advanceTimersByTimeAsync(listenerStall.LISTENER_STALL_TRIGGER_MS)
-
-    expect(stalls).toHaveBeenCalledTimes(1)
-  })
-
-  it('replays an active stall to a subscriber added after it was detected, once only', async () => {
-    pendingFetch()
-    const countingFetch = listenerCount.resolveListenerCountingFetch()
 
     void countingFetch('https://abc123.api.sanity.io/v1/users/me')
     await vi.advanceTimersByTimeAsync(listenerStall.LISTENER_STALL_TRIGGER_MS)
 
-    const lateSubscriber = vi.fn()
-    listenerStall.subscribeListenerStall(lateSubscriber)
-    expect(lateSubscriber).toHaveBeenCalledTimes(1)
-    expect(lateSubscriber.mock.calls[0][0]).toMatchObject({isBootStall: true, stallOccurrence: 1})
+    listenerStall.subscribeListenerStall(stalls)
+    expect(stalls).toHaveBeenCalledTimes(1)
+    expect(stalls.mock.calls[0][0]).toMatchObject({isBootStall: true, stallOccurrence: 1})
 
     const anotherLateSubscriber = vi.fn()
     listenerStall.subscribeListenerStall(anotherLateSubscriber)

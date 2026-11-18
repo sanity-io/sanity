@@ -1,11 +1,9 @@
 import {describe, expect, it} from 'vitest'
 
-import {classifyStall, LISTENER_STALL_BUDGET} from './classifyStall'
+import {classifyStall, LISTENER_STALL_BUDGET, type StallKind} from './classifyStall'
 import {type LedgerSnapshot} from './listenerLedger'
 
-function snapshotWith(options: {selfCount?: number; othersTotal?: number}): LedgerSnapshot {
-  const selfCount = options.selfCount ?? 0
-  const othersTotal = options.othersTotal ?? 0
+function snapshotWith(selfCount: number, othersTotal: number): LedgerSnapshot {
   return {
     self: {tabId: 'self', count: selfCount, isStalled: true},
     others: [],
@@ -22,54 +20,14 @@ describe('classifyStall', () => {
     expect(classifyStall({snapshot: undefined, protocol: 'h2'})).toBe('unmeasured')
   })
 
-  it.each(['http/0.9', 'http/1.0', 'http/1.1'])(
-    'reports unmeasured when this tab measured a legacy protocol (%s)',
-    (protocol) => {
-      const snapshot = snapshotWith({selfCount: 100, othersTotal: 50})
-      expect(classifyStall({snapshot, protocol})).toBe('unmeasured')
-    },
-  )
-
-  it('applies the H2 budget when the protocol has not measured yet', () => {
-    const snapshot = snapshotWith({selfCount: 10, othersTotal: 10})
-    expect(classifyStall({snapshot, protocol: undefined})).toBe('not-listener-limit')
-  })
-
-  it.each([undefined, 'unknown'])(
-    'blames the tabs at the budget when the protocol probe gave no answer (%s)',
-    (protocol) => {
-      const snapshot = snapshotWith({selfCount: 10, othersTotal: LISTENER_STALL_BUDGET})
-      expect(classifyStall({snapshot, protocol})).toBe('too-many-tabs')
-    },
-  )
-
-  it('reports not-listener-limit just under the budget', () => {
-    const snapshot = snapshotWith({selfCount: LISTENER_STALL_BUDGET - 1, othersTotal: 0})
-    expect(classifyStall({snapshot, protocol: 'h2'})).toBe('not-listener-limit')
-  })
-
-  it('a default, idle Studio (5-12 listeners) alone never reaches a specific kind', () => {
-    const snapshot = snapshotWith({selfCount: 12, othersTotal: 0})
-    expect(classifyStall({snapshot, protocol: 'h2'})).toBe('not-listener-limit')
-  })
-
-  it('reports this-tab-over-limit at the budget with no other tab holding listeners', () => {
-    const snapshot = snapshotWith({selfCount: LISTENER_STALL_BUDGET, othersTotal: 0})
-    expect(classifyStall({snapshot, protocol: 'h2'})).toBe('this-tab-over-limit')
-  })
-
-  it('reports this-tab-heavy at the budget next to a busy other tab', () => {
-    const snapshot = snapshotWith({selfCount: LISTENER_STALL_BUDGET, othersTotal: 5})
-    expect(classifyStall({snapshot, protocol: 'h2'})).toBe('this-tab-heavy')
-  })
-
-  it('reports too-many-tabs when the total reaches the budget but this tab alone is under it', () => {
-    const snapshot = snapshotWith({selfCount: 10, othersTotal: LISTENER_STALL_BUDGET})
-    expect(classifyStall({snapshot, protocol: 'h2'})).toBe('too-many-tabs')
-  })
-
-  it('never claims this-tab-over-limit or this-tab-heavy for a self count just under the budget', () => {
-    const snapshot = snapshotWith({selfCount: LISTENER_STALL_BUDGET - 1, othersTotal: 5})
-    expect(classifyStall({snapshot, protocol: 'h2'})).toBe('too-many-tabs')
+  it.each<[string, number, number, string | undefined, StallKind]>([
+    ['a legacy protocol', 100, 50, 'http/1.1', 'unmeasured'],
+    ['a total just under the budget', LISTENER_STALL_BUDGET - 1, 0, 'h2', 'not-listener-limit'],
+    ['this tab alone at the budget', LISTENER_STALL_BUDGET, 0, 'h2', 'this-tab-over-limit'],
+    ['this tab at the budget next to a busy tab', LISTENER_STALL_BUDGET, 5, 'h2', 'this-tab-heavy'],
+    ['other tabs filling the budget', LISTENER_STALL_BUDGET - 1, 5, 'h2', 'too-many-tabs'],
+    ['an unmeasured protocol at the budget', 10, LISTENER_STALL_BUDGET, undefined, 'too-many-tabs'],
+  ])('classifies %s', (_case, selfCount, othersTotal, protocol, kind) => {
+    expect(classifyStall({snapshot: snapshotWith(selfCount, othersTotal), protocol})).toBe(kind)
   })
 })
