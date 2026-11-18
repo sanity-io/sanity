@@ -244,7 +244,11 @@ export const CreateVariantPicker: ComponentType<{
             data-testid={`${testId}-button`}
             disabled={
               disabled ||
-              [...leadingOptions, ...options].every((option) => option.disabled === true)
+              // Nothing to pick opens nothing, but a disabled option that says why it is disabled
+              // (Drafts that already has a draft) still opens the menu, so the reason can be read
+              [...leadingOptions, ...options].every(
+                (option) => option.disabled === true && !option.subtitle,
+              )
             }
             mode="ghost"
             padding={3}
