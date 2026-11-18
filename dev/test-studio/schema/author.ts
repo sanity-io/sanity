@@ -92,6 +92,17 @@ export default defineType({
       },
       validation: (rule: StringRule) => rule.required(),
     }),
+    // The GROQ lint playground sample queries dereference `author->{name, bio, email}`.
+    defineField({
+      name: 'bio',
+      title: 'Bio',
+      type: 'text',
+    }),
+    defineField({
+      name: 'email',
+      title: 'Email',
+      type: 'string',
+    }),
     {
       name: 'bestFriend',
       title: 'Best friend',
