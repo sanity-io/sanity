@@ -198,7 +198,6 @@ export const IntentResolver = memo(function IntentResolver() {
         documentPreload?.unsubscribe()
       }
     }
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- `getResolution` is an effect event, which react-hooks/exhaustive-deps forbids listing
   }, [documentStore, errorHandler, maybeIntent, navigate])
 
   // oxlint-disable-next-line consistent-return
@@ -240,7 +239,6 @@ export const IntentResolver = memo(function IntentResolver() {
         cancelled = true
       }
     }
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- `getResolution` and `getCurrentPanes` are effect events, which react-hooks/exhaustive-deps forbids listing
   }, [errorHandler, navigate, resolvingPaneId])
 
   return null

@@ -181,6 +181,10 @@ export {
   SingleDocReleaseUpsellContext,
   type SingleDocReleaseUpsellContextValue,
 } from '../_singletons/context/SingleDocReleaseUpsellContext'
+export {
+  SortableItemHandleContext,
+  type SortableItemHandleContextValue,
+} from '../_singletons/context/SortableItemHandleContext'
 export {SortableItemIdContext} from '../_singletons/context/SortableItemIdContext'
 export {SourceContext} from '../_singletons/context/SourceContext'
 export {StructureToolContext} from '../_singletons/context/StructureToolContext'

@@ -62,15 +62,22 @@ export function getReleaseDocumentIntent({
     }
   }
 
-  const searchParams: [string, string][] | undefined =
-    isCardinalityOneRelease || isArchivedRelease(releaseState)
-      ? undefined
-      : [
-          ...(variantId
-            ? [['variant', encodeVariantLinkParam(variantId)] as [string, string]]
-            : []),
-          ['perspective', releaseState === 'published' ? 'published' : releaseName],
-        ]
+  const variantSearchParams: [string, string][] = variantId
+    ? [['variant', encodeVariantLinkParam(variantId)]]
+    : []
+
+  let searchParams: [string, string][] | undefined
+  if (isArchivedRelease(releaseState)) {
+    searchParams = undefined
+  } else if (isCardinalityOneRelease) {
+    // The scheduled draft perspective comes from the `scheduledDraft` param, only the variant is sticky.
+    searchParams = variantId ? variantSearchParams : undefined
+  } else {
+    searchParams = [
+      ...variantSearchParams,
+      ['perspective', releaseState === 'published' ? 'published' : releaseName],
+    ]
+  }
 
   return {
     params: {

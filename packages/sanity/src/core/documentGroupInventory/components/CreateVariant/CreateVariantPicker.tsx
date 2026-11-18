@@ -77,7 +77,9 @@ export const CreateVariantPicker: ComponentType<{
   const renderOption = (option: CreateVariantPickerOption) => (
     <MenuItem
       key={option.key}
+      aria-checked={option.key === value?.key}
       icon={option.icon}
+      role="menuitemradio"
       text={option.text}
       pressed={option.key === value?.key}
       onClick={() => onChange(option.key)}
@@ -126,6 +128,7 @@ export const CreateVariantPicker: ComponentType<{
               <Box flexShrink={0} padding={1}>
                 <TextInput
                   ref={filterRef}
+                  aria-label={t('document-group.create-variant.filter-placeholder')}
                   fontSize={1}
                   onChange={(event) => setFilterQuery(event.currentTarget.value)}
                   placeholder={t('document-group.create-variant.filter-placeholder')}

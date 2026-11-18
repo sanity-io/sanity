@@ -77,6 +77,7 @@ export function FederatedAssetSourceDialog(props: {
   const viewProps = useMemo<FederatedAssetSourceViewProps>(
     () => ({
       ...sourceProps,
+      view: view.interface,
       scheme,
       projectId: workspace.projectId,
       dataset: workspace.dataset,
@@ -86,6 +87,7 @@ export function FederatedAssetSourceDialog(props: {
     }),
     [
       sourceProps,
+      view.interface,
       scheme,
       workspace.projectId,
       workspace.dataset,

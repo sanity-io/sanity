@@ -19,6 +19,8 @@ interface ConditionMappedRowProps {
   onRemove: () => void
   onSelectKey: (key: string) => void
   onSelectValue: (value: string) => void
+  /** 1-based position of the row, used to name its remove button. */
+  position: number
   selectedKey: string
   selectedValue: string
   usedKeys: ReadonlySet<string>
@@ -34,6 +36,7 @@ export function ConditionMappedRow(props: ConditionMappedRowProps): React.JSX.El
     onRemove,
     onSelectKey,
     onSelectValue,
+    position,
     selectedKey,
     selectedValue,
     usedKeys,
@@ -85,6 +88,7 @@ export function ConditionMappedRow(props: ConditionMappedRowProps): React.JSX.El
           />
         </Box>
         <Button
+          aria-label={t('dialog.create.remove-condition.aria-label', {position})}
           disabled={disableRemove}
           icon={TrashIcon}
           mode="bleed"

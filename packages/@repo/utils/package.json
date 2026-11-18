@@ -19,7 +19,7 @@
   "dependencies": {
     "dotenv": "^17.4.2",
     "lodash-es": "^4.18.1",
-    "ora": "^9.4.0"
+    "ora": "^9.4.1"
   },
   "devDependencies": {
     "@repo/test-config": "workspace:*",

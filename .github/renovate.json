@@ -1,17 +1,15 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "github>sanity-io/renovate-config",
-    "github>sanity-io/renovate-config:studio-v3",
-    ":dependencyDashboardApproval"
-  ],
+  "extends": ["github>sanity-io/renovate-config", "github>sanity-io/renovate-config:studio-v3"],
   "ignorePresets": [
     "github>sanity-io/renovate-config:group-non-major",
     "github>sanity-io/renovate-config:workarounds-esm",
-    "github>sanity-io/renovate-config:dedupe"
+    "github>sanity-io/renovate-config:dedupe",
+    "github>sanity-io/renovate-config:schedule"
   ],
-  "branchConcurrentLimit": 3,
-  "prConcurrentLimit": 5,
+  "dependencyDashboardApproval": false,
+  "branchConcurrentLimit": 4,
+  "prConcurrentLimit": 4,
   "minimumReleaseAge": "1 day",
   "packageRules": [
     {
@@ -54,8 +52,6 @@
     {
       "description": "Upgrade @sanity/sdk and @sanity/sdk-react together across all workspaces and dependency types, bumping every manifest to keep a single version throughout the repository",
       "matchPackageNames": ["@sanity/sdk", "@sanity/sdk-react"],
-      "dependencyDashboardApproval": false,
-      "schedule": ["every weekday"],
       "groupName": "sanity-sdk",
       "rangeStrategy": "bump"
     },
@@ -89,40 +85,6 @@
       "semanticCommitType": "fix"
     },
     {
-      "description": "Ensure internal and important packages open a PRs right away, without waiting for manual approval",
-      "matchPackageNames": [
-        "@portabletext/editor",
-        "@portabletext/html",
-        "@sanity/bifur-client",
-        "@sanity/cli",
-        "@sanity/client",
-        "@sanity/comlink",
-        "@sanity/eslint-plugin-i18n",
-        "@sanity/import",
-        "@sanity/export",
-        "@sanity/icons",
-        "@sanity/mutate",
-        "@sanity/presentation-comlink",
-        "@sanity/preview-url-secret",
-        "@sanity/template-validator",
-        "@sanity/tsdown-config",
-        "@sanity/ui",
-        "@sanity/visual-editing-csm",
-        "esbuild",
-        "get-it",
-        "groq-js",
-        "react-dom",
-        "react-is",
-        "react-rx",
-        "react",
-        "use-sync-external-store",
-        "styled-components",
-        "typescript"
-      ],
-      "dependencyDashboardApproval": false,
-      "schedule": ["every weekday"]
-    },
-    {
       "description": "ui5 is the exact-pinned npm alias for the @sanity/ui v5 prerelease (pnpm catalog): strictly follow the alpha dist-tag so the pin is bumped whenever a new alpha is published, bypassing the default ignoreUnstable logic that would skip a rebased prerelease (e.g. a beta) and tracking tag rollbacks",
       "matchDepNames": ["ui5"],
       "followTag": "alpha"
@@ -130,8 +92,6 @@
     {
       "description": "Upgrade @portabletext/* packages together, majors included: the editor monorepo versions its packages independently but releases them in lockstep (plugins peer-depend on the editor), so a new major line must land as one PR instead of one per major number",
       "matchPackageNames": ["@portabletext/*"],
-      "dependencyDashboardApproval": false,
-      "schedule": ["every weekday"],
       "groupName": "portabletext",
       "separateMajorMinor": false
     },

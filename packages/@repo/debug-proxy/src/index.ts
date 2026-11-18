@@ -38,6 +38,7 @@ export {
   urlIncludes,
 } from './routes'
 export {
+  channelErrorAfterWelcome,
   dropMutations,
   duplicateMutations,
   expiredToken,
@@ -47,4 +48,5 @@ export {
   refusedRefreshToken,
   sendReset,
   shuffleEventDelivery,
+  withholdWelcome,
 } from './scenarios'

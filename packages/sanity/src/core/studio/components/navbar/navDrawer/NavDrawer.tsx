@@ -233,7 +233,6 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               >
                 {/* Tools */}
                 <Card flex="none" padding={2}>
-                  {/* oxlint-disable-next-line react/static-components -- this is intentional and how the middleware components has to work */}
                   <ToolMenu
                     activeToolName={activeToolName}
                     closeSidebar={onClose}
