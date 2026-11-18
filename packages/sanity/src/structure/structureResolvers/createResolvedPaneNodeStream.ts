@@ -24,6 +24,7 @@ import {
 import {assignId} from './assignId'
 import {
   createPaneResolver,
+  withAsyncPaneResolutionErrors,
   type PaneResolver,
   type PaneResolverMiddleware,
 } from './createPaneResolver'
@@ -530,7 +531,7 @@ export function createResolvedPaneNodeStream({
         flattenedRouterPanes,
         cacheKeysByFlatIndex,
         resolvedPaneCache,
-        resolvePane: createPaneResolver(memoize),
+        resolvePane: withAsyncPaneResolutionErrors(createPaneResolver(memoize)),
       }
     }, initialCacheState),
     // run the memoized, recursive resolving

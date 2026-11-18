@@ -77,6 +77,43 @@ describe('StructureToolBoundary', {timeout: 20_000}, () => {
     )
   })
 
+  it('retries the structure tool when an intent is navigated to after an async child resolver fails', async () => {
+    const structure: StructureResolver = (S) =>
+      S.list()
+        .id('root')
+        .title('Recovered content')
+        .items([
+          S.listItem()
+            .id('anchor')
+            .title('Anchor')
+            .child(
+              S.list()
+                .id('anchor')
+                .title('Anchor')
+                .items([])
+                .child(async () => {
+                  throw new Error('Failed to resolve document')
+                }),
+            ),
+        ])
+    tool = {...tool, options: {structure}}
+    const {rerender} = render(
+      studioAtRouterState({panes: [[{id: 'anchor'}], [{id: 'nonexistent-child'}]]}),
+    )
+    expect(await screen.findByText(STRUCTURE_ERROR_HEADING)).toBeVisible()
+
+    rerender(
+      studioAtRouterState({intent: 'edit', params: {id: 'recovered-document', type: 'author'}}),
+    )
+
+    expect(screen.queryByText(STRUCTURE_ERROR_HEADING)).toBeNull()
+    await waitFor(() =>
+      expect(onNavigate).toHaveBeenCalledWith(
+        expect.objectContaining({path: expect.stringContaining('recovered-document')}),
+      ),
+    )
+  })
+
   it('retries the structure tool when the panes change after a structure error', async () => {
     const {rerender} = render(studioAtRouterState({panes: [[{id: 'broken-child'}]]}))
     expect(await screen.findByText(STRUCTURE_ERROR_HEADING)).toBeVisible()
