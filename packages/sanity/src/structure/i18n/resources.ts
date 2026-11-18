@@ -371,6 +371,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'compare-versions.empty.description': 'Pick a version above to compare with',
   /** The next side's picker in Compare versions before a version is picked */
   'compare-versions.picker.placeholder': 'Pick a version',
+  /** A side's picker in Compare versions when the URL names a version that does not exist */
+  'compare-versions.picker.missing': 'Missing version',
   /** A side of Compare versions whose version no longer exists */
   'compare-versions.missing-version': 'This version no longer exists. Pick another one above.',
   /** The label before the left side's picker in Compare versions: the version the other side is compared against */
