@@ -8,6 +8,7 @@ import {type RouterPaneGroup, type RouterPanes, type RouterPaneSibling} from '..
 import {usePaneLayout} from '../pane/usePaneLayout'
 import {BackLink} from './BackLink'
 import {ChildLink} from './ChildLink'
+import {getInheritedChildParams} from './inheritedChildParams'
 import {ParameterizedLink} from './ParameterizedLink'
 import {ReferenceChildLink} from './ReferenceChildLink'
 import {type PaneRouterContextValue} from './types'
@@ -118,6 +119,7 @@ export function PaneRouterProvider(props: {
                 parentRefPath: pathToString(parentRefPath),
                 type,
                 version,
+                ...getInheritedChildParams(params),
               },
               payload: template.params,
             },
@@ -125,7 +127,7 @@ export function PaneRouterProvider(props: {
         ],
       })
     },
-    [groupIndex, navigate, routerPaneGroups],
+    [groupIndex, navigate, params, routerPaneGroups],
   )
 
   const ctx: PaneRouterContextValue = useMemo(
