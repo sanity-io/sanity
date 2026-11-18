@@ -48,6 +48,12 @@ export const VariantSetHeader = styled(VariantSetEntry)(({theme}) => {
       inset-block-start: 50%;
       inset-inline-end: calc(var(--inventory-row-padding) + ${MARK_COLUMN_WIDTH}px + 8px);
       transform: translateY(-50%);
+      /*
+       * A flex box, so a button wrapped for its tooltip sits on no text line: in a block box the
+       * wrapper's line added room above the button and pushed it 2px below the centre.
+       */
+      display: flex;
+      align-items: center;
     }
 
     .variant-set-text:has(.header-actions) {

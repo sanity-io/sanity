@@ -1,6 +1,7 @@
 import {LockIcon} from '@sanity/icons/Lock'
 import {Checkbox} from '@sanity/ui'
 import {type MouseEvent} from 'react'
+import {Icon} from 'ui5'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 
@@ -51,8 +52,12 @@ export function VariantCheckbox({
           role="img"
           tabIndex={tabbable ? 0 : -1}
         >
-          {/* Drawn in currentColor, so the row decides its colour: muted, or inverted on the open row */}
-          <LockIcon />
+          {/*
+           * The same icon, at the same size, as the lock on a scheduled release in the navbar's
+           * releases menu. Its colour comes from the row (see VariantSetEntry): muted, or inverted
+           * on the open row.
+           */}
+          <Icon icon={LockIcon} muted size={1} style={LOCK_STYLE} />
         </span>
       </Tooltip>
     )
@@ -84,3 +89,6 @@ function preventDefault(event: MouseEvent<HTMLInputElement>) {
 function noop() {
   // A blocked checkbox never changes
 }
+
+/** Trimmed like the navbar menu's lock, so it takes the checkbox's place without growing the row. */
+const LOCK_STYLE = {margin: '-0.375rem'} as const
