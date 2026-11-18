@@ -1,6 +1,7 @@
 import {combineLatest, map, type Observable} from 'rxjs'
 
 import {type DocumentVariantType, getDocumentVariantType} from '../../util/getDocumentVariantType'
+import {mergeEditEvents} from './getEditEvents'
 import {
   type DocumentGroupEvent,
   type EditDocumentVersionEvent,
@@ -52,8 +53,9 @@ export function applyVariantTransforms(
  * Combines the three event sources (fetched events, live remote edits, user-expanded edit events)
  * into the final event list the UI consumes.
  *
- * Per emission, merges and sorts all events newest-first ({@link sortEvents}), then applies the
- * variant transforms ({@link applyVariantTransforms}).
+ * Per emission, merges and sorts all events newest-first ({@link sortEvents}), regroups the
+ * fetched and live edit events together ({@link mergeEditEvents}), then applies the variant
+ * transforms ({@link applyVariantTransforms}).
  */
 export function createEventsObservable({
   events$,
@@ -65,7 +67,7 @@ export function createEventsObservable({
   return combineLatest([events$, remoteEdits$, expandedEvents$]).pipe(
     map(([{events, nextCursor, loading, error}, remoteEdits, expandedEvents]) => ({
       events: applyVariantTransforms(
-        sortEvents({remoteEdits, events, expandedEvents}),
+        mergeEditEvents(sortEvents({remoteEdits, events, expandedEvents})),
         documentVariantType,
       ),
       nextCursor,

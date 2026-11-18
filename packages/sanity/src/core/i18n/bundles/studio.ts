@@ -1660,6 +1660,17 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'login.logged-out.session-expired': 'Your session expired. Please sign in again.',
   /** Title of the banner shown above the login form after the studio logs the user out */
   'login.logged-out.title': "You've been logged out",
+  /** Shown above the authorization server's reason when it refused the sign-in */
+  'login.oauth.authorization-failed': 'Sign-in was not completed',
+  /** Shown below the authorization server's reason when it refused to sign in to the workspace's project (`invalid_target`) */
+  'login.oauth.invalid-target-hint':
+    "You don't have access to this project, or this Studio isn't allowed to sign in to it. Contact your project admin.",
+  /** Button on the login screen of a Studio that signs in with OAuth */
+  'login.oauth.sign-in': 'Sign in with Sanity',
+  /** Shown above the reason when the Studio could not start signing in with OAuth */
+  'login.oauth.sign-in-failed': 'Could not start signing in',
+  /** Heading on the login screen of a Studio that signs in with OAuth */
+  'login.oauth.title': 'Sign in to continue',
 
   /** Unexpected error: `{{error}}` */
   'member-field-error.unexpected-error': 'Unexpected error: {{error}}',

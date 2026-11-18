@@ -291,6 +291,12 @@ export function WorkspacesProvider({
   )
 }
 
+function loggedOutReasonOf(
+  claim: Extract<RequestErrorClaim, {type: 'unauthorized'}>,
+): 'session-expired' | 'session-not-found' {
+  return getApiErrorCode(claim.error) === 'SIO-401-AEX' ? 'session-expired' : 'session-not-found'
+}
+
 function findAuthStoreForProject(
   workspaces: WorkspaceSummary[],
   projectId: string,
@@ -331,12 +337,7 @@ function WorkspacesClaimProvider({
   // while the forced-logout state is — and clears on re-login (no persistence).
   // The reason mirrors the API's invalid-session code so the toast copy can
   // be accurate: "expired" only when the API actually said expired.
-  const loggedOutReason =
-    claim?.type === 'unauthorized'
-      ? getApiErrorCode(claim.error) === 'SIO-401-AEX'
-        ? 'session-expired'
-        : 'session-not-found'
-      : undefined
+  const loggedOutReason = claim?.type === 'unauthorized' ? loggedOutReasonOf(claim) : undefined
 
   // Need access to the current `workspaces` without triggering setup/teardown on change
   const handleLogout = useEffectEvent(
@@ -356,7 +357,7 @@ function WorkspacesClaimProvider({
           ? findAuthStoreForProject(workspaces, unauthorizedClaim.projectId)
           : workspaces[0]?.auth)
       if (!auth?.logout) return
-      auth.logout().catch((logoutErr) => {
+      auth.logout({reason: loggedOutReasonOf(unauthorizedClaim)}).catch((logoutErr) => {
         // The logout request itself failed (likely network). The channel's
         // dedupe prevents recursion; just log so a dev can diagnose.
         console.warn('[sanity] Forced logout failed:', logoutErr)
