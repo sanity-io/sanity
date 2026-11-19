@@ -2,11 +2,12 @@ import {DocumentsIcon} from '@sanity/icons/Documents'
 import {EditIcon} from '@sanity/icons/Edit'
 import {SortIcon} from '@sanity/icons/Sort'
 import {UserIcon} from '@sanity/icons/User'
-import {Card, Skeleton} from '@sanity/ui'
-import {useMemo} from 'react'
+import {Card, Skeleton, TabList} from '@sanity/ui'
+import {useMemo, useState} from 'react'
 import {useRouter} from 'sanity/router'
 import {Text, Container, Flex, Box, VStack, Icon} from 'ui5'
 
+import {Tab} from '../../../../ui-components/tab/Tab'
 import {
   DetailBackButton,
   DetailIdentity,
@@ -18,6 +19,7 @@ import {RelativeTime} from '../../../components/RelativeTime'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {ConditionMismatchIndicator} from '../../components/ConditionMismatchIndicator'
 import {useVariantConditionMismatches, useVariantTypes} from '../../hooks/useVariantConditions'
+import {useVariantDefinitionLens} from '../../hooks/useVariantDefinitionLens'
 import {useVariantDocuments} from '../../hooks/useVariantDocuments'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
@@ -32,6 +34,9 @@ import {groupVariantDocumentsByGroup} from './groupVariantDocumentsByGroup'
 import {VariantActionRail} from './VariantActionRail'
 import {getVariantConditionIcon} from './variantConditionIcons'
 import {VariantDocumentsTable} from './VariantDocumentsTable'
+import {VariantMissingDocumentsTable} from './VariantMissingDocumentsTable'
+
+type DefinitionHalf = 'present' | 'missing'
 
 export function VariantDetail() {
   const router = useRouter()
@@ -58,6 +63,16 @@ export function VariantDetail() {
     () => groupVariantDocumentsByGroup(variantDocuments),
     [variantDocuments],
   )
+
+  // The two halves of the definition: documents with a version for it, and documents of the chosen
+  // type without one. `undefined` type = the types that already have a version (see SAPP-4171).
+  const [activeHalf, setActiveHalf] = useState<DefinitionHalf>('present')
+  const [missingType, setMissingType] = useState<string | undefined>(undefined)
+  const definitionLens = useVariantDefinitionLens({
+    variantDocumentId: variant?._id,
+    types: missingType ? [missingType] : undefined,
+  })
+  const halfCount = (count: number) => (definitionLens.loading ? '…' : String(count))
 
   // "Unpublished changes" = document groups that carry a draft version. Counted separately from the
   // total (a group can hold both a published and a draft version), so the two numbers each answer a
@@ -273,7 +288,52 @@ export function VariantDetail() {
         </Container>
       </Card>
       <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%" overflow="hidden">
-        {variantDocumentsError ? (
+        <Card flex="none" paddingY={2}>
+          <Container flexBasis="auto" flexGrow={0} flexShrink={0} size={3}>
+            <Box paddingX={2}>
+              <TabList gap={1}>
+                <Tab
+                  aria-controls="variant-documents-half"
+                  data-testid="variant-half-tab-present"
+                  id="variant-half-tab-present"
+                  label={t('detail.half.present', {
+                    total: halfCount(definitionLens.present.length),
+                  })}
+                  onClick={() => setActiveHalf('present')}
+                  selected={activeHalf === 'present'}
+                />
+                <Tab
+                  aria-controls="variant-documents-half"
+                  data-testid="variant-half-tab-missing"
+                  id="variant-half-tab-missing"
+                  label={t('detail.half.missing', {
+                    total: halfCount(definitionLens.missing.length),
+                  })}
+                  onClick={() => setActiveHalf('missing')}
+                  selected={activeHalf === 'missing'}
+                />
+              </TabList>
+            </Box>
+          </Container>
+        </Card>
+        {activeHalf === 'missing' ? (
+          definitionLens.error ? (
+            <Box padding={4}>
+              <Text muted size={1} as="div" trim={true}>
+                {t('detail.missing.error')}
+              </Text>
+            </Box>
+          ) : (
+            <VariantMissingDocumentsTable
+              hasTypes={definitionLens.loading || definitionLens.types.length > 0}
+              loading={definitionLens.loading}
+              onSelectType={setMissingType}
+              rows={definitionLens.missing}
+              selectedType={missingType}
+              variant={variant}
+            />
+          )
+        ) : variantDocumentsError ? (
           <Box padding={4}>
             <Text muted size={1} as="div" trim={true}>
               {t('detail.documents.error')}
