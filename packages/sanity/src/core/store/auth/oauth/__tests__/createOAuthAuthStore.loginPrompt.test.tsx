@@ -130,4 +130,45 @@ describe('createOAuthAuthStore login prompt after logout', () => {
       expect((await signIn(tab)).searchParams.has('prompt')).toBe(false)
     },
   )
+
+  /** Comes back from the authorization server with an error for the sign-in this tab started. */
+  function refuseSignIn({store, environment}: ReturnType<typeof createTab>, error: string) {
+    const flow = JSON.parse(sessionStorage.getItem(FLOW_KEY)!)
+    environment.location.search = `?error=${error}&state=${flow.state}`
+    return store.handleCallbackUrl!()
+  }
+
+  it.each(['invalid_target', 'access_denied'])(
+    'asks for the login form after the authorization server refused the account (%s)',
+    async (error) => {
+      // Signing in with the same sanity.io session would get the same answer. The login form
+      // lets the user pick another account.
+      const tab = createTab()
+      await signIn(tab)
+      await expect(refuseSignIn(tab, error)).resolves.toMatchObject({success: false})
+
+      expect((await signIn(tab)).searchParams.get('prompt')).toBe('login')
+      // Also in other tabs, and until a sign-in completes.
+      expect((await signIn(createTab())).searchParams.get('prompt')).toBe('login')
+      await expect(completeSignIn(tab)).resolves.toMatchObject({success: true})
+      expect((await signIn(tab)).searchParams.has('prompt')).toBe(false)
+    },
+  )
+
+  it.each([
+    'server_error',
+    'temporarily_unavailable',
+    'invalid_request',
+    'invalid_scope',
+    'unauthorized_client',
+  ])(
+    'does not ask for the login form after an error another account would not fix (%s)',
+    async (error) => {
+      const tab = createTab()
+      await signIn(tab)
+      await expect(refuseSignIn(tab, error)).resolves.toMatchObject({success: false})
+
+      expect((await signIn(tab)).searchParams.has('prompt')).toBe(false)
+    },
+  )
 })

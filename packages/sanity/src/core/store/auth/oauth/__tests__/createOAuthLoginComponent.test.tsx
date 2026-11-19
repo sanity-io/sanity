@@ -107,14 +107,13 @@ describe('OAuth login component', () => {
       </TestProvider>,
     )
 
-    expect(await screen.findByTestId('oauth-login-error')).toHaveTextContent(
-      'Sign-in was not completed',
-    )
+    expect(await screen.findByTestId('oauth-login-error')).toHaveTextContent("Couldn't sign in")
   })
 
   it('suggests why the project was refused when the authorization server answers invalid_target', async () => {
-    // The server's description is deliberately generic: it does not say whether the user lacks
-    // access to the project or the OAuth application is not allowed on it.
+    // The server's description is deliberately generic, and speaks of a "resource": it does not
+    // say whether the user lacks access to the project or the OAuth application is not allowed on
+    // it. The Studio's own explanation replaces it.
     sessionStorage.setItem(
       FLOW_KEY,
       JSON.stringify({codeVerifier: 'v', state: 'expected-state', redirectUri: ORIGIN}),
@@ -148,10 +147,14 @@ describe('OAuth login component', () => {
     )
 
     const notice = await screen.findByTestId('oauth-login-error')
-    expect(notice).toHaveTextContent('The requested resource is invalid')
-    expect(notice).toHaveTextContent('invalid_target')
+    expect(notice).not.toHaveTextContent('The requested resource is invalid')
+    expect(notice).toHaveTextContent('Error code: invalid_target')
     expect(screen.getByTestId('oauth-login-error-hint')).toHaveTextContent(
-      "You don't have access to this project",
+      "This account doesn't have access to this project",
+    )
+    // The next sign-in shows the login form, so another account is an option.
+    expect(screen.getByTestId('oauth-login-error-hint')).toHaveTextContent(
+      'Sign in with another account',
     )
   })
 
@@ -547,7 +550,7 @@ describe('OAuth login component', () => {
     await userEvent.click(button)
 
     const error = await screen.findByTestId('oauth-login-error')
-    expect(error).toHaveTextContent('Could not start signing in')
+    expect(error).toHaveTextContent("Couldn't start signing in")
     expect(error).toHaveTextContent('QuotaExceededError')
     expect(button).toBeEnabled()
     expect(navigate).not.toHaveBeenCalled()
