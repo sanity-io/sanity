@@ -7,15 +7,13 @@ import {Flex, Icon, Text} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useCompactTimeAgo} from '../../hooks/useRelativeTime'
-import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {getDefaultVariant} from '../../perspective/getDefaultVariant'
 import {usePerspective} from '../../perspective/usePerspective'
 import {useFormatRelativeLocalePublishDate} from '../../releases/hooks/useFormatRelativeLocalePublishDate'
 import {type DocumentPresence} from '../../store/presence/types'
 import {useWorkspace} from '../../studio/workspace'
-import {readVersionType} from '../../util/versionsUtils'
-import {getVariantId, getVariantTitle} from '../../variants/tool/util'
+import {getVariantId} from '../../variants/tool/util'
 import {PreviewCard} from '../previewCard/PreviewCard'
 import {RhombusIconLarge} from '../temporary-icons/Rhombus'
 import {UserAvatar} from '../userAvatar/UserAvatar'
@@ -33,7 +31,7 @@ import {
   type AudienceLineLead,
   getAudienceLine,
 } from './getAudienceLine'
-import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
+import {getAudienceName} from './getAudienceName'
 import {audienceKey, groupPresenceByAudience} from './groupPresenceByAudience'
 import {hasMoreInInventory} from './hasMoreInInventory'
 import {type DocumentVersionStatusGroup} from './sortDocumentVersionsForStatus'
@@ -376,44 +374,27 @@ function AudienceRow({
   picked: boolean
 }) {
   const {t} = useTranslation()
-  const schema = useSchema()
-  const {version} = latestEdit(group)
-  const liveEdit = Boolean(schema.get(version._type)?.liveEdit)
-  const timeAgo = useCompactTimeAgo(version._updatedAt)
-  const variant = group.items[0]?.variant
-  let name = t('document-group.base-variant')
-  if (group.variantId) {
-    name = variant ? getVariantTitle(variant) : getVariantId(group.variantId)
-  }
-
-  // Without Variants the row keeps its latest change. A draft that was never published says so in
-  // words, since the row carries no status icons.
-  const neverPublished =
-    group.items.some((item) => readVersionType(item.version) === 'draft') &&
-    !group.items.some((item) => readVersionType(item.version) === 'published')
-  const subtitle = neverPublished
-    ? t('document-group.version.not-published-yet', {
-        status: t('document-status.edited', {date: timeAgo}),
-      })
-    : t(getDocumentVersionStatusTimestampKey(version, liveEdit), {date: timeAgo})
+  const latest = latestEdit(group)
+  const name = getAudienceName({group, latest, t, variantsEnabled})
 
   return (
     <FlyoutRow
       onClick={onClick}
       presence={presence}
+      // The line describes the document's state across its versions, which reads the same with
+      // Variants off, where the one row stands for the whole document.
       subtitle={
-        variantsEnabled ? (
-          <AudienceLineText fallbackTime={version._updatedAt} line={getAudienceLine(group, now)} />
-        ) : (
-          subtitle
-        )
+        <AudienceLineText
+          fallbackTime={latest.version._updatedAt}
+          line={getAudienceLine(group, now)}
+        />
       }
       viewed={viewed}
       picked={picked}
       testId="document-versions-flyout-row"
       renderTrailing={(isViewed) => (
         <span style={{display: 'flex', height: 25, alignItems: 'center'}}>
-          {group.variantId ? (
+          {variantsEnabled && group.variantId ? (
             <Icon
               icon={RhombusIconLarge}
               size={1}
