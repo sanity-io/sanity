@@ -1,5 +1,4 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {getVersionFromId} from '@sanity/client/csm'
 import {AddIcon} from '@sanity/icons/Add'
 import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
@@ -38,34 +37,16 @@ function searchMissingDocument(row: MissingDocumentRow, searchTerm: string): boo
   return row.groupId.toLowerCase().includes(term) || row._type.toLowerCase().includes(term)
 }
 
-/**
- * The release a document lives in when it has no published version and no draft, only release
- * versions: its preview reads from that release and its link opens in it. Otherwise none.
- */
-function onlyReleaseOf(row: MissingDocumentRow): string | undefined {
-  const publishedId = getPublishedId(row.groupId)
-  const ids = row.versions.map((version) => version._id)
-  if (ids.includes(publishedId) || ids.includes(`drafts.${publishedId}`)) return undefined
-  for (const id of ids) {
-    const bundle = getVersionFromId(id)
-    if (bundle && id === `versions.${bundle}.${publishedId}`) return bundle
-  }
-  return undefined
-}
-
 const MissingDocumentPreview = memo(function MissingDocumentPreview({
   row,
 }: {
   row: MissingDocumentRow
 }) {
   const publishedId = getPublishedId(row.groupId)
-  const releaseId = useMemo(() => onlyReleaseOf(row), [row])
   const {isLoading, value} = useDocumentPreviewValues({
     documentId: publishedId,
     documentType: row._type,
-    perspectiveStack: releaseId
-      ? [releaseId, ...PREVIEW_PERSPECTIVE_STACK]
-      : PREVIEW_PERSPECTIVE_STACK,
+    perspectiveStack: PREVIEW_PERSPECTIVE_STACK,
   })
 
   return (
@@ -75,7 +56,6 @@ const MissingDocumentPreview = memo(function MissingDocumentPreview({
       flex={1}
       intent="edit"
       params={{id: publishedId, type: row._type}}
-      searchParams={releaseId ? [['perspective', releaseId]] : undefined}
       radius={2}
       style={{minWidth: 0}}
       tone="inherit"
