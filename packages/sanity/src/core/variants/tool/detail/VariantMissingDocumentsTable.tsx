@@ -20,6 +20,7 @@ import {Headers} from '../../../releases/tool/components/Table/TableHeader'
 import {type Column} from '../../../releases/tool/components/Table/types'
 import {useDocumentPreviewValues} from '../../../tasks/hooks/useDocumentPreviewValues'
 import {getPublishedId} from '../../../util/draftUtils'
+import {getDocumentVersionVariantId} from '../../../util/getDocumentVersionVariant'
 import {type MissingDocumentRow} from '../../hooks/useVariantDefinitionLens'
 import {useVariantDocumentOperations} from '../../hooks/useVariantDocumentOperations'
 import {variantsLocaleNamespace} from '../../i18n'
@@ -46,9 +47,12 @@ function onlyReleaseOf(row: MissingDocumentRow): string | undefined {
   const publishedId = getPublishedId(row.groupId)
   const ids = row.versions.map((version) => version._id)
   if (ids.includes(publishedId) || ids.includes(`drafts.${publishedId}`)) return undefined
-  for (const id of ids) {
-    const bundle = getVersionFromId(id)
-    if (bundle && id === `versions.${bundle}.${publishedId}`) return bundle
+  for (const version of row.versions) {
+    // A variant's id has the same shape with its scope in place of a release: only a version of
+    // no variant names a release
+    if (getDocumentVersionVariantId(version)) continue
+    const bundle = getVersionFromId(version._id)
+    if (bundle && version._id === `versions.${bundle}.${publishedId}`) return bundle
   }
   return undefined
 }
