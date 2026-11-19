@@ -565,10 +565,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     '{{count}} documents refer to “<DocumentTitle/>”',
   /** Introduces the documents that link to the one being deleted, when every link is optional */
   'confirm-delete-dialog.referring-documents-descriptor.optional.text_delete':
-    'These documents link to “<DocumentTitle/>”:',
+    'Documents that link to “<DocumentTitle/>”:',
   /** Introduces the documents that link to the one being unpublished, when every link is optional */
   'confirm-delete-dialog.referring-documents-descriptor.optional.text_unpublish':
-    'These documents link to “<DocumentTitle/>”:',
+    'Documents that link to “<DocumentTitle/>”:',
   /** Says the document cannot be deleted while documents hold a required link to it */
   'confirm-delete-dialog.referring-documents-descriptor.required.text_delete':
     'You can’t delete “<DocumentTitle/>” while these documents require it. Remove it from them first:',

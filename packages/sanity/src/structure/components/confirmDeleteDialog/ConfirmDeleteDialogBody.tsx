@@ -191,29 +191,32 @@ export function ConfirmDeleteDialogBody({
       {confirmationMessage()}
       <div>
         <Card borderTop padding={1} />
-        <Card padding={3} radius={2} tone="caution" flex="none">
-          <Flex>
-            <Icon
-              aria-hidden="true"
-              size={1}
-              muted
-              icon={WarningOutlineIcon}
-              tone="caution"
-              style={{margin: '-0.375rem'}}
-            />
-            <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
-              <Text size={1} as="div" trim={true} tone="caution">
-                <Translate
-                  i18nKey="confirm-delete-dialog.referring-document-count.text"
-                  components={{DocumentTitle}}
-                  componentProps={{documentTitle}}
-                  t={t}
-                  values={{count: totalCount}}
-                />
-              </Text>
-            </Box>
-          </Flex>
-        </Card>
+        {/* With every link's strength known, the line above the list says who links here; the count would repeat it */}
+        {linkStrength === 'unknown' ? (
+          <Card padding={3} radius={2} tone="caution" flex="none">
+            <Flex>
+              <Icon
+                aria-hidden="true"
+                size={1}
+                muted
+                icon={WarningOutlineIcon}
+                tone="caution"
+                style={{margin: '-0.375rem'}}
+              />
+              <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
+                <Text size={1} as="div" trim={true} tone="caution">
+                  <Translate
+                    i18nKey="confirm-delete-dialog.referring-document-count.text"
+                    components={{DocumentTitle}}
+                    componentProps={{documentTitle}}
+                    t={t}
+                    values={{count: totalCount}}
+                  />
+                </Text>
+              </Box>
+            </Flex>
+          </Card>
+        ) : null}
       </div>
 
       <Box flexBasis="auto" flexGrow={0} flexShrink={0}>

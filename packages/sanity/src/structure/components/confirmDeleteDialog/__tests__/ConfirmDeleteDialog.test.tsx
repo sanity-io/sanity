@@ -118,6 +118,9 @@ describe('ConfirmDeleteDialog', () => {
     expect(await screen.findByTestId('fails-later-note')).toBeInTheDocument()
     // The links do not point at nothing once the document is gone: the release fails instead
     expect(screen.getByRole('dialog')).not.toHaveTextContent('these links will point at nothing')
+    // The line above the list names who links here, so the count bar would only repeat it
+    expect(screen.getByRole('dialog')).not.toHaveTextContent('refers to')
+    expect(screen.getByText(/Documents that link to/)).toBeInTheDocument()
     expect(screen.getByText('Delete document')).toBeInTheDocument()
   })
 
