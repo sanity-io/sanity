@@ -122,7 +122,9 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
       },
       inspectors: (prevInspectors, context) => {
         const structureInspectors = context.beta?.documentGroupInventory?.enabled
-          ? [...inspectors, documentGroupInspector]
+          ? // The inventory leads the inspectors in the document menu: it is the overview of every
+            // version of the document, and History and Incoming references read one of them.
+            [documentGroupInspector, ...inspectors]
           : inspectors
 
         // NOTE: since it's possible to have several structure tools in one Studio,

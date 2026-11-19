@@ -7,6 +7,10 @@ import {
   type DocumentGroupInventoryHandle,
   type DocumentGroupInventoryProps,
   type SanityDocument,
+  type SystemVariant,
+  type TargetDocumentState,
+  usePerspective,
+  type VersionInfoDocumentStub,
 } from 'sanity'
 import {PaneLayoutContext} from 'sanity/_singletons'
 import {test as baseTest, describe, expect, type MockedFunction, vi} from 'vitest'
@@ -24,6 +28,7 @@ import {DocumentGroupInspector} from '../DocumentGroupInspector'
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   DocumentGroupInventory: vi.fn(() => <div data-testid="document-group-inventory" />),
+  usePerspective: vi.fn(),
 }))
 
 vi.mock('../../../useDocumentPane', () => ({
@@ -39,6 +44,7 @@ vi.mock('../../../../../components/confirmDeleteDialog/useReferringDocuments', (
 }))
 
 const mockUseDocumentPane = useDocumentPane as MockedFunction<typeof useDocumentPane>
+const mockUsePerspective = usePerspective as MockedFunction<typeof usePerspective>
 const mockUseDocumentPerspectiveList = useDocumentPerspectiveList as MockedFunction<
   typeof useDocumentPerspectiveList
 >
@@ -65,22 +71,37 @@ function FakeDocumentGroupInventory(
   return <div data-testid="document-group-inventory" />
 }
 
+const BASE_TARGET_DOCUMENT_STATE: TargetDocumentState = {
+  status: 'ready',
+  targetDocument: undefined,
+  scopeId: undefined,
+  variant: undefined,
+  siblings: {published: undefined, draft: undefined, version: undefined},
+}
+
 function buildDocumentPaneValue({
   displayed = {_id: 'drafts.doc-123', _type: 'author'},
   version,
+  draft = {_id: 'drafts.doc-123', _type: 'author'},
+  liveEdit = false,
+  targetDocumentState = BASE_TARGET_DOCUMENT_STATE,
 }: {
   displayed?: DocumentPaneContextValue['displayed']
   version?: SanityDocument
+  draft?: Partial<SanityDocument> | null
+  liveEdit?: boolean
+  targetDocumentState?: TargetDocumentState
 } = {}): DocumentPaneContextValue {
   return {
     displayed,
+    targetDocumentState,
     editState: {
       id: 'doc-123',
       type: 'author',
       transactionSyncLock: {enabled: false},
-      liveEdit: false,
+      liveEdit,
       ready: true,
-      draft: {_id: 'drafts.doc-123', _type: 'author'},
+      draft,
       published: {_id: 'doc-123', _type: 'author'},
       version,
     },
@@ -95,6 +116,12 @@ function lastInventoryProps(): DocumentGroupInventoryProps {
   }
 
   return props
+}
+
+// The version the inventory marks as open: `selectedId` defaults to `documentId` there.
+function markedVersionId(): string | null {
+  const {selectedId, documentId} = lastInventoryProps()
+  return selectedId === undefined ? documentId : selectedId
 }
 
 const PANE_LAYOUT: PaneLayoutContextValue = {
@@ -121,53 +148,78 @@ const test = baseTest
       },
     }),
   )
+  .extend('VariantsTestProvider', {scope: 'file'}, () =>
+    createTestProvider({
+      resources: [structureUsEnglishLocaleBundle],
+      config: {beta: {variants: {enabled: true}}},
+    }),
+  )
+  .extend('variantsEnabled', () => false)
   .extend('documentPaneValue', () => buildDocumentPaneValue())
   .extend('layoutCollapsed', () => false)
-  .extend('renderInspector', ({TestProvider, documentPaneValue, layoutCollapsed}) => {
-    const onInventoryHandle = vi.fn<(handle: DocumentGroupInventoryHandle) => void>()
+  .extend('selectedVariantNames', (): string[] => [])
+  .extend('selectedPerspective', (): string | undefined => undefined)
+  .extend(
+    'renderInspector',
+    ({
+      TestProvider,
+      VariantsTestProvider,
+      variantsEnabled,
+      documentPaneValue,
+      layoutCollapsed,
+      selectedVariantNames,
+      selectedPerspective,
+    }) => {
+      const onInventoryHandle = vi.fn<(handle: DocumentGroupInventoryHandle) => void>()
 
-    mockUseDocumentPane.mockReturnValue(documentPaneValue)
-    mockUseDocumentPerspectiveList.mockReturnValue({} as never)
-    mockDocumentGroupInventory.mockImplementation(function MockDocumentGroupInventory(
-      props: InventoryProps,
-    ) {
-      return <FakeDocumentGroupInventory {...props} onHandle={onInventoryHandle} />
-    })
+      mockUseDocumentPane.mockReturnValue(documentPaneValue)
+      mockUsePerspective.mockReturnValue({
+        selectedVariantNames,
+        selectedPerspective,
+      } as unknown as ReturnType<typeof usePerspective>)
+      mockUseDocumentPerspectiveList.mockReturnValue({} as never)
+      mockDocumentGroupInventory.mockImplementation(function MockDocumentGroupInventory(
+        props: InventoryProps,
+      ) {
+        return <FakeDocumentGroupInventory {...props} onHandle={onInventoryHandle} />
+      })
 
-    function lastInventoryHandle(): DocumentGroupInventoryHandle {
-      const handle = onInventoryHandle.mock.lastCall?.[0]
+      function lastInventoryHandle(): DocumentGroupInventoryHandle {
+        const handle = onInventoryHandle.mock.lastCall?.[0]
 
-      if (typeof handle === 'undefined') {
-        throw new Error('Expected `DocumentGroupInventory` to have exposed its handle')
+        if (typeof handle === 'undefined') {
+          throw new Error('Expected `DocumentGroupInventory` to have exposed its handle')
+        }
+
+        return handle
       }
 
-      return handle
-    }
+      const paneLayout = layoutCollapsed ? COLLAPSED_PANE_LAYOUT : PANE_LAYOUT
 
-    const paneLayout = layoutCollapsed ? COLLAPSED_PANE_LAYOUT : PANE_LAYOUT
+      const Provider = variantsEnabled ? VariantsTestProvider : TestProvider
+      const Wrapper: ComponentType<{children: ReactNode}> = ({children}) => {
+        return (
+          <Provider>
+            <PaneLayoutContext.Provider value={paneLayout}>{children}</PaneLayoutContext.Provider>
+          </Provider>
+        )
+      }
 
-    const Wrapper: ComponentType<{children: ReactNode}> = ({children}) => {
-      return (
-        <TestProvider>
-          <PaneLayoutContext.Provider value={paneLayout}>{children}</PaneLayoutContext.Provider>
-        </TestProvider>
-      )
-    }
+      // The test provider renders a spinner until the locale resources have loaded.
+      return async () => {
+        const onClose = vi.fn()
 
-    // The test provider renders a spinner until the locale resources have loaded.
-    return async () => {
-      const onClose = vi.fn()
+        render(
+          <DocumentGroupInspector documentId="doc-123" documentType="author" onClose={onClose} />,
+          {wrapper: Wrapper},
+        )
 
-      render(
-        <DocumentGroupInspector documentId="doc-123" documentType="author" onClose={onClose} />,
-        {wrapper: Wrapper},
-      )
+        await screen.findByRole('heading', {name: 'Document inventory'})
 
-      await screen.findByRole('heading', {name: 'Manage versions'})
-
-      return {onClose, lastInventoryHandle}
-    }
-  })
+        return {onClose, lastInventoryHandle}
+      }
+    },
+  )
 
 describe('DocumentGroupInspector', () => {
   test('renders the inspector header and closes the inspector from it', async ({
@@ -178,6 +230,18 @@ describe('DocumentGroupInspector', () => {
     await userEvent.click(screen.getByRole('button', {name: 'Close panel'}))
 
     expect(onClose).toHaveBeenCalledTimes(1)
+  })
+
+  test('puts the documents icon of the bottom bar button before the title', async ({
+    renderInspector,
+  }) => {
+    await renderInspector()
+
+    const heading = screen.getByRole('heading', {name: 'Document inventory'})
+    const icon = heading.parentElement?.querySelector('[data-sanity-icon="documents"]')
+
+    expect(icon).not.toBeNull()
+    expect(icon?.compareDocumentPosition(heading)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
   })
 
   test('renders the inventory in manage mode for the displayed document', async ({
@@ -255,7 +319,7 @@ describe('DocumentGroupInspector', () => {
   test('renders the feedback action before the close button', async ({renderInspector}) => {
     await renderInspector()
 
-    const feedbackButton = await screen.findByRole('button', {name: 'Send feedback'})
+    const feedbackButton = await screen.findByRole('button', {name: 'Send feedback to Sanity'})
     const closeButton = screen.getByRole('button', {name: 'Close panel'})
 
     expect(
@@ -268,14 +332,14 @@ describe('DocumentGroupInspector', () => {
   }) => {
     const {lastInventoryHandle} = await renderInspector()
 
-    await userEvent.click(await screen.findByRole('button', {name: 'Send feedback'}))
+    await userEvent.click(await screen.findByRole('button', {name: 'Send feedback to Sanity'}))
 
     expect(lastInventoryHandle().inventory.getSnapshot().matches('feedback')).toBe(true)
-    expect(screen.getByRole('button', {name: 'Send feedback'})).toBeDisabled()
+    expect(screen.getByRole('button', {name: 'Send feedback to Sanity'})).toBeDisabled()
 
     act(() => lastInventoryHandle().inventory.send({type: 'feedback.end'}))
 
-    expect(screen.getByRole('button', {name: 'Send feedback'})).toBeEnabled()
+    expect(screen.getByRole('button', {name: 'Send feedback to Sanity'})).toBeEnabled()
   })
 
   test('disables the feedback action while the inventory refuses to begin feedback', async ({
@@ -283,7 +347,7 @@ describe('DocumentGroupInspector', () => {
   }) => {
     const {lastInventoryHandle} = await renderInspector()
 
-    const feedbackButton = await screen.findByRole('button', {name: 'Send feedback'})
+    const feedbackButton = await screen.findByRole('button', {name: 'Send feedback to Sanity'})
     expect(feedbackButton).toBeEnabled()
 
     const {inventory} = lastInventoryHandle()
@@ -294,6 +358,157 @@ describe('DocumentGroupInspector', () => {
 
     expect(inventory.getSnapshot().matches('creatingVariant')).toBe(true)
     expect(feedbackButton).toBeDisabled()
+  })
+
+  test('marks the displayed document as open when no variant is selected', async ({
+    renderInspector,
+  }) => {
+    await renderInspector()
+
+    expect(markedVersionId()).toBe('drafts.doc-123')
+  })
+
+  describe('when a variant is selected', () => {
+    test.override('selectedVariantNames', () => ['returning-visitors'])
+
+    describe('and its target document is still resolving', () => {
+      // The pane displays the base draft while the variant target resolves.
+      test.override('documentPaneValue', () =>
+        buildDocumentPaneValue({targetDocumentState: {status: 'resolving'}}),
+      )
+
+      test('marks no version as open rather than the base draft', async ({renderInspector}) => {
+        await renderInspector()
+
+        expect(markedVersionId()).toBeNull()
+      })
+    })
+
+    describe('and its target document has resolved', () => {
+      test.override('documentPaneValue', () =>
+        buildDocumentPaneValue({
+          // The displayed document can still lag behind on the base draft.
+          targetDocumentState: {
+            ...BASE_TARGET_DOCUMENT_STATE,
+            targetDocument: {
+              _id: 'versions.scope-a.doc-123',
+            } as VersionInfoDocumentStub,
+            scopeId: 'scope-a',
+          },
+        }),
+      )
+
+      test('marks the variant target as open', async ({renderInspector}) => {
+        await renderInspector()
+
+        expect(markedVersionId()).toBe('versions.scope-a.doc-123')
+      })
+    })
+  })
+
+  describe('when the form is about to create a draft', () => {
+    const DE_DE: SystemVariant = {
+      _id: '_.variants.de-de',
+      _type: 'system.variant',
+      _rev: 'rev',
+      _createdAt: '2026-01-01T00:00:00.000Z',
+      _updatedAt: '2026-01-01T00:00:00.000Z',
+      conditions: {locale: 'de-DE'},
+      priority: 0,
+      metadata: {title: 'de-DE'},
+    }
+
+    describe('for a variant with no draft yet, in Drafts', () => {
+      test.override('selectedPerspective', () => 'drafts')
+      test.override('selectedVariantNames', () => ['de-de'])
+      test.override('documentPaneValue', () =>
+        buildDocumentPaneValue({
+          displayed: {_id: 'versions.p-de.doc-123', _type: 'author'},
+          targetDocumentState: {
+            status: 'variant-missing',
+            variant: DE_DE,
+            bundle: 'drafts',
+            siblings: {
+              published: {_id: 'versions.p-de.doc-123'} as VersionInfoDocumentStub,
+              draft: undefined,
+              version: undefined,
+            },
+            creatableTarget: {id: 'versions.d-de.doc-123', scopeId: 'd-de'},
+          },
+        }),
+      )
+
+      test('passes the draft as a ghost row, marked open', async ({renderInspector}) => {
+        await renderInspector()
+
+        expect(lastInventoryProps().pendingDraft).toEqual({
+          id: 'versions.d-de.doc-123',
+          variantId: '_.variants.de-de',
+          name: 'de-DE',
+        })
+        expect(markedVersionId()).toBe('versions.d-de.doc-123')
+      })
+    })
+
+    describe('for Default with no draft, in Drafts', () => {
+      test.override('selectedPerspective', () => 'drafts')
+      test.override('documentPaneValue', () =>
+        buildDocumentPaneValue({displayed: {_id: 'doc-123', _type: 'author'}, draft: null}),
+      )
+
+      test('passes the draft as a ghost row named Draft, marked open, with variants off', async ({
+        renderInspector,
+      }) => {
+        await renderInspector()
+
+        expect(lastInventoryProps().pendingDraft).toEqual({id: 'drafts.doc-123', name: 'Draft'})
+        expect(markedVersionId()).toBe('drafts.doc-123')
+      })
+
+      describe('with variants on', () => {
+        test.override('variantsEnabled', () => true)
+
+        test('names the ghost row Default', async ({renderInspector}) => {
+          await renderInspector()
+
+          expect(lastInventoryProps().pendingDraft).toEqual({
+            id: 'drafts.doc-123',
+            name: 'Default',
+          })
+        })
+      })
+    })
+
+    describe('for a live-edit document', () => {
+      test.override('selectedPerspective', () => 'drafts')
+      test.override('documentPaneValue', () =>
+        buildDocumentPaneValue({
+          displayed: {_id: 'doc-123', _type: 'author'},
+          draft: null,
+          liveEdit: true,
+        }),
+      )
+
+      test('passes no ghost row: live-edit documents have no drafts', async ({renderInspector}) => {
+        await renderInspector()
+
+        expect(lastInventoryProps().pendingDraft).toBeUndefined()
+        expect(markedVersionId()).toBe('doc-123')
+      })
+    })
+
+    describe('outside Drafts', () => {
+      test.override('selectedPerspective', () => 'published')
+      test.override('documentPaneValue', () =>
+        buildDocumentPaneValue({displayed: {_id: 'doc-123', _type: 'author'}, draft: null}),
+      )
+
+      test('passes no ghost row', async ({renderInspector}) => {
+        await renderInspector()
+
+        expect(lastInventoryProps().pendingDraft).toBeUndefined()
+      })
+    })
   })
 
   describe('when the displayed document is not known yet', () => {
@@ -309,7 +524,9 @@ describe('DocumentGroupInspector', () => {
       await renderInspector()
 
       expect(screen.queryByTestId('document-group-inventory')).not.toBeInTheDocument()
-      expect(screen.queryByRole('button', {name: 'Send feedback'})).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', {name: 'Send feedback to Sanity'}),
+      ).not.toBeInTheDocument()
     })
   })
 })

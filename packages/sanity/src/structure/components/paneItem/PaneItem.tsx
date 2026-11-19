@@ -33,6 +33,7 @@ import {
 } from 'sanity'
 import {Text, Box, Flex, Icon} from 'ui5'
 
+import {DOCUMENT_GROUP_INSPECTOR_NAME} from '../../panes/document/constants'
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter/usePaneRouter'
 import {PaneItemPreview} from './PaneItemPreview'
@@ -88,7 +89,16 @@ export function PaneItem(props: PaneItemProps) {
   const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
   const numberFormat = useNumberFormat()
-  const {ChildLink} = usePaneRouter()
+  const {ChildLink, groupIndex, routerPanesState} = usePaneRouter()
+  // The document pane to the right has the document group inventory (Manage versions) open: the
+  // next document opens with it open too, so going down the list does not close it. Closing it
+  // removes the param from that pane, and with it the carrying.
+  const isDocument = Boolean(value && isSanityDocument(value))
+  const childParameters =
+    isDocument &&
+    routerPanesState[groupIndex + 1]?.[0]?.params?.inspect === DOCUMENT_GROUP_INSPECTOR_NAME
+      ? {inspect: DOCUMENT_GROUP_INSPECTOR_NAME}
+      : undefined
   const documentPresence = useDocumentPresence(id)
   const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
   const [clicked, setClicked] = useState<boolean>(false)
@@ -174,6 +184,7 @@ export function PaneItem(props: PaneItemProps) {
       __unstable_focusRing
       as={ChildLink as FIXME}
       childId={id}
+      childParameters={childParameters}
       data-as="a"
       margin={margin}
       marginBottom={marginBottom}

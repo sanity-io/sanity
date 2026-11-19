@@ -1,3 +1,4 @@
+import {DocumentsIcon} from '@sanity/icons/Documents'
 import {useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -6,15 +7,22 @@ import {
   DocumentGroupInventoryFeedbackAction,
   type DocumentGroupInventoryHandle,
   type DocumentInspectorProps,
+  type EditStateFor,
+  getDefaultVariant,
+  getDraftId,
   getDocumentVersionVariantId,
+  getPublishedId,
   getReleaseIdFromReleaseDocumentId,
   isGoingToUnpublish,
   readVersionType,
+  type TargetDocumentState,
   useClient,
   useDocumentStore,
+  usePerspective,
   useSetVariant,
   useTranslation,
   type VersionInfoDocumentStub,
+  useWorkspace,
 } from 'sanity'
 import {Flex} from 'ui5'
 
@@ -42,7 +50,8 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
   const {documentId, documentType, onClose} = props
   const {t} = useTranslation()
   const {t: structureT} = useTranslation(structureLocaleNamespace)
-  const {displayed, editState} = useDocumentPane()
+  const {displayed, editState, targetDocumentState} = useDocumentPane()
+  const {selectedPerspective, selectedVariantNames} = usePerspective()
   const {collapsed: layoutCollapsed} = usePaneLayout()
 
   const perspectiveList = useDocumentPerspectiveList()
@@ -88,6 +97,26 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
       ? editState.version._id
       : displayed?._id
 
+  const variantsEnabled = useWorkspace().beta?.variants?.enabled === true
+  const variantSelected = Boolean(getDefaultVariant(selectedVariantNames))
+  // In Drafts, a draft the first edit will create shows in the inventory as a ghost row, marked open
+  const pendingDraft = getPendingDraft({
+    targetDocumentState,
+    variantSelected,
+    draftsSelected: selectedPerspective === 'drafts',
+    editState,
+    documentId,
+    // Without Content Variants there is no Default: the ghost row is the draft, named as Drafts are
+    defaultName: variantsEnabled ? t('document-group.base-variant') : t('release.chip.draft'),
+  })
+  const selectedId =
+    pendingDraft?.id ??
+    getSelectedVersionId({
+      targetDocumentState,
+      variantSelected,
+      targetDocumentId,
+    })
+
   return (
     <Flex flexDirection="column" height="100%" overflow="hidden">
       <DocumentInspectorHeader
@@ -97,8 +126,10 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
         as="header"
         closeButtonLabel={structureT('document-inspector.error.close-button.aria-label')}
         flex="none"
+        // The icon of the Manage versions button in the bottom bar
+        icon={DocumentsIcon}
         onClose={onClose}
-        title={t('document-group-inventory.action.manage-versions')}
+        title={t('document-group-inventory.panel-title')}
       />
       <div
         className={documentGroupInventoryContainer}
@@ -113,6 +144,8 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
             ref={setInventory}
             mode="manage"
             documentId={targetDocumentId}
+            selectedId={selectedId}
+            pendingDraft={pendingDraft}
             documentType={documentType}
             portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}
             perspectiveList={perspectiveList}
@@ -124,4 +157,74 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
       </div>
     </Flex>
   )
+}
+
+/**
+ * The draft the form is about to create, if any. In Drafts, when the open audience has no draft
+ * yet, the form shows its published version and the first edit creates the draft: for a variant,
+ * at the id the target state reserves (`creatableTarget`); for Default, at the document's draft
+ * id. Live-edit documents have no drafts, so they never have one.
+ */
+function getPendingDraft({
+  targetDocumentState,
+  variantSelected,
+  draftsSelected,
+  editState,
+  documentId,
+  defaultName,
+}: {
+  targetDocumentState: TargetDocumentState
+  variantSelected: boolean
+  draftsSelected: boolean
+  editState: EditStateFor | null
+  documentId: string
+  defaultName: string
+}): {id: string; variantId?: string; name: string} | undefined {
+  if (!draftsSelected) {
+    return undefined
+  }
+  if (variantSelected) {
+    if (targetDocumentState.status !== 'variant-missing' || !targetDocumentState.creatableTarget) {
+      return undefined
+    }
+    const {variant, creatableTarget} = targetDocumentState
+    return {
+      id: creatableTarget.id,
+      variantId: variant._id,
+      name: variant.metadata?.title ?? variant.name ?? variant._id,
+    }
+  }
+  if (
+    !editState?.ready ||
+    editState.liveEdit ||
+    editState.draft ||
+    editState.version ||
+    !editState.published
+  ) {
+    return undefined
+  }
+  return {id: getDraftId(getPublishedId(documentId)), name: defaultName}
+}
+
+/**
+ * The version the inventory marks as open. With a variant selected, the displayed document falls
+ * back to the base pair while the variant target resolves, so it would briefly mark the Default
+ * row. The resolved variant target is the source instead, and nothing is marked until it is known.
+ */
+function getSelectedVersionId({
+  targetDocumentState,
+  variantSelected,
+  targetDocumentId,
+}: {
+  targetDocumentState: TargetDocumentState
+  variantSelected: boolean
+  targetDocumentId: string | undefined
+}): string | null | undefined {
+  if (!variantSelected) {
+    return targetDocumentId
+  }
+  if (targetDocumentState.status === 'ready' && targetDocumentState.targetDocument) {
+    return targetDocumentState.targetDocument._id
+  }
+  return null
 }

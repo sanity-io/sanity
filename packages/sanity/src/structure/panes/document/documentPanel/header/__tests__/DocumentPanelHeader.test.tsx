@@ -138,7 +138,7 @@ describe('DocumentPanelHeader', () => {
     expect(screen.queryByTestId('document-group-inventory-button')).toBeNull()
   })
 
-  it('renders the manage versions button before the copy actions', async () => {
+  it('leaves the manage versions button to the bottom bar', async () => {
     const inventoryWrapper = await createTestProvider({
       resources: [structureUsEnglishLocaleBundle],
       config: {beta: {documentGroupInventory: {enabled: true}}},
@@ -146,18 +146,15 @@ describe('DocumentPanelHeader', () => {
 
     render(<DocumentPanelHeader menuItems={[]} />, {wrapper: inventoryWrapper})
 
-    const button = await screen.findByTestId('document-group-inventory-button')
-    const copyActions = screen.getByTestId('copy-document-actions')
-
-    expect(button.compareDocumentPosition(copyActions)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+    await screen.findByTestId('copy-document-actions')
+    expect(screen.queryByTestId('action-document-group-inventory')).toBeNull()
   })
 
-  it('renders the inventory and its manage versions button by default, with variants off', async () => {
+  it('renders the inventory navigation by default, with variants off', async () => {
     const defaultWrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
 
     await mountHeader({container: 'document-panel-navigation', wrapper: defaultWrapper})
 
-    expect(screen.getByTestId('document-group-inventory-button')).toBeInTheDocument()
     expect(screen.queryByTestId('document-perspective-list')).toBeNull()
   })
 
