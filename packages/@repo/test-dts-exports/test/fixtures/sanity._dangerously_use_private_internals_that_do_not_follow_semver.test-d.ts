@@ -2054,7 +2054,7 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
     expectTypeOf<GroupChangeNode>().toBeObject()
   })
   test('HandleCallbackResult', () => {
-    expectTypeOf<HandleCallbackResult>().toBeObject()
+    expectTypeOf<HandleCallbackResult>().not.toBeNever()
   })
   test('hasCommentMessageValue', () => {
     expectTypeOf<typeof hasCommentMessageValue>().toBeFunction()
