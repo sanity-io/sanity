@@ -33,7 +33,7 @@ catalog:
   '@playwright/test': 1.65.1
   '@sanity/client': ^8.16.0
   '@sanity/migrate': ^8.0.5
-  '@sanity/pandacss-tsdown-plugin': ^0.3.3
+  '@sanity/pandacss-tsdown-plugin': ^0.3.4
   '@sanity/schema-descriptor-utils': 1.4.0
   '@sanity/sdk': ^3.14.0
   '@sanity/sdk-react': ^3.14.0
