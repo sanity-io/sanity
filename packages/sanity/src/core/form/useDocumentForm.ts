@@ -55,10 +55,12 @@ import {
   isSystemBundle,
 } from '../util/draftUtils'
 import {EMPTY_ARRAY} from '../util/empty'
-import {getTargetDocument} from '../util/getTargetDocument'
+import {getBaseComparisonTarget} from '../util/getTargetDocument'
 import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
+import {getVariantUpstreamId} from './getVariantUpstreamId'
 import {type PatchEvent} from './patch/PatchEvent'
+import {shouldCompareWithBaseVariant} from './shouldCompareWithBaseVariant'
 import {type NodeChronologyProps} from './store/types/nodes'
 import {type StateTree} from './store/types/state'
 import {type FormState, useFormState} from './store/useFormState'
@@ -98,6 +100,12 @@ interface DocumentFormOptions {
    * than the read-only revision being viewed.
    */
   isOlderRevision?: boolean
+  /**
+   * Marks the fields that differ from this value, in place of the base variant. The comparison
+   * view passes the Reference side, so its Comparing with side marks what differs from it. `null`
+   * marks nothing; undefined keeps the base variant.
+   */
+  fieldMarkBase?: Partial<SanityDocument> | null
 }
 interface DocumentFormValue extends NodeChronologyProps {
   /**
@@ -159,6 +167,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onFocusPath,
     displayInlineChanges,
     isOlderRevision,
+    fieldMarkBase,
   } = options
   const schema = useSchema()
   const presenceStore = usePresenceStore()
@@ -257,28 +266,46 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     isOlderRevision ? (EMPTY_ARRAY as ValidationMarker[]) : validationRaw,
   )
 
-  const {previousId: upstreamId} = useDocumentIdStack({
+  const {previousId: stackUpstreamId} = useDocumentIdStack({
     strict: true,
     displayed: value,
     documentId,
     editState,
   })
+  // A variant's draft and published version have the variant's own upstream, which the id stack,
+  // built on the base pair, cannot see: it would compare them with the base published version.
+  const variantUpstreamId = getVariantUpstreamId(targetDocumentState, value._id)
+  const upstreamId = variantUpstreamId === undefined ? stackUpstreamId : variantUpstreamId
 
   // No `getTargetScopeId(useTargetDocumentState())` here: this targets the upstream document in the document id
   // stack (derived from `upstreamId`), not the document targeted by the selected perspective.
-  const upstreamEditState = useEditState(
+  const upstreamEditStateRaw = useEditState(
     documentId,
     documentType,
     'default',
     getVersionFromId(upstreamId ?? ''),
   )
+  // With no upstream version at all, nothing is compared: the base pair the edit state falls back
+  // to is not this document's upstream.
+  const upstreamEditState = useMemo(
+    () =>
+      upstreamId === null
+        ? {...upstreamEditStateRaw, draft: null, published: null, version: null}
+        : upstreamEditStateRaw,
+    [upstreamEditStateRaw, upstreamId],
+  )
 
-  const shouldCompareBaseVariant = isVariantTarget && !isOlderRevision
+  const shouldCompareBaseVariant = shouldCompareWithBaseVariant(
+    targetDocumentState,
+    isOlderRevision,
+  )
 
   const baseVariantTarget = useMemo(
     () =>
       shouldCompareBaseVariant
-        ? getTargetDocument({bundle, variant: undefined, documentVersions: documentVersionStubs})
+        ? // The nearest base version, not only the base in the exact slot: a variant draft of a
+          // published-only document compares with the base published version.
+          getBaseComparisonTarget({bundle, documentVersions: documentVersionStubs})
         : undefined,
     [bundle, shouldCompareBaseVariant, documentVersionStubs],
   )
@@ -297,7 +324,10 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     return comparisonValueRaw
   }, [comparisonValueRaw, upstreamEditState])
 
-  const baseVariant = selectBaseVariant(baseVariantEditState, baseVariantTarget?._id)
+  const baseVariant =
+    fieldMarkBase === undefined
+      ? selectBaseVariant(baseVariantEditState, baseVariantTarget?._id)
+      : fieldMarkBase
 
   const presence$ = useMemo(
     () =>

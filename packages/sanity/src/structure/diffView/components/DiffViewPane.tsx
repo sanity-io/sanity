@@ -207,6 +207,9 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
     displayInlineChanges: true,
     // Compare is for reading: neither side can be edited from here
     readOnly: true,
+    // The Comparing with side marks the fields that differ from the Reference, in place of the
+    // base variant; the Reference side marks nothing
+    fieldMarkBase: role === 'next' ? (compareValue ?? null) : null,
   })
 
   const isLoading = formState === null || !ready
@@ -268,6 +271,7 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
         changedFromBaseVariant={formState.changedFromBaseVariant}
         baseVariantValue={formState.baseVariantValue}
         hasBaseVariant={formState.hasBaseVariant}
+        fieldMarksCompareWithReference
         presence={formState.presence}
         // The whole form is read-only, which the form's own members read from here (closing an
         // empty array item, for one, then never tries to patch it)
