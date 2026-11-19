@@ -73,13 +73,8 @@ export function useDocumentLensFeed({
 
   const onVisibleGroupIds = useCallback(
     (visible: string[]) => {
-      // After a filter or sort change the mounted rows can all be outside the new list: the feed
-      // then seeks back to its first page, or the view would wait on rows that never report
-      const range = getVisibleRange(groupIds ?? [], visible) ?? {
-        start: 0,
-        end: DOCUMENT_LENS_PAGE_SIZE,
-      }
-      setVisibleRange(range)
+      const range = getVisibleRange(groupIds ?? [], visible)
+      if (range) setVisibleRange(range)
     },
     [groupIds, setVisibleRange],
   )
