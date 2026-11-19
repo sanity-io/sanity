@@ -412,9 +412,6 @@ const defaultWorkspace = defineConfig({
         },
       },
     },
-    reactActivityMode: {
-      enabled: true,
-    },
   },
 })
 

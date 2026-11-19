@@ -27,7 +27,7 @@ vi.mock('../workspace', () => ({
     name: 'test-workspace',
     title: 'Test Workspace',
     tools: workspace.tools,
-    beta: {reactActivityMode: {enabled: workspace.reactActivityMode}},
+    reactActivityMode: {enabled: workspace.reactActivityMode},
   }),
 }))
 
@@ -172,7 +172,7 @@ function switchTo(toolName: string) {
   return userEvent.click(screen.getByTestId(`tool-link-${toolName}`))
 }
 
-describe('StudioLayoutComponent with beta.reactActivityMode', () => {
+describe('StudioLayoutComponent with reactActivityMode', () => {
   beforeEach(() => {
     workspace.tools = ['structure', 'presentation', 'vision', 'media'].map(makeTool)
   })
@@ -301,7 +301,7 @@ describe('StudioLayoutComponent with beta.reactActivityMode', () => {
     })
   })
 
-  describe('when disabled (default)', () => {
+  describe('when disabled', () => {
     it('unmounts the previous tool when switching tools', async () => {
       renderStudio({enabled: false})
       await openDocument('structure')
