@@ -43,6 +43,8 @@ import {type FederatedAssetSourceView, type FederatedAssetSourceViewProps} from 
  */
 export function FederatedAssetSourceDialog(props: {
   dialogHeaderTitle?: ReactNode
+  /** The view mounted. */
+  onMounted?: () => void
   /** The view is unavailable (load or mount failed) — recover elsewhere. */
   onUnavailable?: (reason: unknown) => void
   ref?: Ref<HTMLDivElement>
@@ -54,7 +56,8 @@ export function FederatedAssetSourceDialog(props: {
   /** Source-specific view props (e.g. the Media Library's libraryId and plugin filters). */
   extraViewProps?: Record<string, unknown>
 }): ReactNode {
-  const {dialogHeaderTitle, onUnavailable, ref, sourceProps, view, validateCandidate} = props
+  const {dialogHeaderTitle, onMounted, onUnavailable, ref, sourceProps, view, validateCandidate} =
+    props
   const {extraViewProps} = props
   const {t} = useTranslation()
   const scheme = useColorSchemeValue()
@@ -132,7 +135,12 @@ export function FederatedAssetSourceDialog(props: {
     if (!sourceProps.uploader || failed) return null
     return (
       <div hidden>
-        <FederatedViewMount onUnavailable={handleUnavailable} view={view} viewProps={viewProps} />
+        <FederatedViewMount
+          onMounted={onMounted}
+          onUnavailable={handleUnavailable}
+          view={view}
+          viewProps={viewProps}
+        />
       </div>
     )
   }
@@ -189,6 +197,7 @@ export function FederatedAssetSourceDialog(props: {
               </Box>
             ) : (
               <FederatedViewMount
+                onMounted={onMounted}
                 onUnavailable={handleUnavailable}
                 view={view}
                 viewProps={viewProps}
