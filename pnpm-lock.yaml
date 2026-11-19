@@ -1539,8 +1539,8 @@ importers:
         version: 7.2.5
     devDependencies:
       '@portabletext/markdown':
-        specifier: ^2.9.5
-        version: 2.9.5
+        specifier: ^2.9.6
+        version: 2.9.6
       '@repo/test-config':
         specifier: workspace:*
         version: link:../test-config
@@ -7974,8 +7974,8 @@ packages:
     resolution: {integrity: sha512-TLlWrsLT6kXUeE4Fn6KWW+NMOBB/epT5qZiD92+15cJje6R7xmmQ/orCwViSicCiQ77t1/zwguilCUzdNB4XDA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@portabletext/markdown@2.9.5':
-    resolution: {integrity: sha512-OKD5xBwY/1y6xipOs7ggpRl7D+bpNFneHD+OhW+TiK1jv7Vw+spADLZUiND592WlbsK6lNpGju83ScVUIdusTw==}
+  '@portabletext/markdown@2.9.6':
+    resolution: {integrity: sha512-o5mpsbMbnF2csz+izCumvIbuzYkhQh7laSWGcKpfaHHUWj7EcalmzigeRBX5a1hepiKJ147YxD38m4C4KN9IGw==}
     engines: {node: '>=22.12'}
 
   '@portabletext/patches@3.0.6':
@@ -21871,7 +21871,7 @@ snapshots:
       '@portabletext/toolkit': 5.0.2
       markdown-it: 14.3.2
 
-  '@portabletext/markdown@2.9.5':
+  '@portabletext/markdown@2.9.6':
     dependencies:
       '@mdit/plugin-alert': 2.0.2(markdown-it@15.0.3)
       '@portabletext/schema': 3.1.1
