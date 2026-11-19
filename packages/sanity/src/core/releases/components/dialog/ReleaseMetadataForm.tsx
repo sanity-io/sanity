@@ -1,4 +1,5 @@
 import {type EditableReleaseDocument} from '@sanity/client'
+import {RELEASE_METADATA_TYPE_NAME} from '@sanity/schema/_internal'
 import {
   type FieldDefinition,
   type InitialValueResolverContext,
@@ -33,7 +34,6 @@ import {EMPTY_ARRAY} from '../../../util/empty'
 import {isRecord} from '../../../util/isRecord'
 import {
   RELEASE_METADATA_FORM_ID,
-  RELEASE_METADATA_TYPE_NAME,
   compileReleaseMetadataSchema,
 } from '../../metadata/compileReleaseMetadataType'
 import {

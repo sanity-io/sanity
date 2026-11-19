@@ -1,4 +1,5 @@
 import {Schema} from '@sanity/schema'
+import {RELEASE_METADATA_TYPE_NAME} from '@sanity/schema/_internal'
 import {
   type FieldDefinition,
   isObjectSchemaType,
@@ -10,9 +11,6 @@ import {inferFromSchema} from '@sanity/validation/_internal'
 
 import {warnRejectedReleaseMetadataField} from '../../config/releases/metadataFields'
 import {isRecord} from '../../util/isRecord'
-
-/** Type name of the private object that hosts configured release metadata fields. */
-export const RELEASE_METADATA_TYPE_NAME = 'release.metadata'
 
 /** Synthetic form document id. It is not a Content Lake document. */
 export const RELEASE_METADATA_FORM_ID = 'release.metadata.form'
