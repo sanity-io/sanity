@@ -56,11 +56,21 @@ export interface InventoryIndex {
 }
 
 /**
+ * Where scheduled drafts (single-document releases) sit in the release order: among the scheduled
+ * releases by publish date, or after every other release.
+ *
+ * @internal
+ */
+export interface ReleaseOrderOptions {
+  scheduledDrafts?: 'byDate' | 'afterReleases'
+}
+
+/**
  * Input for {@link buildInventoryIndex}.
  *
  * @internal
  */
-export interface InventoryIndexInput {
+export interface InventoryIndexInput extends ReleaseOrderOptions {
   versions: VersionStub[]
   releases: Map<string, ReleaseDocument>
 }

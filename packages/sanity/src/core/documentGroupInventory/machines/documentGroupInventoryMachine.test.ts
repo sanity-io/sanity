@@ -588,8 +588,9 @@ describe('documentGroupInventoryMachine', () => {
     } as unknown as Meta
 
     const expectedVariants = [
-      {id: 'drafts.foo', name: 'release.chip.draft', document: versionStub('drafts.foo')},
+      // Published comes first, as in the perspective menu and the document list popover.
       {id: 'foo', name: 'release.chip.published', document: versionStub('foo')},
+      {id: 'drafts.foo', name: 'release.chip.draft', document: versionStub('drafts.foo')},
       {id: 'versions.rABC.foo', name: 'My Release', document: versionStub('versions.rABC.foo')},
       // Falls back to the release ref when the release metadata is unknown.
       {
@@ -640,8 +641,8 @@ describe('documentGroupInventoryMachine', () => {
         name: 'version.agent-bundle.proposed-changes',
         document: versionStub('versions.agent-abc.foo'),
       },
-      {id: 'drafts.foo', name: 'release.chip.draft', document: versionStub('drafts.foo')},
       {id: 'foo', name: 'release.chip.published', document: versionStub('foo')},
+      {id: 'drafts.foo', name: 'release.chip.draft', document: versionStub('drafts.foo')},
     ]
 
     const {inventoryRef, selectionRef} = createTestActor(loading, {meta})
