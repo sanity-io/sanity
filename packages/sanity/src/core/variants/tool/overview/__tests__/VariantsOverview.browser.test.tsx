@@ -107,6 +107,19 @@ describe('VariantsOverview', () => {
     ).toHaveLength(2)
   })
 
+  it('labels the switched view as the panel of the selected tab', async () => {
+    void render(<VariantsOverviewHarness />)
+    await expectRowsSettled(2)
+
+    const panel = document.getElementById('variants-overview-view')
+    expect(panel?.getAttribute('role')).toBe('tabpanel')
+    expect(panel?.getAttribute('aria-labelledby')).toBe('variants-view-definitions')
+    expect(panel?.contains(page.getByTestId('variant-definitions-table').element())).toBe(true)
+    expect(page.getByTestId('variants-view-versions').element().getAttribute('aria-controls')).toBe(
+      'variants-overview-view',
+    )
+  })
+
   it('moves focus into the add filter popover and back to its trigger on Escape', async () => {
     void render(<VariantsOverviewHarness />)
 
