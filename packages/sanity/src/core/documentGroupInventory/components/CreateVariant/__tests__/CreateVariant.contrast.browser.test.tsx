@@ -310,15 +310,39 @@ function measureFocusRing(scheme: string, state: string) {
   return [row]
 }
 
-/** Waits until the colours of `scope` stop changing (hover and focus transitions). */
+/** The elements from the root down to `element`, whose opacity and background it is painted on. */
+function ancestors(element: Element): Element[] {
+  const chain: Element[] = []
+  for (let node = element.parentElement; node; node = node.parentElement) chain.push(node)
+  return chain
+}
+
+/**
+ * Waits until what the user sees has stopped changing: no CSS transition or animation is still
+ * running on the page, and the colours of `scope` and the opacity of everything it sits in are
+ * steady. The harness's pane fades in from `opacity: 0` over 200ms (`PaneLayout`), and Firefox and
+ * WebKit can still be part way through that fade when the form first shows, which would dim every
+ * colour measured inside it.
+ */
 async function settle(scope: () => Element = form) {
+  await expect
+    .poll(
+      () =>
+        document
+          .getAnimations()
+          .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+          .filter((animation) => animation.playState === 'running').length,
+      {timeout: 5_000},
+    )
+    .toBe(0)
   await expectStable(() =>
-    [...scope().querySelectorAll('*')]
-      .map((element) => {
+    [
+      ...[...scope().querySelectorAll('*')].map((element) => {
         const style = getComputedStyle(element)
         return `${style.color}|${style.backgroundColor}|${style.boxShadow}|${style.opacity}`
-      })
-      .join(';'),
+      }),
+      ...ancestors(scope()).map((element) => getComputedStyle(element).opacity),
+    ].join(';'),
   )
 }
 
