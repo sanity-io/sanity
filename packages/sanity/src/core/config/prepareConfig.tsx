@@ -1015,12 +1015,13 @@ function resolveSource({
       enabled:
         documentGroupInventoryEnabledReducer({config, initialValue: false}) || variantsEnabled,
     },
-    reactActivityMode: {
-      enabled: reactActivityModeEnabledReducer({config, initialValue: false}),
-    },
     releaseBackgroundListeners: {
       enabled: releaseBackgroundListenersEnabledReducer({config, initialValue: false}),
     },
+  }
+
+  const reactActivityMode = {
+    enabled: reactActivityModeEnabledReducer({config, initialValue: true}),
   }
 
   // Upload the schema descriptor to Content Lake, but only when the user is
@@ -1252,6 +1253,8 @@ function resolveSource({
     },
 
     beta,
+
+    reactActivityMode,
 
     announcements: {
       enabled: announcementsEnabledReducer({config, initialValue: true}),

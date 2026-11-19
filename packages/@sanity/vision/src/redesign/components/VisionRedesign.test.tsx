@@ -420,7 +420,7 @@ function renderRedesign(perspective: PerspectiveContextValue = BASE_PERSPECTIVE)
   sanityMocks.useClient.mockReturnValue(mockClient.client)
   const onSwitchToClassic = vi.fn()
 
-  // Inside an Activity boundary, as the studio keeps recent tools mounted (`beta.reactActivityMode`)
+  // Inside an Activity boundary, as the studio keeps recent tools mounted (`reactActivityMode`)
   const ui = (mode: 'visible' | 'hidden') => (
     <ThemeProvider theme={theme}>
       <ToastProvider>
