@@ -1052,7 +1052,7 @@ describe('ConfirmDeleteDialog, open beta (option C)', () => {
     await expect
       .element($dialog.getByTestId('fails-later'))
       .toHaveTextContent(
-        "1 document in a release links here with a required link. The delete goes through, but that release will fail when it's published.",
+        'This link is held in a release. The delete goes through, but the release will fail to publish until the link is removed.',
       )
     await expect
       .element($dialog.getByTestId('reference-tag-versions.rp-release.referrer-r'))

@@ -695,10 +695,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'An error occurred while attempting to delete this document. This usually means that there are other documents that refer to it.',
   /** Notice in the delete dialog when release copies link to the published Default document with a required link: the delete goes through, and the release fails when it is published (singular) */
   'document-group.delete.fails-later.text_one':
-    "1 document in a release links here with a required link. The delete goes through, but that release will fail when it's published.",
+    'This link is held in a release. The delete goes through, but the release will fail to publish until the link is removed.',
   /** Notice in the delete dialog when release copies link to the published Default document with a required link: the delete goes through, and the releases fail when they are published (plural) */
   'document-group.delete.fails-later.text_other':
-    "{{count}} documents in releases link here with required links. The delete goes through, but those releases will fail when they're published.",
+    '{{count}} of these links are held in releases. The delete goes through, but those releases will fail to publish until the links are removed.',
   /** Introduces the list of documents that link to the published Default document in the delete dialog, when the strength of each link is known */
   'document-group.delete.linked-from.text': 'Documents that link to “<DocumentTitle/>”:',
   /** Body of the notice in the delete dialog when no published Default document is selected */
