@@ -91,7 +91,7 @@
     "@xstate/react": "^6.1.0",
     "cobe": "catalog:",
     "dequal": "catalog:",
-    "groq-js": "^2.0.1",
+    "groq-js": "^2.0.2",
     "is-hotkey-esm": "^1.0.0",
     "json-2-csv": "^5.6.0",
     "json5": "^2.2.3",
