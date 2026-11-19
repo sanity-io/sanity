@@ -567,9 +567,20 @@ const Select: ComponentType<{
   if (pendingDraft && pendingDraft.id !== heldDraft?.id) {
     setHeldDraft(pendingDraft)
   }
+  // Whether the held draft was the open version when the open version was last known
+  const [heldOpen, setHeldOpen] = useState(true)
+  const nextHeldOpen =
+    Boolean(pendingDraft) || selectedId === null
+      ? heldOpen || Boolean(pendingDraft)
+      : selectedId === heldDraft?.id
+  if (nextHeldOpen !== heldOpen) setHeldOpen(nextHeldOpen)
   const shownDraft =
     pendingDraft ??
-    (heldDraft && (selectedId === null || selectedId === heldDraft.id) ? heldDraft : undefined)
+    // While the pane resolves the new draft it marks no version open (`null`); that holds the
+    // ghost row only while it was the open version, not after another version was opened
+    (heldDraft && (selectedId === heldDraft.id || (selectedId === null && heldOpen))
+      ? heldDraft
+      : undefined)
   // The draft the form is about to create joins the Draft set as a ghost row
   const sets = useMemo(
     () => withPendingDraft(versionSets, shownDraft, t('release.chip.draft')),
@@ -632,11 +643,16 @@ const Select: ComponentType<{
         const visibleVariants = set.variants.filter(
           ({id}) => !hasFilterString || filterMatchingVariantIds.has(id),
         )
-        const setSelection = getSetSelection({
-          variants: visibleVariants,
-          selectedIds,
-          getRelease: (variant) => resolveVariantRelease(variant, releases),
-        })
+        const getRelease = (variant: (typeof set.variants)[number]) =>
+          resolveVariantRelease(variant, releases)
+        const shownSelection = getSetSelection({variants: visibleVariants, selectedIds, getRelease})
+        // Whether the whole group is locked is the set's, not the filter's: a filter that hides
+        // every row of a scheduled set leaves its lock and its unschedule action in place
+        const setSelection = {
+          ...shownSelection,
+          groupBlockedReason: getSetSelection({variants: set.variants, selectedIds, getRelease})
+            .groupBlockedReason,
+        }
 
         const toggleVariant = (variantId: string, shiftKey: boolean) => {
           const toggle = getRowToggle({
