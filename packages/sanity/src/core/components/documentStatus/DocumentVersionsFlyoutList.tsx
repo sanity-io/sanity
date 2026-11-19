@@ -1,18 +1,26 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {DocumentsIcon} from '@sanity/icons/Documents'
+import {LockIcon} from '@sanity/icons/Lock'
 import {AvatarCounter, AvatarStack, Card} from '@sanity/ui'
 import {type CSSProperties, type ReactNode, useMemo, useState} from 'react'
 import {Flex, Icon, Text} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useCompactTimeAgo} from '../../hooks/useRelativeTime'
+import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {getDefaultVariant} from '../../perspective/getDefaultVariant'
+import {type ReleaseId} from '../../perspective/types'
 import {usePerspective} from '../../perspective/usePerspective'
+import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {useFormatRelativeLocalePublishDate} from '../../releases/hooks/useFormatRelativeLocalePublishDate'
+import {isReleaseScheduledOrScheduling} from '../../releases/util/util'
 import {type DocumentPresence} from '../../store/presence/types'
 import {useWorkspace} from '../../studio/workspace'
+import {type SystemBundle} from '../../util/draftUtils'
+import {readVersionType} from '../../util/versionsUtils'
+import {getVersionFilterLabel} from '../../variants/plugin/components/getVersionFilterLabel'
 import {getVariantId} from '../../variants/tool/util'
 import {PreviewCard} from '../previewCard/PreviewCard'
 import {RhombusIconLarge} from '../temporary-icons/Rhombus'
@@ -32,9 +40,19 @@ import {
   getAudienceLine,
 } from './getAudienceLine'
 import {getAudienceName} from './getAudienceName'
-import {audienceKey, groupPresenceByAudience} from './groupPresenceByAudience'
+import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
+import {getReleasePerspective} from './getReleasePerspective'
+import {getVersionRowPerspective} from './getVersionRowPerspective'
+import {
+  audienceKey,
+  groupPresenceByAudience,
+  groupPresenceByVersion,
+} from './groupPresenceByAudience'
 import {hasMoreInInventory} from './hasMoreInInventory'
-import {type DocumentVersionStatusGroup} from './sortDocumentVersionsForStatus'
+import {
+  type DocumentVersionStatusGroup,
+  type DocumentVersionStatusItem,
+} from './sortDocumentVersionsForStatus'
 
 type RowPresence = Omit<DocumentPresence, 'path'>
 
@@ -361,7 +379,6 @@ function AudienceRow({
   now,
   onClick,
   presence,
-  variantsEnabled,
   viewed,
   picked,
 }: {
@@ -369,20 +386,17 @@ function AudienceRow({
   now: number
   onClick: () => void
   presence?: RowPresence[]
-  variantsEnabled: boolean
   viewed: boolean
   picked: boolean
 }) {
   const {t} = useTranslation()
   const latest = latestEdit(group)
-  const name = getAudienceName({group, latest, t, variantsEnabled})
+  const name = getAudienceName({group, latest, t, variantsEnabled: true})
 
   return (
     <FlyoutRow
       onClick={onClick}
       presence={presence}
-      // The line describes the document's state across its versions, which reads the same with
-      // Variants off, where the one row stands for the whole document.
       subtitle={
         <AudienceLineText
           fallbackTime={latest.version._updatedAt}
@@ -394,7 +408,7 @@ function AudienceRow({
       testId="document-versions-flyout-row"
       renderTrailing={(isViewed) => (
         <span style={{display: 'flex', height: 25, alignItems: 'center'}}>
-          {variantsEnabled && group.variantId ? (
+          {group.variantId ? (
             <Icon
               icon={RhombusIconLarge}
               size={1}
@@ -420,6 +434,99 @@ function AudienceRow({
 }
 
 /**
+ * A release version's timing, in the words of the version menus: "As soon as possible",
+ * "Scheduled for Fri 28 Nov, 9:00" or "Undecided".
+ */
+function useReleaseTiming(): (release: ReleaseDocument) => string {
+  const {t} = useTranslation()
+  const formatPublishDate = useFormatRelativeLocalePublishDate()
+  return (release) => {
+    switch (release.metadata.releaseType) {
+      case 'asap':
+        return t('release.type.asap')
+      case 'scheduled':
+        return release.publishAt || release.metadata.intendedPublishAt
+          ? t('release.chip.tooltip.scheduled-for-date', {date: formatPublishDate(release)})
+          : t('release.chip.tooltip.unknown-date')
+      case 'undecided':
+      default:
+        return t('release.type.undecided')
+    }
+  }
+}
+
+/**
+ * A version row, with Variants off: the version's name in the words of the document header
+ * pills (Published, Draft, the release's title), when it last changed or, for a release, its
+ * timing, and the version's own mark at the right edge, with a lock on a scheduled release, as in
+ * the perspective menu.
+ */
+function VersionRow({
+  item,
+  onClick,
+  presence,
+  viewed,
+}: {
+  item: DocumentVersionStatusItem
+  onClick: () => void
+  presence?: RowPresence[]
+  viewed: boolean
+}) {
+  const {t} = useTranslation()
+  const schema = useSchema()
+  const releaseTiming = useReleaseTiming()
+  const {version, release} = item
+  const perspective = getReleasePerspective({release, version})
+  const name = getVersionFilterLabel(perspective, t, []).displayTitle
+  const timeAgo = useCompactTimeAgo(version._updatedAt)
+  const liveEdit = Boolean(schema.get(version._type)?.liveEdit)
+  const type = readVersionType(version)
+
+  let subtitle: string
+  if (type === 'release') {
+    subtitle = release ? releaseTiming(release) : t('release.type.undecided')
+  } else if (type === 'published' && !liveEdit) {
+    // The name already says Published: the line only says when
+    subtitle = timeAgo
+  } else {
+    subtitle = t(getDocumentVersionStatusTimestampKey(version, liveEdit), {date: timeAgo})
+  }
+
+  return (
+    <FlyoutRow
+      onClick={onClick}
+      presence={presence}
+      subtitle={subtitle}
+      viewed={viewed}
+      testId="document-versions-flyout-version-row"
+      renderTrailing={() => (
+        <span
+          data-testid="document-versions-flyout-version-mark"
+          data-version-type={type}
+          style={{display: 'flex', height: 25, alignItems: 'center', gap: 4}}
+        >
+          {release && isReleaseScheduledOrScheduling(release) ? (
+            <Icon
+              data-testid="document-versions-flyout-version-lock"
+              icon={LockIcon}
+              muted
+              size={1}
+              style={{margin: '-0.375rem'}}
+            />
+          ) : null}
+          <ReleaseAvatarIcon fontSize={1} release={perspective} size="small" />
+        </span>
+      )}
+      title={
+        <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
+          {name}
+        </Text>
+      }
+    />
+  )
+}
+
+/**
  * The content of the versions flyout on a document list row: one row per audience, with its latest
  * event as the subtitle and the variant diamond in a trailing column at the right edge, and a last row that opens the document group
  * inventory. When there are more audiences than the flyout lists, that last row counts the others
@@ -432,6 +539,11 @@ export function DocumentVersionsFlyoutList(props: {
   documentGroupId: string
   /** Called with the audience of the row that was picked (`null` for the default one). */
   onPick: (variantId: string | null) => void
+  /**
+   * Called with the perspective of the version row that was picked, with Variants off: `published`,
+   * `drafts` or a release id. Without it, a version row opens the document like `onPick(null)`.
+   */
+  onPickVersion?: (perspective: SystemBundle | ReleaseId) => void
   onOpenInventory: () => void
   /**
    * Who is editing the document, any version. Each person's avatar sits on the audience row that
@@ -442,8 +554,15 @@ export function DocumentVersionsFlyoutList(props: {
   /** Whether the document of this row is the one open in the pane, which marks the version it shows. */
   viewingDocument?: boolean
 }) {
-  const {documentGroupId, onOpenInventory, onPick, presence, viewingDocument = false} = props
-  const {selectedVariantNames} = usePerspective()
+  const {
+    documentGroupId,
+    onOpenInventory,
+    onPick,
+    onPickVersion,
+    presence,
+    viewingDocument = false,
+  } = props
+  const {selectedVariantNames, selectedPerspectiveName} = usePerspective()
   const viewedVariantId = getDefaultVariant(selectedVariantNames)
   const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   const {t} = useTranslation()
@@ -464,19 +583,38 @@ export function DocumentVersionsFlyoutList(props: {
     [groups, people],
   )
   const shownGroups = groups.slice(0, MAX_AUDIENCES)
+  // With Variants off there are no audiences: the rows are the document's versions, Published,
+  // Draft, then each release it is in, in the order of the header pills
+  const versionItems = useMemo(
+    () => (variantsEnabled ? [] : groups.flatMap((group) => group.items)),
+    [groups, variantsEnabled],
+  )
+  const shownItems = versionItems.slice(0, MAX_AUDIENCES)
+  const presenceByVersion = useMemo(
+    () => groupPresenceByVersion(versionItems, people),
+    [versionItems, people],
+  )
   // Everyone not on a listed row goes on the footer, which opens the inventory where they are
   const footerPeople = useMemo(() => {
     const onRows = new Set<string>()
-    for (const group of groups.slice(0, MAX_AUDIENCES)) {
-      for (const person of presenceByAudience.get(audienceKey(group)) ?? []) {
-        onRows.add(person.user.id)
-      }
-    }
+    const rowPeople = variantsEnabled
+      ? groups
+          .slice(0, MAX_AUDIENCES)
+          .flatMap((group) => presenceByAudience.get(audienceKey(group)) ?? [])
+      : versionItems
+          .slice(0, MAX_AUDIENCES)
+          .flatMap((item) => presenceByVersion.get(item.version._id) ?? [])
+    for (const person of rowPeople) onRows.add(person.user.id)
     return people.filter((person) => !onRows.has(person.user.id))
-  }, [groups, people, presenceByAudience])
+  }, [groups, people, presenceByAudience, presenceByVersion, variantsEnabled, versionItems])
 
-  // Audiences past the first ones: the footer counts them, since that is where they are
-  const hiddenCount = Math.max(0, groups.length - MAX_AUDIENCES)
+  // Rows past the first ones: the footer counts them, since that is where they are
+  const hiddenCount = Math.max(
+    0,
+    (variantsEnabled ? groups.length : versionItems.length) - MAX_AUDIENCES,
+  )
+  // The version the pane shows, with Variants off: its perspective, Drafts when none is picked
+  const viewedPerspective = selectedPerspectiveName ?? 'drafts'
   // The footer always opens the inventory, which is also where variants are created and versions
   // compared or deleted. "Manage all versions" when the inventory lists more than these rows (rows
   // past the cap, a release version or a variant), and "Manage versions", the name of the
@@ -511,14 +649,27 @@ export function DocumentVersionsFlyoutList(props: {
       role="menu"
     >
       <div className={root}>
-        {shownGroups.map((group) => (
+        {variantsEnabled
+          ? null
+          : shownItems.map((item) => {
+              const perspective = getVersionRowPerspective(item)
+              return (
+                <VersionRow
+                  item={item}
+                  key={item.version._id}
+                  onClick={() => (onPickVersion ? onPickVersion(perspective) : onPick(null))}
+                  presence={nonEmpty(presenceByVersion.get(item.version._id))}
+                  viewed={viewingDocument && perspective === viewedPerspective}
+                />
+              )
+            })}
+        {(variantsEnabled ? shownGroups : []).map((group) => (
           <AudienceRow
             group={group}
             key={audienceKey(group)}
             now={now}
             onClick={() => onPick(group.variantId ?? null)}
             presence={nonEmpty(presenceByAudience.get(audienceKey(group)))}
-            variantsEnabled={variantsEnabled}
             viewed={
               viewingDocument &&
               (group.variantId ? getVariantId(group.variantId) : undefined) === viewedVariantId

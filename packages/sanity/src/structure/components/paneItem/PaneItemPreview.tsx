@@ -90,6 +90,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
       documentGroupId={publishedId}
       viewingDocument={Boolean(rowSelected)}
       onOpenInventory={actions.onOpenInventory}
+      onPickVersion={actions.onPickVersion}
       presence={presence}
       onPick={(variantId) =>
         actions.onPick(

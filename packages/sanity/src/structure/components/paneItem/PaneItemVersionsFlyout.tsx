@@ -9,7 +9,13 @@ import {
   useRef,
   useState,
 } from 'react'
-import {COMMAND_LIST_ACTIVATE_ITEM_EVENT, isVariantId, useSetVariant} from 'sanity'
+import {
+  COMMAND_LIST_ACTIVATE_ITEM_EVENT,
+  isVariantId,
+  type ReleaseId,
+  type SystemBundle,
+  useSetVariant,
+} from 'sanity'
 import {PaneRouterContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
@@ -39,6 +45,11 @@ export interface PaneItemVersionsFlyoutActions {
    * `createVariant` param, see `CREATE_VARIANT_PARAM`).
    */
   onPick: (variantId: string | null, paneParams?: Record<string, string>) => void
+  /**
+   * Opens the document in the picked version's perspective (`published`, `drafts` or a release
+   * id), with the inventory beside it: the version rows of a studio without Variants.
+   */
+  onPickVersion: (perspective: SystemBundle | ReleaseId) => void
 }
 
 /** The flyout that is open, across every row and list: opening one closes the one before. */
@@ -386,6 +397,15 @@ export function PaneItemVersionsFlyout(props: {
     [close, documentWithInventory, setVariant],
   )
 
+  const pickVersion = useCallback(
+    (perspective: SystemBundle | ReleaseId) => {
+      close()
+      returnFocus.current = null
+      setVariant({variantId: undefined, perspective, state: documentWithInventory()})
+    },
+    [close, documentWithInventory, setVariant],
+  )
+
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
       const items = [
@@ -464,7 +484,12 @@ export function PaneItemVersionsFlyout(props: {
               onPointerLeave={handleFlyoutPointerLeave}
               ref={flyoutRef}
             >
-              <RenderList onOpenInventory={openInventory} onPick={pick} renderList={renderList} />
+              <RenderList
+                onOpenInventory={openInventory}
+                onPick={pick}
+                onPickVersion={pickVersion}
+                renderList={renderList}
+              />
             </div>
           }
           // Beside the row only, never over the rows above or below it. `flip` checks the cross

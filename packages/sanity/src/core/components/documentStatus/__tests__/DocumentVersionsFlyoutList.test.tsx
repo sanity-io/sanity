@@ -1,8 +1,13 @@
-import {render, screen} from '@testing-library/react'
-import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
+import {render, screen, within} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
+import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {activeASAPRelease} from '../../../releases/__fixtures__/release.fixture'
+import {
+  activeASAPRelease,
+  activeScheduledRelease,
+  activeUndecidedRelease,
+} from '../../../releases/__fixtures__/release.fixture'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../../../releases/store/types'
 import {useActiveReleases} from '../../../releases/store/useActiveReleases'
@@ -120,7 +125,7 @@ describe('DocumentVersionsFlyoutList footer', () => {
   })
 })
 
-describe('DocumentVersionsFlyoutList row name', () => {
+describe('DocumentVersionsFlyoutList audience rows, with variants on', () => {
   beforeEach(() => {
     ;(useActiveReleases as Mock<typeof useActiveReleases>).mockReturnValue({
       data: [activeASAPRelease],
@@ -136,47 +141,156 @@ describe('DocumentVersionsFlyoutList row name', () => {
     })
   })
 
-  it('names the row Published, not Default, with variants off', async () => {
-    await renderList([version(GROUP_ID)])
-    await screen.findByTestId('document-versions-flyout-row')
-    expect(rowTitle()).toMatch(/^Published/)
-    expect(screen.queryByText('Default')).toBeNull()
-  })
-
-  it('names the row Draft when the draft is the latest edit, with variants off', async () => {
-    await renderList([
-      {...version(GROUP_ID), _updatedAt: '2026-10-20T11:00:00.000Z'},
-      version(`drafts.${GROUP_ID}`, 'drafts'),
-    ])
-    await screen.findByTestId('document-versions-flyout-row')
-    expect(rowTitle()).toMatch(/^Draft/)
-    // The line reads the same without variants
-    expect(screen.getByTestId('document-versions-flyout-row-lead').textContent).toBe(
-      'Unpublished edits',
-    )
-    expect(screen.queryByText('Default')).toBeNull()
-  })
-
-  it('names the row after the release when it has the latest edit, with variants off', async () => {
-    const releaseVersion = version(
-      `versions.${activeASAPRelease.name}.${GROUP_ID}`,
-      activeASAPRelease.name,
-    )
-    await renderList([
-      {...version(GROUP_ID), _updatedAt: '2026-10-20T11:00:00.000Z'},
-      {
-        ...releaseVersion,
-        _system: {...releaseVersion._system, release: {_ref: activeASAPRelease._id, _weak: true}},
-      },
-    ])
-    await screen.findByTestId('document-versions-flyout-row')
-    expect(rowTitle()).toMatch(new RegExp(`^${activeASAPRelease.metadata.title}`))
-    expect(screen.queryByText('Default')).toBeNull()
-  })
-
   it('keeps Default for the row of no variant with variants on', async () => {
     await renderList([version(GROUP_ID)], {variantsEnabled: true})
     await screen.findByTestId('document-versions-flyout-row')
     expect(rowTitle()).toMatch(/^Default/)
+  })
+})
+
+const RELEASES = [activeASAPRelease, activeScheduledRelease, activeUndecidedRelease]
+
+function inRelease(release: (typeof RELEASES)[number]): VersionInfoDocumentStub {
+  const stub = version(`versions.${release.name}.${GROUP_ID}`, release.name)
+  return {...stub, _system: {...stub._system, release: {_ref: release._id, _weak: true}}}
+}
+
+function versionRows(): HTMLElement[] {
+  return screen.getAllByTestId('document-versions-flyout-version-row')
+}
+
+/** A row's name, its subtitle and the type its mark is drawn for. */
+function describeRow(row: HTMLElement) {
+  const texts = within(row)
+    .getAllByText(/./)
+    .map((element) => element.textContent)
+  return {
+    name: texts[0],
+    subtitle: texts[1],
+    mark: within(row)
+      .getByTestId('document-versions-flyout-version-mark')
+      .getAttribute('data-version-type'),
+    locked: within(row).queryByTestId('document-versions-flyout-version-lock') !== null,
+  }
+}
+
+describe('DocumentVersionsFlyoutList version rows, with variants off', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({toFake: ['Date']})
+    vi.setSystemTime(new Date('2026-10-22T13:00:00.000Z'))
+    ;(useActiveReleases as Mock<typeof useActiveReleases>).mockReturnValue({
+      data: RELEASES,
+      byId: new Map(RELEASES.map((release) => [release._id, release])),
+      loading: false,
+      error: undefined,
+    } as ReturnType<typeof useActiveReleases>)
+    ;(useAllVariants as Mock<typeof useAllVariants>).mockReturnValue({
+      data: [],
+      byId: new Map(),
+      loading: false,
+      error: undefined,
+    })
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('case A: lists Published and Draft, each with when it changed and its own mark, then Manage versions', async () => {
+    await renderList([version(GROUP_ID), version(`drafts.${GROUP_ID}`, 'drafts')])
+    await screen.findByTestId('document-versions-flyout')
+
+    expect(versionRows().map(describeRow)).toEqual([
+      {name: 'Published', subtitle: '2 hr ago', mark: 'published', locked: false},
+      {name: 'Draft', subtitle: 'Edited 2 hr ago', mark: 'draft', locked: false},
+    ])
+    expect(screen.queryByTestId('document-versions-flyout-row')).toBeNull()
+    expect(screen.queryByText('Default')).toBeNull()
+    expect(screen.getByTestId('document-versions-flyout-inventory').textContent).toBe(
+      'Manage versions',
+    )
+  })
+
+  it('case B: lists Published, Draft, then each release with its timing, mark and lock', async () => {
+    await renderList([
+      inRelease(activeASAPRelease),
+      version(`drafts.${GROUP_ID}`, 'drafts'),
+      inRelease(activeUndecidedRelease),
+      version(GROUP_ID),
+      inRelease(activeScheduledRelease),
+    ])
+    await screen.findByTestId('document-versions-flyout')
+
+    const rows = versionRows().map(describeRow)
+    expect(rows.slice(0, 2)).toEqual([
+      {name: 'Published', subtitle: '2 hr ago', mark: 'published', locked: false},
+      {name: 'Draft', subtitle: 'Edited 2 hr ago', mark: 'draft', locked: false},
+    ])
+    expect(rows.slice(2)).toEqual(
+      expect.arrayContaining([
+        {
+          name: activeASAPRelease.metadata.title,
+          subtitle: 'As soon as possible',
+          mark: 'release',
+          locked: false,
+        },
+        {
+          name: activeUndecidedRelease.metadata.title,
+          subtitle: 'Undecided',
+          mark: 'release',
+          locked: false,
+        },
+        expect.objectContaining({
+          name: activeScheduledRelease.metadata.title,
+          subtitle: expect.stringMatching(/^Scheduled for /),
+          mark: 'release',
+        }),
+      ]),
+    )
+    expect(rows).toHaveLength(5)
+    expect(screen.queryByText('Default')).toBeNull()
+    // The inventory lists more than Published and Draft
+    expect(screen.getByTestId('document-versions-flyout-inventory')).toHaveTextContent(
+      'Manage all versions',
+    )
+  })
+
+  it('opens the picked version in its perspective', async () => {
+    const onPickVersion = vi.fn()
+    ;(useDocumentVersions as Mock<typeof useDocumentVersions>).mockReturnValue({
+      data: [],
+      versions: [version(GROUP_ID), inRelease(activeASAPRelease)],
+      error: null,
+      loading: false,
+    })
+    const wrapper = await createTestProvider()
+    render(
+      <DocumentVersionsFlyoutList
+        documentGroupId={GROUP_ID}
+        onOpenInventory={() => {}}
+        onPick={() => {}}
+        onPickVersion={onPickVersion}
+      />,
+      {wrapper},
+    )
+    await screen.findByTestId('document-versions-flyout')
+
+    const user = userEvent.setup()
+    await user.click(versionRows()[0])
+    await user.click(versionRows()[1])
+    expect(onPickVersion.mock.calls).toEqual([['published'], [activeASAPRelease.name]])
+  })
+
+  it('lists five versions, then counts the others on the inventory row', async () => {
+    await renderList([
+      version(GROUP_ID),
+      version(`drafts.${GROUP_ID}`, 'drafts'),
+      ...RELEASES.map(inRelease),
+      inRelease({...activeASAPRelease, _id: '_.releases.rExtra', name: 'rExtra'}),
+    ])
+    await screen.findByTestId('document-versions-flyout')
+
+    expect(versionRows()).toHaveLength(5)
+    expect(screen.getByTestId('document-versions-flyout-hidden-count')).toHaveTextContent('+1')
   })
 })
