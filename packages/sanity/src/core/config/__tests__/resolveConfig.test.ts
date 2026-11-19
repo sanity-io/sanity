@@ -730,20 +730,21 @@ describe('beta document group inventory config', () => {
   const projectId = 'ppsg7ml5'
   const dataset = 'production'
 
-  it('defaults document group inventory to false', async () => {
+  it('defaults document group inventory to true when variants is off', async () => {
     const source = await createSourceFromConfig({projectId, dataset})
 
-    expect(source.beta?.documentGroupInventory?.enabled).toBe(false)
+    expect(source.beta?.variants?.enabled).toBe(false)
+    expect(source.beta?.documentGroupInventory?.enabled).toBe(true)
   })
 
-  it('resolves document group inventory from root config', async () => {
+  it('lets root config switch document group inventory off', async () => {
     const source = await createSourceFromConfig({
       projectId,
       dataset,
-      beta: {documentGroupInventory: {enabled: true}},
+      beta: {documentGroupInventory: {enabled: false}},
     })
 
-    expect(source.beta?.documentGroupInventory?.enabled).toBe(true)
+    expect(source.beta?.documentGroupInventory?.enabled).toBe(false)
   })
 
   it('resolves document group inventory from plugin config', async () => {
@@ -753,12 +754,12 @@ describe('beta document group inventory config', () => {
       plugins: [
         definePlugin({
           name: 'sanity/beta-document-group-inventory',
-          beta: {documentGroupInventory: {enabled: true}},
+          beta: {documentGroupInventory: {enabled: false}},
         })(),
       ],
     })
 
-    expect(source.beta?.documentGroupInventory?.enabled).toBe(true)
+    expect(source.beta?.documentGroupInventory?.enabled).toBe(false)
   })
 
   it('lets root config override plugin document group inventory config', async () => {
@@ -768,13 +769,13 @@ describe('beta document group inventory config', () => {
       plugins: [
         definePlugin({
           name: 'sanity/beta-document-group-inventory',
-          beta: {documentGroupInventory: {enabled: true}},
+          beta: {documentGroupInventory: {enabled: false}},
         })(),
       ],
-      beta: {documentGroupInventory: {enabled: false}},
+      beta: {documentGroupInventory: {enabled: true}},
     })
 
-    expect(source.beta?.documentGroupInventory?.enabled).toBe(false)
+    expect(source.beta?.documentGroupInventory?.enabled).toBe(true)
   })
 
   it('infers document group inventory when variants is enabled', async () => {
@@ -890,7 +891,7 @@ describe('document inspectors context', () => {
   it('receives resolved defaults when no beta config is set', async () => {
     const {context} = await resolveInspectorsContext({})
 
-    expect(context.beta?.documentGroupInventory?.enabled).toBe(false)
+    expect(context.beta?.documentGroupInventory?.enabled).toBe(true)
   })
 })
 
