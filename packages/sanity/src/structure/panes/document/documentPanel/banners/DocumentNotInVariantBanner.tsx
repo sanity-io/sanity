@@ -230,6 +230,8 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
       i18nKey = 'banners.variant.not-in-variant-published-switch-to-drafts'
       action = {
         text: t('banners.variant.action.switch-to-drafts'),
+        // The banner's one next step, filled like the other banners' and the see-draft banner's
+        mode: 'default',
         onClick: () => setPerspective('drafts'),
       }
       break
@@ -238,7 +240,11 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
       i18nKey = 'banners.variant.not-in-variant-locked-release'
       // Nothing can be added to a scheduled release: the way to add a version is to unschedule it, in the Releases tool.
       action = release
-        ? {text: t('banners.variant.action.open-release'), onClick: handleOpenRelease}
+        ? {
+            text: t('banners.variant.action.open-release'),
+            mode: 'default',
+            onClick: handleOpenRelease,
+          }
         : undefined
       break
   }
@@ -276,7 +282,10 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
             components={chips}
             componentProps={{
               variantLead: t('banners.variant.lead.variant'),
-              releaseLead: t('banners.release.lead.release'),
+              // An agent or anonymous bundle is a bundle, as on the not-in-release banner
+              releaseLead: release
+                ? t('banners.release.lead.release')
+                : t('banners.release.lead.bundle'),
               releaseTone: getReleaseTone(selectedPerspective),
               // The Draft pill's orange, not core's grey drafts tone
               draftsTone: 'caution' as const,
