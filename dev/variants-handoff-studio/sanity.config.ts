@@ -203,6 +203,9 @@ function reviewWorkspace(options: {
 // show up as stray marks when Variants is off.
 const DATASET_WITH_VARIANTS = process.env.SANITY_STUDIO_DATASET || 'variants-2-0'
 const DATASET_WITHOUT_VARIANTS = process.env.SANITY_STUDIO_DATASET || 'v7-ux-review'
+// The drafts-off workspace writes to its own copy of variants-2-0 (19 Nov): its Publish draft and Discard draft buttons would
+// otherwise change the documents the open beta test cases use.
+const DATASET_DRAFTS_OFF = process.env.SANITY_STUDIO_DATASET || 'drafts-off-review'
 
 // Open Beta Review Studio (19 Nov, Jordan's ask): the open beta workspace first, then four switch combinations to compare
 // against it. The first workspace is where the studio address lands.
@@ -247,7 +250,7 @@ const openBetaWorkspaces = [
     name: 'drafts-off',
     title: 'Variants and Releases on, drafts off',
     basePath: '/drafts-off',
-    dataset: DATASET_WITH_VARIANTS,
+    dataset: DATASET_DRAFTS_OFF,
     variants: true,
     releases: true,
     drafts: false,
