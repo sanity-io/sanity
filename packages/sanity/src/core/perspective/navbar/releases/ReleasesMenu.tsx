@@ -1,10 +1,7 @@
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {SearchIcon} from '@sanity/icons/Search'
-// oxlint-disable-next-line no-restricted-imports -- the chevron trigger needs the hit-area style only @sanity/ui Button accepts
-import {Button, TextInput} from '@sanity/ui'
+import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type ChangeEvent, useCallback, useState} from 'react'
-import {styled} from 'styled-components'
 import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
@@ -16,7 +13,6 @@ import {CreateReleaseDialog} from '../../../releases/components/dialog/CreateRel
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
 import {useReleasesUpsell} from '../../../releases/contexts/upsell/useReleasesUpsell'
 import {isReleaseDocument} from '../../../releases/store/types'
-import {oversizedButtonStyle} from '../../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {useGetDefaultPerspective} from '../../useGetDefaultPerspective'
 import {useSetPerspective} from '../../useSetPerspective'
@@ -29,13 +25,8 @@ import {globalPerspectiveMenu, releasesMenuItemIcon} from './ReleasesMenu.css'
 import {useReleasesLabel} from './useReleasesLabel'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
-const OversizedButton = styled(Button)`
-  ${oversizedButtonStyle}
-`
-
 /**
- * Labelled chip used when variants are on. The classic pill keeps its own
- * label beside a chevron, so this hook work stays off that path.
+ * The labelled chip that opens the releases menu, in every studio.
  */
 function ReleasesMenuChip({
   fullWidth,
@@ -84,7 +75,6 @@ export function ReleasesMenu({
   areReleasesEnabled = true,
   menuItemProps,
   showDetailLinks = false,
-  variantsEnabled = false,
 }: {
   /** Stretches the trigger to its parent's width. */
   fullWidth?: boolean
@@ -96,11 +86,6 @@ export function ReleasesMenu({
    * does: a picker that chooses a perspective for something else must not navigate away.
    */
   showDetailLinks?: boolean
-  /**
-   * Which trigger to render. Variants studios get the labelled chip.
-   * Everyone else gets the chevron that sits in the classic releases pill.
-   */
-  variantsEnabled?: boolean
 }): React.JSX.Element {
   const {t} = useTranslation()
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
@@ -140,20 +125,7 @@ export function ReleasesMenu({
   return (
     <>
       <MenuButton
-        button={
-          variantsEnabled ? (
-            <ReleasesMenuChip fullWidth={fullWidth} />
-          ) : (
-            <OversizedButton
-              aria-label={t('release.navbar.open-releases')}
-              data-testid="global-perspective-menu-button"
-              iconRight={ChevronDownIcon}
-              mode="bleed"
-              padding={2}
-              radius="full"
-            />
-          )
-        }
+        button={<ReleasesMenuChip fullWidth={fullWidth} />}
         id="releases-menu"
         onClose={handleMenuClose}
         onOpen={lockMenuWidth}
