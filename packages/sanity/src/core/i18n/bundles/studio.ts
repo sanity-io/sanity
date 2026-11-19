@@ -690,6 +690,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.subject.version_one': 'version',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (plural) */
   'document-group.subject.version_other': 'versions',
+  /** A version that was never published: its status line, with `status` the usual edited text, followed by a note */
+  'document-group.version.not-published-yet': '{{status}} · not published yet',
   /** The label text that indicates a version in the document group is served for the selected perspective and variant */
   'document-group.version.served': 'Served',
   /** The label text that indicates a base version in the document group is served because the selected variant has no version */

@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {type DocumentSystem} from '@sanity/types'
-import {describe, expect, it} from 'vitest'
+import {describe, expect, it, vi} from 'vitest'
 
 import {type TFunction} from '../../i18n/types'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
@@ -212,6 +212,36 @@ describe('computeSets', () => {
             },
           ],
         },
+      ])
+    })
+  })
+
+  describe('when Content Variants is not enabled', () => {
+    it('leaves versions that belong to a variant out of the single set', () => {
+      const versions = [
+        draft(),
+        variantDraft(variantAlphaAudience, 'scopeA'),
+        published(),
+        variantPublished(variantAlphaAudience, 'scopeA'),
+        releaseVersion(RELEASE_ID),
+        variantInRelease(variantAlphaAudience, 'scopeA', RELEASE_ID),
+      ]
+
+      const meta = createMeta({
+        versions,
+        releases: new Map([[getReleaseDocumentIdFromReleaseId(RELEASE_ID), releaseDocument]]),
+        variants: new Map([[variantAlphaAudience._id, variantAlphaAudience]]),
+      })
+
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+      const sets = computeSets({meta, current: [], t, variantsEnabled: false})
+      warn.mockRestore()
+
+      expect(sets).toHaveLength(1)
+      expect(sets[0].variants.map(({id}) => id)).toEqual([
+        PUBLISHED_ID,
+        `drafts.${PUBLISHED_ID}`,
+        `versions.${RELEASE_ID}.${PUBLISHED_ID}`,
       ])
     })
   })

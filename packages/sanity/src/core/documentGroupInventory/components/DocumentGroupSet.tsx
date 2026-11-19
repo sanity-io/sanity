@@ -1,5 +1,5 @@
 import {type ComponentType, type ReactNode} from 'react'
-import {Text} from 'ui5'
+import {Flex, Text} from 'ui5'
 
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {type VariantSetBundle} from '../machines/documentGroupInventoryMachine'
@@ -15,6 +15,8 @@ import {VariantSetHeader} from './VariantSet/VariantSetHeader'
  */
 export const DocumentGroupSet: ComponentType<{
   name: string
+  /** How many versions the set holds. Omitted when the name already says it. */
+  count?: number
   headerActions?: ReactNode
   children: ReactNode
   bundle?: VariantSetBundle
@@ -28,6 +30,7 @@ export const DocumentGroupSet: ComponentType<{
   locked?: boolean
 }> = ({
   name,
+  count,
   headerActions,
   children,
   bundle,
@@ -56,10 +59,19 @@ export const DocumentGroupSet: ComponentType<{
           {bundle?.type === 'perspective' && <ReleaseAvatarIcon release={bundle.perspective} />}
         </div>
       </div>
-      <div>
-        <Text size={1} weight="medium" as="div" trim={true}>
-          {name}
-        </Text>
+      <div className="row-content">
+        <Flex className="variant-set-title" gap={2} alignItems="center">
+          <div className="version-title">
+            <Text size={1} weight="medium" as="div" trim={true}>
+              {name}
+            </Text>
+          </div>
+          {typeof count === 'number' && (
+            <Text size={1} muted as="div" trim={true} data-testid="variant-set-count">
+              {count}
+            </Text>
+          )}
+        </Flex>
         {headerActions}
       </div>
     </VariantSetHeader>

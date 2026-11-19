@@ -15,6 +15,15 @@ export const VariantSetHeader = styled(VariantSetEntry)`
     align-content: center;
   }
 
+  /* A long name ends in an ellipsis, like a row's, and the count stays whole beside it. */
+  .variant-set-title {
+    min-inline-size: 0;
+  }
+
+  .variant-set-title > :not(.version-title) {
+    flex: none;
+  }
+
   /* After a checkbox, the icon shares its spot, and the checkbox is revealed in its place. */
   * + .variant-set-icon {
     position: absolute;

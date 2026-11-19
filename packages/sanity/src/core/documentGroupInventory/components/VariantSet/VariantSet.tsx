@@ -7,6 +7,7 @@ export const VariantSet = styled(Card)(({theme}) => {
 
   return `
   display: grid !important;
+  /* Leading checkbox, then the version. */
   grid-template-columns: min-content 1fr;
   column-gap: var(--space-3);
 
