@@ -6,7 +6,7 @@ export const VARIANT_METADATA_TYPE_NAME = 'sanity.variantMetadata'
  * The fields the variant create and edit dialogs, and the variants tool, read.
  * They are always part of `sanity.variantMetadata`, also when a schema extends it.
  */
-export const VARIANT_METADATA_CORE_FIELDS = [
+const VARIANT_METADATA_CORE_FIELDS = [
   {
     name: 'title',
     title: 'Title',
