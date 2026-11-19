@@ -810,7 +810,7 @@ importers:
         specifier: 'catalog:'
         version: 5.1.0(playwright@1.65.1)(vite@8.3.8)(vitest@5.1.0)
       chromatic:
-        specifier: ^18.14.5
+        specifier: ^18.14.6
         version: 18.14.6(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.4)
       oxc-transform-react:
         specifier: 'catalog:'
