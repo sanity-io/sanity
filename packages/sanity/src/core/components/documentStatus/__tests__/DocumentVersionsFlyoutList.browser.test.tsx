@@ -94,6 +94,24 @@ function contrast(a: string, b: string): number {
   return (light + 0.05) / (dark + 0.05)
 }
 
+/**
+ * The selected blue, as computed colours, from the `@sanity/ui` 5 palette primitives. Studio keeps
+ * the blue selected colour, so these are the primitives, not UI 5's `--active-*` tokens (grey since
+ * 5.0.0-alpha.24).
+ */
+const SELECTED_BLUE = {
+  light: {
+    strong: 'rgb(64, 67, 231)', // blue-600
+    title: 'rgb(255, 255, 255)', // white
+    pale: 'rgb(245, 248, 255)', // blue-50
+  },
+  dark: {
+    strong: 'rgb(117, 149, 255)', // blue-400
+    title: 'rgb(19, 20, 27)', // black
+    pale: 'rgb(16, 18, 40)', // blue-950
+  },
+} as const
+
 /** The colour a status mark paints: its fill, or its stroke where it has no fill. */
 function markColor(svg: Element): string {
   const shape = svg.querySelector('path, rect, polygon') ?? svg
@@ -239,14 +257,12 @@ describe('DocumentVersionsFlyoutList', () => {
         .not.toHaveAttribute('aria-current')
 
       const row = germanRow.element() as HTMLElement
-      const blue = resolvedColor(row, 'var(--active-background-emphasized)')
+      const blue = SELECTED_BLUE[scheme].strong
       const title = germanRow.getByText('German', {exact: true}).element()
       const subtitle = germanRow.getByTestId('document-versions-flyout-row-line').element()
       const diamond = row.querySelector('[data-testid="document-versions-flyout-row-marks"] svg')!
       await expect.element(germanRow).toHaveStyle({backgroundColor: blue})
-      expect(getComputedStyle(title).color).toBe(
-        resolvedColor(row, 'var(--active-foreground-emphasized)'),
-      )
+      expect(getComputedStyle(title).color).toBe(SELECTED_BLUE[scheme].title)
       expect(getComputedStyle(subtitle).color).toBe(
         resolvedColor(row, 'light-dark(var(--blue-100), var(--blue-900))'),
       )
@@ -293,9 +309,9 @@ describe('DocumentVersionsFlyoutList', () => {
 
       // The quiet checked-row tint, not the open version's strong blue, and the text keeps its colours
       const row = germanRow.element() as HTMLElement
-      const paleBlue = resolvedColor(row, 'var(--active-background-normal)')
+      const paleBlue = SELECTED_BLUE[scheme].pale
       await expect.element(germanRow).toHaveStyle({backgroundColor: paleBlue})
-      expect(paleBlue).not.toBe(resolvedColor(row, 'var(--active-background-emphasized)'))
+      expect(paleBlue).not.toBe(SELECTED_BLUE[scheme].strong)
       expect(row.hasAttribute('data-viewed')).toBe(false)
 
       // It stays pale blue while hovered
