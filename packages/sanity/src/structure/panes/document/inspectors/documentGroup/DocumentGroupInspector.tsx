@@ -22,6 +22,7 @@ import {
   useSetVariant,
   useTranslation,
   type VersionInfoDocumentStub,
+  useWorkspace,
 } from 'sanity'
 import {Flex} from 'ui5'
 
@@ -96,6 +97,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
       ? editState.version._id
       : displayed?._id
 
+  const variantsEnabled = useWorkspace().beta?.variants?.enabled === true
   const variantSelected = Boolean(getDefaultVariant(selectedVariantNames))
   // In Drafts, a draft the first edit will create shows in the inventory as a ghost row, marked open
   const pendingDraft = getPendingDraft({
@@ -104,7 +106,8 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
     draftsSelected: selectedPerspective === 'drafts',
     editState,
     documentId,
-    defaultName: t('document-group.base-variant'),
+    // Without Content Variants there is no Default: the ghost row is the draft, named as Drafts are
+    defaultName: variantsEnabled ? t('document-group.base-variant') : t('release.chip.draft'),
   })
   const selectedId =
     pendingDraft?.id ??

@@ -26,6 +26,7 @@ import {
   type StatusMarkName,
   statusMarkGeometry,
 } from '../../../../ui-components/statusMark/statusMarkGeometry'
+import {type WorkspaceOptions} from '../../../config/types'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {
@@ -269,6 +270,8 @@ const harnessMachine = setup({
 type HarnessActor = ReturnType<typeof createActor<typeof harnessMachine>>
 
 let harness: HarnessActor | undefined
+
+const VARIANTS_ON: WorkspaceOptions['beta'] = {variants: {enabled: true}}
 
 function startHarness() {
   harness = createActor(harnessMachine).start()
@@ -889,7 +892,8 @@ function SelectionPanel({
   openId?: string
 }) {
   return (
-    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+    // The sets hold variant rows, which carry their marks only with Content Variants on
+    <TestWrapper schemaTypes={SCHEMA_TYPES} betaFeatures={VARIANTS_ON}>
       <Card
         scheme={scheme}
         style={{display: 'flex', flexDirection: 'column', width: 300, height: 600}}

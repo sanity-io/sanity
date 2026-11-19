@@ -5,6 +5,7 @@ import {page, userEvent} from 'vitest/browser'
 
 import {isShown, testHelpers} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {type WorkspaceOptions} from '../../../config/types'
 import {type Variant} from '../../machines/selectionMachine'
 import {type PendingDraft} from '../../utils/withPendingDraft'
 import {DocumentGroupEntry} from '../DocumentGroupEntry'
@@ -47,9 +48,20 @@ const DE_DE_DRAFT: PendingDraft = {
 }
 
 /** The Draft set as the inventory draws it with a ghost row: the ghost row, then a real draft. */
-function DraftSetHarness({draft = DE_DE_DRAFT}: {draft?: PendingDraft}) {
+const VARIANTS_ON: WorkspaceOptions['beta'] = {variants: {enabled: true}}
+
+function DraftSetHarness({
+  draft = DE_DE_DRAFT,
+  variantsEnabled = true,
+}: {
+  draft?: PendingDraft
+  variantsEnabled?: boolean
+}) {
   return (
-    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+    <TestWrapper
+      schemaTypes={SCHEMA_TYPES}
+      betaFeatures={variantsEnabled ? VARIANTS_ON : undefined}
+    >
       <DocumentGroupSet
         name="Draft"
         count={1}
@@ -134,6 +146,19 @@ describe('PendingDraftEntry', () => {
     await expect
       .element(page.getByRole('button', {name: 'de-DE'}))
       .toHaveAccessibleDescription('Not created yet. Edit the form to create this draft')
+  })
+
+  it('leaves the diamond off with Content Variants off', async () => {
+    await render(
+      <DraftSetHarness
+        draft={{id: `drafts.${PUBLISHED_ID}`, variantId: '_.variants.de-de', name: 'Draft'}}
+        variantsEnabled={false}
+      />,
+    )
+
+    const row = page.getByTestId('pending-draft-row')
+    await expect.element(row.getByTestId('version-title')).toHaveTextContent('Draft')
+    expect(row.element().querySelector('[data-testid="variant-mark"]')).toBeNull()
   })
 
   it('leaves the diamond off a Default ghost row', async () => {

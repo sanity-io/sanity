@@ -4,6 +4,7 @@ import {Text} from 'ui5'
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
+import {useWorkspace} from '../../studio/workspace'
 import {type VersionPresence as VersionPresenceList} from '../utils/groupPresenceByVersion'
 import {type PendingDraft} from '../utils/withPendingDraft'
 import {LeadingGlyph} from './VariantSet/LeadingGlyph'
@@ -25,6 +26,8 @@ export function PendingDraftEntry({draft, selectable}: {draft: PendingDraft; sel
   const {t} = useTranslation(studioLocaleNamespace)
   const tooltip = t('document-group.version.pending-draft.tooltip')
   const descriptionId = useId()
+  // No diamond without Content Variants, where there are no variants to tell apart
+  const isVariantDraft = useWorkspace().beta?.variants?.enabled === true && Boolean(draft.variantId)
 
   return (
     <Tooltip content={tooltip} placement="bottom-end">
@@ -39,8 +42,8 @@ export function PendingDraftEntry({draft, selectable}: {draft: PendingDraft; sel
         <VersionPresence presence={NO_PRESENCE} />
         <LeadingGlyph
           className="variant-mark"
-          data-testid={draft.variantId ? 'variant-mark' : undefined}
-          mark={draft.variantId ? 'variant-empty' : undefined}
+          data-testid={isVariantDraft ? 'variant-mark' : undefined}
+          mark={isVariantDraft ? 'variant-empty' : undefined}
         />
         <div className="row-content">
           {/*

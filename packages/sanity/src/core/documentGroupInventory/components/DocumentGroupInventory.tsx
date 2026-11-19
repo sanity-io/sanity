@@ -22,8 +22,6 @@ import {
 } from 'rxjs'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
-import {STUDIO_DSN} from '../../error/sentry/sentryErrorReporter'
-import {StudioFeedbackDialog} from '../../feedback/components/StudioFeedbackDialog'
 import {useFeedbackTelemetry} from '../../feedback/hooks/useFeedbackTelemetry'
 import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
@@ -87,6 +85,7 @@ import {CreateVariant} from './CreateVariant/CreateVariant'
 import {getNearestBaseVersion} from './CreateVariant/getNearestBaseVersion'
 import {DocumentGroupEntry, resolveVariantRelease} from './DocumentGroupEntry'
 import {DocumentGroupSet} from './DocumentGroupSet'
+import {InventoryFeedbackDialog} from './InventoryFeedbackDialog'
 import {InventoryHeader} from './InventoryHeader'
 import {PendingDraftEntry} from './PendingDraftEntry'
 import {ScheduleDraftAction} from './ScheduleDraftAction'
@@ -441,14 +440,7 @@ export function DocumentGroupInventory(
           />
         )}
       {isFeedbackActive && (
-        <StudioFeedbackDialog
-          dsn={STUDIO_DSN}
-          feedbackVersion="1"
-          source="document-group-inventory"
-          onClose={() => inventoryRef.send({type: 'feedback.end'})}
-          sentimentLabel={t('content-variants.feedback.sentiment-label')}
-          title={t('content-variants.feedback.title')}
-        />
+        <InventoryFeedbackDialog onClose={() => inventoryRef.send({type: 'feedback.end'})} />
       )}
     </>
   )

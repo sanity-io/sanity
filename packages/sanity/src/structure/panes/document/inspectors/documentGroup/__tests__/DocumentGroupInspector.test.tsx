@@ -148,6 +148,13 @@ const test = baseTest
       },
     }),
   )
+  .extend('VariantsTestProvider', {scope: 'file'}, () =>
+    createTestProvider({
+      resources: [structureUsEnglishLocaleBundle],
+      config: {beta: {variants: {enabled: true}}},
+    }),
+  )
+  .extend('variantsEnabled', () => false)
   .extend('documentPaneValue', () => buildDocumentPaneValue())
   .extend('layoutCollapsed', () => false)
   .extend('selectedVariantNames', (): string[] => [])
@@ -156,6 +163,8 @@ const test = baseTest
     'renderInspector',
     ({
       TestProvider,
+      VariantsTestProvider,
+      variantsEnabled,
       documentPaneValue,
       layoutCollapsed,
       selectedVariantNames,
@@ -187,11 +196,12 @@ const test = baseTest
 
       const paneLayout = layoutCollapsed ? COLLAPSED_PANE_LAYOUT : PANE_LAYOUT
 
+      const Provider = variantsEnabled ? VariantsTestProvider : TestProvider
       const Wrapper: ComponentType<{children: ReactNode}> = ({children}) => {
         return (
-          <TestProvider>
+          <Provider>
             <PaneLayoutContext.Provider value={paneLayout}>{children}</PaneLayoutContext.Provider>
-          </TestProvider>
+          </Provider>
         )
       }
 
@@ -446,11 +456,26 @@ describe('DocumentGroupInspector', () => {
         buildDocumentPaneValue({displayed: {_id: 'doc-123', _type: 'author'}, draft: null}),
       )
 
-      test('passes the Default draft as a ghost row, marked open', async ({renderInspector}) => {
+      test('passes the draft as a ghost row named Draft, marked open, with variants off', async ({
+        renderInspector,
+      }) => {
         await renderInspector()
 
-        expect(lastInventoryProps().pendingDraft).toEqual({id: 'drafts.doc-123', name: 'Default'})
+        expect(lastInventoryProps().pendingDraft).toEqual({id: 'drafts.doc-123', name: 'Draft'})
         expect(markedVersionId()).toBe('drafts.doc-123')
+      })
+
+      describe('with variants on', () => {
+        test.override('variantsEnabled', () => true)
+
+        test('names the ghost row Default', async ({renderInspector}) => {
+          await renderInspector()
+
+          expect(lastInventoryProps().pendingDraft).toEqual({
+            id: 'drafts.doc-123',
+            name: 'Default',
+          })
+        })
       })
     })
 
