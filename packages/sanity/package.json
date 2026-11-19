@@ -285,7 +285,7 @@
     "@vitejs/plugin-react": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "blob-polyfill": "^9.0.20240710",
-    "chromatic": "^18.14.4",
+    "chromatic": "^18.14.6",
     "fast-check": "^4.10.2",
     "jsdom": "catalog:",
     "oxc-transform-react": "catalog:",
