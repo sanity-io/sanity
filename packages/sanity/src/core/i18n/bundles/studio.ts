@@ -729,6 +729,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.preview-item.preview-unavailable.subtitle': 'ID: {{documentId}}',
   /** Appears when unable to render a document preview in the referring document list */
   'document-group.delete.preview-item.preview-unavailable.title': 'Preview unavailable',
+  /** Names the release that holds a referring document's fails-later link, next to its Fails later tag in the delete dialog */
+  'document-group.delete.reference-release.text': 'in {{releaseTitle}}',
   /** Tag on a referring release copy in the delete dialog that links to the deleted document with a required link: the delete goes through, and the release fails when it is published */
   'document-group.delete.reference-tag.fails-later': 'Fails later',
   /** Tag on a referring document in the delete dialog whose link to the deleted document is optional (weak) */

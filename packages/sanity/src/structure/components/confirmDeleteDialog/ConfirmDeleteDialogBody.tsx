@@ -6,7 +6,15 @@ import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Badge, Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
-import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
+import {
+  getReleaseIdFromReleaseDocumentId,
+  getVersionFromId,
+  SanityDefaultPreview,
+  Translate,
+  useActiveReleases,
+  useSchema,
+  useTranslation,
+} from 'sanity'
 import {Text, Flex, Box, VStack, Icon} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -57,6 +65,24 @@ function StrongDocumentTitle({
  * The inner part of the `ConfirmDeleteDialog`. This is ran when both the
  * `crossDatasetReferences` and `internalReferences` are loaded.
  */
+/** Names the release that holds a referring release copy, so the reader knows which release fails */
+function ReleaseOfReference({documentId}: {documentId: string}) {
+  const {t} = useTranslation()
+  const {data: releases} = useActiveReleases()
+  const releaseId = getVersionFromId(documentId)
+  const release = releaseId
+    ? releases.find((r) => getReleaseIdFromReleaseDocumentId(r._id) === releaseId)
+    : undefined
+  if (!releaseId) return null
+  return (
+    <Text size={1} muted data-testid="fails-later-reference-release">
+      {t('document-group.delete.reference-release.text', {
+        releaseTitle: release?.metadata.title || t('release.placeholder-untitled-release'),
+      })}
+    </Text>
+  )
+}
+
 export function ConfirmDeleteDialogBody({
   crossDatasetReferences,
   internalReferences,
@@ -91,9 +117,12 @@ export function ConfirmDeleteDialogBody({
               {t('confirm-delete-dialog.preview-item.required-badge')}
             </Badge>
           ) : action === 'delete' && item.failsLater ? (
-            <Badge data-testid="fails-later-reference-badge" tone="caution">
-              {tCore('document-group.delete.reference-tag.fails-later')}
-            </Badge>
+            <Flex alignItems="center" gap={2} style={{flexShrink: 0}}>
+              <ReleaseOfReference documentId={item._id} />
+              <Badge data-testid="fails-later-reference-badge" tone="caution">
+                {tCore('document-group.delete.reference-tag.fails-later')}
+              </Badge>
+            </Flex>
           ) : null
         return tag ? (
           <Flex alignItems="center" gap={2}>

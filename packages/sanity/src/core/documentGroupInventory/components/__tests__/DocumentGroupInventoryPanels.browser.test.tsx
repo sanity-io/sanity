@@ -1057,6 +1057,10 @@ describe('ConfirmDeleteDialog, open beta (option C)', () => {
     await expect
       .element($dialog.getByTestId('reference-tag-versions.rp-release.referrer-r'))
       .toHaveTextContent('Fails later')
+    // The row names the release that holds the link
+    await expect
+      .element($dialog.getByTestId('reference-release-versions.rp-release.referrer-r'))
+      .toMatchTextContent(/^in /)
     await expect
       .element($dialog.getByTestId('internal-references').getByRole('listitem').first())
       .toMatchTextContent('referrer-r')

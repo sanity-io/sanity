@@ -22,8 +22,10 @@ import {type TFunction} from '../../i18n/types'
 import {type TargetPerspective} from '../../perspective/types'
 import {SanityDefaultPreview} from '../../preview/components/SanityDefaultPreview'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
+import {useActiveReleases} from '../../releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../releases/util/getReleaseTone'
-import {type SystemBundle} from '../../util/draftUtils'
+import {getVersionFromId, type SystemBundle} from '../../util/draftUtils'
 import {readVersionType} from '../../util/versionsUtils'
 import {
   type CrossDatasetReferences,
@@ -577,9 +579,10 @@ const References: ComponentType<ReferencesProps> = ({
             <Box flexBasis="0%" flexGrow={1}>
               {preview}
             </Box>
-            <Box paddingRight={2} flexShrink={0}>
+            <Flex paddingRight={2} flexShrink={0} alignItems="center" gap={2}>
+              {item.failsLater ? <ReleaseOfReference documentId={item._id} /> : null}
               <ReferenceTag reference={item} />
-            </Box>
+            </Flex>
           </Flex>
         )
       }
@@ -783,6 +786,24 @@ const References: ComponentType<ReferencesProps> = ({
         </Flex>
       </Card>
     </>
+  )
+}
+
+/** Names the release that holds a referring release copy, so the reader knows which release fails */
+function ReleaseOfReference({documentId}: {documentId: string}) {
+  const {t} = useTranslation(studioLocaleNamespace)
+  const {data: releases} = useActiveReleases()
+  const releaseId = getVersionFromId(documentId)
+  const release = releaseId
+    ? releases.find((r) => getReleaseIdFromReleaseDocumentId(r._id) === releaseId)
+    : undefined
+  if (!releaseId) return null
+  return (
+    <Text size={1} muted data-testid={`reference-release-${documentId}`}>
+      {t('document-group.delete.reference-release.text', {
+        releaseTitle: release?.metadata.title || t('release.placeholder-untitled-release'),
+      })}
+    </Text>
   )
 }
 
