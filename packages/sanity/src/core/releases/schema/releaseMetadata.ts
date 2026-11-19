@@ -17,9 +17,8 @@ export const RELEASE_METADATA_TYPE_NAME = 'sanity.releaseMetadata'
  * The fields the release create and edit actions, and the releases tool, read. They come first
  * in `sanity.releaseMetadata`, and a configured field can't replace them.
  *
- * @internal
  */
-export const RELEASE_METADATA_CORE_FIELDS: FieldDefinition[] = [
+const RELEASE_METADATA_CORE_FIELDS: FieldDefinition[] = [
   defineField({
     name: 'title',
     title: 'Title',
