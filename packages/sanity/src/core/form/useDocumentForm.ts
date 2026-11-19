@@ -100,6 +100,12 @@ interface DocumentFormOptions {
    * than the read-only revision being viewed.
    */
   isOlderRevision?: boolean
+  /**
+   * Marks the fields that differ from this value, in place of the base variant. The comparison
+   * view passes the Reference side, so its Comparing with side marks what differs from it. `null`
+   * marks nothing; undefined keeps the base variant.
+   */
+  fieldMarkBase?: Partial<SanityDocument> | null
 }
 interface DocumentFormValue extends NodeChronologyProps {
   /**
@@ -161,6 +167,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     onFocusPath,
     displayInlineChanges,
     isOlderRevision,
+    fieldMarkBase,
   } = options
   const schema = useSchema()
   const presenceStore = usePresenceStore()
@@ -317,7 +324,10 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     return comparisonValueRaw
   }, [comparisonValueRaw, upstreamEditState])
 
-  const baseVariant = selectBaseVariant(baseVariantEditState, baseVariantTarget?._id)
+  const baseVariant =
+    fieldMarkBase === undefined
+      ? selectBaseVariant(baseVariantEditState, baseVariantTarget?._id)
+      : fieldMarkBase
 
   const presence$ = useMemo(
     () =>

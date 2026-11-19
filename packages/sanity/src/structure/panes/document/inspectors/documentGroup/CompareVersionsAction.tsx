@@ -16,7 +16,9 @@ export function CompareVersionsAction() {
   const {displayed, documentId, editState, onMenuAction} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
   const documentIdStack = useDocumentIdStack({displayed, documentId, editState})
-  const item = getCompareVersionsItem({documentIdStack, t})
+  // The inventory is on wherever this renders, so the action works on any version, the first in its
+  // group included
+  const item = getCompareVersionsItem({compareWithoutPrevious: true, documentIdStack, t})
 
   return (
     <Button

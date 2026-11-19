@@ -13,6 +13,7 @@ import {
   useDocumentIdStack,
   useGlobalCopyPasteElementHandler,
   useTranslation,
+  useWorkspace,
   useZIndex,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -119,6 +120,7 @@ export function DocumentLayout() {
   )
 
   const documentIdStack = useDocumentIdStack({displayed, documentId, editState})
+  const compareWithoutPrevious = useWorkspace().beta?.documentGroupInventory?.enabled === true
 
   const hasValue = Boolean(value)
 
@@ -134,8 +136,10 @@ export function DocumentLayout() {
         documentIdStack,
         t,
         displayInlineChanges: stickyParams.displayInlineChanges === 'true',
+        compareWithoutPrevious,
       }),
     [
+      compareWithoutPrevious,
       currentInspector,
       documentIdStack,
       features,

@@ -11,6 +11,7 @@ import {VersionModeHeader} from '../versionMode/components/VersionModeHeader'
 import {DialogLayout} from './DialogLayout'
 import {DiffViewPane} from './DiffViewPane'
 import {EditReferenceLinkComponent} from './EditReferenceLinkComponent'
+import {EmptyDiffViewPane} from './EmptyDiffViewPane'
 
 export const DiffView: ComponentType<Pick<DocumentLayoutProps, 'documentId'>> = ({documentId}) => {
   const {documents, state, mode} = useDiffViewState()
@@ -53,16 +54,20 @@ export const DiffView: ComponentType<Pick<DocumentLayoutProps, 'documentId'>> = 
                 syncChannel={syncChannel}
                 compareDocument={documents.previous}
               />
-              <DiffViewPane
-                documentType={documents.next.type}
-                documentId={documents.next.id}
-                role="next"
-                ref={setNextPaneElement}
-                scrollElement={nextPaneElement}
-                syncChannel={syncChannel}
-                // The previous document's edit state is used to calculate the diff inroduced by the next document.
-                compareDocument={documents.previous}
-              />
+              {documents.next ? (
+                <DiffViewPane
+                  documentType={documents.next.type}
+                  documentId={documents.next.id}
+                  role="next"
+                  ref={setNextPaneElement}
+                  scrollElement={nextPaneElement}
+                  syncChannel={syncChannel}
+                  // The previous document's edit state is used to calculate the diff inroduced by the next document.
+                  compareDocument={documents.previous}
+                />
+              ) : (
+                <EmptyDiffViewPane />
+              )}
             </>
           )}
         </DialogLayout>

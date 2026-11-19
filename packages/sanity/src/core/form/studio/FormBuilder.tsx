@@ -66,6 +66,12 @@ export interface FormBuilderProps extends Omit<
    * Whether the document has a base variant.
    */
   hasBaseVariant?: boolean
+  /**
+   * The field marks compare with the comparison view's Reference side, not the base variant, so
+   * their tooltip reads "Differs from Reference".
+   * @internal
+   */
+  fieldMarksCompareWithReference?: boolean
   /** @internal */
   __internal_fieldActions?: DocumentFieldAction[]
   /** @internal Considered internal – do not use. */
@@ -133,6 +139,7 @@ export function FormBuilder(props: FormBuilderProps) {
     changedFromBaseVariant = false,
     hasBaseVariant = false,
     baseVariantValue,
+    fieldMarksCompareWithReference = false,
   } = props
 
   const handleCollapseField = useCallback(
@@ -318,8 +325,9 @@ export function FormBuilder(props: FormBuilderProps) {
 
   // The slot of the base version the field marks compare with, named in the mark's tooltip.
   const baseVariantId = (baseVariantValue as {_id?: unknown} | undefined)?._id
-  const comparedSlot =
-    typeof baseVariantId === 'string'
+  const comparedSlot = fieldMarksCompareWithReference
+    ? 'reference'
+    : typeof baseVariantId === 'string'
       ? isDraftId(baseVariantId)
         ? 'drafts'
         : (getVersionFromId(baseVariantId) ?? 'published')
