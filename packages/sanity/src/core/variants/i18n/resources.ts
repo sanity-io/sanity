@@ -79,6 +79,97 @@ const variantsLocaleStrings = {
   'overview.table.no-conditions': 'No conditions',
   /** Title for the Variants overview. */
   'overview.title': 'Variant definitions',
+  /**
+   * Overview tab listing the variant definitions.
+   * @deprecated no longer in use
+   */
+  'overview.view.definitions': 'Definitions',
+  /**
+   * Overview tab listing every stored version across documents.
+   * @deprecated no longer in use
+   */
+  'overview.view.versions': 'Versions',
+  /**
+   * Version table column: the variant definition a version belongs to.
+   * @deprecated no longer in use
+   */
+  'versions.table.definition': 'Definition',
+  /**
+   * Version table column: the version (published, draft or release).
+   * @deprecated no longer in use
+   */
+  'versions.table.version': 'Version',
+  /**
+   * Label for versions that belong to no variant definition.
+   * @deprecated no longer in use
+   */
+  'versions.definition.default': 'Default',
+  /**
+   * Version state: published.
+   * @deprecated no longer in use
+   */
+  'versions.state.published': 'Published',
+  /**
+   * Version state: draft.
+   * @deprecated no longer in use
+   */
+  'versions.state.draft': 'Draft',
+  /**
+   * Version state: in a release (shown when the release title is unknown).
+   * @deprecated no longer in use
+   */
+  'versions.state.release': 'In a release',
+  /**
+   * Type filter option that shows every document type.
+   * @deprecated no longer in use
+   */
+  'versions.filter.type.all': 'All types',
+  /**
+   * Definition filter option that shows every definition, including Default.
+   * @deprecated no longer in use
+   */
+  'versions.filter.definition.all': 'All definitions',
+  /**
+   * Release filter option that shows every release.
+   * @deprecated no longer in use
+   */
+  'versions.filter.release.all': 'All releases',
+  /**
+   * State filter option that shows every state.
+   * @deprecated no longer in use
+   */
+  'versions.filter.state.all': 'All states',
+  /**
+   * Sort option: most recently edited first.
+   * @deprecated no longer in use
+   */
+  'versions.sort.last-edited': 'Last edited',
+  /**
+   * Sort option: Published, Drafts, then releases.
+   * @deprecated no longer in use
+   */
+  'versions.sort.version-order': 'Version order',
+  /**
+   * Hint shown with the Last edited sort: documents keep a fixed order, versions are sorted within each one.
+   * @deprecated no longer in use
+   */
+  'versions.sort.last-edited.hint':
+    'Documents are listed in a fixed order. Versions in each document are sorted by last edit.',
+  /**
+   * Search placeholder in the versions table.
+   * @deprecated no longer in use
+   */
+  'versions.search.placeholder': 'Search versions',
+  /**
+   * Empty state of the versions table.
+   * @deprecated no longer in use
+   */
+  'versions.no-versions': 'No versions match these filters',
+  /**
+   * Shown when the versions could not be loaded.
+   * @deprecated no longer in use
+   */
+  'versions.error': 'Unable to load versions',
   /** Primary action label on the Variant detail action rail. */
   'detail.action.edit-definition': 'Edit definition',
   /** Accessible label / tooltip for the Variant detail overflow menu button. */
@@ -133,6 +224,73 @@ const variantsLocaleStrings = {
   'detail.documents.table.validation.validating': 'Validating',
   /** Error message when variant documents fail to load. */
   'detail.documents.error': 'Unable to load documents for this variant definition',
+  /**
+   * Tab for the documents that have a version for the variant definition, with their count.
+   * @deprecated no longer in use
+   */
+  'detail.half.present': 'Has a version ({{total}})',
+  /**
+   * Tab for the documents of the chosen type that have no version for the variant definition yet, with their count.
+   * @deprecated no longer in use
+   */
+  'detail.half.missing': 'Missing ({{total}})',
+  /**
+   * Type picker option: compare against the document types that already have a version for the variant definition.
+   * @deprecated no longer in use
+   */
+  'detail.missing.type-picker.default': 'Types with a version',
+  /**
+   * Row action that creates the missing version of a document for the variant definition, naming where it goes: a release title, Drafts or Published.
+   * @deprecated no longer in use
+   */
+  'detail.missing.create-in': 'Create in {{destination}}',
+  /**
+   * Destination of a new version: Drafts.
+   * @deprecated no longer in use
+   */
+  'detail.missing.destination.drafts': 'Drafts',
+  /**
+   * Destination of a new version for live-edit types: Published.
+   * @deprecated no longer in use
+   */
+  'detail.missing.destination.published': 'Published',
+  /**
+   * Tooltip when the selected release is scheduled, so the version goes elsewhere.
+   * @deprecated no longer in use
+   */
+  'detail.missing.fallback.scheduled':
+    '{{release}} is scheduled, so this creates in {{destination}}',
+  /**
+   * Tooltip when the selected release can no longer change (archived or published), so the version goes elsewhere.
+   * @deprecated no longer in use
+   */
+  'detail.missing.fallback.locked':
+    '{{release}} can no longer change, so this creates in {{destination}}',
+  /**
+   * Fallback name for a release without a title.
+   * @deprecated no longer in use
+   */
+  'detail.missing.untitled-release': 'Untitled release',
+  /**
+   * Error toast title when creating a missing version fails.
+   * @deprecated no longer in use
+   */
+  'detail.missing.create.error': 'Unable to create version',
+  /**
+   * Shown in the Missing tab when every document of the chosen type has a version.
+   * @deprecated no longer in use
+   */
+  'detail.missing.no-documents': 'Every document of this type has a version',
+  /**
+   * Shown in the Missing tab when no type is chosen and no document has a version yet.
+   * @deprecated no longer in use
+   */
+  'detail.missing.no-types': 'Pick a document type to see which documents are missing a version',
+  /**
+   * Shown in the Missing tab when the documents could not be loaded.
+   * @deprecated no longer in use
+   */
+  'detail.missing.error': 'Unable to load the documents missing a version',
   /** Description for the missing Variant detail page. */
   'detail.not-found.description': 'The requested variant definition could not be found.',
   /** Title for the missing Variant detail page. */
