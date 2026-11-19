@@ -126,6 +126,8 @@ export interface OAuthEndpoints {
     redirectUri: string
     codeChallenge: string
     state: string
+    /** `login` asks the authorization server for its login form, even with a session there. */
+    prompt?: 'login'
   }) => string
   exchangeCode: (params: {
     clientId: string
@@ -212,9 +214,9 @@ export function createOAuthEndpoints(
   }
 
   return {
-    authorizeUrl: ({clientId, redirectUri, codeChallenge, state}) => {
+    authorizeUrl: ({clientId, redirectUri, codeChallenge, state, prompt}) => {
       const url = new URL(endpoint('authorize'))
-      url.search = new URLSearchParams({
+      const params = new URLSearchParams({
         response_type: 'code',
         client_id: clientId,
         redirect_uri: redirectUri,
@@ -226,7 +228,11 @@ export function createOAuthEndpoints(
         // the resource with the grant and reuses it for the code exchange and every refresh, so
         // only this request names it.
         resource: `urn:io.sanity:project:${projectId}`,
-      }).toString()
+      })
+      // OpenID Connect `prompt=login`: show the login form instead of signing the user straight
+      // in with an existing sanity.io session.
+      if (prompt) params.set('prompt', prompt)
+      url.search = params.toString()
       return url.toString()
     },
 

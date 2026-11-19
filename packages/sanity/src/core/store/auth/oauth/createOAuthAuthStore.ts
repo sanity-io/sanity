@@ -457,6 +457,37 @@ export function _createOAuthAuthStore({
     }
     return `${sessionGeneration}:${shared ?? ''}`
   }
+
+  // Set by a logout the user asked for, and cleared once a sign-in completes. Logging out revokes
+  // the OAuth tokens but leaves the user's sanity.io session alive, and the authorization server
+  // would sign them straight back in with it, so the next sign-in asks for the login form
+  // (`prompt=login`) to let them pick another account. Not cleared when a sign-in starts: the user
+  // may abandon that redirect and try again. Stored with the logout epoch, so it survives the
+  // redirect and reaches every tab; in this tab's memory when storage is unavailable.
+  const loginPromptKey = `${tokensStorageKey}_login_prompt`
+  let loginPromptInTab = false
+  const loginPromptPending = (): boolean => {
+    try {
+      if (supportsLocalStorage && localStorage.getItem(loginPromptKey) !== null) return true
+    } catch {
+      // Unreadable storage: only this tab's logouts are seen.
+    }
+    return loginPromptInTab
+  }
+  const setLoginPromptPending = (pending: boolean) => {
+    loginPromptInTab = false
+    try {
+      if (supportsLocalStorage) {
+        if (pending) localStorage.setItem(loginPromptKey, '1')
+        else localStorage.removeItem(loginPromptKey)
+        return
+      }
+    } catch {
+      // Storage refused the write: fall back to this tab.
+    }
+    loginPromptInTab = pending
+  }
+
   const refreshLockName = `${tokensStorageKey}_refresh`
 
   /**
@@ -1030,10 +1061,12 @@ export function _createOAuthAuthStore({
       redirectUri,
       redirectPath: withoutResponseParams(redirectPath, origin),
     })
+    const promptLogin = loginPromptPending()
     debug(
-      'login: leaving for the authorization server, redirect_uri %s, will return to %s',
+      'login: leaving for the authorization server, redirect_uri %s, will return to %s%s',
       redirectUri,
       redirectPath,
+      promptLogin ? ', asking for the login form after a logout' : '',
     )
     navigate(
       endpoints.authorizeUrl({
@@ -1041,6 +1074,7 @@ export function _createOAuthAuthStore({
         redirectUri,
         codeChallenge: await createCodeChallenge(codeVerifier),
         state,
+        ...(promptLogin ? {prompt: 'login' as const} : {}),
       }),
     )
   }
@@ -1221,6 +1255,8 @@ export function _createOAuthAuthStore({
         void revokeTokens(tokens)
         return fail('logged out during sign-in', exchangeDurationMs)
       }
+      // Signed in after a logout: the next sign-in no longer needs the login form.
+      setLoginPromptPending(false)
       const {outcome, ...settle} = await waitForProbeOfStoredToken()
       debug(
         'callback: probe of the new token %s after %dms, returning to %s',
@@ -1314,6 +1350,9 @@ export function _createOAuthAuthStore({
       // Best-effort: when storage refuses the write, only this tab's requests in flight see the
       // logout.
     }
+    // Only when the user signed out. A forced logout (an expired or unknown session) signs back
+    // in with the sanity.io session as before, which is what the user wants there.
+    if (!options?.reason) setLoginPromptPending(true)
     // Cleared right away, not under the refresh lock: another tab can hold that lock for as long
     // as a token request takes, and a tab closed while waiting for it would leave the pair for the
     // next person to open the Studio in this browser. A refresh or code exchange in flight sees
