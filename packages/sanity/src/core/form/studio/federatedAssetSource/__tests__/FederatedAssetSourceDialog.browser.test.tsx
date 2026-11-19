@@ -131,16 +131,6 @@ describe('FederatedAssetSourceDialog', () => {
   })
 
   describe('closing', () => {
-    test('moves focus into the view area when it opens', async () => {
-      mockView()
-      void render(<DialogHarness />)
-
-      await expect.element(page.getByText('View button')).toBeVisible()
-      await expect
-        .poll(() => document.activeElement?.contains(page.getByText('View button').element()))
-        .toBe(true)
-    })
-
     test('leaves Escape to the view', async () => {
       mockView()
       const onClose = vi.fn()

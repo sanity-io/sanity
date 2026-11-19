@@ -5,15 +5,7 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {PortalProvider} from '@sanity/ui'
-import {
-  type CSSProperties,
-  type ReactNode,
-  type Ref,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import {type ReactNode, type Ref, useCallback, useMemo, useState} from 'react'
 import {encodeJsonParams} from 'sanity/router'
 import {Box, Flex, Text} from 'ui5'
 
@@ -151,7 +143,6 @@ export function FederatedAssetSourceDialog(props: {
         // Escape is the view's (see FederatedAssetSourceViewProps). Given
         // `onClose`, the Sanity UI dialog would close on every Escape inside it,
         // so the dialog renders its own header and close button instead.
-        __unstable_autoFocus={false}
         id={DIALOG_ID}
         onClickOutside={sourceProps.onClose}
         open
@@ -179,7 +170,7 @@ export function FederatedAssetSourceDialog(props: {
               />
             </Box>
           </Flex>
-          <FocusOnOpen
+          <Box
             style={{
               position: 'relative',
               flex: 1,
@@ -188,7 +179,6 @@ export function FederatedAssetSourceDialog(props: {
               borderColor: 'var(--card-border-color)',
               overflow: 'hidden',
               display: 'flex',
-              outline: 'none',
             }}
           >
             {failed ? (
@@ -204,7 +194,7 @@ export function FederatedAssetSourceDialog(props: {
                 viewProps={viewProps}
               />
             )}
-          </FocusOnOpen>
+          </Box>
         </div>
       </FullSurfaceAppDialog>
     </PortalProvider>
@@ -212,33 +202,3 @@ export function FederatedAssetSourceDialog(props: {
 }
 
 const DIALOG_ID = 'federated-asset-source-dialog'
-
-/**
- * Moves focus into the view's area when the dialog opens, so keys go to the
- * view. The Sanity UI dialog's own autofocus runs before its DOM is attached to
- * the page, and focus falls back to the body once the menu that opened the
- * dialog unmounts.
- */
-function FocusOnOpen(props: {children: ReactNode; style: CSSProperties}): ReactNode {
-  const [element, setElement] = useState<HTMLDivElement | null>(null)
-
-  useEffect(() => {
-    if (!element) return undefined
-    let frame = 0
-    const focus = () => {
-      if (!element.isConnected) {
-        frame = requestAnimationFrame(focus)
-        return
-      }
-      if (!element.contains(document.activeElement)) element.focus({preventScroll: true})
-    }
-    focus()
-    return () => cancelAnimationFrame(frame)
-  }, [element])
-
-  return (
-    <div ref={setElement} style={props.style} tabIndex={-1}>
-      {props.children}
-    </div>
-  )
-}
