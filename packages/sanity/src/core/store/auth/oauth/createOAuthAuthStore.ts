@@ -101,6 +101,15 @@ const MIN_REFRESH_DELAY_MS = 5_000
 const INVALID_GRANT_GRACE_MS = 1_000
 
 /**
+ * Authorization errors (RFC 6749 section 4.1.2.1, RFC 8707) that can be about the account the user
+ * signed in with: `invalid_target` when it has no access to the project, `access_denied` when the
+ * user declined or the server refused the account. Signing in as someone else can fix these. The
+ * other codes are about the Studio's configuration or the server, which another account does not
+ * change.
+ */
+const ACCOUNT_REFUSALS: ReadonlySet<string> = new Set(['invalid_target', 'access_denied'])
+
+/**
  * The token pair a signed-in Studio holds, persisted per project and client.
  *
  * @internal
@@ -458,10 +467,11 @@ export function _createOAuthAuthStore({
     return `${sessionGeneration}:${shared ?? ''}`
   }
 
-  // Set by a logout the user asked for, and cleared once a sign-in completes. Logging out revokes
-  // the OAuth tokens but leaves the user's sanity.io session alive, and the authorization server
-  // would sign them straight back in with it, so the next sign-in asks for the login form
-  // (`prompt=login`) to let them pick another account. Not cleared when a sign-in starts: the user
+  // Set by a logout the user asked for, or an authorization response that refused the account
+  // (`ACCOUNT_REFUSALS`), and cleared once a sign-in completes. Logging out revokes the OAuth
+  // tokens but leaves the user's sanity.io session alive, and the authorization server would sign
+  // them straight back in with it, so the next sign-in asks for the login form (`prompt=login`) to
+  // let them pick another account. Not cleared when a sign-in starts: the user
   // may abandon that redirect and try again. Stored with the logout epoch, so it survives the
   // redirect and reaches every tab; in this tab's memory when storage is unavailable.
   const loginPromptKey = `${tokensStorageKey}_login_prompt`
@@ -1191,6 +1201,9 @@ export function _createOAuthAuthStore({
         description ?? 'no description',
       )
       const code = OAUTH_ERROR_CODE.test(error) ? error : 'authorization server error'
+      // Refusals that can be about the account. Signing in again with the same sanity.io session
+      // would get the same answer, so the next sign-in shows the login form.
+      if (ACCOUNT_REFUSALS.has(code)) setLoginPromptPending(true)
       callbackError$.next({error: code, description})
       return fail(code)
     }
