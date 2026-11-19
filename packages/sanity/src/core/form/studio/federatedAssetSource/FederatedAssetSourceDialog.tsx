@@ -4,7 +4,7 @@ import {
   type AssetSourceComponentProps,
   type ValidationMarker,
 } from '@sanity/types'
-import {PortalProvider, useGlobalKeyDown, useLayer} from '@sanity/ui'
+import {PortalProvider} from '@sanity/ui'
 import {
   type CSSProperties,
   type ReactNode,
@@ -12,7 +12,6 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react'
 import {encodeJsonParams} from 'sanity/router'
@@ -149,9 +148,9 @@ export function FederatedAssetSourceDialog(props: {
   return (
     <PortalProvider element={portalElement}>
       <FullSurfaceAppDialog
-        // The dialog renders its own header and handles Escape itself (see
-        // DialogEscape): given `onClose`, the Sanity UI dialog closes on every
-        // Escape inside it, before the view's own handlers run.
+        // Escape is the view's (see FederatedAssetSourceViewProps). Given
+        // `onClose`, the Sanity UI dialog would close on every Escape inside it,
+        // so the dialog renders its own header and close button instead.
         __unstable_autoFocus={false}
         id={DIALOG_ID}
         onClickOutside={sourceProps.onClose}
@@ -163,7 +162,6 @@ export function FederatedAssetSourceDialog(props: {
         // matching the Dialog's DOM.
         width={5}
       >
-        <DialogEscape onClose={sourceProps.onClose} />
         <div style={{position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column'}}>
           <Flex alignItems="flex-start" padding={3}>
             <Box flexGrow={1} padding={2}>
@@ -214,34 +212,6 @@ export function FederatedAssetSourceDialog(props: {
 }
 
 const DIALOG_ID = 'federated-asset-source-dialog'
-
-/**
- * Escape closes the dialog once nothing inside it has used the key. The view
- * goes first: it may close its own preview, menu or selection and mark the key
- * handled (`preventDefault`). The dialog waits until the event has been
- * dispatched, so view listeners registered after this one are heard too.
- */
-function DialogEscape(props: {onClose: () => void}): null {
-  const {onClose} = props
-  const {isTopLayer} = useLayer()
-  const pendingClose = useRef<ReturnType<typeof setTimeout>>(undefined)
-  useEffect(() => () => clearTimeout(pendingClose.current), [])
-
-  useGlobalKeyDown((event) => {
-    if (event.key !== 'Escape' || event.isComposing || !isTopLayer || event.defaultPrevented) return
-    const target = event.target
-    const inDialog =
-      target === document.body ||
-      (target instanceof Element && target.closest(`#${DIALOG_ID}`) !== null)
-    if (!inDialog) return
-    clearTimeout(pendingClose.current)
-    pendingClose.current = setTimeout(() => {
-      if (!event.defaultPrevented) onClose()
-    })
-  })
-
-  return null
-}
 
 /**
  * Moves focus into the view's area when the dialog opens, so keys go to the

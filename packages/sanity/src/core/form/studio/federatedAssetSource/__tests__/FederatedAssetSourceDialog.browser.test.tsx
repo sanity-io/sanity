@@ -62,26 +62,15 @@ function DialogHarness(props: {onClose?: () => void}) {
   )
 }
 
-function claimEscape(event: KeyboardEvent) {
-  if (event.key === 'Escape') event.preventDefault()
-}
-
-/** A view that renders a button and, optionally, claims Escape like a view closing its own menu would. */
-function mockView(claim?: 'element' | 'window') {
+/** A view that renders a single button. */
+function mockView() {
   vi.mocked(loadFederatedAssetSourceModule).mockResolvedValue({
     version: 1,
     render: (rootElement) => {
       const button = document.createElement('button')
       button.textContent = 'View button'
       rootElement.replaceChildren(button)
-      if (claim === 'element') rootElement.addEventListener('keydown', claimEscape)
-      if (claim === 'window') window.addEventListener('keydown', claimEscape)
-      return {
-        dispose: () => {
-          rootElement.removeEventListener('keydown', claimEscape)
-          window.removeEventListener('keydown', claimEscape)
-        },
-      }
+      return {dispose: noop}
     },
   })
 }
@@ -152,34 +141,8 @@ describe('FederatedAssetSourceDialog', () => {
         .toBe(true)
     })
 
-    test('closes on Escape that the view leaves alone', async () => {
+    test('leaves Escape to the view', async () => {
       mockView()
-      const onClose = vi.fn()
-      void render(<DialogHarness onClose={onClose} />)
-      await expect.element(page.getByText('View button')).toBeVisible()
-
-      focusViewButton()
-      await userEvent.keyboard('{Escape}')
-      await afterDispatch()
-
-      expect(onClose).toHaveBeenCalledTimes(1)
-    })
-
-    test('stays open when the view claims Escape on its own elements', async () => {
-      mockView('element')
-      const onClose = vi.fn()
-      void render(<DialogHarness onClose={onClose} />)
-      await expect.element(page.getByText('View button')).toBeVisible()
-
-      focusViewButton()
-      await userEvent.keyboard('{Escape}')
-      await afterDispatch()
-
-      expect(onClose).not.toHaveBeenCalled()
-    })
-
-    test('stays open when the view claims Escape in a window listener added after the dialog', async () => {
-      mockView('window')
       const onClose = vi.fn()
       void render(<DialogHarness onClose={onClose} />)
       await expect.element(page.getByText('View button')).toBeVisible()

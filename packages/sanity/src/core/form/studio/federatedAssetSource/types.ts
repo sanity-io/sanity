@@ -10,6 +10,12 @@ import {type AssetFromSource, type ValidationMarker} from '@sanity/types'
  * doing any source-side work such as linking, using its own credentials) and
  * `onClose`.
  *
+ * Escape is the view's: the host dialog does not close on it. A view that
+ * wants Escape to close the dialog calls `onClose` itself, typically once
+ * nothing in the view (a menu, a preview, a selection) is left to dismiss. The
+ * host moves focus into the view's area when the dialog opens. The dialog's
+ * close button and a click outside it still close the dialog.
+ *
  * Upload mode (`action: 'upload'`): only reached when the hosting config
  * opted the view in (`federatedAssetSources.uploads` — the stand-in for an
  * upload capability flag on the view declaration). The mount is headless
