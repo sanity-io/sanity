@@ -13,7 +13,7 @@ import {
   RESERVED_RELEASE_METADATA_NAMES,
   releaseMetadataSchema,
 } from '../../schema/releaseMetadata'
-import {acceptCompiledReleaseMetadataFields} from '../compileReleaseMetadataType'
+import {acceptCompiledReleaseMetadataFields} from '../releaseMetadataFormType'
 
 const note = defineField({name: 'note', type: 'string', title: 'Note'})
 
@@ -68,8 +68,9 @@ describe('acceptCompiledReleaseMetadataFields', () => {
 
     expect(accepted.map((field) => field.name)).toEqual(['note', 'status'])
     expect(accepted[1]?.type.name).toBe('reviewStatus')
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('Dropped field "hero"'))
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('type "image" is not supported'))
+    expect(warn).toHaveBeenCalledWith(
+      `[releases] The release dialog doesn't show metadata field "hero" yet: type "image" is not supported`,
+    )
   })
 
   it.each([
@@ -107,7 +108,9 @@ describe('acceptCompiledReleaseMetadataFields', () => {
     {name: 'slug', field: defineField({name: 'slug', type: 'slug'})},
   ])('drops a $name field and keeps the other fields', ({field}) => {
     expect(acceptedNames([field])).toEqual(['note'])
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining(`Dropped field "${field.name}"`))
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining(`doesn't show metadata field "${field.name}"`),
+    )
   })
 
   it('drops a field that sets a components override and keeps the rest', () => {
@@ -137,7 +140,7 @@ describe('acceptCompiledReleaseMetadataFields', () => {
       ]),
     ).toEqual(['note'])
     expect(warn).toHaveBeenCalledWith(
-      expect.stringContaining('Dropped field "signOff": field "picture"'),
+      expect.stringContaining(`doesn't show metadata field "signOff" yet: field "picture"`),
     )
   })
 

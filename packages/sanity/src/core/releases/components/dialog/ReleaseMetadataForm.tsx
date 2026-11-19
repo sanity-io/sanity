@@ -31,17 +31,15 @@ import {DEFAULT_MAX_RECURSION_DEPTH, resolveInitialValueForType} from '../../../
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {isRecord} from '../../../util/isRecord'
 import {
-  RELEASE_METADATA_FORM_ID,
-  RELEASE_METADATA_FORM_TYPE_NAME,
-} from '../../metadata/compileReleaseMetadataType'
-import {
   asReleaseMetadata,
   mergeReleaseMetadata,
   readFieldValues,
   toReleaseMetadataRecord,
   type ReleaseMetadataRecord,
 } from '../../metadata/mergeReleaseMetadata'
+import {RELEASE_METADATA_FORM_ID} from '../../metadata/releaseMetadataFormType'
 import {useReleaseCustomMetadataFields} from '../../metadata/useReleaseCustomMetadataFields'
+import {RELEASE_METADATA_TYPE_NAME} from '../../schema/releaseMetadata'
 
 const NO_MARKERS: ValidationMarker[] = []
 const VALIDATION_FAILED_MESSAGE = 'Release metadata validation failed'
@@ -74,7 +72,7 @@ function formValueFromMetadata(
 ): FormDocumentValue {
   return {
     _id: RELEASE_METADATA_FORM_ID,
-    _type: RELEASE_METADATA_FORM_TYPE_NAME,
+    _type: RELEASE_METADATA_TYPE_NAME,
     ...readFieldValues(metadata, fieldNames),
   }
 }

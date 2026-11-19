@@ -1275,6 +1275,7 @@ import type {
   RelativeTime,
   RelativeTimeOptions,
   RelativeTimeProps,
+  RELEASE_DOCUMENT_TYPE,
   ReleaseActionComponent,
   ReleaseActionDescription,
   ReleaseActionProps,
@@ -5727,6 +5728,9 @@ describe('sanity', () => {
   })
   test('RelativeTimeProps', () => {
     expectTypeOf<RelativeTimeProps>().toBeObject()
+  })
+  test('RELEASE_DOCUMENT_TYPE', () => {
+    expectTypeOf<typeof RELEASE_DOCUMENT_TYPE>().not.toBeNever()
   })
   test('ReleaseActionComponent', () => {
     expectTypeOf<ReleaseActionComponent>().toBeObject()

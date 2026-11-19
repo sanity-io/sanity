@@ -24,7 +24,7 @@ const defaultPlugins = (options: DefaultPluginsOptions) => [
   options.comments.v2 ? commentsV2() : commentsCurrent(),
   tasks(),
   scheduledPublishing(),
-  releases(options.releases.metadata),
+  releases({metadata: options.releases.metadata}),
   canvasIntegration(),
   mediaLibrary(),
   schedules(options),

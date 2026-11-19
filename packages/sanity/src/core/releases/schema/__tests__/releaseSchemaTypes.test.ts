@@ -6,8 +6,8 @@ import {describe, expect, it, vi} from 'vitest'
 import {getMockSource} from '../../../../../test/testUtils/getMockWorkspaceFromConfig'
 import {type Source} from '../../../config/types'
 import {getSearchableOmnisearchTypes} from '../../../studio/components/navbar/search/utils/selectors'
-import {RELEASE_DOCUMENT_TYPE_NAME} from '../release'
-import {RELEASE_METADATA_TYPE_NAME} from '../releaseMetadata'
+import {RELEASE_DOCUMENT_TYPE} from '../../store/constants'
+import {RELEASE_METADATA_TYPE_NAME, releaseMetadataSchema} from '../releaseMetadata'
 
 const CORE_FIELD_NAMES = ['title', 'description', 'releaseType', 'intendedPublishAt', 'cardinality']
 
@@ -28,7 +28,7 @@ describe('release schema types from the releases plugin', () => {
   it('adds the release document and its metadata with only the core fields by default', async () => {
     const source = await getMockSource()
 
-    const release = source.schema.get(RELEASE_DOCUMENT_TYPE_NAME)
+    const release = source.schema.get(RELEASE_DOCUMENT_TYPE)
     expect(release?.type?.name).toBe('document')
     const metadataField = isObjectSchemaType(release)
       ? release.fields.find((field) => field.name === 'metadata')
@@ -73,6 +73,28 @@ describe('release schema types from the releases plugin', () => {
     ])
   })
 
+  it('warns when two plugins define the same field, and keeps the later one', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    const source = await getMockSource({
+      config: {
+        plugins: [
+          {name: 'first-plugin', releases: {metadata: {fields: [legalNote]}}},
+          {
+            name: 'second-plugin',
+            releases: {metadata: {fields: [{...legalNote, title: 'Legal sign-off'}]}},
+          },
+        ],
+      },
+    })
+
+    expect(fieldNames(source)).toEqual([...CORE_FIELD_NAMES, 'legalNote'])
+    expect(metadataType(source).fields.at(-1)?.type.title).toBe('Legal sign-off')
+    expect(warn).toHaveBeenCalledWith(
+      '[releases.metadata.fields] Field "legalNote" from plugin "second-plugin" replaces the one from plugin "first-plugin"',
+    )
+    warn.mockRestore()
+  })
+
   it('drops a configured field that reuses a core field name', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     const source = await getMockSource({
@@ -86,14 +108,51 @@ describe('release schema types from the releases plugin', () => {
 
     expect(fieldNames(source)).toEqual([...CORE_FIELD_NAMES, 'legalNote'])
     expect(metadataType(source).fields[0]?.type.name).toBe('string')
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('Dropped field "title"'))
+    expect(warn).toHaveBeenCalledWith(
+      '[releases.metadata.fields] Dropped field "title": name "title" is reserved',
+    )
     warn.mockRestore()
+  })
+
+  it('drops core field names when the metadata type is built from a config directly', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+
+    const definition = releaseMetadataSchema({
+      fields: [defineField({name: 'releaseType', type: 'number'}), legalNote],
+    })
+
+    expect(definition.fields.map((field) => field.name)).toEqual([...CORE_FIELD_NAMES, 'legalNote'])
+    expect(definition.fields.find((field) => field.name === 'releaseType')?.type).toBe('string')
+    expect(warn).toHaveBeenCalledExactlyOnceWith(
+      '[releases.metadata.fields] Dropped field "releaseType": name "releaseType" is reserved',
+    )
+    warn.mockRestore()
+  })
+
+  it('keeps configured fields of any type in the schema type', async () => {
+    const source = await getMockSource({
+      config: {
+        releases: {
+          enabled: true,
+          metadata: {
+            fields: [
+              defineField({name: 'cover', type: 'image'}),
+              defineField({name: 'related', type: 'reference', to: [{type: 'author'}]}),
+              defineField({name: 'tags', type: 'array', of: [{type: 'string'}]}),
+            ],
+          },
+        },
+      },
+    })
+
+    expect(fieldNames(source)).toEqual([...CORE_FIELD_NAMES, 'cover', 'related', 'tags'])
+    expect(source.schema._validation?.flatMap((group) => group.problems) ?? []).toEqual([])
   })
 
   it('leaves both types out when releases are disabled', async () => {
     const source = await getMockSource({config: {releases: {enabled: false}}})
 
-    expect(source.schema.get(RELEASE_DOCUMENT_TYPE_NAME)).toBeUndefined()
+    expect(source.schema.get(RELEASE_DOCUMENT_TYPE)).toBeUndefined()
     expect(source.schema.get(RELEASE_METADATA_TYPE_NAME)).toBeUndefined()
   })
 
@@ -102,11 +161,11 @@ describe('release schema types from the releases plugin', () => {
 
     const templateTypes = source.templates.map((template) => template.schemaType)
     expect(templateTypes).toContain('author')
-    expect(templateTypes).not.toContain(RELEASE_DOCUMENT_TYPE_NAME)
+    expect(templateTypes).not.toContain(RELEASE_DOCUMENT_TYPE)
 
     const searchTypes = getSearchableOmnisearchTypes(source.schema).map((type) => type.name)
     expect(searchTypes).toContain('author')
-    expect(searchTypes).not.toContain(RELEASE_DOCUMENT_TYPE_NAME)
+    expect(searchTypes).not.toContain(RELEASE_DOCUMENT_TYPE)
 
     const context = {versionType: 'published', releaseId: undefined} as const
     expect(
@@ -115,7 +174,7 @@ describe('release schema types from the releases plugin', () => {
     expect(
       source.document.actions({
         ...context,
-        schemaType: RELEASE_DOCUMENT_TYPE_NAME,
+        schemaType: RELEASE_DOCUMENT_TYPE,
         documentId: '_.releases.spring',
       }),
     ).toEqual([])
@@ -152,7 +211,7 @@ describe('release schema types from the releases plugin', () => {
     })
     const release = {
       _id: '_.releases.spring',
-      _type: RELEASE_DOCUMENT_TYPE_NAME,
+      _type: RELEASE_DOCUMENT_TYPE,
       _createdAt: '2026-01-01T00:00:00Z',
       _updatedAt: '2026-01-01T00:00:00Z',
       _rev: 'rev',
@@ -197,7 +256,7 @@ describe('release schema types from the releases plugin', () => {
     })
 
     const extracted = extractSchema(source.schema)
-    expect(extracted.find((type) => type.name === RELEASE_DOCUMENT_TYPE_NAME)).toMatchObject({
+    expect(extracted.find((type) => type.name === RELEASE_DOCUMENT_TYPE)).toMatchObject({
       type: 'document',
       attributes: {
         metadata: {value: {type: 'inline', name: RELEASE_METADATA_TYPE_NAME}},
@@ -221,7 +280,7 @@ describe('release schema types from the releases plugin', () => {
     })
 
     const manifest = extractManifestSchemaTypes(source.schema)
-    const release = manifest.find((type) => type.name === RELEASE_DOCUMENT_TYPE_NAME)
+    const release = manifest.find((type) => type.name === RELEASE_DOCUMENT_TYPE)
     const metadata = manifest.find((type) => type.name === RELEASE_METADATA_TYPE_NAME)
     expect(release?.type).toBe('document')
     expect(release?.fields?.find((field) => field.name === 'metadata')?.type).toBe(

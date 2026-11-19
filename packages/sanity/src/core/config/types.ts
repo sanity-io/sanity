@@ -7,12 +7,12 @@ import {
   type FieldDefinition,
   type FieldGroupDefinition,
   type FieldsetDefinition,
-  type ObjectDefinition,
   type ObjectSchemaType,
   type SanityDocumentLike,
   type Schema,
   type SchemaType,
   type SchemaTypeDefinition,
+  type SchemaValidationValue,
   type SearchStrategy,
 } from '@sanity/types'
 import {type ButtonTone} from '@sanity/ui'
@@ -1301,9 +1301,9 @@ export interface Source {
      */
     actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
     /**
-     * Release metadata resolved across the workspace and its plugins. The releases plugin adds
-     * it to the `sanity.releaseMetadata` schema type. Empty when no workspace or plugin
-     * configured any.
+     * The `releases.metadata` of the workspace and its plugins, merged. The releases plugin adds
+     * it to the `sanity.releaseMetadata` schema type, without fields named like a core field.
+     * Empty when no workspace or plugin configured any.
      */
     metadata?: ReleaseMetadataConfig
   }
@@ -1528,10 +1528,11 @@ export type DefaultPluginsWorkspaceOptions = {
 /**
  * The part of the `sanity.releaseMetadata` object type a workspace or plugin configures. The
  * core fields (`title`, `description`, `releaseType`, `intendedPublishAt` and `cardinality`)
- * always come first and can't be redeclared. A field with one of those names is dropped.
+ * always come first and can't be redeclared: a field with one of those names is dropped with a
+ * warning.
  *
  * Plugins and the root config are merged in order: a later field, fieldset or group with the
- * same name replaces the earlier one, and every config's validation applies.
+ * same name replaces the earlier one, with a warning, and every config's validation applies.
  *
  * @example
  * ```ts
@@ -1551,7 +1552,7 @@ export interface ReleaseMetadataConfig {
   fields?: FieldDefinition[]
   fieldsets?: FieldsetDefinition[]
   groups?: FieldGroupDefinition[]
-  validation?: ObjectDefinition['validation']
+  validation?: SchemaValidationValue
 }
 
 /**

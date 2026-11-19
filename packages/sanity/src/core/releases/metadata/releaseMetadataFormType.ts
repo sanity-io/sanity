@@ -1,3 +1,7 @@
+// Temporary: the release dialogs render the custom release metadata fields in a form of their
+// own, which edits a filtered copy of `sanity.releaseMetadata` and leaves out the fields it can't
+// render yet. Follow-ups will render `sanity.releaseMetadata` through the regular Studio form and
+// remove this file.
 import {ALL_FIELDS_GROUP_NAME} from '@sanity/schema/_internal'
 import {
   type FieldGroup,
@@ -9,10 +13,7 @@ import {
   type SchemaType,
 } from '@sanity/types'
 
-import {warnRejectedReleaseMetadataField} from '../../config/releases/metadataFields'
-
-/** Type name of the object the release metadata form edits. */
-export const RELEASE_METADATA_FORM_TYPE_NAME = 'release.metadata'
+import {RELEASE_METADATA_TYPE_NAME} from '../schema/releaseMetadata'
 
 /** Synthetic form document id. It is not a Content Lake document. */
 export const RELEASE_METADATA_FORM_ID = 'release.metadata.form'
@@ -88,14 +89,20 @@ function rejectionReason(type: SchemaType): string | undefined {
   return `resolved type "${names[0] ?? 'unknown'}" is not supported`
 }
 
+function warnNotShown(name: string, reason: string): void {
+  if (process.env.NODE_ENV === 'production') return
+  console.warn(`[releases] The release dialog doesn't show metadata field "${name}" yet: ${reason}`)
+}
+
 /**
- * Drops fields whose resolved type, or `components` override, the release dialog cannot edit.
- * One rejected field does not affect the others.
+ * Leaves out of the dialog the fields whose resolved type, or `components` override, it can't
+ * edit yet. They stay in the `sanity.releaseMetadata` schema type. One field left out does not
+ * affect the others.
  */
 export function acceptCompiledReleaseMetadataFields(fields: readonly ObjectField[]): ObjectField[] {
   return fields.filter((field) => {
     const reason = rejectionReason(field.type)
-    if (reason) warnRejectedReleaseMetadataField(field.name, reason)
+    if (reason) warnNotShown(field.name, reason)
     return !reason
   })
 }
@@ -114,7 +121,7 @@ export function createReleaseMetadataFormType(
   const isKept = (field: ObjectField) => names.has(field.name)
 
   return {
-    name: RELEASE_METADATA_FORM_TYPE_NAME,
+    name: RELEASE_METADATA_TYPE_NAME,
     title: source.title,
     jsonType: 'object',
     type: schema.get('object'),

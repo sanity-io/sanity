@@ -1,6 +1,6 @@
 import {type DocumentActionComponent} from '../../../config/document/actions'
 import {type DocumentActionsContext} from '../../../config/types'
-import {RELEASE_DOCUMENT_TYPE_NAME} from '../../schema/release'
+import {RELEASE_DOCUMENT_TYPE} from '../../store/constants'
 import {useDiscardVersionAction} from './DiscardVersionAction'
 import {useUnpublishVersionAction} from './UnpublishVersionAction'
 
@@ -11,7 +11,7 @@ export default function resolveDocumentActions(
   context: DocumentActionsContext,
 ): Action[] {
   // Releases are written through the releases actions API, never through document actions.
-  if (context.schemaType === RELEASE_DOCUMENT_TYPE_NAME) return []
+  if (context.schemaType === RELEASE_DOCUMENT_TYPE) return []
 
   const duplicateAction = existingActions.filter(({action}) => action === 'duplicate')
 

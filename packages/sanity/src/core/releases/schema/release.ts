@@ -1,9 +1,7 @@
 import {defineField, defineType} from '@sanity/types'
 
+import {RELEASE_DOCUMENT_TYPE} from '../store/constants'
 import {RELEASE_METADATA_TYPE_NAME} from './releaseMetadata'
-
-/** @internal */
-export const RELEASE_DOCUMENT_TYPE_NAME = 'system.release'
 
 /**
  * Releases are stored at `_.releases.<name>` and are written through `sanity.action.release.*`,
@@ -13,7 +11,7 @@ export const RELEASE_DOCUMENT_TYPE_NAME = 'system.release'
  * @internal
  */
 export const releaseSchema = defineType({
-  name: RELEASE_DOCUMENT_TYPE_NAME,
+  name: RELEASE_DOCUMENT_TYPE,
   title: 'Release',
   type: 'document',
   liveEdit: true,

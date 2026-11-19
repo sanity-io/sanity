@@ -15,7 +15,7 @@ import {
 import {
   acceptCompiledReleaseMetadataFields,
   createReleaseMetadataFormType,
-} from './compileReleaseMetadataType'
+} from './releaseMetadataFormType'
 
 const NO_METADATA_FIELDS: readonly ObjectField[] = []
 

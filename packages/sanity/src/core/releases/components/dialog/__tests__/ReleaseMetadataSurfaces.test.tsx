@@ -1,12 +1,14 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {defineField} from '@sanity/types'
+import {defineField, isObjectSchemaType} from '@sanity/types'
 import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type ReactElement} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
+import {getMockSource} from '../../../../../../test/testUtils/getMockWorkspaceFromConfig'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {RELEASE_METADATA_TYPE_NAME} from '../../../schema/releaseMetadata'
 import {useReleaseOperationsMockReturn} from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {
   mockUseReleasePermissions,
@@ -204,30 +206,37 @@ describe('release metadata on create and edit', () => {
     await waitFor(() => expect(submit).toBeEnabled())
   })
 
-  it('drops a configured field whose type the release dialog cannot edit', async () => {
+  it('leaves a field the dialog cannot edit out of the dialog, and keeps it in the schema', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    const metadata = {
+      fields: [
+        defineField({name: 'legalNote', title: 'Legal note', type: 'string'}),
+        defineField({name: 'cover', title: 'Cover', type: 'image'}),
+      ],
+    }
     const wrapper = await createTestProvider({
       config: {
         name: 'default',
         projectId: 'test',
         dataset: 'test',
         beta: {variants: {enabled: true}},
-        releases: {
-          metadata: {
-            fields: [
-              defineField({name: 'legalNote', title: 'Legal note', type: 'string'}),
-              defineField({name: 'cover', title: 'Cover', type: 'image'}),
-            ],
-          },
-        },
+        releases: {metadata},
       },
     })
     render(<CreateReleaseDialog onCancel={vi.fn()} onSubmit={vi.fn()} />, {wrapper})
 
     expect(await screen.findByTestId('field-legalNote')).toBeInTheDocument()
     expect(screen.queryByTestId('field-cover')).toBeNull()
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('Dropped field "cover"'))
+    expect(warn).toHaveBeenCalledWith(
+      `[releases] The release dialog doesn't show metadata field "cover" yet: type "image" is not supported`,
+    )
     warn.mockRestore()
+
+    const source = await getMockSource({config: {releases: {enabled: true, metadata}}})
+    const metadataType = source.schema.get(RELEASE_METADATA_TYPE_NAME)
+    expect(
+      isObjectSchemaType(metadataType) ? metadataType.fields.map((field) => field.name) : [],
+    ).toContain('cover')
   })
 
   it('keeps create blocked when the value changes before validation settles', async () => {

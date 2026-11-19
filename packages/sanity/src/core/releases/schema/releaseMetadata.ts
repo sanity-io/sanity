@@ -3,8 +3,10 @@ import {
   defineField,
   type FieldDefinition,
   type ObjectDefinition,
+  type SchemaValidationValue,
 } from '@sanity/types'
 
+import {warnReleaseMetadata} from '../../config/releases/metadataFields'
 import {type ReleaseMetadataConfig} from '../../config/types'
 import {isRecord} from '../../util/isRecord'
 
@@ -74,20 +76,42 @@ export const RESERVED_RELEASE_METADATA_NAMES: ReadonlySet<string> = new Set(
 )
 
 /**
+ * The `sanity.releaseMetadata` definition. Its `validation` takes anything a field's validation
+ * does, like a list with the rules of several configs.
+ *
+ * @internal
+ */
+export interface ReleaseMetadataDefinition extends Omit<ObjectDefinition, 'name' | 'validation'> {
+  name: typeof RELEASE_METADATA_TYPE_NAME
+  validation?: SchemaValidationValue
+}
+
+/**
  * The `sanity.releaseMetadata` object type: the core fields, followed by the fields, fieldsets,
- * groups and validation the workspace configures in `releases.metadata`.
+ * groups and validation the workspace configures in `releases.metadata`. A configured field named
+ * like a core field is dropped with a warning.
  *
  * @internal
  */
 export function releaseMetadataSchema(
   config: ReleaseMetadataConfig = {},
-): ObjectDefinition & {name: typeof RELEASE_METADATA_TYPE_NAME} {
+): ReleaseMetadataDefinition {
   const {fields = [], ...rest} = config
   return {
     ...rest,
     name: RELEASE_METADATA_TYPE_NAME,
     title: 'Release metadata',
     type: 'object',
-    fields: [...RELEASE_METADATA_CORE_FIELDS, ...fields],
+    fields: [
+      ...RELEASE_METADATA_CORE_FIELDS,
+      ...fields.filter((field) => {
+        if (!RESERVED_RELEASE_METADATA_NAMES.has(field.name)) return true
+        warnReleaseMetadata(
+          'fields',
+          `Dropped field "${field.name}": name "${field.name}" is reserved`,
+        )
+        return false
+      }),
+    ],
   }
 }

@@ -2,58 +2,48 @@ import {
   type FieldDefinition,
   type FieldGroupDefinition,
   type FieldsetDefinition,
+  type SchemaValidationValue,
 } from '@sanity/types'
 
-import {RESERVED_RELEASE_METADATA_NAMES} from '../../releases/schema/releaseMetadata'
 import {getPrintableType} from '../../util/getPrintableType'
 import {isRecord} from '../../util/isRecord'
 import {flattenConfig} from '../flattenConfig'
 import {type PluginOptions, type ReleaseMetadataConfig} from '../types'
 
-type ReleaseMetadataValidation = NonNullable<ReleaseMetadataConfig['validation']>
+type ReleaseMetadataKey = 'fields' | 'fieldsets' | 'groups'
+
+const KIND: Record<ReleaseMetadataKey, string> = {
+  fields: 'Field',
+  fieldsets: 'Fieldset',
+  groups: 'Group',
+}
 
 const FIELD_NAME = /^[A-Za-z][A-Za-z0-9_]*$/
 
-function warnDropped(key: string, kind: string, name: string, reason: string): void {
+/** @internal */
+export function warnReleaseMetadata(key: ReleaseMetadataKey, message: string): void {
   if (process.env.NODE_ENV === 'production') return
-  console.warn(`[releases.metadata.${key}] Dropped ${kind} "${name}": ${reason}`)
-}
-
-export function warnRejectedReleaseMetadataField(name: string, reason: string): void {
-  warnDropped('fields', 'field', name, reason)
+  console.warn(`[releases.metadata.${key}] ${message}`)
 }
 
 function isFieldDefinition(value: unknown): value is FieldDefinition {
   if (!isRecord(value)) return false
   const {name, type} = value
-  if (typeof name !== 'string' || typeof type !== 'string') return false
-  if (!FIELD_NAME.test(name) || RESERVED_RELEASE_METADATA_NAMES.has(name)) return false
-  return true
+  return typeof name === 'string' && typeof type === 'string' && FIELD_NAME.test(name)
 }
 
-function rejectionForField(value: unknown): {name: string; reason: string} | undefined {
-  if (isFieldDefinition(value)) return undefined
+function fieldRejection(value: unknown): {name: string; reason: string} {
   if (!isRecord(value) || typeof value.name !== 'string') {
     return {name: 'unnamed field', reason: 'expected a field definition with a name and type'}
   }
   if (!FIELD_NAME.test(value.name)) {
     return {name: value.name, reason: `name "${value.name}" is not a valid field name`}
   }
-  if (RESERVED_RELEASE_METADATA_NAMES.has(value.name)) {
-    return {name: value.name, reason: `name "${value.name}" is reserved`}
-  }
   return {name: value.name, reason: 'expected a type'}
 }
 
 function isNamed(value: unknown): value is FieldsetDefinition & FieldGroupDefinition {
   return isRecord(value) && typeof value.name === 'string'
-}
-
-/** A later entry replaces an earlier one with the same name, in the earlier one's position. */
-function mergeByName<T extends {name: string}>(current: T[], incoming: T[]): T[] {
-  const byName = new Map(current.map((entry) => [entry.name, entry]))
-  for (const entry of incoming) byName.set(entry.name, entry)
-  return [...byName.values()]
 }
 
 function expectArray(key: string, value: unknown): unknown[] | undefined {
@@ -68,48 +58,72 @@ function expectArray(key: string, value: unknown): unknown[] | undefined {
 
 function acceptFields(entries: unknown[]): FieldDefinition[] {
   return entries.flatMap((entry) => {
-    const rejection = rejectionForField(entry)
-    if (rejection) warnDropped('fields', 'field', rejection.name, rejection.reason)
-    return isFieldDefinition(entry) ? [entry] : []
-  })
-}
-
-function acceptNamed(key: string, kind: string, entries: unknown[]) {
-  return entries.flatMap((entry) => {
-    if (isNamed(entry)) return [entry]
-    warnDropped(key, kind, `unnamed ${kind}`, `expected a ${kind} with a name`)
+    if (isFieldDefinition(entry)) return [entry]
+    const {name, reason} = fieldRejection(entry)
+    warnReleaseMetadata('fields', `Dropped field "${name}": ${reason}`)
     return []
   })
 }
 
-function mergeValidation(
-  validations: ReleaseMetadataValidation[],
-): ReleaseMetadataValidation | undefined {
-  if (validations.length <= 1) return validations[0]
-  return (rule, context) =>
-    validations.flatMap((validation) => {
-      const result = validation(rule, context)
-      return Array.isArray(result) ? result : [result]
-    })
+function acceptNamed(key: 'fieldsets' | 'groups', entries: unknown[]) {
+  return entries.flatMap((entry) => {
+    if (isNamed(entry)) return [entry]
+    const kind = KIND[key].toLowerCase()
+    warnReleaseMetadata(key, `Dropped unnamed ${kind}: expected a ${kind} with a name`)
+    return []
+  })
+}
+
+interface MergedEntry<T> {
+  entry: T
+  source: string
+}
+
+/** A later entry replaces an earlier one with the same name, in the earlier one's position. */
+function mergeByName<T extends {name: string}>(
+  key: ReleaseMetadataKey,
+  merged: Map<string, MergedEntry<T>>,
+  incoming: T[],
+  source: string,
+): void {
+  for (const entry of incoming) {
+    const previous = merged.get(entry.name)
+    if (previous) {
+      warnReleaseMetadata(
+        key,
+        previous.source === source
+          ? `${KIND[key]} "${entry.name}" is listed more than once in ${source}, so the last one is used`
+          : `${KIND[key]} "${entry.name}" from ${source} replaces the one from ${previous.source}`,
+      )
+    }
+    merged.set(entry.name, {entry, source})
+  }
+}
+
+function entries<T>(merged: Map<string, MergedEntry<T>>): T[] {
+  return [...merged.values()].map(({entry}) => entry)
 }
 
 /**
  * Resolves `releases.metadata` across plugins and the root config. Root config is flattened
- * last, so a later field, fieldset or group with the same name replaces the earlier one, and the
- * validation of every config applies. Unlike `releases.actions`, this runs even when the root
- * config object has no `releases` key. `fields` is always set.
+ * last, so a later field, fieldset or group with the same name replaces the earlier one, with a
+ * warning, and the validation of every config applies. Unlike `releases.actions`, this runs even
+ * when the root config object has no `releases` key. `fields` is always set.
+ *
+ * Fields named like a core metadata field are kept here: `releaseMetadataSchema` drops them
+ * when it builds the schema type.
  *
  * @internal
  */
 export function resolveReleaseMetadataConfig(
   config: PluginOptions,
 ): ReleaseMetadataConfig & {fields: FieldDefinition[]} {
-  let fields: FieldDefinition[] = []
-  let fieldsets: FieldsetDefinition[] = []
-  let groups: FieldGroupDefinition[] = []
-  const validations: ReleaseMetadataValidation[] = []
+  const fields = new Map<string, MergedEntry<FieldDefinition>>()
+  const fieldsets = new Map<string, MergedEntry<FieldsetDefinition>>()
+  const groups = new Map<string, MergedEntry<FieldGroupDefinition>>()
+  const validations: SchemaValidationValue[] = []
 
-  for (const {config: innerConfig} of flattenConfig(config, [])) {
+  for (const {config: innerConfig, path} of flattenConfig(config, [])) {
     const metadata: unknown = innerConfig.releases?.metadata
     if (typeof metadata === 'undefined') continue
     if (!isRecord(metadata)) {
@@ -117,35 +131,31 @@ export function resolveReleaseMetadataConfig(
         `Expected \`releases.metadata\` to be an object, but received ${getPrintableType(metadata)}`,
       )
     }
+    const source = path.length > 1 ? `plugin "${innerConfig.name}"` : 'the workspace config'
 
     const configuredFields = expectArray('fields', metadata.fields)
-    if (configuredFields) fields = mergeByName(fields, acceptFields(configuredFields))
+    if (configuredFields) mergeByName('fields', fields, acceptFields(configuredFields), source)
 
     const configuredFieldsets = expectArray('fieldsets', metadata.fieldsets)
     if (configuredFieldsets) {
-      fieldsets = mergeByName(fieldsets, acceptNamed('fieldsets', 'fieldset', configuredFieldsets))
+      mergeByName('fieldsets', fieldsets, acceptNamed('fieldsets', configuredFieldsets), source)
     }
 
     const configuredGroups = expectArray('groups', metadata.groups)
     if (configuredGroups) {
-      groups = mergeByName(groups, acceptNamed('groups', 'group', configuredGroups))
+      mergeByName('groups', groups, acceptNamed('groups', configuredGroups), source)
     }
 
     const validation = innerConfig.releases?.metadata?.validation
-    if (typeof validation === 'undefined') continue
-    if (typeof validation !== 'function') {
-      throw new Error(
-        `Expected \`releases.metadata.validation\` to be a function, but received ${getPrintableType(validation)}`,
-      )
-    }
-    validations.push(validation)
+    if (typeof validation !== 'undefined') validations.push(validation)
   }
 
-  const validation = mergeValidation(validations)
   return {
-    fields,
-    ...(fieldsets.length > 0 ? {fieldsets} : {}),
-    ...(groups.length > 0 ? {groups} : {}),
-    ...(validation ? {validation} : {}),
+    fields: entries(fields),
+    ...(fieldsets.size > 0 ? {fieldsets: entries(fieldsets)} : {}),
+    ...(groups.size > 0 ? {groups: entries(groups)} : {}),
+    ...(validations.length > 0
+      ? {validation: validations.length === 1 ? validations[0] : validations}
+      : {}),
   }
 }
