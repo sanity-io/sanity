@@ -674,7 +674,10 @@ nothing has no local types:
 To add one (variant metadata, for example): add the default type to `extendableTypes/` and its
 list, and its document to `systemTypes/` and its list, then export a `defineVariantMetadata` from
 `sanity` built on the internal `extendBuiltinType` (`core/schema/extendBuiltinType.ts`), as
-`defineReleaseMetadata` is. Nothing else needs a per-type check.
+`defineReleaseMetadata` is. Nothing else needs a per-type check. Only the types in
+`systemDocumentTypes` are compiled again when a schema extends a type: any other built-in that uses
+an extendable type silently keeps the default, so a built-in that isn't a system document needs
+`compileRegistry` to compile it again too.
 
 ### Effect events: use `use-effect-event`, not React's native hook
 
