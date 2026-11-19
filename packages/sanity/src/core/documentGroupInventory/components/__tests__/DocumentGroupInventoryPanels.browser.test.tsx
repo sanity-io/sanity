@@ -153,6 +153,9 @@ const WITH_VARIANTS = [
   MEMBERS_DRAFT,
 ]
 /** The Default's copies and nothing else. */
+/** The rows as the inventory names them without Content Variants: by their bundle. */
+const PLAIN_VERSIONS = [PUBLISHED, DRAFT]
+
 const WITHOUT_VARIANTS = [
   {...PUBLISHED, name: 'Default'},
   {...DRAFT, name: 'Default'},
@@ -406,18 +409,26 @@ function PanelFrame({children}: {children: React.ReactNode}) {
   )
 }
 
+/** The dialog's Default wording belongs to Content Variants, so the harness has them on by default. */
+const VARIANTS_ON = {variants: {enabled: true}}
+
 function ConfirmDeleteDialogHarness({
   deletionRef,
   selectionRef,
+  variantsEnabled = true,
 }: {
   deletionRef: ActorRefFromLogic<typeof deletionMachine>
   selectionRef: ActorRefFromLogic<typeof selectionMachine>
+  variantsEnabled?: boolean
 }) {
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const portalElements = useMemo(() => ({[PORTAL_NAME]: portalElement}), [portalElement])
 
   return (
-    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+    <TestWrapper
+      schemaTypes={SCHEMA_TYPES}
+      betaFeatures={variantsEnabled ? VARIANTS_ON : undefined}
+    >
       <PortalProvider __unstable_elements={portalElements}>
         <div ref={setPortalElement} />
         {portalElement && (
@@ -924,6 +935,48 @@ describe('ConfirmDeleteDialog, open beta (option C)', () => {
     await expect.element($cancel).toHaveFocus()
 
     await settleChromaticEndState()
+  })
+
+  it('names no Default when the studio runs without Content Variants', async () => {
+    const refs = startHarness(REQUIRED_REFERRING_DOCUMENTS, PLAIN_VERSIONS)
+    selectAndRequest(refs, [PUBLISHED.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+        variantsEnabled={false}
+      />,
+    )
+
+    await expect.element($dialog.getByText('Delete the published document?')).toBeVisible()
+    await expect
+      .element($dialog.getByTestId('default-blocked'))
+      .toMatchTextContent("This document can't be deleted yet")
+    await expect
+      .element($dialog.getByTestId('blocked-by-links'))
+      .toHaveTextContent(
+        '1 document links to it with a required link. Change or remove that link first.',
+      )
+    await expect.element($dialog.getByText(/Default/)).not.toBeInTheDocument()
+  })
+
+  it('names the published document, not the Default, among several versions without Content Variants', async () => {
+    const refs = startHarness(NO_LINKS, PLAIN_VERSIONS)
+    selectAndRequest(refs, [PUBLISHED.id, DRAFT.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+        variantsEnabled={false}
+      />,
+    )
+
+    await expect
+      .element($dialog.getByText('Delete 2 versions, including the published document?'))
+      .toBeVisible()
+    await expect.element($dialog.getByText(/Default/)).not.toBeInTheDocument()
   })
 
   it('names both reasons, variants first, when variants and required links block the Default', async () => {

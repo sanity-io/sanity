@@ -25,6 +25,7 @@ import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../releases/util/getReleaseTone'
+import {useWorkspace} from '../../studio/workspace'
 import {getVersionFromId, type SystemBundle} from '../../util/draftUtils'
 import {readVersionType} from '../../util/versionsUtils'
 import {
@@ -78,6 +79,8 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
   const {t} = useTranslation(studioLocaleNamespace)
   const {DocTitle, ReferencePreviewLink} = components
   const blockedReasonId = useId()
+  // Without Content Variants there is no Default to name: the published document is just that.
+  const variantsEnabled = useWorkspace().beta?.variants?.enabled === true
 
   const selectedIdSet = useSelector(selectionRef, ({context}) => context.selectedIds)
   const variants = useSelector(selectionRef, ({context}) => context.variants)
@@ -125,7 +128,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
   const isDefaultBlocked = blockedIds.length > 0
   const hasLinks = description.totalLinkCount > 0
 
-  const header = getHeader({t, description, selectedCount: selectedIds.length})
+  const header = getHeader({t, description, selectedCount: selectedIds.length, variantsEnabled})
 
   const confirmButton = isDefaultBlocked
     ? {
@@ -195,6 +198,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
         {isDefaultBlocked && (
           <BlockedNotice
             id={blockedReasonId}
+            variantsEnabled={variantsEnabled}
             variantCount={description.blockingVariantCount}
             requiredLinkCount={description.requiredLinkCount}
           />
@@ -285,10 +289,12 @@ function getHeader({
   t,
   description,
   selectedCount,
+  variantsEnabled,
 }: {
   t: TFunction
   description: DeletionDescription
   selectedCount: number
+  variantsEnabled: boolean
 }): string {
   const {includesDefault, deletableIds, blockedIds} = description
   if (blockedIds.length > 0 && deletableIds.length > 0) {
@@ -297,6 +303,11 @@ function getHeader({
       count: deletableIds.length,
       total: selectedCount,
     })
+  }
+  if (includesDefault && !variantsEnabled) {
+    return selectedCount === 1
+      ? t('document-group.delete.published-title')
+      : t('document-group.delete.with-published-title', {count: selectedCount})
   }
   if (includesDefault) {
     return selectedCount === 1
@@ -433,10 +444,12 @@ function VersionChipRow({id, variant}: {id: string; variant: Variant | undefined
 
 function BlockedNotice({
   id,
+  variantsEnabled,
   variantCount,
   requiredLinkCount,
 }: {
   id: string
+  variantsEnabled: boolean
   variantCount: number
   requiredLinkCount: number
 }) {
@@ -454,7 +467,9 @@ function BlockedNotice({
         <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
           <VStack gap={3}>
             <Text size={1} as="div" trim={true} weight="medium" tone="critical">
-              {t('document-group.delete.blocked.heading')}
+              {variantsEnabled
+                ? t('document-group.delete.blocked.heading')
+                : t('document-group.delete.blocked.document-heading')}
             </Text>
             {/* Variants first: they are the reason that can always be resolved from here. */}
             <VStack as="ul" gap={3} style={{paddingInlineStart: 0, listStyle: 'none', margin: 0}}>
