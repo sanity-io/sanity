@@ -1,10 +1,13 @@
 import {ClientError} from '@sanity/client'
 import {act, render, screen, waitFor} from '@testing-library/react'
+import {type ReactNode, useContext} from 'react'
+import {ConfigErrorContext} from 'sanity/_singletons'
 import {describe, expect, it, vi} from 'vitest'
 
 import {type Config, type WorkspaceSummary} from '../../../config/types'
 import {type AuthStore} from '../../../store/auth/types'
 import type * as RequestErrorChannelModule from '../../requestErrors/createRequestErrorChannel'
+import {type RequestFailureResult} from '../../requestErrors/diagnoseRequestFailure'
 import {WorkspacesProvider} from '../WorkspacesProvider'
 
 const harness = vi.hoisted(() => ({
@@ -16,7 +19,7 @@ const harness = vi.hoisted(() => ({
   claimAuthStore: undefined as AuthStore | undefined,
   onRequestFailure: undefined as
     | ((
-        result: {type: 'cors'; allowed: boolean; withCredentials: boolean},
+        result: Exclude<RequestFailureResult, {type: 'unknown'}>,
         client: {config: () => {projectId?: string; apiHost?: string; dataset?: string}},
       ) => void)
     | undefined,
@@ -92,16 +95,21 @@ function workspace(
   } as WorkspaceSummary
 }
 
-function renderProvider() {
+function renderProvider(children: ReactNode = <div>ready</div>) {
   return render(
     <WorkspacesProvider
       config={{} as Config}
       LoadingComponent={() => <div>loading</div>}
       basePath="/"
     >
-      <div>ready</div>
+      {children}
     </WorkspacesProvider>,
   )
+}
+
+function ConfigErrorProbe() {
+  const configError = useContext(ConfigErrorContext)
+  return <div>config error: {configError ? configError.error.type : 'none'}</div>
 }
 
 describe('WorkspacesProvider forced logout', () => {
@@ -193,5 +201,29 @@ describe('WorkspacesProvider forced logout', () => {
     })
     expect(screen.getByText('ready')).toBeInTheDocument()
     expect(logout).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('WorkspacesProvider config errors', () => {
+  it('hands a disabled project to the config error screen', async () => {
+    harness.workspaces = [
+      workspace(
+        'proja',
+        vi.fn(() => Promise.resolve()),
+      ),
+    ]
+    harness.claimProjectId = undefined
+
+    renderProvider(<ConfigErrorProbe />)
+    expect(screen.getByText('config error: none')).toBeInTheDocument()
+
+    await act(async () => {
+      harness.onRequestFailure?.(
+        {type: 'project-disabled'},
+        {config: () => ({projectId: 'proja', dataset: 'test'})},
+      )
+    })
+
+    expect(screen.getByText('config error: projectDisabled')).toBeInTheDocument()
   })
 })

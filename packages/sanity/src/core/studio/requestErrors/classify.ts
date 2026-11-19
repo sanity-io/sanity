@@ -104,11 +104,12 @@ export function classifyRequestError(err: unknown): RequestErrorClassification |
 
 /**
  * A workspace-level configuration error: the project or dataset the
- * studio is pointed at doesn't exist. Unlike the infrastructure errors
+ * studio is pointed at doesn't exist, or the project has been disabled
+ * (archived, disabled or suspended). Unlike the infrastructure errors
  * above, these are not transient and not recoverable by retry — the user
- * has to fix `projectId`/`dataset` in their config (or create the missing
- * resource). The studio surfaces these as a full-screen takeover rather
- * than the retry/reload dialog.
+ * has to fix `projectId`/`dataset` in their config, create the missing
+ * resource, or get the project re-enabled. The studio surfaces these as a
+ * full-screen takeover rather than the retry/reload dialog.
  *
  * Which variant we can report depends on what the failing endpoint tells
  * us. Only the project/dataset management API carries a structured
@@ -118,15 +119,18 @@ export function classifyRequestError(err: unknown): RequestErrorClassification |
  *
  * @internal
  */
-export type ConfigErrorClassification = {type: 'projectNotFound'} | {type: 'datasetNotFound'}
+export type ConfigErrorClassification =
+  | {type: 'projectNotFound'}
+  | {type: 'datasetNotFound'}
+  | {type: 'projectDisabled'}
 
-/** Shape of the structured fields we read off a 404 response body. */
-interface NotFoundBody {
+/** Shape of the structured fields we read off an error response body. */
+interface StructuredErrorBody {
   error?: unknown
   attributes?: {type?: unknown}
 }
 
-function notFoundBody(err: HttpError): NotFoundBody | undefined {
+function structuredErrorBody(err: HttpError): StructuredErrorBody | undefined {
   const body = err.response.body
   if (!body || typeof body !== 'object') return undefined
 
@@ -141,28 +145,42 @@ function notFoundBody(err: HttpError): NotFoundBody | undefined {
 }
 
 /**
- * Classify a 404 as a studio-configuration error — the project or dataset
- * the studio points at doesn't exist — using only structured response
- * fields (never message text, which isn't stable across endpoints).
+ * Classify a 404 or 402 as a studio-configuration error (the project or
+ * dataset the studio points at doesn't exist, or the project is disabled)
+ * using only structured response fields (never message text, which isn't
+ * stable across endpoints).
  *
  * Recognized structured signals:
- *  - `attributes.type === 'project'` → `projectNotFound`
+ *  - 404 with `attributes.type === 'project'` → `projectNotFound`
  *    (project management API)
- *  - `error === 'Dataset not found'` → `datasetNotFound`
+ *  - 404 with `error === 'Dataset not found'` → `datasetNotFound`
  *    (dataset management API; a discrete error code, not free-form text)
+ *  - 402 with `error === 'Project Disabled'` → `projectDisabled`
+ *    (every project API rejects an archived, disabled or suspended project
+ *    with this code)
  *
- * A 404 without one of these structured signals returns `null` and stays
- * caller-domain — including the generic `/data` 404s, which carry no
+ * A response without one of these structured signals returns `null` and
+ * stays caller-domain, including the generic `/data` 404s, which carry no
  * discriminator and so can't be safely attributed to a missing project or
  * dataset. This classifier only reports what the *response* proves.
  *
  * @internal
  */
 export function classifyConfigError(err: unknown): ConfigErrorClassification | null {
-  if (!isHttpError(err) || err.statusCode !== 404) return null
-  const body = notFoundBody(err)
+  if (!isHttpError(err)) return null
+  const body = structuredErrorBody(err)
   if (!body) return null
 
+  if (err.statusCode === 402) {
+    return body.error === 'Project Disabled' ? {type: 'projectDisabled'} : null
+  }
+  if (err.statusCode === 404) {
+    return classifyNotFoundBody(body)
+  }
+  return null
+}
+
+function classifyNotFoundBody(body: StructuredErrorBody): ConfigErrorClassification | null {
   // Project management API tags the response with `attributes.type`.
   if (body.attributes?.type === 'project') {
     return {type: 'projectNotFound'}

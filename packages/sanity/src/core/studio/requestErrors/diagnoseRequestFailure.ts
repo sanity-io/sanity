@@ -1,7 +1,12 @@
 import {type SanityClient} from '@sanity/client'
 
 import {checkCors, type CorsCheckCache} from '../workspaces/corsCheck'
-import {classifyConfigError, isNetworkError, isRequestTimeoutError} from './classify'
+import {
+  classifyConfigError,
+  type ConfigErrorClassification,
+  isNetworkError,
+  isRequestTimeoutError,
+} from './classify'
 
 /**
  * A diagnosed request failure — the reason a request the studio can't recover
@@ -11,6 +16,8 @@ import {classifyConfigError, isNetworkError, isRequestTimeoutError} from './clas
  *  - `project-not-found` / `dataset-not-found` — a configuration error: the
  *    project or dataset the studio points at doesn't exist. Unrecoverable by
  *    retry; the studio takes over the screen with guidance.
+ *  - `project-disabled` - the project is archived, disabled or suspended, so
+ *    every request to it is rejected. Also a screen takeover.
  *  - `cors` — the origin isn't allowed (or can't send credentials) by the
  *    project's CORS allowlist. The studio shows the CORS-origin screen. This
  *    can begin at any time (e.g. an admin editing the allowlist in Manage),
@@ -24,6 +31,7 @@ import {classifyConfigError, isNetworkError, isRequestTimeoutError} from './clas
 export type RequestFailureResult =
   | {type: 'project-not-found'}
   | {type: 'dataset-not-found'}
+  | {type: 'project-disabled'}
   | {type: 'cors'; allowed: boolean; withCredentials: boolean}
   | {type: 'unknown'}
 
@@ -42,11 +50,18 @@ export type RequestFailureResult =
  */
 export type RequestFailureProbe = (err: unknown) => Promise<RequestFailureResult>
 
+const CONFIG_ERROR_RESULTS = {
+  projectNotFound: {type: 'project-not-found'},
+  datasetNotFound: {type: 'dataset-not-found'},
+  projectDisabled: {type: 'project-disabled'},
+} as const satisfies Record<ConfigErrorClassification['type'], RequestFailureResult>
+
 /**
  * Build a {@link RequestFailureProbe} bound to a client + CORS-probe cache.
  *
  * Detection order:
- *  1. A structured 404 (project/dataset management API) is a config error.
+ *  1. A structured 404 (project/dataset management API) or a `Project Disabled`
+ *     402 is a config error.
  *  2. An opaque network failure (not a timeout) is probed via `/check/cors`,
  *     which can still answer where the data API can't: a missing project
  *     (`SIO-404-PNF`) or the origin's allow/credentials verdict.
@@ -59,12 +74,9 @@ export function createRequestFailureProbe(
   corsCache: CorsCheckCache,
 ): RequestFailureProbe {
   return async (err) => {
-    // Structured 404 from the project/dataset management API.
     const configClassification = classifyConfigError(err)
     if (configClassification) {
-      return configClassification.type === 'datasetNotFound'
-        ? {type: 'dataset-not-found'}
-        : {type: 'project-not-found'}
+      return CONFIG_ERROR_RESULTS[configClassification.type]
     }
 
     // Opaque network/CORS failure — probe `/check/cors` to learn why. Skip
@@ -96,9 +108,9 @@ export function createRequestFailureProbe(
  *   than bound up front, because the auth store builds its own clients
  *   internally (so there's no single client to bind the probe to).
  * - `onRequestFailure` — reports a non-`unknown` result to the studio so it
- *   can take over the screen (CORS / missing project or dataset). Must be
- *   idempotent: the probe runs inside a retryable thunk, so a recurring
- *   failure can report the same result more than once.
+ *   can take over the screen (CORS / missing project or dataset / disabled
+ *   project). Must be idempotent: the probe runs inside a retryable thunk, so
+ *   a recurring failure can report the same result more than once.
  *
  * @internal
  */

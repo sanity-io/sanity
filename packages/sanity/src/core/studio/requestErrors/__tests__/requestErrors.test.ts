@@ -199,7 +199,37 @@ describe('classifyConfigError', () => {
     expect(classifyConfigError(err)).toBeNull()
   })
 
-  it('ignores non-404 client errors and non-client errors', () => {
+  it('classifies a Project Disabled 402 as a disabled project', () => {
+    const err = clientErrorWith({
+      statusCode: 402,
+      body: {
+        statusCode: 402,
+        error: 'Project Disabled',
+        message: 'This project has been disabled by a project administrator',
+      },
+    })
+    expect(classifyConfigError(err)).toEqual({type: 'projectDisabled'})
+  })
+
+  it('leaves other 402s, such as payment or usage limits, unclassified', () => {
+    expect(
+      classifyConfigError(
+        clientErrorWith({
+          statusCode: 402,
+          body: {statusCode: 402, error: 'Payment Required', message: 'Payment overdue'},
+        }),
+      ),
+    ).toBeNull()
+    expect(classifyConfigError(clientErrorWith({statusCode: 402, body: {}}))).toBeNull()
+  })
+
+  it('does not treat a Project Disabled error code on another status as a disabled project', () => {
+    expect(
+      classifyConfigError(clientErrorWith({statusCode: 403, body: {error: 'Project Disabled'}})),
+    ).toBeNull()
+  })
+
+  it('ignores other client errors and non-client errors', () => {
     expect(
       classifyConfigError(
         clientErrorWith({statusCode: 403, body: {attributes: {type: 'project'}}}),

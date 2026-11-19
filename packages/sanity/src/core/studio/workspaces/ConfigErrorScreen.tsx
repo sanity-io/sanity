@@ -63,10 +63,11 @@ export interface ConfigErrorScreenProps {
 
 /**
  * Full-screen takeover for workspace configuration errors — the project
- * or dataset the studio points at doesn't exist. Unlike the request-error
- * dialog, there's no "Try again": the only path forward is fixing the
- * config (or creating the missing resource in Manage), so the screen links
- * straight to the relevant Manage page.
+ * or dataset the studio points at doesn't exist, or the project is
+ * disabled. Unlike the request-error dialog, there's no "Try again": the
+ * only path forward is fixing the config, creating the missing resource or
+ * restoring the project in Manage, so the screen links straight to the
+ * relevant Manage page.
  *
  * @internal
  */
@@ -107,6 +108,15 @@ export function ConfigErrorScreen(props: ConfigErrorScreenProps): React.ReactEle
 
   const onChooseAnotherWorkspace = canChooseAnotherWorkspace ? handleChoose : undefined
 
+  if (error.type === 'projectDisabled') {
+    return (
+      <ProjectDisabledScreen
+        projectId={projectId}
+        manageBaseUrl={manageBaseUrl}
+        onChooseAnotherWorkspace={onChooseAnotherWorkspace}
+      />
+    )
+  }
   if (error.type === 'projectNotFound') {
     return (
       <ProjectNotFoundScreen
@@ -272,6 +282,45 @@ function ProjectNotFoundScreen(props: {
           can find your project IDs in Manage.
         </>
       }
+      action={
+        <Button
+          as="a"
+          href={`${manageBaseUrl}/manage`}
+          iconRight={LaunchIcon}
+          rel="noopener noreferrer"
+          size="large"
+          target="_blank"
+          text="Open Manage"
+        />
+      }
+    />
+  )
+}
+
+function ProjectDisabledScreen(props: {
+  projectId?: string
+  manageBaseUrl: string
+  onChooseAnotherWorkspace?: () => void
+}) {
+  const {projectId, manageBaseUrl, onChooseAnotherWorkspace} = props
+
+  return (
+    <ConfigErrorLayout
+      errorLabel="Project unavailable"
+      heading="Project unavailable"
+      onChooseAnotherWorkspace={onChooseAnotherWorkspace}
+      message={
+        projectId ? (
+          <>
+            The project <InlineCode>{projectId}</InlineCode> has been archived, disabled or
+            suspended, so the Studio can&apos;t load it.
+          </>
+        ) : (
+          "The project this Studio is configured for has been archived, disabled or suspended, so the Studio can't load it."
+        )
+      }
+      details={null}
+      hint="A project administrator can re-enable the project in Manage, or contact Sanity support."
       action={
         <Button
           as="a"
