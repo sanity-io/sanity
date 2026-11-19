@@ -129,6 +129,19 @@ function resolvedColor(element: Element, color: string): string {
   return resolved
 }
 
+/**
+ * The colour of UI 5's focus outline (`--focus-outline`, a `2px solid <colour>` shorthand) inside
+ * `element`, read from the theme rather than pinned, since UI 5 changes its step between releases.
+ */
+function resolvedFocusOutlineColor(element: Element): string {
+  const probe = document.createElement('span')
+  probe.style.outline = 'var(--focus-outline)'
+  element.append(probe)
+  const resolved = getComputedStyle(probe).outlineColor
+  probe.remove()
+  return resolved
+}
+
 beforeEach(() => {
   ;(useDocumentVersions as Mock<typeof useDocumentVersions>).mockReturnValue({
     data: versions.map((v) => v._id),
@@ -285,7 +298,7 @@ describe('DocumentVersionsFlyoutList', () => {
         await expect.element(germanRow).toHaveAttribute('data-focused')
         expect(getComputedStyle(row).backgroundColor).toBe(blue)
         expect(getComputedStyle(row).outlineStyle).toBe('solid')
-        expect(getComputedStyle(row).outlineColor).toBe(resolvedColor(row, 'var(--blue-500)'))
+        expect(getComputedStyle(row).outlineColor).toBe(resolvedFocusOutlineColor(row))
       }
 
       await settleChromaticEndState()
