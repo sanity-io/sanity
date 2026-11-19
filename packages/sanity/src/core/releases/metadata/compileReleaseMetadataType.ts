@@ -1,18 +1,18 @@
-import {Schema} from '@sanity/schema'
+import {ALL_FIELDS_GROUP_NAME} from '@sanity/schema/_internal'
 import {
-  type FieldDefinition,
+  type FieldGroup,
+  type Fieldset,
   isObjectSchemaType,
+  type ObjectField,
   type ObjectSchemaType,
-  type Schema as SchemaType,
-  type SchemaType as SanitySchemaType,
+  type Schema,
+  type SchemaType,
 } from '@sanity/types'
-import {inferFromSchema} from '@sanity/validation/_internal'
 
 import {warnRejectedReleaseMetadataField} from '../../config/releases/metadataFields'
-import {isRecord} from '../../util/isRecord'
 
-/** Type name of the private object that hosts configured release metadata fields. */
-export const RELEASE_METADATA_TYPE_NAME = 'release.metadata'
+/** Type name of the object the release metadata form edits. */
+export const RELEASE_METADATA_FORM_TYPE_NAME = 'release.metadata'
 
 /** Synthetic form document id. It is not a Content Lake document. */
 export const RELEASE_METADATA_FORM_ID = 'release.metadata.form'
@@ -44,10 +44,10 @@ const BUILTIN_TYPE_NAMES = new Set([
   'document',
 ])
 
-function typeChain(type: SanitySchemaType): SanitySchemaType[] {
-  const seen = new Set<SanitySchemaType>()
-  const chain: SanitySchemaType[] = []
-  let current: SanitySchemaType | undefined = type
+function typeChain(type: SchemaType): SchemaType[] {
+  const seen = new Set<SchemaType>()
+  const chain: SchemaType[] = []
+  let current: SchemaType | undefined = type
   while (current && !seen.has(current)) {
     seen.add(current)
     chain.push(current)
@@ -56,11 +56,11 @@ function typeChain(type: SanitySchemaType): SanitySchemaType[] {
   return chain
 }
 
-function componentKeys(type: SanitySchemaType): string[] {
+function componentKeys(type: SchemaType): string[] {
   return typeChain(type).flatMap((entry) => (entry.components ? Object.keys(entry.components) : []))
 }
 
-function rejectionReason(type: SanitySchemaType): string | undefined {
+function rejectionReason(type: SchemaType): string | undefined {
   const keys = componentKeys(type)
   if (keys.length > 0) {
     return `components.${keys.join(', components.')} is not supported`
@@ -88,144 +88,49 @@ function rejectionReason(type: SanitySchemaType): string | undefined {
   return `resolved type "${names[0] ?? 'unknown'}" is not supported`
 }
 
-function definitionComponents(field: FieldDefinition): string[] {
-  if (!isRecord(field) || !isRecord(field.components)) return []
-  return Object.keys(field.components)
-}
-
-function inlineObjectFields(field: FieldDefinition): unknown[] | undefined {
-  if (!isRecord(field) || field.type !== 'object' || !Array.isArray(field.fields)) return undefined
-  return field.fields
-}
-
-function withFields(field: FieldDefinition, fields: FieldDefinition[]): FieldDefinition {
-  const next: Record<string, unknown> = {...field, type: 'object'}
-  next.fields = fields
-  if (!isLooseField(next)) return field
-  return next
-}
-
-function isLooseField(value: unknown): value is FieldDefinition {
-  return isRecord(value) && typeof value.name === 'string' && typeof value.type === 'string'
-}
-
-function probeResolvedType(
-  field: FieldDefinition,
-  parent: SchemaType,
-  label: string,
-): {ok: true; type: SanitySchemaType} | {ok: false; reported: boolean} {
-  try {
-    const schema = Schema.compile({
-      name: 'release.metadata.probe',
-      types: [{name: 'probe', type: 'object', fields: [field]}],
-      parent,
-    })
-    const objectType: unknown = schema.get('probe')
-    const resolved = isObjectSchemaType(objectType) ? objectType.fields[0]?.type : undefined
-    if (!resolved) return {ok: false, reported: false}
-    return {ok: true, type: resolved}
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'failed to compile'
-    warnRejectedReleaseMetadataField(label, message)
-    return {ok: false, reported: true}
-  }
-}
-
-function acceptField(
-  field: FieldDefinition,
-  parent: SchemaType,
-  label: string,
-): FieldDefinition | undefined {
-  const components = definitionComponents(field)
-  if (components.length > 0) {
-    warnRejectedReleaseMetadataField(
-      label,
-      `components.${components.join(', components.')} is not supported`,
-    )
-    return undefined
-  }
-
-  const inlineFields = inlineObjectFields(field)
-  const next = inlineFields
-    ? withFields(
-        field,
-        inlineFields.flatMap((entry) => {
-          if (!isLooseField(entry)) {
-            warnRejectedReleaseMetadataField(
-              label,
-              'expected nested fields to be field definitions',
-            )
-            return []
-          }
-          const nested = acceptField(entry, parent, `${label}.${entry.name}`)
-          return nested ? [nested] : []
-        }),
-      )
-    : field
-
-  if (inlineFields && inlineObjectFields(next)?.length === 0) {
-    warnRejectedReleaseMetadataField(label, 'object has no supported fields')
-    return undefined
-  }
-
-  const resolved = probeResolvedType(next, parent, label)
-  if (!resolved.ok) {
-    if (!resolved.reported) {
-      warnRejectedReleaseMetadataField(label, `type "${String(field.type)}" could not be resolved`)
-    }
-    return undefined
-  }
-
-  const reason = rejectionReason(resolved.type)
-  if (reason) {
-    warnRejectedReleaseMetadataField(label, reason)
-    return undefined
-  }
-
-  return next
-}
-
 /**
- * Drops fields whose resolved type, or `components` override, cannot be edited
- * on release metadata. One rejected field does not affect the others.
+ * Drops fields whose resolved type, or `components` override, the release dialog cannot edit.
+ * One rejected field does not affect the others.
  */
-export function acceptReleaseMetadataFields(
-  fields: readonly FieldDefinition[],
-  parent: SchemaType,
-): FieldDefinition[] {
-  return fields.flatMap((field) => {
-    const accepted = acceptField(field, parent, field.name)
-    return accepted ? [accepted] : []
+export function acceptCompiledReleaseMetadataFields(fields: readonly ObjectField[]): ObjectField[] {
+  return fields.filter((field) => {
+    const reason = rejectionReason(field.type)
+    if (reason) warnRejectedReleaseMetadataField(field.name, reason)
+    return !reason
   })
 }
 
-export function compileReleaseMetadataSchema(
-  fields: readonly FieldDefinition[],
-  parent: SchemaType,
-): {schema: SchemaType; schemaType: ObjectSchemaType} | null {
-  const accepted = acceptReleaseMetadataFields(fields, parent)
-  if (accepted.length === 0) return null
+/**
+ * The object type the release metadata form edits: `fields`, with the fieldsets, groups and
+ * object-level validation `source` declares for them. Object-level rules only see these fields,
+ * since the dialog edits the core fields itself.
+ */
+export function createReleaseMetadataFormType(
+  source: ObjectSchemaType,
+  fields: readonly ObjectField[],
+  schema: Schema,
+): ObjectSchemaType {
+  const names = new Set(fields.map((field) => field.name))
+  const isKept = (field: ObjectField) => names.has(field.name)
 
-  try {
-    const schema = inferFromSchema(
-      Schema.compile({
-        name: 'release.metadata',
-        types: [
-          {
-            name: RELEASE_METADATA_TYPE_NAME,
-            type: 'object',
-            fields: accepted,
-          },
-        ],
-        parent,
-      }),
-    )
-    const schemaType: unknown = schema.get(RELEASE_METADATA_TYPE_NAME)
-    if (!isObjectSchemaType(schemaType)) return null
-    return {schema, schemaType}
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'failed to compile'
-    warnRejectedReleaseMetadataField(RELEASE_METADATA_TYPE_NAME, message)
-    return null
+  return {
+    name: RELEASE_METADATA_FORM_TYPE_NAME,
+    title: source.title,
+    jsonType: 'object',
+    type: schema.get('object'),
+    validation: source.validation,
+    fields: [...fields],
+    fieldsets: source.fieldsets?.flatMap((fieldset): Fieldset[] => {
+      if (fieldset.single) return isKept(fieldset.field) ? [fieldset] : []
+      const kept = fieldset.fields.filter(isKept)
+      return kept.length > 0 ? [{...fieldset, fields: kept}] : []
+    }),
+    groups: source.groups?.flatMap((group): FieldGroup[] => {
+      if (!group.fields) return [group]
+      const kept = group.fields.filter(isKept)
+      return kept.length > 0 || group.name === ALL_FIELDS_GROUP_NAME
+        ? [{...group, fields: kept}]
+        : []
+    }),
   }
 }

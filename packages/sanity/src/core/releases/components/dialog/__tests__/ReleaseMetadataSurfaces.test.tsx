@@ -99,6 +99,137 @@ describe('release metadata on create and edit', () => {
     })
   })
 
+  it('renders the configured fields without the core metadata fields', async () => {
+    await renderDialog(<CreateReleaseDialog onCancel={vi.fn()} onSubmit={vi.fn()} />)
+
+    expect(await screen.findByTestId('field-reviewNote')).toBeInTheDocument()
+    expect(screen.queryByTestId('field-releaseType')).toBeNull()
+    expect(screen.queryByTestId('field-intendedPublishAt')).toBeNull()
+  })
+
+  it('keeps the configured fieldsets, groups and object-level validation', async () => {
+    const wrapper = await createTestProvider({
+      config: {
+        name: 'default',
+        projectId: 'test',
+        dataset: 'test',
+        beta: {variants: {enabled: true}},
+        releases: {
+          metadata: {
+            fieldsets: [{name: 'review', title: 'Review'}],
+            groups: [
+              {name: 'legal', title: 'Legal'},
+              {name: 'other', title: 'Other'},
+            ],
+            fields: [
+              defineField({
+                name: 'legalNote',
+                title: 'Legal note',
+                type: 'string',
+                fieldset: 'review',
+                group: 'legal',
+              }),
+              defineField({
+                name: 'signedOff',
+                title: 'Signed off',
+                type: 'boolean',
+                group: 'other',
+              }),
+            ],
+            validation: (rule) =>
+              rule.custom((value: {legalNote?: string} | undefined) =>
+                value?.legalNote ? true : 'Add a legal note',
+              ),
+          },
+        },
+      },
+    })
+    render(<CreateReleaseDialog onCancel={vi.fn()} onSubmit={vi.fn()} />, {wrapper})
+
+    const fieldset = await screen.findByTestId('fieldset-review')
+    const legalNote = within(fieldset).getByTestId('field-legalNote')
+    expect(screen.getByTestId('group-tab-legal')).toBeInTheDocument()
+    expect(screen.getByTestId('group-tab-other')).toBeInTheDocument()
+
+    const submit = screen.getByTestId('submit-release-button')
+    await waitFor(() => expect(submit).toBeDisabled())
+    await userEvent.type(within(legalNote).getByRole('textbox'), 'Cleared')
+    await waitFor(() => expect(submit).toBeEnabled())
+  })
+
+  it('applies the validation of a plugin and of the root config', async () => {
+    const wrapper = await createTestProvider({
+      config: {
+        name: 'default',
+        projectId: 'test',
+        dataset: 'test',
+        beta: {variants: {enabled: true}},
+        plugins: [
+          {
+            name: 'legal-plugin',
+            releases: {
+              metadata: {
+                fields: [defineField({name: 'legalNote', title: 'Legal note', type: 'string'})],
+                validation: (rule) =>
+                  rule.custom((value: {legalNote?: string} | undefined) =>
+                    value?.legalNote ? true : 'Add a legal note',
+                  ),
+              },
+            },
+          },
+        ],
+        releases: {
+          metadata: {
+            fields: [defineField({name: 'owner', title: 'Owner', type: 'string'})],
+            validation: (rule) =>
+              rule.custom((value: {owner?: string} | undefined) =>
+                value?.owner ? true : 'Add an owner',
+              ),
+          },
+        },
+      },
+    })
+    render(<CreateReleaseDialog onCancel={vi.fn()} onSubmit={vi.fn()} />, {wrapper})
+
+    const legalNote = await screen.findByTestId('field-legalNote')
+    const owner = screen.getByTestId('field-owner')
+    const submit = screen.getByTestId('submit-release-button')
+    await waitFor(() => expect(submit).toBeDisabled())
+
+    await userEvent.type(within(legalNote).getByRole('textbox'), 'Cleared')
+    await flushMicrotasksThisIsACodeSmell()
+    expect(submit).toBeDisabled()
+
+    await userEvent.type(within(owner).getByRole('textbox'), 'Legal')
+    await waitFor(() => expect(submit).toBeEnabled())
+  })
+
+  it('drops a configured field whose type the release dialog cannot edit', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    const wrapper = await createTestProvider({
+      config: {
+        name: 'default',
+        projectId: 'test',
+        dataset: 'test',
+        beta: {variants: {enabled: true}},
+        releases: {
+          metadata: {
+            fields: [
+              defineField({name: 'legalNote', title: 'Legal note', type: 'string'}),
+              defineField({name: 'cover', title: 'Cover', type: 'image'}),
+            ],
+          },
+        },
+      },
+    })
+    render(<CreateReleaseDialog onCancel={vi.fn()} onSubmit={vi.fn()} />, {wrapper})
+
+    expect(await screen.findByTestId('field-legalNote')).toBeInTheDocument()
+    expect(screen.queryByTestId('field-cover')).toBeNull()
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('Dropped field "cover"'))
+    warn.mockRestore()
+  })
+
   it('keeps create blocked when the value changes before validation settles', async () => {
     const gates: Array<(result: true | string) => void> = []
     const deferredNote = defineField({
