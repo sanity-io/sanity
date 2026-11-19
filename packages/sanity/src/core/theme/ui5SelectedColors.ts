@@ -28,9 +28,9 @@ function cssVar(color: Ui5Color): string {
 type BadgeTone = 'default' | 'neutral' | 'primary' | 'suggest' | 'positive' | 'caution' | 'critical'
 
 interface SelectedColorTokens {
-  /** `--active-background-emphasized` */
+  /** The selected blue: `--blue-600` in light, `--blue-400` in dark. */
   background: Ui5Color
-  /** `--active-foreground-emphasized` */
+  /** Text on the selected blue: `--white` in light, `--black` in dark. */
   foreground: Ui5Color
   /** Secondary text and icons: the blue one step from the end of the scale. */
   muted: Ui5Color
@@ -41,12 +41,15 @@ interface SelectedColorTokens {
 /**
  * The UI 5 selected colours, per scheme.
  *
- * Each value is the primitive that the named UI 5 semantic token resolves to in that scheme
- * (`light-dark(light, dark)` in `ui5/styles.css`). The theme already has one object per scheme, so
- * it takes the primitive for its own scheme instead of the semantic token: `light-dark()` is
- * resolved from the `color-scheme` at the element, and a consumer's bundler that down-levels it
+ * Studio draws the selected item in blue. The background and its text name UI 5 colour primitives
+ * directly, not a semantic token: UI 5 moved its `--active-*` tokens from blue to grey in
+ * 5.0.0-alpha.24, and Studio keeps the blue. These are the primitives those tokens used up to
+ * alpha.23. Primitives also suit the theme, which has one object per scheme: a `light-dark()` token
+ * is resolved from the `color-scheme` at the element, and a consumer's bundler that down-levels it
  * gates the result on `prefers-color-scheme` instead, which a dark card inside a light studio does
- * not match. `ui5SelectedColors.test.ts` checks that every primitive still matches its semantic token.
+ * not match. The badge marks are the primitives each tone's `--foreground-low-emphasized` resolves
+ * to. `ui5SelectedColors.test.ts` checks that every primitive exists in `ui5/styles.css` with the
+ * hex value given here.
  *
  * @internal
  */

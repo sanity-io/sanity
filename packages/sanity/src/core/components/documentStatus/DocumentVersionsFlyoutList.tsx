@@ -104,23 +104,25 @@ function PresenceAvatars({people}: {people: RowPresence[]}) {
  * moving through the rows (hover and keyboard focus), the strong blue is for the version that is
  * open, and the open version stays blue when it is hovered or focused. UI 5 declares these
  * variables on `:root`; where a token is only defined per tone (`.sui-tone-*`), the value is the
- * palette steps that token resolves to, as in the inventory.
+ * palette steps that token resolves to, as in the inventory. The selected blue names the blue
+ * primitives directly: UI 5 moved its `--active-*` tokens from blue to grey in 5.0.0-alpha.24, and
+ * Studio keeps the blue, at the steps those tokens used up to alpha.23.
  */
 const COLORS = {
-  /** The open version's row: `--active-background-emphasized` (blue-600 / blue-400). */
-  viewedBackground: 'var(--active-background-emphasized)',
-  /** Its title: `--active-foreground-emphasized` (white / black). */
-  viewedTitle: 'var(--active-foreground-emphasized)',
+  /** The open version's row: the strong selected blue (blue-600 / blue-400). */
+  viewedBackground: 'light-dark(var(--blue-600), var(--blue-400))',
+  /** Its title: white / black on that blue. */
+  viewedTitle: 'light-dark(var(--white), var(--black))',
   /** Its subtitle: the low-emphasis selected foreground step of the blue (blue-100 / blue-900). */
   viewedSubtitle: 'light-dark(var(--blue-100), var(--blue-900))',
   /** Its variant diamond: the suggest tone's `--foreground-low-emphasized` (purple-100 / purple-900). */
   viewedMark: 'light-dark(var(--purple-100), var(--purple-900))',
   /**
    * The row of the variant picked in the studio, on a document that is not open: the inventory's
-   * checked-row tint, `--active-background-normal` (blue-50 / blue-950). Quieter than the open
-   * version's blue, since nothing is open there yet; picking the row opens it in that variant.
+   * checked-row tint, the pale selected blue (blue-50 / blue-950). Quieter than the open version's
+   * blue, since nothing is open there yet; picking the row opens it in that variant.
    */
-  pickedBackground: 'var(--active-background-normal)',
+  pickedBackground: 'light-dark(var(--blue-50), var(--blue-950))',
   /**
    * A hovered or focused row: `--background-low` (gray-50) in light. In dark that token is gray-950,
    * the panel's own background, so dark takes the next step, gray-900.

@@ -48,14 +48,16 @@ describe('UI5_SELECTED_COLORS', () => {
     }
   })
 
-  it('uses the primitives the UI 5 semantic tokens resolve to', () => {
-    const background = lightDark(ui5Declaration(':root', '--active-background-emphasized'))
-    const foreground = lightDark(ui5Declaration(':root', '--active-foreground-emphasized'))
-    for (const scheme of schemes) {
-      expect(UI5_SELECTED_COLORS[scheme].background.variable).toBe(background[scheme])
-      expect(UI5_SELECTED_COLORS[scheme].foreground.variable).toBe(foreground[scheme])
-    }
+  it('draws the selected item in the UI 5 blue primitives', () => {
+    // Studio keeps the blue selected colour. UI 5's own `--active-*` tokens turned grey in
+    // 5.0.0-alpha.24, so these are pinned to the primitives rather than compared with those tokens.
+    expect(UI5_SELECTED_COLORS.light.background).toEqual({variable: '--blue-600', hex: '#4043e7'})
+    expect(UI5_SELECTED_COLORS.light.foreground).toEqual({variable: '--white', hex: '#fff'})
+    expect(UI5_SELECTED_COLORS.dark.background).toEqual({variable: '--blue-400', hex: '#7595ff'})
+    expect(UI5_SELECTED_COLORS.dark.foreground).toEqual({variable: '--black', hex: '#13141b'})
+  })
 
+  it('gives each badge mark the primitive its tone uses for low-emphasis text', () => {
     for (const tone of ['default', 'neutral', 'suggest', 'positive', 'caution', 'critical']) {
       const mark = lightDark(ui5Declaration(`.sui-tone-${tone}`, '--foreground-low-emphasized'))
       for (const scheme of schemes) {

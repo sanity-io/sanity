@@ -86,8 +86,8 @@ export interface StatusMarkProps
   /** Overrides the mark's own tone, as for an archived or paused release. */
   tone?: BadgeTone
   /**
-   * Whether the mark sits on a strong selected background (UI 5's
-   * `--active-background-emphasized`). It then takes its tone's emphasized foreground.
+   * Whether the mark sits on the strong selected blue (blue-600 / blue-400). It then takes its
+   * tone's emphasized foreground.
    */
   selected?: boolean
 }

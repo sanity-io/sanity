@@ -3,6 +3,7 @@ import {getTheme_v2 as getThemeV2} from '@sanity/ui/theme'
 import {styled} from 'styled-components'
 
 import {inventoryContainerName} from '../CreateVariant/CreateVariant.css'
+import {SELECTION} from './selectionTokens'
 
 /**
  * The width of the selection checkbox, the size of a `@sanity/ui` checkbox.
@@ -64,7 +65,7 @@ export const VariantSet = styled(Card)(({theme}) => {
     position: absolute;
     inset: 0;
     z-index: 3;
-    border: 1px dashed var(--active-background-emphasized);
+    border: 1px dashed ${SELECTION.openBackground};
     pointer-events: none;
   }
   grid-template-columns:
