@@ -4220,7 +4220,7 @@ describe('sanity', () => {
     expectTypeOf<GroupChangeNode>().toBeObject()
   })
   test('HandleCallbackResult', () => {
-    expectTypeOf<HandleCallbackResult>().toBeObject()
+    expectTypeOf<HandleCallbackResult>().not.toBeNever()
   })
   test('hasCommentMessageValue', () => {
     expectTypeOf<typeof hasCommentMessageValue>().toBeFunction()
