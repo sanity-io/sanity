@@ -1107,26 +1107,28 @@ function selected(refs: ReturnType<typeof startHarness>): string[] {
 }
 
 /**
- * The UI 5 blue selection ladder, from `@sanity/ui` 5's palette (`ui5/styles.css`), as rgb.
+ * The blue selection ladder, as rgb, from the `@sanity/ui` 5 palette primitives (`ui5/styles.css`).
+ * Studio keeps the blue selected colour, so these are primitives, not UI 5's `--active-*` tokens
+ * (grey since 5.0.0-alpha.24).
  */
 const UI5 = {
   light: {
-    open: [64, 67, 231], // --active-background-emphasized: blue-600
-    openTitle: [255, 255, 255], // --active-foreground-emphasized: white
+    open: [64, 67, 231], // blue-600
+    openTitle: [255, 255, 255], // white
     openSubtitle: [229, 237, 255], // blue-100
     openVariantMark: [241, 235, 255], // suggest --foreground-low-emphasized: purple-100
-    checked: [245, 248, 255], // --active-background-normal: blue-50
+    checked: [245, 248, 255], // blue-50
     checkedHeader: [219, 229, 255], // blue-200
     hover: [246, 246, 248], // --background-low: gray-50
     checkboxFill: [64, 67, 231], // blue-600
     checkboxTick: [255, 255, 255], // white
   },
   dark: {
-    open: [117, 149, 255], // --active-background-emphasized: blue-400
-    openTitle: [19, 20, 27], // --active-foreground-emphasized: black
+    open: [117, 149, 255], // blue-400
+    openTitle: [19, 20, 27], // black
     openSubtitle: [22, 26, 65], // blue-900
     openVariantMark: [35, 23, 63], // suggest --foreground-low-emphasized: purple-900
-    checked: [16, 18, 40], // --active-background-normal: blue-950
+    checked: [16, 18, 40], // blue-950
     checkedHeader: [25, 36, 87], // blue-800
     hover: [27, 29, 39], // gray-900: --background-low is gray-950, the panel's own background
     checkboxFill: [117, 149, 255], // blue-400
