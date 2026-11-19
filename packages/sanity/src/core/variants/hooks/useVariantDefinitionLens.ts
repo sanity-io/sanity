@@ -74,7 +74,7 @@ export type RawVersionStub = Omit<VersionInfoDocumentStub, '_system'> & {
  *
  * @internal
  */
-function resolveVersionStub(raw: RawVersionStub): VersionInfoDocumentStub {
+export function resolveVersionStub(raw: RawVersionStub): VersionInfoDocumentStub {
   return {...raw, _system: resolveVersionSystem(raw, undefined)}
 }
 
@@ -135,7 +135,7 @@ function listenStubs(
  *
  * @internal
  */
-function getTypesWithVersions(versions: Pick<RawVersionStub, '_type'>[]): string[] {
+export function getTypesWithVersions(versions: Pick<RawVersionStub, '_type'>[]): string[] {
   return [...new Set(versions.map((version) => version._type))].toSorted()
 }
 
