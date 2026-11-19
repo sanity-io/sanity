@@ -16,6 +16,7 @@ import {
 import {type VersionInfoDocumentStub} from '../../../releases/store/types'
 import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {variantAlphaAudience} from '../../../variants/__fixtures__/variants.fixture'
+import {DocumentStatusIndicator} from '../DocumentStatusIndicator'
 import {DocumentVersionsStatusIndicator} from '../DocumentVersionsStatusIndicator'
 
 const PUBLISHED_ID = 'article-1'
@@ -238,17 +239,52 @@ function DocumentList({
   )
 }
 
+function StatusDots(props: {draft?: VersionInfoDocumentStub; published?: VersionInfoDocumentStub}) {
+  // oxlint-disable-next-line typescript/no-deprecated -- still painted on list rows until callers migrate
+  return <DocumentStatusIndicator {...props} />
+}
+
+function DocumentStatusIndicatorList() {
+  return (
+    <VStack gap={1}>
+      <Text muted size={1} weight="medium" as="div" trim={true}>
+        Deprecated DocumentStatusIndicator
+      </Text>
+      <DefaultPreview
+        media={<DocumentIcon />}
+        status={<StatusDots published={published} />}
+        subtitle="Published only"
+        title="Published"
+      />
+      <DefaultPreview
+        media={<DocumentIcon />}
+        status={<StatusDots draft={draft} />}
+        subtitle="Draft only"
+        title="Draft"
+      />
+      <DefaultPreview
+        media={<DocumentIcon />}
+        status={<StatusDots draft={draft} published={published} />}
+        subtitle="Overlapping published and draft dots"
+        title="Published and draft"
+      />
+    </VStack>
+  )
+}
+
 /**
  * Chromatic sentinel for the icons on structure list rows. Each group is one
  * studio perspective: drafts, drafts with a variant selected, then each release
  * type with and without that variant. Icons sit in the preview status slot,
- * which is where the studio renders them.
+ * which is where the studio renders them. Also pins the deprecated overlapping
+ * status dots (published / draft) used on older list rows.
  */
 export function DocumentVersionsStatusIndicatorStory() {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={4} style={{maxWidth: 420}}>
         <VStack gap={5}>
+          <DocumentStatusIndicatorList />
           <DocumentList documents={DRAFT_DOCUMENTS} heading="Drafts" perspective={DRAFTS} />
           <DocumentList
             documents={DRAFT_VARIANT_DOCUMENTS}
