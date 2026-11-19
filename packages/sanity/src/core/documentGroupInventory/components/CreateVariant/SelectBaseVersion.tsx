@@ -10,7 +10,11 @@ import {isAgentBundleName} from '../../../store/agent/createAgentBundlesStore'
 import {getVersionFromId} from '../../../util/draftUtils'
 import {readVersionType} from '../../../util/versionsUtils'
 import {type VariantSet} from '../../machines/documentGroupInventoryMachine'
-import {CreateVariantPicker, type CreateVariantPickerOption} from './CreateVariantPicker'
+import {
+  CreateVariantPicker,
+  type CreateVariantPickerOption,
+  TrimmedGlyph,
+} from './CreateVariantPicker'
 
 interface Props {
   /** The document group's versions, in the sets the inventory lists them in. */
@@ -21,6 +25,13 @@ interface Props {
   /** Called with the picked version's id, or `undefined` when the nearest version is picked. */
   onChange: (versionId: string | undefined) => void
   disabled: boolean
+  /**
+   * The version "Nearest version" resolves to for the picked variant and bundle, named on the
+   * second line of its menu row. `undefined` when there is none and the variant starts empty.
+   */
+  nearestBase?: {variantName: string; bundleName: string}
+  /** Whether what Nearest version copies depends on an Add to that is not picked yet. */
+  nearestPending?: boolean
 }
 
 const NEAREST_VERSION_KEY = '#nearest-version'
@@ -31,6 +42,8 @@ export const SelectBaseVersion: ComponentType<Props> = ({
   value,
   onChange,
   disabled,
+  nearestBase,
+  nearestPending = false,
 }) => {
   const {t} = useTranslation(studioLocaleNamespace)
 
@@ -45,20 +58,41 @@ export const SelectBaseVersion: ComponentType<Props> = ({
           bundleName: set.name,
         }),
         icon: <VersionIcon document={version.document} releases={releases} />,
+        selectIcon: (
+          <TrimmedGlyph>
+            <VersionIcon document={version.document} releases={releases} />
+          </TrimmedGlyph>
+        ),
       })),
   )
+
+  // Where "Nearest version" copies from: the second line of its menu row, and the line under the
+  // select while it is the chosen value.
+  let nearestSource = t('document-group.create-variant.form.nearest-subtitle-empty')
+  if (nearestBase) {
+    nearestSource = t('document-group.create-variant.form.nearest-subtitle', nearestBase)
+  } else if (nearestPending) {
+    nearestSource = t('document-group.create-variant.form.nearest-subtitle-pending')
+  }
 
   const nearestVersionOption: CreateVariantPickerOption = {
     key: NEAREST_VERSION_KEY,
     text: t('document-group.create-variant.base-option-nearest'),
+    icon: DocumentsIcon,
+    selectIcon: <DocumentsGlyph />,
+    subtitle: nearestSource,
   }
 
   return (
     <CreateVariantPicker
-      icon={DocumentsIcon}
-      label={t('document-group.create-variant.base-label')}
-      description={t('document-group.create-variant.base-description')}
+      label={t('document-group.create-variant.form.base-label')}
+      info={{
+        text: t('document-group.create-variant.form.base-info'),
+        label: t('document-group.create-variant.form.base-info-label'),
+      }}
+      description={typeof value === 'undefined' ? nearestSource : undefined}
       testId="create-variant-base-menu"
+      emptyIcon={<DocumentsGlyph />}
       leadingOptions={[nearestVersionOption]}
       options={options}
       value={
@@ -69,6 +103,14 @@ export const SelectBaseVersion: ComponentType<Props> = ({
       onChange={(key) => onChange(key === NEAREST_VERSION_KEY ? undefined : key)}
       disabled={disabled}
     />
+  )
+}
+
+function DocumentsGlyph() {
+  return (
+    <TrimmedGlyph>
+      <DocumentsIcon />
+    </TrimmedGlyph>
   )
 }
 
@@ -85,9 +127,9 @@ const VersionIcon: ComponentType<{
       return <ReleaseAvatarIcon release="published" />
     case 'release': {
       const release = releases.get(document._system.release?._ref ?? '')
-      return release ? <ReleaseAvatarIcon release={release} /> : null
+      return release ? <ReleaseAvatarIcon release={release} /> : <DocumentsIcon />
     }
     default:
-      return null
+      return <DocumentsIcon />
   }
 }

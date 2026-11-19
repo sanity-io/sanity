@@ -1,4 +1,4 @@
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   DocumentGroupInventory,
@@ -13,9 +13,11 @@ import {
   useClient,
   useDocumentStore,
   useSetVariant,
+  usePerspective,
   useTranslation,
   type VersionInfoDocumentStub,
 } from 'sanity'
+import {useRouter} from 'sanity/router'
 import {Flex} from 'ui5'
 
 import {ReferencePreviewLink} from '../../../../components/confirmDeleteDialog/ReferencePreviewLink'
@@ -23,13 +25,16 @@ import {referringDocuments} from '../../../../components/confirmDeleteDialog/use
 import {VersionsPreviewList} from '../../../../components/confirmDeleteDialog/VersionsPreviewList'
 import {DocTitle} from '../../../../components/DocTitle'
 import {usePaneLayout} from '../../../../components/pane/usePaneLayout'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../../constants'
 import {useDocumentPerspectiveList} from '../../../../hooks/useDocumentPerspectiveList'
 import {structureLocaleNamespace} from '../../../../i18n'
+import {CREATE_VARIANT_PARAM, EMPTY_PARAMS} from '../../constants'
 import {DocumentInspectorHeader} from '../../documentInspector/DocumentInspectorHeader'
 import {useDocumentPane} from '../../useDocumentPane'
 import {CompareVersionsAction} from './CompareVersionsAction'
 import {documentGroupInventoryContainer} from './DocumentGroupInspector.css'
+import {isAddToReleaseShown} from './isAddToReleaseShown'
 
 const documentGroupInventoryComponents: DocumentGroupInventoryComponents = {
   DocTitle,
@@ -42,7 +47,8 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
   const {documentId, documentType, onClose} = props
   const {t} = useTranslation()
   const {t: structureT} = useTranslation(structureLocaleNamespace)
-  const {displayed, editState} = useDocumentPane()
+  const {displayed, editState, ready, targetDocumentState} = useDocumentPane()
+  const {selectedPerspective} = usePerspective()
   const {collapsed: layoutCollapsed} = usePaneLayout()
 
   const perspectiveList = useDocumentPerspectiveList()
@@ -56,6 +62,40 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
   const setVariant = useSetVariant()
 
   const [inventory, setInventory] = useState<DocumentGroupInventoryHandle | null>(null)
+
+  // `createVariant=<variant id>` (see CREATE_VARIANT_PARAM) opens the Create variant form for that
+  // variant. Once the form closes, the param goes, replacing the history entry rather than adding
+  // one, so Back does not open the form again.
+  const {params = EMPTY_PARAMS, createPathWithParams} = usePaneRouter()
+  const {navigateUrl} = useRouter()
+  const createVariantId = params[CREATE_VARIANT_PARAM] || undefined
+  const latestPaneRouter = useRef({params, createPathWithParams, navigateUrl})
+  useEffect(() => {
+    latestPaneRouter.current = {params, createPathWithParams, navigateUrl}
+  })
+  // Deferred a tick, so the param is cleared from the router state that creating the variant
+  // navigated to (it switches the pane to the new variant), not from the one before it.
+  const handleCreateVariantClose = () => {
+    setTimeout(() => {
+      const latest = latestPaneRouter.current
+      if (!latest.params[CREATE_VARIANT_PARAM]) return
+      latest.navigateUrl({
+        path: latest.createPathWithParams({...latest.params, [CREATE_VARIANT_PARAM]: undefined}),
+        replace: true,
+      })
+    }, 0)
+  }
+
+  // One filled button per view: while the pane's banner shows Add to release, that is the filled
+  // button, and the inventory's Create variant steps down to a secondary one.
+  const createVariantSecondary = isAddToReleaseShown({
+    selectedPerspective,
+    targetDocumentState,
+    displayedId: displayed?._id,
+    ready,
+    editState,
+    historyVersion: params.historyVersion,
+  })
 
   // Picking a version in the inventory switches the pane to it.
   function selectDocumentGroupVariant(document: VersionInfoDocumentStub) {
@@ -119,6 +159,9 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
             referringDocuments$={referringDocuments$}
             components={documentGroupInventoryComponents}
             onSelect={selectDocumentGroupVariant}
+            createVariantId={createVariantId}
+            onCreateVariantClose={handleCreateVariantClose}
+            createVariantSecondary={createVariantSecondary}
           />
         )}
       </div>

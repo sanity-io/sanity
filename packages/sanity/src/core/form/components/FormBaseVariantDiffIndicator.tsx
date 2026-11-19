@@ -1,9 +1,8 @@
 import {AnimatePresence, motion} from 'motion/react'
-import {type ComponentType, type CSSProperties} from 'react'
-import {Icon} from 'ui5'
+import {type ComponentType} from 'react'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
-import {RhombusIcon} from '../../components/temporary-icons/Rhombus'
+import {VariantMark} from '../../../ui-components/variantMark'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type BaseFieldProps} from '../types/fieldProps'
 
@@ -22,15 +21,7 @@ export const FormBaseVariantDiffIndicator: ComponentType<Props> = ({changedFromB
           animate={{opacity: 1}}
         >
           <Tooltip content={t('changes.from-base-variant.label')} placement="left">
-            <Icon
-              size={3}
-              icon={<RhombusIcon />}
-              style={
-                {
-                  '--icon-color': 'var(--card-badge-suggest-icon-color)',
-                } as CSSProperties
-              }
-            />
+            <VariantMark size="inline" />
           </Tooltip>
         </motion.div>
       )}
