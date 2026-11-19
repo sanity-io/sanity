@@ -175,7 +175,7 @@ settings:
 catalogs:
   default:
     '@optique/core':
-      specifier: ^1.3.6
+      specifier: ^1.3.7
       version: 1.3.7
     '@optique/run':
       specifier: ^1.3.7
