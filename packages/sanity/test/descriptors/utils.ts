@@ -4,14 +4,17 @@ import {
   type SetSynchronization,
   // @ts-expect-error -- pre-existing, fix later
 } from '@sanity/descriptors'
-import {createSchemaFromManifestTypes, extractManifestSchemaTypes} from '@sanity/schema/_internal'
+import {
+  createSchemaFromManifestTypes,
+  extractManifestSchemaTypes,
+  findExtendableType,
+} from '@sanity/schema/_internal'
 import {type Schema} from '@sanity/types'
 import capitalize from 'lodash-es/capitalize.js'
 import cloneDeep from 'lodash-es/cloneDeep.js'
 import startCase from 'lodash-es/startCase.js'
 import {expect} from 'vitest'
 
-import {findExtendableType} from '../../../@sanity/schema/src/sanity/builtinTypes/extendableTypes'
 import {DESCRIPTOR_CONVERTER} from '../../src/core/schema/descriptors'
 
 export async function expectManifestSchemaConversion(
