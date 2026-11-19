@@ -229,7 +229,7 @@ describe('classifyConfigError', () => {
     ).toBeNull()
   })
 
-  it('ignores non-404 client errors and non-client errors', () => {
+  it('ignores other client errors and non-client errors', () => {
     expect(
       classifyConfigError(
         clientErrorWith({statusCode: 403, body: {attributes: {type: 'project'}}}),

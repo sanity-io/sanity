@@ -56,3 +56,8 @@ export const ProjectDisabled: Story = {
 export const ProjectDisabledWithoutId: Story = {
   args: {error: {type: 'projectDisabled'}, projectId: undefined},
 }
+
+/** Disabled project with the chooser button. */
+export const ProjectDisabledChooseAnother: Story = {
+  args: {error: {type: 'projectDisabled'}, multipleWorkspaces: true},
+}
