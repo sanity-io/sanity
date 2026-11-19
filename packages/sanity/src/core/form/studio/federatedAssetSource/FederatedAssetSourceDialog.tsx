@@ -1,13 +1,24 @@
+import {CloseIcon} from '@sanity/icons/Close'
 import {
   type AssetFromSource,
   type AssetSourceComponentProps,
   type ValidationMarker,
 } from '@sanity/types'
-import {PortalProvider} from '@sanity/ui'
-import {type ReactNode, type Ref, useCallback, useMemo, useState} from 'react'
+import {PortalProvider, useGlobalKeyDown, useLayer} from '@sanity/ui'
+import {
+  type CSSProperties,
+  type ReactNode,
+  type Ref,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {encodeJsonParams} from 'sanity/router'
-import {Box, Text} from 'ui5'
+import {Box, Flex, Text} from 'ui5'
 
+import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useColorSchemeValue} from '../../../studio/colorScheme'
 import {useWorkspace} from '../../../studio/workspace'
@@ -138,9 +149,11 @@ export function FederatedAssetSourceDialog(props: {
   return (
     <PortalProvider element={portalElement}>
       <FullSurfaceAppDialog
-        header={dialogHeaderTitle ?? view.title}
-        id="federated-asset-source-dialog"
-        onClose={sourceProps.onClose}
+        // The dialog renders its own header and handles Escape itself (see
+        // DialogEscape): given `onClose`, the Sanity UI dialog closes on every
+        // Escape inside it, before the view's own handlers run.
+        __unstable_autoFocus={false}
+        id={DIALOG_ID}
         onClickOutside={sourceProps.onClose}
         open
         ref={ref ?? null}
@@ -150,31 +163,112 @@ export function FederatedAssetSourceDialog(props: {
         // matching the Dialog's DOM.
         width={5}
       >
-        <Box
-          style={{
-            position: 'absolute',
-            inset: 0,
-            borderTop: '1px solid',
-            borderColor: 'var(--card-border-color)',
-            overflow: 'hidden',
-            display: 'flex',
-          }}
-        >
-          {failed ? (
-            <Box padding={4}>
-              <Text muted size={1} as="div" trim={true}>
-                {t('asset-sources.federated.error.unavailable')}
+        <DialogEscape onClose={sourceProps.onClose} />
+        <div style={{position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column'}}>
+          <Flex alignItems="flex-start" padding={3}>
+            <Box flexGrow={1} padding={2}>
+              <Text id={`${DIALOG_ID}_label`} size={1} weight="semibold">
+                {dialogHeaderTitle ?? view.title}
               </Text>
             </Box>
-          ) : (
-            <FederatedViewMount
-              onUnavailable={handleUnavailable}
-              view={view}
-              viewProps={viewProps}
-            />
-          )}
-        </Box>
+            <Box flexShrink={0}>
+              <Button
+                aria-label={t('asset-sources.federated.dialog.close-label')}
+                icon={CloseIcon}
+                mode="bleed"
+                onClick={sourceProps.onClose}
+                tooltipProps={null}
+              />
+            </Box>
+          </Flex>
+          <FocusOnOpen
+            style={{
+              position: 'relative',
+              flex: 1,
+              minHeight: 0,
+              borderTop: '1px solid',
+              borderColor: 'var(--card-border-color)',
+              overflow: 'hidden',
+              display: 'flex',
+              outline: 'none',
+            }}
+          >
+            {failed ? (
+              <Box padding={4}>
+                <Text muted size={1} as="div" trim={true}>
+                  {t('asset-sources.federated.error.unavailable')}
+                </Text>
+              </Box>
+            ) : (
+              <FederatedViewMount
+                onUnavailable={handleUnavailable}
+                view={view}
+                viewProps={viewProps}
+              />
+            )}
+          </FocusOnOpen>
+        </div>
       </FullSurfaceAppDialog>
     </PortalProvider>
+  )
+}
+
+const DIALOG_ID = 'federated-asset-source-dialog'
+
+/**
+ * Escape closes the dialog once nothing inside it has used the key. The view
+ * goes first: it may close its own preview, menu or selection and mark the key
+ * handled (`preventDefault`). The dialog waits until the event has been
+ * dispatched, so view listeners registered after this one are heard too.
+ */
+function DialogEscape(props: {onClose: () => void}): null {
+  const {onClose} = props
+  const {isTopLayer} = useLayer()
+  const pendingClose = useRef<ReturnType<typeof setTimeout>>(undefined)
+  useEffect(() => () => clearTimeout(pendingClose.current), [])
+
+  useGlobalKeyDown((event) => {
+    if (event.key !== 'Escape' || event.isComposing || !isTopLayer || event.defaultPrevented) return
+    const target = event.target
+    const inDialog =
+      target === document.body ||
+      (target instanceof Element && target.closest(`#${DIALOG_ID}`) !== null)
+    if (!inDialog) return
+    clearTimeout(pendingClose.current)
+    pendingClose.current = setTimeout(() => {
+      if (!event.defaultPrevented) onClose()
+    })
+  })
+
+  return null
+}
+
+/**
+ * Moves focus into the view's area when the dialog opens, so keys go to the
+ * view. The Sanity UI dialog's own autofocus runs before its DOM is attached to
+ * the page, and focus falls back to the body once the menu that opened the
+ * dialog unmounts.
+ */
+function FocusOnOpen(props: {children: ReactNode; style: CSSProperties}): ReactNode {
+  const [element, setElement] = useState<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!element) return undefined
+    let frame = 0
+    const focus = () => {
+      if (!element.isConnected) {
+        frame = requestAnimationFrame(focus)
+        return
+      }
+      if (!element.contains(document.activeElement)) element.focus({preventScroll: true})
+    }
+    focus()
+    return () => cancelAnimationFrame(frame)
+  }, [element])
+
+  return (
+    <div ref={setElement} style={props.style} tabIndex={-1}>
+      {props.children}
+    </div>
   )
 }

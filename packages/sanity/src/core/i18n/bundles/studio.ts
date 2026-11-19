@@ -236,6 +236,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-sources.dataset.file.title': 'Workspace files',
   'asset-sources.dataset.image.title': 'Workspace images',
 
+  /** Accessible label for the button that closes a federated (workbench-brokered) asset source dialog */
+  'asset-sources.federated.dialog.close-label': 'Close dialog',
   /** Error message shown when a federated (workbench-brokered) asset source view fails to load */
   'asset-sources.federated.error.unavailable':
     'This asset source failed to load. Close the dialog and try again.',
