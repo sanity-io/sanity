@@ -12,7 +12,7 @@ import {Tooltip} from '@sanity/ui/tooltip'
 import {dequal as isEqual} from 'dequal/lite'
 import {type ComponentProps, type ReactElement, useCallback, useState} from 'react'
 import {ContextMenuButton, UserAvatar, useDateTimeFormat, useTranslation} from 'sanity'
-import {Text, Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack, type VStackProps} from 'ui5'
 
 import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
@@ -20,7 +20,7 @@ import * as styles from './QueryRecall.module.css'
 import {type ParsedUrlState} from './VisionGui'
 import {StyledLabel} from './VisionGui.styled'
 
-function FixedHeader(props: ComponentProps<typeof VStack>) {
+function FixedHeader(props: VStackProps) {
   return <VStack {...props} className={styles.fixedHeader} />
 }
 
