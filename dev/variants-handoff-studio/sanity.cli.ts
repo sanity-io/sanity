@@ -4,7 +4,9 @@ import {defineCliConfig} from 'sanity/cli'
 import {defaultClientConditions, mergeConfig} from 'vite'
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'ppsg7ml5'
-const dataset = process.env.SANITY_STUDIO_DATASET || 'variants-2-0'
+const dataset =
+  process.env.SANITY_STUDIO_DATASET ||
+  (process.env.SANITY_STUDIO_REVIEW_KIND === 'v7' ? 'v7-ux-review' : 'variants-2-0')
 
 // Same monorepo setup as dev/test-studio/sanity.cli.ts: resolve workspace sources via the
 // `monorepo` condition so edits under packages/sanity/src hot-reload.
