@@ -273,6 +273,9 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
         hasBaseVariant={formState.hasBaseVariant}
         fieldMarksCompareWithReference
         presence={formState.presence}
+        // The whole form is read-only, which the form's own members read from here (closing an
+        // empty array item, for one, then never tries to patch it)
+        readOnly
         schemaType={schemaType}
         value={value}
         compareValue={compareValue}
