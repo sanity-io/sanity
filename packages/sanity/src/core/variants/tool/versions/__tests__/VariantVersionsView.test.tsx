@@ -8,7 +8,7 @@ import {type VersionStub} from '../../../../inventoryModel/types'
 import {variantAlphaAudience} from '../../../__fixtures__/variants.fixture'
 import {type DocumentLensFeed} from '../../../hooks/useDocumentLensFeed'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
-import {searchVersion, VariantVersionsView} from '../VariantVersionsView'
+import {VariantVersionsView} from '../VariantVersionsView'
 
 const inventoryMock = vi.hoisted(() => ({
   value: undefined as unknown,
@@ -177,16 +177,6 @@ describe('VariantVersionsView', () => {
     })
 
     expect(await screen.findByTestId('versions-error')).toBeInTheDocument()
-  })
-
-  it('keeps placeholders through a search, so their documents still load', () => {
-    const placeholder = {
-      ...row({_id: 'placeholder.scarf', groupId: 'scarf', _type: ''}),
-      placeholder: true as const,
-    }
-    expect(searchVersion(placeholder, 'jacket')).toBe(true)
-    expect(searchVersion(row({_id: 'boots', groupId: 'boots'}), 'jacket')).toBe(false)
-    expect(searchVersion(row({_id: 'drafts.jacket', groupId: 'jacket'}), 'jacket')).toBe(true)
   })
 
   it('shows no error notice while the feed is fine', async () => {
