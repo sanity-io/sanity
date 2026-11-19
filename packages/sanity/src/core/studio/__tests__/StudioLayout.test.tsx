@@ -131,6 +131,9 @@ describe('StudioLayoutComponent telemetry', () => {
       name: 'test-workspace',
       title: 'Test Workspace',
       tools,
+      // These tests cover the Studio Ready event. Stay on the unmount path so hidden tools are
+      // not part of the render.
+      reactActivityMode: {enabled: false},
     })
     const {useRouterState} = await import('sanity/router')
     ;(useRouterState as ReturnType<typeof vi.fn>).mockImplementation(

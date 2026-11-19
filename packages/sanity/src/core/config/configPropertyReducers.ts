@@ -733,7 +733,7 @@ export const reactActivityModeEnabledReducer = ({
   const flattenedConfig = flattenConfig(config, [])
 
   return flattenedConfig.reduce<boolean>((value, {config: innerConfig}) => {
-    const reactActivityMode: unknown = innerConfig.beta?.reactActivityMode
+    const reactActivityMode: unknown = innerConfig.reactActivityMode
 
     if (typeof reactActivityMode === 'undefined') {
       return value
@@ -741,7 +741,7 @@ export const reactActivityModeEnabledReducer = ({
 
     if (!isRecord(reactActivityMode)) {
       throw new Error(
-        `Expected \`beta.reactActivityMode\` to be an object, but received ${getPrintableType(
+        `Expected \`reactActivityMode\` to be an object, but received ${getPrintableType(
           reactActivityMode,
         )}`,
       )
@@ -758,7 +758,7 @@ export const reactActivityModeEnabledReducer = ({
     }
 
     throw new Error(
-      `Expected \`beta.reactActivityMode.enabled\` to be a boolean, but received ${getPrintableType(
+      `Expected \`reactActivityMode.enabled\` to be a boolean, but received ${getPrintableType(
         enabled,
       )}`,
     )

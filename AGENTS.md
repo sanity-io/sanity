@@ -808,7 +808,8 @@ counts as deleting it: add the new key and deprecate the old one.
 ### `<Activity mode="hidden">`: effects are torn down, DOM and state stay
 
 React's `<Activity>` is used for closed `@sanity/ui` overlays, collapsed document lists, and the
-top-level tools when `beta.reactActivityMode` is on (`StudioLayoutComponent`). Hiding runs
+top-level tools. `reactActivityMode` is on by default (`StudioLayoutComponent`), so the tools
+used most recently stay mounted while inactive. Hiding runs
 every effect cleanup in the subtree and showing runs the effects again, without a remount, so:
 
 - Anything that lives only in an effect-created object is lost on reveal unless the effect can
