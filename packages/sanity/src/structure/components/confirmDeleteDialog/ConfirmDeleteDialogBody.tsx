@@ -127,6 +127,12 @@ export function ConfirmDeleteDialogBody({
   const failsLaterCount = (internalReferences?.references ?? []).filter(
     (reference) => reference.failsLater,
   ).length
+  // Every link is a release copy's: the delete leaves no live link pointing at nothing, the release fails instead
+  const onlyFailsLater =
+    action === 'delete' &&
+    failsLaterCount > 0 &&
+    failsLaterCount === (internalReferences?.totalCount ?? 0) &&
+    (crossDatasetReferences?.totalCount ?? 0) === 0
   const sortedReferences = useMemo(
     () =>
       [...(internalReferences?.references ?? [])].sort(
@@ -384,8 +390,8 @@ export function ConfirmDeleteDialogBody({
           </Text>
         </Card>
       ) : null}
-      {/* A blocked action needs no warning about what it would do */}
-      {linkStrength === 'required' ? null : (
+      {/* A blocked action needs no warning about what it would do, and the fails-later note already says what happens */}
+      {linkStrength === 'required' || onlyFailsLater ? null : (
         <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
           <Text size={1} as="div" trim={true}>
             <Translate

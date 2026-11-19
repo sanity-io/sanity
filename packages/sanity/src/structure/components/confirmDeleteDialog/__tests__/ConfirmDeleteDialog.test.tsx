@@ -97,6 +97,30 @@ describe('ConfirmDeleteDialog', () => {
     expect(screen.queryByText('Delete all versions anyway')).not.toBeInTheDocument()
   })
 
+  it('says only that the release fails when every link is held in a release copy', async () => {
+    mockUseDocumentVersions.mockReturnValue(withVersions(1))
+    mockUseReferringDocuments.mockReturnValue({
+      ...noReferences,
+      internalReferences: {
+        totalCount: 1,
+        references: [
+          {_id: 'versions.r1.publisher', _type: 'post', required: false, failsLater: true},
+        ],
+      },
+      totalCount: 1,
+    } as unknown as ReturnType<typeof useReferringDocuments>)
+    const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
+
+    render(<ConfirmDeleteDialog id="doc1" type="post" onCancel={vi.fn()} onConfirm={vi.fn()} />, {
+      wrapper,
+    })
+
+    expect(await screen.findByTestId('fails-later-note')).toBeInTheDocument()
+    // The links do not point at nothing once the document is gone: the release fails instead
+    expect(screen.getByRole('dialog')).not.toHaveTextContent('these links will point at nothing')
+    expect(screen.getByText('Delete document')).toBeInTheDocument()
+  })
+
   it('hides the confirm button while the version count loads', async () => {
     mockUseDocumentVersions.mockReturnValue({data: [], loading: true} as unknown as ReturnType<
       typeof useDocumentVersions
