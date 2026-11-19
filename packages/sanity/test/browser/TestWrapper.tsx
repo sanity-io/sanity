@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {Card, LayerProvider, ThemeProvider} from '@sanity/ui'
-import {buildTheme, type RootTheme} from '@sanity/ui/theme'
+import {type RootTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
 import {clsx} from 'clsx'
 import memoize from 'lodash-es/memoize.js'
@@ -25,6 +25,7 @@ import {
 
 import {AssetLimitUpsellProvider} from '../../src/core/limits/context/assets/AssetLimitUpsellProvider'
 import {PerspectiveProvider} from '../../src/core/perspective/PerspectiveProvider'
+import {getStudioDefaultTheme} from '../../src/core/theme'
 import {route} from '../../src/router/route'
 import {RouterProvider} from '../../src/router/RouterProvider'
 import {Pane} from '../../src/structure/components/pane/Pane'
@@ -51,7 +52,8 @@ interface TestWrapperProps {
    */
   plugins?: PluginOptions[]
 }
-const studioThemeConfig: RootTheme = buildTheme()
+// The theme a studio gets when its config sets none, so harnesses render with Studio's colours.
+const studioThemeConfig: RootTheme = getStudioDefaultTheme()
 
 function StyledChangeConnectorRoot(props: ComponentProps<typeof ChangeConnectorRoot>) {
   const {className, ...restProps} = props

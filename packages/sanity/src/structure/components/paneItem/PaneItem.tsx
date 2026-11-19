@@ -10,6 +10,7 @@ import {
 } from '@sanity/types'
 import {Badge, type CardProps} from '@sanity/ui'
 import {
+  type CSSProperties,
   type ComponentType,
   type MouseEvent,
   startTransition,
@@ -35,6 +36,7 @@ import {Text, Box, Flex, Icon} from 'ui5'
 
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter/usePaneRouter'
+import {paneItemChevron} from './PaneItem.css'
 import {PaneItemPreview} from './PaneItemPreview'
 
 interface PaneItemProps {
@@ -93,6 +95,8 @@ export function PaneItem(props: PaneItemProps) {
   const hasSchemaType = Boolean(schemaType && schemaType.name && schema.get(schemaType.name))
   const [clicked, setClicked] = useState<boolean>(false)
 
+  const isSelected = Boolean(selected || clicked)
+
   const preview = useMemo(() => {
     if (value && isSanityDocument(value)) {
       if (!schemaType || !hasSchemaType) {
@@ -120,8 +124,13 @@ export function PaneItem(props: PaneItemProps) {
             {typeof count === 'number' && (
               <Badge data-testid="pane-item-count">{numberFormat.format(count)}</Badge>
             )}
-            <Box style={{opacity: 0.5}}>
-              <Icon muted size={1} icon={ChevronRightIcon} style={{margin: '-0.375rem'}} />
+            <Box className={paneItemChevron}>
+              <Icon
+                muted
+                size={1}
+                icon={ChevronRightIcon}
+                style={isSelected ? CHEVRON_SELECTED_STYLE : CHEVRON_STYLE}
+              />
             </Box>
           </Flex>
         }
@@ -135,6 +144,7 @@ export function PaneItem(props: PaneItemProps) {
     documentPreviewStore,
     hasSchemaType,
     icon,
+    isSelected,
     layout,
     numberFormat,
     schemaType,
@@ -205,3 +215,14 @@ function PreloadDocumentPane(props: {documentId: string; documentType: string}) 
 
   return null
 }
+
+const CHEVRON_STYLE: CSSProperties = {margin: '-0.375rem'}
+
+/**
+ * On a selected row the chevron takes the selected card's secondary text colour. ui5's `Icon`
+ * declares `--icon-color-muted` on itself and paints from it, so the colour is set there, inline.
+ */
+const CHEVRON_SELECTED_STYLE = {
+  ...CHEVRON_STYLE,
+  '--icon-color-muted': 'var(--card-muted-fg-color)',
+} as CSSProperties
