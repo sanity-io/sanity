@@ -100,14 +100,15 @@ Switch Content Variants on in your Studio configuration to ensure variants are d
     const classified = new Set(index.versions.map(({_id}) => _id))
     const unclassified = meta.versionState.versions.filter(({_id}) => !classified.has(_id))
 
-    const variants: Variant[] = [
-      ...ordered.map(({document}) => document),
-      ...unclassified,
-    ].map<Variant>((version) => ({
-      id: version._id,
-      name: getVersionName({document: version, releases, t}),
-      document: version,
-    }))
+    // Without Content Variants, versions that belong to a variant are left out, as the document
+    // status tooltip does: they would otherwise read as more of the document's ordinary versions.
+    const variants: Variant[] = [...ordered.map(({document}) => document), ...unclassified]
+      .filter((version) => !getDocumentVersionVariantId(version))
+      .map<Variant>((version) => ({
+        id: version._id,
+        name: getVersionName({document: version, releases, t}),
+        document: version,
+      }))
 
     if (proposedChanges) {
       variants.splice(

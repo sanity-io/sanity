@@ -11,6 +11,7 @@ import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {useFormatRelativeLocalePublishDate} from '../../releases/hooks/useFormatRelativeLocalePublishDate'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
+import {useWorkspace} from '../../studio/workspace'
 import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {type Variant} from '../machines/selectionMachine'
 import {isNeverPublishedDraft} from '../utils/isNeverPublishedDraft'
@@ -51,7 +52,9 @@ export function DocumentGroupEntry({
   const {t} = useTranslation(studioLocaleNamespace)
   const {document} = variant
   const release = resolveVariantRelease(variant, releases)
-  const isVariantRow = getDocumentVersionVariantId(document) !== undefined
+  // The variant mark is drawn only with Content Variants on: without it there are no variants to tell apart
+  const variantsEnabled = useWorkspace().beta?.variants?.enabled === true
+  const isVariantRow = variantsEnabled && getDocumentVersionVariantId(document) !== undefined
   const neverPublished =
     !release && documentVersions !== undefined && isNeverPublishedDraft(document, documentVersions)
 
