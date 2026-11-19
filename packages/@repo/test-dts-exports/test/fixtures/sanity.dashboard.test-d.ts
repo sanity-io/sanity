@@ -8,6 +8,10 @@ import type {
   ServiceBus,
   unstable_defineService,
   unstable_defineView,
+  useAssetSource,
+  usePanel,
+  useTile,
+  WebWorkerProps,
 } from 'sanity/dashboard'
 import {describe, expectTypeOf, test} from 'vitest'
 
@@ -26,5 +30,17 @@ describe('sanity/dashboard', () => {
   })
   test('unstable_defineView', () => {
     expectTypeOf<typeof unstable_defineView>().toBeFunction()
+  })
+  test('useAssetSource', () => {
+    expectTypeOf<typeof useAssetSource>().toBeFunction()
+  })
+  test('usePanel', () => {
+    expectTypeOf<typeof usePanel>().toBeFunction()
+  })
+  test('useTile', () => {
+    expectTypeOf<typeof useTile>().toBeFunction()
+  })
+  test('WebWorkerProps', () => {
+    expectTypeOf<WebWorkerProps>().toBeObject()
   })
 })

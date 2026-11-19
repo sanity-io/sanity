@@ -1532,6 +1532,9 @@ exports[`exports snapshot 1`] = `
   "./dashboard": {
     "unstable_defineService": "function",
     "unstable_defineView": "function",
+    "useAssetSource": "function",
+    "usePanel": "function",
+    "useTile": "function",
   },
   "./desk": {
     "ComponentBuilder": "function",
