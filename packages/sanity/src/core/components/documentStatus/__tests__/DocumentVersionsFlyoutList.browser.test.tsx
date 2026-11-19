@@ -598,15 +598,55 @@ describe('DocumentVersionsFlyoutList', () => {
       expect(getComputedStyle(detail).textOverflow).toBe('ellipsis')
     })
 
-    it('names the row after its version, not Default, and keeps the line without Variants', async () => {
-      mockVersions([version(GROUP_ID), version(`drafts.${GROUP_ID}`)])
+    it('case A: lists Published and Draft as version rows, with their marks, without Variants', async () => {
+      mockVersions([
+        {...version(GROUP_ID), _system: {group: {_ref: GROUP_ID, _weak: true}}},
+        version(`drafts.${GROUP_ID}`),
+      ])
       await renderFlyoutList({variantsEnabled: false})
-      const row = page.getByTestId('document-versions-flyout-row')
-      await expect.element(row).toBeVisible()
-      // Both versions carry the same edit time, so the row takes the name of the one listed first
-      await expect.element(row).toMatchTextContent(/^(Published|Draft)/)
-      await expect.element(row).not.toMatchTextContent(/Default/)
-      expect(page.getByTestId('document-versions-flyout-row-line').elements()).toHaveLength(1)
+      const rows = page.getByTestId('document-versions-flyout-version-row')
+      await expect.poll(() => rows.elements().length).toBe(2)
+      await expect.element(rows.nth(0)).toMatchTextContent(/^Published/)
+      await expect.element(rows.nth(1)).toMatchTextContent(/^DraftEdited/)
+      expect(page.getByTestId('document-versions-flyout-row').elements()).toHaveLength(0)
+      await expect
+        .element(page.getByTestId('document-versions-flyout'))
+        .not.toMatchTextContent(/Default/)
+      await expect
+        .element(page.getByTestId('document-versions-flyout-inventory'))
+        .toMatchTextContent(/^Manage versions/)
+      // Each row carries its own mark, at the right edge
+      const marks = page.getByTestId('document-versions-flyout-version-mark').elements()
+      expect(marks.map((mark) => mark.getAttribute('data-version-type'))).toEqual([
+        'published',
+        'draft',
+      ])
+      for (const mark of marks) expect(mark.querySelector('svg')).not.toBeNull()
+    })
+
+    it('case B: adds a row per release, with its timing and mark, without Variants', async () => {
+      const releaseVersion = {
+        ...version(`versions.${activeASAPRelease.name}.${GROUP_ID}`),
+        _system: {
+          bundleId: activeASAPRelease.name,
+          group: {_ref: GROUP_ID, _weak: true},
+          release: {_ref: activeASAPRelease._id, _weak: true},
+        },
+      } as VersionInfoDocumentStub
+      mockVersions([
+        {...version(GROUP_ID), _system: {group: {_ref: GROUP_ID, _weak: true}}},
+        version(`drafts.${GROUP_ID}`),
+        releaseVersion,
+      ])
+      await renderFlyoutList({variantsEnabled: false})
+      const rows = page.getByTestId('document-versions-flyout-version-row')
+      await expect.poll(() => rows.elements().length).toBe(3)
+      await expect
+        .element(rows.nth(2))
+        .toMatchTextContent(`${activeASAPRelease.metadata.title}As soon as possible`)
+      await expect
+        .element(page.getByTestId('document-versions-flyout-inventory'))
+        .toMatchTextContent(/^Manage all versions/)
     })
   })
 

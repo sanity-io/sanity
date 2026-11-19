@@ -1,6 +1,9 @@
 import {type DocumentPresence} from '../../store/presence/types'
 import {getPublishedId} from '../../util/draftUtils'
-import {type DocumentVersionStatusGroup} from './sortDocumentVersionsForStatus'
+import {
+  type DocumentVersionStatusGroup,
+  type DocumentVersionStatusItem,
+} from './sortDocumentVersionsForStatus'
 
 type RowPresence = Omit<DocumentPresence, 'path'>
 
@@ -48,4 +51,27 @@ export function groupPresenceByAudience(
     byAudience.set(key, people)
   }
   return byAudience
+}
+
+/**
+ * Who is editing which version, for the version rows of the flyout with Variants off: each person
+ * on the row of the exact version they have open. A person on a version the flyout does not list
+ * goes on no row; the flyout puts them on its footer row.
+ *
+ * @internal
+ */
+export function groupPresenceByVersion(
+  items: DocumentVersionStatusItem[],
+  presence: RowPresence[],
+): Map<string, RowPresence[]> {
+  const ids = new Set(items.map((item) => item.version._id))
+  const byVersion = new Map<string, RowPresence[]>()
+  for (const entry of presence) {
+    const id = entry.documentId
+    if (!id || !ids.has(id)) continue
+    const people = byVersion.get(id) ?? []
+    if (!people.some((person) => person.user.id === entry.user.id)) people.push(entry)
+    byVersion.set(id, people)
+  }
+  return byVersion
 }

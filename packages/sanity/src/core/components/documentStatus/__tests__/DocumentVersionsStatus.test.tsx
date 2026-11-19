@@ -174,43 +174,25 @@ describe('DocumentVersionsStatus', () => {
     vi.useRealTimers()
   })
 
-  it('names the one line after its latest version, not Default, when variants are disabled', async () => {
+  it('lists one line per version, Published, Draft then each release, when variants are disabled', async () => {
     await renderStatus({
       versions: [
+        inRelease(activeASAPRelease, hoursAgo(5)),
         published(hoursAgo(48)),
         draft(hoursAgo(3)),
-        inRelease(activeASAPRelease, hoursAgo(5)),
         published(hoursAgo(1), variantAlphaAudience._id),
       ],
       variants: [variantAlphaAudience],
     })
 
-    const [line] = getLines()
-    expect(getLines()).toHaveLength(1)
-    expect(within(line).getByText('Edited 3 hr ago')).toBeInTheDocument()
-    expect(getIcons(line)).toEqual(['release', 'draft', 'published'])
-    expect(line).toHaveTextContent('DraftEdited 3 hr ago')
+    const lines = getLines()
+    expect(lines).toHaveLength(3)
+    expect(lines[0]).toHaveTextContent('PublishedPublished 2 days ago')
+    expect(lines[1]).toHaveTextContent('DraftEdited 3 hr ago')
+    expect(lines[2]).toHaveTextContent(`${activeASAPRelease.metadata.title}Edited 5 hr ago`)
+    expect(lines.map(getIcons)).toEqual([['published'], ['draft'], ['release']])
     expect(screen.queryByText('Default')).not.toBeInTheDocument()
     expect(screen.queryByText(/Alpha audience/)).not.toBeInTheDocument()
-    expect(screen.queryByText(activeASAPRelease.metadata.title)).not.toBeInTheDocument()
-  })
-
-  it('names the line Published when variants are disabled and published is the latest edit', async () => {
-    await renderStatus({versions: [published(hoursAgo(2))]})
-
-    const [line] = getLines()
-    expect(within(line).getByText('Published')).toBeInTheDocument()
-    expect(screen.queryByText('Default')).not.toBeInTheDocument()
-  })
-
-  it('names the line after the release when variants are disabled and a release has the latest edit', async () => {
-    await renderStatus({
-      versions: [published(hoursAgo(48)), inRelease(activeASAPRelease, hoursAgo(1))],
-    })
-
-    const [line] = getLines()
-    expect(within(line).getByText(activeASAPRelease.metadata.title)).toBeInTheDocument()
-    expect(screen.queryByText('Default')).not.toBeInTheDocument()
   })
 
   it('keeps the Default name for the line of no variant when variants are enabled', async () => {
@@ -273,6 +255,7 @@ describe('DocumentVersionsStatus', () => {
         inRelease(activeASAPRelease),
         inRelease(activeUndecidedRelease),
       ],
+      variantsEnabled: true,
     })
 
     expect(getIcons(getLines()[0])).toEqual(['release', 'draft', 'published'])
@@ -296,6 +279,7 @@ describe('DocumentVersionsStatus', () => {
     async ({releases, testId}) => {
       await renderStatus({
         versions: [published(hoursAgo(48)), ...releases.map((release) => inRelease(release))],
+        variantsEnabled: true,
       })
 
       const releaseIcons = getLines()[0].querySelectorAll('[data-testid^="release-avatar-"]')
