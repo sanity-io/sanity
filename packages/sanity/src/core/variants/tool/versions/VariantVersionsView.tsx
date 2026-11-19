@@ -5,7 +5,7 @@ import {Card} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 // eslint-disable-next-line @sanity/i18n/no-i18next-import -- types-only import
 import {type TFunction} from 'i18next'
-import {memo, useEffect, useMemo, useState} from 'react'
+import {memo, useMemo, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {Text, Flex, Box} from 'ui5'
 
@@ -15,6 +15,7 @@ import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {RelativeTime} from '../../../components/RelativeTime'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {type VersionStub} from '../../../inventoryModel/types'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {useActiveReleases} from '../../../releases/store/useActiveReleases'
 import {DocumentTable} from '../../../releases/tool/components/Table/DocumentTable'
@@ -22,7 +23,7 @@ import {Headers} from '../../../releases/tool/components/Table/TableHeader'
 import {type Column, type VisibleColumn} from '../../../releases/tool/components/Table/types'
 import {getSearchableTypes} from '../../../search/common/getSearchableTypes'
 import {useDocumentPreviewValues} from '../../../tasks/hooks/useDocumentPreviewValues'
-import {useDocumentLensFeed} from '../../hooks/useDocumentLensFeed'
+import {useVersionInventory, VERSION_INVENTORY_LIMIT} from '../../hooks/useVersionInventory'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useAllVariants} from '../../store/useAllVariants'
 import {type SystemVariant, type VariantId} from '../../types'
@@ -30,23 +31,17 @@ import {getVariantType} from '../../util/variantType'
 import {getVariantId, getVariantTitle} from '../util'
 import {
   DEFAULT_DEFINITION,
-  createVisibleRowTracker,
-  type DocumentLensRow,
+  filterVersions,
+  getReleaseOptions,
   getRowPreviewVariant,
   getVersionLinkTarget,
+  orderVersions,
   type VersionFilters,
+  type VersionGrouping,
   type VersionSort,
 } from './versionRows'
 
-type VersionRow = DocumentLensRow & {order: number; rowKey: string}
-
-type VisibleRowTracker = ReturnType<typeof createVisibleRowTracker>
-
-/** Reports while its row is mounted, which the virtualized table only does for rows on screen. */
-function VisibleRow({groupId, tracker}: {groupId: string; tracker: VisibleRowTracker}) {
-  useEffect(() => tracker.track(groupId), [groupId, tracker])
-  return null
-}
+type VersionRow = VersionStub & {order: number; rowKey: string}
 
 interface Option<Value extends string> {
   value: Value | undefined
@@ -144,7 +139,7 @@ function textHeader(text: string): VisibleColumn<VersionRow>['header'] {
 }
 
 function getVersionLabel(
-  row: DocumentLensRow,
+  row: VersionStub,
   releases: Map<string, ReleaseDocument>,
   t: TFunction<'variants'>,
 ): string {
@@ -157,15 +152,13 @@ function getColumnDefs({
   t,
   variantsById,
   releases,
-  tracker,
 }: {
   t: TFunction<'variants'>
   variantsById: Map<string, SystemVariant>
   releases: Map<string, ReleaseDocument>
-  tracker: VisibleRowTracker
 }): Column<VersionRow>[] {
   return [
-    // Rows arrive in the feed's document order; this hidden column keeps it.
+    // Rows arrive already ordered by the sort and group controls; this hidden column keeps it.
     {id: 'order', hidden: true, width: null, sortTransform: (row) => row.order},
     {
       id: 'document',
@@ -181,9 +174,7 @@ function getColumnDefs({
       cell: ({cellProps, datum}) => (
         <Flex {...cellProps} alignItems="center" flexBasis="0%" flexGrow={1} padding={1}>
           <Box flexBasis="0%" flexGrow={1} style={{minWidth: 0}}>
-            {!datum.isLoading && <VisibleRow groupId={datum.groupId} tracker={tracker} />}
-            {datum.isLoading || datum.placeholder ? (
-              // A document whose page has not loaded yet.
+            {datum.isLoading ? (
               <SanityDefaultPreview isPlaceholder />
             ) : (
               <VersionPreview
@@ -203,7 +194,7 @@ function getColumnDefs({
       header: textHeader(t('detail.documents.table.type')),
       cell: ({cellProps, datum}) => (
         <Flex {...cellProps} alignItems="center" paddingX={2}>
-          {!datum.isLoading && !datum.placeholder && <TypeTitle type={datum._type} />}
+          {!datum.isLoading && <TypeTitle type={datum._type} />}
         </Flex>
       ),
     },
@@ -213,7 +204,7 @@ function getColumnDefs({
       header: textHeader(t('versions.table.definition')),
       cell: ({cellProps, datum}) => (
         <Flex {...cellProps} alignItems="center" paddingX={2}>
-          {!datum.isLoading && !datum.placeholder && (
+          {!datum.isLoading && (
             <Text size={1} as="div" trim={true} muted={!datum.variantId}>
               {datum.variantId
                 ? variantsById.has(datum.variantId)
@@ -231,7 +222,7 @@ function getColumnDefs({
       header: textHeader(t('versions.table.version')),
       cell: ({cellProps, datum}) => (
         <Flex {...cellProps} alignItems="center" paddingX={2}>
-          {!datum.isLoading && !datum.placeholder && (
+          {!datum.isLoading && (
             <Text size={1} as="div" trim={true}>
               {getVersionLabel(datum, releases, t)}
             </Text>
@@ -245,7 +236,7 @@ function getColumnDefs({
       header: textHeader(t('detail.documents.table.last-edited')),
       cell: ({cellProps, datum}) => (
         <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
-          {!datum.isLoading && !datum.placeholder && (
+          {!datum.isLoading && (
             <Text muted size={1} as="div" trim={true}>
               <RelativeTime time={datum._updatedAt} useTemporalPhrase minimal />
             </Text>
@@ -276,23 +267,23 @@ export function VariantVersionsView(): React.JSX.Element {
   const [type, setType] = useState<string | undefined>(undefined)
   const [filters, setFilters] = useState<VersionFilters>({})
   const [sort, setSort] = useState<VersionSort>('last-edited')
+  const [grouping, setGrouping] = useState<VersionGrouping>('none')
 
-  const feed = useDocumentLensFeed({type, filters, sort})
+  // The type filter bounds the query; the other filters work on the rows that were read.
+  const types = useMemo(() => (type ? [type] : []), [type])
+  const inventory = useVersionInventory(types)
+
   const rows = useMemo<VersionRow[]>(
-    () => feed.rows.map((row, order) => ({...row, order, rowKey: row._id})),
-    [feed.rows],
+    () =>
+      orderVersions(filterVersions(inventory.rows, filters), {sort, grouping}).map(
+        (row, order) => ({...row, order, rowKey: row._id}),
+      ),
+    [filters, grouping, inventory.rows, sort],
   )
 
-  // The feed loads the pages around the documents on screen. Rows report while mounted; the
-  // range is recomputed when they change and when the document list changes.
-  const [visibleGroupIds, setVisibleGroupIds] = useState<string[]>([])
-  const [tracker] = useState(() => createVisibleRowTracker(setVisibleGroupIds))
-  const {onVisibleGroupIds} = feed
-  useEffect(() => onVisibleGroupIds(visibleGroupIds), [onVisibleGroupIds, visibleGroupIds])
-
   const columnDefs = useMemo(
-    () => getColumnDefs({t, variantsById, releases, tracker}),
-    [releases, t, tracker, variantsById],
+    () => getColumnDefs({t, variantsById, releases}),
+    [releases, t, variantsById],
   )
 
   const typeOptions = useMemo<Option<string>[]>(
@@ -315,12 +306,12 @@ export function VariantVersionsView(): React.JSX.Element {
   const releaseOptions = useMemo<Option<string>[]>(
     () => [
       {value: undefined, text: t('versions.filter.release.all')},
-      ...[...releases.values()].map((release) => ({
-        value: release._id,
-        text: release.metadata?.title || release.name,
+      ...getReleaseOptions(inventory.rows, releases).map((release) => ({
+        value: release.id,
+        text: release.title,
       })),
     ],
-    [releases, t],
+    [inventory.rows, releases, t],
   )
   const stateOptions = useMemo<Option<NonNullable<VersionFilters['state']>>[]>(
     () => [
@@ -334,6 +325,13 @@ export function VariantVersionsView(): React.JSX.Element {
 
   return (
     <Flex flexDirection="column" flexBasis="0%" flexGrow={1} height="100%">
+      {inventory.truncated && (
+        <Card flex="none" marginX={3} marginBottom={3} padding={3} radius={2} tone="caution">
+          <Text size={1} as="div" trim={true} data-testid="versions-truncated">
+            {t('versions.truncated', {limit: VERSION_INVENTORY_LIMIT})}
+          </Text>
+        </Card>
+      )}
       <DocumentTable<VersionRow>
         alwaysShowCommandLane
         columnDefs={columnDefs}
@@ -348,10 +346,20 @@ export function VariantVersionsView(): React.JSX.Element {
               ]}
               value={sort}
             />
+            <OptionMenu<VersionGrouping>
+              id="versions-group"
+              onChange={(value) => setGrouping(value ?? 'none')}
+              options={[
+                {value: 'none', text: t('versions.group.none')},
+                {value: 'document', text: t('versions.group.document')},
+                {value: 'definition', text: t('versions.group.definition')},
+              ]}
+              value={grouping}
+            />
           </Flex>
         }
         defaultSort={{column: 'order', direction: 'asc'}}
-        emptyState={feed.error ? t('versions.error') : t('versions.no-versions')}
+        emptyState={inventory.error ? t('versions.error') : t('versions.no-versions')}
         filterTabs={
           <Flex gap={2}>
             <OptionMenu
@@ -383,7 +391,7 @@ export function VariantVersionsView(): React.JSX.Element {
         filterTabsScroll={false}
         getRowKey={(row) => row._id}
         id="variant-versions-table"
-        loading={feed.loading}
+        loading={inventory.loading}
         rows={rows}
         // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
         rowId="rowKey"

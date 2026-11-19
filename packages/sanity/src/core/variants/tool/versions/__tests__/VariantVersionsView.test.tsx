@@ -6,20 +6,19 @@ import {setupVirtualListEnv} from '../../../../../../test/testUtils/setupVirtual
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type VersionStub} from '../../../../inventoryModel/types'
 import {variantAlphaAudience} from '../../../__fixtures__/variants.fixture'
-import {type DocumentLensFeed} from '../../../hooks/useDocumentLensFeed'
+import {type VersionInventory} from '../../../hooks/useVersionInventory'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {VariantVersionsView} from '../VariantVersionsView'
 
 const inventoryMock = vi.hoisted(() => ({
   value: undefined as unknown,
   types: [] as string[][],
-  filters: [] as unknown[],
 }))
 
-vi.mock('../../../hooks/useDocumentLensFeed', () => ({
-  useDocumentLensFeed: vi.fn((options: {type: string | undefined; filters: unknown}) => {
-    inventoryMock.types.push(options.type ? [options.type] : [])
-    inventoryMock.filters.push(options.filters)
+vi.mock('../../../hooks/useVersionInventory', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useVersionInventory: vi.fn((types: string[]) => {
+    inventoryMock.types.push(types)
     return inventoryMock.value
   }),
 }))
@@ -62,13 +61,10 @@ function row(overrides: Partial<VersionStub> & Pick<VersionStub, '_id' | 'groupI
   }
 }
 
-const onVisibleGroupIds = vi.fn()
-
-const inventory: DocumentLensFeed = {
+const inventory: VersionInventory = {
   loading: false,
   error: null,
-  documentCount: 3,
-  onVisibleGroupIds,
+  truncated: false,
   rows: [
     row({_id: 'jacket', groupId: 'jacket'}),
     row({_id: 'drafts.jacket', groupId: 'jacket', kind: 'draft', bundle: 'drafts'}),
@@ -82,11 +78,9 @@ const inventory: DocumentLensFeed = {
   ],
 }
 
-async function renderView(value: DocumentLensFeed = inventory) {
+async function renderView(value: VersionInventory = inventory) {
   inventoryMock.value = value
   inventoryMock.types = []
-  inventoryMock.filters = []
-  onVisibleGroupIds.mockClear()
   const wrapper = await createTestProvider({resources: [variantsUsEnglishLocaleBundle]})
   return render(<VariantVersionsView />, {wrapper})
 }
@@ -114,7 +108,7 @@ describe('VariantVersionsView', () => {
     expect(href).toContain('variant=variant:alpha-audience')
   })
 
-  it('passes the state filter to the feed', async () => {
+  it('filters by state', async () => {
     await renderView()
     await screen.findAllByTestId('version-row-link')
 
@@ -127,24 +121,14 @@ describe('VariantVersionsView', () => {
       within(openMenu!).getByRole('menuitem', {name: 'Published', hidden: true}),
     )
 
-    await waitFor(() => expect(inventoryMock.filters.at(-1)).toEqual({state: 'published'}))
+    await waitFor(() => expect(screen.getAllByTestId('version-row-link')).toHaveLength(1))
   })
 
-  it('shows a placeholder for a document not loaded yet and reports the visible documents', async () => {
-    await renderView({
-      ...inventory,
-      rows: [
-        ...inventory.rows,
-        {...row({_id: 'placeholder.scarf', groupId: 'scarf', _type: ''}), placeholder: true},
-      ],
-    })
+  it('says when the list was cut', async () => {
+    await renderView({...inventory, truncated: true})
 
-    await waitFor(() => expect(screen.getAllByTestId('version-row-link')).toHaveLength(3))
-    // The feed hears which documents are on screen, placeholders included, so it loads them.
-    await waitFor(() =>
-      expect(onVisibleGroupIds).toHaveBeenLastCalledWith(
-        expect.arrayContaining(['jacket', 'boots', 'scarf']),
-      ),
+    expect(await screen.findByTestId('versions-truncated')).toHaveTextContent(
+      'Showing the 500 most recently edited versions',
     )
   })
 })
