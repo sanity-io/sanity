@@ -9,9 +9,9 @@ import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useWorkspace} from '../../studio/workspace'
 import {readVersionType} from '../../util/versionsUtils'
 import {useAllVariants} from '../../variants/store/useAllVariants'
-import {getVariantId, getVariantTitle} from '../../variants/tool/util'
 import {DocumentStatusIcon} from '../documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {lineIcons, lineName, root} from './DocumentVersionsStatus.css'
+import {getAudienceName} from './getAudienceName'
 import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
 import {
   type DocumentVersionStatusGroup,
@@ -115,14 +115,12 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
 function AudienceLine({group, index}: {group: DocumentVersionStatusGroup; index: number}) {
   const {t} = useTranslation()
   const schema = useSchema()
-  const {version} = latestEdit(group)
+  const latest = latestEdit(group)
+  const {version} = latest
   const liveEdit = Boolean(schema.get(version._type)?.liveEdit)
   const timeAgo = useCompactTimeAgo(version._updatedAt)
-  const variant = group.items[0]?.variant
-  let name = t('document-group.base-variant')
-  if (group.variantId) {
-    name = variant ? getVariantTitle(variant) : getVariantId(group.variantId)
-  }
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+  const name = getAudienceName({group, latest, t, variantsEnabled})
 
   return (
     <Flex

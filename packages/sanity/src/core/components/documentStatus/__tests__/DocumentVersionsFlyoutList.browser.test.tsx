@@ -598,13 +598,15 @@ describe('DocumentVersionsFlyoutList', () => {
       expect(getComputedStyle(detail).textOverflow).toBe('ellipsis')
     })
 
-    it('keeps the latest change on the row without Variants', async () => {
+    it('names the row after its version, not Default, and keeps the line without Variants', async () => {
       mockVersions([version(GROUP_ID), version(`drafts.${GROUP_ID}`)])
       await renderFlyoutList({variantsEnabled: false})
-      const row = page.getByRole('menuitem', {name: /Default/})
+      const row = page.getByTestId('document-versions-flyout-row')
       await expect.element(row).toBeVisible()
-      await expect.element(row).toMatchTextContent(/Edited/)
-      expect(page.getByTestId('document-versions-flyout-row-line').elements()).toHaveLength(0)
+      // Both versions carry the same edit time, so the row takes the name of the one listed first
+      await expect.element(row).toMatchTextContent(/^(Published|Draft)/)
+      await expect.element(row).not.toMatchTextContent(/Default/)
+      expect(page.getByTestId('document-versions-flyout-row-line').elements()).toHaveLength(1)
     })
   })
 
