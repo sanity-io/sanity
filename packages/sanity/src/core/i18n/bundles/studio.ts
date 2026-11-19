@@ -584,6 +584,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'How easy or difficult is it to create and manage document versions and variants?',
   /** The title of the Content Variants feedback dialog */
   'content-variants.feedback.title': 'Share feedback with Sanity on versions and variants',
+  /** The question in the version inventory's feedback dialog in a studio without Content Variants */
+  'document-group-inventory.feedback.versions-sentiment-label':
+    'How easy or difficult is it to create and manage document versions?',
+  /** The title of the version inventory's feedback dialog in a studio without Content Variants */
+  'document-group-inventory.feedback.versions-title': 'Share feedback with Sanity on versions',
 
   /** --- Document inventory --- */
 

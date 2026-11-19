@@ -27,6 +27,7 @@ import {
   type StatusMarkName,
   statusMarkGeometry,
 } from '../../../../ui-components/statusMark/statusMarkGeometry'
+import {type WorkspaceOptions} from '../../../config/types'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {type PerspectiveContextValue} from '../../../perspective/types'
@@ -325,6 +326,8 @@ let harness: HarnessActor | undefined
 let deletedIds: string[][] = []
 /** While set, a confirmed delete stays in flight until it settles. */
 let deleteGate: Promise<void> | undefined
+
+const VARIANTS_ON: WorkspaceOptions['beta'] = {variants: {enabled: true}}
 
 /** Keeps confirmed deletes in flight; call the returned function to let them settle. */
 function holdDeletes(): () => void {
@@ -1553,7 +1556,8 @@ function SelectionPanel({
   openId?: string
 }) {
   return (
-    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+    // The sets hold variant rows, which carry their marks only with Content Variants on
+    <TestWrapper schemaTypes={SCHEMA_TYPES} betaFeatures={VARIANTS_ON}>
       <Card
         scheme={scheme}
         style={{display: 'flex', flexDirection: 'column', width: 300, height: 600}}
