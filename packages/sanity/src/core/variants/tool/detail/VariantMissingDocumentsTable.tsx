@@ -1,4 +1,3 @@
-import {type ReleaseDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
 import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
@@ -12,7 +11,6 @@ import {Button} from '../../../../ui-components/button/Button'
 import {getNearestBaseVersion} from '../../../documentGroupInventory/components/CreateVariant/getNearestBaseVersion'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {usePerspective} from '../../../perspective/usePerspective'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {DocumentTable} from '../../../releases/tool/components/Table/DocumentTable'
 import {Headers} from '../../../releases/tool/components/Table/TableHeader'
@@ -23,10 +21,6 @@ import {type MissingDocumentRow} from '../../hooks/useVariantDefinitionLens'
 import {useVariantDocumentOperations} from '../../hooks/useVariantDocumentOperations'
 import {variantsLocaleNamespace} from '../../i18n'
 import {type SystemVariant} from '../../types'
-import {
-  getMissingVersionDestination,
-  type MissingVersionDestination,
-} from './missingVersionDestination'
 import {VariantDocumentTypePicker} from './VariantDocumentTypePicker'
 
 const PREVIEW_PERSPECTIVE_STACK = ['drafts']
@@ -127,31 +121,20 @@ function getColumnDefs(t: TFunction<'variants'>): Column<MissingDocumentRow>[] {
 
 /**
  * Creates the missing version of one document for a definition, with the same create action the
- * document's version inventory uses, in the destination {@link getMissingVersionDestination}
- * picks from the selected perspective. The new variant starts from the document's version in the
- * destination release if it has one, else its draft, else its published version.
+ * document's version inventory uses. The new variant starts from the document's draft, or its
+ * published version, and lands in drafts (published for live-edit types).
  */
 function useCreateMissingVersion(variant: SystemVariant) {
   const {t} = useTranslation(variantsLocaleNamespace)
   const toast = useToast()
   const schema = useSchema()
   const {createVariantDocument} = useVariantDocumentOperations()
-  const {selectedPerspective} = usePerspective()
-  const getDestination = useCallback(
-    (type: string) =>
-      getMissingVersionDestination({
-        selectedPerspective,
-        liveEdit: Boolean(schema.get(type)?.liveEdit),
-      }),
-    [schema, selectedPerspective],
-  )
   const [pending, setPending] = useState<ReadonlySet<string>>(() => new Set())
 
   const create = useCallback(
     async (row: MissingDocumentRow) => {
       setPending((previous) => new Set(previous).add(row.groupId))
-      const destination = getDestination(row._type)
-      const selectedPerspective = destination.perspective
+      const selectedPerspective = schema.get(row._type)?.liveEdit ? 'published' : 'drafts'
 
       const done = () =>
         setPending((previous) => {
@@ -161,19 +144,11 @@ function useCreateMissingVersion(variant: SystemVariant) {
         })
 
       try {
-        const baseDocument =
-          (destination.kind === 'release'
-            ? getNearestBaseVersion({
-                variantId: variant._id,
-                bundle: {type: 'release', releaseId: destination.release._id},
-                versions: row.versions,
-              })
-            : undefined) ??
-          getNearestBaseVersion({
-            variantId: variant._id,
-            bundle: {type: 'drafts'},
-            versions: row.versions,
-          })
+        const baseDocument = getNearestBaseVersion({
+          variantId: variant._id,
+          bundle: {type: 'drafts'},
+          versions: row.versions,
+        })
         await (baseDocument
           ? createVariantDocument({
               baseId: baseDocument._id,
@@ -201,26 +176,10 @@ function useCreateMissingVersion(variant: SystemVariant) {
         })
       }
     },
-    [createVariantDocument, getDestination, t, toast, variant],
+    [createVariantDocument, schema, t, toast, variant],
   )
 
-  return {create, getDestination, pending}
-}
-
-function getReleaseTitle(release: ReleaseDocument, t: TFunction<'variants'>): string {
-  return release.metadata?.title || t('detail.missing.untitled-release')
-}
-
-function getDestinationTitle(
-  destination: MissingVersionDestination,
-  t: TFunction<'variants'>,
-): string {
-  if (destination.kind === 'release') return getReleaseTitle(destination.release, t)
-  return t(
-    destination.kind === 'published'
-      ? 'detail.missing.destination.published'
-      : 'detail.missing.destination.drafts',
-  )
+  return {create, pending}
 }
 
 /**
@@ -246,7 +205,7 @@ export function VariantMissingDocumentsTable({
   hasTypes: boolean
 }): React.JSX.Element {
   const {t} = useTranslation(variantsLocaleNamespace)
-  const {create, getDestination, pending} = useCreateMissingVersion(variant)
+  const {create, pending} = useCreateMissingVersion(variant)
   const columnDefs = useMemo(() => getColumnDefs(t), [t])
   const tableRows = useMemo(() => rows.map((row) => ({...row, rowKey: row.groupId})), [rows])
 
@@ -254,8 +213,6 @@ export function VariantMissingDocumentsTable({
     ({datum}: {datum: unknown}) => {
       const row = datum as MissingDocumentRow & {isLoading?: boolean}
       if (row.isLoading) return null
-      const destination = getDestination(row._type)
-      const fallback = destination.kind === 'release' ? undefined : destination.fallback
       return (
         <Button
           data-testid="variant-missing-create-version"
@@ -263,27 +220,16 @@ export function VariantMissingDocumentsTable({
           icon={AddIcon}
           mode="bleed"
           onClick={() => void create(row)}
-          text={t('detail.missing.create-in', {destination: getDestinationTitle(destination, t)})}
-          tooltipProps={
-            fallback
-              ? {
-                  content: t(`detail.missing.fallback.${fallback.reason}`, {
-                    release: getReleaseTitle(fallback.release, t),
-                    destination: getDestinationTitle(destination, t),
-                  }),
-                }
-              : undefined
-          }
+          text={t('detail.missing.create')}
         />
       )
     },
-    [create, getDestination, pending, t],
+    [create, pending, t],
   )
 
-  // TODO(GA, not open beta): create the missing versions for many documents at once. The
+  // TODO(SAPP-4881 follow-up): create the missing versions for many documents at once. The
   // DocumentTable `selection` prop (select column plus a bulk action bar) is the place for it; each
-  // selected row would run the same create as the row action, in the same destination, batched
-  // into one transaction.
+  // selected row would run the same create as the row action, batched into one transaction.
 
   return (
     <DocumentTable<MissingDocumentRow & {rowKey: string}>
