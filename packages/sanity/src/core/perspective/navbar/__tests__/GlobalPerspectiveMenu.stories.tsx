@@ -6,8 +6,8 @@ import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {ReleasesMenu} from '../releases/ReleasesMenu'
 
 /**
- * The navbar's perspective menu. The default trigger is the classic chevron;
- * `variantsEnabled` swaps it for the labelled chip. Once opened, the menu keeps
+ * The navbar's perspective menu, opened from the labelled chip that every
+ * studio uses. Once opened, the menu keeps
  * its sticky system perspectives (Published, Drafts) at the top and the
  * releases-tool actions at the bottom. Chromatic sentinel for the menu's
  * zero-gap override on the `@sanity/ui` Menu stack, which is what keeps the
@@ -39,7 +39,6 @@ export const Open: Story = {
   args: {
     selectedPerspectiveName: undefined,
     areReleasesEnabled: true,
-    variantsEnabled: false,
   },
   parameters: {chromatic: {delay: 300}},
   play: async ({canvasElement}) => {

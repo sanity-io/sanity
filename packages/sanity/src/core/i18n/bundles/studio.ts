@@ -1871,11 +1871,19 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.navbar.drafts': 'Drafts',
   /** Placeholder for the releases perspective filter. */
   'release.navbar.filter-placeholder': 'Search versions and releases…',
-  /** Accessible name for the chevron that opens the releases menu */
+  /**
+   * Accessible name for the chevron that opens the releases menu
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions
   'release.navbar.open-releases': 'Open releases',
   /** Label for published releases in navbar */
   'release.navbar.published': 'Published',
-  /** Tooltip for releases navigation in navbar */
+  /**
+   * Tooltip for releases navigation in navbar
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions
   'release.navbar.tooltip': 'View scheduling',
   /** Accessible label for the link that opens a release's page from the global perspective menu */
   'release.navbar.view-release-aria-label': 'View release {{title}}',

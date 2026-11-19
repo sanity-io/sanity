@@ -207,7 +207,8 @@ describe('deferral safety of useActiveReleases / useAllVariants / useAllReleases
 
   describe('variant identity (PerspectiveProvider pairs the map with the live variant name)', () => {
     it('sync (current): no frame pairs a selected variant name with an unresolved variant', async () => {
-      const wrapper = await createTestProvider()
+      // The provider only reads the sticky variant param while variants are on
+      const wrapper = await createTestProvider({config: {beta: {variants: {enabled: true}}}})
       render(<SyncVariantHarness />, {wrapper})
 
       act(() => {
