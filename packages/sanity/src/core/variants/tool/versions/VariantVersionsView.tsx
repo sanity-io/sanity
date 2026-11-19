@@ -42,6 +42,20 @@ type VersionRow = DocumentLensRow & {order: number; rowKey: string}
 
 type VisibleRowTracker = ReturnType<typeof createVisibleRowTracker>
 
+const perspectiveStacks = new Map<string, string[]>()
+
+/**
+ * The same array for the same stack. The preview's observable is keyed on the stack's identity, so
+ * a new array on every feed emission would rebuild it and flash the preview back to a placeholder.
+ */
+function stablePerspectiveStack(stack: string[]): string[] {
+  const key = stack.join('\n')
+  const known = perspectiveStacks.get(key)
+  if (known) return known
+  perspectiveStacks.set(key, stack)
+  return stack
+}
+
 /** Reports while its row is mounted, which the virtualized table only does for rows on screen. */
 function VisibleRow({groupId, tracker}: {groupId: string; tracker: VisibleRowTracker}) {
   useEffect(() => tracker.track(groupId), [groupId, tracker])
@@ -101,7 +115,7 @@ const VersionPreview = memo(function VersionPreview({
   const {isLoading, value} = useDocumentPreviewValues({
     documentId: row.groupId,
     documentType: row._type,
-    perspectiveStack,
+    perspectiveStack: stablePerspectiveStack(perspectiveStack),
     variant: getRowPreviewVariant(row),
   })
 
