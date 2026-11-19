@@ -153,9 +153,15 @@ const primaryButtonTheme = buildTheme({
   },
 })
 
+// Two review studios share this config, the integration build and the dataset:
+// - Open Beta Review Studio (default): what open beta customers see, with Variants on.
+// - Studio v7 UX Review (SANITY_STUDIO_REVIEW_KIND=v7): what every Studio with Releases gets, with Variants
+//   off and the document inventory on through its own switch.
+const isV7UxReview = process.env.SANITY_STUDIO_REVIEW_KIND === 'v7'
+
 export default defineConfig({
   name: 'default',
-  title: 'Content Variants Handoff Studio',
+  title: isV7UxReview ? 'Studio v7 UX Review' : 'Open Beta Review Studio',
   projectId,
   dataset,
   plugins: [
@@ -173,5 +179,7 @@ export default defineConfig({
   // The Variants flag is ON: today's open-beta baseline (the shipped Variants tool, variant UI in the Studio). The
   // Variants 2.0 designs extend it through the PROPOSED extension points. "Stock" in the Design options window means
   // this baseline without the designs. (A flag-off baseline, if needed, would be a second workspace.)
-  beta: {variants: {enabled: true}},
+  beta: isV7UxReview
+    ? {variants: {enabled: false}, documentGroupInventory: {enabled: true}}
+    : {variants: {enabled: true}},
 })

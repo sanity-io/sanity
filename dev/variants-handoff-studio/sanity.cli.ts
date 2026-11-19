@@ -12,8 +12,11 @@ export default defineCliConfig({
   api: {projectId, dataset},
   // REVIEW_DEPLOY=1 deploys to the separate frozen review studio (variants-open-beta-review.sanity.studio)
   // and never overwrites the frozen variants-handoff studio that engineers reference.
+  // SANITY_STUDIO_REVIEW_KIND=v7 with REVIEW_DEPLOY=1 deploys Studio v7 UX Review (studio-v7-ux-review.sanity.studio).
   deployment: process.env.REVIEW_DEPLOY
-    ? {appId: 'cliqa8w9wb51jkhh40brwfzw', autoUpdates: false}
+    ? process.env.SANITY_STUDIO_REVIEW_KIND === 'v7'
+      ? {appId: 'nwnh4iv4emmhxp97hnog7njq', autoUpdates: false}
+      : {appId: 'cliqa8w9wb51jkhh40brwfzw', autoUpdates: false}
     : {appId: 'tf6sfb2f5tuw6jtt3qysvelr'},
   reactStrictMode: true,
   unstable_bundledDev: false,
