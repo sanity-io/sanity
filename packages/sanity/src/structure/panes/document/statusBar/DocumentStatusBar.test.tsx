@@ -15,7 +15,6 @@ const mockPerspective = vi.hoisted(() => ({
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
   usePerspective: () => mockPerspective,
-  useWorkspace: () => ({beta: {documentGroupInventory: {enabled: true}}}),
 }))
 vi.mock('../useDocumentPane', () => ({useDocumentPane: vi.fn()}))
 vi.mock('../../../components/paneRouter/usePaneRouter', () => ({usePaneRouter: vi.fn()}))
@@ -37,6 +36,7 @@ describe('DocumentStatusBar', () => {
   let TestProvider: ComponentType<{children: React.ReactNode}>
 
   beforeEach(async () => {
+    // The default config: the inventory is on, and variants are off.
     TestProvider = await createTestProvider()
     mockUsePaneRouter.mockReturnValue({params: {}} as never)
     mockPerspective.selectedPerspective = 'published'
@@ -56,5 +56,36 @@ describe('DocumentStatusBar', () => {
     expect(screen.getByTestId('document-status-bar-empty')).toBeTruthy()
     // No actions here: the document cannot be acted on in this perspective
     expect(screen.queryByTestId('actions')).toBeNull()
+  })
+
+  it('shows Manage versions with the default config, where variants are off', async () => {
+    mockUseDocumentPane.mockReturnValue({
+      editState: {ready: true, published: null},
+      revisionNotFound: false,
+      targetDocumentState: {status: 'ready', targetDocument: null},
+    } as never)
+
+    render(<DocumentStatusBar />, {wrapper: TestProvider})
+
+    expect(await screen.findByText('Manage versions')).toBeTruthy()
+  })
+
+  it('leaves out Manage versions when the studio switches the inventory off', async () => {
+    const InventoryOffProvider = await createTestProvider({
+      config: {beta: {documentGroupInventory: {enabled: false}}},
+    })
+    mockUseDocumentPane.mockReturnValue({
+      editState: {ready: true, published: null},
+      revisionNotFound: false,
+      targetDocumentState: {status: 'ready', targetDocument: null},
+    } as never)
+
+    const {container} = render(<DocumentStatusBar />, {wrapper: InventoryOffProvider})
+
+    // The bar itself mounts (its card is there), but with nothing to show and no inventory
+    // there is no empty bar holding Manage versions.
+    await expect.poll(() => container.firstChild).toBeTruthy()
+    expect(screen.queryByText('Manage versions')).toBeNull()
+    expect(screen.queryByTestId('document-status-bar-empty')).toBeNull()
   })
 })
