@@ -8,8 +8,10 @@ import {test as baseTest, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {perspectiveContextValueMock} from '../../../../__mocks__/usePerspective.mock'
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureUsEnglishLocaleBundle} from '../../../../i18n'
 import {useStructureTool} from '../../../../useStructureTool'
+import {DOCUMENT_GROUP_INSPECTOR_NAME} from '../../constants'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentPanel} from '../DocumentPanel'
 
@@ -109,6 +111,7 @@ vi.mock('sanity', async (importOriginal) => ({
 
 const mockUseDocumentPane = vi.mocked(useDocumentPane)
 const mockUseStructureTool = vi.mocked(useStructureTool)
+const mockUsePaneRouter = vi.mocked(usePaneRouter)
 
 const publishedPerspectiveContextValue = {
   ...perspectiveContextValueMock,
@@ -429,4 +432,144 @@ describe('DocumentPanel scheduled draft banners', () => {
 
     expect(screen.getByTestId('scheduled-release-banner')).toBeInTheDocument()
   })
+})
+
+const summerRelease: ReleaseDocument = {
+  _id: '_.releases.rSummer',
+  _type: 'system.release',
+  _rev: 'rev-summer',
+  _createdAt: '2026-01-01T00:00:00Z',
+  _updatedAt: '2026-01-01T00:00:00Z',
+  name: 'rSummer',
+  state: 'active',
+  metadata: {title: 'Summer sale', releaseType: 'asap'},
+}
+
+/**
+ * With an open release selected and the document (or the selected variant of it) not in that
+ * release, the pane always shows an enabled, filled Add to release, whether or not the document
+ * inventory is open: it is the view's one filled button, and the inventory's Create variant steps
+ * down to a secondary button while it shows.
+ */
+describe('DocumentPanel Add to release', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockUseStructureTool.mockReturnValue({
+      features: splitPanesFeatures,
+    } as ReturnType<typeof useStructureTool>)
+  })
+
+  const releasePerspective: PerspectiveContextValue = {
+    ...perspectiveContextValueMock,
+    selectedPerspective: summerRelease,
+    selectedPerspectiveName: 'rSummer',
+    selectedReleaseId: 'rSummer',
+    perspectiveStack: ['rSummer', 'drafts'],
+    bundle: 'rSummer',
+  }
+
+  const draft = {
+    _id: 'drafts.doc-1',
+    _type: 'simpleBlock',
+    _rev: 'rev-draft',
+    _createdAt: '2026-01-01T00:00:00Z',
+    _updatedAt: '2026-01-01T00:00:00Z',
+  }
+  const published = {...draft, _id: 'doc-1', _rev: 'rev-published'}
+  const variantDraftStub = {
+    _id: 'versions.scope-loyal-drafts.doc-1',
+    _rev: 'rev-loyal-draft',
+    _system: {
+      bundleId: 'drafts',
+      scopeId: 'scope-loyal-drafts',
+      group: {_ref: 'doc-1', _weak: true},
+      variants: [{_ref: loyalVariant._id, _key: 'loyal'}],
+    },
+  }
+
+  type Lane = 'base' | 'variant'
+  type Content = 'draft' | 'no draft'
+  type Extra = 'none' | 'live edit' | 'no update permission'
+
+  function paneValue({lane, content, extra}: {lane: Lane; content: Content; extra: Extra}) {
+    const displayed = content === 'draft' ? draft : published
+    const siblings = {
+      published: undefined,
+      draft: lane === 'variant' && content === 'draft' ? variantDraftStub : undefined,
+      version: undefined,
+    }
+    return {
+      ...documentPaneValue(),
+      displayed,
+      value: displayed,
+      editState: {
+        ready: true,
+        draft: content === 'draft' ? draft : null,
+        published: content === 'draft' ? null : published,
+        version: null,
+      },
+      schemaType: {name: 'simpleBlock', liveEdit: extra === 'live edit'},
+      permissions: {granted: extra !== 'no update permission'},
+      isPermissionsLoading: false,
+      targetDocumentState:
+        lane === 'base'
+          ? {
+              status: 'ready',
+              targetDocument: undefined,
+              scopeId: undefined,
+              variant: undefined,
+              siblings,
+            }
+          : {status: 'variant-missing', variant: loyalVariant, bundle: 'rSummer', siblings},
+    } as unknown as ReturnType<typeof useDocumentPane>
+  }
+
+  const cases: {lane: Lane; content: Content; extra: Extra; inventoryOpen: boolean}[] = []
+  for (const lane of ['base', 'variant'] as const) {
+    for (const content of ['draft', 'no draft'] as const) {
+      for (const extra of ['none', 'live edit', 'no update permission'] as const) {
+        for (const inventoryOpen of [false, true]) {
+          cases.push({lane, content, extra, inventoryOpen})
+        }
+      }
+    }
+  }
+
+  it.each(cases)(
+    '$lane document, $content, extra: $extra, inventory open: $inventoryOpen',
+    async ({lane, content, extra, inventoryOpen}) => {
+      mockUseDocumentPane.mockReturnValue(paneValue({lane, content, extra}))
+      mockUsePaneRouter.mockReturnValue({
+        params: inventoryOpen ? {inspect: DOCUMENT_GROUP_INSPECTOR_NAME} : {},
+        setParams: vi.fn(),
+      } as unknown as ReturnType<typeof usePaneRouter>)
+
+      const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
+      render(
+        <PerspectiveContext.Provider
+          value={
+            lane === 'variant'
+              ? {
+                  ...releasePerspective,
+                  selectedVariantNames: ['loyal'],
+                  selectedVariants: [loyalVariant],
+                }
+              : releasePerspective
+          }
+        >
+          {renderDocumentPanel()}
+        </PerspectiveContext.Provider>,
+        {wrapper},
+      )
+
+      const buttons = await screen.findAllByRole('button', {name: 'Add to release'})
+      expect(buttons).toHaveLength(1)
+      expect(buttons[0]).toBeEnabled()
+      expect(buttons[0]).toHaveAttribute('data-mode', 'default')
+      expect(screen.queryByRole('button', {name: 'Create variant'})).toBeNull()
+      expect(
+        screen.queryByRole('button', {name: 'Create it in the document inventory.'}),
+      ).toBeNull()
+    },
+  )
 })

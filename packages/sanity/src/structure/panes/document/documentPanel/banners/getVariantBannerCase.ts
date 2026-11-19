@@ -1,0 +1,95 @@
+import {type TargetDocumentState} from 'sanity'
+
+/**
+ * The perspective the document pane shows, as far as the variant banners care.
+ * - `drafts`: the Drafts perspective.
+ * - `published`: the Published perspective.
+ * - `release`: an open release (ASAP, at a time and not yet scheduled, or undecided), or a bundle id.
+ * - `locked-release`: a scheduled (or scheduling) release; nothing can be added to it.
+ */
+export type VariantBannerPerspective = 'drafts' | 'published' | 'release' | 'locked-release'
+
+/** @internal */
+export interface VariantBannerCaseInput {
+  targetDocumentState: TargetDocumentState
+  perspective: VariantBannerPerspective
+  /**
+   * Whether the document has a Drafts perspective to edit in: the workspace has drafts on and the
+   * type is not live edit.
+   */
+  hasDrafts: boolean
+}
+
+/**
+ * Which variant banner the document pane shows, or `none`.
+ *
+ * - `create`: no version of the selected variant here, and one can be created in place
+ *   (Drafts, an open release, or Published when the document has no Drafts).
+ * - `create-in-drafts`: Published, the variant has no version here and no draft. The banner
+ *   creates the draft and switches to Drafts in one step.
+ * - `switch-to-drafts`: Published, the variant has no version here but has a draft.
+ * - `locked-release`: a scheduled release, which is locked. The banner opens the release.
+ * - `definition-not-found`: the selected variant matches no variant definition (it was
+ *   deleted, or the URL names one that never existed). The banner goes back to Default.
+ *
+ * - `stand-in`: Drafts, the variant is published but has no draft (`variant-missing` with a
+ *   `creatableTarget`). The form is editable and shows the published variant as a stand-in;
+ *   typing creates the draft. The banner says so and has no action.
+ *
+ * @internal
+ */
+export type VariantBannerCase =
+  | {kind: 'none'}
+  | {kind: 'create'; perspective: 'drafts' | 'published' | 'release'}
+  | {kind: 'stand-in'}
+  | {kind: 'create-in-drafts'}
+  | {kind: 'switch-to-drafts'}
+  | {kind: 'locked-release'}
+  | {kind: 'definition-not-found'; requestedVariantName: string}
+
+const NONE: VariantBannerCase = {kind: 'none'}
+
+/**
+ * Decides the variant banner from the target document state and the perspective. No React, so
+ * every case can be tested from a table.
+ *
+ * @internal
+ */
+export function getVariantBannerCase(input: VariantBannerCaseInput): VariantBannerCase {
+  const {targetDocumentState, perspective, hasDrafts} = input
+
+  if (targetDocumentState.status === 'variant-definition-document-not-found') {
+    return {
+      kind: 'definition-not-found',
+      requestedVariantName: targetDocumentState.requestedVariantName,
+    }
+  }
+
+  // A version is here, or the target is still resolving.
+  if (targetDocumentState.status !== 'variant-missing') {
+    return NONE
+  }
+
+  // The missing draft is created by typing: the form shows the published variant meanwhile.
+  if (targetDocumentState.creatableTarget) {
+    return perspective === 'drafts' ? {kind: 'stand-in'} : NONE
+  }
+
+  switch (perspective) {
+    case 'drafts':
+      // A live edit type has no drafts lane, so the variant is created as a published one: say so.
+      return {kind: 'create', perspective: hasDrafts ? 'drafts' : 'published'}
+    case 'release':
+      return {kind: 'create', perspective: 'release'}
+    case 'locked-release':
+      return {kind: 'locked-release'}
+    case 'published':
+      // Without Drafts (live edit, or drafts off) the published variant is the one that is edited.
+      if (!hasDrafts) return {kind: 'create', perspective: 'published'}
+      return targetDocumentState.siblings.draft
+        ? {kind: 'switch-to-drafts'}
+        : {kind: 'create-in-drafts'}
+    default:
+      return NONE
+  }
+}
