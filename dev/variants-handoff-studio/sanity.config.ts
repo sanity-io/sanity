@@ -18,7 +18,10 @@ import {schemaTypesFor} from './schemas'
 import {structure} from './structure'
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID || 'ppsg7ml5'
-const dataset = process.env.SANITY_STUDIO_DATASET || 'variants-2-0'
+// Studio v7 UX Review reads a copy of variants-2-0 with every variant version removed (v7-ux-review).
+const dataset =
+  process.env.SANITY_STUDIO_DATASET ||
+  (process.env.SANITY_STUDIO_REVIEW_KIND === 'v7' ? 'v7-ux-review' : 'variants-2-0')
 // The stand-in preview (dev/preview-iframe, variants-preview.html) mounts @sanity/visual-editing against this dataset. Locally it runs
 // on `vite --port 3334`; the hosted Studio uses the same build on Vercel (variants-handoff-preview.sanity.dev, deployed 22 Oct).
 // Set SANITY_STUDIO_PREVIEW_ORIGIN=http://localhost:3456 to use the Northfold storefront instead.
