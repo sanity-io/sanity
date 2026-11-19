@@ -7,6 +7,7 @@ import {page, userEvent} from 'vitest/browser'
 import {isShown, testHelpers} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {Button} from '../../../../ui-components/button/Button'
+import {type WorkspaceOptions} from '../../../config/types'
 import {activeASAPRelease} from '../../../releases/__fixtures__/release.fixture'
 import {type VersionInfoDocumentStub} from '../../../releases/store/types'
 import {type Variant} from '../../machines/selectionMachine'
@@ -158,9 +159,20 @@ const VARIANT_DRAFT: Variant = {
 }
 
 /** A set of the draft and published versions, outside any release. */
-function UnreleasedHarness({versions = [DRAFT, PUBLISHED]}: {versions?: Variant[]}) {
+const VARIANTS_ON: WorkspaceOptions['beta'] = {variants: {enabled: true}}
+
+function UnreleasedHarness({
+  versions = [DRAFT, PUBLISHED],
+  variantsEnabled = true,
+}: {
+  versions?: Variant[]
+  variantsEnabled?: boolean
+}) {
   return (
-    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+    <TestWrapper
+      schemaTypes={SCHEMA_TYPES}
+      betaFeatures={variantsEnabled ? VARIANTS_ON : undefined}
+    >
       <DocumentGroupSet
         name="Unreleased"
         selectionState="unchecked"
@@ -574,6 +586,22 @@ describe('DocumentGroupSet', () => {
     expect(Math.abs(diamond.top + diamond.height / 2 - (text.top + text.height / 2))).toBeLessThan(
       1,
     )
+  })
+
+  it('draws no variant diamond with Content Variants off', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(
+      <UnreleasedHarness versions={[DRAFT, VARIANT_DRAFT, PUBLISHED]} variantsEnabled={false} />,
+    )
+
+    await expect.element(page.getByText('Unreleased')).toBeVisible()
+    await settleChromaticEndState()
+
+    const variantMark = getRow(VARIANT_DRAFT, 'Unreleased').querySelector<HTMLElement>(
+      '.variant-mark',
+    )!
+    expect(variantMark.querySelector('svg')).toBeNull()
+    expect(variantMark.dataset.testid).toBeUndefined()
   })
 })
 
