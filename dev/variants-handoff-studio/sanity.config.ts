@@ -1,5 +1,5 @@
 import {buildTheme, type ThemeColorTokenValue} from '@sanity/ui/theme'
-import {defineConfig, definePlugin} from 'sanity'
+import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
@@ -162,27 +162,107 @@ const primaryButtonTheme = buildTheme({
 //   off and the document inventory on through its own switch.
 const isV7UxReview = process.env.SANITY_STUDIO_REVIEW_KIND === 'v7'
 
-export default defineConfig({
-  name: 'default',
-  title: isV7UxReview ? 'Studio v7 UX Review' : 'Open Beta Review Studio',
-  projectId,
-  dataset,
-  plugins: [
-    structureTool({structure}),
-    // The tools read Structure, Presentation, Variants, Releases: Presentation comes right after Structure.
-    presentationTool({
-      allowOrigins: ['http://localhost:*', 'https://*.sanity.dev'],
-      previewUrl: {origin: previewOrigin, preview: previewPath},
-    }),
-    variantsHandoffOptions(),
-  ],
-  theme: applyUi5SelectedColors(primaryButtonTheme),
-  schema: {types: schemaTypesFor(dataset)},
-  scheduledDrafts: {enabled: true},
-  // The Variants flag is ON: today's open-beta baseline (the shipped Variants tool, variant UI in the Studio). The
-  // Variants 2.0 designs extend it through the PROPOSED extension points. "Stock" in the Design options window means
-  // this baseline without the designs. (A flag-off baseline, if needed, would be a second workspace.)
-  beta: isV7UxReview
-    ? {variants: {enabled: false}, documentGroupInventory: {enabled: true}}
-    : {variants: {enabled: true}},
-})
+// One workspace's settings: which dataset it reads and which of Variants, Releases and drafts are on.
+function reviewWorkspace(options: {
+  name: string
+  title: string
+  basePath?: string
+  dataset: string
+  variants: boolean
+  releases: boolean
+  drafts: boolean
+}): WorkspaceOptions {
+  return {
+    name: options.name,
+    title: options.title,
+    basePath: options.basePath ?? '/',
+    projectId,
+    dataset: options.dataset,
+    plugins: [
+      structureTool({structure}),
+      // The tools read Structure, Presentation, Variants, Releases: Presentation comes right after Structure.
+      presentationTool({
+        allowOrigins: ['http://localhost:*', 'https://*.sanity.dev'],
+        previewUrl: {origin: previewOrigin, preview: previewPath},
+      }),
+      variantsHandoffOptions(),
+    ],
+    theme: applyUi5SelectedColors(primaryButtonTheme),
+    schema: {types: schemaTypesFor(options.dataset)},
+    scheduledDrafts: {enabled: true},
+    ...(options.releases ? {} : {releases: {enabled: false}}),
+    ...(options.drafts ? {} : {document: {drafts: {enabled: false}}}),
+    // With Variants off, the document inventory is on through its own switch (what every Studio with Releases gets).
+    beta: options.variants
+      ? {variants: {enabled: true}}
+      : {variants: {enabled: false}, documentGroupInventory: {enabled: true}},
+  }
+}
+
+// Workspaces with Variants off read the dataset without variant versions (v7-ux-review): in variants-2-0 those versions
+// show up as stray marks when Variants is off.
+const DATASET_WITH_VARIANTS = process.env.SANITY_STUDIO_DATASET || 'variants-2-0'
+const DATASET_WITHOUT_VARIANTS = process.env.SANITY_STUDIO_DATASET || 'v7-ux-review'
+
+// Open Beta Review Studio (19 Nov, Jordan's ask): the open beta workspace first, then four switch combinations to compare
+// against it. The first workspace is where the studio address lands.
+const openBetaWorkspaces = [
+  reviewWorkspace({
+    name: 'default',
+    title: 'Open beta (Variants and Releases on)',
+    basePath: '/open-beta',
+    dataset: DATASET_WITH_VARIANTS,
+    variants: true,
+    releases: true,
+    drafts: true,
+  }),
+  reviewWorkspace({
+    name: 'variants-off-releases-off',
+    title: 'Variants and Releases off',
+    basePath: '/variants-off-releases-off',
+    dataset: DATASET_WITHOUT_VARIANTS,
+    variants: false,
+    releases: false,
+    drafts: true,
+  }),
+  reviewWorkspace({
+    name: 'variants-only',
+    title: 'Only Variants (Releases off)',
+    basePath: '/variants-only',
+    dataset: DATASET_WITH_VARIANTS,
+    variants: true,
+    releases: false,
+    drafts: true,
+  }),
+  reviewWorkspace({
+    name: 'releases-only',
+    title: 'Only Releases (Variants off)',
+    basePath: '/releases-only',
+    dataset: DATASET_WITHOUT_VARIANTS,
+    variants: false,
+    releases: true,
+    drafts: true,
+  }),
+  reviewWorkspace({
+    name: 'drafts-off',
+    title: 'Variants and Releases on, drafts off',
+    basePath: '/drafts-off',
+    dataset: DATASET_WITH_VARIANTS,
+    variants: true,
+    releases: true,
+    drafts: false,
+  }),
+]
+
+export default defineConfig(
+  isV7UxReview
+    ? reviewWorkspace({
+        name: 'default',
+        title: 'Studio v7 UX Review',
+        dataset,
+        variants: false,
+        releases: true,
+        drafts: true,
+      })
+    : openBetaWorkspaces,
+)
