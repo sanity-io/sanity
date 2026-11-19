@@ -22,6 +22,7 @@ import {type TargetPerspective} from '../../perspective/types'
 import {SanityDefaultPreview} from '../../preview/components/SanityDefaultPreview'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {getReleaseTone} from '../../releases/util/getReleaseTone'
+import {useWorkspace} from '../../studio/workspace'
 import {type SystemBundle} from '../../util/draftUtils'
 import {readVersionType} from '../../util/versionsUtils'
 import {
@@ -74,6 +75,8 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
   const {t} = useTranslation(studioLocaleNamespace)
   const {DocTitle, ReferencePreviewLink} = components
   const blockedReasonId = useId()
+  // Without Content Variants there is no Default to name: the published document is just that.
+  const variantsEnabled = useWorkspace().beta?.variants?.enabled === true
 
   const selectedIdSet = useSelector(selectionRef, ({context}) => context.selectedIds)
   const variants = useSelector(selectionRef, ({context}) => context.variants)
@@ -125,7 +128,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
   const {deletableIds, blockedIds} = description
   const isDefaultBlocked = blockedIds.length > 0
 
-  const header = getHeader({t, description, selectedCount: selectedIds.length})
+  const header = getHeader({t, description, selectedCount: selectedIds.length, variantsEnabled})
 
   const confirmButton = isDefaultBlocked
     ? {
@@ -198,7 +201,11 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
           variantsById={variantsById}
         />
         {isDefaultBlocked && (
-          <BlockedNotice id={blockedReasonId} variantCount={description.blockingVariantCount} />
+          <BlockedNotice
+            id={blockedReasonId}
+            variantsEnabled={variantsEnabled}
+            variantCount={description.blockingVariantCount}
+          />
         )}
         {/* While the Default is blocked it is not deleted, so the links to it don't apply. */}
         {warnIncomingReferences && !isDefaultBlocked && (
@@ -245,10 +252,12 @@ function getHeader({
   t,
   description,
   selectedCount,
+  variantsEnabled,
 }: {
   t: TFunction
   description: DeletionDescription
   selectedCount: number
+  variantsEnabled: boolean
 }): string {
   const {includesDefault, deletableIds, blockedIds} = description
   if (blockedIds.length > 0 && deletableIds.length > 0) {
@@ -257,6 +266,11 @@ function getHeader({
       count: deletableIds.length,
       total: selectedCount,
     })
+  }
+  if (includesDefault && !variantsEnabled) {
+    return selectedCount === 1
+      ? t('document-group.delete.published-title')
+      : t('document-group.delete.with-published-title', {count: selectedCount})
   }
   if (includesDefault) {
     return selectedCount === 1
@@ -391,7 +405,15 @@ function VersionChipRow({id, variant}: {id: string; variant: Variant | undefined
   )
 }
 
-function BlockedNotice({id, variantCount}: {id: string; variantCount: number}) {
+function BlockedNotice({
+  id,
+  variantsEnabled,
+  variantCount,
+}: {
+  id: string
+  variantsEnabled: boolean
+  variantCount: number
+}) {
   const {t} = useTranslation(studioLocaleNamespace)
   return (
     <Card padding={3} radius={2} tone="critical" flex="none" data-testid="default-blocked" id={id}>
@@ -406,7 +428,9 @@ function BlockedNotice({id, variantCount}: {id: string; variantCount: number}) {
         <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
           <VStack gap={3}>
             <Text size={1} as="div" trim={true} weight="medium" tone="critical">
-              {t('document-group.delete.blocked.heading')}
+              {variantsEnabled
+                ? t('document-group.delete.blocked.heading')
+                : t('document-group.delete.blocked.document-heading')}
             </Text>
             <VStack as="ul" gap={3} style={{paddingInlineStart: 0, listStyle: 'none', margin: 0}}>
               <li data-testid="blocked-by-variants">

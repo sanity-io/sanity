@@ -735,6 +735,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.create-variant.variant-label': 'Variant',
   /** Heading of the delete dialog's notice that lists why the published Default document can't be deleted yet */
   'document-group.delete.blocked.heading': "The Default document can't be deleted yet",
+  /** Heading of the delete dialog's notice that lists why the published document can't be deleted yet, without Content Variants */
+  'document-group.delete.blocked.document-heading': "This document can't be deleted yet",
   /** Reason in the delete dialog's blocked notice: documents link to the Default document with a required (strong) link (singular) */
   'document-group.delete.blocked.links-reason_one':
     '1 document links to it with a required link. Change or remove that link first.',
@@ -804,6 +806,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.confirm-count-button.text_other': 'Delete {{count}} versions',
   /** Header of the delete dialog when only the published Default document is selected */
   'document-group.delete.default-title': 'Delete the Default document?',
+  /** Header of the delete dialog when only the published document is selected, without Content Variants */
+  'document-group.delete.published-title': 'Delete the published document?',
   /** Heading above the versions in the delete dialog that the confirm action deletes, shown when some selected versions can't be deleted yet */
   'document-group.delete.deletable-versions.heading': 'Will be deleted',
   /** The message shown after deletion fails */
@@ -887,6 +891,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Header of the delete dialog when the published Default document is selected along with other versions (plural) */
   'document-group.delete.with-default-title_other':
     'Delete {{count}} versions, including the Default?',
+  /** Header of the delete dialog when the published document is selected along with other versions, without Content Variants (singular) */
+  'document-group.delete.with-published-title_one':
+    'Delete {{count}} version, including the published document?',
+  /** Header of the delete dialog when the published document is selected along with other versions, without Content Variants (plural) */
+  'document-group.delete.with-published-title_other':
+    'Delete {{count}} versions, including the published document?',
   /** The label for the action that clears every selected variant in the document group inventory */
   'document-group.deselect-all': 'Deselect all',
   /** An audience row in the versions flyout, detail: when the audience was last edited, for one that was never published ("edited 2 hr ago") */

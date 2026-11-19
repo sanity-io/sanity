@@ -380,15 +380,21 @@ function PanelFrame({children}: {children: React.ReactNode}) {
 function ConfirmDeleteDialogHarness({
   deletionRef,
   selectionRef,
+  variantsEnabled = true,
 }: {
   deletionRef: ActorRefFromLogic<typeof deletionMachine>
   selectionRef: ActorRefFromLogic<typeof selectionMachine>
+  /** The dialog names the Default only with Content Variants on */
+  variantsEnabled?: boolean
 }) {
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const portalElements = useMemo(() => ({[PORTAL_NAME]: portalElement}), [portalElement])
 
   return (
-    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+    <TestWrapper
+      schemaTypes={SCHEMA_TYPES}
+      betaFeatures={variantsEnabled ? VARIANTS_ON : undefined}
+    >
       <PortalProvider __unstable_elements={portalElements}>
         <div ref={setPortalElement} />
         {portalElement && (
@@ -1095,6 +1101,23 @@ function selectAndRequest(
 }
 
 describe('ConfirmDeleteDialog', () => {
+  it('names the published document, not the Default, without Content Variants', async () => {
+    // The rows as the inventory names them without Content Variants
+    const refs = startHarness(REFERRING_DOCUMENTS, [PUBLISHED, DRAFT])
+    selectAndRequest(refs, [PUBLISHED.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+        variantsEnabled={false}
+      />,
+    )
+
+    await expect.element($dialog.getByText('Delete the published document?')).toBeVisible()
+    await expect.element($dialog.getByText(/Default/)).not.toBeInTheDocument()
+  })
+
   it('warns about incoming references when a published version is selected', async () => {
     const {settleChromaticEndState} = testHelpers()
     const refs = startHarness(REFERRING_DOCUMENTS, WITHOUT_VARIANTS)
