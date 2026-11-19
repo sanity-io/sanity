@@ -1389,7 +1389,7 @@ describe('Inventory selection', () => {
     const refs = startSelectionHarness()
     void render(<SelectionPanel refs={refs} />)
 
-    const $create = page.getByRole('button', {name: 'Create variant'})
+    const $create = page.getByRole('button', {name: 'Create version'})
     await expect.element($create).toBeVisible()
     const group = groupCheckbox('Published')
     const restShadow = getComputedStyle(group.nextElementSibling!).boxShadow
