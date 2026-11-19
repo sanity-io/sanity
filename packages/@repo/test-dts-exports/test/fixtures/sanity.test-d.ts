@@ -1284,6 +1284,7 @@ import type {
   ReleaseAvatarIcon,
   ReleaseDocument,
   ReleaseId,
+  ReleaseMetadataConfig,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
   ReleasesNav,
@@ -5753,6 +5754,9 @@ describe('sanity', () => {
   })
   test('ReleaseId', () => {
     expectTypeOf<ReleaseId>().not.toBeNever()
+  })
+  test('ReleaseMetadataConfig', () => {
+    expectTypeOf<ReleaseMetadataConfig>().toBeObject()
   })
   test('RELEASES_INTENT', () => {
     expectTypeOf<typeof RELEASES_INTENT>().not.toBeNever()

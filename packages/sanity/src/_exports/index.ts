@@ -364,6 +364,7 @@ export {
   type PluginOptions,
   type PreparedConfig,
   type ReleaseActionsResolver,
+  type ReleaseMetadataConfig,
   type ResolveProductionUrlContext,
   type SanityFormConfig,
   type ScheduledPublishingPluginOptions,

@@ -5,6 +5,9 @@ import {
   type BaseSchemaType,
   type CurrentUser,
   type FieldDefinition,
+  type FieldGroupDefinition,
+  type FieldsetDefinition,
+  type ObjectDefinition,
   type ObjectSchemaType,
   type SanityDocumentLike,
   type Schema,
@@ -1298,13 +1301,11 @@ export interface Source {
      */
     actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
     /**
-     * Extra metadata fields, compiled as a private object schema and edited with the studio form.
-     * Rendered on create and in the edit dialog only while `beta.variants` is enabled.
-     * Empty when no workspace or plugin configured any.
+     * Release metadata resolved across the workspace and its plugins. The releases plugin adds
+     * it to the `sanity.releaseMetadata` schema type. Empty when no workspace or plugin
+     * configured any.
      */
-    metadata?: {
-      fields?: FieldDefinition[]
-    }
+    metadata?: ReleaseMetadataConfig
   }
 
   /** Configuration for studio features.
@@ -1513,17 +1514,44 @@ export type DefaultPluginsWorkspaceOptions = {
      */
     actions?: ReleaseActionComponent[] | ReleaseActionsResolver
     /**
-     * Field definitions stored on release metadata. The same `defineField` definitions used in
-     * Structure. Studio renders them on create and in the edit-release dialog while
-     * `beta.variants` is enabled. This is not a component slot.
+     * Fields stored on release metadata, with the fieldsets, groups and validation that
+     * organize them. They are added to the `sanity.releaseMetadata` schema type, and Studio
+     * renders them on create and in the edit-release dialog while `beta.variants` is enabled.
      *
      * @beta
      */
-    metadata?: {
-      fields?: FieldDefinition[]
-    }
+    metadata?: ReleaseMetadataConfig
   }
   mediaLibrary?: MediaLibraryConfig
+}
+
+/**
+ * The part of the `sanity.releaseMetadata` object type a workspace or plugin configures. The
+ * core fields (`title`, `description`, `releaseType`, `intendedPublishAt` and `cardinality`)
+ * always come first and can't be redeclared. A field with one of those names is dropped.
+ *
+ * Plugins and the root config are merged in order: a later field, fieldset or group with the
+ * same name replaces the earlier one, and every config's validation applies.
+ *
+ * @example
+ * ```ts
+ * defineConfig({
+ *   releases: {
+ *     metadata: {
+ *       fieldsets: [{name: 'review', title: 'Review'}],
+ *       fields: [defineField({name: 'legalReview', type: 'string', fieldset: 'review'})],
+ *     },
+ *   },
+ * })
+ * ```
+ *
+ * @beta
+ */
+export interface ReleaseMetadataConfig {
+  fields?: FieldDefinition[]
+  fieldsets?: FieldsetDefinition[]
+  groups?: FieldGroupDefinition[]
+  validation?: ObjectDefinition['validation']
 }
 
 /**
