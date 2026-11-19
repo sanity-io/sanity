@@ -937,10 +937,10 @@ function resolveSource({
       types: variantsTypesReducer({config, initialValue: undefined}),
     },
     documentGroupInventory: {
-      // The document group inventory is an inherent part of the variants experience.
-      // It cannot be switched off while variants are switched on.
+      // The document group inventory is on for every Studio, with or without variants. A Studio
+      // can switch it off, except while variants are on: it is an inherent part of that experience.
       enabled:
-        documentGroupInventoryEnabledReducer({config, initialValue: false}) || variantsEnabled,
+        documentGroupInventoryEnabledReducer({config, initialValue: true}) || variantsEnabled,
     },
     reactActivityMode: {
       enabled: reactActivityModeEnabledReducer({config, initialValue: false}),
