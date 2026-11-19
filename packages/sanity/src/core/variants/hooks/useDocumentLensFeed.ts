@@ -12,15 +12,6 @@ import {
 } from '../tool/versions/versionRows'
 
 /**
- * Documents per feed page, and so per listener. Each page's listener filter lists its group ids
- * in the URL: about 4.6 KB at 50, about 9 KB at 100, which may hit URL length limits. Pinned here
- * so a change to the feed's default cannot raise it.
- *
- * @internal
- */
-export const DOCUMENT_LENS_PAGE_SIZE = 50
-
-/**
  * The Document lens, ready to render.
  *
  * @internal
@@ -58,12 +49,7 @@ export function useDocumentLensFeed({
     () => buildDocumentLensFilter({type, filters: {definition, release, state: stateFilter}}),
     [definition, release, stateFilter, type],
   )
-  const {state, index, setVisibleRange} = useVersionFeed({
-    filter,
-    params,
-    releases,
-    pageSize: DOCUMENT_LENS_PAGE_SIZE,
-  })
+  const {state, index, setVisibleRange} = useVersionFeed({filter, params, releases})
 
   const groupIds = state.groupIds
   const rows = useMemo(
