@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react'
 import {SourceProvider, type Tool, useWorkspace} from 'sanity'
 import {recordStructureTool} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {useRouterState} from 'sanity/router'
 
 import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
 import {setActivePanes} from '../../getIntentState'
@@ -32,6 +33,17 @@ export function StructureToolBoundary({
   }, [toolName])
 
   const [{error}, setError] = useState<{error: unknown}>({error: null})
+  const intent = useRouterState((routerState) => routerState.intent)
+
+  // Clear error state when a new intent is detected, allowing IntentResolver
+  // to process it. This enables recovery from an error state by clicking a
+  // Global Search result or any other intent link.
+  useEffect(() => {
+    if (intent && error) {
+      // oxlint-disable-next-line react/set-state-in-effect -- intentional: responding to external router state change to allow error recovery
+      setError({error: null})
+    }
+  }, [intent, error])
 
   // this re-throws if the error it catches is not a PaneResolutionError
   if (error) return <StructureError error={error} onReload={() => setError({error: null})} />
