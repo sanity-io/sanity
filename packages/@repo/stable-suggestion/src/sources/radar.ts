@@ -9,6 +9,7 @@ import {
   type RegressionRecord,
   type ReleaseBench,
   type SqrlFacts,
+  type Sourced,
 } from '../types'
 
 export interface RadarClient {
@@ -33,6 +34,7 @@ export interface RadarTag {
   tag: string
   sha: string
   taggedAt: string
+  onMainline: boolean
 }
 
 export interface RadarSqrlRow {
@@ -64,7 +66,7 @@ const SESSIONS_QUERY = `*[_type=="bisectSession"]{_id,_createdAt,_updatedAt,"goo
   "firstBadTag":*[_type=="gitTag" && sha==^.result.firstBadSha][0].tag,
   "firstBadCommittedAt":*[_type=="gitCommit" && sha==^.result.firstBadSha][0].committedAt}`
 
-const TAGS_QUERY = `*[_type=="gitTag" && !defined(prerelease)]{tag, sha, taggedAt}`
+const TAGS_QUERY = `*[_type=="gitTag" && !defined(prerelease)]{tag, sha, taggedAt, "onMainline": defined(commit->_id)}`
 
 const SQRL_QUERY = `*[_type=="sqrlScore" && git.sha in $shas]{_createdAt,"sha":git.sha,score,scoreCommit,formulaVersion,
   "regressedInputs":inputs[trend=="regression"].key,"reliabilityEvents":reliability.count}`
@@ -80,27 +82,37 @@ function validVersion(label: string | null | undefined): string | null {
   return label ? semver.valid(stripVersionPrefix(label)) : null
 }
 
+function earliestTagVersionAfter(
+  tags: RadarTag[],
+  afterMs: number,
+  isCandidate: (tag: RadarTag, version: string) => boolean,
+): string | undefined {
+  return tags
+    .flatMap((tag): string[] => {
+      const version = validVersion(tag.tag)
+      return version !== null &&
+        semver.prerelease(version) === null &&
+        isCandidate(tag, version) &&
+        Date.parse(tag.taggedAt) >= afterMs
+        ? [version]
+        : []
+    })
+    .toSorted(semver.compare)[0]
+}
+
 export function deriveIntroducedIn(session: RadarSession, tags: RadarTag[]): string | null {
   const badVersion = validVersion(session.bad)
   const exactTagVersion = validVersion(session.firstBadTag)
   const firstBadCommittedAtMs = session.firstBadCommittedAt
     ? Date.parse(session.firstBadCommittedAt)
     : null
-  const sameMajorVersion =
-    badVersion && firstBadCommittedAtMs !== null
-      ? tags
-          .map((tag) => ({version: validVersion(tag.tag), taggedAt: tag.taggedAt}))
-          .filter(
-            (entry): entry is {version: string; taggedAt: string} =>
-              entry.version !== null &&
-              semver.prerelease(entry.version) === null &&
-              semver.major(entry.version) === semver.major(badVersion) &&
-              Date.parse(entry.taggedAt) >= firstBadCommittedAtMs,
-          )
-          .map((entry) => entry.version)
-          .toSorted(semver.compare)[0]
-      : undefined
-  const candidates = [exactTagVersion, sameMajorVersion, badVersion].filter(
+  const tagVersionAfterCommit =
+    firstBadCommittedAtMs === null
+      ? undefined
+      : earliestTagVersionAfter(tags, firstBadCommittedAtMs, (tag, version) =>
+          badVersion === null ? tag.onMainline : semver.major(version) === semver.major(badVersion),
+        )
+  const candidates = [exactTagVersion, tagVersionAfterCommit, badVersion].filter(
     (version): version is string => typeof version === 'string',
   )
   return candidates.toSorted(semver.compare)[0] ?? null
@@ -110,23 +122,39 @@ function toLabel(session: RadarSession): string {
   return `${session.good ?? '?'} → ${session.bad ?? '?'}`
 }
 
-export function normaliseRegressions(sessions: RadarSession[], tags: RadarTag[]): RadarRegressions {
-  const confirmed = sessions
+function isUnplaceable(session: RadarSession, introducedIn: string | null): boolean {
+  return introducedIn === null && session.firstBadCommittedAt === null
+}
+
+export function normaliseRegressions(
+  sessions: RadarSession[],
+  tags: RadarTag[],
+): Sourced<RadarRegressions> {
+  const placed = sessions
     .filter((session) => session.regression === true)
-    .flatMap((session): RegressionRecord[] => {
-      const introducedIn = deriveIntroducedIn(session, tags)
-      if (!introducedIn) return []
-      return [
-        {
-          id: session._id,
-          introducedIn,
-          fixedIn: validVersion(session.fixedIn),
-          severity: session.severity ?? null,
-          knownAt: session._updatedAt,
-          label: toLabel(session),
-        },
-      ]
-    })
+    .map((session) => ({session, introducedIn: deriveIntroducedIn(session, tags)}))
+  const unplaceable = placed.filter((entry) => isUnplaceable(entry.session, entry.introducedIn))
+  if (unplaceable.length > 0) {
+    const ids = unplaceable.map((entry) => entry.session._id).join(', ')
+    return {
+      status: 'unavailable',
+      error: `confirmed regression ${ids} cannot be placed on a release because its first bad commit is not synced to Radar`,
+    }
+  }
+  const confirmed = placed.flatMap(({session, introducedIn}): RegressionRecord[] =>
+    introducedIn === null
+      ? []
+      : [
+          {
+            id: session._id,
+            introducedIn,
+            fixedIn: validVersion(session.fixedIn),
+            severity: session.severity ?? null,
+            knownAt: session._updatedAt,
+            label: toLabel(session),
+          },
+        ],
+  )
   const investigations = sessions.flatMap((session): Investigation[] => {
     const goodVersion = validVersion(session.good)
     const badVersion = validVersion(session.bad)
@@ -142,7 +170,7 @@ export function normaliseRegressions(sessions: RadarSession[], tags: RadarTag[])
       },
     ]
   })
-  return {confirmed, investigations}
+  return {status: 'ok', data: {confirmed, investigations}}
 }
 
 function versionsBySha(tags: RadarTag[]): Map<string, string> {
@@ -229,7 +257,7 @@ export async function fetchRadarHistory(client: RadarClient | null): Promise<Rad
       client.fetch(BENCH_QUERY, {shas}),
     ])) as [RadarSqrlRow[], RadarBenchRow[]]
     return {
-      regressions: {status: 'ok', data: normaliseRegressions(sessions, tags)},
+      regressions: normaliseRegressions(sessions, tags),
       sqrl: {status: 'ok', data: normaliseSqrl(sqrlRows, tags)},
       releaseBench: {status: 'ok', data: normaliseBench(benchRows, tags)},
     }

@@ -109,112 +109,134 @@
     {
       "sha": "ac05aa3e3e45221d10bdfbf1ee822f95eb2aa54d",
       "tag": "v6.10.0",
-      "taggedAt": "2026-08-18T15:10:53Z"
+      "taggedAt": "2026-08-18T15:10:53Z",
+      "onMainline": true
     },
     {
       "sha": "bd5182dc40b5cef9e1c42aa6e906a85d3f02d299",
       "tag": "v6.10.1",
-      "taggedAt": "2026-08-18T21:56:56Z"
+      "taggedAt": "2026-08-18T21:56:56Z",
+      "onMainline": true
     },
     {
       "sha": "24cdd2a0a80ed20db622508f47cd17197e3c3e74",
       "tag": "v6.11.0",
-      "taggedAt": "2026-08-25T17:03:38Z"
+      "taggedAt": "2026-08-25T17:03:38Z",
+      "onMainline": true
     },
     {
       "sha": "04dcf0fa45dbc5f0ca9e2f9f383c9646f3992f17",
       "tag": "v6.12.0",
-      "taggedAt": "2026-09-01T15:22:19Z"
+      "taggedAt": "2026-09-01T15:22:19Z",
+      "onMainline": true
     },
     {
       "sha": "55fd0580ebcee43ae09e27820e0da24a20190b7d",
       "tag": "v6.13.0",
-      "taggedAt": "2026-09-08T15:04:42Z"
+      "taggedAt": "2026-09-08T15:04:42Z",
+      "onMainline": true
     },
     {
       "sha": "b318878fc726ca0ac491edad6222b2e9e527016f",
       "tag": "v6.13.1",
-      "taggedAt": "2026-09-09T14:46:15Z"
+      "taggedAt": "2026-09-09T14:46:15Z",
+      "onMainline": true
     },
     {
       "sha": "bf5bb03b566400d342a0d1d17ed2fb27dda1914d",
       "tag": "v6.13.2",
-      "taggedAt": "2026-09-11T13:16:07Z"
+      "taggedAt": "2026-09-11T13:16:07Z",
+      "onMainline": true
     },
     {
       "sha": "3d791dabdf4af61686ccb5c47bc70f3527da8d9b",
       "tag": "v6.14.0",
-      "taggedAt": "2026-09-15T14:37:40Z"
+      "taggedAt": "2026-09-15T14:37:40Z",
+      "onMainline": true
     },
     {
       "sha": "27d0eb758ea14863fd479668a5ef0f628779d7e9",
       "tag": "v6.14.1",
-      "taggedAt": "2026-09-16T08:53:45Z"
+      "taggedAt": "2026-09-16T08:53:45Z",
+      "onMainline": true
     },
     {
       "sha": "338d3ebdba6ca180215c3eb373a27f8e4b7d4a47",
       "tag": "v6.15.0",
-      "taggedAt": "2026-09-17T13:32:22Z"
+      "taggedAt": "2026-09-17T13:32:22Z",
+      "onMainline": true
     },
     {
       "sha": "584242af90d95fa149c75d83ab2c3c0246d4f060",
       "tag": "v6.16.0",
-      "taggedAt": "2026-09-22T14:32:10Z"
+      "taggedAt": "2026-09-22T14:32:10Z",
+      "onMainline": true
     },
     {
       "sha": "a9944b05746aae5b2dbd0b8c6a41aa4f669320fc",
       "tag": "v6.17.0",
-      "taggedAt": "2026-09-29T16:40:40Z"
+      "taggedAt": "2026-09-29T16:40:40Z",
+      "onMainline": true
     },
     {
       "sha": "27989fca8198af3c411125bef36bf3c8592c1d9e",
       "tag": "v6.18.0",
-      "taggedAt": "2026-10-06T15:42:01Z"
+      "taggedAt": "2026-10-06T15:42:01Z",
+      "onMainline": true
     },
     {
       "sha": "65999c9f634bea46fc815aff04460e65a5c2adfa",
       "tag": "v6.19.0",
-      "taggedAt": "2026-10-13T15:26:30Z"
+      "taggedAt": "2026-10-13T15:26:30Z",
+      "onMainline": true
     },
     {
       "sha": "08d497a3731ba605c3b331e8d4062f0328264a43",
       "tag": "v6.20.0",
-      "taggedAt": "2026-10-19T16:21:59Z"
+      "taggedAt": "2026-10-19T16:21:59Z",
+      "onMainline": true
     },
     {
       "sha": "010d6f20e0add047198862c76e5ee68a35fac77f",
       "tag": "v6.21.0",
-      "taggedAt": "2026-10-29T07:58:49Z"
+      "taggedAt": "2026-10-29T07:58:49Z",
+      "onMainline": true
     },
     {
       "sha": "8e979b9732fa4dd38c2bb19a2af2b1f1f6b1b9e9",
       "tag": "v6.22.0",
-      "taggedAt": "2026-11-03T15:07:42Z"
+      "taggedAt": "2026-11-03T15:07:42Z",
+      "onMainline": true
     },
     {
       "sha": "7c32014e2695aba636154f70ed62791086d26d76",
       "tag": "v6.23.0",
-      "taggedAt": "2026-11-10T16:13:52Z"
+      "taggedAt": "2026-11-10T16:13:52Z",
+      "onMainline": true
     },
     {
       "sha": "79382ab0e80196c0ee0716091bf1b063ed544f92",
       "tag": "v6.24.0",
-      "taggedAt": "2026-11-17T17:34:00Z"
+      "taggedAt": "2026-11-17T17:34:00Z",
+      "onMainline": true
     },
     {
       "sha": "80a23806ea8d5a8c3c6e217fe38066530cacc9af",
       "tag": "v6.9.0",
-      "taggedAt": "2026-08-04T14:02:50Z"
+      "taggedAt": "2026-08-04T14:02:50Z",
+      "onMainline": true
     },
     {
       "sha": "22b46c6aa4b71e3ec039ad700eb89cb3c29f3031",
       "tag": "v6.9.1",
-      "taggedAt": "2026-08-06T14:14:55Z"
+      "taggedAt": "2026-08-06T14:14:55Z",
+      "onMainline": true
     },
     {
       "sha": "dc445a37fb2c023ada5798051ef9563ba71806b0",
       "tag": "v6.9.2",
-      "taggedAt": "2026-08-11T16:06:18Z"
+      "taggedAt": "2026-08-11T16:06:18Z",
+      "onMainline": true
     }
   ],
   "sqrl": [

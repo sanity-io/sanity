@@ -184,7 +184,7 @@ function hardReasons(
   if (evidence.regressions.status === 'unavailable') {
     verdicts.push({
       code: 'regression-data-unavailable',
-      detail: 'Radar regression data is unavailable, so the regression gate cannot be cleared',
+      detail: `Radar regression data is unavailable (${evidence.regressions.error}), so the regression gate cannot be cleared`,
     })
   }
   blockingRegressions(evidence, version).forEach((regression) => {

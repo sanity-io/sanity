@@ -28,6 +28,12 @@ function sessionBetween(good: string, bad: string): RadarSession {
   return session
 }
 
+function okRegressions(sessions: RadarSession[], tags: RadarTag[]) {
+  const regressions = normaliseRegressions(sessions, tags)
+  if (regressions.status === 'unavailable') throw new Error(regressions.error)
+  return regressions.data
+}
+
 describe('deriveIntroducedIn', () => {
   test('the 6.9.1 to 6.9.2 session derives 6.9.2', () => {
     expect(deriveIntroducedIn(sessionBetween('v6.9.1', 'v6.9.2'), raw.tags)).toBe('6.9.2')
@@ -56,9 +62,9 @@ describe('deriveIntroducedIn', () => {
       firstBadCommittedAt: '2026-08-12T00:00:00Z',
     }
     const tags: RadarTag[] = [
-      {tag: 'v6.10.0', sha: 'a', taggedAt: '2026-08-18T12:00:00Z'},
-      {tag: 'v6.9.2', sha: 'b', taggedAt: '2026-08-11T12:00:00Z'},
-      {tag: 'v5.9.0', sha: 'c', taggedAt: '2026-08-13T12:00:00Z'},
+      {tag: 'v6.10.0', sha: 'a', taggedAt: '2026-08-18T12:00:00Z', onMainline: true},
+      {tag: 'v6.9.2', sha: 'b', taggedAt: '2026-08-11T12:00:00Z', onMainline: true},
+      {tag: 'v5.9.0', sha: 'c', taggedAt: '2026-08-13T12:00:00Z', onMainline: true},
     ]
     expect(deriveIntroducedIn(session, tags)).toBe('6.10.0')
   })
@@ -79,7 +85,7 @@ describe('deriveIntroducedIn', () => {
 })
 
 describe('normaliseRegressions', () => {
-  const {confirmed, investigations} = normaliseRegressions(raw.sessions, raw.tags)
+  const {confirmed, investigations} = okRegressions(raw.sessions, raw.tags)
 
   test('keeps the five confirmed regressions with labels from the session labels', () => {
     expect(confirmed).toHaveLength(5)
@@ -120,6 +126,59 @@ describe('normaliseRegressions', () => {
   })
 })
 
+describe('commit-endpoint regressions', () => {
+  const commitSession: RadarSession = {
+    _id: 'session-commit',
+    _createdAt: '2026-09-10T10:00:00Z',
+    _updatedAt: '2026-09-22T10:00:00Z',
+    good: null,
+    bad: null,
+    regression: true,
+    severity: 'major',
+    fixedIn: null,
+    firstBadSha: 'commit-sha',
+    firstBadTag: null,
+    firstBadCommittedAt: '2026-08-12T00:00:00Z',
+  }
+  const mainlineTags: RadarTag[] = [
+    {tag: 'v6.9.2', sha: 'a', taggedAt: '2026-08-11T12:00:00Z', onMainline: true},
+    {tag: 'v6.10.0', sha: 'b', taggedAt: '2026-08-18T12:00:00Z', onMainline: true},
+    {tag: 'v6.11.0', sha: 'c', taggedAt: '2026-08-25T12:00:00Z', onMainline: true},
+  ]
+
+  test('attributes a commit endpoint to the first mainline tag after the commit', () => {
+    expect(deriveIntroducedIn(commitSession, mainlineTags)).toBe('6.10.0')
+    expect(okRegressions([commitSession], mainlineTags).confirmed).toMatchObject([
+      {id: 'session-commit', introducedIn: '6.10.0'},
+    ])
+  })
+
+  test('ignores an off-mainline tag cut between the commit and the next mainline tag', () => {
+    const offMainline: RadarTag = {
+      tag: 'v5.31.2',
+      sha: 'd',
+      taggedAt: '2026-08-13T12:00:00Z',
+      onMainline: false,
+    }
+    expect(deriveIntroducedIn(commitSession, [...mainlineTags, offMainline])).toBe('6.10.0')
+  })
+
+  test('skips a regression whose commit no mainline tag contains yet', () => {
+    const lateSession = {...commitSession, firstBadCommittedAt: '2026-09-01T00:00:00Z'}
+    expect(deriveIntroducedIn(lateSession, mainlineTags)).toBeNull()
+    expect(okRegressions([lateSession], mainlineTags).confirmed).toEqual([])
+  })
+
+  test('fails closed when the first bad commit is not synced', () => {
+    const unsynced = {...commitSession, firstBadCommittedAt: null}
+    const regressions = normaliseRegressions([unsynced], mainlineTags)
+    expect(regressions).toMatchObject({status: 'unavailable'})
+    expect(regressions.status === 'unavailable' ? regressions.error : '').toContain(
+      'session-commit',
+    )
+  })
+})
+
 describe('normaliseRegressions investigations', () => {
   const session = {
     _id: 'session-open',
@@ -136,7 +195,7 @@ describe('normaliseRegressions investigations', () => {
   }
 
   test('keeps a resolved session as an investigation with its resolution time', () => {
-    const {investigations} = normaliseRegressions([session], [])
+    const {investigations} = okRegressions([session], [])
     expect(investigations).toEqual([
       {
         id: 'session-open',
@@ -149,7 +208,7 @@ describe('normaliseRegressions investigations', () => {
   })
 
   test('an unresolved session has no resolution time', () => {
-    const {investigations} = normaliseRegressions([{...session, regression: null}], [])
+    const {investigations} = okRegressions([{...session, regression: null}], [])
     expect(investigations[0]?.resolvedAt).toBeNull()
   })
 })
@@ -164,7 +223,9 @@ describe('normaliseSqrl and normaliseBench', () => {
   })
 
   test('defaults missing numeric fields and skips rows without a score or tag', () => {
-    const tags: RadarTag[] = [{tag: 'v1.0.0', sha: 'sha-1', taggedAt: '2026-01-01T00:00:00Z'}]
+    const tags: RadarTag[] = [
+      {tag: 'v1.0.0', sha: 'sha-1', taggedAt: '2026-01-01T00:00:00Z', onMainline: true},
+    ]
     const facts = normaliseSqrl(
       [
         {
@@ -211,7 +272,9 @@ describe('normaliseSqrl and normaliseBench', () => {
   })
 
   test('keeps the earliest release bench run per version', () => {
-    const tags: RadarTag[] = [{tag: 'v1.0.0', sha: 'sha-1', taggedAt: '2026-01-01T00:00:00Z'}]
+    const tags: RadarTag[] = [
+      {tag: 'v1.0.0', sha: 'sha-1', taggedAt: '2026-01-01T00:00:00Z', onMainline: true},
+    ]
     const bench = normaliseBench(
       [
         {

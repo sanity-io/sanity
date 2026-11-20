@@ -378,6 +378,16 @@ describe('regression-data-unavailable', () => {
     })
     expect(evaluation.stableAtRisk).toEqual([])
   })
+
+  test('names the reason the regression data is unavailable', () => {
+    const evidence = makeEvidence([{version: '6.16.0', ageDays: 30}], {
+      regressions: {
+        status: 'unavailable',
+        error: 'confirmed regression session-commit cannot be placed',
+      },
+    })
+    expect(candidateOf(evidence, '6.16.0').hard[0]?.detail).toContain('session-commit')
+  })
 })
 
 describe('ranking and shortlist', () => {
