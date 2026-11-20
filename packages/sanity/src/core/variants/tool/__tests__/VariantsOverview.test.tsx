@@ -90,6 +90,14 @@ vi.mock('../../store/useVariantPermissions', () => ({
   useVariantPermissions: vi.fn(() => variantPermissionsMock),
 }))
 
+vi.mock('../../hooks/useVariantDocuments', () => ({
+  useVariantDocuments: vi.fn(() => ({loading: false, results: [], error: null})),
+}))
+
+vi.mock('../../../releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => ({data: [], byId: new Map(), loading: false, error: null})),
+}))
+
 vi.mock('../../hooks/useVariantsDocumentCounts', () => ({
   useVariantsDocumentCounts: vi.fn(() => ({
     data: documentCountsMock.data,
@@ -315,6 +323,47 @@ describe('VariantsOverview', () => {
     await user.click(await screen.findByText('Delete variant definition'))
 
     expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
+  })
+
+  it('duplicates a variant from the row actions menu and navigates to the duplicate', async () => {
+    setVariants([variantAlphaAudience, variantNorwegianMarket])
+    documentCountsMock.data = {[variantAlphaAudience._id]: 0, [variantNorwegianMarket._id]: 0}
+    documentCountsMock.loading = false
+    const user = userEvent.setup()
+
+    await renderOverview()
+
+    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(2))
+
+    const menuButton = screen
+      .getAllByRole('button')
+      .find((button) => button.id === 'variant-actions-alpha-audience')
+
+    if (!menuButton) throw new Error('Variant actions menu button not found')
+
+    await user.click(menuButton)
+    await user.click(await screen.findByText('Duplicate variant definition'))
+
+    const dialog = await screen.findByRole('dialog', {name: 'Duplicate variant definition'})
+    expect(within(dialog).getByTestId('variant-form-title')).toHaveValue(
+      'Alpha audience (duplicated)',
+    )
+
+    const conditionValues = await within(dialog).findAllByTestId('variant-form-condition-value')
+    await user.clear(conditionValues[0]!)
+    await user.type(conditionValues[0]!, 'beta')
+    await user.click(within(dialog).getByTestId('duplicate-variant-button'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.createVariant).toHaveBeenCalledTimes(1)
+    })
+
+    const duplicate = variantOperationsMock.createVariant.mock.calls[0]![0] as EditableSystemVariant
+
+    expect(duplicate.conditions).toEqual({audience: 'beta', locale: 'en-US'})
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith({variantId: getVariantId(duplicate._id)})
+    })
   })
 
   it('shows filter empty state when condition filters exclude every definition', async () => {

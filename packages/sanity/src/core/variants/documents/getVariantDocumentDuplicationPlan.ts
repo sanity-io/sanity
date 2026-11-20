@@ -1,5 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {type DocumentSystem, type Schema} from '@sanity/types'
+import {type Schema} from '@sanity/types'
 
 import {DOCUMENT_SYSTEM_FIELD} from '../../preview/constants'
 import {isGoingToUnpublish} from '../../releases/util/isGoingToUnpublish'
@@ -51,8 +51,7 @@ export interface VariantDocumentDuplicationPlan {
 }
 
 function getGroupId(item: DocumentInVariant): string | undefined {
-  const system = item.document[DOCUMENT_SYSTEM_FIELD] as DocumentSystem | undefined
-  return system?.group?._ref
+  return item.document[DOCUMENT_SYSTEM_FIELD]?.group?._ref
 }
 
 /**

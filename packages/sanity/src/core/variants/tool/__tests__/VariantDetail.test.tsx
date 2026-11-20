@@ -1,10 +1,12 @@
-import {render, screen, waitFor} from '@testing-library/react'
+import {act, render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
+import {VariantsModePromiseContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {type SingleWorkspace} from '../../../config/types'
 import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
+import {type VariantsMode} from '../../contexts/mode/types'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
 import {VARIANT_DOCUMENTS_PATH} from '../../store/constants'
 import {type SystemVariant} from '../../types'
@@ -92,10 +94,15 @@ vi.mock('../../hooks/useVariantDocuments', () => ({
 vi.mock('../../../releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => ({
     data: [],
+    byId: new Map(),
     loading: false,
     error: null,
   })),
 }))
+
+function settledMode(mode: VariantsMode): Promise<VariantsMode> {
+  return Object.assign(Promise.resolve(mode), {status: 'fulfilled' as const, value: mode})
+}
 
 describe('VariantDetail', () => {
   beforeEach(() => {
@@ -137,7 +144,18 @@ describe('VariantDetail', () => {
       config,
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const result = render(<VariantDetail />, {wrapper})
+    let result!: ReturnType<typeof render>
+    // The detail menu reads the variants mode with `use()`; a sync `render` act drops the commit's
+    // passive effects once a render has called `use()` on a thenable, so mount inside an awaited act
+    // oxlint-disable-next-line testing-library/no-unnecessary-act -- see above
+    await act(async () => {
+      result = render(
+        <VariantsModePromiseContext value={settledMode('default')}>
+          <VariantDetail />
+        </VariantsModePromiseContext>,
+        {wrapper},
+      )
+    })
     return result
   }
 
@@ -427,6 +445,55 @@ describe('VariantDetail', () => {
     expect(screen.getByRole('heading', {level: 1, name: 'Alpha audience'})).toBeInTheDocument()
 
     consoleError.mockRestore()
+  })
+
+  it('duplicates the variant from the detail menu and navigates to the duplicate', async () => {
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+    variantOperationsMock.createVariant.mockResolvedValue(undefined)
+    const user = userEvent.setup()
+
+    await renderDetail()
+
+    await user.click(await screen.findByTestId('variant-detail-menu-button'))
+    await user.click(await screen.findByTestId('duplicate-variant-menu-item'))
+
+    const dialog = await screen.findByRole('dialog', {name: 'Duplicate variant definition'})
+    expect(within(dialog).getByTestId('variant-form-title')).toHaveValue(
+      'Alpha audience (duplicated)',
+    )
+
+    // The copied conditions are the original's, so creating the duplicate is blocked until they differ
+    await user.click(within(dialog).getByTestId('duplicate-variant-button'))
+    expect(
+      within(dialog).getByTestId('variant-form-conditions-duplicate-error'),
+    ).toBeInTheDocument()
+    expect(variantOperationsMock.createVariant).not.toHaveBeenCalled()
+
+    const conditionValues = await within(dialog).findAllByTestId('variant-form-condition-value')
+    await user.clear(conditionValues[0]!)
+    await user.type(conditionValues[0]!, 'beta')
+    await user.click(within(dialog).getByTestId('duplicate-variant-button'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.createVariant).toHaveBeenCalledTimes(1)
+    })
+    const duplicate = variantOperationsMock.createVariant.mock.calls[0]![0]
+    expect(duplicate).toEqual(
+      expect.objectContaining({
+        conditions: {audience: 'beta', locale: 'en-US'},
+        priority: variantAlphaAudience.priority,
+        metadata: expect.objectContaining({title: 'Alpha audience (duplicated)'}),
+      }),
+    )
+    expect(duplicate._id).not.toBe(variantAlphaAudience._id)
+    // Without documents in the original, nothing asks about copying them
+    expect(
+      screen.queryByRole('dialog', {name: 'Duplicate also the variant documents?'}),
+    ).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith({variantId: getVariantId(duplicate._id)})
+    })
   })
 
   it('shows not found when variant id does not match any document', async () => {

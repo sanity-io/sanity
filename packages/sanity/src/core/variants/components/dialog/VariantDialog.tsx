@@ -2,7 +2,7 @@ import {at, set} from '@sanity/mutate'
 import {applyPatches} from '@sanity/mutate/_unstable_apply'
 import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {type FormEvent, useCallback, useMemo, useState} from 'react'
+import {type FormEvent, type ReactNode, useCallback, useMemo, useState} from 'react'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
@@ -16,6 +16,11 @@ import {getVariantUniquenessValidation} from '../../util/uniquenessValidation'
 import {VariantForm, type VariantFormChangeHandler} from './VariantForm'
 
 interface VariantDialogProps {
+  /**
+   * A dialog to open on top of this one. Rendering it inside this dialog makes it a child layer,
+   * so this dialog neither closes on clicks inside it nor on its Escape key.
+   */
+  children?: ReactNode
   confirmDataTestId: string
   confirmText: string
   errorTitle: string
@@ -30,6 +35,7 @@ interface VariantDialogProps {
 
 export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
   const {
+    children,
     confirmDataTestId,
     confirmText,
     errorTitle,
@@ -140,6 +146,7 @@ export function VariantDialog(props: VariantDialogProps): React.JSX.Element {
           </Flex>
         </form>
       </Card>
+      {children}
     </Dialog>
   )
 }
