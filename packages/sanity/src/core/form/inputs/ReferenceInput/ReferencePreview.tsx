@@ -3,12 +3,14 @@ import {Badge, Inline} from '@sanity/ui'
 import {useMemo} from 'react'
 import {Box} from 'ui5'
 
+import {DocumentVersionsMarks} from '../../../components/documentStatus/DocumentVersionsMarks'
 import {DocumentVersionsStatus} from '../../../components/documentStatus/DocumentVersionsStatus'
 import {DocumentVersionsStatusIndicator} from '../../../components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {type PreviewLayoutKey} from '../../../components/previews/types'
 import {DocumentPreviewPresence} from '../../../presence/DocumentPreviewPresence'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
 import {useDocumentPresence} from '../../../store/presence/useDocumentPresence'
+import {useWorkspace} from '../../../studio/workspace'
 import {type RenderPreviewCallback} from '../../types/renderCallback'
 
 /**
@@ -21,8 +23,16 @@ export function ReferencePreview(props: {
   layout: PreviewLayoutKey
   renderPreview: RenderPreviewCallback
   showTypeLabel?: boolean
+  /**
+   * With the document group inventory enabled: no versions tooltip on the preview (it opened below
+   * the reference, over the next item and the next field), and the marks carry a spoken summary of
+   * the versions instead. Set for the field's own value, not for the options of its search.
+   */
+  quietVersionsStatus?: boolean
 }) {
-  const {id, layout, refType, renderPreview, showTypeLabel} = props
+  const {id, layout, refType, renderPreview, showTypeLabel, quietVersionsStatus = false} = props
+  const inventoryEnabled = useWorkspace().beta?.documentGroupInventory?.enabled === true
+  const quiet = quietVersionsStatus && inventoryEnabled
 
   const documentPresence = useDocumentPresence(id)
 
@@ -44,16 +54,24 @@ export function ReferencePreview(props: {
               <DocumentPreviewPresence presence={documentPresence} />
             )}
 
-            <DocumentVersionsStatusIndicator documentVersions={versions} />
+            {/* While a variant is picked, the diamond says whether the referenced document has its
+                own version for it (filled) or shows Default (outline), as in lists and search */}
+            {quiet ? (
+              <DocumentVersionsMarks versionCount={versions.length}>
+                <DocumentVersionsStatusIndicator documentVersions={versions} />
+              </DocumentVersionsMarks>
+            ) : (
+              <DocumentVersionsStatusIndicator documentVersions={versions} />
+            )}
           </Inline>
         </Box>
       ),
       layout,
       schemaType: refType,
-      tooltip: <DocumentVersionsStatus documentGroupId={id} />,
+      tooltip: quiet ? undefined : <DocumentVersionsStatus documentGroupId={id} />,
       value: previewStub,
     }),
-    [documentPresence, id, layout, previewStub, refType, showTypeLabel, versions],
+    [documentPresence, id, layout, previewStub, quiet, refType, showTypeLabel, versions],
   )
 
   return renderPreview(previewProps)

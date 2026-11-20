@@ -674,6 +674,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'pane-item.published-status.has-published.tooltip': 'Published <RelativeTime/>',
   /** The text shown in the tooltip of pane item previews of documents if there are no unpublished edits */
   'pane-item.published-status.no-published.tooltip': 'No unpublished edits',
+  /** The hint at the bottom of the versions popover on document list rows, when a click on the status icons opens the document group inventory */
+  'pane-item.versions-status.open-inventory.hint': 'Click the status icons to see every version',
   /** The text used in the document header title if there is an error */
   'panes.document-header-title.error.text': 'Error: {{error}}',
   /** The text used in the document header title if creating a new item */

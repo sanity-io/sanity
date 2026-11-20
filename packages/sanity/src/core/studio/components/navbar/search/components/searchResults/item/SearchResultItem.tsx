@@ -130,6 +130,9 @@ export function SearchResultItem({
           variant={previewVariant}
           presence={documentPresence}
           schemaType={type}
+          // Results that open their document; a picker that hands the result to `onItemSelect`
+          // keeps the versions tooltip
+          quietVersionsStatus={!disabledAction && !disableIntentLink && !onItemSelect}
         />
       </PreviewCard>
     </Box>

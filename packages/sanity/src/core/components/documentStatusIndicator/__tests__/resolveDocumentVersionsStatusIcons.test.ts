@@ -2,7 +2,10 @@ import {describe, expect, it} from 'vitest'
 
 import {type VersionInfoDocumentStub} from '../../../releases/store/types'
 import {variantAlphaAudience} from '../../../variants/__fixtures__/variants.fixture'
-import {resolveDocumentStatusIconsOutcome} from '../resolveDocumentStatusIcons'
+import {
+  resolveDocumentStatusIcons,
+  resolveDocumentStatusIconsOutcome,
+} from '../resolveDocumentStatusIcons'
 
 const PUBLISHED_ID = 'article-1'
 const RELEASE_BUNDLE_ID = 'rASAP'
@@ -75,13 +78,45 @@ describe('resolveDocumentStatusIcons', () => {
       ).toBe('variantDraftOnly')
     })
 
-    it('falls back to defaultPublishedWithDraft when the document is not in the variant', () => {
+    it('noVariantPublishedWithDraft when the document is not in the variant', () => {
       expect(
         resolveDocumentStatusIconsOutcome({
           ...context,
           documentVersions: [publishedDefault, draftDefault],
         }),
-      ).toBe('defaultPublishedWithDraft')
+      ).toBe('noVariantPublishedWithDraft')
+    })
+
+    it('noVariantPublished when only the default version is published', () => {
+      expect(
+        resolveDocumentStatusIconsOutcome({...context, documentVersions: [publishedDefault]}),
+      ).toBe('noVariantPublished')
+    })
+
+    it('noVariantDraftOnly when only a default draft exists', () => {
+      expect(
+        resolveDocumentStatusIconsOutcome({...context, documentVersions: [draftDefault]}),
+      ).toBe('noVariantDraftOnly')
+    })
+
+    it('noVariantUnpublished when there are no versions', () => {
+      expect(resolveDocumentStatusIconsOutcome(context)).toBe('noVariantUnpublished')
+    })
+
+    it('ends every row with a diamond: filled with a variant version, outline without', () => {
+      expect(
+        resolveDocumentStatusIcons({
+          ...context,
+          documentVersions: [publishedVariant, draftVariant],
+        }),
+      ).toEqual(['draft', 'published', 'variant'])
+      expect(
+        resolveDocumentStatusIcons({
+          ...context,
+          documentVersions: [publishedDefault, draftDefault],
+        }),
+      ).toEqual(['draft', 'published', 'variant-empty'])
+      expect(resolveDocumentStatusIcons(context)).toEqual(['variant-empty'])
     })
 
     it('falls back to defaultPublishedWithDraft while the variants store is still resolving', () => {
@@ -178,22 +213,34 @@ describe('resolveDocumentStatusIcons', () => {
       ).toBe('inReleaseWithVariant')
     })
 
-    it('inRelease when the release holds the default version only', () => {
+    it('inReleaseNoVariant when the release holds the default version only', () => {
       expect(
         resolveDocumentStatusIconsOutcome({
           ...context,
           documentVersions: [publishedDefault, draftDefault, releaseDefault],
         }),
-      ).toBe('inRelease')
+      ).toBe('inReleaseNoVariant')
     })
 
-    it('notInRelease when the document is not in the release', () => {
+    it('notInReleaseNoVariant when the document is not in the release', () => {
       expect(
         resolveDocumentStatusIconsOutcome({
           ...context,
           documentVersions: [publishedDefault, draftDefault],
         }),
-      ).toBe('notInRelease')
+      ).toBe('notInReleaseNoVariant')
+    })
+
+    it('ends with the filled or outline diamond after the release mark', () => {
+      expect(resolveDocumentStatusIcons({...context, documentVersions: [releaseVariant]})).toEqual([
+        'release',
+        'variant',
+      ])
+      expect(resolveDocumentStatusIcons({...context, documentVersions: [releaseDefault]})).toEqual([
+        'release',
+        'variant-empty',
+      ])
+      expect(resolveDocumentStatusIcons(context)).toEqual(['variant-empty'])
     })
 
     it('inRelease while the variants store is still resolving', () => {

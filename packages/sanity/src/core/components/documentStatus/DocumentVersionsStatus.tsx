@@ -8,11 +8,13 @@ import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useWorkspace} from '../../studio/workspace'
 import {readVersionType} from '../../util/versionsUtils'
+import {getVersionFilterLabel} from '../../variants/plugin/components/getVersionFilterLabel'
 import {useAllVariants} from '../../variants/store/useAllVariants'
-import {getVariantId, getVariantTitle} from '../../variants/tool/util'
 import {DocumentStatusIcon} from '../documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {lineIcons, lineName, root} from './DocumentVersionsStatus.css'
+import {getAudienceName} from './getAudienceName'
 import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
+import {getReleasePerspective} from './getReleasePerspective'
 import {
   type DocumentVersionStatusGroup,
   type DocumentVersionStatusItem,
@@ -25,21 +27,24 @@ const MAX_LINES = 7
 /** The order of the document list's status icons, which keeps published at the right edge. */
 const ICON_KINDS = ['release', 'draft', 'published'] as const
 
+/** @internal */
 const editedAt = (item: DocumentVersionStatusItem) => Date.parse(item.version._updatedAt) || 0
 
-function latestEdit(group: DocumentVersionStatusGroup): DocumentVersionStatusItem {
+/** @internal */
+export function latestEdit(group: DocumentVersionStatusGroup): DocumentVersionStatusItem {
   return group.items.reduce((latest, item) => (editedAt(item) > editedAt(latest) ? item : latest))
 }
 
 /**
- * Displays the versions of a document: one line per audience, the default one first, then the
- * others by their latest edit. Each line shows the audience, when it was last published or edited,
- * and one status icon per kind of version it has.
+ * The audience lines of a document's versions: the default one first, then the others by their
+ * latest edit.
  *
  * @internal
  */
-export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: string}) {
-  const {t} = useTranslation()
+export function useDocumentVersionStatusGroups(documentGroupId: string): {
+  groups: DocumentVersionStatusGroup[]
+  loading: boolean
+} {
   const {byId: releasesById} = useActiveReleases()
   const {byId: variantsById, loading: variantsLoading} = useAllVariants()
   const {loading, versions} = useDocumentVersions({documentId: documentGroupId})
@@ -56,7 +61,22 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
     return [...allGroups.filter((group) => !group.variantId), ...audiences]
   }, [releasesById, variantsById, variantsEnabled, versions])
 
-  if (loading || variantsLoading) {
+  return {groups, loading: loading || variantsLoading}
+}
+
+/**
+ * Displays the versions of a document: one line per audience, the default one first, then the
+ * others by their latest edit. Each line shows the audience, when it was last published or edited,
+ * and one status icon per kind of version it has.
+ *
+ * @internal
+ */
+export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: string}) {
+  const {t} = useTranslation()
+  const {groups, loading} = useDocumentVersionStatusGroups(documentGroupId)
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+
+  if (loading) {
     return (
       <Box padding={2}>
         <Text muted size={1} as="div" trim={true}>
@@ -66,15 +86,23 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
     )
   }
 
-  const hiddenVersionCount = groups
-    .slice(MAX_LINES)
-    .reduce((count, group) => count + group.items.length, 0)
+  // With Variants off there are no audiences: one line per version, as in the versions flyout
+  const items = variantsEnabled ? [] : groups.flatMap((group) => group.items)
+  const hiddenVersionCount = variantsEnabled
+    ? groups.slice(MAX_LINES).reduce((count, group) => count + group.items.length, 0)
+    : Math.max(0, items.length - MAX_LINES)
 
   return (
     <div className={root} data-testid="document-versions-status">
-      {groups.slice(0, MAX_LINES).map((group, index) => (
-        <AudienceLine group={group} key={group.variantId ?? 'default'} index={index} />
-      ))}
+      {variantsEnabled
+        ? groups
+            .slice(0, MAX_LINES)
+            .map((group, index) => (
+              <AudienceLine group={group} key={group.variantId ?? 'default'} index={index} />
+            ))
+        : items
+            .slice(0, MAX_LINES)
+            .map((item, index) => <VersionLine item={item} key={item.version._id} index={index} />)}
       {hiddenVersionCount > 0 && (
         <Flex
           alignItems="center"
@@ -98,14 +126,12 @@ export function DocumentVersionsStatus({documentGroupId}: {documentGroupId: stri
 function AudienceLine({group, index}: {group: DocumentVersionStatusGroup; index: number}) {
   const {t} = useTranslation()
   const schema = useSchema()
-  const {version} = latestEdit(group)
+  const latest = latestEdit(group)
+  const {version} = latest
   const liveEdit = Boolean(schema.get(version._type)?.liveEdit)
   const timeAgo = useCompactTimeAgo(version._updatedAt)
-  const variant = group.items[0]?.variant
-  let name = t('document-group.base-variant')
-  if (group.variantId) {
-    name = variant ? getVariantTitle(variant) : getVariantId(group.variantId)
-  }
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+  const name = getAudienceName({group, latest, t, variantsEnabled})
 
   return (
     <Flex
@@ -132,6 +158,45 @@ function AudienceLine({group, index}: {group: DocumentVersionStatusGroup; index:
           const item = group.items.find((candidate) => readVersionType(candidate.version) === kind)
           return item ? <DocumentStatusIcon key={kind} kind={kind} release={item.release} /> : null
         })}
+      </div>
+    </Flex>
+  )
+}
+
+/** A line per version, with Variants off: its name, when it last changed, and its own mark. */
+function VersionLine({item, index}: {item: DocumentVersionStatusItem; index: number}) {
+  const {t} = useTranslation()
+  const schema = useSchema()
+  const {version, release} = item
+  const liveEdit = Boolean(schema.get(version._type)?.liveEdit)
+  const timeAgo = useCompactTimeAgo(version._updatedAt)
+  const name = getVersionFilterLabel(getReleasePerspective({release, version}), t, []).displayTitle
+  const kind = readVersionType(version)
+
+  return (
+    <Flex
+      alignItems="center"
+      data-testid="document-versions-status-line"
+      gap={2}
+      paddingY={1}
+      paddingLeft={3}
+      paddingRight={2}
+      borderTop={index > 0}
+    >
+      <Box className={lineName}>
+        <Text size={1} truncate={1}>
+          {name}
+        </Text>
+      </Box>
+      <Box flexShrink={0}>
+        <Text muted size={1}>
+          {t(getDocumentVersionStatusTimestampKey(version, liveEdit), {date: timeAgo})}
+        </Text>
+      </Box>
+      <div className={lineIcons}>
+        {kind === 'release' || kind === 'draft' || kind === 'published' ? (
+          <DocumentStatusIcon kind={kind} release={release} />
+        ) : null}
       </div>
     </Flex>
   )

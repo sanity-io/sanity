@@ -681,6 +681,112 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.title_other': 'Delete {{count}} {{subject}}',
   /** The label for the action that clears every selected variant in the document group inventory */
   'document-group.deselect-all': 'Deselect all',
+  /** An audience row in the versions flyout, detail: when the audience was last edited, for one that was never published ("edited 2 hr ago") */
+  'document-group.flyout.audience.detail.edited': 'edited {{date}}',
+  /** An audience row in the versions flyout, detail: the unscheduled release the audience is waiting in, for one that was never published */
+  'document-group.flyout.audience.detail.in-release': 'in {{releaseTitle}}',
+  /** An audience row in the versions flyout, detail: how many other releases the audience is in (singular) */
+  'document-group.flyout.audience.detail.more-releases_one': '+{{count}} release',
+  /** An audience row in the versions flyout, detail: how many other releases the audience is in (plural) */
+  'document-group.flyout.audience.detail.more-releases_other': '+{{count}} releases',
+  /** An audience row in the versions flyout, detail: the release the audience is waiting in has no publish time */
+  'document-group.flyout.audience.detail.no-date-set': 'no date set',
+  /** An audience row in the versions flyout, detail: the audience also has a draft, which does not go out with the scheduled release */
+  'document-group.flyout.audience.detail.unpublished-edits': 'unpublished edits',
+  /** An audience row in the versions flyout, lead: the audience was never published and goes live for the first time when a scheduled release publishes. `date` is the release's publish time */
+  'document-group.flyout.audience.lead.first-publish-scheduled': 'First publish scheduled {{date}}',
+  /** An audience row in the versions flyout, lead: nothing is live for this audience yet */
+  'document-group.flyout.audience.lead.not-published-yet': 'Not published yet',
+  /** An audience row in the versions flyout, lead: published, nothing pending. `date` is a relative time ("3 wk ago") */
+  'document-group.flyout.audience.lead.published': 'Published {{date}}',
+  /** An audience row in the versions flyout, lead: a draft that is not published yet */
+  'document-group.flyout.audience.lead.unpublished-edits': 'Unpublished edits',
+  /** An audience row in the versions flyout, lead: what is published changes when a scheduled release publishes. `date` is the release's publish time */
+  'document-group.flyout.audience.lead.update-scheduled': 'Update scheduled {{date}}',
+  /** An audience row in the versions flyout, lead: a published audience has an update in a release with no publish time */
+  'document-group.flyout.audience.lead.update-waiting': 'Update waiting in {{releaseTitle}}',
+  /** An audience row in the versions flyout, lead: a scheduled release with this audience in it has gone out. `date` is a relative time ("2 hr ago") */
+  'document-group.flyout.audience.lead.updated': 'Updated {{date}}',
+  /** Tooltip and accessible name of the avatars on a row of the versions flyout: one person is editing that audience */
+  'document-group.flyout.avatars.one': '{{displayName}} is editing',
+  /** Tooltip and accessible name of the avatars on a row of the versions flyout: more than one person is editing that audience. `count` is the number of other people (singular) */
+  'document-group.flyout.avatars.other_one': '{{displayName}} and {{count}} other are editing',
+  /** Tooltip and accessible name of the avatars on a row of the versions flyout: more than one person is editing that audience. `count` is the number of other people (plural) */
+  'document-group.flyout.avatars.other_other': '{{displayName}} and {{count}} others are editing',
+  /** The count at the end of the versions flyout's last row, when the flyout lists only its first audiences: how many it does not show */
+  'document-group.flyout.footer.hidden-count': '+{{count}}',
+  /** The accessible name of that count (singular) */
+  'document-group.flyout.footer.hidden-count.aria-label_one': '{{count}} more',
+  /** The accessible name of that count (plural) */
+  'document-group.flyout.footer.hidden-count.aria-label_other': '{{count}} more',
+  /**
+   * The last row of the versions flyout on a document list row, when it lists only its first audiences: counts the ones it does not show and opens the document group inventory (singular)
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
+  'document-group.flyout.footer.see-more_one': 'See {{count}} more in the inventory',
+  /**
+   * The last row of the versions flyout on a document list row, when it lists only its first audiences: counts the ones it does not show and opens the document group inventory (plural)
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
+  'document-group.flyout.footer.see-more_other': 'See {{count}} more in the inventory',
+  /** The last row of the versions flyout on a document list row, when the inventory has more than the flyout shows: opens the document group inventory */
+  'document-group.flyout.manage-all-versions': 'Manage all versions',
+  /**
+   * The last row of the versions flyout on a document list row, when the document has a single version
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the footer reads `see-all-versions`
+  'document-group.flyout.manage-versions': 'Manage versions in inventory',
+  /**
+   * The last row of the versions flyout on a document list row, opening the document group inventory (plural)
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the footer reads `see-all-versions`
+  'document-group.flyout.see-all_other': 'See all {{count}} versions in inventory',
+  /**
+   * A row of the versions flyout after its first rows, counting the rows it does not show; opens the document group inventory (singular)
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the footer reads `footer.see-more`
+  'document-group.flyout.more_one': '{{count}} more in the inventory',
+  /**
+   * A row of the versions flyout after its first rows, counting the rows it does not show; opens the document group inventory (plural)
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the footer reads `footer.see-more`
+  'document-group.flyout.more_other': '{{count}} more in the inventory',
+  /**
+   * The first line of the versions flyout on a document list row: one person is editing the document
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the avatars read `avatars.*`
+  'document-group.flyout.presence.one': '{{displayName}} is editing',
+  /**
+   * The first line of the versions flyout on a document list row: more than one person is editing the document. `count` is the number of other people (singular)
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the avatars read `avatars.*`
+  'document-group.flyout.presence.other_one': '{{displayName}} and {{count}} other are editing',
+  /**
+   * The first line of the versions flyout on a document list row: more than one person is editing the document. `count` is the number of other people (plural)
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios that still read it; the avatars read `avatars.*`
+  'document-group.flyout.presence.other_other': '{{displayName}} and {{count}} others are editing',
+  /**
+   * The last row of the versions flyout on a document list row, when it lists every audience: opens the document group inventory
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
+  'document-group.flyout.see-all-versions': 'See all versions in the inventory',
+  /** Accessible name of the versions flyout on a document list row */
+  'document-group.flyout.title': 'Versions',
+  /** Accessible summary of a search result's or reference preview's status marks, while the document group inventory is enabled (one version) */
+  'document-group.marks.label_one': '{{count}} version',
+  /** Accessible summary of a search result's or reference preview's status marks, while the document group inventory is enabled (several versions) */
+  'document-group.marks.label_other': '{{count}} versions',
   /** The number of variants currently selected in the document group inventory */
   'document-group.selected-count': '{{count}} selected',
   /** Last line of the document versions popover, counting the versions it does not list (singular) */
@@ -695,6 +801,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.subject.version_one': 'version',
   /** Translated noun used as the `{{subject}}` value in document group strings such as `document-group.delete.title` (plural) */
   'document-group.subject.version_other': 'versions',
+  /** A version that was never published: its status line, with `status` the usual edited text, followed by a note */
+  'document-group.version.not-published-yet': '{{status}} · not published yet',
   /** The label text that indicates a version in the document group is served for the selected perspective and variant */
   'document-group.version.served': 'Served',
   /** The label text that indicates a base version in the document group is served because the selected variant has no version */
@@ -723,6 +831,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Label to show in the document footer indicating that the revision was not found */
   'document-status.revision-not-found': 'Revision not found',
+  /** Accessible label of the outline diamond on a document list row: the document has no version for the selected variant, so its status marks describe the Default version. `variant` is the variant's title */
+  'document-status.variant-mark.no-version': 'No {{variant}} version, showing Default',
+  /** Accessible label of the filled diamond on a document list row: the status marks describe the document's version for the selected variant. `variant` is the variant's title */
+  'document-status.variant-mark.version': '{{variant}} version',
 
   /** Toast description shown when saving changes is taking longer than expected */
   'document-store.slow-commit.description': 'Your changes are still being saved.',

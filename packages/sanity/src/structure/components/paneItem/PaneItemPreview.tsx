@@ -4,12 +4,13 @@ import {
   type SchemaType,
   type SortOrdering,
 } from '@sanity/types'
-import {type ComponentType, useMemo} from 'react'
+import {type ComponentType, useContext, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
   type DocumentPresence,
   DocumentPreviewPresence,
   type DocumentPreviewStore,
+  DocumentVersionsFlyoutList,
   DocumentVersionsStatus,
   DocumentVersionsStatusIndicator,
   type GeneralPreviewLayoutKey,
@@ -20,13 +21,29 @@ import {
   SanityDefaultPreview,
   useDocumentVersions,
   usePerspective,
+  useWorkspace,
 } from 'sanity'
+import {PreviewCardContext} from 'sanity/_singletons'
 import {Flex} from 'ui5'
 
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
+import {getCreateVariantPaneParams} from './getCreateVariantPaneParams'
+import {PaneItemVersionsFlyout, type PaneItemVersionsFlyoutActions} from './PaneItemVersionsFlyout'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
+  /**
+   * The child id the row links to. When it is set and the document group inventory is enabled,
+   * hovering the row opens a flyout of the document's versions, which open the document with the
+   * inventory open.
+   */
+  inventoryChildId?: string
+  /**
+   * With the document group inventory enabled and no row link: no versions popover on hover, as
+   * on search results and reference previews. Set where the row is a link to the document only,
+   * like the delete dialog's list of documents that refer to it.
+   */
+  quietVersionsStatus?: boolean
   icon: ComponentType | false
   layout: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
@@ -49,12 +66,41 @@ const INITIAL_PREVIEW_STATE = {
  * and are rendered by `<SanityDefaultPreview>`.
  */
 export function PaneItemPreview(props: PaneItemPreviewProps) {
-  const {icon, layout, presence, schemaType, sortOrder, value} = props
+  const {
+    icon,
+    inventoryChildId,
+    layout,
+    presence,
+    quietVersionsStatus = false,
+    schemaType,
+    sortOrder,
+    value,
+  } = props
+  const inventoryEnabled = useWorkspace().beta?.documentGroupInventory?.enabled === true
+  const versionsLinkChildId = inventoryEnabled ? inventoryChildId : undefined
 
   const publishedId = getPublishedId(value._id)
   const {versions} = useDocumentVersions({documentId: publishedId})
+  const rowSelected = useContext(PreviewCardContext)?.selected
+  const {perspectiveStack, selectedPerspective, selectedVariantNames} = usePerspective()
+  // A variant with no version in the release in view opens with Manage versions ready to create it
+  // there, instead of the document falling back to another version.
+  const renderFlyoutList = (actions: PaneItemVersionsFlyoutActions) => (
+    <DocumentVersionsFlyoutList
+      documentGroupId={publishedId}
+      viewingDocument={Boolean(rowSelected)}
+      onOpenInventory={actions.onOpenInventory}
+      onPickVersion={actions.onPickVersion}
+      presence={presence}
+      onPick={(variantId) =>
+        actions.onPick(
+          variantId,
+          getCreateVariantPaneParams({variantId, selectedPerspective, versions}),
+        )
+      }
+    />
+  )
 
-  const {perspectiveStack, selectedVariantNames} = usePerspective()
   const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const viewOptions = useMemo((): PrepareViewOptions | undefined => {
     if (!sortOrder) return undefined
@@ -95,13 +141,27 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
   const status = isLoading ? null : (
     <TooltipDelayGroupProvider>
       <Flex alignItems="center" gap={3}>
-        {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <DocumentVersionsStatusIndicator documentVersions={versions} />
+        {/* With the flyout on, it is the row's only overlay: who is editing shows on its rows */}
+        {presence && presence.length > 0 && (
+          <DocumentPreviewPresence presence={presence} tooltip={!versionsLinkChildId} />
+        )}
+        {versionsLinkChildId ? (
+          <PaneItemVersionsFlyout childId={versionsLinkChildId} renderList={renderFlyoutList}>
+            <DocumentVersionsStatusIndicator documentVersions={versions} />
+          </PaneItemVersionsFlyout>
+        ) : (
+          <DocumentVersionsStatusIndicator documentVersions={versions} />
+        )}
       </Flex>
     </TooltipDelayGroupProvider>
   )
 
-  const tooltip = <DocumentVersionsStatus documentGroupId={publishedId} />
+  // With the inventory on, the flyout of the row replaces the read-only versions popover, and a
+  // quiet row shows neither.
+  const tooltip =
+    versionsLinkChildId || (inventoryEnabled && quietVersionsStatus) ? undefined : (
+      <DocumentVersionsStatus documentGroupId={publishedId} />
+    )
 
   return (
     <SanityDefaultPreview
