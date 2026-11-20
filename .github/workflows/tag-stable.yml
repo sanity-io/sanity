@@ -174,7 +174,7 @@ jobs:
           OUTCOME: ${{ steps.decide.outputs.outcome }}
         run: |
           headline="${VERSION:-an invalid version} promoted to @stable by @${ACTOR}: ${OUTCOME}"
-          detail="Was ${PREVIOUS:-unknown}. Run: ${RUN_URL}"
+          detail="Previously was ${PREVIOUS:-unknown}."$'\n\n'"Run: ${RUN_URL}"
           jq -n --arg headline "$headline" --arg text "$detail" \
             '{headline: $headline, text: $text}' > "$RUNNER_TEMP/notice-webhook.json"
           jq -n --arg text "*${headline}*"$'\n\n'"${detail}" '{text: $text}' > "$RUNNER_TEMP/notice-fallback.json"
