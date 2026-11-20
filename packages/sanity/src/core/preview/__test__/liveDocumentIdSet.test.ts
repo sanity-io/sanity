@@ -5,10 +5,12 @@ import {
   type ListenEvent,
   ServerError,
 } from '@sanity/client'
-import {defer, delay, type Observable, of, Subject, throwError} from 'rxjs'
+import {defer, delay, Observable, of, Subject, throwError} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, onTestFinished, vi} from 'vitest'
 
+import {stubDocumentVisibility} from '../../../../test/testUtils/documentVisibility'
 import {it} from '../../../../test/testUtils/listenerErrorHandlerTest'
+import {LISTENER_PAUSE_GRACE_PERIOD, listenerGate} from '../../store/listenerGate/listenerGate'
 import {createDocumentIdSetObserver, type DocumentIdSetObserverState} from '../liveDocumentIdSet'
 
 type Event = ListenEvent<Record<string, unknown>>
@@ -224,5 +226,62 @@ describe('createDocumentIdSetObserver when a fetch fails', () => {
 
     expect(errors).toEqual([error])
     expect(fetch).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('createDocumentIdSetObserver on a hidden page', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    listenerGate.setEnabled(true)
+  })
+  afterEach(() => {
+    listenerGate.setEnabled(false)
+    vi.useRealTimers()
+    vi.restoreAllMocks()
+  })
+
+  it('reports reconnecting while paused on a hidden page, and refetches the set when shown', () => {
+    const documentVisibility = stubDocumentVisibility()
+    const client = createClient({
+      projectId: 'abc',
+      dataset: 'production',
+      apiVersion: '2025-02-19',
+      useCdn: false,
+    })
+    const connections = {opened: 0, open: 0}
+    vi.spyOn(client.observable, 'listen').mockImplementation(
+      () =>
+        new Observable((subscriber) => {
+          connections.opened++
+          connections.open++
+          subscriber.next({type: 'welcome', listenerName: 'id-set'})
+          return () => {
+            connections.open--
+          }
+        }) as never,
+    )
+    const fetch = vi
+      .spyOn(client.observable, 'fetch')
+      .mockImplementationOnce(() => of(['a']) as never)
+      .mockImplementationOnce(() => of(['a', 'b']) as never)
+
+    const states: DocumentIdSetObserverState[] = []
+    const subscription = createDocumentIdSetObserver(client)('_type == "article"').subscribe(
+      (state) => states.push(state),
+    )
+
+    documentVisibility.set('hidden')
+    vi.advanceTimersByTime(LISTENER_PAUSE_GRACE_PERIOD)
+    expect(connections.open).toBe(0)
+
+    documentVisibility.set('visible')
+    expect(connections).toEqual({opened: 2, open: 1})
+    expect(fetch).toHaveBeenCalledTimes(2)
+    expect(states).toEqual([
+      {status: 'connected', documentIds: ['a']},
+      {status: 'reconnecting', documentIds: ['a']},
+      {status: 'connected', documentIds: ['a', 'b']},
+    ])
+    subscription.unsubscribe()
   })
 })

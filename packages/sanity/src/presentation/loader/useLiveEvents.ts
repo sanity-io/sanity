@@ -1,8 +1,8 @@
-import {type LiveEvent, type LiveEventMessage} from '@sanity/client'
+import {type LiveEvent, type LiveEventMessage, type LiveEventReconnect} from '@sanity/client'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, scan, throwError} from 'rxjs'
-import {type SanityClient} from 'sanity'
+import {pauseWhileDocumentHidden, type SanityClient} from 'sanity'
 
 /**
  * Upper bound on retained messages. Only the most recent sync tags are useful for refetching,
@@ -60,6 +60,9 @@ export function useLiveEvents(client: SanityClient): State {
   const state$ = useMemo(
     () =>
       client.live.events({includeDrafts: true, tag: 'presentation-loader'}).pipe(
+        // Live events missed while paused are made up for by a reset when the page is shown,
+        // which refetches every query of the loader
+        pauseWhileDocumentHidden({onResume: (): LiveEventReconnect => ({type: 'reconnect'})}),
         scan(reducer, initialState),
         // Normalize non-Error failures so the error boundary always receives
         // an Error with the original throwable as `cause`.
