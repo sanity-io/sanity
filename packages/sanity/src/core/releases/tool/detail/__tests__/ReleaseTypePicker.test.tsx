@@ -1,6 +1,6 @@
 import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {beforeEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
 import {getByDataUi, queryByDataUi} from '../../../../../../test/setup/customQueries'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -17,7 +17,14 @@ import {
   mockUseReleaseOperations,
   useReleaseOperationsMockReturn,
 } from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
+import {setReleaseLabelMode} from '../../overview/useReleaseLabelMode'
 import {ReleaseTypePicker} from '../ReleaseTypePicker'
+
+const {mockReleasesRedesign} = vi.hoisted(() => ({mockReleasesRedesign: {enabled: true}}))
+
+vi.mock('../../../hooks/useReleasesRedesign', () => ({
+  useReleasesRedesign: () => mockReleasesRedesign.enabled,
+}))
 
 vi.mock('../../../store/useReleaseOperations', () => ({
   useReleaseOperations: vi.fn(() => useReleaseOperationsMockReturn),
@@ -60,6 +67,8 @@ const mockUpdateRelease = vi.fn()
 describe('ReleaseTypePicker', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    // These assertions cover the labels Studio ships today.
+    setReleaseLabelMode('current')
     mockUseReleaseOperations.mockReturnValue({
       ...useReleaseOperationsMockReturn,
       updateRelease: mockUpdateRelease.mockResolvedValue({}),
@@ -88,6 +97,11 @@ describe('ReleaseTypePicker', () => {
     })
 
     it('renders the label with a published text when release was asap published', async () => {
+      // The published pill is the legacy layout, kept behind useReleasesRedesign until v6 ships.
+      mockReleasesRedesign.enabled = false
+      onTestFinished(() => {
+        mockReleasesRedesign.enabled = true
+      })
       await renderComponent(publishedASAPRelease)
 
       expect(screen.queryByRole('button')).not.toBeInTheDocument()
@@ -98,6 +112,11 @@ describe('ReleaseTypePicker', () => {
     })
 
     it('renders the label with a published text when release was schedule published', async () => {
+      // The published pill is the legacy layout, kept behind useReleasesRedesign until v6 ships.
+      mockReleasesRedesign.enabled = false
+      onTestFinished(() => {
+        mockReleasesRedesign.enabled = true
+      })
       await renderComponent({...scheduledRelease, state: 'published'})
 
       expect(screen.queryByRole('button')).not.toBeInTheDocument()

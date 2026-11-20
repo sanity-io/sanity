@@ -19,8 +19,8 @@ import {DatePicker} from '../../../components/inputs/DateInputs/DatePicker'
 import {getCalendarLabels} from '../../../form/inputs/DateInputs/utils'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
-import {useWorkspace} from '../../../studio/workspace'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
+import {useReleasesRedesign} from '../../hooks/useReleasesRedesign'
 import {useReleaseTime} from '../../hooks/useReleaseTime'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
@@ -57,7 +57,7 @@ const ScheduleTrigger = styled.button`
 
 export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.JSX.Element {
   const {release} = props
-  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+  const redesign = useReleasesRedesign()
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -273,7 +273,7 @@ export function ReleaseTypePicker(props: {release: NotArchivedRelease}): React.J
     </VStack>
   )
 
-  if (!variantsEnabled) {
+  if (!redesign) {
     return (
       <Popover
         content={popoverContent}

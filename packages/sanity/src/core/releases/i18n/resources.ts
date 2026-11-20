@@ -9,6 +9,8 @@ import {defineLocalesResources} from '../../i18n/helpers'
 const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Action text for adding a document to release */
   'action.add-document': 'Add document',
+  /** Menu item label for showing the combined releases + scheduled drafts view */
+  'action.all': 'All',
   /** Action text for archiving a release */
   'action.archive': 'Archive release',
   /** Tooltip for copy release actions button */
@@ -114,7 +116,7 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'archive-info.title': 'This release is archived',
   /** Description for information card on a published or archived release to description retention effects */
   'archive-info.description':
-    'It will be available for {{retentionDays}} days, then automatically removed on {{removalDate}}. <Link>Learn about retention</Link>.',
+    'This release is kept for {{retentionDays}} days. You can open it until {{removalDate}}. After that, the release and its document versions are removed. Published documents stay as they are. <Link>Learn about retention</Link>.',
 
   /** Title for changes to published documents */
   'changes-published-docs.title': 'Changes to published documents',
@@ -268,6 +270,155 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Label for the back button on a release detail page (returns to the releases list). The
    * leading arrow already conveys "back", so the label names the destination only. */
   'overview.back-to-all-releases': 'All releases',
+  /** Accessible label for the bulk select-all checkbox on the releases overview table */
+  'overview.bulk.select-all': 'Select all releases',
+  /** Accessible label for a per-row bulk select checkbox on the releases overview table */
+  'overview.bulk.select-row': 'Select release',
+  /** Count shown in the bulk selection toolbar (singular) */
+  'overview.bulk.selected_one': '{{count}} selected',
+  /** Count shown in the bulk selection toolbar (plural) */
+  'overview.bulk.selected_other': '{{count}} selected',
+  /** Label for clearing the current bulk selection */
+  'overview.bulk.clear': 'Clear selection',
+  /** Tooltip for the overflow button that holds bulk actions on narrow widths */
+  'overview.bulk.more': 'More actions',
+  /** Label for the bulk archive action */
+  'overview.bulk.archive': 'Archive',
+  /** Label for the bulk archive-and-delete action (the destructive bulk action in the active-releases
+   * view; plain delete is reserved for the archived view, which has no bulk selection today) */
+  'overview.bulk.archive-and-delete': 'Archive and delete',
+  /** Header for the bulk archive confirmation dialog */
+  'overview.bulk.archive-dialog.header': 'Archive releases',
+  /** Confirm button for the bulk archive dialog */
+  'overview.bulk.archive-dialog.confirm': 'Archive releases',
+  /** Body of the bulk archive dialog (singular) */
+  'overview.bulk.archive-dialog.description_one':
+    'This will archive 1 release. You can unarchive it later.',
+  /** Body of the bulk archive dialog (plural) */
+  'overview.bulk.archive-dialog.description_other':
+    'This will archive {{count}} releases. You can unarchive them later.',
+  /** Success toast after a bulk archive (singular) */
+  'overview.bulk.archive-toast.success_one': 'Archived 1 release',
+  /** Success toast after a bulk archive (plural) */
+  'overview.bulk.archive-toast.success_other': 'Archived {{count}} releases',
+  /** Error toast when some bulk archives fail */
+  'overview.bulk.archive-toast.error': 'Some releases could not be archived',
+  /** Tooltip on the bulk archive action when no selected release is eligible (all scheduled/scheduling) */
+  'overview.bulk.archive-none-eligible':
+    'Only active releases can be archived. Unschedule scheduled releases first.',
+  /** Note in the bulk archive dialog when some selected releases will be skipped (singular) */
+  'overview.bulk.archive-skipped-note_one':
+    '{{count}} scheduled release will be skipped — unschedule it first.',
+  /** Note in the bulk archive dialog when some selected releases will be skipped (plural) */
+  'overview.bulk.archive-skipped-note_other':
+    '{{count}} scheduled releases will be skipped — unschedule them first.',
+  /** Tooltip on the bulk archive-and-delete action when no selected release is eligible (all
+   * scheduled/scheduling) */
+  'overview.bulk.archive-and-delete-none-eligible':
+    'Only active releases can be archived and deleted. Unschedule scheduled releases first.',
+  /** Header for the bulk archive-and-delete confirmation dialog */
+  'overview.bulk.archive-and-delete-dialog.header': 'Archive and delete releases?',
+  /** Confirm button for the bulk archive-and-delete dialog */
+  'overview.bulk.archive-and-delete-dialog.confirm': 'Archive and delete',
+  /** Body of the bulk archive-and-delete dialog (singular) */
+  'overview.bulk.archive-and-delete-dialog.description_one':
+    'This will archive and permanently delete 1 release and its document versions. This cannot be undone.',
+  /** Body of the bulk archive-and-delete dialog (plural) */
+  'overview.bulk.archive-and-delete-dialog.description_other':
+    'This will archive and permanently delete {{count}} releases and their document versions. This cannot be undone.',
+  /** Success toast after a bulk archive-and-delete (singular) */
+  'overview.bulk.archive-and-delete-toast.success_one': 'Archived and deleted 1 release',
+  /** Success toast after a bulk archive-and-delete (plural) */
+  'overview.bulk.archive-and-delete-toast.success_other': 'Archived and deleted {{count}} releases',
+  /** Error toast when some bulk archive-and-deletes fail */
+  'overview.bulk.archive-and-delete-toast.error': 'Some releases could not be archived and deleted',
+  /** Label for the bulk unarchive action, offered in the archived-releases view */
+  'overview.bulk.unarchive': 'Unarchive',
+  /** Header for the bulk unarchive confirmation dialog */
+  'overview.bulk.unarchive-dialog.header': 'Unarchive releases',
+  /** Confirm button for the bulk unarchive dialog */
+  'overview.bulk.unarchive-dialog.confirm': 'Unarchive releases',
+  /** Body of the bulk unarchive dialog (singular) */
+  'overview.bulk.unarchive-dialog.description_one': 'This will unarchive 1 release.',
+  /** Body of the bulk unarchive dialog (plural) */
+  'overview.bulk.unarchive-dialog.description_other': 'This will unarchive {{count}} releases.',
+  /** Success toast after a bulk unarchive (singular) */
+  'overview.bulk.unarchive-toast.success_one': 'Unarchived 1 release',
+  /** Success toast after a bulk unarchive (plural) */
+  'overview.bulk.unarchive-toast.success_other': 'Unarchived {{count}} releases',
+  /** Error toast when some bulk unarchives fail */
+  'overview.bulk.unarchive-toast.error': 'Some releases could not be unarchived',
+  /** Tooltip on the bulk unarchive action when no selected release is eligible (all published,
+   * which can't be unarchived) */
+  'overview.bulk.unarchive-none-eligible': 'Only archived releases can be unarchived.',
+  /** Note in the bulk unarchive dialog when some selected releases will be skipped (singular) */
+  'overview.bulk.unarchive-skipped-note_one':
+    '{{count}} published release will be skipped — it cannot be unarchived.',
+  /** Note in the bulk unarchive dialog when some selected releases will be skipped (plural) */
+  'overview.bulk.unarchive-skipped-note_other':
+    '{{count}} published releases will be skipped — they cannot be unarchived.',
+  /** Label for the bulk delete action, offered in the archived-releases view (a plain delete —
+   * these releases are already archived or published, so no archive-first step is needed) */
+  'overview.bulk.delete': 'Delete',
+  /** Header for the bulk delete confirmation dialog */
+  'overview.bulk.delete-dialog.header': 'Delete releases?',
+  /** Confirm button for the bulk delete dialog */
+  'overview.bulk.delete-dialog.confirm': 'Delete',
+  /** Body of the bulk delete dialog (singular) */
+  'overview.bulk.delete-dialog.description_one':
+    'This will permanently delete 1 release and its document versions. This cannot be undone.',
+  /** Body of the bulk delete dialog (plural) */
+  'overview.bulk.delete-dialog.description_other':
+    'This will permanently delete {{count}} releases and their document versions. This cannot be undone.',
+  /** Success toast after a bulk delete (singular) */
+  'overview.bulk.delete-toast.success_one': 'Deleted 1 release',
+  /** Success toast after a bulk delete (plural) */
+  'overview.bulk.delete-toast.success_other': 'Deleted {{count}} releases',
+  /** Error toast when some bulk deletes fail */
+  'overview.bulk.delete-toast.error': 'Some releases could not be deleted',
+  /** Tooltip on the bulk delete action when no selected release is eligible (none archived or
+   * published) */
+  'overview.bulk.delete-none-eligible': 'Only archived or published releases can be deleted.',
+  /** Note in the bulk delete dialog when some selected releases will be skipped (singular) */
+  'overview.bulk.delete-skipped-note_one':
+    '{{count}} release will be skipped — it is not eligible for deletion.',
+  /** Note in the bulk delete dialog when some selected releases will be skipped (plural) */
+  'overview.bulk.delete-skipped-note_other':
+    '{{count}} releases will be skipped — they are not eligible for deletion.',
+  /** Label for the bulk delete-schedule action, offered in the Active/Paused scheduled-drafts
+   * view (removes the scheduling only — the document itself is not deleted) */
+  'overview.bulk.delete-schedule': 'Delete schedule',
+  /** Header for the bulk delete-schedule confirmation dialog */
+  'overview.bulk.delete-schedule-dialog.header': 'Delete schedule?',
+  /** Confirm button for the bulk delete-schedule dialog */
+  'overview.bulk.delete-schedule-dialog.confirm': 'Delete schedule',
+  /** Body of the bulk delete-schedule dialog (singular) — makes clear this removes the schedule
+   * only; the document stays as a draft, it is not deleted */
+  'overview.bulk.delete-schedule-dialog.description_one':
+    'This will remove the schedule for 1 document. The document will remain as a draft — its content will not be deleted.',
+  /** Body of the bulk delete-schedule dialog (plural) */
+  'overview.bulk.delete-schedule-dialog.description_other':
+    'This will remove the schedule for {{count}} documents. The documents will remain as drafts — their content will not be deleted.',
+  /** Success toast after a bulk delete-schedule (singular) */
+  'overview.bulk.delete-schedule-toast.success_one': 'Deleted 1 schedule',
+  /** Success toast after a bulk delete-schedule (plural) */
+  'overview.bulk.delete-schedule-toast.success_other': 'Deleted {{count}} schedules',
+  /** Error toast when some bulk delete-schedules fail */
+  'overview.bulk.delete-schedule-toast.error': 'Some schedules could not be deleted',
+  /** Tooltip on the bulk delete-schedule action when no selected draft is eligible */
+  'overview.bulk.delete-schedule-none-eligible': 'No selected schedules can be deleted.',
+  /** Note in the bulk delete-schedule dialog when some selected drafts will be skipped (singular) */
+  'overview.bulk.delete-schedule-skipped-note_one':
+    '{{count}} draft will be skipped — it is not eligible.',
+  /** Note in the bulk delete-schedule dialog when some selected drafts will be skipped (plural) */
+  'overview.bulk.delete-schedule-skipped-note_other':
+    '{{count}} drafts will be skipped — they are not eligible.',
+  /** Label for the batch-level checkbox in the bulk delete-schedule confirm dialog, applied to
+   * the whole selection. Defaults to checked (the safe choice against silent data loss). */
+  'overview.bulk.delete-schedule-keep-content': 'Keep edited content as drafts',
+  /** Helper line under the keep-content checkbox, explaining what unchecking it does */
+  'overview.bulk.delete-schedule-keep-content-description':
+    'If unchecked, edits made only in the scheduled version will be discarded instead of being saved to the draft.',
   /** Tooltip for the calendar button in the release overview */
   'overview.calendar.tooltip': 'View calendar',
   /** Description for the release tool */
@@ -299,22 +450,30 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   /** Tooltip text for publish release action when there are no documents */
   'publish-action.validation.no-documents': 'There are no documents to publish',
   /** Title for the dialog confirming the publish of a release */
-  'publish-dialog.confirm-publish.title':
-    'Are you sure you want to publish the release and all document versions?',
+  'publish-dialog.confirm-publish.title': "Run the '{{title}}' release?",
   /** Label for the checkbox in the publish confirmation dialog for also updating existing drafts to match the release */
-  'publish-dialog.confirm-publish.update-drafts-checkbox': 'Update existing drafts',
+  'publish-dialog.confirm-publish.update-drafts-checkbox':
+    'Discard drafts that differ from this release',
   /** Description for the update existing drafts checkbox when one document has an existing draft */
   'publish-dialog.confirm-publish.update-drafts-description_one':
-    'The existing draft of {{draftDocumentsLength}} document will be discarded so that drafts match the published release. Unpublished draft changes will be lost.',
+    "{{draftDocumentsLength}} document has draft changes that aren't in this release. Discarding the draft keeps it the same as what you publish. Those draft changes will be lost.",
   /** Description for the update existing drafts checkbox when multiple documents have existing drafts */
   'publish-dialog.confirm-publish.update-drafts-description_other':
-    'The existing drafts of {{draftDocumentsLength}} documents will be discarded so that drafts match the published release. Unpublished draft changes will be lost.',
+    "{{draftDocumentsLength}} documents have draft changes that aren't in this release. Discarding the drafts keeps them the same as what you publish. Those draft changes will be lost.",
+  /** Label above the list of drafts that would be discarded, each of which opens the draft in a new tab */
+  'publish-dialog.confirm-publish.update-drafts-review': 'Open a draft to see what would be lost:',
   /** Description for the dialog confirming the publish of a release with one document */
   'publish-dialog.confirm-publish-description_one':
-    "The '<strong>{{title}}</strong>' release and its document will be published.",
+    'One document in this release will be published.',
   /** Description for the dialog confirming the publish of a release with multiple documents */
   'publish-dialog.confirm-publish-description_other':
-    "The '<strong>{{title}}</strong>' release and its {{releaseDocumentsLength}} documents will be published.",
+    '{{releaseDocumentsLength}} documents in this release will be published.',
+  /** Line in the run release dialog when one document in the release is set to be unpublished */
+  'publish-dialog.confirm-unpublish-description_one':
+    'One document will be unpublished. Its content is kept as a draft.',
+  /** Line in the run release dialog when several documents in the release are set to be unpublished */
+  'publish-dialog.confirm-unpublish-description_other':
+    '{{count}} documents will be unpublished. Their content is kept as drafts.',
   /** Label for the button when the user doesn't have permissions to publish a release */
   'publish-dialog.validation.no-permission': 'You do not have permission to publish',
   /** Label for when documents are being validated */
@@ -494,14 +653,31 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'table-header.time': 'Time',
   /** Header for the document table in the release tool - when */
   'table-header.when': 'When',
+  /** Header for the overview Schedule column — the two-state timing (scheduled date / intended date / unscheduled) */
+  'table-header.schedule': 'Schedule',
   /** Header for the  document table in the release tool - release title */
   'table-header.title': 'Release',
+  /** Header for the overview Name column in the combined "All" view, where rows may be either
+   * a bundle release or a single document — "Name" is neutral across both kinds. */
+  'table-header.name': 'Name',
   /** Header for the document table in the release tool - type */
   'table-header.type': 'Type',
+  /** Release-type labels for the overview Type column (the release's publish trigger, distinct from its
+   * schedule status). 'scheduled' type shows as "At time" so it doesn't collide with the "Scheduled"
+   * status. */
+  'overview.release-type.asap': 'ASAP',
+  'overview.release-type.scheduled': 'At time',
+  'overview.release-type.undecided': 'Undecided',
   /** Header for the document table in the release tool - variant (which variant a document targets) */
   'table-header.variant': 'Variant',
   /** Header for the document table in the release tool - action */
   'table-header.action': 'Action',
+  /** Header for the overview Kind column (shown only in the combined All view) */
+  'table-header.kind': 'Kind',
+  /** Kind column value for a multi-document release, in the combined All view */
+  'overview.kind.release': 'Release',
+  /** Kind column value for a cardinality-one (single document) release, in the combined All view */
+  'overview.kind.document': 'Document',
 
   /** Filter tab label for all documents */
   'filter-tab.all': 'All',
@@ -511,6 +687,81 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'time.scheduled': 'Scheduled',
   /** Text for the release time label for scheduled releases  which has not been scheduled yet*/
   'time.estimated': 'Estimated',
+  /** Release time label for an at-time release that has an intended date but has NOT been scheduled yet
+   * (it will not publish until the user confirms the schedule) */
+  'time.not-scheduled': 'Not scheduled',
+  /** Tooltip explaining the "Not scheduled" state */
+  'time.not-scheduled-tooltip':
+    'This release has an intended date but isn’t scheduled yet — it won’t publish until you schedule it.',
+  /** Two-state timing (Schedule column). Shown when a release has no publish date at all — it will
+   * publish when a person clicks Publish. See naming-model-decision.md. */
+  'schedule.unscheduled': 'Unscheduled',
+  /** Tooltip on the caution glyph: a date is set but the release is NOT armed to publish. */
+  'schedule.intended-tooltip':
+    'This date is intended, but the release isn’t scheduled — it won’t publish automatically until you schedule it.',
+  /** Tooltip on the caution glyph when the intended date has already passed. */
+  'schedule.overdue-tooltip':
+    'The intended publish date has passed and the release isn’t scheduled — it won’t publish until you schedule it.',
+  /** Label/button text for the collapsible roadmap timeline strip above the releases table */
+  'timeline.title': 'Timeline',
+  /** Tooltip for the button that collapses the timeline strip */
+  'timeline.collapse': 'Collapse timeline',
+  /** Tooltip for the button that expands the timeline strip */
+  'timeline.expand': 'Expand timeline',
+  /** "now" marker label on the timeline axis */
+  'timeline.now-marker': 'Now',
+  /** Segmented control option: a ~3-4 week range centered on today */
+  'timeline.granularity.week': 'Week',
+  /** Segmented control option: a ~3-month range centered on today */
+  'timeline.granularity.month': 'Month',
+  /** Segmented control option: a ~6-month range centered on today */
+  'timeline.granularity.quarter': 'Quarter',
+  /** Density toggle button: single-line diamonds-only view */
+  'timeline.density-compact': 'Compact',
+  /** Tooltip for the compact density toggle */
+  'timeline.density-compact-tooltip': 'Compact view — diamonds only',
+  /** Density toggle button: full pill-card view */
+  'timeline.density-detailed': 'Detailed',
+  /** Tooltip for the detailed density toggle */
+  'timeline.density-detailed-tooltip': 'Detailed view — full cards',
+  /** Badge shown on a timeline pill for a scheduled draft (single document), distinguishing it from a release */
+  'timeline.draft-badge': 'Draft',
+  /** Badge shown on a timeline pill whose intended date has already passed without being scheduled */
+  'timeline.overdue-badge': 'Overdue',
+  /** Badge shown on a timeline pill when another release/draft publishes the same calendar day */
+  'timeline.collision-badge': 'Stagger',
+  /** Tooltip line shown when a timeline pill shares its publish day with another release/draft */
+  'timeline.tooltip-collision': 'Publishes the same day as another release — consider staggering.',
+  /** Bottom-left chip on the timeline strip: count of releases with no date at all, excluded from
+   * the strip and left list-only. Singular form. */
+  'timeline.unscheduled-count_one': 'Unscheduled: {{count}}',
+  /** Plural form of `timeline.unscheduled-count_one`. */
+  'timeline.unscheduled-count_other': 'Unscheduled: {{count}}',
+  /** Left-edge scroll signpost: count of dated releases currently off the left of the scroll
+   * viewport (earlier in time). Clicking scrolls the timeline back toward them. Singular form. */
+  'timeline.overflow-earlier_one': '{{count}} earlier',
+  /** Plural form of `timeline.overflow-earlier_one`. */
+  'timeline.overflow-earlier_other': '{{count}} earlier',
+  /** Right-edge scroll signpost: count of dated releases currently off the right of the scroll
+   * viewport (later in time). Clicking scrolls the timeline forward toward them. Singular form. */
+  'timeline.overflow-later_one': '{{count}} later',
+  /** Plural form of `timeline.overflow-later_one`. */
+  'timeline.overflow-later_other': '{{count}} later',
+  /** Tooltip on the left scroll signpost */
+  'timeline.scroll-earlier': 'Scroll to earlier releases',
+  /** Tooltip on the right scroll signpost */
+  'timeline.scroll-later': 'Scroll to later releases',
+  /** Button that recenters the timeline scroll position on today */
+  'timeline.today': 'Today',
+  /** Tooltip on the Today button */
+  'timeline.today-tooltip': 'Jump to today',
+  /** Tooltip line on a timeline pill for a scheduled draft (single document) */
+  'timeline.status-draft': 'Scheduled draft',
+  /** Tooltip line on a timeline pill whose intended date has passed without being scheduled */
+  'timeline.status-overdue': 'Overdue — the intended date has passed and it isn’t scheduled',
+  /** Tooltip line on a timeline pill that shares its publish day with another release */
+  'timeline.status-stagger': 'Publishes the same day as another release',
+
   /** Text for toast when release failed to archive */
   'toast.archive.error': "Failed to archive '<strong>{{title}}</strong>': {{error}}",
   /** Toast message after copying release ID */

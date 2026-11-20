@@ -1,4 +1,4 @@
-import {render, screen, waitFor} from '@testing-library/react'
+import {render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 
@@ -120,6 +120,21 @@ describe('ReleasePublishAllButton', () => {
       expect(screen.getByTestId('update-drafts-checkbox')).not.toBeChecked()
     })
 
+    test('lists the drafts that would be discarded, and describes the option to screen readers', async () => {
+      await openConfirmPublishDialog(documents)
+
+      expect(
+        within(screen.getByTestId('update-drafts-list')).getAllByRole('listitem'),
+      ).toHaveLength(2)
+      const descriptionId = screen
+        .getByTestId('update-drafts-checkbox')
+        .getAttribute('aria-describedby')
+      expect(descriptionId).toBeTruthy()
+      expect(document.getElementById(descriptionId!)).toHaveTextContent(
+        "2 documents have draft changes that aren't in this release.",
+      )
+    })
+
     test('publishes the release without discarding drafts when the option is left unchecked', async () => {
       await openConfirmPublishDialog(documents)
 
@@ -183,6 +198,16 @@ describe('ReleasePublishAllButton', () => {
       await openConfirmPublishDialog(documents)
 
       expect(screen.queryByTestId('update-drafts-checkbox')).not.toBeInTheDocument()
+    })
+
+    test('counts the unpublished document apart from the published one', async () => {
+      await openConfirmPublishDialog(documents)
+
+      const dialog = screen.getByTestId('confirm-publish-dialog')
+      expect(dialog).toHaveTextContent('One document in this release will be published.')
+      expect(dialog).toHaveTextContent(
+        'One document will be unpublished. Its content is kept as a draft.',
+      )
     })
   })
 })

@@ -1,24 +1,28 @@
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
+import {DocumentIcon} from '@sanity/icons/Document'
+import {DocumentsIcon} from '@sanity/icons/Documents'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
-import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card} from '@sanity/ui'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
 import {type TFunction} from 'i18next'
 import {Text, Flex, Icon} from 'ui5'
 
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
+import {EditedByCell} from '../../../components/documentTable/EditedByCell'
 import {RelativeTime} from '../../../components/RelativeTime'
-import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
-import {getPublishDateFromRelease} from '../../util/util'
+import {isCardinalityOneRelease} from '../../../util/releaseUtils'
+import {type SystemVariant} from '../../../variants/types'
+import {getReleaseTiming} from '../../util/getReleaseTiming'
 import {ReleaseTime} from '../components/ReleaseTime'
 import {Headers} from '../components/Table/TableHeader'
 import {type Column} from '../components/Table/types'
 import {ReleaseColumnValidationLoading} from './columnCells/ReleaseColumnValidationLoading'
 import {ReleaseDocumentsCounter} from './columnCells/ReleaseDocumentsCounter'
 import {ReleaseNameCell} from './columnCells/ReleaseName'
-import {type Mode} from './queryParamUtils'
+import {ScheduledDraftVariantCell} from './columnCells/ScheduledDraftVariantCell'
+import {type CardinalityView, type Mode} from './queryParamUtils'
 import {type TableRelease} from './ReleasesOverview'
+import {type ReleaseLabelMode} from './useReleaseLabelMode'
 
 export const RELEASES_OVERVIEW_TITLE_COLUMN_MIN_WIDTH = 200
 
@@ -32,53 +36,156 @@ const enableColumnFormMode =
     if (expectedMode === 'all' || expectedMode === currentMode) {
       return column
     }
+    // 'paused' is a cardinality-one-only sub-state of 'active' (an active scheduled draft
+    // whose intended date hasn't been armed yet) — it renders the same column set as 'active'.
+    // The Schedule column's ⚠ glyph (via ReleaseTime) is what actually conveys "intended, not
+    // scheduled"; there is no separate paused-only column.
+    if (expectedMode === 'active' && currentMode === 'paused') {
+      return column
+    }
     return undefined
   }
+
+/** @internal */
+export interface ReleasesOverviewColumnOptions {
+  /** Present when variants are enabled: adds the Variant column for scheduled drafts. */
+  variantsById?: Map<string, SystemVariant>
+  variantsLoading?: boolean
+  /** Which timing labels to show (prototype switch, see `useReleaseLabelMode`). */
+  labelMode?: ReleaseLabelMode
+}
 
 export const releasesOverviewColumnDefs: (
   t: TFunction<'releases'>,
   releaseGroupMode: Mode,
-) => Column<TableRelease>[] = (t, releaseGroupMode) => {
+  cardinalityView: CardinalityView,
+  options?: ReleasesOverviewColumnOptions,
+) => Column<TableRelease>[] = (t, releaseGroupMode, cardinalityView, options) => {
   const checkColumnMode = enableColumnFormMode(releaseGroupMode)
+  const labelMode = options?.labelMode ?? 'two-state'
+  const variantsById = options?.variantsById
+  const variantsLoading = Boolean(options?.variantsLoading)
+
+  // Variant: only in the Scheduled drafts view, and only when variants are enabled (a scheduled
+  // draft can target one variant of a document). Left out of the All view, where most rows are
+  // bundles and the column would take width from Name.
+  const variantColumn =
+    variantsById && cardinalityView === 'drafts'
+      ? ({
+          id: 'variant',
+          sorting: false,
+          width: 180,
+          style: {minWidth: 120, maxWidth: 180},
+          header: (props) => (
+            <Flex {...props.headerProps} paddingX={2} paddingY={3}>
+              <Headers.BasicHeader text={t('table-header.variant')} />
+            </Flex>
+          ),
+          cell: ({cellProps, datum}) =>
+            isCardinalityOneRelease(datum) ? (
+              <ScheduledDraftVariantCell
+                release={datum}
+                cellProps={cellProps}
+                variantsById={variantsById}
+                variantsLoading={variantsLoading}
+              />
+            ) : (
+              <Flex {...cellProps} paddingX={2} paddingY={3} />
+            ),
+        } satisfies Column<TableRelease>)
+      : undefined
+
+  // Name-column header is view-aware: in the combined "All" view rows may be either a bundle
+  // release or a single document, so "Name" is the neutral label; the single-cardinality
+  // "Releases"/"Scheduled drafts" tabs keep their existing, more specific labels.
+  const titleHeaderText =
+    cardinalityView === 'drafts'
+      ? t('table-header.document')
+      : cardinalityView === 'releases'
+        ? t('table-header.title')
+        : t('table-header.name')
+
+  const titleColumn = checkColumnMode(
+    {
+      id: 'metadata.title',
+      sorting: true,
+      width: null,
+      style: RELEASES_OVERVIEW_TITLE_COLUMN_STYLE,
+      header: (props) => (
+        <Flex
+          {...props.headerProps}
+          flexBasis="0%"
+          flexGrow={1}
+          paddingLeft={6}
+          paddingRight={2}
+          paddingY={3}
+        >
+          <Headers.SortHeaderButton {...props} text={titleHeaderText} />
+        </Flex>
+      ),
+      cell: ReleaseNameCell,
+    },
+    'all',
+  )
+
+  // Kind — Bundle vs Document. Only shown in the combined "All" view, where cardinality
+  // actually varies; in the single-cardinality "Releases"/"Scheduled drafts" tabs this would
+  // always read the same value for every row, so it's omitted there. It leads the row (before
+  // Name) so the reader learns what kind of thing they're looking at before its name.
+  const kindColumn =
+    cardinalityView === 'all'
+      ? checkColumnMode(
+          {
+            id: 'kind',
+            sorting: true,
+            sortTransform: (release) => (isCardinalityOneRelease(release) ? 1 : 0),
+            width: 120,
+            header: (props) => (
+              <Flex {...props.headerProps} paddingY={3}>
+                <Headers.SortHeaderButton text={t('table-header.kind')} {...props} />
+              </Flex>
+            ),
+            cell: ({cellProps, datum: release}) => {
+              const isDocument = isCardinalityOneRelease(release)
+              return (
+                <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3} gap={2}>
+                  <Icon icon={isDocument ? DocumentIcon : DocumentsIcon} size={1} muted />
+                  <Text muted size={1}>
+                    {isDocument ? t('overview.kind.document') : t('overview.kind.release')}
+                  </Text>
+                </Flex>
+              )
+            },
+          },
+          'all',
+        )
+      : undefined
+
   return [
-    checkColumnMode(
-      {
-        id: 'metadata.title',
-        sorting: true,
-        width: null,
-        style: RELEASES_OVERVIEW_TITLE_COLUMN_STYLE,
-        header: (props) => (
-          <Flex
-            {...props.headerProps}
-            flexBasis="0%"
-            flexGrow={1}
-            paddingLeft={6}
-            paddingRight={2}
-            paddingY={3}
-          >
-            <Headers.SortHeaderButton {...props} text={t('table-header.title')} />
-          </Flex>
-        ),
-        cell: ReleaseNameCell,
-      },
-      'all',
-    ),
+    // Kind precedes Name in the "All" view (see kindColumn comment above); other views never
+    // have a kind column, so this is simply the title column on its own.
+    ...(cardinalityView === 'all' ? [kindColumn, titleColumn] : [titleColumn]),
+    variantColumn,
+    // Schedule — the two-state timing in ONE adaptive column (see naming-model-decision.md):
+    // 🔒 date (armed) / ⚠ date (intended, not scheduled) / "Unscheduled" (no date). This replaces
+    // the old Type + When pair, which restated each other ("Undecided Undecided") and wrapped.
     checkColumnMode(
       {
         id: 'publishAt',
         sorting: true,
-        sortTransform: (release) => {
-          if (release.metadata.releaseType === 'undecided') return Infinity
-
-          const publishDate = getPublishDateFromRelease(release)
-
-          if (release.metadata.releaseType === 'asap' || !publishDate) return 0
-          return new Date(publishDate).getTime()
+        sortTransform: (release, direction) => {
+          const {date} = getReleaseTiming(release)
+          // Unscheduled-with-no-date always sinks to the end, regardless of sort direction.
+          if (date) return date.getTime()
+          return direction === 'asc' ? Infinity : -Infinity
         },
         width: 280,
         header: (props) => (
           <Flex {...props.headerProps} paddingY={3}>
-            <Headers.SortHeaderButton text={t('table-header.when')} {...props} />
+            <Headers.SortHeaderButton
+              text={labelMode === 'current' ? t('table-header.when') : t('table-header.schedule')}
+              {...props}
+            />
           </Flex>
         ),
         cell: ({cellProps, datum: release}) => {
@@ -86,7 +193,7 @@ export const releasesOverviewColumnDefs: (
 
           return (
             <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3} gap={2}>
-              <ReleaseTime release={release} />
+              <ReleaseTime release={release} compact />
             </Flex>
           )
         },
@@ -187,7 +294,11 @@ export const releasesOverviewColumnDefs: (
         width: 150,
         header: (props) => (
           <Flex {...props.headerProps} paddingY={3}>
-            <Headers.SortHeaderButton text={t('table-header.edited')} {...props} />
+            <Headers.SortHeaderButton
+              paddingLeft={2}
+              text={t('table-header.last-edited')}
+              {...props}
+            />
           </Flex>
         ),
         cell: ({datum: {documentsMetadata, _updatedAt}, cellProps}) => {
@@ -207,123 +318,104 @@ export const releasesOverviewColumnDefs: (
       },
       'active',
     ),
+    // Edited by — immediately after "Last edited" (reads "edited <time> by <person>"), mirroring the
+    // detail tables. Non-sortable: resolving the editor front-loads per-row history. A release is a
+    // document, so the shared translog resolver works directly on release._id/_rev.
     checkColumnMode(
       {
-        id: 'error',
+        id: 'editedBy',
         sorting: false,
-        width: 40,
+        width: 170,
+        style: {minWidth: 44, maxWidth: 170},
+        header: ({headerProps}) => (
+          <Flex {...headerProps} alignItems="center" paddingX={2} paddingY={3}>
+            <Text muted size={1} weight="medium">
+              {t('table-header.edited-by')}
+            </Text>
+          </Flex>
+        ),
+        cell: ({datum: release, cellProps}) => (
+          <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3}>
+            {!release.isLoading && !release.isDeleted && (
+              <EditedByCell documentId={release._id} revision={release._rev} />
+            )}
+          </Flex>
+        ),
+      },
+      'active',
+    ),
+    checkColumnMode(
+      {
+        id: 'documentCount',
+        sorting: true,
+        sortTransform: (release) =>
+          release.state === 'archived' || release.state === 'published'
+            ? (release.finalDocumentStates?.length ?? 0)
+            : (release.documentsMetadata?.documentCount ?? 0),
+        width: 120,
+        header: (props) => (
+          <Flex {...props.headerProps} paddingY={3}>
+            <Headers.SortHeaderButton text={t('table-header.documents')} {...props} />
+          </Flex>
+        ),
+        cell: ({datum: {isDeleted, state, finalDocumentStates, documentsMetadata}, cellProps}) => (
+          <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3} gap={2}>
+            {!isDeleted && (
+              <ReleaseDocumentsCounter
+                documentCount={
+                  state === 'archived' || state === 'published'
+                    ? finalDocumentStates?.length
+                    : documentsMetadata?.documentCount
+                }
+              />
+            )}
+          </Flex>
+        ),
+      },
+      'all',
+    ),
+    // Status — ONE consolidated trailing signal (merges the former standalone error glyph and the
+    // readiness column). Answers "is this release OK?" in one place, by priority:
+    // publish failed (critical) › validation issues/loading › ready. Schedule-timing warnings
+    // (intended-not-armed / overdue) live in the Schedule column, not here.
+    checkColumnMode(
+      {
+        id: 'status',
+        sorting: false,
+        width: 50,
+        style: {minWidth: 50, maxWidth: 50},
         header: ({headerProps}) => <Flex {...headerProps} paddingY={3} />,
-        cell: ({datum, cellProps}) => {
-          const {error, state} = datum
+        cell: ({datum: {isDeleted, error, state, _id}, cellProps}) => {
           const hasError = typeof error !== 'undefined' && state === 'active'
-          const hasWarning = state === 'active' && getIsScheduledDateInPast(datum)
 
           return (
             <Flex
               {...cellProps}
               alignItems="center"
-              gap={2}
+              justifyContent="center"
               paddingX={2}
               paddingY={3}
-              data-testid="error-indicator"
+              data-testid="release-readiness"
             >
-              {hasError && (
-                <Tooltip
-                  content={
-                    <Text size={1} as="div" trim={true}>
-                      {t('failed-publish-title')}
-                    </Text>
-                  }
-                  portal
-                >
-                  <Icon
-                    size={1}
-                    style={{margin: '-0.375rem'}}
-                    icon={<ToneIcon icon={ErrorOutlineIcon} tone="critical" />}
-                  />
+              {!isDeleted && hasError && (
+                <Tooltip content={<Text size={1}>{t('failed-publish-title')}</Text>} portal>
+                  <Icon icon={ErrorOutlineIcon} size={1} tone="critical" />
                 </Tooltip>
               )}
-              {hasWarning && (
-                <Tooltip
-                  content={
-                    <Text size={1} as="div" trim={true}>
-                      {t('passed-intended-publish-date')}
-                    </Text>
-                  }
-                  portal
-                >
-                  <Icon
-                    size={1}
-                    style={{margin: '-0.375rem'}}
-                    icon={<ToneIcon icon={WarningOutlineIcon} tone="caution" />}
-                  />
+              {!isDeleted && !hasError && state === 'active' && (
+                <ReleaseColumnValidationLoading releaseId={_id} />
+              )}
+              {!isDeleted && state === 'scheduled' && (
+                // Same size and colour as the validation check on active rows.
+                <Tooltip content={t('summary.all-documents-validated')}>
+                  <Icon size={1} muted icon={CheckmarkCircleIcon} />
                 </Tooltip>
               )}
             </Flex>
           )
         },
       },
-      'all',
-    ),
-    checkColumnMode(
-      {
-        id: 'documentCount',
-        sorting: false,
-        width: 120,
-        header: ({headerProps}) => (
-          <Flex {...headerProps} paddingY={3}>
-            <Headers.BasicHeader text={t('table-header.documents')} />
-          </Flex>
-        ),
-        cell: ({
-          datum: {isDeleted, state, finalDocumentStates, documentsMetadata, _id},
-          cellProps,
-        }) => {
-          return (
-            <Flex {...cellProps} alignItems="center" paddingX={2} paddingY={3} gap={2}>
-              {state === 'active' && <ReleaseColumnValidationLoading releaseId={_id} />}
-
-              {/**
-               * Show a checkmark for scheduled releases
-               * A scheduled release can't be anything other than valid
-               * Since it can't be edited via the API or the UI
-               * However we should still gives a visual indicator of that instead of showing nothing
-               */}
-              {state === 'scheduled' && (
-                <Card
-                  padding={0}
-                  radius="full"
-                  tone="neutral"
-                  style={{
-                    background: 'transparent',
-                  }}
-                >
-                  <Flex gap={2}>
-                    <Text size={1} as="div" trim={true}>
-                      <Tooltip content={t('summary.all-documents-validated')}>
-                        <Icon size={1} style={{margin: '-0.375rem'}} icon={CheckmarkCircleIcon} />
-                      </Tooltip>
-                    </Text>
-                  </Flex>
-                </Card>
-              )}
-
-              {!isDeleted && (
-                <>
-                  <ReleaseDocumentsCounter
-                    documentCount={
-                      state === 'archived' || state === 'published'
-                        ? finalDocumentStates?.length
-                        : documentsMetadata?.documentCount
-                    }
-                  />
-                </>
-              )}
-            </Flex>
-          )
-        },
-      },
-      'all',
+      'active',
     ),
   ].filter(filterNull)
 }

@@ -15,6 +15,7 @@ import {getDocumentVariantType} from '../../../util/getDocumentVariantType'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useAllVariants} from '../../../variants/store/useAllVariants'
 import {AddedVersion} from '../../__telemetry__/releases.telemetry'
+import {useReleasesRedesign} from '../../hooks/useReleasesRedesign'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getReleaseIdFromReleaseDocumentId} from '../../util/getReleaseIdFromReleaseDocumentId'
@@ -77,6 +78,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   // production Releases until the flag is on.
   const {beta} = useWorkspace()
   const variantsEnabled = Boolean(beta?.variants?.enabled)
+  const redesign = useReleasesRedesign()
   // Resolves each document's variant (via `_system.variants[0]._ref`) to its definition for the
   // "Variant" column. Provider-free + cached; returns empty when variants are disabled.
   const {byId: variantsById, loading: variantsLoading} = useAllVariants()
@@ -113,12 +115,12 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
   const documentTableColumnDefs = useMemo(
     () =>
       getDocumentTableColumnDefs(release._id, release.state, t, {
-        searchInCommandLane: variantsEnabled,
+        searchInCommandLane: redesign,
         variantsById: variantsEnabled ? variantsById : undefined,
         variantsLoading: variantsEnabled ? variantsLoading : false,
         variantsEnabled,
       }),
-    [release._id, release.state, t, variantsEnabled, variantsById, variantsLoading],
+    [release._id, release.state, t, redesign, variantsEnabled, variantsById, variantsLoading],
   )
 
   const handleAddDocumentClick = useCallback(() => setAddDocumentDialog(true), [])
@@ -284,7 +286,7 @@ export function ReleaseSummary(props: ReleaseSummaryProps) {
 
   return (
     <Flex flexDirection="column" style={FULL_HEIGHT_STYLE}>
-      {variantsEnabled ? (
+      {redesign ? (
         <DocumentTable<DocumentInReleaseDetail>
           alwaysShowCommandLane
           columnDefs={documentTableColumnDefs}

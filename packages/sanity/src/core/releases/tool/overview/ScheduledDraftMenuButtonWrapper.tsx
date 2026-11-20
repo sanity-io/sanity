@@ -29,7 +29,8 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
   const scheduledDraftMenuRef = useRef<HTMLDivElement>(null)
   const [openPopover, setOpenPopover] = useState(false)
 
-  const {firstDocument: scheduledDraftDocument} = useScheduledDraftDocument(release._id)
+  const {firstDocument: scheduledDraftDocument, loading: documentLoading} =
+    useScheduledDraftDocument(release._id)
 
   const handleActionComplete = useCallback(() => {
     if (!scheduledDraftDocument) return
@@ -108,7 +109,9 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
     () => [popoverRef.current, scheduledDraftMenuRef.current],
   )
 
-  if (!canPerformActions || !hasConfiguredMenuItems) {
+  // Keep the ⋯ affordance present (disabled, with a spinner) while the document is still loading,
+  // otherwise a single-document row has no menu until its document resolves.
+  if ((!documentLoading && !canPerformActions) || !hasConfiguredMenuItems) {
     return null
   }
 
@@ -125,8 +128,8 @@ export const ScheduledDraftMenuButtonWrapper = ({release}: {release: ReleaseDocu
         placement="bottom"
       >
         <Button
-          disabled={!canPerformActions || isPerformingOperation}
-          icon={isPerformingOperation ? Spinner : EllipsisHorizontalIcon}
+          disabled={!canPerformActions || isPerformingOperation || documentLoading}
+          icon={isPerformingOperation || documentLoading ? Spinner : EllipsisHorizontalIcon}
           mode="bleed"
           tooltipProps={{content: t('release.menu.tooltip')}}
           aria-label={t('release.menu.label')}

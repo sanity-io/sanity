@@ -1,22 +1,19 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CalendarIcon} from '@sanity/icons/Calendar'
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu} from '@sanity/ui/menu'
 import {useCallback, useMemo} from 'react'
-import {Text, Flex} from 'ui5'
+import {Flex, Text} from 'ui5'
 
-import {Button} from '../../../../ui-components/button/Button'
-import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
-import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {
+  NavigatedToAllReleases,
   NavigatedToReleasesOverview,
   NavigatedToScheduledDrafts,
 } from '../../__telemetry__/navigation.telemetry'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type CardinalityView} from './queryParamUtils'
+import {SegmentedControl} from './SegmentedControl'
 
 interface CardinalityViewPickerProps {
   cardinalityView: CardinalityView
@@ -49,6 +46,12 @@ const getPickerView = ({
   return cardinalityView === 'releases' ? 'both' : 'singleDocReleases'
 }
 
+function getNavigationTelemetryEvent(view: CardinalityView) {
+  if (view === 'all') return NavigatedToAllReleases
+  if (view === 'drafts') return NavigatedToScheduledDrafts
+  return NavigatedToReleasesOverview
+}
+
 export const CardinalityViewPicker = ({
   cardinalityView,
   loading,
@@ -75,9 +78,8 @@ export const CardinalityViewPicker = ({
   })
 
   const handleViewChange = useCallback(
-    (view: CardinalityView) => () => {
-      const telemetryEvent =
-        view === 'releases' ? NavigatedToReleasesOverview : NavigatedToScheduledDrafts
+    (view: CardinalityView) => {
+      const telemetryEvent = getNavigationTelemetryEvent(view)
       telemetry.log(telemetryEvent, {source: 'view-picker'})
 
       onCardinalityViewChange(view)()
@@ -97,35 +99,20 @@ export const CardinalityViewPicker = ({
     )
   }
 
-  //  If both are enabled, show the menu button
+  //  If both are enabled, show them as a segmented control (equal prominence) rather than a
+  //  dropdown. This is the primary navigation of the overview, so it's rendered large.
   return (
-    <MenuButton
-      id="cardinality-view-menu"
-      button={
-        <Button
-          mode="bleed"
-          paddingY={2}
-          text={cardinalityView === 'releases' ? t('action.releases') : t('action.drafts')}
-          icon={CalendarIcon}
-          iconRight={ChevronDownIcon}
-          disabled={loading}
-          style={{fontWeight: 600}}
-        />
-      }
-      menu={
-        <Menu>
-          <MenuItem
-            text={t('action.releases')}
-            selected={cardinalityView === 'releases'}
-            onClick={handleViewChange('releases')}
-          />
-          <MenuItem
-            text={t('action.drafts')}
-            selected={cardinalityView === 'drafts'}
-            onClick={handleViewChange('drafts')}
-          />
-        </Menu>
-      }
+    <SegmentedControl
+      data-testid="cardinality-view-picker"
+      size="large"
+      value={cardinalityView}
+      onChange={handleViewChange}
+      disabled={loading}
+      items={[
+        {value: 'all', label: t('action.all')},
+        {value: 'releases', label: t('action.releases')},
+        {value: 'drafts', label: t('action.drafts')},
+      ]}
     />
   )
 }
