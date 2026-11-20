@@ -65,13 +65,13 @@ export function DetailLayoutStory() {
             </Text>
             <DetailIdentity title={undefined} titlePlaceholder="Untitled release" />
           </VStack>
-          <VStack gap={2}>
+          <Flex alignItems="flex-start" flexDirection="column" gap={2}>
             <Text muted size={1} weight="medium" as="div" trim={true}>
               back button
             </Text>
             <DetailBackButton onClick={noop} text="Back to all releases" />
             <DetailBackButton onClick={noop} text="Back to all variants" />
-          </VStack>
+          </Flex>
         </VStack>
       </Card>
     </TestWrapper>
