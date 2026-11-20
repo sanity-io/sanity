@@ -53,10 +53,7 @@ function collectIssueTitles(evidence: Evidence, evaluation: Evaluation) {
     .map((issue) => ({number: issue.number, title: issue.title.slice(0, ISSUE_TITLE_LIMIT)}))
 }
 
-export function buildSchema(
-  eligible: string[],
-  candidateVersions: string[],
-): Record<string, unknown> {
+function buildSchema(eligible: string[], candidateVersions: string[]): Record<string, unknown> {
   return {
     type: 'object',
     additionalProperties: false,

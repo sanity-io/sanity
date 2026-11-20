@@ -22,7 +22,7 @@ export const SUGGESTION_WEBHOOK_FIELDS = {
 } as const
 export const CI_ALERTS_WEBHOOK_FIELDS = {text: 'text'} as const
 
-export const EMPTY_WEBHOOK_VALUE = '-'
+const EMPTY_WEBHOOK_VALUE = '-'
 const DEFAULT_ESCAPE_LIMIT = 2000
 const MAX_LISTED_VERSIONS = 6
 const MAX_LISTED_BLOCKED = 3

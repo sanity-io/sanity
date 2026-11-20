@@ -92,7 +92,7 @@ export async function fetchDistTags(fetchImpl: FetchImpl): Promise<History['live
   )
 }
 
-export function normaliseStableTag(distTags: Record<string, string>): string | null {
+function normaliseStableTag(distTags: Record<string, string>): string | null {
   return distTags.stable ?? null
 }
 
