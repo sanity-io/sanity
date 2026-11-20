@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {type StudioDiagnostics} from './gatherStudioDiagnostics'
+import {formatStudioDiagnostics, type StudioDiagnostics} from './gatherStudioDiagnostics'
 import {parseStudioDiagnostics} from './parseStudioDiagnostics'
 
 const listen = {
@@ -84,6 +84,28 @@ describe('parseStudioDiagnostics', () => {
         ...report,
         styles: {styledComponents: [{ruleCount: 1, sizeBytes: '100'}]},
       }),
+    ).toThrow('not a supported Studio diagnostics report')
+  })
+
+  const withListeners: StudioDiagnostics = {
+    ...report,
+    network: {...report.network, listeners: {open: 6, peak: 9}},
+  }
+
+  it('accepts reports carrying listener counts', () => {
+    expect(parse(withListeners)).toEqual(withListeners)
+  })
+
+  it('keeps listener counts through the copied output', () => {
+    const copied = formatStudioDiagnostics(withListeners)
+
+    expect(JSON.parse(copied).network.listeners).toEqual({open: 6, peak: 9})
+    expect(parseStudioDiagnostics(copied).network.listeners).toEqual({open: 6, peak: 9})
+  })
+
+  it('rejects non-numeric listener counts', () => {
+    expect(() =>
+      parse({...report, network: {...report.network, listeners: {open: '6', peak: 9}}}),
     ).toThrow('not a supported Studio diagnostics report')
   })
 
