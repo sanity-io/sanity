@@ -1,10 +1,11 @@
-import {ClientError, ServerError} from '@sanity/client'
+import {ClientError, ServerError, type RequestHandler} from '@sanity/client'
 import {
   type TransactionLogEventWithMutations,
   type TransactionLogEventWithEffects,
 } from '@sanity/types'
 
 import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../studioClient'
+import {isInvalidSessionError} from '../../util/apiErrors'
 
 type StreamResult =
   | (TransactionLogEventWithEffects & TransactionLogEventWithMutations)
@@ -13,13 +14,32 @@ type StreamResult =
 export async function getJsonStream(
   url: string,
   token: string | undefined,
+  /**
+   * The studio client request handler, when this fetch runs inside a Studio.
+   * History is loaded with `fetch` (NDJSON), so it never passes through that
+   * handler on its own. An invalid-session 401 (including history's
+   * no-credentials answer, see {@link withSessionErrorCode}) is handed to it so
+   * the studio logs the user out and shows the login screen.
+   */
+  requestHandler?: RequestHandler,
 ): Promise<ReadableStream<StreamResult>> {
   const options: RequestInit = token
     ? {headers: {...DEFAULT_STUDIO_CLIENT_HEADERS, Authorization: `Bearer ${token}`}}
     : {credentials: 'include', headers: DEFAULT_STUDIO_CLIENT_HEADERS}
   const response = await fetch(url, options)
   if (!response.ok) {
-    throw await toHttpError(response, url)
+    const error = await toHttpError(response, url)
+    if (requestHandler && isInvalidSessionError(error)) {
+      // The handler claims the 401 and parks its own promise (forced logout).
+      // This call stays fire-and-forget so the throw below still unwinds the
+      // caller; a handler that rejects with the same error is ignored.
+      void requestHandler({url, method: 'GET'}, () => Promise.reject(error)).catch(
+        (handlerError) => {
+          if (handlerError !== error) console.error(handlerError)
+        },
+      )
+    }
+    throw error
   }
   return getStream(response)
 }
@@ -44,11 +64,38 @@ async function toHttpError(response: Response, url: string): Promise<Error> {
     statusCode: response.status,
     statusMessage: response.statusText,
     headers,
-    body,
+    body: withSessionErrorCode(response.status, body),
     url,
     method: 'GET',
   }
   return response.status >= 500 ? new ServerError(res) : new ClientError(res)
+}
+
+/**
+ * The API's code for a request that resolves to no session, one of the codes
+ * `isInvalidSessionError` treats as an ended session.
+ */
+const SESSION_NOT_FOUND_ERROR_CODE = 'SIO-401-ANF'
+
+/**
+ * History answers a request that carried no credentials with a 401
+ * `unauthenticatedError` and no `errorCode`. Studio sends its credential with
+ * every history fetch (its token, or its cookie), so that answer means the
+ * session is gone. It gets the session-not-found code, so the studio request
+ * handler and `isInvalidSessionError` treat it like any other ended session.
+ * An `errorCode` the API sends itself is kept.
+ */
+function withSessionErrorCode(statusCode: number, body: unknown): unknown {
+  if (statusCode !== 401 || typeof body !== 'object' || body === null || !('error' in body)) {
+    return body
+  }
+  const {error} = body
+  const isUnauthenticated =
+    typeof error === 'object' &&
+    error !== null &&
+    'type' in error &&
+    error.type === 'unauthenticatedError'
+  return isUnauthenticated ? {errorCode: SESSION_NOT_FOUND_ERROR_CODE, ...body} : body
 }
 
 function getStream(response: Response): ReadableStream<StreamResult> {
