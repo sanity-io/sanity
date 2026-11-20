@@ -1,11 +1,11 @@
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {expect, userEvent, waitFor, within} from 'storybook/test'
 
-import {OAuthLoginComponentStory} from './OAuthLoginComponentStory'
+import {OAuthLoginComponentStory, OAuthLoginErrorsStory} from './OAuthLoginComponentStory'
 
 /**
  * Reuses the in-package harness: the OAuth sign-in screen, before and after the user starts
- * signing in.
+ * signing in, plus the critical error Cards for a refused authorization.
  */
 const meta = {
   title: 'Auth/OAuth Login',
@@ -35,5 +35,20 @@ export const Redirecting: Story = {
     await userEvent.click(button)
     await waitFor(() => expect(button).toBeDisabled())
     button.blur()
+  },
+}
+
+export const Errors: Story = {
+  render: () => <OAuthLoginErrorsStory />,
+  play: async () => {
+    const body = within(document.body)
+    // Three Cards: invalid_target, access_denied with a description, generic code-only.
+    await waitFor(
+      async () => {
+        await expect(body.getAllByTestId('oauth-login-error')).toHaveLength(3)
+      },
+      {timeout: 5000},
+    )
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
   },
 }
