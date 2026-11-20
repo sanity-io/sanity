@@ -5,8 +5,6 @@ on:
   workflow_run: # zizmor: ignore[dangerous-triggers] runs main's own code, reads nothing from the triggering run
     workflows: ["Release @latest"]
     types: [completed]
-  push:
-    branches: [jordanl17/radar-studio-stable-tag-promotion]
   workflow_dispatch:
     inputs:
       as-of:
@@ -27,7 +25,6 @@ jobs:
     name: Build the shortlist
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'push' ||
       (github.event.workflow_run.conclusion == 'success' &&
        github.event.workflow_run.head_branch == 'main' &&
        github.event.workflow_run.head_repository.full_name == github.repository)
@@ -83,18 +80,8 @@ jobs:
           retention-days: 90
       - name: Choose the Slack route
         id: route
-        if: steps.mode.outputs.live == 'true' || github.event_name == 'push'
+        if: steps.mode.outputs.live == 'true'
         run: pnpm stable-suggestion slack-route
-      - name: Mark the shortlist as a branch test
-        if: github.event_name == 'push'
-        env:
-          OUT_DIR: ${{ runner.temp }}/stable-suggestion
-          TEST_PREFIX: "TEST (branch run, nothing will be promoted) - "
-        run: |
-          for file in slack-webhook.json slack-fallback.json; do
-            jq --arg prefix "$TEST_PREFIX" 'if has("headline") then .headline = $prefix + .headline else .text = $prefix + .text end' "$OUT_DIR/$file" > "$OUT_DIR/$file.tmp"
-            mv "$OUT_DIR/$file.tmp" "$OUT_DIR/$file"
-          done
       - name: Post the shortlist
         if: steps.route.outputs.route == 'webhook-trigger'
         uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
