@@ -22,12 +22,14 @@ import {
 import {
   createFederatedSanityMediaLibraryFileSource,
   createFederatedSanityMediaLibraryImageSource,
-  createSanityMediaLibraryFileSource,
-  createSanityMediaLibraryImageSource,
+  createIframeSanityMediaLibraryFileSource,
+  createIframeSanityMediaLibraryImageSource,
 } from '../form/studio/assetSourceMediaLibrary'
+import {type MediaLibraryAssetSourceIframeResolution} from '../form/studio/assetSourceMediaLibrary/__telemetry__/mediaLibraryAssetSource.telemetry'
 import {
   createFederatedAssetSource,
-  getCurrentFederatedAssetSourceViews,
+  discoverFederatedAssetSourceViews,
+  type FederatedAssetSourceDiscovery,
   isMediaLibraryView,
 } from '../form/studio/federatedAssetSource'
 import {prepareI18n} from '../i18n/i18nConfig'
@@ -295,27 +297,33 @@ const createMediaLibraryAssetSources = (config: PluginOptions) => {
   const brokeredSourcesEnabled = federatedSourcesConfig?.enabled === true
 
   // The `asset_source` views brokered over the workbench message bus, read
-  // synchronously since sources are resolved once here. `undefined` outside
-  // the workbench; on a cold start in which the workbench has not published
-  // its application list yet, `[]` — either way every brokered source is
-  // simply absent and the Media Library keeps its iframe select dialog, so
+  // synchronously since sources are resolved once here. Outside the
+  // workbench, or on a cold start in which the workbench has not published
+  // its application list yet, there are none — either way every brokered
+  // source is simply absent and the Media Library keeps its iframe dialog, so
   // the race can never cost the Media Library source itself. Only consult
   // the bus when a source could use the result — with `federated` defaulting
   // on, reading it unconditionally would open a message-bus connection in
   // every workspace, Media Library or not.
-  const viewsFromBus =
+  const discovery =
     (federated && enabled) || brokeredSourcesEnabled
-      ? getCurrentFederatedAssetSourceViews()
+      ? discoverFederatedAssetSourceViews()
       : undefined
-  const brokeredViews = viewsFromBus ?? []
+  const brokeredViews = discovery?.status === 'published' ? discovery.views : []
 
   // The Media Library's own view replaces the select dialog of the built-in
   // source below; views from other applications become their own sources.
   const mediaLibraryView = federated ? brokeredViews.find(isMediaLibraryView) : undefined
 
-  // Outside the workbench (`viewsFromBus === undefined`) the iframe dialog is
-  // the normal path, not a degraded one — stay quiet there.
-  if (federated && enabled && !mediaLibraryView && viewsFromBus !== undefined) {
+  // Outside the workbench the iframe dialog is the normal path, not a
+  // degraded one — stay quiet there.
+  if (
+    federated &&
+    enabled &&
+    !mediaLibraryView &&
+    discovery !== undefined &&
+    discovery.status !== 'standalone'
+  ) {
     notifyFederatedFallbackOnce(
       'no Media Library asset_source view in the brokered application list',
     )
@@ -346,25 +354,50 @@ const createMediaLibraryAssetSources = (config: PluginOptions) => {
     return {fileSource: null, imageSource: null, federatedSources}
   }
 
-  const fileSource = mediaLibraryView
-    ? createFederatedSanityMediaLibraryFileSource({
+  if (mediaLibraryView) {
+    return {
+      fileSource: createFederatedSanityMediaLibraryFileSource({
         libraryId: libraryId || null,
         view: mediaLibraryView,
-      })
-    : createSanityMediaLibraryFileSource({
-        libraryId: libraryId || null,
-      })
-
-  const imageSource = mediaLibraryView
-    ? createFederatedSanityMediaLibraryImageSource({
+      }),
+      imageSource: createFederatedSanityMediaLibraryImageSource({
         libraryId: libraryId || null,
         view: mediaLibraryView,
-      })
-    : createSanityMediaLibraryImageSource({
-        libraryId: libraryId || null,
-      })
+      }),
+      federatedSources,
+    }
+  }
 
-  return {fileSource, imageSource, federatedSources}
+  const resolution = resolveIframeResolution(federated, discovery)
+  return {
+    fileSource: createIframeSanityMediaLibraryFileSource({
+      libraryId: libraryId || null,
+      resolution,
+    }),
+    imageSource: createIframeSanityMediaLibraryImageSource({
+      libraryId: libraryId || null,
+      resolution,
+    }),
+    federatedSources,
+  }
+}
+
+/** Why the Media Library source uses the iframe, reported when it opens. */
+function resolveIframeResolution(
+  federated: boolean,
+  discovery: FederatedAssetSourceDiscovery | undefined,
+): MediaLibraryAssetSourceIframeResolution {
+  if (!federated) return {outcome: 'iframe_opt_out', reason: null}
+  switch (discovery?.status) {
+    case 'pending':
+      return {outcome: 'iframe_fallback', reason: 'cold_start'}
+    case 'failed':
+      return {outcome: 'iframe_fallback', reason: 'applications_list_failed'}
+    case 'published':
+      return {outcome: 'iframe_fallback', reason: 'no_view'}
+    default:
+      return {outcome: 'iframe_unsupported', reason: 'standalone_studio'}
+  }
 }
 
 // Create default asset sources with configuration
