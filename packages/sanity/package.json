@@ -207,7 +207,7 @@
     "@tanstack/react-virtual": "^3.14.26",
     "@xstate/react": "^6.1.0",
     "clsx": "^2.1.1",
-    "color2k": "^2.0.4",
+    "color2k": "^2.1.0",
     "dataloader": "^2.2.3",
     "date-fns": "^4.4.0",
     "dequal": "catalog:",
