@@ -461,6 +461,26 @@ pnpm engine-confidence unit                              # the package's unit te
 - **Refreshing a patch the PR check flagged:** rebase the patch onto the changed engine code, confirm with `git apply --check`, then run `catalogue --only <id>` to confirm the verdict. `engine-confidence/README.md` has the steps.
 - **Where it shows:** the Radar "Engine confidence" tab (`dev/radar`, `/trends?tab=engine`). `?source=demo` renders it offline. To see a real local run there, copy `engine-confidence/reports/engine-confidence-run.json` into the gitignored `dev/radar/tools/trends/__local__/`; demo mode uses it as the newest week.
 
+### Stable promotion suggestion (`suggest-stable.yml`)
+
+After each `sanity` release reaches npm `latest`, `.github/workflows/suggest-stable.yml` (triggered by `Release @latest` completing on `main`, or by manual dispatch) collects evidence (npm, Radar, GitHub issues), applies the rules in `packages/@repo/stable-suggestion` to list the eligible versions newest first, shortlists the top 3 and asks Claude for a per-candidate reason and an overall promote or hold call. A version needs 7 days on npm `latest` before it is eligible, or 3 days when it is on a newer major than the current stable, or 1 day when it patches the current stable's minor or fixes a broken stable. Versions that a `tag-latest.yml` run rolled latest back below are excluded, and the shortlist message warns when the `stable` tag differs across packages. Claude can only reorder or trim within the eligible set; if it is down the shortlist is deterministic, and if Radar is down the answer is hold. Each slot is a separate job (`promote-N`, `tag-N`, `result-N`, no matrix) gated by its own environment, which re-checks everything and then calls `tag-stable.yml` through `workflow_call`. The package README has the rules, the evidence model and the backtest method.
+
+```bash
+# Run from the repo root. The script runs inside the package directory, so --out, --out-dir and --history take absolute paths.
+export RADAR_SANITY_READ_TOKEN=...   # from `pnpm exec sanity debug --secrets`, never print or commit it
+export ANTHROPIC_API_KEY=...         # optional locally; add --no-llm to skip the Claude step
+pnpm stable-suggestion collect --out "$PWD/.context/evidence.json"           # also: --as-of <ISO>, --history <file>
+pnpm stable-suggestion recommend "$PWD/.context/evidence.json" --out-dir "$PWD/.context/out" --run-url https://example.invalid/run --no-llm
+pnpm stable-suggestion verify --version 6.23.0 --slot 1 --expected-stable 6.15.0   # the guard each slot runs before tagging
+pnpm stable-suggestion backtest --out "$PWD/.context/backtest.md"            # replays every Tuesday since 2025-12-09; --llm-sample <dates> --max-llm-calls 4 adds Claude on chosen dates
+pnpm vitest run --project=@repo/stable-suggestion --maxWorkers=2
+```
+
+- **Secrets and variables.** `RADAR_SANITY_READ_TOKEN`, `RELEASE_NOTES_CLAUDE_API_KEY` (passed as `ANTHROPIC_API_KEY`), `SLACK_WEBHOOK_URL_STABLE_SUGGESTION`, `SLACK_WEBHOOK_URL_CI_ALERTS` and the secrets `tag-stable.yml` already needs. The optional variable `STABLE_SUGGESTION_MODEL` overrides the model id in `src/config.ts`.
+- **Slack.** One Workflow Builder webhook (`SLACK_WEBHOOK_URL_STABLE_SUGGESTION`) carries the shortlist, each promotion result and the manual promotion notice, with payload `{text, run_url}` and an "Open github workflow" button on `run_url`. If that secret is unset, the same messages go to the CI-alerts incoming webhook (`SLACK_WEBHOOK_URL_CI_ALERTS`) as `{text}`, which has no button, so every `text` ends with a link to the run. The workflows choose the route from `HAS_*` booleans in job `env`, never from `secrets` in an `if:`.
+- **Approving.** The three environments `stable-candidate-1`, `-2` and `-3` hold the required reviewers. Open the run, choose Review deployments, tick only one `stable-candidate-N` and approve. Ticking more than one slot fails closed: the guard refuses every approved slot and the result message says so. A successful promotion cancels its own run to close the other slots, and the next live run cancels older waiting runs.
+- **Manual override** is still `gh workflow run tag-stable.yml -f version=X.Y.Z`. The environment gate protects only the automated path: anyone with write access can still dispatch `tag-stable.yml`. After a re-run of a suggestion run, earlier attempts' approvals still count, so a different slot fails closed with `multiple-slots-approved`; use the manual override then. It posts a notice to Slack; calls from `suggest-stable.yml` set `invoked-by` and never do.
+
 ### Sync tests (No Auth Required)
 
 A sync test runs the real Studio document engine (`checkoutPair`, `getPairListener`, `sequentializeListenerEvents`, the buffered document and `@sanity/mutator`) with two or more clients against an in-memory fake Content Lake, on fake timers and with no browser. Each test ends in the oracles in `packages/sanity/test/sync/oracles.ts`: every client converged on the server copy, revisions agree, no stream errored or stayed locked, and no array item was lost or duplicated. A bench test (`perf/bench`) runs a built studio in a real browser and measures time, and a unit test exercises one piece of code with stub inputs. Never call sync tests "scenarios": bench uses that word for its runs.

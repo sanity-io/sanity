@@ -1,5 +1,5 @@
 name: Tag @stable
-run-name: Tag @stable - ${{ github.event.inputs.version }}
+run-name: Tag @stable - ${{ inputs.version }}
 
 on:
   workflow_dispatch:
@@ -8,6 +8,43 @@ on:
         description: "Semver version to tag as stable (e.g., 3.2.1 or 3.2.1-next.1.abc)"
         required: true
         type: string
+  workflow_call:
+    inputs:
+      version:
+        description: "Semver version to tag as stable"
+        required: true
+        type: string
+      expected-current-stable:
+        description: "Tag nothing unless sanity's stable dist-tag currently equals this version"
+        required: false
+        type: string
+        default: ""
+      invoked-by:
+        description: "Calling workflow. The caller posts its own Slack message, so this one stays quiet"
+        required: false
+        type: string
+        default: "workflow_call"
+    secrets:
+      NPM_PUBLISH_TOKEN:
+        required: true
+      TURBO_TOKEN:
+        required: true
+      GCS_STAGING_PROJECT_ID:
+        required: true
+      GCS_STAGING_SERVICE_KEY:
+        required: true
+      GCS_STAGING_BUCKET:
+        required: true
+      GCS_PRODUCTION_PROJECT_ID:
+        required: true
+      GCS_PRODUCTION_SERVICE_KEY:
+        required: true
+      GCS_PRODUCTION_BUCKET:
+        required: true
+      SLACK_WEBHOOK_URL_STABLE_SUGGESTION:
+        required: false
+      SLACK_WEBHOOK_URL_CI_ALERTS:
+        required: false
 
 permissions:
   contents: read
@@ -18,33 +55,52 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.get-version.outputs.version }}
+      previous: ${{ steps.current-stable.outputs.previous }}
     steps:
-      - name: Get version input
+      - name: Validate version input
         id: get-version
         env:
-          INPUT_VERSION: ${{ github.event.inputs.version }}
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
-          echo "Using version: $INPUT_VERSION"
-          echo "version=$INPUT_VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Validate semver version
-        run: |
-          version="${{ steps.get-version.outputs.version }}"
-          echo "Validating version: $version"
+          echo "Validating version: $INPUT_VERSION"
 
           # Validate semver format (basic check for X.Y.Z or X.Y.Z-prerelease)
-          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9\.-]+)?$ ]]; then
-            echo "Error: Invalid semver format: $version"
+          if [[ ! "$INPUT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9\.-]+)?$ ]]; then
+            echo "Error: Invalid semver format: $INPUT_VERSION"
             echo "Expected format: X.Y.Z or X.Y.Z-prerelease (e.g., 3.2.1 or 3.2.1-next.1.abc)"
             exit 1
           fi
 
-          echo "✅ Version validation passed: $version"
+          echo "✅ Version validation passed: $INPUT_VERSION"
+          echo "version=$INPUT_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check the current stable tag
+        id: current-stable
+        env:
+          EXPECTED_CURRENT_STABLE: ${{ inputs.expected-current-stable }}
+          TARGET_VERSION: ${{ inputs.version }}
+        run: |
+          previous=$(curl -fsS https://registry.npmjs.org/-/package/sanity/dist-tags | jq -r '.stable' || true)
+
+          if [[ "$previous" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9\.-]+)?$ ]]; then
+            echo "previous=$previous" >> "$GITHUB_OUTPUT"
+          elif [ -n "$EXPECTED_CURRENT_STABLE" ]; then
+            echo "::error::Could not read the current stable tag of sanity from npm. Nothing was tagged."
+            exit 1
+          fi
+
+          if [ -n "$EXPECTED_CURRENT_STABLE" ] && [ "$previous" != "$EXPECTED_CURRENT_STABLE" ] && [ "$previous" != "$TARGET_VERSION" ]; then
+            echo "::error::stable is $previous, expected $EXPECTED_CURRENT_STABLE. Nothing was tagged."
+            exit 1
+          fi
 
   npm-tagging:
     name: Update NPM dist-tags
     needs: get-version
     runs-on: ubuntu-latest
+    concurrency:
+      group: tag-stable-npm
+      cancel-in-progress: false
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -52,6 +108,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup
 
       - name: Set publishing config
@@ -70,19 +128,20 @@ jobs:
           echo "✅ npm authentication validated - using $EXPECTED_NPM_USER account"
 
       - name: Update npm dist-tags to stable
+        env:
+          VERSION: ${{ needs.get-version.outputs.version }}
         run: |
           # Get all published (non-private) packages in the workspace
           packages=$(pnpm --silent tsx scripts/listPublishedPackages.ts)
-          version="${{ needs.get-version.outputs.version }}"
 
-          echo "Using version: $version"
+          echo "Using version: $VERSION"
           echo "Tagging the following packages as stable: $packages"
 
           # Convert relative paths to package names and apply dist-tag
           for pkg_dir in $packages; do
             pkg_name=$(jq -r '.name' "$pkg_dir/package.json")
-            echo "Tagging $pkg_name@$version as stable"
-            pnpm dist-tag add "$pkg_name@$version" stable
+            echo "Tagging $pkg_name@$VERSION as stable"
+            pnpm dist-tag add "$pkg_name@$VERSION" stable
           done
 
           echo "✅ All packages tagged as stable"
@@ -91,12 +150,18 @@ jobs:
     name: Update bundle manifest
     needs: get-version
     runs-on: ubuntu-latest
+    concurrency:
+      group: tag-stable-manifest
+      cancel-in-progress: false
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+      VERSION: ${{ needs.get-version.outputs.version }}
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup
 
       - name: Update manifest with stable tag (staging)
@@ -105,9 +170,8 @@ jobs:
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
           GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
         run: |
-          version="${{ needs.get-version.outputs.version }}"
-          echo "Using version: $version"
-          pnpm bundle-manager tag --tag=stable --target-version="$version"
+          echo "Using version: $VERSION"
+          pnpm bundle-manager tag --tag=stable --target-version="$VERSION"
 
       - name: Update manifest with stable tag (production)
         env:
@@ -115,6 +179,63 @@ jobs:
           GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
           GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
         run: |
-          version="${{ needs.get-version.outputs.version }}"
-          echo "Using version: $version"
-          pnpm bundle-manager tag --tag=stable --target-version="$version"
+          echo "Using version: $VERSION"
+          pnpm bundle-manager tag --tag=stable --target-version="$VERSION"
+
+  notify:
+    name: Announce manual promotion
+    needs: [get-version, npm-tagging, update-manifest]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    env:
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      HAS_SUGGESTION_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_STABLE_SUGGESTION != '' }}
+      HAS_CI_ALERTS_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS != '' }}
+    steps:
+      - name: Decide whether to post
+        id: decide
+        env:
+          INVOKED_BY: ${{ inputs.invoked-by }}
+          NPM_RESULT: ${{ needs.npm-tagging.result }}
+          MANIFEST_RESULT: ${{ needs.update-manifest.result }}
+        run: |
+          if [ -n "$INVOKED_BY" ]; then
+            echo "route=none" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "$HAS_SUGGESTION_WEBHOOK" = "true" ]; then
+            echo "route=webhook-trigger" >> "$GITHUB_OUTPUT"
+          elif [ "$HAS_CI_ALERTS_WEBHOOK" = "true" ]; then
+            echo "route=incoming-webhook" >> "$GITHUB_OUTPUT"
+          else
+            echo "route=none" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [ "$NPM_RESULT" = "success" ] && [ "$MANIFEST_RESULT" = "success" ]; then
+            echo "outcome=succeeded" >> "$GITHUB_OUTPUT"
+          else
+            echo "outcome=failed" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Post the manual promotion notice
+        if: steps.decide.outputs.route == 'webhook-trigger'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          # Fields: text, run_url (SUGGESTION_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts)
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_STABLE_SUGGESTION }}
+          webhook-type: webhook-trigger
+          payload: |
+            {"text": ${{ toJSON(format(':label: Manual @stable promotion of sanity {0} by @{1}: {2} (was {3}). <{4}|Open github workflow>', needs.get-version.outputs.version || 'an invalid version', github.triggering_actor, steps.decide.outputs.outcome, needs.get-version.outputs.previous || 'unknown', env.RUN_URL)) }}, "run_url": ${{ toJSON(env.RUN_URL) }}}
+
+      - name: Post the manual promotion notice (CI alerts fallback)
+        if: steps.decide.outputs.route == 'incoming-webhook'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          # Fields: text (CI_ALERTS_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts)
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
+          payload: |
+            {"text": ${{ toJSON(format(':label: Manual @stable promotion of sanity {0} by @{1}: {2} (was {3}). <{4}|Open github workflow>', needs.get-version.outputs.version || 'an invalid version', github.triggering_actor, steps.decide.outputs.outcome, needs.get-version.outputs.previous || 'unknown', env.RUN_URL)) }}}

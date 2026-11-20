@@ -102,6 +102,7 @@
     "publish:tarball": "tsx scripts/publish/tarball.ts",
     "radar": "pnpm --filter radar dev",
     "react-devtools:test-studio": "ENABLE_REACT_DEVTOOLS=true pnpm dev:test-studio:studio",
+    "stable-suggestion": "pnpm --silent --filter @repo/stable-suggestion run cli",
     "start": "pnpm dev",
     "test": "pnpm test:vitest",
     "test:changed": "vitest --changed",

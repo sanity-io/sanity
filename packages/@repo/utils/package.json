@@ -9,6 +9,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./engine-confidence": "./src/engineConfidence.ts",
+    "./github-token": "./src/githubToken.ts",
     "./radar-ids": "./src/radarIds.ts",
     "./soak-settle": "./src/soakSettle.ts",
     "./style-systems": "./src/styleSystems.ts"

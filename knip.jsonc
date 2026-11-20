@@ -184,6 +184,10 @@
     "packages/@repo/release-notes": {
       "project": ["src/**/*.ts"],
     },
+    "packages/@repo/stable-suggestion": {
+      "entry": ["bin/*.ts"],
+      "project": ["src/**/*.ts", "bin/*.ts"],
+    },
     "packages/@repo/test-exports": {
       // Plain `node --test` suite; the test files are the entry points
       "entry": ["test/**/*.{mjs,cjs}"],
