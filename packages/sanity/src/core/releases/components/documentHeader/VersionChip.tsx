@@ -92,13 +92,13 @@ export const VersionChip = memo(function VersionChip(props: {
   } = props
   const releasesToolAvailable = useReleasesToolAvailable()
   const isLinked = useVersionIsLinked(documentGroupId, bundleId)
-  const chipRef = useRef<HTMLButtonElement | null>(null)
+  const chipRef = useRef<HTMLSpanElement | null>(null)
 
   useEffect(() => {
     const chip = chipRef.current
     if (selected && chip) {
       scrollIntoView(chip, {
-        scrollMode: 'if-needed',
+        scrollMode: 'always',
         block: 'nearest',
         inline: 'center',
         boundary: isOverflowVisible,
