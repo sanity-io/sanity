@@ -7,26 +7,15 @@ import {Card} from '@sanity/ui'
 import {Breadcrumbs} from '@sanity/ui/breadcrumbs'
 import capitalize from 'lodash-es/capitalize.js'
 import {useMemo} from 'react'
-import {styled} from 'styled-components'
 import {Text, VStack, Flex, Box, type TextProps, Icon, Link} from 'ui5'
 
 import {getTypeInfo} from './getTypeInfo'
+import {errorMessageText, segmentSpan} from './SchemaProblemGroups.css'
 
 const TONES: Record<'error' | 'warning', TextProps['tone']> = {
   error: 'critical',
   warning: 'caution',
 }
-
-const SegmentSpan = styled.code`
-  && {
-    background: none;
-    color: inherit;
-  }
-`
-
-const ErrorMessageText = styled(Text)`
-  white-space: pre-line;
-`
 
 export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProblemGroup[]}) {
   const {problemGroups} = props
@@ -97,7 +86,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                           trim={true}
                           tone={TONES[problem.severity]}
                         >
-                          <SegmentSpan>{text}</SegmentSpan>
+                          <code className={segmentSpan}>{text}</code>
                         </Text>
                       )
                     }
@@ -114,7 +103,7 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                           trim={true}
                           tone={TONES[problem.severity]}
                         >
-                          <SegmentSpan>{segment.name}</SegmentSpan>
+                          <code className={segmentSpan}>{segment.name}</code>
                         </Text>
                       )
                     }
@@ -128,15 +117,16 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
             <Box as="ul" marginTop={4}>
               <Box as="li">
                 <VStack gap={3}>
-                  <ErrorMessageText
+                  <Text
+                    className={errorMessageText}
                     muted
                     size={1}
-                    forwardedAs="div"
+                    as="div"
                     trim={true}
                     tone={TONES[problem.severity]}
                   >
                     {problem.message}
-                  </ErrorMessageText>
+                  </Text>
 
                   {problem.helpId && (
                     <Text size={1} as="div" trim={true}>
