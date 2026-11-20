@@ -1,4 +1,4 @@
-import {type ClientConfig, type ListenEvent, type SanityClient} from '@sanity/client'
+import {type ListenEvent, type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
 import {
   catchError,
@@ -15,7 +15,11 @@ import {
 
 import {hasSanityPackageInImportMap} from '../../environment/importMap'
 import {type ApiNetworkDiagnostic, getApiNetworkDiagnostic} from '../../network/isUsingLegacyHttp'
-import {getListenerCounts, type ListenerCounts} from '../../network/listenerCount'
+import {
+  getListenerCounts,
+  type ListenerCounts,
+  resolveUncountedFetch,
+} from '../../network/listenerCount'
 import {type SchemaDiagnostics} from './getStudioConfigurationDiagnostics'
 import {getStylesDiagnostics, type StylesDiagnostics} from './getStylesDiagnostics'
 import {
@@ -231,12 +235,6 @@ async function runStudioDiagnostics({
       roles: user?.roles.map(({name, title}) => ({name, title})) ?? [],
     },
   }
-}
-
-type FetchFunction = ReturnType<NonNullable<ClientConfig['resolveFetch']>>
-
-function resolveUncountedFetch(): FetchFunction {
-  return (input, init) => globalThis.fetch(input, init)
 }
 
 // hasSanityPackageInImportMap JSON.parses the page's import maps; a malformed one must not abort

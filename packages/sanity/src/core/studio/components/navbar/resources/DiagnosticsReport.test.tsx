@@ -210,7 +210,17 @@ describe('DiagnosticsReport', () => {
     })
 
     expect(getRowText('Open listeners')).toBe('Open listeners31 (high)')
-    expect(getRowText('Peak listeners')).toBe('Peak listeners31')
+    expect(getRowText('Peak listeners')).toBe('Peak listeners31 (high)')
+  })
+
+  it('flags a peak listener count above the warning threshold when open is low', () => {
+    renderNetworkSection({
+      ...diagnostics,
+      network: {...diagnostics.network, listeners: {open: 2, peak: 31}},
+    })
+
+    expect(getRowText('Open listeners')).toBe('Open listeners2')
+    expect(getRowText('Peak listeners')).toBe('Peak listeners31 (high)')
   })
 
   it('renders readable sections and network measurements', async () => {

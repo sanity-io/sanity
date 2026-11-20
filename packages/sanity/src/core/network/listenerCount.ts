@@ -55,6 +55,19 @@ export function resolveListenerCountingFetch(): FetchFunction {
   return countingFetch
 }
 
+/**
+ * A `resolveFetch` whose listeners are not counted, for the diagnostics probes.
+ *
+ * @internal
+ */
+export function resolveUncountedFetch(): FetchFunction {
+  return uncountedFetch
+}
+
+function uncountedFetch(input: string, init?: FetchInit): Promise<FetchResponse> {
+  return globalThis.fetch(input, init)
+}
+
 function countingFetch(input: string, init?: FetchInit): Promise<FetchResponse> {
   return isEventStreamRequest(init) ? fetchListener(input, init) : globalThis.fetch(input, init)
 }
