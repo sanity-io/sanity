@@ -1,3 +1,4 @@
+import {findExtendableType} from './builtinTypes/extendableTypes'
 import {traverseSanitySchema} from './traverseSchema'
 import {type _FIXME_} from './typedefs'
 import array from './validation/types/array'
@@ -5,6 +6,7 @@ import block from './validation/types/block'
 import common from './validation/types/common'
 import crossDatasetReference from './validation/types/crossDatasetReference'
 import documentVisitor from './validation/types/document'
+import extendableType from './validation/types/extendableType'
 import file from './validation/types/file'
 import globalDocumentReference from './validation/types/globalDocumentReference'
 import image from './validation/types/image'
@@ -75,7 +77,10 @@ export function validateSchema(
     const commonVisitors = transformCommonVisitors([common])
 
     if (visitorContext.isRoot) {
-      return combine(rootType, ...commonVisitors, typeVisitor)(schemaDef, visitorContext)
+      const rootVisitors = findExtendableType(schemaDef?.name)
+        ? [rootType, ...commonVisitors, extendableType, typeVisitor]
+        : [rootType, ...commonVisitors, typeVisitor]
+      return combine(...rootVisitors)(schemaDef, visitorContext)
     }
 
     return combine(...commonVisitors, typeVisitor)(schemaDef, visitorContext)

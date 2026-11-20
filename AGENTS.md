@@ -647,6 +647,38 @@ each dropped name before regenerating:
 Regenerating needs a full `pnpm build` first: the generator reads each package's built
 `lib/**/*.d.ts`.
 
+### Extendable built-in types
+
+Two folders in `packages/@sanity/schema/src/sanity/builtinTypes/` hold built-in types whose lists
+(exported from each folder's `index.ts`) are part of `builtinTypes`, so a schema that declares
+nothing has no local types:
+
+- `extendableTypes/` (`extendableTypes`): object types a schema extends by declaring a type with
+  the same name (`sanity.releaseMetadata`). The declaration lists only the fields it adds:
+  `resolveExtendableTypes`, which `createSchema` and `createSchemaFromManifestTypes` call,
+  prepends the core fields of the built-in definition, the way `image` prepends `asset`, and a
+  declared field with a core field's name is replaced by the built-in one, so a descriptor that
+  carries the core fields rebuilds through `createSchema` too. The `define*` helpers throw on a
+  core field name instead (`extendBuiltinType`). The compiler
+  (`compileRegistry` in `legacy/Schema.ts`) lets the declaration replace the built-in type, so it
+  is a local type of that schema. Manifests carry the schema's local types, so an extension is
+  written with only its added fields, and a rebuilt schema takes the core fields from code, also
+  when a descriptor carried them.
+- `systemTypes/` (`systemDocumentTypes`): documents Content Lake owns that reference an
+  extendable type (`system.release`). When a schema extends a type, the compiler compiles these
+  again in that schema so they use the extension, without making them local types: a parent type
+  resolves its field types against the parent and would otherwise keep the built-in version. A
+  schema can't declare them, and `isSystemDocumentTypeName` keeps them out of templates, search,
+  the default Structure lists and document actions, like the asset types.
+
+To add one (variant metadata, for example): add the default type to `extendableTypes/` and its
+list, and its document to `systemTypes/` and its list, then export a `defineVariantMetadata` from
+`sanity` built on the internal `extendBuiltinType` (`core/schema/extendBuiltinType.ts`), as
+`defineReleaseMetadata` is. Nothing else needs a per-type check. Only the types in
+`systemDocumentTypes` are compiled again when a schema extends a type: any other built-in that uses
+an extendable type silently keeps the default, so a built-in that isn't a system document needs
+`compileRegistry` to compile it again too.
+
 ### Effect events: use `use-effect-event`, not React's native hook
 
 Import `useEffectEvent` from `use-effect-event`, never from `react`. On React 19.2 the native hook

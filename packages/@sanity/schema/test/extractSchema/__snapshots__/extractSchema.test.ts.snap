@@ -209,6 +209,241 @@ exports[`Extract schema test > Can extract inline documents 1`] = `
 exports[`Extract schema test > Can hoist types > Hoist repeated objects 1`] = `
 [
   {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "system.release",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "error": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "attributes": {
+            "message": {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": {
+                "type": "string",
+              },
+            },
+          },
+          "type": "object",
+        },
+      },
+      "finalDocumentStates": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "of": {
+            "attributes": {
+              "id": {
+                "optional": true,
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string",
+                },
+              },
+            },
+            "rest": {
+              "attributes": {
+                "_key": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                  },
+                },
+              },
+              "type": "object",
+            },
+            "type": "object",
+          },
+          "type": "array",
+        },
+      },
+      "metadata": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "sanity.releaseMetadata",
+          "type": "inline",
+        },
+      },
+      "name": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "publishAt": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "publishedAt": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "state": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "of": [
+            {
+              "type": "string",
+              "value": "active",
+            },
+            {
+              "type": "string",
+              "value": "archiving",
+            },
+            {
+              "type": "string",
+              "value": "unarchiving",
+            },
+            {
+              "type": "string",
+              "value": "archived",
+            },
+            {
+              "type": "string",
+              "value": "published",
+            },
+            {
+              "type": "string",
+              "value": "publishing",
+            },
+            {
+              "type": "string",
+              "value": "scheduled",
+            },
+            {
+              "type": "string",
+              "value": "scheduling",
+            },
+          ],
+          "type": "union",
+        },
+      },
+      "userId": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+    },
+    "name": "system.release",
+    "type": "document",
+  },
+  {
+    "name": "sanity.releaseMetadata",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "sanity.releaseMetadata",
+          },
+        },
+        "cardinality": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "of": [
+              {
+                "type": "string",
+                "value": "many",
+              },
+              {
+                "type": "string",
+                "value": "one",
+              },
+            ],
+            "type": "union",
+          },
+        },
+        "description": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "intendedPublishAt": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "releaseType": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "of": [
+              {
+                "type": "string",
+                "value": "asap",
+              },
+              {
+                "type": "string",
+                "value": "scheduled",
+              },
+              {
+                "type": "string",
+                "value": "undecided",
+              },
+            ],
+            "type": "union",
+          },
+        },
+        "title": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+  {
     "name": "sanity.imagePaletteSwatch",
     "type": "type",
     "value": {
@@ -1231,6 +1466,241 @@ exports[`Extract schema test > Can hoist types > hoisted inline types should not
     "type": "type",
     "value": {
       "attributes": {
+        "title": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "system.release",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "error": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "attributes": {
+            "message": {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": {
+                "type": "string",
+              },
+            },
+          },
+          "type": "object",
+        },
+      },
+      "finalDocumentStates": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "of": {
+            "attributes": {
+              "id": {
+                "optional": true,
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string",
+                },
+              },
+            },
+            "rest": {
+              "attributes": {
+                "_key": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                  },
+                },
+              },
+              "type": "object",
+            },
+            "type": "object",
+          },
+          "type": "array",
+        },
+      },
+      "metadata": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "sanity.releaseMetadata",
+          "type": "inline",
+        },
+      },
+      "name": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "publishAt": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "publishedAt": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "state": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "of": [
+            {
+              "type": "string",
+              "value": "active",
+            },
+            {
+              "type": "string",
+              "value": "archiving",
+            },
+            {
+              "type": "string",
+              "value": "unarchiving",
+            },
+            {
+              "type": "string",
+              "value": "archived",
+            },
+            {
+              "type": "string",
+              "value": "published",
+            },
+            {
+              "type": "string",
+              "value": "publishing",
+            },
+            {
+              "type": "string",
+              "value": "scheduled",
+            },
+            {
+              "type": "string",
+              "value": "scheduling",
+            },
+          ],
+          "type": "union",
+        },
+      },
+      "userId": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+    },
+    "name": "system.release",
+    "type": "document",
+  },
+  {
+    "name": "sanity.releaseMetadata",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "sanity.releaseMetadata",
+          },
+        },
+        "cardinality": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "of": [
+              {
+                "type": "string",
+                "value": "many",
+              },
+              {
+                "type": "string",
+                "value": "one",
+              },
+            ],
+            "type": "union",
+          },
+        },
+        "description": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "intendedPublishAt": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "releaseType": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "of": [
+              {
+                "type": "string",
+                "value": "asap",
+              },
+              {
+                "type": "string",
+                "value": "scheduled",
+              },
+              {
+                "type": "string",
+                "value": "undecided",
+              },
+            ],
+            "type": "union",
+          },
+        },
         "title": {
           "optional": true,
           "type": "objectAttribute",
@@ -3022,6 +3492,241 @@ exports[`Extract schema test > Extracts schema general 1`] = `
               "type": "union",
             },
             "type": "array",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+  {
+    "attributes": {
+      "_createdAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_id": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_rev": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "_type": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+          "value": "system.release",
+        },
+      },
+      "_updatedAt": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "error": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "attributes": {
+            "message": {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": {
+                "type": "string",
+              },
+            },
+          },
+          "type": "object",
+        },
+      },
+      "finalDocumentStates": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "of": {
+            "attributes": {
+              "id": {
+                "optional": true,
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string",
+                },
+              },
+            },
+            "rest": {
+              "attributes": {
+                "_key": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string",
+                  },
+                },
+              },
+              "type": "object",
+            },
+            "type": "object",
+          },
+          "type": "array",
+        },
+      },
+      "metadata": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "name": "sanity.releaseMetadata",
+          "type": "inline",
+        },
+      },
+      "name": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "publishAt": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "publishedAt": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+      "state": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "of": [
+            {
+              "type": "string",
+              "value": "active",
+            },
+            {
+              "type": "string",
+              "value": "archiving",
+            },
+            {
+              "type": "string",
+              "value": "unarchiving",
+            },
+            {
+              "type": "string",
+              "value": "archived",
+            },
+            {
+              "type": "string",
+              "value": "published",
+            },
+            {
+              "type": "string",
+              "value": "publishing",
+            },
+            {
+              "type": "string",
+              "value": "scheduled",
+            },
+            {
+              "type": "string",
+              "value": "scheduling",
+            },
+          ],
+          "type": "union",
+        },
+      },
+      "userId": {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": {
+          "type": "string",
+        },
+      },
+    },
+    "name": "system.release",
+    "type": "document",
+  },
+  {
+    "name": "sanity.releaseMetadata",
+    "type": "type",
+    "value": {
+      "attributes": {
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "sanity.releaseMetadata",
+          },
+        },
+        "cardinality": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "of": [
+              {
+                "type": "string",
+                "value": "many",
+              },
+              {
+                "type": "string",
+                "value": "one",
+              },
+            ],
+            "type": "union",
+          },
+        },
+        "description": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "intendedPublishAt": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+          },
+        },
+        "releaseType": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "of": [
+              {
+                "type": "string",
+                "value": "asap",
+              },
+              {
+                "type": "string",
+                "value": "scheduled",
+              },
+              {
+                "type": "string",
+                "value": "undecided",
+              },
+            ],
+            "type": "union",
+          },
+        },
+        "title": {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
           },
         },
       },

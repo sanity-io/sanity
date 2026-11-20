@@ -1,4 +1,5 @@
 import assetSourceData from './assetSourceData'
+import {extendableTypes} from './extendableTypes'
 import fileAsset from './fileAsset'
 import geopoint from './geopoint'
 import imageAsset from './imageAsset'
@@ -9,6 +10,7 @@ import imageMetadata from './imageMetadata'
 import imagePalette from './imagePalette'
 import imagePaletteSwatch from './imagePaletteSwatch'
 import slug from './slug'
+import {systemDocumentTypes} from './systemTypes'
 
 export const builtinTypes = [
   assetSourceData,
@@ -23,4 +25,6 @@ export const builtinTypes = [
   imageDimensions,
   imagePalette,
   imagePaletteSwatch,
+  ...extendableTypes,
+  ...systemDocumentTypes,
 ]

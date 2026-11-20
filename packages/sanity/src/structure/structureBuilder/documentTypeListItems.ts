@@ -1,5 +1,6 @@
 import {StackIcon} from '@sanity/icons/Stack'
 import {StackCompactIcon} from '@sanity/icons/StackCompact'
+import {isSystemDocumentTypeName} from '@sanity/schema/_internal'
 import {type SchemaType} from '@sanity/types'
 import startCase from 'lodash-es/startCase.js'
 
@@ -18,7 +19,7 @@ import {markDefaultDocumentTypeChild} from './util/defaultDocumentTypeChild'
 const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset']
 
 function isBundledDocType(typeName: string) {
-  return BUNDLED_DOC_TYPES.includes(typeName)
+  return BUNDLED_DOC_TYPES.includes(typeName) || isSystemDocumentTypeName(typeName)
 }
 
 function isDocumentType(schemaType: SchemaType) {

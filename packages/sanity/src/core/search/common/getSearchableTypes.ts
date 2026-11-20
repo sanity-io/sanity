@@ -1,3 +1,4 @@
+import {isSystemDocumentTypeName} from '@sanity/schema/_internal'
 import {type ObjectSchemaType, type Schema, type SchemaType} from '@sanity/types'
 
 import {isNonNullable} from '../../util/isNonNullable'
@@ -8,7 +9,8 @@ const isDocumentType = (type: SchemaType): type is ObjectSchemaType =>
 const isObjectType = (type: SchemaType): type is ObjectSchemaType => type.jsonType === 'object'
 
 const isIgnoredType = (type: SchemaType): boolean =>
-  type.name.startsWith('sanity.') && type.name !== 'sanity.previewUrlSecret'
+  (type.name.startsWith('sanity.') && type.name !== 'sanity.previewUrlSecret') ||
+  isSystemDocumentTypeName(type.name)
 
 /**
  * Get all defined document types from the schema that are searchable

@@ -8,6 +8,8 @@ import {
 
 import {Schema} from '../legacy/Schema'
 import {builtinTypes} from '../sanity/builtinTypes'
+import {resolveExtendableTypes} from '../sanity/builtinTypes/extendableTypes'
+import {isSystemDocumentTypeName} from '../sanity/builtinTypes/systemTypes'
 import {groupProblems} from '../sanity/groupProblems'
 import {type SchemaValidationResult} from '../sanity/typedefs'
 import {validateSchema} from '../sanity/validateSchema'
@@ -42,12 +44,29 @@ export interface CreateSchemaFromManifestTypesOptions {
   validate?: boolean
 }
 
+/**
+ * Serialized schemas carry the system document types, and descriptors also carry
+ * the core fields of extendable types. Both are always replaced by the built-in
+ * definitions, so a serialized schema can't change how those documents and
+ * fields are stored or edited. The fields a schema added to an extendable type
+ * are kept.
+ */
+function withExtendableTypes(types: unknown[]): unknown[] {
+  return resolveExtendableTypes(
+    types.filter(
+      (type) => !isObject(type) || !('name' in type) || !isSystemDocumentTypeName(type.name),
+    ),
+  )
+}
+
 export function createSchemaFromManifestTypes(
   schemaDef: {name: string; types: unknown[]},
   options: CreateSchemaFromManifestTypesOptions = {},
 ) {
   if (options.validate !== false) {
-    const validated = validateSchema(schemaDef.types, {parentTypes: builtinTypes}).getTypes()
+    const validated = validateSchema(withExtendableTypes(schemaDef.types), {
+      parentTypes: builtinTypes,
+    }).getTypes()
     const validation = groupProblems(validated)
     const problems = validation.filter((group) =>
       group.problems.some((problem: SchemaValidationResult) => problem.severity === 'error'),
@@ -60,9 +79,9 @@ export function createSchemaFromManifestTypes(
 
   return Schema.compile({
     name: schemaDef.name,
-    types: schemaDef.types
-      .map((type) => coerceType(type, options.cloneTypes !== false))
-      .filter(Boolean),
+    types: withExtendableTypes(
+      schemaDef.types.map((type) => coerceType(type, options.cloneTypes !== false)).filter(Boolean),
+    ),
     parent: builtinSchema,
   })
 }

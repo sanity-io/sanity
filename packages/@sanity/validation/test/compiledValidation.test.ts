@@ -354,6 +354,41 @@ describe.each([false, true])('validation with compiled schema=%s', (compiled) =>
       }),
     )
   })
+
+  it('validates a release document against the extended release metadata', async () => {
+    const schema = createSchema(
+      [
+        {
+          name: 'sanity.releaseMetadata',
+          type: 'object',
+          fields: [
+            {name: 'legalReview', type: 'string', validation: (rule: Rule) => rule.required()},
+          ],
+        },
+      ],
+      compiled,
+    )
+    const result = await validateDocument({
+      schema,
+      document: {
+        ...document,
+        _id: '_.releases.rLegal',
+        _type: 'system.release',
+        publishAt: 'not a date',
+        metadata: {},
+      },
+    })
+
+    expect(result.markers).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          path: ['publishAt'],
+          code: validationMarkerCodes.dateInvalidFormat,
+        }),
+        expect.objectContaining({path: ['metadata', 'legalReview']}),
+      ]),
+    )
+  })
 })
 
 it('reuses compiled static rules for the same field across repeated inference and validation', async () => {

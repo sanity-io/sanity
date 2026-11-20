@@ -18,12 +18,14 @@ import type {
   extractCreateWorkspaceManifest,
   extractManifestSchemaTypes,
   extractSchema,
+  findExtendableType,
   FIXME,
   getWorkspaceSchemaId,
   groupProblems,
   IconResolver,
   isActionEnabled,
   isInternalValidator,
+  isSystemDocumentTypeName,
   ManifestSchemaType,
   ManifestWorkspaceFile,
   markInternalValidator,
@@ -38,6 +40,9 @@ import type {
   ProblemPathSegment,
   ProblemPathTypeSegment,
   processSchemaSynchronization,
+  RELEASE_METADATA_CORE_FIELDS,
+  RELEASE_METADATA_TYPE_NAME,
+  resolveExtendableTypes,
   resolveSearchConfig,
   resolveSearchConfigForBaseFieldPaths,
   SchemaSynchronizationRequest,
@@ -104,6 +109,9 @@ describe('@sanity/schema/_internal', () => {
   test('extractSchema', () => {
     expectTypeOf<typeof extractSchema>().toBeFunction()
   })
+  test('findExtendableType', () => {
+    expectTypeOf<typeof findExtendableType>().toBeFunction()
+  })
   test('FIXME', () => {
     expectTypeOf<FIXME>().not.toBeNever()
   })
@@ -121,6 +129,9 @@ describe('@sanity/schema/_internal', () => {
   })
   test('isInternalValidator', () => {
     expectTypeOf<typeof isInternalValidator>().toBeFunction()
+  })
+  test('isSystemDocumentTypeName', () => {
+    expectTypeOf<typeof isSystemDocumentTypeName>().toBeFunction()
   })
   test('ManifestSchemaType', () => {
     expectTypeOf<ManifestSchemaType>().toBeObject()
@@ -163,6 +174,15 @@ describe('@sanity/schema/_internal', () => {
   })
   test('processSchemaSynchronization', () => {
     expectTypeOf<typeof processSchemaSynchronization>().toBeFunction()
+  })
+  test('RELEASE_METADATA_CORE_FIELDS', () => {
+    expectTypeOf<typeof RELEASE_METADATA_CORE_FIELDS>().not.toBeNever()
+  })
+  test('RELEASE_METADATA_TYPE_NAME', () => {
+    expectTypeOf<typeof RELEASE_METADATA_TYPE_NAME>().not.toBeNever()
+  })
+  test('resolveExtendableTypes', () => {
+    expectTypeOf<typeof resolveExtendableTypes>().toBeFunction()
   })
   test('resolveSearchConfig', () => {
     expectTypeOf<typeof resolveSearchConfig>().toBeFunction()

@@ -1,5 +1,7 @@
 import startCase from 'lodash-es/startCase.js'
 
+import {extendableTypes} from '../sanity/builtinTypes/extendableTypes'
+import {systemDocumentTypes} from '../sanity/builtinTypes/systemTypes'
 import * as types from './types'
 import {lazyGetter} from './types/utils'
 
@@ -32,6 +34,25 @@ function compileRegistry(schemaDef: any) {
     acc[def.name] = def
     return acc
   }, {})
+
+  // A schema can redefine an extendable type that its parent already has. The parent's system
+  // document types are then compiled again in this schema, so they use the redefined type, but
+  // they stay inherited types rather than local ones.
+  const redefinedTypes = schemaDef.parent
+    ? extendableTypes.filter((type) => defsByName[type.name] && registry[type.name])
+    : []
+  const reboundDefsByName: Record<string, any> = Object.create(null)
+  if (redefinedTypes.length > 0) {
+    for (const def of systemDocumentTypes) {
+      if (registry[def.name]) reboundDefsByName[def.name] = def
+    }
+  }
+  for (const name of [
+    ...redefinedTypes.map((type) => type.name),
+    ...Object.keys(reboundDefsByName),
+  ]) {
+    delete registry[name]
+  }
 
   const memberCache = new Map()
   const fieldCache = new Map()
@@ -84,6 +105,7 @@ function compileRegistry(schemaDef: any) {
   })
 
   schemaDef.types.forEach(add)
+  Object.values(reboundDefsByName).forEach(rebind)
 
   return {
     registry,
@@ -92,11 +114,22 @@ function compileRegistry(schemaDef: any) {
 
   function ensure(typeName: any) {
     if (!registry[typeName]) {
-      if (!defsByName[typeName]) {
+      if (defsByName[typeName]) {
+        add(defsByName[typeName])
+      } else if (reboundDefsByName[typeName]) {
+        rebind(reboundDefsByName[typeName])
+      } else {
         throw new Error(`Unknown type: ${typeName}`)
       }
-      add(defsByName[typeName])
     }
+  }
+
+  function rebind(typeDef: any) {
+    ensure(typeDef.type)
+    if (registry[typeDef.name]) {
+      return
+    }
+    registry[typeDef.name] = registry[typeDef.type].extend(typeDef, extendMember)
   }
 
   function extendMember(memberDef: any) {

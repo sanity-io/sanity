@@ -140,9 +140,14 @@ export function extractManifestSchemaTypes(schema: Schema): ManifestSchemaType[]
     name: 'default',
     types: builtinTypes,
   }).getTypeNames()
+  // A schema's local types include a built-in type it redefines, like an extended
+  // `sanity.releaseMetadata`. A root schema also lists the core types as local.
+  const localTypeNames = new Set(schema.parent ? schema.getLocalTypeNames() : [])
 
   return typeNames
-    .filter((typeName) => !studioDefaultTypeNames.includes(typeName))
+    .filter(
+      (typeName) => localTypeNames.has(typeName) || !studioDefaultTypeNames.includes(typeName),
+    )
     .map((typeName) => schema.get(typeName))
     .filter((type): type is SchemaType => typeof type !== 'undefined')
     .map((type) => transformType(type, context))
