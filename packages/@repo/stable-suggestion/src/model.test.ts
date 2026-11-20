@@ -50,7 +50,7 @@ describe('toRecommendation', () => {
     expect(result.headline).not.toContain('evil.example')
   })
 
-  test('accepts a valid answer and numbers the slots', () => {
+  test('accepts a valid answer', () => {
     const result = toRecommendation(answered(validOutput()), evaluation, MODEL)
     expect(result).toMatchObject({
       source: 'model',
@@ -61,8 +61,8 @@ describe('toRecommendation', () => {
       headline: 'Promote 6.22.0',
     })
     expect(result.shortlist).toEqual([
-      {slot: 1, version: '6.22.0', reason: 'Has the longest soak.'},
-      {slot: 2, version: '6.23.0', reason: 'Newest.'},
+      {version: '6.22.0', reason: 'Has the longest soak.'},
+      {version: '6.23.0', reason: 'Newest.'},
     ])
   })
 
@@ -83,8 +83,8 @@ describe('toRecommendation', () => {
     })
     const result = toRecommendation(answered(output), evaluation, MODEL)
     expect(result.shortlist).toEqual([
-      {slot: 1, version: '6.23.0', reason: 'first'},
-      {slot: 2, version: '6.22.0', reason: 'other'},
+      {version: '6.23.0', reason: 'first'},
+      {version: '6.22.0', reason: 'other'},
     ])
   })
 
@@ -98,7 +98,6 @@ describe('toRecommendation', () => {
     })
     const result = toRecommendation(answered(output), wide, MODEL)
     expect(result.shortlist).toHaveLength(SHORTLIST_SIZE)
-    expect(result.shortlist.map((entry) => entry.slot)).toEqual([1, 2, 3])
   })
 
   test('hold keeps the model shortlist', () => {
@@ -200,7 +199,6 @@ describe('deterministicRecommendation', () => {
       confidence: null,
       headline: 'Promote 6.23.0',
     })
-    expect(result.shortlist.map((entry) => entry.slot)).toEqual([1, 2, 3])
   })
 
   test('holds when nothing is eligible and names the blocking reasons', () => {

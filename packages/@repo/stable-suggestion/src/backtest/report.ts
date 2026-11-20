@@ -8,7 +8,7 @@ export interface LlmNarrative {
   narrative: string
 }
 
-export interface ReportOptions {
+interface ReportOptions {
   generatedAt?: IsoDate
   narratives?: LlmNarrative[]
 }

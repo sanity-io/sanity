@@ -117,6 +117,18 @@ describe('P1 independent hard rules', () => {
     expect(result.p1.violations[0]?.reasons).toContain('superseded')
   })
 
+  test('does not call a version superseded by a deprecated newer patch', () => {
+    const base = evidenceAt(AS_OF)
+    const evidence = evidenceAt(AS_OF, {
+      deprecationKnown: true,
+      versions: base.versions.map((entry) =>
+        entry.version === '6.9.2' ? {...entry, deprecated: 'broken'} : entry,
+      ),
+    })
+    const reasons = score(['6.9.1'], evidence).p1.violations[0]?.reasons ?? []
+    expect(reasons).not.toContain('superseded')
+  })
+
   test('fails a version still inside the soak window', () => {
     const evidence = evidenceAt('2026-08-18T10:00:00Z')
     const result = score(['6.12.0'], evidence)

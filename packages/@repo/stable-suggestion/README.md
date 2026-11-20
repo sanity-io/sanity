@@ -1,6 +1,10 @@
 # @repo/stable-suggestion
 
-Internal tool that suggests which already-published `sanity` version to move to the npm `stable` dist-tag. `.github/workflows/suggest-stable.yml` runs it after every release to `latest`. The workflow posts a shortlist of up to three versions to Slack, and a reviewer approves one slot to promote it through `tag-stable.yml`.
+Internal tool that suggests which already-published `sanity` version to move to the npm `stable` dist-tag. `.github/workflows/suggest-stable.yml` runs it after every release to `latest`. The workflow posts a shortlist of up to three versions to Slack with a link to the `tag-stable.yml` workflow page. A person promotes a version by running that workflow and typing the version. Nothing is promoted by the suggestion itself, and `tag-stable.yml` posts the result to Slack.
+
+## Promoting
+
+The Slack message and the run summary both say: open the `tag-stable.yml` workflow page, click Run workflow and enter the version. `gh workflow run tag-stable.yml -f version=<X.Y.Z>` does the same from a terminal. `tag-stable.yml` validates the version, reads the current stable tag, tags every package, updates the bundle manifest and posts the outcome to Slack.
 
 ## Rules
 
@@ -15,10 +19,10 @@ Hard reasons:
 - `deprecated`: npm marks the version deprecated. Live mode only, because past deprecation timing is unknown.
 - `regression`: Radar holds a confirmed regression introduced at or before the version and not fixed by a published version at or before it. Any severity blocks. A regression counts from the `_updatedAt` of its Radar document.
 - `missing-packages`: some package that the repo publishes lacks the version on npm. Live mode uses the list `tag-stable.yml` iterates. As-of mode infers the list from the packages that have L.
-- `rolled-back`: a successful `tag-latest.yml` run moved latest back to X at time T, and the version is above X on the same major and was published before T. It applies from T onward, so a version published after T is unaffected, and a later move back up to the version lifts it. In live mode any version above the current npm `latest` is also rolled back, whatever the history says, and `verify` applies the same check. In as-of mode only moves at or before A count. A same-version re-point changes nothing.
+- `rolled-back`: a successful `tag-latest.yml` run moved latest back to X at time T, and the version is above X on the same major and was published before T. It applies from T onward, so a version published after T is unaffected, and a later move back up to the version lifts it. In live mode any version above the current npm `latest` is also rolled back whatever the history says. In as-of mode only moves at or before A count. A same-version re-point changes nothing.
 - `regression-data-unavailable`: Radar could not be read, so every version is held. The tool fails closed.
 
-The `@stable` history that defines S merges successful `tag-stable.yml` runs with automated promotions read from the jobs of `suggest-stable.yml` runs.
+The `@stable` history that defines S is the successful `tag-stable.yml` runs.
 
 Eligible versions are ranked newest first, except that patches of stable's own minor come first (highest first). The shortlist is the top three, and the deterministic pick is the first one, or hold when none is eligible.
 
@@ -38,13 +42,13 @@ When issues or downloads are unavailable, the Slack text says so.
 
 ## Urgent mode
 
-A version gets the 1 day soak instead of 7 (or 3) when it is a patch on stable's own major.minor, for example 6.15.1 when S is 6.15.0, or when stable is hit by a confirmed regression and the version is at or above the `fixedIn` of every regression hitting S. Every other hard rule still applies. The smallest jump off a broken stable is the safest, so urgent versions lead the shortlist, oldest first, with patches of stable's minor ahead of other fixes. Urgent applies only to versions on stable's own major, so a new major keeps its 3 day soak. When stable is at risk or such a patch exists, the Slack message leads with an Urgent banner that names the reason and the recommended version.
+A version gets the 1 day soak instead of 7 (or 3) when it is a patch on stable's own major.minor, for example 6.15.1 when S is 6.15.0, or when stable is hit by a confirmed regression and the version is at or above the `fixedIn` of every regression hitting S. Every other hard rule still applies. The smallest jump off a broken stable is the safest, so urgent versions lead the shortlist, oldest first, with patches of stable's minor ahead of other fixes. Urgent applies only to versions on stable's own major, so a new major keeps its 3 day soak. When stable is at risk or such a patch exists, the Slack message carries an Urgent banner that names the reason and the recommended version. The one day soak is only claimed when the recommended version is itself urgent.
 
 The tool only runs after a release. A patch of stable's minor is itself a release, so the patch case fires on its own. The case where a later release fixes a broken stable fires on the next release after that fix has soaked a day.
 
 ## Split stable
 
-In live mode the tool reads the `stable` dist-tag of every package the repo publishes. When the packages disagree, the Slack message leads with a warning that lists them and recommends `gh workflow run tag-stable.yml -f version=<sanity's stable>`. A split does not block promotion, because a fresh promotion re-tags every package. As-of mode cannot know the tag history, so the check does not apply there.
+In live mode the tool reads the `stable` dist-tag of every package the repo publishes. When the packages disagree, the Slack message carries a warning that lists them. A split does not block promotion, because a fresh promotion re-tags every package. As-of mode cannot know the tag history, so the check does not apply there.
 
 ## Claude step
 
@@ -57,14 +61,12 @@ Run from the repo root. The script runs inside the package directory, so every p
 ```bash
 pnpm stable-suggestion --help
 pnpm stable-suggestion collect [--as-of <ISO>] --out <evidence.json>
-pnpm stable-suggestion recommend <evidence.json> --out-dir <dir> --run-url <url> [--no-llm]
+pnpm stable-suggestion recommend <evidence.json> --out-dir <dir> --run-url <url> --workflow-url <url> [--no-llm]
 pnpm stable-suggestion slack-route
-pnpm stable-suggestion verify --version <X.Y.Z> --slot <n> --expected-stable <S> [--run-id <id>]
-pnpm stable-suggestion result --slot <n> --slot-count <m> --version <X.Y.Z> --previous <S> --outcome <promoted|guard-failed|tag-failed> [--guard-reason <reason>] --run-id <id> --run-url <url> --out-dir <dir>
 pnpm stable-suggestion backtest [--from <date>] [--to <ISO>] --out <report.md> [--json <file>] [--llm-sample <d1,d2>] [--max-llm-calls 4]
 ```
 
-Exit codes: 0 on success, 1 on a failure or a refused guard, 2 on invalid usage. `collect --as-of` must parse, must not be in the future and must be on or after 2025-01-01. Values written to `GITHUB_OUTPUT` are checked against plain semver or a fixed set of codes first.
+Exit codes: 0 on success, 1 on a failure, 2 on invalid usage. `collect --as-of` must parse, must not be in the future and must be on or after 2025-01-01. The Slack route written to `GITHUB_OUTPUT` is checked against a fixed set of values first.
 
 Environment: `RADAR_SANITY_READ_TOKEN`, `GITHUB_TOKEN` or `GH_TOKEN` (falls back to `gh auth token`), `ANTHROPIC_API_KEY` and `STABLE_SUGGESTION_MODEL`. `HAS_SUGGESTION_WEBHOOK` and `HAS_CI_ALERTS_WEBHOOK` drive `slack-route`.
 
@@ -75,12 +77,12 @@ export RADAR_SANITY_READ_TOKEN=...   # from `pnpm exec sanity debug --secrets`, 
 export GITHUB_TOKEN=$(gh auth token)
 mkdir -p "$PWD/.context/out"
 pnpm stable-suggestion collect --out "$PWD/.context/out/evidence.json"
-pnpm stable-suggestion recommend "$PWD/.context/out/evidence.json" --out-dir "$PWD/.context/out" --run-url https://example.invalid/run --no-llm
+pnpm stable-suggestion recommend "$PWD/.context/out/evidence.json" --out-dir "$PWD/.context/out" --run-url https://example.invalid/run --workflow-url https://example.invalid/workflow --no-llm
 ```
 
-`recommend` writes `recommendation.json`, `slack-webhook.json` (`{text, run_url}`), `slack-fallback.json` (`{text}`) and `summary.md`. Nothing posts to Slack from the CLI.
+`recommend` writes `recommendation.json`, `slack-webhook.json` (`{text, run_url}`, where `run_url` is the `tag-stable.yml` workflow page), `slack-fallback.json` (`{text}`) and `summary.md`. Nothing posts to Slack from the CLI.
 
-`--history <file>` on `collect`, `verify` and `backtest` reads a recorded history JSON instead of fetching, which runs the tool offline. `src/__fixtures__/history.json` is such a file.
+`--history <file>` on `collect` and `backtest` reads a recorded history JSON instead of fetching, which runs the tool offline. `src/__fixtures__/history.json` is such a file.
 
 ## Backtest
 

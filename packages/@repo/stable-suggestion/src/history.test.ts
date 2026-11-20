@@ -25,10 +25,7 @@ function fixtureFetch(): typeof fetch {
     if (url.includes('/actions/workflows/tag-stable.yml/runs')) {
       return new Response(JSON.stringify({workflow_runs: loadRawFixture('github-runs')}))
     }
-    if (
-      url.includes('/actions/workflows/suggest-stable.yml/runs') ||
-      url.includes('/actions/workflows/tag-latest.yml/runs')
-    ) {
+    if (url.includes('/actions/workflows/tag-latest.yml/runs')) {
       return new Response(JSON.stringify({workflow_runs: []}))
     }
     if (url.includes('/search/issues')) {

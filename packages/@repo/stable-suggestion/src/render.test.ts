@@ -6,6 +6,7 @@ import {
   makeEvidence,
   makeRecommendation,
   RUN_URL,
+  WORKFLOW_URL,
 } from './__fixtures__/factories'
 import {deterministicRecommendation} from './model'
 import {
@@ -18,7 +19,7 @@ import {
   toWebhookPayload,
 } from './render'
 
-const RUN_LINK = `<${RUN_URL}|Open github workflow>`
+const LINKS = {runUrl: RUN_URL, workflowUrl: WORKFLOW_URL}
 
 describe('escapeSlack', () => {
   test('neutralises channel mentions', () => {
@@ -44,11 +45,11 @@ describe('escapeSlack', () => {
 })
 
 describe('payload builders', () => {
-  test('webhook payload has exactly the constant keys and the given run url', () => {
-    const payload = toWebhookPayload('hello', RUN_URL)
+  test('webhook payload has exactly the constant keys and the given workflow url', () => {
+    const payload = toWebhookPayload('hello', WORKFLOW_URL)
     expect(Object.keys(payload).sort()).toEqual(Object.values(SUGGESTION_WEBHOOK_FIELDS).sort())
     expect(Object.keys(payload).sort()).toEqual(['run_url', 'text'])
-    expect(payload.run_url).toBe(RUN_URL)
+    expect(payload.run_url).toBe(WORKFLOW_URL)
     expect(payload.text).toBe('hello')
   })
 
@@ -61,27 +62,61 @@ describe('payload builders', () => {
 
 describe('renderShortlistText', () => {
   const evidence = makeEvidence()
+  const render = (recommendation = makeRecommendation(), source = evidence) =>
+    renderShortlistText(recommendation, source, LINKS)
 
   test('promote', () => {
-    expect(renderShortlistText(makeRecommendation(), evidence, RUN_URL)).toMatchSnapshot()
+    expect(render()).toMatchSnapshot()
+  })
+
+  test('is plain text without Slack markup', () => {
+    const text = render()
+    expect(text).not.toMatch(/[*`]/)
+    expect(text).not.toMatch(/<https?:/)
+  })
+
+  test('lists candidates in reading order and ends with the instructions and the run url', () => {
+    const lines = render().split('\n')
+    expect(lines[0]).toBe('@stable shortlist after sanity 6.24.0 reached latest - recommend 6.23.0')
+    expect(lines).toContain('1) 6.23.0 - Newest eligible version.')
+    expect(lines).toContain('3) 6.21.0 - Fallback if the open reports are regressions.')
+    expect(lines.at(-3)).toBe(
+      `To promote: open ${WORKFLOW_URL}, click Run workflow, enter the version (for example 6.23.0). The result posts here.`,
+    )
+    expect(lines.at(-2)).toBe('From the CLI: gh workflow run tag-stable.yml -f version=6.23.0')
+    expect(lines.at(-1)).toBe(`Full reasoning: ${RUN_URL}`)
+  })
+
+  test('caps a candidate reason at one short line', () => {
+    const recommendation = makeRecommendation({
+      shortlist: [{version: '6.23.0', reason: 'word '.repeat(100)}],
+    })
+    const line = render(recommendation)
+      .split('\n')
+      .find((candidate) => candidate.startsWith('1) '))
+    expect(line?.length).toBeLessThanOrEqual(160)
+  })
+
+  test('leaves the rationale and concerns to the run summary', () => {
+    const text = render()
+    expect(text).not.toContain('No confirmed regressions')
+    expect(text).not.toContain('Two open bug reports')
   })
 
   test('major transition banner', () => {
     const evaluation = makeEvaluation({eligible: ['7.0.0'], shortlist: ['7.0.0']})
     const recommendation = makeRecommendation({
       evaluation,
-      shortlist: [{slot: 1, version: '7.0.0', reason: 'Soaked 3 days on the new major.'}],
+      shortlist: [{version: '7.0.0', reason: 'Soaked 3 days on the new major.'}],
       concerns: [],
     })
-    const text = renderShortlistText(recommendation, evidence, RUN_URL)
-    expect(text).toContain(':arrow_up: Major transition: stable is on 6.x and 7.x has shipped')
+    const text = render(recommendation)
+    expect(text).toContain('Major transition: stable is on 6.x and 7.x has shipped')
     expect(text).toMatchSnapshot()
   })
 
   test('no banner when every shortlisted version is on the stable major', () => {
-    expect(renderShortlistText(makeRecommendation(), evidence, RUN_URL)).not.toContain(
-      'Major transition',
-    )
+    expect(render()).not.toContain('Major transition')
   })
 
   test('urgent banner for a patch of stable', () => {
@@ -93,14 +128,12 @@ describe('renderShortlistText', () => {
     })
     const recommendation = makeRecommendation({
       evaluation,
-      shortlist: [{slot: 1, version: '6.15.1', reason: 'Smallest jump off stable.'}],
+      shortlist: [{version: '6.15.1', reason: 'Smallest jump off stable.'}],
       concerns: [],
     })
-    const text = renderShortlistText(recommendation, evidence, RUN_URL)
-    expect(text.startsWith(':rotating_light: Urgent: 6.15.1 is a patch of stable 6.15.0')).toBe(
-      true,
-    )
-    expect(text).toContain('Recommended: 6.15.1')
+    const text = render(recommendation)
+    expect(text).toContain('Urgent: 6.15.1 is a patch of stable 6.15.0')
+    expect(text).toContain('Recommended: 6.15.1 (1 day soak applies).')
     expect(text).toMatchSnapshot()
   })
 
@@ -108,16 +141,23 @@ describe('renderShortlistText', () => {
     const evaluation = makeEvaluation({
       stableAtRisk: [{code: 'regression', detail: 'Confirmed regression in range'}],
     })
-    const text = renderShortlistText(makeRecommendation({evaluation}), evidence, RUN_URL)
+    const text = render(makeRecommendation({evaluation}))
     expect(text).toContain('Urgent: current stable 6.15.0 is affected by a confirmed regression')
-    expect(text).toContain('Recommended: 6.23.0')
+    expect(text).toContain('Recommended: 6.23.0.')
+  })
+
+  test('does not claim the urgent soak for a recommendation that is not urgent', () => {
+    const evaluation = makeEvaluation({
+      stableAtRisk: [{code: 'regression', detail: 'Confirmed regression in range'}],
+    })
+    expect(render(makeRecommendation({evaluation}))).not.toContain('soak applies')
   })
 
   test('no urgent banner on a healthy stable', () => {
-    expect(renderShortlistText(makeRecommendation(), evidence, RUN_URL)).not.toContain('Urgent')
+    expect(render()).not.toContain('Urgent')
   })
 
-  test('split stable banner lists the packages and the heal command', () => {
+  test('split stable banner lists the packages', () => {
     const evaluation = makeEvaluation({
       stableSplit: {
         sanityStable: '6.15.0',
@@ -129,24 +169,19 @@ describe('renderShortlistText', () => {
         },
       },
     })
-    const text = renderShortlistText(makeRecommendation({evaluation}), evidence, RUN_URL)
+    const text = render(makeRecommendation({evaluation}))
     expect(text).toContain(
-      ':warning: stable is split across packages: sanity → 6.15.0, @sanity/mutator → 6.14.1, @sanity/util → none.',
+      'Stable is split across packages: sanity -> 6.15.0, @sanity/mutator -> 6.14.1, @sanity/util -> none.',
     )
-    expect(text).toContain('`gh workflow run tag-stable.yml -f version=6.15.0`')
-    expect(text).toContain('does not block promotion')
     expect(text).toMatchSnapshot()
   })
 
   test('no split banner when the tags agree', () => {
-    expect(renderShortlistText(makeRecommendation(), evidence, RUN_URL)).not.toContain('split')
+    expect(render()).not.toContain('split')
   })
 
-  test('notes when the latest rollback history is unavailable', () => {
-    const degraded = makeEvidence({latestMoves: {status: 'unavailable', error: 'down'}})
-    expect(renderShortlistText(makeRecommendation(), degraded, RUN_URL)).toContain(
-      'Latest rollback history unavailable',
-    )
+  test('names why a version is not eligible', () => {
+    expect(render()).toContain('Not eligible: 6.24.0 (too new until 2026-11-24 17:42 UTC)')
   })
 
   test('hold', () => {
@@ -159,12 +194,13 @@ describe('renderShortlistText', () => {
       rationale: 'Nothing has soaked long enough.',
       concerns: [],
     })
-    expect(renderShortlistText(recommendation, evidence, RUN_URL)).toMatchSnapshot()
+    const text = render(recommendation)
+    expect(text).not.toContain('To promote')
+    expect(text).toMatchSnapshot()
   })
 
   test('claude down', () => {
-    const recommendation = deterministicRecommendation(makeEvaluation(), 'api-error')
-    expect(renderShortlistText(recommendation, evidence, RUN_URL)).toMatchSnapshot()
+    expect(render(deterministicRecommendation(makeEvaluation(), 'api-error'))).toMatchSnapshot()
   })
 
   test('radar down', () => {
@@ -184,54 +220,79 @@ describe('renderShortlistText', () => {
       ],
     })
     const recommendation = deterministicRecommendation(evaluation, 'no-eligible-versions')
-    expect(renderShortlistText(recommendation, radarEvidence, RUN_URL)).toMatchSnapshot()
+    expect(render(recommendation, radarEvidence)).toMatchSnapshot()
   })
 
-  test('stable at risk comes first', () => {
+  test('stable at risk comes first among the banners', () => {
     const evaluation = makeEvaluation({
       stableAtRisk: [{code: 'regression', detail: 'Confirmed regression in range'}],
     })
-    const text = renderShortlistText(makeRecommendation({evaluation}), evidence, RUN_URL)
-    expect(text.startsWith(':rotating_light: Urgent: current stable 6.15.0 is affected')).toBe(true)
+    const banner = render(makeRecommendation({evaluation}))
+      .split('\n')
+      .find((line) => line.startsWith('Urgent'))
+    expect(banner).toContain('current stable 6.15.0 is affected')
   })
 
-  test('unavailable issues and downloads are stated explicitly', () => {
-    const degraded = makeEvidence({
-      issues: {status: 'unavailable', error: 'down'},
-      downloads: {status: 'unavailable', error: 'down'},
-    })
-    const text = renderShortlistText(makeRecommendation(), degraded, RUN_URL)
-    expect(text).toContain('issue reports unavailable')
-    expect(text).toContain('downloads unavailable')
-  })
-
-  test('every model string is escaped and the text ends with the workflow link', () => {
+  test('every model string is escaped', () => {
     const hostile = '<!channel> <https://evil.example|click> & done'
     const recommendation = makeRecommendation({
       headline: hostile,
       rationale: hostile,
-      shortlist: [{slot: 1, version: '6.23.0', reason: hostile}],
+      shortlist: [{version: '6.23.0', reason: hostile}],
       concerns: [{version: '6.23.0', note: hostile}],
     })
-    const text = renderShortlistText(recommendation, evidence, RUN_URL)
+    const text = render(recommendation)
     expect(text).not.toContain('<!channel>')
     expect(text).not.toContain('<https://evil.example|click>')
     expect(text).toContain('&lt;!channel&gt;')
-    expect(text.endsWith(RUN_LINK)).toBe(true)
   })
 
-  test('a run url cannot break out of the link', () => {
-    const text = renderShortlistText(makeRecommendation(), evidence, 'https://x.example/a|b>c d')
-    expect(text.endsWith('<https://x.example/a%7Cb%3Ec%20d|Open github workflow>')).toBe(true)
+  test('a url cannot break out of its line', () => {
+    const text = renderShortlistText(makeRecommendation(), evidence, {
+      runUrl: 'https://x.example/a|b>c d',
+      workflowUrl: WORKFLOW_URL,
+    })
+    expect(text.endsWith('Full reasoning: https://x.example/a%7Cb%3Ec%20d')).toBe(true)
   })
 })
 
 describe('renderSummaryMarkdown', () => {
-  test('escapes hostile text and lists the shortlist', () => {
-    const recommendation = makeRecommendation({headline: '<script>alert(1)</script> | `x`'})
-    const markdown = renderSummaryMarkdown(recommendation, makeEvidence(), RUN_URL)
+  const summarise = (recommendation = makeRecommendation(), evidence = makeEvidence()) =>
+    renderSummaryMarkdown(recommendation, evidence, LINKS)
+
+  test('leads with how to promote and a version table', () => {
+    const markdown = summarise()
+    expect(markdown.startsWith('## @stable suggestion\n\n### How to promote\n')).toBe(true)
+    expect(markdown).toContain(
+      `Open ${WORKFLOW_URL}, click Run workflow, enter the version (for example 6.23.0).`,
+    )
+    expect(markdown).toContain(
+      '| Version | Why |\n| --- | --- |\n| 6.23.0 | Newest eligible version. |',
+    )
+    expect(markdown.indexOf('### How to promote')).toBeLessThan(markdown.indexOf('### Reasoning'))
+  })
+
+  test('keeps the rationale and concerns for the summary', () => {
+    const markdown = summarise()
+    expect(markdown).toContain('No confirmed regressions in the eligible range.')
+    expect(markdown).toContain('- 6.23.0: Two open bug reports mention it.')
+  })
+
+  test('escapes hostile text', () => {
+    const markdown = summarise(makeRecommendation({headline: '<script>alert(1)</script> | `x`'}))
     expect(markdown).not.toContain('<script>')
-    expect(markdown).toContain('1. **6.23.0**')
-    expect(markdown).toContain(`[Open github workflow](${RUN_URL})`)
+  })
+
+  test('says when no version is eligible', () => {
+    const markdown = summarise(makeRecommendation({decision: 'hold', shortlist: []}))
+    expect(markdown).toContain('No version is eligible yet.')
+    expect(markdown).not.toContain('Open https')
+  })
+
+  test('notes when the latest rollback history is unavailable', () => {
+    const degraded = makeEvidence({latestMoves: {status: 'unavailable', error: 'down'}})
+    expect(summarise(makeRecommendation(), degraded)).toContain(
+      'Latest rollback history unavailable',
+    )
   })
 })

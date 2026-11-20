@@ -2,13 +2,10 @@ import {describe, expect, test} from 'vitest'
 
 import {loadRawFixture} from '../__fixtures__/load'
 import {
-  fetchApprovals,
   fetchIssues,
   fetchStablePromotions,
   mentionsVersion,
   monthWindows,
-  normaliseApprovals,
-  normaliseAutomatedPromotions,
   normaliseIssues,
   normaliseLatestMoves,
   normalisePromotions,
@@ -122,30 +119,6 @@ describe('normaliseIssues', () => {
   })
 })
 
-describe('normaliseApprovals', () => {
-  test('maps candidate environments to slots', () => {
-    expect(
-      normaliseApprovals([
-        {
-          state: 'approved',
-          comment: 'ship it',
-          user: {login: 'reviewer'},
-          environments: [{name: 'stable-candidate-2'}, {name: 'other-env'}],
-        },
-        {
-          state: 'rejected',
-          comment: null,
-          user: null,
-          environments: [{name: 'stable-candidate-1'}, {name: 'stable-candidate-3'}],
-        },
-      ]),
-    ).toEqual([
-      {login: 'reviewer', comment: 'ship it', state: 'approved', slots: [2]},
-      {login: 'unknown', comment: '', state: 'rejected', slots: [1, 3]},
-    ])
-  })
-})
-
 describe('monthWindows', () => {
   test('covers the range with month sized windows clipped to the bounds', () => {
     const windows = monthWindows(new Date('2026-01-15T00:00:00Z'), new Date('2026-03-10T12:00:00Z'))
@@ -171,94 +144,6 @@ describe('github fetchers', () => {
     expect(
       urls.some((url) => url.includes('/actions/workflows/tag-stable.yml/runs?status=success')),
     ).toBe(true)
-  })
-
-  test('fetchStablePromotions merges automated promotions read from suggest-stable jobs', async () => {
-    const {deps, urls} = depsFor((url) => {
-      if (url.includes('tag-stable.yml')) {
-        return jsonResponse({
-          workflow_runs: [
-            {
-              display_title: 'Tag @stable - 6.15.0',
-              created_at: '2026-09-29T17:02:35Z',
-              conclusion: 'success',
-            },
-          ],
-        })
-      }
-      if (url.includes('suggest-stable.yml/runs?status=cancelled')) {
-        return jsonResponse({workflow_runs: [{id: 501}]})
-      }
-      if (url.includes('suggest-stable.yml')) {
-        return jsonResponse({workflow_runs: [{id: 502}]})
-      }
-      if (url.includes('/runs/501/jobs')) {
-        return jsonResponse({
-          jobs: [
-            {
-              name: 'Tag 6.23.0 as stable / Determine version',
-              conclusion: 'success',
-              completed_at: '2026-11-25T10:00:00Z',
-            },
-            {
-              name: 'Tag 6.23.0 as stable / Update NPM dist-tags',
-              conclusion: 'success',
-              completed_at: '2026-11-25T10:05:00Z',
-            },
-            {
-              name: 'Tag 6.23.0 as stable / Update bundle manifest',
-              conclusion: 'success',
-              completed_at: '2026-11-25T10:07:30Z',
-            },
-            {name: 'Report slot 1', conclusion: 'success', completed_at: '2026-11-25T10:08:00Z'},
-          ],
-        })
-      }
-      return jsonResponse({
-        jobs: [
-          {
-            name: 'Tag 6.22.0 as stable / Update NPM dist-tags',
-            conclusion: 'success',
-            completed_at: '2026-11-26T10:05:00Z',
-          },
-          {
-            name: 'Tag 6.22.0 as stable / Update bundle manifest',
-            conclusion: 'failure',
-            completed_at: '2026-11-26T10:07:00Z',
-          },
-        ],
-      })
-    })
-    const result = await fetchStablePromotions(deps)
-    expect(result).toEqual({
-      status: 'ok',
-      data: [
-        {version: '6.15.0', at: '2026-09-29T17:02:35Z'},
-        {version: '6.23.0', at: '2026-11-25T10:07:30Z'},
-      ],
-    })
-    expect(urls.some((url) => url.includes('/runs/501/jobs'))).toBe(true)
-  })
-
-  test('a workflow that does not exist yet means no automated promotions', async () => {
-    const {deps} = depsFor((url) =>
-      url.includes('suggest-stable.yml')
-        ? new Response('not found', {status: 404})
-        : jsonResponse({workflow_runs: loadRawFixture<RawRuns>('github-runs')}),
-    )
-    expect((await fetchStablePromotions(deps)).status).toBe('ok')
-  })
-
-  test('normaliseAutomatedPromotions needs both tagging jobs to succeed', () => {
-    expect(
-      normaliseAutomatedPromotions([
-        {
-          name: 'Tag 6.23.0 as stable / Update NPM dist-tags',
-          conclusion: 'success',
-          completed_at: '2026-11-25T10:05:00Z',
-        },
-      ]),
-    ).toEqual([])
   })
 
   test('fetchStablePromotions reports unavailable on an API error', async () => {
@@ -322,25 +207,6 @@ describe('github fetchers', () => {
       knownVersions: [],
     })
     expect(result.status).toBe('unavailable')
-  })
-
-  test('fetchApprovals reads the run approvals and throws on failure', async () => {
-    const {deps, urls} = depsFor(() =>
-      jsonResponse([
-        {
-          state: 'approved',
-          comment: 'ok',
-          user: {login: 'someone'},
-          environments: [{name: 'stable-candidate-1'}],
-        },
-      ]),
-    )
-    expect(await fetchApprovals(deps, 123)).toEqual([
-      {login: 'someone', comment: 'ok', state: 'approved', slots: [1]},
-    ])
-    expect(urls[0]).toBe('https://api.github.com/repos/sanity-io/sanity/actions/runs/123/approvals')
-    const failing = depsFor(() => new Response('no', {status: 403})).deps
-    await expect(fetchApprovals(failing, 1)).rejects.toThrow(/403/)
   })
 })
 

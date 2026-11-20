@@ -1,118 +1,96 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`renderShortlistText > claude down 1`] = `
-":package: *@stable shortlist* after sanity 6.24.0 reached latest
-Current stable: *6.15.0* (stable since 2026-09-29, 49 days). Recommendation: *promote 6.23.0* (deterministic: Claude unavailable, api-error)
-Promote 6.23.0
-6.23.0 is the newest of 3 eligible versions. Passes every hard rule with no soft flags.
+"@stable shortlist after sanity 6.24.0 reached latest - recommend 6.23.0
+Current stable: 6.15.0 (since 2026-09-29, 49 days)
 
-*Slot 1 · 6.23.0* · 7.1 days on latest · SQRL 114.4 (+5% vs prior) · 15.6% of v6 downloads · open reports <https://github.com/sanity-io/sanity/issues/101|#101> <https://github.com/sanity-io/sanity/issues/102|#102>
-> Passes every hard rule with no soft flags.
-*Slot 2 · 6.22.0* · 14.1 days on latest · SQRL 114.4 (+5% vs prior) · 8.5% of v6 downloads · open reports <https://github.com/sanity-io/sanity/issues/101|#101>
-> Passes every hard rule with no soft flags.
-*Slot 3 · 6.21.0* · 19.4 days on latest · SQRL 114.4 (+5% vs prior) · 8.5% of v6 downloads · no open reports
-> Passes every hard rule with no soft flags.
-Not eligible: 6.24.0 (too new, eligible from 2026-11-24 17:42 UTC)
+1) 6.23.0 - Passes every hard rule with no soft flags.
+2) 6.22.0 - Passes every hard rule with no soft flags.
+3) 6.21.0 - Passes every hard rule with no soft flags.
 
-To promote: open the run → Review deployments → tick only stable-candidate-N → Approve and deploy. Only one slot can promote.
-Manual override: \`gh workflow run tag-stable.yml -f version=6.23.0\`
-<https://github.com/example-org/example-repo/actions/runs/123|Open github workflow>"
+Not eligible: 6.24.0 (too new until 2026-11-24 17:42 UTC)
+
+To promote: open https://github.com/example-org/example-repo/actions/workflows/tag-stable.yml, click Run workflow, enter the version (for example 6.23.0). The result posts here.
+From the CLI: gh workflow run tag-stable.yml -f version=6.23.0
+Full reasoning: https://github.com/example-org/example-repo/actions/runs/123"
 `;
 
 exports[`renderShortlistText > hold 1`] = `
-":double_vertical_bar: *@stable: hold*
-Current stable: *6.15.0* (stable since 2026-09-29, 49 days). Recommendation: *hold* (Claude, medium confidence)
-Hold: wait for the soak window
-Nothing has soaked long enough.
+"@stable: hold after sanity 6.24.0 reached latest
+Current stable: 6.15.0 (since 2026-09-29, 49 days)
+
 Earliest a version becomes eligible: 2026-11-24 17:42 UTC
+Not eligible: 6.24.0 (too new until 2026-11-24 17:42 UTC)
 
-Not eligible: 6.24.0 (too new, eligible from 2026-11-24 17:42 UTC)
-
-Manual override: \`gh workflow run tag-stable.yml -f version=X.Y.Z\`
-<https://github.com/example-org/example-repo/actions/runs/123|Open github workflow>"
+From the CLI: gh workflow run tag-stable.yml -f version=X.Y.Z
+Full reasoning: https://github.com/example-org/example-repo/actions/runs/123"
 `;
 
 exports[`renderShortlistText > major transition banner 1`] = `
-":package: *@stable shortlist* after sanity 6.24.0 reached latest
-Current stable: *6.15.0* (stable since 2026-09-29, 49 days). Recommendation: *promote 7.0.0* (Claude, medium confidence)
-:arrow_up: Major transition: stable is on 6.x and 7.x has shipped
-Promote 6.23.0
-No confirmed regressions in the eligible range.
+"@stable shortlist after sanity 6.24.0 reached latest - recommend 7.0.0
+Current stable: 6.15.0 (since 2026-09-29, 49 days)
 
-*Slot 1 · 7.0.0*
-> Soaked 3 days on the new major.
-Not eligible: 6.24.0 (too new, eligible from 2026-11-24 17:42 UTC)
+1) 7.0.0 - Soaked 3 days on the new major.
 
-To promote: open the run → Review deployments → tick only stable-candidate-N → Approve and deploy. Only one slot can promote.
-Manual override: \`gh workflow run tag-stable.yml -f version=7.0.0\`
-<https://github.com/example-org/example-repo/actions/runs/123|Open github workflow>"
+Major transition: stable is on 6.x and 7.x has shipped
+Not eligible: 6.24.0 (too new until 2026-11-24 17:42 UTC)
+
+To promote: open https://github.com/example-org/example-repo/actions/workflows/tag-stable.yml, click Run workflow, enter the version (for example 7.0.0). The result posts here.
+From the CLI: gh workflow run tag-stable.yml -f version=7.0.0
+Full reasoning: https://github.com/example-org/example-repo/actions/runs/123"
 `;
 
 exports[`renderShortlistText > promote 1`] = `
-":package: *@stable shortlist* after sanity 6.24.0 reached latest
-Current stable: *6.15.0* (stable since 2026-09-29, 49 days). Recommendation: *promote 6.23.0* (Claude, medium confidence)
-Promote 6.23.0
-No confirmed regressions in the eligible range.
-Concerns: 6.23.0: Two open bug reports mention it.
+"@stable shortlist after sanity 6.24.0 reached latest - recommend 6.23.0
+Current stable: 6.15.0 (since 2026-09-29, 49 days)
 
-*Slot 1 · 6.23.0* · 7.1 days on latest · SQRL 114.4 (+5% vs prior) · 15.6% of v6 downloads · open reports <https://github.com/sanity-io/sanity/issues/101|#101> <https://github.com/sanity-io/sanity/issues/102|#102>
-> Newest eligible version.
-*Slot 2 · 6.22.0* · 14.1 days on latest · SQRL 114.4 (+5% vs prior) · 8.5% of v6 downloads · open reports <https://github.com/sanity-io/sanity/issues/101|#101>
-> One more week of soak.
-*Slot 3 · 6.21.0* · 19.4 days on latest · SQRL 114.4 (+5% vs prior) · 8.5% of v6 downloads · no open reports
-> Fallback if the open reports are regressions.
-Not eligible: 6.24.0 (too new, eligible from 2026-11-24 17:42 UTC)
+1) 6.23.0 - Newest eligible version.
+2) 6.22.0 - One more week of soak.
+3) 6.21.0 - Fallback if the open reports are regressions.
 
-To promote: open the run → Review deployments → tick only stable-candidate-N → Approve and deploy. Only one slot can promote.
-Manual override: \`gh workflow run tag-stable.yml -f version=6.23.0\`
-<https://github.com/example-org/example-repo/actions/runs/123|Open github workflow>"
+Not eligible: 6.24.0 (too new until 2026-11-24 17:42 UTC)
+
+To promote: open https://github.com/example-org/example-repo/actions/workflows/tag-stable.yml, click Run workflow, enter the version (for example 6.23.0). The result posts here.
+From the CLI: gh workflow run tag-stable.yml -f version=6.23.0
+Full reasoning: https://github.com/example-org/example-repo/actions/runs/123"
 `;
 
 exports[`renderShortlistText > radar down 1`] = `
-":double_vertical_bar: *@stable: hold*
-Current stable: *6.15.0* (stable since 2026-09-29, 49 days). Recommendation: *hold* (deterministic: no eligible versions)
-Hold: no version is eligible to promote
-No version passes the hard rules. Blocking reasons: regression-data-unavailable x1.
-hold: Radar unavailable, regression gate cannot be cleared
+"@stable: hold after sanity 6.24.0 reached latest
+Current stable: 6.15.0 (since 2026-09-29, 49 days)
 
-Not eligible: 6.23.0 (regression-data-unavailable: Radar unavailable)
+Hold: Radar unavailable, regression gate cannot be cleared
+Not eligible: 6.23.0 (regression-data-unavailable)
 
-Manual override: \`gh workflow run tag-stable.yml -f version=X.Y.Z\`
-<https://github.com/example-org/example-repo/actions/runs/123|Open github workflow>"
+From the CLI: gh workflow run tag-stable.yml -f version=X.Y.Z
+Full reasoning: https://github.com/example-org/example-repo/actions/runs/123"
 `;
 
-exports[`renderShortlistText > split stable banner lists the packages and the heal command 1`] = `
-":warning: stable is split across packages: sanity → 6.15.0, @sanity/mutator → 6.14.1, @sanity/util → none. Run \`gh workflow run tag-stable.yml -f version=6.15.0\` to re-tag every package. This does not block promotion: promoting a shortlisted version re-tags every package too.
-:package: *@stable shortlist* after sanity 6.24.0 reached latest
-Current stable: *6.15.0* (stable since 2026-09-29, 49 days). Recommendation: *promote 6.23.0* (Claude, medium confidence)
-Promote 6.23.0
-No confirmed regressions in the eligible range.
-Concerns: 6.23.0: Two open bug reports mention it.
+exports[`renderShortlistText > split stable banner lists the packages 1`] = `
+"@stable shortlist after sanity 6.24.0 reached latest - recommend 6.23.0
+Current stable: 6.15.0 (since 2026-09-29, 49 days)
 
-*Slot 1 · 6.23.0* · 7.1 days on latest · SQRL 114.4 (+5% vs prior) · 15.6% of v6 downloads · open reports <https://github.com/sanity-io/sanity/issues/101|#101> <https://github.com/sanity-io/sanity/issues/102|#102>
-> Newest eligible version.
-*Slot 2 · 6.22.0* · 14.1 days on latest · SQRL 114.4 (+5% vs prior) · 8.5% of v6 downloads · open reports <https://github.com/sanity-io/sanity/issues/101|#101>
-> One more week of soak.
-*Slot 3 · 6.21.0* · 19.4 days on latest · SQRL 114.4 (+5% vs prior) · 8.5% of v6 downloads · no open reports
-> Fallback if the open reports are regressions.
-Not eligible: 6.24.0 (too new, eligible from 2026-11-24 17:42 UTC)
+1) 6.23.0 - Newest eligible version.
+2) 6.22.0 - One more week of soak.
+3) 6.21.0 - Fallback if the open reports are regressions.
 
-To promote: open the run → Review deployments → tick only stable-candidate-N → Approve and deploy. Only one slot can promote.
-Manual override: \`gh workflow run tag-stable.yml -f version=6.23.0\`
-<https://github.com/example-org/example-repo/actions/runs/123|Open github workflow>"
+Stable is split across packages: sanity -> 6.15.0, @sanity/mutator -> 6.14.1, @sanity/util -> none. Promoting a shortlisted version re-tags every package.
+Not eligible: 6.24.0 (too new until 2026-11-24 17:42 UTC)
+
+To promote: open https://github.com/example-org/example-repo/actions/workflows/tag-stable.yml, click Run workflow, enter the version (for example 6.23.0). The result posts here.
+From the CLI: gh workflow run tag-stable.yml -f version=6.23.0
+Full reasoning: https://github.com/example-org/example-repo/actions/runs/123"
 `;
 
 exports[`renderShortlistText > urgent banner for a patch of stable 1`] = `
-":rotating_light: Urgent: 6.15.1 is a patch of stable 6.15.0. Recommended: 6.15.1 (1 day soak applies).
-:package: *@stable shortlist* after sanity 6.24.0 reached latest
-Current stable: *6.15.0* (stable since 2026-09-29, 49 days). Recommendation: *promote 6.15.1* (Claude, medium confidence)
-Promote 6.23.0
-No confirmed regressions in the eligible range.
+"@stable shortlist after sanity 6.24.0 reached latest - recommend 6.15.1
+Current stable: 6.15.0 (since 2026-09-29, 49 days)
 
-*Slot 1 · 6.15.1* · 1.1 days on latest · SQRL 114.4 (+5% vs prior) · 8.5% of v6 downloads · no open reports
-> Smallest jump off stable.
+1) 6.15.1 - Smallest jump off stable.
 
-To promote: open the run → Review deployments → tick only stable-candidate-N → Approve and deploy. Only one slot can promote.
-Manual override: \`gh workflow run tag-stable.yml -f version=6.15.1\`
-<https://github.com/example-org/example-repo/actions/runs/123|Open github workflow>"
+Urgent: 6.15.1 is a patch of stable 6.15.0. Recommended: 6.15.1 (1 day soak applies).
+
+To promote: open https://github.com/example-org/example-repo/actions/workflows/tag-stable.yml, click Run workflow, enter the version (for example 6.15.1). The result posts here.
+From the CLI: gh workflow run tag-stable.yml -f version=6.15.1
+Full reasoning: https://github.com/example-org/example-repo/actions/runs/123"
 `;

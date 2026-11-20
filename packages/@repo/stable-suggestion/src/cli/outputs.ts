@@ -1,21 +1,6 @@
-import {SHORTLIST_SIZE} from '../config'
 import {type CliDeps} from './deps'
 
-const SEMVER_PATTERN = /^\d+\.\d+\.\d+$/
-
 export type OutputValidator = (value: string) => boolean
-
-export function matchesSemver(value: string): boolean {
-  return SEMVER_PATTERN.test(value)
-}
-
-export function matchesSemverOrEmpty(value: string): boolean {
-  return value === '' || SEMVER_PATTERN.test(value)
-}
-
-export function matchesSlotCount(value: string): boolean {
-  return /^\d+$/.test(value) && Number(value) <= SHORTLIST_SIZE
-}
 
 export function matchesOneOf(allowed: readonly string[]): OutputValidator {
   return (value) => allowed.includes(value)

@@ -133,8 +133,7 @@ function describeCandidateFlags(candidate: Candidate | undefined): string {
 }
 
 function deterministicShortlist(evaluation: Evaluation): ShortlistEntry[] {
-  return evaluation.shortlist.map((version, index) => ({
-    slot: index + 1,
+  return evaluation.shortlist.map((version) => ({
     version,
     reason: cleanText(
       describeCandidateFlags(evaluation.candidates.find((item) => item.version === version)),
@@ -214,8 +213,7 @@ export function toRecommendation(
   }
   const shortlist =
     picked.length > 0
-      ? picked.map((entry, index) => ({
-          slot: index + 1,
+      ? picked.map((entry) => ({
           version: entry.version,
           reason: cleanText(entry.reason, TEXT_LIMITS.reason),
         }))

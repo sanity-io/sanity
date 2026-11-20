@@ -227,6 +227,38 @@ describe('superseded', () => {
     ])
     expect(hardCodes(candidateOf(evidence, '6.16.0'))).toEqual([])
   })
+
+  test('ignores a newer patch that is deprecated', () => {
+    const evidence = makeEvidence([
+      {version: '6.16.0', ageDays: 20},
+      {version: '6.16.1', ageDays: 10, deprecated: 'do not use'},
+    ])
+    expect(hardCodes(candidateOf(evidence, '6.16.0'))).toEqual([])
+    expect(hardCodes(candidateOf(evidence, '6.16.1'))).toEqual(['deprecated'])
+  })
+
+  test('ignores a newer patch above the live latest', () => {
+    const evidence = makeEvidence(
+      [
+        {version: '6.16.0', ageDays: 20},
+        {version: '6.16.1', ageDays: 10},
+      ],
+      {latest: '6.16.0'},
+    )
+    expect(hardCodes(candidateOf(evidence, '6.16.0'))).toEqual([])
+  })
+
+  test('ignores a newer patch that latest was rolled back past', () => {
+    const evidence = makeEvidence(
+      [
+        {version: '6.16.0', ageDays: 20},
+        {version: '6.16.1', ageDays: 10},
+      ],
+      {latestMoves: {status: 'ok', data: [{version: '6.16.0', at: daysBefore(5)}]}},
+    )
+    expect(hardCodes(candidateOf(evidence, '6.16.0'))).toEqual([])
+    expect(hardCodes(candidateOf(evidence, '6.16.1'))).toEqual(['rolled-back'])
+  })
 })
 
 describe('deprecated', () => {

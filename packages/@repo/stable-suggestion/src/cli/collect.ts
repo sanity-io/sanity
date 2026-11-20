@@ -3,7 +3,7 @@ import {type History} from '../types'
 import {parseAsOf, type ParsedArguments, optionalString, requireString} from './args'
 import {type CliDeps, daysBefore, readJson, writeJson} from './deps'
 
-export const ISSUES_LOOKBACK_DAYS = 180
+const ISSUES_LOOKBACK_DAYS = 180
 
 export async function loadHistoryFor(
   deps: CliDeps,
