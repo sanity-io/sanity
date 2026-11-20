@@ -2340,8 +2340,8 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       '@sanity/cli':
-        specifier: ^8.32.0
-        version: 8.32.0(@babel/core@7.29.13)(@babel/runtime@7.29.10)(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.3.1)(@types/node@24.19.2)(@types/react@19.3.0)(@vitejs/devtools@0.8.3)(esbuild@0.28.2)(immer@11.1.21)(jiti@2.7.0)(oxc-transform-react@0.158.0)(oxfmt@0.79.0)(react@19.3.1)(rolldown@1.3.3)(sanity@packages+sanity)(supports-color@8.1.1)(tsx@4.23.15)(typescript@7.0.2)(use-sync-external-store@1.7.0)(vitest@5.1.1)(xstate@5.33.4)
+        specifier: ^8.32.1
+        version: 8.32.1(@babel/core@7.29.13)(@babel/runtime@7.29.10)(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.3.1)(@types/node@24.19.2)(@types/react@19.3.0)(@vitejs/devtools@0.8.3)(esbuild@0.28.2)(immer@11.1.21)(jiti@2.7.0)(oxc-transform-react@0.158.0)(oxfmt@0.79.0)(react@19.3.1)(rolldown@1.3.3)(sanity@packages+sanity)(supports-color@8.1.1)(tsx@4.23.15)(typescript@7.0.2)(use-sync-external-store@1.7.0)(vitest@5.1.1)(xstate@5.33.4)
       '@sanity/client':
         specifier: 'catalog:'
         version: 8.16.0(vitest@5.1.1)
@@ -8869,8 +8869,8 @@ packages:
       oxc-transform-react:
         optional: true
 
-  '@sanity/cli@8.32.0':
-    resolution: {integrity: sha512-5BD68oKQZt0vzlD/M7OEE/Cc+tWtsrLAqidclJ4ZGN4bUpv6I0hu/DkDP7L0PKQU7Q44T12RNlI/6NQxxEvu5Q==}
+  '@sanity/cli@8.32.1':
+    resolution: {integrity: sha512-X4zeuiDu10KednZ7AmBArPX1JmmzkKDQTWIabQ3llPeY1Iag/kfQGdzf+K1xeK3HcTXzoYI/4EGmRlOq3iyFyw==}
     engines: {node: '>=22.12'}
     hasBin: true
     peerDependencies:
@@ -8898,8 +8898,8 @@ packages:
       sanity: ^5 || ^6.0.0-0
       styled-components: ^6.1
 
-  '@sanity/codegen@8.3.1':
-    resolution: {integrity: sha512-Rg01PjOGhwnjA0eQsclfWdfp7rnnrapTDnIKQCTY+0s7rKphy97l/OXUVoHQZp7pWJBF/tj4v/iS+CKpFmSp3Q==}
+  '@sanity/codegen@8.3.3':
+    resolution: {integrity: sha512-uZpfYZif+NZs/c2HK3m6JYaiOBzUhBDKMEZi3ieXCBpg+lmCLJdtSk4jC1s+rtS5v3Fm7V1D5HhA2gUlud0g1g==}
     engines: {node: '>=22.12'}
     peerDependencies:
       oxfmt: '*'
@@ -22764,7 +22764,7 @@ snapshots:
       - vitest
       - yaml
 
-  '@sanity/cli@8.32.0(@babel/core@7.29.13)(@babel/runtime@7.29.10)(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.3.1)(@types/node@24.19.2)(@types/react@19.3.0)(@vitejs/devtools@0.8.3)(esbuild@0.28.2)(immer@11.1.21)(jiti@2.7.0)(oxc-transform-react@0.158.0)(oxfmt@0.79.0)(react@19.3.1)(rolldown@1.3.3)(sanity@packages+sanity)(supports-color@8.1.1)(tsx@4.23.15)(typescript@7.0.2)(use-sync-external-store@1.7.0)(vitest@5.1.1)(xstate@5.33.4)':
+  '@sanity/cli@8.32.1(@babel/core@7.29.13)(@babel/runtime@7.29.10)(@noble/hashes@2.4.0)(@rolldown/plugin-babel@0.3.1)(@types/node@24.19.2)(@types/react@19.3.0)(@vitejs/devtools@0.8.3)(esbuild@0.28.2)(immer@11.1.21)(jiti@2.7.0)(oxc-transform-react@0.158.0)(oxfmt@0.79.0)(react@19.3.1)(rolldown@1.3.3)(sanity@packages+sanity)(supports-color@8.1.1)(tsx@4.23.15)(typescript@7.0.2)(use-sync-external-store@1.7.0)(vitest@5.1.1)(xstate@5.33.4)':
     dependencies:
       '@oclif/core': 4.14.0
       '@oclif/plugin-help': 6.3.0
@@ -22773,7 +22773,7 @@ snapshots:
       '@sanity/cli-build': 7.4.0(@babel/core@7.29.13)(@babel/runtime@7.29.10)(@noble/hashes@2.4.0)(@types/node@24.19.2)(@types/react@19.3.0)(@vitejs/devtools@0.8.3)(esbuild@0.28.2)(immer@11.1.21)(jiti@2.7.0)(oxc-transform-react@0.158.0)(rolldown@1.3.3)(sanity@packages+sanity)(tsx@4.23.15)(typescript@7.0.2)(use-sync-external-store@1.7.0)(vitest@5.1.1)(xstate@5.33.4)(yaml@2.9.1)
       '@sanity/cli-core': 3.15.1(@noble/hashes@2.4.0)(@types/node@24.19.2)(@vitejs/devtools@0.8.3)(esbuild@0.28.2)(oxc-transform-react@0.158.0)(tsx@4.23.15)(vitest@5.1.1)(yaml@2.9.1)
       '@sanity/client': 8.16.0(vitest@5.1.1)
-      '@sanity/codegen': 8.3.1(oxfmt@0.79.0)(react@19.3.1)(supports-color@8.1.1)(typescript@7.0.2)
+      '@sanity/codegen': 8.3.3(oxfmt@0.79.0)(react@19.3.1)(supports-color@8.1.1)(typescript@7.0.2)
       '@sanity/descriptors': 1.3.0
       '@sanity/export': 7.1.1(vitest@5.1.1)
       '@sanity/generate-help-url': 4.0.0
@@ -22916,7 +22916,7 @@ snapshots:
       - react-dom
       - remix
 
-  '@sanity/codegen@8.3.1(oxfmt@0.79.0)(react@19.3.1)(supports-color@8.1.1)(typescript@7.0.2)':
+  '@sanity/codegen@8.3.3(oxfmt@0.79.0)(react@19.3.1)(supports-color@8.1.1)(typescript@7.0.2)':
     dependencies:
       '@babel/core': 7.29.13(supports-color@8.1.1)
       '@babel/generator': 7.29.13
