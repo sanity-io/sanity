@@ -5,6 +5,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {type SingleWorkspace} from '../../../config/types'
+import {createMockVariantsStore} from '../../__fixtures__/createMockVariantsStore'
 import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
 import {type VariantsMode} from '../../contexts/mode/types'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
@@ -73,6 +74,12 @@ vi.mock('../../store/useAllVariants', () => ({
     loading: variantsMock.loading,
     error: variantsMock.error,
   })),
+}))
+
+let variantsStore = createMockVariantsStore()
+
+vi.mock('../../store/useVariantsStore', () => ({
+  useVariantsStore: vi.fn(() => variantsStore.store),
 }))
 
 vi.mock('../../store/useVariantOperations', () => ({
@@ -450,7 +457,10 @@ describe('VariantDetail', () => {
   it('duplicates the variant from the detail menu and navigates to the duplicate', async () => {
     routerState.variantId = getVariantId(variantAlphaAudience._id)
     setVariants([variantAlphaAudience])
-    variantOperationsMock.createVariant.mockResolvedValue(undefined)
+    variantsStore = createMockVariantsStore([variantAlphaAudience])
+    variantOperationsMock.createVariant.mockImplementation(async (variant) => {
+      variantsStore.list(variant)
+    })
     const user = userEvent.setup()
 
     await renderDetail()

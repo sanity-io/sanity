@@ -1,5 +1,7 @@
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo, useState} from 'react'
+import {firstValueFrom, of} from 'rxjs'
+import {first, timeout} from 'rxjs/operators'
 
 import {useSchema} from '../../../hooks/useSchema'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -9,6 +11,7 @@ import {useVariantDocumentOperations} from '../../hooks/useVariantDocumentOperat
 import {useVariantDocuments} from '../../hooks/useVariantDocuments'
 import {variantsLocaleNamespace} from '../../i18n'
 import {useVariantOperations} from '../../store/useVariantOperations'
+import {useVariantsStore} from '../../store/useVariantsStore'
 import {getVariantId, getVariantTitle} from '../../tool/util'
 import {type EditableSystemVariant, type SystemVariant} from '../../types'
 import {getDuplicatedVariant} from '../../util/getDuplicatedVariant'
@@ -17,6 +20,13 @@ import {
   type DuplicatingState,
 } from './DuplicateVariantDocumentsDialog'
 import {VariantDialog} from './VariantDialog'
+
+/**
+ * The variants tool reads definitions from the variants store, which lists a new definition only
+ * once the global listener has reported it. Opening the duplicate before then renders the detail
+ * page's not-found state, so the dialog waits for the store to list it, for at most this long.
+ */
+const LISTED_TIMEOUT = 10_000
 
 interface DuplicateVariantDialogProps {
   /**
@@ -47,6 +57,7 @@ export function DuplicateVariantDialog(props: DuplicateVariantDialogProps): Reac
   const {byId: releasesById} = useActiveReleases()
   const {createVariant} = useVariantOperations()
   const {duplicateVariantDocuments} = useVariantDocumentOperations()
+  const {state$: variantsState$} = useVariantsStore()
   const {
     loading: documentsLoading,
     results: documents,
@@ -67,6 +78,17 @@ export function DuplicateVariantDialog(props: DuplicateVariantDialogProps): Reac
 
   const mayHaveDocuments =
     documentsLoading || documentsError ? documentCount !== 0 : documents.length > 0
+
+  const waitUntilListed = useCallback(
+    (variantId: string) =>
+      firstValueFrom(
+        variantsState$.pipe(
+          first((state) => state.variants.has(variantId)),
+          timeout({first: LISTED_TIMEOUT, with: () => of(null)}),
+        ),
+      ),
+    [variantsState$],
+  )
 
   const pushSuccessToast = useCallback(
     (copied?: {copiedCount: number; skippedCount: number}) => {
@@ -100,10 +122,11 @@ export function DuplicateVariantDialog(props: DuplicateVariantDialogProps): Reac
 
       // Errors reach `VariantDialog`, which reports them and keeps the form open
       await createVariant(duplicate)
+      await waitUntilListed(duplicate._id)
       pushSuccessToast()
       onDuplicated(duplicate._id)
     },
-    [createVariant, mayHaveDocuments, onDuplicated, pushSuccessToast],
+    [createVariant, mayHaveDocuments, onDuplicated, pushSuccessToast, waitUntilListed],
   )
 
   const handleCreate = useCallback(
@@ -129,6 +152,7 @@ export function DuplicateVariantDialog(props: DuplicateVariantDialogProps): Reac
       }
 
       if (!copyDocuments) {
+        await waitUntilListed(pendingVariant._id)
         pushSuccessToast()
         onDuplicated(pendingVariant._id)
         return
@@ -144,10 +168,12 @@ export function DuplicateVariantDialog(props: DuplicateVariantDialogProps): Reac
           title: t('toast.duplicate.documents-error.title'),
           description: error instanceof Error ? error.message : undefined,
         })
+        await waitUntilListed(pendingVariant._id)
         onDuplicated(pendingVariant._id)
         return
       }
 
+      await waitUntilListed(pendingVariant._id)
       pushSuccessToast({copiedCount: plan.toCreate.length, skippedCount: plan.skipped.length})
       onDuplicated(pendingVariant._id)
     },
@@ -160,6 +186,7 @@ export function DuplicateVariantDialog(props: DuplicateVariantDialogProps): Reac
       pushSuccessToast,
       t,
       toast,
+      waitUntilListed,
     ],
   )
 

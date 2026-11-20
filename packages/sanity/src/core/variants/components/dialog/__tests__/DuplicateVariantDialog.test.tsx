@@ -1,6 +1,6 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {defineField, defineType} from '@sanity/types'
-import {render, screen, waitFor, within} from '@testing-library/react'
+import {act, render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -10,10 +10,11 @@ import {
   scheduledRelease,
 } from '../../../../releases/__fixtures__/release.fixture'
 import {createMockDocumentInVariant} from '../../../__fixtures__/createMockDocumentInVariant'
+import {createMockVariantsStore} from '../../../__fixtures__/createMockVariantsStore'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {type DocumentInVariant} from '../../../tool/detail/types'
-import {type SystemVariant} from '../../../types'
+import {type EditableSystemVariant, type SystemVariant} from '../../../types'
 import {DuplicateVariantDialog} from '../DuplicateVariantDialog'
 
 const variantOperationsMock = vi.hoisted(() => ({
@@ -62,6 +63,12 @@ vi.mock('../../../store/useVariantOperations', () => ({
 
 vi.mock('../../../hooks/useVariantDocumentOperations', () => ({
   useVariantDocumentOperations: vi.fn(() => variantDocumentOperationsMock),
+}))
+
+let variantsStore = createMockVariantsStore()
+
+vi.mock('../../../store/useVariantsStore', () => ({
+  useVariantsStore: vi.fn(() => variantsStore.store),
 }))
 
 vi.mock('../../../store/useAllVariants', () => ({
@@ -119,7 +126,12 @@ describe('DuplicateVariantDialog', () => {
     documentsMock.error = null
     releasesMock.data = [activeASAPRelease, scheduledRelease]
     releasesMock.byId = new Map(releasesMock.data.map((release) => [release._id, release]))
-    variantOperationsMock.createVariant.mockResolvedValue({transactionId: 'create'})
+    variantsStore = createMockVariantsStore()
+    // The store lists the duplicate once the listener reports it, which the dialog waits for
+    variantOperationsMock.createVariant.mockImplementation(async (variant) => {
+      variantsStore.list(variant)
+      return {transactionId: 'create'}
+    })
     variantDocumentOperationsMock.duplicateVariantDocuments.mockResolvedValue({
       transactionId: 'documents',
     })
@@ -244,6 +256,32 @@ describe('DuplicateVariantDialog', () => {
     )
   })
 
+  it('opens the duplicate only once the variants store lists it', async () => {
+    const created: EditableSystemVariant[] = []
+    variantOperationsMock.createVariant.mockImplementation(async (variant) => {
+      created.push(variant)
+      return {transactionId: 'create'}
+    })
+    const user = userEvent.setup()
+    const dialog = await renderDialog(0)
+
+    await makeConditionsUnique(user, dialog)
+    await user.click(within(dialog).getByTestId('duplicate-variant-button'))
+
+    await waitFor(() => {
+      expect(created).toHaveLength(1)
+    })
+    // Opening it before the store lists it would render the detail page's not-found state
+    expect(onDuplicated).not.toHaveBeenCalled()
+    expect(within(dialog).getByTestId('duplicate-variant-button')).toBeDisabled()
+
+    act(() => variantsStore.list(created[0]!))
+
+    await waitFor(() => {
+      expect(onDuplicated).toHaveBeenCalledWith(created[0]!._id)
+    })
+  })
+
   it('asks whether to copy the documents when the original has documents', async () => {
     documentsMock.results = DOCUMENTS
     const user = userEvent.setup()
@@ -267,9 +305,7 @@ describe('DuplicateVariantDialog', () => {
     const skipped = within(documentsDialog).getAllByTestId('duplicate-variant-skipped-document')
     expect(skipped).toHaveLength(1)
     expect(skipped[0]).toHaveTextContent('Spring launch')
-    expect(skipped[0]).toHaveTextContent(
-      'The release "scheduled Release" is scheduled, so no documents can be added to it',
-    )
+    expect(skipped[0]).toHaveTextContent('In the scheduled release "scheduled Release"')
   })
 
   it('duplicates only the definition when the documents are declined', async () => {

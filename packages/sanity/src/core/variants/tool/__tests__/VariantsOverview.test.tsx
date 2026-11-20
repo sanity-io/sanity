@@ -7,6 +7,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {type SingleWorkspace} from '../../../config/types'
+import {createMockVariantsStore} from '../../__fixtures__/createMockVariantsStore'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../__fixtures__/variants.fixture'
 import {type VariantsMode} from '../../contexts/mode/types'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
@@ -80,6 +81,12 @@ vi.mock('../../store/useAllVariants', () => ({
     loading: variantsMock.loading,
     error: variantsMock.error,
   })),
+}))
+
+let variantsStore = createMockVariantsStore()
+
+vi.mock('../../store/useVariantsStore', () => ({
+  useVariantsStore: vi.fn(() => variantsStore.store),
 }))
 
 vi.mock('../../store/useVariantOperations', () => ({
@@ -327,6 +334,10 @@ describe('VariantsOverview', () => {
 
   it('duplicates a variant from the row actions menu and navigates to the duplicate', async () => {
     setVariants([variantAlphaAudience, variantNorwegianMarket])
+    variantsStore = createMockVariantsStore([variantAlphaAudience, variantNorwegianMarket])
+    variantOperationsMock.createVariant.mockImplementation(async (variant) => {
+      variantsStore.list(variant)
+    })
     documentCountsMock.data = {[variantAlphaAudience._id]: 0, [variantNorwegianMarket._id]: 0}
     documentCountsMock.loading = false
     const user = userEvent.setup()

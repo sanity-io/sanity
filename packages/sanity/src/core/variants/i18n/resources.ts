@@ -251,11 +251,9 @@ const variantsLocaleStrings = {
   /** Heading of the list of document versions the duplicate will not copy. */
   'dialog.duplicate-documents.skipped.title': 'These document versions will not be copied:',
   /** Why a document version is not copied: its release is scheduled; `release` is the release title. */
-  'dialog.duplicate-documents.skipped.scheduled-release':
-    'The release "{{release}}" is scheduled, so no documents can be added to it',
+  'dialog.duplicate-documents.skipped.scheduled-release': 'In the scheduled release "{{release}}"',
   /** Why a document version is not copied: it is set to be unpublished when its release is published. */
-  'dialog.duplicate-documents.skipped.going-to-unpublish':
-    'Set to be unpublished in the release "{{release}}"',
+  'dialog.duplicate-documents.skipped.going-to-unpublish': 'Set to unpublish in "{{release}}"',
   /** Confirm action of the duplicate documents dialog: duplicate the definition and its documents. */
   'dialog.duplicate-documents.action.confirm': 'Yes, duplicate documents',
   /** Cancel action of the duplicate documents dialog: duplicate only the definition. */
