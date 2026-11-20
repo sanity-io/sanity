@@ -21,9 +21,14 @@ export type Step =
   | {client: string; do: 'rejectCommit'; statusCode: number}
   | {client: string; do: 'listener'; mode: 'auto' | 'hold'; latencyMs?: number}
   | {client: string; do: 'releaseEvents'; count?: number; order?: 'fifo' | 'reverse'}
+  | {client: string; do: 'snapshotFetches'; mode: 'auto' | 'hold'}
+  | {client: string; do: 'releaseSnapshotFetches'}
   | {client: string; do: 'dropEvent'}
   | {client: string; do: 'disconnect'}
   | {client: string; do: 'reconnect'; resume: boolean}
+  | {client: string; do: 'breakListener'}
+  | {client: string; do: 'restoreListener'}
+  | {client: string; do: 'failListener'}
   | {do: 'outside'; mutations: MutationPayload[]}
   | {do: 'advance'; ms: number}
   | {do: 'settle'}
@@ -35,6 +40,8 @@ export interface SyncTestDefinition {
   initial: SanityDocument[]
   idPair: IdPair
   clients: string[]
+  /** Clients whose listener is down before they check the pair out */
+  listenersDown?: string[]
   steps: Step[]
 }
 
@@ -83,6 +90,7 @@ export async function createWorld(
   worldCounter += 1
   const dataset = `sync-${worldCounter}`
   const lake = new FakeContentLake(definition.initial)
+  definition.listenersDown?.forEach((clientId) => lake.client(clientId).breakListener())
   const clients = Object.fromEntries(
     definition.clients.map((clientId) => [
       clientId,
@@ -174,6 +182,12 @@ async function runStep(world: World, step: Step): Promise<void> {
     case 'releaseEvents':
       controls.releaseHeldEvents({count: step.count, order: step.order})
       break
+    case 'snapshotFetches':
+      controls.snapshotFetches = {mode: step.mode}
+      break
+    case 'releaseSnapshotFetches':
+      controls.releaseSnapshotFetches()
+      break
     case 'dropEvent':
       controls.dropNextHeldEvent()
       break
@@ -182,6 +196,15 @@ async function runStep(world: World, step: Step): Promise<void> {
       break
     case 'reconnect':
       controls.reconnect({resume: step.resume})
+      break
+    case 'breakListener':
+      controls.breakListener()
+      break
+    case 'restoreListener':
+      controls.restoreListener()
+      break
+    case 'failListener':
+      controls.failListener()
       break
     default:
       throw new Error(`Unknown step ${JSON.stringify(step)}`)

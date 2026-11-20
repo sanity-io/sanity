@@ -74,7 +74,7 @@ describe('createGlobalListenerStore', () => {
 
   it('serves the listener and the invalidation channel from one connection on every document', () => {
     const {store, server, connections, withConfig, listen} = setup()
-    const listenerEvents: (WelcomeEvent | MutationEvent)[] = []
+    const listenerEvents: ({type: 'connected'} | MutationEvent)[] = []
     const invalidations: InvalidationChannelEvent[] = []
 
     const subscriptions = [
@@ -103,7 +103,7 @@ describe('createGlobalListenerStore', () => {
     server.next(WELCOME)
     server.next(event)
 
-    expect(listenerEvents).toEqual([WELCOME, event])
+    expect(listenerEvents).toEqual([{type: 'connected'}, event])
     expect(invalidations).toEqual([{type: 'connected'}, event])
 
     subscriptions.forEach((subscription) => subscription.unsubscribe())
@@ -115,7 +115,7 @@ describe('createGlobalListenerStore', () => {
     server.next(WELCOME)
     server.next(mutation('article'))
 
-    const listenerEvents: (WelcomeEvent | MutationEvent)[] = []
+    const listenerEvents: ({type: 'connected'} | MutationEvent)[] = []
     const invalidations: InvalidationChannelEvent[] = []
     const subscriptions = [
       first,
@@ -123,14 +123,14 @@ describe('createGlobalListenerStore', () => {
       store.invalidationChannel.subscribe((event) => invalidations.push(event)),
     ]
 
-    expect(listenerEvents).toEqual([WELCOME])
+    expect(listenerEvents).toEqual([{type: 'connected'}])
     expect(invalidations).toEqual([{type: 'connected'}])
     expect(connections.opened).toBe(1)
 
     subscriptions.forEach((subscription) => subscription.unsubscribe())
   })
 
-  it('leaves reconnects out, and tells every subscriber again once the listener is back', () => {
+  it('tells every subscriber again once the listener is back, and one that arrives while it is down right away', () => {
     const {store, server} = setup()
     const invalidations: InvalidationChannelEvent[] = []
     const first = store.invalidationChannel.subscribe((event) => invalidations.push(event))
@@ -139,16 +139,16 @@ describe('createGlobalListenerStore', () => {
 
     expect(invalidations).toEqual([{type: 'connected'}])
 
-    // The welcome from before the connection was lost is stale, so a subscriber that arrives
-    // while the listener reconnects waits for the next one
+    // A subscriber that arrives while the listener reconnects has nothing loaded yet, so it
+    // fetches right away, and again once the listener is back
     const lateInvalidations: InvalidationChannelEvent[] = []
     const late = store.invalidationChannel.subscribe((event) => lateInvalidations.push(event))
-    expect(lateInvalidations).toEqual([])
+    expect(lateInvalidations).toEqual([{type: 'connected'}])
 
     server.next(WELCOME)
 
     expect(invalidations).toEqual([{type: 'connected'}, {type: 'connected'}])
-    expect(lateInvalidations).toEqual([{type: 'connected'}])
+    expect(lateInvalidations).toEqual([{type: 'connected'}, {type: 'connected'}])
 
     first.unsubscribe()
     late.unsubscribe()
