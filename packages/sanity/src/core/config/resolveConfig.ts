@@ -45,7 +45,7 @@ export function resolveConfig(config: Config): Observable<Workspace[]> {
 export type CreateWorkspaceFromConfigOptions =
   | SingleWorkspace
   | (SingleWorkspace & {
-      currentUser: CurrentUser
+      currentUser: Omit<CurrentUser, 'role'>
       getClient: (options: {apiVersion: string}) => SanityClient
       schema?: SchemaPluginOptions
     })

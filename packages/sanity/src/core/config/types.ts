@@ -274,7 +274,7 @@ export interface ConfigContext {
   /**
    * The current user or `null` if not authenticated.
    */
-  currentUser: CurrentUser | null
+  currentUser: Omit<CurrentUser, 'role'> | null
   /**
    * A function that returns a Sanity client with the {@link SourceClientOptions | specified options}.
    */
