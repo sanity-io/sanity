@@ -1,0 +1,32 @@
+[package]
+name = "sanity-ui"
+description = "Rust port of @sanity/ui: the theme builder and Leptos components"
+edition.workspace = true
+license.workspace = true
+publish.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[dependencies]
+js-sys.workspace = true
+leptos.workspace = true
+sanity-color.workspace = true
+sanity-icons.workspace = true
+serde_json.workspace = true
+wasm-bindgen.workspace = true
+web-sys = { workspace = true, features = [
+  "CssRuleList",
+  "CssStyleSheet",
+  "Document",
+  "DomRect",
+  "Element",
+  "HtmlElement",
+  "HtmlStyleElement",
+  "KeyboardEvent",
+  "MediaQueryList",
+  "Node",
+  "NodeList",
+  "ResizeObserver",
+  "ResizeObserverEntry",
+  "Window",
+] }

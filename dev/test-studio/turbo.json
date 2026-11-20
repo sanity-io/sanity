@@ -3,7 +3,24 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["ENABLE_VITE_DEVTOOLS", "REACT_PRODUCTION_PROFILING", "SANITY_STUDIO_STYLE_OUTLINE"],
+      "env": [
+        "ENABLE_VITE_DEVTOOLS",
+        "REACT_PRODUCTION_PROFILING",
+        "SANITY_RUST_STUDIO",
+        "SANITY_STUDIO_STYLE_OUTLINE",
+        "VERCEL"
+      ],
+      // The build also compiles the Rust studio into `dist/rust` (`rust-studio:build`) and the
+      // JS-lite studio into `dist/js-lite` (`js-lite-studio:build`)
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/dev/js-lite-studio/**",
+        "!$TURBO_ROOT$/dev/js-lite-studio/dist/**",
+        "!$TURBO_ROOT$/dev/js-lite-studio/node_modules/**",
+        "$TURBO_ROOT$/dev/rust-studio/**",
+        "!$TURBO_ROOT$/dev/rust-studio/dist/**",
+        "!$TURBO_ROOT$/dev/rust-studio/target/**"
+      ],
       "outputs": [".sanity/**", "dist/**"]
     },
     "start": {
