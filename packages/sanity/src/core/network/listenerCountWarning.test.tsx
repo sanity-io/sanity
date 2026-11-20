@@ -217,6 +217,32 @@ describe('listener count warning', () => {
     subscriptions.forEach((subscription) => subscription.unsubscribe())
   })
 
+  it.each([
+    ['client', (client: SanityClient) => client],
+    ['observable client', (client: SanityClient) => client.observable],
+  ])(
+    'leaves a derived %s with its own resolveFetch uncounted and unattributed',
+    (_description, selectClient) => {
+      const attributedClient = listenerCountWarning.attributeListeners(createFakeClient())
+      const subscriber = getListenerCountSubscriber()
+      const customFetch = vi.fn<typeof fetch>(() => new Promise<never>(() => undefined))
+      const uncountedClient = selectClient(attributedClient).withConfig({
+        resolveFetch: () => customFetch,
+      })
+      const subscriptions = Array.from({length: ABOVE_THRESHOLD}, () =>
+        uncountedClient.listen('*', {}, {tag: 'uncounted-source'}).subscribe(),
+      )
+
+      subscriber({open: ABOVE_THRESHOLD, peak: ABOVE_THRESHOLD})
+
+      expect(customFetch).toHaveBeenCalledTimes(ABOVE_THRESHOLD)
+      expect(warnSpy.mock.calls[0]?.[0]).toBe(
+        `[sanity] This tab has ${ABOVE_THRESHOLD} open listeners. A Studio tab usually has about 12. Too many can stall requests in every open Studio tab.`,
+      )
+      subscriptions.forEach((subscription) => subscription.unsubscribe())
+    },
+  )
+
   it('names no source when the unlabelled listeners outnumber the biggest source', () => {
     const attribution = new Map([
       ['<TasksStudioLayout> (tag "addon-dataset.listen")', 2],

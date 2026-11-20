@@ -74,7 +74,8 @@ export function attributeListeners(client: SanityClient): SanityClient {
     }) as SanityClient['listen']
     client.withConfig = (config) => {
       const configuredClient = withOriginalConfig(config)
-      return configuredClient === client ? client : attributeListeners(configuredClient)
+      if (configuredClient === client) return client
+      return config?.resolveFetch ? configuredClient : attributeListeners(configuredClient)
     }
     attributeObservableListeners(client.observable)
   }
@@ -95,8 +96,9 @@ function attributeObservableListeners(
     }) as ObservableSanityClient['listen']
     observableClient.withConfig = (config) => {
       const configuredClient = withOriginalConfig(config)
-      return configuredClient === observableClient
-        ? observableClient
+      if (configuredClient === observableClient) return observableClient
+      return config?.resolveFetch
+        ? configuredClient
         : attributeObservableListeners(configuredClient)
     }
   }
