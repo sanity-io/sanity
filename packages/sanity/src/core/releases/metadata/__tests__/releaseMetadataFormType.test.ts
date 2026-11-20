@@ -1,15 +1,23 @@
-import {defineField, defineType, type FieldDefinition} from '@sanity/types'
+import {
+  defineField,
+  defineType,
+  type FieldDefinition,
+  isObjectSchemaType,
+  type ObjectField,
+} from '@sanity/types'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createSchema} from '../../../schema/createSchema'
 import {
-  acceptReleaseMetadataFields,
-  compileReleaseMetadataSchema,
-} from '../compileReleaseMetadataType'
+  RELEASE_METADATA_TYPE_NAME,
+  RESERVED_RELEASE_METADATA_NAMES,
+  releaseMetadataSchema,
+} from '../../schema/releaseMetadata'
+import {acceptCompiledReleaseMetadataFields} from '../releaseMetadataFormType'
 
 const note = defineField({name: 'note', type: 'string', title: 'Note'})
 
-function parentSchema() {
+function compileMetadata(fields: FieldDefinition[]) {
   return createSchema({
     name: 'workspace',
     types: [
@@ -20,19 +28,26 @@ function parentSchema() {
       }),
       defineType({name: 'reviewStatus', type: 'string'}),
       defineType({name: 'heroImage', type: 'image'}),
+      releaseMetadataSchema({fields: [note, ...fields]}),
     ],
   })
 }
 
+function customFields(fields: FieldDefinition[]): ObjectField[] {
+  const metadataType = compileMetadata(fields).get(RELEASE_METADATA_TYPE_NAME)
+  if (!isObjectSchemaType(metadataType)) throw new Error('Expected an object type')
+  return metadataType.fields.filter((field) => !RESERVED_RELEASE_METADATA_NAMES.has(field.name))
+}
+
 function acceptedNames(fields: FieldDefinition[]): string[] {
-  return acceptReleaseMetadataFields([note, ...fields], parentSchema()).map((field) => field.name)
+  return acceptCompiledReleaseMetadataFields(customFields(fields)).map((field) => field.name)
 }
 
 function CustomInput() {
   return null
 }
 
-describe('acceptReleaseMetadataFields', () => {
+describe('acceptCompiledReleaseMetadataFields', () => {
   const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
 
   beforeEach(() => {
@@ -44,20 +59,18 @@ describe('acceptReleaseMetadataFields', () => {
   })
 
   it('keeps an alias that resolves to string and drops an alias that resolves to image', () => {
-    const accepted = acceptReleaseMetadataFields(
-      [
+    const accepted = acceptCompiledReleaseMetadataFields(
+      customFields([
         defineField({name: 'status', type: 'reviewStatus', title: 'Status'}),
         defineField({name: 'hero', type: 'heroImage', title: 'Hero'}),
-      ],
-      parentSchema(),
+      ]),
     )
 
-    expect(accepted.map((field) => field.name)).toEqual(['status'])
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('Dropped field "hero"'))
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('type "image" is not supported'))
-
-    const compiled = compileReleaseMetadataSchema(accepted, parentSchema())
-    expect(compiled?.schemaType.fields[0]?.type.name).toBe('reviewStatus')
+    expect(accepted.map((field) => field.name)).toEqual(['note', 'status'])
+    expect(accepted[1]?.type.name).toBe('reviewStatus')
+    expect(warn).toHaveBeenCalledWith(
+      `[releases] The release dialog doesn't show metadata field "hero" yet: type "image" is not supported`,
+    )
   })
 
   it.each([
@@ -95,7 +108,9 @@ describe('acceptReleaseMetadataFields', () => {
     {name: 'slug', field: defineField({name: 'slug', type: 'slug'})},
   ])('drops a $name field and keeps the other fields', ({field}) => {
     expect(acceptedNames([field])).toEqual(['note'])
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining(`Dropped field "${field.name}"`))
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining(`doesn't show metadata field "${field.name}"`),
+    )
   })
 
   it('drops a field that sets a components override and keeps the rest', () => {
@@ -111,14 +126,9 @@ describe('acceptReleaseMetadataFields', () => {
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('components.input'))
   })
 
-  it('drops one field that cannot be compiled without hiding the rest', () => {
-    expect(acceptedNames([defineField({name: 'missing', type: 'doesNotExist'})])).toEqual(['note'])
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('Dropped field "missing"'))
-  })
-
-  it('drops an unsupported field inside an object and keeps the object', () => {
-    const accepted = acceptReleaseMetadataFields(
-      [
+  it('drops an object with an unsupported field inside it', () => {
+    expect(
+      acceptedNames([
         defineField({
           name: 'signOff',
           type: 'object',
@@ -127,21 +137,22 @@ describe('acceptReleaseMetadataFields', () => {
             defineField({name: 'picture', type: 'image'}),
           ],
         }),
-      ],
-      parentSchema(),
+      ]),
+    ).toEqual(['note'])
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining(`doesn't show metadata field "signOff" yet: field "picture"`),
     )
+  })
 
-    expect(accepted.map((field) => field.name)).toEqual(['signOff'])
-    const signOff = accepted[0]
-    expect(isObjectField(signOff) ? signOff.fields?.map((field) => field.name) : []).toEqual([
-      'reviewer',
-    ])
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('Dropped field "signOff.picture"'))
+  it('reports a field with an unknown type as a schema error', () => {
+    const schema = compileMetadata([defineField({name: 'missing', type: 'doesNotExist'})])
+
+    const problems = (schema._validation ?? []).flatMap((group) => group.problems)
+    expect(problems).toContainEqual(
+      expect.objectContaining({
+        severity: 'error',
+        message: expect.stringContaining('doesNotExist'),
+      }),
+    )
   })
 })
-
-function isObjectField(
-  field: FieldDefinition,
-): field is FieldDefinition & {fields?: {name: string}[]} {
-  return field.type === 'object'
-}

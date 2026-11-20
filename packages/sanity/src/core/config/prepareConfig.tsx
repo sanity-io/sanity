@@ -33,7 +33,6 @@ import {
 import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
 import {resolveListenerCountingFetch} from '../network/listenerCount'
-import {acceptReleaseMetadataFields} from '../releases/metadata/compileReleaseMetadataType'
 import {createSchema} from '../schema/createSchema'
 import {createLegacyAuthStore} from '../store/auth/legacy/createLegacyAuthStore'
 import {createOAuthAuthStore} from '../store/auth/oauth/createOAuthAuthStore'
@@ -109,7 +108,6 @@ import {createBifurClient} from './createBifurClient'
 import {createDefaultIcon} from './createDefaultIcon'
 import {initialDocumentFieldActions} from './document/fieldActions'
 import {documentFieldActionsReducer} from './document/fieldActions/reducer'
-import {resolveReleaseMetadataFields} from './releases/metadataFields'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
 import {resolveSchemaTypes} from './resolveSchemaTypes'
@@ -121,6 +119,7 @@ import {
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
+  type ReleaseMetadataConfig,
   type SingletonDefinition,
   type SingleWorkspace,
   type Source,
@@ -516,6 +515,7 @@ export function prepareConfig(
             authenticated,
             auth,
             i18n,
+            releaseMetadata: defaultPluginsOptions.releases.metadata ?? {},
           })
         }),
         shareReplay(1),
@@ -649,6 +649,8 @@ interface ResolveSourceOptions {
   authenticated: boolean
   auth: AuthStore
   i18n: {i18next: i18n; source: LocaleSource}
+  /** Resolved once per workspace, with the default plugins options. */
+  releaseMetadata: ReleaseMetadataConfig
 }
 
 function resolveSource({
@@ -659,6 +661,7 @@ function resolveSource({
   authenticated,
   auth,
   i18n,
+  releaseMetadata,
 }: ResolveSourceOptions): Source {
   const {dataset, projectId} = config
   const bifur = createBifurClient(client, auth.token)
@@ -1007,11 +1010,6 @@ function resolveSource({
       })
     : Promise.resolve(undefined)
 
-  const releaseMetadataFields = acceptReleaseMetadataFields(
-    resolveReleaseMetadataFields(config),
-    schema,
-  )
-
   const source: Source = {
     type: 'source',
     name: config.name,
@@ -1278,9 +1276,9 @@ function resolveSource({
               propertyName: 'releases.actions',
               reducer: releaseActionsReducer,
             }),
-          metadata: {fields: releaseMetadataFields},
+          metadata: releaseMetadata,
         }
-      : {enabled: true, metadata: {fields: releaseMetadataFields}},
+      : {enabled: true, metadata: releaseMetadata},
   }
 
   return source

@@ -28,18 +28,15 @@ import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
-import {useWorkspace} from '../../../studio/workspace'
 import {hasStoredReleaseData, useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
 import {asReleaseMetadata, toReleaseMetadataRecord} from '../../metadata/mergeReleaseMetadata'
-import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadataFieldsEnabled'
+import {useReleaseCustomMetadataFields} from '../../metadata/useReleaseCustomMetadataFields'
 import {isReleaseType} from '../../store/types'
 import {DEFAULT_RELEASE_TYPE, RELEASE_TYPES_TONES} from '../../util/const'
 import {ReleaseAvatar} from '../ReleaseAvatar'
 import {ScheduleDatePicker} from '../ScheduleDatePicker'
 import {ReleaseMetadataForm} from './ReleaseMetadataForm'
 import {TitleDescriptionForm} from './TitleDescriptionForm'
-
-const NO_METADATA_FIELDS: readonly [] = []
 
 /** @internal */
 export function ReleaseForm(props: {
@@ -51,9 +48,7 @@ export function ReleaseForm(props: {
   const {releaseType = DEFAULT_RELEASE_TYPE, intendedPublishAt} = value.metadata || {}
   const {t} = useTranslation()
   const {getStoredReleaseData, saveReleaseDataToStorage} = useReleaseFormStorage()
-  const metadataFieldsEnabled = useReleaseMetadataFieldsEnabled()
-  const configuredFields = useWorkspace().releases?.metadata?.fields ?? NO_METADATA_FIELDS
-  const metadataFields = metadataFieldsEnabled ? configuredFields : NO_METADATA_FIELDS
+  const {enabled: metadataFieldsEnabled, fields: metadataFields} = useReleaseCustomMetadataFields()
 
   const id = value._id
   // Recovery is a mount action. A parent that passes a new onChange each render
