@@ -1,5 +1,5 @@
 import {render, screen} from '@testing-library/react'
-import {useDocumentVersions} from 'sanity'
+import {defineField, defineType, useDocumentVersions} from 'sanity'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
@@ -10,6 +10,12 @@ import {useReferringDocuments} from '../useReferringDocuments'
 vi.mock('sanity', async (importActual) => ({
   ...((await importActual()) as Record<string, unknown>),
   useDocumentVersions: vi.fn(),
+  useActiveReleases: () => ({
+    data: [{_id: '_.releases.r1', metadata: {title: 'Black Friday'}}],
+    error: undefined,
+    loading: false,
+    dispatch: () => undefined,
+  }),
 }))
 
 vi.mock('../useReferringDocuments', () => ({
@@ -21,6 +27,11 @@ vi.mock('../useReferringDocuments', () => ({
 // the preview store (no data in this test).
 vi.mock('../VersionsPreviewList', () => ({
   VersionsPreviewList: () => null,
+}))
+
+// Each referring document's preview link needs the structure pane's router; the row's tags are what these tests read
+vi.mock('../ReferencePreviewLink', () => ({
+  ReferencePreviewLink: () => <span>Referring document</span>,
 }))
 
 vi.mock('../../DocTitle', () => ({
@@ -95,6 +106,48 @@ describe('ConfirmDeleteDialog', () => {
 
     expect(await screen.findByText('Delete anyway')).toBeInTheDocument()
     expect(screen.queryByText('Delete all versions anyway')).not.toBeInTheDocument()
+  })
+
+  it('says only that the release fails when every link is held in a release copy', async () => {
+    mockUseDocumentVersions.mockReturnValue(withVersions(1))
+    mockUseReferringDocuments.mockReturnValue({
+      ...noReferences,
+      internalReferences: {
+        totalCount: 1,
+        references: [
+          {_id: 'versions.r1.publisher', _type: 'publisher', required: false, failsLater: true},
+        ],
+      },
+      totalCount: 1,
+    } as unknown as ReturnType<typeof useReferringDocuments>)
+    const wrapper = await createTestProvider({
+      resources: [structureUsEnglishLocaleBundle],
+      config: {
+        schema: {
+          types: [
+            defineType({
+              name: 'publisher',
+              type: 'document',
+              fields: [defineField({name: 'name', type: 'string'})],
+            }),
+          ],
+        },
+      },
+    })
+
+    render(<ConfirmDeleteDialog id="doc1" type="post" onCancel={vi.fn()} onConfirm={vi.fn()} />, {
+      wrapper,
+    })
+
+    expect(await screen.findByTestId('fails-later-note')).toBeInTheDocument()
+    // The links do not point at nothing once the document is gone: the release fails instead
+    expect(screen.getByRole('dialog')).not.toHaveTextContent('these links will point at nothing')
+    // The line above the list names who links here, so the count bar would only repeat it
+    expect(screen.getByRole('dialog')).not.toHaveTextContent('refers to')
+    expect(screen.getByText(/Documents that link to/)).toBeInTheDocument()
+    // The row names the release that holds the link, so the reader knows which release fails
+    expect(screen.getByTestId('fails-later-reference-release')).toHaveTextContent('in Black Friday')
+    expect(screen.getByText('Delete document')).toBeInTheDocument()
   })
 
   it('hides the confirm button while the version count loads', async () => {

@@ -1,6 +1,12 @@
 import {act, render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {type ComponentType, type ReactNode, type RefAttributes, useImperativeHandle} from 'react'
+import {
+  type ComponentType,
+  type ReactNode,
+  type RefAttributes,
+  use,
+  useImperativeHandle,
+} from 'react'
 import {EMPTY} from 'rxjs'
 import {
   DocumentGroupInventory,
@@ -8,7 +14,7 @@ import {
   type DocumentGroupInventoryProps,
   type SanityDocument,
 } from 'sanity'
-import {PaneLayoutContext} from 'sanity/_singletons'
+import {PaneLayoutContext, PaneRouterContext} from 'sanity/_singletons'
 import {test as baseTest, describe, expect, type MockedFunction, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
@@ -146,10 +152,24 @@ const test = baseTest
 
     const paneLayout = layoutCollapsed ? COLLAPSED_PANE_LAYOUT : PANE_LAYOUT
 
+    const closeCurrentAndAfter = vi.fn()
+
+    // The default pane router, with the one method the inspector calls observed.
+    function PaneRouter({children}: {children: ReactNode}) {
+      const paneRouter = use(PaneRouterContext)
+      return (
+        <PaneRouterContext value={{...paneRouter, closeCurrentAndAfter}}>
+          {children}
+        </PaneRouterContext>
+      )
+    }
+
     const Wrapper: ComponentType<{children: ReactNode}> = ({children}) => {
       return (
         <TestProvider>
-          <PaneLayoutContext.Provider value={paneLayout}>{children}</PaneLayoutContext.Provider>
+          <PaneRouter>
+            <PaneLayoutContext.Provider value={paneLayout}>{children}</PaneLayoutContext.Provider>
+          </PaneRouter>
         </TestProvider>
       )
     }
@@ -165,11 +185,23 @@ const test = baseTest
 
       await screen.findByRole('heading', {name: 'Manage versions'})
 
-      return {onClose, lastInventoryHandle}
+      return {onClose, lastInventoryHandle, closeCurrentAndAfter}
     }
   })
 
 describe('DocumentGroupInspector', () => {
+  test('closes the document pane once a delete leaves no versions', async ({renderInspector}) => {
+    const {closeCurrentAndAfter} = await renderInspector()
+    const {onAllVersionsDeleted} = lastInventoryProps() as Extract<
+      DocumentGroupInventoryProps,
+      {mode: 'manage'}
+    >
+
+    act(() => onAllVersionsDeleted?.())
+
+    expect(closeCurrentAndAfter).toHaveBeenCalledTimes(1)
+  })
+
   test('renders the inspector header and closes the inspector from it', async ({
     renderInspector,
   }) => {

@@ -3,10 +3,18 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {UnknownIcon} from '@sanity/icons/Unknown'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Card} from '@sanity/ui'
+import {Badge, Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback} from 'react'
-import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
+import {useCallback, useMemo} from 'react'
+import {
+  getReleaseIdFromReleaseDocumentId,
+  getVersionFromId,
+  SanityDefaultPreview,
+  Translate,
+  useActiveReleases,
+  useSchema,
+  useTranslation,
+} from 'sanity'
 import {Text, Flex, Box, VStack, Icon} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -19,6 +27,7 @@ import {
   OtherReferenceCount,
   Table,
 } from './ConfirmDeleteDialogBody.styles'
+import {type LinkStrength} from './getLinkStrength'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
 import {type ReferringDocuments} from './useReferringDocuments'
 import {VersionsPreviewList} from './VersionsPreviewList'
@@ -30,6 +39,8 @@ type DeletionConfirmationDialogBodyProps = Required<ReferringDocuments> & {
   documentId: string
   documentType: string
   documentVersions: string[]
+  /** Whether the links block the action, let it through, or are not known for every link */
+  linkStrength?: LinkStrength
 }
 
 function DocumentTitle({
@@ -54,6 +65,24 @@ function StrongDocumentTitle({
  * The inner part of the `ConfirmDeleteDialog`. This is ran when both the
  * `crossDatasetReferences` and `internalReferences` are loaded.
  */
+/** Names the release that holds a referring release copy, so the reader knows which release fails */
+function ReleaseOfReference({documentId}: {documentId: string}) {
+  const {t} = useTranslation()
+  const {data: releases} = useActiveReleases()
+  const releaseId = getVersionFromId(documentId)
+  const release = releaseId
+    ? releases.find((r) => getReleaseIdFromReleaseDocumentId(r._id) === releaseId)
+    : undefined
+  if (!releaseId) return null
+  return (
+    <Text size={1} muted data-testid="fails-later-reference-release">
+      {t('document-group.delete.reference-release.text', {
+        releaseTitle: release?.metadata.title || t('release.placeholder-untitled-release'),
+      })}
+    </Text>
+  )
+}
+
 export function ConfirmDeleteDialogBody({
   crossDatasetReferences,
   internalReferences,
@@ -66,16 +95,45 @@ export function ConfirmDeleteDialogBody({
   documentType,
   onReferenceLinkClick,
   documentVersions,
+  linkStrength = 'unknown',
 }: DeletionConfirmationDialogBodyProps) {
   const schema = useSchema()
   const toast = useToast()
   const {t} = useTranslation(structureLocaleNamespace)
+  const {t: tCore} = useTranslation()
 
   const renderPreviewItem = useCallback(
-    (item: {_id: string; _type: string}) => {
+    (item: {_id: string; _type: string; required?: boolean; failsLater?: boolean}) => {
       const type = schema.get(item._type)
       if (type) {
-        return <ReferencePreviewLink type={type} value={item} onClick={onReferenceLinkClick} />
+        const link = (
+          <ReferencePreviewLink type={type} value={item} onClick={onReferenceLinkClick} />
+        )
+        // A link that blocks the action is tagged Required. A required link held only in a release
+        // copy does not block the delete, but that release fails when published: Fails later
+        const tag =
+          linkStrength === 'required' && item.required ? (
+            <Badge data-testid="required-reference-badge" tone="critical">
+              {t('confirm-delete-dialog.preview-item.required-badge')}
+            </Badge>
+          ) : action === 'delete' && item.failsLater ? (
+            <Flex alignItems="center" gap={2} style={{flexShrink: 0}}>
+              <ReleaseOfReference documentId={item._id} />
+              <Badge data-testid="fails-later-reference-badge" tone="caution">
+                {tCore('document-group.delete.reference-tag.fails-later')}
+              </Badge>
+            </Flex>
+          ) : null
+        return tag ? (
+          <Flex alignItems="center" gap={2}>
+            <Box flexBasis="0%" flexGrow={1} style={{minWidth: 0}}>
+              {link}
+            </Box>
+            {tag}
+          </Flex>
+        ) : (
+          link
+        )
       }
 
       return (
@@ -92,27 +150,50 @@ export function ConfirmDeleteDialogBody({
         </Box>
       )
     },
-    [schema, t, onReferenceLinkClick],
+    [schema, t, tCore, onReferenceLinkClick, linkStrength, action],
+  )
+  // Required links first: they are the ones to remove before the action can go through
+  const failsLaterCount = (internalReferences?.references ?? []).filter(
+    (reference) => reference.failsLater,
+  ).length
+  // Every link is a release copy's: the delete leaves no live link pointing at nothing, the release fails instead
+  const onlyFailsLater =
+    action === 'delete' &&
+    failsLaterCount > 0 &&
+    failsLaterCount === (internalReferences?.totalCount ?? 0) &&
+    (crossDatasetReferences?.totalCount ?? 0) === 0
+  const sortedReferences = useMemo(
+    () =>
+      [...(internalReferences?.references ?? [])].sort(
+        (a, b) =>
+          Number(Boolean(b.required)) * 2 +
+          Number(Boolean(b.failsLater)) -
+          (Number(Boolean(a.required)) * 2 + Number(Boolean(a.failsLater))),
+      ),
+    [internalReferences],
   )
   const confirmationMessage = useCallback(
     () => (
       <VStack gap={4}>
-        <Text as="p" size={1} trim={true}>
-          <Translate
-            t={t}
-            i18nKey="confirm-delete-dialog.confirmation.text"
-            context={action}
-            values={{count: documentVersions.length}}
-            components={{DocumentTitle: StrongDocumentTitle}}
-            componentProps={{documentTitle}}
-          />
-        </Text>
+        {/* A blocked action asks nothing: the links below say why it can't go through */}
+        {linkStrength === 'required' ? null : (
+          <Text as="p" size={1} trim={true}>
+            <Translate
+              t={t}
+              i18nKey="confirm-delete-dialog.confirmation.text"
+              context={action}
+              values={{count: documentVersions.length}}
+              components={{DocumentTitle: StrongDocumentTitle}}
+              componentProps={{documentTitle}}
+            />
+          </Text>
+        )}
         {action === 'delete' && (
           <VersionsPreviewList documentType={documentType} documentVersions={documentVersions} />
         )}
       </VStack>
     ),
-    [t, action, documentTitle, documentType, documentVersions],
+    [t, action, documentTitle, documentType, documentVersions, linkStrength],
   )
 
   if (internalReferences?.totalCount === 0 && crossDatasetReferences?.totalCount === 0) {
@@ -139,35 +220,44 @@ export function ConfirmDeleteDialogBody({
       {confirmationMessage()}
       <div>
         <Card borderTop padding={1} />
-        <Card padding={3} radius={2} tone="caution" flex="none">
-          <Flex>
-            <Icon
-              aria-hidden="true"
-              size={1}
-              muted
-              icon={WarningOutlineIcon}
-              tone="caution"
-              style={{margin: '-0.375rem'}}
-            />
-            <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
-              <Text size={1} as="div" trim={true} tone="caution">
-                <Translate
-                  i18nKey="confirm-delete-dialog.referring-document-count.text"
-                  components={{DocumentTitle}}
-                  componentProps={{documentTitle}}
-                  t={t}
-                  values={{count: totalCount}}
-                />
-              </Text>
-            </Box>
-          </Flex>
-        </Card>
+        {/* With every link's strength known, the line above the list says who links here; the count would repeat it */}
+        {linkStrength === 'unknown' ? (
+          <Card padding={3} radius={2} tone="caution" flex="none">
+            <Flex>
+              <Icon
+                aria-hidden="true"
+                size={1}
+                muted
+                icon={WarningOutlineIcon}
+                tone="caution"
+                style={{margin: '-0.375rem'}}
+              />
+              <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
+                <Text size={1} as="div" trim={true} tone="caution">
+                  <Translate
+                    i18nKey="confirm-delete-dialog.referring-document-count.text"
+                    components={{DocumentTitle}}
+                    componentProps={{documentTitle}}
+                    t={t}
+                    values={{count: totalCount}}
+                  />
+                </Text>
+              </Box>
+            </Flex>
+          </Card>
+        ) : null}
       </div>
 
       <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
         <Text size={1} as="div" trim={true}>
           <Translate
-            i18nKey="confirm-delete-dialog.referring-documents-descriptor.text"
+            i18nKey={
+              linkStrength === 'required'
+                ? 'confirm-delete-dialog.referring-documents-descriptor.required.text'
+                : linkStrength === 'optional'
+                  ? 'confirm-delete-dialog.referring-documents-descriptor.optional.text'
+                  : 'confirm-delete-dialog.referring-documents-descriptor.text'
+            }
             t={t}
             context={action}
             components={{DocumentTitle}}
@@ -179,7 +269,7 @@ export function ConfirmDeleteDialogBody({
         <Flex flexDirection="column">
           {internalReferences.totalCount > 0 && (
             <VStack as="ul" gap={2} data-testid="internal-references">
-              {internalReferences?.references.map((item) => (
+              {sortedReferences.map((item) => (
                 <Box key={item._id} as="li">
                   {renderPreviewItem(item)}
                 </Box>
@@ -325,17 +415,31 @@ export function ConfirmDeleteDialogBody({
           )}
         </Flex>
       </Card>
-      <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
-        <Text size={1} as="div" trim={true}>
-          <Translate
-            i18nKey="confirm-delete-dialog.referential-integrity-disclaimer.text"
-            t={t}
-            context={action}
-            components={{DocumentTitle}}
-            componentProps={{documentTitle}}
-          />
-        </Text>
-      </Box>
+      {action === 'delete' && linkStrength !== 'required' && failsLaterCount > 0 ? (
+        <Card padding={3} radius={2} tone="caution" data-testid="fails-later-note">
+          <Text size={1} as="div" trim={true} tone="caution">
+            {tCore('document-group.delete.fails-later.text', {count: failsLaterCount})}
+          </Text>
+        </Card>
+      ) : null}
+      {/* A blocked action needs no warning about what it would do, and the fails-later note already says what happens */}
+      {linkStrength === 'required' || onlyFailsLater ? null : (
+        <Box flexBasis="auto" flexGrow={0} flexShrink={0}>
+          <Text size={1} as="div" trim={true}>
+            <Translate
+              i18nKey={
+                linkStrength === 'optional'
+                  ? 'confirm-delete-dialog.referential-integrity-disclaimer.optional.text'
+                  : 'confirm-delete-dialog.referential-integrity-disclaimer.text'
+              }
+              t={t}
+              context={action}
+              components={{DocumentTitle}}
+              componentProps={{documentTitle}}
+            />
+          </Text>
+        </Box>
+      )}
     </Flex>
   )
 }
