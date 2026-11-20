@@ -15,6 +15,7 @@ import {run} from '@optique/run'
 import {resolveFromInvocation} from './benchRoot'
 import {certPathCommand, writeCertificateFile} from './commands/certPath'
 import {devCommand} from './commands/dev'
+import {listenerStallCommand} from './commands/listenerStall'
 import {prepareBackfill, prepareBackfillCommand} from './commands/prepareBackfill'
 import {prepareReference, prepareReferenceCommand} from './commands/prepareReference'
 import {reportCommand} from './commands/report'
@@ -28,6 +29,7 @@ const result = run(
     reportCommand,
     storeCommand,
     devCommand,
+    listenerStallCommand,
     scenariosCommand,
     prepareReferenceCommand,
     prepareBackfillCommand,
@@ -67,6 +69,9 @@ switch (result.action) {
     await (
       await import('../runner/devServer')
     ).startBenchDev({customizations: result.customizations})
+    break
+  case 'listener-stall':
+    await (await import('./commands/listenerStallImpl')).runListenerStall(result)
     break
   case 'scenarios':
     listScenarios(result.json)
