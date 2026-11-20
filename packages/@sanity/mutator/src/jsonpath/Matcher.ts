@@ -26,7 +26,7 @@ export class Matcher {
   constructor(active: Descender[], parent?: Matcher) {
     this.active = active || []
     if (parent) {
-      this.recursives = parent.recursives
+      this.recursives = [...parent.recursives]
       this.payload = parent.payload
     } else {
       this.recursives = []
