@@ -6,7 +6,7 @@ import {
   type Recommendation,
 } from '../types'
 
-export const AS_OF = '2026-11-17T18:10:00Z'
+const AS_OF = '2026-11-17T18:10:00Z'
 export const RUN_URL = 'https://github.com/example-org/example-repo/actions/runs/123'
 export const WORKFLOW_URL =
   'https://github.com/example-org/example-repo/actions/workflows/tag-stable.yml'
