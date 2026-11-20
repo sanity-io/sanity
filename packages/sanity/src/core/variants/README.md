@@ -67,7 +67,7 @@ Covered behavior:
 - Search by title, ID suffix, condition keys, and condition values.
 - Table rows that navigate to the detail route.
 - Create variant button.
-- Row actions menu with `Delete variant`.
+- Row actions menu with `Edit variant`, `Duplicate variant` and `Delete variant`.
 
 The table uses the shared releases table component so the row layout, sorting, and virtualization match other Studio tooling.
 
@@ -78,9 +78,22 @@ Create and edit share the same dialog shell and form:
 - `components/dialog/VariantDialog.tsx` owns submit state, validation display, save button state, and error toasts.
 - `CreateVariantDialog.tsx` provides default variant values and calls `createVariant`.
 - `EditVariantDialog.tsx` converts an existing `SystemVariant` into `EditableSystemVariant` and calls `updateVariant`.
+- `DuplicateVariantDialog.tsx` prefills the form from an existing variant (`util/getDuplicatedVariant.ts`: a new id, the title "title (duplicated)", everything else copied) and calls `createVariant`. See [Duplicating a variant](#duplicating-a-variant).
 - `VariantForm.tsx` owns title, description, and condition row editing.
 
 The detail page intentionally uses a read-only summary plus an edit dialog instead of inline editing. Inline title/description editing was considered, but the dialog approach is simpler while the feature is still evolving and lets create/edit share the same validation behavior.
+
+## Duplicating a variant
+
+Both the overview row menu and the detail `⋯` menu offer `Duplicate variant definition`, through `hooks/useVariantDuplicateAction.ts`. Duplicating creates a definition, so it is gated like the create button: upsell mode opens the upsell dialog, a failed feature check shows an error toast. The hook reads the mode with `use(useVariantsMode())`, so tests that render either menu provide `VariantsModePromiseContext`.
+
+The duplicate starts with the original's conditions, so the uniqueness validation (`util/uniquenessValidation.ts`) blocks it until they differ. On a valid submit, `DuplicateVariantDialog` asks whether to copy the original's documents (`DuplicateVariantDocumentsDialog.tsx`) when the original has any, and creates only the definition otherwise. The documents dialog is rendered as a child of `VariantDialog` so it is a child layer: as siblings, both dialogs would count as the top layer, and a click inside the documents dialog would close the form.
+
+Copying documents:
+
+- `documents/getVariantDocumentDuplicationPlan.ts` decides what is copied, from the `useVariantDocuments` results. Drafts are copied as drafts; published versions are copied as drafts too, unless the document also has a draft version in the variant (then only the draft is copied) or its type is `liveEdit` (then it is copied as published). Release versions are copied into the same release. Versions in a scheduled release (or a scheduled draft, which holds one document) and versions marked to unpublish are returned as `skipped` and listed in the dialog.
+- `documents/duplicateVariantDocuments.ts` sends one `sanity.action.document.variant.create` action per copied version (`baseId` is the original version) in a single `client.action([...])` call, so either every document is copied or none is. The actions are built by `buildCreateVariantDocumentAction`, which `createVariantScopedDocument` uses too.
+- The definition is created first, with its own action, because the variant must exist before documents can be created in it. When the document transaction fails, the duplicate exists without documents: the dialog still navigates to it and shows an error toast.
 
 ## Condition Row UX
 
@@ -206,10 +219,11 @@ Covered areas include:
 - invalid variant detection
 - overview table behavior and routing
 - create/edit dialog validation and submit behavior
+- duplicate flow: prefilled form, document duplication plan, single-transaction document copy, and the documents dialog
 - condition row validation and partial-edit regressions
 - condition suggestion helpers
 - conditions config reduction, normalization, mapped dropdown-picker form flow, and condition mismatch errors
-- detail page rendering, edit dialog, footer, and detail delete menu
+- detail page rendering, edit dialog, footer, and detail duplicate and delete menu
 
 Focused command:
 
