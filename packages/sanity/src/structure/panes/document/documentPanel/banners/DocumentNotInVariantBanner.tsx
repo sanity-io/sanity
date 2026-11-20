@@ -6,6 +6,7 @@ import {
   isDraftPerspective,
   isPublishedPerspective,
   isReleaseDocument,
+  isVariantVersionAllowed,
   Translate,
   useConditionalToast,
   useDocumentVersions,
@@ -133,6 +134,7 @@ export function DocumentNotInVariantBanner() {
 
   // TODO: Use machine.
   const isActionAllowed = selectedPerspective === defaultPerspective || selectedReleaseId
+  const variantsAllowed = isVariantVersionAllowed(schemaType)
   return (
     <Banner
       tone="suggest"
@@ -154,9 +156,12 @@ export function DocumentNotInVariantBanner() {
           ? {
               text: t('banners.variant.action.add-to-variant'),
               tone: 'suggest',
-              disabled: status === 'in-progress' || status === 'success',
+              disabled: !variantsAllowed || status === 'in-progress' || status === 'success',
               onClick: handleAddToVariant,
               mode: 'default',
+              tooltipProps: variantsAllowed
+                ? undefined
+                : {content: t('banners.variant.action.variants-not-supported')},
             }
           : undefined
       }

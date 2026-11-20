@@ -8,6 +8,7 @@ import {
   getReleaseTone,
   isCardinalityOneRelease,
   isReleaseDocument,
+  isReleaseVersionAllowed,
   ReleaseAvatar,
   ReleaseAvatarIcon,
   useActiveReleases,
@@ -76,7 +77,8 @@ export function DocumentReleasesMenu() {
   const {t: tStudio} = useTranslation()
   const isReleasesEnabled = Boolean(useWorkspace().releases?.enabled)
   const isReleasesToolAvailable = useReleasesToolAvailable()
-  const {documentId} = useDocumentPane()
+  const {documentId, schemaType} = useDocumentPane()
+  const releasesAllowed = isReleaseVersionAllowed(schemaType)
   const {versions} = useDocumentVersions({documentId: getPublishedId(documentId)})
   const {data: activeReleases} = useActiveReleases()
   const {selectedPerspective, selectedReleaseId} = usePerspective()
@@ -155,6 +157,12 @@ export function DocumentReleasesMenu() {
       button={
         <DropdownButton
           data-testid="document-releases-menu-button"
+          disabled={!releasesAllowed}
+          tooltipProps={
+            releasesAllowed
+              ? null
+              : {content: t('document-panel-navigation.releases.button.not-supported')}
+          }
           icon={selectedRelease ? <ReleaseAvatarIcon release={selectedRelease} /> : DotIcon}
           onClear={selectedRelease ? handleClear : undefined}
           tone={selectedRelease ? getReleaseTone(selectedRelease) : undefined}

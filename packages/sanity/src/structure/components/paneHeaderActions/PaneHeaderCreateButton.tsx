@@ -8,10 +8,13 @@ import {
   type TemplatePermissionsResult,
   useGetI18nText,
   usePerspective,
+  useSchema,
   useTemplatePermissions,
   useTemplates,
   useTranslation,
   IntentButton,
+  isReleaseVersionAllowed,
+  isVariantVersionAllowed,
 } from 'sanity'
 import {IntentLink, type IntentLinkProps} from 'sanity/router'
 
@@ -56,9 +59,21 @@ interface PaneHeaderCreateButtonProps {
 
 export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonProps) {
   const templates = useTemplates()
-  const {selectedReleaseId} = usePerspective()
+  const schema = useSchema()
+  const {selectedReleaseId, selectedVariantNames} = usePerspective()
 
   const {t} = useTranslation(structureLocaleNamespace)
+  const getUnsupportedReason = (item: InitialValueTemplateItem) => {
+    const typeName = templates.find((template) => template.id === item.templateId)?.schemaType
+    const schemaType = typeName ? schema.get(typeName) : undefined
+    if (selectedReleaseId && !isReleaseVersionAllowed(schemaType)) {
+      return t('pane-header.create-new-button.releases-not-supported')
+    }
+    if (selectedVariantNames.length > 0 && !isVariantVersionAllowed(schemaType)) {
+      return t('pane-header.create-new-button.variants-not-supported')
+    }
+    return undefined
+  }
   const getI18nText = useGetI18nText([...templateItems, ...templates])
 
   const [templatePermissions, isTemplatePermissionsLoading] = useTemplatePermissions({
@@ -109,13 +124,14 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
   if (templateItems.length === 1) {
     const firstItem = templateItems[0]
     const permissions = permissionsById[firstItem.id]
-    const disabled = !permissions?.granted
+    const unsupportedReason = getUnsupportedReason(firstItem)
+    const disabled = !permissions?.granted || Boolean(unsupportedReason)
     const intent = getIntentProps(templates, firstItem, selectedReleaseId)
     if (!intent) return null
 
     return (
       <InsufficientPermissionsMessageTooltip
-        reveal={disabled}
+        reveal={disabled && !unsupportedReason}
         loading={isTemplatePermissionsLoading}
         context="create-document-type"
       >
@@ -126,7 +142,9 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
           mode="bleed"
           disabled={disabled}
           data-testid="action-intent-button"
-          tooltipProps={{content: t('pane-header.create-new-button.tooltip')}}
+          tooltipProps={{
+            content: unsupportedReason ?? t('pane-header.create-new-button.tooltip'),
+          }}
         />
       </InsufficientPermissionsMessageTooltip>
     )
@@ -147,7 +165,8 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
         <Menu>
           {templateItems.map((item, itemIndex) => {
             const permissions = permissionsById[item.id]
-            const disabled = !permissions?.granted
+            const unsupportedReason = getUnsupportedReason(item)
+            const disabled = !permissions?.granted || Boolean(unsupportedReason)
             const intent = getIntentProps(templates, item, selectedReleaseId)
             const template = templates.find((i) => i.id === item.templateId)
             if (!template || !intent) return null
@@ -162,7 +181,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
               <InsufficientPermissionsMessageTooltip
                 key={item.id}
                 context="create-document-type"
-                reveal={disabled}
+                reveal={disabled && !unsupportedReason}
                 loading={isTemplatePermissionsLoading}
               >
                 {disabled ? (
@@ -171,9 +190,12 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
                     data-as="button"
                     icon={item.icon}
                     text={title}
-                    aria-label={t('pane-header.disabled-created-button.aria-label')}
+                    aria-label={
+                      unsupportedReason ?? t('pane-header.disabled-created-button.aria-label')
+                    }
                     disabled
                     data-testid={`action-intent-button-${itemIndex}`}
+                    tooltipProps={unsupportedReason ? {content: unsupportedReason} : undefined}
                   />
                 ) : (
                   <MenuItem

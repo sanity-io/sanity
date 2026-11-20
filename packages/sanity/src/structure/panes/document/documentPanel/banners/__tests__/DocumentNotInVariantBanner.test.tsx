@@ -1,7 +1,9 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {defineType} from '@sanity/types'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {
+  createSchema,
   type SystemVariant,
   useDocumentVersions,
   useGetDefaultPerspective,
@@ -564,6 +566,31 @@ describe('DocumentNotInVariantBanner', () => {
         screen.getByText('An error occurred when adding document to the variant: create failed'),
       ).toBeInTheDocument()
       expect(button).not.toBeDisabled()
+    })
+
+    it('disables the action when the document type does not allow variants', async () => {
+      mockUseDocumentPane.mockReturnValue({
+        documentId: DOCUMENT_ID,
+        value: existingDocumentValue,
+        schemaType: createSchema({
+          name: 'default',
+          types: [
+            defineType({
+              name: 'article',
+              type: 'document',
+              versions: ['releases'],
+              fields: [{name: 'title', type: 'string'}],
+            }),
+          ],
+        }).get('article'),
+      } as unknown as ReturnType<typeof useDocumentPane>)
+
+      await renderBanner()
+
+      const button = await screen.findByRole('button', {name: 'Create variant'})
+      expect(button).toBeDisabled()
+      await userEvent.click(button, {pointerEventsCheck: 0})
+      expect(createVariantDocument).not.toHaveBeenCalled()
     })
   })
 })

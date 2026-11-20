@@ -239,6 +239,7 @@ export {
   type DocumentDefinition,
   type DocumentOptions,
   type DocumentRule,
+  type DocumentVersionKind,
 } from './schema/definition/type/document'
 export {
   type EmailDefinition,

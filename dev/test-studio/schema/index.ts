@@ -44,6 +44,12 @@ import {
   namedDeprecatedObject,
 } from './debug/deprecatedFields'
 import documentActions from './debug/documentActions'
+import {
+  noScheduledDraftsType,
+  noVersionsLiveEditType,
+  releasesOnlyType,
+  variantsOnlyType,
+} from './debug/documentVersions'
 import {domAttrsAsFieldNames} from './debug/domAttrsAsFieldNames'
 import empty from './debug/empty'
 import experiment from './debug/experiment'
@@ -302,6 +308,10 @@ export function createSchemaTypes(projectId: string) {
     sdkProjectionWrapped,
     locationResolverTest,
     liveEdit,
+    noVersionsLiveEditType,
+    releasesOnlyType,
+    variantsOnlyType,
+    noScheduledDraftsType,
     localeString,
     manyFieldsTest,
     manyViewsType,

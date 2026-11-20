@@ -99,3 +99,42 @@ describe('extractManifestSchemaTypes preview', () => {
     expect(article).not.toHaveProperty('preview')
   })
 })
+
+describe('extractManifestSchemaTypes versions', () => {
+  test('keeps `versions` on a document type and on types extending it', () => {
+    const [settings, siteSettings] = extract([
+      {
+        name: 'settings',
+        type: 'document',
+        liveEdit: true,
+        versions: [],
+        fields: [{name: 'title', type: 'string'}],
+      },
+      {name: 'siteSettings', type: 'settings'},
+    ])
+
+    expect(settings).toMatchObject({name: 'settings', liveEdit: true, versions: []})
+    expect(siteSettings).toMatchObject({name: 'siteSettings', versions: []})
+  })
+
+  test('keeps the listed version kinds', () => {
+    const [banner] = extract([
+      {
+        name: 'banner',
+        type: 'document',
+        versions: ['variants'],
+        fields: [{name: 'heading', type: 'string'}],
+      },
+    ])
+
+    expect(banner).toMatchObject({name: 'banner', versions: ['variants']})
+  })
+
+  test('omits `versions` when the type does not set it', () => {
+    const [article] = extract([
+      {name: 'article', type: 'document', fields: [{name: 'heading', type: 'string'}]},
+    ])
+
+    expect(article).not.toHaveProperty('versions')
+  })
+})

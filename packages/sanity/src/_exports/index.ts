@@ -1736,6 +1736,11 @@ export {
   type ReactHook,
 } from '../core/util/createHookFromObservableFactory'
 export {
+  isReleaseVersionAllowed,
+  isScheduledDraftVersionAllowed,
+  isVariantVersionAllowed,
+} from '../core/util/documentVersions'
+export {
   collate,
   type CollatedHit,
   createDraftFrom,

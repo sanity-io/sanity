@@ -148,6 +148,12 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The explanation displayed when a user attempts to create a new document in a release, but the selected release is inactive */
   'banners.choose-new-document-destination.release-inactive':
     'The <VersionBadge>{{title}}</VersionBadge> release is not active.',
+  /** The explanation displayed when a user attempts to create a new document in a release, but the schema type doesn't allow releases */
+  'banners.choose-new-document-destination.releases-not-supported':
+    "Documents of this type can't be added to releases.",
+  /** The explanation displayed when a user attempts to create a new document in a scheduled draft, but the schema type doesn't allow scheduled drafts */
+  'banners.choose-new-document-destination.scheduled-drafts-not-supported':
+    "Documents of this type can't be scheduled.",
   /** The text for the restore button on the deleted document banner */
   'banners.deleted-document-banner.restore-button.text': 'Restore most recent revision',
   /** The text content for the deleted document banner */
@@ -216,6 +222,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.release.action.add-to-release': 'Add to release',
   /** The text that appears for the action button to add the current document to the global release */
   'banners.release.action.open-to-edit': 'Open release to edit',
+  /** Tooltip on the disabled "Add to release" button when the schema type doesn't allow releases */
+  'banners.release.action.releases-not-supported':
+    "Documents of this type can't be added to releases.",
   /** Toast description in case an error occurs when adding a document to a release  */
   'banners.release.error.description':
     'An error occurred when adding document to the release: {{message}}',
@@ -262,6 +271,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
     'Showing the current <strong>published</strong> version:',
   /** The text that appears for the action button to add the current document to the selected variant */
   'banners.variant.action.add-to-variant': 'Create variant',
+  /** Tooltip on the disabled "Create variant" button when the schema type doesn't allow variants */
+  'banners.variant.action.variants-not-supported': "Documents of this type can't have variants.",
   /** The text for the banner that appears when the selected variant matches no variant definition */
   'banners.variant.definition-not-found':
     'The selected variant <VariantName>{{name}}</VariantName> could not be found.',
@@ -507,6 +518,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** Placeholder of the filter input in the variants and releases menus of the document header */
   'document-panel-navigation.filter-placeholder': 'Find',
+  /** Tooltip on the disabled releases menu trigger when the schema type doesn't allow releases */
+  'document-panel-navigation.releases.button.not-supported':
+    "Documents of this type can't be added to releases.",
   /** Label of the releases menu trigger in the document header when no release is selected */
   'document-panel-navigation.releases.button.text': 'Releases',
   /** A scheduled release in the releases menu of the document header: its title and publish date */
@@ -524,6 +538,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'document-panel-navigation.scheduled-drafts.button.text': 'Scheduled drafts',
   /** Section header listing the dates the scheduled drafts of the document go out */
   'document-panel-navigation.scheduled-drafts.section.scheduled-for': 'Scheduled for:',
+  /** Tooltip on the disabled variants menu trigger when the schema type doesn't allow variants */
+  'document-panel-navigation.variants.button.not-supported':
+    "Documents of this type can't have variants.",
   /** Label of the variants menu trigger in the document header when no variant is selected */
   'document-panel-navigation.variants.button.text': 'Variants',
   /** Section header listing the variants the document has versions in */
@@ -658,8 +675,14 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'pane-header.context-menu-button.tooltip': 'Show menu',
   /** Appears in a document list pane header if there are more than one option for create. This is the label for that menu */
   'pane-header.create-menu.label': 'Create',
+  /** Tooltip on the disabled create button when the document type can't be created in the selected release */
+  'pane-header.create-new-button.releases-not-supported':
+    "Documents of this type can't be created in a release",
   /** Tooltip displayed on the create new button in document lists */
   'pane-header.create-new-button.tooltip': 'Create new document',
+  /** Tooltip on the disabled create button when the document type can't be created in the selected variant */
+  'pane-header.create-new-button.variants-not-supported':
+    "Documents of this type can't be created in a variant",
   /** The `aria-label` for the disabled button in the pane header if create permissions are granted */
   'pane-header.disabled-created-button.aria-label': 'Insufficient permissions',
   /** The text shown in the tooltip of pane item previews of documents if there are unpublished edits */

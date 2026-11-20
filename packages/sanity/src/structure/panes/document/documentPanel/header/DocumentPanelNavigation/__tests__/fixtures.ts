@@ -1,5 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {defineType, type DocumentVersionKind, type ObjectSchemaType} from '@sanity/types'
 import {
+  createSchema,
   type PerspectiveContextValue,
   type SystemVariant,
   type VersionInfoDocumentStub,
@@ -7,6 +9,21 @@ import {
 
 /** The document every fixture version belongs to. */
 export const GROUP_ID = 'article-1'
+
+/** A compiled `article` type with the given `versions`. */
+export function createArticleSchemaType(versions: DocumentVersionKind[]): ObjectSchemaType {
+  return createSchema({
+    name: 'default',
+    types: [
+      defineType({
+        name: 'article',
+        type: 'document',
+        versions,
+        fields: [{name: 'title', type: 'string'}],
+      }),
+    ],
+  }).get('article') as ObjectSchemaType
+}
 
 type Bundle = 'published' | 'drafts' | {release: string} | {agent: string}
 

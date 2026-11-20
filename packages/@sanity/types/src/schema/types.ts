@@ -11,6 +11,7 @@ import {type BlockDecoratorDefinition, type BlockOptions} from './definition/typ
 import {type BooleanOptions} from './definition/type/boolean'
 import {type DateOptions} from './definition/type/date'
 import {type DatetimeOptions} from './definition/type/datetime'
+import {type DocumentVersionKind} from './definition/type/document'
 import {type FileOptions} from './definition/type/file'
 import {type ImageOptions} from './definition/type/image'
 import {type NumberOptions} from './definition/type/number'
@@ -230,6 +231,12 @@ export interface BaseSchemaType extends Partial<DeprecationConfiguration> {
   description?: string
   type?: SchemaType
   liveEdit?: boolean
+  /**
+   * The kinds of versions documents of this type can have. Unset allows all of them.
+   *
+   * @beta
+   */
+  versions?: DocumentVersionKind[]
   readOnly?: ConditionalProperty
   hidden?: ConditionalProperty
   icon?: ComponentType

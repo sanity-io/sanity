@@ -1,3 +1,4 @@
+import {type DocumentVersionKind} from '@sanity/types'
 import {render, screen, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {
@@ -19,6 +20,7 @@ import {structureUsEnglishLocaleBundle} from '../../../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../../../useDocumentPane'
 import {
+  createArticleSchemaType,
   createPerspective,
   createRelease,
   createVariant,
@@ -137,6 +139,32 @@ describe('DocumentVariantsMenu', () => {
     const trigger = await screen.findByTestId('document-variants-menu-button')
     expect(trigger).toHaveTextContent('Variants')
     expect(screen.queryByTestId('dropdown-button-clear')).toBeNull()
+  })
+
+  it.each<[DocumentVersionKind[]]>([[['releases']], [[]]])(
+    'disables the trigger when the document type has `versions: %j`',
+    async (versions) => {
+      mockUseDocumentPane.mockReturnValue({
+        documentId: GROUP_ID,
+        schemaType: createArticleSchemaType(versions),
+      })
+      render(<DocumentVariantsMenu />, {wrapper})
+
+      const trigger = await screen.findByTestId('document-variants-menu-button')
+      expect(trigger).toBeDisabled()
+      await userEvent.click(trigger, {pointerEventsCheck: 0})
+      expect(screen.getByTestId('document-variants-menu')).not.toBeVisible()
+    },
+  )
+
+  it("keeps the trigger enabled when the document type's `versions` include variants", async () => {
+    mockUseDocumentPane.mockReturnValue({
+      documentId: GROUP_ID,
+      schemaType: createArticleSchemaType(['variants']),
+    })
+    render(<DocumentVariantsMenu />, {wrapper})
+
+    expect(await screen.findByTestId('document-variants-menu-button')).toBeEnabled()
   })
 
   it('names the selected variant on the trigger and clears it with the remove control', async () => {

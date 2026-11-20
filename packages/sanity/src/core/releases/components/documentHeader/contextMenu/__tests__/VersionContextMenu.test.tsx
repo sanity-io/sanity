@@ -1,4 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {defineType} from '@sanity/types'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
@@ -258,6 +259,52 @@ describe('VersionContextMenu', () => {
 
     expect(screen.getByTestId('copy-version-to-release-button-group')).toBeInTheDocument()
     expect(screen.queryByText('Discard version')).not.toBeInTheDocument()
+  })
+
+  const variantsOnlyConfig = {
+    schema: {
+      types: [
+        defineType({
+          name: 'settings',
+          type: 'document',
+          versions: ['variants'],
+          fields: [{name: 'title', type: 'string'}],
+        }),
+      ],
+    },
+    document: {actions: (prev: DocumentActionComponent[]) => [...prev, discardChangesAction]},
+  }
+
+  it('hides copying to a release and keeps discard when the type does not allow releases', async () => {
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+
+    const wrapper = await createTestProvider({config: variantsOnlyConfig})
+
+    render(<VersionContextMenu {...draftChipProps} type="settings" />, {wrapper})
+    await flushMicrotasksThisIsACodeSmell()
+
+    expect(screen.queryByTestId('copy-version-to-release-button-group')).not.toBeInTheDocument()
+    expect(screen.getByText('Discard version')).toBeInTheDocument()
+  })
+
+  it('only offers copying an existing release version to drafts when the type does not allow releases', async () => {
+    mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
+
+    const wrapper = await createTestProvider({config: variantsOnlyConfig})
+
+    render(<VersionContextMenu {...defaultProps} type="settings" />, {wrapper})
+    await flushMicrotasksThisIsACodeSmell()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('copy-version-to-release-button-group')).not.toBeDisabled()
+    })
+    await userEvent.click(screen.getByTestId('copy-version-to-release-button-group'))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('copy-to-drafts-menu-item')).toBeInTheDocument()
+    })
+    expect(screen.queryByTestId('create-new-release-button')).not.toBeInTheDocument()
+    expect(screen.queryByText('Release 2')).not.toBeInTheDocument()
   })
 
   it('shows every scheduled draft action when document.actions is unfiltered', async () => {

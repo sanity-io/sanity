@@ -524,6 +524,7 @@ import type {
   DocumentVersionEvent,
   DocumentVersionEventType,
   DocumentVersionIcons,
+  DocumentVersionKind,
   DocumentVersionSnapshots,
   DocumentVersionsStatus,
   DocumentVersionsStatusIndicator,
@@ -948,9 +949,11 @@ import type {
   isReleasePerspective,
   isReleaseScheduledOrScheduling,
   isReleaseVersion,
+  isReleaseVersionAllowed,
   isRemovedItemDiff,
   isSanityDefinedAction,
   isSanityDocument,
+  isScheduledDraftVersionAllowed,
   isScheduleDocumentVersionEvent,
   isSearchStrategy,
   isSlug,
@@ -980,6 +983,7 @@ import type {
   isValidationWarningMarker,
   isVariantId,
   isVariantVersion,
+  isVariantVersionAllowed,
   isVersionId,
   ItemDiff,
   ItemProps,
@@ -3464,6 +3468,9 @@ describe('sanity', () => {
   test('DocumentVersionIcons', () => {
     expectTypeOf<typeof DocumentVersionIcons>().toBeFunction()
   })
+  test('DocumentVersionKind', () => {
+    expectTypeOf<DocumentVersionKind>().not.toBeNever()
+  })
   test('DocumentVersionSnapshots', () => {
     expectTypeOf<DocumentVersionSnapshots>().toBeObject()
   })
@@ -4742,6 +4749,9 @@ describe('sanity', () => {
   test('isReleaseVersion', () => {
     expectTypeOf<typeof isReleaseVersion>().toBeFunction()
   })
+  test('isReleaseVersionAllowed', () => {
+    expectTypeOf<typeof isReleaseVersionAllowed>().toBeFunction()
+  })
   test('isRemovedItemDiff', () => {
     expectTypeOf<typeof isRemovedItemDiff>().toBeFunction()
   })
@@ -4750,6 +4760,9 @@ describe('sanity', () => {
   })
   test('isSanityDocument', () => {
     expectTypeOf<typeof isSanityDocument>().toBeFunction()
+  })
+  test('isScheduledDraftVersionAllowed', () => {
+    expectTypeOf<typeof isScheduledDraftVersionAllowed>().toBeFunction()
   })
   test('isScheduleDocumentVersionEvent', () => {
     expectTypeOf<typeof isScheduleDocumentVersionEvent>().not.toBeNever()
@@ -4837,6 +4850,9 @@ describe('sanity', () => {
   })
   test('isVariantVersion', () => {
     expectTypeOf<typeof isVariantVersion>().toBeFunction()
+  })
+  test('isVariantVersionAllowed', () => {
+    expectTypeOf<typeof isVariantVersionAllowed>().toBeFunction()
   })
   test('isVersionId', () => {
     expectTypeOf<typeof isVersionId>().toBeFunction()
