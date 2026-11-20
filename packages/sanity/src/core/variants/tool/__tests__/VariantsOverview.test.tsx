@@ -7,6 +7,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {type SingleWorkspace} from '../../../config/types'
+import {createMockVariantsStore} from '../../__fixtures__/createMockVariantsStore'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../__fixtures__/variants.fixture'
 import {type VariantsMode} from '../../contexts/mode/types'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
@@ -82,12 +83,26 @@ vi.mock('../../store/useAllVariants', () => ({
   })),
 }))
 
+let variantsStore = createMockVariantsStore()
+
+vi.mock('../../store/useVariantsStore', () => ({
+  useVariantsStore: vi.fn(() => variantsStore.store),
+}))
+
 vi.mock('../../store/useVariantOperations', () => ({
   useVariantOperations: vi.fn(() => variantOperationsMock),
 }))
 
 vi.mock('../../store/useVariantPermissions', () => ({
   useVariantPermissions: vi.fn(() => variantPermissionsMock),
+}))
+
+vi.mock('../../hooks/useVariantDocuments', () => ({
+  useVariantDocuments: vi.fn(() => ({loading: false, results: [], error: null})),
+}))
+
+vi.mock('../../../releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => ({data: [], byId: new Map(), loading: false, error: null})),
 }))
 
 vi.mock('../../hooks/useVariantsDocumentCounts', () => ({
@@ -315,6 +330,51 @@ describe('VariantsOverview', () => {
     await user.click(await screen.findByText('Delete variant definition'))
 
     expect(variantOperationsMock.deleteVariant).not.toHaveBeenCalled()
+  })
+
+  it('duplicates a variant from the row actions menu and navigates to the duplicate', async () => {
+    setVariants([variantAlphaAudience, variantNorwegianMarket])
+    variantsStore = createMockVariantsStore([variantAlphaAudience, variantNorwegianMarket])
+    variantOperationsMock.createVariant.mockImplementation(async (variant) => {
+      variantsStore.list(variant)
+    })
+    documentCountsMock.data = {[variantAlphaAudience._id]: 0, [variantNorwegianMarket._id]: 0}
+    documentCountsMock.loading = false
+    const user = userEvent.setup()
+
+    await renderOverview()
+
+    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(2))
+
+    const menuButton = screen
+      .getAllByRole('button')
+      .find((button) => button.id === 'variant-actions-alpha-audience')
+
+    if (!menuButton) throw new Error('Variant actions menu button not found')
+
+    await user.click(menuButton)
+    await user.click(await screen.findByText('Duplicate variant definition'))
+
+    const dialog = await screen.findByRole('dialog', {name: 'Duplicate variant definition'})
+    expect(within(dialog).getByTestId('variant-form-title')).toHaveValue(
+      'Alpha audience (duplicated)',
+    )
+
+    const conditionValues = await within(dialog).findAllByTestId('variant-form-condition-value')
+    await user.clear(conditionValues[0]!)
+    await user.type(conditionValues[0]!, 'beta')
+    await user.click(within(dialog).getByTestId('duplicate-variant-button'))
+
+    await waitFor(() => {
+      expect(variantOperationsMock.createVariant).toHaveBeenCalledTimes(1)
+    })
+
+    const duplicate = variantOperationsMock.createVariant.mock.calls[0]![0] as EditableSystemVariant
+
+    expect(duplicate.conditions).toEqual({audience: 'beta', locale: 'en-US'})
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith({variantId: getVariantId(duplicate._id)})
+    })
   })
 
   it('shows filter empty state when condition filters exclude every definition', async () => {

@@ -1,9 +1,11 @@
-import {act, render, screen, waitFor} from '@testing-library/react'
+import {act, render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
+import {VariantsModePromiseContext} from 'sanity/_singletons'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
+import {type VariantsMode} from '../../contexts/mode/types'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
 import {VariantMenuButton} from '../overview/VariantMenuButton'
 
@@ -25,6 +27,35 @@ vi.mock('../../store/useVariantPermissions', () => ({
   useVariantPermissions: vi.fn(() => variantPermissionsMock),
 }))
 
+const upsellMock = vi.hoisted(() => ({
+  handleOpenDialog: vi.fn(),
+}))
+
+vi.mock('../../contexts/upsell/useVariantsUpsell', () => ({
+  useVariantsUpsell: vi.fn(() => upsellMock),
+}))
+
+const toastMock = vi.hoisted(() => ({
+  push: vi.fn(),
+}))
+
+vi.mock('@sanity/ui/toast', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useToast: vi.fn(() => toastMock),
+}))
+
+vi.mock('../../hooks/useVariantDocuments', () => ({
+  useVariantDocuments: vi.fn(() => ({loading: false, results: [], error: null})),
+}))
+
+vi.mock('../../../releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(() => ({data: [], byId: new Map(), loading: false, error: null})),
+}))
+
+function settledMode(mode: VariantsMode): Promise<VariantsMode> {
+  return Object.assign(Promise.resolve(mode), {status: 'fulfilled' as const, value: mode})
+}
+
 function createDeferred<T = void>() {
   let resolve!: (value: T | PromiseLike<T>) => void
   let reject!: (reason?: unknown) => void
@@ -43,7 +74,10 @@ describe('VariantMenuButton', () => {
     variantPermissionsMock.checkWithPermissionGuard.mockResolvedValue(true)
   })
 
-  const renderMenuButton = async (options?: {documentCount?: number | null}) => {
+  const renderMenuButton = async (options?: {
+    documentCount?: number | null
+    mode?: VariantsMode
+  }) => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
@@ -53,7 +87,14 @@ describe('VariantMenuButton', () => {
     // oxlint-disable-next-line testing-library/no-unnecessary-act -- see above
     await act(async () => {
       result = render(
-        <VariantMenuButton documentCount={options?.documentCount} variant={variantAlphaAudience} />,
+        <VariantsModePromiseContext
+          value={settledMode(options?.mode === undefined ? 'default' : options.mode)}
+        >
+          <VariantMenuButton
+            documentCount={options?.documentCount}
+            variant={variantAlphaAudience}
+          />
+        </VariantsModePromiseContext>,
         {wrapper},
       )
     })
@@ -86,6 +127,58 @@ describe('VariantMenuButton', () => {
     await waitFor(() => {
       expect(variantOperationsMock.updateVariant).toHaveBeenCalled()
     })
+  })
+
+  it('opens the duplicate dialog prefilled from the variant', async () => {
+    const user = userEvent.setup()
+
+    await renderMenuButton({documentCount: 0})
+
+    await user.click(screen.getByRole('button'))
+    await user.click(await screen.findByText('Duplicate variant definition'))
+
+    const dialog = await screen.findByRole('dialog', {name: 'Duplicate variant definition'})
+    expect(within(dialog).getByTestId('variant-form-title')).toHaveValue(
+      'Alpha audience (duplicated)',
+    )
+    const conditionValues = await within(dialog).findAllByTestId('variant-form-condition-value')
+    expect(conditionValues.map((input) => (input as HTMLInputElement).value)).toEqual([
+      'alpha',
+      'en-US',
+    ])
+    expect(within(dialog).getByTestId('variant-form-priority')).toHaveValue(
+      variantAlphaAudience.priority,
+    )
+    expect(variantOperationsMock.createVariant).not.toHaveBeenCalled()
+  })
+
+  it('opens the upsell dialog instead of duplicating without the content variants feature', async () => {
+    const user = userEvent.setup()
+
+    await renderMenuButton({documentCount: 0, mode: 'upsell'})
+
+    await user.click(screen.getByRole('button'))
+    await user.click(await screen.findByText('Duplicate variant definition'))
+
+    expect(upsellMock.handleOpenDialog).toHaveBeenCalledWith('navbar')
+    expect(
+      screen.queryByRole('dialog', {name: 'Duplicate variant definition'}),
+    ).not.toBeInTheDocument()
+  })
+
+  it('shows an error instead of duplicating when the feature check failed', async () => {
+    const user = userEvent.setup()
+
+    await renderMenuButton({documentCount: 0, mode: null})
+
+    await user.click(screen.getByRole('button'))
+    await user.click(await screen.findByText('Duplicate variant definition'))
+
+    expect(toastMock.push).toHaveBeenCalledWith(expect.objectContaining({status: 'error'}))
+    expect(upsellMock.handleOpenDialog).not.toHaveBeenCalled()
+    expect(
+      screen.queryByRole('dialog', {name: 'Duplicate variant definition'}),
+    ).not.toBeInTheDocument()
   })
 
   it('deletes the variant when delete is selected', async () => {

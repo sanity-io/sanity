@@ -23,11 +23,25 @@ function getSupportedBundleId(
   return bundleId
 }
 
-type BaseOptions = {
-  client: SanityClient
+/**
+ * @internal
+ */
+export type BuildCreateVariantDocumentActionOptions = {
   variant: Pick<SystemVariant, '_id'>
   selectedPerspective: TargetPerspective
   documentGroupId: string
+} & (
+  | {
+      document: SanityDocumentStub
+    }
+  | {
+      baseId: string
+      ifBaseRevisionId?: string
+    }
+)
+
+type BaseOptions = {
+  client: SanityClient
   signal?: AbortSignal
 }
 
@@ -35,29 +49,20 @@ type BaseOptions = {
  * @internal
  */
 export type CreateVariantScopedDocumentOptions = BaseOptions &
-  (
-    | {
-        document: SanityDocumentStub
-      }
-    | {
-        baseId: string
-        ifBaseRevisionId?: string
-      }
-  )
+  BuildCreateVariantDocumentActionOptions
 
 /**
- * Creates a variant-scoped version document via the variants document create action.
+ * Builds the variants document create action that creates a variant-scoped version document in the
+ * bundle of `selectedPerspective`, either from `document` or by copying `baseId`.
  *
  * @internal
  */
-export async function createVariantScopedDocument({
-  client,
+export function buildCreateVariantDocumentAction({
   variant,
   selectedPerspective,
   documentGroupId,
-  signal,
   ...options
-}: CreateVariantScopedDocumentOptions): Promise<SingleActionResult> {
+}: BuildCreateVariantDocumentActionOptions): CreateVariantAction {
   const bundleId = getSupportedBundleId(selectedPerspective)
 
   const action: Pick<CreateVariantAction, 'actionType' | 'variantId' | 'publishedId' | 'bundleId'> =
@@ -69,33 +74,37 @@ export async function createVariantScopedDocument({
     }
 
   if ('baseId' in options) {
-    return variantsApiClient(client).action(
-      {
-        baseId: options.baseId,
-        ...(typeof options.ifBaseRevisionId === 'string'
-          ? {ifBaseRevisionId: options.ifBaseRevisionId}
-          : {}),
-        ...action,
-      },
-      {
-        tag: 'variants.document.create',
-        signal,
-      },
-    )
+    return {
+      baseId: options.baseId,
+      ...(typeof options.ifBaseRevisionId === 'string'
+        ? {ifBaseRevisionId: options.ifBaseRevisionId}
+        : {}),
+      ...action,
+    }
   }
 
   if ('document' in options) {
-    return variantsApiClient(client).action(
-      {
-        document: options.document,
-        ...action,
-      },
-      {
-        tag: 'variants.document.create',
-        signal,
-      },
-    )
+    return {
+      document: options.document,
+      ...action,
+    }
   }
 
-  throw new Error('`createVariantScopedDocument`: `baseId` or `document` must be provided.')
+  throw new Error('`buildCreateVariantDocumentAction`: `baseId` or `document` must be provided.')
+}
+
+/**
+ * Creates a variant-scoped version document via the variants document create action.
+ *
+ * @internal
+ */
+export async function createVariantScopedDocument({
+  client,
+  signal,
+  ...options
+}: CreateVariantScopedDocumentOptions): Promise<SingleActionResult> {
+  return variantsApiClient(client).action(buildCreateVariantDocumentAction(options), {
+    tag: 'variants.document.create',
+    signal,
+  })
 }
