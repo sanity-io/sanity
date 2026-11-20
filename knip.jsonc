@@ -126,10 +126,17 @@
       ],
     },
     "packages/sanity": {
-      "entry": ["src/_exports/*.ts", "bin/sanity", "mock-browser-env-stub-loader.mjs"],
+      "entry": [
+        "src/_exports/*.ts",
+        "src/core/store/document/sync/*.sync.test.ts",
+        "test/sync/*.ts",
+        "bin/sanity",
+        "mock-browser-env-stub-loader.mjs",
+      ],
       "project": [
         "src/**/*.{ts,tsx}",
         "!src/**/__test{,s}__", // These files might actually be safe to delete?
+        "test/sync/*.ts",
       ],
       "ignoreBinaries": ["tzutil"],
       "ignoreDependencies": [
@@ -202,7 +209,7 @@
       "ignoreFiles": ["resolveProductionUrl.ts"],
     },
     "engine-confidence": {
-      "entry": ["scripts/*.ts", "stryker/*.{mjs,mts,ts}"],
+      "entry": ["scripts/**/*.ts", "stryker/*.{mjs,mts,ts}"],
       "project": ["**/*.{ts,mts,mjs}"],
     },
     "packages/@repo/oxlint-plugin-i18n": {
