@@ -24,7 +24,7 @@ export function GlobalPerspectiveNav(props: {
   return (
     <BoundaryElementProvider element={typeof document === 'undefined' ? null : document.body}>
       {Boolean(beta?.variants?.enabled) && <VariantsStudioNavbarLayout fullWidth={fullWidth} />}
-      <ReleasesNav fullWidth={fullWidth} showDetailLinks withReleasesToolButton />
+      <ReleasesNav fullWidth={fullWidth} showDetailLinks />
     </BoundaryElementProvider>
   )
 }

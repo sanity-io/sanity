@@ -7,7 +7,7 @@ import {ViewContentReleasesMenuItem} from '../releases/ViewContentReleasesMenuIt
 
 /**
  * Chromatic sentinel for the sticky bottom of the releases perspective menu:
- * the "View Content Releases" row. Rendered as a static Menu list so the
+ * the "View content releases" row. Rendered as a static Menu list so the
  * snapshot shows the Calendar icon and MenuItem chrome without opening a
  * popover. Shared with Storybook via a thin CSF wrapper.
  */

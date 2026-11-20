@@ -1592,7 +1592,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Default option label when no variant is selected. */
   'navbar.variant.default': 'Default',
   /** View all option label for the menu item dropdown in the variants selection menu. */
-  'navbar.variant.menu.view-all': 'View all',
+  'navbar.variant.menu.view-all': 'View all variant definitions',
   /** Tooltip for the link that opens an audience's page from the variants selection menu. */
   'navbar.variant.menu.view-variant': 'View audience',
   /** Accessible label for the link that opens an audience's page from the variants selection menu. */
@@ -1600,7 +1600,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** New audience option label for the menu item dropdown in the variants selection menu. */
   'navbar.variant.menu.new-audience': 'New audience',
   /** Placeholder for the variant filter input in the dropdown. */
-  'navbar.variant.filter-placeholder': 'Find audience',
+  'navbar.variant.filter-placeholder': 'Search variant definitions…',
 
   /** Text shown in warning when browser is using HTTP1 to communicate with the Sanity API */
   'network-check.slow-protocol-warning.description':
@@ -1865,20 +1865,32 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for the release menu */
   'release.menu.label': 'Release menu',
   /** Menu item label for scheduled drafts */
-  'release.menu.scheduled-drafts': 'View Scheduled Drafts',
+  'release.menu.scheduled-drafts': 'View scheduled drafts',
   /** Tooltip for the release menu */
   'release.menu.tooltip': 'Actions',
   /** Menu item label for viewing content releases */
-  'release.menu.view-releases': 'View Content Releases',
+  'release.menu.view-releases': 'View content releases',
+  /** Label above a release's title in the navbar perspective chip's tooltip */
+  'release.navbar.chip-label.release': 'Release',
+  /** Label above "Drafts" or "Published" in the navbar perspective chip's tooltip */
+  'release.navbar.chip-label.version': 'Version',
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
   /** Placeholder for the releases perspective filter. */
-  'release.navbar.filter-placeholder': 'Find a version or release',
-  /** Accessible name for the chevron that opens the releases menu */
+  'release.navbar.filter-placeholder': 'Search versions and releases…',
+  /**
+   * Accessible name for the chevron that opens the releases menu
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions
   'release.navbar.open-releases': 'Open releases',
   /** Label for published releases in navbar */
   'release.navbar.published': 'Published',
-  /** Tooltip for releases navigation in navbar */
+  /**
+   * Tooltip for releases navigation in navbar
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions
   'release.navbar.tooltip': 'View scheduling',
   /** Accessible label for the link that opens a release's page from the global perspective menu */
   'release.navbar.view-release-aria-label': 'View release {{title}}',

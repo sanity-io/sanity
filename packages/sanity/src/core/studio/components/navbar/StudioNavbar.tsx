@@ -22,7 +22,6 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getDefaultVariant} from '../../../perspective/getDefaultVariant'
 import {GlobalPerspectiveNav} from '../../../perspective/navbar/GlobalPerspectiveNav'
 import {usePerspective} from '../../../perspective/usePerspective'
-import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {useToolMenuComponent} from '../../studio-components-hooks/useToolMenuComponent'
 import {useWorkspace} from '../../workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
@@ -64,7 +63,7 @@ const RootCard = styled(Card)`
 export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   const {__internal_actions: actions = EMPTY_ARRAY} = props
 
-  const {beta, name, tools} = useWorkspace()
+  const {name, tools} = useWorkspace()
   const routerState = useRouterState()
   const mediaIndex = useMediaIndex()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
@@ -80,10 +79,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     searchOpen,
   } = useContext(NavbarContext)
 
-  const {perspectiveStack, selectedPerspective, selectedVariantNames} = usePerspective()
+  const {perspectiveStack, selectedVariantNames} = usePerspective()
   const selectedVariantName = getDefaultVariant(selectedVariantNames)
-  // Variants beta keeps one navbar color. Otherwise the bar follows the release tone.
-  const variantsEnabled = Boolean(beta?.variants?.enabled)
 
   const ToolMenu = useToolMenuComponent()
 
@@ -189,7 +186,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
       <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
         <RootCard
           className={navbar}
-          tone={variantsEnabled ? 'default' : getReleaseTone(selectedPerspective)}
+          // One navbar colour in every studio: the bar no longer takes the release's tone
+          tone="default"
           data-testid="studio-navbar"
           data-ui="Navbar"
           padding={3}
