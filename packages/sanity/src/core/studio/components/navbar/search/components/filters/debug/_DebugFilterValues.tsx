@@ -1,6 +1,5 @@
 import {Card} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
-import {VStack} from 'ui5'
+import {Code, VStack} from 'ui5'
 
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type SearchFilter} from '../../../types'
@@ -19,17 +18,27 @@ export function DebugFilterValues({filter}: DebugFilterValuesProps) {
   return (
     <Card borderTop padding={3} tone="transparent">
       <VStack gap={2}>
-        <Code size={0} weight="medium">
+        <Code
+          size={0}
+          style={{
+            fontWeight: 'var(--medium)',
+          }}
+          trim
+        >
           Filter
         </Code>
-        {fieldDefinition?.fieldPath && <Code size={0}>fieldPath: {fieldDefinition.fieldPath}</Code>}
-        <Code size={0} style={{whiteSpace: 'normal'}}>
+        {fieldDefinition?.fieldPath && (
+          <Code size={0} trim>
+            fieldPath: {fieldDefinition.fieldPath}
+          </Code>
+        )}
+        <Code size={0} style={{whiteSpace: 'normal'}} trim>
           filterName: {filter.filterName}
         </Code>
-        <Code size={0} style={{whiteSpace: 'normal'}}>
+        <Code size={0} style={{whiteSpace: 'normal'}} trim>
           operatorType: {filter.operatorType}
         </Code>
-        <Code size={0} style={{whiteSpace: 'normal'}}>
+        <Code size={0} style={{whiteSpace: 'normal'}} trim>
           value: {typeof filter?.value === 'undefined' ? '' : JSON.stringify(filter.value)}
         </Code>
       </VStack>
