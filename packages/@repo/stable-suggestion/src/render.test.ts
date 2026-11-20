@@ -12,7 +12,8 @@ import {deterministicRecommendation} from './model'
 import {
   CI_ALERTS_WEBHOOK_FIELDS,
   escapeSlack,
-  renderShortlistText,
+  renderShortlist,
+  shortenAtWord,
   renderSummaryMarkdown,
   SUGGESTION_WEBHOOK_FIELDS,
   toFallbackPayload,
@@ -46,24 +47,57 @@ describe('escapeSlack', () => {
 
 describe('payload builders', () => {
   test('webhook payload has exactly the constant keys and the given workflow url', () => {
-    const payload = toWebhookPayload('hello', WORKFLOW_URL)
+    const payload = toWebhookPayload({headline: 'bold', text: 'hello', cli: 'gh x'}, WORKFLOW_URL)
     expect(Object.keys(payload).sort()).toEqual(Object.values(SUGGESTION_WEBHOOK_FIELDS).sort())
-    expect(Object.keys(payload).sort()).toEqual(['run_url', 'text'])
+    expect(Object.keys(payload).sort()).toEqual(['cli', 'headline', 'run_url', 'text'])
+    expect(payload.headline).toBe('bold')
+    expect(payload.cli).toBe('gh x')
     expect(payload.run_url).toBe(WORKFLOW_URL)
     expect(payload.text).toBe('hello')
   })
 
-  test('fallback payload has exactly the text key', () => {
-    const payload = toFallbackPayload('hello')
+  test('fallback payload has exactly the text key, with the headline in bold on its own line', () => {
+    const payload = toFallbackPayload({headline: 'bold', text: 'hello', cli: 'gh x'})
     expect(Object.keys(payload)).toEqual(Object.values(CI_ALERTS_WEBHOOK_FIELDS))
-    expect(Object.keys(payload)).toEqual(['text'])
+    expect(payload).toEqual({text: '*bold*\n\nhello\nFrom the CLI: `gh x`'})
+  })
+
+  test('the webhook sends a dash when there is no command', () => {
+    expect(toWebhookPayload({headline: 'h', text: 't', cli: null}, WORKFLOW_URL).cli).toBe('-')
+    expect(toFallbackPayload({headline: 'h', text: 't', cli: null}).text).toBe('*h*\n\nt')
   })
 })
 
 describe('renderShortlistText', () => {
   const evidence = makeEvidence()
-  const render = (recommendation = makeRecommendation(), source = evidence) =>
-    renderShortlistText(recommendation, source, LINKS)
+  const message = (recommendation = makeRecommendation(), source = evidence) =>
+    renderShortlist(recommendation, source, LINKS)
+  const render = (recommendation = makeRecommendation(), source = evidence) => {
+    const {headline, text} = message(recommendation, source)
+    return `${headline}\n${text}`
+  }
+
+  test('splits the headline from the text', () => {
+    const {headline, text} = message()
+    expect(headline).toBe('@stable shortlist after sanity 6.24.0 reached latest - recommend 6.23.0')
+    expect(text.startsWith('Current stable: 6.15.0')).toBe(true)
+    expect(text).not.toContain(headline)
+  })
+
+  test('the command is its own field and not part of the text', () => {
+    const {text, cli} = message()
+    expect(cli).toBe('gh workflow run tag-stable.yml -f version=6.23.0')
+    expect(text).not.toContain('From the CLI')
+  })
+
+  test('the hold headline names the hold', () => {
+    const evaluation = makeEvaluation({eligible: [], shortlist: []})
+    const recommendation = makeRecommendation({evaluation, decision: 'hold', shortlist: []})
+    expect(message(recommendation).headline).toBe(
+      '@stable: hold after sanity 6.24.0 reached latest',
+    )
+    expect(message(recommendation).cli).toBeNull()
+  })
 
   test('promote', () => {
     expect(render()).toMatchSnapshot()
@@ -80,10 +114,9 @@ describe('renderShortlistText', () => {
     expect(lines[0]).toBe('@stable shortlist after sanity 6.24.0 reached latest - recommend 6.23.0')
     expect(lines).toContain('1) 6.23.0 - Newest eligible version.')
     expect(lines).toContain('3) 6.21.0 - Fallback if the open reports are regressions.')
-    expect(lines.at(-3)).toBe(
+    expect(lines.at(-2)).toBe(
       `To promote: open ${WORKFLOW_URL}, click Run workflow, enter the version (for example 6.23.0). The result posts here.`,
     )
-    expect(lines.at(-2)).toBe('From the CLI: gh workflow run tag-stable.yml -f version=6.23.0')
     expect(lines.at(-1)).toBe(`Full reasoning: ${RUN_URL}`)
   })
 
@@ -95,6 +128,18 @@ describe('renderShortlistText', () => {
       .split('\n')
       .find((candidate) => candidate.startsWith('1) '))
     expect(line?.length).toBeLessThanOrEqual(160)
+  })
+
+  test('cuts a long reason at a word boundary and marks the cut', () => {
+    const recommendation = makeRecommendation({
+      shortlist: [{version: '6.23.0', reason: `${'wordy '.repeat(40)}end`}],
+    })
+    const line = message(recommendation)
+      .text.split('\n')
+      .find((candidate) => candidate.startsWith('1) '))
+    const reason = line?.slice('1) 6.23.0 - '.length) ?? ''
+    expect(reason.length).toBeLessThanOrEqual(140)
+    expect(reason.endsWith('wordy…')).toBe(true)
   })
 
   test('leaves the rationale and concerns to the run summary', () => {
@@ -248,7 +293,7 @@ describe('renderShortlistText', () => {
   })
 
   test('a url cannot break out of its line', () => {
-    const text = renderShortlistText(makeRecommendation(), evidence, {
+    const {text} = renderShortlist(makeRecommendation(), evidence, {
       runUrl: 'https://x.example/a|b>c d',
       workflowUrl: WORKFLOW_URL,
     })
@@ -294,5 +339,23 @@ describe('renderSummaryMarkdown', () => {
     expect(summarise(makeRecommendation(), degraded)).toContain(
       'Latest rollback history unavailable',
     )
+  })
+})
+
+describe('shortenAtWord', () => {
+  test('keeps text that fits', () => {
+    expect(shortenAtWord('short reason.', 20)).toBe('short reason.')
+  })
+
+  test('cuts at the last word boundary before the limit', () => {
+    expect(shortenAtWord('alpha beta gamma delta', 14)).toBe('alpha beta…')
+  })
+
+  test('drops trailing punctuation before the ellipsis', () => {
+    expect(shortenAtWord('alpha beta, gamma delta', 16)).toBe('alpha beta…')
+  })
+
+  test('falls back to a hard cut for a single long word', () => {
+    expect(shortenAtWord('abcdefghijklmnop', 6)).toBe('abcde…')
   })
 })

@@ -1,6 +1,6 @@
 import semver from 'semver'
 
-import {PACKAGE_NAME} from './config'
+import {PACKAGE_NAME, TEXT_LIMITS} from './config'
 import {TAG_STABLE_WORKFLOW} from './sources/github'
 import {daysBetween} from './time'
 import {
@@ -9,13 +9,20 @@ import {
   type FallbackPayload,
   type ModelFailureReason,
   type Recommendation,
+  type ShortlistMessage,
   type ShortlistEntry,
   type WebhookPayload,
 } from './types'
 
-export const SUGGESTION_WEBHOOK_FIELDS = {text: 'text', runUrl: 'run_url'} as const
+export const SUGGESTION_WEBHOOK_FIELDS = {
+  headline: 'headline',
+  text: 'text',
+  cli: 'cli',
+  runUrl: 'run_url',
+} as const
 export const CI_ALERTS_WEBHOOK_FIELDS = {text: 'text'} as const
 
+export const EMPTY_WEBHOOK_VALUE = '-'
 const DEFAULT_ESCAPE_LIMIT = 2000
 const MAX_LISTED_VERSIONS = 6
 const MAX_LISTED_BLOCKED = 3
@@ -38,15 +45,18 @@ export function escapeSlack(text: string, maxLength: number = DEFAULT_ESCAPE_LIM
     .replaceAll('>', '&gt;')
 }
 
-export function toWebhookPayload(text: string, runUrl: string): WebhookPayload {
+export function toWebhookPayload(message: ShortlistMessage, runUrl: string): WebhookPayload {
   return {
-    [SUGGESTION_WEBHOOK_FIELDS.text]: text,
+    [SUGGESTION_WEBHOOK_FIELDS.headline]: message.headline,
+    [SUGGESTION_WEBHOOK_FIELDS.text]: message.text,
+    [SUGGESTION_WEBHOOK_FIELDS.cli]: message.cli ?? EMPTY_WEBHOOK_VALUE,
     [SUGGESTION_WEBHOOK_FIELDS.runUrl]: runUrl,
   }
 }
 
-export function toFallbackPayload(text: string): FallbackPayload {
-  return {[CI_ALERTS_WEBHOOK_FIELDS.text]: text}
+export function toFallbackPayload(message: ShortlistMessage): FallbackPayload {
+  const cliLine = message.cli ? `\nFrom the CLI: \`${message.cli}\`` : ''
+  return {[CI_ALERTS_WEBHOOK_FIELDS.text]: `*${message.headline}*\n\n${message.text}${cliLine}`}
 }
 
 function encodeLinkUnsafe(character: string): string {
@@ -118,8 +128,16 @@ function renderStable(recommendation: Recommendation): string {
   return `Current stable: ${escapeSlack(evaluation.currentStable, 40)}${age}`
 }
 
+export function shortenAtWord(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text
+  const clipped = text.slice(0, maxLength - 1)
+  const lastSpace = clipped.lastIndexOf(' ')
+  const wholeWords = lastSpace > 0 ? clipped.slice(0, lastSpace) : clipped
+  return `${wholeWords.replace(/[\s,;:.-]+$/, '')}…`
+}
+
 function renderSlot(entry: ShortlistEntry, position: number): string {
-  const reason = escapeSlack(singleLine(entry.reason), SLOT_REASON_LIMIT)
+  const reason = escapeSlack(shortenAtWord(singleLine(entry.reason), SLOT_REASON_LIMIT))
   return `${position}) ${escapeSlack(entry.version, 40)} - ${reason}`
 }
 
@@ -213,11 +231,11 @@ function renderStableSplit(recommendation: Recommendation): string | null {
   return `Stable is split across packages: ${listed}${andMore(others.length, MAX_LISTED_VERSIONS)}. Promoting a shortlisted version re-tags every package.`
 }
 
-export function renderShortlistText(
+export function renderShortlist(
   recommendation: Recommendation,
   evidence: Evidence,
   links: RenderLinks,
-): string {
+): ShortlistMessage {
   const topPick = recommendation.shortlist[0]
   const exampleVersion = topPick ? escapeSlack(topPick.version, 40) : 'X.Y.Z'
   const banners = withoutNulls([
@@ -229,7 +247,6 @@ export function renderShortlistText(
   ])
   const slots = recommendation.shortlist.map((entry, index) => renderSlot(entry, index + 1))
   const lines = [
-    renderHeadline(recommendation),
     renderStable(recommendation),
     '',
     ...slots,
@@ -239,10 +256,13 @@ export function renderShortlistText(
     topPick
       ? `To promote: ${promoteInstruction(links.workflowUrl, exampleVersion)} The result posts here.`
       : null,
-    `From the CLI: ${overrideCommand(exampleVersion)}`,
     `Full reasoning: ${bareUrl(links.runUrl)}`,
   ]
-  return withoutNulls(lines).join('\n')
+  return {
+    headline: renderHeadline(recommendation),
+    text: withoutNulls(lines).join('\n'),
+    cli: topPick ? overrideCommand(exampleVersion) : null,
+  }
 }
 
 function escapeMarkdown(text: string, maxLength: number): string {
@@ -264,7 +284,7 @@ function renderPromoteSection(recommendation: Recommendation, links: RenderLinks
   const exampleVersion = topPick ? escapeMarkdown(topPick.version, 40) : 'X.Y.Z'
   const rows = recommendation.shortlist.map(
     (entry) =>
-      `| ${escapeMarkdown(entry.version, 40)} | ${escapeMarkdown(entry.reason, SLOT_REASON_LIMIT)} |`,
+      `| ${escapeMarkdown(entry.version, 40)} | ${escapeMarkdown(entry.reason, TEXT_LIMITS.reason)} |`,
   )
   const table =
     rows.length > 0

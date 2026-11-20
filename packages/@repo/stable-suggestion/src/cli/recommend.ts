@@ -2,7 +2,7 @@ import {getModel} from '../config'
 import {askModel, deterministicRecommendation, toRecommendation} from '../model'
 import {buildPrompt} from '../prompt'
 import {
-  renderShortlistText,
+  renderShortlist,
   renderSummaryMarkdown,
   toFallbackPayload,
   toWebhookPayload,
@@ -52,10 +52,10 @@ export async function runRecommend(deps: CliDeps, args: ParsedArguments): Promis
   const evidence = await readJson<Evidence>(deps, evidencePath)
   const evaluation = evaluate(evidence)
   const recommendation = await recommendFor(deps, args, evidence, evaluation)
-  const text = renderShortlistText(recommendation, evidence, links)
+  const message = renderShortlist(recommendation, evidence, links)
   await writeJson(deps, `${outDir}/recommendation.json`, recommendation)
-  await writeJson(deps, `${outDir}/slack-webhook.json`, toWebhookPayload(text, workflowUrl))
-  await writeJson(deps, `${outDir}/slack-fallback.json`, toFallbackPayload(text))
+  await writeJson(deps, `${outDir}/slack-webhook.json`, toWebhookPayload(message, workflowUrl))
+  await writeJson(deps, `${outDir}/slack-fallback.json`, toFallbackPayload(message))
   await deps.files.writeText(
     `${outDir}/summary.md`,
     `${renderSummaryMarkdown(recommendation, evidence, links)}\n`,

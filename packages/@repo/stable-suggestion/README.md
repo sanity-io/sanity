@@ -6,6 +6,8 @@ Internal tool that suggests which already-published `sanity` version to move to 
 
 The Slack message and the run summary both say: open the `tag-stable.yml` workflow page, click Run workflow and enter the version. `gh workflow run tag-stable.yml -f version=<X.Y.Z>` does the same from a terminal. `tag-stable.yml` validates the version, reads the current stable tag, tags every package, updates the bundle manifest and posts the outcome to Slack.
 
+The webhook payload has four variables because Workflow Builder inserts them literally and applies no markup: `headline` is the first line and is bolded in the step, `text` is the body, `cli` is the `gh workflow run tag-stable.yml -f version=<pick>` command and is styled as code in the step (`-` when there is no pick), and `run_url` drives the button. Each reason in `text` is a single sentence the prompt caps at 120 characters, and a longer one is cut at a word boundary before 140 characters.
+
 ## Rules
 
 Terms: **A** is the as-of instant. **S** is the current stable at A. **L** is the latest version at A. **published(v)** is the npm publish time of v.
@@ -80,7 +82,7 @@ pnpm stable-suggestion collect --out "$PWD/.context/out/evidence.json"
 pnpm stable-suggestion recommend "$PWD/.context/out/evidence.json" --out-dir "$PWD/.context/out" --run-url https://example.invalid/run --workflow-url https://example.invalid/workflow --no-llm
 ```
 
-`recommend` writes `recommendation.json`, `slack-webhook.json` (`{text, run_url}`, where `run_url` is the `tag-stable.yml` workflow page), `slack-fallback.json` (`{text}`) and `summary.md`. Nothing posts to Slack from the CLI.
+`recommend` writes `recommendation.json`, `slack-webhook.json` (`{headline, text, cli, run_url}`, where `run_url` is the `tag-stable.yml` workflow page), `slack-fallback.json` (`{text}`, the headline in bold, the text and the command in backticks) and `summary.md`. Nothing posts to Slack from the CLI.
 
 `--history <file>` on `collect` and `backtest` reads a recorded history JSON instead of fetching, which runs the tool offline. `src/__fixtures__/history.json` is such a file.
 

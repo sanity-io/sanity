@@ -179,8 +179,15 @@ export interface Recommendation {
 }
 
 export type SlackRoute = 'webhook-trigger' | 'incoming-webhook' | 'none'
-export interface WebhookPayload {
+export interface ShortlistMessage {
+  headline: string
   text: string
+  cli: string | null
+}
+export interface WebhookPayload {
+  headline: string
+  text: string
+  cli: string
   run_url: string
 }
 export interface FallbackPayload {

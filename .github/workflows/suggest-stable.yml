@@ -92,14 +92,14 @@ jobs:
           TEST_PREFIX: "TEST (branch run, nothing will be promoted) - "
         run: |
           for file in slack-webhook.json slack-fallback.json; do
-            jq --arg prefix "$TEST_PREFIX" '.text = $prefix + .text' "$OUT_DIR/$file" > "$OUT_DIR/$file.tmp"
+            jq --arg prefix "$TEST_PREFIX" 'if has("headline") then .headline = $prefix + .headline else .text = $prefix + .text end' "$OUT_DIR/$file" > "$OUT_DIR/$file.tmp"
             mv "$OUT_DIR/$file.tmp" "$OUT_DIR/$file"
           done
       - name: Post the shortlist
         if: steps.route.outputs.route == 'webhook-trigger'
         uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
         with:
-          # Fields: text, run_url (SUGGESTION_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts). run_url is the tag-stable workflow page
+          # Fields: headline, text, cli, run_url (SUGGESTION_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts). run_url is the tag-stable workflow page
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_STABLE_SUGGESTION }}
           webhook-type: webhook-trigger
           payload-file-path: ${{ runner.temp }}/stable-suggestion/slack-webhook.json
