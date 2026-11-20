@@ -8,43 +8,6 @@ on:
         description: "Semver version to tag as stable (e.g., 3.2.1 or 3.2.1-next.1.abc)"
         required: true
         type: string
-  workflow_call:
-    inputs:
-      version:
-        description: "Semver version to tag as stable"
-        required: true
-        type: string
-      expected-current-stable:
-        description: "Tag nothing unless sanity's stable dist-tag currently equals this version"
-        required: false
-        type: string
-        default: ""
-      invoked-by:
-        description: "Calling workflow. The caller posts its own Slack message, so this one stays quiet"
-        required: false
-        type: string
-        default: "workflow_call"
-    secrets:
-      NPM_PUBLISH_TOKEN:
-        required: true
-      TURBO_TOKEN:
-        required: true
-      GCS_STAGING_PROJECT_ID:
-        required: true
-      GCS_STAGING_SERVICE_KEY:
-        required: true
-      GCS_STAGING_BUCKET:
-        required: true
-      GCS_PRODUCTION_PROJECT_ID:
-        required: true
-      GCS_PRODUCTION_SERVICE_KEY:
-        required: true
-      GCS_PRODUCTION_BUCKET:
-        required: true
-      SLACK_WEBHOOK_URL_STABLE_SUGGESTION:
-        required: false
-      SLACK_WEBHOOK_URL_CI_ALERTS:
-        required: false
 
 permissions:
   contents: read
@@ -74,24 +37,13 @@ jobs:
           echo "✅ Version validation passed: $INPUT_VERSION"
           echo "version=$INPUT_VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Check the current stable tag
+      - name: Read the current stable tag
         id: current-stable
-        env:
-          EXPECTED_CURRENT_STABLE: ${{ inputs.expected-current-stable }}
-          TARGET_VERSION: ${{ inputs.version }}
         run: |
           previous=$(curl -fsS https://registry.npmjs.org/-/package/sanity/dist-tags | jq -r '.stable' || true)
 
           if [[ "$previous" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9\.-]+)?$ ]]; then
             echo "previous=$previous" >> "$GITHUB_OUTPUT"
-          elif [ -n "$EXPECTED_CURRENT_STABLE" ]; then
-            echo "::error::Could not read the current stable tag of sanity from npm. Nothing was tagged."
-            exit 1
-          fi
-
-          if [ -n "$EXPECTED_CURRENT_STABLE" ] && [ "$previous" != "$EXPECTED_CURRENT_STABLE" ] && [ "$previous" != "$TARGET_VERSION" ]; then
-            echo "::error::stable is $previous, expected $EXPECTED_CURRENT_STABLE. Nothing was tagged."
-            exit 1
           fi
 
   npm-tagging:
@@ -183,7 +135,7 @@ jobs:
           pnpm bundle-manager tag --tag=stable --target-version="$VERSION"
 
   notify:
-    name: Announce manual promotion
+    name: Announce promotion
     needs: [get-version, npm-tagging, update-manifest]
     if: always()
     runs-on: ubuntu-latest
@@ -194,18 +146,12 @@ jobs:
       HAS_SUGGESTION_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_STABLE_SUGGESTION != '' }}
       HAS_CI_ALERTS_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS != '' }}
     steps:
-      - name: Decide whether to post
+      - name: Decide how to post
         id: decide
         env:
-          INVOKED_BY: ${{ inputs.invoked-by }}
           NPM_RESULT: ${{ needs.npm-tagging.result }}
           MANIFEST_RESULT: ${{ needs.update-manifest.result }}
         run: |
-          if [ -n "$INVOKED_BY" ]; then
-            echo "route=none" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
           if [ "$HAS_SUGGESTION_WEBHOOK" = "true" ]; then
             echo "route=webhook-trigger" >> "$GITHUB_OUTPUT"
           elif [ "$HAS_CI_ALERTS_WEBHOOK" = "true" ]; then
@@ -220,7 +166,7 @@ jobs:
             echo "outcome=failed" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Post the manual promotion notice
+      - name: Post the promotion notice
         if: steps.decide.outputs.route == 'webhook-trigger'
         uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
         with:
@@ -228,9 +174,9 @@ jobs:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_STABLE_SUGGESTION }}
           webhook-type: webhook-trigger
           payload: |
-            {"text": ${{ toJSON(format(':label: Manual @stable promotion of sanity {0} by @{1}: {2} (was {3}). <{4}|Open github workflow>', needs.get-version.outputs.version || 'an invalid version', github.triggering_actor, steps.decide.outputs.outcome, needs.get-version.outputs.previous || 'unknown', env.RUN_URL)) }}, "run_url": ${{ toJSON(env.RUN_URL) }}}
+            {"text": ${{ toJSON(format('{0} promoted to @stable by @{1}: {2} (was {3}). {4}', needs.get-version.outputs.version || 'an invalid version', github.triggering_actor, steps.decide.outputs.outcome, needs.get-version.outputs.previous || 'unknown', env.RUN_URL)) }}, "run_url": ${{ toJSON(env.RUN_URL) }}}
 
-      - name: Post the manual promotion notice (CI alerts fallback)
+      - name: Post the promotion notice (CI alerts fallback)
         if: steps.decide.outputs.route == 'incoming-webhook'
         uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
         with:
@@ -238,4 +184,4 @@ jobs:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
           webhook-type: incoming-webhook
           payload: |
-            {"text": ${{ toJSON(format(':label: Manual @stable promotion of sanity {0} by @{1}: {2} (was {3}). <{4}|Open github workflow>', needs.get-version.outputs.version || 'an invalid version', github.triggering_actor, steps.decide.outputs.outcome, needs.get-version.outputs.previous || 'unknown', env.RUN_URL)) }}}
+            {"text": ${{ toJSON(format('{0} promoted to @stable by @{1}: {2} (was {3}). {4}', needs.get-version.outputs.version || 'an invalid version', github.triggering_actor, steps.decide.outputs.outcome, needs.get-version.outputs.previous || 'unknown', env.RUN_URL)) }}}

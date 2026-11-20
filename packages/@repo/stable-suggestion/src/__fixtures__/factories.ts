@@ -8,6 +8,8 @@ import {
 
 export const AS_OF = '2026-11-17T18:10:00Z'
 export const RUN_URL = 'https://github.com/example-org/example-repo/actions/runs/123'
+export const WORKFLOW_URL =
+  'https://github.com/example-org/example-repo/actions/workflows/tag-stable.yml'
 
 export function makeCandidate(version: string, overrides: Partial<Candidate> = {}): Candidate {
   return {
@@ -102,9 +104,9 @@ export function makeRecommendation(overrides: Partial<Recommendation> = {}): Rec
     evaluation: makeEvaluation(),
     decision: 'promote',
     shortlist: [
-      {slot: 1, version: '6.23.0', reason: 'Newest eligible version.'},
-      {slot: 2, version: '6.22.0', reason: 'One more week of soak.'},
-      {slot: 3, version: '6.21.0', reason: 'Fallback if the open reports are regressions.'},
+      {version: '6.23.0', reason: 'Newest eligible version.'},
+      {version: '6.22.0', reason: 'One more week of soak.'},
+      {version: '6.21.0', reason: 'Fallback if the open reports are regressions.'},
     ],
     source: 'model',
     fallbackReason: null,

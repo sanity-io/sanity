@@ -10,11 +10,11 @@ import {
   type StablePromotion,
 } from '../types'
 
-export const P3_VERSION = '6.11.0'
-export const P3_CUTOFF = '2026-09-01T15:24:00Z'
+const P3_VERSION = '6.11.0'
+const P3_CUTOFF = '2026-09-01T15:24:00Z'
 
-export type ExposureClass = 'none' | 'unknowable' | 'knowable'
-export type IndependentReason =
+type ExposureClass = 'none' | 'unknowable' | 'knowable'
+type IndependentReason =
   | 'no-evidence'
   | 'unknown-version'
   | 'not-newer-than-stable'
@@ -38,7 +38,7 @@ export interface BacktestInput {
   notes: string[]
 }
 
-export interface HumanPromotionMatch {
+interface HumanPromotionMatch {
   version: string
   at: IsoDate
 }
@@ -49,13 +49,13 @@ export interface BacktestRow extends BacktestInput {
   exposedVersions: string[]
 }
 
-export interface P1Violation {
+interface P1Violation {
   asOf: IsoDate
   version: string
   reasons: IndependentReason[]
 }
 
-export interface P4Exposure {
+interface P4Exposure {
   asOf: IsoDate
   versions: string[]
   classification: ExposureClass
@@ -149,6 +149,14 @@ function isRolledBack(evidence: Evidence, version: string, publishedAt: IsoDate)
   })
 }
 
+function isUnavailable(evidence: Evidence, version: string, publishedAt: IsoDate): boolean {
+  const deprecated =
+    evidence.deprecationKnown &&
+    Boolean(evidence.versions.find((entry) => entry.version === version)?.deprecated)
+  const aboveLatest = evidence.mode === 'live' && semver.gt(version, evidence.latest)
+  return deprecated || aboveLatest || isRolledBack(evidence, version, publishedAt)
+}
+
 const NO_PROMOTION_VERSION = '0.0.0'
 
 function deriveStable(history: History, evidence: Evidence): string {
@@ -210,7 +218,8 @@ function independentReasons(
       semver.major(entry.version) === semver.major(version) &&
       semver.minor(entry.version) === semver.minor(version) &&
       semver.gt(entry.version, version) &&
-      isPublishedBy(entry.publishedAt, evidence.asOf),
+      isPublishedBy(entry.publishedAt, evidence.asOf) &&
+      !isUnavailable(evidence, entry.version, entry.publishedAt),
   )
   const checks: [IndependentReason, boolean][] = [
     ['not-newer-than-stable', semver.lte(version, evidence.currentStable)],

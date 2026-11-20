@@ -6,7 +6,6 @@ import {resolveGitHubToken} from '@repo/utils/github-token'
 
 import {fetchHistory} from '../history'
 import {type ModelClient} from '../model'
-import {fetchApprovals} from '../sources/github'
 import {createRadarClient} from '../sources/radar'
 import {type CliDeps} from './deps'
 
@@ -42,8 +41,6 @@ export function createLiveDeps(): CliDeps {
         githubToken: findGitHubToken(),
         issuesFrom,
       }),
-    fetchApprovals: (runId) =>
-      fetchApprovals({fetchImpl: fetch, token: resolveGitHubToken()}, runId),
     createModelClient: () => new Anthropic() as ModelClient,
   }
 }

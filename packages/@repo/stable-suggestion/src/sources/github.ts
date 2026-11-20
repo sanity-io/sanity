@@ -1,30 +1,19 @@
 import semver from 'semver'
 
-import {CANDIDATE_ENVIRONMENT_PREFIX} from '../config'
 import {toSourced} from '../sourced'
 import {compareByAt} from '../time'
-import {
-  type Approval,
-  type History,
-  type IssueReport,
-  type LatestMove,
-  type StablePromotion,
-} from '../types'
+import {type History, type IssueReport, type LatestMove, type StablePromotion} from '../types'
 import {type FetchImpl} from './npm'
 
 const API_BASE_URL = 'https://api.github.com'
 const REPOSITORY = 'sanity-io/sanity'
-const TAG_STABLE_WORKFLOW = 'tag-stable.yml'
+export const TAG_STABLE_WORKFLOW = 'tag-stable.yml'
 const PAGE_SIZE = 100
 const MAX_PAGES = 10
 const SEARCH_RESULT_CAP = 1000
 const PROMOTION_TITLE = /^Tag @stable - (\d+\.\d+\.\d+)$/
 const LATEST_MOVE_TITLE = /^Tag @latest - (\d+\.\d+\.\d+)$/
 const TAG_LATEST_WORKFLOW = 'tag-latest.yml'
-const SUGGEST_STABLE_WORKFLOW = 'suggest-stable.yml'
-const AUTOMATED_TAG_JOB =
-  /^Tag (\d+\.\d+\.\d+) as stable \/ (Update NPM dist-tags|Update bundle manifest)$/
-const REQUIRED_TAG_JOBS = 2
 
 export interface GitHubDeps {
   fetchImpl: FetchImpl
@@ -38,16 +27,6 @@ interface ApiWorkflowRun {
   conclusion: string | null
 }
 
-interface ApiRunReference {
-  id: number
-}
-
-interface ApiJob {
-  name: string
-  conclusion: string | null
-  completed_at: string | null
-}
-
 interface ApiIssue {
   number: number
   title: string
@@ -57,13 +36,6 @@ interface ApiIssue {
   closed_at: string | null
   labels: ({name?: string} | string)[]
   pull_request?: unknown
-}
-
-interface ApiApproval {
-  state: string
-  comment: string | null
-  user: {login: string} | null
-  environments: {name: string}[]
 }
 
 function escapeRegExp(text: string): string {
@@ -88,24 +60,6 @@ export function normalisePromotions(runs: ApiWorkflowRun[]): StablePromotion[] {
   return normaliseTitledRuns(runs, PROMOTION_TITLE)
 }
 
-export function normaliseAutomatedPromotions(jobs: ApiJob[]): StablePromotion[] {
-  const finished = jobs.flatMap((job) => {
-    const match = AUTOMATED_TAG_JOB.exec(job.name)
-    return match?.[1] && job.conclusion === 'success' && job.completed_at
-      ? [{version: match[1], at: job.completed_at}]
-      : []
-  })
-  const versions = [...new Set(finished.map((entry) => entry.version))]
-  return versions.flatMap((version): StablePromotion[] => {
-    const jobsForVersion = finished.filter((entry) => entry.version === version)
-    const latestAt = jobsForVersion
-      .map((entry) => entry.at)
-      .toSorted()
-      .at(-1)
-    return jobsForVersion.length >= REQUIRED_TAG_JOBS && latestAt ? [{version, at: latestAt}] : []
-  })
-}
-
 export function normaliseLatestMoves(runs: ApiWorkflowRun[]): LatestMove[] {
   return normaliseTitledRuns(runs, LATEST_MOVE_TITLE)
 }
@@ -128,20 +82,6 @@ export function normaliseIssues(issues: ApiIssue[], knownVersions: string[]): Is
       }
     })
     .toSorted((left, right) => left.number - right.number)
-}
-
-export function normaliseApprovals(raw: ApiApproval[]): Approval[] {
-  return raw.map((entry) => ({
-    login: entry.user?.login ?? 'unknown',
-    comment: entry.comment ?? '',
-    state: entry.state === 'approved' ? 'approved' : 'rejected',
-    slots: entry.environments
-      .map((environment) => environment.name)
-      .filter((name) => name.startsWith(CANDIDATE_ENVIRONMENT_PREFIX))
-      .map((name) => Number(name.slice(CANDIDATE_ENVIRONMENT_PREFIX.length)))
-      .filter((slot) => Number.isInteger(slot) && slot > 0)
-      .toSorted((left, right) => left - right),
-  }))
 }
 
 async function request(deps: GitHubDeps, pathAndQuery: string): Promise<Response> {
@@ -192,44 +132,10 @@ async function fetchRuns<Run>(deps: GitHubDeps, workflow: string, status: string
   )
 }
 
-const NOT_FOUND_PREFIX = 'GitHub API 404'
-
-async function orEmptyWhenMissing<Item>(load: Promise<Item[]>): Promise<Item[]> {
-  try {
-    return await load
-  } catch (error) {
-    if (error instanceof Error && error.message.startsWith(NOT_FOUND_PREFIX)) return []
-    throw error
-  }
-}
-
-async function fetchAutomatedPromotions(deps: GitHubDeps): Promise<StablePromotion[]> {
-  const runsByStatus = await Promise.all(
-    ['success', 'cancelled'].map((status) =>
-      orEmptyWhenMissing(fetchRuns<ApiRunReference>(deps, SUGGEST_STABLE_WORKFLOW, status)),
-    ),
-  )
-  const jobs = await Promise.all(
-    runsByStatus.flat().map((run) =>
-      getPages<ApiJob, {jobs?: ApiJob[]}>(
-        deps,
-        (page) =>
-          `/repos/${repositoryOf(deps)}/actions/runs/${run.id}/jobs?per_page=${PAGE_SIZE}&page=${page}`,
-        (body) => body.jobs ?? [],
-      ),
-    ),
-  )
-  return jobs.flatMap(normaliseAutomatedPromotions)
-}
-
 export function fetchStablePromotions(deps: GitHubDeps): Promise<History['stablePromotions']> {
-  return toSourced(async () => {
-    const [manual, automated] = await Promise.all([
-      fetchRuns<ApiWorkflowRun>(deps, TAG_STABLE_WORKFLOW, 'success'),
-      fetchAutomatedPromotions(deps),
-    ])
-    return [...normalisePromotions(manual), ...automated].toSorted(compareByAt)
-  })
+  return toSourced(async () =>
+    normalisePromotions(await fetchRuns<ApiWorkflowRun>(deps, TAG_STABLE_WORKFLOW, 'success')),
+  )
 }
 
 export function fetchLatestMoves(deps: GitHubDeps): Promise<NonNullable<History['latestMoves']>> {
@@ -301,15 +207,4 @@ export function fetchIssues(
     )
     return normaliseIssues(perWindow.flat(), stableVersions)
   })
-}
-
-export async function fetchApprovals(
-  deps: GitHubDeps,
-  runId: string | number,
-): Promise<Approval[]> {
-  const response = await request(
-    deps,
-    `/repos/${repositoryOf(deps)}/actions/runs/${runId}/approvals`,
-  )
-  return normaliseApprovals((await response.json()) as ApiApproval[])
 }

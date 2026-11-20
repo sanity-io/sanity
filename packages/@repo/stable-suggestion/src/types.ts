@@ -161,7 +161,6 @@ export type ModelFailureReason =
   | 'empty-shortlist'
   | 'no-eligible-versions'
 export interface ShortlistEntry {
-  slot: number
   version: string
   reason: string
 }
@@ -179,19 +178,6 @@ export interface Recommendation {
   confidence: 'low' | 'medium' | 'high' | null
 }
 
-export type GuardReason =
-  | 'multiple-slots-approved'
-  | 'slot-not-approved'
-  | 'stable-moved'
-  | 'not-eligible'
-  | 'data-unavailable'
-export type PromotionOutcome = 'promoted' | 'guard-failed' | 'tag-failed'
-export interface Approval {
-  login: string
-  comment: string
-  state: 'approved' | 'rejected'
-  slots: number[]
-}
 export type SlackRoute = 'webhook-trigger' | 'incoming-webhook' | 'none'
 export interface WebhookPayload {
   text: string

@@ -4,11 +4,11 @@ import {type Evidence, type History, type Recommendation} from '../types'
 import {parseAsOf} from './args'
 import {UsageError} from './deps'
 import {runCli} from './main'
-import {toOutputLines} from './outputs'
-import {toRecommendOutputs} from './recommend'
+import {matchesOneOf, toOutputLines} from './outputs'
 import {createFakeCli, FAKE_NOW, HISTORY_PATH, readFile} from './testDeps'
 
 const RUN_URL = 'https://example.invalid/run'
+const WORKFLOW_URL = 'https://example.invalid/workflow'
 const OUTPUT_PATH = '/tmp/github-output'
 
 async function collectLive(fake = createFakeCli()) {
@@ -24,7 +24,7 @@ describe('usage', () => {
     const fake = createFakeCli()
     expect(await runCli(['--help'], fake.deps)).toBe(0)
     const text = fake.stdout.join('\n')
-    ;['collect', 'recommend', 'slack-route', 'verify', 'result', 'backtest'].forEach((command) =>
+    ;['collect', 'recommend', 'slack-route', 'backtest'].forEach((command) =>
       expect(text).toContain(command),
     )
   })
@@ -114,10 +114,20 @@ describe('collect', () => {
 
 describe('recommend', () => {
   async function recommend(extraArgs: string[] = ['--no-llm'], env: Record<string, string> = {}) {
-    const fake = createFakeCli({env: {GITHUB_OUTPUT: OUTPUT_PATH, ...env}})
+    const fake = createFakeCli({env})
     await collectLive(fake)
     const code = await runCli(
-      ['recommend', '/run/evidence.json', '--out-dir', '/out', '--run-url', RUN_URL, ...extraArgs],
+      [
+        'recommend',
+        '/run/evidence.json',
+        '--out-dir',
+        '/out',
+        '--run-url',
+        RUN_URL,
+        '--workflow-url',
+        WORKFLOW_URL,
+        ...extraArgs,
+      ],
       fake.deps,
     )
     return {fake, code}
@@ -133,25 +143,13 @@ describe('recommend', () => {
     >
     expect(Object.keys(webhook).toSorted()).toEqual(['run_url', 'text'])
     expect(Object.keys(fallback)).toEqual(['text'])
-    expect(webhook.run_url).toBe(RUN_URL)
-    expect(webhook.text).toContain(`<${RUN_URL}|Open github workflow>`)
+    expect(webhook.run_url).toBe(WORKFLOW_URL)
+    expect(webhook.text).toContain(`Full reasoning: ${RUN_URL}`)
+    expect(webhook.text).toContain(`To promote: open ${WORKFLOW_URL}`)
     expect(fallback.text).toBe(webhook.text)
     expect(readFile(fake, '/out/summary.md')).toContain('@stable suggestion')
     const recommendation = JSON.parse(readFile(fake, '/out/recommendation.json')) as Recommendation
     expect(recommendation).toMatchObject({source: 'deterministic', fallbackReason: 'disabled'})
-  })
-
-  test('writes validated GITHUB_OUTPUT lines', async () => {
-    const {fake} = await recommend()
-    const lines = readFile(fake, OUTPUT_PATH).trim().split('\n')
-    expect(lines).toEqual([
-      'baseline=6.15.0',
-      'slot-count=3',
-      'slot-1=6.23.0',
-      'slot-2=6.22.0',
-      'slot-3=6.21.0',
-      'decision=promote',
-    ])
   })
 
   test('no API key falls back without calling the model', async () => {
@@ -163,7 +161,12 @@ describe('recommend', () => {
 
   test('a missing evidence argument exits 2', async () => {
     const fake = createFakeCli()
-    expect(await runCli(['recommend', '--out-dir', '/o', '--run-url', RUN_URL], fake.deps)).toBe(2)
+    expect(
+      await runCli(
+        ['recommend', '--out-dir', '/o', '--run-url', RUN_URL, '--workflow-url', WORKFLOW_URL],
+        fake.deps,
+      ),
+    ).toBe(2)
   })
 
   test('a non-URL --run-url exits 2', async () => {
@@ -177,6 +180,8 @@ describe('recommend', () => {
         '/o',
         '--run-url',
         'javascript:alert(1)',
+        '--workflow-url',
+        WORKFLOW_URL,
         '--no-llm',
       ],
       fake.deps,
@@ -186,33 +191,9 @@ describe('recommend', () => {
 })
 
 describe('GITHUB_OUTPUT validation', () => {
-  function recommendationWith(overrides: Partial<Recommendation>): Recommendation {
-    return {
-      evaluation: {currentStable: '6.15.0'},
-      decision: 'hold',
-      shortlist: [],
-      ...overrides,
-    } as Recommendation
-  }
-
-  test('leaves unfilled slots empty', () => {
-    const lines = toOutputLines(toRecommendOutputs(recommendationWith({})))
-    expect(lines).toContain('slot-1=')
-    expect(lines).toContain('slot-count=0')
-  })
-
-  test('refuses a baseline that is not plain semver', () => {
-    const recommendation = recommendationWith({
-      evaluation: {currentStable: '6.15.0\nrun=evil'} as Recommendation['evaluation'],
-    })
-    expect(() => toOutputLines(toRecommendOutputs(recommendation))).toThrow(/baseline/)
-  })
-
-  test('refuses a shortlist version with a newline', () => {
-    const recommendation = recommendationWith({
-      shortlist: [{slot: 1, version: '6.23.0\nx=1', reason: ''}],
-    })
-    expect(() => toOutputLines(toRecommendOutputs(recommendation))).toThrow(/slot-1/)
+  test('refuses a value that fails its validator', () => {
+    const entry = {name: 'route', value: 'none\nx=1', isValid: matchesOneOf(['none'])}
+    expect(() => toOutputLines([entry])).toThrow(/route/)
   })
 })
 
@@ -232,132 +213,6 @@ describe('slack-route', () => {
     })
     expect(await runCli(['slack-route'], fake.deps)).toBe(0)
     expect(readFile(fake, OUTPUT_PATH)).toBe(`route=${route}\n`)
-  })
-})
-
-describe('verify', () => {
-  const base = ['verify', '--slot', '1', '--history', HISTORY_PATH]
-
-  test('exits 0 when everything is clear', async () => {
-    const fake = createFakeCli()
-    const args = [...base, '--version', '6.23.0', '--expected-stable', '6.15.0']
-    expect(await runCli(args, fake.deps)).toBe(0)
-  })
-
-  test('stable moved', async () => {
-    const fake = createFakeCli({env: {GITHUB_OUTPUT: OUTPUT_PATH}})
-    const args = [...base, '--version', '6.23.0', '--expected-stable', '6.14.1']
-    expect(await runCli(args, fake.deps)).toBe(1)
-    expect(readFile(fake, OUTPUT_PATH)).toBe('reason=stable-moved\n')
-  })
-
-  test('not eligible', async () => {
-    const fake = createFakeCli({env: {GITHUB_OUTPUT: OUTPUT_PATH}})
-    const args = [...base, '--version', '6.24.0', '--expected-stable', '6.15.0']
-    expect(await runCli(args, fake.deps)).toBe(1)
-    expect(readFile(fake, OUTPUT_PATH)).toBe('reason=not-eligible\n')
-  })
-
-  test('a version above the live latest is not eligible', async () => {
-    const fake = createFakeCli({env: {GITHUB_OUTPUT: OUTPUT_PATH}})
-    const recorded = JSON.parse(readFile(fake, HISTORY_PATH)) as History
-    fake.files.set(
-      HISTORY_PATH,
-      JSON.stringify({...recorded, liveDistTags: {latest: '6.22.0', stable: '6.15.0'}}),
-    )
-    const args = [...base, '--version', '6.23.0', '--expected-stable', '6.15.0']
-    expect(await runCli(args, fake.deps)).toBe(1)
-    expect(readFile(fake, OUTPUT_PATH)).toBe('reason=not-eligible\n')
-  })
-
-  test('data unavailable when the history cannot be loaded', async () => {
-    const fake = createFakeCli({env: {GITHUB_OUTPUT: OUTPUT_PATH}})
-    fake.deps.loadHistory = async () => {
-      throw new Error('npm is down')
-    }
-    const args = ['verify', '--slot', '1', '--version', '6.23.0', '--expected-stable', '6.15.0']
-    expect(await runCli(args, fake.deps)).toBe(1)
-    expect(readFile(fake, OUTPUT_PATH)).toBe('reason=data-unavailable\n')
-  })
-
-  test('approvals must be exactly this slot', async () => {
-    const approval = (slots: number[]) => ({
-      login: 'reviewer',
-      comment: '',
-      state: 'approved' as const,
-      slots,
-    })
-    const args = [...base, '--version', '6.23.0', '--expected-stable', '6.15.0', '--run-id', '99']
-    const ok = createFakeCli({approvals: [approval([1])]})
-    expect(await runCli(args, ok.deps)).toBe(0)
-    const multiple = createFakeCli({
-      env: {GITHUB_OUTPUT: OUTPUT_PATH},
-      approvals: [approval([1, 2])],
-    })
-    expect(await runCli(args, multiple.deps)).toBe(1)
-    expect(readFile(multiple, OUTPUT_PATH)).toBe('reason=multiple-slots-approved\n')
-    const other = createFakeCli({env: {GITHUB_OUTPUT: OUTPUT_PATH}, approvals: [approval([2])]})
-    expect(await runCli(args, other.deps)).toBe(1)
-    expect(readFile(other, OUTPUT_PATH)).toBe('reason=slot-not-approved\n')
-  })
-
-  test('fails closed when approvals cannot be fetched', async () => {
-    const fake = createFakeCli({env: {GITHUB_OUTPUT: OUTPUT_PATH}, approvals: new Error('403')})
-    const args = [...base, '--version', '6.23.0', '--expected-stable', '6.15.0', '--run-id', '99']
-    expect(await runCli(args, fake.deps)).toBe(1)
-    expect(readFile(fake, OUTPUT_PATH)).toBe('reason=slot-not-approved\n')
-  })
-
-  test('rejects a version that is not plain semver', async () => {
-    const fake = createFakeCli()
-    const args = [...base, '--version', '6.23.0;rm', '--expected-stable', '6.15.0']
-    expect(await runCli(args, fake.deps)).toBe(2)
-  })
-})
-
-describe('result', () => {
-  const args = [
-    'result',
-    '--slot',
-    '1',
-    '--slot-count',
-    '3',
-    '--version',
-    '6.23.0',
-    '--previous',
-    '6.15.0',
-    '--outcome',
-    'promoted',
-    '--run-id',
-    '99',
-    '--run-url',
-    RUN_URL,
-    '--out-dir',
-    '/out',
-  ]
-
-  test('names the approver and writes both payloads', async () => {
-    const fake = createFakeCli({
-      approvals: [{login: 'reviewer', comment: 'ship <!channel>', state: 'approved', slots: [1]}],
-    })
-    expect(await runCli(args, fake.deps)).toBe(0)
-    const webhook = JSON.parse(readFile(fake, '/out/slack-webhook.json')) as Record<string, string>
-    expect(Object.keys(webhook).toSorted()).toEqual(['run_url', 'text'])
-    expect(webhook.text).toContain('@reviewer')
-    expect(webhook.text).toContain('&lt;!channel&gt;')
-    expect(Object.keys(JSON.parse(readFile(fake, '/out/slack-fallback.json')))).toEqual(['text'])
-  })
-
-  test('uses approver unknown when approvals cannot be fetched', async () => {
-    const fake = createFakeCli({approvals: new Error('403')})
-    expect(await runCli(args, fake.deps)).toBe(0)
-    expect(readFile(fake, '/out/slack-webhook.json')).toContain('@unknown')
-  })
-
-  test('rejects an invalid outcome', async () => {
-    const fake = createFakeCli()
-    const bad = args.map((value) => (value === 'promoted' ? 'exploded' : value))
-    expect(await runCli(bad, fake.deps)).toBe(2)
   })
 })
 

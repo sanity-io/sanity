@@ -142,6 +142,15 @@ function rolledBackBy(evidence: Evidence, version: string, publishedAt: number):
   )
 }
 
+function isWithdrawn(evidence: Evidence, version: string, publishedAt: number): boolean {
+  const facts = evidence.versions.find((entry) => entry.version === version)
+  return (
+    (evidence.deprecationKnown && Boolean(facts?.deprecated)) ||
+    (evidence.mode === 'live' && semver.gt(version, evidence.latest)) ||
+    rolledBackBy(evidence, version, publishedAt) !== null
+  )
+}
+
 function hardReasons(
   evidence: Evidence,
   version: string,
@@ -166,7 +175,8 @@ function hardReasons(
         semver.major(entry.version) === semver.major(version) &&
         semver.minor(entry.version) === semver.minor(version) &&
         semver.gt(entry.version, version) &&
-        toTime(entry.publishedAt) <= asOf,
+        toTime(entry.publishedAt) <= asOf &&
+        !isWithdrawn(evidence, entry.version, toTime(entry.publishedAt)),
     )
     .sort((left, right) => semver.rcompare(left.version, right.version))[0]
   if (newerPatch) {

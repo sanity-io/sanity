@@ -1,12 +1,12 @@
 import {type ModelClient} from '../model'
 import {DAY_MS} from '../time'
-import {type Approval, type History} from '../types'
+import {type History} from '../types'
 
 export class UsageError extends Error {
   override name = 'UsageError'
 }
 
-export interface CliFiles {
+interface CliFiles {
   readText(path: string): Promise<string>
   writeText(path: string, content: string): Promise<void>
   appendText(path: string, content: string): Promise<void>
@@ -19,7 +19,6 @@ export interface CliDeps {
   stdout(line: string): void
   stderr(line: string): void
   loadHistory(options: {issuesFrom: Date}): Promise<History>
-  fetchApprovals(runId: string): Promise<Approval[]>
   createModelClient(): ModelClient
 }
 

@@ -74,12 +74,8 @@ const SQRL_QUERY = `*[_type=="sqrlScore" && git.sha in $shas]{_createdAt,"sha":g
 const BENCH_QUERY = `*[_type=="benchRun" && mode=="absolute" && trigger=="release" && git.sha in $shas]{_createdAt,"sha":git.sha,
   "calibrationMs":runner.calibrationMs,"initialJsBytes":bundle.experiment.initialJsBytes,"totalJsBytes":bundle.experiment.totalJsBytes}`
 
-export function stripVersionPrefix(label: string): string {
-  return label.replace(/^v/, '')
-}
-
 function validVersion(label: string | null | undefined): string | null {
-  return label ? semver.valid(stripVersionPrefix(label)) : null
+  return label ? semver.valid(label) : null
 }
 
 function earliestTagVersionAfter(

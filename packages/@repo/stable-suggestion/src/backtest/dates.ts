@@ -1,5 +1,5 @@
 import {BACKTEST_TIME_OF_DAY_UTC} from '../config'
-import {DAY_MS} from '../time'
+import {DAY_MS, formatInstant} from '../time'
 import {type IsoDate} from '../types'
 
 const WEEK_MS = 7 * DAY_MS
@@ -11,10 +11,6 @@ function toInstant(value: IsoDate, boundary: 'start' | 'end'): number {
     return Date.parse(boundary === 'start' ? `${value}T00:00:00Z` : `${value}T23:59:59.999Z`)
   }
   return Date.parse(value)
-}
-
-function formatInstant(instant: number): IsoDate {
-  return new Date(instant).toISOString().replace('.000Z', 'Z')
 }
 
 function firstTuesdayAtOrAfter(fromInstant: number): number {

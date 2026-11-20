@@ -1,5 +1,4 @@
 import {loadHistoryFixture} from '../__fixtures__/load'
-import {type Approval} from '../types'
 import {type CliDeps} from './deps'
 
 export const HISTORY_PATH = '/fixtures/history.json'
@@ -14,7 +13,6 @@ export interface FakeCli {
 
 export interface FakeCliOptions {
   env?: Record<string, string | undefined>
-  approvals?: Approval[] | Error
 }
 
 export function createFakeCli(options: FakeCliOptions = {}): FakeCli {
@@ -40,10 +38,6 @@ export function createFakeCli(options: FakeCliOptions = {}): FakeCli {
     stdout: (line) => stdout.push(line),
     stderr: (line) => stderr.push(line),
     loadHistory: async () => loadHistoryFixture(),
-    fetchApprovals: async () => {
-      if (options.approvals instanceof Error) throw options.approvals
-      return options.approvals ?? []
-    },
     createModelClient: () => {
       throw new Error('model client must not be created in these tests')
     },

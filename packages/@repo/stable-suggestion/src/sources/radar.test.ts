@@ -7,7 +7,6 @@ import {
   normaliseBench,
   normaliseRegressions,
   normaliseSqrl,
-  stripVersionPrefix,
   type RadarBenchRow,
   type RadarClient,
   type RadarSession,
@@ -303,11 +302,6 @@ describe('normaliseSqrl and normaliseBench', () => {
         createdAt: '2026-01-01T00:00:00Z',
       },
     ])
-  })
-
-  test('strips the tag prefix', () => {
-    expect(stripVersionPrefix('v6.23.0')).toBe('6.23.0')
-    expect(stripVersionPrefix('6.23.0')).toBe('6.23.0')
   })
 })
 

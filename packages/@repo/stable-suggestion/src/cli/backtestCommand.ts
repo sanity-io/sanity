@@ -62,7 +62,7 @@ function evaluateDate(history: History, asOf: IsoDate): DateResult {
   }
 }
 
-export function resolveSampleDates(sample: string | null, dates: IsoDate[]): IsoDate[] {
+function resolveSampleDates(sample: string | null, dates: IsoDate[]): IsoDate[] {
   if (sample === null) return []
   return sample
     .split(',')

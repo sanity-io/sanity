@@ -1,6 +1,7 @@
 import semver from 'semver'
 
 import {PACKAGE_NAME} from './config'
+import {TAG_STABLE_WORKFLOW} from './sources/github'
 import {daysBetween} from './time'
 import {
   type Candidate,
@@ -15,9 +16,10 @@ import {
 export const SUGGESTION_WEBHOOK_FIELDS = {text: 'text', runUrl: 'run_url'} as const
 export const CI_ALERTS_WEBHOOK_FIELDS = {text: 'text'} as const
 
-export const DEFAULT_ESCAPE_LIMIT = 2000
-const ISSUE_URL_BASE = 'https://github.com/sanity-io/sanity/issues'
+const DEFAULT_ESCAPE_LIMIT = 2000
 const MAX_LISTED_VERSIONS = 6
+const MAX_LISTED_BLOCKED = 3
+const SLOT_REASON_LIMIT = 140
 
 function isPrintable(character: string): boolean {
   const code = character.codePointAt(0) ?? 0
@@ -51,16 +53,16 @@ function encodeLinkUnsafe(character: string): string {
   return `%${(character.codePointAt(0) ?? 0).toString(16).toUpperCase().padStart(2, '0')}`
 }
 
-export function workflowLink(runUrl: string): string {
-  const safeUrl = stripControlChars(runUrl).replace(/[<>|\s]/g, encodeLinkUnsafe)
-  return `<${safeUrl}|Open github workflow>`
+interface RenderLinks {
+  runUrl: string
+  workflowUrl: string
 }
 
-function issueLink(issueNumber: number): string {
-  return `<${ISSUE_URL_BASE}/${issueNumber}|#${issueNumber}>`
+function bareUrl(url: string): string {
+  return stripControlChars(url).replace(/[<>|\s]/g, encodeLinkUnsafe)
 }
 
-export function singleLine(text: string): string {
+function singleLine(text: string): string {
   return text.replace(/\s+/g, ' ').trim()
 }
 
@@ -68,8 +70,8 @@ function formatUtc(isoDate: string): string {
   return `${isoDate.slice(0, 10)} ${isoDate.slice(11, 16)} UTC`
 }
 
-function andMore(total: number): string {
-  const remainder = total - MAX_LISTED_VERSIONS
+function andMore(total: number, listed: number): string {
+  const remainder = total - listed
   return remainder > 0 ? `, and ${remainder} more` : ''
 }
 
@@ -90,82 +92,54 @@ function describeSource(recommendation: Recommendation): string {
   return `deterministic: ${describeFallback(recommendation.fallbackReason)}`
 }
 
-function describeSqrl(candidate: Candidate, evidence: Evidence): string {
-  if (evidence.sqrl.status === 'unavailable') return 'SQRL unavailable'
-  if (candidate.sqrl === null) return 'SQRL missing'
-  const score = candidate.sqrl.score.toFixed(1)
-  const baseline = candidate.sqrlBaseline
-  const change =
-    baseline === null || baseline === 0
-      ? ''
-      : ` (${candidate.sqrl.score >= baseline ? '+' : ''}${Math.round((candidate.sqrl.score / baseline - 1) * 100)}% vs prior)`
-  const regressed =
-    candidate.sqrl.regressedInputs.length > 0
-      ? `, ${candidate.sqrl.regressedInputs.map((input) => `\`${escapeSlack(input, 80)}\``).join(' ')} input regressed`
-      : ''
-  return `SQRL ${score}${change}${regressed}`
+function overrideCommand(version: string): string {
+  return `gh workflow run ${TAG_STABLE_WORKFLOW} -f version=${version}`
 }
 
-function describeAdoption(candidate: Candidate, evidence: Evidence): string | null {
-  if (evidence.downloads.status === 'unavailable') return 'downloads unavailable'
-  if (evidence.downloads.status === 'not-applicable') return null
-  if (candidate.adoptionShare === null) return 'no download data'
-  return `${(candidate.adoptionShare * 100).toFixed(1)}% of v6 downloads`
+function promoteInstruction(workflowUrl: string, exampleVersion: string): string {
+  return `open ${bareUrl(workflowUrl)}, click Run workflow, enter the version (for example ${exampleVersion}).`
 }
 
-function describeReports(candidate: Candidate, evidence: Evidence): string {
-  if (evidence.issues.status === 'unavailable') return 'issue reports unavailable'
-  if (candidate.openIssueNumbers.length === 0) return 'no open reports'
-  return `open reports ${candidate.openIssueNumbers.map(issueLink).join(' ')}`
+function renderHeadline(recommendation: Recommendation): string {
+  const latest = escapeSlack(recommendation.evaluation.latest, 40)
+  const topPick = recommendation.shortlist[0]
+  if (recommendation.decision === 'hold' || topPick === undefined) {
+    return `@stable: hold after ${PACKAGE_NAME} ${latest} reached latest`
+  }
+  return `@stable shortlist after ${PACKAGE_NAME} ${latest} reached latest - recommend ${escapeSlack(topPick.version, 40)}`
 }
 
-function renderSlot(
-  entry: ShortlistEntry,
-  recommendation: Recommendation,
-  evidence: Evidence,
-): string {
-  const candidate = recommendation.evaluation.candidates.find(
-    (item) => item.version === entry.version,
-  )
-  const title = `*Slot ${entry.slot} · ${escapeSlack(entry.version, 40)}*`
-  const facts = candidate
-    ? withoutNulls([
-        `${candidate.ageDays.toFixed(1)} days on latest`,
-        describeSqrl(candidate, evidence),
-        describeAdoption(candidate, evidence),
-        describeReports(candidate, evidence),
-      ])
-    : []
-  const reason = `> ${escapeSlack(singleLine(entry.reason), 300)}`
-  return [[title, ...facts].join(' · '), reason].join('\n')
+function renderStable(recommendation: Recommendation): string {
+  const {evaluation} = recommendation
+  const since = evaluation.currentStableSince
+  const age = since
+    ? ` (since ${since.slice(0, 10)}, ${daysBetween(since, evaluation.asOf)} days)`
+    : ''
+  return `Current stable: ${escapeSlack(evaluation.currentStable, 40)}${age}`
 }
 
-function describeHardReason(candidate: Candidate, code: string, detail: string): string {
-  if (code === 'too-new') return `too new, eligible from ${formatUtc(candidate.eligibleFrom)}`
-  return `${code}: ${singleLine(detail)}`
+function renderSlot(entry: ShortlistEntry, position: number): string {
+  const reason = escapeSlack(singleLine(entry.reason), SLOT_REASON_LIMIT)
+  return `${position}) ${escapeSlack(entry.version, 40)} - ${reason}`
+}
+
+function describeHardReason(candidate: Candidate, code: string): string {
+  return code === 'too-new' ? `too new until ${formatUtc(candidate.eligibleFrom)}` : code
 }
 
 function renderNotEligible(candidates: Candidate[]): string | null {
   const blocked = candidates.filter((candidate) => !candidate.eligible)
   if (blocked.length === 0) return null
   const listed = blocked
-    .slice(0, MAX_LISTED_VERSIONS)
+    .slice(0, MAX_LISTED_BLOCKED)
     .map((candidate) => {
       const reasons = candidate.hard
-        .map((verdict) => describeHardReason(candidate, verdict.code, verdict.detail))
-        .join('; ')
-      return `${escapeSlack(candidate.version, 40)} (${escapeSlack(reasons, 300)})`
+        .map((verdict) => describeHardReason(candidate, verdict.code))
+        .join(', ')
+      return `${escapeSlack(candidate.version, 40)} (${escapeSlack(reasons, 120)})`
     })
     .join(', ')
-  return `Not eligible: ${listed}${andMore(blocked.length)}`
-}
-
-function renderNotShortlisted(recommendation: Recommendation): string | null {
-  const shortlisted = new Set(recommendation.shortlist.map((entry) => entry.version))
-  const rest = recommendation.evaluation.eligible.filter((version) => !shortlisted.has(version))
-  if (rest.length === 0) return null
-  const listed = rest.slice(0, MAX_LISTED_VERSIONS).map((version) => escapeSlack(version, 40))
-  return `Not shortlisted: ${listed.join(', ')}${andMore(rest.length)} (eligible, older)`
+  return `Not eligible: ${listed}${andMore(blocked.length, MAX_LISTED_BLOCKED)}`
 }
 
 function earliestEligibleFrom(candidates: Candidate[]): string | null {
@@ -180,30 +154,9 @@ function renderHoldReasons(recommendation: Recommendation, evidence: Evidence): 
   const radarDown = evidence.regressions.status === 'unavailable'
   const earliest = earliestEligibleFrom(recommendation.evaluation.candidates)
   return withoutNulls([
-    radarDown ? 'hold: Radar unavailable, regression gate cannot be cleared' : null,
+    radarDown ? 'Hold: Radar unavailable, regression gate cannot be cleared' : null,
     earliest ? `Earliest a version becomes eligible: ${formatUtc(earliest)}` : null,
   ])
-}
-
-function renderHeader(recommendation: Recommendation): string {
-  const latest = escapeSlack(recommendation.evaluation.latest, 40)
-  if (recommendation.decision === 'hold') return ':double_vertical_bar: *@stable: hold*'
-  return `:package: *@stable shortlist* after ${PACKAGE_NAME} ${latest} reached latest`
-}
-
-function renderStable(recommendation: Recommendation): string {
-  const {evaluation} = recommendation
-  const stable = escapeSlack(evaluation.currentStable, 40)
-  const since = evaluation.currentStableSince
-  const age = since
-    ? ` (stable since ${since.slice(0, 10)}, ${daysBetween(since, evaluation.asOf)} days)`
-    : ''
-  const topPick = recommendation.shortlist[0]
-  const call =
-    recommendation.decision === 'promote' && topPick
-      ? `*promote ${escapeSlack(topPick.version, 40)}*`
-      : '*hold*'
-  return `Current stable: *${stable}*${age}. Recommendation: ${call} (${describeSource(recommendation)})`
 }
 
 function renderMajorTransition(recommendation: Recommendation): string | null {
@@ -215,7 +168,7 @@ function renderMajorTransition(recommendation: Recommendation): string | null {
   const [newestMajor] = newerMajors.toSorted((left, right) => right - left)
   return newestMajor === undefined
     ? null
-    : `:arrow_up: Major transition: stable is on ${stableMajor}.x and ${newestMajor}.x has shipped`
+    : `Major transition: stable is on ${stableMajor}.x and ${newestMajor}.x has shipped`
 }
 
 function urgentReasons(recommendation: Recommendation): string[] {
@@ -235,17 +188,21 @@ function renderUrgent(recommendation: Recommendation): string | null {
   const reasons = urgentReasons(recommendation)
   if (reasons.length === 0) return null
   const topPick = recommendation.shortlist[0]
+  const topCandidate = recommendation.evaluation.candidates.find(
+    (candidate) => candidate.version === topPick?.version,
+  )
+  const soak = topCandidate?.urgentReason ? ' (1 day soak applies)' : ''
   const next = topPick
-    ? `Recommended: ${escapeSlack(topPick.version, 40)} (1 day soak applies).`
+    ? `Recommended: ${escapeSlack(topPick.version, 40)}${soak}.`
     : 'No version is eligible yet.'
-  return `:rotating_light: Urgent: ${reasons.join('; ')}. ${next}`
+  return `Urgent: ${reasons.join('; ')}. ${next}`
 }
 
 function renderStableSplit(recommendation: Recommendation): string | null {
   const split = recommendation.evaluation.stableSplit
   if (!split) return null
   const describe = (name: string, tag: string | null) =>
-    `${escapeSlack(name, 80)} → ${tag ? escapeSlack(tag, 40) : 'none'}`
+    `${escapeSlack(name, 80)} -> ${tag ? escapeSlack(tag, 40) : 'none'}`
   const others = Object.entries(split.byPackage).filter(
     ([name, tag]) => name !== PACKAGE_NAME && tag !== split.sanityStable,
   )
@@ -253,58 +210,37 @@ function renderStableSplit(recommendation: Recommendation): string | null {
     describe(PACKAGE_NAME, split.sanityStable),
     ...others.slice(0, MAX_LISTED_VERSIONS).map(([name, tag]) => describe(name, tag)),
   ].join(', ')
-  const heal = split.sanityStable
-    ? `Run \`gh workflow run tag-stable.yml -f version=${escapeSlack(split.sanityStable, 40)}\` to re-tag every package. `
-    : ''
-  return `:warning: stable is split across packages: ${listed}${andMore(others.length)}. ${heal}This does not block promotion: promoting a shortlisted version re-tags every package too.`
-}
-
-function renderRollbackNote(evidence: Evidence): string | null {
-  return evidence.latestMoves?.status === 'ok'
-    ? null
-    : 'Latest rollback history unavailable, so rolled-back versions were not excluded.'
-}
-
-function renderConcerns(recommendation: Recommendation): string | null {
-  if (recommendation.concerns.length === 0) return null
-  const listed = recommendation.concerns
-    .map(
-      (concern) =>
-        `${escapeSlack(concern.version, 40)}: ${escapeSlack(singleLine(concern.note), 300)}`,
-    )
-    .join('; ')
-  return `Concerns: ${listed}`
+  return `Stable is split across packages: ${listed}${andMore(others.length, MAX_LISTED_VERSIONS)}. Promoting a shortlisted version re-tags every package.`
 }
 
 export function renderShortlistText(
   recommendation: Recommendation,
   evidence: Evidence,
-  runUrl: string,
+  links: RenderLinks,
 ): string {
-  const {evaluation} = recommendation
   const topPick = recommendation.shortlist[0]
-  const overrideVersion = topPick ? escapeSlack(topPick.version, 40) : 'X.Y.Z'
-  const lines = [
+  const exampleVersion = topPick ? escapeSlack(topPick.version, 40) : 'X.Y.Z'
+  const banners = withoutNulls([
     renderUrgent(recommendation),
     renderStableSplit(recommendation),
-    renderHeader(recommendation),
-    renderStable(recommendation),
     renderMajorTransition(recommendation),
-    escapeSlack(singleLine(recommendation.headline), 200),
-    escapeSlack(singleLine(recommendation.rationale), 1500),
-    renderConcerns(recommendation),
     ...(recommendation.decision === 'hold' ? renderHoldReasons(recommendation, evidence) : []),
+    renderNotEligible(recommendation.evaluation.candidates),
+  ])
+  const slots = recommendation.shortlist.map((entry, index) => renderSlot(entry, index + 1))
+  const lines = [
+    renderHeadline(recommendation),
+    renderStable(recommendation),
     '',
-    ...recommendation.shortlist.map((entry) => renderSlot(entry, recommendation, evidence)),
-    renderNotShortlisted(recommendation),
-    renderNotEligible(evaluation.candidates),
-    renderRollbackNote(evidence),
-    '',
-    recommendation.shortlist.length > 0
-      ? 'To promote: open the run → Review deployments → tick only stable-candidate-N → Approve and deploy. Only one slot can promote.'
+    ...slots,
+    ...(slots.length > 0 ? [''] : []),
+    ...banners,
+    ...(banners.length > 0 ? [''] : []),
+    topPick
+      ? `To promote: ${promoteInstruction(links.workflowUrl, exampleVersion)} The result posts here.`
       : null,
-    `Manual override: \`gh workflow run tag-stable.yml -f version=${overrideVersion}\``,
-    workflowLink(runUrl),
+    `From the CLI: ${overrideCommand(exampleVersion)}`,
+    `Full reasoning: ${bareUrl(links.runUrl)}`,
   ]
   return withoutNulls(lines).join('\n')
 }
@@ -317,10 +253,53 @@ function describeStatus(label: string, status: string): string {
   return `- ${label}: ${status}`
 }
 
+function renderRollbackNote(evidence: Evidence): string | null {
+  return evidence.latestMoves?.status === 'ok'
+    ? null
+    : '- Latest rollback history unavailable, so rolled-back versions were not excluded.'
+}
+
+function renderPromoteSection(recommendation: Recommendation, links: RenderLinks): string[] {
+  const topPick = recommendation.shortlist[0]
+  const exampleVersion = topPick ? escapeMarkdown(topPick.version, 40) : 'X.Y.Z'
+  const rows = recommendation.shortlist.map(
+    (entry) =>
+      `| ${escapeMarkdown(entry.version, 40)} | ${escapeMarkdown(entry.reason, SLOT_REASON_LIMIT)} |`,
+  )
+  const table =
+    rows.length > 0
+      ? ['| Version | Why |', '| --- | --- |', ...rows]
+      : ['No version is eligible yet.']
+  return [
+    '### How to promote',
+    '',
+    ...(topPick
+      ? [
+          `${promoteInstruction(links.workflowUrl, exampleVersion).replace(/^open/, 'Open')} The result posts to Slack.`,
+          '',
+        ]
+      : []),
+    ...table,
+    '',
+    `From the CLI: \`${overrideCommand(exampleVersion)}\``,
+  ]
+}
+
+function renderConcernsMarkdown(recommendation: Recommendation): string[] {
+  if (recommendation.concerns.length === 0) return []
+  return [
+    '',
+    '#### Concerns',
+    ...recommendation.concerns.map(
+      (concern) => `- ${escapeMarkdown(concern.version, 40)}: ${escapeMarkdown(concern.note, 300)}`,
+    ),
+  ]
+}
+
 export function renderSummaryMarkdown(
   recommendation: Recommendation,
   evidence: Evidence,
-  runUrl: string,
+  links: RenderLinks,
 ): string {
   const {evaluation} = recommendation
   const candidateRows = evaluation.candidates.map((candidate) => {
@@ -328,12 +307,12 @@ export function renderSummaryMarkdown(
     const soft = candidate.soft.map((verdict) => verdict.code).join(', ')
     return `| ${escapeMarkdown(candidate.version, 40)} | ${candidate.ageDays.toFixed(1)} | ${candidate.eligible ? 'yes' : 'no'} | ${escapeMarkdown(hard, 200)} | ${escapeMarkdown(soft, 200)} |`
   })
-  const shortlistRows = recommendation.shortlist.map(
-    (entry) =>
-      `${entry.slot}. **${escapeMarkdown(entry.version, 40)}** - ${escapeMarkdown(entry.reason, 300)}`,
-  )
   const lines = [
     '## @stable suggestion',
+    '',
+    ...renderPromoteSection(recommendation, links),
+    '',
+    '### Reasoning',
     '',
     `As of ${escapeMarkdown(evaluation.asOf, 40)} (${evaluation.mode}). Current stable ${escapeMarkdown(evaluation.currentStable, 40)}, latest ${escapeMarkdown(evaluation.latest, 40)}.`,
     `Recommendation: **${recommendation.decision}** (${escapeMarkdown(describeSource(recommendation), 200)}).`,
@@ -341,9 +320,7 @@ export function renderSummaryMarkdown(
     escapeMarkdown(recommendation.headline, 200),
     '',
     escapeMarkdown(recommendation.rationale, 1500),
-    '',
-    '### Shortlist',
-    ...(shortlistRows.length > 0 ? shortlistRows : ['None.']),
+    ...renderConcernsMarkdown(recommendation),
     '',
     '### Candidates',
     '| Version | Age (days) | Eligible | Hard | Soft |',
@@ -355,8 +332,7 @@ export function renderSummaryMarkdown(
     describeStatus('SQRL', evidence.sqrl.status),
     describeStatus('Issues', evidence.issues.status),
     describeStatus('Downloads', evidence.downloads.status),
-    '',
-    `[Open github workflow](${stripControlChars(runUrl).replace(/[()\s]/g, encodeLinkUnsafe)})`,
+    ...withoutNulls([renderRollbackNote(evidence)]),
   ]
   return lines.join('\n')
 }
