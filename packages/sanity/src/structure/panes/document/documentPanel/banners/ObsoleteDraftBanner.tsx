@@ -11,7 +11,7 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {Text, Flex} from 'ui5'
+import {Text} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
@@ -22,7 +22,7 @@ import {
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {ResolvedLiveEdit} from './__telemetry__/DraftLiveEditBanner.telemetry'
-import {Banner} from './Banner'
+import {Banner, BannerPrimaryAction} from './Banner'
 
 interface ObsoleteDraftBannerProps {
   displayed: Partial<SanityDocument> | null
@@ -113,10 +113,12 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   return (
     <Banner
       content={
-        <Flex alignItems="center" justifyContent="space-between" gap={2}>
-          <Text size={1} weight="medium" as="div" trim={true}>
-            <Translate t={t} i18nKey={i18nKey} values={{schemaType: schemaType.title}} />
-          </Text>
+        <Text size={1} weight="medium" as="div" trim={true}>
+          <Translate t={t} i18nKey={i18nKey} values={{schemaType: schemaType.title}} />
+        </Text>
+      }
+      actions={
+        <>
           <Button
             text={t('banners.obsolete-draft.actions.compare-draft.text')}
             mode="ghost"
@@ -127,20 +129,22 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
             }}
             onClick={compareDraft}
           />
-          <Button
-            onClick={handlePublish}
-            text={t('banners.obsolete-draft.actions.publish-draft.text')}
-            disabled={Boolean(actionRequested) || Boolean(publishDisabled)}
-            tooltipProps={
-              publishDisabledReason
-                ? {content: publishDisabledReason}
-                : isEditBlocking
-                  ? {content: t('banners.live-edit-draft-banner.publish.tooltip')}
-                  : undefined
-            }
-            loading={isPublishing}
-            tone="positive"
-          />
+          <BannerPrimaryAction>
+            <Button
+              onClick={handlePublish}
+              text={t('banners.obsolete-draft.actions.publish-draft.text')}
+              disabled={Boolean(actionRequested) || Boolean(publishDisabled)}
+              tooltipProps={
+                publishDisabledReason
+                  ? {content: publishDisabledReason}
+                  : isEditBlocking
+                    ? {content: t('banners.live-edit-draft-banner.publish.tooltip')}
+                    : undefined
+              }
+              loading={isPublishing}
+              tone="default"
+            />
+          </BannerPrimaryAction>
           <Button
             onClick={handleDiscard}
             disabled={!draftId || Boolean(actionRequested) || Boolean(discardChanges.disabled)}
@@ -153,9 +157,10 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
                   : undefined
             }
             loading={isDiscarding}
+            mode="ghost"
             tone="caution"
           />
-        </Flex>
+        </>
       }
       data-testid="live-edit-type-banner"
       icon={ErrorOutlineIcon}

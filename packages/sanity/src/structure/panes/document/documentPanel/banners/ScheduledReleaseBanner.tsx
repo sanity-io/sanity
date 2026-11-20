@@ -53,7 +53,6 @@ export function ScheduledReleaseBanner({
               onClick: pauseToEdit,
               disabled: isPausing,
               mode: 'default',
-              tone: tone,
             }
           : undefined
       }
