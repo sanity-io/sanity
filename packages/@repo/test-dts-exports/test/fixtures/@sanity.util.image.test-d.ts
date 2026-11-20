@@ -12,6 +12,7 @@ import type {
   formatAspectRatio,
   getAspectRatioMessageOptions,
   getCroppedImageDimensions,
+  getDefaultImageCrop,
   getImageRefDimensions,
   ImagePixelRect,
   isCroppableImageRef,
@@ -53,6 +54,9 @@ describe('@sanity/util/image', () => {
   })
   test('getCroppedImageDimensions', () => {
     expectTypeOf<typeof getCroppedImageDimensions>().toBeFunction()
+  })
+  test('getDefaultImageCrop', () => {
+    expectTypeOf<typeof getDefaultImageCrop>().toBeFunction()
   })
   test('getImageRefDimensions', () => {
     expectTypeOf<typeof getImageRefDimensions>().toBeFunction()
