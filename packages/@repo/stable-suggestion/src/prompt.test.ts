@@ -14,6 +14,12 @@ describe('buildPrompt', () => {
     expect(system).toContain('shorter soak of 1 day')
   })
 
+  test('asks for one short sentence per reason', () => {
+    expect(buildPrompt(makeEvidence(), makeEvaluation()).system).toContain(
+      'single sentence under 120 characters',
+    )
+  })
+
   test('tells the model a new major is not a reason to hold on its own', () => {
     const {system} = buildPrompt(makeEvidence(), makeEvaluation())
     expect(system).toContain(

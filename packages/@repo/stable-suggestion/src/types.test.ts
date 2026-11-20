@@ -14,7 +14,12 @@ describe('stable-suggestion types', () => {
   })
 
   test('payload and route shapes are fixed', () => {
-    expectTypeOf<WebhookPayload>().toEqualTypeOf<{text: string; run_url: string}>()
+    expectTypeOf<WebhookPayload>().toEqualTypeOf<{
+      headline: string
+      text: string
+      cli: string
+      run_url: string
+    }>()
     expectTypeOf<SlackRoute>().toEqualTypeOf<'webhook-trigger' | 'incoming-webhook' | 'none'>()
     expectTypeOf<Recommendation['decision']>().toEqualTypeOf<'promote' | 'hold'>()
   })
@@ -35,7 +40,7 @@ describe('stable-suggestion config', () => {
     expect(getModel()).toBe('custom-model')
   })
 
-  test('shortlist size matches the candidate environments', () => {
+  test('shortlist size is three', () => {
     expect(SHORTLIST_SIZE).toBe(3)
   })
 })

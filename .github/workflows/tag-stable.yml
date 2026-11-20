@@ -166,15 +166,27 @@ jobs:
             echo "outcome=failed" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Build the notice
+        env:
+          VERSION: ${{ needs.get-version.outputs.version }}
+          PREVIOUS: ${{ needs.get-version.outputs.previous }}
+          ACTOR: ${{ github.triggering_actor }}
+          OUTCOME: ${{ steps.decide.outputs.outcome }}
+        run: |
+          headline="${VERSION:-an invalid version} promoted to @stable by @${ACTOR}: ${OUTCOME}"
+          detail="Was ${PREVIOUS:-unknown}. Run: ${RUN_URL}"
+          jq -n --arg headline "$headline" --arg text "$detail" --arg run_url "$RUN_URL" \
+            '{headline: $headline, text: $text, cli: "-", run_url: $run_url}' > "$RUNNER_TEMP/notice-webhook.json"
+          jq -n --arg text "*${headline}*"$'\n\n'"${detail}" '{text: $text}' > "$RUNNER_TEMP/notice-fallback.json"
+
       - name: Post the promotion notice
         if: steps.decide.outputs.route == 'webhook-trigger'
         uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
         with:
-          # Fields: text, run_url (SUGGESTION_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts)
+          # Fields: headline, text, cli, run_url (SUGGESTION_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts)
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_STABLE_SUGGESTION }}
           webhook-type: webhook-trigger
-          payload: |
-            {"text": ${{ toJSON(format('{0} promoted to @stable by @{1}: {2} (was {3}). {4}', needs.get-version.outputs.version || 'an invalid version', github.triggering_actor, steps.decide.outputs.outcome, needs.get-version.outputs.previous || 'unknown', env.RUN_URL)) }}, "run_url": ${{ toJSON(env.RUN_URL) }}}
+          payload-file-path: ${{ runner.temp }}/notice-webhook.json
 
       - name: Post the promotion notice (CI alerts fallback)
         if: steps.decide.outputs.route == 'incoming-webhook'
@@ -183,5 +195,4 @@ jobs:
           # Fields: text (CI_ALERTS_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts)
           webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
           webhook-type: incoming-webhook
-          payload: |
-            {"text": ${{ toJSON(format('{0} promoted to @stable by @{1}: {2} (was {3}). {4}', needs.get-version.outputs.version || 'an invalid version', github.triggering_actor, steps.decide.outputs.outcome, needs.get-version.outputs.previous || 'unknown', env.RUN_URL)) }}}
+          payload-file-path: ${{ runner.temp }}/notice-fallback.json
