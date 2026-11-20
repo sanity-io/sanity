@@ -6,6 +6,7 @@ import {Patcher} from '../src/patch'
 import diffMatchPatch from './patchExamples/diffMatchPatch'
 import incDec from './patchExamples/incDec'
 import insert from './patchExamples/insert'
+import insertServerParity from './patchExamples/insertServerParity'
 import mixed from './patchExamples/mixed'
 import set from './patchExamples/set'
 import setIfMissing from './patchExamples/setIfMissing'
@@ -17,6 +18,7 @@ const examples = [
   ...unset,
   ...diffMatchPatch,
   ...insert,
+  ...insertServerParity,
   ...incDec,
   ...mixed,
 ]
