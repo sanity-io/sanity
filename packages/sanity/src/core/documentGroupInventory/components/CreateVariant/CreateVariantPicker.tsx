@@ -1,19 +1,15 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {TextInput} from '@sanity/ui'
+import {Label, TextInput} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
-import {
-  type ComponentProps,
-  type ComponentType,
-  type RefObject,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from 'react'
+import {type ComponentProps, type ComponentType, useId, useState} from 'react'
 import {Box, Flex, Icon, type IconProps, Text} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {menuOverflowScroller} from '../../../../ui-components/menuButton/menuOverflow.css'
+import {useFocusSearchOnOpen} from '../../../../ui-components/menuButton/useFocusSearchOnOpen'
+import {useMenuOverflow} from '../../../../ui-components/menuButton/useMenuOverflow'
+import {useStableMenuWidth} from '../../../../ui-components/menuButton/useStableMenuWidth'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
@@ -28,22 +24,26 @@ export interface CreateVariantPickerOption {
 
 const NO_OPTIONS: CreateVariantPickerOption[] = []
 
-const FilterMenu: ComponentType<
-  ComponentProps<typeof Menu> & {filterRef: RefObject<HTMLInputElement | null>}
-> = ({filterRef, ...props}) => {
-  useEffect(() => {
-    filterRef.current?.focus()
-  }, [filterRef])
-
-  return <Menu {...props} shouldFocus={null} />
-}
+/**
+ * The menu does not move the focus to an item when it opens (not even for a keyboard open): the
+ * search field takes it, see `useFocusSearchOnOpen`.
+ */
+const FilterMenu: ComponentType<ComponentProps<typeof Menu>> = (props) => (
+  <Menu {...props} shouldFocus={null} />
+)
 
 export const CreateVariantPicker: ComponentType<{
   icon: IconProps['icon']
   label: string
   description?: string
   leadingOptions?: CreateVariantPickerOption[]
+  /** A heading above `leadingOptions`, shown while they have a match. */
+  leadingLabel?: string
   options: CreateVariantPickerOption[]
+  /** A heading above `options`, shown while they have a match. */
+  optionsLabel?: string
+  /** The search field's placeholder; "Search…" when absent. */
+  filterPlaceholder?: string
   value: CreateVariantPickerOption | undefined
   onChange: (key: string) => void
   disabled: boolean
@@ -53,7 +53,10 @@ export const CreateVariantPicker: ComponentType<{
   label,
   description,
   leadingOptions = NO_OPTIONS,
+  leadingLabel,
   options,
+  optionsLabel,
+  filterPlaceholder,
   value,
   onChange,
   disabled,
@@ -63,16 +66,19 @@ export const CreateVariantPicker: ComponentType<{
   const id = useId()
   const descriptionId = useId()
   const [filterQuery, setFilterQuery] = useState('')
-  const filterRef = useRef<HTMLInputElement>(null)
+  const focusSearchField = useFocusSearchOnOpen()
+  const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
+  const scrollerRef = useMenuOverflow()
 
   const query = filterQuery.trim().toLowerCase()
 
   const matches = (option: CreateVariantPickerOption) =>
     query.length === 0 || option.text.toLowerCase().includes(query)
 
-  const sections = [leadingOptions.filter(matches), options.filter(matches)].filter(
-    (section) => section.length > 0,
-  )
+  const sections = [
+    {key: 'leading', label: leadingLabel, options: leadingOptions.filter(matches)},
+    {key: 'options', label: optionsLabel, options: options.filter(matches)},
+  ].filter((section) => section.options.length > 0)
 
   const renderOption = (option: CreateVariantPickerOption) => (
     <MenuItem
@@ -104,7 +110,11 @@ export const CreateVariantPicker: ComponentType<{
       <div className={createVariantPickerTrigger}>
         <MenuButton
           id={id}
-          onClose={() => setFilterQuery('')}
+          onClose={() => {
+            resetMenuWidth()
+            setFilterQuery('')
+          }}
+          onOpen={lockMenuWidth}
           button={
             <Button
               data-testid={`${testId}-button`}
@@ -120,18 +130,23 @@ export const CreateVariantPicker: ComponentType<{
           }
           menu={
             <FilterMenu
-              filterRef={filterRef}
               className={createVariantPickerMenu}
               data-testid={testId}
               padding={1}
+              ref={menuRef}
+              style={menuStyle}
             >
               <Box flexShrink={0} padding={1}>
                 <TextInput
-                  ref={filterRef}
-                  aria-label={t('document-group.create-variant.filter-placeholder')}
+                  aria-label={
+                    filterPlaceholder ?? t('document-group.create-variant.filter-placeholder')
+                  }
+                  ref={focusSearchField}
                   fontSize={1}
                   onChange={(event) => setFilterQuery(event.currentTarget.value)}
-                  placeholder={t('document-group.create-variant.filter-placeholder')}
+                  placeholder={
+                    filterPlaceholder ?? t('document-group.create-variant.filter-placeholder')
+                  }
                   radius={2}
                   value={filterQuery}
                 />
@@ -144,18 +159,38 @@ export const CreateVariantPicker: ComponentType<{
                 </Box>
               ) : (
                 <Flex
+                  className={menuOverflowScroller}
                   flexDirection="column"
                   flexGrow={1}
                   flexShrink={1}
                   minHeight="0"
                   overflowY="auto"
-                  paddingX={1}
-                  paddingBottom={1}
+                  ref={scrollerRef}
                 >
-                  <Flex flexDirection="column" flexShrink={0} gap={1}>
+                  <Flex
+                    flexDirection="column"
+                    flexShrink={0}
+                    gap={1}
+                    paddingBottom={1}
+                    paddingX={1}
+                  >
                     {sections.flatMap((section, index) => [
-                      ...(index > 0 ? [<MenuDivider key="divider" />] : []),
-                      ...section.map(renderOption),
+                      ...(index > 0 ? [<MenuDivider key={`${section.key}-divider`} />] : []),
+                      ...(section.label
+                        ? [
+                            <Box
+                              key={`${section.key}-label`}
+                              paddingX={3}
+                              paddingTop={3}
+                              paddingBottom={2}
+                            >
+                              <Label muted size={1} style={{textTransform: 'uppercase'}}>
+                                {section.label}
+                              </Label>
+                            </Box>,
+                          ]
+                        : []),
+                      ...section.options.map(renderOption),
                     ])}
                   </Flex>
                 </Flex>
