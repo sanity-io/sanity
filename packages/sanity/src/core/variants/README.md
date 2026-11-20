@@ -94,6 +94,7 @@ Copying documents:
 - `documents/getVariantDocumentDuplicationPlan.ts` decides what is copied, from the `useVariantDocuments` results. Drafts are copied as drafts; published versions are copied as drafts too, unless the document also has a draft version in the variant (then only the draft is copied) or its type is `liveEdit` (then it is copied as published). Release versions are copied into the same release. Versions in a scheduled release (or a scheduled draft, which holds one document) and versions marked to unpublish are returned as `skipped` and listed in the dialog.
 - `documents/duplicateVariantDocuments.ts` sends one `sanity.action.document.variant.create` action per copied version (`baseId` is the original version) in a single `client.action([...])` call, so either every document is copied or none is. The actions are built by `buildCreateVariantDocumentAction`, which `createVariantScopedDocument` uses too.
 - The definition is created first, with its own action, because the variant must exist before documents can be created in it. When the document transaction fails, the duplicate exists without documents: the dialog still navigates to it and shows an error toast.
+- Before navigating, the dialog waits (with a timeout) until the variants store lists the duplicate. The store only refetches once the global listener reports the new definition, and the detail page renders its not-found state for an id the store does not hold yet; duplicating from a detail page would otherwise flash it.
 
 ## Condition Row UX
 
