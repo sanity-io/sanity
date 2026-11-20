@@ -140,20 +140,30 @@ jobs:
           SANITY_INTERNAL_ENV: "staging" # sets the __SANITY_STAGING__ global variable to true in built bundles
         run: pnpm run build:bundle
 
+      - name: Authenticate to staging bundle bucket
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: projects/351269381955/locations/global/workloadIdentityPools/github-actions/providers/github
+          service_account: modules@sanity-staging-svc.iam.gserviceaccount.com
+
       - name: Upload bundles to staging bucket
         env:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
-          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
           GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
         run: pnpm bundle-manager publish --tag=next
 
       - name: Build bundles for production
         run: pnpm run build:bundle
 
+      - name: Authenticate to production bundle bucket
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: projects/351269381955/locations/global/workloadIdentityPools/github-actions/providers/github
+          service_account: modules@sanity-production-svc.iam.gserviceaccount.com
+
       - name: Upload bundles to production bucket
         env:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
-          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
           GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
         run: pnpm bundle-manager publish --tag=next
 
