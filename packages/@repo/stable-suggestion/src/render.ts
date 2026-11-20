@@ -1,6 +1,6 @@
 import semver from 'semver'
 
-import {PACKAGE_NAME, TEXT_LIMITS} from './config'
+import {ISSUE_TITLE_LIMIT, MAX_LISTED_ISSUES, PACKAGE_NAME, TEXT_LIMITS} from './config'
 import {TAG_STABLE_WORKFLOW} from './sources/github'
 import {daysBetween} from './time'
 import {
@@ -8,6 +8,7 @@ import {
   type Evidence,
   type FallbackPayload,
   type ModelFailureReason,
+  type OpenIssueInRange,
   type Recommendation,
   type ShortlistMessage,
   type ShortlistEntry,
@@ -231,6 +232,21 @@ function renderStableSplit(recommendation: Recommendation): string | null {
   return `Stable is split across packages: ${listed}${andMore(others.length, MAX_LISTED_VERSIONS)}. Promoting a shortlisted version re-tags every package.`
 }
 
+function renderOpenBugReports(recommendation: Recommendation, evidence: Evidence): string | null {
+  if (evidence.issues.status === 'unavailable') return 'Open bug reports: unavailable'
+  const {openIssuesInRange, currentStable, latest} = recommendation.evaluation
+  if (openIssuesInRange.length === 0) return null
+  const listed = openIssuesInRange
+    .slice(0, MAX_LISTED_ISSUES)
+    .map((issue) => `#${issue.number}`)
+    .join(', ')
+  const more =
+    openIssuesInRange.length > MAX_LISTED_ISSUES
+      ? ` (+${openIssuesInRange.length - MAX_LISTED_ISSUES} more)`
+      : ''
+  return `Open bug reports for versions above ${escapeSlack(currentStable, 40)} up to ${escapeSlack(latest, 40)}: ${listed}${more}`
+}
+
 export function renderShortlist(
   recommendation: Recommendation,
   evidence: Evidence,
@@ -253,6 +269,7 @@ export function renderShortlist(
     ...(slots.length > 0 ? [''] : []),
     ...banners,
     ...(banners.length > 0 ? [''] : []),
+    renderOpenBugReports(recommendation, evidence),
     topPick ? `To promote: ${bareUrl(links.workflowUrl)}` : null,
     `Full reasoning: ${bareUrl(links.runUrl)}`,
   ]
@@ -314,6 +331,25 @@ function renderConcernsMarkdown(recommendation: Recommendation): string[] {
   ]
 }
 
+function renderOpenIssueRow(issue: OpenIssueInRange, asOf: string): string {
+  const title = escapeMarkdown(issue.title, ISSUE_TITLE_LIMIT)
+  const versions = escapeMarkdown(issue.versions.join(', '), 200)
+  return `| [#${issue.number}](${bareUrl(issue.url)}) | ${title} | ${versions} | ${daysBetween(issue.createdAt, asOf)} |`
+}
+
+function renderOpenIssuesSection(recommendation: Recommendation, evidence: Evidence): string[] {
+  const {openIssuesInRange, asOf} = recommendation.evaluation
+  const heading = ['### Open bug reports in range', '']
+  if (evidence.issues.status === 'unavailable') return [...heading, 'Unavailable.']
+  if (openIssuesInRange.length === 0) return [...heading, 'None.']
+  return [
+    ...heading,
+    '| Issue | Title | Versions mentioned | Age (days) |',
+    '| --- | --- | --- | --- |',
+    ...openIssuesInRange.map((issue) => renderOpenIssueRow(issue, asOf)),
+  ]
+}
+
 export function renderSummaryMarkdown(
   recommendation: Recommendation,
   evidence: Evidence,
@@ -344,6 +380,8 @@ export function renderSummaryMarkdown(
     '| Version | Age (days) | Eligible | Hard | Soft |',
     '| --- | --- | --- | --- | --- |',
     ...candidateRows,
+    '',
+    ...renderOpenIssuesSection(recommendation, evidence),
     '',
     '### Data',
     describeStatus('Regressions', evidence.regressions.status),

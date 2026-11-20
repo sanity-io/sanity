@@ -8,6 +8,7 @@ import {
   RUN_URL,
   WORKFLOW_URL,
 } from './__fixtures__/factories'
+import {ISSUE_TITLE_LIMIT} from './config'
 import {deterministicRecommendation} from './model'
 import {
   CI_ALERTS_WEBHOOK_FIELDS,
@@ -355,5 +356,83 @@ describe('shortenAtWord', () => {
 
   test('falls back to a hard cut for a single long word', () => {
     expect(shortenAtWord('abcdefghijklmnop', 6)).toBe('abcde…')
+  })
+})
+
+describe('open bug reports', () => {
+  const entry = (number: number) => ({
+    number,
+    title: `Report <${number}> | title`,
+    url: `https://github.com/example-org/example-repo/issues/${number}`,
+    versions: ['6.22.0', '6.23.0'],
+    createdAt: '2026-11-10T10:00:00Z',
+  })
+  const recommendationWith = (numbers: number[]) =>
+    makeRecommendation({
+      evaluation: makeEvaluation({openIssuesInRange: numbers.map(entry)}),
+    })
+  const slackText = (recommendation = makeRecommendation(), evidence = makeEvidence()) =>
+    renderShortlist(recommendation, evidence, LINKS).text
+
+  test('lists bare numbers on the line before the promote link', () => {
+    const lines = slackText(recommendationWith([16063, 15773, 15048])).split('\n')
+    expect(lines.at(-3)).toBe(
+      'Open bug reports for versions above 6.15.0 up to 6.24.0: #16063, #15773, #15048',
+    )
+    expect(lines.at(-2)).toBe(`To promote: ${WORKFLOW_URL}`)
+  })
+
+  test('caps the list at five and counts the rest', () => {
+    const text = slackText(recommendationWith([9, 8, 7, 6, 5, 4, 3]))
+    expect(text).toContain(': #9, #8, #7, #6, #5 (+2 more)')
+    expect(text).not.toContain('#4')
+  })
+
+  test('shows exactly five without a remainder', () => {
+    expect(slackText(recommendationWith([5, 4, 3, 2, 1]))).toContain(': #5, #4, #3, #2, #1\n')
+  })
+
+  test('omits the line when there are none', () => {
+    expect(slackText(recommendationWith([]))).not.toContain('Open bug reports')
+  })
+
+  test('says unavailable when issue data is unavailable', () => {
+    const evidence = makeEvidence({issues: {status: 'unavailable', error: 'down'}})
+    expect(slackText(recommendationWith([]), evidence)).toContain('Open bug reports: unavailable')
+  })
+
+  test('never puts titles or links in Slack', () => {
+    const text = slackText(recommendationWith([1]))
+    expect(text).not.toContain('Report')
+    expect(text).not.toContain('issues/1')
+  })
+
+  test('the run summary tables every report with link, escaped title, versions and age', () => {
+    const markdown = renderSummaryMarkdown(recommendationWith([2, 1]), makeEvidence(), LINKS)
+    expect(markdown).toContain('### Open bug reports in range')
+    expect(markdown).toContain(
+      '| [#2](https://github.com/example-org/example-repo/issues/2) | Report &lt;2&gt; \\| title | 6.22.0, 6.23.0 | 7 |',
+    )
+    expect(markdown).toContain('issues/1)')
+  })
+
+  test('the run summary truncates long titles', () => {
+    const long = {...entry(3), title: 'z'.repeat(400)}
+    const recommendation = makeRecommendation({
+      evaluation: makeEvaluation({openIssuesInRange: [long]}),
+    })
+    const markdown = renderSummaryMarkdown(recommendation, makeEvidence(), LINKS)
+    expect(markdown).toContain(`${'z'.repeat(ISSUE_TITLE_LIMIT - 1)}…`)
+    expect(markdown).not.toContain('z'.repeat(ISSUE_TITLE_LIMIT + 1))
+  })
+
+  test('the run summary says none or unavailable', () => {
+    expect(renderSummaryMarkdown(recommendationWith([]), makeEvidence(), LINKS)).toContain(
+      '### Open bug reports in range\n\nNone.',
+    )
+    const down = makeEvidence({issues: {status: 'unavailable', error: 'down'}})
+    expect(renderSummaryMarkdown(recommendationWith([]), down, LINKS)).toContain(
+      '### Open bug reports in range\n\nUnavailable.',
+    )
   })
 })

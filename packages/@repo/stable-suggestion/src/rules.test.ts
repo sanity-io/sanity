@@ -1103,3 +1103,73 @@ describe('above current latest', () => {
     expect(hardCodes(candidateOf(unavailable, '6.23.0'))).toEqual(['rolled-back'])
   })
 })
+
+describe('openIssuesInRange', () => {
+  const releases: ReleaseInput[] = [
+    {version: '6.16.0', ageDays: 30},
+    {version: '6.17.0', ageDays: 20},
+    {version: '6.18.0', ageDays: 3},
+  ]
+
+  function inRange(data: IssueReport[], overrides: Partial<Evidence> = {}) {
+    return evaluate(makeEvidence(releases, {issues: {status: 'ok', data}, ...overrides}))
+      .openIssuesInRange
+  }
+
+  test('keeps only versions above stable up to latest, sorted, newest issue first', () => {
+    const result = inRange([
+      issue({number: 5, versionsMentioned: ['6.17.0', '6.15.0', '6.16.0', '6.19.0']}),
+      issue({number: 9, versionsMentioned: ['6.18.0']}),
+    ])
+    expect(result.map((entry) => entry.number)).toEqual([9, 5])
+    expect(result[1]?.versions).toEqual(['6.16.0', '6.17.0'])
+  })
+
+  test('includes latest and excludes stable itself', () => {
+    expect(inRange([issue({versionsMentioned: ['6.18.0']})])).toHaveLength(1)
+    expect(inRange([issue({versionsMentioned: ['6.15.0']})])).toEqual([])
+  })
+
+  test('lists issues for versions that are not candidates', () => {
+    const superseded = inRange([issue({versionsMentioned: ['6.16.0']})])
+    const candidate = candidateOf(
+      makeEvidence([...releases, {version: '6.16.1', ageDays: 10}]),
+      '6.16.0',
+    )
+    expect(superseded).toHaveLength(1)
+    expect(candidate.eligible).toBe(false)
+  })
+
+  test('skips feature requests, closed issues and issues created after the as-of instant', () => {
+    expect(
+      inRange([
+        issue({number: 1, labels: ['Feature']}),
+        issue({number: 2, closedAt: daysBefore(1)}),
+        issue({number: 3, closedAt: AS_OF}),
+        issue({number: 4, createdAt: daysBefore(-1)}),
+        issue({number: 5, closedAt: daysBefore(-1)}),
+      ]).map((entry) => entry.number),
+    ).toEqual([5])
+  })
+
+  test('is empty when issue data is unavailable', () => {
+    expect(inRange([], {issues: {status: 'unavailable', error: 'down'}})).toEqual([])
+  })
+
+  test('never changes eligibility or ranking', () => {
+    const without = evaluate(makeEvidence(releases, {issues: {status: 'ok', data: []}}))
+    const withIssues = evaluate(
+      makeEvidence(releases, {
+        issues: {status: 'ok', data: [issue({versionsMentioned: ['6.16.0', '6.17.0']})]},
+      }),
+    )
+    expect(withIssues.eligible).toEqual(without.eligible)
+    expect(withIssues.shortlist).toEqual(without.shortlist)
+  })
+
+  test('an issue created after the as-of instant does not change the result', () => {
+    const early = issue({number: 5, versionsMentioned: ['6.17.0']})
+    const late = issue({number: 6, createdAt: daysBefore(-2), versionsMentioned: ['6.17.0']})
+    expect(inRange([early, late])).toEqual(inRange([early]))
+  })
+})

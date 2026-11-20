@@ -40,6 +40,13 @@ export interface IssueReport {
   labels: string[]
   versionsMentioned: string[]
 }
+export interface OpenIssueInRange {
+  number: number
+  title: string
+  url: string
+  versions: string[]
+  createdAt: IsoDate
+}
 export interface ReleaseBench {
   version: string
   calibrationMs: number | null
@@ -148,6 +155,7 @@ export interface Evaluation {
   shortlist: string[]
   stableAtRisk: Verdict<'regression'>[]
   stableSplit?: StableSplit | null
+  openIssuesInRange: OpenIssueInRange[]
 }
 
 export type ModelFailureReason =

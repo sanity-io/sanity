@@ -12,6 +12,8 @@ export const PACKAGE_NAME = 'sanity'
 export const BACKTEST_FROM = '2025-12-09'
 export const BACKTEST_TIME_OF_DAY_UTC = '18:00:00Z'
 export const KNOWN_BAD_RANGE = {from: '6.9.2', to: '6.14.0'} as const
+export const ISSUE_TITLE_LIMIT = 120
+export const MAX_LISTED_ISSUES = 5
 export const TEXT_LIMITS = {
   headline: 200,
   rationale: 1500,
