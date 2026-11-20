@@ -114,7 +114,7 @@ describe('VariantsOverview', () => {
     const trigger = page.getByRole('button', {name: 'Add filter'})
     await userEvent.click(trigger)
 
-    const search = page.getByLabelText('Find a dimension…')
+    const search = page.getByLabelText('Search dimensions…')
     await expect.element(search).toBeVisible()
     await expect.element(search).toHaveFocus()
     await expect.element(trigger).toHaveAttribute('aria-expanded', 'true')

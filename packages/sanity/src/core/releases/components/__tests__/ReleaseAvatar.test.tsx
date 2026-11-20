@@ -108,12 +108,12 @@ describe('ReleaseAvatarIcon', () => {
     )
   })
 
-  it('renders the unknown-small icon for undecided releases when size is small', () => {
+  it('renders a grey dot, not a question mark, for undecided releases when size is small', () => {
     render(<ReleaseAvatarIcon release={activeUndecidedRelease} size="small" />)
 
     expect(screen.getByTestId('release-avatar-neutral')).toHaveAttribute(
       'data-sanity-icon',
-      'unknown-small',
+      'circle-small',
     )
   })
 

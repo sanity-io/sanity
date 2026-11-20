@@ -153,17 +153,17 @@ describe('DocumentReleasesMenu', () => {
     expect(navigate).toHaveBeenCalledWith('drafts')
   })
 
-  it('lists the releases the document is in apart from the others, leaving out scheduled drafts', async () => {
+  it('lists the releases the document is in apart from the ones to add it to, leaving out scheduled drafts', async () => {
     await renderMenu()
 
     const menu = await openMenu()
 
     const documentSection = within(menu).getByTestId('document-releases-menu-section-document')
-    expect(documentSection).toHaveTextContent('In 1 release')
+    expect(documentSection).toHaveTextContent('Releases with this document (1)')
     expect(within(documentSection).getByTestId('document-release-rA')).toBeInTheDocument()
 
     const otherSection = within(menu).getByTestId('document-releases-menu-section-other')
-    expect(otherSection).toHaveTextContent('Other releases')
+    expect(otherSection).toHaveTextContent('Add to more releases')
     expect(within(otherSection).getByTestId('document-release-rB')).toBeInTheDocument()
     expect(within(otherSection).getByTestId('document-release-rHalloween').textContent).toMatch(
       /^Halloween · .+/,
@@ -182,17 +182,21 @@ describe('DocumentReleasesMenu', () => {
     expect(within(documentSection).queryByTestId('document-release-rA')).toBeNull()
   })
 
-  it('shows an empty "In 0 releases" section with a tooltip when the document is in none', async () => {
+  it('hides the empty first section and invites adding the document when it is in none', async () => {
     mockVersions([createVersion({bundle: 'published'})])
     await renderMenu()
 
     const menu = await openMenu()
 
-    const documentSection = within(menu).getByTestId('document-releases-menu-section-document')
-    expect(documentSection).toHaveTextContent('In 0 releases')
-    expect(
-      within(documentSection).getByTestId('document-releases-menu-section-document-tooltip'),
-    ).toHaveAccessibleName("This document isn't in any release yet. Pick one below to add it.")
+    expect(within(menu).queryByTestId('document-releases-menu-section-document')).toBeNull()
+    expect(within(menu).queryByTestId('document-releases-menu-section-document-tooltip')).toBeNull()
+    expect(menu).not.toHaveTextContent('In 0 releases')
+    expect(menu).not.toHaveTextContent('Releases with this document')
+
+    const otherSection = within(menu).getByTestId('document-releases-menu-section-other')
+    expect(otherSection).toHaveTextContent('Add this document to')
+    expect(within(otherSection).getByTestId('document-release-rA')).toBeInTheDocument()
+    expect(within(otherSection).getByTestId('document-release-rB')).toBeInTheDocument()
   })
 
   it('changes the global perspective to the release picked', async () => {
@@ -208,7 +212,7 @@ describe('DocumentReleasesMenu', () => {
     await renderMenu()
 
     const menu = await openMenu()
-    const input = within(menu).getByPlaceholderText('Find')
+    const input = within(menu).getByPlaceholderText('Search releases…')
 
     await userEvent.type(input, 'hallo')
     expect(within(menu).getByTestId('document-release-rHalloween')).toBeInTheDocument()

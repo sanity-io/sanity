@@ -23,20 +23,18 @@ export const dropdownButtonDivider = css({
 })
 
 /**
- * The left corners follow the pill. The right corners do too when the trigger is the only
- * control; a clear control beside it keeps that edge square.
+ * The corners follow the pill. While something is selected the clear control sits beside the
+ * trigger, so the trigger's right edge is square. Keyed off the card's `data-has-selection` (a v4 Card sets its own `data-selected`), not
+ * `:only-child`: a tooltip on a cut label wraps the trigger, which made it an only child.
  */
 export const dropdownButtonTrigger = css({
   '&&': {
-    borderTopLeftRadius: pillRadius,
-    borderBottomLeftRadius: pillRadius,
-    borderTopRightRadius: '0',
-    borderBottomRightRadius: '0',
+    borderRadius: pillRadius,
     zIndex: 1,
   },
-  '&&:only-child': {
-    borderTopRightRadius: pillRadius,
-    borderBottomRightRadius: pillRadius,
+  '[data-has-selection] > &&, [data-has-selection] > * > &&': {
+    borderTopRightRadius: '0',
+    borderBottomRightRadius: '0',
   },
 })
 
@@ -50,5 +48,9 @@ export const dropdownButtonClear = css({
   },
   '&&:hover': {
     zIndex: 2,
+  },
+  // The navbar perspective chips draw their × at this scale; the header pills match them
+  '& [data-sanity-icon]': {
+    transform: 'scale(0.65)',
   },
 })

@@ -13,7 +13,6 @@ import {CircleSmallIcon} from '../../components/temporary-icons/CircleSmall'
 import {CircleXsIcon} from '../../components/temporary-icons/CircleXs'
 import {ClockSmallIcon} from '../../components/temporary-icons/ClockSmall'
 import {RingIcon} from '../../components/temporary-icons/Ring'
-import {UnknownSmallIcon} from '../../components/temporary-icons/UnknownSmall'
 import {type TargetPerspective} from '../../perspective/types'
 import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
@@ -49,10 +48,11 @@ function renderReleaseTypeIcon(
         <Icon icon={ClockSmallIcon} {...iconProps} />
       )
     case 'undecided':
+      // A plain grey dot at both sizes: a question mark read as a missing icon
       return size === 'default' ? (
         <Icon icon={DotIcon} {...iconProps} />
       ) : (
-        <Icon icon={UnknownSmallIcon} {...iconProps} />
+        <Icon icon={CircleSmallIcon} {...iconProps} />
       )
     default:
       return size === 'default' ? (

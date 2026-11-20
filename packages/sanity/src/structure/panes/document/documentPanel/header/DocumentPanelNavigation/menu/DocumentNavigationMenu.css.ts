@@ -12,11 +12,14 @@ import {css} from '#styled-system/css'
  * `--perspective-menu-viewport-inset` is the space kept on each side, as in the navbar perspective
  * menus. Both widths subtract it twice so the menu fits a phone, and they sit in the same
  * three-class block because `Box` resets `min-width: 0` with one class.
+ *
+ * The minimum is the maximum, 360px, so the Variants, Releases and Scheduled drafts pill menus all
+ * open at one width, whatever their rows hold. Rows that are too long still end in an ellipsis.
  */
 export const documentNavigationMenu = css({
   '&&&': {
     '--perspective-menu-viewport-inset': '12px',
-    'minWidth': 'min(280px, calc(100vw - (var(--perspective-menu-viewport-inset) * 2)))',
+    'minWidth': 'min(360px, calc(100vw - (var(--perspective-menu-viewport-inset) * 2)))',
     'maxWidth': 'min(360px, calc(100vw - (var(--perspective-menu-viewport-inset) * 2)))',
     'display': 'flex',
     'flexDirection': 'column',
@@ -32,5 +35,16 @@ export const documentNavigationMenu = css({
     minHeight: 0,
     gap: 0,
     overflow: 'hidden',
+  },
+})
+
+/**
+ * A section's label starts where its rows' text does, past the icon slot every row of these menus
+ * reserves: 33px from the row's edge (the menu item's padding, icon slot and gap), so 41px from the
+ * menu's. The browser test checks that the label and the row text line up.
+ */
+export const menuSectionLabel = css({
+  '&&': {
+    paddingLeft: '33px',
   },
 })

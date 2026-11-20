@@ -326,7 +326,7 @@ describe('VariantsOverview', () => {
     await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(2))
 
     await user.click(screen.getByRole('button', {name: 'Add filter'}))
-    const filterPopover = (await screen.findByPlaceholderText('Find a dimension…')).closest(
+    const filterPopover = (await screen.findByPlaceholderText('Search dimensions…')).closest(
       '[data-ui="Popover"]',
     )
     if (!filterPopover) throw new Error('Filter popover not found')
@@ -366,7 +366,7 @@ describe('VariantsOverview', () => {
     await user.click(trigger)
 
     expect(trigger).toHaveAttribute('aria-expanded', 'true')
-    const search = await screen.findByLabelText('Find a dimension…')
+    const search = await screen.findByLabelText('Search dimensions…')
     await waitFor(() => expect(search).toHaveFocus())
     expect(document.getElementById(trigger.getAttribute('aria-controls') ?? '')).toHaveAttribute(
       'role',
