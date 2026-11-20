@@ -42,6 +42,8 @@ Soft flags never block. They appear in Slack and in the prompt:
 
 When issues or downloads are unavailable, the Slack text says so.
 
+Open bug reports are informational and never affect eligibility or ranking. `evaluation.openIssuesInRange` lists every open, non-feature GitHub issue at A that mentions a version above S up to L, whether or not that version is a candidate. It reuses the issues already collected, so as-of mode stays leak-free: only issues created at or before A and not closed by A count. Slack gets one line before the promote link with up to five bare issue numbers and a `(+N more)` remainder, or `Open bug reports: unavailable` when issue data is down. Titles and links stay out of Slack. The run summary has an "Open bug reports in range" table with the link, a truncated title, the versions mentioned and the age in days.
+
 ## Urgent mode
 
 A version gets the 1 day soak instead of 7 (or 3) when it is a patch on stable's own major.minor, for example 6.15.1 when S is 6.15.0, or when stable is hit by a confirmed regression and the version is at or above the `fixedIn` of every regression hitting S. Every other hard rule still applies. The smallest jump off a broken stable is the safest, so urgent versions lead the shortlist, oldest first, with patches of stable's minor ahead of other fixes. Urgent applies only to versions on stable's own major, so a new major keeps its 3 day soak. When stable is at risk or such a patch exists, the Slack message carries an Urgent banner that names the reason and the recommended version. The one day soak is only claimed when the recommended version is itself urgent.
@@ -55,6 +57,15 @@ In live mode the tool reads the `stable` dist-tag of every package the repo publ
 ## Claude step
 
 Claude receives the evidence and the deterministic shortlist and returns a shortlist of one to three versions taken only from the eligible set, plus promote or hold. Any failure falls back to the deterministic shortlist and records the reason. The step is skipped with `--no-llm`, without `ANTHROPIC_API_KEY`, or when no version is eligible. Moving stable to a new major is expected once it has soaked, so the prompt tells Claude not to hold on that alone.
+
+## Changing the prompt
+
+The prompt has two parts, and both are meant to be edited.
+
+- Edit `prompts/system.md` to change the instructions. `{{packageName}}` and `{{shortlistSize}}` are filled in when the file loads. The output schema and the validation in `toRecommendation` stay in code, so the model can only return versions from the eligible set.
+- Toggle evidence in `EVIDENCE_SECTIONS` in `src/evidenceSections.ts`. Each entry is a `{key, build}` pair that turns the evidence and the evaluation into one block of the user content. Adding, removing or reordering a signal is a one-line edit of that array.
+- Swap the model with the `STABLE_SUGGESTION_MODEL` repo variable. The default is in `src/config.ts`.
+- Try a change before merging with `pnpm stable-suggestion backtest --out "$PWD/.context/backtest.md" --llm-sample <d1,d2> --max-llm-calls N`. It needs `ANTHROPIC_API_KEY` locally and runs Claude only on the sampled dates.
 
 ## CLI
 

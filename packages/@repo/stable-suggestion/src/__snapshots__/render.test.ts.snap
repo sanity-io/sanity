@@ -58,6 +58,7 @@ Current stable: 6.15.0 (since 2026-09-29, 49 days)
 Hold: Radar unavailable, regression gate cannot be cleared
 Not eligible: 6.23.0 (regression-data-unavailable)
 
+Open bug reports: unavailable
 Full reasoning: https://github.com/example-org/example-repo/actions/runs/123"
 `;
 

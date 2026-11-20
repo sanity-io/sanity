@@ -20,6 +20,7 @@ import {
   type IssueReport,
   type IsoDate,
   type LatestMove,
+  type OpenIssueInRange,
   type RegressionRecord,
   type SoftFlagCode,
   type SqrlFacts,
@@ -257,16 +258,45 @@ function sqrlBaselineOf(
     : null
 }
 
+function isOpenBugReport(evidence: Evidence, issue: IssueReport): boolean {
+  const asOf = toTime(evidence.asOf)
+  return (
+    toTime(issue.createdAt) <= asOf &&
+    (issue.closedAt === null || toTime(issue.closedAt) > asOf) &&
+    issue.labels.every((label) => label !== FEATURE_LABEL)
+  )
+}
+
 function openIssuesFor(evidence: Evidence, version: string): IssueReport[] {
   if (evidence.issues.status === 'unavailable') return []
-  const asOf = toTime(evidence.asOf)
   return evidence.issues.data.filter(
-    (issue) =>
-      toTime(issue.createdAt) <= asOf &&
-      (issue.closedAt === null || toTime(issue.closedAt) > asOf) &&
-      issue.labels.every((label) => label !== FEATURE_LABEL) &&
-      issue.versionsMentioned.includes(version),
+    (issue) => isOpenBugReport(evidence, issue) && issue.versionsMentioned.includes(version),
   )
+}
+
+function isAfterStableUpToLatest(evidence: Evidence, version: string): boolean {
+  return (
+    isStableRelease(version) &&
+    semver.gt(version, evidence.currentStable) &&
+    semver.lte(version, evidence.latest)
+  )
+}
+
+function openIssuesInRangeOf(evidence: Evidence): OpenIssueInRange[] {
+  if (evidence.issues.status === 'unavailable') return []
+  return evidence.issues.data
+    .filter((issue) => isOpenBugReport(evidence, issue))
+    .map((issue) => ({
+      number: issue.number,
+      title: issue.title,
+      url: issue.url,
+      versions: issue.versionsMentioned
+        .filter((version) => isAfterStableUpToLatest(evidence, version))
+        .toSorted(semver.compare),
+      createdAt: issue.createdAt,
+    }))
+    .filter((issue) => issue.versions.length > 0)
+    .toSorted((left, right) => right.number - left.number)
 }
 
 function openInvestigationsFor(evidence: Evidence, version: string): Investigation[] {
@@ -460,5 +490,6 @@ export function evaluate(evidence: Evidence): Evaluation {
     shortlist: eligible.slice(0, SHORTLIST_SIZE),
     stableAtRisk: stableAtRiskOf(evidence),
     stableSplit: stableSplitOf(evidence),
+    openIssuesInRange: openIssuesInRangeOf(evidence),
   }
 }

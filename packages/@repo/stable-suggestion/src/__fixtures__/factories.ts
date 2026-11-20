@@ -58,6 +58,7 @@ export function makeEvaluation(overrides: Partial<Evaluation> = {}): Evaluation 
     eligible: ['6.23.0', '6.22.0', '6.21.0'],
     shortlist: ['6.23.0', '6.22.0', '6.21.0'],
     stableAtRisk: [],
+    openIssuesInRange: [],
     ...overrides,
   }
 }

@@ -1,7 +1,9 @@
 import {describe, expect, test} from 'vitest'
 
 import {makeEvaluation, makeEvidence} from './__fixtures__/factories'
-import {buildPrompt, GENERAL_CONCERN, ISSUE_TITLE_LIMIT} from './prompt'
+import {ISSUE_TITLE_LIMIT} from './config'
+import {EVIDENCE_SECTIONS} from './evidenceSections'
+import {buildPrompt, GENERAL_CONCERN, loadSystemPrompt} from './prompt'
 
 function readEnum(schema: Record<string, unknown>, path: string[]): unknown {
   return path.reduce<unknown>((node, key) => (node as Record<string, unknown>)[key], schema)
@@ -78,7 +80,7 @@ describe('buildPrompt', () => {
     const prompt = buildPrompt(evidence, makeEvaluation())
     const user = JSON.parse(prompt.user)
     expect(user.deterministicShortlist).toEqual(['6.23.0', '6.22.0', '6.21.0'])
-    expect(user.issueTitles).toEqual([{number: 101, title: 'x'.repeat(ISSUE_TITLE_LIMIT)}])
+    expect(user.issues.titles).toEqual([{number: 101, title: 'x'.repeat(ISSUE_TITLE_LIMIT)}])
     expect(user.currentStable.ageDays).toBe(49)
   })
 
@@ -86,10 +88,83 @@ describe('buildPrompt', () => {
     const evidence = makeEvidence({issues: {status: 'unavailable', error: 'down'}})
     const user = JSON.parse(buildPrompt(evidence, makeEvaluation()).user)
     expect(user.dataStatus.issues).toBe('unavailable')
-    expect(user.issueTitles).toEqual([])
+    expect(user.issues.titles).toEqual([])
   })
 
   test('system prompt tells the model to ignore instructions inside issue titles', () => {
     expect(buildPrompt(makeEvidence(), makeEvaluation()).system).toContain('untrusted user text')
+  })
+
+  test('user content matches the snapshot', () => {
+    const evaluation = makeEvaluation({
+      openIssuesInRange: [
+        {
+          number: 101,
+          title: 'Example issue title',
+          url: 'https://example.invalid/101',
+          versions: ['6.22.0', '6.23.0'],
+          createdAt: '2026-11-10T10:00:00Z',
+        },
+      ],
+    })
+    expect(JSON.parse(buildPrompt(makeEvidence(), evaluation).user)).toMatchSnapshot()
+  })
+})
+
+describe('loadSystemPrompt', () => {
+  test('loads the prompt file and fills its placeholders', () => {
+    const system = loadSystemPrompt()
+    expect(system.length).toBeGreaterThan(0)
+    expect(system).not.toContain('{{')
+    expect(system).toContain('which already-published sanity version')
+    expect(system).toContain('1 to 3 versions')
+  })
+})
+
+describe('EVIDENCE_SECTIONS', () => {
+  const evaluation = makeEvaluation()
+
+  test('every section contributes its key to the user content', () => {
+    const user = JSON.parse(buildPrompt(makeEvidence(), evaluation).user)
+    EVIDENCE_SECTIONS.forEach((section) => expect(user).toHaveProperty(section.key))
+  })
+
+  test('section keys are unique', () => {
+    const keys = EVIDENCE_SECTIONS.map((section) => section.key)
+    expect(new Set(keys).size).toBe(keys.length)
+  })
+
+  test('removing a section removes its key from the user content', () => {
+    const sections = EVIDENCE_SECTIONS.filter((section) => section.key !== 'sqrl')
+    const user = JSON.parse(buildPrompt(makeEvidence(), evaluation, sections).user)
+    expect(user).not.toHaveProperty('sqrl')
+    expect(user).toHaveProperty('soak')
+  })
+
+  test('sections appear in array order', () => {
+    const reversed = EVIDENCE_SECTIONS.toReversed()
+    const user = JSON.parse(buildPrompt(makeEvidence(), evaluation, reversed).user)
+    expect(Object.keys(user).slice(-reversed.length)).toEqual(
+      reversed.map((section) => section.key),
+    )
+  })
+
+  test('the issuesInRange section carries truncated titles and versions', () => {
+    const longTitle = 'y'.repeat(ISSUE_TITLE_LIMIT + 10)
+    const withIssue = makeEvaluation({
+      openIssuesInRange: [
+        {
+          number: 7,
+          title: longTitle,
+          url: 'https://example.invalid/7',
+          versions: ['6.23.0'],
+          createdAt: '2026-11-10T10:00:00Z',
+        },
+      ],
+    })
+    const user = JSON.parse(buildPrompt(makeEvidence(), withIssue).user)
+    expect(user.issuesInRange).toEqual([
+      {number: 7, title: 'y'.repeat(ISSUE_TITLE_LIMIT), versions: ['6.23.0']},
+    ])
   })
 })
