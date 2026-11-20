@@ -6,7 +6,7 @@ import {type FieldDefinition, type IntrinsicTypeName} from '../schema/definition
  * @public
  */
 export type MediaLibraryAssetAspectSupportedFieldDefinitions = FieldDefinition<
-  Exclude<IntrinsicTypeName, 'document' | 'image' | 'file' | 'reference' | 'crossDatasetReference'>
+  Exclude<IntrinsicTypeName, 'document' | 'reference' | 'crossDatasetReference'>
 >
 
 /**
