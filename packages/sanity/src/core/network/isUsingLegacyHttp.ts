@@ -1,6 +1,8 @@
 import {type SanityClient} from '@sanity/client'
 import {defer, firstValueFrom, map, type Observable, of, tap} from 'rxjs'
 
+import {hostMatchesScope} from './listenerCount'
+
 /**
  * The /ping route is special in that it allows any origin to access it, and crucially
  * for this case: also allows _timing_ requests through the `timing-allow-origin` header.
@@ -30,6 +32,36 @@ interface ProtocolCheck {
 // so observable warm-up, remounts, and multiple subscribers cannot start duplicate requests. The
 // detailed diagnostics API below remains uncached so an explicit rerun always captures a fresh result.
 const protocolChecks = new WeakMap<SanityClient, ProtocolCheck>()
+
+// Keyed by root API host, never by client, so a stall detected in one tab can look up the
+// protocol this tab measured for the scope it stalled in.
+const measuredProtocols = new Map<string, string>()
+
+/**
+ * This tab's own measured `nextHopProtocol` for the root API host `host` falls under (a root
+ * host itself, or a request host such as `<projectId>.<root>`, matched by
+ * {@link hostMatchesScope}), or `undefined` before the probe has resolved. No browser storage -
+ * a fresh tab or reload measures again.
+ *
+ * @internal
+ */
+export function getMeasuredApiProtocol(host: string): string | undefined {
+  return (
+    measuredProtocols.get(host) ??
+    Array.from(measuredProtocols.entries()).find(([rootHost]) =>
+      hostMatchesScope(host, rootHost),
+    )?.[1]
+  )
+}
+
+function rootApiHost(client: SanityClient): string | undefined {
+  try {
+    const {host} = new URL(client.config().apiHost ?? '')
+    return host || undefined
+  } catch {
+    return undefined
+  }
+}
 
 /** @internal */
 export interface ApiNetworkResourceTiming {
@@ -109,6 +141,8 @@ function getApiProtocol(client: SanityClient): Observable<string> {
           map((diagnostic) => diagnostic.protocol),
           tap((protocol) => {
             check.protocol = protocol
+            const host = rootApiHost(client)
+            if (host) measuredProtocols.set(host, protocol)
           }),
         ),
       ),
