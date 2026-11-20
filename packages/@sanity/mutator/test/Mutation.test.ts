@@ -20,3 +20,20 @@ test('does not update _updatedAt when there is no timestamp', () => {
   const doc = mutation.apply({_id: '1', _type: 'test', _updatedAt: timestamp})
   expect(doc?._updatedAt).toBe(timestamp)
 })
+
+test('skips patches when applying them to a missing document', () => {
+  const mutation = new Mutation({
+    mutations: [
+      {
+        patch: {
+          id: '1',
+          set: {
+            title: 'Hello world',
+          },
+        },
+      },
+    ],
+  })
+
+  expect(mutation.apply(null)).toBeNull()
+})
