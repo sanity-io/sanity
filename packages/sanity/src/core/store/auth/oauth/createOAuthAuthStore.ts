@@ -123,6 +123,11 @@ export interface OAuthTokens {
   /** Epoch milliseconds when the Studio renews the access token, ahead of `expiresAt`. */
   refreshAt: number
   /**
+   * Epoch milliseconds when the refresh token expires: when the token response arrived, plus its
+   * `refresh_token_timeout`. Missing when the server did not send a timeout.
+   */
+  refreshTokenExpiresAt?: number
+  /**
    * Epoch milliseconds of the sign-in this pair descends from, kept across renewals. Only ever
    * reported as a coarse session age. Missing for pairs stored before it was recorded.
    */
@@ -225,13 +230,26 @@ function toTokens(
 ): OAuthTokens {
   const issuedAt = Date.now()
   const lifetimeMs = response.expires_in * 1000
+  const refreshTokenExpiresAt =
+    response.refresh_token_timeout === undefined
+      ? // The server kept the old refresh token, so it keeps its old expiry.
+        response.refresh_token === undefined
+        ? previous?.refreshTokenExpiresAt
+        : undefined
+      : issuedAt + response.refresh_token_timeout * 1000
   return {
     accessToken: response.access_token,
     refreshToken: response.refresh_token ?? previous?.refreshToken,
     expiresAt: issuedAt + lifetimeMs,
     refreshAt: issuedAt + renewAfterMs(lifetimeMs, renewBeforeExpiryMs),
     signedInAt: previous ? previous.signedInAt : issuedAt,
+    ...(refreshTokenExpiresAt === undefined ? {} : {refreshTokenExpiresAt}),
   }
+}
+
+/** Whether the refresh token has expired. Always false when the server did not send a timeout. */
+function isRefreshTokenExpired(tokens: OAuthTokens, now = Date.now()): boolean {
+  return tokens.refreshTokenExpiresAt !== undefined && now >= tokens.refreshTokenExpiresAt
 }
 
 /**
@@ -556,6 +574,14 @@ export function _createOAuthAuthStore({
         debug('refresh: no refresh token to redeem, signing out')
         tokenStorage.update(undefined)
         reportSessionEnded('refresh-refused', stored)
+        outcome = 'session-ended'
+        return undefined
+      }
+      // The server would refuse it, so end the session without sending it.
+      if (isRefreshTokenExpired(stored)) {
+        debug('refresh: refresh token has expired, signing out without a request')
+        tokenStorage.update(undefined)
+        reportSessionEnded('refresh-expired', stored)
         outcome = 'session-ended'
         return undefined
       }
