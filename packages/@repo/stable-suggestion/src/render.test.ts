@@ -114,9 +114,7 @@ describe('renderShortlistText', () => {
     expect(lines[0]).toBe('@stable shortlist after sanity 6.24.0 reached latest - recommend 6.23.0')
     expect(lines).toContain('1) 6.23.0 - Newest eligible version.')
     expect(lines).toContain('3) 6.21.0 - Fallback if the open reports are regressions.')
-    expect(lines.at(-2)).toBe(
-      `To promote: open ${WORKFLOW_URL}, click Run workflow, enter the version (for example 6.23.0). The result posts here.`,
-    )
+    expect(lines.at(-2)).toBe(`To promote: ${WORKFLOW_URL}`)
     expect(lines.at(-1)).toBe(`Full reasoning: ${RUN_URL}`)
   })
 

@@ -145,7 +145,7 @@ describe('recommend', () => {
     expect(Object.keys(fallback)).toEqual(['text'])
     expect(webhook.run_url).toBe(WORKFLOW_URL)
     expect(webhook.text).toContain(`Full reasoning: ${RUN_URL}`)
-    expect(webhook.text).toContain(`To promote: open ${WORKFLOW_URL}`)
+    expect(webhook.text).toContain(`To promote: ${WORKFLOW_URL}`)
     expect(fallback.text).toBe(
       `*${webhook.headline}*\n\n${webhook.text}\nFrom the CLI: \`${webhook.cli}\``,
     )

@@ -253,9 +253,7 @@ export function renderShortlist(
     ...(slots.length > 0 ? [''] : []),
     ...banners,
     ...(banners.length > 0 ? [''] : []),
-    topPick
-      ? `To promote: ${promoteInstruction(links.workflowUrl, exampleVersion)} The result posts here.`
-      : null,
+    topPick ? `To promote: ${bareUrl(links.workflowUrl)}` : null,
     `Full reasoning: ${bareUrl(links.runUrl)}`,
   ]
   return {
