@@ -684,6 +684,14 @@ own static color and can become unreadable on the selected background. In custom
 `ui-components/menuItem/MenuItem.tsx` do. `ResourcesMenuItems.browser.test.tsx` covers the help
 menu's version row selected in light and dark mode.
 
+### A dialog opened on top of another dialog renders inside it
+
+`@sanity/ui` decides which dialog handles click-outside and Escape from the React tree of layers,
+not from the DOM. Two `Dialog`s rendered as siblings both count as the top layer, so a click inside
+the second one fires the first one's `onClickOutside`, and Escape closes both. Render the second
+dialog as a child of the first one (it still portals), as `DuplicateVariantDialog` does through
+`VariantDialog`'s `children`.
+
 ### Translate: never define `components` inline
 
 Components passed to `<Translate>`'s `components` map must be stable, module-scope components —
