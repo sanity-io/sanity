@@ -19,7 +19,6 @@ import {
   useWorkspace,
   useAllVariants,
   type VersionInfoDocumentStub,
-  useSetVariant,
 } from 'sanity'
 
 import {isLiveEditEnabled} from '../components/paneItem/helpers'
@@ -101,7 +100,7 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     }
   }, [params, onSetScheduledDraftPerspective])
 
-  const {navigate: handlePerspectiveChange} = usePerspectiveNavigator()
+  const {navigate: handlePerspectiveChange, setVariant} = usePerspectiveNavigator()
 
   const schemaType = schema.get(documentType)
   const isLiveEdit = schemaType ? isLiveEditEnabled(schemaType) : false
@@ -249,7 +248,6 @@ export function useDocumentPerspectiveList(): DocumentPerspectiveList {
     () => filteredVersions.filter((version) => Boolean(getDocumentVersionVariantId(version))),
     [filteredVersions],
   )
-  const setVariant = useSetVariant()
   const handleVariantSelectionChange = useCallback(
     (version: VersionInfoDocumentStub) => {
       const variantId = getDocumentVersionVariantId(version)

@@ -752,6 +752,7 @@ import type {
   getValueAtPath,
   getValueError,
   getVariantPublishedSibling,
+  getVariantStickyParams,
   getVariantTitle,
   getVariantType,
   getVersionFromId,
@@ -1422,6 +1423,7 @@ import type {
   SetActiveGroupOperation,
   setAtPath,
   setIfMissing,
+  SetVariant,
   SingleDocReleaseProvider,
   SingleFieldSet,
   SingleMutationResult,
@@ -4153,6 +4155,9 @@ describe('sanity', () => {
   test('getVariantPublishedSibling', () => {
     expectTypeOf<typeof getVariantPublishedSibling>().toBeFunction()
   })
+  test('getVariantStickyParams', () => {
+    expectTypeOf<typeof getVariantStickyParams>().toBeFunction()
+  })
   test('getVariantTitle', () => {
     expectTypeOf<typeof getVariantTitle>().toBeFunction()
   })
@@ -6168,6 +6173,9 @@ describe('sanity', () => {
   })
   test('setIfMissing', () => {
     expectTypeOf<typeof setIfMissing>().toBeFunction()
+  })
+  test('SetVariant', () => {
+    expectTypeOf<SetVariant>().not.toBeNever()
   })
   test('SingleDocReleaseProvider', () => {
     expectTypeOf<typeof SingleDocReleaseProvider>().toBeFunction()

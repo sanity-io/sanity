@@ -13,23 +13,48 @@ import {type ReleaseId} from './types'
 import {useGetDefaultPerspective} from './useGetDefaultPerspective'
 import {getPerspectiveParam} from './useSetPerspective'
 
+type SetVariantOptions =
+  | {
+      variantId: SystemVariant['_id'] | undefined
+      /** Variant type to update. Defaults to `variant`, preserving other types. */
+      type?: string
+      perspective?: SystemBundle | ReleaseId
+    }
+  | {
+      variantId?: SystemVariant['_id']
+      type?: string
+      perspective: SystemBundle | ReleaseId
+    }
+
 /**
  * @internal
  */
-export type SetVariant = (
-  options:
-    | {
-        variantId: SystemVariant['_id'] | undefined
-        /** Variant type to update. Defaults to `variant`, preserving other types. */
-        type?: string
-        perspective?: SystemBundle | ReleaseId
-      }
-    | {
-        variantId?: SystemVariant['_id']
-        type?: string
-        perspective: SystemBundle | ReleaseId
-      },
-) => void
+export type SetVariant = (options: SetVariantOptions) => void
+
+/**
+ * The sticky params {@link useSetVariant} navigates with: `variant` with the selection of one type
+ * replaced, and the perspective params when a perspective is given. `null` removes a param.
+ * For a navigation that changes other router state too, so it can update everything at once.
+ *
+ * @internal
+ */
+export function getVariantStickyParams(
+  {variantId, type = DEFAULT_VARIANT_TYPE_KEY, perspective}: SetVariantOptions,
+  currentVariantParam: string | undefined,
+  defaultPerspective: SystemBundle,
+): Record<string, string | null> {
+  const current = parseVariantStickyParam(currentVariantParam)
+
+  return {
+    variant: serializeVariantStickyParam(updateVariantSelection(current, type, variantId)),
+    ...(perspective
+      ? {
+          excludedPerspectives: null,
+          perspective: getPerspectiveParam(perspective, defaultPerspective),
+        }
+      : {}),
+  }
+}
 
 /**
  * React hook to set the variant in the router.
@@ -44,21 +69,13 @@ export function useSetVariant(): SetVariant {
   const defaultPerspective = useGetDefaultPerspective()
 
   return useCallback<SetVariant>(
-    ({variantId, type = DEFAULT_VARIANT_TYPE_KEY, perspective}) => {
-      const current = parseVariantStickyParam(
-        typeof router.stickyParams.variant === 'string' ? router.stickyParams.variant : undefined,
-      )
-
+    (options) => {
       router.navigate({
-        stickyParams: {
-          variant: serializeVariantStickyParam(updateVariantSelection(current, type, variantId)),
-          ...(perspective
-            ? {
-                excludedPerspectives: null,
-                perspective: getPerspectiveParam(perspective, defaultPerspective),
-              }
-            : {}),
-        },
+        stickyParams: getVariantStickyParams(
+          options,
+          typeof router.stickyParams.variant === 'string' ? router.stickyParams.variant : undefined,
+          defaultPerspective,
+        ),
       })
     },
     [router, defaultPerspective],

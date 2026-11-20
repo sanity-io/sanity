@@ -34,6 +34,10 @@ vi.mock('../../../../../hooks/useDocumentPerspectiveList', () => ({
   useDocumentPerspectiveList: vi.fn(() => ({})),
 }))
 
+vi.mock('../../../../../hooks/usePerspectiveNavigator', () => ({
+  usePerspectiveNavigator: vi.fn(() => ({navigate: vi.fn(), setVariant: vi.fn()})),
+}))
+
 vi.mock('../../../../../components/confirmDeleteDialog/useReferringDocuments', () => ({
   referringDocuments: vi.fn(() => EMPTY),
 }))

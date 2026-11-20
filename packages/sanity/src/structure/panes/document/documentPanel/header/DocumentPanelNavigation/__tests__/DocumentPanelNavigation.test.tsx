@@ -98,7 +98,7 @@ describe('DocumentPanelNavigation', () => {
       schemaType: {name: 'article', liveEdit: false} as ObjectSchemaType,
     })
     mockUsePerspective.mockReturnValue(createPerspective())
-    mockUsePerspectiveNavigator.mockReturnValue({navigate})
+    mockUsePerspectiveNavigator.mockReturnValue({navigate, setVariant: vi.fn()})
     mockUseReleasesToolAvailable.mockReturnValue(true)
     mockUseScheduledDraftsEnabled.mockReturnValue(true)
     mockUseSingleDocRelease.mockReturnValue({onSetScheduledDraftPerspective: vi.fn()})
