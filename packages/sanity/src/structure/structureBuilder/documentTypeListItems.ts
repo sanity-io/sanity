@@ -15,7 +15,7 @@ import {type Collection} from './StructureNodes'
 import {type StructureContext} from './types'
 import {markDefaultDocumentTypeChild} from './util/defaultDocumentTypeChild'
 
-const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset']
+const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset', 'system.release']
 
 function isBundledDocType(typeName: string) {
   return BUNDLED_DOC_TYPES.includes(typeName)

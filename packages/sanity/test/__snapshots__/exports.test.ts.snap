@@ -331,6 +331,7 @@ exports[`exports snapshot 1`] = `
     "defineLocaleResourceBundle": "function",
     "defineLocalesResources": "function",
     "definePlugin": "function",
+    "defineReleaseMetadata": "function",
     "defineSearchFilter": "function",
     "defineSearchFilterOperators": "function",
     "defineSearchMachine": "function",

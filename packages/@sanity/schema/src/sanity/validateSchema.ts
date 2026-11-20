@@ -1,3 +1,4 @@
+import {RELEASE_METADATA_TYPE_NAME} from './builtinTypes/releaseMetadata'
 import {traverseSanitySchema} from './traverseSchema'
 import {type _FIXME_} from './typedefs'
 import array from './validation/types/array'
@@ -10,6 +11,7 @@ import globalDocumentReference from './validation/types/globalDocumentReference'
 import image from './validation/types/image'
 import object from './validation/types/object'
 import reference from './validation/types/reference'
+import releaseMetadata from './validation/types/releaseMetadata'
 import rootType from './validation/types/rootType'
 import slug from './validation/types/slug'
 
@@ -75,7 +77,11 @@ export function validateSchema(
     const commonVisitors = transformCommonVisitors([common])
 
     if (visitorContext.isRoot) {
-      return combine(rootType, ...commonVisitors, typeVisitor)(schemaDef, visitorContext)
+      const rootVisitors =
+        schemaDef?.name === RELEASE_METADATA_TYPE_NAME
+          ? [rootType, ...commonVisitors, releaseMetadata, typeVisitor]
+          : [rootType, ...commonVisitors, typeVisitor]
+      return combine(...rootVisitors)(schemaDef, visitorContext)
     }
 
     return combine(...commonVisitors, typeVisitor)(schemaDef, visitorContext)

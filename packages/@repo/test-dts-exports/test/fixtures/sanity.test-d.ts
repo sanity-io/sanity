@@ -384,6 +384,7 @@ import type {
   defineLocaleResourceBundle,
   defineLocalesResources,
   definePlugin,
+  defineReleaseMetadata,
   DefineSchemaBase,
   DefineSchemaOptions,
   DefineSchemaType,
@@ -1288,6 +1289,7 @@ import type {
   ReleaseAvatarIcon,
   ReleaseDocument,
   ReleaseId,
+  ReleaseMetadataDefinition,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
   ReleasesNav,
@@ -3046,6 +3048,9 @@ describe('sanity', () => {
   })
   test('definePlugin', () => {
     expectTypeOf<typeof definePlugin>().toBeFunction()
+  })
+  test('defineReleaseMetadata', () => {
+    expectTypeOf<typeof defineReleaseMetadata>().toBeFunction()
   })
   test('DefineSchemaBase', () => {
     expectTypeOf<DefineSchemaBase<any, any>>().not.toBeNever()
@@ -5769,6 +5774,9 @@ describe('sanity', () => {
   })
   test('ReleaseId', () => {
     expectTypeOf<ReleaseId>().not.toBeNever()
+  })
+  test('ReleaseMetadataDefinition', () => {
+    expectTypeOf<ReleaseMetadataDefinition>().not.toBeNever()
   })
   test('RELEASES_INTENT', () => {
     expectTypeOf<typeof RELEASES_INTENT>().not.toBeNever()
