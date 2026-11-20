@@ -5,6 +5,8 @@ import {type ReactNode, useState} from 'react'
 import {Text, Flex, Grid, type GapProps, type TextProps, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
+import {type ListenerCounts} from '../../../../network/listenerCount'
+import {LISTENER_WARNING_THRESHOLD} from '../../../../network/listenerCountWarning'
 import {type StudioDiagnostics} from '../../../diagnostics/gatherStudioDiagnostics'
 import {type StyleSheetDiagnostic} from '../../../diagnostics/getStylesDiagnostics'
 import {codeValue} from './DiagnosticsReport.css'
@@ -374,11 +376,17 @@ function StyledComponentsReport({sheets}: {sheets: StyleSheetDiagnostic[]}) {
   )
 }
 
+function formatOpenListeners(listeners: ListenerCounts | undefined): string | undefined {
+  if (listeners === undefined) return undefined
+  const formatted = listeners.open.toLocaleString()
+  return listeners.open > LISTENER_WARNING_THRESHOLD ? `${formatted} (high)` : formatted
+}
+
 function NetworkReport({
   diagnostics,
   useUtc,
 }: Pick<DiagnosticsReportProps, 'diagnostics'> & {useUtc: boolean}) {
-  const {geoIpCountry, protocol, requestHistory, shard} = diagnostics.network
+  const {geoIpCountry, listeners, protocol, requestHistory, shard} = diagnostics.network
   const timing = protocol.resourceTiming
   const trackingStartedAt = requestHistory.sessionSummary.startedAt
   const protocolValue =
@@ -387,6 +395,8 @@ function NetworkReport({
   return (
     <ReportSection testId="diagnostics-network" title="Network">
       <DetailRow label="Protocol" monospace value={protocolValue} />
+      <DetailRow label="Open listeners" value={formatOpenListeners(listeners)} />
+      <DetailRow label="Peak listeners" value={listeners?.peak.toLocaleString()} />
       <DetailRow
         label="Session requests"
         value={requestHistory.sessionSummary.totalRequests.toLocaleString()}

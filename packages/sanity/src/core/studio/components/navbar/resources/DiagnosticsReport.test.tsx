@@ -42,6 +42,7 @@ const diagnostics: StudioDiagnostics = {
         timedOut: true,
       },
     },
+    listeners: {open: 6, peak: 9},
     protocol: {
       durationMs: 95,
       protocol: 'h2',
@@ -173,7 +174,45 @@ const diagnostics: StudioDiagnostics = {
   },
 }
 
+function renderNetworkSection(report: StudioDiagnostics) {
+  render(
+    <ThemeProvider theme={buildTheme()}>
+      <DiagnosticsReport diagnostics={report} onRunAgain={vi.fn()} />
+    </ThemeProvider>,
+  )
+}
+
+function getRowText(label: string): string | null {
+  const network = screen.getByTestId('diagnostics-network')
+  return within(network).getByText(label).closest('[data-ui="Flex"]')?.textContent ?? null
+}
+
 describe('DiagnosticsReport', () => {
+  it('shows the open and peak listener counts', () => {
+    renderNetworkSection(diagnostics)
+
+    expect(getRowText('Open listeners')).toBe('Open listeners6')
+    expect(getRowText('Peak listeners')).toBe('Peak listeners9')
+  })
+
+  it('shows Unknown for both listener rows when the report has no counts', () => {
+    const {listeners: _listeners, ...networkWithoutListeners} = diagnostics.network
+    renderNetworkSection({...diagnostics, network: networkWithoutListeners})
+
+    expect(getRowText('Open listeners')).toBe('Open listenersUnknown')
+    expect(getRowText('Peak listeners')).toBe('Peak listenersUnknown')
+  })
+
+  it('flags an open listener count above the warning threshold', () => {
+    renderNetworkSection({
+      ...diagnostics,
+      network: {...diagnostics.network, listeners: {open: 31, peak: 31}},
+    })
+
+    expect(getRowText('Open listeners')).toBe('Open listeners31 (high)')
+    expect(getRowText('Peak listeners')).toBe('Peak listeners31')
+  })
+
   it('renders readable sections and network measurements', async () => {
     const onRunAgain = vi.fn()
     const userInteraction = userEvent.setup()

@@ -1,4 +1,4 @@
-import {type ListenEvent, type SanityClient} from '@sanity/client'
+import {type ClientConfig, type ListenEvent, type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
 import {
   catchError,
@@ -15,6 +15,7 @@ import {
 
 import {hasSanityPackageInImportMap} from '../../environment/importMap'
 import {type ApiNetworkDiagnostic, getApiNetworkDiagnostic} from '../../network/isUsingLegacyHttp'
+import {getListenerCounts, type ListenerCounts} from '../../network/listenerCount'
 import {type SchemaDiagnostics} from './getStudioConfigurationDiagnostics'
 import {getStylesDiagnostics, type StylesDiagnostics} from './getStylesDiagnostics'
 import {
@@ -102,6 +103,7 @@ export interface StudioDiagnostics {
       first: ListenDiagnostic
       secondWhileFirstOpen: ListenDiagnostic
     }
+    listeners?: ListenerCounts
     protocol: ApiNetworkDiagnostic
     requestHistory: RequestPerformanceSnapshot
     requests: RequestDiagnostic[]
@@ -186,12 +188,16 @@ async function runStudioDiagnostics({
 }: StudioDiagnosticsOptions): Promise<StudioDiagnostics> {
   const startedAt = new Date()
   const startedAtMeasurement = performance.now()
+  const listeners = getListenerCounts()
   const diagnosticClient = client.withConfig({maxRetries: 0, useCdn: false})
   const requestTarget = {dataset: studio.dataset, projectId: studio.projectId}
   const requestHistoryBeforeDiagnostics =
     getRequestHistory?.(requestTarget) ?? createEmptyRequestHistory(requestTarget, startedAt)
   const protocol = await firstValueFrom(getApiNetworkDiagnostic(diagnosticClient))
-  const listen = await runListenDiagnostics(diagnosticClient, requestTimeout)
+  const listen = await runListenDiagnostics(
+    diagnosticClient.withConfig({resolveFetch: resolveUncountedFetch}),
+    requestTimeout,
+  )
   const {geoIpCountry, requests} = await runRequestDiagnostics(diagnosticClient, requestTimeout)
   const clientConfig = diagnosticClient.config()
   const browser = getBrowserDiagnostics()
@@ -209,7 +215,7 @@ async function runStudioDiagnostics({
     diagnosticVersion: 1,
     durationMs: elapsedSince(startedAtMeasurement),
     generatedAt: generatedAt.toISOString(),
-    network: {geoIpCountry, listen, protocol, requestHistory, requests, shard},
+    network: {geoIpCountry, listen, listeners, protocol, requestHistory, requests, shard},
     schema,
     startedAt: startedAt.toISOString(),
     studio: {
@@ -225,6 +231,12 @@ async function runStudioDiagnostics({
       roles: user?.roles.map(({name, title}) => ({name, title})) ?? [],
     },
   }
+}
+
+type FetchFunction = ReturnType<NonNullable<ClientConfig['resolveFetch']>>
+
+function resolveUncountedFetch(): FetchFunction {
+  return (input, init) => globalThis.fetch(input, init)
 }
 
 // hasSanityPackageInImportMap JSON.parses the page's import maps; a malformed one must not abort
