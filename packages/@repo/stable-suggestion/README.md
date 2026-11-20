@@ -4,7 +4,7 @@ Internal tool that suggests which already-published `sanity` version to move to 
 
 ## Promoting
 
-The Slack message and the run summary both say: open the `tag-stable.yml` workflow page, click Run workflow and enter the version. `gh workflow run tag-stable.yml -f version=<X.Y.Z>` does the same from a terminal. `tag-stable.yml` validates the version, reads the current stable tag, tags every package, updates the bundle manifest and posts the outcome to Slack.
+The Slack message ends with a link to the `tag-stable.yml` workflow page, and the run summary spells out the steps: open the page, click Run workflow and enter the version. `gh workflow run tag-stable.yml -f version=<X.Y.Z>` does the same from a terminal. `tag-stable.yml` validates the version, reads the current stable tag, tags every package, updates the bundle manifest and posts the outcome to Slack.
 
 The webhook payload has four variables because Workflow Builder inserts them literally and applies no markup: `headline` is the first line and is bolded in the step, `text` is the body, `cli` is the `gh workflow run tag-stable.yml -f version=<pick>` command and is styled as code in the step (`-` when there is no pick), and `run_url` drives the button. The `tag-stable.yml` confirmation uses a second webhook, `SLACK_WEBHOOK_URL_STABLE_RESULT`, with only `headline` and `text`. Each reason in `text` is a single sentence the prompt caps at 120 characters, and a longer one is cut at a word boundary before 140 characters.
 
