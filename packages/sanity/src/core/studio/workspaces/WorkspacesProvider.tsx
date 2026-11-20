@@ -25,6 +25,7 @@ import {useEffectEvent} from 'use-effect-event'
 import {prepareConfig} from '../../config/prepareConfig'
 import {type Config, type WorkspaceSummary} from '../../config/types'
 import {type AuthStore} from '../../store/auth/types'
+import {registerListenerErrorHandler} from '../../util/listenerErrorHandlers'
 import {getApiErrorCode} from '../requestErrors/classify'
 import {createRequestErrorChannel} from '../requestErrors/createRequestErrorChannel'
 import {createStudioRequestHandler as createStudioRequestHandlerFactory} from '../requestErrors/createStudioRequestHandler'
@@ -207,6 +208,10 @@ export function WorkspacesProvider({
     }).workspaces satisfies WorkspacesContextValue,
     null,
   )
+
+  // Takes over the listeners that fail irrecoverably, so the studio shows the connection error
+  // dialog for them instead of crashing the tool that listens. See `registerListenerErrorHandler`.
+  useEffect(() => registerListenerErrorHandler(requestErrorChannel), [requestErrorChannel])
 
   // Survives the CORS (and loading) early returns. Those replace
   // `WorkspacesClaimProvider`, and `claim$` keeps the unauthorized claim

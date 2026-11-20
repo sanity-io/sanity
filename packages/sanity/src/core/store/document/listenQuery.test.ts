@@ -1,7 +1,8 @@
 import {ChannelError, ClientError, type SanityClient, ServerError} from '@sanity/client'
 import {defer, NEVER, of, Subject, throwError} from 'rxjs'
-import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, vi} from 'vitest'
 
+import {test} from '../../../../test/testUtils/listenerErrorHandlerTest'
 import {type InvalidationChannelEvent} from '../../preview/types'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../variants/store/constants'
 import {listenQuery, listenQueryOnGlobalListener} from './listenQuery'
@@ -409,6 +410,32 @@ describe('listenQuery', () => {
       // The fetch is subscribed and delivered on two further async scheduler ticks.
       await vi.advanceTimersByTimeAsync(10_000 + 10)
       expect(values).toEqual([{ok: true}])
+
+      sub.unsubscribe()
+    })
+
+    test('keeps its result when the registered error handler takes over a listener that fails irrecoverably', async ({
+      listenerErrorHandler,
+    }) => {
+      const {connections, current} = openConnections(listen)
+      const values: unknown[] = []
+      const errors: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe({
+        next: (value) => values.push(value),
+        error: (error) => errors.push(error),
+      })
+      current().next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+
+      const error = new ChannelError('Denied', {error: {type: 'permissionDeniedError'}})
+      current().error(error)
+      await vi.advanceTimersByTimeAsync(60_000)
+
+      expect(listenerErrorHandler.handle).toHaveBeenCalledWith(error)
+      expect(errors).toEqual([])
+      // The outage's `reconnect` refetches, as every `reconnect` does.
+      expect(values).toEqual([{ok: true}, {ok: true}])
+      expect(connections).toHaveLength(1)
 
       sub.unsubscribe()
     })

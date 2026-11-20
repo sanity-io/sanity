@@ -7,6 +7,7 @@ import {
   EMPTY,
   filter,
   first,
+  from,
   map,
   merge,
   mergeMap,
@@ -22,7 +23,8 @@ import {
   timer,
 } from 'rxjs'
 
-import {isTransientListenerError} from './listenerErrors'
+import {type ListenerErrorHandler, registeredListenerErrorHandler} from './listenerErrorHandlers'
+import {isListenerConnectionError, isTransientListenerError} from './listenerErrors'
 
 /** @internal */
 export interface ReconnectListenerOptions {
@@ -39,6 +41,12 @@ export interface ReconnectListenerOptions {
   maxClientReconnects?: number
   /** How long a connection may take to open before an outage starts. */
   welcomeTimeoutMs?: number
+  /**
+   * Takes over a listener that failed in a way it cannot recover from (see
+   * `isListenerConnectionError`), in place of the registered handlers
+   * (`registerListenerErrorHandler`). Without either, the error is passed on.
+   */
+  errorHandler?: ListenerErrorHandler
 }
 
 /**
@@ -145,16 +153,21 @@ export function reconnectDelay(
  *   answers the listen request before it sets the listener up, and sends nothing the client
  *   surfaces until `welcome`, so a listener whose setup hangs would otherwise leave the consumers
  *   waiting with no end. The connection is kept, and opening late ends the outage.
+ * - a listener that fails in a way it cannot recover from (`isListenerConnectionError`) is handed
+ *   to `errorHandler`, or else to the registered handlers (`registerListenerErrorHandler`), which
+ *   report it to the user. The outage starts, so the consumers keep what they loaded and stop
+ *   treating it as live, and the listener stays open without reconnecting.
  *
- * Any other error is passed on. Place the operator right after `client.listen()`, before the
- * listener is shared, so that a single recovery serves every subscriber.
+ * Any other error is passed on, as is one the error handler rejects. Place the operator right after
+ * `client.listen()`, before the listener is shared, so that a single recovery serves every
+ * subscriber.
  *
  * @internal
  */
 export function reconnectListener<T extends {type: string}>(
   options: ReconnectListenerOptions = {},
 ): OperatorFunction<T, T | ReconnectEvent> {
-  const {maxClientReconnects = 2, welcomeTimeoutMs = 10_000} = options
+  const {maxClientReconnects = 2, welcomeTimeoutMs = 10_000, errorHandler} = options
   return (listener$) => {
     // A single connection: subscribing to it opens it. `connect` subscribes every branch before
     // the listener, so they all see the events of a listener that emits as soon as it is
@@ -181,6 +194,18 @@ export function reconnectListener<T extends {type: string}>(
       // Failed attempts since a connection last opened, which sets the backoff.
       let attempt = 0
 
+      // Hands a listener that failed irrecoverably to the error handler, which keeps it down until
+      // it rejects, if it ever does.
+      function handOver(error: unknown): Observable<ReconnectEvent> {
+        // Looked up as the listener fails: the handler may have been registered after the listener
+        // was set up.
+        const handler = errorHandler ?? registeredListenerErrorHandler()
+        if (!handler || !isListenerConnectionError(error)) {
+          return throwError(() => error)
+        }
+        return concat(of(RECONNECT), from(handler.handle(error)))
+      }
+
       return defer(() => openConnection(attempt > 0)).pipe(
         // A failure the backoff recovers from starts an outage before the next attempt.
         catchError((error) =>
@@ -200,6 +225,7 @@ export function reconnectListener<T extends {type: string}>(
         tap((event) => {
           if (isConnected(event)) attempt = 0
         }),
+        catchError(handOver),
         announceEachOutageOnce(),
       )
     })

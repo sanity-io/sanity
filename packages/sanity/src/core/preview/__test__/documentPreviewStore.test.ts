@@ -1,7 +1,8 @@
 import {ChannelError, createClient, type ListenEvent, type MutationEvent} from '@sanity/client'
 import {defer, NEVER, type Observable, of, Subject} from 'rxjs'
-import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, onTestFinished, vi} from 'vitest'
 
+import {it} from '../../../../test/testUtils/listenerErrorHandlerTest'
 import {createDocumentPreviewStore} from '../documentPreviewStore'
 import {type InvalidationChannelEvent} from '../types'
 
@@ -213,5 +214,23 @@ describe('createDocumentPreviewStore while the global listener is down', () => {
 
     await vi.advanceTimersByTimeAsync(10_000 + BATCH_DEBOUNCE_MS)
     expect(documents).toEqual([{_id: 'book', _type: 'book', _rev: 'rev'}])
+  })
+
+  it('keeps what it loaded when the registered error handler takes over a listener that fails irrecoverably', async ({
+    listenerErrorHandler,
+  }) => {
+    const {store, listener, connections, fetchesTagged} = setup()
+    const documents = collect(store.unstable_observeDocument('book'))
+    listener.next(welcome)
+    await vi.advanceTimersByTimeAsync(BATCH_DEBOUNCE_MS)
+
+    const error = new ChannelError('Denied', {error: {type: 'permissionDeniedError'}})
+    listener.error(error)
+    await vi.advanceTimersByTimeAsync(60_000)
+
+    expect(listenerErrorHandler.handle).toHaveBeenCalledWith(error)
+    expect(documents).toEqual([{_id: 'book', _type: 'book', _rev: 'rev'}])
+    expect(fetchesTagged('preview.observe-document')).toHaveLength(1)
+    expect(connections).toHaveLength(1)
   })
 })
