@@ -1,10 +1,8 @@
+import {clsx} from 'clsx'
 import {motion} from 'motion/react'
 import {type ComponentProps} from 'react'
-import {keyframes, styled} from 'styled-components'
 
-const StyledMotionPath = styled(motion.path)`
-  transform-origin: center;
-`
+import {motionPath, rotateGroup} from './AnimatedStatusIcon.css'
 
 type MotionCircleProps = Omit<ComponentProps<typeof motion.circle>, 'd'>
 type MotionPathProps = Omit<ComponentProps<typeof motion.path>, 'd' | 'ref'>
@@ -12,32 +10,20 @@ type MotionPathProps = Omit<ComponentProps<typeof motion.path>, 'd' | 'ref'>
 const Circle = (props: MotionCircleProps) => (
   <motion.circle fill="none" r="8" cx="12.5" cy="12.5" strokeWidth="1.2" {...props} />
 )
-const Arrows = (props: MotionPathProps) => (
-  <StyledMotionPath
-    fill="none"
-    d="M14 17.5619L11.5 20.5L14.5 23.0619M11 7.43811L13.5 4.50001L10.5 1.93811"
-    {...props}
-  />
-)
+const Arrows = (props: MotionPathProps) => {
+  const {className, ...rest} = props
+  return (
+    <motion.path
+      fill="none"
+      d="M14 17.5619L11.5 20.5L14.5 23.0619M11 7.43811L13.5 4.50001L10.5 1.93811"
+      {...rest}
+      className={clsx(motionPath, className)}
+    />
+  )
+}
 const Checkmark = (props: MotionPathProps) => (
   <motion.path d="M9.5 12.1316L11.7414 14.5L16 10" {...props} />
 )
-
-const rotateAnimation = keyframes`
-  0% {
-    transform: rotate(0);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-`
-const RotateGroup = styled.g`
-  transform-origin: center;
-
-  &[data-rotate] {
-    animation: ${rotateAnimation} 1s ease-in-out infinite;
-  }
-`
 
 const root = {
   syncing: {
@@ -143,10 +129,10 @@ export function AnimatedStatusIcon(props: AnimatedStatusIconProps) {
       data-sanity-icon="animated-status-icon"
     >
       <motion.g variants={root} initial={status} animate={status}>
-        <RotateGroup data-rotate={status === 'changes' ? undefined : ''}>
+        <g className={rotateGroup} data-rotate={status === 'changes' ? undefined : ''}>
           <Arrows variants={arrows} initial={status} animate={status} />
           <Circle variants={circle} initial={status} animate={status} />
-        </RotateGroup>
+        </g>
         <Checkmark variants={checkmark} initial={status} animate={status} />
       </motion.g>
     </svg>

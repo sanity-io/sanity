@@ -4,13 +4,13 @@ import {useObservable} from 'react-rx'
 import {isObservable, type Observable, of} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {Delay, LoadingBlock, useTranslation} from 'sanity'
-import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
 import {Pane} from '../../components/pane/Pane'
 import {PaneContent} from '../../components/pane/PaneContent'
 import {structureLocaleNamespace} from '../../i18n'
 import {getWaitMessages, type WaitMessage} from './getWaitMessages'
+import {content as contentClassName} from './LoadingPane.css'
 
 interface LoadingPaneProps {
   delay?: number
@@ -26,15 +26,6 @@ interface LoadingPaneProps {
 
 const DELAY = false
 const DEFAULT_MESSAGE_KEY = 'panes.resolving.default-message'
-
-const Content = styled(Flex)`
-  opacity: 0;
-  transition: opacity 200ms;
-
-  &[data-mounted] {
-    opacity: 1;
-  }
-`
 
 /**
  * @internal
@@ -91,8 +82,9 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
   }, [contentElement])
 
   const content = (
-    <Content
+    <Flex
       alignItems="center"
+      className={contentClassName}
       data-mounted={mounted ? '' : undefined}
       flexDirection="column"
       height="100%"
@@ -100,7 +92,7 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
       ref={setContentElement}
     >
       <LoadingBlock showText title={title || currentMessage} />
-    </Content>
+    </Flex>
   )
 
   return (
