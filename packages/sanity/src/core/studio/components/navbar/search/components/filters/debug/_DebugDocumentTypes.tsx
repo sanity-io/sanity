@@ -1,6 +1,5 @@
 import {Card} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
-import {VStack} from 'ui5'
+import {Code, VStack} from 'ui5'
 
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type SearchFilter} from '../../../types'
@@ -21,10 +20,16 @@ export function DebugDocumentTypes({filter}: DebugDocumentTypesProps) {
   return (
     <Card borderTop padding={3} tone="transparent">
       <VStack gap={2}>
-        <Code size={0} weight="medium">
+        <Code
+          size={0}
+          style={{
+            fontWeight: 'var(--medium)',
+          }}
+          trim
+        >
           Document types
         </Code>
-        <Code size={0} style={{whiteSpace: 'normal'}}>
+        <Code size={0} style={{whiteSpace: 'normal'}} trim>
           {fieldDefinition?.documentTypes && fieldDefinition.documentTypes.length > 0
             ? fieldDefinition.documentTypes?.join(', ')
             : '(all)'}

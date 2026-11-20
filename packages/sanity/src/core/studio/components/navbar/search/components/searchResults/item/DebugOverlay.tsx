@@ -1,7 +1,6 @@
 /* oxlint-disable i18next/no-literal-string */
 import {Card, type CardTone, Inline} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
-import {VStack} from 'ui5'
+import {Code, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../../../../../ui-components/tooltip/Tooltip'
 import {type WeightedHit} from '../../../../../../../search/common/types'
@@ -32,15 +31,25 @@ export function DebugOverlay({data}: DebugScoreProps) {
               <>
                 {matchingStories.map((story) => (
                   <Inline key={story.path} gap={3}>
-                    <Code size={0} weight="medium">
+                    <Code
+                      size={0}
+                      style={{
+                        fontWeight: 'var(--medium)',
+                      }}
+                      trim
+                    >
                       {story.path}
                     </Code>
-                    <Code size={0}>{story.why}</Code>
+                    <Code size={0} trim>
+                      {story.why}
+                    </Code>
                   </Inline>
                 ))}
               </>
             ) : (
-              <Code size={0}>No matches</Code>
+              <Code size={0} trim>
+                No matches
+              </Code>
             )}
           </VStack>
         }
@@ -48,7 +57,9 @@ export function DebugOverlay({data}: DebugScoreProps) {
         portal
       >
         <Card className={debugScoreCard} padding={1} shadow={1} tone={tone}>
-          <Code size={0}>score: {score}</Code>
+          <Code size={0} trim>
+            score: {score}
+          </Code>
         </Card>
       </Tooltip>
     </>
