@@ -4,7 +4,7 @@ import {
   Skeleton,
 } from '@sanity/ui'
 import {AnimatePresence, motion} from 'motion/react'
-import {useEffect, useLayoutEffect, useState} from 'react'
+import {useCallback, useEffect, useLayoutEffect, useState} from 'react'
 import {
   AvatarSkeleton,
   getTargetScopeId,
@@ -67,6 +67,15 @@ const DocumentStatusButton = ({
   const {t} = useTranslation()
   const relativeTime = useRelativeTime(timestamp, RELATIVE_TIME_OPTIONS)
 
+  const isHistoryOpen = inspector?.name === HISTORY_INSPECTOR_NAME
+  const handleStatusClick = useCallback(() => {
+    if (isHistoryOpen) {
+      onHistoryClose()
+    } else {
+      onHistoryOpen('status_line')
+    }
+  }, [isHistoryOpen, onHistoryClose, onHistoryOpen])
+
   return (
     <MotionButton
       data-testid="pane-footer-document-status"
@@ -74,7 +83,7 @@ const DocumentStatusButton = ({
       initial={{opacity: 0}}
       exit={{opacity: 0}}
       mode="bleed"
-      onClick={inspector?.name === HISTORY_INSPECTOR_NAME ? onHistoryClose : onHistoryOpen}
+      onClick={handleStatusClick}
       padding={2}
       muted
     >
