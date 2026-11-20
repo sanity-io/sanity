@@ -1,0 +1,503 @@
+name: Suggest @stable
+run-name: Suggest @stable (${{ github.event_name }})
+
+on:
+  workflow_run: # zizmor: ignore[dangerous-triggers] runs main's own code, reads nothing from the triggering run
+    workflows: ["Release @latest"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      as-of:
+        description: "Evaluate as of this ISO date-time (UTC). Empty means now. A past date never posts or promotes."
+        required: false
+        type: string
+        default: ""
+      dry-run:
+        description: "Skip Slack and the promotion jobs"
+        required: false
+        type: boolean
+        default: false
+
+permissions: {}
+
+jobs:
+  suggest:
+    name: Build the shortlist
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      issues: read
+      actions: read
+    env:
+      HAS_SUGGESTION_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_STABLE_SUGGESTION != '' }}
+      HAS_CI_ALERTS_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS != '' }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    outputs:
+      live: ${{ steps.mode.outputs.live }}
+      baseline: ${{ steps.recommend.outputs.baseline }}
+      slot-count: ${{ steps.recommend.outputs.slot-count }}
+      slot-1: ${{ steps.recommend.outputs.slot-1 }}
+      slot-2: ${{ steps.recommend.outputs.slot-2 }}
+      slot-3: ${{ steps.recommend.outputs.slot-3 }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Decide whether this run is live
+        id: mode
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DRY_RUN: ${{ inputs.dry-run }}
+          AS_OF: ${{ inputs.as-of }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_run" ] || { [ "$DRY_RUN" = "false" ] && [ -z "$AS_OF" ]; }; then
+            echo "live=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "live=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Collect evidence
+        env:
+          AS_OF: ${{ inputs.as-of }}
+          RADAR_SANITY_READ_TOKEN: ${{ secrets.RADAR_SANITY_READ_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/stable-suggestion"
+          pnpm stable-suggestion collect ${AS_OF:+--as-of "$AS_OF"} --out "$RUNNER_TEMP/stable-suggestion/evidence.json"
+      - name: Recommend
+        id: recommend
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.RELEASE_NOTES_CLAUDE_API_KEY }}
+          STABLE_SUGGESTION_MODEL: ${{ vars.STABLE_SUGGESTION_MODEL }}
+        run: |
+          pnpm stable-suggestion recommend "$RUNNER_TEMP/stable-suggestion/evidence.json" \
+            --out-dir "$RUNNER_TEMP/stable-suggestion" --run-url "$RUN_URL"
+          cat "$RUNNER_TEMP/stable-suggestion/summary.md" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: stable-suggestion
+          path: ${{ runner.temp }}/stable-suggestion/
+          retention-days: 90
+      - name: Choose the Slack route
+        id: route
+        if: steps.mode.outputs.live == 'true'
+        run: pnpm stable-suggestion slack-route
+      - name: Post the shortlist
+        if: steps.route.outputs.route == 'webhook-trigger'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          # Fields: text, run_url (SUGGESTION_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts)
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_STABLE_SUGGESTION }}
+          webhook-type: webhook-trigger
+          payload-file-path: ${{ runner.temp }}/stable-suggestion/slack-webhook.json
+      - name: Post the shortlist (CI alerts fallback)
+        if: steps.route.outputs.route == 'incoming-webhook'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          # Fields: text (CI_ALERTS_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts)
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
+          payload-file-path: ${{ runner.temp }}/stable-suggestion/slack-fallback.json
+      - name: Alert on failure
+        if: failure() && steps.mode.outputs.live == 'true'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
+          payload: |
+            {"text": ":alert-dot: Suggest @stable failed before posting a shortlist (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run>)"}
+
+  supersede:
+    name: Cancel older waiting shortlists
+    needs: suggest
+    if: needs.suggest.outputs.live == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          gh run list --repo "$REPO" --workflow suggest-stable.yml --status waiting --json databaseId --jq '.[].databaseId' \
+            | { grep -vx "$RUN_ID" || true; } \
+            | while read -r waiting_id; do
+                busy=$(gh api "repos/$REPO/actions/runs/$waiting_id/jobs" --jq '[.jobs[] | select(.status == "in_progress" or .status == "queued")] | length')
+                if [ "$busy" = "0" ]; then
+                  gh run cancel "$waiting_id" --repo "$REPO"
+                else
+                  echo "Run $waiting_id has a job in progress, leaving it alone."
+                fi
+              done
+
+  promote-1:
+    name: Promote ${{ needs.suggest.outputs.slot-1 }} (slot 1)
+    needs: suggest
+    if: needs.suggest.outputs.live == 'true' && needs.suggest.outputs.slot-1 != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: stable-candidate-1
+      url: https://www.npmjs.com/package/sanity/v/${{ needs.suggest.outputs.slot-1 }}
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      started: ${{ steps.start.outputs.started }}
+      guard-reason: ${{ steps.verify.outputs.reason }}
+    steps:
+      - id: start
+        run: echo "started=true" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Re-check before tagging
+        id: verify
+        env:
+          VERSION: ${{ needs.suggest.outputs.slot-1 }}
+          BASELINE: ${{ needs.suggest.outputs.baseline }}
+          RUN_ID: ${{ github.run_id }}
+          RADAR_SANITY_READ_TOKEN: ${{ secrets.RADAR_SANITY_READ_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: pnpm stable-suggestion verify --version "$VERSION" --slot 1 --expected-stable "$BASELINE" --run-id "$RUN_ID"
+
+  tag-1:
+    name: Tag ${{ needs.suggest.outputs.slot-1 }} as stable
+    needs: [suggest, promote-1]
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tag-stable.yml
+    with:
+      version: ${{ needs.suggest.outputs.slot-1 }}
+      expected-current-stable: ${{ needs.suggest.outputs.baseline }}
+      invoked-by: suggest-stable
+    secrets:
+      NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      GCS_STAGING_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
+      GCS_STAGING_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
+      GCS_STAGING_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
+      GCS_PRODUCTION_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
+      GCS_PRODUCTION_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
+      GCS_PRODUCTION_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
+
+  result-1:
+    name: Report slot 1
+    needs: [suggest, promote-1, tag-1]
+    if: always() && needs.promote-1.outputs.started == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: write
+    env:
+      HAS_SUGGESTION_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_STABLE_SUGGESTION != '' }}
+      HAS_CI_ALERTS_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS != '' }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Work out the outcome
+        id: outcome
+        env:
+          PROMOTE_RESULT: ${{ needs.promote-1.result }}
+          TAG_RESULT: ${{ needs.tag-1.result }}
+        run: |
+          if [ "$TAG_RESULT" = "success" ]; then outcome=promoted
+          elif [ "$PROMOTE_RESULT" != "success" ]; then outcome=guard-failed
+          else outcome=tag-failed; fi
+          echo "outcome=$outcome" >> "$GITHUB_OUTPUT"
+      - name: Build the result message
+        env:
+          VERSION: ${{ needs.suggest.outputs.slot-1 }}
+          BASELINE: ${{ needs.suggest.outputs.baseline }}
+          SLOT_COUNT: ${{ needs.suggest.outputs.slot-count }}
+          OUTCOME: ${{ steps.outcome.outputs.outcome }}
+          GUARD_REASON: ${{ needs.promote-1.outputs.guard-reason }}
+          RUN_ID: ${{ github.run_id }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/stable-suggestion"
+          pnpm stable-suggestion result --slot 1 --slot-count "$SLOT_COUNT" --version "$VERSION" --previous "$BASELINE" \
+            --outcome "$OUTCOME" ${GUARD_REASON:+--guard-reason "$GUARD_REASON"} --run-id "$RUN_ID" --run-url "$RUN_URL" \
+            --out-dir "$RUNNER_TEMP/stable-suggestion"
+      - name: Choose the Slack route
+        id: route
+        run: pnpm stable-suggestion slack-route
+      - name: Post the result
+        if: steps.route.outputs.route == 'webhook-trigger'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          # Fields: text, run_url (SUGGESTION_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts)
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_STABLE_SUGGESTION }}
+          webhook-type: webhook-trigger
+          payload-file-path: ${{ runner.temp }}/stable-suggestion/slack-webhook.json
+      - name: Post the result (CI alerts fallback)
+        if: steps.route.outputs.route == 'incoming-webhook'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          # Fields: text (CI_ALERTS_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts)
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
+          payload-file-path: ${{ runner.temp }}/stable-suggestion/slack-fallback.json
+      - name: Close the unpicked slots
+        if: steps.outcome.outputs.outcome == 'promoted'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: gh run cancel "$RUN_ID" --repo "$REPO"
+
+  promote-2:
+    name: Promote ${{ needs.suggest.outputs.slot-2 }} (slot 2)
+    needs: suggest
+    if: needs.suggest.outputs.live == 'true' && needs.suggest.outputs.slot-2 != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: stable-candidate-2
+      url: https://www.npmjs.com/package/sanity/v/${{ needs.suggest.outputs.slot-2 }}
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      started: ${{ steps.start.outputs.started }}
+      guard-reason: ${{ steps.verify.outputs.reason }}
+    steps:
+      - id: start
+        run: echo "started=true" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Re-check before tagging
+        id: verify
+        env:
+          VERSION: ${{ needs.suggest.outputs.slot-2 }}
+          BASELINE: ${{ needs.suggest.outputs.baseline }}
+          RUN_ID: ${{ github.run_id }}
+          RADAR_SANITY_READ_TOKEN: ${{ secrets.RADAR_SANITY_READ_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: pnpm stable-suggestion verify --version "$VERSION" --slot 2 --expected-stable "$BASELINE" --run-id "$RUN_ID"
+
+  tag-2:
+    name: Tag ${{ needs.suggest.outputs.slot-2 }} as stable
+    needs: [suggest, promote-2]
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tag-stable.yml
+    with:
+      version: ${{ needs.suggest.outputs.slot-2 }}
+      expected-current-stable: ${{ needs.suggest.outputs.baseline }}
+      invoked-by: suggest-stable
+    secrets:
+      NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      GCS_STAGING_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
+      GCS_STAGING_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
+      GCS_STAGING_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
+      GCS_PRODUCTION_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
+      GCS_PRODUCTION_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
+      GCS_PRODUCTION_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
+
+  result-2:
+    name: Report slot 2
+    needs: [suggest, promote-2, tag-2]
+    if: always() && needs.promote-2.outputs.started == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: write
+    env:
+      HAS_SUGGESTION_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_STABLE_SUGGESTION != '' }}
+      HAS_CI_ALERTS_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS != '' }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Work out the outcome
+        id: outcome
+        env:
+          PROMOTE_RESULT: ${{ needs.promote-2.result }}
+          TAG_RESULT: ${{ needs.tag-2.result }}
+        run: |
+          if [ "$TAG_RESULT" = "success" ]; then outcome=promoted
+          elif [ "$PROMOTE_RESULT" != "success" ]; then outcome=guard-failed
+          else outcome=tag-failed; fi
+          echo "outcome=$outcome" >> "$GITHUB_OUTPUT"
+      - name: Build the result message
+        env:
+          VERSION: ${{ needs.suggest.outputs.slot-2 }}
+          BASELINE: ${{ needs.suggest.outputs.baseline }}
+          SLOT_COUNT: ${{ needs.suggest.outputs.slot-count }}
+          OUTCOME: ${{ steps.outcome.outputs.outcome }}
+          GUARD_REASON: ${{ needs.promote-2.outputs.guard-reason }}
+          RUN_ID: ${{ github.run_id }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/stable-suggestion"
+          pnpm stable-suggestion result --slot 2 --slot-count "$SLOT_COUNT" --version "$VERSION" --previous "$BASELINE" \
+            --outcome "$OUTCOME" ${GUARD_REASON:+--guard-reason "$GUARD_REASON"} --run-id "$RUN_ID" --run-url "$RUN_URL" \
+            --out-dir "$RUNNER_TEMP/stable-suggestion"
+      - name: Choose the Slack route
+        id: route
+        run: pnpm stable-suggestion slack-route
+      - name: Post the result
+        if: steps.route.outputs.route == 'webhook-trigger'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          # Fields: text, run_url (SUGGESTION_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts)
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_STABLE_SUGGESTION }}
+          webhook-type: webhook-trigger
+          payload-file-path: ${{ runner.temp }}/stable-suggestion/slack-webhook.json
+      - name: Post the result (CI alerts fallback)
+        if: steps.route.outputs.route == 'incoming-webhook'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          # Fields: text (CI_ALERTS_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts)
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
+          payload-file-path: ${{ runner.temp }}/stable-suggestion/slack-fallback.json
+      - name: Close the unpicked slots
+        if: steps.outcome.outputs.outcome == 'promoted'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: gh run cancel "$RUN_ID" --repo "$REPO"
+
+  promote-3:
+    name: Promote ${{ needs.suggest.outputs.slot-3 }} (slot 3)
+    needs: suggest
+    if: needs.suggest.outputs.live == 'true' && needs.suggest.outputs.slot-3 != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: stable-candidate-3
+      url: https://www.npmjs.com/package/sanity/v/${{ needs.suggest.outputs.slot-3 }}
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      started: ${{ steps.start.outputs.started }}
+      guard-reason: ${{ steps.verify.outputs.reason }}
+    steps:
+      - id: start
+        run: echo "started=true" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Re-check before tagging
+        id: verify
+        env:
+          VERSION: ${{ needs.suggest.outputs.slot-3 }}
+          BASELINE: ${{ needs.suggest.outputs.baseline }}
+          RUN_ID: ${{ github.run_id }}
+          RADAR_SANITY_READ_TOKEN: ${{ secrets.RADAR_SANITY_READ_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: pnpm stable-suggestion verify --version "$VERSION" --slot 3 --expected-stable "$BASELINE" --run-id "$RUN_ID"
+
+  tag-3:
+    name: Tag ${{ needs.suggest.outputs.slot-3 }} as stable
+    needs: [suggest, promote-3]
+    permissions:
+      contents: read
+    uses: ./.github/workflows/tag-stable.yml
+    with:
+      version: ${{ needs.suggest.outputs.slot-3 }}
+      expected-current-stable: ${{ needs.suggest.outputs.baseline }}
+      invoked-by: suggest-stable
+    secrets:
+      NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      GCS_STAGING_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
+      GCS_STAGING_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
+      GCS_STAGING_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
+      GCS_PRODUCTION_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
+      GCS_PRODUCTION_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
+      GCS_PRODUCTION_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
+
+  result-3:
+    name: Report slot 3
+    needs: [suggest, promote-3, tag-3]
+    if: always() && needs.promote-3.outputs.started == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: write
+    env:
+      HAS_SUGGESTION_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_STABLE_SUGGESTION != '' }}
+      HAS_CI_ALERTS_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS != '' }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Work out the outcome
+        id: outcome
+        env:
+          PROMOTE_RESULT: ${{ needs.promote-3.result }}
+          TAG_RESULT: ${{ needs.tag-3.result }}
+        run: |
+          if [ "$TAG_RESULT" = "success" ]; then outcome=promoted
+          elif [ "$PROMOTE_RESULT" != "success" ]; then outcome=guard-failed
+          else outcome=tag-failed; fi
+          echo "outcome=$outcome" >> "$GITHUB_OUTPUT"
+      - name: Build the result message
+        env:
+          VERSION: ${{ needs.suggest.outputs.slot-3 }}
+          BASELINE: ${{ needs.suggest.outputs.baseline }}
+          SLOT_COUNT: ${{ needs.suggest.outputs.slot-count }}
+          OUTCOME: ${{ steps.outcome.outputs.outcome }}
+          GUARD_REASON: ${{ needs.promote-3.outputs.guard-reason }}
+          RUN_ID: ${{ github.run_id }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/stable-suggestion"
+          pnpm stable-suggestion result --slot 3 --slot-count "$SLOT_COUNT" --version "$VERSION" --previous "$BASELINE" \
+            --outcome "$OUTCOME" ${GUARD_REASON:+--guard-reason "$GUARD_REASON"} --run-id "$RUN_ID" --run-url "$RUN_URL" \
+            --out-dir "$RUNNER_TEMP/stable-suggestion"
+      - name: Choose the Slack route
+        id: route
+        run: pnpm stable-suggestion slack-route
+      - name: Post the result
+        if: steps.route.outputs.route == 'webhook-trigger'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          # Fields: text, run_url (SUGGESTION_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts)
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_STABLE_SUGGESTION }}
+          webhook-type: webhook-trigger
+          payload-file-path: ${{ runner.temp }}/stable-suggestion/slack-webhook.json
+      - name: Post the result (CI alerts fallback)
+        if: steps.route.outputs.route == 'incoming-webhook'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          # Fields: text (CI_ALERTS_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts)
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
+          payload-file-path: ${{ runner.temp }}/stable-suggestion/slack-fallback.json
+      - name: Close the unpicked slots
+        if: steps.outcome.outputs.outcome == 'promoted'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: gh run cancel "$RUN_ID" --repo "$REPO"

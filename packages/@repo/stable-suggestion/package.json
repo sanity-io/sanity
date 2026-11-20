@@ -1,0 +1,41 @@
+{
+  "name": "@repo/stable-suggestion",
+  "version": "6.9.2",
+  "private": true,
+  "description": "Internal tool that suggests which sanity release to promote to the stable dist-tag",
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "bin": {
+    "stable-suggestion": "./bin/stable-suggestion.ts"
+  },
+  "files": [
+    "src",
+    "bin"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "cli": "tsx ./bin/stable-suggestion.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.10.0",
+    "@repo/utils": "workspace:*",
+    "@sanity/client": "catalog:",
+    "semver": "^7.8.6",
+    "tsx": "^4.23.15"
+  },
+  "devDependencies": {
+    "@repo/test-config": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/semver": "^7.8.0",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": ">=22.12"
+  }
+}

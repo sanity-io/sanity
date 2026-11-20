@@ -1576,6 +1576,40 @@ importers:
         specifier: ^5.1.1
         version: 5.1.1(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@26.6.6)(@vitest/browser-playwright@5.1.1)(@vitest/coverage-v8@5.1.1)(@vitest/ui@5.1.1)(jsdom@31.0.1)(vite@8.3.8)
 
+  packages/@repo/stable-suggestion:
+    dependencies:
+      '@anthropic-ai/sdk':
+        specifier: ^1.10.0
+        version: 1.10.0(zod@4.6.7)
+      '@repo/utils':
+        specifier: workspace:*
+        version: link:../utils
+      '@sanity/client':
+        specifier: 'catalog:'
+        version: 8.17.0(vitest@5.1.1)
+      semver:
+        specifier: ^7.8.6
+        version: 7.8.6
+      tsx:
+        specifier: ^4.23.15
+        version: 4.23.15
+    devDependencies:
+      '@repo/test-config':
+        specifier: workspace:*
+        version: link:../test-config
+      '@repo/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      '@types/node':
+        specifier: 'catalog:'
+        version: 24.19.2
+      '@types/semver':
+        specifier: ^7.8.0
+        version: 7.8.0
+      vitest:
+        specifier: ^5.1.1
+        version: 5.1.1(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.1.1)(@vitest/coverage-v8@5.1.1)(@vitest/ui@5.1.1)(jsdom@29.1.1)(vite@8.3.8)
+
   packages/@repo/test-config:
     devDependencies:
       vite:
