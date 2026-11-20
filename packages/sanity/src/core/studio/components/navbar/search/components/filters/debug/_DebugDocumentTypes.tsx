@@ -2,7 +2,8 @@ import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {VStack} from 'ui5'
 
-import {useSearchState} from '../../../contexts/search/useSearchState'
+import {selectDefinitions} from '../../../contexts/search/searchSelectors'
+import {useSearchSelector} from '../../../contexts/search/useSearchState'
 import {type SearchFilter} from '../../../types'
 import {getFieldFromFilter} from '../../../utils/filterUtils'
 
@@ -11,12 +12,8 @@ interface DebugDocumentTypesProps {
 }
 
 export function DebugDocumentTypes({filter}: DebugDocumentTypesProps) {
-  const {
-    state: {
-      definitions: {fields},
-    },
-  } = useSearchState()
-  const fieldDefinition = getFieldFromFilter(fields, filter)
+  const definitions = useSearchSelector(selectDefinitions)
+  const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
 
   return (
     <Card borderTop padding={3} tone="transparent">

@@ -2,7 +2,8 @@ import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {Fragment} from 'react'
 import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
-import {useSearchState} from '../../../contexts/search/useSearchState'
+import {selectDefinitions} from '../../../contexts/search/searchSelectors'
+import {useSearchSelector} from '../../../contexts/search/useSearchState'
 import {type SearchFilter} from '../../../types'
 import {getFieldFromFilter} from '../../../utils/filterUtils'
 import {FilterTitle} from '../../common/FilterTitle'
@@ -13,9 +14,7 @@ interface FilterDetailsProps {
 }
 
 export function FilterDetails({filter}: FilterDetailsProps) {
-  const {
-    state: {definitions},
-  } = useSearchState()
+  const definitions = useSearchSelector(selectDefinitions)
   const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
 
   return (

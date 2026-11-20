@@ -6,7 +6,8 @@ import {Button} from '../../../../../../../../ui-components/button/Button'
 import {Popover} from '../../../../../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../../../../../i18n/hooks/useTranslation'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
-import {useSearchState} from '../../../contexts/search/useSearchState'
+import {selectSelectedTypes} from '../../../contexts/search/searchSelectors'
+import {useSearchSelector, useSearchState} from '../../../contexts/search/useSearchState'
 import {documentTypesTruncated} from '../../../utils/documentTypesTruncated'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
 import {DocumentTypesPopoverContent} from './DocumentTypesPopoverContent'
@@ -18,12 +19,8 @@ export function DocumentTypesButton() {
   const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)
 
-  const {
-    state: {
-      fullscreen,
-      terms: {types},
-    },
-  } = useSearchState()
+  const {fullscreen} = useSearchState()
+  const types = useSearchSelector(selectSelectedTypes)
   const {t} = useTranslation()
 
   const handleClose = useCallback(() => setOpen(false), [])

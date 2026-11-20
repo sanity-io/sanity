@@ -10,7 +10,8 @@ import {expectStable, testHelpers} from '../../../../../../../../../test/browser
 import {TestWrapper} from '../../../../../../../../../test/browser/TestWrapper'
 import {useSchema} from '../../../../../../../hooks/useSchema'
 import {SearchProvider} from '../../../contexts/search/SearchProvider'
-import {useSearchState} from '../../../contexts/search/useSearchState'
+import {selectSelectedTypes} from '../../../contexts/search/searchSelectors'
+import {useSearchSelector, useSearchState} from '../../../contexts/search/useSearchState'
 import {filterDefinitions} from '../../../definitions/defaultFilters'
 import {type SearchFieldDefinition} from '../../../definitions/fields'
 import {type SearchFilterFieldDefinition} from '../../../definitions/filters'
@@ -87,16 +88,16 @@ function AddFilterMenu() {
 
 function SelectedDocumentTypes() {
   const schema = useSchema()
-  const {dispatch, state} = useSearchState()
+  const {searchActorRef} = useSearchState()
   const author = schema.get('author')
   const didSelect = useRef(false)
-  const selected = state.terms.types.some((type) => type.name === 'author')
+  const selected = useSearchSelector(selectSelectedTypes).some((type) => type.name === 'author')
 
   useEffect(() => {
     if (!author || didSelect.current) return
     didSelect.current = true
-    dispatch({schemaType: author, type: 'TERMS_TYPE_ADD'})
-  }, [author, dispatch])
+    searchActorRef.send({type: 'TERMS_TYPE_ADD', schemaType: author})
+  }, [author, searchActorRef])
 
   if (!selected || !author) return null
   return <DocumentTypesPopoverContent />
