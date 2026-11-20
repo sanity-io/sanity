@@ -2,7 +2,9 @@
 // oxlint-disable no-console
 import {execFile, execFileSync} from 'node:child_process'
 import {X509Certificate} from 'node:crypto'
-import {mkdir, readFile} from 'node:fs/promises'
+import {mkdir, mkdtemp, readFile, rm} from 'node:fs/promises'
+import {tmpdir} from 'node:os'
+import {join} from 'node:path'
 import * as tls from 'node:tls'
 import {fileURLToPath} from 'node:url'
 import {promisify} from 'node:util'
@@ -366,6 +368,52 @@ function detectMkcert(): boolean {
 const MKCERT_AVAILABLE = detectMkcert()
 
 /**
+ * Warns when mkcert's local CA is not trusted. The CA file alone proves nothing (mkcert
+ * creates it the first time it mints a certificate, trusted or not), and certificates are
+ * cached, so this mints a throwaway one on every start: mkcert checks trust on every run and
+ * says so on stderr.
+ */
+async function warnIfMkcertCaNotTrusted(): Promise<void> {
+  // Best effort: a failure here (temp dir, mkcert, cleanup) must never stop the proxy from
+  // starting, and a failing mkcert is reported when a real certificate is minted
+  try {
+    const dir = await mkdtemp(join(tmpdir(), 'debug-proxy-mkcert-'))
+    try {
+      const {stderr} = await execFileAsync('mkcert', [
+        '-cert-file',
+        join(dir, 'cert.pem'),
+        '-key-file',
+        join(dir, 'key.pem'),
+        'localhost',
+      ])
+      if (/mkcert -install/.test(stderr)) warnCaNotInstalled()
+    } finally {
+      await rm(dir, {recursive: true, force: true})
+    }
+  } catch {
+    // ignored, see above
+  }
+}
+
+let warnedCaNotInstalled = false
+function warnCaNotInstalled() {
+  if (warnedCaNotInstalled) return
+  warnedCaNotInstalled = true
+  console.warn(
+    [
+      '',
+      'mkcert is installed, but its local CA is not trusted by this machine, so browsers',
+      'will reject the proxy’s certificates (the studio shows a network error). Run:',
+      '',
+      '  mkcert -install',
+      '',
+      '…then restart the browser (Firefox: restart it) and reload the studio.',
+      '',
+    ].join('\n'),
+  )
+}
+
+/**
  * Mint (or read from the disk cache) a certificate for the given hostname —
  * mkcert-signed when available, self-signed otherwise.
  */
@@ -378,7 +426,7 @@ async function mintCert(hostname: string): Promise<{key: string; cert: string}> 
       return {key, cert}
     } catch {
       await mkdir(SNI_CERTS_DIR, {recursive: true})
-      await execFileAsync('mkcert', [
+      const {stderr} = await execFileAsync('mkcert', [
         '-cert-file',
         fileURLToPath(certPath),
         '-key-file',
@@ -386,6 +434,9 @@ async function mintCert(hostname: string): Promise<{key: string; cert: string}> 
         hostname,
       ])
       console.info(`Minted TLS certificate for ${hostname}`)
+      // mkcert mints fine without its CA installed (it creates one on the fly) and only
+      // prints a note, so the certificate would be rejected by the browser with no hint
+      if (/mkcert -install/.test(stderr)) warnCaNotInstalled()
       const [key, cert] = await Promise.all([readFile(keyPath, 'utf8'), readFile(certPath, 'utf8')])
       return {key, cert}
     }
@@ -425,6 +476,7 @@ async function loadTlsConfig(): Promise<{
   ) => void
 }> {
   const userCert = await loadUserCert()
+  if (MKCERT_AVAILABLE && !userCert) await warnIfMkcertCaNotTrusted()
   const defaultCert = userCert ?? (await mintCert('localhost'))
 
   if (!MKCERT_AVAILABLE && !userCert) {
