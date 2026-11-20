@@ -6,7 +6,7 @@ import {type AuthStore} from '../types'
 
 /** @internal */
 export interface MockAuthStoreOptions {
-  currentUser: CurrentUser | null
+  currentUser: Omit<CurrentUser, 'role'> | null
   client: SanityClient
 }
 
@@ -18,6 +18,6 @@ export interface MockAuthStoreOptions {
  */
 export function createMockAuthStore({client, currentUser = null}: MockAuthStoreOptions): AuthStore {
   return {
-    state: of({authenticated: true, client, currentUser}),
+    state: of({authenticated: true, client, currentUser: currentUser as CurrentUser | null}),
   }
 }
