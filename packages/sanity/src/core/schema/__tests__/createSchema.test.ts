@@ -3,6 +3,7 @@ import {describe, expect, it} from 'vitest'
 
 import {defineReleaseMetadata} from '../../releases/metadata/defineReleaseMetadata'
 import {defaultTemplatesForSchema} from '../../templates/prepare'
+import {defineVariantMetadata} from '../../variants/metadata/defineVariantMetadata'
 import {createSchema} from '../createSchema'
 
 const fieldNames = (type: unknown) => (type as ObjectSchemaType).fields.map((field) => field.name)
@@ -132,7 +133,7 @@ describe('createSchema: release types', () => {
     expect(fieldNames(schema.get('sanity.releaseMetadata'))).toContain('releaseType')
   })
 
-  it('does not create templates for `system.release`', () => {
+  it('does not create templates for `system.release` or `system.variant`', () => {
     const schema = createSchema({
       name: 'default',
       types: [
@@ -141,5 +142,77 @@ describe('createSchema: release types', () => {
     })
 
     expect(defaultTemplatesForSchema(schema).map((template) => template.id)).toEqual(['author'])
+  })
+})
+
+describe('createSchema: variant types', () => {
+  it('includes `system.variant` and the default `sanity.variantMetadata` as built-in types', () => {
+    const schema = createSchema({name: 'default', types: []})
+
+    expect(hasErrors(schema)).toBe(false)
+
+    const variant = schema.get('system.variant') as ObjectSchemaType
+    expect(variant.jsonType).toBe('object')
+    expect(variant.liveEdit).toBe(true)
+    expect(variant.fields.find((field) => field.name === 'metadata')?.type.name).toBe(
+      'sanity.variantMetadata',
+    )
+
+    expect(fieldNames(schema.get('sanity.variantMetadata'))).toEqual([
+      'title',
+      'description',
+      'type',
+    ])
+  })
+
+  it('uses a custom `sanity.variantMetadata` and keeps the core fields', () => {
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        defineVariantMetadata({
+          fields: [defineField({name: 'owner', type: 'string'})],
+        }),
+      ],
+    })
+
+    expect(hasErrors(schema)).toBe(false)
+
+    expect(fieldNames(schema.get('sanity.variantMetadata'))).toEqual([
+      'title',
+      'description',
+      'type',
+      'owner',
+    ])
+
+    const variant = schema.get('system.variant') as ObjectSchemaType
+    expect(fieldNames(variant.fields.find((field) => field.name === 'metadata')?.type)).toContain(
+      'owner',
+    )
+    expect(fieldNames(schema.get('sanity.releaseMetadata'))).not.toContain('owner')
+    expect(schema.getLocalTypeNames()).toEqual(['sanity.variantMetadata'])
+  })
+
+  it('extends release and variant metadata in the same schema', () => {
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        defineReleaseMetadata({fields: [defineField({name: 'legalReview', type: 'string'})]}),
+        defineVariantMetadata({fields: [defineField({name: 'owner', type: 'string'})]}),
+      ],
+    })
+
+    expect(hasErrors(schema)).toBe(false)
+    expect(fieldNames(schema.get('sanity.releaseMetadata'))).toContain('legalReview')
+    expect(fieldNames(schema.get('sanity.variantMetadata'))).toContain('owner')
+  })
+
+  it('throws when `defineVariantMetadata` is given a core field', () => {
+    expect(() =>
+      defineVariantMetadata({
+        fields: [defineField({name: 'description', type: 'text'})],
+      }),
+    ).toThrow(
+      "Can't declare `description` on `sanity.variantMetadata`. Its core fields (`title`, `description`, `type`) are always included, so only list the fields you add.",
+    )
   })
 })

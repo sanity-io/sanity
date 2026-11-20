@@ -567,6 +567,7 @@ export const structure: StructureResolver = (
       S.documentTypeListItem('sanity.imageAsset').icon(ImagesIcon),
       S.documentTypeListItem('sanity.fileAsset').icon(BinaryDocumentIcon),
       S.documentTypeListItem('system.release').title('Releases').icon(CalendarIcon),
+      S.documentTypeListItem('system.variant').title('Variants').icon(UsersIcon),
     ])
 }
 

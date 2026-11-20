@@ -59,6 +59,7 @@ import type {
   ValidationResult,
   validForNamesChars,
   validForNamesPattern,
+  VARIANT_METADATA_TYPE_NAME,
   WorkspaceSchemaId,
 } from '@sanity/schema/_internal'
 import {describe, expectTypeOf, test} from 'vitest'
@@ -231,6 +232,9 @@ describe('@sanity/schema/_internal', () => {
   })
   test('validForNamesPattern', () => {
     expectTypeOf<typeof validForNamesPattern>().not.toBeNever()
+  })
+  test('VARIANT_METADATA_TYPE_NAME', () => {
+    expectTypeOf<typeof VARIANT_METADATA_TYPE_NAME>().not.toBeNever()
   })
   test('WorkspaceSchemaId', () => {
     expectTypeOf<WorkspaceSchemaId>().not.toBeNever()

@@ -1,6 +1,6 @@
 import {DescriptorConverter} from '@sanity/schema/_internal'
 import {defineArrayMember, defineField, defineType, type Schema} from '@sanity/types'
-import {createSchema, defineReleaseMetadata} from 'sanity'
+import {createSchema, defineReleaseMetadata, defineVariantMetadata} from 'sanity'
 import {describe, test} from 'vitest'
 
 import {expectManifestSchemaConversion} from './utils'
@@ -1070,8 +1070,42 @@ describe('ManifestSchemaTypes[] converts to Schema', () => {
     await validate(schema)
   })
 
-  test('release document and default release metadata', async () => {
+  test('system documents and default metadata', async () => {
     await validate(createSchema({name: 'test', types: []}))
+  })
+
+  test('variant metadata extended with defineVariantMetadata', async () => {
+    const schema = createSchema({
+      name: 'test',
+      types: [
+        defineVariantMetadata({
+          fields: [
+            defineField({name: 'owner', type: 'string'}),
+            defineField({name: 'tags', type: 'array', of: [defineArrayMember({type: 'string'})]}),
+          ],
+        }),
+      ],
+    })
+
+    await validate(schema)
+  })
+
+  test('extended variant metadata next to a block type of the schema', async () => {
+    const schema = createSchema({
+      name: 'test',
+      types: [
+        defineVariantMetadata({fields: [defineField({name: 'owner', type: 'string'})]}),
+        defineType({
+          name: 'post',
+          type: 'document',
+          fields: [
+            defineField({name: 'body', type: 'array', of: [defineArrayMember({type: 'block'})]}),
+          ],
+        }),
+      ],
+    })
+
+    await validate(schema)
   })
 
   test('release metadata extended with defineReleaseMetadata', async () => {

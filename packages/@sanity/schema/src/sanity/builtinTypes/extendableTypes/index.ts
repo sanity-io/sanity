@@ -1,4 +1,5 @@
 import releaseMetadata from './releaseMetadata'
+import variantMetadata from './variantMetadata'
 
 export interface ExtendableTypeDefinition {
   name: string
@@ -12,7 +13,10 @@ export interface ExtendableTypeDefinition {
  * fields, and replace a declared field with the same name.
  * The declaration becomes a local type of that schema, replacing the built-in one.
  */
-export const extendableTypes: readonly ExtendableTypeDefinition[] = [releaseMetadata]
+export const extendableTypes: readonly ExtendableTypeDefinition[] = [
+  releaseMetadata,
+  variantMetadata,
+]
 
 export function findExtendableType(typeName: unknown): ExtendableTypeDefinition | undefined {
   return extendableTypes.find((type) => type.name === typeName)

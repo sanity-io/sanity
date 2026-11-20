@@ -1,11 +1,12 @@
 import releaseDocument from './release'
+import variantDocument from './variant'
 
 /**
  * Built-in documents that Content Lake owns and writes through actions. They
  * reference extendable types: when a schema extends one, the compiler compiles
  * these again in that schema so they use the extension. A schema can't declare them.
  */
-export const systemDocumentTypes = [releaseDocument]
+export const systemDocumentTypes = [releaseDocument, variantDocument]
 
 const systemDocumentTypeNames = new Set<unknown>(systemDocumentTypes.map((type) => type.name))
 
