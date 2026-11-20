@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.25.0](https://github.com/sanity-io/sanity/compare/v6.24.0...v6.25.0) (2026-11-20)
+
+### Features
+
+* add experimental support for OAuth auth store ([#15799](https://github.com/sanity-io/sanity/issues/15799)) ([1131780](https://github.com/sanity-io/sanity/commit/1131780fd9260f07f06e113f84b2ea28addc0e3f))
+* ask for the login form on the first oauth sign-in after sign-out ([#16168](https://github.com/sanity-io/sanity/issues/16168)) ([09e2051](https://github.com/sanity-io/sanity/commit/09e2051a24df5b951f929ca5296a3e3076eaa673))
+* **core:** add sanity/i18n entry point ([#16161](https://github.com/sanity-io/sanity/issues/16161)) ([b88ee73](https://github.com/sanity-io/sanity/commit/b88ee73425c124a352c6f5b60f7a848d4545ef29))
+* **core:** fall back to fetch on data store listener failures ([#15988](https://github.com/sanity-io/sanity/issues/15988)) ([004cfe6](https://github.com/sanity-io/sanity/commit/004cfe68b4bbb804d292b599842affa9713743b7))
+* **core:** report how the media library asset source resolves to telemetry ([#16213](https://github.com/sanity-io/sanity/issues/16213)) ([d461512](https://github.com/sanity-io/sanity/commit/d4615126fdac5003ee66cc58b193f3b016cab82e))
+* **core:** show the connection error dialog for non-transient listener failures ([#16055](https://github.com/sanity-io/sanity/issues/16055)) ([fe5804b](https://github.com/sanity-io/sanity/commit/fe5804b94a8acf389472b46436491a2e7fa532a0))
+* **sanity:** fall back to fetch on document id set listener failures ([#15878](https://github.com/sanity-io/sanity/issues/15878)) ([f1c5699](https://github.com/sanity-io/sanity/commit/f1c5699760dfa50d72ea7f9dcb453b3702546edd))
+* **structure:** send the open document's type to the Dashboard ([#16219](https://github.com/sanity-io/sanity/issues/16219)) ([9f914e4](https://github.com/sanity-io/sanity/commit/9f914e4978535263299fe038e386d135df2269b7))
+
+### Bug Fixes
+
+* ask for login form after authorization server refuses account ([#16197](https://github.com/sanity-io/sanity/issues/16197)) ([11148d0](https://github.com/sanity-io/sanity/commit/11148d0bddf0b8fed329c9ba7a92e97d3f29ad72))
+* **core:** clear addon dataset fetch errors after a later load ([#16065](https://github.com/sanity-io/sanity/issues/16065)) ([a8748e9](https://github.com/sanity-io/sanity/commit/a8748e9a56a3e494c6a4aa7e4c3c09fc15f7d78b))
+* **core:** leave Escape to federated asset source views ([#16202](https://github.com/sanity-io/sanity/issues/16202)) ([7b45cf2](https://github.com/sanity-io/sanity/commit/7b45cf20c9c88f1a0c9b939b61f41ccd51a18d8f))
+* **core:** prefer local dev servers over deployed apps for federated asset sources ([#16118](https://github.com/sanity-io/sanity/issues/16118)) ([1ac408e](https://github.com/sanity-io/sanity/commit/1ac408e254eafb9198502f7121c79afecf5dadfb))
+* **core:** send the project resource indicator on oauth sign-in ([#16164](https://github.com/sanity-io/sanity/issues/16164)) ([1e94679](https://github.com/sanity-io/sanity/commit/1e946799dd3cd6f690bd0e5729fcbc76bf6463d8))
+* **deps:** update @sanity/cli to ^8.33.0 ([#16240](https://github.com/sanity-io/sanity/issues/16240)) ([65b934f](https://github.com/sanity-io/sanity/commit/65b934f2532ad96a489f61a7459452b699da4e1a))
+* **deps:** update dependency @sanity/cli to ^8.31.0 ([#16129](https://github.com/sanity-io/sanity/issues/16129)) ([4cf053f](https://github.com/sanity-io/sanity/commit/4cf053f6b5ab6060f46304d52b2b04dc7c7c813d))
+* **deps:** update dependency @sanity/cli to ^8.32.0 ([#16201](https://github.com/sanity-io/sanity/issues/16201)) ([95c9c5f](https://github.com/sanity-io/sanity/commit/95c9c5fccc7241b7a7c0b196bde9d11264775673))
+* **deps:** update dependency @sanity/cli to ^8.32.1 ([#16218](https://github.com/sanity-io/sanity/issues/16218)) ([1465ddc](https://github.com/sanity-io/sanity/commit/1465ddc6b2780277630eec4bb01bc092f1c12520))
+* **deps:** update dependency @sanity/cli to ^8.33.0 ([#16242](https://github.com/sanity-io/sanity/issues/16242)) ([837ef1c](https://github.com/sanity-io/sanity/commit/837ef1cd9ca98644ce646bcff2936f979d303bc8))
+* **deps:** update dependency groq-js to ^2.0.2 ([#16207](https://github.com/sanity-io/sanity/issues/16207)) ([cc5e59c](https://github.com/sanity-io/sanity/commit/cc5e59c3399f13eddc8a87d1c29fce8337c67994))
+* **deps:** update dependency groq-js to ^2.0.3 ([#16210](https://github.com/sanity-io/sanity/issues/16210)) ([21574f9](https://github.com/sanity-io/sanity/commit/21574f955cd0b8166d738adba47acebcae9bae77))
+* **deps:** update panda-css monorepo to ^2.6.0 ([#16243](https://github.com/sanity-io/sanity/issues/16243)) ([9804b9e](https://github.com/sanity-io/sanity/commit/9804b9ecfb5158b57ac8748b6dc7cb5499601bf9))
+* **deps:** update playwright monorepo to v1.65.1 ([#16139](https://github.com/sanity-io/sanity/issues/16139)) ([6357d9e](https://github.com/sanity-io/sanity/commit/6357d9e115948a7cab198b2ac4973c4642c79625))
+* **deps:** update vitest monorepo to ^5.1.1 ([#16208](https://github.com/sanity-io/sanity/issues/16208)) ([52be281](https://github.com/sanity-io/sanity/commit/52be28199920fa38d99cac6a62beccb5e5d68b51))
+* drop an oauth pair whose refresh token has expired ([#16163](https://github.com/sanity-io/sanity/issues/16163)) ([f60d778](https://github.com/sanity-io/sanity/commit/f60d778e54b9e7cec914bf9518c66a9fc00e0dea))
+* **form:** show dialog breadcrumb overflow menu ([dae4f68](https://github.com/sanity-io/sanity/commit/dae4f68aa7636786bff59ca9bcb24dc4b7a9f5c2)), closes [#16215](https://github.com/sanity-io/sanity/issues/16215)
+* keep waiting for the listener when it reconnects before welcome ([#16119](https://github.com/sanity-io/sanity/issues/16119)) ([be4f5d9](https://github.com/sanity-io/sanity/commit/be4f5d9c5559a2d40cef01c59debb787edf91874))
+* **structure:** show status on singleton list items ([#16132](https://github.com/sanity-io/sanity/issues/16132)) ([3b26428](https://github.com/sanity-io/sanity/commit/3b2642879a106bea199eb73633a9b48b2b9bb82b))
 ## [6.24.0](https://github.com/sanity-io/sanity/compare/v6.23.0...v6.24.0) (2026-11-17)
 
 ### Features
