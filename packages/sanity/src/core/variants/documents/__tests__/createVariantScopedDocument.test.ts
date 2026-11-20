@@ -3,7 +3,10 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {RELEASE_DOCUMENT_TYPE} from '../../../releases/store/constants'
 import {type SystemVariant} from '../../types'
-import {createVariantScopedDocument} from '../createVariantScopedDocument'
+import {
+  buildCreateVariantDocumentAction,
+  createVariantScopedDocument,
+} from '../createVariantScopedDocument'
 
 const ACTION_RESULT = {transactionId: 'txn-1'}
 
@@ -39,6 +42,42 @@ function mockClient() {
 
   return client
 }
+
+describe('buildCreateVariantDocumentAction', () => {
+  it('builds a copy of a base document into a release bundle', () => {
+    expect(
+      buildCreateVariantDocumentAction({
+        baseId: 'versions.scope.article-1',
+        documentGroupId: 'article-1',
+        variant: VARIANT,
+        selectedPerspective: 'rSummer123',
+      }),
+    ).toEqual({
+      actionType: 'sanity.action.document.variant.create',
+      publishedId: 'article-1',
+      variantId: 'Ab12cd34',
+      baseId: 'versions.scope.article-1',
+      bundleId: 'rSummer123',
+    })
+  })
+
+  it('omits the bundle for the published perspective', () => {
+    const action = buildCreateVariantDocumentAction({
+      document: {_type: 'article'},
+      documentGroupId: 'article-1',
+      variant: VARIANT,
+      selectedPerspective: 'published',
+    })
+
+    expect(action).toEqual({
+      actionType: 'sanity.action.document.variant.create',
+      publishedId: 'article-1',
+      variantId: 'Ab12cd34',
+      document: {_type: 'article'},
+    })
+    expect(action).not.toHaveProperty('bundleId')
+  })
+})
 
 describe('createVariantScopedDocument', () => {
   it('creates a variant document from a base document in the published perspective', async () => {

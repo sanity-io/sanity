@@ -20,6 +20,8 @@ const variantsLocaleStrings = {
   'overview.action.new-variant': 'New variant definition',
   /** Label for the Variants overview row edit action. */
   'overview.action.edit-variant': 'Edit variant definition',
+  /** Label for the duplicate action in the Variants overview row menu and the Variant detail menu. */
+  'overview.action.duplicate-variant': 'Duplicate variant definition',
   /** Label for the Variants overview delete action. */
   'overview.action.delete-variant': 'Delete variant definition',
   /** Tooltip when delete is disabled because the variant contains one document. */
@@ -225,6 +227,52 @@ const variantsLocaleStrings = {
     'This will permanently delete "{{title}}". This action cannot be undone.',
   /** Confirm action for the delete variant confirmation dialog. */
   'dialog.delete.action.confirm': 'Yes, delete variant definition',
+  /** Title for the duplicate variant dialog. */
+  'dialog.duplicate.title': 'Duplicate variant definition',
+  /** Confirm action for the duplicate variant dialog. */
+  'dialog.duplicate.action.confirm': 'Duplicate',
+  /** Initial title of a duplicated variant definition; `title` is the original's title. */
+  'dialog.duplicate.variant-title': '{{title}} (duplicated)',
+  /** Error toast title when creating the duplicated variant definition fails. */
+  'dialog.duplicate.error.title': 'Unable to duplicate variant definition',
+  /** Title of the dialog asking whether to also copy the original variant's documents. */
+  'dialog.duplicate-documents.title': 'Duplicate also the variant documents?',
+  /** Description of the duplicate documents dialog when one document version will be copied. */
+  'dialog.duplicate-documents.description_one':
+    '{{count}} document version from "{{title}}" will be copied into the new variant definition. Drafts and published versions are copied as drafts, and release versions are added to the same release.',
+  /** Description of the duplicate documents dialog when several document versions will be copied. */
+  'dialog.duplicate-documents.description_other':
+    '{{count}} document versions from "{{title}}" will be copied into the new variant definition. Drafts and published versions are copied as drafts, and release versions are added to the same release.',
+  /** Shown in the duplicate documents dialog when none of the original's document versions can be copied. */
+  'dialog.duplicate-documents.nothing-to-copy':
+    'None of the document versions in "{{title}}" can be copied.',
+  /** Shown in the duplicate documents dialog while the original variant's documents are loading. */
+  'dialog.duplicate-documents.loading': 'Loading documents',
+  /** Heading of the list of document versions the duplicate will not copy. */
+  'dialog.duplicate-documents.skipped.title': 'These document versions will not be copied:',
+  /** Why a document version is not copied: its release is scheduled; `release` is the release title. */
+  'dialog.duplicate-documents.skipped.scheduled-release':
+    'The release "{{release}}" is scheduled, so no documents can be added to it',
+  /** Why a document version is not copied: it is set to be unpublished when its release is published. */
+  'dialog.duplicate-documents.skipped.going-to-unpublish':
+    'Set to be unpublished in the release "{{release}}"',
+  /** Confirm action of the duplicate documents dialog: duplicate the definition and its documents. */
+  'dialog.duplicate-documents.action.confirm': 'Yes, duplicate documents',
+  /** Cancel action of the duplicate documents dialog: duplicate only the definition. */
+  'dialog.duplicate-documents.action.definition-only': 'No, only the definition',
+  /** Success toast title after a variant definition is duplicated. */
+  'toast.duplicate.success': 'Variant definition duplicated',
+  /** Success toast description when one document version was copied into the duplicate. */
+  'toast.duplicate.documents-copied_one': '{{count}} document version was copied.',
+  /** Success toast description when several document versions were copied into the duplicate. */
+  'toast.duplicate.documents-copied_other': '{{count}} document versions were copied.',
+  /** Success toast description when one document version was not copied into the duplicate. */
+  'toast.duplicate.documents-skipped_one': '{{count}} document version was not copied.',
+  /** Success toast description when several document versions were not copied into the duplicate. */
+  'toast.duplicate.documents-skipped_other': '{{count}} document versions were not copied.',
+  /** Error toast title when the duplicate was created but copying its documents failed. */
+  'toast.duplicate.documents-error.title':
+    'The variant definition was duplicated, but its documents could not be copied',
   /** Shown in place of the Variants tool content when the content variants feature check failed. */
   'unavailable.text': 'Variants are unavailable right now. Try again later.',
 }
