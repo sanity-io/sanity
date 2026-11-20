@@ -3,7 +3,7 @@ import {isKeySegment, type Path, type SchemaType} from '@sanity/types'
 // oxlint-disable-next-line no-restricted-imports
 import {Badge, Button, Inline, useElementSize} from '@sanity/ui'
 // oxlint-disable-next-line no-restricted-imports
-import {Menu, MenuItem} from '@sanity/ui/menu'
+import {MenuItem} from '@sanity/ui/menu'
 import {isEqual} from '@sanity/util/paths'
 import {
   type PropsWithChildren,
@@ -16,6 +16,7 @@ import {
 import {EnhancedObjectDialogScrollContext} from 'sanity/_singletons'
 import {Text, Box, Flex, PressArea} from 'ui5'
 
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {useFormValue} from '../../contexts/FormValue'
 import {useBreadcrumbPreview} from '../../hooks/useBreadcrumbPreview'

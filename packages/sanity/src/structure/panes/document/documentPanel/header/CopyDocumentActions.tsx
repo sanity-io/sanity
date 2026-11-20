@@ -2,7 +2,6 @@ import {LinkIcon} from '@sanity/icons/Link'
 import {ShareIcon} from '@sanity/icons/Share'
 import {TargetIcon} from '@sanity/icons/Target'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Menu} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
 import {
@@ -19,6 +18,7 @@ import {
 import {useRouter} from 'sanity/router'
 
 import {Button} from '../../../../../ui-components/button/Button'
+import {Menu} from '../../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {structureLocaleNamespace} from '../../../../i18n'
