@@ -1,8 +1,7 @@
-import {Code} from '@sanity/ui/code'
-import {type ComponentProps} from 'react'
+import {Code, type CodeProps} from 'ui5'
 
 import * as styles from './QueryErrorDialog.module.css'
 
-export function ErrorCode(props: ComponentProps<typeof Code>) {
-  return <Code {...props} className={styles.errorCode} />
+export function ErrorCode(props: CodeProps) {
+  return <Code {...props} className={styles.errorCode} trim />
 }
