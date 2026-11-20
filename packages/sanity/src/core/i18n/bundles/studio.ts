@@ -617,6 +617,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.create-variant.variant-description': 'Who sees this version',
   /** The label of the variant creation form's picker for the variant definition to create */
   'document-group.create-variant.variant-label': 'Variant',
+  /** Heading of the delete dialog's notice that says why the published Default document can't be deleted yet */
+  'document-group.delete.blocked.heading': "The Default document can't be deleted yet",
+  /** Reason in the delete dialog's blocked notice: the document has variants, which need their Default document. Counts variants, not copies (singular) */
+  'document-group.delete.blocked.variants-reason_one':
+    '1 variant exists. Delete the variant first.',
+  /** Reason in the delete dialog's blocked notice: the document has variants, which need their Default document. Counts variants, not copies (plural) */
+  'document-group.delete.blocked.variants-reason_other':
+    '{{count}} variants exist. Delete the variants first.',
+  /** Heading above the versions in the delete dialog that can't be deleted yet */
+  'document-group.delete.blocked-versions.heading': "Can't be deleted yet",
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action */
   'document-group.delete.cancel-button.text': 'Cancel',
   /** Used in `document-group.delete.cdr-summary.title` */
@@ -647,6 +657,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.delete.cdr-table.project-id.label': 'Project ID',
   /** The label given to the delete action */
   'document-group.delete.confirm-button.text': 'Delete',
+  /** The label of the delete dialog's confirm action. `count` is the number of versions it deletes (singular) */
+  'document-group.delete.confirm-count-button.text_one': 'Delete 1 version',
+  /** The label of the delete dialog's confirm action. `count` is the number of versions it deletes (plural) */
+  'document-group.delete.confirm-count-button.text_other': 'Delete {{count}} versions',
+  /** Header of the delete dialog when only the published Default document is selected */
+  'document-group.delete.default-title': 'Delete the Default document?',
+  /** Heading above the versions in the delete dialog that the confirm action deletes, shown when some selected versions can't be deleted yet */
+  'document-group.delete.deletable-versions.heading': 'Will be deleted',
   /** The message shown after deletion fails */
   'document-group.delete.error.message':
     'An error occurred while attempting to delete this document. This usually means that there are other documents that refer to it.',
@@ -670,10 +688,26 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Describes the list of documents that refer to the one trying to be deleted (delete) */
   'document-group.delete.referring-documents-descriptor.text':
     'You may not be able to delete “<DocumentTitle/>” because the following documents refer to it:',
-  /** Header of the delete dialog. `count` controls pluralization; `subject` is a translated noun (see `document-group.subject.*`) (singular) */
+  /** Header of the delete dialog when some of the selected versions can't be deleted yet. `count` is the number it deletes, `total` the number selected (singular) */
+  'document-group.delete.some-of-title_one': 'Delete 1 of {{total}} versions?',
+  /** Header of the delete dialog when some of the selected versions can't be deleted yet. `count` is the number it deletes, `total` the number selected (plural) */
+  'document-group.delete.some-of-title_other': 'Delete {{count}} of {{total}} versions?',
+  /** Header of the delete dialog when the published Default document is not selected (singular) */
+  'document-group.delete.question-title_one': 'Delete 1 version?',
+  /** Header of the delete dialog when the published Default document is not selected (plural) */
+  'document-group.delete.question-title_other': 'Delete {{count}} versions?',
+  /** @deprecated no longer in use. Header of the delete dialog. `count` controls pluralization; `subject` is a translated noun (see `document-group.subject.*`) (singular) */
+  // oxlint-disable-next-line no-deprecated -- kept so no locale key is ever removed
   'document-group.delete.title_one': 'Delete {{count}} {{subject}}',
-  /** Header of the delete dialog. `count` controls pluralization; `subject` is a translated noun (see `document-group.subject.*`) (plural) */
+  /** @deprecated no longer in use. Header of the delete dialog. `count` controls pluralization; `subject` is a translated noun (see `document-group.subject.*`) (plural) */
+  // oxlint-disable-next-line no-deprecated -- kept so no locale key is ever removed
   'document-group.delete.title_other': 'Delete {{count}} {{subject}}',
+  /** Header of the delete dialog when the published Default document is selected along with other versions (singular) */
+  'document-group.delete.with-default-title_one':
+    'Delete {{count}} version, including the Default?',
+  /** Header of the delete dialog when the published Default document is selected along with other versions (plural) */
+  'document-group.delete.with-default-title_other':
+    'Delete {{count}} versions, including the Default?',
   /** The label for the action that clears every selected variant in the document group inventory */
   'document-group.deselect-all': 'Deselect all',
   /** The number of variants currently selected in the document group inventory */

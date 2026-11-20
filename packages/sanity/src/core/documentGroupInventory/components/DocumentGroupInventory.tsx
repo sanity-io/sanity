@@ -3,6 +3,7 @@ import {
   type ChangeEvent,
   type ComponentType,
   type RefAttributes,
+  useEffect,
   useImperativeHandle,
   useMemo,
 } from 'react'
@@ -17,6 +18,7 @@ import {
   Subject,
   timeout,
 } from 'rxjs'
+import {useEffectEvent} from 'use-effect-event'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
 import {STUDIO_DSN} from '../../error/sentry/sentryErrorReporter'
@@ -108,6 +110,11 @@ export interface DocumentGroupInventoryManageProps extends DocumentGroupInventor
    * Pane-coupled presentational components injected by the consumer.
    */
   components: DocumentGroupInventoryComponents
+  /**
+   * Called after a delete that removed every version of the document, so the consumer can leave
+   * the document (for example by closing its pane) instead of showing an empty one.
+   */
+  onAllVersionsDeleted?: () => void
 }
 
 /**
@@ -149,6 +156,9 @@ export function DocumentGroupInventory(
   const perspectiveList = props.mode === 'readOnly' ? undefined : props.perspectiveList
   const referringDocuments$ = props.mode === 'readOnly' ? undefined : props.referringDocuments$
   const components = props.mode === 'readOnly' ? undefined : props.components
+  const onAllVersionsDeleted = props.mode === 'readOnly' ? undefined : props.onAllVersionsDeleted
+
+  const handleAllVersionsDeleted = useEffectEvent(() => onAllVersionsDeleted?.())
 
   const {beta} = useWorkspace()
   const variantsEnabled = beta?.variants?.enabled
@@ -336,6 +346,12 @@ export function DocumentGroupInventory(
   const variantCreationRef = useSelector(inventoryRef, ({context}) => context.variantCreationRef)
 
   useImperativeHandle(ref, () => ({inventory: inventoryRef}), [inventoryRef])
+
+  useEffect(() => {
+    const subscription = deletionRef.on('allVersionsDeleted', () => handleAllVersionsDeleted())
+    return () => subscription.unsubscribe()
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- handleAllVersionsDeleted is a useEffectEvent and must stay out of the dependency array
+  }, [deletionRef])
 
   const isDeletionActive = useSelector(deletionRef, (snapshot) => snapshot.matches('active'))
   const isFeedbackActive = useSelector(inventoryRef, (snapshot) => snapshot.matches('feedback'))
