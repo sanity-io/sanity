@@ -1,10 +1,7 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {
-  type FieldDefinition,
   type InitialValueResolverContext,
-  type ObjectSchemaType,
   type SanityDocument,
-  type Schema,
   type ValidationMarker,
 } from '@sanity/types'
 import {validateItem} from '@sanity/validation/_internal'
@@ -24,28 +21,25 @@ import {
   useFormPatchHandler,
 } from '../../../form/useFormBuilderState'
 import {useClient} from '../../../hooks/useClient'
-import {useSchema} from '../../../hooks/useSchema'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {useWorkspace} from '../../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {DEFAULT_MAX_RECURSION_DEPTH, resolveInitialValueForType} from '../../../templates/resolve'
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {isRecord} from '../../../util/isRecord'
-import {
-  RELEASE_METADATA_FORM_ID,
-  RELEASE_METADATA_TYPE_NAME,
-  compileReleaseMetadataSchema,
-} from '../../metadata/compileReleaseMetadataType'
+import {formValueFromMetadata} from '../../metadata/formValueFromMetadata'
 import {
   asReleaseMetadata,
   mergeReleaseMetadata,
-  readFieldValues,
   toReleaseMetadataRecord,
   type ReleaseMetadataRecord,
 } from '../../metadata/mergeReleaseMetadata'
 import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadataFieldsEnabled'
+import {
+  useReleaseMetadataSchemaType,
+  type CompiledReleaseMetadataSchema,
+} from '../../metadata/useReleaseMetadataSchemaType'
 
-const NO_FIELDS: readonly FieldDefinition[] = []
 const NO_MARKERS: ValidationMarker[] = []
 const VALIDATION_FAILED_MESSAGE = 'Release metadata validation failed'
 
@@ -61,25 +55,9 @@ interface ReleaseMetadataFormProps {
   commitInitialValues?: boolean
 }
 
-interface CompiledReleaseMetadataSchema {
-  schema: Schema
-  schemaType: ObjectSchemaType
-}
-
 interface ReleaseMetadataFieldsFormProps extends ReleaseMetadataFormProps {
   compiled: CompiledReleaseMetadataSchema
   fieldNames: readonly string[]
-}
-
-function formValueFromMetadata(
-  metadata: ReleaseMetadataRecord,
-  fieldNames: readonly string[],
-): FormDocumentValue {
-  return {
-    _id: RELEASE_METADATA_FORM_ID,
-    _type: RELEASE_METADATA_TYPE_NAME,
-    ...readFieldValues(metadata, fieldNames),
-  }
 }
 
 function sameConfiguredFields(
@@ -333,12 +311,9 @@ function ReleaseMetadataFieldsForm(
   )
 }
 
-function ReleaseMetadataFields(
-  props: ReleaseMetadataFormProps & {fields: readonly FieldDefinition[]},
-): React.JSX.Element | null {
-  const {fields, onValidityChange} = props
-  const schema = useSchema()
-  const compiled = useMemo(() => compileReleaseMetadataSchema(fields, schema), [fields, schema])
+function ReleaseMetadataFields(props: ReleaseMetadataFormProps): React.JSX.Element | null {
+  const {onValidityChange} = props
+  const compiled = useReleaseMetadataSchemaType()
   const fieldNames = useMemo(
     () => compiled?.schemaType.fields.map((field) => field.name) ?? [],
     [compiled],
@@ -354,15 +329,13 @@ function ReleaseMetadataFields(
 
 export function ReleaseMetadataForm(props: ReleaseMetadataFormProps): React.JSX.Element | null {
   const enabled = useReleaseMetadataFieldsEnabled()
-  const fields = useWorkspace().releases?.metadata?.fields ?? NO_FIELDS
   const {onValidityChange} = props
-  const activeFields = enabled ? fields : NO_FIELDS
 
   useEffect(() => {
-    if (activeFields.length > 0) return
+    if (enabled) return
     onValidityChange?.(true)
-  }, [activeFields.length, onValidityChange])
+  }, [enabled, onValidityChange])
 
-  if (activeFields.length === 0) return null
-  return <ReleaseMetadataFields {...props} fields={activeFields} />
+  if (enabled) return <ReleaseMetadataFields {...props} />
+  return null
 }
