@@ -851,7 +851,6 @@ export {
   type AvailabilityResponse,
   type DocumentAvailability,
   type DocumentStackAvailability,
-  type DraftsModelDocument,
   type DraftsModelDocumentAvailability,
   type FieldName,
   type Id,

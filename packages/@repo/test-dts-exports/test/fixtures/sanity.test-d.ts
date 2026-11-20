@@ -446,7 +446,6 @@ import type {
   DocumentVersionSnapshots,
   DraftId,
   DRAFTS_FOLDER,
-  DraftsModelDocument,
   DraftsModelDocumentAvailability,
   DuplicateActionProps,
   DuplicateDocumentActionComponent,
@@ -2822,9 +2821,6 @@ describe('sanity', () => {
   })
   test('DRAFTS_FOLDER', () => {
     expectTypeOf<typeof DRAFTS_FOLDER>().not.toBeNever()
-  })
-  test('DraftsModelDocument', () => {
-    expectTypeOf<DraftsModelDocument<any>>().toBeObject()
   })
   test('DraftsModelDocumentAvailability', () => {
     expectTypeOf<DraftsModelDocumentAvailability>().toBeObject()

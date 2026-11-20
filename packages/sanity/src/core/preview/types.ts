@@ -117,26 +117,6 @@ export interface DocumentStackAvailability {
 }
 
 /**
- * @hidden
- * @beta */
-export interface DraftsModelDocument<T extends SanityDocumentLike = SanityDocumentLike> {
-  id: string
-  type: string | null
-  draft: {
-    availability: DocumentAvailability
-    snapshot: T | undefined
-  }
-  published: {
-    availability: DocumentAvailability
-    snapshot: T | undefined
-  }
-  version?: {
-    availability: DocumentAvailability
-    snapshot: T | undefined
-  }
-}
-
-/**
  * Event emitted to notify preview subscribers when they need to refetch a document being previewed
  * - 'connected' will happen when the store is connected to the invalidation channel, both initially and after a reconnect after a connection loss
  * - 'mutation' will happen when a document has been mutated and the store needs to refetch a document
