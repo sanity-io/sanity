@@ -935,13 +935,36 @@ describe('documentGroupInventoryMachine', () => {
     expect(variantCreationRef.getSnapshot().context.error).toBeUndefined()
   })
 
-  it('refuses to create a variant when the variants feature is switched off', () => {
-    const {variantCreationRef} = createTestActor(loading, {variantsEnabled: false})
+  it('creates a version of the default variant when the variants feature is switched off', async () => {
+    const createVariant = vi.fn().mockResolvedValue(undefined)
+    const {variantCreationRef} = createTestActor(loading, {createVariant, variantsEnabled: false})
 
-    expect(variantCreationRef.getSnapshot().can({type: 'createVariant.request'})).toBe(false)
+    expect(variantCreationRef.getSnapshot().can({type: 'createVariant.request'})).toBe(true)
+    variantCreationRef.send({type: 'createVariant.request'})
+
+    // No variant is needed: a bundle is enough to confirm.
+    variantCreationRef.send({type: 'createVariant.selectBundle', bundle: {type: 'drafts'}})
+    variantCreationRef.send({type: 'createVariant.confirm'})
+
+    await vi.waitFor(() => expect(variantCreationRef.getSnapshot().matches('idle')).toBe(true))
+    expect(createVariant).toHaveBeenCalledWith(
+      expect.objectContaining({input: expect.objectContaining({variantDefinition: undefined})}),
+    )
+  })
+
+  it('ignores a selected variant when the variants feature is switched off', async () => {
+    const createVariant = vi.fn().mockResolvedValue(undefined)
+    const {variantCreationRef} = createTestActor(loading, {createVariant, variantsEnabled: false})
 
     variantCreationRef.send({type: 'createVariant.request'})
-    expect(variantCreationRef.getSnapshot().matches('idle')).toBe(true)
+    variantCreationRef.send({type: 'createVariant.selectVariant', variantId: 'variant-a'})
+    variantCreationRef.send({type: 'createVariant.selectBundle', bundle: {type: 'drafts'}})
+    variantCreationRef.send({type: 'createVariant.confirm'})
+
+    await vi.waitFor(() => expect(createVariant).toHaveBeenCalledTimes(1))
+    expect(createVariant).toHaveBeenCalledWith(
+      expect.objectContaining({input: expect.objectContaining({variantDefinition: undefined})}),
+    )
   })
 
   describe('read-only mode', () => {

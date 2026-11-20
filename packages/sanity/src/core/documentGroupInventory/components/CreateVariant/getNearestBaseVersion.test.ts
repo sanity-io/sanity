@@ -76,6 +76,18 @@ describe('getNearestBaseVersion', () => {
     ).toBeUndefined()
   })
 
+  it('starts a version of the default variant from the default draft, then the published version', () => {
+    const versions = [PUBLISHED, IN_ASAP, SUMMER_SALE_PUBLISHED]
+
+    expect(getNearestBaseVersion({variantId: undefined, bundle: ASAP, versions})).toBe(PUBLISHED)
+    expect(
+      getNearestBaseVersion({variantId: undefined, bundle: ASAP, versions: [DRAFT, ...versions]}),
+    ).toBe(DRAFT)
+    expect(getNearestBaseVersion({variantId: undefined, bundle: {type: 'drafts'}, versions})).toBe(
+      PUBLISHED,
+    )
+  })
+
   it('starts a release version from the default version in that release only', () => {
     expect(
       getNearestBaseVersion({variantId: SUMMER_SALE, bundle: ASAP, versions: [DRAFT, IN_ASAP]}),

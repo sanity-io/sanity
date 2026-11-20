@@ -50,6 +50,7 @@ describe('getAvailableBundles', () => {
   it('offers drafts, then the open releases', () => {
     const bundles = getAvailableBundles({
       variantId: SUMMER_SALE,
+      liveEdit: false,
       releases: RELEASES,
       existingVariants: [],
     })
@@ -64,6 +65,7 @@ describe('getAvailableBundles', () => {
   it('leaves out the bundles already holding the variant', () => {
     const bundles = getAvailableBundles({
       variantId: SUMMER_SALE,
+      liveEdit: false,
       releases: RELEASES,
       existingVariants: [summerSaleIn('drafts'), summerSaleIn(activeASAPRelease.name)],
     })
@@ -71,9 +73,61 @@ describe('getAvailableBundles', () => {
     expect(bundles.map(getBundleKey)).toEqual([activeUndecidedRelease._id])
   })
 
+  it('leaves out the bundles already holding the default variant when no variant is given', () => {
+    const bundles = getAvailableBundles({
+      variantId: undefined,
+      liveEdit: false,
+      releases: RELEASES,
+      existingVariants: [
+        version(`drafts.${GROUP_ID}`, {bundleId: 'drafts'}),
+        summerSaleIn(activeASAPRelease.name),
+      ],
+    })
+
+    expect(bundles.map(getBundleKey)).toEqual([activeASAPRelease._id, activeUndecidedRelease._id])
+  })
+
+  it('leaves out drafts for the default variant of a live-edit document', () => {
+    const bundles = getAvailableBundles({
+      variantId: undefined,
+      liveEdit: true,
+      releases: RELEASES,
+      existingVariants: [version(GROUP_ID, {})],
+    })
+
+    expect(bundles.map(getBundleKey)).toEqual([activeASAPRelease._id, activeUndecidedRelease._id])
+  })
+
+  it('offers no bundle for the default variant of a live-edit document without open releases', () => {
+    const bundles = getAvailableBundles({
+      variantId: undefined,
+      liveEdit: true,
+      releases: new Map(),
+      existingVariants: [version(GROUP_ID, {})],
+    })
+
+    expect(bundles).toEqual([])
+  })
+
+  it('still offers drafts for a variant of a live-edit document', () => {
+    const bundles = getAvailableBundles({
+      variantId: SUMMER_SALE,
+      liveEdit: true,
+      releases: RELEASES,
+      existingVariants: [version(GROUP_ID, {})],
+    })
+
+    expect(bundles.map(getBundleKey)).toEqual([
+      'drafts',
+      activeASAPRelease._id,
+      activeUndecidedRelease._id,
+    ])
+  })
+
   it('ignores the bundles holding other variants', () => {
     const bundles = getAvailableBundles({
       variantId: '_.variants.vip-users',
+      liveEdit: false,
       releases: RELEASES,
       existingVariants: [summerSaleIn('drafts'), summerSaleIn(activeASAPRelease.name)],
     })
