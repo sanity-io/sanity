@@ -8,6 +8,7 @@ import {
   type SanityDocument,
 } from 'sanity'
 
+import {EXCLUDE_RELEASE_DOCUMENTS_FILTER} from '../../util/excludeReleaseDocumentsFilter'
 import {type IncomingReferencesFilterResolver, type IncomingReferencesOptions} from './types'
 
 async function resolveRawFilterCallback(
@@ -83,7 +84,7 @@ export function getIncomingReferences({
     switchMap(({filter: filterQuery, filterParams}) => {
       return documentPreviewStore
         .unstable_observeDocumentIdSet(
-          `references("${publishedId}") && _system.group._ref != "${publishedId}" ${type ? `&& _type == "${type}"` : ''} ${filterQuery ? `&& ${filterQuery}` : ''}`,
+          `references("${publishedId}") && _system.group._ref != "${publishedId}" && ${EXCLUDE_RELEASE_DOCUMENTS_FILTER} ${type ? `&& _type == "${type}"` : ''} ${filterQuery ? `&& ${filterQuery}` : ''}`,
           filterParams,
           {insert: 'append'},
         )
