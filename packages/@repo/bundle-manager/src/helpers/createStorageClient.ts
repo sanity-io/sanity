@@ -2,6 +2,7 @@ import {Agent} from 'node:https'
 
 import {Storage} from '@google-cloud/storage'
 import {readEnv} from '@repo/utils'
+import {JWT} from 'google-auth-library'
 
 import {type KnownEnvVar} from '../types'
 
@@ -28,9 +29,15 @@ import {type KnownEnvVar} from '../types'
  * @see https://github.com/nodejs/node/issues/63989
  */
 export function createStorageClient(): Storage {
-  return new Storage({
-    projectId: readEnv<KnownEnvVar>('GOOGLE_PROJECT_ID'),
-    credentials: JSON.parse(readEnv<KnownEnvVar>('GCLOUD_SERVICE_KEY')),
-    clientOptions: {transporterOptions: {agent: new Agent({keepAlive: false})}},
+  const serviceKey = JSON.parse(readEnv<KnownEnvVar>('GCLOUD_SERVICE_KEY'))
+  // Building the JWT client ourselves avoids the deprecated `credentials` option, which
+  // `google-auth-library` warns about because it accepts any credential type unvalidated.
+  const authClient = new JWT({
+    email: serviceKey.client_email,
+    key: serviceKey.private_key,
+    keyId: serviceKey.private_key_id,
+    scopes: ['https://www.googleapis.com/auth/devstorage.full_control'],
+    transporterOptions: {agent: new Agent({keepAlive: false})},
   })
+  return new Storage({projectId: readEnv<KnownEnvVar>('GOOGLE_PROJECT_ID'), authClient})
 }
