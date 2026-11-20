@@ -1,13 +1,10 @@
 import {motion} from 'motion/react'
-import {Suspense, use, useCallback} from 'react'
-import {type ObservablePromise} from 'react-rx'
+import {type ComponentProps} from 'react'
 import {styled} from 'styled-components'
 import {Container, Box, Flex} from 'ui5'
 
-import {NO_UPSELL_DATA} from '../../../hooks/useUpsellData'
 import {useSingleDocReleaseEnabled} from '../../../singleDocRelease/context/SingleDocReleaseEnabledProvider'
 import {useSingleDocReleaseUpsell} from '../../../singleDocRelease/context/SingleDocReleaseUpsellProvider'
-import {type UpsellDataResult} from '../../../studio/upsell/types'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {ReleaseIllustration} from '../resources/ReleaseIllustration'
@@ -18,26 +15,7 @@ const Panel = styled(Container)`
   flex-shrink: 0;
 `
 
-interface UpsellIllustrationPanelProps {
-  upsellDataPromise: ObservablePromise<UpsellDataResult> | null
-  onPrimaryClick: () => void
-  onSecondaryClick: () => void
-}
-
-/**
- * Waits for the upsell content at the leaf, under the boundary its caller renders; nothing when
- * the request failed.
- */
-function UpsellIllustrationPanel({
-  upsellDataPromise,
-  onPrimaryClick,
-  onSecondaryClick,
-}: UpsellIllustrationPanelProps) {
-  const {upsellData} = upsellDataPromise ? use(upsellDataPromise) : NO_UPSELL_DATA
-
-  if (!upsellData) {
-    return null
-  }
+function UpsellIllustrationPanel({upsell}: Pick<ComponentProps<typeof UpsellPanel>, 'upsell'>) {
   return (
     <Flex
       flexDirection="column"
@@ -58,10 +36,9 @@ function UpsellIllustrationPanel({
               <UpsellPanel
                 align="center"
                 layout="vertical"
-                data={{...upsellData, image: null}}
+                hideImage
                 border={false}
-                onPrimaryClick={onPrimaryClick}
-                onSecondaryClick={onSecondaryClick}
+                upsell={upsell}
               />
             </Box>
           </Flex>
@@ -73,51 +50,21 @@ function UpsellIllustrationPanel({
 
 const SingleDocReleasesUpsell = () => {
   const {mode} = useSingleDocReleaseEnabled()
-  const {upsellDataPromise, telemetryLogs} = useSingleDocReleaseUpsell()
-  const handlePrimaryClick = useCallback(() => {
-    telemetryLogs.panelPrimaryClicked()
-  }, [telemetryLogs])
-
-  const handleSecondaryClick = useCallback(() => {
-    telemetryLogs.panelSecondaryClicked()
-  }, [telemetryLogs])
+  const upsell = useSingleDocReleaseUpsell()
 
   if (mode !== 'upsell') {
     return null
   }
-  return (
-    <Suspense>
-      <UpsellIllustrationPanel
-        upsellDataPromise={upsellDataPromise}
-        onPrimaryClick={handlePrimaryClick}
-        onSecondaryClick={handleSecondaryClick}
-      />
-    </Suspense>
-  )
+  return <UpsellIllustrationPanel upsell={upsell} />
 }
 
 const ReleasesUpsell = () => {
-  const {upsellDataPromise, telemetryLogs, mode} = useReleasesUpsell()
-  const handlePrimaryClick = useCallback(() => {
-    telemetryLogs.panelPrimaryClicked()
-  }, [telemetryLogs])
+  const upsell = useReleasesUpsell()
 
-  const handleSecondaryClick = useCallback(() => {
-    telemetryLogs.panelSecondaryClicked()
-  }, [telemetryLogs])
-
-  if (mode === 'default') {
+  if (upsell.mode === 'default') {
     return null
   }
-  return (
-    <Suspense>
-      <UpsellIllustrationPanel
-        upsellDataPromise={upsellDataPromise}
-        onPrimaryClick={handlePrimaryClick}
-        onSecondaryClick={handleSecondaryClick}
-      />
-    </Suspense>
-  )
+  return <UpsellIllustrationPanel upsell={upsell} />
 }
 
 export function SchedulesUpsell({cardinalityView}: {cardinalityView: CardinalityView}) {

@@ -36,12 +36,15 @@ function settled(value: UpsellDataResult): ObservablePromise<UpsellDataResult> {
   return Object.assign(Promise.resolve(value), {status: 'fulfilled' as const, value})
 }
 
+const requestUpsellData = vi.fn()
+
 function contextValue(upsellDataPromise: ObservablePromise<UpsellDataResult>) {
   return {
     upsellDialogOpen: false,
     handleOpenDialog: vi.fn(),
     handleClose: vi.fn(),
     upsellDataPromise,
+    requestUpsellData,
     telemetryLogs: {
       dialogSecondaryClicked: vi.fn(),
       dialogPrimaryClicked: vi.fn(),
@@ -77,6 +80,12 @@ describe('DocumentLimitsUpsellPanel', () => {
       'https://www.sanity.io/manage',
     )
     expect(screen.queryByTestId('studio-error-screen')).toBeNull()
+  })
+
+  it('starts the content request, which the provider does not preload', async () => {
+    await renderPanel({upsellData, hasError: false})
+
+    expect(requestUpsellData).toHaveBeenCalledTimes(1)
   })
 
   it('shows the document limit error itself when the upsell content cannot be loaded', async () => {
