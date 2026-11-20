@@ -27,6 +27,7 @@ import {
   onUncaughtErrorResolver,
   partialIndexingEnabledReducer,
   releaseActionsReducer,
+  releasePropertiesReducer,
   resolveProductionUrlReducer,
   scheduledDraftsEnabledReducer,
   schemaTemplatesReducer,
@@ -97,6 +98,13 @@ const arrayReducers: ArrayReducerExample[] = [
     reduce: releaseActionsReducer as ArrayReducerExample['reduce'],
     set: (value) => ({name: 'test', releases: {actions: value as never}}),
     expectedError: 'Expected `releases.actions` to be an array or a function, but received number',
+  },
+  {
+    name: 'releases.properties',
+    reduce: releasePropertiesReducer as ArrayReducerExample['reduce'],
+    set: (value) => ({name: 'test', releases: {properties: value as never}}),
+    expectedError:
+      'Expected `releases.properties` to be an array or a function, but received number',
   },
   {
     name: 'form.file.assetSources',
