@@ -132,6 +132,8 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'dashboard.details.pin-release': 'Pin release to studio',
   /** Text for the releases detail screen in the unpin release button. */
   'dashboard.details.unpin-release': 'Unpin release from studio',
+  /** Message shown in place of the custom release detail when it throws while rendering. */
+  'dashboard.details.detail-error': "Can't display this detail",
   /** Label for the schedule/type metadata in the release detail header zone. */
   'dashboard.details.metadata.schedule': 'Schedule',
   /** Label for the validation status metadata in the release detail header zone. */

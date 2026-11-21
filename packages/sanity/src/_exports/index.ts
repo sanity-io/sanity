@@ -304,6 +304,7 @@ export {
   type ReleaseActionProps,
   type ReleaseActionsContext,
 } from '../core/config/releases/actions'
+export {type ReleaseDetailComponent, type ReleaseDetailProps} from '../core/config/releases/detail'
 export {
   createSourceFromConfig,
   createWorkspaceFromConfig,
