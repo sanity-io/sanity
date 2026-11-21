@@ -1,0 +1,43 @@
+/*
+ * The crab that stands in for the "You" dot when groq-store-wasm answered on this device. The
+ * globe faces you then, so you are at its centre; the crab sits there, over the canvas.
+ */
+.globe {
+  position: relative;
+}
+
+.crab {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 22px;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.35));
+}
+
+/* A sideways scuttle, now and then */
+@media (prefers-reduced-motion: no-preference) {
+  .crab {
+    animation: scuttle 3.2s ease-in-out 1.2s infinite;
+  }
+}
+
+@keyframes scuttle {
+  0%,
+  70%,
+  100% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  76% {
+    transform: translate(calc(-50% - 2px), -50%) rotate(-8deg);
+  }
+  82% {
+    transform: translate(calc(-50% + 2px), -50%) rotate(8deg);
+  }
+  88% {
+    transform: translate(calc(-50% - 1px), -50%) rotate(-4deg);
+  }
+}

@@ -403,6 +403,25 @@ describe('HistoryTab', () => {
     }
   })
 
+  it('writes the time of an answer given on this device in fractions of a millisecond', () => {
+    const local = {
+      method: 'GET',
+      viaCdn: false,
+      cacheHit: false,
+      shard: undefined,
+      traceId: undefined,
+      cacheControl: undefined,
+      local: {
+        documents: 51226,
+        memoryBytes: undefined,
+        timings: [{name: 'wasm', dur: 1.84, desc: 'Query in WebAssembly'}],
+      },
+    } satisfies FetchHistoryEntry['network']
+    const [row] = renderTab([entry('local', 1, {ms: 1, e2eMs: 12.43, network: local})])
+    expect(row.textContent).toContain('result.execution-time-label 1.84ms')
+    expect(row.textContent).toContain('result.end-to-end-time-label 12.4ms')
+  })
+
   it('writes a short duration in milliseconds and a longer one in seconds', () => {
     const [row] = renderTab([entry('slow', 1, {ms: 888, e2eMs: 1_170})])
     expect(row.textContent).toContain('result.execution-time-label 888ms')

@@ -50,6 +50,8 @@ import {testStudioLocaleBundles} from './locales'
 import {documentFormOnly} from './plugins/document-form-only/plugin'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test/plugin'
 import {formBuilderReproTool} from './plugins/form-builder-repro/plugin'
+import {startGroqStore} from './plugins/groq-store-wasm/groqStore'
+import {groqStoreDebugBar} from './plugins/groq-store-wasm/plugin'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter/plugin'
@@ -89,6 +91,11 @@ function getDebugProxyApiHost(): string | undefined {
 }
 
 const debugProxyApiHost = getDebugProxyApiHost()
+
+// Answers Content Lake queries from a wasm GROQ engine in a SharedWorker, through a service worker.
+// Switch it off per browser with `?groqStore=off` (or the debug bar), or for a build with
+// SANITY_STUDIO_GROQ_STORE=off. See plugins/groq-store-wasm.
+startGroqStore()
 
 // Sanity Sandbox org SAML SSO (`ppsg7ml5`). `/auth/providers` reports `sso.saml: true`
 // but does not include the login URL, so Studio will not offer SSO unless we add it.
@@ -171,6 +178,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       badges: (prev, context) => (context.schemaType === 'author' ? [CustomBadge, ...prev] : prev),
     },
     plugins: [
+      groqStoreDebugBar(),
       structureTool({
         icon: BookIcon,
         structure,

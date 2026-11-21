@@ -7,10 +7,11 @@ import {Text, Box, Flex, Grid} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
-import {formatDuration} from '../../../util/formatDuration'
+import {formatMeasuredDuration} from '../../../util/formatDuration'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {type VisionResponseMeta} from '../../store/types'
 import {formatBytes} from '../../util/payloadSize'
+import {formatExecutionTime} from '../../util/queryNetwork'
 import {sortSyncTags} from '../../util/syncTags'
 
 function MetaRow({label, children}: {label: string; children: ReactNode}) {
@@ -51,12 +52,12 @@ export function ResponseMetaTab({meta, url}: ResponseMetaTabProps) {
         <Grid gap={3} gridTemplateColumns="max-content minmax(0, 1fr)">
           <MetaRow label={t('result.execution-time-label')}>
             <Text data-testid="vision-meta-execution" size={1} as="div" trim={true}>
-              {meta ? formatDuration(meta.ms) : notApplicable}
+              {(meta && formatExecutionTime(meta.ms, meta.network)) ?? notApplicable}
             </Text>
           </MetaRow>
           <MetaRow label={t('result.end-to-end-time-label')}>
             <Text data-testid="vision-meta-e2e" size={1} as="div" trim={true}>
-              {meta ? formatDuration(meta.e2eMs) : notApplicable}
+              {meta ? formatMeasuredDuration(meta.e2eMs) : notApplicable}
             </Text>
           </MetaRow>
           <MetaRow label={t('vision.response.payload-size')}>
