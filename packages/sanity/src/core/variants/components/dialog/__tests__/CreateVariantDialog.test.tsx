@@ -324,11 +324,11 @@ describe('CreateVariantDialog', () => {
     expect(screen.getByTestId('variant-form-title-error')).toHaveTextContent('Title is required')
   })
 
-  it('renders the priority field with a help tooltip', async () => {
+  it('renders the priority field with its help text', async () => {
     await renderDialog()
 
     expect(screen.getByTestId('variant-form-priority')).toHaveValue(0)
-    expect(screen.getByTestId('variant-form-priority-help')).toBeInTheDocument()
+    expect(screen.getByTestId('variant-form-priority-description')).toBeVisible()
   })
 
   it('rejects an empty priority value', async () => {

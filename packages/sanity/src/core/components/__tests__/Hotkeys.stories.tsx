@@ -1,5 +1,6 @@
-import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {Card, Flex, Stack} from '@sanity/ui'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
+import {Text} from 'ui5'
 
 import {Hotkeys} from '../Hotkeys'
 
@@ -41,7 +42,9 @@ export const Legend: Story = {
       <Stack gap={3}>
         {SHORTCUTS.map(({label, keys}) => (
           <Flex align="center" gap={4} justify="space-between" key={label}>
-            <Text size={1}>{label}</Text>
+            <Text size={1} as="div" trim={true}>
+              {label}
+            </Text>
             <Hotkeys keys={keys} makePlatformAware={false} />
           </Flex>
         ))}

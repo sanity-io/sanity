@@ -181,6 +181,10 @@ export {
   SingleDocReleaseUpsellContext,
   type SingleDocReleaseUpsellContextValue,
 } from '../_singletons/context/SingleDocReleaseUpsellContext'
+export {
+  SortableItemHandleContext,
+  type SortableItemHandleContextValue,
+} from '../_singletons/context/SortableItemHandleContext'
 export {SortableItemIdContext} from '../_singletons/context/SortableItemIdContext'
 export {SourceContext} from '../_singletons/context/SourceContext'
 export {StructureToolContext} from '../_singletons/context/StructureToolContext'
@@ -198,6 +202,8 @@ export {
   type UnclaimedProjectContextValue,
 } from '../_singletons/context/UnclaimedProjectContext'
 export {ValidationContext} from '../_singletons/context/ValidationContext'
+export {VariantsModePromiseContext} from '../_singletons/context/VariantsModePromiseContext'
+export {VariantsUpsellContext} from '../_singletons/context/VariantsUpsellContext'
 export {VirtualizerScrollInstanceContext} from '../_singletons/context/VirtualizerScrollInstanceContext'
 export {VisibleWorkspacesContext} from '../_singletons/context/VisibleWorkspacesContext'
 export {WorkspaceContext} from '../_singletons/context/WorkspaceContext'

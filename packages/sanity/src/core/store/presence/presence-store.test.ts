@@ -5,7 +5,7 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type ConnectionStatus} from '../connection-status/connection-status-store'
 import {type UserStore} from '../user/userStore'
-import {createPresenceStore, type PresenceStore, SESSION_ID} from './presence-store'
+import {createPresenceStore, getSessionId, type PresenceStore} from './presence-store'
 import {type DocumentPresence, type GlobalPresence, type PresenceLocation} from './types'
 
 // Own location announcements are audited at this interval
@@ -267,7 +267,7 @@ describe('presence-store', () => {
       const {latest, subscription} = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
 
       // Alone, the own session yields no presence at all
-      incoming$.next(stateEvent('me', SESSION_ID, [location('doc-1')]))
+      incoming$.next(stateEvent('me', getSessionId(), [location('doc-1')]))
       await settle()
       expect(latest()).toEqual([])
 
@@ -402,7 +402,7 @@ describe('presence-store', () => {
       const {store, incoming$} = createHarness()
       const {latest, subscription} = collect<GlobalPresence[]>(store.globalPresence$)
 
-      incoming$.next(stateEvent('me', SESSION_ID, [location('doc-1')]))
+      incoming$.next(stateEvent('me', getSessionId(), [location('doc-1')]))
       await settle()
       expect(latest()).toEqual([])
 
@@ -424,7 +424,7 @@ describe('presence-store', () => {
       await vi.advanceTimersByTimeAsync(ANNOUNCE_DELAY)
       expect(requests.at(-1)).toEqual({
         name: 'presence_announce',
-        params: {data: {locations: [], sessionId: SESSION_ID}},
+        params: {data: {locations: [], sessionId: getSessionId()}},
       })
       subscription.unsubscribe()
     })
@@ -440,7 +440,7 @@ describe('presence-store', () => {
 
       expect(requests.at(-1)).toEqual({
         name: 'presence_announce',
-        params: {data: {locations, sessionId: SESSION_ID}},
+        params: {data: {locations, sessionId: getSessionId()}},
       })
       subscription.unsubscribe()
     })
@@ -466,7 +466,7 @@ describe('presence-store', () => {
       await vi.advanceTimersByTimeAsync(ANNOUNCE_DELAY)
       const announcementsBefore = requests.filter((r) => r.name === 'presence_announce').length
 
-      incoming$.next(rollCallEvent('me', SESSION_ID))
+      incoming$.next(rollCallEvent('me', getSessionId()))
       await vi.advanceTimersByTimeAsync(ANNOUNCE_DELAY)
 
       expect(requests.filter((r) => r.name === 'presence_announce').length).toBe(
@@ -660,6 +660,34 @@ describe('presence-store', () => {
 
       expect(values.at(-1)?.map((p) => p.user.id)).toEqual(['alice'])
       subscription.unsubscribe()
+    })
+
+    it('releases the transport once the last document presence subscriber is gone', async () => {
+      const {store, incoming$, connectionStatus$, requests} = createHarness()
+      const first = collect<DocumentPresence[]>(store.documentPresence('doc-1'))
+      const second = collect<DocumentPresence[]>(store.documentPresence('doc-2'))
+      await vi.advanceTimersByTimeAsync(ANNOUNCE_DELAY)
+      expect(incoming$.observed).toBe(true)
+      expect(connectionStatus$.observed).toBe(true)
+
+      // One of two consumers leaving keeps the shared pipeline up
+      first.subscription.unsubscribe()
+      expect(incoming$.observed).toBe(true)
+
+      // The grace keeps the socket through a document switch. Once it elapses
+      // with nobody left, the listener, the heartbeat watcher and the location
+      // announcements of a workspace that is gone all stop.
+      second.subscription.unsubscribe()
+      await vi.advanceTimersByTimeAsync(DOCUMENT_PRESENCE_GRACE - 1)
+      expect(incoming$.observed).toBe(true)
+      await vi.advanceTimersByTimeAsync(1)
+      expect(incoming$.observed).toBe(false)
+      expect(connectionStatus$.observed).toBe(false)
+      const announcementsAtTeardown = requests.filter((r) => r.name === 'presence_announce').length
+      await vi.advanceTimersByTimeAsync(60_000)
+      expect(requests.filter((r) => r.name === 'presence_announce').length).toBe(
+        announcementsAtTeardown,
+      )
     })
 
     it('listens again when the presence subscription closes while the connection stays up', async () => {

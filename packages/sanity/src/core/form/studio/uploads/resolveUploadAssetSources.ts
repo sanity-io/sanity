@@ -1,5 +1,5 @@
 import {type AssetSource, type SchemaType} from '@sanity/types'
-import {accepts} from '@sanity/validation/_internal'
+import {accepts} from '@sanity/util/accepts'
 
 import {type FormBuilderContextValue} from '../../FormBuilderContext'
 import * as is from '../../utils/is'

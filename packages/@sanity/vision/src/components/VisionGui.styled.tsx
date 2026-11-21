@@ -1,11 +1,11 @@
-import {Card, Label, rem, Text, useTheme_v2 as useThemeV2} from '@sanity/ui'
+import {Card, Label, rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {
   type ComponentProps,
   type ComponentPropsWithoutRef,
   type CSSProperties,
   type RefAttributes,
 } from 'react'
-import {Flex, Box} from 'ui5'
+import {Text, Flex, Box} from 'ui5'
 
 import * as styles from './VisionGui.module.css'
 
@@ -129,7 +129,7 @@ export function SaveResultLabel(props: ComponentProps<typeof Text>) {
   const {space} = useThemeV2()
   const style: SaveResultLabelStyle = {'--vision-save-result-gap': `${rem(space[3])}`}
 
-  return <Text {...props} className={styles.saveResultLabel} style={style} />
+  return <Text {...props} className={styles.saveResultLabel} style={style} as="div" trim={true} />
 }
 
 export function ControlsContainer(props: ComponentProps<typeof Box>) {

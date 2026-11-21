@@ -33,7 +33,8 @@
     "react-barcode": "^1.6.1",
     "react-dom": "catalog:",
     "sanity": "workspace:*",
-    "styled-components": "catalog:"
+    "styled-components": "catalog:",
+    "ui5": "catalog:"
   },
   "devDependencies": {
     "rimraf": "catalog:"

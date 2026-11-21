@@ -208,6 +208,34 @@ describe('prepareConfig — studio request handler', () => {
       expect(config.requestHandler).toBe(requestHandler)
     }
   })
+
+  it('gives the handler of each client the auth store that created it', () => {
+    const projectId = `test-${Math.random().toString(36).slice(2)}`
+    const authStoreGetters: Array<() => unknown> = []
+
+    const {workspaces} = prepareConfig(
+      [
+        createWorkspace({name: 'cookie', basePath: '/cookie', projectId}),
+        createWorkspace({
+          name: 'token',
+          basePath: '/token',
+          projectId,
+          auth: {loginMethod: 'token'},
+        }),
+      ],
+      {
+        createStudioRequestHandler: (_getClient, getAuthStore) => {
+          if (getAuthStore) authStoreGetters.push(getAuthStore)
+          return (request, next) => next(request)
+        },
+      },
+    )
+
+    expect(authStoreGetters.length).toBeGreaterThan(0)
+    expect(new Set(authStoreGetters.map((getAuthStore) => getAuthStore()))).toEqual(
+      new Set(workspaces.map((workspace) => workspace.auth)),
+    )
+  })
 })
 
 describe('prepareConfig — schema error context', () => {
@@ -297,5 +325,48 @@ describe('prepareConfig — schema error context', () => {
       projectId: 'riot',
       dataset: 'live',
     })
+  })
+})
+
+describe('prepareConfig — auth.experimental_oauth', () => {
+  it('uses the OAuth auth store for a workspace that sets it', () => {
+    const {workspaces} = prepareConfig(
+      createWorkspace({auth: {experimental_oauth: {clientId: 'oc-test-client'}}}),
+    )
+
+    expect(workspaces[0].auth.LoginComponent?.name).toBe('OAuthLoginComponent')
+  })
+
+  it('keeps the provider login for a workspace that does not', () => {
+    const {workspaces} = prepareConfig(createWorkspace({auth: {loginMethod: 'token'}}))
+
+    expect(workspaces[0].auth.LoginComponent?.name).not.toBe('OAuthLoginComponent')
+  })
+
+  it('does not warn about divergent auth for an OAuth workspace of the same project', () => {
+    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const projectId = `oauth-${Math.random().toString(36).slice(2)}`
+    const warningsBefore = getCollectedConfigWarnings().length
+
+    prepareConfig([
+      createWorkspace({
+        name: 'token-workspace',
+        projectId,
+        basePath: '/token',
+        auth: {loginMethod: 'token'},
+      }),
+      createWorkspace({
+        name: 'oauth-workspace',
+        projectId,
+        basePath: '/oauth',
+        auth: {experimental_oauth: {clientId: 'oc-test-client'}},
+      }),
+    ])
+
+    const newWarnings = getCollectedConfigWarnings().slice(warningsBefore)
+    expect(
+      newWarnings.find((w) => w.type === 'project-auth-divergence' && w.projectId === projectId),
+    ).toBeUndefined()
+    consoleWarnSpy.mockRestore()
   })
 })

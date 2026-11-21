@@ -1,11 +1,22 @@
-import {ConnectionFailedError, type SanityClient} from '@sanity/client'
-import {defer, from, lastValueFrom, type Observable, of, Subject, throwError} from 'rxjs'
+import {ChannelError, ConnectionFailedError, type SanityClient} from '@sanity/client'
+import {
+  concat,
+  defer,
+  from,
+  lastValueFrom,
+  mergeMap,
+  type Observable,
+  of,
+  Subject,
+  throwError,
+  timer,
+} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {type ListenerEvent, getPairListener} from './getPairListener'
 import {type IdPair, type MutationEvent} from './types'
-import {OutOfSyncError} from './utils/sequentializeListenerEvents'
+import {DeadlineExceededError, OutOfSyncError} from './utils/sequentializeListenerEvents'
 
 function createMutationEvent(
   overrides: Partial<MutationEvent> & Pick<MutationEvent, 'documentId'>,
@@ -78,6 +89,22 @@ function createMockClient(listenerEvents$: Subject<ListenerEvent>) {
 }
 
 const nextTick = () => Promise.resolve()
+
+function mutationsOf(events: ListenerEvent[], documentId: string) {
+  return events.flatMap((event) =>
+    event.type === 'mutation' && event.documentId === documentId
+      ? [`${event.previousRev ?? 'create'} -> ${event.resultRev}`]
+      : [],
+  )
+}
+
+function snapshotsOf(events: ListenerEvent[], documentId: string) {
+  return events.flatMap((event) =>
+    event.type === 'snapshot' && event.documentId === documentId
+      ? [event.document?._rev ?? null]
+      : [],
+  )
+}
 
 describe('getPairListener', () => {
   let listener$: Subject<ListenerEvent>
@@ -388,6 +415,96 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
+    test('passes the welcome on after its snapshots', async () => {
+      const events: ListenerEvent[] = []
+      const sub = getPairListener(client, idPair).subscribe((e) => events.push(e))
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+
+      expect(events.map((e) => e.type)).toEqual([
+        'snapshot',
+        'snapshot',
+        // once per stream: draft, published and version
+        'welcome',
+        'welcome',
+        'welcome',
+      ])
+
+      sub.unsubscribe()
+    })
+
+    // A connection event marks the document as connected, and the form editable. While the fetch
+    // it triggered is in flight, the pair still holds the documents from before the outage.
+    describe('holds the connection event until the snapshots it fetches arrive', () => {
+      function holdSnapshotFetches(mockClient: SanityClient) {
+        const fetches: Subject<unknown[]>[] = []
+        ;(
+          mockClient as unknown as {observable: {getDocuments: ReturnType<typeof vi.fn>}}
+        ).observable.getDocuments.mockImplementation(() => {
+          const fetch = new Subject<unknown[]>()
+          fetches.push(fetch)
+          return fetch
+        })
+        const release = (published: unknown, draft: unknown) => {
+          const fetch = fetches.at(-1)!
+          fetch.next([published, draft])
+          fetch.complete()
+        }
+        return {fetches, release}
+      }
+
+      test('a welcome after the listener reconnected', async () => {
+        const {fetches, release} = holdSnapshotFetches(client)
+        const events: ListenerEvent[] = []
+        const sub = getPairListener(client, idPair).subscribe((e) => events.push(e))
+
+        listener$.next({type: 'reconnect'})
+        await nextTick()
+        release(publishedDoc, draftDoc)
+
+        listener$.next({type: 'welcome', listenerName: 'test'})
+        await nextTick()
+        expect(fetches).toHaveLength(2)
+        expect(events.filter((e) => e.type === 'welcome')).toEqual([])
+
+        release(publishedDoc, {...draftDoc, _rev: 'draft-rev-2'})
+        await nextTick()
+        expect(snapshotsOf(events, DRAFT_ID)).toEqual(['draft-rev', 'draft-rev-2'])
+        expect(events.slice(-3).map((e) => e.type)).toEqual(['welcome', 'welcome', 'welcome'])
+
+        sub.unsubscribe()
+      })
+
+      test('a reset of a live listener', async () => {
+        const {fetches, release} = holdSnapshotFetches(client)
+        const events: ListenerEvent[] = []
+        const sub = getPairListener(client, idPair).subscribe((e) => events.push(e))
+
+        listener$.next({type: 'welcome', listenerName: 'test'})
+        await nextTick()
+        release(publishedDoc, draftDoc)
+        const before = events.length
+
+        listener$.next({type: 'reset'})
+        await nextTick()
+        expect(fetches).toHaveLength(2)
+        expect(events.slice(before)).toEqual([])
+
+        release(publishedDoc, {...draftDoc, _rev: 'draft-rev-2'})
+        await nextTick()
+        expect(events.slice(before).map((e) => e.type)).toEqual([
+          'snapshot',
+          'snapshot',
+          'reset',
+          'reset',
+          'reset',
+        ])
+
+        sub.unsubscribe()
+      })
+    })
+
     test('welcomeback event does NOT trigger snapshot fetch', async () => {
       const getDocuments = (
         client as unknown as {observable: {getDocuments: ReturnType<typeof vi.fn>}}
@@ -405,6 +522,60 @@ describe('getPairListener', () => {
 
       // welcomeback means resume succeeded — no snapshot fetch needed
       expect(getDocuments.mock.calls.length).toBe(fetchCountAfterWelcome)
+
+      sub.unsubscribe()
+    })
+  })
+
+  describe('listener down before it welcomes', () => {
+    function getDocumentsOf(mockClient: SanityClient) {
+      return (mockClient as unknown as {observable: {getDocuments: ReturnType<typeof vi.fn>}})
+        .observable.getDocuments
+    }
+
+    test('fetches the snapshots after a reconnect that comes before any welcome', async () => {
+      const events: ListenerEvent[] = []
+      const sub = getPairListener(client, idPair).subscribe((e) => events.push(e))
+
+      listener$.next({type: 'reconnect'})
+      await nextTick()
+
+      expect(getDocumentsOf(client)).toHaveBeenCalledTimes(1)
+      // The reconnect goes first, so the snapshots are not mistaken for a live connection.
+      expect(events.map((e) => e.type)).toEqual([
+        'reconnect',
+        'reconnect',
+        'reconnect',
+        'snapshot',
+        'snapshot',
+      ])
+
+      sub.unsubscribe()
+    })
+
+    test('fetches the snapshots again once the listener welcomes', async () => {
+      const sub = getPairListener(client, idPair).subscribe()
+
+      listener$.next({type: 'reconnect'})
+      await nextTick()
+      expect(getDocumentsOf(client)).toHaveBeenCalledTimes(1)
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+      expect(getDocumentsOf(client)).toHaveBeenCalledTimes(2)
+
+      sub.unsubscribe()
+    })
+
+    test('does not fetch the snapshots again when a live listener goes down', async () => {
+      const sub = getPairListener(client, idPair).subscribe()
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+      listener$.next({type: 'reconnect'})
+      await nextTick()
+
+      expect(getDocumentsOf(client)).toHaveBeenCalledTimes(1)
 
       sub.unsubscribe()
     })
@@ -431,8 +602,73 @@ describe('getPairListener', () => {
       return {client: mockClient, connect}
     }
 
-    test('a 401 completes the stream — no error rethrow, no retry', async () => {
-      const {client: mockClient, connect} = createFailingClient(() => rejectedConnection(401))
+    // A 401 on the listener means the credential it was opened with was refused. That can be a
+    // token that a rotation has just replaced (the reconnect went out before the new pair
+    // landed), or a token the store still believes valid (revoked, clock skew). Either way the
+    // stream must not die quietly: the last event the form saw was `reconnect`, so a completed
+    // stream leaves the editor read-only for good. Instead, one ordinary request through the
+    // client lets the auth store sort the credential out (it renews once, or ends the session),
+    // and the listener reconnects with whatever credential the client holds afterwards.
+    function createReconnectingClient(
+      connectImpl: () => Observable<unknown>,
+      requestImpl: () => Observable<unknown>,
+    ) {
+      const connect = vi.fn(connectImpl)
+      const request = vi.fn(requestImpl)
+      const mockClient = {
+        observable: {
+          listen: vi.fn(() => defer(connect)),
+          getDocuments: vi.fn(() => of([publishedDoc, draftDoc])),
+          request,
+        },
+        withConfig: vi.fn(function (this: unknown) {
+          return this
+        }),
+      } as unknown as SanityClient
+      return {client: mockClient, connect, request}
+    }
+
+    test('a 401 reconnects once a request through the client has restored the credential', async () => {
+      const second$ = new Subject<ListenerEvent>()
+      let attempt = 0
+      const {
+        client: mockClient,
+        connect,
+        request,
+      } = createReconnectingClient(
+        () => (++attempt === 1 ? rejectedConnection(401) : second$),
+        () => of({}),
+      )
+
+      const events: {type: string}[] = []
+      const errors: unknown[] = []
+      const sub = getPairListener(mockClient, idPair).subscribe({
+        next: (e) => events.push(e),
+        error: (e) => errors.push(e),
+      })
+      await nextTick()
+      await nextTick()
+
+      expect(request).toHaveBeenCalledTimes(1)
+      expect(request).toHaveBeenCalledWith(expect.objectContaining({url: '/users/me'}))
+      expect(connect).toHaveBeenCalledTimes(2)
+      // The form learns the connection is being re-established while the credential is checked.
+      expect(events.map((e) => e.type)).toContain('reconnect')
+
+      second$.next({type: 'welcome'} as ListenerEvent)
+      await nextTick()
+      await nextTick()
+      expect(events.some((e) => e.type === 'snapshot')).toBe(true)
+      expect(errors).toEqual([])
+      second$.complete()
+      sub.unsubscribe()
+    })
+
+    test('a 401 completes the stream when the credential cannot be restored', async () => {
+      const {client: mockClient, connect} = createReconnectingClient(
+        () => rejectedConnection(401),
+        () => throwError(() => new ConnectionFailedError('still rejected', {status: 401})),
+      )
 
       const errors: unknown[] = []
       let completed = false
@@ -443,16 +679,85 @@ describe('getPairListener', () => {
         },
       })
       await nextTick()
+      await nextTick()
 
-      // The listen endpoint only 401s on an invalid/expired session, so the
-      // connection is terminal: the stream completes (not errors — an errored
-      // stream would be rethrown by `useSyncObservable` and crash the tool)
-      // and is not retried. Recovery is driven by the studio's request handler
-      // on ordinary requests, not by this stream.
+      // Completes rather than errors: an errored stream is rethrown by `useSyncObservable` and
+      // crashes the tool. The session ending is handled by the auth store, not here.
       expect(errors).toEqual([])
       expect(completed).toBe(true)
       expect(connect).toHaveBeenCalledTimes(1)
+      sub.unsubscribe()
+    })
 
+    test('a 401 reconnects when the credential check fails for another reason', async () => {
+      // A network error, a timeout or a 5xx says nothing about the credential. Completing here
+      // would leave the editor read-only while the user is still signed in.
+      const second$ = new Subject<ListenerEvent>()
+      let attempt = 0
+      const {client: mockClient, connect} = createReconnectingClient(
+        () => (++attempt === 1 ? rejectedConnection(401) : second$),
+        () => throwError(() => new Error('network error')),
+      )
+
+      const errors: unknown[] = []
+      let completed = false
+      const sub = getPairListener(mockClient, idPair).subscribe({
+        error: (e) => errors.push(e),
+        complete: () => {
+          completed = true
+        },
+      })
+      await nextTick()
+      await nextTick()
+
+      expect(connect).toHaveBeenCalledTimes(2)
+      expect(completed).toBe(false)
+      expect(errors).toEqual([])
+      second$.complete()
+      sub.unsubscribe()
+    })
+
+    test('gives up after repeated 401s even when the credential check keeps passing', async () => {
+      const {client: mockClient, connect} = createReconnectingClient(
+        () => rejectedConnection(401),
+        () => of({}),
+      )
+
+      let completed = false
+      const sub = getPairListener(mockClient, idPair).subscribe({
+        complete: () => {
+          completed = true
+        },
+      })
+      for (let i = 0; i < 12; i++) await nextTick()
+
+      expect(completed).toBe(true)
+      expect(connect.mock.calls.length).toBeLessThanOrEqual(4)
+      sub.unsubscribe()
+    })
+
+    test('keeps recovering from 401s as long as each reconnect is welcomed', async () => {
+      // A long session rotates its token many times. Only 401s in a row count towards the limit.
+      const open$ = new Subject<ListenerEvent>()
+      const {client: mockClient, connect} = createReconnectingClient(
+        () =>
+          connect.mock.calls.length <= 4
+            ? concat(of({type: 'welcome'} as ListenerEvent), rejectedConnection(401))
+            : open$,
+        () => of({}),
+      )
+
+      let completed = false
+      const sub = getPairListener(mockClient, idPair).subscribe({
+        complete: () => {
+          completed = true
+        },
+      })
+      for (let i = 0; i < 12; i++) await nextTick()
+
+      expect(connect).toHaveBeenCalledTimes(5)
+      expect(completed).toBe(false)
+      open$.complete()
       sub.unsubscribe()
     })
 
@@ -467,14 +772,77 @@ describe('getPairListener', () => {
       sub.unsubscribe()
     })
 
-    test('a non-401 rejected connection also propagates (listen only 401s in practice)', async () => {
-      const {client: mockClient} = createFailingClient(() => rejectedConnection(500))
+    test('other listener errors still propagate after recovering from a 401', async () => {
+      const error = new Error('channel error')
+      let attempt = 0
+      const {client: mockClient} = createReconnectingClient(
+        () => (++attempt === 1 ? rejectedConnection(401) : throwError(() => error)),
+        () => of({}),
+      )
+      const errors: unknown[] = []
+      const sub = getPairListener(mockClient, idPair).subscribe({error: (e) => errors.push(e)})
+      await nextTick()
+      await nextTick()
+
+      expect(errors).toEqual([error])
+      sub.unsubscribe()
+    })
+
+    test('a connection rejected with another 4xx also propagates', async () => {
+      const {client: mockClient} = createFailingClient(() => rejectedConnection(403))
       const errors: unknown[] = []
       const sub = getPairListener(mockClient, idPair).subscribe({error: (e) => errors.push(e)})
       await nextTick()
       expect(errors).toHaveLength(1)
       expect(errors[0]).toBeInstanceOf(ConnectionFailedError)
       sub.unsubscribe()
+    })
+
+    test('a connection rejected with a 5xx is reopened with backoff, and loads the snapshots meanwhile', async () => {
+      vi.useFakeTimers()
+      try {
+        // The EventSource reports a rejected connection asynchronously.
+        const {client: mockClient, connect} = createFailingClient(() =>
+          timer(0).pipe(mergeMap(() => rejectedConnection(500))),
+        )
+        const events: ListenerEvent[] = []
+        const errors: unknown[] = []
+        const sub = getPairListener(mockClient, idPair).subscribe({
+          next: (e) => events.push(e),
+          error: (e) => errors.push(e),
+        })
+        await vi.advanceTimersByTimeAsync(0)
+
+        expect(errors).toEqual([])
+        expect(events.filter((e) => e.type === 'snapshot')).toHaveLength(2)
+        await vi.advanceTimersByTimeAsync(1_000)
+        expect(connect).toHaveBeenCalledTimes(2)
+
+        sub.unsubscribe()
+      } finally {
+        vi.useRealTimers()
+      }
+    })
+
+    test('a channel error is reopened with backoff instead of failing the document', async () => {
+      vi.useFakeTimers()
+      try {
+        const {client: mockClient, connect} = createFailingClient(() =>
+          throwError(
+            () => new ChannelError('Internal error', {error: {description: 'Internal error'}}),
+          ),
+        )
+        const errors: unknown[] = []
+        const sub = getPairListener(mockClient, idPair).subscribe({error: (e) => errors.push(e)})
+        await vi.advanceTimersByTimeAsync(1_000)
+
+        expect(errors).toEqual([])
+        expect(connect).toHaveBeenCalledTimes(2)
+
+        sub.unsubscribe()
+      } finally {
+        vi.useRealTimers()
+      }
     })
   })
 
@@ -519,6 +887,179 @@ describe('getPairListener', () => {
       expect(errors).toEqual([])
       expect(delegated).toEqual([serverError])
       expect(getDocuments).toHaveBeenCalledTimes(2)
+
+      sub.unsubscribe()
+    })
+  })
+
+  describe('putting the events of each document in sequence', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+      // `messageReceivedAt` is stamped with whole seconds, the deadline counts from it
+      vi.setSystemTime(new Date('2024-01-01T00:00:00.000Z'))
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    test('emits the mutations of a document that arrive out of order in the order of their revisions', async () => {
+      const events: ListenerEvent[] = []
+      const sub = getPairListener(client, idPair).subscribe((e) => events.push(e))
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-3',
+          previousRev: 'draft-rev-2',
+          resultRev: 'draft-rev-3',
+        }),
+      )
+      listener$.next(
+        createMutationEvent({
+          documentId: PUBLISHED_ID,
+          transactionId: 'tx-pub',
+          previousRev: 'pub-rev',
+          resultRev: 'pub-rev-2',
+        }),
+      )
+      expect(mutationsOf(events, DRAFT_ID)).toEqual([])
+
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-2',
+          previousRev: 'draft-rev',
+          resultRev: 'draft-rev-2',
+        }),
+      )
+
+      expect(mutationsOf(events, DRAFT_ID)).toEqual([
+        'draft-rev -> draft-rev-2',
+        'draft-rev-2 -> draft-rev-3',
+      ])
+      // the mutations held back for the draft don't hold back those of the published document
+      expect(mutationsOf(events, PUBLISHED_ID)).toEqual(['pub-rev -> pub-rev-2'])
+
+      sub.unsubscribe()
+    })
+
+    test('drops a mutation that the fetched snapshot already includes', async () => {
+      const onSyncErrorRecovery = vi.fn()
+      const events: ListenerEvent[] = []
+      const sub = getPairListener(client, idPair, {onSyncErrorRecovery}).subscribe((e) =>
+        events.push(e),
+      )
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-1',
+          previousRev: 'draft-rev-0',
+          resultRev: 'draft-rev',
+        }),
+      )
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-2',
+          previousRev: 'draft-rev',
+          resultRev: 'draft-rev-2',
+        }),
+      )
+      await vi.advanceTimersByTimeAsync(60_000)
+
+      expect(mutationsOf(events, DRAFT_ID)).toEqual(['draft-rev -> draft-rev-2'])
+      expect(onSyncErrorRecovery).not.toHaveBeenCalled()
+
+      sub.unsubscribe()
+    })
+
+    test('continues from a snapshot of a missing document with the mutation that creates it', async () => {
+      vi.spyOn(client.observable, 'getDocuments').mockReturnValueOnce(of([publishedDoc, null]))
+      const events: ListenerEvent[] = []
+      const sub = getPairListener(client, idPair).subscribe((e) => events.push(e))
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-create',
+          // the listener sends no `previousRev` for the mutation that creates a document
+          previousRev: undefined,
+          resultRev: 'draft-rev-1',
+          transition: 'appear',
+        }),
+      )
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-2',
+          previousRev: 'draft-rev-1',
+          resultRev: 'draft-rev-2',
+        }),
+      )
+
+      expect(snapshotsOf(events, DRAFT_ID)).toEqual([null])
+      expect(mutationsOf(events, DRAFT_ID)).toEqual([
+        'create -> draft-rev-1',
+        'draft-rev-1 -> draft-rev-2',
+      ])
+
+      sub.unsubscribe()
+    })
+
+    test('fetches the snapshots again when a missing mutation does not arrive within 30 seconds', async () => {
+      const onSyncErrorRecovery = vi.fn()
+      const listen = vi.spyOn(client.observable, 'listen')
+      const getDocuments = vi.spyOn(client.observable, 'getDocuments')
+      const events: ListenerEvent[] = []
+      const sub = getPairListener(client, idPair, {onSyncErrorRecovery}).subscribe((e) =>
+        events.push(e),
+      )
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+
+      // draft-rev -> draft-rev-2 never arrives
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-3',
+          previousRev: 'draft-rev-2',
+          resultRev: 'draft-rev-3',
+        }),
+      )
+      await vi.advanceTimersByTimeAsync(29_999)
+      expect(onSyncErrorRecovery).not.toHaveBeenCalled()
+
+      await vi.advanceTimersByTimeAsync(1)
+      expect(onSyncErrorRecovery).toHaveBeenCalledExactlyOnceWith(expect.any(DeadlineExceededError))
+      expect(listen).toHaveBeenCalledTimes(2)
+
+      // the welcome of the new listener connection fetches the snapshots again
+      getDocuments.mockReturnValueOnce(of([publishedDoc, {...draftDoc, _rev: 'draft-rev-3'}]))
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-4',
+          previousRev: 'draft-rev-3',
+          resultRev: 'draft-rev-4',
+        }),
+      )
+
+      expect(getDocuments).toHaveBeenCalledTimes(2)
+      expect(snapshotsOf(events, DRAFT_ID)).toEqual(['draft-rev', 'draft-rev-3'])
+      expect(mutationsOf(events, DRAFT_ID)).toEqual(['draft-rev-3 -> draft-rev-4'])
 
       sub.unsubscribe()
     })

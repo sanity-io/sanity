@@ -539,6 +539,16 @@ describe('asset `accept` inference', () => {
     'image-jpeg4-10x10-jpg': {mimeType: 'image/jpeg', extension: 'jpg'},
     'image-png1-10x10-png': {mimeType: 'image/png', extension: 'png'},
     'file-pdf1-pdf': {mimeType: 'application/pdf', extension: 'pdf', originalFilename: 'brief.pdf'},
+    'file-pdf-no-suffix-pdf': {
+      mimeType: 'application/pdf',
+      extension: 'pdf',
+      originalFilename: 'Financial Release',
+    },
+    'file-pdf-wrong-suffix-pdf': {
+      mimeType: 'application/pdf',
+      extension: 'pdf',
+      originalFilename: 'Financial Release.bin',
+    },
     'file-zip1-zip': {
       mimeType: 'application/zip',
       extension: 'zip',
@@ -631,6 +641,13 @@ describe('asset `accept` inference', () => {
     ])
   })
 
+  test.each(['file-pdf-no-suffix-pdf', 'file-pdf-wrong-suffix-pdf'])(
+    'accepts a stored PDF regardless of its original filename (%s)',
+    async (ref) => {
+      await expect(validateFields({pdfOrWord: assetValue(ref)})).resolves.toEqual([])
+    },
+  )
+
   test('warns on the extension when the asset has no MIME type', async () => {
     await expect(validateFields({pngOnly: assetValue('image-nomime1-10x10-png')})).resolves.toEqual(
       [
@@ -684,6 +701,12 @@ describe('assetMatchesAccept', () => {
     [{mimeType: 'application/pdf'}, 'image/*', false],
     [{mimeType: 'application/zip', extension: 'zip'}, '.pdf', false],
     [{mimeType: 'application/pdf', extension: 'pdf'}, '.pdf', true],
+    [{mimeType: 'application/pdf', extension: 'pdf', originalFilename: 'brief'}, '.pdf', true],
+    [{mimeType: 'application/pdf', extension: 'pdf', originalFilename: 'brief.bin'}, '.pdf', true],
+    [{extension: 'PDF', originalFilename: 'brief'}, ' .png, .pdf ', true],
+    [{extension: 'zip', originalFilename: 'archive'}, '.pdf', false],
+    [{extension: 'jpg', originalFilename: 'photo.JPEG'}, '.jpeg', true],
+    [{extension: 'gz', originalFilename: 'archive.tar.gz'}, '.tar.gz', true],
   ])('%o against %s is %s', (fileType, accept, expected) => {
     expect(assetMatchesAccept(fileType, accept)).toBe(expected)
   })

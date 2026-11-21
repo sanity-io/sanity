@@ -260,6 +260,7 @@ jobs:
         with:
           app-id: ${{ secrets.ECOSPARK_APP_ID }}
           private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+          permission-contents: write
 
       - name: Generate GitHub release
         id: generate-github-release

@@ -1,9 +1,8 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {Text} from '@sanity/ui'
 import {Fragment, useCallback, useEffect, useMemo, useRef} from 'react'
 import {styled} from 'styled-components'
-import {Grid, Flex, Box} from 'ui5'
+import {Text, Grid, Flex, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {Dialog} from '../../../ui-components/dialog/Dialog'
@@ -131,7 +130,7 @@ function Announcement({announcement, mode, isFirst, parentRef}: AnnouncementProp
       <DialogHeader padding={3}>
         <Box flexBasis="auto" flexGrow={0} flexShrink={0} padding={2} paddingRight={0}>
           <Box paddingLeft={2}>
-            <Text size={1} muted>
+            <Text size={1} muted as="div" trim={true}>
               {formattedDate}
             </Text>
           </Box>
@@ -143,7 +142,7 @@ function Announcement({announcement, mode, isFirst, parentRef}: AnnouncementProp
           justifyContent="center"
           ref={logViewedItemRef}
         >
-          <Text as="h2" size={1} weight="semibold">
+          <Text as="h2" size={1} weight="semibold" trim={true}>
             {announcement.title}
           </Text>
         </Flex>

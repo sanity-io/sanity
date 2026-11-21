@@ -85,3 +85,5 @@ The **Edit Event** is a special case. It is not returned directly by the API but
 
 1. Fetching transactions from the translog.
 2. Processing new transactions as they are received in real-time through change listeners.
+
+Each source groups its own transactions, so `createEventsObservable` regroups consecutive edit events together (`mergeEditEvents`): edits made within the merge window end up in the same event whether the studio fetched them or received them live.

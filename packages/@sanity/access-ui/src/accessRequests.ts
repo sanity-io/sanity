@@ -26,6 +26,23 @@ function withAccessApiVersion(client: SanityClient): SanityClient {
   return client.withConfig({apiVersion: ACCESS_API_VERSION})
 }
 
+function isAccessRequestEligibilityState(value: unknown): value is AccessRequestEligibilityState {
+  if (typeof value !== 'object' || value === null) return false
+  const {state, redirectUrl} = value as {state?: unknown; redirectUrl?: unknown}
+  if (redirectUrl !== undefined && typeof redirectUrl !== 'string') return false
+  return (
+    state === 'eligible' ||
+    state === 'saml-required' ||
+    state === 'resource-not-available' ||
+    state === 'already-member' ||
+    state === 'pending' ||
+    state === 'recently-declined' ||
+    state === 'requests-disabled' ||
+    state === 'saml-roles-managed' ||
+    state === 'temporarily-unavailable'
+  )
+}
+
 /**
  * Fetches the caller's own access requests across all resources
  * (`GET /access/requests/me`).
@@ -48,8 +65,8 @@ export async function listMyAccessRequests(client: SanityClient): Promise<Access
  * pointed at SSO instead of writing a note no administrator can action.
  *
  * `origin` is carried opaquely to the login page so the user returns where they
- * started. Never throws: an unreachable or older API answers `eligible`,
- * leaving the form in place and the submit-time 403 as the backstop.
+ * started. Never throws: invalid responses and request failures fail closed so
+ * the form is not offered without a trustworthy eligibility verdict.
  *
  * @public
  */
@@ -61,16 +78,14 @@ export async function fetchAccessRequestStatus(options: {
 }): Promise<AccessRequestEligibilityState> {
   const {client, resourceType, resourceId, origin} = options
   try {
-    const status = await withAccessApiVersion(client).request<AccessRequestEligibilityState | null>(
-      {
-        url: `/access/${resourceType}/${resourceId}/requests/state`,
-        tag: 'access-ui.request-state',
-        query: origin ? {returnQuery: new URLSearchParams({origin}).toString()} : undefined,
-      },
-    )
-    return status ?? {state: 'eligible'}
+    const status = await withAccessApiVersion(client).request<unknown>({
+      url: `/access/${resourceType}/${resourceId}/requests/state`,
+      tag: 'access-ui.request-state',
+      query: origin ? {returnQuery: new URLSearchParams({origin}).toString()} : undefined,
+    })
+    return isAccessRequestEligibilityState(status) ? status : {state: 'temporarily-unavailable'}
   } catch {
-    return {state: 'eligible'}
+    return {state: 'temporarily-unavailable'}
   }
 }
 

@@ -7,6 +7,8 @@ interface ConditionAutocompleteInputProps {
   ariaLabel: string
   autoFocus?: boolean
   customValidity?: string
+  /** Id of the error text for this input. Set while the error is shown. */
+  describedBy?: string
   invalid?: boolean
   onChange: (value: string) => void
   options: ConditionSuggestionOption[]
@@ -22,6 +24,7 @@ export function ConditionAutocompleteInput(
     ariaLabel,
     autoFocus,
     customValidity,
+    describedBy,
     invalid,
     onChange,
     options,
@@ -46,6 +49,7 @@ export function ConditionAutocompleteInput(
   return (
     <Autocomplete
       id={id}
+      aria-describedby={describedBy}
       aria-invalid={invalid ? 'true' : undefined}
       aria-label={ariaLabel}
       autoFocus={autoFocus}

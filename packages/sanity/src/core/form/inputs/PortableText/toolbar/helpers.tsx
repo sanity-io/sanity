@@ -1,4 +1,4 @@
-import {type HotkeyOptions, PortableTextEditor} from '@portabletext/editor'
+import {PortableTextEditor} from '@portabletext/editor'
 import {type ApplicableSchema} from '@portabletext/editor/selectors'
 import {type PortableTextMemberSchemaTypes} from '@portabletext/sanity-bridge'
 import {BlockElementIcon} from '@sanity/icons/BlockElement'
@@ -18,6 +18,7 @@ import get from 'lodash-es/get.js'
 import {type ComponentType, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 
+import {type PortableTextInputHotkeys} from '../hooks/useHotKeys'
 import {CustomIcon} from './CustomIcon'
 import {
   type BlockItem,
@@ -32,7 +33,7 @@ function getPTEFormatActions(
   schemaTypes: PortableTextMemberSchemaTypes,
   disabled: boolean,
   applicable: ApplicableSchema,
-  hotkeyOpts: HotkeyOptions,
+  hotkeyOpts: PortableTextInputHotkeys,
   t?: (key: string) => string,
 ): PTEToolbarAction[] {
   return schemaTypes.decorators.map((decorator) => {
@@ -139,7 +140,7 @@ export function getPTEToolbarActionGroups(
     disabled: boolean
     applicable: ApplicableSchema
     onInsertAnnotation: (type: ObjectSchemaType) => void
-    hotkeyOpts: HotkeyOptions
+    hotkeyOpts: PortableTextInputHotkeys
     t?: (key: string) => string
   },
 ): PTEToolbarActionGroup[] {

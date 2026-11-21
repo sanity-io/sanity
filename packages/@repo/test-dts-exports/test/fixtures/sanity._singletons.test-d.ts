@@ -138,6 +138,8 @@ import type {
   SingleDocReleaseEnabledContextValue,
   SingleDocReleaseUpsellContext,
   SingleDocReleaseUpsellContextValue,
+  SortableItemHandleContext,
+  SortableItemHandleContextValue,
   SortableItemIdContext,
   SourceContext,
   StructureToolContext,
@@ -154,6 +156,8 @@ import type {
   UserApplicationCacheContext,
   UserColorManagerContext,
   ValidationContext,
+  VariantsModePromiseContext,
+  VariantsUpsellContext,
   VirtualizerScrollInstanceContext,
   VisibleWorkspacesContext,
   WorkspaceContext,
@@ -569,6 +573,12 @@ describe('sanity/_singletons', () => {
   test('SingleDocReleaseUpsellContextValue', () => {
     expectTypeOf<SingleDocReleaseUpsellContextValue>().toBeObject()
   })
+  test('SortableItemHandleContext', () => {
+    expectTypeOf<typeof SortableItemHandleContext>().not.toBeNever()
+  })
+  test('SortableItemHandleContextValue', () => {
+    expectTypeOf<SortableItemHandleContextValue>().toBeObject()
+  })
   test('SortableItemIdContext', () => {
     expectTypeOf<typeof SortableItemIdContext>().not.toBeNever()
   })
@@ -616,6 +626,12 @@ describe('sanity/_singletons', () => {
   })
   test('ValidationContext', () => {
     expectTypeOf<typeof ValidationContext>().not.toBeNever()
+  })
+  test('VariantsModePromiseContext', () => {
+    expectTypeOf<typeof VariantsModePromiseContext>().not.toBeNever()
+  })
+  test('VariantsUpsellContext', () => {
+    expectTypeOf<typeof VariantsUpsellContext>().not.toBeNever()
   })
   test('VirtualizerScrollInstanceContext', () => {
     expectTypeOf<typeof VirtualizerScrollInstanceContext>().not.toBeNever()

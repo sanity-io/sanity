@@ -3,7 +3,17 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {SearchIcon} from '@sanity/icons/Search'
 import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type RefAttributes, type SVGProps, useCallback, useMemo, useState, type JSX} from 'react'
+import {
+  type RefAttributes,
+  type SVGProps,
+  Suspense,
+  use,
+  useCallback,
+  useMemo,
+  useState,
+  type JSX,
+} from 'react'
+import {VariantsModePromiseContext} from 'sanity/_singletons'
 import {useIntentLink} from 'sanity/router'
 import {Text, Flex, Box} from 'ui5'
 
@@ -14,6 +24,7 @@ import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getConditionMismatchMessage} from '../../../variants/components/ConditionMismatchIndicator'
 import {CreateVariantDialog} from '../../../variants/components/dialog/CreateVariantDialog'
+import {useVariantsUpsell} from '../../../variants/contexts/upsell/useVariantsUpsell'
 import {useVariantConditionMismatches} from '../../../variants/hooks/useVariantConditions'
 import {VARIANTS_INTENT} from '../../../variants/plugin'
 import {useAllVariants} from '../../../variants/store/useAllVariants'
@@ -62,6 +73,7 @@ function VariantMenuItem(props: {
     <div className={variantMenuItemRow} data-detail-link-row="">
       <MenuItem
         {...detailLinkMenuItemProps}
+        aria-checked={isSelected}
         data-testid={`variant-${variantId}`}
         icon={VariantMenuItemIcon}
         iconRight={
@@ -74,6 +86,7 @@ function VariantMenuItem(props: {
         onClick={() => onSelect(variant)}
         pressed={isSelected}
         renderMenuItem={renderWithDetailLinkSpace}
+        role="menuitemradio"
         selected={isSelected}
         text={title}
         tooltipProps={
@@ -102,6 +115,29 @@ function VariantMenuItem(props: {
         tooltip={t('navbar.variant.menu.view-variant')}
       />
     </div>
+  )
+}
+
+/**
+ * Opens the create variant dialog, or the upsell dialog when the plan lacks content variants.
+ * Hidden when the feature check failed, so nothing creates a variant the plan may not include.
+ */
+function NewVariantMenuItem({onCreate}: {onCreate: () => void}) {
+  const {t} = useTranslation()
+  const {handleOpenDialog} = useVariantsUpsell()
+  const modePromise = use(VariantsModePromiseContext)
+  // The navbar renders outside the variants plugin; without its provider there is no check to read
+  const mode = modePromise ? use(modePromise) : 'default'
+
+  if (mode === null) return null
+
+  return (
+    <MenuItem
+      data-testid="new-audience"
+      onClick={mode === 'upsell' ? () => handleOpenDialog('navbar') : onCreate}
+      icon={AddIcon}
+      text={t('navbar.variant.menu.new-audience')}
+    />
   )
 }
 
@@ -214,6 +250,7 @@ export function VariantsMenu({
           >
             <Box flexShrink={0} paddingX={3} paddingTop={3} paddingBottom={2}>
               <TextInput
+                aria-label={t('navbar.variant.filter-placeholder')}
                 fontSize={1}
                 icon={SearchIcon}
                 onChange={handleFilterChange}
@@ -241,10 +278,12 @@ export function VariantsMenu({
                   {filteredVariants.map((variant) =>
                     isDefaultVariant(variant) ? (
                       <MenuItem
+                        aria-checked={isDefaultSelected}
                         data-testid="variant-default"
                         key={variant._id}
                         onClick={handleSelectDefault}
                         pressed={isDefaultSelected}
+                        role="menuitemradio"
                         selected={isDefaultSelected}
                         text={variant.title}
                       />
@@ -280,12 +319,9 @@ export function VariantsMenu({
                 text={t('navbar.variant.menu.view-all')}
               />
               {allowCreate && (
-                <MenuItem
-                  data-testid="new-audience"
-                  onClick={handleNewAudience}
-                  icon={AddIcon}
-                  text={t('navbar.variant.menu.new-audience')}
-                />
+                <Suspense fallback={null}>
+                  <NewVariantMenuItem onCreate={handleNewAudience} />
+                </Suspense>
               )}
             </Flex>
           </Menu>

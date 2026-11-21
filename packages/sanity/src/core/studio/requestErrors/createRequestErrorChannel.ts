@@ -1,6 +1,7 @@
 import {type HttpError} from '@sanity/client'
 import {BehaviorSubject, isObservable, lastValueFrom, type Observable} from 'rxjs'
 
+import {type AuthStore} from '../../store/auth/types'
 import {classifyRequestError, isInvalidSessionError} from './classify'
 import {
   type RequestErrorChannel,
@@ -48,7 +49,12 @@ export function createRequestErrorChannel(): RequestErrorChannel {
    * (entry parked, dialog state set) and `false` when the error is
    * caller-domain and should be re-thrown by the caller of this function.
    */
-  function tryClaim(err: unknown, options: RequestErrorReportOptions, entry: ParkedEntry): boolean {
+  function tryClaim(
+    err: unknown,
+    options: RequestErrorReportOptions,
+    entry: ParkedEntry,
+    authStore?: AuthStore,
+  ): boolean {
     if (isInvalidSessionError(err)) {
       // The API positively signals an invalid session (expired or not found,
       // see INVALID_SESSION_ERROR_CODES) — force logout. A 401 *without* such
@@ -60,7 +66,12 @@ export function createRequestErrorChannel(): RequestErrorChannel {
       // ones for the same teardown (including the logout request's own
       // 401) just park behind it rather than re-claiming.
       if (claimSubject.getValue()?.type !== 'unauthorized') {
-        claimSubject.next({type: 'unauthorized', error: err, projectId: projectIdFromError(err)})
+        claimSubject.next({
+          type: 'unauthorized',
+          error: err,
+          projectId: projectIdFromError(err),
+          authStore,
+        })
       }
       return true
     }
@@ -93,10 +104,10 @@ export function createRequestErrorChannel(): RequestErrorChannel {
     }
   }
 
-  async function handle(err: unknown): Promise<never> {
+  async function handle(err: unknown, owner?: {authStore?: AuthStore}): Promise<never> {
     // A rejection handler can't re-run the request (it already happened),
     // so handled errors are never retryable.
-    if (!tryClaim(err, {retryable: false}, {})) throw err
+    if (!tryClaim(err, {retryable: false}, {}, owner?.authStore)) throw err
     // Claimed: the dialog is up. Park the chain — there is nothing to
     // re-run, so it stays pending until the user reloads.
     return new Promise<never>(() => {})

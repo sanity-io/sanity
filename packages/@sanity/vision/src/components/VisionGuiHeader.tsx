@@ -1,5 +1,5 @@
 import {CopyIcon} from '@sanity/icons/Copy'
-import {Button, Card, Inline, Select, Text, TextInput} from '@sanity/ui'
+import {Button, Card, Inline, Select, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {
   type ChangeEvent,
@@ -18,7 +18,7 @@ import {
   usePerspective,
   useTranslation,
 } from 'sanity'
-import {Box, Flex, Grid, VStack} from 'ui5'
+import {Text, Box, Flex, Grid, VStack} from 'ui5'
 
 import {API_VERSIONS, VARIANTS_API_VERSION} from '../apiVersions'
 import {useVariantsEnabled} from '../hooks/useVariantsEnabled'
@@ -76,6 +76,7 @@ export interface VisionGuiHeaderProps {
   url?: string
   perspective?: SupportedPerspective
   isScheduledDraftsEnabled: boolean
+  onCopyUrl: () => void
 }
 
 export function VisionGuiHeader({
@@ -92,6 +93,7 @@ export function VisionGuiHeader({
   url,
   perspective,
   isScheduledDraftsEnabled,
+  onCopyUrl,
 }: VisionGuiHeaderProps) {
   const pinnedPerspective = usePerspective()
   const isVariantsEnabled = useVariantsEnabled()
@@ -115,10 +117,11 @@ export function VisionGuiHeader({
       el.select()
       // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
       document.execCommand('copy')
+      onCopyUrl()
     } catch {
       console.error('Unable to copy to clipboard :(')
     }
-  }, [])
+  }, [onCopyUrl])
 
   return (
     <Header paddingX={3} paddingY={2}>
@@ -153,7 +156,7 @@ export function VisionGuiHeader({
             <Tooltip
               animate
               content={
-                <Text size={1}>
+                <Text size={1} as="div" trim={true}>
                   {t('settings.api-version-locked-for-variant', {apiVersion: VARIANTS_API_VERSION})}
                 </Text>
               }

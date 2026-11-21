@@ -1,5 +1,5 @@
 import {createDocumentHandle, useDocumentProjection} from '@sanity/sdk-react'
-import {Card, Text} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ComponentType, Suspense} from 'react'
 import {
   defineArrayMember,
@@ -8,6 +8,7 @@ import {
   type ArrayOfObjectsInputProps,
   useFormValue,
 } from 'sanity'
+import {Text} from 'ui5'
 
 type ProjectionData = {
   models: {name?: string}[] | null
@@ -37,7 +38,7 @@ function sdkProjectionWarnings(documentType: string) {
     return (
       <>
         <Card padding={2} radius={2} tone={missingNames > 0 ? 'critical' : 'positive'}>
-          <Text size={1}>
+          <Text size={1} as="div" trim={true} tone={missingNames > 0 ? 'critical' : 'positive'}>
             Projection resolved: {data.modelCount} models, {missingNames} without a name
           </Text>
         </Card>

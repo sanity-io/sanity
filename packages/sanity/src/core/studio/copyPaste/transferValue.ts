@@ -31,8 +31,8 @@ import {
   type StringSchemaType,
   type TypedObject,
 } from '@sanity/types'
+import {accepts} from '@sanity/util/accepts'
 import {resolveTypeName} from '@sanity/util/content'
-import {accepts} from '@sanity/validation/_internal'
 import last from 'lodash-es/last.js'
 
 import {getValueAtPath} from '../../field/paths/helpers'

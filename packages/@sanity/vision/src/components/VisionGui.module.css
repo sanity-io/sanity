@@ -170,7 +170,7 @@
   content: none;
 }
 
-.saveResultLabel > span {
+.saveResultLabel {
   display: flex !important;
   flex-wrap: wrap;
   gap: var(--vision-save-result-gap);

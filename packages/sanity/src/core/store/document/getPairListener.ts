@@ -1,13 +1,14 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import groupBy from 'lodash-es/groupBy.js'
-import {defer, EMPTY, merge, type Observable, of, throwError} from 'rxjs'
-import {catchError, concatMap, filter, map, mergeMap, scan, share} from 'rxjs/operators'
+import {concat, defer, EMPTY, merge, type Observable, of, throwError} from 'rxjs'
+import {catchError, concatMap, filter, map, mergeMap, scan, share, tap} from 'rxjs/operators'
 
 import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
-import {isConnectionSessionError} from '../../util/apiErrors'
+import {isConnectionSessionError, isUnauthorizedError} from '../../util/apiErrors'
 import {getVersionFromId} from '../../util/draftUtils'
+import {reconnectListener} from '../../util/reconnectListener'
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {debug} from './debug'
 import {
@@ -21,6 +22,9 @@ import {
 } from './types'
 import {dedupeListenerEvents} from './utils/dedupeListenerEvents'
 import {OutOfSyncError, sequentializeListenerEvents} from './utils/sequentializeListenerEvents'
+
+/** See the 401 branch of the listener's `catchError`. */
+const MAX_CREDENTIAL_CHECKS = 3
 
 interface Snapshots {
   draft: SanityDocument | null
@@ -178,6 +182,12 @@ export function getPairListener(
   ) {
     throw new Error('VersionId cannot be "published" or "drafts"')
   }
+  // 401s in a row on the listener, each followed by a credential check and a reconnect. A welcome
+  // resets it. Each check renews at most once through the auth store, so a session that is
+  // really over ends the retries by itself; the bound covers a server that keeps refusing a
+  // credential the store keeps accepting.
+  let credentialChecks = 0
+
   const sharedEvents = defer(() =>
     (
       client.observable.listen(
@@ -195,6 +205,10 @@ export function getPairListener(
         },
       ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent | WelcomeBackEvent | ResetEvent>
     ).pipe(
+      reconnectListener(),
+      tap((event) => {
+        if (event.type === 'welcome' || event.type === 'welcomeback') credentialChecks = 0
+      }),
       dedupeListenerEvents(),
       map((event): WelcomeEvent | MutationEvent | ReconnectEvent | WelcomeBackEvent | ResetEvent =>
         event.type === 'mutation'
@@ -216,22 +230,39 @@ export function getPairListener(
     ),
   )
 
-  const pairEvents$ = sharedEvents.pipe(
-    concatMap((event) => {
-      const shouldSyncDocument =
-        event.type === 'reset' ||
-        // note: resumability may not be enabled – if so, treat welcome the same way as a reset
-        event.type === 'welcome'
-      return shouldSyncDocument
-        ? fetchInitialDocumentSnapshots().pipe(
-            mergeMap(({draft, published, version}) => [
-              createSnapshotEvent(draftId, draft),
-              createSnapshotEvent(publishedId, published),
-              ...(versionId ? [createSnapshotEvent(versionId, version)] : []),
-            ]),
-          )
-        : of(event)
-    }),
+  const pairEvents$ = defer(() => {
+    let hasSnapshots = false
+    return sharedEvents.pipe(
+      concatMap((event) => {
+        const shouldSyncDocument =
+          event.type === 'reset' ||
+          // note: resumability may not be enabled – if so, treat welcome the same way as a reset
+          event.type === 'welcome' ||
+          // The listener is down before it delivered anything: the snapshots are fetched without
+          // it, so the document can be shown while it reconnects, and again once it welcomes.
+          (event.type === 'reconnect' && !hasSnapshots)
+        if (!shouldSyncDocument) {
+          return of(event)
+        }
+        hasSnapshots = true
+        const snapshots$ = fetchInitialDocumentSnapshots().pipe(
+          mergeMap(({draft, published, version}) => [
+            createSnapshotEvent(draftId, draft),
+            createSnapshotEvent(publishedId, published),
+            ...(versionId ? [createSnapshotEvent(versionId, version)] : []),
+          ]),
+        )
+        // The connection state follows the connection events alone, and a form is editable once
+        // it reads connected. A reconnect goes before its snapshots, so they are not shown as
+        // live. A welcome or reset goes after them: until the fresh snapshots have replaced the
+        // documents, the pair still holds the copies from before the outage, and edits made on
+        // those would be built on content the listener missed.
+        return event.type === 'reconnect'
+          ? concat(of(event), snapshots$)
+          : concat(snapshots$, of(event))
+      }),
+    )
+  }).pipe(
     scan(
       (
         acc: {
@@ -312,16 +343,37 @@ export function getPairListener(
         return caught$
       }
 
-      // A listener 401 is a dead session (see isConnectionSessionError), so
-      // complete the stream rather than rethrow — an errored stream is rethrown
-      // by `useSyncObservable` during render and crashes the tool. Forced logout
-      // is not triggered here; it's owned by the request handler, which 401s on
-      // the ordinary HTTP requests a mounted pane also fires (users, grants, …).
-      // The pane keeps its last value (or stays loading if it never got a
-      // snapshot) until that logout lands.
+      // The listener's credential was refused, usually a token a renewal just replaced. One
+      // request through the client lets the auth store renew it or end the session; then
+      // reconnect. If that fails, complete (an errored stream crashes the tool).
       if (isConnectionSessionError(err)) {
-        debug('Listener connection rejected (HTTP 401), terminating (invalid session)')
-        return EMPTY
+        credentialChecks += 1
+        if (credentialChecks > MAX_CREDENTIAL_CHECKS) {
+          debug('Listener connection rejected (HTTP 401) %d times, giving up', credentialChecks - 1)
+          return EMPTY
+        }
+        debug(
+          'Listener connection rejected (HTTP 401), checking the credential before reconnecting',
+        )
+        return concat(
+          of({type: 'reconnect'} as ReconnectEvent),
+          client.observable.request({url: '/users/me', tag: 'document.pair.reauthorize'}).pipe(
+            // Only the check: errors from the reconnected listener take the usual paths above.
+            catchError((checkError: unknown) => {
+              const message = checkError instanceof Error ? checkError.message : checkError
+              // Only a rejected credential ends the listener. Any other failure (network, timeout,
+              // 5xx) says nothing about the credential, so reconnect anyway; the limit above still
+              // applies if the listener keeps rejecting it.
+              if (isUnauthorizedError(checkError) || isConnectionSessionError(checkError)) {
+                debug('Listener credential could not be restored, terminating: %s', message)
+                return EMPTY
+              }
+              debug('Listener credential check failed, reconnecting anyway: %s', message)
+              return of(undefined)
+            }),
+            mergeMap(() => caught$),
+          ),
+        )
       }
 
       return throwError(() => err)

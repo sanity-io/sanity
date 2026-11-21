@@ -30,8 +30,7 @@ const blockArrayDescription = [
   },
 ]
 
-const nonStringDescriptions: [string, unknown][] = [
-  ['an array of blocks', blockArrayDescription],
+const unreadableDescriptions: [string, unknown][] = [
   ['an object', {_type: 'unknown', text: 'Not a description'}],
   ['a number', 42],
 ]
@@ -67,7 +66,14 @@ describe('EditReleaseDialog with a description that is not a string', () => {
     useReleaseOperationsMockReturn.updateRelease.mockClear()
   })
 
-  it.each(nonStringDescriptions)(
+  it('renders the plain text of a description written as Portable Text blocks', async () => {
+    await renderEditDialog(releaseFromContentLake(blockArrayDescription))
+
+    expect(screen.getByTestId('release-form-title')).toHaveValue('Spring')
+    expect(screen.getByTestId('release-form-description')).toHaveValue('Written as blocks')
+  })
+
+  it.each(unreadableDescriptions)(
     'renders the title and an empty description field when the description is %s',
     async (_label, description) => {
       await renderEditDialog(releaseFromContentLake(description))

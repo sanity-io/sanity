@@ -1,6 +1,6 @@
 import {type CurrentUser} from '@sanity/types'
-import {Card, Text} from '@sanity/ui'
-import {VStack} from 'ui5'
+import {Card} from '@sanity/ui'
+import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
 import {InsufficientPermissionsMessage} from '../InsufficientPermissionsMessage'
@@ -33,25 +33,25 @@ export function InsufficientPermissionsMessageStory() {
       <Card padding={4} style={{maxWidth: 420}}>
         <VStack gap={5}>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               no roles
             </Text>
             <InsufficientPermissionsMessage context="create-any-document" />
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               single role
             </Text>
             <InsufficientPermissionsMessage context="publish-document" currentUser={EDITOR} />
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               multiple roles
             </Text>
             <InsufficientPermissionsMessage context="delete-document" currentUser={MULTI_ROLE} />
           </VStack>
           <VStack gap={2}>
-            <Text muted size={1} weight="medium">
+            <Text muted size={1} weight="medium" as="div" trim={true}>
               create reference
             </Text>
             <InsufficientPermissionsMessage context="create-new-reference" currentUser={EDITOR} />

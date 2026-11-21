@@ -1,6 +1,5 @@
-import {Text} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
-import {Button as Ui5Button} from 'ui5'
+import {Text, Button as Ui5Button} from 'ui5'
 import {type ActorRefFromLogic} from 'xstate'
 
 import {Button} from '../../../ui-components/button/Button'
@@ -43,7 +42,9 @@ export function InventoryHeader({
     <Header>
       <div className="atom">
         {selectedCount !== 0 && (
-          <Text size={1}>{t('document-group.selected-count', {count: selectedCount})}</Text>
+          <Text size={1} as="div" trim={true}>
+            {t('document-group.selected-count', {count: selectedCount})}
+          </Text>
         )}
         {canRequestDeletion && (
           <Ui5Button

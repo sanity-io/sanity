@@ -339,8 +339,7 @@ export type NewDocumentCreationContext =
  *
  * Each falls back to the schema type's own configuration if omitted.
  *
- * @hidden
- * @beta
+ * @public
  */
 export interface SingletonDefinition extends Pick<
   BaseSchemaType,
@@ -374,13 +373,46 @@ export interface SingletonDefinition extends Pick<
    * The name of the document schema type used by the singleton.
    */
   schemaType: string
+
+  /**
+   * Whether editors can still create ordinary (non-singleton) documents of
+   * `schemaType`. Defaults to `false`.
+   *
+   * By default, registering a singleton over a schema type removes that
+   * type's plain "create new" initial value template and hides the type from
+   * the Structure Tool's default document type lists. Editors can then no
+   * longer create ordinary documents of that type.
+   *
+   * Set `allowNonSingletonDocuments: true` when the schema type is also used
+   * for ordinary documents. The type then keeps its default initial value
+   * template, so it stays in "create new document" menus, and keeps its
+   * default document type list item, which lists every document of the type,
+   * singletons included.
+   *
+   * If several singletons share a schema type, setting this on any one of
+   * them is enough. The singleton `id` (which defaults to `documentId`) must
+   * not equal the schema type name, because the type's own template and list
+   * item use that id.
+   *
+   * @example
+   * ```ts
+   * document: {
+   *   singletons: [
+   *     // Fixed "Spring" and "Summer" campaigns; editors can still create
+   *     // ordinary campaigns from the "create new document" menus.
+   *     {documentId: 'spring', schemaType: 'campaign', allowNonSingletonDocuments: true},
+   *     {documentId: 'summer', schemaType: 'campaign', allowNonSingletonDocuments: true},
+   *   ],
+   * }
+   * ```
+   */
+  allowNonSingletonDocuments?: boolean
 }
 
 /**
  * A singleton definition as provided by the developer.
  *
- * @hidden
- * @beta
+ * @public
  */
 export type UnresolvedSingletonDefinition =
   | (Omit<SingletonDefinition, 'id'> & {
@@ -403,8 +435,7 @@ export type UnresolvedSingletonDefinition =
  * ({@link UnresolvedSingletonDefinition}); Studio resolves the returned
  * definitions before the next resolver sees them.
  *
- * @hidden
- * @beta
+ * @public
  */
 export type SingletonsResolver = (
   prev: SingletonDefinition[],
@@ -449,14 +480,35 @@ export interface DocumentPluginOptions {
    * The singleton configuration, surfaced at the `document.singletons`
    * configuration path.
    *
+   * Registering a singleton over a schema type removes that type's plain
+   * "create new" initial value template and hides the type from the
+   * Structure Tool's default document type lists, so editors can no longer
+   * create ordinary documents of that type. If the schema type is also used
+   * for ordinary documents (for example, fixed "Spring" and "Summer"
+   * campaigns alongside regular campaigns), set
+   * `allowNonSingletonDocuments: true` on the singleton definition to keep
+   * ordinary documents creatable. See
+   * {@link SingletonDefinition.allowNonSingletonDocuments}.
+   *
    * If a singleton's `id`, `documentId`, and `schemaType` properties are
    * identical, it can simply be provided as a single string. Studio will
    * expand it to a full {@link SingletonDefinition} at runtime.
    *
    * Alternatively, a resolver function may be provided.
    *
-   * @hidden
-   * @beta
+   * @example
+   * ```ts
+   * document: {
+   *   singletons: [
+   *     // `settings` is only used for this one document.
+   *     'settings',
+   *     // Editors can still create ordinary `campaign` documents.
+   *     {documentId: 'spring', schemaType: 'campaign', allowNonSingletonDocuments: true},
+   *   ],
+   * }
+   * ```
+   *
+   * @public
    */
   singletons?: UnresolvedSingletonDefinition[] | SingletonsResolver
 
@@ -1077,8 +1129,7 @@ export interface Source {
     /**
      * The resolved singleton definitions.
      *
-     * @hidden
-     * @beta
+     * @public
      */
     singletons: SingletonDefinition[]
 
@@ -1749,7 +1800,7 @@ export interface BetaFeatures {
   /**
    * Config for the opt-in Comments API implementation.
    *
-   * @internal
+   * @beta
    */
   comments?: {
     v2?: boolean

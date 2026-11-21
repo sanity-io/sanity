@@ -63,8 +63,7 @@ const blockArrayDescription = [
   },
 ]
 
-const nonStringDescriptions: [string, unknown][] = [
-  ['an array of blocks', blockArrayDescription],
+const unreadableDescriptions: [string, unknown][] = [
   ['an object', {_type: 'unknown', text: 'Not a description'}],
   ['a number', 42],
 ]
@@ -228,7 +227,17 @@ describe('ReleaseDetailsEditor', () => {
       vi.useRealTimers()
     })
 
-    it.each(nonStringDescriptions)(
+    it('renders the plain text of a description written as Portable Text blocks', async () => {
+      const wrapper = await createTestProvider()
+      render(<ReleaseDetailsEditor release={releaseFromContentLake(blockArrayDescription)} />, {
+        wrapper,
+      })
+      await flushMicrotasksThisIsACodeSmell()
+
+      expect(screen.getByTestId('release-form-description')).toHaveValue('Written as blocks')
+    })
+
+    it.each(unreadableDescriptions)(
       'renders the title and an empty description field when the description is %s',
       async (_label, description) => {
         const wrapper = await createTestProvider()
@@ -324,7 +333,21 @@ describe('ReleaseDetailsEditor', () => {
       expect(screen.queryByTestId('release-form-title')).toBeNull()
     })
 
-    it.each(nonStringDescriptions)(
+    it('renders the plain text of a description written as Portable Text blocks', async () => {
+      const wrapper = await createTestProvider({
+        config: {beta: {variants: {enabled: true}}},
+      })
+      render(<ReleaseDetailsEditor release={releaseFromContentLake(blockArrayDescription)} />, {
+        wrapper,
+      })
+      await flushMicrotasksThisIsACodeSmell()
+
+      expect(screen.getByTestId('release-description-display')).toHaveTextContent(
+        'Written as blocks',
+      )
+    })
+
+    it.each(unreadableDescriptions)(
       'renders no description when the description is %s',
       async (_label, description) => {
         const wrapper = await createTestProvider({

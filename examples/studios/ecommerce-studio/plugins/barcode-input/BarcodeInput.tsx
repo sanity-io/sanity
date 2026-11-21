@@ -1,10 +1,11 @@
 // Copied from `@sanity/cli` (templates/ecommerce/plugins/barcode-input/BarcodeInput.js)
 
-import {Box, Text} from '@sanity/ui'
+import {Box} from '@sanity/ui'
 import {useState} from 'react'
 import Barcode from 'react-barcode'
 import {type FieldMember, MemberField, type ObjectInputProps} from 'sanity'
 import {styled} from 'styled-components'
+import {Text} from 'ui5'
 
 const BarcodeRoot = styled(Box)`
   svg {
@@ -48,7 +49,11 @@ export const BarcodeInput = function BarcodeInput(props: ObjectInputProps<Barcod
             valid={setValid}
           />
         )}
-        {!valid && <ErrorMessage>Not a valid {value?.format}</ErrorMessage>}
+        {!valid && (
+          <ErrorMessage forwardedAs="div" trim={true}>
+            Not a valid {value?.format}
+          </ErrorMessage>
+        )}
       </BarcodeRoot>
       <FieldWrapper>
         {memberFields.map((member) => (

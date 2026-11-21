@@ -33,15 +33,22 @@ export {
   isGetOrgIdEndpoint,
   isListenEndpoint,
   isLogoutEndpoint,
+  isOAuthEndpoint,
+  isOAuthTokenEndpoint,
   urlIncludes,
 } from './routes'
 export {
+  channelErrorAfterWelcome,
   dropMutations,
   duplicateMutations,
   expiredToken,
   invalidSession,
   type InvalidSessionCode,
+  type ListenerRefusal,
   randomLatency,
+  refusedRefreshToken,
+  refuseListener,
   sendReset,
   shuffleEventDelivery,
+  withholdWelcome,
 } from './scenarios'

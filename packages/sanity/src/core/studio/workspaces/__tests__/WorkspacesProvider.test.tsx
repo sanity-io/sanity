@@ -4,6 +4,7 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {type Config, type WorkspaceSummary} from '../../../config/types'
 import {type AuthStore} from '../../../store/auth/types'
+import {registeredListenerErrorHandler} from '../../../util/listenerErrorHandlers'
 import type * as RequestErrorChannelModule from '../../requestErrors/createRequestErrorChannel'
 import {WorkspacesProvider} from '../WorkspacesProvider'
 
@@ -12,6 +13,8 @@ const harness = vi.hoisted(() => ({
   // Set before render so the claim lands in the channel's BehaviorSubject
   // during the useState initializer, before WorkspacesClaimProvider mounts.
   claimProjectId: undefined as string | undefined,
+  // The auth store of the client that got the invalid session, when the claim names one.
+  claimAuthStore: undefined as AuthStore | undefined,
   onRequestFailure: undefined as
     | ((
         result: {type: 'cors'; allowed: boolean; withCredentials: boolean},
@@ -52,7 +55,8 @@ vi.mock('../../requestErrors/createRequestErrorChannel', async (importOriginal) 
       if (projectId) {
         // `handle` claims synchronously before its first await, so the
         // unauthorized claim is already current when the provider mounts.
-        void channel.handle(invalidSessionError(projectId))
+        const authStore = harness.claimAuthStore
+        void channel.handle(invalidSessionError(projectId), authStore ? {authStore} : undefined)
       }
       return channel
     },
@@ -130,6 +134,33 @@ describe('WorkspacesProvider forced logout', () => {
     expect(matchingLogout).toHaveBeenCalledTimes(1)
   })
 
+  it('logs out the auth store named on the claim, not the first workspace of the project', async () => {
+    // An OAuth workspace keeps its own session next to the legacy workspaces of the same project.
+    const legacyLogout = vi.fn(() => Promise.resolve())
+    const oauthLogout = vi.fn(() => Promise.resolve())
+    const oauthWorkspace = workspace('proja', oauthLogout)
+    harness.workspaces = [workspace('proja', legacyLogout), oauthWorkspace]
+    harness.claimProjectId = 'proja'
+    harness.claimAuthStore = oauthWorkspace.auth
+
+    renderProvider()
+
+    await waitFor(() => expect(oauthLogout).toHaveBeenCalledTimes(1))
+    expect(legacyLogout).not.toHaveBeenCalled()
+    harness.claimAuthStore = undefined
+  })
+
+  it('tells the auth store why it logs the user out', async () => {
+    const logout = vi.fn((_options?: {reason?: string}) => Promise.resolve())
+    harness.workspaces = [workspace('proja', logout)]
+    harness.claimProjectId = 'proja'
+
+    renderProvider()
+
+    // The claim's error is `SIO-401-ANF`, a session the API does not know.
+    await waitFor(() => expect(logout).toHaveBeenCalledWith({reason: 'session-not-found'}))
+  })
+
   it('logs out a nested source whose project differs from every root workspace', async () => {
     const rootLogout = vi.fn(() => Promise.resolve())
     const nestedLogout = vi.fn(() => Promise.resolve())
@@ -163,5 +194,20 @@ describe('WorkspacesProvider forced logout', () => {
     })
     expect(screen.getByText('ready')).toBeInTheDocument()
     expect(logout).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('WorkspacesProvider listener error handler', () => {
+  it('registers its request error channel until it unmounts', async () => {
+    harness.claimProjectId = undefined
+    harness.workspaces = [workspace('listenproj', () => Promise.resolve())]
+    expect(registeredListenerErrorHandler()).toBeUndefined()
+
+    const view = renderProvider()
+    await screen.findByText('ready')
+    expect(registeredListenerErrorHandler()).toBeDefined()
+
+    view.unmount()
+    expect(registeredListenerErrorHandler()).toBeUndefined()
   })
 })

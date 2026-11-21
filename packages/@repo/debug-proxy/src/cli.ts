@@ -2,7 +2,9 @@
 // oxlint-disable no-console
 import {execFile, execFileSync} from 'node:child_process'
 import {X509Certificate} from 'node:crypto'
-import {mkdir, readFile} from 'node:fs/promises'
+import {mkdir, mkdtemp, readFile, rm} from 'node:fs/promises'
+import {tmpdir} from 'node:os'
+import {join} from 'node:path'
 import * as tls from 'node:tls'
 import {fileURLToPath} from 'node:url'
 import {promisify} from 'node:util'
@@ -23,13 +25,41 @@ import {createRequestProxy, createSSEProxy} from './proxy'
 import {intermittentServiceErrors} from './requestScenarios'
 import {isGetOrgIdEndpoint, isListenEndpoint} from './routes'
 import {
+  channelErrorAfterWelcome,
   dropMutations,
   duplicateMutations,
   invalidSession,
+  type InvalidSessionCode,
+  type ListenerRefusal,
   randomLatency,
+  refusedRefreshToken,
+  refuseListener,
   sendReset,
   shuffleEventDelivery,
+  withholdWelcome,
 } from './scenarios'
+
+const LISTENER_REFUSALS: readonly ListenerRefusal[] = ['dataset-not-found', 'evicted']
+
+/** Parses the --refuse-listener value (`<refusal>[:<seconds>]`). */
+const listenerRefusal: ValueParser<'sync', {refusal: ListenerRefusal; afterMs: number}> = {
+  mode: 'sync',
+  metavar: 'REFUSAL[:SECONDS]',
+  placeholder: {refusal: 'evicted', afterMs: 0},
+  parse(input) {
+    const [refusal, after = '0', ...rest] = input.split(':')
+    const afterSec = Number(after)
+    const known = LISTENER_REFUSALS.find((candidate) => candidate === refusal)
+    if (rest.length > 0 || !known || !Number.isInteger(afterSec) || afterSec < 0) {
+      return {
+        success: false,
+        error: message`Expected "dataset-not-found" or "evicted", optionally followed by ":<seconds>" (a whole number), got ${input}.`,
+      }
+    }
+    return {success: true, value: {refusal: known, afterMs: afterSec * 1000}}
+  },
+  format: (value) => `${value.refusal}:${value.afterMs / 1000}`,
+}
 
 /** Parses the --flap value (`<on>[:<off>]` in seconds) into phase durations. */
 const flapPhases: ValueParser<'sync', {onlineMs: number; offlineMs: number}> = {
@@ -103,9 +133,26 @@ const flags = run(
       }),
       3051,
     ),
-    forceHttp1: repeatableFlag('--force-http1', {
-      description: message`don't offer h2 in the TLS handshake, forcing clients down to HTTP/1.1 over TLS — useful for testing legacy-protocol handling`,
-    }),
+    // or() makes the parser itself reject passing both flags: a stream cap needs h2
+    tlsProtocol: optional(
+      or(
+        mapValue(
+          multiple(
+            option('--force-http1', {
+              description: message`don't offer h2 in the TLS handshake, forcing clients down to HTTP/1.1 over TLS — useful for testing legacy-protocol handling. Mutually exclusive with --max-streams`,
+            }),
+            {min: 1},
+          ),
+          () => ({kind: 'http1' as const}),
+        ),
+        mapValue(
+          option('--max-streams', integer({min: 1, metavar: 'N'}), {
+            description: message`cap concurrent HTTP/2 streams per session (no cap by default). Mutually exclusive with --force-http1`,
+          }),
+          (maxStreams) => ({kind: 'h2' as const, maxStreams}),
+        ),
+      ),
+    ),
     http1: repeatableFlag('--http1', {
       description: message`also serve a plain (cleartext) HTTP/1.1 listener`,
     }),
@@ -161,6 +208,47 @@ const flags = run(
     org401: repeatableFlag('--org-401', {
       description: message`make the get-org-id endpoint return 401`,
     }),
+    listenerErrorProbability: withDefault(
+      option('--listener-error-probability', probability(), {
+        description: message`like --error-probability, but only for listen requests: each one fails with a random 5xx at this probability while every other request still works`,
+      }),
+      0,
+    ),
+    // or() makes the parser itself reject passing more than one of these flags: withholding the
+    // welcome would also withhold the channelError and disconnect, leaving a silently closed
+    // stream, and a refused listener never welcomes
+    listenerFault: optional(
+      or(
+        mapValue(
+          option('--listener-channel-error', integer({min: 0, metavar: 'SECONDS'}), {
+            description: message`end every listener SECONDS after its welcome (welcome, welcomeback or reset) with the channelError (Internal error) and disconnect the API sends when a listener fails, and close it. Use 0 to fail every listener instead of welcoming it, as when the API cannot set one up`,
+          }),
+          (seconds) => ({kind: 'channelError' as const, afterMs: seconds * 1000}),
+        ),
+        // Like repeatableFlag(), but {min: 1} so that or() only picks it when it is passed
+        mapValue(
+          multiple(
+            option('--withhold-welcome', {
+              description: message`keep listen requests open without ever welcoming them, as when the API hangs while setting a listener up. Mutually exclusive with --listener-channel-error`,
+            }),
+            {min: 1},
+          ),
+          () => ({kind: 'withholdWelcome' as const, probability: 1}),
+        ),
+        mapValue(
+          option('--withhold-welcome-probability', probability(), {
+            description: message`like --withhold-welcome, but only for this share of listen requests: each one is left unwelcomed at this probability while the rest work normally`,
+          }),
+          (value) => ({kind: 'withholdWelcome' as const, probability: value}),
+        ),
+        mapValue(
+          option('--refuse-listener', listenerRefusal, {
+            description: message`refuse every listener the way the API refuses one it will not serve, which reconnecting does not change: dataset-not-found replaces its welcome with a namespaceNotFoundError channelError and a disconnect; evicted welcomes it, then disconnects it (forced by provider). Append :SECONDS to start refusing that long after the proxy starts, so the studio can boot first; listeners open at that point are refused too. Mutually exclusive with --listener-channel-error, --withhold-welcome and --withhold-welcome-probability`,
+          }),
+          (value) => ({kind: 'refuse' as const, ...value}),
+        ),
+      ),
+    ),
     // or() makes the parser itself reject passing both flags
     tokenFault: optional(
       or(
@@ -176,7 +264,18 @@ const flags = run(
           }),
           (seconds) => ({kind: 'revoke' as const, afterMs: seconds * 1000}),
         ),
+        mapValue(
+          option('--bearer-401', integer({min: 0, metavar: 'SECONDS'}), {
+            description: message`like --expire-token, but answer with a plain RFC 6750 bearer token 401 (error "invalid_token", no Sanity error code) — a hypothesis for what an expired OAuth access token gets. For studios using auth.experimental_oauth: shows whether the studio renews on a 401 that carries no SIO code. Mutually exclusive with the other two`,
+          }),
+          (seconds) => ({kind: 'bearer' as const, afterMs: seconds * 1000}),
+        ),
       ),
+    ),
+    refuseRefresh: optional(
+      option('--refuse-refresh', integer({min: 0, metavar: 'SECONDS'}), {
+        description: message`after SECONDS, answer every POST to the OAuth token endpoint (/auth/oauth/token) with the RFC 6749 invalid_grant error — the refresh token expired, was redeemed already, or its session was revoked in Manage. For studios using auth.experimental_oauth: the one failure that ends the session, so it exercises forced sign-out. Combine with --expire-token to force a renewal first. Use 0 to refuse immediately`,
+      }),
     ),
   }),
   {
@@ -192,11 +291,12 @@ const flags = run(
 )
 
 const TLS_PORT = flags.port
-const FORCE_HTTP1 = flags.forceHttp1
+const FORCE_HTTP1 = flags.tlsProtocol?.kind === 'http1'
 const ENABLE_HTTP1 = flags.http1
 const HTTP1_PORT = flags.http1Port
 const API_HOST = flags.apiHost
 const LISTENER_TTL_MS = flags.listenerTtl * 1000
+const MAX_STREAMS = flags.tlsProtocol?.kind === 'h2' ? flags.tlsProtocol.maxStreams : undefined
 const FLAP = flags.flap
 const LATENCY = flags.latency
 const ERROR_PROBABILITY = flags.errorProbability
@@ -204,10 +304,31 @@ const ENABLE_SSE_FAULTS = flags.sseFaults
 const DROPPED_MUTATION_PROBABILITY = flags.dropProbability
 const RESET_PROBABILITY = flags.resetProbability
 const FORCE_ORG_401 = flags.org401
+const LISTENER_ERROR_PROBABILITY = flags.listenerErrorProbability
+const LISTENER_CHANNEL_ERROR_AFTER_MS =
+  flags.listenerFault?.kind === 'channelError' ? flags.listenerFault.afterMs : undefined
+const WITHHOLD_WELCOME_PROBABILITY =
+  flags.listenerFault?.kind === 'withholdWelcome' ? flags.listenerFault.probability : 0
+const LISTENER_REFUSAL =
+  flags.listenerFault?.kind === 'refuse' ? flags.listenerFault.refusal : undefined
+const LISTENER_REFUSAL_AFTER_MS =
+  flags.listenerFault?.kind === 'refuse' ? flags.listenerFault.afterMs : 0
+// Refusals start this long after the proxy starts, like the --expire-token deadline.
+const LISTENER_REFUSAL_AT = Date.now() + LISTENER_REFUSAL_AFTER_MS
+// Any scenario that changes what the listen endpoint answers
+const LISTENER_FAULTS =
+  LISTENER_ERROR_PROBABILITY > 0 ||
+  LISTENER_CHANNEL_ERROR_AFTER_MS !== undefined ||
+  WITHHOLD_WELCOME_PROBABILITY > 0 ||
+  LISTENER_REFUSAL !== undefined
 const EXPIRE_TOKEN_AFTER_MS =
   flags.tokenFault?.kind === 'expire' ? flags.tokenFault.afterMs : undefined
 const REVOKE_TOKEN_AFTER_MS =
   flags.tokenFault?.kind === 'revoke' ? flags.tokenFault.afterMs : undefined
+const BEARER_401_AFTER_MS =
+  flags.tokenFault?.kind === 'bearer' ? flags.tokenFault.afterMs : undefined
+const REFUSE_REFRESH_AFTER_MS =
+  flags.refuseRefresh === undefined ? undefined : flags.refuseRefresh * 1000
 
 const SANITY_TOKEN = process.env.SANITY_TOKEN
 
@@ -247,6 +368,52 @@ function detectMkcert(): boolean {
 const MKCERT_AVAILABLE = detectMkcert()
 
 /**
+ * Warns when mkcert's local CA is not trusted. The CA file alone proves nothing (mkcert
+ * creates it the first time it mints a certificate, trusted or not), and certificates are
+ * cached, so this mints a throwaway one on every start: mkcert checks trust on every run and
+ * says so on stderr.
+ */
+async function warnIfMkcertCaNotTrusted(): Promise<void> {
+  // Best effort: a failure here (temp dir, mkcert, cleanup) must never stop the proxy from
+  // starting, and a failing mkcert is reported when a real certificate is minted
+  try {
+    const dir = await mkdtemp(join(tmpdir(), 'debug-proxy-mkcert-'))
+    try {
+      const {stderr} = await execFileAsync('mkcert', [
+        '-cert-file',
+        join(dir, 'cert.pem'),
+        '-key-file',
+        join(dir, 'key.pem'),
+        'localhost',
+      ])
+      if (/mkcert -install/.test(stderr)) warnCaNotInstalled()
+    } finally {
+      await rm(dir, {recursive: true, force: true})
+    }
+  } catch {
+    // ignored, see above
+  }
+}
+
+let warnedCaNotInstalled = false
+function warnCaNotInstalled() {
+  if (warnedCaNotInstalled) return
+  warnedCaNotInstalled = true
+  console.warn(
+    [
+      '',
+      'mkcert is installed, but its local CA is not trusted by this machine, so browsers',
+      'will reject the proxy’s certificates (the studio shows a network error). Run:',
+      '',
+      '  mkcert -install',
+      '',
+      '…then restart the browser (Firefox: restart it) and reload the studio.',
+      '',
+    ].join('\n'),
+  )
+}
+
+/**
  * Mint (or read from the disk cache) a certificate for the given hostname —
  * mkcert-signed when available, self-signed otherwise.
  */
@@ -259,7 +426,7 @@ async function mintCert(hostname: string): Promise<{key: string; cert: string}> 
       return {key, cert}
     } catch {
       await mkdir(SNI_CERTS_DIR, {recursive: true})
-      await execFileAsync('mkcert', [
+      const {stderr} = await execFileAsync('mkcert', [
         '-cert-file',
         fileURLToPath(certPath),
         '-key-file',
@@ -267,6 +434,9 @@ async function mintCert(hostname: string): Promise<{key: string; cert: string}> 
         hostname,
       ])
       console.info(`Minted TLS certificate for ${hostname}`)
+      // mkcert mints fine without its CA installed (it creates one on the fly) and only
+      // prints a note, so the certificate would be rejected by the browser with no hint
+      if (/mkcert -install/.test(stderr)) warnCaNotInstalled()
       const [key, cert] = await Promise.all([readFile(keyPath, 'utf8'), readFile(certPath, 'utf8')])
       return {key, cert}
     }
@@ -306,6 +476,7 @@ async function loadTlsConfig(): Promise<{
   ) => void
 }> {
   const userCert = await loadUserCert()
+  if (MKCERT_AVAILABLE && !userCert) await warnIfMkcertCaNotTrusted()
   const defaultCert = userCert ?? (await mintCert('localhost'))
 
   if (!MKCERT_AVAILABLE && !userCert) {
@@ -369,9 +540,19 @@ const listenEndpointProxy = createSSEProxy((events$) =>
           dropMutations(DROPPED_MUTATION_PROBABILITY),
         )
       : tap(),
+    LISTENER_CHANNEL_ERROR_AFTER_MS === undefined
+      ? tap()
+      : channelErrorAfterWelcome(LISTENER_CHANNEL_ERROR_AFTER_MS),
+    WITHHOLD_WELCOME_PROBABILITY > 0 ? withholdWelcome(WITHHOLD_WELCOME_PROBABILITY) : tap(),
+    LISTENER_REFUSAL === undefined
+      ? tap()
+      : refuseListener(LISTENER_REFUSAL, {startAt: LISTENER_REFUSAL_AT}),
     LISTENER_TTL_MS ? takeUntil(timer(LISTENER_TTL_MS)) : tap(),
   ),
 )
+
+// --listener-error-probability fails listen requests only, before they reach the upstream
+const faultListenRequests = intermittentServiceErrors(LISTENER_ERROR_PROBABILITY)
 
 const orgEndpointProxy = createRequestProxy({
   transformHeaders: (headers$) =>
@@ -442,8 +623,21 @@ const faultRequests = intermittentServiceErrors(ERROR_PROBABILITY)
 // "already past", i.e. invalidate now. Re-armed whenever the studio
 // re-authenticates (a `/auth/fetch` token exchange), so you can log back in
 // and watch the simulated session lapse again — see below.
-const INVALIDATE_SESSION_AFTER_MS = EXPIRE_TOKEN_AFTER_MS ?? REVOKE_TOKEN_AFTER_MS
-const INVALID_SESSION_CODE = REVOKE_TOKEN_AFTER_MS === undefined ? 'SIO-401-AEX' : 'SIO-401-ANF'
+const INVALIDATE_SESSION_AFTER_MS =
+  EXPIRE_TOKEN_AFTER_MS ?? REVOKE_TOKEN_AFTER_MS ?? BEARER_401_AFTER_MS
+const INVALID_SESSION_CODE: InvalidSessionCode =
+  REVOKE_TOKEN_AFTER_MS !== undefined
+    ? 'SIO-401-ANF'
+    : BEARER_401_AFTER_MS !== undefined
+      ? 'invalid_token'
+      : 'SIO-401-AEX'
+// --refuse-refresh: OAuth token endpoint requests after this wall-clock time
+// get `invalid_grant`. Not re-armed: once the refresh token is refused the
+// studio signs out, and a fresh sign-in's code exchange is refused too until
+// the proxy restarts.
+const REFUSE_REFRESH_AT =
+  REFUSE_REFRESH_AFTER_MS === undefined ? undefined : Date.now() + REFUSE_REFRESH_AFTER_MS
+const isRefreshRefused = () => REFUSE_REFRESH_AT !== undefined && Date.now() >= REFUSE_REFRESH_AT
 let sessionInvalidAt =
   INVALIDATE_SESSION_AFTER_MS === undefined ? undefined : Date.now() + INVALIDATE_SESSION_AFTER_MS
 const isSessionInvalid = () => sessionInvalidAt !== undefined && Date.now() >= sessionInvalidAt
@@ -468,7 +662,11 @@ const withNetworkScenarios = (handler: ProxyHandler): ProxyHandler => {
           errorCode: INVALID_SESSION_CODE,
           onReauthenticated: rearmSessionInvalidation,
         })
-  const faulted = faultRequests(maybeInvalid)
+  const maybeRefused =
+    REFUSE_REFRESH_AFTER_MS === undefined
+      ? maybeInvalid
+      : refusedRefreshToken(maybeInvalid, isRefreshRefused)
+  const faulted = faultRequests(maybeRefused)
   const delayed = LATENCY ? withLatency(faulted, LATENCY) : faulted
   return flapper ? flapper.wrap(delayed) : delayed
 }
@@ -480,8 +678,13 @@ const routes = [
   // Only intercept the listener endpoint when a scenario needs it — with no
   // scenarios active, even SSE flows through the byte-transparent default
   // handler (which is still subject to --flap and --latency)
-  ...(ENABLE_SSE_FAULTS || LISTENER_TTL_MS > 0
-    ? [{match: isListenEndpoint(), handler: withNetworkScenarios(listenEndpointProxy)}]
+  ...(ENABLE_SSE_FAULTS || LISTENER_TTL_MS > 0 || LISTENER_FAULTS
+    ? [
+        {
+          match: isListenEndpoint(),
+          handler: withNetworkScenarios(faultListenRequests(listenEndpointProxy)),
+        },
+      ]
     : []),
 ]
 
@@ -497,6 +700,7 @@ const tlsProxy = createDebugProxy({
   port: TLS_PORT,
   tls: await loadTlsConfig(),
   forceHttp1: FORCE_HTTP1,
+  http2Options: MAX_STREAMS ? {settings: {maxConcurrentStreams: MAX_STREAMS}} : undefined,
 })
 
 await tlsProxy.listen()
@@ -535,11 +739,54 @@ if (ERROR_PROBABILITY > 0) {
   )
 }
 
+if (MAX_STREAMS) {
+  console.info(`Max concurrent HTTP/2 streams: ${MAX_STREAMS} (the ${TLS_PORT} listener only)`)
+}
+
+if (LISTENER_ERROR_PROBABILITY > 0) {
+  console.info(
+    `Failing listeners: ${Math.round(LISTENER_ERROR_PROBABILITY * 100)}% of listen requests fail with a random 5xx`,
+  )
+}
+
+if (LISTENER_CHANNEL_ERROR_AFTER_MS !== undefined) {
+  console.info(
+    LISTENER_CHANNEL_ERROR_AFTER_MS === 0
+      ? 'Failing listeners: every listener gets a channelError (Internal error) instead of its welcome'
+      : `Failing listeners: every listener gets a channelError (Internal error) ${LISTENER_CHANNEL_ERROR_AFTER_MS / 1000}s after its welcome`,
+  )
+}
+
+if (WITHHOLD_WELCOME_PROBABILITY === 1) {
+  console.info('Failing listeners: listen requests stay open and are never welcomed')
+} else if (WITHHOLD_WELCOME_PROBABILITY > 0) {
+  console.info(
+    `Failing listeners: ${Math.round(WITHHOLD_WELCOME_PROBABILITY * 100)}% of listen requests stay open and are never welcomed`,
+  )
+}
+
+if (LISTENER_REFUSAL !== undefined) {
+  const how =
+    LISTENER_REFUSAL === 'dataset-not-found'
+      ? 'gets a channelError (namespaceNotFoundError)'
+      : 'is evicted (forced by provider)'
+  const when =
+    LISTENER_REFUSAL === 'dataset-not-found' ? 'instead of its welcome' : 'as it welcomes'
+  console.info(
+    LISTENER_REFUSAL_AFTER_MS === 0
+      ? `Refusing listeners: every listener ${how} ${when}`
+      : `Refusing listeners: after ${LISTENER_REFUSAL_AFTER_MS / 1000}s, every listener ${how}, including the open ones`,
+  )
+}
+
 if (INVALIDATE_SESSION_AFTER_MS !== undefined) {
-  const what =
-    INVALID_SESSION_CODE === 'SIO-401-AEX'
-      ? 'the expired-session 401 (SIO-401-AEX)'
-      : 'the session-not-found 401 (SIO-401-ANF)'
+  const what = (
+    {
+      'SIO-401-AEX': 'the expired-session 401 (SIO-401-AEX)',
+      'SIO-401-ANF': 'the session-not-found 401 (SIO-401-ANF)',
+      'invalid_token': 'a plain bearer-token 401 (invalid_token, no Sanity error code)',
+    } satisfies Record<InvalidSessionCode, string>
+  )[INVALID_SESSION_CODE]
   console.info(
     INVALIDATE_SESSION_AFTER_MS === 0
       ? `Invalid session: every API request returns ${what}`

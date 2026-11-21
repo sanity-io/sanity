@@ -38,6 +38,7 @@ export default defineConfig({
     setupFiles: [
       // Fail tests during which react-dom reports a prop leaking onto a DOM element
       '@repo/test-config/vitest/failOnReactDomPropWarnings',
+      './test/setup/groqWasmFetch.ts',
     ],
   },
   plugins: [

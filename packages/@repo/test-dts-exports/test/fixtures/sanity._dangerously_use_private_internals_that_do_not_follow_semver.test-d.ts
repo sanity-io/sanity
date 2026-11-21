@@ -362,6 +362,7 @@ import type {
   getSchemaTypeTitle,
   getSearchableTypes,
   getSelectedVariant,
+  getSessionId,
   getTargetDocument,
   getTargetScopeId,
   getTargetSiblings,
@@ -453,6 +454,7 @@ import type {
   KeyValueStoreValue,
   LatencyReportEvent,
   LATEST,
+  LegacyCallbackResult,
   LegacyLayerProvider,
   LegacyThemeTints,
   ListenerEvent,
@@ -506,6 +508,7 @@ import type {
   normalizePathSegment,
   NullDiff,
   NumberDiff,
+  OAuthCallbackResult,
   ObjectDiff,
   ObjectInputMember,
   ObjectInputMemberProps,
@@ -564,6 +567,8 @@ import type {
   PrimitiveFieldProps,
   PUBLISHED,
   ReactHook,
+  reconnectListener,
+  ReconnectListenerOptions,
   recordStructurePaneKind,
   recordStructureTool,
   Rect,
@@ -606,6 +611,7 @@ import type {
   ResourceCacheProvider,
   ResourceCacheProviderProps,
   RetryingStatus,
+  retryTransientFetch,
   RevertChangesButton,
   RevertChangesConfirmDialog,
   RouterContext,
@@ -646,7 +652,6 @@ import type {
   serializeError,
   SerializeError,
   Session,
-  SESSION_ID,
   SetActiveGroupOperation,
   setAtPath,
   shallowIntentChecker,
@@ -836,6 +841,8 @@ import type {
   useSource,
   useStructureTool,
   useStudioFeedbackTags,
+  useStudioPreference,
+  useStudioPreferenceList,
   useStudioUrl,
   useSyncState,
   useTargetDocumentState,
@@ -1986,6 +1993,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('getSelectedVariant', () => {
     expectTypeOf<typeof getSelectedVariant>().toBeFunction()
   })
+  test('getSessionId', () => {
+    expectTypeOf<typeof getSessionId>().toBeFunction()
+  })
   test('getTargetDocument', () => {
     expectTypeOf<typeof getTargetDocument>().toBeFunction()
   })
@@ -2047,7 +2057,7 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
     expectTypeOf<GroupChangeNode>().toBeObject()
   })
   test('HandleCallbackResult', () => {
-    expectTypeOf<HandleCallbackResult>().toBeObject()
+    expectTypeOf<HandleCallbackResult>().not.toBeNever()
   })
   test('hasCommentMessageValue', () => {
     expectTypeOf<typeof hasCommentMessageValue>().toBeFunction()
@@ -2259,6 +2269,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('LATEST', () => {
     expectTypeOf<typeof LATEST>().not.toBeNever()
   })
+  test('LegacyCallbackResult', () => {
+    expectTypeOf<LegacyCallbackResult>().toBeObject()
+  })
   test('LegacyLayerProvider', () => {
     expectTypeOf<typeof LegacyLayerProvider>().toBeFunction()
   })
@@ -2417,6 +2430,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('NumberDiff', () => {
     expectTypeOf<NumberDiff>().not.toBeNever()
+  })
+  test('OAuthCallbackResult', () => {
+    expectTypeOf<OAuthCallbackResult>().toBeObject()
   })
   test('ObjectDiff', () => {
     expectTypeOf<ObjectDiff<any>>().not.toBeNever()
@@ -2592,6 +2608,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('ReactHook', () => {
     expectTypeOf<ReactHook<any, any>>().not.toBeNever()
   })
+  test('reconnectListener', () => {
+    expectTypeOf<typeof reconnectListener>().toBeFunction()
+  })
+  test('ReconnectListenerOptions', () => {
+    expectTypeOf<ReconnectListenerOptions>().toBeObject()
+  })
   test('recordStructurePaneKind', () => {
     expectTypeOf<typeof recordStructurePaneKind>().toBeFunction()
   })
@@ -2719,6 +2741,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('RetryingStatus', () => {
     expectTypeOf<RetryingStatus>().not.toBeNever()
   })
+  test('retryTransientFetch', () => {
+    expectTypeOf<typeof retryTransientFetch>().toBeFunction()
+  })
   test('RevertChangesButton', () => {
     expectTypeOf<typeof RevertChangesButton>().toBeFunction()
   })
@@ -2838,9 +2863,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('Session', () => {
     expectTypeOf<Session>().toBeObject()
-  })
-  test('SESSION_ID', () => {
-    expectTypeOf<typeof SESSION_ID>().not.toBeNever()
   })
   test('SetActiveGroupOperation', () => {
     expectTypeOf<SetActiveGroupOperation>().toBeObject()
@@ -3411,6 +3433,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useStudioFeedbackTags', () => {
     expectTypeOf<typeof useStudioFeedbackTags>().toBeFunction()
   })
+  test('useStudioPreference', () => {
+    expectTypeOf<typeof useStudioPreference>().toBeFunction()
+  })
+  test('useStudioPreferenceList', () => {
+    expectTypeOf<typeof useStudioPreferenceList>().toBeFunction()
+  })
   test('useStudioUrl', () => {
     expectTypeOf<typeof useStudioUrl>().not.toBeNever()
   })
@@ -3469,6 +3497,7 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
     expectTypeOf<typeof useUserColorManager>().toBeFunction()
   })
   test('useValidationStatus', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof useValidationStatus>().toBeFunction()
   })
   test('useValuePreview', () => {

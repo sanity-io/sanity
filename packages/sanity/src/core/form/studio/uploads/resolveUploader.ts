@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import {accepts} from '@sanity/validation/_internal'
+import {accepts} from '@sanity/util/accepts'
 
 import * as is from '../../utils/is'
 import {type FileLike, type Uploader} from './types'

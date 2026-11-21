@@ -7,7 +7,7 @@ import {
   type SanityDocument,
 } from '@sanity/types'
 import {get} from '@sanity/util/paths'
-import {useCallback, useMemo} from 'react'
+import {useCallback} from 'react'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 
@@ -17,9 +17,8 @@ import {useSource} from '../../../../studio/source'
 import {useFormValue} from '../../../contexts/FormValue'
 import {GlobalDocumentReferenceInput} from '../../../inputs/GlobalDocumentReferenceInput/GlobalDocumentReferenceInput'
 import {type ObjectInputProps} from '../../../types/inputProps'
-import {getReferenceClient} from './datastores/getReferenceClient'
-import {createGetReferenceInfo} from './datastores/getReferenceInfo'
 import {search} from './datastores/search'
+import {useGlobalDocumentReferenceStore} from './datastores/useGlobalDocumentReferenceStore'
 
 async function resolveUserDefinedFilter(
   options: ReferenceFilterOptions | undefined,
@@ -80,16 +79,11 @@ export function StudioGlobalDocumentReferenceInput(
   const {path, schemaType} = props
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const source = useSource()
-  const client = source.getClient({
-    apiVersion: '2025-02-19',
-  })
   const getClient = source.getClient
   const {strategy: searchStrategy} = source.search
 
-  const referenceClient = useMemo(
-    () => getReferenceClient(client, schemaType),
-    [client, schemaType],
-  )
+  const globalDocumentReferenceStore = useGlobalDocumentReferenceStore()
+  const referenceClient = globalDocumentReferenceStore.getClient(schemaType)
   const documentValue = useFormValue([]) as FIXME
 
   const handleSearch = useCallback(
@@ -118,15 +112,10 @@ export function StudioGlobalDocumentReferenceInput(
     [schemaType, documentValue, path, getClient, referenceClient, searchStrategy],
   )
 
-  const getReferenceInfo = useMemo(
-    () => createGetReferenceInfo({client: referenceClient}),
-    [referenceClient],
-  )
-
   return (
     <GlobalDocumentReferenceInput
       {...props}
-      getReferenceInfo={getReferenceInfo}
+      getReferenceInfo={globalDocumentReferenceStore.getReferenceInfo}
       onSearch={handleSearch}
     />
   )
