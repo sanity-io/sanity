@@ -1,5 +1,6 @@
-import {test} from 'vitest'
+import {expect, test} from 'vitest'
 
+import {Document, Mutation} from '../src/document'
 import {DocumentTester} from './util/DocumentTester'
 
 test('simple remote mutation', () => {
@@ -171,4 +172,33 @@ test('simple local mutation arriving out of order', () => {
     .onMutationDidNotFire()
     .isConsistent()
     .assertBOTH('numbers', [2, 1])
+})
+
+test('a retried mutation whose echo already arrived is not applied again', () => {
+  // The first attempt lands, but its response is lost: the attempt is reported as failed, then
+  // the server's echo arrives. The retry reuses the transaction id and is answered as already
+  // existing, which is reported as success.
+  const doc = new Document({_id: 'a', _type: 't', _rev: '1', title: 'Hello'})
+  const local = () =>
+    new Mutation({
+      transactionId: 't2',
+      resultRev: 't2',
+      mutations: [{patch: {id: 'a', set: {title: 'Hello!'}}}],
+    })
+
+  doc.stage(local()).failure()
+  doc.arrive(
+    new Mutation({
+      transactionId: 't2',
+      resultRev: 't2',
+      previousRev: '1',
+      mutations: [{patch: {id: 'a', set: {title: 'Hello!'}}}],
+    }),
+  )
+  doc.stage(local()).success()
+
+  expect(doc.submitted).toHaveLength(0)
+  expect(doc.pending).toHaveLength(0)
+  expect(doc.EDGE).toMatchObject({title: 'Hello!', _rev: 't2'})
+  expect(doc.isConsistent()).toBe(true)
 })

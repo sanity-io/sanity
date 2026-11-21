@@ -368,6 +368,16 @@ export class Document {
       return
     }
 
+    // The resulting revision of a transaction is its transaction id, so HEAD at this id means
+    // the server's echo of this mutation was already applied: an earlier attempt landed while
+    // its response was lost, and a retry with the same transaction id was answered as already
+    // existing. Waiting for another echo would apply it a second time on top of HEAD.
+    if (this.HEAD?._rev === pendingTxnId) {
+      this.pending = this.pending.filter((mutation) => mutation.transactionId !== pendingTxnId)
+      this.rebase([])
+      return
+    }
+
     const first = this.pending[0]
     if (first.transactionId === pendingTxnId) {
       // Nice, the pending transaction arrived in order

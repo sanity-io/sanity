@@ -25,6 +25,12 @@ export interface CommitHandlerMessage {
 class Commit {
   mutations: Mutation[]
   tries: number
+  /**
+   * Assigned on the first attempt and reused on every retry. If an attempt lands but its
+   * response is lost, the retry then fails with `transactionAlreadyExistsError` instead of
+   * applying the same mutations a second time.
+   */
+  transactionId?: string
   resolve: () => void
   reject: (error: Error) => void
 
@@ -44,7 +50,13 @@ class Commit {
 
   squash(doc: Doc | null) {
     const result = Mutation.squash(doc, this.mutations)
-    result.assignRandomTransactionId()
+    if (this.transactionId) {
+      result.params.transactionId = this.transactionId
+      result.params.resultRev = this.transactionId
+    } else {
+      result.assignRandomTransactionId()
+      this.transactionId = result.transactionId
+    }
     return result
   }
 }

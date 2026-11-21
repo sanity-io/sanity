@@ -380,6 +380,18 @@ function submitCommitRequest(
       // session-expiry 401s, network errors — fails, so the mutator keeps
       // the buffer and retries with backoff.
       const statusCode = getStatusCode(error)
+      // A retry reuses its commit's transaction id, so this answer means an earlier attempt
+      // landed but its response was lost: the commit succeeded.
+      const transactionId = request.mutation.params.transactionId
+      if (
+        statusCode === 409 &&
+        transactionId &&
+        getResponseErrorType(error) === 'transactionAlreadyExistsError'
+      ) {
+        observer.beforeSuccess(request)
+        request.success()
+        return of<CommitAttemptResult>({type: 'success', result: {transactionId}})
+      }
       if (
         statusCode !== undefined &&
         TERMINAL_COMMIT_STATUSES.has(statusCode) &&
