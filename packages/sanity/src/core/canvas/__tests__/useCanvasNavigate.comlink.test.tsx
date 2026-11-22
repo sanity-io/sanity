@@ -16,7 +16,20 @@ vi.hoisted(() => {
   )
 })
 
+// Comlink store override: undefined until a test sets it, so the store has no node.
+let comlinkStoreOverride: {node: undefined; start: () => void} | undefined
+
+vi.mock('../../store/datastores', async (importOriginal) => {
+  const original = await importOriginal<Record<string, unknown>>()
+  return {
+    ...original,
+    useComlinkStore: () =>
+      comlinkStoreOverride ?? (original.useComlinkStore as () => Record<string, unknown>)(),
+  }
+})
+
 afterEach(() => {
+  comlinkStoreOverride = undefined
   vi.restoreAllMocks()
 })
 
@@ -108,6 +121,17 @@ it('fails closed on a Comlink error, with "Edit in Canvas" unaffected', async ()
     'Failed to read Canvas visibility from the Dashboard context',
     expect.any(Error),
   )
+})
+
+it('fails closed in a Comlink host whose store has no node yet', async () => {
+  vi.spyOn(window, 'top', 'get').mockReturnValue(null)
+  comlinkStoreOverride = {node: undefined, start: () => {}}
+  const {result} = await renderCanvas()
+
+  await waitFor(() => expect(result.current).not.toBeNull())
+  expect(result.current.canLink).toBe(false)
+  // "Edit in Canvas" keeps working: availability is not tied to the context reply.
+  expect(result.current.isAvailable).toBe(true)
 })
 
 it('standalone: does not ask a Dashboard about visibility', async () => {
