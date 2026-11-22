@@ -35,11 +35,13 @@ it('hides "Link to Canvas" over Comlink when the Dashboard says Canvas is unlist
   const fetch = vi.spyOn(node, 'fetch').mockResolvedValue({context: {canvasVisibility: 'unlisted'}})
   const {result} = await renderCanvas()
 
-  // Wait for the call, then flush a macrotask so the reply has certainly settled: the
-  // settled answer and the closed starting point carry the same value.
+  // Wait for mount and the call, then settle inside act so the reply's value is committed
+  // before the synchronous assertion. The settled answer and the closed starting point carry
+  // the same value, so the assertion must not run before the reply arrives.
+  await waitFor(() => expect(result.current).not.toBeNull())
   await waitFor(() => expect(fetch).toHaveBeenCalledWith('dashboard/v1/context', undefined))
-  await new Promise((resolve) => setTimeout(resolve, 0))
-  await waitFor(() => expect(result.current.canLink).toBe(false))
+  await act(() => new Promise((resolve) => setTimeout(resolve, 0)))
+  expect(result.current.canLink).toBe(false)
   // "Edit in Canvas" gates on `isAvailable` only and must keep working.
   expect(result.current.isAvailable).toBe(true)
 })
@@ -95,11 +97,12 @@ it('fails closed on a Comlink error, with "Edit in Canvas" unaffected', async ()
   const error = vi.spyOn(console, 'error').mockImplementation(() => {})
   const {result} = await renderCanvas()
 
-  // Wait for the call, then flush a macrotask so the rejection has certainly settled: the
-  // settled answer and the closed starting point carry the same value.
+  // Wait for mount and the call, then settle inside act so the rejection's value is
+  // committed before the synchronous assertion.
+  await waitFor(() => expect(result.current).not.toBeNull())
   await waitFor(() => expect(fetch).toHaveBeenCalledWith('dashboard/v1/context', undefined))
-  await new Promise((resolve) => setTimeout(resolve, 0))
-  await waitFor(() => expect(result.current.canLink).toBe(false))
+  await act(() => new Promise((resolve) => setTimeout(resolve, 0)))
+  expect(result.current.canLink).toBe(false)
   expect(result.current.isAvailable).toBe(true)
   expect(error).toHaveBeenCalledWith(
     'Failed to read Canvas visibility from the Dashboard context',

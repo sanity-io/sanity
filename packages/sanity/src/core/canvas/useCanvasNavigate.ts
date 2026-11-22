@@ -4,7 +4,7 @@ import {type ValueOf} from '@sanity/sdk/dashboard'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
-import {catchError, from, map, of, timeout} from 'rxjs'
+import {catchError, defer, map, of, timeout} from 'rxjs'
 
 import {useClient} from '../hooks/useClient'
 import {useTranslation} from '../i18n/hooks/useTranslation'
@@ -62,7 +62,7 @@ export function useCanvasNavigate(): CanvasNavigate {
     // Over Comlink, only the Dashboard's context says how Canvas is listed. No node: fail closed.
     if (hasComlinkHost) {
       if (!node) return of({isAvailable: true, canLink: false})
-      return from(node.fetch('dashboard/v1/context', undefined)).pipe(
+      return defer(() => node.fetch('dashboard/v1/context', undefined)).pipe(
         map((response) => ({
           isAvailable: true,
           canLink: !(
