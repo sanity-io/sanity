@@ -139,8 +139,8 @@ it('is available without a message bus host, which does not say', async () => {
 })
 
 it.each([
-  {shape: 'an installation', listed: installation, unlisted: false},
-  {shape: 'an application', listed: application, unlisted: false},
+  {shape: 'an installation', listed: installation},
+  {shape: 'an application', listed: application},
 ])('keeps "Link to Canvas" for a listed Canvas in $shape', async ({listed}) => {
   const host = stubMessageBusHost()
   const {result} = await renderCanvas()
@@ -169,6 +169,7 @@ it.each([
     }),
   )
   await waitFor(() => expect(result.current.isAvailable).toBe(true))
+  expect(result.current.canLink).toBe(true)
 
   act(() =>
     host.publish('applications.list', {
@@ -180,28 +181,12 @@ it.each([
   expect(result.current.isAvailable).toBe(true)
 })
 
-it('keeps "Edit in Canvas" for an unlisted Canvas', async () => {
-  const host = stubMessageBusHost()
-  const {result} = await renderCanvas()
-
-  act(() =>
-    host.publish('applications.list', {
-      ok: true,
-      value: [withVisibility(application, 'unlisted')('sanity/canvas')],
-    }),
-  )
-  await waitFor(() => expect(result.current.canLink).toBe(false))
-
-  // Edit in Canvas gates on `isAvailable` only: it must stay working for unlisted organizations.
-  expect(result.current.isAvailable).toBe(true)
-})
-
 /**
- * Returns a record builder that marks the Canvas application as unlisted. Installations have no
- * `visibility` field yet, so this only carries meaning on applications.
+ * Returns a record builder that marks the Canvas record as unlisted. Both shapes carry
+ * `visibility` top-level, the same field the Dashboard now writes on each record.
  */
 function withVisibility(
-  record: typeof application,
+  record: typeof installation | typeof application,
   visibility: 'unlisted' | 'default',
 ): (reference: string) => ListedApplication {
   return (reference) => ({...record(reference), visibility})

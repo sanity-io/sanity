@@ -683,7 +683,11 @@ describe('document panel banners', () => {
   })
 
   it('shows the canvas link for a locked and an editable document', async () => {
-    vi.mocked(useCanvasNavigate).mockReturnValue({isAvailable: true, openCanvas: noop})
+    vi.mocked(useCanvasNavigate).mockReturnValue({
+      isAvailable: true,
+      canLink: true,
+      openCanvas: noop,
+    })
     vi.mocked(useCanvasCompanionDoc).mockImplementation((documentId) => ({
       isLinked: true,
       isLockedByCanvas: documentId === DOCUMENT_ID,
