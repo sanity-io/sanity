@@ -42,7 +42,7 @@ export const useLinkToCanvasAction: DocumentActionComponent = (props: DocumentAc
   const renderingContext = useRenderingContext()
   const isInDashboard =
     renderingContext?.name === 'coreUi' || renderingContext?.name === 'messageBus'
-  const {isAvailable} = useCanvasNavigate()
+  const {canLink} = useCanvasNavigate()
   const isVersionDocument = Boolean(props.release)
   const getFormValue = useGetFormValue()
   const [formValue, setFormValue] = useState<SanityDocument | undefined>()
@@ -87,7 +87,7 @@ export const useLinkToCanvasAction: DocumentActionComponent = (props: DocumentAc
   // Release documents are not yet supported in Canvas
   if (isReleaseDocument(selectedPerspective)) return null
 
-  if (!isInDashboard || !isAvailable) return null
+  if (!isInDashboard || !canLink) return null
 
   return {
     disabled: disabled.disabled,

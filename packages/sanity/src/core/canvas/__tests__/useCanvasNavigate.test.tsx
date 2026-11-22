@@ -137,3 +137,72 @@ it('is available without a message bus host, which does not say', async () => {
 
   expect(result.current.isAvailable).toBe(true)
 })
+
+it.each([
+  {shape: 'an installation', listed: installation, unlisted: false},
+  {shape: 'an application', listed: application, unlisted: false},
+])('keeps "Link to Canvas" for a listed Canvas in $shape', async ({listed}) => {
+  const host = stubMessageBusHost()
+  const {result} = await renderCanvas()
+  expect(result.current.canLink).toBe(false)
+
+  act(() =>
+    host.publish('applications.list', {
+      ok: true,
+      value: [listed('sanity/canvas')],
+    }),
+  )
+  await waitFor(() => expect(result.current.canLink).toBe(true))
+})
+
+it.each([
+  {shape: 'an installation', record: installation},
+  {shape: 'an application', record: application},
+])('hides "Link to Canvas" for an unlisted Canvas in $shape', async ({record}) => {
+  const host = stubMessageBusHost()
+  const {result} = await renderCanvas()
+
+  act(() =>
+    host.publish('applications.list', {
+      ok: true,
+      value: [record('sanity/canvas')],
+    }),
+  )
+  await waitFor(() => expect(result.current.isAvailable).toBe(true))
+
+  act(() =>
+    host.publish('applications.list', {
+      ok: true,
+      value: [withVisibility(record, 'unlisted')('sanity/canvas')],
+    }),
+  )
+  await waitFor(() => expect(result.current.canLink).toBe(false))
+  expect(result.current.isAvailable).toBe(true)
+})
+
+it('keeps "Edit in Canvas" for an unlisted Canvas', async () => {
+  const host = stubMessageBusHost()
+  const {result} = await renderCanvas()
+
+  act(() =>
+    host.publish('applications.list', {
+      ok: true,
+      value: [withVisibility(application, 'unlisted')('sanity/canvas')],
+    }),
+  )
+  await waitFor(() => expect(result.current.canLink).toBe(false))
+
+  // Edit in Canvas gates on `isAvailable` only: it must stay working for unlisted organizations.
+  expect(result.current.isAvailable).toBe(true)
+})
+
+/**
+ * Returns a record builder that marks the Canvas application as unlisted. Installations have no
+ * `visibility` field yet, so this only carries meaning on applications.
+ */
+function withVisibility(
+  record: typeof application,
+  visibility: 'unlisted' | 'default',
+): (reference: string) => ListedApplication {
+  return (reference) => ({...record(reference), visibility})
+}
