@@ -664,15 +664,19 @@ describe('deprecatedConfigDetection', () => {
     it('reports a deprecated theme token set in the config', async () => {
       const workspace = await getMockWorkspace({
         // oxlint-disable-next-line no-deprecated -- exercising deprecated theme key
-        config: {theme: {space: [0, 4, 8]}},
+        config: {theme: Object.assign(buildLegacyTheme({}), {space: [0, 4, 8]})},
       })
       expect(collectDeprecatedConfigFlags(workspace).deprecatedThemeSpace).toBe(true)
     })
 
     it('reports deprecated legacy theme keys', async () => {
       const workspace = await getMockWorkspace({
-        // oxlint-disable-next-line no-deprecated -- exercising deprecated legacy theme
-        config: {theme: buildLegacyTheme({'--screen-medium-break': '800px'})},
+        config: {
+          // oxlint-disable-next-line no-deprecated -- exercising deprecated legacy theme
+          theme: buildLegacyTheme(
+            Object.assign({'--black': '#000'}, {'--screen-medium-break': '800px'}),
+          ),
+        },
       })
       expect(collectDeprecatedConfigFlags(workspace).deprecatedLegacyThemeScreenMediumBreak).toBe(
         true,

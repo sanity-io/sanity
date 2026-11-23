@@ -40,52 +40,6 @@ export interface StudioTheme extends Omit<
    * @internal
    */
   __deprecatedLegacyThemeKeys?: LegacyThemeDeprecatedFlags
-  /**
-   * @deprecated this theme property is not configurable within the studio
-   */
-  avatar?: RootTheme['avatar']
-  /**
-   * @deprecated this theme property is not configurable within the studio
-   */
-  button?: RootTheme['button']
-  /**
-   * @deprecated this theme property is not configurable within the studio
-   */
-  container?: RootTheme['container']
-  /**
-   * @deprecated this theme property is not configurable within the studio
-   */
-  focusRing?: RootTheme['focusRing']
-  /**
-   * @deprecated this theme property is not configurable within the studio
-   */
-  input?: RootTheme['input']
-  /**
-   * @deprecated this theme property is not configurable within the studio
-   */
-  layer?: RootTheme['layer']
-
-  /**
-   * @deprecated this theme property is not configurable within the studio
-   */
-  media?: RootTheme['media']
-  /**
-   * @deprecated this theme property is not configurable within the studio
-   */
-  radius?: RootTheme['radius']
-  /**
-   * @deprecated this theme property is not configurable within the studio
-   */
-  shadows?: RootTheme['shadows']
-  /**
-   * @deprecated this theme property is not configurable within the studio
-   */
-  space?: RootTheme['space']
-  /**
-   * @deprecated this theme property is not configurable within the studio
-   */
-  styles?: RootTheme['styles']
-
   color?: RootTheme['color']
   fonts?: RootTheme['fonts']
 }

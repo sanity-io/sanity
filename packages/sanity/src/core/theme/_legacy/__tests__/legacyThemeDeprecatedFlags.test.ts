@@ -3,9 +3,13 @@ import {describe, expect, it} from 'vitest'
 
 import {buildLegacyTheme} from '../theme'
 
+function buildLegacyThemeWithRemovedKeys(removedKeys: Record<string, string>) {
+  return buildLegacyTheme(Object.assign({}, removedKeys))
+}
+
 describe('buildLegacyTheme deprecated flags', () => {
   it('tracks --screen-medium-break usage on the theme object', () => {
-    const theme = buildLegacyTheme({'--screen-medium-break': '600px'})
+    const theme = buildLegacyThemeWithRemovedKeys({'--screen-medium-break': '600px'})
     expect(theme.__deprecatedLegacyThemeKeys?.screenMediumBreak).toBe(true)
     expect(theme.__deprecatedLegacyThemeKeys?.screenDefaultBreak).toBe(false)
     expect(theme.__deprecatedLegacyThemeKeys?.screenLargeBreak).toBe(false)
@@ -13,7 +17,7 @@ describe('buildLegacyTheme deprecated flags', () => {
   })
 
   it('tracks --screen-default-break usage on the theme object', () => {
-    const theme = buildLegacyTheme({'--screen-default-break': '768px'})
+    const theme = buildLegacyThemeWithRemovedKeys({'--screen-default-break': '768px'})
     expect(theme.__deprecatedLegacyThemeKeys?.screenMediumBreak).toBe(false)
     expect(theme.__deprecatedLegacyThemeKeys?.screenDefaultBreak).toBe(true)
     expect(theme.__deprecatedLegacyThemeKeys?.screenLargeBreak).toBe(false)
@@ -21,7 +25,7 @@ describe('buildLegacyTheme deprecated flags', () => {
   })
 
   it('tracks --screen-large-break usage on the theme object', () => {
-    const theme = buildLegacyTheme({'--screen-large-break': '1024px'})
+    const theme = buildLegacyThemeWithRemovedKeys({'--screen-large-break': '1024px'})
     expect(theme.__deprecatedLegacyThemeKeys?.screenMediumBreak).toBe(false)
     expect(theme.__deprecatedLegacyThemeKeys?.screenDefaultBreak).toBe(false)
     expect(theme.__deprecatedLegacyThemeKeys?.screenLargeBreak).toBe(true)
@@ -29,7 +33,7 @@ describe('buildLegacyTheme deprecated flags', () => {
   })
 
   it('tracks --screen-xlarge-break usage on the theme object', () => {
-    const theme = buildLegacyTheme({'--screen-xlarge-break': '1400px'})
+    const theme = buildLegacyThemeWithRemovedKeys({'--screen-xlarge-break': '1400px'})
     expect(theme.__deprecatedLegacyThemeKeys?.screenMediumBreak).toBe(false)
     expect(theme.__deprecatedLegacyThemeKeys?.screenDefaultBreak).toBe(false)
     expect(theme.__deprecatedLegacyThemeKeys?.screenLargeBreak).toBe(false)
@@ -37,7 +41,7 @@ describe('buildLegacyTheme deprecated flags', () => {
   })
 
   it('tracks multiple --screen-*-break usages on the theme object', () => {
-    const theme = buildLegacyTheme({
+    const theme = buildLegacyThemeWithRemovedKeys({
       '--screen-medium-break': '600px',
       '--screen-xlarge-break': '1400px',
     })
@@ -56,8 +60,8 @@ describe('buildLegacyTheme deprecated flags', () => {
   })
 
   it('stores flags independently per theme instance (no cross-contamination)', () => {
-    const theme1 = buildLegacyTheme({'--screen-medium-break': '600px'})
-    const theme2 = buildLegacyTheme({'--screen-large-break': '1024px'})
+    const theme1 = buildLegacyThemeWithRemovedKeys({'--screen-medium-break': '600px'})
+    const theme2 = buildLegacyThemeWithRemovedKeys({'--screen-large-break': '1024px'})
 
     // Each theme should have its own flags
     expect(theme1.__deprecatedLegacyThemeKeys?.screenMediumBreak).toBe(true)
