@@ -38,7 +38,6 @@ import {DownloadButton} from './DownloadButton'
 import {ExplainTab} from './ExplainTab'
 import {HistoryTab} from './HistoryTab'
 import {MutateTab, useMutatePanel} from './MutateTab'
-import {NetworkTab} from './NetworkTab'
 import {ResponseMetaTab} from './ResponseMetaTab'
 import {ResultActionsMenu} from './ResultActionsMenu'
 import {ResultGraph} from './ResultGraph'
@@ -147,12 +146,14 @@ export function ResponsePanel(props: ResponsePanelProps) {
       {
         id: 'response',
         label: t('vision.panel.response'),
-        content: <ResponseMetaTab meta={meta} url={url} />,
-      },
-      {
-        id: 'network',
-        label: t('vision.panel.network'),
-        content: <NetworkTab meta={meta} perspectiveName={perspectiveName} resolved={resolved} />,
+        content: (
+          <ResponseMetaTab
+            meta={meta}
+            perspectiveName={perspectiveName}
+            resolved={resolved}
+            url={url}
+          />
+        ),
       },
       {
         id: 'history',

@@ -10,7 +10,7 @@ const SETTLE_MS = 1200
 /** Fewer than cobe's demo uses: at this size more read as a screen door on a 1x screen */
 const MAP_SAMPLES = 12_000
 
-/** cobe draws the globe; it is only fetched once the Network panel shows a response */
+/** cobe draws the globe; it is only fetched once the Response tab shows a response */
 const loadCobe = () => import('cobe')
 const YOU_COLOR: [number, number, number] = [0.25, 0.55, 1]
 const API_COLOR: [number, number, number] = [1, 0.45, 0.2]
