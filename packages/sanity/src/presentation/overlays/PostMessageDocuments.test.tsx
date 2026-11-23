@@ -6,11 +6,11 @@ import {
 } from '@sanity/presentation-comlink'
 import {render} from '@testing-library/react'
 import {Observable} from 'rxjs'
-import {LISTENER_PAUSE_GRACE_PERIOD, listenerGate} from 'sanity'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {stubDocumentVisibility} from '../../../test/testUtils/documentVisibility'
 import {createTestProvider} from '../../../test/testUtils/TestProvider'
+import {LISTENER_PAUSE_GRACE_PERIOD, listenerGate} from '../../core/store/listenerGate/listenerGate'
 import PostMessageDocuments from './PostMessageDocuments'
 
 let releaseListenerGate: (() => void) | undefined

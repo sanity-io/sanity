@@ -2,7 +2,9 @@ import {type LiveEvent, type LiveEventMessage, type LiveEventReconnect} from '@s
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, scan, throwError} from 'rxjs'
-import {pauseWhileDocumentHidden, type SanityClient} from 'sanity'
+import {type SanityClient} from 'sanity'
+
+import {pauseWhileDocumentHidden} from '../../core/store/listenerGate/listenerGate'
 
 /**
  * Upper bound on retained messages. Only the most recent sync tags are useful for refetching,

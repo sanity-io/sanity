@@ -1,7 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useLayoutEffect} from 'react'
+import {useEffectEvent, useLayoutEffect} from 'react'
 import {skip, tap} from 'rxjs'
-import {useEffectEvent} from 'use-effect-event'
 
 import {listenerGate} from '../../store/listenerGate/listenerGate'
 import {useWorkspace} from '../workspace'
@@ -61,7 +60,6 @@ export function ListenerGateController(): null {
       subscription.unsubscribe()
       release()
     }
-    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- useEffectEvent callbacks must not be listed
   }, [enabled])
 
   return null

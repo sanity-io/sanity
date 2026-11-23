@@ -10,9 +10,9 @@ import {useClient} from 'sanity'
 
 import {
   isReleasePerspective,
-  pauseWhileDocumentHidden,
   RELEASES_STUDIO_CLIENT_OPTIONS,
 } from '../../core/releases/util/releasesClient'
+import {pauseWhileDocumentHidden} from '../../core/store/listenerGate/listenerGate'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../core/variants/store/constants'
 import {API_VERSION} from '../constants'
 import {type VisualEditingConnection} from '../types'
