@@ -485,12 +485,11 @@ export function RequestPanel(props: RequestPanelProps) {
           minHeight="0"
           minWidth="0"
         >
-          <Box className={styles.editorLabel}>
+          <Box className={styles.paneLabel}>
             <Flex alignItems="center" gap={2}>
               <Label muted size={1}>
                 {t('query.label')}
               </Label>
-              <Box flexBasis="0%" flexGrow={1} />
               <Flex alignItems="center" className={styles.labelActions} gap={1}>
                 {!generatorOpen && (
                   <AgentActionsTooltip>

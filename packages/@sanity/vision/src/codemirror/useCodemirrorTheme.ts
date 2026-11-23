@@ -44,12 +44,18 @@ function createTheme(theme: Theme) {
 
       // The gutter shares the editor's background, set apart only by a subtle border; its line
       // numbers are muted, and the focused editor's active line number takes the text color
-      // instead of a background highlight
+      // instead of a background highlight. The border is drawn as a background so that it starts
+      // at the first line, below the content's top padding, rather than at the top of the editor
       '.cm-gutters': {
         backgroundColor: card.bg,
         color: card.muted.fg,
         border: 'none',
-        borderRight: `1px solid ${card.border}`,
+        borderRight: '1px solid transparent',
+        backgroundImage: `linear-gradient(${card.border}, ${card.border})`,
+        backgroundOrigin: 'border-box',
+        backgroundPosition: 'right bottom',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: '1px calc(100% - var(--vision-editor-content-padding-top, 0px))',
       },
       '.cm-activeLineGutter': {backgroundColor: 'transparent'},
       '&.cm-focused .cm-activeLineGutter': {color: card.fg},
