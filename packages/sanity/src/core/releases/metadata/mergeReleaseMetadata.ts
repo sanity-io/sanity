@@ -1,6 +1,6 @@
 import {type EditableReleaseDocument, type ReleaseType} from '@sanity/client'
 
-import {RESERVED_RELEASE_METADATA_NAMES} from '../../config/releases/metadataFields'
+import {RESERVED_RELEASE_METADATA_NAMES} from '../schema/releaseMetadata'
 
 /**
  * Release metadata as Studio holds it while a form is editing configured fields.

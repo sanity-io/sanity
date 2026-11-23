@@ -182,6 +182,7 @@ exports[`exports snapshot 1`] = `
     "PreviewLoader": "function",
     "RELEASES_INTENT": "string",
     "RELEASES_STUDIO_CLIENT_OPTIONS": "object",
+    "RELEASE_DOCUMENT_TYPE": "string",
     "RESOLVE_INITIAL_VALUE_TIMEOUT_MS": "number",
     "ReferenceAutocomplete": "function",
     "ReferenceInput": "function",
