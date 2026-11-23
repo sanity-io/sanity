@@ -61,6 +61,35 @@ describe('useReleasePermissions', () => {
       expect(results).toEqual([true, true])
       expect(mockAction).toHaveBeenCalledTimes(1)
     })
+
+    it('should not reuse one release result for another release', async () => {
+      const archive = vi.fn((releaseId: string) =>
+        releaseId === 'rLimited' ? Promise.reject(permissionError) : Promise.resolve(),
+      )
+      const store = createReleasePermissionsStore(true)
+
+      expect(await store.checkWithPermissionGuard(archive, 'rAllowed')).toBe(true)
+      expect(await store.checkWithPermissionGuard(archive, 'rLimited')).toBe(false)
+      expect(await store.checkWithPermissionGuard(archive, 'rAllowed')).toBe(true)
+      expect(archive).toHaveBeenCalledTimes(2)
+      expect(archive).toHaveBeenNthCalledWith(1, 'rAllowed', {
+        dryRun: true,
+        skipCrossDatasetReferenceValidation: true,
+      })
+      expect(archive).toHaveBeenNthCalledWith(2, 'rLimited', {
+        dryRun: true,
+        skipCrossDatasetReferenceValidation: true,
+      })
+    })
+
+    it('should reuse a check for the same release when non-string arguments differ', async () => {
+      const schedule = vi.fn((_releaseId: string, _publishAt: Date) => Promise.resolve())
+      const store = createReleasePermissionsStore(true)
+
+      expect(await store.checkWithPermissionGuard(schedule, 'rA', new Date(1))).toBe(true)
+      expect(await store.checkWithPermissionGuard(schedule, 'rA', new Date(2))).toBe(true)
+      expect(schedule).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('when content release feature is disabled', () => {
