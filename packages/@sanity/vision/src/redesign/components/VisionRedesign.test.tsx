@@ -15,6 +15,7 @@ import {
 import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
 import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
+import visionLocaleStrings from '../../i18n/resources'
 import {
   VisionAgentActionInvoked,
   VisionApiVersionChanged,
@@ -38,6 +39,7 @@ import {
   saveVisionState,
 } from '../store/visionStorage'
 import {parseQueryPaste} from '../util/parseQueryPaste'
+import * as styles from './redesign.module.css'
 import {VisionRedesign} from './VisionRedesign'
 
 const telemetry = vi.hoisted(() => ({log: vi.fn()}))
@@ -544,6 +546,28 @@ function generateFrom(description: string) {
   fireEvent.click(screen.getByTestId('vision-generate-submit'))
 }
 
+/** Shows results as the tree, which renders them as text the tests can read */
+function preferTreeView() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({version: 1, panels: {resultViewer: 'tree'}}))
+}
+
+/** Opens the result's Export… menu, and returns the open one among the mounted menus */
+async function openExportMenu(): Promise<HTMLElement> {
+  fireEvent.click(screen.getByTestId('vision-result-export-button'))
+  let menu: HTMLElement | undefined
+  await waitFor(() => {
+    menu = screen
+      .getAllByTestId('vision-result-export-menu')
+      .find((candidate) => !candidate.closest('[style*="display: none"]'))
+    expect(menu).toBeTruthy()
+  })
+  return menu as HTMLElement
+}
+
+function isItemDisabled(element: HTMLElement): boolean {
+  return isDisabled(element) || element.getAttribute('aria-disabled') === 'true'
+}
+
 function getStoredState() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
 }
@@ -628,8 +652,13 @@ describe('VisionRedesign', () => {
     expect(
       within(screen.getByTestId('vision-query-actions')).getByTestId('vision-fetch-button'),
     ).toBe(fetchButton)
-    expect(text(screen.getByTestId('vision-export-json'))).toContain('vision.result.export-json')
-    expect(text(screen.getByTestId('vision-export-csv'))).toContain('vision.result.export-csv')
+    const actions = screen.getByTestId('vision-result-actions')
+    const copy = within(actions).getByTestId('vision-copy-result')
+    expect(text(copy)).toBe('vision.result.copy')
+    expect(isDisabled(copy)).toBe(true)
+    expect(text(within(actions).getByTestId('vision-result-export-button'))).toBe(
+      'vision.result.export',
+    )
     expect(text(screen.getByTestId('vision-result'))).toContain('vision.result.empty')
   })
 
@@ -856,6 +885,7 @@ describe('VisionRedesign', () => {
   })
 
   it('fetches the raw response, shows its metadata and records the history', async () => {
+    preferTreeView()
     const {fetchCalls} = renderRedesign()
 
     typeQuery('*[_type == "author"]')
@@ -889,6 +919,7 @@ describe('VisionRedesign', () => {
   })
 
   it('tells in the history whether a refetch changed the result', async () => {
+    preferTreeView()
     const {respondWith} = renderRedesign()
     typeQuery('*[_type == "author"]')
     await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
@@ -1342,36 +1373,46 @@ describe('VisionRedesign', () => {
     )
   })
 
-  it('shows the result as JSON text to select and copy from, and remembers the choice', async () => {
+  it('shows the result as JSON text by default, copies it from the action bar, and remembers another view', async () => {
     const {respondWith} = renderRedesign()
     const result = [{_id: 'a', title: 'Copy me'}]
     respondWith({result, ms: 3})
     typeQuery('*[_type == "post"]')
     await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
-    await waitFor(() => expect(screen.getByTestId('result-json')).toBeTruthy())
+    const json = await screen.findByTestId('vision-result-json')
     const writeText = vi.fn(() => Promise.resolve())
     const clipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
     Object.defineProperty(navigator, 'clipboard', {value: {writeText}, configurable: true})
 
     try {
-      fireEvent.click(document.getElementById('vision-result-view-json') as HTMLElement)
-      const json = await screen.findByTestId('vision-result-json')
       expect((within(json).getByTestId('codemirror-mock') as HTMLTextAreaElement).value).toBe(
         JSON.stringify(result, null, 2),
       )
       expect(screen.queryByTestId('result-json')).toBeNull()
-      expect(
-        document.getElementById('vision-result-view-json')?.getAttribute('aria-controls'),
-      ).toBe(json.id)
-      await waitFor(() => expect(getStoredState().panels.resultView).toBe('json'))
+      const views = within(screen.getByTestId('vision-result')).getAllByRole('tab')
+      expect(views.map((view) => view.id)).toEqual([
+        'vision-result-view-json',
+        'vision-result-view-tree',
+        'vision-result-view-graph',
+      ])
+      expect(views[0].getAttribute('aria-selected')).toBe('true')
+      expect(views[0].getAttribute('aria-controls')).toBe(json.id)
+      await waitFor(() => expect(getStoredState()?.panels.resultViewer).toBe('json'))
 
-      fireEvent.click(screen.getByTestId('vision-copy-result'))
+      // Copying lives in the action bar, not next to the views
+      const copy = screen.getByTestId('vision-copy-result')
+      expect(within(screen.getByTestId('vision-result')).queryByTestId('vision-copy-result')).toBe(
+        null,
+      )
+      expect(screen.getByTestId('vision-result-actions').contains(copy)).toBe(true)
+      fireEvent.click(copy)
       await waitFor(() => expect(writeText).toHaveBeenCalledWith(JSON.stringify(result, null, 2)))
 
       fireEvent.click(document.getElementById('vision-result-view-tree') as HTMLElement)
       expect(screen.getByTestId('result-json')).toBeTruthy()
       expect(screen.queryByTestId('vision-result-json')).toBeNull()
+      await waitFor(() => expect(getStoredState().panels.resultViewer).toBe('tree'))
     } finally {
       if (clipboard) Object.defineProperty(navigator, 'clipboard', clipboard)
       else Reflect.deleteProperty(navigator, 'clipboard')
@@ -2024,14 +2065,15 @@ describe('VisionRedesign', () => {
   })
 
   it('keeps the shown result and its actions while a refetch is in flight', async () => {
+    preferTreeView()
     const {fetchCalls, holdFetches, respondWith} = renderRedesign()
     typeQuery('*[_type == "author"]')
-    // Nothing to download yet: the export controls are disabled
-    expect(isDisabled(screen.getByTestId('vision-export-json'))).toBe(true)
+    // Nothing to copy yet
+    expect(isDisabled(screen.getByTestId('vision-copy-result'))).toBe(true)
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(screen.getByTestId('result-json')).toBeTruthy())
-    // With a result they download it
-    expect(isDisabled(screen.getByTestId('vision-export-json'))).toBe(false)
+    // With a result there is
+    expect(isDisabled(screen.getByTestId('vision-copy-result'))).toBe(false)
 
     const release = holdFetches()
     respondWith({result: [{title: 'Newer'}], ms: 34, syncTags: ['s1:abc']})
@@ -2041,8 +2083,11 @@ describe('VisionRedesign', () => {
     // The previous result stays on screen until the new one arrives, and so does everything
     // that works on it
     expect(text(screen.getByTestId('result-json'))).toContain('Variant title')
-    expect(isDisabled(screen.getByTestId('vision-export-json'))).toBe(false)
-    expect(isDisabled(screen.getByTestId('vision-export-csv'))).toBe(false)
+    expect(isDisabled(screen.getByTestId('vision-copy-result'))).toBe(false)
+    const menu = await openExportMenu()
+    expect(isItemDisabled(within(menu).getByTestId('vision-export-json'))).toBe(false)
+    expect(isItemDisabled(within(menu).getByTestId('vision-export-csv'))).toBe(false)
+    fireEvent.keyDown(menu, {key: 'Escape'})
     // Fetch reads Stop meanwhile, named for what it stops next to Stop live
     const fetchButton = screen.getByTestId('vision-fetch-button')
     expect(text(fetchButton)).toBe('vision.query.stop')
@@ -2052,10 +2097,11 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(text(screen.getByTestId('result-json'))).toContain('Newer'))
     expect(text(fetchButton)).toBe('action.query-execute')
     expect(text(screen.getByTestId('vision-meta-execution'))).toContain('34ms')
-    expect(isDisabled(screen.getByTestId('vision-export-json'))).toBe(false)
+    expect(isDisabled(screen.getByTestId('vision-copy-result'))).toBe(false)
   })
 
   it('serializes the result for a download only when one is asked for', async () => {
+    preferTreeView()
     // Object URLs are stubbed so the files built can be counted, and the download link's click
     // is intercepted since jsdom cannot navigate
     const objectUrl = Object.getOwnPropertyDescriptor(URL, 'createObjectURL')
@@ -2076,15 +2122,12 @@ describe('VisionRedesign', () => {
       )
 
       // The response is on screen and both downloads are offered, but no file has been built
-      expect(isDisabled(screen.getByTestId('vision-export-json'))).toBe(false)
-      expect(isDisabled(screen.getByTestId('vision-export-csv'))).toBe(false)
+      let menu = await openExportMenu()
+      expect(isItemDisabled(within(menu).getByTestId('vision-export-json'))).toBe(false)
+      expect(isItemDisabled(within(menu).getByTestId('vision-export-csv'))).toBe(false)
       expect(createObjectURL).not.toHaveBeenCalled()
-      // The buttons themselves are what a keyboard user reaches
-      expect(screen.getByTestId('vision-export-csv').parentElement?.hasAttribute('tabindex')).toBe(
-        false,
-      )
 
-      fireEvent.click(screen.getByTestId('vision-export-json'))
+      fireEvent.click(within(menu).getByTestId('vision-export-json'))
       expect(createObjectURL).toHaveBeenCalledTimes(1)
       expect(createObjectURL.mock.calls[0][0].type).toBe('application/json')
       expect(anchorClick).toHaveBeenCalledTimes(1)
@@ -2092,33 +2135,37 @@ describe('VisionRedesign', () => {
       expect(anchor.download).toBe('query-result.json')
       expect(anchor.href).toBe('blob:application/json')
       // Asking for the same result again reuses the file
-      fireEvent.click(screen.getByTestId('vision-export-json'))
+      menu = await openExportMenu()
+      fireEvent.click(within(menu).getByTestId('vision-export-json'))
       expect(createObjectURL).toHaveBeenCalledTimes(1)
 
-      fireEvent.click(screen.getByTestId('vision-export-csv'))
+      menu = await openExportMenu()
+      fireEvent.click(within(menu).getByTestId('vision-export-csv'))
       expect(createObjectURL).toHaveBeenCalledTimes(2)
       expect(createObjectURL.mock.calls[1][0].type).toBe('text/csv')
       expect((anchorClick.mock.contexts.at(-1) as HTMLAnchorElement).download).toBe(
         'query-result.csv',
       )
 
-      // A result without objects has no CSV to offer, while the JSON stays available
+      // A result without objects has no CSV to offer, and the item says why, while the JSON
+      // stays available
       respondWith({result: [1, 2, 3], ms: 12, syncTags: []})
       fireEvent.click(screen.getByTestId('vision-fetch-button'))
       await waitFor(() => expect(text(screen.getByTestId('result-json'))).toBe('[1,2,3]'))
-      expect(isDisabled(screen.getByTestId('vision-export-json'))).toBe(false)
-      const csvButton = screen.getByTestId('vision-export-csv')
-      expect(isDisabled(csvButton)).toBe(true)
+      menu = await openExportMenu()
+      expect(isItemDisabled(within(menu).getByTestId('vision-export-json'))).toBe(false)
+      const csvItem = within(menu).getByTestId('vision-export-csv')
+      expect(isItemDisabled(csvItem)).toBe(true)
+      expect(text(csvItem)).toContain('vision.result.export-csv')
+      expect(text(csvItem)).toContain('result.save-result-as-csv.not-csv-encodable')
+      // The hint is a sibling of the ellipsized label, so the menu does not clip it to one line
+      const csvLabel = within(csvItem).getByText('vision.result.export-csv')
+      const csvHint = within(csvItem).getByText('result.save-result-as-csv.not-csv-encodable')
+      const hintText = csvHint.closest('[data-ui="Text"]')
+      expect(csvLabel.closest('[data-ui="Text"]')).not.toBe(hintText)
+      expect(hintText?.classList.contains(styles.exportUnavailableHint)).toBe(true)
+      fireEvent.click(csvItem)
       expect(createObjectURL).toHaveBeenCalledTimes(2)
-      // The disabled button is out of the tab order, so its wrapper takes its place there, as a
-      // disabled button described by the reason, for a keyboard user to reach the explanation
-      const csvWrapper = csvButton.parentElement as HTMLElement
-      expect(csvWrapper.getAttribute('tabindex')).toBe('0')
-      expect(csvWrapper.getAttribute('role')).toBe('button')
-      expect(csvWrapper.getAttribute('aria-disabled')).toBe('true')
-      expect(csvWrapper.getAttribute('aria-label')).toBe('vision.result.export-csv')
-      expect(describedBy(csvWrapper)).toBe('result.save-result-as-csv.not-csv-encodable')
-      expect(csvButton.getAttribute('aria-hidden')).toBe('true')
     } finally {
       anchorClick.mockRestore()
       if (objectUrl) Object.defineProperty(URL, 'createObjectURL', objectUrl)
@@ -2126,6 +2173,45 @@ describe('VisionRedesign', () => {
       if (revokeUrl) Object.defineProperty(URL, 'revokeObjectURL', revokeUrl)
       else Reflect.deleteProperty(URL, 'revokeObjectURL')
     }
+  })
+
+  it('offers the file exports first in the Export… menu, then the type exports', async () => {
+    const {respondWith} = renderRedesign()
+    typeQuery('*[_type == "author"]')
+    respondWith({result: [{title: 'Exported'}], ms: 5, syncTags: []})
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
+    await screen.findByTestId('vision-result-json')
+
+    const actions = screen.getByTestId('vision-result-actions')
+    expect(
+      Array.from(actions.querySelectorAll('[data-testid]'), (el) =>
+        el.getAttribute('data-testid'),
+      ).filter((id) => id === 'vision-copy-result' || id === 'vision-result-export-button'),
+    ).toEqual(['vision-copy-result', 'vision-result-export-button'])
+    expect(text(within(actions).getByTestId('vision-result-export-button'))).toBe(
+      'vision.result.export',
+    )
+    expect(
+      within(actions).getByTestId('vision-result-export-button').querySelectorAll('svg'),
+    ).toHaveLength(1)
+
+    const menu = await openExportMenu()
+    const entries = Array.from(menu.querySelectorAll('[data-testid^="vision-export-"], hr'), (el) =>
+      el.tagName === 'HR' ? 'divider' : el.getAttribute('data-testid'),
+    )
+    expect(entries).toEqual([
+      'vision-export-json',
+      'vision-export-csv',
+      'divider',
+      'vision-export-typescript',
+      'vision-export-zod',
+    ])
+    expect(visionLocaleStrings['vision.result.export-json']).toBe('Save as JSON…')
+    expect(visionLocaleStrings['vision.result.export-csv']).toBe('Save as CSV…')
+    expect(text(within(menu).getByTestId('vision-export-json'))).toBe('vision.result.export-json')
+    expect(text(within(menu).getByTestId('vision-export-csv'))).toBe('vision.result.export-csv')
+    expect(within(menu).queryByText('vision.result.copy')).toBeNull()
   })
 
   it('runs the query with the keyboard shortcut and marks the reason', async () => {
@@ -2349,14 +2435,14 @@ describe('VisionRedesign', () => {
   })
 
   it('only derives types from a result that was fetched for the current query', async () => {
+    preferTreeView()
     renderRedesign()
     typeQuery('*[_type == "author"]')
     await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(screen.getByTestId('result-json')).toBeTruthy())
 
-    fireEvent.click(screen.getByTestId('vision-result-menu-button'))
-    fireEvent.click(await screen.findByTestId('vision-export-typescript'))
+    fireEvent.click(within(await openExportMenu()).getByTestId('vision-export-typescript'))
     // No schema in the test studio mock, so the fetched result is what the types come from
     await waitFor(() =>
       expect(text(screen.getByTestId('vision-export-types-source'))).toContain(
@@ -2370,8 +2456,7 @@ describe('VisionRedesign', () => {
 
     // The shown result no longer belongs to the edited query
     typeQuery('*[_type == "book"]')
-    fireEvent.click(screen.getByTestId('vision-result-menu-button'))
-    fireEvent.click(await screen.findByTestId('vision-export-typescript'))
+    fireEvent.click(within(await openExportMenu()).getByTestId('vision-export-typescript'))
     await waitFor(() =>
       expect(text(screen.getByTestId('vision-export-types-source'))).toContain(
         'vision.export-types.stale-result',
@@ -2406,6 +2491,7 @@ describe('VisionRedesign', () => {
   })
 
   it('refetches from live events that carry one of the response sync tags', async () => {
+    preferTreeView()
     const {fetchCalls, liveEvents, liveSubscriptionCount, respondWith} = renderRedesign()
     typeQuery('*[_type == "author"]')
     // Live fetches like Fetch, then follows the response's sync tags
@@ -3115,6 +3201,7 @@ describe('VisionRedesign', () => {
   })
 
   it('loads a pasted curl command, runs the query from its body, and shows that the request posts it', async () => {
+    preferTreeView()
     const {fetchCalls} = renderRedesign()
     // A query too long for a URL, which `@sanity/client` posts as a JSON body; copied from a
     // browser's network tab, token and all
