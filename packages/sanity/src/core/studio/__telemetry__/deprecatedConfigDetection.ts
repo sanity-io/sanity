@@ -63,7 +63,7 @@ export function detectDeprecatedRawConfigOptions(
 }
 
 /**
- * Detects deprecated schema options (array direction).
+ * Detects deprecated schema options.
  *
  * @internal
  */
@@ -105,7 +105,6 @@ function checkFieldForDeprecatedOptions(
 ): void {
   const fieldType = field.type
 
-  // Check array fields for deprecated direction
   if (fieldType?.name === 'array') {
     checkArrayTypeForDeprecatedOptions(fieldType, flags)
   }

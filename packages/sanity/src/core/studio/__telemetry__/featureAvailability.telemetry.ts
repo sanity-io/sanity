@@ -106,13 +106,10 @@ export function collectDeprecatedConfigFlags(workspace: Workspace): DeprecatedCo
   // At runtime this includes workspace-level fields even though typed as SourceOptions
   const rawConfig = workspace.__internal.options as WorkspaceOptions
 
-  // Detect deprecated raw config options (logo, studio.components.logo)
   Object.assign(flags, detectDeprecatedRawConfigOptions(rawConfig))
 
-  // Detect deprecated presentation tool options (previewMode check, disable)
   Object.assign(flags, detectDeprecatedPresentationOptions(workspace.tools))
 
-  // Detect deprecated schema options (array direction)
   Object.assign(flags, detectDeprecatedSchemaOptions(workspace.schema))
 
   return flags
