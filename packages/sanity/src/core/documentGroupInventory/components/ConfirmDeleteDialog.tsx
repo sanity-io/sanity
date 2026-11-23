@@ -435,7 +435,9 @@ function BlockedNotice({
             <VStack as="ul" gap={3} style={{paddingInlineStart: 0, listStyle: 'none', margin: 0}}>
               <li data-testid="blocked-by-variants">
                 <Text size={1} as="div" trim={true}>
-                  {t('document-group.delete.blocked.variants-reason', {count: variantCount})}
+                  {variantsEnabled
+                    ? t('document-group.delete.blocked.variants-reason', {count: variantCount})
+                    : t('document-group.delete.blocked.variants-off-reason', {count: variantCount})}
                 </Text>
               </li>
             </VStack>
