@@ -68,7 +68,7 @@ describe('lintGroq', () => {
     const query = '*[_type == "post" && author->name == "x"]{title}'
     const findings = await lintGroq(query)
 
-    expect(findings.map((finding) => finding.ruleId)).toEqual(['join-in-filter', 'unlimited-query'])
+    expect(findings.map((finding) => finding.ruleId)).toEqual(['join-in-filter'])
     expect(findings[0].severity).toBe('error')
     expect(findings[0].message).toContain('Avoid joins')
     expect(query.slice(findings[0].from, findings[0].to)).toBe('author->')
@@ -78,21 +78,16 @@ describe('lintGroq', () => {
     expect(await lintGroq('')).toEqual([])
   })
 
-  it('reports unlimited-query for an unsliced top-level filter and not once it is sliced', async () => {
-    const query = '*[_type == "post"]'
+  it('does not report unlimited-query for an unsliced query, sliced or not', async () => {
+    expect(await lintGroq('*[_type == "post"]')).toEqual([])
+    expect(await lintGroq('*[_type == "post"]{title}')).toEqual([])
+    expect(await lintGroq('*[_type == "post"][0...10]')).toEqual([])
+  })
+
+  it('still reports the other rules on a query that is not sliced', async () => {
+    const query = '*[_type == "post"][0...2000]'
     const findings = await lintGroq(query)
-
-    expect(findings.map((finding) => finding.ruleId)).toEqual(['unlimited-query'])
-    expect(findings[0].severity).toBe('warning')
-    expect(query.slice(findings[0].from, findings[0].to)).toBe('[_type == "post"]')
-
-    // A projection does not bound the result; the filter is still what the rule underlines
-    const projected = '*[_type == "post"]{title}'
-    const [projectedFinding] = await lintGroq(projected)
-    expect(projectedFinding.ruleId).toBe('unlimited-query')
-    expect(projected.slice(projectedFinding.from, projectedFinding.to)).toBe('[_type == "post"]')
-
-    expect(await lintGroq(`${query}[0...10]`)).toEqual([])
+    expect(findings.map((finding) => finding.ruleId)).toEqual(['large-pages'])
   })
 
   it('reports ranges as string indices when the query holds multi-byte characters', async () => {
