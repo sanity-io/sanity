@@ -28,6 +28,7 @@ import {selectOpenTabDrawer, selectResultView} from '../../store/visionMachine'
 import {haveSameQuery} from '../../util/queryRequest'
 import {ActionRail} from '../ActionRail'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
+import {useResponseBottomPanel} from '../queryTabLayout'
 import * as styles from '../redesign.module.css'
 import {usePerspectiveOptionName} from '../request/OptionFields'
 import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
@@ -60,6 +61,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
   const {tab, runnerRef, resolved, request, onMutationsApplied} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
+  const {state: panelState, setState: setPanelState} = useResponseBottomPanel()
 
   const status = useSelector(runnerRef, selectRequestStatus)
   const result = useSelector(runnerRef, (snapshot) => snapshot.context.result)
@@ -263,6 +265,8 @@ export function ResponsePanel(props: ResponsePanelProps) {
           </ActionRail>
         }
         id="vision-response"
+        onStateChange={setPanelState}
+        state={panelState}
         tabs={panelTabs}
         testId="vision-response-panel"
       >

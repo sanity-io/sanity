@@ -1,5 +1,5 @@
 import {type Extension} from '@codemirror/state'
-import {type Command} from '@codemirror/view'
+import {type Command, type EditorView} from '@codemirror/view'
 import {rem, useTheme} from '@sanity/ui'
 import CodeMirror, {
   EditorSelection,
@@ -113,7 +113,14 @@ export function VisionCodeMirror({
     setSeenInitialValue(initialValueProp)
     if (!hasView) setValue(initialValueProp)
   }
-  const handleCreateEditor = useCallback(() => setHasView(true), [])
+  const handleCreateEditor = useCallback((view: EditorView) => {
+    // A new view draws its gutters before it has read the content's top padding, and only lines
+    // them up with the text in its first measure, after the browser has painted: the line numbers
+    // would show a frame too high, every time a tab mounts its editors. Reading the layout makes
+    // the view take that measure now
+    view.lineBlockAtHeight(0)
+    setHasView(true)
+  }, [])
   useEffect(() => {
     // The view is destroyed by the child's effect cleanups, which run along with this one
     return () => setHasView(false)

@@ -3522,6 +3522,30 @@ describe('VisionRedesign', () => {
     expect(requestPane.style.flex).toBe('0 0 600px')
   })
 
+  it('renders a switched-to or new tab with the layout already in place, in its first render', async () => {
+    renderRedesign()
+    const split = await screen.findByTestId('vision-split')
+    resizeElement(screen.getByTestId('vision-query-tab'), {width: 1200, height: 700})
+    resizeElement(split, {width: 1200, height: 700})
+    fireEvent.keyDown(screen.getByTestId('vision-split-handle'), {key: 'ArrowRight'})
+    fireEvent.click(document.getElementById('vision-response-history-tab') as HTMLElement)
+    fireEvent.click(document.getElementById('vision-request-lint-tab') as HTMLElement)
+
+    // Each tab mounts its own panels, which nothing has measured yet: the split and the bottom
+    // panels have to come from what the tab before them showed, or they paint in a default first
+    const expectSameLayout = () => {
+      const requestPane = screen.getByTestId('vision-split').firstElementChild as HTMLElement
+      expect(requestPane.style.flex).toBe('0 0 616px')
+      for (const id of ['vision-response-history-tab', 'vision-request-lint-tab']) {
+        expect(document.getElementById(id)?.getAttribute('aria-selected')).toBe('true')
+      }
+    }
+    fireEvent.click(screen.getByTestId('vision-new-tab'))
+    expectSameLayout()
+    fireEvent.click(within(screen.getAllByTestId('vision-tab')[0]).getByTestId('vision-tab-button'))
+    expectSameLayout()
+  })
+
   it.each(['params', 'options', 'lint', 'functions'] as const)(
     'fits the request panel to the %s tab on double-click, not on a single click',
     async (id) => {
