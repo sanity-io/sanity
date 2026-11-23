@@ -32,12 +32,12 @@ import {useSetVariant} from '../../perspective/useSetVariant'
 import {VersionContextMenuDialogs} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuDialogs'
 import {VersionContextMenuPopover} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuPopover'
 import {useDocumentVersionsObservable} from '../../releases/hooks/useDocumentVersions'
+import {useReleasesEnabled} from '../../releases/hooks/useReleasesEnabled'
 import {useVersionContextMenu} from '../../releases/hooks/useVersionContextMenu'
 import {isReleaseDocument, type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
 import {useAgentBundlesStore} from '../../store/agent/useAgentBundles'
 import {useDocumentPresence} from '../../store/presence/useDocumentPresence'
 import {useWorkspace} from '../../studio/workspace'
@@ -73,6 +73,7 @@ import {
   SELECTION_BLOCKED_REASON_KEYS,
   type SelectionBlockedReason,
 } from '../utils/selection'
+import {metaWithoutReleases, withoutReleases} from '../utils/withoutReleases'
 import {
   type DisplayedVariantSet,
   type PendingDraft,
@@ -189,7 +190,13 @@ export function DocumentGroupInventory(
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema().get(documentType)
   const versionState = useDocumentVersionsObservable({documentId})
-  const {state$: releases} = useReleasesStore()
+  const {state$: releasesState$} = useReleasesStore()
+  // With content releases off, the inventory and Create variant only know scheduled drafts.
+  const releasesEnabled = useReleasesEnabled()
+  const releases = useMemo(
+    () => (releasesEnabled ? releasesState$ : releasesState$.pipe(map(withoutReleases))),
+    [releasesEnabled, releasesState$],
+  )
   const {state$: agentBundles} = useAgentBundlesStore()
   const {state$: variants} = useVariantsStore()
 
@@ -215,14 +222,16 @@ export function DocumentGroupInventory(
       documentGroupInventoryMachine.provide({
         actors: {
           meta: fromObservable(() =>
-            combineLatest({versionState, releases, variants, agentBundles}),
+            combineLatest({versionState, releases, variants, agentBundles}).pipe(
+              map((meta) => (releasesEnabled ? meta : metaWithoutReleases(meta))),
+            ),
           ),
         },
         actions: {
           onFeedbackBegin: feedbackDialogOpened,
         },
       }),
-    [versionState, releases, variants, agentBundles, feedbackDialogOpened],
+    [versionState, releases, variants, agentBundles, feedbackDialogOpened, releasesEnabled],
   )
 
   const inventoryRef = useActorRef(inventoryMachine, {
@@ -754,7 +763,7 @@ const ManagedVariantRow: ComponentType<{
   onToggleSelection,
 }) => {
   const {t} = useTranslation(studioLocaleNamespace)
-  const releasesToolAvailable = useReleasesToolAvailable()
+  const releasesToolAvailable = useReleasesEnabled()
   const {loading: releasesLoading} = useActiveReleases()
   // Derived from `_system` rather than the id, because `_system` is authoritative: it
   // distinguishes a variant-scoped draft (`versions.<scope>.<id>` with `bundleId: 'drafts'`)
