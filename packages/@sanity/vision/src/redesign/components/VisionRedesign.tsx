@@ -23,8 +23,8 @@ import {selectActiveTab, selectOpenDrawer, visionMachine} from '../store/visionM
 import {loadVisionState, type VisionStorageDefaults} from '../store/visionStorage'
 import {AiCreditsUpsellProvider} from './AiCreditsUpsell'
 import {AiFeaturesProvider} from './AiFeaturesProvider'
+import {QueryTabLayoutProvider} from './queryTabLayout'
 import * as styles from './redesign.module.css'
-import {RequestBottomPanelProvider} from './requestBottomPanel'
 import {VisionSidebar} from './sidebar/VisionSidebar'
 import {QueryTab} from './tabs/QueryTab'
 import {QueryTabBar} from './tabs/QueryTabBar'
@@ -132,9 +132,9 @@ export function VisionRedesign(props: VisionRedesignProps) {
                         overflow="hidden"
                       >
                         <QueryTabBar />
-                        <RequestBottomPanelProvider>
+                        <QueryTabLayoutProvider>
                           <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
-                        </RequestBottomPanelProvider>
+                        </QueryTabLayoutProvider>
                       </Flex>
                     </Flex>
                     <VisionDialogs />

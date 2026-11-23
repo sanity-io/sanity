@@ -172,7 +172,7 @@ export const visionMachine = setup({
       context.restoredPanels[params.panel],
     wasParamsForm: ({context}) => context.restoredPanels.paramsView === 'form',
     wasResultView: ({context}, params: {view: VisionResultView}) =>
-      context.restoredPanels.resultView === params.view,
+      context.restoredPanels.resultViewer === params.view,
     isResultView: ({event}, params: {view: VisionResultView}) =>
       event.type === 'result.view' && event.view === params.view,
     isParamsView: ({event}, params: {view: VisionParamsView}) =>
@@ -390,7 +390,7 @@ export const visionMachine = setup({
         '.sidebar.collapsed',
         '.paramsPanel.expanded',
         '.paramsView.json',
-        '.resultView.tree',
+        '.resultView.json',
         '.optionsPanel.expanded',
         '.drawer.closed',
         '.dialog.closed',
@@ -466,9 +466,9 @@ export const visionMachine = setup({
       states: {
         restoring: {
           always: [
-            {guard: {type: 'wasResultView', params: {view: 'json'}}, target: 'json'},
+            {guard: {type: 'wasResultView', params: {view: 'tree'}}, target: 'tree'},
             {guard: {type: 'wasResultView', params: {view: 'graph'}}, target: 'graph'},
-            {target: 'tree'},
+            {target: 'json'},
           ],
         },
         tree: {},
@@ -548,7 +548,7 @@ export function selectPersistedState(snapshot: VisionSnapshot): VisionPersistedS
       params: isPanelExpanded(snapshot, 'params'),
       options: isPanelExpanded(snapshot, 'options'),
       paramsView: selectParamsView(snapshot),
-      resultView: selectResultView(snapshot),
+      resultViewer: selectResultView(snapshot),
     },
     historyDiff: snapshot.context.historyDiff,
     ai: snapshot.context.ai,
@@ -565,8 +565,8 @@ export function selectParamsView(snapshot: VisionSnapshot): VisionParamsView {
 }
 
 export function selectResultView(snapshot: VisionSnapshot): VisionResultView {
-  if (snapshot.matches({resultView: 'json'})) return 'json'
-  return snapshot.matches({resultView: 'graph'}) ? 'graph' : 'tree'
+  if (snapshot.matches({resultView: 'tree'})) return 'tree'
+  return snapshot.matches({resultView: 'graph'}) ? 'graph' : 'json'
 }
 
 export function isPanelExpanded(snapshot: VisionSnapshot, panel: VisionPanel): boolean {

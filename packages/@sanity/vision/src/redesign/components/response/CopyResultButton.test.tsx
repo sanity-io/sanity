@@ -88,4 +88,24 @@ describe('CopyResultButton', () => {
     await click()
     expect(copied()).toBe(false)
   })
+
+  it('shows its label next to the copy icon', () => {
+    renderButton(() => Promise.resolve(true))
+    const button = screen.getByTestId('vision-copy-result')
+    expect(button.textContent).toBe('Copy result')
+    expect(button.contains(screen.getByTestId('vision-copy-result-glyphs'))).toBe(true)
+  })
+
+  it('copies nothing while disabled', async () => {
+    const onCopy = vi.fn(() => Promise.resolve(true))
+    render(
+      <ThemeProvider theme={theme}>
+        <LayerProvider>
+          <CopyResultButton disabled label="Copy result" onCopy={onCopy} />
+        </LayerProvider>
+      </ThemeProvider>,
+    )
+    await click()
+    expect(onCopy).not.toHaveBeenCalled()
+  })
 })

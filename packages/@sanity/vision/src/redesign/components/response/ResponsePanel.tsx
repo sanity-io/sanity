@@ -1,5 +1,3 @@
-import {DocumentSheetIcon} from '@sanity/icons/DocumentSheet'
-import {JsonIcon} from '@sanity/icons/Json'
 import {Badge, Card, Label, Tab, TabList} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
@@ -28,13 +26,13 @@ import {selectOpenTabDrawer, selectResultView} from '../../store/visionMachine'
 import {haveSameQuery} from '../../util/queryRequest'
 import {ActionRail} from '../ActionRail'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
+import {useResponseBottomPanel} from '../queryTabLayout'
 import * as styles from '../redesign.module.css'
 import {usePerspectiveOptionName} from '../request/OptionFields'
 import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
 import {TabDrawerPortal} from '../TabDrawerPortal'
 import {CopyResultButton} from './CopyResultButton'
 import {DeltaTab, useDeltaPanel} from './DeltaTab'
-import {DownloadButton} from './DownloadButton'
 import {ExplainTab} from './ExplainTab'
 import {HistoryTab} from './HistoryTab'
 import {MutateTab, useMutatePanel} from './MutateTab'
@@ -60,6 +58,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
   const {tab, runnerRef, resolved, request, onMutationsApplied} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
+  const {state: panelState, setState: setPanelState} = useResponseBottomPanel()
 
   const status = useSelector(runnerRef, selectRequestStatus)
   const result = useSelector(runnerRef, (snapshot) => snapshot.context.result)
@@ -234,28 +233,21 @@ export function ResponsePanel(props: ResponsePanelProps) {
         fitOnTabDoubleClick
         footer={
           <ActionRail testId="vision-result-actions">
-            <DownloadButton
-              download="query-result.json"
-              getBlobUrl={hasResult ? getJsonUrl : undefined}
-              icon={JsonIcon}
-              label={t('vision.result.export-json')}
-              testId="vision-export-json"
+            <CopyResultButton
+              disabled={!hasResult}
+              label={t('vision.result.copy')}
+              onCopy={copyResult}
             />
-            <DownloadButton
-              download="query-result.csv"
-              getBlobUrl={canExportCsv ? getCsvUrl : undefined}
-              icon={DocumentSheetIcon}
-              label={t('vision.result.export-csv')}
-              onUnavailable={reportCsvUnavailable}
-              testId="vision-export-csv"
-              tooltip={
+            <ResultActionsMenu
+              csvUnavailableHint={
                 hasResult && !canExportCsv
                   ? t('result.save-result-as-csv.not-csv-encodable')
                   : undefined
               }
-            />
-            <ResultActionsMenu
+              getCsvUrl={canExportCsv ? getCsvUrl : undefined}
+              getJsonUrl={hasResult ? getJsonUrl : undefined}
               hasResult={hasResult}
+              onCsvUnavailable={reportCsvUnavailable}
               result={result}
               resultIsCurrent={resultIsCurrent}
               tab={tab}
@@ -263,6 +255,8 @@ export function ResponsePanel(props: ResponsePanelProps) {
           </ActionRail>
         }
         id="vision-response"
+        onStateChange={setPanelState}
+        state={panelState}
         tabs={panelTabs}
         testId="vision-response-panel"
       >
@@ -284,20 +278,20 @@ export function ResponsePanel(props: ResponsePanelProps) {
                     <Tab
                       aria-controls="vision-result-content"
                       fontSize={1}
-                      id="vision-result-view-tree"
-                      label={t('vision.result.view.tree')}
-                      onClick={() => setResultView('tree')}
-                      padding={2}
-                      selected={resultView === 'tree'}
-                    />
-                    <Tab
-                      aria-controls="vision-result-content"
-                      fontSize={1}
                       id="vision-result-view-json"
                       label={t('vision.result.view.json')}
                       onClick={() => setResultView('json')}
                       padding={2}
                       selected={resultView === 'json'}
+                    />
+                    <Tab
+                      aria-controls="vision-result-content"
+                      fontSize={1}
+                      id="vision-result-view-tree"
+                      label={t('vision.result.view.tree')}
+                      onClick={() => setResultView('tree')}
+                      padding={2}
+                      selected={resultView === 'tree'}
                     />
                     <Tab
                       aria-controls="vision-result-content"
@@ -309,7 +303,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
                       selected={resultView === 'graph'}
                     />
                   </TabList>
-                  <CopyResultButton label={t('vision.result.copy')} onCopy={copyResult} />
                 </Flex>
               )}
             </Flex>

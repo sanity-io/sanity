@@ -25,7 +25,6 @@ import {
   useVisionActor,
   useVisionExperience,
   useVisionSelector,
-  type VisionLayout,
 } from '../../store/VisionActorContext'
 import {
   selectDatasets,
@@ -47,6 +46,7 @@ import {parseQueryPaste} from '../../util/parseQueryPaste'
 import {isQueryParamName} from '../../util/queryParamName'
 import {parsedQueryToTabInit} from '../../util/savedQueryTab'
 import {type VisionShortcutId} from '../../util/shortcuts'
+import {useQueryTabSplitSizes} from '../queryTabLayout'
 import * as styles from '../redesign.module.css'
 import {RequestPanel} from '../request/RequestPanel'
 import {ResizableSplit} from '../ResizableSplit'
@@ -135,7 +135,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   const [splitContainer, setSplitContainer] = useState<HTMLDivElement | null>(null)
   const splitContainerSize = useContentSize(splitContainer)
   // Dragged sizes are remembered per layout: a column width makes no sense as a stacked height
-  const [splitSizes, setSplitSizes] = useState<Partial<Record<VisionLayout, number>>>({})
+  const {splitSizes, setSplitSizes} = useQueryTabSplitSizes()
   const [mobilePane, setMobilePane] = useState<MobilePane>('request')
 
   const queryEditorRef = useRef<VisionCodeMirrorHandle>(null)

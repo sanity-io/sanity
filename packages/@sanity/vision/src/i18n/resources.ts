@@ -951,20 +951,26 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Under the query URL when the request went out as a POST body rather than that URL */
   'vision.response.url.sent-as-post':
     'Sent as a POST body: the query and params are too long for a URL, so @sanity/client sent them as JSON. Pasting this URL into Vision still loads the query.',
-  /** Accessible label for the result actions menu */
+  /**
+   * Accessible label for the result actions menu
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.result.actions': 'Result actions',
   /** Toast shown after the result was copied */
   'vision.result.copied': 'Result copied to clipboard',
   /** Toast shown after a value in the result was copied, with its path such as [0].author.name */
   'vision.result.copied-value': 'Copied {{path}}',
-  /** Menu item and button copying the result as JSON */
+  /** Button in the result's action bar copying the result as JSON */
   'vision.result.copy': 'Copy result',
   /** Button next to each property in the result tree, copying its value */
   'vision.result.copy-value': 'Copy value',
   /** Empty state of the result view */
   'vision.result.empty': 'Run the query to see its result here',
-  /** Button exporting the result as CSV */
-  'vision.result.export-csv': 'Export CSV',
+  /** Button opening the menu of ways to export the result */
+  'vision.result.export': 'Export…',
+  /** Menu item saving the result as a CSV file */
+  'vision.result.export-csv': 'Save as CSV…',
   /** Button on a graph node hiding the objects and arrays it holds */
   'vision.result.graph.collapse': 'Hide what it holds',
   /** Button on a collapsed graph node showing the objects and arrays it holds again */
@@ -995,8 +1001,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.result.graph.zoom-in': 'Zoom in',
   /** Button zooming out of the graph */
   'vision.result.graph.zoom-out': 'Zoom out',
-  /** Button exporting the result as JSON */
-  'vision.result.export-json': 'Export JSON',
+  /** Menu item saving the result as a JSON file */
+  'vision.result.export-json': 'Save as JSON…',
   /** Menu item opening the TypeScript export dialog */
   'vision.result.export-typescript': 'Export TypeScript…',
   /** Menu item opening the Zod export dialog */

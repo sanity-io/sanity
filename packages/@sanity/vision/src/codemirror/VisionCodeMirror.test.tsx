@@ -1,5 +1,6 @@
 import {history, undo} from '@codemirror/commands'
 import {type Extension} from '@codemirror/state'
+import {EditorView} from '@codemirror/view'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {act, render} from '@testing-library/react'
 import {Activity, type RefObject} from 'react'
@@ -50,6 +51,17 @@ describe('VisionCodeMirror', () => {
     expect(undone).toBe(true)
     expect(content()).toBe('*[_type == "post"]')
     // Destroying the view cancels the measuring that undo scheduled, which jsdom cannot do
+    unmount()
+  })
+
+  it('lines its gutters up with the text in the commit that creates the view', () => {
+    const padding = EditorView.theme({'.cm-content': {paddingTop: '32px'}})
+    const {container, unmount} = render(editor('visible', {current: null}, vi.fn(), '*', [padding]))
+    const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)
+
+    // The gutters are placed from the padding the view has read, which it would otherwise only
+    // read in an animation frame after the first paint
+    expect(view?.documentPadding.top).toBe(32)
     unmount()
   })
 
