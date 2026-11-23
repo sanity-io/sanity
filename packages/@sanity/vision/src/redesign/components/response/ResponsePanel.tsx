@@ -273,7 +273,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
           data-testid="vision-result"
           tone={status === 'failed' ? 'critical' : 'default'}
         >
-          <Box className={styles.resultLabel}>
+          <Box className={styles.paneLabel}>
             <Flex alignItems="center" gap={2}>
               <Label muted size={1}>
                 {t('result.label')}
@@ -283,7 +283,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
                   {t('vision.live.active')}
                 </Badge>
               )}
-              <Box flexBasis="0%" flexGrow={1} />
               {hasResult && (
                 <Flex alignItems="center" className={styles.labelActions} gap={1}>
                   <TabList aria-label={t('vision.result.view.label')} gap={1}>
