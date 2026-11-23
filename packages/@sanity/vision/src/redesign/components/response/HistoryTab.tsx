@@ -240,7 +240,8 @@ function HistoryEntry(props: {
           />
         )}
         <Box flexBasis="0%" flexGrow={1} />
-        {entry.network?.viaCdn && (
+        {/* An answer given on this device never reached the CDN, whatever host it was asked of. */}
+        {entry.network?.viaCdn && !entry.network.local && (
           <Badge
             data-testid="vision-history-cdn"
             fontSize={0}
