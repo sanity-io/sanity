@@ -83,7 +83,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
   const hiddenDiffFields = useVisionSelector(
     (snapshot) => snapshot.context.historyDiff.hiddenFields,
   )
-  const isLive = useSelector(runnerRef, (snapshot) => snapshot.matches({live: 'on'}))
 
   // A response stays on screen while a newer fetch is in flight, and its actions stay with it;
   // a failed fetch or a cleared tab drops `meta` together with the result
@@ -278,11 +277,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
               <Label muted size={1}>
                 {t('result.label')}
               </Label>
-              {isLive && (
-                <Badge className={styles.resultEnter} fontSize={0} tone="positive">
-                  {t('vision.live.active')}
-                </Badge>
-              )}
               {hasResult && (
                 <Flex alignItems="center" className={styles.labelActions} gap={1}>
                   <TabList aria-label={t('vision.result.view.label')} gap={1}>
