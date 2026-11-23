@@ -9,6 +9,7 @@ import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {validateApiVersion} from '../../../util/validateApiVersion'
+import {AI_FEATURE_KEYS, type AiFeature, useConfiguredAiFeatures} from '../../aiFeatures'
 import {
   useSavedQueriesApi,
   useVisionActor,
@@ -91,6 +92,68 @@ function HiddenDiffFieldsSetting() {
         />
       </Flex>
     </Stack>
+  )
+}
+
+const AI_FEATURE_TEXT = {
+  generateQuery: {
+    title: 'vision.settings.ai.generate-query',
+    description: 'vision.settings.ai.generate-query.description',
+  },
+  generateMutations: {
+    title: 'vision.settings.ai.generate-mutations',
+    description: 'vision.settings.ai.generate-mutations.description',
+  },
+  explainQuery: {
+    title: 'vision.settings.ai.explain-query',
+    description: 'vision.settings.ai.explain-query.description',
+  },
+} as const satisfies Record<AiFeature, {title: string; description: string}>
+
+/**
+ * Switches for the AI features the config leaves on; none at all when it leaves none on. They
+ * only switch features off, so a feature the config turns off has no switch.
+ */
+function AiSettings() {
+  const {t} = useTranslation(visionLocaleNamespace)
+  const actorRef = useVisionActor()
+  const configured = useConfiguredAiFeatures()
+  const settings = useVisionSelector((snapshot) => snapshot.context.ai)
+  const features = AI_FEATURE_KEYS.filter((feature) => configured[feature])
+  if (features.length === 0) return null
+
+  return (
+    <Card border data-testid="vision-settings-ai" padding={3} radius={2}>
+      <Stack gap={4}>
+        <Stack gap={2}>
+          <Text size={1} weight="medium" as="div" trim={true}>
+            {t('vision.settings.ai.title')}
+          </Text>
+          <Text muted size={1} as="div" trim={true}>
+            {t('vision.settings.ai.description')}
+          </Text>
+        </Stack>
+        <SwitchField
+          checked={settings.enabled}
+          onChange={(enabled) => actorRef.send({type: 'ai.update', settings: {enabled}})}
+          testId="vision-settings-ai-enabled"
+          title={t('vision.settings.ai.enabled')}
+        />
+        {features.map((feature) => (
+          <SwitchField
+            checked={settings.enabled && settings[feature]}
+            description={t(AI_FEATURE_TEXT[feature].description)}
+            disabled={!settings.enabled}
+            key={feature}
+            onChange={(checked) =>
+              actorRef.send({type: 'ai.update', settings: {[feature]: checked}})
+            }
+            testId={`vision-settings-ai-${feature}`}
+            title={t(AI_FEATURE_TEXT[feature].title)}
+          />
+        ))}
+      </Stack>
+    </Card>
   )
 }
 
@@ -197,6 +260,8 @@ export function SettingsPanel() {
         <Card border padding={3} radius={2}>
           <HiddenDiffFieldsSetting />
         </Card>
+
+        <AiSettings />
 
         <Card border padding={3} radius={2}>
           <Stack gap={3}>

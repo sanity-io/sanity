@@ -383,7 +383,28 @@ describe('visionMachine', () => {
       sidebar: {expanded: true, drawer: 'saved'},
       panels: {params: true, options: false, paramsView: 'json', resultView: 'tree'},
       historyDiff: {hiddenFields: ['_rev', '_updatedAt', '_system.base.rev']},
+      ai: {enabled: true, generateQuery: true, generateMutations: true, explainQuery: true},
       functions: [],
+    })
+  })
+
+  it('updates the AI settings, persists them, and turns them all back on when storage is cleared', () => {
+    const harness = createHarness()
+    harness.actor.send({type: 'ai.update', settings: {generateMutations: false}})
+    harness.actor.send({type: 'ai.update', settings: {enabled: false}})
+    expect(selectPersistedState(harness.snapshot()).ai).toEqual({
+      enabled: false,
+      generateQuery: true,
+      generateMutations: false,
+      explainQuery: true,
+    })
+
+    harness.actor.send({type: 'storage.clear'})
+    expect(harness.snapshot().context.ai).toEqual({
+      enabled: true,
+      generateQuery: true,
+      generateMutations: true,
+      explainQuery: true,
     })
   })
 

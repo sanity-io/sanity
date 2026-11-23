@@ -6,7 +6,6 @@ import {Flex} from 'ui5'
 import {useSavedQueries} from '../../hooks/useSavedQueries'
 import {useVisionTelemetry} from '../../telemetry/useVisionTelemetry'
 import {type VisionConfig} from '../../types'
-import {AiFeaturesContext, resolveAiFeatures} from '../aiFeatures'
 import {useContentSize} from '../hooks/useContentSize'
 import {
   createPendingEdits,
@@ -23,6 +22,7 @@ import {
 import {selectActiveTab, selectOpenDrawer, visionMachine} from '../store/visionMachine'
 import {loadVisionState, type VisionStorageDefaults} from '../store/visionStorage'
 import {AiCreditsUpsellProvider} from './AiCreditsUpsell'
+import {AiFeaturesProvider} from './AiFeaturesProvider'
 import * as styles from './redesign.module.css'
 import {RequestBottomPanelProvider} from './requestBottomPanel'
 import {VisionSidebar} from './sidebar/VisionSidebar'
@@ -96,7 +96,6 @@ export function VisionRedesign(props: VisionRedesignProps) {
     (): VisionExperience => ({layout, switchToClassic: onSwitchToClassic}),
     [layout, onSwitchToClassic],
   )
-  const aiFeatures = useMemo(() => resolveAiFeatures(config.ai), [config.ai])
   const savedQueries = useSavedQueries()
   const [pendingEdits] = useState(createPendingEdits)
   const [tabDrawerElement, setTabDrawerElement] = useState<HTMLElement | null>(null)
@@ -111,7 +110,7 @@ export function VisionRedesign(props: VisionRedesignProps) {
         <SavedQueriesContext.Provider value={savedQueries}>
           <PendingEditsContext.Provider value={pendingEdits}>
             <TabDrawerSlotContext.Provider value={tabDrawerSlot}>
-              <AiFeaturesContext.Provider value={aiFeatures}>
+              <AiFeaturesProvider ai={config.ai}>
                 <AiCreditsUpsellProvider projectId={projectId}>
                   <TooltipDelayGroupProvider delay={TOOLTIP_DELAY}>
                     <Flex
@@ -143,7 +142,7 @@ export function VisionRedesign(props: VisionRedesignProps) {
                     <VisionWebMcp tab={activeTab} />
                   </TooltipDelayGroupProvider>
                 </AiCreditsUpsellProvider>
-              </AiFeaturesContext.Provider>
+              </AiFeaturesProvider>
             </TabDrawerSlotContext.Provider>
           </PendingEditsContext.Provider>
         </SavedQueriesContext.Provider>

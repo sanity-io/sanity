@@ -1827,6 +1827,86 @@ describe('VisionRedesign', () => {
       // Generate over the query editor and Explain this to me
       expect(creditNotes).toBe(2)
     })
+
+    function openSettings() {
+      fireEvent.click(screen.getByTestId('vision-sidebar-settings'))
+      return within(screen.getByTestId('vision-drawer-settings'))
+    }
+
+    function isChecked(element: HTMLElement): boolean {
+      return (element as HTMLInputElement).checked
+    }
+
+    it('turns off the AI features the user switches off in the settings, and remembers it', async () => {
+      renderRedesign()
+      const settings = openSettings()
+      expect(settings.getByTestId('vision-settings-ai')).toBeTruthy()
+      for (const id of ['enabled', 'generateQuery', 'generateMutations', 'explainQuery']) {
+        expect(isChecked(settings.getByTestId(`vision-settings-ai-${id}`))).toBe(true)
+      }
+      expect(screen.getByTestId('vision-generate-query')).toBeTruthy()
+
+      fireEvent.click(settings.getByTestId('vision-settings-ai-generateQuery'))
+      await waitFor(() => expect(screen.queryByTestId('vision-generate-query')).toBeNull())
+      await waitFor(() =>
+        expect(getStoredState().ai).toEqual({
+          enabled: true,
+          generateQuery: false,
+          generateMutations: true,
+          explainQuery: true,
+        }),
+      )
+      cleanup()
+
+      const {shown, webMcpTools} = await shownAiControls(undefined)
+      expect(shown).toEqual({generateQuery: false, generateMutations: true, explainQuery: true})
+      // The WebMCP tools spend no AI credits and stay registered
+      expect(webMcpTools).toBe(7)
+    })
+
+    it('turns off every AI feature with the switch for all of them, and reads no AI credits', async () => {
+      const view = renderRedesign()
+      const settings = openSettings()
+      fireEvent.click(settings.getByTestId('vision-settings-ai-enabled'))
+      await waitFor(() => expect(getStoredState().ai.enabled).toBe(false))
+      // The per-feature switches read as off and wait for the switch for all of them
+      for (const id of ['generateQuery', 'generateMutations', 'explainQuery']) {
+        const toggle = settings.getByTestId(`vision-settings-ai-${id}`)
+        expect(isChecked(toggle)).toBe(false)
+        expect(isDisabled(toggle)).toBe(true)
+      }
+      expect(getStoredState().ai.generateQuery).toBe(true)
+      view.unmount()
+
+      const {shown, webMcpTools, creditNotes, view: next} = await shownAiControls(undefined)
+      expect(shown).toEqual({generateQuery: false, generateMutations: false, explainQuery: false})
+      expect(webMcpTools).toBe(7)
+      expect(creditNotes).toBe(0)
+      expect(next.aiCreditsRequests).toHaveLength(0)
+    })
+
+    it('never turns on a feature the config turns off, and gives it no switch', async () => {
+      const initial = createInitialState(DEFAULTS)
+      saveVisionState(PROJECT_ID, {
+        ...initial,
+        ai: {enabled: true, generateQuery: true, generateMutations: false, explainQuery: true},
+      })
+      const {shown} = await shownAiControls({explainQuery: false})
+      expect(shown).toEqual({generateQuery: true, generateMutations: false, explainQuery: false})
+
+      const settings = openSettings()
+      expect(settings.getByTestId('vision-settings-ai-enabled')).toBeTruthy()
+      expect(settings.getByTestId('vision-settings-ai-generateQuery')).toBeTruthy()
+      expect(settings.getByTestId('vision-settings-ai-generateMutations')).toBeTruthy()
+      expect(settings.queryByTestId('vision-settings-ai-explainQuery')).toBeNull()
+    })
+
+    it('shows no AI settings when the config turns every AI feature off', () => {
+      renderRedesign(BASE_PERSPECTIVE, {ai: false})
+      const settings = openSettings()
+      expect(settings.getByTestId('vision-settings')).toBeTruthy()
+      expect(settings.queryByTestId('vision-settings-ai')).toBeNull()
+    })
   })
 
   it('generates a query from a description into the empty tab, and fetches it', async () => {

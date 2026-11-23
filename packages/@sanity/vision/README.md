@@ -52,6 +52,8 @@ visionTool({ai: {generateQuery: false}})
 
 A feature is on unless its key is `false`.
 
+Each user can also switch AI features off for themselves, all at once or one at a time, in Vision's settings. The choice is saved in their browser. It only turns features off: a feature the `ai` option turns off stays off and has no switch, and with `ai: false` the settings show no AI section.
+
 ### Only enabling it for development
 
 If you only want the Vision tool available in development (e.g., not in deployed studios), you can import and use the `isDev` constant from the `sanity` package:

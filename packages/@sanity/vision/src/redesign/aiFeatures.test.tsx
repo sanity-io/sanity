@@ -3,7 +3,12 @@ import {renderHook} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
-import {AiFeaturesContext, ALL_AI_FEATURES, resolveAiFeatures} from './aiFeatures'
+import {
+  AiFeaturesContext,
+  ALL_AI_FEATURES,
+  resolveAiFeatures,
+  resolveEffectiveAiFeatures,
+} from './aiFeatures'
 import {useQueryExplain} from './hooks/useQueryExplain'
 import {type QueryRequest} from './store/types'
 
@@ -33,6 +38,42 @@ describe('resolveAiFeatures', () => {
     expect(resolveAiFeatures({generateQuery: true, explainQuery: false})).toEqual({
       ...ALL_AI_FEATURES,
       explainQuery: false,
+    })
+  })
+})
+
+describe('resolveEffectiveAiFeatures', () => {
+  const allOn = {enabled: true, generateQuery: true, generateMutations: true, explainQuery: true}
+
+  it('leaves on what the config leaves on while the user keeps everything on', () => {
+    expect(resolveEffectiveAiFeatures(resolveAiFeatures(undefined), allOn)).toEqual(ALL_AI_FEATURES)
+    expect(
+      resolveEffectiveAiFeatures(resolveAiFeatures({generateMutations: false}), allOn),
+    ).toEqual({...ALL_AI_FEATURES, generateMutations: false})
+    expect(resolveEffectiveAiFeatures(resolveAiFeatures(false), allOn)).toEqual(
+      resolveAiFeatures(false),
+    )
+  })
+
+  it('turns everything off when the user switches AI features off', () => {
+    expect(resolveEffectiveAiFeatures(resolveAiFeatures(true), {...allOn, enabled: false})).toEqual(
+      resolveAiFeatures(false),
+    )
+  })
+
+  it('turns off the features the user switches off', () => {
+    expect(
+      resolveEffectiveAiFeatures(resolveAiFeatures(true), {...allOn, explainQuery: false}),
+    ).toEqual({...ALL_AI_FEATURES, explainQuery: false})
+  })
+
+  it('never turns on a feature the config turns off', () => {
+    const configured = resolveAiFeatures({generateQuery: false})
+    expect(resolveEffectiveAiFeatures(configured, allOn).generateQuery).toBe(false)
+    expect(resolveEffectiveAiFeatures(configured, {...allOn, generateMutations: false})).toEqual({
+      generateQuery: false,
+      generateMutations: false,
+      explainQuery: true,
     })
   })
 })
