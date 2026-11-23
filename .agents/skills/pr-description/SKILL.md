@@ -125,8 +125,24 @@ After CI is green and the prompter approves, mark ready for review:
 gh pr ready
 ```
 
+## Keep internal details out
+
+PR descriptions are public. Write them free of:
+
+- Customer, client, and organization names
+- Project IDs, dataset names, domains, and URLs
+- People's names
+- Customer-specific schema or field names
+- Support tickets and support case details
+- Internal system, service, and architecture details
+- Long-term architecture direction, unreleased plans, roadmap, and company strategy
+- Any other sensitive internal information
+
+Describe the problem generically: "multi-region workspaces with role-based access" in place of a customer's name. Reference a ticket by its ID or link, or say it came from Slack. When a source (ticket, Slack thread, support case, conversation) contains such details, the description states the problem generically and the specifics go in the report to the user, never in the body.
+
 ## Release notes checklist
 
+- [ ] Description contains none of the details in "Keep internal details out": scrubbed or rewritten generically, with anything scrubbed flagged in the report to the user
 - [ ] Written for end users, not internal engineers
 - [ ] Includes code snippets for new APIs or changed behavior
 - [ ] Mentions breaking changes prominently
