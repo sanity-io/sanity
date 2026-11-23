@@ -59,12 +59,33 @@ function countingFetch(input: string, init?: FetchInit): Promise<FetchResponse> 
   return isEventStreamRequest(init) ? fetchListener(input, init) : globalThis.fetch(input, init)
 }
 
+/** @internal */
+export function resolveAttributedListenerFetch(attributeListener: () => () => void): FetchFunction {
+  return (input, init) =>
+    isEventStreamRequest(init)
+      ? fetchListener(input, init, attributeListener)
+      : globalThis.fetch(input, init)
+}
+
 function isEventStreamRequest(init: FetchInit): boolean {
   return new Headers(init?.headers).get('accept')?.includes('text/event-stream') ?? false
 }
 
-async function fetchListener(input: string, init: FetchInit): Promise<FetchResponse> {
-  const release = openListener()
+function skipAttribution(): () => void {
+  return () => undefined
+}
+
+async function fetchListener(
+  input: string,
+  init: FetchInit,
+  attributeListener: () => () => void = skipAttribution,
+): Promise<FetchResponse> {
+  const releaseAttribution = attributeListener()
+  const releaseCount = openListener()
+  const release = once(() => {
+    releaseAttribution()
+    releaseCount()
+  })
   init?.signal?.addEventListener('abort', release, {once: true})
 
   try {
