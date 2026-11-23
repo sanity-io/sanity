@@ -88,6 +88,10 @@ export function ReleasesMenu({
   showDetailLinks?: boolean
 }): React.JSX.Element {
   const {t} = useTranslation()
+  // With releases off the menu lists no releases, so the search doesn't offer to find any.
+  const filterPlaceholder = areReleasesEnabled
+    ? t('release.navbar.filter-placeholder')
+    : t('release.navbar.filter-placeholder-no-releases')
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const [filterQuery, setFilterQuery] = useState('')
   const {handleOpenDialog: handleOpenReleasesUpsellDialog, mode: releasesUpsellMode} =
@@ -142,12 +146,12 @@ export function ReleasesMenu({
             to the first row */}
             <Box flexShrink={0} paddingX={2} paddingTop={2} paddingBottom={1}>
               <TextInput
-                aria-label={t('release.navbar.filter-placeholder')}
+                aria-label={filterPlaceholder}
                 data-testid="global-perspective-filter"
                 fontSize={1}
                 icon={SearchIcon}
                 onChange={handleFilterChange}
-                placeholder={t('release.navbar.filter-placeholder')}
+                placeholder={filterPlaceholder}
                 radius={2}
                 ref={focusSearchField}
                 value={filterQuery}
