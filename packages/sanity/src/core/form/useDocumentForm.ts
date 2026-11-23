@@ -231,14 +231,14 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       if (selectedReleaseVersion && isGoingToUnpublish(selectedReleaseVersion)) {
         return editState.published || baseValue
       }
-      return (
+      const selectedReleaseFormValue =
         selectedReleaseVersion ||
         stackedEditState.version ||
         editState.draft ||
         editState.published ||
         editState.version ||
         baseValue
-      )
+      return selectedReleaseFormValue
     }
     if (selectedPerspectiveName && isPublishedPerspective(selectedPerspectiveName)) {
       return (
