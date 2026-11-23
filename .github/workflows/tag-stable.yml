@@ -91,6 +91,9 @@ jobs:
     name: Update bundle manifest
     needs: get-version
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -99,20 +102,30 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
 
+      - name: Authenticate to staging bundle bucket
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: projects/351269381955/locations/global/workloadIdentityPools/github-actions/providers/github
+          service_account: modules@sanity-staging-svc.iam.gserviceaccount.com
+
       - name: Update manifest with stable tag (staging)
         env:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_STAGING_PROJECT_ID }}
-          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_STAGING_SERVICE_KEY }}
           GCLOUD_BUCKET: ${{ secrets.GCS_STAGING_BUCKET }}
         run: |
           version="${{ needs.get-version.outputs.version }}"
           echo "Using version: $version"
           pnpm bundle-manager tag --tag=stable --target-version="$version"
 
+      - name: Authenticate to production bundle bucket
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: projects/351269381955/locations/global/workloadIdentityPools/github-actions/providers/github
+          service_account: modules@sanity-production-svc.iam.gserviceaccount.com
+
       - name: Update manifest with stable tag (production)
         env:
           GOOGLE_PROJECT_ID: ${{ secrets.GCS_PRODUCTION_PROJECT_ID }}
-          GCLOUD_SERVICE_KEY: ${{ secrets.GCS_PRODUCTION_SERVICE_KEY }}
           GCLOUD_BUCKET: ${{ secrets.GCS_PRODUCTION_BUCKET }}
         run: |
           version="${{ needs.get-version.outputs.version }}"
