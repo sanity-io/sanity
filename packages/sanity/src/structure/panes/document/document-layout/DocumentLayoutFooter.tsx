@@ -36,7 +36,12 @@ export function DocumentLayoutFooter({
     // The portal element comes from `DocumentPanel`.
     <PortalProvider __unstable_elements={portalElements}>
       <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
-        <PaneFooter ref={setFooterElement} padding={1}>
+        <PaneFooter
+          // Stable CSS hook for hiding the footer. Public contract: do not rename or remove.
+          data-sanity-document-footer=""
+          ref={setFooterElement}
+          padding={1}
+        >
           <TooltipDelayGroupProvider>
             <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
           </TooltipDelayGroupProvider>
