@@ -1303,8 +1303,8 @@ importers:
   packages/@repo/bundle-manager:
     dependencies:
       '@google-cloud/storage':
-        specifier: ^7.22.0
-        version: 7.22.0(supports-color@8.1.1)
+        specifier: ^9.0.0
+        version: 9.0.0(supports-color@8.1.1)
       '@optique/core':
         specifier: 'catalog:'
         version: 1.3.7
@@ -5086,6 +5086,10 @@ packages:
     resolution: {integrity: sha512-9bxQ/QNhcq5c6ra75khWjA5Q9UHWp0vQnhwesmqPpLLF5PxmxCIsadIA5ssLxKted4/iZ2RlRPkW/E8p68W8cg==}
     engines: {node: '>=18'}
 
+  '@google-cloud/paginator@7.2.0':
+    resolution: {integrity: sha512-l+x6YObHGTuqBCMvC0SXo3Cnyqg4FkWWKYRptf46PACHJ5GAUuhsd2b3wphgGrg1ybs/LAb+q5MnUTuG/3+v7w==}
+    engines: {node: '>=22'}
+
   '@google-cloud/precise-date@5.2.0':
     resolution: {integrity: sha512-ckZ1elVT/JXbO4kxltiT8tumYnTXGIY7OFrDMAJyVWAte/rUYiCuH1YbaKLQrZpYDp522xgTfPqqW/VxfXFdgA==}
     engines: {node: '>=18'}
@@ -5106,9 +5110,17 @@ packages:
     resolution: {integrity: sha512-/j9zzWDxsgKg0hMuFBmLGI8ES9xj4DjXvQnDCKl0w5ed7WE3CGsgHmUoC35rvfBXshSW+5StQGnCUD+RBqITKA==}
     engines: {node: '>=18'}
 
+  '@google-cloud/promisify@6.2.1':
+    resolution: {integrity: sha512-/+RvLJ5u+WhGay6Z3aY6OApDQmNqq1427Mmt7Eov9kYp69gdUiGSwFnygeTxfz69XBtYZLAnWikGMIoFXtKt+A==}
+    engines: {node: '>=22'}
+
   '@google-cloud/storage@7.22.0':
     resolution: {integrity: sha512-W98gTQOAntEeEQ7/pZxSQXxfUO5CiQcXJRsxBpUa6UU25n8YN/VtogPBi0H+MAmUrn/6bY/sBhFansoWEsr2/g==}
     engines: {node: '>=18'}
+
+  '@google-cloud/storage@9.0.0':
+    resolution: {integrity: sha512-fjUzqzbxgkItIjEFjs/j/NrjQ9RZ3yWhMqmOdJB4AjdMu03vvpa88RvJEkZ5cjvSZAF+cBNCovw3fmERarOHFA==}
+    engines: {node: '>=22'}
 
   '@googleapis/drive@20.2.0':
     resolution: {integrity: sha512-6xPjqqLl34jBXWYMO34ywLVQsT8FgH948x8YI9o6Tdqs7+n4QRyvkC+BcvVQaAPNc+pyqsvZAXcbdMEcGgDUGw==}
@@ -12715,6 +12727,10 @@ packages:
     resolution: {integrity: sha512-kB3rzJV7d9juLZh8/56QTXCwQfxyhdOMdyYk1HdQKFtF8TJTDTZQJtixWIwXdE9Jji91mC41DUNpjleo4L4eAQ==}
     engines: {node: '>=18'}
 
+  gaxios@8.3.3:
+    resolution: {integrity: sha512-zqPbbtW5bAOZ8BRjS7bxj5VG7PBY5PwKRxpku9NplLqAPmYMoXExL1KOdaK5fHvwRETu3bPplLEsFGDdUUlrpw==}
+    engines: {node: '>=22'}
+
   gcp-metadata@6.1.1:
     resolution: {integrity: sha512-a4tiq7E0/5fTjxPAaH4jpjkSv/uCaU2p5KC6HVGrvl0cDjA8iBZv4vv1gyzlmK0ZUKqwpOyQMKzZQe3lTit77A==}
     engines: {node: '>=14'}
@@ -12726,6 +12742,10 @@ packages:
   gcp-metadata@8.1.4:
     resolution: {integrity: sha512-iJ9KMsiu+xKtNRX0PmGLSaIU3bUBAyzWTyqKemKPzNPsmmsBCQYmlNg+brEbES7IHSXtdVwzBPzx1vz3FAaipw==}
     engines: {node: '>=18'}
+
+  gcp-metadata@9.2.3:
+    resolution: {integrity: sha512-d2OI/dJJ3IIaeOz3c9jvr5j5G5beI5fQzbgilNiWhDKGwvJN9o10Qub70NkbF6PNJSUoNKZ77JKYGz0Fs4+9Lg==}
+    engines: {node: '>=22'}
 
   generic-pool@3.4.2:
     resolution: {integrity: sha512-H7cUpwCQSiJmAHM4c/aFu6fUfrhWXW1ncyh8ftxEPMu6AiYkHw9K8br720TGPZJbk5eOH2bynjZD1yPvdDAmag==}
@@ -12847,6 +12867,10 @@ packages:
     resolution: {integrity: sha512-i1ydyHrqcIxXkWh/uBmVkzCvIuq5yiK2ATndIe5XxKholrG/MTYP9xGYka4sQhrbIAgGjL2B6NOE7rFaiF3fXw==}
     engines: {node: '>=18'}
 
+  google-auth-library@11.3.4:
+    resolution: {integrity: sha512-RaYCDoeYIIFTRgH8hesSxqLrmtC2l+DB3cSCS/SN1TPGjI2VpPdJmF3bfRLUn8VvP/4I2Af9fsktw2f9SvVSVg==}
+    engines: {node: '>=22'}
+
   google-auth-library@9.15.1:
     resolution: {integrity: sha512-Jb6Z0+nvECVz+2lzSMt9u98UsoakXxA2HGHMCxh+so3n90XgYWkq5dur19JAJV7ONiJY22yBTyJB1TSkvPq9Ng==}
     engines: {node: '>=14'}
@@ -12858,6 +12882,10 @@ packages:
   google-logging-utils@1.1.3:
     resolution: {integrity: sha512-eAmLkjDjAFCVXg7A1unxHsLf961m6y17QFqXqAXGj/gVkKFrEICfStRfwUlGNfeCEjNRa32JEWOUTlYXPyyKvA==}
     engines: {node: '>=14'}
+
+  google-logging-utils@2.2.0:
+    resolution: {integrity: sha512-Q6HuSEyoaxi0AgqUrOYb2gc77fDl4QugRoHpreI8VpW/VzPsoKyxjL8tGKLmZpWlvC1uVBXM85tykoQpCGBF5g==}
+    engines: {node: '>=22'}
 
   googleapis-common@8.0.3:
     resolution: {integrity: sha512-7g1yzQKx0mmNTjiK0H9dJ8eqKqDBveES9vLHeg5neb3BMQy/d1oQefIMhIpOVT8a+f+LOcixMEdRbFIW/cQUJw==}
@@ -19779,6 +19807,10 @@ snapshots:
     dependencies:
       extend: 3.0.2
 
+  '@google-cloud/paginator@7.2.0':
+    dependencies:
+      extend: 3.0.2
+
   '@google-cloud/precise-date@5.2.0': {}
 
   '@google-cloud/projectify@4.0.0': {}
@@ -19788,6 +19820,8 @@ snapshots:
   '@google-cloud/promisify@4.1.0': {}
 
   '@google-cloud/promisify@5.1.0': {}
+
+  '@google-cloud/promisify@6.2.1': {}
 
   '@google-cloud/storage@7.22.0(supports-color@8.1.1)':
     dependencies:
@@ -19807,6 +19841,20 @@ snapshots:
       teeny-request: 9.0.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - encoding
+      - supports-color
+
+  '@google-cloud/storage@9.0.0(supports-color@8.1.1)':
+    dependencies:
+      '@google-cloud/paginator': 7.2.0
+      '@google-cloud/promisify': 6.2.1
+      async-retry: 1.3.3
+      duplexify: 4.1.3
+      fast-xml-parser: 5.11.2
+      gaxios: 8.3.3(supports-color@8.1.1)
+      google-auth-library: 11.3.4(supports-color@8.1.1)
+      mime: 3.0.0
+      p-limit: 3.1.0
+    transitivePeerDependencies:
       - supports-color
 
   '@googleapis/drive@20.2.0(supports-color@8.1.1)':
@@ -27286,6 +27334,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  gaxios@8.3.3(supports-color@8.1.1):
+    dependencies:
+      extend: 3.0.2
+      https-proxy-agent: 7.0.6(supports-color@8.1.1)
+      node-fetch: 3.3.2
+    transitivePeerDependencies:
+      - supports-color
+
   gcp-metadata@6.1.1(supports-color@8.1.1):
     dependencies:
       gaxios: 6.7.1(supports-color@8.1.1)
@@ -27307,6 +27363,14 @@ snapshots:
     dependencies:
       gaxios: 7.1.3(supports-color@8.1.1)
       google-logging-utils: 1.1.3
+      json-bigint: 1.0.0
+    transitivePeerDependencies:
+      - supports-color
+
+  gcp-metadata@9.2.3(supports-color@8.1.1):
+    dependencies:
+      gaxios: 8.3.3(supports-color@8.1.1)
+      google-logging-utils: 2.2.0
       json-bigint: 1.0.0
     transitivePeerDependencies:
       - supports-color
@@ -27479,6 +27543,17 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  google-auth-library@11.3.4(supports-color@8.1.1):
+    dependencies:
+      base64-js: 1.5.1
+      ecdsa-sig-formatter: 1.0.11
+      gaxios: 8.3.3(supports-color@8.1.1)
+      gcp-metadata: 9.2.3(supports-color@8.1.1)
+      google-logging-utils: 2.2.0
+      jws: 4.0.1
+    transitivePeerDependencies:
+      - supports-color
+
   google-auth-library@9.15.1(supports-color@8.1.1):
     dependencies:
       base64-js: 1.5.1
@@ -27494,6 +27569,8 @@ snapshots:
   google-logging-utils@0.0.2: {}
 
   google-logging-utils@1.1.3: {}
+
+  google-logging-utils@2.2.0: {}
 
   googleapis-common@8.0.3(supports-color@8.1.1):
     dependencies:
