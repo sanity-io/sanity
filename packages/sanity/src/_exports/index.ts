@@ -189,6 +189,9 @@ export {
   type AuthProvider,
   type CookielessCompatibleLoginMethod,
   type LoginMethod,
+  type OAuthAuthConfig,
+  type OAuthConfig,
+  type LegacyAuthConfig,
 } from '../core/config/auth/types'
 export {type ConfigPropertyErrorOptions} from '../core/config/ConfigPropertyError'
 export {type ConfigResolutionErrorOptions} from '../core/config/ConfigResolutionError'
@@ -302,6 +305,7 @@ export {
   type PluginOptions,
   type PreparedConfig,
   type ReleaseActionsResolver,
+  type ReleaseMetadataConfig,
   type ResolveProductionUrlContext,
   type SanityFormConfig,
   type ScheduledPublishingPluginOptions,
@@ -882,6 +886,7 @@ export {useDocumentVersionTypeSortedList} from '../core/releases/hooks/useDocume
 export {useIsReleaseActive} from '../core/releases/hooks/useIsReleaseActive'
 export {useOnlyHasVersions} from '../core/releases/hooks/useOnlyHasVersions'
 export {sortReleases} from '../core/releases/hooks/utils'
+export {RELEASE_DOCUMENT_TYPE} from '../core/releases/store/constants'
 export {type VersionInfoDocumentStub} from '../core/releases/store/types'
 export {useActiveReleases} from '../core/releases/store/useActiveReleases'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -926,6 +931,8 @@ export {
   type AuthStore,
   type HandleCallbackResult,
   type LoginComponentProps,
+  type OAuthCallbackResult,
+  type LegacyCallbackResult,
 } from '../core/store/auth/types'
 export {
   type ConnectedStatus,
@@ -941,6 +948,7 @@ export {
   useDocumentStore,
   useGrantsStore,
   useHistoryStore,
+  // oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
   useKeyValueStore,
   usePresenceStore,
   useProjectStore,
@@ -1009,6 +1017,7 @@ export {
 } from '../core/store/document/initialValue/types'
 export {type ListenQueryOptions, type ListenQueryParams} from '../core/store/document/listenQuery'
 export {
+  type DocumentPairPermissionsListener,
   type DocumentPairTarget,
   type IdPair,
   type MutationEvent,

@@ -4,6 +4,7 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {type Config, type WorkspaceSummary} from '../../../config/types'
 import {type AuthStore} from '../../../store/auth/types'
+import {registeredListenerErrorHandler} from '../../../util/listenerErrorHandlers'
 import type * as RequestErrorChannelModule from '../../requestErrors/createRequestErrorChannel'
 import {WorkspacesProvider} from '../WorkspacesProvider'
 
@@ -149,6 +150,17 @@ describe('WorkspacesProvider forced logout', () => {
     harness.claimAuthStore = undefined
   })
 
+  it('tells the auth store why it logs the user out', async () => {
+    const logout = vi.fn((_options?: {reason?: string}) => Promise.resolve())
+    harness.workspaces = [workspace('proja', logout)]
+    harness.claimProjectId = 'proja'
+
+    renderProvider()
+
+    // The claim's error is `SIO-401-ANF`, a session the API does not know.
+    await waitFor(() => expect(logout).toHaveBeenCalledWith({reason: 'session-not-found'}))
+  })
+
   it('logs out a nested source whose project differs from every root workspace', async () => {
     const rootLogout = vi.fn(() => Promise.resolve())
     const nestedLogout = vi.fn(() => Promise.resolve())
@@ -182,5 +194,20 @@ describe('WorkspacesProvider forced logout', () => {
     })
     expect(screen.getByText('ready')).toBeInTheDocument()
     expect(logout).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('WorkspacesProvider listener error handler', () => {
+  it('registers its request error channel until it unmounts', async () => {
+    harness.claimProjectId = undefined
+    harness.workspaces = [workspace('listenproj', () => Promise.resolve())]
+    expect(registeredListenerErrorHandler()).toBeUndefined()
+
+    const view = renderProvider()
+    await screen.findByText('ready')
+    expect(registeredListenerErrorHandler()).toBeDefined()
+
+    view.unmount()
+    expect(registeredListenerErrorHandler()).toBeUndefined()
   })
 })

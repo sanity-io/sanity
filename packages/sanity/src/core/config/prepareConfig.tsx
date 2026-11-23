@@ -1,4 +1,9 @@
-import {createClient, type RequestHandler, type SanityClient} from '@sanity/client'
+import {
+  type ClientConfig as SanityClientConfig,
+  createClient,
+  type RequestHandler,
+  type SanityClient,
+} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 // oxlint-disable-next-line @sanity/i18n/no-i18next-import -- figure out how to have the linter be fine with importing types-only
@@ -17,19 +22,22 @@ import {
 import {
   createFederatedSanityMediaLibraryFileSource,
   createFederatedSanityMediaLibraryImageSource,
-  createSanityMediaLibraryFileSource,
-  createSanityMediaLibraryImageSource,
+  createIframeSanityMediaLibraryFileSource,
+  createIframeSanityMediaLibraryImageSource,
 } from '../form/studio/assetSourceMediaLibrary'
+import {type MediaLibraryAssetSourceIframeResolution} from '../form/studio/assetSourceMediaLibrary/__telemetry__/mediaLibraryAssetSource.telemetry'
 import {
   createFederatedAssetSource,
-  getCurrentFederatedAssetSourceViews,
+  discoverFederatedAssetSourceViews,
+  type FederatedAssetSourceDiscovery,
   isMediaLibraryView,
 } from '../form/studio/federatedAssetSource'
 import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
-import {acceptReleaseMetadataFields} from '../releases/metadata/compileReleaseMetadataType'
+import {resolveListenerCountingFetch} from '../network/listenerCount'
 import {createSchema} from '../schema/createSchema'
 import {createLegacyAuthStore} from '../store/auth/legacy/createLegacyAuthStore'
+import {createOAuthAuthStore} from '../store/auth/oauth/createOAuthAuthStore'
 import {type AuthStore} from '../store/auth/types'
 import {isAuthStore} from '../store/auth/utils/asserters'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
@@ -54,6 +62,8 @@ import {
   type StructureNodeIdValidationResult,
   validateStructureNodeId,
 } from '../util/validateStructureNodeId'
+import {type AuthConfig} from './auth/types'
+import {composeRequestHandlers} from './composeRequestHandlers'
 import {
   advancedVersionControlEnabledReducer,
   announcementsEnabledReducer,
@@ -99,7 +109,6 @@ import {createBifurClient} from './createBifurClient'
 import {createDefaultIcon} from './createDefaultIcon'
 import {initialDocumentFieldActions} from './document/fieldActions'
 import {documentFieldActionsReducer} from './document/fieldActions/reducer'
-import {resolveReleaseMetadataFields} from './releases/metadataFields'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
 import {resolveSchemaTypes} from './resolveSchemaTypes'
@@ -111,6 +120,7 @@ import {
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
+  type ReleaseMetadataConfig,
   type SingletonDefinition,
   type SingleWorkspace,
   type Source,
@@ -123,6 +133,8 @@ import {
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
 const debug = createDebug('sanity:config')
+
+const isBrowser = typeof window === 'object'
 
 const isError = (p: SchemaValidationProblem) => p.severity === 'error'
 
@@ -170,6 +182,9 @@ function warnOnDivergentProjectAuth(
   for (const workspace of workspaces) {
     const {projectId, auth, name} = workspace as WorkspaceOptions & {auth?: unknown}
     if (!projectId || auth === undefined) continue
+    // OAuth tokens are stored per project and OAuth client, so an OAuth workspace does not share
+    // its session with the other workspaces of the project.
+    if (!isAuthStore(auth) && (auth as AuthConfig | null)?.experimental_oauth) continue
     const list = byProject.get(projectId) ?? []
     list.push({name: name ?? 'default', auth})
     byProject.set(projectId, list)
@@ -280,27 +295,33 @@ const createMediaLibraryAssetSources = (config: PluginOptions) => {
   const brokeredSourcesEnabled = federatedSourcesConfig?.enabled === true
 
   // The `asset_source` views brokered over the workbench message bus, read
-  // synchronously since sources are resolved once here. `undefined` outside
-  // the workbench; on a cold start in which the workbench has not published
-  // its application list yet, `[]` — either way every brokered source is
-  // simply absent and the Media Library keeps its iframe select dialog, so
+  // synchronously since sources are resolved once here. Outside the
+  // workbench, or on a cold start in which the workbench has not published
+  // its application list yet, there are none — either way every brokered
+  // source is simply absent and the Media Library keeps its iframe dialog, so
   // the race can never cost the Media Library source itself. Only consult
   // the bus when a source could use the result — with `federated` defaulting
   // on, reading it unconditionally would open a message-bus connection in
   // every workspace, Media Library or not.
-  const viewsFromBus =
+  const discovery =
     (federated && enabled) || brokeredSourcesEnabled
-      ? getCurrentFederatedAssetSourceViews()
+      ? discoverFederatedAssetSourceViews()
       : undefined
-  const brokeredViews = viewsFromBus ?? []
+  const brokeredViews = discovery?.status === 'published' ? discovery.views : []
 
   // The Media Library's own view replaces the select dialog of the built-in
   // source below; views from other applications become their own sources.
   const mediaLibraryView = federated ? brokeredViews.find(isMediaLibraryView) : undefined
 
-  // Outside the workbench (`viewsFromBus === undefined`) the iframe dialog is
-  // the normal path, not a degraded one — stay quiet there.
-  if (federated && enabled && !mediaLibraryView && viewsFromBus !== undefined) {
+  // Outside the workbench the iframe dialog is the normal path, not a
+  // degraded one — stay quiet there.
+  if (
+    federated &&
+    enabled &&
+    !mediaLibraryView &&
+    discovery !== undefined &&
+    discovery.status !== 'standalone'
+  ) {
     notifyFederatedFallbackOnce(
       'no Media Library asset_source view in the brokered application list',
     )
@@ -331,25 +352,50 @@ const createMediaLibraryAssetSources = (config: PluginOptions) => {
     return {fileSource: null, imageSource: null, federatedSources}
   }
 
-  const fileSource = mediaLibraryView
-    ? createFederatedSanityMediaLibraryFileSource({
+  if (mediaLibraryView) {
+    return {
+      fileSource: createFederatedSanityMediaLibraryFileSource({
         libraryId: libraryId || null,
         view: mediaLibraryView,
-      })
-    : createSanityMediaLibraryFileSource({
-        libraryId: libraryId || null,
-      })
-
-  const imageSource = mediaLibraryView
-    ? createFederatedSanityMediaLibraryImageSource({
+      }),
+      imageSource: createFederatedSanityMediaLibraryImageSource({
         libraryId: libraryId || null,
         view: mediaLibraryView,
-      })
-    : createSanityMediaLibraryImageSource({
-        libraryId: libraryId || null,
-      })
+      }),
+      federatedSources,
+    }
+  }
 
-  return {fileSource, imageSource, federatedSources}
+  const resolution = resolveIframeResolution(federated, discovery)
+  return {
+    fileSource: createIframeSanityMediaLibraryFileSource({
+      libraryId: libraryId || null,
+      resolution,
+    }),
+    imageSource: createIframeSanityMediaLibraryImageSource({
+      libraryId: libraryId || null,
+      resolution,
+    }),
+    federatedSources,
+  }
+}
+
+/** Why the Media Library source uses the iframe, reported when it opens. */
+function resolveIframeResolution(
+  federated: boolean,
+  discovery: FederatedAssetSourceDiscovery | undefined,
+): MediaLibraryAssetSourceIframeResolution {
+  if (!federated) return {outcome: 'iframe_opt_out', reason: null}
+  switch (discovery?.status) {
+    case 'pending':
+      return {outcome: 'iframe_fallback', reason: 'cold_start'}
+    case 'failed':
+      return {outcome: 'iframe_fallback', reason: 'applications_list_failed'}
+    case 'published':
+      return {outcome: 'iframe_fallback', reason: 'no_view'}
+    default:
+      return {outcome: 'iframe_unsupported', reason: 'standalone_studio'}
+  }
 }
 
 // Create default asset sources with configuration
@@ -485,6 +531,7 @@ export function prepareConfig(
       }
 
       const auth = getAuthStore(source, {
+        basePath: joinBasePath(rootPath, rootSource.basePath),
         createStudioRequestHandler: options?.createStudioRequestHandler,
         requestErrorChannel: options?.requestErrorChannel,
         requestFailureDiagnostics: options?.requestFailureDiagnostics,
@@ -500,6 +547,7 @@ export function prepareConfig(
             authenticated,
             auth,
             i18n,
+            releaseMetadata: defaultPluginsOptions.releases.metadata ?? {},
           })
         }),
         shareReplay(1),
@@ -552,10 +600,13 @@ export function prepareConfig(
 function getAuthStore(
   source: SourceOptions,
   {
+    basePath,
     createStudioRequestHandler,
     requestErrorChannel,
     requestFailureDiagnostics,
   }: {
+    /** The workspace base path, joined with the root path. */
+    basePath: string
     createStudioRequestHandler?: (
       getClient: () => SanityClient,
       getAuthStore?: () => AuthStore | undefined,
@@ -571,25 +622,47 @@ function getAuthStore(
   const clientFactory = source.unstable_clientFactory ?? createClient
 
   const {projectId, dataset, apiHost} = source
-  // The store creates its clients, so their request handlers read it lazily.
-  const authStore: AuthStore = createLegacyAuthStore({
+  // Set once the store is created below. Its clients are created by the store, so their request
+  // handlers read it lazily.
+  let authStore: AuthStore | undefined
+  const authClientFactory = (config: SanityClientConfig) => {
+    let client: SanityClient
+    const studioRequestHandler = createStudioRequestHandler?.(
+      () => client,
+      () => authStore,
+    )
+    // A handler the auth store installs (the OAuth store renews its token on
+    // an invalid session) runs inside the studio handler, closest to the
+    // network, so the studio only sees the 401s that survive it.
+    const authRequestHandler = config.requestHandler
+    client = clientFactory({
+      ...(isBrowser ? {resolveFetch: resolveListenerCountingFetch} : {}),
+      ...config,
+      ...(studioRequestHandler
+        ? {requestHandler: composeRequestHandlers(studioRequestHandler, authRequestHandler)}
+        : {}),
+    })
+    return client
+  }
+
+  if (source.auth?.experimental_oauth) {
+    authStore = createOAuthAuthStore({
+      apiHost: source.auth.apiHost ?? apiHost,
+      ...source.auth.experimental_oauth,
+      basePath,
+      clientFactory: authClientFactory,
+      getRequestErrorHandler: () => requestErrorChannel,
+      getRequestFailureDiagnostics: () => requestFailureDiagnostics,
+      dataset,
+      projectId,
+    })
+    return authStore
+  }
+
+  authStore = createLegacyAuthStore({
     apiHost,
     ...source.auth,
-    clientFactory: (config) => {
-      let client: SanityClient
-      client = clientFactory({
-        ...config,
-        ...(createStudioRequestHandler
-          ? {
-              requestHandler: createStudioRequestHandler(
-                () => client,
-                () => authStore,
-              ),
-            }
-          : {}),
-      })
-      return client
-    },
+    clientFactory: authClientFactory,
     // Passed as getters so this unhashable runtime wiring stays out of the
     // auth-store memo key.
     getRequestErrorHandler: () => requestErrorChannel,
@@ -608,6 +681,8 @@ interface ResolveSourceOptions {
   authenticated: boolean
   auth: AuthStore
   i18n: {i18next: i18n; source: LocaleSource}
+  /** Resolved once per workspace, with the default plugins options. */
+  releaseMetadata: ReleaseMetadataConfig
 }
 
 function resolveSource({
@@ -618,6 +693,7 @@ function resolveSource({
   authenticated,
   auth,
   i18n,
+  releaseMetadata,
 }: ResolveSourceOptions): Source {
   const {dataset, projectId} = config
   const bifur = createBifurClient(client, auth.token)
@@ -962,11 +1038,6 @@ function resolveSource({
       })
     : Promise.resolve(undefined)
 
-  const releaseMetadataFields = acceptReleaseMetadataFields(
-    resolveReleaseMetadataFields(config),
-    schema,
-  )
-
   const source: Source = {
     type: 'source',
     name: config.name,
@@ -1219,9 +1290,9 @@ function resolveSource({
               propertyName: 'releases.actions',
               reducer: releaseActionsReducer,
             }),
-          metadata: {fields: releaseMetadataFields},
+          metadata: releaseMetadata,
         }
-      : {enabled: true, metadata: {fields: releaseMetadataFields}},
+      : {enabled: true, metadata: releaseMetadata},
   }
 
   return source

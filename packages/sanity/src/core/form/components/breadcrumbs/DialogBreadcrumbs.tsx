@@ -359,6 +359,10 @@ export function DialogBreadcrumbs({
             popover={{
               placement: 'bottom-start',
               portal: true,
+              // The breadcrumbs render in the dialog header, outside the dialog's scrolling
+              // content, which is the nearest boundary element. Measured against it the button
+              // always counts as hidden, and the menu would render with `display: none`.
+              referenceBoundary: rootElement ?? undefined,
             }}
             menu={
               <Menu>

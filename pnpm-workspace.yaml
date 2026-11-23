@@ -26,31 +26,33 @@ allowBuilds:
   unrs-resolver: false
 
 catalog:
-  '@optique/core': ^1.3.6
-  '@optique/run': ^1.3.6
-  '@pandacss/dev': ^2.5.0
-  '@pandacss/vite': ^2.5.0
-  '@playwright/test': 1.65.0
-  '@sanity/client': ^8.16.0
+  '@optique/core': ^1.3.7
+  '@optique/run': ^1.3.7
+  '@pandacss/dev': ^2.6.0
+  '@pandacss/vite': ^2.6.0
+  '@playwright/test': 1.65.1
+  '@sanity/client': ^8.17.0
   '@sanity/migrate': ^8.0.5
-  '@sanity/pandacss-tsdown-plugin': ^0.3.3
+  '@sanity/pandacss-tsdown-plugin': ^0.3.4
   '@sanity/schema-descriptor-utils': 1.4.0
+  '@sanity/sdk': ^3.15.0
+  '@sanity/sdk-react': ^3.15.0
   '@sanity/telemetry': ^1.1.0
-  '@sanity/tsdown-config': ^0.31.4
+  '@sanity/tsdown-config': ^0.32.0
   '@sanity/ui': ^4.4.12
   '@types/node': ^24.19.2
   '@types/react': ^19.3.0
   '@types/react-dom': ^19.3.0
   '@types/react-is': ^19.3.0
   '@vitejs/plugin-react': ^6.3.0
-  '@vitest/browser-playwright': ^5.1.0
+  '@vitest/browser-playwright': ^5.1.1
   cobe: ^2.0.1
   dequal: ^2.0.3
   get-it: ^9.7.0
   jsdom: ^29.1.1
-  oxc-parser: ^0.158.0
+  oxc-parser: ^0.159.0
   oxc-transform-react: ^0.158.0
-  playwright: 1.65.0
+  playwright: 1.65.1
   react: ^19.3.1
   react-dom: ^19.3.1
   react-focus-lock: ^2.13.7
@@ -61,13 +63,13 @@ catalog:
   styled-components: ^6.6.0
   # Exact version on purpose (like @sanity/workbench): bumps are explicit so published
   # packages ship the version we validated instead of whatever the alpha dist-tag points to
-  ui5: npm:@sanity/ui@5.0.0-alpha.23
+  ui5: npm:@sanity/ui@5.0.0-alpha.27
   tsdown: ^0.23.7
   # Pins its `tsdown` peer to the exact release it ships with, so bump it together with `tsdown`
   '@tsdown/css': ^0.23.7
   typescript: ^7.0.2
   vite: ^8.3.8
-  vitest: ^5.1.0
+  vitest: ^5.1.1
   vitest-browser-react: ^2.3.0
 
 autoDedupe: true
@@ -93,7 +95,6 @@ minimumReleaseAgeExclude:
   # yuku 0.19 moved the native bindings from @yuku-codegen/* and @yuku-parser/* to this scope
   - '@yuku-core/*'
   - '@yuku-parser/*'
-  - '@yuku-toolchain/types'
   - '@types/*'
   - '@typescript/*'
   - '@vercel/stega'
@@ -169,14 +170,15 @@ trustPolicy: no-downgrade
 trustPolicyExcludePrune: true
 trustPolicyExclude:
   - '@sanity/cli'
+  # @sanity/cli 8.32.1 requires @sanity/codegen ^8.3.2. 8.3.1 shipped provenance;
+  # 8.3.3 did not, from the same publisher
+  - '@sanity/codegen@8.3.3'
   # @sanity/vision's result diff (@pierre/diffs) depends on it. 1.0.0 was published with
   # provenance; 1.1.0 and 2.0.0 without it, by a listed maintainer who also publishes
   # @pierre/diffs (which has never shipped provenance)
   - '@pierre/theme@2.0.0'
+  # 2.2.2 was published with weaker trust evidence than earlier releases
+  - lefthook@2.2.2
   - rxjs@7.8.2
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0
-patchedDependencies:
-  # The runner joins describe and test names with ' ' but Vitest 5 filters on ' > ', so tests
-  # inside a describe never run against a mutant and it reports as survived. Drop once fixed upstream
-  '@stryker-mutator/vitest-runner@10.0.0': patches/@stryker-mutator__vitest-runner@10.0.0.patch

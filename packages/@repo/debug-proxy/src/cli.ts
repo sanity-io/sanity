@@ -2,7 +2,9 @@
 // oxlint-disable no-console
 import {execFile, execFileSync} from 'node:child_process'
 import {X509Certificate} from 'node:crypto'
-import {mkdir, readFile} from 'node:fs/promises'
+import {mkdir, mkdtemp, readFile, rm} from 'node:fs/promises'
+import {tmpdir} from 'node:os'
+import {join} from 'node:path'
 import * as tls from 'node:tls'
 import {fileURLToPath} from 'node:url'
 import {promisify} from 'node:util'
@@ -28,12 +30,36 @@ import {
   duplicateMutations,
   invalidSession,
   type InvalidSessionCode,
+  type ListenerRefusal,
   randomLatency,
   refusedRefreshToken,
+  refuseListener,
   sendReset,
   shuffleEventDelivery,
   withholdWelcome,
 } from './scenarios'
+
+const LISTENER_REFUSALS: readonly ListenerRefusal[] = ['dataset-not-found', 'evicted']
+
+/** Parses the --refuse-listener value (`<refusal>[:<seconds>]`). */
+const listenerRefusal: ValueParser<'sync', {refusal: ListenerRefusal; afterMs: number}> = {
+  mode: 'sync',
+  metavar: 'REFUSAL[:SECONDS]',
+  placeholder: {refusal: 'evicted', afterMs: 0},
+  parse(input) {
+    const [refusal, after = '0', ...rest] = input.split(':')
+    const afterSec = Number(after)
+    const known = LISTENER_REFUSALS.find((candidate) => candidate === refusal)
+    if (rest.length > 0 || !known || !Number.isInteger(afterSec) || afterSec < 0) {
+      return {
+        success: false,
+        error: message`Expected "dataset-not-found" or "evicted", optionally followed by ":<seconds>" (a whole number), got ${input}.`,
+      }
+    }
+    return {success: true, value: {refusal: known, afterMs: afterSec * 1000}}
+  },
+  format: (value) => `${value.refusal}:${value.afterMs / 1000}`,
+}
 
 /** Parses the --flap value (`<on>[:<off>]` in seconds) into phase durations. */
 const flapPhases: ValueParser<'sync', {onlineMs: number; offlineMs: number}> = {
@@ -188,8 +214,9 @@ const flags = run(
       }),
       0,
     ),
-    // or() makes the parser itself reject passing both flags: withholding the welcome would also
-    // withhold the channelError and disconnect, leaving a silently closed stream
+    // or() makes the parser itself reject passing more than one of these flags: withholding the
+    // welcome would also withhold the channelError and disconnect, leaving a silently closed
+    // stream, and a refused listener never welcomes
     listenerFault: optional(
       or(
         mapValue(
@@ -206,7 +233,19 @@ const flags = run(
             }),
             {min: 1},
           ),
-          () => ({kind: 'withholdWelcome' as const}),
+          () => ({kind: 'withholdWelcome' as const, probability: 1}),
+        ),
+        mapValue(
+          option('--withhold-welcome-probability', probability(), {
+            description: message`like --withhold-welcome, but only for this share of listen requests: each one is left unwelcomed at this probability while the rest work normally`,
+          }),
+          (value) => ({kind: 'withholdWelcome' as const, probability: value}),
+        ),
+        mapValue(
+          option('--refuse-listener', listenerRefusal, {
+            description: message`refuse every listener the way the API refuses one it will not serve, which reconnecting does not change: dataset-not-found replaces its welcome with a namespaceNotFoundError channelError and a disconnect; evicted welcomes it, then disconnects it (forced by provider). Append :SECONDS to start refusing that long after the proxy starts, so the studio can boot first; listeners open at that point are refused too. Mutually exclusive with --listener-channel-error, --withhold-welcome and --withhold-welcome-probability`,
+          }),
+          (value) => ({kind: 'refuse' as const, ...value}),
         ),
       ),
     ),
@@ -268,12 +307,20 @@ const FORCE_ORG_401 = flags.org401
 const LISTENER_ERROR_PROBABILITY = flags.listenerErrorProbability
 const LISTENER_CHANNEL_ERROR_AFTER_MS =
   flags.listenerFault?.kind === 'channelError' ? flags.listenerFault.afterMs : undefined
-const WITHHOLD_WELCOME = flags.listenerFault?.kind === 'withholdWelcome'
+const WITHHOLD_WELCOME_PROBABILITY =
+  flags.listenerFault?.kind === 'withholdWelcome' ? flags.listenerFault.probability : 0
+const LISTENER_REFUSAL =
+  flags.listenerFault?.kind === 'refuse' ? flags.listenerFault.refusal : undefined
+const LISTENER_REFUSAL_AFTER_MS =
+  flags.listenerFault?.kind === 'refuse' ? flags.listenerFault.afterMs : 0
+// Refusals start this long after the proxy starts, like the --expire-token deadline.
+const LISTENER_REFUSAL_AT = Date.now() + LISTENER_REFUSAL_AFTER_MS
 // Any scenario that changes what the listen endpoint answers
 const LISTENER_FAULTS =
   LISTENER_ERROR_PROBABILITY > 0 ||
   LISTENER_CHANNEL_ERROR_AFTER_MS !== undefined ||
-  WITHHOLD_WELCOME
+  WITHHOLD_WELCOME_PROBABILITY > 0 ||
+  LISTENER_REFUSAL !== undefined
 const EXPIRE_TOKEN_AFTER_MS =
   flags.tokenFault?.kind === 'expire' ? flags.tokenFault.afterMs : undefined
 const REVOKE_TOKEN_AFTER_MS =
@@ -321,6 +368,52 @@ function detectMkcert(): boolean {
 const MKCERT_AVAILABLE = detectMkcert()
 
 /**
+ * Warns when mkcert's local CA is not trusted. The CA file alone proves nothing (mkcert
+ * creates it the first time it mints a certificate, trusted or not), and certificates are
+ * cached, so this mints a throwaway one on every start: mkcert checks trust on every run and
+ * says so on stderr.
+ */
+async function warnIfMkcertCaNotTrusted(): Promise<void> {
+  // Best effort: a failure here (temp dir, mkcert, cleanup) must never stop the proxy from
+  // starting, and a failing mkcert is reported when a real certificate is minted
+  try {
+    const dir = await mkdtemp(join(tmpdir(), 'debug-proxy-mkcert-'))
+    try {
+      const {stderr} = await execFileAsync('mkcert', [
+        '-cert-file',
+        join(dir, 'cert.pem'),
+        '-key-file',
+        join(dir, 'key.pem'),
+        'localhost',
+      ])
+      if (/mkcert -install/.test(stderr)) warnCaNotInstalled()
+    } finally {
+      await rm(dir, {recursive: true, force: true})
+    }
+  } catch {
+    // ignored, see above
+  }
+}
+
+let warnedCaNotInstalled = false
+function warnCaNotInstalled() {
+  if (warnedCaNotInstalled) return
+  warnedCaNotInstalled = true
+  console.warn(
+    [
+      '',
+      'mkcert is installed, but its local CA is not trusted by this machine, so browsers',
+      'will reject the proxy’s certificates (the studio shows a network error). Run:',
+      '',
+      '  mkcert -install',
+      '',
+      '…then restart the browser (Firefox: restart it) and reload the studio.',
+      '',
+    ].join('\n'),
+  )
+}
+
+/**
  * Mint (or read from the disk cache) a certificate for the given hostname —
  * mkcert-signed when available, self-signed otherwise.
  */
@@ -333,7 +426,7 @@ async function mintCert(hostname: string): Promise<{key: string; cert: string}> 
       return {key, cert}
     } catch {
       await mkdir(SNI_CERTS_DIR, {recursive: true})
-      await execFileAsync('mkcert', [
+      const {stderr} = await execFileAsync('mkcert', [
         '-cert-file',
         fileURLToPath(certPath),
         '-key-file',
@@ -341,6 +434,9 @@ async function mintCert(hostname: string): Promise<{key: string; cert: string}> 
         hostname,
       ])
       console.info(`Minted TLS certificate for ${hostname}`)
+      // mkcert mints fine without its CA installed (it creates one on the fly) and only
+      // prints a note, so the certificate would be rejected by the browser with no hint
+      if (/mkcert -install/.test(stderr)) warnCaNotInstalled()
       const [key, cert] = await Promise.all([readFile(keyPath, 'utf8'), readFile(certPath, 'utf8')])
       return {key, cert}
     }
@@ -380,6 +476,7 @@ async function loadTlsConfig(): Promise<{
   ) => void
 }> {
   const userCert = await loadUserCert()
+  if (MKCERT_AVAILABLE && !userCert) await warnIfMkcertCaNotTrusted()
   const defaultCert = userCert ?? (await mintCert('localhost'))
 
   if (!MKCERT_AVAILABLE && !userCert) {
@@ -446,7 +543,10 @@ const listenEndpointProxy = createSSEProxy((events$) =>
     LISTENER_CHANNEL_ERROR_AFTER_MS === undefined
       ? tap()
       : channelErrorAfterWelcome(LISTENER_CHANNEL_ERROR_AFTER_MS),
-    WITHHOLD_WELCOME ? withholdWelcome() : tap(),
+    WITHHOLD_WELCOME_PROBABILITY > 0 ? withholdWelcome(WITHHOLD_WELCOME_PROBABILITY) : tap(),
+    LISTENER_REFUSAL === undefined
+      ? tap()
+      : refuseListener(LISTENER_REFUSAL, {startAt: LISTENER_REFUSAL_AT}),
     LISTENER_TTL_MS ? takeUntil(timer(LISTENER_TTL_MS)) : tap(),
   ),
 )
@@ -657,8 +757,26 @@ if (LISTENER_CHANNEL_ERROR_AFTER_MS !== undefined) {
   )
 }
 
-if (WITHHOLD_WELCOME) {
+if (WITHHOLD_WELCOME_PROBABILITY === 1) {
   console.info('Failing listeners: listen requests stay open and are never welcomed')
+} else if (WITHHOLD_WELCOME_PROBABILITY > 0) {
+  console.info(
+    `Failing listeners: ${Math.round(WITHHOLD_WELCOME_PROBABILITY * 100)}% of listen requests stay open and are never welcomed`,
+  )
+}
+
+if (LISTENER_REFUSAL !== undefined) {
+  const how =
+    LISTENER_REFUSAL === 'dataset-not-found'
+      ? 'gets a channelError (namespaceNotFoundError)'
+      : 'is evicted (forced by provider)'
+  const when =
+    LISTENER_REFUSAL === 'dataset-not-found' ? 'instead of its welcome' : 'as it welcomes'
+  console.info(
+    LISTENER_REFUSAL_AFTER_MS === 0
+      ? `Refusing listeners: every listener ${how} ${when}`
+      : `Refusing listeners: after ${LISTENER_REFUSAL_AFTER_MS / 1000}s, every listener ${how}, including the open ones`,
+  )
 }
 
 if (INVALIDATE_SESSION_AFTER_MS !== undefined) {

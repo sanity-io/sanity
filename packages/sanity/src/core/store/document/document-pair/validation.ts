@@ -2,8 +2,8 @@ import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type SanityDocument, type Schema} from '@sanity/types'
 import {type ValidationScheduling} from '@sanity/validation/_internal'
 import omit from 'lodash-es/omit.js'
-import {asyncScheduler, BehaviorSubject, combineLatest, merge, Observable, of, timer} from 'rxjs'
-import {distinctUntilChanged, map, retry, share, shareReplay, throttleTime} from 'rxjs/operators'
+import {asyncScheduler, BehaviorSubject, combineLatest, merge, Observable, of} from 'rxjs'
+import {distinctUntilChanged, map, share, shareReplay, throttleTime} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../../config/types'
 import {type LocaleSource} from '../../../i18n/types'
@@ -12,28 +12,18 @@ import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
 import {shallowEquals} from '../../../util/shallowEquals'
 import {validateDocumentWithReferences, type ValidationStatus} from '../../../validation'
 import {type DocumentStoreExtraOptions} from '../getPairListener'
-import {type IdPair} from '../types'
+import {type DocumentPairPermissionsListener, type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
+import {retryGlobalDocumentLoad} from '../utils/retryGlobalDocumentLoad'
 import {editState} from './editState'
 import {memoizeKeyGen} from './memoizeKeyGen'
 
 // throttle delay for document updates (i.e. time between responding to changes in the current document)
 const DOC_UPDATE_DELAY = 200
 
-// Same limit as the preview store's document-count fetch. An unbounded retry would never surface
-// the failure.
-const MAX_GLOBAL_DOCUMENT_LOAD_RETRIES = 3
-
 function shareLatestWithRefCount<T>() {
   return shareReplay<T>({bufferSize: 1, refCount: true})
 }
-
-/**
- * Where the validated document comes from: `document` checks out the document pair, which opens a
- * listener for it, and `global` follows the document through the document preview store's shared
- * global listener.
- */
-export type ValidationListener = 'document' | 'global'
 
 function getValidationTargetId(idPair: IdPair, validationTarget: DocumentVariantType) {
   if (validationTarget === 'draft') return idPair.draftId
@@ -61,21 +51,13 @@ const validationStreams = memoize(
     idPair: IdPair,
     typeName: string,
     validationTarget: DocumentVariantType,
-    listener: ValidationListener,
+    listener: DocumentPairPermissionsListener,
   ) => {
     const documentId = getValidationTargetId(idPair, validationTarget)
     const target$: Observable<SanityDocument | null | undefined> =
       listener === 'global'
         ? documentId
-          ? ctx.observeDocument(documentId).pipe(
-              // A failed fetch or a dropped global listener would error the validation, which
-              // `useValidationStatus` rethrows during render. Retry three times, the same limit as
-              // the preview store's document-count fetch, then let that error through.
-              retry({
-                count: MAX_GLOBAL_DOCUMENT_LOAD_RETRIES,
-                delay: (_error: unknown, attempt) => timer(Math.min(30_000, attempt * 1000)),
-              }),
-            )
+          ? ctx.observeDocument(documentId).pipe(retryGlobalDocumentLoad())
           : of(undefined)
         : editState(ctx, idPair, typeName).pipe(
             map((state) => {
@@ -178,7 +160,7 @@ export function validation(
    */
   _validatePublishedReferences?: boolean,
   scheduling?: ValidationScheduling,
-  listener: ValidationListener = 'document',
+  listener: DocumentPairPermissionsListener = 'document',
 ): Observable<ValidationStatus> {
   const {status$, immediate$} = validationStreams(ctx, idPair, typeName, validationTarget, listener)
   return scheduling === 'immediate' ? immediate$ : status$

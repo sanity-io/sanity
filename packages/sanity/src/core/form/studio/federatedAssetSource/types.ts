@@ -1,9 +1,5 @@
-import {type FederationRemote} from '@sanity/sdk-react/dashboard'
-import {
-  type AssetFromSource,
-  type AssetSourceComponentProps,
-  type ValidationMarker,
-} from '@sanity/types'
+import {type FederationRemote, type useAssetSource} from '@sanity/sdk-react/dashboard'
+import {type AssetFromSource, type ValidationMarker} from '@sanity/types'
 
 /**
  * The props the host passes to a mounted federated view: Studio's asset-source
@@ -13,6 +9,11 @@ import {
  * asset-source callbacks: `onSelect` with the final `AssetFromSource[]` (after
  * doing any source-side work such as linking, using its own credentials) and
  * `onClose`.
+ *
+ * Escape is the view's: the host dialog does not close on it. A view that
+ * wants Escape to close the dialog calls `onClose` itself, typically once
+ * nothing in the view (a menu, a preview, a selection) is left to dismiss. The
+ * dialog's close button and a click outside it still close the dialog.
  *
  * Upload mode (`action: 'upload'`): only reached when the hosting config
  * opted the view in (`federatedAssetSources.uploads` — the stand-in for an
@@ -72,7 +73,7 @@ import {
  *
  * @internal
  */
-export interface FederatedAssetSourceViewProps extends AssetSourceComponentProps {
+export interface FederatedAssetSourceViewProps extends ReturnType<typeof useAssetSource> {
   /** The Studio's resolved color scheme, so the view matches the host theme. */
   scheme?: 'light' | 'dark'
   /** The hosting workspace's project id, for project-scoped source APIs. */
@@ -114,7 +115,15 @@ export interface FederatedAssetSourceViewProps extends AssetSourceComponentProps
  *
  * @internal
  */
-export const SUPPORTED_VIEW_CONTRACT_VERSION = 1
+export const SUPPORTED_VIEW_CONTRACT_VERSION = 2
+
+/**
+ * The view contract `unstable_defineView` builds.
+ * TODO(SDK-3210): remove with `unstable_defineView`, with every branch that reads it.
+ *
+ * @internal
+ */
+export const V1_VIEW_CONTRACT_VERSION = 1
 
 /**
  * The handle returned by a federated view's `render()`.
@@ -178,4 +187,5 @@ export interface FederatedAssetSourceView extends FederatedAssetSourceRef {
   name: string
   /** Human-readable view title. */
   title: string
+  interface: FederatedAssetSourceViewProps['view']
 }

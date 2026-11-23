@@ -25,11 +25,13 @@ function renderOptionsFor(moduleId: string) {
  * @internal
  */
 export function FederatedViewMount(props: {
+  /** The view's `render()` returned without throwing. */
+  onMounted?: () => void
   onUnavailable: (reason: unknown) => void
   view: FederatedAssetSourceView
   viewProps: FederatedAssetSourceViewProps
 }): ReactNode {
-  const {onUnavailable, view, viewProps} = props
+  const {onMounted, onUnavailable, view, viewProps} = props
 
   const [module, setModule] = useState<FederatedAssetSourceModule | null>(null)
   const [mountElement, setMountElement] = useState<HTMLDivElement | null>(null)
@@ -39,9 +41,11 @@ export function FederatedViewMount(props: {
   // mount effect would tear the view's React root down and up again).
   const viewPropsRef = useRef(viewProps)
   const onUnavailableRef = useRef(onUnavailable)
+  const onMountedRef = useRef(onMounted)
   useEffect(() => {
     viewPropsRef.current = viewProps
     onUnavailableRef.current = onUnavailable
+    onMountedRef.current = onMounted
   })
 
   const fail = useCallback((error: unknown) => {
@@ -78,6 +82,7 @@ export function FederatedViewMount(props: {
       fail(error)
       return undefined
     }
+    onMountedRef.current?.()
     return () => {
       try {
         handleRef.current?.dispose()

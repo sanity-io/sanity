@@ -138,7 +138,8 @@ export interface DraftsModelDocument<T extends SanityDocumentLike = SanityDocume
 
 /**
  * Event emitted to notify preview subscribers when they need to refetch a document being previewed
- * - 'connected' means fetch now: the listener has connected, either for the first time or again after a connection loss, when changes may have been missed
+ * - 'connected' means fetch now: the listener has connected, either for the first time or again after a connection loss, when changes may have been missed,
+ *   or the listener is down and the subscriber has nothing loaded yet. Either way the subscriber loads from scratch
  * - 'mutation' will happen when a document has been mutated and the store needs to refetch a document
  * @hidden
  * @beta

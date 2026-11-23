@@ -14,7 +14,7 @@ import {type ComponentProps, type ReactElement, useCallback, useState} from 'rea
 import {UserAvatar, useDateTimeFormat} from 'sanity'
 import {ContextMenuButton} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
-import {Text, Flex, Box, VStack} from 'ui5'
+import {Text, Flex, Box, VStack, type VStackProps} from 'ui5'
 
 import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
@@ -22,7 +22,7 @@ import * as styles from './QueryRecall.module.css'
 import {type ParsedUrlState} from './VisionGui'
 import {StyledLabel} from './VisionGui.styled'
 
-function FixedHeader(props: ComponentProps<typeof VStack>) {
+function FixedHeader(props: VStackProps) {
   return <VStack {...props} className={styles.fixedHeader} />
 }
 

@@ -9,6 +9,7 @@ import {
 
 import {createLazyComponent} from '../../../components/lazy/createLazyComponent'
 import {type FederatedAssetSourceView} from '../federatedAssetSource/types'
+import {type MediaLibraryAssetSourceIframeResolution} from './__telemetry__/mediaLibraryAssetSource.telemetry'
 import {MediaLibraryUploader} from './uploader'
 
 // Same as the dataset asset source: the picker dialogs (iframe, comlink, the federated view)
@@ -85,6 +86,58 @@ export function createSanityMediaLibraryFileSource(
     icon: props.icon || DocumentIcon,
     Uploader: MediaLibraryUploader,
     openInSource,
+  }
+}
+
+/**
+ * Props for the iframe Media Library source factories that `prepareConfig`
+ * uses: the public factory props plus why the federated view is not used.
+ *
+ * @internal
+ */
+export interface CreateIframeSanityMediaLibrarySourceProps extends CreateSanityMediaLibrarySourceProps {
+  resolution: MediaLibraryAssetSourceIframeResolution
+}
+
+/**
+ * {@link createSanityMediaLibraryImageSource}, reporting `resolution` in the
+ * `Media Library Asset Source Resolved` telemetry event when the source opens.
+ *
+ * @internal
+ */
+export function createIframeSanityMediaLibraryImageSource(
+  props: CreateIframeSanityMediaLibrarySourceProps,
+): AssetSource {
+  return {
+    ...createSanityMediaLibraryImageSource(props),
+    component: (sourceProps: AssetSourceComponentProps) => (
+      <MediaLibraryAssetSource
+        {...sourceProps}
+        libraryId={props.libraryId}
+        resolution={props.resolution}
+      />
+    ),
+  }
+}
+
+/**
+ * {@link createSanityMediaLibraryFileSource}, reporting `resolution` in the
+ * `Media Library Asset Source Resolved` telemetry event when the source opens.
+ *
+ * @internal
+ */
+export function createIframeSanityMediaLibraryFileSource(
+  props: CreateIframeSanityMediaLibrarySourceProps,
+): AssetSource {
+  return {
+    ...createSanityMediaLibraryFileSource(props),
+    component: (sourceProps: AssetSourceComponentProps) => (
+      <MediaLibraryAssetSource
+        {...sourceProps}
+        libraryId={props.libraryId}
+        resolution={props.resolution}
+      />
+    ),
   }
 }
 

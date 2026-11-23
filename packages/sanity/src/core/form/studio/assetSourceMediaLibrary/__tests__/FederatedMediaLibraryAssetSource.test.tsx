@@ -53,6 +53,15 @@ const VIEW: FederatedAssetSourceView = {
   title: 'Media Library',
   remote: {name: 'ml-app', entry: 'https://ml.example/mf-manifest.json'},
   moduleId: 'ml-app/views/picker/asset_source',
+  interface: {
+    id: 'ml-app-picker',
+    type: 'asset_source',
+    name: 'picker',
+    title: 'Media Library',
+    version: '1',
+    moduleId: 'views/picker',
+    metadata: null,
+  },
 }
 
 const ASSET_SOURCE: AssetSource = {

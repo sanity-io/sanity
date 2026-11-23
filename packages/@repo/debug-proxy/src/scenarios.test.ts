@@ -9,6 +9,7 @@ import {
   expiredToken,
   invalidSession,
   randomLatency,
+  refuseListener,
   refusedRefreshToken,
   sendReset,
   withholdWelcome,
@@ -113,12 +114,151 @@ describe('channelErrorAfterWelcome', () => {
   })
 })
 
+// Refuses listeners from 10s on.
+function subscribeRefused(refusal: 'dataset-not-found' | 'evicted') {
+  const upstream = new Subject<Message>()
+  const out: unknown[] = []
+  let completed = false
+  upstream.pipe(refuseListener(refusal, {startAt: 10_000})).subscribe({
+    next: (event) => out.push(event),
+    complete: () => {
+      completed = true
+    },
+  })
+  return {upstream, out, completed: () => completed}
+}
+
+describe('refuseListener', () => {
+  const welcomes = ['welcome', 'welcomeback', 'reset'] as const
+
+  test.each(welcomes)(
+    'dataset-not-found: fails instead of sending %s, and closes',
+    async (event) => {
+      const out = await firstValueFrom(
+        from([welcome(event), mutation('a')]).pipe(refuseListener('dataset-not-found'), toArray()),
+      )
+      expect(out).toEqual([
+        {
+          type: 'message',
+          message: {
+            event: 'channelError',
+            data: '{"error":{"type":"namespaceNotFoundError","description":"namespace does not exist"}}',
+          },
+        },
+        {type: 'message', message: {event: 'disconnect', data: '{"reason":"error"}'}},
+      ])
+    },
+  )
+
+  describe('from a given time', () => {
+    beforeEach(() => {
+      vi.useFakeTimers({now: 0})
+    })
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    const datasetNotFound = [
+      {
+        type: 'message',
+        message: {
+          event: 'channelError',
+          data: '{"error":{"type":"namespaceNotFoundError","description":"namespace does not exist"}}',
+        },
+      },
+      {type: 'message', message: {event: 'disconnect', data: '{"reason":"error"}'}},
+    ]
+    const evicted = [
+      {type: 'message', message: {event: 'disconnect', data: '{"reason":"forced by provider"}'}},
+    ]
+
+    test.each([
+      ['dataset-not-found', datasetNotFound],
+      ['evicted', evicted],
+    ] as const)(
+      '%s: passes a listener through until then, and refuses it there and then',
+      async (refusal, refusalEvents) => {
+        const {upstream, out, completed} = subscribeRefused(refusal)
+        upstream.next(welcome())
+        upstream.next(mutation('a'))
+        await vi.advanceTimersByTimeAsync(10_000)
+        upstream.next(mutation('b'))
+
+        expect(out).toEqual([welcome(), mutation('a'), ...refusalEvents])
+        expect(completed()).toBe(true)
+      },
+    )
+
+    test('refuses a listener that is still waiting for its welcome at its welcome', async () => {
+      const {upstream, out, completed} = subscribeRefused('dataset-not-found')
+      await vi.advanceTimersByTimeAsync(10_000)
+      expect(completed()).toBe(false)
+
+      upstream.next(welcome())
+      expect(out).toEqual(datasetNotFound)
+      expect(completed()).toBe(true)
+    })
+
+    test('refuses a listener opened later at its welcome', async () => {
+      await vi.advanceTimersByTimeAsync(10_000)
+      const {upstream, out, completed} = subscribeRefused('evicted')
+      upstream.next(welcome())
+      upstream.next(mutation('a'))
+
+      expect(out).toEqual([welcome(), ...evicted])
+      expect(completed()).toBe(true)
+    })
+
+    test('passes on a listener that ends before then', async () => {
+      const {upstream, out, completed} = subscribeRefused('evicted')
+      upstream.next(welcome())
+      upstream.complete()
+      await vi.advanceTimersByTimeAsync(10_000)
+
+      expect(out).toEqual([welcome()])
+      expect(completed()).toBe(true)
+    })
+  })
+
+  test.each(welcomes)('evicted: sends %s, then disconnects and closes', async (event) => {
+    const keepalive = {type: 'comment' as const, comment: ''}
+    const out = await firstValueFrom(
+      from([keepalive, welcome(event), mutation('a')]).pipe(refuseListener('evicted'), toArray()),
+    )
+    expect(out).toEqual([
+      keepalive,
+      welcome(event),
+      {type: 'message', message: {event: 'disconnect', data: '{"reason":"forced by provider"}'}},
+    ])
+  })
+})
+
 describe('withholdWelcome', () => {
   test('withholds every message and keeps comments flowing', async () => {
     const keepalive = {type: 'comment' as const, comment: ''}
     const input = [welcome(), keepalive, mutation('a')]
     const out = await firstValueFrom(from(input).pipe(withholdWelcome(), toArray()))
     expect(out).toEqual([keepalive])
+  })
+
+  test('decides once per listener whether to withhold it', async () => {
+    const input = [welcome(), mutation('a'), mutation('b')]
+    const random = vi.spyOn(Math, 'random')
+
+    random.mockReturnValue(0.3)
+    expect(await firstValueFrom(from(input).pipe(withholdWelcome(0.5), toArray()))).toEqual([])
+
+    random.mockReturnValue(0.7)
+    expect(await firstValueFrom(from(input).pipe(withholdWelcome(0.5), toArray()))).toEqual(input)
+
+    expect(random).toHaveBeenCalledTimes(2)
+    random.mockRestore()
+  })
+
+  test('passes every listener through at probability 0', async () => {
+    const input = [welcome(), mutation('a')]
+    const out = await firstValueFrom(from(input).pipe(withholdWelcome(0), toArray()))
+    expect(out).toEqual(input)
   })
 })
 

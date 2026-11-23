@@ -449,6 +449,7 @@ export function useProjectStore(): ProjectStore {
   }, [client, resourceCache])
 }
 
+/* oxlint-disable no-deprecated -- the deprecated key-value store stays until the next major */
 /**
  * Module-level cache for KeyValueStore instances, keyed by project identity.
  * Uses a simple Map with string keys since the ResourceCache's WeakMap
@@ -474,6 +475,9 @@ function getKeyValueStoreCacheKey(client: SanityClient): string {
  * user preferences are shared across all datasets within a project.
  *
  * @internal
+ * @deprecated The Studio keeps its preferences through the App SDK now: use
+ * `useStudioPreference` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`
+ * instead. `useKeyValueStore` will be removed in Sanity Studio v7.
  */
 export function useKeyValueStore(): KeyValueStore {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -488,6 +492,7 @@ export function useKeyValueStore(): KeyValueStore {
     return keyValueStore
   }, [client])
 }
+/* oxlint-enable no-deprecated */
 
 /** @internal */
 export function useRenderingContextStore(): RenderingContextStore {

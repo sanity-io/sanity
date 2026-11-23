@@ -37,14 +37,14 @@ import {
 } from './document-pair/operationEvents'
 import {GUARDED, TARGET_NOT_FOUND_OPERATIONS} from './document-pair/operations/helpers'
 import {type OperationsAPI} from './document-pair/operations/types'
-import {validation, type ValidationListener} from './document-pair/validation'
+import {validation} from './document-pair/validation'
 import {type DocumentStoreExtraOptions} from './getPairListener'
 import {getInitialValueStream, type InitialValueOptions} from './initialValue/initialValue'
 import {type InitialValueMsg} from './initialValue/types'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
 import {getPairTargetScopeId, normalizeDocumentPairTarget} from './normalizeDocumentPairTarget'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
-import {type DocumentPairTarget, type IdPair} from './types'
+import {type DocumentPairPermissionsListener, type DocumentPairTarget, type IdPair} from './types'
 
 /**
  * @hidden
@@ -145,7 +145,7 @@ export interface DocumentStore {
          * change only once the server has it. Use it where nobody edits the document, like a list
          * or a board of documents.
          */
-        listener?: ValidationListener
+        listener?: DocumentPairPermissionsListener
       },
     ) => Observable<ValidationStatus>
   }
