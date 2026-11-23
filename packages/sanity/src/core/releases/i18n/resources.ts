@@ -286,7 +286,7 @@ const releasesLocaleStrings = defineLocalesResources('releases', {
   'permission-missing-title': 'Limited access',
   /** Description for when a user doesn't have publish or schedule releases */
   'permission-missing-description':
-    'Your role currently limits what you can see in this release. You may not publish, schedule nor archive this release.',
+    'Your role currently limits what you can see in this release. You may not publish nor schedule this release.',
   /** Tooltip label when the user doesn't have permission to archive release */
   'permissions.error.archive': 'You do not have permission to archive this release',
   /** Tooltip label when the user doesn't have permission to delete release */

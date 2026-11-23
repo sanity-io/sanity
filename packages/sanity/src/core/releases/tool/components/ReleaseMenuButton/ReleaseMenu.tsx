@@ -102,11 +102,6 @@ export const ReleaseMenu = ({
     schedule,
   ])
 
-  // The archive dry run only checks the release document, while the archive itself moves every
-  // version in the release. A release with versions the user cannot access fails to publish in
-  // the dry run (the "Limited access" warning) and would get stuck while archiving.
-  const canArchive = Boolean(hasArchivePermission && hasPublishPermission)
-
   const handleOnInitiateAction = useCallback<MouseEventHandler<HTMLButtonElement>>(
     (event) => {
       const action = event.currentTarget.getAttribute('data-value') as ReleaseAction
@@ -139,10 +134,12 @@ export const ReleaseMenu = ({
       <MenuItem
         key="archive"
         tooltipProps={{
-          disabled: canArchive
+          disabled: hasArchivePermission
             ? !['scheduled', 'scheduling'].includes(release.state) || disabled
             : false,
-          content: canArchive ? t('action.archive.tooltip') : t('permissions.error.archive'),
+          content: hasArchivePermission
+            ? t('action.archive.tooltip')
+            : t('permissions.error.archive'),
         }}
         data-value="archive"
         onClick={handleOnInitiateAction}
@@ -151,7 +148,9 @@ export const ReleaseMenu = ({
         data-testid="archive-release-menu-item"
         tone="caution"
         disabled={
-          releaseMenuDisabled || ['scheduled', 'scheduling'].includes(release.state) || !canArchive
+          releaseMenuDisabled ||
+          ['scheduled', 'scheduling'].includes(release.state) ||
+          !hasArchivePermission
         }
       />
     )
@@ -161,7 +160,7 @@ export const ReleaseMenu = ({
     hasUnarchivePermission,
     handleOnInitiateAction,
     t,
-    canArchive,
+    hasArchivePermission,
     disabled,
   ])
 
