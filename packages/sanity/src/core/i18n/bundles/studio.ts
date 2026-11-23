@@ -663,6 +663,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.create-variant.form.base-label': 'Start from',
   /** The second line of the Drafts row in the variant creation form's "Add to" picker when the picked variant already has a draft, so Drafts cannot be picked */
   'document-group.create-variant.form.drafts-taken': 'Already has a draft',
+  /** The second line of the Published row in the variant creation form's "Add to" picker (a workspace with drafts off) when the picked variant is already published, so Published cannot be picked */
+  'document-group.create-variant.form.published-taken': 'Already published',
   /** The header of the variant creation form. `<DocumentTitle/>` is the title of the document the variant is created for */
   'document-group.create-variant.form.header': 'New variant of <DocumentTitle/>',
   /** The second line of the "Nearest version" option: the variant and the draft or release the new variant is copied from */
