@@ -23,6 +23,7 @@ import {usePerspective} from '../../../perspective/usePerspective'
 import {useSetPerspective} from '../../../perspective/useSetPerspective'
 import {useWorkspace} from '../../../studio/workspace'
 import {ReleaseAvatar} from '../../components/ReleaseAvatar'
+import {useReleasesRedesign} from '../../hooks/useReleasesRedesign'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../store/useReleasePermissions'
@@ -203,7 +204,7 @@ export function ReleaseDashboardDetails({
   const {publishRelease, schedule} = useReleaseOperations()
 
   const {t: tRelease} = useTranslation(releasesLocaleNamespace)
-  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+  const redesign = useReleasesRedesign()
   const createAuthor = events.find(isCreateReleaseEvent)?.author
 
   const validation = getDocumentValidationLoading(documents)
@@ -267,7 +268,7 @@ export function ReleaseDashboardDetails({
     schedule,
   ])
 
-  if (!variantsEnabled) {
+  if (!redesign) {
     return (
       <ReleaseDashboardDetailsProduction
         release={release}

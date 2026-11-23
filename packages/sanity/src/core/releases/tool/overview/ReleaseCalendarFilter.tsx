@@ -54,6 +54,10 @@ function ReleasesCalendarFilterDay(props: CalendarDayProps) {
   return <ReleaseCalendarFilterDayWithCardinality {...props} cardinalityView="releases" />
 }
 
+function AllCalendarFilterDay(props: CalendarDayProps) {
+  return <ReleaseCalendarFilterDayWithCardinality {...props} cardinalityView="all" />
+}
+
 function DraftsCalendarFilterDay(props: CalendarDayProps) {
   return <ReleaseCalendarFilterDayWithCardinality {...props} cardinalityView="drafts" />
 }
@@ -69,6 +73,7 @@ export const RELEASE_CALENDAR_FILTER_DAY: Record<
 > = {
   releases: ReleasesCalendarFilterDay,
   drafts: DraftsCalendarFilterDay,
+  all: AllCalendarFilterDay,
 }
 
 const MotionButton = motion.create(Button)

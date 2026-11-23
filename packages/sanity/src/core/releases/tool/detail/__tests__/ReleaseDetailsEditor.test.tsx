@@ -2,7 +2,7 @@ import {type ReleaseDocument} from '@sanity/client'
 import {defineField} from '@sanity/types'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, onTestFinished, type Mock, vi} from 'vitest'
 
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
@@ -17,6 +17,12 @@ import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {ReleaseDetailsEditor} from '../ReleaseDetailsEditor'
 
 const mockTelemetryLog = vi.fn<(event: unknown, payload?: unknown) => void>()
+
+const {mockReleasesRedesign} = vi.hoisted(() => ({mockReleasesRedesign: {enabled: true}}))
+
+vi.mock('../../../hooks/useReleasesRedesign', () => ({
+  useReleasesRedesign: () => mockReleasesRedesign.enabled,
+}))
 
 vi.mock('@sanity/telemetry/react', () => ({
   useTelemetry: vi.fn(() => ({log: mockTelemetryLog})),
@@ -87,6 +93,14 @@ function getUpdateReleaseMock(): Mock {
 
 describe('ReleaseDetailsEditor', () => {
   describe('production (inline editing)', () => {
+    // The legacy layout, kept behind useReleasesRedesign until v6 ships.
+    beforeEach(() => {
+      mockReleasesRedesign.enabled = false
+    })
+    afterEach(() => {
+      mockReleasesRedesign.enabled = true
+    })
+
     beforeEach(() => {
       vi.clearAllMocks()
       mockUseReleasePermissions.mockReturnValue(useReleasesPermissionsMockReturnTrue)
@@ -369,6 +383,10 @@ describe('ReleaseDetailsEditor', () => {
     })
 
     it('disables inline fields in production', async () => {
+      mockReleasesRedesign.enabled = false
+      onTestFinished(() => {
+        mockReleasesRedesign.enabled = true
+      })
       const wrapper = await createTestProvider()
       render(<ReleaseDetailsEditor release={initialRelease} />, {wrapper})
       await flushMicrotasksThisIsACodeSmell()

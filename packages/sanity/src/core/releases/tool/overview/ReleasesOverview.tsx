@@ -2,20 +2,11 @@ import {type ReleaseDocument} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
-import {type ButtonMode, Card, Inline, useMediaIndex} from '@sanity/ui'
+import {Card, useMediaIndex} from '@sanity/ui'
 import {isSameDay} from 'date-fns/isSameDay'
-import {AnimatePresence, motion} from 'motion/react'
-import {
-  type CSSProperties,
-  type MouseEventHandler,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useRouter} from 'sanity/router'
-import {Box, Flex} from 'ui5'
+import {Box, Container, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
@@ -38,15 +29,20 @@ import {isReleaseDocument} from '../../store/types'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
 import {type ReleasesMetadata, useReleasesMetadata} from '../../store/useReleasesMetadata'
-import {getIsScheduledDateInPast} from '../../util/getIsScheduledDateInPast'
 import {getReleaseTone} from '../../util/getReleaseTone'
-import {filterReleasesForOverview, shouldShowReleaseInView} from '../../util/util'
-import {Table, type TableRowProps} from '../components/Table/Table'
+import {
+  filterReleasesForOverview,
+  getReleaseDefaults,
+  shouldShowReleaseInView,
+} from '../../util/util'
+import {DocumentTable, type DocumentTableSelection} from '../components/Table/DocumentTable'
+import {type TableRowProps} from '../components/Table/Table'
 import {type TableSort} from '../components/Table/TableProvider'
 import {CalendarPopover} from './CalendarPopover'
 import {CardinalityViewPicker} from './CardinalityViewPicker'
 import {ConfirmActiveScheduledDraftsBanner} from './ConfirmActiveScheduledDraftsBanner'
 import {DraftsDisabledBanner} from './DraftsDisabledBanner'
+import {OVERVIEW_CONTENT_SIZE} from './overviewLayout'
 import {
   buildReleasesSearchParams,
   type CardinalityView,
@@ -56,18 +52,19 @@ import {
   getInitialReleaseNotFound,
   type Mode,
 } from './queryParamUtils'
+import {ReleaseBulkActions} from './ReleaseBulkActions'
 import {DateFilterButton, RELEASE_CALENDAR_FILTER_DAY} from './ReleaseCalendarFilter'
 import {ReleaseMenuButtonWrapper} from './ReleaseMenuButtonWrapper'
 import {ReleaseNotFoundBanner} from './ReleaseNotFoundBanner'
 import {ReleasesEmptyState} from './ReleasesEmptyState'
 import {releasesOverviewColumnDefs} from './ReleasesOverviewColumnDefs'
+import {ReleaseTimeline} from './ReleaseTimeline'
 import {ScheduledDraftMenuButtonWrapper} from './ScheduledDraftMenuButtonWrapper'
 import {ScheduledDraftsEmptyState} from './ScheduledDraftsEmptyState'
-import {scheduledDraftsOverviewColumnDefs} from './ScheduledDraftsOverviewColumnDefs'
 import {SchedulesUpsell} from './SchedulesUpsell'
+import {SegmentedControl} from './SegmentedControl'
+import {useReleaseLabelMode} from './useReleaseLabelMode'
 import {useTimezoneAdjustedDateTimeRange} from './useTimezoneAdjustedDateTimeRange'
-
-const MotionButton = motion.create(Button)
 
 export interface TableRelease extends ReleaseDocument {
   documentsMetadata?: ReleasesMetadata
@@ -96,6 +93,7 @@ export function ReleasesOverview() {
   const isReleasesEnabled = Boolean(releasesConfig?.enabled)
   const isDraftModelEnabled = document?.drafts?.enabled
   const variantsEnabled = Boolean(beta?.variants?.enabled)
+  const labelMode = useReleaseLabelMode()
   const {byId: variantsById, loading: variantsLoading} = useAllVariants()
 
   const router = useRouter()
@@ -153,12 +151,6 @@ export function ReleasesOverview() {
   const mediaIndex = useMediaIndex()
   const isNarrowViewport = mediaIndex < 2
 
-  const narrowFilterStyle: CSSProperties | undefined = isNarrowViewport
-    ? {minWidth: '100%', order: 3}
-    : undefined
-  const narrowTimezoneStyle: CSSProperties | undefined = isNarrowViewport
-    ? {marginLeft: 'auto'}
-    : undefined
   const timeZoneLabel = `${timeZone.abbreviation} (${timeZone.namePretty})`
   const timeZoneButtonProps = isNarrowViewport
     ? {tooltipProps: {content: timeZoneLabel}}
@@ -174,16 +166,10 @@ export function ReleasesOverview() {
         return {tone: getReleaseTone(datum)}
       }
 
-      if (datum.state === 'active' && getIsScheduledDateInPast(datum)) {
-        return {tone: 'caution'}
-      }
-
       return {tone: 'default'}
     },
     [selectedPerspective],
   )
-
-  const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null)
 
   const hasReleases = releases.length > 0 || archivedReleases.length > 0
   // banner that shows when drafts mode is disabled, or scheduled drafts are disabled
@@ -216,13 +202,6 @@ export function ReleasesOverview() {
     setShowReleaseNotFound(false)
   }, [])
 
-  const handleReleaseGroupModeChange = useCallback<MouseEventHandler<HTMLButtonElement>>(
-    ({currentTarget: {value: groupMode}}) => {
-      setReleaseGroupMode(groupMode as Mode)
-    },
-    [],
-  )
-
   const handleCardinalityViewChange = useCallback(
     (view: CardinalityView) => () => {
       router.navigate({
@@ -243,8 +222,9 @@ export function ReleasesOverview() {
   )
 
   const clearFilterDate = useCallback(() => {
+    // Date filter and lifecycle are independent now — clearing the date leaves the current
+    // lifecycle view (Active/Paused/Archived) untouched.
     setReleaseFilterDate(undefined)
-    setReleaseGroupMode('active')
   }, [])
 
   const handleNavigateToPaused = useCallback(() => {
@@ -270,81 +250,43 @@ export function ReleasesOverview() {
     )
   }, [releaseFilterDate, releaseGroupMode, cardinalityView, isScheduledDraftsEnabled])
 
-  const [hasMounted, setHasMounted] = useState(false)
-
-  useEffect(() => {
-    // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
-    setHasMounted(true)
-  }, [])
-
-  const showCalendar = mediaIndex > 2
-
   const currentArchivedPicker = useMemo(() => {
-    const groupModeButtonBaseProps = {
-      disabled: loading || !hasReleases,
-      mode: 'bleed' as ButtonMode,
-      padding: 2,
-      ...(hasMounted
-        ? {
-            initial: {opacity: 0},
-            animate: {opacity: 1},
-            transition: {duration: 0.4, ease: 'easeInOut' as const},
-          }
-        : {}),
-    }
+    // Lifecycle is a "pick one of N" filter → the shared SegmentedControl (same widget as the
+    // cardinality picker and the timeline zoom). Paused only appears in the drafts view; a mode
+    // with nothing in it is disabled, with a tooltip explaining why. No lifecycle colour — these
+    // are neutral filter tabs (green stays reserved for the readiness "good to go").
+    const items = [
+      {value: 'active' as Mode, label: t('action.open'), testId: 'group-mode-active'},
+      ...(cardinalityView === 'drafts'
+        ? [
+            {
+              value: 'paused' as Mode,
+              label: t('action.paused'),
+              disabled: !pausedReleases.length,
+              tooltip: pausedReleases.length ? undefined : t('no-paused-release'),
+              testId: 'group-mode-paused',
+            },
+          ]
+        : []),
+      {
+        value: 'archived' as Mode,
+        label: t('action.archived'),
+        disabled: !archivedReleases.length,
+        tooltip: archivedReleases.length ? undefined : t('no-archived-release'),
+        testId: 'group-mode-archived',
+      },
+    ]
     return (
-      <AnimatePresence>
-        <MotionButton
-          key="open-group"
-          {...groupModeButtonBaseProps}
-          onClick={handleReleaseGroupModeChange}
-          selected={releaseGroupMode === 'active'}
-          text={t('action.open')}
-          value="active"
-        />
-        {cardinalityView === 'drafts' && (
-          <Tooltip
-            disabled={pausedReleases.length !== 0}
-            content={t('no-paused-release')}
-            placement="bottom"
-          >
-            <div>
-              <MotionButton
-                key="paused-group"
-                {...groupModeButtonBaseProps}
-                disabled={groupModeButtonBaseProps.disabled || !pausedReleases.length}
-                onClick={handleReleaseGroupModeChange}
-                selected={releaseGroupMode === 'paused'}
-                text={t('action.paused')}
-                value="paused"
-              />
-            </div>
-          </Tooltip>
-        )}
-        <Tooltip
-          disabled={archivedReleases.length !== 0}
-          content={t('no-archived-release')}
-          placement="bottom"
-        >
-          <div>
-            <MotionButton
-              key="archived-group"
-              {...groupModeButtonBaseProps}
-              disabled={groupModeButtonBaseProps.disabled || !archivedReleases.length}
-              onClick={handleReleaseGroupModeChange}
-              selected={releaseGroupMode === 'archived'}
-              text={t('action.archived')}
-              value="archived"
-            />
-          </div>
-        </Tooltip>
-      </AnimatePresence>
+      <SegmentedControl
+        value={releaseGroupMode}
+        onChange={setReleaseGroupMode}
+        disabled={loading || !hasReleases}
+        items={items}
+      />
     )
   }, [
     loading,
     hasReleases,
-    hasMounted,
-    handleReleaseGroupModeChange,
     releaseGroupMode,
     t,
     archivedReleases.length,
@@ -408,7 +350,11 @@ export function ReleasesOverview() {
 
       if (release.isDeleted || release.isLoading) return null
 
-      if (cardinalityView === 'drafts') {
+      // Route by the ROW's cardinality, not the current view: a single-document
+      // release always gets the scheduled-draft menu (Publish now / Edit schedule /
+      // Delete schedule), a bundle always gets the release menu (Run release /
+      // Schedule / Unschedule / …) — consistent across All / Releases / Scheduled drafts.
+      if (isCardinalityOneRelease(release)) {
         return <ScheduledDraftMenuButtonWrapper release={release} />
       }
 
@@ -419,16 +365,19 @@ export function ReleasesOverview() {
 
       return <ReleaseMenuButtonWrapper release={release} documentsCount={documentsCount} />
     },
-    [releaseGroupMode, cardinalityView],
+    [releaseGroupMode],
   )
 
   const filteredReleases = useMemo(() => {
-    const dateFilter = releaseFilterDate
-      ? {
-          filterDate: releaseFilterDate,
-          getTimezoneAdjustedDateTimeRange,
-        }
-      : undefined
+    // The date filter is managed from the timeline (a non-archived surface), so it only applies
+    // outside Archived — no invisible filtering of the archived list, which has no calendar control.
+    const dateFilter =
+      releaseFilterDate && releaseGroupMode !== 'archived'
+        ? {
+            filterDate: releaseFilterDate,
+            getTimezoneAdjustedDateTimeRange,
+          }
+        : undefined
 
     return filterReleasesForOverview({
       releases: tableReleases,
@@ -463,29 +412,74 @@ export function ReleasesOverview() {
     [loading, releases, releaseFilterDate, handleSelectFilterDate, cardinalityView],
   )
 
-  const renderCalendarFilter = useMemo(
-    () => (
-      <Flex flexBasis="auto" flexGrow={0} flexShrink={0}>
-        <Card borderRight flex="none" disabled>
-          {calendarFilterContent}
-        </Card>
-      </Flex>
-    ),
-    [calendarFilterContent],
-  )
-
-  const tableColumns = useMemo(() => {
-    if (cardinalityView === 'drafts') {
-      return scheduledDraftsOverviewColumnDefs(t, releaseGroupMode, {
+  const tableColumns = useMemo(
+    () =>
+      releasesOverviewColumnDefs(t, releaseGroupMode, cardinalityView, {
         variantsById: variantsEnabled ? variantsById : undefined,
         variantsLoading: variantsEnabled && variantsLoading,
-      })
-    }
-    return releasesOverviewColumnDefs(t, releaseGroupMode)
-  }, [cardinalityView, releaseGroupMode, t, variantsEnabled, variantsById, variantsLoading])
+        labelMode,
+      }),
+    [
+      cardinalityView,
+      releaseGroupMode,
+      t,
+      variantsEnabled,
+      variantsById,
+      variantsLoading,
+      labelMode,
+    ],
+  )
 
-  const hasBannerAboveTable =
-    showReleaseNotFound || showDraftsDisabledBanner || showConfirmActiveScheduledDraftsBanner
+  const getReleaseKey = useCallback((release: TableRelease) => release._id, [])
+  const searchReleasePredicate = useCallback(
+    (release: TableRelease, term: string) =>
+      (release.metadata?.title || '').toLowerCase().includes(term.toLowerCase()),
+    [],
+  )
+
+  // Command-lane filter slot: the lifecycle tabs, ALWAYS. Date filtering is now independent — its
+  // trigger + active chip live together in the timeline header (see `dateControl`), so the tabs no
+  // longer get swapped out. Both filters apply together.
+  const filterTabsNode = useMemo(() => {
+    if (!loadingOrHasReleases) return undefined
+    return currentArchivedPicker
+  }, [loadingOrHasReleases, currentArchivedPicker])
+
+  // Multi-select is available for All, Releases, and Scheduled drafts views, in Active/Paused/
+  // Archived modes — each view+mode combination gets its own action set from ReleaseBulkActions
+  // (All/Releases active: archive/archive-and-delete; All/Releases archived: unarchive/delete;
+  // Scheduled drafts active/paused: delete schedule; Scheduled drafts archived: unarchive/delete).
+  //
+  // filteredReleases is exactly what's rendered in the table for the current view/mode (it's
+  // already scoped by filterReleasesForOverview to the active-vs-archived source array and any
+  // date filter), so it's the correct array to resolve selectedKeys -> release objects from —
+  // no need to branch between tableReleases/archivedReleases ourselves.
+  const bulkSelection = useMemo<DocumentTableSelection | undefined>(() => {
+    return {
+      labels: {
+        selectAll: t('overview.bulk.select-all'),
+        selectRow: t('overview.bulk.select-row'),
+        selectedCount: (count) => t('overview.bulk.selected', {count}),
+        clear: t('overview.bulk.clear'),
+      },
+      selectAllTestId: 'release-bulk-select-all',
+      renderActions: ({selectedKeys, compact, clear}) => {
+        const selectedKeySet = new Set(selectedKeys)
+        const selectedReleases = filteredReleases.filter((release) =>
+          selectedKeySet.has(release._id),
+        )
+        return (
+          <ReleaseBulkActions
+            selectedReleases={selectedReleases}
+            mode={releaseGroupMode}
+            cardinalityView={cardinalityView}
+            compact={compact}
+            onClear={clear}
+          />
+        )
+      },
+    }
+  }, [cardinalityView, releaseGroupMode, t, filteredReleases])
 
   const isArchivedReleasesView = releaseGroupMode === 'archived' && cardinalityView === 'releases'
   const defaultTableSort = isArchivedReleasesView
@@ -526,100 +520,101 @@ export function ReleasesOverview() {
   }
 
   return (
-    <Flex flexDirection="row" flexBasis="0%" flexGrow={1} style={{height: '100%'}}>
-      <Flex flexBasis="0%" flexGrow={1}>
-        {showCalendar && renderCalendarFilter}
-
-        <Flex flexDirection="column" flexBasis="0%" flexGrow={1} style={{position: 'relative'}}>
-          <Card flex="none" padding={3}>
-            <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={3} flexWrap="wrap">
-              <Inline>
-                {!showCalendar && (
-                  <CalendarPopover content={calendarFilterContent} asDialog={isNarrowViewport} />
-                )}
-                <CardinalityViewPicker
-                  cardinalityView={cardinalityView}
-                  loading={loading}
-                  onCardinalityViewChange={handleCardinalityViewChange}
-                  isScheduledDraftsEnabled={isScheduledDraftsEnabled}
-                  allReleases={allReleases}
-                  isReleasesEnabled={isReleasesEnabled}
-                  isDraftModelEnabled={isDraftModelEnabled}
-                />
-              </Inline>
-
-              <Flex flexBasis="0%" flexGrow={1} gap={1} style={narrowFilterStyle}>
-                {loadingOrHasReleases &&
-                  (releaseFilterDate ? (
-                    <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
-                  ) : (
-                    currentArchivedPicker
-                  ))}
-              </Flex>
-              <Flex
-                flexBasis="auto"
-                flexGrow={0}
-                flexShrink={0}
-                gap={2}
-                style={narrowTimezoneStyle}
-              >
-                <Button
-                  icon={EarthGlobeIcon}
-                  mode="bleed"
-                  onClick={dialogTimeZoneShow}
-                  {...timeZoneButtonProps}
-                />
-                {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
-                {loadingOrHasReleases && createReleaseButton}
-              </Flex>
+    <Flex flexDirection="column" flexBasis="0%" flexGrow={1} style={{height: '100%'}}>
+      {/* Page toolbar (zone 0): reads left→right as SETTING · SCOPE · ACTION. The timezone is a
+          global time lens (re-clocks every date on the page), so it sits on the LEFT as a setting,
+          grouped with the date-related controls; the cardinality picker is the horizontally-centered
+          primary navigation; New release — the actual action — sits alone on the right. Time-scoped
+          FILTERS (calendar date, lifecycle tabs, search) live below in the timeline zone / command
+          lane. */}
+      <Card flex="none" padding={3}>
+        {/* Toolbar, timeline and table share one content column (OVERVIEW_CONTENT_SIZE), so on
+            wide screens they read as one page rather than spreading to the edges. */}
+        <Container size={OVERVIEW_CONTENT_SIZE}>
+          <Flex alignItems="center" gap={3} flexWrap="wrap">
+            <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2}>
+              <Button
+                icon={EarthGlobeIcon}
+                mode="bleed"
+                onClick={dialogTimeZoneShow}
+                {...timeZoneButtonProps}
+              />
+              {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
             </Flex>
-          </Card>
-          {showReleaseNotFound && (
-            <ReleaseNotFoundBanner onDismiss={handleDismissReleaseNotFound} />
-          )}
-          {showDraftsDisabledBanner && (
-            <DraftsDisabledBanner
-              isDraftModelEnabled={isDraftModelEnabled}
+            <CardinalityViewPicker
+              cardinalityView={cardinalityView}
+              loading={loading}
+              onCardinalityViewChange={handleCardinalityViewChange}
               isScheduledDraftsEnabled={isScheduledDraftsEnabled}
               allReleases={allReleases}
+              isReleasesEnabled={isReleasesEnabled}
+              isDraftModelEnabled={isDraftModelEnabled}
             />
-          )}
-          {showConfirmActiveScheduledDraftsBanner && (
-            <ConfirmActiveScheduledDraftsBanner
-              releases={releases}
-              releaseGroupMode={releaseGroupMode}
-              hasDateFilter={Boolean(releaseFilterDate)}
-              onNavigateToPaused={handleNavigateToPaused}
-            />
-          )}
+            <Flex alignItems="center" flexBasis="0%" flexGrow={1} justifyContent="flex-end" gap={2}>
+              {loadingOrHasReleases && createReleaseButton}
+            </Flex>
+          </Flex>
+        </Container>
+      </Card>
 
-          {hasNoReleases ? (
-            renderNoReleasesEmptyState()
-          ) : (
-            <Box
-              ref={setScrollContainerRef}
-              marginTop={hasBannerAboveTable ? 0 : 3}
-              overflow="auto"
-            >
-              <Table<TableRelease>
-                // for resetting filter and sort on table when filer changed
-                key={releaseFilterDate ? 'by_date' : releaseGroupMode}
-                defaultSort={defaultTableSort}
-                loading={loadingTableData}
-                data={filteredReleases}
-                columnDefs={tableColumns}
-                emptyState={tableEmptyState}
-                // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
-                rowId="_id"
-                rowActions={renderRowActions}
-                rowProps={getRowProps}
-                scrollContainerRef={scrollContainerRef}
-                hideTableInlinePadding
-              />
-            </Box>
-          )}
-        </Flex>
-      </Flex>
+      {showReleaseNotFound && <ReleaseNotFoundBanner onDismiss={handleDismissReleaseNotFound} />}
+      {showDraftsDisabledBanner && (
+        <DraftsDisabledBanner
+          isDraftModelEnabled={isDraftModelEnabled}
+          isScheduledDraftsEnabled={isScheduledDraftsEnabled}
+          allReleases={allReleases}
+        />
+      )}
+      {showConfirmActiveScheduledDraftsBanner && (
+        <ConfirmActiveScheduledDraftsBanner
+          releases={releases}
+          releaseGroupMode={releaseGroupMode}
+          hasDateFilter={Boolean(releaseFilterDate)}
+          onNavigateToPaused={handleNavigateToPaused}
+        />
+      )}
+
+      {!hasNoReleases && releaseGroupMode !== 'archived' && (
+        <ReleaseTimeline
+          releases={filteredReleases}
+          dateControl={
+            <Flex alignItems="center" gap={1}>
+              <CalendarPopover content={calendarFilterContent} asDialog={isNarrowViewport} />
+              {releaseFilterDate && (
+                <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
+              )}
+            </Flex>
+          }
+        />
+      )}
+
+      {hasNoReleases ? (
+        renderNoReleasesEmptyState()
+      ) : (
+        <DocumentTable<TableRelease>
+          // reset search/selection/sort when the filter axis changes
+          key={releaseFilterDate ? 'by_date' : releaseGroupMode}
+          alwaysShowCommandLane
+          contentSize={OVERVIEW_CONTENT_SIZE}
+          columnDefs={tableColumns}
+          defaultSort={defaultTableSort}
+          emptyState={tableEmptyState}
+          filterTabs={filterTabsNode}
+          getRowKey={getReleaseKey}
+          id="releases-overview-table"
+          loading={loadingTableData}
+          rows={filteredReleases}
+          rowActions={renderRowActions}
+          rowProps={getRowProps}
+          // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
+          rowId="_id"
+          searchPlaceholder={t('overview.search-releases-placeholder')}
+          searchPredicate={searchReleasePredicate}
+          searchTestId="release-search"
+          selection={bulkSelection}
+        />
+      )}
+
       {isCreateReleaseDialogOpen && (
         <CreateReleaseDialog
           onCancel={() => setIsCreateReleaseDialogOpen(false)}
