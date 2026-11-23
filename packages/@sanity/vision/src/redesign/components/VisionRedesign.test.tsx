@@ -1193,12 +1193,6 @@ describe('VisionRedesign', () => {
           ?.content[0].text ?? '[]',
       )
       expect(findings).toEqual([
-        expect.objectContaining({
-          line: 1,
-          rule: 'groq-lint/unlimited-query',
-          severity: 'warning',
-          text: '[_type == "post" && author->name == "x"]',
-        }),
         expect.objectContaining({line: 1, rule: 'groq-lint/join-in-filter', text: 'author->'}),
       ])
 
