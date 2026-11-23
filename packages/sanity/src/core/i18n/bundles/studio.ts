@@ -1890,6 +1890,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.schedule-dialog.select-publish-date-label': 'Publish on',
   /** The toast description that will be shown when the user has a release perspective which is now archived */
   'release.toast.archived-release.description': 'This release has been unpinned',
+  /** The toast title shown when a link selects a release this studio has no release for. `{{name}}` is the name from the link */
+  'release.toast.unknown-perspective.title': 'There is no release "{{name}}" in this studio',
+  /** The toast title shown when a link selects a release in a studio with content releases off. `{{name}}` is the release id from the link */
+  'release.toast.releases-off-perspective.title':
+    'Releases are off in this studio, so this link opens without its release',
   /** The toast title that will be shown when the user has a release perspective which is now archived */
   'release.toast.archived-release.title': "The '{{title}}' release was archived",
   /** The toast title that will be shown the creating a release fails */
