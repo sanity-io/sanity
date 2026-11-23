@@ -183,6 +183,10 @@ trustPolicyExclude:
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0
 patchedDependencies:
+  # 6.3.0 imports defineLocaleResourceBundle and useTranslation from the 'sanity' root, which only
+  # exports them from 'sanity/i18n' since the i18n runtime exports moved. The patch rewrites those
+  # two imports. Drop once a release of the plugin that supports this sanity major ships
+  '@sanity/document-internationalization@6.3.0': patches/@sanity__document-internationalization@6.3.0.patch
   # The runner joins describe and test names with ' ' but Vitest 5 filters on ' > ', so tests
   # inside a describe never run against a mutant and it reports as survived. Drop once fixed upstream
   '@stryker-mutator/vitest-runner@10.0.0': patches/@stryker-mutator__vitest-runner@10.0.0.patch
