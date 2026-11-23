@@ -897,6 +897,8 @@ export {
   UpsellDialogViewed,
   type UpsellDialogViewedInfo,
 } from '../core/studio/upsell/__telemetry__/upsell.telemetry'
+export {type UpsellDataResult} from '../core/studio/upsell/types'
+export {UpsellDialog, type UpsellDialogProps} from '../core/studio/upsell/UpsellDialog'
 export {
   type InterpolationProp,
   UpsellDescriptionSerializer,
@@ -1213,6 +1215,7 @@ export {useSyncState} from '../core/hooks/useSyncState'
 // oxlint-disable-next-line no-deprecated -- deprecated API stays available on the internals entry until it is removed
 export {useTimeAgo} from '../core/hooks/useTimeAgo'
 export {useTimeZone} from '../core/hooks/useTimeZone'
+export {NO_UPSELL_DATA, type UpsellTelemetryLogs, useUpsellData} from '../core/hooks/useUpsellData'
 export {useUnstableObserveDocument} from '../core/preview/useObserveDocument'
 export {useUserColorManager} from '../core/user-color/hooks'
 // oxlint-disable-next-line no-deprecated -- only the boolean overload is deprecated

@@ -41,7 +41,8 @@ const Image = styled.img`
   height: 200px;
 `
 
-interface UpsellDialogProps {
+/** @internal */
+export interface UpsellDialogProps {
   data?: UpsellData | null
   open?: boolean
   onClose: () => void
@@ -50,6 +51,12 @@ interface UpsellDialogProps {
   interpolation?: InterpolationProp
 }
 
+/**
+ * The dialog every upsell renders its `/journey/<feature>` content in: the image, the description
+ * and the CTA and secondary buttons the content names. Renders nothing without `data`.
+ *
+ * @internal
+ */
 export function UpsellDialog(props: UpsellDialogProps) {
   const {data, open = true, onClose, onPrimaryClick, onSecondaryClick, interpolation} = props
 
