@@ -23,6 +23,7 @@ import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror
 import {type Params} from '../../../components/VisionGui'
 import {visionLocaleNamespace} from '../../../i18n'
 import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
+import {useAiFeatures} from '../../aiFeatures'
 import {type QueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {
@@ -240,7 +241,9 @@ export function RequestPanel(props: RequestPanelProps) {
   )
 
   const querySectionRef = useRef<HTMLDivElement>(null)
-  const [generatorOpen, setGeneratorOpen] = useState(false)
+  const {generateQuery: canGenerate} = useAiFeatures()
+  const [generatorState, setGeneratorOpen] = useState(false)
+  const generatorOpen = canGenerate && generatorState
   // Closing hands the keyboard back to the query editor, where the bar was opened from
   const closeGenerator = useCallback(() => {
     setGeneratorOpen(false)
@@ -491,7 +494,7 @@ export function RequestPanel(props: RequestPanelProps) {
                 {t('query.label')}
               </Label>
               <Flex alignItems="center" className={styles.labelActions} gap={1}>
-                {!generatorOpen && (
+                {canGenerate && !generatorOpen && (
                   <AgentActionsTooltip>
                     <GenerateQueryButton
                       className={styles.pressable}
