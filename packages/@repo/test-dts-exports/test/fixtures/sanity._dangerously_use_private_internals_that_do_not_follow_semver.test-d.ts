@@ -477,9 +477,13 @@ import type {
   KeyValueStoreValue,
   LatencyReportEvent,
   LATEST,
+  LegacyCallbackResult,
   LegacyLayerProvider,
   LegacyThemeTints,
+  LISTENER_PAUSE_GRACE_PERIOD,
   ListenerEvent,
+  listenerGate,
+  ListenerGate,
   listenQuery,
   ListenQueryParams,
   ListPaneNode,
@@ -522,6 +526,7 @@ import type {
   NavbarContextValue,
   newDraftFrom,
   NextStateOrOptions,
+  NO_UPSELL_DATA,
   NoChanges,
   noop,
   normalizeIndexSegment,
@@ -530,6 +535,7 @@ import type {
   normalizePathSegment,
   NullDiff,
   NumberDiff,
+  OAuthCallbackResult,
   ObjectDiff,
   ObjectInputMember,
   ObjectInputMemberProps,
@@ -563,6 +569,8 @@ import type {
   passthroughErrorHandler,
   pathsAreEqual,
   pathToString,
+  pauseWhileDocumentHidden,
+  PauseWhileDocumentHiddenOptions,
   PendingMutationsEvent,
   PerspectiveNotWriteableReason,
   PerspectiveProvider,
@@ -588,6 +596,8 @@ import type {
   PrimitiveFieldProps,
   PUBLISHED,
   ReactHook,
+  reconnectListener,
+  ReconnectListenerOptions,
   recordStructurePaneKind,
   recordStructureTool,
   Rect,
@@ -630,6 +640,7 @@ import type {
   ResourceCacheProvider,
   ResourceCacheProviderProps,
   RetryingStatus,
+  retryTransientFetch,
   RevertChangesButton,
   RevertChangesConfirmDialog,
   RouterContext,
@@ -738,12 +749,16 @@ import type {
   UpdateReadOnlyPlugin,
   UploaderDef,
   uploadSchema,
+  UpsellDataResult,
   UpsellDescriptionSerializer,
+  UpsellDialog,
   UpsellDialogDismissed,
   UpsellDialogLearnMoreCtaClicked,
+  UpsellDialogProps,
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
   UpsellDialogViewedInfo,
+  UpsellTelemetryLogs,
   useActiveReleases,
   useActiveWorkspace,
   useAgentVersionDisplay,
@@ -865,6 +880,8 @@ import type {
   useSource,
   useStructureTool,
   useStudioFeedbackTags,
+  useStudioPreference,
+  useStudioPreferenceList,
   useStudioUrl,
   useSyncState,
   useTargetDocumentState,
@@ -881,6 +898,7 @@ import type {
   useTrackerStoreReporter,
   useUnique,
   useUnstableObserveDocument,
+  useUpsellData,
   useUser,
   useUserColor,
   useUserColorManager,
@@ -2143,7 +2161,7 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
     expectTypeOf<GroupChangeNode>().toBeObject()
   })
   test('HandleCallbackResult', () => {
-    expectTypeOf<HandleCallbackResult>().toBeObject()
+    expectTypeOf<HandleCallbackResult>().not.toBeNever()
   })
   test('hasCommentMessageValue', () => {
     expectTypeOf<typeof hasCommentMessageValue>().toBeFunction()
@@ -2361,14 +2379,26 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('LATEST', () => {
     expectTypeOf<typeof LATEST>().not.toBeNever()
   })
+  test('LegacyCallbackResult', () => {
+    expectTypeOf<LegacyCallbackResult>().toBeObject()
+  })
   test('LegacyLayerProvider', () => {
     expectTypeOf<typeof LegacyLayerProvider>().toBeFunction()
   })
   test('LegacyThemeTints', () => {
     expectTypeOf<LegacyThemeTints>().not.toBeNever()
   })
+  test('LISTENER_PAUSE_GRACE_PERIOD', () => {
+    expectTypeOf<typeof LISTENER_PAUSE_GRACE_PERIOD>().not.toBeNever()
+  })
   test('ListenerEvent', () => {
     expectTypeOf<ListenerEvent>().not.toBeNever()
+  })
+  test('listenerGate', () => {
+    expectTypeOf<typeof listenerGate>().not.toBeNever()
+  })
+  test('ListenerGate', () => {
+    expectTypeOf<ListenerGate>().toBeObject()
   })
   test('listenQuery', () => {
     expectTypeOf<typeof listenQuery>().toBeFunction()
@@ -2496,6 +2526,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('NextStateOrOptions', () => {
     expectTypeOf<NextStateOrOptions>().not.toBeNever()
   })
+  test('NO_UPSELL_DATA', () => {
+    expectTypeOf<typeof NO_UPSELL_DATA>().not.toBeNever()
+  })
   test('NoChanges', () => {
     expectTypeOf<typeof NoChanges>().toBeFunction()
   })
@@ -2519,6 +2552,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('NumberDiff', () => {
     expectTypeOf<NumberDiff>().not.toBeNever()
+  })
+  test('OAuthCallbackResult', () => {
+    expectTypeOf<OAuthCallbackResult>().toBeObject()
   })
   test('ObjectDiff', () => {
     expectTypeOf<ObjectDiff<any>>().not.toBeNever()
@@ -2619,6 +2655,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('pathToString', () => {
     expectTypeOf<typeof pathToString>().toBeFunction()
   })
+  test('pauseWhileDocumentHidden', () => {
+    expectTypeOf<typeof pauseWhileDocumentHidden>().not.toBeNever()
+  })
+  test('PauseWhileDocumentHiddenOptions', () => {
+    expectTypeOf<PauseWhileDocumentHiddenOptions<any>>().toBeObject()
+  })
   test('PendingMutationsEvent', () => {
     expectTypeOf<PendingMutationsEvent>().toBeObject()
   })
@@ -2693,6 +2735,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('ReactHook', () => {
     expectTypeOf<ReactHook<any, any>>().not.toBeNever()
+  })
+  test('reconnectListener', () => {
+    expectTypeOf<typeof reconnectListener>().toBeFunction()
+  })
+  test('ReconnectListenerOptions', () => {
+    expectTypeOf<ReconnectListenerOptions>().toBeObject()
   })
   test('recordStructurePaneKind', () => {
     expectTypeOf<typeof recordStructurePaneKind>().toBeFunction()
@@ -2820,6 +2868,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('RetryingStatus', () => {
     expectTypeOf<RetryingStatus>().not.toBeNever()
+  })
+  test('retryTransientFetch', () => {
+    expectTypeOf<typeof retryTransientFetch>().toBeFunction()
   })
   test('RevertChangesButton', () => {
     expectTypeOf<typeof RevertChangesButton>().toBeFunction()
@@ -3145,14 +3196,23 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('uploadSchema', () => {
     expectTypeOf<typeof uploadSchema>().toBeFunction()
   })
+  test('UpsellDataResult', () => {
+    expectTypeOf<UpsellDataResult>().toBeObject()
+  })
   test('UpsellDescriptionSerializer', () => {
     expectTypeOf<typeof UpsellDescriptionSerializer>().toBeFunction()
+  })
+  test('UpsellDialog', () => {
+    expectTypeOf<typeof UpsellDialog>().toBeFunction()
   })
   test('UpsellDialogDismissed', () => {
     expectTypeOf<typeof UpsellDialogDismissed>().not.toBeNever()
   })
   test('UpsellDialogLearnMoreCtaClicked', () => {
     expectTypeOf<typeof UpsellDialogLearnMoreCtaClicked>().not.toBeNever()
+  })
+  test('UpsellDialogProps', () => {
+    expectTypeOf<UpsellDialogProps>().toBeObject()
   })
   test('UpsellDialogUpgradeCtaClicked', () => {
     expectTypeOf<typeof UpsellDialogUpgradeCtaClicked>().not.toBeNever()
@@ -3162,6 +3222,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('UpsellDialogViewedInfo', () => {
     expectTypeOf<UpsellDialogViewedInfo>().toBeObject()
+  })
+  test('UpsellTelemetryLogs', () => {
+    expectTypeOf<UpsellTelemetryLogs>().toBeObject()
   })
   test('useActiveReleases', () => {
     expectTypeOf<typeof useActiveReleases>().toBeFunction()
@@ -3528,6 +3591,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useStudioFeedbackTags', () => {
     expectTypeOf<typeof useStudioFeedbackTags>().toBeFunction()
   })
+  test('useStudioPreference', () => {
+    expectTypeOf<typeof useStudioPreference>().toBeFunction()
+  })
+  test('useStudioPreferenceList', () => {
+    expectTypeOf<typeof useStudioPreferenceList>().toBeFunction()
+  })
   test('useStudioUrl', () => {
     expectTypeOf<typeof useStudioUrl>().not.toBeNever()
   })
@@ -3576,6 +3645,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useUnstableObserveDocument', () => {
     expectTypeOf<typeof useUnstableObserveDocument>().toBeFunction()
   })
+  test('useUpsellData', () => {
+    expectTypeOf<typeof useUpsellData>().not.toBeNever()
+  })
   test('useUser', () => {
     expectTypeOf<typeof useUser>().toBeFunction()
   })
@@ -3586,6 +3658,7 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
     expectTypeOf<typeof useUserColorManager>().toBeFunction()
   })
   test('useValidationStatus', () => {
+    // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<typeof useValidationStatus>().toBeFunction()
   })
   test('useValuePreview', () => {

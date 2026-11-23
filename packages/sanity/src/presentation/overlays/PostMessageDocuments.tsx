@@ -12,6 +12,7 @@ import {
   isReleasePerspective,
   RELEASES_STUDIO_CLIENT_OPTIONS,
 } from '../../core/releases/util/releasesClient'
+import {pauseWhileDocumentHidden} from '../../core/store/listenerGate/listenerGate'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../core/variants/store/constants'
 import {API_VERSION} from '../constants'
 import {type VisualEditingConnection} from '../types'
@@ -50,15 +51,27 @@ const PostMessageDocuments: FunctionComponent<PostMessageDocumentsProps> = (prop
         },
       )
       .pipe(
+        // Visual editing handles a paused listener like a dropped one: `reconnect`, then the new
+        // connection's `welcome`, after which it fetches its snapshots again
+        pauseWhileDocumentHidden({onPause: (): ReconnectEvent => ({type: 'reconnect'})}),
         filter(
           (event): event is WelcomeEvent | ReconnectEvent | MutationEvent =>
             event.type === 'welcome' || event.type === 'reconnect' || event.type === 'mutation',
         ),
       )
 
-    const welcome = listener.pipe(
-      filter((event): event is WelcomeEvent => event.type === 'welcome'),
+    // `reconnect` replaces the replayed `welcome`, so a context that asks for it while the listener
+    // is paused or reconnecting waits for the new connection instead of trusting the old one
+    const connection = listener.pipe(
+      filter(
+        (event): event is WelcomeEvent | ReconnectEvent =>
+          event.type === 'welcome' || event.type === 'reconnect',
+      ),
       shareReplay({bufferSize: 1, refCount: false}),
+    )
+
+    const welcome = connection.pipe(
+      filter((event): event is WelcomeEvent => event.type === 'welcome'),
     )
 
     // When new contexts initialize, they need to explicitly request the welcome
@@ -72,21 +85,16 @@ const PostMessageDocuments: FunctionComponent<PostMessageDocumentsProps> = (prop
       return {event}
     })
 
-    const reconnect = listener.pipe(
-      filter((event): event is ReconnectEvent => event.type === 'reconnect'),
-    )
-
     const mutations = listener.pipe(
       filter((event): event is MutationEvent => event.type === 'mutation'),
     )
 
     const events = merge(
       /**
-       * @deprecated remove 'welcome' here and switch to explict welcome message fetching at next major
+       * @deprecated post only `reconnect` here and switch to explict welcome message fetching at next major
        */
-      welcome,
+      connection,
       mutations,
-      reconnect,
     ).subscribe((event) => {
       comlink.post('presentation/snapshot-event', {event})
     })

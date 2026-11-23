@@ -93,7 +93,7 @@ function RenderTool({tool, ActiveToolLayout, toolMountT0Ref}: RenderToolProps) {
  * The default Studio Layout component
  * */
 export function StudioLayoutComponent() {
-  const {beta, name, title, tools} = useWorkspace()
+  const {name, title, tools, reactActivityMode} = useWorkspace()
   const telemetry = useTelemetry()
 
   // In the background, check if the network protocol used to communicate with the
@@ -113,11 +113,11 @@ export function StudioLayoutComponent() {
     () => tools.find((tool) => tool.name === activeToolName),
     [activeToolName, tools],
   )
-  // With `beta.reactActivityMode`, the tools used most recently stay mounted inside a
+  // With `reactActivityMode`, the tools used most recently stay mounted inside a
   // hidden `<Activity>` boundary instead of being unmounted when another tool takes over.
-  const reactActivityMode = beta?.reactActivityMode?.enabled === true
+  const reactActivityModeEnabled = reactActivityMode.enabled
   const {mountedTools, contextValue: mountedToolsContextValue} = useMountedTools({
-    enabled: reactActivityMode,
+    enabled: reactActivityModeEnabled,
     tools,
     activeTool,
   })
@@ -255,7 +255,7 @@ export function StudioLayoutComponent() {
         {searchFullscreenOpen && (
           <SearchFullscreenPortalCard ref={setSearchFullscreenPortalEl} overflow="auto" />
         )}
-        {reactActivityMode ? (
+        {reactActivityModeEnabled ? (
           <StudioErrorBoundary>
             {detectViteDevServerStopped && (
               <Suspense>

@@ -733,7 +733,7 @@ export const reactActivityModeEnabledReducer = ({
   const flattenedConfig = flattenConfig(config, [])
 
   return flattenedConfig.reduce<boolean>((value, {config: innerConfig}) => {
-    const reactActivityMode: unknown = innerConfig.beta?.reactActivityMode
+    const reactActivityMode: unknown = innerConfig.reactActivityMode
 
     if (typeof reactActivityMode === 'undefined') {
       return value
@@ -741,7 +741,7 @@ export const reactActivityModeEnabledReducer = ({
 
     if (!isRecord(reactActivityMode)) {
       throw new Error(
-        `Expected \`beta.reactActivityMode\` to be an object, but received ${getPrintableType(
+        `Expected \`reactActivityMode\` to be an object, but received ${getPrintableType(
           reactActivityMode,
         )}`,
       )
@@ -758,7 +758,49 @@ export const reactActivityModeEnabledReducer = ({
     }
 
     throw new Error(
-      `Expected \`beta.reactActivityMode.enabled\` to be a boolean, but received ${getPrintableType(
+      `Expected \`reactActivityMode.enabled\` to be a boolean, but received ${getPrintableType(
+        enabled,
+      )}`,
+    )
+  }, initialValue)
+}
+
+export const releaseBackgroundListenersEnabledReducer = ({
+  config,
+  initialValue,
+}: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce<boolean>((value, {config: innerConfig}) => {
+    const releaseBackgroundListeners: unknown = innerConfig.beta?.releaseBackgroundListeners
+
+    if (typeof releaseBackgroundListeners === 'undefined') {
+      return value
+    }
+
+    if (!isRecord(releaseBackgroundListeners)) {
+      throw new Error(
+        `Expected \`beta.releaseBackgroundListeners\` to be an object, but received ${getPrintableType(
+          releaseBackgroundListeners,
+        )}`,
+      )
+    }
+
+    const enabled = releaseBackgroundListeners.enabled
+
+    if (typeof enabled === 'undefined') {
+      return value
+    }
+
+    if (typeof enabled === 'boolean') {
+      return enabled
+    }
+
+    throw new Error(
+      `Expected \`beta.releaseBackgroundListeners.enabled\` to be a boolean, but received ${getPrintableType(
         enabled,
       )}`,
     )

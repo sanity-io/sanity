@@ -1,0 +1,135 @@
+import {type MutationEvent, type ReconnectEvent, type SanityClient} from '@sanity/client'
+import {type Observable, timer} from 'rxjs'
+import {filter, map} from 'rxjs/operators'
+
+import {LISTENER_RESET_DELAY} from '../../preview/constants'
+import {type InvalidationChannelEvent} from '../../preview/types'
+import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
+import {reconnectListener} from '../../util/reconnectListener'
+import {pauseWhileDocumentHidden} from '../listenerGate/listenerGate'
+
+/**
+ * The Studio's shared listener on every document in the dataset. `globalListener` and
+ * `invalidationChannel` are served by one connection, which opens on the first subscription and
+ * closes `LISTENER_RESET_DELAY` after the last subscriber has left.
+ *
+ * Both start with `{type: 'connected'}`, which means "fetch now". Fetch when it arrives rather
+ * than when you subscribe, since a fetch made before the listener has connected can miss the
+ * changes made until it does. A new subscriber gets the event right away while the listener stays
+ * connected, and every subscriber gets it again once the listener has reconnected after losing its
+ * connection: changes may have been missed in between, so fetch again. A subscriber that arrives
+ * while the listener is down gets it right away too, since it has nothing loaded yet, and again
+ * once the listener connects. A subscriber that has loaded keeps what it loaded while the listener
+ * is down.
+ *
+ * @internal
+ */
+export interface GlobalListenerStore {
+  /**
+   * `{type: 'connected'}`, then the listener's `mutation` event with its mendoza effects for
+   * every change to a document in the dataset, for keeping a local copy of documents in sync, or
+   * whenever the changed document's id is not enough. The preview store's
+   * `unstable_observeDocument` keeps a whole document in sync this way.
+   *
+   * @example
+   * ```ts
+   * // Refetch the release ids when a release is created or deleted, but not when one is edited
+   * const releaseIds$ = globalListenerStore.globalListener.pipe(
+   *   filter(
+   *     (event) =>
+   *       event.type === 'connected' ||
+   *       (event.documentId.startsWith('_.releases.') && event.transition !== 'update'),
+   *   ),
+   *   switchMap(() => client.observable.fetch<string[]>('*[_id in path("_.releases.*")]._id')),
+   * )
+   * ```
+   */
+  globalListener: Observable<{type: 'connected'} | MutationEvent>
+  /**
+   * `{type: 'connected'}`, then a mutation event for every change to a document in the dataset.
+   * Fetch on `connected`, the first time and again after every reconnect. A mutation event carries
+   * the changed document's id but not the change, so refetch whatever that document affects.
+   * `listenQueryOnGlobalListener` does this for a GROQ query, and throttles the refetches.
+   *
+   * @example
+   * ```ts
+   * // How many documents a release holds, and when one of them was last edited. The server
+   * // computes both across all the release's documents, so there is no local copy to apply a
+   * // change to: refetch whenever one of them changes.
+   * const query = `{
+   *   "documents": count(*[sanity::partOfRelease($releaseId)]),
+   *   "lastEditedAt": (*[sanity::partOfRelease($releaseId)] | order(_updatedAt desc))[0]._updatedAt
+   * }`
+   *
+   * const summary$ = globalListenerStore.invalidationChannel.pipe(
+   *   filter(
+   *     (event) => event.type === 'connected' || getVersionFromId(event.documentId) === releaseId,
+   *   ),
+   *   switchMap(() =>
+   *     client.observable.fetch<{documents: number; lastEditedAt: string | null}>(
+   *       query,
+   *       {releaseId},
+   *       {perspective: 'raw'},
+   *     ),
+   *   ),
+   * )
+   * ```
+   */
+  invalidationChannel: Observable<InvalidationChannelEvent>
+}
+
+/** @internal */
+export interface GlobalListenerStoreOptions {
+  client: SanityClient
+}
+
+/** @internal */
+export function createGlobalListenerStore({
+  client,
+}: GlobalListenerStoreOptions): GlobalListenerStore {
+  const listener = client
+    .withConfig({apiVersion: '2025-02-19'})
+    .listen(
+      '*',
+      {},
+      {
+        events: ['welcome', 'mutation', 'reconnect'],
+        includeResult: false,
+        includePreviousRevision: false,
+        includeMutations: false,
+        includeAllVersions: true,
+        visibility: 'query',
+        effectFormat: 'mendoza',
+        // Predates this store: renaming it would split the listener's history in request logs
+        tag: 'preview.global',
+      },
+    )
+    .pipe(
+      reconnectListener(),
+      // `reconnect` replaces the replayed `welcome`, so a subscriber that arrives while the
+      // listener is paused waits for the new connection instead of trusting the old one
+      pauseWhileDocumentHidden({onPause: (): ReconnectEvent => ({type: 'reconnect'})}),
+      shareReplayLatest({
+        predicate: (event) => event.type === 'welcome' || event.type === 'reconnect',
+        resetOnRefCountZero: () => timer(LISTENER_RESET_DELAY),
+      }),
+    )
+
+  // A subscriber first sees the latest `welcome` or `reconnect` the listener replays, or the first
+  // one after it subscribed. Either makes it load from scratch (`connected`): a `reconnect` there
+  // means the listener is down and the subscriber has nothing loaded yet, and it loads again once
+  // the listener welcomes. A later `reconnect` is ignored, the subscriber keeps what it loaded.
+  const globalListener = listener.pipe(
+    filter(
+      (event, index) =>
+        event.type === 'mutation' ||
+        event.type === 'welcome' ||
+        (index === 0 && event.type === 'reconnect'),
+    ),
+    map((event): {type: 'connected'} | MutationEvent =>
+      event.type === 'mutation' ? event : {type: 'connected'},
+    ),
+  )
+
+  return {globalListener, invalidationChannel: globalListener}
+}

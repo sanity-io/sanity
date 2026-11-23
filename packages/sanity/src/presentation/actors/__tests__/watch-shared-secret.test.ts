@@ -5,7 +5,14 @@ import {type SanityClient} from 'sanity'
 import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 import {createActor} from 'xstate'
 
+import {stubDocumentVisibility} from '../../../../test/testUtils/documentVisibility'
+import {
+  LISTENER_PAUSE_GRACE_PERIOD,
+  listenerGate,
+} from '../../../core/store/listenerGate/listenerGate'
 import {defineWatchSharedSecretActor} from '../watch-shared-secret'
+
+let releaseListenerGate: (() => void) | undefined
 
 const shareAccessSyncTag = 's1:share-access'
 
@@ -50,10 +57,24 @@ const mockClientWithPendingReads = () => {
   return {client, events, fetch, respond}
 }
 
+/**
+ * Stopped after each test, since an actor left running keeps listening on the shared listener gate
+ */
+const startedActors: Array<{stop: () => void}> = []
+afterEach(() => {
+  for (const actor of startedActors.splice(0)) actor.stop()
+})
+
+function startActor(client: SanityClient) {
+  const actor = createActor(defineWatchSharedSecretActor({client})).start()
+  startedActors.push(actor)
+  return actor
+}
+
 describe('watch shared preview secret actor', () => {
   test('reads the shared secret, and reads it again when a live event says it changed', () => {
     const {client, events, fetch} = mockClient('shared-secret', null, 'new-shared-secret')
-    const actor = createActor(defineWatchSharedSecretActor({client})).start()
+    const actor = startActor(client)
 
     expect(actor.getSnapshot().context).toBe('shared-secret')
     expect(fetch).toHaveBeenLastCalledWith(
@@ -82,7 +103,7 @@ describe('watch shared preview secret actor', () => {
 
   test('reads the shared secret again for a live event that arrived during the first read', () => {
     const {client, events, fetch, respond} = mockClientWithPendingReads()
-    const actor = createActor(defineWatchSharedSecretActor({client})).start()
+    const actor = startActor(client)
     expect(fetch).toHaveBeenCalledTimes(1)
 
     /**
@@ -114,7 +135,7 @@ describe('watch shared preview secret actor', () => {
         of({query: fetchSharedAccessQuery, ms: 0, result: null, syncTags: [shareAccessSyncTag]}),
       )
     const client = {live: {events: () => events}, observable: {fetch}} as unknown as SanityClient
-    const actor = createActor(defineWatchSharedSecretActor({client})).start()
+    const actor = startActor(client)
 
     events.next({type: 'message', id: 'event-1', tags: [shareAccessSyncTag]})
     firstRead.next({
@@ -130,7 +151,7 @@ describe('watch shared preview secret actor', () => {
 
   test('forgets the live events from before a restart, and reads from scratch once for each reset', () => {
     const {client, events, fetch, respond} = mockClientWithPendingReads()
-    const actor = createActor(defineWatchSharedSecretActor({client})).start()
+    const actor = startActor(client)
 
     /**
      * A live event arrives during the first read, and then the stream restarts, so its id no longer applies
@@ -166,7 +187,7 @@ describe('watch shared preview secret actor', () => {
 
   test('ignores live events about other documents', () => {
     const {client, events, fetch} = mockClient('shared-secret')
-    const actor = createActor(defineWatchSharedSecretActor({client})).start()
+    const actor = startActor(client)
 
     events.next({type: 'welcome'})
     events.next({type: 'message', id: 'event-1', tags: ['s1:another-document']})
@@ -178,7 +199,7 @@ describe('watch shared preview secret actor', () => {
     'reads the shared secret again after a $type, as changes might have been missed',
     (event) => {
       const {client, events, fetch} = mockClient('shared-secret', 'new-shared-secret')
-      const actor = createActor(defineWatchSharedSecretActor({client})).start()
+      const actor = startActor(client)
 
       events.next(event)
       expect(fetch).toHaveBeenCalledTimes(2)
@@ -196,7 +217,7 @@ describe('watch shared preview secret actor', () => {
 
     test('reads the shared secret right away, and then every 30 seconds', () => {
       const {client, events, fetch} = mockClient('shared-secret', 'shared-secret', null)
-      const actor = createActor(defineWatchSharedSecretActor({client})).start()
+      const actor = startActor(client)
 
       events.next({type: 'goaway', id: 'event-1', reason: 'Too many connections'})
       expect(events.observed).toBe(false)
@@ -218,9 +239,80 @@ describe('watch shared preview secret actor', () => {
     })
   })
 
+  describe('on a hidden page', () => {
+    beforeEach(() => {
+      vi.useFakeTimers()
+      releaseListenerGate = listenerGate.enable()
+    })
+    afterEach(() => {
+      releaseListenerGate?.()
+      vi.useRealTimers()
+      vi.restoreAllMocks()
+    })
+
+    test('stops listening for live events, and reads the shared secret again when shown', () => {
+      const documentVisibility = stubDocumentVisibility()
+      const {client, events, fetch} = mockClient('shared-secret', 'new-shared-secret')
+      const actor = startActor(client)
+
+      documentVisibility.set('hidden')
+      vi.advanceTimersByTime(LISTENER_PAUSE_GRACE_PERIOD)
+      expect(events.observed).toBe(false)
+      expect(fetch).toHaveBeenCalledTimes(1)
+
+      documentVisibility.set('visible')
+      expect(events.observed).toBe(true)
+      expect(fetch).toHaveBeenCalledTimes(2)
+      expect(fetch).toHaveBeenLastCalledWith(
+        fetchSharedAccessQuery,
+        {},
+        expect.objectContaining({lastLiveEventId: undefined}),
+      )
+      expect(actor.getSnapshot().context).toBe('new-shared-secret')
+      actor.stop()
+    })
+
+    test('stops polling after a goaway, and polls right away when shown', () => {
+      const documentVisibility = stubDocumentVisibility()
+      const {client, events, fetch} = mockClient()
+      const actor = startActor(client)
+      events.next({type: 'goaway', id: 'event-1', reason: 'Too many connections'})
+
+      documentVisibility.set('hidden')
+      vi.advanceTimersByTime(LISTENER_PAUSE_GRACE_PERIOD)
+      const readsWhenPaused = fetch.mock.calls.length
+      vi.advanceTimersByTime(LISTENER_PAUSE_GRACE_PERIOD * 2)
+      expect(fetch).toHaveBeenCalledTimes(readsWhenPaused)
+
+      documentVisibility.set('visible')
+      expect(fetch).toHaveBeenCalledTimes(readsWhenPaused + 1)
+      actor.stop()
+    })
+
+    test('reads the shared secret again when a page opened in the background is first shown', () => {
+      const documentVisibility = stubDocumentVisibility('hidden')
+      const {client, events, fetch} = mockClient('shared-secret', 'new-shared-secret')
+      const actor = startActor(client)
+      expect(events.observed).toBe(false)
+      expect(fetch).toHaveBeenCalledTimes(1)
+      expect(actor.getSnapshot().context).toBe('shared-secret')
+
+      documentVisibility.set('visible')
+      expect(events.observed).toBe(true)
+      expect(fetch).toHaveBeenCalledTimes(2)
+      expect(fetch).toHaveBeenLastCalledWith(
+        fetchSharedAccessQuery,
+        {},
+        expect.objectContaining({lastLiveEventId: undefined}),
+      )
+      expect(actor.getSnapshot().context).toBe('new-shared-secret')
+      actor.stop()
+    })
+  })
+
   test('stops listening for live events when the actor stops', () => {
     const {client, events} = mockClient('shared-secret')
-    const actor = createActor(defineWatchSharedSecretActor({client})).start()
+    const actor = startActor(client)
     expect(events.observed).toBe(true)
 
     actor.stop()

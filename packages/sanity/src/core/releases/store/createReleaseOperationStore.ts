@@ -11,6 +11,8 @@ import {
 
 import {getDraftId, getPublishedId, getVersionFromId, getVersionId} from '../../util/draftUtils'
 import {type ReleasesUpsellContextValue} from '../contexts/upsell/types'
+import {asReleaseMetadata} from '../metadata/mergeReleaseMetadata'
+import {RELEASE_METADATA_TYPE_NAME} from '../schema/releaseMetadata'
 import {type RevertDocument} from '../tool/components/releaseCTAButtons/ReleaseRevertButton/useDocumentRevertStates'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
 import {isReleaseLimitError} from './isReleaseLimitError'
@@ -67,6 +69,16 @@ export interface ReleaseOperationsStore {
   ) => Promise<SingleActionResult>
 }
 
+/**
+ * Release metadata is the named `sanity.releaseMetadata` object type, so it is stored with its
+ * `_type`, which typegen and other schema-aware readers expect.
+ */
+function withMetadataType(
+  metadata: EditableReleaseDocument['metadata'],
+): EditableReleaseDocument['metadata'] {
+  return asReleaseMetadata({...metadata, _type: RELEASE_METADATA_TYPE_NAME})
+}
+
 export function createReleaseOperationsStore(options: {
   client: SanityClient
   onReleaseLimitReached: ReleasesUpsellContextValue['onReleaseLimitReached']
@@ -91,7 +103,10 @@ export function createReleaseOperationsStore(options: {
   const handleCreateRelease = (release: EditableReleaseDocument, opts?: BaseActionOptions) =>
     handleReleaseLimitError(
       client.releases.create(
-        {releaseId: getReleaseIdFromReleaseDocumentId(release._id), metadata: release.metadata},
+        {
+          releaseId: getReleaseIdFromReleaseDocumentId(release._id),
+          metadata: withMetadataType(release.metadata),
+        },
         opts,
       ),
       opts,
@@ -112,7 +127,7 @@ export function createReleaseOperationsStore(options: {
         {
           releaseId,
           patch: {
-            set: {metadata: release.metadata},
+            set: {metadata: withMetadataType(release.metadata)},
             unset: unsetKeys,
           },
         },

@@ -19,6 +19,8 @@ import {
 import {type SanityClient} from 'sanity'
 import {fromObservable, type ObservableActorLogic} from 'xstate'
 
+import {pauseWhileDocumentHidden} from '../../core/store/listenerGate/listenerGate'
+
 /**
  * Only the most recent live events can be about the shared secret, the same cap `useLiveEvents` uses
  */
@@ -77,8 +79,15 @@ export function defineWatchSharedSecretActor({
        * limits, and the Live Content API expects clients to poll from then on
        */
       const events$ = concat(
-        client.live.events().pipe(takeWhile((event) => event.type !== 'goaway', true)),
-        interval(POLL_INTERVAL_AFTER_GOAWAY).pipe(map((): SharedSecretEvent => ({type: 'poll'}))),
+        client.live.events().pipe(
+          // Paused while the page is hidden, and read from scratch when it is shown again
+          pauseWhileDocumentHidden({onResume: (): SharedSecretEvent => ({type: 'reconnect'})}),
+          takeWhile((event) => event.type !== 'goaway', true),
+        ),
+        interval(POLL_INTERVAL_AFTER_GOAWAY).pipe(
+          map((): SharedSecretEvent => ({type: 'poll'})),
+          pauseWhileDocumentHidden({onResume: (): SharedSecretEvent => ({type: 'poll'})}),
+        ),
       )
 
       return combineLatest([

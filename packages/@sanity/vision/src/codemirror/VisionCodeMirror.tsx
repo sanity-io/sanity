@@ -101,7 +101,7 @@ export function VisionCodeMirror({
   // `resetEditorContent`. The document is mirrored into `value` because `@uiw/react-codemirror`
   // destroys its `EditorView` when its effects are cleaned up and creates a new one from `value`
   // when they run again, which happens without a remount when the tool is hidden and shown again
-  // inside an `<Activity>` boundary (`beta.reactActivityMode`). While the view is alive `value`
+  // inside an `<Activity>` boundary (`reactActivityMode`). While the view is alive `value`
   // always equals its document, so the value sync never dispatches. Without a view the prop
   // leads instead: the handle is detached along with the effects, so a query formatted while the
   // tool is hidden only reaches this component as a new `initialValue`, and the next view must

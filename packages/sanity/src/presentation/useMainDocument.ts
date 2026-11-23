@@ -60,9 +60,14 @@ function getParamsFromResult(
 /**
  * Route matching is backed by URLPattern, which needs a polyfill in runtimes without a native
  * implementation. The promise is kept at module level so its identity is stable across render
- * attempts, as `use()` requires.
+ * attempts, as `use()` requires. The assignment lives here, not in the hook: reassigning a
+ * binding declared outside the hook is rejected by the React compiler.
  */
 let urlPatternPolyfillPromise: Promise<unknown> | undefined
+
+function loadUrlPatternPolyfill(): Promise<unknown> {
+  return (urlPatternPolyfillPromise ??= import('urlpattern-polyfill'))
+}
 
 /**
  * Compiling a URLPattern is not free and the route is resolved again on every preview URL change,
@@ -145,15 +150,13 @@ export function useMainDocument(props: {
    * tool's own lazy chunk.
    */
   if (resolvers.length > 0) {
-    if (typeof URLPattern === 'undefined') {
-      // oxlint-disable-next-line react/todo -- pre-existing violation, to be fixed in a follow-up
-      urlPatternPolyfillPromise ??= import('urlpattern-polyfill')
-    }
     // Once a load has started, keep unwrapping the same promise on every render: the resolved
     // import installs the `URLPattern` global, so gating `use()` on the `typeof` check alone
-    // would change the hook sequence between the suspended attempt and React's replay of it
-    if (urlPatternPolyfillPromise !== undefined) {
-      use(urlPatternPolyfillPromise)
+    // would change the hook sequence between the suspended attempt and React's replay of it.
+    const polyfillPromise =
+      typeof URLPattern === 'undefined' ? loadUrlPatternPolyfill() : urlPatternPolyfillPromise
+    if (polyfillPromise !== undefined) {
+      use(polyfillPromise)
     }
   }
 

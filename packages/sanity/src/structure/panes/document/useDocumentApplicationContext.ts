@@ -32,7 +32,7 @@ export function useDocumentApplicationContext({
     hasSent.current = true
     void connection.emit('applications.context.update', {
       resource: {id: `${projectId}.${dataset}`, type: 'dataset'},
-      document: {id: displayedId},
+      document: {id: displayedId, type: editState.type},
     })
-  }, [connection, dataset, displayedId, displayedExists, projectId])
+  }, [connection, dataset, displayedId, displayedExists, editState.type, projectId])
 }

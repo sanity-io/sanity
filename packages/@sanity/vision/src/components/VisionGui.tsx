@@ -50,6 +50,7 @@ import {
   isVirtualPerspective,
   type SupportedPerspective,
 } from '../perspectives'
+import {useVisionTelemetry} from '../telemetry/useVisionTelemetry'
 import {type VisionProps} from '../types'
 import {encodeQueryString} from '../util/encodeQueryString'
 import {isVisionPasteTarget} from '../util/isVisionPasteTarget'
@@ -101,6 +102,8 @@ interface QueryExecutionOptions {
   perspective?: SupportedPerspective | undefined
   query?: string
   params?: Record<string, unknown>
+  /** Set only for an explicit Fetch. A setting change re-runs without one, and is not a query run. */
+  trigger?: 'button' | 'shortcut'
 }
 
 interface VisionGuiProps extends VisionProps {
@@ -125,6 +128,7 @@ export interface ParsedUrlState {
 export function VisionGui(props: VisionGuiProps) {
   const {datasets, config, projectId, defaultDataset, onSwitchToRedesign} = props
   const toast = useToast()
+  const telemetry = useVisionTelemetry()
   const {t} = useTranslation(visionLocaleNamespace)
   const {perspectiveStack, selectedVariantNames} = usePerspective()
   const isVariantsEnabled = useVariantsEnabled()
@@ -279,7 +283,7 @@ export function VisionGui(props: VisionGuiProps) {
         options && 'perspective' in options ? options.perspective : perspective
       const queryVariant = getActiveVariant(visionPerspective, selectedVariantName)
 
-      const context: Required<Omit<QueryExecutionOptions, 'params' | 'perspective'>> & {
+      const context: Required<Omit<QueryExecutionOptions, 'params' | 'perspective' | 'trigger'>> & {
         params: Params
         perspective: ClientPerspective | undefined
         variant: string | undefined
@@ -319,6 +323,14 @@ export function VisionGui(props: VisionGuiProps) {
 
       if (context.params.error || !hasQuery) {
         return
+      }
+
+      if (options?.trigger) {
+        telemetry.queryRun({
+          mode: 'fetch',
+          trigger: options.trigger,
+          hasParams: Object.keys(context.params.parsed ?? {}).length > 0,
+        })
       }
 
       const urlQueryOpts: Record<string, string | string[]> = {
@@ -376,6 +388,7 @@ export function VisionGui(props: VisionGuiProps) {
       cancelListenerSubscription,
       client,
       cancelQuerySubscription,
+      telemetry,
     ],
   )
 
@@ -396,11 +409,12 @@ export function VisionGui(props: VisionGuiProps) {
   const handleChangeDataset = useCallback(
     (evt: ChangeEvent<HTMLSelectElement>) => {
       const newDataset = evt.target.value
+      if (newDataset !== dataset) telemetry.datasetChanged()
       localStorage.set('dataset', newDataset)
       setDataset(newDataset)
       handleQueryExecution({dataset: newDataset})
     },
-    [localStorage, handleQueryExecution, setDataset],
+    [dataset, localStorage, handleQueryExecution, setDataset, telemetry],
   )
 
   const changeApiVersion = useCallback(
@@ -421,9 +435,14 @@ export function VisionGui(props: VisionGuiProps) {
 
   const handleChangeApiVersion = useCallback(
     (evt: ChangeEvent<HTMLSelectElement>) => {
-      changeApiVersion(evt.target.value)
+      const next = evt.target.value
+      // "Other" only reveals the text field. The version counts once it is a real one.
+      if (next.toLowerCase() !== 'other' && next !== apiVersion) {
+        telemetry.apiVersionChanged(false)
+      }
+      changeApiVersion(next)
     },
-    [changeApiVersion],
+    [apiVersion, changeApiVersion, telemetry],
   )
 
   // Handle custom API version change
@@ -433,21 +452,23 @@ export function VisionGui(props: VisionGuiProps) {
       setCustomApiVersion(newCustomApiVersion || 'v')
 
       if (validateApiVersion(newCustomApiVersion)) {
+        if (newCustomApiVersion !== apiVersion) telemetry.apiVersionChanged(true)
         setApiVersion(newCustomApiVersion)
         localStorage.set('apiVersion', newCustomApiVersion)
         handleQueryExecution({apiVersion: newCustomApiVersion})
       }
     },
-    [localStorage, handleQueryExecution],
+    [apiVersion, localStorage, handleQueryExecution, telemetry],
   )
 
   // Handle perspective change
   const handleChangePerspective = useCallback(
     (evt: ChangeEvent<HTMLSelectElement>) => {
-      const newPerspective = evt.target.value
-      setPerspective(newPerspective === 'default' ? undefined : newPerspective)
+      const newPerspective = evt.target.value === 'default' ? undefined : evt.target.value
+      if (newPerspective !== perspective) telemetry.perspectiveChanged()
+      setPerspective(newPerspective)
     },
-    [setPerspective],
+    [perspective, setPerspective, telemetry],
   )
 
   const handleListenerEvent = useCallback((evt: ListenEvent<any>) => {
@@ -488,6 +509,12 @@ export function VisionGui(props: VisionGuiProps) {
       return
     }
 
+    telemetry.queryRun({
+      mode: 'listen',
+      trigger: 'button',
+      hasParams: Object.keys(params.parsed ?? {}).length > 0,
+    })
+
     listenSubscriptionRef.current = client
       .listen(query, params.parsed, {events: ['mutation', 'welcome'], includeAllVersions: true})
       .subscribe({
@@ -506,6 +533,7 @@ export function VisionGui(props: VisionGuiProps) {
     handleListenerEvent,
     cancelListenerSubscription,
     client,
+    telemetry,
   ])
 
   const handleParamsChange = useCallback(
@@ -636,7 +664,7 @@ export function VisionGui(props: VisionGuiProps) {
       const isWithinRoot =
         visionRootRef.current && nodeContains(visionRootRef.current, event.target)
       if (isRunHotkey(event) && isWithinRoot && params.valid) {
-        handleQueryExecution()
+        handleQueryExecution({trigger: 'shortcut'})
         event.preventDefault()
         event.stopPropagation()
       }
@@ -728,6 +756,7 @@ export function VisionGui(props: VisionGuiProps) {
         url={url}
         perspective={perspective}
         isScheduledDraftsEnabled={isScheduledDraftsEnabled}
+        onCopyUrl={() => telemetry.copied('url')}
       />
 
       <SplitpaneContainer flexBasis="auto" flexGrow={1} flexShrink={1}>
@@ -786,7 +815,7 @@ export function VisionGui(props: VisionGuiProps) {
                       hasValidParams={params.valid}
                       queryInProgress={queryInProgress}
                       listenInProgress={listenInProgress}
-                      onQueryExecution={handleQueryExecution}
+                      onQueryExecution={() => handleQueryExecution({trigger: 'button'})}
                       onListenExecution={handleListenExecution}
                       onSwitchToRedesign={onSwitchToRedesign}
                     />

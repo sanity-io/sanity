@@ -1,3 +1,4 @@
+import {CloseIcon} from '@sanity/icons/Close'
 import {
   type AssetFromSource,
   type AssetSourceComponentProps,
@@ -5,9 +6,10 @@ import {
 } from '@sanity/types'
 import {PortalProvider} from '@sanity/ui'
 import {type ReactNode, type Ref, useCallback, useMemo, useState} from 'react'
-import {Box, Text} from 'ui5'
+import {Box, Flex, Text} from 'ui5'
 
 import {encodeJsonParams} from '../../../../router/utils/jsonParamsEncoding'
+import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useColorSchemeValue} from '../../../studio/colorScheme'
 import {useWorkspace} from '../../../studio/workspace'
@@ -41,6 +43,8 @@ import {type FederatedAssetSourceView, type FederatedAssetSourceViewProps} from 
  */
 export function FederatedAssetSourceDialog(props: {
   dialogHeaderTitle?: ReactNode
+  /** The view mounted. */
+  onMounted?: () => void
   /** The view is unavailable (load or mount failed) — recover elsewhere. */
   onUnavailable?: (reason: unknown) => void
   ref?: Ref<HTMLDivElement>
@@ -52,7 +56,8 @@ export function FederatedAssetSourceDialog(props: {
   /** Source-specific view props (e.g. the Media Library's libraryId and plugin filters). */
   extraViewProps?: Record<string, unknown>
 }): ReactNode {
-  const {dialogHeaderTitle, onUnavailable, ref, sourceProps, view, validateCandidate} = props
+  const {dialogHeaderTitle, onMounted, onUnavailable, ref, sourceProps, view, validateCandidate} =
+    props
   const {extraViewProps} = props
   const {t} = useTranslation()
   const scheme = useColorSchemeValue()
@@ -77,6 +82,7 @@ export function FederatedAssetSourceDialog(props: {
   const viewProps = useMemo<FederatedAssetSourceViewProps>(
     () => ({
       ...sourceProps,
+      view: view.interface,
       scheme,
       projectId: workspace.projectId,
       dataset: workspace.dataset,
@@ -86,6 +92,7 @@ export function FederatedAssetSourceDialog(props: {
     }),
     [
       sourceProps,
+      view.interface,
       scheme,
       workspace.projectId,
       workspace.dataset,
@@ -128,7 +135,12 @@ export function FederatedAssetSourceDialog(props: {
     if (!sourceProps.uploader || failed) return null
     return (
       <div hidden>
-        <FederatedViewMount onUnavailable={handleUnavailable} view={view} viewProps={viewProps} />
+        <FederatedViewMount
+          onMounted={onMounted}
+          onUnavailable={handleUnavailable}
+          view={view}
+          viewProps={viewProps}
+        />
       </div>
     )
   }
@@ -136,9 +148,10 @@ export function FederatedAssetSourceDialog(props: {
   return (
     <PortalProvider element={portalElement}>
       <FullSurfaceAppDialog
-        header={dialogHeaderTitle ?? view.title}
-        id="federated-asset-source-dialog"
-        onClose={sourceProps.onClose}
+        // Escape is the view's (see FederatedAssetSourceViewProps). Given
+        // `onClose`, the Sanity UI dialog would close on every Escape inside it,
+        // so the dialog renders its own header and close button instead.
+        id={DIALOG_ID}
         onClickOutside={sourceProps.onClose}
         open
         ref={ref ?? null}
@@ -148,31 +161,53 @@ export function FederatedAssetSourceDialog(props: {
         // matching the Dialog's DOM.
         width={5}
       >
-        <Box
-          style={{
-            position: 'absolute',
-            inset: 0,
-            borderTop: '1px solid',
-            borderColor: 'var(--card-border-color)',
-            overflow: 'hidden',
-            display: 'flex',
-          }}
-        >
-          {failed ? (
-            <Box padding={4}>
-              <Text muted size={1} as="div" trim={true}>
-                {t('asset-sources.federated.error.unavailable')}
+        <div style={{position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column'}}>
+          <Flex alignItems="flex-start" padding={3}>
+            <Box flexGrow={1} padding={2}>
+              <Text id={`${DIALOG_ID}_label`} size={1} weight="semibold">
+                {dialogHeaderTitle ?? view.title}
               </Text>
             </Box>
-          ) : (
-            <FederatedViewMount
-              onUnavailable={handleUnavailable}
-              view={view}
-              viewProps={viewProps}
-            />
-          )}
-        </Box>
+            <Box flexShrink={0}>
+              <Button
+                aria-label={t('asset-sources.federated.dialog.close-label')}
+                icon={CloseIcon}
+                mode="bleed"
+                onClick={sourceProps.onClose}
+                tooltipProps={null}
+              />
+            </Box>
+          </Flex>
+          <Box
+            style={{
+              position: 'relative',
+              flex: 1,
+              minHeight: 0,
+              borderTop: '1px solid',
+              borderColor: 'var(--card-border-color)',
+              overflow: 'hidden',
+              display: 'flex',
+            }}
+          >
+            {failed ? (
+              <Box padding={4}>
+                <Text muted size={1} as="div" trim={true}>
+                  {t('asset-sources.federated.error.unavailable')}
+                </Text>
+              </Box>
+            ) : (
+              <FederatedViewMount
+                onMounted={onMounted}
+                onUnavailable={handleUnavailable}
+                view={view}
+                viewProps={viewProps}
+              />
+            )}
+          </Box>
+        </div>
       </FullSurfaceAppDialog>
     </PortalProvider>
   )
 }
+
+const DIALOG_ID = 'federated-asset-source-dialog'

@@ -22,21 +22,9 @@ import {
 import {type SearchFilter} from '../types'
 import {validateFilter} from '../utils/filterUtils'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
-import {useStoredSearch} from './useStoredSearch'
+import {RECENT_SEARCH_VERSION, useStoredSearch} from './useStoredSearch'
 
 export const MAX_RECENT_SEARCHES = 5
-/**
- * Current recent search version.
- *
- * Users with recent searches containing mismatching versions will have their recent searches cleared.
- * This value should only be incremented when search filter operator `value` data types are updated,
- * ensuring that users don't have stored recent searches containing invalid operator values.
- *
- * This is a bit of a blunt instrument: in future we could look to validate individual filter values and
- * remove outdated entries individually.
- */
-const RECENT_SEARCH_VERSION = 3
-
 export type RecentSearch = SearchTerms & {
   __recent: {
     index: number

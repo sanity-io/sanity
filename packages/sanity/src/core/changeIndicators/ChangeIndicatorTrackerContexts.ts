@@ -8,10 +8,12 @@ import {type ChangeIndicatorTrackerContextValue} from './types'
  * @internal
  * @hidden
  */
-export type ChangeIndicatorTrackerContextStoreType = TrackerContextStore<ChangeIndicatorTrackerContextValue> | null
+export type ChangeIndicatorTrackerContextStoreType =
+  TrackerContextStore<ChangeIndicatorTrackerContextValue> | null
 
 /**
  * @internal
  * @hidden
  */
-export type ChangeIndicatorTrackerGetSnapshotType = TrackerContextGetSnapshot<ChangeIndicatorTrackerContextValue> | null
+export type ChangeIndicatorTrackerGetSnapshotType =
+  TrackerContextGetSnapshot<ChangeIndicatorTrackerContextValue> | null

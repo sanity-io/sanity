@@ -5,11 +5,14 @@ import {
   type BaseSchemaType,
   type CurrentUser,
   type FieldDefinition,
+  type FieldGroupDefinition,
+  type FieldsetDefinition,
   type ObjectSchemaType,
   type SanityDocumentLike,
   type Schema,
   type SchemaType,
   type SchemaTypeDefinition,
+  type SchemaValidationValue,
   type SearchStrategy,
 } from '@sanity/types'
 import {type ButtonTone} from '@sanity/ui'
@@ -339,8 +342,7 @@ export type NewDocumentCreationContext =
  *
  * Each falls back to the schema type's own configuration if omitted.
  *
- * @hidden
- * @beta
+ * @public
  */
 export interface SingletonDefinition extends Pick<
   BaseSchemaType,
@@ -413,8 +415,7 @@ export interface SingletonDefinition extends Pick<
 /**
  * A singleton definition as provided by the developer.
  *
- * @hidden
- * @beta
+ * @public
  */
 export type UnresolvedSingletonDefinition =
   | (Omit<SingletonDefinition, 'id'> & {
@@ -437,8 +438,7 @@ export type UnresolvedSingletonDefinition =
  * ({@link UnresolvedSingletonDefinition}); Studio resolves the returned
  * definitions before the next resolver sees them.
  *
- * @hidden
- * @beta
+ * @public
  */
 export type SingletonsResolver = (
   prev: SingletonDefinition[],
@@ -511,8 +511,7 @@ export interface DocumentPluginOptions {
    * }
    * ```
    *
-   * @hidden
-   * @beta
+   * @public
    */
   singletons?: UnresolvedSingletonDefinition[] | SingletonsResolver
 
@@ -708,6 +707,35 @@ export interface PluginOptions {
    */
   announcements?: {
     enabled: boolean
+  }
+
+  /**
+   * Keep recently used tools mounted with React's `<Activity>` while another tool is active.
+   *
+   * On by default. The three most recently used tools stay mounted: inactive ones are hidden with
+   * an `<Activity mode="hidden">` boundary instead of being unmounted, so their state survives the
+   * round trip, and switching back to one of them restores the URL it was last at instead of
+   * resetting it to the tool's start page. Going from Presentation to Structure and back, for
+   * example, keeps the preview iframe loaded and the document you were editing open.
+   *
+   * Opening a fourth tool unmounts the one you have not used for the longest time. Hidden tools
+   * have their effects paused, as with any hidden `<Activity>` boundary.
+   *
+   * Set `enabled` to `false` to unmount a tool as soon as you leave it, and mount it again from
+   * scratch when you come back. A value set on the root config wins over one set by a plugin.
+   *
+   * Hidden `<Activity>` boundaries tear down effects and re-create them on reveal, which custom
+   * studio code and plugins may not expect. If this causes problems in your tools, components or
+   * plugins, set `enabled` to `false`, or see the React documentation's troubleshooting guide for
+   * `<Activity>`: https://react.dev/reference/react/Activity#troubleshooting
+   */
+  reactActivityMode?: {
+    /**
+     * Whether recently used tools stay mounted while another tool is active.
+     *
+     * @defaultValue `true`
+     */
+    enabled?: boolean
   }
 
   /**
@@ -1136,8 +1164,7 @@ export interface Source {
     /**
      * The resolved singleton definitions.
      *
-     * @hidden
-     * @beta
+     * @public
      */
     singletons: SingletonDefinition[]
 
@@ -1301,19 +1328,31 @@ export interface Source {
      */
     actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
     /**
-     * Extra metadata fields, compiled as a private object schema and edited with the studio form.
-     * Rendered on create and in the edit dialog only while `beta.variants` is enabled.
+     * The `releases.metadata` of the workspace and its plugins, merged. The releases plugin adds
+     * it to the `sanity.releaseMetadata` schema type, without fields named like a core field.
      * Empty when no workspace or plugin configured any.
      */
-    metadata?: {
-      fields?: FieldDefinition[]
-    }
+    metadata?: ReleaseMetadataConfig
   }
 
   /** Configuration for studio features.
    * @internal
    */
   beta?: BetaFeatures
+  /**
+   * Resolved `reactActivityMode` config.
+   *
+   * Recently used tools stay mounted while another tool is active. `enabled` is `false` only when
+   * the root config or a plugin opted out.
+   */
+  reactActivityMode: {
+    /**
+     * Whether recently used tools stay mounted while another tool is active.
+     *
+     * @defaultValue `true`
+     */
+    enabled: boolean
+  }
   /** Configuration for error handling.
    * @beta
    */
@@ -1517,17 +1556,45 @@ export type DefaultPluginsWorkspaceOptions = {
      */
     actions?: ReleaseActionComponent[] | ReleaseActionsResolver
     /**
-     * Field definitions stored on release metadata. The same `defineField` definitions used in
-     * Structure. Studio renders them on create and in the edit-release dialog while
-     * `beta.variants` is enabled. This is not a component slot.
+     * Fields stored on release metadata, with the fieldsets, groups and validation that
+     * organize them. They are added to the `sanity.releaseMetadata` schema type, and Studio
+     * renders them on create and in the edit-release dialog while `beta.variants` is enabled.
      *
      * @beta
      */
-    metadata?: {
-      fields?: FieldDefinition[]
-    }
+    metadata?: ReleaseMetadataConfig
   }
   mediaLibrary?: MediaLibraryConfig
+}
+
+/**
+ * The part of the `sanity.releaseMetadata` object type a workspace or plugin configures. The
+ * core fields (`title`, `description`, `releaseType`, `intendedPublishAt` and `cardinality`)
+ * always come first and can't be redeclared: a field with one of those names is dropped with a
+ * warning.
+ *
+ * Plugins and the root config are merged in order: a later field, fieldset or group with the
+ * same name replaces the earlier one, with a warning, and every config's validation applies.
+ *
+ * @example
+ * ```ts
+ * defineConfig({
+ *   releases: {
+ *     metadata: {
+ *       fieldsets: [{name: 'review', title: 'Review'}],
+ *       fields: [defineField({name: 'legalReview', type: 'string', fieldset: 'review'})],
+ *     },
+ *   },
+ * })
+ * ```
+ *
+ * @beta
+ */
+export interface ReleaseMetadataConfig {
+  fields?: FieldDefinition[]
+  fieldsets?: FieldsetDefinition[]
+  groups?: FieldGroupDefinition[]
+  validation?: SchemaValidationValue
 }
 
 /**
@@ -1815,28 +1882,21 @@ export interface BetaFeatures {
     enabled?: boolean
   }
   /**
-   * Keep recently used tools mounted with React's `<Activity>` while another tool is active.
+   * Close the Studio's real-time listener connections while its browser tab is in the background,
+   * and open them again when the tab is shown.
    *
-   * By default the Studio unmounts a tool as soon as you switch to another one, and mounts it
-   * again from scratch when you come back. With this switched on, the three most recently used
-   * tools stay mounted: inactive ones are hidden with an `<Activity mode="hidden">` boundary
-   * instead of being unmounted, so their state survives the round trip, and switching back to one
-   * of them restores the URL it was last at instead of resetting it to the tool's start page.
-   * Going from Presentation to Structure and back, for example, keeps the preview iframe loaded
-   * and the document you were editing open.
-   *
-   * Opening a fourth tool unmounts the one you have not used for the longest time. Hidden tools
-   * have their effects paused, as with any hidden `<Activity>` boundary.
+   * Browsers limit how many connections a site can keep open at once, and every Studio tab
+   * counts against the same limit. With many Studio tabs open, listeners in the tab you are
+   * working in can fail to connect. With this switched on, a tab that has been hidden for 30
+   * seconds gives its listener connections up, and a tab opened in the background does not
+   * connect until it is first shown. When the tab is shown again, the Studio reconnects and
+   * refreshes whatever changed in the meantime. A document with changes that have not been
+   * saved yet keeps every listener connected until the changes are saved.
    *
    * This feature is not ready for production yet. Only enable it to test in development and
    * staging environments.
-   *
-   * Hidden `<Activity>` boundaries tear down effects and re-create them on reveal, which custom
-   * studio code and plugins may not expect. If enabling this mode causes problems in your tools,
-   * components or plugins, see the React documentation's troubleshooting guide for `<Activity>`:
-   * https://react.dev/reference/react/Activity#troubleshooting
    */
-  reactActivityMode?: {
+  releaseBackgroundListeners?: {
     enabled?: boolean
   }
 }

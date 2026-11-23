@@ -5,9 +5,13 @@ import {ToastProvider} from '@sanity/ui/toast'
 import {act, cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import JSON5 from 'json5'
 import {Activity, type ReactNode, type RefAttributes, useImperativeHandle, useRef} from 'react'
-import {Subject} from 'rxjs'
+import {defer, type Observable, of, Subject} from 'rxjs'
 import {type PerspectiveContextValue} from 'sanity'
-import {useScheduledDraftsEnabled} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {
+  type UpsellDataResult,
+  type UpsellDialogProps,
+  useScheduledDraftsEnabled,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
 import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
@@ -72,6 +76,52 @@ const sanityMocks = vi.hoisted(() => {
     },
   }
 })
+
+/** The studio's upsell infrastructure, as the AI credits upsell sees it */
+const upsellMocks = vi.hoisted(() => ({
+  /**
+   * What the upsell content request settles to; an observable of its own per test, since react-rx
+   * caches the answer by the observable's identity
+   */
+  content$: undefined as Observable<UpsellDataResult> | undefined,
+  /** How often the content was requested */
+  requests: 0,
+  telemetryLogs: {
+    dialogViewed: vi.fn(),
+    dialogDismissed: vi.fn(),
+    dialogPrimaryClicked: vi.fn(),
+    dialogSecondaryClicked: vi.fn(),
+    panelViewed: vi.fn(),
+    panelDismissed: vi.fn(),
+    panelPrimaryClicked: vi.fn(),
+    panelSecondaryClicked: vi.fn(),
+  },
+}))
+
+/** The content `/journey/ai-credits` answers with */
+const UPSELL_CONTENT: UpsellDataResult = {
+  upsellData: {
+    _createdAt: '2026-10-01T00:00:00Z',
+    _id: 'journey.ai-credits',
+    _rev: 'rev-1',
+    _type: 'journey',
+    _updatedAt: '2026-10-01T00:00:00Z',
+    id: 'ai-credits',
+    image: null,
+    descriptionText: [],
+    ctaButton: {text: 'Upgrade to Growth', url: 'https://www.sanity.io/manage/plan'},
+    secondaryButton: {text: 'About AI credits', url: 'https://www.sanity.io/docs/ai-credits'},
+  },
+  hasError: false,
+}
+
+/** The content request, answering with `result` and counting how often it was made */
+function upsellContent(result: UpsellDataResult): Observable<UpsellDataResult> {
+  return defer(() => {
+    upsellMocks.requests++
+    return of(result)
+  })
+}
 
 /**
  * What the mocked editors report as their width, in characters, optionally depending on the
@@ -168,7 +218,8 @@ vi.mock('sanity/i18n', () => ({
 }))
 
 // Internals that Vision imports from the internals entry; mocked without the real barrel so the
-// structure modules it re-exports do not load against the partial `sanity` mock above
+// structure modules it re-exports do not load against the partial `sanity` mock above. The upsell
+// content request and dialog are stood in for here too: a test can answer and read them back.
 vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
   useActiveReleases: vi.fn(() => ({data: [], loading: false})),
   useScheduledDraftsEnabled: vi.fn(() => false),
@@ -185,6 +236,25 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', (
     {name: 'staging', title: 'Staging', projectId: 'test-project', dataset: 'staging'},
   ],
   ContextMenuButton: (props: Record<string, unknown>) => <button type="button" {...props} />,
+  NO_UPSELL_DATA: {upsellData: null, hasError: false},
+  useUpsellData: () => ({
+    upsellData$: upsellMocks.content$,
+    telemetryLogs: upsellMocks.telemetryLogs,
+  }),
+  UpsellDialog: ({data, onClose, onPrimaryClick, onSecondaryClick}: UpsellDialogProps) =>
+    data ? (
+      <div aria-label={data.id} data-testid="upsell-dialog" role="dialog">
+        <a href={data.ctaButton.url} onClick={onPrimaryClick}>
+          {data.ctaButton.text}
+        </a>
+        <a href={data.secondaryButton.url} onClick={onSecondaryClick}>
+          {data.secondaryButton.text}
+        </a>
+        <button data-testid="upsell-dialog-close" onClick={onClose} type="button">
+          Close
+        </button>
+      </div>
+    ) : null,
 }))
 
 vi.mock('sanity/router', () => ({
@@ -420,7 +490,7 @@ function renderRedesign(perspective: PerspectiveContextValue = BASE_PERSPECTIVE)
   sanityMocks.useClient.mockReturnValue(mockClient.client)
   const onSwitchToClassic = vi.fn()
 
-  // Inside an Activity boundary, as the studio keeps recent tools mounted (`beta.reactActivityMode`)
+  // Inside an Activity boundary, as the studio keeps recent tools mounted (`reactActivityMode`)
   const ui = (mode: 'visible' | 'hidden') => (
     <ThemeProvider theme={theme}>
       <ToastProvider>
@@ -503,8 +573,11 @@ function openRequestTab(id: 'params' | 'options' | 'lint' | 'functions') {
   fireEvent.click(document.getElementById(`vision-request-${id}-tab`) as HTMLElement)
 }
 
-/** The response Agent Actions give once the organization has used all its AI credits */
-function limitError(): ClientError {
+/**
+ * The response Agent Actions give once the organization has used all its AI credits: by default
+ * for a spending limit the organization set, or for the quota its plan includes
+ */
+function limitError(reasonCode = 'default_budget_limit_reached'): ClientError {
   return new ClientError({
     statusCode: 429,
     statusMessage: 'Too Many Requests',
@@ -513,7 +586,7 @@ function limitError(): ClientError {
       statusCode: 429,
       error: 'MeteringLimitReached',
       message: 'The organization has used all its AI credits',
-      reasonCode: 'default_budget_limit_reached',
+      reasonCode,
       usageValue: 100,
       quota: 100,
     },
@@ -536,6 +609,8 @@ describe('VisionRedesign', () => {
     sanityMocks.router.state = {}
     sanityMocks.workspace = {document: {drafts: {enabled: true}}, beta: {variants: {enabled: true}}}
     editorMocks.visibleColumns = undefined
+    upsellMocks.requests = 0
+    upsellMocks.content$ = upsellContent(UPSELL_CONTENT)
   })
 
   it('starts with one empty tab and a disabled fetch button', () => {
@@ -1393,7 +1468,7 @@ describe('VisionRedesign', () => {
     expect(aiCreditsRequests).toHaveLength(1)
   })
 
-  it('offers more AI credits in place of a control description once the organization is out of them', async () => {
+  it('offers a bigger plan in place of a control description once the credits the plan includes are used up', async () => {
     const {respondToAiCredits} = renderRedesign()
     respondToAiCredits({
       granted: false,
@@ -1406,21 +1481,137 @@ describe('VisionRedesign', () => {
     const bar = screen.getByTestId('vision-generate-bar')
     const card = await within(bar).findByTestId('vision-ai-credits-limit')
     expect(text(card)).toContain('vision.ai-credits.limit.title')
-    expect(text(card)).toContain('vision.ai-credits.limit.description:{"used":"100","quota":"100"}')
     expect(within(bar).queryByText('vision.generate.description')).toBeNull()
-    // The control itself stays: the API decides, and the limit may have been raised since
+    // The control itself stays: the API decides, and the plan may have been upgraded since
     expect(isDisabled(within(bar).getByTestId('vision-generate-request'))).toBe(false)
+    // The reading alone opens nothing: the dialog is for a request that was turned down
+    expect(screen.queryByTestId('upsell-dialog')).toBeNull()
+
+    // Once the upsell content has come, the card leads to the plan upgrade rather than to Manage
+    const upgrade = await within(bar).findByTestId('vision-ai-credits-upgrade')
+    expect(upsellMocks.requests).toBe(1)
+    const upgradeCard = within(bar).getByTestId('vision-ai-credits-limit')
+    expect(text(upgradeCard)).toContain(
+      'vision.ai-credits.limit.description-upgrade:{"used":"100","quota":"100"}',
+    )
+    expect(within(upgradeCard).queryByTestId('vision-ai-credits-manage')).toBeNull()
+    expect(
+      within(upgradeCard)
+        .getByText('vision.ai-credits.limit.learn-more')
+        .closest('a')
+        ?.getAttribute('href'),
+    ).toBe('https://www.sanity.io/docs/platform-management/how-ai-credits-work')
+    expect(upsellMocks.telemetryLogs.dialogViewed).not.toHaveBeenCalled()
+
+    fireEvent.click(upgrade)
+    const dialog = await screen.findByTestId('upsell-dialog')
+    expect(upsellMocks.telemetryLogs.dialogViewed).toHaveBeenCalledExactlyOnceWith(
+      'ai_credits_card',
+    )
+    const cta = within(dialog).getByText('Upgrade to Growth')
+    expect(cta.getAttribute('href')).toBe('https://www.sanity.io/manage/plan')
+    fireEvent.click(cta)
+    expect(upsellMocks.telemetryLogs.dialogPrimaryClicked).toHaveBeenCalledOnce()
+    fireEvent.click(within(dialog).getByText('About AI credits'))
+    expect(upsellMocks.telemetryLogs.dialogSecondaryClicked).toHaveBeenCalledOnce()
+
+    fireEvent.click(within(dialog).getByTestId('upsell-dialog-close'))
+    await waitFor(() => expect(screen.queryByTestId('upsell-dialog')).toBeNull())
+    expect(upsellMocks.telemetryLogs.dialogDismissed).toHaveBeenCalledOnce()
+    // The content was asked for once, when the credits turned out to call for it
+    expect(upsellMocks.requests).toBe(1)
+  })
+
+  it('leads to the spending limit in Manage where a bigger plan would not help', async () => {
+    const {respondToAiCredits} = renderRedesign()
+    respondToAiCredits({
+      granted: false,
+      reasonCode: 'default_budget_limit_reached',
+      subscription: {resourceId: 'ai-usage', quota: 100},
+      usage: {metric: 'ai-usage', value: 100},
+    })
+
+    fireEvent.click(screen.getByTestId('vision-generate-query'))
+    const bar = screen.getByTestId('vision-generate-bar')
+    const card = await within(bar).findByTestId('vision-ai-credits-limit')
+    expect(text(card)).toContain('vision.ai-credits.limit.description:{"used":"100","quota":"100"}')
     await waitFor(() =>
       expect(within(card).getByTestId('vision-ai-credits-manage').getAttribute('href')).toBe(
         'https://www.sanity.io/organizations/org-1/settings#caps',
       ),
     )
-    expect(
-      within(card)
-        .getByText('vision.ai-credits.limit.learn-more')
-        .closest('a')
-        ?.getAttribute('href'),
-    ).toBe('https://www.sanity.io/docs/platform-management/how-ai-credits-work')
+    // Nothing to upsell, so the content is not even asked for
+    await act(async () => {})
+    expect(within(bar).queryByTestId('vision-ai-credits-upgrade')).toBeNull()
+    expect(upsellMocks.requests).toBe(0)
+    expect(screen.queryByTestId('upsell-dialog')).toBeNull()
+  })
+
+  it('keeps the way into Manage when the upsell content does not come', async () => {
+    upsellMocks.content$ = upsellContent({upsellData: null, hasError: true})
+    const {replyToPrompts, respondToAiCredits} = renderRedesign()
+    respondToAiCredits({
+      granted: false,
+      reasonCode: 'plan_limit_reached',
+      subscription: {resourceId: 'ai-usage', quota: 100},
+      usage: {metric: 'ai-usage', value: 100},
+    })
+    replyToPrompts(limitError('plan_limit_reached'))
+
+    // Neither the reading nor a turned-down request opens a dialog there is no content for
+    generateFrom('Ten authors')
+    const bar = screen.getByTestId('vision-generate-bar')
+    const card = await within(bar).findByTestId('vision-ai-credits-limit')
+    await waitFor(() => expect(upsellMocks.requests).toBe(1))
+    await act(async () => {})
+    expect(screen.queryByTestId('upsell-dialog')).toBeNull()
+    expect(upsellMocks.telemetryLogs.dialogViewed).not.toHaveBeenCalled()
+    expect(upsellMocks.telemetryLogs.dialogDismissed).not.toHaveBeenCalled()
+    expect(within(card).queryByTestId('vision-ai-credits-upgrade')).toBeNull()
+    expect(text(card)).toContain('vision.ai-credits.limit.description:{"used":"100","quota":"100"}')
+    expect(within(card).getByTestId('vision-ai-credits-manage').getAttribute('href')).toBe(
+      'https://www.sanity.io/organizations/org-1/settings#caps',
+    )
+    expect(within(bar).queryByTestId('vision-generate-error')).toBeNull()
+  })
+
+  it('opens the upsell dialog when Agent Actions turn a request down for the credits a bigger plan comes with', async () => {
+    const {promptCalls, replyToPrompts, respondToAiCredits, respondToRequests} = renderRedesign()
+    respondToAiCredits({
+      granted: true,
+      reasonCode: null,
+      subscription: {resourceId: 'ai-usage', quota: 100},
+      usage: {metric: 'ai-usage', value: 99},
+    })
+    respondToRequests({result: [], explain: 'Pipeline {}'})
+    replyToPrompts(limitError('plan_limit_reached'), limitError('plan_limit_reached'))
+
+    generateFrom('Ten authors')
+    const dialog = await screen.findByTestId('upsell-dialog')
+    expect(upsellMocks.telemetryLogs.dialogViewed).toHaveBeenCalledExactlyOnceWith('agent_action')
+    expect(within(dialog).getByText('Upgrade to Growth').getAttribute('href')).toBe(
+      'https://www.sanity.io/manage/plan',
+    )
+    // The card stands under the control as well, for after the dialog is closed
+    const bar = screen.getByTestId('vision-generate-bar')
+    await within(bar).findByTestId('vision-ai-credits-upgrade')
+    expect(within(bar).queryByTestId('vision-generate-error')).toBeNull()
+    expect(promptCalls).toHaveLength(1)
+
+    fireEvent.click(within(dialog).getByTestId('upsell-dialog-close'))
+    await waitFor(() => expect(screen.queryByTestId('upsell-dialog')).toBeNull())
+    expect(upsellMocks.telemetryLogs.dialogDismissed).toHaveBeenCalledOnce()
+
+    // Every Agent Actions control opens it: the explanation as well
+    typeQuery('*[_type == "post"]')
+    fireEvent.click(document.getElementById('vision-response-explain-tab') as HTMLElement)
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-explain-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vision-explain-button'))
+    await screen.findByTestId('upsell-dialog')
+    expect(upsellMocks.telemetryLogs.dialogViewed).toHaveBeenCalledTimes(2)
+    expect(upsellMocks.telemetryLogs.dialogViewed).toHaveBeenLastCalledWith('agent_action')
+    expect(promptCalls).toHaveLength(2)
+    expect(upsellMocks.requests).toBe(1)
   })
 
   it('offers more AI credits, not an error, when Agent Actions turn a request down for them', async () => {
@@ -1440,6 +1631,9 @@ describe('VisionRedesign', () => {
     expect(text(card)).toContain('vision.ai-credits.limit.description:{"used":"100","quota":"100"}')
     expect(within(bar).queryByTestId('vision-generate-error')).toBeNull()
     expect(promptCalls).toHaveLength(1)
+    // A spending limit the organization set is raised in Manage, not with a bigger plan
+    expect(screen.queryByTestId('upsell-dialog')).toBeNull()
+    expect(upsellMocks.requests).toBe(0)
 
     // Every control shows the limit from then on
     fireEvent.click(document.getElementById('vision-response-explain-tab') as HTMLElement)
@@ -1514,6 +1708,8 @@ describe('VisionRedesign', () => {
     const error = await screen.findByTestId('vision-generate-error')
     expect(text(error)).toContain('Rate limit exceeded')
     expect(screen.queryByTestId('vision-ai-credits-limit')).toBeNull()
+    expect(screen.queryByTestId('upsell-dialog')).toBeNull()
+    expect(upsellMocks.requests).toBe(0)
   })
 
   it('offers more AI credits in the Explain panel when the explanation is turned down for them', async () => {

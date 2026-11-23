@@ -860,39 +860,55 @@ describe('document inspectors context', () => {
   })
 })
 
-describe('beta react activity mode config', () => {
+describe('react activity mode config', () => {
   const projectId = 'ppsg7ml5'
   const dataset = 'production'
 
-  it('defaults to false', async () => {
+  it('defaults to true', async () => {
     const source = await createSourceFromConfig({projectId, dataset})
 
-    expect(source.beta?.reactActivityMode?.enabled).toBe(false)
+    expect(source.reactActivityMode.enabled).toBe(true)
   })
 
-  it('resolves from root config', async () => {
+  it('opts out from the root config', async () => {
     const source = await createSourceFromConfig({
       projectId,
       dataset,
-      beta: {reactActivityMode: {enabled: true}},
+      reactActivityMode: {enabled: false},
     })
 
-    expect(source.beta?.reactActivityMode?.enabled).toBe(true)
+    expect(source.reactActivityMode.enabled).toBe(false)
   })
 
-  it('resolves from plugin config', async () => {
+  it('opts out from plugin config', async () => {
     const source = await createSourceFromConfig({
       projectId,
       dataset,
       plugins: [
         definePlugin({
-          name: 'sanity/beta-react-activity-mode',
-          beta: {reactActivityMode: {enabled: true}},
+          name: 'sanity/react-activity-mode',
+          reactActivityMode: {enabled: false},
         })(),
       ],
     })
 
-    expect(source.beta?.reactActivityMode?.enabled).toBe(true)
+    expect(source.reactActivityMode.enabled).toBe(false)
+  })
+
+  it('lets root config override a plugin opt-out', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/react-activity-mode',
+          reactActivityMode: {enabled: false},
+        })(),
+      ],
+      reactActivityMode: {enabled: true},
+    })
+
+    expect(source.reactActivityMode.enabled).toBe(true)
   })
 
   it('lets root config override plugin config', async () => {
@@ -901,14 +917,90 @@ describe('beta react activity mode config', () => {
       dataset,
       plugins: [
         definePlugin({
-          name: 'sanity/beta-react-activity-mode',
-          beta: {reactActivityMode: {enabled: true}},
+          name: 'sanity/react-activity-mode',
+          reactActivityMode: {enabled: true},
         })(),
       ],
-      beta: {reactActivityMode: {enabled: false}},
+      reactActivityMode: {enabled: false},
     })
 
-    expect(source.beta?.reactActivityMode?.enabled).toBe(false)
+    expect(source.reactActivityMode.enabled).toBe(false)
+  })
+
+  it('throws when the namespace is not an object', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        // @ts-expect-error should be an object
+        reactActivityMode: true,
+      }),
+    ).rejects.toThrow('Expected `reactActivityMode` to be an object, but received boolean')
+  })
+
+  it('throws when enabled is not a boolean', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        reactActivityMode: {
+          // @ts-expect-error should be a boolean
+          enabled: 'yes',
+        },
+      }),
+    ).rejects.toThrow('Expected `reactActivityMode.enabled` to be a boolean, but received string')
+  })
+})
+
+describe('beta release background listeners config', () => {
+  const projectId = 'ppsg7ml5'
+  const dataset = 'production'
+
+  it('defaults to false', async () => {
+    const source = await createSourceFromConfig({projectId, dataset})
+
+    expect(source.beta?.releaseBackgroundListeners?.enabled).toBe(false)
+  })
+
+  it('resolves from root config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {releaseBackgroundListeners: {enabled: true}},
+    })
+
+    expect(source.beta?.releaseBackgroundListeners?.enabled).toBe(true)
+  })
+
+  it('resolves from plugin config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-release-background-listeners',
+          beta: {releaseBackgroundListeners: {enabled: true}},
+        })(),
+      ],
+    })
+
+    expect(source.beta?.releaseBackgroundListeners?.enabled).toBe(true)
+  })
+
+  it('lets root config override plugin config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-release-background-listeners',
+          beta: {releaseBackgroundListeners: {enabled: true}},
+        })(),
+      ],
+      beta: {releaseBackgroundListeners: {enabled: false}},
+    })
+
+    expect(source.beta?.releaseBackgroundListeners?.enabled).toBe(false)
   })
 
   it('throws when the namespace is not an object', async () => {
@@ -918,10 +1010,12 @@ describe('beta react activity mode config', () => {
         dataset,
         beta: {
           // @ts-expect-error should be an object
-          reactActivityMode: true,
+          releaseBackgroundListeners: true,
         },
       }),
-    ).rejects.toThrow('Expected `beta.reactActivityMode` to be an object, but received boolean')
+    ).rejects.toThrow(
+      'Expected `beta.releaseBackgroundListeners` to be an object, but received boolean',
+    )
   })
 
   it('throws when enabled is not a boolean', async () => {
@@ -930,14 +1024,14 @@ describe('beta react activity mode config', () => {
         projectId,
         dataset,
         beta: {
-          reactActivityMode: {
+          releaseBackgroundListeners: {
             // @ts-expect-error should be a boolean
             enabled: 'yes',
           },
         },
       }),
     ).rejects.toThrow(
-      'Expected `beta.reactActivityMode.enabled` to be a boolean, but received string',
+      'Expected `beta.releaseBackgroundListeners.enabled` to be a boolean, but received string',
     )
   })
 })

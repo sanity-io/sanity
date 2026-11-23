@@ -1,9 +1,22 @@
 import {type SanityClient} from '@sanity/client'
 import {type Dispatch} from 'react'
-import {catchError, concatWith, merge, type Observable, of, scan, shareReplay, Subject} from 'rxjs'
+import {
+  catchError,
+  concatWith,
+  merge,
+  type Observable,
+  of,
+  ReplaySubject,
+  scan,
+  share,
+  Subject,
+  timer,
+} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 
-import {listenQuery} from '../../store/document/listenQuery'
+import {listenQueryOnGlobalListener} from '../../store/document/listenQuery'
+import {type GlobalListenerStore} from '../../store/globalListener/createGlobalListenerStore'
+import {isVariantId, type SystemVariant} from '../types'
 import {VARIANT_DOCUMENTS_PATH, VARIANT_DOCUMENT_TYPE} from './constants'
 import {variantStoreReducer, type VariantStoreAction, type VariantStoreState} from './reducer'
 
@@ -31,6 +44,14 @@ const INITIAL_STATE: VariantStoreState = {
   state: 'initialising' as const,
 }
 
+/**
+ * How long the listener outlives its last subscriber. Covers a consumer that
+ * unsubscribes and resubscribes (a remount, StrictMode) without a refetch,
+ * while a store left behind by a workspace switch still lets go of its
+ * `/listen` stream.
+ */
+const TEARDOWN_GRACE_PERIOD = 5_000
+
 export interface VariantStore {
   state$: Observable<VariantStoreState>
   /**
@@ -42,17 +63,19 @@ export interface VariantStore {
 
 /**
  * The variants store is initialised lazily when first subscribed to. Upon subscription, it will
- * fetch a list of variants and create a listener to keep the locally held state fresh.
+ * fetch a list of variants, and fetch it again whenever the global listener reports a change to a
+ * variant definition document.
  *
- * The store is not disposed of when all subscriptions are closed. After it has been initialised,
- * it will keep listening for the duration of the app's lifecycle. Subsequent subscriptions will be
- * given the latest state upon subscription.
+ * While subscribed, subsequent subscriptions are given the latest state upon subscription. Once
+ * the last subscription is closed the store keeps listening for {@link TEARDOWN_GRACE_PERIOD}
+ * and then releases the global listener; the next subscription initialises it again.
  */
 export function createVariantsStore(context: {
   client: SanityClient
+  globalListenerStore: GlobalListenerStore
   enabled: boolean
 }): VariantStore {
-  const {client, enabled} = context
+  const {client, globalListenerStore, enabled} = context
 
   if (!enabled) {
     const disabledState: VariantStoreState = {
@@ -83,7 +106,11 @@ export function createVariantsStore(context: {
     },
   }).pipe(
     concatWith(
-      listenQuery(client, QUERY, {}, {tag: 'variants.listen'}).pipe(
+      listenQueryOnGlobalListener<SystemVariant[]>(client, QUERY, {
+        invalidationChannel: globalListenerStore.invalidationChannel,
+        shouldRefetch: ({documentId}) => isVariantId(documentId),
+        fetchTag: 'variants.store.fetch',
+      }).pipe(
         map((variants): VariantStoreAction => ({type: 'FETCH_SUCCEEDED', payload: variants})),
       ),
     ),
@@ -102,7 +129,10 @@ export function createVariantsStore(context: {
   const state$ = merge(listFetch$, dispatch$).pipe(
     scan((state, action) => variantStoreReducer(state, action), INITIAL_STATE),
     startWith(INITIAL_STATE),
-    shareReplay(1),
+    share({
+      connector: () => new ReplaySubject(1),
+      resetOnRefCountZero: () => timer(TEARDOWN_GRACE_PERIOD),
+    }),
   )
 
   return {
