@@ -277,7 +277,7 @@ catalogs:
       specifier: ^6.1.4
       version: 6.1.4
     storybook:
-      specifier: ^10.6.7
+      specifier: ^10.6.8
       version: 10.6.8
     styled-components:
       specifier: ^6.6.0
@@ -1752,7 +1752,7 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/tsdown.config
       '@storybook/react-vite':
-        specifier: ^10.6.7
+        specifier: ^10.6.8
         version: 10.6.8(@types/react-dom@19.3.0)(@types/react@19.3.0)(react-dom@19.3.1)(react@19.3.1)(storybook@10.6.8)(supports-color@8.1.1)(typescript@7.0.2)(vite@8.3.8)
       '@testing-library/jest-dom':
         specifier: ^8.0.0
@@ -2620,7 +2620,7 @@ importers:
         specifier: ^3.0.19
         version: 3.0.19(@sanity/client@8.17.0)(@sanity/types@packages+@sanity+types)(typescript@7.0.2)
       '@storybook/react-vite':
-        specifier: ^10.6.7
+        specifier: ^10.6.8
         version: 10.6.8(@types/react-dom@19.3.0)(@types/react@19.3.0)(react-dom@19.3.1)(react@19.3.1)(storybook@10.6.8)(supports-color@8.1.1)(typescript@7.0.2)(vite@8.3.8)
       '@testing-library/jest-dom':
         specifier: ^8.0.0
