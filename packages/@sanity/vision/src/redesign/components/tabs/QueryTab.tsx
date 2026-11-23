@@ -371,13 +371,6 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     runnerRef.send({type: 'clear'})
   })
 
-  useLiveSubscription({
-    runnerRef,
-    dataset: resolved.dataset,
-    enabled: tab.autoRefetch && resolved.supportsSyncTags,
-    tabId: tab.id,
-  })
-
   // A tab that refetches automatically resumes with a current result when it mounts. After a
   // reload its runner has nothing to replay, so the tab's query runs. Otherwise only what
   // automatic refetching applies anyway is caught up on: the options may have changed while the
@@ -429,6 +422,13 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   useEffect(() => {
     resumeAutoRefetch()
   }, [])
+  // After the resume above, whose fetch makes the paused subscription's catch-up refetch moot
+  useLiveSubscription({
+    runnerRef,
+    dataset: resolved.dataset,
+    enabled: tab.autoRefetch && resolved.supportsSyncTags,
+    tabId: tab.id,
+  })
   useEffect(() => {
     // oxlint-disable-next-line react/set-state-in-effect -- a tab opened with fetch-on-open runs its query once, when it mounts
     if (fetchOnOpen) void fetchOpenedQuery()

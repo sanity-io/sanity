@@ -2228,11 +2228,9 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
 
     await waitFor(() => expect(liveSubscriptionCount()).toBe(1))
-    // Both the tab and the result carry the badge while the subscription is up
-    expect(screen.getAllByText('vision.live.active')).toHaveLength(2)
-    const tabBadge = () =>
-      within(screen.getByTestId('vision-tab-bar')).queryByText('vision.live.active')
-    expect(tabBadge()).not.toBeNull()
+    // The bottom bar's Stop live is what shows the tab is live; neither the tab nor the result
+    // carries a badge for it
+    expect(screen.queryByText('vision.live.active')).toBeNull()
 
     respondWith({result: [{title: 'Updated'}], ms: 3, syncTags: ['s1:def']})
     act(() => {
@@ -2262,18 +2260,46 @@ describe('VisionRedesign', () => {
     })
     await waitFor(() => expect(fetchCalls).toHaveLength(3))
 
-    // A background tab does not keep refetching: switching away ends the subscription (and the
-    // tab's badge with it), and coming back restarts it
+    // A background tab does not refetch, but its paused subscription stays up and remembers
+    // relevant events
+    const firstTab = () => within(screen.getAllByTestId('vision-tab')[0])
     fireEvent.click(screen.getByTestId('vision-new-tab'))
-    await waitFor(() => expect(liveEvents.observed).toBe(false))
-    expect(tabBadge()).toBeNull()
+    await waitFor(() => expect(screen.getAllByTestId('vision-tab')).toHaveLength(2))
+    respondWith({result: [{title: 'Caught up'}], ms: 3, syncTags: ['s1:def']})
     act(() => {
       liveEvents.next({type: 'message', id: '5', tags: ['s1:def']})
+      liveEvents.next({type: 'message', id: '6', tags: ['s1:nope']})
+      liveEvents.next({type: 'message', id: '7', tags: ['s1:def']})
     })
+    expect(liveEvents.observed).toBe(true)
     expect(fetchCalls).toHaveLength(3)
-    fireEvent.click(within(screen.getAllByTestId('vision-tab')[0]).getByTestId('vision-tab-button'))
-    await waitFor(() => expect(liveSubscriptionCount()).toBe(2))
-    expect(tabBadge()).not.toBeNull()
+
+    // Coming back catches up with one refetch, on the same subscription
+    fireEvent.click(firstTab().getByTestId('vision-tab-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(4))
+    await waitFor(() => expect(text(screen.getByTestId('result-json'))).toContain('Caught up'))
+    expect(liveSubscriptionCount()).toBe(1)
+    expect(screen.queryByText('vision.live.active')).toBeNull()
+    expect(screen.getByTestId('vision-auto-refetch').textContent).toContain('vision.live.stop')
+
+    // Nothing relevant while away: back to live without a refetch
+    fireEvent.click(within(screen.getAllByTestId('vision-tab')[1]).getByTestId('vision-tab-button'))
+    act(() => {
+      liveEvents.next({type: 'message', id: '8', tags: ['s1:nope']})
+    })
+    fireEvent.click(firstTab().getByTestId('vision-tab-button'))
+    await waitFor(() => expect(screen.getByTestId('result-json')).toBeTruthy())
+    expect(fetchCalls).toHaveLength(4)
+    act(() => {
+      liveEvents.next({type: 'message', id: '9', tags: ['s1:def']})
+    })
+    await waitFor(() => expect(fetchCalls).toHaveLength(5))
+
+    // The History tab still says which fetches live made
+    fireEvent.click(document.getElementById('vision-response-history-tab') as HTMLElement)
+    expect(text(screen.getAllByTestId('vision-history-entry')[1])).toContain(
+      'vision.history.reason.live',
+    )
   })
 
   it('prettifies the query with groq-format and reports queries that do not parse', async () => {
@@ -2958,7 +2984,8 @@ describe('VisionRedesign', () => {
     const url = new URL((screen.getByTestId('vision-query-url') as HTMLInputElement).value)
     expect(url.searchParams.get('query')).toBe(query)
     expect(screen.getByTestId('vision-query-url-posted')).toBeTruthy()
-    fireEvent.click(document.getElementById('vision-response-network-tab') as HTMLElement)
+    // The network details share the Response tab, which has no separate Network tab
+    expect(document.getElementById('vision-response-network-tab')).toBeNull()
     expect(text(screen.getByTestId('vision-network-method'))).toBe('vision.network.method.post')
 
     // The curl export writes the POST form back, so it pastes again

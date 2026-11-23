@@ -534,6 +534,118 @@ describe('queryRunnerMachine', () => {
     expect(harness.liveEvents.observed).toBe(false)
   })
 
+  describe('while paused', () => {
+    async function liveHarness() {
+      const harness = createHarness()
+      const client = {} as SanityClient
+      harness.actor.send({type: 'fetch', request: harness.request(), reason: {type: 'manual'}})
+      harness.fetches[0].resolve({result: 1, syncTags: ['s1:a', 's1:b']})
+      await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'settled'}))
+      harness.actor.send({type: 'live.enable', client})
+      harness.liveEvents.next({type: 'welcome'})
+      return {harness, client}
+    }
+
+    it('keeps the subscription but buffers relevant events instead of refetching', async () => {
+      const {harness} = await liveHarness()
+      harness.actor.send({type: 'live.pause'})
+      expect(harness.snapshot().matches({live: {on: 'paused'}})).toBe(true)
+
+      harness.liveEvents.next({type: 'message', id: '1', tags: ['s1:other']})
+      expect(harness.snapshot().context.liveMissed).toBeUndefined()
+      harness.liveEvents.next({type: 'message', id: '2', tags: ['s1:a']})
+      harness.liveEvents.next({type: 'message', id: '3', tags: ['s1:b', 's1:a']})
+      expect(harness.fetches).toHaveLength(1)
+      expect(harness.liveEvents.observed).toBe(true)
+      expect(harness.liveSubscriptionCount()).toBe(1)
+      expect(harness.snapshot().context.liveMissed).toEqual({
+        matchedTags: ['s1:a', 's1:b'],
+        eventId: '3',
+      })
+    })
+
+    it('buffers restart and welcome events, which mean changes may have been missed', async () => {
+      const {harness} = await liveHarness()
+      harness.actor.send({type: 'live.pause'})
+      harness.liveEvents.next({type: 'welcome'})
+      expect(harness.snapshot().context.liveMissed).toEqual({matchedTags: [], eventId: undefined})
+
+      harness.liveEvents.next({type: 'restart', id: 'r'})
+      expect(harness.fetches).toHaveLength(1)
+      expect(harness.snapshot().context.liveMissed).toEqual({matchedTags: [], eventId: 'r'})
+    })
+
+    it('refetches once on resume when relevant events arrived', async () => {
+      const {harness, client} = await liveHarness()
+      harness.actor.send({type: 'live.pause'})
+      harness.liveEvents.next({type: 'message', id: '1', tags: ['s1:a']})
+      harness.liveEvents.next({type: 'message', id: '2', tags: ['s1:b']})
+
+      harness.actor.send({type: 'live.enable', client})
+      expect(harness.snapshot().matches({live: {on: 'active'}})).toBe(true)
+      expect(harness.fetches).toHaveLength(2)
+      expect(harness.snapshot().context.reason).toEqual({
+        type: 'live',
+        matchedTags: ['s1:a', 's1:b'],
+        eventId: '2',
+      })
+      expect(harness.snapshot().context.liveMissed).toBeUndefined()
+      expect(harness.liveSubscriptionCount()).toBe(1)
+
+      // Live again: the next relevant event refetches straight away
+      harness.liveEvents.next({type: 'message', id: '3', tags: ['s1:a']})
+      expect(harness.fetches).toHaveLength(3)
+    })
+
+    it('stays live without refetching on resume when nothing relevant arrived', async () => {
+      const {harness, client} = await liveHarness()
+      harness.actor.send({type: 'live.pause'})
+      harness.liveEvents.next({type: 'message', id: '1', tags: ['s1:other']})
+
+      harness.actor.send({type: 'live.enable', client})
+      expect(harness.snapshot().matches({live: {on: 'active'}})).toBe(true)
+      expect(harness.fetches).toHaveLength(1)
+      // The reconnect a paused subscription buffers is a plain no-op while active
+      harness.liveEvents.next({type: 'welcome'})
+      expect(harness.fetches).toHaveLength(1)
+    })
+
+    it('drops the buffer when another fetch runs first', async () => {
+      const {harness, client} = await liveHarness()
+      harness.actor.send({type: 'live.pause'})
+      harness.liveEvents.next({type: 'message', id: '1', tags: ['s1:a']})
+      harness.actor.send({type: 'fetch', request: harness.request(), reason: {type: 'resume'}})
+      expect(harness.snapshot().context.liveMissed).toBeUndefined()
+
+      harness.actor.send({type: 'live.enable', client})
+      expect(harness.fetches).toHaveLength(2)
+    })
+
+    it('clears the buffer when live is stopped', async () => {
+      const {harness, client} = await liveHarness()
+      harness.actor.send({type: 'live.pause'})
+      harness.liveEvents.next({type: 'message', id: '1', tags: ['s1:a']})
+      harness.actor.send({type: 'live.disable'})
+      expect(harness.snapshot().matches({live: 'off'})).toBe(true)
+      expect(harness.snapshot().context.liveMissed).toBeUndefined()
+      expect(harness.liveEvents.observed).toBe(false)
+
+      harness.actor.send({type: 'live.enable', client})
+      expect(harness.fetches).toHaveLength(1)
+    })
+
+    it('starts over with a new subscription and no buffer for a new client', async () => {
+      const {harness} = await liveHarness()
+      harness.actor.send({type: 'live.pause'})
+      harness.liveEvents.next({type: 'message', id: '1', tags: ['s1:a']})
+
+      harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+      expect(harness.liveSubscriptionCount()).toBe(2)
+      expect(harness.snapshot().context.liveMissed).toBeUndefined()
+      expect(harness.fetches).toHaveLength(1)
+    })
+  })
+
   it('reports live subscription errors and recovers when re-enabled', () => {
     const harness = createHarness()
     harness.actor.send({type: 'live.enable', client: {} as SanityClient})
