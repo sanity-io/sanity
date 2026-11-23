@@ -2984,7 +2984,8 @@ describe('VisionRedesign', () => {
     const url = new URL((screen.getByTestId('vision-query-url') as HTMLInputElement).value)
     expect(url.searchParams.get('query')).toBe(query)
     expect(screen.getByTestId('vision-query-url-posted')).toBeTruthy()
-    fireEvent.click(document.getElementById('vision-response-network-tab') as HTMLElement)
+    // The network details share the Response tab, which has no separate Network tab
+    expect(document.getElementById('vision-response-network-tab')).toBeNull()
     expect(text(screen.getByTestId('vision-network-method'))).toBe('vision.network.method.post')
 
     // The curl export writes the POST form back, so it pastes again
