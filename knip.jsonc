@@ -131,6 +131,10 @@
         "src/**/*.{ts,tsx}",
         "!src/**/__test{,s}__", // These files might actually be safe to delete?
       ],
+      "ignoreIssues": {
+        // The deprecated unstable_useValuePreview is an intentional compatibility alias.
+        "src/core/preview/useValuePreview.ts": ["duplicates"],
+      },
       "ignoreBinaries": ["tzutil"],
       "ignoreDependencies": [
         // CLI for local uploads (`pnpm --filter sanity exec chromatic --vitest`, see

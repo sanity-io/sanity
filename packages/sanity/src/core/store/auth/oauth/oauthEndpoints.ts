@@ -9,6 +9,12 @@ export interface OAuthTokenResponse {
   token_type: string
   expires_in: number
   refresh_token?: string
+  /**
+   * How many seconds the refresh token can go unused before it expires
+   * (draft-ietf-oauth-refresh-token-expiration). Every renewal gives a new refresh token with the
+   * full timeout.
+   */
+  refresh_token_timeout?: number
 }
 
 /**
@@ -116,7 +122,19 @@ function toTokenResponse(body: unknown): OAuthTokenResponse {
   ) {
     throw new Error('OAuth token endpoint returned a malformed token response')
   }
-  return {access_token, token_type, expires_in, refresh_token}
+  const {refresh_token_timeout} = response
+  return {
+    access_token,
+    token_type,
+    expires_in,
+    refresh_token,
+    // Ignore a value that is not a positive number. The tokens are still good.
+    ...(typeof refresh_token_timeout === 'number' &&
+    Number.isFinite(refresh_token_timeout) &&
+    refresh_token_timeout > 0
+      ? {refresh_token_timeout}
+      : {}),
+  }
 }
 
 /** @internal */

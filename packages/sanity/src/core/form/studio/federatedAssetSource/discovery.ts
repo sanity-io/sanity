@@ -111,20 +111,34 @@ function findAssetSourceViews(entries: ApplicationsList): FederatedAssetSourceVi
 }
 
 /**
- * The brokered `asset_source` views currently published by the workbench, or
- * `undefined` when the Studio is not running as a federated remote inside the
- * workbench (no message bus).
- *
- * Read synchronously off the bus's state topic because `prepareConfig`
- * resolves asset sources once: on a cold start in which the workbench has not
- * yet published `applications.list`, this returns `[]` — callers must resolve
- * that to today's iframe behavior, never to a missing Media Library source.
+ * The state of the workbench's `applications.list` topic, as read by
+ * {@link discoverFederatedAssetSourceViews}:
+ * - `standalone`: no message bus, the Studio is not running inside the workbench.
+ * - `pending`: the workbench has not published the list yet (cold start).
+ * - `failed`: the workbench published an error instead of the list.
+ * - `published`: the list, mapped to its `asset_source` views.
  *
  * @internal
  */
-export function getCurrentFederatedAssetSourceViews(): FederatedAssetSourceView[] | undefined {
+export type FederatedAssetSourceDiscovery =
+  | {status: 'standalone'}
+  | {status: 'pending'}
+  | {status: 'failed'}
+  | {status: 'published'; views: FederatedAssetSourceView[]}
+
+/**
+ * Reads the brokered `asset_source` views synchronously off the bus's state
+ * topic, because `prepareConfig` resolves asset sources once. Anything but
+ * `published` must resolve to today's iframe behavior, never to a missing
+ * Media Library source.
+ *
+ * @internal
+ */
+export function discoverFederatedAssetSourceViews(): FederatedAssetSourceDiscovery {
   const connection = getMessageBusConnection()
-  if (!connection) return undefined
+  if (!connection) return {status: 'standalone'}
   const result = connection.subscribe('applications.list').getCurrent()
-  return result?.ok ? findAssetSourceViews(result.value) : []
+  if (!result) return {status: 'pending'}
+  if (!result.ok) return {status: 'failed'}
+  return {status: 'published', views: findAssetSourceViews(result.value)}
 }

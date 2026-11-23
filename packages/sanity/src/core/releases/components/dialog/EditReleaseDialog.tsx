@@ -13,7 +13,7 @@ import {
   toReleaseMetadataRecord,
   type ReleaseMetadataRecord,
 } from '../../metadata/mergeReleaseMetadata'
-import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadataFieldsEnabled'
+import {useReleaseCustomMetadataFields} from '../../metadata/useReleaseCustomMetadataFields'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {useCanEditRelease} from '../../tool/detail/useCanEditRelease'
 import {ReleaseMetadataForm} from './ReleaseMetadataForm'
@@ -40,7 +40,7 @@ export function EditReleaseDialog({
   const toast = useToast()
   const titleId = useId()
   const descriptionId = useId()
-  const metadataFieldsEnabled = useReleaseMetadataFieldsEnabled()
+  const {enabled: metadataFieldsEnabled} = useReleaseCustomMetadataFields()
   const canEdit = useCanEditRelease(release)
 
   const [metadata, setMetadata] = useState<ReleaseMetadataRecord>(() =>

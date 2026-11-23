@@ -7,9 +7,14 @@ import {type DeprecatedVersions, parseDeprecatedVersions} from './utils'
 const MODULES_URL_VERSION = 'v1'
 const MODULES_HOST = isStaging ? 'https://sanity-cdn.work' : 'https://sanity-cdn.com'
 const MODULES_URL = `${MODULES_HOST}/${MODULES_URL_VERSION}/modules`
+// The Studio team owns this value, and it must match the CLI's timestamp bucket.
+const MODULES_TIMESTAMP_BUCKET_SECONDS = 60
 
 function currentUnixTimestamp() {
-  return Math.floor(Date.now() / 1000)
+  return (
+    Math.floor(Date.now() / 1000 / MODULES_TIMESTAMP_BUCKET_SECONDS) *
+    MODULES_TIMESTAMP_BUCKET_SECONDS
+  )
 }
 
 function getAppIdModuleUrl({

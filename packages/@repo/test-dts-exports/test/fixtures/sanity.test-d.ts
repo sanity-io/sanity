@@ -997,7 +997,10 @@ import type {
   LegacyThemeProps,
   LegacyThemeTints,
   LinearProgress,
+  LISTENER_PAUSE_GRACE_PERIOD,
   ListenerEvent,
+  listenerGate,
+  ListenerGate,
   listenQuery,
   ListenQueryOptions,
   ListenQueryParams,
@@ -1173,6 +1176,8 @@ import type {
   pathsAreEqual,
   PathSegment,
   pathToString,
+  pauseWhileDocumentHidden,
+  PauseWhileDocumentHiddenOptions,
   PendingMutationsEvent,
   PermissionCheckResult,
   PerspectiveContextValue,
@@ -1245,6 +1250,8 @@ import type {
   readVersionType,
   RebasePatchMsg,
   ReconnectEvent,
+  reconnectListener,
+  ReconnectListenerOptions,
   Rect,
   Reference,
   ReferenceAutocomplete,
@@ -1275,6 +1282,7 @@ import type {
   RelativeTime,
   RelativeTimeOptions,
   RelativeTimeProps,
+  RELEASE_DOCUMENT_TYPE,
   ReleaseActionComponent,
   ReleaseActionDescription,
   ReleaseActionProps,
@@ -1284,6 +1292,7 @@ import type {
   ReleaseAvatarIcon,
   ReleaseDocument,
   ReleaseId,
+  ReleaseMetadataConfig,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
   ReleasesNav,
@@ -1334,6 +1343,7 @@ import type {
   ResourceCacheProvider,
   ResourceCacheProviderProps,
   RetryingStatus,
+  retryTransientFetch,
   RevertChangesButton,
   RevertChangesConfirmDialog,
   Role,
@@ -4889,8 +4899,17 @@ describe('sanity', () => {
   test('LinearProgress', () => {
     expectTypeOf<typeof LinearProgress>().toBeFunction()
   })
+  test('LISTENER_PAUSE_GRACE_PERIOD', () => {
+    expectTypeOf<typeof LISTENER_PAUSE_GRACE_PERIOD>().not.toBeNever()
+  })
   test('ListenerEvent', () => {
     expectTypeOf<ListenerEvent>().not.toBeNever()
+  })
+  test('listenerGate', () => {
+    expectTypeOf<typeof listenerGate>().not.toBeNever()
+  })
+  test('ListenerGate', () => {
+    expectTypeOf<ListenerGate>().toBeObject()
   })
   test('listenQuery', () => {
     expectTypeOf<typeof listenQuery>().toBeFunction()
@@ -5420,6 +5439,12 @@ describe('sanity', () => {
   test('pathToString', () => {
     expectTypeOf<typeof pathToString>().toBeFunction()
   })
+  test('pauseWhileDocumentHidden', () => {
+    expectTypeOf<typeof pauseWhileDocumentHidden>().not.toBeNever()
+  })
+  test('PauseWhileDocumentHiddenOptions', () => {
+    expectTypeOf<PauseWhileDocumentHiddenOptions<any>>().toBeObject()
+  })
   test('PendingMutationsEvent', () => {
     expectTypeOf<PendingMutationsEvent>().toBeObject()
   })
@@ -5636,6 +5661,12 @@ describe('sanity', () => {
   test('ReconnectEvent', () => {
     expectTypeOf<ReconnectEvent>().not.toBeNever()
   })
+  test('reconnectListener', () => {
+    expectTypeOf<typeof reconnectListener>().toBeFunction()
+  })
+  test('ReconnectListenerOptions', () => {
+    expectTypeOf<ReconnectListenerOptions>().toBeObject()
+  })
   test('Rect', () => {
     expectTypeOf<Rect>().toBeObject()
   })
@@ -5727,6 +5758,9 @@ describe('sanity', () => {
   test('RelativeTimeProps', () => {
     expectTypeOf<RelativeTimeProps>().toBeObject()
   })
+  test('RELEASE_DOCUMENT_TYPE', () => {
+    expectTypeOf<typeof RELEASE_DOCUMENT_TYPE>().not.toBeNever()
+  })
   test('ReleaseActionComponent', () => {
     expectTypeOf<ReleaseActionComponent>().toBeObject()
   })
@@ -5753,6 +5787,9 @@ describe('sanity', () => {
   })
   test('ReleaseId', () => {
     expectTypeOf<ReleaseId>().not.toBeNever()
+  })
+  test('ReleaseMetadataConfig', () => {
+    expectTypeOf<ReleaseMetadataConfig>().toBeObject()
   })
   test('RELEASES_INTENT', () => {
     expectTypeOf<typeof RELEASES_INTENT>().not.toBeNever()
@@ -5904,6 +5941,9 @@ describe('sanity', () => {
   })
   test('RetryingStatus', () => {
     expectTypeOf<RetryingStatus>().not.toBeNever()
+  })
+  test('retryTransientFetch', () => {
+    expectTypeOf<typeof retryTransientFetch>().toBeFunction()
   })
   test('RevertChangesButton', () => {
     expectTypeOf<typeof RevertChangesButton>().toBeFunction()

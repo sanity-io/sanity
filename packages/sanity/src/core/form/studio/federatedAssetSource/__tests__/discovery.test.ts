@@ -2,7 +2,8 @@ import {type DashboardTopics, type ValueOf} from '@sanity/sdk/dashboard'
 import {describe, expect, it} from 'vitest'
 
 import {stubMessageBusHost} from '../../../../../../test/testUtils/stubMessageBusHost'
-import {getCurrentFederatedAssetSourceViews, isMediaLibraryView} from '../discovery'
+import {discoverFederatedAssetSourceViews, isMediaLibraryView} from '../discovery'
+import {type FederatedAssetSourceView} from '../types'
 
 type ApplicationsList = Extract<
   NonNullable<ValueOf<'applications.list', DashboardTopics>>,
@@ -88,19 +89,26 @@ function publish(entries: ApplicationsList) {
   stubMessageBusHost().publish('applications.list', {ok: true, value: entries})
 }
 
-describe('getCurrentFederatedAssetSourceViews', () => {
-  it('returns undefined without a message bus (not hosted by the workbench)', () => {
-    expect(getCurrentFederatedAssetSourceViews()).toBeUndefined()
+function publishedViews(): FederatedAssetSourceView[] {
+  const discovery = discoverFederatedAssetSourceViews()
+  if (discovery.status !== 'published')
+    throw new Error(`Expected published, got ${discovery.status}`)
+  return discovery.views
+}
+
+describe('discoverFederatedAssetSourceViews', () => {
+  it('reports a standalone Studio without a message bus (not hosted by the workbench)', () => {
+    expect(discoverFederatedAssetSourceViews()).toEqual({status: 'standalone'})
   })
 
-  it('returns an empty list when the workbench has not published applications yet', () => {
+  it('reports a cold start when the workbench has not published applications yet', () => {
     stubMessageBusHost()
-    expect(getCurrentFederatedAssetSourceViews()).toEqual([])
+    expect(discoverFederatedAssetSourceViews()).toEqual({status: 'pending'})
   })
 
-  it('returns an empty list on an error result', () => {
+  it('reports an error result as failed', () => {
     stubMessageBusHost().publish('applications.list', {ok: false})
-    expect(getCurrentFederatedAssetSourceViews()).toEqual([])
+    expect(discoverFederatedAssetSourceViews()).toEqual({status: 'failed'})
   })
 
   it('maps a deployed application with a federation manifest, appending the component slot', () => {
@@ -128,7 +136,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
       }),
     ])
 
-    const views = getCurrentFederatedAssetSourceViews()
+    const views = publishedViews()
     expect(views).toEqual([
       {
         applicationId: 'media-app',
@@ -155,7 +163,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
       }),
     ])
 
-    expect(getCurrentFederatedAssetSourceViews()).toEqual([])
+    expect(publishedViews()).toEqual([])
   })
 
   it('maps a local dev server regardless of manifest config, keeping a full moduleId as-is', () => {
@@ -173,7 +181,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
       } as ListedEntry,
     ])
 
-    const views = getCurrentFederatedAssetSourceViews()
+    const views = publishedViews()
     expect(views).toEqual([
       {
         applicationId: 'dev-app',
@@ -198,7 +206,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
       }),
     ])
 
-    expect(getCurrentFederatedAssetSourceViews()).toEqual([
+    expect(publishedViews()).toEqual([
       {
         applicationId: 'installation-1',
         applicationName: 'installed-app',
@@ -226,7 +234,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
       }),
     ])
 
-    expect(getCurrentFederatedAssetSourceViews()).toEqual([])
+    expect(publishedViews()).toEqual([])
   })
 
   describe('when an application is also served by a local dev server', () => {
@@ -273,7 +281,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
         localMediaLibrary,
       ])
 
-      expect(getCurrentFederatedAssetSourceViews()).toEqual([expectedLocalView])
+      expect(publishedViews()).toEqual([expectedLocalView])
     })
 
     it('prefers the local dev server over a deployed application listed after it', () => {
@@ -292,7 +300,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
         }),
       ])
 
-      expect(getCurrentFederatedAssetSourceViews()).toEqual([expectedLocalView])
+      expect(publishedViews()).toEqual([expectedLocalView])
     })
 
     it('keeps deployed applications with a different name', () => {
@@ -304,7 +312,7 @@ describe('getCurrentFederatedAssetSourceViews', () => {
         }),
       ])
 
-      expect(getCurrentFederatedAssetSourceViews()?.map((view) => view.applicationId)).toEqual([
+      expect(publishedViews().map((view) => view.applicationId)).toEqual([
         'local-media',
         'installation-1',
       ])

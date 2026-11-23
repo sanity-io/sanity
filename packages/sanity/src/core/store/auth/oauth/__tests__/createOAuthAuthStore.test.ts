@@ -1790,6 +1790,308 @@ describe('createOAuthAuthStore', () => {
     })
   })
 
+  // The auth service sends `refresh_token_timeout`: how many seconds the refresh token can go
+  // unused before it expires. Once it has expired, the store signs out instead of renewing.
+  describe('refresh token timeout', () => {
+    const NINETY_DAYS_S = 90 * 24 * 60 * 60
+
+    /** A client factory that keeps its clients, so a test can see every request they made. */
+    function createTrackedClientFactory(validTokens: Set<string>) {
+      const {factory} = createMockClientFactory(validTokens)
+      const clients: SanityClient[] = []
+      const tracked = (config: SanityClientConfig): SanityClient => {
+        const client = factory(config)
+        clients.push(client)
+        return client
+      }
+      const requestsOf = (client: SanityClient) => vi.mocked(client.request).mock.calls
+      return {
+        factory: tracked,
+        requests: () => clients.flatMap(requestsOf),
+        clearRequests: () => clients.forEach((client) => vi.mocked(client.request).mockClear()),
+      }
+    }
+
+    function createStore(options: {
+      endpoints?: OAuthEndpoints
+      validTokens?: Set<string>
+      visible$?: Subject<void>
+      renewBeforeExpiryMs?: number
+    }) {
+      const {factory, requests, clearRequests} = createTrackedClientFactory(
+        options.validTokens ?? new Set(),
+      )
+      const endpoints = options.endpoints ?? createMockEndpoints()
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints,
+        renewBeforeExpiryMs: options.renewBeforeExpiryMs,
+        ...createEnvironment(),
+        ...(options.visible$ ? {visible$: options.visible$} : {}),
+      })
+      return {store, endpoints, requests, clearRequests}
+    }
+
+    function expectNoRequest(endpoints: OAuthEndpoints, requests: () => unknown[]) {
+      expect(endpoints.refresh).not.toHaveBeenCalled()
+      expect(endpoints.revoke).not.toHaveBeenCalled()
+      expect(endpoints.exchangeCode).not.toHaveBeenCalled()
+      expect(requests()).toEqual([])
+    }
+
+    const storedPair = () => JSON.parse(localStorage.getItem(TOKENS_KEY)!) as OAuthTokens
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('stores when the refresh token times out, counted from when the response arrived', async () => {
+      vi.useFakeTimers()
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('expired', 'refresh-1')))
+      const {store} = createStore({
+        validTokens: new Set(['access-2']),
+        endpoints: createMockEndpoints({
+          refresh: vi.fn(async () => ({
+            ...tokenResponse('access-2', 'refresh-2'),
+            refresh_token_timeout: NINETY_DAYS_S,
+          })),
+        }),
+      })
+
+      const receivedAt = Date.now()
+      const subscription = store.state.subscribe()
+      await vi.advanceTimersByTimeAsync(0)
+
+      expect(storedPair()).toMatchObject({
+        accessToken: 'access-2',
+        refreshToken: 'refresh-2',
+        refreshTokenExpiresAt: receivedAt + NINETY_DAYS_S * 1000,
+      })
+      subscription.unsubscribe()
+    })
+
+    it('stores the timeout of the pair a sign-in exchanges', async () => {
+      vi.useFakeTimers()
+      const {factory} = createMockClientFactory(new Set(['access-1']))
+      const environment = createEnvironment('?code=c&state=s')
+      sessionStorage.setItem(
+        FLOW_KEY,
+        JSON.stringify({codeVerifier: 'v', state: 's', redirectUri: `${ORIGIN}/`}),
+      )
+      const store = _createOAuthAuthStore({
+        projectId: PROJECT_ID,
+        dataset: DATASET,
+        clientId: CLIENT_ID,
+        clientFactory: factory,
+        endpoints: createMockEndpoints({
+          exchangeCode: vi.fn(async () => ({
+            ...tokenResponse('access-1', 'refresh-1'),
+            refresh_token_timeout: NINETY_DAYS_S,
+          })),
+        }),
+        ...environment,
+      })
+
+      const receivedAt = Date.now()
+      const callback = store.handleCallbackUrl!()
+      await vi.advanceTimersByTimeAsync(0)
+      await expect(callback).resolves.toMatchObject({success: true})
+
+      expect(storedPair().refreshTokenExpiresAt).toBe(receivedAt + NINETY_DAYS_S * 1000)
+    })
+
+    it('keeps today’s pair and schedule when the response states no timeout', async () => {
+      vi.useFakeTimers()
+      localStorage.setItem(TOKENS_KEY, JSON.stringify(storedTokens('expired', 'refresh-1')))
+      const {store} = createStore({validTokens: new Set(['access-2'])})
+
+      const receivedAt = Date.now()
+      const subscription = store.state.subscribe()
+      await vi.advanceTimersByTimeAsync(0)
+
+      const stored = storedPair()
+      expect(stored.accessToken).toBe('access-2')
+      expect(stored).not.toHaveProperty('refreshTokenExpiresAt')
+      // The default 60s margin before the 3600s access token expiry.
+      expect(stored.refreshAt).toBe(receivedAt + 3_540_000)
+      subscription.unsubscribe()
+    })
+
+    it('signs out at boot without a request when the refresh token has expired', async () => {
+      // The Studio was closed for longer than the refresh token lives.
+      const now = Date.now()
+      localStorage.setItem(
+        TOKENS_KEY,
+        JSON.stringify({
+          ...storedTokens('access-1', 'refresh-1'),
+          expiresAt: now - 1_000,
+          refreshAt: now - 61_000,
+          refreshTokenExpiresAt: now - 500,
+          signedInAt: now - 100 * 24 * 3_600_000,
+        }),
+      )
+      const {store, endpoints, requests} = createStore({})
+      const events: OAuthTelemetryEvent[] = []
+      const telemetry = store.telemetryEvents.subscribe((event) => events.push(event))
+
+      await expect(firstValueFrom(store.state)).resolves.toMatchObject({authenticated: false})
+      await settle(20)
+
+      expect(localStorage.getItem(TOKENS_KEY)).toBeNull()
+      expectNoRequest(endpoints, requests)
+      expect(events).toEqual([
+        {type: 'session-ended', reason: 'refresh-expired', sessionAge: '>7d'},
+        expect.objectContaining({
+          type: 'token-renewed',
+          trigger: 'expired',
+          outcome: 'session-ended',
+        }),
+      ])
+      telemetry.unsubscribe()
+    })
+
+    it('does not retry a rejected request when the refresh token has expired', async () => {
+      vi.useFakeTimers()
+      const now = Date.now()
+      localStorage.setItem(
+        TOKENS_KEY,
+        JSON.stringify({
+          ...storedTokens('access-1', 'refresh-1'),
+          refreshTokenExpiresAt: now + 120_000,
+        }),
+      )
+      const {store, endpoints} = createStore({validTokens: new Set(['access-1'])})
+      const states: AuthState[] = []
+      const subscription = store.state.subscribe((state) => states.push(state))
+      await vi.advanceTimersByTimeAsync(0)
+      const requestHandler = states[0].client.config().requestHandler as RequestHandler
+
+      vi.setSystemTime(now + 3_600_000)
+      const next = vi.fn().mockRejectedValue(createExpiredSessionError())
+      await expect(
+        requestHandler({url: '/data/query', headers: {Authorization: 'Bearer access-1'}}, next),
+      ).rejects.toThrow()
+
+      expect(next).toHaveBeenCalledTimes(1)
+      expect(endpoints.refresh).not.toHaveBeenCalled()
+      expect(localStorage.getItem(TOKENS_KEY)).toBeNull()
+      subscription.unsubscribe()
+    })
+
+    it('signs out when the tab is shown after the refresh token expired, without a request', async () => {
+      // The machine slept for longer than the refresh token lives, so no timer fired.
+      vi.useFakeTimers()
+      const now = Date.now()
+      localStorage.setItem(
+        TOKENS_KEY,
+        JSON.stringify({
+          ...storedTokens('access-1', 'refresh-1'),
+          expiresAt: now + 60_000,
+          refreshAt: now + 30_000,
+          refreshTokenExpiresAt: now + 120_000,
+          signedInAt: now,
+        }),
+      )
+      const visible$ = new Subject<void>()
+      const {store, endpoints, requests, clearRequests} = createStore({
+        visible$,
+        validTokens: new Set(['access-1']),
+      })
+      const events: OAuthTelemetryEvent[] = []
+      const telemetry = store.telemetryEvents.subscribe((event) => events.push(event))
+      const states: boolean[] = []
+      const subscription = store.state.subscribe((state) => states.push(state.authenticated))
+      await vi.advanceTimersByTimeAsync(0)
+      expect(states).toEqual([true])
+      clearRequests()
+
+      vi.setSystemTime(now + 3_600_000)
+      visible$.next()
+      await vi.advanceTimersByTimeAsync(0)
+
+      expect(states.at(-1)).toBe(false)
+      expect(localStorage.getItem(TOKENS_KEY)).toBeNull()
+      expectNoRequest(endpoints, requests)
+      expect(events).toEqual([
+        {type: 'session-ended', reason: 'refresh-expired', sessionAge: '1-24h'},
+        expect.objectContaining({type: 'token-renewed', outcome: 'session-ended'}),
+      ])
+      subscription.unsubscribe()
+      telemetry.unsubscribe()
+    })
+
+    it('signs out when the scheduled renewal fires after the refresh token expired, without a request', async () => {
+      // A background tab or a sleeping machine delays the timer until after the refresh token
+      // has expired.
+      vi.useFakeTimers()
+      const now = Date.now()
+      localStorage.setItem(
+        TOKENS_KEY,
+        JSON.stringify({
+          ...storedTokens('access-1', 'refresh-1'),
+          expiresAt: now + 60_000,
+          refreshAt: now + 30_000,
+          refreshTokenExpiresAt: now + 120_000,
+          signedInAt: now,
+        }),
+      )
+      const {store, endpoints, requests, clearRequests} = createStore({
+        validTokens: new Set(['access-1']),
+      })
+      const events: OAuthTelemetryEvent[] = []
+      const telemetry = store.telemetryEvents.subscribe((event) => events.push(event))
+      const states: boolean[] = []
+      const subscription = store.state.subscribe((state) => states.push(state.authenticated))
+      await vi.advanceTimersByTimeAsync(0)
+      expect(states).toEqual([true])
+      clearRequests()
+
+      vi.setSystemTime(now + 3_600_000)
+      await vi.advanceTimersByTimeAsync(30_000)
+
+      expect(states.at(-1)).toBe(false)
+      expect(localStorage.getItem(TOKENS_KEY)).toBeNull()
+      expectNoRequest(endpoints, requests)
+      expect(events).toEqual([
+        {type: 'session-ended', reason: 'refresh-expired', sessionAge: '1-24h'},
+        expect.objectContaining({type: 'token-renewed', outcome: 'session-ended'}),
+      ])
+      subscription.unsubscribe()
+      telemetry.unsubscribe()
+    })
+
+    it('renews on wake as today when the refresh token has not timed out', async () => {
+      vi.useFakeTimers()
+      const now = Date.now()
+      localStorage.setItem(
+        TOKENS_KEY,
+        JSON.stringify({
+          ...storedTokens('access-1', 'refresh-1'),
+          refreshAt: now + 60_000,
+          refreshTokenExpiresAt: now + NINETY_DAYS_S * 1000,
+        }),
+      )
+      const visible$ = new Subject<void>()
+      const {store, endpoints} = createStore({
+        visible$,
+        validTokens: new Set(['access-1', 'access-2']),
+      })
+      const subscription = store.state.subscribe()
+      await vi.advanceTimersByTimeAsync(0)
+
+      vi.setSystemTime(now + 3_600_000)
+      visible$.next()
+      await vi.advanceTimersByTimeAsync(0)
+
+      expect(endpoints.refresh).toHaveBeenCalledTimes(1)
+      expect(storedPair().accessToken).toBe('access-2')
+      subscription.unsubscribe()
+    })
+  })
+
   // A rotation keeps the client. A sign-in, another user or new roles get a new client.
   describe('session clients', () => {
     /** A client whose `/users/me` answers per token, so a token can belong to another user. */

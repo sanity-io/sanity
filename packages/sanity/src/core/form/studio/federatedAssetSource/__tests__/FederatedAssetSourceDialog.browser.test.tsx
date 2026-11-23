@@ -2,7 +2,7 @@ import {type AssetSource, type AssetSourceComponentProps} from '@sanity/types'
 import noop from 'lodash-es/noop.js'
 import {beforeEach, describe, expect, test, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
-import {page} from 'vitest/browser'
+import {page, userEvent} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../test/browser/TestWrapper'
@@ -51,12 +51,35 @@ const SOURCE_PROPS: AssetSourceComponentProps = {
   onSelect: noop,
 }
 
-function DialogHarness() {
+function DialogHarness(props: {onClose?: () => void}) {
   return (
     <TestWrapper schemaTypes={[]}>
-      <FederatedAssetSourceDialog sourceProps={SOURCE_PROPS} view={VIEW} />
+      <FederatedAssetSourceDialog
+        sourceProps={{...SOURCE_PROPS, onClose: props.onClose ?? noop}}
+        view={VIEW}
+      />
     </TestWrapper>
   )
+}
+
+/** A view that renders a single button. */
+function mockView() {
+  vi.mocked(loadFederatedAssetSourceModule).mockResolvedValue({
+    version: 1,
+    render: (rootElement) => {
+      const button = document.createElement('button')
+      button.textContent = 'View button'
+      rootElement.replaceChildren(button)
+      return {dispose: noop}
+    },
+  })
+}
+
+const afterDispatch = () => new Promise((resolve) => setTimeout(resolve, 50))
+
+// Focused directly: WebKit does not focus a button on click.
+function focusViewButton() {
+  ;(page.getByText('View button').element() as HTMLElement).focus()
 }
 
 beforeEach(() => {
@@ -105,5 +128,30 @@ describe('FederatedAssetSourceDialog', () => {
       .element(page.getByText('This asset source failed to load. Close the dialog and try again.'))
       .toBeVisible()
     await settleChromaticEndState()
+  })
+
+  describe('closing', () => {
+    test('leaves Escape to the view', async () => {
+      mockView()
+      const onClose = vi.fn()
+      void render(<DialogHarness onClose={onClose} />)
+      await expect.element(page.getByText('View button')).toBeVisible()
+
+      focusViewButton()
+      await userEvent.keyboard('{Escape}')
+      await afterDispatch()
+
+      expect(onClose).not.toHaveBeenCalled()
+    })
+
+    test('closes from the close button', async () => {
+      mockView()
+      const onClose = vi.fn()
+      void render(<DialogHarness onClose={onClose} />)
+
+      await userEvent.click(page.getByRole('button', {name: 'Close dialog'}))
+
+      expect(onClose).toHaveBeenCalledTimes(1)
+    })
   })
 })

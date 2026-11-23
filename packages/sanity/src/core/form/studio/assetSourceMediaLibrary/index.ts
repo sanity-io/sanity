@@ -1,7 +1,7 @@
 export {
   createFederatedSanityMediaLibraryFileSource,
   createFederatedSanityMediaLibraryImageSource,
-  createSanityMediaLibraryFileSource,
-  createSanityMediaLibraryImageSource,
+  createIframeSanityMediaLibraryFileSource,
+  createIframeSanityMediaLibraryImageSource,
   sourceName,
 } from './createAssetSource'

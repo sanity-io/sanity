@@ -35,8 +35,10 @@ paste-ready brief for an agent).
 ## The data
 
 Project `mhfozd0z`, dataset `bench`, **private**: reads need a token with access to the project
-(your CLI token via `sanity debug --secrets`, or a viewer token from sanity.io/manage; the deployed
-studio authenticates through your login). Writes need `RADAR_SANITY_WRITE_TOKEN`, which only CI
+(your CLI token via `sanity debug --secrets`, or a viewer token from sanity.io/manage). The studio
+itself signs in with OAuth (`auth.experimental_oauth` in `sanity.config.ts`, with an OAuth
+application of its own on `mhfozd0z`), so a `#token=` URL does not sign it in; scripts
+and CI never go through that sign-in and use tokens directly. Writes need `RADAR_SANITY_WRITE_TOKEN`, which only CI
 has; never write from a laptop. Ids are built in one place, `@repo/utils/radar-ids`: lowercase,
 dashes, no dots (a dot makes an id a path like `drafts.x`, which the API scopes differently).
 
@@ -63,7 +65,7 @@ Ready-made queries: [references/groq-recipes.md](references/groq-recipes.md).
 ## Working on the dashboard
 
 ```bash
-pnpm radar                                  # sanity dev on http://localhost:3399 (needs a Sanity login; reads live data)
+pnpm radar                                  # sanity dev on http://localhost:3399 (OAuth sign-in; reads live data)
 pnpm vitest run --project=radar             # pure modules: trend math, drift, bisect, git parsers
 pnpm build:radar                            # production build (turbo)
 pnpm --filter radar sync-git -- --dry-run   # preview the git-history sync (needs GITHUB_TOKEN)
