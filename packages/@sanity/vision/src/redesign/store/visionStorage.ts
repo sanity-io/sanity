@@ -6,6 +6,7 @@ import {getStorage, VISION_STORAGE_KEY_PREFIX} from '../../util/localStorage'
 import {prefixApiVersion} from '../../util/prefixApiVersion'
 import {validateApiVersion} from '../../util/validateApiVersion'
 import {
+  type VisionAiSettings,
   type VisionDatasetMode,
   type VisionDrawer,
   type VisionHistoryDiffSettings,
@@ -34,6 +35,14 @@ const DEFAULT_PANELS: VisionPanelsState = {
 
 /** Fields that change with every revision, so a diff of them says nothing about the content */
 export const DEFAULT_HIDDEN_DIFF_FIELDS = ['_rev', '_updatedAt', '_system.base.rev']
+
+/** Every AI feature stays on until the user switches it off */
+export const DEFAULT_AI_SETTINGS: VisionAiSettings = {
+  enabled: true,
+  generateQuery: true,
+  generateMutations: true,
+  explainQuery: true,
+}
 
 export interface VisionStorageDefaults {
   datasets: string[]
@@ -130,6 +139,7 @@ export function createInitialState(defaults: VisionStorageDefaults): VisionPersi
     sidebar: {expanded: false, drawer: null},
     panels: {...DEFAULT_PANELS},
     historyDiff: {hiddenFields: [...DEFAULT_HIDDEN_DIFF_FIELDS]},
+    ai: {...DEFAULT_AI_SETTINGS},
     functions: [],
   }
 }
@@ -256,6 +266,17 @@ function sanitizeHistoryDiff(value: unknown): VisionHistoryDiffSettings {
   }
 }
 
+/** A setting stays on unless it was switched off; state saved before the settings existed has all on */
+function sanitizeAiSettings(value: unknown): VisionAiSettings {
+  const ai = isPlainObject(value) ? value : {}
+  return {
+    enabled: ai.enabled !== false,
+    generateQuery: ai.generateQuery !== false,
+    generateMutations: ai.generateMutations !== false,
+    explainQuery: ai.explainQuery !== false,
+  }
+}
+
 /** Saved functions with an id and a declaration, the first of each id; state saved before had none */
 function sanitizeFunctions(value: unknown): VisionSavedFunction[] {
   if (!Array.isArray(value)) return []
@@ -315,9 +336,10 @@ export function loadVisionState(
   const sidebar = sanitizeSidebar(stored.sidebar)
   const panels = sanitizePanels(stored.panels)
   const historyDiff = sanitizeHistoryDiff(stored.historyDiff)
+  const ai = sanitizeAiSettings(stored.ai)
   const functions = sanitizeFunctions(stored.functions)
   if (tabs.length === 0) {
-    return {...initial, settings, sidebar, panels, historyDiff, functions}
+    return {...initial, settings, sidebar, panels, historyDiff, ai, functions}
   }
 
   const activeTabId =
@@ -333,6 +355,7 @@ export function loadVisionState(
     sidebar,
     panels,
     historyDiff,
+    ai,
     functions,
   }
 }

@@ -1009,6 +1009,27 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Toast shown when an opened saved query used a content variant, but this workspace has variants switched off */
   'vision.saved.variants-disabled':
     'This saved query used the "{{variant}}" variant; this workspace has variants switched off, so the query runs without it.',
+  /** Explains the settings that switch Vision's AI features off */
+  'vision.settings.ai.description':
+    "These features write with Sanity Agent Actions and use your organization's AI credits. Switch off the ones you do not want; the choice is saved in this browser.",
+  /** Switch in the settings that turns every AI feature on or off */
+  'vision.settings.ai.enabled': 'Use AI features',
+  /** Switch in the settings for explaining queries with Agent Actions */
+  'vision.settings.ai.explain-query': 'Explain queries',
+  /** Description of the switch for explaining queries with Agent Actions */
+  'vision.settings.ai.explain-query.description':
+    'Explain this to me in the Explain panel. The query plan stays available.',
+  /** Switch in the settings for generating mutations with Agent Actions */
+  'vision.settings.ai.generate-mutations': 'Generate mutations',
+  /** Description of the switch for generating mutations with Agent Actions */
+  'vision.settings.ai.generate-mutations.description':
+    'Generate in the Mutate panel writes mutations from a description.',
+  /** Switch in the settings for generating queries with Agent Actions */
+  'vision.settings.ai.generate-query': 'Generate queries',
+  /** Description of the switch for generating queries with Agent Actions */
+  'vision.settings.ai.generate-query.description': 'Generate writes the query from a description.',
+  /** Title of the settings that switch Vision's AI features off */
+  'vision.settings.ai.title': 'AI features',
   /** Button in the settings dialog that clears the stored state */
   'vision.settings.clear-storage': 'Clear storage',
   /** Confirmation button for clearing the storage */

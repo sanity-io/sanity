@@ -9,6 +9,7 @@ import {
 
 import {queryRunnerMachine, type QueryRunnerRef} from './queryRunnerMachine'
 import {
+  type VisionAiSettings,
   type VisionDialog,
   type VisionDrawer,
   type VisionHistoryDiffSettings,
@@ -43,6 +44,7 @@ export interface VisionContext {
   activeTabId: string
   settings: VisionSettings
   historyDiff: VisionHistoryDiffSettings
+  ai: VisionAiSettings
   /** The functions library, most recently saved first */
   functions: VisionSavedFunction[]
   /** One query runner per open tab, keyed by tab id */
@@ -88,6 +90,7 @@ export type VisionEvent =
   | {type: 'tab.load'; id: string; tab: Omit<VisionTabInit, 'id'>; fetch?: FetchOnOpenSource}
   | {type: 'settings.update'; settings: Partial<VisionSettings>}
   | {type: 'historyDiff.update'; settings: Partial<VisionHistoryDiffSettings>}
+  | {type: 'ai.update'; settings: Partial<VisionAiSettings>}
   /** Saves a function to the library, replacing the one with its id */
   | {type: 'functions.save'; fn: VisionSavedFunction}
   | {type: 'functions.remove'; id: string}
@@ -247,6 +250,7 @@ export const visionMachine = setup({
           activeTabId: fresh.activeTabId,
           settings: fresh.settings,
           historyDiff: fresh.historyDiff,
+          ai: fresh.ai,
           functions: fresh.functions,
           runners: spawnRunners(spawn, fresh.tabs),
           fetchOnOpen: {},
@@ -264,6 +268,7 @@ export const visionMachine = setup({
     activeTabId: input.persisted.activeTabId,
     settings: input.persisted.settings,
     historyDiff: input.persisted.historyDiff,
+    ai: input.persisted.ai,
     functions: input.persisted.functions,
     runners: spawnRunners(spawn, input.persisted.tabs),
     loadRevisions: {},
@@ -360,6 +365,11 @@ export const visionMachine = setup({
     'historyDiff.update': {
       actions: assign({
         historyDiff: ({context, event}) => ({...context.historyDiff, ...event.settings}),
+      }),
+    },
+    'ai.update': {
+      actions: assign({
+        ai: ({context, event}) => ({...context.ai, ...event.settings}),
       }),
     },
     'functions.save': {
@@ -541,6 +551,7 @@ export function selectPersistedState(snapshot: VisionSnapshot): VisionPersistedS
       resultView: selectResultView(snapshot),
     },
     historyDiff: snapshot.context.historyDiff,
+    ai: snapshot.context.ai,
     functions: snapshot.context.functions,
   }
 }
