@@ -77,14 +77,6 @@ export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'has
   previewUrl?: string | null
   ready: boolean
   schemaType: ObjectSchemaType
-  /**
-   * @deprecated not used anymore
-   * */
-  setTimelineMode?: undefined
-  /**
-   * @deprecated not used anymore
-   * */
-  timelineMode?: undefined
   setTimelineRange(since: string | null, rev: string | null): void
   setIsDeleting: (state: boolean) => void
   /**
