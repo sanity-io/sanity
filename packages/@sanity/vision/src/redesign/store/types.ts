@@ -80,13 +80,13 @@ export type VisionPanel = 'params' | 'options'
 /** How the params panel edits the params: their JSON, or a form inferred from the query */
 export type VisionParamsView = 'json' | 'form'
 
-/** How the result shows: a tree to browse, or its JSON as text to select and copy from */
+/** How the result shows: its JSON as text to select and copy from, a tree to browse, or a graph */
 export type VisionResultView = 'tree' | 'json' | 'graph'
 
 /** Whether each collapsible panel is expanded, and how the params and the result show */
 export interface VisionPanelsState extends Record<VisionPanel, boolean> {
   paramsView: VisionParamsView
-  resultView: VisionResultView
+  resultViewer: VisionResultView
 }
 
 /** How the History panel diffs a result with the previous one */

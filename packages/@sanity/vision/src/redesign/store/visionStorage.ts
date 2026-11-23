@@ -13,6 +13,7 @@ import {
   type VisionPanelsState,
   type VisionPersistedState,
   type VisionPerspective,
+  type VisionResultView,
   type VisionSavedFunction,
   type VisionSettings,
   type VisionSidebarState,
@@ -30,7 +31,7 @@ const DEFAULT_PANELS: VisionPanelsState = {
   params: true,
   options: true,
   paramsView: 'json',
-  resultView: 'tree',
+  resultViewer: 'json',
 }
 
 /** Fields that change with every revision, so a diff of them says nothing about the content */
@@ -237,7 +238,7 @@ function sanitizeSidebar(value: unknown): VisionSidebarState {
 
 /**
  * A panel stays expanded unless it was explicitly collapsed, the params show as JSON unless the
- * form was chosen, and the result as a tree unless JSON was; state saved before any of them
+ * form was chosen, and the result as JSON unless another view was; state saved before any of them
  * existed reads that way
  */
 function sanitizePanels(value: unknown): VisionPanelsState {
@@ -246,9 +247,19 @@ function sanitizePanels(value: unknown): VisionPanelsState {
     params: panels.params !== false,
     options: panels.options !== false,
     paramsView: panels.paramsView === 'form' ? 'form' : 'json',
-    resultView:
-      panels.resultView === 'json' || panels.resultView === 'graph' ? panels.resultView : 'tree',
+    resultViewer: sanitizeResultViewer(panels),
   }
+}
+
+/**
+ * State saved before JSON became the default kept the view as `resultView`, written whether or
+ * not it was chosen: its `tree` was the default then, so only `graph` reads as a choice
+ */
+function sanitizeResultViewer(panels: Record<string, unknown>): VisionResultView {
+  if (!('resultViewer' in panels)) return panels.resultView === 'graph' ? 'graph' : 'json'
+  return panels.resultViewer === 'tree' || panels.resultViewer === 'graph'
+    ? panels.resultViewer
+    : 'json'
 }
 
 /** Unique, trimmed paths; state saved before the setting existed hides the default fields */
