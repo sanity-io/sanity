@@ -678,6 +678,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.create-variant.form.target-hint': 'Choose where it goes',
   /** The tooltip of the info button after the "Add to" title in the variant creation form: where the new version goes and when it is published */
   'document-group.create-variant.form.target-info': 'The draft or release this version joins',
+  /** The tooltip of the info button after the "Add to" title in a studio with content releases off */
+  'document-group.create-variant.form.target-info-no-releases': 'The draft this version joins',
+  /** The tooltip of the info button after the "Add to" title in a studio with drafts off, where the new version is published */
+  'document-group.create-variant.form.target-info-published':
+    'Published, or the release this version joins',
+  /** The tooltip of the info button after the "Add to" title in a studio with drafts and content releases off */
+  'document-group.create-variant.form.target-info-published-no-releases':
+    'This version is published',
   /** The accessible name of the info button after the "Add to" title in the variant creation form */
   'document-group.create-variant.form.target-info-label': 'About Add to',
   /** The title of the variant creation form's picker for the draft or release to create the variant in */
