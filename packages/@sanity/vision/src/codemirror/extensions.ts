@@ -9,7 +9,7 @@ import {
   syntaxHighlighting,
 } from '@codemirror/language'
 import {highlightSelectionMatches} from '@codemirror/search'
-import {EditorState, type Extension} from '@codemirror/state'
+import {Compartment, EditorState, type Extension} from '@codemirror/state'
 import {
   drawSelection,
   highlightActiveLine,
@@ -21,6 +21,13 @@ import {
 } from '@codemirror/view'
 import {groq} from '@sanity/lezer-groq'
 
+/**
+ * Holds the undo history, so an editor that shows another document (another tab's query) can
+ * drop the history of the one before it, or bring back the one saved for it, by reconfiguring
+ * this compartment: a state field only starts over when it is taken out of the configuration
+ */
+export const historyCompartment = new Compartment()
+
 const sharedExtensions: Extension[] = [
   lineNumbers(),
   highlightActiveLine(),
@@ -30,7 +37,7 @@ const sharedExtensions: Extension[] = [
   indentOnInput(),
   bracketMatching(),
   closeBrackets(),
-  history(),
+  historyCompartment.of(history()),
   drawSelection(),
   syntaxHighlighting(defaultHighlightStyle, {fallback: true}),
   keymap.of([

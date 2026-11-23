@@ -1,8 +1,10 @@
-import {type Extension} from '@codemirror/state'
+import {history, historyField} from '@codemirror/commands'
+import {type EditorState, type Extension, Transaction} from '@codemirror/state'
 import {type Command, type EditorView} from '@codemirror/view'
 import {rem, useTheme} from '@sanity/ui'
 import CodeMirror, {
   EditorSelection,
+  ExternalChange,
   type ReactCodeMirrorProps,
   type ReactCodeMirrorRef,
 } from '@uiw/react-codemirror'
@@ -12,11 +14,13 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useLayoutEffect,
   useRef,
   useState,
   type RefAttributes,
 } from 'react'
 
+import {historyCompartment} from './extensions'
 import {useCodemirrorTheme} from './useCodemirrorTheme'
 import {getVisibleColumns} from './visibleColumns'
 import * as styles from './VisionCodeMirror.module.css'
@@ -59,6 +63,34 @@ function EditorRoot({
   )
 }
 
+/**
+ * Shows another document in a live view, as if the view had been created for it: the text is
+ * replaced in one step that is kept out of the undo history (and out of `onChange`, like the
+ * value sync of `@uiw/react-codemirror`), and the history field is then taken out of the
+ * configuration and put back, which empties it, or starts it from the one `saved` for this
+ * document when `saved` still reads the same text as `doc` (the document may have been changed
+ * from outside the editor meanwhile, and a history for other text cannot be replayed on it).
+ * The view keeps its configuration, so extensions reconfigured since the state was saved (a
+ * theme, the lint reporting) stay current. The two steps are separate dispatches (one update
+ * carrying both reconfigurations does not settle), both made before the browser paints.
+ */
+function showDocument(view: EditorView, doc: string, saved: EditorState | undefined): void {
+  const restore = saved !== undefined && saved.doc.toString() === doc
+  const savedHistory = restore ? saved.field(historyField, false) : undefined
+  view.dispatch({
+    changes: {from: 0, to: view.state.doc.length, insert: doc},
+    selection: restore ? saved.selection : EditorSelection.cursor(doc.length),
+    annotations: [Transaction.addToHistory.of(false), ExternalChange.of(true)],
+    effects: historyCompartment.reconfigure([]),
+    scrollIntoView: true,
+  })
+  view.dispatch({
+    effects: historyCompartment.reconfigure(
+      savedHistory === undefined ? history() : [history(), historyField.init(() => savedHistory)],
+    ),
+  })
+}
+
 export interface VisionCodeMirrorHandle {
   resetEditorContent: (newContent: string) => void
   /** Edits the document like typing would: undoable, the selection mapped through the edits */
@@ -79,11 +111,20 @@ export function VisionCodeMirror({
   ref,
   onChange,
   initialValue: initialValueProp,
+  stateKey,
   extensions,
   autoHeight = false,
   underHeader = autoHeight,
 }: Pick<ReactCodeMirrorProps, 'onChange'> & {
   initialValue: ReactCodeMirrorProps['value']
+  /**
+   * Names the document the editor shows (a tab id). When it changes, the editor keeps the
+   * document, selection and undo history it had for the previous key, shows the one it kept for
+   * the new key, or `initialValue` with an empty history where it kept none, and does so in the
+   * same view, in the commit that changes it: nothing is torn down and nothing paints empty.
+   * Without a key the editor shows one document for as long as it is mounted.
+   */
+  stateKey?: string
   extensions: Extension[]
   /**
    * Sizes the editor to its document instead of filling its container, for an editor that sits
@@ -109,10 +150,18 @@ export function VisionCodeMirror({
   const [value, setValue] = useState(initialValueProp)
   const [hasView, setHasView] = useState(false)
   const [seenInitialValue, setSeenInitialValue] = useState(initialValueProp)
-  if (initialValueProp !== seenInitialValue) {
+  // Another key means another document: `initialValue` leads again, as it does for a new view
+  const [seenStateKey, setSeenStateKey] = useState(stateKey)
+  const keyChanged = stateKey !== seenStateKey
+  if (keyChanged) {
+    setSeenStateKey(stateKey)
+    setSeenInitialValue(initialValueProp)
+    setValue(initialValueProp)
+  } else if (initialValueProp !== seenInitialValue) {
     setSeenInitialValue(initialValueProp)
     if (!hasView) setValue(initialValueProp)
   }
+  const codeMirrorRef = useRef<ReactCodeMirrorRef>(null)
   const handleCreateEditor = useCallback((view: EditorView) => {
     // A new view draws its gutters before it has read the content's top padding, and only lines
     // them up with the text in its first measure, after the browser has painted: the line numbers
@@ -135,7 +184,6 @@ export function VisionCodeMirror({
   )
   const sanityTheme = useTheme()
   const theme = useCodemirrorTheme(sanityTheme)
-  const codeMirrorRef = useRef<ReactCodeMirrorRef>(null)
 
   const resetEditorContent = useCallback((newContent: string) => {
     // Mirrored first, so a call made while there is no view still reaches the next one
@@ -196,6 +244,28 @@ export function VisionCodeMirror({
     }),
     [resetEditorContent, applyChanges, runCommand, selectRange, getVisibleColumnsOfEditor],
   )
+
+  // The states kept per key, for as long as the editor is mounted (a closed tab's state is a
+  // small immutable value, kept until then). The view is swapped in a layout effect, before the
+  // browser paints the commit that changed the key. Without a view (hidden inside an
+  // `<Activity>` boundary) there is nothing to keep, and the next view is created from `value`,
+  // which the key change has just set.
+  const savedStatesRef = useRef<Map<string, EditorState> | null>(null)
+  const shownStateKeyRef = useRef(stateKey)
+  useLayoutEffect(() => {
+    const previousKey = shownStateKeyRef.current
+    if (previousKey === stateKey) return
+    shownStateKeyRef.current = stateKey
+    const view = codeMirrorRef.current?.view
+    if (!view) return
+    const savedStates = (savedStatesRef.current ??= new Map())
+    if (previousKey !== undefined) savedStates.set(previousKey, view.state)
+    showDocument(
+      view,
+      initialValueProp ?? '',
+      stateKey === undefined ? undefined : savedStates.get(stateKey),
+    )
+  }, [initialValueProp, stateKey])
 
   return (
     <EditorRoot autoHeight={autoHeight} underHeader={underHeader}>
