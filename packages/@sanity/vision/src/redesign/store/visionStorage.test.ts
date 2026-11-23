@@ -141,7 +141,7 @@ describe('visionStorage', () => {
         params: true,
         options: false,
         paramsView: 'form' as const,
-        resultView: 'json' as const,
+        resultViewer: 'tree' as const,
       },
       historyDiff: {hiddenFields: ['_rev', 'meta.version']},
       ai: {enabled: true, generateQuery: false, generateMutations: true, explainQuery: false},
@@ -240,7 +240,7 @@ describe('visionStorage', () => {
     expect(loaded.activeTabId).toBe('dup')
   })
 
-  it('reads state saved before the panels existed as having them expanded, params as JSON, the result as a tree', () => {
+  it('reads state saved before the panels existed as having them expanded, params as JSON, the result as JSON', () => {
     const {panels: _panels, ...withoutPanels} = createInitialState(defaults)
     localStorage.setItem(getVisionStorageKey('proj'), JSON.stringify(withoutPanels))
 
@@ -248,22 +248,38 @@ describe('visionStorage', () => {
       params: true,
       options: true,
       paramsView: 'json',
-      resultView: 'tree',
+      resultViewer: 'json',
     })
 
     localStorage.setItem(
       getVisionStorageKey('proj'),
       JSON.stringify({
         ...withoutPanels,
-        panels: {params: false, paramsView: 'table', resultView: 'chart'},
+        panels: {params: false, paramsView: 'table', resultViewer: 'chart'},
       }),
     )
     expect(loadVisionState('proj', defaults).panels).toEqual({
       params: false,
       options: true,
       paramsView: 'json',
-      resultView: 'tree',
+      resultViewer: 'json',
     })
+  })
+
+  it('shows the result as JSON for state saved while the tree was the default, unless the graph was chosen', () => {
+    const state = createInitialState(defaults)
+    const load = (panels: Record<string, unknown>) => {
+      localStorage.setItem(getVisionStorageKey('proj'), JSON.stringify({...state, panels}))
+      return loadVisionState('proj', defaults).panels.resultViewer
+    }
+    // The tree was written for every session back then, chosen or not
+    expect(load({resultView: 'tree'})).toBe('json')
+    expect(load({resultView: 'json'})).toBe('json')
+    expect(load({resultView: 'graph'})).toBe('graph')
+    // Written since, every view is a choice
+    expect(load({resultViewer: 'tree'})).toBe('tree')
+    expect(load({resultViewer: 'graph'})).toBe('graph')
+    expect(load({resultViewer: 'tree', resultView: 'graph'})).toBe('tree')
   })
 
   it('hides the default fields from history diffs unless others were chosen', () => {

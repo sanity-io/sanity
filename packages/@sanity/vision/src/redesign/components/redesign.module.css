@@ -565,6 +565,8 @@
 /* The copy icon and the checkmark that confirms a copy, stacked and crossfaded */
 .copyGlyphs {
   display: inline-grid;
+  /* Lines the stacked glyphs up with the label, like a lone icon sits in a button's text */
+  vertical-align: middle;
 }
 
 .copyGlyphs > svg {
@@ -580,6 +582,26 @@
   opacity: 0;
   transform: scale(0.9);
   filter: blur(2px);
+}
+
+/*
+ * MenuItem clips its `text` to one line, so the reason a CSV file cannot be built is rendered
+ * as a child of the item. It wraps under the label instead of being cut off, and the child's
+ * own padding would otherwise open a second padded row.
+ */
+.exportCsvUnavailable > span:last-child {
+  display: block;
+  padding-top: 0;
+  overflow: visible;
+  white-space: normal;
+}
+
+.exportUnavailableHint {
+  display: block;
+  overflow: visible;
+  text-overflow: unset;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 /* The bottom bar's buttons respond to the press like `.pressable` above */
