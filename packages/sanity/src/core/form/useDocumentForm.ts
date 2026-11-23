@@ -59,6 +59,7 @@ import {getTargetDocument} from '../util/getTargetDocument'
 import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
 import {type PatchEvent} from './patch/PatchEvent'
+import {resolveStackedVersionScopeId} from './resolveStackedVersionScopeId'
 import {type NodeChronologyProps} from './store/types/nodes'
 import {type StateTree} from './store/types/state'
 import {type FormState, useFormState} from './store/useFormState'
@@ -188,27 +189,24 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const editState = useEditState(documentId, documentType, 'default', targetScopeId)
 
-  // Resolves the first version below the selected release so the form value matches the list preview
-  const stackedVersionScopeId = useMemo(() => {
-    if (!releaseId || isSystemBundle(releaseId)) return undefined
-    if (editState.version) return undefined
+  const selectedReleaseVersion =
+    editState.version && getVersionFromId(editState.version._id) === releaseId
+      ? editState.version
+      : undefined
 
-    const selectedIndex = perspectiveStack.indexOf(releaseId)
-    if (selectedIndex === -1) return undefined
+  const hasSelectedReleaseVersion = Boolean(selectedReleaseVersion)
+  const stackedVersionScopeId = useMemo(
+    () =>
+      resolveStackedVersionScopeId({
+        releaseId,
+        hasSelectedReleaseVersion,
+        perspectiveStack,
+        documentVersionStubs,
+      }),
+    [releaseId, hasSelectedReleaseVersion, perspectiveStack, documentVersionStubs],
+  )
 
-    const isDraftsOrPublished = (perspective: string) =>
-      perspective === 'drafts' || perspective === 'published'
-    const firstStop = perspectiveStack
-      .slice(selectedIndex + 1)
-      .find(
-        (perspective) =>
-          isDraftsOrPublished(perspective) ||
-          documentVersionStubs.some((stub) => stub._system?.bundleId === perspective),
-      )
-    return firstStop && isDraftsOrPublished(firstStop) ? undefined : firstStop
-  }, [releaseId, editState.version, perspectiveStack, documentVersionStubs])
-
-  const stackedEditState = useEditState(documentId, documentType, 'low', stackedVersionScopeId)
+  const stackedEditState = useEditState(documentId, documentType, 'default', stackedVersionScopeId)
 
   const connectionState = useConnectionState(documentId, documentType, targetScopeId)
   useReconnectingToast(connectionState === 'reconnecting')
@@ -230,14 +228,15 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     if (releaseId && !isSystemBundle(releaseId)) {
       // in cases where the current version is going to be unpublished, we need to show the published document
       // this way, instead of showing the version that will stop existing, we show instead the published document with a fall back
-      if (editState.version && isGoingToUnpublish(editState.version)) {
+      if (selectedReleaseVersion && isGoingToUnpublish(selectedReleaseVersion)) {
         return editState.published || baseValue
       }
       return (
-        editState.version ||
+        selectedReleaseVersion ||
         stackedEditState.version ||
         editState.draft ||
         editState.published ||
+        editState.version ||
         baseValue
       )
     }
@@ -266,6 +265,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     editState.draft,
     editState.published,
     editState.version,
+    selectedReleaseVersion,
     stackedEditState.version,
     initialValue,
     releaseId,
@@ -403,6 +403,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const ready =
     connectionState === 'connected' &&
     editState.ready &&
+    (stackedVersionScopeId === undefined || stackedEditState.ready) &&
     !initialValue?.loading &&
     !documentVersionsLoading
 
