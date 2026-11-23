@@ -38,24 +38,11 @@ const VARIANT_METADATA_CORE_FIELDS: FieldDefinition[] = [
     ],
   }),
   defineField({
-    // The keys come from `beta.variants.types`, which the schema can't read, and a definition
-    // without one belongs to the `variant` type.
     name: 'type',
     title: 'Type',
     type: 'string',
-    hidden: true,
   }),
 ]
-
-/**
- * Metadata keys a configured field must not write: the create and edit actions replace the
- * whole metadata object, and these keys already have their own controls.
- *
- * @internal
- */
-export const RESERVED_VARIANT_METADATA_NAMES: ReadonlySet<string> = new Set(
-  VARIANT_METADATA_CORE_FIELDS.map((field) => field.name),
-)
 
 /**
  * The `sanity.variantMetadata` definition. Its `validation` takes anything a field's validation

@@ -39,8 +39,7 @@ const KIND: Record<MetadataKey, string> = {
 
 const FIELD_NAME = /^[A-Za-z][A-Za-z0-9_]*$/
 
-/** @internal */
-export function warnMetadataConfig(path: MetadataConfigPath, key: MetadataKey, message: string) {
+function warnMetadataConfig(path: MetadataConfigPath, key: MetadataKey, message: string) {
   if (process.env.NODE_ENV === 'production') return
   console.warn(`[${path}.${key}] ${message}`)
 }
