@@ -765,6 +765,48 @@ export const reactActivityModeEnabledReducer = ({
   }, initialValue)
 }
 
+export const releaseBackgroundListenersEnabledReducer = ({
+  config,
+  initialValue,
+}: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const flattenedConfig = flattenConfig(config, [])
+
+  return flattenedConfig.reduce<boolean>((value, {config: innerConfig}) => {
+    const releaseBackgroundListeners: unknown = innerConfig.beta?.releaseBackgroundListeners
+
+    if (typeof releaseBackgroundListeners === 'undefined') {
+      return value
+    }
+
+    if (!isRecord(releaseBackgroundListeners)) {
+      throw new Error(
+        `Expected \`beta.releaseBackgroundListeners\` to be an object, but received ${getPrintableType(
+          releaseBackgroundListeners,
+        )}`,
+      )
+    }
+
+    const enabled = releaseBackgroundListeners.enabled
+
+    if (typeof enabled === 'undefined') {
+      return value
+    }
+
+    if (typeof enabled === 'boolean') {
+      return enabled
+    }
+
+    throw new Error(
+      `Expected \`beta.releaseBackgroundListeners.enabled\` to be a boolean, but received ${getPrintableType(
+        enabled,
+      )}`,
+    )
+  }, initialValue)
+}
+
 export const mediaLibraryEnabledReducer = (opts: {
   config: PluginOptions
   initialValue: boolean

@@ -480,7 +480,10 @@ import type {
   LegacyCallbackResult,
   LegacyLayerProvider,
   LegacyThemeTints,
+  LISTENER_PAUSE_GRACE_PERIOD,
   ListenerEvent,
+  listenerGate,
+  ListenerGate,
   listenQuery,
   ListenQueryParams,
   ListPaneNode,
@@ -565,6 +568,8 @@ import type {
   passthroughErrorHandler,
   pathsAreEqual,
   pathToString,
+  pauseWhileDocumentHidden,
+  PauseWhileDocumentHiddenOptions,
   PendingMutationsEvent,
   PerspectiveNotWriteableReason,
   PerspectiveProvider,
@@ -2377,8 +2382,17 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('LegacyThemeTints', () => {
     expectTypeOf<LegacyThemeTints>().not.toBeNever()
   })
+  test('LISTENER_PAUSE_GRACE_PERIOD', () => {
+    expectTypeOf<typeof LISTENER_PAUSE_GRACE_PERIOD>().not.toBeNever()
+  })
   test('ListenerEvent', () => {
     expectTypeOf<ListenerEvent>().not.toBeNever()
+  })
+  test('listenerGate', () => {
+    expectTypeOf<typeof listenerGate>().not.toBeNever()
+  })
+  test('ListenerGate', () => {
+    expectTypeOf<ListenerGate>().toBeObject()
   })
   test('listenQuery', () => {
     expectTypeOf<typeof listenQuery>().toBeFunction()
@@ -2631,6 +2645,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('pathToString', () => {
     expectTypeOf<typeof pathToString>().toBeFunction()
+  })
+  test('pauseWhileDocumentHidden', () => {
+    expectTypeOf<typeof pauseWhileDocumentHidden>().not.toBeNever()
+  })
+  test('PauseWhileDocumentHiddenOptions', () => {
+    expectTypeOf<PauseWhileDocumentHiddenOptions<any>>().toBeObject()
   })
   test('PendingMutationsEvent', () => {
     expectTypeOf<PendingMutationsEvent>().toBeObject()

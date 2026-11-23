@@ -942,6 +942,90 @@ describe('beta react activity mode config', () => {
   })
 })
 
+describe('beta release background listeners config', () => {
+  const projectId = 'ppsg7ml5'
+  const dataset = 'production'
+
+  it('defaults to false', async () => {
+    const source = await createSourceFromConfig({projectId, dataset})
+
+    expect(source.beta?.releaseBackgroundListeners?.enabled).toBe(false)
+  })
+
+  it('resolves from root config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {releaseBackgroundListeners: {enabled: true}},
+    })
+
+    expect(source.beta?.releaseBackgroundListeners?.enabled).toBe(true)
+  })
+
+  it('resolves from plugin config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-release-background-listeners',
+          beta: {releaseBackgroundListeners: {enabled: true}},
+        })(),
+      ],
+    })
+
+    expect(source.beta?.releaseBackgroundListeners?.enabled).toBe(true)
+  })
+
+  it('lets root config override plugin config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      plugins: [
+        definePlugin({
+          name: 'sanity/beta-release-background-listeners',
+          beta: {releaseBackgroundListeners: {enabled: true}},
+        })(),
+      ],
+      beta: {releaseBackgroundListeners: {enabled: false}},
+    })
+
+    expect(source.beta?.releaseBackgroundListeners?.enabled).toBe(false)
+  })
+
+  it('throws when the namespace is not an object', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          // @ts-expect-error should be an object
+          releaseBackgroundListeners: true,
+        },
+      }),
+    ).rejects.toThrow(
+      'Expected `beta.releaseBackgroundListeners` to be an object, but received boolean',
+    )
+  })
+
+  it('throws when enabled is not a boolean', async () => {
+    await expect(
+      createSourceFromConfig({
+        projectId,
+        dataset,
+        beta: {
+          releaseBackgroundListeners: {
+            // @ts-expect-error should be a boolean
+            enabled: 'yes',
+          },
+        },
+      }),
+    ).rejects.toThrow(
+      'Expected `beta.releaseBackgroundListeners.enabled` to be a boolean, but received string',
+    )
+  })
+})
+
 describe('search strategy selection', () => {
   const projectId = 'ppsg7ml5'
   const dataset = 'production'

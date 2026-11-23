@@ -768,6 +768,13 @@ export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
 // oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
 export {
+  LISTENER_PAUSE_GRACE_PERIOD,
+  type ListenerGate,
+  listenerGate,
+  pauseWhileDocumentHidden,
+  type PauseWhileDocumentHiddenOptions,
+} from '../core/store/listenerGate/listenerGate'
+export {
   useStudioPreference,
   useStudioPreferenceList,
 } from '../core/store/preferences/useStudioPreference'

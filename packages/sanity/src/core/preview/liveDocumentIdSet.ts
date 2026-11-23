@@ -1,9 +1,10 @@
-import {type QueryParams, type SanityClient} from '@sanity/client'
+import {type QueryParams, type ReconnectEvent, type SanityClient} from '@sanity/client'
 import sortedIndex from 'lodash-es/sortedIndex.js'
 import {of} from 'rxjs'
 import {distinctUntilChanged, filter, map, mergeMap, scan, tap} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../config/types'
+import {pauseWhileDocumentHidden} from '../store/listenerGate/listenerGate'
 import {versionedClient} from '../studioClient'
 import {retryTransientFetch} from '../util/fetchErrors'
 import {reconnectListener} from '../util/reconnectListener'
@@ -55,6 +56,7 @@ export function createDocumentIdSetObserver(client: SanityClient) {
       })
       .pipe(
         reconnectListener(),
+        pauseWhileDocumentHidden({onPause: (): ReconnectEvent => ({type: 'reconnect'})}),
         mergeMap((event, index) => {
           const live = event.type === 'welcome'
           // A reconnect before welcome: the listener is down before it delivered anything, so the
