@@ -499,7 +499,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.webmcp.preview-mutations': 'Preview mutations in Vision',
   /** Title the browser shows for the WebMCP tool that runs a query */
   'vision.webmcp.run-query': 'Run a GROQ query in Vision',
-  /** Badge shown while a tab refetches automatically */
+  /**
+   * Badge shown while a tab refetches automatically
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.live.active': 'Live',
   /** Button in the request column's action bar that fetches and then refetches automatically */
   'vision.live.button': 'Live fetch',
