@@ -481,7 +481,12 @@ function percentile(sorted: number[], fraction: number): number {
   return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * fraction))] ?? 0
 }
 
-/** Records how long every `/data/query` request took, answered by the store or by Content Lake. */
+/**
+ * Records how long every `/data/query` request to the API took, answered by the store or by Content
+ * Lake. API CDN requests (`*.apicdn.sanity.io`) are left out on purpose: the service worker never
+ * routes them to a store, so they take as long with the store on as off and would only blur the
+ * comparison this sample is for.
+ */
 function observeQueryLatency(): void {
   if (typeof PerformanceObserver === 'undefined') return
   const observer = new PerformanceObserver((list) => {
