@@ -2268,6 +2268,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'release.navbar.drafts': 'Drafts',
   /** Placeholder for the releases perspective filter. */
   'release.navbar.filter-placeholder': 'Search versions and releases…',
+  /** Placeholder for the perspective filter in a studio with content releases off, where the menu lists no releases. */
+  'release.navbar.filter-placeholder-no-releases': 'Search versions…',
   /**
    * Accessible name for the chevron that opens the releases menu
    * @deprecated no longer in use
