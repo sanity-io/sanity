@@ -8,11 +8,9 @@ import {type Workspace, type WorkspaceOptions} from '../../config/types'
 import {
   createEmptyDeprecatedConfigFlags,
   type DeprecatedConfigFlags,
-  detectDeprecatedLegacyThemeOptions,
   detectDeprecatedPresentationOptions,
   detectDeprecatedRawConfigOptions,
   detectDeprecatedSchemaOptions,
-  detectDeprecatedThemeOptions,
 } from './deprecatedConfigDetection'
 
 interface WorkspaceFeaturesObservedInfo {
@@ -108,22 +106,13 @@ export function collectDeprecatedConfigFlags(workspace: Workspace): DeprecatedCo
   // At runtime this includes workspace-level fields even though typed as SourceOptions
   const rawConfig = workspace.__internal.options as WorkspaceOptions
 
-  // Detect deprecated raw config options (logo, beta.create, beta.form.enhancedObjectDialog, etc.)
+  // Detect deprecated raw config options (logo, studio.components.logo)
   Object.assign(flags, detectDeprecatedRawConfigOptions(rawConfig))
 
-  // Detect deprecated theme options (avatar, button, container, etc.)
-  const theme = rawConfig.theme
-  if (theme && typeof theme === 'object') {
-    Object.assign(flags, detectDeprecatedThemeOptions(theme))
-    // Detect deprecated buildLegacyTheme options (--screen-*-break keys)
-    // These are stored on the theme object by buildLegacyTheme
-    Object.assign(flags, detectDeprecatedLegacyThemeOptions(theme))
-  }
-
-  // Detect deprecated presentation tool options (check, disable, unstable_showUnsafeShareUrl)
+  // Detect deprecated presentation tool options (previewMode check, disable)
   Object.assign(flags, detectDeprecatedPresentationOptions(workspace.tools))
 
-  // Detect deprecated schema options (array direction/treeEditing, cross-dataset __experimental_search)
+  // Detect deprecated schema options (array direction)
   Object.assign(flags, detectDeprecatedSchemaOptions(workspace.schema))
 
   return flags
