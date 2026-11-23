@@ -60,6 +60,23 @@ export function useFocusSearchOnOpen(): (element: HTMLInputElement | null) => ((
       forward(event.key === 'ArrowDown' ? 'End' : 'Home')
       forward(event.key)
       forwarding = false
+      // When the menu's active item already was that end row, the two keys leave its state
+      // unchanged and the menu does not move the focus: the field then hands it over itself, once
+      // the menu has had its frame to focus.
+      const toFirst = event.key === 'ArrowDown'
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (element.ownerDocument.activeElement !== element) return
+          const items = [
+            ...(element
+              .closest('[data-ui="Menu"]')
+              ?.querySelectorAll<HTMLElement>(
+                '[data-ui="MenuItem"]:not([disabled]):not([data-disabled="true"])',
+              ) ?? []),
+          ]
+          items[toFirst ? 0 : items.length - 1]?.focus()
+        })
+      })
     }
     element.addEventListener('keydown', handleKeyDown)
 
