@@ -2316,18 +2316,20 @@ describe('VisionRedesign', () => {
     fireEvent.click(screen.getByTestId('vision-prettify'))
 
     const narrow = [
-      '*[_type == "author"',
-      '  && name match $q] {',
+      '*[',
+      '  _type == "author"',
+      '  && name match $q',
+      '] {',
       '  _id,',
       '  name,',
-      '  "posts": *[references(^._id)] {',
-      '    title',
-      '  }',
+      '  "posts": *[',
+      '    references(^._id)',
+      '  ] { title }',
       '}',
     ].join('\n')
     await waitFor(() => expect(getQueryEditor().value).toBe(narrow))
-    // Measured for the query's one line, then for the 7 lines of the first pass and the 8 of the second
-    expect(widthsAsked).toEqual([1, 7, 8])
+    // Measured for the query's one line, then for the 7 lines of the first pass and the 10 of the second
+    expect(widthsAsked).toEqual([1, 7, 10])
 
     typeQuery('*[_type == "author"')
     fireEvent.click(screen.getByTestId('vision-query-menu-button'))

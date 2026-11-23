@@ -40,11 +40,13 @@ describe('formatQueryForDiff', () => {
       ),
     ).toBe(
       [
-        '*[_type == "post"',
-        '  && defined(slug.current)]',
-        '  | order(_createdAt desc)[0...$limit] {',
+        '*[',
+        '  _type',
+        '    == "post"',
+        '  && defined(slug.current)',
+        '] | order(_createdAt desc)[0...$limit] {',
         '  _id,',
-        '  author-> {',
+        '  author->{',
         '    name',
         '  }',
         '}',
@@ -55,7 +57,7 @@ describe('formatQueryForDiff', () => {
 
   it('keeps comments', async () => {
     expect(await formatQueryForDiff('// authors\n*[_type == "author"]{name}')).toBe(
-      '// authors\n*[_type == "author"] {\n  name\n}\n',
+      '// authors\n*[\n  _type\n    == "author"\n] {\n  name\n}\n',
     )
   })
 

@@ -273,7 +273,7 @@ describe('HistoryTab', () => {
     expect(await diffedTexts(query)).toEqual({
       lang: 'text',
       previous: '*\n',
-      next: '*[_type == $type]\n',
+      next: '*[\n  _type\n    == $type\n]\n',
     })
     expect(await diffedTexts(within(changes).getByTestId('vision-history-diff-params'))).toEqual({
       lang: 'json',
@@ -309,8 +309,8 @@ describe('HistoryTab', () => {
       await diffedTexts(await within(latest).findByTestId('vision-history-diff-query')),
     ).toEqual({
       lang: 'text',
-      previous: '*[_type == "author"] {\n  _id,\n  name\n}\n',
-      next: '*[_type == "author"] {\n  _id,\n  name,\n  bio\n}\n',
+      previous: '*[\n  _type\n    == "author"\n] {\n  _id,\n  name\n}\n',
+      next: '*[\n  _type\n    == "author"\n] {\n  _id,\n  name,\n  bio\n}\n',
     })
   })
 
