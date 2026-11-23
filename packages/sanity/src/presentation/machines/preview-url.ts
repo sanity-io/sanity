@@ -25,6 +25,11 @@ interface Context {
   previewAccessSharingUpdatePermission: PermissionCheckResult | null
   previewUrlSecretPermission: PermissionCheckResult | null
   previewMode: PreviewUrlPreviewMode | null
+  /**
+   * Preview mode is configured, but the current user can neither create a preview URL secret nor
+   * read a shared one, so the preview loads without preview mode
+   */
+  missingPreviewSecretAccess: boolean
 }
 
 type SetPreviewSearchParamEvent = {
@@ -49,6 +54,12 @@ export const previewUrlSecretDocument = {
   _type: schemaType,
 }
 
+function isPermissionDeniedError(error: unknown): boolean {
+  return (
+    typeof error === 'object' && error !== null && 'statusCode' in error && error.statusCode === 403
+  )
+}
+
 export const previewUrlMachine = setup({
   types: {} as {
     context: Context
@@ -58,8 +69,14 @@ export const previewUrlMachine = setup({
   },
   actions: {
     'notify preview will likely fail': log(
-      `Missing permissions to create preview secret, or read shared preview secret. Preview will likely fail loading.`,
+      `Missing permissions to create a preview secret, and no shared preview secret is available. The preview loads without preview mode.`,
     ),
+    'assign missing preview secret access': assign({
+      previewUrl: ({context}) => context.initialUrl,
+      previewMode: null,
+      previewUrlSecret: null,
+      missingPreviewSecretAccess: true,
+    }),
     'assign preview search param': assign({
       previewSearchParam: (_, params: {previewSearchParam: string | null}) =>
         params.previewSearchParam,
@@ -148,6 +165,9 @@ export const previewUrlMachine = setup({
         return false
       }
     },
+    'is permission denied error': (_, params: {error: unknown}) =>
+      isPermissionDeniedError(params.error),
+    'has shared secret': (_, params: {secret: string | null}) => Boolean(params.secret),
     'can create preview secret': ({context}) => {
       return context.previewUrlSecretPermission?.granted === true
     },
@@ -200,6 +220,7 @@ export const previewUrlMachine = setup({
     previewAccessSharingUpdatePermission: null,
     previewUrlSecretPermission: null,
     previewMode: null,
+    missingPreviewSecretAccess: false,
   }),
 
   invoke: [
@@ -427,14 +448,7 @@ export const previewUrlMachine = setup({
               type: 'has preview mode without permissions',
               params: ({event}) => event.output,
             },
-            actions: [
-              assign({
-                previewUrl: ({context}) => context.initialUrl,
-                previewMode: null,
-                previewUrlSecret: null,
-              }),
-              'notify preview will likely fail',
-            ],
+            actions: ['assign missing preview secret access', 'notify preview will likely fail'],
             target: 'success',
           },
           {
@@ -442,6 +456,7 @@ export const previewUrlMachine = setup({
               previewUrl: ({context}) => context.initialUrl,
               previewMode: null,
               previewUrlSecret: null,
+              missingPreviewSecretAccess: false,
             }),
             target: 'success',
           },
@@ -451,6 +466,7 @@ export const previewUrlMachine = setup({
     },
 
     success: {
+      id: 'previewUrlResolved',
       on: {
         'set preview search param': {
           guard: 'search param has new origin',
@@ -481,16 +497,30 @@ export const previewUrlMachine = setup({
         createPreviewSecret: {
           invoke: {
             src: 'create preview secret',
-            onError: {
-              target: 'error',
-              actions: {
-                type: 'assign error',
-                params: ({event}) => ({
-                  message: 'Failed to create preview secret',
-                  error: event.error,
-                }),
+            onError: [
+              {
+                // The grants check can allow what the API then rejects, for example with custom roles
+                guard: {
+                  type: 'is permission denied error',
+                  params: ({event}) => ({error: event.error}),
+                },
+                actions: [
+                  'assign missing preview secret access',
+                  'notify preview will likely fail',
+                ],
+                target: '#previewUrlResolved',
               },
-            },
+              {
+                target: 'error',
+                actions: {
+                  type: 'assign error',
+                  params: ({event}) => ({
+                    message: 'Failed to create preview secret',
+                    error: event.error,
+                  }),
+                },
+              },
+            ],
             onDone: {
               target: 'resolvePreviewUrl',
               actions: assign({previewUrlSecret: ({event}) => event.output}),
@@ -501,25 +531,52 @@ export const previewUrlMachine = setup({
         readShareAccess: {
           invoke: {
             src: 'read shared preview secret',
-            onError: {
-              target: 'error',
-              actions: {
-                type: 'assign error',
-                params: ({event}) => ({
-                  message: 'Failed to read shared preview secret',
-                  error: event.error,
+            onError: [
+              {
+                guard: {
+                  type: 'is permission denied error',
+                  params: ({event}) => ({error: event.error}),
+                },
+                actions: [
+                  'assign missing preview secret access',
+                  'notify preview will likely fail',
+                ],
+                target: '#previewUrlResolved',
+              },
+              {
+                target: 'error',
+                actions: {
+                  type: 'assign error',
+                  params: ({event}) => ({
+                    message: 'Failed to read shared preview secret',
+                    error: event.error,
+                  }),
+                },
+              },
+            ],
+            onDone: [
+              {
+                guard: {
+                  type: 'has shared secret',
+                  params: ({event}) => ({secret: event.output}),
+                },
+                target: 'resolvePreviewUrl',
+                actions: assign({
+                  previewUrlSecret: ({event}) => ({
+                    secret: event.output!,
+                    expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 60 * 24),
+                  }),
                 }),
               },
-            },
-            onDone: {
-              target: 'resolvePreviewUrl',
-              actions: assign({
-                previewUrlSecret: ({event}) => ({
-                  secret: event.output!,
-                  expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 60 * 24),
-                }),
-              }),
-            },
+              {
+                // Sharing is turned off, so there is no secret to enable preview mode with
+                actions: [
+                  'assign missing preview secret access',
+                  'notify preview will likely fail',
+                ],
+                target: '#previewUrlResolved',
+              },
+            ],
           },
           tags: ['busy'],
         },
@@ -543,7 +600,10 @@ export const previewUrlMachine = setup({
             },
             onDone: {
               target: 'success',
-              actions: assign({previewUrl: ({event}) => event.output}),
+              actions: assign({
+                previewUrl: ({event}) => event.output,
+                missingPreviewSecretAccess: false,
+              }),
             },
           },
           tags: ['busy'],

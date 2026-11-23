@@ -1,7 +1,6 @@
-import {useSortable} from '@dnd-kit/sortable'
 import {DragHandleIcon} from '@sanity/icons/DragHandle'
 import {use} from 'react'
-import {SortableItemIdContext} from 'sanity/_singletons'
+import {SortableItemHandleContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 
 import {Button, type ButtonProps} from '../../../../../ui-components/button/Button'
@@ -34,13 +33,14 @@ interface DragHandleProps {
 }
 
 export const DragHandle = function DragHandle(props: DragHandleProps) {
-  const id = use(SortableItemIdContext)!
+  const handle = use(SortableItemHandleContext)
   const {mode = 'bleed', readOnly, ...rest} = props
-  const {listeners, attributes} = useSortable({id, disabled: readOnly})
   const {t} = useTranslation()
+  const activator = readOnly ? null : handle
 
   return (
     <DragHandleButton
+      ref={activator?.setActivatorNodeRef}
       icon={DragHandleIcon}
       tooltipProps={{
         content: t('inputs.array.action.drag.tooltip'),
@@ -50,8 +50,8 @@ export const DragHandle = function DragHandle(props: DragHandleProps) {
       mode={mode}
       data-ui="DragHandleButton"
       {...rest}
-      {...attributes}
-      {...listeners}
+      {...activator?.attributes}
+      {...activator?.listeners}
       disabled={readOnly}
     />
   )

@@ -189,6 +189,9 @@ export {
   type AuthProvider,
   type CookielessCompatibleLoginMethod,
   type LoginMethod,
+  type OAuthAuthConfig,
+  type OAuthConfig,
+  type LegacyAuthConfig,
 } from '../core/config/auth/types'
 export {type ConfigPropertyErrorOptions} from '../core/config/ConfigPropertyError'
 export {type ConfigResolutionErrorOptions} from '../core/config/ConfigResolutionError'
@@ -302,6 +305,7 @@ export {
   type PluginOptions,
   type PreparedConfig,
   type ReleaseActionsResolver,
+  type ReleaseMetadataConfig,
   type ResolveProductionUrlContext,
   type SanityFormConfig,
   type ScheduledPublishingPluginOptions,
@@ -770,6 +774,7 @@ export {
   type UserWithPermission,
   useUserListWithPermissions,
 } from '../core/hooks/useUserListWithPermissions'
+// oxlint-disable-next-line no-deprecated -- only the boolean overload is deprecated
 export {useValidationStatus} from '../core/hooks/useValidationStatus'
 export {useWorkspaceSchemaId} from '../core/hooks/useWorkspaceSchemaId'
 export {type StudioLocaleResourceKeys} from '../core/i18n/bundles/studio'
@@ -881,6 +886,7 @@ export {useDocumentVersionTypeSortedList} from '../core/releases/hooks/useDocume
 export {useIsReleaseActive} from '../core/releases/hooks/useIsReleaseActive'
 export {useOnlyHasVersions} from '../core/releases/hooks/useOnlyHasVersions'
 export {sortReleases} from '../core/releases/hooks/utils'
+export {RELEASE_DOCUMENT_TYPE} from '../core/releases/store/constants'
 export {type VersionInfoDocumentStub} from '../core/releases/store/types'
 export {useActiveReleases} from '../core/releases/store/useActiveReleases'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -925,6 +931,8 @@ export {
   type AuthStore,
   type HandleCallbackResult,
   type LoginComponentProps,
+  type OAuthCallbackResult,
+  type LegacyCallbackResult,
 } from '../core/store/auth/types'
 export {
   type ConnectedStatus,
@@ -940,6 +948,7 @@ export {
   useDocumentStore,
   useGrantsStore,
   useHistoryStore,
+  // oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
   useKeyValueStore,
   usePresenceStore,
   useProjectStore,
@@ -1008,6 +1017,7 @@ export {
 } from '../core/store/document/initialValue/types'
 export {type ListenQueryOptions, type ListenQueryParams} from '../core/store/document/listenQuery'
 export {
+  type DocumentPairPermissionsListener,
   type DocumentPairTarget,
   type IdPair,
   type MutationEvent,
@@ -1094,7 +1104,9 @@ export {
   useTimelineStore,
 } from '../core/store/history/useTimelineStore'
 /* oxlint-enable no-deprecated */
+/* oxlint-disable no-deprecated -- the key-value store types stay exported while deprecated, until their removal lands */
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
+/* oxlint-enable no-deprecated */
 export {type PresenceStore} from '../core/store/presence/presence-store'
 export {
   type DocumentPresence,

@@ -1,3 +1,5 @@
+NEVER DISCLOSE ANY CUSTOMER-IDENTIFYING INFORMATION IN PULL REQUESTS. NOT IN CODE, NOT IN TESTS OR FIXTURES, NOT IN COMMENTS, NOT IN COMMIT MESSAGES, NOT IN PR TITLES OR DESCRIPTIONS, NOT IN CHANGESETS OR DOCS. ALWAYS SCRUB CUSTOMER NAMES, ORGANIZATION NAMES, PROJECT IDS, DATASET NAMES, DOMAINS, PEOPLE'S NAMES, AND CUSTOMER-SPECIFIC SCHEMA OR FIELD NAMES. DESCRIBE THE PROBLEM GENERICALLY. REFERENCING A TICKET BY ITS ID OR LINK (E.G. A LINEAR ISSUE LIKE PS-1264) OR SAYING IT CAME FROM SLACK IS FINE.
+
 # AGENTS.md - AI Agent Guidelines for Sanity Monorepo
 
 This document helps AI agents work successfully with the Sanity monorepo.
@@ -453,7 +455,7 @@ pnpm engine-confidence unit                              # the package's unit te
 
 - **Run it in a disposable checkout.** Stryker's in-place mode rewrites the tier-1 sources until it finishes, and the catalogue applies patches to real sources. A killed run leaves them mutated; the next run refuses a dirty tree. Recover with `git checkout -- packages/sanity/src packages/@sanity/mutator/src`. Run the two Stryker targets one after the other, never at once.
 - **Local recipe:** `pnpm build`, then `stryker --target mutator --full`, `stryker --target sanity --full`, `catalogue`, `score`, and `store reports/engine-confidence-run.json --dry-run` (`pnpm engine-confidence` runs from `engine-confidence/`, so paths are relative to it). `git status --short packages/` must be empty afterwards.
-- **`config.version` is the series-break marker.** Any change to `config.json`, `tier1.json`, `exclusions.json`, `engine-confidence/stryker/`, the vitest-runner patch (it works around a runner bug where tests inside a `describe` never run against a mutant under Vitest 5) or the four `@stryker-mutator/*` specifiers changes the pinned hash. Run `pin` and commit the result; a unit test fails on the pull request when the hash is stale. Catalogue growth is not hashed.
+- **`config.version` is the series-break marker.** Any change to `config.json`, `tier1.json`, `exclusions.json`, `engine-confidence/stryker/`, or the four `@stryker-mutator/*` specifiers changes the pinned hash. `@stryker-mutator/vitest-runner@10.1.1` includes the Vitest 5 test-name separator fix, so there is no runner patch in the hash. Run `pin` and commit the result; a unit test fails on the pull request when the hash is stale. Catalogue growth is not hashed.
 - **Workflows.** `Engine confidence` (`.github/workflows/engine-confidence.yml`) runs Thursdays 03:00 UTC on `main` only, plus manual dispatch, and stores one document per ISO week. It never runs on pull requests, and only its `store` job holds `RADAR_SANITY_WRITE_TOKEN`. `Engine confidence catalogue` (`.github/workflows/engine-confidence-catalogue.yml`) runs on pull requests that touch engine files or the catalogue and checks that every patch still applies. It is not a required check.
 - **The exclusion register** (`engine-confidence/exclusions.json`) holds reviewed mutants that no test could ever catch. `score` exits 8 when an entry is stale (matches no mutant) or matches a mutant a test detected; fix the entry, never the check. Unreachable code and assumption-based equivalence do not qualify. The README has the rules.
 - **Refreshing a patch the PR check flagged:** rebase the patch onto the changed engine code, confirm with `git apply --check`, then run `catalogue --only <id>` to confirm the verdict. `engine-confidence/README.md` has the steps.
@@ -474,6 +476,7 @@ pnpm vitest run --project=sanity packages/sanity/src/core/store/document/sync/
 - A test for a known, unfixed bug asserts the correct behaviour and is marked `test.fails`, and the PR that fixes the bug changes it to `test`. Never assert a bug's current behaviour as correct.
 - Test names start with a provisional id (`ARR-`, `LSN-`, `CMT-`, `OPS-`), which would be mapped onto the collaborative editing scenario list once it exists.
 - The store's memo caches key on token and dataset, so every world gets a fresh dataset and every client its own token. A test that reuses a dataset reads another test's cached pair.
+- Every client of a world runs on one page, with the listener gate enabled (see [Listeners: pause in hidden tabs](#listeners-pause-in-hidden-tabs)). The `setDocumentVisibility` step (`visibility: 'hidden'` or `'visible'`) hides and shows it, `createWorld(definition, {initialDocumentVisibility: 'hidden'})` opens it in a background tab, `world.listenersActive()` reads the gate, and `lake.openListeners(clientId)` / `lake.openedListeners(clientId)` count connections. Hiding the page pauses every client at once and a pending mutation holds them all, so an edit made while a client is paused comes from `outside`.
 
 ### E2E Tests (Token Required)
 
@@ -834,6 +837,43 @@ every effect cleanup in the subtree and showing runs the effects again, without 
   own `useContentSize`, which observes afresh on every effect run; the fix belongs in `@sanity/ui`.
 - Hidden content keeps `display: none` on its topmost host nodes only, and portals under the
   boundary are hidden too (`hideOrUnhideNearestPortals`); descendants report their own `display`.
+
+### Listeners: pause in hidden tabs
+
+Browsers cap the connections a site can hold open, and every Studio tab shares the cap. With
+`beta.releaseBackgroundListeners`, a page hidden for `LISTENER_PAUSE_GRACE_PERIOD` (30 s) closes
+its listener connections and a page opened in the background connects nothing until it is first
+shown. The gate is `core/store/listenerGate/listenerGate.ts`, a page-level singleton that
+`ListenerGateController` (`core/studio/listenerGate/`, mounted in `StudioProvider`) turns on for
+the active workspace from a layout effect, before any listener subscribes.
+
+- **Every long-lived connection goes through `pauseWhileDocumentHidden()`** (`client.listen`,
+  `client.observable.listen`, `client.live.events`, `client.collaboration.comments.listen`).
+  Code in `src/core` imports it relatively, `src/structure` and `src/presentation` from
+  `'sanity'` (it is `@internal`). Explicit user actions, like Vision's listen mode and the
+  diagnostics' listen test, stay ungated.
+- **Put it where a fresh subscription resyncs the consumer.** A resume is a new subscription,
+  so its first event is the new connection's `welcome`. Gate the raw listener when the consumer
+  refetches on every `welcome` (`getPairListener`, `listenSearchQuery`), or the whole stream when
+  it only fetches on the first one (`listenQuery`, which uses `welcome$.pipe(take(1))`).
+- **Tell the consumer what it missed.** `onPause` emits a value when the connection closes,
+  usually `{type: 'reconnect'}` for a consumer that already treats a dropped connection that way
+  (the pair, the comments and tasks stores). `onResume` emits one before the events of any
+  connection made after a pause, for a consumer that fetches when it subscribes and resyncs only
+  on a reset (`useLiveEvents`, the shared-secret watcher, `SharePreviewMenu`). It also fires on
+  the first connection of a subscription made while paused (a page opened in the background),
+  since that consumer's initial fetch may be stale by the time the page is shown. `onPause` does
+  not fire for a listener that never connected.
+- **A pending mutation holds every listener open.** `checkoutPair` acquires
+  `listenerGate.acquireHold()` while the pair is not consistent, because commits are confirmed
+  by the listener. Any other code that needs its listener to finish something calls the same API.
+- **Testing:** stub visibility with `stubDocumentVisibility()` (`test/testUtils/documentVisibility.ts`),
+  turn the gate on with `releaseListenerGate = listenerGate.enable()` (and call the release in
+  `afterEach`; enabling is reference-counted like holds, so a missed release leaks pausing into
+  later tests), and use fake
+  timers for the grace period. In a browser or e2e run, the `_sanity_listenerPauseGracePeriod`
+  `localStorage` key overrides the grace period in milliseconds
+  (`e2e/tests/listeners/pauseWhenDocumentHidden.spec.ts`).
 
 ### Refs: use `props.ref`, not `forwardRef`
 
@@ -1694,8 +1734,8 @@ No Docker, databases, or other local services are required for unit tests, lint,
 ### Gotchas
 
 - **Root `typescript` is TypeScript 7.** Catalog `typescript` (^7) is a normal root dependency and provides the native `tsc` binary for vitest typecheck (`*.test-d.*`) and for tsdown `dts: {tsgo: true}` (packages also declare catalog `typescript`). CI type checking of application code is owned by oxlint (`options.typeCheck`). Tools that still need the TypeScript 6 compiler API keep that isolated: `@repo/typedoc` (typedoc) and `@repo/test-dts-exports` (ts-morph) depend on `typescript` aliased to `@typescript/typescript6`. The old symlink workaround for a missing root `tsc` is no longer needed.
-- **Dev studio auth for cloud agents — use the `STUDIO_AUTH_TOKEN` secret, not interactive login.** `pnpm dev` runs `sanity dev --no-auto-updates` (non-interactive, no upgrade prompt) and serves the app at `http://localhost:3333`. The test studio connects to Sanity Cloud (project `ppsg7ml5`); its default workspace is `/test`. Without auth the workspaces show "Signed out" / "Choose login provider". To authenticate, put the injected `STUDIO_AUTH_TOKEN` in the URL hash — Sanity consumes it on load and strips it from the address bar:
-  - Build the URL: `node -e "console.log('http://localhost:3333/test#token=' + encodeURIComponent(process.env.STUDIO_AUTH_TOKEN))"` (any workspace basePath works, e.g. `/test`).
+- **Dev studio auth for cloud agents — use the `STUDIO_AUTH_TOKEN` secret, not interactive login.** `pnpm dev` runs `sanity dev --no-auto-updates` (non-interactive, no upgrade prompt) and serves the app at `http://localhost:3333`. The test studio connects to Sanity Cloud (project `ppsg7ml5`); its default workspace is `/test-oauth`, which signs in with OAuth and ignores `#token=`, so use `/test` (the same workspace with the legacy sign-in). Without auth the workspaces show "Signed out" / "Choose login provider". To authenticate, put the injected `STUDIO_AUTH_TOKEN` in the URL hash — Sanity consumes it on load and strips it from the address bar:
+  - Build the URL: `node -e "console.log('http://localhost:3333/test#token=' + encodeURIComponent(process.env.STUDIO_AUTH_TOKEN))"` (any workspace basePath works except the OAuth ones, `/test-oauth` and `/oauth`).
   - Because the Read tool redacts the token, you cannot paste the URL into browser instructions directly. A reliable trick is a tiny local HTTP server that reads `STUDIO_AUTH_TOKEN` from env and serves an HTML page doing `location.replace(<studio-url-with-token>)`, then point the browser at that server (keeps the secret out of prompts/screenshots). After load you land authenticated in the workspace and can create/publish documents (e.g. an `Author`).
   - Most changes should still be verified with `pnpm build && pnpm test` (no auth needed); only use the studio for visual/manual verification.
 - **`sanity dev` needs the packages built first, even though studio sources resolve from `src/`.** The CLI loads `sanity.cli.ts` without the `monorepo` export condition, so its `sanity/cli` import resolves to `packages/sanity/lib/cli.js`; on an unbuilt checkout every dev studio exits with `CLI config cannot be loaded … Cannot find module '…/sanity/lib/cli.js'`. Build once (see the Node version and turbo `Exec format error` notes below), then restart `sanity dev`.
@@ -1768,7 +1808,7 @@ The e2e suite runs against the staging project `ittbm412` (see `.env.example`) o
    cd e2e && pnpm exec playwright test --project=chromium tests/navbar/search.spec.ts --retries=0
    ```
 
-   Keep `--retries=0` so a flake stays visible, and add `--repeat-each=N` when chasing one. `--project=firefox` runs the other browser CI uses. CI gives each browser its own dataset through `SANITY_E2E_DATASET_CHROMIUM` / `SANITY_E2E_DATASET_FIREFOX`; both fall back to `SANITY_E2E_DATASET`, so run one project at a time unless you create a dataset per browser — specs that touch per-user state (key-value keys such as recent searches or sort orders) otherwise interfere across browsers.
+   Keep `--retries=0` so a flake stays visible, and add `--repeat-each=N` when chasing one. `--project=firefox` runs the other browser CI uses. CI gives each browser its own dataset through `SANITY_E2E_DATASET_CHROMIUM` / `SANITY_E2E_DATASET_FIREFOX`; both fall back to `SANITY_E2E_DATASET`, so run one project at a time unless you create a dataset per browser — specs that touch per-user state (preferences such as recent searches or sort orders) otherwise interfere across browsers.
 
 6. **Delete the dataset when you are done:**
 

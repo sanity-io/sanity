@@ -7,6 +7,14 @@ export interface BroadcastedState<T> {
   dispose(): void
 }
 
+export interface BroadcastedStateOptions<T> {
+  /**
+   * Whether to take over a value another tab broadcast. A refused value is cleared, here, in
+   * storage and in every other tab.
+   */
+  accept?: (value: T) => boolean
+}
+
 export interface BroadcastedStateStorage<T> {
   load(): T | undefined
   store(value: T | undefined): void
@@ -77,31 +85,44 @@ export function createBroadcastState<T>(
   key: string,
   initial: (current: T | undefined) => T | undefined,
   storage: BroadcastedStateStorage<T>,
+  options?: BroadcastedStateOptions<T>,
 ): BroadcastedState<T>
 export function createBroadcastState<T>(
   key: string,
   initial?: (current: T | undefined) => T | undefined,
   storage: BroadcastedStateStorage<T> = createMemoryStorage(),
+  options: BroadcastedStateOptions<T> = {},
 ): BroadcastedState<T> {
   const channel = createChannel(key)
   const subject = new BehaviorSubject<T | undefined>(initial?.(storage.load()))
 
   storage.store(subject.getValue())
 
+  function update(value: T | undefined) {
+    storage.store(value)
+    const stringified = JSON.stringify(value === undefined ? null : value)
+    channel.postMessage(stringified)
+    subject.next(value)
+  }
+
   channel.onmessage = (e: MessageEvent<string>) => {
     const parsed = JSON.parse(e.data)
-    subject.next(parsed === null ? undefined : parsed)
+    if (parsed === null) {
+      subject.next(undefined)
+      return
+    }
+    // A refused value is not taken over, and cleared for every tab.
+    if (options.accept && !options.accept(parsed)) {
+      update(undefined)
+      return
+    }
+    subject.next(parsed)
   }
 
   return {
     value: subject.asObservable(),
     get: () => subject.getValue(),
-    update(value: T | undefined) {
-      storage.store(value)
-      const stringified = JSON.stringify(value === undefined ? null : value)
-      channel.postMessage(stringified)
-      subject.next(value)
-    },
+    update,
     dispose() {
       channel.close()
       subject.complete()

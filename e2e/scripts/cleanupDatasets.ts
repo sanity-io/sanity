@@ -3,8 +3,8 @@
  *
  * Handles three types of datasets:
  * - PR datasets (`pr-<number>-<browser>-<run-id>`): deleted when the PR is closed.
- *   An open PR keeps its latest run when that run is younger than 5 days, and
- *   deletes every earlier run. A run that is 5 days old or older is deleted even
+ *   An open PR keeps its latest run when that run is younger than 3 days, and
+ *   deletes every earlier run. A run that is 3 days old or older is deleted even
  *   while the PR is open. `-comments` addons are not deleted directly; removing
  *   the dataset they attach to removes them.
  * - Main datasets (`main-<browser>-<run-id>`): deleted when older than 24 hours

@@ -18,7 +18,7 @@ import {useCreateReleaseMetadata} from '../../hooks/useCreateReleaseMetadata'
 import {useGuardWithReleaseLimitUpsell} from '../../hooks/useGuardWithReleaseLimitUpsell'
 import {useReleaseFormStorage} from '../../hooks/useReleaseFormStorage'
 import {useWorkspaceReleaseLimitGuard} from '../../hooks/useWorkspaceReleaseLimit'
-import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadataFieldsEnabled'
+import {useReleaseCustomMetadataFields} from '../../metadata/useReleaseCustomMetadataFields'
 import {isReleaseLimitError} from '../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../store/useReleaseOperations'
 import {getIsReleaseInvalid} from '../../util/getIsReleaseInvalid'
@@ -43,7 +43,7 @@ export function CreateReleaseDialog(props: CreateReleaseDialogProps): React.JSX.
   const createReleaseMetadata = useCreateReleaseMetadata()
   const {clearReleaseDataFromStorage} = useReleaseFormStorage()
 
-  const metadataFieldsEnabled = useReleaseMetadataFieldsEnabled()
+  const {enabled: metadataFieldsEnabled} = useReleaseCustomMetadataFields()
   const [release, setRelease] = useState(getReleaseDefaults)
   const [isSubmitting, setIsSubmitting] = useState(false)
   // True when the form is not mounted, so create is not waiting on a check that will never run.

@@ -11,8 +11,8 @@ import {useDocumentApplicationContext} from '../useDocumentApplicationContext'
 // The mock workspace's project and dataset.
 const WORKSPACE_RESOURCE = 'mock-project-id.mock-data-set'
 
-function contextFor(id: string, resource = WORKSPACE_RESOURCE) {
-  return {resource: {id: resource, type: 'dataset'}, document: {id}}
+function contextFor(id: string, resource = WORKSPACE_RESOURCE, type = 'book') {
+  return {resource: {id: resource, type: 'dataset'}, document: {id, type}}
 }
 
 const LOADING: EditStateFor = {
@@ -95,6 +95,21 @@ it('sends a published document', () => {
   renderContext({displayedId: 'book-1', editState: PUBLISHED})
 
   expect(updates).toEqual([contextFor('book-1')])
+})
+
+it('sends the schema type of the document', () => {
+  const updates = captureContext()
+
+  renderContext({
+    displayedId: 'drafts.article-1',
+    editState: {
+      ...DRAFT,
+      type: 'article',
+      draft: {_id: 'drafts.article-1', _type: 'article', _createdAt: '', _updatedAt: '', _rev: '1'},
+    },
+  })
+
+  expect(updates).toEqual([contextFor('drafts.article-1', WORKSPACE_RESOURCE, 'article')])
 })
 
 it('sends the document once, not again when the document on screen changes', () => {

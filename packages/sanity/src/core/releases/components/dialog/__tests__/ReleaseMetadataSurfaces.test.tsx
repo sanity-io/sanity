@@ -1,12 +1,14 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {defineField} from '@sanity/types'
+import {defineField, isObjectSchemaType} from '@sanity/types'
 import {fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type ReactElement} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../../test/testUtils/flushMicrotasks'
+import {getMockSource} from '../../../../../../test/testUtils/getMockWorkspaceFromConfig'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {RELEASE_METADATA_TYPE_NAME} from '../../../schema/releaseMetadata'
 import {useReleaseOperationsMockReturn} from '../../../store/__tests__/__mocks/useReleaseOperations.mock'
 import {
   mockUseReleasePermissions,
@@ -97,6 +99,144 @@ describe('release metadata on create and edit', () => {
     await waitFor(() => {
       expect(screen.getByTestId('save-release-details-button')).toBeEnabled()
     })
+  })
+
+  it('renders the configured fields without the core metadata fields', async () => {
+    await renderDialog(<CreateReleaseDialog onCancel={vi.fn()} onSubmit={vi.fn()} />)
+
+    expect(await screen.findByTestId('field-reviewNote')).toBeInTheDocument()
+    expect(screen.queryByTestId('field-releaseType')).toBeNull()
+    expect(screen.queryByTestId('field-intendedPublishAt')).toBeNull()
+  })
+
+  it('keeps the configured fieldsets, groups and object-level validation', async () => {
+    const wrapper = await createTestProvider({
+      config: {
+        name: 'default',
+        projectId: 'test',
+        dataset: 'test',
+        beta: {variants: {enabled: true}},
+        releases: {
+          metadata: {
+            fieldsets: [{name: 'review', title: 'Review'}],
+            groups: [
+              {name: 'legal', title: 'Legal'},
+              {name: 'other', title: 'Other'},
+            ],
+            fields: [
+              defineField({
+                name: 'legalNote',
+                title: 'Legal note',
+                type: 'string',
+                fieldset: 'review',
+                group: 'legal',
+              }),
+              defineField({
+                name: 'signedOff',
+                title: 'Signed off',
+                type: 'boolean',
+                group: 'other',
+              }),
+            ],
+            validation: (rule) =>
+              rule.custom((value: {legalNote?: string} | undefined) =>
+                value?.legalNote ? true : 'Add a legal note',
+              ),
+          },
+        },
+      },
+    })
+    render(<CreateReleaseDialog onCancel={vi.fn()} onSubmit={vi.fn()} />, {wrapper})
+
+    const fieldset = await screen.findByTestId('fieldset-review')
+    const legalNote = within(fieldset).getByTestId('field-legalNote')
+    expect(screen.getByTestId('group-tab-legal')).toBeInTheDocument()
+    expect(screen.getByTestId('group-tab-other')).toBeInTheDocument()
+
+    const submit = screen.getByTestId('submit-release-button')
+    await waitFor(() => expect(submit).toBeDisabled())
+    await userEvent.type(within(legalNote).getByRole('textbox'), 'Cleared')
+    await waitFor(() => expect(submit).toBeEnabled())
+  })
+
+  it('applies the validation of a plugin and of the root config', async () => {
+    const wrapper = await createTestProvider({
+      config: {
+        name: 'default',
+        projectId: 'test',
+        dataset: 'test',
+        beta: {variants: {enabled: true}},
+        plugins: [
+          {
+            name: 'legal-plugin',
+            releases: {
+              metadata: {
+                fields: [defineField({name: 'legalNote', title: 'Legal note', type: 'string'})],
+                validation: (rule) =>
+                  rule.custom((value: {legalNote?: string} | undefined) =>
+                    value?.legalNote ? true : 'Add a legal note',
+                  ),
+              },
+            },
+          },
+        ],
+        releases: {
+          metadata: {
+            fields: [defineField({name: 'owner', title: 'Owner', type: 'string'})],
+            validation: (rule) =>
+              rule.custom((value: {owner?: string} | undefined) =>
+                value?.owner ? true : 'Add an owner',
+              ),
+          },
+        },
+      },
+    })
+    render(<CreateReleaseDialog onCancel={vi.fn()} onSubmit={vi.fn()} />, {wrapper})
+
+    const legalNote = await screen.findByTestId('field-legalNote')
+    const owner = screen.getByTestId('field-owner')
+    const submit = screen.getByTestId('submit-release-button')
+    await waitFor(() => expect(submit).toBeDisabled())
+
+    await userEvent.type(within(legalNote).getByRole('textbox'), 'Cleared')
+    await flushMicrotasksThisIsACodeSmell()
+    expect(submit).toBeDisabled()
+
+    await userEvent.type(within(owner).getByRole('textbox'), 'Legal')
+    await waitFor(() => expect(submit).toBeEnabled())
+  })
+
+  it('leaves a field the dialog cannot edit out of the dialog, and keeps it in the schema', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    const metadata = {
+      fields: [
+        defineField({name: 'legalNote', title: 'Legal note', type: 'string'}),
+        defineField({name: 'cover', title: 'Cover', type: 'image'}),
+      ],
+    }
+    const wrapper = await createTestProvider({
+      config: {
+        name: 'default',
+        projectId: 'test',
+        dataset: 'test',
+        beta: {variants: {enabled: true}},
+        releases: {metadata},
+      },
+    })
+    render(<CreateReleaseDialog onCancel={vi.fn()} onSubmit={vi.fn()} />, {wrapper})
+
+    expect(await screen.findByTestId('field-legalNote')).toBeInTheDocument()
+    expect(screen.queryByTestId('field-cover')).toBeNull()
+    expect(warn).toHaveBeenCalledWith(
+      `[releases] The release dialog doesn't show metadata field "cover" yet: type "image" is not supported`,
+    )
+    warn.mockRestore()
+
+    const source = await getMockSource({config: {releases: {enabled: true, metadata}}})
+    const metadataType = source.schema.get(RELEASE_METADATA_TYPE_NAME)
+    expect(
+      isObjectSchemaType(metadataType) ? metadataType.fields.map((field) => field.name) : [],
+    ).toContain('cover')
   })
 
   it('keeps create blocked when the value changes before validation settles', async () => {

@@ -17,7 +17,7 @@ import {useCreateReleaseMetadata} from '../../../hooks/useCreateReleaseMetadata'
 import {useGuardWithReleaseLimitUpsell} from '../../../hooks/useGuardWithReleaseLimitUpsell'
 import {useReleaseFormStorage} from '../../../hooks/useReleaseFormStorage'
 import {useWorkspaceReleaseLimitGuard} from '../../../hooks/useWorkspaceReleaseLimit'
-import {useReleaseMetadataFieldsEnabled} from '../../../metadata/useReleaseMetadataFieldsEnabled'
+import {useReleaseCustomMetadataFields} from '../../../metadata/useReleaseCustomMetadataFields'
 import {isReleaseLimitError} from '../../../store/isReleaseLimitError'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {DEFAULT_RELEASE_TYPE} from '../../../util/const'
@@ -64,7 +64,7 @@ export function CopyToNewReleaseDialog(props: {
    * and so date in past warning ui elements wouldn't show
    */
   const [, setRerenderDialog] = useState(0)
-  const metadataFieldsEnabled = useReleaseMetadataFieldsEnabled()
+  const {enabled: metadataFieldsEnabled} = useReleaseCustomMetadataFields()
   const [metadataValid, setMetadataValid] = useState(!metadataFieldsEnabled)
 
   const telemetry = useTelemetry()

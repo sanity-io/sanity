@@ -1,6 +1,5 @@
 import {type EditableReleaseDocument} from '@sanity/client'
 import {
-  type FieldDefinition,
   type InitialValueResolverContext,
   type ObjectSchemaType,
   type SanityDocument,
@@ -31,20 +30,16 @@ import {DEFAULT_MAX_RECURSION_DEPTH, resolveInitialValueForType} from '../../../
 import {EMPTY_ARRAY} from '../../../util/empty'
 import {isRecord} from '../../../util/isRecord'
 import {
-  RELEASE_METADATA_FORM_ID,
-  RELEASE_METADATA_TYPE_NAME,
-  compileReleaseMetadataSchema,
-} from '../../metadata/compileReleaseMetadataType'
-import {
   asReleaseMetadata,
   mergeReleaseMetadata,
   readFieldValues,
   toReleaseMetadataRecord,
   type ReleaseMetadataRecord,
 } from '../../metadata/mergeReleaseMetadata'
-import {useReleaseMetadataFieldsEnabled} from '../../metadata/useReleaseMetadataFieldsEnabled'
+import {RELEASE_METADATA_FORM_ID} from '../../metadata/releaseMetadataFormType'
+import {useReleaseCustomMetadataFields} from '../../metadata/useReleaseCustomMetadataFields'
+import {RELEASE_METADATA_TYPE_NAME} from '../../schema/releaseMetadata'
 
-const NO_FIELDS: readonly FieldDefinition[] = []
 const NO_MARKERS: ValidationMarker[] = []
 const VALIDATION_FAILED_MESSAGE = 'Release metadata validation failed'
 
@@ -330,36 +325,18 @@ function ReleaseMetadataFieldsForm(
   )
 }
 
-function ReleaseMetadataFields(
-  props: ReleaseMetadataFormProps & {fields: readonly FieldDefinition[]},
-): React.JSX.Element | null {
-  const {fields, onValidityChange} = props
+export function ReleaseMetadataForm(props: ReleaseMetadataFormProps): React.JSX.Element | null {
+  const {fields, schemaType} = useReleaseCustomMetadataFields()
   const schema = useSchema()
-  const compiled = useMemo(() => compileReleaseMetadataSchema(fields, schema), [fields, schema])
-  const fieldNames = useMemo(
-    () => compiled?.schemaType.fields.map((field) => field.name) ?? [],
-    [compiled],
-  )
+  const {onValidityChange} = props
+  const compiled = useMemo(() => (schemaType ? {schema, schemaType} : null), [schema, schemaType])
+  const fieldNames = useMemo(() => fields.map((field) => field.name), [fields])
+
   useEffect(() => {
     if (compiled) return
-    // Nothing accepted, or compilation failed. Do not leave create/save waiting.
     onValidityChange?.(true)
   }, [compiled, onValidityChange])
+
   if (!compiled) return null
   return <ReleaseMetadataFieldsForm {...props} compiled={compiled} fieldNames={fieldNames} />
-}
-
-export function ReleaseMetadataForm(props: ReleaseMetadataFormProps): React.JSX.Element | null {
-  const enabled = useReleaseMetadataFieldsEnabled()
-  const fields = useWorkspace().releases?.metadata?.fields ?? NO_FIELDS
-  const {onValidityChange} = props
-  const activeFields = enabled ? fields : NO_FIELDS
-
-  useEffect(() => {
-    if (activeFields.length > 0) return
-    onValidityChange?.(true)
-  }, [activeFields.length, onValidityChange])
-
-  if (activeFields.length === 0) return null
-  return <ReleaseMetadataFields {...props} fields={activeFields} />
 }

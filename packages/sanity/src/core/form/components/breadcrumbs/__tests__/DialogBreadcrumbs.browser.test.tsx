@@ -176,3 +176,101 @@ describe('dialog breadcrumbs', () => {
     await expect.poll(focusedFieldTestId).toBe('field-animals')
   })
 })
+
+// A recursive type, deep enough that the trail collapses into the overflow ("...") menu.
+const NESTED_SCHEMA = [
+  defineType({
+    type: 'object',
+    name: 'node',
+    fields: [
+      defineField({type: 'string', name: 'name', title: 'Name'}),
+      defineField({
+        type: 'array',
+        name: 'children',
+        title: 'Children',
+        of: [defineArrayMember({type: 'node'})],
+      }),
+    ],
+  }),
+  defineType({
+    // `TestForm` always edits the `test` document type.
+    type: 'document',
+    name: 'test',
+    title: 'Test',
+    fields: [
+      defineField({
+        type: 'array',
+        name: 'nodes',
+        title: 'Nodes',
+        of: [defineArrayMember({type: 'node'})],
+      }),
+    ],
+  }),
+]
+
+const NESTED_DOCUMENT: SanityDocument = {
+  _id: 'dialog-breadcrumbs-overflow',
+  _type: 'test',
+  _createdAt: '2024-01-01T00:00:00.000Z',
+  _updatedAt: '2024-01-01T00:00:00.000Z',
+  _rev: 'dialog-breadcrumbs-overflow-rev',
+  nodes: [
+    {
+      _key: 'n1',
+      _type: 'node',
+      name: 'Level one',
+      children: [
+        {
+          _key: 'n2',
+          _type: 'node',
+          name: 'Level two',
+          children: [
+            {
+              _key: 'n3',
+              _type: 'node',
+              name: 'Level three',
+              children: [{_key: 'n4', _type: 'node', name: 'Level four'}],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+}
+
+describe('dialog breadcrumbs overflow menu', () => {
+  configure({disableAutoSnapshot: true})
+
+  test('shows the collapsed breadcrumbs and navigates to the chosen one', async () => {
+    void render(
+      <TestWrapper schemaTypes={NESTED_SCHEMA}>
+        <TestForm
+          document={NESTED_DOCUMENT}
+          openPath={[
+            'nodes',
+            {_key: 'n1'},
+            'children',
+            {_key: 'n2'},
+            'children',
+            {_key: 'n3'},
+            'children',
+            {_key: 'n4'},
+          ]}
+        />
+      </TestWrapper>,
+    )
+    await expect.element(breadcrumb('level-four')).toHaveAttribute('aria-current', 'location')
+
+    const overflowButton = page.getByRole('button', {name: 'More breadcrumb items'}).last()
+    await overflowButton.click()
+
+    // The menu renders in the dialog header, outside the dialog's scroll box. It must not be
+    // treated as a hidden reference and rendered with `display: none`.
+    const collapsedItem = page.getByRole('menuitem', {name: 'Level two'})
+    await expect.element(collapsedItem).toBeVisible()
+
+    await collapsedItem.click()
+
+    await expect.element(breadcrumb('level-two')).toHaveAttribute('aria-current', 'location')
+  })
+})

@@ -85,6 +85,7 @@ const headerProps: Omit<VisionGuiHeaderProps, 'perspective'> = {
   onChangePerspective: vi.fn(),
   url: 'https://api.sanity.io/v2025-08-18/data/query/test?query=*&variant=french',
   isScheduledDraftsEnabled: false,
+  onCopyUrl: vi.fn(),
 }
 
 function renderHeader(

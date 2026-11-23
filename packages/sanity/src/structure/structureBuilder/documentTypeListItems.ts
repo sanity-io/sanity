@@ -3,6 +3,7 @@ import {StackCompactIcon} from '@sanity/icons/StackCompact'
 import {type SchemaType} from '@sanity/types'
 import startCase from 'lodash-es/startCase.js'
 
+import {RELEASE_DOCUMENT_TYPE} from '../../core/releases/store/constants'
 import {structureLocaleNamespace} from '../i18n'
 import {type DocumentListBuilder} from './DocumentList'
 import {DocumentTypeListBuilder, type DocumentTypeListInput} from './DocumentTypeList'
@@ -15,7 +16,7 @@ import {type Collection} from './StructureNodes'
 import {type StructureContext} from './types'
 import {markDefaultDocumentTypeChild} from './util/defaultDocumentTypeChild'
 
-const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset']
+const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset', RELEASE_DOCUMENT_TYPE]
 
 function isBundledDocType(typeName: string) {
   return BUNDLED_DOC_TYPES.includes(typeName)

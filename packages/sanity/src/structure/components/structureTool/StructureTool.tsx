@@ -45,7 +45,7 @@ export const StructureTool = memo(function StructureTool({
   const schema = useSchema()
   const {navigate} = useRouter()
   const routerState = useRouterState()
-  const {layoutCollapsed, setLayoutCollapsed} = useStructureTool()
+  const {setLayoutCollapsed} = useStructureTool()
   const resolvedPanesValue = useResolvedPanes()
   const {paneDataItems, resolvedPanes, setMaximizedPane, maximizedPane} = resolvedPanesValue
   // Intent resolving is processed by the sibling `<IntentResolver />` but it doesn't have a UI for indicating progress.
@@ -206,7 +206,7 @@ export const StructureTool = memo(function StructureTool({
       <PortalProvider element={portalElement || null}>
         <StyledPaneLayout
           flex={1}
-          height={layoutCollapsed ? undefined : 'fill'}
+          height="fill"
           minWidth={media[1]}
           onCollapse={handleRootCollapse}
           onExpand={handleRootExpand}

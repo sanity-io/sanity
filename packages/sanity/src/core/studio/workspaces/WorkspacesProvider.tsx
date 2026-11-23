@@ -25,6 +25,7 @@ import {
 import {prepareConfig} from '../../config/prepareConfig'
 import {type Config, type WorkspaceSummary} from '../../config/types'
 import {type AuthStore} from '../../store/auth/types'
+import {registerListenerErrorHandler} from '../../util/listenerErrorHandlers'
 import {getApiErrorCode} from '../requestErrors/classify'
 import {createRequestErrorChannel} from '../requestErrors/createRequestErrorChannel'
 import {createStudioRequestHandler as createStudioRequestHandlerFactory} from '../requestErrors/createStudioRequestHandler'
@@ -208,6 +209,10 @@ export function WorkspacesProvider({
     null,
   )
 
+  // Takes over the listeners that fail irrecoverably, so the studio shows the connection error
+  // dialog for them instead of crashing the tool that listens. See `registerListenerErrorHandler`.
+  useEffect(() => registerListenerErrorHandler(requestErrorChannel), [requestErrorChannel])
+
   // Survives the CORS (and loading) early returns. Those replace
   // `WorkspacesClaimProvider`, and `claim$` keeps the unauthorized claim
   // with no retry path that clears it, so a remount would log out again.
@@ -291,6 +296,12 @@ export function WorkspacesProvider({
   )
 }
 
+function loggedOutReasonOf(
+  claim: Extract<RequestErrorClaim, {type: 'unauthorized'}>,
+): 'session-expired' | 'session-not-found' {
+  return getApiErrorCode(claim.error) === 'SIO-401-AEX' ? 'session-expired' : 'session-not-found'
+}
+
 function findAuthStoreForProject(
   workspaces: WorkspaceSummary[],
   projectId: string,
@@ -331,12 +342,7 @@ function WorkspacesClaimProvider({
   // while the forced-logout state is — and clears on re-login (no persistence).
   // The reason mirrors the API's invalid-session code so the toast copy can
   // be accurate: "expired" only when the API actually said expired.
-  const loggedOutReason =
-    claim?.type === 'unauthorized'
-      ? getApiErrorCode(claim.error) === 'SIO-401-AEX'
-        ? 'session-expired'
-        : 'session-not-found'
-      : undefined
+  const loggedOutReason = claim?.type === 'unauthorized' ? loggedOutReasonOf(claim) : undefined
 
   // Need access to the current `workspaces` without triggering setup/teardown on change
   const handleLogout = useEffectEvent(
@@ -356,7 +362,7 @@ function WorkspacesClaimProvider({
           ? findAuthStoreForProject(workspaces, unauthorizedClaim.projectId)
           : workspaces[0]?.auth)
       if (!auth?.logout) return
-      auth.logout().catch((logoutErr) => {
+      auth.logout({reason: loggedOutReasonOf(unauthorizedClaim)}).catch((logoutErr) => {
         // The logout request itself failed (likely network). The channel's
         // dedupe prevents recursion; just log so a dev can diagnose.
         console.warn('[sanity] Forced logout failed:', logoutErr)
