@@ -412,10 +412,6 @@ export interface PresentationPluginOptions {
     unstable_header?: HeaderOptions
     unstable_navigator?: NavigatorOptions
   }
-  /**
-   * @deprecated this feature flag is no longer needed
-   */
-  unstable_showUnsafeShareUrl?: boolean
 }
 
 /**
