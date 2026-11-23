@@ -420,9 +420,6 @@ const defaultWorkspace = defineConfig({
         },
       },
     },
-    reactActivityMode: {
-      enabled: true,
-    },
     releaseBackgroundListeners: {
       enabled: true,
     },

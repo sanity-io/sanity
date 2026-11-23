@@ -10,7 +10,7 @@ export interface ContentSize {
  * the effect runs. `@sanity/ui`'s `useElementSize` shares one observer per element and drops it
  * when its last subscriber leaves without forgetting the element, so a later subscription to the
  * same node is never observed again. That is what happens when a hidden `<Activity>` tears the
- * effects down and shows the tool again with its DOM intact (`beta.reactActivityMode`).
+ * effects down and shows the tool again with its DOM intact (`reactActivityMode`).
  * Returns `null` until the first measurement.
  */
 export function useContentSize(element: HTMLElement | null): ContentSize | null {
