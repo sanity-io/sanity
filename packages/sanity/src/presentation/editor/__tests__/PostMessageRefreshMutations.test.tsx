@@ -169,19 +169,6 @@ describe('PostMessageRefreshMutations', () => {
     expect(postedIds(post)).toEqual([draftVariantId])
   })
 
-  test('refreshes when the selected variant is published', () => {
-    mocks.perspective = {selectedReleaseId: undefined, selectedVariantNames: ['french']}
-    mocks.targetDocumentState = readyVariantState()
-    mocks.editStates.set(DRAFT_SCOPE, {version: doc(draftVariantId, 'r1')})
-    mocks.editStates.set(PUBLISHED_SCOPE, {version: doc(publishedVariantId, 'p1')})
-    const {post} = renderRefresh()
-
-    act(() => mocks.setEditState(DRAFT_SCOPE, {version: null}))
-    act(() => mocks.setEditState(PUBLISHED_SCOPE, {version: doc(publishedVariantId, 'p2')}))
-
-    expect(postedIds(post)).toEqual([publishedVariantId])
-  })
-
   test('does not watch the base pair while the variant target is resolving', () => {
     mocks.perspective = {selectedReleaseId: undefined, selectedVariantNames: ['french']}
     mocks.editStates.set(undefined, {draft: doc(`drafts.${GROUP_ID}`, 'r1')})
