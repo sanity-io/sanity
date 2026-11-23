@@ -8,7 +8,6 @@ import {usePane} from './usePane'
 interface PaneFooterProps {
   children?: ReactNode
   padding?: PaddingProps['padding']
-  [dataAttribute: `data-${string}`]: string | undefined
 }
 
 /**
@@ -17,12 +16,18 @@ interface PaneFooterProps {
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
 export function PaneFooter(props: PaneFooterProps & RefAttributes<HTMLDivElement>) {
-  const {ref, children, padding, ...dataAttributes} = props
+  const {ref, children, padding} = props
   const {collapsed} = usePane()
 
   return (
     <LegacyLayerProvider zOffset="paneFooter">
-      <Root data-testid="pane-footer" {...dataAttributes} hidden={collapsed} ref={ref}>
+      <Root
+        data-testid="pane-footer"
+        // Stable CSS hook for hiding the document footer. Public contract: do not rename or remove.
+        data-sanity-document-footer=""
+        hidden={collapsed}
+        ref={ref}
+      >
         <RootCard tone="inherit">
           <Box padding={padding}>{children}</Box>
         </RootCard>
