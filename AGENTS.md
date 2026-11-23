@@ -1199,6 +1199,13 @@ Conventions that follow from this:
   `data-testid` attributes instead. Visual/style behavior belongs in the vitest browser mode
   suite (`*.browser.test.tsx`, real Chromium/Firefox/WebKit, where `test/setup/browser.ts` loads
   the generated stylesheet) or the Playwright e2e tests.
+- **jsdom 31 computes styles like a browser.** A helper under test that reads `getComputedStyle`
+  gets `''` for every property of a detached element (attach the fixture to `document.body`),
+  `0px` for a border whose style is `none` (set `border: 2px solid`, not `borderWidth`), and
+  `0px` rather than jsdom 29's unitless `0` for an unset length, so a test that passed because
+  `'0' !== '0px'` was not measuring anything. A test that must measure a `ui5` utility class
+  appends the package's `dist/styles.css` to `document.head` for that file
+  (`tagInput.test.tsx`); jsdom resolves its `@layer` and custom properties.
 - **A `.css.ts` module exports class name strings, nothing else renders.** A `css()` call outside
   a `.css.ts` file is neither extracted nor rewritten (the Panda config only `include`s those
   files), so it evaluates to the right class names at runtime but has no CSS behind them.
@@ -1214,11 +1221,15 @@ while closed (hidden with `display: none`). Consequences for tests:
   hits a closed tooltip's copy of the text resolves to two elements and trips the locator's
   strict-mode check, so scope it (`page.getByTestId('field-publishedAt').getByText(...)`).
 - In jsdom, asserting that closed content is hidden works (`expect(...).not.toBeVisible()`), but
-  selecting the **open** overlay by visibility does not. Runtime styles are disabled there, so
-  nothing overrides the `hidden` attribute `@sanity/ui` puts on an open popover, and
-  `getByRole` (which skips inaccessible nodes) finds neither the open nor the closed copy. Pick
-  the open one by the absence of the `display: none` that `<Activity>` applies to closed
-  overlays, rather than by index:
+  selecting the **open** overlay by visibility does not. jsdom lays nothing out, so Floating
+  UI's `hide` middleware reports every reference as clipped and `@sanity/ui` renders its open
+  popovers with the `hidden` attribute. The `sanity` jsdom setup (`test/setup/environment.ts`)
+  overrides that attribute on the floating cards (`[data-placement][hidden]`) because jsdom 31
+  refuses to focus anything under a `display: none` ancestor, which would leave `user.type` into
+  a popover's filter input typing into `<body>`; a suite without that shim finds neither the open
+  nor the closed copy with `getByRole` (which skips inaccessible nodes). Pick the open one by the
+  absence of the `display: none` that `<Activity>` applies to closed overlays, rather than by
+  index:
 
   ```ts
   const [openMenu] = getAllByDataUi(document.body, 'MenuButton__popover').filter(
