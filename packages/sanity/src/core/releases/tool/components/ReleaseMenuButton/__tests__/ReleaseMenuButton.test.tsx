@@ -647,6 +647,30 @@ describe('ReleaseMenuButton', () => {
     })
   })
 
+  describe('when the release has versions the user cannot publish', () => {
+    beforeEach(() => {
+      mockUseReleasePermissions.mockReturnValue({
+        checkWithPermissionGuard: vi
+          .fn()
+          .mockImplementation(
+            async (action: unknown) => action !== useReleaseOperationsMockReturn.publishRelease,
+          ),
+        permissions: {},
+      })
+    })
+
+    test('will disable archive menu even though the archive dry run is allowed', async () => {
+      await renderTest({release: activeASAPRelease, documentsCount: 1})
+
+      await userEvent.click(await screen.findByTestId('release-menu-button'))
+
+      await waitFor(() => {
+        expect(screen.getByTestId('duplicate-release-menu-item')).not.toBeDisabled()
+      })
+      expect(screen.getByTestId('archive-release-menu-item')).toBeDisabled()
+    })
+  })
+
   describe('when permission is not provided', () => {
     beforeEach(() => {
       vi.clearAllMocks()
