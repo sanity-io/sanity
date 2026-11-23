@@ -10,7 +10,9 @@ import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
 import {useFormatRelativeLocalePublishDate} from '../../releases/hooks/useFormatRelativeLocalePublishDate'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
+import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {useWorkspace} from '../../studio/workspace'
+import {getVersionFromId} from '../../util/draftUtils'
 import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {type Variant} from '../machines/selectionMachine'
 import {type VersionPresence as VersionPresenceList} from '../utils/groupPresenceByVersion'
@@ -248,6 +250,12 @@ export function resolveVariantRelease(
   variant: Variant,
   releases: Map<string, ReleaseDocument>,
 ): ReleaseDocument | undefined {
+  if (variant.releaseDocument) return variant.releaseDocument
+  // A variant names its release in _system.release. A plain release version (the rows of the
+  // single list shown with Content Variants off) names it in its bundle id, or only in its id.
   const releaseRef = variant.document._system.release?._ref
-  return variant.releaseDocument ?? (releaseRef ? releases.get(releaseRef) : undefined)
+  if (releaseRef) return releases.get(releaseRef)
+  const bundleId = variant.document._system.bundleId ?? getVersionFromId(variant.document._id)
+  if (!bundleId || bundleId === 'drafts') return undefined
+  return releases.get(getReleaseDocumentIdFromReleaseId(bundleId)) ?? releases.get(bundleId)
 }
