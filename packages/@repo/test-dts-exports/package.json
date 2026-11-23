@@ -8,6 +8,7 @@
   },
   "scripts": {
     "generate:dts-exports": "node generate.mjs",
+    "generate:v7-export-map": "node v7-export-map/generate.mjs",
     "postgenerate:dts-exports": "oxfmt test/fixtures/**",
     "test": "vitest run"
   },
