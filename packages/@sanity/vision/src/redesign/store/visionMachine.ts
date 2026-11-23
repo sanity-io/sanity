@@ -36,6 +36,8 @@ import {
   createTab,
   resolveWorkspaceDataset,
   sanitizeExportSnippetSettings,
+  type StoredPreferences,
+  toStoredPreferences,
   type VisionStorageDefaults,
 } from './visionStorage'
 
@@ -103,6 +105,14 @@ export type VisionEvent =
   | {type: 'response.update'; settings: Partial<VisionResponseSettings>}
   /** Hiding the last visible snippet is ignored: the dialog always has a tab to show */
   | {type: 'exportSnippets.update'; settings: Partial<VisionExportSnippetSettings>}
+  /** The settings changed elsewhere, in another tab or browser (see `visionPreferences`) */
+  | {
+      type: 'preferences.sync'
+      preferences: Pick<
+        VisionPersistedState,
+        'settings' | 'historyDiff' | 'ai' | 'editor' | 'response' | 'exportSnippets'
+      >
+    }
   /** Saves a function to the library, replacing the one with its id */
   | {type: 'functions.save'; fn: VisionSavedFunction}
   | {type: 'functions.remove'; id: string}
@@ -411,6 +421,16 @@ export const visionMachine = setup({
           sanitizeExportSnippetSettings({...context.exportSnippets, ...event.settings}),
       }),
     },
+    'preferences.sync': {
+      actions: assign(({event}) => ({
+        settings: event.preferences.settings,
+        historyDiff: event.preferences.historyDiff,
+        ai: event.preferences.ai,
+        editor: event.preferences.editor,
+        response: event.preferences.response,
+        exportSnippets: event.preferences.exportSnippets,
+      })),
+    },
     'functions.save': {
       actions: assign({
         functions: ({context, event}) => [
@@ -599,6 +619,11 @@ export function selectPersistedState(snapshot: VisionSnapshot): VisionPersistedS
     exportSnippets: snapshot.context.exportSnippets,
     functions: snapshot.context.functions,
   }
+}
+
+/** What the durable preferences store, see `visionPreferences` */
+export function selectStoredPreferences(snapshot: VisionSnapshot): StoredPreferences {
+  return toStoredPreferences(selectPersistedState(snapshot))
 }
 
 export function selectFunctionLibrary(snapshot: VisionSnapshot): VisionSavedFunction[] {

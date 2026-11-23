@@ -410,31 +410,96 @@ function sanitizeFunctions(value: unknown): VisionSavedFunction[] {
 }
 
 /**
- * Loads the persisted state for a project, dropping anything that no longer validates (unknown
- * datasets, malformed tabs, ...). Returns a fresh state when nothing usable is stored.
+ * The values of the `settings` and `layout` preferences (see `visionPreferences`), as stored:
+ * validated on load like the rest of the state, since another release may have written them
+ */
+export interface VisionStoredPreferences {
+  settings?: unknown
+  layout?: unknown
+}
+
+export type VisionSettingsPreference = Pick<
+  VisionPersistedState,
+  'settings' | 'historyDiff' | 'ai' | 'editor' | 'response' | 'exportSnippets'
+>
+
+export interface StoredPreferences {
+  settings: {
+    /** `null` is the API default perspective, see `persistPerspective` */
+    settings: Omit<VisionSettings, 'perspective'> & {perspective: VisionPerspective | null}
+    historyDiff: VisionHistoryDiffSettings
+    ai: VisionAiSettings
+    editor: VisionEditorSettings
+    response: VisionResponseSettings
+    exportSnippets: VisionExportSnippetSettings
+  }
+  layout: {sidebarExpanded: boolean; panels: VisionPanelsState}
+}
+
+export function toStoredSettings(value: VisionSettingsPreference): StoredPreferences['settings'] {
+  return {
+    settings: {...value.settings, perspective: value.settings.perspective ?? null},
+    historyDiff: value.historyDiff,
+    ai: value.ai,
+    editor: value.editor,
+    response: value.response,
+    exportSnippets: value.exportSnippets,
+  }
+}
+
+/** What the `settings` and `layout` preferences store for a state */
+export function toStoredPreferences(state: VisionPersistedState): StoredPreferences {
+  return {
+    settings: toStoredSettings(state),
+    layout: {sidebarExpanded: state.sidebar.expanded, panels: state.panels},
+  }
+}
+
+/** The `settings` preference as stored, validated */
+export function sanitizeStoredSettings(
+  value: unknown,
+  defaults: VisionStorageDefaults,
+): VisionSettingsPreference {
+  const stored = isPlainObject(value) ? value : {}
+  return {
+    settings: sanitizeSettings(stored.settings, resolveDefaultSettings(defaults), defaults),
+    historyDiff: sanitizeHistoryDiff(stored.historyDiff),
+    ai: sanitizeAiSettings(stored.ai),
+    editor: sanitizeEditorSettings(stored.editor),
+    response: sanitizeResponseSettings(stored.response),
+    exportSnippets: sanitizeExportSnippetSettings(stored.exportSnippets),
+  }
+}
+
+function readStoredObject(projectId: string): Record<string, unknown> {
+  const storage = getStorage()
+  if (!storage) return {}
+  try {
+    const stored: unknown = JSON.parse(readStoredState(storage, projectId) || 'null')
+    return isPlainObject(stored) && stored.version === STATE_VERSION ? stored : {}
+  } catch {
+    return {}
+  }
+}
+
+/**
+ * Loads the state for a project, dropping anything that no longer validates (unknown datasets,
+ * malformed tabs, ...). The settings and the layout come from the preferences; releases up to this
+ * one stored them with the tabs, which is where they are read from until a preference is stored.
+ * Returns a fresh state when nothing usable is stored.
  */
 export function loadVisionState(
   projectId: string,
   defaults: VisionStorageDefaults,
+  preferences: VisionStoredPreferences = {},
 ): VisionPersistedState {
   const initial = createInitialState(defaults)
-  const storage = getStorage()
-  if (!storage) {
-    return initial
-  }
+  const stored = readStoredObject(projectId)
+  const settingsPreference = isPlainObject(preferences.settings) ? preferences.settings : stored
+  const layoutPreference = isPlainObject(preferences.layout) ? preferences.layout : undefined
+  const storedSidebar = isPlainObject(stored.sidebar) ? stored.sidebar : {}
 
-  let stored: unknown
-  try {
-    stored = JSON.parse(readStoredState(storage, projectId) || 'null')
-  } catch {
-    return initial
-  }
-
-  if (!isPlainObject(stored) || stored.version !== STATE_VERSION) {
-    return initial
-  }
-
-  const settings = sanitizeSettings(stored.settings, initial.settings, defaults)
+  const settings = sanitizeSettings(settingsPreference.settings, initial.settings, defaults)
   // Tab ids key the spawned runners and the React list, so a duplicated id keeps its first tab only
   const tabs: VisionTab[] = []
   const seenIds = new Set<string>()
@@ -446,13 +511,16 @@ export function loadVisionState(
     }
   }
 
-  const sidebar = sanitizeSidebar(stored.sidebar)
-  const panels = sanitizePanels(stored.panels)
-  const historyDiff = sanitizeHistoryDiff(stored.historyDiff)
-  const ai = sanitizeAiSettings(stored.ai)
-  const editor = sanitizeEditorSettings(stored.editor)
-  const response = sanitizeResponseSettings(stored.response)
-  const exportSnippets = sanitizeExportSnippetSettings(stored.exportSnippets)
+  const sidebar = sanitizeSidebar({
+    expanded: layoutPreference ? layoutPreference.sidebarExpanded : storedSidebar.expanded,
+    drawer: storedSidebar.drawer,
+  })
+  const panels = sanitizePanels(layoutPreference ? layoutPreference.panels : stored.panels)
+  const historyDiff = sanitizeHistoryDiff(settingsPreference.historyDiff)
+  const ai = sanitizeAiSettings(settingsPreference.ai)
+  const editor = sanitizeEditorSettings(settingsPreference.editor)
+  const response = sanitizeResponseSettings(settingsPreference.response)
+  const exportSnippets = sanitizeExportSnippetSettings(settingsPreference.exportSnippets)
   const functions = sanitizeFunctions(stored.functions)
   if (tabs.length === 0) {
     return {
@@ -499,9 +567,23 @@ function persistPerspective(key: string, value: unknown): unknown {
   return key === 'perspective' && value === undefined ? null : value
 }
 
+/**
+ * Stores what is not a preference: the open tabs and drawer, and the saved functions. They belong
+ * to this browser, so they stay in `localStorage` (see `visionPreferences` for the rest).
+ */
 export function saveVisionState(projectId: string, state: VisionPersistedState): void {
+  const workspace = {
+    version: state.version,
+    tabs: state.tabs,
+    activeTabId: state.activeTabId,
+    sidebar: {drawer: state.sidebar.drawer},
+    functions: state.functions,
+  }
   try {
-    getStorage()?.setItem(getVisionStorageKey(projectId), JSON.stringify(state, persistPerspective))
+    getStorage()?.setItem(
+      getVisionStorageKey(projectId),
+      JSON.stringify(workspace, persistPerspective),
+    )
   } catch {
     // Quota exceeded: the session keeps working, it just will not be restored
   }

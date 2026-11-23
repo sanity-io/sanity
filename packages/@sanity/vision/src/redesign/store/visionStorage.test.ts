@@ -12,7 +12,10 @@ import {
   getVisionStorageKey,
   loadVisionState,
   resolveDefaultSettings,
+  sanitizeStoredSettings,
   saveVisionState,
+  toStoredPreferences,
+  toStoredSettings,
 } from './visionStorage'
 
 const defaults = {
@@ -178,7 +181,81 @@ describe('visionStorage', () => {
     }
     saveVisionState('proj', saved)
 
-    expect(loadVisionState('proj', defaults)).toEqual(saved)
+    expect(loadVisionState('proj', defaults, toStoredPreferences(saved))).toEqual(saved)
+  })
+
+  it('keeps the settings and the layout out of the stored tabs', () => {
+    const state = createInitialState(defaults)
+    saveVisionState('proj', {
+      ...state,
+      settings: {...state.settings, useCdn: true},
+      sidebar: {expanded: true, drawer: 'saved'},
+    })
+
+    const stored = JSON.parse(localStorage.getItem(getVisionStorageKey('proj')) || 'null')
+    expect(Object.keys(stored).toSorted()).toEqual([
+      'activeTabId',
+      'functions',
+      'sidebar',
+      'tabs',
+      'version',
+    ])
+    expect(stored.sidebar).toEqual({drawer: 'saved'})
+    const loaded = loadVisionState('proj', defaults)
+    expect(loaded.settings.useCdn).toBe(false)
+    expect(loaded.sidebar).toEqual({expanded: false, drawer: 'saved'})
+  })
+
+  it('reads the settings and the layout from the preferences, then from state earlier releases stored', () => {
+    const state = createInitialState(defaults)
+    localStorage.setItem(
+      getVisionStorageKey('proj'),
+      JSON.stringify({
+        ...state,
+        settings: {...state.settings, useCdn: true},
+        sidebar: {expanded: true, drawer: null},
+        ai: {...state.ai, explainQuery: false},
+      }),
+    )
+    expect(loadVisionState('proj', defaults)).toMatchObject({
+      settings: {useCdn: true},
+      sidebar: {expanded: true},
+      ai: {explainQuery: false},
+    })
+
+    const preferences = {
+      settings: {settings: {useCdn: false}, ai: {generateQuery: false}},
+      layout: {sidebarExpanded: false, panels: {resultViewer: 'graph'}},
+    }
+    expect(loadVisionState('proj', defaults, preferences)).toMatchObject({
+      settings: {useCdn: false},
+      sidebar: {expanded: false},
+      panels: {resultViewer: 'graph'},
+      ai: {explainQuery: true, generateQuery: false},
+    })
+  })
+
+  it('validates the settings preference and keeps the API default perspective as null', () => {
+    const state = createInitialState(defaults)
+    const settings = {
+      settings: {...state.settings, perspective: undefined},
+      historyDiff: state.historyDiff,
+      ai: state.ai,
+      editor: state.editor,
+      response: state.response,
+      exportSnippets: state.exportSnippets,
+    }
+    const stored = JSON.parse(JSON.stringify(toStoredSettings(settings)))
+    expect(stored.settings.perspective).toBeNull()
+    expect(sanitizeStoredSettings(stored, defaults)).toEqual(settings)
+    expect(sanitizeStoredSettings({settings: {dataset: 'unknown'}, ai: 'nope'}, defaults)).toEqual({
+      settings: state.settings,
+      historyDiff: state.historyDiff,
+      ai: state.ai,
+      editor: state.editor,
+      response: state.response,
+      exportSnippets: state.exportSnippets,
+    })
   })
 
   it('keeps the drawers the sidebar has, and forgets any other', () => {
@@ -596,11 +673,9 @@ describe('visionStorage', () => {
     expect(loadVisionState('tab', defaults).tabs[0].options.perspective).toBeUndefined()
 
     // Settings on the API default must not fall back to the built-in Global either
-    saveVisionState('settings', {
-      ...initial,
-      settings: {...initial.settings, perspective: undefined},
-    })
-    expect(loadVisionState('settings', defaults).settings.perspective).toBeUndefined()
+    const settings = {...initial, settings: {...initial.settings, perspective: undefined}}
+    const preferences = JSON.parse(JSON.stringify(toStoredPreferences(settings)))
+    expect(loadVisionState('settings', defaults, preferences).settings.perspective).toBeUndefined()
   })
 
   it('stores state under the classic Vision prefix so "Clear cache" resets both tools', () => {

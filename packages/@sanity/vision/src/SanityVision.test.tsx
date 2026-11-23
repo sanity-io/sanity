@@ -1,4 +1,5 @@
 import {type SanityClient} from '@sanity/client'
+import {createSanityInstance} from '@sanity/sdk'
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
@@ -7,7 +8,10 @@ import {type ReactNode} from 'react'
 import {type Tool} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {writeRedesignPreference} from './redesign/redesignPreference'
+import {
+  getLocalPreferenceKey,
+  type VisionPreferenceName,
+} from './redesign/preferences/visionPreferences'
 import SanityVision from './SanityVision'
 import {type VisionConfig} from './types'
 
@@ -30,7 +34,12 @@ vi.stubGlobal(
   })),
 )
 
+// A real instance: the SDK does not declare Vision's keys yet, so they fall back to localStorage
+const sdkInstance = createSanityInstance({projectId: 'switch-project', dataset: 'test'})
+vi.mock('@sanity/sdk-react', () => ({useSanityInstance: () => sdkInstance}))
+
 vi.mock('sanity', () => ({
+  useCurrentUser: () => ({id: 'user-1'}),
   useClient: () =>
     ({
       config: () => ({projectId: 'switch-project', dataset: 'test'}),
@@ -76,6 +85,14 @@ vi.mock('@sanity-labs/groq-wasm/lazy', () => {
   return {}
 })
 
+function storePreference(name: VisionPreferenceName, value: unknown) {
+  localStorage.setItem(getLocalPreferenceKey(name, 'switch-project'), JSON.stringify(value))
+}
+
+function readPreference(name: VisionPreferenceName): unknown {
+  return JSON.parse(localStorage.getItem(getLocalPreferenceKey(name, 'switch-project')) || 'null')
+}
+
 // Untyped options, so a test can pass keys VisionConfig no longer declares
 function renderTool(options: object) {
   const tool = {name: 'vision', title: 'Vision', options} as unknown as Tool<VisionConfig>
@@ -94,8 +111,6 @@ describe('SanityVision experience switch', () => {
   beforeEach(() => {
     loadedModules.clear()
     localStorage.clear()
-    // The preference module caches per project; start every test from a known state
-    writeRedesignPreference('switch-project', {optedIn: false, dismissed: false})
   })
 
   afterEach(async () => {
@@ -121,7 +136,7 @@ describe('SanityVision experience switch', () => {
     expect(await screen.findByTestId('vision-redesign-accept')).toBeTruthy()
 
     cleanup()
-    writeRedesignPreference('switch-project', {optedIn: true})
+    storePreference('redesign', true)
     renderTool(legacyOptions)
     expect(await screen.findByTestId('vision')).toBeTruthy()
   })
@@ -139,12 +154,8 @@ describe('SanityVision experience switch', () => {
     expect(screen.queryByTestId('classic-vision')).toBeNull()
     // The toast animates out, so it leaves the DOM a moment later
     await waitFor(() => expect(screen.queryByText('vision.redesign.toast.title')).toBeNull())
-    expect(
-      JSON.parse(localStorage.getItem('sanityVision:redesign:switch-project') || '{}'),
-    ).toEqual({
-      optedIn: true,
-      dismissed: false,
-    })
+    expect(readPreference('redesign')).toBe(true)
+    expect(readPreference('redesignInvitation')).toBe(false)
   })
 
   it('remembers a dismissed invitation', async () => {
@@ -156,6 +167,7 @@ describe('SanityVision experience switch', () => {
 
     await waitFor(() => expect(screen.queryByText('vision.redesign.toast.title')).toBeNull())
     expect(screen.getByTestId('classic-vision')).toBeTruthy()
+    expect(readPreference('redesignInvitation')).toBe(true)
 
     cleanup()
     renderTool({})
@@ -164,7 +176,7 @@ describe('SanityVision experience switch', () => {
   })
 
   it('keeps the redesign one click away in the classic tool after the invitation is dismissed', async () => {
-    writeRedesignPreference('switch-project', {dismissed: true})
+    storePreference('redesignInvitation', true)
     renderTool({})
     expect(screen.queryByTestId('vision-redesign-accept')).toBeNull()
 
@@ -172,9 +184,8 @@ describe('SanityVision experience switch', () => {
       fireEvent.click(screen.getByTestId('classic-try-redesign'))
     })
     await waitFor(() => expect(screen.getByTestId('vision')).toBeTruthy())
-    expect(
-      JSON.parse(localStorage.getItem('sanityVision:redesign:switch-project') || '{}'),
-    ).toEqual({optedIn: true, dismissed: false})
+    expect(readPreference('redesign')).toBe(true)
+    expect(readPreference('redesignInvitation')).toBe(false)
 
     // Back in the classic tool, the invitation shows again
     await act(async () => {
@@ -185,7 +196,7 @@ describe('SanityVision experience switch', () => {
   })
 
   it('opens the redesign directly for an opted-in project and can switch back', async () => {
-    writeRedesignPreference('switch-project', {optedIn: true})
+    storePreference('redesign', true)
     renderTool({})
     const visionRedesign = await screen.findByTestId('vision')
 
@@ -195,6 +206,23 @@ describe('SanityVision experience switch', () => {
 
     await waitFor(() => expect(screen.getByTestId('classic-vision')).toBeTruthy())
     // The invitation shows again so the redesign stays one click away
+    expect(await screen.findByTestId('vision-redesign-accept')).toBeTruthy()
+  })
+
+  it('reads the opt-in and the dismissal where earlier releases stored them', async () => {
+    localStorage.setItem(
+      'sanityVision:redesign:switch-project',
+      JSON.stringify({optedIn: true, dismissed: true}),
+    )
+    renderTool({})
+    const visionRedesign = await screen.findByTestId('vision')
+
+    await act(async () => {
+      fireEvent.click(visionRedesign)
+    })
+    // Switching back stores the preferences, which take over from the old key
+    await waitFor(() => expect(screen.getByTestId('classic-vision')).toBeTruthy())
+    expect(readPreference('redesign')).toBe(false)
     expect(await screen.findByTestId('vision-redesign-accept')).toBeTruthy()
   })
 })

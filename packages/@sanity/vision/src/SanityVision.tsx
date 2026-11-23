@@ -7,7 +7,12 @@ import {VisionContainer} from './containers/VisionContainer'
 import {VisionErrorBoundary} from './containers/VisionErrorBoundary'
 import {RedesignToast} from './redesign/components/RedesignToast'
 import {type VisionRedesign} from './redesign/components/VisionRedesign'
-import {useRedesignPreference, writeRedesignPreference} from './redesign/redesignPreference'
+import {
+  useCreateVisionPreferences,
+  useVisionPreference,
+  useVisionPreferencesReady,
+  VisionPreferencesContext,
+} from './redesign/preferences/VisionPreferencesContext'
 import {type VisionConfig} from './types'
 import {createRetryableLazy} from './util/createRetryableLazy'
 
@@ -30,37 +35,46 @@ function SanityVision(props: SanityVisionProps) {
     ...props.tool.options,
   }
   const projectId = client.config().projectId || 'default'
-  const preference = useRedesignPreference(projectId)
-  const showRedesign = preference.optedIn
+  const preferences = useCreateVisionPreferences(projectId)
+  const ready = useVisionPreferencesReady(preferences)
+  const showRedesign = useVisionPreference(preferences, 'redesign') === true
+  const invitationDismissed = useVisionPreference(preferences, 'redesignInvitation') === true
 
-  const optIn = useCallback(
-    () => writeRedesignPreference(projectId, {optedIn: true, dismissed: false}),
-    [projectId],
-  )
-  const dismiss = useCallback(
-    () => writeRedesignPreference(projectId, {dismissed: true}),
-    [projectId],
-  )
-  const switchToClassic = useCallback(
-    () => writeRedesignPreference(projectId, {optedIn: false, dismissed: false}),
-    [projectId],
-  )
+  const optIn = useCallback(() => {
+    preferences.set('redesign', true)
+    preferences.set('redesignInvitation', false)
+  }, [preferences])
+  const dismiss = useCallback(() => preferences.set('redesignInvitation', true), [preferences])
+  const switchToClassic = useCallback(() => {
+    preferences.set('redesign', false)
+    preferences.set('redesignInvitation', false)
+  }, [preferences])
+
+  // The first visit waits for the stored preferences, so it does not open one experience and then
+  // switch to the other
+  if (!ready) return null
 
   return (
-    <VisionErrorBoundary onRetry={visionRedesign.retry}>
-      <VisionContainer client={client} config={config}>
-        {(loaded) =>
-          showRedesign ? (
-            <VisionRedesignLoader {...loaded} config={config} onSwitchToClassic={switchToClassic} />
-          ) : (
-            <VisionGui {...loaded} client={client} config={config} onSwitchToRedesign={optIn} />
-          )
-        }
-      </VisionContainer>
-      {!showRedesign && !preference.dismissed && (
-        <RedesignToast onAccept={optIn} onDismiss={dismiss} />
-      )}
-    </VisionErrorBoundary>
+    <VisionPreferencesContext.Provider value={preferences}>
+      <VisionErrorBoundary onRetry={visionRedesign.retry}>
+        <VisionContainer client={client} config={config}>
+          {(loaded) =>
+            showRedesign ? (
+              <VisionRedesignLoader
+                {...loaded}
+                config={config}
+                onSwitchToClassic={switchToClassic}
+              />
+            ) : (
+              <VisionGui {...loaded} client={client} config={config} onSwitchToRedesign={optIn} />
+            )
+          }
+        </VisionContainer>
+        {!showRedesign && !invitationDismissed && (
+          <RedesignToast onAccept={optIn} onDismiss={dismiss} />
+        )}
+      </VisionErrorBoundary>
+    </VisionPreferencesContext.Provider>
   )
 }
 

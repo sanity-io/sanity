@@ -83,6 +83,8 @@
     "@sanity/icons": "^5.4.0",
     "@sanity/lezer-groq": "^1.0.4",
     "@sanity/schema": "workspace:*",
+    "@sanity/sdk": "catalog:",
+    "@sanity/sdk-react": "catalog:",
     "@sanity/telemetry": "catalog:",
     "@sanity/ui": "catalog:",
     "@sanity/uuid": "^3.0.3",
