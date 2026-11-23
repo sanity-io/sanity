@@ -159,15 +159,21 @@ export const documentGroupInventoryMachine = setup({
         ),
         sendTo(
           ({context}) => context.deletionRef,
-          ({context}) => {
+          ({context, event}) => {
             const versions = context.sets.flatMap((set) => set.variants)
+            // Variants are counted from every version of the group, not only the listed ones:
+            // with Content Variants off the inventory leaves variant versions out, but they still
+            // need the Default, so deleting it stays blocked.
+            const allDocuments =
+              event.snapshot.context?.versionState.versions ??
+              versions.map(({document}) => document)
             return {
               type: 'versions.changed' as const,
               versionIds: versions.map(({id}) => id),
               variantIds: [
                 ...new Set(
-                  versions
-                    .map(({document}) => getDocumentVersionVariantId(document))
+                  allDocuments
+                    .map((document) => getDocumentVersionVariantId(document))
                     .filter((variantId) => typeof variantId === 'string'),
                 ),
               ],

@@ -22,6 +22,7 @@ import {type TargetPerspective} from '../../perspective/types'
 import {SanityDefaultPreview} from '../../preview/components/SanityDefaultPreview'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
 import {getReleaseTone} from '../../releases/util/getReleaseTone'
+import {useWorkspace} from '../../studio/workspace'
 import {type SystemBundle} from '../../util/draftUtils'
 import {readVersionType} from '../../util/versionsUtils'
 import {
@@ -393,6 +394,7 @@ function VersionChipRow({id, variant}: {id: string; variant: Variant | undefined
 
 function BlockedNotice({id, variantCount}: {id: string; variantCount: number}) {
   const {t} = useTranslation(studioLocaleNamespace)
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   return (
     <Card padding={3} radius={2} tone="critical" flex="none" data-testid="default-blocked" id={id}>
       <Flex>
@@ -411,7 +413,9 @@ function BlockedNotice({id, variantCount}: {id: string; variantCount: number}) {
             <VStack as="ul" gap={3} style={{paddingInlineStart: 0, listStyle: 'none', margin: 0}}>
               <li data-testid="blocked-by-variants">
                 <Text size={1} as="div" trim={true}>
-                  {t('document-group.delete.blocked.variants-reason', {count: variantCount})}
+                  {variantsEnabled
+                    ? t('document-group.delete.blocked.variants-reason', {count: variantCount})
+                    : t('document-group.delete.blocked.variants-off-reason', {count: variantCount})}
                 </Text>
               </li>
             </VStack>

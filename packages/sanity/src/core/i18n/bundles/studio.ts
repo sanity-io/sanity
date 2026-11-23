@@ -625,6 +625,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Reason in the delete dialog's blocked notice: the document has variants, which need their Default document. Counts variants, not copies (plural) */
   'document-group.delete.blocked.variants-reason_other':
     '{{count}} variants exist. Delete the variants first.',
+  /** Reason in the delete dialog's blocked notice with Content Variants off: the document still has variants (made while it was on), which need it and can't be managed here (singular) */
+  'document-group.delete.blocked.variants-off-reason_one':
+    '1 variant of this document exists, and Content Variants is off in this studio. Ask an administrator to delete the variant first.',
+  /** Reason in the delete dialog's blocked notice with Content Variants off: the document still has variants (made while it was on), which need it and can't be managed here (plural) */
+  'document-group.delete.blocked.variants-off-reason_other':
+    '{{count}} variants of this document exist, and Content Variants is off in this studio. Ask an administrator to delete the variants first.',
   /** Heading above the versions in the delete dialog that can't be deleted yet */
   'document-group.delete.blocked-versions.heading': "Can't be deleted yet",
   /** The text in the "Cancel" button in the confirm delete dialog that cancels the action */
