@@ -2442,8 +2442,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       color2k:
-        specifier: ^2.1.0
-        version: 2.1.0
+        specifier: ^2.2.0
+        version: 2.2.0
       dataloader:
         specifier: ^2.2.3
         version: 2.2.3
@@ -11420,8 +11420,8 @@ packages:
     resolution: {integrity: sha512-Bb6Cq8oq0IjDOe8wJmi4JeNn763Xs9cfrBcaylK1tPypWzyoy2G3l90v9k64kjphl/ZJjPIShFztenRomi8WTg==}
     engines: {node: '>=18'}
 
-  color2k@2.1.0:
-    resolution: {integrity: sha512-ohe2JUfg2IOY1cf4sBtdwIW2fAn41OR14wURKqsQgk7WHSJAnl/WlAFhk4O15CNUMAD+dep9Lxh6mjrKCpQMkA==}
+  color2k@2.2.0:
+    resolution: {integrity: sha512-n+jb2Ss/1jXE9u4YDfR2Tk8SqVr9FcA14qpVw8oBBxZqnUzsN3yvGmyvHaw5z5VRvLpL5Ab8+CNjJjIStth3KQ==}
 
   color@5.0.3:
     resolution: {integrity: sha512-ezmVcLR3xAVp8kYOm4GS45ZLLgIE6SPAFoduLr6hTDajwb3KZ2F46gulK3XpcwRFb5KKGCSezCBAY4Dw4HsyXA==}
@@ -25987,7 +25987,7 @@ snapshots:
     dependencies:
       color-name: 2.1.1
 
-  color2k@2.1.0: {}
+  color2k@2.2.0: {}
 
   color@5.0.3:
     dependencies:
