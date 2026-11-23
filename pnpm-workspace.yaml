@@ -110,6 +110,7 @@ minimumReleaseAgeExclude:
   # in lockstep; @sanity/tsdown-config tracks its latest so builds pick up new bindings together
   - 'lightningcss'
   - 'lightningcss-*'
+  - 'mendoza'
   # motion, framer-motion and motion-dom release in lockstep, often several times a week, so new
   # versions are routinely younger than minimumReleaseAge
   - 'framer-motion'
