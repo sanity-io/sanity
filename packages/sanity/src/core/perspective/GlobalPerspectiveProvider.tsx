@@ -1,12 +1,15 @@
 import {type ReactNode, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 
-import {PUBLISHED} from '../releases/util/const'
+import {useReleasesEnabled} from '../releases/hooks/useReleasesEnabled'
+import {useActiveReleases} from '../releases/store/useActiveReleases'
+import {useArchivedReleases} from '../releases/store/useArchivedReleases'
 import {useWorkspace} from '../studio/workspace'
 import {EMPTY_ARRAY} from '../util/empty'
 import {PerspectiveProvider} from './PerspectiveProvider'
 import {ResetArchivedReleasePerspective} from './ResetArchivedReleasePerspective'
-import {type ReleaseId} from './types'
+import {ResetIgnoredPerspective} from './ResetIgnoredPerspective'
+import {resolveStickyPerspectiveName} from './resolveStickyPerspectiveName'
 
 /**
  * This component is not meant to be exported by `sanity`, it's meant only for internal use from the `<StudioProvider>` file.
@@ -24,14 +27,30 @@ export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
     },
   } = useWorkspace()
 
-  let selectedPerspectiveName = router.stickyParams.perspective as
-    | 'published'
-    | ReleaseId
-    | undefined
-
-  if (!isDraftModelEnabled && typeof selectedPerspectiveName === 'undefined') {
-    selectedPerspectiveName = PUBLISHED
-  }
+  const {data: activeReleases, loading: activeLoading} = useActiveReleases()
+  const {data: archivedReleases, loading: archivedLoading} = useArchivedReleases()
+  const releasesEnabled = useReleasesEnabled()
+  const stickyPerspective = router.stickyParams.perspective ?? undefined
+  const {name: selectedPerspectiveName, ignored} = useMemo(
+    () =>
+      resolveStickyPerspectiveName({
+        perspective: stickyPerspective,
+        activeReleases,
+        archivedReleases,
+        releasesLoading: activeLoading || archivedLoading,
+        releasesEnabled,
+        isDraftModelEnabled,
+      }),
+    [
+      stickyPerspective,
+      activeReleases,
+      archivedReleases,
+      activeLoading,
+      archivedLoading,
+      releasesEnabled,
+      isDraftModelEnabled,
+    ],
+  )
 
   const excludedPerspectives = useMemo(
     () => router.stickyParams.excludedPerspectives?.split(',') || EMPTY_ARRAY,
@@ -49,6 +68,7 @@ export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
     >
       {children}
       <ResetArchivedReleasePerspective />
+      <ResetIgnoredPerspective perspective={stickyPerspective} ignored={ignored} />
     </PerspectiveProvider>
   )
 }

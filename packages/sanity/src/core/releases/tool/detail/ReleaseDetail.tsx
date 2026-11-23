@@ -8,6 +8,8 @@ import {Text, Box, Flex, VStack, Icon} from 'ui5'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../studio/workspace'
+import {isCardinalityOneRelease} from '../../../util/releaseUtils'
+import {useReleasesEnabled} from '../../hooks/useReleasesEnabled'
 import {releasesLocaleNamespace} from '../../i18n'
 import {useActiveReleases} from '../../store/useActiveReleases'
 import {useArchivedReleases} from '../../store/useArchivedReleases'
@@ -35,6 +37,7 @@ export function ReleaseDetail() {
   const releaseId = decodeURIComponent(releaseIdRaw || '')
   const {data, loading} = useActiveReleases()
   const {data: archivedReleases} = useArchivedReleases()
+  const releasesEnabled = useReleasesEnabled()
 
   const {
     loading: documentsLoading,
@@ -43,9 +46,15 @@ export function ReleaseDetail() {
   } = useReleaseDocuments(releaseId)
   const releaseEvents = useReleaseEvents(releaseId)
 
+  // With content releases off, the tool lists scheduled drafts only: a link to a release reads as
+  // not found, like a release that does not exist.
   const releaseInDetail = data
     .concat(archivedReleases)
-    .find((candidate) => getReleaseIdFromReleaseDocumentId(candidate._id) === releaseId)
+    .find(
+      (candidate) =>
+        getReleaseIdFromReleaseDocumentId(candidate._id) === releaseId &&
+        (releasesEnabled || isCardinalityOneRelease(candidate)),
+    )
 
   const isNotFound = !loading && !releaseInDetail
 
