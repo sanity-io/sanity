@@ -7,6 +7,8 @@ import {definePlugin} from '../../config/definePlugin'
 import {type ProviderProps} from '../../config/studio/types'
 import {type ObjectInputProps} from '../../form/types/inputProps'
 import {FEATURES, useFeatureEnabledObservable} from '../../hooks/useFeatureEnabled'
+import {RELEASE_DOCUMENT_TYPE} from '../../releases/store/constants'
+import {VARIANT_DOCUMENT_TYPE} from '../../variants/store/constants'
 import {type TasksMode} from '../context/enabled/types'
 import {tasksUsEnglishLocaleBundle} from '../i18n'
 import {TaskCreateAction} from './TaskCreateAction'
@@ -29,7 +31,14 @@ export const TASKS_NAME = 'sanity/tasks'
 export const tasks = definePlugin({
   name: TASKS_NAME,
   document: {
-    actions: (prev) => {
+    actions: (prev, context) => {
+      // Release and variant definitions are written through their actions APIs, not edited
+      if (
+        context.schemaType === RELEASE_DOCUMENT_TYPE ||
+        context.schemaType === VARIANT_DOCUMENT_TYPE
+      ) {
+        return prev
+      }
       return [...prev, TaskCreateAction].filter(Boolean)
     },
   },

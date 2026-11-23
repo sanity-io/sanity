@@ -42,6 +42,11 @@ export const variants = definePlugin((options: {metadata?: VariantMetadataConfig
     types: (prev) => [...prev, variantSchema, variantMetadataSchema(options.metadata)],
     templates: (prev) => prev.filter((template) => template.schemaType !== VARIANT_DOCUMENT_TYPE),
   },
+  document: {
+    // Variant definitions are written through the variants actions API, never through document
+    // actions.
+    actions: (prev, context) => (context.schemaType === VARIANT_DOCUMENT_TYPE ? [] : prev),
+  },
   studio: {
     components: {
       provider: VariantsStudioProvider,

@@ -11,7 +11,6 @@ import {tasks, TASKS_NAME} from '../tasks/plugin'
 import {variants, VARIANTS_NAME} from '../variants/plugin'
 import {scheduledDraftsEnabledReducer} from './configPropertyReducers'
 import {resolveReleaseMetadataConfig} from './releases/metadataFields'
-import {systemDocuments} from './systemDocuments'
 import {
   type AppsOptions,
   type DefaultPluginsWorkspaceOptions,
@@ -31,7 +30,6 @@ const defaultPlugins = (options: DefaultPluginsOptions) => [
   mediaLibrary(),
   schedules(options),
   singleDocRelease(),
-  systemDocuments(),
 ]
 
 type DefaultPluginsOptions = DefaultPluginsWorkspaceOptions & {

@@ -169,7 +169,6 @@ describe('resolveConfig', () => {
       {name: 'sanity/canvas-integration'},
       {name: 'sanity/schedules'},
       {name: 'sanity/singleDocRelease'},
-      {name: 'sanity/system-documents'},
     ])
   })
   it('still registers the comments plugin as sanity/comments when v2 is enabled', async () => {
@@ -353,7 +352,6 @@ describe('resolveConfig', () => {
       {name: 'sanity/canvas-integration'},
       {name: 'sanity/schedules'},
       {name: 'sanity/singleDocRelease'},
-      {name: 'sanity/system-documents'},
     ])
   })
 })
