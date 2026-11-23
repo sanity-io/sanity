@@ -22,6 +22,7 @@ import {type TFunction} from '../../i18n/types'
 import {type TargetPerspective} from '../../perspective/types'
 import {SanityDefaultPreview} from '../../preview/components/SanityDefaultPreview'
 import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
+import {useReleasesEnabled} from '../../releases/hooks/useReleasesEnabled'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../releases/util/getReleaseTone'
@@ -86,8 +87,21 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
   const variants = useSelector(selectionRef, ({context}) => context.variants)
   const variantIds = useSelector(deletionRef, ({context}) => context.variantIds)
 
-  const internalReferences =
+  const allInternalReferences =
     useSelector(deletionRef, ({context}) => context.internalReferences) ?? EMPTY_INTERNAL_REFERENCES
+  // With content releases off, a link held only in a release version is left out, as the rest of
+  // the studio leaves out releases: it doesn't block the delete, and this studio can't open it.
+  const releasesEnabled = useReleasesEnabled()
+  const internalReferences = useMemo(() => {
+    if (releasesEnabled) return allInternalReferences
+    const references = allInternalReferences.references.filter(
+      (reference) => reference.failsLater !== true,
+    )
+    const removed = allInternalReferences.references.length - references.length
+    return removed === 0
+      ? allInternalReferences
+      : {totalCount: allInternalReferences.totalCount - removed, references}
+  }, [allInternalReferences, releasesEnabled])
 
   const crossDatasetReferences =
     useSelector(deletionRef, ({context}) => context.crossDatasetReferences) ??
