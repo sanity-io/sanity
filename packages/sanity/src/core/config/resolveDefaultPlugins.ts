@@ -94,8 +94,6 @@ export function getDefaultPluginsOptions(
     },
     tasks: {
       enabled: true,
-      // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-      ...workspace.unstable_tasks,
       ...workspace.tasks,
     },
     scheduledPublishing: {

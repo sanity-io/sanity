@@ -861,10 +861,6 @@ export interface WorkspaceOptions extends SourceOptions {
    */
   unstable_sources?: SourceOptions[]
   /**
-   * @deprecated Use `tasks` instead
-   */
-  unstable_tasks?: DefaultPluginsWorkspaceOptions['tasks']
-  /**
    * Set `legacy: true` to keep using the legacy comments, stored in the comments addon dataset,
    * instead of the Comments API.
    * @public
