@@ -188,36 +188,26 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const editState = useEditState(documentId, documentType, 'default', targetScopeId)
 
-  // When a release is selected but the document doesn't exist in it, find the first version
-  // in the perspective stack below the selected release. This aligns the form value with the
-  // list preview, which walks the stack and shows the first copy it finds.
+  // Resolves the first version below the selected release so the form value matches the list preview
   const stackedVersionScopeId = useMemo(() => {
-    // Only relevant when viewing a release (not drafts/published)
     if (!releaseId || isSystemBundle(releaseId)) return undefined
-    // If the selected release already has the version, no need to look further
     if (editState.version) return undefined
 
-    // Find the index of the selected release in the stack
     const selectedIndex = perspectiveStack.indexOf(releaseId)
     if (selectedIndex === -1) return undefined
 
-    // Walk the stack starting after the selected release
-    for (let i = selectedIndex + 1; i < perspectiveStack.length; i++) {
-      const perspective = perspectiveStack[i]
-      // Stop at system bundles (drafts/published)
-      if (perspective === 'drafts' || perspective === 'published') {
-        return undefined
-      }
-      // Check if a version exists for this perspective
-      const hasVersion = documentVersionStubs.some((v) => v._system?.bundleId === perspective)
-      if (hasVersion) {
-        return perspective
-      }
-    }
-    return undefined
+    const isDraftsOrPublished = (perspective: string) =>
+      perspective === 'drafts' || perspective === 'published'
+    const firstStop = perspectiveStack
+      .slice(selectedIndex + 1)
+      .find(
+        (perspective) =>
+          isDraftsOrPublished(perspective) ||
+          documentVersionStubs.some((stub) => stub._system?.bundleId === perspective),
+      )
+    return firstStop && isDraftsOrPublished(firstStop) ? undefined : firstStop
   }, [releaseId, editState.version, perspectiveStack, documentVersionStubs])
 
-  // Fetch the stacked version's edit state when it exists below the selected release
   const stackedEditState = useEditState(documentId, documentType, 'low', stackedVersionScopeId)
 
   const connectionState = useConnectionState(documentId, documentType, targetScopeId)
@@ -243,9 +233,6 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       if (editState.version && isGoingToUnpublish(editState.version)) {
         return editState.published || baseValue
       }
-      // Walk down the perspective stack: use the selected release's version if available,
-      // then check releases below it in the stack, then fall back to draft/published.
-      // This aligns the form value with the list preview which walks the stack.
       return (
         editState.version ||
         stackedEditState.version ||
