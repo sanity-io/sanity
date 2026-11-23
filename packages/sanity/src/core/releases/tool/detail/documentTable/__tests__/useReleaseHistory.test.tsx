@@ -3,6 +3,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {getTransactionsLogs} from '../../../../../store/translog/getTransactionsLogs'
+import {MAX_CONCURRENT_HISTORY_REQUESTS} from '../createHistoryRequestQueue'
 import {useReleaseHistory} from '../useReleaseHistory'
 
 vi.mock('../../../../../store/translog/getTransactionsLogs', () => ({
@@ -45,7 +46,7 @@ describe('useReleaseHistory', () => {
     )
   })
 
-  it('sends no more than two history requests at a time when many rows mount together', async () => {
+  it('sends no more than five history requests at a time when many rows mount together', async () => {
     const pending: Array<() => void> = []
     let maxInFlight = 0
     mockGetTransactionsLogs.mockImplementation(
@@ -56,20 +57,22 @@ describe('useReleaseHistory', () => {
         }),
     )
     const wrapper = await createTestProvider()
-    const rows = Array.from({length: 6}, (_unused, index) =>
+    const rows = Array.from({length: MAX_CONCURRENT_HISTORY_REQUESTS * 3}, (_unused, index) =>
       renderHook(() => useReleaseHistory(`queued-${index}`, 'rSummer', 'rev-queued'), {wrapper}),
     )
 
-    await waitFor(() => expect(mockGetTransactionsLogs).toHaveBeenCalledTimes(2))
-    pending.splice(0).forEach((resolve) => resolve())
-    await waitFor(() => expect(mockGetTransactionsLogs).toHaveBeenCalledTimes(4))
-    pending.splice(0).forEach((resolve) => resolve())
-    await waitFor(() => expect(mockGetTransactionsLogs).toHaveBeenCalledTimes(6))
-    pending.splice(0).forEach((resolve) => resolve())
+    for (const batch of [1, 2, 3]) {
+      await waitFor(() =>
+        expect(mockGetTransactionsLogs).toHaveBeenCalledTimes(
+          MAX_CONCURRENT_HISTORY_REQUESTS * batch,
+        ),
+      )
+      pending.splice(0).forEach((resolve) => resolve())
+    }
 
     await waitFor(() =>
       expect(rows.every(({result}) => result.current.loading === false)).toBe(true),
     )
-    expect(maxInFlight).toBe(2)
+    expect(maxInFlight).toBe(MAX_CONCURRENT_HISTORY_REQUESTS)
   })
 })

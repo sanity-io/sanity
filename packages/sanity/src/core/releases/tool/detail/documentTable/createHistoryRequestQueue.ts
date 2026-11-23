@@ -18,7 +18,8 @@ import {
 import {classifyRequestError} from '../../../../studio/requestErrors/classify'
 
 // The history endpoint is uncached and its in-flight limit is shared with other tabs and editors.
-const MAX_CONCURRENT_HISTORY_REQUESTS = 2
+/** @internal */
+export const MAX_CONCURRENT_HISTORY_REQUESTS = 5
 const HISTORY_REQUEST_GAP_MS = 100
 const MAX_HISTORY_REQUEST_RETRIES = 3
 const DEFAULT_RETRY_DELAY_MS = 1000
@@ -34,7 +35,7 @@ function getRetryDelay(error: unknown, retryCount: number): Observable<number> {
 }
 
 /**
- * Creates a queue that runs history API requests at most two at a time, with a short gap after
+ * Creates a queue that runs history API requests at most five at a time, with a short gap after
  * each one, and retries rate limited and failed requests after the delay the API asks for.
  *
  * A request whose subscriber unsubscribes before its turn is never sent. One that is already in

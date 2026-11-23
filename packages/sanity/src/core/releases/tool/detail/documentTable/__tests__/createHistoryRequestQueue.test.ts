@@ -2,7 +2,10 @@ import {ClientError} from '@sanity/client'
 import {lastValueFrom} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {createHistoryRequestQueue} from '../createHistoryRequestQueue'
+import {
+  createHistoryRequestQueue,
+  MAX_CONCURRENT_HISTORY_REQUESTS,
+} from '../createHistoryRequestQueue'
 
 function rateLimitedError(retryAfter?: string): ClientError {
   return new ClientError({
@@ -14,6 +17,8 @@ function rateLimitedError(retryAfter?: string): ClientError {
     method: 'GET',
   })
 }
+
+const slots = Array.from({length: MAX_CONCURRENT_HISTORY_REQUESTS}, (_unused, index) => index)
 
 function deferred<T>() {
   let resolve!: (value: T) => void
@@ -34,9 +39,11 @@ describe('createHistoryRequestQueue', () => {
     vi.useRealTimers()
   })
 
-  it('runs no more than two requests at a time, with a gap after each one', async () => {
+  it('runs no more than five requests at a time, with a gap after each one', async () => {
     const schedule = createHistoryRequestQueue()
-    const pending = Array.from({length: 5}, () => deferred<string>())
+    const pending = Array.from({length: MAX_CONCURRENT_HISTORY_REQUESTS + 3}, () =>
+      deferred<string>(),
+    )
     let inFlight = 0
     let maxInFlight = 0
     const started: number[] = []
@@ -55,25 +62,21 @@ describe('createHistoryRequestQueue', () => {
     )
 
     await vi.advanceTimersByTimeAsync(0)
-    expect(started).toEqual([0, 1])
+    expect(started).toEqual(slots)
 
-    pending[0].resolve('first')
+    pending[0].resolve('result 0')
     await vi.advanceTimersByTimeAsync(99)
-    expect(started).toEqual([0, 1])
+    expect(started).toEqual(slots)
     await vi.advanceTimersByTimeAsync(1)
-    expect(started).toEqual([0, 1, 2])
+    expect(started).toEqual([...slots, MAX_CONCURRENT_HISTORY_REQUESTS])
 
     pending.forEach((request, index) => request.resolve(`result ${index}`))
     await vi.advanceTimersByTimeAsync(1000)
 
-    await expect(Promise.all(results)).resolves.toEqual([
-      'first',
-      'result 1',
-      'result 2',
-      'result 3',
-      'result 4',
-    ])
-    expect(maxInFlight).toBe(2)
+    await expect(Promise.all(results)).resolves.toEqual(
+      pending.map((_request, index) => `result ${index}`),
+    )
+    expect(maxInFlight).toBe(MAX_CONCURRENT_HISTORY_REQUESTS)
   })
 
   it('waits for the Retry-After delay before retrying a rate limited request', async () => {
@@ -133,7 +136,7 @@ describe('createHistoryRequestQueue', () => {
 
   it('never sends a request whose subscriber left before its turn', async () => {
     const schedule = createHistoryRequestQueue()
-    const blocking = [deferred<string>(), deferred<string>()]
+    const blocking = slots.map(() => deferred<string>())
     blocking.forEach((request) => schedule(() => request.promise).subscribe())
     const skipped = vi.fn(() => Promise.resolve('skipped'))
     const sent = vi.fn(() => Promise.resolve('sent'))
@@ -151,7 +154,7 @@ describe('createHistoryRequestQueue', () => {
 
   it('does not wait to retry a request whose subscriber left while it was in flight', async () => {
     const schedule = createHistoryRequestQueue()
-    const inFlight = [deferred<string>(), deferred<string>()]
+    const inFlight = slots.map(() => deferred<string>())
     const subscriptions = inFlight.map((request) => schedule(() => request.promise).subscribe())
     const next = vi.fn(() => Promise.resolve('next'))
     const result = lastValueFrom(schedule(next))
@@ -168,18 +171,16 @@ describe('createHistoryRequestQueue', () => {
   it('stops waiting to retry once its subscriber has left', async () => {
     const schedule = createHistoryRequestQueue()
     const rateLimited = vi.fn(() => Promise.reject(rateLimitedError('30')))
-    const subscription = schedule(rateLimited).subscribe()
-    const second = schedule(() => Promise.reject(rateLimitedError('30'))).subscribe()
+    const subscriptions = slots.map(() => schedule(rateLimited).subscribe())
     const next = vi.fn(() => Promise.resolve('next'))
     const result = lastValueFrom(schedule(next))
 
     await vi.advanceTimersByTimeAsync(0)
-    subscription.unsubscribe()
-    second.unsubscribe()
+    subscriptions.forEach((subscription) => subscription.unsubscribe())
     await vi.advanceTimersByTimeAsync(100)
 
     expect(next).toHaveBeenCalledTimes(1)
     await expect(result).resolves.toBe('next')
-    expect(rateLimited).toHaveBeenCalledTimes(1)
+    expect(rateLimited).toHaveBeenCalledTimes(MAX_CONCURRENT_HISTORY_REQUESTS)
   })
 })
