@@ -11,7 +11,7 @@
 interface GroqWasmModule {
   DEFAULT_WIDTH: number
   format: (query: string, config?: {width?: number}) => string
-  lint: (query: string) => WasmFinding[]
+  lint: (query: string, config?: {rules?: Record<string, boolean>}) => WasmFinding[]
   extractParams: (
     query: string,
   ) => Array<{name: string; references: Array<{start: number; end: number}>}>
@@ -56,6 +56,13 @@ export interface GroqQueryParam {
   /** Where `$name` occurs in the query; already indices into the query string */
   references: Array<{from: number; to: number}>
 }
+
+/**
+ * `groq-lint` rules Vision does not run, keyed by the id the wasm config takes (snake_cased, unlike
+ * the kebab-cased `ruleId` of a finding). `unlimited-query` flags every unsliced query, which is
+ * what a tool for exploring a dataset is for.
+ */
+const DISABLED_LINT_RULES: Record<string, boolean> = {unlimited_query: false}
 
 let groqWasm: Promise<GroqWasmModule> | undefined
 
@@ -147,13 +154,14 @@ export async function formatGroq(query: string, width?: number): Promise<string>
 
 /**
  * Runs the `groq-lint` rules (joins in filters, unindexable comparisons, deep pagination, ...)
- * over a query. Rejects with a {@link GroqSyntaxError} when the query does not parse.
+ * over a query, except those Vision turns off. Rejects with a {@link GroqSyntaxError} when the
+ * query does not parse.
  */
 export async function lintGroq(query: string): Promise<GroqFinding[]> {
   const wasm = await loadGroqWasm()
   let findings: WasmFinding[]
   try {
-    findings = wasm.lint(query)
+    findings = wasm.lint(query, {rules: DISABLED_LINT_RULES})
   } catch (error) {
     throw toSyntaxError(error, query)
   }
