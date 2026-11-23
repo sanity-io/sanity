@@ -412,6 +412,7 @@ import type {
   DocumentMutationEvent,
   DocumentOptions,
   DocumentPairLoadedEvent,
+  DocumentPairPermissionsListener,
   DocumentPairPermissionsOptions,
   DocumentPairTarget,
   DocumentPermission,
@@ -788,6 +789,8 @@ import type {
   KeyValueStoreValue,
   LatencyReportEvent,
   LayoutProps,
+  LegacyAuthConfig,
+  LegacyCallbackResult,
   LegacyThemeProps,
   LegacyThemeTints,
   LinearProgress,
@@ -884,6 +887,9 @@ import type {
   NumberOptions,
   NumberRule,
   NumberSchemaType,
+  OAuthAuthConfig,
+  OAuthCallbackResult,
+  OAuthConfig,
   ObjectArrayFormNode,
   ObjectComponents,
   ObjectDefinition,
@@ -1033,6 +1039,7 @@ import type {
   RegionWithIntersectionDetails,
   RelativeTimeOptions,
   RelativeTimeProps,
+  RELEASE_DOCUMENT_TYPE,
   ReleaseActionComponent,
   ReleaseActionDescription,
   ReleaseActionProps,
@@ -1042,6 +1049,7 @@ import type {
   ReleaseAvatarIcon,
   ReleaseDocument,
   ReleaseId,
+  ReleaseMetadataConfig,
   RELEASES_STUDIO_CLIENT_OPTIONS,
   ReleasesNavMenuItemPropsGetter,
   RemoteSnapshotEvent,
@@ -1712,7 +1720,7 @@ describe('sanity', () => {
     expectTypeOf<AsyncConfigPropertyReducer<any, any>>().not.toBeNever()
   })
   test('AuthConfig', () => {
-    expectTypeOf<AuthConfig>().toBeObject()
+    expectTypeOf<AuthConfig>().not.toBeNever()
   })
   test('AuthProbeResult', () => {
     expectTypeOf<AuthProbeResult>().not.toBeNever()
@@ -2721,6 +2729,9 @@ describe('sanity', () => {
   test('DocumentPairLoadedEvent', () => {
     expectTypeOf<DocumentPairLoadedEvent>().toBeObject()
   })
+  test('DocumentPairPermissionsListener', () => {
+    expectTypeOf<DocumentPairPermissionsListener>().not.toBeNever()
+  })
   test('DocumentPairPermissionsOptions', () => {
     expectTypeOf<DocumentPairPermissionsOptions>().toBeObject()
   })
@@ -3336,7 +3347,7 @@ describe('sanity', () => {
     expectTypeOf<GroupChangeNode>().toBeObject()
   })
   test('HandleCallbackResult', () => {
-    expectTypeOf<HandleCallbackResult>().toBeObject()
+    expectTypeOf<HandleCallbackResult>().not.toBeNever()
   })
   test('HexColor', () => {
     expectTypeOf<HexColor>().not.toBeNever()
@@ -3855,6 +3866,12 @@ describe('sanity', () => {
   test('LayoutProps', () => {
     expectTypeOf<LayoutProps>().toBeObject()
   })
+  test('LegacyAuthConfig', () => {
+    expectTypeOf<LegacyAuthConfig>().toBeObject()
+  })
+  test('LegacyCallbackResult', () => {
+    expectTypeOf<LegacyCallbackResult>().toBeObject()
+  })
   test('LegacyThemeProps', () => {
     expectTypeOf<LegacyThemeProps>().toBeObject()
   })
@@ -4144,6 +4161,15 @@ describe('sanity', () => {
   })
   test('NumberSchemaType', () => {
     expectTypeOf<NumberSchemaType>().toBeObject()
+  })
+  test('OAuthAuthConfig', () => {
+    expectTypeOf<OAuthAuthConfig>().toBeObject()
+  })
+  test('OAuthCallbackResult', () => {
+    expectTypeOf<OAuthCallbackResult>().toBeObject()
+  })
+  test('OAuthConfig', () => {
+    expectTypeOf<OAuthConfig>().toBeObject()
   })
   test('ObjectArrayFormNode', () => {
     expectTypeOf<ObjectArrayFormNode<any, any>>().toBeObject()
@@ -4594,6 +4620,9 @@ describe('sanity', () => {
   test('RelativeTimeProps', () => {
     expectTypeOf<RelativeTimeProps>().toBeObject()
   })
+  test('RELEASE_DOCUMENT_TYPE', () => {
+    expectTypeOf<typeof RELEASE_DOCUMENT_TYPE>().not.toBeNever()
+  })
   test('ReleaseActionComponent', () => {
     expectTypeOf<ReleaseActionComponent>().toBeObject()
   })
@@ -4620,6 +4649,9 @@ describe('sanity', () => {
   })
   test('ReleaseId', () => {
     expectTypeOf<ReleaseId>().not.toBeNever()
+  })
+  test('ReleaseMetadataConfig', () => {
+    expectTypeOf<ReleaseMetadataConfig>().toBeObject()
   })
   test('RELEASES_STUDIO_CLIENT_OPTIONS', () => {
     expectTypeOf<typeof RELEASES_STUDIO_CLIENT_OPTIONS>().not.toBeNever()
