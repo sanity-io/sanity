@@ -1,6 +1,6 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {CloseIcon} from '@sanity/icons/Close'
-import {Button, TextInput} from '@sanity/ui'
+import {Button, Text, TextInput} from '@sanity/ui'
 import {type Transition, Reorder, useDragControls, useReducedMotion} from 'motion/react'
 import {
   type KeyboardEvent,
@@ -67,7 +67,7 @@ function TabTitleInput({title, onCommit, onCancel}: TabTitleInputProps) {
   }
 
   return (
-    <Box className={styles.tabTitleInput} paddingY={1}>
+    <Box className={styles.tabTitleInput} paddingX={1}>
       <TextInput
         autoFocus
         data-testid="vision-tab-title-input"
@@ -171,33 +171,31 @@ function TabHandle(props: TabHandleProps) {
         data-entering={entering ? 'true' : undefined}
         data-selected={selected ? 'true' : undefined}
         data-testid="vision-tab"
-        gap={1}
-        paddingLeft={1}
-        paddingRight={1}
         role="presentation"
       >
         {editing ? (
           <TabTitleInput onCancel={onCancelRename} onCommit={onRename} title={title} />
         ) : (
-          <Button
+          // A plain button, so the whole tab is its hit area and the tab paints hover and focus
+          <button
             aria-controls={QUERY_TAB_PANEL_ID}
             aria-selected={selected}
             className={styles.tabTitleButton}
             data-testid="vision-tab-button"
-            fontSize={1}
             id={getQueryTabId(tab.id)}
-            mode="bleed"
             onAuxClick={handleAuxClick}
             onClick={onSelect}
             onDoubleClick={onStartRename}
             onKeyDown={onKeyDown}
             onPointerDown={startDrag}
-            padding={2}
             role="tab"
             tabIndex={selected ? 0 : -1}
-            text={title}
-            textWeight={selected ? 'medium' : 'regular'}
-          />
+            type="button"
+          >
+            <Text className={styles.tabTitle} muted={!selected} size={1} textOverflow="ellipsis">
+              {title}
+            </Text>
+          </button>
         )}
         <Button
           aria-label={t('vision.tabs.close-tab')}
@@ -318,7 +316,6 @@ export function QueryTabBar() {
       data-testid="vision-tab-bar"
       flexShrink={0}
       onPointerDownCapture={() => setKeyboardDriven(false)}
-      paddingX={1}
     >
       <Reorder.Group
         aria-label={t('vision.tabs.label')}
@@ -351,18 +348,17 @@ export function QueryTabBar() {
           />
         ))}
       </Reorder.Group>
-      <Flex alignItems="center" paddingX={1}>
-        <Button
-          aria-label={t('vision.tabs.new-tab')}
-          className={styles.pressableIcon}
-          data-testid="vision-new-tab"
-          fontSize={1}
-          icon={AddIcon}
-          mode="bleed"
-          onClick={() => actorRef.send({type: 'tab.add'})}
-          padding={2}
-        />
-      </Flex>
+      <Button
+        aria-label={t('vision.tabs.new-tab')}
+        className={styles.newTabButton}
+        data-testid="vision-new-tab"
+        fontSize={1}
+        icon={AddIcon}
+        mode="bleed"
+        onClick={() => actorRef.send({type: 'tab.add'})}
+        padding={2}
+        radius={0}
+      />
     </Flex>
   )
 }

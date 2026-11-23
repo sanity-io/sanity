@@ -7,9 +7,10 @@ import {InlineCode, useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
+import {useAiFeatures} from '../../aiFeatures'
 import {useAiCredits} from '../../hooks/useAiCredits'
 import {type ExplainStep} from '../../hooks/useQueryExplain'
-import {type AiCreditsClient} from '../../util/aiCredits'
+import {type AiCredits, type AiCreditsClient} from '../../util/aiCredits'
 import {cx} from '../../util/cx'
 import {splitMessage} from '../../util/groqLint'
 import {
@@ -54,14 +55,21 @@ export interface ExplainTabProps {
   onExplain: () => void
 }
 
+/** The AI credits under the explain button, read when it mounts */
+function ExplainCredits({client, limit}: {client: AiCreditsClient; limit: AiCredits | undefined}) {
+  const credits = useAiCredits(client)
+  return <AiCreditsStatus apiHost={client.config().apiHost} credits={limit ?? credits} />
+}
+
 /**
  * How the Content Lake runs the tab's query: its query plan (the query endpoint's `explain`),
- * and on request an explanation of the query and the plan written by Agent Actions
+ * and on request an explanation of the query and the plan written by Agent Actions, unless the
+ * `explainQuery` AI feature is off
  */
 export function ExplainTab(props: ExplainTabProps) {
   const {client, plan, explanation, canExplain, onShowPlan, onExplain} = props
   const {t} = useTranslation(visionLocaleNamespace)
-  const credits = useAiCredits(client)
+  const {explainQuery: aiExplain} = useAiFeatures()
   const explaining = explanation.status === 'loading'
   const planText = plan.status === 'done' ? plan.text : undefined
   const insights = useMemo(() => (planText ? readPlanInsights(planText) : []), [planText])
@@ -72,22 +80,24 @@ export function ExplainTab(props: ExplainTabProps) {
     <Box data-testid="vision-explain" padding={3}>
       <Stack gap={4}>
         <Text muted size={1} as="div" trim={true}>
-          {t('vision.explain.description')}
+          {aiExplain ? t('vision.explain.description') : t('vision.explain.description-plan')}
         </Text>
         <Flex flexWrap="wrap" gap={2}>
-          <AgentActionsTooltip>
-            <Button
-              data-testid="vision-explain-button"
-              disabled={!canExplain || explaining}
-              fontSize={1}
-              icon={SparklesIcon}
-              loading={explaining}
-              onClick={onExplain}
-              padding={2}
-              text={t('vision.explain.explain')}
-              tone="primary"
-            />
-          </AgentActionsTooltip>
+          {aiExplain && (
+            <AgentActionsTooltip>
+              <Button
+                data-testid="vision-explain-button"
+                disabled={!canExplain || explaining}
+                fontSize={1}
+                icon={SparklesIcon}
+                loading={explaining}
+                onClick={onExplain}
+                padding={2}
+                text={t('vision.explain.explain')}
+                tone="primary"
+              />
+            </AgentActionsTooltip>
+          )}
           <Button
             data-testid="vision-explain-plan-button"
             disabled={!canExplain || plan.status === 'loading'}
@@ -99,7 +109,7 @@ export function ExplainTab(props: ExplainTabProps) {
             text={t('vision.explain.plan')}
           />
         </Flex>
-        <AiCreditsStatus apiHost={client.config().apiHost} credits={limit ?? credits} />
+        {aiExplain && <ExplainCredits client={client} limit={limit} />}
         {!canExplain && (
           <Text muted size={1} as="div" trim={true}>
             {t('vision.explain.empty')}

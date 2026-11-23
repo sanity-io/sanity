@@ -8,6 +8,7 @@ import {Text, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
+import {useAiFeatures} from '../../aiFeatures'
 import {reportAiCreditsGranted, reportAiCreditsLimit, useAiCredits} from '../../hooks/useAiCredits'
 import {type VisionTab} from '../../store/types'
 import {useVisionActor} from '../../store/VisionActorContext'
@@ -58,6 +59,7 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
   const controllerRef = useRef<AbortController | null>(null)
   const credits = useAiCredits(client)
   const upsell = useAiCreditsUpsell()
+  const {generateQuery: enabled} = useAiFeatures()
 
   useEffect(() => () => controllerRef.current?.abort(), [])
 
@@ -88,7 +90,7 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
   const telemetry = useVisionTelemetry()
   const generate = useCallback(async () => {
     const description = request.trim()
-    if (!description) return
+    if (!description || !enabled) return
     telemetry.agentAction('generate-query')
     controllerRef.current?.abort()
     const controller = new AbortController()
@@ -118,7 +120,7 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
         limit,
       })
     }
-  }, [client, open, request, schema, telemetry, upsell])
+  }, [client, enabled, open, request, schema, telemetry, upsell])
 
   const generating = status.type === 'generating'
   const lastAttempt = status.type === 'failed' ? status.lastAttempt : undefined
@@ -128,7 +130,12 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
   const atLimit = shownCredits?.granted === false
 
   return (
-    <Card className={overlays.promptBar} borderBottom data-testid="vision-generate-bar" padding={2}>
+    <Card
+      className={`${overlays.promptBar} ${styles.generateBar}`}
+      borderBottom
+      data-testid="vision-generate-bar"
+      padding={2}
+    >
       <Stack gap={2}>
         <PromptRow
           label={t('vision.generate.label')}

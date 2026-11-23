@@ -1,6 +1,7 @@
 import {useCallback, useState} from 'react'
 
 import {useVisionTelemetry} from '../../telemetry/useVisionTelemetry'
+import {useAiFeatures} from '../aiFeatures'
 import {useAiCreditsUpsell} from '../components/AiCreditsUpsellContext'
 import {type QueryRequest} from '../store/types'
 import {type AiCredits, readAiCreditsLimit} from '../util/aiCredits'
@@ -34,10 +35,11 @@ export function useQueryExplain(request: QueryRequest | null) {
   const [plan, setPlan] = useState<ExplainStep>(IDLE)
   const [explanation, setExplanation] = useState<ExplainStep>(IDLE)
   const upsell = useAiCreditsUpsell()
+  const {explainQuery: canExplain} = useAiFeatures()
   const url = request?.url
   const currentPlan = plan.status !== 'idle' && plan.url === url ? plan : IDLE
   const currentExplanation =
-    explanation.status !== 'idle' && explanation.url === url ? explanation : IDLE
+    canExplain && explanation.status !== 'idle' && explanation.url === url ? explanation : IDLE
 
   const loadPlan = useCallback(async (current: QueryRequest): Promise<string | undefined> => {
     setPlan({status: 'loading', url: current.url})
@@ -57,7 +59,7 @@ export function useQueryExplain(request: QueryRequest | null) {
 
   const telemetry = useVisionTelemetry()
   const explain = useCallback(async () => {
-    if (!request) return
+    if (!request || !canExplain) return
     telemetry.agentAction('explain')
     setExplanation({status: 'loading', url: request.url})
     const planText = currentPlan.status === 'done' ? currentPlan.text : await loadPlan(request)
@@ -77,7 +79,7 @@ export function useQueryExplain(request: QueryRequest | null) {
       }
       setExplanation({status: 'failed', url: request.url, message: toMessage(error), limit})
     }
-  }, [currentPlan, loadPlan, request, telemetry, upsell])
+  }, [canExplain, currentPlan, loadPlan, request, telemetry, upsell])
 
   return {plan: currentPlan, explanation: currentExplanation, showPlan, explain}
 }

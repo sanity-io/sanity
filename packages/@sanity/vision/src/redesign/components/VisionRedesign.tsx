@@ -6,6 +6,7 @@ import {Flex} from 'ui5'
 import {useSavedQueries} from '../../hooks/useSavedQueries'
 import {useVisionTelemetry} from '../../telemetry/useVisionTelemetry'
 import {type VisionConfig} from '../../types'
+import {AiFeaturesContext, resolveAiFeatures} from '../aiFeatures'
 import {useContentSize} from '../hooks/useContentSize'
 import {
   createPendingEdits,
@@ -95,6 +96,7 @@ export function VisionRedesign(props: VisionRedesignProps) {
     (): VisionExperience => ({layout, switchToClassic: onSwitchToClassic}),
     [layout, onSwitchToClassic],
   )
+  const aiFeatures = useMemo(() => resolveAiFeatures(config.ai), [config.ai])
   const savedQueries = useSavedQueries()
   const [pendingEdits] = useState(createPendingEdits)
   const [tabDrawerElement, setTabDrawerElement] = useState<HTMLElement | null>(null)
@@ -109,37 +111,39 @@ export function VisionRedesign(props: VisionRedesignProps) {
         <SavedQueriesContext.Provider value={savedQueries}>
           <PendingEditsContext.Provider value={pendingEdits}>
             <TabDrawerSlotContext.Provider value={tabDrawerSlot}>
-              <AiCreditsUpsellProvider projectId={projectId}>
-                <TooltipDelayGroupProvider delay={TOOLTIP_DELAY}>
-                  <Flex
-                    className={styles.root}
-                    data-testid="vision-root"
-                    data-vision-layout={layout}
-                    height="100%"
-                    overflow="hidden"
-                    ref={setRootElement}
-                  >
-                    <VisionSidebar />
+              <AiFeaturesContext.Provider value={aiFeatures}>
+                <AiCreditsUpsellProvider projectId={projectId}>
+                  <TooltipDelayGroupProvider delay={TOOLTIP_DELAY}>
                     <Flex
-                      flexBasis="0%"
-                      flexDirection="column"
-                      flexGrow={1}
-                      // Under a phone's full-width drawer the tabs area is covered and must not take focus
-                      inert={layout === 'mobile' && openDrawer !== null}
-                      minWidth="0"
+                      className={styles.root}
+                      data-testid="vision-root"
+                      data-vision-layout={layout}
+                      height="100%"
                       overflow="hidden"
+                      ref={setRootElement}
                     >
-                      <QueryTabBar />
-                      <RequestBottomPanelProvider>
-                        <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
-                      </RequestBottomPanelProvider>
+                      <VisionSidebar />
+                      <Flex
+                        flexBasis="0%"
+                        flexDirection="column"
+                        flexGrow={1}
+                        // Under a phone's full-width drawer the tabs area is covered and must not take focus
+                        inert={layout === 'mobile' && openDrawer !== null}
+                        minWidth="0"
+                        overflow="hidden"
+                      >
+                        <QueryTabBar />
+                        <RequestBottomPanelProvider>
+                          <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
+                        </RequestBottomPanelProvider>
+                      </Flex>
                     </Flex>
-                  </Flex>
-                  <VisionDialogs />
-                  <VisionUrlState tab={activeTab} />
-                  <VisionWebMcp tab={activeTab} />
-                </TooltipDelayGroupProvider>
-              </AiCreditsUpsellProvider>
+                    <VisionDialogs />
+                    <VisionUrlState tab={activeTab} />
+                    <VisionWebMcp tab={activeTab} />
+                  </TooltipDelayGroupProvider>
+                </AiCreditsUpsellProvider>
+              </AiFeaturesContext.Provider>
             </TabDrawerSlotContext.Provider>
           </PendingEditsContext.Provider>
         </SavedQueriesContext.Provider>

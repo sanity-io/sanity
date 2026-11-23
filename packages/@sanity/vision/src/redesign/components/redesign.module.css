@@ -119,8 +119,17 @@
 .labelActions {
   position: absolute;
   top: -7px;
-  right: 12px;
+  right: 8px;
   pointer-events: auto;
+}
+
+/*
+ * The Generate query bar that replaces the label's Generate button: its row starts 5px from the
+ * top of the pane like the button, and its close button sits 8px from the right edge like the
+ * button. Doubled to beat the card's own padding.
+ */
+.generateBar.generateBar {
+  padding-top: 5px;
 }
 
 /* The result's JSON view fills the result pane, its editor scrolling on its own */
@@ -197,13 +206,11 @@
  */
 .pressable,
 .pressableIcon,
-.tabTitleButton,
 .tabCloseButton {
   transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.pressable:active,
-.tabItem:not([data-dragging='true']) .tabTitleButton:active {
+.pressable:active {
   transform: scale(0.97);
 }
 
@@ -215,14 +222,12 @@
 @media (prefers-reduced-motion: reduce) {
   .pressable,
   .pressableIcon,
-  .tabTitleButton,
   .tabCloseButton {
     transition: none;
   }
 
   .pressable:active,
   .pressableIcon:active,
-  .tabItem .tabTitleButton:active,
   .tabCloseButton:active {
     transform: none;
   }
@@ -323,7 +328,8 @@
 }
 
 /*
- * The tab strip: a tinted band whose bottom rule is an inset shadow, so the selected tab's
+ * The tab strip, laid out like an editor's: full-height rectangular tabs, each closed off by a
+ * vertical rule, on a tinted band whose bottom rule is an inset shadow, so the selected tab's
  * background can cover it and merge with the panel below (a border would be clipped away by the
  * strip's overflow instead).
  */
@@ -332,6 +338,7 @@
   overflow-y: hidden;
   scrollbar-width: thin;
   flex-shrink: 0;
+  height: 36px;
   background: var(--card-bg2-color);
   box-shadow: inset 0 -1px 0 var(--card-border-color);
 }
@@ -345,7 +352,6 @@
 .tabList {
   display: flex;
   align-items: stretch;
-  gap: 2px;
 }
 
 /* The draggable wrapper around each tab; motion positions it while dragging and reordering */
@@ -359,14 +365,18 @@
   z-index: 1;
 }
 
+/*
+ * Half of an Untitled query tab, on the 4px grid. A `*` plus its close button is about 51px, so
+ * 64px still leaves breathing room and nothing clips. The close button keeps its room when
+ * hidden, so hovering never changes the width.
+ */
 .tab {
   position: relative;
   flex-shrink: 0;
+  min-width: 64px;
   max-width: 240px;
-  margin-top: 4px;
-  border: 1px solid transparent;
-  border-bottom: none;
-  border-radius: 3px 3px 0 0;
+  padding-right: 6px;
+  border-right: 1px solid var(--card-border-color);
   transform-origin: bottom center;
 }
 
@@ -393,13 +403,19 @@
 }
 
 /*
- * Hover tints ease in; selecting a tab (often from the keyboard) switches its background at once.
- * Touch devices get no hover, which would otherwise stick after a tap.
+ * Hover tints the whole tab and brightens its title, easing in; selecting a tab (often from the
+ * keyboard) switches its background at once. Touch devices get no hover, which would otherwise
+ * stick after a tap.
  */
 @media (hover: hover) and (pointer: fine) {
+  /* Halfway between the strip and its rules: `--card-muted-bg-color` is the strip's own color */
   .tab:not([data-selected='true']):hover {
-    background: var(--card-muted-bg-color);
+    background: color-mix(in srgb, var(--card-border-color) 50%, var(--card-bg2-color));
     transition: background-color 100ms ease;
+  }
+
+  .tab:not([data-selected='true']):hover .tabTitle {
+    color: var(--card-fg-color);
   }
 
   .tab:hover .tabCloseButton {
@@ -412,17 +428,53 @@
 
 .tab[data-selected='true'] {
   background: var(--card-bg-color);
-  border-color: var(--card-border-color);
+}
+
+/* The selected tab's accent, over the strip's bottom rule */
+.tab[data-selected='true']::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--card-focus-ring-color);
+  pointer-events: none;
+}
+
+/* Keyboard focus outlines the whole tab, inside the strip, which clips anything outside it */
+.tab:has(.tabTitleButton:focus-visible) {
+  outline: 1px solid var(--card-focus-ring-color);
+  outline-offset: -1px;
 }
 
 .tabItem[data-dragging='true'] .tab {
   box-shadow: 0 2px 6px var(--card-shadow-umbra-color);
 }
 
+/* Fills the tab up to the close button, so the whole tab selects it */
 .tabTitleButton {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  align-self: stretch;
   min-width: 0;
-  flex-shrink: 1;
-  overflow: hidden;
+  margin: 0;
+  padding: 0 8px 0 12px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: default;
+}
+
+.tabTitleButton:focus-visible {
+  outline: none;
+}
+
+.tabTitle {
+  min-width: 0;
 }
 
 .tabCloseButton {
@@ -436,7 +488,15 @@
 }
 
 .tabTitleInput {
+  flex: 1 1 auto;
   min-width: 120px;
+}
+
+/* A square cell at the strip's height, right after the last tab's rule */
+.newTabButton {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
 }
 
 .resultContainer {
