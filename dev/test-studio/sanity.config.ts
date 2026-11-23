@@ -55,6 +55,7 @@ import {groqStoreDebugBar} from './plugins/groq-store-wasm/plugin'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter/plugin'
+import {listenerFloodTool} from './plugins/listener-flood/plugin'
 import {presenceDebug} from './plugins/presence-debug/plugin'
 import {routerDebugTool} from './plugins/router-debug/plugin'
 import {styleOutline} from './plugins/style-outline/plugin'
@@ -284,6 +285,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       }),
       themerTool(),
       routerDebugTool(),
+      listenerFloodTool(),
       // Opt-in (Vercel test-studio). Must stay this exact member expression.
       ...(process.env.SANITY_STUDIO_STYLE_OUTLINE === 'true' ? [styleOutline()] : []),
       formBuilderReproTool(),
