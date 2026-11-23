@@ -1,7 +1,5 @@
 import {type ComponentType} from 'react'
 
-import {type SanityDocument} from '../documents/types'
-import {type Path} from '../paths/types'
 import {type ReferenceFilterOptions} from '../reference/types'
 import {type PreviewConfig} from '../schema/preview'
 import {type ObjectSchemaType} from '../schema/types'
@@ -15,25 +13,6 @@ export interface CrossDatasetReferenceValue {
   _key?: string
   _weak?: boolean
 }
-
-/** @beta */
-export interface WeakCrossDatasetReferenceValue extends CrossDatasetReferenceValue {
-  _weak: true
-}
-
-/** @beta */
-export type CrossDatasetReferenceFilterSearchOptions = {
-  filter?: string
-  params?: Record<string, unknown>
-  tag?: string
-}
-
-/** @beta */
-export type CrossDatasetReferenceFilterResolver = (options: {
-  document: SanityDocument
-  parent?: Record<string, unknown> | Record<string, unknown>[]
-  parentPath: Path
-}) => CrossDatasetReferenceFilterSearchOptions | Promise<CrossDatasetReferenceFilterSearchOptions>
 
 /** @beta */
 export interface CrossDatasetType {
