@@ -981,8 +981,8 @@ importers:
         specifier: ^6.1.18
         version: 6.1.18(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)
       '@sanity/groq-store-wasm':
-        specifier: ^0.11.4
-        version: 0.11.4(vitest@5.1.1)
+        specifier: ^0.11.5
+        version: 0.11.5(vitest@5.1.1)
       '@sanity/icons':
         specifier: ^5.4.0
         version: 5.4.0(react@19.3.1)
@@ -2118,8 +2118,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0(react-dom@19.3.1)(react@19.3.1)
       '@sanity-labs/groq-wasm':
-        specifier: ^1.2.4
-        version: 1.2.4
+        specifier: ^1.2.7
+        version: 1.2.7
       '@sanity/client':
         specifier: 'catalog:'
         version: 8.17.0(vitest@5.1.1)
@@ -8808,8 +8808,8 @@ packages:
     resolution: {integrity: sha512-SuaCvywAoZ0gbPFKI5B+TinSQaBiVlQlCTDvZOvCFwUioEngkfYxDhIeh1S8fV9lNQ+l3suF8xAlRPEYxyh7nA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@sanity-labs/groq-wasm@1.2.4':
-    resolution: {integrity: sha512-siiz3C8NKZy3z+maE88pGFbwLCs98mtoNP4tSaolRZ0s9offJLLOPLt4kBoMsqOLnaYUI9l54O6RJ8YcR0d7EA==}
+  '@sanity-labs/groq-wasm@1.2.7':
+    resolution: {integrity: sha512-M3KHJjL3fFxqKyHy8e35VEcox9JyuVRkcTY344V6idYrLviNugLjuRV0gLN54MZq6n14f7QRJ1ZVS6p4/D7P8w==}
     engines: {node: '>=22.3.0'}
 
   '@sanity-labs/oclif-plugin-skills-flag@0.2.1':
@@ -8996,8 +8996,8 @@ packages:
       react-dom: ^19.2
       sanity: ^5 || ^6.0.0-0
 
-  '@sanity/groq-store-wasm@0.11.4':
-    resolution: {integrity: sha512-cCy9wFMrnZafr6uL8Kz1g8ZNfUMGoqnlxx0aMYA0T1E/Mn3fFHBLbhc42DG+IEM0/yaq6AK/Oq0nUTnN2tkN3A==}
+  '@sanity/groq-store-wasm@0.11.5':
+    resolution: {integrity: sha512-ohoiRlT6S8wkjV+yOr/+iZi54NqWM1xqjNWVZRxYS7SivP17+V2lK6heuBBhkeCGfPwAF1OEc94QSzp0LOlCuw==}
     engines: {node: '>=22.12'}
 
   '@sanity/icons@5.4.0':
@@ -22505,7 +22505,7 @@ snapshots:
 
   '@sanity-labs/design-tokens@0.0.2-alpha.12': {}
 
-  '@sanity-labs/groq-wasm@1.2.4': {}
+  '@sanity-labs/groq-wasm@1.2.7': {}
 
   '@sanity-labs/oclif-plugin-skills-flag@0.2.1(@oclif/core@4.14.0)':
     dependencies:
@@ -23010,7 +23010,7 @@ snapshots:
       - remix
       - styled-components
 
-  '@sanity/groq-store-wasm@0.11.4(vitest@5.1.1)':
+  '@sanity/groq-store-wasm@0.11.5(vitest@5.1.1)':
     dependencies:
       '@sanity/client': 8.16.0(vitest@5.1.1)
     transitivePeerDependencies:
