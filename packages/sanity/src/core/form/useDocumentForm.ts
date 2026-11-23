@@ -231,12 +231,14 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
       if (selectedReleaseVersion && isGoingToUnpublish(selectedReleaseVersion)) {
         return editState.published || baseValue
       }
+      const fallbackVersion =
+        editState.version && isGoingToUnpublish(editState.version) ? undefined : editState.version
       const selectedReleaseFormValue =
         selectedReleaseVersion ||
         stackedEditState.version ||
         editState.draft ||
         editState.published ||
-        editState.version ||
+        fallbackVersion ||
         baseValue
       return selectedReleaseFormValue
     }
