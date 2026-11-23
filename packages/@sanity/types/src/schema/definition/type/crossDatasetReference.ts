@@ -13,11 +13,6 @@ export interface CrossDatasetReferenceDefinition extends BaseSchemaDefinition {
     title?: string
     icon?: ComponentType
     preview?: PreviewConfig
-
-    /**
-     * @deprecated Unused. Configuring search is no longer supported.
-     */
-    __experimental_search?: {path: string | string[]; weight?: number; mapWith?: string}[]
   }[]
 
   dataset: string

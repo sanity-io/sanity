@@ -270,7 +270,6 @@ function checkArrayTypeForDeprecatedOptions(
   }
 }
 
-// Compilation injects `__experimental_search` into every compiled cross-dataset reference, so only the raw definitions show customer usage
 function hasCrossDatasetReferenceExperimentalSearch(
   definition: unknown,
   visited: WeakSet<object> = new WeakSet(),

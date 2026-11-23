@@ -2,7 +2,6 @@ import arrify from 'arrify'
 import capitalize from 'lodash-es/capitalize.js'
 import pick from 'lodash-es/pick.js'
 
-import {resolveSearchConfigForBaseFieldPaths} from '../searchConfig/resolve'
 import {DEFAULT_OVERRIDEABLE_FIELDS, OWN_PROPS_NAME} from './constants'
 import {hiddenGetter, lazyGetter} from './utils'
 
@@ -84,12 +83,7 @@ export const CrossDatasetReferenceType = {
     })
 
     lazyGetter(parsed, 'to', () => {
-      return arrify(subTypeDef.to).map((toType: any) => {
-        return {
-          ...toType,
-          __experimental_search: resolveSearchConfigForBaseFieldPaths(toType),
-        }
-      })
+      return arrify(subTypeDef.to).map((toType: any) => ({...toType}))
     })
 
     lazyGetter(parsed, 'title', () => subTypeDef.title || buildTitle(parsed))
