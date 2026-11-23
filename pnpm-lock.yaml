@@ -2169,8 +2169,8 @@ importers:
         specifier: ^14.14.0
         version: 14.14.0(react-dom@19.3.1)(react@19.3.1)
       quick-lru:
-        specifier: ^7.3.0
-        version: 7.3.0
+        specifier: ^8.0.0
+        version: 8.0.0
       react-focus-lock:
         specifier: 'catalog:'
         version: 2.13.7(@types/react@19.3.0)(react@19.3.1)
@@ -2508,8 +2508,8 @@ importers:
         specifier: ^4.3.1
         version: 4.3.1
       quick-lru:
-        specifier: ^7.3.0
-        version: 7.3.0
+        specifier: ^8.0.0
+        version: 8.0.0
       raf:
         specifier: ^3.4.1
         version: 3.4.1
@@ -15071,9 +15071,9 @@ packages:
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
-  quick-lru@7.3.0:
-    resolution: {integrity: sha512-k9lSsjl36EJdK7I06v7APZCbyGT2vMTsYSRX1Q2nbYmnkBqgUhRkAuzH08Ciotteu/PLJmIF2+tti7o3C/ts2g==}
-    engines: {node: '>=18'}
+  quick-lru@8.0.0:
+    resolution: {integrity: sha512-wuV1TowawrTfnwGvYbjYE1vwKAO0yO0rcEgHz0y9/Lz+v79WqQtRLLpLYYCZJY/tacCb9zVDMDJCJ04DKVZgfg==}
+    engines: {node: '>=22'}
 
   raf@3.4.1:
     resolution: {integrity: sha512-Sq4CW4QhwOHE8ucn6J34MqtZCeWFP2aQSmrlroYgqAV1PjStIhJXxYuTgUIfkEk7zTLjmIjLmU5q+fbD1NnOJA==}
@@ -30080,7 +30080,7 @@ snapshots:
 
   queue-microtask@1.2.3: {}
 
-  quick-lru@7.3.0: {}
+  quick-lru@8.0.0: {}
 
   raf@3.4.1:
     dependencies:
