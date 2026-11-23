@@ -4,6 +4,7 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {type TFunction} from '../../../i18n/types'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
+import {useReleasesEnabled} from '../../../releases/hooks/useReleasesEnabled'
 import {
   CreateVariantPicker,
   type CreateVariantPickerOption,
@@ -35,6 +36,16 @@ export const SelectBundle: ComponentType<Props> = ({
   disabled,
 }) => {
   const {t} = useTranslation(studioLocaleNamespace)
+  const releasesEnabled = useReleasesEnabled()
+  // The help names only what this studio offers: no releases when releases are off, Published
+  // instead of a draft when drafts are off.
+  const infoText = targetsPublished
+    ? releasesEnabled
+      ? t('document-group.create-variant.form.target-info-published')
+      : t('document-group.create-variant.form.target-info-published-no-releases')
+    : releasesEnabled
+      ? t('document-group.create-variant.form.target-info')
+      : t('document-group.create-variant.form.target-info-no-releases')
   const options = [
     ...(draftsTaken
       ? [
@@ -54,7 +65,7 @@ export const SelectBundle: ComponentType<Props> = ({
     <CreateVariantPicker
       label={t('document-group.create-variant.form.target-label')}
       info={{
-        text: t('document-group.create-variant.form.target-info'),
+        text: infoText,
         label: t('document-group.create-variant.form.target-info-label'),
       }}
       testId="create-variant-target-menu"
