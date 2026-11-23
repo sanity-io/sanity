@@ -38,7 +38,7 @@ const DEFAULT_PANELS: VisionPanelsState = {
 export const DEFAULT_HIDDEN_DIFF_FIELDS = ['_rev', '_updatedAt', '_system.base.rev']
 
 /** Every AI feature stays on until the user switches it off */
-export const DEFAULT_AI_SETTINGS: VisionAiSettings = {
+const DEFAULT_AI_SETTINGS: VisionAiSettings = {
   enabled: true,
   generateQuery: true,
   generateMutations: true,
