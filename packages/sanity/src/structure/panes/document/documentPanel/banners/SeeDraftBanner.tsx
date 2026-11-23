@@ -40,11 +40,12 @@ export function SeeDraftBanner() {
   }
 
   return (
+    // Neutral: purple (suggest) is the variants tone, and this banner is about drafts.
     <Banner
-      tone="suggest"
+      tone="default"
       data-testid="see-draft-banner"
       content={
-        <Text size={1} as="div" trim={true} tone="suggest">
+        <Text size={1} as="div" trim={true}>
           {t('banners.published.see-draft.text')}
         </Text>
       }
