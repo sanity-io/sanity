@@ -280,7 +280,10 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
     [hasTooltip, layout, media, resolvedMediaDimensions, restProps, status, title],
   )
 
-  const LayoutComponent = _previewComponents[layout || 'default'] as ComponentType<
+  // `layout` can come from persisted user settings that outlive the supported layouts (e.g. the
+  // removed `sheetList` list layout), so an unknown key must fall back instead of rendering undefined.
+  const layoutKey = layout && Object.hasOwn(_previewComponents, layout) ? layout : 'default'
+  const LayoutComponent = _previewComponents[layoutKey] as ComponentType<
     Omit<PreviewProps, 'renderDefault'>
   >
 
