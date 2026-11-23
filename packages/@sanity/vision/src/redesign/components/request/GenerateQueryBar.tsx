@@ -130,7 +130,12 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
   const atLimit = shownCredits?.granted === false
 
   return (
-    <Card className={overlays.promptBar} borderBottom data-testid="vision-generate-bar" padding={2}>
+    <Card
+      className={`${overlays.promptBar} ${styles.generateBar}`}
+      borderBottom
+      data-testid="vision-generate-bar"
+      padding={2}
+    >
       <Stack gap={2}>
         <PromptRow
           label={t('vision.generate.label')}
