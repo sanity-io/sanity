@@ -98,6 +98,18 @@ export interface VisionHistoryDiffSettings {
   hiddenFields: string[]
 }
 
+/**
+ * The AI features a user keeps on. They only switch features off: one the tool's `ai` option
+ * turns off stays off whatever is stored here.
+ */
+export interface VisionAiSettings {
+  /** `false` switches every AI feature off, whatever the per-feature settings say */
+  enabled: boolean
+  generateQuery: boolean
+  generateMutations: boolean
+  explainQuery: boolean
+}
+
 /** A custom GROQ function kept in the functions library, to declare in any query */
 export interface VisionSavedFunction {
   /** `ns::name`, unique in the library */
@@ -115,6 +127,7 @@ export interface VisionPersistedState {
   sidebar: VisionSidebarState
   panels: VisionPanelsState
   historyDiff: VisionHistoryDiffSettings
+  ai: VisionAiSettings
   /** The functions library, most recently saved first */
   functions: VisionSavedFunction[]
 }

@@ -144,6 +144,7 @@ describe('visionStorage', () => {
         resultView: 'json' as const,
       },
       historyDiff: {hiddenFields: ['_rev', 'meta.version']},
+      ai: {enabled: true, generateQuery: false, generateMutations: true, explainQuery: false},
       functions: [{id: 'ex::author', declaration: 'fn ex::author($ref) = $ref->{name}'}],
     }
     saveVisionState('proj', saved)
@@ -287,6 +288,33 @@ describe('visionStorage', () => {
       JSON.stringify({...withoutHistoryDiff, historyDiff: {hiddenFields: []}}),
     )
     expect(loadVisionState('proj', defaults).historyDiff).toEqual({hiddenFields: []})
+  })
+
+  it('keeps each AI setting on unless it was switched off', () => {
+    const {ai: _ai, ...withoutAi} = createInitialState(defaults)
+    const allOn = {enabled: true, generateQuery: true, generateMutations: true, explainQuery: true}
+    expect(createInitialState(defaults).ai).toEqual(allOn)
+
+    // State saved before the settings existed
+    localStorage.setItem(getVisionStorageKey('proj'), JSON.stringify(withoutAi))
+    expect(loadVisionState('proj', defaults).ai).toEqual(allOn)
+
+    localStorage.setItem(
+      getVisionStorageKey('proj'),
+      JSON.stringify({
+        ...withoutAi,
+        ai: {enabled: false, generateQuery: 'no', explainQuery: false},
+      }),
+    )
+    expect(loadVisionState('proj', defaults).ai).toEqual({
+      enabled: false,
+      generateQuery: true,
+      generateMutations: true,
+      explainQuery: false,
+    })
+
+    localStorage.setItem(getVisionStorageKey('proj'), JSON.stringify({...withoutAi, ai: 'off'}))
+    expect(loadVisionState('proj', defaults).ai).toEqual(allOn)
   })
 
   it('returns a fresh state for missing, malformed or outdated storage', () => {

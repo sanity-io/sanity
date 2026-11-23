@@ -1,9 +1,19 @@
 import {createContext, use} from 'react'
 
 import {type VisionAiConfig, type VisionAiFeatures} from '../types'
+import {type VisionAiSettings} from './store/types'
 
 /** Every AI feature, each resolved to whether it is on */
 export type ResolvedAiFeatures = Required<VisionAiFeatures>
+
+export type AiFeature = keyof ResolvedAiFeatures
+
+/** In the order the settings list them */
+export const AI_FEATURE_KEYS: readonly AiFeature[] = [
+  'generateQuery',
+  'generateMutations',
+  'explainQuery',
+]
 
 export const ALL_AI_FEATURES: ResolvedAiFeatures = {
   generateQuery: true,
@@ -28,8 +38,32 @@ export function resolveAiFeatures(ai: VisionAiConfig | undefined): ResolvedAiFea
   }
 }
 
+/**
+ * The features that end up on: those the config leaves on and the user's settings keep on. The
+ * settings only switch features off, so a feature the config turns off stays off.
+ */
+export function resolveEffectiveAiFeatures(
+  configured: ResolvedAiFeatures,
+  settings: VisionAiSettings,
+): ResolvedAiFeatures {
+  if (!settings.enabled) return NO_AI_FEATURES
+  return {
+    generateQuery: configured.generateQuery && settings.generateQuery,
+    generateMutations: configured.generateMutations && settings.generateMutations,
+    explainQuery: configured.explainQuery && settings.explainQuery,
+  }
+}
+
+/** The features in effect, after the config and the user's settings */
 export const AiFeaturesContext = createContext<ResolvedAiFeatures>(ALL_AI_FEATURES)
 
 export function useAiFeatures(): ResolvedAiFeatures {
   return use(AiFeaturesContext)
+}
+
+/** The features the config leaves on, which the user's settings can switch off */
+export const ConfiguredAiFeaturesContext = createContext<ResolvedAiFeatures>(ALL_AI_FEATURES)
+
+export function useConfiguredAiFeatures(): ResolvedAiFeatures {
+  return use(ConfiguredAiFeaturesContext)
 }
