@@ -18,9 +18,10 @@ import {
   type SingleWorkspace,
   type WorkspaceOptions,
 } from './types'
+import {resolveVariantMetadataConfig} from './variants/metadataFields'
 
 const defaultPlugins = (options: DefaultPluginsOptions) => [
-  variants(),
+  variants({metadata: options.variants.metadata}),
   options.comments.v2 ? commentsV2() : commentsCurrent(),
   tasks(),
   scheduledPublishing(),
@@ -118,6 +119,9 @@ export function getDefaultPluginsOptions(
     variants: {
       enabled: false,
       ...workspace.beta?.variants,
+      // Reduced across the workspace's plugins, so the variants plugin adds the same metadata to
+      // the schema as the resolved `Source.beta.variants.metadata` describes
+      metadata: resolveVariantMetadataConfig(workspace as PluginOptions),
     },
   }
 }

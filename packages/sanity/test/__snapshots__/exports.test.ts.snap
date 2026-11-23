@@ -253,6 +253,7 @@ exports[`exports snapshot 1`] = `
     "UserAvatar": "function",
     "UserColorManagerProvider": "function",
     "VARIANTS_STUDIO_CLIENT_OPTIONS": "object",
+    "VARIANT_DOCUMENT_TYPE": "string",
     "VERSION_FOLDER": "string",
     "ValueError": "function",
     "VersionChip": "object",

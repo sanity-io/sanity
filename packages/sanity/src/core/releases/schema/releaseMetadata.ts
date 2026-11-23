@@ -6,7 +6,7 @@ import {
   type SchemaValidationValue,
 } from '@sanity/types'
 
-import {warnReleaseMetadata} from '../../config/releases/metadataFields'
+import {withCoreMetadataFields} from '../../config/metadataConfig'
 import {type ReleaseMetadataConfig} from '../../config/types'
 import {isRecord} from '../../util/isRecord'
 
@@ -101,16 +101,6 @@ export function releaseMetadataSchema(
     name: RELEASE_METADATA_TYPE_NAME,
     title: 'Release metadata',
     type: 'object',
-    fields: [
-      ...RELEASE_METADATA_CORE_FIELDS,
-      ...fields.filter((field) => {
-        if (!RESERVED_RELEASE_METADATA_NAMES.has(field.name)) return true
-        warnReleaseMetadata(
-          'fields',
-          `Dropped field "${field.name}": name "${field.name}" is reserved`,
-        )
-        return false
-      }),
-    ],
+    fields: withCoreMetadataFields('releases.metadata', RELEASE_METADATA_CORE_FIELDS, fields),
   }
 }

@@ -1501,7 +1501,7 @@ export type DefaultPluginsWorkspaceOptions = {
   comments: {v2: boolean}
   tasks: {enabled: boolean}
   scheduledDrafts: {enabled: boolean}
-  variants: {enabled: boolean}
+  variants: {enabled: boolean; metadata?: VariantMetadataConfig}
   scheduledPublishing: ScheduledPublishingPluginOptions
   releases: {
     enabled?: boolean
@@ -1724,6 +1724,37 @@ export interface VariantTypeConfig {
 }
 
 /**
+ * The part of the `sanity.variantMetadata` object type a workspace or plugin configures. The
+ * core fields (`title`, `description` and `type`) always come first and can't be redeclared: a
+ * field with one of those names is dropped with a warning.
+ *
+ * Plugins and the root config are merged in order: a later field, fieldset or group with the
+ * same name replaces the earlier one, with a warning, and every config's validation applies.
+ *
+ * @example
+ * ```ts
+ * defineConfig({
+ *   beta: {
+ *     variants: {
+ *       enabled: true,
+ *       metadata: {
+ *         fields: [defineField({name: 'owner', type: 'string'})],
+ *       },
+ *     },
+ *   },
+ * })
+ * ```
+ *
+ * @internal
+ */
+export interface VariantMetadataConfig {
+  fields?: FieldDefinition[]
+  fieldsets?: FieldsetDefinition[]
+  groups?: FieldGroupDefinition[]
+  validation?: SchemaValidationValue
+}
+
+/**
  * Variant types supplied in config.
  *
  * The object form only types `variant`. Other keys are rejected until `assertOnlyVariantType`
@@ -1825,6 +1856,13 @@ export interface BetaFeatures {
      * ```
      */
     types?: VariantTypesConfig
+    /**
+     * Fields stored on variant metadata, with the fieldsets, groups and validation that
+     * organize them. They are added to the `sanity.variantMetadata` schema type.
+     *
+     * Once resolved, the `beta.variants.metadata` of the workspace and its plugins, merged.
+     */
+    metadata?: VariantMetadataConfig
   }
   /**
    * Config for the opt-in Comments API implementation.
