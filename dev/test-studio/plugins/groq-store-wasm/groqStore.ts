@@ -226,6 +226,22 @@ function hostUrl(guardOff: boolean, globalSearch: 'on' | 'off' | undefined): str
   return `/groq-host.js?${params}`
 }
 
+/**
+ * The store host's SharedWorker name, which must change whenever `hostUrl` does. The default host
+ * (guard on, no global search override, default persistence) keeps the package's default name.
+ */
+function hostName(guardOff: boolean, globalSearch: 'on' | 'off' | undefined): string | undefined {
+  const parts: string[] = []
+  if (guardOff) parts.push('guard-off')
+  if (globalSearch) parts.push(`global-search-${globalSearch}`)
+  if (!persistence.enabled) parts.push('persist-off')
+  if (persistence.enabled && persistence.maxMb !== '')
+    parts.push(`persist-max-${persistence.maxMb}`)
+  if (persistence.enabled && persistence.backend !== 'auto')
+    parts.push(`persist-${persistence.backend}`)
+  return parts.length === 0 ? undefined : `groq-store-wasm-${parts.join('-')}`
+}
+
 function isLastRun(value: unknown): value is LastRun {
   return (
     typeof value === 'object' &&
@@ -538,10 +554,7 @@ export function startGroqStore(): void {
       serviceWorkerUrl: SERVICE_WORKER_PATH,
       hostUrl: hostUrl(status.guardOff, status.globalSearch),
       // A SharedWorker name is bound to one URL, so each host variant gets its own name.
-      hostName:
-        status.guardOff || status.globalSearch
-          ? `groq-store-wasm${status.guardOff ? '-guard-off' : ''}${status.globalSearch ? `-global-search-${status.globalSearch}` : ''}`
-          : undefined,
+      hostName: hostName(status.guardOff, status.globalSearch),
       // `navigator.storage.persist()` only exists on the page, so boot asks for it here.
       requestPersistentStorage: persistence.enabled,
       onMetric,

@@ -12,8 +12,8 @@ const queryUrl =
   encodeURIComponent('count(*[_type == "author"])')
 const deadline = Date.now() + 5 * 60_000
 
-const expected = await fetch(queryUrl).then((response) => response.json())
-console.log(`Content Lake: ${JSON.stringify(expected.result)}`)
+const contentLake = () => fetch(queryUrl).then((response) => response.json())
+console.log(`Content Lake: ${JSON.stringify((await contentLake()).result)}`)
 
 const browser = await chromium.launch()
 try {
@@ -41,6 +41,8 @@ try {
     }, queryUrl)
     console.log(`attempt ${attempt}: status ${reply.status}, x-groq-wasm ${reply.hit ?? '-'}`)
     if (reply.hit === 'hit') {
+      // The store follows the dataset through its listener, so compare with Content Lake now.
+      const expected = await contentLake()
       if (JSON.stringify(reply.body.result) !== JSON.stringify(expected.result)) {
         throw new Error(
           `store answered ${JSON.stringify(reply.body.result)}, Content Lake ${JSON.stringify(expected.result)}`,

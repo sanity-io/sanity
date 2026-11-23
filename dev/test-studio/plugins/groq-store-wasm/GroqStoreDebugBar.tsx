@@ -516,7 +516,8 @@ function GroqStoreDebugBar() {
         )}
         <Latency status={status} />
         {status.enabled ? <span> · {storesSummary(rows)}</span> : null}
-        {status.enabled && status.memoryBytes !== undefined ? (
+        {/* With snapshots on each store has its own instance, so there is no single total. */}
+        {status.enabled && status.memoryBytes !== undefined && !status.persistence ? (
           <span> · wasm {mib(status.memoryBytes)} MiB</span>
         ) : null}
         {status.enabled && status.guardOff ? (
