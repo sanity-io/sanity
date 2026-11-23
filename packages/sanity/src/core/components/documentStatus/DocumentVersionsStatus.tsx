@@ -1,3 +1,4 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
 import {Box, Flex, Text} from 'ui5'
 
@@ -5,8 +6,14 @@ import {useCompactTimeAgo} from '../../hooks/useRelativeTime'
 import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
+import {useReleasesEnabled} from '../../releases/hooks/useReleasesEnabled'
+import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
+import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
 import {useWorkspace} from '../../studio/workspace'
+import {getVersionFromId} from '../../util/draftUtils'
+import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
+import {isCardinalityOneRelease} from '../../util/releaseUtils'
 import {readVersionType} from '../../util/versionsUtils'
 import {getVersionFilterLabel} from '../../variants/plugin/components/getVersionFilterLabel'
 import {useAllVariants} from '../../variants/store/useAllVariants'
@@ -47,10 +54,16 @@ export function useDocumentVersionStatusGroups(documentGroupId: string): {
 } {
   const {byId: releasesById} = useActiveReleases()
   const {byId: variantsById, loading: variantsLoading} = useAllVariants()
-  const {loading, versions} = useDocumentVersions({documentId: documentGroupId})
+  const {loading, versions: allVersions} = useDocumentVersions({documentId: documentGroupId})
   const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+  const releasesEnabled = useReleasesEnabled()
 
   const groups = useMemo(() => {
+    // With content releases off, versions in a release are left out, as the navbar leaves out the
+    // releases. Scheduled drafts stay.
+    const versions = releasesEnabled
+      ? allVersions
+      : allVersions.filter((version) => !isInHiddenRelease(version, releasesById))
     const allGroups = groupDocumentVersionsForStatus(versions, releasesById, variantsById, {
       variantsEnabled,
       showAgentVersions: SHOW_AGENT_VERSIONS_IN_STATUS,
@@ -59,9 +72,23 @@ export function useDocumentVersionStatusGroups(documentGroupId: string): {
       .filter((group) => group.variantId)
       .toSorted((left, right) => editedAt(latestEdit(right)) - editedAt(latestEdit(left)))
     return [...allGroups.filter((group) => !group.variantId), ...audiences]
-  }, [releasesById, variantsById, variantsEnabled, versions])
+  }, [allVersions, releasesById, releasesEnabled, variantsById, variantsEnabled])
 
   return {groups, loading: loading || variantsLoading}
+}
+
+/** Whether a version belongs to a release (not a scheduled draft) that the studio knows of. */
+function isInHiddenRelease(
+  version: VersionInfoDocumentStub,
+  releasesById: Map<string, ReleaseDocument>,
+): boolean {
+  const releaseRef =
+    version._system.release?._ref ??
+    (getDocumentVersionVariantId(version) ? undefined : getVersionFromId(version._id))
+  if (!releaseRef) return false
+  const release =
+    releasesById.get(releaseRef) ?? releasesById.get(getReleaseDocumentIdFromReleaseId(releaseRef))
+  return release !== undefined && !isCardinalityOneRelease(release)
 }
 
 /**
