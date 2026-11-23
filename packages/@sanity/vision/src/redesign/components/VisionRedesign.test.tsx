@@ -28,6 +28,7 @@ import {
   VisionSnippetCopied,
   VisionTabsChanged,
 } from '../../telemetry/vision.telemetry'
+import {type VisionAiConfig} from '../../types'
 import {QUERY_URL_SIZE_LIMIT} from '../../util/queryRequestMethod'
 import {resetAiCredits} from '../hooks/useAiCredits'
 import {
@@ -484,7 +485,10 @@ function createMockClient(
   }
 }
 
-function renderRedesign(perspective: PerspectiveContextValue = BASE_PERSPECTIVE) {
+function renderRedesign(
+  perspective: PerspectiveContextValue = BASE_PERSPECTIVE,
+  {ai}: {ai?: VisionAiConfig} = {},
+) {
   const mockClient = createMockClient()
   sanityMocks.setPerspective(perspective)
   sanityMocks.useClient.mockReturnValue(mockClient.client)
@@ -497,7 +501,7 @@ function renderRedesign(perspective: PerspectiveContextValue = BASE_PERSPECTIVE)
         <LayerProvider>
           <Activity mode={mode}>
             <VisionRedesign
-              config={{defaultApiVersion: '2025-02-19'}}
+              config={{defaultApiVersion: '2025-02-19', ai}}
               datasets={DEFAULTS.datasets}
               projectId={PROJECT_ID}
               defaultDataset="test"
@@ -1722,6 +1726,107 @@ describe('VisionRedesign', () => {
     expect(within(explain).queryByTestId('vision-explain-error')).toBeNull()
     // The plan costs nothing, so it still came
     expect(within(explain).getByTestId('vision-query-plan')).toBeTruthy()
+  })
+
+  describe('the ai option', () => {
+    /** What a test registers as WebMCP tools; removed again when the test finishes */
+    function captureWebMcpTools(): string[] {
+      const names: string[] = []
+      Reflect.set(document, 'modelContext', {
+        registerTool: (tool: {name: string}) => {
+          names.push(tool.name)
+          return Promise.resolve()
+        },
+      })
+      onTestFinished(() => {
+        Reflect.deleteProperty(document, 'modelContext')
+      })
+      return names
+    }
+
+    /** Which AI controls a configuration shows, after visiting every panel that has one */
+    async function shownAiControls(ai: VisionAiConfig | undefined) {
+      const tools = captureWebMcpTools()
+      const view = renderRedesign(BASE_PERSPECTIVE, {ai})
+      typeQuery('*[_type == "post"]')
+      fireEvent.click(document.getElementById('vision-response-explain-tab') as HTMLElement)
+      // The query plan is no AI feature: it is there in every configuration
+      await waitFor(() =>
+        expect(isDisabled(screen.getByTestId('vision-explain-plan-button'))).toBe(false),
+      )
+      const explainDescription = text(screen.getByTestId('vision-explain'))
+      fireEvent.click(screen.getByTestId('vision-sidebar-mutate'))
+      await waitFor(() => expect(screen.getByTestId('vision-mutate-add')).toBeTruthy())
+      // Registration is asynchronous; give it the turn it takes when it happens
+      await act(async () => {})
+      return {
+        view,
+        shown: {
+          generateQuery: screen.queryByTestId('vision-generate-query') !== null,
+          generateMutations: screen.queryByTestId('vision-mutate-generate') !== null,
+          explainQuery: screen.queryByTestId('vision-explain-button') !== null,
+        },
+        webMcpTools: tools.length,
+        explainDescription,
+        creditNotes: screen.queryAllByText('vision.agent-actions.credits').length,
+      }
+    }
+
+    it.each([
+      ['omitted', undefined],
+      ['true', true],
+      ['an empty object', {}],
+    ] as const)('keeps every AI feature on when it is %s', async (_label, ai) => {
+      const {shown, explainDescription, creditNotes, webMcpTools} = await shownAiControls(ai)
+      expect(shown).toEqual({generateQuery: true, generateMutations: true, explainQuery: true})
+      expect(webMcpTools).toBe(7)
+      expect(explainDescription).toContain('vision.explain.description')
+      expect(explainDescription).not.toContain('vision.explain.description-plan')
+      expect(creditNotes).toBe(3)
+    })
+
+    it('hides every AI feature with false, reads no AI credits and calls no Agent Actions', async () => {
+      const {shown, explainDescription, creditNotes, view, webMcpTools} =
+        await shownAiControls(false)
+      expect(shown).toEqual({generateQuery: false, generateMutations: false, explainQuery: false})
+      // The WebMCP tools spend no AI credits and stay registered
+      expect(webMcpTools).toBe(7)
+      // The plan stays, described without the explanation
+      expect(explainDescription).toContain('vision.explain.description-plan')
+      expect(creditNotes).toBe(0)
+      expect(screen.queryByText(/vision\.ai-credits\./)).toBeNull()
+      expect(view.aiCreditsRequests).toHaveLength(0)
+
+      view.respondToRequests({result: [], explain: 'Pipeline {}'})
+      fireEvent.click(document.getElementById('vision-response-explain-tab') as HTMLElement)
+      fireEvent.click(screen.getByTestId('vision-explain-plan-button'))
+      await waitFor(() => expect(screen.getByTestId('vision-query-plan')).toBeTruthy())
+      expect(view.promptCalls).toHaveLength(0)
+    })
+
+    it.each([
+      ['generateQuery', {generateQuery: false}],
+      ['generateMutations', {generateMutations: false}],
+      ['explainQuery', {explainQuery: false}],
+    ] as const)('switches off only %s when it alone is false', async (key, ai) => {
+      const {shown} = await shownAiControls(ai)
+      expect(shown).toEqual({
+        generateQuery: true,
+        generateMutations: true,
+        explainQuery: true,
+        [key]: false,
+      })
+    })
+
+    it('keeps the features an object sets to true or leaves out, and turns off the rest', async () => {
+      const {shown, creditNotes} = await shownAiControls({
+        generateQuery: true,
+        generateMutations: false,
+      })
+      expect(shown).toEqual({generateQuery: true, generateMutations: false, explainQuery: true})
+      // Generate over the query editor and Explain this to me
+      expect(creditNotes).toBe(2)
+    })
   })
 
   it('generates a query from a description into the empty tab, and fetches it', async () => {

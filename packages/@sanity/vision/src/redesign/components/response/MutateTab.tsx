@@ -11,6 +11,7 @@ import {Text, Box, Flex, Grid} from 'ui5'
 
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {visionLocaleNamespace} from '../../../i18n'
+import {useAiFeatures} from '../../aiFeatures'
 import {type AiCreditsClient} from '../../util/aiCredits'
 import {type GenerateMutationsClient} from '../../util/generateMutations'
 import {
@@ -328,7 +329,9 @@ export function MutateTab(props: MutateTabProps) {
   const {mutate, client, dataset, canRequest, result, hiddenFields, onApplied} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const {state} = mutate
-  const [generatorOpen, setGeneratorOpen] = useState(false)
+  const {generateMutations: canGenerate} = useAiFeatures()
+  const [generatorState, setGeneratorOpen] = useState(false)
+  const generatorOpen = canGenerate && generatorState
 
   const input = useMemo(() => readMutations(state.text), [state.text])
   const options = useMemo(
@@ -411,7 +414,7 @@ export function MutateTab(props: MutateTabProps) {
             <JsonEditor
               actions={
                 <Flex alignItems="center" gap={1}>
-                  {!generatorOpen && (
+                  {canGenerate && !generatorOpen && (
                     <AgentActionsTooltip title={t('vision.mutate.generate.button')}>
                       <Button
                         aria-label={t('vision.mutate.generate.button')}

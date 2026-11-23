@@ -290,6 +290,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Explanation at the top of the Explain panel */
   'vision.explain.description':
     'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps. Explain this to me has Sanity Agent Actions describe the query and its plan in plain words, which uses one AI credit.',
+  /** Explanation at the top of the Explain panel when the AI explanation is switched off */
+  'vision.explain.description-plan':
+    'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps.',
   /** Shown in the Explain panel while there is no valid query to explain */
   'vision.explain.empty': 'Write a query to explain it.',
   /** Button in the Explain panel asking Agent Actions to explain the query and its plan */

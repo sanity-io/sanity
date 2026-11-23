@@ -32,6 +32,26 @@ export default defineConfig({
 })
 ```
 
+### Turning off AI features
+
+The redesigned Vision has AI features that use your organization's AI credits, all of them on by default. The `ai` option turns them off, all at once or one at a time:
+
+```ts
+// No AI features at all
+visionTool({ai: false})
+
+// Everything except query generation
+visionTool({ai: {generateQuery: false}})
+```
+
+| Key                 | Feature                                                                                                                                                        |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `generateQuery`     | Generate, which writes the query from a description with Sanity Agent Actions (uses AI credits)                                                                |
+| `generateMutations` | Generate in the Mutate panel, which writes mutations from a description with Sanity Agent Actions (uses AI credits)                                            |
+| `explainQuery`      | "Explain this to me" in the Explain panel, which describes the query and its plan with Sanity Agent Actions (uses AI credits). The query plan stays available. |
+
+A feature is on unless its key is `false`.
+
 ### Only enabling it for development
 
 If you only want the Vision tool available in development (e.g., not in deployed studios), you can import and use the `isDev` constant from the `sanity` package:
