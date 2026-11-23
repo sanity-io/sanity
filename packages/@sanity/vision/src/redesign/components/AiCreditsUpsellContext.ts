@@ -1,4 +1,4 @@
-import {createContext, useContext} from 'react'
+import {createContext, use} from 'react'
 import {type ObservablePromise} from 'react-rx'
 import {
   type UpsellDataResult,
@@ -38,5 +38,5 @@ export const AiCreditsUpsellContext = createContext<AiCreditsUpsellContextValue 
 
 /** The AI credits upsell, or `null` outside the provider, where the out-of-credits card stands alone */
 export function useAiCreditsUpsell(): AiCreditsUpsellContextValue | null {
-  return useContext(AiCreditsUpsellContext)
+  return use(AiCreditsUpsellContext)
 }
