@@ -403,6 +403,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const ready =
     connectionState === 'connected' &&
     editState.ready &&
+    (!stackedVersionScopeId || stackedEditState.ready) &&
     !initialValue?.loading &&
     !documentVersionsLoading
 
