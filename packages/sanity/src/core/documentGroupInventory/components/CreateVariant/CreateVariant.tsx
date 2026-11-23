@@ -85,12 +85,15 @@ export const CreateVariant: ComponentType<Props> = ({
     const onKeyDown = (event: KeyboardEvent) => {
       const card = cardRef.current
       // Escape closes the form while the focus is in it. While one of its menus is open, the menu
-      // takes the Escape. This listens in the capture phase, so the select still reads as expanded
-      // when the menu's own handler closes it.
+      // takes the Escape, and so does an open tooltip (a field's info tooltip shows on keyboard
+      // focus): the tooltip closes on its own window Escape listener, and a second Escape closes
+      // the form. This listens in the capture phase, so the select still reads as expanded and the
+      // tooltip as open when their own handlers close them.
       if (
         event.key === 'Escape' &&
         card?.contains(event.target as Node) &&
-        !card.querySelector('[aria-expanded="true"]')
+        !card.querySelector('[aria-expanded="true"]') &&
+        !hasOpenTooltip()
       ) {
         variantCreationRef.send({type: 'createVariant.cancel'})
       }
@@ -340,4 +343,13 @@ function toVariantCreationBundle(option: CreateVariantBundleOption): VariantCrea
   return option.type === 'drafts'
     ? {type: 'drafts'}
     : {type: 'release', releaseId: option.releaseId}
+}
+
+/** Whether a tooltip is showing. Closed `@sanity/ui` tooltips stay mounted, hidden. */
+function hasOpenTooltip(): boolean {
+  return [...document.querySelectorAll<HTMLElement>('[data-ui="Tooltip"]')].some((tooltip) =>
+    typeof tooltip.checkVisibility === 'function'
+      ? tooltip.checkVisibility()
+      : tooltip.offsetParent !== null,
+  )
 }

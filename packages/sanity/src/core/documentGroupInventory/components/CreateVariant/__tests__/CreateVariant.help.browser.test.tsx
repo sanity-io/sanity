@@ -78,6 +78,8 @@ const RELEASES: ReleasesReducerState = {
   state: 'loaded',
 }
 
+type CreationRef = ActorRefFromLogic<typeof variantCreationMachine>
+
 /** The form's machine reports to a parent when it opens, so it runs under one. */
 function createVariantCreationRef() {
   const parent = createActor(
@@ -99,25 +101,21 @@ function createVariantCreationRef() {
   return ref
 }
 
-function Harness() {
+function Harness({creationRef = createVariantCreationRef()}: {creationRef?: CreationRef}) {
   return (
     <TestWrapper schemaTypes={[]}>
       <Card padding={3}>
         {/* Room left of the form for the tooltips, as the document pane gives it in the studio */}
         <div style={{width: 360, marginLeft: 320}}>
-          <CreateVariant
-            variantCreationRef={createVariantCreationRef()}
-            sets={SETS}
-            documentTitle="Summer sale"
-          />
+          <CreateVariant variantCreationRef={creationRef} sets={SETS} documentTitle="Summer sale" />
         </div>
       </Card>
     </TestWrapper>
   )
 }
 
-async function open() {
-  void render(<Harness />)
+async function open(creationRef?: CreationRef) {
+  void render(<Harness creationRef={creationRef} />)
   await expect.element(page.getByTestId('create-variant-form')).toBeVisible()
 }
 
@@ -175,6 +173,23 @@ describe('Create variant form: info buttons', () => {
       await expect.element(tooltip).not.toBeVisible()
     },
   )
+
+  it('closes an open tooltip on Escape before it closes the form', async () => {
+    const creationRef = createVariantCreationRef()
+    await open(creationRef)
+    const button = page.getByRole('button', {name: 'About Add to', exact: true})
+    button.element().focus()
+    await expect.poll(() => openTooltipTexts()).toEqual([FIELDS[1].text])
+
+    // The first Escape is the tooltip's
+    await userEvent.keyboard('{Escape}')
+    await expect.poll(() => openTooltipTexts()).toEqual([])
+    expect(creationRef.getSnapshot().matches('active')).toBe(true)
+
+    // The second one closes the form (the harness keeps rendering it; the machine is what closes)
+    await userEvent.keyboard('{Escape}')
+    await expect.poll(() => creationRef.getSnapshot().matches('idle')).toBe(true)
+  })
 
   it('shows a tooltip on hover', async () => {
     await open()
