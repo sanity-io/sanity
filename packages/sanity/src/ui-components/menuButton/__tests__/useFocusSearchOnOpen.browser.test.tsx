@@ -16,8 +16,8 @@ configure({disableAutoSnapshot: true})
 
 const ROWS = ['Published', 'Drafts', 'Scheduled drafts']
 
-/** A navbar perspective menu in short: the search field, then rows, Drafts selected. */
-function Harness() {
+/** A navbar perspective menu in short: the search field, then rows, one of them selected. */
+function Harness({selected = 'Drafts'}: {selected?: string}) {
   const focusSearchField = useFocusSearchOnOpen()
   return (
     <TestWrapper schemaTypes={[]}>
@@ -28,7 +28,7 @@ function Harness() {
           <Menu>
             <TextInput ref={focusSearchField} data-testid="search" />
             {ROWS.map((row) => (
-              <MenuItem key={row} text={row} selected={row === 'Drafts'} />
+              <MenuItem key={row} text={row} selected={row === selected} />
             ))}
           </Menu>
         }
@@ -37,8 +37,8 @@ function Harness() {
   )
 }
 
-async function openWithKeyboard() {
-  void render(<Harness />)
+async function openWithKeyboard(selected?: string) {
+  void render(<Harness selected={selected} />)
   const trigger = page.getByRole('button', {name: 'Open'})
   await expect.element(trigger).toBeVisible()
   trigger.element().focus()
@@ -54,6 +54,12 @@ describe('useFocusSearchOnOpen: arrow keys from the search field', () => {
     // From there the menu moves on as usual
     await userEvent.keyboard('{ArrowDown}')
     await expect.poll(() => document.activeElement?.textContent).toBe('Drafts')
+  })
+
+  it('ArrowDown moves to the first row when that row is the selected one', async () => {
+    await openWithKeyboard('Published')
+    await userEvent.keyboard('{ArrowDown}')
+    await expect.poll(() => document.activeElement?.textContent).toBe('Published')
   })
 
   it('ArrowUp moves to the last row', async () => {
