@@ -1195,4 +1195,5 @@ export {useTimeAgo} from '../core/hooks/useTimeAgo'
 export {useTimeZone} from '../core/hooks/useTimeZone'
 export {useUnstableObserveDocument} from '../core/preview/useObserveDocument'
 export {useUserColorManager} from '../core/user-color/hooks'
+// oxlint-disable-next-line no-deprecated -- only the boolean overload is deprecated
 export {useValidationStatus} from '../core/hooks/useValidationStatus'

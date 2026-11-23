@@ -85,7 +85,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
 
   const {publish} = useDocumentOperation(id, type, getPairTarget(targetDocumentState))
-  const validationStatus = useValidationStatus(value._id, type)
+  const validationStatus = useValidationStatus(value._id, type, {listener: 'document'})
   useSetImmediateValidation(value._id, type, !release, {enabled: publishScheduled})
   const syncState = useSyncState(id, type, scopeId)
   const editState = useEditState(documentId, documentType, 'default', scopeId)
@@ -103,6 +103,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     type,
     version: scopeId,
     permission: 'publish',
+    listener: 'document',
   })
 
   const currentUser = useCurrentUser()

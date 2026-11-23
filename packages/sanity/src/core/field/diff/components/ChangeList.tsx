@@ -78,6 +78,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
     type: schemaType.name,
     version: scopeId,
     permission: 'update',
+    listener: 'document',
   })
 
   const allChanges = useMemo(

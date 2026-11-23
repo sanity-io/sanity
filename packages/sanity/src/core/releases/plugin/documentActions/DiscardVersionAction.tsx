@@ -37,6 +37,7 @@ export const useDiscardVersionAction: DocumentActionComponent = (
     type,
     version: scopeId,
     permission: 'discardVersion',
+    listener: 'document',
   })
 
   const [dialogOpen, setDialogOpen] = useState(false)
