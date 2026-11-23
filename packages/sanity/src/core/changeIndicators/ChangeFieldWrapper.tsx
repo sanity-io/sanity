@@ -1,13 +1,6 @@
 import {type Path} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {
-  type ReactNode,
-  type SyntheticEvent,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from 'react'
+import {type ReactNode, type SyntheticEvent, useCallback, use, useMemo, useState} from 'react'
 import {ReviewChangesContext} from 'sanity/_singletons'
 import {Text} from 'ui5'
 
@@ -28,7 +21,7 @@ export const ChangeFieldWrapper = (props: {
   hasRevertHover: boolean
 }) => {
   const {path, hasRevertHover} = props
-  const {onSetFocus} = useContext(ReviewChangesContext)
+  const {onSetFocus} = use(ReviewChangesContext)
   const zIndex = useZIndex()
   const [hasHover, setHover] = useState(false)
 

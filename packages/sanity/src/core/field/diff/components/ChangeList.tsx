@@ -2,7 +2,7 @@ import {type SanityDocument} from '@sanity/client'
 import {RevertIcon} from '@sanity/icons/Revert'
 import {type ObjectSchemaType} from '@sanity/types'
 import {Card} from '@sanity/ui'
-import {startTransition, useCallback, useContext, useMemo, useState} from 'react'
+import {startTransition, useCallback, use, useMemo, useState} from 'react'
 import {DiffContext} from 'sanity/_singletons'
 import {VStack} from 'ui5'
 
@@ -46,7 +46,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.J
     schemaType.name,
     getPairTarget(targetDocumentState),
   )
-  const {path} = useContext(DiffContext)
+  const {path} = use(DiffContext)
   const isRoot = path.length === 0
   const [confirmRevertAllOpen, setConfirmRevertAllOpen] = useState(false)
   const [confirmRevertAllHover, setConfirmRevertAllHover] = useState(false)

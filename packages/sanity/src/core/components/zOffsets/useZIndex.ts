@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {ZIndexContext} from 'sanity/_singletons'
 
 import {type ZIndexContextValue} from './types'
@@ -9,5 +9,5 @@ import {type ZIndexContextValue} from './types'
  * @internal
  */
 export function useZIndex(): ZIndexContextValue {
-  return useContext(ZIndexContext)
+  return use(ZIndexContext)
 }

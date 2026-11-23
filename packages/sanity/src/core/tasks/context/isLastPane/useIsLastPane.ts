@@ -1,4 +1,4 @@
-import {useContext} from 'react'
+import {use} from 'react'
 import {IsLastPaneContext} from 'sanity/_singletons'
 
 /**
@@ -6,5 +6,5 @@ import {IsLastPaneContext} from 'sanity/_singletons'
  * @hidden
  */
 export function useIsLastPane(): boolean {
-  return useContext(IsLastPaneContext)
+  return use(IsLastPaneContext)
 }
