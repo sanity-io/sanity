@@ -352,18 +352,26 @@ function PanelFrame({children}: {children: React.ReactNode}) {
   )
 }
 
+const VARIANTS_ON = {variants: {enabled: true}}
+
 function ConfirmDeleteDialogHarness({
   deletionRef,
   selectionRef,
+  variantsEnabled = true,
 }: {
   deletionRef: ActorRefFromLogic<typeof deletionMachine>
   selectionRef: ActorRefFromLogic<typeof selectionMachine>
+  /** The open beta has Content Variants on; off is a studio that turned it off after using it. */
+  variantsEnabled?: boolean
 }) {
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const portalElements = useMemo(() => ({[PORTAL_NAME]: portalElement}), [portalElement])
 
   return (
-    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+    <TestWrapper
+      schemaTypes={SCHEMA_TYPES}
+      betaFeatures={variantsEnabled ? VARIANTS_ON : undefined}
+    >
       <PortalProvider __unstable_elements={portalElements}>
         <div ref={setPortalElement} />
         {portalElement && (
@@ -790,6 +798,25 @@ describe('ConfirmDeleteDialog, open beta baseline', () => {
     await expect.element($delete).toBeEnabled()
 
     await settleChromaticEndState()
+  })
+
+  it('with Content Variants off, keeps the Default blocked and asks for an administrator', async () => {
+    const refs = startHarness(REFERRING_DOCUMENTS, WITH_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+        variantsEnabled={false}
+      />,
+    )
+
+    await expect
+      .element($dialog.getByTestId('blocked-by-variants'))
+      .toHaveTextContent(
+        '2 variants of this document exist, and Content Variants is off in this studio. Ask an administrator to delete the variants first.',
+      )
   })
 
   it('blocks the Default while variants exist, counting variants, not copies', async () => {
