@@ -62,7 +62,7 @@ export function createHistoryRequestQueue(): <T>(request: () => Promise<T>) => O
             retry({
               count: MAX_HISTORY_REQUEST_RETRIES,
               delay: (error, retryCount) =>
-                getRetryDelay(error, retryCount).pipe(takeUntil(cancelled$)),
+                cancelled ? EMPTY : getRetryDelay(error, retryCount).pipe(takeUntil(cancelled$)),
             }),
             tap(subscriber),
             catchError(() => EMPTY),

@@ -149,6 +149,22 @@ describe('createHistoryRequestQueue', () => {
     expect(skipped).not.toHaveBeenCalled()
   })
 
+  it('does not wait to retry a request whose subscriber left while it was in flight', async () => {
+    const schedule = createHistoryRequestQueue()
+    const inFlight = [deferred<string>(), deferred<string>()]
+    const subscriptions = inFlight.map((request) => schedule(() => request.promise).subscribe())
+    const next = vi.fn(() => Promise.resolve('next'))
+    const result = lastValueFrom(schedule(next))
+
+    await vi.advanceTimersByTimeAsync(0)
+    subscriptions.forEach((subscription) => subscription.unsubscribe())
+    inFlight.forEach((request) => request.reject(rateLimitedError('30')))
+    await vi.advanceTimersByTimeAsync(100)
+
+    expect(next).toHaveBeenCalledTimes(1)
+    await expect(result).resolves.toBe('next')
+  })
+
   it('stops waiting to retry once its subscriber has left', async () => {
     const schedule = createHistoryRequestQueue()
     const rateLimited = vi.fn(() => Promise.reject(rateLimitedError('30')))
