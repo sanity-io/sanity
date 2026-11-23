@@ -163,7 +163,8 @@ export function VisionGui(props: VisionGuiProps) {
     return datasets[0]
   })
   const [perspective, setPerspectiveState] = useState<SupportedPerspective | undefined>(
-    storedPerspective || 'raw',
+    // The stored value can be one an earlier release supported, like `previewDrafts`
+    storedPerspective && isSupportedPerspective(storedPerspective) ? storedPerspective : 'raw',
   )
   const activeVariant = getActiveVariant(perspective, selectedVariantName)
 

@@ -334,6 +334,27 @@ describe('VisionGui pinned release and variant', () => {
     expect(fetchConfigs.at(-1)?.variant).toBeUndefined()
   })
 
+  it('falls back to the raw perspective when the stored one is no longer supported', async () => {
+    // `previewDrafts` was a selectable perspective in earlier releases
+    seedVisionStorage({perspective: 'previewDrafts', apiVersion: 'v2025-02-19'})
+
+    const {fetchConfigs} = renderVision({
+      ...BASE_PERSPECTIVE,
+      perspectiveStack: [],
+      selectedPerspectiveName: undefined,
+      selectedPerspective: 'drafts',
+    })
+
+    expect(getPerspectiveSelector().value).toBe('raw')
+
+    fireEvent.click(screen.getByRole('button', {name: 'action.query-execute'}))
+
+    await waitFor(() => {
+      expect(getQueryUrlParams().get('perspective')).toBe('raw')
+    })
+    expect(fetchConfigs.at(-1)?.perspective).toBe('raw')
+  })
+
   it('drops variant from the query URL after switching away from pinned release', async () => {
     seedVisionStorage({
       perspective: 'pinnedRelease',

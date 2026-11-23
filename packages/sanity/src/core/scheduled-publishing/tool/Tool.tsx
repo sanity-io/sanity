@@ -1,5 +1,4 @@
 import {Card, useTheme} from '@sanity/ui'
-import {parse} from 'date-fns/parse'
 import {use, useEffect, useMemo, useRef} from 'react'
 import {
   HasUsedScheduledPublishingPromiseContext,
@@ -27,6 +26,11 @@ import usePollSchedules from '../hooks/usePollSchedules'
 import {type Schedule, type ScheduleState} from '../types'
 import {SchedulesProvider} from './contexts/schedules'
 import {ScheduleFilters} from './scheduleFilters'
+import {
+  DATE_SLUG_FORMAT,
+  getScheduleStateFromRouterState,
+  getSelectedDateFromRouterState,
+} from './scheduleRouterState'
 import {Schedules} from './schedules'
 import SchedulesContextMenu from './schedulesContextMenu/SchedulesContextMenu'
 import {ToolCalendar} from './toolCalendar'
@@ -38,7 +42,6 @@ const Column = styled(Flex).attrs({flexDirection: 'column'})`
 `
 
 const NO_SCHEDULE: Schedule[] = []
-const DATE_SLUG_FORMAT = 'yyyy-MM-dd' // date-fns format
 
 function ScheduledDraftsBanner() {
   const router = useRouter()
@@ -77,19 +80,15 @@ export default function Tool() {
 
   const lastScheduleState = useRef<ScheduleState | undefined>(undefined)
 
-  const scheduleState: ScheduleState = router.state.state as ScheduleState
-  // oxlint-disable react/purity -- `new Date()` is only date-fns `parse`'s reference date; kept as-is rather than changing the parser input
-  const selectedDate = router.state.date
-    ? parse(router.state.date as string, DATE_SLUG_FORMAT, new Date())
-    : undefined
-  // oxlint-enable react/purity
+  const scheduleState = getScheduleStateFromRouterState(router.state.state)
+  const selectedDate = getSelectedDateFromRouterState(router.state.date)
 
   //Store last active schedule state
   useEffect(() => {
-    if (router.state.state) {
-      lastScheduleState.current = router.state.state as ScheduleState
+    if (scheduleState) {
+      lastScheduleState.current = scheduleState
     }
-  }, [router.state.state])
+  }, [scheduleState])
 
   // Default to first filter type ('upcoming') if no existing schedule state or
   // selected date can be inferred from current route.

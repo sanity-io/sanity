@@ -47,7 +47,7 @@ export function InspectDialog(props: InspectDialogProps) {
   )
 
   /* based on the view mode it shows the right tab content */
-  const viewMode = VIEW_MODES.find((mode) => mode.id === viewModeId)
+  const viewMode = VIEW_MODES.find((mode) => mode.id === viewModeId) ?? VIEW_MODE_PARSED
 
   const setParsedViewMode = useCallback(async () => {
     await onViewModeChange(VIEW_MODE_PARSED.id)
@@ -106,7 +106,7 @@ export function InspectDialog(props: InspectDialogProps) {
         </Card>
 
         <TabPanel
-          aria-labelledby={`${dialogIdPrefix}tab-${viewModeId}`}
+          aria-labelledby={`${dialogIdPrefix}tab-${viewMode.id}`}
           flex={1}
           id={`${dialogIdPrefix}tabpanel`}
           overflow="auto"
