@@ -4,9 +4,8 @@ The `pokemon` workspace (`/pokemon` in the test studio) holds every Pokémon up 
 generation, along with the 18 elemental types, their abilities and the generations they were
 introduced in. The data comes from [PokéAPI](https://pokeapi.co).
 
-The workspace shares the `test` dataset with the other test studio workspaces. It registers only
-its own schema types and lists only them in its structure, and its only tools are Structure and
-Vision.
+The workspace uses the `pokedex` dataset of the test studio project (`ppsg7ml5`), instead of the
+`test` dataset the other workspaces share. Its only tools are Structure, Vision and Themer.
 
 ## Schema
 
@@ -19,7 +18,7 @@ Vision.
 
 Every document ID starts with `pokemon.` (`pokemon.species.pikachu`, `pokemon.type.electric`,
 `pokemon.ability.static`, `pokemon.generation.1`), so the seed never touches other documents in
-the shared dataset.
+the dataset.
 
 Each Pokémon's `icon` is its 96×96 game sprite, cropped to the sprite's visible pixels so that it
 fills list previews. The original image is uploaded unchanged; the crop and hotspot live on the
@@ -44,7 +43,7 @@ requests to PokéAPI.
 | Option              | Default    | Description                                                                                                        |
 | ------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------ |
 | `--project-id`      | `ppsg7ml5` | Project to seed                                                                                                    |
-| `--dataset`         | `test`     | Dataset to seed                                                                                                    |
+| `--dataset`         | `pokedex`  | Dataset to seed                                                                                                    |
 | `--limit <n>`       |            | Only seed the first `n` Pokémon (all types and generations are still seeded)                                       |
 | `--concurrency <n>` | `8`        | Parallel requests to PokéAPI and the Sanity API                                                                    |
 | `--dry-run`         |            | Write the documents to `pokemon/.cache/pokedex.ndjson` instead, ready for `sanity dataset import`; no token needed |

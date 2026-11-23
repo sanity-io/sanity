@@ -23,7 +23,7 @@ import {readPng} from './png'
 const {values: args} = parseArgs({
   options: {
     'project-id': {type: 'string', default: 'ppsg7ml5'},
-    'dataset': {type: 'string', default: 'test'},
+    'dataset': {type: 'string', default: 'pokedex'},
     'limit': {type: 'string'},
     'concurrency': {type: 'string', default: '8'},
     'dry-run': {type: 'boolean', default: false},
