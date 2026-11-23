@@ -39,10 +39,21 @@ interface SidebarItemProps {
   expanded: boolean
   selected?: boolean
   testId: string
+  /** Sized like the buttons of the bottom action bars, which it lines up with */
+  compact?: boolean
   onClick: (event: MouseEvent<HTMLElement>) => void
 }
 
-function SidebarItem({icon, label, expanded, selected, testId, onClick}: SidebarItemProps) {
+function SidebarItem({
+  icon,
+  label,
+  expanded,
+  selected,
+  testId,
+  compact,
+  onClick,
+}: SidebarItemProps) {
+  const size = compact ? ({fontSize: 1, padding: 2} as const) : undefined
   const delayGroup = useTooltipDelayGroup()
   // Only the tooltip that opens after the wait animates in. Moving along the rail swaps the
   // content right away instead, which an animation on every one would only slow down. Decided
@@ -60,6 +71,7 @@ function SidebarItem({icon, label, expanded, selected, testId, onClick}: Sidebar
           aria-label={label}
           className={cx(sidebarStyles.pressable, sidebarStyles.pressableRow)}
           data-testid={testId}
+          {...size}
           icon={icon}
           justify="flex-start"
           mode="bleed"
@@ -92,10 +104,12 @@ function SidebarItem({icon, label, expanded, selected, testId, onClick}: Sidebar
           aria-label={label}
           className={sidebarStyles.pressable}
           data-testid={testId}
+          {...size}
           icon={icon}
           mode="bleed"
           onClick={onClick}
           selected={selected}
+          width={compact ? 'fill' : undefined}
         />
       </Tooltip>
     </div>
@@ -212,8 +226,10 @@ export function VisionSidebar() {
           onClick={switchToClassic}
           testId="vision-sidebar-classic"
         />
-        <Box borderTop paddingTop={1}>
+        {/* The same border and padding as the action bars, so the separator continues their border */}
+        <Box borderTop paddingTop={2}>
           <SidebarItem
+            compact
             expanded={expanded}
             icon={expanded ? DoubleChevronLeftIcon : DoubleChevronRightIcon}
             label={expanded ? t('vision.sidebar.collapse') : t('vision.sidebar.expand')}
