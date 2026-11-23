@@ -44,4 +44,32 @@ describe('useReleaseHistory', () => {
       expect.anything(),
     )
   })
+
+  it('sends no more than two history requests at a time when many rows mount together', async () => {
+    const pending: Array<() => void> = []
+    let maxInFlight = 0
+    mockGetTransactionsLogs.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          pending.push(() => resolve([]))
+          maxInFlight = Math.max(maxInFlight, pending.length)
+        }),
+    )
+    const wrapper = await createTestProvider()
+    const rows = Array.from({length: 6}, (_unused, index) =>
+      renderHook(() => useReleaseHistory(`queued-${index}`, 'rSummer', 'rev-queued'), {wrapper}),
+    )
+
+    await waitFor(() => expect(mockGetTransactionsLogs).toHaveBeenCalledTimes(2))
+    pending.splice(0).forEach((resolve) => resolve())
+    await waitFor(() => expect(mockGetTransactionsLogs).toHaveBeenCalledTimes(4))
+    pending.splice(0).forEach((resolve) => resolve())
+    await waitFor(() => expect(mockGetTransactionsLogs).toHaveBeenCalledTimes(6))
+    pending.splice(0).forEach((resolve) => resolve())
+
+    await waitFor(() =>
+      expect(rows.every(({result}) => result.current.loading === false)).toBe(true),
+    )
+    expect(maxInFlight).toBe(2)
+  })
 })
