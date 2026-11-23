@@ -1,7 +1,6 @@
 import {type ComponentType} from 'react'
 
-import {useReleasesToolAvailable} from '../../../schedules/hooks/useReleasesToolAvailable'
-import {useWorkspace} from '../../../studio/workspace'
+import {useReleasesEnabled} from '../../../releases/hooks/useReleasesEnabled'
 import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {usePerspective} from '../../usePerspective'
 import {ReleasesMenu} from './ReleasesMenu'
@@ -27,14 +26,12 @@ interface Props {
  * @internal
  */
 export const ReleasesNav: ComponentType<Props> = ({fullWidth, menuItemProps, showDetailLinks}) => {
-  const releasesToolAvailable = useReleasesToolAvailable()
-  const {releases} = useWorkspace()
-  const isReleasesEnabled = !!releases?.enabled
+  const areReleasesEnabled = useReleasesEnabled()
   const {selectedPerspectiveName} = usePerspective()
 
   return (
     <ReleasesMenu
-      areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
+      areReleasesEnabled={areReleasesEnabled}
       fullWidth={fullWidth}
       menuItemProps={menuItemProps}
       selectedPerspectiveName={selectedPerspectiveName}
