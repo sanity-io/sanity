@@ -7,6 +7,7 @@ import {
   getMockSource,
   type MockWorkspaceOptions,
 } from '../../../../../test/testUtils/getMockWorkspaceFromConfig'
+import {type DocumentActionComponent} from '../../../config/document/actions'
 import {type Source, type VariantMetadataConfig} from '../../../config/types'
 import {getSearchableOmnisearchTypes} from '../../../studio/components/navbar/search/utils/selectors'
 import {VARIANT_DOCUMENT_TYPE} from '../../store/constants'
@@ -150,8 +151,15 @@ describe('variant schema types from the variants plugin', () => {
     )
   })
 
-  it('keeps the variant document out of templates, document actions and global search', async () => {
-    const source = await getMockSource(withVariants())
+  it('keeps the variant document out of templates, global search and earlier document actions', async () => {
+    const workspaceAction: DocumentActionComponent = () => null
+    const source = await getMockSource(
+      withVariants(undefined, {
+        plugins: [
+          {name: 'workspace-actions', document: {actions: (prev) => [...prev, workspaceAction]}},
+        ],
+      }),
+    )
 
     const templateTypes = source.templates.map((template) => template.schemaType)
     expect(templateTypes).toContain('author')
@@ -161,17 +169,16 @@ describe('variant schema types from the variants plugin', () => {
     expect(searchTypes).toContain('author')
     expect(searchTypes).not.toContain(VARIANT_DOCUMENT_TYPE)
 
-    const context = {versionType: 'published', releaseId: undefined} as const
-    expect(
-      source.document.actions({...context, schemaType: 'author', documentId: 'someAuthor'}),
-    ).not.toHaveLength(0)
-    expect(
+    // Plugins after the variants plugin decide for themselves, like tasks adding its action
+    const actions = (schemaType: string, documentId: string) =>
       source.document.actions({
-        ...context,
-        schemaType: VARIANT_DOCUMENT_TYPE,
-        documentId: '_.variants.loyal',
-      }),
-    ).toEqual([])
+        versionType: 'published',
+        releaseId: undefined,
+        schemaType,
+        documentId,
+      })
+    expect(actions('author', 'someAuthor')).toContain(workspaceAction)
+    expect(actions(VARIANT_DOCUMENT_TYPE, '_.variants.loyal')).not.toContain(workspaceAction)
   })
 
   it('validates a stored variant with the core fields and the validation of every config', async () => {
