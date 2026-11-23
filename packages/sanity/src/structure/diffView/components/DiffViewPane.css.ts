@@ -26,12 +26,22 @@ export const readOnlyPane = css({
   // What differs from the Reference: added text in green and removed text in red, whoever made
   // the change and whatever release it is in. User colours leave out green and red, so these
   // never read as a person. Light and dark tints are Sanity's green and red 100/700 and 900/200.
+  // The pane is a Card, which carries the scheme in data-scheme. `light-dark()` is not used: a
+  // studio build down-levels it into variables nothing defines, and the colours drop out.
   '& ins': {
-    backgroundColor: 'light-dark(#c5fce8, #06231a)',
-    color: 'light-dark(#015133, #a9f9dc)',
+    backgroundColor: '#c5fce8',
+    color: '#015133',
   },
   '& del': {
-    backgroundColor: 'light-dark(#ffe7e5, #321615)',
-    color: 'light-dark(#8b2018, #ffdedc)',
+    backgroundColor: '#ffe7e5',
+    color: '#8b2018',
+  },
+  '&[data-scheme="dark"] ins': {
+    backgroundColor: '#06231a',
+    color: '#a9f9dc',
+  },
+  '&[data-scheme="dark"] del': {
+    backgroundColor: '#321615',
+    color: '#ffdedc',
   },
 })
