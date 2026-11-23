@@ -474,7 +474,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       }
 
       if (item.action === 'reviewChanges') {
-        handleHistoryOpen()
+        handleHistoryOpen('pane_menu')
         return true
       }
 
