@@ -90,7 +90,6 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
     <Flex data-testid={`${idPrefix}-panel`} flexDirection="column" height="100%" minHeight="0">
       <Flex
         alignItems="center"
-        borderBottom={!collapsed}
         flexShrink={0}
         gap={2}
         height={`${PANEL_HEADER_HEIGHT}px`}
@@ -150,7 +149,7 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
       {!collapsed && (
         <TabPanel
           aria-labelledby={`${idPrefix}-${activeTab.id}-tab`}
-          className={motion.body}
+          className={cx(motion.body, styles.panelBody)}
           flex={1}
           id={`${idPrefix}-${activeTab.id}-panel`}
           overflow="auto"
