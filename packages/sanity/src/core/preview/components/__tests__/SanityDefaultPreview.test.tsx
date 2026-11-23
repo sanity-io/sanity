@@ -11,7 +11,11 @@ import {render, screen, waitFor} from '@testing-library/react'
 import {type ComponentType} from 'react'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {type PreviewMediaDimensions, type PreviewProps} from '../../../components/previews/types'
+import {
+  type PreviewLayoutKey,
+  type PreviewMediaDimensions,
+  type PreviewProps,
+} from '../../../components/previews/types'
 import {useImageUrl} from '../../../form/inputs/files/ImageInput/useImageUrl'
 import {useClient} from '../../../hooks/useClient'
 import {_previewComponents} from '../_previewComponents'
@@ -307,4 +311,17 @@ describe('SanityDefaultPreview - blockImage media dimensions', () => {
 
     expect(capturedMediaDimensions).toBeUndefined()
   })
+})
+
+describe('SanityDefaultPreview - unknown layout', () => {
+  // A layout can come from a persisted per-user list setting that outlives the layouts Studio
+  // supports (e.g. the removed `sheetList`). Rendering it must not crash (React error #130).
+  it.each(['sheetList', 'not-a-layout'])(
+    'falls back to the default layout component for %s',
+    (layout) => {
+      render(<SanityDefaultPreview layout={layout as PreviewLayoutKey} title="Test" />)
+
+      expect(_previewComponents.default).toHaveBeenCalled()
+    },
+  )
 })

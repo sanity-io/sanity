@@ -61,9 +61,11 @@ test(`navigating document creates only one listener connection`, async ({
 
   await expect(page.getByTestId('structure-tool-list-pane')).toBeVisible()
 
-  // Scroll the items to click into view.
+  // Scroll to the end of the list, where the Author item lives. The list is virtualized, so a
+  // fixed offset stops reaching it whenever a type is added to the test studio structure.
   await page.evaluate(() => {
-    document.querySelector('[data-testid="pane-content"] > *:first-of-type')?.scrollBy(0, 750)
+    const list = document.querySelector('[data-testid="pane-content"] > *:first-of-type')
+    list?.scrollTo(0, list.scrollHeight)
   })
 
   // NOTE: clicks are intentionally not `force: true`: a forced click dispatches

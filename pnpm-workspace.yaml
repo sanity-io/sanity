@@ -170,9 +170,6 @@ trustPolicy: no-downgrade
 trustPolicyExcludePrune: true
 trustPolicyExclude:
   - '@sanity/cli'
-  # @sanity/cli 8.32.1 requires @sanity/codegen ^8.3.2. 8.3.1 shipped provenance;
-  # 8.3.3 did not, from the same publisher
-  - '@sanity/codegen@8.3.3'
   # @sanity/vision's result diff (@pierre/diffs) depends on it. 1.0.0 was published with
   # provenance; 1.1.0 and 2.0.0 without it, by a listed maintainer who also publishes
   # @pierre/diffs (which has never shipped provenance)
@@ -182,3 +179,8 @@ trustPolicyExclude:
   - rxjs@7.8.2
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0
+patchedDependencies:
+  # 6.3.0 imports defineLocaleResourceBundle and useTranslation from the 'sanity' root, which only
+  # exports them from 'sanity/i18n' since the i18n runtime exports moved. The patch rewrites those
+  # two imports. Drop once a release of the plugin that supports this sanity major ships
+  '@sanity/document-internationalization@6.3.0': patches/@sanity__document-internationalization@6.3.0.patch
