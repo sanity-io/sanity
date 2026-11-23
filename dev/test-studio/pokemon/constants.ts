@@ -1,5 +1,5 @@
 /** Every document the seed script writes has an id in this namespace, so it never collides with
- * other test-studio documents in the shared dataset. */
+ * other documents in the dataset. */
 export const POKEMON_ID_PREFIX = 'pokemon.'
 
 export const POKEMON_TYPE_NAMES = [
