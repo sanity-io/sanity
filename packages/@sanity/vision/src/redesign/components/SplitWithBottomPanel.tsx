@@ -127,7 +127,8 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
       if (!split || !(header instanceof HTMLElement) || !content) return
       const size = bottomPanelSizeToFit({
         headerHeight: header.offsetHeight,
-        contentHeight: content.offsetHeight,
+        // The divider under the header is the top border of the body around the content
+        contentHeight: content.offsetHeight + (content.parentElement?.clientTop ?? 0),
         containerHeight: split.clientHeight,
         minMainHeight: MIN_MAIN_HEIGHT,
         handleSize: SPLIT_HANDLE_SIZE,
