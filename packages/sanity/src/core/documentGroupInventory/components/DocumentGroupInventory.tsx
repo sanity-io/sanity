@@ -174,8 +174,9 @@ export function DocumentGroupInventory(
   const createVariantSecondary =
     props.mode === 'readOnly' ? false : Boolean(props.createVariantSecondary)
 
-  const {beta} = useWorkspace()
+  const {beta, document: documentConfig} = useWorkspace()
   const variantsEnabled = beta?.variants?.enabled
+  const draftsEnabled = documentConfig.drafts.enabled
   const {t} = useTranslation(studioLocaleNamespace)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema().get(documentType)
@@ -270,17 +271,22 @@ export function DocumentGroupInventory(
                         ? {type: 'drafts'}
                         : {type: 'release', releaseId: input.bundle._id}
 
-                    // Live-edit documents have no drafts sibling: create the variant-of-published
-                    // even when the selected bundle is drafts. Release bundles still target the release.
-                    const createPerspective =
-                      schema?.liveEdit && input.bundle === ('drafts' satisfies SystemBundle)
-                        ? 'published'
-                        : input.bundle
+                    // Live-edit documents, and every document in a workspace with drafts off, have
+                    // no drafts sibling: the drafts option creates the variant-of-published (the
+                    // form labels it Published). Release bundles still target the release.
+                    const targetsPublished =
+                      (schema?.liveEdit || !draftsEnabled) &&
+                      input.bundle === ('drafts' satisfies SystemBundle)
+                    const createPerspective = targetsPublished ? 'published' : input.bundle
 
+                    // With drafts off there is no drafts perspective to select (it would read as a
+                    // release id); live-edit keeps the drafts perspective, which shows published.
                     const perspective =
-                      typeof input.bundle === 'string'
-                        ? input.bundle
-                        : getReleaseIdFromReleaseDocumentId(input.bundle._id)
+                      targetsPublished && !draftsEnabled
+                        ? 'published'
+                        : typeof input.bundle === 'string'
+                          ? input.bundle
+                          : getReleaseIdFromReleaseDocumentId(input.bundle._id)
 
                     const readVersions = async () => {
                       const versionSnapshot = await firstValueFrom(
@@ -350,6 +356,7 @@ export function DocumentGroupInventory(
           documentId,
           schema,
           versionState,
+          draftsEnabled,
         ],
       ),
     },
@@ -397,6 +404,7 @@ export function DocumentGroupInventory(
             variantCreationRef={variantCreationRef}
             sets={sets}
             documentTitle={components && <components.DocTitle document={titleDocument} />}
+            targetsPublished={!draftsEnabled}
           />
         ) : (
           !readOnly && (

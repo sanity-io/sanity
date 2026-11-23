@@ -36,6 +36,11 @@ interface Props {
   /** The title of the document the variant is created for, shown in the header. */
   documentTitle: ReactNode
   /**
+   * Whether Add to offers Published instead of Drafts: in a workspace with drafts off, the
+   * variant is created as a published version.
+   */
+  targetsPublished?: boolean
+  /**
    * Whether focus goes to the Create button when the form opens, instead of the Variant select:
    * for a form that opens already filled in, so one Enter or click creates the variant. Create is
    * focused as soon as it can be pressed.
@@ -61,6 +66,7 @@ export const CreateVariant: ComponentType<Props> = ({
   sets,
   documentTitle,
   focusCreate = false,
+  targetsPublished = false,
 }) => {
   const {t} = useTranslation(studioLocaleNamespace)
   const {selectedPerspective, selectedVariants} = usePerspective()
@@ -136,6 +142,7 @@ export const CreateVariant: ComponentType<Props> = ({
     variantId: pickedVariantDefinition?._id,
     releases: releases ?? NO_RELEASES,
     existingVariants: pickedVariantDefinition ? existingVariants : [],
+    targetsPublished,
   })
 
   // Whether the picked variant already has a draft, so Drafts is not offered.
@@ -173,6 +180,7 @@ export const CreateVariant: ComponentType<Props> = ({
       variantId: selectedVariantDefinition._id,
       releases: releases ?? NO_RELEASES,
       existingVariants,
+      targetsPublished,
     }).some((option) => getBundleKey(option) === getBundleKey(bundle))
       ? selectedVariantDefinition
       : undefined
@@ -290,6 +298,7 @@ export const CreateVariant: ComponentType<Props> = ({
           />
           <SelectBundle
             bundles={bundleOptions}
+            targetsPublished={targetsPublished}
             draftsTaken={draftsTaken}
             value={bundle}
             onChange={handleSelectBundle}

@@ -18,6 +18,8 @@ interface Props {
    * cannot be picked and says why, so it does not look as if Drafts went missing.
    */
   draftsTaken?: boolean
+  /** Whether the drafts option reads as Published: drafts are off, so the variant is published. */
+  targetsPublished?: boolean
   value: CreateVariantBundleOption | undefined
   onChange: (bundleKey: string) => void
   disabled: boolean
@@ -27,6 +29,7 @@ interface Props {
 export const SelectBundle: ComponentType<Props> = ({
   bundles,
   draftsTaken = false,
+  targetsPublished = false,
   value,
   onChange,
   disabled,
@@ -36,13 +39,15 @@ export const SelectBundle: ComponentType<Props> = ({
     ...(draftsTaken
       ? [
           {
-            ...toOption({type: 'drafts'}, t),
+            ...toOption({type: 'drafts'}, t, targetsPublished),
             disabled: true,
-            subtitle: t('document-group.create-variant.form.drafts-taken'),
+            subtitle: targetsPublished
+              ? t('document-group.create-variant.form.published-taken')
+              : t('document-group.create-variant.form.drafts-taken'),
           },
         ]
       : []),
-    ...bundles.map((bundle) => toOption(bundle, t)),
+    ...bundles.map((bundle) => toOption(bundle, t, targetsPublished)),
   ]
 
   return (
@@ -61,18 +66,22 @@ export const SelectBundle: ComponentType<Props> = ({
         </TrimmedGlyph>
       }
       options={options}
-      value={typeof value === 'undefined' ? undefined : toOption(value, t)}
+      value={typeof value === 'undefined' ? undefined : toOption(value, t, targetsPublished)}
       onChange={onChange}
       disabled={disabled}
     />
   )
 }
 
-function toOption(bundle: CreateVariantBundleOption, t: TFunction): CreateVariantPickerOption {
+function toOption(
+  bundle: CreateVariantBundleOption,
+  t: TFunction,
+  targetsPublished: boolean,
+): CreateVariantPickerOption {
   const icon =
     bundle.type === 'drafts' ? (
       // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- this string is not shown to users
-      <ReleaseAvatarIcon release="drafts" />
+      <ReleaseAvatarIcon release={targetsPublished ? 'published' : 'drafts'} />
     ) : (
       <ReleaseAvatarIcon release={bundle.release} />
     )
@@ -81,7 +90,9 @@ function toOption(bundle: CreateVariantBundleOption, t: TFunction): CreateVarian
     key: getBundleKey(bundle),
     text:
       bundle.type === 'drafts'
-        ? t('release.chip.global.drafts')
+        ? targetsPublished
+          ? t('release.chip.published')
+          : t('release.chip.global.drafts')
         : bundle.release.metadata.title || t('release.placeholder-untitled-release'),
     icon,
     selectIcon: <TrimmedGlyph>{icon}</TrimmedGlyph>,
