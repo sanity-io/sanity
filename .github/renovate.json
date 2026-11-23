@@ -7,6 +7,7 @@
     "github>sanity-io/renovate-config:dedupe",
     "github>sanity-io/renovate-config:schedule"
   ],
+  "baseBranchPatterns": ["main", "next-major"],
   "dependencyDashboardApproval": false,
   "branchConcurrentLimit": 4,
   "prConcurrentLimit": 4,
