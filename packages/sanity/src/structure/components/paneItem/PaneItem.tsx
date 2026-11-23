@@ -21,7 +21,6 @@ import {
 } from 'react'
 import {
   type GeneralPreviewLayoutKey,
-  DocumentVersionsStatusIndicator,
   getPublishedId,
   PreviewCard,
   SanityDefaultPreview,
@@ -34,6 +33,7 @@ import {
 } from 'sanity'
 import {Text, Box, Flex, Icon} from 'ui5'
 
+import {DocumentVersionsStatusIndicator} from '../../../core/components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {type FIXME} from '../../../core/FIXME'
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter/usePaneRouter'

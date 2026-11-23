@@ -1,5 +1,6 @@
 import {type PreferenceKey} from '@sanity/sdk'
 import {useCallback, useMemo} from 'react'
+
 import {useStudioPreference} from '../core/store/preferences/useStudioPreference'
 
 /**

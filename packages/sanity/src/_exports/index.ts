@@ -1104,7 +1104,9 @@ export {
   useTimelineStore,
 } from '../core/store/history/useTimelineStore'
 /* oxlint-enable no-deprecated */
+/* oxlint-disable no-deprecated -- the key-value store types stay exported while deprecated, until their removal lands */
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
+/* oxlint-enable no-deprecated */
 export {type PresenceStore} from '../core/store/presence/presence-store'
 export {
   type DocumentPresence,
