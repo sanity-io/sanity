@@ -85,9 +85,17 @@ function resolveCommentsLegacy(workspace: WorkspaceOptions | SingleWorkspace): b
   )
 }
 
+function assertNoUnstableTasks(workspace: WorkspaceOptions | SingleWorkspace): void {
+  if ('unstable_tasks' in workspace) {
+    throw new Error('The `unstable_tasks` option has been removed. Use `tasks` instead.')
+  }
+}
+
 export function getDefaultPluginsOptions(
   workspace: WorkspaceOptions | SingleWorkspace,
 ): DefaultPluginsOptions {
+  assertNoUnstableTasks(workspace)
+
   return {
     comments: {
       legacy: resolveCommentsLegacy(workspace),
