@@ -997,7 +997,10 @@ import type {
   LegacyThemeProps,
   LegacyThemeTints,
   LinearProgress,
+  LISTENER_PAUSE_GRACE_PERIOD,
   ListenerEvent,
+  listenerGate,
+  ListenerGate,
   listenQuery,
   ListenQueryOptions,
   ListenQueryParams,
@@ -1173,6 +1176,8 @@ import type {
   pathsAreEqual,
   PathSegment,
   pathToString,
+  pauseWhileDocumentHidden,
+  PauseWhileDocumentHiddenOptions,
   PendingMutationsEvent,
   PermissionCheckResult,
   PerspectiveContextValue,
@@ -4894,8 +4899,17 @@ describe('sanity', () => {
   test('LinearProgress', () => {
     expectTypeOf<typeof LinearProgress>().toBeFunction()
   })
+  test('LISTENER_PAUSE_GRACE_PERIOD', () => {
+    expectTypeOf<typeof LISTENER_PAUSE_GRACE_PERIOD>().not.toBeNever()
+  })
   test('ListenerEvent', () => {
     expectTypeOf<ListenerEvent>().not.toBeNever()
+  })
+  test('listenerGate', () => {
+    expectTypeOf<typeof listenerGate>().not.toBeNever()
+  })
+  test('ListenerGate', () => {
+    expectTypeOf<ListenerGate>().toBeObject()
   })
   test('listenQuery', () => {
     expectTypeOf<typeof listenQuery>().toBeFunction()
@@ -5424,6 +5438,12 @@ describe('sanity', () => {
   })
   test('pathToString', () => {
     expectTypeOf<typeof pathToString>().toBeFunction()
+  })
+  test('pauseWhileDocumentHidden', () => {
+    expectTypeOf<typeof pauseWhileDocumentHidden>().not.toBeNever()
+  })
+  test('PauseWhileDocumentHiddenOptions', () => {
+    expectTypeOf<PauseWhileDocumentHiddenOptions<any>>().toBeObject()
   })
   test('PendingMutationsEvent', () => {
     expectTypeOf<PendingMutationsEvent>().toBeObject()

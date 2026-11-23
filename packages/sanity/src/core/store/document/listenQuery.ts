@@ -8,6 +8,7 @@ import {versionedClient} from '../../studioClient'
 import {retryTransientFetch} from '../../util/fetchErrors'
 import {reconnectListener} from '../../util/reconnectListener'
 import {variantApiVersion} from '../../variants/util/variantApiVersion'
+import {pauseWhileDocumentHidden} from '../listenerGate/listenerGate'
 import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from './types'
 
 /** @internal */
@@ -152,6 +153,11 @@ export function listenQuery(
     mutationAndReconnect$.pipe(filter(isRelevantEvent)),
     () => fetch(client, fetchQuery, params, options),
     options.throttleTime || DEFAULT_THROTTLE_TIME,
+  ).pipe(
+    // Around the whole query, not just the listener: only the first `welcome` of a subscription
+    // fetches, so a resumed listener has to start a new subscription. A paused query emits
+    // nothing, and consumers keep its last result until the new connection's fetch replaces it.
+    pauseWhileDocumentHidden(),
   )
 }
 

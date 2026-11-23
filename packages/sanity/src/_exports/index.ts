@@ -1460,6 +1460,13 @@ export {
 export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
 /* oxlint-enable no-deprecated */
+export {
+  LISTENER_PAUSE_GRACE_PERIOD,
+  type ListenerGate,
+  listenerGate,
+  pauseWhileDocumentHidden,
+  type PauseWhileDocumentHiddenOptions,
+} from '../core/store/listenerGate/listenerGate'
 export {createPresenceStore, type PresenceStore} from '../core/store/presence/presence-store'
 export {
   type DocumentPresence,

@@ -136,6 +136,7 @@ export class FakeContentLake {
   private brokenListeners = new Set<string>()
   private heldSnapshotFetches = new Map<string, Array<() => void>>()
   private welcomeCounter = 0
+  private listenersOpened = new Map<string, number>()
   readonly transactions: TransactionRecord[] = []
   readonly rejectedCommits: Array<{clientId: string; transactionId: string; statusCode: number}> =
     []
@@ -204,6 +205,16 @@ export class FakeContentLake {
     return this.submit(clientId, transactionId, () => mutations)
   }
 
+  /** The listener connections the client holds open right now */
+  openListeners(clientId: string): number {
+    return this.connectionsOf(clientId).length
+  }
+
+  /** Every listener connection the client has opened, including closed ones */
+  openedListeners(clientId: string): number {
+    return this.listenersOpened.get(clientId) ?? 0
+  }
+
   getDocuments(ids: string[]): Array<SanityDocument | null> {
     return ids.map((id) => structuredClone(this.get(id)))
   }
@@ -233,6 +244,7 @@ export class FakeContentLake {
         queued: [],
       }
       this.connections.add(connection)
+      this.listenersOpened.set(clientId, this.openedListeners(clientId) + 1)
       this.welcomeCounter += 1
       const welcomeTimer = setTimeout(() => {
         if (this.brokenListeners.has(clientId)) {
