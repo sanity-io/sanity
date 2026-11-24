@@ -22,8 +22,9 @@ export interface UseAutoFormatOnResizeOptions {
 
 /**
  * Reformats a query the formatter laid out for the query editor's width when that width
- * changes: a drag of the split or a resize of the window. Waits for the resize to settle and
- * leaves the query alone while the split is being dragged or the query is being typed in.
+ * changes: a drag of a divider or a resize of the window. Waits for the resize to settle and
+ * leaves the query alone while a divider that resizes the editor is being dragged, or the query
+ * is being typed in.
  */
 export function useAutoFormatOnResize(options: UseAutoFormatOnResizeOptions): void {
   const {container, layout, editorRef, enabled, query, getQuery, formatForEditor, onFormatted} =
@@ -45,8 +46,12 @@ export function useAutoFormatOnResize(options: UseAutoFormatOnResizeOptions): vo
       getQuery: readQuery,
       isEnabled,
       isBusy: () =>
-        container.querySelector('[data-dragging="true"]') !== null ||
-        editorRef.current?.isEditing() === true,
+        // The request/response split changes the editor's width. The request column's bottom
+        // panel changes its height, which can show or hide the scrollbar and so its columns.
+        // Panning the result graph sets data-dragging too, and that drag does not resize the editor.
+        container.querySelector(
+          '[data-testid="vision-split-handle"][data-dragging="true"], [data-testid="vision-request-column-split-handle"][data-dragging="true"]',
+        ) !== null || editorRef.current?.isEditing() === true,
       format: formatGroq,
       formatForEditor: formatForEditorEvent,
       apply,
