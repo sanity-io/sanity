@@ -1,6 +1,9 @@
+import {type TypeNode} from 'groq-js'
+
 import {type InferredParam, type ParamKind, type ParamType} from './paramInference'
 
 const ANY: ParamType = {kind: 'any', array: false}
+const UNKNOWN: TypeNode = {type: 'unknown'}
 const ISO_DATETIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?$/
 
 export function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -50,7 +53,7 @@ export function objectFields(param: InferredParam, value: unknown): InferredPara
     ...inferred,
     ...Object.keys(object)
       .filter((key) => !known.has(key))
-      .map((key): InferredParam => ({name: key, type: ANY, usages: []})),
+      .map((key): InferredParam => ({name: key, node: UNKNOWN, type: ANY, usages: []})),
   ]
   return fields.map((field) =>
     field.type.kind === 'any' && !field.type.array && Object.hasOwn(object, field.name)
@@ -68,7 +71,7 @@ export function previewObject(fields: InferredParam[], value: unknown): string {
       const item = object[field.name]
       const text = isPlainObject(item)
         ? `{${previewObject(
-            Object.keys(item).map((name) => ({name, type: ANY, usages: []})),
+            Object.keys(item).map((name) => ({name, node: UNKNOWN, type: ANY, usages: []})),
             item,
           )}}`
         : (JSON.stringify(item) ?? String(item))

@@ -47,6 +47,7 @@ export function joinKeyAndValue(key: string, value: string): string {
 
 export function createTypeScriptPrinter(
   identifiers: ReadonlyMap<string, string>,
+  {jsonValues = false}: {jsonValues?: boolean} = {},
 ): TypeScriptPrinter {
   let usesArrayOf = false
   let usesReferenceSymbol = false
@@ -109,13 +110,15 @@ export function createTypeScriptPrinter(
       if (!identifier) return printInline(rest.name)
       return `${printLiteral(members, depth)} & ${identifier}`
     }
-    if (node.dereferencesTo !== undefined) {
+    if (node.dereferencesTo !== undefined && !jsonValues) {
       usesReferenceSymbol = true
       members.push(
         `${inner}[internalGroqTypeReferenceTo]?: ${JSON.stringify(node.dereferencesTo)};`,
       )
     }
-    return printLiteral(members, depth)
+    return members.length === 0 && jsonValues
+      ? 'Record<string, never>'
+      : printLiteral(members, depth)
   }
 
   function isIntersection(node: TypeNode): boolean {
@@ -197,19 +200,36 @@ export interface PrintTypeScriptOptions {
   typeName: string
   /** Schema the `inline` references point into; the types referenced are emitted as well */
   schema?: SchemaType
+  /**
+   * Prints the type of values sent as JSON, as the Zod schema infers it: without the symbol that
+   * brands references, and with an object without attributes as `Record<string, never>` rather
+   * than typegen's `{}`, which is any value but null and undefined
+   */
+  jsonValues?: boolean
 }
+
+/**
+ * Prints the exported type's right-hand side with the printer the declarations share, for a type
+ * that is more than its node (the params' properties carry comments)
+ */
+export type PrintRoot = (print: (node: TypeNode, depth: number) => string) => string
 
 /**
  * Prints a query result type as TypeScript the way `sanity typegen` would: the result type
  * first, then every schema type it references (directly or through other schema types), each
  * under the alias typegen gives it, preceded by the helpers those declarations rely on.
  */
-export function printTypeScript(node: TypeNode, options: PrintTypeScriptOptions): string {
+export function printTypeScript(
+  node: TypeNode,
+  options: PrintTypeScriptOptions,
+  printRoot: PrintRoot = (print) => print(node, 0),
+): string {
   const identifiers = createSchemaIdentifiers(options.schema)
-  const printer = createTypeScriptPrinter(identifiers)
+  const printer = createTypeScriptPrinter(identifiers, options)
   const {order} = collectReferencedTypes(node, options.schema)
 
-  const declarations = [`export type ${options.typeName} =${printAssignment(printer.print(node))};`]
+  const root = printRoot((child, depth) => printer.print(child, depth))
+  const declarations = [`export type ${options.typeName} =${printAssignment(root)};`]
   for (const name of sortBySchemaOrder(order, options.schema)) {
     const identifier = identifiers.get(name)
     const resolved = resolveSchemaType(options.schema, name)

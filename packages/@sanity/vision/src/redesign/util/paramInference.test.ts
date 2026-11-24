@@ -1,37 +1,21 @@
-import {Schema} from '@sanity/schema'
-import {extractSchema} from '@sanity/schema/_internal'
 import {describe, expect, it} from 'vitest'
 
-import {findParamNames, inferQueryParams} from './paramInference'
+import {documentTypes, schema, STATUSES} from '../../../test/paramsFixtures'
+import {findParamNames, inferQueryParams, type InferParamsOptions} from './paramInference'
 
-const schema = extractSchema(
-  Schema.compile({
-    name: 'test',
-    types: [
-      {name: 'slug', type: 'object', fields: [{name: 'current', type: 'string'}]},
-      {
-        name: 'post',
-        type: 'document',
-        fields: [
-          {name: 'title', type: 'string'},
-          {name: 'slug', type: 'slug'},
-          {name: 'status', type: 'string', options: {list: ['draft', 'review', 'published']}},
-          {name: 'rating', type: 'number'},
-          {name: 'featured', type: 'boolean'},
-          {name: 'tags', type: 'array', of: [{type: 'string'}]},
-          {name: 'author', type: 'reference', to: [{type: 'author'}]},
-        ],
-      },
-      {name: 'author', type: 'document', fields: [{name: 'name', type: 'string'}]},
-    ],
-  }),
-)
+const WITH_SCHEMA: InferParamsOptions = {schema, documentTypes}
+const WITHOUT_SCHEMA: InferParamsOptions = {documentTypes}
 
-const documentTypes = ['author', 'post']
+const STATUS_OPTIONS = STATUSES.toSorted()
 
-function typeOf(query: string, name: string, withSchema = true) {
-  const inference = inferQueryParams(query, withSchema ? {schema, documentTypes} : {documentTypes})
-  return inference.params.find((param) => param.name === name)?.type
+function paramOf(query: string, name: string, options = WITH_SCHEMA) {
+  const param = inferQueryParams(query, options).params.find((each) => each.name === name)
+  if (!param) throw new Error(`No param ${name} in ${query}`)
+  return param
+}
+
+function typeOf(query: string, name: string, options = WITH_SCHEMA) {
+  return paramOf(query, name, options).type
 }
 
 describe('findParamNames', () => {
@@ -65,6 +49,19 @@ describe('inferQueryParams', () => {
     expect(inferQueryParams('*[_type == "post"]')).toEqual({params: [], syntaxError: false})
   })
 
+  it('types the argument of text::semanticSimilarity as a string', () => {
+    const param = paramOf(
+      '*[_type == "pokemon"] | score(text::semanticSimilarity($description)) | order(_score desc)[0...10]',
+      'description',
+    )
+    expect(param).toEqual({
+      name: 'description',
+      node: {type: 'string'},
+      type: {kind: 'string', array: false},
+      usages: ['text::semanticSimilarity($description)'],
+    })
+  })
+
   it('does not offer the parameters of the custom functions the query declares', () => {
     const inference = inferQueryParams(
       [
@@ -92,31 +89,24 @@ describe('inferQueryParams', () => {
   })
 
   it('offers the document types for _type, from the schema or the workspace', () => {
-    expect(typeOf('*[_type == $type]', 'type')).toEqual({
-      kind: 'string',
-      array: false,
-      options: ['author', 'post'],
-      format: 'document-type',
-    })
-    expect(typeOf('*[$type == _type]', 'type', false)).toEqual({
+    const documentType = {
       kind: 'string',
       array: false,
       options: documentTypes,
       format: 'document-type',
-    })
-    expect(typeOf('*[_type in $types]', 'types', false)).toEqual({
-      kind: 'string',
+    }
+    expect(typeOf('*[_type == $type]', 'type')).toEqual(documentType)
+    expect(typeOf('*[$type == _type]', 'type', WITHOUT_SCHEMA)).toEqual(documentType)
+    expect(typeOf('*[_type in $types]', 'types', WITHOUT_SCHEMA)).toEqual({
+      ...documentType,
       array: true,
-      options: documentTypes,
-      format: 'document-type',
     })
   })
 
   it('does not offer document types for the _type of objects inside documents', () => {
-    expect(typeOf('*[_type == "post"]{"blocks": body[_type == $block]}', 'block', false)).toEqual({
-      kind: 'string',
-      array: false,
-    })
+    expect(
+      typeOf('*[_type == "post"]{"blocks": body[_type == $block]}', 'block', WITHOUT_SCHEMA),
+    ).toEqual({kind: 'string', array: false})
   })
 
   it('types fields from the schema, narrowed by the filter', () => {
@@ -124,16 +114,31 @@ describe('inferQueryParams', () => {
       kind: 'string',
       array: false,
     })
-    expect(typeOf('*[_type == "post" && status == $status]', 'status')).toEqual({
+    expect(paramOf('*[_type == "post" && status == $status]', 'status')).toMatchObject({
+      node: {type: 'union', of: STATUS_OPTIONS.map((value) => ({type: 'string', value}))},
+      type: {kind: 'string', array: false, options: STATUS_OPTIONS},
+    })
+    expect(typeOf('*[_type == "post" && views >= $min]', 'min').kind).toBe('number')
+    expect(typeOf('*[_type == "post" && featured == $featured]', 'featured').kind).toBe('boolean')
+    expect(typeOf('*[_type == "post" && author->name == $author]', 'author').kind).toBe('string')
+    expect(typeOf('*[_type == "post" && author._ref == $author]', 'author')).toEqual({
       kind: 'string',
       array: false,
-      options: ['draft', 'published', 'review'],
+      format: 'document-id',
     })
-    expect(typeOf('*[_type == "post" && rating >= $min]', 'min')?.kind).toBe('number')
-    expect(typeOf('*[_type == "post" && featured == $featured]', 'featured')?.kind).toBe('boolean')
-    expect(typeOf('*[_type == "post" && author->name == $author]', 'author')?.kind).toBe('string')
-    // Without a schema the field could hold anything
-    expect(typeOf('*[_type == "post" && slug.current == $slug]', 'slug', false)?.kind).toBe('any')
+  })
+
+  it('says why a field the schema does not type leaves its param untyped', () => {
+    expect(paramOf('*[_type == "post" && slug.current == $slug]', 'slug', WITHOUT_SCHEMA)).toEqual({
+      name: 'slug',
+      node: {type: 'unknown'},
+      type: {kind: 'any', array: false},
+      usages: ['slug.current == $slug'],
+      reason: '`slug.current`, which it is compared with, needs the workspace schema to be typed',
+    })
+    expect(paramOf('*[_type == "post" && subtitle == $subtitle]', 'subtitle').reason).toBe(
+      'the schema does not type `subtitle`, which it is compared with',
+    )
   })
 
   it('types membership both ways', () => {
@@ -144,59 +149,142 @@ describe('inferQueryParams', () => {
     expect(typeOf('*[_type == "post" && status in $statuses]', 'statuses')).toEqual({
       kind: 'string',
       array: true,
-      options: ['draft', 'published', 'review'],
+      options: STATUS_OPTIONS,
     })
-  })
-
-  it('knows what functions, matching and system fields expect', () => {
-    expect(typeOf('*[references($id)]', 'id', false)).toEqual({
+    expect(typeOf('*[_type == "post" && _id in $ids]', 'ids')).toEqual({
+      kind: 'string',
+      array: true,
+      format: 'document-id',
+    })
+    expect(typeOf('*[_type == "post" && $category in categories[]._ref]', 'category')).toEqual({
       kind: 'string',
       array: false,
       format: 'document-id',
     })
-    expect(typeOf('*[title match $q]', 'q', false)?.kind).toBe('string')
-    expect(typeOf('*[dateTime(_updatedAt) > dateTime($since)]', 'since', false)?.format).toBe(
-      'datetime',
-    )
+    expect(typeOf('*[_type == "post" && $id in *[_type == "author"]._id]', 'id')).toEqual({
+      kind: 'string',
+      array: false,
+      format: 'document-id',
+    })
+  })
+
+  it('knows what functions, matching and system fields expect', () => {
+    expect(typeOf('*[references($id)]', 'id', WITHOUT_SCHEMA)).toEqual({
+      kind: 'string',
+      array: false,
+      format: 'document-id',
+    })
+    expect(typeOf('*[title match $q]', 'q', WITHOUT_SCHEMA).kind).toBe('string')
+    expect(typeOf('*[dateTime(_updatedAt) > dateTime($since)]', 'since', WITHOUT_SCHEMA)).toEqual({
+      kind: 'string',
+      array: false,
+      format: 'datetime',
+    })
     // The schema says string, the query says when
     expect(typeOf('*[_updatedAt > $since]', 'since')).toEqual({
       kind: 'string',
       array: false,
       format: 'datetime',
     })
-    expect(typeOf('*[_id == $id]', 'id')?.format).toBe('document-id')
-    expect(typeOf('*[count(tags) > $n]', 'n', false)?.kind).toBe('number')
-    expect(typeOf('*[!$hidden]', 'hidden', false)?.kind).toBe('boolean')
-    expect(typeOf('*[]{"x": select($flag => 1, 2)}', 'flag', false)?.kind).toBe('boolean')
+    expect(typeOf('*[_id == $id]', 'id').format).toBe('document-id')
+    expect(typeOf('*[count(tags) > $n]', 'n', WITHOUT_SCHEMA).kind).toBe('number')
+    expect(typeOf('*[!$hidden]', 'hidden', WITHOUT_SCHEMA).kind).toBe('boolean')
+    expect(typeOf('*[]{"x": select($flag => 1, 2)}', 'flag', WITHOUT_SCHEMA).kind).toBe('boolean')
+    expect(typeOf('*[string::startsWith(title, $prefix)]', 'prefix', WITHOUT_SCHEMA).kind).toBe(
+      'string',
+    )
+    expect(typeOf('*[round(views, $digits) > 1]', 'digits', WITHOUT_SCHEMA).kind).toBe('integer')
+    expect(typeOf('*[]{"n": math::sum($values)}', 'values', WITHOUT_SCHEMA)).toEqual({
+      kind: 'number',
+      array: true,
+    })
   })
 
   it('types params of nested queries in their own scope', () => {
     const inference = inferQueryParams(
       '*[_type == "post"]{title, "related": *[_type == "post" && _id != $current && status == $status]}',
-      {schema, documentTypes},
+      WITH_SCHEMA,
     )
     expect(inference.params.map(({name, type}) => [name, type])).toEqual([
       ['current', {kind: 'string', array: false, format: 'document-id'}],
-      ['status', {kind: 'string', array: false, options: ['draft', 'published', 'review']}],
+      ['status', {kind: 'string', array: false, options: STATUS_OPTIONS}],
     ])
   })
 
-  it('lists params it cannot type, with where they are used', () => {
+  it('reads the comparisons of a filter that also checks another param', () => {
+    expect(typeOf('*[_type == "post" && count($ids) > 0 && status == $status]', 'status')).toEqual({
+      kind: 'string',
+      array: false,
+      options: STATUS_OPTIONS,
+    })
+    expect(typeOf('*[_type == "post" && array::intersects(tags, $tags)]', 'tags')).toEqual({
+      kind: 'string',
+      array: true,
+    })
+  })
+
+  it('lists params it cannot type, with where they are used and why', () => {
     const inference = inferQueryParams(
       '*[_type == "post"]{title, "extra": $extra, "same": $a == $b}',
     )
-    expect(inference.params).toEqual([
-      {name: 'extra', type: {kind: 'any', array: false}, usages: ['$extra']},
-      {name: 'a', type: {kind: 'any', array: false}, usages: ['$a == $b']},
-      {name: 'b', type: {kind: 'any', array: false}, usages: ['$a == $b']},
+    expect(
+      inference.params.map(({name, type, usages, reason}) => ({name, type, usages, reason})),
+    ).toEqual([
+      {
+        name: 'extra',
+        type: {kind: 'any', array: false},
+        usages: ['$extra'],
+        reason: 'the query only returns it',
+      },
+      {
+        name: 'a',
+        type: {kind: 'any', array: false},
+        usages: ['$a == $b'],
+        reason: 'it is only compared with `$b`, which is not typed either',
+      },
+      {
+        name: 'b',
+        type: {kind: 'any', array: false},
+        usages: ['$a == $b'],
+        reason: 'it is only compared with `$a`, which is not typed either',
+      },
     ])
+  })
+
+  it('types a param from its current value only when the query says nothing about it', () => {
+    const query = '*[_type == "post" && status == $status]{"extra": $extra}'
+    const values = {status: 42, extra: ['a', 'b']}
+    const {params} = inferQueryParams(query, {...WITH_SCHEMA, values})
+    expect(params.map(({name, type, valueNode}) => ({name, kind: type.kind, valueNode}))).toEqual([
+      {name: 'status', kind: 'string', valueNode: undefined},
+      {name: 'extra', kind: 'any', valueNode: {type: 'array', of: {type: 'string'}}},
+    ])
+  })
+
+  it('takes what all uses of a param accept, or any of them when they accept nothing in common', () => {
+    expect(
+      paramOf('*[_type == "post" && $mode == "draft" && $mode in ["draft", "review"]]', 'mode')
+        .node,
+    ).toEqual({
+      type: 'union',
+      of: [
+        {type: 'string', value: 'draft'},
+        {type: 'string', value: 'review'},
+      ],
+    })
+    expect(
+      paramOf('*[_type == "post" && ($value == views || $value == title)]', 'value').node,
+    ).toEqual({
+      type: 'union',
+      of: [{type: 'number'}, {type: 'string'}],
+    })
   })
 
   it('merges the usages of a param', () => {
     const inference = inferQueryParams('*[_type == $type || $type == "post"][0...$limit]', {
       documentTypes,
     })
-    expect(inference.params[0]).toEqual({
+    expect(inference.params[0]).toMatchObject({
       name: 'type',
       type: {kind: 'string', array: false, options: documentTypes, format: 'document-type'},
       usages: ['_type == $type', '$type == "post"'],
@@ -206,7 +294,7 @@ describe('inferQueryParams', () => {
   it('marks params the query expects to be null', () => {
     const inference = inferQueryParams(
       '*[(!defined($status) || status == $status) && $author != null && title == coalesce($title, "Untitled")]{"n": $limit}',
-      {schema, documentTypes},
+      WITH_SCHEMA,
     )
     expect(inference.params.map(({name, nullable}) => [name, nullable])).toEqual([
       ['status', true],
@@ -219,18 +307,21 @@ describe('inferQueryParams', () => {
   })
 
   it('reads `!$param || …` as an optional param, not a boolean', () => {
-    const inference = inferQueryParams('*[(!$title || title == $title) && !$flag]', {
-      schema,
-      documentTypes,
-    })
+    const inference = inferQueryParams('*[(!$title || title == $title) && !$flag]', WITH_SCHEMA)
     expect(inference.params).toEqual([
       {
         name: 'title',
+        node: {type: 'string'},
         type: {kind: 'string', array: false},
         usages: ['!$title', 'title == $title'],
         nullable: true,
       },
-      {name: 'flag', type: {kind: 'boolean', array: false}, usages: ['!$flag']},
+      {
+        name: 'flag',
+        node: {type: 'boolean'},
+        type: {kind: 'boolean', array: false},
+        usages: ['!$flag'],
+      },
     ])
   })
 
@@ -239,15 +330,15 @@ describe('inferQueryParams', () => {
   })
 
   it('lists the params of a query that does not parse, without types', () => {
-    const inference = inferQueryParams('*[_type == $type && title == $title', {
-      schema,
-      documentTypes,
-    })
+    const inference = inferQueryParams('*[_type == $type && title == $title', WITH_SCHEMA)
     expect(inference).toEqual({
-      params: [
-        {name: 'type', type: {kind: 'any', array: false}, usages: []},
-        {name: 'title', type: {kind: 'any', array: false}, usages: []},
-      ],
+      params: ['type', 'title'].map((name) => ({
+        name,
+        node: {type: 'unknown'},
+        type: {kind: 'any', array: false},
+        usages: [],
+        reason: 'the query does not parse',
+      })),
       syntaxError: true,
     })
   })
@@ -269,11 +360,29 @@ describe('inferQueryParams', () => {
     expect(limits?.fields).toEqual([
       {
         name: 'low',
-        type: {kind: 'number', array: false},
+        node: {type: 'unknown'},
+        type: {kind: 'any', array: false},
         usages: ['rating > $range.limits.low'],
+        reason: 'the schema does not type `rating`, which it is compared with',
       },
     ])
     expect(range.fields?.[0].usages).toEqual(['count(tags) >= $range.min'])
+    // The exports print the object the query reads
+    expect(range.node).toEqual({
+      type: 'object',
+      attributes: {
+        min: {type: 'objectAttribute', value: {type: 'number'}},
+        max: {type: 'objectAttribute', value: {type: 'number'}},
+        limits: {
+          type: 'objectAttribute',
+          value: {
+            type: 'object',
+            attributes: {low: {type: 'objectAttribute', value: {type: 'unknown'}}},
+          },
+        },
+        flag: {type: 'objectAttribute', value: {type: 'boolean'}},
+      },
+    })
   })
 
   it('reads the type of a key of an object param from the query alone', () => {
@@ -281,13 +390,16 @@ describe('inferQueryParams', () => {
     expect(inference.params[0].fields).toEqual([
       {
         name: 'id',
+        node: {type: 'string'},
         type: {kind: 'string', array: false, format: 'document-id'},
         usages: ['_id == $doc.id'],
       },
       {
         name: 'slug',
+        node: {type: 'unknown'},
         type: {kind: 'any', array: false},
         usages: ['defined($doc.slug)'],
+        reason: 'the query only checks whether it is set',
         nullable: true,
       },
     ])

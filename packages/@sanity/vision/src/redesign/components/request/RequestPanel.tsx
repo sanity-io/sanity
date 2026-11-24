@@ -455,7 +455,7 @@ export function RequestPanel(props: RequestPanelProps) {
                 onFormat={onFormatParams}
                 testIdPrefix="vision-params"
               />
-              <ParamsActionsMenu tab={tab} />
+              <ParamsActionsMenu params={paramValues} tab={tab} />
             </Flex>
           </Flex>
         ),
@@ -569,6 +569,7 @@ export function RequestPanel(props: RequestPanelProps) {
     onParamsSubmit,
     onRevealRange,
     params,
+    paramValues,
     paramsContentId,
     paramsEditorRef,
     paramsFormTabId,

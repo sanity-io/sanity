@@ -17,10 +17,12 @@ import {ExportParamsTypesDialog} from './ExportParamsTypesDialog'
 
 export interface ParamsActionsMenuProps {
   tab: VisionTab
+  /** The params as they parse; empty while their JSON does not */
+  params: Record<string, unknown>
 }
 
 /** The "More actions" menu next to Copy in the params toolbar: types for the query's params */
-export function ParamsActionsMenu({tab}: ParamsActionsMenuProps) {
+export function ParamsActionsMenu({tab, params}: ParamsActionsMenuProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const pendingEdits = usePendingEdits()
   const [exportFormat, setExportFormat] = useState<TypesExportFormat | null>(null)
@@ -87,6 +89,7 @@ export function ParamsActionsMenu({tab}: ParamsActionsMenuProps) {
         <ExportParamsTypesDialog
           format={exportFormat}
           onClose={() => setExportFormat(null)}
+          params={params}
           query={tab.query}
         />
       )}

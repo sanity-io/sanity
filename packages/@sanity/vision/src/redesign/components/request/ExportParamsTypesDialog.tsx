@@ -13,21 +13,28 @@ import {type TypesExportFormat} from '../response/ExportTypesDialog'
 
 export interface ExportParamsTypesDialogProps {
   query: string
+  /** The params' current values: a param the query says nothing about is typed from its value */
+  params: Record<string, unknown>
   format: TypesExportFormat
   onClose: () => void
 }
 
 /** Types for the params a query uses, from the inference that builds the params form */
-export function ExportParamsTypesDialog({query, format, onClose}: ExportParamsTypesDialogProps) {
+export function ExportParamsTypesDialog({
+  query,
+  params,
+  format,
+  onClose,
+}: ExportParamsTypesDialogProps) {
   const {t} = useTranslation(visionLocaleNamespace)
-  const inference = useParamsInference(query)
+  const inference = useParamsInference(query, params)
 
   const code = useMemo(() => {
-    const typeName = toParamsTypeName(query)
+    const options = {typeName: toParamsTypeName(query), schema: inference.groqSchema}
     return format === 'typescript'
-      ? printParamsTypeScript(inference.params, typeName)
-      : printParamsZod(inference.params, typeName)
-  }, [format, inference.params, query])
+      ? printParamsTypeScript(inference.params, options)
+      : printParamsZod(inference.params, options)
+  }, [format, inference.groqSchema, inference.params, query])
 
   return (
     <ExportCodeDialog
