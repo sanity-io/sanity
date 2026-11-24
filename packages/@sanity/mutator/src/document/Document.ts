@@ -27,6 +27,12 @@ export interface SubmissionResponder {
  *
  * @internal
  */
+/**
+ * How many applied transaction ids a document remembers. A retry reaches the server within
+ * minutes of its first attempt, and far fewer transactions than this land on one document then.
+ */
+const MAX_APPLIED_TRANSACTION_IDS = 1000
+
 export class Document {
   /**
    * Incoming patches from the server waiting to be applied to HEAD
@@ -43,6 +49,12 @@ export class Document {
    * Pending mutations
    */
   pending: Mutation[] = []
+
+  /**
+   * Transaction ids recently applied to HEAD, oldest first. A retried submission answered as
+   * already existing checks this to tell whether its earlier attempt's echo already arrived.
+   */
+  appliedTransactionIds = new Set<string>()
 
   /**
    * Our model of the document according to the incoming patches from the server
@@ -263,6 +275,11 @@ export class Document {
     )
 
     this.HEAD = mut.apply(this.HEAD)
+    this.appliedTransactionIds.add(mut.transactionId)
+    if (this.appliedTransactionIds.size > MAX_APPLIED_TRANSACTION_IDS) {
+      const [oldest] = this.appliedTransactionIds
+      this.appliedTransactionIds.delete(oldest)
+    }
 
     if (this.onRemoteMutation) {
       this.onRemoteMutation(mut)
@@ -368,11 +385,12 @@ export class Document {
       return
     }
 
-    // The resulting revision of a transaction is its transaction id, so HEAD at this id means
-    // the server's echo of this mutation was already applied: an earlier attempt landed while
-    // its response was lost, and a retry with the same transaction id was answered as already
-    // existing. Waiting for another echo would apply it a second time on top of HEAD.
-    if (this.HEAD?._rev === pendingTxnId) {
+    // The server's echo of this mutation was already applied: an earlier attempt landed while its
+    // response was lost, and a retry with the same transaction id was answered as already
+    // existing. Waiting for another echo would apply it a second time on top of HEAD. Other
+    // users' mutations may have arrived after the echo, so HEAD's revision alone does not show
+    // it. HEAD at this revision covers a document reset from a snapshot that includes it.
+    if (this.appliedTransactionIds.has(pendingTxnId) || this.HEAD?._rev === pendingTxnId) {
       this.pending = this.pending.filter((mutation) => mutation.transactionId !== pendingTxnId)
       this.rebase([])
       return

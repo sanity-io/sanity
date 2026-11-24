@@ -174,19 +174,29 @@ test('simple local mutation arriving out of order', () => {
     .assertBOTH('numbers', [2, 1])
 })
 
+/** The local mutation a retry sends again, under the transaction id of its first attempt. */
+const retriedSetTitle = () =>
+  new Mutation({
+    transactionId: 't2',
+    resultRev: 't2',
+    mutations: [{patch: {id: 'a', set: {title: 'Hello!'}}}],
+  })
+
+const retriedIncrement = (previousRev?: string) =>
+  new Mutation({
+    transactionId: 't2',
+    resultRev: 't2',
+    ...(previousRev && {previousRev}),
+    mutations: [{patch: {id: 'a', inc: {count: 1}}}],
+  })
+
 test('a retried mutation whose echo already arrived is not applied again', () => {
   // The first attempt lands, but its response is lost: the attempt is reported as failed, then
   // the server's echo arrives. The retry reuses the transaction id and is answered as already
   // existing, which is reported as success.
   const doc = new Document({_id: 'a', _type: 't', _rev: '1', title: 'Hello'})
-  const local = () =>
-    new Mutation({
-      transactionId: 't2',
-      resultRev: 't2',
-      mutations: [{patch: {id: 'a', set: {title: 'Hello!'}}}],
-    })
 
-  doc.stage(local()).failure()
+  doc.stage(retriedSetTitle()).failure()
   doc.arrive(
     new Mutation({
       transactionId: 't2',
@@ -195,10 +205,33 @@ test('a retried mutation whose echo already arrived is not applied again', () =>
       mutations: [{patch: {id: 'a', set: {title: 'Hello!'}}}],
     }),
   )
-  doc.stage(local()).success()
+  doc.stage(retriedSetTitle()).success()
 
   expect(doc.submitted).toHaveLength(0)
   expect(doc.pending).toHaveLength(0)
   expect(doc.EDGE).toMatchObject({title: 'Hello!', _rev: 't2'})
+  expect(doc.isConsistent()).toBe(true)
+})
+
+test('a retried mutation is not applied again when another mutation arrived after its echo', () => {
+  // As above, but another user's mutation lands on top of the echo before the retry is
+  // answered, so HEAD's revision is no longer the retried transaction's id.
+  const doc = new Document({_id: 'a', _type: 't', _rev: '1', count: 0})
+
+  doc.stage(retriedIncrement()).failure()
+  doc.arrive(retriedIncrement('1'))
+  doc.arrive(
+    new Mutation({
+      transactionId: 'b1',
+      resultRev: 'b1',
+      previousRev: 't2',
+      mutations: [{patch: {id: 'a', set: {title: 'Other'}}}],
+    }),
+  )
+  doc.stage(retriedIncrement()).success()
+
+  expect(doc.submitted).toHaveLength(0)
+  expect(doc.pending).toHaveLength(0)
+  expect(doc.EDGE).toMatchObject({count: 1, title: 'Other', _rev: 'b1'})
   expect(doc.isConsistent()).toBe(true)
 })
