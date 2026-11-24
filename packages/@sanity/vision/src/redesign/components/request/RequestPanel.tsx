@@ -513,8 +513,8 @@ export function RequestPanel(props: RequestPanelProps) {
         >
           <Box className={styles.paneLabel}>
             <Flex alignItems="center" gap={2}>
-              <Label muted size={1}>
-                {t('query.label')}
+              <Label aria-label={t('vision.query.label')} muted size={1}>
+                {t('vision.query.label')}
               </Label>
               <Flex alignItems="center" className={styles.labelActions} gap={1}>
                 {canGenerate && !generatorOpen && (

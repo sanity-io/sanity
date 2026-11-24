@@ -33,7 +33,7 @@ function EditorLabelChrome({action}: {action: ReactNode}) {
         </Text>
         <Flex align="center" gap={2}>
           <Label muted size={1}>
-            Query
+            GROQ
           </Label>
           <Flex flex={1} />
           {action}

@@ -888,6 +888,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.query.copy': 'Copy query',
   /** Menu item opening the export query dialog */
   'vision.query.export': 'Export query…',
+  /** Label floating over the GROQ editor */
+  'vision.query.label': 'GROQ',
   /** Menu item reformatting the query */
   'vision.query.prettify': 'Prettify query',
   /** Toast shown when the query could not be reformatted */

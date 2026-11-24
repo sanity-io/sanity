@@ -730,7 +730,15 @@ describe('VisionRedesign', () => {
   it('shows the query editor over the request tabs, with Params open and the fetch actions under them', async () => {
     renderRedesign()
 
-    expect(screen.getByTestId('vision-query-editor')).toBeTruthy()
+    const queryEditor = screen.getByTestId('vision-query-editor')
+    expect(queryEditor).toBeTruthy()
+    // The header above the editor is GROQ; the shared query label stays "Query"
+    const header = within(queryEditor).getByText('vision.query.label')
+    expect(header.closest('[data-ui="Label"]')?.getAttribute('aria-label')).toBe(
+      'vision.query.label',
+    )
+    expect(visionLocaleStrings['vision.query.label']).toBe('GROQ')
+    expect(visionLocaleStrings['query.label']).toBe('Query')
     expect(screen.getByTestId('vision-params-editor')).toBeTruthy()
     expect(screen.queryByTestId('vision-options')).toBeNull()
     expect(screen.queryByTestId('vision-sidebar-lint')).toBeNull()
