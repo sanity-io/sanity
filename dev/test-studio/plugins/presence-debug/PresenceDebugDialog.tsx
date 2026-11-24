@@ -1,4 +1,4 @@
-import {Box, Button, Card, Dialog, Spinner} from '@sanity/ui'
+import {Box, Button, Card, Dialog} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {
   pathToString,
@@ -8,7 +8,7 @@ import {
   usePresenceStore,
   useUserListWithPermissions,
 } from 'sanity'
-import {Text, Flex, VStack} from 'ui5'
+import {Spinner, Text, Flex, VStack} from 'ui5'
 
 import {type PresenceDebugTarget} from './context'
 
@@ -84,7 +84,11 @@ export function PresenceDebugDialog(props: PresenceDebugDialogProps) {
 
         {loading && (
           <Flex justifyContent="center" padding={3}>
-            <Spinner muted />
+            <Spinner
+              style={{
+                color: 'var(--foreground-low)',
+              }}
+            />
           </Flex>
         )}
 

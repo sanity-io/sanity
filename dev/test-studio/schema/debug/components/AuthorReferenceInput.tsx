@@ -1,6 +1,6 @@
 import {createImageUrlBuilder} from '@sanity/image-url'
 import {type Reference, type ReferenceSchemaType} from '@sanity/types'
-import {Button, Spinner} from '@sanity/ui'
+import {Button} from '@sanity/ui'
 import {
   type RefObject,
   Suspense,
@@ -12,6 +12,7 @@ import {
 } from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {type ObjectInputProps, set, setIfMissing, unset, useClient} from 'sanity'
+import {Spinner} from 'ui5'
 
 import * as styles from './AuthorReferenceInput.module.css'
 

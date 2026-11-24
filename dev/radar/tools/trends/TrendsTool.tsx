@@ -24,7 +24,6 @@ import {
   Dialog,
   PortalProvider,
   Select,
-  Spinner,
   Tab,
   TabList,
   TabPanel,
@@ -37,7 +36,7 @@ import {type ComponentType, type ReactNode, useEffect, useMemo, useRef, useState
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
 import {useDocumentStore} from 'sanity'
-import {Text, Container, Box, Flex, Grid, VStack} from 'ui5'
+import {Spinner, Text, Container, Box, Flex, Grid, VStack} from 'ui5'
 
 import {idSlug} from './acks'
 import {ChartLegend} from './ChartLegend'
@@ -1710,7 +1709,11 @@ export function TrendsTool() {
             )}
             {loading && (
               <Flex alignItems="center" justifyContent="center" padding={6}>
-                <Spinner muted />
+                <Spinner
+                  style={{
+                    color: 'var(--foreground-low)',
+                  }}
+                />
               </Flex>
             )}
             {!error && !loading && series.length === 0 && (

@@ -1,10 +1,9 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {stegaClean} from '@sanity/client/stega'
 import {type PortableTextBlock} from '@sanity/types'
-import {Spinner} from '@sanity/ui'
 import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
 import {createContext, useContext, useMemo} from 'react'
-import {Flex} from 'ui5'
+import {Spinner, Flex} from 'ui5'
 
 import {imageBuilder, useQuery} from './loader'
 
