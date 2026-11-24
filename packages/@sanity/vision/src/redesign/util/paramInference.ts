@@ -22,7 +22,7 @@ export interface InferredParam {
   type: ParamType
   /** The expressions that use the param, as GROQ */
   usages: string[]
-  /** The query expects null too: `defined($param)`, `coalesce($param, …)`, `$param == null` */
+  /** The query expects null too: `defined($param)`, `coalesce($param, fallback)`, `$param == null` */
   nullable?: true
 }
 
@@ -381,12 +381,16 @@ function collectUsages(ast: ExprNode, options: InferParamsOptions): Usage[] {
           break
         }
         if (name === 'global::coalesce') {
-          // A param given as one of the alternatives holds what the others do, or null
+          // coalesce returns the first non-null argument, so a param before the last
+          // one may be null and a later argument takes over. The last argument is
+          // that value: null there is not handled, it is what the call returns.
           const others = node.args.filter((arg) => arg.type !== 'Parameter')
           const type = others
             .map((other) => resolve('value', other, scope, options))
             .find((resolved) => resolved !== undefined)
-          for (const arg of node.args) report(arg, node, type, true)
+          for (const [index, arg] of node.args.entries()) {
+            report(arg, node, type, index < node.args.length - 1)
+          }
           break
         }
         const type = FUNCTION_ARGUMENTS[name]

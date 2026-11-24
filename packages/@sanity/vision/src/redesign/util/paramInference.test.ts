@@ -218,6 +218,18 @@ describe('inferQueryParams', () => {
     expect(inference.params[2].type).toEqual({kind: 'string', array: false})
   })
 
+  it('leaves the final coalesce fallback required', () => {
+    const inference = inferQueryParams(
+      '*[_type == "post"]{"label": coalesce($label, title, $fallback), "only": coalesce($only)}',
+      {schema, documentTypes},
+    )
+    expect(inference.params.map(({name, nullable, type}) => [name, nullable, type])).toEqual([
+      ['label', true, {kind: 'string', array: false}],
+      ['fallback', undefined, {kind: 'string', array: false}],
+      ['only', undefined, {kind: 'any', array: false}],
+    ])
+  })
+
   it('does not narrow a param to the literal it is compared with', () => {
     expect(typeOf('*[$type == "post"]', 'type')).toEqual({kind: 'string', array: false})
   })

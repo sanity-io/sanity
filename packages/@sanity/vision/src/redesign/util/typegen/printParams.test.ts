@@ -211,6 +211,18 @@ describe('printParamsTypeScript and printParamsZod', () => {
     )
   })
 
+  it('keeps the final coalesce fallback required', () => {
+    const {typescript, zod} = print(
+      '*[_type == "post"]{"label": coalesce($label, title, $fallback)}',
+    )
+    expect(properties(typescript)).toBe(
+      ['  label: string | null;', '  fallback: string;'].join('\n'),
+    )
+    expect(properties(zod)).toBe(
+      ['  label: z.string().nullable(),', '  fallback: z.string(),'].join('\n'),
+    )
+  })
+
   it('breaks long array unions over lines', () => {
     const {typescript, zod} = print('*[_type == "post" && category in $categories]')
     expect(properties(typescript)).toBe(
