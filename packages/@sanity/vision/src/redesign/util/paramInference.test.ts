@@ -139,6 +139,7 @@ describe('inferQueryParams', () => {
       kind: 'string',
       array: false,
       format: 'document-id',
+      documentTypes: ['author'],
     })
   })
 
@@ -169,16 +170,19 @@ describe('inferQueryParams', () => {
       kind: 'string',
       array: true,
       format: 'document-id',
+      documentTypes: ['post'],
     })
     expect(typeOf('*[_type == "post" && $category in categories[]._ref]', 'category')).toEqual({
       kind: 'string',
       array: false,
       format: 'document-id',
+      documentTypes: ['category'],
     })
     expect(typeOf('*[_type == "post" && $id in *[_type == "author"]._id]', 'id')).toEqual({
       kind: 'string',
       array: false,
       format: 'document-id',
+      documentTypes: ['author'],
     })
   })
 
@@ -230,6 +234,30 @@ describe('inferQueryParams', () => {
     })
   })
 
+  it('narrows a document id to the type the query constrains', () => {
+    // `_type == "pokemonGeneration"` beside `references($generationId)`
+    expect(
+      typeOf('*[_type == "pokemonGeneration" && references($generationId)]', 'generationId')
+        .documentTypes,
+    ).toEqual(['pokemonGeneration'])
+    // A reference field's target, not the document that holds the reference
+    expect(
+      typeOf('*[_type == "pokemon" && generation._ref == $generationId]', 'generationId')
+        .documentTypes,
+    ).toEqual(['pokemonGeneration'])
+    expect(typeOf('*[_type == "post" && _id == $id]', 'id').documentTypes).toEqual(['post'])
+    expect(
+      typeOf('*[_type == "post" && $id in *[_type == "author"]._id]', 'id').documentTypes,
+    ).toEqual(['author'])
+    // Nothing names a type, so the search covers every document type
+    expect(typeOf('*[references($id)]', 'id').documentTypes).toBeUndefined()
+    expect(typeOf('*[_id == $id]', 'id').documentTypes).toBeUndefined()
+    // Two uses that name different types do not narrow to either
+    expect(
+      typeOf('*[_type == "post" && references($id) && author._ref == $id]', 'id').documentTypes,
+    ).toBeUndefined()
+  })
+
   it('types each side of a match, and what a plus adds a param to', () => {
     // `match` takes strings on either side, whatever the other side is
     expect(typeOf('*[$text match $pattern]', 'text', WITHOUT_SCHEMA).kind).toBe('string')
@@ -274,7 +302,7 @@ describe('inferQueryParams', () => {
       WITH_SCHEMA,
     )
     expect(inference.params.map(({name, type}) => [name, type])).toEqual([
-      ['current', {kind: 'string', array: false, format: 'document-id'}],
+      ['current', {kind: 'string', array: false, format: 'document-id', documentTypes: ['post']}],
       ['status', {kind: 'string', array: false, options: STATUS_OPTIONS}],
     ])
   })
@@ -297,7 +325,7 @@ describe('inferQueryParams', () => {
     ).toEqual({type: 'array', of: {type: 'unknown'}})
     expect(
       typeOf('*[_type == "post" && array::intersects(categories[]._ref, $ids)]', 'ids'),
-    ).toEqual({kind: 'string', array: true, format: 'document-id'})
+    ).toEqual({kind: 'string', array: true, format: 'document-id', documentTypes: ['category']})
   })
 
   it('lists params it cannot type, with where they are used and why', () => {

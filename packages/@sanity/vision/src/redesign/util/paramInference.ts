@@ -32,6 +32,11 @@ export interface ParamType {
   /** The values the schema allows, offered as suggestions; others can still be entered */
   options?: string[]
   format?: ParamFormat
+  /**
+   * Document types a document id is limited to: a `_type` check beside `references($id)`, or the
+   * target of a `_ref` / `_id` it is compared with. Absent: the search covers every document type.
+   */
+  documentTypes?: string[]
   /** The smallest number a number input offers, from the query or a field's validation */
   min?: number
   /** The largest number a number input offers */
@@ -528,6 +533,11 @@ interface Occurrence {
   nullable?: boolean
   /** Why this use says nothing about the type */
   reason?: string
+  /**
+   * Where a document-id function argument was read, so `references($id)` can be narrowed by the
+   * `_type` check in that same filter
+   */
+  scope?: Scope
 }
 
 const RETURNED = 'the query only returns it'
@@ -618,6 +628,7 @@ function collect(ast: ExprNode): Occurrence[] {
     node: ExprNode,
     context: ExprNode | string,
     occurrence: Omit<Occurrence, 'name' | 'path' | 'usage'>,
+    scope?: Scope,
   ) => {
     const reference = paramPath(node)
     if (!reference) return
@@ -627,14 +638,15 @@ function collect(ast: ExprNode): Occurrence[] {
       path: reference.path,
       usage: typeof context === 'string' ? context : describe(context, pathText(reference)),
       ...occurrence,
+      ...(scope && {scope}),
     })
   }
 
   /** `node` is passed where `expected` is taken: types the params it is made of */
-  const expect = (node: ExprNode, expected: Expected, context: ExprNode) => {
+  const expect = (node: ExprNode, expected: Expected, context: ExprNode, scope?: Scope) => {
     const inner = unwrapGroups(node)
     if (asParameter(inner)) {
-      note(inner, context, {expected})
+      note(inner, context, {expected}, scope)
       return
     }
     switch (inner.type) {
@@ -737,7 +749,9 @@ function collect(ast: ExprNode): Occurrence[] {
     const signature = SIGNATURES[name]
     node.args.forEach((arg, index) => {
       const expected = signature && (signature.args[index] ?? signature.rest)
-      if (expected && expected.node.type !== 'unknown') expect(arg, expected, node)
+      // A document id passed to `references()` is narrowed by the `_type` check beside it
+      const scopeForArg = expected?.format === 'document-id' ? scope : undefined
+      if (expected && expected.node.type !== 'unknown') expect(arg, expected, node, scopeForArg)
     })
     if (!signature?.alike) return
     const others = node.args.filter((arg) => !asParameter(arg))
@@ -1334,6 +1348,120 @@ export function inferQueryParams(query: string, options: InferParamsOptions = {}
   }
 }
 
+/**
+ * The `_type` of the document an id or reference points at, so the search can be limited to it.
+ * `_id` is the document's own (or a dereferenced one's); `_ref` is the referenced document.
+ */
+function documentTypeExpr(node: ExprNode): ExprNode | undefined {
+  const inner = unwrapGroups(node)
+  if (inner.type === 'AccessAttribute' && inner.name === '_ref') {
+    const base = inner.base ?? {type: 'This'}
+    return {type: 'AccessAttribute', name: '_type', base: {type: 'Deref', base}}
+  }
+  if (inner.type === 'AccessAttribute' && inner.name === '_id') {
+    const base = inner.base
+    const own = !base || base.type === 'This'
+    const dereferenced = base?.type === 'Deref'
+    if (!own && !dereferenced) return undefined
+    return {type: 'AccessAttribute', name: '_type', base: base ?? {type: 'This'}}
+  }
+  if (
+    inner.type === 'Map' ||
+    inner.type === 'FlatMap' ||
+    inner.type === 'Filter' ||
+    inner.type === 'Projection'
+  ) {
+    const expr = documentTypeExpr(inner.expr)
+    return expr ? {...inner, expr} : undefined
+  }
+  return undefined
+}
+
+const THIS_TYPE: ExprNode = {type: 'AccessAttribute', name: '_type', base: {type: 'This'}}
+
+/** The types a value holds, through the arrays a `categories[]._ref` or `*[_type == "author"]._id` is */
+function elementTypes(type: TypeNode): TypeNode[] {
+  return members(type).flatMap((member) =>
+    member.type === 'array' ? elementTypes(member.of) : [member],
+  )
+}
+
+/** String literals only. A plain `string` means the query did not limit the type. */
+function literalStrings(type: TypeNode): string[] | undefined {
+  const present = elementTypes(type).filter((member) => member.type !== 'null')
+  if (present.length === 0) return undefined
+  const names: string[] = []
+  for (const member of present) {
+    if (member.type !== 'string' || member.value === undefined) return undefined
+    names.push(member.value)
+  }
+  return [...new Set(names)].toSorted((a, b) => a.localeCompare(b))
+}
+
+/**
+ * Document types a document-id param is limited to. A use that names none is ignored. When the uses
+ * name different types, the search stays on every document type.
+ */
+/** Every document type, which is what an unconstrained `*._type` is. That is not a narrowing. */
+function everyDocumentType(schema: SchemaType): string[] | undefined {
+  try {
+    return literalStrings(
+      typeEvaluate({type: 'Map', base: {type: 'Everything'}, expr: THIS_TYPE}, schema),
+    )
+  } catch {
+    return undefined
+  }
+}
+
+function sameNames(left: string[], right: string[] | undefined): boolean {
+  return (
+    right !== undefined &&
+    left.length === right.length &&
+    left.every((name) => right.includes(name))
+  )
+}
+
+function narrowDocumentIdTypes(
+  occurrences: Occurrence[],
+  schema: SchemaType | undefined,
+): string[] | undefined {
+  if (!schema) return undefined
+  const every = everyDocumentType(schema)
+  const sets: string[][] = []
+  for (const occurrence of occurrences) {
+    if (occurrence.path.length !== 0) continue
+    const fromComparison = occurrence.comparison
+      ? documentTypeExpr(occurrence.comparison.counterpart)
+      : undefined
+    const fromFunction =
+      !fromComparison && occurrence.expected?.format === 'document-id' && occurrence.scope
+        ? THIS_TYPE
+        : undefined
+    const expr = fromComparison ?? fromFunction
+    const scope = occurrence.comparison?.scope ?? occurrence.scope
+    if (!expr || !scope) continue
+    const probed = probe(scope, expr, schema)
+    if (!probed) continue
+    const names = literalStrings(probed)
+    // The whole schema is what an unconstrained id searches. It is not a type the query named.
+    if (names && names.length > 0 && !sameNames(names, every)) sets.push(names)
+  }
+  if (sets.length === 0) return undefined
+  const [first, ...rest] = sets
+  const names = first.filter((name) => rest.every((set) => set.includes(name)))
+  return names.length > 0 ? names : undefined
+}
+
+function withDocumentIdTypes(
+  type: ParamType,
+  occurrences: Occurrence[],
+  schema: SchemaType | undefined,
+): ParamType {
+  if (type.format !== 'document-id') return type
+  const documentTypes = narrowDocumentIdTypes(occurrences, schema)
+  return documentTypes ? {...type, documentTypes} : type
+}
+
 /** A param, or a key of one, from the occurrences that read it; `path` is relative to it */
 function buildParam(
   name: string,
@@ -1378,7 +1506,13 @@ function buildParam(
     ...(nullable && {nullable: true as const}),
     ...(fields.length > 0 && {fields}),
   }
-  if (combined) return {...shared, node: combined.node, type: toParamType(combined)}
+  if (combined) {
+    return {
+      ...shared,
+      node: combined.node,
+      type: withDocumentIdTypes(toParamType(combined), own, options.schema),
+    }
+  }
   // Nothing uses the object whole: it holds the keys the query reads, a missing one reads as null
   if (fields.length > 0) return {...shared, node: objectOfFields(fields), type: ANY}
   // The most telling reason: one about the query's types over "only returns it"

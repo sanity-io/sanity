@@ -49,7 +49,17 @@ export const schema: SchemaType = getGroqSchema(
         fields: [
           defineField({name: 'name', type: 'string'}),
           defineField({name: 'description', type: 'text'}),
+          defineField({
+            name: 'generation',
+            type: 'reference',
+            to: [{type: 'pokemonGeneration'}],
+          }),
         ],
+      }),
+      defineType({
+        name: 'pokemonGeneration',
+        type: 'document',
+        fields: [defineField({name: 'name', type: 'string'})],
       }),
     ],
   }),
