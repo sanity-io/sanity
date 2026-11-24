@@ -55,6 +55,11 @@ const dataset: FakeDataset = {
   slugs: {'about-us': 's1:slug-about'},
 }
 
+/** An image asset id the way the asset pipeline writes them */
+function assetId(index: number): string {
+  return `image-${index.toString(16).padStart(40, '0')}-1200x800-png`
+}
+
 afterEach(() => clearSyncTagLookupCache())
 
 describe('resolveSyncTags', () => {
@@ -181,7 +186,7 @@ describe('resolveSyncTags', () => {
     })
   })
 
-  it('probes dereferenced ids, then types and slugs, then the ids a result shows, then other types', async () => {
+  it('probes types and slugs, then dereferenced ids, then the ids a result shows, then other types', async () => {
     const {client, calls} = fakeClient({
       anyTag: 's1:any',
       types: {t1: 's1:t1', t2: 's1:t2', other: 's1:other'},
@@ -192,13 +197,48 @@ describe('resolveSyncTags', () => {
     })
     const order = probed(calls).map((params) => Object.values(params)[0])
     const at = (value: string) => order.indexOf(value)
+    expect(order.slice(0, 3)).toEqual(['t2', 't1', 'a-slug'])
     // Each id is probed before the next, in its published, draft and version forms
-    expect(order.slice(0, 2)).toEqual(['deref', 'drafts.deref'])
-    expect(at('drafts.deref')).toBeLessThan(at('t2'))
-    expect(at('t2')).toBeLessThan(at('shown'))
-    expect(at('t1')).toBeLessThan(at('shown'))
-    expect(at('a-slug')).toBeLessThan(at('shown'))
+    expect(order.slice(3, 5)).toEqual(['deref', 'drafts.deref'])
+    expect(at('drafts.deref')).toBeLessThan(at('shown'))
     expect(at('drafts.shown')).toBeLessThan(at('other'))
+  })
+
+  it('finds a type tag at once when the result references more documents than the budget', async () => {
+    const count = MAX_SYNC_TAG_PROBES
+    const result = Array.from({length: count}, (_, index) => ({
+      _type: 'creature',
+      title: `Creature ${index}`,
+      media: {_type: 'image', asset: {_type: 'reference', _ref: assetId(index)}},
+    }))
+    const sourceMap: SyncTagSourceMap = {
+      documents: Array.from({length: count}, (_, index) => ({
+        _id: `creature-${index}`,
+        _type: 'creature',
+      })),
+    }
+    const {client, calls} = fakeClient({
+      anyTag: 's1:any',
+      types: {'creature': 's1:creature', 'sanity.imageAsset': 's1:image-asset'},
+    })
+    const resolved = await resolveSyncTags(client, ['s1:creature'], {result, sourceMap})
+    expect(resolved.get('s1:creature')).toEqual({kind: 'type', type: 'creature'})
+    // The four probes in flight may each send one before the first answer lands
+    expect(probed(calls).length).toBeLessThanOrEqual(4)
+  })
+
+  it('probes an asset reference as it is, without draft or version forms', async () => {
+    const {client, calls} = fakeClient(dataset, {perspective: ['r1', 'drafts']})
+    await resolveSyncTags(client, ['s1:never'], {
+      result: [
+        {image: {asset: {_ref: assetId(1)}}},
+        {file: {asset: {_ref: 'file-0123456789abcdef0123456789abcdef01234567-pdf'}}},
+      ],
+    })
+    const ids = probed(calls).flatMap((params) =>
+      typeof params.id === 'string' ? [params.id] : [],
+    )
+    expect(ids).toEqual([assetId(1), 'file-0123456789abcdef0123456789abcdef01234567-pdf'])
   })
 
   it('stops as soon as every tag is found', async () => {
