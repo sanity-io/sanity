@@ -3,10 +3,8 @@ import {CodeIcon} from '@sanity/icons/Code'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {Button} from '@sanity/ui'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {useCallback, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
-import {Text} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type QueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
@@ -15,6 +13,7 @@ import {useSaveCurrentQuery} from '../../hooks/useSaveCurrentQuery'
 import {type QueryRequest, type VisionTab} from '../../store/types'
 import {usePendingEdits} from '../../store/VisionActorContext'
 import * as styles from '../redesign.module.css'
+import {VisionTooltip} from '../VisionTooltip'
 import {ExportQueryDialog} from './ExportQueryDialog'
 
 export interface QueryActionsMenuProps {
@@ -45,17 +44,11 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
 
   return (
     <>
-      <Tooltip
-        animate
-        content={
-          <Text as="div" size={1}>
-            {moreActions}
-          </Text>
-        }
+      <VisionTooltip
+        content={moreActions}
         // The tooltip would cover the menu it names
         disabled={menuOpen}
         placement="top"
-        portal
       >
         {/* The tooltip attaches to this wrapper, which leaves the button's ref to the menu */}
         <span className={styles.tooltipTarget} data-testid="vision-query-menu-tooltip-target">
@@ -94,7 +87,7 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
             popover={{animate: true, portal: true, placement: 'bottom-end'}}
           />
         </span>
-      </Tooltip>
+      </VisionTooltip>
       {exportOpen && request && (
         <ExportQueryDialog
           onClose={() => setExportOpen(false)}

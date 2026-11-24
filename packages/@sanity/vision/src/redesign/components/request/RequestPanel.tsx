@@ -1,8 +1,7 @@
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {PlayIcon} from '@sanity/icons/Play'
 import {StopIcon} from '@sanity/icons/Stop'
-import {Badge, Button, Hotkeys, Label, Tab, TabList} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
+import {Badge, Button, Label, Tab, TabList} from '@sanity/ui'
 import {
   type MouseEvent,
   type RefObject,
@@ -17,7 +16,7 @@ import {
 import {createPortal} from 'react-dom'
 import {type Schema, useSchema} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
-import {Text, Box, Flex, Icon} from 'ui5'
+import {Box, Flex, Icon} from 'ui5'
 
 import {groqExtensions} from '../../../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
@@ -72,6 +71,7 @@ import {
   type SplitWithBottomPanelHandle,
 } from '../SplitWithBottomPanel'
 import {useTabElementId} from '../tabs/queryTabShown'
+import {VisionTooltip} from '../VisionTooltip'
 import {ApiVersionButton, type RevealedOption} from './ApiVersionButton'
 import {EditorCornerActions} from './EditorCornerActions'
 import {GenerateQueryBar, type QueryBarMode} from './GenerateQueryBar'
@@ -612,18 +612,10 @@ export function RequestPanel(props: RequestPanelProps) {
             onToggle={onToggleAutoRefetch}
             supported={resolved.supportsSyncTags}
           />
-          <Tooltip
-            animate
-            content={
-              <Flex alignItems="center" gap={2} padding={1}>
-                <Text size={1} as="div" trim={true}>
-                  {runDescription}
-                </Text>
-                {!isFetching && <Hotkeys fontSize={0} keys={VISION_SHORTCUTS.fetch.keys} />}
-              </Flex>
-            }
+          <VisionTooltip
+            content={runDescription}
+            hotkeys={isFetching ? undefined : VISION_SHORTCUTS.fetch.keys}
             placement="top"
-            portal
           >
             <Button
               aria-label={runDescription}
@@ -637,7 +629,7 @@ export function RequestPanel(props: RequestPanelProps) {
               text={runLabel}
               tone={isFetching ? 'critical' : 'primary'}
             />
-          </Tooltip>
+          </VisionTooltip>
         </ActionRail>
       }
       id="vision-request"

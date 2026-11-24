@@ -8,10 +8,10 @@ import {RestoreIcon} from '@sanity/icons/Restore'
 import {TransferIcon} from '@sanity/icons/Transfer'
 import {UsersIcon} from '@sanity/icons/Users'
 import {Button} from '@sanity/ui'
-import {Tooltip, TooltipDelayGroupProvider, useTooltipDelayGroup} from '@sanity/ui/tooltip'
+import {TooltipDelayGroupProvider, useTooltipDelayGroup} from '@sanity/ui/tooltip'
 import {type ComponentType, type MouseEvent, useCallback, useRef, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
-import {Text, Box, Flex} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {useOnValueChange} from '../../hooks/useOnValueChange'
@@ -24,6 +24,7 @@ import {
 import {selectOpenDrawer} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
 import * as styles from '../redesign.module.css'
+import {VisionTooltip} from '../VisionTooltip'
 import * as sidebarStyles from './sidebar.module.css'
 import {SidebarDrawer} from './SidebarDrawer'
 
@@ -90,16 +91,7 @@ function SidebarItem({
       onFocusCapture={decideTooltipAnimation}
       onMouseEnter={decideTooltipAnimation}
     >
-      <Tooltip
-        animate={animateTooltip}
-        content={
-          <Text size={1} as="div" trim={true}>
-            {label}
-          </Text>
-        }
-        placement="right"
-        portal
-      >
+      <VisionTooltip animate={animateTooltip} content={label} placement="right">
         <Button
           aria-label={label}
           className={sidebarStyles.pressable}
@@ -111,7 +103,7 @@ function SidebarItem({
           selected={selected}
           width={compact ? 'fill' : undefined}
         />
-      </Tooltip>
+      </VisionTooltip>
     </div>
   )
 }

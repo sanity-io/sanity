@@ -10,7 +10,6 @@ import {Button, Card, Dialog, TextInput} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {UserAvatar, useDateTimeFormat} from 'sanity'
 import {ContextMenuButton} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
@@ -30,6 +29,7 @@ import {selectActiveTab, selectDatasets} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
 import {savedQueryToTabInit, tabMatchesParsedQuery} from '../../util/savedQueryTab'
 import * as styles from '../redesign.module.css'
+import {VisionTooltip} from '../VisionTooltip'
 import * as sidebarStyles from './sidebar.module.css'
 
 interface QueryListPanelProps {
@@ -248,15 +248,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
           />
         </Box>
         {mode === 'saved' && (
-          <Tooltip
-            animate
-            content={
-              <Text size={1} as="div" trim={true}>
-                {t('vision.saved.save-current')}
-              </Text>
-            }
-            portal
-          >
+          <VisionTooltip content={t('vision.saved.save-current')}>
             <Button
               aria-label={t('vision.saved.save-current')}
               className={sidebarStyles.pressable}
@@ -267,7 +259,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
               onClick={() => void saveCurrent()}
               padding={2}
             />
-          </Tooltip>
+          </VisionTooltip>
         )}
       </Flex>
 

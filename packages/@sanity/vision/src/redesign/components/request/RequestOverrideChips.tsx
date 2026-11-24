@@ -1,5 +1,4 @@
 import {Button} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {type ReactNode, useMemo} from 'react'
 import {usePerspective} from 'sanity'
 import {
@@ -7,12 +6,12 @@ import {
   getVariantTitle,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
-import {Text} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type ResolvedRequest, useRequestEnvironment} from '../../hooks/useResolvedRequest'
 import {type VisionTabOptions} from '../../store/types'
 import {getRequestOverrides} from '../../util/requestOverrides'
+import {VisionTooltip} from '../VisionTooltip'
 import {type RevealedOption} from './ApiVersionButton'
 import {useGlobalPerspectiveName, usePerspectiveOptionName} from './OptionFields'
 
@@ -37,16 +36,7 @@ interface OverrideChipProps {
 
 function OverrideChip({testId, text, tooltip, onClick}: OverrideChipProps) {
   return (
-    <Tooltip
-      animate
-      content={
-        <Text size={1} as="div" trim={true}>
-          {tooltip}
-        </Text>
-      }
-      placement="top"
-      portal
-    >
+    <VisionTooltip content={tooltip} placement="top">
       <Button
         data-testid={testId}
         fontSize={1}
@@ -55,7 +45,7 @@ function OverrideChip({testId, text, tooltip, onClick}: OverrideChipProps) {
         padding={2}
         text={text}
       />
-    </Tooltip>
+    </VisionTooltip>
   )
 }
 

@@ -1,11 +1,10 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {Button} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {useTranslation} from 'sanity/i18n'
-import {Text} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
+import {VisionTooltip} from '../VisionTooltip'
 import {usePerspectiveOptionName} from './OptionFields'
 
 /** The fields of the Options panel the button can show */
@@ -51,16 +50,7 @@ export function ApiVersionButton({resolved, onReveal}: ApiVersionButtonProps) {
   }
 
   return (
-    <Tooltip
-      animate
-      content={
-        <Text size={1} as="div" trim={true}>
-          {tooltip}
-        </Text>
-      }
-      placement="top"
-      portal
-    >
+    <VisionTooltip content={tooltip} placement="top">
       <Button
         data-cdn-blocked={cdnBlocked || undefined}
         data-testid="vision-api-version-button"
@@ -78,6 +68,6 @@ export function ApiVersionButton({resolved, onReveal}: ApiVersionButtonProps) {
         }
         tone={isValidApiVersion && !cdnBlocked ? 'default' : 'caution'}
       />
-    </Tooltip>
+    </VisionTooltip>
   )
 }

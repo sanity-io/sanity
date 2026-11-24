@@ -1,7 +1,6 @@
 import {DocumentIcon} from '@sanity/icons/Document'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Button} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {type ReactNode, useCallback, useMemo} from 'react'
 import {
   getPublishedId,
@@ -19,11 +18,11 @@ import {
 import {useValuePreview} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
 import {useIntentLink} from 'sanity/router'
-import {Text} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../../i18n'
 import {useCopyToClipboard} from '../../../hooks/useCopyToClipboard'
 import {type DocumentListDocument} from '../../../util/documentListResult'
+import {VisionTooltip} from '../../VisionTooltip'
 import {CopyResultButton} from '../CopyResultButton'
 import * as styles from './DocumentList.module.css'
 
@@ -177,16 +176,7 @@ function OpenInNewTabButton({id, type}: {id: string; type: string}) {
   const {href} = useIntentLink({intent: 'edit', params})
   const label = t('vision.result.documents.open-new-tab')
   return (
-    <Tooltip
-      animate
-      content={
-        <Text as="div" size={1} trim>
-          {label}
-        </Text>
-      }
-      placement="bottom"
-      portal
-    >
+    <VisionTooltip content={label} placement="bottom">
       <Button
         aria-label={label}
         as="a"
@@ -199,7 +189,7 @@ function OpenInNewTabButton({id, type}: {id: string; type: string}) {
         rel="noopener noreferrer"
         target="_blank"
       />
-    </Tooltip>
+    </VisionTooltip>
   )
 }
 

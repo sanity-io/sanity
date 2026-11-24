@@ -1,7 +1,6 @@
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Badge, Button, Card, Label, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {useMemo} from 'react'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
@@ -20,6 +19,7 @@ import {
 } from '../../util/groqFunctions'
 import {EXTRACT_FUNCTION_SHORTCUT} from '../../util/shortcuts'
 import * as styles from '../redesign.module.css'
+import {VisionTooltip} from '../VisionTooltip'
 
 const DECLARATION_EXAMPLE = 'fn my::author($ref) = $ref->{name, "slug": slug.current};'
 
@@ -156,16 +156,7 @@ function LibraryFunction(props: {
       </Box>
       <Flex alignItems="center" flexShrink={0} gap={1} paddingRight={1}>
         {action}
-        <Tooltip
-          animate
-          content={
-            <Text size={1} as="div" trim={true}>
-              {t('vision.functions.remove')}
-            </Text>
-          }
-          placement="top"
-          portal
-        >
+        <VisionTooltip content={t('vision.functions.remove')} placement="top">
           <Button
             aria-label={t('vision.functions.remove')}
             data-testid="vision-function-remove"
@@ -176,7 +167,7 @@ function LibraryFunction(props: {
             padding={2}
             tone="critical"
           />
-        </Tooltip>
+        </VisionTooltip>
       </Flex>
     </Flex>
   )

@@ -4,7 +4,6 @@ import {StackCompactIcon} from '@sanity/icons/StackCompact'
 import {SyncIcon} from '@sanity/icons/Sync'
 import {Card, Stack} from '@sanity/ui'
 import {Autocomplete} from '@sanity/ui/autocomplete'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {type ReactNode, useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
 import {ReleaseAvatarIcon, usePerspective, useWorkspace} from 'sanity'
 import {
@@ -26,6 +25,7 @@ import {type ApiVersionOption, getApiVersionOptions} from '../../util/apiVersion
 import {getEffectivePerspective} from '../../util/tabPerspective'
 import {SwitchField} from '../SwitchField'
 import {useTabElementId} from '../tabs/queryTabShown'
+import {VisionTooltip} from '../VisionTooltip'
 import {
   OptionMenuButton,
   OptionMenuItem,
@@ -132,16 +132,10 @@ export function ApiVersionField({
   return (
     <Stack gap={2}>
       <FieldLabel htmlFor={elementId}>{t('settings.api-version-label')}</FieldLabel>
-      <Tooltip
-        animate
-        content={
-          <Text size={1} as="div" trim={true}>
-            {t('settings.api-version-locked-for-variant', {apiVersion: VARIANTS_API_VERSION})}
-          </Text>
-        }
+      <VisionTooltip
+        content={t('settings.api-version-locked-for-variant', {apiVersion: VARIANTS_API_VERSION})}
         disabled={!locked}
         placement="bottom"
-        portal
       >
         {/*
           A disabled input gets neither pointer events nor focus, so while the field is locked
@@ -194,7 +188,7 @@ export function ApiVersionField({
             value={heldValue ?? shownValue}
           />
         </Box>
-      </Tooltip>
+      </VisionTooltip>
     </Stack>
   )
 }

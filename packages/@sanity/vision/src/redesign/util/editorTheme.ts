@@ -81,6 +81,30 @@ export const redesignEditorTheme: Extension = [
         boxShadow:
           'inset 0 0 0 1px color-mix(in srgb, var(--card-badge-primary-fg-color) 50%, transparent)',
       },
+      // Hover tooltips (lint findings, function docs) are padded, sized and raised like the
+      // tooltips of Studio itself (`VisionTooltip`) rather than CodeMirror's roomier defaults
+      '&.cm-editor .cm-tooltip.cm-tooltip-hover': {
+        border: 'none',
+        borderRadius: '3px',
+        boxShadow: [
+          '0 0 0 0.5px var(--card-shadow-outline-color, var(--card-border-color))',
+          '0 3px 5px -2px var(--card-shadow-umbra-color, transparent)',
+          '0 6px 10px 0 var(--card-shadow-penumbra-color, transparent)',
+          '0 1px 18px 1px var(--card-shadow-ambient-color, transparent)',
+        ].join(', '),
+      },
+      '&.cm-editor .cm-tooltip-hover .cm-diagnostic': {
+        fontSize: '0.8125rem',
+        lineHeight: '1.0625rem',
+        marginLeft: 0,
+        padding: '4px 8px 4px 6px',
+      },
+      '&.cm-editor .cm-tooltip-hover .cm-diagnosticSource': {
+        lineHeight: '0.875rem',
+      },
+      '&.cm-editor .cm-tooltip-hover .cm-vision-function-doc': {
+        padding: '6px 8px',
+      },
     }),
   ),
 ]
