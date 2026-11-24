@@ -23,7 +23,12 @@ export function ResultJson(props: {className?: string; id: string; value: unknow
       data-testid="vision-result-json"
       id={props.id}
     >
-      <VisionCodeMirror extensions={resultJsonExtensions} initialValue={text} ref={editorRef} />
+      <VisionCodeMirror
+        extensions={resultJsonExtensions}
+        initialValue={text}
+        ref={editorRef}
+        underHeader
+      />
     </div>
   )
 }

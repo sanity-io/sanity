@@ -1,4 +1,4 @@
-/* Fills the result pane, and the list below the floating view tabs scrolls on its own */
+/* Fills the pane under its toolbar, and the list scrolls on its own */
 .root {
   display: flex;
   flex-direction: column;
@@ -13,19 +13,22 @@
 }
 
 /*
- * The JSON, Tree, Graph and Documents tabs float at the top right of the pane. The list starts
- * below them.
+ * The list keeps its scrollbar's track whether or not it overflows, like the Structure tool's
+ * list panes (see `.paneScroll` in `redesign.module.css`). The doubled class beats
+ * `CommandList`'s own `overflow-y: auto`, which styled-components injects after this stylesheet.
  */
 .commandList {
   position: absolute;
-  top: 48px;
+  top: var(--space-1, 4px);
   right: 0;
   bottom: 0;
   left: 0;
 }
 
-.root[data-flush] .commandList {
-  top: var(--space-1, 4px);
+@supports selector(::-webkit-scrollbar) {
+  .commandList.commandList {
+    overflow-y: scroll;
+  }
 }
 
 .row {

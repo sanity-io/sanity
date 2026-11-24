@@ -14,6 +14,7 @@ import {canEncodeCsv, getCsvBlobUrl, getJsonBlobUrl} from '../../../util/getBlob
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {useQueryExplain} from '../../hooks/useQueryExplain'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
+import {useScrolledFromTop} from '../../hooks/useScrolledFromTop'
 import {type QueryRunnerRef, selectRequestStatus} from '../../store/queryRunnerMachine'
 import {
   type QueryRequest,
@@ -23,6 +24,7 @@ import {
 } from '../../store/types'
 import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectOpenTabDrawer, selectResultView} from '../../store/visionMachine'
+import {cx} from '../../util/cx'
 import {parseDocumentList} from '../../util/documentListResult'
 import {haveSameQuery} from '../../util/queryRequest'
 import {fetchSyncTagSourceMap} from '../../util/syncTagLookup'
@@ -178,6 +180,12 @@ export function ResponsePanel(props: ResponsePanelProps) {
     if (hasResult) views.push({id: 'documents', label: t('vision.result.view.documents')})
     return views
   }, [hasResult, t])
+  const resultFills =
+    hasResult &&
+    ((resultView === 'documents' && parsedDocuments !== undefined) ||
+      resultView === 'json' ||
+      resultView === 'graph')
+  const {scrolled: resultScrolled, setScroller: setResultScroller} = useScrolledFromTop()
   const copyToClipboard = useCopyToClipboard()
   // The Copy button confirms the copy itself, so no toast
   const copyResult = useCallback(
@@ -245,6 +253,20 @@ export function ResponsePanel(props: ResponsePanelProps) {
         id: 'source-map',
         label: t('vision.panel.source-map'),
         fill: hasSourceMap && sourceMapView !== 'tree',
+        // Picks the view, above it; there is nothing to pick while there is no source map
+        toolbar: hasSourceMap ? (
+          <Flex alignItems="center" data-testid="vision-source-map-toolbar" padding={2}>
+            <ResultViewMenu
+              controls={sourceMapContentId}
+              id={tabElementId('vision-source-map-view-menu')}
+              onChange={setSourceMapView}
+              placement="bottom-start"
+              testId="vision-source-map-view"
+              value={sourceMapView}
+              views={sourceMapViews}
+            />
+          </Flex>
+        ) : undefined,
         content: (
           <SourceMapTab
             copy={copyValue}
@@ -252,17 +274,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
             id={sourceMapContentId}
             meta={meta}
             view={sourceMapView}
-            viewMenu={
-              <ResultViewMenu
-                controls={sourceMapContentId}
-                id={tabElementId('vision-source-map-view-menu')}
-                onChange={setSourceMapView}
-                placement="bottom-start"
-                testId="vision-source-map-view"
-                value={sourceMapView}
-                views={sourceMapViews}
-              />
-            }
           />
         ),
       },
@@ -332,94 +343,100 @@ export function ResponsePanel(props: ResponsePanelProps) {
           data-testid="vision-result"
           tone={status === 'failed' ? 'critical' : 'default'}
         >
-          <Box className={styles.paneLabel}>
-            <Flex alignItems="center" gap={2}>
-              <Label muted size={1}>
-                {t('result.label')}
-              </Label>
-              <Flex
-                alignItems="center"
-                className={styles.labelActions}
-                data-testid="vision-result-actions"
-                gap={1}
-              >
-                {/* First: the row is anchored on the right, so "Copied" grows to the left */}
-                <CopyButton disabled={!hasResult} onCopy={copyResult} testId="vision-copy-result" />
-                <ResultViewMenu
-                  controls={resultContentId}
-                  id={tabElementId('vision-result-view-menu')}
-                  onChange={setResultView}
-                  value={resultView}
-                  views={resultViews}
-                />
-                <ResultActionsMenu
-                  csvUnavailableHint={
-                    hasResult && !canExportCsv
-                      ? t('result.save-result-as-csv.not-csv-encodable')
-                      : undefined
-                  }
-                  getCsvUrl={canExportCsv ? getCsvUrl : undefined}
-                  getJsonUrl={hasResult ? getJsonUrl : undefined}
-                  hasResult={hasResult}
-                  onCsvUnavailable={reportCsvUnavailable}
-                  result={result}
-                  resultIsCurrent={resultIsCurrent}
-                  tab={tab}
-                />
-              </Flex>
+          <div
+            className={cx(styles.paneToolbar, styles.paneToolbarMain)}
+            data-scrolled={resultScrolled}
+            data-testid="vision-result-toolbar"
+          >
+            <Label className={styles.paneToolbarLabel} muted size={1}>
+              {t('result.label')}
+            </Label>
+            <Flex alignItems="center" data-testid="vision-result-actions" gap={1}>
+              {/* First: the row is anchored on the right, so "Copied" grows to the left */}
+              <CopyButton disabled={!hasResult} onCopy={copyResult} testId="vision-copy-result" />
+              <ResultViewMenu
+                controls={resultContentId}
+                id={tabElementId('vision-result-view-menu')}
+                onChange={setResultView}
+                value={resultView}
+                views={resultViews}
+              />
+              <ResultActionsMenu
+                csvUnavailableHint={
+                  hasResult && !canExportCsv
+                    ? t('result.save-result-as-csv.not-csv-encodable')
+                    : undefined
+                }
+                getCsvUrl={canExportCsv ? getCsvUrl : undefined}
+                getJsonUrl={hasResult ? getJsonUrl : undefined}
+                hasResult={hasResult}
+                onCsvUnavailable={reportCsvUnavailable}
+                result={result}
+                resultIsCurrent={resultIsCurrent}
+                tab={tab}
+              />
             </Flex>
-          </Box>
-          {hasResult && parsedDocuments && resultView === 'documents' ? (
-            <DocumentListView
-              className={styles.resultView}
-              datasetName={resultDataset}
-              id={resultContentId}
-              parsed={parsedDocuments}
-            />
-          ) : hasResult && resultView === 'json' ? (
-            <ResultJson className={styles.resultView} id={resultContentId} value={result} />
-          ) : hasResult && resultView === 'graph' ? (
-            <ResultGraph
-              className={styles.resultView}
-              copy={copyValue}
-              id={resultContentId}
-              value={result}
-            />
-          ) : (
-            <Box id={resultContentId} padding={3} paddingTop={5}>
-              {status === 'fetching' && (
-                <Box className={styles.resultSpinner} marginTop={3}>
-                  <DelayedSpinner />
-                </Box>
-              )}
-              {status === 'failed' && error && (
-                <div className={styles.resultEnter}>
-                  <QueryErrorDialog
-                    apiVersion={failedConfig?.apiVersion ?? resolved.apiVersion}
-                    error={error}
-                    perspective={failedConfig ? failedConfig.perspective : resolved.perspective}
-                    variant={
-                      failedConfig
-                        ? typeof failedConfig.variant === 'string'
-                          ? failedConfig.variant
-                          : undefined
-                        : resolved.variant
-                    }
-                  />
-                </div>
-              )}
-              {hasResult && resultView === 'tree' && (
-                <div className={styles.resultView}>
-                  <ResultView copy={copyValue} data={result} datasetName={resultDataset} />
-                </div>
-              )}
-              {status === 'idle' && (
-                <Text muted size={1} as="div" trim={true}>
-                  {t('vision.result.empty')}
-                </Text>
-              )}
-            </Box>
-          )}
+          </div>
+          <div
+            className={styles.paneScroll}
+            // JSON, Graph and Documents scroll or pan inside their own box
+            data-fill={resultFills ? '' : undefined}
+            // Each view starts at its top
+            key={resultFills ? resultView : 'scroll'}
+            ref={setResultScroller}
+          >
+            {hasResult && parsedDocuments && resultView === 'documents' ? (
+              <DocumentListView
+                className={styles.resultView}
+                datasetName={resultDataset}
+                id={resultContentId}
+                parsed={parsedDocuments}
+              />
+            ) : hasResult && resultView === 'json' ? (
+              <ResultJson className={styles.resultView} id={resultContentId} value={result} />
+            ) : hasResult && resultView === 'graph' ? (
+              <ResultGraph
+                className={styles.resultView}
+                copy={copyValue}
+                id={resultContentId}
+                value={result}
+              />
+            ) : (
+              <Box id={resultContentId} padding={3}>
+                {status === 'fetching' && (
+                  <Box className={styles.resultSpinner} marginTop={3}>
+                    <DelayedSpinner />
+                  </Box>
+                )}
+                {status === 'failed' && error && (
+                  <div className={styles.resultEnter}>
+                    <QueryErrorDialog
+                      apiVersion={failedConfig?.apiVersion ?? resolved.apiVersion}
+                      error={error}
+                      perspective={failedConfig ? failedConfig.perspective : resolved.perspective}
+                      variant={
+                        failedConfig
+                          ? typeof failedConfig.variant === 'string'
+                            ? failedConfig.variant
+                            : undefined
+                          : resolved.variant
+                      }
+                    />
+                  </div>
+                )}
+                {hasResult && resultView === 'tree' && (
+                  <div className={styles.resultView}>
+                    <ResultView copy={copyValue} data={result} datasetName={resultDataset} />
+                  </div>
+                )}
+                {status === 'idle' && (
+                  <Text muted size={1} as="div" trim={true}>
+                    {t('vision.result.empty')}
+                  </Text>
+                )}
+              </Box>
+            )}
+          </div>
         </Card>
       </SplitWithBottomPanel>
     </>
