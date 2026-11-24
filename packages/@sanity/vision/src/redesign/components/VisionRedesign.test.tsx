@@ -1519,7 +1519,7 @@ describe('VisionRedesign', () => {
       fireEvent.keyDown(viewMenu, {key: 'Escape'})
       await waitFor(() => expect(getStoredState()?.panels.resultViewer).toBe('json'))
 
-      // The view dropdown, Copy and the "More actions" menu, in that order
+      // Copy, the view dropdown and the "More actions" menu, in that order
       const actions = screen.getByTestId('vision-result-actions')
       expect(
         Array.from(actions.querySelectorAll('[data-testid]'), (el) =>
@@ -1529,7 +1529,7 @@ describe('VisionRedesign', () => {
             id ?? '',
           ),
         ),
-      ).toEqual(['vision-result-view-button', 'vision-copy-result', 'vision-result-menu-button'])
+      ).toEqual(['vision-copy-result', 'vision-result-view-button', 'vision-result-menu-button'])
       const copy = within(actions).getByTestId('vision-copy-result')
       fireEvent.click(copy)
       await waitFor(() => expect(writeText).toHaveBeenCalledWith(JSON.stringify(result, null, 2)))

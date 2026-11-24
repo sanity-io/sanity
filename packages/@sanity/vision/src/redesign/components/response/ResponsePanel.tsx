@@ -357,6 +357,8 @@ export function ResponsePanel(props: ResponsePanelProps) {
                 data-testid="vision-result-actions"
                 gap={1}
               >
+                {/* First: the row is anchored on the right, so "Copied" grows to the left */}
+                <CopyButton disabled={!hasResult} onCopy={copyResult} testId="vision-copy-result" />
                 <ResultViewMenu
                   controls={resultContentId}
                   id={tabElementId('vision-result-view-menu')}
@@ -364,7 +366,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
                   value={resultView}
                   views={resultViews}
                 />
-                <CopyButton disabled={!hasResult} onCopy={copyResult} testId="vision-copy-result" />
                 <ResultActionsMenu
                   csvUnavailableHint={
                     hasResult && !canExportCsv
