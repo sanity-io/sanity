@@ -1,0 +1,12 @@
+/* Form fields flow into as many columns as fit, and stack in one column when narrow */
+.fieldGrid {
+  display: grid;
+  align-items: start;
+  gap: 16px 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+}
+
+/* A field that grows (a list, an object) takes the whole row */
+.fieldGridWide {
+  grid-column: 1 / -1;
+}
