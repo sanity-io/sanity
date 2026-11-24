@@ -1322,9 +1322,15 @@ describe('VisionRedesign', () => {
         const view = renderRedesign()
         const plan = [
           'Pipeline {',
-          '  r1: StreamStep { $0: Fetch { Sort: _createdAt desc',
-          '      Limit: 10 } }',
-          '  r3: FilterStep { Source: r2, Expr: eq($1.name, "x") }',
+          '  r1: StreamStep {',
+          '    $0: Fetch {',
+          '      Sort: _createdAt desc',
+          '      Limit: 10',
+          '    }',
+          '  }',
+          '  r3: FilterStep {',
+          '    Source: r2, Expr: eq($1.name, "x")',
+          '  }',
           '}',
         ].join('\n')
         view.respondToRequests({result: [], explain: plan})
