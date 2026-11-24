@@ -376,7 +376,7 @@ export function ResultGraph({className, id, value, copy}: ResultGraphProps) {
   const onCopy = useCallback(
     (nodeId: string) => {
       const found = getAtKeypath(value, nodeId)
-      if (found) copy.onCopy(found.value, nodeId)
+      if (found) void copy.onCopy(found.value, nodeId)
     },
     [copy, value],
   )

@@ -1232,6 +1232,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    */
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.result.documents.unknown-type': 'Unknown type: {{type}}',
+  /** Tooltip and accessible label of the button after an `_id` or `_ref` in the result tree, opening that document */
+  'vision.result.edit-document': 'Edit document',
   /** Empty state of the result view */
   'vision.result.empty': 'Run the query to see its result here',
   /**

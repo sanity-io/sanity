@@ -195,7 +195,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
     (): ResultViewCopy => ({
       label: t('vision.result.copy-value'),
       onCopy: (value, keypath) =>
-        void copyToClipboard(
+        copyToClipboard(
           typeof value === 'string' ? value : JSON.stringify(value, null, 2),
           keypath
             ? t('vision.result.copied-value', {path: describeKeypath(keypath)})
