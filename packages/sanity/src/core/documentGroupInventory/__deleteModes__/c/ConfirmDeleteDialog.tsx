@@ -28,6 +28,7 @@ import {getReleaseIdFromReleaseDocumentId} from '../../../releases/util/getRelea
 import {getReleaseTone} from '../../../releases/util/getReleaseTone'
 import {useWorkspace} from '../../../studio/workspace'
 import {getVersionFromId, type SystemBundle} from '../../../util/draftUtils'
+import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {readVersionType} from '../../../util/versionsUtils'
 import {
   ChevronWrapper,
@@ -49,6 +50,7 @@ import {
   type InternalReferences,
 } from './deletionMachine'
 import {type DeletionDescription, describeDeletion} from './describeDeletion'
+import {withoutReleaseOnlyReferences} from './withoutReleaseOnlyReferences'
 
 const PUBLISHED: SystemBundle = 'published'
 const DRAFTS: SystemBundle = 'drafts'
@@ -91,17 +93,18 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
     useSelector(deletionRef, ({context}) => context.internalReferences) ?? EMPTY_INTERNAL_REFERENCES
   // With content releases off, a link held only in a release version is left out, as the rest of
   // the studio leaves out releases: it doesn't block the delete, and this studio can't open it.
+  // A scheduled draft is kept: it still publishes with releases off, and fails if the target is gone.
   const releasesEnabled = useReleasesEnabled()
+  const {data: activeReleases} = useActiveReleases()
   const internalReferences = useMemo(() => {
     if (releasesEnabled) return allInternalReferences
-    const references = allInternalReferences.references.filter(
-      (reference) => reference.failsLater !== true,
+    const scheduledDraftIds = new Set(
+      activeReleases
+        .filter(isCardinalityOneRelease)
+        .map((release) => getReleaseIdFromReleaseDocumentId(release._id)),
     )
-    const removed = allInternalReferences.references.length - references.length
-    return removed === 0
-      ? allInternalReferences
-      : {totalCount: allInternalReferences.totalCount - removed, references}
-  }, [allInternalReferences, releasesEnabled])
+    return withoutReleaseOnlyReferences(allInternalReferences, scheduledDraftIds)
+  }, [activeReleases, allInternalReferences, releasesEnabled])
 
   const crossDatasetReferences =
     useSelector(deletionRef, ({context}) => context.crossDatasetReferences) ??
