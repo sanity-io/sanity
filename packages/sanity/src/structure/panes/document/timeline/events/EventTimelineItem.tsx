@@ -5,14 +5,16 @@ import {
   Event,
   isDeleteDocumentGroupEvent,
   isDeleteDocumentVersionEvent,
+  isEditDocumentVersionEvent,
   isScheduleDocumentVersionEvent,
   isUnpublishDocumentEvent,
   isUnscheduleDocumentVersionEvent,
   useTranslation,
 } from 'sanity'
-import {Flex} from 'ui5'
+import {Box, Flex} from 'ui5'
 
-import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {Tooltip, type TooltipProps} from '../../../../../ui-components/tooltip/Tooltip'
+import {EditEventChanges} from './EditEventChanges'
 import {isEditTransactionEvent} from './timelineRows'
 
 export interface TimelineItemProps {
@@ -20,6 +22,15 @@ export interface TimelineItemProps {
   isSelected: boolean
   onSelect: (chunk: DocumentGroupEvent) => void
   optionsMenu?: React.ReactNode
+}
+
+// The timeline sits at the right edge of the pane, so the changes show next to it, over the form.
+// They are fetched when shown, so they wait a bit longer than other tooltips while the pointer
+// moves along the list.
+const CHANGES_TOOLTIP_PROPS: Partial<TooltipProps> = {
+  delay: {open: 600},
+  placement: 'left',
+  fallbackPlacements: ['left-start', 'left-end', 'right', 'bottom'],
 }
 
 const getIsSelectable = (event: DocumentGroupEvent) => {
@@ -46,30 +57,44 @@ export function EventTimelineItem({event, isSelected, onSelect, optionsMenu}: Ti
     },
     [onSelect, event, isSelectable],
   )
+  const card = (
+    <Card
+      as={isSelectable ? 'button' : 'div'}
+      onClick={handleClick}
+      padding={2}
+      pressed={isSelected}
+      radius={2}
+      data-ui="timelineItem"
+      data-testid="timeline-item-button"
+      data-chunk-timestamp={event.timestamp}
+      style={{
+        cursor: isSelectable ? 'pointer' : 'default',
+        width: '100%',
+      }}
+    >
+      {/* A transaction has a single author, already shown as the row avatar. */}
+      <Event event={event} showChangesBy={isEditTransactionEvent(event) ? 'hidden' : 'tooltip'} />
+    </Card>
+  )
+
   return (
     <Flex gap={1}>
-      <Tooltip content={isSelectable ? '' : t('changes.not-selectable')} disabled={isSelectable}>
-        <Card
-          as={isSelectable ? 'button' : 'div'}
-          onClick={handleClick}
-          padding={2}
-          pressed={isSelected}
-          radius={2}
-          data-ui="timelineItem"
-          data-testid="timeline-item-button"
-          data-chunk-timestamp={event.timestamp}
-          style={{
-            cursor: isSelectable ? 'pointer' : 'default',
-            width: '100%',
-          }}
+      {isEditDocumentVersionEvent(event) ? (
+        <Tooltip
+          {...CHANGES_TOOLTIP_PROPS}
+          content={
+            <Box padding={3} style={{width: 360, maxHeight: '50vh', overflow: 'hidden'}}>
+              <EditEventChanges event={event} />
+            </Box>
+          }
         >
-          {/* A transaction has a single author, already shown as the row avatar. */}
-          <Event
-            event={event}
-            showChangesBy={isEditTransactionEvent(event) ? 'hidden' : 'tooltip'}
-          />
-        </Card>
-      </Tooltip>
+          {card}
+        </Tooltip>
+      ) : (
+        <Tooltip content={isSelectable ? '' : t('changes.not-selectable')} disabled={isSelectable}>
+          {card}
+        </Tooltip>
+      )}
       {optionsMenu}
     </Flex>
   )
