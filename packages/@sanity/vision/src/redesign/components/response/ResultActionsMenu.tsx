@@ -10,7 +10,9 @@ import {useTranslation} from 'sanity/i18n'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VisionTab} from '../../store/types'
+import {cx} from '../../util/cx'
 import * as styles from '../redesign.module.css'
+import * as themeStyles from '../themeTokens.module.css'
 import {VisionTooltip} from '../VisionTooltip'
 import {downloadFile} from './downloadFile'
 import {ExportTypesDialog, type TypesExportFormat} from './ExportTypesDialog'
@@ -86,7 +88,10 @@ export function ResultActionsMenu({
             }
             id={`vision-result-menu-${tab.id}`}
             menu={
-              <Menu className={styles.popoverScroll} data-testid="vision-result-menu">
+              <Menu
+                className={cx(styles.popoverScroll, themeStyles.themeTokens)}
+                data-testid="vision-result-menu"
+              >
                 <MenuItem
                   data-testid="vision-export-json"
                   disabled={!getJsonUrl}

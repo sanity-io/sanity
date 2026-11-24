@@ -21,10 +21,12 @@ import {prefixApiVersion} from '../../../util/prefixApiVersion'
 import {validateApiVersion} from '../../../util/validateApiVersion'
 import {type VisionPerspective, type VisionVariantMode} from '../../store/types'
 import {type ApiVersionOption, getApiVersionOptions} from '../../util/apiVersionOptions'
+import {cx} from '../../util/cx'
 import {getEffectivePerspective} from '../../util/tabPerspective'
 import * as styles from '../redesign.module.css'
 import {SwitchField} from '../SwitchField'
 import {useTabElementId} from '../tabs/queryTabShown'
+import * as themeStyles from '../themeTokens.module.css'
 import {VisionTooltip} from '../VisionTooltip'
 import {
   OptionItemContent,
@@ -209,7 +211,7 @@ export function ApiVersionField({
             placeholder={DEFAULT_API_VERSION}
             popover={{
               animate: true,
-              className: styles.popoverScroll,
+              className: cx(styles.popoverScroll, themeStyles.themeTokens),
               constrainSize: true,
               fallbackPlacements: ['top-start'],
               matchReferenceWidth: false,

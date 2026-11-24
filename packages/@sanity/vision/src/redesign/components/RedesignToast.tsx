@@ -5,6 +5,7 @@ import {useTranslation} from 'sanity/i18n'
 import {Text, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../i18n'
+import * as themeStyles from './themeTokens.module.css'
 
 const TOAST_ID = 'vision-redesign-invitation'
 
@@ -23,7 +24,7 @@ interface RedesignToastActionsProps {
 function RedesignToastActions(props: RedesignToastActionsProps) {
   const {description, acceptLabel, dismissLabel, onAccept, onDismiss} = props
   return (
-    <Stack gap={3} paddingTop={1}>
+    <Stack className={themeStyles.themeTokens} gap={3} paddingTop={1}>
       <Text size={1} as="div" trim={true}>
         {description}
       </Text>

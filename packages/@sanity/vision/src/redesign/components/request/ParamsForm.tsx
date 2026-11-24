@@ -26,12 +26,14 @@ import {Text, Box, Flex, Icon} from 'ui5'
 import {type Params} from '../../../components/VisionGui'
 import {visionLocaleNamespace} from '../../../i18n'
 import {useParamsInference} from '../../hooks/useParamsInference'
+import {cx} from '../../util/cx'
 import {splitMessage} from '../../util/groqLint'
 import {isObjectParam} from '../../util/objectParams'
 import {type InferredParam, type ParamKind, type ParamType} from '../../util/paramInference'
 import {type ParamLintFinding, withParamSuggestion} from '../../util/paramLint'
 import * as fieldGrid from '../fieldGrid.module.css'
 import * as styles from '../redesign.module.css'
+import * as themeStyles from '../themeTokens.module.css'
 import {VisionTooltip} from '../VisionTooltip'
 import {DateTimePickerButton} from './DateTimePickerButton'
 import {ObjectParamInput} from './ObjectParamInput'
@@ -265,7 +267,11 @@ function DocumentTypeInput(props: DocumentTypeInputProps) {
       openButton
       options={options}
       placeholder={placeholder}
-      popover={{className: styles.popoverScroll, constrainSize: true, portal: true}}
+      popover={{
+        className: cx(styles.popoverScroll, themeStyles.themeTokens),
+        constrainSize: true,
+        portal: true,
+      }}
       renderOption={renderDocumentTypeOption}
       value={heldValue ?? text}
     />

@@ -30,6 +30,7 @@ import {
 } from '../store/VisionActorContext'
 import {selectActiveTab, selectOpenDrawer, visionMachine} from '../store/visionMachine'
 import {loadVisionState, type VisionStorageDefaults} from '../store/visionStorage'
+import {cx} from '../util/cx'
 import {estimateVisionLayoutWidths, getVisionLayout} from '../util/visionLayout'
 import {AiCreditsUpsellProvider} from './AiCreditsUpsell'
 import {AiFeaturesProvider} from './AiFeaturesProvider'
@@ -41,6 +42,7 @@ import {VisionSidebar} from './sidebar/VisionSidebar'
 import {QueryTab, type QueryTabProps} from './tabs/QueryTab'
 import {QueryTabBar} from './tabs/QueryTabBar'
 import {HiddenQueryTabContext} from './tabs/queryTabShown'
+import * as themeStyles from './themeTokens.module.css'
 import {VisionDialogs} from './VisionDialogs'
 import {VisionUrlState} from './VisionUrlState'
 import {VisionWebMcp} from './VisionWebMcp'
@@ -160,7 +162,7 @@ export function VisionRedesign(props: VisionRedesignProps) {
                 <AiCreditsUpsellProvider projectId={projectId}>
                   <TooltipDelayGroupProvider delay={TOOLTIP_DELAY}>
                     <Flex
-                      className={styles.root}
+                      className={cx(styles.root, themeStyles.themeTokens)}
                       data-testid="vision-root"
                       data-vision-layout={layout}
                       height="100%"
