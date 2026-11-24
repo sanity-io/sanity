@@ -262,11 +262,25 @@ export function paramsJsonCompletions(
   if (!inRootObject(preceding)) return null
 
   const from = current?.from ?? context.pos
-  // closeBrackets writes the closing quote with the opening one
-  const to =
+  // closeBrackets writes the closing quote with the opening one. Accepting replaces that quote
+  // too, so the inserted value does not sit inside the empty string. The match ends at the
+  // cursor: including the closing quote makes the filter text `""`, which matches no option.
+  const replaceTo =
     current?.type === 'string' && doc[context.pos] === doc[current.from]
       ? context.pos + 1
       : context.pos
+  // Nothing typed between the quotes. An explicit request matches every option; filtering on the
+  // opening quote alone would hide every value that is not itself a string.
+  const emptyString =
+    current?.type === 'string' &&
+    context.pos === current.from + 1 &&
+    (doc[context.pos] === doc[current.from] || context.pos === doc.length)
+  const matchAll = emptyString && context.explicit
+  // A quoted key is matched on the text inside the quotes. An explicit request in an empty
+  // string matches every option, so the match is empty.
+  let matchFrom = from
+  if (matchAll) matchFrom = context.pos
+  else if (current?.type === 'string') matchFrom = from + 1
 
   if (previous.char === '{' || previous.char === ',') {
     const existing = rootKeys(preceding)
@@ -274,7 +288,7 @@ export function paramsJsonCompletions(
       (param) => isQueryParamName(param.name) && !existing.has(param.name),
     )
     if (missing.length === 0) return null
-    const next = nextSignificant(doc, to)
+    const next = nextSignificant(doc, replaceTo)
     const separator = next === undefined || next === '}' || next === ',' ? '' : ','
     const options = missing.map((param, index): Completion => {
       const value = JSON.stringify(defaultParamValue(param, now))
@@ -283,11 +297,10 @@ export function paramsJsonCompletions(
         detail: value,
         type: 'property',
         boost: -index,
-        apply: replaceWith(`${JSON.stringify(param.name)}: ${value}${separator}`, from, to),
+        apply: replaceWith(`${JSON.stringify(param.name)}: ${value}${separator}`, from, replaceTo),
       }
     })
-    // A quoted key is matched without its opening quote
-    return {from: current?.type === 'string' ? from + 1 : from, to, options}
+    return {from: matchFrom, to: context.pos, options}
   }
 
   if (previous.char === ':') {
@@ -296,9 +309,17 @@ export function paramsJsonCompletions(
     if (!param) return null
     const options = paramValueOptions(param, now).map((value, index): Completion => {
       const json = JSON.stringify(value)
-      return {label: json, type: 'constant', boost: -index, apply: replaceWith(json, from, to)}
+      return {
+        label: json,
+        type: 'constant',
+        boost: -index,
+        apply: replaceWith(json, from, replaceTo),
+      }
     })
-    return {from, to, options}
+    // A value's label is its JSON, so the opening quote is part of the match. An explicit
+    // request in an empty string matches every value, strings or not.
+    if (current?.type === 'string' && !matchAll) matchFrom = from
+    return {from: matchFrom, to: context.pos, options}
   }
 
   return null
