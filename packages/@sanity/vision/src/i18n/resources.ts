@@ -973,6 +973,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.not-set': 'Not set',
   /** Placeholder of a params form field whose param is null; typing sends text instead */
   'vision.params-form.null': 'null',
+  /** Accessible label of the preview of an object param, which opens a dialog to edit its keys */
+  'vision.params-form.object.edit': 'Edit {{name}}',
+  /** In the dialog of an object param whose keys are neither read by the query nor set */
+  'vision.params-form.object.empty':
+    'The query reads no keys of this param. Use the params JSON to add some.',
   /**
    * Button setting a date and time param to the current time
    * @deprecated no longer in use
@@ -1006,6 +1011,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.type.list': 'list, each {{type}}',
   /** Type hint of a params form field: a number */
   'vision.params-form.type.number': 'number',
+  /** Type hint of a params form field: an object whose keys the query reads */
+  'vision.params-form.type.object': 'object',
   /** Type hint of a params form field: one of the values the schema allows */
   'vision.params-form.type.options': '{{type}}, one of {{count}} values',
   /** Type hint of a params form field: text */

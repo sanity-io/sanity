@@ -14,10 +14,12 @@ import {Text, Box, Flex, Icon} from 'ui5'
 import {type Params} from '../../../components/VisionGui'
 import {visionLocaleNamespace} from '../../../i18n'
 import {useParamsInference} from '../../hooks/useParamsInference'
+import {isObjectParam} from '../../util/objectParams'
 import {type InferredParam, type ParamKind, type ParamType} from '../../util/paramInference'
 import * as fieldGrid from '../fieldGrid.module.css'
 import {VisionTooltip} from '../VisionTooltip'
 import {DateTimePickerButton} from './DateTimePickerButton'
+import {ObjectParamInput} from './ObjectParamInput'
 
 type Translate = TFunction<typeof visionLocaleNamespace>
 
@@ -292,9 +294,11 @@ function ParamField(props: {
   disabled: boolean
   /** Whether the details say the types come from the query alone */
   schemaNote: boolean
+  /** A key of an object param (`$range.min`), which the query reads as null when it is missing */
+  nested?: boolean
   onChange: (value: unknown) => void
 }) {
-  const {param, value, isSet, disabled, schemaNote, onChange} = props
+  const {param, value, isSet, disabled, schemaNote, nested, onChange} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const inputId = useId()
   const listId = useId()
@@ -304,11 +308,34 @@ function ParamField(props: {
   // A text field shows null as its placeholder, so the text "null" can be told apart and typed
   const isNull = value === null && !type.array
   const problem = isSet && !(isNull && param.nullable) ? describeProblem(type, value, t) : undefined
+  const object = isObjectParam(param, value, isSet)
 
-  const required = isSet ? undefined : t('vision.params-form.required')
+  const required = isSet || nested ? undefined : t('vision.params-form.required')
 
   let input
-  if (type.kind === 'boolean' && !type.array) {
+  if (object) {
+    input = (
+      <ObjectParamInput
+        disabled={disabled}
+        id={inputId}
+        label={`$${param.name}`}
+        onChange={onChange}
+        param={param}
+        renderField={(field, fieldValue, fieldIsSet, onFieldChange) => (
+          <ParamField
+            disabled={disabled}
+            isSet={fieldIsSet}
+            nested
+            onChange={onFieldChange}
+            param={{...field, name: `${param.name}.${field.name}`}}
+            schemaNote={false}
+            value={fieldValue}
+          />
+        )}
+        value={value}
+      />
+    )
+  } else if (type.kind === 'boolean' && !type.array) {
     input = (
       <BooleanInput
         disabled={disabled}
@@ -388,7 +415,9 @@ function ParamField(props: {
           testId={`vision-params-form-${param.name}-details`}
         >
           <Text data-testid={`vision-params-form-${param.name}-type`} size={1} as="div" trim>
-            {t('vision.params-form.type-detail', {type: describeType(type, t)})}
+            {t('vision.params-form.type-detail', {
+              type: object ? t('vision.params-form.type.object') : describeType(type, t),
+            })}
           </Text>
           {param.usages.length > 0 && (
             <Text size={1} as="div" trim={true}>

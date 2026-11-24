@@ -251,4 +251,49 @@ describe('inferQueryParams', () => {
       syntaxError: true,
     })
   })
+  it('lists the keys the query reads from an object param, each typed like a param', () => {
+    const inference = inferQueryParams(
+      '*[_type == "post" && count(tags) >= $range.min && count(tags) <= $range.max && rating > $range.limits.low && featured == $range.flag]',
+      {schema, documentTypes},
+    )
+    const [range] = inference.params
+    expect(range.name).toBe('range')
+    expect(range.type).toEqual({kind: 'any', array: false})
+    expect(range.fields?.map(({name, type}) => [name, type])).toEqual([
+      ['min', {kind: 'number', array: false}],
+      ['max', {kind: 'number', array: false}],
+      ['limits', {kind: 'any', array: false}],
+      ['flag', {kind: 'boolean', array: false}],
+    ])
+    const limits = range.fields?.[2]
+    expect(limits?.fields).toEqual([
+      {
+        name: 'low',
+        type: {kind: 'number', array: false},
+        usages: ['rating > $range.limits.low'],
+      },
+    ])
+    expect(range.fields?.[0].usages).toEqual(['count(tags) >= $range.min'])
+  })
+
+  it('reads the type of a key of an object param from the query alone', () => {
+    const inference = inferQueryParams('*[_id == $doc.id && defined($doc.slug)]', {documentTypes})
+    expect(inference.params[0].fields).toEqual([
+      {
+        name: 'id',
+        type: {kind: 'string', array: false, format: 'document-id'},
+        usages: ['_id == $doc.id'],
+      },
+      {
+        name: 'slug',
+        type: {kind: 'any', array: false},
+        usages: ['defined($doc.slug)'],
+        nullable: true,
+      },
+    ])
+  })
+
+  it('gives no keys to a param the query only reads whole', () => {
+    expect(inferQueryParams('*[_type == $type]', {documentTypes}).params[0].fields).toBeUndefined()
+  })
 })

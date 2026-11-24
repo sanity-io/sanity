@@ -7,6 +7,7 @@ import {type ReactNode, useState} from 'react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {type Params} from '../../../components/VisionGui'
+import {ObjectParamInput} from './ObjectParamInput'
 import {ParamsForm} from './ParamsForm'
 
 const schema = Schema.compile({
@@ -331,5 +332,111 @@ describe('ParamsForm', () => {
   it('explains a query without params', () => {
     renderForm('*[_type == "post"]')
     expect(screen.getByText('vision.params-form.empty')).toBeTruthy()
+  })
+  it('edits an object param key by key in a dialog, from a one-line preview', () => {
+    const {field, params} = renderForm(
+      '*[_type == "post" && count(tags) >= $countRange.min && count(tags) <= $countRange.max]',
+      '{"countRange": {"min": 0, "max": 10000}}',
+    )
+    expect(screen.getByTestId('vision-params-form-countRange-type').textContent).toBe(
+      `vision.params-form.type-detail:${JSON.stringify({type: 'vision.params-form.type.object'})}`,
+    )
+    expect(screen.getByTestId('vision-params-form-countRange-object-preview').textContent).toBe(
+      'min: 0, max: 10000',
+    )
+    // No raw JSON input in the grid
+    expect(within(field('countRange')).queryByRole('textbox')).toBeNull()
+    expect(screen.queryByTestId('vision-params-form-countRange-dialog')).toBeNull()
+
+    fireEvent.click(screen.getByTestId('vision-params-form-countRange-object'))
+    const dialog = screen.getByTestId('vision-params-form-countRange-dialog')
+    const min = within(within(dialog).getByTestId('vision-params-form-countRange.min')).getByRole(
+      'textbox',
+    )
+    expect(min).toHaveProperty('value', '0')
+    fireEvent.change(min, {target: {value: '5'}})
+    expect(params()).toEqual({countRange: {min: 5, max: 10000}})
+    expect(screen.getByTestId('vision-params-form-countRange-object-preview').textContent).toBe(
+      'min: 5, max: 10000',
+    )
+
+    // An emptied key is removed; the query reads it as null, so it is not flagged as required
+    fireEvent.change(min, {target: {value: ''}})
+    expect(params()).toEqual({countRange: {max: 10000}})
+    expect(within(dialog).queryByTestId('vision-params-form-countRange.min-required')).toBeNull()
+  })
+
+  it('creates an object param from its first key, and keeps keys the query does not read', () => {
+    const {params} = renderForm('*[featured == $filter.featured]', '{"filter": {"label": "x"}}')
+    fireEvent.click(screen.getByTestId('vision-params-form-filter-object'))
+    const dialog = screen.getByTestId('vision-params-form-filter-dialog')
+    expect(within(dialog).getByTestId('vision-params-form-filter.label')).toBeTruthy()
+    fireEvent.change(
+      within(within(dialog).getByTestId('vision-params-form-filter.featured')).getByRole(
+        'combobox',
+      ),
+      {target: {value: 'true'}},
+    )
+    expect(params()).toEqual({filter: {label: 'x', featured: true}})
+  })
+
+  it('opens nested objects in their own dialog', () => {
+    const {params} = renderForm('*[rating > $range.limits.low]')
+    expect(screen.getByTestId('vision-params-form-range-object-preview').textContent).toBe(
+      'vision.params-form.not-set',
+    )
+    fireEvent.click(screen.getByTestId('vision-params-form-range-object'))
+    fireEvent.click(screen.getByTestId('vision-params-form-range.limits-object'))
+    const nested = screen.getByTestId('vision-params-form-range.limits-dialog')
+    fireEvent.change(
+      within(within(nested).getByTestId('vision-params-form-range.limits.low')).getByRole(
+        'textbox',
+      ),
+      {target: {value: '3'}},
+    )
+    expect(params()).toEqual({range: {limits: {low: 3}}})
+    expect(screen.getByTestId('vision-params-form-range-object-preview').textContent).toBe(
+      'limits: {low: 3}',
+    )
+  })
+  it('forwards focus and blur from the object preview, and from the fields in its dialog', () => {
+    const onFocus = vi.fn()
+    const onBlur = vi.fn()
+    const onFieldFocus = vi.fn()
+    render(
+      <ThemeProvider theme={theme}>
+        <LayerProvider>
+          <div onFocus={onFieldFocus}>
+            <ObjectParamInput
+              disabled={false}
+              id="range"
+              label="$range"
+              onBlur={onBlur}
+              onChange={vi.fn()}
+              onFocus={onFocus}
+              param={{
+                name: 'range',
+                type: {kind: 'any', array: false},
+                usages: [],
+                fields: [{name: 'min', type: {kind: 'number', array: false}, usages: []}],
+              }}
+              renderField={(field) => <input aria-label={field.name} />}
+              value={{min: 1}}
+            />
+          </div>
+        </LayerProvider>
+      </ThemeProvider>,
+    )
+    const preview = screen.getByTestId('vision-params-form-range-object')
+    fireEvent.focus(preview)
+    fireEvent.blur(preview)
+    expect(onFocus).toHaveBeenCalledTimes(1)
+    expect(onBlur).toHaveBeenCalledTimes(1)
+
+    // The dialog is portalled, but its focus events still reach the field through React
+    fireEvent.click(preview)
+    onFieldFocus.mockClear()
+    fireEvent.focus(screen.getByLabelText('min'))
+    expect(onFieldFocus).toHaveBeenCalledTimes(1)
   })
 })
