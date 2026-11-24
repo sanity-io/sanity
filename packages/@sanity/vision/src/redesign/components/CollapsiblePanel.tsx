@@ -113,6 +113,7 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
             {tabs.map((tab) => (
               <Tab
                 aria-controls={elementId(`${tab.id}-panel`)}
+                data-tone={tab.tone}
                 fontSize={1}
                 icon={tab.icon}
                 id={elementId(`${tab.id}-tab`)}

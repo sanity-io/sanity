@@ -542,13 +542,6 @@ export function ParamsForm({query, params, onChange, onSubmit}: ParamsFormProps)
       }}
       padding={3}
     >
-      {disabled && (
-        <Card padding={3} radius={2} tone="caution">
-          <Text size={1} as="div" trim={true} tone="caution">
-            {t('vision.params-form.invalid-json')}
-          </Text>
-        </Card>
-      )}
       {inference.syntaxError && (
         <Text muted size={1} as="div" trim={true}>
           {t('vision.params-form.syntax-error')}
@@ -620,6 +613,14 @@ export function ParamsForm({query, params, onChange, onSubmit}: ParamsFormProps)
             </Flex>
           ))}
         </Stack>
+      )}
+      {/* Under the fields, so they stay put while the JSON goes in and out of parsing */}
+      {disabled && (
+        <Card data-testid="vision-params-form-invalid-json" padding={3} radius={2} tone="caution">
+          <Text size={1} as="div" trim={true} tone="caution">
+            {t('vision.params-form.invalid-json')}
+          </Text>
+        </Card>
       )}
     </Stack>
   )

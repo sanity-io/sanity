@@ -1,4 +1,3 @@
-import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {PlayIcon} from '@sanity/icons/Play'
 import {StopIcon} from '@sanity/icons/Stop'
 import {Badge, Button, Label, Tab, TabList} from '@sanity/ui'
@@ -16,7 +15,7 @@ import {
 import {createPortal} from 'react-dom'
 import {type Schema, useSchema} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
-import {Box, Flex, Icon} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {groqExtensions} from '../../../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
@@ -407,9 +406,9 @@ export function RequestPanel(props: RequestPanelProps) {
       {
         id: 'params',
         label: t('params.label'),
-        icon: params.valid ? undefined : (
-          <Icon icon={ErrorOutlineIcon} muted size={1} tone="critical" />
-        ),
+        // Params that do not parse get the Lint tab's chip for an error
+        muted: !params.valid,
+        tone: params.valid ? undefined : severityTone('error'),
         toolbar: (
           <Flex
             alignItems="center"
@@ -479,6 +478,7 @@ export function RequestPanel(props: RequestPanelProps) {
                     onActiveParamChange={highlightParam}
                     onChange={onParamsChange}
                     params={params}
+                    query={tab.query}
                     value={tab.rawParams}
                   />
                   <FlushOnUnmount onUnmount={onParamsFlush} />
