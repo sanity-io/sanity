@@ -29,6 +29,7 @@ import {selectActiveTab, selectDatasets} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
 import {savedQueryToTabInit, tabMatchesParsedQuery} from '../../util/savedQueryTab'
 import * as styles from '../redesign.module.css'
+import * as themeStyles from '../themeTokens.module.css'
 import {VisionTooltip} from '../VisionTooltip'
 import * as sidebarStyles from './sidebar.module.css'
 
@@ -345,7 +346,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                         }
                         id={`vision-saved-query-menu-${query._key}`}
                         menu={
-                          <Menu>
+                          <Menu className={cx(styles.popoverScroll, themeStyles.themeTokens)}>
                             <MenuItem
                               icon={LaunchIcon}
                               onClick={() => openInNewTab(item)}
@@ -426,7 +427,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
           onClose={() => setShareCandidate(null)}
           width={0}
         >
-          <Box padding={4}>
+          <Box className={themeStyles.themeTokens} padding={4}>
             <Text size={1} as="div" trim={true}>
               {t('save-query.share-warning')}
             </Text>

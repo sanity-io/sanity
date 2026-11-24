@@ -34,6 +34,20 @@ export interface SchemaFinding {
   message: string
   /** The name that was probably meant, written in place of the range */
   suggestion?: {text: string; from: number; to: number}
+  /** Set when a param's value is what is wrong: the fix belongs in the params, not the query */
+  param?: ParamFindingTarget
+}
+
+/** A value inside a param, which a finding is about */
+export interface ParamFindingTarget {
+  /** The param's name, without `$` */
+  name: string
+  /** Where in the param's value the offending value is: `[]` for the value itself, `[1]` for an item */
+  path: (string | number)[]
+  /** The offending value */
+  value: string
+  /** The value that was probably meant */
+  suggestion?: string
 }
 
 /** A field name the query reads, and what it is read from */
@@ -284,6 +298,8 @@ interface TypeName {
   name: string
   node: GroqNode
   param?: string
+  /** The item of the parameter's array value the name is, for `_type in $types` */
+  index?: number
 }
 
 /** A type name a string or parameter node holds */
@@ -336,7 +352,7 @@ function conjunctConstraint(nodes: GroqNode[], context: Context): TypeName[] | n
     const param = textOf(query, right)
     const values = context.params?.[param.slice(1)]
     return Array.isArray(values) && values.every((value) => typeof value === 'string')
-      ? values.map((name: string) => ({name, node: right, param}))
+      ? values.map((name: string, index: number) => ({name, node: right, param, index}))
       : null
   }
   if (operator.name === 'In' && isType(left) && right.name === 'ArrayLiteral') {
@@ -354,7 +370,16 @@ function unknownTypeSubject({name, param}: TypeName): string {
 
 /** A suggestion for a type name, written in place of the string; a parameter's value is not in the query */
 function typeSuggestion(entry: TypeName, suggestion: string | undefined) {
-  return suggestion && !entry.param
+  if (entry.param) {
+    const param: ParamFindingTarget = {
+      name: entry.param.slice(1),
+      path: entry.index === undefined ? [] : [entry.index],
+      value: entry.name,
+      ...(suggestion ? {suggestion} : {}),
+    }
+    return {param}
+  }
+  return suggestion
     ? {suggestion: {text: JSON.stringify(suggestion), from: entry.node.from, to: entry.node.to}}
     : {}
 }

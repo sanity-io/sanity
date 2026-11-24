@@ -6,6 +6,7 @@ import {type Schema, useSchema} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
+import {firstEditorLineStyle} from '../../../codemirror/editorMetrics'
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {QueryErrorDialog} from '../../../components/QueryErrorDialog'
 import {ResultView, type ResultViewCopy} from '../../../components/ResultView'
@@ -26,16 +27,13 @@ import {
   type VisionTab,
   type VisionTabDrawer,
 } from '../../store/types'
-import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
-import {
-  selectOpenTabDrawer,
-  selectResultView,
-  selectSourceMapEnabled,
-} from '../../store/visionMachine'
+import {useTabDrawerSlot, useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
+import {selectResultView, selectSourceMapEnabled} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
 import {getAvailableRowFields} from '../../util/documentListFields'
 import {canImproveDocumentList, getRowTypes, parseDocumentList} from '../../util/documentListResult'
 import {haveSameQuery} from '../../util/queryRequest'
+import {stringifyResultJson} from '../../util/stringifyResultJson'
 import {fetchSyncTagSourceMap} from '../../util/syncTagLookup'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
 import {CopyButton} from '../CopyButton'
@@ -235,22 +233,23 @@ export function ResponsePanel(props: ResponsePanelProps) {
       resultView === 'graph')
   const {scrolled: resultScrolled, setScroller: setResultScroller} = useScrolledFromTop()
   const copyToClipboard = useCopyToClipboard()
-  // The Copy button confirms the copy itself, so no toast
-  const copyResult = useCallback(
-    () => copyToClipboard(JSON.stringify(result, null, 2)),
-    [copyToClipboard, result],
-  )
+  // Same text as the JSON view (depth-truncated / soft-capped); never a bare misleading `null`
+  const copyResult = useCallback(() => {
+    return copyToClipboard(stringifyResultJson(result).text)
+  }, [copyToClipboard, result])
   // Text is copied as it is (an ID, a slug) and everything else as indented JSON
   const copyValue = useMemo(
     (): ResultViewCopy => ({
       label: t('vision.result.copy-value'),
-      onCopy: (value, keypath) =>
-        copyToClipboard(
-          typeof value === 'string' ? value : JSON.stringify(value, null, 2),
+      onCopy: (value, keypath) => {
+        const text = typeof value === 'string' ? value : stringifyResultJson(value).text
+        return copyToClipboard(
+          text,
           keypath
             ? t('vision.result.copied-value', {path: describeKeypath(keypath)})
             : t('vision.result.copied'),
-        ),
+        )
+      },
     }),
     [copyToClipboard, t],
   )
@@ -375,7 +374,8 @@ export function ResponsePanel(props: ResponsePanelProps) {
       : panelState
 
   // The tab's tools open in the sidebar's drawer
-  const tabDrawer = useVisionSelector(selectOpenTabDrawer)
+  // The tool follows the drawer as it shows, so it comes and goes with the drawer
+  const {drawer: tabDrawer} = useTabDrawerSlot()
   const renderTabDrawer = (drawer: VisionTabDrawer): ReactNode => {
     switch (drawer) {
       case 'delta':
@@ -494,7 +494,10 @@ export function ResponsePanel(props: ResponsePanelProps) {
               <Box
                 className={hasResult && resultView === 'tree' ? styles.treeContent : undefined}
                 id={resultContentId}
-                padding={3}
+                paddingBottom={3}
+                // The empty state takes its top offset from the query editor's first line instead
+                paddingTop={status === 'idle' ? 0 : 3}
+                paddingX={3}
               >
                 {status === 'fetching' && (
                   <Box className={styles.resultSpinner} marginTop={3}>
@@ -523,7 +526,13 @@ export function ResponsePanel(props: ResponsePanelProps) {
                   </div>
                 )}
                 {status === 'idle' && (
-                  <Text muted size={1} as="div" trim={true}>
+                  <Text
+                    as="div"
+                    data-testid="vision-result-empty"
+                    muted
+                    size={1}
+                    style={firstEditorLineStyle}
+                  >
                     {t('vision.result.empty')}
                   </Text>
                 )}

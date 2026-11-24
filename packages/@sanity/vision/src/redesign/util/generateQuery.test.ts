@@ -427,6 +427,37 @@ describe('fixQueryLint', () => {
     expect(prompts[0].instruction).toContain('Keep every comment')
     expect(prompts[0].instruction).toContain('never delete one')
     expect(checks).toEqual([{query: `select(false => (\n${fixed}\n))`, params: {type: 'post'}}])
+    expect(prompts[0].instructionParams?.target).toBe('The problems are in the query.')
+  })
+
+  it('says when the problems are in the values of the params', async () => {
+    const query = '*[_type == $type]'
+    const {client, prompts} = createClient({replies: [{query, params: {type: 'post'}}]})
+    const param: QueryLintFinding = {
+      from: 11,
+      to: 16,
+      line: 1,
+      column: 12,
+      severity: 'warning',
+      message: '`$type` is `"psot"`, but the schema has no document type named `psot`.',
+      source: 'vision/unknown-type',
+      param: {name: 'type', path: [], value: 'psot'},
+    }
+
+    await fixQueryLint({
+      query,
+      params: {type: 'psot'},
+      diagnostics: [param],
+      target: 'params',
+      schema,
+      client,
+    })
+    expect(prompts[0].instruction).toContain('$target')
+    expect(prompts[0].instructionParams).toMatchObject({
+      target: expect.stringContaining('values of its parameters'),
+      diagnostics:
+        '- Params, the value of $type (warning, vision/unknown-type): `$type` is `"psot"`, but the schema has no document type named `psot`.',
+    })
   })
 })
 

@@ -7,11 +7,13 @@ import {EnvelopeIcon} from '@sanity/icons/Envelope'
 import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
 import {PresentationIcon} from '@sanity/icons/Presentation'
 import {SanityMonogram} from '@sanity/logos'
+import {buildTheme} from '@sanity/themer'
 import {themerTool} from '@sanity/themer/tool'
 import {visionTool} from '@sanity/vision'
 import {
   defineConfig,
   defineField,
+  defineType,
   definePlugin,
   type AuthProvider,
   type WorkspaceOptions,
@@ -116,6 +118,11 @@ const sanitySandboxAuth = {
       ? prev
       : [...prev, sanitySandboxSsoProvider],
 }
+
+const warmTheme = buildTheme({
+  light: {accent: '#b4541a', text: '#6b4a32', background: '#fbf6ef'},
+  dark: {accent: '#e0894a', text: '#c9a88a', background: '#1e1510'},
+})
 
 const envConfig = {
   // use this for production workspaces
@@ -950,6 +957,33 @@ export default defineConfig([
       visionTool(),
       themerTool(),
     ],
+    releases: {enabled: false},
+    scheduledDrafts: {enabled: false},
+    scheduledPublishing: {enabled: false},
+    tasks: {enabled: false},
+    mediaLibrary: {enabled: false},
+    apps: {canvas: {enabled: false}},
+  },
+  {
+    name: 'custom-theme',
+    title: 'Custom theme',
+    subtitle: 'A warm custom theme, for checking that tools follow the studio theme',
+    projectId: 'ppsg7ml5',
+    dataset: 'test',
+    ...envConfig.production,
+    auth: sanitySandboxAuth,
+    basePath: '/custom-theme',
+    schema: {
+      types: [
+        defineType({
+          name: 'note',
+          type: 'document',
+          fields: [defineField({name: 'title', type: 'string'})],
+        }),
+      ],
+    },
+    theme: warmTheme,
+    plugins: [structureTool(), visionTool()],
     releases: {enabled: false},
     scheduledDrafts: {enabled: false},
     scheduledPublishing: {enabled: false},

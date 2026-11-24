@@ -22,7 +22,7 @@ import {inferTypeFromValue} from './typegen/inferTypeFromValue'
 export type ParamKind = 'string' | 'number' | 'integer' | 'boolean' | 'any'
 
 /** What the strings of a `string` param stand for, for the hint and the input helpers */
-export type ParamFormat = 'document-type' | 'document-id' | 'datetime'
+export type ParamFormat = 'document-type' | 'document-id' | 'datetime' | 'semantic-query'
 
 /** A param's type as the params form offers it */
 export interface ParamType {
@@ -32,6 +32,28 @@ export interface ParamType {
   /** The values the schema allows, offered as suggestions; others can still be entered */
   options?: string[]
   format?: ParamFormat
+  /**
+   * Document types a document id is limited to: a `_type` check beside `references($id)`, or the
+   * target of a `_ref` / `_id` it is compared with. Absent: the search covers every document type.
+   */
+  documentTypes?: string[]
+  /** The smallest number a number input offers, from the query or a field's validation */
+  min?: number
+  /** The largest number a number input offers */
+  max?: number
+  /** The step of a number input: `1` for a whole number, or from a field's `precision()` */
+  step?: number
+}
+
+/**
+ * The `min`, `max`, `integer` and `precision` rules of one number field. `{}` is a number field
+ * with no rules; a missing field is not represented
+ */
+export interface NumberRules {
+  min?: number
+  max?: number
+  integer?: boolean
+  precision?: number
 }
 
 export interface InferredParam {
@@ -69,6 +91,11 @@ export interface InferParamsOptions {
   documentTypes?: string[]
   /** The params' current values, typed for a param the query says nothing about */
   values?: Record<string, unknown>
+  /**
+   * The number rules of a field of a document type, given its path. A param compared with the
+   * field, or used as an end of its range, takes the loosest bounds across the types in scope
+   */
+  numberRules?: (documentType: string, path: string[]) => NumberRules | undefined
 }
 
 const ANY: ParamType = {kind: 'any', array: false}
@@ -222,14 +249,36 @@ function elementOf(type: TypeNode): TypeNode {
   return union(members(type).map((member) => (member.type === 'array' ? member.of : member)))
 }
 
-/** A literal's primitive: comparing with `"admin"` takes any string, not only that one */
+/**
+ * A literal's primitive: comparing with `"admin"` takes any string, not only that one, and a
+ * default of `["a"]` any list of strings
+ */
 function widen(type: TypeNode): TypeNode {
   return union(
-    members(type).map((member) =>
-      member.type === 'string' || member.type === 'number' || member.type === 'boolean'
-        ? {type: member.type}
-        : member,
-    ),
+    members(type).map((member): TypeNode => {
+      if (member.type === 'string' || member.type === 'number' || member.type === 'boolean') {
+        return {type: member.type}
+      }
+      if (member.type === 'array') return {...member, of: widen(member.of)}
+      if (member.type !== 'object') return member
+      const attributes = Object.entries(member.attributes).map(
+        ([name, attribute]) => [name, {...attribute, value: widen(attribute.value)}] as const,
+      )
+      return {...member, attributes: Object.fromEntries(attributes)}
+    }),
+  )
+}
+
+/** Whether an expression is a literal, or a list or object of literals alone */
+function isLiteral(expr: ExprNode): boolean {
+  const node = unwrapGroups(expr)
+  if (node.type === 'Value') return true
+  if (node.type === 'Array') return node.elements.every((element) => isLiteral(element.value))
+  return (
+    node.type === 'Object' &&
+    node.attributes.every(
+      (attribute) => attribute.type === 'ObjectAttributeValue' && isLiteral(attribute.value),
+    )
   )
 }
 
@@ -290,11 +339,18 @@ interface Expected {
   node: TypeNode
   format?: ParamFormat
   integer?: true
+  min?: number
+  max?: number
+  step?: number
 }
 
 const TEXT: Expected = {node: STRING}
+/** The query text of `text::semanticSimilarity()`, offered as a multiline field */
+const SEMANTIC_QUERY: Expected = {node: STRING, format: 'semantic-query'}
 const NUMERIC: Expected = {node: NUMBER}
 const INTEGER: Expected = {node: NUMBER, integer: true}
+/** `count()` and `length()` are whole numbers from 0 */
+const COUNT: Expected = {node: NUMBER, integer: true, min: 0}
 const CONDITION: Expected = {node: BOOLEAN}
 const DATETIME: Expected = {node: STRING, format: 'datetime'}
 const DOCUMENT_ID: Expected = {node: STRING, format: 'document-id'}
@@ -321,7 +377,7 @@ interface Signature {
   args: Expected[]
   /** What the arguments past `args` take */
   rest?: Expected
-  /** Whether the arguments hold the same type, so a param takes the type of the others */
+  /** Whether the arguments are lists whose elements are compared, so a param lists the others' */
   alike?: true
 }
 
@@ -341,7 +397,7 @@ const SIGNATURES: Record<string, Signature> = {
     args: [],
     rest: {node: union([STRING, arrayOf(STRING)]), format: 'document-id'},
   },
-  'global::round': {args: [NUMERIC, INTEGER]},
+  'global::round': {args: [NUMERIC, {...INTEGER, min: 0}]},
   'global::string': {args: [{node: union([STRING, NUMBER, BOOLEAN])}]},
   'global::upper': {args: [TEXT]},
   'string::lower': {args: [TEXT]},
@@ -365,7 +421,7 @@ const SIGNATURES: Record<string, Signature> = {
   'sanity::partOfRelease': {args: [TEXT]},
   'sanity::versionOf': {args: [DOCUMENT_ID]},
   'text::query': {args: [TEXT]},
-  'text::semanticSimilarity': {args: [TEXT]},
+  'text::semanticSimilarity': {args: [SEMANTIC_QUERY]},
 }
 
 /**
@@ -373,9 +429,9 @@ const SIGNATURES: Record<string, Signature> = {
  * (`count(tags) > $min` without the schema), and for the format of a date and time
  */
 const RETURNS: Record<string, Expected> = {
-  'global::count': NUMERIC,
+  'global::count': COUNT,
   'global::dateTime': DATETIME,
-  'global::length': NUMERIC,
+  'global::length': COUNT,
   'global::lower': TEXT,
   'global::now': DATETIME,
   'global::round': NUMERIC,
@@ -456,8 +512,11 @@ function isDocuments(node: ExprNode): boolean {
 /** A param on one side of an operator, with the expression on the other side */
 interface Comparison {
   counterpart: ExprNode
-  /** `same` holds what the counterpart holds: an alternative of `coalesce()` */
-  op: OpCall | 'range' | 'same'
+  /**
+   * `same` holds what the counterpart holds: an alternative of `coalesce()`, an operand of `+`.
+   * `elements` lists values equal to the counterpart's elements: `array::intersects()`
+   */
+  op: OpCall | 'range' | 'same' | 'elements'
   paramOnLeft: boolean
   scope: Scope
 }
@@ -474,12 +533,19 @@ interface Occurrence {
   nullable?: boolean
   /** Why this use says nothing about the type */
   reason?: string
+  /**
+   * Where a document-id function argument was read, so `references($id)` can be narrowed by the
+   * `_type` check in that same filter
+   */
+  scope?: Scope
 }
 
 const RETURNED = 'the query only returns it'
 const CHECKED = 'the query only checks whether it is set'
 const ORDERED = 'it is only used to order by'
 const ARITHMETIC = new Set<OpCall>(['-', '*', '/', '%', '**'])
+/** A param compared this way with a field can take that field's validation bounds */
+const ORDERINGS = new Set<Comparison['op']>(['==', '!=', '<', '<=', '>', '>='])
 /** Nodes that hold a param without using it, so its usage is the param alone */
 const CONTAINERS = new Set<ExprNode['type']>(['Array', 'Object', 'Projection', 'Select'])
 
@@ -562,6 +628,7 @@ function collect(ast: ExprNode): Occurrence[] {
     node: ExprNode,
     context: ExprNode | string,
     occurrence: Omit<Occurrence, 'name' | 'path' | 'usage'>,
+    scope?: Scope,
   ) => {
     const reference = paramPath(node)
     if (!reference) return
@@ -571,14 +638,15 @@ function collect(ast: ExprNode): Occurrence[] {
       path: reference.path,
       usage: typeof context === 'string' ? context : describe(context, pathText(reference)),
       ...occurrence,
+      ...(scope && {scope}),
     })
   }
 
   /** `node` is passed where `expected` is taken: types the params it is made of */
-  const expect = (node: ExprNode, expected: Expected, context: ExprNode) => {
+  const expect = (node: ExprNode, expected: Expected, context: ExprNode, scope?: Scope) => {
     const inner = unwrapGroups(node)
     if (asParameter(inner)) {
-      note(inner, context, {expected})
+      note(inner, context, {expected}, scope)
       return
     }
     switch (inner.type) {
@@ -614,11 +682,13 @@ function collect(ast: ExprNode): Occurrence[] {
   const noteOpCall = (node: OpCallNode, scope: Scope) => {
     const left = asParameter(node.left)
     const right = asParameter(node.right)
-    // Two params say nothing about each other, and two fields involve no param
+    // Two params say nothing about each other, unless the operator types each side on its own,
+    // and two fields involve no param
     if (Boolean(left) === Boolean(right)) {
-      if (left && right && ARITHMETIC.has(node.op)) {
-        note(node.left, node, {expected: NUMERIC})
-        note(node.right, node, {expected: NUMERIC})
+      const expected = node.op === 'match' ? TEXT : ARITHMETIC.has(node.op) && NUMERIC
+      if (left && right && expected) {
+        note(node.left, node, {expected})
+        note(node.right, node, {expected})
       }
       return
     }
@@ -630,6 +700,9 @@ function collect(ast: ExprNode): Occurrence[] {
       note(param, node, {expected: TEXT})
     } else if (ARITHMETIC.has(node.op)) {
       note(param, node, {expected: NUMERIC})
+    } else if (node.op === '+') {
+      // `+` adds numbers and joins strings and lists, and merges objects: both sides alike
+      note(param, node, {comparison: {counterpart, op: 'same', paramOnLeft: Boolean(left), scope}})
     } else {
       note(param, node, {comparison: {counterpart, op: node.op, paramOnLeft: Boolean(left), scope}})
     }
@@ -676,14 +749,18 @@ function collect(ast: ExprNode): Occurrence[] {
     const signature = SIGNATURES[name]
     node.args.forEach((arg, index) => {
       const expected = signature && (signature.args[index] ?? signature.rest)
-      if (expected && expected.node.type !== 'unknown') expect(arg, expected, node)
+      // A document id passed to `references()` is narrowed by the `_type` check beside it
+      const scopeForArg = expected?.format === 'document-id' ? scope : undefined
+      if (expected && expected.node.type !== 'unknown') expect(arg, expected, node, scopeForArg)
     })
     if (!signature?.alike) return
     const others = node.args.filter((arg) => !asParameter(arg))
     for (const arg of node.args) {
       if (!asParameter(arg)) continue
       for (const other of others) {
-        note(arg, node, {comparison: {counterpart: other, op: 'same', paramOnLeft: true, scope}})
+        note(arg, node, {
+          comparison: {counterpart: other, op: 'elements', paramOnLeft: true, scope},
+        })
       }
     }
   }
@@ -1006,14 +1083,25 @@ function resolveComparison(
   const probed = probe(scope, expr, options.schema ?? [])
   let base: Expected | undefined = hinted
   if (probed && probed.type !== 'unknown') {
-    // A comparison with a literal, as in `$role == "admin"`, is about a value of that primitive
-    const type = expr.type === 'Value' ? widen(probed) : withoutNull(probed)
+    // A comparison with a literal, as in `$role == "admin"`, is about a value of that primitive,
+    // and so is a default or an operand of `+`, as in `coalesce($tags, ["news"])`, while
+    // `$mode in ["draft", "review"]` lists the values to pick from
+    const literal = expr.type === 'Value' || (op === 'same' && isLiteral(expr))
+    const type = literal ? widen(probed) : withoutNull(probed)
     // An attribute the schema does not have evaluates to null, which says nothing about the value
-    if (type.type !== 'null' || expr.type === 'Value') {
+    if (type.type !== 'null' || literal) {
       // The schema's `_type`s include the asset documents, which the workspace does not list
       const node = (hinted && intersect(hinted.node, type)) ?? type
       const format = hinted?.format && holdsStrings(node) ? hinted.format : undefined
-      base = {node, ...(format && {format})}
+      // The schema types `count()` as a number; the query still says it is a whole number from 0
+      base = {
+        node,
+        ...(format && {format}),
+        ...(hinted?.integer && {integer: true as const}),
+        ...(hinted?.min !== undefined && {min: hinted.min}),
+        ...(hinted?.max !== undefined && {max: hinted.max}),
+        ...(hinted?.step !== undefined && {step: hinted.step}),
+      }
     }
   }
   if (!base || base.node.type === 'null') {
@@ -1021,15 +1109,90 @@ function resolveComparison(
       ? `the schema does not type \`${text}\`, which it is compared with`
       : `\`${text}\`, which it is compared with, needs the workspace schema to be typed`
   }
-  if (op === 'same') return base
-  const compared = op === 'in' && paramOnLeft ? withoutNull(elementOf(base.node)) : base.node
-  const node = comparable(compared)
+  // An operand of `+` or a `coalesce()` alternative holds the same kind of value, but the
+  // counterpart's bounds do not hold for it: `count(tags) + $offset` takes a negative offset
+  if (op === 'same') return {node: base.node, ...(base.format && {format: base.format})}
+  // `$value in list` and `array::intersects(list, $values)` compare with the list's elements
+  const ofElements = op === 'elements' || (op === 'in' && paramOnLeft)
+  const node = comparable(ofElements ? withoutNull(elementOf(base.node)) : base.node)
   if (!node) {
-    return op === 'in' && paramOnLeft
+    if (op === 'elements') {
+      return `GROQ never finds its elements in \`${text}\`, whose elements are not strings, numbers or booleans`
+    }
+    return ofElements
       ? `GROQ never finds it in \`${text}\`, whose elements are not strings, numbers or booleans`
       : `GROQ never finds it equal to \`${text}\`, which is not a string, number or boolean`
   }
-  return {...base, node: op === 'in' && !paramOnLeft ? arrayOf(node) : node}
+  const listed = op === 'elements' || (op === 'in' && !paramOnLeft)
+  const typed: Expected = {...base, node: listed ? arrayOf(node) : node}
+  return op === 'range' || ORDERINGS.has(op) ? withNumberBounds(typed, expr, scope, options) : typed
+}
+
+/** `field` or `object.field` of the element in scope, as a path */
+function attributePath(node: ExprNode): string[] | undefined {
+  const path: string[] = []
+  let current: ExprNode | undefined = unwrapGroups(node)
+  while (current?.type === 'AccessAttribute') {
+    path.unshift(current.name)
+    current = current.base ? unwrapGroups(current.base) : undefined
+  }
+  return path.length > 0 && (!current || current.type === 'This') ? path : undefined
+}
+
+/**
+ * A number param compared with a document field, or used as an end of its range, takes that
+ * field's validation bounds. A bound holds only when every matching type that has the field sets
+ * one, and then the loosest value, so a number valid for any of those types is not flagged.
+ * Arithmetic never asks: a scale or an offset is not constrained by the field it is used with.
+ */
+function withNumberBounds(
+  expected: Expected,
+  counterpart: ExprNode,
+  scope: Scope,
+  options: InferParamsOptions,
+): Expected {
+  const {schema, numberRules} = options
+  if (!schema || !numberRules || !scope.documents) return expected
+  const numbers = members(expected.node)
+  if (numbers.length === 0 || numbers.some((member) => member.type !== 'number')) return expected
+  const path = attributePath(counterpart)
+  if (!path) return expected
+  const documentTypes = probe(scope, {type: 'AccessAttribute', name: '_type'}, schema)
+  if (!documentTypes) return expected
+  const names: string[] = []
+  for (const member of members(withoutNull(documentTypes))) {
+    if (member.type !== 'string' || member.value === undefined) return expected
+    names.push(member.value)
+  }
+  const ruleSets: NumberRules[] = []
+  for (const name of names) {
+    const rules = numberRules(name, path)
+    if (rules) ruleSets.push(rules)
+  }
+  if (ruleSets.length === 0) return expected
+  const loosest = (values: (number | undefined)[], pick: (...picked: number[]) => number) =>
+    values.every((value) => value !== undefined) ? pick(...values) : undefined
+  const min = loosest(
+    ruleSets.map((rules) => rules.min),
+    Math.min,
+  )
+  const max = loosest(
+    ruleSets.map((rules) => rules.max),
+    Math.max,
+  )
+  const precision = loosest(
+    ruleSets.map((rules) => rules.precision),
+    Math.max,
+  )
+  const integer =
+    expected.integer || ruleSets.every((rules) => rules.integer === true || rules.precision === 0)
+  return {
+    ...expected,
+    ...(integer && {integer: true as const}),
+    ...(min !== undefined && {min}),
+    ...(max !== undefined && {max}),
+    ...(!integer && precision !== undefined && {step: 10 ** -precision}),
+  }
 }
 
 /**
@@ -1066,8 +1229,34 @@ function combine(expectations: Expected[]): Expected | undefined {
       }
     }
     const format = result.format ?? next.format
-    const integer = result.integer ?? next.integer
-    result = {node, ...(format && {format}), ...(integer && {integer})}
+    const integer = result.integer || next.integer
+    // A bound from one use stands, and two bounds take the stricter, so every use accepts it
+    const min =
+      result.min === undefined
+        ? next.min
+        : next.min === undefined
+          ? result.min
+          : Math.max(result.min, next.min)
+    const max =
+      result.max === undefined
+        ? next.max
+        : next.max === undefined
+          ? result.max
+          : Math.min(result.max, next.max)
+    const step =
+      result.step === undefined
+        ? next.step
+        : next.step === undefined
+          ? result.step
+          : Math.max(result.step, next.step)
+    result = {
+      node,
+      ...(format && {format}),
+      ...(integer && {integer: true as const}),
+      ...(min !== undefined && {min}),
+      ...(max !== undefined && {max}),
+      ...(step !== undefined && {step}),
+    }
   }
   return result
 }
@@ -1097,7 +1286,13 @@ function scalarType(node: TypeNode, expected: Expected): ParamType | undefined {
     return {kind: 'string', array: false, ...(options && {options}), ...(format && {format})}
   }
   if (all.every((member) => member.type === 'number')) {
-    return {kind: expected.integer ? 'integer' : 'number', array: false}
+    return {
+      kind: expected.integer ? 'integer' : 'number',
+      array: false,
+      ...(expected.min !== undefined && {min: expected.min}),
+      ...(expected.max !== undefined && {max: expected.max}),
+      ...(expected.step !== undefined && {step: expected.step}),
+    }
   }
   if (all.every((member) => member.type === 'boolean')) return {kind: 'boolean', array: false}
   return undefined
@@ -1153,6 +1348,120 @@ export function inferQueryParams(query: string, options: InferParamsOptions = {}
   }
 }
 
+/**
+ * The `_type` of the document an id or reference points at, so the search can be limited to it.
+ * `_id` is the document's own (or a dereferenced one's); `_ref` is the referenced document.
+ */
+function documentTypeExpr(node: ExprNode): ExprNode | undefined {
+  const inner = unwrapGroups(node)
+  if (inner.type === 'AccessAttribute' && inner.name === '_ref') {
+    const base = inner.base ?? {type: 'This'}
+    return {type: 'AccessAttribute', name: '_type', base: {type: 'Deref', base}}
+  }
+  if (inner.type === 'AccessAttribute' && inner.name === '_id') {
+    const base = inner.base
+    const own = !base || base.type === 'This'
+    const dereferenced = base?.type === 'Deref'
+    if (!own && !dereferenced) return undefined
+    return {type: 'AccessAttribute', name: '_type', base: base ?? {type: 'This'}}
+  }
+  if (
+    inner.type === 'Map' ||
+    inner.type === 'FlatMap' ||
+    inner.type === 'Filter' ||
+    inner.type === 'Projection'
+  ) {
+    const expr = documentTypeExpr(inner.expr)
+    return expr ? {...inner, expr} : undefined
+  }
+  return undefined
+}
+
+const THIS_TYPE: ExprNode = {type: 'AccessAttribute', name: '_type', base: {type: 'This'}}
+
+/** The types a value holds, through the arrays a `categories[]._ref` or `*[_type == "author"]._id` is */
+function elementTypes(type: TypeNode): TypeNode[] {
+  return members(type).flatMap((member) =>
+    member.type === 'array' ? elementTypes(member.of) : [member],
+  )
+}
+
+/** String literals only. A plain `string` means the query did not limit the type. */
+function literalStrings(type: TypeNode): string[] | undefined {
+  const present = elementTypes(type).filter((member) => member.type !== 'null')
+  if (present.length === 0) return undefined
+  const names: string[] = []
+  for (const member of present) {
+    if (member.type !== 'string' || member.value === undefined) return undefined
+    names.push(member.value)
+  }
+  return [...new Set(names)].toSorted((a, b) => a.localeCompare(b))
+}
+
+/**
+ * Document types a document-id param is limited to. A use that names none is ignored. When the uses
+ * name different types, the search stays on every document type.
+ */
+/** Every document type, which is what an unconstrained `*._type` is. That is not a narrowing. */
+function everyDocumentType(schema: SchemaType): string[] | undefined {
+  try {
+    return literalStrings(
+      typeEvaluate({type: 'Map', base: {type: 'Everything'}, expr: THIS_TYPE}, schema),
+    )
+  } catch {
+    return undefined
+  }
+}
+
+function sameNames(left: string[], right: string[] | undefined): boolean {
+  return (
+    right !== undefined &&
+    left.length === right.length &&
+    left.every((name) => right.includes(name))
+  )
+}
+
+function narrowDocumentIdTypes(
+  occurrences: Occurrence[],
+  schema: SchemaType | undefined,
+): string[] | undefined {
+  if (!schema) return undefined
+  const every = everyDocumentType(schema)
+  const sets: string[][] = []
+  for (const occurrence of occurrences) {
+    if (occurrence.path.length !== 0) continue
+    const fromComparison = occurrence.comparison
+      ? documentTypeExpr(occurrence.comparison.counterpart)
+      : undefined
+    const fromFunction =
+      !fromComparison && occurrence.expected?.format === 'document-id' && occurrence.scope
+        ? THIS_TYPE
+        : undefined
+    const expr = fromComparison ?? fromFunction
+    const scope = occurrence.comparison?.scope ?? occurrence.scope
+    if (!expr || !scope) continue
+    const probed = probe(scope, expr, schema)
+    if (!probed) continue
+    const names = literalStrings(probed)
+    // The whole schema is what an unconstrained id searches. It is not a type the query named.
+    if (names && names.length > 0 && !sameNames(names, every)) sets.push(names)
+  }
+  if (sets.length === 0) return undefined
+  const [first, ...rest] = sets
+  const names = first.filter((name) => rest.every((set) => set.includes(name)))
+  return names.length > 0 ? names : undefined
+}
+
+function withDocumentIdTypes(
+  type: ParamType,
+  occurrences: Occurrence[],
+  schema: SchemaType | undefined,
+): ParamType {
+  if (type.format !== 'document-id') return type
+  const documentTypes = narrowDocumentIdTypes(occurrences, schema)
+  return documentTypes ? {...type, documentTypes} : type
+}
+
 /** A param, or a key of one, from the occurrences that read it; `path` is relative to it */
 function buildParam(
   name: string,
@@ -1197,7 +1506,13 @@ function buildParam(
     ...(nullable && {nullable: true as const}),
     ...(fields.length > 0 && {fields}),
   }
-  if (combined) return {...shared, node: combined.node, type: toParamType(combined)}
+  if (combined) {
+    return {
+      ...shared,
+      node: combined.node,
+      type: withDocumentIdTypes(toParamType(combined), own, options.schema),
+    }
+  }
   // Nothing uses the object whole: it holds the keys the query reads, a missing one reads as null
   if (fields.length > 0) return {...shared, node: objectOfFields(fields), type: ANY}
   // The most telling reason: one about the query's types over "only returns it"
@@ -1210,7 +1525,8 @@ function buildParam(
 }
 
 function objectOfFields(fields: InferredParam[]): TypeNode {
-  const attributes: Record<string, ObjectAttribute> = {}
+  // Null prototype: a field named `__proto__` must stay an ordinary attribute
+  const attributes: Record<string, ObjectAttribute> = Object.create(null)
   for (const field of fields) {
     const value = field.node.type === 'unknown' ? (field.valueNode ?? UNKNOWN) : field.node
     attributes[field.name] = {

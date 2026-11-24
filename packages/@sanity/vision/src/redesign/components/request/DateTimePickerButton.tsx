@@ -11,6 +11,10 @@ import {
 import {useTranslation} from 'sanity/i18n'
 import {Flex, Text} from 'ui5'
 
+import {cx} from '../../util/cx'
+import * as styles from '../redesign.module.css'
+import * as themeStyles from '../themeTokens.module.css'
+
 /** The calendar shows and picks times in the local time zone; nothing stores a choice for it */
 const TIME_ZONE_SCOPE = {type: 'input', id: 'vision.params'} as const
 
@@ -60,7 +64,7 @@ export function DateTimePickerButton(props: DateTimePickerButtonProps) {
     <Tooltip
       animate
       content={
-        <Text size={1} as="div" trim={true}>
+        <Text className={themeStyles.themeTokens} size={1} as="div" trim={true}>
           {labels.tooltipText}
         </Text>
       }
@@ -88,6 +92,7 @@ export function DateTimePickerButton(props: DateTimePickerButtonProps) {
         <LayerProvider zOffset={1000}>
           <Popover
             animate
+            className={cx(styles.popoverScroll, themeStyles.themeTokens)}
             constrainSize
             fallbackPlacements={FALLBACK_PLACEMENTS}
             content={

@@ -7,6 +7,7 @@ import {Box, Flex, Text} from 'ui5'
 import {visionLocaleNamespace} from '../../../i18n'
 import {isPlainObject, objectFields, previewObject, setObjectKey} from '../../util/objectParams'
 import {type InferredParam} from '../../util/paramInference'
+import * as themeStyles from '../themeTokens.module.css'
 
 export interface ObjectParamInputProps {
   id: string
@@ -78,7 +79,7 @@ export function ObjectParamInput(props: ObjectParamInputProps) {
         <Dialog
           data-testid={`vision-params-form-${param.name}-dialog`}
           header={
-            <Text size={1} weight="medium" as="div" trim={true}>
+            <Text className={themeStyles.themeTokens} size={1} weight="medium" as="div" trim={true}>
               <InlineCode>{label}</InlineCode>
             </Text>
           }
@@ -86,7 +87,7 @@ export function ObjectParamInput(props: ObjectParamInputProps) {
           onClose={() => setOpen(false)}
           width={1}
         >
-          <Stack gap={4} padding={4}>
+          <Stack className={themeStyles.themeTokens} gap={4} padding={4}>
             {fields.length === 0 ? (
               <Text muted size={1} as="div" trim={true}>
                 {t('vision.params-form.object.empty')}

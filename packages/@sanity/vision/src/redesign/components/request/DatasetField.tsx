@@ -1,5 +1,5 @@
 import {Stack} from '@sanity/ui'
-import {useMemo, useState} from 'react'
+import {useMemo, useRef, useState} from 'react'
 import {type WorkspaceSummary} from 'sanity'
 import {useWorkspaces} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
@@ -23,17 +23,26 @@ export interface DatasetMenuEntry {
   workspaces: string[]
 }
 
+export interface DatasetMenuGroups {
+  /** Datasets of this project's workspaces, in the workspace switcher's order */
+  workspace: DatasetMenuEntry[]
+  /** The project's remaining datasets, by name */
+  other: DatasetMenuEntry[]
+}
+
 /**
- * The project's datasets other than the workspace's, which Auto stands for, in name order with
- * the workspaces that use each; the query matches dataset names and workspace titles
+ * The dataset menu's groups after Auto, which stands for the workspace's dataset and so is in
+ * neither: the datasets of this project's workspaces, in the workspace switcher's order and
+ * listed once each where the switcher first shows them, then the project's other datasets by
+ * name. The query matches dataset names and workspace titles in both groups.
  */
-export function listOtherDatasets(options: {
+export function groupDatasets(options: {
   datasets: readonly string[]
   workspaceDataset: string
   workspaces: readonly Pick<WorkspaceSummary, 'name' | 'title' | 'dataset' | 'projectId'>[]
   projectId: string
   query: string
-}): DatasetMenuEntry[] {
+}): DatasetMenuGroups {
   const {datasets, workspaceDataset, workspaces, projectId} = options
   const query = options.query.trim().toLowerCase()
   const usedBy = new Map<string, string[]>()
@@ -45,17 +54,20 @@ export function listOtherDatasets(options: {
   }
 
   // Without the dataset list, the datasets the workspaces use are all there is to offer
-  const known = datasets.length > 0 ? datasets : [...usedBy.keys()]
-  return [...new Set(known)]
-    .filter((dataset) => dataset !== workspaceDataset)
+  const known = new Set(datasets.length > 0 ? datasets : usedBy.keys())
+  const matches = ({dataset, workspaces: titles}: DatasetMenuEntry) =>
+    !query ||
+    dataset.toLowerCase().includes(query) ||
+    titles.some((title) => title.toLowerCase().includes(query))
+
+  const workspace = [...usedBy.keys()]
+    .filter((dataset) => dataset !== workspaceDataset && known.has(dataset))
     .map((dataset) => ({dataset, workspaces: usedBy.get(dataset) ?? []}))
-    .filter(
-      ({dataset, workspaces: titles}) =>
-        !query ||
-        dataset.toLowerCase().includes(query) ||
-        titles.some((title) => title.toLowerCase().includes(query)),
-    )
-    .toSorted((a, b) => a.dataset.localeCompare(b.dataset))
+  const other = [...known]
+    .filter((dataset) => dataset !== workspaceDataset && !usedBy.has(dataset))
+    .toSorted((a, b) => a.localeCompare(b))
+    .map((dataset) => ({dataset, workspaces: []}))
+  return {workspace: workspace.filter(matches), other: other.filter(matches)}
 }
 
 interface DatasetFieldProps {
@@ -92,15 +104,26 @@ export function DatasetField({
   const autoTitle = t('vision.options.auto')
   const autoSubtitle = t('vision.options.dataset.auto.subtitle', {dataset: workspaceDataset})
 
-  const others = useMemo(
-    () => listOtherDatasets({datasets, workspaceDataset, workspaces, projectId, query}),
+  const groups = useMemo(
+    () => groupDatasets({datasets, workspaceDataset, workspaces, projectId, query}),
     [datasets, workspaceDataset, workspaces, projectId, query],
   )
+  const foldRef = useRef<HTMLDivElement>(null)
   const normalizedQuery = query.trim().toLowerCase()
   const showAuto =
     !normalizedQuery ||
     autoTitle.toLowerCase().includes(normalizedQuery) ||
     workspaceDataset.toLowerCase().includes(normalizedQuery)
+  const renderItem = (entry: DatasetMenuEntry) => (
+    <OptionMenuItem
+      key={entry.dataset}
+      onClick={() => onChange({datasetMode: 'override', dataset: entry.dataset})}
+      selected={!isAuto && entry.dataset === dataset}
+      subtitle={entry.workspaces.length > 0 ? entry.workspaces.join(', ') : undefined}
+      testId={`${id}-item-${entry.dataset}`}
+      title={entry.dataset}
+    />
+  )
 
   return (
     <Stack gap={2}>
@@ -108,6 +131,7 @@ export function DatasetField({
         {t('settings.dataset-label')}
       </Text>
       <OptionMenuButton
+        foldRef={foldRef}
         id={elementId}
         onClose={() => setQuery('')}
         onSearchQueryChange={setQuery}
@@ -128,21 +152,24 @@ export function DatasetField({
             />
           </OptionMenuSection>
         )}
-        {others.length > 0 && (
-          <OptionMenuSection title={t('vision.options.dataset.other-datasets')}>
-            {others.map((entry) => (
-              <OptionMenuItem
-                key={entry.dataset}
-                onClick={() => onChange({datasetMode: 'override', dataset: entry.dataset})}
-                selected={!isAuto && entry.dataset === dataset}
-                subtitle={entry.workspaces.length > 0 ? entry.workspaces.join(', ') : undefined}
-                testId={`${id}-item-${entry.dataset}`}
-                title={entry.dataset}
-              />
-            ))}
+        {groups.workspace.length > 0 && (
+          <OptionMenuSection
+            ref={foldRef}
+            testId={`${id}-group-workspace`}
+            title={t('vision.options.dataset.workspace-datasets')}
+          >
+            {groups.workspace.map(renderItem)}
           </OptionMenuSection>
         )}
-        {!showAuto && others.length === 0 && (
+        {groups.other.length > 0 && (
+          <OptionMenuSection
+            testId={`${id}-group-other`}
+            title={t('vision.options.dataset.other-datasets')}
+          >
+            {groups.other.map(renderItem)}
+          </OptionMenuSection>
+        )}
+        {!showAuto && groups.workspace.length === 0 && groups.other.length === 0 && (
           <OptionMenuNoMatches>{t('vision.options.dataset.no-matches')}</OptionMenuNoMatches>
         )}
       </OptionMenuButton>

@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {Button} from '@sanity/ui'
-import {type KeyboardEvent, type ReactNode, useCallback} from 'react'
+import {type KeyboardEvent, type ReactNode, useCallback, ViewTransition} from 'react'
 import TrapFocus from 'react-focus-lock'
 import {type TFunction} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
@@ -10,6 +10,7 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {type VisionDrawer} from '../../store/types'
 import {useTabDrawerSlot, useVisionActor} from '../../store/VisionActorContext'
 import {cx} from '../../util/cx'
+import {DRAWER_ENTER, DRAWER_EXIT, SIDEBAR_PANE} from '../panelTransitions'
 import * as styles from '../redesign.module.css'
 import {QueryListPanel} from './QueryListPanel'
 import {SettingsPanel} from './SettingsPanel'
@@ -37,17 +38,29 @@ function drawerTitle(drawer: VisionDrawer, t: TFunction<'vision'>): string {
   }
 }
 
-/** The active tab renders its tool into this element (see `TabDrawerSlot`) */
+/**
+ * Shows the element the active tab renders its tool into (see `TabDrawerSlot`). It is attached
+ * in the commit that mounts the drawer, so a view transition already pictures the tool in it
+ */
 function TabDrawerSlotElement({drawer}: {drawer: VisionDrawer}) {
-  const {setElement} = useTabDrawerSlot()
+  const {element} = useTabDrawerSlot()
+  const attach = useCallback(
+    (container: HTMLDivElement | null) => {
+      if (!container) return undefined
+      container.append(element)
+      return () => element.remove()
+    },
+    [element],
+  )
   return (
     <Box
+      className={styles.nestedScroll}
       data-testid={`vision-drawer-${drawer}-content`}
       flexBasis="0%"
       flexGrow={1}
       minHeight="0"
       overflow="auto"
-      ref={setElement}
+      ref={attach}
     />
   )
 }
@@ -59,7 +72,13 @@ function DrawerContent({drawer}: {drawer: VisionDrawer}): ReactNode {
       return <QueryListPanel key={drawer} mode={drawer} />
     case 'settings':
       return (
-        <Box flexBasis="0%" flexGrow={1} minHeight="0" overflow="auto">
+        <Box
+          className={styles.nestedScroll}
+          flexBasis="0%"
+          flexGrow={1}
+          minHeight="0"
+          overflow="auto"
+        >
           <SettingsPanel />
         </Box>
       )
@@ -95,11 +114,9 @@ export function SidebarDrawer({drawer, overlay}: SidebarDrawerProps) {
     [close, overlay],
   )
 
-  // Floating over the tool, the drawer is a modal dialog: the rest of the tool is inert (see
-  // VisionRedesign and VisionSidebar), focus moves to its close button on open, Tab stays inside it (the
-  // studio chrome above is not inert), and focus returns to the opener on close (VisionSidebar)
-  return (
-    <TrapFocus autoFocus disabled={!overlay} lockProps={TRAP_FOCUS_PROPS}>
+  // Swapping one drawer for another resizes it, like the tabs area next to it
+  const drawerElement = (
+    <ViewTransition default={SIDEBAR_PANE} enter={DRAWER_ENTER} exit={DRAWER_EXIT}>
       <Flex
         aria-label={overlay ? title : undefined}
         aria-modal={overlay || undefined}
@@ -141,6 +158,19 @@ export function SidebarDrawer({drawer, overlay}: SidebarDrawerProps) {
         </Flex>
         <DrawerContent drawer={drawer} />
       </Flex>
+    </ViewTransition>
+  )
+
+  // Floating over the tool, the drawer is a modal dialog: the rest of the tool is inert (see
+  // VisionRedesign and VisionSidebar), focus moves to its close button on open, Tab stays inside it (the
+  // studio chrome above is not inert), and focus returns to the opener on close (VisionSidebar).
+  // Beside the tabs area it is not, and stays out of the lock: inside the lock's wrapper, React does
+  // not see the drawer come in or go in a view transition, which then leaves it out of the picture
+  return overlay ? (
+    <TrapFocus autoFocus lockProps={TRAP_FOCUS_PROPS}>
+      {drawerElement}
     </TrapFocus>
+  ) : (
+    drawerElement
   )
 }

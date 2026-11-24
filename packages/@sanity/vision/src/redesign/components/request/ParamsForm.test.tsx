@@ -2,6 +2,7 @@ import {Schema} from '@sanity/schema'
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {
+  act,
   cleanup,
   createEvent,
   fireEvent,
@@ -12,11 +13,39 @@ import {
 } from '@testing-library/react'
 import JSON5 from 'json5'
 import {type ReactNode, useState} from 'react'
-import {afterEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type Params} from '../../../components/VisionGui'
+import * as fieldGrid from '../fieldGrid.module.css'
 import {ObjectParamInput} from './ObjectParamInput'
 import {ParamsForm} from './ParamsForm'
+
+const {createSearch, useValuePreview, searchClient} = vi.hoisted(() => {
+  const client = {
+    config: () => ({perspective: 'published' as const}),
+    withConfig() {
+      return this
+    },
+    observable: {fetch: vi.fn()},
+  }
+  return {
+    searchClient: client,
+    createSearch: vi.fn(),
+    useValuePreview: vi.fn((_props: {value: {_id: string}}) => ({
+      isLoading: false,
+      value: {title: 'Ash'},
+    })),
+  }
+})
+
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
+  DEFAULT_STUDIO_CLIENT_OPTIONS: {apiVersion: '2025-02-19'},
+  DatePicker: () => null,
+  getCalendarLabels: () => ({}),
+  createSearch: (types: {name: string}[], client: unknown, options: unknown) =>
+    createSearch(types, client, options),
+  useValuePreview: (props: {value: {_id: string}}) => useValuePreview(props),
+}))
 
 const schema = Schema.compile({
   name: 'test',
@@ -28,6 +57,8 @@ const schema = Schema.compile({
         {name: 'title', type: 'string'},
         {name: 'status', type: 'string', options: {list: ['draft', 'published']}},
         {name: 'featured', type: 'boolean'},
+        {name: 'rating', type: 'number'},
+        {name: 'tags', type: 'array', of: [{type: 'string'}]},
       ],
     },
     {name: 'author', type: 'document', fields: [{name: 'name', type: 'string'}]},
@@ -37,6 +68,18 @@ const schema = Schema.compile({
 vi.mock('sanity', () => ({
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
   useSchema: () => schema,
+  useClient: () => searchClient,
+  isDraftId: (id: string) => id.startsWith('drafts.'),
+  getVersionFromId: (id: string) => {
+    const match = /^versions\.([^.]+)\./.exec(id)
+    return match ? match[1] : undefined
+  },
+  SanityDefaultPreview: ({title, subtitle}: {title?: string; subtitle?: string}) => (
+    <span>
+      {title}
+      {subtitle ? ` ${subtitle}` : ''}
+    </span>
+  ),
 }))
 vi.mock('sanity/i18n', () => ({
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
@@ -116,6 +159,20 @@ function renderForm(query: string, initial = '{}') {
 
 describe('ParamsForm', () => {
   afterEach(() => cleanup())
+
+  beforeEach(() => {
+    createSearch.mockReset()
+    useValuePreview.mockClear()
+    createSearch.mockImplementation((types: {name: string}[]) => (query: string) => ({
+      subscribe(observer: {next?: (value: unknown) => void}) {
+        const typeName = types[0]?.name ?? 'author'
+        observer.next?.({
+          hits: [{hit: {_id: `${typeName}-1`, _type: typeName}, score: query.length}],
+        })
+        return {unsubscribe: () => undefined}
+      },
+    }))
+  })
 
   it('has a field per param, typed from the schema and the query', () => {
     const {field} = renderForm(
@@ -211,18 +268,122 @@ describe('ParamsForm', () => {
     expect(typeInput).toHaveProperty('value', 'post')
   })
 
-  it('sends numbers as numbers, keeping the text as typed, and other text as text', () => {
-    const {field, input, params} = renderForm('*[_type == "post"][0...$limit]')
-    fireEvent.change(input('limit'), {target: {value: '1.'}})
-    expect(params()).toEqual({limit: 1})
-    expect(input('limit')).toHaveProperty('value', '1.')
-    fireEvent.change(input('limit'), {target: {value: '1.5'}})
-    expect(params()).toEqual({limit: 1.5})
+  it('searches the type the query constrains and fills the picked document id', async () => {
+    const {field, params} = renderForm('*[_type == "author" && _id == $authorId]')
+    const input = within(field('authorId')).getByRole('combobox')
+    fireEvent.change(input, {target: {value: 'ash'}})
+    expect(params()).toEqual({authorId: 'ash'})
+    await waitFor(() => expect(createSearch).toHaveBeenCalled())
+    const types = createSearch.mock.calls.at(-1)?.[0] as {name: string}[]
+    expect(types.map((type) => type.name)).toEqual(['author'])
+    expect(createSearch.mock.calls.at(-1)?.[2]).toEqual({tag: 'vision.document-id'})
+    fireEvent.click(within(field('authorId')).getByLabelText('Open'))
+    await waitFor(() => expect(optionTexts()).toEqual(['Ash author-1']))
+
+    fireEvent.keyDown(input, {key: 'ArrowDown'})
+    const [listbox] = screen
+      .getAllByRole('listbox', {hidden: true})
+      .filter((element) => !(element instanceof HTMLDataListElement))
+    fireEvent.keyDown(within(listbox).getByRole('option', {hidden: true}), {key: 'Enter'})
+    await waitFor(() => expect(params()).toEqual({authorId: 'author-1'}))
+  })
+
+  it('searches every document type when the query does not name one', async () => {
+    const {field} = renderForm('*[references($id)]')
+    fireEvent.change(within(field('id')).getByRole('combobox'), {target: {value: 'a'}})
+    await waitFor(() => expect(createSearch).toHaveBeenCalled())
+    const types = createSearch.mock.calls.at(-1)?.[0] as {name: string}[]
+    expect(types.map((type) => type.name)).toEqual(['author', 'post'])
+  })
+
+  it('drops a document search that a newer query has replaced', async () => {
+    const held: {next?: (value: unknown) => void}[] = []
+    createSearch.mockImplementation(() => () => ({
+      subscribe(observer: {next?: (value: unknown) => void}) {
+        held.push(observer)
+        return {unsubscribe: () => undefined}
+      },
+    }))
+    const {field} = renderForm('*[_type == "author" && _id == $authorId]')
+    const input = within(field('authorId')).getByRole('combobox')
+    fireEvent.change(input, {target: {value: 'a'}})
+    await waitFor(() => expect(held).toHaveLength(1))
+    fireEvent.change(input, {target: {value: 'ad'}})
+    await waitFor(() => expect(held).toHaveLength(2))
+    act(() => {
+      held[1]?.next?.({hits: [{hit: {_id: 'author-2', _type: 'author'}}]})
+    })
+    fireEvent.click(within(field('authorId')).getByLabelText('Open'))
+    await waitFor(() => expect(optionTexts()).toEqual(['Ash author-2']))
+    act(() => {
+      held[0]?.next?.({hits: [{hit: {_id: 'author-1', _type: 'author'}}]})
+    })
+    expect(optionTexts()).toEqual(['Ash author-2'])
+  })
+
+  it('keeps a typed document id, null and a cleared field', () => {
+    const {field, params} = renderForm('*[!defined($id) || _id == $id]')
+    const input = within(field('id')).getByRole('combobox')
+    fireEvent.change(input, {target: {value: 'not-a-hit'}})
+    expect(params()).toEqual({id: 'not-a-hit'})
+
+    fireEvent.click(within(field('id')).getByTestId('vision-params-form-id-clear'))
+    expect(params()).toEqual({id: null})
+    expect(input).toHaveProperty('value', '')
+
+    fireEvent.change(input, {target: {value: 'still-text'}})
+    expect(params()).toEqual({id: 'still-text'})
+    // The field's own clear sends an empty string, which removes the param
+    fireEvent.change(input, {target: {value: ''}})
+    expect(params()).toEqual({})
+  })
+
+  it('takes numbers in a number input and sends them as JSON numbers', () => {
+    const {field, params} = renderForm('*[_type == "post" && rating > $rating][0...$limit]')
+    const rating = within(field('rating')).getByRole('spinbutton')
+    expect(rating).toHaveProperty('type', 'number')
+    // Any number, like a Studio number field without rules
+    expect(rating.getAttribute('step')).toBe('any')
+    expect(rating.getAttribute('min')).toBeNull()
+    fireEvent.change(rating, {target: {value: '-2.5'}})
+    expect(params()).toEqual({rating: -2.5})
+
+    // A slice bound steps in whole numbers, and a fraction is still sent, with its note
+    const limit = within(field('limit')).getByRole('spinbutton')
+    expect(limit.getAttribute('step')).toBe('1')
+    fireEvent.change(limit, {target: {value: '1.5'}})
+    expect(params()).toEqual({rating: -2.5, limit: 1.5})
     expect(within(field('limit')).getByTestId('vision-params-form-limit-problem').textContent).toBe(
       'vision.params-form.invalid.integer',
     )
-    fireEvent.change(input('limit'), {target: {value: 'ten'}})
-    expect(params()).toEqual({limit: 'ten'})
+    fireEvent.change(limit, {target: {value: ''}})
+    expect(params()).toEqual({rating: -2.5})
+  })
+
+  it('bounds counts and rounding places to whole numbers from 0', () => {
+    const {field, params} = renderForm(
+      '*[_type == "post" && count(tags) >= $minimum]{"r": round(rating, $precision)}',
+    )
+    for (const name of ['minimum', 'precision']) {
+      const input = within(field(name)).getByRole('spinbutton')
+      expect([input.getAttribute('min'), input.getAttribute('step')]).toEqual(['0', '1'])
+      expect(input).toHaveProperty('inputMode', 'numeric')
+      expect(screen.getByTestId(`vision-params-form-${name}-type`).textContent).toBe(
+        `vision.params-form.type-detail:${JSON.stringify({
+          type: `vision.params-form.type.min:${JSON.stringify({type: 'vision.params-form.type.integer', min: 0})}`,
+        })}`,
+      )
+    }
+    fireEvent.change(within(field('minimum')).getByRole('spinbutton'), {target: {value: '-1'}})
+    expect(params()).toEqual({minimum: -1})
+    expect(
+      within(field('minimum')).getByTestId('vision-params-form-minimum-problem').textContent,
+    ).toBe('vision.params-form.invalid.min:{"min":0}')
+  })
+
+  it('shows a number param that holds something else as text, with its note', () => {
+    const {field, input} = renderForm('*[_type == "post"][0...$limit]', '{"limit": "ten"}')
+    expect(input('limit')).toHaveProperty('value', 'ten')
     expect(within(field('limit')).getByTestId('vision-params-form-limit-problem').textContent).toBe(
       'vision.params-form.invalid.number',
     )
@@ -276,11 +437,71 @@ describe('ParamsForm', () => {
     expect(input('g')).toHaveProperty('placeholder', 'vision.params-form.null')
   })
 
-  it('offers true and false for a boolean, and any JSON for an untyped param', () => {
+  it('forwards focus and blur from a number input and a switch to the form', () => {
+    const onFocus = vi.fn()
+    const onBlur = vi.fn()
+    const {field} = renderForm('*[_type == "post" && rating > $rating && featured == $featured]')
+    const form = screen.getByTestId('vision-params-form')
+    form.addEventListener('focusin', onFocus)
+    form.addEventListener('focusout', onBlur)
+    for (const input of [
+      within(field('rating')).getByRole('spinbutton'),
+      within(field('featured')).getByRole('checkbox'),
+    ]) {
+      input.focus()
+      expect(document.activeElement).toBe(input)
+      input.blur()
+    }
+    expect(onFocus).toHaveBeenCalledTimes(2)
+    expect(onBlur).toHaveBeenCalledTimes(2)
+  })
+
+  it('toggles a boolean with a switch, not set until it is switched', () => {
+    const {field, params} = renderForm('*[_type == "post" && featured == $featured]')
+    const toggle = within(field('featured')).getByRole('checkbox') as HTMLInputElement
+    expect(toggle.indeterminate).toBe(true)
+    expect(within(field('featured')).getByText('vision.params-form.not-set')).toBeTruthy()
+    // The field label points at the switch
+    expect(within(field('featured')).getByLabelText('$featured')).toBe(toggle)
+
+    fireEvent.click(toggle)
+    expect(params()).toEqual({featured: true})
+    expect(toggle.indeterminate).toBe(false)
+    expect(toggle.checked).toBe(true)
+    fireEvent.click(toggle)
+    expect(params()).toEqual({featured: false})
+    expect(toggle.checked).toBe(false)
+    expect(within(field('featured')).getByText('false')).toBeTruthy()
+  })
+
+  it('switches a boolean that holds something else to a boolean, with a note until then', () => {
+    const {field, params} = renderForm(
+      '*[_type == "post" && $includeSummary]',
+      '{"includeSummary": "yes"}',
+    )
+    const toggle = within(field('includeSummary')).getByRole('checkbox') as HTMLInputElement
+    expect(toggle.indeterminate).toBe(true)
+    expect(
+      within(field('includeSummary')).getByTestId('vision-params-form-includeSummary-problem'),
+    ).toBeTruthy()
+    fireEvent.click(toggle)
+    expect(params()).toEqual({includeSummary: true})
+  })
+
+  it('edits number list items in number inputs', () => {
+    const {field, params} = renderForm('*[_type == "post" && rating in $ratings]')
+    fireEvent.click(screen.getByTestId('vision-params-form-ratings-add'))
+    expect(params()).toEqual({ratings: [0]})
+    fireEvent.change(within(field('ratings')).getByRole('spinbutton'), {target: {value: '4'}})
+    expect(params()).toEqual({ratings: [4]})
+  })
+
+  it('offers any JSON for an untyped param next to a boolean', () => {
     const {field, input, params} = renderForm(
       '*[_type == "post" && featured == $featured]{"extra": $extra}',
     )
-    fireEvent.change(within(field('featured')).getByRole('combobox'), {target: {value: 'false'}})
+    fireEvent.click(within(field('featured')).getByRole('checkbox'))
+    fireEvent.click(within(field('featured')).getByRole('checkbox'))
     expect(params()).toEqual({featured: false})
 
     fireEvent.change(input('extra'), {target: {value: '{a: [1, 2]}'}})
@@ -307,6 +528,14 @@ describe('ParamsForm', () => {
 
     fireEvent.click(within(field('types')).getAllByLabelText('vision.params-form.remove-item')[0])
     expect(params()).toEqual({types: ['author']})
+  })
+
+  it('shows only the first 100 items of a huge list param', () => {
+    const ids = Array.from({length: 250}, (_, index) => `id-${index}`)
+    const {field} = renderForm('*[_id in $ids]', JSON.stringify({ids}))
+    expect(within(field('ids')).getAllByRole('combobox')).toHaveLength(100)
+    expect(screen.getByTestId('vision-params-form-ids-truncated').textContent).toContain('250')
+    expect(screen.getByTestId('vision-params-form-ids-add')).toHaveProperty('disabled', true)
   })
 
   it('sends the items of a boolean list as booleans', () => {
@@ -354,14 +583,14 @@ describe('ParamsForm', () => {
     fireEvent.click(screen.getByTestId('vision-params-form-types-add'))
     const fields = [
       input('title'),
-      within(field('limit')).getByRole('textbox'),
-      within(field('featured')).getByRole('combobox'),
+      within(field('limit')).getByRole('spinbutton'),
+      within(field('featured')).getByRole('checkbox'),
       within(field('types')).getByRole('combobox'),
     ]
     for (const [index, target] of fields.entries()) {
       const enter = createEvent.keyDown(target, {key: 'Enter', keyCode: 13})
       fireEvent(target, enter)
-      // No native form submission or select popup on top of the fetch
+      // No native form submission or toggle on top of the fetch
       expect(enter.defaultPrevented).toBe(true)
       expect(onSubmit).toHaveBeenCalledTimes(index + 1)
     }
@@ -373,6 +602,35 @@ describe('ParamsForm', () => {
     fireEvent.keyDown(input('title'), {key: 'Enter', metaKey: true})
     fireEvent.keyDown(input('title'), {key: 'a'})
     fireEvent.keyDown(screen.getByTestId('vision-params-form-types-add'), {key: 'Enter'})
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('renders a semantic similarity query as a textarea that spans two columns', () => {
+    const {field, input, onSubmit, params} = renderForm(
+      '*[_type == "post" && title match $title] | score(text::semanticSimilarity($search))',
+      '{"search": "a short query", "title": "hello"}',
+    )
+    const search = input('search')
+    const title = input('title')
+    expect(search.tagName).toBe('TEXTAREA')
+    expect(title.tagName).toBe('INPUT')
+    expect(field('search').classList.contains(fieldGrid.wide)).toBe(true)
+    expect(field('title').classList.contains(fieldGrid.wide)).toBe(false)
+    expect(search.classList.contains(fieldGrid.queryText)).toBe(true)
+    expect(screen.getByTestId('vision-params-form-search-type').textContent).toContain(
+      'vision.params-form.type.string',
+    )
+
+    fireEvent.change(search, {target: {value: 'a yellow mouse\nwith a lightning tail'}})
+    expect(params()).toEqual({search: 'a yellow mouse\nwith a lightning tail', title: 'hello'})
+
+    // Plain Enter is a newline, the same as any multiline field. Fetch stays on mod+Enter.
+    const enter = createEvent.keyDown(search, {key: 'Enter', keyCode: 13})
+    fireEvent(search, enter)
+    expect(enter.defaultPrevented).toBe(false)
+    expect(onSubmit).not.toHaveBeenCalled()
+    fireEvent.keyDown(search, {key: 'Enter', ctrlKey: true, keyCode: 13})
+    fireEvent.keyDown(search, {key: 'Enter', metaKey: true, keyCode: 13})
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
@@ -397,9 +655,11 @@ describe('ParamsForm', () => {
 
     fireEvent.click(screen.getByTestId('vision-params-form-countRange-object'))
     const dialog = screen.getByTestId('vision-params-form-countRange-dialog')
-    const min = within(within(dialog).getByTestId('vision-params-form-countRange.min')).getByRole(
-      'textbox',
-    )
+    const minField = within(dialog).getByTestId('vision-params-form-countRange.min')
+    const min = within(minField).getByRole('spinbutton')
+    // Compared with count(), so a whole number from 0, like the same comparison on its own
+    expect(min).toHaveProperty('type', 'number')
+    expect([min.getAttribute('min'), min.getAttribute('step')]).toEqual(['0', '1'])
     expect(min).toHaveProperty('value', '0')
     fireEvent.change(min, {target: {value: '5'}})
     expect(params()).toEqual({countRange: {min: 5, max: 10000}})
@@ -418,12 +678,12 @@ describe('ParamsForm', () => {
     fireEvent.click(screen.getByTestId('vision-params-form-filter-object'))
     const dialog = screen.getByTestId('vision-params-form-filter-dialog')
     expect(within(dialog).getByTestId('vision-params-form-filter.label')).toBeTruthy()
-    fireEvent.change(
-      within(within(dialog).getByTestId('vision-params-form-filter.featured')).getByRole(
-        'combobox',
-      ),
-      {target: {value: 'true'}},
-    )
+    const featured = within(
+      within(dialog).getByTestId('vision-params-form-filter.featured'),
+    ).getByRole('checkbox') as HTMLInputElement
+    expect(featured.indeterminate).toBe(true)
+    fireEvent.click(featured)
+    expect(featured.checked).toBe(true)
     expect(params()).toEqual({filter: {label: 'x', featured: true}})
   })
 
@@ -435,12 +695,13 @@ describe('ParamsForm', () => {
     fireEvent.click(screen.getByTestId('vision-params-form-range-object'))
     fireEvent.click(screen.getByTestId('vision-params-form-range.limits-object'))
     const nested = screen.getByTestId('vision-params-form-range.limits-dialog')
-    fireEvent.change(
-      within(within(nested).getByTestId('vision-params-form-range.limits.low')).getByRole(
-        'textbox',
-      ),
-      {target: {value: '3'}},
+    const low = within(within(nested).getByTestId('vision-params-form-range.limits.low')).getByRole(
+      'spinbutton',
     )
+    // A number with no rules: any step, and still sent as a JSON number
+    expect(low).toHaveProperty('type', 'number')
+    expect(low.getAttribute('step')).toBe('any')
+    fireEvent.change(low, {target: {value: '3'}})
     expect(params()).toEqual({range: {limits: {low: 3}}})
     expect(screen.getByTestId('vision-params-form-range-object-preview').textContent).toBe(
       'limits: {low: 3}',

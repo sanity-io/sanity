@@ -9,7 +9,14 @@ import {TransferIcon} from '@sanity/icons/Transfer'
 import {UsersIcon} from '@sanity/icons/Users'
 import {Button} from '@sanity/ui'
 import {TooltipDelayGroupProvider, useTooltipDelayGroup} from '@sanity/ui/tooltip'
-import {type ComponentType, type MouseEvent, useCallback, useRef, useState} from 'react'
+import {
+  type ComponentType,
+  type MouseEvent,
+  useCallback,
+  useRef,
+  useState,
+  ViewTransition,
+} from 'react'
 import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 
@@ -23,10 +30,12 @@ import {
 } from '../../store/VisionActorContext'
 import {selectOpenDrawer} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
+import {SIDEBAR_PANE} from '../panelTransitions'
 import * as styles from '../redesign.module.css'
 import {VisionTooltip} from '../VisionTooltip'
 import * as sidebarStyles from './sidebar.module.css'
 import {SidebarDrawer} from './SidebarDrawer'
+import {useShownInSidebar} from './useShownInSidebar'
 
 /**
  * The collapsed rail's tooltips wait before the first one opens, so a pointer crossing the rail
@@ -108,13 +117,22 @@ function SidebarItem({
   )
 }
 
-export function VisionSidebar() {
+export interface VisionSidebarProps {
+  /**
+   * The drawer as it shows, which follows the machine's a transition later beside the tabs area
+   * (see `useShownInSidebar`). The tab that renders a tool into the drawer follows it too.
+   */
+  shownDrawer: VisionDrawer | null
+}
+
+export function VisionSidebar({shownDrawer}: VisionSidebarProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const actorRef = useVisionActor()
   const {layout, switchToClassic} = useVisionExperience()
-  const expanded = useVisionSelector((snapshot) => snapshot.matches({sidebar: 'expanded'}))
+  const railExpanded = useVisionSelector((snapshot) => snapshot.matches({sidebar: 'expanded'}))
   const drawer = useVisionSelector(selectOpenDrawer)
   const isMobile = layout === 'mobile'
+  const expanded = useShownInSidebar(railExpanded, isMobile)
 
   // The rail button that opened the drawer, remembered from its click: the drawer is a modal
   // dialog on phones, and focus goes back there once it has closed. Not read when the drawer's
@@ -131,112 +149,114 @@ export function VisionSidebar() {
     },
     [actorRef, drawer],
   )
-  useOnValueChange(drawer, (next, previous) => {
+  useOnValueChange(shownDrawer, (next, previous) => {
     if (previous === null || next !== null) return
     openerRef.current?.focus()
     openerRef.current = null
   })
 
   const rail = (
-    <Flex
-      aria-label={t('vision.sidebar.label')}
-      as="nav"
-      borderRight
-      className={cx(
-        styles.sidebarRail,
-        sidebarStyles.rail,
-        expanded ? styles.sidebarRailExpanded : styles.sidebarRailCollapsed,
-        isMobile && expanded && styles.sidebarRailOverlay,
-      )}
-      data-testid="vision-sidebar"
-      flexDirection="column"
-      gap={1}
-      height="100%"
-      // Under a phone's full-width drawer the rail is covered and must not take focus
-      inert={isMobile && drawer !== null}
-      justifyContent="space-between"
-    >
-      <Flex flexDirection="column" gap={1} padding={2}>
-        <SidebarItem
-          expanded={expanded}
-          icon={UsersIcon}
-          label={t('vision.sidebar.shared-queries')}
-          onClick={(event) => toggleDrawer('shared', event)}
-          selected={drawer === 'shared'}
-          testId="vision-sidebar-shared"
-        />
-        <SidebarItem
-          expanded={expanded}
-          icon={BookmarkIcon}
-          label={t('vision.sidebar.saved-queries')}
-          onClick={(event) => toggleDrawer('saved', event)}
-          selected={drawer === 'saved'}
-          testId="vision-sidebar-saved"
-        />
-        <Box borderTop marginTop={1} paddingTop={1}>
-          <Flex flexDirection="column" gap={1}>
+    <ViewTransition default={SIDEBAR_PANE}>
+      <Flex
+        aria-label={t('vision.sidebar.label')}
+        as="nav"
+        borderRight
+        className={cx(
+          styles.sidebarRail,
+          sidebarStyles.rail,
+          expanded ? styles.sidebarRailExpanded : styles.sidebarRailCollapsed,
+          isMobile && expanded && styles.sidebarRailOverlay,
+        )}
+        data-testid="vision-sidebar"
+        flexDirection="column"
+        gap={1}
+        height="100%"
+        // Under a phone's full-width drawer the rail is covered and must not take focus
+        inert={isMobile && drawer !== null}
+        justifyContent="space-between"
+      >
+        <Flex flexDirection="column" gap={1} padding={2}>
+          <SidebarItem
+            expanded={expanded}
+            icon={UsersIcon}
+            label={t('vision.sidebar.shared-queries')}
+            onClick={(event) => toggleDrawer('shared', event)}
+            selected={drawer === 'shared'}
+            testId="vision-sidebar-shared"
+          />
+          <SidebarItem
+            expanded={expanded}
+            icon={BookmarkIcon}
+            label={t('vision.sidebar.saved-queries')}
+            onClick={(event) => toggleDrawer('saved', event)}
+            selected={drawer === 'saved'}
+            testId="vision-sidebar-saved"
+          />
+          <Box borderTop marginTop={1} paddingTop={1}>
+            <Flex flexDirection="column" gap={1}>
+              <SidebarItem
+                expanded={expanded}
+                icon={TransferIcon}
+                label={t('vision.panel.delta')}
+                onClick={(event) => toggleDrawer('delta', event)}
+                selected={drawer === 'delta'}
+                testId="vision-sidebar-delta"
+              />
+              <SidebarItem
+                expanded={expanded}
+                icon={EditIcon}
+                label={t('vision.panel.mutate')}
+                onClick={(event) => toggleDrawer('mutate', event)}
+                selected={drawer === 'mutate'}
+                testId="vision-sidebar-mutate"
+              />
+            </Flex>
+          </Box>
+        </Flex>
+        <Flex flexDirection="column">
+          <Flex flexDirection="column" gap={1} paddingBottom={1} paddingTop={2} paddingX={2}>
             <SidebarItem
               expanded={expanded}
-              icon={TransferIcon}
-              label={t('vision.panel.delta')}
-              onClick={(event) => toggleDrawer('delta', event)}
-              selected={drawer === 'delta'}
-              testId="vision-sidebar-delta"
+              icon={BoltIcon}
+              label={t('vision.sidebar.shortcuts')}
+              onClick={() => actorRef.send({type: 'dialog.open', dialog: 'shortcuts'})}
+              testId="vision-sidebar-shortcuts"
             />
             <SidebarItem
               expanded={expanded}
-              icon={EditIcon}
-              label={t('vision.panel.mutate')}
-              onClick={(event) => toggleDrawer('mutate', event)}
-              selected={drawer === 'mutate'}
-              testId="vision-sidebar-mutate"
+              icon={CogIcon}
+              label={t('vision.sidebar.settings')}
+              onClick={(event) => toggleDrawer('settings', event)}
+              selected={drawer === 'settings'}
+              testId="vision-sidebar-settings"
+            />
+            <SidebarItem
+              expanded={expanded}
+              icon={RestoreIcon}
+              label={t('vision.redesign.switch-to-classic')}
+              onClick={switchToClassic}
+              testId="vision-sidebar-classic"
             />
           </Flex>
-        </Box>
-      </Flex>
-      <Flex flexDirection="column">
-        <Flex flexDirection="column" gap={1} paddingBottom={1} paddingTop={2} paddingX={2}>
-          <SidebarItem
-            expanded={expanded}
-            icon={BoltIcon}
-            label={t('vision.sidebar.shortcuts')}
-            onClick={() => actorRef.send({type: 'dialog.open', dialog: 'shortcuts'})}
-            testId="vision-sidebar-shortcuts"
-          />
-          <SidebarItem
-            expanded={expanded}
-            icon={CogIcon}
-            label={t('vision.sidebar.settings')}
-            onClick={(event) => toggleDrawer('settings', event)}
-            selected={drawer === 'settings'}
-            testId="vision-sidebar-settings"
-          />
-          <SidebarItem
-            expanded={expanded}
-            icon={RestoreIcon}
-            label={t('vision.redesign.switch-to-classic')}
-            onClick={switchToClassic}
-            testId="vision-sidebar-classic"
-          />
-        </Flex>
-        {/* A bottom bar, so its top rule continues the action bar's and the tab header's */}
-        <Flex
-          className={styles.bottomBar}
-          flexDirection="column"
-          justifyContent="center"
-          paddingX={2}
-        >
-          <SidebarItem
-            compact
-            expanded={expanded}
-            icon={expanded ? DoubleChevronLeftIcon : DoubleChevronRightIcon}
-            label={expanded ? t('vision.sidebar.collapse') : t('vision.sidebar.expand')}
-            onClick={() => actorRef.send({type: 'sidebar.toggle'})}
-            testId="vision-sidebar-toggle"
-          />
+          {/* A bottom bar, so its top rule continues the action bar's and the tab header's */}
+          <Flex
+            className={styles.bottomBar}
+            flexDirection="column"
+            justifyContent="center"
+            paddingX={2}
+          >
+            <SidebarItem
+              compact
+              expanded={expanded}
+              icon={expanded ? DoubleChevronLeftIcon : DoubleChevronRightIcon}
+              label={expanded ? t('vision.sidebar.collapse') : t('vision.sidebar.expand')}
+              onClick={() => actorRef.send({type: 'sidebar.toggle'})}
+              testId="vision-sidebar-toggle"
+            />
+          </Flex>
         </Flex>
       </Flex>
-    </Flex>
+    </ViewTransition>
   )
 
   return (
@@ -244,7 +264,7 @@ export function VisionSidebar() {
       <TooltipDelayGroupProvider delay={RAIL_TOOLTIP_DELAY}>
         {isMobile ? <div className={styles.sidebarSlot}>{rail}</div> : rail}
       </TooltipDelayGroupProvider>
-      {drawer && <SidebarDrawer drawer={drawer} overlay={isMobile} />}
+      {shownDrawer && <SidebarDrawer drawer={shownDrawer} overlay={isMobile} />}
     </Flex>
   )
 }

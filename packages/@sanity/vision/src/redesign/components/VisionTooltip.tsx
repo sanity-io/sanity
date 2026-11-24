@@ -3,6 +3,8 @@ import {Tooltip, type TooltipProps} from '@sanity/ui/tooltip'
 import {type ReactNode} from 'react'
 import {Box, Flex, Text} from 'ui5'
 
+import * as themeStyles from './themeTokens.module.css'
+
 export type VisionTooltipProps = Omit<TooltipProps, 'arrow' | 'content' | 'padding' | 'portal'> & {
   /** A label, laid out like Studio's own tooltips, or richer content, given the same padding */
   content: ReactNode
@@ -26,7 +28,7 @@ export function VisionTooltip(props: VisionTooltipProps) {
       arrow={false}
       content={
         typeof content === 'string' ? (
-          <Flex alignItems="center">
+          <Flex alignItems="center" className={themeStyles.themeTokens}>
             <Box flexBasis="0%" flexGrow={1} padding={1}>
               <Text as="div" size={1} trim={true}>
                 {content}
@@ -39,7 +41,9 @@ export function VisionTooltip(props: VisionTooltipProps) {
             )}
           </Flex>
         ) : (
-          <Box padding={1}>{content}</Box>
+          <Box className={themeStyles.themeTokens} padding={1}>
+            {content}
+          </Box>
         )
       }
       padding={1}

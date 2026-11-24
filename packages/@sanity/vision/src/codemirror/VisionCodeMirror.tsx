@@ -19,6 +19,7 @@ import {
   type RefAttributes,
 } from 'react'
 
+import {EDITOR_FONT_SIZE, editorContentPaddingTop} from './editorMetrics'
 import {historyCompartment} from './extensions'
 import {useCodemirrorTheme} from './useCodemirrorTheme'
 import {getVisibleColumns} from './visibleColumns'
@@ -29,6 +30,7 @@ import {whitespaceChanges} from './whitespaceChanges'
 const EDITING_IDLE_MS = 1_000
 
 interface EditorRootStyle extends CSSProperties {
+  '--vision-editor-font-size': string
   '--vision-editor-line-padding-left': string
   '--vision-editor-content-border-right-width': string
   '--vision-editor-content-padding-top': string
@@ -45,16 +47,13 @@ function EditorRoot({
 }) {
   const {sanity} = useTheme()
   const style: EditorRootStyle = {
+    '--vision-editor-font-size': `${EDITOR_FONT_SIZE}px`,
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     '--vision-editor-line-padding-left': `${rem(sanity.space[3])}`,
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     '--vision-editor-content-border-right-width': `${rem(sanity.space[4])}`,
-    // The tall top padding makes room for the label floating over a pane-filling editor. Under a
-    // header the first line sits flush, so the header's scrolled border lands on it at once
-    '--vision-editor-content-padding-top': underHeader
-      ? '0px'
-      : // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-        `${rem(sanity.space[5])}`,
+    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+    '--vision-editor-content-padding-top': editorContentPaddingTop(sanity.space, underHeader),
   }
 
   return (

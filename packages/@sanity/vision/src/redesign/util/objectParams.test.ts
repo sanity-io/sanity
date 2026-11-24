@@ -30,8 +30,8 @@ describe('objectParams', () => {
         ({name, type}) => [name, type],
       ),
     ).toEqual([
-      ['min', {kind: 'number', array: false}],
-      ['max', {kind: 'number', array: false}],
+      ['min', {kind: 'integer', array: false, min: 0}],
+      ['max', {kind: 'integer', array: false, min: 0}],
       ['label', {kind: 'string', array: false}],
       ['at', {kind: 'string', array: false, format: 'datetime'}],
       ['tags', {kind: 'string', array: true}],
@@ -44,6 +44,16 @@ describe('objectParams', () => {
       'min: 0, max: 10000, nested: {a: 1}',
     )
     expect(previewObject(objectFields(range, undefined), undefined)).toBe('')
+  })
+
+  it('caps deeply nested object previews instead of overflowing the call stack', () => {
+    let deep: Record<string, unknown> = {leaf: 1}
+    for (let index = 0; index < 3000; index++) {
+      deep = {a: deep}
+    }
+    const fields = objectFields(range, {a: deep})
+    expect(() => previewObject(fields, {a: deep})).not.toThrow()
+    expect(previewObject(fields, {a: deep})).toContain('{…}')
   })
 
   it('sets and removes keys', () => {

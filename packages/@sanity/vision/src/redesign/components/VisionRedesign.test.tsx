@@ -31,6 +31,7 @@ import {
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
+import {editorContentPaddingTop, editorLineHeight} from '../../codemirror/editorMetrics'
 import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
 import visionLocaleStrings from '../../i18n/resources'
 import {
@@ -613,6 +614,45 @@ function shownTab(): HTMLElement {
   return tab
 }
 
+interface ViewTransitionCall {
+  update?: () => unknown
+  types?: string[]
+}
+
+/**
+ * A browser's view transitions, which jsdom lacks, so React takes the path it takes in a browser:
+ * the update runs on the next microtask and the animations end at once. `onPicture` is called where
+ * the browser pictures the page: as the transition starts (the old state) and once its update has
+ * run (the new state). Returns the `document.startViewTransition` spy, whose calls carry the
+ * transition types
+ */
+function stubViewTransitions(onPicture?: (state: 'old' | 'new') => void) {
+  const root = document.documentElement
+  const startViewTransition = vi.fn((options: ViewTransitionCall) => {
+    onPicture?.('old')
+    const updateCallbackDone = (async () => {
+      await Promise.resolve()
+      await options.update?.()
+      onPicture?.('new')
+    })()
+    const ready = updateCallbackDone.then(() => undefined)
+    return {updateCallbackDone, ready, finished: ready, skipTransition: () => {}}
+  })
+  const stubs: [object, string, unknown][] = [
+    [document, 'startViewTransition', startViewTransition],
+    [document, 'fonts', {status: 'loaded', ready: Promise.resolve()}],
+    [root, 'getAnimations', () => []],
+    [root, 'animate', () => ({cancel: () => {}, finished: Promise.resolve()})],
+  ]
+  for (const [target, key, value] of stubs) {
+    Object.defineProperty(target, key, {configurable: true, value})
+  }
+  onTestFinished(() => {
+    for (const [target, key] of stubs) Reflect.deleteProperty(target, key)
+  })
+  return startViewTransition
+}
+
 function getQueryEditor(): HTMLTextAreaElement {
   return within(within(shownTab()).getByTestId('vision-query-editor')).getByTestId(
     'codemirror-mock',
@@ -814,6 +854,13 @@ describe('VisionRedesign', () => {
     expect(isDisabled(copy)).toBe(true)
     expect(isDisabled(within(actions).getByTestId('vision-result-menu-button'))).toBe(false)
     expect(text(screen.getByTestId('vision-result'))).toContain('vision.result.empty')
+  })
+
+  it('sets the empty result in the box of the query editor first line', () => {
+    renderRedesign()
+    const empty = within(screen.getByTestId('vision-result')).getByTestId('vision-result-empty')
+    expect(empty.style.paddingTop).toBe(editorContentPaddingTop([], true))
+    expect(empty.style.lineHeight).toBe(editorLineHeight)
   })
 
   it('turns Live on and off without fetching, with Fetch still fetching meanwhile', async () => {
@@ -2277,7 +2324,7 @@ describe('VisionRedesign', () => {
     expect(screen.queryByTestId('vision-option-api-version-option-vX')).toBeNull()
   })
 
-  it('lists the dataset chip before the API version, with fetch actions outside the chip strip', () => {
+  it('orders the chips like the Options fields, API version first, with fetch actions outside the chip strip', () => {
     const initial = createInitialState(DEFAULTS)
     const tab = createTab(initial.settings, {
       id: 'overrides',
@@ -2293,18 +2340,34 @@ describe('VisionRedesign', () => {
     saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'overrides'})
     renderRedesign({...BASE_PERSPECTIVE, selectedVariantNames: ['french']})
 
-    // Same order as the Options panel: dataset, API version, perspective, variant. The strip is
-    // what scrolls when the bar is narrow; Live fetch, Fetch and the menu stay after it.
+    // The strip is what scrolls when the bar is narrow; Live fetch, Fetch and the menu stay after it
     const actions = screen.getByTestId('vision-query-actions')
     const chips = within(actions).getByTestId('vision-query-action-chips')
-    expect(
-      [...chips.querySelectorAll('button')].map((button) => button.getAttribute('data-testid')),
-    ).toEqual([
-      'vision-override-dataset-button',
+    const chipOrder = [...chips.querySelectorAll('button')].map((button) =>
+      button.getAttribute('data-testid'),
+    )
+    expect(chipOrder).toEqual([
       'vision-api-version-button',
+      'vision-override-dataset-button',
       'vision-override-perspective-button',
       'vision-override-variant-button',
     ])
+
+    // The fields each chip reveals, in the order the Options panel lists them
+    openRequestTab('options')
+    const fieldOfChip: Record<string, string> = {
+      'vision-api-version-button': 'vision-option-api-version-select',
+      'vision-override-dataset-button': 'vision-option-dataset-select',
+      'vision-override-perspective-button': 'vision-option-perspective-select',
+      'vision-override-variant-button': 'vision-option-variant-select',
+    }
+    const chipFields = new Set(Object.values(fieldOfChip))
+    const fieldOrder = [
+      ...screen.getByTestId('vision-options-grid').querySelectorAll<HTMLElement>('[data-testid]'),
+    ]
+      .map((element) => element.dataset.testid ?? '')
+      .filter((testId) => chipFields.has(testId))
+    expect(chipOrder.map((testId) => fieldOfChip[testId ?? ''])).toEqual(fieldOrder)
     expect(text(within(chips).getByTestId('vision-api-version-button'))).toBe(
       'vision.api-version.button-cdn:v2025-02-19',
     )
@@ -5178,6 +5241,90 @@ describe('VisionRedesign', () => {
         '_system.base.rev',
       ]),
     )
+  })
+
+  it('runs its own layout changes as view transitions, and never a tab being opened, switched or closed', async () => {
+    const startViewTransition = stubViewTransitions()
+    const {hide, show} = renderRedesign()
+    const transitionTypes = () => startViewTransition.mock.calls.map(([call]) => call.types)
+
+    // A view transition snapshots the page and holds pointer events while it runs, so tabs and
+    // leaving the tool change at once
+    fireEvent.click(screen.getByTestId('vision-new-tab'))
+    fireEvent.click(within(screen.getAllByTestId('vision-tab')[0]).getByTestId('vision-tab-button'))
+    fireEvent.click(within(screen.getAllByTestId('vision-tab')[1]).getByTestId('vision-tab-close'))
+    hide()
+    show()
+    await act(async () => {})
+    expect(startViewTransition).not.toHaveBeenCalled()
+
+    const toggle = within(shownTab()).getByTestId('vision-request-panel-toggle')
+    fireEvent.click(toggle)
+    await waitFor(() => expect(transitionTypes()).toEqual([['vision-panel']]))
+    await waitFor(() => expect(toggle.getAttribute('aria-expanded')).toBe('false'))
+
+    fireEvent.click(screen.getByTestId('vision-sidebar-saved'))
+    await screen.findByTestId('vision-drawer-saved')
+    fireEvent.click(screen.getByTestId('vision-sidebar-toggle'))
+    await waitFor(() =>
+      expect(transitionTypes()).toEqual([['vision-panel'], ['vision-sidebar'], ['vision-sidebar']]),
+    )
+  })
+
+  it('pictures the Mutate drawer with its tool in it as the drawer comes in and as it leaves', async () => {
+    const pictures: {state: 'old' | 'new'; drawer: boolean; mutate: boolean}[] = []
+    stubViewTransitions((state) => {
+      pictures.push({
+        state,
+        // React names the elements a view transition animates on their own
+        drawer: Boolean(screen.queryByTestId('vision-drawer-mutate')?.style.viewTransitionName),
+        mutate: screen.queryByTestId('vision-mutate') !== null,
+      })
+    })
+    renderRedesign()
+
+    // The tab renders the tool for the drawer as it shows, so the drawer slides in with the tool
+    // in it and slides out with the tool still in it, rather than empty
+    fireEvent.click(screen.getByTestId('vision-sidebar-mutate'))
+    await screen.findByTestId('vision-mutate')
+    await waitFor(() => expect(pictures).toHaveLength(2))
+    expect(pictures).toEqual([
+      {state: 'old', drawer: false, mutate: false},
+      {state: 'new', drawer: true, mutate: true},
+    ])
+    expect(
+      within(screen.getByTestId('vision-drawer-mutate-content')).getByTestId('vision-mutate'),
+    ).toBeTruthy()
+
+    fireEvent.click(screen.getByTestId('vision-sidebar-mutate'))
+    await waitFor(() => expect(pictures).toHaveLength(4))
+    expect(pictures.slice(2)).toEqual([
+      {state: 'old', drawer: true, mutate: true},
+      {state: 'new', drawer: false, mutate: false},
+    ])
+  })
+
+  it('opens and closes the phone drawer at once, inert behind it only while it shows', async () => {
+    const startViewTransition = stubViewTransitions()
+    const {innerWidth} = window
+    Object.defineProperty(window, 'innerWidth', {configurable: true, value: 500})
+    try {
+      renderRedesign()
+      const rail = screen.getByTestId('vision-sidebar')
+
+      // Floating over the tool, the drawer moves nothing, so it shows with the click that opens it
+      fireEvent.click(screen.getByTestId('vision-sidebar-saved'))
+      const drawer = screen.getByTestId('vision-drawer-saved')
+      expect(rail.hasAttribute('inert')).toBe(true)
+
+      fireEvent.click(within(drawer).getByRole('button', {name: 'vision.drawer.close'}))
+      expect(screen.queryByTestId('vision-drawer-saved')).toBeNull()
+      expect(rail.hasAttribute('inert')).toBe(false)
+      await act(async () => {})
+      expect(startViewTransition).not.toHaveBeenCalled()
+    } finally {
+      Object.defineProperty(window, 'innerWidth', {configurable: true, value: innerWidth})
+    }
   })
 
   it('opens the phone drawer as a modal dialog: focus moves in, and back to the opener on Escape', async () => {

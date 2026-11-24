@@ -153,7 +153,7 @@ const MATRIX: Record<string, Row> = {
     zod: [
       '  /** Document ID, or a list of them */',
       '  author: z.union([z.string(), z.array(z.string())]),',
-      '  minCategories: z.number(),',
+      '  minCategories: z.number().int(),',
     ],
   },
   'schema fields, their listed values and membership both ways': {
@@ -224,6 +224,32 @@ const MATRIX: Record<string, Row> = {
     zod: [
       '  status: z.enum(["draft", "published", "review"]).nullable().default(null),',
       '  title: z.string().nullable().default(null),',
+    ],
+  },
+  'null joins the options of a param that breaks onto its own lines': {
+    query:
+      '*[_type == "post" && (!defined($state) || $state in ["draft", "in-review", "approved", "scheduled", "published", "archived", "withdrawn"])]',
+    typescript: [
+      '  state:',
+      '    | "approved"',
+      '    | "archived"',
+      '    | "draft"',
+      '    | "in-review"',
+      '    | "published"',
+      '    | "scheduled"',
+      '    | "withdrawn"',
+      '    | null;',
+    ],
+    zod: [
+      '  state: z.enum([',
+      '    "approved",',
+      '    "archived",',
+      '    "draft",',
+      '    "in-review",',
+      '    "published",',
+      '    "scheduled",',
+      '    "withdrawn",',
+      '  ]).nullable().default(null),',
     ],
   },
   'a param negated before || is optional': {
@@ -326,6 +352,8 @@ const MATRIX: Record<string, Row> = {
 const REFERENCE_QUERY =
   '*[_type == "post"]{title, "author": coalesce(author, $fallbackAuthor)->name}'
 
+const BLOCKS_QUERY = '*[_type == "post"]{"body": coalesce($body, body)}'
+
 describe('printParamsTypeScript and printParamsZod', () => {
   it.each(Object.entries(MATRIX))('%s', (_, {query, values, typescript, zod}) => {
     const printed = print(query, values)
@@ -376,6 +404,15 @@ describe('printParamsTypeScript and printParamsZod', () => {
     expect(zod).toContain('  fallbackAuthor: AuthorReferenceSchema,')
   })
 
+  it('lets the members of a list leave out the `_key` they carry in a document', () => {
+    const {typescript, zod} = print(BLOCKS_QUERY)
+    expect(typescript).toContain('      _type: "span";\n      _key?: string;')
+    expect(typescript).toContain('    _type: "block";\n    _key?: string;')
+    expect(typescript).not.toContain('_key: string')
+    expect(zod).toContain('      _type: z.literal("span"),\n      _key: z.string().optional(),')
+    expect(zod).not.toContain('_key: z.string(),')
+  })
+
   it(
     'prints modules that strict tsc accepts, whose Zod schema infers the TypeScript type',
     {timeout: 60_000},
@@ -384,6 +421,7 @@ describe('printParamsTypeScript and printParamsZod', () => {
         ...Object.values(MATRIX).map(({query, values}) => print(query, values)),
         print('*[_type == "post"]'),
         print(REFERENCE_QUERY),
+        print(BLOCKS_QUERY),
       ]
       expect(await typecheckParams(printed)).toBe('')
     },

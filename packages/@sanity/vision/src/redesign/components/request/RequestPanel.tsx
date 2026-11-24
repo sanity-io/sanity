@@ -52,7 +52,9 @@ import {createGroqFunctionExtensions} from '../../util/groqFunctionEditor'
 import {parseGroq, readQueryFunctions, type TextRange} from '../../util/groqFunctions'
 import {createGroqLintExtensions, type QueryLintFinding, worstSeverity} from '../../util/groqLint'
 import {NO_QUERY_PARAM_NAMES, queryParamNames} from '../../util/groqParamCompletions'
+import {applyParamFixes, applyQueryEdits, type LintFixPlan} from '../../util/lintFixPlan'
 import {queryParamHighlight} from '../../util/paramHighlight'
+import {isParamLintFinding, type ParamLintTarget, paramValueRange} from '../../util/paramLint'
 import {queryEndSlot} from '../../util/queryEndSlot'
 import {isQueryParamName} from '../../util/queryParamName'
 import {createQuerySchema} from '../../util/schemaCheck'
@@ -375,6 +377,105 @@ export function RequestPanel(props: RequestPanelProps) {
     [setPanelState, tabElementId],
   )
 
+  const showParams = useCallback(
+    () => setPanelState((current) => ({...current, activeTabId: 'params', collapsed: false})),
+    [setPanelState],
+  )
+  const paramLintFindings = useMemo(() => lintFindings.filter(isParamLintFinding), [lintFindings])
+  const paramSuggestionLabel = useCallback(
+    (suggestion: string) => t('vision.lint.use-suggestion', {suggestion}),
+    [t],
+  )
+  const onParamSuggestionApplied = useCallback(() => telemetry.lintUsed('fix'), [telemetry])
+
+  // The value a param finding is about is selected where the params show: in the JSON editor, or
+  // the param's field in the form. The panel may have to expand first, so the editor or the
+  // field can take a few frames to be there.
+  const revealParamValue = useCallback(
+    (target: ParamLintTarget) => {
+      const reveal = (): boolean => {
+        if (paramsView === 'form') {
+          const field = document
+            .getElementById(paramsContentId)
+            ?.querySelector<HTMLElement>(`[data-vision-param="${CSS.escape(target.name)}"]`)
+          if (!field) return false
+          field.scrollIntoView({block: 'nearest'})
+          const label = field.querySelector('label')
+          const input =
+            label?.control ?? field.querySelector<HTMLElement>('input, textarea, select')
+          input?.focus({preventScroll: true})
+          if (input instanceof HTMLInputElement) input.select()
+          return true
+        }
+        const editor = paramsEditorRef.current
+        return (
+          editor?.runCommand((view) => {
+            const range = paramValueRange(view.state.doc.toString(), target)
+            if (range) editor.selectRange(range.from, range.to)
+            return true
+          }) ?? false
+        )
+      }
+      let attempts = 5
+      const attempt = () => {
+        attempts--
+        if (!reveal() && attempts > 0) requestAnimationFrame(attempt)
+      }
+      requestAnimationFrame(attempt)
+    },
+    [paramsContentId, paramsEditorRef, paramsView],
+  )
+  const revealFinding = useCallback(
+    (finding: QueryLintFinding) => {
+      if (!finding.param) {
+        onRevealRange(finding)
+        return
+      }
+      showParams()
+      revealParamValue(finding.param)
+    },
+    [onRevealRange, revealParamValue, showParams],
+  )
+
+  // Quick fixes from the Lint panel are written where they belong: the query's in the query
+  // editor, the params' in the params editor while it shows, or in the params text otherwise
+  const applyLintFixes = useCallback(
+    ({queryEdits, paramFixes}: Pick<LintFixPlan, 'queryEdits' | 'paramFixes'>) => {
+      let query = tab.query
+      queryEditorRef.current?.runCommand((view) => {
+        query = view.state.doc.toString()
+        return true
+      })
+      if (queryEdits.length > 0) {
+        query = applyQueryEdits(query, queryEdits)
+        if (queryEditorRef.current) queryEditorRef.current.applyChanges(queryEdits)
+        else onQueryChange(query)
+      }
+      let rawParams = tab.rawParams
+      if (paramFixes.length > 0) {
+        const editor = paramsView === 'json' ? paramsEditorRef.current : null
+        editor?.runCommand((view) => {
+          rawParams = view.state.doc.toString()
+          return true
+        })
+        const fixed = applyParamFixes(rawParams, paramFixes)
+        rawParams = fixed.text
+        if (editor?.runCommand(() => true)) editor.applyChanges(fixed.changes)
+        else onParamsReplace(rawParams)
+      }
+      return {query, rawParams}
+    },
+    [
+      onParamsReplace,
+      onQueryChange,
+      paramsEditorRef,
+      paramsView,
+      queryEditorRef,
+      tab.query,
+      tab.rawParams,
+    ],
+  )
+
   const fitParams = useCallback((event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     panelRef.current?.fitToContent()
@@ -463,6 +564,9 @@ export function RequestPanel(props: RequestPanelProps) {
               {paramsView === 'form' ? (
                 <div {...formFocusProps}>
                   <ParamsForm
+                    client={resolved.client}
+                    lintFindings={paramLintFindings}
+                    onApplySuggestion={onParamSuggestionApplied}
                     onChange={onParamsReplace}
                     onSubmit={onParamsSubmit}
                     params={params}
@@ -473,10 +577,13 @@ export function RequestPanel(props: RequestPanelProps) {
                 <>
                   <ParamsPanel
                     editorRef={paramsEditorRef}
+                    lintFindings={paramLintFindings}
                     onActiveParamChange={highlightParam}
+                    onApplySuggestion={onParamSuggestionApplied}
                     onChange={onParamsChange}
                     params={params}
                     query={tab.query}
+                    suggestionLabel={paramSuggestionLabel}
                     value={tab.rawParams}
                   />
                   <FlushOnUnmount onUnmount={onParamsFlush} />
@@ -509,13 +616,15 @@ export function RequestPanel(props: RequestPanelProps) {
                   agent={lintAgent}
                   client={resolved.client}
                   findings={lintFindings}
+                  onApplyFixes={applyLintFixes}
+                  onParamsFixed={showParams}
                   params={params.valid ? params.parsed : undefined}
                   tab={tab}
                 />
               ) : undefined
             }
             findings={lintFindings}
-            onReveal={onRevealRange}
+            onReveal={revealFinding}
           />
         ),
       },
@@ -544,6 +653,12 @@ export function RequestPanel(props: RequestPanelProps) {
       },
     ]
   }, [
+    applyLintFixes,
+    onParamSuggestionApplied,
+    paramLintFindings,
+    paramSuggestionLabel,
+    revealFinding,
+    showParams,
     canFixLint,
     canFormatParams,
     copied,
@@ -601,9 +716,12 @@ export function RequestPanel(props: RequestPanelProps) {
             justifyContent="flex-start"
             minWidth="0"
           >
-            <RequestOverrideChips onReveal={revealOption} options={tab.options} resolved={resolved}>
-              <ApiVersionButton onReveal={revealOption} resolved={resolved} />
-            </RequestOverrideChips>
+            <RequestOverrideChips
+              apiVersionButton={<ApiVersionButton onReveal={revealOption} resolved={resolved} />}
+              onReveal={revealOption}
+              options={tab.options}
+              resolved={resolved}
+            />
           </Flex>
           <LiveButton
             active={tab.autoRefetch}

@@ -12,6 +12,7 @@ import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {visionLocaleNamespace} from '../../../i18n'
 import {useAiFeatures} from '../../aiFeatures'
 import {type AiCreditsClient} from '../../util/aiCredits'
+import {cx} from '../../util/cx'
 import {type GenerateMutationsClient} from '../../util/generateMutations'
 import {
   addMutation,
@@ -37,6 +38,7 @@ import * as styles from '../redesign.module.css'
 import {AnimatedSparklesIcon} from '../request/AnimatedSparklesIcon'
 import {SwitchField} from '../SwitchField'
 import {useTabElementId} from '../tabs/queryTabShown'
+import * as themeStyles from '../themeTokens.module.css'
 import {GenerateMutationsBar} from './GenerateMutationsBar'
 import {JsonEditor} from './JsonEditor'
 import {CodeDiffLoader, DiffBoundary} from './LazyCodeDiff'
@@ -372,6 +374,7 @@ export function MutateTab(props: MutateTabProps) {
     <Flex data-testid="vision-mutate" flexDirection="column" height="100%">
       {/* Scrolls only in a drawer too short for the least room the editor takes */}
       <Flex
+        className={styles.nestedScroll}
         flexBasis="0%"
         flexDirection="column"
         flexGrow={1}
@@ -442,7 +445,7 @@ export function MutateTab(props: MutateTabProps) {
                     }
                     id={tabElementId('vision-mutate-add')}
                     menu={
-                      <Menu>
+                      <Menu className={cx(styles.popoverScroll, themeStyles.themeTokens)}>
                         <MenuItem
                           data-testid="vision-mutate-add-patch"
                           fontSize={1}
@@ -498,6 +501,7 @@ export function MutateTab(props: MutateTabProps) {
           </Flex>
           {hasOutcome && (
             <Flex
+              className={styles.nestedScroll}
               data-testid="vision-mutate-outcome"
               flexDirection="column"
               gap={4}

@@ -57,9 +57,23 @@ describe('inferQueryParams', () => {
     expect(param).toEqual({
       name: 'description',
       node: {type: 'string'},
-      type: {kind: 'string', array: false},
+      type: {kind: 'string', array: false, format: 'semantic-query'},
       usages: ['text::semanticSimilarity($description)'],
     })
+  })
+
+  it('keeps the semantic-query format when the param is also matched as text', () => {
+    const param = paramOf(
+      '*[_type == "post" && title match $search] | score(text::semanticSimilarity($search))',
+      'search',
+    )
+    expect(param.type).toEqual({kind: 'string', array: false, format: 'semantic-query'})
+    expect(param.usages).toContain('text::semanticSimilarity($search)')
+  })
+
+  it('keeps the argument of text::query a plain string', () => {
+    const param = paramOf('*[title match text::query($search)]', 'search')
+    expect(param.type).toEqual({kind: 'string', array: false})
   })
 
   it('does not offer the parameters of the custom functions the query declares', () => {
@@ -125,6 +139,7 @@ describe('inferQueryParams', () => {
       kind: 'string',
       array: false,
       format: 'document-id',
+      documentTypes: ['author'],
     })
   })
 
@@ -155,16 +170,19 @@ describe('inferQueryParams', () => {
       kind: 'string',
       array: true,
       format: 'document-id',
+      documentTypes: ['post'],
     })
     expect(typeOf('*[_type == "post" && $category in categories[]._ref]', 'category')).toEqual({
       kind: 'string',
       array: false,
       format: 'document-id',
+      documentTypes: ['category'],
     })
     expect(typeOf('*[_type == "post" && $id in *[_type == "author"]._id]', 'id')).toEqual({
       kind: 'string',
       array: false,
       format: 'document-id',
+      documentTypes: ['author'],
     })
   })
 
@@ -187,16 +205,94 @@ describe('inferQueryParams', () => {
       format: 'datetime',
     })
     expect(typeOf('*[_id == $id]', 'id').format).toBe('document-id')
-    expect(typeOf('*[count(tags) > $n]', 'n', WITHOUT_SCHEMA).kind).toBe('number')
+    expect(typeOf('*[count(tags) > $n]', 'n', WITHOUT_SCHEMA)).toEqual({
+      kind: 'integer',
+      array: false,
+      min: 0,
+    })
+    expect(typeOf('*[length(title) < $max]', 'max', WITHOUT_SCHEMA)).toEqual({
+      kind: 'integer',
+      array: false,
+      min: 0,
+    })
     expect(typeOf('*[!$hidden]', 'hidden', WITHOUT_SCHEMA).kind).toBe('boolean')
     expect(typeOf('*[]{"x": select($flag => 1, 2)}', 'flag', WITHOUT_SCHEMA).kind).toBe('boolean')
     expect(typeOf('*[string::startsWith(title, $prefix)]', 'prefix', WITHOUT_SCHEMA).kind).toBe(
       'string',
     )
-    expect(typeOf('*[round(views, $digits) > 1]', 'digits', WITHOUT_SCHEMA).kind).toBe('integer')
+    expect(typeOf('*[round(views, $digits) > 1]', 'digits', WITHOUT_SCHEMA)).toEqual({
+      kind: 'integer',
+      array: false,
+      min: 0,
+    })
+    // `round()` with no arguments does not parse, and inference still lists the other params
+    expect(() => inferQueryParams('*[round() && $ok]')).not.toThrow()
+    expect(inferQueryParams('*[round() && $ok]').params.map((param) => param.name)).toEqual(['ok'])
     expect(typeOf('*[]{"n": math::sum($values)}', 'values', WITHOUT_SCHEMA)).toEqual({
       kind: 'number',
       array: true,
+    })
+  })
+
+  it('narrows a document id to the type the query constrains', () => {
+    // `_type == "pokemonGeneration"` beside `references($generationId)`
+    expect(
+      typeOf('*[_type == "pokemonGeneration" && references($generationId)]', 'generationId')
+        .documentTypes,
+    ).toEqual(['pokemonGeneration'])
+    // A reference field's target, not the document that holds the reference
+    expect(
+      typeOf('*[_type == "pokemon" && generation._ref == $generationId]', 'generationId')
+        .documentTypes,
+    ).toEqual(['pokemonGeneration'])
+    expect(typeOf('*[_type == "post" && _id == $id]', 'id').documentTypes).toEqual(['post'])
+    expect(
+      typeOf('*[_type == "post" && $id in *[_type == "author"]._id]', 'id').documentTypes,
+    ).toEqual(['author'])
+    // Nothing names a type, so the search covers every document type
+    expect(typeOf('*[references($id)]', 'id').documentTypes).toBeUndefined()
+    expect(typeOf('*[_id == $id]', 'id').documentTypes).toBeUndefined()
+    // Two uses that name different types do not narrow to either
+    expect(
+      typeOf('*[_type == "post" && references($id) && author._ref == $id]', 'id').documentTypes,
+    ).toBeUndefined()
+  })
+
+  it('types each side of a match, and what a plus adds a param to', () => {
+    // `match` takes strings on either side, whatever the other side is
+    expect(typeOf('*[$text match $pattern]', 'text', WITHOUT_SCHEMA).kind).toBe('string')
+    expect(typeOf('*[$text match $pattern]', 'pattern', WITHOUT_SCHEMA).kind).toBe('string')
+    // `+` joins lists and merges objects as well as adding numbers and strings
+    expect(typeOf('*[_type == "post"]{"all": $extra + tags}', 'extra')).toEqual({
+      kind: 'string',
+      array: true,
+    })
+    expect(typeOf('*[_type == "post"]{"label": title + $suffix}', 'suffix').kind).toBe('string')
+    expect(paramOf('*[_type == "post"]{"place": location + $place}', 'place').node).toEqual({
+      type: 'inline',
+      name: 'geopoint',
+    })
+    // A list or object literal stands for lists or objects of its primitives, not its values
+    expect(typeOf('*[_type == "post"]{"all": $more + ["a", "b"]}', 'more')).toEqual({
+      kind: 'string',
+      array: true,
+    })
+    expect(paramOf('*[_type == "post"]{"merged": $base + {"n": 1}}', 'base').node).toEqual({
+      type: 'object',
+      attributes: {n: {type: 'objectAttribute', value: {type: 'number'}}},
+    })
+    expect(paramOf('*[_type == "post"]{"t": coalesce($tags, ["news"])}', 'tags').node).toEqual({
+      type: 'array',
+      of: {type: 'string'},
+    })
+    // `count()` is a whole number from 0, but what is added to it or stands in for it need not be
+    expect(typeOf('*[count(tags) + $offset > 2]', 'offset', WITHOUT_SCHEMA)).toEqual({
+      kind: 'number',
+      array: false,
+    })
+    expect(typeOf('*[]{"n": coalesce($n, count(tags))}', 'n', WITHOUT_SCHEMA)).toEqual({
+      kind: 'number',
+      array: false,
     })
   })
 
@@ -206,7 +302,7 @@ describe('inferQueryParams', () => {
       WITH_SCHEMA,
     )
     expect(inference.params.map(({name, type}) => [name, type])).toEqual([
-      ['current', {kind: 'string', array: false, format: 'document-id'}],
+      ['current', {kind: 'string', array: false, format: 'document-id', documentTypes: ['post']}],
       ['status', {kind: 'string', array: false, options: STATUS_OPTIONS}],
     ])
   })
@@ -221,6 +317,15 @@ describe('inferQueryParams', () => {
       kind: 'string',
       array: true,
     })
+    // Lists intersect on equal elements, and objects never are: a list of references takes any
+    // list, the IDs they hold a list of IDs
+    expect(
+      paramOf('*[_type == "post" && array::intersects(categories, $categories)]', 'categories')
+        .node,
+    ).toEqual({type: 'array', of: {type: 'unknown'}})
+    expect(
+      typeOf('*[_type == "post" && array::intersects(categories[]._ref, $ids)]', 'ids'),
+    ).toEqual({kind: 'string', array: true, format: 'document-id', documentTypes: ['category']})
   })
 
   it('lists params it cannot type, with where they are used and why', () => {
@@ -351,8 +456,8 @@ describe('inferQueryParams', () => {
     expect(range.name).toBe('range')
     expect(range.type).toEqual({kind: 'any', array: false})
     expect(range.fields?.map(({name, type}) => [name, type])).toEqual([
-      ['min', {kind: 'number', array: false}],
-      ['max', {kind: 'number', array: false}],
+      ['min', {kind: 'integer', array: false, min: 0}],
+      ['max', {kind: 'integer', array: false, min: 0}],
       ['limits', {kind: 'any', array: false}],
       ['flag', {kind: 'boolean', array: false}],
     ])
@@ -403,6 +508,20 @@ describe('inferQueryParams', () => {
         nullable: true,
       },
     ])
+  })
+
+  it('keeps a "__proto__" object-param key as an ordinary attribute', () => {
+    const {params} = inferQueryParams('*[_id == $doc.__proto__]')
+    expect(params).toHaveLength(1)
+    const {node} = params[0]
+    expect(node.type).toBe('object')
+    if (node.type !== 'object') return
+    expect(Object.keys(node.attributes)).toEqual(['__proto__'])
+    expect(Object.getPrototypeOf(node.attributes)).toBeNull()
+    expect(node.attributes.__proto__).toEqual({
+      type: 'objectAttribute',
+      value: {type: 'string'},
+    })
   })
 
   it('gives no keys to a param the query only reads whole', () => {

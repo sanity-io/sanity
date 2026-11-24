@@ -7,6 +7,7 @@ import {Text, Box, Flex} from 'ui5'
 import {visionLocaleNamespace} from '../../i18n'
 import {useCopyToClipboard} from '../hooks/useCopyToClipboard'
 import * as styles from './redesign.module.css'
+import * as themeStyles from './themeTokens.module.css'
 
 export interface ExportCodeDialogProps {
   /** The dialog's ID, which also prefixes the test IDs of its parts */
@@ -46,7 +47,7 @@ export function ExportCodeDialog({
       onClose={onClose}
       width={2}
     >
-      <Box padding={4}>
+      <Box className={themeStyles.themeTokens} padding={4}>
         <Stack gap={4}>
           <Text data-testid={`${id}-source`} muted size={1} as="div" trim={true}>
             {note}

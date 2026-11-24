@@ -12,7 +12,9 @@ import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {useSaveCurrentQuery} from '../../hooks/useSaveCurrentQuery'
 import {type QueryRequest, type VisionTab} from '../../store/types'
 import {usePendingEdits} from '../../store/VisionActorContext'
+import {cx} from '../../util/cx'
 import * as styles from '../redesign.module.css'
+import * as themeStyles from '../themeTokens.module.css'
 import {VisionTooltip} from '../VisionTooltip'
 import {ExportQueryDialog} from './ExportQueryDialog'
 
@@ -65,7 +67,7 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
             }
             id={`vision-query-menu-${tab.id}`}
             menu={
-              <Menu>
+              <Menu className={cx(styles.popoverScroll, themeStyles.themeTokens)}>
                 <MenuItem
                   data-testid="vision-export-query"
                   disabled={!request}
