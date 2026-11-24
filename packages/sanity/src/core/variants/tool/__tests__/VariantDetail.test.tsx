@@ -4,9 +4,14 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {type SingleWorkspace} from '../../../config/types'
-import {variantAlphaAudience} from '../../__fixtures__/variants.fixture'
+import {
+  legacyVariantAlphaAudience,
+  variantAlphaAudience,
+  variantNorwegianMarket,
+} from '../../__fixtures__/variants.fixture'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
 import {VARIANT_DOCUMENTS_PATH} from '../../store/constants'
+import {normalizeStoredVariant} from '../../store/normalizeStoredVariant'
 import {type SystemVariant} from '../../types'
 import {VariantDetail} from '../detail/VariantDetail'
 import {getVariantId} from '../util'
@@ -40,6 +45,7 @@ const variantOperationsMock = vi.hoisted(() => ({
   createVariant: vi.fn(),
   updateVariant: vi.fn(),
   deleteVariant: vi.fn(),
+  migrateVariantConditions: vi.fn(),
 }))
 
 const variantPermissionsMock = vi.hoisted(() => ({
@@ -107,6 +113,7 @@ describe('VariantDetail', () => {
     variantsMock.error = undefined
     routerState.variantId = undefined
     variantPermissionsMock.checkWithPermissionGuard.mockResolvedValue(true)
+    variantOperationsMock.migrateVariantConditions.mockResolvedValue(undefined)
     variantOperationsMock.updateVariant.mockImplementation(async (variant) => {
       const existingVariant = variantsMock.byId.get(variant._id)
 
@@ -246,7 +253,10 @@ describe('VariantDetail', () => {
     await waitFor(() => {
       expect(variantOperationsMock.updateVariant).toHaveBeenCalledWith(
         expect.objectContaining({
-          conditions: {audience: 'beta', locale: 'en-US'},
+          conditions: [
+            {_key: 'audience', condition: 'audience', value: 'beta'},
+            {_key: 'locale', condition: 'locale', value: 'en-US'},
+          ],
           metadata: expect.objectContaining({
             title: 'Beta audience',
             description: [
@@ -511,5 +521,46 @@ describe('VariantDetail', () => {
     })
 
     expect(screen.queryByTestId('variant-condition-mismatch')).not.toBeInTheDocument()
+  })
+
+  it('does not show the migration banner for a definition in the array shape', async () => {
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+
+    await renderDetail()
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', {level: 1, name: 'Alpha audience'})).toBeInTheDocument()
+    })
+
+    expect(screen.queryByTestId('variant-detail-migration-banner')).not.toBeInTheDocument()
+  })
+
+  it('renders legacy conditions and migrates only the definition being viewed', async () => {
+    const legacyVariant = normalizeStoredVariant(legacyVariantAlphaAudience)
+    routerState.variantId = getVariantId(legacyVariant._id)
+    setVariants([legacyVariant, {...variantNorwegianMarket, needsMigration: true}])
+
+    await renderDetail()
+
+    const banner = await screen.findByTestId('variant-detail-migration-banner')
+    expect(banner).toHaveTextContent(
+      'This variant definition uses an outdated conditions format and needs to be migrated.',
+    )
+    expect(screen.getByText('audience')).toBeInTheDocument()
+    expect(screen.getByText('alpha')).toBeInTheDocument()
+    expect(screen.getByText('locale')).toBeInTheDocument()
+    expect(screen.getByText('en-US')).toBeInTheDocument()
+
+    const action = screen.getByTestId('variant-detail-migration-banner-action')
+    await waitFor(() => expect(action).toBeEnabled())
+    await userEvent.click(action)
+
+    await waitFor(() => {
+      expect(variantOperationsMock.migrateVariantConditions).toHaveBeenCalledWith([legacyVariant])
+    })
+    expect(toastMock.push).toHaveBeenCalledWith(
+      expect.objectContaining({status: 'success', title: 'Migrated 1 variant definition'}),
+    )
   })
 })

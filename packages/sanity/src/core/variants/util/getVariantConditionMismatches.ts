@@ -1,3 +1,4 @@
+import {type VariantCondition} from '../types'
 import {type NormalizedVariantConditionMap} from './normalizeVariantConditions'
 
 /**
@@ -40,13 +41,13 @@ function getValuesByKey(
  * @internal
  */
 export function getVariantConditionMismatches(
-  conditions: Record<string, string>,
+  conditions: readonly VariantCondition[],
   definitions: readonly NormalizedVariantConditionMap[],
 ): ConditionMismatch[] {
   const valuesByKey = getValuesByKey(definitions)
   const mismatches: ConditionMismatch[] = []
 
-  for (const [key, value] of Object.entries(conditions)) {
+  for (const {condition: key, value} of conditions) {
     const allowedValues = valuesByKey.get(key)
 
     if (!allowedValues) {

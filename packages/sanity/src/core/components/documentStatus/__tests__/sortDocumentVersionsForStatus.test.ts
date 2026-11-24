@@ -43,7 +43,8 @@ const variantReturning: SystemVariant = {
   _createdAt: '2025-01-01T00:00:00Z',
   _updatedAt: '2025-01-01T00:00:00Z',
   _rev: 'variant-returning-rev',
-  conditions: {},
+  conditions: [],
+  needsMigration: false,
   priority: 0,
   metadata: {title: 'Returning visitors'},
 }
@@ -54,7 +55,8 @@ const variantFirstTime: SystemVariant = {
   _createdAt: '2025-01-01T00:00:00Z',
   _updatedAt: '2025-01-01T00:00:00Z',
   _rev: 'variant-first-time-rev',
-  conditions: {},
+  conditions: [],
+  needsMigration: false,
   priority: 0,
   metadata: {title: 'First-time visitors'},
 }

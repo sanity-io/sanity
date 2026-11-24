@@ -11,7 +11,7 @@ function createVariant(
   return {
     _id: `${VARIANT_DOCUMENTS_PATH}.${id}`,
     _type: 'system.variant',
-    conditions: {},
+    conditions: [],
     priority: 0,
     metadata: {title: '', description: []},
     ...overrides,
@@ -60,8 +60,12 @@ describe('getVariantUniquenessValidation', () => {
   })
 
   it('matches another variant with an identical condition set', () => {
-    const existing = createVariant('existing', {conditions: {audience: 'loyal'}})
-    const candidate = createVariant('candidate', {conditions: {audience: 'loyal'}})
+    const existing = createVariant('existing', {
+      conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
+    })
+    const candidate = createVariant('candidate', {
+      conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
+    })
 
     expect(getVariantUniquenessValidation(candidate, [existing]).duplicateConditionsOf).toBe(
       existing,
@@ -69,8 +73,15 @@ describe('getVariantUniquenessValidation', () => {
   })
 
   it('does not match when the candidate has an extra condition', () => {
-    const existing = createVariant('existing', {conditions: {audience: 'loyal'}})
-    const candidate = createVariant('candidate', {conditions: {audience: 'loyal', country: 'us'}})
+    const existing = createVariant('existing', {
+      conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
+    })
+    const candidate = createVariant('candidate', {
+      conditions: [
+        {_key: 'audience', condition: 'audience', value: 'loyal'},
+        {_key: 'country', condition: 'country', value: 'us'},
+      ],
+    })
 
     expect(
       getVariantUniquenessValidation(candidate, [existing]).duplicateConditionsOf,
@@ -78,8 +89,15 @@ describe('getVariantUniquenessValidation', () => {
   })
 
   it('does not match when the existing variant has an extra condition', () => {
-    const existing = createVariant('existing', {conditions: {audience: 'loyal', country: 'us'}})
-    const candidate = createVariant('candidate', {conditions: {audience: 'loyal'}})
+    const existing = createVariant('existing', {
+      conditions: [
+        {_key: 'audience', condition: 'audience', value: 'loyal'},
+        {_key: 'country', condition: 'country', value: 'us'},
+      ],
+    })
+    const candidate = createVariant('candidate', {
+      conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
+    })
 
     expect(
       getVariantUniquenessValidation(candidate, [existing]).duplicateConditionsOf,
@@ -87,8 +105,18 @@ describe('getVariantUniquenessValidation', () => {
   })
 
   it('does not match when a condition value differs', () => {
-    const existing = createVariant('existing', {conditions: {audience: 'loyal', country: 'us'}})
-    const candidate = createVariant('candidate', {conditions: {audience: 'loyal', country: 'no'}})
+    const existing = createVariant('existing', {
+      conditions: [
+        {_key: 'audience', condition: 'audience', value: 'loyal'},
+        {_key: 'country', condition: 'country', value: 'us'},
+      ],
+    })
+    const candidate = createVariant('candidate', {
+      conditions: [
+        {_key: 'audience', condition: 'audience', value: 'loyal'},
+        {_key: 'country', condition: 'country', value: 'no'},
+      ],
+    })
 
     expect(
       getVariantUniquenessValidation(candidate, [existing]).duplicateConditionsOf,
@@ -96,8 +124,18 @@ describe('getVariantUniquenessValidation', () => {
   })
 
   it('matches regardless of condition key order', () => {
-    const existing = createVariant('existing', {conditions: {audience: 'loyal', country: 'us'}})
-    const candidate = createVariant('candidate', {conditions: {country: 'us', audience: 'loyal'}})
+    const existing = createVariant('existing', {
+      conditions: [
+        {_key: 'audience', condition: 'audience', value: 'loyal'},
+        {_key: 'country', condition: 'country', value: 'us'},
+      ],
+    })
+    const candidate = createVariant('candidate', {
+      conditions: [
+        {_key: 'country', condition: 'country', value: 'us'},
+        {_key: 'audience', condition: 'audience', value: 'loyal'},
+      ],
+    })
 
     expect(getVariantUniquenessValidation(candidate, [existing]).duplicateConditionsOf).toBe(
       existing,
@@ -105,8 +143,8 @@ describe('getVariantUniquenessValidation', () => {
   })
 
   it('never matches empty condition sets', () => {
-    const existing = createVariant('existing', {conditions: {}})
-    const candidate = createVariant('candidate', {conditions: {}})
+    const existing = createVariant('existing', {conditions: []})
+    const candidate = createVariant('candidate', {conditions: []})
 
     expect(
       getVariantUniquenessValidation(candidate, [existing]).duplicateConditionsOf,
@@ -115,11 +153,11 @@ describe('getVariantUniquenessValidation', () => {
 
   it('excludes the candidate itself so editing an unchanged variant never matches', () => {
     const stored = createVariant('stored', {
-      conditions: {audience: 'loyal'},
+      conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
       metadata: {title: 'Loyal customers', description: []},
     })
     const edited = createVariant('stored', {
-      conditions: {audience: 'loyal'},
+      conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
       metadata: {title: 'Loyal customers', description: []},
     })
 
@@ -131,15 +169,15 @@ describe('getVariantUniquenessValidation', () => {
 
   it('reports title and condition duplicates from different variants independently', () => {
     const sameTitle = createVariant('same-title', {
-      conditions: {audience: 'vip'},
+      conditions: [{_key: 'audience', condition: 'audience', value: 'vip'}],
       metadata: {title: 'Loyal customers', description: []},
     })
     const sameConditions = createVariant('same-conditions', {
-      conditions: {audience: 'loyal'},
+      conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
       metadata: {title: 'Another title', description: []},
     })
     const candidate = createVariant('candidate', {
-      conditions: {audience: 'loyal'},
+      conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
       metadata: {title: 'Loyal customers', description: []},
     })
 
@@ -151,11 +189,11 @@ describe('getVariantUniquenessValidation', () => {
 
   it('allows the same title and conditions on a different type', () => {
     const existing = createVariant('existing', {
-      conditions: {audience: 'loyal'},
+      conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
       metadata: {title: 'Loyal customers', description: [], type: 'language'},
     })
     const candidate = createVariant('candidate', {
-      conditions: {audience: 'loyal'},
+      conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
       metadata: {title: 'Loyal customers', description: [], type: 'variant'},
     })
 

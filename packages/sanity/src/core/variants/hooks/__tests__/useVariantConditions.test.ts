@@ -485,9 +485,11 @@ describe('useVariantConditions', () => {
       },
     })
 
-    const {result} = renderHook(() => useVariantConditionMismatches({audience: 'loyal'}), {
-      wrapper,
-    })
+    const {result} = renderHook(
+      () =>
+        useVariantConditionMismatches([{_key: 'audience', condition: 'audience', value: 'loyal'}]),
+      {wrapper},
+    )
 
     expect(result.current).toEqual([])
   })

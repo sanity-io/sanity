@@ -27,7 +27,8 @@ const returningVisitor: SystemVariant = {
   _createdAt: '',
   _updatedAt: '',
   _rev: 'returning-visitor-rev',
-  conditions: {audience: 'returning'},
+  conditions: [{_key: 'audience', condition: 'audience', value: 'returning'}],
+  needsMigration: false,
   priority: 0,
 }
 

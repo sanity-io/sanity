@@ -46,10 +46,7 @@ const VariantDocumentsCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, d
 
 const VariantTitleCell: VisibleColumn<TableVariant>['cell'] = ({cellProps, datum: variant}) => {
   const {t} = useTranslation(variantsLocaleNamespace)
-  const mismatches = useVariantConditionMismatches(
-    variant.conditions ?? {},
-    getVariantType(variant),
-  )
+  const mismatches = useVariantConditionMismatches(variant.conditions, getVariantType(variant))
 
   const encodedVariantId = getVariantId(variant._id)
 

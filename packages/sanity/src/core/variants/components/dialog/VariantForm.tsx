@@ -68,9 +68,9 @@ const EMPTY_DEFINITIONS: readonly NormalizedVariantConditionMap[] = []
 const NO_RESOLVED_TYPES: ResolvedVariantType[] = []
 
 function getConditionRows(conditions: EditableSystemVariant['conditions']): ConditionRow[] {
-  const rows = Object.entries(conditions).map(([key, value]) => ({
-    id: randomKey(12),
-    key,
+  const rows = conditions.map(({_key, condition, value}) => ({
+    id: _key,
+    key: condition,
     value,
   }))
 
@@ -78,16 +78,12 @@ function getConditionRows(conditions: EditableSystemVariant['conditions']): Cond
 }
 
 function getConditionsFromRows(rows: ConditionRow[]): EditableSystemVariant['conditions'] {
-  return rows.reduce<EditableSystemVariant['conditions']>((conditions, row) => {
-    const key = row.key.trim()
+  return rows.flatMap((row) => {
+    const condition = row.key.trim()
     const value = row.value.trim()
 
-    if (key && value) {
-      conditions[key] = value
-    }
-
-    return conditions
-  }, {})
+    return condition && value ? [{_key: row.id, condition, value}] : []
+  })
 }
 
 function isConditionRowEmpty(row: ConditionRow): boolean {
@@ -254,9 +250,9 @@ export function VariantForm(props: {
   const priorityDescriptionId = useId()
   const priorityErrorId = useId()
   const conditionErrorIdPrefix = useId()
-  // `conditions` is stored as an object, but object keys are awkward to edit live:
-  // duplicates collapse and partial key edits like "far" -> "favorite" can lose data.
-  // Keep rows locally while editing, then commit back once they serialize cleanly.
+  // Rows can hold incomplete or duplicate conditions while they are edited, which the stored
+  // `conditions` must never contain. Keep rows locally while editing, then commit back once they
+  // serialize cleanly.
   const [conditionRows, setConditionRows] = useState(() => getConditionRows(value.conditions))
   const [priorityInput, setPriorityInput] = useState(() => String(value.priority))
   const mappedNotReady = conditionsConfig.mode === 'mapped' && conditionsConfig.status !== 'ready'
@@ -305,7 +301,7 @@ export function VariantForm(props: {
 
   const updateConditionRows = useCallback(
     (nextRows: ConditionRow[]) => {
-      const rows = nextRows.length ? nextRows : getConditionRows({})
+      const rows = nextRows.length ? nextRows : getConditionRows([])
 
       setConditionRows(rows)
 
@@ -347,8 +343,8 @@ export function VariantForm(props: {
       }
 
       onChange(['metadata', 'type'], nextType)
-      setConditionRows(getConditionRows({}))
-      onChange(['conditions'], {})
+      setConditionRows(getConditionRows([]))
+      onChange(['conditions'], [])
     },
     [lockType, onChange, typeKey],
   )

@@ -7,9 +7,14 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {setupVirtualListEnv} from '../../../../../test/testUtils/setupVirtualListEnv'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {type SingleWorkspace} from '../../../config/types'
-import {variantAlphaAudience, variantNorwegianMarket} from '../../__fixtures__/variants.fixture'
+import {
+  legacyVariantAlphaAudience,
+  variantAlphaAudience,
+  variantNorwegianMarket,
+} from '../../__fixtures__/variants.fixture'
 import {type VariantsMode} from '../../contexts/mode/types'
 import {variantsUsEnglishLocaleBundle} from '../../i18n'
+import {normalizeStoredVariant} from '../../store/normalizeStoredVariant'
 import {type EditableSystemVariant, type SystemVariant} from '../../types'
 import {VariantsOverview} from '../overview/VariantsOverview'
 import {getVariantId} from '../util'
@@ -31,6 +36,7 @@ const variantOperationsMock = vi.hoisted(() => ({
   createVariant: vi.fn(),
   updateVariant: vi.fn(),
   deleteVariant: vi.fn(),
+  migrateVariantConditions: vi.fn(),
 }))
 
 const variantPermissionsMock = vi.hoisted(() => ({
@@ -122,6 +128,7 @@ describe('VariantsOverview', () => {
       }),
     )
     variantOperationsMock.deleteVariant.mockResolvedValue(undefined)
+    variantOperationsMock.migrateVariantConditions.mockResolvedValue(undefined)
     variantPermissionsMock.checkWithPermissionGuard.mockResolvedValue(true)
   })
 
@@ -515,6 +522,52 @@ describe('VariantsOverview', () => {
       expect(
         screen.getAllByText('Unable to load variant definitions').length,
       ).toBeGreaterThanOrEqual(1)
+    })
+  })
+
+  describe('conditions migration', () => {
+    const legacyVariant = normalizeStoredVariant(legacyVariantAlphaAudience)
+
+    it('does not show the migration banner when every definition uses the array shape', async () => {
+      setVariants([variantAlphaAudience, variantNorwegianMarket])
+
+      await renderOverview()
+
+      expect(screen.queryByTestId('variants-migration-banner')).not.toBeInTheDocument()
+    })
+
+    it('counts the definitions that need migration and migrates only those', async () => {
+      setVariants([legacyVariant, variantNorwegianMarket])
+
+      await renderOverview()
+
+      const banner = screen.getByTestId('variants-migration-banner')
+      expect(banner).toHaveTextContent(
+        '1 variant definition uses an outdated conditions format and needs to be migrated.',
+      )
+
+      const action = within(banner).getByRole('button', {name: 'Migrate all'})
+      await waitFor(() => expect(action).toBeEnabled())
+      await userEvent.click(action)
+
+      await waitFor(() => {
+        expect(variantOperationsMock.migrateVariantConditions).toHaveBeenCalledWith([legacyVariant])
+      })
+    })
+
+    it('disables the migrate action without permission to edit variant definitions', async () => {
+      variantPermissionsMock.checkWithPermissionGuard.mockResolvedValue(false)
+      setVariants([legacyVariant])
+
+      await renderOverview()
+
+      const action = within(screen.getByTestId('variants-migration-banner')).getByRole('button', {
+        name: 'Migrate all',
+      })
+      await waitFor(() =>
+        expect(variantPermissionsMock.checkWithPermissionGuard).toHaveBeenCalled(),
+      )
+      expect(action).toBeDisabled()
     })
   })
 })

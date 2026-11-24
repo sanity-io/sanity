@@ -23,6 +23,7 @@ import {
   getVariantId,
   variantMatchesConditionFilters,
 } from '../util'
+import {VariantConditionsMigrationBanner} from '../VariantConditionsMigrationBanner'
 import {VariantConditionFilters} from './VariantConditionFilters'
 import {VariantMenuButton} from './VariantMenuButton'
 import {VariantsEmptyState} from './VariantsEmptyState'
@@ -110,6 +111,10 @@ export function VariantsOverview(): React.JSX.Element {
   )
 
   const hasVariants = variantsList.length > 0
+  const migrationCount = useMemo(
+    () => variantsList.filter((variant) => variant.needsMigration).length,
+    [variantsList],
+  )
   const hasActiveConditionFilters = useMemo(
     () => Object.values(conditionFilters).some((values) => values.length > 0),
     [conditionFilters],
@@ -204,6 +209,17 @@ export function VariantsOverview(): React.JSX.Element {
               <Text size={1} as="div" trim={true} tone="critical">
                 {t('overview.error')}
               </Text>
+            </Card>
+          )}
+
+          {migrationCount > 0 && (
+            <Card flex="none" marginBottom={4}>
+              <VariantConditionsMigrationBanner
+                actionText={t('overview.migration.action')}
+                description={t('overview.migration.description', {count: migrationCount})}
+                testId="variants-migration-banner"
+                variants={variantsList}
+              />
             </Card>
           )}
         </Flex>

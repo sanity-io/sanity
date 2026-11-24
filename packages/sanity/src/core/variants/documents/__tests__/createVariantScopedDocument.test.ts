@@ -13,7 +13,8 @@ const VARIANT: SystemVariant = {
   _createdAt: '2026-01-01T00:00:00.000Z',
   _updatedAt: '2026-01-01T00:00:00.000Z',
   _rev: 'rev-1',
-  conditions: {audience: 'loyal'},
+  conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
+  needsMigration: false,
   priority: 0,
 }
 

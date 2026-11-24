@@ -259,7 +259,9 @@ describe('CreateVariantDialog', () => {
 
     const createdVariant = variantOperationsMock.createVariant.mock.calls[0]![0]
 
-    expect(createdVariant.conditions).toEqual({audience: 'loyal:customers'})
+    expect(createdVariant.conditions).toEqual([
+      {_key: expect.any(String), condition: 'audience', value: 'loyal:customers'},
+    ])
   })
 
   it('shows an error for condition values that contain commas', async () => {
@@ -311,7 +313,9 @@ describe('CreateVariantDialog', () => {
 
     const createdVariant = variantOperationsMock.createVariant.mock.calls[0]![0]
 
-    expect(createdVariant.conditions).toEqual({experiment: 'control'})
+    expect(createdVariant.conditions).toEqual([
+      {_key: expect.any(String), condition: 'experiment', value: 'control'},
+    ])
   })
 
   it('shows a title validation message after submit is attempted', async () => {
@@ -669,7 +673,9 @@ describe('CreateVariantDialog mapped conditions', () => {
 
     const createdVariant = variantOperationsMock.createVariant.mock.calls[0]![0]
 
-    expect(createdVariant.conditions).toEqual({audience: 'loyal'})
+    expect(createdVariant.conditions).toEqual([
+      {_key: expect.any(String), condition: 'audience', value: 'loyal'},
+    ])
   })
 
   it('shows the selected state on the trigger only while open, and checks the choice in the menu', async () => {

@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {createMockVariant} from '../../__fixtures__/createMockVariant'
+import {createMockConditions, createMockVariant} from '../../__fixtures__/createMockVariant'
 import {VARIANT_DOCUMENTS_PATH} from '../../store/constants'
 import {type SystemVariant} from '../../types'
 import {
@@ -33,10 +33,12 @@ describe('variants tool utilities', () => {
   })
 
   it('formats conditions as quoted key value pairs', () => {
-    expect(getVariantConditionsText({audience: 'developer', locale: 'en'})).toBe(
-      'audience: "developer", locale: "en"',
+    expect(
+      getVariantConditionsText(createMockConditions({audience: 'developer', locale: 'en'})),
+    ).toBe('audience: "developer", locale: "en"')
+    expect(getVariantConditionsText(createMockConditions({locale: 'en,nb'}))).toBe(
+      'locale: "en,nb"',
     )
-    expect(getVariantConditionsText({locale: 'en,nb'})).toBe('locale: "en,nb"')
   })
 
   it('decodes route slugs back to variant document ids', () => {
@@ -81,7 +83,7 @@ describe('variants tool utilities', () => {
     }
     const localeVariant = {
       ...createMockVariant('norwegian', 1),
-      conditions: {locale: 'nb-NO'},
+      conditions: [{_key: 'locale', condition: 'locale', value: 'nb-NO'}],
     }
 
     expect(filterVariantsForSearch([developerVariant, localeVariant], 'developer')).toEqual([
@@ -132,9 +134,24 @@ describe('variants tool utilities', () => {
 describe('buildConditionFacets', () => {
   it('derives one sorted facet per condition key with its distinct values', () => {
     const variants: SystemVariant[] = [
-      {...createMockVariant('a'), conditions: {market: 'london', brand: 'brand-z'}},
-      {...createMockVariant('b'), conditions: {market: 'plymouth', brand: 'brand-z'}},
-      {...createMockVariant('c'), conditions: {market: 'london'}},
+      {
+        ...createMockVariant('a'),
+        conditions: [
+          {_key: 'market', condition: 'market', value: 'london'},
+          {_key: 'brand', condition: 'brand', value: 'brand-z'},
+        ],
+      },
+      {
+        ...createMockVariant('b'),
+        conditions: [
+          {_key: 'market', condition: 'market', value: 'plymouth'},
+          {_key: 'brand', condition: 'brand', value: 'brand-z'},
+        ],
+      },
+      {
+        ...createMockVariant('c'),
+        conditions: [{_key: 'market', condition: 'market', value: 'london'}],
+      },
     ]
 
     expect(buildConditionFacets(variants)).toEqual([
@@ -144,7 +161,7 @@ describe('buildConditionFacets', () => {
   })
 
   it('returns an empty list when no variant carries conditions', () => {
-    const variants: SystemVariant[] = [{...createMockVariant('a'), conditions: {}}]
+    const variants: SystemVariant[] = [{...createMockVariant('a'), conditions: []}]
     expect(buildConditionFacets(variants)).toEqual([])
   })
 })
@@ -152,7 +169,10 @@ describe('buildConditionFacets', () => {
 describe('variantMatchesConditionFilters', () => {
   const variant: SystemVariant = {
     ...createMockVariant('a'),
-    conditions: {market: 'london', segment: 'VIP'},
+    conditions: [
+      {_key: 'market', condition: 'market', value: 'london'},
+      {_key: 'segment', condition: 'segment', value: 'VIP'},
+    ],
   }
 
   it('matches when there are no active filters', () => {

@@ -7,11 +7,34 @@ import {type VARIANT_DOCUMENT_TYPE, type VARIANT_DOCUMENTS_PATH} from './store/c
  */
 export type VariantId = `${typeof VARIANT_DOCUMENTS_PATH}.${string}`
 
-export interface SystemVariant extends SanityDocument {
+/**
+ * One targeting condition of a variant definition, e.g. `{condition: 'audience', value: 'loyal'}`.
+ *
+ * @internal
+ */
+export interface VariantCondition {
+  _key: string
+  condition: string
+  value: string
+}
+
+/**
+ * The shape `conditions` had before it became an array of {@link VariantCondition}: a map from
+ * condition name to value. Content Lake still returns it for definitions that have not been
+ * migrated yet.
+ *
+ * @internal
+ */
+export type LegacyVariantConditions = Record<string, string>
+
+/**
+ * The fields a variant definition has in both `conditions` shapes. `SanityDocument` carries an
+ * index signature, which `Omit` would collapse, so both shapes extend this instead.
+ */
+interface SystemVariantBase extends SanityDocument {
   _type: typeof VARIANT_DOCUMENT_TYPE
   _id: VariantId
   name?: string
-  conditions: Record<string, string>
   priority: number // defaults to 0.
   metadata?: {
     title?: string
@@ -22,6 +45,15 @@ export interface SystemVariant extends SanityDocument {
   }
 }
 
+export interface SystemVariant extends SystemVariantBase {
+  conditions: VariantCondition[]
+  /**
+   * Set by the variants store, never stored: `true` when Content Lake returned `conditions` in
+   * the legacy object shape, so the definition still has to be migrated to the array shape.
+   */
+  needsMigration: boolean
+}
+
 /**
  * @internal
  */
@@ -29,6 +61,16 @@ export type EditableSystemVariant = Pick<
   SystemVariant,
   '_id' | '_type' | 'conditions' | 'priority' | 'metadata'
 >
+
+/**
+ * A variant definition as Content Lake returns it, before the variants store normalizes it into a
+ * {@link SystemVariant}.
+ *
+ * @internal
+ */
+export interface StoredSystemVariant extends SystemVariantBase {
+  conditions?: VariantCondition[] | LegacyVariantConditions | null
+}
 
 /**
  * @internal

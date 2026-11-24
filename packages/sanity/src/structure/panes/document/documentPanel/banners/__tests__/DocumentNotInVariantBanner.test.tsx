@@ -52,7 +52,11 @@ const variantAlphaAudience: SystemVariant = {
   _createdAt: '2025-01-03T00:00:00Z',
   _updatedAt: '2025-01-03T00:00:00Z',
   _rev: 'rev-alpha-audience',
-  conditions: {audience: 'alpha', locale: 'en-US'},
+  conditions: [
+    {_key: 'audience', condition: 'audience', value: 'alpha'},
+    {_key: 'locale', condition: 'locale', value: 'en-US'},
+  ],
+  needsMigration: false,
   priority: 2,
   metadata: {
     title: VARIANT_TITLE,

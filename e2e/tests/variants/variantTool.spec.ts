@@ -23,12 +23,21 @@ interface VariantDocument {
   _id: `${typeof VARIANT_DOCUMENTS_PATH}.${string}`
   _type: typeof VARIANT_DOCUMENT_TYPE
   name?: string
-  conditions: Record<string, string>
+  conditions: Array<{_key: string; condition: string; value: string}>
   priority: number
   metadata?: {
     title?: string
     [key: string]: unknown
   }
+}
+
+/** The array shape the Studio writes `conditions` in, for a `condition → value` map. */
+function expectedConditions(conditions: Record<string, string>) {
+  return Object.entries(conditions).map(([condition, value]) => ({
+    _key: expect.any(String),
+    condition,
+    value,
+  }))
 }
 
 function normalizeTitlePart(value: string): string {
@@ -49,6 +58,7 @@ async function createVariantDefinition(
   sanityClient: SanityClient,
   options: {
     variantId: string
+    /** Seeded in the legacy object shape, which the Studio still reads. */
     conditions?: Record<string, string>
     priority?: number
     metadata?: VariantDocument['metadata']
@@ -303,7 +313,7 @@ test.describe('Variants create flow', () => {
     expect(document._id).toMatch(new RegExp(`^${escapeRegExp(VARIANT_DOCUMENTS_PATH)}\\.`))
     expect(document._type).toBe(VARIANT_DOCUMENT_TYPE)
     expect(document.metadata?.title).toBe(title)
-    expect(document.conditions).toEqual({audience: value})
+    expect(document.conditions).toEqual(expectedConditions({audience: value}))
   })
 
   test('validates title and complete condition rows', async ({page}) => {
@@ -371,10 +381,12 @@ test.describe('Variants create flow', () => {
 
     const document = await submitCreateVariantDialog(page, sanityClient, title)
 
-    expect(document.conditions).toEqual({
-      audience: firstValue,
-      audience2: secondValue,
-    })
+    expect(document.conditions).toEqual(
+      expectedConditions({
+        audience: firstValue,
+        audience2: secondValue,
+      }),
+    )
   })
 
   test('preserves partial condition key editing from new to newton', async ({
@@ -414,10 +426,12 @@ test.describe('Variants create flow', () => {
 
     const document = await submitCreateVariantDialog(page, sanityClient, title)
 
-    expect(document.conditions).toEqual({
-      new: firstValue,
-      newton: secondValue,
-    })
+    expect(document.conditions).toEqual(
+      expectedConditions({
+        new: firstValue,
+        newton: secondValue,
+      }),
+    )
   })
 
   test('suggests condition keys and values from existing variants', async ({
@@ -468,7 +482,9 @@ test.describe('Variants create flow', () => {
 
     const document = await submitCreateVariantDialog(page, sanityClient, title)
 
-    expect(document.conditions).toEqual({audience: audienceValue, session: sessionValue})
+    expect(document.conditions).toEqual(
+      expectedConditions({audience: audienceValue, session: sessionValue}),
+    )
   })
 
   test('blocks duplicate titles and condition sets and links to the existing definition', async ({

@@ -28,6 +28,7 @@ import {
   getVariantId,
   getVariantTitle,
 } from '../util'
+import {VariantConditionsMigrationBanner} from '../VariantConditionsMigrationBanner'
 import {groupVariantDocumentsByGroup} from './groupVariantDocumentsByGroup'
 import {VariantActionRail} from './VariantActionRail'
 import {getVariantConditionIcon} from './variantConditionIcons'
@@ -44,8 +45,9 @@ export function VariantDetail() {
   const {byId, loading} = useAllVariants()
 
   const variant = variantId ? byId.get(variantId) : undefined
+  const migrationVariants = useMemo(() => (variant ? [variant] : []), [variant])
   const conditionMismatches = useVariantConditionMismatches(
-    variant?.conditions ?? {},
+    variant?.conditions,
     getVariantType(variant),
   )
   const {
@@ -76,10 +78,9 @@ export function VariantDetail() {
   const definitionSections = useMemo<DetailPropertiesSection[]>(() => {
     if (!variant) return []
 
-    const conditionEntries = Object.entries(variant.conditions)
     const conditionRows =
-      conditionEntries.length > 0
-        ? conditionEntries.map(([key, value]) => {
+      variant.conditions.length > 0
+        ? variant.conditions.map(({condition: key, value}) => {
             // Each targeting dimension gets a recognizable glyph (audience → people, location →
             // pin, …) so a multi-dimension definition reads at a glance.
             const DimensionIcon = getVariantConditionIcon(key)
@@ -268,6 +269,14 @@ export function VariantDetail() {
                   testId="variant-detail-documents"
                 />
               </Flex>
+              {variant.needsMigration && (
+                <VariantConditionsMigrationBanner
+                  actionText={t('detail.migration.action')}
+                  description={t('detail.migration.description')}
+                  testId="variant-detail-migration-banner"
+                  variants={migrationVariants}
+                />
+              )}
             </VStack>
           </Box>
         </Container>

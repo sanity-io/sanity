@@ -49,9 +49,19 @@ export function getVariantTitle(variant: SystemVariant): string {
  * @internal
  */
 export function getVariantConditionsText(conditions: SystemVariant['conditions']): string {
-  return Object.entries(conditions)
-    .map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
-    .join(', ')
+  return conditions.map(({condition, value}) => `${condition}: ${JSON.stringify(value)}`).join(', ')
+}
+
+/**
+ * The value a variant targets for `condition`, or `undefined` when it does not target it.
+ *
+ * @internal
+ */
+export function getConditionValue(
+  conditions: SystemVariant['conditions'],
+  condition: string,
+): string | undefined {
+  return conditions.find((item) => item.condition === condition)?.value
 }
 
 /**
@@ -143,7 +153,7 @@ export function filterVariantsForSearch(
       : [
           getVariantTitle(variant),
           getVariantId(variant._id),
-          ...Object.entries(variant.conditions).flat(),
+          ...variant.conditions.flatMap(({condition, value}) => [condition, value]),
         ]
 
     return searchableValues.some((value) => value.toLowerCase().includes(normalizedSearchTerm))
@@ -166,8 +176,8 @@ export function buildConditionFacets(variants: SystemVariant[]): ConditionFacet[
   const valuesByKey = new Map<string, Set<string>>()
 
   for (const variant of variants) {
-    for (const [key, value] of Object.entries(variant.conditions)) {
-      if (typeof value !== 'string' || value.length === 0) continue
+    for (const {condition: key, value} of variant.conditions) {
+      if (value.length === 0) continue
       const values = valuesByKey.get(key) ?? new Set<string>()
       values.add(value)
       valuesByKey.set(key, values)
@@ -190,7 +200,7 @@ export function variantMatchesConditionFilters(
 ): boolean {
   return Object.entries(filters).every(([key, selectedValues]) => {
     if (selectedValues.length === 0) return true
-    const value = variant.conditions[key]
-    return typeof value === 'string' && selectedValues.includes(value)
+    const value = getConditionValue(variant.conditions, key)
+    return value !== undefined && selectedValues.includes(value)
   })
 }

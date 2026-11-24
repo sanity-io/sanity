@@ -8,7 +8,7 @@ function createVariant(overrides: Partial<EditableSystemVariant> = {}): Editable
   return {
     _id: `${VARIANT_DOCUMENTS_PATH}.test`,
     _type: 'system.variant',
-    conditions: {},
+    conditions: [],
     priority: 0,
     metadata: {title: '', description: []},
     ...overrides,
@@ -28,7 +28,7 @@ describe('getIsVariantInvalid', () => {
     expect(
       getIsVariantInvalid(
         createVariant({
-          conditions: {audience: 'loyal'},
+          conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
         }),
       ),
     ).toBe(true)
@@ -36,7 +36,7 @@ describe('getIsVariantInvalid', () => {
       getIsVariantInvalid(
         createVariant({
           metadata: {title: 'Audience', description: []},
-          conditions: {'': ''},
+          conditions: [{_key: 'blank', condition: '', value: ''}],
         }),
       ),
     ).toBe(true)
@@ -44,7 +44,7 @@ describe('getIsVariantInvalid', () => {
       getIsVariantInvalid(
         createVariant({
           metadata: {title: 'Audience', description: []},
-          conditions: {audience: ''},
+          conditions: [{_key: 'audience', condition: 'audience', value: ''}],
         }),
       ),
     ).toBe(true)
@@ -52,7 +52,7 @@ describe('getIsVariantInvalid', () => {
       getIsVariantInvalid(
         createVariant({
           metadata: {title: 'Audience', description: []},
-          conditions: {audience: 'loyal'},
+          conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
         }),
       ),
     ).toBe(false)

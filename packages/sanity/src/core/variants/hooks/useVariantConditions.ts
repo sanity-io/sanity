@@ -15,6 +15,7 @@ import {memoize} from '../../store/document/utils/createMemoizer'
 import {useWorkspace} from '../../studio/workspace'
 import {getPrintableType} from '../../util/getPrintableType'
 import {isRecord} from '../../util/isRecord'
+import {type VariantCondition} from '../types'
 import {
   type ConditionMismatch,
   getVariantConditionMismatches,
@@ -455,7 +456,7 @@ export function useVariantConditions(
  * @internal
  */
 export function useVariantConditionMismatches(
-  conditions: Record<string, string> | undefined,
+  conditions: readonly VariantCondition[] | undefined,
   typeKey: string = DEFAULT_VARIANT_TYPE_KEY,
 ): ConditionMismatch[] {
   const config = useVariantConditions(typeKey)

@@ -13,7 +13,7 @@ const EMPTY_CONDITIONS: VariantConditionMap[] = []
 const STORY_VARIANT: EditableSystemVariant = {
   _id: '_.variants.story',
   _type: 'system.variant',
-  conditions: {},
+  conditions: [],
   priority: 0,
   metadata: {
     title: '',

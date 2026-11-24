@@ -178,7 +178,10 @@ describe('VariantDialog', () => {
       initialValue: {
         ...getVariantDefaults(),
         metadata: {title: 'Alpha audience', description: []},
-        conditions: {audience: 'alpha', locale: 'en-US'},
+        conditions: [
+          {_key: 'audience', condition: 'audience', value: 'alpha'},
+          {_key: 'locale', condition: 'locale', value: 'en-US'},
+        ],
       },
     })
 
@@ -209,7 +212,7 @@ describe('VariantDialog', () => {
       initialValue: {
         ...getVariantDefaults(),
         metadata: {title: 'Loyal audience', description: []},
-        conditions: {audience: 'loyal'},
+        conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
       },
     })
 
@@ -223,7 +226,7 @@ describe('VariantDialog', () => {
       initialValue: {
         ...getVariantDefaults(),
         metadata: {title: 'Alpha audience', description: []},
-        conditions: {audience: 'alpha'},
+        conditions: [{_key: 'audience', condition: 'audience', value: 'alpha'}],
         priority: 10,
       },
       renderCancelButton: true,
@@ -273,7 +276,7 @@ describe('VariantDialog', () => {
       initialValue: {
         ...getVariantDefaults(),
         metadata: {title: 'Alpha audience', description: []},
-        conditions: {audience: 'alpha'},
+        conditions: [{_key: 'audience', condition: 'audience', value: 'alpha'}],
       },
       renderCancelButton: true,
     })
@@ -318,7 +321,7 @@ describe('VariantDialog', () => {
       initialValue: {
         ...getVariantDefaults(),
         metadata: {title: 'Legacy audience', description: []},
-        conditions: {legacy: 'old-value'},
+        conditions: [{_key: 'legacy', condition: 'legacy', value: 'old-value'}],
       },
     })
 
@@ -377,7 +380,10 @@ describe('VariantDialog', () => {
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith(
-        expect.objectContaining({conditions: {audience: 'loyal'}}),
+        // The retargeted row keeps the `_key` of the stale condition it replaced.
+        expect.objectContaining({
+          conditions: [{_key: 'legacy', condition: 'audience', value: 'loyal'}],
+        }),
       )
     })
   })
@@ -411,7 +417,7 @@ describe('VariantDialog', () => {
       initialValue: {
         ...getVariantDefaults(),
         metadata: {title: 'Loyal audience', description: []},
-        conditions: {audience: 'loyal'},
+        conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
       },
     })
 
@@ -458,7 +464,7 @@ describe('VariantDialog', () => {
       initialValue: {
         ...getVariantDefaults(),
         metadata: {title: 'Legacy audience', description: []},
-        conditions: {audience: 'old-value'},
+        conditions: [{_key: 'audience', condition: 'audience', value: 'old-value'}],
       },
     })
 
@@ -511,7 +517,7 @@ describe('VariantDialog', () => {
       initialValue: {
         ...getVariantDefaults(),
         metadata: {title: 'Padded audience', description: []},
-        conditions: {' audience ': 'loyal'},
+        conditions: [{_key: 'audience', condition: ' audience ', value: 'loyal'}],
       },
     })
 
@@ -554,7 +560,7 @@ describe('VariantDialog', () => {
       initialValue: {
         ...getVariantDefaults(),
         metadata: {title: 'Padded audience', description: []},
-        conditions: {audience: ' loyal '},
+        conditions: [{_key: 'audience', condition: 'audience', value: ' loyal '}],
       },
     })
 
@@ -588,7 +594,7 @@ describe('VariantDialog', () => {
       initialValue: {
         ...getVariantDefaults(),
         metadata: {title: 'Loyal audience', description: []},
-        conditions: {audience: 'loyal'},
+        conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
       },
     })
 

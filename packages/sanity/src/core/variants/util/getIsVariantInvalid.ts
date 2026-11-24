@@ -17,7 +17,8 @@ export function getIsVariantInvalid(variant: EditableSystemVariant): boolean {
 }
 
 function getHasValidConditions(conditions: EditableSystemVariant['conditions']): boolean {
-  const entries = Object.entries(conditions)
-
-  return entries.length > 0 && entries.every(([key, value]) => Boolean(key.trim() && value.trim()))
+  return (
+    conditions.length > 0 &&
+    conditions.every(({condition, value}) => Boolean(condition.trim() && value.trim()))
+  )
 }
