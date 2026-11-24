@@ -237,6 +237,29 @@ describe('editQuery', () => {
     expect(prompts[1].instruction).toContain('$previous')
     expect(prompts[1].instructionParams).toMatchObject({query: current})
   })
+
+  it('tells the model to keep the comments of the query, on every attempt', async () => {
+    const {client, prompts} = createClient({
+      replies: [
+        {query: '*[_type == $type] | sort_by(.lastName)', params: {type: 'author'}},
+        {query: `${current} | order(lastName asc)`, params: {type: 'author'}},
+      ],
+      rejections: {sort_by: queryError('unexpected token "."')},
+    })
+
+    await editQuery({
+      query: `${current}\n// only published authors`,
+      params: {type: 'author'},
+      request: 'Sort by last name',
+      schema,
+      client,
+    })
+    for (const prompt of prompts) {
+      expect(prompt.instruction).toContain('Keep every comment')
+      expect(prompt.instruction).toContain('// Generated with the prompt:')
+      expect(prompt.instruction).toContain('never delete one')
+    }
+  })
 })
 
 describe('fixQueryLint', () => {
@@ -289,6 +312,8 @@ describe('fixQueryLint', () => {
     })
     expect(prompts[0].instruction).toContain('$diagnostics')
     expect(prompts[0].instruction).not.toContain('Unexpected token')
+    expect(prompts[0].instruction).toContain('Keep every comment')
+    expect(prompts[0].instruction).toContain('never delete one')
     expect(checks).toEqual([{query: `select(false => (\n${fixed}\n))`, params: {type: 'post'}}])
   })
 })

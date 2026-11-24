@@ -38,6 +38,12 @@ const GROQ_REFERENCE = `GROQ is the query language of the Sanity Content Lake. I
 - Use the field names of the schema; when the request names something the schema lacks, use the closest field
 - Never use jq or SQL syntax: no .[] or .field after a pipe, no sort_by(), map() or select(.x), no LIMIT, ORDER BY or SELECT`
 
+/**
+ * Line comments carry context the query cannot (the prompt a query was generated from, notes the
+ * user wrote), and models drop them when they rewrite a query
+ */
+const KEEP_COMMENTS = `Keep every comment (a line starting with //) of the query, including a "// Generated with the prompt:" comment at the top. Update a comment only when the change makes it inaccurate, and never delete one.`
+
 const INSTRUCTION = `You write GROQ queries for the Sanity Content Lake.
 
 The request:
@@ -68,7 +74,9 @@ $schema
 How to write GROQ:
 $reference
 
-Reply with JSON: an object with "query" (the whole query with the change made, without code fences) and "params" (an object with a value for every parameter the query uses, or an empty object).`
+${KEEP_COMMENTS}
+
+Reply with JSON: an object with "query" (the whole query with the change made, comments included, without code fences) and "params" (an object with a value for every parameter the query uses, or an empty object).`
 
 const FIX_LINT_INSTRUCTION = `You fix GROQ queries for the Sanity Content Lake.
 
@@ -87,7 +95,9 @@ $schema
 How to write GROQ:
 $reference
 
-Fix those problems and change nothing else. Reply with JSON: an object with "query" (the whole fixed query, without code fences) and "params" (an object with a value for every parameter the query uses, or an empty object).`
+Fix those problems and change nothing else. ${KEEP_COMMENTS}
+
+Reply with JSON: an object with "query" (the whole fixed query, comments included, without code fences) and "params" (an object with a value for every parameter the query uses, or an empty object).`
 
 const RETRY_INSTRUCTION = `
 
@@ -275,8 +285,8 @@ export function generateQuery(options: GenerateQueryOptions): Promise<GeneratedQ
 
 /**
  * Changes a query as the user asks with Agent Actions: the query, its parameters, the change, the
- * workspace's document types and a GROQ primer go in. The query comes back whole, comments and
- * all, as the model left them.
+ * workspace's document types and a GROQ primer go in. The query comes back whole; the model is told
+ * to keep its comments, updating only those the change makes inaccurate.
  */
 export function editQuery(options: EditQueryOptions): Promise<GeneratedQuery> {
   const {query, params, request, schema, ...rest} = options
