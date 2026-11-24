@@ -2494,8 +2494,8 @@ importers:
         specifier: ^4.18.1
         version: 4.18.1
       mendoza:
-        specifier: ^4.0.0
-        version: 4.0.0
+        specifier: ^6.0.0
+        version: 6.0.0
       motion:
         specifier: ^14.14.0
         version: 14.14.0(react-dom@19.3.1)(react@19.3.1)
@@ -2759,8 +2759,8 @@ importers:
         specifier: ^2.0.3
         version: 2.0.3
       mendoza:
-        specifier: ^4.0.0
-        version: 4.0.0
+        specifier: ^6.0.0
+        version: 6.0.0
       playwright:
         specifier: 'catalog:'
         version: 1.65.1
@@ -13933,10 +13933,6 @@ packages:
 
   memory-pager@1.5.0:
     resolution: {integrity: sha512-ZS4Bp4r/Zoeq6+NLJpP+0Zzm0pR8whtGPf1XExKLJBAczGMnSi3It14OiNCStjQjM6NU1okjQGSxgEZN8eBYKg==}
-
-  mendoza@4.0.0:
-    resolution: {integrity: sha512-VwauCbKKTKnKDNe3qXe5PPFQ1derZrYAWatFz2HnzHBeaArfnPOZ2q6M16I7UWIIF3/BeT1MbKNeFDTU3TyseA==}
-    engines: {node: '>=22.12.0'}
 
   mendoza@6.0.0:
     resolution: {integrity: sha512-hgHqpcF6iAB7M49nCrfmWZJMYssEXBgXTgIB9VIp3UxE9HCnAjziu3fHhQesaqvgzOwpddeNMqat/JzNiZjJPQ==}
@@ -28645,8 +28641,6 @@ snapshots:
 
   memory-pager@1.5.0:
     optional: true
-
-  mendoza@4.0.0: {}
 
   mendoza@6.0.0: {}
 

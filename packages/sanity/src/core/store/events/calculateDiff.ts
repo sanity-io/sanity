@@ -1,5 +1,6 @@
 import {type SanityDocument, type TransactionLogEventWithEffects} from '@sanity/types'
-import {applyPatch, incremental} from 'mendoza'
+import {applyPatch} from 'mendoza'
+import * as incremental from 'mendoza/incremental'
 
 import {type ObjectDiff} from '../../field/types'
 import {diffValue, type EventMeta} from './diffValue'
