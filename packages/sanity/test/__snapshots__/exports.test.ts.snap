@@ -470,7 +470,6 @@ exports[`exports snapshot 1`] = `
     "isGroupChange": "function",
     "isImage": "function",
     "isImageSchemaType": "function",
-    "isImportError": "function",
     "isIndexSegment": "function",
     "isIndexTuple": "function",
     "isInvalidSessionError": "function",

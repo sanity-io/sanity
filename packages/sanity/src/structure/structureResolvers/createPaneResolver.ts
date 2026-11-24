@@ -1,6 +1,7 @@
 import {from, isObservable, type Observable, of as observableOf, throwError} from 'rxjs'
 import {catchError, publishReplay, refCount, switchMap} from 'rxjs/operators'
-import {isImportError, isRecord} from 'sanity'
+import {isRecord} from 'sanity'
+import {isImportError} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {type PaneNode, type RouterPaneSiblingContext, type UnresolvedPaneNode} from '../types'
 import {PaneResolutionError} from './PaneResolutionError'
