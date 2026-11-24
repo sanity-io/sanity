@@ -16,6 +16,10 @@ import {useTabElementId} from './tabs/queryTabShown'
  * it as `--vision-bottom-bar-height`, the height of every bar along the bottom of the tool.
  */
 export const PANEL_HEADER_HEIGHT = 35
+/** A bar along the bottom of the tool (`.bottomBar`), the 1px rule along its top included */
+export const BOTTOM_BAR_HEIGHT = PANEL_HEADER_HEIGHT + 1
+/** The rule between the tab header and the panel's body (`.panelBody`) */
+export const PANEL_BODY_BORDER = 1
 
 export interface CollapsiblePanelTab {
   id: string

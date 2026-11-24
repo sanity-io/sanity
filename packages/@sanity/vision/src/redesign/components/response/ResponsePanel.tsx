@@ -54,8 +54,6 @@ import {ResultJson} from './ResultJson'
 import {type ResultViewOption, ResultViewMenu} from './ResultViewMenu'
 import {SourceMapTab, type SourceMapView} from './SourceMapTab'
 
-const DEFAULT_BOTTOM_PANEL_SIZE = {columns: 220, stacked: 180, mobile: 160}
-
 export interface ResponsePanelProps {
   tab: VisionTab
   runnerRef: QueryRunnerRef
@@ -388,7 +386,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
     <>
       {tabDrawer && <TabDrawerPortal>{renderTabDrawer(tabDrawer)}</TabDrawerPortal>}
       <SplitWithBottomPanel
-        defaultBottomSize={DEFAULT_BOTTOM_PANEL_SIZE}
+        column="response"
         fitOnTabDoubleClick
         id="vision-response"
         onStateChange={setPanelState}
