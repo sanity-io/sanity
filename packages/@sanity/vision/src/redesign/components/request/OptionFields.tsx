@@ -5,7 +5,7 @@ import {SyncIcon} from '@sanity/icons/Sync'
 import {Card, Stack} from '@sanity/ui'
 import {Autocomplete} from '@sanity/ui/autocomplete'
 import {Tooltip} from '@sanity/ui/tooltip'
-import {type ReactNode, useCallback, useId, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
 import {ReleaseAvatarIcon, usePerspective, useWorkspace} from 'sanity'
 import {
   getDefaultVariant,
@@ -73,6 +73,13 @@ export function ApiVersionField({
   const isValid = validateApiVersion(shownValue)
   const lockedHintId = useId()
   const options = useMemo(() => getApiVersionOptions([value]), [value])
+  // The version the list opened on. Typing stores each keystroke, so comparing the query to the
+  // live value would match every option; this stays on the text the list opened with until it closes.
+  const openQuery = useRef<string | null>(null)
+  const committedVersion = useRef(shownValue)
+  useEffect(() => {
+    committedVersion.current = shownValue
+  }, [shownValue])
 
   const change = useCallback(
     (next: string) => {
@@ -85,15 +92,14 @@ export function ApiVersionField({
     [onChange, options, telemetry, trackQueryChanges, value],
   )
 
-  const filterOption = useCallback(
-    (query: string, option: ApiVersionOption) => {
-      const normalized = query.trim().toLowerCase().replace(/^v/, '')
-      // Opening the list fills the input with the current version: show every version then
-      if (!normalized || query === value) return true
-      return option.value.toLowerCase().replace(/^v/, '').includes(normalized)
-    },
-    [value],
-  )
+  const filterOption = useCallback((query: string, option: ApiVersionOption) => {
+    // Opening fills the input with the current version, before that version has been edited
+    if (openQuery.current === null && query === committedVersion.current) openQuery.current = query
+    if (query === openQuery.current) return true
+    const normalized = query.trim().toLowerCase().replace(/^v/, '')
+    if (!normalized) return true
+    return option.value.toLowerCase().replace(/^v/, '').includes(normalized)
+  }, [])
 
   const renderOption = useCallback(
     (option: ApiVersionOption) => (
@@ -165,7 +171,12 @@ export function ApiVersionField({
             }}
             onChange={change}
             onQueryChange={(query) => {
-              if (query !== null) change(query)
+              // `null` is the list closing. The stored version follows the text while it is open.
+              if (query === null) {
+                openQuery.current = null
+                return
+              }
+              if (!locked) change(query)
             }}
             openButton
             options={options}

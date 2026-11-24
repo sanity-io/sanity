@@ -295,7 +295,7 @@ describe('savedQueryTab', () => {
 
   it('matches a tab following the workspace against the dataset the workspace uses', () => {
     const tab = createTab(settings, {query: '*', options: {perspective: undefined}})
-    expect(tab.options.datasetMode).toBe('workspace')
+    expect(tab.options.datasetMode).toBe('auto')
     const saved = url('*')
 
     expect(matches(tab, saved, {...environment, workspaceDataset: 'production'})).toBe(true)

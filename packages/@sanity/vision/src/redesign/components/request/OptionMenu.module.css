@@ -7,40 +7,8 @@
   min-width: 0;
 }
 
-/*
- * Sized like the navbar's perspective menu: it fits its content between a minimum and a maximum
- * width, and never spans the window. `Menu` is a `Box` whose display and overflow rules have two
- * classes, so three win; its inner `Stack` is a gapped grid that this turns into a column.
- */
-.menu.menu.menu {
-  --vision-option-menu-inset: 12px;
-  width: max-content;
-  min-width: min(240px, calc(100vw - (var(--vision-option-menu-inset) * 2)));
-  max-width: min(360px, calc(100vw - (var(--vision-option-menu-inset) * 2)));
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.menu.menu.menu > [data-ui='Stack'] {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  overflow: hidden;
-}
-
-.list {
-  overflow-y: auto;
-  min-height: 0;
-}
-
 .section:last-child {
   border-bottom: none;
-}
-
-.icon {
-  display: flex;
-  line-height: 0;
 }
 
 .subtitle {

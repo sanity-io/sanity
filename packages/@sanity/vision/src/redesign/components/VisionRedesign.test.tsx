@@ -238,6 +238,7 @@ vi.mock('sanity', async () => {
     useCurrentUser: () => ({id: 'user-1'}),
     useDateTimeFormat: () => ({format: () => 'a date'}),
     UserAvatar: () => null,
+    ReleaseAvatarIcon: () => null,
   }
 })
 vi.mock('sanity/i18n', () => ({
@@ -706,6 +707,13 @@ function selectValue(testId: string): string {
 function pickDataset(dataset: string) {
   fireEvent.click(screen.getByTestId('vision-option-dataset-select'))
   fireEvent.click(screen.getByTestId(`vision-option-dataset-item-${dataset}`))
+}
+
+/** Picks an item in one of the Options or Settings menus. The id is the trigger's test id. */
+function pickMenuItem(selectTestId: string, item: string) {
+  const id = selectTestId.replace(/-select$/, '')
+  fireEvent.click(screen.getByTestId(selectTestId))
+  fireEvent.click(screen.getByTestId(`${id}-item-${item}`))
 }
 
 /** The request column shows one tab at a time; Params is the one open at first */
@@ -1752,7 +1760,7 @@ describe('VisionRedesign', () => {
 
     // The CDN serves no drafts: the query goes to the API, the option says why and offers the
     // published perspective, and the API version button warns about it
-    fireEvent.change(perspectiveSelect(), {target: {value: 'drafts'}})
+    pickMenuItem('vision-option-perspective-select', 'drafts')
     const notice = screen.getByTestId('vision-option-use-cdn-blocked')
     expect(text(notice)).toContain('vision.options.use-cdn.blocked.title')
     expect(text(notice)).toContain('vision.options.use-cdn.blocked')
@@ -2111,16 +2119,16 @@ describe('VisionRedesign', () => {
       expect(document.activeElement).toBe(screen.getByTestId('vision-option-api-version-select')),
     )
 
-    // An unfinished "Other" version is called out, since nothing can be fetched with it
+    // A version that is not a version is called out, since nothing can be fetched with it
     fireEvent.change(screen.getByTestId('vision-option-api-version-select'), {
-      target: {value: 'other'},
+      target: {value: 'nope'},
     })
     expect(text(screen.getByTestId('vision-api-version-button'))).toBe(
       'vision.api-version.button-invalid',
     )
     fireEvent.click(screen.getByTestId('vision-api-version-button'))
     await waitFor(() =>
-      expect(document.activeElement).toBe(screen.getByTestId('vision-option-api-version-custom')),
+      expect(document.activeElement).toBe(screen.getByTestId('vision-option-api-version-select')),
     )
   })
 
@@ -3287,9 +3295,7 @@ describe('VisionRedesign', () => {
 
     // The tab moves to a plain perspective while the request is still in flight
     openRequestTab('options')
-    fireEvent.change(screen.getByTestId('vision-option-perspective-select'), {
-      target: {value: 'published'},
-    })
+    pickMenuItem('vision-option-perspective-select', 'published')
     release()
 
     await waitFor(() =>
@@ -4210,9 +4216,7 @@ describe('VisionRedesign', () => {
     // Opening Options unmounts the params editor, which commits the edit still in the debounce
     fireEvent.change(paramsEditor, {target: {value: '{"id": "freshest"}'}})
     openRequestTab('options')
-    fireEvent.change(screen.getByTestId('vision-option-perspective-select'), {
-      target: {value: 'drafts'},
-    })
+    pickMenuItem('vision-option-perspective-select', 'drafts')
     await waitFor(() => expect(fetchCalls).toHaveLength(3))
     expect(fetchCalls[2].params).toEqual({id: 'freshest'})
     expect(fetchCalls[2].config.perspective).toBe('drafts')
@@ -4434,9 +4438,7 @@ describe('VisionRedesign', () => {
     expect(url.searchParams.get('variant')).toBeNull()
 
     // The variant option is independent of the perspective
-    fireEvent.change(screen.getByTestId('vision-option-variant-select'), {
-      target: {value: 'global'},
-    })
+    pickMenuItem('vision-option-variant-select', 'global')
     await waitFor(() =>
       expect(isDisabled(screen.getByTestId('vision-option-api-version-select'))).toBe(true),
     )
@@ -4525,7 +4527,7 @@ describe('VisionRedesign', () => {
     expect(screen.queryByText('vision.saved.unavailable-variant')).toBeNull()
   })
 
-  it('follows the workspace dataset until one is pinned, and back', async () => {
+  it('follows the workspace dataset until one is chosen, and Auto follows it again', async () => {
     const {fetchCalls} = renderRedesign()
     typeQuery('*')
     openRequestTab('options')
@@ -4544,23 +4546,20 @@ describe('VisionRedesign', () => {
       }),
     )
 
-    // Picking the current workspace's dataset follows the workspace again
+    // Picking the workspace's own dataset is still an override: it stays if the workspace changes
     pickDataset('test')
     expect(datasetSelect().value).toBe('test')
-    expect(screen.getByTestId('vision-option-dataset-pin')).toBeTruthy()
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].config.dataset).toBe('test')
-
-    // The pin button pins the workspace's dataset, and follows the workspace again
-    fireEvent.click(screen.getByTestId('vision-option-dataset-pin'))
     await waitFor(() =>
       expect(getStoredState().tabs[0].options).toMatchObject({
         datasetMode: 'override',
         dataset: 'test',
       }),
     )
-    fireEvent.click(screen.getByTestId('vision-option-dataset-follow'))
+
+    pickMenuItem('vision-option-dataset-select', 'auto')
     await waitFor(() =>
       expect(getStoredState().tabs[0].options).toMatchObject({datasetMode: 'auto'}),
     )
@@ -5286,28 +5285,19 @@ describe('VisionRedesign adoption telemetry', () => {
     typeQuery('*[_type == "author"]')
     openRequestTab('options')
 
-    fireEvent.click(screen.getByTestId('vision-option-dataset-pin'))
     expect(logged(VisionDatasetChanged.name)).toEqual([])
     pickDataset('staging')
     expect(logged(VisionDatasetChanged.name)).toEqual([[VisionDatasetChanged]])
 
-    fireEvent.change(screen.getByTestId('vision-option-perspective-select'), {
-      target: {value: 'published'},
-    })
-    fireEvent.change(screen.getByTestId('vision-option-perspective-select'), {
-      target: {value: 'published'},
-    })
+    pickMenuItem('vision-option-perspective-select', 'published')
+    pickMenuItem('vision-option-perspective-select', 'published')
     expect(logged(VisionPerspectiveChanged.name)).toEqual([[VisionPerspectiveChanged]])
 
-    fireEvent.change(screen.getByTestId('vision-option-api-version-select'), {
-      target: {value: 'v1'},
-    })
-    fireEvent.change(screen.getByTestId('vision-option-api-version-select'), {
-      target: {value: 'other'},
-    })
-    const custom = screen.getByTestId('vision-option-api-version-custom')
-    fireEvent.change(custom, {target: {value: 'v2021-03-25'}})
-    fireEvent.change(custom, {target: {value: 'v2021-03-25'}})
+    const apiVersion = screen.getByTestId('vision-option-api-version-select')
+    fireEvent.change(apiVersion, {target: {value: 'v1'}})
+    // A dated version that is not one of the listed ones is a custom version
+    fireEvent.change(apiVersion, {target: {value: 'v2020-01-01'}})
+    fireEvent.change(apiVersion, {target: {value: 'v2020-01-01'}})
     expect(logged(VisionApiVersionChanged.name)).toEqual([
       [VisionApiVersionChanged, {custom: false}],
       [VisionApiVersionChanged, {custom: true}],
@@ -5319,9 +5309,7 @@ describe('VisionRedesign adoption telemetry', () => {
     fireEvent.change(await screen.findByTestId('vision-settings-api-version-select'), {
       target: {value: 'vX'},
     })
-    fireEvent.change(screen.getByTestId('vision-settings-perspective-select'), {
-      target: {value: 'drafts'},
-    })
+    pickMenuItem('vision-settings-perspective-select', 'drafts')
     expect(logged(VisionApiVersionChanged.name)).toHaveLength(2)
     expect(logged(VisionPerspectiveChanged.name)).toHaveLength(1)
   })
