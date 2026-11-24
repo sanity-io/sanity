@@ -273,7 +273,7 @@ export const CopyPasteProvider: React.FC<{
         const _isEmptyValue = isEmptyValue(targetValue)
 
         if (nonWarningErrors.length > 0) {
-          const description = t(nonWarningErrors[0].i18n.key, nonWarningErrors[0].i18n.args)
+          const description = t(nonWarningErrors[0].i18n.key, nonWarningErrors[0].i18n.args ?? {})
 
           toast.push({
             status: 'error',
@@ -284,7 +284,9 @@ export const CopyPasteProvider: React.FC<{
         }
 
         if (errors.length > 0 && !_isEmptyValue) {
-          const description = errors.map((error) => t(error.i18n.key, error.i18n.args)).join(', ')
+          const description = errors
+            .map((error) => t(error.i18n.key, error.i18n.args ?? {}))
+            .join(', ')
 
           toast.push({
             status: 'warning',

@@ -8,7 +8,7 @@ export function isValidDate(date: Date): boolean {
  * @internal
  */
 export function getCalendarLabels(
-  t: (key: string, values?: Record<string, unknown>) => string,
+  t: (...args: [key: string] | [key: string, values: Record<string, unknown>]) => string,
 ): CalendarLabels {
   return {
     ariaLabel: t('calendar.button.aria-label'),
