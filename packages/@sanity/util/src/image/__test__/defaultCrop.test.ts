@@ -1,8 +1,8 @@
-import {type ImageCropDimensions} from '@sanity/types'
+import {type ImageAspectRatio, type ImageCropDimensions} from '@sanity/types'
 import {describe, expect, it} from 'vitest'
 
-import {resolveAspectRatio} from '../aspectRatio'
-import {croppedDimensions} from '../cropDimensions'
+import {dimensionsMatchConstraint, resolveAspectRatio} from '../aspectRatio'
+import {croppedDimensions, cropToPixelRect} from '../cropDimensions'
 import {
   defaultCropRect,
   getDefaultImageCrop,
@@ -119,6 +119,22 @@ describe('defaultCropRect', () => {
     expect(croppedDimensions(rect)).toEqual({width: 1125, height: 1500})
   })
 
+  it('holds minDimensions at a ratio inside the validation tolerance when the exact one cannot', () => {
+    const wide = resolveAspectRatio(16 / 9)
+    const rect = defaultCropRect({width: 1415, height: 810}, wide, {width: 1200, height: 800})
+    expect(croppedDimensions(rect)).toEqual({width: 1415, height: 800})
+    expect(dimensionsMatchConstraint(croppedDimensions(rect), wide)).toBe(true)
+  })
+
+  it('checks minDimensions before rounding, as the crop tool does', () => {
+    const rect = defaultCropRect({width: 2000, height: 677}, resolveAspectRatio([1, 16 / 9]), {
+      width: 1204,
+      height: 600,
+    })
+    expect(rect.width).toBeGreaterThanOrEqual(1204)
+    expect(rect.height).toBeGreaterThanOrEqual(600)
+  })
+
   it('keeps the nearest listed ratio when no listed ratio holds minDimensions', () => {
     const portraitOrWide = resolveAspectRatio([3 / 4, 16 / 9])
     const rect = defaultCropRect({width: 1300, height: 1500}, portraitOrWide, {
@@ -182,9 +198,57 @@ describe('getDefaultImageCrop', () => {
     expect(getDefaultImageCrop(`image-${ASSET_HASH}-1200x900-jpg`, [1, 4 / 3])).toBeUndefined()
   })
 
+  it.each([
+    {source: {width: 101, height: 100}, aspectRatio: 1},
+    {source: {width: 100, height: 101}, aspectRatio: 1},
+    {source: {width: 2, height: 1}, aspectRatio: 3 / 2},
+    {source: {width: 3, height: 2}, aspectRatio: 1},
+    {source: {width: 40, height: 23}, aspectRatio: 16 / 9},
+  ])(
+    'writes no crop for a $source.width × $source.height image that validation accepts at $aspectRatio',
+    ({source, aspectRatio}) => {
+      expect(dimensionsMatchConstraint(source, resolveAspectRatio(aspectRatio))).toBe(true)
+      expect(
+        getDefaultImageCrop(
+          `image-${ASSET_HASH}-${source.width}x${source.height}-jpg`,
+          aspectRatio,
+        ),
+      ).toBeUndefined()
+    },
+  )
+
   it('writes no crop without an aspect ratio', () => {
     expect(getDefaultImageCrop(`image-${ASSET_HASH}-2000x1000-jpg`, undefined)).toBeUndefined()
   })
+
+  const EXTREME_SOURCES: ImageCropDimensions[] = [
+    {width: 1, height: 10000},
+    {width: 10000, height: 1},
+    {width: 20000, height: 20000},
+    {width: 1001, height: 1000},
+  ]
+  const EXTREME_RATIOS: ImageAspectRatio[] = [16 / 9, 9 / 16, 4, [1, 16 / 9], {min: 0.5, max: 2}]
+
+  it.each(
+    EXTREME_SOURCES.flatMap((source) =>
+      EXTREME_RATIOS.map((aspectRatio) => ({source, aspectRatio})),
+    ),
+  )(
+    'crops a $source.width × $source.height image inside itself, at least a pixel on each axis',
+    ({source, aspectRatio}) => {
+      const crop = getDefaultImageCrop(
+        `image-${ASSET_HASH}-${source.width}x${source.height}-jpg`,
+        aspectRatio,
+      )
+      const rect = crop ? cropToPixelRect(crop, source) : {x: 0, y: 0, ...source}
+      expect(croppedDimensions(rect).width).toBeGreaterThanOrEqual(1)
+      expect(croppedDimensions(rect).height).toBeGreaterThanOrEqual(1)
+      expect(rect.x).toBeGreaterThanOrEqual(0)
+      expect(rect.y).toBeGreaterThanOrEqual(0)
+      expect(rect.x + rect.width).toBeLessThanOrEqual(source.width + 1e-9)
+      expect(rect.y + rect.height).toBeLessThanOrEqual(source.height + 1e-9)
+    },
+  )
 
   it('writes no crop for an asset that cannot be cropped', () => {
     expect(getDefaultImageCrop(`image-${ASSET_HASH}-2000x1000-svg`, 1)).toBeUndefined()

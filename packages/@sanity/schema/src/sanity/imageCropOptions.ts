@@ -1,4 +1,4 @@
-import {type ImageAspectRatio, type ImageCropDimensions} from '@sanity/types'
+import {type ImageAspectRatio, type ImageCropDimensions, type ImageOptions} from '@sanity/types'
 
 function isPositiveFiniteNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value) && value > 0
@@ -36,4 +36,23 @@ export function isValidImageCropDimensions(value: unknown): value is ImageCropDi
     return isPositiveFiniteNumber(value.width) && isPositiveFiniteNumber(value.height)
   }
   return false
+}
+
+/**
+ * The crop options of an image type with every malformed one left out. Schema validation does not
+ * see options a field sets on a named image type, so whatever reads them must drop malformed ones.
+ *
+ * @internal
+ */
+export function getValidImageCropOptions(
+  options: ImageOptions | undefined,
+): Pick<ImageOptions, 'aspectRatio' | 'minDimensions' | 'recommendedDimensions'> {
+  const {aspectRatio, minDimensions, recommendedDimensions} = options ?? {}
+  return {
+    aspectRatio: isValidImageAspectRatio(aspectRatio) ? aspectRatio : undefined,
+    minDimensions: isValidImageCropDimensions(minDimensions) ? minDimensions : undefined,
+    recommendedDimensions: isValidImageCropDimensions(recommendedDimensions)
+      ? recommendedDimensions
+      : undefined,
+  }
 }

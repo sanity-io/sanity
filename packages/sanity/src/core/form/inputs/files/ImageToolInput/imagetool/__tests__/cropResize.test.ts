@@ -1,4 +1,12 @@
-import {type ImagePixelRect, resolveAspectRatio} from '@sanity/util/image'
+import {type ImageAspectRatio, type ImageCropDimensions} from '@sanity/types'
+import {
+  dimensionsAtLeast,
+  dimensionsMatchConstraint,
+  getCroppedImageDimensions,
+  type ImagePixelRect,
+  pixelRectToCrop,
+  resolveAspectRatio,
+} from '@sanity/util/image'
 import {describe, expect, test} from 'vitest'
 
 import {
@@ -8,7 +16,7 @@ import {
   type CropResizeOptions,
   type ResizeDirection,
 } from '../cropResize'
-import {type Size} from '../types'
+import {type Size, type ToolHandleType} from '../types'
 
 const EPSILON = 1e-6
 const SOURCE: Size = {width: 2000, height: 2000}
@@ -378,6 +386,102 @@ describe('resizeCropRect', () => {
     expect(next.y).toBeCloseTo(403)
     expectInsideSource(next, square)
   })
+
+  describe('growing a fixed ratio on a side drag when the crop is flush with one cross side', () => {
+    const square: Size = {width: 1200, height: 1200}
+    const options: CropResizeOptions = {
+      aspectRatio: resolveAspectRatio(16 / 9),
+      minimum: getMinimumCropSize(square, {width: 800, height: 450}),
+    }
+
+    test.each([
+      {
+        name: 'left edge flush, bottom drag',
+        handle: 'crop-bottom',
+        rect: {x: 0, y: 340, width: 1168, height: 657},
+        pointer: {x: 584, y: 1100},
+        expected: {x: 0, y: 340, width: 1200, height: 675},
+      },
+      {
+        name: 'right edge flush, bottom drag',
+        handle: 'crop-bottom',
+        rect: {x: 32, y: 340, width: 1168, height: 657},
+        pointer: {x: 616, y: 1100},
+        expected: {x: 0, y: 340, width: 1200, height: 675},
+      },
+      {
+        name: 'right edge flush, top drag',
+        handle: 'crop-top',
+        rect: {x: 32, y: 340, width: 1168, height: 657},
+        pointer: {x: 616, y: 100},
+        expected: {x: 0, y: 322, width: 1200, height: 675},
+      },
+      {
+        name: 'top edge flush, right drag',
+        handle: 'crop-right',
+        rect: {x: 0, y: 0, width: 800, height: 450},
+        pointer: {x: 1100, y: 225},
+        expected: {x: 0, y: 0, width: 1100, height: 618.75},
+      },
+      {
+        name: 'top edge flush, left drag',
+        handle: 'crop-left',
+        rect: {x: 400, y: 0, width: 800, height: 450},
+        pointer: {x: 100, y: 225},
+        expected: {x: 100, y: 0, width: 1100, height: 618.75},
+      },
+      {
+        name: 'bottom edge flush, right drag',
+        handle: 'crop-right',
+        rect: {x: 0, y: 750, width: 800, height: 450},
+        pointer: {x: 1100, y: 975},
+        expected: {x: 0, y: 581.25, width: 1100, height: 618.75},
+      },
+      {
+        name: 'flush on both cross sides, bottom drag',
+        handle: 'crop-bottom',
+        rect: {x: 0, y: 340, width: 1200, height: 675},
+        pointer: {x: 600, y: 1100},
+        expected: {x: 0, y: 340, width: 1200, height: 675},
+      },
+    ] satisfies {
+      name: string
+      handle: ToolHandleType
+      rect: ImagePixelRect
+      pointer: {x: number; y: number}
+      expected: ImagePixelRect
+    }[])('$name', ({handle, rect, pointer, expected}) => {
+      const next = resizeCropRect(rect, HANDLE_DIRECTIONS[handle], pointer, square, options)
+      expectRect(next, expected)
+      expect(ratioOf(next)).toBeCloseTo(16 / 9)
+      expect(next.width).toBeGreaterThanOrEqual(800 - EPSILON)
+      expectInsideSource(next, square)
+    })
+
+    test('stops at the largest crop that fits, however far the pointer goes', () => {
+      const leftFlush: ImagePixelRect = {x: 0, y: 340, width: 1168, height: 657}
+      const next = resizeCropRect(
+        leftFlush,
+        HANDLE_DIRECTIONS['crop-bottom'],
+        {x: 584, y: 5000},
+        square,
+        options,
+      )
+      expectRect(next, {x: 0, y: 340, width: 1200, height: 675})
+    })
+
+    test('still grows evenly about the centre when both cross sides have room', () => {
+      const centered: ImagePixelRect = {x: 200, y: 340, width: 800, height: 450}
+      const next = resizeCropRect(
+        centered,
+        HANDLE_DIRECTIONS['crop-bottom'],
+        {x: 600, y: 880},
+        square,
+        options,
+      )
+      expectRect(next, {x: 120, y: 340, width: 960, height: 540})
+    })
+  })
 })
 
 const TINY_CONSTRAINTS = [
@@ -421,4 +525,184 @@ describe.each([
       })
     },
   )
+})
+
+interface ValidatedField {
+  aspectRatio: ImageAspectRatio
+  minDimensions: ImageCropDimensions
+}
+
+function passesValidation(rect: ImagePixelRect, source: Size, field: ValidatedField): boolean {
+  const size = getCroppedImageDimensions({
+    asset: {
+      _type: 'reference',
+      _ref: `image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-${source.width}x${source.height}-jpg`,
+    },
+    crop: pixelRectToCrop(rect, source),
+  })
+  return (
+    size !== undefined &&
+    dimensionsAtLeast(size, field.minDimensions) &&
+    dimensionsMatchConstraint(size, resolveAspectRatio(field.aspectRatio))
+  )
+}
+
+function resizeForField(
+  rect: ImagePixelRect,
+  handle: ToolHandleType,
+  pointer: {x: number; y: number},
+  source: Size,
+  field: ValidatedField,
+  modifiers: Partial<CropResizeOptions> = {},
+): ImagePixelRect {
+  return resizeCropRect(rect, HANDLE_DIRECTIONS[handle], pointer, source, {
+    aspectRatio: resolveAspectRatio(field.aspectRatio),
+    minimum: getMinimumCropSize(source, field.minDimensions),
+    ...modifiers,
+  })
+}
+
+function draggedEdge(rect: ImagePixelRect, handle: ToolHandleType): {x: number; y: number} {
+  const {dx, dy} = HANDLE_DIRECTIONS[handle]
+  const edge = (start: number, length: number, direction: number) =>
+    start + (length * (direction + 1)) / 2
+  return {x: edge(rect.x, rect.width, dx), y: edge(rect.y, rect.height, dy)}
+}
+
+function wholeImage(source: Size): ImagePixelRect {
+  return {x: 0, y: 0, width: source.width, height: source.height}
+}
+
+describe('a 16:9 field with a 1200 × 800 minimum on a 1415 × 800 image', () => {
+  const field: ValidatedField = {aspectRatio: 16 / 9, minDimensions: {width: 1200, height: 800}}
+  const source: Size = {width: 1415, height: 800}
+
+  test('passes validation uncropped', () => {
+    expect(passesValidation(wholeImage(source), source, field)).toBe(true)
+  })
+
+  test.each(DIRECTIONS.map(([handle]) => handle as ToolHandleType))(
+    'stays 800px high and passes validation after a %s drag',
+    (handle) => {
+      const failures = MODIFIERS.flatMap(({name, options}) =>
+        [-200, -20, 20, 200].flatMap((delta) => {
+          const edge = draggedEdge(wholeImage(source), handle)
+          const pointer = {x: edge.x + delta, y: edge.y + delta}
+          const resized = resizeForField(
+            wholeImage(source),
+            handle,
+            pointer,
+            source,
+            field,
+            options,
+          )
+          return passesValidation(resized, source, field) && Math.round(resized.height) === 800
+            ? []
+            : [`${name} ${delta}px: ${resized.width} × ${resized.height}`]
+        }),
+      )
+      expect(failures).toEqual([])
+    },
+  )
+
+  test('passes validation after every keyboard resize step', () => {
+    const steps: {handle: ToolHandleType; delta: Size}[] = [
+      {handle: 'crop-right', delta: {width: -source.width * 0.005, height: 0}},
+      {handle: 'crop-bottom', delta: {width: 0, height: -source.height * 0.005}},
+      {handle: 'crop-right', delta: {width: source.width * 0.005, height: 0}},
+      {handle: 'crop-bottom', delta: {width: 0, height: source.height * 0.005}},
+    ]
+    const rects = [...steps, ...steps].reduce<ImagePixelRect[]>(
+      (previous, {handle, delta}) => {
+        const rect = previous[previous.length - 1]
+        const edge = draggedEdge(rect, handle)
+        const pointer = {x: edge.x + delta.width, y: edge.y + delta.height}
+        return [...previous, resizeForField(rect, handle, pointer, source, field)]
+      },
+      [wholeImage(source)],
+    )
+    expect(rects.filter((rect) => passesValidation(rect, source, field) === false)).toEqual([])
+  })
+})
+
+describe('a drag from a crop that passes validation keeps passing', () => {
+  const CASES: {field: ValidatedField; sources: Size[]}[] = [
+    {
+      field: {aspectRatio: 16 / 9, minDimensions: {width: 1200, height: 800}},
+      sources: [
+        {width: 1415, height: 800},
+        {width: 1407, height: 800},
+        {width: 1415, height: 803},
+        {width: 1430, height: 800},
+        {width: 1600, height: 900},
+      ],
+    },
+    {
+      field: {aspectRatio: 9 / 16, minDimensions: {width: 800, height: 1200}},
+      sources: [
+        {width: 800, height: 1415},
+        {width: 803, height: 1420},
+      ],
+    },
+    {
+      field: {aspectRatio: 4 / 3, minDimensions: {width: 900, height: 760}},
+      sources: [
+        {width: 1010, height: 760},
+        {width: 1013, height: 765},
+        {width: 1333, height: 1000},
+      ],
+    },
+    {
+      field: {aspectRatio: [1, 16 / 9], minDimensions: {width: 1200, height: 800}},
+      sources: [
+        {width: 1415, height: 800},
+        {width: 1200, height: 1200},
+        {width: 1300, height: 1300},
+      ],
+    },
+    {
+      field: {aspectRatio: {min: 4 / 3, max: 16 / 9}, minDimensions: {width: 1400, height: 800}},
+      sources: [
+        {width: 1415, height: 800},
+        {width: 1500, height: 1000},
+      ],
+    },
+  ]
+  const DELTAS = [-300, -40, -3, 3, 40, 300]
+  const HANDLES = DIRECTIONS.map(([handle]) => handle as ToolHandleType)
+
+  function dragsFrom(rect: ImagePixelRect, source: Size, field: ValidatedField) {
+    return HANDLES.flatMap((handle) =>
+      MODIFIERS.flatMap(({name, options}) =>
+        DELTAS.map((delta) => {
+          const edge = draggedEdge(rect, handle)
+          const pointer = {x: edge.x + delta, y: edge.y + delta}
+          return {
+            label: `${handle} ${name} ${delta}px`,
+            rect: resizeForField(rect, handle, pointer, source, field, options),
+          }
+        }),
+      ),
+    )
+  }
+
+  test.each(
+    CASES.flatMap(({field, sources}) =>
+      sources.map((source) => ({field, source, label: JSON.stringify(field.aspectRatio)})),
+    ),
+  )('$label on a $source.width × $source.height image', ({field, source}) => {
+    expect(passesValidation(wholeImage(source), source, field)).toBe(true)
+    const firstDrags = dragsFrom(wholeImage(source), source, field)
+    const passingStarts = firstDrags.filter(({rect}) => passesValidation(rect, source, field))
+    const secondDrags = passingStarts.flatMap((start) =>
+      dragsFrom(start.rect, source, field).map((drag) => ({
+        ...drag,
+        label: `${start.label}, then ${drag.label}`,
+      })),
+    )
+    const failures = [...firstDrags, ...secondDrags]
+      .filter(({rect}) => passesValidation(rect, source, field) === false)
+      .map(({label, rect}) => `${label}: ${rect.width} × ${rect.height}`)
+    expect(failures).toEqual([])
+  })
 })

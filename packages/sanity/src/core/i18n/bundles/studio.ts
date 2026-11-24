@@ -1090,6 +1090,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.imagetool.crop-only.title': 'Crop',
   /** The size of the current crop in pixels of the original image */
   'inputs.imagetool.crop-size.dimensions': '{{width}} × {{height}} px',
+  /** Shown under the crop size when no crop of the image can reach the field's minimum size, which only a larger image can fix */
+  'inputs.imagetool.crop-size.image-too-small':
+    'This image is too small to crop to {{width}} × {{height}} px. Upload a larger image.',
   /** Shown under the crop size when the crop tool proposes a crop the document does not have yet */
   'inputs.imagetool.crop-size.unsaved': 'Not saved yet. Edit the crop to save it.',
   /** Shown under the crop size when a read-only field shows a crop the document does not have */

@@ -111,6 +111,16 @@ describe('croppedDimensions / dimensionsAtLeast', () => {
     })
   })
 
+  it('rounds an exact half pixel up whatever float noise the insets carry', () => {
+    const source = {width: 1000, height: 1000}
+    const centred = {left: 0.21875, right: 0.21875, top: 0, bottom: 0}
+    const offset = 50 / 468
+    const moved = {...centred, left: centred.left + offset, right: centred.right - offset}
+    expect(cropToPixelRect(moved, source).width).toBeLessThan(562.5)
+    expect(croppedDimensions(cropToPixelRect(centred, source)).width).toBe(563)
+    expect(croppedDimensions(cropToPixelRect(moved, source)).width).toBe(563)
+  })
+
   it('compares both axes against a threshold', () => {
     const threshold = {width: 800, height: 600}
     expect(dimensionsAtLeast({width: 800, height: 600}, threshold)).toBe(true)

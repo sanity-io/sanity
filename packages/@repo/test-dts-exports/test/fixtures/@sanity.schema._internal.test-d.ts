@@ -19,6 +19,7 @@ import type {
   extractManifestSchemaTypes,
   extractSchema,
   FIXME,
+  getValidImageCropOptions,
   getWorkspaceSchemaId,
   groupProblems,
   IconResolver,
@@ -26,8 +27,6 @@ import type {
   isHotspotEnabled,
   isImageToolEnabled,
   isInternalValidator,
-  isValidImageAspectRatio,
-  isValidImageCropDimensions,
   ManifestSchemaType,
   ManifestWorkspaceFile,
   markInternalValidator,
@@ -111,6 +110,9 @@ describe('@sanity/schema/_internal', () => {
   test('FIXME', () => {
     expectTypeOf<FIXME>().not.toBeNever()
   })
+  test('getValidImageCropOptions', () => {
+    expectTypeOf<typeof getValidImageCropOptions>().toBeFunction()
+  })
   test('getWorkspaceSchemaId', () => {
     expectTypeOf<typeof getWorkspaceSchemaId>().toBeFunction()
   })
@@ -131,12 +133,6 @@ describe('@sanity/schema/_internal', () => {
   })
   test('isInternalValidator', () => {
     expectTypeOf<typeof isInternalValidator>().toBeFunction()
-  })
-  test('isValidImageAspectRatio', () => {
-    expectTypeOf<typeof isValidImageAspectRatio>().toBeFunction()
-  })
-  test('isValidImageCropDimensions', () => {
-    expectTypeOf<typeof isValidImageCropDimensions>().toBeFunction()
   })
   test('ManifestSchemaType', () => {
     expectTypeOf<ManifestSchemaType>().toBeObject()

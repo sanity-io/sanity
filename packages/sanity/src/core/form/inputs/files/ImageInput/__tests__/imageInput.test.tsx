@@ -306,16 +306,48 @@ describe('ImageInput default crop', () => {
     expect(hotspot.y + hotspot.height / 2).toBeLessThanOrEqual(1 - (crop?.bottom ?? 0))
   })
 
-  it('writes no crop without an aspect ratio', async () => {
+  it('writes no crop for a selected asset on a field without crop options', async () => {
     const assetSource = createMockAssetSourceWithMediaLibraryUploader({browseAssetId: WIDE_REF})
     const {onChange} = await renderWithOptions({hotspot: true}, {assetSources: [assetSource]})
 
     await userEvent.click(screen.getByTestId(imageBrowseTestId(assetSource.name)))
 
     await waitFor(() => {
-      expect(changePatches(onChange).length).toBeGreaterThan(0)
+      expect(
+        changePatches(onChange).some((patches) =>
+          patches.some((patch) => patch.path.join('.') === 'asset' && patch.type === 'set'),
+        ),
+      ).toBe(true)
     })
     expect(cropAfterAsset(onChange)).toBeUndefined()
+  })
+
+  it('clears the previous crop when its asset source uploader replaces the asset on a field with only minDimensions', async () => {
+    const value = {
+      _type: 'image',
+      asset: {_type: 'reference', _ref: WIDE_REF},
+      crop: CENTERED_SQUARE_CROP,
+    }
+    const assetSource: AssetSource = {
+      ...createMockAssetSourceWithMediaLibraryUploader({name: 'patching-source'}),
+      Uploader: createPatchingUploader(SQUARE_REF),
+    }
+    const {onChange} = await renderWithOptions(
+      {minDimensions: {width: 600, height: 600}},
+      {assetSources: [assetSource], value},
+    )
+
+    await userEvent.click(screen.getByTestId('options-menu-button'))
+    const [uploadButton] = await screen.findAllByTestId('file-input-upload-button')
+    await userEvent.click(uploadButton, {pointerEventsCheck: 0})
+    await userEvent.upload(
+      await screen.findByTestId('open-file-picker-input'),
+      new File(['content'], 'square.jpg', {type: 'image/jpeg'}),
+    )
+
+    await waitFor(() => {
+      expect(cropAfterAsset(onChange)).toMatchObject({type: 'unset'})
+    })
   })
 
   it('crops an off-ratio upload in the change its asset source uploader makes', async () => {

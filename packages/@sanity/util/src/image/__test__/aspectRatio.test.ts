@@ -5,7 +5,6 @@ import {
   formatAspectRatio,
   getAspectRatioMessageOptions,
   nearestAllowedRatio,
-  ratioMatchesConstraint,
   resolveAspectRatio,
 } from '../aspectRatio'
 
@@ -61,33 +60,6 @@ describe('nearestAllowedRatio', () => {
 
   it('returns the sole member of a one-element list', () => {
     expect(nearestAllowedRatio(3, resolveAspectRatio([1.5]))).toBe(1.5)
-  })
-})
-
-describe('ratioMatchesConstraint', () => {
-  it('matches a fixed ratio within the rounding tolerance', () => {
-    const fixed = resolveAspectRatio(16 / 9)
-    expect(ratioMatchesConstraint(16 / 9, fixed)).toBe(true)
-    expect(ratioMatchesConstraint(1600 / 896, fixed)).toBe(true)
-    expect(ratioMatchesConstraint(1.5, fixed)).toBe(false)
-  })
-
-  it('matches a ratio inside a range and rejects one outside it', () => {
-    const range = resolveAspectRatio(RANGE)
-    expect(ratioMatchesConstraint(1.5, range)).toBe(true)
-    expect(ratioMatchesConstraint(1, range)).toBe(false)
-    expect(ratioMatchesConstraint(2, range)).toBe(false)
-  })
-
-  it('matches a snap-list member and rejects a ratio between members', () => {
-    const snap = resolveAspectRatio([1, 16 / 9])
-    expect(ratioMatchesConstraint(1, snap)).toBe(true)
-    expect(ratioMatchesConstraint(16 / 9, snap)).toBe(true)
-    expect(ratioMatchesConstraint(1.5, snap)).toBe(false)
-  })
-
-  it('accepts a custom tolerance', () => {
-    expect(ratioMatchesConstraint(1.1, resolveAspectRatio(1), 0.2)).toBe(true)
   })
 })
 
@@ -167,5 +139,18 @@ describe('getAspectRatioMessageOptions', () => {
 
   it('states a one-member snap list as a fixed ratio', () => {
     expect(getAspectRatioMessageOptions(resolveAspectRatio([1]))).toEqual({aspectRatio: '1:1'})
+  })
+
+  it('states ratios that share a label once', () => {
+    expect(getAspectRatioMessageOptions(resolveAspectRatio([1.777, 16 / 9]))).toEqual({
+      aspectRatio: '16:9',
+    })
+    expect(getAspectRatioMessageOptions(resolveAspectRatio([1, 1.777, 16 / 9]))).toEqual({
+      context: 'list',
+      ratios: ['1:1', '16:9'],
+    })
+    expect(getAspectRatioMessageOptions(resolveAspectRatio({min: 1.777, max: 16 / 9}))).toEqual({
+      aspectRatio: '16:9',
+    })
   })
 })

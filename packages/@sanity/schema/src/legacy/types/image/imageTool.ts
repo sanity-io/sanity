@@ -1,5 +1,7 @@
 import {type ImageOptions} from '@sanity/types'
 
+import {getValidImageCropOptions} from '../../../sanity/imageCropOptions'
+
 /**
  * Whether an image field has a hotspot, which shows its hotspot field. Any truthy `hotspot` counts,
  * so the studio's image tool and the compiled schema always agree on which field the tool edits.
@@ -11,7 +13,8 @@ export function isHotspotEnabled(options: ImageOptions | undefined): boolean {
 }
 
 function hasCropConstraints(options: ImageOptions | undefined): boolean {
-  return options?.aspectRatio !== undefined || options?.minDimensions !== undefined
+  const {aspectRatio, minDimensions} = getValidImageCropOptions(options)
+  return aspectRatio !== undefined || minDimensions !== undefined
 }
 
 /**

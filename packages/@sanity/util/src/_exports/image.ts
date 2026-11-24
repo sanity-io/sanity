@@ -4,7 +4,6 @@ export {
   formatAspectRatio,
   getAspectRatioMessageOptions,
   nearestAllowedRatio,
-  ratioMatchesConstraint,
   resolveAspectRatio,
   type ResolvedImageAspectRatio,
 } from '../image/aspectRatio'
@@ -24,4 +23,5 @@ export {
   getDefaultImageCrop,
   largestRectForRatio,
   largestSizeForRatio,
+  nearestRatioHoldingMinimum,
 } from '../image/defaultCrop'

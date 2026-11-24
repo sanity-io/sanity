@@ -85,13 +85,20 @@ export function pixelRectToCrop(rect: ImagePixelRect, source: ImageCropDimension
   }
 }
 
+// Fractional insets carry float noise that can tip an exact half pixel either way.
+const SUBPIXEL_PRECISION = 1e6
+
+function roundToPixels(length: number): number {
+  return Math.round(Math.round(length * SUBPIXEL_PRECISION) / SUBPIXEL_PRECISION)
+}
+
 /**
  * A rectangle's size, rounded to whole pixels.
  *
  * @internal
  */
 export function croppedDimensions(rect: ImagePixelRect): ImageCropDimensions {
-  return {width: Math.round(rect.width), height: Math.round(rect.height)}
+  return {width: roundToPixels(rect.width), height: roundToPixels(rect.height)}
 }
 
 /**

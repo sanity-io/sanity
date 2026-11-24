@@ -2,6 +2,7 @@ import {
   type ImagePixelRect,
   largestSizeForRatio,
   nearestAllowedRatio,
+  nearestRatioHoldingMinimum,
   type ResolvedImageAspectRatio,
 } from '@sanity/util/image'
 
@@ -73,6 +74,7 @@ interface Axis {
   length: number
   direction: AxisDirection
   centered: boolean
+  fromCenter: boolean
   sourceLength: number
 }
 
@@ -82,7 +84,8 @@ function getAnchor({start, length, direction, centered}: Axis): number {
 }
 
 function getAvailableLength(axis: Axis, anchor: number): number {
-  if (axis.centered) return 2 * Math.min(anchor, axis.sourceLength - anchor)
+  if (axis.fromCenter) return 2 * Math.min(anchor, axis.sourceLength - anchor)
+  if (axis.direction === 0) return axis.sourceLength
   return axis.direction > 0 ? axis.sourceLength - anchor : anchor
 }
 
@@ -99,15 +102,16 @@ function getStart(axis: Axis, anchor: number, length: number): number {
 /**
  * Resizes a crop by dragging the edges `direction` names toward `pointer`, all in source pixels.
  *
- * The opposite edge stays fixed while the dragged edge follows the pointer; an axis the handle
- * leaves free (or every axis, with `fromCenter`) keeps its midpoint fixed instead. A side handle
- * holds the perpendicular size, so the ratio follows the dragged edge, and the perpendicular axis
- * only changes when the ratio has to be clamped to the range or snapped to a listed ratio. A
- * corner reads its ratio from the pointer unless `lockRatio` is set.
+ * The opposite edge stays fixed while the dragged edge follows the pointer. With `fromCenter` every
+ * axis keeps its midpoint fixed instead; an axis the handle leaves free keeps its midpoint where the
+ * image has room and shifts to stay inside it otherwise. A side handle holds the perpendicular
+ * size, so the ratio follows the dragged edge, and the perpendicular axis only changes when the
+ * ratio has to be clamped to the range or snapped to a listed ratio. A corner reads its ratio from
+ * the pointer unless `lockRatio` is set.
  *
- * The result stays inside the image, keeps its ratio within the constraint (snapping to the
- * nearest listed ratio that leaves room for `minimum`, when there are any) and does not shrink
- * below `minimum`, unless the room left between the anchor and the image edge is smaller than that.
+ * The result stays inside the image, keeps a ratio validation accepts (the allowed ratio nearest
+ * the asked one that leaves room for `minimum`, see `pickRatio`) and does not shrink below
+ * `minimum`, unless the room left between the anchor and the image edge is smaller than that.
  */
 export function resizeCropRect(
   rect: ImagePixelRect,
@@ -123,6 +127,7 @@ export function resizeCropRect(
     length: rect.width,
     direction: direction.dx,
     centered: fromCenter || direction.dx === 0,
+    fromCenter,
     sourceLength: source.width,
   }
   const yAxis: Axis = {
@@ -130,6 +135,7 @@ export function resizeCropRect(
     length: rect.height,
     direction: direction.dy,
     centered: fromCenter || direction.dy === 0,
+    fromCenter,
     sourceLength: source.height,
   }
 
@@ -190,14 +196,10 @@ function atLeastAPixel({width, height}: Size, source: Size): Size {
   }
 }
 
-function holdsMinimum(ratio: number, minimum: Size, available: Size): boolean {
-  const width = Math.max(minimum.width, minimum.height * ratio)
-  return width <= available.width && width / ratio <= available.height
-}
-
 /**
- * The allowed ratio nearest `askedRatio`. With listed ratios, one that cannot hold `minimum` in the
- * room left by the anchor gives way to the nearest one that can, or to the crop's current ratio.
+ * The allowed ratio nearest `askedRatio` that holds `minimum` in the room left by the anchor, as
+ * {@link nearestRatioHoldingMinimum} picks it. When none can, a range keeps the asked ratio and
+ * listed ratios keep the crop's current one.
  */
 function pickRatio(params: {
   askedRatio: number
@@ -207,16 +209,14 @@ function pickRatio(params: {
   available: Size
 }): number {
   const {askedRatio, currentRatio, aspectRatio, minimum, available} = params
-  const nearest = nearestAllowedRatio(askedRatio, aspectRatio)
-  if (aspectRatio?.snapRatios === undefined || holdsMinimum(nearest, minimum, available)) {
-    return nearest
+  if (aspectRatio === undefined) {
+    return askedRatio
   }
-  const roomyRatios = aspectRatio.snapRatios.filter((ratio) =>
-    holdsMinimum(ratio, minimum, available),
+  const fallbackRatio = aspectRatio.snapRatios ? currentRatio : askedRatio
+  return (
+    nearestRatioHoldingMinimum(askedRatio, aspectRatio, minimum, available) ??
+    nearestAllowedRatio(fallbackRatio, aspectRatio)
   )
-  return roomyRatios.length > 0
-    ? nearestAllowedRatio(askedRatio, {...aspectRatio, snapRatios: roomyRatios})
-    : nearestAllowedRatio(currentRatio, aspectRatio)
 }
 
 function getAskedRatio(params: {

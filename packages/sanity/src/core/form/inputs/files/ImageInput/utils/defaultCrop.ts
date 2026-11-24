@@ -1,3 +1,4 @@
+import {getValidImageCropOptions} from '@sanity/schema/_internal'
 import {type ImageHotspot, type ImageOptions} from '@sanity/types'
 import {getDefaultImageCrop} from '@sanity/util/image'
 
@@ -20,17 +21,20 @@ function isHotspotUnset(patch: FormPatch): boolean {
 
 /**
  * Patches writing the default crop for a newly set asset, and moving `hotspot` inside it, or
- * clearing a stale crop when the asset already fits; none without an aspect ratio.
+ * clearing the previous asset's crop when the asset already fits. A field with no valid
+ * `aspectRatio` or `minDimensions` gets none, so it keeps whatever crop it had.
  */
 export function getDefaultCropPatches(
   assetRef: string | undefined,
   options: ImageOptions | undefined,
   hotspot?: ImageHotspot,
 ): FormPatch[] {
-  if (assetRef === undefined || options?.aspectRatio === undefined) {
+  const {aspectRatio, minDimensions} = getValidImageCropOptions(options)
+  const isUnconstrained = aspectRatio === undefined && minDimensions === undefined
+  if (assetRef === undefined || isUnconstrained) {
     return []
   }
-  const crop = getDefaultImageCrop(assetRef, options.aspectRatio, options.minDimensions)
+  const crop = getDefaultImageCrop(assetRef, aspectRatio, minDimensions)
   if (crop === undefined) {
     return [unset(['crop'])]
   }

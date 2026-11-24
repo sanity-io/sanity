@@ -73,21 +73,6 @@ export function nearestAllowedRatio(
 }
 
 /**
- * Whether `ratio` satisfies a resolved constraint within a relative tolerance. A snap list
- * matches its nearest member, and a range matches anything inside it.
- *
- * @internal
- */
-export function ratioMatchesConstraint(
-  ratio: number,
-  constraint: ResolvedImageAspectRatio,
-  tolerance = RATIO_MATCH_TOLERANCE,
-): boolean {
-  const target = nearestAllowedRatio(ratio, constraint)
-  return Math.abs(ratio - target) <= target * tolerance
-}
-
-/**
  * Whether a whole-pixel size could have come from a size within half a pixel per axis whose ratio
  * satisfies the constraint, so rounding a small crop to pixels never fails it.
  *
@@ -135,7 +120,7 @@ export type AspectRatioMessageOptions =
 
 /**
  * The options to translate a message that states a resolved constraint with, so the locale words
- * a range or a list.
+ * a range or a list. Ratios that share a label are stated once.
  *
  * @internal
  */
@@ -143,11 +128,11 @@ export function getAspectRatioMessageOptions({
   range,
   snapRatios,
 }: ResolvedImageAspectRatio): AspectRatioMessageOptions {
-  if (snapRatios && snapRatios.length > 1) {
-    return {context: 'list', ratios: snapRatios.map(formatAspectRatio)}
+  const labels = [...new Set((snapRatios ?? [range.min, range.max]).map(formatAspectRatio))]
+  if (labels.length === 1) {
+    return {aspectRatio: labels[0]}
   }
-  if (range.min === range.max) {
-    return {aspectRatio: formatAspectRatio(range.min)}
-  }
-  return {context: 'range', min: formatAspectRatio(range.min), max: formatAspectRatio(range.max)}
+  return snapRatios
+    ? {context: 'list', ratios: labels}
+    : {context: 'range', min: labels[0], max: labels[1]}
 }

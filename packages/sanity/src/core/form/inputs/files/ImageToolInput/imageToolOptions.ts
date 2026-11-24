@@ -1,4 +1,4 @@
-import {isHotspotEnabled} from '@sanity/schema/_internal'
+import {getValidImageCropOptions, isHotspotEnabled} from '@sanity/schema/_internal'
 import {
   type HotspotPreview,
   type Image,
@@ -15,6 +15,7 @@ import {
   getAspectRatioMessageOptions,
   getCroppedImageDimensions,
   getImageRefDimensions,
+  nearestRatioHoldingMinimum,
   pixelRectToCrop,
   resolveAspectRatio,
   type ResolvedImageAspectRatio,
@@ -70,28 +71,28 @@ export function getHotspotPreviews(options: ImageOptions | undefined): HotspotPr
   if (configuredPreviews) {
     return configuredPreviews
   }
-  if (options?.aspectRatio === undefined) {
+  const {aspectRatio} = getValidImageCropOptions(options)
+  if (aspectRatio === undefined) {
     return DEFAULT_PREVIEWS
   }
-  const {range, snapRatios} = resolveAspectRatio(options.aspectRatio)
+  const {range, snapRatios} = resolveAspectRatio(aspectRatio)
   const ratios = snapRatios ?? [...new Set([range.min, range.max])]
   return ratios.map((ratio) => ({title: formatAspectRatio(ratio), aspectRatio: ratio}))
 }
 
 /** Whether the crop tool shows the size of the crop, which only matters with a size or ratio. */
 export function hasCropSizeReadout(options: ImageOptions | undefined): boolean {
-  return [options?.aspectRatio, options?.minDimensions, options?.recommendedDimensions].some(
-    (option) => option !== undefined,
-  )
+  return Object.values(getValidImageCropOptions(options)).some((option) => option !== undefined)
 }
 
 /** The options the validation message states the field's required aspect ratio with, when it has one. */
 export function getCropAspectRatioMessageOptions(
   options: ImageOptions | undefined,
 ): AspectRatioMessageOptions | undefined {
-  return options?.aspectRatio === undefined
+  const {aspectRatio} = getValidImageCropOptions(options)
+  return aspectRatio === undefined
     ? undefined
-    : getAspectRatioMessageOptions(resolveAspectRatio(options.aspectRatio))
+    : getAspectRatioMessageOptions(resolveAspectRatio(aspectRatio))
 }
 
 export type CropSizeStatus =
@@ -103,7 +104,7 @@ export function getCropSizeStatus(
   dimensions: ImageCropDimensions,
   options: ImageOptions | undefined,
 ): CropSizeStatus {
-  const {minDimensions, recommendedDimensions} = options ?? {}
+  const {minDimensions, recommendedDimensions} = getValidImageCropOptions(options)
   if (minDimensions && !dimensionsAtLeast(dimensions, minDimensions)) {
     return {tone: 'critical', threshold: minDimensions}
   }
@@ -111,4 +112,21 @@ export function getCropSizeStatus(
     return {tone: 'caution', threshold: recommendedDimensions}
   }
   return {tone: undefined, threshold: undefined}
+}
+
+/** Whether no crop of `source` can reach the field's `minDimensions` at a ratio it allows. */
+export function isImageTooSmallForMinimum(
+  source: ImageCropDimensions,
+  options: ImageOptions | undefined,
+): boolean {
+  const {aspectRatio, minDimensions} = getValidImageCropOptions(options)
+  if (minDimensions === undefined) {
+    return false
+  }
+  if (aspectRatio === undefined) {
+    return !dimensionsAtLeast(source, minDimensions)
+  }
+  const sourceRatio = source.width / source.height
+  const constraint = resolveAspectRatio(aspectRatio)
+  return nearestRatioHoldingMinimum(sourceRatio, constraint, minDimensions, source) === undefined
 }

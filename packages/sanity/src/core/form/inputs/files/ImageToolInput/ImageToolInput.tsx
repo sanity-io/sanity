@@ -1,4 +1,4 @@
-import {isHotspotEnabled} from '@sanity/schema/_internal'
+import {getValidImageCropOptions, isHotspotEnabled} from '@sanity/schema/_internal'
 import {
   type Image,
   type ImageCropDimensions,
@@ -48,6 +48,7 @@ import {
   getImageToolPath,
   getInitialToolCrop,
   hasCropSizeReadout,
+  isImageTooSmallForMinimum,
 } from './imageToolOptions'
 import {useLoadImage} from './useLoadImage'
 
@@ -107,17 +108,19 @@ function LoadStatus(props: {children: ReactNode}) {
 
 function CropSize(props: {
   dimensions: ImageCropDimensions
+  source: ImageCropDimensions | undefined
   options: ImageOptions | undefined
   unsaved: boolean
   readOnly: boolean | undefined
 }) {
-  const {dimensions, options, unsaved, readOnly} = props
+  const {dimensions, source, options, unsaved, readOnly} = props
   const {t} = useTranslation()
   const {t: tValidation} = useTranslation(validationLocaleNamespace)
   const {tone, threshold} = getCropSizeStatus(dimensions, options)
   const aspectRatioMessage = getCropAspectRatioMessageOptions(options)
-  const minDimensions = options?.minDimensions
+  const {minDimensions} = getValidImageCropOptions(options)
   const minimumTone = tone === 'critical' ? tone : undefined
+  const imageTooSmall = source !== undefined && isImageTooSmallForMinimum(source, options)
 
   return (
     <Flex
@@ -146,7 +149,12 @@ function CropSize(props: {
           {tValidation('object.image-below-recommended-dimensions', {...threshold})}
         </Text>
       ) : null}
-      {unsaved ? (
+      {imageTooSmall ? (
+        <Text size={1} tone="critical">
+          {t('inputs.imagetool.crop-size.image-too-small', {...minDimensions})}
+        </Text>
+      ) : null}
+      {unsaved && !imageTooSmall ? (
         <Text size={1} muted>
           {readOnly
             ? t('inputs.imagetool.crop-size.unsaved-read-only')
@@ -175,7 +183,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
   const ref = useRef<HTMLDivElement | null>(null)
   useImperativeHandle(forwardRef, () => ref.current)
 
-  const {aspectRatio, minDimensions} = schemaType.options ?? {}
+  const {aspectRatio, minDimensions} = getValidImageCropOptions(schemaType.options)
   const cropConstraints = useMemo<CropConstraints>(
     () => ({
       aspectRatio: aspectRatio === undefined ? undefined : resolveAspectRatio(aspectRatio),
@@ -352,6 +360,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
         {cropSize ? (
           <CropSize
             dimensions={cropSize}
+            source={sourceSize}
             options={schemaType.options}
             unsaved={isCropProposed}
             readOnly={readOnly}

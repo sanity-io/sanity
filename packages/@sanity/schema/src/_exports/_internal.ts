@@ -53,7 +53,7 @@ export {
 export {builtinTypes} from '../sanity/builtinTypes'
 export {extractSchema} from '../sanity/extractSchema'
 export {groupProblems} from '../sanity/groupProblems'
-export {isValidImageAspectRatio, isValidImageCropDimensions} from '../sanity/imageCropOptions'
+export {getValidImageCropOptions} from '../sanity/imageCropOptions'
 export {
   type _FIXME_ as FIXME,
   type SchemaValidationResult as Problem,

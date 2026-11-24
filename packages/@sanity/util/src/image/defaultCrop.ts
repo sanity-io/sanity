@@ -1,8 +1,8 @@
 import {type ImageAspectRatio, type ImageCrop, type ImageCropDimensions} from '@sanity/types'
 
 import {
+  dimensionsMatchConstraint,
   nearestAllowedRatio,
-  ratioMatchesConstraint,
   resolveAspectRatio,
   type ResolvedImageAspectRatio,
 } from './aspectRatio'
@@ -50,10 +50,63 @@ export function largestRectForRatio(source: ImageCropDimensions, ratio: number):
   }
 }
 
+// A clamped ratio pins the crop to the full width or height of `bounds`: the only crop to check.
+function fitRatioToMinimum(
+  ratio: number,
+  constraint: ResolvedImageAspectRatio,
+  minimum: ImageCropDimensions,
+  bounds: ImageCropDimensions,
+): number | undefined {
+  const fitted = Math.min(
+    Math.max(ratio, minimum.width / bounds.height),
+    bounds.width / minimum.height,
+  )
+  const pinnedCrop = {
+    x: 0,
+    y: 0,
+    width: Math.max(minimum.width, minimum.height * fitted),
+    height: Math.max(minimum.height, minimum.width / fitted),
+  }
+  const accepted =
+    fitted === ratio || dimensionsMatchConstraint(croppedDimensions(pinnedCrop), constraint)
+  return dimensionsAtLeast(bounds, minimum) && accepted ? fitted : undefined
+}
+
+/**
+ * The ratio nearest `ratio` at which a crop of at least `minimum` fits inside `bounds` and passes
+ * validation. An allowed ratio that cannot hold `minimum` gives way to the nearest ratio inside
+ * validation's tolerance that can, then to the nearest listed ratio that can. `undefined` when
+ * none can.
+ *
+ * @internal
+ */
+export function nearestRatioHoldingMinimum(
+  ratio: number,
+  constraint: ResolvedImageAspectRatio,
+  minimum: ImageCropDimensions,
+  bounds: ImageCropDimensions,
+): number | undefined {
+  const candidates = constraint.snapRatios ?? [nearestAllowedRatio(ratio, constraint)]
+  const fittedByCandidate = new Map(
+    candidates.flatMap((candidate) => {
+      const fitted = fitRatioToMinimum(candidate, constraint, minimum, bounds)
+      return fitted === undefined ? [] : [[candidate, fitted] as const]
+    }),
+  )
+  if (fittedByCandidate.size === 0) {
+    return undefined
+  }
+  const nearest = nearestAllowedRatio(ratio, {
+    ...constraint,
+    snapRatios: [...fittedByCandidate.keys()],
+  })
+  return fittedByCandidate.get(nearest)
+}
+
 /**
  * The largest centered crop at the allowed ratio nearest the source's own. A source ratio inside a
- * range keeps the whole image. With listed ratios and `minDimensions`, a nearest ratio whose crop
- * is too small gives way to the nearest listed ratio whose crop is large enough, when there is one.
+ * range keeps the whole image. With `minDimensions`, the ratio gives way as
+ * {@link nearestRatioHoldingMinimum} describes when the source can hold the minimum.
  *
  * @internal
  */
@@ -63,27 +116,16 @@ export function defaultCropRect(
   minDimensions?: ImageCropDimensions,
 ): ImagePixelRect {
   const sourceRatio = source.width / source.height
-  const nearest = largestRectForRatio(source, nearestAllowedRatio(sourceRatio, constraint))
-  const holdsMinimum = (rect: ImagePixelRect) =>
-    minDimensions === undefined || dimensionsAtLeast(croppedDimensions(rect), minDimensions)
-  if (constraint.snapRatios === undefined || holdsMinimum(nearest)) {
-    return nearest
-  }
-  const roomyRatios = constraint.snapRatios.filter((ratio) =>
-    holdsMinimum(largestRectForRatio(source, ratio)),
-  )
-  return roomyRatios.length > 0
-    ? largestRectForRatio(
-        source,
-        nearestAllowedRatio(sourceRatio, {...constraint, snapRatios: roomyRatios}),
-      )
-    : nearest
+  const nearest = nearestAllowedRatio(sourceRatio, constraint)
+  const holdingMinimum =
+    minDimensions && nearestRatioHoldingMinimum(sourceRatio, constraint, minDimensions, source)
+  return largestRectForRatio(source, holdingMinimum ?? nearest)
 }
 
 /**
  * The crop to write when the image asset `ref` is set on a field with `aspectRatio`, at a listed
  * ratio that holds `minDimensions` when one can. `undefined` when the field has no ratio, the
- * asset cannot be cropped, or its ratio already fits.
+ * asset cannot be cropped, or validation already accepts its size.
  *
  * @internal
  */
@@ -97,7 +139,7 @@ export function getDefaultImageCrop(
     return undefined
   }
   const constraint = resolveAspectRatio(aspectRatio)
-  if (ratioMatchesConstraint(source.width / source.height, constraint)) {
+  if (dimensionsMatchConstraint(source, constraint)) {
     return undefined
   }
   return pixelRectToCrop(defaultCropRect(source, constraint, minDimensions), source)

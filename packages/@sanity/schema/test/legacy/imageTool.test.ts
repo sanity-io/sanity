@@ -23,6 +23,10 @@ function withUntypedHotspot(hotspot: unknown, options: ImageOptions = {}): Image
   return {...options, hotspot} as ImageOptions
 }
 
+function withUntypedAspectRatio(aspectRatio: unknown, options: ImageOptions = {}): ImageOptions {
+  return {...options, aspectRatio} as ImageOptions
+}
+
 const SIZE = {width: 10, height: 10}
 
 describe('image tool options', () => {
@@ -38,6 +42,18 @@ describe('image tool options', () => {
     {name: 'hotspot: 1', options: withUntypedHotspot(1), hotspot: true, cropTool: true},
     {name: 'aspectRatio', options: {aspectRatio: 1}, hotspot: false, cropTool: true},
     {name: 'minDimensions', options: {minDimensions: SIZE}, hotspot: false, cropTool: true},
+    {
+      name: 'a malformed aspectRatio alone',
+      options: withUntypedAspectRatio('16/9'),
+      hotspot: false,
+      cropTool: false,
+    },
+    {
+      name: 'a malformed aspectRatio and valid minDimensions',
+      options: withUntypedAspectRatio('16/9', {minDimensions: SIZE}),
+      hotspot: false,
+      cropTool: true,
+    },
     {
       name: 'hotspot: false with aspectRatio',
       options: {hotspot: false, aspectRatio: 1},

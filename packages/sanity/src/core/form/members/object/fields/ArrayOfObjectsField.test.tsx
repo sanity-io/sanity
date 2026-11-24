@@ -1,4 +1,3 @@
-import {type SanityClient} from '@sanity/client'
 import {
   type AssetFromSource,
   type AssetSource,
@@ -8,10 +7,10 @@ import {
 import {getCroppedImageDimensions} from '@sanity/util/image'
 import {act, render, screen} from '@testing-library/react'
 import {type ComponentType, type PropsWithChildren} from 'react'
-import {of} from 'rxjs'
 import {FormBuilderContext} from 'sanity/_singletons'
 import {describe, expect, it, vi} from 'vitest'
 
+import {createMockSanityClientAsClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type FIXME} from '../../../../FIXME'
 import {createSchema} from '../../../../schema/createSchema'
@@ -38,6 +37,7 @@ const EMPTY_ARRAY: never[] = []
 const schema = createSchema({
   name: 'test',
   types: [
+    {name: 'squareImage', type: 'image', options: {aspectRatio: 1}},
     {
       name: 'doc',
       type: 'document',
@@ -53,6 +53,7 @@ const schema = createSchema({
           type: 'array',
           of: [{type: 'image', options: {hotspot: true, aspectRatio: 16 / 9}}],
         },
+        {name: 'squares', type: 'array', of: [{type: 'squareImage'}]},
       ],
     },
   ],
@@ -140,20 +141,13 @@ function NoopUploadComponent() {
   return null
 }
 
-const datasetClient = {
-  observable: {
-    fetch: () => of(null),
-    assets: {
-      upload: () => of({type: 'response', body: {document: {_id: PORTRAIT_ASSET_ID}}}),
-    },
-  },
-} as unknown as SanityClient
+const datasetClient = createMockSanityClientAsClient({uploadedAssetId: PORTRAIT_ASSET_ID})
 
-function storedPhoto(onChange: FormCallbacksValue['onChange']) {
+function storedPhoto(onChange: FormCallbacksValue['onChange'], fieldName = 'photos') {
   const patches: FormPatch[] = vi
     .mocked(onChange)
     .mock.calls.flatMap(([event]) => PatchEvent.from(event).patches)
-  return applyAll({}, patches)?.photos?.[0]
+  return applyAll({}, patches)?.[fieldName]?.[0]
 }
 
 function storedRatio(onChange: FormCallbacksValue['onChange']): number {
@@ -164,12 +158,11 @@ function storedRatio(onChange: FormCallbacksValue['onChange']): number {
 describe('ArrayOfObjectsField image uploads', () => {
   it('crops an image dropped into an array of 16:9 images to 16:9', async () => {
     const {formCallbacks, onSelectFile, itemType} = await setupTest('photos')
-    const assetSource = {
+    const assetSource: AssetSource = {
       name: 'dataset',
-      title: 'Uploaded images',
       component: NoopUploadComponent,
       Uploader: createDatasetUploader({client: datasetClient}),
-    } as unknown as AssetSource
+    }
 
     act(() => {
       onSelectFile({
@@ -185,6 +178,31 @@ describe('ArrayOfObjectsField image uploads', () => {
     expect(storedRatio(formCallbacks.onChange)).toBeCloseTo(16 / 9, 2)
   })
 
+  it('crops an image dropped into an array of a named image type to the ratio set on the type', async () => {
+    const {formCallbacks, onSelectFile, itemType} = await setupTest('squares')
+    const assetSource: AssetSource = {
+      name: 'dataset',
+      component: NoopUploadComponent,
+      Uploader: createDatasetUploader({client: datasetClient}),
+    }
+
+    act(() => {
+      onSelectFile({
+        assetSource,
+        schemaType: itemType,
+        file: new File(['pixels'], 'portrait.jpg', {type: 'image/jpeg'}),
+      })
+    })
+
+    await vi.waitFor(() =>
+      expect(storedPhoto(formCallbacks.onChange, 'squares')?.asset?._ref).toBe(PORTRAIT_ASSET_ID),
+    )
+    expect(getCroppedImageDimensions(storedPhoto(formCallbacks.onChange, 'squares'))).toEqual({
+      width: 1200,
+      height: 1200,
+    })
+  })
+
   it('crops an image picked from the asset source into an array of 16:9 images to 16:9', async () => {
     const {formCallbacks, onSelectFile, itemType} = await setupTest('photos')
 
@@ -193,12 +211,11 @@ describe('ArrayOfObjectsField image uploads', () => {
       selectAssets = props.onSelect
       return null
     }
-    const assetSource = {
+    const assetSource: AssetSource = {
       name: 'mock-source',
-      title: 'Mock source',
       component: SelectingUploadComponent,
       Uploader: MediaLibraryUploader,
-    } as unknown as AssetSource
+    }
 
     act(() => {
       onSelectFile({
@@ -218,7 +235,7 @@ describe('ArrayOfObjectsField image uploads', () => {
 })
 
 async function setupTest(
-  fieldName: 'body' | 'items' | 'photos',
+  fieldName: 'body' | 'items' | 'photos' | 'squares',
   value?: {_key: string; _type: string}[],
 ) {
   const docType = schema.get('doc') as FIXME

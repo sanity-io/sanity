@@ -12,6 +12,7 @@ import {
   getCroppedImageDimensions,
   resolveAspectRatio,
 } from '@sanity/util/image'
+import {getFallbackLocaleSource} from '@sanity/validation/_internal'
 import {describe, expect, test} from 'vitest'
 
 import {prepareI18n} from '../../../../../i18n/i18nConfig'
@@ -25,6 +26,7 @@ import {
   getImageToolPath,
   getInitialToolCrop,
   hasCropSizeReadout,
+  isImageTooSmallForMinimum,
 } from '../imageToolOptions'
 
 const IMAGE_OPTIONS: Record<string, ImageOptions | undefined> = {
@@ -293,6 +295,42 @@ describe('crop size readout', () => {
   test('flags nothing without a size option', () => {
     expect(getCropSizeStatus({width: 1, height: 1}, {aspectRatio: 1}).tone).toBeUndefined()
   })
+
+  test.each([
+    {name: 'no minimum', source: {width: 10, height: 10}, options: {aspectRatio: 1}, small: false},
+    {
+      name: 'a source below the minimum',
+      source: {width: 799, height: 900},
+      options: SIZES,
+      small: true,
+    },
+    {
+      name: 'a source at the minimum',
+      source: {width: 800, height: 450},
+      options: SIZES,
+      small: false,
+    },
+    {
+      name: 'a source that holds the minimum only at a ratio the field does not allow',
+      source: {width: 1300, height: 1500},
+      options: {aspectRatio: 16 / 9, minDimensions: {width: 1200, height: 800}},
+      small: true,
+    },
+    {
+      name: 'a source that holds the minimum only inside the ratio tolerance',
+      source: {width: 1415, height: 800},
+      options: {aspectRatio: 16 / 9, minDimensions: {width: 1200, height: 800}},
+      small: false,
+    },
+    {
+      name: 'a source that holds the minimum at one listed ratio',
+      source: {width: 1300, height: 1500},
+      options: {aspectRatio: [3 / 4, 16 / 9], minDimensions: {width: 1200, height: 675}},
+      small: false,
+    },
+  ])('calls the image too small for $name: $small', ({source, options, small}) => {
+    expect(isImageTooSmallForMinimum(source, options)).toBe(small)
+  })
 })
 
 describe('getCropAspectRatioMessageOptions', () => {
@@ -347,10 +385,47 @@ describe('getCropAspectRatioMessageOptions', () => {
     ])
   })
 
+  test('words every kind of ratio the way headless validation does', async () => {
+    const t = await createValidationT({})
+    const headless = getFallbackLocaleSource()
+    const mismatches = [16 / 9, {min: 4 / 3, max: 16 / 9}, [1, 16 / 9], [16 / 9, 1, 4 / 3, 2]]
+      .map((aspectRatio) => getCropAspectRatioMessageOptions({aspectRatio}))
+      .filter((options) => t(MESSAGE_KEY, options) !== headless.t(MESSAGE_KEY, options))
+    expect(mismatches).toEqual([])
+  })
+
   test('states nothing without an aspect ratio', () => {
     expect(
       getCropAspectRatioMessageOptions({minDimensions: {width: 10, height: 10}}),
     ).toBeUndefined()
     expect(getCropAspectRatioMessageOptions(undefined)).toBeUndefined()
+  })
+})
+
+describe('malformed options a field sets on a named image type', () => {
+  function fieldOptions(options: Record<string, unknown>): ImageOptions | undefined {
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {name: 'namedImage', type: 'image'},
+        {name: 'post', type: 'document', fields: [{name: 'photo', type: 'namedImage', options}]},
+      ],
+    })
+    const documentType = schema.get('post') as ObjectSchemaType
+    return documentType.fields.find((field) => field.name === 'photo')?.type.options
+  }
+
+  test.each([
+    {name: 'an empty aspectRatio list', options: {aspectRatio: []}},
+    {name: 'a NaN aspectRatio', options: {aspectRatio: Number.NaN}},
+    {name: 'a flipped aspectRatio range', options: {aspectRatio: {min: 2, max: 1}}},
+    {name: 'a string aspectRatio', options: {aspectRatio: '16/9'}},
+    {name: 'a minDimensions without a height', options: {minDimensions: {width: 800}}},
+  ])('are ignored by the readout and previews, as validation ignores them: $name', ({options}) => {
+    const resolved = fieldOptions(options)
+    expect(hasCropSizeReadout(resolved)).toBe(false)
+    expect(getCropAspectRatioMessageOptions(resolved)).toBeUndefined()
+    expect(getCropSizeStatus({width: 100, height: 100}, resolved).tone).toBeUndefined()
+    expect(getHotspotPreviews(resolved)).toEqual(getHotspotPreviews(undefined))
   })
 })

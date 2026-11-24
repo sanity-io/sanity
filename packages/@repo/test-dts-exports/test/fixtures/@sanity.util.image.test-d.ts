@@ -20,8 +20,8 @@ import type {
   largestRectForRatio,
   largestSizeForRatio,
   nearestAllowedRatio,
+  nearestRatioHoldingMinimum,
   pixelRectToCrop,
-  ratioMatchesConstraint,
   resolveAspectRatio,
   ResolvedImageAspectRatio,
 } from '@sanity/util/image'
@@ -79,11 +79,11 @@ describe('@sanity/util/image', () => {
   test('nearestAllowedRatio', () => {
     expectTypeOf<typeof nearestAllowedRatio>().toBeFunction()
   })
+  test('nearestRatioHoldingMinimum', () => {
+    expectTypeOf<typeof nearestRatioHoldingMinimum>().toBeFunction()
+  })
   test('pixelRectToCrop', () => {
     expectTypeOf<typeof pixelRectToCrop>().toBeFunction()
-  })
-  test('ratioMatchesConstraint', () => {
-    expectTypeOf<typeof ratioMatchesConstraint>().toBeFunction()
   })
   test('resolveAspectRatio', () => {
     expectTypeOf<typeof resolveAspectRatio>().toBeFunction()

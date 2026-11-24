@@ -157,6 +157,10 @@ function WideImageToolInputHarness({options}: {options: ImageValueOptions}) {
 const UNSAVED_HINT = 'Not saved yet. Edit the crop to save it.'
 const UNSAVED_READ_ONLY_HINT = 'Not saved.'
 
+function tooSmallHint(width: number, height: number): string {
+  return `This image is too small to crop to ${width} × ${height} px. Upload a larger image.`
+}
+
 function getCropSize() {
   return page.getByTestId('image-tool-crop-size')
 }
@@ -265,7 +269,9 @@ describe('image tool input', () => {
     await expect.element(getCropSize()).toHaveAttribute('data-tone', 'critical')
     await expect
       .element(getCropSize())
-      .toHaveTextContent('2000 × 1000 pxCropped image must be at least 2400 × 600 px')
+      .toHaveTextContent(
+        `2000 × 1000 pxCropped image must be at least 2400 × 600 px${tooSmallHint(2400, 600)}`,
+      )
     await settleChromaticEndState()
   })
 
@@ -282,7 +288,25 @@ describe('image tool input', () => {
     await expect
       .element(getCropSize())
       .toHaveTextContent(
-        '2000 × 1000 pxCropped image aspect ratio must be 2:1Cropped image must be at least 2400 × 1200 px',
+        `2000 × 1000 pxCropped image aspect ratio must be 2:1Cropped image must be at least 2400 × 1200 px${tooSmallHint(2400, 1200)}`,
+      )
+    await settleChromaticEndState()
+  })
+
+  test('asks for a larger image instead of a crop edit when no crop can reach the minimum', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(
+      <WideImageToolInputHarness
+        options={{hotspot: true, aspectRatio: 16 / 9, minDimensions: {width: 1600, height: 1200}}}
+      />,
+    )
+
+    await waitForFixtureImage()
+    await expect.element(getCropSize()).toHaveAttribute('data-tone', 'critical')
+    await expect
+      .element(getCropSize())
+      .toHaveTextContent(
+        `1778 × 1000 pxCropped image aspect ratio must be 16:9Cropped image must be at least 1600 × 1200 px${tooSmallHint(1600, 1200)}`,
       )
     await settleChromaticEndState()
   })
@@ -411,6 +435,95 @@ describe('image tool input', () => {
       expect(dimensions.width).toBeGreaterThanOrEqual(800)
       expect(dimensions.height).toBeGreaterThanOrEqual(450)
     })
+
+    function dispatchPointer(
+      target: Element,
+      type: 'pointerdown' | 'pointermove' | 'pointerup',
+      point: {x: number; y: number},
+    ) {
+      target.dispatchEvent(
+        new PointerEvent(type, {
+          clientX: point.x,
+          clientY: point.y,
+          pointerId: 1,
+          pointerType: 'mouse',
+          isPrimary: true,
+          bubbles: true,
+          cancelable: true,
+          button: 0,
+          buttons: type === 'pointerup' ? 0 : 1,
+        }),
+      )
+    }
+
+    function nextFrame() {
+      return new Promise<void>((resolve) => {
+        requestAnimationFrame(() => resolve())
+      })
+    }
+
+    test.each([
+      {
+        name: 'a corner far outside the image',
+        handle: 'bottomRight',
+        target: (box: DOMRect) => ({x: box.right + 3000, y: box.bottom + 3000}),
+      },
+      {
+        name: 'a corner past the opposite corner',
+        handle: 'topLeft',
+        target: (box: DOMRect) => ({x: box.right + 200, y: box.bottom + 200}),
+      },
+      {
+        name: 'a side past the opposite side',
+        handle: 'bottom',
+        target: (box: DOMRect) => ({x: box.left + box.width / 2, y: box.top - 500}),
+      },
+    ])(
+      'commits a crop that passes the ratio and the minimum when the editor drags $name',
+      async ({handle, target}) => {
+        const {findBySelector, waitForDocumentState} = testHelpers()
+        void render(<PortraitHarness />)
+
+        await waitForFixtureImage()
+        const cropRect = await findCropRect()
+        const handleElement = (
+          await findBySelector({element: () => document.body}, `[data-handle="crop-${handle}"]`)
+        ).element()
+        const svg = cropRect.ownerSVGElement as SVGSVGElement
+        const handleBox = handleElement.getBoundingClientRect()
+        const from = {
+          x: handleBox.left + handleBox.width / 2,
+          y: handleBox.top + handleBox.height / 2,
+        }
+        const to = target(cropRect.getBoundingClientRect())
+        const steps = [1, 2, 3, 4, 5, 6]
+
+        dispatchPointer(handleElement, 'pointerdown', from)
+        await nextFrame()
+        for (const step of steps) {
+          const progress = step / steps.length
+          dispatchPointer(svg, 'pointermove', {
+            x: from.x + (to.x - from.x) * progress,
+            y: from.y + (to.y - from.y) * progress,
+          })
+          await nextFrame()
+        }
+        dispatchPointer(svg, 'pointerup', to)
+
+        const state = await waitForDocumentState((documentState) =>
+          Boolean(documentState?.image?.crop),
+        )
+        const {crop, hotspot} = state.image
+        const dimensions = getCroppedImageDimensions(state.image) ?? {width: 0, height: 0}
+        expect(dimensionsMatchConstraint(dimensions, WIDESCREEN)).toBe(true)
+        expect(dimensions.width).toBeGreaterThanOrEqual(800)
+        expect(dimensions.height).toBeGreaterThanOrEqual(450)
+        expect(hotspot.x - hotspot.width / 2).toBeGreaterThanOrEqual(crop.left - 1e-9)
+        expect(hotspot.x + hotspot.width / 2).toBeLessThanOrEqual(1 - crop.right + 1e-9)
+        expect(hotspot.y - hotspot.height / 2).toBeGreaterThanOrEqual(crop.top - 1e-9)
+        expect(hotspot.y + hotspot.height / 2).toBeLessThanOrEqual(1 - crop.bottom + 1e-9)
+      },
+    )
   })
 
   describe('on a crop-only field in 16:9', () => {

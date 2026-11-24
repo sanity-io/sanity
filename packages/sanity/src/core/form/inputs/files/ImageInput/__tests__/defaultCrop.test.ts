@@ -1,5 +1,14 @@
+import {
+  type ImageAspectRatio,
+  type ImageCrop,
+  type ImageHotspot,
+  type ImageOptions,
+  type ObjectSchemaType,
+} from '@sanity/types'
 import {describe, expect, test} from 'vitest'
 
+import {createSchema} from '../../../../../schema/createSchema'
+import {applyAll} from '../../../../patch/applyPatch'
 import {set, unset} from '../../../../patch/patch'
 import {PatchEvent} from '../../../../patch/PatchEvent'
 import {withDefaultCrop} from '../utils/defaultCrop'
@@ -44,8 +53,39 @@ describe('withDefaultCrop', () => {
     ])
   })
 
-  test('writes no crop without an aspect ratio', () => {
-    expect(withDefaultCrop([setAsset(WIDE_REF)], undefined).patches).toHaveLength(1)
+  test('clears the previous asset crop on a field with only minDimensions', () => {
+    const {patches} = withDefaultCrop([setAsset(WIDE_REF)], {
+      minDimensions: {width: 600, height: 600},
+    })
+    expect(patches.map(({type, path}) => `${type} ${path.join('.')}`)).toEqual([
+      'set asset',
+      'unset crop',
+    ])
+  })
+
+  test('writes only the asset on a field with no crop options', () => {
+    const {patches} = withDefaultCrop([setAsset(WIDE_REF)], undefined)
+    expect(patches.map(({type, path}) => `${type} ${path.join('.')}`)).toEqual(['set asset'])
+  })
+
+  test.each([
+    {name: 'an empty aspectRatio list', options: {aspectRatio: []}},
+    {name: 'a NaN aspectRatio', options: {aspectRatio: Number.NaN}},
+    {name: 'a flipped aspectRatio range', options: {aspectRatio: {min: 2, max: 1}}},
+    {name: 'a string aspectRatio', options: {aspectRatio: '16/9'}},
+  ])('writes no crop for $name a field sets on a named image type', ({options}) => {
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {name: 'namedImage', type: 'image'},
+        {name: 'post', type: 'document', fields: [{name: 'photo', type: 'namedImage', options}]},
+      ],
+    })
+    const photo = (schema.get('post') as ObjectSchemaType).fields.find(
+      (field) => field.name === 'photo',
+    )
+    const {patches} = withDefaultCrop([setAsset(WIDE_REF)], photo?.type.options as ImageOptions)
+    expect(patches.map(({type, path}) => `${type} ${path.join('.')}`)).toEqual(['set asset'])
   })
 
   test('moves the stored hotspot inside the crop it writes', () => {
@@ -67,9 +107,49 @@ describe('withDefaultCrop', () => {
     })
   })
 
+  const HOTSPOT_SOURCES = ['2000x1000', '1200x1800', '1x10000', '1001x1000']
+  const HOTSPOT_RATIOS: ImageAspectRatio[] = [1, 16 / 9, 9 / 16, [1, 16 / 9], {min: 0.5, max: 2}]
+  const HOTSPOTS = [
+    {x: 0.5, y: 0.5, width: 1, height: 1},
+    {x: 0.02, y: 0.98, width: 0.04, height: 0.04},
+    {x: 0.7, y: 0.05, width: 0.6, height: 0.1},
+  ]
+
+  test.each(
+    HOTSPOT_SOURCES.flatMap((size) => HOTSPOT_RATIOS.map((aspectRatio) => ({size, aspectRatio}))),
+  )(
+    'keeps every stored hotspot inside the crop it writes on $size at $aspectRatio',
+    ({size, aspectRatio}) => {
+      const ref = `image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-${size}-jpg`
+      const outside = HOTSPOTS.filter((hotspot) => {
+        const {patches} = withDefaultCrop([setAsset(ref)], {aspectRatio}, hotspot)
+        const stored: {crop?: ImageCrop; hotspot: ImageHotspot} = applyAll({hotspot}, patches)
+        const written = stored.hotspot
+        const bounds = stored.crop ?? {top: 0, bottom: 0, left: 0, right: 0}
+        return (
+          written.x - written.width / 2 < bounds.left - 1e-9 ||
+          written.x + written.width / 2 > 1 - bounds.right + 1e-9 ||
+          written.y - written.height / 2 < bounds.top - 1e-9 ||
+          written.y + written.height / 2 > 1 - bounds.bottom + 1e-9
+        )
+      })
+      expect(outside).toEqual([])
+    },
+  )
+
   test('leaves the hotspot alone when the asset already fits', () => {
     const hotspot = {x: 0.15, y: 0.5, width: 0.1, height: 0.1}
     const {patches} = withDefaultCrop([setAsset(SQUARE_REF)], {aspectRatio: 1}, hotspot)
+    expect(patches.map(({type, path}) => `${type} ${path.join('.')}`)).toEqual([
+      'set asset',
+      'unset crop',
+    ])
+  })
+
+  test('clears the crop for an asset reference without encoded dimensions', () => {
+    const {patches} = withDefaultCrop([setAsset('image-legacy-asset-without-size')], {
+      aspectRatio: 1,
+    })
     expect(patches.map(({type, path}) => `${type} ${path.join('.')}`)).toEqual([
       'set asset',
       'unset crop',

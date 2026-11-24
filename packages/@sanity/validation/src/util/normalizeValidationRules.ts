@@ -1,8 +1,4 @@
-import {
-  isValidImageAspectRatio,
-  isValidImageCropDimensions,
-  markInternalValidator,
-} from '@sanity/schema/_internal'
+import {getValidImageCropOptions, markInternalValidator} from '@sanity/schema/_internal'
 import {
   isArrayOfObjectsSchemaType,
   isImageSchemaType,
@@ -179,22 +175,11 @@ function inferAssetAcceptRules(typeDef: SchemaType): Rule[] {
   return []
 }
 
-function pickValid<Value>(
-  value: unknown,
-  isValid: (candidate: unknown) => candidate is Value,
-): Value | undefined {
-  return isValid(value) ? value : undefined
-}
-
 // Rule level is per rule, so the error checks and the warning check need a rule each.
 function inferImageCropRules(typeDef: SchemaType): Rule[] {
   if (isImageSchemaType(typeDef)) {
-    const options = typeDef.options ?? {}
-    const aspectRatio = pickValid(options.aspectRatio, isValidImageAspectRatio)
-    const minDimensions = pickValid(options.minDimensions, isValidImageCropDimensions)
-    const recommendedDimensions = pickValid(
-      options.recommendedDimensions,
-      isValidImageCropDimensions,
+    const {aspectRatio, minDimensions, recommendedDimensions} = getValidImageCropOptions(
+      typeDef.options,
     )
     const errorRules =
       aspectRatio === undefined && minDimensions === undefined
