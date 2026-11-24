@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {createClient} from '@sanity/client'
 import {describe, expect, it} from 'vitest'
 
 import {type QueryRequest} from '../store/types'
@@ -6,7 +6,12 @@ import {haveSameQuery} from './queryRequest'
 
 function request(query: string, params: Record<string, unknown>): QueryRequest {
   return {
-    client: {} as SanityClient,
+    client: createClient({
+      projectId: 'test',
+      dataset: 'test',
+      apiVersion: '2025-02-19',
+      useCdn: false,
+    }),
     query,
     params,
     includeSourceMap: false,
