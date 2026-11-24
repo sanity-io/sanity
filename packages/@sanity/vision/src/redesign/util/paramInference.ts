@@ -24,6 +24,8 @@ export interface InferredParam {
   usages: string[]
   /** The query expects null too: `defined($param)`, `coalesce($param, …)`, `$param == null`, `!$param || …` */
   nullable?: true
+  /** The keys the query reads from the param (`$range.min`), when it holds an object */
+  fields?: InferredParam[]
 }
 
 export interface ParamInference {
@@ -178,6 +180,8 @@ type Relation =
 
 interface Usage {
   name: string
+  /** The keys read from the param, outermost first: `["a", "b"]` for `$p.a.b` */
+  path: string[]
   text: string
   type: ParamType | undefined
   nullable?: boolean
@@ -329,6 +333,18 @@ function resolve(
     : schematic
 }
 
+/** The param a node reads, and the keys it reads from it: `$p` or `$p.a.b` */
+function paramPath(node: ExprNode): {name: string; path: string[]} | undefined {
+  if (node.type === 'Parameter') return {name: node.name, path: []}
+  if (node.type !== 'AccessAttribute' || !node.base) return undefined
+  const base = paramPath(node.base)
+  return base && {name: base.name, path: [...base.path, node.name]}
+}
+
+function isParam(node: ExprNode): boolean {
+  return paramPath(node) !== undefined
+}
+
 function collectUsages(ast: ExprNode, options: InferParamsOptions): Usage[] {
   const usages: Usage[] = []
   const handled = new Set<ExprNode>()
@@ -340,9 +356,15 @@ function collectUsages(ast: ExprNode, options: InferParamsOptions): Usage[] {
     type: ParamType | undefined,
     nullable = false,
   ) => {
-    if (param.type !== 'Parameter') return
+    const reference = paramPath(param)
+    if (!reference) return
     handled.add(param)
-    usages.push({name: param.name, text: describe(context, `$${param.name}`), type, nullable})
+    usages.push({
+      ...reference,
+      text: describe(context, `$${[reference.name, ...reference.path].join('.')}`),
+      type,
+      nullable,
+    })
   }
   const isNull = (node: ExprNode) => node.type === 'Value' && node.value === null
 
@@ -351,9 +373,9 @@ function collectUsages(ast: ExprNode, options: InferParamsOptions): Usage[] {
       case 'OpCall': {
         const {left, right, op} = node
         if (op === 'in') {
-          if (left.type === 'Parameter' && right.type !== 'Parameter') {
+          if (isParam(left) && !isParam(right)) {
             report(left, node, resolve('element', right, scope, options))
-          } else if (right.type === 'Parameter' && left.type !== 'Parameter') {
+          } else if (isParam(right) && !isParam(left)) {
             report(right, node, resolve('list', left, scope, options))
           }
         } else if (op === 'match') {
@@ -363,9 +385,9 @@ function collectUsages(ast: ExprNode, options: InferParamsOptions): Usage[] {
         } else if ((op === '==' || op === '!=') && (isNull(left) || isNull(right))) {
           report(isNull(left) ? right : left, node, undefined, true)
         } else if (COMPARISONS.has(op)) {
-          if (right.type === 'Parameter' && left.type !== 'Parameter') {
+          if (isParam(right) && !isParam(left)) {
             report(right, node, resolve('value', left, scope, options))
-          } else if (left.type === 'Parameter' && right.type !== 'Parameter') {
+          } else if (isParam(left) && !isParam(right)) {
             report(left, node, resolve('value', right, scope, options))
           }
         }
@@ -383,7 +405,7 @@ function collectUsages(ast: ExprNode, options: InferParamsOptions): Usage[] {
         }
         if (name === 'global::coalesce') {
           // A param given as one of the alternatives holds what the others do, or null
-          const others = node.args.filter((arg) => arg.type !== 'Parameter')
+          const others = node.args.filter((arg) => !isParam(arg))
           const type = others
             .map((other) => resolve('value', other, scope, options))
             .find((resolved) => resolved !== undefined)
@@ -420,7 +442,7 @@ function collectUsages(ast: ExprNode, options: InferParamsOptions): Usage[] {
 
   const visit = (node: ExprNode, scope: Scope, parent: ExprNode | undefined) => {
     inspect(node, scope)
-    if (node.type === 'Parameter') {
+    if (isParam(node)) {
       if (!handled.has(node)) report(node, parent ?? node, undefined)
       return
     }
@@ -504,18 +526,37 @@ export function inferQueryParams(query: string, options: InferParamsOptions = {}
 
   const usages = collectUsages(ast, options)
   return {
-    params: names.map((name) => {
-      const own = usages.filter((usage) => usage.name === name)
-      const slice = slices.get(name)
-      const types = own.flatMap((usage) => (usage.type ? [usage.type] : []))
-      const nullable = !slice && own.some((usage) => usage.nullable)
-      return {
+    params: names.map((name) =>
+      buildParam(
         name,
-        type: slice ? INTEGER : mergeTypes(types),
-        usages: [...new Set([...(slice ? [slice] : []), ...own.map((usage) => usage.text)])],
-        ...(nullable && {nullable: true as const}),
-      }
-    }),
+        usages.filter((usage) => usage.name === name),
+        slices.get(name),
+      ),
+    ),
     syntaxError: false,
+  }
+}
+
+/** A param, or a key of one, from the usages that read it; `path` is relative to it */
+function buildParam(name: string, usages: Usage[], slice?: string): InferredParam {
+  const own = usages.filter((usage) => usage.path.length === 0)
+  const nested = usages.filter((usage) => usage.path.length > 0)
+  const types = own.flatMap((usage) => (usage.type ? [usage.type] : []))
+  const nullable = !slice && own.some((usage) => usage.nullable)
+  const keys = [...new Set(nested.map((usage) => usage.path[0]))]
+  const fields = keys.map((key) =>
+    buildParam(
+      key,
+      nested
+        .filter((usage) => usage.path[0] === key)
+        .map((usage) => ({...usage, path: usage.path.slice(1)})),
+    ),
+  )
+  return {
+    name,
+    type: slice ? INTEGER : mergeTypes(types),
+    usages: [...new Set([...(slice ? [slice] : []), ...usages.map((usage) => usage.text)])],
+    ...(nullable && {nullable: true as const}),
+    ...(fields.length > 0 && {fields}),
   }
 }
