@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Avatar, Button, Card, Spinner, TextArea} from '@sanity/ui'
+import {Avatar, Button, Card, TextArea} from '@sanity/ui'
 import {
   type ReactNode,
   type SubmitEvent,
@@ -12,7 +12,7 @@ import {
 } from 'react'
 import {type ObservablePromise, useObservablePromise} from 'react-rx'
 import {catchError, combineLatest, defer, of} from 'rxjs'
-import {Text, Flex, Box, VStack} from 'ui5'
+import {Spinner, Text, Flex, Box, VStack} from 'ui5'
 
 import {
   fetchAccessRequestStatus,
@@ -98,7 +98,11 @@ export function RequestAccessForm(props: RequestAccessFormProps) {
       <Suspense
         fallback={
           <Flex alignItems="center" height="100%" justifyContent="center" padding={5}>
-            <Spinner muted />
+            <Spinner
+              style={{
+                color: 'var(--foreground-low)',
+              }}
+            />
           </Flex>
         }
       >
