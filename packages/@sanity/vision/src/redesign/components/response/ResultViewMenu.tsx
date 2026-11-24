@@ -23,6 +23,8 @@ export interface ResultViewMenuProps<View extends string> {
   controls: string
   /** Prefix of the button, menu and item test ids, which differ per panel that has a menu */
   testId?: string
+  /** Where the menu opens, under the button's end by default */
+  placement?: 'bottom-start' | 'bottom-end'
 }
 
 /** The result panel's view selector: a dropdown naming the shown view, listing the others */
@@ -33,6 +35,7 @@ export function ResultViewMenu<View extends string>({
   onChange,
   controls,
   testId = 'vision-result-view',
+  placement = 'bottom-end',
 }: ResultViewMenuProps<View>) {
   const {t} = useTranslation(visionLocaleNamespace)
   const active = views.find((view) => view.id === value) ?? views[0]
@@ -70,7 +73,7 @@ export function ResultViewMenu<View extends string>({
           ))}
         </Menu>
       }
-      popover={{animate: true, portal: true, placement: 'bottom-end'}}
+      popover={{animate: true, portal: true, placement}}
     />
   )
 }

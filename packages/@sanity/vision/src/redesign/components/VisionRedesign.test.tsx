@@ -1432,9 +1432,30 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].options).toMatchObject({useCdn: false})
 
-    // The button points at the perspective, and the notice switches it to published
-    fireEvent.click(apiVersionButton())
-    await waitFor(() => expect(document.activeElement).toBe(perspectiveSelect()))
+    // The button points at the notice and focuses its action, scrolling the whole notice into
+    // view without the focus call scrolling the button alone
+    const scrolled: Element[] = []
+    Object.defineProperty(Element.prototype, 'scrollIntoView', {
+      configurable: true,
+      value(this: Element, arg?: boolean | ScrollIntoViewOptions) {
+        expect(arg).toEqual({block: 'nearest'})
+        scrolled.push(this)
+      },
+    })
+    const focusSpy = vi.spyOn(HTMLElement.prototype, 'focus')
+    try {
+      fireEvent.click(apiVersionButton())
+      const usePublished = screen.getByTestId('vision-option-use-cdn-blocked-use-published')
+      await waitFor(() => expect(document.activeElement).toBe(usePublished))
+      expect(focusSpy.mock.contexts).toContain(usePublished)
+      expect(focusSpy.mock.calls[focusSpy.mock.contexts.indexOf(usePublished)]).toEqual([
+        {preventScroll: true},
+      ])
+      expect(scrolled).toEqual([notice])
+    } finally {
+      focusSpy.mockRestore()
+      Reflect.deleteProperty(Element.prototype, 'scrollIntoView')
+    }
     fireEvent.click(screen.getByTestId('vision-option-use-cdn-blocked-use-published'))
     expect(perspectiveSelect().value).toBe('published')
     expect(screen.queryByTestId('vision-option-use-cdn-blocked')).toBeNull()
@@ -1626,7 +1647,7 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(text(screen.getByTestId('vision-document-list-mock'))).toBe('b'))
   })
 
-  it('shows the content source map as JSON, Tree, Graph or Documents from its tab header', async () => {
+  it('shows the content source map as JSON, Tree, Graph or Documents from its toolbar row', async () => {
     const {respondWith} = renderRedesign()
     const resultSourceMap = {
       documents: [
@@ -1647,11 +1668,16 @@ describe('VisionRedesign', () => {
 
     fireEvent.click(document.getElementById('vision-response-source-map-tab') as HTMLElement)
     const sourceMap = await screen.findByTestId('vision-source-map')
-    // The tree it always showed comes first, with the switcher in the panel header
+    // The tree it always showed comes first, with the switcher on a row above it in the tab body
     expect(within(sourceMap).getByTestId('result-json').textContent).toBe(
       JSON.stringify(resultSourceMap),
     )
-    const viewButton = screen.getByTestId('vision-source-map-view-button')
+    const viewButton = within(screen.getByTestId('vision-source-map-toolbar')).getByTestId(
+      'vision-source-map-view-button',
+    )
+    expect(document.getElementById('vision-response-source-map-panel')?.contains(viewButton)).toBe(
+      true,
+    )
     expect(text(viewButton)).toBe('vision.result.view.tree')
     expect(viewButton.getAttribute('aria-controls')).toBe(sourceMap.id)
     const menu = await openMenu('vision-source-map-view-button', 'vision-source-map-view-menu')
@@ -3086,6 +3112,42 @@ describe('VisionRedesign', () => {
     fireEvent.click(within(tabs[0]).getByTestId('vision-tab-close'))
     expect(screen.getAllByTestId('vision-tab')).toHaveLength(1)
     expect(text(screen.getByTestId('vision-tab-button'))).toContain('vision.tabs.untitled')
+  })
+
+  it('keeps every tab pane in place, without moving its DOM node, when the tabs are reordered', () => {
+    renderRedesign()
+    fireEvent.click(screen.getByTestId('vision-new-tab'))
+    fireEvent.click(screen.getByTestId('vision-new-tab'))
+    const tabIds = () =>
+      screen.getAllByTestId('vision-tab-button').map((button) => button.getAttribute('id'))
+    const initialOrder = tabIds()
+    const panes = screen.getAllByTestId('vision-query-tab')
+    expect(panes).toHaveLength(3)
+    const shown = shownTab()
+
+    // A node React moves is removed and inserted again, which is what resets a pane's scroll
+    const observer = new MutationObserver(() => {})
+    observer.observe(document.body, {childList: true, subtree: true})
+    const moveActiveTab = (key: 'ArrowLeft' | 'ArrowRight') =>
+      fireEvent.keyDown(
+        screen.getAllByRole('tab').find((tab) => tab.getAttribute('aria-selected') === 'true')!,
+        {key, shiftKey: true},
+      )
+    // The keyboard sends the same reorder a drag does, one swap at a time
+    moveActiveTab('ArrowLeft')
+    moveActiveTab('ArrowLeft')
+    expect(tabIds()).toEqual([initialOrder[2], initialOrder[0], initialOrder[1]])
+    moveActiveTab('ArrowRight')
+    expect(tabIds()).toEqual([initialOrder[0], initialOrder[2], initialOrder[1]])
+    const moved = observer
+      .takeRecords()
+      .flatMap((record) => [...record.removedNodes, ...record.addedNodes])
+      .filter((node) => panes.some((pane) => node === pane || node.contains(pane)))
+    observer.disconnect()
+
+    expect(moved).toEqual([])
+    expect(screen.getAllByTestId('vision-query-tab')).toEqual(panes)
+    expect(shownTab()).toBe(shown)
   })
 
   it('keeps the query, params, result and panel state of each tab apart', async () => {

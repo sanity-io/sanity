@@ -248,9 +248,27 @@
 }
 
 /* Content that scrolls inside its own box takes the panel's height; fitting it keeps the size */
-.panelContentFill,
-.panelFillView {
+.panelContentFill {
   height: 100%;
+}
+
+/*
+ * The Content Source Map tab: its view menu on a row of its own above the view. A view that
+ * scrolls inside its own box gets the rest of the panel's height below that row.
+ */
+.sourceMapTab[data-fill] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+}
+
+/* A tree grows with the source map and scrolls the panel; its view menu stays in sight */
+.sourceMapToolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-bottom: 1px solid var(--card-border-color);
+  background-color: var(--card-bg-color);
 }
 
 /* Option fields flow into as many columns as fit the request column */
