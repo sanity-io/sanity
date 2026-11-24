@@ -20,6 +20,10 @@ export interface VisionAiFeatures {
    * with Agent Actions. The query plan itself stays available.
    */
   explainQuery?: boolean
+  /** Edit: changes the tab's GROQ query as described, with Agent Actions */
+  editQuery?: boolean
+  /** "Fix with AI" in the Lint panel: fixes the problems the linter found, with Agent Actions */
+  fixLint?: boolean
 }
 
 /**

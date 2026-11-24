@@ -22,7 +22,9 @@ export interface VisionTelemetry {
   perspectiveChanged: () => void
   apiVersionChanged: (custom: boolean) => void
   copied: (target: 'query' | 'url') => void
-  agentAction: (action: 'generate-query' | 'generate-mutations' | 'explain') => void
+  agentAction: (
+    action: 'generate-query' | 'edit-query' | 'fix-lint' | 'generate-mutations' | 'explain',
+  ) => void
   tabsChanged: (count: number, action: 'open' | 'add' | 'close') => void
   queryPrettified: (outcome: 'success' | 'error') => void
   lintUsed: (action: 'open' | 'fix') => void
@@ -64,7 +66,7 @@ export function useVisionTelemetry(): VisionTelemetry {
   )
 
   const agentAction = useCallback(
-    (action: 'generate-query' | 'generate-mutations' | 'explain') => {
+    (action: 'generate-query' | 'edit-query' | 'fix-lint' | 'generate-mutations' | 'explain') => {
       telemetry.log(VisionAgentActionInvoked, {action})
     },
     [telemetry],

@@ -100,6 +100,14 @@ const AI_FEATURE_TEXT = {
     title: 'vision.settings.ai.generate-query',
     description: 'vision.settings.ai.generate-query.description',
   },
+  editQuery: {
+    title: 'vision.settings.ai.edit-query',
+    description: 'vision.settings.ai.edit-query.description',
+  },
+  fixLint: {
+    title: 'vision.settings.ai.fix-lint',
+    description: 'vision.settings.ai.fix-lint.description',
+  },
   generateMutations: {
     title: 'vision.settings.ai.generate-mutations',
     description: 'vision.settings.ai.generate-mutations.description',
