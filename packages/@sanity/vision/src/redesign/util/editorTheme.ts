@@ -185,8 +185,9 @@ export const redesignEditorTheme: Extension = [
         textUnderlineOffset: '3px',
       },
       // Hover tooltips (lint findings, function docs) are padded, sized and raised like the
-      // tooltips of Studio itself (`VisionTooltip`) rather than CodeMirror's roomier defaults
-      '&.cm-editor .cm-tooltip.cm-tooltip-hover': {
+      // tooltips of Studio itself (`VisionTooltip`) rather than CodeMirror's roomier defaults.
+      // Scoped to the theme, not the editor: tooltips can render outside it (`visionTooltips`)
+      '& .cm-tooltip.cm-tooltip-hover': {
         border: 'none',
         borderRadius: '3px',
         boxShadow: [
@@ -196,16 +197,16 @@ export const redesignEditorTheme: Extension = [
           '0 1px 18px 1px var(--card-shadow-ambient-color, transparent)',
         ].join(', '),
       },
-      '&.cm-editor .cm-tooltip-hover .cm-diagnostic': {
+      '& .cm-tooltip-hover .cm-diagnostic': {
         fontSize: '0.8125rem',
         lineHeight: '1.0625rem',
         marginLeft: 0,
         padding: '4px 8px 4px 6px',
       },
-      '&.cm-editor .cm-tooltip-hover .cm-diagnosticSource': {
+      '& .cm-tooltip-hover .cm-diagnosticSource': {
         lineHeight: '0.875rem',
       },
-      '&.cm-editor .cm-tooltip-hover .cm-vision-function-doc': {
+      '& .cm-tooltip-hover .cm-vision-function-doc': {
         padding: '6px 8px',
       },
     }),

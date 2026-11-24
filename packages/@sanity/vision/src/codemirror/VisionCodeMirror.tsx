@@ -14,6 +14,7 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
   type RefAttributes,
@@ -21,6 +22,7 @@ import {
 
 import {EDITOR_FONT_SIZE, editorContentPaddingTop} from './editorMetrics'
 import {historyCompartment} from './extensions'
+import {visionTooltips} from './tooltips'
 import {useCodemirrorTheme} from './useCodemirrorTheme'
 import {getVisibleColumns} from './visibleColumns'
 import * as styles from './VisionCodeMirror.module.css'
@@ -196,6 +198,7 @@ export function VisionCodeMirror({
   )
   const sanityTheme = useTheme()
   const theme = useCodemirrorTheme(sanityTheme)
+  const editorExtensions = useMemo(() => [visionTooltips, ...extensions], [extensions])
   const codeMirrorRef = useRef<ReactCodeMirrorRef>(null)
   useEffect(() => {
     if (!liveView) return undefined
@@ -303,7 +306,7 @@ export function VisionCodeMirror({
         ref={codeMirrorRef}
         basicSetup={false}
         theme={theme}
-        extensions={extensions}
+        extensions={editorExtensions}
         value={value}
         onChange={handleChange}
         onCreateEditor={handleCreateEditor}
