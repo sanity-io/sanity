@@ -1,3 +1,4 @@
+import {type SanityClient} from '@sanity/client'
 import {AddIcon} from '@sanity/icons/Add'
 import {CloseIcon} from '@sanity/icons/Close'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
@@ -37,6 +38,7 @@ import * as styles from '../redesign.module.css'
 import * as themeStyles from '../themeTokens.module.css'
 import {VisionTooltip} from '../VisionTooltip'
 import {DateTimePickerButton} from './DateTimePickerButton'
+import {DocumentIdInput, DocumentIdSearchClient} from './DocumentIdInput'
 import {ObjectParamInput} from './ObjectParamInput'
 
 type Translate = TFunction<typeof visionLocaleNamespace>
@@ -52,6 +54,11 @@ export interface ParamsFormProps {
   lintFindings?: readonly ParamLintFinding[]
   /** Called when a finding's suggestion is applied */
   onApplySuggestion?: () => void
+  /**
+   * The client a document-id field searches with: the tab's dataset and perspective. Without one,
+   * the search uses the workspace client.
+   */
+  client?: SanityClient
 }
 
 /**
@@ -358,6 +365,9 @@ interface ValueInputProps {
   documentTypes: string[] | undefined
   /** A semantic similarity query, typed across lines. Enter stays a newline */
   multiline?: boolean
+  /** A document id: search the dataset. `idTypes` limits that search; absent searches every type */
+  documentId?: boolean
+  idTypes?: string[]
   value: unknown
   /** What an emptied input sends: nothing for a param, an empty string for a list item */
   empty: unknown
@@ -382,6 +392,8 @@ function ValueInput(props: ValueInputProps) {
     listId,
     documentTypes,
     multiline,
+    documentId,
+    idTypes,
     value,
     empty,
     disabled,
@@ -435,6 +447,22 @@ function ValueInput(props: ValueInputProps) {
         }}
         placeholder={placeholder}
         value={text}
+      />
+    )
+  }
+
+  if (documentId) {
+    return (
+      <DocumentIdInput
+        disabled={disabled}
+        documentTypes={idTypes}
+        empty={empty}
+        id={id}
+        invalid={invalid}
+        label={label}
+        onChange={onChange}
+        placeholder={placeholder}
+        value={value}
       />
     )
   }
@@ -529,10 +557,12 @@ function ListInput(props: {
   items: unknown[]
   listId: string | undefined
   documentTypes: string[] | undefined
+  documentId?: boolean
+  idTypes?: string[]
   disabled: boolean
   onChange: (value: unknown) => void
 }) {
-  const {param, items, listId, documentTypes, disabled, onChange} = props
+  const {param, items, listId, documentTypes, documentId, idTypes, disabled, onChange} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const {kind} = param.type
   const shown = items.slice(0, MAX_FORM_LIST_ITEMS)
@@ -547,8 +577,10 @@ function ListInput(props: {
             <ValueInput
               bounds={param.type}
               disabled={disabled}
+              documentId={documentId}
               documentTypes={documentTypes}
               empty=""
+              idTypes={idTypes}
               kind={kind}
               label={t('vision.params-form.item-label', {name: param.name, index: index + 1})}
               listId={listId}
@@ -620,6 +652,7 @@ function ParamField(props: {
   const {type} = param
   const options = type.options && type.options.length > 0 ? type.options : undefined
   const documentTypes = type.format === 'document-type' ? options : undefined
+  const documentId = type.format === 'document-id'
   const suggestionsListId = options && !documentTypes ? listId : undefined
   // A text field shows null as its placeholder, so the text "null" can be told apart and typed
   const isNull = value === null && !type.array
@@ -665,7 +698,9 @@ function ParamField(props: {
     input = (
       <ListInput
         disabled={disabled}
+        documentId={documentId}
         documentTypes={documentTypes}
+        idTypes={type.documentTypes}
         items={Array.isArray(value) ? value : []}
         listId={suggestionsListId}
         onChange={onChange}
@@ -684,8 +719,10 @@ function ParamField(props: {
           <ValueInput
             bounds={type}
             disabled={disabled}
+            documentId={type.array ? undefined : documentId}
             documentTypes={type.array ? undefined : documentTypes}
             empty={undefined}
+            idTypes={type.documentTypes}
             id={inputId}
             invalid={required}
             kind={type.array ? 'any' : type.kind}
@@ -880,6 +917,7 @@ export function ParamsForm({
   onSubmit,
   lintFindings,
   onApplySuggestion,
+  client,
 }: ParamsFormProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const inference = useParamsInference(query)
@@ -905,100 +943,104 @@ export function ParamsForm({
   const schemaNoteInDetails = schemaUnavailable && unused.length === 0
 
   return (
-    <Stack
-      data-testid="vision-params-form"
-      gap={4}
-      onKeyDown={(event) => {
-        if (!isSubmitKey(event)) return
-        event.preventDefault()
-        onSubmit()
-      }}
-      padding={3}
-    >
-      {inference.syntaxError && (
-        <Text muted size={1} as="div" trim={true}>
-          {t('vision.params-form.syntax-error')}
-        </Text>
-      )}
-      {inference.params.length === 0 && unused.length === 0 && (
-        <Text muted size={1} as="div" trim={true}>
-          {t('vision.params-form.empty')}
-        </Text>
-      )}
-      {inference.params.length > 0 && (
-        <div className={fieldGrid.container}>
-          <div className={fieldGrid.fieldGrid}>
-            {inference.params.map((param) => (
-              <ParamField
-                disabled={disabled}
-                isSet={Object.hasOwn(values, param.name)}
-                key={param.name}
-                lintFindings={lintFindings?.filter((finding) => finding.param.name === param.name)}
-                onApplySuggestion={onApplySuggestion}
-                onChange={(value) => setValue(param.name, value)}
-                param={param}
-                schemaNote={schemaNoteInDetails}
-                value={values[param.name]}
-              />
-            ))}
+    <DocumentIdSearchClient client={client ?? null}>
+      <Stack
+        data-testid="vision-params-form"
+        gap={4}
+        onKeyDown={(event) => {
+          if (!isSubmitKey(event)) return
+          event.preventDefault()
+          onSubmit()
+        }}
+        padding={3}
+      >
+        {inference.syntaxError && (
+          <Text muted size={1} as="div" trim={true}>
+            {t('vision.params-form.syntax-error')}
+          </Text>
+        )}
+        {inference.params.length === 0 && unused.length === 0 && (
+          <Text muted size={1} as="div" trim={true}>
+            {t('vision.params-form.empty')}
+          </Text>
+        )}
+        {inference.params.length > 0 && (
+          <div className={fieldGrid.container}>
+            <div className={fieldGrid.fieldGrid}>
+              {inference.params.map((param) => (
+                <ParamField
+                  disabled={disabled}
+                  isSet={Object.hasOwn(values, param.name)}
+                  key={param.name}
+                  lintFindings={lintFindings?.filter(
+                    (finding) => finding.param.name === param.name,
+                  )}
+                  onApplySuggestion={onApplySuggestion}
+                  onChange={(value) => setValue(param.name, value)}
+                  param={param}
+                  schemaNote={schemaNoteInDetails}
+                  value={values[param.name]}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-      {unused.length > 0 && (
-        <Stack data-testid="vision-params-form-unused" gap={2}>
-          <Flex alignItems="center" gap={1}>
-            <Text muted size={1} weight="medium" as="div" trim={true}>
-              {t('vision.params-form.unused')}
-            </Text>
-            {schemaUnavailable && (
-              <InfoTip
-                label={t('vision.params-form.types-details')}
-                testId="vision-params-form-no-schema"
-              >
-                <Text size={1} as="div" trim={true}>
-                  {t('vision.params-form.no-schema')}
-                </Text>
-              </InfoTip>
-            )}
-            <Box flexGrow={1} />
-            <Button
-              data-testid="vision-params-form-remove-all"
-              fontSize={1}
-              mode="bleed"
-              onClick={removeUnused}
-              padding={2}
-              text={t('vision.params-form.remove-all')}
-            />
-          </Flex>
-          {unused.map((name) => (
-            <Flex alignItems="center" gap={2} key={name}>
-              <Text size={1} as="div" trim={true}>
-                <InlineCode>{`$${name}`}</InlineCode>
+        )}
+        {unused.length > 0 && (
+          <Stack data-testid="vision-params-form-unused" gap={2}>
+            <Flex alignItems="center" gap={1}>
+              <Text muted size={1} weight="medium" as="div" trim={true}>
+                {t('vision.params-form.unused')}
               </Text>
-              <Box flexBasis="0%" flexGrow={1} minWidth="0">
-                <Text muted size={1} truncate={1} as="div" trim={true}>
-                  {preview(values[name])}
-                </Text>
-              </Box>
+              {schemaUnavailable && (
+                <InfoTip
+                  label={t('vision.params-form.types-details')}
+                  testId="vision-params-form-no-schema"
+                >
+                  <Text size={1} as="div" trim={true}>
+                    {t('vision.params-form.no-schema')}
+                  </Text>
+                </InfoTip>
+              )}
+              <Box flexGrow={1} />
               <Button
+                data-testid="vision-params-form-remove-all"
                 fontSize={1}
                 mode="bleed"
-                onClick={() => setValue(name, undefined)}
+                onClick={removeUnused}
                 padding={2}
-                text={t('vision.params-form.remove')}
+                text={t('vision.params-form.remove-all')}
               />
             </Flex>
-          ))}
-        </Stack>
-      )}
-      {/* Under the fields, so they stay put while the JSON goes in and out of parsing */}
-      {disabled && (
-        <Card data-testid="vision-params-form-invalid-json" padding={3} radius={2} tone="caution">
-          <Text size={1} as="div" trim={true} tone="caution">
-            {t('vision.params-form.invalid-json')}
-          </Text>
-        </Card>
-      )}
-    </Stack>
+            {unused.map((name) => (
+              <Flex alignItems="center" gap={2} key={name}>
+                <Text size={1} as="div" trim={true}>
+                  <InlineCode>{`$${name}`}</InlineCode>
+                </Text>
+                <Box flexBasis="0%" flexGrow={1} minWidth="0">
+                  <Text muted size={1} truncate={1} as="div" trim={true}>
+                    {preview(values[name])}
+                  </Text>
+                </Box>
+                <Button
+                  fontSize={1}
+                  mode="bleed"
+                  onClick={() => setValue(name, undefined)}
+                  padding={2}
+                  text={t('vision.params-form.remove')}
+                />
+              </Flex>
+            ))}
+          </Stack>
+        )}
+        {/* Under the fields, so they stay put while the JSON goes in and out of parsing */}
+        {disabled && (
+          <Card data-testid="vision-params-form-invalid-json" padding={3} radius={2} tone="caution">
+            <Text size={1} as="div" trim={true} tone="caution">
+              {t('vision.params-form.invalid-json')}
+            </Text>
+          </Card>
+        )}
+      </Stack>
+    </DocumentIdSearchClient>
   )
 }

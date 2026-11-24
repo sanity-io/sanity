@@ -2,6 +2,7 @@ import {Schema} from '@sanity/schema'
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {
+  act,
   cleanup,
   createEvent,
   fireEvent,
@@ -12,12 +13,39 @@ import {
 } from '@testing-library/react'
 import JSON5 from 'json5'
 import {type ReactNode, useState} from 'react'
-import {afterEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type Params} from '../../../components/VisionGui'
 import * as fieldGrid from '../fieldGrid.module.css'
 import {ObjectParamInput} from './ObjectParamInput'
 import {ParamsForm} from './ParamsForm'
+
+const {createSearch, useValuePreview, searchClient} = vi.hoisted(() => {
+  const client = {
+    config: () => ({perspective: 'published' as const}),
+    withConfig() {
+      return this
+    },
+    observable: {fetch: vi.fn()},
+  }
+  return {
+    searchClient: client,
+    createSearch: vi.fn(),
+    useValuePreview: vi.fn((_props: {value: {_id: string}}) => ({
+      isLoading: false,
+      value: {title: 'Ash'},
+    })),
+  }
+})
+
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
+  DEFAULT_STUDIO_CLIENT_OPTIONS: {apiVersion: '2025-02-19'},
+  DatePicker: () => null,
+  getCalendarLabels: () => ({}),
+  createSearch: (types: {name: string}[], client: unknown, options: unknown) =>
+    createSearch(types, client, options),
+  useValuePreview: (props: {value: {_id: string}}) => useValuePreview(props),
+}))
 
 const schema = Schema.compile({
   name: 'test',
@@ -40,6 +68,18 @@ const schema = Schema.compile({
 vi.mock('sanity', () => ({
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
   useSchema: () => schema,
+  useClient: () => searchClient,
+  isDraftId: (id: string) => id.startsWith('drafts.'),
+  getVersionFromId: (id: string) => {
+    const match = /^versions\.([^.]+)\./.exec(id)
+    return match ? match[1] : undefined
+  },
+  SanityDefaultPreview: ({title, subtitle}: {title?: string; subtitle?: string}) => (
+    <span>
+      {title}
+      {subtitle ? ` ${subtitle}` : ''}
+    </span>
+  ),
 }))
 vi.mock('sanity/i18n', () => ({
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
@@ -119,6 +159,20 @@ function renderForm(query: string, initial = '{}') {
 
 describe('ParamsForm', () => {
   afterEach(() => cleanup())
+
+  beforeEach(() => {
+    createSearch.mockReset()
+    useValuePreview.mockClear()
+    createSearch.mockImplementation((types: {name: string}[]) => (query: string) => ({
+      subscribe(observer: {next?: (value: unknown) => void}) {
+        const typeName = types[0]?.name ?? 'author'
+        observer.next?.({
+          hits: [{hit: {_id: `${typeName}-1`, _type: typeName}, score: query.length}],
+        })
+        return {unsubscribe: () => undefined}
+      },
+    }))
+  })
 
   it('has a field per param, typed from the schema and the query', () => {
     const {field} = renderForm(
@@ -212,6 +266,76 @@ describe('ParamsForm', () => {
     fireEvent.click(within(field('type')).getByLabelText('Open'))
     expect(optionTexts()).toEqual(['author', 'post'])
     expect(typeInput).toHaveProperty('value', 'post')
+  })
+
+  it('searches the type the query constrains and fills the picked document id', async () => {
+    const {field, params} = renderForm('*[_type == "author" && _id == $authorId]')
+    const input = within(field('authorId')).getByRole('combobox')
+    fireEvent.change(input, {target: {value: 'ash'}})
+    expect(params()).toEqual({authorId: 'ash'})
+    await waitFor(() => expect(createSearch).toHaveBeenCalled())
+    const types = createSearch.mock.calls.at(-1)?.[0] as {name: string}[]
+    expect(types.map((type) => type.name)).toEqual(['author'])
+    expect(createSearch.mock.calls.at(-1)?.[2]).toEqual({tag: 'vision.document-id'})
+    fireEvent.click(within(field('authorId')).getByLabelText('Open'))
+    await waitFor(() => expect(optionTexts()).toEqual(['Ash author-1']))
+
+    fireEvent.keyDown(input, {key: 'ArrowDown'})
+    const [listbox] = screen
+      .getAllByRole('listbox', {hidden: true})
+      .filter((element) => !(element instanceof HTMLDataListElement))
+    fireEvent.keyDown(within(listbox).getByRole('option', {hidden: true}), {key: 'Enter'})
+    await waitFor(() => expect(params()).toEqual({authorId: 'author-1'}))
+  })
+
+  it('searches every document type when the query does not name one', async () => {
+    const {field} = renderForm('*[references($id)]')
+    fireEvent.change(within(field('id')).getByRole('combobox'), {target: {value: 'a'}})
+    await waitFor(() => expect(createSearch).toHaveBeenCalled())
+    const types = createSearch.mock.calls.at(-1)?.[0] as {name: string}[]
+    expect(types.map((type) => type.name)).toEqual(['author', 'post'])
+  })
+
+  it('drops a document search that a newer query has replaced', async () => {
+    const held: {next?: (value: unknown) => void}[] = []
+    createSearch.mockImplementation(() => () => ({
+      subscribe(observer: {next?: (value: unknown) => void}) {
+        held.push(observer)
+        return {unsubscribe: () => undefined}
+      },
+    }))
+    const {field} = renderForm('*[_type == "author" && _id == $authorId]')
+    const input = within(field('authorId')).getByRole('combobox')
+    fireEvent.change(input, {target: {value: 'a'}})
+    await waitFor(() => expect(held).toHaveLength(1))
+    fireEvent.change(input, {target: {value: 'ad'}})
+    await waitFor(() => expect(held).toHaveLength(2))
+    act(() => {
+      held[1]?.next?.({hits: [{hit: {_id: 'author-2', _type: 'author'}}]})
+    })
+    fireEvent.click(within(field('authorId')).getByLabelText('Open'))
+    await waitFor(() => expect(optionTexts()).toEqual(['Ash author-2']))
+    act(() => {
+      held[0]?.next?.({hits: [{hit: {_id: 'author-1', _type: 'author'}}]})
+    })
+    expect(optionTexts()).toEqual(['Ash author-2'])
+  })
+
+  it('keeps a typed document id, null and a cleared field', () => {
+    const {field, params} = renderForm('*[!defined($id) || _id == $id]')
+    const input = within(field('id')).getByRole('combobox')
+    fireEvent.change(input, {target: {value: 'not-a-hit'}})
+    expect(params()).toEqual({id: 'not-a-hit'})
+
+    fireEvent.click(within(field('id')).getByTestId('vision-params-form-id-clear'))
+    expect(params()).toEqual({id: null})
+    expect(input).toHaveProperty('value', '')
+
+    fireEvent.change(input, {target: {value: 'still-text'}})
+    expect(params()).toEqual({id: 'still-text'})
+    // The field's own clear sends an empty string, which removes the param
+    fireEvent.change(input, {target: {value: ''}})
+    expect(params()).toEqual({})
   })
 
   it('takes numbers in a number input and sends them as JSON numbers', () => {
@@ -409,7 +533,7 @@ describe('ParamsForm', () => {
   it('shows only the first 100 items of a huge list param', () => {
     const ids = Array.from({length: 250}, (_, index) => `id-${index}`)
     const {field} = renderForm('*[_id in $ids]', JSON.stringify({ids}))
-    expect(within(field('ids')).getAllByRole('textbox')).toHaveLength(100)
+    expect(within(field('ids')).getAllByRole('combobox')).toHaveLength(100)
     expect(screen.getByTestId('vision-params-form-ids-truncated').textContent).toContain('250')
     expect(screen.getByTestId('vision-params-form-ids-add')).toHaveProperty('disabled', true)
   })

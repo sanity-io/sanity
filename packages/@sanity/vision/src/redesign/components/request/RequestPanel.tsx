@@ -564,6 +564,7 @@ export function RequestPanel(props: RequestPanelProps) {
               {paramsView === 'form' ? (
                 <div {...formFocusProps}>
                   <ParamsForm
+                    client={resolved.client}
                     lintFindings={paramLintFindings}
                     onApplySuggestion={onParamSuggestionApplied}
                     onChange={onParamsReplace}

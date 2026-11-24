@@ -956,3 +956,8 @@
 [data-ui='Popover__wrapper']:has(.popoverScroll) {
   overscroll-behavior: none contain;
 }
+
+/* A document-id field is one grid column. Its menu is wider, so a preview title fits. */
+.documentIdMenu {
+  min-width: 280px;
+}
