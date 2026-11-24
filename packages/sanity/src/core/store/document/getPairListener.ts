@@ -134,10 +134,10 @@ export interface ListenerResumeTimeTelemetryEvent {
 /** @internal */
 export interface ListenerResumePayloadTelemetryEvent {
   /**
-   * Number of replayed mutations received after a resume.
-   * Zero means no catch-up was needed.
+   * Number of mutations received after a resume until the next connection event.
+   * Includes both replayed mutations and any live mutations in that window.
    */
-  replayedMutationCount: number
+  mutationsAfterResumeCount: number
   /** The shard that handled the connection, if known */
   shard?: string
 }
@@ -290,7 +290,7 @@ export function getPairListener(
           // If we were counting resume payload, finalize it (reconnect interrupts the replay)
           if (isCountingResumePayload) {
             options.onListenerResumePayload?.({
-              replayedMutationCount: resumePayloadMutationCount,
+              mutationsAfterResumeCount: resumePayloadMutationCount,
               shard: currentShard,
             })
           }
@@ -314,7 +314,7 @@ export function getPairListener(
         ) {
           // Non-mutation event signals end of replay, report payload size (including zero)
           options.onListenerResumePayload?.({
-            replayedMutationCount: resumePayloadMutationCount,
+            mutationsAfterResumeCount: resumePayloadMutationCount,
             shard: currentShard,
           })
           isCountingResumePayload = false

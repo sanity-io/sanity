@@ -50,21 +50,24 @@ export const ListenerResumeTimeMeasured = defineEvent<ListenerResumeTimeMeasured
 /** @internal */
 export interface ListenerResumePayloadMeasuredData {
   /**
-   * Number of replayed mutations received after a resume.
-   * This is a proxy for payload size - zero means no catch-up was needed.
+   * Number of mutations received after a resume until the next connection event.
+   * Includes both replayed mutations from catch-up and any live mutations that
+   * arrive before the next reconnect/reset. Zero means no mutations were received.
    */
-  replayedMutationCount: number
+  mutationsAfterResumeCount: number
   /** The shard that handled the connection, if known */
   shard?: string
 }
 
 /**
- * Emitted after a listener resumes, measuring the payload replayed to catch up.
- * A count of zero indicates no mutations were buffered during the disconnect.
+ * Emitted after a listener resumes, counting mutations received until the next connection event.
+ * This measures mutations after welcomeback until the next reconnect/reset - it includes both
+ * catch-up replay and any live mutations that arrive in that window.
  * @internal
  */
 export const ListenerResumePayloadMeasured = defineEvent<ListenerResumePayloadMeasuredData>({
   name: 'Listener Resume Payload Measured',
   version: 1,
-  description: 'Number of mutations replayed when a listener resumes from its last position',
+  description:
+    'Number of mutations received after a listener resumes until the next connection event',
 })

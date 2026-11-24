@@ -1140,7 +1140,7 @@ describe('getPairListener', () => {
     })
 
     test('reports resume payload count after welcomeback with shard', async () => {
-      const resumePayloadCalls: {replayedMutationCount: number; shard?: string}[] = []
+      const resumePayloadCalls: {mutationsAfterResumeCount: number; shard?: string}[] = []
       const onListenerResumePayload = vi.fn((event) => resumePayloadCalls.push(event))
 
       const sub = getPairListener(client, idPair, {onListenerResumePayload}).subscribe()
@@ -1188,14 +1188,14 @@ describe('getPairListener', () => {
       await nextTick()
 
       expect(onListenerResumePayload).toHaveBeenCalledTimes(1)
-      expect(resumePayloadCalls[0].replayedMutationCount).toBe(3)
+      expect(resumePayloadCalls[0].mutationsAfterResumeCount).toBe(3)
       expect(resumePayloadCalls[0].shard).toBe('test-shard')
 
       sub.unsubscribe()
     })
 
     test('reports zero-mutation resume payload', async () => {
-      const resumePayloadCalls: {replayedMutationCount: number; shard?: string}[] = []
+      const resumePayloadCalls: {mutationsAfterResumeCount: number; shard?: string}[] = []
       const onListenerResumePayload = vi.fn((event) => resumePayloadCalls.push(event))
 
       const sub = getPairListener(client, idPair, {onListenerResumePayload}).subscribe()
@@ -1211,7 +1211,7 @@ describe('getPairListener', () => {
 
       // Should be called with count of 0 - zero is meaningful data
       expect(onListenerResumePayload).toHaveBeenCalledTimes(1)
-      expect(resumePayloadCalls[0].replayedMutationCount).toBe(0)
+      expect(resumePayloadCalls[0].mutationsAfterResumeCount).toBe(0)
       expect(resumePayloadCalls[0].shard).toBe('test-shard')
 
       sub.unsubscribe()

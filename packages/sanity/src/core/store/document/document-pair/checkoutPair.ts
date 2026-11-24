@@ -444,6 +444,9 @@ export function checkoutPair(
     onCommitCancelled,
     onCommitRetriesEnded,
     onPairTornDownWithPendingMutations,
+    onListenerWelcomeTime,
+    onListenerResumeTime,
+    onListenerResumePayload,
     snapshotFetchErrorHandler,
     tag,
   } = options
@@ -466,6 +469,9 @@ export function checkoutPair(
           }
         }
       : undefined,
+    onListenerWelcomeTime,
+    onListenerResumeTime,
+    onListenerResumePayload,
     tag,
     snapshotFetchErrorHandler,
   }).pipe(share())
