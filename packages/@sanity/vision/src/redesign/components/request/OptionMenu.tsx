@@ -15,6 +15,14 @@ import {Box, Flex, Text, VStack} from 'ui5'
 
 import * as styles from './OptionMenu.module.css'
 
+/** Fits the menu to its labels, between a minimum and a maximum, and scrolls the rest */
+const MENU_STYLE = {
+  width: 'max-content',
+  minWidth: 'min(240px, calc(100vw - 24px))',
+  maxWidth: 'min(360px, calc(100vw - 24px))',
+  overflow: 'auto',
+} as const
+
 interface OptionMenuButtonProps {
   /** Id of the trigger, which the field's label points at */
   id: string
@@ -79,7 +87,15 @@ export function OptionMenuButton({
       }
       id={id}
       menu={
-        <Menu className={styles.menu} data-testid={`${testId}-menu`} padding={0}>
+        <Menu
+          data-testid={`${testId}-menu`}
+          gap={0}
+          padding={0}
+          // Width is inline so it wins over the menu's own `min-width: 0`. Display stays the
+          // component's: a stylesheet `display` ties `@sanity/ui`'s `:not([hidden])` rule and
+          // loses in a production build.
+          style={MENU_STYLE}
+        >
           {hasSearch && (
             <Box borderBottom flexShrink={0} padding={2}>
               <TextInput
@@ -96,9 +112,7 @@ export function OptionMenuButton({
               />
             </Box>
           )}
-          <Flex className={styles.list} flexDirection="column">
-            {children}
-          </Flex>
+          <Flex flexDirection="column">{children}</Flex>
         </Menu>
       }
       onClose={handleClose}
@@ -180,9 +194,9 @@ export function OptionMenuItem({
       selected={selected}
     >
       <Flex alignItems="flex-start" gap={1}>
-        <Box className={styles.icon} flexShrink={0} paddingX={3} paddingY={2}>
+        <Flex flexShrink={0} paddingX={3} paddingY={2}>
           {icon}
-        </Box>
+        </Flex>
         <Flex
           flexDirection="column"
           flexGrow={1}

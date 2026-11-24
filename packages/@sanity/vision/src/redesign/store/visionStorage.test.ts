@@ -513,6 +513,28 @@ describe('visionStorage', () => {
     })
   })
 
+  it('reads a pinned dataset as an override and one following the workspace as Auto', () => {
+    const state = createInitialState(defaults)
+    localStorage.setItem(
+      getVisionStorageKey('proj'),
+      JSON.stringify({
+        ...state,
+        settings: {...state.settings, datasetMode: 'workspace', dataset: 'staging'},
+        tabs: [
+          {
+            ...state.tabs[0],
+            options: {...state.tabs[0].options, datasetMode: 'pinned', dataset: 'staging'},
+          },
+        ],
+      }),
+    )
+
+    const loaded = loadVisionState('proj', defaults)
+    expect(loaded.tabs[0].options).toMatchObject({datasetMode: 'override', dataset: 'staging'})
+    // Following the workspace resets the stored dataset to the workspace's
+    expect(loaded.settings).toMatchObject({datasetMode: 'auto', dataset: 'production'})
+  })
+
   it('keeps the API default perspective of a tab and of the settings across a reload', () => {
     const initial = createInitialState(defaults)
     expect(initial.settings.perspective).toBe('global')

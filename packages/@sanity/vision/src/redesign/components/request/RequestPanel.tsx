@@ -363,9 +363,6 @@ export function RequestPanel(props: RequestPanelProps) {
                 `[id="${tabElementId(`vision-option-${option}`)}"]`,
               )
             : (options?.querySelector<HTMLElement>(
-                'input[data-testid="vision-option-api-version-custom"], [data-testid="vision-option-api-version-custom"] input',
-              ) ??
-              options?.querySelector<HTMLElement>(
                 '[data-testid="vision-option-api-version-wrap"][tabindex]',
               ) ??
               options?.querySelector<HTMLElement>(
