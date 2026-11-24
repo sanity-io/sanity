@@ -67,7 +67,7 @@
     "@sanity/types": "workspace:*",
     "@sanity/util": "workspace:*",
     "dequal": "catalog:",
-    "i18next": "^26.7.2",
+    "i18next": "^27.2.4",
     "lodash-es": "^4.18.1",
     "rxjs": "^7.8.2"
   },
