@@ -325,16 +325,27 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.edit.submit': 'Edit',
   /** Explanation at the top of the Explain panel */
   'vision.explain.description':
-    'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps. Explain this to me has Sanity Agent Actions describe the query and its plan in plain words, which uses one AI credit.',
+    'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps. Explain this to me has Sanity Agent Actions describe the query in plain words, say whether it runs well and suggest how to improve it, which uses one AI credit.',
   /** Explanation at the top of the Explain panel when the AI explanation is switched off */
   'vision.explain.description-plan':
     'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps.',
+  /** Toggle under the explanation showing how the query plan runs the query, step by step */
+  'vision.explain.details': 'How it runs, in detail',
   /** Shown in the Explain panel while there is no valid query to explain */
   'vision.explain.empty': 'Write a query to explain it.',
   /** Button in the Explain panel asking Agent Actions to explain the query and its plan */
   'vision.explain.explain': 'Explain this to me',
   /** Shown when the explanation could not be written */
   'vision.explain.failed': 'The query could not be explained: {{message}}',
+  /** Button under the explanation's suggestions that has Agent Actions make them to the query */
+  'vision.explain.improve': 'Improve query',
+  /** Explanation under the Improve query button */
+  'vision.explain.improve.description':
+    'Sanity Agent Actions make these changes to the GROQ, with the document types, and the Content Lake checks each attempt; every attempt uses one AI credit. It replaces this tab’s query and runs; undo in the editor brings the previous query back.',
+  /** Shown when the query could not be improved, above the reason */
+  'vision.explain.improve.failed': 'The query could not be improved',
+  /** Shown while the first attempt at the improved query is written */
+  'vision.explain.improve.progress': 'Improving the query…',
   /** A count the index computes without reading the documents */
   'vision.explain.insight.aggregate': 'Counted in the index, without reading the documents.',
   /** A subquery the plan runs once for all documents */
@@ -362,6 +373,15 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.explain.plan-failed': 'The query plan could not be fetched: {{message}}',
   /** Heading of the query plan in the Explain panel */
   'vision.explain.plan-title': 'Query plan',
+  /** Heading of the explanation's list of changes that would make the query faster */
+  'vision.explain.suggestions.title': 'Here are ways you can improve your query',
+  /** Verdict of an explanation: the query does slow work, but there is no faster way to get its data */
+  'vision.explain.verdict.cannot-improve':
+    'This query takes some work, but there isn’t really a faster way to get this data',
+  /** Verdict of an explanation: a change to the query would make it faster */
+  'vision.explain.verdict.improvable': 'This query can be faster',
+  /** Verdict of an explanation: the query runs well as it is */
+  'vision.explain.verdict.performant': 'This is a good, fast query',
   /** Button of a library function the query does not declare, which declares it at the top */
   'vision.functions.add': 'Add to query',
   /** Shown on a library function the query declares the same way */

@@ -1209,9 +1209,13 @@ describe('VisionRedesign', () => {
     const plan =
       'Pipeline {\n  r1: StreamStep {\n    $0: Fetch {Filter: (_type == "post")}\n  }\n  r2: FilterStep {\n    Source: r1, Expr: eq($1.name, "x")\n  }\n}'
     respondToRequests({result: [], explain: plan})
-    replyToPrompts(
-      'It fetches every post.\n\nThe filter `_type == "post"` is applied while reading.',
-    )
+    replyToPrompts({
+      summary: 'It fetches every post.\n\nThe filter `_type == "post"` is applied while reading.',
+      verdict: 'performant',
+      verdictReason: 'The index does the work.',
+      suggestions: [],
+      details: 'The Fetch reads posts.\n\nA FilterStep compares names.',
+    })
 
     fireEvent.click(document.getElementById('vision-response-explain-tab') as HTMLElement)
     expect(isDisabled(screen.getByTestId('vision-explain-button'))).toBe(true)
@@ -1239,19 +1243,150 @@ describe('VisionRedesign', () => {
     expect(requestCalls).toHaveLength(1)
     expect(promptCalls[0].config.apiVersion).toBe('vX')
     expect(promptCalls[0].request).toMatchObject({instructionParams: {plan}})
-    const explanation = screen.getByTestId('vision-explanation')
+    // The plain explanation leads, then the verdict
+    const summary = screen.getByTestId('vision-explanation-summary')
     expect(
-      [...explanation.querySelectorAll('[data-ui="Text"]')].map(
-        (paragraph) => paragraph.textContent,
-      ),
+      [...summary.querySelectorAll('[data-ui="Text"]')].map((paragraph) => paragraph.textContent),
     ).toEqual(['It fetches every post.', 'The filter _type == "post" is applied while reading.'])
     // Quoted GROQ is shown as code
-    expect(explanation.querySelector('code')?.textContent).toBe('_type == "post"')
+    expect(summary.querySelector('code')?.textContent).toBe('_type == "post"')
+    expect(text(screen.getByTestId('vision-explain-verdict'))).toBe(
+      'vision.explain.verdict.performantThe index does the work.',
+    )
+    // The technical walkthrough waits behind a toggle
+    expect(screen.queryByTestId('vision-explanation-details')).toBeNull()
+    const details = screen.getByTestId('vision-explanation-details-toggle')
+    expect(details.getAttribute('aria-expanded')).toBe('false')
+    fireEvent.click(details)
+    expect(details.getAttribute('aria-expanded')).toBe('true')
+    expect(text(screen.getByTestId('vision-explanation-details'))).toBe(
+      'The Fetch reads posts.A FilterStep compares names.',
+    )
 
     // Both belong to the query they were made for
     typeQuery('*[_type == "author"]')
     await waitFor(() => expect(screen.queryByTestId('vision-explanation')).toBeNull())
     expect(screen.queryByTestId('vision-query-plan')).toBeNull()
+  })
+
+  describe('the explanation verdict', () => {
+    /** Explains a query with the given reply from Agent Actions, and waits for the explanation */
+    async function explain(view: ReturnType<typeof renderRedesign>, reply: unknown) {
+      view.respondToRequests({result: [], explain: 'Pipeline {}'})
+      view.replyToPrompts(reply)
+      typeQuery('*[_type == "post"]')
+      fireEvent.click(document.getElementById('vision-response-explain-tab') as HTMLElement)
+      await waitFor(() =>
+        expect(isDisabled(screen.getByTestId('vision-explain-button'))).toBe(false),
+      )
+      fireEvent.click(screen.getByTestId('vision-explain-button'))
+      return screen.findByTestId('vision-explanation')
+    }
+
+    it.each([
+      ['performant', 'positive'],
+      ['cannot-improve', 'neutral'],
+      ['improvable', 'caution'],
+    ] as const)('shows the %s verdict', async (verdict, tone) => {
+      const view = renderRedesign()
+      await explain(view, {
+        summary: 'It finds posts.',
+        verdict,
+        verdictReason: 'Because.',
+        suggestions: verdict === 'improvable' ? ['Add a slice.'] : [],
+        details: '',
+      })
+      const card = screen.getByTestId('vision-explain-verdict')
+      expect(card.getAttribute('data-verdict')).toBe(verdict)
+      expect(card.getAttribute('data-tone')).toBe(tone)
+      expect(text(card)).toBe(`vision.explain.verdict.${verdict}Because.`)
+      // Nothing to show for the plan's detail without a walkthrough
+      expect(screen.queryByTestId('vision-explanation-details-toggle')).toBeNull()
+    })
+
+    it('offers no suggestions and no Improve query when there is nothing to change', async () => {
+      const view = renderRedesign()
+      await explain(view, {summary: 'It finds posts.', verdict: 'cannot-improve', suggestions: []})
+      expect(screen.queryByTestId('vision-explain-suggestions')).toBeNull()
+      expect(screen.queryByTestId('vision-improve-query')).toBeNull()
+    })
+
+    it('lists the suggestions and improves the query with them', async () => {
+      const view = renderRedesign()
+      const suggestions = ['Filter on `_type` before the join.', 'Add a slice such as `[0...10]`.']
+      await explain(view, {
+        summary: 'It finds posts.',
+        verdict: 'improvable',
+        verdictReason: 'It reads every post.',
+        suggestions,
+      })
+      const list = screen.getByTestId('vision-explain-suggestions')
+      expect(text(list)).toContain('vision.explain.suggestions.title')
+      expect(
+        within(list)
+          .getAllByTestId('vision-explain-suggestion')
+          .map((item) => item.tagName),
+      ).toEqual(['LI', 'LI'])
+      expect(
+        within(list)
+          .getAllByTestId('vision-explain-suggestion')
+          .map((item) => item.textContent),
+      ).toEqual(['1.Filter on _type before the join.', '2.Add a slice such as [0...10].'])
+      // The button costs AI credits like the other Agent Actions controls
+      expect(text(within(list).getByTestId('vision-improve-query-panel'))).toContain(
+        'vision.explain.improve.description',
+      )
+
+      const improved = '*[_type == "post"][0...10]'
+      view.replyToPrompts({query: improved, params: {}})
+      fireEvent.click(within(list).getByTestId('vision-improve-query'))
+      await waitFor(() => expect(getQueryEditor().value).toBe(improved))
+      expect(view.promptCalls).toHaveLength(2)
+      expect(view.promptCalls[1].config.apiVersion).toBe('vX')
+      expect(view.promptCalls[1].request).toMatchObject({
+        format: 'json',
+        instructionParams: {
+          query: '*[_type == "post"]',
+          params: '{}',
+          suggestions: '- Filter on `_type` before the join.\n- Add a slice such as `[0...10]`.',
+        },
+      })
+      expect(String(view.promptCalls[1].request.instruction)).toContain('$suggestions')
+      // Checked without running, then run as the new query
+      await waitFor(() => expect(view.fetchCalls).toHaveLength(2))
+      // The explanation was for the query that was there
+      await waitFor(() => expect(screen.queryByTestId('vision-explanation')).toBeNull())
+    })
+
+    it('shows the verdict and suggestions but no Improve query with editQuery off', async () => {
+      const view = renderRedesign(BASE_PERSPECTIVE, {ai: {editQuery: false}})
+      await explain(view, {
+        summary: 'It finds posts.',
+        verdict: 'improvable',
+        suggestions: ['Add a slice.'],
+      })
+      expect(screen.getByTestId('vision-explain-verdict').getAttribute('data-verdict')).toBe(
+        'improvable',
+      )
+      expect(screen.getByTestId('vision-explain-suggestions')).toBeTruthy()
+      expect(screen.queryByTestId('vision-improve-query')).toBeNull()
+    })
+
+    it('shows the error and keeps the suggestions when the improvement fails', async () => {
+      const view = renderRedesign()
+      await explain(view, {
+        summary: 'It finds posts.',
+        verdict: 'improvable',
+        suggestions: ['Add a slice.'],
+      })
+      view.replyToPrompts(new Error('The model is unavailable'))
+      fireEvent.click(screen.getByTestId('vision-improve-query'))
+      const error = await screen.findByTestId('vision-improve-query-error')
+      expect(text(error)).toContain('vision.explain.improve.failed')
+      expect(text(error)).toContain('The model is unavailable')
+      expect(getQueryEditor().value).toBe('*[_type == "post"]')
+      expect(screen.getByTestId('vision-explain-suggestions')).toBeTruthy()
+    })
   })
 
   it('runs the query in delta mode against two documents, typed in or loaded from the history', async () => {

@@ -645,7 +645,14 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
     />
   )
   const responsePanel = (
-    <ResponsePanel request={request} resolved={resolved} runnerRef={runnerRef} tab={tab} />
+    <ResponsePanel
+      formatForEditor={formatForEditor}
+      params={params.valid ? params.parsed : undefined}
+      request={request}
+      resolved={resolved}
+      runnerRef={runnerRef}
+      tab={tab}
+    />
   )
 
   const panelProps = {
