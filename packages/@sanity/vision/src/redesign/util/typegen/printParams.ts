@@ -44,6 +44,7 @@ function printComment(param: InferredParam): string | undefined {
     case 'datetime':
       return 'ISO 8601 date and time'
     case 'document-type':
+    case 'semantic-query':
     case undefined:
       return undefined
     default:

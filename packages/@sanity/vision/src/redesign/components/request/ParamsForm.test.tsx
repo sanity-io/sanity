@@ -15,6 +15,7 @@ import {type ReactNode, useState} from 'react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {type Params} from '../../../components/VisionGui'
+import * as fieldGrid from '../fieldGrid.module.css'
 import {ObjectParamInput} from './ObjectParamInput'
 import {ParamsForm} from './ParamsForm'
 
@@ -477,6 +478,35 @@ describe('ParamsForm', () => {
     fireEvent.keyDown(input('title'), {key: 'Enter', metaKey: true})
     fireEvent.keyDown(input('title'), {key: 'a'})
     fireEvent.keyDown(screen.getByTestId('vision-params-form-types-add'), {key: 'Enter'})
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('renders a semantic similarity query as a textarea that spans two columns', () => {
+    const {field, input, onSubmit, params} = renderForm(
+      '*[_type == "post" && title match $title] | score(text::semanticSimilarity($search))',
+      '{"search": "a short query", "title": "hello"}',
+    )
+    const search = input('search')
+    const title = input('title')
+    expect(search.tagName).toBe('TEXTAREA')
+    expect(title.tagName).toBe('INPUT')
+    expect(field('search').classList.contains(fieldGrid.wide)).toBe(true)
+    expect(field('title').classList.contains(fieldGrid.wide)).toBe(false)
+    expect(search.classList.contains(fieldGrid.queryText)).toBe(true)
+    expect(screen.getByTestId('vision-params-form-search-type').textContent).toContain(
+      'vision.params-form.type.string',
+    )
+
+    fireEvent.change(search, {target: {value: 'a yellow mouse\nwith a lightning tail'}})
+    expect(params()).toEqual({search: 'a yellow mouse\nwith a lightning tail', title: 'hello'})
+
+    // Plain Enter is a newline, the same as any multiline field. Fetch stays on mod+Enter.
+    const enter = createEvent.keyDown(search, {key: 'Enter', keyCode: 13})
+    fireEvent(search, enter)
+    expect(enter.defaultPrevented).toBe(false)
+    expect(onSubmit).not.toHaveBeenCalled()
+    fireEvent.keyDown(search, {key: 'Enter', ctrlKey: true, keyCode: 13})
+    fireEvent.keyDown(search, {key: 'Enter', metaKey: true, keyCode: 13})
     expect(onSubmit).not.toHaveBeenCalled()
   })
 

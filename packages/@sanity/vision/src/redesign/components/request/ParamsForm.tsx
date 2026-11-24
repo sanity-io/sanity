@@ -3,7 +3,7 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Button, Card, Stack, Switch, TextInput} from '@sanity/ui'
+import {Button, Card, Stack, Switch, TextArea, TextInput} from '@sanity/ui'
 import {Autocomplete} from '@sanity/ui/autocomplete'
 import {dequal} from 'dequal/lite'
 import JSON5 from 'json5'
@@ -15,6 +15,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -83,6 +84,7 @@ function describeType(type: ParamType, t: Translate): string {
     case 'datetime':
       base = t('vision.params-form.type.datetime')
       break
+    case 'semantic-query':
     case 'string':
       base = t('vision.params-form.type.string')
       break
@@ -303,6 +305,47 @@ function assignRef<T>(ref: Ref<T> | undefined, value: T | null) {
   else if (ref) ref.current = value
 }
 
+/** The query text of `text::semanticSimilarity()`, one line tall until the text needs more */
+function SearchText(props: {
+  id?: string
+  label?: string
+  value: string
+  disabled: boolean
+  invalid?: string
+  placeholder: string
+  onChange: (value: string) => void
+}) {
+  const {id, label, value, disabled, invalid, placeholder, onChange} = props
+  const areaRef = useRef<HTMLTextAreaElement>(null)
+
+  useLayoutEffect(() => {
+    const element = areaRef.current
+    // The field shows `value`; measure once that text is committed. An unmeasured field (no
+    // layout) keeps the one-line height, and the field's max-height clamps a long one and scrolls
+    if (!element || element.value !== value) return
+    // Zero first, so a shorter value measures the content instead of the height it already has
+    element.style.height = '0px'
+    const next = element.scrollHeight
+    if (next > 0) element.style.height = `${next}px`
+  }, [value])
+
+  return (
+    <TextArea
+      aria-label={label}
+      className={fieldGrid.queryText}
+      customValidity={invalid}
+      disabled={disabled}
+      fontSize={1}
+      id={id}
+      onChange={(event) => onChange(event.currentTarget.value)}
+      placeholder={placeholder}
+      ref={areaRef}
+      rows={1}
+      value={value}
+    />
+  )
+}
+
 interface ValueInputProps {
   id?: string
   /** For inputs no label points at (list items) */
@@ -313,6 +356,8 @@ interface ValueInputProps {
   listId: string | undefined
   /** Picked from with an autocomplete instead of the suggestions list */
   documentTypes: string[] | undefined
+  /** A semantic similarity query, typed across lines. Enter stays a newline */
+  multiline?: boolean
   value: unknown
   /** What an emptied input sends: nothing for a param, an empty string for a list item */
   empty: unknown
@@ -336,6 +381,7 @@ function ValueInput(props: ValueInputProps) {
     bounds,
     listId,
     documentTypes,
+    multiline,
     value,
     empty,
     disabled,
@@ -373,6 +419,24 @@ function ValueInput(props: ValueInputProps) {
     const nonNegative = bounds?.min !== undefined && bounds.min >= 0
     if (nonNegative) inputMode = kind === 'integer' ? 'numeric' : 'decimal'
     else inputMode = 'text'
+  }
+
+  if (multiline) {
+    return (
+      <SearchText
+        disabled={disabled}
+        id={id}
+        invalid={invalid}
+        label={label}
+        onChange={(next) => {
+          const nextValue = fromText(next, kind, empty)
+          setDraft({text: next, value: nextValue})
+          onChange(nextValue)
+        }}
+        placeholder={placeholder}
+        value={text}
+      />
+    )
   }
 
   if (documentTypes) {
@@ -626,6 +690,7 @@ function ParamField(props: {
             invalid={required}
             kind={type.array ? 'any' : type.kind}
             listId={suggestionsListId}
+            multiline={type.format === 'semantic-query' && !type.array}
             onChange={onChange}
             placeholder={placeholder}
             ref={datetime ? setInputElement : undefined}
@@ -658,8 +723,15 @@ function ParamField(props: {
     )
   }
 
+  const wide = !nested && type.format === 'semantic-query' && !type.array
+
   return (
-    <Stack data-testid={`vision-params-form-${param.name}`} data-vision-param={param.name} gap={2}>
+    <Stack
+      className={wide ? fieldGrid.wide : undefined}
+      data-testid={`vision-params-form-${param.name}`}
+      data-vision-param={param.name}
+      gap={2}
+    >
       <Flex alignItems="center" gap={1}>
         <Text as="label" htmlFor={inputId} size={1} weight="medium" trim={true}>
           <InlineCode>{`$${param.name}`}</InlineCode>
@@ -854,20 +926,22 @@ export function ParamsForm({
         </Text>
       )}
       {inference.params.length > 0 && (
-        <div className={fieldGrid.fieldGrid}>
-          {inference.params.map((param) => (
-            <ParamField
-              disabled={disabled}
-              isSet={Object.hasOwn(values, param.name)}
-              key={param.name}
-              lintFindings={lintFindings?.filter((finding) => finding.param.name === param.name)}
-              onApplySuggestion={onApplySuggestion}
-              onChange={(value) => setValue(param.name, value)}
-              param={param}
-              schemaNote={schemaNoteInDetails}
-              value={values[param.name]}
-            />
-          ))}
+        <div className={fieldGrid.container}>
+          <div className={fieldGrid.fieldGrid}>
+            {inference.params.map((param) => (
+              <ParamField
+                disabled={disabled}
+                isSet={Object.hasOwn(values, param.name)}
+                key={param.name}
+                lintFindings={lintFindings?.filter((finding) => finding.param.name === param.name)}
+                onApplySuggestion={onApplySuggestion}
+                onChange={(value) => setValue(param.name, value)}
+                param={param}
+                schemaNote={schemaNoteInDetails}
+                value={values[param.name]}
+              />
+            ))}
+          </div>
         </div>
       )}
       {unused.length > 0 && (
