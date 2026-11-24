@@ -1,4 +1,4 @@
-import {Card} from '@sanity/ui'
+import {BoundaryElementProvider, Card} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 import {
   type DocumentGroupEvent,
@@ -80,16 +80,19 @@ export function EventTimelineItem({event, isSelected, onSelect, optionsMenu}: Ti
   return (
     <Flex gap={1}>
       {isEditDocumentVersionEvent(event) ? (
-        <Tooltip
-          {...CHANGES_TOOLTIP_PROPS}
-          content={
-            <Box padding={3} style={{width: 360, maxHeight: '50vh', overflow: 'hidden'}}>
-              <EditEventChanges event={event} />
-            </Box>
-          }
-        >
-          {card}
-        </Tooltip>
+        // The timeline's scroller is the boundary otherwise, which leaves no room on the left.
+        <BoundaryElementProvider element={null}>
+          <Tooltip
+            {...CHANGES_TOOLTIP_PROPS}
+            content={
+              <Box padding={3} style={{width: 360, maxHeight: '50vh', overflow: 'hidden'}}>
+                <EditEventChanges event={event} />
+              </Box>
+            }
+          >
+            {card}
+          </Tooltip>
+        </BoundaryElementProvider>
       ) : (
         <Tooltip content={isSelectable ? '' : t('changes.not-selectable')} disabled={isSelectable}>
           {card}
