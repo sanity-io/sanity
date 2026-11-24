@@ -6,6 +6,7 @@ import {type Schema, useSchema} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
+import {firstEditorLineStyle} from '../../../codemirror/editorMetrics'
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {QueryErrorDialog} from '../../../components/QueryErrorDialog'
 import {ResultView, type ResultViewCopy} from '../../../components/ResultView'
@@ -494,7 +495,10 @@ export function ResponsePanel(props: ResponsePanelProps) {
               <Box
                 className={hasResult && resultView === 'tree' ? styles.treeContent : undefined}
                 id={resultContentId}
-                padding={3}
+                paddingBottom={3}
+                // The empty state takes its top offset from the query editor's first line instead
+                paddingTop={status === 'idle' ? 0 : 3}
+                paddingX={3}
               >
                 {status === 'fetching' && (
                   <Box className={styles.resultSpinner} marginTop={3}>
@@ -523,7 +527,13 @@ export function ResponsePanel(props: ResponsePanelProps) {
                   </div>
                 )}
                 {status === 'idle' && (
-                  <Text muted size={1} as="div" trim={true}>
+                  <Text
+                    as="div"
+                    data-testid="vision-result-empty"
+                    muted
+                    size={1}
+                    style={firstEditorLineStyle}
+                  >
                     {t('vision.result.empty')}
                   </Text>
                 )}

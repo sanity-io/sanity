@@ -6,6 +6,8 @@ import {hues} from '@sanity/color'
 import {rem, type Theme} from '@sanity/ui'
 import {useMemo} from 'react'
 
+import {EDITOR_LINE_HEIGHT} from './editorMetrics'
+
 // The explicit return type keeps declaration emit portable (TS2883): without it the inferred
 // type references `Extension` from @codemirror/state through a non-portable .pnpm path
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -34,6 +36,10 @@ function createTheme(theme: Theme) {
 
       '.cm-content': {
         caretColor: cursor,
+      },
+
+      '.cm-scroller': {
+        lineHeight: String(EDITOR_LINE_HEIGHT),
       },
 
       '.cm-editor': {
