@@ -6,6 +6,13 @@
   min-height: 0;
 }
 
+/* The AI action over the rows, which keep the rest of the pane */
+.action {
+  flex: none;
+  padding: var(--space-2, 8px) var(--space-3, 12px);
+  border-bottom: 1px solid var(--card-border-color);
+}
+
 .body {
   position: relative;
   flex: 1;

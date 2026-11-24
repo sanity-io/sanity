@@ -57,7 +57,7 @@ export function evaluateQueryType(options: EvaluateQueryTypeOptions): QueryTypeE
       if (node.type !== 'unknown') {
         return {source: 'schema', node, schema}
       }
-      schemaError = new Error('The query evaluates to an unknown type against the schema')
+      schemaError = new Error('it evaluates to an unknown type, which the schema cannot narrow')
     } catch (err) {
       schemaError = toError(err)
     }

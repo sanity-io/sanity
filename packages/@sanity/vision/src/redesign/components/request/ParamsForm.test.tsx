@@ -1,12 +1,21 @@
 import {Schema} from '@sanity/schema'
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
-import {cleanup, createEvent, fireEvent, render, screen, within} from '@testing-library/react'
+import {
+  cleanup,
+  createEvent,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import JSON5 from 'json5'
 import {type ReactNode, useState} from 'react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {type Params} from '../../../components/VisionGui'
+import {ObjectParamInput} from './ObjectParamInput'
 import {ParamsForm} from './ParamsForm'
 
 const schema = Schema.compile({
@@ -54,6 +63,15 @@ vi.stubGlobal(
 )
 
 const theme = buildTheme()
+
+/** The options of the open autocomplete, which jsdom reports as clipped and so hidden */
+function optionTexts() {
+  return screen
+    .queryAllByRole('listbox', {hidden: true})
+    .filter((listbox) => !(listbox instanceof HTMLDataListElement))
+    .flatMap((listbox) => within(listbox).queryAllByRole('option', {hidden: true}))
+    .map((option) => option.textContent)
+}
 
 function toParams(raw: string): Params {
   try {
@@ -116,12 +134,15 @@ describe('ParamsForm', () => {
         'vision.params-form.type.any',
       ].map((type) => `vision.params-form.type-detail:${JSON.stringify({type})}`),
     )
-    // The document types are suggested; the input points at the list
-    const typeInput = within(field('type')).getByRole('combobox')
-    const list = document.getElementById(typeInput.getAttribute('list') || '')
+    // The document types are listed by an autocomplete, the options of a string by its suggestions
+    fireEvent.focus(within(field('type')).getByRole('combobox'))
+    fireEvent.click(within(field('type')).getByLabelText('Open'))
+    expect(optionTexts()).toEqual(['author', 'post'])
+    const statusInput = within(field('status')).getByRole('combobox')
+    const list = document.getElementById(statusInput.getAttribute('list') || '')
     expect([...(list?.querySelectorAll('option') ?? [])].map((option) => option.value)).toEqual([
-      'author',
-      'post',
+      'draft',
+      'published',
     ])
     // The details live in the info icon's tooltip, the missing value is flagged like a required field
     expect(
@@ -163,6 +184,33 @@ describe('ParamsForm', () => {
     expect(params()).toEqual({title: 'x'})
   })
 
+  it('narrows the document types to what is typed, and picks one from the list', async () => {
+    const {field, params} = renderForm('*[_type == $type]')
+    const typeInput = within(field('type')).getByRole('combobox')
+    fireEvent.focus(typeInput)
+    fireEvent.change(typeInput, {target: {value: 'AU'}})
+    expect(optionTexts()).toEqual(['author'])
+    expect(params()).toEqual({type: 'AU'})
+
+    fireEvent.keyDown(typeInput, {key: 'ArrowDown'})
+    const [listbox] = screen
+      .getAllByRole('listbox', {hidden: true})
+      .filter((element) => !(element instanceof HTMLDataListElement))
+    fireEvent.keyDown(within(listbox).getByRole('option', {hidden: true}), {key: 'Enter'})
+    await waitFor(() => expect(params()).toEqual({type: 'author'}))
+    expect(typeInput).toHaveProperty('value', 'author')
+    expect(typeInput.getAttribute('aria-expanded')).toBe('false')
+  })
+
+  it('lists every document type when a filled value opens the list', () => {
+    const {field} = renderForm('*[_type == $type]', '{"type": "post"}')
+    const typeInput = within(field('type')).getByRole('combobox')
+    fireEvent.focus(typeInput)
+    fireEvent.click(within(field('type')).getByLabelText('Open'))
+    expect(optionTexts()).toEqual(['author', 'post'])
+    expect(typeInput).toHaveProperty('value', 'post')
+  })
+
   it('sends numbers as numbers, keeping the text as typed, and other text as text', () => {
     const {field, input, params} = renderForm('*[_type == "post"][0...$limit]')
     fireEvent.change(input('limit'), {target: {value: '1.'}})
@@ -180,6 +228,54 @@ describe('ParamsForm', () => {
     )
   })
 
+  it('sends what is typed into a text field as text, "null" included', () => {
+    const {field, input, params} = renderForm('*[_type == "post" && title == $title]')
+    fireEvent.change(input('title'), {target: {value: 'null'}})
+    expect(params()).toEqual({title: 'null'})
+    expect(input('title')).toHaveProperty('value', 'null')
+    expect(within(field('title')).queryByTestId('vision-params-form-title-problem')).toBeNull()
+    // Only params the query treats as optional can be set to null
+    expect(within(field('title')).queryByTestId('vision-params-form-title-clear')).toBeNull()
+  })
+
+  it('sets a param the query treats as optional to null, and back to text when typed', () => {
+    const {field, input, params} = renderForm(
+      '*[_type == "post" && (!defined($title) || title == $title)]',
+      '{"title": "null"}',
+    )
+    const clear = within(field('title')).getByTestId('vision-params-form-title-clear')
+    expect(clear.getAttribute('aria-label')).toBe('vision.params-form.clear:{"name":"title"}')
+    fireEvent.click(clear)
+    expect(params()).toEqual({title: null})
+    // Null is the placeholder, not text, and is not flagged
+    expect(input('title')).toHaveProperty('value', '')
+    expect(input('title')).toHaveProperty('placeholder', 'vision.params-form.null')
+    expect(within(field('title')).queryByTestId('vision-params-form-title-problem')).toBeNull()
+    expect(within(field('title')).queryByTestId('vision-params-form-title-required')).toBeNull()
+    expect(clear).toHaveProperty('disabled', true)
+
+    fireEvent.change(input('title'), {target: {value: 'null'}})
+    expect(params()).toEqual({title: 'null'})
+    expect(input('title')).toHaveProperty('value', 'null')
+    expect(clear).toHaveProperty('disabled', false)
+  })
+
+  it('offers the null control for every way a query makes a param optional', () => {
+    const {field} = renderForm(
+      '*[_type == "post" && ($a == null || title == $a) && (!$b || title == $b) && title == coalesce($c, title) && title == $d]',
+    )
+    for (const name of ['a', 'b', 'c']) {
+      expect(within(field(name)).getByTestId(`vision-params-form-${name}-clear`)).toBeTruthy()
+    }
+    expect(within(field('d')).queryByTestId('vision-params-form-d-clear')).toBeNull()
+  })
+
+  it('shows null as the placeholder of an untyped optional param too', () => {
+    const {input} = renderForm('*[defined($g)]', '{"g": null}')
+    expect(input('g')).toHaveProperty('value', '')
+    expect(input('g')).toHaveProperty('placeholder', 'vision.params-form.null')
+  })
+
   it('offers true and false for a boolean, and any JSON for an untyped param', () => {
     const {field, input, params} = renderForm(
       '*[_type == "post" && featured == $featured]{"extra": $extra}',
@@ -192,6 +288,10 @@ describe('ParamsForm', () => {
     expect(input('extra')).toHaveProperty('value', '{a: [1, 2]}')
     fireEvent.change(input('extra'), {target: {value: 'plain text'}})
     expect(params()).toEqual({featured: false, extra: 'plain text'})
+    // Typed text is never null, even where JSON is parsed
+    fireEvent.change(input('extra'), {target: {value: 'null'}})
+    expect(params()).toEqual({featured: false, extra: 'null'})
+    expect(input('extra')).toHaveProperty('value', 'null')
   })
 
   it('edits a list param item by item', () => {
@@ -279,5 +379,122 @@ describe('ParamsForm', () => {
   it('explains a query without params', () => {
     renderForm('*[_type == "post"]')
     expect(screen.getByText('vision.params-form.empty')).toBeTruthy()
+  })
+  it('edits an object param key by key in a dialog, from a one-line preview', () => {
+    const {field, params} = renderForm(
+      '*[_type == "post" && count(tags) >= $countRange.min && count(tags) <= $countRange.max]',
+      '{"countRange": {"min": 0, "max": 10000}}',
+    )
+    expect(screen.getByTestId('vision-params-form-countRange-type').textContent).toBe(
+      `vision.params-form.type-detail:${JSON.stringify({type: 'vision.params-form.type.object'})}`,
+    )
+    expect(screen.getByTestId('vision-params-form-countRange-object-preview').textContent).toBe(
+      'min: 0, max: 10000',
+    )
+    // No raw JSON input in the grid
+    expect(within(field('countRange')).queryByRole('textbox')).toBeNull()
+    expect(screen.queryByTestId('vision-params-form-countRange-dialog')).toBeNull()
+
+    fireEvent.click(screen.getByTestId('vision-params-form-countRange-object'))
+    const dialog = screen.getByTestId('vision-params-form-countRange-dialog')
+    const min = within(within(dialog).getByTestId('vision-params-form-countRange.min')).getByRole(
+      'textbox',
+    )
+    expect(min).toHaveProperty('value', '0')
+    fireEvent.change(min, {target: {value: '5'}})
+    expect(params()).toEqual({countRange: {min: 5, max: 10000}})
+    expect(screen.getByTestId('vision-params-form-countRange-object-preview').textContent).toBe(
+      'min: 5, max: 10000',
+    )
+
+    // An emptied key is removed; the query reads it as null, so it is not flagged as required
+    fireEvent.change(min, {target: {value: ''}})
+    expect(params()).toEqual({countRange: {max: 10000}})
+    expect(within(dialog).queryByTestId('vision-params-form-countRange.min-required')).toBeNull()
+  })
+
+  it('creates an object param from its first key, and keeps keys the query does not read', () => {
+    const {params} = renderForm('*[featured == $filter.featured]', '{"filter": {"label": "x"}}')
+    fireEvent.click(screen.getByTestId('vision-params-form-filter-object'))
+    const dialog = screen.getByTestId('vision-params-form-filter-dialog')
+    expect(within(dialog).getByTestId('vision-params-form-filter.label')).toBeTruthy()
+    fireEvent.change(
+      within(within(dialog).getByTestId('vision-params-form-filter.featured')).getByRole(
+        'combobox',
+      ),
+      {target: {value: 'true'}},
+    )
+    expect(params()).toEqual({filter: {label: 'x', featured: true}})
+  })
+
+  it('opens nested objects in their own dialog', () => {
+    const {params} = renderForm('*[rating > $range.limits.low]')
+    expect(screen.getByTestId('vision-params-form-range-object-preview').textContent).toBe(
+      'vision.params-form.not-set',
+    )
+    fireEvent.click(screen.getByTestId('vision-params-form-range-object'))
+    fireEvent.click(screen.getByTestId('vision-params-form-range.limits-object'))
+    const nested = screen.getByTestId('vision-params-form-range.limits-dialog')
+    fireEvent.change(
+      within(within(nested).getByTestId('vision-params-form-range.limits.low')).getByRole(
+        'textbox',
+      ),
+      {target: {value: '3'}},
+    )
+    expect(params()).toEqual({range: {limits: {low: 3}}})
+    expect(screen.getByTestId('vision-params-form-range-object-preview').textContent).toBe(
+      'limits: {low: 3}',
+    )
+  })
+  it('forwards focus and blur from the object preview, and from the fields in its dialog', () => {
+    const onFocus = vi.fn()
+    const onBlur = vi.fn()
+    const onFieldFocus = vi.fn()
+    render(
+      <ThemeProvider theme={theme}>
+        <LayerProvider>
+          <div onFocus={onFieldFocus}>
+            <ObjectParamInput
+              disabled={false}
+              id="range"
+              label="$range"
+              onBlur={onBlur}
+              onChange={vi.fn()}
+              onFocus={onFocus}
+              param={{
+                name: 'range',
+                node: {
+                  type: 'object',
+                  attributes: {min: {type: 'objectAttribute', value: {type: 'number'}}},
+                },
+                type: {kind: 'any', array: false},
+                usages: [],
+                fields: [
+                  {
+                    name: 'min',
+                    node: {type: 'number'},
+                    type: {kind: 'number', array: false},
+                    usages: [],
+                  },
+                ],
+              }}
+              renderField={(field) => <input aria-label={field.name} />}
+              value={{min: 1}}
+            />
+          </div>
+        </LayerProvider>
+      </ThemeProvider>,
+    )
+    const preview = screen.getByTestId('vision-params-form-range-object')
+    fireEvent.focus(preview)
+    fireEvent.blur(preview)
+    expect(onFocus).toHaveBeenCalledTimes(1)
+    expect(onBlur).toHaveBeenCalledTimes(1)
+
+    // The dialog is portalled, but its focus events still reach the field through React
+    fireEvent.click(preview)
+    onFieldFocus.mockClear()
+    fireEvent.focus(screen.getByLabelText('min'))
+    expect(onFieldFocus).toHaveBeenCalledTimes(1)
   })
 })

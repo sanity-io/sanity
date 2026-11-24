@@ -25,7 +25,9 @@ function severityLabel(severity: LintSeverity, t: TFunction<'vision'>): string {
   }
 }
 
-function severityTone(severity: LintSeverity): 'critical' | 'caution' | 'primary' | 'default' {
+export function severityTone(
+  severity: LintSeverity,
+): 'critical' | 'caution' | 'primary' | 'default' {
   switch (severity) {
     case 'error':
       return 'critical'

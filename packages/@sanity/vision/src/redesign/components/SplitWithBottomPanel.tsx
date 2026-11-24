@@ -14,14 +14,27 @@ import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../i18n'
+import {useContentSize} from '../hooks/useContentSize'
 import {useVisionExperience, type VisionLayout} from '../store/VisionActorContext'
-import {CollapsiblePanel, type CollapsiblePanelTab, PANEL_HEADER_HEIGHT} from './CollapsiblePanel'
-import {bottomPanelSizeToFit} from './fitPanelSize'
+import {
+  BOTTOM_BAR_HEIGHT,
+  CollapsiblePanel,
+  type CollapsiblePanelTab,
+  PANEL_BODY_BORDER,
+  PANEL_HEADER_HEIGHT,
+} from './CollapsiblePanel'
+import {type BottomPanelColumn, bottomPanelSizeToFit, defaultBottomPanelSize} from './fitPanelSize'
 import * as styles from './redesign.module.css'
 import {ResizableSplit, SPLIT_HANDLE_SIZE} from './ResizableSplit'
 
 /** The main area may never be dragged smaller than this */
 const MIN_MAIN_HEIGHT = 120
+
+/**
+ * How far above the bottom of the query tab the request panel's toolbar row and the response
+ * panel's tab header start out, per layout. Both columns' default panel sizes derive from it.
+ */
+const DEFAULT_ROW_OFFSET: Record<VisionLayout, number> = {columns: 220, stacked: 180, mobile: 160}
 
 /** The bottom panel's tab, whether it is collapsed, and the height dragged per layout */
 export interface BottomPanelState {
@@ -43,9 +56,12 @@ export interface SplitWithBottomPanelProps {
   children: ReactNode
   /** The bottom panel's tabs; the first one starts out selected */
   tabs: CollapsiblePanelTab[]
-  /** Initial height of the bottom panel, per layout */
-  defaultBottomSize: Record<VisionLayout, number>
-  /** Rendered below the split pane, such as the bottom action bar */
+  /**
+   * The column this is. Its bottom panel's initial height lines up the request panel's toolbar row
+   * with the response panel's tab header.
+   */
+  column: BottomPanelColumn
+  /** Rendered below the split pane: the request column's action bar */
   footer?: ReactNode
   /**
    * Controlled tab, collapsed flag and height. Without it the panel keeps its own, which resets
@@ -69,7 +85,7 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
     testId,
     children,
     tabs,
-    defaultBottomSize,
+    column,
     footer,
     state,
     onStateChange,
@@ -85,9 +101,21 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
   }))
   const panelState = state ?? uncontrolled
   const setPanelState = onStateChange ?? setUncontrolled
-  const bottomSize = panelState.bottomSizes[layout] ?? defaultBottomSize[layout]
   const containerRef = useRef<HTMLDivElement>(null)
   const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
+  const columnHeight = useContentSize(boundaryElement)?.height
+  const bottomSize =
+    panelState.bottomSizes[layout] ??
+    defaultBottomPanelSize({
+      column,
+      rowOffset: DEFAULT_ROW_OFFSET[layout],
+      headerHeight: PANEL_HEADER_HEIGHT,
+      bodyBorder: PANEL_BODY_BORDER,
+      footerHeight: BOTTOM_BAR_HEIGHT,
+      columnHeight,
+      minMainHeight: MIN_MAIN_HEIGHT,
+      handleSize: SPLIT_HANDLE_SIZE,
+    })
   const [fitRequest, setFitRequest] = useState(0)
 
   const selectTab = useCallback(

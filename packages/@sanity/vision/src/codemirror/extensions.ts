@@ -4,7 +4,6 @@ import {javascriptLanguage} from '@codemirror/lang-javascript'
 import {
   bracketMatching,
   defaultHighlightStyle,
-  foldGutter,
   indentOnInput,
   syntaxHighlighting,
 } from '@codemirror/language'
@@ -54,10 +53,12 @@ export const groqExtensions: Extension[] = [groq(), ...sharedExtensions]
 
 export const paramsExtensions: Extension[] = [javascriptLanguage, ...sharedExtensions]
 
-/** A result's JSON: read only, but focusable and selectable, with its objects and arrays foldable */
-export const resultJsonExtensions: Extension[] = [
+/**
+ * A result's JSON: read only, but focusable and selectable. Folding is up to the caller — the
+ * redesign adds its own fold gutter; classic Vision has no result JSON editor.
+ */
+export const readOnlyJsonExtensions: Extension[] = [
   javascriptLanguage,
   ...sharedExtensions,
-  foldGutter(),
   EditorState.readOnly.of(true),
 ]

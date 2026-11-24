@@ -1,56 +1,145 @@
-import {type ObjectTypeNode, type SchemaType, type TypeNode} from 'groq-js'
+import {type ArrayTypeNode, type ObjectTypeNode, type SchemaType, type TypeNode} from 'groq-js'
 
-import {printTypeScriptNode} from './printTypeScript'
-import {flattenObject, indent, printLiteralKey, uniqueMembers} from './printUtils'
-import {collectReferencedTypes, createTypeNames, resolveSchemaType, toTypeName} from './schemaTypes'
+import {
+  createTypeScriptPrinter,
+  joinKeyAndValue,
+  printHelperDeclarations,
+  type PrintRoot,
+  sortBySchemaOrder,
+} from './printTypeScript'
+import {flattenObject, indent, MAX_LINE_WIDTH, printLiteralKey} from './printUtils'
+import {collectReferencedTypes, createSchemaIdentifiers, resolveSchemaType} from './schemaTypes'
+
+/** The Zod counterpart of typegen's `ArrayOf<T>`: an array whose members carry a `_key` */
+const ARRAY_OF_ZOD_DECLARATION = [
+  '/** Members of an array in a document carry a `_key` the named type does not declare */',
+  'const arrayOf = <T extends z.ZodTypeAny>(member: T) =>',
+  '  z.array(member.and(z.object({ _key: z.string() })))',
+].join('\n')
 
 export interface PrintZodOptions {
-  /** Name of the query result type; the schema constant gets a `Schema` suffix */
+  /** Name of the query result type (see `toResultTypeName`); its schema gets a `Schema` suffix */
   typeName: string
+  /** Schema the `inline` references point into; the types referenced are emitted as well */
   schema?: SchemaType
 }
 
 interface PrintContext {
-  /** Identifier of each referenced schema type, unique across the output */
-  typeNames: Map<string, string>
+  /** The TypeScript alias of every schema type; its Zod schema is the alias with `Schema` added */
+  identifiers: ReadonlyMap<string, string>
   /** Referenced schema types that close a cycle and therefore need `z.lazy` */
-  cyclic: Set<string>
+  cyclic: ReadonlySet<string>
   /** Whether schema type declarations are being printed; the result schema comes after them all */
   inDeclarations: boolean
+  usesArrayOf: boolean
 }
 
-function typeAliasName(typeName: string, context: PrintContext): string {
-  return context.typeNames.get(typeName) ?? toTypeName(typeName)
+function schemaName(identifier: string): string {
+  return `${identifier}Schema`
 }
 
-function schemaName(typeName: string, context: PrintContext): string {
-  return `${typeAliasName(typeName, context)}Schema`
+function printReference(name: string, context: PrintContext): string {
+  const identifier = context.identifiers.get(name)
+  if (!identifier) {
+    return `z.unknown() /* Unable to locate the referenced type ${JSON.stringify(name)} in schema */`
+  }
+  const reference = schemaName(identifier)
+  return context.inDeclarations && context.cyclic.has(name)
+    ? `z.lazy(() => ${reference})`
+    : reference
+}
+
+/** `helper([a, b])` on one line when it fits, otherwise one member per line */
+function printList(helper: string, members: string[], depth: number): string {
+  const inline = `${helper}([${members.join(', ')}])`
+  if (
+    !members.some((member) => member.includes('\n')) &&
+    indent(depth).length + inline.length <= MAX_LINE_WIDTH
+  ) {
+    return inline
+  }
+  const inner = indent(depth + 1)
+  return `${helper}([\n${members.map((member) => `${inner}${member},`).join('\n')}\n${indent(depth)}])`
+}
+
+function printArray(node: ArrayTypeNode, depth: number, context: PrintContext): string {
+  const arrayOf = (): string => {
+    context.usesArrayOf = true
+    return `arrayOf(${printZodNode(node.of, depth, context)})`
+  }
+  if (node.of.type === 'inline') return arrayOf()
+  if (node.of.type !== 'union') return `z.array(${printZodNode(node.of, depth, context)})`
+  const members = node.of.of
+  if (members.every((member) => member.type !== 'inline')) {
+    return `z.array(${printZodNode(node.of, depth, context)})`
+  }
+  if (members.every((member) => member.type === 'inline')) return arrayOf()
+  const union = node.of
+  const split = (predicate: (member: TypeNode) => boolean): ArrayTypeNode => ({
+    ...node,
+    of: {...union, of: members.filter(predicate)},
+  })
+  return printList(
+    'z.union',
+    [
+      printArray(
+        split((member) => member.type !== 'inline'),
+        depth + 1,
+        context,
+      ),
+      printArray(
+        split((member) => member.type === 'inline'),
+        depth + 1,
+        context,
+      ),
+    ],
+    depth,
+  )
 }
 
 function printObject(node: ObjectTypeNode, depth: number, context: PrintContext): string {
   const {attributes, rest} = flattenObject(node)
-  const inner = indent(depth + 1)
-
-  const lines = Object.entries(attributes).map(([key, attribute]) => {
-    const value = printZodNode(attribute.value, depth + 1, context)
-    return `${inner}${printLiteralKey(key)}: ${attribute.optional ? `${value}.optional()` : value},`
-  })
-
-  let output =
-    lines.length === 0 ? 'z.object({})' : `z.object({\n${lines.join('\n')}\n${indent(depth)}})`
   if (rest?.type === 'unknown') {
-    output += '.passthrough()'
-  } else if (rest?.type === 'inline') {
-    output += `.and(${printReference(rest.name, context)})`
+    return 'z.unknown()'
   }
-  return output
+  const inner = indent(depth + 1)
+  const members = Object.entries(attributes).map(([key, attribute]) => {
+    const value = printZodNode(attribute.value, depth + 1, context)
+    return `${inner}${joinKeyAndValue(printLiteralKey(key), attribute.optional ? `${value}.optional()` : value)},`
+  })
+  const object =
+    members.length === 0 ? 'z.object({})' : `z.object({\n${members.join('\n')}\n${indent(depth)}})`
+  if (rest?.type === 'inline') {
+    const identifier = context.identifiers.get(rest.name)
+    if (!identifier) return printReference(rest.name, context)
+    return `${object}.and(${printReference(rest.name, context)})`
+  }
+  return object
 }
 
-function printReference(name: string, context: PrintContext): string {
-  const reference = schemaName(name, context)
-  return context.inDeclarations && context.cyclic.has(name)
-    ? `z.lazy(() => ${reference})`
-    : reference
+function printUnion(members: TypeNode[], depth: number, context: PrintContext): string {
+  const nullable = members.some((member) => member.type === 'null')
+  const defined = members.filter((member) => member.type !== 'null')
+  let union: string
+  if (defined.length === 0) {
+    // Only null, or nothing at all (extracted schemas have empty unions)
+    return nullable ? 'z.null()' : 'z.never()'
+  } else if (defined.length === 1) {
+    union = printZodNode(defined[0], depth, context)
+  } else if (defined.every((member) => member.type === 'string' && member.value !== undefined)) {
+    union = printList(
+      'z.enum',
+      defined.map((member) => JSON.stringify(member.type === 'string' ? member.value : undefined)),
+      depth,
+    )
+  } else {
+    union = printList(
+      'z.union',
+      defined.map((member) => printZodNode(member, depth + 1, context)),
+      depth,
+    )
+  }
+  return nullable ? `${union}.nullable()` : union
 }
 
 function printZodNode(node: TypeNode, depth: number, context: PrintContext): string {
@@ -68,67 +157,69 @@ function printZodNode(node: TypeNode, depth: number, context: PrintContext): str
     case 'inline':
       return printReference(node.name, context)
     case 'array':
-      return `z.array(${printZodNode(node.of, depth, context)})`
-    case 'union': {
-      const nullable = node.of.some((member) => member.type === 'null')
-      const members = uniqueMembers(
-        node.of
-          .filter((member) => member.type !== 'null')
-          .map((member) => printZodNode(member, depth, context)),
-      )
-      if (members.length === 0) {
-        // Only null, or nothing at all (extracted schemas have empty unions)
-        return nullable ? 'z.null()' : 'z.never()'
-      }
-      const union =
-        members.length === 1
-          ? members[0]
-          : `z.union([\n${members.map((member) => `${indent(depth + 1)}${member},`).join('\n')}\n${indent(depth)}])`
-      return nullable ? `${union}.nullable()` : union
-    }
+      return printArray(node, depth, context)
+    case 'union':
+      return printUnion(node.of, depth, context)
     case 'object':
       return printObject(node, depth, context)
     default:
+      node satisfies never
       return 'z.unknown()'
   }
 }
 
 /**
- * Prints a Zod schema for a query result, preceded by schemas for the referenced schema types
- * (dependencies first, cycles broken with `z.lazy`).
+ * Prints a Zod schema for a query result from the same type the TypeScript output is printed
+ * from, so the two agree: optional fields are `.optional()`, `null` members `.nullable()`, and
+ * the schema types the result references are declared first, dependencies before dependents,
+ * with `z.lazy` breaking the cycles and `z.infer` giving the result type.
  */
-export function printZod(node: TypeNode, options: PrintZodOptions): string {
+export function printZod(
+  node: TypeNode,
+  options: PrintZodOptions,
+  printRoot: PrintRoot = (print) => print(node, 0),
+): string {
+  const identifiers = createSchemaIdentifiers(options.schema)
   const {order, cyclic} = collectReferencedTypes(node, options.schema)
-  const context: PrintContext = {
-    typeNames: createTypeNames(order, [options.typeName]),
-    cyclic,
-    inDeclarations: true,
-  }
-  const declarations = [`import {z} from 'zod'`]
+  const context: PrintContext = {identifiers, cyclic, inDeclarations: true, usesArrayOf: false}
+  const declarations: string[] = []
 
-  // TypeScript cannot infer a type through `z.lazy`, so recursive schemas are annotated with an
-  // explicit type: the referenced schema types are declared as TypeScript types first (all of
-  // them, since a recursive type may mention the others), and `z.infer` keeps working downstream
-  if (cyclic.size > 0) {
-    for (const name of order) {
-      const resolved = resolveSchemaType(options.schema, name)
-      const type = resolved ? printTypeScriptNode(resolved, context.typeNames) : 'unknown'
-      declarations.push(`export type ${typeAliasName(name, context)} = ${type};`)
-    }
+  // TypeScript cannot infer a type through `z.lazy`, so a recursive schema is annotated with an
+  // explicit type, declared first; the other types it mentions are inferred from their schemas
+  const typeIdentifiers = new Map(
+    [...identifiers].map(([name, identifier]) => [
+      name,
+      cyclic.has(name) ? identifier : `z.infer<typeof ${schemaName(identifier)}>`,
+    ]),
+  )
+  const typePrinter = createTypeScriptPrinter(typeIdentifiers)
+  for (const name of sortBySchemaOrder([...cyclic], options.schema)) {
+    const resolved = resolveSchemaType(options.schema, name)
+    if (!resolved) continue
+    declarations.push(`export type ${identifiers.get(name)} = ${typePrinter.print(resolved)};`)
   }
 
   for (const name of order) {
+    const identifier = identifiers.get(name)
     const resolved = resolveSchemaType(options.schema, name)
-    const value = resolved ? printZodNode(resolved, 0, context) : 'z.unknown()'
-    const typeAnnotation = cyclic.has(name) ? `: z.ZodType<${typeAliasName(name, context)}>` : ''
-    declarations.push(`export const ${schemaName(name, context)}${typeAnnotation} = ${value}`)
+    // A reference the schema cannot resolve was already pointed out where it is used
+    if (!identifier || !resolved) continue
+    const annotation = cyclic.has(name) ? `: z.ZodType<${identifier}>` : ''
+    declarations.push(
+      `export const ${schemaName(identifier)}${annotation} = ${printZodNode(resolved, 0, context)}`,
+    )
   }
 
-  const resultSchema = `${options.typeName}Schema`
+  context.inDeclarations = false
+  const resultSchema = schemaName(options.typeName)
+  const root = printRoot((child, depth) => printZodNode(child, depth, context))
   declarations.push(
-    `export const ${resultSchema} = ${printZodNode(node, 0, {...context, inDeclarations: false})}`,
+    `export const ${resultSchema} = ${root}`,
     `export type ${options.typeName} = z.infer<typeof ${resultSchema}>`,
   )
 
-  return declarations.join('\n\n')
+  const helpers = printHelperDeclarations(typePrinter)
+  if (context.usesArrayOf) helpers.push(ARRAY_OF_ZOD_DECLARATION)
+
+  return [`import {z} from 'zod'`, ...helpers, ...declarations].join('\n\n')
 }

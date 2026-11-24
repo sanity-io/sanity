@@ -12,6 +12,8 @@ import {
   selectParamsView,
   selectResultView,
   selectPersistedState,
+  selectSourceMapEnabled,
+  selectSourceMapRequest,
   visionMachine,
 } from './visionMachine'
 import {createInitialState, createTab, getVisionStorageKey, saveVisionState} from './visionStorage'
@@ -157,7 +159,7 @@ describe('visionMachine', () => {
     harness.actor.send({
       type: 'tab.setOptions',
       id: tab.id,
-      options: {datasetMode: 'pinned', dataset: 'staging'},
+      options: {datasetMode: 'override', dataset: 'staging'},
     })
 
     expect(harness.tabs()[0]).toMatchObject({
@@ -165,7 +167,7 @@ describe('visionMachine', () => {
       rawParams: '{"a": 1}',
       autoRefetch: true,
       options: {
-        datasetMode: 'pinned',
+        datasetMode: 'override',
         dataset: 'staging',
         perspective: 'global',
         variant: 'global',
@@ -413,7 +415,7 @@ describe('visionMachine', () => {
         explainQuery: true,
       },
       editor: {autoFormatOnResize: true},
-      response: {resolveSyncTags: false},
+      response: {resolveSyncTags: false, sourceMapEnabled: false, resultSourceMap: true},
       exportSnippets: {
         order: ['client', 'curl', 'next-sanity', 'astro', 'sveltekit', 'nuxt'],
         hidden: [],
@@ -456,13 +458,43 @@ describe('visionMachine', () => {
     })
   })
 
+  it('asks for a source map only while the Content Source Map features are on', () => {
+    const harness = createHarness()
+    expect(selectSourceMapEnabled(harness.snapshot())).toBe(false)
+    expect(selectSourceMapRequest(harness.snapshot())).toBeUndefined()
+
+    harness.actor.send({type: 'response.update', settings: {sourceMapEnabled: true}})
+    expect(selectSourceMapRequest(harness.snapshot())).toBe(true)
+    harness.actor.send({
+      type: 'response.update',
+      settings: {resultSourceMap: 'withKeyArraySelector'},
+    })
+    expect(selectSourceMapRequest(harness.snapshot())).toBe('withKeyArraySelector')
+
+    harness.actor.send({type: 'response.update', settings: {sourceMapEnabled: false}})
+    expect(selectSourceMapEnabled(harness.snapshot())).toBe(false)
+    expect(selectSourceMapRequest(harness.snapshot())).toBeUndefined()
+  })
+
   it('updates the response settings, persists them, and switches them back off when storage is cleared', () => {
     const harness = createHarness()
     harness.actor.send({type: 'response.update', settings: {resolveSyncTags: true}})
-    expect(selectPersistedState(harness.snapshot()).response).toEqual({resolveSyncTags: true})
+    harness.actor.send({
+      type: 'response.update',
+      settings: {sourceMapEnabled: true, resultSourceMap: 'withKeyArraySelector'},
+    })
+    expect(selectPersistedState(harness.snapshot()).response).toEqual({
+      resolveSyncTags: true,
+      sourceMapEnabled: true,
+      resultSourceMap: 'withKeyArraySelector',
+    })
 
     harness.actor.send({type: 'storage.clear'})
-    expect(harness.snapshot().context.response).toEqual({resolveSyncTags: false})
+    expect(harness.snapshot().context.response).toEqual({
+      resolveSyncTags: false,
+      sourceMapEnabled: false,
+      resultSourceMap: true,
+    })
   })
 
   it('updates the editor settings, persists them, and turns them back on when storage is cleared', () => {

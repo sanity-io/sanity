@@ -11,6 +11,10 @@ import {
 export interface SyncTagLookupSource {
   /** The client the response was fetched with, so probes run where its tags were computed */
   client: SyncTagLookupClient
+  /** The query, read for what it compares and dereferences without showing it in the result */
+  query?: string
+  /** The params the query ran with */
+  params?: Record<string, unknown>
   /** The response's result, read for the ids and slugs its tags may stand for */
   result: unknown
   /** The response's `resultSourceMap`, which lists the documents the result read */
@@ -58,6 +62,8 @@ export function useSyncTagLookup(
     const controller = new AbortController()
     const {signal} = controller
     resolveSyncTags(source.client, tags, {
+      query: source.query,
+      params: source.params,
       result: source.result,
       sourceMap: source.resultSourceMap,
       loadSourceMap: source.loadSourceMap,

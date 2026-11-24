@@ -36,6 +36,9 @@ interface QueryTabLayoutContextValue {
   response: BottomPanelValue
   splitSizes: SplitSizes
   setSplitSizes: Dispatch<SetStateAction<SplitSizes>>
+  /** Whether the split holds equal halves, in every layout, until it is dragged off them */
+  splitSnapped: boolean
+  setSplitSnapped: Dispatch<SetStateAction<boolean>>
 }
 
 const QueryTabLayoutContext = createContext<QueryTabLayoutContextValue | null>(null)
@@ -50,14 +53,17 @@ export function QueryTabLayoutProvider({children}: {children: ReactNode}) {
   const [requestState, setRequestState] = useState<BottomPanelState>(INITIAL_REQUEST_PANEL)
   const [responseState, setResponseState] = useState<BottomPanelState>(INITIAL_RESPONSE_PANEL)
   const [splitSizes, setSplitSizes] = useState<SplitSizes>({})
+  const [splitSnapped, setSplitSnapped] = useState(false)
   const value = useMemo(
     (): QueryTabLayoutContextValue => ({
       request: {state: requestState, setState: setRequestState},
       response: {state: responseState, setState: setResponseState},
       splitSizes,
       setSplitSizes,
+      splitSnapped,
+      setSplitSnapped,
     }),
-    [requestState, responseState, splitSizes],
+    [requestState, responseState, splitSizes, splitSnapped],
   )
   return <QueryTabLayoutContext value={value}>{children}</QueryTabLayoutContext>
 }
@@ -80,8 +86,8 @@ export function useResponseBottomPanel(): BottomPanelValue {
 
 export function useQueryTabSplitSizes(): Pick<
   QueryTabLayoutContextValue,
-  'splitSizes' | 'setSplitSizes'
+  'splitSizes' | 'setSplitSizes' | 'splitSnapped' | 'setSplitSnapped'
 > {
-  const {splitSizes, setSplitSizes} = useQueryTabLayout()
-  return {splitSizes, setSplitSizes}
+  const {splitSizes, setSplitSizes, splitSnapped, setSplitSnapped} = useQueryTabLayout()
+  return {splitSizes, setSplitSizes, splitSnapped, setSplitSnapped}
 }

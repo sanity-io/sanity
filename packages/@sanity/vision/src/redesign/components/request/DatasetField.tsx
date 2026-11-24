@@ -1,22 +1,21 @@
-import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {PinIcon} from '@sanity/icons/Pin'
-import {PinRemovedIcon} from '@sanity/icons/PinRemoved'
-import {SearchIcon} from '@sanity/icons/Search'
-import {Button, Stack, TextInput} from '@sanity/ui'
-import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
-import {Tooltip} from '@sanity/ui/tooltip'
-import {type ChangeEvent, Fragment, useMemo, useState} from 'react'
-import {useWorkspace, type WorkspaceSummary} from 'sanity'
+import {Stack} from '@sanity/ui'
+import {useMemo, useState} from 'react'
+import {type WorkspaceSummary} from 'sanity'
 import {useWorkspaces} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
-import {Box, Flex, Text} from 'ui5'
+import {Text} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VisionDatasetMode} from '../../store/types'
 import {useVisionSelector} from '../../store/VisionActorContext'
 import {selectProjectId} from '../../store/visionMachine'
 import {useTabElementId} from '../tabs/queryTabShown'
+import {
+  OptionMenuButton,
+  OptionMenuItem,
+  OptionMenuNoMatches,
+  OptionMenuSection,
+} from './OptionMenu'
 
 export interface DatasetMenuEntry {
   dataset: string
@@ -24,25 +23,17 @@ export interface DatasetMenuEntry {
   workspaces: string[]
 }
 
-export interface DatasetMenuGroups {
-  current: DatasetMenuEntry | null
-  used: DatasetMenuEntry[]
-  unused: DatasetMenuEntry[]
-}
-
-const byDataset = (a: DatasetMenuEntry, b: DatasetMenuEntry) => a.dataset.localeCompare(b.dataset)
-
 /**
- * Sorts the project's datasets into the current workspace's, those other workspaces of the
- * project use, and the rest; the query matches dataset names and workspace titles
+ * The project's datasets other than the workspace's, which Auto stands for, in name order with
+ * the workspaces that use each; the query matches dataset names and workspace titles
  */
-export function groupDatasets(options: {
+export function listOtherDatasets(options: {
   datasets: readonly string[]
   workspaceDataset: string
   workspaces: readonly Pick<WorkspaceSummary, 'name' | 'title' | 'dataset' | 'projectId'>[]
   projectId: string
   query: string
-}): DatasetMenuGroups {
+}): DatasetMenuEntry[] {
   const {datasets, workspaceDataset, workspaces, projectId} = options
   const query = options.query.trim().toLowerCase()
   const usedBy = new Map<string, string[]>()
@@ -53,35 +44,24 @@ export function groupDatasets(options: {
     usedBy.set(workspace.dataset, titles)
   }
 
-  const entry = (dataset: string): DatasetMenuEntry => ({
-    dataset,
-    workspaces: usedBy.get(dataset) ?? [],
-  })
-  const matches = ({dataset, workspaces: titles}: DatasetMenuEntry) =>
-    !query ||
-    dataset.toLowerCase().includes(query) ||
-    titles.some((title) => title.toLowerCase().includes(query))
-
-  const known = new Set(datasets)
-  const current = entry(workspaceDataset)
-  const used = [...usedBy.keys()]
-    .filter((dataset) => dataset !== workspaceDataset && (known.size === 0 || known.has(dataset)))
-    .map(entry)
-  const unused = datasets
-    .filter((dataset) => dataset !== workspaceDataset && !usedBy.has(dataset))
-    .map(entry)
-
-  return {
-    current: matches(current) ? current : null,
-    used: used.filter(matches).toSorted(byDataset),
-    unused: unused.filter(matches).toSorted(byDataset),
-  }
+  // Without the dataset list, the datasets the workspaces use are all there is to offer
+  const known = datasets.length > 0 ? datasets : [...usedBy.keys()]
+  return [...new Set(known)]
+    .filter((dataset) => dataset !== workspaceDataset)
+    .map((dataset) => ({dataset, workspaces: usedBy.get(dataset) ?? []}))
+    .filter(
+      ({dataset, workspaces: titles}) =>
+        !query ||
+        dataset.toLowerCase().includes(query) ||
+        titles.some((title) => title.toLowerCase().includes(query)),
+    )
+    .toSorted((a, b) => a.dataset.localeCompare(b.dataset))
 }
 
 interface DatasetFieldProps {
   id: string
   mode: VisionDatasetMode
-  /** The pinned dataset, shown (and pinned from) while following the workspace */
+  /** The overriding dataset, used while `mode` is `override` */
   dataset: string
   workspaceDataset: string
   datasets: readonly string[]
@@ -89,8 +69,9 @@ interface DatasetFieldProps {
 }
 
 /**
- * The dataset follows the workspace until one is pinned: picking another dataset in the menu, or
- * the pin button, pins one; picking the current workspace's dataset follows the workspace again.
+ * The dataset menu. Auto, the first and default option, queries the workspace's dataset and
+ * follows it when the workspace changes, so the workspace's dataset has no item of its own;
+ * picking another dataset overrides it until Auto is picked again.
  */
 export function DatasetField({
   id,
@@ -102,200 +83,69 @@ export function DatasetField({
 }: DatasetFieldProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const elementId = useTabElementId()(id)
-  const workspace = useWorkspace()
   const workspaces = useWorkspaces()
   const projectId = useVisionSelector(selectProjectId)
   const [query, setQuery] = useState('')
-  const following = mode === 'workspace'
-  const shownDataset = following ? workspaceDataset : dataset
-  const toggleLabel = following
-    ? t('vision.options.dataset.pin')
-    : t('vision.options.dataset.use-workspace')
-  const status = following
-    ? t('vision.options.dataset.follows-workspace')
-    : t('vision.options.dataset.pinned')
+  // The workspace's dataset is only listed as Auto, so a tab pinned to it (saved before, or
+  // pinned in another workspace) shows Auto checked rather than no selection
+  const isAuto = mode === 'auto' || dataset === workspaceDataset
+  const autoTitle = t('vision.options.auto')
+  const autoSubtitle = t('vision.options.dataset.auto.subtitle', {dataset: workspaceDataset})
 
-  const groups = useMemo(
-    () => groupDatasets({datasets, workspaceDataset, workspaces, projectId, query}),
+  const others = useMemo(
+    () => listOtherDatasets({datasets, workspaceDataset, workspaces, projectId, query}),
     [datasets, workspaceDataset, workspaces, projectId, query],
   )
-  const isEmpty = !groups.current && groups.used.length === 0 && groups.unused.length === 0
-  const currentWorkspaceTitle = workspace.title || workspace.name
-
-  const pick = (next: string) =>
-    onChange(
-      next === workspaceDataset
-        ? {datasetMode: 'workspace', dataset}
-        : {datasetMode: 'pinned', dataset: next},
-    )
-
-  const renderItem = (entry: DatasetMenuEntry, subtitle: string | undefined) => {
-    const selected = entry.dataset === shownDataset
-    return (
-      <MenuItem
-        data-testid={`${id}-item-${entry.dataset}`}
-        key={entry.dataset}
-        onClick={() => pick(entry.dataset)}
-        padding={3}
-        pressed={selected}
-        selected={selected}
-      >
-        <Flex alignItems="center" gap={3}>
-          <Stack flex={1} gap={2}>
-            <Text size={1} weight="medium" style={{color: 'var(--card-fg-color)'}}>
-              {entry.dataset}
-            </Text>
-            {subtitle && (
-              <Text
-                size={0}
-                style={{
-                  color: 'var(--card-muted-fg-color)',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {subtitle}
-              </Text>
-            )}
-          </Stack>
-          {selected && (
-            <Text size={1} style={{color: 'var(--card-fg-color)'}}>
-              <CheckmarkIcon />
-            </Text>
-          )}
-        </Flex>
-      </MenuItem>
-    )
-  }
-
-  const sections = [
-    {
-      key: 'used',
-      title: t('vision.options.dataset.used-by-workspaces'),
-      entries: groups.used,
-      subtitle: (entry: DatasetMenuEntry) => entry.workspaces.join(', '),
-    },
-    {
-      key: 'unused',
-      title: t('vision.options.dataset.unused'),
-      entries: groups.unused,
-      subtitle: () => undefined,
-    },
-  ].filter((section) => section.entries.length > 0)
+  const normalizedQuery = query.trim().toLowerCase()
+  const showAuto =
+    !normalizedQuery ||
+    autoTitle.toLowerCase().includes(normalizedQuery) ||
+    workspaceDataset.toLowerCase().includes(normalizedQuery)
 
   return (
     <Stack gap={2}>
       <Text as="label" htmlFor={elementId} muted size={1} weight="medium" trim={true}>
         {t('settings.dataset-label')}
       </Text>
-      <Flex gap={1}>
-        <Box flexBasis="0%" flexGrow={1} minWidth="0">
-          <MenuButton
-            button={
-              <Button
-                data-testid={`${id}-select`}
-                fontSize={1}
-                iconRight={ChevronDownIcon}
-                justify="space-between"
-                mode="ghost"
-                padding={2}
-                style={{width: '100%'}}
-                text={shownDataset}
-                textAlign="left"
-                value={shownDataset}
+      <OptionMenuButton
+        id={elementId}
+        onClose={() => setQuery('')}
+        onSearchQueryChange={setQuery}
+        searchPlaceholder={t('vision.options.dataset.search-placeholder')}
+        searchQuery={query}
+        testId={id}
+        text={isAuto ? t('vision.options.auto.button', {name: workspaceDataset}) : dataset}
+        value={isAuto ? workspaceDataset : dataset}
+      >
+        {showAuto && (
+          <OptionMenuSection>
+            <OptionMenuItem
+              onClick={() => onChange({datasetMode: 'auto', dataset: workspaceDataset})}
+              selected={isAuto}
+              subtitle={autoSubtitle}
+              testId={`${id}-item-auto`}
+              title={autoTitle}
+            />
+          </OptionMenuSection>
+        )}
+        {others.length > 0 && (
+          <OptionMenuSection title={t('vision.options.dataset.other-datasets')}>
+            {others.map((entry) => (
+              <OptionMenuItem
+                key={entry.dataset}
+                onClick={() => onChange({datasetMode: 'override', dataset: entry.dataset})}
+                selected={!isAuto && entry.dataset === dataset}
+                subtitle={entry.workspaces.length > 0 ? entry.workspaces.join(', ') : undefined}
+                testId={`${id}-item-${entry.dataset}`}
+                title={entry.dataset}
               />
-            }
-            id={elementId}
-            menu={
-              <Menu data-testid={`${id}-menu`} padding={0} style={{minWidth: 280}}>
-                <Box padding={2} borderBottom>
-                  <TextInput
-                    data-testid={`${id}-search`}
-                    fontSize={1}
-                    icon={SearchIcon}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                      setQuery(event.currentTarget.value)
-                    }
-                    placeholder={t('vision.options.dataset.search-placeholder')}
-                    radius={2}
-                    value={query}
-                  />
-                </Box>
-                <Box overflowY="auto" padding={1} style={{maxHeight: 360}}>
-                  {groups.current && (
-                    <>
-                      <Box paddingX={3} paddingTop={3} paddingBottom={2}>
-                        <Text muted size={0} weight="medium">
-                          {t('vision.options.dataset.current-workspace')}
-                        </Text>
-                      </Box>
-                      {renderItem(groups.current, currentWorkspaceTitle)}
-                    </>
-                  )}
-                  {sections.map((section, index) => (
-                    <Fragment key={section.key}>
-                      {(groups.current || index > 0) && <MenuDivider />}
-                      <Box paddingX={3} paddingTop={3} paddingBottom={2}>
-                        <Text muted size={0} weight="medium">
-                          {section.title}
-                        </Text>
-                      </Box>
-                      {section.entries.map((entry) => renderItem(entry, section.subtitle(entry)))}
-                    </Fragment>
-                  ))}
-                  {isEmpty && (
-                    <Box padding={3}>
-                      <Text muted size={1}>
-                        {t('vision.options.dataset.no-matches')}
-                      </Text>
-                    </Box>
-                  )}
-                </Box>
-              </Menu>
-            }
-            onClose={() => setQuery('')}
-            popover={{
-              constrainSize: true,
-              placement: 'bottom-start',
-              portal: true,
-              tone: 'default',
-            }}
-          />
-        </Box>
-        <Tooltip
-          animate
-          content={
-            <Stack gap={2}>
-              <Text muted size={1} as="div">
-                {status}
-              </Text>
-              <Text size={1} as="div">
-                {toggleLabel}
-              </Text>
-            </Stack>
-          }
-          placement="bottom"
-          portal
-        >
-          <Button
-            aria-label={toggleLabel}
-            aria-pressed={!following}
-            data-testid={`${id}-${following ? 'pin' : 'follow'}`}
-            fontSize={1}
-            icon={following ? PinIcon : PinRemovedIcon}
-            mode="ghost"
-            onClick={() =>
-              onChange(
-                following
-                  ? {datasetMode: 'pinned', dataset: workspaceDataset}
-                  : {datasetMode: 'workspace', dataset},
-              )
-            }
-            padding={2}
-          />
-        </Tooltip>
-      </Flex>
+            ))}
+          </OptionMenuSection>
+        )}
+        {!showAuto && others.length === 0 && (
+          <OptionMenuNoMatches>{t('vision.options.dataset.no-matches')}</OptionMenuNoMatches>
+        )}
+      </OptionMenuButton>
     </Stack>
   )
 }

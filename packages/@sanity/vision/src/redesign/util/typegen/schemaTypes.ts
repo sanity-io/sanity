@@ -1,17 +1,6 @@
 import {type SchemaType, type TypeNode} from 'groq-js'
 
-/** `blockContent` becomes `BlockContent`, `my-type` becomes `MyType`, `2fast` becomes `_2fast` */
-export function toTypeName(name: string): string {
-  const pascal = name
-    .split(/[^a-zA-Z0-9_$]+/)
-    .filter(Boolean)
-    .map((part) => part[0].toUpperCase() + part.slice(1))
-    .join('')
-  if (!pascal) {
-    return 'Unknown'
-  }
-  return /^[0-9]/.test(pascal) ? `_${pascal}` : pascal
-}
+import {getUniqueIdentifierForName} from './naming'
 
 /**
  * Identifiers the printed declarations take from the global scope. A schema type named `array`
@@ -21,25 +10,18 @@ export function toTypeName(name: string): string {
 const GLOBAL_IDENTIFIERS = ['Array']
 
 /**
- * One identifier per schema type name. Different names can normalise to the same identifier
- * (`foo-bar` and `foo.bar` both want `FooBar`), so later ones get a numeric suffix; `reserved`
- * identifiers (the result type's own name) and the globals the output refers to are never
- * handed out.
+ * The type alias of every schema type, as `sanity typegen` names them: identifiers are handed
+ * out in schema order, so of two names that normalise alike (`foo-bar` and `foo.bar` both want
+ * `FooBar`) the later one gets a `_2` suffix, whichever of them a query happens to reference
  */
-export function createTypeNames(
-  names: readonly string[],
-  reserved: readonly string[] = [],
-): Map<string, string> {
-  const taken = new Set([...GLOBAL_IDENTIFIERS, ...reserved])
+export function createSchemaIdentifiers(schema: SchemaType | undefined): Map<string, string> {
   const identifiers = new Map<string, string>()
-  for (const name of names) {
-    const base = toTypeName(name)
-    let candidate = base
-    for (let suffix = 2; taken.has(candidate); suffix++) {
-      candidate = `${base}${suffix}`
-    }
-    taken.add(candidate)
-    identifiers.set(name, candidate)
+  const taken = new Set<string>(GLOBAL_IDENTIFIERS)
+  for (const {name} of schema ?? []) {
+    if (identifiers.has(name)) continue
+    const identifier = getUniqueIdentifierForName(name, taken)
+    identifiers.set(name, identifier)
+    taken.add(identifier)
   }
   return identifiers
 }

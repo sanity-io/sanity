@@ -126,6 +126,7 @@ export {
   useCopyErrorDetails,
 } from '../core/components/errorActions/useCopyErrorDetails'
 export {GetHookCollectionState} from '../core/components/hookCollection/GetHookCollectionState'
+export {DatePicker} from '../core/components/inputs/DateInputs/DatePicker'
 export {type InsufficientPermissionsMessageProps} from '../core/components/InsufficientPermissionsMessage'
 export {LoadingBlock} from '../core/components/loadingBlock/LoadingBlock'
 export {PopoverDialog} from '../core/components/popoverDialog/PopoverDialog'

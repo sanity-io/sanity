@@ -17,9 +17,17 @@
   border-top: 1px solid var(--card-border-color);
 }
 
-.panelHeader {
+/*
+ * A row of a bottom panel: its tab header, and the toolbar rows of its tabs (the params' view tabs
+ * and actions, the Lint tab's Fix with AI). They share the header's height and insets, so a
+ * toolbar's first and last buttons line up with the tabs and the collapse toggle above them, and
+ * are centered on the same line within their row.
+ */
+.panelBar {
+  box-sizing: border-box;
   flex-shrink: 0;
   height: var(--vision-bottom-bar-height);
+  padding-inline: 8px;
 }
 
 /* `ResizableSplit`: two panes and the divider between them */
@@ -245,17 +253,16 @@
 /*
  * The divider under a bottom panel's tab header belongs to the expanded body, so the header keeps
  * the same height inside its borders whether the panel is expanded or collapsed, and its tabs the
- * same whole-pixel insets above and below
+ * same whole-pixel insets above and below. The body stacks the toolbar over the scroll container;
+ * it sets `display: flex` itself, through its `display` prop: `@sanity/ui`'s Box writes its
+ * display as `.x:not([hidden])`, as specific as a doubled class, and its runtime stylesheet
+ * follows this one in a built studio, so a doubled class here lost to it there (and won in
+ * `sanity dev`, where this stylesheet is injected later).
  */
 .panelBody {
-  border-top: 1px solid var(--card-border-color);
-}
-
-/* Stacks the toolbar over the scroll container; doubled to beat the tab panel's own display */
-.panelBody.panelBody {
-  display: flex;
   flex-direction: column;
   min-height: 0;
+  border-top: 1px solid var(--card-border-color);
 }
 
 /* Tab headers of the bottom panels scroll sideways rather than wrap when space is tight */
@@ -320,11 +327,6 @@
   display: grid;
   grid-template-rows: minmax(0, 1fr);
   height: 100%;
-}
-
-/* Hides the request or response pane in the single-column phone layout */
-.hiddenPane.hiddenPane {
-  display: none;
 }
 
 .editorContainer {
@@ -676,9 +678,8 @@
   transition: background-color 200ms ease;
 }
 
-/* Doubled to beat the card's own display */
-.resultContainer.resultContainer {
-  display: flex;
+/* The card sets `display: flex` through its `display` prop; see `.panelBody` */
+.resultContainer {
   flex-direction: column;
 }
 
@@ -722,6 +723,15 @@
   .resultContainer[data-refreshing='true'] .resultView {
     opacity: 0.5;
   }
+}
+
+/*
+ * The tree wraps to the pane's width and never scrolls sideways. Its hover band reaches past the
+ * lines into this box's padding and beyond, and is clipped here at the pane's edges rather than
+ * widening the pane's scroller.
+ */
+.treeContent {
+  overflow-x: clip;
 }
 
 /* The delayed spinner fades in rather than popping up */

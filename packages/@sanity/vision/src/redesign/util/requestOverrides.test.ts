@@ -14,7 +14,7 @@ const environment: RequestEnvironment = {
 }
 
 const following: VisionTabOptions = {
-  datasetMode: 'workspace',
+  datasetMode: 'auto',
   dataset: 'production',
   apiVersion: 'v2025-02-19',
   perspective: 'global',
@@ -33,7 +33,7 @@ describe('getRequestOverrides', () => {
   })
 
   test('reports a pinned dataset only when it is not the workspace one', () => {
-    const pinned = {...following, datasetMode: 'pinned' as const}
+    const pinned = {...following, datasetMode: 'override' as const}
     expect(getRequestOverrides(pinned, environment).dataset).toBeUndefined()
     expect(getRequestOverrides({...pinned, dataset: 'staging'}, environment).dataset).toEqual({
       dataset: 'staging',

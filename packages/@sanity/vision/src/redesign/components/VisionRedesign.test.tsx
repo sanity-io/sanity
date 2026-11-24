@@ -238,6 +238,7 @@ vi.mock('sanity', async () => {
     useCurrentUser: () => ({id: 'user-1'}),
     useDateTimeFormat: () => ({format: () => 'a date'}),
     UserAvatar: () => null,
+    ReleaseAvatarIcon: () => null,
   }
 })
 vi.mock('sanity/i18n', () => ({
@@ -684,6 +685,18 @@ function getStoredState() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
 }
 
+/** Switches the Content Source Map features on in the stored settings, before rendering */
+function enableSourceMaps(response: Record<string, unknown> = {}) {
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({
+      ...getStoredState(),
+      version: 1,
+      response: {sourceMapEnabled: true, ...response},
+    }),
+  )
+}
+
 function text(element: HTMLElement): string {
   return element.textContent || ''
 }
@@ -706,6 +719,13 @@ function selectValue(testId: string): string {
 function pickDataset(dataset: string) {
   fireEvent.click(screen.getByTestId('vision-option-dataset-select'))
   fireEvent.click(screen.getByTestId(`vision-option-dataset-item-${dataset}`))
+}
+
+/** Picks an item in one of the Options or Settings menus. The id is the trigger's test id. */
+function pickMenuItem(selectTestId: string, item: string) {
+  const id = selectTestId.replace(/-select$/, '')
+  fireEvent.click(screen.getByTestId(selectTestId))
+  fireEvent.click(screen.getByTestId(`${id}-item-${item}`))
 }
 
 /** The request column shows one tab at a time; Params is the one open at first */
@@ -969,49 +989,8 @@ describe('VisionRedesign', () => {
     for (const reason of reasons) expect(reason).toContain('vision.history.reason.shortcut')
   })
 
-  it('prefills the JSON params editor with params the query references, keeping existing values', async () => {
-    const {unmount} = renderRedesign()
-    const paramsEditor = () =>
-      within(screen.getByTestId('vision-params-editor')).getByTestId(
-        'codemirror-mock',
-      ) as HTMLTextAreaElement
-
-    // An existing value for one of the two params the query below references is kept untouched;
-    // the other, never seen before, is added as an empty placeholder. Nothing is written while
-    // the query is still being edited: leaving the query field is what writes it
-    fireEvent.change(paramsEditor(), {target: {value: '{\n  "limit": 3\n}'}})
-    typeQuery('*[_type == $type][0...$limit]')
-    await new Promise((resolve) => setTimeout(resolve, 400))
-    expect(JSON5.parse(paramsEditor().value)).toEqual({limit: 3})
-
-    fireEvent.focusOut(getQueryEditor())
-    await waitFor(() => expect(JSON5.parse(paramsEditor().value)).toEqual({limit: 3, type: ''}), {
-      timeout: 2000,
-    })
-    // Written to the stored tab too, not just the live editor
-    await waitFor(() =>
-      expect(JSON5.parse(getStoredState().tabs[0].rawParams)).toEqual({limit: 3, type: ''}),
-    )
-
-    // A real value typed into the placeholder is never clobbered by a later prefill of the same
-    // referenced params
-    fireEvent.change(paramsEditor(), {target: {value: '{\n  "limit": 3,\n  "type": "author"\n}'}})
-    await waitFor(() =>
-      expect(getStoredState().tabs[0].rawParams).toBe('{\n  "limit": 3,\n  "type": "author"\n}'),
-    )
-    typeQuery('*[_type == $type][0...$limit]{_id}')
-    await waitFor(() =>
-      expect(getStoredState().tabs[0].query).toBe('*[_type == $type][0...$limit]{_id}'),
-    )
-    // The debounce settling afterwards finds nothing missing to add
-    await new Promise((resolve) => setTimeout(resolve, 400))
-    expect(JSON5.parse(paramsEditor().value)).toEqual({limit: 3, type: 'author'})
-
-    unmount()
-  })
-
   it(
-    'writes a referenced param once the query has been idle, and not an empty key for a bare $',
+    'leaves the JSON params alone when the query editor blurs or idles',
     {timeout: 15_000},
     async () => {
       const {unmount} = renderRedesign()
@@ -1020,53 +999,41 @@ describe('VisionRedesign', () => {
           'codemirror-mock',
         ) as HTMLTextAreaElement
 
-      typeQuery('*[_type == $]')
+      fireEvent.change(paramsEditor(), {target: {value: '{\n  "limit": 3\n}'}})
+      typeQuery('*[_type == $type][0...$limit]')
+      await waitFor(() =>
+        expect(getStoredState().tabs[0].query).toBe('*[_type == $type][0...$limit]'),
+      )
       fireEvent.focusOut(getQueryEditor())
-      await new Promise((resolve) => setTimeout(resolve, 400))
-      expect(JSON5.parse(paramsEditor().value)).toEqual({})
+      // Longer than the query used to have to be idle before its params were written
+      await new Promise((resolve) => setTimeout(resolve, 3_500))
 
-      typeQuery('*[_type == $type]')
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      expect(JSON5.parse(paramsEditor().value)).toEqual({})
-      await new Promise((resolve) => setTimeout(resolve, 2_700))
-      await waitFor(() => expect(JSON5.parse(paramsEditor().value)).toEqual({type: ''}))
+      expect(paramsEditor().value).toBe('{\n  "limit": 3\n}')
+      expect(getStoredState().tabs[0].rawParams).toBe('{\n  "limit": 3\n}')
 
       unmount()
     },
   )
 
-  it('leaves the JSON params editor alone while the query does not parse', async () => {
+  it('shows a params syntax error under the editor and marks the Params tab', async () => {
     const {unmount} = renderRedesign()
-    const paramsEditor = () =>
-      within(screen.getByTestId('vision-params-editor')).getByTestId(
-        'codemirror-mock',
-      ) as HTMLTextAreaElement
+    const paramsTab = () => document.getElementById('vision-request-params-tab') as HTMLElement
+    const editorRoot = screen.getByTestId('vision-params-editor')
+    expect(paramsTab().getAttribute('data-tone')).toBeNull()
 
-    typeQuery('*[_type == $type][0...$limit')
-    await waitFor(() => expect(getStoredState().tabs[0].query).toBe('*[_type == $type][0...$limit'))
-    await new Promise((resolve) => setTimeout(resolve, 400))
+    fireEvent.change(within(editorRoot).getByTestId('codemirror-mock'), {
+      target: {value: '{"limit": '},
+    })
+    const error = await screen.findByTestId('vision-params-error')
+    // After the editor, so the editor does not move when the error appears
+    expect(editorRoot.lastElementChild).toBe(error)
+    await waitFor(() => expect(paramsTab().getAttribute('data-tone')).toBe('critical'))
 
-    expect(JSON5.parse(paramsEditor().value)).toEqual({})
-
-    unmount()
-  })
-
-  it('does not prefill the params form inferred from the query, only the JSON editor', async () => {
-    const {unmount} = renderRedesign()
-    const formInput = (name: string) =>
-      screen.getByTestId(`vision-params-form-${name}`).querySelector('input') as HTMLInputElement
-
-    fireEvent.click(document.getElementById('vision-params-view-form') as HTMLElement)
-    typeQuery('*[_type == $type][0...$limit]')
-    await waitFor(() =>
-      expect(getStoredState().tabs[0].query).toBe('*[_type == $type][0...$limit]'),
-    )
-    await new Promise((resolve) => setTimeout(resolve, 400))
-
-    // The form view already lists every referenced param on its own (groq-js based) inference;
-    // paramsEditorRef is unset while it is mounted, so this feature leaves it alone
-    expect(formInput('limit').value).toBe('')
-    expect(JSON5.parse(getStoredState().tabs[0].rawParams)).toEqual({})
+    fireEvent.change(within(editorRoot).getByTestId('codemirror-mock'), {
+      target: {value: '{"limit": 1}'},
+    })
+    await waitFor(() => expect(screen.queryByTestId('vision-params-error')).toBeNull())
+    expect(paramsTab().getAttribute('data-tone')).toBeNull()
 
     unmount()
   })
@@ -1166,7 +1133,7 @@ describe('VisionRedesign', () => {
     expect(JSON.parse(getStoredState().tabs[1].rawParams)).toEqual({limit: 3})
     expect(getStoredState().tabs[1].options).toMatchObject({
       apiVersion: 'v2025-02-19',
-      datasetMode: 'pinned',
+      datasetMode: 'override',
       dataset: 'test',
       perspective: 'drafts',
     })
@@ -1253,6 +1220,9 @@ describe('VisionRedesign', () => {
     expect(text(screen.getByTestId('vision-explain-verdict'))).toBe(
       'vision.explain.verdict.performantThe index does the work.',
     )
+    // The verdict says the query is fast, so the warning that the filter gets slow is gone
+    expect(screen.queryByTestId('vision-plan-insight')).toBeNull()
+    expect(screen.queryByText('vision.explain.insights.guide')).toBeNull()
     // The technical walkthrough waits behind a toggle
     expect(screen.queryByTestId('vision-explanation-details')).toBeNull()
     const details = screen.getByTestId('vision-explanation-details-toggle')
@@ -1303,6 +1273,69 @@ describe('VisionRedesign', () => {
       // Nothing to show for the plan's detail without a walkthrough
       expect(screen.queryByTestId('vision-explanation-details-toggle')).toBeNull()
     })
+
+    it.each([
+      ['performant', 'positive', 'vision.explain.insight.index-sort-limit', false],
+      [
+        'cannot-improve',
+        'neutral',
+        'vision.explain.insight.filter-in-memory.cannot-improve',
+        false,
+      ],
+      ['improvable', 'caution', 'vision.explain.insight.filter-in-memory', true],
+    ] as const)(
+      'does not let What stands out contradict a %s verdict',
+      async (verdict, tone, message, guide) => {
+        const view = renderRedesign()
+        const plan = [
+          'Pipeline {',
+          '  r1: StreamStep {',
+          '    $0: Fetch {',
+          '      Sort: _createdAt desc',
+          '      Limit: 10',
+          '    }',
+          '  }',
+          '  r3: FilterStep {',
+          '    Source: r2, Expr: eq($1.name, "x")',
+          '  }',
+          '}',
+        ].join('\n')
+        view.respondToRequests({result: [], explain: plan})
+        view.replyToPrompts({
+          summary: 'It finds books.',
+          verdict,
+          verdictReason: 'Because.',
+          suggestions: [],
+          details: '',
+        })
+        typeQuery('*[_type == "book"]')
+        fireEvent.click(document.getElementById('vision-response-explain-tab') as HTMLElement)
+        await waitFor(() =>
+          expect(isDisabled(screen.getByTestId('vision-explain-button'))).toBe(false),
+        )
+        // No verdict yet: the heuristic stands, warning included
+        fireEvent.click(screen.getByTestId('vision-explain-plan-button'))
+        await waitFor(() => expect(screen.getByTestId('vision-query-plan')).toBeTruthy())
+        const before = screen.getAllByTestId('vision-plan-insight')[0]
+        expect(before.getAttribute('data-tone')).toBe('caution')
+        expect(before.querySelector('[data-ui="Text"]')?.textContent).toBe(
+          'vision.explain.insight.filter-in-memory',
+        )
+        expect(screen.getByText('vision.explain.insights.guide')).toBeTruthy()
+
+        fireEvent.click(screen.getByTestId('vision-explain-button'))
+        await screen.findByTestId('vision-explain-verdict')
+        const [card] = screen.getAllByTestId('vision-plan-insight')
+        expect(card.getAttribute('data-tone')).toBe(tone)
+        expect(card.querySelector('[data-ui="Text"]')?.textContent).toBe(message)
+        expect(card.textContent).not.toContain('gets slow')
+        if (guide) {
+          expect(screen.getByText('vision.explain.insights.guide')).toBeTruthy()
+        } else {
+          expect(screen.queryByText('vision.explain.insights.guide')).toBeNull()
+        }
+      },
+    )
 
     it('offers no suggestions and no Improve query when there is nothing to change', async () => {
       const view = renderRedesign()
@@ -1686,7 +1719,7 @@ describe('VisionRedesign', () => {
 
     // The CDN serves no drafts: the query goes to the API, the option says why and offers the
     // published perspective, and the API version button warns about it
-    fireEvent.change(perspectiveSelect(), {target: {value: 'drafts'}})
+    pickMenuItem('vision-option-perspective-select', 'drafts')
     const notice = screen.getByTestId('vision-option-use-cdn-blocked')
     expect(text(notice)).toContain('vision.options.use-cdn.blocked.title')
     expect(text(notice)).toContain('vision.options.use-cdn.blocked')
@@ -1912,6 +1945,7 @@ describe('VisionRedesign', () => {
   })
 
   it('shows the content source map as JSON, Tree, Graph or Documents from its toolbar row', async () => {
+    enableSourceMaps()
     const {respondWith} = renderRedesign()
     const resultSourceMap = {
       documents: [
@@ -1987,6 +2021,178 @@ describe('VisionRedesign', () => {
     expect(text(screen.getByTestId('vision-result-view-button'))).toBe('vision.result.view.json')
   })
 
+  describe('content source maps', () => {
+    function openSettings() {
+      fireEvent.click(screen.getByTestId('vision-sidebar-settings'))
+      return within(screen.getByTestId('vision-drawer-settings'))
+    }
+
+    function openOptions() {
+      fireEvent.click(document.getElementById('vision-request-options-tab') as HTMLElement)
+    }
+
+    const sourceMapTab = () => document.getElementById('vision-response-source-map-tab')
+
+    async function fetchQuery() {
+      typeQuery('*[_type == "author"]{name}')
+      await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
+      fireEvent.click(screen.getByTestId('vision-fetch-button'))
+      await screen.findByTestId('vision-result-json')
+    }
+
+    /** The curl and @sanity/client snippets of the Export query dialog */
+    async function exportedQuery(): Promise<string> {
+      fireEvent.click(screen.getByTestId('vision-query-menu-button'))
+      fireEvent.click(screen.getByTestId('vision-export-query'))
+      const dialog = await screen.findByTestId('vision-export-query-dialog')
+      const snippet = (id: string) => {
+        fireEvent.click(document.getElementById(`vision-export-${id}-tab`) as HTMLElement)
+        return text(document.getElementById(`vision-export-${id}-panel`) as HTMLElement)
+      }
+      const code = `${snippet('curl')}\n${snippet('client')}`
+      fireEvent.keyDown(dialog, {key: 'Escape'})
+      await waitFor(() => expect(screen.queryByTestId('vision-export-query-dialog')).toBeNull())
+      return code
+    }
+
+    it('are off by default: no option, no tab, and no source map asked for', async () => {
+      const {fetchCalls} = renderRedesign()
+      openOptions()
+      expect(screen.getByTestId('vision-options')).toBeTruthy()
+      expect(screen.queryByTestId('vision-option-source-map')).toBeNull()
+      expect(sourceMapTab()).toBeNull()
+
+      await fetchQuery()
+      expect(fetchCalls.at(-1)?.options.resultSourceMap).toBeUndefined()
+      expect(await exportedQuery()).not.toContain('resultSourceMap')
+
+      // Only the opt-in shows in the settings until it is switched on
+      const settings = openSettings()
+      expect(settings.queryByTestId('vision-settings-include-source-map')).toBeNull()
+      expect(settings.queryByTestId('vision-settings-source-map-format')).toBeNull()
+      fireEvent.click(settings.getByTestId('vision-settings-source-map-enabled'))
+      await waitFor(() => expect(getStoredState().response).toMatchObject({sourceMapEnabled: true}))
+      expect(settings.getByTestId('vision-settings-include-source-map')).toBeTruthy()
+      expect(settings.getByTestId('vision-settings-source-map-format')).toBeTruthy()
+      expect(screen.getByTestId('vision-option-source-map')).toBeTruthy()
+      expect(sourceMapTab()).toBeTruthy()
+    })
+
+    it('ask for none once switched off, whatever the tab option says', async () => {
+      enableSourceMaps()
+      const {fetchCalls} = renderRedesign()
+      openOptions()
+      fireEvent.click(screen.getByTestId('vision-option-source-map'))
+      await fetchQuery()
+      expect(fetchCalls.at(-1)?.options.resultSourceMap).toBe(true)
+      const exported = await exportedQuery()
+      expect(exported).toContain('resultSourceMap=true')
+      expect(exported).toContain('filterResponse: false')
+      expect(exported).toContain('resultSourceMap: true')
+
+      fireEvent.click(openSettings().getByTestId('vision-settings-source-map-enabled'))
+      await waitFor(() => expect(screen.queryByTestId('vision-option-source-map')).toBeNull())
+      await waitFor(() => expect(getStoredState().tabs?.[0].options.includeSourceMap).toBe(true))
+      expect(sourceMapTab()).toBeNull()
+
+      const fetches = fetchCalls.length
+      fireEvent.click(screen.getByTestId('vision-fetch-button'))
+      await waitFor(() => expect(fetchCalls.length).toBeGreaterThan(fetches))
+      expect(fetchCalls.at(-1)?.options.resultSourceMap).toBeUndefined()
+      expect(await exportedQuery()).not.toContain('resultSourceMap')
+    })
+
+    it('fall back to the Response tab when the Content Source Map tab was open', async () => {
+      enableSourceMaps()
+      renderRedesign()
+      await fetchQuery()
+      fireEvent.click(sourceMapTab() as HTMLElement)
+      expect(await screen.findByTestId('vision-source-map-empty')).toBeTruthy()
+
+      fireEvent.click(openSettings().getByTestId('vision-settings-source-map-enabled'))
+      await waitFor(() => expect(sourceMapTab()).toBeNull())
+      expect(screen.queryByTestId('vision-source-map-empty')).toBeNull()
+      const responseTab = document.getElementById('vision-response-response-tab') as HTMLElement
+      expect(responseTab.getAttribute('aria-selected')).toBe('true')
+      expect(document.getElementById('vision-response-response-panel')?.textContent).not.toBe('')
+    })
+
+    it('fetches a source map once from the empty tab, leaving the result and the option alone', async () => {
+      enableSourceMaps({resultSourceMap: 'withKeyArraySelector'})
+      const {fetchCalls, respondWith} = renderRedesign()
+      respondWith({result: [{name: 'Ada'}], ms: 3})
+      await fetchQuery()
+      fireEvent.click(sourceMapTab() as HTMLElement)
+      const empty = await screen.findByTestId('vision-source-map-empty')
+      const fetches = fetchCalls.length
+
+      const resultSourceMap = {documents: [{_id: 'a', _type: 'author'}], paths: [], mappings: {}}
+      respondWith({result: [{name: 'Grace'}], ms: 4, resultSourceMap})
+      fireEvent.click(within(empty).getByTestId('vision-source-map-fetch'))
+      const sourceMap = await screen.findByTestId('vision-source-map')
+      expect(fetchCalls).toHaveLength(fetches + 1)
+      expect(fetchCalls.at(-1)?.options).toMatchObject({
+        filterResponse: false,
+        resultSourceMap: 'withKeyArraySelector',
+      })
+      expect(within(sourceMap).getByTestId('result-json').textContent).toBe(
+        JSON.stringify(resultSourceMap),
+      )
+      expect(screen.getByTestId('vision-source-map-one-off')).toBeTruthy()
+      // The result still shows the response it had, and the option stays off
+      expect(
+        (
+          within(screen.getByTestId('vision-result-json')).getByTestId(
+            'codemirror-mock',
+          ) as HTMLTextAreaElement
+        ).value,
+      ).toContain('Ada')
+      await waitFor(() => expect(getStoredState().tabs?.[0].options.includeSourceMap).toBe(false))
+
+      // The next fetch drops the source map it fetched
+      respondWith({result: [{name: 'Ada'}], ms: 3})
+      fireEvent.click(screen.getByTestId('vision-fetch-button'))
+      expect(await screen.findByTestId('vision-source-map-empty')).toBeTruthy()
+      expect(fetchCalls.at(-1)?.options.resultSourceMap).toBeUndefined()
+    })
+
+    it('opens Options on the include switch from the empty tab', async () => {
+      enableSourceMaps()
+      renderRedesign()
+      await fetchQuery()
+      fireEvent.click(sourceMapTab() as HTMLElement)
+      const empty = await screen.findByTestId('vision-source-map-empty')
+      fireEvent.click(within(empty).getByTestId('vision-source-map-show-option'))
+      await waitFor(() =>
+        expect(document.activeElement).toBe(screen.getByTestId('vision-option-source-map')),
+      )
+      expect(
+        document.getElementById('vision-request-options-tab')?.getAttribute('aria-selected'),
+      ).toBe('true')
+    })
+
+    it('send the source map format picked in the settings, to fetches and exports', async () => {
+      enableSourceMaps()
+      const {fetchCalls} = renderRedesign()
+      openOptions()
+      fireEvent.click(screen.getByTestId('vision-option-source-map'))
+      const format = openSettings().getByTestId(
+        'vision-settings-source-map-format',
+      ) as HTMLSelectElement
+      expect(format.value).toBe('true')
+      fireEvent.change(format, {target: {value: 'withKeyArraySelector'}})
+      await waitFor(() =>
+        expect(getStoredState().response).toMatchObject({resultSourceMap: 'withKeyArraySelector'}),
+      )
+
+      await fetchQuery()
+      expect(fetchCalls.at(-1)?.options.resultSourceMap).toBe('withKeyArraySelector')
+      const exported = await exportedQuery()
+      expect(exported).toContain('resultSourceMap=withKeyArraySelector')
+      expect(exported).toContain("resultSourceMap: 'withKeyArraySelector'")
+    })
+  })
+
   it('keeps JSON for a result that is not a document list, and explains it from Documents', async () => {
     const {respondWith} = renderRedesign()
     respondWith({result: {count: 1}, ms: 3})
@@ -2045,17 +2251,30 @@ describe('VisionRedesign', () => {
       expect(document.activeElement).toBe(screen.getByTestId('vision-option-api-version-select')),
     )
 
-    // An unfinished "Other" version is called out, since nothing can be fetched with it
+    // A version that is not a version is called out, since nothing can be fetched with it
     fireEvent.change(screen.getByTestId('vision-option-api-version-select'), {
-      target: {value: 'other'},
+      target: {value: 'nope'},
     })
     expect(text(screen.getByTestId('vision-api-version-button'))).toBe(
       'vision.api-version.button-invalid',
     )
     fireEvent.click(screen.getByTestId('vision-api-version-button'))
     await waitFor(() =>
-      expect(document.activeElement).toBe(screen.getByTestId('vision-option-api-version-custom')),
+      expect(document.activeElement).toBe(screen.getByTestId('vision-option-api-version-select')),
     )
+  })
+
+  it('narrows the API version list to what was typed', () => {
+    renderRedesign()
+    openRequestTab('options')
+    fireEvent.change(screen.getByTestId('vision-option-api-version-select'), {
+      target: {value: '2021'},
+    })
+
+    expect(screen.getByTestId('vision-option-api-version-option-v2021-10-21')).toBeTruthy()
+    expect(screen.getByTestId('vision-option-api-version-option-v2021-03-25')).toBeTruthy()
+    expect(screen.queryByTestId('vision-option-api-version-option-v1')).toBeNull()
+    expect(screen.queryByTestId('vision-option-api-version-option-vX')).toBeNull()
   })
 
   it('lists the dataset chip before the API version, with fetch actions outside the chip strip', () => {
@@ -2064,7 +2283,7 @@ describe('VisionRedesign', () => {
       id: 'overrides',
       query: '*',
       options: {
-        datasetMode: 'pinned',
+        datasetMode: 'override',
         dataset: 'staging',
         perspective: 'raw',
         variant: 'none',
@@ -2603,7 +2822,7 @@ describe('VisionRedesign', () => {
       const toggle = settings.getByTestId('vision-settings-resolve-sync-tags')
       expect(isChecked(toggle)).toBe(false)
       fireEvent.click(toggle)
-      await waitFor(() => expect(getStoredState().response).toEqual({resolveSyncTags: true}))
+      await waitFor(() => expect(getStoredState().response).toMatchObject({resolveSyncTags: true}))
       expect(isChecked(toggle)).toBe(true)
     })
 
@@ -3221,9 +3440,7 @@ describe('VisionRedesign', () => {
 
     // The tab moves to a plain perspective while the request is still in flight
     openRequestTab('options')
-    fireEvent.change(screen.getByTestId('vision-option-perspective-select'), {
-      target: {value: 'published'},
-    })
+    pickMenuItem('vision-option-perspective-select', 'published')
     release()
 
     await waitFor(() =>
@@ -3549,7 +3766,7 @@ describe('VisionRedesign', () => {
     fireEvent.click(within(menu).getByTestId('vision-params-export-typescript'))
     await waitFor(() =>
       expect(text(screen.getByTestId('vision-export-params-code'))).toContain(
-        'export type AuthorQueryParams = {\n  /** Could not be inferred from the query */\n  name: unknown;\n  limit: number;\n};',
+        'export type AuthorQueryParams = {\n  /** Could not be inferred because `name`, which it is compared with, needs the workspace schema to be typed */\n  name: unknown;\n  limit: number;\n};',
       ),
     )
     fireEvent.keyDown(screen.getByTestId('vision-export-params-dialog'), {key: 'Escape'})
@@ -3568,7 +3785,7 @@ describe('VisionRedesign', () => {
       id: 'restored',
       title: 'Restored',
       query: '*[_type == "book"]',
-      options: {datasetMode: 'pinned', dataset: 'staging', perspective: 'drafts'},
+      options: {datasetMode: 'override', dataset: 'staging', perspective: 'drafts'},
     })
     saveVisionState(PROJECT_ID, {
       ...initial,
@@ -4144,9 +4361,7 @@ describe('VisionRedesign', () => {
     // Opening Options unmounts the params editor, which commits the edit still in the debounce
     fireEvent.change(paramsEditor, {target: {value: '{"id": "freshest"}'}})
     openRequestTab('options')
-    fireEvent.change(screen.getByTestId('vision-option-perspective-select'), {
-      target: {value: 'drafts'},
-    })
+    pickMenuItem('vision-option-perspective-select', 'drafts')
     await waitFor(() => expect(fetchCalls).toHaveLength(3))
     expect(fetchCalls[2].params).toEqual({id: 'freshest'})
     expect(fetchCalls[2].config.perspective).toBe('drafts')
@@ -4368,9 +4583,7 @@ describe('VisionRedesign', () => {
     expect(url.searchParams.get('variant')).toBeNull()
 
     // The variant option is independent of the perspective
-    fireEvent.change(screen.getByTestId('vision-option-variant-select'), {
-      target: {value: 'global'},
-    })
+    pickMenuItem('vision-option-variant-select', 'global')
     await waitFor(() =>
       expect(isDisabled(screen.getByTestId('vision-option-api-version-select'))).toBe(true),
     )
@@ -4459,7 +4672,7 @@ describe('VisionRedesign', () => {
     expect(screen.queryByText('vision.saved.unavailable-variant')).toBeNull()
   })
 
-  it('follows the workspace dataset until one is pinned, and back', async () => {
+  it('follows the workspace dataset until one is chosen, and Auto follows it again', async () => {
     const {fetchCalls} = renderRedesign()
     typeQuery('*')
     openRequestTab('options')
@@ -4473,31 +4686,67 @@ describe('VisionRedesign', () => {
     expect(fetchCalls[0].config.dataset).toBe('staging')
     await waitFor(() =>
       expect(getStoredState().tabs[0].options).toMatchObject({
-        datasetMode: 'pinned',
+        datasetMode: 'override',
         dataset: 'staging',
       }),
     )
 
-    // Picking the current workspace's dataset follows the workspace again
-    pickDataset('test')
+    // Auto stands for the workspace's own dataset, which has no item of its own
+    fireEvent.click(datasetSelect())
+    expect(screen.getByTestId('vision-option-dataset-item-auto')).toBeTruthy()
+    expect(screen.queryByTestId('vision-option-dataset-item-test')).toBeNull()
+    fireEvent.click(datasetSelect())
+
+    pickMenuItem('vision-option-dataset-select', 'auto')
+    await waitFor(() =>
+      expect(getStoredState().tabs[0].options).toMatchObject({datasetMode: 'auto'}),
+    )
     expect(datasetSelect().value).toBe('test')
-    expect(screen.getByTestId('vision-option-dataset-pin')).toBeTruthy()
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].config.dataset).toBe('test')
+  })
 
-    // The pin button pins the workspace's dataset, and follows the workspace again
-    fireEvent.click(screen.getByTestId('vision-option-dataset-pin'))
-    await waitFor(() =>
-      expect(getStoredState().tabs[0].options).toMatchObject({
-        datasetMode: 'pinned',
-        dataset: 'test',
-      }),
+  it('checks Auto for a tab pinned to the workspace dataset', () => {
+    const initial = createInitialState(DEFAULTS)
+    const tab = createTab(initial.settings, {
+      id: 'pinned',
+      options: {datasetMode: 'override', dataset: 'test'},
+    })
+    saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'pinned'})
+    renderRedesign()
+    openRequestTab('options')
+
+    fireEvent.click(screen.getByTestId('vision-option-dataset-select'))
+    expect(screen.getByTestId('vision-option-dataset-item-auto').getAttribute('aria-checked')).toBe(
+      'true',
     )
-    fireEvent.click(screen.getByTestId('vision-option-dataset-follow'))
-    await waitFor(() =>
-      expect(getStoredState().tabs[0].options).toMatchObject({datasetMode: 'workspace'}),
+  })
+
+  it('lists today first in the API version list, then dated versions, vX and v1', async () => {
+    renderRedesign()
+    openRequestTab('options')
+    // A bare `v` matches every version
+    fireEvent.change(screen.getByTestId('vision-option-api-version-select'), {
+      target: {value: 'v'},
+    })
+    const today = `v${new Date().toISOString().split('T')[0]}`
+    const optionIds = () =>
+      screen
+        .getAllByTestId(/^vision-option-api-version-option-/)
+        .map((option) => option.dataset.testid?.replace('vision-option-api-version-option-', ''))
+
+    await waitFor(() => expect(optionIds()[0]).toBe(today))
+    expect(optionIds().filter((id) => id === today)).toHaveLength(1)
+    expect(optionIds().slice(-2)).toEqual(['vX', 'v1'])
+    const todayOption = screen.getByTestId(`vision-option-api-version-option-${today}`)
+    expect(todayOption.textContent).toContain('vision.options.api-version.today')
+    expect(todayOption.textContent).toContain(today)
+    expect(screen.getByTestId('vision-option-api-version-option-v1').textContent).toContain(
+      'vision.options.api-version.legacy',
     )
+    // A typed query lists the matches without the group headings
+    expect(screen.queryByText('vision.options.api-version.dated')).toBeNull()
   })
 
   it('switches a tab on its own perspective back to the global one when the navbar changes', async () => {
@@ -4581,7 +4830,7 @@ describe('VisionRedesign', () => {
     // The URL names its dataset, so the tab stops following the workspace's
     await waitFor(() =>
       expect(getStoredState().tabs[0].options).toMatchObject({
-        datasetMode: 'pinned',
+        datasetMode: 'override',
         dataset: 'staging',
       }),
     )
@@ -4634,7 +4883,7 @@ describe('VisionRedesign', () => {
     await waitFor(
       () =>
         expect(getStoredState().tabs[0].options).toEqual({
-          datasetMode: 'pinned',
+          datasetMode: 'override',
           dataset: 'staging',
           apiVersion: 'v2021-10-21',
           perspective: 'published',
@@ -4757,7 +5006,7 @@ describe('VisionRedesign', () => {
     openRequestTab('options')
     expect(selectValue('vision-option-dataset-select')).toBe('test')
     await waitFor(() =>
-      expect(getStoredState().tabs[0].options).toMatchObject({datasetMode: 'workspace'}),
+      expect(getStoredState().tabs[0].options).toMatchObject({datasetMode: 'auto'}),
     )
   })
 
@@ -4991,6 +5240,37 @@ describe('VisionRedesign', () => {
     expect(root.dataset.visionLayout).toBe('mobile')
   })
 
+  // The redesign's stylesheet and @sanity/ui's runtime stylesheet load in either order (the
+  // built studio links the stylesheet first, `sanity dev` injects it later), so a layout the two
+  // disagree on must come from the component's own `display` prop: a `display: flex` in the
+  // stylesheet that ties with Box's `.x:not([hidden]) {display: block}` loses in a built studio,
+  // and the result scroller, and the graph filling it, get no height (jsdom resolves the
+  // runtime stylesheet and no CSS module here, so what is asserted is the prop's rule alone)
+  it('lays out the result card as a flex column through its own display rule', async () => {
+    renderRedesign()
+    const result = await screen.findByTestId('vision-result')
+    const style = getComputedStyle(result)
+    expect(style.display).toBe('flex')
+    expect(result.querySelector('[data-testid="vision-result-toolbar"]')).not.toBeNull()
+  })
+
+  it('hides the pane that is not shown in the phone layout through the hidden attribute', async () => {
+    renderRedesign()
+    const root = await screen.findByTestId('vision-root')
+    resizeElement(root, {width: 560, height: 800})
+    expect(root.dataset.visionLayout).toBe('mobile')
+    const requestPane = root.querySelector<HTMLElement>('[id$="vision-mobile-request-pane"]')!
+    const responsePane = root.querySelector<HTMLElement>('[id$="vision-mobile-response-pane"]')!
+    expect(requestPane.hidden).toBe(false)
+    expect(responsePane.hidden).toBe(true)
+    expect(getComputedStyle(responsePane).display).toBe('none')
+
+    fireEvent.click(screen.getByRole('tab', {name: 'result.label'}))
+    expect(requestPane.hidden).toBe(true)
+    expect(responsePane.hidden).toBe(false)
+    expect(getComputedStyle(responsePane).display).toBe('block')
+  })
+
   it('keeps both panes of the main split at their minimum size, from the keyboard as well', async () => {
     renderRedesign()
     const split = await screen.findByTestId('vision-split')
@@ -5189,28 +5469,19 @@ describe('VisionRedesign adoption telemetry', () => {
     typeQuery('*[_type == "author"]')
     openRequestTab('options')
 
-    fireEvent.click(screen.getByTestId('vision-option-dataset-pin'))
     expect(logged(VisionDatasetChanged.name)).toEqual([])
     pickDataset('staging')
     expect(logged(VisionDatasetChanged.name)).toEqual([[VisionDatasetChanged]])
 
-    fireEvent.change(screen.getByTestId('vision-option-perspective-select'), {
-      target: {value: 'published'},
-    })
-    fireEvent.change(screen.getByTestId('vision-option-perspective-select'), {
-      target: {value: 'published'},
-    })
+    pickMenuItem('vision-option-perspective-select', 'published')
+    pickMenuItem('vision-option-perspective-select', 'published')
     expect(logged(VisionPerspectiveChanged.name)).toEqual([[VisionPerspectiveChanged]])
 
-    fireEvent.change(screen.getByTestId('vision-option-api-version-select'), {
-      target: {value: 'v1'},
-    })
-    fireEvent.change(screen.getByTestId('vision-option-api-version-select'), {
-      target: {value: 'other'},
-    })
-    const custom = screen.getByTestId('vision-option-api-version-custom')
-    fireEvent.change(custom, {target: {value: 'v2021-03-25'}})
-    fireEvent.change(custom, {target: {value: 'v2021-03-25'}})
+    const apiVersion = screen.getByTestId('vision-option-api-version-select')
+    fireEvent.change(apiVersion, {target: {value: 'v1'}})
+    // A dated version that is not one of the listed ones is a custom version
+    fireEvent.change(apiVersion, {target: {value: 'v2020-01-01'}})
+    fireEvent.change(apiVersion, {target: {value: 'v2020-01-01'}})
     expect(logged(VisionApiVersionChanged.name)).toEqual([
       [VisionApiVersionChanged, {custom: false}],
       [VisionApiVersionChanged, {custom: true}],
@@ -5222,9 +5493,7 @@ describe('VisionRedesign adoption telemetry', () => {
     fireEvent.change(await screen.findByTestId('vision-settings-api-version-select'), {
       target: {value: 'vX'},
     })
-    fireEvent.change(screen.getByTestId('vision-settings-perspective-select'), {
-      target: {value: 'drafts'},
-    })
+    pickMenuItem('vision-settings-perspective-select', 'drafts')
     expect(logged(VisionApiVersionChanged.name)).toHaveLength(2)
     expect(logged(VisionPerspectiveChanged.name)).toHaveLength(1)
   })

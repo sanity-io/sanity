@@ -1,12 +1,23 @@
 import {AddIcon} from '@sanity/icons/Add'
+import {CloseIcon} from '@sanity/icons/Close'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Button, Card, Select, Stack, TextInput} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
+import {Autocomplete} from '@sanity/ui/autocomplete'
 import {dequal} from 'dequal/lite'
 import JSON5 from 'json5'
-import {type KeyboardEvent, type ReactNode, useId, useState} from 'react'
+import {
+  type KeyboardEvent,
+  type ReactNode,
+  type Ref,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {type TFunction} from 'sanity'
 import {InlineCode, useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex, Icon} from 'ui5'
@@ -14,8 +25,12 @@ import {Text, Box, Flex, Icon} from 'ui5'
 import {type Params} from '../../../components/VisionGui'
 import {visionLocaleNamespace} from '../../../i18n'
 import {useParamsInference} from '../../hooks/useParamsInference'
+import {isObjectParam} from '../../util/objectParams'
 import {type InferredParam, type ParamKind, type ParamType} from '../../util/paramInference'
 import * as fieldGrid from '../fieldGrid.module.css'
+import {VisionTooltip} from '../VisionTooltip'
+import {DateTimePickerButton} from './DateTimePickerButton'
+import {ObjectParamInput} from './ObjectParamInput'
 
 type Translate = TFunction<typeof visionLocaleNamespace>
 
@@ -134,12 +149,106 @@ function fromText(text: string, kind: ParamKind, empty: unknown): unknown {
   if (kind === 'boolean' && (text === 'true' || text === 'false')) return text === 'true'
   if (kind === 'any') {
     try {
-      return JSON5.parse(text)
+      // Typed text never becomes null; optional params have a control for that
+      const parsed: unknown = JSON5.parse(text)
+      return parsed === null ? text : parsed
     } catch {
       return text
     }
   }
   return text
+}
+
+interface DocumentTypeOption {
+  value: string
+}
+
+interface DocumentTypeInputProps {
+  id?: string
+  label?: string
+  documentTypes: string[]
+  value: unknown
+  empty: unknown
+  disabled: boolean
+  invalid?: string
+  placeholder: string
+  onChange: (value: unknown) => void
+}
+
+function renderDocumentTypeOption(option: DocumentTypeOption) {
+  return (
+    <Card data-as="button" padding={2} radius={2} tone="inherit">
+      <Text size={1} style={{color: 'var(--card-fg-color)'}} truncate={1} weight="medium">
+        {option.value}
+      </Text>
+    </Card>
+  )
+}
+
+/**
+ * The document types of the schema to pick from, like Studio's autocompletes. Any other text is
+ * still sent, for testing
+ */
+function DocumentTypeInput(props: DocumentTypeInputProps) {
+  const {id, label, documentTypes, value, empty, disabled, invalid, placeholder, onChange} = props
+  const fallbackId = useId()
+  const text = toText(value, 'string')
+  const options = useMemo(
+    () => documentTypes.map((name): DocumentTypeOption => ({value: name})),
+    [documentTypes],
+  )
+  // The text the list opened with. Opening reports that text as the query, and each keystroke is
+  // stored, so the query and the stored text are the same string while typing; remembering the
+  // opening text is what keeps that from matching every option, and from filtering to it on open.
+  const openQuery = useRef<string | null>(null)
+  const committed = useRef(text)
+  useEffect(() => {
+    committed.current = text
+  }, [text])
+  // Autocomplete clears its query when `value` changes, which would list every type again.
+  // Hold the text the list opened with until the edit ends, and let the stored text move.
+  const [heldValue, setHeldValue] = useState<string | null>(null)
+
+  const filterOption = useCallback((query: string, option: DocumentTypeOption) => {
+    // Opening fills the input with the current text, before that text has been edited
+    if (openQuery.current === null && query === committed.current) openQuery.current = query
+    if (query === openQuery.current) return true
+    const normalized = query.trim().toLowerCase()
+    return !normalized || option.value.toLowerCase().includes(normalized)
+  }, [])
+
+  const change = (next: string) => {
+    if (next === text) return
+    onChange(next === '' ? empty : next)
+  }
+
+  return (
+    <Autocomplete
+      aria-label={label}
+      customValidity={invalid}
+      disabled={disabled}
+      filterOption={filterOption}
+      fontSize={1}
+      id={id ?? fallbackId}
+      onChange={change}
+      onQueryChange={(query) => {
+        // `null` is the list closing
+        if (query === null) {
+          openQuery.current = null
+          setHeldValue(null)
+          return
+        }
+        setHeldValue((current) => current ?? openQuery.current ?? text)
+        change(query)
+      }}
+      openButton
+      options={options}
+      placeholder={placeholder}
+      popover={{constrainSize: true, portal: true}}
+      renderOption={renderDocumentTypeOption}
+      value={heldValue ?? text}
+    />
+  )
 }
 
 interface ValueInputProps {
@@ -148,6 +257,8 @@ interface ValueInputProps {
   label?: string
   kind: ParamKind
   listId: string | undefined
+  /** Picked from with an autocomplete instead of the suggestions list */
+  documentTypes: string[] | undefined
   value: unknown
   /** What an emptied input sends: nothing for a param, an empty string for a list item */
   empty: unknown
@@ -155,15 +266,47 @@ interface ValueInputProps {
   /** Why the input is invalid, shown like a required Structure field */
   invalid?: string
   placeholder: string
+  /** Shown at the end of the input, like the calendar button of a date and time param */
+  suffix?: ReactNode
+  ref?: Ref<HTMLInputElement>
   onChange: (value: unknown) => void
 }
 
 function ValueInput(props: ValueInputProps) {
-  const {id, label, kind, listId, value, empty, disabled, invalid, placeholder, onChange} = props
+  const {
+    id,
+    label,
+    kind,
+    listId,
+    documentTypes,
+    value,
+    empty,
+    disabled,
+    invalid,
+    placeholder,
+    onChange,
+  } = props
+  const {ref, suffix} = props
   // The text as typed, for as long as it is what the param holds: "1." or "02" read as numbers,
   // and showing the number instead would rewrite the text under the caret
   const [draft, setDraft] = useState<{text: string; value: unknown}>()
   const text = draft && dequal(draft.value, value) ? draft.text : toText(value, kind)
+
+  if (documentTypes) {
+    return (
+      <DocumentTypeInput
+        disabled={disabled}
+        documentTypes={documentTypes}
+        empty={empty}
+        id={id}
+        invalid={invalid}
+        label={label}
+        onChange={onChange}
+        placeholder={placeholder}
+        value={value}
+      />
+    )
+  }
 
   return (
     <TextInput
@@ -181,6 +324,8 @@ function ValueInput(props: ValueInputProps) {
         onChange(nextValue)
       }}
       placeholder={placeholder}
+      ref={ref}
+      suffix={suffix}
       value={text}
     />
   )
@@ -224,10 +369,11 @@ function ListInput(props: {
   param: InferredParam
   items: unknown[]
   listId: string | undefined
+  documentTypes: string[] | undefined
   disabled: boolean
   onChange: (value: unknown) => void
 }) {
-  const {param, items, listId, disabled, onChange} = props
+  const {param, items, listId, documentTypes, disabled, onChange} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const {kind} = param.type
   return (
@@ -239,6 +385,7 @@ function ListInput(props: {
           <Box flexBasis="0%" flexGrow={1} minWidth="0">
             <ValueInput
               disabled={disabled}
+              documentTypes={documentTypes}
               empty=""
               kind={kind}
               label={t('vision.params-form.item-label', {name: param.name, index: index + 1})}
@@ -282,21 +429,50 @@ function ParamField(props: {
   disabled: boolean
   /** Whether the details say the types come from the query alone */
   schemaNote: boolean
+  /** A key of an object param (`$range.min`), which the query reads as null when it is missing */
+  nested?: boolean
   onChange: (value: unknown) => void
 }) {
-  const {param, value, isSet, disabled, schemaNote, onChange} = props
+  const {param, value, isSet, disabled, schemaNote, nested, onChange} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const inputId = useId()
   const listId = useId()
+  const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const {type} = param
   const options = type.options && type.options.length > 0 ? type.options : undefined
-  const problem = isSet ? describeProblem(type, value, t) : undefined
+  const documentTypes = type.format === 'document-type' ? options : undefined
+  const suggestionsListId = options && !documentTypes ? listId : undefined
+  // A text field shows null as its placeholder, so the text "null" can be told apart and typed
+  const isNull = value === null && !type.array
+  const problem = isSet && !(isNull && param.nullable) ? describeProblem(type, value, t) : undefined
+  const object = isObjectParam(param, value, isSet)
 
-  const required = isSet ? undefined : t('vision.params-form.required')
-  const wide = type.array || (type.kind === 'any' && typeof value === 'object' && value !== null)
+  const required = isSet || nested ? undefined : t('vision.params-form.required')
 
   let input
-  if (type.kind === 'boolean' && !type.array) {
+  if (object) {
+    input = (
+      <ObjectParamInput
+        disabled={disabled}
+        id={inputId}
+        label={`$${param.name}`}
+        onChange={onChange}
+        param={param}
+        renderField={(field, fieldValue, fieldIsSet, onFieldChange) => (
+          <ParamField
+            disabled={disabled}
+            isSet={fieldIsSet}
+            nested
+            onChange={onFieldChange}
+            param={{...field, name: `${param.name}.${field.name}`}}
+            schemaNote={false}
+            value={fieldValue}
+          />
+        )}
+        value={value}
+      />
+    )
+  } else if (type.kind === 'boolean' && !type.array) {
     input = (
       <BooleanInput
         disabled={disabled}
@@ -311,40 +487,56 @@ function ParamField(props: {
     input = (
       <ListInput
         disabled={disabled}
+        documentTypes={documentTypes}
         items={Array.isArray(value) ? value : []}
-        listId={options && listId}
+        listId={suggestionsListId}
         onChange={onChange}
         param={param}
       />
     )
   } else {
+    let placeholder = t('vision.params-form.not-set')
+    if (isNull) placeholder = t('vision.params-form.null')
+    else if (type.kind === 'any' || type.array)
+      placeholder = t('vision.params-form.any-placeholder')
+    const datetime = type.format === 'datetime' && !type.array
     input = (
       <Flex alignItems="center" gap={1}>
         <Box flexBasis="0%" flexGrow={1} minWidth="0">
           <ValueInput
             disabled={disabled}
+            documentTypes={type.array ? undefined : documentTypes}
             empty={undefined}
             id={inputId}
             invalid={required}
             kind={type.array ? 'any' : type.kind}
-            listId={options && listId}
+            listId={suggestionsListId}
             onChange={onChange}
-            placeholder={
-              type.kind === 'any' || type.array
-                ? t('vision.params-form.any-placeholder')
-                : t('vision.params-form.not-set')
+            placeholder={placeholder}
+            ref={datetime ? setInputElement : undefined}
+            suffix={
+              datetime ? (
+                <DateTimePickerButton
+                  disabled={disabled}
+                  input={inputElement}
+                  onChange={onChange}
+                  value={value}
+                />
+              ) : undefined
             }
-            value={value}
+            value={isNull ? undefined : value}
           />
         </Box>
-        {type.format === 'datetime' && (
+        {param.nullable && !type.array && (
           <Button
-            disabled={disabled}
+            aria-label={t('vision.params-form.clear', {name: param.name})}
+            data-testid={`vision-params-form-${param.name}-clear`}
+            disabled={disabled || value === null}
             fontSize={1}
-            mode="ghost"
-            onClick={() => onChange(new Date().toISOString())}
+            icon={CloseIcon}
+            mode="bleed"
+            onClick={() => onChange(null)}
             padding={2}
-            text={t('vision.params-form.now')}
           />
         )}
       </Flex>
@@ -352,11 +544,7 @@ function ParamField(props: {
   }
 
   return (
-    <Stack
-      className={wide ? fieldGrid.fieldGridWide : undefined}
-      data-testid={`vision-params-form-${param.name}`}
-      gap={2}
-    >
+    <Stack data-testid={`vision-params-form-${param.name}`} data-vision-param={param.name} gap={2}>
       <Flex alignItems="center" gap={1}>
         <Text as="label" htmlFor={inputId} size={1} weight="medium" trim={true}>
           <InlineCode>{`$${param.name}`}</InlineCode>
@@ -366,7 +554,9 @@ function ParamField(props: {
           testId={`vision-params-form-${param.name}-details`}
         >
           <Text data-testid={`vision-params-form-${param.name}-type`} size={1} as="div" trim>
-            {t('vision.params-form.type-detail', {type: describeType(type, t)})}
+            {t('vision.params-form.type-detail', {
+              type: object ? t('vision.params-form.type.object') : describeType(type, t),
+            })}
           </Text>
           {param.usages.length > 0 && (
             <Text size={1} as="div" trim={true}>
@@ -386,8 +576,7 @@ function ParamField(props: {
           )}
         </InfoTip>
         {required && (
-          <Tooltip
-            animate
+          <VisionTooltip
             content={
               <Flex alignItems="center" gap={2}>
                 <Icon icon={ErrorOutlineIcon} size={1} tone="critical" />
@@ -397,17 +586,16 @@ function ParamField(props: {
               </Flex>
             }
             placement="top"
-            portal
           >
             <Box data-testid={`vision-params-form-${param.name}-required`} paddingX={1}>
               <Icon aria-label={required} icon={ErrorOutlineIcon} size={1} tone="critical" />
             </Box>
-          </Tooltip>
+          </VisionTooltip>
         )}
       </Flex>
       {input}
-      {options && (
-        <datalist id={listId}>
+      {suggestionsListId && options && (
+        <datalist id={suggestionsListId}>
           {options.map((option) => (
             <option key={option} value={option} />
           ))}
@@ -433,15 +621,13 @@ function ParamField(props: {
 function InfoTip(props: {label: string; testId: string; children: ReactNode}) {
   const {label, testId, children} = props
   return (
-    <Tooltip
-      animate
+    <VisionTooltip
       content={
         <Stack data-testid={`${testId}-content`} gap={2}>
           {children}
         </Stack>
       }
       placement="top"
-      portal
     >
       <Button
         aria-label={label}
@@ -451,7 +637,7 @@ function InfoTip(props: {label: string; testId: string; children: ReactNode}) {
         mode="bleed"
         padding={1}
       />
-    </Tooltip>
+    </VisionTooltip>
   )
 }
 
@@ -495,13 +681,6 @@ export function ParamsForm({query, params, onChange, onSubmit}: ParamsFormProps)
       }}
       padding={3}
     >
-      {disabled && (
-        <Card padding={3} radius={2} tone="caution">
-          <Text size={1} as="div" trim={true} tone="caution">
-            {t('vision.params-form.invalid-json')}
-          </Text>
-        </Card>
-      )}
       {inference.syntaxError && (
         <Text muted size={1} as="div" trim={true}>
           {t('vision.params-form.syntax-error')}
@@ -573,6 +752,14 @@ export function ParamsForm({query, params, onChange, onSubmit}: ParamsFormProps)
             </Flex>
           ))}
         </Stack>
+      )}
+      {/* Under the fields, so they stay put while the JSON goes in and out of parsing */}
+      {disabled && (
+        <Card data-testid="vision-params-form-invalid-json" padding={3} radius={2} tone="caution">
+          <Text size={1} as="div" trim={true} tone="caution">
+            {t('vision.params-form.invalid-json')}
+          </Text>
+        </Card>
       )}
     </Stack>
   )

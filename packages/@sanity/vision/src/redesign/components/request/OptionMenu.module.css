@@ -1,0 +1,12 @@
+/*
+ * The Options pickers' trigger fills its grid cell, so every picker has the same width and the
+ * label truncates instead of pushing the chevron out
+ */
+.trigger {
+  width: 100%;
+  min-width: 0;
+}
+
+.section:last-child {
+  border-bottom: none;
+}

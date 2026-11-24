@@ -15,6 +15,7 @@ import {type QueryLintFinding} from '../../util/groqLint'
 import {summarizeSchema} from '../../util/schemaSummary'
 import {AgentActionsTooltip} from '../AgentActionsTooltip'
 import {AiCreditsStatus} from '../AiCreditsStatus'
+import * as styles from '../redesign.module.css'
 import {AnimatedSparklesIcon} from './AnimatedSparklesIcon'
 
 export interface LintFixProps {
@@ -65,33 +66,33 @@ export function LintFix({tab, params, findings, client, agent}: LintFixProps) {
 
   return (
     <Card borderBottom data-testid="vision-lint-fix-panel">
-      <Stack gap={2} padding={2}>
-        <Flex alignItems="center" gap={2}>
-          <AgentActionsTooltip>
-            <Button
-              data-testid="vision-lint-fix"
-              disabled={running || atLimit}
-              fontSize={1}
-              gap={2}
-              icon={AnimatedSparklesIcon}
-              mode="bleed"
-              onClick={fix}
-              padding={2}
-              text={t('vision.lint.fix')}
-              tone="primary"
-            />
-          </AgentActionsTooltip>
-          {running && (
-            <Text data-testid="vision-lint-fix-progress" muted size={1} as="div" trim={true}>
-              {status.attempt > 1
-                ? t('vision.generate.progress-retry', {
-                    attempt: status.attempt,
-                    max: MAX_GENERATE_ATTEMPTS,
-                  })
-                : t('vision.lint.fix.progress')}
-            </Text>
-          )}
-        </Flex>
+      <Flex alignItems="center" className={styles.panelBar} gap={2}>
+        <AgentActionsTooltip>
+          <Button
+            data-testid="vision-lint-fix"
+            disabled={running || atLimit}
+            fontSize={1}
+            gap={2}
+            icon={AnimatedSparklesIcon}
+            mode="bleed"
+            onClick={fix}
+            padding={2}
+            text={t('vision.lint.fix')}
+            tone="primary"
+          />
+        </AgentActionsTooltip>
+        {running && (
+          <Text data-testid="vision-lint-fix-progress" muted size={1} as="div" trim={true}>
+            {status.attempt > 1
+              ? t('vision.generate.progress-retry', {
+                  attempt: status.attempt,
+                  max: MAX_GENERATE_ATTEMPTS,
+                })
+              : t('vision.lint.fix.progress')}
+          </Text>
+        )}
+      </Flex>
+      <Stack gap={2} paddingBottom={2} paddingX={2}>
         {status.type === 'failed' && !atLimit && (
           <Card data-testid="vision-lint-fix-error" padding={3} radius={2} tone="critical">
             <Stack gap={3}>

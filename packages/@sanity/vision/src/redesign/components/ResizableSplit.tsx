@@ -28,12 +28,18 @@ export interface ResizableSplitProps {
   minSize: number
   /** The least the other pane keeps */
   minSecondarySize: number
-  onChange: (size: number) => void
+  /** A new size, and whether it holds equal halves (always `false` without `snapToCenter`) */
+  onChange: (size: number, snapped: boolean) => void
   /** Enter on the divider: back to the default size */
   onReset?: () => void
   allowResize?: boolean
   /** Hold the divider at equal halves when a drag or a keyboard step comes close to or past them */
   snapToCenter?: boolean
+  /**
+   * With `snapToCenter`: the divider holds equal halves whatever `size` says, through every
+   * container resize, until a drag or a key moves it off them
+   */
+  snapped?: boolean
   /** Accessible name of the divider */
   label: string
   children: [ReactNode, ReactNode]
@@ -56,7 +62,8 @@ function clamp(value: number, {min, max}: Bounds): number {
  * stops short of either, and a size that no longer fits (a window narrowed after a drag) is
  * clamped for as long as the container is that small, the primary pane winning when it cannot
  * fit both. With `snapToCenter`, a drag within a few pixels of equal halves holds them, and an
- * arrow key step that would pass over them stops there.
+ * arrow key step that would pass over them stops there; with `snapped` the halves stay equal as
+ * the container resizes.
  */
 export function ResizableSplit(props: ResizableSplitProps) {
   const {
@@ -69,6 +76,7 @@ export function ResizableSplit(props: ResizableSplitProps) {
     onReset,
     allowResize = true,
     snapToCenter = false,
+    snapped: snappedProp = false,
     label,
     children,
     testId,
@@ -93,7 +101,6 @@ export function ResizableSplit(props: ResizableSplitProps) {
           },
     [extent, minSecondarySize, minSize],
   )
-  const shownSize = bounds ? clamp(size, bounds) : size
   const snap = useMemo(
     () =>
       snapToCenter && bounds && extent !== undefined
@@ -101,7 +108,12 @@ export function ResizableSplit(props: ResizableSplitProps) {
         : null,
     [bounds, extent, snapToCenter],
   )
+  const shownSize = snap && snappedProp ? snap.center : bounds ? clamp(size, bounds) : size
   const snapped = snap !== null && shownSize === snap.center
+  const change = useCallback(
+    (next: number) => onChange(next, snap !== null && next === snap.center),
+    [onChange, snap],
+  )
 
   const onPointerDown = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -116,7 +128,7 @@ export function ResizableSplit(props: ResizableSplitProps) {
         const delta = position - start
         const drag = snapDragSize(shownSize + (primary === 'first' ? delta : -delta), snap, engaged)
         engaged = drag.engaged
-        onChange(clamp(drag.size, bounds))
+        change(clamp(drag.size, bounds))
       }
       const onEnd = () => {
         handle.removeEventListener('pointermove', onMove)
@@ -130,7 +142,7 @@ export function ResizableSplit(props: ResizableSplitProps) {
       handle.addEventListener('pointercancel', onEnd)
       setDragging(true)
     },
-    [allowResize, bounds, onChange, primary, shownSize, snap, split],
+    [allowResize, bounds, change, primary, shownSize, snap, split],
   )
 
   const onKeyDown = useCallback(
@@ -160,9 +172,9 @@ export function ResizableSplit(props: ResizableSplitProps) {
       }
       event.preventDefault()
       const next = clamp(target, bounds)
-      if (next !== shownSize) onChange(next)
+      if (next !== shownSize) change(next)
     },
-    [allowResize, bounds, onChange, onReset, primary, shownSize, snap, split],
+    [allowResize, bounds, change, onReset, primary, shownSize, snap, split],
   )
 
   const primaryStyle = {flex: `0 0 ${shownSize}px`}

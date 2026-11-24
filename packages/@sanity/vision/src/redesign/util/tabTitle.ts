@@ -8,6 +8,16 @@ const ID_FILTER = /_id\s*==\s*(["'])([^"']+)\1/
  * (`*[_type == "author"]` becomes `author`), otherwise the first non-empty line, truncated.
  */
 export function deriveTabTitle(query: string): string | undefined {
+  const subject = deriveQuerySubject(query)
+  return subject === undefined ? undefined : truncate(subject)
+}
+
+/**
+ * What a GROQ query is about, in full: the filtered document type or id when there is one
+ * (`*[_type == "author"]` gives `author`, `*[_type in ["post", "page"]]` gives `post, page`),
+ * otherwise its first non-empty line
+ */
+export function deriveQuerySubject(query: string): string | undefined {
   const trimmed = query.trim()
   if (!trimmed) {
     return undefined
@@ -15,12 +25,12 @@ export function deriveTabTitle(query: string): string | undefined {
 
   const typeMatch = trimmed.match(TYPE_FILTER)
   if (typeMatch) {
-    return truncate(typeMatch[2])
+    return typeMatch[2]
   }
 
   const idMatch = trimmed.match(ID_FILTER)
   if (idMatch) {
-    return truncate(idMatch[2])
+    return idMatch[2]
   }
 
   const typeInMatch = trimmed.match(TYPE_IN_FILTER)
@@ -30,7 +40,7 @@ export function deriveTabTitle(query: string): string | undefined {
       .map((type) => type.trim().replace(/^["']|["']$/g, ''))
       .filter(Boolean)
     if (types.length > 0) {
-      return truncate(types.join(', '))
+      return types.join(', ')
     }
   }
 
@@ -39,7 +49,7 @@ export function deriveTabTitle(query: string): string | undefined {
     .map((line) => line.trim())
     .find((line) => line.length > 0 && !line.startsWith('//'))
 
-  return truncate(firstLine || trimmed)
+  return firstLine || trimmed
 }
 
 function truncate(value: string): string {

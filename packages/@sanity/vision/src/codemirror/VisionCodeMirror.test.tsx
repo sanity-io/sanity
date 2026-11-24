@@ -57,6 +57,29 @@ describe('VisionCodeMirror', () => {
     unmount()
   })
 
+  it('starts its content flush under a header, and below a floating label otherwise', () => {
+    const paddingTop = (underHeader: boolean) => {
+      const {container, unmount} = render(
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        <ThemeProvider theme={studioTheme}>
+          <VisionCodeMirror
+            initialValue=""
+            onChange={vi.fn()}
+            extensions={NO_EXTENSIONS}
+            underHeader={underHeader}
+          />
+        </ThemeProvider>,
+      )
+      const root = container.firstElementChild as HTMLElement
+      const value = root.style.getPropertyValue('--vision-editor-content-padding-top')
+      unmount()
+      return value
+    }
+
+    expect(paddingTop(true)).toBe('0px')
+    expect(paddingTop(false)).not.toBe('0px')
+  })
+
   it('lines its gutters up with the text in the commit that creates the view', () => {
     const padding = EditorView.theme({'.cm-content': {paddingTop: '32px'}})
     const {container, unmount} = render(editor('visible', {current: null}, vi.fn(), '*', [padding]))

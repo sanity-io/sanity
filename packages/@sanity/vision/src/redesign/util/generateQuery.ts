@@ -44,6 +44,23 @@ const GROQ_REFERENCE = `GROQ is the query language of the Sanity Content Lake. I
  */
 const KEEP_COMMENTS = `Keep every comment (a line starting with //) of the query, including a "// Generated with the prompt:" comment at the top. Update a comment only when the change makes it inaccurate, and never delete one.`
 
+/**
+ * What Vision's Documents view shows of each item of a list: a row as wide as the result pane,
+ * with a thumbnail of about 34 pixels square
+ */
+const DOCUMENT_LIST_ROWS = `Each item of a list of documents is shown as a row, so give it _id, _type, "title" (text that names the document), "subtitle" (one line of text that tells documents apart; rows are wide, so it can combine several fields, like "subtitle": array::join(array::compact([director->name, string(releaseYear)]), " · "), since joining with + gives null when one of them is missing) and "media" (a small square thumbnail: the image field itself, like "media": poster, never its asset or a URL; prefer a thumbnail, avatar or logo over a hero or cover image, and leave "media" out when the type has no image). Put the other attributes after these.`
+
+/** When the row attributes are known for none of the types */
+const NO_DOCUMENT_LIST_FIELDS = 'Pick the row attributes from the fields of the document types.'
+
+/**
+ * Only a list of documents gets the row attributes: a count, a single document or an aggregate
+ * would be changed by them, so they are named as left alone
+ */
+const DOCUMENT_LIST_GUIDANCE = `When the request asks for a list of documents (an array with one object per document, like *[_type == "movie"] | order(title asc)[0...20]): ${DOCUMENT_LIST_ROWS} When the request names the attributes it wants, add those too.
+$listFields
+Leave the row attributes out of every other kind of query: a count or another number, a single document (a [0] or a lookup by _id), a value or an array of plain values (like *[_type == "movie"].title), an object of aggregates or groups, or any other shape the request asks for.`
+
 const INSTRUCTION = `You write GROQ queries for the Sanity Content Lake.
 
 The request:
@@ -54,6 +71,8 @@ $schema
 
 How to write GROQ:
 $reference
+
+${DOCUMENT_LIST_GUIDANCE}
 
 Reply with JSON: an object with "query" (the GROQ query, without comments or code fences), "params" (an object with a value for every parameter the query uses, or an empty object) and "title" (a name for the query of at most five words).`
 
@@ -120,6 +139,29 @@ Make those improvements. The query must still return the same data in the same s
 
 Reply with JSON: an object with "query" (the whole improved query, comments included, without code fences) and "params" (an object with a value for every parameter the query uses, or an empty object).`
 
+const DOCUMENT_LIST_INSTRUCTION = `You change GROQ queries for the Sanity Content Lake so that their result can be shown as a list of documents.
+
+The query:
+$query
+
+The values of its parameters:
+$params
+
+What it returns now:
+$result
+
+The document types in the dataset:
+$schema
+
+How to write GROQ:
+$reference
+
+Make the query return an array with one object per document. ${DOCUMENT_LIST_ROWS}
+$listFields
+Keep what the query selects (its filter, order, slice and parameters) and every attribute it already returns, after the row attributes; change an attribute named title, subtitle or media only when it is not what the row needs. When it returns a single document, return that document in a list of one. ${KEEP_COMMENTS}
+
+Reply with JSON: an object with "query" (the whole changed query, comments included, without code fences) and "params" (an object with a value for every parameter the query uses, or an empty object).`
+
 const RETRY_INSTRUCTION = `
 
 Your previous attempt was rejected by the Content Lake:
@@ -175,6 +217,11 @@ interface QueryAgentOptions {
 export interface GenerateQueryOptions extends QueryAgentOptions {
   /** What the query should do, in the user's words */
   request: string
+  /**
+   * The row attributes of the requested types, from `describeDocumentListFields`, used when the
+   * request asks for a list of documents
+   */
+  listFields?: string
 }
 
 export interface EditQueryOptions extends QueryAgentOptions {
@@ -300,8 +347,12 @@ async function promptForQuery(
  * types and a GROQ primer go in.
  */
 export function generateQuery(options: GenerateQueryOptions): Promise<GeneratedQuery> {
-  const {request, schema, ...rest} = options
-  return promptForQuery({...rest, instruction: INSTRUCTION, instructionParams: {request, schema}})
+  const {request, schema, listFields, ...rest} = options
+  return promptForQuery({
+    ...rest,
+    instruction: INSTRUCTION,
+    instructionParams: {request, schema, listFields: listFields || NO_DOCUMENT_LIST_FIELDS},
+  })
 }
 
 /**
@@ -359,6 +410,40 @@ export function fixQueryLint(options: FixQueryLintOptions): Promise<GeneratedQue
       query,
       params: JSON.stringify(params),
       diagnostics: describeDiagnostics(diagnostics),
+      schema,
+    },
+  })
+}
+
+export interface FitQueryToDocumentListOptions extends QueryAgentOptions {
+  /** The query whose result is shown, as it is in the editor */
+  query: string
+  /** The values of its parameters */
+  params: Record<string, unknown>
+  /** What the query returns now, from `describeDocumentListResult` */
+  result: string
+  /** The row attributes of the types it lists, from `describeDocumentListFields` */
+  listFields?: string
+}
+
+/**
+ * Changes a query with Agent Actions so that the Documents view can show its result: one object
+ * per document, with `_id`, `_type`, `title`, `subtitle` and `media`. The query, its parameters,
+ * what it returns now, the row attributes of its types, the workspace's document types and a GROQ
+ * primer go in. The query comes back whole, comments kept, as an edit's does.
+ */
+export function fitQueryToDocumentList(
+  options: FitQueryToDocumentListOptions,
+): Promise<GeneratedQuery> {
+  const {query, params, result, listFields, schema, ...rest} = options
+  return promptForQuery({
+    ...rest,
+    instruction: DOCUMENT_LIST_INSTRUCTION,
+    instructionParams: {
+      query,
+      params: JSON.stringify(params),
+      result,
+      listFields: listFields || NO_DOCUMENT_LIST_FIELDS,
       schema,
     },
   })

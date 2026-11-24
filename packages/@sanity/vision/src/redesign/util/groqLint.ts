@@ -46,6 +46,19 @@ export interface QueryLintFinding {
   source: string | undefined
 }
 
+const SEVERITY_RANK: Record<LintSeverity, number> = {error: 3, warning: 2, info: 1, hint: 0}
+
+/** The most severe of the findings, or `undefined` when there are none */
+export function worstSeverity(findings: QueryLintFinding[]): LintSeverity | undefined {
+  let worst: LintSeverity | undefined
+  for (const {severity} of findings) {
+    if (worst === undefined || SEVERITY_RANK[severity] > SEVERITY_RANK[worst]) {
+      worst = severity
+    }
+  }
+  return worst
+}
+
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max)
 }

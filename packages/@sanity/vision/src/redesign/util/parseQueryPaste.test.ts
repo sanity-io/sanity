@@ -64,7 +64,7 @@ describe('parseCurlQuery', () => {
         apiVersion: 'v2025-02-19',
         perspective: 'published',
         variant: undefined,
-        includeSourceMap: false,
+        resultSourceMap: undefined,
         useCdn: true,
       },
       ['curl'],
@@ -172,7 +172,7 @@ describe('parseCurlQuery', () => {
       query: '*',
       rawParams: '{}',
       options: {
-        datasetMode: 'pinned',
+        datasetMode: 'override',
         dataset: 'staging',
         apiVersion: 'v2021-10-21',
         perspective: undefined,
@@ -212,7 +212,7 @@ describe('parseCurlQuery', () => {
     )
     expect(full).toMatchObject(expected)
     expect(parsedQueryToTabInit(full).options).toStrictEqual({
-      datasetMode: 'pinned',
+      datasetMode: 'override',
       dataset: 'production',
       apiVersion: 'v2025-02-19',
       perspective: 'published',

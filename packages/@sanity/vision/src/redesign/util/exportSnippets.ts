@@ -6,7 +6,7 @@ import {
   queryRequestMethod,
   splitQuerySearchParams,
 } from '../../util/queryRequestMethod'
-import {type VisionExportSnippetId} from '../store/types'
+import {type VisionExportSnippetId, type VisionResultSourceMap} from '../store/types'
 
 export type ExportSnippetId = VisionExportSnippetId
 
@@ -59,7 +59,8 @@ export interface ExportSnippetInput {
   /** `undefined` is the API default, which depends on the API version */
   perspective: ClientPerspective | undefined
   variant: string | undefined
-  includeSourceMap: boolean
+  /** The source map the fetch asks for, `undefined` when it asks for none */
+  resultSourceMap: VisionResultSourceMap | undefined
   /**
    * The query is meant for the API CDN. Perspectives the CDN cannot serve (drafts, releases) go
    * to the API whatever this says, as the clients the snippets configure do too.
@@ -401,15 +402,21 @@ function perspectiveEntry(context: SnippetContext, isDefault: boolean): ObjectEn
   return isDefault ? defaultEntry('perspective', value) : {key: 'perspective', value}
 }
 
+function sourceMapLiteral(resultSourceMap: VisionResultSourceMap): string {
+  return resultSourceMap === true ? 'true' : toSingleQuoted(resultSourceMap)
+}
+
 /** Fetch options asking for the source map along with the result */
-const SOURCE_MAP_ENTRIES: ObjectEntry[] = [
-  {key: 'filterResponse', value: 'false'},
-  {key: 'resultSourceMap', value: 'true'},
-]
+function sourceMapEntries(resultSourceMap: VisionResultSourceMap): ObjectEntry[] {
+  return [
+    {key: 'filterResponse', value: 'false'},
+    {key: 'resultSourceMap', value: sourceMapLiteral(resultSourceMap)},
+  ]
+}
 
 /** The variable a fetch's answer goes in: the result alone, or the result and its source map */
 function resultBinding(context: SnippetContext, name: string): string {
-  return context.input.includeSourceMap ? `{result: ${name}, resultSourceMap}` : name
+  return context.input.resultSourceMap ? `{result: ${name}, resultSourceMap}` : name
 }
 
 function resultName(context: SnippetContext): string {
@@ -484,8 +491,8 @@ function clientSnippet(context: SnippetContext): ExportSnippet {
   }
 
   const args: CallArgument[] = [context.constantName]
-  if (context.paramsArg || input.includeSourceMap) args.push(context.paramsArg ?? '{}')
-  if (input.includeSourceMap) args.push(SOURCE_MAP_ENTRIES)
+  if (context.paramsArg || input.resultSourceMap) args.push(context.paramsArg ?? '{}')
+  if (input.resultSourceMap) args.push(sourceMapEntries(input.resultSourceMap))
 
   const code = [
     `import {createClient} from '@sanity/client'`,
@@ -521,7 +528,9 @@ function nextSanitySnippet(context: SnippetContext): ExportSnippet {
 
   const liveClientConfig = clientConfigEntries(context)
   // sanityFetch returns a source map only when the client asks for one
-  if (input.includeSourceMap) liveClientConfig.push({key: 'resultSourceMap', value: 'true'})
+  if (input.resultSourceMap) {
+    liveClientConfig.push({key: 'resultSourceMap', value: sourceMapLiteral(input.resultSourceMap)})
+  }
 
   const live = [
     `import {createClient} from 'next-sanity'`,
@@ -550,7 +559,7 @@ function nextSanitySnippet(context: SnippetContext): ExportSnippet {
   }
   if (input.variant) fetchArgs.push({key: 'variant', value: toSingleQuoted(input.variant)})
 
-  const binding = input.includeSourceMap ? '{data, sourceMap}' : '{data}'
+  const binding = input.resultSourceMap ? '{data, sourceMap}' : '{data}'
   const page = [
     `import {defineQuery} from 'next-sanity'`,
     '',
@@ -591,7 +600,8 @@ function perRequestEntries(context: SnippetContext, tokenComment: string, token:
       {key: 'token', value: token},
     )
   }
-  if (context.input.includeSourceMap) entries.push(...SOURCE_MAP_ENTRIES)
+  const {resultSourceMap} = context.input
+  if (resultSourceMap) entries.push(...sourceMapEntries(resultSourceMap))
   return entries
 }
 
@@ -759,7 +769,7 @@ function nuxtSnippet(context: SnippetContext): ExportSnippet {
     options.push({key: 'perspective', value: toPerspectiveLiteral(context.perspective)})
   }
   if (input.variant) options.push({key: 'variant', value: toSingleQuoted(input.variant)})
-  if (input.includeSourceMap) options.push(...SOURCE_MAP_ENTRIES)
+  if (input.resultSourceMap) options.push(...sourceMapEntries(input.resultSourceMap))
 
   if (context.usesToken) {
     const route =
@@ -788,7 +798,7 @@ function nuxtSnippet(context: SnippetContext): ExportSnippet {
   const queryOptions: CallArgument[] = [context.constantName]
   if (context.paramsArg || options.length > 0) queryOptions.push(context.paramsArg ?? '{}')
   if (options.length > 0) queryOptions.push([{key: 'queryOptions', value: toObject(options, '  ')}])
-  const binding = input.includeSourceMap ? '{data, sourceMap}' : '{data}'
+  const binding = input.resultSourceMap ? '{data, sourceMap}' : '{data}'
   const page = [
     '<script setup lang="ts">',
     ...queryDeclaration(context, 'defineQuery'),

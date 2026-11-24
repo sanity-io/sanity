@@ -12,9 +12,6 @@ interface GroqWasmModule {
   DEFAULT_WIDTH: number
   format: (query: string, config?: {width?: number}) => string
   lint: (query: string, config?: {rules?: Record<string, boolean>}) => WasmFinding[]
-  extractParams: (
-    query: string,
-  ) => Array<{name: string; references: Array<{start: number; end: number}>}>
 }
 
 export type GroqFindingSeverity = 'error' | 'warning' | 'info'
@@ -50,19 +47,24 @@ export class GroqSyntaxError extends Error {
   }
 }
 
-/** A `$name` reference extracted from a query, with its locations */
-export interface GroqQueryParam {
-  name: string
-  /** Where `$name` occurs in the query; already indices into the query string */
-  references: Array<{from: number; to: number}>
-}
-
 /**
  * `groq-lint` rules Vision does not run, keyed by the id the wasm config takes (snake_cased, unlike
  * the kebab-cased `ruleId` of a finding). `unlimited-query` flags every unsliced query, which is
  * what a tool for exploring a dataset is for.
  */
 const DISABLED_LINT_RULES: Record<string, boolean> = {unlimited_query: false}
+
+/**
+ * Rules whose finding Vision reports at a lower severity than `groq-lint` does: ordering on a
+ * computed value, a computed value in a filter and a comparison of two non-literal expressions.
+ * Whether any of them is slow depends on the data and the plan, which Explain shows, so the lint
+ * only hints at them.
+ */
+const SEVERITY_OVERRIDES: Record<string, GroqFindingSeverity> = {
+  'order-on-expr': 'warning',
+  'computed-value-in-filter': 'warning',
+  'non-literal-comparison': 'warning',
+}
 
 let groqWasm: Promise<GroqWasmModule> | undefined
 
@@ -109,11 +111,9 @@ export function createByteOffsetConverter(text: string): (byteOffset: number) =>
   }
 }
 
-// `Format error: Parse("expected ']' at Position { start: 1, end: 14 }")`,
-// `Lint error: expected ']' at Position { start: 1, end: 14 }` and
-// `Failed to parse query: Parse error: expected ']' at Position { start: 1, end: 14 }` (from
-// `extractParams`) are the shapes the wasm wrapper produces; the message inside `Parse("…")` is
-// Rust debug-escaped
+// `Format error: Parse("expected ']' at Position { start: 1, end: 14 }")` and
+// `Lint error: expected ']' at Position { start: 1, end: 14 }` are the shapes the wasm wrapper
+// produces; the message inside `Parse("…")` is Rust debug-escaped
 const PARSE_WRAPPER_RE = /Parse\("((?:[^"\\]|\\.)*)"\)/
 const PREFIX_RE =
   /^(?:(?:Failed to parse query|Format failed|Lint failed|Format error|Lint error|Parse error): )+/
@@ -168,29 +168,21 @@ export async function lintGroq(query: string): Promise<GroqFinding[]> {
   return toGroqFindings(findings, query)
 }
 
-/** Converts the wasm findings' spans into ranges of `query`; a finding without a span covers all of it */
+/**
+ * Converts the wasm findings' spans into ranges of `query`; a finding without a span covers all of
+ * it. Applies {@link SEVERITY_OVERRIDES}.
+ */
 export function toGroqFindings(findings: WasmFinding[], query: string): GroqFinding[] {
   const clamp = (index: number) => Math.max(0, Math.min(index, query.length))
   return findings.map(({ruleId, message, severity, span}) => {
     const from = span ? clamp(span.start.offset) : 0
     const to = span ? Math.max(from, clamp(span.end.offset)) : query.length
-    return {ruleId, message: message.trim(), severity, from, to}
+    return {
+      ruleId,
+      message: message.trim(),
+      severity: SEVERITY_OVERRIDES[ruleId] ?? severity,
+      from,
+      to,
+    }
   })
-}
-
-/**
- * Extracts every `$name` parameter a query references, with their locations. `extractParams`
- * already returns indices into the query string, so no conversion happens here. Rejects with a
- * {@link GroqSyntaxError} when the query does not parse.
- */
-export async function extractQueryParams(query: string): Promise<GroqQueryParam[]> {
-  const wasm = await loadGroqWasm()
-  try {
-    return wasm.extractParams(query).map(({name, references}) => ({
-      name,
-      references: references.map(({start, end}) => ({from: start, to: end})),
-    }))
-  } catch (error) {
-    throw toSyntaxError(error, query)
-  }
 }

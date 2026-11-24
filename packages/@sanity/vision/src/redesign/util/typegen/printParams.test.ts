@@ -1,250 +1,353 @@
-import {Schema} from '@sanity/schema'
-import {extractSchema} from '@sanity/schema/_internal'
 import {describe, expect, it} from 'vitest'
 
+import {documentTypes, schema} from '../../../../test/paramsFixtures'
+import {typecheckParams} from '../../../../test/typecheck'
 import {inferQueryParams} from '../paramInference'
 import {printParamsTypeScript, printParamsZod, toParamsTypeName} from './printParams'
 
-const schema = extractSchema(
-  Schema.compile({
-    name: 'test',
-    types: [
-      {name: 'slug', type: 'object', fields: [{name: 'current', type: 'string'}]},
-      {
-        name: 'post',
-        type: 'document',
-        fields: [
-          {name: 'title', type: 'string'},
-          {name: 'slug', type: 'slug'},
-          {name: 'status', type: 'string', options: {list: ['draft', 'review', 'published']}},
-          {
-            name: 'category',
-            type: 'string',
-            options: {
-              list: ['announcements', 'engineering', 'product-updates', 'customer-stories'],
-            },
-          },
-          {name: 'rating', type: 'number'},
-          {name: 'featured', type: 'boolean'},
-          {name: 'publishedAt', type: 'datetime'},
-          {name: 'tags', type: 'array', of: [{type: 'string'}]},
-          {name: 'author', type: 'reference', to: [{type: 'author'}]},
-        ],
-      },
-      {name: 'author', type: 'document', fields: [{name: 'name', type: 'string'}]},
-    ],
-  }),
-)
-
-const documentTypes = ['author', 'post']
-
-function print(query: string, withSchema = true) {
-  const {params} = inferQueryParams(query, withSchema ? {schema, documentTypes} : {documentTypes})
-  const typeName = toParamsTypeName(query)
+function print(query: string, values?: Record<string, unknown>) {
+  const {params} = inferQueryParams(query, {schema, documentTypes, values})
+  const options = {typeName: toParamsTypeName(query), schema}
   return {
-    typescript: printParamsTypeScript(params, typeName),
-    zod: printParamsZod(params, typeName),
+    typeName: options.typeName,
+    typescript: printParamsTypeScript(params, options),
+    zod: printParamsZod(params, options),
   }
 }
 
 /** The property lines of the printed type or schema, without the declaration around them */
-function properties(code: string): string {
-  const start = code.indexOf('{\n') + 2
-  const end = code.lastIndexOf('\n}')
-  return code.slice(start, end)
+function properties(code: string): string[] {
+  return code.slice(code.indexOf('{\n') + 2, code.lastIndexOf('\n}')).split('\n')
 }
 
-describe('toParamsTypeName', () => {
-  it('names the params after the query, as the result type is named', () => {
-    expect(toParamsTypeName('*[_type == "author"]')).toBe('AuthorQueryParams')
-    expect(toParamsTypeName('')).toBe('QueryParams')
-  })
-})
+interface Row {
+  query: string
+  /** The params as they are set in the panel */
+  values?: Record<string, unknown>
+  typescript: string[]
+  zod: string[]
+}
+
+const GEO_TYPESCRIPT = (name: string) => [
+  `  ${name}: {`,
+  '    lat: number;',
+  '    lng: number;',
+  '    alt?: number;',
+  '  } | {',
+  '    type: string;',
+  '    coordinates: Array<unknown>;',
+  '  };',
+]
+
+const GEO_ZOD = (name: string) => [
+  `  ${name}: z.union([`,
+  '    z.object({',
+  '      lat: z.number(),',
+  '      lng: z.number(),',
+  '      alt: z.number().optional(),',
+  '    }),',
+  '    z.object({',
+  '      type: z.string(),',
+  '      coordinates: z.array(z.unknown()),',
+  '    }),',
+  '  ]),',
+]
+
+const MATRIX: Record<string, Row> = {
+  'semantic similarity takes a string': {
+    query:
+      '*[_type == "pokemon"] | score(text::semanticSimilarity($description)) | order(_score desc)[0...10]{_id, name}',
+    typescript: ['  description: string;'],
+    zod: ['  description: z.string(),'],
+  },
+  'score, boost and match': {
+    query: '*[_type == "post"] | score(boost(title match $q, 3), views > $minViews)',
+    typescript: ['  q: string;', '  minViews: number;'],
+    zod: ['  q: z.string(),', '  minViews: z.number(),'],
+  },
+  'text::query and pt::text': {
+    query:
+      '*[_type == "post" && [title, pt::text(body)] match text::query($search) && pt::text(body) match $q]',
+    typescript: ['  search: string;', '  q: string;'],
+    zod: ['  search: z.string(),', '  q: z.string(),'],
+  },
+  'the string functions': {
+    query:
+      '*[_type == "post" && string::startsWith(title, $prefix) && lower(title) != lower($exclude)]{"code": upper($code), "words": string::split(title, $separator)}',
+    typescript: [
+      '  prefix: string;',
+      '  exclude: string;',
+      '  code: string;',
+      '  separator: string;',
+    ],
+    zod: [
+      '  prefix: z.string(),',
+      '  exclude: z.string(),',
+      '  code: z.string(),',
+      '  separator: z.string(),',
+    ],
+  },
+  'round, math::* and comparing with numbers': {
+    query:
+      '*[_type == "post" && round(views, $digits) > $min]{"total": math::sum($weights), "high": math::max($values)}',
+    typescript: [
+      '  digits: number;',
+      '  min: number;',
+      '  weights: Array<number>;',
+      '  values: Array<number>;',
+    ],
+    zod: [
+      '  digits: z.number().int(),',
+      '  min: z.number(),',
+      '  weights: z.array(z.number()),',
+      '  values: z.array(z.number()),',
+    ],
+  },
+  'array::*, with intersects taking the type of the other array': {
+    query:
+      '*[_type == "post" && array::intersects(tags, $tags)]{"label": array::join($parts, $separator), "unique": array::unique($items)}',
+    typescript: [
+      '  tags: Array<string>;',
+      '  parts: Array<string | number | boolean>;',
+      '  separator: string;',
+      '  items: Array<unknown>;',
+    ],
+    zod: [
+      '  tags: z.array(z.string()),',
+      '  parts: z.array(z.union([z.string(), z.number(), z.boolean()])),',
+      '  separator: z.string(),',
+      '  items: z.array(z.unknown()),',
+    ],
+  },
+  'dateTime() and the system timestamps take a date and time, a datetime field a string': {
+    query:
+      '*[_type == "post" && dateTime(publishedAt) > dateTime($since) && _updatedAt > $updatedSince && publishedAt < $until]',
+    typescript: [
+      '  /** ISO 8601 date and time */',
+      '  since: string;',
+      '  /** ISO 8601 date and time */',
+      '  updatedSince: string;',
+      '  until: string;',
+    ],
+    zod: [
+      '  /** ISO 8601 date and time */',
+      '  since: z.string().datetime({offset: true}),',
+      '  /** ISO 8601 date and time */',
+      '  updatedSince: z.string().datetime({offset: true}),',
+      '  until: z.string(),',
+    ],
+  },
+  'geo::* takes a point or a GeoJSON geometry': {
+    query:
+      '*[_type == "post" && geo::distance(location, $point) < $meters && geo::contains($area, location)]',
+    typescript: [...GEO_TYPESCRIPT('point'), '  meters: number;', ...GEO_TYPESCRIPT('area')],
+    zod: [...GEO_ZOD('point'), '  meters: z.number(),', ...GEO_ZOD('area')],
+  },
+  'references() and count()': {
+    query: '*[_type == "post" && references($author) && count(categories) >= $minCategories]',
+    typescript: [
+      '  /** Document ID, or a list of them */',
+      '  author: string | Array<string>;',
+      '  minCategories: number;',
+    ],
+    zod: [
+      '  /** Document ID, or a list of them */',
+      '  author: z.union([z.string(), z.array(z.string())]),',
+      '  minCategories: z.number(),',
+    ],
+  },
+  'schema fields, their listed values and membership both ways': {
+    query:
+      '*[_type == "post" && status == $status && _id in $ids && $tag in tags && status in $statuses]',
+    typescript: [
+      '  status: "draft" | "published" | "review";',
+      '  /** Document IDs */',
+      '  ids: Array<string>;',
+      '  tag: string;',
+      '  statuses: Array<"draft" | "published" | "review">;',
+    ],
+    zod: [
+      '  status: z.enum(["draft", "published", "review"]),',
+      '  /** Document IDs */',
+      '  ids: z.array(z.string()),',
+      '  tag: z.string(),',
+      '  statuses: z.array(z.enum(["draft", "published", "review"])),',
+    ],
+  },
+  'references and the fields of referenced documents': {
+    query: '*[_type == "post" && author._ref == $author && author->name == $authorName]',
+    typescript: ['  /** Document ID */', '  author: string;', '  authorName: string;'],
+    zod: ['  /** Document ID */', '  author: z.string(),', '  authorName: z.string(),'],
+  },
+  'membership in an array of references': {
+    query: '*[_type == "post" && $category in categories[]._ref]',
+    typescript: ['  /** Document ID */', '  category: string;'],
+    zod: ['  /** Document ID */', '  category: z.string(),'],
+  },
+  'the keys read from an object param': {
+    query: '*[_id == $doc.id && defined($doc.slug)]',
+    typescript: ['  doc: {', '    id: string;', '    slug?: unknown;', '  };'],
+    zod: ['  doc: z.object({', '    id: z.string(),', '    slug: z.unknown().optional(),', '  }),'],
+  },
+  'document types and slice bounds': {
+    query: '*[_type == $type] | order(_createdAt desc)[$start...$end]',
+    typescript: [
+      '  type: "author" | "category" | "pokemon" | "post";',
+      '  start: number;',
+      '  end: number;',
+    ],
+    zod: [
+      '  type: z.enum(["author", "category", "pokemon", "post"]),',
+      '  start: z.number().int(),',
+      '  end: z.number().int(),',
+    ],
+  },
+  'arithmetic and string concatenation': {
+    query: '*[_type == "post" && views * $factor > 100]{"heading": $prefix + title}',
+    typescript: ['  factor: number;', '  prefix: string;'],
+    zod: ['  factor: z.number(),', '  prefix: z.string(),'],
+  },
+  'uses that agree intersect': {
+    query: '*[_type == "post" && $mode == "draft" && $mode in ["draft", "review"]]',
+    typescript: ['  mode: "draft" | "review";'],
+    zod: ['  mode: z.enum(["draft", "review"]),'],
+  },
+  'uses that do not agree make a union': {
+    query: '*[_type == "post" && ($value == views || $value == title)]',
+    typescript: ['  value: number | string;'],
+    zod: ['  value: z.union([z.number(), z.string()]),'],
+  },
+  'defined() and coalesce() allow null': {
+    query:
+      '*[_type == "post" && (!defined($status) || status == $status) && title == coalesce($title, "Untitled")]',
+    typescript: ['  status: "draft" | "published" | "review" | null;', '  title: string | null;'],
+    zod: [
+      '  status: z.enum(["draft", "published", "review"]).nullable().default(null),',
+      '  title: z.string().nullable().default(null),',
+    ],
+  },
+  'a param negated before || is optional': {
+    query: '*[_type == "post" && (!$status || status == $status)]',
+    typescript: ['  status: "draft" | "published" | "review" | null;'],
+    zod: ['  status: z.enum(["draft", "published", "review"]).nullable().default(null),'],
+  },
+  'conditions, dereferences and filters': {
+    query:
+      '*[_type == "post" && $featuredOnly]{"summary": select($short => title, pt::text(body)), "author": $authorRef->name}[$index]',
+    typescript: [
+      '  featuredOnly: boolean;',
+      '  short: boolean;',
+      '  authorRef: {',
+      '    _ref: string;',
+      '  };',
+      '  index: number | boolean;',
+    ],
+    zod: [
+      '  featuredOnly: z.boolean(),',
+      '  short: z.boolean(),',
+      '  authorRef: z.object({',
+      '    _ref: z.string(),',
+      '  }),',
+      '  index: z.union([z.number(), z.boolean()]),',
+    ],
+  },
+  'nested queries, in their own scope': {
+    query:
+      '*[_type == "post"]{title, "related": *[_type == "post" && _id != ^._id && status == ^.status && author._ref == $author]}',
+    typescript: ['  /** Document ID */', '  author: string;'],
+    zod: ['  /** Document ID */', '  author: z.string(),'],
+  },
+  'conditions on other params do not hide the documents a comparison reads': {
+    query: '*[_type == "post" && count($ids) > 0 && _id in $ids && status == $status]',
+    typescript: [
+      '  /** Document IDs */',
+      '  ids: Array<string>;',
+      '  status: "draft" | "published" | "review";',
+    ],
+    zod: [
+      '  /** Document IDs */',
+      '  ids: z.array(z.string()),',
+      '  status: z.enum(["draft", "published", "review"]),',
+    ],
+  },
+  'the sanity::* functions': {
+    query: '*[_type == "post" && (sanity::partOfRelease($release) || sanity::versionOf($id))]',
+    typescript: ['  release: string;', '  /** Document ID */', '  id: string;'],
+    zod: ['  release: z.string(),', '  /** Document ID */', '  id: z.string(),'],
+  },
+  'what cannot be typed says why, and the current value only types what nothing else does': {
+    query:
+      '*[_type == "post" && missing == $m && $a == $b && title == $title] | order($sortField){"extra": $extra, "given": $given}',
+    values: {given: 'x', title: 12},
+    typescript: [
+      '  /** Could not be inferred because the schema does not type `missing`, which it is compared with */',
+      '  m: unknown;',
+      '  /** Could not be inferred because it is only compared with `$b`, which is not typed either */',
+      '  a: unknown;',
+      '  /** Could not be inferred because it is only compared with `$a`, which is not typed either */',
+      '  b: unknown;',
+      '  title: string;',
+      '  /** Could not be inferred because it is only used to order by */',
+      '  sortField: unknown;',
+      '  /** Could not be inferred because the query only returns it */',
+      '  extra: unknown;',
+      '  /** Typed from its current value because the query only returns it */',
+      '  given: string;',
+    ],
+    zod: [
+      '  /** Could not be inferred because the schema does not type `missing`, which it is compared with */',
+      '  m: z.unknown(),',
+      '  /** Could not be inferred because it is only compared with `$b`, which is not typed either */',
+      '  a: z.unknown(),',
+      '  /** Could not be inferred because it is only compared with `$a`, which is not typed either */',
+      '  b: z.unknown(),',
+      '  title: z.string(),',
+      '  /** Could not be inferred because it is only used to order by */',
+      '  sortField: z.unknown(),',
+      '  /** Could not be inferred because the query only returns it */',
+      '  extra: z.unknown(),',
+      '  /** Typed from its current value because the query only returns it */',
+      '  given: z.string(),',
+    ],
+  },
+  'a query that does not parse': {
+    query: '*[_type == "post" && title == $title',
+    typescript: [
+      '  /** Could not be inferred because the query does not parse */',
+      '  title: unknown;',
+    ],
+    zod: [
+      '  /** Could not be inferred because the query does not parse */',
+      '  title: z.unknown(),',
+    ],
+  },
+}
+
+const REFERENCE_QUERY =
+  '*[_type == "post"]{title, "author": coalesce(author, $fallbackAuthor)->name}'
 
 describe('printParamsTypeScript and printParamsZod', () => {
-  it('prints strings, numbers, booleans and whole numbers', () => {
-    const {typescript, zod} = print(
-      '*[_type == "post" && title match $search && rating >= $minRating && featured == $featured][0...$limit]',
-    )
+  it.each(Object.entries(MATRIX))('%s', (_, {query, values, typescript, zod}) => {
+    const printed = print(query, values)
+    expect(properties(printed.typescript)).toEqual(typescript)
+    expect(properties(printed.zod)).toEqual(zod)
+  })
+
+  it('names the declarations after the query, and infers the type from the schema', () => {
+    const {typescript, zod} = print(MATRIX['semantic similarity takes a string'].query)
     expect(typescript).toBe(
-      [
-        'export type PostQueryParams = {',
-        '  search: string;',
-        '  minRating: number;',
-        '  featured: boolean;',
-        '  limit: number;',
-        '};',
-      ].join('\n'),
+      ['export type PokemonQueryParams = {', '  description: string;', '};'].join('\n'),
     )
     expect(zod).toBe(
       [
         `import {z} from 'zod'`,
         '',
-        'export const PostQueryParamsSchema = z.object({',
-        '  search: z.string(),',
-        '  minRating: z.number(),',
-        '  featured: z.boolean(),',
-        '  limit: z.number().int(),',
+        'export const PokemonQueryParamsSchema = z.object({',
+        '  description: z.string(),',
         '})',
         '',
-        'export type PostQueryParams = z.infer<typeof PostQueryParamsSchema>',
+        'export type PokemonQueryParams = z.infer<typeof PokemonQueryParamsSchema>',
       ].join('\n'),
-    )
-  })
-
-  it('prints the values a param is compared with as a literal union', () => {
-    const {typescript, zod} = print('*[_type == "post" && status == $status]')
-    expect(properties(typescript)).toBe('  status: "draft" | "published" | "review";')
-    expect(properties(zod)).toBe('  status: z.enum(["draft", "published", "review"]),')
-  })
-
-  it('prints document types for _type, with or without the schema', () => {
-    expect(properties(print('*[_type == $type]').typescript)).toBe('  type: "author" | "post";')
-    expect(properties(print('*[_type == $type]', false).zod)).toBe(
-      '  type: z.enum(["author", "post"]),',
-    )
-  })
-
-  it('prints a single allowed value as a literal', () => {
-    const {params} = inferQueryParams('*[_type == $type]', {documentTypes: ['post']})
-    expect(properties(printParamsTypeScript(params, 'P'))).toBe('  type: "post";')
-    expect(properties(printParamsZod(params, 'P'))).toBe('  type: z.literal("post"),')
-  })
-
-  it('prints arrays for params on the right of `in`, and elements for the left', () => {
-    const {typescript, zod} = print(
-      '*[_type in $types && status in $statuses && $tag in tags[] && _id in $ids]',
-    )
-    expect(properties(typescript)).toBe(
-      [
-        '  types: Array<"author" | "post">;',
-        '  statuses: Array<"draft" | "published" | "review">;',
-        '  tag: string;',
-        '  /** Document ID */',
-        '  ids: Array<string>;',
-      ].join('\n'),
-    )
-    expect(properties(zod)).toBe(
-      [
-        '  types: z.array(z.enum(["author", "post"])),',
-        '  statuses: z.array(z.enum(["draft", "published", "review"])),',
-        '  tag: z.string(),',
-        '  /** Document ID */',
-        '  ids: z.array(z.string()),',
-      ].join('\n'),
-    )
-  })
-
-  it('marks document IDs and datetimes', () => {
-    const {typescript, zod} = print(
-      '*[references($authorId) && _updatedAt > $since && publishedAt < $until]',
-    )
-    expect(properties(typescript)).toBe(
-      [
-        '  /** Document ID */',
-        '  authorId: string;',
-        '  /** ISO 8601 date and time */',
-        '  since: string;',
-        '  until: string;',
-      ].join('\n'),
-    )
-    expect(properties(zod)).toBe(
-      [
-        '  /** Document ID */',
-        '  authorId: z.string(),',
-        '  /** ISO 8601 date and time */',
-        '  since: z.string().datetime({offset: true}),',
-        '  until: z.string(),',
-      ].join('\n'),
-    )
-  })
-
-  it('falls back to unknown, with a comment, when a param cannot be typed', () => {
-    const {typescript, zod} = print('*[_type == "post"]{title, "extra": $extra}')
-    expect(properties(typescript)).toBe(
-      ['  /** Could not be inferred from the query */', '  extra: unknown;'].join('\n'),
-    )
-    expect(properties(zod)).toBe(
-      ['  /** Could not be inferred from the query */', '  extra: z.unknown(),'].join('\n'),
-    )
-  })
-
-  it('types the params of a query that does not parse as unknown', () => {
-    const {typescript} = print('*[_type == $type && title == $title')
-    expect(properties(typescript)).toBe(
-      [
-        '  /** Could not be inferred from the query */',
-        '  type: unknown;',
-        '  /** Could not be inferred from the query */',
-        '  title: unknown;',
-      ].join('\n'),
-    )
-  })
-
-  it('allows null where the query handles a missing value, and keeps every key required', () => {
-    const {typescript, zod} = print(
-      '*[_type == "post" && (!defined($status) || status == $status) && ($category == null || category == $category) && title == coalesce($title, "Untitled")]',
-    )
-    expect(properties(typescript)).toBe(
-      [
-        '  status: "draft" | "published" | "review" | null;',
-        '  category:',
-        '    | "announcements"',
-        '    | "customer-stories"',
-        '    | "engineering"',
-        '    | "product-updates"',
-        '    | null;',
-        '  title: string | null;',
-      ].join('\n'),
-    )
-    expect(properties(zod)).toBe(
-      [
-        '  status: z.enum(["draft", "published", "review"]).nullable(),',
-        '  category: z.enum([',
-        '    "announcements",',
-        '    "customer-stories",',
-        '    "engineering",',
-        '    "product-updates",',
-        '  ]).nullable(),',
-        '  title: z.string().nullable(),',
-      ].join('\n'),
-    )
-  })
-
-  it('breaks long array unions over lines', () => {
-    const {typescript, zod} = print('*[_type == "post" && category in $categories]')
-    expect(properties(typescript)).toBe(
-      [
-        '  categories: Array<',
-        '    | "announcements"',
-        '    | "customer-stories"',
-        '    | "engineering"',
-        '    | "product-updates"',
-        '  >;',
-      ].join('\n'),
-    )
-    expect(properties(zod)).toBe(
-      [
-        '  categories: z.array(',
-        '    z.enum([',
-        '      "announcements",',
-        '      "customer-stories",',
-        '      "engineering",',
-        '      "product-updates",',
-        '    ]),',
-        '  ),',
-      ].join('\n'),
-    )
-  })
-
-  it('types params of nested queries and merges repeated usages', () => {
-    const {typescript} = print(
-      '*[_type == "post" && _id == $id]{title, "related": *[_type == "post" && _id != $id && status == $status]}',
-    )
-    expect(properties(typescript)).toBe(
-      ['  /** Document ID */', '  id: string;', '  status: "draft" | "published" | "review";'].join(
-        '\n',
-      ),
     )
   })
 
@@ -252,5 +355,44 @@ describe('printParamsTypeScript and printParamsZod', () => {
     const {typescript, zod} = print('*[_type == "post"]')
     expect(typescript).toBe('export type PostQueryParams = Record<string, never>;')
     expect(zod).toContain('export const PostQueryParamsSchema = z.object({})')
+  })
+
+  it('declares the schema types a param holds, without the brand a JSON value cannot carry', () => {
+    const {typescript, zod} = print(REFERENCE_QUERY)
+    expect(typescript).toBe(
+      [
+        'export type PostQueryParams = {',
+        '  fallbackAuthor: AuthorReference;',
+        '};',
+        '',
+        'export type AuthorReference = {',
+        '  _ref: string;',
+        '  _type: "reference";',
+        '  _weak?: boolean;',
+        '};',
+      ].join('\n'),
+    )
+    expect(zod).toContain('export const AuthorReferenceSchema = z.object({')
+    expect(zod).toContain('  fallbackAuthor: AuthorReferenceSchema,')
+  })
+
+  it(
+    'prints modules that strict tsc accepts, whose Zod schema infers the TypeScript type',
+    {timeout: 60_000},
+    async () => {
+      const printed = [
+        ...Object.values(MATRIX).map(({query, values}) => print(query, values)),
+        print('*[_type == "post"]'),
+        print(REFERENCE_QUERY),
+      ]
+      expect(await typecheckParams(printed)).toBe('')
+    },
+  )
+})
+
+describe('toParamsTypeName', () => {
+  it('names the params after the query, as the result type is named', () => {
+    expect(toParamsTypeName('*[_type == "author"]')).toBe('AuthorQueryParams')
+    expect(toParamsTypeName('')).toBe('QueryParams')
   })
 })

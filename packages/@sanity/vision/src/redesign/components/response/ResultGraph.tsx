@@ -5,7 +5,6 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {ExpandIcon} from '@sanity/icons/Expand'
 import {RemoveIcon} from '@sanity/icons/Remove'
 import {Button, useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {
   type CSSProperties,
   type KeyboardEvent,
@@ -37,6 +36,7 @@ import {
   MAX_GRAPH_ROWS,
   type ResultGraph as ResultGraphModel,
 } from '../../util/resultGraph'
+import {VisionTooltip} from '../VisionTooltip'
 import * as styles from './ResultGraph.module.css'
 
 /** The theme values and `GRAPH_METRICS` that ResultGraph.module.css reads */
@@ -376,7 +376,7 @@ export function ResultGraph({className, id, value, copy}: ResultGraphProps) {
   const onCopy = useCallback(
     (nodeId: string) => {
       const found = getAtKeypath(value, nodeId)
-      if (found) copy.onCopy(found.value, nodeId)
+      if (found) void copy.onCopy(found.value, nodeId)
     },
     [copy, value],
   )
@@ -461,17 +461,7 @@ export function ResultGraph({className, id, value, copy}: ResultGraphProps) {
       )}
       <div className={styles.graphControls}>
         {controls.map(({action, label, icon, onClick}) => (
-          <Tooltip
-            animate
-            content={
-              <Text size={1} as="div" trim={true}>
-                {label}
-              </Text>
-            }
-            key={action}
-            placement="top"
-            portal
-          >
+          <VisionTooltip content={label} key={action} placement="top">
             <Button
               aria-label={label}
               className={styles.graphControl}
@@ -482,7 +472,7 @@ export function ResultGraph({className, id, value, copy}: ResultGraphProps) {
               onClick={onClick}
               padding={2}
             />
-          </Tooltip>
+          </VisionTooltip>
         ))}
       </div>
     </div>

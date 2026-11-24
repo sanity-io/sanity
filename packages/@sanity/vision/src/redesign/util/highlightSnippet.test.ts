@@ -40,7 +40,7 @@ function input(query: string): ExportSnippetInput {
     url: `https://abc123.api.sanity.io/v2025-01-01/data/query/production${encodeQueryString(query, {})}&perspective=drafts`,
     perspective: ['drafts'],
     variant: undefined,
-    includeSourceMap: false,
+    resultSourceMap: undefined,
     useCdn: true,
   }
 }
