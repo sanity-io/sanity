@@ -2,7 +2,6 @@ import {describe, expect, it} from 'vitest'
 
 import {
   createByteOffsetConverter,
-  extractQueryParams,
   formatGroq,
   GroqSyntaxError,
   lintGroq,
@@ -160,41 +159,6 @@ describe('lintGroq', () => {
       },
       {ruleId: 'x', message: 'Too big', severity: 'error', from: 2, to: 7},
     ])
-  })
-})
-
-describe('extractQueryParams', () => {
-  it('lists referenced params, in order of first reference, with their ranges', async () => {
-    const query = '*[_type == $type][0...$limit]'
-    const params = await extractQueryParams(query)
-
-    expect(params.map((param) => param.name)).toEqual(['type', 'limit'])
-    for (const param of params) {
-      expect(param.references).toHaveLength(1)
-      const [{from, to}] = param.references
-      expect(query.slice(from, to)).toBe(`$${param.name}`)
-    }
-  })
-
-  it('returns nothing for a blank query', async () => {
-    expect(await extractQueryParams('')).toEqual([])
-  })
-
-  it('returns string indices, not UTF-8 byte offsets, when the query holds multi-byte characters', async () => {
-    const query = '*[name == "café"][$offset...$limit]'
-    const params = await extractQueryParams(query)
-
-    expect(params.map((param) => param.name)).toEqual(['offset', 'limit'])
-    for (const param of params) {
-      const [{from, to}] = param.references
-      expect(query.slice(from, to)).toBe(`$${param.name}`)
-    }
-  })
-
-  it('rejects with a GroqSyntaxError for queries that do not parse', async () => {
-    const error = await syntaxErrorOf(extractQueryParams('*['))
-    expect(error.message).toBe("expected ']' following expression")
-    expect([error.from, error.to]).toEqual([1, 2])
   })
 })
 

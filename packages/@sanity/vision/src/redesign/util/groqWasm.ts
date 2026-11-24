@@ -12,9 +12,6 @@ interface GroqWasmModule {
   DEFAULT_WIDTH: number
   format: (query: string, config?: {width?: number}) => string
   lint: (query: string, config?: {rules?: Record<string, boolean>}) => WasmFinding[]
-  extractParams: (
-    query: string,
-  ) => Array<{name: string; references: Array<{start: number; end: number}>}>
 }
 
 export type GroqFindingSeverity = 'error' | 'warning' | 'info'
@@ -48,13 +45,6 @@ export class GroqSyntaxError extends Error {
     this.from = from
     this.to = to
   }
-}
-
-/** A `$name` reference extracted from a query, with its locations */
-export interface GroqQueryParam {
-  name: string
-  /** Where `$name` occurs in the query; already indices into the query string */
-  references: Array<{from: number; to: number}>
 }
 
 /**
@@ -121,11 +111,9 @@ export function createByteOffsetConverter(text: string): (byteOffset: number) =>
   }
 }
 
-// `Format error: Parse("expected ']' at Position { start: 1, end: 14 }")`,
-// `Lint error: expected ']' at Position { start: 1, end: 14 }` and
-// `Failed to parse query: Parse error: expected ']' at Position { start: 1, end: 14 }` (from
-// `extractParams`) are the shapes the wasm wrapper produces; the message inside `Parse("…")` is
-// Rust debug-escaped
+// `Format error: Parse("expected ']' at Position { start: 1, end: 14 }")` and
+// `Lint error: expected ']' at Position { start: 1, end: 14 }` are the shapes the wasm wrapper
+// produces; the message inside `Parse("…")` is Rust debug-escaped
 const PARSE_WRAPPER_RE = /Parse\("((?:[^"\\]|\\.)*)"\)/
 const PREFIX_RE =
   /^(?:(?:Failed to parse query|Format failed|Lint failed|Format error|Lint error|Parse error): )+/
@@ -197,21 +185,4 @@ export function toGroqFindings(findings: WasmFinding[], query: string): GroqFind
       to,
     }
   })
-}
-
-/**
- * Extracts every `$name` parameter a query references, with their locations. `extractParams`
- * already returns indices into the query string, so no conversion happens here. Rejects with a
- * {@link GroqSyntaxError} when the query does not parse.
- */
-export async function extractQueryParams(query: string): Promise<GroqQueryParam[]> {
-  const wasm = await loadGroqWasm()
-  try {
-    return wasm.extractParams(query).map(({name, references}) => ({
-      name,
-      references: references.map(({start, end}) => ({from: start, to: end})),
-    }))
-  } catch (error) {
-    throw toSyntaxError(error, query)
-  }
 }

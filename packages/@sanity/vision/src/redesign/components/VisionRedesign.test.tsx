@@ -989,49 +989,8 @@ describe('VisionRedesign', () => {
     for (const reason of reasons) expect(reason).toContain('vision.history.reason.shortcut')
   })
 
-  it('prefills the JSON params editor with params the query references, keeping existing values', async () => {
-    const {unmount} = renderRedesign()
-    const paramsEditor = () =>
-      within(screen.getByTestId('vision-params-editor')).getByTestId(
-        'codemirror-mock',
-      ) as HTMLTextAreaElement
-
-    // An existing value for one of the two params the query below references is kept untouched;
-    // the other, never seen before, is added as an empty placeholder. Nothing is written while
-    // the query is still being edited: leaving the query field is what writes it
-    fireEvent.change(paramsEditor(), {target: {value: '{\n  "limit": 3\n}'}})
-    typeQuery('*[_type == $type][0...$limit]')
-    await new Promise((resolve) => setTimeout(resolve, 400))
-    expect(JSON5.parse(paramsEditor().value)).toEqual({limit: 3})
-
-    fireEvent.focusOut(getQueryEditor())
-    await waitFor(() => expect(JSON5.parse(paramsEditor().value)).toEqual({limit: 3, type: ''}), {
-      timeout: 2000,
-    })
-    // Written to the stored tab too, not just the live editor
-    await waitFor(() =>
-      expect(JSON5.parse(getStoredState().tabs[0].rawParams)).toEqual({limit: 3, type: ''}),
-    )
-
-    // A real value typed into the placeholder is never clobbered by a later prefill of the same
-    // referenced params
-    fireEvent.change(paramsEditor(), {target: {value: '{\n  "limit": 3,\n  "type": "author"\n}'}})
-    await waitFor(() =>
-      expect(getStoredState().tabs[0].rawParams).toBe('{\n  "limit": 3,\n  "type": "author"\n}'),
-    )
-    typeQuery('*[_type == $type][0...$limit]{_id}')
-    await waitFor(() =>
-      expect(getStoredState().tabs[0].query).toBe('*[_type == $type][0...$limit]{_id}'),
-    )
-    // The debounce settling afterwards finds nothing missing to add
-    await new Promise((resolve) => setTimeout(resolve, 400))
-    expect(JSON5.parse(paramsEditor().value)).toEqual({limit: 3, type: 'author'})
-
-    unmount()
-  })
-
   it(
-    'writes a referenced param once the query has been idle, and not an empty key for a bare $',
+    'leaves the JSON params alone when the query editor blurs or idles',
     {timeout: 15_000},
     async () => {
       const {unmount} = renderRedesign()
@@ -1040,53 +999,41 @@ describe('VisionRedesign', () => {
           'codemirror-mock',
         ) as HTMLTextAreaElement
 
-      typeQuery('*[_type == $]')
+      fireEvent.change(paramsEditor(), {target: {value: '{\n  "limit": 3\n}'}})
+      typeQuery('*[_type == $type][0...$limit]')
+      await waitFor(() =>
+        expect(getStoredState().tabs[0].query).toBe('*[_type == $type][0...$limit]'),
+      )
       fireEvent.focusOut(getQueryEditor())
-      await new Promise((resolve) => setTimeout(resolve, 400))
-      expect(JSON5.parse(paramsEditor().value)).toEqual({})
+      // Longer than the query used to have to be idle before its params were written
+      await new Promise((resolve) => setTimeout(resolve, 3_500))
 
-      typeQuery('*[_type == $type]')
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      expect(JSON5.parse(paramsEditor().value)).toEqual({})
-      await new Promise((resolve) => setTimeout(resolve, 2_700))
-      await waitFor(() => expect(JSON5.parse(paramsEditor().value)).toEqual({type: ''}))
+      expect(paramsEditor().value).toBe('{\n  "limit": 3\n}')
+      expect(getStoredState().tabs[0].rawParams).toBe('{\n  "limit": 3\n}')
 
       unmount()
     },
   )
 
-  it('leaves the JSON params editor alone while the query does not parse', async () => {
+  it('shows a params syntax error under the editor and marks the Params tab', async () => {
     const {unmount} = renderRedesign()
-    const paramsEditor = () =>
-      within(screen.getByTestId('vision-params-editor')).getByTestId(
-        'codemirror-mock',
-      ) as HTMLTextAreaElement
+    const paramsTab = () => document.getElementById('vision-request-params-tab') as HTMLElement
+    const editorRoot = screen.getByTestId('vision-params-editor')
+    expect(paramsTab().getAttribute('data-tone')).toBeNull()
 
-    typeQuery('*[_type == $type][0...$limit')
-    await waitFor(() => expect(getStoredState().tabs[0].query).toBe('*[_type == $type][0...$limit'))
-    await new Promise((resolve) => setTimeout(resolve, 400))
+    fireEvent.change(within(editorRoot).getByTestId('codemirror-mock'), {
+      target: {value: '{"limit": '},
+    })
+    const error = await screen.findByTestId('vision-params-error')
+    // After the editor, so the editor does not move when the error appears
+    expect(editorRoot.lastElementChild).toBe(error)
+    await waitFor(() => expect(paramsTab().getAttribute('data-tone')).toBe('critical'))
 
-    expect(JSON5.parse(paramsEditor().value)).toEqual({})
-
-    unmount()
-  })
-
-  it('does not prefill the params form inferred from the query, only the JSON editor', async () => {
-    const {unmount} = renderRedesign()
-    const formInput = (name: string) =>
-      screen.getByTestId(`vision-params-form-${name}`).querySelector('input') as HTMLInputElement
-
-    fireEvent.click(document.getElementById('vision-params-view-form') as HTMLElement)
-    typeQuery('*[_type == $type][0...$limit]')
-    await waitFor(() =>
-      expect(getStoredState().tabs[0].query).toBe('*[_type == $type][0...$limit]'),
-    )
-    await new Promise((resolve) => setTimeout(resolve, 400))
-
-    // The form view already lists every referenced param on its own (groq-js based) inference;
-    // paramsEditorRef is unset while it is mounted, so this feature leaves it alone
-    expect(formInput('limit').value).toBe('')
-    expect(JSON5.parse(getStoredState().tabs[0].rawParams)).toEqual({})
+    fireEvent.change(within(editorRoot).getByTestId('codemirror-mock'), {
+      target: {value: '{"limit": 1}'},
+    })
+    await waitFor(() => expect(screen.queryByTestId('vision-params-error')).toBeNull())
+    expect(paramsTab().getAttribute('data-tone')).toBeNull()
 
     unmount()
   })
