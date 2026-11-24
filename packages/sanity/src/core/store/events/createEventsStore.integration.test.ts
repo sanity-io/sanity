@@ -153,6 +153,7 @@ function createDraftBackend(
       const listener = store.remoteTransactionsListener()
       return {
         values,
+        expand: store.handleExpandEvent,
         close: () => {
           listener.unsubscribe()
           subscription.unsubscribe()
@@ -586,6 +587,53 @@ describe('createEventsStore (integration)', () => {
     }
     creatorPane.close()
     otherPane.close()
+  })
+
+  it('keeps an expanded edit group as it is while new edits arrive', async () => {
+    const draftId = 'drafts.int-frozen'
+    const backend = createDraftBackend(draftId, snapshots$)
+    const createdEvent = createDocumentVersionEvent({
+      documentId: 'int-frozen',
+      versionId: draftId,
+      versionRevisionId: 'tx-create',
+    })
+    backend.commit(createTransaction({id: 'tx-create', documentId: draftId}), [createdEvent])
+    backend.commit(
+      editTransaction({id: 'tx-edit-1', documentId: draftId, timestamp: minutesAfterBase(1)}),
+    )
+    const pane = backend.open()
+    await vi.waitFor(() => expect(pane.values.at(-1)?.loading).toBe(false))
+    // A live edit joins the fetched one, the group is now identified by the live edit.
+    backend.commit(
+      editTransaction({id: 'tx-edit-2', documentId: draftId, timestamp: minutesAfterBase(2)}),
+    )
+    await vi.waitFor(() =>
+      expect(timeline(pane.values.at(-1)?.events)?.[0]).toEqual({
+        type: 'editDocumentVersion',
+        id: 'tx-edit-2',
+        transactions: ['tx-edit-2', 'tx-edit-1'],
+      }),
+    )
+
+    await pane.expand(pane.values.at(-1)!.events[0])
+    backend.commit(
+      editTransaction({id: 'tx-edit-3', documentId: draftId, timestamp: minutesAfterBase(3)}),
+    )
+
+    // The new edit is within the merge window, but the expanded group keeps its transactions.
+    await vi.waitFor(() =>
+      expect(timeline(pane.values.at(-1)?.events)).toEqual([
+        {type: 'editDocumentVersion', id: 'tx-edit-3', transactions: ['tx-edit-3']},
+        {type: 'editDocumentVersion', id: 'tx-edit-2', transactions: ['tx-edit-2', 'tx-edit-1']},
+        {type: 'createDocumentVersion', id: 'tx-create'},
+      ]),
+    )
+    expect(pane.values.at(-1)?.events[2]).toMatchObject({
+      id: 'tx-edit-1',
+      parentId: 'tx-edit-2',
+      isTransaction: true,
+    })
+    pane.close()
   })
 
   it('never groups edits on both sides of a publish, even within the merge window', async () => {

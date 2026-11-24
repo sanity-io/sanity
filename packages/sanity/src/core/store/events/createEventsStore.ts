@@ -36,7 +36,8 @@ function createIdleEventsStore() {
 /**
  * Creates the (non-React) events store for a document variant, wiring together:
  * - `getInitialFetchEvents`: fetching/paginating events + synthesizing edit events,
- * - `getExpandEvents`: on-demand expansion of publish/delete events,
+ * - `getExpandEvents`: on-demand expansion of publish/delete events, and freezing of expanded
+ *   edit groups,
  * - `getRemoteTransactionsSubscription`: real-time remote mutations (append or trigger refetch),
  * - `createEventsObservable`: merge, sort and per-variant post-processing.
  *
@@ -63,7 +64,10 @@ export function createEventsStore({
   }
 
   const initialEvents = getInitialFetchEvents({client, documentId})
-  const {expandedEvents$, handleExpandEvent} = getExpandEvents({client, documentId})
+  const {expandedEvents$, frozenEditGroups$, handleExpandEvent} = getExpandEvents({
+    client,
+    documentId,
+  })
   const {remoteEdits$, remoteTransactions$, subscribe} = getRemoteTransactionsSubscription({
     client,
     documentId,
@@ -76,6 +80,7 @@ export function createEventsStore({
     events$: initialEvents.events$,
     remoteEdits$,
     expandedEvents$,
+    frozenEditGroups$,
   })
 
   return {

@@ -392,6 +392,61 @@ describe('getEditEvents()', () => {
       const events = [...getEditEvents([liveEdit], DRAFT_ID), {...expanded, parentId: 'tx-publish'}]
       expect(mergeEditEvents(events)).toEqual(events)
     })
+
+    describe('with frozen edit groups', () => {
+      const older = editTransaction({id: 'tx-0', timestamp: minutesAfterBase(0)})
+      const frozenOldest = editTransaction({id: 'tx-6', timestamp: minutesAfterBase(6)})
+      const frozenNewest = editTransaction({id: 'tx-7', timestamp: minutesAfterBase(7)})
+      const newer = editTransaction({
+        id: 'tx-8',
+        author: 'author-2',
+        timestamp: minutesAfterBase(8),
+      })
+      const frozenGroups = new Map([
+        ['tx-6', 'tx-7'],
+        ['tx-7', 'tx-7'],
+      ])
+      const summary = (events: ReturnType<typeof mergeEditEvents>) =>
+        events.map((event) => ({
+          id: event.id,
+          transactions:
+            'transactions' in event ? event.transactions.map((tx) => tx.revisionId) : [],
+        }))
+
+      it('keeps a frozen group as it is when a newer edit arrives within the merge window', () => {
+        const fetched = getEditEvents([older, frozenOldest, frozenNewest], DRAFT_ID)
+        const live = getEditEvents([newer], DRAFT_ID)
+        // Without freezing, the newer edit takes over the group and changes its id.
+        expect(summary(mergeEditEvents([...live, ...fetched]))).toEqual([
+          {id: 'tx-8', transactions: ['tx-8', 'tx-7', 'tx-6']},
+          {id: 'tx-0', transactions: ['tx-0']},
+        ])
+
+        expect(summary(mergeEditEvents([...live, ...fetched], frozenGroups))).toEqual([
+          {id: 'tx-8', transactions: ['tx-8']},
+          {id: 'tx-7', transactions: ['tx-7', 'tx-6']},
+          {id: 'tx-0', transactions: ['tx-0']},
+        ])
+      })
+
+      it('splits a single edit event that holds frozen transactions', () => {
+        // Live edits are grouped by getEditEvents alone, which doesn't know about frozen groups.
+        const live = getEditEvents([frozenOldest, frozenNewest, newer], DRAFT_ID)
+        expect(live).toHaveLength(1)
+
+        const merged = mergeEditEvents(live, frozenGroups)
+        expect(summary(merged)).toEqual([
+          {id: 'tx-8', transactions: ['tx-8']},
+          {id: 'tx-7', transactions: ['tx-7', 'tx-6']},
+        ])
+        expect(merged[1]).toMatchObject({author: 'author-1', contributors: ['author-1']})
+      })
+
+      it('leaves a run without frozen transactions untouched', () => {
+        const events = getEditEvents([newer], DRAFT_ID)
+        expect(mergeEditEvents(events, frozenGroups)[0]).toBe(events[0])
+      })
+    })
   })
 
   describe('addEditTransactionEvents()', () => {
