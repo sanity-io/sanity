@@ -1,4 +1,4 @@
-import {Badge, Card, Label, Tab, TabList} from '@sanity/ui'
+import {Badge, Card, Label} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
@@ -25,15 +25,14 @@ import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectOpenTabDrawer, selectResultView} from '../../store/visionMachine'
 import {parseDocumentList} from '../../util/documentListResult'
 import {haveSameQuery} from '../../util/queryRequest'
-import {ActionRail} from '../ActionRail'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
+import {CopyButton} from '../CopyButton'
 import {useResponseBottomPanel} from '../queryTabLayout'
 import * as styles from '../redesign.module.css'
 import {usePerspectiveOptionName} from '../request/OptionFields'
 import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
 import {TabDrawerPortal} from '../TabDrawerPortal'
 import {useTabElementId} from '../tabs/queryTabShown'
-import {CopyResultButton} from './CopyResultButton'
 import {DeltaTab, useDeltaPanel} from './DeltaTab'
 import {DocumentListView} from './documentList/DocumentListView'
 import {ExplainTab} from './ExplainTab'
@@ -43,6 +42,7 @@ import {ResponseMetaTab} from './ResponseMetaTab'
 import {ResultActionsMenu} from './ResultActionsMenu'
 import {ResultGraph} from './ResultGraph'
 import {ResultJson} from './ResultJson'
+import {type ResultViewOption, ResultViewMenu} from './ResultViewMenu'
 import {SourceMapTab} from './SourceMapTab'
 
 const DEFAULT_BOTTOM_PANEL_SIZE = {columns: 220, stacked: 180, mobile: 160}
@@ -162,10 +162,21 @@ export function ResponsePanel(props: ResponsePanelProps) {
     },
     [actorRef, settledQuery, tab.id],
   )
+  const resultViews = useMemo((): ResultViewOption<VisionResultView | 'documents'>[] => {
+    const views: ResultViewOption<VisionResultView | 'documents'>[] = [
+      {id: 'json', label: t('vision.result.view.json')},
+      {id: 'tree', label: t('vision.result.view.tree')},
+      {id: 'graph', label: t('vision.result.view.graph')},
+    ]
+    // Documents is a choice whenever a result is showing, including one the list cannot open
+    if (hasResult) views.push({id: 'documents', label: t('vision.result.view.documents')})
+    return views
+  }, [hasResult, t])
   const copyToClipboard = useCopyToClipboard()
+  // The Copy button confirms the copy itself, so no toast
   const copyResult = useCallback(
-    () => copyToClipboard(JSON.stringify(result, null, 2), t('vision.result.copied')),
-    [copyToClipboard, result, t],
+    () => copyToClipboard(JSON.stringify(result, null, 2)),
+    [copyToClipboard, result],
   )
   // Text is copied as it is (an ID, a slug) and everything else as indented JSON
   const copyValue = useMemo(
@@ -274,29 +285,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
       <SplitWithBottomPanel
         defaultBottomSize={DEFAULT_BOTTOM_PANEL_SIZE}
         fitOnTabDoubleClick
-        footer={
-          <ActionRail testId="vision-result-actions">
-            <CopyResultButton
-              disabled={!hasResult}
-              label={t('vision.result.copy')}
-              onCopy={copyResult}
-            />
-            <ResultActionsMenu
-              csvUnavailableHint={
-                hasResult && !canExportCsv
-                  ? t('result.save-result-as-csv.not-csv-encodable')
-                  : undefined
-              }
-              getCsvUrl={canExportCsv ? getCsvUrl : undefined}
-              getJsonUrl={hasResult ? getJsonUrl : undefined}
-              hasResult={hasResult}
-              onCsvUnavailable={reportCsvUnavailable}
-              result={result}
-              resultIsCurrent={resultIsCurrent}
-              tab={tab}
-            />
-          </ActionRail>
-        }
         id="vision-response"
         onStateChange={setPanelState}
         state={panelState}
@@ -315,50 +303,35 @@ export function ResponsePanel(props: ResponsePanelProps) {
               <Label muted size={1}>
                 {t('result.label')}
               </Label>
-              {hasResult && (
-                <Flex alignItems="center" className={styles.labelActions} gap={1}>
-                  <TabList aria-label={t('vision.result.view.label')} gap={1}>
-                    <Tab
-                      aria-controls={resultContentId}
-                      fontSize={1}
-                      id={tabElementId('vision-result-view-json')}
-                      label={t('vision.result.view.json')}
-                      onClick={() => setResultView('json')}
-                      padding={2}
-                      selected={resultView === 'json'}
-                    />
-                    <Tab
-                      aria-controls={resultContentId}
-                      fontSize={1}
-                      id={tabElementId('vision-result-view-tree')}
-                      label={t('vision.result.view.tree')}
-                      onClick={() => setResultView('tree')}
-                      padding={2}
-                      selected={resultView === 'tree'}
-                    />
-                    <Tab
-                      aria-controls={resultContentId}
-                      fontSize={1}
-                      id={tabElementId('vision-result-view-graph')}
-                      label={t('vision.result.view.graph')}
-                      onClick={() => setResultView('graph')}
-                      padding={2}
-                      selected={resultView === 'graph'}
-                    />
-                    {hasResult && (
-                      <Tab
-                        aria-controls={resultContentId}
-                        fontSize={1}
-                        id={tabElementId('vision-result-view-documents')}
-                        label={t('vision.result.view.documents')}
-                        onClick={() => setResultView('documents')}
-                        padding={2}
-                        selected={resultView === 'documents'}
-                      />
-                    )}
-                  </TabList>
-                </Flex>
-              )}
+              <Flex
+                alignItems="center"
+                className={styles.labelActions}
+                data-testid="vision-result-actions"
+                gap={1}
+              >
+                <ResultViewMenu
+                  controls={resultContentId}
+                  id={tabElementId('vision-result-view-menu')}
+                  onChange={setResultView}
+                  value={resultView}
+                  views={resultViews}
+                />
+                <CopyButton disabled={!hasResult} onCopy={copyResult} testId="vision-copy-result" />
+                <ResultActionsMenu
+                  csvUnavailableHint={
+                    hasResult && !canExportCsv
+                      ? t('result.save-result-as-csv.not-csv-encodable')
+                      : undefined
+                  }
+                  getCsvUrl={canExportCsv ? getCsvUrl : undefined}
+                  getJsonUrl={hasResult ? getJsonUrl : undefined}
+                  hasResult={hasResult}
+                  onCsvUnavailable={reportCsvUnavailable}
+                  result={result}
+                  resultIsCurrent={resultIsCurrent}
+                  tab={tab}
+                />
+              </Flex>
             </Flex>
           </Box>
           {hasResult && parsedDocuments && resultView === 'documents' ? (
