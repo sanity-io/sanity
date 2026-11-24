@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest'
 
-import {groupDatasets} from './DatasetField'
+import {listOtherDatasets} from './DatasetField'
 
 const workspaces = [
   {name: 'default', title: 'Production', projectId: 'p1', dataset: 'production'},
@@ -10,52 +10,54 @@ const workspaces = [
 ]
 const datasets = ['production', 'zeta', 'staging', 'archive', 'alpha']
 
-describe('groupDatasets', () => {
-  it('puts the workspace dataset first, then those other workspaces use, then the rest', () => {
+describe('listOtherDatasets', () => {
+  it('lists every dataset but the workspace one, by name, with the workspaces that use it', () => {
     expect(
-      groupDatasets({
+      listOtherDatasets({
         datasets,
         workspaceDataset: 'production',
         workspaces,
         projectId: 'p1',
         query: '',
       }),
-    ).toEqual({
-      current: {dataset: 'production', workspaces: ['Production']},
-      used: [{dataset: 'staging', workspaces: ['Staging', 'Preview']}],
-      unused: [
-        {dataset: 'alpha', workspaces: []},
-        {dataset: 'archive', workspaces: []},
-        {dataset: 'zeta', workspaces: []},
-      ],
-    })
+    ).toEqual([
+      {dataset: 'alpha', workspaces: []},
+      {dataset: 'archive', workspaces: []},
+      {dataset: 'staging', workspaces: ['Staging', 'Preview']},
+      {dataset: 'zeta', workspaces: []},
+    ])
   })
 
-  it('filters every group by dataset name and workspace title', () => {
+  it('filters by dataset name and workspace title', () => {
     expect(
-      groupDatasets({
+      listOtherDatasets({
         datasets,
         workspaceDataset: 'production',
         workspaces,
         projectId: 'p1',
         query: 'PREV',
       }),
-    ).toEqual({
-      current: null,
-      used: [{dataset: 'staging', workspaces: ['Staging', 'Preview']}],
-      unused: [],
-    })
+    ).toEqual([{dataset: 'staging', workspaces: ['Staging', 'Preview']}])
     expect(
-      groupDatasets({
+      listOtherDatasets({
         datasets,
         workspaceDataset: 'production',
         workspaces,
         projectId: 'p1',
         query: 'a',
+      }).map((entry) => entry.dataset),
+    ).toEqual(['alpha', 'archive', 'staging', 'zeta'])
+  })
+
+  it('falls back to the datasets the workspaces use when the dataset list is unknown', () => {
+    expect(
+      listOtherDatasets({
+        datasets: [],
+        workspaceDataset: 'production',
+        workspaces,
+        projectId: 'p1',
+        query: '',
       }),
-    ).toMatchObject({
-      current: null,
-      unused: [{dataset: 'alpha'}, {dataset: 'archive'}, {dataset: 'zeta'}],
-    })
+    ).toEqual([{dataset: 'staging', workspaces: ['Staging', 'Preview']}])
   })
 })

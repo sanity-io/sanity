@@ -10,7 +10,3 @@
 .section:last-child {
   border-bottom: none;
 }
-
-.subtitle {
-  overflow-wrap: anywhere;
-}

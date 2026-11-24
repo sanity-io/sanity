@@ -758,13 +758,21 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.network.use-cdn-hint.label': 'About the API CDN',
   /** Label of the browser's marker on the Response panel's globe, placed from its time zone */
   'vision.network.you': 'You',
-  /** Next to the newest dated version in the API version list */
+  /**
+   * Next to the newest dated version in the API version list
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.api-version.latest': 'Latest',
-  /** Next to the API version content variants need, in the API version list */
+  /** Heading of the API version list's dated versions, below its Today option */
+  'vision.options.api-version.dated': 'Dated versions',
+  /** The first option of the API version list, today's date, which it shows under this title */
+  'vision.options.api-version.today': 'Today',
+  /** Under the API version content variants need, in the API version list */
   'vision.options.api-version.variants': 'Required for variants',
-  /** Next to vX in the API version list */
+  /** Under vX in the API version list */
   'vision.options.api-version.experimental': 'Experimental',
-  /** Next to v1 in the API version list */
+  /** Under v1 in the API version list */
   'vision.options.api-version.legacy': 'Legacy, not recommended',
   /** The first and default option of the dataset, perspective and variant menus, which follows the workspace and navbar */
   'vision.options.auto': 'Auto',
@@ -772,7 +780,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.options.auto.button': 'Auto ({{name}})',
   /** Under the dataset menu's Auto option: the workspace's dataset, which it follows */
   'vision.options.dataset.auto.subtitle': 'Workspace dataset: {{dataset}}',
-  /** Heading of the dataset menu's entry for the dataset the current workspace uses */
+  /**
+   * Heading of the dataset menu's entry for the dataset the current workspace uses
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.dataset.current-workspace': 'Current workspace',
   /**
    * In the pin button's tooltip while the tab follows the workspace's dataset
@@ -796,9 +808,19 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.options.dataset.pinned': 'Pinned; the workspace may use another dataset',
   /** Placeholder of the search field at the top of the dataset menu */
   'vision.options.dataset.search-placeholder': 'Search datasets',
-  /** Heading of the dataset menu's group of datasets other workspaces of this project use */
+  /** Heading of the dataset menu's datasets other than the workspace's, which Auto stands for */
+  'vision.options.dataset.other-datasets': 'Other datasets',
+  /**
+   * Heading of the dataset menu's group of datasets other workspaces of this project use
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.dataset.used-by-workspaces': 'Used by workspaces',
-  /** Heading of the dataset menu's group of datasets no workspace of this project uses */
+  /**
+   * Heading of the dataset menu's group of datasets no workspace of this project uses
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.dataset.unused': 'Not used by any workspaces',
   /**
    * Button that makes the tab follow the workspace's dataset again
@@ -817,6 +839,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    */
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.include-source-map.summary': 'Adds resultSourceMap to the response',
+  /** Label of the Options field that holds the API CDN switch */
+  'vision.options.caching-label': 'Caching',
   /** Label of the switch that sends queries to the API CDN */
   'vision.options.use-cdn': 'Use the API CDN',
   /** Note in the API CDN switch's info tooltip while the studio signs in with a cookie */

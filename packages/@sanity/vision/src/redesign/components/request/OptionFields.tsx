@@ -1,9 +1,8 @@
 import {CircleIcon} from '@sanity/icons/Circle'
-import {RemoveCircleIcon} from '@sanity/icons/RemoveCircle'
 import {StackCompactIcon} from '@sanity/icons/StackCompact'
-import {SyncIcon} from '@sanity/icons/Sync'
 import {Card, Stack} from '@sanity/ui'
 import {Autocomplete} from '@sanity/ui/autocomplete'
+import {MenuDivider} from '@sanity/ui/menu'
 import {type ReactNode, useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
 import {ReleaseAvatarIcon, usePerspective, useWorkspace} from 'sanity'
 import {
@@ -12,7 +11,7 @@ import {
   useScheduledDraftsEnabled,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
-import {Text, Box, Flex, VisuallyHidden} from 'ui5'
+import {Text, Box, Icon, VisuallyHidden} from 'ui5'
 
 import {DEFAULT_API_VERSION, VARIANTS_API_VERSION} from '../../../apiVersions'
 import {useVariantsEnabled} from '../../../hooks/useVariantsEnabled'
@@ -27,13 +26,23 @@ import {SwitchField} from '../SwitchField'
 import {useTabElementId} from '../tabs/queryTabShown'
 import {VisionTooltip} from '../VisionTooltip'
 import {
+  OptionItemContent,
   OptionMenuButton,
+  OptionMenuGroupLabel,
   OptionMenuItem,
   OptionMenuNoMatches,
   OptionMenuSection,
 } from './OptionMenu'
 
-function FieldLabel({children, htmlFor}: {children: string; htmlFor: string}) {
+/** The label above an Options field; without `htmlFor` it names a field that labels itself */
+export function FieldLabel({children, htmlFor}: {children: string; htmlFor?: string}) {
+  if (!htmlFor) {
+    return (
+      <Text as="div" muted size={1} weight="medium" trim={true}>
+        {children}
+      </Text>
+    )
+  }
   return (
     <Text as="label" htmlFor={htmlFor} muted size={1} weight="medium" trim={true}>
       {children}
@@ -56,8 +65,9 @@ interface ApiVersionFieldProps {
 }
 
 /**
- * The API version: an autocomplete that lists the known versions, newest dated first, and takes
- * any other one typed in, flagging it while it is not a valid version
+ * The API version: an autocomplete that lists today's date, the known versions newest dated
+ * first, `vX` and `v1`, and takes any other one typed in, flagging it while it is not a valid
+ * version
  */
 export function ApiVersionField({
   id,
@@ -84,6 +94,11 @@ export function ApiVersionField({
   // Autocomplete clears its query when `value` changes, which would show every option again.
   // Hold the version the field opened with until the edit ends, and let the stored version move.
   const [heldValue, setHeldValue] = useState<string | null>(null)
+  const [listQuery, setListQuery] = useState<string | null>(null)
+  // Typing narrows the list to the matching versions, without the group headings. Each keystroke
+  // is stored, so the query is compared with the version the field opened with, not the stored one.
+  const isFiltering = listQuery !== null && listQuery !== heldValue
+  const todayTitle = t('vision.options.api-version.today')
 
   const change = useCallback(
     (next: string) => {
@@ -96,37 +111,44 @@ export function ApiVersionField({
     [onChange, options, telemetry, trackQueryChanges, value],
   )
 
-  const filterOption = useCallback((query: string, option: ApiVersionOption) => {
-    // Opening fills the input with the current version, before that version has been edited
-    if (openQuery.current === null && query === committedVersion.current) openQuery.current = query
-    if (query === openQuery.current) return true
-    const normalized = query.trim().toLowerCase().replace(/^v/, '')
-    if (!normalized) return true
-    return option.value.toLowerCase().replace(/^v/, '').includes(normalized)
-  }, [])
+  const filterOption = useCallback(
+    (query: string, option: ApiVersionOption) => {
+      // Opening fills the input with the current version, before that version has been edited
+      if (openQuery.current === null && query === committedVersion.current) {
+        openQuery.current = query
+      }
+      if (query === openQuery.current) return true
+      const normalized = query.trim().toLowerCase()
+      if (!normalized) return true
+      if (option.group === 'today' && todayTitle.toLowerCase().startsWith(normalized)) return true
+      return option.value.toLowerCase().replace(/^v/, '').includes(normalized.replace(/^v/, ''))
+    },
+    [todayTitle],
+  )
 
   const renderOption = useCallback(
-    (option: ApiVersionOption) => (
-      <Card
-        data-as="button"
-        data-testid={`${id}-option-${option.value}`}
-        padding={2}
-        radius={2}
-        tone="inherit"
-      >
-        <Flex alignItems="center" gap={3} justifyContent="space-between">
-          <Text size={1} weight="medium">
-            {option.value}
-          </Text>
-          {option.note && (
-            <Text muted size={1}>
-              {t(API_VERSION_NOTE_KEYS[option.note])}
-            </Text>
-          )}
-        </Flex>
-      </Card>
-    ),
-    [id, t],
+    (option: ApiVersionOption) => {
+      const index = options.indexOf(option)
+      const startsGroup = !isFiltering && index > 0 && options[index - 1].group !== option.group
+      return (
+        <ApiVersionOptionItem
+          divider={startsGroup}
+          groupLabel={
+            startsGroup && option.group === 'dated'
+              ? t('vision.options.api-version.dated')
+              : undefined
+          }
+          subtitle={
+            option.group === 'today'
+              ? option.value
+              : option.note && t(API_VERSION_NOTE_KEYS[option.note])
+          }
+          testId={`${id}-option-${option.value}`}
+          title={option.group === 'today' ? todayTitle : option.value}
+        />
+      )
+    },
+    [id, isFiltering, options, t, todayTitle],
   )
 
   return (
@@ -169,6 +191,7 @@ export function ApiVersionField({
             }}
             onChange={change}
             onQueryChange={(query) => {
+              setListQuery(query)
               // `null` is the list closing.
               if (query === null) {
                 openQuery.current = null
@@ -183,7 +206,14 @@ export function ApiVersionField({
             options={options}
             padding={2}
             placeholder={DEFAULT_API_VERSION}
-            popover={{constrainSize: true, portal: true}}
+            popover={{
+              animate: true,
+              constrainSize: true,
+              fallbackPlacements: ['top-start'],
+              matchReferenceWidth: false,
+              placement: 'bottom-start',
+              portal: true,
+            }}
             renderOption={renderOption}
             value={heldValue ?? shownValue}
           />
@@ -193,8 +223,61 @@ export function ApiVersionField({
   )
 }
 
+interface ApiVersionOptionItemProps {
+  title: string
+  subtitle?: string
+  testId: string
+  /** Opens a new group with a divider, and with `groupLabel` as its heading when there is one */
+  divider: boolean
+  groupLabel?: string
+  /** Set by the autocomplete on the option it highlights */
+  selected?: boolean
+  disabled?: boolean
+  tabIndex?: number
+}
+
+/**
+ * An option of the API version list, in the item style of the other Options pickers. The
+ * autocomplete makes the whole option clickable, so a group's divider and heading swallow clicks
+ * rather than pick the version under them.
+ */
+function ApiVersionOptionItem({
+  title,
+  subtitle,
+  testId,
+  divider,
+  groupLabel,
+  selected,
+  disabled,
+  tabIndex,
+}: ApiVersionOptionItemProps) {
+  return (
+    <>
+      {divider && (
+        <div aria-hidden onClick={(event) => event.stopPropagation()}>
+          <Box paddingY={1}>
+            <MenuDivider />
+          </Box>
+          {groupLabel && <OptionMenuGroupLabel>{groupLabel}</OptionMenuGroupLabel>}
+        </div>
+      )}
+      <Card
+        data-as="button"
+        data-testid={testId}
+        disabled={disabled}
+        padding={1}
+        radius={2}
+        selected={selected}
+        tabIndex={tabIndex}
+        tone="inherit"
+      >
+        <OptionItemContent subtitle={subtitle} title={title} />
+      </Card>
+    </>
+  )
+}
+
 const API_VERSION_NOTE_KEYS = {
-  latest: 'vision.options.api-version.latest',
   variants: 'vision.options.api-version.variants',
   experimental: 'vision.options.api-version.experimental',
   legacy: 'vision.options.api-version.legacy',
@@ -241,11 +324,8 @@ const PUBLISHED = 'published'
 const DRAFTS = 'drafts'
 const SCHEDULED = 'scheduled'
 
-const autoIcon = (
-  <Text size={1}>
-    <SyncIcon />
-  </Text>
-)
+/** Trims a size 1 icon to the slot the release avatars take, as `ReleaseAvatarIcon` trims its own */
+const PERSPECTIVE_ICON_STYLE = {margin: '-0.3125rem'}
 
 /**
  * The perspective menu, laid out like the navbar's: Auto, the default, follows the navbar's
@@ -277,7 +357,8 @@ export function PerspectiveSelect({id, value, onChange}: PerspectiveSelectProps)
       value: 'global',
       title: t('vision.options.auto'),
       subtitle: t('vision.options.perspective.auto.subtitle', {name: globalName}),
-      icon: autoIcon,
+      // What Auto resolves to: the drafts or published dot, or the release's avatar
+      icon: <ReleaseAvatarIcon fontSize={2} release={selectedPerspective} size="small" />,
       group: 'auto',
     },
     {
@@ -299,11 +380,7 @@ export function PerspectiveSelect({id, value, onChange}: PerspectiveSelectProps)
       value: 'raw',
       title: 'raw',
       subtitle: t('vision.options.perspective.raw.subtitle'),
-      icon: (
-        <Text size={1}>
-          <StackCompactIcon />
-        </Text>
-      ),
+      icon: <Icon icon={StackCompactIcon} size={1} style={PERSPECTIVE_ICON_STYLE} />,
       group: 'vision',
     },
     {
@@ -311,11 +388,7 @@ export function PerspectiveSelect({id, value, onChange}: PerspectiveSelectProps)
       value: undefined,
       title: t('settings.perspectives.default'),
       subtitle: t('vision.options.perspective.default.subtitle'),
-      icon: (
-        <Text size={1}>
-          <CircleIcon />
-        </Text>
-      ),
+      icon: <Icon icon={CircleIcon} size={1} style={PERSPECTIVE_ICON_STYLE} />,
       group: 'vision',
     },
     ...(isScheduledDraftsEnabled
@@ -452,7 +525,6 @@ export function VariantSelect({id, value, onChange}: VariantSelectProps) {
       >
         <OptionMenuSection>
           <OptionMenuItem
-            icon={autoIcon}
             onClick={() => onChange('global')}
             selected={value === 'global'}
             subtitle={
@@ -464,11 +536,6 @@ export function VariantSelect({id, value, onChange}: VariantSelectProps) {
             title={t('vision.options.auto')}
           />
           <OptionMenuItem
-            icon={
-              <Text size={1}>
-                <RemoveCircleIcon />
-              </Text>
-            }
             onClick={() => onChange('none')}
             selected={value === 'none'}
             subtitle={t('vision.options.variant.none.subtitle')}
