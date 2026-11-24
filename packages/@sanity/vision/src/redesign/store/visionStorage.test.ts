@@ -288,6 +288,7 @@ describe('visionStorage', () => {
     // Written since, every view is a choice
     expect(load({resultViewer: 'tree'})).toBe('tree')
     expect(load({resultViewer: 'graph'})).toBe('graph')
+    expect(load({resultViewer: 'documents'})).toBe('documents')
     expect(load({resultViewer: 'tree', resultView: 'graph'})).toBe('tree')
   })
 

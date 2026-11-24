@@ -48,12 +48,6 @@ import {SourceMapTab, type SourceMapView} from './SourceMapTab'
 
 const DEFAULT_BOTTOM_PANEL_SIZE = {columns: 220, stacked: 180, mobile: 160}
 
-/**
- * The query a tab left the document list for. Switching tabs hides this panel in an `<Activity>`
- * boundary, which keeps its state, and the map keeps the choice if the panel remounts.
- */
-const dismissedDocumentListQuery = new Map<string, string>()
-
 export interface ResponsePanelProps {
   tab: VisionTab
   runnerRef: QueryRunnerRef
@@ -142,42 +136,24 @@ export function ResponsePanel(props: ResponsePanelProps) {
   const delta = useDeltaPanel()
   const mutate = useMutatePanel()
   const actorRef = useVisionActor()
+  // The last view picked in any tab, JSON until one is. The result's shape never picks one.
   const storedResultView = useVisionSelector(selectResultView)
-  // A non-empty array of `{_id, _type?, title?, subtitle?, media?}` opens as documents. Picking another
-  // view keeps that view for the query. A result that does not fit stays on the stored view, and
-  // Documents is still there so the guidance can be opened.
   const parsedDocuments = useMemo(
-    () => (hasResult ? parseDocumentList(result) : undefined),
-    [hasResult, result],
+    () => (hasResult && storedResultView === 'documents' ? parseDocumentList(result) : undefined),
+    [hasResult, result, storedResultView],
   )
   const settledQuery = settledRequest?.query ?? ''
-  const [documentsDismissedFor, setDocumentsDismissedFor] = useState<string | undefined>(() =>
-    dismissedDocumentListQuery.get(tab.id),
-  )
-  const [forcedDocumentsQuery, setForcedDocumentsQuery] = useState<string | undefined>(undefined)
-  const opensDocuments = parsedDocuments?.ok === true && parsedDocuments.documents.length > 0
-  const autoOpensDocuments = opensDocuments && documentsDismissedFor !== settledQuery
-  // Once Documents is open for the query it stays open, also when a refetch returns `[]`
-  if (autoOpensDocuments && forcedDocumentsQuery !== settledQuery) {
-    setForcedDocumentsQuery(settledQuery)
-  }
-  const showDocuments =
-    parsedDocuments !== undefined && (autoOpensDocuments || forcedDocumentsQuery === settledQuery)
-  const resultView = showDocuments ? 'documents' : storedResultView
+  // Documents picked for this query shows its guidance when the result is not a document list.
+  // Otherwise a remembered Documents shows such a result as JSON and stays remembered.
+  const [documentsPickedFor, setDocumentsPickedFor] = useState<string | undefined>(undefined)
+  const resultView =
+    parsedDocuments?.ok === false && documentsPickedFor !== settledQuery ? 'json' : storedResultView
   const setResultView = useCallback(
-    (view: VisionResultView | 'documents') => {
-      if (view === 'documents') {
-        dismissedDocumentListQuery.delete(tab.id)
-        setDocumentsDismissedFor(undefined)
-        setForcedDocumentsQuery(settledQuery)
-        return
-      }
-      dismissedDocumentListQuery.set(tab.id, settledQuery)
-      setDocumentsDismissedFor(settledQuery)
-      setForcedDocumentsQuery(undefined)
+    (view: VisionResultView) => {
+      setDocumentsPickedFor(view === 'documents' ? settledQuery : undefined)
       actorRef.send({type: 'result.view', view})
     },
-    [actorRef, settledQuery, tab.id],
+    [actorRef, settledQuery],
   )
   // The source map's view is the panel's own, and starts on the tree it always showed
   const [sourceMapView, setSourceMapView] = useState<SourceMapView>('tree')
@@ -192,8 +168,8 @@ export function ResponsePanel(props: ResponsePanelProps) {
   )
   const sourceMapContentId = tabElementId('vision-source-map-content')
   const hasSourceMap = meta?.resultSourceMap !== undefined
-  const resultViews = useMemo((): ResultViewOption<VisionResultView | 'documents'>[] => {
-    const views: ResultViewOption<VisionResultView | 'documents'>[] = [
+  const resultViews = useMemo((): ResultViewOption<VisionResultView>[] => {
+    const views: ResultViewOption<VisionResultView>[] = [
       {id: 'json', label: t('vision.result.view.json')},
       {id: 'tree', label: t('vision.result.view.tree')},
       {id: 'graph', label: t('vision.result.view.graph')},

@@ -349,6 +349,12 @@ describe('visionMachine', () => {
     harness.actor.send({type: 'result.view', view: 'graph'})
     expect(selectResultView(harness.snapshot())).toBe('graph')
     expect(selectPersistedState(harness.snapshot()).panels.resultViewer).toBe('graph')
+    harness.actor.send({type: 'result.view', view: 'documents'})
+    expect(selectResultView(harness.snapshot())).toBe('documents')
+    expect(selectPersistedState(harness.snapshot()).panels.resultViewer).toBe('documents')
+    // A new tab opens on the remembered view
+    harness.actor.send({type: 'tab.add'})
+    expect(selectResultView(harness.snapshot())).toBe('documents')
 
     harness.actor.send({type: 'storage.clear'})
     expect(selectResultView(harness.snapshot())).toBe('json')
@@ -358,6 +364,12 @@ describe('visionMachine', () => {
       panels: {params: true, options: true, paramsView: 'json', resultViewer: 'graph'},
     })
     expect(selectResultView(restored.snapshot())).toBe('graph')
+
+    const restoredDocuments = createHarness({
+      ...createInitialState(defaults),
+      panels: {params: true, options: true, paramsView: 'json', resultViewer: 'documents'},
+    })
+    expect(selectResultView(restoredDocuments.snapshot())).toBe('documents')
   })
 
   it('updates, persists and resets the fields hidden from history diffs', () => {
