@@ -742,15 +742,41 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.network.use-cdn-hint.label': 'About the API CDN',
   /** Label of the browser's marker on the Response panel's globe, placed from its time zone */
   'vision.network.you': 'You',
+  /** Next to the newest dated version in the API version list */
+  'vision.options.api-version.latest': 'Latest',
+  /** Next to the API version content variants need, in the API version list */
+  'vision.options.api-version.variants': 'Required for variants',
+  /** Next to vX in the API version list */
+  'vision.options.api-version.experimental': 'Experimental',
+  /** Next to v1 in the API version list */
+  'vision.options.api-version.legacy': 'Legacy, not recommended',
+  /** The first and default option of the dataset, perspective and variant menus, which follows the workspace and navbar */
+  'vision.options.auto': 'Auto',
+  /** What a picker's button shows while Auto is selected; the name is what Auto resolves to */
+  'vision.options.auto.button': 'Auto ({{name}})',
+  /** Under the dataset menu's Auto option: the workspace's dataset, which it follows */
+  'vision.options.dataset.auto.subtitle': 'Workspace dataset: {{dataset}}',
   /** Heading of the dataset menu's entry for the dataset the current workspace uses */
   'vision.options.dataset.current-workspace': 'Current workspace',
-  /** In the pin button's tooltip while the tab follows the workspace's dataset */
+  /**
+   * In the pin button's tooltip while the tab follows the workspace's dataset
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.dataset.follows-workspace': 'Follows the workspace',
   /** Shown in the dataset menu when the search matches no dataset */
   'vision.options.dataset.no-matches': 'No datasets match',
-  /** Button that pins the current dataset so the tab stops following the workspace */
+  /**
+   * Button that pins the current dataset so the tab stops following the workspace
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.dataset.pin': 'Pin a dataset',
-  /** In the pin button's tooltip while a dataset is pinned */
+  /**
+   * In the pin button's tooltip while a dataset is pinned
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.dataset.pinned': 'Pinned; the workspace may use another dataset',
   /** Placeholder of the search field at the top of the dataset menu */
   'vision.options.dataset.search-placeholder': 'Search datasets',
@@ -758,7 +784,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.options.dataset.used-by-workspaces': 'Used by workspaces',
   /** Heading of the dataset menu's group of datasets no workspace of this project uses */
   'vision.options.dataset.unused': 'Not used by any workspaces',
-  /** Button that makes the tab follow the workspace's dataset again */
+  /**
+   * Button that makes the tab follow the workspace's dataset again
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.dataset.use-workspace': 'Use the workspace dataset',
   /** Label for the "Include content source map" switch */
   'vision.options.include-source-map': 'Include content source map',
@@ -791,12 +821,43 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.options.use-cdn.summary': 'Cached responses, for published and raw',
   /** Button in the API CDN notice switching the tab to the published perspective */
   'vision.options.use-cdn.use-published': 'Use the published perspective',
-  /** Perspective option following the studio navbar; the name is the release, published or drafts */
+  /**
+   * Perspective option following the studio navbar; the name is the release, published or drafts
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.perspective.global': 'Global ({{name}})',
-  /** Variant option sending the navbar's variant, named */
+  /**
+   * Variant option sending the navbar's variant, named
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.variant.global': 'Global ({{name}})',
-  /** Variant option sending the navbar's variant while none is selected there */
+  /**
+   * Variant option sending the navbar's variant while none is selected there
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.variant.global-none': 'Global (none selected)',
+  /** Under the perspective menu's Auto option; the name is the navbar's perspective */
+  'vision.options.perspective.auto.subtitle': 'Follows the studio: {{name}}',
+  /** Under the perspective menu's API default option */
+  'vision.options.perspective.default.subtitle': 'Whatever the API version defaults to',
+  /** Heading of the perspective menu's group of perspectives only Vision offers */
+  'vision.options.perspective.more': 'More perspectives',
+  /** Shown in the perspective menu when the search matches no perspective */
+  'vision.options.perspective.no-matches': 'No perspectives match',
+  /** Under the perspective menu's raw option */
+  'vision.options.perspective.raw.subtitle':
+    'Every document as stored, drafts and versions included',
+  /** Placeholder of the search field at the top of the perspective menu */
+  'vision.options.perspective.search-placeholder': 'Search perspectives',
+  /** Under the variant menu's Auto option; the name is the navbar's variant */
+  'vision.options.variant.auto.subtitle': 'Follows the studio: {{name}}',
+  /** Under the variant menu's Auto option while the navbar has no variant selected */
+  'vision.options.variant.auto.subtitle-none': 'Follows the studio, which has none selected',
+  /** Under the variant menu's None option */
+  'vision.options.variant.none.subtitle': 'Queries without a variant',
   /** Variant option sending no variant */
   'vision.options.variant.none': 'None',
   /** Label of the variant field */

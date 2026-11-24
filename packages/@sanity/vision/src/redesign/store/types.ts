@@ -3,8 +3,11 @@ import {type ContentSourceMap, type SanityClient, type SyncTag} from '@sanity/cl
 import {type QueryRequestMethod} from '../../util/queryRequestMethod'
 import {type QueryNetwork} from '../util/queryNetwork'
 
-/** Whether a tab queries the workspace's dataset, following it, or one pinned by hand */
-export type VisionDatasetMode = 'workspace' | 'pinned'
+/**
+ * Whether a tab queries the workspace's dataset (`auto`, following it when the workspace
+ * changes) or one chosen by hand (`override`, which stays put)
+ */
+export type VisionDatasetMode = 'auto' | 'override'
 
 /**
  * A tab's perspective. `global` follows the studio's navbar (the pinned release stack,
@@ -25,7 +28,7 @@ export type VisionVariantMode = 'global' | 'none'
 /** Per-tab request options */
 export interface VisionTabOptions {
   datasetMode: VisionDatasetMode
-  /** The pinned dataset; while following the workspace, this is what pinning starts from */
+  /** The overriding dataset; on `auto`, the workspace's dataset when the tab was last saved */
   dataset: string
   /**
    * Any API version, listed in `API_VERSIONS` or typed into the "Other" input. May be unfinished

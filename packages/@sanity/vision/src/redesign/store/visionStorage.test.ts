@@ -28,7 +28,7 @@ describe('visionStorage', () => {
 
   it('resolves settings from the tool defaults: following the workspace and the navbar', () => {
     expect(resolveDefaultSettings(defaults)).toEqual({
-      datasetMode: 'workspace',
+      datasetMode: 'auto',
       dataset: 'production',
       apiVersion: 'v2025-02-19',
       perspective: 'global',
@@ -46,7 +46,7 @@ describe('visionStorage', () => {
         defaultApiVersion: 'not-a-version',
       }),
     ).toEqual({
-      datasetMode: 'workspace',
+      datasetMode: 'auto',
       dataset: 'staging',
       apiVersion: DEFAULT_API_VERSION,
       perspective: 'global',
@@ -58,7 +58,7 @@ describe('visionStorage', () => {
 
   it('keeps an unlisted default API version on new tabs', () => {
     const options = createTabOptions({
-      datasetMode: 'workspace',
+      datasetMode: 'auto',
       dataset: 'production',
       apiVersion: 'v2022-01-01',
       perspective: 'raw',
@@ -129,7 +129,12 @@ describe('visionStorage', () => {
       query: '*[_type == "author"]',
       title: 'Authors',
       autoRefetch: true,
-      options: {perspective: 'published', datasetMode: 'pinned', dataset: 'staging', useCdn: true},
+      options: {
+        perspective: 'published',
+        datasetMode: 'override',
+        dataset: 'staging',
+        useCdn: true,
+      },
     })
     const saved = {
       ...state,
@@ -492,7 +497,7 @@ describe('visionStorage', () => {
     // A dataset other than the workspace's was chosen on purpose, so it stays pinned; the
     // navbar-following perspective keeps its meaning under its new name, and variants follow the navbar
     expect(loaded.tabs[0].options).toEqual({
-      datasetMode: 'pinned',
+      datasetMode: 'override',
       dataset: 'staging',
       apiVersion: 'v2025-02-19',
       perspective: 'global',
@@ -502,7 +507,7 @@ describe('visionStorage', () => {
     })
     // The workspace's dataset was the old default, so it keeps following the workspace
     expect(loaded.settings).toMatchObject({
-      datasetMode: 'workspace',
+      datasetMode: 'auto',
       dataset: 'production',
       perspective: 'raw',
     })

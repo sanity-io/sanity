@@ -31,7 +31,7 @@ export function getRequestOverrides(
 ): RequestOverrides {
   const tab = resolveRequestOptions(options, environment)
   const global = resolveRequestOptions(
-    {...options, datasetMode: 'workspace', perspective: 'global', variant: 'global'},
+    {...options, datasetMode: 'auto', perspective: 'global', variant: 'global'},
     environment,
   )
 
