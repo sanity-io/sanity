@@ -281,7 +281,7 @@ test('replays the mutations of an incoming mutation without effects', () => {
 
 test('replays the mutations when the effects do not apply to HEAD', () => {
   // HEAD has drifted from the revision the effects were computed on: it has no tags.
-  const {tags, ...drifted} = effectsBase
+  const {tags: _tags, ...drifted} = effectsBase
   const doc = new Document(drifted)
   doc.arrive(realEvent(true))
   expect(doc.HEAD).toMatchObject({title: 'Hello brave world', _rev: 'rev-2'})
@@ -303,10 +303,67 @@ test('builds a deleted HEAD from effects', () => {
 
 test('replays the mutations of an incoming mutation with effects but no resulting revision', () => {
   const doc = new Document(effectsBase)
-  const {resultRev, ...withoutResultRev} = realEvent(true).params
+  const {resultRev: _resultRev, ...withoutResultRev} = realEvent(true).params
   doc.applyIncoming(new Mutation(withoutResultRev))
   expect(doc.HEAD).toMatchObject({
     title: 'Hello brave world',
     _updatedAt: '2026-11-20T13:56:20.000Z',
+  })
+})
+
+/** An event that sets `title` on `effectsBase`, with the given effect. */
+const withEffect = (apply: unknown, previousRev: string | undefined = 'rev-1') =>
+  new Mutation({
+    transactionId: 'rev-2',
+    previousRev,
+    resultRev: 'rev-2',
+    mutations: [{patch: {id: 'drafts.post-1', set: {title: 'Set by the mutations'}}}],
+    effects: {apply, revert: []},
+  })
+const {_rev: _baseRev, ...storedBase} = effectsBase
+
+test('creates HEAD from the effects of a mutation that creates the document', () => {
+  const doc = new Document(null)
+  doc.arrive(
+    new Mutation({
+      transactionId: 'rev-1',
+      resultRev: 'rev-1',
+      mutations: [{create: {...storedBase}}],
+      effects: {apply: [0, storedBase], revert: []},
+    }),
+  )
+  expect(doc.HEAD).toEqual(effectsBase)
+})
+
+test('throws for a mutation on another revision, as without effects', () => {
+  const doc = new Document(effectsBase)
+  expect(() => doc.applyIncoming(withEffect([0, storedBase], 'rev-0'))).toThrow('Previous revision')
+})
+
+test('does not apply effects computed against a document to a missing HEAD', () => {
+  const doc = new Document(null)
+  expect(() => doc.applyIncoming(withEffect([0, storedBase]))).toThrow()
+  expect(doc.HEAD).toBeNull()
+})
+
+test('replays the mutations when the effects are not a Mendoza patch', () => {
+  const doc = new Document(effectsBase)
+  doc.arrive(withEffect({}))
+  expect(doc.HEAD).toMatchObject({title: 'Set by the mutations', _rev: 'rev-2'})
+})
+
+test.each([
+  ['a primitive', 'text'],
+  ['an array', [1, 2]],
+  ['a document with another _id', {...storedBase, _id: 'drafts.other'}],
+  ['a document without a _type', {_id: 'drafts.post-1', title: 'x'}],
+  ['a document with an undefined field', {...storedBase, undefined: 'x'}],
+])('replays the mutations when the effects give %s', (_case, result) => {
+  const doc = new Document(effectsBase)
+  doc.arrive(withEffect([0, result]))
+  expect(doc.HEAD).toMatchObject({
+    _id: 'drafts.post-1',
+    title: 'Set by the mutations',
+    _rev: 'rev-2',
   })
 })

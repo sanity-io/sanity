@@ -22,6 +22,7 @@ export function mutationEvent({
    */
   effects?: MutationEvent['effects']
 }): MutationEvent {
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- `effects` is left out unless given
   return {
     type: 'mutation',
     documentId,
