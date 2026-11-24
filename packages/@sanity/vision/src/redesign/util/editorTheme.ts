@@ -3,6 +3,7 @@ import {Prec, type Extension} from '@codemirror/state'
 import {EditorView} from '@codemirror/view'
 
 import {paramsExtensions, readOnlyJsonExtensions} from '../../codemirror/extensions'
+import {PARAM_LINT_MARK_CLASS} from './groqLint'
 import {PARAM_HIGHLIGHT_CLASS} from './paramHighlight'
 
 const HAS_SELECTION_CLASS = 'cm-vision-hasSelection'
@@ -165,6 +166,15 @@ export const redesignEditorTheme: Extension = [
         borderRadius: '2px',
         boxShadow:
           'inset 0 0 0 1px color-mix(in srgb, var(--card-badge-primary-fg-color) 50%, transparent)',
+      },
+      // A finding the value of a param causes is fixed in the params, where it is underlined; the
+      // reference in the query only gets a dotted line, so it reads as a pointer to the params
+      [`&.cm-editor .cm-lintRange.${PARAM_LINT_MARK_CLASS}`]: {
+        backgroundImage: 'none',
+        textDecorationLine: 'underline',
+        textDecorationStyle: 'dotted',
+        textDecorationColor: 'color-mix(in srgb, var(--card-muted-fg-color) 70%, transparent)',
+        textUnderlineOffset: '3px',
       },
       // Hover tooltips (lint findings, function docs) are padded, sized and raised like the
       // tooltips of Studio itself (`VisionTooltip`) rather than CodeMirror's roomier defaults

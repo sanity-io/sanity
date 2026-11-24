@@ -25,7 +25,7 @@ import {
   parseGroq,
 } from './groqFunctions'
 import {type GroqFinding, GroqSyntaxError, lintGroq} from './groqWasm'
-import {checkQuerySchema, type SchemaFinding} from './schemaCheck'
+import {checkQuerySchema, type ParamFindingTarget, type SchemaFinding} from './schemaCheck'
 
 /** Idle time after an edit before the query is linted again */
 const LINT_DELAY_MS = 500
@@ -44,7 +44,23 @@ export interface QueryLintFinding {
   message: string
   /** `groq-lint/<rule>`, or `groq` for a query that does not parse */
   source: string | undefined
+  /** Set when a param's value causes the finding: it is fixed in the params, not the query */
+  param?: ParamFindingTarget
+  /** The edit of the query that the finding's quick fix makes, when it has one */
+  fix?: {from: number; to: number; insert: string}
 }
+
+/** Marks the query's diagnostics that a param's value causes, which the query editor underlines lightly */
+export const PARAM_LINT_MARK_CLASS = 'cm-vision-paramLint'
+
+/**
+ * What the Lint panel needs from a diagnostic that CodeMirror does not keep: the param it is
+ * about, or the query edit of its quick fix, relative to the diagnostic's start (edits move it)
+ */
+const diagnosticTargets = new WeakMap<
+  Diagnostic,
+  {param?: ParamFindingTarget; fix?: {from: number; to: number; insert: string}}
+>()
 
 const SEVERITY_RANK: Record<LintSeverity, number> = {error: 3, warning: 2, info: 1, hint: 0}
 
@@ -166,8 +182,21 @@ function schemaDiagnostics(
   labels: GroqEditorLabels | undefined,
 ): Diagnostic[] {
   return findings.map((finding) => {
-    const {suggestion} = finding
-    return {
+    const {suggestion, param} = finding
+    if (param) {
+      const diagnostic: Diagnostic = {
+        from: finding.from,
+        to: finding.to,
+        severity: 'warning',
+        message: finding.message,
+        renderMessage: () => renderMessage(finding.message),
+        source: `vision/${finding.rule}`,
+        markClass: PARAM_LINT_MARK_CLASS,
+      }
+      diagnosticTargets.set(diagnostic, {param})
+      return diagnostic
+    }
+    const diagnostic: Diagnostic = {
       from: finding.from,
       to: finding.to,
       severity: 'warning',
@@ -194,6 +223,16 @@ function schemaDiagnostics(
           }
         : {}),
     }
+    if (suggestion) {
+      diagnosticTargets.set(diagnostic, {
+        fix: {
+          from: suggestion.from - finding.from,
+          to: suggestion.to - finding.from,
+          insert: suggestion.text,
+        },
+      })
+    }
+    return diagnostic
   })
 }
 
@@ -247,6 +286,7 @@ export function collectFindings(state: EditorState): QueryLintFinding[] {
   const findings: QueryLintFinding[] = []
   forEachDiagnostic(state, (diagnostic, from, to) => {
     const line = state.doc.lineAt(from)
+    const target = diagnosticTargets.get(diagnostic)
     findings.push({
       from,
       to,
@@ -255,6 +295,10 @@ export function collectFindings(state: EditorState): QueryLintFinding[] {
       severity: diagnostic.severity,
       message: diagnostic.message,
       source: diagnostic.source,
+      ...(target?.param ? {param: target.param} : {}),
+      ...(target?.fix
+        ? {fix: {...target.fix, from: from + target.fix.from, to: from + target.fix.to}}
+        : {}),
     })
   })
   return findings

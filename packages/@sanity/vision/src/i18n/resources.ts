@@ -562,8 +562,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.lint.fix.open-anyway': 'Open the last attempt',
   /** Shown while the fixed query is written */
   'vision.lint.fix.progress': 'Fixing the query…',
+  /** Button in the Lint panel when every listed problem has a suggestion, which it writes in place without Agent Actions */
+  'vision.lint.fix.suggestions': 'Apply suggestions',
   /** Where a lint finding sits in the query, shown under its message */
   'vision.lint.position': 'Line {{line}}, column {{column}}',
+  /** Where a lint finding caused by a param's value is: the param, and the item in it (`type`, `types[1]`) */
+  'vision.lint.position-param': 'Params · {{param}}',
   /** Severity badge of a lint finding */
   'vision.lint.severity.error': 'Error',
   /** Severity badge of a lint finding */

@@ -7,6 +7,7 @@ import {type Params} from '../../../components/VisionGui'
 import {useParamsInference} from '../../hooks/useParamsInference'
 import {redesignParamsExtensions} from '../../util/editorTheme'
 import {paramsJsonActiveParam} from '../../util/paramHighlight'
+import {type ParamLintFinding, paramsJsonLint, paramsLintContext} from '../../util/paramLint'
 import {paramsJsonAutocompletion, paramsJsonInferredParams} from '../../util/paramsJsonCompletions'
 
 export interface ParamsPanelProps {
@@ -18,12 +19,19 @@ export interface ParamsPanelProps {
   onChange: (rawParams: string) => void
   /** The param the cursor is in while the editor has focus, `null` otherwise */
   onActiveParamChange: (name: string | null) => void
+  /** The query's lint findings that a param's value causes, underlined at that value */
+  lintFindings: readonly ParamLintFinding[]
+  /** The label of the quick fix writing a finding's suggestion */
+  suggestionLabel: (suggestion: string) => string
+  onApplySuggestion?: () => void
 }
 
 /**
  * The params editor, as tall as its JSON; the panel around it caps and scrolls it. It completes
  * the params the query uses with values the query accepts, inferred like the params form and the
- * TS/Zod export do, and reports the param the cursor is in. A syntax error shows under the
+ * TS/Zod export do, and reports the param the cursor is in. The query's lint findings about a
+ * param's value are underlined at that value, with their "Did you mean" suggestion as a quick
+ * fix. A syntax error shows under the
  * editor, so the editor does not move as it comes and goes while typing.
  */
 export function ParamsPanel({
@@ -33,16 +41,30 @@ export function ParamsPanel({
   editorRef,
   onChange,
   onActiveParamChange,
+  lintFindings,
+  suggestionLabel,
+  onApplySuggestion,
 }: ParamsPanelProps) {
   const inference = useParamsInference(query)
+  const lintContext = useMemo(
+    () =>
+      paramsLintContext.of({
+        findings: lintFindings,
+        useSuggestion: suggestionLabel,
+        onApplySuggestion,
+      }),
+    [lintFindings, onApplySuggestion, suggestionLabel],
+  )
   const extensions = useMemo(
     () => [
       ...redesignParamsExtensions,
       paramsJsonActiveParam(onActiveParamChange),
       paramsJsonAutocompletion,
       paramsJsonInferredParams.of(inference.params),
+      paramsJsonLint,
+      lintContext,
     ],
-    [inference.params, onActiveParamChange],
+    [inference.params, lintContext, onActiveParamChange],
   )
   // An editor that unmounts with focus in it reports no blur
   useEffect(() => () => onActiveParamChange(null), [onActiveParamChange])

@@ -25,8 +25,10 @@ import {Text, Box, Flex, Icon} from 'ui5'
 import {type Params} from '../../../components/VisionGui'
 import {visionLocaleNamespace} from '../../../i18n'
 import {useParamsInference} from '../../hooks/useParamsInference'
+import {splitMessage} from '../../util/groqLint'
 import {isObjectParam} from '../../util/objectParams'
 import {type InferredParam, type ParamKind, type ParamType} from '../../util/paramInference'
+import {type ParamLintFinding, withParamSuggestion} from '../../util/paramLint'
 import * as fieldGrid from '../fieldGrid.module.css'
 import * as styles from '../redesign.module.css'
 import {VisionTooltip} from '../VisionTooltip'
@@ -42,6 +44,10 @@ export interface ParamsFormProps {
   onChange: (rawParams: string) => void
   /** Enter in a field, which fetches like the fetch shortcut */
   onSubmit: () => void
+  /** The query's lint findings about the params' values, shown at their param */
+  lintFindings?: readonly ParamLintFinding[]
+  /** Called when a finding's suggestion is applied */
+  onApplySuggestion?: () => void
 }
 
 /**
@@ -432,9 +438,12 @@ function ParamField(props: {
   schemaNote: boolean
   /** A key of an object param (`$range.min`), which the query reads as null when it is missing */
   nested?: boolean
+  /** The query's lint findings about this param's value */
+  lintFindings?: readonly ParamLintFinding[]
+  onApplySuggestion?: () => void
   onChange: (value: unknown) => void
 }) {
-  const {param, value, isSet, disabled, schemaNote, nested, onChange} = props
+  const {param, value, isSet, disabled, schemaNote, nested, lintFindings, onChange} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const inputId = useId()
   const listId = useId()
@@ -602,6 +611,46 @@ function ParamField(props: {
           ))}
         </datalist>
       )}
+      {lintFindings?.map((finding) => {
+        const {suggestion} = finding.param
+        return (
+          <Card
+            data-testid={`vision-params-form-${param.name}-lint`}
+            key={`${finding.from}:${finding.message}`}
+            padding={2}
+            radius={2}
+            tone="caution"
+          >
+            <Flex alignItems="center" gap={2}>
+              <Box flexBasis="0%" flexGrow={1} minWidth="0">
+                <Text size={1} as="div" trim={true} tone="caution">
+                  {splitMessage(finding.message).map((segment, index) =>
+                    segment.code ? (
+                      <InlineCode key={index}>{segment.text}</InlineCode>
+                    ) : (
+                      <span key={index}>{segment.text}</span>
+                    ),
+                  )}
+                </Text>
+              </Box>
+              {suggestion !== undefined && (
+                <Button
+                  data-testid={`vision-params-form-${param.name}-lint-fix`}
+                  disabled={disabled}
+                  fontSize={1}
+                  mode="ghost"
+                  onClick={() => {
+                    props.onApplySuggestion?.()
+                    onChange(withParamSuggestion(value, finding.param))
+                  }}
+                  padding={2}
+                  text={t('vision.lint.use-suggestion', {suggestion: JSON.stringify(suggestion)})}
+                />
+              )}
+            </Flex>
+          </Card>
+        )
+      })}
       {problem && (
         <Card
           data-testid={`vision-params-form-${param.name}-problem`}
@@ -647,7 +696,14 @@ function InfoTip(props: {label: string; testId: string; children: ReactNode}) {
  * schema, like typegen). Values that fit are easy to enter (document types and option lists are
  * suggested, numbers become numbers), and values that do not are still sent, for testing.
  */
-export function ParamsForm({query, params, onChange, onSubmit}: ParamsFormProps) {
+export function ParamsForm({
+  query,
+  params,
+  onChange,
+  onSubmit,
+  lintFindings,
+  onApplySuggestion,
+}: ParamsFormProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const inference = useParamsInference(query)
   const values = params.parsed ?? {}
@@ -699,6 +755,8 @@ export function ParamsForm({query, params, onChange, onSubmit}: ParamsFormProps)
               disabled={disabled}
               isSet={Object.hasOwn(values, param.name)}
               key={param.name}
+              lintFindings={lintFindings?.filter((finding) => finding.param.name === param.name)}
+              onApplySuggestion={onApplySuggestion}
               onChange={(value) => setValue(param.name, value)}
               param={param}
               schemaNote={schemaNoteInDetails}

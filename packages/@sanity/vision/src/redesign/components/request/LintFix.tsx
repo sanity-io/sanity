@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {Button, Card, Stack} from '@sanity/ui'
-import {useCallback} from 'react'
+import JSON5 from 'json5'
+import {useCallback, useMemo} from 'react'
 import {type Schema, useSchema} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Flex} from 'ui5'
@@ -12,6 +13,7 @@ import {type QueryAgent} from '../../hooks/useQueryAgent'
 import {type VisionTab} from '../../store/types'
 import {fixQueryLint, MAX_GENERATE_ATTEMPTS} from '../../util/generateQuery'
 import {type QueryLintFinding} from '../../util/groqLint'
+import {type LintFixPlan, planLintFix, shiftFindings} from '../../util/lintFixPlan'
 import {summarizeSchema} from '../../util/schemaSummary'
 import {AgentActionsTooltip} from '../AgentActionsTooltip'
 import {AiCreditsStatus} from '../AiCreditsStatus'
@@ -31,38 +33,92 @@ export interface LintFixProps {
    * tab opens or the panel collapses, and a request still running then has to finish and load.
    */
   agent: QueryAgent
+  /**
+   * Writes the quick fixes in place, in the query editor and in the params, and returns the query
+   * and params text they leave
+   */
+  onApplyFixes: (fixes: Pick<LintFixPlan, 'queryEdits' | 'paramFixes'>) => {
+    query: string
+    rawParams: string
+  }
+  /** Shows the params, after a fix changed them */
+  onParamsFixed: () => void
+}
+
+function parseParams(rawParams: string): Record<string, unknown> | undefined {
+  try {
+    const parsed: unknown = JSON5.parse(rawParams)
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+      ? (parsed as Record<string, unknown>)
+      : undefined
+  } catch {
+    return undefined
+  }
 }
 
 /**
- * "Fix with AI" in the Lint panel: has Agent Actions fix the problems the linter found in the
- * tab's query. The fixed query replaces the tab's query and params, and runs.
+ * "Fix with AI" in the Lint panel. Each problem is fixed where it is: a problem with a "Did you
+ * mean" suggestion gets it written in place, in the query or in the params, without asking the
+ * agent. Agent Actions fixes the rest, in the query, in the values of the params when those are
+ * what is wrong (the query then stays as it is), or in both. The result replaces what it fixed,
+ * and runs; the params show when they changed.
  */
-export function LintFix({tab, params, findings, client, agent}: LintFixProps) {
+export function LintFix({
+  tab,
+  params,
+  findings,
+  client,
+  agent,
+  onApplyFixes,
+  onParamsFixed,
+}: LintFixProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const schema = useSchema() as Schema | undefined
   const credits = useAiCredits(client)
   const telemetry = useVisionTelemetry()
   const {status, run, openLastAttempt} = agent
 
+  const plan = useMemo(() => planLintFix(findings), [findings])
+  const needsAgent = plan.agent !== undefined
+
   const fix = useCallback(() => {
+    const {queryEdits, paramFixes, agent: forAgent} = plan
+    const fixed =
+      queryEdits.length > 0 || paramFixes.length > 0
+        ? onApplyFixes({queryEdits, paramFixes})
+        : {query: tab.query, rawParams: tab.rawParams}
+    if (!forAgent) {
+      if (paramFixes.length > 0) onParamsFixed()
+      telemetry.lintUsed('fix')
+      return
+    }
     telemetry.agentAction('fix-lint')
+    const {target} = forAgent
+    const fixedParams = paramFixes.length > 0 ? (parseParams(fixed.rawParams) ?? params) : params
     void run(
-      (agent) =>
+      (request) =>
         fixQueryLint({
-          ...agent,
-          query: tab.query,
-          params: params ?? {},
-          diagnostics: findings,
-          schema: schema ? summarizeSchema(schema, tab.query) : '',
+          ...request,
+          query: fixed.query,
+          params: fixedParams ?? {},
+          diagnostics: shiftFindings(forAgent.findings, queryEdits, fixed.query),
+          target,
+          schema: schema ? summarizeSchema(schema, fixed.query) : '',
         }),
-      {comment: false, keepParams: params === undefined},
+      {
+        comment: false,
+        keepParams: fixedParams === undefined,
+        keepQuery: target === 'params',
+        // The Lint tab shows the agent's progress and failure, so the params show once it is done
+        onOpened: paramFixes.length > 0 || target !== 'query' ? onParamsFixed : undefined,
+      },
     )
-  }, [findings, params, run, schema, tab.query, telemetry])
+  }, [onApplyFixes, onParamsFixed, params, plan, run, schema, tab.query, tab.rawParams, telemetry])
 
   const running = status.type === 'running'
   const shownCredits =
     status.type === 'failed' ? status.limit : status.type === 'idle' ? credits : undefined
-  const atLimit = shownCredits?.granted === false
+  const atLimit = needsAgent && shownCredits?.granted === false
 
   return (
     <Card borderBottom data-testid="vision-lint-fix-panel">
@@ -70,6 +126,7 @@ export function LintFix({tab, params, findings, client, agent}: LintFixProps) {
         <AgentActionsTooltip>
           <Button
             data-testid="vision-lint-fix"
+            data-fix-mode={needsAgent ? 'agent' : 'suggestions'}
             disabled={running || atLimit}
             fontSize={1}
             gap={2}
@@ -77,7 +134,7 @@ export function LintFix({tab, params, findings, client, agent}: LintFixProps) {
             mode="bleed"
             onClick={fix}
             padding={2}
-            text={t('vision.lint.fix')}
+            text={needsAgent ? t('vision.lint.fix') : t('vision.lint.fix.suggestions')}
             tone="primary"
           />
         </AgentActionsTooltip>
@@ -117,7 +174,9 @@ export function LintFix({tab, params, findings, client, agent}: LintFixProps) {
             </Stack>
           </Card>
         )}
-        <AiCreditsStatus apiHost={client.config().apiHost} credits={shownCredits} size={0} />
+        {needsAgent && (
+          <AiCreditsStatus apiHost={client.config().apiHost} credits={shownCredits} size={0} />
+        )}
       </Stack>
     </Card>
   )
