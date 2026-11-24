@@ -14,6 +14,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import {createPortal} from 'react-dom'
 import {type Schema, useSchema} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex, Icon} from 'ui5'
@@ -45,6 +46,7 @@ import {createGroqFunctionExtensions} from '../../util/groqFunctionEditor'
 import {parseGroq, readQueryFunctions, type TextRange} from '../../util/groqFunctions'
 import {createGroqLintExtensions, type QueryLintFinding} from '../../util/groqLint'
 import {NO_QUERY_PARAM_NAMES, queryParamNames} from '../../util/groqParamCompletions'
+import {queryEndSlot} from '../../util/queryEndSlot'
 import {isQueryParamName} from '../../util/queryParamName'
 import {createQuerySchema} from '../../util/schemaCheck'
 import {VISION_SHORTCUTS} from '../../util/shortcuts'
@@ -193,6 +195,15 @@ export function RequestPanel(props: RequestPanelProps) {
     return names.length === 0 ? NO_QUERY_PARAM_NAMES : names
   }, [params.parsed, params.valid])
   const paramValues = params.valid && params.parsed ? params.parsed : NO_QUERY_PARAM_VALUES
+  const {generateQuery: canGenerate} = useAiFeatures()
+  // Generate sits under the query's last line, inside the editor's scrolling content
+  const [generateSlot] = useState(() => {
+    const slot = document.createElement('div')
+    slot.className = styles.queryEnd
+    slot.dataset.testid = 'vision-query-end'
+    return slot
+  })
+  const generateExtension = useMemo(() => queryEndSlot(generateSlot), [generateSlot])
   const queryExtensions = useMemo(
     () => [
       ...groqExtensions,
@@ -202,8 +213,18 @@ export function RequestPanel(props: RequestPanelProps) {
       queryParamNames.of(paramNames),
       queryParamValues.of(paramValues),
       ...(workspaceSchema ? [querySchema.of(workspaceSchema)] : []),
+      ...(canGenerate ? [generateExtension] : []),
     ],
-    [functionExtensions, library, lintExtensions, paramNames, paramValues, workspaceSchema],
+    [
+      canGenerate,
+      functionExtensions,
+      generateExtension,
+      library,
+      lintExtensions,
+      paramNames,
+      paramValues,
+      workspaceSchema,
+    ],
   )
   const actorRef = useVisionActor()
   const {state: panelState, setState: setPanelState} = useRequestBottomPanel()
@@ -256,7 +277,6 @@ export function RequestPanel(props: RequestPanelProps) {
   )
 
   const querySectionRef = useRef<HTMLDivElement>(null)
-  const {generateQuery: canGenerate} = useAiFeatures()
   const [generatorState, setGeneratorOpen] = useState(false)
   const generatorOpen = canGenerate && generatorState
   // Closing hands the keyboard back to the query editor, where the bar was opened from
@@ -502,14 +522,6 @@ export function RequestPanel(props: RequestPanelProps) {
       testId="vision-request-column"
     >
       <Flex className={styles.querySection} ref={querySectionRef}>
-        {generatorOpen && (
-          <GenerateQueryBar
-            client={resolved.client}
-            formatForEditor={formatForEditor}
-            onClose={closeGenerator}
-            tab={tab}
-          />
-        )}
         <Box
           className={styles.editorContainer}
           data-testid="vision-query-editor"
@@ -523,16 +535,6 @@ export function RequestPanel(props: RequestPanelProps) {
               <Label aria-label={t('query.label')} muted size={1}>
                 {t('query.label')}
               </Label>
-              <Flex alignItems="center" className={styles.labelActions} gap={1}>
-                {canGenerate && !generatorOpen && (
-                  <AgentActionsTooltip>
-                    <GenerateQueryButton
-                      onClick={() => setGeneratorOpen(true)}
-                      text={t('vision.generate.button')}
-                    />
-                  </AgentActionsTooltip>
-                )}
-              </Flex>
             </Flex>
           </Box>
           <VisionCodeMirror
@@ -541,6 +543,26 @@ export function RequestPanel(props: RequestPanelProps) {
             onChange={onQueryChange}
             ref={queryEditorRef}
           />
+          {canGenerate &&
+            createPortal(
+              generatorOpen ? (
+                <GenerateQueryBar
+                  client={resolved.client}
+                  formatForEditor={formatForEditor}
+                  onClose={closeGenerator}
+                  tab={tab}
+                />
+              ) : (
+                <AgentActionsTooltip>
+                  <GenerateQueryButton
+                    className={styles.queryEndButton}
+                    onClick={() => setGeneratorOpen(true)}
+                    text={t('vision.generate.button')}
+                  />
+                </AgentActionsTooltip>
+              ),
+              generateSlot,
+            )}
         </Box>
       </Flex>
     </SplitWithBottomPanel>

@@ -47,7 +47,7 @@ export interface GenerateQueryBarProps {
 }
 
 /**
- * Writes a query from a description with Agent Actions, above the query editor. The query
+ * Writes a query from a description with Agent Actions, under the query's last line. The query
  * replaces the tab's query and params, and runs.
  */
 export function GenerateQueryBar({tab, client, formatForEditor, onClose}: GenerateQueryBarProps) {
@@ -131,10 +131,11 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
 
   return (
     <Card
-      className={`${overlays.promptBar} ${styles.generateBar}`}
-      borderBottom
+      border
+      className={overlays.promptBar}
       data-testid="vision-generate-bar"
       padding={2}
+      radius={2}
     >
       <Stack gap={2}>
         <PromptRow

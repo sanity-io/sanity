@@ -1,10 +1,18 @@
+import {EditorState, type Extension} from '@codemirror/state'
 import {ClientError, type LiveEvent, type SanityClient} from '@sanity/client'
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
 import {act, cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import JSON5 from 'json5'
-import {Activity, type ReactNode, type RefAttributes, useImperativeHandle, useRef} from 'react'
+import {
+  Activity,
+  type ReactNode,
+  type RefAttributes,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from 'react'
 import {defer, type Observable, of, Subject} from 'rxjs'
 import {type PerspectiveContextValue} from 'sanity'
 import {
@@ -40,6 +48,7 @@ import {
   saveVisionState,
 } from '../store/visionStorage'
 import {parseQueryPaste} from '../util/parseQueryPaste'
+import {queryEndSlotElement} from '../util/queryEndSlot'
 import * as styles from './redesign.module.css'
 import {QUERY_TAB_PANEL_ID} from './tabs/QueryTabBar'
 import {VisionRedesign} from './VisionRedesign'
@@ -307,12 +316,23 @@ vi.mock('../../codemirror/VisionCodeMirror', () => ({
   VisionCodeMirror: function VisionCodeMirrorMock({
     initialValue,
     onChange,
+    extensions,
     ref,
   }: {
     initialValue?: string
     onChange?: (value: string) => void
+    extensions?: Extension[]
   } & RefAttributes<VisionCodeMirrorHandle>) {
     const textareaRef = useRef<HTMLTextAreaElement>(null)
+    // The slot the real editor shows under the query's last line goes after the textarea
+    const slot = EditorState.create({extensions}).facet(queryEndSlotElement)
+    const queryEndRef = useRef<HTMLDivElement>(null)
+    useEffect(() => {
+      const container = queryEndRef.current
+      if (!slot || !container) return undefined
+      container.append(slot)
+      return () => slot.remove()
+    }, [slot])
     useImperativeHandle(ref, () => ({
       resetEditorContent: (content: string) => {
         if (textareaRef.current) textareaRef.current.value = content
@@ -343,12 +363,15 @@ vi.mock('../../codemirror/VisionCodeMirror', () => ({
       isEditing: () => false,
     }))
     return (
-      <textarea
-        data-testid="codemirror-mock"
-        defaultValue={initialValue}
-        onChange={(event) => onChange?.(event.target.value)}
-        ref={textareaRef}
-      />
+      <>
+        <textarea
+          data-testid="codemirror-mock"
+          defaultValue={initialValue}
+          onChange={(event) => onChange?.(event.target.value)}
+          ref={textareaRef}
+        />
+        <div ref={queryEndRef} />
+      </>
     )
   },
 }))
