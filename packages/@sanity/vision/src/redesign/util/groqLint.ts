@@ -12,6 +12,7 @@ import {
   functionLibrary,
   type GroqEditorLabels,
   groqEditorLabels,
+  queryParamValues,
   querySchema,
 } from './groqEditorContext'
 import {
@@ -189,7 +190,12 @@ function editorDiagnostics(tree: GroqTree, query: string, state: EditorState): D
   const schema = state.facet(querySchema)
   return [
     ...functionDiagnostics(checkFunctions(tree, query, state.facet(functionLibrary)), labels),
-    ...(schema ? schemaDiagnostics(checkQuerySchema(tree, query, schema), labels) : []),
+    ...(schema
+      ? schemaDiagnostics(
+          checkQuerySchema(tree, query, schema, {params: state.facet(queryParamValues)}),
+          labels,
+        )
+      : []),
   ]
 }
 
@@ -253,10 +259,12 @@ export function createGroqLintExtensions(
     linter(groqLintSource, {
       delay: LINT_DELAY_MS,
       // A function saved to the library or removed from it changes what the query's calls know,
-      // and another schema what its types and fields are checked against
+      // another schema what its types and fields are checked against, and other params the types
+      // `_type == $type` narrows to
       needsRefresh: (update) =>
         update.startState.facet(functionLibrary) !== update.state.facet(functionLibrary) ||
-        update.startState.facet(querySchema) !== update.state.facet(querySchema),
+        update.startState.facet(querySchema) !== update.state.facet(querySchema) ||
+        update.startState.facet(queryParamValues) !== update.state.facet(queryParamValues),
     }),
     keymap.of(lintKeymap),
     EditorView.updateListener.of((update) => {

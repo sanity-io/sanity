@@ -35,7 +35,12 @@ import {
 } from '../../store/types'
 import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectFunctionLibrary, selectParamsView} from '../../store/visionMachine'
-import {functionLibrary, querySchema} from '../../util/groqEditorContext'
+import {
+  functionLibrary,
+  NO_QUERY_PARAM_VALUES,
+  queryParamValues,
+  querySchema,
+} from '../../util/groqEditorContext'
 import {createGroqFunctionExtensions} from '../../util/groqFunctionEditor'
 import {parseGroq, readQueryFunctions, type TextRange} from '../../util/groqFunctions'
 import {createGroqLintExtensions, type QueryLintFinding} from '../../util/groqLint'
@@ -171,6 +176,9 @@ export function RequestPanel(props: RequestPanelProps) {
         extract: t('vision.functions.editor.extract'),
         addFromLibrary: t('vision.functions.editor.add-from-library'),
         useSuggestion: (suggestion) => t('vision.lint.use-suggestion', {suggestion}),
+        fieldOf: (types) => t('vision.schema.editor.field-of', {types}),
+        systemField: t('vision.schema.editor.system-field'),
+        documentType: t('vision.schema.editor.document-type'),
         onApplySuggestion: () => telemetry.lintUsed('fix'),
       }),
     [t, telemetry],
@@ -184,6 +192,7 @@ export function RequestPanel(props: RequestPanelProps) {
     const names = Object.keys(params.parsed).filter(isQueryParamName)
     return names.length === 0 ? NO_QUERY_PARAM_NAMES : names
   }, [params.parsed, params.valid])
+  const paramValues = params.valid && params.parsed ? params.parsed : NO_QUERY_PARAM_VALUES
   const queryExtensions = useMemo(
     () => [
       ...groqExtensions,
@@ -191,9 +200,10 @@ export function RequestPanel(props: RequestPanelProps) {
       ...functionExtensions,
       functionLibrary.of(library),
       queryParamNames.of(paramNames),
+      queryParamValues.of(paramValues),
       ...(workspaceSchema ? [querySchema.of(workspaceSchema)] : []),
     ],
-    [functionExtensions, library, lintExtensions, paramNames, workspaceSchema],
+    [functionExtensions, library, lintExtensions, paramNames, paramValues, workspaceSchema],
   )
   const actorRef = useVisionActor()
   const {state: panelState, setState: setPanelState} = useRequestBottomPanel()
@@ -297,7 +307,6 @@ export function RequestPanel(props: RequestPanelProps) {
   const lintCount = lintFindings.length
   const functionCount = declaredFunctions.length
   const panelTabs = useMemo((): CollapsiblePanelTab[] => {
-    const fitTitle = t('vision.panel.fit-content')
     return [
       {
         id: 'params',
@@ -318,7 +327,6 @@ export function RequestPanel(props: RequestPanelProps) {
                   onDoubleClick={fitParams}
                   padding={2}
                   selected={paramsView === 'json'}
-                  title={fitTitle}
                 />
                 <Tab
                   aria-controls={paramsContentId}
@@ -329,7 +337,6 @@ export function RequestPanel(props: RequestPanelProps) {
                   onDoubleClick={fitParams}
                   padding={2}
                   selected={paramsView === 'form'}
-                  title={fitTitle}
                 />
               </TabList>
             </Flex>
@@ -513,14 +520,13 @@ export function RequestPanel(props: RequestPanelProps) {
         >
           <Box className={styles.paneLabel}>
             <Flex alignItems="center" gap={2}>
-              <Label muted size={1}>
+              <Label aria-label={t('query.label')} muted size={1}>
                 {t('query.label')}
               </Label>
               <Flex alignItems="center" className={styles.labelActions} gap={1}>
                 {canGenerate && !generatorOpen && (
                   <AgentActionsTooltip>
                     <GenerateQueryButton
-                      className={styles.pressable}
                       onClick={() => setGeneratorOpen(true)}
                       text={t('vision.generate.button')}
                     />

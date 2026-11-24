@@ -32,6 +32,9 @@ const EDITOR_LABELS: GroqEditorLabels = {
   extract: 'Extract to function',
   addFromLibrary: 'Declare it',
   useSuggestion: (suggestion) => `Use ${suggestion}`,
+  fieldOf: (types) => `Field of ${types}`,
+  systemField: 'System field',
+  documentType: 'Document type',
 }
 
 function viewOf(doc: string) {

@@ -316,11 +316,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                         </Box>
                       ) : (
                         <Button
-                          className={cx(
-                            styles.listItemButton,
-                            sidebarStyles.pressable,
-                            sidebarStyles.pressableRow,
-                          )}
+                          className={cx(styles.listItemButton, sidebarStyles.pressable)}
                           data-testid="vision-saved-query-open"
                           justify="flex-start"
                           mode="bleed"

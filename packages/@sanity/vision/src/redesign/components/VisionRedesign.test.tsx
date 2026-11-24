@@ -291,6 +291,18 @@ vi.mock('../../components/ResultView', () => ({
   ),
 }))
 
+vi.mock('./response/documentList/DocumentListView', () => ({
+  DocumentListView: ({
+    parsed,
+  }: {
+    parsed: {ok: true; documents: {_id: string}[]} | {ok: false; problem: {kind: string}}
+  }) => (
+    <div data-testid="vision-document-list-mock">
+      {parsed.ok ? parsed.documents.map((document) => document._id).join(',') : parsed.problem.kind}
+    </div>
+  ),
+}))
+
 vi.mock('../../codemirror/VisionCodeMirror', () => ({
   VisionCodeMirror: function VisionCodeMirrorMock({
     initialValue,
@@ -324,6 +336,11 @@ vi.mock('../../codemirror/VisionCodeMirror', () => ({
         typeof editorMocks.visibleColumns === 'function'
           ? editorMocks.visibleColumns(lines)
           : editorMocks.visibleColumns,
+      reformat: (formatted: string) => {
+        if (textareaRef.current) textareaRef.current.value = formatted
+        onChange?.(formatted)
+      },
+      isEditing: () => false,
     }))
     return (
       <textarea
@@ -730,7 +747,12 @@ describe('VisionRedesign', () => {
   it('shows the query editor over the request tabs, with Params open and the fetch actions under them', async () => {
     renderRedesign()
 
-    expect(screen.getByTestId('vision-query-editor')).toBeTruthy()
+    const queryEditor = screen.getByTestId('vision-query-editor')
+    expect(queryEditor).toBeTruthy()
+    const header = within(queryEditor).getByText('query.label')
+    expect(header.closest('[data-ui="Label"]')?.getAttribute('aria-label')).toBe('query.label')
+    expect(within(queryEditor).queryByText('vision.query.label')).toBeNull()
+    expect(visionLocaleStrings['query.label']).toBe('Query')
     expect(screen.getByTestId('vision-params-editor')).toBeTruthy()
     expect(screen.queryByTestId('vision-options')).toBeNull()
     expect(screen.queryByTestId('vision-sidebar-lint')).toBeNull()
@@ -1389,7 +1411,7 @@ describe('VisionRedesign', () => {
 
   it('shows the result as JSON text by default, copies it from the action bar, and remembers another view', async () => {
     const {respondWith} = renderRedesign()
-    const result = [{_id: 'a', title: 'Copy me'}]
+    const result = {title: 'Copy me'}
     respondWith({result, ms: 3})
     typeQuery('*[_type == "post"]')
     await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
@@ -1409,6 +1431,7 @@ describe('VisionRedesign', () => {
         'vision-result-view-json',
         'vision-result-view-tree',
         'vision-result-view-graph',
+        'vision-result-view-documents',
       ])
       expect(views[0].getAttribute('aria-selected')).toBe('true')
       expect(views[0].getAttribute('aria-controls')).toBe(json.id)
@@ -1431,6 +1454,106 @@ describe('VisionRedesign', () => {
       if (clipboard) Object.defineProperty(navigator, 'clipboard', clipboard)
       else Reflect.deleteProperty(navigator, 'clipboard')
     }
+  })
+
+  it('opens a document list result as documents, and keeps another view picked for the query', async () => {
+    const {respondWith} = renderRedesign()
+    respondWith({
+      result: [
+        {_id: 'a', _type: 'author', title: 'Ada'},
+        {_id: 'drafts.b', title: 'Bea'},
+      ],
+      ms: 3,
+    })
+    typeQuery('*[_type == "author"]{_id, _type, title}')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
+
+    const documentsTab = () => document.getElementById('vision-result-view-documents')
+    await waitFor(() => expect(screen.getByTestId('vision-document-list-mock')).toBeTruthy())
+    expect(text(screen.getByTestId('vision-document-list-mock'))).toBe('a,drafts.b')
+    expect(documentsTab()?.getAttribute('aria-selected')).toBe('true')
+    expect(screen.queryByTestId('result-json')).toBeNull()
+
+    // Another view is kept for the query, and the documents are a click away
+    fireEvent.click(document.getElementById('vision-result-view-tree') as HTMLElement)
+    expect(screen.getByTestId('result-json')).toBeTruthy()
+    expect(screen.queryByTestId('vision-document-list-mock')).toBeNull()
+    expect(documentsTab()?.getAttribute('aria-selected')).toBe('false')
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
+    expect(screen.getByTestId('result-json')).toBeTruthy()
+    expect(screen.queryByTestId('vision-document-list-mock')).toBeNull()
+
+    fireEvent.click(documentsTab() as HTMLElement)
+    expect(screen.getByTestId('vision-document-list-mock')).toBeTruthy()
+  })
+
+  it('keeps a view picked over the document list when the query tab is left and reopened', async () => {
+    const {respondWith} = renderRedesign()
+    respondWith({result: [{_id: 'a', _type: 'author', title: 'Ada'}], ms: 3})
+    typeQuery('*[_type == "author"]{_id, _type, title}')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
+    await waitFor(() => expect(screen.getByTestId('vision-document-list-mock')).toBeTruthy())
+
+    fireEvent.click(document.getElementById('vision-result-view-tree') as HTMLElement)
+    expect(screen.getByTestId('result-json')).toBeTruthy()
+
+    // Switching tabs hides this one; coming back must not reopen the document list
+    fireEvent.click(screen.getByTestId('vision-new-tab'))
+    fireEvent.click(screen.getAllByTestId('vision-tab-button')[0])
+    expect(screen.getByTestId('result-json')).toBeTruthy()
+    expect(screen.queryByTestId('vision-document-list-mock')).toBeNull()
+    expect(
+      document.getElementById('vision-result-view-documents')?.getAttribute('aria-selected'),
+    ).toBe('false')
+  })
+
+  it('keeps JSON for a result that is not a document list, and explains it from Documents', async () => {
+    const {respondWith} = renderRedesign()
+    respondWith({result: {count: 1}, ms: 3})
+    typeQuery('count(*[_type == "author"])')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
+    await waitFor(() => expect(screen.getByTestId('vision-result-json')).toBeTruthy())
+    const documentsTab = document.getElementById('vision-result-view-documents')
+    expect(documentsTab?.getAttribute('aria-selected')).toBe('false')
+
+    fireEvent.click(documentsTab as HTMLElement)
+    expect(text(screen.getByTestId('vision-document-list-mock'))).toBe('not-array')
+    expect(screen.queryByTestId('vision-result-json')).toBeNull()
+  })
+
+  it('stays on Documents when a refetch of an open document list returns an empty array', async () => {
+    const {respondWith} = renderRedesign()
+    respondWith({result: [{_id: 'a', _type: 'author', title: 'Ada'}], ms: 3})
+    typeQuery('*[_type == "author"]{_id, _type, title}')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
+    await waitFor(() => expect(text(screen.getByTestId('vision-document-list-mock'))).toBe('a'))
+
+    respondWith({result: [], ms: 3})
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
+    await waitFor(() => expect(text(screen.getByTestId('vision-document-list-mock'))).toBe(''))
+    expect(
+      document.getElementById('vision-result-view-documents')?.getAttribute('aria-selected'),
+    ).toBe('true')
+  })
+
+  it('keeps the current view for an empty array, and shows the empty list from Documents', async () => {
+    const {respondWith} = renderRedesign()
+    respondWith({result: [], ms: 3})
+    typeQuery('*[_type == "nothing"]{_id, _type, title}')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
+    await waitFor(() => expect(screen.getByTestId('vision-result-json')).toBeTruthy())
+    const documentsTab = document.getElementById('vision-result-view-documents')
+    expect(documentsTab?.getAttribute('aria-selected')).toBe('false')
+    expect(screen.queryByTestId('vision-document-list-mock')).toBeNull()
+
+    fireEvent.click(documentsTab as HTMLElement)
+    expect(text(screen.getByTestId('vision-document-list-mock'))).toBe('')
   })
 
   it('shows the API version next to Fetch, and the field that changes it on request', async () => {
@@ -2765,8 +2888,9 @@ describe('VisionRedesign', () => {
       '}',
     ].join('\n')
     await waitFor(() => expect(getQueryEditor().value).toBe(narrow))
-    // Measured for the query's one line, then for the 7 lines of the first pass and the 10 of the second
-    expect(widthsAsked).toEqual([1, 7, 10])
+    // Measured for the query's one line, then for the 7 lines of the first pass and the 10 of the
+    // second. Auto-formatting on resize then measures the editor as it is (no line count)
+    expect(widthsAsked.filter((lines) => lines !== undefined)).toEqual([1, 7, 10])
 
     typeQuery('*[_type == "author"')
     fireEvent.click(screen.getByTestId('vision-query-menu-button'))
@@ -3807,6 +3931,7 @@ describe('VisionRedesign', () => {
       const bottomPane = split.lastElementChild as HTMLElement
       const initialFlex = bottomPane.style.flex
       const tab = document.getElementById(`vision-request-${id}-tab`) as HTMLElement
+      expect(tab.hasAttribute('title')).toBe(false)
 
       fireEvent.click(tab)
       expect(tab.getAttribute('aria-selected')).toBe('true')
@@ -3816,6 +3941,17 @@ describe('VisionRedesign', () => {
       await waitFor(() => expect(bottomPane.style.flex).toBe('0 0 335px'))
     },
   )
+
+  it('shows no fit tooltip on the panel tabs or the params view tabs', async () => {
+    renderRedesign()
+    await screen.findByTestId('vision-request-column-split')
+    fireEvent.click(document.getElementById('vision-request-params-tab') as HTMLElement)
+
+    expect(document.getElementById('vision-params-view-json')).not.toBeNull()
+    expect(document.getElementById('vision-response-response-tab')).not.toBeNull()
+    const titled = [...document.querySelectorAll('[role="tab"][title]')].map((tab) => tab.id)
+    expect(titled).toEqual([])
+  })
 })
 
 function logged(name: string): unknown[][] {

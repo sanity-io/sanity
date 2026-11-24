@@ -13,13 +13,23 @@ export interface CopyResultButtonProps {
   disabled?: boolean
   /** Resolves whether the result was copied */
   onCopy: () => Promise<boolean>
+  /** Icon only, for a row action. The result bar shows the label as the button text */
+  iconOnly?: boolean
+  testId?: string
 }
 
 /**
  * Copies the result from the response panel's bottom action bar, and confirms it where the click
- * happened: the copy icon turns into a checkmark for a moment, next to the toast the copy pushes
+ * happened: the copy icon turns into a checkmark for a moment, next to the toast the copy pushes.
+ * A document row uses the same button as an icon.
  */
-export function CopyResultButton({label, disabled, onCopy}: CopyResultButtonProps) {
+export function CopyResultButton({
+  label,
+  disabled,
+  onCopy,
+  iconOnly = false,
+  testId = 'vision-copy-result',
+}: CopyResultButtonProps) {
   // When the last copy succeeded, so a second copy while the checkmark shows keeps it longer
   const [copiedAt, setCopiedAt] = useState<number | null>(null)
   useEffect(() => {
@@ -34,23 +44,24 @@ export function CopyResultButton({label, disabled, onCopy}: CopyResultButtonProp
 
   return (
     <Button
-      data-testid="vision-copy-result"
+      aria-label={iconOnly ? label : undefined}
+      data-testid={testId}
       disabled={disabled}
       gap={2}
       icon={
         <span
           className={styles.copyGlyphs}
           data-copied={copiedAt !== null}
-          data-testid="vision-copy-result-glyphs"
+          data-testid={`${testId}-glyphs`}
         >
           <CopyIcon data-glyph="copy" />
           <CheckmarkIcon data-glyph="check" />
         </span>
       }
-      mode="ghost"
+      mode={iconOnly ? 'bleed' : 'ghost'}
       onClick={() => void handleClick()}
       padding={2}
-      text={label}
+      text={iconOnly ? undefined : label}
     />
   )
 }

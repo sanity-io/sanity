@@ -105,7 +105,6 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
             {tabs.map((tab) => (
               <Tab
                 aria-controls={elementId(`${tab.id}-panel`)}
-                className={motion.pressable}
                 fontSize={1}
                 icon={tab.icon}
                 id={elementId(`${tab.id}-tab`)}
@@ -125,7 +124,6 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
                 }
                 muted={tab.muted}
                 padding={2}
-                title={onTabDoubleClick ? t('vision.panel.fit-content') : undefined}
                 tone={tab.tone}
                 // A tablist always has a selected tab; collapsing hides its panel, no more
                 selected={tab.id === activeTab.id}
@@ -137,7 +135,7 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
           aria-controls={collapsed ? undefined : elementId(`${activeTab.id}-panel`)}
           aria-expanded={!collapsed}
           aria-label={collapsed ? t('vision.panel.expand') : t('vision.panel.collapse')}
-          className={cx(motion.pressable, motion.toggle)}
+          className={motion.toggle}
           data-testid={`${idPrefix}-panel-toggle`}
           fontSize={1}
           icon={

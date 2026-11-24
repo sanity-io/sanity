@@ -215,39 +215,6 @@
   width: 100%;
 }
 
-/*
- * Press feedback for the editor chrome's buttons: a slight give under the pointer. Icon-only
- * buttons are small targets and take a little more.
- */
-.pressable,
-.pressableIcon,
-.tabCloseButton {
-  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.pressable:active {
-  transform: scale(0.97);
-}
-
-.pressableIcon:active,
-.tabCloseButton:active {
-  transform: scale(0.95);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pressable,
-  .pressableIcon,
-  .tabCloseButton {
-    transition: none;
-  }
-
-  .pressable:active,
-  .pressableIcon:active,
-  .tabCloseButton:active {
-    transform: none;
-  }
-}
-
 /* Option fields flow into as many columns as fit the request column */
 .optionsGrid {
   display: grid;
@@ -619,15 +586,6 @@
   overflow-wrap: break-word;
 }
 
-/* The bottom bar's buttons respond to the press like `.pressable` above */
-.actionRail [data-ui='Button'] {
-  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.actionRail [data-ui='Button']:active:not(:disabled) {
-  transform: scale(0.97);
-}
-
 /*
  * An unavailable action is a disabled button wrapped in a focusable stand-in, which shows the
  * focus ring the disabled button cannot
@@ -659,10 +617,6 @@
     .resultEnter {
       transform: none;
     }
-  }
-
-  .actionRail [data-ui='Button']:active:not(:disabled) {
-    transform: none;
   }
 }
 
