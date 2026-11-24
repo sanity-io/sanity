@@ -1,0 +1,71 @@
+/* Fills the result pane, and the list below the floating view tabs scrolls on its own */
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+/*
+ * The JSON, Tree, Graph and Documents tabs float at the top right of the pane. The list starts
+ * below them.
+ */
+.commandList {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.row {
+  position: relative;
+  padding-bottom: 2px;
+}
+
+/*
+ * Copying the ID and opening a new tab show on the row that is hovered or holds the focus, over
+ * its status, so the row keeps the width of Structure's list item
+ */
+.rowActions {
+  position: absolute;
+  top: 50%;
+  right: var(--space-1, 4px);
+  transform: translateY(-50%);
+  padding: 2px;
+  border-radius: 4px;
+  background-color: var(--card-bg-color);
+  box-shadow: 0 0 0 1px var(--card-border-color);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+}
+
+.row:hover .rowActions,
+.row:focus-within .rowActions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (hover: none) {
+  .rowActions {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.shape {
+  font-family: var(--font-family-code, ui-monospace, monospace);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rowActions {
+    transition: none;
+  }
+}

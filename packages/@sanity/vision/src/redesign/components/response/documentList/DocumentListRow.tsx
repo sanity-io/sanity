@@ -1,0 +1,147 @@
+import {DocumentIcon} from '@sanity/icons/Document'
+import {LaunchIcon} from '@sanity/icons/Launch'
+import {Button} from '@sanity/ui'
+import {Tooltip} from '@sanity/ui/tooltip'
+import {type ReactNode, useCallback, useMemo} from 'react'
+import {
+  getPublishedId,
+  type PreviewProps,
+  PreviewCard,
+  SanityDefaultPreview,
+  useSchema,
+} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
+import {useIntentLink} from 'sanity/router'
+import {Text} from 'ui5'
+
+import {visionLocaleNamespace} from '../../../../i18n'
+import {useCopyToClipboard} from '../../../hooks/useCopyToClipboard'
+import {type DocumentListDocument} from '../../../util/documentListResult'
+import {CopyResultButton} from '../CopyResultButton'
+import * as styles from './DocumentList.module.css'
+
+function previewMedia(media: unknown): Pick<PreviewProps, 'imageUrl' | 'media'> {
+  // A string is only safe as an image URL. Any other string is a component type to the preview.
+  if (typeof media === 'string' && /^https?:\/\//.test(media)) return {imageUrl: media}
+  // An object is an image source, or something the preview replaces with the type icon.
+  if (isPreviewMedia(media)) return {media}
+  return {}
+}
+
+function isPreviewMedia(media: unknown): media is NonNullable<PreviewProps['media']> {
+  return typeof media === 'object' && media !== null && !Array.isArray(media)
+}
+
+/**
+ * One result row. A string `_type` opens the document when the result is from the workspace's dataset; without one the row is still the title,
+ * subtitle, media and id from the result. An unknown type uses the plain document icon.
+ */
+export function DocumentListRow({
+  document,
+  linkDocuments,
+}: {
+  document: DocumentListDocument
+  linkDocuments: boolean
+}) {
+  const schema = useSchema()
+  const schemaType = document._type ? schema.get(document._type) : undefined
+  const media = useMemo(() => previewMedia(document.media), [document.media])
+  const preview = (
+    <SanityDefaultPreview
+      icon={schemaType?.icon ?? DocumentIcon}
+      layout="default"
+      subtitle={document.subtitle}
+      title={document.title ?? document._id}
+      {...media}
+    />
+  )
+
+  return (
+    <div className={styles.row} data-testid="vision-document-list-row">
+      {linkDocuments && document._type ? (
+        <DocumentLinkCard id={document._id} type={document._type}>
+          {preview}
+        </DocumentLinkCard>
+      ) : (
+        <PreviewCard __unstable_focusRing as="div" radius={2} tone="inherit">
+          {preview}
+        </PreviewCard>
+      )}
+      <div className={styles.rowActions}>
+        <CopyIdButton id={document._id} />
+        {linkDocuments && document._type ? (
+          <OpenInNewTabButton id={document._id} type={document._type} />
+        ) : null}
+      </div>
+    </div>
+  )
+}
+
+/** Opens the document with an edit intent; a modified click opens it in a new tab */
+function DocumentLinkCard({id, type, children}: {id: string; type: string; children: ReactNode}) {
+  const params = useMemo(() => ({id: getPublishedId(id), type}), [id, type])
+  const {href, onClick} = useIntentLink({intent: 'edit', params})
+  return (
+    <PreviewCard
+      __unstable_focusRing
+      as="a"
+      data-as="a"
+      data-testid="vision-document-list-link"
+      href={href}
+      onClick={onClick}
+      radius={2}
+      tone="inherit"
+    >
+      {children}
+    </PreviewCard>
+  )
+}
+
+function OpenInNewTabButton({id, type}: {id: string; type: string}) {
+  const {t} = useTranslation(visionLocaleNamespace)
+  const params = useMemo(() => ({id: getPublishedId(id), type}), [id, type])
+  const {href} = useIntentLink({intent: 'edit', params})
+  const label = t('vision.result.documents.open-new-tab')
+  return (
+    <Tooltip
+      animate
+      content={
+        <Text as="div" size={1} trim>
+          {label}
+        </Text>
+      }
+      placement="bottom"
+      portal
+    >
+      <Button
+        aria-label={label}
+        as="a"
+        data-testid="vision-document-list-open"
+        fontSize={1}
+        href={href}
+        icon={LaunchIcon}
+        mode="bleed"
+        padding={2}
+        rel="noopener noreferrer"
+        target="_blank"
+      />
+    </Tooltip>
+  )
+}
+
+function CopyIdButton({id}: {id: string}) {
+  const {t} = useTranslation(visionLocaleNamespace)
+  const copyToClipboard = useCopyToClipboard()
+  const onCopy = useCallback(
+    () => copyToClipboard(id, t('vision.result.documents.copied-id', {id})),
+    [copyToClipboard, id, t],
+  )
+  return (
+    <CopyResultButton
+      iconOnly
+      label={t('vision.result.documents.copy-id')}
+      onCopy={onCopy}
+      testId="vision-document-list-copy-id"
+    />
+  )
+}
