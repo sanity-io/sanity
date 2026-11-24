@@ -1,6 +1,9 @@
 import {BoltIcon} from '@sanity/icons/Bolt'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
+import {MOVE_DAMAGE_CLASSES} from '../constants'
+import {countField, summaryField} from './shared'
+
 function typeReferences(field: {
   name: string
   title: string
@@ -59,6 +62,24 @@ export const pokemonType = defineType({
       type: 'image',
       validation: (rule) => rule.required(),
     }),
+    defineField({
+      name: 'generation',
+      title: 'Introduced in',
+      type: 'reference',
+      to: [{type: 'pokemonGeneration'}],
+      options: {disableNew: true},
+    }),
+    defineField({
+      name: 'moveDamageClass',
+      title: 'Damage class before Generation IV',
+      description:
+        'Until the physical/special split, the type decided whether its moves were physical or special.',
+      type: 'string',
+      options: {list: MOVE_DAMAGE_CLASSES},
+    }),
+    summaryField(),
+    countField('pokemonCount', 'Pokémon', 'How many Pokémon (including forms) have this type.'),
+    countField('moveCount', 'Moves', 'How many moves are of this type.'),
     typeReferences({
       name: 'strongAgainst',
       title: 'Super effective against',
