@@ -1432,9 +1432,30 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].options).toMatchObject({useCdn: false})
 
-    // The button points at the perspective, and the notice switches it to published
-    fireEvent.click(apiVersionButton())
-    await waitFor(() => expect(document.activeElement).toBe(perspectiveSelect()))
+    // The button points at the notice and focuses its action, scrolling the whole notice into
+    // view without the focus call scrolling the button alone
+    const scrolled: Element[] = []
+    Object.defineProperty(Element.prototype, 'scrollIntoView', {
+      configurable: true,
+      value(this: Element, arg?: boolean | ScrollIntoViewOptions) {
+        expect(arg).toEqual({block: 'nearest'})
+        scrolled.push(this)
+      },
+    })
+    const focusSpy = vi.spyOn(HTMLElement.prototype, 'focus')
+    try {
+      fireEvent.click(apiVersionButton())
+      const usePublished = screen.getByTestId('vision-option-use-cdn-blocked-use-published')
+      await waitFor(() => expect(document.activeElement).toBe(usePublished))
+      expect(focusSpy.mock.contexts).toContain(usePublished)
+      expect(focusSpy.mock.calls[focusSpy.mock.contexts.indexOf(usePublished)]).toEqual([
+        {preventScroll: true},
+      ])
+      expect(scrolled).toEqual([notice])
+    } finally {
+      focusSpy.mockRestore()
+      Reflect.deleteProperty(Element.prototype, 'scrollIntoView')
+    }
     fireEvent.click(screen.getByTestId('vision-option-use-cdn-blocked-use-published'))
     expect(perspectiveSelect().value).toBe('published')
     expect(screen.queryByTestId('vision-option-use-cdn-blocked')).toBeNull()

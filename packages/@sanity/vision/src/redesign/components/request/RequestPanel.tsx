@@ -324,13 +324,31 @@ export function RequestPanel(props: RequestPanelProps) {
   // The API version button shows the field that changes what it says: the Options tab opens if
   // another was showing, the panel expands if it was collapsed, and once its fields have mounted
   // the API version field (or, while a variant locks it, the wrapper that stands in for it) takes
-  // focus, or the perspective while that keeps the queries off the API CDN. The override chips
-  // around it show the dataset, perspective or variant field they name.
+  // focus. While the perspective keeps the queries off the API CDN it is the notice saying so that
+  // is shown: its action takes focus, or the perspective when it has none, and the whole notice is
+  // scrolled into view, since it sits below the fields and focusing alone would leave its heading
+  // clipped. The override chips around it show the dataset, perspective or variant field they name.
   const revealOption = useCallback(
     (option: RevealedOption) => {
       setPanelState((current) => ({...current, activeTabId: 'options', collapsed: false}))
       requestAnimationFrame(() => {
         const options = document.getElementById(tabElementId('vision-request-options-panel'))
+        if (option === 'cdnBlocked') {
+          const notice = options?.querySelector<HTMLElement>(
+            '[data-testid="vision-option-use-cdn-blocked"]',
+          )
+          const action = notice?.querySelector<HTMLElement>(
+            '[data-testid="vision-option-use-cdn-blocked-use-published"]',
+          )
+          const field =
+            action ??
+            options?.querySelector<HTMLElement>(
+              `[id="${tabElementId('vision-option-perspective')}"]`,
+            )
+          field?.focus({preventScroll: true})
+          notice?.scrollIntoView({block: 'nearest'})
+          return
+        }
         const field =
           option !== 'apiVersion'
             ? options?.querySelector<HTMLElement>(
