@@ -49,9 +49,12 @@ function EditorRoot({
     '--vision-editor-line-padding-left': `${rem(sanity.space[3])}`,
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     '--vision-editor-content-border-right-width': `${rem(sanity.space[4])}`,
-    // The tall top padding makes room for the label floating over a pane-filling editor
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    '--vision-editor-content-padding-top': `${rem(sanity.space[underHeader ? 3 : 5])}`,
+    // The tall top padding makes room for the label floating over a pane-filling editor. Under a
+    // header the first line sits flush, so the header's scrolled border lands on it at once
+    '--vision-editor-content-padding-top': underHeader
+      ? '0px'
+      : // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        `${rem(sanity.space[5])}`,
   }
 
   return (
@@ -108,7 +111,7 @@ export function VisionCodeMirror({
   autoHeight?: boolean
   /**
    * The editor sits under a header rather than under a label floating over it, so its content
-   * needs less top padding
+   * starts flush under the header
    */
   underHeader?: boolean
 } & RefAttributes<VisionCodeMirrorHandle>) {
