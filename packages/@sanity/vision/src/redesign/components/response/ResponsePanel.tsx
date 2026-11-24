@@ -134,6 +134,8 @@ export function ResponsePanel(props: ResponsePanelProps) {
     const {client, query, params} = settledRequest
     return {
       client,
+      query,
+      params,
       result,
       resultSourceMap,
       // A result that dereferences does not show the documents it read; the source map does

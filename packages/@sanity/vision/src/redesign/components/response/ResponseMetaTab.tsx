@@ -16,7 +16,7 @@ import {type SyncTagLookupSource, useSyncTagLookup} from '../../hooks/useSyncTag
 import {type VisionResponseMeta} from '../../store/types'
 import {regionOfShard} from '../../util/apiRegions'
 import {formatBytes} from '../../util/payloadSize'
-import {formatSyncTagMeaning} from '../../util/syncTagLookup'
+import {formatSyncTagMeaning, MAX_SYNC_TAG_PROBES} from '../../util/syncTagLookup'
 import {isWildcardSyncTag, sortSyncTags} from '../../util/syncTags'
 import {browserLocation} from '../../util/timeZoneLocation'
 import {CdnBlockedNotice} from '../CdnBlockedNotice'
@@ -147,13 +147,22 @@ function SyncTagsRow(props: {
           {tags.map((tag) => {
             const meaning = resolved?.get(tag)
             const shown = meaning ? formatSyncTagMeaning(meaning) : tag
+            // A tag that covers a whole dataset: this one, or another read through a reference
+            let wholeDataset: string | undefined
             if (isWildcardSyncTag(shown) || isWildcardSyncTag(tag)) {
+              wholeDataset = t('vision.response.sync-tags.wildcard')
+            } else if (meaning?.kind === 'dataset') {
+              wholeDataset = t('vision.response.sync-tags.other-dataset', {
+                dataset: meaning.dataset,
+              })
+            }
+            if (wholeDataset) {
               return (
                 <VisionTooltip
                   content={
                     <Box style={WILDCARD_TOOLTIP}>
                       <Text size={1} as="div" trim={true}>
-                        {t('vision.response.sync-tags.wildcard')}
+                        {wholeDataset}
                       </Text>
                     </Box>
                   }
@@ -176,7 +185,11 @@ function SyncTagsRow(props: {
                 data-resolved={resolved ? meaning !== undefined : undefined}
                 key={tag}
                 title={
-                  resolved ? (meaning ? tag : t('vision.response.sync-tags.unresolved')) : undefined
+                  resolved
+                    ? meaning
+                      ? tag
+                      : t('vision.response.sync-tags.unresolved', {budget: MAX_SYNC_TAG_PROBES})
+                    : undefined
                 }
                 tone={meaning ? 'positive' : undefined}
               >

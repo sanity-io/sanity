@@ -1163,10 +1163,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Tooltip of the Sync tags label while it shows the tags as they came */
   'vision.response.sync-tags.show-resolved': 'Show what the sync tags stand for',
   /** Tooltip of a sync tag the lookup could not resolve */
-  'vision.response.sync-tags.unresolved': 'Not resolved',
+  'vision.response.sync-tags.unresolved':
+    'Not resolved: no type, slug, document or dataset the query compares or reads answered with this tag within the lookup’s {{budget}} probes.',
   /** Tooltip of the sync tag that stands for the whole dataset, the `*` or `ALL` tag */
   'vision.response.sync-tags.wildcard':
     'This tag covers the whole dataset. With Sanity Live or live fetch, any change in the dataset triggers a refetch.',
+  /** Tooltip of a sync tag that stands for the whole of another dataset, read through a cross-dataset reference */
+  'vision.response.sync-tags.other-dataset':
+    'This tag covers the whole of the dataset “{{dataset}}”, read through a cross-dataset reference. With Sanity Live or live fetch, any change in that dataset triggers a refetch.',
   /** Under the query URL when the request went out as a POST body rather than that URL */
   'vision.response.url.sent-as-post':
     'Sent as a POST body: the query and params are too long for a URL, so @sanity/client sent them as JSON. Pasting this URL into Vision still loads the query.',
