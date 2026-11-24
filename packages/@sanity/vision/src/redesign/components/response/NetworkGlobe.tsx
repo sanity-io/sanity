@@ -135,7 +135,7 @@ export function NetworkGlobe({you, api: apiProp, reachedApi, local = false}: Net
   useEffect(() => {
     const container = containerRef.current
     if (!container) return undefined
-    const key = JSON.stringify([you, api, reachedApi, dark])
+    const key = JSON.stringify([you, api, reachedApi, dark, local])
     const settled = settledRef.current
     if (settled?.key === key && container.contains(settled.still)) return undefined
     settledRef.current = null

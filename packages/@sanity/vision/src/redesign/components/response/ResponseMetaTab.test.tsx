@@ -444,6 +444,54 @@ describe('ResponseMetaTab', () => {
     expect(options.markers).toHaveLength(2)
   })
 
+  it('draws the globe again when the same place is answered on this device instead', async () => {
+    const getContext = vi
+      .spyOn(HTMLCanvasElement.prototype, 'getContext')
+      .mockImplementation(((type: string) =>
+        type === '2d' ? {drawImage: vi.fn()} : null) as never)
+    // The globe has finished turning by its first frame, so its still picture is kept
+    const frame = vi
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback) => window.setTimeout(() => callback(1e9), 0))
+    onTestFinished(() => {
+      getContext.mockRestore()
+      frame.mockRestore()
+    })
+    cobe.createGlobe.mockClear()
+    // No shard, so no region: only the dot for you, until groq-store-wasm answers
+    const remote = meta({...wasmHit, local: undefined})
+    const ui = (network: VisionResponseMeta) => (
+      <ThemeProvider theme={theme}>
+        <ToastProvider>
+          <LayerProvider>
+            <ResponseMetaTab
+              meta={network}
+              perspectiveName="published"
+              resolved={{useCdn: true, isCdnBlockedByPerspective: false}}
+              url={network.url}
+            />
+          </LayerProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    )
+    let view: ReturnType<typeof render> | undefined
+    await act(async () => {
+      view = render(ui(remote))
+    })
+    await act(async () => {
+      await new Promise((resolve) => requestAnimationFrame(resolve))
+    })
+    expect(cobe.createGlobe).toHaveBeenCalledTimes(1)
+
+    await act(async () => view?.rerender(ui(meta(wasmHit))))
+    expect(cobe.createGlobe).toHaveBeenCalledTimes(2)
+    const [, options] = cobe.createGlobe.mock.lastCall as unknown[] as [
+      unknown,
+      {markers: unknown[]},
+    ]
+    expect(options.markers).toHaveLength(0)
+  })
+
   it('shows the measured WebAssembly execution time and local round trip', async () => {
     await renderTab({
       meta: {
