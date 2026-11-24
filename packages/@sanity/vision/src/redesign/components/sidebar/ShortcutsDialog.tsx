@@ -5,6 +5,7 @@ import {Text, Box, Flex} from 'ui5'
 import {visionLocaleNamespace} from '../../../i18n'
 import {useVisionActor} from '../../store/VisionActorContext'
 import {EDITOR_SHORTCUTS, VISION_SHORTCUT_LIST} from '../../util/shortcuts'
+import * as themeStyles from '../themeTokens.module.css'
 
 export function ShortcutsDialog() {
   const {t} = useTranslation(visionLocaleNamespace)
@@ -21,7 +22,7 @@ export function ShortcutsDialog() {
       onClose={close}
       width={0}
     >
-      <Box padding={4}>
+      <Box className={themeStyles.themeTokens} padding={4}>
         <Stack gap={4}>
           {[...VISION_SHORTCUT_LIST, ...EDITOR_SHORTCUTS].map((shortcut) => (
             <Flex

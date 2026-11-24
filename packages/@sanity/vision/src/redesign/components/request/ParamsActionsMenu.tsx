@@ -9,9 +9,11 @@ import {useTranslation} from 'sanity/i18n'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VisionTab} from '../../store/types'
 import {usePendingEdits} from '../../store/VisionActorContext'
+import {cx} from '../../util/cx'
 import {findParamNames} from '../../util/paramInference'
 import * as styles from '../redesign.module.css'
 import {type TypesExportFormat} from '../response/ExportTypesDialog'
+import * as themeStyles from '../themeTokens.module.css'
 import {VisionTooltip} from '../VisionTooltip'
 import {ExportParamsTypesDialog} from './ExportParamsTypesDialog'
 
@@ -62,7 +64,10 @@ export function ParamsActionsMenu({tab, params}: ParamsActionsMenuProps) {
             }
             id={`vision-params-menu-${tab.id}`}
             menu={
-              <Menu className={styles.popoverScroll} data-testid="vision-params-menu">
+              <Menu
+                className={cx(styles.popoverScroll, themeStyles.themeTokens)}
+                data-testid="vision-params-menu"
+              >
                 <ExportMenuItem
                   data-testid="vision-params-export-typescript"
                   disabled={!hasParams}

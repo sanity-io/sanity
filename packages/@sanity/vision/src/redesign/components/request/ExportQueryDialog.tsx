@@ -37,6 +37,7 @@ import {highlightSnippet} from '../../util/highlightSnippet'
 import {CopyButton} from '../CopyButton'
 import * as overlays from '../overlays.module.css'
 import * as styles from '../redesign.module.css'
+import * as themeStyles from '../themeTokens.module.css'
 
 const COPIED_FEEDBACK_MS = 1500
 
@@ -194,7 +195,7 @@ export function ExportQueryDialog({request, resolved, onClose}: ExportQueryDialo
       onClose={onClose}
       width={2}
     >
-      <Box padding={4}>
+      <Box className={themeStyles.themeTokens} padding={4}>
         <Stack gap={4}>
           <Text muted size={1} as="div" trim={true}>
             {t('vision.export-query.description')}
