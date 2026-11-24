@@ -415,7 +415,7 @@ describe('visionMachine', () => {
         explainQuery: true,
       },
       editor: {autoFormatOnResize: true},
-      response: {resolveSyncTags: false, sourceMapEnabled: false, resultSourceMap: true},
+      response: {resolveSyncTags: true, sourceMapEnabled: false, resultSourceMap: true},
       exportSnippets: {
         order: ['client', 'curl', 'next-sanity', 'astro', 'sveltekit', 'nuxt'],
         hidden: [],
@@ -476,22 +476,23 @@ describe('visionMachine', () => {
     expect(selectSourceMapRequest(harness.snapshot())).toBeUndefined()
   })
 
-  it('updates the response settings, persists them, and switches them back off when storage is cleared', () => {
+  it('updates the response settings, persists them, and restores the defaults when storage is cleared', () => {
     const harness = createHarness()
-    harness.actor.send({type: 'response.update', settings: {resolveSyncTags: true}})
+    expect(harness.snapshot().context.response.resolveSyncTags).toBe(true)
+    harness.actor.send({type: 'response.update', settings: {resolveSyncTags: false}})
     harness.actor.send({
       type: 'response.update',
       settings: {sourceMapEnabled: true, resultSourceMap: 'withKeyArraySelector'},
     })
     expect(selectPersistedState(harness.snapshot()).response).toEqual({
-      resolveSyncTags: true,
+      resolveSyncTags: false,
       sourceMapEnabled: true,
       resultSourceMap: 'withKeyArraySelector',
     })
 
     harness.actor.send({type: 'storage.clear'})
     expect(harness.snapshot().context.response).toEqual({
-      resolveSyncTags: false,
+      resolveSyncTags: true,
       sourceMapEnabled: false,
       resultSourceMap: true,
     })

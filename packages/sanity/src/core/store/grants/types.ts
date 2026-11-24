@@ -2,8 +2,10 @@ import {type SanityDocument} from '@sanity/types'
 import {type Observable} from 'rxjs'
 
 /**
- * @hidden
- * @beta */
+ * The document operations a grant can allow: read, create, update, and viewing or editing history.
+ *
+ * @public
+ */
 export type DocumentValuePermission = 'read' | 'create' | 'update' | 'history' | 'editHistory'
 
 /** @internal */
@@ -13,16 +15,20 @@ export interface Grant {
 }
 
 /**
- * @hidden
- * @beta */
+ * The outcome of a permission check: whether it was `granted`, and the `reason`.
+ *
+ * @public
+ */
 export interface PermissionCheckResult {
   granted: boolean
   reason: string
 }
 
 /**
- * @hidden
- * @beta */
+ * Checks the current user's permissions on documents. Get one with {@link useGrantsStore}.
+ *
+ * @public
+ */
 export interface GrantsStore {
   /**
    * Returns an observable of `PermissionCheckResult`

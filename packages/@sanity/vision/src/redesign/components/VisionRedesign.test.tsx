@@ -450,6 +450,8 @@ function createMockClient(
   initial: ClientConfig = {projectId: PROJECT_ID, apiVersion: 'v2025-02-19', dataset: 'test'},
 ) {
   const fetchCalls: FetchCall[] = []
+  // The Response panel's sync tag lookup, apart from the fetches of the query itself
+  const syncTagLookupCalls: FetchCall[] = []
   const promptCalls: {config: ClientConfig; request: Record<string, unknown>}[] = []
   const promptReplies: unknown[] = []
   const requestCalls: {config: ClientConfig; options: RequestOptions}[] = []
@@ -483,6 +485,10 @@ function createMockClient(
       getUrl: (path: string, canUseCdn?: boolean) =>
         `https://test.${canUseCdn ? 'apicdn' : 'api'}.sanity.io${path}`,
       fetch: (query: string, params: Record<string, unknown>, options: Record<string, unknown>) => {
+        if (options?.tag === 'vision.sync-tags') {
+          syncTagLookupCalls.push({config, query, params, options})
+          return Promise.resolve({result: 0, syncTags: [], ms: 1})
+        }
         fetchCalls.push({config, query, params, options})
         const respond = () =>
           nextError ? Promise.reject(nextError) : Promise.resolve({query, ...nextResponse})
@@ -519,6 +525,7 @@ function createMockClient(
   return {
     client: create(initial),
     fetchCalls,
+    syncTagLookupCalls,
     promptCalls,
     /** Replies the Agent Actions prompt gives, one per call; an error rejects the call */
     replyToPrompts: (...replies: unknown[]) => promptReplies.push(...replies),
@@ -1087,11 +1094,12 @@ describe('VisionRedesign', () => {
 
   it('fetches the raw response, shows its metadata and records the history', async () => {
     preferTreeView()
-    const {fetchCalls} = renderRedesign()
+    const {fetchCalls, syncTagLookupCalls} = renderRedesign()
 
     typeQuery('*[_type == "author"]')
     await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
     expect(text(screen.getByTestId('vision-tab-button'))).toContain('author')
+    expect(syncTagLookupCalls).toHaveLength(0)
 
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
 
@@ -1108,6 +1116,12 @@ describe('VisionRedesign', () => {
 
     expect(text(screen.getByTestId('vision-meta-execution'))).toContain('12ms')
     expect(text(screen.getByTestId('vision-meta-sync-tags'))).toContain('s1:abc')
+    // Sync tags are resolved without being asked, as the setting is on for a new user
+    expect(screen.getByTestId('vision-meta-sync-tags-toggle').getAttribute('aria-pressed')).toBe(
+      'true',
+    )
+    await waitFor(() => expect(syncTagLookupCalls.length).toBeGreaterThan(0))
+    expect(syncTagLookupCalls[0].config).toMatchObject({dataset: 'test'})
     const url = new URL((screen.getByTestId('vision-query-url') as HTMLInputElement).value)
     expect(url.pathname).toBe('/v2025-02-19/data/query/test')
     expect(url.searchParams.get('query')).toBe('*[_type == "author"]')
@@ -2879,14 +2893,19 @@ describe('VisionRedesign', () => {
       expect(webMcpTools).toBe(7)
     })
 
-    it('switches sync tag lookup on from the settings, and keeps it on', async () => {
-      renderRedesign()
-      const settings = openSettings()
-      const toggle = settings.getByTestId('vision-settings-resolve-sync-tags')
-      expect(isChecked(toggle)).toBe(false)
-      fireEvent.click(toggle)
-      await waitFor(() => expect(getStoredState().response).toMatchObject({resolveSyncTags: true}))
+    it('has sync tag lookup on at first, and keeps it off once switched off', async () => {
+      const view = renderRedesign()
+      const toggle = openSettings().getByTestId('vision-settings-resolve-sync-tags')
       expect(isChecked(toggle)).toBe(true)
+      fireEvent.click(toggle)
+      await waitFor(() => expect(getStoredState().response).toMatchObject({resolveSyncTags: false}))
+      expect(isChecked(toggle)).toBe(false)
+
+      view.unmount()
+      renderRedesign()
+      // The sidebar comes back as it was left, with the settings open
+      const restored = within(screen.getByTestId('vision-drawer-settings'))
+      expect(isChecked(restored.getByTestId('vision-settings-resolve-sync-tags'))).toBe(false)
     })
 
     it('turns off every AI feature with the switch for all of them, and reads no AI credits', async () => {

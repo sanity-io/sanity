@@ -389,13 +389,12 @@ describe('visionStorage', () => {
     expect(load('off')).toEqual({autoFormatOnResize: true})
   })
 
-  it('keeps sync tag lookup off unless it was switched on', () => {
+  it('keeps sync tag lookup on unless it was switched off', () => {
     const {response: _response, ...withoutResponse} = createInitialState(defaults)
-    expect(createInitialState(defaults).response).toEqual({
-      resolveSyncTags: false,
-      sourceMapEnabled: false,
-      resultSourceMap: true,
-    })
+    const on = {resolveSyncTags: true, sourceMapEnabled: false, resultSourceMap: true}
+    expect(createInitialState(defaults).response).toEqual(on)
+    // Nothing stored: a new user
+    expect(loadVisionState('proj', defaults).response).toEqual(on)
 
     const load = (response?: unknown) => {
       localStorage.setItem(
@@ -404,18 +403,21 @@ describe('visionStorage', () => {
       )
       return loadVisionState('proj', defaults).response
     }
-    expect(load()).toEqual({resolveSyncTags: false, sourceMapEnabled: false, resultSourceMap: true})
-    expect(load({resolveSyncTags: true})).toMatchObject({resolveSyncTags: true})
-    expect(load({resolveSyncTags: 'yes'})).toEqual({
-      resolveSyncTags: false,
-      sourceMapEnabled: false,
-      resultSourceMap: true,
-    })
-    expect(load('on')).toEqual({
-      resolveSyncTags: false,
-      sourceMapEnabled: false,
-      resultSourceMap: true,
-    })
+    expect(load()).toEqual(on)
+    expect(load({})).toEqual(on)
+    expect(load({resolveSyncTags: 'yes'})).toEqual(on)
+    expect(load('on')).toEqual(on)
+    expect(load({resolveSyncTags: false})).toEqual({...on, resolveSyncTags: false})
+
+    // State from before the current storage key, and state without tabs, read the same way
+    localStorage.clear()
+    localStorage.setItem(getLegacyVisionStorageKey('proj'), JSON.stringify(withoutResponse))
+    expect(loadVisionState('proj', defaults).response).toEqual(on)
+    localStorage.setItem(
+      getVisionStorageKey('proj'),
+      JSON.stringify({...withoutResponse, tabs: [], response: {resolveSyncTags: false}}),
+    )
+    expect(loadVisionState('proj', defaults).response).toEqual({...on, resolveSyncTags: false})
   })
 
   it('keeps the Content Source Map features off, and the plain source map, unless picked', () => {
@@ -433,17 +435,17 @@ describe('visionStorage', () => {
       resultSourceMap: true,
     })
     expect(load({sourceMapEnabled: true, resultSourceMap: 'withKeyArraySelector'})).toEqual({
-      resolveSyncTags: false,
+      resolveSyncTags: true,
       sourceMapEnabled: true,
       resultSourceMap: 'withKeyArraySelector',
     })
     expect(load({sourceMapEnabled: 'yes', resultSourceMap: 'withKeys'})).toEqual({
-      resolveSyncTags: false,
+      resolveSyncTags: true,
       sourceMapEnabled: false,
       resultSourceMap: true,
     })
     expect(load({sourceMapEnabled: true, resultSourceMap: false})).toEqual({
-      resolveSyncTags: false,
+      resolveSyncTags: true,
       sourceMapEnabled: true,
       resultSourceMap: true,
     })
