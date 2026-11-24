@@ -1,6 +1,15 @@
 import {TooltipDelayGroupProvider} from '@sanity/ui/tooltip'
 import {useActorRef, useSelector} from '@xstate/react'
-import {Activity, type CSSProperties, memo, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  Activity,
+  type CSSProperties,
+  memo,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  ViewTransition,
+} from 'react'
 import {Flex} from 'ui5'
 
 import {useSavedQueries} from '../../hooks/useSavedQueries'
@@ -25,6 +34,7 @@ import {estimateVisionLayoutWidths, getVisionLayout} from '../util/visionLayout'
 import {AiCreditsUpsellProvider} from './AiCreditsUpsell'
 import {AiFeaturesProvider} from './AiFeaturesProvider'
 import {PANEL_HEADER_HEIGHT} from './CollapsiblePanel'
+import {TABS_AREA} from './panelTransitions'
 import {QueryTabLayoutProvider} from './queryTabLayout'
 import * as styles from './redesign.module.css'
 import {VisionSidebar} from './sidebar/VisionSidebar'
@@ -159,35 +169,37 @@ export function VisionRedesign(props: VisionRedesignProps) {
                       style={ROOT_STYLE}
                     >
                       <VisionSidebar />
-                      <Flex
-                        data-testid="vision-tabs-area"
-                        flexBasis="0%"
-                        flexDirection="column"
-                        flexGrow={1}
-                        // Under a phone's full-width drawer the tabs area is covered and must not take focus
-                        inert={layout === 'mobile' && openDrawer !== null}
-                        minWidth="0"
-                        overflow="hidden"
-                        ref={setTabsElement}
-                      >
-                        <QueryTabBar />
-                        <QueryTabLayoutProvider>
-                          {/*
-                            Every tab stays mounted, so switching tabs hides one and shows another
-                            rather than remounting it: a tab shown again keeps its elements and
-                            its state, and its editors their selection, undo history and scroll
-                          */}
-                          {paneTabs.map((tab) => (
-                            <QueryTabActivityMemo
-                              animateFirstShow={tab.id === firstTabId}
-                              key={tab.id}
-                              rootElement={rootElement}
-                              shown={tab.id === activeTab.id}
-                              tab={tab}
-                            />
-                          ))}
-                        </QueryTabLayoutProvider>
-                      </Flex>
+                      <ViewTransition default={TABS_AREA}>
+                        <Flex
+                          data-testid="vision-tabs-area"
+                          flexBasis="0%"
+                          flexDirection="column"
+                          flexGrow={1}
+                          // Under a phone's full-width drawer the tabs area is covered and must not take focus
+                          inert={layout === 'mobile' && openDrawer !== null}
+                          minWidth="0"
+                          overflow="hidden"
+                          ref={setTabsElement}
+                        >
+                          <QueryTabBar />
+                          <QueryTabLayoutProvider>
+                            {/*
+                              Every tab stays mounted, so switching tabs hides one and shows another
+                              rather than remounting it: a tab shown again keeps its elements and
+                              its state, and its editors their selection, undo history and scroll
+                            */}
+                            {paneTabs.map((tab) => (
+                              <QueryTabActivityMemo
+                                animateFirstShow={tab.id === firstTabId}
+                                key={tab.id}
+                                rootElement={rootElement}
+                                shown={tab.id === activeTab.id}
+                                tab={tab}
+                              />
+                            ))}
+                          </QueryTabLayoutProvider>
+                        </Flex>
+                      </ViewTransition>
                     </Flex>
                     <VisionDialogs />
                     <VisionUrlState tab={activeTab} />
