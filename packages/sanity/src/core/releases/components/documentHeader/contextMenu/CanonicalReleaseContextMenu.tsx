@@ -1,10 +1,10 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Spinner} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {memo} from 'react'
 import {IntentLink} from 'sanity/router'
+import {Spinner} from 'ui5'
 
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
