@@ -717,6 +717,15 @@
   }
 }
 
+/*
+ * The tree wraps to the pane's width and never scrolls sideways. Its hover band reaches past the
+ * lines into this box's padding and beyond, and is clipped here at the pane's edges rather than
+ * widening the pane's scroller.
+ */
+.treeContent {
+  overflow-x: clip;
+}
+
 /* The delayed spinner fades in rather than popping up */
 .resultSpinner [data-ui='Spinner'] {
   transition: opacity 200ms cubic-bezier(0.23, 1, 0.32, 1);
