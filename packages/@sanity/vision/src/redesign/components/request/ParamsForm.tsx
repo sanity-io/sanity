@@ -7,7 +7,7 @@ import {Button, Card, Select, Stack, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {dequal} from 'dequal/lite'
 import JSON5 from 'json5'
-import {type KeyboardEvent, type ReactNode, useId, useState} from 'react'
+import {type KeyboardEvent, type ReactNode, type Ref, useId, useState} from 'react'
 import {type TFunction} from 'sanity'
 import {InlineCode, useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex, Icon} from 'ui5'
@@ -17,6 +17,7 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {useParamsInference} from '../../hooks/useParamsInference'
 import {type InferredParam, type ParamKind, type ParamType} from '../../util/paramInference'
 import * as fieldGrid from '../fieldGrid.module.css'
+import {DateTimePickerButton} from './DateTimePickerButton'
 
 type Translate = TFunction<typeof visionLocaleNamespace>
 
@@ -158,11 +159,15 @@ interface ValueInputProps {
   /** Why the input is invalid, shown like a required Structure field */
   invalid?: string
   placeholder: string
+  /** Shown at the end of the input, like the calendar button of a date and time param */
+  suffix?: ReactNode
+  ref?: Ref<HTMLInputElement>
   onChange: (value: unknown) => void
 }
 
 function ValueInput(props: ValueInputProps) {
   const {id, label, kind, listId, value, empty, disabled, invalid, placeholder, onChange} = props
+  const {ref, suffix} = props
   // The text as typed, for as long as it is what the param holds: "1." or "02" read as numbers,
   // and showing the number instead would rewrite the text under the caret
   const [draft, setDraft] = useState<{text: string; value: unknown}>()
@@ -184,6 +189,8 @@ function ValueInput(props: ValueInputProps) {
         onChange(nextValue)
       }}
       placeholder={placeholder}
+      ref={ref}
+      suffix={suffix}
       value={text}
     />
   )
@@ -291,6 +298,7 @@ function ParamField(props: {
   const {t} = useTranslation(visionLocaleNamespace)
   const inputId = useId()
   const listId = useId()
+  const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
   const {type} = param
   const options = type.options && type.options.length > 0 ? type.options : undefined
   // A text field shows null as its placeholder, so the text "null" can be told apart and typed
@@ -327,6 +335,7 @@ function ParamField(props: {
     if (isNull) placeholder = t('vision.params-form.null')
     else if (type.kind === 'any' || type.array)
       placeholder = t('vision.params-form.any-placeholder')
+    const datetime = type.format === 'datetime' && !type.array
     input = (
       <Flex alignItems="center" gap={1}>
         <Box flexBasis="0%" flexGrow={1} minWidth="0">
@@ -339,19 +348,20 @@ function ParamField(props: {
             listId={options && listId}
             onChange={onChange}
             placeholder={placeholder}
+            ref={datetime ? setInputElement : undefined}
+            suffix={
+              datetime ? (
+                <DateTimePickerButton
+                  disabled={disabled}
+                  input={inputElement}
+                  onChange={onChange}
+                  value={value}
+                />
+              ) : undefined
+            }
             value={isNull ? undefined : value}
           />
         </Box>
-        {type.format === 'datetime' && (
-          <Button
-            disabled={disabled}
-            fontSize={1}
-            mode="ghost"
-            onClick={() => onChange(new Date().toISOString())}
-            padding={2}
-            text={t('vision.params-form.now')}
-          />
-        )}
         {param.nullable && !type.array && (
           <Button
             aria-label={t('vision.params-form.clear', {name: param.name})}

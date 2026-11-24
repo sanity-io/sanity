@@ -2116,6 +2116,7 @@
     "DEFAULT_STUDIO_CLIENT_OPTIONS": "value",
     "DEFAULT_VARIANT_TYPE_KEY": "value",
     "DashboardLink": "value",
+    "DatePicker": "value",
     "Delay": "value",
     "DiagnosticsReport": "value",
     "DiagnosticsReportProps": "type",

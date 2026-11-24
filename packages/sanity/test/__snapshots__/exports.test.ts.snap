@@ -415,6 +415,7 @@ exports[`exports snapshot 1`] = `
     "DEFAULT_STUDIO_CLIENT_OPTIONS": "object",
     "DEFAULT_VARIANT_TYPE_KEY": "string",
     "DashboardLink": "function",
+    "DatePicker": "function",
     "Delay": "function",
     "DiagnosticsReport": "function",
     "DiffCard": "function",

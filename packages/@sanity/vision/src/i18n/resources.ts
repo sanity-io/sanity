@@ -973,7 +973,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.not-set': 'Not set',
   /** Placeholder of a params form field whose param is null; typing sends text instead */
   'vision.params-form.null': 'null',
-  /** Button setting a date and time param to the current time */
+  /**
+   * Button setting a date and time param to the current time
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.params-form.now': 'Now',
   /** Button removing a param the query does not use from the params */
   'vision.params-form.remove': 'Remove',
