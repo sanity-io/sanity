@@ -240,6 +240,46 @@ describe('useEventsStore', () => {
       const {result} = setup({rev: 'e2', events: [editNewest, editOlder, olderEdit]})
       expect(result.current.sinceRevision?.revisionId).toBe('e5')
     })
+
+    describe('with the transactions of a grouped edit listed under it', () => {
+      const transaction = (revisionId: string, minutes: number) => ({
+        type: 'editTransaction' as const,
+        author: 'author-1',
+        timestamp: minutesAfterBase(minutes),
+        revisionId,
+      })
+      const group = editDocumentVersionEvent({
+        revisionId: 'e0',
+        timestamp: minutesAfterBase(40),
+        transactions: [transaction('e0', 40), transaction('t1', 39), transaction('t2', 38)],
+      })
+      const listed = (revisionId: string, minutes: number) =>
+        editDocumentVersionEvent({
+          revisionId,
+          timestamp: minutesAfterBase(minutes),
+          transactions: [transaction(revisionId, minutes)],
+          parentId: 'e0',
+          isTransaction: true,
+        })
+      const olderEdit = editDocumentVersionEvent({revisionId: 'e5', timestamp: minutesAfterBase(1)})
+      const events = [group, listed('t1', 39), listed('t2', 38), olderEdit]
+
+      it('viewing latest: skips the transactions listed under the newest event', () => {
+        const {result} = setup({events})
+        expect(result.current.sinceRevision?.revisionId).toBe('e5')
+      })
+
+      it('with the group selected: skips its listed transactions', () => {
+        const {result} = setup({rev: 'e0', events})
+        expect(result.current.sinceRevision?.revisionId).toBe('e5')
+      })
+
+      it('with a listed transaction selected: uses the next older transaction', () => {
+        const {result} = setup({rev: 't1', events})
+        expect(result.current.revision?.revisionId).toBe('t1')
+        expect(result.current.sinceRevision?.revisionId).toBe('t2')
+      })
+    })
   })
 
   describe('findRangeForRevision', () => {

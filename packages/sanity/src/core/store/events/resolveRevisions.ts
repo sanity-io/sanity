@@ -13,6 +13,20 @@ function indexOfEvent(events: DocumentGroupEvent[], id: string | null | undefine
 }
 
 /**
+ * The event older than the one at `index`, skipping the transactions listed under it when it is a
+ * grouped edit event: those are part of the group, not the change before it.
+ */
+function eventBefore(events: DocumentGroupEvent[], index: number): DocumentGroupEvent | undefined {
+  const event = events[index]
+  return events
+    .slice(index + 1)
+    .find(
+      (older) =>
+        !(isEditDocumentVersionEvent(older) && older.isTransaction && older.parentId === event?.id),
+    )
+}
+
+/**
  * Resolves the `rev` search parameter against the loaded events (extracted from
  * `useEventsStore`):
  *
@@ -80,8 +94,8 @@ export function resolveRevisionId({
  *
  * - explicit revision id: used as-is.
  * - `@lastPublished` or `undefined`: the first publish event *older* than the current revision;
- *   falls back to the creation event; then to the event right after the revision (or the second
- *   event when no revision is selected).
+ *   falls back to the creation event; then to the event right after the revision (or the newest
+ *   event when no revision is selected), skipping the transactions listed under it.
  */
 export function resolveSinceId({
   events,
@@ -107,13 +121,13 @@ export function resolveSinceId({
   }
 
   // rev has not been selected, the is seeing the last version of the document, select the event that comes after
-  if (!revisionId) return events[1]?.id
+  if (!revisionId) return eventBefore(events, 0)?.id
 
   // If the user has selected a revisionId, we should show here the id of the event that is the previous event to the rev selected.
   const revisionEventIndex = indexOfEvent(events, revisionId)
   if (revisionEventIndex === -1) return null
 
-  return events[revisionEventIndex + 1]?.id || null
+  return eventBefore(events, revisionEventIndex)?.id || null
 }
 
 /**
