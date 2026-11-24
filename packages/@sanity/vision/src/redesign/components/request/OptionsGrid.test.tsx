@@ -1,45 +1,77 @@
-import {render, screen, within} from '@testing-library/react'
-import {describe, expect, it} from 'vitest'
+import {cleanup, render, screen} from '@testing-library/react'
+import {afterEach, describe, expect, it} from 'vitest'
 
-import {OptionsGrid} from './OptionsGrid'
+import {OptionsGrid, OptionsGridToggleCell} from './OptionsGrid'
+import * as styles from './OptionsGrid.module.css'
+
+function cellIds(grid: HTMLElement) {
+  return [...grid.children].map((cell) =>
+    cell.getAttribute('data-testid') === 'vision-options-toggle-cell'
+      ? cell.firstElementChild?.getAttribute('data-testid')
+      : cell.getAttribute('data-testid'),
+  )
+}
 
 describe('OptionsGrid', () => {
-  it('lays the toggles out in a grid of their own, apart from the columns of the selects', () => {
+  afterEach(cleanup)
+
+  it('lays the selects and toggles out on one grid, only the source map toggle two columns wide', () => {
     render(
-      <OptionsGrid
-        fields={
-          <>
-            <div data-testid="dataset" />
-            <div data-testid="api-version" />
-            <div data-testid="perspective" />
-          </>
-        }
-        testId="options"
-        toggles={
-          <>
-            <div data-testid="source-map" />
-            <div data-testid="use-cdn" />
-          </>
-        }
-      />,
+      <OptionsGrid testId="options">
+        <div data-testid="api-version" />
+        <div data-testid="dataset" />
+        <div data-testid="perspective" />
+        <div data-testid="variant" />
+        <OptionsGridToggleCell>
+          <div data-testid="use-cdn" />
+        </OptionsGridToggleCell>
+        <OptionsGridToggleCell wide>
+          <div data-testid="source-map" />
+        </OptionsGridToggleCell>
+      </OptionsGrid>,
     )
 
-    const fields = screen.getByTestId('vision-options-fields')
-    const toggles = screen.getByTestId('vision-options-toggles')
-    expect([...fields.children].map((child) => child.getAttribute('data-testid'))).toEqual([
-      'dataset',
+    const grid = screen.getByTestId('vision-options-grid')
+    expect(grid.classList.contains(styles.grid)).toBe(true)
+    expect(cellIds(grid)).toEqual([
       'api-version',
+      'dataset',
       'perspective',
-    ])
-    expect([...toggles.children].map((child) => child.getAttribute('data-testid'))).toEqual([
+      'variant',
+      'use-cdn',
       'source-map',
+    ])
+    const [cdnCell, sourceMapCell] = screen.getAllByTestId('vision-options-toggle-cell')
+    expect(cdnCell.classList.contains(styles.toggle)).toBe(true)
+    expect(cdnCell.classList.contains(styles.wide)).toBe(false)
+    expect(sourceMapCell.classList.contains(styles.toggle)).toBe(true)
+    expect(sourceMapCell.classList.contains(styles.wide)).toBe(true)
+  })
+
+  it('keeps the CDN toggle in an ordinary cell when the source map toggle is not rendered', () => {
+    const showSourceMap = false
+    render(
+      <OptionsGrid>
+        <div data-testid="api-version" />
+        <div data-testid="dataset" />
+        <OptionsGridToggleCell>
+          <div data-testid="use-cdn" />
+        </OptionsGridToggleCell>
+        {showSourceMap && (
+          <OptionsGridToggleCell wide>
+            <div data-testid="source-map" />
+          </OptionsGridToggleCell>
+        )}
+      </OptionsGrid>,
+    )
+
+    expect(cellIds(screen.getByTestId('vision-options-grid'))).toEqual([
+      'api-version',
+      'dataset',
       'use-cdn',
     ])
-    // Neither grid holds the other, so the toggles never take the selects' column tracks
-    expect(fields.contains(toggles)).toBe(false)
-    expect(toggles.contains(fields)).toBe(false)
-    expect(within(screen.getByTestId('options')).getByTestId('vision-options-toggles')).toBe(
-      toggles,
-    )
+    const [cdnCell, ...rest] = screen.getAllByTestId('vision-options-toggle-cell')
+    expect(rest).toEqual([])
+    expect(cdnCell.classList.contains(styles.wide)).toBe(false)
   })
 })
