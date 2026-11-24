@@ -8,6 +8,10 @@ export interface DocumentListDocument {
   title?: string
   subtitle?: string
   media?: unknown
+  /** Set on a Content Source Map entry for a document in another project, which rows never open */
+  _projectId?: string
+  /** Set on a Content Source Map entry for a document in another dataset, which rows never open */
+  _dataset?: string
 }
 
 export type DocumentListProblem =
@@ -58,6 +62,38 @@ export function parseDocumentList(result: unknown): ParsedDocumentList {
 
   if (missing > 0) {
     return {ok: false, problem: {kind: 'missing-id', count: missing, total: result.length}}
+  }
+  return {ok: true, documents}
+}
+
+/**
+ * Reads the `documents` of a Content Source Map as a document list. Every entry has an `_id` and
+ * a `_type`, and an entry for a cross-dataset reference also names its `_projectId` and
+ * `_dataset`. A source map without documents is an empty list.
+ */
+export function parseSourceMapDocuments(sourceMap: unknown): ParsedDocumentList {
+  const entries =
+    typeof sourceMap === 'object' && sourceMap !== null && !Array.isArray(sourceMap)
+      ? (sourceMap as Record<string, unknown>).documents
+      : undefined
+  if (!Array.isArray(entries)) return {ok: true, documents: []}
+
+  const documents: DocumentListDocument[] = []
+  for (const entry of entries) {
+    if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) continue
+    const record = entry as Record<string, unknown>
+    const id = optionalText(record._id)
+    if (!id) continue
+    const type = optionalText(record._type)
+    const projectId = optionalText(record._projectId)
+    const dataset = optionalText(record._dataset)
+    documents.push({
+      _id: id,
+      ...(type ? {_type: type} : {}),
+      ...(projectId ? {_projectId: projectId} : {}),
+      ...(dataset ? {_dataset: dataset} : {}),
+      ...(projectId || dataset ? {subtitle: [projectId, dataset].filter(Boolean).join(' · ')} : {}),
+    })
   }
   return {ok: true, documents}
 }

@@ -247,6 +247,12 @@
   width: 100%;
 }
 
+/* Content that scrolls inside its own box takes the panel's height; fitting it keeps the size */
+.panelContentFill,
+.panelFillView {
+  height: 100%;
+}
+
 /* Option fields flow into as many columns as fit the request column */
 .optionsGrid {
   display: grid;

@@ -24,6 +24,10 @@
   left: 0;
 }
 
+.root[data-flush] .commandList {
+  top: var(--space-1, 4px);
+}
+
 .row {
   position: relative;
   padding-bottom: 2px;

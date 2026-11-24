@@ -8,6 +8,8 @@ import {
   type PreviewProps,
   PreviewCard,
   SanityDefaultPreview,
+  useDataset,
+  useProjectId,
   useSchema,
 } from 'sanity'
 import {useTranslation} from 'sanity/i18n'
@@ -34,7 +36,8 @@ function isPreviewMedia(media: unknown): media is NonNullable<PreviewProps['medi
 
 /**
  * One result row. A string `_type` opens the document when the result is from the workspace's dataset; without one the row is still the title,
- * subtitle, media and id from the result. An unknown type uses the plain document icon.
+ * subtitle, media and id from the result. An unknown type uses the plain document icon. A row for
+ * a document in another project or dataset (a cross-dataset reference) never opens it.
  */
 export function DocumentListRow({
   document,
@@ -44,6 +47,12 @@ export function DocumentListRow({
   linkDocuments: boolean
 }) {
   const schema = useSchema()
+  const projectId = useProjectId()
+  const dataset = useDataset()
+  const isRemote =
+    (document._projectId !== undefined && document._projectId !== projectId) ||
+    (document._dataset !== undefined && document._dataset !== dataset)
+  const type = linkDocuments && !isRemote ? document._type : undefined
   const schemaType = document._type ? schema.get(document._type) : undefined
   const media = useMemo(() => previewMedia(document.media), [document.media])
   const preview = (
@@ -58,8 +67,8 @@ export function DocumentListRow({
 
   return (
     <div className={styles.row} data-testid="vision-document-list-row">
-      {linkDocuments && document._type ? (
-        <DocumentLinkCard id={document._id} type={document._type}>
+      {type ? (
+        <DocumentLinkCard id={document._id} type={type}>
           {preview}
         </DocumentLinkCard>
       ) : (
@@ -69,9 +78,7 @@ export function DocumentListRow({
       )}
       <div className={styles.rowActions}>
         <CopyIdButton id={document._id} />
-        {linkDocuments && document._type ? (
-          <OpenInNewTabButton id={document._id} type={document._type} />
-        ) : null}
+        {type ? <OpenInNewTabButton id={document._id} type={type} /> : null}
       </div>
     </div>
   )

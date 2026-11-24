@@ -20,6 +20,8 @@ export interface DocumentListViewProps {
   className?: string
   /** The dataset the result came from; rows link only when it is the workspace's dataset */
   datasetName: string
+  /** Starts the list at the top, for a pane without the result's floating view controls */
+  flush?: boolean
   id: string
   parsed: ParsedDocumentList
 }
@@ -28,11 +30,18 @@ export interface DocumentListViewProps {
  * Lists the documents already in the result. There is no second query: the rows are the objects
  * the result returned.
  */
-export function DocumentListView({className, datasetName, id, parsed}: DocumentListViewProps) {
+export function DocumentListView({
+  className,
+  datasetName,
+  flush,
+  id,
+  parsed,
+}: DocumentListViewProps) {
   const linkDocuments = useDataset() === datasetName
   return (
     <Flex
       className={className ? `${styles.root} ${className}` : styles.root}
+      data-flush={flush || undefined}
       flexDirection="column"
       id={id}
     >
