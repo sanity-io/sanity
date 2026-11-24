@@ -3,8 +3,6 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {Button} from '@sanity/ui'
 import {useEffect, useState} from 'react'
 
-import * as styles from '../redesign.module.css'
-
 /** How long the button shows its checkmark after a copy */
 export const COPIED_FEEDBACK_MS = 1500
 
@@ -44,19 +42,11 @@ export function CopyResultButton({
   return (
     <Button
       aria-label={iconOnly ? label : undefined}
+      data-copied={copiedAt !== null}
       data-testid={testId}
       disabled={disabled}
       gap={2}
-      icon={
-        <span
-          className={styles.copyGlyphs}
-          data-copied={copiedAt !== null}
-          data-testid={`${testId}-glyphs`}
-        >
-          <CopyIcon data-glyph="copy" />
-          <CheckmarkIcon data-glyph="check" />
-        </span>
-      }
+      icon={copiedAt !== null ? CheckmarkIcon : CopyIcon}
       mode={iconOnly ? 'bleed' : 'ghost'}
       onClick={() => void handleClick()}
       padding={2}
