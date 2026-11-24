@@ -520,7 +520,6 @@ export function RequestPanel(props: RequestPanelProps) {
                 {canGenerate && !generatorOpen && (
                   <AgentActionsTooltip>
                     <GenerateQueryButton
-                      className={styles.pressable}
                       onClick={() => setGeneratorOpen(true)}
                       text={t('vision.generate.button')}
                     />

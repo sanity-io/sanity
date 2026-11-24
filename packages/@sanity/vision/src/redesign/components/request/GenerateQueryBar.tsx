@@ -189,7 +189,6 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
                   <Code size={1}>{lastAttempt.query}</Code>
                   <Flex>
                     <Button
-                      className={styles.pressable}
                       data-testid="vision-generate-open-anyway"
                       fontSize={1}
                       mode="ghost"

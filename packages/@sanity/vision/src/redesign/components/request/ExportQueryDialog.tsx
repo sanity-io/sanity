@@ -134,7 +134,7 @@ export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQuery
               )}
             </Stack>
             <Button
-              className={cx(styles.pressable, overlays.copyButton)}
+              className={overlays.copyButton}
               data-copied={copied ? 'true' : undefined}
               data-testid="vision-export-query-copy"
               icon={copied ? CheckmarkIcon : CopyIcon}

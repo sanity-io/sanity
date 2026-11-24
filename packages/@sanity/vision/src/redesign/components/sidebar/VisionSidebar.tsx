@@ -69,7 +69,7 @@ function SidebarItem({
       <div className={cx(styles.sidebarItem, sidebarStyles.railItemExpanded)}>
         <Button
           aria-label={label}
-          className={cx(sidebarStyles.pressable, sidebarStyles.pressableRow)}
+          className={sidebarStyles.pressable}
           data-testid={testId}
           {...size}
           icon={icon}

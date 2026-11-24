@@ -3,14 +3,6 @@
  * entry's changes, the explanation and the plan. Live history entries and tab changes do not.
  */
 
-.pressable {
-  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.pressable:active {
-  transform: scale(0.97);
-}
-
 /* Points right when closed and turns down to open */
 .chevron {
   display: inline-block;
@@ -58,10 +50,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pressable:active {
-    transform: none;
-  }
-
   .chevron {
     transition: none;
   }

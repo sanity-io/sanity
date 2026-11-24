@@ -197,7 +197,6 @@ export function GenerateMutationsBar(props: GenerateMutationsBarProps) {
               {lastAttempt && (
                 <Flex>
                   <Button
-                    className={styles.pressable}
                     data-testid="vision-mutate-generate-open-anyway"
                     fontSize={1}
                     mode="ghost"
