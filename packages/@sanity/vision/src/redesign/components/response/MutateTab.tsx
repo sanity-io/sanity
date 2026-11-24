@@ -1,7 +1,6 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {Badge, type BadgeTone, Button, Card, Label, Stack} from '@sanity/ui'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {Suspense, useCallback, useId, useMemo, useState} from 'react'
@@ -35,6 +34,7 @@ import {
 import {omitFields, parseFieldPaths} from '../../util/omitFields'
 import {AgentActionsTooltip} from '../AgentActionsTooltip'
 import * as styles from '../redesign.module.css'
+import {AnimatedSparklesIcon} from '../request/AnimatedSparklesIcon'
 import {SwitchField} from '../SwitchField'
 import {useTabElementId} from '../tabs/queryTabShown'
 import {GenerateMutationsBar} from './GenerateMutationsBar'
@@ -422,7 +422,7 @@ export function MutateTab(props: MutateTabProps) {
                         aria-label={t('vision.mutate.generate.button')}
                         data-testid="vision-mutate-generate"
                         fontSize={1}
-                        icon={SparklesIcon}
+                        icon={AnimatedSparklesIcon}
                         mode="bleed"
                         onClick={() => setGeneratorOpen(true)}
                         padding={2}

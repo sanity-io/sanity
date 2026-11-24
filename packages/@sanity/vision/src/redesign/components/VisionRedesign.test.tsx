@@ -1,10 +1,18 @@
+import {EditorState, type Extension} from '@codemirror/state'
 import {ClientError, type LiveEvent, type SanityClient} from '@sanity/client'
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
 import {act, cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import JSON5 from 'json5'
-import {Activity, type ReactNode, type RefAttributes, useImperativeHandle, useRef} from 'react'
+import {
+  Activity,
+  type ReactNode,
+  type RefAttributes,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from 'react'
 import {defer, type Observable, of, Subject} from 'rxjs'
 import {type PerspectiveContextValue} from 'sanity'
 import {
@@ -39,7 +47,10 @@ import {
   getVisionStorageKey,
   saveVisionState,
 } from '../store/visionStorage'
+import type * as groqLintModule from '../util/groqLint'
+import {type QueryLintFinding} from '../util/groqLint'
 import {parseQueryPaste} from '../util/parseQueryPaste'
+import {queryEndSlotElement} from '../util/queryEndSlot'
 import * as styles from './redesign.module.css'
 import {QUERY_TAB_PANEL_ID} from './tabs/QueryTabBar'
 import {VisionRedesign} from './VisionRedesign'
@@ -135,6 +146,22 @@ function upsellContent(result: UpsellDataResult): Observable<UpsellDataResult> {
 const editorMocks = vi.hoisted(() => ({
   visibleColumns: undefined as number | ((lines: number | undefined) => number) | undefined,
 }))
+
+/** Reports lint findings for the shown query editor, as its linter would once it has run */
+const lintMocks = vi.hoisted(() => ({
+  report: undefined as ((findings: QueryLintFinding[]) => void) | undefined,
+}))
+
+vi.mock('../util/groqLint', async (importOriginal) => {
+  const actual = await importOriginal<typeof groqLintModule>()
+  return {
+    ...actual,
+    createGroqLintExtensions: (onFindings: (findings: QueryLintFinding[]) => void) => {
+      lintMocks.report = onFindings
+      return actual.createGroqLintExtensions(onFindings)
+    },
+  }
+})
 
 /** The elements each mocked `ResizeObserver` watches, so a test can hand one a measurement */
 const resizeObservers = new Set<{callback: ResizeObserverCallback; elements: Set<Element>}>()
@@ -240,7 +267,9 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', (
     {name: 'default', title: 'Test', projectId: 'test-project', dataset: 'test'},
     {name: 'staging', title: 'Staging', projectId: 'test-project', dataset: 'staging'},
   ],
-  ContextMenuButton: (props: Record<string, unknown>) => <button type="button" {...props} />,
+  ContextMenuButton: ({tooltipProps, ...props}: {tooltipProps?: {content?: string}}) => (
+    <button data-tooltip={tooltipProps?.content} type="button" {...props} />
+  ),
   NO_UPSELL_DATA: {upsellData: null, hasError: false},
   useUpsellData: () => ({
     upsellData$: upsellMocks.content$,
@@ -307,12 +336,23 @@ vi.mock('../../codemirror/VisionCodeMirror', () => ({
   VisionCodeMirror: function VisionCodeMirrorMock({
     initialValue,
     onChange,
+    extensions,
     ref,
   }: {
     initialValue?: string
     onChange?: (value: string) => void
+    extensions?: Extension[]
   } & RefAttributes<VisionCodeMirrorHandle>) {
     const textareaRef = useRef<HTMLTextAreaElement>(null)
+    // The slot the real editor shows under the query's last line goes after the textarea
+    const slot = EditorState.create({extensions}).facet(queryEndSlotElement)
+    const queryEndRef = useRef<HTMLDivElement>(null)
+    useEffect(() => {
+      const container = queryEndRef.current
+      if (!slot || !container) return undefined
+      container.append(slot)
+      return () => slot.remove()
+    }, [slot])
     useImperativeHandle(ref, () => ({
       resetEditorContent: (content: string) => {
         if (textareaRef.current) textareaRef.current.value = content
@@ -343,12 +383,15 @@ vi.mock('../../codemirror/VisionCodeMirror', () => ({
       isEditing: () => false,
     }))
     return (
-      <textarea
-        data-testid="codemirror-mock"
-        defaultValue={initialValue}
-        onChange={(event) => onChange?.(event.target.value)}
-        ref={textareaRef}
-      />
+      <>
+        <textarea
+          data-testid="codemirror-mock"
+          defaultValue={initialValue}
+          onChange={(event) => onChange?.(event.target.value)}
+          ref={textareaRef}
+        />
+        <div ref={queryEndRef} />
+      </>
     )
   },
 }))
@@ -566,6 +609,18 @@ function getQueryEditor(): HTMLTextAreaElement {
   ) as HTMLTextAreaElement
 }
 
+/** The keys of the Copy shortcut, Cmd/Ctrl+Shift+C (`mod` is Ctrl in jsdom) */
+const COPY_KEYS = {key: 'c', ctrlKey: true, shiftKey: true, which: 67, keyCode: 67}
+/** The keys of the Format shortcut, Cmd/Ctrl+Shift+P */
+const FORMAT_KEYS = {key: 'p', ctrlKey: true, shiftKey: true, which: 80, keyCode: 80}
+
+/** The shown tab's params JSON editor */
+function getParamsEditor(): HTMLTextAreaElement {
+  return within(within(shownTab()).getByTestId('vision-params-editor')).getByTestId(
+    'codemirror-mock',
+  ) as HTMLTextAreaElement
+}
+
 function typeQuery(query: string) {
   fireEvent.change(getQueryEditor(), {target: {value: query}})
 }
@@ -575,6 +630,12 @@ function generateFrom(description: string) {
   fireEvent.click(screen.getByTestId('vision-generate-query'))
   fireEvent.change(screen.getByTestId('vision-generate-request'), {target: {value: description}})
   fireEvent.click(screen.getByTestId('vision-generate-submit'))
+}
+
+function editFrom(description: string) {
+  fireEvent.click(screen.getByTestId('vision-edit-query'))
+  fireEvent.change(screen.getByTestId('vision-edit-request'), {target: {value: description}})
+  fireEvent.click(screen.getByTestId('vision-edit-submit'))
 }
 
 /** Shows results as the tree, which renders them as text the tests can read */
@@ -1970,6 +2031,8 @@ describe('VisionRedesign', () => {
     async function shownAiControls(ai: VisionAiConfig | undefined) {
       const tools = captureWebMcpTools()
       const view = renderRedesign(BASE_PERSPECTIVE, {ai})
+      // Generate is offered for an empty query, Edit once it has text in it
+      const generateQuery = screen.queryByTestId('vision-generate-query') !== null
       typeQuery('*[_type == "post"]')
       fireEvent.click(document.getElementById('vision-response-explain-tab') as HTMLElement)
       // The query plan is no AI feature: it is there in every configuration
@@ -1984,7 +2047,8 @@ describe('VisionRedesign', () => {
       return {
         view,
         shown: {
-          generateQuery: screen.queryByTestId('vision-generate-query') !== null,
+          generateQuery,
+          editQuery: screen.queryByTestId('vision-edit-query') !== null,
           generateMutations: screen.queryByTestId('vision-mutate-generate') !== null,
           explainQuery: screen.queryByTestId('vision-explain-button') !== null,
         },
@@ -2000,7 +2064,12 @@ describe('VisionRedesign', () => {
       ['an empty object', {}],
     ] as const)('keeps every AI feature on when it is %s', async (_label, ai) => {
       const {shown, explainDescription, creditNotes, webMcpTools} = await shownAiControls(ai)
-      expect(shown).toEqual({generateQuery: true, generateMutations: true, explainQuery: true})
+      expect(shown).toEqual({
+        generateQuery: true,
+        editQuery: true,
+        generateMutations: true,
+        explainQuery: true,
+      })
       expect(webMcpTools).toBe(7)
       expect(explainDescription).toContain('vision.explain.description')
       expect(explainDescription).not.toContain('vision.explain.description-plan')
@@ -2010,7 +2079,12 @@ describe('VisionRedesign', () => {
     it('hides every AI feature with false, reads no AI credits and calls no Agent Actions', async () => {
       const {shown, explainDescription, creditNotes, view, webMcpTools} =
         await shownAiControls(false)
-      expect(shown).toEqual({generateQuery: false, generateMutations: false, explainQuery: false})
+      expect(shown).toEqual({
+        generateQuery: false,
+        editQuery: false,
+        generateMutations: false,
+        explainQuery: false,
+      })
       // The WebMCP tools spend no AI credits and stay registered
       expect(webMcpTools).toBe(7)
       // The plan stays, described without the explanation
@@ -2028,12 +2102,14 @@ describe('VisionRedesign', () => {
 
     it.each([
       ['generateQuery', {generateQuery: false}],
+      ['editQuery', {editQuery: false}],
       ['generateMutations', {generateMutations: false}],
       ['explainQuery', {explainQuery: false}],
     ] as const)('switches off only %s when it alone is false', async (key, ai) => {
       const {shown} = await shownAiControls(ai)
       expect(shown).toEqual({
         generateQuery: true,
+        editQuery: true,
         generateMutations: true,
         explainQuery: true,
         [key]: false,
@@ -2045,8 +2121,13 @@ describe('VisionRedesign', () => {
         generateQuery: true,
         generateMutations: false,
       })
-      expect(shown).toEqual({generateQuery: true, generateMutations: false, explainQuery: true})
-      // Generate over the query editor and Explain this to me
+      expect(shown).toEqual({
+        generateQuery: true,
+        editQuery: true,
+        generateMutations: false,
+        explainQuery: true,
+      })
+      // Edit under the query and Explain this to me
       expect(creditNotes).toBe(2)
     })
 
@@ -2063,7 +2144,14 @@ describe('VisionRedesign', () => {
       renderRedesign()
       const settings = openSettings()
       expect(settings.getByTestId('vision-settings-ai')).toBeTruthy()
-      for (const id of ['enabled', 'generateQuery', 'generateMutations', 'explainQuery']) {
+      for (const id of [
+        'enabled',
+        'generateQuery',
+        'editQuery',
+        'fixLint',
+        'generateMutations',
+        'explainQuery',
+      ]) {
         expect(isChecked(settings.getByTestId(`vision-settings-ai-${id}`))).toBe(true)
       }
       expect(screen.getByTestId('vision-generate-query')).toBeTruthy()
@@ -2074,6 +2162,8 @@ describe('VisionRedesign', () => {
         expect(getStoredState().ai).toEqual({
           enabled: true,
           generateQuery: false,
+          editQuery: true,
+          fixLint: true,
           generateMutations: true,
           explainQuery: true,
         }),
@@ -2081,7 +2171,12 @@ describe('VisionRedesign', () => {
       cleanup()
 
       const {shown, webMcpTools} = await shownAiControls(undefined)
-      expect(shown).toEqual({generateQuery: false, generateMutations: true, explainQuery: true})
+      expect(shown).toEqual({
+        generateQuery: false,
+        editQuery: true,
+        generateMutations: true,
+        explainQuery: true,
+      })
       // The WebMCP tools spend no AI credits and stay registered
       expect(webMcpTools).toBe(7)
     })
@@ -2092,7 +2187,13 @@ describe('VisionRedesign', () => {
       fireEvent.click(settings.getByTestId('vision-settings-ai-enabled'))
       await waitFor(() => expect(getStoredState().ai.enabled).toBe(false))
       // The per-feature switches read as off and wait for the switch for all of them
-      for (const id of ['generateQuery', 'generateMutations', 'explainQuery']) {
+      for (const id of [
+        'generateQuery',
+        'editQuery',
+        'fixLint',
+        'generateMutations',
+        'explainQuery',
+      ]) {
         const toggle = settings.getByTestId(`vision-settings-ai-${id}`)
         expect(isChecked(toggle)).toBe(false)
         expect(isDisabled(toggle)).toBe(true)
@@ -2101,7 +2202,12 @@ describe('VisionRedesign', () => {
       view.unmount()
 
       const {shown, webMcpTools, creditNotes, view: next} = await shownAiControls(undefined)
-      expect(shown).toEqual({generateQuery: false, generateMutations: false, explainQuery: false})
+      expect(shown).toEqual({
+        generateQuery: false,
+        editQuery: false,
+        generateMutations: false,
+        explainQuery: false,
+      })
       expect(webMcpTools).toBe(7)
       expect(creditNotes).toBe(0)
       expect(next.aiCreditsRequests).toHaveLength(0)
@@ -2111,16 +2217,30 @@ describe('VisionRedesign', () => {
       const initial = createInitialState(DEFAULTS)
       saveVisionState(PROJECT_ID, {
         ...initial,
-        ai: {enabled: true, generateQuery: true, generateMutations: false, explainQuery: true},
+        ai: {
+          enabled: true,
+          generateQuery: true,
+          editQuery: true,
+          fixLint: true,
+          generateMutations: false,
+          explainQuery: true,
+        },
       })
-      const {shown} = await shownAiControls({explainQuery: false})
-      expect(shown).toEqual({generateQuery: true, generateMutations: false, explainQuery: false})
+      const {shown} = await shownAiControls({explainQuery: false, fixLint: false})
+      expect(shown).toEqual({
+        generateQuery: true,
+        editQuery: true,
+        generateMutations: false,
+        explainQuery: false,
+      })
 
       const settings = openSettings()
       expect(settings.getByTestId('vision-settings-ai-enabled')).toBeTruthy()
       expect(settings.getByTestId('vision-settings-ai-generateQuery')).toBeTruthy()
       expect(settings.getByTestId('vision-settings-ai-generateMutations')).toBeTruthy()
+      expect(settings.getByTestId('vision-settings-ai-editQuery')).toBeTruthy()
       expect(settings.queryByTestId('vision-settings-ai-explainQuery')).toBeNull()
+      expect(settings.queryByTestId('vision-settings-ai-fixLint')).toBeNull()
     })
 
     it('shows no AI settings when the config turns every AI feature off', () => {
@@ -2166,53 +2286,192 @@ describe('VisionRedesign', () => {
     const tabs = screen.getAllByTestId('vision-tab')
     expect(tabs).toHaveLength(1)
     expect(text(tabs[0])).toContain('Recent authors')
+    // Under a comment that keeps the description the query was generated from
     expect(fetchCalls[1].query).toBe(
-      '*[_type == "author"] | order(_createdAt desc)[0...10] { _id, name }',
+      '// Generated with the prompt: The 10 most recent authors\n' +
+        '*[_type == "author"] | order(_createdAt desc)[0...10] { _id, name }',
     )
     expect(getQueryEditor().value).toBe(fetchCalls[1].query)
+    // The query has text in it now, so Edit takes Generate's place
+    expect(screen.queryByTestId('vision-generate-query')).toBeNull()
+    expect(screen.getByTestId('vision-edit-query')).toBeTruthy()
     fireEvent.click(document.getElementById('vision-response-history-tab') as HTMLElement)
     expect(text(screen.getByTestId('vision-history-entry'))).toContain(
       'vision.history.reason.generated',
     )
   })
 
-  it('replaces the query of a tab that has one, keeping its title, and closes on Escape', async () => {
-    const {fetchCalls, replyToPrompts} = renderRedesign()
+  it('offers Generate only while the query is empty, and Edit once it has text in it', () => {
+    renderRedesign()
+    expect(screen.getByTestId('vision-generate-query')).toBeTruthy()
+    expect(screen.queryByTestId('vision-edit-query')).toBeNull()
+
     typeQuery('*[_type == "post"]')
+    expect(screen.queryByTestId('vision-generate-query')).toBeNull()
+    expect(screen.getByTestId('vision-edit-query')).toBeTruthy()
+
+    // Whitespace alone counts as empty
+    typeQuery('  \n ')
+    expect(screen.getByTestId('vision-generate-query')).toBeTruthy()
+    expect(screen.queryByTestId('vision-edit-query')).toBeNull()
+  })
+
+  it('keeps the comment on one line for a description with a line separator in it', async () => {
+    const {fetchCalls, replyToPrompts} = renderRedesign()
+    replyToPrompts({query: '*[_type == "author"]', params: {}})
+
+    generateFrom('Authors\u2028newest first')
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(getQueryEditor().value).toBe(
+      '// Generated with the prompt: Authors\\u2028newest first\n*[_type == "author"]',
+    )
+  })
+
+  it('edits the query of the tab with Agent Actions, keeping its title, and closes on Escape', async () => {
+    const {fetchCalls, promptCalls, replyToPrompts} = renderRedesign()
+    typeQuery('// Posts\n*[_type == "post"][0...$limit]')
+    openRequestTab('params')
+    fireEvent.change(
+      within(screen.getByTestId('vision-params-editor')).getByTestId('codemirror-mock'),
+      {target: {value: '{"limit": 5}'}},
+    )
+    await waitFor(() => expect(getStoredState().tabs[0].rawParams).toBe('{"limit": 5}'))
     replyToPrompts(
       {
-        query: '*[_type == "author"] | order(_createdAt desc)[0...$limit]{_id, name}',
-        params: {limit: 10},
-        title: 'Authors',
+        query: '// Posts\n*[_type == "post"] | order(_createdAt desc)[0...$limit]{_id, title}',
+        params: {limit: 5},
+        title: 'Posts',
       },
       {query: '*[_type == "book"]', params: {}, title: 'Books'},
     )
 
-    fireEvent.click(screen.getByTestId('vision-generate-query'))
-    fireEvent.keyDown(screen.getByTestId('vision-generate-request'), {key: 'Escape'})
-    expect(screen.queryByTestId('vision-generate-bar')).toBeNull()
+    fireEvent.click(screen.getByTestId('vision-edit-query'))
+    fireEvent.keyDown(screen.getByTestId('vision-edit-request'), {key: 'Escape'})
+    expect(screen.queryByTestId('vision-edit-bar')).toBeNull()
 
-    generateFrom('Authors')
+    editFrom('Newest first, with their titles')
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(promptCalls[0].request).toMatchObject({
+      format: 'json',
+      instructionParams: {
+        query: '// Posts\n*[_type == "post"][0...$limit]',
+        params: '{"limit":5}',
+        request: 'Newest first, with their titles',
+      },
+    })
     expect(screen.getAllByTestId('vision-tab')).toHaveLength(1)
-    // Formatted for the editor, as Prettify would, before it replaced the query
+    // Formatted for the editor, with the comments the model kept and none added
     expect(fetchCalls[1].query).toBe(
-      '*[_type == "author"] | order(_createdAt desc)[0...$limit] { _id, name }',
+      '// Posts\n*[_type == "post"] | order(_createdAt desc)[0...$limit] { _id, title }',
     )
-    expect(fetchCalls[1].params).toEqual({limit: 10})
+    expect(fetchCalls[1].params).toEqual({limit: 5})
     expect(getQueryEditor().value).toBe(fetchCalls[1].query)
     // The title still comes from the query, so it follows an undo in the editor too
-    expect(text(screen.getByTestId('vision-tab-button'))).toBe('author')
+    expect(text(screen.getByTestId('vision-tab-button'))).toBe('post')
 
     // A title the tab was given stays
     fireEvent.keyDown(within(screen.getByTestId('vision-tab')).getByRole('tab'), {key: 'F2'})
     const titleInput = screen.getByTestId('vision-tab-title-input')
     fireEvent.change(titleInput, {target: {value: 'Reading list'}})
     fireEvent.keyDown(titleInput, {key: 'Enter'})
-    generateFrom('Books')
+    editFrom('Books instead')
     await waitFor(() => expect(fetchCalls).toHaveLength(4))
     expect(getQueryEditor().value).toBe('*[_type == "book"]')
     expect(text(screen.getByTestId('vision-tab-button'))).toBe('Reading list')
+  })
+
+  it('fixes the lint findings with Agent Actions from the Lint panel', async () => {
+    const {fetchCalls, promptCalls, replyToPrompts} = renderRedesign()
+    const query = '*[_type == "post" && author->name == "x"]'
+    typeQuery(query)
+    openRequestTab('lint')
+    expect(screen.queryByTestId('vision-lint-fix')).toBeNull()
+
+    act(() =>
+      lintMocks.report?.([
+        {
+          from: 21,
+          to: 29,
+          line: 1,
+          column: 22,
+          severity: 'warning',
+          message: 'Avoid `->` in a filter',
+          source: 'groq-lint/join-in-filter',
+        },
+      ]),
+    )
+    replyToPrompts({query: '*[_type == "post" && author._ref in *[name == "x"]._id]', params: {}})
+    fireEvent.click(screen.getByTestId('vision-lint-fix'))
+
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(promptCalls[0].request).toMatchObject({
+      format: 'json',
+      instructionParams: {
+        query,
+        params: '{}',
+        diagnostics:
+          '- Line 1, column 22 (warning, groq-lint/join-in-filter): Avoid `->` in a filter',
+      },
+    })
+    // No comment is added: the fix is made to the query that was there
+    expect(getQueryEditor().value).toBe('*[_type == "post" && author._ref in *[name == "x"]._id]')
+  })
+
+  it('loads the fixed query when the Lint tab closes while the fix is running', async () => {
+    const {fetchCalls, replyToPrompts} = renderRedesign()
+    const query = '*[_type == "post" && author->name == "x"]'
+    const fixed = '*[_type == "post" && author._ref in *[name == "x"]._id]'
+    typeQuery(query)
+    openRequestTab('lint')
+    act(() =>
+      lintMocks.report?.([
+        {
+          from: 21,
+          to: 29,
+          line: 1,
+          column: 22,
+          severity: 'warning',
+          message: 'Avoid `->` in a filter',
+          source: 'groq-lint/join-in-filter',
+        },
+      ]),
+    )
+    let answer: (reply: {query: string; params: Record<string, never>}) => void = () => {}
+    replyToPrompts(
+      new Promise((resolve) => {
+        answer = resolve
+      }),
+    )
+    fireEvent.click(screen.getByTestId('vision-lint-fix'))
+
+    // Another tab takes the request panel, unmounting the Lint tab's content
+    openRequestTab('params')
+    expect(screen.queryByTestId('vision-lint-fix')).toBeNull()
+
+    await act(async () => answer({query: fixed, params: {}}))
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(getQueryEditor().value).toBe(fixed)
+  })
+
+  it('offers no Fix with AI when the config turns it off', () => {
+    renderRedesign(BASE_PERSPECTIVE, {ai: {fixLint: false}})
+    typeQuery('*[_type == "post" && author->name == "x"]')
+    openRequestTab('lint')
+    act(() =>
+      lintMocks.report?.([
+        {
+          from: 21,
+          to: 29,
+          line: 1,
+          column: 22,
+          severity: 'warning',
+          message: 'Avoid `->` in a filter',
+          source: 'groq-lint/join-in-filter',
+        },
+      ]),
+    )
+    expect(screen.getByTestId('vision-lint-finding')).toBeTruthy()
+    expect(screen.queryByTestId('vision-lint-fix')).toBeNull()
   })
 
   it('offers the last attempt when every generated query is rejected', async () => {
@@ -2849,8 +3108,7 @@ describe('VisionRedesign', () => {
     typeQuery(compact)
 
     // Without a laid-out editor to measure, lines wrap at the formatter's default width
-    fireEvent.click(screen.getByTestId('vision-query-menu-button'))
-    fireEvent.click(screen.getByTestId('vision-prettify'))
+    fireEvent.click(await screen.findByTestId('vision-query-format'))
 
     const formatted = [
       '*[_type == "author" && name match $q] {',
@@ -2861,6 +3119,8 @@ describe('VisionRedesign', () => {
     ].join('\n')
     await waitFor(() => expect(getQueryEditor().value).toBe(formatted))
     await waitFor(() => expect(getStoredState().tabs[0].query).toBe(formatted))
+    // A formatted query has nothing left to format
+    await waitFor(() => expect(screen.queryByTestId('vision-query-format')).toBeNull())
 
     // A narrow editor wraps at its own width, so the result needs no sideways scrolling. The
     // width is measured again for the formatted line count: here the one-line query measures
@@ -2872,8 +3132,10 @@ describe('VisionRedesign', () => {
       widthsAsked.push(lines)
       return (lines ?? 1) > 5 ? 30 : 40
     }
-    fireEvent.click(screen.getByTestId('vision-query-menu-button'))
-    fireEvent.click(screen.getByTestId('vision-prettify'))
+    const formatButton = await screen.findByTestId('vision-query-format')
+    // Deciding whether to offer Format measures too; only the click's measuring counts here
+    widthsAsked.length = 0
+    fireEvent.click(formatButton)
 
     const narrow = [
       '*[',
@@ -2889,16 +3151,160 @@ describe('VisionRedesign', () => {
     ].join('\n')
     await waitFor(() => expect(getQueryEditor().value).toBe(narrow))
     // Measured for the query's one line, then for the 7 lines of the first pass and the 10 of the
-    // second. Auto-formatting on resize then measures the editor as it is (no line count)
-    expect(widthsAsked.filter((lines) => lines !== undefined)).toEqual([1, 7, 10])
+    // second. Offering Format again measures the formatted query, and auto-formatting on resize
+    // measures the editor as it is (no line count)
+    await waitFor(() => expect(screen.queryByTestId('vision-query-format')).toBeNull())
+    expect(widthsAsked.filter((lines) => lines !== undefined)).toEqual([1, 7, 10, 10, 10])
 
+    // A query that does not parse offers no Format button; the shortcut says why it cannot format
     typeQuery('*[_type == "author"')
-    fireEvent.click(screen.getByTestId('vision-query-menu-button'))
-    fireEvent.click(screen.getByTestId('vision-prettify'))
+    fireEvent.keyDown(getQueryEditor(), FORMAT_KEYS)
 
     await screen.findByText('vision.query.prettify.failed', undefined, {timeout: 3000})
     expect(screen.getByText("expected ']' following expression")).toBeTruthy()
     expect(getQueryEditor().value).toBe('*[_type == "author"')
+    expect(screen.queryByTestId('vision-query-format')).toBeNull()
+  })
+
+  it('offers Format on the query only when formatting would change it, and Copy always', async () => {
+    renderRedesign()
+    const tab = () => within(shownTab())
+
+    typeQuery('*[_type=="author"]')
+    expect(tab().getByTestId('vision-query-copy')).toBeTruthy()
+    await waitFor(() => expect(tab().queryByTestId('vision-query-format')).not.toBeNull())
+    expect(tab().getByTestId('vision-query-format').getAttribute('aria-label')).toBe(
+      'vision.query.format',
+    )
+
+    // Already formatted
+    typeQuery('*[_type == "author"]')
+    await waitFor(() => expect(tab().queryByTestId('vision-query-format')).toBeNull())
+
+    // Does not parse
+    typeQuery('*[_type=="author"')
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(tab().queryByTestId('vision-query-format')).toBeNull()
+    expect(tab().getByTestId('vision-query-copy')).toBeTruthy()
+  })
+
+  it('offers Format on the JSON params only when it would change them, and only Copy in the form', async () => {
+    renderRedesign()
+    const tab = () => within(shownTab())
+
+    // The default, empty params have nothing to format
+    expect(tab().getByTestId('vision-params-copy')).toBeTruthy()
+    expect(tab().queryByTestId('vision-params-format')).toBeNull()
+
+    fireEvent.change(getParamsEditor(), {target: {value: '{"id":"a"}'}})
+    const format = await tab().findByTestId('vision-params-format', undefined, {timeout: 3000})
+    expect(format.getAttribute('aria-label')).toBe('vision.params.format')
+    fireEvent.click(format)
+    expect(getParamsEditor().value).toBe('{\n  "id": "a"\n}')
+    await waitFor(() => expect(getStoredState().tabs[0].rawParams).toBe('{\n  "id": "a"\n}'))
+    await waitFor(() => expect(tab().queryByTestId('vision-params-format')).toBeNull())
+
+    // Formatting would drop the comment, so it is not offered
+    fireEvent.change(getParamsEditor(), {target: {value: '{"id":"a" /* keep */}'}})
+    await waitFor(() => expect(getStoredState().tabs[0].rawParams).toBe('{"id":"a" /* keep */}'))
+    expect(tab().queryByTestId('vision-params-format')).toBeNull()
+
+    fireEvent.change(getParamsEditor(), {target: {value: '{"id":"a"}'}})
+    await tab().findByTestId('vision-params-format', undefined, {timeout: 3000})
+    fireEvent.click(document.getElementById('vision-params-view-form') as HTMLElement)
+    expect(tab().queryByTestId('vision-params-format')).toBeNull()
+    expect(tab().getByTestId('vision-params-copy')).toBeTruthy()
+  })
+
+  it('switches Copy to Copied with a check for a moment, without a toast, and only once it copied', async () => {
+    renderRedesign()
+    const writeText = vi.fn(() => Promise.resolve())
+    const clipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
+    Object.defineProperty(navigator, 'clipboard', {value: {writeText}, configurable: true})
+    try {
+      typeQuery('*[_type == "author"]')
+      const copy = () => within(shownTab()).getByTestId('vision-query-copy')
+      expect(text(copy())).toBe('vision.editor.copy')
+      expect(copy().getAttribute('aria-label')).toBe('vision.query.copy')
+
+      fireEvent.click(copy())
+      await waitFor(() => expect(text(copy())).toBe('vision.editor.copied'))
+      expect(writeText).toHaveBeenCalledWith('*[_type == "author"]')
+      expect(copy().getAttribute('aria-label')).toBe('vision.editor.copied')
+      expect(copy().querySelector('[data-copied="true"]')).not.toBeNull()
+      expect(screen.queryByText('vision.query.copied')).toBeNull()
+      // The params' Copy button is not the one that copied
+      expect(text(within(shownTab()).getByTestId('vision-params-copy'))).toBe('vision.editor.copy')
+
+      await waitFor(() => expect(text(copy())).toBe('vision.editor.copy'), {timeout: 3000})
+      expect(copy().querySelector('[data-copied="true"]')).toBeNull()
+
+      writeText.mockRejectedValueOnce(new Error('denied'))
+      fireEvent.click(copy())
+      await waitFor(() => expect(writeText).toHaveBeenCalledTimes(2))
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      expect(text(copy())).toBe('vision.editor.copy')
+    } finally {
+      if (clipboard) Object.defineProperty(navigator, 'clipboard', clipboard)
+      else Reflect.deleteProperty(navigator, 'clipboard')
+    }
+  })
+
+  it('copies and formats the params with the shortcuts while they have focus, and the query otherwise', async () => {
+    renderRedesign()
+    const writeText = vi.fn(() => Promise.resolve())
+    const clipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
+    Object.defineProperty(navigator, 'clipboard', {value: {writeText}, configurable: true})
+    try {
+      const query = '*[_type=="author"&&_id==$id]'
+      typeQuery(query)
+      // Still in the debounce: the shortcuts act on what the editor shows
+      fireEvent.change(getParamsEditor(), {target: {value: '{"id":"a"}'}})
+
+      fireEvent.keyDown(getParamsEditor(), COPY_KEYS)
+      await waitFor(() => expect(writeText).toHaveBeenLastCalledWith('{"id":"a"}'))
+      await waitFor(() =>
+        expect(text(within(shownTab()).getByTestId('vision-params-copy'))).toBe(
+          'vision.editor.copied',
+        ),
+      )
+      expect(text(within(shownTab()).getByTestId('vision-query-copy'))).toBe('vision.editor.copy')
+
+      fireEvent.keyDown(getParamsEditor(), FORMAT_KEYS)
+      expect(getParamsEditor().value).toBe('{\n  "id": "a"\n}')
+      await waitFor(() => expect(getStoredState().tabs[0].rawParams).toBe('{\n  "id": "a"\n}'))
+      expect(getQueryEditor().value).toBe(query)
+
+      fireEvent.keyDown(getQueryEditor(), COPY_KEYS)
+      await waitFor(() => expect(writeText).toHaveBeenLastCalledWith(query))
+      await waitFor(() =>
+        expect(text(within(shownTab()).getByTestId('vision-query-copy'))).toBe(
+          'vision.editor.copied',
+        ),
+      )
+
+      fireEvent.keyDown(getQueryEditor(), FORMAT_KEYS)
+      await waitFor(() => expect(getQueryEditor().value).toBe('*[_type == "author" && _id == $id]'))
+      expect(getParamsEditor().value).toBe('{\n  "id": "a"\n}')
+    } finally {
+      if (clipboard) Object.defineProperty(navigator, 'clipboard', clipboard)
+      else Reflect.deleteProperty(navigator, 'clipboard')
+    }
+  })
+
+  it('keeps Export and Save in the query actions menu, behind a More actions tooltip', async () => {
+    renderRedesign()
+    const button = within(shownTab()).getByTestId('vision-query-menu-button')
+    expect(button.getAttribute('aria-label')).toBe('vision.query.actions')
+
+    fireEvent.mouseEnter(button)
+    await screen.findByText('vision.actions.more')
+
+    fireEvent.click(button)
+    await screen.findByTestId('vision-save-query')
+    expect(screen.getByTestId('vision-export-query')).toBeTruthy()
+    expect(screen.queryByTestId('vision-copy-query')).toBeNull()
+    expect(screen.queryByTestId('vision-prettify')).toBeNull()
   })
 
   it('starts Live with a fetch of the current request, not the last fetched one', async () => {
@@ -4071,8 +4477,7 @@ describe('VisionRedesign adoption telemetry', () => {
     Object.defineProperty(navigator, 'clipboard', {value: {writeText}, configurable: true})
     try {
       typeQuery('*[_type == "author"]')
-      fireEvent.click(screen.getByTestId('vision-query-menu-button'))
-      fireEvent.click(screen.getByTestId('vision-copy-query'))
+      fireEvent.click(within(shownTab()).getByTestId('vision-query-copy'))
       await waitFor(() =>
         expect(logged(VisionCopied.name)).toEqual([[VisionCopied, {target: 'query'}]]),
       )
@@ -4164,17 +4569,15 @@ describe('VisionRedesign adoption telemetry', () => {
     fireEvent.click(screen.getByTestId('vision-tab-close'))
     expect(logged(VisionTabsChanged.name)).toHaveLength(3)
 
-    typeQuery('*[_type == "author"]')
-    fireEvent.click(screen.getByTestId('vision-query-menu-button'))
-    fireEvent.click(screen.getByTestId('vision-prettify'))
+    typeQuery('*[_type=="author"]')
+    fireEvent.click(await screen.findByTestId('vision-query-format'))
     await waitFor(() =>
       expect(logged(VisionQueryPrettified.name)).toEqual([
         [VisionQueryPrettified, {outcome: 'success'}],
       ]),
     )
     typeQuery('*[_type == "author"')
-    fireEvent.click(screen.getByTestId('vision-query-menu-button'))
-    fireEvent.click(screen.getByTestId('vision-prettify'))
+    fireEvent.keyDown(getQueryEditor(), FORMAT_KEYS)
     await waitFor(() =>
       expect(logged(VisionQueryPrettified.name).at(-1)).toEqual([
         VisionQueryPrettified,

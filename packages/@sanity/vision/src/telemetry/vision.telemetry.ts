@@ -58,16 +58,16 @@ export const VisionApiVersionChanged = defineEvent<{custom: boolean}>({
     'custom is true when they typed a version rather than picking a listed one. The version is not recorded.',
 })
 
-export const VisionCopied = defineEvent<{target: 'query' | 'url'}>({
+export const VisionCopied = defineEvent<{target: 'query' | 'params' | 'url'}>({
   name: 'Vision Copied',
   version: 1,
   description:
-    'User copied the Vision query or its request URL. Temporary adoption event. ' +
+    'User copied the Vision query, its params or its request URL. Temporary adoption event. ' +
     'The copied text is not recorded.',
 })
 
 export const VisionAgentActionInvoked = defineEvent<{
-  action: 'generate-query' | 'generate-mutations' | 'explain'
+  action: 'generate-query' | 'edit-query' | 'fix-lint' | 'generate-mutations' | 'explain'
 }>({
   name: 'Vision Agent Action Invoked',
   version: 1,

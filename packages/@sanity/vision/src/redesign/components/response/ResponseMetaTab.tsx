@@ -4,7 +4,7 @@ import {Tooltip} from '@sanity/ui/tooltip'
 import {type CSSProperties, type ReactNode, useMemo} from 'react'
 import {useNumberFormat} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
-import {Text, Box, Flex, Grid} from 'ui5'
+import {Badge as Ui5Badge, Text, Box, Flex, Grid} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
@@ -23,26 +23,25 @@ import {CdnBlockedNotice} from '../CdnBlockedNotice'
 import {InfoTooltip} from '../InfoTooltip'
 import {NetworkGlobe} from './NetworkGlobe'
 
-const CENTERED_LABEL: CSSProperties = {alignSelf: 'center'}
+const LABEL: CSSProperties = {whiteSpace: 'nowrap'}
 /** Keeps the info button from making its row taller than the text next to it */
 const INLINE_ICON: CSSProperties = {height: 0, display: 'flex', alignItems: 'center'}
 /** Narrower than this, the details wrap below the globe */
 const DETAILS_MIN_WIDTH: CSSProperties = {minWidth: 280}
 const MUTED: CSSProperties = {color: 'var(--card-muted-fg-color)'}
 
-function MetaRow({
-  label,
-  children,
-  centerLabel = false,
-}: {
-  label: string
-  children: ReactNode
-  /** For a value taller than a line of text, such as an input */
-  centerLabel?: boolean
-}) {
+/** A row of the grid, whose label sits on the baseline of the first line of its value */
+function MetaRow({label, children}: {label: string; children: ReactNode}) {
   return (
     <>
-      <Text muted size={1} as="div" trim={true} style={centerLabel ? CENTERED_LABEL : undefined}>
+      <Text
+        data-testid="vision-response-meta-label"
+        muted
+        size={1}
+        as="div"
+        trim={true}
+        style={LABEL}
+      >
         {label}
       </Text>
       <Box minWidth="0">{children}</Box>
@@ -152,7 +151,13 @@ export function ResponseMetaTab({meta, url, resolved, perspectiveName}: Response
         )}
         <Box flexBasis="0%" flexGrow={1} style={DETAILS_MIN_WIDTH}>
           <Stack gap={4}>
-            <Grid columnGap={4} gridTemplateColumns="max-content minmax(0, 1fr)" rowGap={2}>
+            <Grid
+              alignItems="baseline"
+              columnGap={4}
+              data-testid="vision-response-meta-rows"
+              gridTemplateColumns="max-content minmax(0, 1fr)"
+              rowGap={3}
+            >
               <MetaRow label={t('vision.network.timing')}>
                 {local && meta ? (
                   <Stack gap={2}>
@@ -292,9 +297,11 @@ export function ResponseMetaTab({meta, url, resolved, perspectiveName}: Response
                 {meta && meta.syncTags.length > 0 ? (
                   <Flex data-testid="vision-meta-sync-tags" flexWrap="wrap" gap={1}>
                     {sortSyncTags(meta.syncTags).map((tag) => (
-                      <Badge fontSize={0} key={tag}>
-                        {tag}
-                      </Badge>
+                      <Ui5Badge key={tag}>
+                        <Text size={0} as="span" trim={true}>
+                          {tag}
+                        </Text>
+                      </Ui5Badge>
                     ))}
                   </Flex>
                 ) : (
@@ -311,7 +318,7 @@ export function ResponseMetaTab({meta, url, resolved, perspectiveName}: Response
                 </MetaRow>
               )}
               {url && (
-                <MetaRow centerLabel label={t('query.url')}>
+                <MetaRow label={t('query.url')}>
                   <Flex gap={1}>
                     <Box flexBasis="0%" flexGrow={1} minWidth="0">
                       <TextInput

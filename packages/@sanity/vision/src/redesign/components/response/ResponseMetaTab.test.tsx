@@ -1,9 +1,13 @@
+import {readFileSync} from 'node:fs'
+import {createRequire} from 'node:module'
+import {dirname, join} from 'node:path'
+
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
 import {act, cleanup, fireEvent, render, screen, within} from '@testing-library/react'
 import {Activity} from 'react'
-import {afterEach, describe, expect, it, onTestFinished, vi} from 'vitest'
+import {afterAll, afterEach, beforeAll, describe, expect, it, onTestFinished, vi} from 'vitest'
 
 import {encodeQueryString} from '../../../util/encodeQueryString'
 import {encodedQuerySize, QUERY_URL_SIZE_LIMIT} from '../../../util/queryRequestMethod'
@@ -514,5 +518,43 @@ describe('ResponseMetaTab', () => {
       'vision.network.timing.local:{"e2e":"12.4ms"}',
     )
     expect(screen.queryByTestId('vision-network-endpoint-info')).toBeNull()
+  })
+})
+
+describe('ResponseMetaTab rows', () => {
+  const ui5Styles = document.createElement('style')
+  beforeAll(() => {
+    const ui5Manifest = createRequire(import.meta.url).resolve('ui5/package.json')
+    ui5Styles.textContent = readFileSync(join(dirname(ui5Manifest), 'dist/styles.css'), 'utf8')
+    document.head.append(ui5Styles)
+  })
+  afterAll(() => {
+    ui5Styles.remove()
+  })
+  afterEach(() => cleanup())
+
+  it('spaces the rows apart and puts each label, on one line, on the baseline of its value', async () => {
+    await renderTab({meta: {...meta(cdnMiss), syncTags: ['s1:b', 's1:a']}})
+    const rows = getComputedStyle(screen.getByTestId('vision-response-meta-rows'))
+    expect(rows.alignItems).toBe('baseline')
+    expect(rows.rowGap).toBe('12px')
+    const labels = screen.getAllByTestId('vision-response-meta-label')
+    expect(labels.map((label) => label.textContent)).toContain('vision.response.sync-tags')
+    for (const label of labels) {
+      expect(getComputedStyle(label).whiteSpace).toBe('nowrap')
+    }
+  })
+
+  it('draws the sync tag text where its baseline is, so the label lines up with the pills', async () => {
+    await renderTab({meta: {...meta(cdnMiss), syncTags: ['s1:b', 's1:a']}})
+    const tags = screen.getByTestId('vision-meta-sync-tags')
+    // A transform moves the text away from the baseline the row aligns its label to
+    for (const tag of ['s1:a', 's1:b']) {
+      let element: HTMLElement | null = within(tags).getByText(tag)
+      while (element && element !== tags) {
+        expect(getComputedStyle(element).transform).toMatch(/^(none)?$/)
+        element = element.parentElement
+      }
+    }
   })
 })
