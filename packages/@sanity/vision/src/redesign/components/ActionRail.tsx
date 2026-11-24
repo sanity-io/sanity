@@ -1,6 +1,7 @@
 import {type ReactNode} from 'react'
 import {Flex} from 'ui5'
 
+import {cx} from '../util/cx'
 import * as styles from './redesign.module.css'
 
 /**
@@ -11,13 +12,11 @@ export function ActionRail({children, testId}: {children: ReactNode; testId: str
   return (
     <Flex
       alignItems="center"
-      borderTop
-      className={styles.actionRail}
+      className={cx(styles.actionRail, styles.bottomBar)}
       data-testid={testId}
-      flexShrink={0}
       gap={2}
       justifyContent="flex-end"
-      padding={2}
+      paddingX={2}
     >
       {children}
     </Flex>

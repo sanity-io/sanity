@@ -163,9 +163,8 @@ export function VisionSidebar() {
       // Under a phone's full-width drawer the rail is covered and must not take focus
       inert={isMobile && drawer !== null}
       justifyContent="space-between"
-      padding={2}
     >
-      <Flex flexDirection="column" gap={1}>
+      <Flex flexDirection="column" gap={1} padding={2}>
         <SidebarItem
           expanded={expanded}
           icon={UsersIcon}
@@ -203,31 +202,38 @@ export function VisionSidebar() {
           </Flex>
         </Box>
       </Flex>
-      <Flex flexDirection="column" gap={1}>
-        <SidebarItem
-          expanded={expanded}
-          icon={BoltIcon}
-          label={t('vision.sidebar.shortcuts')}
-          onClick={() => actorRef.send({type: 'dialog.open', dialog: 'shortcuts'})}
-          testId="vision-sidebar-shortcuts"
-        />
-        <SidebarItem
-          expanded={expanded}
-          icon={CogIcon}
-          label={t('vision.sidebar.settings')}
-          onClick={(event) => toggleDrawer('settings', event)}
-          selected={drawer === 'settings'}
-          testId="vision-sidebar-settings"
-        />
-        <SidebarItem
-          expanded={expanded}
-          icon={RestoreIcon}
-          label={t('vision.redesign.switch-to-classic')}
-          onClick={switchToClassic}
-          testId="vision-sidebar-classic"
-        />
-        {/* The same border and padding as the action bars, so the separator continues their border */}
-        <Box borderTop paddingTop={2}>
+      <Flex flexDirection="column">
+        <Flex flexDirection="column" gap={1} paddingBottom={1} paddingTop={2} paddingX={2}>
+          <SidebarItem
+            expanded={expanded}
+            icon={BoltIcon}
+            label={t('vision.sidebar.shortcuts')}
+            onClick={() => actorRef.send({type: 'dialog.open', dialog: 'shortcuts'})}
+            testId="vision-sidebar-shortcuts"
+          />
+          <SidebarItem
+            expanded={expanded}
+            icon={CogIcon}
+            label={t('vision.sidebar.settings')}
+            onClick={(event) => toggleDrawer('settings', event)}
+            selected={drawer === 'settings'}
+            testId="vision-sidebar-settings"
+          />
+          <SidebarItem
+            expanded={expanded}
+            icon={RestoreIcon}
+            label={t('vision.redesign.switch-to-classic')}
+            onClick={switchToClassic}
+            testId="vision-sidebar-classic"
+          />
+        </Flex>
+        {/* A bottom bar, so its top rule continues the action bar's and the tab header's */}
+        <Flex
+          className={styles.bottomBar}
+          flexDirection="column"
+          justifyContent="center"
+          paddingX={2}
+        >
           <SidebarItem
             compact
             expanded={expanded}
@@ -236,7 +242,7 @@ export function VisionSidebar() {
             onClick={() => actorRef.send({type: 'sidebar.toggle'})}
             testId="vision-sidebar-toggle"
           />
-        </Box>
+        </Flex>
       </Flex>
     </Flex>
   )

@@ -1,6 +1,6 @@
 import {TooltipDelayGroupProvider} from '@sanity/ui/tooltip'
 import {useActorRef, useSelector} from '@xstate/react'
-import {Activity, memo, useEffect, useMemo, useRef, useState} from 'react'
+import {Activity, type CSSProperties, memo, useEffect, useMemo, useRef, useState} from 'react'
 import {Flex} from 'ui5'
 
 import {useSavedQueries} from '../../hooks/useSavedQueries'
@@ -23,6 +23,7 @@ import {selectActiveTab, selectOpenDrawer, visionMachine} from '../store/visionM
 import {loadVisionState, type VisionStorageDefaults} from '../store/visionStorage'
 import {AiCreditsUpsellProvider} from './AiCreditsUpsell'
 import {AiFeaturesProvider} from './AiFeaturesProvider'
+import {PANEL_HEADER_HEIGHT} from './CollapsiblePanel'
 import {QueryTabLayoutProvider} from './queryTabLayout'
 import * as styles from './redesign.module.css'
 import {VisionSidebar} from './sidebar/VisionSidebar'
@@ -49,6 +50,12 @@ function getVisionLayout(width: number): VisionLayout {
  * one is open, its neighbours open without waiting, as in the studio's own toolbars
  */
 const TOOLTIP_DELAY = {open: 400}
+
+interface VisionRootStyle extends CSSProperties {
+  '--vision-bottom-bar-height': string
+}
+
+const ROOT_STYLE: VisionRootStyle = {'--vision-bottom-bar-height': `${PANEL_HEADER_HEIGHT}px`}
 
 /**
  * A tab in the list of open ones, mounted for as long as it is open and hidden while another is
@@ -140,6 +147,7 @@ export function VisionRedesign(props: VisionRedesignProps) {
                       height="100%"
                       overflow="hidden"
                       ref={setRootElement}
+                      style={ROOT_STYLE}
                     >
                       <VisionSidebar />
                       <Flex
