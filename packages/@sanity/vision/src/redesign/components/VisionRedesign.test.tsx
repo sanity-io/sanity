@@ -4991,6 +4991,37 @@ describe('VisionRedesign', () => {
     expect(root.dataset.visionLayout).toBe('mobile')
   })
 
+  // The redesign's stylesheet and @sanity/ui's runtime stylesheet load in either order (the
+  // built studio links the stylesheet first, `sanity dev` injects it later), so a layout the two
+  // disagree on must come from the component's own `display` prop: a `display: flex` in the
+  // stylesheet that ties with Box's `.x:not([hidden]) {display: block}` loses in a built studio,
+  // and the result scroller, and the graph filling it, get no height (jsdom resolves the
+  // runtime stylesheet and no CSS module here, so what is asserted is the prop's rule alone)
+  it('lays out the result card as a flex column through its own display rule', async () => {
+    renderRedesign()
+    const result = await screen.findByTestId('vision-result')
+    const style = getComputedStyle(result)
+    expect(style.display).toBe('flex')
+    expect(result.querySelector('[data-testid="vision-result-toolbar"]')).not.toBeNull()
+  })
+
+  it('hides the pane that is not shown in the phone layout through the hidden attribute', async () => {
+    renderRedesign()
+    const root = await screen.findByTestId('vision-root')
+    resizeElement(root, {width: 560, height: 800})
+    expect(root.dataset.visionLayout).toBe('mobile')
+    const requestPane = root.querySelector<HTMLElement>('[id$="vision-mobile-request-pane"]')!
+    const responsePane = root.querySelector<HTMLElement>('[id$="vision-mobile-response-pane"]')!
+    expect(requestPane.hidden).toBe(false)
+    expect(responsePane.hidden).toBe(true)
+    expect(getComputedStyle(responsePane).display).toBe('none')
+
+    fireEvent.click(screen.getByRole('tab', {name: 'result.label'}))
+    expect(requestPane.hidden).toBe(true)
+    expect(responsePane.hidden).toBe(false)
+    expect(getComputedStyle(responsePane).display).toBe('block')
+  })
+
   it('keeps both panes of the main split at their minimum size, from the keyboard as well', async () => {
     renderRedesign()
     const split = await screen.findByTestId('vision-split')

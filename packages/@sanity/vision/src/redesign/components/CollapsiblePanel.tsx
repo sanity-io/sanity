@@ -166,6 +166,7 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
         <TabPanel
           aria-labelledby={elementId(`${activeTab.id}-tab`)}
           className={cx(motion.body, styles.panelBody)}
+          display="flex"
           flex={1}
           id={elementId(`${activeTab.id}-panel`)}
         >
