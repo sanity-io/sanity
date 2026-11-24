@@ -470,7 +470,7 @@ export function MutateTab(props: MutateTabProps) {
                         />
                       </Menu>
                     }
-                    popover={{placement: 'bottom-end', portal: true}}
+                    popover={{animate: true, placement: 'bottom-end', portal: true}}
                   />
                 </Flex>
               }
