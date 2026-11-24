@@ -13,7 +13,7 @@ export interface GenerateQueryButtonProps extends Omit<
 
 /**
  * Opens the generate-query bar. Labelled (not icon-only), with twinkling sparkles
- * so the Agent Actions entry point stays discoverable in the query editor chrome.
+ * so the Agent Actions entry point stays discoverable under the query.
  * The remaining props reach the `Button`, so a wrapping `Tooltip` can attach its
  * ref and handlers.
  */

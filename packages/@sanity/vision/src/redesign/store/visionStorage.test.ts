@@ -144,7 +144,14 @@ describe('visionStorage', () => {
         resultViewer: 'tree' as const,
       },
       historyDiff: {hiddenFields: ['_rev', 'meta.version']},
-      ai: {enabled: true, generateQuery: false, generateMutations: true, explainQuery: false},
+      ai: {
+        enabled: true,
+        generateQuery: false,
+        editQuery: true,
+        fixLint: false,
+        generateMutations: true,
+        explainQuery: false,
+      },
       editor: {autoFormatOnResize: false},
       functions: [{id: 'ex::author', declaration: 'fn ex::author($ref) = $ref->{name}'}],
     }
@@ -309,7 +316,14 @@ describe('visionStorage', () => {
 
   it('keeps each AI setting on unless it was switched off', () => {
     const {ai: _ai, ...withoutAi} = createInitialState(defaults)
-    const allOn = {enabled: true, generateQuery: true, generateMutations: true, explainQuery: true}
+    const allOn = {
+      enabled: true,
+      generateQuery: true,
+      editQuery: true,
+      fixLint: true,
+      generateMutations: true,
+      explainQuery: true,
+    }
     expect(createInitialState(defaults).ai).toEqual(allOn)
 
     // State saved before the settings existed
@@ -320,12 +334,14 @@ describe('visionStorage', () => {
       getVisionStorageKey('proj'),
       JSON.stringify({
         ...withoutAi,
-        ai: {enabled: false, generateQuery: 'no', explainQuery: false},
+        ai: {enabled: false, generateQuery: 'no', editQuery: false, explainQuery: false},
       }),
     )
     expect(loadVisionState('proj', defaults).ai).toEqual({
       enabled: false,
       generateQuery: true,
+      editQuery: false,
+      fixLint: true,
       generateMutations: true,
       explainQuery: false,
     })

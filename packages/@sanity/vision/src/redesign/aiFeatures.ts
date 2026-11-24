@@ -11,18 +11,24 @@ export type AiFeature = keyof ResolvedAiFeatures
 /** In the order the settings list them */
 export const AI_FEATURE_KEYS: readonly AiFeature[] = [
   'generateQuery',
+  'editQuery',
+  'fixLint',
   'generateMutations',
   'explainQuery',
 ]
 
 export const ALL_AI_FEATURES: ResolvedAiFeatures = {
   generateQuery: true,
+  editQuery: true,
+  fixLint: true,
   generateMutations: true,
   explainQuery: true,
 }
 
 const NO_AI_FEATURES: ResolvedAiFeatures = {
   generateQuery: false,
+  editQuery: false,
+  fixLint: false,
   generateMutations: false,
   explainQuery: false,
 }
@@ -33,6 +39,8 @@ export function resolveAiFeatures(ai: VisionAiConfig | undefined): ResolvedAiFea
   if (typeof ai !== 'object' || ai === null) return ALL_AI_FEATURES
   return {
     generateQuery: ai.generateQuery !== false,
+    editQuery: ai.editQuery !== false,
+    fixLint: ai.fixLint !== false,
     generateMutations: ai.generateMutations !== false,
     explainQuery: ai.explainQuery !== false,
   }
@@ -49,6 +57,8 @@ export function resolveEffectiveAiFeatures(
   if (!settings.enabled) return NO_AI_FEATURES
   return {
     generateQuery: configured.generateQuery && settings.generateQuery,
+    editQuery: configured.editQuery && settings.editQuery,
+    fixLint: configured.fixLint && settings.fixLint,
     generateMutations: configured.generateMutations && settings.generateMutations,
     explainQuery: configured.explainQuery && settings.explainQuery,
   }

@@ -124,12 +124,26 @@
 }
 
 /*
- * The Generate query bar that replaces the label's Generate button: its row starts 5px from the
- * top of the pane like the button, and its close button sits 8px from the right edge like the
- * button. Doubled to beat the card's own padding.
+ * Generate, under the query's last line in the editor's content: the button, or the bar it opens.
+ * It lines up with the text of the lines above, and sticks to the right of the gutters at the
+ * visible width (both set from the editor's layout), so long lines scrolled sideways keep it in
+ * view. The editor's content is preformatted, monospaced text with a caret; the controls are not.
  */
-.generateBar.generateBar {
-  padding-top: 5px;
+.queryEnd {
+  position: sticky;
+  box-sizing: border-box;
+  padding: 4px var(--vision-editor-line-padding-left);
+  white-space: normal;
+  caret-color: auto;
+  cursor: auto;
+}
+
+/*
+ * The sparkles line up with the first character: the button's padding and the icon's own inset
+ * hang into the margin
+ */
+.queryEndButton {
+  margin-left: -6px;
 }
 
 /* The result's JSON view fills the result pane, its editor scrolling on its own */

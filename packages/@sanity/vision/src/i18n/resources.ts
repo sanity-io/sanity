@@ -287,6 +287,21 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Tooltip of the API version button while a selected variant forces the variants API version */
   'vision.api-version.tooltip-locked':
     'Queries run against API version {{version}}, which the selected variant needs.',
+  /** Button under the query editor that opens the bar changing the query as described */
+  'vision.edit.button': 'Edit',
+  /** Explanation under the edit query field */
+  'vision.edit.description':
+    'Sanity Agent Actions change the GROQ as you describe, with the document types, and the Content Lake checks each attempt; every attempt uses one AI credit. It replaces this tab’s query and runs; undo in the editor brings the previous query back.',
+  /** Shown when the query could not be changed, above the reason */
+  'vision.edit.failed': 'The query could not be changed',
+  /** Accessible label of the description field in the edit query bar */
+  'vision.edit.label': 'How should the query change?',
+  /** Placeholder of the description field in the edit query bar */
+  'vision.edit.placeholder': 'Also fetch the author’s name, and only show published posts',
+  /** Shown while the first attempt at the changed query is written */
+  'vision.edit.progress': 'Changing the query…',
+  /** Button changing the query */
+  'vision.edit.submit': 'Edit',
   /** Explanation at the top of the Explain panel */
   'vision.explain.description':
     'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps. Explain this to me has Sanity Agent Actions describe the query and its plan in plain words, which uses one AI credit.',
@@ -476,6 +491,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Shown in the Lint panel while the query has no lint findings */
   'vision.lint.empty':
     'No lint findings. Problems the GROQ linter spots in the query are listed here as you type; pick one to select it in the editor.',
+  /** Button in the Lint panel that fixes the listed problems with Agent Actions */
+  'vision.lint.fix': 'Fix with AI',
+  /** Shown when the lint problems could not be fixed, above the reason */
+  'vision.lint.fix.failed': 'The problems could not be fixed',
+  /** Opens the last rejected fix, without running it, to finish by hand */
+  'vision.lint.fix.open-anyway': 'Open the last attempt',
+  /** Shown while the fixed query is written */
+  'vision.lint.fix.progress': 'Fixing the query…',
   /** Where a lint finding sits in the query, shown under its message */
   'vision.lint.position': 'Line {{line}}, column {{column}}',
   /** Severity badge of a lint finding */
@@ -1203,6 +1226,15 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     "These features write with Sanity Agent Actions and use your organization's AI credits. Switch off the ones you do not want; the choice is saved in this browser.",
   /** Switch in the settings that turns every AI feature on or off */
   'vision.settings.ai.enabled': 'Use AI features',
+  /** Switch in the settings for editing queries with Agent Actions */
+  'vision.settings.ai.edit-query': 'Edit queries',
+  /** Description of the switch for editing queries with Agent Actions */
+  'vision.settings.ai.edit-query.description': 'Edit changes the query as you describe.',
+  /** Switch in the settings for fixing lint problems with Agent Actions */
+  'vision.settings.ai.fix-lint': 'Fix lint problems',
+  /** Description of the switch for fixing lint problems with Agent Actions */
+  'vision.settings.ai.fix-lint.description':
+    'Fix with AI in the Lint panel fixes the problems the linter found.',
   /** Switch in the settings for explaining queries with Agent Actions */
   'vision.settings.ai.explain-query': 'Explain queries',
   /** Description of the switch for explaining queries with Agent Actions */

@@ -42,6 +42,8 @@ export const DEFAULT_HIDDEN_DIFF_FIELDS = ['_rev', '_updatedAt', '_system.base.r
 const DEFAULT_AI_SETTINGS: VisionAiSettings = {
   enabled: true,
   generateQuery: true,
+  editQuery: true,
+  fixLint: true,
   generateMutations: true,
   explainQuery: true,
 }
@@ -289,6 +291,8 @@ function sanitizeAiSettings(value: unknown): VisionAiSettings {
   return {
     enabled: ai.enabled !== false,
     generateQuery: ai.generateQuery !== false,
+    editQuery: ai.editQuery !== false,
+    fixLint: ai.fixLint !== false,
     generateMutations: ai.generateMutations !== false,
     explainQuery: ai.explainQuery !== false,
   }
