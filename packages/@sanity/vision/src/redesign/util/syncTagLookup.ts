@@ -141,7 +141,11 @@ export function collectSyncTagCandidates(result: unknown): SyncTagCandidates {
     const node = queue.shift()
     visited++
     if (Array.isArray(node)) {
-      queue.push(...node)
+      // Push by index — spreading a huge array into push(...node) exceeds the call stack
+      const remaining = MAX_RESULT_NODES - visited
+      for (let i = 0, n = Math.min(node.length, remaining); i < n; i++) {
+        queue.push(node[i])
+      }
       continue
     }
     if (!node || typeof node !== 'object') continue

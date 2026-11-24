@@ -169,6 +169,15 @@ describe('collectSyncTagCandidates', () => {
   it('reads nothing from a scalar result', () => {
     expect(collectSyncTagCandidates(42)).toEqual({types: [], ids: [], slugs: []})
   })
+
+  it('samples a large array without exceeding the call stack', () => {
+    const large = Array.from({length: 200_000}, (_, i) => ({_id: `doc-${i}`, _type: 'item'}))
+    expect(() => collectSyncTagCandidates(large)).not.toThrow()
+    const {ids, types} = collectSyncTagCandidates(large)
+    expect(types).toEqual(['item'])
+    expect(ids[0]).toBe('doc-0')
+    expect(ids).toContain('drafts.doc-0')
+  })
 })
 
 describe('formatSyncTagMeaning', () => {
