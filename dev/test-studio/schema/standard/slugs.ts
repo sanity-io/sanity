@@ -97,6 +97,21 @@ export default defineType({
       },
     }),
     defineField({
+      name: 'slugWithFailingSource',
+      type: 'slug',
+      title: 'Slug with source that can fail',
+      description: 'Generating with an empty title throws, which shows the generation error',
+      options: {
+        source: (document) => {
+          if (typeof document.title !== 'string' || !document.title) {
+            throw new Error('Title required')
+          }
+          return document.title
+        },
+        maxLength: 96,
+      },
+    }),
+    defineField({
       name: 'slugWithCustomUniqueCheck',
       type: 'slug',
       title: 'Slug with custom unique check',

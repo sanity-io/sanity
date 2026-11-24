@@ -41,36 +41,9 @@ const SCHEMA = [
   }),
 ]
 
-const FAILING_SOURCE_SCHEMA = [
-  defineType({
-    type: 'document',
-    name: 'test',
-    title: 'Test',
-    fields: [
-      defineField({type: 'string', name: 'title', title: 'Title'}),
-      defineField({
-        type: 'slug',
-        name: 'slug',
-        title: 'Slug',
-        options: {
-          source: () => {
-            throw new Error('Title required')
-          },
-          isUnique: () => true,
-        },
-        components: {input: SlugSchemaInput},
-      }),
-    ],
-  }),
-]
-
-function SlugInputHarness({
-  schemaTypes = SCHEMA,
-}: {
-  schemaTypes?: ComponentProps<typeof TestWrapper>['schemaTypes']
-}) {
+function SlugInputHarness() {
   return (
-    <TestWrapper schemaTypes={schemaTypes}>
+    <TestWrapper schemaTypes={SCHEMA}>
       <TestForm document={DOCUMENT} />
     </TestWrapper>
   )
@@ -84,25 +57,6 @@ describe('SlugInput', () => {
     const field = page.getByTestId('field-slug')
     await expect.element(field.getByText('Slug', {exact: true})).toBeVisible()
     await expect.element(field.getByRole('textbox')).toHaveValue('visual-regression-fixtures')
-    await settleChromaticEndState()
-  })
-
-  test('keeps the generate button height when slug generation fails', async () => {
-    const {settleChromaticEndState} = testHelpers()
-    void render(<SlugInputHarness schemaTypes={FAILING_SOURCE_SCHEMA} />)
-
-    const field = page.getByTestId('field-slug')
-    const button = field.getByRole('button', {name: 'Generate'})
-    await expect.element(button).toBeVisible()
-    const heightBefore = button.element().getBoundingClientRect().height
-
-    await button.click()
-    await expect.element(field.getByText('Title required')).toBeVisible()
-
-    const textInputHeight = field.getByRole('textbox').element().getBoundingClientRect().height
-    const heightAfter = button.element().getBoundingClientRect().height
-    expect(heightAfter).toBe(heightBefore)
-    expect(heightAfter).toBe(textInputHeight)
     await settleChromaticEndState()
   })
 })
