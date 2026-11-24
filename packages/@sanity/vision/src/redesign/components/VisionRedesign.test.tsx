@@ -1552,7 +1552,7 @@ describe('VisionRedesign', () => {
     }
   })
 
-  it('opens a document list result as documents, and keeps another view picked for the query', async () => {
+  it('shows a document list result as JSON, and remembers Documents once it is picked', async () => {
     const {respondWith} = renderRedesign()
     respondWith({
       result: [
@@ -1565,47 +1565,65 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
 
-    await waitFor(() => expect(screen.getByTestId('vision-document-list-mock')).toBeTruthy())
-    expect(text(screen.getByTestId('vision-document-list-mock'))).toBe('a,drafts.b')
-    expect(text(screen.getByTestId('vision-result-view-button'))).toBe(
-      'vision.result.view.documents',
-    )
-    expect(screen.queryByTestId('result-json')).toBeNull()
-
-    // Another view is kept for the query, and the documents are a click away
-    await pickResultView('tree')
-    expect(screen.getByTestId('result-json')).toBeTruthy()
+    // The result's shape never picks the view
+    await waitFor(() => expect(screen.getByTestId('vision-result-json')).toBeTruthy())
     expect(screen.queryByTestId('vision-document-list-mock')).toBeNull()
-    expect(text(screen.getByTestId('vision-result-view-button'))).toBe('vision.result.view.tree')
-    fireEvent.click(screen.getByTestId('vision-fetch-button'))
-    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
-    expect(screen.getByTestId('result-json')).toBeTruthy()
-    expect(screen.queryByTestId('vision-document-list-mock')).toBeNull()
+    expect(text(screen.getByTestId('vision-result-view-button'))).toBe('vision.result.view.json')
 
     await pickResultView('documents')
-    expect(screen.getByTestId('vision-document-list-mock')).toBeTruthy()
+    expect(text(screen.getByTestId('vision-document-list-mock'))).toBe('a,drafts.b')
+    await waitFor(() => expect(getStoredState().panels.resultViewer).toBe('documents'))
+
+    // A new tab opens on the remembered view
+    fireEvent.click(screen.getByTestId('vision-new-tab'))
+    respondWith({result: [{_id: 'c', _type: 'author'}], ms: 3})
+    typeQuery('*[_type == "author"]{_id, _type}')
+    await waitFor(() =>
+      expect(isDisabled(within(shownTab()).getByTestId('vision-fetch-button'))).toBe(false),
+    )
+    fireEvent.click(within(shownTab()).getByTestId('vision-fetch-button'))
+    await waitFor(() =>
+      expect(text(within(shownTab()).getByTestId('vision-document-list-mock'))).toBe('c'),
+    )
+
+    // Another view picked is remembered in its place
+    fireEvent.click(within(shownTab()).getByTestId('vision-result-view-button'))
+    let menu: HTMLElement | undefined
+    await waitFor(() => {
+      menu = screen
+        .getAllByTestId('vision-result-view-menu')
+        .find((candidate) => !candidate.closest('[style*="display: none"]'))
+      expect(menu).toBeTruthy()
+    })
+    fireEvent.click(within(menu as HTMLElement).getByTestId('vision-result-view-tree'))
+    await waitFor(() => expect(within(shownTab()).getByTestId('result-json')).toBeTruthy())
+    await waitFor(() => expect(getStoredState().panels.resultViewer).toBe('tree'))
   })
 
-  it('keeps a view picked over the document list when the query tab is left and reopened', async () => {
+  it('opens on the remembered Documents view after a reload, and shows other results as JSON without forgetting it', async () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({version: 1, panels: {resultViewer: 'documents'}}),
+    )
     const {respondWith} = renderRedesign()
     respondWith({result: [{_id: 'a', _type: 'author', title: 'Ada'}], ms: 3})
     typeQuery('*[_type == "author"]{_id, _type, title}')
     await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
-    await waitFor(() => expect(screen.getByTestId('vision-document-list-mock')).toBeTruthy())
+    await waitFor(() => expect(text(screen.getByTestId('vision-document-list-mock'))).toBe('a'))
 
-    await pickResultView('tree')
-    expect(screen.getByTestId('result-json')).toBeTruthy()
-
-    // Switching tabs hides this one; coming back must not reopen the document list
-    fireEvent.click(screen.getByTestId('vision-new-tab'))
-    fireEvent.click(screen.getAllByTestId('vision-tab-button')[0])
-    expect(screen.getByTestId('result-json')).toBeTruthy()
+    respondWith({result: {count: 1}, ms: 3})
+    typeQuery('count(*[_type == "author"])')
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
+    await waitFor(() => expect(screen.getByTestId('vision-result-json')).toBeTruthy())
     expect(screen.queryByTestId('vision-document-list-mock')).toBeNull()
-    // The other tab stays mounted, so the shown view is the one in the visible tab
-    expect(text(within(shownTab()).getByTestId('vision-result-view-button'))).toBe(
-      'vision.result.view.tree',
-    )
+    expect(text(screen.getByTestId('vision-result-view-button'))).toBe('vision.result.view.json')
+    expect(getStoredState()?.panels?.resultViewer ?? 'documents').toBe('documents')
+
+    respondWith({result: [{_id: 'b', _type: 'author'}], ms: 3})
+    typeQuery('*[_type == "author"]{_id, _type}')
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
+    await waitFor(() => expect(text(screen.getByTestId('vision-document-list-mock'))).toBe('b'))
   })
 
   it('shows the content source map as JSON, Tree, Graph or Documents from its tab header', async () => {
@@ -1699,6 +1717,8 @@ describe('VisionRedesign', () => {
     typeQuery('*[_type == "author"]{_id, _type, title}')
     await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
+    await waitFor(() => expect(screen.getByTestId('vision-result-json')).toBeTruthy())
+    await pickResultView('documents')
     await waitFor(() => expect(text(screen.getByTestId('vision-document-list-mock'))).toBe('a'))
 
     respondWith({result: [], ms: 3})
@@ -2415,6 +2435,18 @@ describe('VisionRedesign', () => {
     expect(text(screen.getByTestId('vision-history-entry'))).toContain(
       'vision.history.reason.generated',
     )
+  })
+
+  it('shows the result of a generated query as JSON, also when it lists documents', async () => {
+    const {fetchCalls, replyToPrompts, respondWith} = renderRedesign()
+    replyToPrompts({query: '*[_type == "author"]{_id, _type}', params: {}, title: 'Authors'})
+    respondWith({result: [{_id: 'a', _type: 'author'}], ms: 3})
+    generateFrom('All authors')
+
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    await waitFor(() => expect(screen.getByTestId('vision-result-json')).toBeTruthy())
+    expect(screen.queryByTestId('vision-document-list-mock')).toBeNull()
+    expect(text(screen.getByTestId('vision-result-view-button'))).toBe('vision.result.view.json')
   })
 
   it('offers Generate only while the query is empty, and Edit once it has text in it', () => {

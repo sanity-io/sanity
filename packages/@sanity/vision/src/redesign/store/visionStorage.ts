@@ -272,7 +272,9 @@ function sanitizePanels(value: unknown): VisionPanelsState {
  */
 function sanitizeResultViewer(panels: Record<string, unknown>): VisionResultView {
   if (!('resultViewer' in panels)) return panels.resultView === 'graph' ? 'graph' : 'json'
-  return panels.resultViewer === 'tree' || panels.resultViewer === 'graph'
+  return panels.resultViewer === 'tree' ||
+    panels.resultViewer === 'graph' ||
+    panels.resultViewer === 'documents'
     ? panels.resultViewer
     : 'json'
 }
