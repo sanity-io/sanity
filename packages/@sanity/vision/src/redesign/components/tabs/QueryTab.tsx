@@ -17,6 +17,7 @@ import {useFollowNavbarPerspective} from '../../hooks/useFollowNavbarPerspective
 import {useLiveSubscription} from '../../hooks/useLiveSubscription'
 import {useOnValueChange} from '../../hooks/useOnValueChange'
 import {useQueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
+import {useScopedState} from '../../hooks/useScopedState'
 import {useVisionDocumentEvents} from '../../hooks/useVisionDocumentEvents'
 import {selectIsFetching} from '../../store/queryRunnerMachine'
 import {type FetchReason, type VisionTab, type VisionTabOptions} from '../../store/types'
@@ -109,6 +110,8 @@ const MAX_LAYOUT_FRAMES = 30
 
 type MobilePane = 'request' | 'response'
 
+const NO_FINDINGS: QueryLintFinding[] = []
+
 interface QueryTabProps {
   tab: VisionTab
   /** The tool's root element; keyboard shortcuts and pastes outside it are ignored */
@@ -116,9 +119,15 @@ interface QueryTabProps {
 }
 
 /**
- * One open tab: the request and response columns, wired to the tab's query runner actor. Only
- * the active tab is mounted, so this component also owns the keyboard shortcuts and the
- * paste-a-query-URL handler.
+ * The active tab: the request and response columns, wired to the tab's query runner actor. One
+ * instance shows whichever tab is active, so switching tabs changes its `tab` prop rather than
+ * mounting another one: the columns, their panels and the editors stay as they are and only
+ * their content changes, in the commit that switches (a remount would paint the panels' entry
+ * transitions and empty editors for a frame). Everything that belongs to one tab is keyed on
+ * `tab.id`: the editors keep a document per tab, the local state here starts over per tab, and
+ * what a tab did when it mounted (resuming automatic refetching, a fetch on open) happens when
+ * it becomes active instead. As the only instance, this component also owns the keyboard
+ * shortcuts and the paste-a-query-URL handler.
  */
 export function QueryTab({tab, rootElement}: QueryTabProps) {
   const {t} = useTranslation(visionLocaleNamespace)
@@ -136,12 +145,13 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   const splitContainerSize = useContentSize(splitContainer)
   // Dragged sizes are remembered per layout: a column width makes no sense as a stacked height
   const {splitSizes, setSplitSizes} = useQueryTabSplitSizes()
-  const [mobilePane, setMobilePane] = useState<MobilePane>('request')
+  const [mobilePane, setMobilePane] = useScopedState<MobilePane>(tab.id, 'request')
 
   const queryEditorRef = useRef<VisionCodeMirrorHandle>(null)
   const paramsEditorRef = useRef<VisionCodeMirrorHandle>(null)
-  // The query editor's diagnostics, listed in the request column's Lint tab
-  const [lintFindings, setLintFindings] = useState<QueryLintFinding[]>([])
+  // The query editor's diagnostics, listed in the request column's Lint tab. The editor lints
+  // the newly shown tab's query afresh, so the previous tab's findings are not shown meanwhile
+  const [lintFindings, setLintFindings] = useScopedState<QueryLintFinding[]>(tab.id, NO_FINDINGS)
 
   const {resolved, params, request, buildRequest} = useQueryRequestBuilder(tab)
   const isVariantsEnabled = useVariantsEnabled()
@@ -245,7 +255,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       if (layout === 'mobile') setMobilePane('response')
       return true
     },
-    [buildCurrentRequest, layout, runnerRef, telemetry],
+    [buildCurrentRequest, layout, runnerRef, setMobilePane, telemetry],
   )
   const cancel = useCallback(() => runnerRef.send({type: 'cancel'}), [runnerRef])
   const refetchAfterMutations = useCallback(() => {
@@ -305,9 +315,12 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     const {query} = tab
     const formatted = await formatForEditor(query)
     // The formatter loads lazily; a query edited meanwhile is not overwritten
-    const latest = actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id)
+    const {tabs, activeTabId} = actorRef.getSnapshot().context
+    const latest = tabs.find((it) => it.id === tab.id)
     if (latest?.query !== query || formatted === query) return
-    queryEditorRef.current?.resetEditorContent(formatted)
+    // The editor shows the active tab; another tab's formatted query reaches its editor as the
+    // tab's query when it is shown again
+    if (activeTabId === tab.id) queryEditorRef.current?.resetEditorContent(formatted)
     setQuery(formatted)
   }, [actorRef, formatForEditor, setQuery, tab])
 
@@ -347,7 +360,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       }
       queryEditorRef.current?.selectRange(range.from, range.to)
     },
-    [actorRef, drawerOpen, layout, mobilePane],
+    [actorRef, drawerOpen, layout, mobilePane, setMobilePane],
   )
   // The Functions panel declares and replaces functions through the editor, so they can be undone
   const editQuery = useCallback(
@@ -363,26 +376,34 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
 
   // A query loaded from outside the editors (saved query, pasted URL) replaces their content
   // and drops the previous response; an edit still waiting in the debounce belongs to the
-  // replaced params and must not write them back
-  useOnValueChange(loadRevision, () => {
-    setParams.cancel()
-    queryEditorRef.current?.resetEditorContent(tab.query)
-    paramsEditorRef.current?.resetEditorContent(tab.rawParams)
-    runnerRef.send({type: 'clear'})
-  })
+  // replaced params and must not write them back. Another tab's revision is not a load: the
+  // editors show that tab's query and params as they were kept for it
+  useOnValueChange(
+    loadRevision,
+    () => {
+      setParams.cancel()
+      queryEditorRef.current?.resetEditorContent(tab.query)
+      paramsEditorRef.current?.resetEditorContent(tab.rawParams)
+      runnerRef.send({type: 'clear'})
+    },
+    tab.id,
+  )
 
-  // A tab that refetches automatically resumes with a current result when it mounts. After a
-  // reload its runner has nothing to replay, so the tab's query runs. Otherwise only what
-  // automatic refetching applies anyway is caught up on: the options may have changed while the
-  // tab was in the background (a navbar perspective change reaches every tab), so the last
-  // request is fetched again under the current ones. Query and params typed in the editors but
-  // never run stay unsent, as they do while the tab is shown
-  const resumeAutoRefetch = useEffectEvent(() => {
-    if (!tab.autoRefetch) return
-    const lastRequest = runnerRef.getSnapshot().context.request
+  // A tab that refetches automatically resumes with a current result when it becomes active.
+  // After a reload its runner has nothing to replay, so the tab's query runs. Otherwise only
+  // what automatic refetching applies anyway is caught up on: the options may have changed
+  // while the tab was in the background (a navbar perspective change reaches every tab), so the
+  // last request is fetched again under the current ones. Query and params typed in the editors
+  // but never run stay unsent, as they do while the tab is shown
+  const resumeAutoRefetch = useEffectEvent((tabId: string) => {
+    const {tabs, runners} = actorRef.getSnapshot().context
+    const resumed = tabs.find((it) => it.id === tabId)
+    const runner = runners[tabId]
+    if (!resumed?.autoRefetch || !runner) return
+    const lastRequest = runner.getSnapshot().context.request
     if (!lastRequest) {
       const current = buildCurrentRequest()
-      if (current) runnerRef.send({type: 'fetch', request: current, reason: {type: 'resume'}})
+      if (current) runner.send({type: 'fetch', request: current, reason: {type: 'resume'}})
       return
     }
     const current = buildRequest(lastRequest.query, JSON.stringify(lastRequest.params))
@@ -390,7 +411,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       current &&
       (current.url !== lastRequest.url || current.includeSourceMap !== lastRequest.includeSourceMap)
     ) {
-      runnerRef.send({type: 'fetch', request: current, reason: {type: 'resume'}})
+      runner.send({type: 'fetch', request: current, reason: {type: 'resume'}})
     }
   })
   // A query the tab fetches as soon as it is shown, or right away when it already is. A generated
@@ -401,10 +422,10 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   // (half a second at most; without a width it is formatted at the default one). A pasted query
   // URL runs as it was pasted, as the classic tool does, and so does one a link to the tool named
   const fetchOnOpen = useVisionSelector((snapshot) => snapshot.context.fetchOnOpen[tab.id])
-  const fetchOpenedQuery = useEffectEvent(async () => {
-    const source = actorRef.getSnapshot().context.fetchOnOpen[tab.id]
+  const fetchOpenedQuery = useEffectEvent(async (tabId: string) => {
+    const source = actorRef.getSnapshot().context.fetchOnOpen[tabId]
     if (!source) return
-    actorRef.send({type: 'tab.fetchedOnOpen', id: tab.id})
+    actorRef.send({type: 'tab.fetchedOnOpen', id: tabId})
     if (source === 'generated') {
       let previousColumns: number | undefined
       let settledFrames = 0
@@ -420,8 +441,8 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     run({type: source})
   })
   useEffect(() => {
-    resumeAutoRefetch()
-  }, [])
+    resumeAutoRefetch(tab.id)
+  }, [tab.id])
   // After the resume above, whose fetch makes the paused subscription's catch-up refetch moot
   useLiveSubscription({
     runnerRef,
@@ -430,13 +451,13 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     tabId: tab.id,
   })
   useEffect(() => {
-    // oxlint-disable-next-line react/set-state-in-effect -- a tab opened with fetch-on-open runs its query once, when it mounts
-    if (fetchOnOpen) void fetchOpenedQuery()
-  }, [fetchOnOpen])
+    if (fetchOnOpen) void fetchOpenedQuery(tab.id)
+  }, [fetchOnOpen, tab.id])
 
   // While refetching automatically, a request that changed outside the editors is fetched right
   // away: changed options, or a loaded query (live refetches replay the runner's last request,
-  // which the load has just cleared)
+  // which the load has just cleared). Another tab's options are not a change of this tab's;
+  // what changed while a tab was in the background is caught up on when it becomes active
   const refetchKey = `${loadRevision}|${JSON.stringify([
     resolved.apiVersion,
     resolved.dataset,
@@ -445,18 +466,26 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     resolved.useCdn,
     tab.options.includeSourceMap,
   ])}`
-  useOnValueChange(refetchKey, (key, previous) => {
-    if (!tab.autoRefetch) return
-    const loaded = key.split('|', 1)[0] !== previous.split('|', 1)[0]
-    // A load that fetches on its own (a generated query, a pasted URL) is not fetched twice
-    if (loaded && fetchOnOpen) return
-    // Built like a manual run, so params typed just before an option changed come along (after
-    // a load there is nothing waiting: the edit that belonged to the replaced params was cancelled)
-    const current = buildCurrentRequest()
-    if (current) {
-      runnerRef.send({type: 'fetch', request: current, reason: {type: loaded ? 'load' : 'options'}})
-    }
-  })
+  useOnValueChange(
+    refetchKey,
+    (key, previous) => {
+      if (!tab.autoRefetch) return
+      const loaded = key.split('|', 1)[0] !== previous.split('|', 1)[0]
+      // A load that fetches on its own (a generated query, a pasted URL) is not fetched twice
+      if (loaded && fetchOnOpen) return
+      // Built like a manual run, so params typed just before an option changed come along (after
+      // a load there is nothing waiting: the edit that belonged to the replaced params was cancelled)
+      const current = buildCurrentRequest()
+      if (current) {
+        runnerRef.send({
+          type: 'fetch',
+          request: current,
+          reason: {type: loaded ? 'load' : 'options'},
+        })
+      }
+    },
+    tab.id,
+  )
 
   // A stored scheduled drafts choice already reads as global where this workspace has no
   // scheduled drafts, so a navbar change leaves it stored for the workspaces that do

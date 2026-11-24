@@ -1,17 +1,23 @@
-import {useEffect, useRef, useEffectEvent} from 'react'
+import {useEffect, useEffectEvent, useRef} from 'react'
 
 /**
- * Calls `onChange` after a render in which `value` differs from the previous render, but not on
- * mount. Compares with `Object.is`, so pass a primitive (or a string key) for compound values.
+ * Calls `onChange` after a commit in which `value` differs from the one before, with both
+ * values. Not called for the first render. With a `scope` (a tab id), a commit that changes the
+ * scope takes the value as the new baseline without calling: the values before and after belong
+ * to different things, so the difference between them is not a change of either.
  */
-export function useOnValueChange<T>(value: T, onChange: (value: T, previous: T) => void): void {
+export function useOnValueChange<T>(
+  value: T,
+  onChange: (value: T, previous: T) => void,
+  scope?: unknown,
+): void {
   const handleChange = useEffectEvent(onChange)
-  const previous = useRef(value)
-
+  const previous = useRef({value, scope})
   useEffect(() => {
-    if (Object.is(previous.current, value)) return
     const before = previous.current
-    previous.current = value
-    handleChange(value, before)
-  }, [value])
+    if (Object.is(before.value, value) && Object.is(before.scope, scope)) return
+    previous.current = {value, scope}
+    if (!Object.is(before.scope, scope)) return
+    handleChange(value, before.value)
+  }, [value, scope])
 }

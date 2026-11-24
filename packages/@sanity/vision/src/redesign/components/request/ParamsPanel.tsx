@@ -8,13 +8,15 @@ import {type Params} from '../../../components/VisionGui'
 
 export interface ParamsPanelProps {
   value: string
+  /** The editor keeps a document per tab */
+  tabId: string
   params: Params
   editorRef: RefObject<VisionCodeMirrorHandle | null>
   onChange: (rawParams: string) => void
 }
 
 /** The params editor, as tall as its JSON; the panel around it caps and scrolls it */
-export function ParamsPanel({value, params, editorRef, onChange}: ParamsPanelProps) {
+export function ParamsPanel({value, tabId, params, editorRef, onChange}: ParamsPanelProps) {
   return (
     <div data-testid="vision-params-editor">
       {params.error && (
@@ -30,6 +32,7 @@ export function ParamsPanel({value, params, editorRef, onChange}: ParamsPanelPro
         initialValue={value}
         onChange={onChange}
         ref={editorRef}
+        stateKey={tabId}
       />
     </div>
   )

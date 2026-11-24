@@ -1,6 +1,6 @@
 import {Button} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
-import {useMemo} from 'react'
+import {type ReactNode, useMemo} from 'react'
 import {usePerspective} from 'sanity'
 import {
   getDefaultVariant,
@@ -21,6 +21,11 @@ export interface RequestOverrideChipsProps {
   resolved: Pick<ResolvedRequest, 'tabPerspective'>
   /** Shows a field in the Options panel */
   onReveal: (option: RevealedOption) => void
+  /**
+   * The API version button. It sits after the dataset chip and before perspective and variant,
+   * the same order as the Options panel.
+   */
+  children?: ReactNode
 }
 
 interface OverrideChipProps {
@@ -55,10 +60,16 @@ function OverrideChip({testId, text, tooltip, onClick}: OverrideChipProps) {
 }
 
 /**
- * Chips next to the API version button for the options where the tab departs from the studio's
- * global state, so that stays visible while the Options panel is collapsed
+ * Chips in the query column's bottom bar for the options where the tab departs from the studio's
+ * global state, so that stays visible while the Options panel is collapsed. Dataset comes first,
+ * then `children` (the API version button), then perspective and variant.
  */
-export function RequestOverrideChips({options, resolved, onReveal}: RequestOverrideChipsProps) {
+export function RequestOverrideChips({
+  options,
+  resolved,
+  onReveal,
+  children,
+}: RequestOverrideChipsProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const environment = useRequestEnvironment()
   const overrides = useMemo(() => getRequestOverrides(options, environment), [environment, options])
@@ -77,6 +88,7 @@ export function RequestOverrideChips({options, resolved, onReveal}: RequestOverr
           tooltip={t('vision.overrides.dataset.tooltip', overrides.dataset)}
         />
       )}
+      {children}
       {overrides.perspective && (
         <OverrideChip
           onClick={() => onReveal('perspective')}
