@@ -3,7 +3,6 @@ import {useRouter} from 'sanity/router'
 
 import {useReleasesEnabled} from '../releases/hooks/useReleasesEnabled'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
-import {useArchivedReleases} from '../releases/store/useArchivedReleases'
 import {useWorkspace} from '../studio/workspace'
 import {EMPTY_ARRAY} from '../util/empty'
 import {PerspectiveProvider} from './PerspectiveProvider'
@@ -28,7 +27,6 @@ export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
   } = useWorkspace()
 
   const {data: activeReleases, loading: activeLoading} = useActiveReleases()
-  const {data: archivedReleases, loading: archivedLoading} = useArchivedReleases()
   const releasesEnabled = useReleasesEnabled()
   const stickyPerspective = router.stickyParams.perspective ?? undefined
   const {name: selectedPerspectiveName, ignored} = useMemo(
@@ -36,20 +34,11 @@ export function GlobalPerspectiveProvider({children}: {children: ReactNode}) {
       resolveStickyPerspectiveName({
         perspective: stickyPerspective,
         activeReleases,
-        archivedReleases,
-        releasesLoading: activeLoading || archivedLoading,
+        releasesLoading: activeLoading,
         releasesEnabled,
         isDraftModelEnabled,
       }),
-    [
-      stickyPerspective,
-      activeReleases,
-      archivedReleases,
-      activeLoading,
-      archivedLoading,
-      releasesEnabled,
-      isDraftModelEnabled,
-    ],
+    [stickyPerspective, activeReleases, activeLoading, releasesEnabled, isDraftModelEnabled],
   )
 
   const excludedPerspectives = useMemo(
