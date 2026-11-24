@@ -244,16 +244,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
       {
         id: 'source-map',
         label: t('vision.panel.source-map'),
-        actions: hasSourceMap ? (
-          <ResultViewMenu
-            controls={sourceMapContentId}
-            id={tabElementId('vision-source-map-view-menu')}
-            onChange={setSourceMapView}
-            testId="vision-source-map-view"
-            value={sourceMapView}
-            views={sourceMapViews}
-          />
-        ) : undefined,
         fill: hasSourceMap && sourceMapView !== 'tree',
         content: (
           <SourceMapTab
@@ -262,6 +252,17 @@ export function ResponsePanel(props: ResponsePanelProps) {
             id={sourceMapContentId}
             meta={meta}
             view={sourceMapView}
+            viewMenu={
+              <ResultViewMenu
+                controls={sourceMapContentId}
+                id={tabElementId('vision-source-map-view-menu')}
+                onChange={setSourceMapView}
+                placement="bottom-start"
+                testId="vision-source-map-view"
+                value={sourceMapView}
+                views={sourceMapViews}
+              />
+            }
           />
         ),
       },
