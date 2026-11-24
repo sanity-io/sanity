@@ -1,7 +1,8 @@
 /**
  * The OAuth store's `handleCallbackUrl` result (`auth.experimental_oauth`).
  *
- * @internal
+ * @beta
+ * @hidden
  */
 export interface OAuthCallbackResult {
   loginMethod: 'oauth'

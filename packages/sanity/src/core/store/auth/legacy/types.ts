@@ -4,7 +4,8 @@ import {type LoginMethod} from '../../../config/auth/types'
  * The legacy store's `handleCallbackUrl` result (`createLegacyAuthStore`, and custom
  * auth stores).
  *
- * @internal
+ * @beta
+ * @hidden
  */
 export interface LegacyCallbackResult {
   /** The login method configured for this auth store (e.g. `'cookie'` or `'token'`). */

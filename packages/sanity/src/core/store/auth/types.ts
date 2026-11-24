@@ -137,7 +137,8 @@ export type LoginComponentProps =
  * in the AuthBoundary. `loginMethod` tells the legacy store's result from the
  * OAuth store's.
  *
- * @internal
+ * @beta
+ * @hidden
  */
 export type HandleCallbackResult = LegacyCallbackResult | OAuthCallbackResult
 
