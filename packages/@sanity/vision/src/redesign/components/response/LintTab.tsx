@@ -6,6 +6,7 @@ import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type LintSeverity, type QueryLintFinding, splitMessage} from '../../util/groqLint'
+import {paramLintLabel} from '../../util/paramLint'
 import * as styles from '../redesign.module.css'
 
 function severityLabel(severity: LintSeverity, t: TFunction<'vision'>): string {
@@ -46,13 +47,16 @@ export function severityTone(
 
 export interface LintTabProps {
   findings: QueryLintFinding[]
-  /** Called with the finding to show in the editor */
+  /** Called with the finding to show, in the query editor or, for a param's value, in the params */
   onReveal: (finding: QueryLintFinding) => void
   /** Shown above the findings, while there are any */
   action?: ReactNode
 }
 
-/** The query editor's lint diagnostics as a list; each one selects its range in the editor */
+/**
+ * The query editor's lint diagnostics as a list; each one selects its range in the editor, or the
+ * value in the params that it is about
+ */
 export function LintTab({findings, onReveal, action}: LintTabProps) {
   const {t} = useTranslation(visionLocaleNamespace)
 
@@ -74,6 +78,7 @@ export function LintTab({findings, onReveal, action}: LintTabProps) {
           as="button"
           borderBottom
           className={styles.lintFindingButton}
+          data-param={finding.param ? paramLintLabel(finding.param) : undefined}
           data-testid="vision-lint-finding"
           key={`${finding.from}:${finding.to}:${finding.source ?? ''}:${finding.message}`}
           onClick={() => onReveal(finding)}
@@ -98,7 +103,9 @@ export function LintTab({findings, onReveal, action}: LintTabProps) {
                 )}
               </Text>
               <Text muted size={0} as="div" trim={true}>
-                {t('vision.lint.position', {line: finding.line, column: finding.column})}
+                {finding.param
+                  ? t('vision.lint.position-param', {param: paramLintLabel(finding.param)})
+                  : t('vision.lint.position', {line: finding.line, column: finding.column})}
                 {finding.source ? ` · ${finding.source}` : ''}
               </Text>
             </Stack>

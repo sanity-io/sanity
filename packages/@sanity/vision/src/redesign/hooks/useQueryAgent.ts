@@ -19,6 +19,8 @@ export type QueryAgentStatus =
       lastAttempt: GeneratedQuery | undefined
       /** Whether the tab's own params text stays when the last attempt is opened */
       keepParams: boolean
+      /** Whether the tab's own query stays when the last attempt is opened */
+      keepQuery: boolean
       /** The credits the request was turned down for, when that is what failed */
       limit: AiCredits | undefined
     }
@@ -40,6 +42,8 @@ export interface QueryAgentOpenOptions {
    * parse, which went to the model as empty: what it made up must not replace what the user typed.
    */
   keepParams?: boolean
+  /** Leaves the tab's query as it is, for a request that was only to change the params */
+  keepQuery?: boolean
 }
 
 export interface UseQueryAgentOptions {
@@ -80,7 +84,9 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
   // description goes in after formatting, so the formatter cannot reflow it.
   const open = useCallback(
     async (generated: GeneratedQuery, options: QueryAgentOpenOptions, signal?: AbortSignal) => {
-      const formatted = await formatForEditor(generated.query).catch(() => generated.query)
+      const formatted = options.keepQuery
+        ? tab.query
+        : await formatForEditor(generated.query).catch(() => generated.query)
       if (signal?.aborted) return
       const query =
         options.prompt === undefined
@@ -91,7 +97,7 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
         type: 'tab.load',
         id: tab.id,
         tab: {
-          query,
+          ...(options.keepQuery ? {} : {query}),
           ...(options.keepParams ? {} : {rawParams: JSON.stringify(generated.params, null, 2)}),
           ...(named ? {title: generated.title} : {}),
         },
@@ -106,7 +112,14 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
   const run = useCallback(
     async (
       ask: (request: QueryAgentRequest) => Promise<GeneratedQuery>,
-      options: {prompt?: string; comment: boolean; keepParams?: boolean},
+      options: {
+        prompt?: string
+        comment: boolean
+        keepParams?: boolean
+        keepQuery?: boolean
+        /** Called once the result is in the editors */
+        onOpened?: () => void
+      },
     ) => {
       controllerRef.current?.abort()
       const controller = new AbortController()
@@ -129,11 +142,13 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
             prompt: options.comment ? options.prompt : undefined,
             fetch: true,
             keepParams: options.keepParams,
+            keepQuery: options.keepQuery,
           },
           controller.signal,
         )
         // open returns without writing when the request was aborted mid-format
         if (controller.signal.aborted) clearIfCurrent()
+        else options.onOpened?.()
       } catch (error) {
         if (controller.signal.aborted) {
           clearIfCurrent()
@@ -150,6 +165,7 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
           prompt: options.comment ? options.prompt : undefined,
           lastAttempt: error instanceof GenerateQueryError ? error.lastAttempt : undefined,
           keepParams: options.keepParams === true,
+          keepQuery: options.keepQuery === true,
           limit,
         })
       }
@@ -164,6 +180,7 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
       prompt: status.prompt,
       fetch: false,
       keepParams: status.keepParams,
+      keepQuery: status.keepQuery,
     })
   }, [open, status])
 

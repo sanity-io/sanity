@@ -2,6 +2,7 @@ import {type PromptRequest} from '@sanity/client'
 
 import {isPlainObject} from '../../util/isPlainObject'
 import {type QueryLintFinding} from './groqLint'
+import {type LintAgentTarget} from './lintFixPlan'
 
 /** What `generateQuery` needs of a client; a `SanityClient` has it */
 export interface GenerateQueryClient {
@@ -114,7 +115,7 @@ $schema
 How to write GROQ:
 $reference
 
-Fix those problems and change nothing else. ${KEEP_COMMENTS}
+$target Fix those problems and change nothing else. ${KEEP_COMMENTS}
 
 Reply with JSON: an object with "query" (the whole fixed query, comments included, without code fences) and "params" (an object with a value for every parameter the query uses, or an empty object).`
 
@@ -278,6 +279,15 @@ export interface FixQueryLintOptions extends QueryAgentOptions {
   params: Record<string, unknown>
   /** The query editor's lint diagnostics */
   diagnostics: QueryLintFinding[]
+  /** Where the problems are: in the query (the default), in the values of its params, or both */
+  target?: LintAgentTarget
+}
+
+const FIX_LINT_TARGETS: Record<LintAgentTarget, string> = {
+  query: 'The problems are in the query.',
+  params:
+    'The problems are in the values of its parameters, not in the query: fix those values, and reply with the query as it is.',
+  both: 'Some problems are in the query, and those listed under Params are in the values of its parameters: fix each where it is.',
 }
 
 /** The diagnostics for the model, one per line, as the Lint panel lists them */
@@ -285,9 +295,13 @@ export function describeDiagnostics(diagnostics: QueryLintFinding[]): string {
   return diagnostics
     .map(
       (finding) =>
-        `- Line ${finding.line}, column ${finding.column} (${finding.severity}${
-          finding.source ? `, ${finding.source}` : ''
-        }): ${finding.message}`,
+        `- ${
+          finding.param
+            ? `Params, the value of $${finding.param.name}${finding.param.path
+                .map((segment) => `[${JSON.stringify(segment)}]`)
+                .join('')}`
+            : `Line ${finding.line}, column ${finding.column}`
+        } (${finding.severity}${finding.source ? `, ${finding.source}` : ''}): ${finding.message}`,
     )
     .join('\n')
 }
@@ -402,11 +416,12 @@ export function improveQuery(options: ImproveQueryOptions): Promise<GeneratedQue
  * its parameters, the diagnostics, the workspace's document types and a GROQ primer go in.
  */
 export function fixQueryLint(options: FixQueryLintOptions): Promise<GeneratedQuery> {
-  const {query, params, diagnostics, schema, ...rest} = options
+  const {query, params, diagnostics, schema, target = 'query', ...rest} = options
   return promptForQuery({
     ...rest,
     instruction: FIX_LINT_INSTRUCTION,
     instructionParams: {
+      target: FIX_LINT_TARGETS[target],
       query,
       params: JSON.stringify(params),
       diagnostics: describeDiagnostics(diagnostics),

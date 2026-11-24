@@ -208,6 +208,14 @@ describe('checkQuerySchema', () => {
         '`$type` is `"athor"`, but the schema has no document type named `athor`. Did you mean `author`?',
     })
     expect(finding.suggestion).toBeUndefined()
+    // ...but with the param and the value in it that is wrong, and what to write there instead
+    expect(finding.param).toEqual({name: 'type', path: [], value: 'athor', suggestion: 'author'})
+
+    const [inList] = withParams('*[_type in $types]{name}', {types: ['book', 'athor']})
+    expect(inList.param).toEqual({name: 'types', path: [1], value: 'athor', suggestion: 'author'})
+
+    const [unlike] = withParams('*[_type == $type]{name}', {type: 'zzzzzzzzzz'})
+    expect(unlike.param).toEqual({name: 'type', path: [], value: 'zzzzzzzzzz'})
   })
 
   it('leaves alone what the schema cannot tell', () => {
