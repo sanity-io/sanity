@@ -42,15 +42,15 @@ function lookupKey(client: SyncTagLookupClient, tags: readonly string[]): string
 }
 
 /**
- * Whether the Sync tags row shows the tags as they came or what they stand for, and the lookup
- * behind it. Nothing is asked of the API until the resolved values are first shown; while they
- * are, each new set of tags (a refetch, another query) is looked up as it arrives.
+ * Whether the Sync tags row shows what the tags stand for, as it does at first, or the tags as they
+ * came, and the lookup behind it. While the resolved values are shown, each new set of tags (a
+ * refetch, another query) is looked up as it arrives.
  */
 export function useSyncTagLookup(
   source: SyncTagLookupSource | undefined,
   tags: readonly string[],
 ): {pressed: boolean; toggle: () => void; state: SyncTagLookupState} {
-  const [pressed, setPressed] = useState(false)
+  const [pressed, setPressed] = useState(true)
   const [settled, setSettled] = useState<Settled>()
   const key = source && tags.length > 0 ? lookupKey(source.client, tags) : undefined
   const current = settled && settled.key === key ? settled : undefined

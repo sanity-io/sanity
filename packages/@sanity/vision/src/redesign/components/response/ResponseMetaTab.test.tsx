@@ -450,15 +450,10 @@ describe('ResponseMetaTab sync tag lookup', () => {
     expect(calls()).toBe(0)
   })
 
-  it('switches between the raw and the resolved tags, marking those it could not resolve', async () => {
+  it('shows the resolved tags first and switches to the raw ones, marking those it could not resolve', async () => {
     const {client, calls, release} = lookupClient()
     await renderTab({meta: tagged, syncTagLookup: {client, result: [{_type: 'book'}]}})
 
-    expect(toggle().getAttribute('aria-pressed')).toBe('false')
-    // Nothing is asked of the API before the resolved values are first shown
-    expect(calls()).toBe(0)
-
-    fireEvent.click(toggle())
     expect(toggle().getAttribute('aria-pressed')).toBe('true')
     expect(screen.getByTestId('vision-meta-sync-tags').getAttribute('aria-busy')).toBe('true')
     expect(screen.getByRole('status').textContent).toBe('vision.response.sync-tags.resolving')
@@ -492,7 +487,6 @@ describe('ResponseMetaTab sync tag lookup', () => {
     const failing = lookupClient({fail: true})
     await renderTab({meta: tagged, syncTagLookup: {client: failing.client, result: []}})
 
-    fireEvent.click(toggle())
     await failing.release()
     expect(screen.getByRole('status').textContent).toBe(
       'vision.response.sync-tags.resolve-failed:{"message":"Network down"}',
@@ -554,7 +548,6 @@ describe('ResponseMetaTab wildcard sync tags', () => {
     })
     expect(toneOf(badgeOf('s1:any'))).toBe('sui-tone-neutral')
 
-    fireEvent.click(screen.getByRole('button', {name: 'vision.response.sync-tags'}))
     await release()
     expect(toneOf(badgeOf('*'))).toBe('sui-tone-critical')
     expect(toneOf(badgeOf('_type == "book"'))).toBe('sui-tone-positive')
@@ -573,7 +566,6 @@ describe('ResponseMetaTab wildcard sync tags', () => {
       meta: {...meta(cdnMiss), syncTags: ['s1:other-any', 's1:book']},
       syncTagLookup: {client, result: [{_type: 'book', author: {_ref: 'r', _dataset: 'other'}}]},
     })
-    fireEvent.click(screen.getByRole('button', {name: 'vision.response.sync-tags'}))
     await release()
     expect(toneOf(badgeOf('* in dataset "other"'))).toBe('sui-tone-critical')
 
