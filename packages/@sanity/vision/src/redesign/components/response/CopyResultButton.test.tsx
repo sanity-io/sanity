@@ -31,8 +31,10 @@ function renderButton(onCopy: () => Promise<boolean>) {
   )
 }
 
-const copied = () =>
-  screen.getByTestId('vision-copy-result-glyphs').getAttribute('data-copied') === 'true'
+const button = () => screen.getByTestId('vision-copy-result')
+const copied = () => button().getAttribute('data-copied') === 'true'
+const shownIcon = () =>
+  button().querySelector('[data-sanity-icon]')?.getAttribute('data-sanity-icon')
 
 async function click() {
   await act(async () => {
@@ -55,6 +57,7 @@ describe('CopyResultButton', () => {
     await click()
     expect(onCopy).toHaveBeenCalledTimes(1)
     expect(copied()).toBe(true)
+    expect(shownIcon()).toBe('checkmark')
 
     act(() => {
       vi.advanceTimersByTime(COPIED_FEEDBACK_MS - 1)
@@ -64,6 +67,7 @@ describe('CopyResultButton', () => {
       vi.advanceTimersByTime(1)
     })
     expect(copied()).toBe(false)
+    expect(shownIcon()).toBe('copy')
   })
 
   it('keeps the checkmark longer when copied again while it shows', async () => {
@@ -87,5 +91,24 @@ describe('CopyResultButton', () => {
     renderButton(() => Promise.resolve(false))
     await click()
     expect(copied()).toBe(false)
+  })
+
+  it('shows its label next to the copy icon', () => {
+    renderButton(() => Promise.resolve(true))
+    expect(button().textContent).toBe('Copy result')
+    expect(shownIcon()).toBe('copy')
+  })
+
+  it('copies nothing while disabled', async () => {
+    const onCopy = vi.fn(() => Promise.resolve(true))
+    render(
+      <ThemeProvider theme={theme}>
+        <LayerProvider>
+          <CopyResultButton disabled label="Copy result" onCopy={onCopy} />
+        </LayerProvider>
+      </ThemeProvider>,
+    )
+    await click()
+    expect(onCopy).not.toHaveBeenCalled()
   })
 })

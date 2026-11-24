@@ -30,6 +30,18 @@ export interface GroqEditorLabels {
   addFromLibrary: string
   /** The lint action that writes the name a schema finding suggests */
   useSuggestion: (suggestion: string) => string
+  /** "Field of post, page": the types that declare a field, in its completion info and hover */
+  fieldOf: (types: string) => string
+  /** Completions of the fields every document or reference has (`_id`, `_ref`) */
+  systemField: string
+  /** Completions of document type names, for types without a title */
+  documentType: string
+  /** Link at the end of an operator's hover documentation */
+  operatorReference: string
+  /** Under a `$param`'s type in its hover, when the type is its value in the params */
+  paramValue: string
+  /** Under a `$param`'s type in its hover, when the params give it no value yet */
+  paramNotSet: string
   /** Called when a lint suggestion or a library declaration is applied */
   onApplySuggestion?: () => void
 }
@@ -50,4 +62,17 @@ export const groqEditorLabels = Facet.define<GroqEditorLabels, GroqEditorLabels 
 /** The workspace schema the query is checked against; none when the studio has no schema */
 export const querySchema = Facet.define<QuerySchema, QuerySchema | undefined>({
   combine: (values) => values[0],
+})
+
+/**
+ * The params the query runs with, from the params JSON: the schema checks, completions and hover
+ * narrow `_type == $type` by the value of `$type`
+ */
+export const NO_QUERY_PARAM_VALUES: Readonly<Record<string, unknown>> = Object.freeze({})
+
+export const queryParamValues = Facet.define<
+  Readonly<Record<string, unknown>>,
+  Readonly<Record<string, unknown>>
+>({
+  combine: (values) => values[0] ?? NO_QUERY_PARAM_VALUES,
 })

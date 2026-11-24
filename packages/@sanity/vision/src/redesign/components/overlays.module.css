@@ -5,7 +5,7 @@
  * strong ease-out: movement starts fast, so the UI feels like it answered right away.
  */
 
-/* The Agent Actions bar above the query or mutations editor */
+/* The Agent Actions bar under the query, or above the mutations editor */
 .promptBar {
   transition:
     opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),

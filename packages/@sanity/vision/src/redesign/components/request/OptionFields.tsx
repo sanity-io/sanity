@@ -18,6 +18,7 @@ import {validateApiVersion} from '../../../util/validateApiVersion'
 import {type VisionPerspective, type VisionVariantMode} from '../../store/types'
 import {getEffectivePerspective} from '../../util/tabPerspective'
 import {SwitchField} from '../SwitchField'
+import {useTabElementId} from '../tabs/queryTabShown'
 
 function FieldLabel({children, htmlFor}: {children: string; htmlFor: string}) {
   return (
@@ -52,6 +53,7 @@ export function ApiVersionField({
   trackQueryChanges = false,
 }: ApiVersionFieldProps) {
   const {t} = useTranslation(visionLocaleNamespace)
+  const elementId = useTabElementId()(id)
   const telemetry = useVisionTelemetry()
   const isCustom = !API_VERSIONS.includes(value)
   const isValid = validateApiVersion(value)
@@ -83,7 +85,7 @@ export function ApiVersionField({
 
   return (
     <Stack gap={2}>
-      <FieldLabel htmlFor={id}>{t('settings.api-version-label')}</FieldLabel>
+      <FieldLabel htmlFor={elementId}>{t('settings.api-version-label')}</FieldLabel>
       <Tooltip
         animate
         content={
@@ -117,7 +119,7 @@ export function ApiVersionField({
             data-testid={`${id}-select`}
             disabled={locked}
             fontSize={1}
-            id={id}
+            id={elementId}
             onChange={handleSelect}
             padding={2}
             value={locked ? VARIANTS_API_VERSION : isCustom ? 'other' : value}
@@ -187,6 +189,7 @@ interface PerspectiveSelectProps {
 
 export function PerspectiveSelect({id, value, onChange}: PerspectiveSelectProps) {
   const {t} = useTranslation(visionLocaleNamespace)
+  const elementId = useTabElementId()(id)
   const globalName = useGlobalPerspectiveName()
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
   // Shows what the request runs with: a stored scheduled drafts choice reads as Global where
@@ -195,11 +198,11 @@ export function PerspectiveSelect({id, value, onChange}: PerspectiveSelectProps)
 
   return (
     <Stack gap={2}>
-      <FieldLabel htmlFor={id}>{t('settings.perspective-label')}</FieldLabel>
+      <FieldLabel htmlFor={elementId}>{t('settings.perspective-label')}</FieldLabel>
       <Select
         data-testid={`${id}-select`}
         fontSize={1}
-        id={id}
+        id={elementId}
         onChange={(event: ChangeEvent<HTMLSelectElement>) => {
           const next = event.currentTarget.value
           onChange(next === 'default' ? undefined : (next as Exclude<VisionPerspective, undefined>))
@@ -229,15 +232,23 @@ interface UseCdnFieldProps {
   onChange: (useCdn: boolean) => void
   /** How the CDN answers the query */
   notes?: string[]
+  /** The short line under the switch; the Options pane leaves it to the info tooltip */
+  showSummary?: boolean
 }
 
 /** The `useCdn` switch: queries go to the cached API CDN instead of the live API */
-export function UseCdnField({testId, checked, onChange, notes = []}: UseCdnFieldProps) {
+export function UseCdnField({
+  testId,
+  checked,
+  onChange,
+  notes = [],
+  showSummary = true,
+}: UseCdnFieldProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   return (
     <SwitchField
       checked={checked}
-      description={t('vision.options.use-cdn.summary')}
+      description={showSummary ? t('vision.options.use-cdn.summary') : undefined}
       info={[t('vision.options.use-cdn.description'), ...notes]}
       onChange={onChange}
       testId={testId}
@@ -259,6 +270,7 @@ interface VariantSelectProps {
  */
 export function VariantSelect({id, value, onChange}: VariantSelectProps) {
   const {t} = useTranslation(visionLocaleNamespace)
+  const elementId = useTabElementId()(id)
   const isVariantsEnabled = useVariantsEnabled()
   const {selectedVariants, selectedVariantNames} = usePerspective()
   const selectedVariant = getDefaultVariant(selectedVariants)
@@ -270,11 +282,11 @@ export function VariantSelect({id, value, onChange}: VariantSelectProps) {
 
   return (
     <Stack gap={2}>
-      <FieldLabel htmlFor={id}>{t('vision.options.variant-label')}</FieldLabel>
+      <FieldLabel htmlFor={elementId}>{t('vision.options.variant-label')}</FieldLabel>
       <Select
         data-testid={`${id}-select`}
         fontSize={1}
-        id={id}
+        id={elementId}
         onChange={(event: ChangeEvent<HTMLSelectElement>) =>
           onChange(event.currentTarget.value === 'none' ? 'none' : 'global')
         }

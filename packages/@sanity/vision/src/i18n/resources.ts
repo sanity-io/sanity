@@ -158,6 +158,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Title for popover that explains what "Perspectives" are */
   'settings.perspectives.title': 'Perspectives',
 
+  /** Copy button of a pane header, for a moment after it copied */
+  'vision.copied': 'Copied',
+  /** Copy button of a pane header, copying what the pane shows */
+  'vision.copy': 'Copy',
   /** Label of the document after the change in the Delta panel */
   'vision.delta.after': 'After',
   /** Label of the document before the change in the Delta panel */
@@ -196,6 +200,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.delta.revision.none-before': 'Nothing: the change creates the document',
   /** Accessible label for the button that closes the sidebar drawer */
   'vision.drawer.close': 'Close panel',
+  /** The Copy button in the corner of the query and params editors, for a few seconds after a copy */
+  'vision.editor.copied': 'Copied',
+  /** Button in the corner of the query and params editors that copies their text */
+  'vision.editor.copy': 'Copy',
+  /** Button in the corner of the query and params editors that reformats their text */
+  'vision.editor.format': 'Format',
+  /** Tooltip and accessible label of the `…` buttons that open a menu of more actions */
+  'vision.actions.more': 'More actions',
   /** Toast shown after a code snippet was copied */
   'vision.export-query.copied': 'Snippet copied to clipboard',
   /** Label for the button that copies a code snippet */
@@ -287,9 +299,27 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Tooltip of the API version button while a selected variant forces the variants API version */
   'vision.api-version.tooltip-locked':
     'Queries run against API version {{version}}, which the selected variant needs.',
+  /** Button under the query editor that opens the bar changing the query as described */
+  'vision.edit.button': 'Edit',
+  /** Explanation under the edit query field */
+  'vision.edit.description':
+    'Sanity Agent Actions change the GROQ as you describe, with the document types, and the Content Lake checks each attempt; every attempt uses one AI credit. It replaces this tab’s query and runs; undo in the editor brings the previous query back.',
+  /** Shown when the query could not be changed, above the reason */
+  'vision.edit.failed': 'The query could not be changed',
+  /** Accessible label of the description field in the edit query bar */
+  'vision.edit.label': 'How should the query change?',
+  /** Placeholder of the description field in the edit query bar */
+  'vision.edit.placeholder': 'Also fetch the author’s name, and only show published posts',
+  /** Shown while the first attempt at the changed query is written */
+  'vision.edit.progress': 'Changing the query…',
+  /** Button changing the query */
+  'vision.edit.submit': 'Edit',
   /** Explanation at the top of the Explain panel */
   'vision.explain.description':
     'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps. Explain this to me has Sanity Agent Actions describe the query and its plan in plain words, which uses one AI credit.',
+  /** Explanation at the top of the Explain panel when the AI explanation is switched off */
+  'vision.explain.description-plan':
+    'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps.',
   /** Shown in the Explain panel while there is no valid query to explain */
   'vision.explain.empty': 'Write a query to explain it.',
   /** Button in the Explain panel asking Agent Actions to explain the query and its plan */
@@ -473,6 +503,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Shown in the Lint panel while the query has no lint findings */
   'vision.lint.empty':
     'No lint findings. Problems the GROQ linter spots in the query are listed here as you type; pick one to select it in the editor.',
+  /** Button in the Lint panel that fixes the listed problems with Agent Actions */
+  'vision.lint.fix': 'Fix with AI',
+  /** Shown when the lint problems could not be fixed, above the reason */
+  'vision.lint.fix.failed': 'The problems could not be fixed',
+  /** Opens the last rejected fix, without running it, to finish by hand */
+  'vision.lint.fix.open-anyway': 'Open the last attempt',
+  /** Shown while the fixed query is written */
+  'vision.lint.fix.progress': 'Fixing the query…',
   /** Where a lint finding sits in the query, shown under its message */
   'vision.lint.position': 'Line {{line}}, column {{column}}',
   /** Severity badge of a lint finding */
@@ -485,6 +523,19 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.lint.severity.warning': 'Warning',
   /** Lint action writing the type, field or operator a schema finding suggests */
   'vision.lint.use-suggestion': 'Use {{suggestion}}',
+  /** Completion detail of a document type name without a title, in `_type == "…"` */
+  'vision.schema.editor.document-type': 'Document type',
+  /** Under a field's type in its completion info and hover: the schema types that declare it */
+  'vision.schema.editor.field-of': 'Field of {{types}}',
+  /** Link at the end of an operator's hover documentation in the query editor */
+  'vision.schema.editor.operator-reference': 'GROQ operators reference',
+  /** Under a param's type in its hover, when the params give it no value yet */
+  'vision.schema.editor.param-not-set':
+    'No value in the params yet; expected from how the query uses it',
+  /** Under a param's type in its hover: the type is its value in the params */
+  'vision.schema.editor.param-value': 'Its value in the params',
+  /** Completion detail of the fields every document or reference has (`_id`, `_ref`) */
+  'vision.schema.editor.system-field': 'System field',
   /** Title the browser shows for the WebMCP tool that lints a query */
   'vision.webmcp.check-query': 'Check a GROQ query in Vision',
   /** Title the browser shows for the WebMCP tool that describes the workspace schema */
@@ -499,7 +550,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.webmcp.preview-mutations': 'Preview mutations in Vision',
   /** Title the browser shows for the WebMCP tool that runs a query */
   'vision.webmcp.run-query': 'Run a GROQ query in Vision',
-  /** Badge shown while a tab refetches automatically */
+  /**
+   * Badge shown while a tab refetches automatically
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.live.active': 'Live',
   /** Button in the request column's action bar that fetches and then refetches automatically */
   'vision.live.button': 'Live fetch',
@@ -598,7 +653,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'The mutations, the dataset or the options changed after this dry run. Run it again to apply them.',
   /** How many documents the dry run changes and leaves as they are */
   'vision.mutate.summary': 'Changed: {{changed}} · Unchanged: {{unchanged}}',
-  /** In the Network panel: whether a cache answered the query */
+  /** In the Response panel: whether a cache answered the query */
   'vision.network.cache': 'Cache',
   /** The API CDN answered from its cache */
   'vision.network.cache.hit': 'Hit',
@@ -609,16 +664,20 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.network.cache.miss': 'Miss, as far as this session can tell',
   /** The API answered, which caches nothing */
   'vision.network.cache.none': 'None, the API answers every request with fresh content',
-  /** Shown in the Network panel while there is no response */
+  /**
+   * Shown in the Network panel while there is no response
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.network.empty':
     'Fetch the query to see which endpoint answered it, whether from a cache, and where it ran.',
-  /** In the Network panel: the endpoint that answered */
+  /** In the Response panel: the endpoint that answered */
   'vision.network.endpoint': 'Answered by',
   /** The live API answered */
   'vision.network.endpoint.api': 'API',
   /** The API CDN answered */
   'vision.network.endpoint.cdn': 'API CDN',
-  /** In the Network panel: the HTTP method the query was sent with */
+  /** In the Response panel: the HTTP method the query was sent with */
   'vision.network.method': 'Method',
   /** The query and its params went in the URL */
   'vision.network.method.get': 'GET, with the query and params in the URL',
@@ -627,20 +686,26 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Under the method of a POST request: why the query was not sent in the URL */
   'vision.network.method.post-explained':
     'The query and params come to {{size}} characters as search params; from {{limit}} on, @sanity/client sends them as a JSON body, since the API limits the length of a URL. The options stay in the URL.',
-  /** In the Network panel: the region the query ran in */
+  /** In the Response panel: the region the query ran in */
   'vision.network.region': 'Query ran in',
   /** The response did not say where the query ran */
   'vision.network.region.unknown': 'Not reported',
-  /** In the Network panel: the round trip and the time on the server */
+  /** In the Response panel: the round trip and the time on the server */
   'vision.network.timing': 'Time',
-  /** The round trip and the server's time for the query, already formatted (`1.17s`, `888ms`) */
+  /**
+   * The round trip and the server's time for the query, already formatted (`1.17s`, `888ms`)
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.network.timing.value': '{{e2e}} round trip, {{server}} on the server',
-  /** In the Network panel: the trace of the request, for Sanity support */
+  /** In the Response panel: the trace of the request, for Sanity support */
   'vision.network.trace': 'Trace ID',
-  /** Hint in the Network panel while queries go to the API */
+  /** Tooltip next to the endpoint in the Response panel while queries go to the API */
   'vision.network.use-cdn-hint':
     'Turn on Use the API CDN in Options to send queries through the CDN.',
-  /** Label of the browser's marker on the Network panel's globe, placed from its time zone */
+  /** Names the info button that shows how to send queries through the API CDN */
+  'vision.network.use-cdn-hint.label': 'About the API CDN',
+  /** Label of the browser's marker on the Response panel's globe, placed from its time zone */
   'vision.network.you': 'You',
   /** Heading of the dataset menu's entry for the dataset the current workspace uses */
   'vision.options.dataset.current-workspace': 'Current workspace',
@@ -665,7 +730,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Description for the "Include content source map" switch, in its info tooltip */
   'vision.options.include-source-map.description':
     'Adds resultSourceMap to the response, shown in the Content Source Map tab.',
-  /** The short line under the "Include content source map" switch; the rest is in its tooltip */
+  /**
+   * The short line under the "Include content source map" switch; the rest is in its tooltip
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.include-source-map.summary': 'Adds resultSourceMap to the response',
   /** Label of the switch that sends queries to the API CDN */
   'vision.options.use-cdn': 'Use the API CDN',
@@ -682,7 +751,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.options.use-cdn.blocked.title': 'Queries go to the API, not the CDN',
   /** Description of the API CDN switch, in its info tooltip */
   'vision.options.use-cdn.description':
-    'Sends the query to the API CDN, like useCdn: true in @sanity/client, with the published and raw perspectives: drafts and releases always go to the API. Its answers are cached for up to a minute; the Network panel shows when one came from the cache.',
+    'Sends the query to the API CDN, like useCdn: true in @sanity/client, with the published and raw perspectives: drafts and releases always go to the API. Its answers are cached for up to a minute; the Response panel shows when one came from the cache.',
   /** The short line under the API CDN switch; the rest is in its tooltip */
   'vision.options.use-cdn.summary': 'Cached responses, for published and raw',
   /** Button in the API CDN notice switching the tab to the published perspective */
@@ -716,13 +785,21 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.panel.collapse': 'Collapse panel',
   /** Accessible label for expanding a bottom panel */
   'vision.panel.expand': 'Expand panel',
-  /** Tooltip of a control that sizes its bottom panel to the open tab */
+  /**
+   * Tooltip of a control that sizes its bottom panel to the open tab
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.panel.fit-content': 'Double-click to fit the panel to its content',
   /** Label of the "Explain" tab in the response panel: the query plan and an explanation */
   'vision.panel.explain': 'Explain',
   /** Label of the Functions tab in the request panel */
   'vision.panel.functions': 'Functions',
-  /** Label of the Network tab in the response panel */
+  /**
+   * Label of the Network tab in the response panel
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.panel.network': 'Network',
   /** Label of the Delta tab in the response panel, which tests the query in delta mode */
   'vision.panel.delta': 'Delta',
@@ -834,6 +911,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.params.resize':
     'Resize params: drag or use the arrow keys; double-click or press Enter to fit the content again',
+  /** Accessible label of the button next to the params view tabs that copies the params */
+  'vision.params.copy': 'Copy params',
+  /** Accessible label of the button next to the params view tabs that reformats the params JSON */
+  'vision.params.format': 'Format params',
   /** Tab showing the params as a form inferred from the query */
   'vision.params.view.form': 'Form',
   /** Tab showing the params as JSON */
@@ -861,16 +942,32 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Tooltip when automatic refetching is not available for the API version */
   'vision.query.auto-refetch.unsupported':
     'Refetching automatically needs API version v2021-03-25 or later.',
-  /** Toast shown after the query was copied */
+  /**
+   * Toast shown after the query was copied
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.query.copied': 'Query copied to clipboard',
-  /** Menu item copying the query text */
+  /** Accessible label of the button in the query editor's corner that copies the query */
   'vision.query.copy': 'Copy query',
   /** Menu item opening the export query dialog */
   'vision.query.export': 'Export query…',
-  /** Menu item reformatting the query */
+  /** Accessible label of the button in the query editor's corner that reformats the query */
+  'vision.query.format': 'Format query',
+  /**
+   * Label floating over the GROQ editor
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.query.label': 'Query',
+  /**
+   * Menu item reformatting the query
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.query.prettify': 'Prettify query',
   /** Toast shown when the query could not be reformatted */
-  'vision.query.prettify.failed': 'Could not prettify the query',
+  'vision.query.prettify.failed': 'Could not format the query',
   /** Menu item saving the query to the personal saved queries */
   'vision.query.save': 'Save query',
   /** The Fetch button while a fetch is running, stopping it; paired with Stop live */
@@ -906,23 +1003,218 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.response.sync-tags': 'Sync tags',
   /** Shown when the response carried no sync tags */
   'vision.response.sync-tags.none': 'No sync tags in the response',
+  /** Under the sync tags when some of them stand for nothing the lookup could find */
+  'vision.response.sync-tags.partly-resolved':
+    '{{count}} of {{total}} sync tags could not be resolved and are shown as they came.',
+  /** Under the sync tags when looking up what they stand for failed */
+  'vision.response.sync-tags.resolve-failed': 'Could not resolve the sync tags: {{message}}',
+  /** Under the sync tags while the lookup of what they stand for is running */
+  'vision.response.sync-tags.resolving': 'Resolving sync tags…',
+  /** Tooltip of the Sync tags label while it shows what the tags stand for */
+  'vision.response.sync-tags.show-raw': 'Show the sync tags as they came',
+  /** Tooltip of the Sync tags label while it shows the tags as they came */
+  'vision.response.sync-tags.show-resolved': 'Show what the sync tags stand for',
+  /** Tooltip of a sync tag the lookup could not resolve */
+  'vision.response.sync-tags.unresolved': 'Not resolved',
+  /** Tooltip of the sync tag that stands for the whole dataset, the `*` or `ALL` tag */
+  'vision.response.sync-tags.wildcard':
+    'This tag covers the whole dataset. With Sanity Live or live fetch, any change in the dataset triggers a refetch.',
   /** Under the query URL when the request went out as a POST body rather than that URL */
   'vision.response.url.sent-as-post':
     'Sent as a POST body: the query and params are too long for a URL, so @sanity/client sent them as JSON. Pasting this URL into Vision still loads the query.',
-  /** Accessible label for the result actions menu */
+  /**
+   * Accessible label for the result actions menu
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.result.actions': 'Result actions',
-  /** Toast shown after the result was copied */
+  /** Toast shown after the whole result was copied from the result tree or graph */
   'vision.result.copied': 'Result copied to clipboard',
   /** Toast shown after a value in the result was copied, with its path such as [0].author.name */
   'vision.result.copied-value': 'Copied {{path}}',
-  /** Menu item and button copying the result as JSON */
+  /**
+   * Button in the result's action bar copying the result as JSON
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.result.copy': 'Copy result',
   /** Button next to each property in the result tree, copying its value */
   'vision.result.copy-value': 'Copy value',
+  /** Button on a row of the document list copying the document's ID */
+  'vision.result.documents.copy-id': 'Copy ID',
+  /** Toast confirming the document list copied a document's ID */
+  'vision.result.documents.copied-id': 'Copied {{id}}',
+  /**
+   * Number of documents the document list shows, while a search or a type narrows it
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.count-of': '{{shown}} of {{count}}',
+  /** Empty state of a document list whose result lists no documents */
+  'vision.result.documents.empty': 'The result lists no documents',
+  /**
+   * Shown when the documents of the document list could not be fetched
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.error': 'The documents could not be loaded: {{message}}',
+  /** Shown when the result is not an array, so Documents cannot list it */
+  'vision.result.documents.invalid.not-array':
+    'This result is not an array, so Documents cannot list it. _id is required. _type, title, subtitle and media are optional. Expected shape:',
+  /** Shown when some items of the result have no _id, with how many and how many items there are */
+  'vision.result.documents.invalid.missing-id':
+    '{{count}} of {{total}} items have no _id, so Documents cannot list them. _id is required. _type, title, subtitle and media are optional. Expected shape:',
+  /**
+   * Accessible label of the menu choosing how the document list lays out its documents
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.layout.aria-label': 'Change layout',
+  /**
+   * Layout of the document list as cards with large media
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.layout.card': 'Cards',
+  /**
+   * Layout of the document list with one line per document
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.layout.compact': 'Compact view',
+  /**
+   * Layout of the document list with a title and a subtitle per document
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.layout.default': 'Default view',
+  /**
+   * Layout of the document list with a title, a subtitle and a description per document
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.layout.detail': 'Detailed view',
+  /**
+   * Layout of the document list as a grid of media tiles
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.layout.media': 'Media grid',
+  /**
+   * Row of the document list for an ID no document has in the current perspective
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.missing': 'Not found in the current perspective',
+  /**
+   * Shown instead of rows when a search or a type matches none of the listed documents
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.no-match': 'No documents match',
+  /** Button on a row of the document list opening the document in a new browser tab */
+  'vision.result.documents.open-new-tab': 'Open in new tab',
+  /**
+   * Shown instead of the document list when the result is from another dataset than the workspace's
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.other-dataset':
+    'Documents are listed from the workspace dataset, {{workspaceDataset}}, and this result is from {{dataset}}. Switch the dataset to {{workspaceDataset}} to list them.',
+  /**
+   * Accessible label of the search field of the document list
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.search.aria-label': 'Search list',
+  /**
+   * Placeholder of the search field of the document list
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.search.placeholder': 'Search list',
+  /**
+   * Notice of a document list result with items that are not IDs, which are left out
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.skipped': 'Items without an ID left out: {{count}}',
+  /**
+   * Accessible label of the menu choosing how the document list is sorted
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.sort.aria-label': 'Sort documents',
+  /**
+   * Sort option of the document list: the newest documents first
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.sort.created': 'Recently created',
+  /**
+   * Sort option of the document list: the ordering the result gives as `defaultOrdering`
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.sort.custom': 'Query ordering',
+  /**
+   * Label of the sort menu of the document list, with the selected sort
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.sort.label': 'Sorted by {{order}}',
+  /**
+   * Sort option of the document list: the order the result lists the documents in
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.sort.result': 'Result order',
+  /**
+   * Sort option of the document list: by preview title, alphabetically
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.sort.title': 'Title A–Z',
+  /**
+   * Sort option of the document list: by document type
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.sort.type': 'Schema type',
+  /**
+   * Sort option of the document list: the most recently edited documents first
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.sort.updated': 'Recently updated',
+  /**
+   * Accessible label of the buttons narrowing the document list to one document type
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.types.aria-label': 'Filter by type',
+  /**
+   * Button showing documents of every type in the document list
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.types.all': 'All',
+  /**
+   * Row of the document list for a document of a type the schema does not have
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.unknown-type': 'Unknown type: {{type}}',
   /** Empty state of the result view */
   'vision.result.empty': 'Run the query to see its result here',
-  /** Button exporting the result as CSV */
-  'vision.result.export-csv': 'Export CSV',
+  /**
+   * Button opening the menu of ways to export the result
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.export': 'Export…',
+  /** Menu item saving the result as a CSV file */
+  'vision.result.export-csv': 'Save as CSV…',
   /** Button on a graph node hiding the objects and arrays it holds */
   'vision.result.graph.collapse': 'Hide what it holds',
   /** Button on a collapsed graph node showing the objects and arrays it holds again */
@@ -953,19 +1245,25 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.result.graph.zoom-in': 'Zoom in',
   /** Button zooming out of the graph */
   'vision.result.graph.zoom-out': 'Zoom out',
-  /** Button exporting the result as JSON */
-  'vision.result.export-json': 'Export JSON',
+  /** Menu item saving the result as a JSON file */
+  'vision.result.export-json': 'Save as JSON…',
   /** Menu item opening the TypeScript export dialog */
   'vision.result.export-typescript': 'Export TypeScript…',
   /** Menu item opening the Zod export dialog */
   'vision.result.export-zod': 'Export Zod…',
-  /** Tab showing the result as a graph of its objects and arrays */
+  /** Tooltip and accessible label of the result header's menu of export and save options */
+  'vision.result.more-actions': 'More actions',
+  /** Accessible label of the result view dropdown, with the view it shows such as JSON */
+  'vision.result.view.button': 'Result view: {{view}}',
+  /** View listing a result shaped `*[]{_id, _type, title?, subtitle?, media?}` as document previews */
+  'vision.result.view.documents': 'Documents',
+  /** View showing the result as a graph of its objects and arrays */
   'vision.result.view.graph': 'Graph',
-  /** Tab showing the result as indented JSON text, to select and copy from */
+  /** View showing the result as indented JSON text, to select and copy from */
   'vision.result.view.json': 'JSON',
-  /** Accessible label of the tabs that switch how the result shows */
+  /** Accessible label of the menu that switches how the result shows */
   'vision.result.view.label': 'Result view',
-  /** Tab showing the result as a tree to browse */
+  /** View showing the result as a tree to browse */
   'vision.result.view.tree': 'Tree',
   /** Empty state of the saved queries panel */
   'vision.saved.empty': 'No saved queries yet. Save the current query with the + button.',
@@ -988,6 +1286,36 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Toast shown when an opened saved query used a content variant, but this workspace has variants switched off */
   'vision.saved.variants-disabled':
     'This saved query used the "{{variant}}" variant; this workspace has variants switched off, so the query runs without it.',
+  /** Explains the settings that switch Vision's AI features off */
+  'vision.settings.ai.description':
+    "These features write with Sanity Agent Actions and use your organization's AI credits. Switch off the ones you do not want; the choice is saved in this browser.",
+  /** Switch in the settings that turns every AI feature on or off */
+  'vision.settings.ai.enabled': 'Use AI features',
+  /** Switch in the settings for editing queries with Agent Actions */
+  'vision.settings.ai.edit-query': 'Edit queries',
+  /** Description of the switch for editing queries with Agent Actions */
+  'vision.settings.ai.edit-query.description': 'Edit changes the query as you describe.',
+  /** Switch in the settings for fixing lint problems with Agent Actions */
+  'vision.settings.ai.fix-lint': 'Fix lint problems',
+  /** Description of the switch for fixing lint problems with Agent Actions */
+  'vision.settings.ai.fix-lint.description':
+    'Fix with AI in the Lint panel fixes the problems the linter found.',
+  /** Switch in the settings for explaining queries with Agent Actions */
+  'vision.settings.ai.explain-query': 'Explain queries',
+  /** Description of the switch for explaining queries with Agent Actions */
+  'vision.settings.ai.explain-query.description':
+    'Explain this to me in the Explain panel. The query plan stays available.',
+  /** Switch in the settings for generating mutations with Agent Actions */
+  'vision.settings.ai.generate-mutations': 'Generate mutations',
+  /** Description of the switch for generating mutations with Agent Actions */
+  'vision.settings.ai.generate-mutations.description':
+    'Generate in the Mutate panel writes mutations from a description.',
+  /** Switch in the settings for generating queries with Agent Actions */
+  'vision.settings.ai.generate-query': 'Generate queries',
+  /** Description of the switch for generating queries with Agent Actions */
+  'vision.settings.ai.generate-query.description': 'Generate writes the query from a description.',
+  /** Title of the settings that switch Vision's AI features off */
+  'vision.settings.ai.title': 'AI features',
   /** Button in the settings dialog that clears the stored state */
   'vision.settings.clear-storage': 'Clear storage',
   /** Confirmation button for clearing the storage */
@@ -1001,6 +1329,13 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.settings.clear-storage.success': 'Storage cleared',
   /** Explanation at the top of the settings dialog */
   'vision.settings.description': 'Defaults for new tabs. Open tabs keep their own options.',
+  /** Switch in the settings that reformats a prettified query when the query editor is resized */
+  'vision.settings.editor.auto-format-on-resize': 'Auto-format GROQ on resize',
+  /** Description of the switch that reformats a prettified query when the query editor is resized */
+  'vision.settings.editor.auto-format-on-resize.description':
+    'When the query editor gets wider or narrower, a query laid out by Prettify is laid out again for the new width. Queries you formatted yourself are left as they are.',
+  /** Title of the settings section about the query editor */
+  'vision.settings.editor.title': 'Query editor',
   /** Explains the setting listing the fields left out of History diffs */
   'vision.settings.history-diff.description':
     'One field path per line. A path matches at any depth of a result, so _rev hides the revision of every document in it. Each diff can still show them.',
@@ -1008,6 +1343,13 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.settings.history-diff.reset': 'Reset to the defaults',
   /** Label of the setting listing the fields left out of History diffs */
   'vision.settings.history-diff.title': 'Fields hidden from History diffs',
+  /** Switch in the settings that lets the Sync tags row show what each tag stands for */
+  'vision.settings.response.resolve-sync-tags': 'Resolve sync tags',
+  /** Description of the switch that lets the Sync tags row show what each tag stands for */
+  'vision.settings.response.resolve-sync-tags.description':
+    'Click Sync tags in the Response panel to switch between the tags and the documents they stand for: every document, a type, an id or a slug. Finding them sends a few extra queries to the dataset the response came from.',
+  /** Title of the settings section about the Response panel */
+  'vision.settings.response.title': 'Response panel',
   /** Title of the settings dialog */
   'vision.settings.title': 'Settings',
   /** Empty state of the shared queries panel */
@@ -1017,16 +1359,16 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.shortcuts.close': 'Close dialogs and menus',
   /** Shortcut that lists the functions matching the name being typed in the query editor */
   'vision.shortcuts.complete': 'Complete a function name',
-  /** Shortcut description: copy the query */
-  'vision.shortcuts.copy-query': 'Copy the query',
+  /** Shortcut description: copy the query, or the params while they have focus */
+  'vision.shortcuts.copy-query': 'Copy the query, or the params while they have focus',
   /** Shortcut that turns the selected projection, or the one around the cursor, into a custom function */
   'vision.shortcuts.extract-function': 'Extract the projection at the cursor to a function',
   /** Shortcut description: run the query */
   'vision.shortcuts.fetch': 'Fetch the query',
   /** Shortcut description: move the cursor to the next lint finding in the query editor */
   'vision.shortcuts.next-finding': 'Jump to the next lint finding',
-  /** Shortcut description: reformat the query */
-  'vision.shortcuts.prettify': 'Prettify the query',
+  /** Shortcut description: reformat the query, or the params JSON while it has focus */
+  'vision.shortcuts.prettify': 'Format the query, or the params JSON while it has focus',
   /** Title of the keyboard shortcuts dialog */
   'vision.shortcuts.title': 'Keyboard shortcuts',
   /** Sidebar toggle: show icons only */

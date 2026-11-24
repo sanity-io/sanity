@@ -1,26 +1,32 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {Button} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {useEffect, useState} from 'react'
-import {Text} from 'ui5'
-
-import * as styles from '../redesign.module.css'
 
 /** How long the button shows its checkmark after a copy */
 export const COPIED_FEEDBACK_MS = 1500
 
 export interface CopyResultButtonProps {
   label: string
+  disabled?: boolean
   /** Resolves whether the result was copied */
   onCopy: () => Promise<boolean>
+  /** Icon only, for a row action. The result bar shows the label as the button text */
+  iconOnly?: boolean
+  testId?: string
 }
 
 /**
- * Copies the result, and confirms it where the click happened: the copy icon turns into a
- * checkmark for a moment, next to the toast the copy pushes
+ * Copies from a result and confirms it where the click happened: the copy icon turns into a
+ * checkmark for a moment, next to the toast the copy pushes. A document row uses it as an icon.
  */
-export function CopyResultButton({label, onCopy}: CopyResultButtonProps) {
+export function CopyResultButton({
+  label,
+  disabled,
+  onCopy,
+  iconOnly = false,
+  testId = 'vision-copy-result',
+}: CopyResultButtonProps) {
   // When the last copy succeeded, so a second copy while the checkmark shows keeps it longer
   const [copiedAt, setCopiedAt] = useState<number | null>(null)
   useEffect(() => {
@@ -34,35 +40,17 @@ export function CopyResultButton({label, onCopy}: CopyResultButtonProps) {
   }
 
   return (
-    <Tooltip
-      animate
-      content={
-        <Text size={1} as="div" trim={true}>
-          {label}
-        </Text>
-      }
-      placement="bottom"
-      portal
-    >
-      <Button
-        aria-label={label}
-        className={styles.pressable}
-        data-testid="vision-copy-result"
-        fontSize={1}
-        icon={
-          <span
-            className={styles.copyGlyphs}
-            data-copied={copiedAt !== null}
-            data-testid="vision-copy-result-glyphs"
-          >
-            <CopyIcon data-glyph="copy" />
-            <CheckmarkIcon data-glyph="check" />
-          </span>
-        }
-        mode="bleed"
-        onClick={() => void handleClick()}
-        padding={2}
-      />
-    </Tooltip>
+    <Button
+      aria-label={iconOnly ? label : undefined}
+      data-copied={copiedAt !== null}
+      data-testid={testId}
+      disabled={disabled}
+      gap={2}
+      icon={copiedAt !== null ? CheckmarkIcon : CopyIcon}
+      mode={iconOnly ? 'bleed' : 'ghost'}
+      onClick={() => void handleClick()}
+      padding={2}
+      text={iconOnly ? undefined : label}
+    />
   )
 }

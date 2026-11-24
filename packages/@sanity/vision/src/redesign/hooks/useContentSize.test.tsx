@@ -1,6 +1,6 @@
 import {act, cleanup, render} from '@testing-library/react'
-import {Activity, useState} from 'react'
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
+import {Activity, type CSSProperties, useState} from 'react'
+import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
 import {useContentSize} from './useContentSize'
 
@@ -48,11 +48,11 @@ class ResizeObserverMock implements ResizeObserver {
   }
 }
 
-function Measured() {
+function Measured({style}: {style?: CSSProperties}) {
   const [element, setElement] = useState<HTMLDivElement | null>(null)
   const size = useContentSize(element)
   return (
-    <div data-testid="measured" ref={setElement}>
+    <div data-testid="measured" ref={setElement} style={style}>
       {size ? `${size.width}x${size.height}` : 'unmeasured'}
     </div>
   )
@@ -90,6 +90,31 @@ describe('useContentSize', () => {
 
     act(() => observer.resize(640, 600))
     expect(element.textContent).toBe('640x600')
+  })
+
+  it('measures a laid-out element before the browser paints, without waiting for the observer', () => {
+    // jsdom lays nothing out, so give the element the box a browser would
+    const box = {x: 0, y: 0, top: 0, left: 0, right: 900, bottom: 600, width: 900, height: 600}
+    vi.spyOn(HTMLElement.prototype, 'getClientRects').mockReturnValue([
+      box,
+    ] as unknown as DOMRectList)
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+      ...box,
+      toJSON: () => box,
+    })
+    onTestFinished(() => {
+      vi.restoreAllMocks()
+    })
+
+    const {getByTestId} = render(
+      <Activity mode="visible">
+        <Measured style={{padding: '10px 20px', border: '2px solid'}} />
+      </Activity>,
+    )
+
+    // The layout effect has measured the content box: the border box less borders and padding
+    expect(getByTestId('measured').textContent).toBe('856x576')
+    expect(ResizeObserverMock.instances).toHaveLength(1)
   })
 
   it('observes again after a hidden Activity boundary shows the same element', () => {

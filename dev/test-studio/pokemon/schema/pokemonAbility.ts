@@ -1,6 +1,8 @@
 import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {defineField, defineType} from 'sanity'
 
+import {countField, flavorTextEntriesField, summaryField} from './shared'
+
 export const pokemonAbility = defineType({
   name: 'pokemonAbility',
   title: 'Ability',
@@ -28,6 +30,14 @@ export const pokemonAbility = defineType({
       options: {disableNew: true},
     }),
     defineField({
+      name: 'isMainSeries',
+      title: 'Main series',
+      description: 'Off when the ability only exists in spin-off games.',
+      type: 'boolean',
+      initialValue: true,
+    }),
+    summaryField(),
+    defineField({
       name: 'shortEffect',
       title: 'Short effect',
       type: 'string',
@@ -47,6 +57,8 @@ export const pokemonAbility = defineType({
       type: 'text',
       rows: 2,
     }),
+    flavorTextEntriesField('Each unique English description, with every game that uses it.'),
+    countField('pokemonCount', 'Pokémon', 'How many Pokémon (including forms) can have it.'),
   ],
   orderings: [{title: 'Name', name: 'nameAsc', by: [{field: 'name', direction: 'asc'}]}],
   preview: {

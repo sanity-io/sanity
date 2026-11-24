@@ -1,7 +1,6 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {CloseIcon} from '@sanity/icons/Close'
-import {Badge, Button, TextInput} from '@sanity/ui'
-import {useSelector} from '@xstate/react'
+import {Button, Text, TextInput} from '@sanity/ui'
 import {type Transition, Reorder, useDragControls, useReducedMotion} from 'motion/react'
 import {
   type KeyboardEvent,
@@ -9,6 +8,7 @@ import {
   type PointerEvent,
   type RefObject,
   useCallback,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react'
@@ -16,6 +16,7 @@ import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
+import {useOverlayScrollThumb} from '../../hooks/useOverlayScrollThumb'
 import {type VisionTab} from '../../store/types'
 import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {deriveTabTitle} from '../../util/tabTitle'
@@ -68,7 +69,7 @@ function TabTitleInput({title, onCommit, onCancel}: TabTitleInputProps) {
   }
 
   return (
-    <Box className={styles.tabTitleInput} paddingY={1}>
+    <Box className={styles.tabTitleInput} paddingX={1}>
       <TextInput
         autoFocus
         data-testid="vision-tab-title-input"
@@ -128,10 +129,6 @@ function TabHandle(props: TabHandleProps) {
   const title = getTabTitle(tab, t('vision.tabs.untitled'))
   const dragControls = useDragControls()
   const [dragging, setDragging] = useState(false)
-  // The badge reports the runner's actual subscription, which only the active tab holds, rather
-  // than the stored auto-refetch preference
-  const runnerRef = useVisionSelector((snapshot) => snapshot.context.runners[tab.id])
-  const isLive = useSelector(runnerRef, (snapshot) => snapshot.matches({live: 'on'}))
 
   const handleAuxClick = useCallback(
     (event: MouseEvent) => {
@@ -176,40 +173,31 @@ function TabHandle(props: TabHandleProps) {
         data-entering={entering ? 'true' : undefined}
         data-selected={selected ? 'true' : undefined}
         data-testid="vision-tab"
-        gap={1}
-        paddingLeft={1}
-        paddingRight={1}
         role="presentation"
       >
         {editing ? (
           <TabTitleInput onCancel={onCancelRename} onCommit={onRename} title={title} />
         ) : (
-          <Button
+          // A plain button, so the whole tab is its hit area and the tab paints hover and focus
+          <button
             aria-controls={QUERY_TAB_PANEL_ID}
             aria-selected={selected}
             className={styles.tabTitleButton}
             data-testid="vision-tab-button"
-            fontSize={1}
             id={getQueryTabId(tab.id)}
-            mode="bleed"
             onAuxClick={handleAuxClick}
             onClick={onSelect}
             onDoubleClick={onStartRename}
             onKeyDown={onKeyDown}
             onPointerDown={startDrag}
-            padding={2}
             role="tab"
             tabIndex={selected ? 0 : -1}
-            text={title}
-            textWeight={selected ? 'medium' : 'regular'}
-          />
-        )}
-        {isLive && (
-          <Box flexShrink={0}>
-            <Badge fontSize={0} tone="positive">
-              {t('vision.live.active')}
-            </Badge>
-          </Box>
+            type="button"
+          >
+            <Text className={styles.tabTitle} muted={!selected} size={1} textOverflow="ellipsis">
+              {title}
+            </Text>
+          </button>
         )}
         <Button
           aria-label={t('vision.tabs.close-tab')}
@@ -234,6 +222,9 @@ export function QueryTabBar() {
   const activeTabId = useVisionSelector((snapshot) => snapshot.context.activeTabId)
   const [editingId, setEditingId] = useState<string | null>(null)
   const listRef = useRef<HTMLDivElement | null>(null)
+  const barRef = useRef<HTMLDivElement | null>(null)
+  const newTabSlotRef = useRef<HTMLDivElement | null>(null)
+  const scrollThumbRef = useRef<HTMLDivElement | null>(null)
   const reducedMotion = useReducedMotion()
   // Whether the last change to the strip came from the keyboard. Shift+Arrow and Delete repeat
   // fast, and a slide on every press makes the strip feel slower than the keys
@@ -270,6 +261,22 @@ export function QueryTabBar() {
     },
     [focusTab],
   )
+
+  // Keep the active tab whole in the strip when it changes, a new tab included, clear of the new
+  // tab button pinned over the right edge. Layout offsets rather than bounding boxes, so a tab
+  // that is still scaling in or sliding into place measures where it ends up.
+  useLayoutEffect(() => {
+    const bar = barRef.current
+    const item = listRef.current
+      ?.querySelector(`#${getQueryTabId(activeTabId)}`)
+      ?.closest<HTMLElement>('[data-testid="vision-tab-item"]')
+    if (!bar || !item) return
+    const visibleWidth = bar.clientWidth - (newTabSlotRef.current?.offsetWidth ?? 0)
+    if (item.offsetLeft < bar.scrollLeft) bar.scrollLeft = item.offsetLeft
+    else if (item.offsetLeft + item.offsetWidth > bar.scrollLeft + visibleWidth) {
+      bar.scrollLeft = item.offsetLeft + item.offsetWidth - visibleWidth
+    }
+  }, [activeTabId])
 
   const reorder = useCallback(
     (ordered: VisionTab[]) =>
@@ -323,58 +330,74 @@ export function QueryTabBar() {
     [activeTabId, actorRef, focusTab, reorder, tabs],
   )
 
+  useOverlayScrollThumb({
+    scrollerRef: barRef,
+    contentRef: listRef,
+    thumbRef: scrollThumbRef,
+    endInsetRef: newTabSlotRef,
+  })
+
   return (
-    <Flex
-      alignItems="stretch"
-      className={styles.tabBar}
-      data-testid="vision-tab-bar"
-      flexShrink={0}
-      onPointerDownCapture={() => setKeyboardDriven(false)}
-      paddingX={1}
-    >
-      <Reorder.Group
-        aria-label={t('vision.tabs.label')}
-        as="div"
-        axis="x"
-        className={styles.tabList}
-        onReorder={reorder}
-        ref={listRef}
-        role="tablist"
-        values={tabs}
+    <div className={styles.tabStrip}>
+      <Flex
+        alignItems="stretch"
+        className={styles.tabBar}
+        data-testid="vision-tab-bar"
+        flexShrink={0}
+        onPointerDownCapture={() => setKeyboardDriven(false)}
+        ref={barRef}
       >
-        {tabs.map((tab) => (
-          <TabHandle
-            editing={editingId === tab.id}
-            entering={enteringIds.has(tab.id)}
-            key={tab.id}
-            layoutTransition={layoutTransition}
-            listRef={listRef}
-            onKeyDown={handleTabKeyDown}
-            onCancelRename={() => stopRenaming(tab.id)}
-            onClose={() => actorRef.send({type: 'tab.close', id: tab.id})}
-            onRename={(title) => {
-              stopRenaming(tab.id)
-              actorRef.send({type: 'tab.rename', id: tab.id, title})
-            }}
-            onSelect={() => actorRef.send({type: 'tab.select', id: tab.id})}
-            onStartRename={() => setEditingId(tab.id)}
-            selected={tab.id === activeTabId}
-            tab={tab}
+        <Reorder.Group
+          aria-label={t('vision.tabs.label')}
+          as="div"
+          axis="x"
+          className={styles.tabList}
+          onReorder={reorder}
+          ref={listRef}
+          role="tablist"
+          values={tabs}
+        >
+          {tabs.map((tab) => (
+            <TabHandle
+              editing={editingId === tab.id}
+              entering={enteringIds.has(tab.id)}
+              key={tab.id}
+              layoutTransition={layoutTransition}
+              listRef={listRef}
+              onKeyDown={handleTabKeyDown}
+              onCancelRename={() => stopRenaming(tab.id)}
+              onClose={() => actorRef.send({type: 'tab.close', id: tab.id})}
+              onRename={(title) => {
+                stopRenaming(tab.id)
+                actorRef.send({type: 'tab.rename', id: tab.id, title})
+              }}
+              onSelect={() => actorRef.send({type: 'tab.select', id: tab.id})}
+              onStartRename={() => setEditingId(tab.id)}
+              selected={tab.id === activeTabId}
+              tab={tab}
+            />
+          ))}
+        </Reorder.Group>
+        <div className={styles.newTabSlot} ref={newTabSlotRef}>
+          <Button
+            aria-label={t('vision.tabs.new-tab')}
+            className={styles.newTabButton}
+            data-testid="vision-new-tab"
+            fontSize={1}
+            icon={AddIcon}
+            mode="bleed"
+            onClick={() => actorRef.send({type: 'tab.add'})}
+            padding={2}
+            radius={0}
           />
-        ))}
-      </Reorder.Group>
-      <Flex alignItems="center" paddingX={1}>
-        <Button
-          aria-label={t('vision.tabs.new-tab')}
-          className={styles.pressableIcon}
-          data-testid="vision-new-tab"
-          fontSize={1}
-          icon={AddIcon}
-          mode="bleed"
-          onClick={() => actorRef.send({type: 'tab.add'})}
-          padding={2}
-        />
+        </div>
       </Flex>
-    </Flex>
+      <div
+        aria-hidden
+        className={styles.tabScrollThumb}
+        data-testid="vision-tab-scroll-thumb"
+        ref={scrollThumbRef}
+      />
+    </div>
   )
 }

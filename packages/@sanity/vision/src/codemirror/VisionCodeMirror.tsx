@@ -1,5 +1,7 @@
-import {type Extension} from '@codemirror/state'
-import {type Command} from '@codemirror/view'
+import {history, historyField} from '@codemirror/commands'
+import {forceParsing} from '@codemirror/language'
+import {type EditorState, type Extension, type StateEffect, Transaction} from '@codemirror/state'
+import {type Command, type EditorView, type ViewUpdate} from '@codemirror/view'
 import {rem, useTheme} from '@sanity/ui'
 import CodeMirror, {
   EditorSelection,
@@ -17,9 +19,14 @@ import {
   type RefAttributes,
 } from 'react'
 
+import {historyCompartment} from './extensions'
 import {useCodemirrorTheme} from './useCodemirrorTheme'
 import {getVisibleColumns} from './visibleColumns'
 import * as styles from './VisionCodeMirror.module.css'
+import {whitespaceChanges} from './whitespaceChanges'
+
+/** How long after a typed edit the editor still counts as being edited */
+const EDITING_IDLE_MS = 1_000
 
 interface EditorRootStyle extends CSSProperties {
   '--vision-editor-line-padding-left': string
@@ -73,6 +80,15 @@ export interface VisionCodeMirrorHandle {
    * scrollbar); `undefined` while the editor has no layout (hidden, or not mounted yet)
    */
   getVisibleColumns: (lines?: number) => number | undefined
+  /**
+   * Replaces the document with a reformatted version of it, outside the undo history: undo steps
+   * over it to the edits made before, which are mapped through it. Only the whitespace that
+   * differs is replaced, so the selection stays on the same tokens, and the scroll position
+   * follows the text at the top of the editor.
+   */
+  reformat: (formatted: string) => void
+  /** Whether an input method composition is open, or the document was typed into just now */
+  isEditing: () => boolean
 }
 
 export function VisionCodeMirror({
@@ -107,16 +123,66 @@ export function VisionCodeMirror({
   // tool is hidden only reaches this component as a new `initialValue`, and the next view must
   // show it rather than the document from before hiding.
   const [value, setValue] = useState(initialValueProp)
-  const [hasView, setHasView] = useState(false)
+  const [liveView, setLiveView] = useState<EditorView | null>(null)
+  const hasView = liveView !== null
   const [seenInitialValue, setSeenInitialValue] = useState(initialValueProp)
   if (initialValueProp !== seenInitialValue) {
     setSeenInitialValue(initialValueProp)
     if (!hasView) setValue(initialValueProp)
   }
-  const handleCreateEditor = useCallback(() => setHasView(true), [])
+  // A new view starts with the cursor at the start, no undo history and no scroll. When it shows
+  // the document the previous view had, it takes over that view's selection, history and scroll,
+  // so a tab shown again looks and undoes as it did when it was hidden. The scroll is recorded as
+  // it happens: by the time the view is destroyed its tab is already hidden, with no layout
+  const lastState = useRef<EditorState | undefined>(undefined)
+  const lastScroll = useRef<StateEffect<unknown> | undefined>(undefined)
+  const lastTypedAt = useRef(-Infinity)
+  const handleUpdate = useCallback((update: ViewUpdate) => {
+    lastState.current = update.state
+    if (update.transactions.some((tr) => tr.isUserEvent('input') || tr.isUserEvent('delete'))) {
+      lastTypedAt.current = performance.now()
+    }
+  }, [])
+  const handleCreateEditor = useCallback((view: EditorView) => {
+    const previous = lastState.current
+    lastState.current = view.state
+    if (previous && previous.doc.eq(view.state.doc)) {
+      const previousHistory = previous.field(historyField, false)
+      const keepsHistory =
+        previousHistory !== undefined && historyCompartment.get(view.state) !== undefined
+      view.dispatch({
+        selection: previous.selection,
+        annotations: Transaction.addToHistory.of(false),
+        effects: keepsHistory ? historyCompartment.reconfigure([]) : [],
+      })
+      // Taking the history out and putting it back with its old value must be two transactions:
+      // in one, the field would keep its current value
+      if (keepsHistory) {
+        view.dispatch({
+          effects: historyCompartment.reconfigure([
+            history(),
+            historyField.init(() => previousHistory),
+          ]),
+        })
+      }
+      if (lastScroll.current) view.dispatch({effects: lastScroll.current})
+      // A new state parses only the start of a long document and the rest while idle, so folds
+      // that end further down (the gutter's markers) would show up frames after the view; the old
+      // view had them all
+      forceParsing(view, view.state.doc.length, 50)
+    } else {
+      lastScroll.current = undefined
+    }
+    // A new view draws its gutters before it has read the content's top padding, and only lines
+    // them up with the text in its first measure, after the browser has painted: the line numbers
+    // would show a frame too high, every time a tab mounts its editors. Reading the layout makes
+    // the view take that measure now
+    view.lineBlockAtHeight(0)
+    setLiveView(view)
+  }, [])
   useEffect(() => {
     // The view is destroyed by the child's effect cleanups, which run along with this one
-    return () => setHasView(false)
+    return () => setLiveView(null)
   }, [])
 
   const handleChange = useCallback<NonNullable<ReactCodeMirrorProps['onChange']>>(
@@ -129,6 +195,14 @@ export function VisionCodeMirror({
   const sanityTheme = useTheme()
   const theme = useCodemirrorTheme(sanityTheme)
   const codeMirrorRef = useRef<ReactCodeMirrorRef>(null)
+  useEffect(() => {
+    if (!liveView) return undefined
+    const recordScroll = () => {
+      lastScroll.current = liveView.scrollSnapshot()
+    }
+    liveView.scrollDOM.addEventListener('scroll', recordScroll, {passive: true})
+    return () => liveView.scrollDOM.removeEventListener('scroll', recordScroll)
+  }, [liveView])
 
   const resetEditorContent = useCallback((newContent: string) => {
     // Mirrored first, so a call made while there is no view still reaches the next one
@@ -178,6 +252,27 @@ export function VisionCodeMirror({
     return editorView ? getVisibleColumns(editorView, {lines}) : undefined
   }, [])
 
+  const reformat = useCallback((formatted: string) => {
+    const editorView = codeMirrorRef.current?.view
+    if (!editorView) {
+      setValue(formatted)
+      return
+    }
+    const changes = whitespaceChanges(editorView.state.doc.toString(), formatted)
+    if (changes.length === 0) return
+    editorView.dispatch({
+      changes,
+      annotations: Transaction.addToHistory.of(false),
+      effects: editorView.scrollSnapshot(),
+    })
+  }, [])
+
+  const isEditing = useCallback(() => {
+    const editorView = codeMirrorRef.current?.view
+    if (!editorView) return false
+    return editorView.composing || performance.now() - lastTypedAt.current < EDITING_IDLE_MS
+  }, [])
+
   useImperativeHandle(
     ref,
     () => ({
@@ -186,8 +281,18 @@ export function VisionCodeMirror({
       runCommand,
       selectRange,
       getVisibleColumns: getVisibleColumnsOfEditor,
+      reformat,
+      isEditing,
     }),
-    [resetEditorContent, applyChanges, runCommand, selectRange, getVisibleColumnsOfEditor],
+    [
+      resetEditorContent,
+      applyChanges,
+      runCommand,
+      selectRange,
+      getVisibleColumnsOfEditor,
+      reformat,
+      isEditing,
+    ],
   )
 
   return (
@@ -200,6 +305,7 @@ export function VisionCodeMirror({
         value={value}
         onChange={handleChange}
         onCreateEditor={handleCreateEditor}
+        onUpdate={handleUpdate}
       />
     </EditorRoot>
   )

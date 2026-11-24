@@ -64,7 +64,7 @@ function mockContextMenu(sourceReleasePerspective: typeof LATEST | typeof PUBLIS
 describe('VersionChip', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    HTMLElement.prototype.scrollIntoView = vi.fn()
+    Element.prototype.scroll = vi.fn()
   })
 
   it('keeps the draft avatar caution when the chip acts on the published document', async () => {

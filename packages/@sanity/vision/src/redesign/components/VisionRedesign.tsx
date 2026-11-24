@@ -1,12 +1,13 @@
 import {TooltipDelayGroupProvider} from '@sanity/ui/tooltip'
 import {useActorRef, useSelector} from '@xstate/react'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {Activity, type CSSProperties, memo, useEffect, useMemo, useRef, useState} from 'react'
 import {Flex} from 'ui5'
 
 import {useSavedQueries} from '../../hooks/useSavedQueries'
 import {useVisionTelemetry} from '../../telemetry/useVisionTelemetry'
 import {type VisionConfig} from '../../types'
 import {useContentSize} from '../hooks/useContentSize'
+import {type VisionTab} from '../store/types'
 import {
   createPendingEdits,
   PendingEditsContext,
@@ -22,11 +23,14 @@ import {
 import {selectActiveTab, selectOpenDrawer, visionMachine} from '../store/visionMachine'
 import {loadVisionState, type VisionStorageDefaults} from '../store/visionStorage'
 import {AiCreditsUpsellProvider} from './AiCreditsUpsell'
+import {AiFeaturesProvider} from './AiFeaturesProvider'
+import {PANEL_HEADER_HEIGHT} from './CollapsiblePanel'
+import {QueryTabLayoutProvider} from './queryTabLayout'
 import * as styles from './redesign.module.css'
-import {RequestBottomPanelProvider} from './requestBottomPanel'
 import {VisionSidebar} from './sidebar/VisionSidebar'
-import {QueryTab} from './tabs/QueryTab'
+import {QueryTab, type QueryTabProps} from './tabs/QueryTab'
 import {QueryTabBar} from './tabs/QueryTabBar'
+import {HiddenQueryTabContext} from './tabs/queryTabShown'
 import {VisionDialogs} from './VisionDialogs'
 import {VisionUrlState} from './VisionUrlState'
 import {VisionWebMcp} from './VisionWebMcp'
@@ -47,6 +51,43 @@ function getVisionLayout(width: number): VisionLayout {
  * one is open, its neighbours open without waiting, as in the studio's own toolbars
  */
 const TOOLTIP_DELAY = {open: 400}
+
+interface VisionRootStyle extends CSSProperties {
+  '--vision-bottom-bar-height': string
+}
+
+const ROOT_STYLE: VisionRootStyle = {'--vision-bottom-bar-height': `${PANEL_HEADER_HEIGHT}px`}
+
+/**
+ * A tab in the list of open ones, mounted for as long as it is open and hidden while another is
+ * shown. Memoized, as a hidden tab has nothing to render again when the shown one changes
+ */
+function QueryTabActivity(props: QueryTabProps & {shown: boolean}) {
+  const {shown, tab, ...rest} = props
+  return (
+    <Activity mode={shown ? 'visible' : 'hidden'}>
+      <HiddenQueryTabContext value={shown ? null : tab.id}>
+        <QueryTab tab={tab} {...rest} />
+      </HiddenQueryTabContext>
+    </Activity>
+  )
+}
+const QueryTabActivityMemo = memo(QueryTabActivity)
+
+/**
+ * The open tabs in the order they were opened, whatever order the tab bar shows them in. React
+ * moves the DOM nodes of keyed siblings whose order changes, and a moved tab loses its scroll
+ * positions and restarts its transitions, so dragging a tab in the bar must not reorder the panes
+ */
+function useOpenOrder(tabs: VisionTab[]): VisionTab[] {
+  const [ids, setIds] = useState(() => tabs.map((tab) => tab.id))
+  const byId = new Map(tabs.map((tab) => [tab.id, tab]))
+  const kept = ids.filter((id) => byId.has(id))
+  const known = new Set(kept)
+  const next = kept.concat(tabs.filter((tab) => !known.has(tab.id)).map((tab) => tab.id))
+  if (next.length !== ids.length || next.some((id, index) => id !== ids[index])) setIds(next)
+  return next.flatMap((id) => byId.get(id) ?? [])
+}
 
 export interface VisionRedesignProps {
   config: VisionConfig
@@ -80,7 +121,11 @@ export function VisionRedesign(props: VisionRedesignProps) {
   usePersistVisionState(actorRef, projectId)
 
   const activeTab = useSelector(actorRef, selectActiveTab)
-  const tabCount = useSelector(actorRef, (snapshot) => snapshot.context.tabs.length)
+  const tabs = useSelector(actorRef, (snapshot) => snapshot.context.tabs)
+  const paneTabs = useOpenOrder(tabs)
+  // The tab shown when the tool opens lifts its panels in; tabs shown later appear in place
+  const [firstTabId] = useState(activeTab.id)
+  const tabCount = tabs.length
   const telemetry = useVisionTelemetry()
   const tabCountRef = useRef<number | null>(null)
   useEffect(() => {
@@ -109,37 +154,53 @@ export function VisionRedesign(props: VisionRedesignProps) {
         <SavedQueriesContext.Provider value={savedQueries}>
           <PendingEditsContext.Provider value={pendingEdits}>
             <TabDrawerSlotContext.Provider value={tabDrawerSlot}>
-              <AiCreditsUpsellProvider projectId={projectId}>
-                <TooltipDelayGroupProvider delay={TOOLTIP_DELAY}>
-                  <Flex
-                    className={styles.root}
-                    data-testid="vision-root"
-                    data-vision-layout={layout}
-                    height="100%"
-                    overflow="hidden"
-                    ref={setRootElement}
-                  >
-                    <VisionSidebar />
+              <AiFeaturesProvider ai={config.ai}>
+                <AiCreditsUpsellProvider projectId={projectId}>
+                  <TooltipDelayGroupProvider delay={TOOLTIP_DELAY}>
                     <Flex
-                      flexBasis="0%"
-                      flexDirection="column"
-                      flexGrow={1}
-                      // Under a phone's full-width drawer the tabs area is covered and must not take focus
-                      inert={layout === 'mobile' && openDrawer !== null}
-                      minWidth="0"
+                      className={styles.root}
+                      data-testid="vision-root"
+                      data-vision-layout={layout}
+                      height="100%"
                       overflow="hidden"
+                      ref={setRootElement}
+                      style={ROOT_STYLE}
                     >
-                      <QueryTabBar />
-                      <RequestBottomPanelProvider>
-                        <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
-                      </RequestBottomPanelProvider>
+                      <VisionSidebar />
+                      <Flex
+                        flexBasis="0%"
+                        flexDirection="column"
+                        flexGrow={1}
+                        // Under a phone's full-width drawer the tabs area is covered and must not take focus
+                        inert={layout === 'mobile' && openDrawer !== null}
+                        minWidth="0"
+                        overflow="hidden"
+                      >
+                        <QueryTabBar />
+                        <QueryTabLayoutProvider>
+                          {/*
+                            Every tab stays mounted, so switching tabs hides one and shows another
+                            rather than remounting it: a tab shown again keeps its elements and
+                            its state, and its editors their selection, undo history and scroll
+                          */}
+                          {paneTabs.map((tab) => (
+                            <QueryTabActivityMemo
+                              animateFirstShow={tab.id === firstTabId}
+                              key={tab.id}
+                              rootElement={rootElement}
+                              shown={tab.id === activeTab.id}
+                              tab={tab}
+                            />
+                          ))}
+                        </QueryTabLayoutProvider>
+                      </Flex>
                     </Flex>
-                  </Flex>
-                  <VisionDialogs />
-                  <VisionUrlState tab={activeTab} />
-                  <VisionWebMcp tab={activeTab} />
-                </TooltipDelayGroupProvider>
-              </AiCreditsUpsellProvider>
+                    <VisionDialogs />
+                    <VisionUrlState tab={activeTab} />
+                    <VisionWebMcp tab={activeTab} />
+                  </TooltipDelayGroupProvider>
+                </AiCreditsUpsellProvider>
+              </AiFeaturesProvider>
             </TabDrawerSlotContext.Provider>
           </PendingEditsContext.Provider>
         </SavedQueriesContext.Provider>

@@ -1,13 +1,17 @@
 import {history, undo} from '@codemirror/commands'
 import {type Extension} from '@codemirror/state'
+import {EditorView} from '@codemirror/view'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {act, render} from '@testing-library/react'
 import {Activity, type RefObject} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
+import {historyCompartment} from './extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from './VisionCodeMirror'
 
 const NO_EXTENSIONS: Extension[] = []
+/** The undo history as the tool's editors hold it */
+const HISTORY: Extension[] = [historyCompartment.of(history())]
 
 function editor(
   mode: 'visible' | 'hidden',
@@ -53,6 +57,17 @@ describe('VisionCodeMirror', () => {
     unmount()
   })
 
+  it('lines its gutters up with the text in the commit that creates the view', () => {
+    const padding = EditorView.theme({'.cm-content': {paddingTop: '32px'}})
+    const {container, unmount} = render(editor('visible', {current: null}, vi.fn(), '*', [padding]))
+    const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)
+
+    // The gutters are placed from the padding the view has read, which it would otherwise only
+    // read in an animation frame after the first paint
+    expect(view?.documentPadding.top).toBe(32)
+    unmount()
+  })
+
   it('keeps its document when hidden and shown again inside an Activity boundary', () => {
     const ref: RefObject<VisionCodeMirrorHandle | null> = {current: null}
     const onChange = vi.fn()
@@ -68,6 +83,50 @@ describe('VisionCodeMirror', () => {
     rerender(editor('visible', ref, onChange))
 
     expect(content()).toBe('*[_type == "author"]')
+  })
+
+  it('brings back its selection and undo history when hidden and shown again', () => {
+    const ref: RefObject<VisionCodeMirrorHandle | null> = {current: null}
+    const {container, rerender, unmount} = render(editor('visible', ref, vi.fn(), '{}', HISTORY))
+    const content = () => container.querySelector('.cm-content')?.textContent
+    const view = () =>
+      EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement) ?? undefined
+
+    act(() => ref.current?.applyChanges([{from: 1, to: 1, insert: '"limit": 3'}]))
+    act(() => ref.current?.selectRange(2, 7))
+    const hiddenView = view()
+
+    // A query tab switched away from and back to: the view is created again, with the old one's
+    // selection and history rather than a cursor at the start and nothing to undo
+    rerender(editor('hidden', ref, vi.fn(), '{}', HISTORY))
+    rerender(editor('visible', ref, vi.fn(), '{}', HISTORY))
+    expect(view()).not.toBe(hiddenView)
+    expect(content()).toBe('{"limit": 3}')
+    expect(view()?.state.selection.main).toMatchObject({from: 2, to: 7})
+
+    let undone: boolean | undefined
+    act(() => {
+      undone = ref.current?.runCommand(undo)
+    })
+    expect(undone).toBe(true)
+    expect(content()).toBe('{}')
+    unmount()
+  })
+
+  it('starts over with a document that changed while hidden', () => {
+    const ref: RefObject<VisionCodeMirrorHandle | null> = {current: null}
+    const {container, rerender, unmount} = render(editor('visible', ref, vi.fn(), '*', HISTORY))
+    act(() => ref.current?.applyChanges([{from: 1, to: 1, insert: '[0]'}]))
+
+    rerender(editor('hidden', ref, vi.fn(), '*', HISTORY))
+    rerender(editor('hidden', ref, vi.fn(), '*[_type == "author"]', HISTORY))
+    rerender(editor('visible', ref, vi.fn(), '*[_type == "author"]', HISTORY))
+
+    const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)
+    expect(view?.state.selection.main.head).toBe(0)
+    // The edits belonged to the replaced document
+    expect(ref.current?.runCommand(undo)).toBe(false)
+    unmount()
   })
 
   it('shows an initialValue that changed while hidden, and only then', () => {

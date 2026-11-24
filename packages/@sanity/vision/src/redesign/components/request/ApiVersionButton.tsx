@@ -9,7 +9,7 @@ import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {usePerspectiveOptionName} from './OptionFields'
 
 /** The fields of the Options panel the button can show */
-export type RevealedOption = 'apiVersion' | 'dataset' | 'perspective' | 'variant'
+export type RevealedOption = 'apiVersion' | 'cdnBlocked' | 'dataset' | 'perspective' | 'variant'
 
 export interface ApiVersionButtonProps {
   resolved: Pick<
@@ -28,7 +28,8 @@ export interface ApiVersionButtonProps {
 /**
  * The API version the tab's requests go out with, and whether they go to the API CDN, next to
  * Fetch, so it is in view while the Options panel is collapsed or scrolled away. Pressing it
- * shows the field that changes it: the perspective while it keeps the queries off the CDN.
+ * shows the field that changes it: while the perspective keeps the queries off the CDN, the notice that
+ * says so, with its action in focus.
  */
 export function ApiVersionButton({resolved, onReveal}: ApiVersionButtonProps) {
   const {t} = useTranslation(visionLocaleNamespace)
@@ -66,7 +67,7 @@ export function ApiVersionButton({resolved, onReveal}: ApiVersionButtonProps) {
         fontSize={1}
         icon={cdnBlocked ? WarningOutlineIcon : undefined}
         mode="bleed"
-        onClick={() => onReveal(cdnBlocked ? 'perspective' : 'apiVersion')}
+        onClick={() => onReveal(cdnBlocked ? 'cdnBlocked' : 'apiVersion')}
         padding={2}
         text={
           isValidApiVersion

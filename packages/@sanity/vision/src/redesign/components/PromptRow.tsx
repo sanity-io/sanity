@@ -19,11 +19,23 @@ export interface PromptRowProps {
   pending: boolean
   /** `-request` and `-submit` are added for the field and the button */
   testIdPrefix: string
+  /** The button's text; Generate unless given */
+  submitText?: string
 }
 
 /** A description to generate from, with the button that generates: Enter submits, Escape closes */
 export function PromptRow(props: PromptRowProps) {
-  const {label, placeholder, value, onChange, onSubmit, onClose, pending, testIdPrefix} = props
+  const {
+    label,
+    placeholder,
+    value,
+    onChange,
+    onSubmit,
+    onClose,
+    pending,
+    testIdPrefix,
+    submitText,
+  } = props
   const {t} = useTranslation(visionLocaleNamespace)
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Escape') {
@@ -58,14 +70,13 @@ export function PromptRow(props: PromptRowProps) {
         />
       </Box>
       <Button
-        className={styles.pressable}
         data-testid={`${testIdPrefix}-submit`}
         disabled={!value.trim() || pending}
         fontSize={1}
         loading={pending}
         onClick={onSubmit}
         padding={2}
-        text={t('vision.generate.submit')}
+        text={submitText ?? t('vision.generate.submit')}
         tone="primary"
       />
       <Button

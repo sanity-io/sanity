@@ -9,6 +9,7 @@ import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {validateApiVersion} from '../../../util/validateApiVersion'
+import {AI_FEATURE_KEYS, type AiFeature, useConfiguredAiFeatures} from '../../aiFeatures'
 import {
   useSavedQueriesApi,
   useVisionActor,
@@ -94,6 +95,76 @@ function HiddenDiffFieldsSetting() {
   )
 }
 
+const AI_FEATURE_TEXT = {
+  generateQuery: {
+    title: 'vision.settings.ai.generate-query',
+    description: 'vision.settings.ai.generate-query.description',
+  },
+  editQuery: {
+    title: 'vision.settings.ai.edit-query',
+    description: 'vision.settings.ai.edit-query.description',
+  },
+  fixLint: {
+    title: 'vision.settings.ai.fix-lint',
+    description: 'vision.settings.ai.fix-lint.description',
+  },
+  generateMutations: {
+    title: 'vision.settings.ai.generate-mutations',
+    description: 'vision.settings.ai.generate-mutations.description',
+  },
+  explainQuery: {
+    title: 'vision.settings.ai.explain-query',
+    description: 'vision.settings.ai.explain-query.description',
+  },
+} as const satisfies Record<AiFeature, {title: string; description: string}>
+
+/**
+ * Switches for the AI features the config leaves on; none at all when it leaves none on. They
+ * only switch features off, so a feature the config turns off has no switch.
+ */
+function AiSettings() {
+  const {t} = useTranslation(visionLocaleNamespace)
+  const actorRef = useVisionActor()
+  const configured = useConfiguredAiFeatures()
+  const settings = useVisionSelector((snapshot) => snapshot.context.ai)
+  const features = AI_FEATURE_KEYS.filter((feature) => configured[feature])
+  if (features.length === 0) return null
+
+  return (
+    <Card border data-testid="vision-settings-ai" padding={3} radius={2}>
+      <Stack gap={4}>
+        <Stack gap={2}>
+          <Text size={1} weight="medium" as="div" trim={true}>
+            {t('vision.settings.ai.title')}
+          </Text>
+          <Text muted size={1} as="div" trim={true}>
+            {t('vision.settings.ai.description')}
+          </Text>
+        </Stack>
+        <SwitchField
+          checked={settings.enabled}
+          onChange={(enabled) => actorRef.send({type: 'ai.update', settings: {enabled}})}
+          testId="vision-settings-ai-enabled"
+          title={t('vision.settings.ai.enabled')}
+        />
+        {features.map((feature) => (
+          <SwitchField
+            checked={settings.enabled && settings[feature]}
+            description={t(AI_FEATURE_TEXT[feature].description)}
+            disabled={!settings.enabled}
+            key={feature}
+            onChange={(checked) =>
+              actorRef.send({type: 'ai.update', settings: {[feature]: checked}})
+            }
+            testId={`vision-settings-ai-${feature}`}
+            title={t(AI_FEATURE_TEXT[feature].title)}
+          />
+        ))}
+      </Stack>
+    </Card>
+  )
+}
+
 /** The settings, in the sidebar's drawer */
 export function SettingsPanel() {
   const {t} = useTranslation(visionLocaleNamespace)
@@ -104,6 +175,8 @@ export function SettingsPanel() {
   const datasets = useVisionSelector(selectDatasets)
   const workspaceDataset = useVisionSelector(selectWorkspaceDataset)
   const settings = useVisionSelector((snapshot) => snapshot.context.settings)
+  const editorSettings = useVisionSelector((snapshot) => snapshot.context.editor)
+  const responseSettings = useVisionSelector((snapshot) => snapshot.context.response)
   const [confirmClear, setConfirmClear] = useState(false)
   // The "Other" input may hold an unfinished version; only usable ones become the default
   const [apiVersionDraft, setApiVersionDraft] = useState(settings.apiVersion)
@@ -195,8 +268,44 @@ export function SettingsPanel() {
         />
 
         <Card border padding={3} radius={2}>
+          <Stack gap={4}>
+            <Text size={1} weight="medium" as="div" trim={true}>
+              {t('vision.settings.editor.title')}
+            </Text>
+            <SwitchField
+              checked={editorSettings.autoFormatOnResize}
+              description={t('vision.settings.editor.auto-format-on-resize.description')}
+              onChange={(autoFormatOnResize) =>
+                actorRef.send({type: 'editor.update', settings: {autoFormatOnResize}})
+              }
+              testId="vision-settings-auto-format-on-resize"
+              title={t('vision.settings.editor.auto-format-on-resize')}
+            />
+          </Stack>
+        </Card>
+
+        <Card border padding={3} radius={2}>
+          <Stack gap={4}>
+            <Text size={1} weight="medium" as="div" trim={true}>
+              {t('vision.settings.response.title')}
+            </Text>
+            <SwitchField
+              checked={responseSettings.resolveSyncTags}
+              description={t('vision.settings.response.resolve-sync-tags.description')}
+              onChange={(resolveSyncTags) =>
+                actorRef.send({type: 'response.update', settings: {resolveSyncTags}})
+              }
+              testId="vision-settings-resolve-sync-tags"
+              title={t('vision.settings.response.resolve-sync-tags')}
+            />
+          </Stack>
+        </Card>
+
+        <Card border padding={3} radius={2}>
           <HiddenDiffFieldsSetting />
         </Card>
+
+        <AiSettings />
 
         <Card border padding={3} radius={2}>
           <Stack gap={3}>

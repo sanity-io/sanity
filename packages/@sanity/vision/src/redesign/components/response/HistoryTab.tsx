@@ -224,7 +224,6 @@ function HistoryEntry(props: {
           <Button
             aria-controls={changesId}
             aria-expanded={expanded}
-            className={motion.pressable}
             data-testid="vision-history-changes-toggle"
             fontSize={1}
             icon={

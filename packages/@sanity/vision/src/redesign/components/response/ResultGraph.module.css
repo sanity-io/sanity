@@ -129,21 +129,7 @@
 .graphControl {
   transition:
     color 150ms ease,
-    background-color 150ms ease,
-    transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.graphNodeButton:active,
-.graphControl:active:not(:disabled) {
-  transform: scale(0.95);
-}
-
-/* Less motion: color and background still respond to press, nothing scales */
-@media (prefers-reduced-motion: reduce) {
-  .graphNodeButton:active,
-  .graphControl:active:not(:disabled) {
-    transform: none;
-  }
+    background-color 150ms ease;
 }
 
 .graphNodeButton:focus-visible {

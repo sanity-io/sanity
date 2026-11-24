@@ -13,7 +13,7 @@ export interface GenerateQueryButtonProps extends Omit<
 
 /**
  * Opens the generate-query bar. Labelled (not icon-only), with twinkling sparkles
- * so the Agent Actions entry point stays discoverable in the query editor chrome.
+ * so the Agent Actions entry point stays discoverable under the query.
  * The remaining props reach the `Button`, so a wrapping `Tooltip` can attach its
  * ref and handlers.
  */
@@ -24,6 +24,8 @@ export function GenerateQueryButton(props: GenerateQueryButtonProps) {
     <Button
       data-testid="vision-generate-query"
       fontSize={1}
+      // The button's default gap is one step wider than this padding
+      gap={2}
       padding={2}
       {...rest}
       icon={AnimatedSparklesIcon}

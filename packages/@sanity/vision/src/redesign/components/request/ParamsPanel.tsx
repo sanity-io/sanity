@@ -2,9 +2,9 @@ import {Card} from '@sanity/ui'
 import {type RefObject} from 'react'
 import {Text} from 'ui5'
 
-import {paramsExtensions} from '../../../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
 import {type Params} from '../../../components/VisionGui'
+import {redesignParamsExtensions} from '../../util/editorTheme'
 
 export interface ParamsPanelProps {
   value: string
@@ -26,7 +26,7 @@ export function ParamsPanel({value, params, editorRef, onChange}: ParamsPanelPro
       )}
       <VisionCodeMirror
         autoHeight
-        extensions={paramsExtensions}
+        extensions={redesignParamsExtensions}
         initialValue={value}
         onChange={onChange}
         ref={editorRef}

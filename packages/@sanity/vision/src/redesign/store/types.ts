@@ -80,13 +80,16 @@ export type VisionPanel = 'params' | 'options'
 /** How the params panel edits the params: their JSON, or a form inferred from the query */
 export type VisionParamsView = 'json' | 'form'
 
-/** How the result shows: a tree to browse, or its JSON as text to select and copy from */
-export type VisionResultView = 'tree' | 'json' | 'graph'
+/**
+ * How the result shows: its JSON as text to select and copy from, a tree to browse, a graph, or
+ * the documents it lists
+ */
+export type VisionResultView = 'tree' | 'json' | 'graph' | 'documents'
 
 /** Whether each collapsible panel is expanded, and how the params and the result show */
 export interface VisionPanelsState extends Record<VisionPanel, boolean> {
   paramsView: VisionParamsView
-  resultView: VisionResultView
+  resultViewer: VisionResultView
 }
 
 /** How the History panel diffs a result with the previous one */
@@ -96,6 +99,38 @@ export interface VisionHistoryDiffSettings {
    * the revision of every document in it, `_system.base.rev` that nested field wherever it is
    */
   hiddenFields: string[]
+}
+
+/**
+ * The AI features a user keeps on. They only switch features off: one the tool's `ai` option
+ * turns off stays off whatever is stored here.
+ */
+export interface VisionAiSettings {
+  /** `false` switches every AI feature off, whatever the per-feature settings say */
+  enabled: boolean
+  generateQuery: boolean
+  editQuery: boolean
+  fixLint: boolean
+  generateMutations: boolean
+  explainQuery: boolean
+}
+
+/** How the query editor behaves */
+export interface VisionEditorSettings {
+  /**
+   * Reformats a query laid out for the editor's old width (as Prettify does) for the new one
+   * once a resize of the query editor settles; a query laid out by hand is never touched
+   */
+  autoFormatOnResize: boolean
+}
+
+/** What the Response panel shows about a response */
+export interface VisionResponseSettings {
+  /**
+   * The Sync tags row can switch between the tags as they came and the documents they stand for,
+   * found with extra queries to the dataset the response came from
+   */
+  resolveSyncTags: boolean
 }
 
 /** A custom GROQ function kept in the functions library, to declare in any query */
@@ -115,6 +150,9 @@ export interface VisionPersistedState {
   sidebar: VisionSidebarState
   panels: VisionPanelsState
   historyDiff: VisionHistoryDiffSettings
+  ai: VisionAiSettings
+  editor: VisionEditorSettings
+  response: VisionResponseSettings
   /** The functions library, most recently saved first */
   functions: VisionSavedFunction[]
 }

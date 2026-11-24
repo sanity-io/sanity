@@ -1,23 +1,22 @@
 import {type ReactNode} from 'react'
 import {Flex} from 'ui5'
 
+import {cx} from '../util/cx'
 import * as styles from './redesign.module.css'
 
 /**
- * The bottom action bar of the request and response panels, following the structure tool's
- * document status bar: a primary CTA (with text and icon) and a show-more menu button.
+ * The bottom action bar of the request panel, following the structure tool's document status bar:
+ * request chips on the left, the primary CTA (with text and icon) on the right.
  */
 export function ActionRail({children, testId}: {children: ReactNode; testId: string}) {
   return (
     <Flex
       alignItems="center"
-      borderTop
-      className={styles.actionRail}
+      className={cx(styles.actionRail, styles.bottomBar)}
       data-testid={testId}
-      flexShrink={0}
       gap={2}
       justifyContent="flex-end"
-      padding={2}
+      paddingX={2}
     >
       {children}
     </Flex>

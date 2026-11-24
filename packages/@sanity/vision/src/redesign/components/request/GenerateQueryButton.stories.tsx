@@ -1,4 +1,5 @@
 import {Card, Flex, Label, Stack} from '@sanity/ui'
+import {Code} from '@sanity/ui/code'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {type ReactNode} from 'react'
@@ -8,7 +9,7 @@ import {Text} from 'ui5'
 import {GenerateQueryButton} from './GenerateQueryButton'
 
 /**
- * Labelled Agent Actions entry point over Vision's query editor. The sparkles
+ * Labelled Agent Actions entry point under the query in Vision's query editor. The sparkles
  * icon stays and twinkles now and then, with "Generate" written out beside it.
  * The twinkle is switched off under `prefers-reduced-motion`.
  */
@@ -24,20 +25,15 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-function EditorLabelChrome({action}: {action: ReactNode}) {
+function QueryEndChrome({action}: {action: ReactNode}) {
   return (
     <Card border padding={4} radius={2} style={{maxWidth: 480}}>
       <Stack gap={3}>
-        <Text muted size={1} as="div" trim={true}>
-          Query editor chrome
-        </Text>
-        <Flex align="center" gap={2}>
-          <Label muted size={1}>
-            Query
-          </Label>
-          <Flex flex={1} />
-          {action}
-        </Flex>
+        <Label muted size={1}>
+          Query
+        </Label>
+        <Code size={1}>{'*[_type == "author"]'}</Code>
+        <Flex>{action}</Flex>
       </Stack>
     </Card>
   )
@@ -54,15 +50,15 @@ export const Default: Story = {
 }
 
 /**
- * In-context: the floating Query label row where the control lives, so spacing
- * against the muted label stays visible.
+ * In-context: under the query's last line, where the control lives, lined up with the
+ * query text.
  */
-export const InEditorLabel: Story = {
-  render: (args) => <EditorLabelChrome action={<GenerateQueryButton {...args} />} />,
+export const UnderQuery: Story = {
+  render: (args) => <QueryEndChrome action={<GenerateQueryButton {...args} />} />,
 }
 
 /**
- * Wrapped in a tooltip, as the AI credits note wraps it in the query editor: the
+ * Wrapped in a tooltip, as the AI credits note wraps it under the query: the
  * tooltip has to reach the underlying button to open on hover.
  */
 export const InTooltip: Story = {

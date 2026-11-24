@@ -35,8 +35,9 @@ import {
   parseDeclaration,
   readQueryFunctions,
 } from './groqFunctions'
-import {renderMessage} from './groqLint'
+import {element, renderDoc} from './groqHoverDoc'
 import {paramCompletions} from './groqParamCompletions'
+import {schemaFieldCompletions, typeHoverAt, typeValueCompletions} from './groqSchemaEditor'
 
 /** Completions open on their own once this much of a name is typed; Ctrl-Space opens them anytime */
 const MIN_TYPED_LENGTH = 2
@@ -51,42 +52,6 @@ const PIPE_BEFORE = /(?:^|[^|])\|\s*$/
  * dialog lists it as `EXTRACT_FUNCTION_SHORTCUT`.
  */
 const EXTRACT_FUNCTION_KEY = 'Alt-Enter'
-
-function element<K extends keyof HTMLElementTagNameMap>(
-  tag: K,
-  className: string,
-  content?: string | Node,
-): HTMLElementTagNameMap[K] {
-  const node = document.createElement(tag)
-  node.className = className
-  if (content !== undefined) node.append(content)
-  return node
-}
-
-/** A function's documentation: its signature or declaration, then what it does and how to use it */
-function renderDoc(parts: {
-  code: string
-  description?: string
-  notes?: string[]
-  link?: {href: string; text: string}
-}): HTMLElement {
-  const dom = element('div', 'cm-vision-function-doc')
-  dom.append(element('pre', 'cm-vision-function-code', parts.code))
-  if (parts.description) {
-    dom.append(element('p', 'cm-vision-function-description', renderMessage(parts.description)))
-  }
-  for (const note of parts.notes ?? []) {
-    dom.append(element('p', 'cm-vision-function-note', renderMessage(note)))
-  }
-  if (parts.link) {
-    const link = element('a', 'cm-vision-function-link', parts.link.text)
-    link.href = parts.link.href
-    link.target = '_blank'
-    link.rel = 'noreferrer'
-    dom.append(link)
-  }
-  return dom
-}
 
 function renderBuiltinDoc(doc: GroqFunctionDoc, labels: GroqEditorLabels): HTMLElement {
   const notes: string[] = []
@@ -338,16 +303,25 @@ const functionEditorTheme = EditorView.baseTheme({
 
 /**
  * Custom functions in the query editor: hover documentation for every function called,
- * completions of function names (the library's declare themselves), and extracting a projection
+ * completions of function names (the library's declare themselves), schema-aware completions and
+ * hover for fields and `_type` names, and extracting a projection
  * to a function: with a button over a selected one, and with `Alt-Enter` for the selection or
  * the projection around the cursor
  */
 export function createGroqFunctionExtensions(labels: GroqEditorLabels): Extension[] {
   return [
     groqEditorLabels.of(labels),
-    hoverTooltip((view, pos, side) => functionHoverAt(view.state, pos, side)),
+    hoverTooltip(
+      (view, pos, side) =>
+        functionHoverAt(view.state, pos, side) ?? typeHoverAt(view.state, pos, side),
+    ),
     autocompletion({
-      override: [paramCompletions, functionCompletions],
+      override: [
+        paramCompletions,
+        typeValueCompletions,
+        schemaFieldCompletions,
+        functionCompletions,
+      ],
       selectOnOpen: false,
       icons: false,
     }),

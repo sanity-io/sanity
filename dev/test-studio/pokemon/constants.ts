@@ -1,6 +1,9 @@
-/** Every document the seed script writes has an id in this namespace, so it never collides with
- * other documents in the dataset. */
-export const POKEMON_ID_PREFIX = 'pokemon.'
+/**
+ * Every document the seed script writes has an id in this namespace, so it never collides with
+ * other documents in the dataset. Ids use underscores as separators: a dot in a document id makes
+ * it path-scoped (private), which the studio and the public API treat differently.
+ */
+export const POKEMON_ID_PREFIX = 'pokemon_'
 
 export const POKEMON_TYPE_NAMES = [
   'normal',
@@ -65,7 +68,87 @@ export const EVOLUTION_TRIGGERS = [
   {title: 'Defeat three Bisharp', value: 'three-defeated-bisharp'},
   {title: 'Gimmighoul coins', value: 'gimmighoul-coins'},
   {title: 'Meltan candies', value: 'meltan-candies'},
+  {title: 'Unclassified', value: 'unclassified'},
   {title: 'Other', value: 'other'},
+]
+
+export const MOVE_DAMAGE_CLASSES = [
+  {title: 'Physical', value: 'physical'},
+  {title: 'Special', value: 'special'},
+  {title: 'Status', value: 'status'},
+]
+
+export const MOVE_TARGETS = [
+  {title: 'Selected Pokémon', value: 'selected-pokemon'},
+  {title: 'Selected Pokémon (Me First)', value: 'selected-pokemon-me-first'},
+  {title: 'Specific move', value: 'specific-move'},
+  {title: 'Ally', value: 'ally'},
+  {title: 'User or ally', value: 'user-or-ally'},
+  {title: 'User', value: 'user'},
+  {title: "User's side of the field", value: 'users-field'},
+  {title: 'User and allies', value: 'user-and-allies'},
+  {title: 'All allies', value: 'all-allies'},
+  {title: 'Random opponent', value: 'random-opponent'},
+  {title: 'All opponents', value: 'all-opponents'},
+  {title: "Opponents' side of the field", value: 'opponents-field'},
+  {title: 'All other Pokémon', value: 'all-other-pokemon'},
+  {title: 'All Pokémon', value: 'all-pokemon'},
+  {title: 'Entire field', value: 'entire-field'},
+  {title: 'Fainting Pokémon', value: 'fainting-pokemon'},
+]
+
+export const MOVE_CATEGORIES = [
+  {title: 'Damage', value: 'damage'},
+  {title: 'Status condition', value: 'ailment'},
+  {title: 'Raises stats', value: 'net-good-stats'},
+  {title: 'Heals', value: 'heal'},
+  {title: 'Damage and status condition', value: 'damage-ailment'},
+  {title: 'Confuses and raises stats', value: 'swagger'},
+  {title: 'Damage and lowers stats', value: 'damage-lower'},
+  {title: 'Damage and raises stats', value: 'damage-raise'},
+  {title: 'Damage and heals', value: 'damage-heal'},
+  {title: 'One-hit KO', value: 'ohko'},
+  {title: 'Whole field effect', value: 'whole-field-effect'},
+  {title: 'Field effect', value: 'field-effect'},
+  {title: 'Forces a switch', value: 'force-switch'},
+  {title: 'Unique', value: 'unique'},
+]
+
+export const STAT_NAMES = [
+  {name: 'hp', apiName: 'hp', title: 'HP'},
+  {name: 'attack', apiName: 'attack', title: 'Attack'},
+  {name: 'defense', apiName: 'defense', title: 'Defense'},
+  {name: 'specialAttack', apiName: 'special-attack', title: 'Sp. Atk'},
+  {name: 'specialDefense', apiName: 'special-defense', title: 'Sp. Def'},
+  {name: 'speed', apiName: 'speed', title: 'Speed'},
+] as const
+
+/** Kinds of alternate forms, derived from the suffix of the variety's PokéAPI name. */
+export const VARIETY_KINDS = [
+  {title: 'Mega Evolution', value: 'mega'},
+  {title: 'Gigantamax', value: 'gigantamax'},
+  {title: 'Alolan form', value: 'alolan'},
+  {title: 'Galarian form', value: 'galarian'},
+  {title: 'Hisuian form', value: 'hisuian'},
+  {title: 'Paldean form', value: 'paldean'},
+  {title: 'Primal Reversion', value: 'primal'},
+  {title: 'Other form', value: 'other'},
+]
+
+/** Tags derived from base stats and moves, to make battle roles searchable. */
+export const POKEMON_ROLES = [
+  {title: 'Very fast', value: 'very-fast'},
+  {title: 'Fast', value: 'fast'},
+  {title: 'Slow', value: 'slow'},
+  {title: 'Physical attacker', value: 'physical-attacker'},
+  {title: 'Special attacker', value: 'special-attacker'},
+  {title: 'Mixed attacker', value: 'mixed-attacker'},
+  {title: 'Sweeper', value: 'sweeper'},
+  {title: 'Physical wall', value: 'physical-wall'},
+  {title: 'Special wall', value: 'special-wall'},
+  {title: 'Tank', value: 'tank'},
+  {title: 'Healer', value: 'healer'},
+  {title: 'Glass cannon', value: 'glass-cannon'},
 ]
 
 export const GROWTH_RATES = [

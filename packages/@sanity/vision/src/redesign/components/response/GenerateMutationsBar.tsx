@@ -6,6 +6,7 @@ import {Text, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
+import {useAiFeatures} from '../../aiFeatures'
 import {reportAiCreditsGranted, reportAiCreditsLimit, useAiCredits} from '../../hooks/useAiCredits'
 import {type AiCredits, type AiCreditsClient, readAiCreditsLimit} from '../../util/aiCredits'
 import {
@@ -72,13 +73,14 @@ export function GenerateMutationsBar(props: GenerateMutationsBarProps) {
   const controllerRef = useRef<AbortController | null>(null)
   const credits = useAiCredits(client)
   const upsell = useAiCreditsUpsell()
+  const {generateMutations: enabled} = useAiFeatures()
 
   useEffect(() => () => controllerRef.current?.abort(), [])
 
   const telemetry = useVisionTelemetry()
   const generate = useCallback(async () => {
     const description = request.trim()
-    if (!description) return
+    if (!description || !enabled) return
     telemetry.agentAction('generate-mutations')
     controllerRef.current?.abort()
     const controller = new AbortController()
@@ -116,7 +118,18 @@ export function GenerateMutationsBar(props: GenerateMutationsBarProps) {
         limit,
       })
     }
-  }, [client, dataset, mutationOptions, onGenerated, request, result, schema, telemetry, upsell])
+  }, [
+    client,
+    dataset,
+    enabled,
+    mutationOptions,
+    onGenerated,
+    request,
+    result,
+    schema,
+    telemetry,
+    upsell,
+  ])
 
   const generating = status.type === 'generating'
   const lastAttempt = status.type === 'failed' ? status.lastAttempt : undefined
@@ -184,7 +197,6 @@ export function GenerateMutationsBar(props: GenerateMutationsBarProps) {
               {lastAttempt && (
                 <Flex>
                   <Button
-                    className={styles.pressable}
                     data-testid="vision-mutate-generate-open-anyway"
                     fontSize={1}
                     mode="ghost"

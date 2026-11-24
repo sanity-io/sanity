@@ -1,6 +1,7 @@
 import {type PromptRequest} from '@sanity/client'
 
 import {isPlainObject} from '../../util/isPlainObject'
+import {type QueryLintFinding} from './groqLint'
 
 /** What `generateQuery` needs of a client; a `SanityClient` has it */
 export interface GenerateQueryClient {
@@ -37,6 +38,12 @@ const GROQ_REFERENCE = `GROQ is the query language of the Sanity Content Lake. I
 - Use the field names of the schema; when the request names something the schema lacks, use the closest field
 - Never use jq or SQL syntax: no .[] or .field after a pipe, no sort_by(), map() or select(.x), no LIMIT, ORDER BY or SELECT`
 
+/**
+ * Line comments carry context the query cannot (the prompt a query was generated from, notes the
+ * user wrote), and models drop them when they rewrite a query
+ */
+const KEEP_COMMENTS = `Keep every comment (a line starting with //) of the query, including a "// Generated with the prompt:" comment at the top. Update a comment only when the change makes it inaccurate, and never delete one.`
+
 const INSTRUCTION = `You write GROQ queries for the Sanity Content Lake.
 
 The request:
@@ -50,7 +57,49 @@ $reference
 
 Reply with JSON: an object with "query" (the GROQ query, without comments or code fences), "params" (an object with a value for every parameter the query uses, or an empty object) and "title" (a name for the query of at most five words).`
 
-const RETRY_INSTRUCTION = `${INSTRUCTION}
+const EDIT_INSTRUCTION = `You edit GROQ queries for the Sanity Content Lake.
+
+The current query:
+$query
+
+The values of its parameters:
+$params
+
+The change to make:
+$request
+
+The document types in the dataset:
+$schema
+
+How to write GROQ:
+$reference
+
+${KEEP_COMMENTS}
+
+Reply with JSON: an object with "query" (the whole query with the change made, comments included, without code fences) and "params" (an object with a value for every parameter the query uses, or an empty object).`
+
+const FIX_LINT_INSTRUCTION = `You fix GROQ queries for the Sanity Content Lake.
+
+The query:
+$query
+
+The values of its parameters:
+$params
+
+The problems the linter found in it, with the line and column each starts at:
+$diagnostics
+
+The document types in the dataset:
+$schema
+
+How to write GROQ:
+$reference
+
+Fix those problems and change nothing else. ${KEEP_COMMENTS}
+
+Reply with JSON: an object with "query" (the whole fixed query, comments included, without code fences) and "params" (an object with a value for every parameter the query uses, or an empty object).`
+
+const RETRY_INSTRUCTION = `
 
 Your previous attempt was rejected by the Content Lake:
 $previous
@@ -64,6 +113,24 @@ export interface GeneratedQuery {
   title: string | undefined
 }
 
+const LINE_BREAK_ESCAPES: Record<string, string> = {
+  '\r\n': '\\r\\n',
+  '\r': '\\r',
+  '\n': '\\n',
+  '\u2028': '\\u2028',
+  '\u2029': '\\u2029',
+}
+
+/**
+ * The line comment a generated query starts with, naming the prompt it was written from. Line
+ * breaks in the prompt are written as escapes, so the comment stays on one line and everything
+ * after it is query.
+ */
+export function generatedQueryComment(prompt: string): string {
+  const escaped = prompt.replace(/\r\n|[\r\n\u2028\u2029]/g, (match) => LINE_BREAK_ESCAPES[match])
+  return `// Generated with the prompt: ${escaped}\n`
+}
+
 /** Every attempt was rejected; the last one is kept so it can still be opened and fixed by hand */
 export class GenerateQueryError extends Error {
   readonly lastAttempt: GeneratedQuery | undefined
@@ -74,9 +141,7 @@ export class GenerateQueryError extends Error {
   }
 }
 
-export interface GenerateQueryOptions {
-  /** What the query should do, in the user's words */
-  request: string
+interface QueryAgentOptions {
   /** The workspace's document types, from `summarizeSchema` */
   schema: string
   /** The client the query will run with (dataset, API version, perspective); it checks each attempt */
@@ -84,6 +149,20 @@ export interface GenerateQueryOptions {
   /** Called as each attempt starts, from 1 */
   onAttempt?: (attempt: number) => void
   signal?: AbortSignal
+}
+
+export interface GenerateQueryOptions extends QueryAgentOptions {
+  /** What the query should do, in the user's words */
+  request: string
+}
+
+export interface EditQueryOptions extends QueryAgentOptions {
+  /** The query to change, as it is in the editor */
+  query: string
+  /** The values of its parameters */
+  params: Record<string, unknown>
+  /** What to change, in the user's words */
+  request: string
 }
 
 function toGeneratedQuery(response: unknown): GeneratedQuery {
@@ -124,15 +203,40 @@ async function checkQuery(
   })
 }
 
+export interface FixQueryLintOptions extends QueryAgentOptions {
+  /** The query the diagnostics are for, as it is in the editor */
+  query: string
+  /** The values of its parameters */
+  params: Record<string, unknown>
+  /** The query editor's lint diagnostics */
+  diagnostics: QueryLintFinding[]
+}
+
+/** The diagnostics for the model, one per line, as the Lint panel lists them */
+export function describeDiagnostics(diagnostics: QueryLintFinding[]): string {
+  return diagnostics
+    .map(
+      (finding) =>
+        `- Line ${finding.line}, column ${finding.column} (${finding.severity}${
+          finding.source ? `, ${finding.source}` : ''
+        }): ${finding.message}`,
+    )
+    .join('\n')
+}
+
 /**
- * Writes a GROQ query for a request with Agent Actions (`client.agent.action.prompt`): the
- * request, the workspace's document types and a GROQ primer go in, and every attempt is compiled
- * on the Content Lake before it is accepted. A rejected attempt is retried with the API's error,
- * up to {@link MAX_GENERATE_ATTEMPTS} times. A failing prompt request (no access to Agent
- * Actions, quota) rejects right away.
+ * Asks Agent Actions (`client.agent.action.prompt`) for a query, and compiles every attempt on
+ * the Content Lake before it is accepted. A rejected attempt is retried with the API's error, up
+ * to {@link MAX_GENERATE_ATTEMPTS} times. A failing prompt request (no access to Agent Actions,
+ * quota) rejects right away.
  */
-export async function generateQuery(options: GenerateQueryOptions): Promise<GeneratedQuery> {
-  const {request, schema, client, onAttempt, signal} = options
+async function promptForQuery(
+  options: Omit<QueryAgentOptions, 'schema'> & {
+    instruction: string
+    instructionParams: Record<string, string>
+  },
+): Promise<GeneratedQuery> {
+  const {instruction, instructionParams, client, onAttempt, signal} = options
   const agent = client.withConfig({apiVersion: AGENT_API_VERSION}).agent.action
   let previous: {attempt: GeneratedQuery; problem: string} | undefined
 
@@ -141,10 +245,9 @@ export async function generateQuery(options: GenerateQueryOptions): Promise<Gene
     onAttempt?.(attempt)
     // oxlint-disable-next-line no-await-in-loop -- each attempt is asked with the previous one's error
     const response: unknown = await agent.prompt({
-      instruction: previous ? RETRY_INSTRUCTION : INSTRUCTION,
+      instruction: previous ? `${instruction}${RETRY_INSTRUCTION}` : instruction,
       instructionParams: {
-        request,
-        schema,
+        ...instructionParams,
         reference: GROQ_REFERENCE,
         ...(previous
           ? {previous: `${JSON.stringify(previous.attempt)}\nError: ${previous.problem}`}
@@ -169,4 +272,45 @@ export async function generateQuery(options: GenerateQueryOptions): Promise<Gene
     }
   }
   throw new GenerateQueryError(previous?.problem ?? 'No query was generated', previous?.attempt)
+}
+
+/**
+ * Writes a GROQ query for a request with Agent Actions: the request, the workspace's document
+ * types and a GROQ primer go in.
+ */
+export function generateQuery(options: GenerateQueryOptions): Promise<GeneratedQuery> {
+  const {request, schema, ...rest} = options
+  return promptForQuery({...rest, instruction: INSTRUCTION, instructionParams: {request, schema}})
+}
+
+/**
+ * Changes a query as the user asks with Agent Actions: the query, its parameters, the change, the
+ * workspace's document types and a GROQ primer go in. The query comes back whole; the model is told
+ * to keep its comments, updating only those the change makes inaccurate.
+ */
+export function editQuery(options: EditQueryOptions): Promise<GeneratedQuery> {
+  const {query, params, request, schema, ...rest} = options
+  return promptForQuery({
+    ...rest,
+    instruction: EDIT_INSTRUCTION,
+    instructionParams: {query, params: JSON.stringify(params), request, schema},
+  })
+}
+
+/**
+ * Fixes the problems the query editor's linter found in a query with Agent Actions: the query,
+ * its parameters, the diagnostics, the workspace's document types and a GROQ primer go in.
+ */
+export function fixQueryLint(options: FixQueryLintOptions): Promise<GeneratedQuery> {
+  const {query, params, diagnostics, schema, ...rest} = options
+  return promptForQuery({
+    ...rest,
+    instruction: FIX_LINT_INSTRUCTION,
+    instructionParams: {
+      query,
+      params: JSON.stringify(params),
+      diagnostics: describeDiagnostics(diagnostics),
+      schema,
+    },
+  })
 }

@@ -1,12 +1,30 @@
+import {readFileSync} from 'node:fs'
+import {createRequire} from 'node:module'
+import {dirname, join} from 'node:path'
+
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
-import {describe, expect, it, vi} from 'vitest'
+import {afterAll, beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {TagInput} from './tagInput'
 
 vi.mock('../../../i18n/hooks/useTranslation', () => ({
   useTranslation: () => ({t: (key: string) => key}),
 }))
+
+// The paddings under test are `ui5` utility classes, and the jsdom suite loads no stylesheet, so
+// `getComputedStyle` would report `0px` on both sides and the assertions below would not
+// distinguish the regression from the fix. Load the stylesheet for this file; its `node` export
+// condition is a no-op shim, hence the path through the package manifest.
+const ui5Styles = document.createElement('style')
+beforeAll(() => {
+  const ui5Manifest = createRequire(import.meta.url).resolve('ui5/package.json')
+  ui5Styles.textContent = readFileSync(join(dirname(ui5Manifest), 'dist/styles.css'), 'utf8')
+  document.head.append(ui5Styles)
+})
+afterAll(() => {
+  ui5Styles.remove()
+})
 
 // Reproduces https://github.com/sanity-io/sanity/issues/13429
 //

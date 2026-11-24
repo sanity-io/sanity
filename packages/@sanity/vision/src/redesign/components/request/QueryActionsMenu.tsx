@@ -1,12 +1,12 @@
 import {BookmarkIcon} from '@sanity/icons/Bookmark'
 import {CodeIcon} from '@sanity/icons/Code'
-import {CodeBlockIcon} from '@sanity/icons/CodeBlock'
-import {CopyIcon} from '@sanity/icons/Copy'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {Button} from '@sanity/ui'
-import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
+import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
+import {Tooltip} from '@sanity/ui/tooltip'
 import {useCallback, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
+import {Text} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type QueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
@@ -14,7 +14,7 @@ import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {useSaveCurrentQuery} from '../../hooks/useSaveCurrentQuery'
 import {type QueryRequest, type VisionTab} from '../../store/types'
 import {usePendingEdits} from '../../store/VisionActorContext'
-import {VISION_SHORTCUTS} from '../../util/shortcuts'
+import * as styles from '../redesign.module.css'
 import {ExportQueryDialog} from './ExportQueryDialog'
 
 export interface QueryActionsMenuProps {
@@ -22,15 +22,18 @@ export interface QueryActionsMenuProps {
   request: QueryRequest | null
   buildRequest: QueryRequestBuilder['buildRequest']
   resolved: ResolvedRequest
-  onCopyQuery: () => void
-  onPrettify: () => void
 }
 
+/**
+ * The "More actions" menu in the query pane's toolbar, next to Copy: export or save the query
+ */
 export function QueryActionsMenu(props: QueryActionsMenuProps) {
-  const {tab, request, buildRequest, resolved, onCopyQuery, onPrettify} = props
+  const {tab, request, buildRequest, resolved} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const pendingEdits = usePendingEdits()
   const [exportOpen, setExportOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const moreActions = t('vision.actions.more')
   const {saveCurrent, canSave} = useSaveCurrentQuery(tab, {request, buildRequest})
 
   const openExport = useCallback(() => {
@@ -42,52 +45,56 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
 
   return (
     <>
-      <MenuButton
-        button={
-          <Button
-            aria-label={t('vision.query.actions')}
-            data-testid="vision-query-menu-button"
-            icon={EllipsisHorizontalIcon}
-            mode="bleed"
-            padding={2}
+      <Tooltip
+        animate
+        content={
+          <Text as="div" size={1}>
+            {moreActions}
+          </Text>
+        }
+        // The tooltip would cover the menu it names
+        disabled={menuOpen}
+        placement="top"
+        portal
+      >
+        {/* The tooltip attaches to this wrapper, which leaves the button's ref to the menu */}
+        <span className={styles.tooltipTarget} data-testid="vision-query-menu-tooltip-target">
+          <MenuButton
+            button={
+              <Button
+                aria-label={t('vision.query.actions')}
+                data-testid="vision-query-menu-button"
+                fontSize={1}
+                icon={EllipsisHorizontalIcon}
+                mode="bleed"
+                padding={2}
+              />
+            }
+            id={`vision-query-menu-${tab.id}`}
+            menu={
+              <Menu>
+                <MenuItem
+                  data-testid="vision-export-query"
+                  disabled={!request}
+                  icon={CodeIcon}
+                  onClick={openExport}
+                  text={t('vision.query.export')}
+                />
+                <MenuItem
+                  data-testid="vision-save-query"
+                  disabled={!canSave}
+                  icon={BookmarkIcon}
+                  onClick={() => void saveCurrent()}
+                  text={t('vision.query.save')}
+                />
+              </Menu>
+            }
+            onClose={() => setMenuOpen(false)}
+            onOpen={() => setMenuOpen(true)}
+            popover={{animate: true, portal: true, placement: 'bottom-end'}}
           />
-        }
-        id={`vision-query-menu-${tab.id}`}
-        menu={
-          <Menu>
-            <MenuItem
-              data-testid="vision-copy-query"
-              hotkeys={VISION_SHORTCUTS['copy-query'].keys}
-              icon={CopyIcon}
-              onClick={onCopyQuery}
-              text={t('vision.query.copy')}
-            />
-            <MenuItem
-              data-testid="vision-prettify"
-              hotkeys={VISION_SHORTCUTS.prettify.keys}
-              icon={CodeBlockIcon}
-              onClick={onPrettify}
-              text={t('vision.query.prettify')}
-            />
-            <MenuDivider />
-            <MenuItem
-              data-testid="vision-export-query"
-              disabled={!request}
-              icon={CodeIcon}
-              onClick={openExport}
-              text={t('vision.query.export')}
-            />
-            <MenuItem
-              data-testid="vision-save-query"
-              disabled={!canSave}
-              icon={BookmarkIcon}
-              onClick={() => void saveCurrent()}
-              text={t('vision.query.save')}
-            />
-          </Menu>
-        }
-        popover={{animate: true, portal: true, placement: 'top-end'}}
-      />
+        </span>
+      </Tooltip>
       {exportOpen && request && (
         <ExportQueryDialog
           onClose={() => setExportOpen(false)}

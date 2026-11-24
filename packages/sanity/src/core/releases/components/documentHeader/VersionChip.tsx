@@ -5,6 +5,7 @@ import {UnlockIcon} from '@sanity/icons/Unlock'
 import {type BadgeTone} from '@sanity/ui'
 import {memo, type ReactNode, useEffect, useMemo, useRef} from 'react'
 import {useObservable} from 'react-rx'
+import scrollIntoView from 'scroll-into-view-if-needed'
 
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {INITIAL_COMPANION_DOCS} from '../../../canvas/store/createCanvasCompanionDocsStore'
@@ -34,6 +35,9 @@ const useVersionIsLinked = (documentId: string, fromRelease: string) => {
   const companionDocs = useObservable(companionDocs$, INITIAL_COMPANION_DOCS)
   return companionDocs.data.some((companion) => companion?.studioDocumentId === versionId)
 }
+
+// Native scrollIntoView also scrolls every ancestor, parent frames included, so stop at the chip strip.
+const isOverflowVisible = (element: Element) => getComputedStyle(element).overflowX === 'visible'
 
 /**
  * @internal
@@ -88,10 +92,18 @@ export const VersionChip = memo(function VersionChip(props: {
   } = props
   const releasesToolAvailable = useReleasesToolAvailable()
   const isLinked = useVersionIsLinked(documentGroupId, bundleId)
-  const chipRef = useRef<HTMLButtonElement | null>(null)
+  const chipRef = useRef<HTMLSpanElement | null>(null)
 
   useEffect(() => {
-    if (selected) chipRef.current?.scrollIntoView({inline: 'center'})
+    const chip = chipRef.current
+    if (selected && chip) {
+      scrollIntoView(chip, {
+        scrollMode: 'always',
+        block: 'nearest',
+        inline: 'center',
+        boundary: isOverflowVisible,
+      })
+    }
   }, [selected])
 
   const {

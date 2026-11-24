@@ -328,13 +328,14 @@ describe('MutateTab', () => {
     })
     fireEvent.keyDown(field, {key: 'Enter'})
 
-    await waitFor(() => expect(screen.queryByTestId('vision-mutate-generate-bar')).toBeNull())
+    // The generated mutations replace the ones written, and their dry run is the one shown. The
+    // editor takes the text in an effect after the commit that closes the bar, so wait for that.
+    await waitFor(() => expect(JSON.parse(editor().value)).toEqual(generated))
+    expect(screen.queryByTestId('vision-mutate-generate-bar')).toBeNull()
     expect(prompt.mock.calls[0][0].instructionParams).toMatchObject({
       request: 'Change the title of the documents I am looking at to foobar',
       documents: '- a (post)',
     })
-    // The generated mutations replace the ones written, and their dry run is the one shown
-    expect(JSON.parse(editor().value)).toEqual(generated)
     const preview = screen.getByTestId('vision-mutate-preview-result')
     expect(
       within(preview)
