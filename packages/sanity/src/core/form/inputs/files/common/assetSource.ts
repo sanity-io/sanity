@@ -1,4 +1,9 @@
-import {type AssetFromSource, type FileSchemaType, type ImageSchemaType} from '@sanity/types'
+import {
+  type AssetFromSource,
+  type FileSchemaType,
+  type ImageSchemaType,
+  isImageSchemaType,
+} from '@sanity/types'
 import pickBy from 'lodash-es/pickBy.js'
 
 import {
@@ -55,7 +60,7 @@ export function handleSelectAssetFromSource({
     (value) => value !== null && value !== undefined && value !== '',
   )
 
-  const isImage = type.name === 'image'
+  const isImage = isImageSchemaType(type)
 
   const assetPatches: FormPatch[] = isImage
     ? [unset(['hotspot']), unset(['crop']), unset(['media'])]

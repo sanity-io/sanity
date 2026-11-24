@@ -1,7 +1,13 @@
-import {type AssetFromSource, type FileSchemaType, type ImageSchemaType} from '@sanity/types'
+import {
+  type AssetFromSource,
+  type FileSchemaType,
+  type ImageSchemaType,
+  type ObjectSchemaType,
+} from '@sanity/types'
 import {describe, expect, it, vi} from 'vitest'
 
 import {type VideoSchemaType} from '../../../../../../media-library/plugin/schemas/types'
+import {createSchema} from '../../../../../schema/createSchema'
 import {base64ToFile, urlToFile} from '../../ImageInput/utils/image'
 import {handleSelectAssetFromSource} from '../assetSource'
 
@@ -136,6 +142,31 @@ describe('handleSelectAssetFromSource', () => {
           value: {_type: 'reference', _ref: 'image-asset-456'},
         }),
       )
+    })
+
+    it('unsets hotspot and crop for a field of a named image type', () => {
+      const schema = createSchema({
+        name: 'default',
+        types: [
+          {name: 'namedImage', type: 'image', options: {hotspot: true}},
+          {name: 'post', type: 'document', fields: [{name: 'photo', type: 'namedImage'}]},
+        ],
+      })
+      const photo = (schema.get('post') as ObjectSchemaType).fields.find(
+        (field) => field.name === 'photo',
+      )
+      const onChange = vi.fn()
+
+      handleSelectAssetFromSource({
+        assetsFromSource: [{kind: 'assetDocumentId', value: 'image-asset-456'}],
+        onChange,
+        type: photo?.type as ImageSchemaType,
+        resolveUploader: () => null,
+      })
+
+      const patches = onChange.mock.calls[0][0]
+      expect(patches).toContainEqual(expect.objectContaining({type: 'unset', path: ['hotspot']}))
+      expect(patches).toContainEqual(expect.objectContaining({type: 'unset', path: ['crop']}))
     })
 
     it('calls onChange with media unset for file type (no hotspot/crop)', () => {
