@@ -166,7 +166,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
   }, [revealing, shown])
   const splitContainerSize = useContentSize(splitContainer)
   // Dragged sizes are remembered per layout: a column width makes no sense as a stacked height
-  const {splitSizes, setSplitSizes} = useQueryTabSplitSizes()
+  const {splitSizes, setSplitSizes, splitSnapped, setSplitSnapped} = useQueryTabSplitSizes()
   const [mobilePane, setMobilePane] = useState<MobilePane>('request')
 
   const queryEditorRef = useRef<VisionCodeMirrorHandle>(null)
@@ -736,10 +736,17 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
         label={t('vision.split.request-response')}
         minSecondarySize={minSize}
         minSize={minSize}
-        onChange={(size) => setSplitSizes((sizes) => ({...sizes, [layout]: size}))}
-        onReset={() => setSplitSizes((sizes) => ({...sizes, [layout]: undefined}))}
+        onChange={(size, snapped) => {
+          setSplitSizes((sizes) => ({...sizes, [layout]: size}))
+          setSplitSnapped(snapped)
+        }}
+        onReset={() => {
+          setSplitSizes((sizes) => ({...sizes, [layout]: undefined}))
+          setSplitSnapped(false)
+        }}
         size={splitSizes[layout] ?? defaultSplitSize}
         snapToCenter
+        snapped={splitSnapped}
         // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- layout mode, not user-facing text
         split={layout === 'stacked' ? 'horizontal' : 'vertical'}
         testId="vision-split"
