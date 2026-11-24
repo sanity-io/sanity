@@ -78,6 +78,12 @@
   outline-offset: -2px;
 }
 
+/* Held at equal halves: the line takes the focus color while it is dragged or focused */
+.splitHandle[data-snapped='true'][data-dragging='true'],
+.splitHandle[data-snapped='true']:focus-visible {
+  background: var(--card-focus-ring-color);
+}
+
 .splitHandleVertical {
   cursor: col-resize;
 }

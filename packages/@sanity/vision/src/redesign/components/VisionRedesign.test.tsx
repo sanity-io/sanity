@@ -4793,11 +4793,14 @@ describe('VisionRedesign', () => {
     expect(handle.getAttribute('aria-valuemax')).toBe('919')
     expect(handle.getAttribute('tabindex')).toBe('0')
 
-    // Arrow keys move the divider by a step, five with Shift; Home and End go to the bounds
+    // Arrow keys move the divider by a step, five with Shift, and a step that would pass over
+    // equal halves stops on them; Home and End go to the bounds
     fireEvent.keyDown(handle, {key: 'ArrowRight'})
     expect(requestPane.style.flex).toBe('0 0 616px')
     fireEvent.keyDown(handle, {key: 'ArrowLeft', shiftKey: true})
-    expect(requestPane.style.flex).toBe('0 0 536px')
+    expect(requestPane.style.flex).toBe('0 0 600px')
+    fireEvent.keyDown(handle, {key: 'ArrowLeft', shiftKey: true})
+    expect(requestPane.style.flex).toBe('0 0 520px')
     fireEvent.keyDown(handle, {key: 'End'})
     expect(requestPane.style.flex).toBe('0 0 919px')
     fireEvent.keyDown(handle, {key: 'Home'})
