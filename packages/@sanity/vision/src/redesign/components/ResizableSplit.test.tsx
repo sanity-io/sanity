@@ -35,22 +35,28 @@ function measure(width: number, height: number) {
 
 interface HarnessProps extends Partial<Omit<ResizableSplitProps, 'children' | 'onChange'>> {
   defaultSize?: number
-  onChange?: (size: number) => void
+  onChange?: (size: number, snapped: boolean) => void
 }
 
 function Harness({defaultSize = 300, onChange, ...props}: HarnessProps) {
   const [size, setSize] = useState<number | undefined>(undefined)
+  const [snapped, setSnapped] = useState(false)
   return (
     <ResizableSplit
       label="Resize"
       minSecondarySize={100}
       minSize={100}
-      onChange={(next) => {
+      onChange={(next, nextSnapped) => {
         setSize(next)
-        onChange?.(next)
+        setSnapped(nextSnapped)
+        onChange?.(next, nextSnapped)
       }}
-      onReset={() => setSize(undefined)}
+      onReset={() => {
+        setSize(undefined)
+        setSnapped(false)
+      }}
       size={size ?? defaultSize}
+      snapped={snapped}
       split="vertical"
       testId="split"
       {...props}
@@ -203,8 +209,46 @@ describe('ResizableSplit', () => {
     // Snapping back, then letting go there, reports the center like any other size
     fireEvent.pointerMove(handle, {clientX: 405})
     fireEvent.pointerUp(handle)
-    expect(onChange).toHaveBeenLastCalledWith(400)
+    expect(onChange).toHaveBeenLastCalledWith(400, true)
     expect(primaryPane().style.flex).toBe('0 0 400px')
+  })
+
+  it('keeps snapped equal halves through container resizes until a drag moves off them', () => {
+    const onChange = vi.fn()
+    render(<Harness onChange={onChange} snapToCenter />)
+    measure(801, 400)
+    const handle = screen.getByTestId('split-handle')
+    fireEvent.pointerDown(handle, {button: 0, clientX: 300, pointerId: 1})
+    fireEvent.pointerMove(handle, {clientX: 395})
+    fireEvent.pointerUp(handle)
+    expect(onChange).toHaveBeenLastCalledWith(400, true)
+
+    // Narrower and wider containers (a window resize, the Studio sidebar) keep the halves equal
+    measure(601, 400)
+    expect(primaryPane().style.flex).toBe('0 0 300px')
+    expect(handle.getAttribute('data-snapped')).toBe('true')
+    expect(handle.getAttribute('aria-valuenow')).toBe('300')
+    measure(1201, 400)
+    expect(primaryPane().style.flex).toBe('0 0 600px')
+    expect(handle.getAttribute('data-snapped')).toBe('true')
+
+    // A drag off the center drops the snap, and later resizes keep the dragged size
+    fireEvent.pointerDown(handle, {button: 0, clientX: 600, pointerId: 1})
+    fireEvent.pointerMove(handle, {clientX: 700})
+    fireEvent.pointerUp(handle)
+    expect(onChange).toHaveBeenLastCalledWith(700, false)
+    measure(1001, 400)
+    expect(primaryPane().style.flex).toBe('0 0 700px')
+    expect(handle.getAttribute('data-snapped')).toBe('false')
+
+    // Dragging back onto the center snaps again
+    fireEvent.pointerDown(handle, {button: 0, clientX: 700, pointerId: 1})
+    fireEvent.pointerMove(handle, {clientX: 505})
+    fireEvent.pointerUp(handle)
+    expect(onChange).toHaveBeenLastCalledWith(500, true)
+    measure(801, 400)
+    expect(primaryPane().style.flex).toBe('0 0 400px')
+    expect(handle.getAttribute('data-snapped')).toBe('true')
   })
 
   it('does not jump when a drag starts just outside the snap zone', () => {
