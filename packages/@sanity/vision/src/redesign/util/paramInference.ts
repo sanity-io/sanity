@@ -22,6 +22,8 @@ export interface InferredParam {
   type: ParamType
   /** The expressions that use the param, as GROQ */
   usages: string[]
+  /** The query expects null too: `defined($param)`, `coalesce($param, …)`, `$param == null` */
+  nullable?: true
 }
 
 export interface ParamInference {
@@ -178,6 +180,7 @@ interface Usage {
   name: string
   text: string
   type: ParamType | undefined
+  nullable?: boolean
 }
 
 const COMPARISONS = new Set(['==', '!=', '<', '<=', '>', '>=', '+', '-', '*', '/', '%', '**'])
@@ -314,9 +317,11 @@ function resolve(
   } else if (relation === 'list' && queried && !queried.array) {
     heuristic = {...queried, array: true}
   }
-  const schematic = options.schema
-    ? fromSchema(relation, operand, scope, options.schema)
-    : undefined
+  // A literal says what kind of value the param is compared with, not that it must equal it
+  const schematic =
+    options.schema && operand.type !== 'Value'
+      ? fromSchema(relation, operand, scope, options.schema)
+      : undefined
   if (!schematic) return heuristic
   // The schema knows the values; the query still tells what they are (a date, a document type)
   return heuristic && heuristic.kind === schematic.kind
@@ -328,11 +333,17 @@ function collectUsages(ast: ExprNode, options: InferParamsOptions): Usage[] {
   const usages: Usage[] = []
   const handled = new Set<ExprNode>()
 
-  const report = (param: ExprNode, context: ExprNode, type: ParamType | undefined) => {
+  const report = (
+    param: ExprNode,
+    context: ExprNode,
+    type: ParamType | undefined,
+    nullable = false,
+  ) => {
     if (param.type !== 'Parameter') return
     handled.add(param)
-    usages.push({name: param.name, text: describe(context, `$${param.name}`), type})
+    usages.push({name: param.name, text: describe(context, `$${param.name}`), type, nullable})
   }
+  const isNull = (node: ExprNode) => node.type === 'Value' && node.value === null
 
   const inspect = (node: ExprNode, scope: Scope) => {
     switch (node.type) {
@@ -348,6 +359,8 @@ function collectUsages(ast: ExprNode, options: InferParamsOptions): Usage[] {
           const type: ParamType = {kind: 'string', array: false}
           report(left, node, type)
           report(right, node, type)
+        } else if ((op === '==' || op === '!=') && (isNull(left) || isNull(right))) {
+          report(isNull(left) ? right : left, node, undefined, true)
         } else if (COMPARISONS.has(op)) {
           if (right.type === 'Parameter' && left.type !== 'Parameter') {
             report(right, node, resolve('value', left, scope, options))
@@ -362,7 +375,21 @@ function collectUsages(ast: ExprNode, options: InferParamsOptions): Usage[] {
         report(node.right, node, resolve('value', node.base, scope, options))
         break
       case 'FuncCall': {
-        const type = FUNCTION_ARGUMENTS[`${node.namespace}::${node.name}`]
+        const name = `${node.namespace}::${node.name}`
+        if (name === 'global::defined') {
+          for (const arg of node.args) report(arg, node, undefined, true)
+          break
+        }
+        if (name === 'global::coalesce') {
+          // A param given as one of the alternatives holds what the others do, or null
+          const others = node.args.filter((arg) => arg.type !== 'Parameter')
+          const type = others
+            .map((other) => resolve('value', other, scope, options))
+            .find((resolved) => resolved !== undefined)
+          for (const arg of node.args) report(arg, node, type, true)
+          break
+        }
+        const type = FUNCTION_ARGUMENTS[name]
         if (type) for (const arg of node.args) report(arg, node, type)
         break
       }
@@ -474,10 +501,12 @@ export function inferQueryParams(query: string, options: InferParamsOptions = {}
       const own = usages.filter((usage) => usage.name === name)
       const slice = slices.get(name)
       const types = own.flatMap((usage) => (usage.type ? [usage.type] : []))
+      const nullable = !slice && own.some((usage) => usage.nullable)
       return {
         name,
         type: slice ? INTEGER : mergeTypes(types),
         usages: [...new Set([...(slice ? [slice] : []), ...own.map((usage) => usage.text)])],
+        ...(nullable && {nullable: true as const}),
       }
     }),
     syntaxError: false,

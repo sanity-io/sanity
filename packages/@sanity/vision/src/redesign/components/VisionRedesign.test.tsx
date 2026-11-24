@@ -3269,6 +3269,35 @@ describe('VisionRedesign', () => {
     expect(screen.queryByTestId('vision-export-types-code')).toBeNull()
   })
 
+  it('exports types for the params the query uses from the params menu', async () => {
+    renderRedesign()
+    const openParamsMenu = () => openMenu('vision-params-menu-button', 'vision-params-menu')
+
+    // A query without params has nothing to type
+    typeQuery('*[_type == "author"]')
+    let menu = await openParamsMenu()
+    expect(isItemDisabled(within(menu).getByTestId('vision-params-export-typescript'))).toBe(true)
+    expect(isItemDisabled(within(menu).getByTestId('vision-params-export-zod'))).toBe(true)
+    fireEvent.keyDown(menu, {key: 'Escape'})
+
+    typeQuery('*[_type == "author" && name == $name][0...$limit]')
+    menu = await openParamsMenu()
+    fireEvent.click(within(menu).getByTestId('vision-params-export-typescript'))
+    await waitFor(() =>
+      expect(text(screen.getByTestId('vision-export-params-code'))).toContain(
+        'export type AuthorQueryParams = {\n  /** Could not be inferred from the query */\n  name: unknown;\n  limit: number;\n};',
+      ),
+    )
+    fireEvent.keyDown(screen.getByTestId('vision-export-params-dialog'), {key: 'Escape'})
+
+    fireEvent.click(within(await openParamsMenu()).getByTestId('vision-params-export-zod'))
+    await waitFor(() =>
+      expect(text(screen.getByTestId('vision-export-params-code'))).toContain(
+        'export const AuthorQueryParamsSchema = z.object({',
+      ),
+    )
+  })
+
   it('restores persisted tabs and settings on mount', () => {
     const initial = createInitialState(DEFAULTS)
     const tab = createTab(initial.settings, {
@@ -3658,7 +3687,14 @@ describe('VisionRedesign', () => {
     expect(within(shownTab()).getByTestId('vision-query-actions').contains(button)).toBe(false)
 
     fireEvent.mouseEnter(within(shownTab()).getByTestId('vision-query-menu-tooltip-target'))
-    await screen.findByText('vision.actions.more')
+    // The params menu's closed tooltip stays mounted with the same text
+    await waitFor(() =>
+      expect(
+        screen
+          .getAllByText('vision.actions.more')
+          .some((element) => !element.closest('[style*="display: none"]')),
+      ).toBe(true),
+    )
 
     fireEvent.click(button)
     await screen.findByTestId('vision-save-query')
