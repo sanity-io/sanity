@@ -13,7 +13,6 @@ export default defineConfig({
     '_singletons.js',
     '_createContext.js',
     'cli.js',
-    'desk.js',
     'migrate.js',
     'presentation.js',
     'router.js',
