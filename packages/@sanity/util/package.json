@@ -47,6 +47,9 @@
       "createSafeJsonParser": [
         "./lib/createSafeJsonParser.d.ts"
       ],
+      "image": [
+        "./lib/image.d.ts"
+      ],
       "legacyDateFormat": [
         "./lib/legacyDateFormat.d.ts"
       ],
@@ -84,6 +87,10 @@
       "monorepo": "./src/_exports/fs.ts",
       "default": "./lib/fs.js"
     },
+    "./image": {
+      "monorepo": "./src/_exports/image.ts",
+      "default": "./lib/image.js"
+    },
     "./legacyDateFormat": {
       "monorepo": "./src/_exports/legacyDateFormat.ts",
       "default": "./lib/legacyDateFormat.js"
@@ -103,6 +110,7 @@
       "./content": "./lib/content.js",
       "./createSafeJsonParser": "./lib/createSafeJsonParser.js",
       "./fs": "./lib/fs.js",
+      "./image": "./lib/image.js",
       "./legacyDateFormat": "./lib/legacyDateFormat.js",
       "./paths": "./lib/paths.js",
       "./package.json": "./package.json"
@@ -117,6 +125,7 @@
   "dependencies": {
     "@date-fns/tz": "^1.5.0",
     "@date-fns/utc": "^2.1.1",
+    "@sanity/asset-utils": "^2.3.0",
     "@sanity/client": "catalog:",
     "@sanity/types": "workspace:*",
     "date-fns": "^4.4.0",

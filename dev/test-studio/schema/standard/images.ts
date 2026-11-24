@@ -214,6 +214,41 @@ export default defineType({
       },
     },
     {
+      name: 'fixedAspectRatioImage',
+      title: 'Fixed 16:9 image with minimum size',
+      type: 'image',
+      description:
+        'Upload a portrait image or one smaller than 800 × 450 px and see the aspect ratio and minimum size errors.',
+      options: {
+        hotspot: true,
+        aspectRatio: 16 / 9,
+        minDimensions: {width: 800, height: 450},
+      },
+    },
+    {
+      name: 'aspectRatioRangeImage',
+      title: '4:3 to 16:9 image with recommended size',
+      type: 'image',
+      description:
+        'Upload a square image to see the aspect ratio error, or one smaller than 1600 × 900 px to see the recommended size warning.',
+      options: {
+        hotspot: true,
+        aspectRatio: {min: 4 / 3, max: 16 / 9},
+        recommendedDimensions: {width: 1600, height: 900},
+      },
+    },
+    {
+      name: 'snapAspectRatioImage',
+      title: '1:1, 4:3 or 16:9 image',
+      type: 'image',
+      description:
+        'Upload a 3:2 image, or crop to a ratio between the listed ones, and see the aspect ratio error.',
+      options: {
+        hotspot: true,
+        aspectRatio: [1, 4 / 3, 16 / 9],
+      },
+    },
+    {
       name: 'imageWithMediaLibraryFilters',
       title: 'Image with Media Library filter',
       type: 'image',
