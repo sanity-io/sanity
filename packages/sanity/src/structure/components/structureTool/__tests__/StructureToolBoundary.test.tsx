@@ -1,4 +1,4 @@
-import {render, screen, waitFor} from '@testing-library/react'
+import {act, render, screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {type ComponentType, type PropsWithChildren} from 'react'
 import {defineConfig, type Tool} from 'sanity'
@@ -133,5 +133,28 @@ describe('StructureToolBoundary', {timeout: 20_000}, () => {
 
     expect(screen.getByText(STRUCTURE_ERROR_HEADING)).toBeVisible()
     expect(attempts).toBe(1)
+  })
+
+  it('keeps the error screen when the structure fails while an intent is pending', async () => {
+    const failingStructure: StructureResolver = () => () => {
+      attempts += 1
+      throw new Error('Structure failed')
+    }
+    tool = {...tool, options: {structure: failingStructure}}
+    const intentState: RouterState = {
+      intent: 'edit',
+      params: {id: 'pending-document', type: 'author'},
+    }
+    render(studioAtRouterState(intentState))
+    expect(await screen.findByText(STRUCTURE_ERROR_HEADING)).toBeVisible()
+    await waitFor(() => expect(attempts).toBeGreaterThan(0))
+    const attemptsAfterError = attempts
+
+    await act(async () => {
+      await Promise.resolve()
+    })
+
+    expect(attempts).toBe(attemptsAfterError)
+    expect(screen.getByText(STRUCTURE_ERROR_HEADING)).toBeVisible()
   })
 })
