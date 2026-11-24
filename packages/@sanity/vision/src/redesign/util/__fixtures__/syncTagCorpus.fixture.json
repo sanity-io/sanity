@@ -1,0 +1,4545 @@
+{
+  "datasets": {
+    "test": {
+      "anyTag": "s1:JAVAQw",
+      "types": {
+        "imagesTest": "s1:CVVh5A",
+        "sanity.imageAsset": "s1:s+D/Iw",
+        "species": "s1:8rchCA",
+        "author": "s1:TcMVJQ",
+        "slugsTest": "s1:KfGgSw",
+        "sanity.imageDimensions": "s1:iihn1A",
+        "simpleReferences": "s1:HvR1YA",
+        "book": "s1:0IF5OA",
+        "referenceTest": "s1:xk8kaQ",
+        "thesis": "s1:xW33og",
+        "crossDatasetReferenceTest": "s1:d/C+Vw",
+        "nonexistent": "s1:EwYhuw",
+        "strongAuthorRef": "s1:yiu7Kw",
+        "reference": "s1:umct1A",
+        "playlist": "s1:XOz86A"
+      },
+      "ids": {
+        "drafts.image-eeb1baf83b62177d2bbf858ec71d08fffc8d0555-1022x1024-jpg": "s1:NxPXIQ",
+        "image-eeb1baf83b62177d2bbf858ec71d08fffc8d0555-1022x1024-jpg": "s1:2vub1w",
+        "drafts.image-47e4e6600d66ef6c4eb3896073e53ecd9e46ddc5-512x512-webp": "s1:WgXfrg",
+        "drafts.drafts.image-eeb1baf83b62177d2bbf858ec71d08fffc8d0555-1022x1024-jpg": "s1:+YVBfA",
+        "image-47e4e6600d66ef6c4eb3896073e53ecd9e46ddc5-512x512-webp": "s1:o3bDSg",
+        "drafts.drafts.image-47e4e6600d66ef6c4eb3896073e53ecd9e46ddc5-512x512-webp": "s1:g6Z0Hg",
+        "versions.agent-rPrQAF.06078a39-266b-494c-ad1f-52a0568800b2": "s1:gOpM5A",
+        "drafts.06078a39-266b-494c-ad1f-52a0568800b2": "s1:lponLA",
+        "06078a39-266b-494c-ad1f-52a0568800b2": "s1:5wVr0Q",
+        "062912c8-80c0-4245-b6a2-ebb8258b4fbe": "s1:MwMsDw",
+        "image-08e5a88716d82c6e8a5803115d2cf5933ab35916-774x389-png": "s1:Tj0XJA",
+        "drafts.image-08e5a88716d82c6e8a5803115d2cf5933ab35916-774x389-png": "s1:R+nLCg",
+        "versions.agent-rPrQAF.image-e3cb01560b72bfbfe15da1c72e280339905a3179-768x768-png": "s1:7fZb8g",
+        "drafts.image-e3cb01560b72bfbfe15da1c72e280339905a3179-768x768-png": "s1:wqtGeQ",
+        "image-e3cb01560b72bfbfe15da1c72e280339905a3179-768x768-png": "s1:8mpzgA",
+        "versions.agent-rPrQAF.image-08e5a88716d82c6e8a5803115d2cf5933ab35916-774x389-png": "s1:Ka6xlg",
+        "007f7c5a-cde0-47dc-8fd2-8c9b676767e5": "s1:+7yGUA",
+        "drafts.000f6f66-5a70-48a6-a22d-6ef54d77512f": "s1:aVPu4Q",
+        "000f6f66-5a70-48a6-a22d-6ef54d77512f": "s1:FkqQxg",
+        "drafts.007f7c5a-cde0-47dc-8fd2-8c9b676767e5": "s1:3z7tow",
+        "drafts.04c86968-2e91-4ba0-9dbc-be947fdf807e": "s1:M22KSg",
+        "0154f201-bb53-4048-b9e3-7f7cdcad15fb": "s1:lsKVxA",
+        "drafts.0154f201-bb53-4048-b9e3-7f7cdcad15fb": "s1:a60qLg",
+        "04c86968-2e91-4ba0-9dbc-be947fdf807e": "s1:zIhJcQ",
+        "0214c09c-6892-4d00-97ed-96537158648f": "s1:gV8oSA",
+        "drafts.0214c09c-6892-4d00-97ed-96537158648f": "s1:NqUSjA",
+        "drafts.07669397-0b55-4ace-9ab4-1f8c08d28372": "s1:iZ+MiA",
+        "07669397-0b55-4ace-9ab4-1f8c08d28372": "s1:nJMxzQ",
+        "foo-bar": "s1:WoJ/sQ",
+        "drafts.foo-bar": "s1:4W9Vcg",
+        "e1a3faf4-3e5d-4193-a1ad-05ab6aae8ffe": "s1:YKrqeQ",
+        "drafts.e1a3faf4-3e5d-4193-a1ad-05ab6aae8ffe": "s1:Q+ehjA",
+        "01db1d0e-6146-4e14-931c-f9dae21a9db2": "s1:4u7UEg",
+        "2cc5e39e-cf57-43c1-8871-4536d247016d": "s1:DxOjrg",
+        "drafts.2cc5e39e-cf57-43c1-8871-4536d247016d": "s1:5UQ9VQ",
+        "drafts.01db1d0e-6146-4e14-931c-f9dae21a9db2": "s1:TieviQ",
+        "8dac0001-be5a-4699-af2c-2a300456b24e": "s1:83riNQ",
+        "12ba77fa-38db-4155-85f5-864a8996be58": "s1:NCYZRA",
+        "drafts.8dac0001-be5a-4699-af2c-2a300456b24e": "s1:oiMEIA",
+        "drafts.12ba77fa-38db-4155-85f5-864a8996be58": "s1:+EPpLg",
+        "3f977480-daf1-4d16-be59-7ae39b94ca73": "s1:Z5JcZg",
+        "01e4fdce-0ffb-44be-b6df-72cd22bc3abf": "s1:8hBqJQ",
+        "drafts.3f977480-daf1-4d16-be59-7ae39b94ca73": "s1:u0Pa+A",
+        "drafts.01e4fdce-0ffb-44be-b6df-72cd22bc3abf": "s1:Ih2PVA",
+        "0149fe75-1e83-41f4-b62f-3c73d823c152": "s1:9X61mw",
+        "drafts.0f633e58-d313-429f-a93a-ba77b4adc871": "s1:OsWQeg",
+        "drafts.0149fe75-1e83-41f4-b62f-3c73d823c152": "s1:wlk05g",
+        "0f633e58-d313-429f-a93a-ba77b4adc871": "s1:uQbf2Q",
+        "8ab96211-501c-45e3-9eb0-4ed1da1b50df": "s1:rs56tw",
+        "drafts.8ab96211-501c-45e3-9eb0-4ed1da1b50df": "s1:ihMPTg",
+        "311cc6a3-6e4f-4aa9-a44a-074efa0d898d": "s1:05rekw",
+        "drafts.311cc6a3-6e4f-4aa9-a44a-074efa0d898d": "s1:EYXL5g",
+        "03d08532-319f-44b6-a655-15f2e7bea8f6": "s1:65oSBA",
+        "0b55e4c4-f70b-4ca1-8afd-d09e82d8ad13": "s1:vOGXPw",
+        "drafts.03d08532-319f-44b6-a655-15f2e7bea8f6": "s1:p+derQ",
+        "drafts.0b55e4c4-f70b-4ca1-8afd-d09e82d8ad13": "s1:UnDjOg",
+        "0c9d9135-0d20-44a1-9ec1-54ea41ce84d1": "s1:CiBn2A",
+        "drafts.560e8040-0f4f-49e2-a8a3-792c2cac1a9b": "s1:81Meuw",
+        "drafts.0c9d9135-0d20-44a1-9ec1-54ea41ce84d1": "s1:pNf/qQ",
+        "560e8040-0f4f-49e2-a8a3-792c2cac1a9b": "s1:Ck/VWA",
+        "aa663f51-5c00-444c-9182-7ed8d253d5e8": "s1:VYjLyA",
+        "drafts.aa663f51-5c00-444c-9182-7ed8d253d5e8": "s1:gW/XMg",
+        "24ffc985-6d8a-42d5-a225-0df64fe2e78e": "s1:JM7I8A",
+        "drafts.002694ea-cd01-4f38-99e0-20da158b9e5c": "s1:oID7Nw",
+        "01a673ff-fd6b-4390-b1f7-fae2275f7414": "s1:G4ynPQ",
+        "002694ea-cd01-4f38-99e0-20da158b9e5c": "s1:8D/DDA",
+        "drafts.174fd1fa-0bb6-4cdd-b30c-777082917a03": "s1:pNsFNA",
+        "drafts.01a673ff-fd6b-4390-b1f7-fae2275f7414": "s1:HD+vTg",
+        "trigger-doc": "s1:uB88Sg",
+        "174fd1fa-0bb6-4cdd-b30c-777082917a03": "s1:5yf61g",
+        "drafts.trigger-doc": "s1:d2PSNw",
+        "versions.agent-rPrQAF.0334ffa7-ca4d-40c5-8829-8dc837cb3504": "s1:x3dTFA",
+        "0334ffa7-ca4d-40c5-8829-8dc837cb3504": "s1:0eekjA",
+        "drafts.0334ffa7-ca4d-40c5-8829-8dc837cb3504": "s1:BoVgkw",
+        "ca2a845e-bce4-43b3-9506-43afc7f9df15": "s1:mDIpmA",
+        "drafts.ca2a845e-bce4-43b3-9506-43afc7f9df15": "s1:pRX72Q",
+        "versions.agent-rPrQAF.ca2a845e-bce4-43b3-9506-43afc7f9df15": "s1:w1sqcA",
+        "versions.agent-rPrQAF.7b275d68-b416-4f18-8263-7971fa09a639": "s1:KHlAUA",
+        "drafts.7b275d68-b416-4f18-8263-7971fa09a639": "s1:A0Ix1A",
+        "7b275d68-b416-4f18-8263-7971fa09a639": "s1:bTcETA",
+        "drafts.A5tU6RFyBea0LYVlfNp9Sl": "s1:14jL6w",
+        "A5tU6RFyBea0LYVlfNp9Sl": "s1:QLVVbQ",
+        "versions.agent-rPrQAF.A5tU6RFyBea0LYVlfNp9Sl": "s1:v4239g",
+        "drafts.Sln1mToh8ZDMZr1ZTPhJ7Z": "s1:J+ayZA",
+        "Sln1mToh8ZDMZr1ZTPhJ7Z": "s1:zoew+w",
+        "versions.agent-rPrQAF.Sln1mToh8ZDMZr1ZTPhJ7Z": "s1:M5DEBQ",
+        "image-07cd7d7e08947f4620044cbc00b184fa17c5f157-61x68-gif": "s1:V5f9EQ",
+        "drafts.drafts.image-07cd7d7e08947f4620044cbc00b184fa17c5f157-61x68-gif": "s1:cCFiNw",
+        "drafts.image-07cd7d7e08947f4620044cbc00b184fa17c5f157-61x68-gif": "s1:+EH+yA",
+        "versions.agent-rPrQAF.656b91db-9383-4aca-b113-872ef7dc737d": "s1:qj38SQ",
+        "656b91db-9383-4aca-b113-872ef7dc737d": "s1:m7eDww",
+        "drafts.656b91db-9383-4aca-b113-872ef7dc737d": "s1:DDEeGw",
+        "Z6gQ6PfY7T5m4WQd1tV4tz": "s1:dYgGRQ",
+        "drafts.Z6gQ6PfY7T5m4WQd1tV4tz": "s1:zQf5EA",
+        "versions.agent-rPrQAF.Z6gQ6PfY7T5m4WQd1tV4tz": "s1:W5ySsA",
+        "jordan-drop-a.b361414c-3f87-42a5-84ef-40a1cc11b4a2": "s1:piJWBA",
+        "drafts.jordan-drop-a.b361414c-3f87-42a5-84ef-40a1cc11b4a2": "s1:kX9j9g",
+        "versions.agent-rPrQAF.jordan-drop-a.b361414c-3f87-42a5-84ef-40a1cc11b4a2": "s1:7slZNA",
+        "versions.agent-rPrQAF.174fd1fa-0bb6-4cdd-b30c-777082917a03": "s1:zKNxJQ",
+        "versions.agent-rPrQAF.01db1d0e-6146-4e14-931c-f9dae21a9db2": "s1:qIf5eg",
+        "versions.agent-rPrQAF.e1a3faf4-3e5d-4193-a1ad-05ab6aae8ffe": "s1:KFC56Q",
+        "versions.agent-rPrQAF.0214c09c-6892-4d00-97ed-96537158648f": "s1:0NYDsA",
+        "bbadbf93-a456-4168-888e-ecafb15a9040": "s1:IRdZCQ",
+        "drafts.bbadbf93-a456-4168-888e-ecafb15a9040": "s1:8jnc3Q",
+        "versions.agent-rPrQAF.bbadbf93-a456-4168-888e-ecafb15a9040": "s1:TG/btQ",
+        "versions.agent-rPrQAF.01e4fdce-0ffb-44be-b6df-72cd22bc3abf": "s1:g/2/3g",
+        "versions.agent-rPrQAF.0b55e4c4-f70b-4ca1-8afd-d09e82d8ad13": "s1:wE6d2w",
+        "9cf92af9-2e20-49b5-b784-df31a4116ea4": "s1:a7fEGw",
+        "drafts.9cf92af9-2e20-49b5-b784-df31a4116ea4": "s1:KKf47A",
+        "versions.agent-rPrQAF.9cf92af9-2e20-49b5-b784-df31a4116ea4": "s1:e/RGHw",
+        "versions.agent-rPrQAF.07669397-0b55-4ace-9ab4-1f8c08d28372": "s1:p2x3eA",
+        "drafts.15ec0bfd-9083-44c6-abc1-68ac58025d85": "s1:rbOhyQ",
+        "versions.agent-rPrQAF.03d08532-319f-44b6-a655-15f2e7bea8f6": "s1:6WPpow",
+        "15ec0bfd-9083-44c6-abc1-68ac58025d85": "s1:+0SL2g",
+        "versions.agent-rPrQAF.15ec0bfd-9083-44c6-abc1-68ac58025d85": "s1:qJm37A",
+        "67347eb9-d404-4e47-9085-0c24f352846b": "s1:EdejIw",
+        "drafts.67347eb9-d404-4e47-9085-0c24f352846b": "s1:fjwy0g",
+        "versions.agent-rPrQAF.67347eb9-d404-4e47-9085-0c24f352846b": "s1:94SqUA",
+        "versions.agent-rPrQAF.0149fe75-1e83-41f4-b62f-3c73d823c152": "s1:E370rg",
+        "0744c4d0-3f03-464b-a24d-dd39abf0a45b": "s1:eNRLdQ",
+        "drafts.0744c4d0-3f03-464b-a24d-dd39abf0a45b": "s1:R75dJg",
+        "versions.agent-rPrQAF.0744c4d0-3f03-464b-a24d-dd39abf0a45b": "s1:Il3rWQ",
+        "versions.agent-rPrQAF.grrm": "s1:d66Uig",
+        "drafts.grrm": "s1:MNR9sw",
+        "grrm": "s1:KbdASw",
+        "cf3ab059-0d03-48aa-9cab-b4dc3a26ec9f": "s1:e9CZFg",
+        "versions.agent-rPrQAF.cf3ab059-0d03-48aa-9cab-b4dc3a26ec9f": "s1:DiF19g",
+        "drafts.cf3ab059-0d03-48aa-9cab-b4dc3a26ec9f": "s1:dm1Vzw",
+        "versions.agent-rPrQAF.0154f201-bb53-4048-b9e3-7f7cdcad15fb": "s1:LvENEA",
+        "drafts.2b7c646e-a078-417c-8f66-2df2c5453c3d": "s1:Kg2PoA",
+        "2b7c646e-a078-417c-8f66-2df2c5453c3d": "s1:WcHwZw",
+        "versions.agent-rPrQAF.2b7c646e-a078-417c-8f66-2df2c5453c3d": "s1:qeOC9g",
+        "drafts.cf40e419-b609-4f41-9128-6315ee84e939": "s1:Yshqog",
+        "cf40e419-b609-4f41-9128-6315ee84e939": "s1:Sk2FGA",
+        "af96bc38-dcd1-456b-b65f-a56530140195": "s1:c0ytBg",
+        "versions.agent-rPrQAF.cf40e419-b609-4f41-9128-6315ee84e939": "s1:7Ojl8g",
+        "versions.agent-rPrQAF.af96bc38-dcd1-456b-b65f-a56530140195": "s1:1dCIow",
+        "drafts.af96bc38-dcd1-456b-b65f-a56530140195": "s1:8Eq7IQ",
+        "foo-author": "s1:WCepIA",
+        "drafts.foo-author": "s1:mBrb3A",
+        "947b0c69-726b-4507-be7b-ee8fd84ec6f1": "s1:+6EX/w",
+        "versions.agent-rPrQAF.foo-author": "s1:XuHitQ",
+        "drafts.947b0c69-726b-4507-be7b-ee8fd84ec6f1": "s1:AXn1Tg",
+        "versions.agent-rPrQAF.947b0c69-726b-4507-be7b-ee8fd84ec6f1": "s1:oHThAg",
+        "versions.agent-rPrQAF.aa663f51-5c00-444c-9182-7ed8d253d5e8": "s1:82rk0w",
+        "eeab9530-edfa-461e-b056-825aee994d34": "s1:EpEkwQ",
+        "drafts.eeab9530-edfa-461e-b056-825aee994d34": "s1:SUR4ng",
+        "versions.agent-rPrQAF.eeab9530-edfa-461e-b056-825aee994d34": "s1:5jPyAA",
+        "3ea7284c-54c2-4a71-b831-88d720dffe4a": "s1:Kb9Tjw",
+        "drafts.3ea7284c-54c2-4a71-b831-88d720dffe4a": "s1:1DcW0Q",
+        "versions.agent-rPrQAF.3ea7284c-54c2-4a71-b831-88d720dffe4a": "s1:bLym8Q",
+        "9364f20e-9592-4f07-9d7c-430e45ed13b8": "s1:dkVdqg",
+        "versions.agent-rPrQAF.foo-bar": "s1:SWa0Ig",
+        "drafts.9364f20e-9592-4f07-9d7c-430e45ed13b8": "s1:MtdZWw",
+        "versions.agent-rPrQAF.9364f20e-9592-4f07-9d7c-430e45ed13b8": "s1:78buNA",
+        "c0d933ff-420a-445b-ad5e-5761c947649f": "s1:zl9umA",
+        "versions.agent-rPrQAF.c0d933ff-420a-445b-ad5e-5761c947649f": "s1:ZMhDcA",
+        "drafts.c0d933ff-420a-445b-ad5e-5761c947649f": "s1:w+zIxQ",
+        "3c065b1e-5d77-490e-aa34-3a860c880b36": "s1:IBNddg",
+        "drafts.3c065b1e-5d77-490e-aa34-3a860c880b36": "s1:8WkGwg",
+        "versions.agent-rPrQAF.3c065b1e-5d77-490e-aa34-3a860c880b36": "s1:33TfmA",
+        "3bd2f464-6eba-4cc1-9adb-d2a97ea4680c": "s1:N15skg",
+        "drafts.3bd2f464-6eba-4cc1-9adb-d2a97ea4680c": "s1:rqYYuQ",
+        "versions.agent-rPrQAF.3bd2f464-6eba-4cc1-9adb-d2a97ea4680c": "s1:kICTtg",
+        "453ccfc8-da94-4573-aa9c-8253b0773a21": "s1:Ud0Ixg",
+        "drafts.453ccfc8-da94-4573-aa9c-8253b0773a21": "s1:CBbOJQ",
+        "versions.agent-rPrQAF.453ccfc8-da94-4573-aa9c-8253b0773a21": "s1:tgpl0Q",
+        "9d9ebac9-5c28-46e3-a659-6acab20fc20c": "s1:yMkO5g",
+        "drafts.9d9ebac9-5c28-46e3-a659-6acab20fc20c": "s1:BA8Uqg",
+        "versions.agent-rPrQAF.9d9ebac9-5c28-46e3-a659-6acab20fc20c": "s1:HOZnLA",
+        "57d08918-8e5d-4f28-94f1-7d8deabcd3f3": "s1:Q02BrQ",
+        "versions.agent-rPrQAF.57d08918-8e5d-4f28-94f1-7d8deabcd3f3": "s1:nih1aA",
+        "1f933beb-2ff1-405b-823c-75317dbd55fc": "s1:PvUmLQ",
+        "drafts.57d08918-8e5d-4f28-94f1-7d8deabcd3f3": "s1:ccwY1A",
+        "drafts.1f933beb-2ff1-405b-823c-75317dbd55fc": "s1:e8mjDg",
+        "versions.agent-rPrQAF.1f933beb-2ff1-405b-823c-75317dbd55fc": "s1:JQ6w3g",
+        "fd330e83-5162-408c-bd14-a191da79974e": "s1:kPdH1A",
+        "drafts.fd330e83-5162-408c-bd14-a191da79974e": "s1:B3Thlg",
+        "versions.agent-rPrQAF.fd330e83-5162-408c-bd14-a191da79974e": "s1:BNkARA",
+        "4cccbafe-6143-49eb-b8c1-e4437c7b9a6a": "s1:QAsOeQ",
+        "drafts.4cccbafe-6143-49eb-b8c1-e4437c7b9a6a": "s1:zLe9uA",
+        "versions.agent-rPrQAF.4cccbafe-6143-49eb-b8c1-e4437c7b9a6a": "s1:f0j5nA",
+        "840b23c3-bf01-4b1e-abf0-48deaa3f3086": "s1:gnNguQ",
+        "drafts.840b23c3-bf01-4b1e-abf0-48deaa3f3086": "s1:+SVygw",
+        "versions.agent-rPrQAF.840b23c3-bf01-4b1e-abf0-48deaa3f3086": "s1:8ofgIA",
+        "drafts.20d5d13c-c414-4211-9dfe-a4eedda9acdf": "s1:opnmCA",
+        "20d5d13c-c414-4211-9dfe-a4eedda9acdf": "s1:GeCqVw",
+        "drafts.drafts.20d5d13c-c414-4211-9dfe-a4eedda9acdf": "s1:hRWG4Q",
+        "versions.agent-rPrQAF.drafts.20d5d13c-c414-4211-9dfe-a4eedda9acdf": "s1:uWy64A",
+        "versions.agent-rPrQAF.20d5d13c-c414-4211-9dfe-a4eedda9acdf": "s1:iIRfUA",
+        "0608e654-d272-4551-ac55-a6ddd9a7369e": "s1:O+HApg",
+        "drafts.0608e654-d272-4551-ac55-a6ddd9a7369e": "s1:zqY+KQ",
+        "versions.agent-rPrQAF.0608e654-d272-4551-ac55-a6ddd9a7369e": "s1:eW2Hkg",
+        "drafts.bc3b845a-1e71-4893-a137-a793a96d2b37": "s1:/K1NcA",
+        "bc3b845a-1e71-4893-a137-a793a96d2b37": "s1:YNB64Q",
+        "versions.agent-rPrQAF.bc3b845a-1e71-4893-a137-a793a96d2b37": "s1:U1G2xA",
+        "drafts.jordan-drop-a.0154f201-bb53-4048-b9e3-7f7cdcad15fb": "s1:D6JMvQ",
+        "jordan-drop-a.0154f201-bb53-4048-b9e3-7f7cdcad15fb": "s1:+56cIA",
+        "versions.agent-rPrQAF.jordan-drop-a.0154f201-bb53-4048-b9e3-7f7cdcad15fb": "s1:YI4fDA",
+        "a0a6c8ff-56ee-4f2f-84e6-25db3a135c8b": "s1:82kuKQ",
+        "drafts.a0a6c8ff-56ee-4f2f-84e6-25db3a135c8b": "s1:Qreh/Q",
+        "versions.agent-rPrQAF.a0a6c8ff-56ee-4f2f-84e6-25db3a135c8b": "s1:anJbVw",
+        "6ff8e386-710a-4ccd-9e91-1fae9e27ebd3": "s1:8U5cmA",
+        "drafts.6ff8e386-710a-4ccd-9e91-1fae9e27ebd3": "s1:fWT1dA",
+        "c13f39b7-9530-4e33-a3d2-622976ecb058": "s1:L6AXmw",
+        "drafts.c13f39b7-9530-4e33-a3d2-622976ecb058": "s1:bemKKQ",
+        "versions.agent-rPrQAF.6ff8e386-710a-4ccd-9e91-1fae9e27ebd3": "s1:P9fSzQ",
+        "versions.agent-rPrQAF.c13f39b7-9530-4e33-a3d2-622976ecb058": "s1:X/1xOw",
+        "a3670715-6b5d-4535-a8ae-71771df33255": "s1:efv/gw",
+        "drafts.a3670715-6b5d-4535-a8ae-71771df33255": "s1:JyQ7qA",
+        "versions.agent-rPrQAF.a3670715-6b5d-4535-a8ae-71771df33255": "s1:u+vniQ",
+        "1f75a2e3-8e20-4786-b385-2f6b2ce73e0e": "s1:4epC/g",
+        "drafts.1f75a2e3-8e20-4786-b385-2f6b2ce73e0e": "s1:gXJPXg",
+        "versions.agent-rPrQAF.1f75a2e3-8e20-4786-b385-2f6b2ce73e0e": "s1:ZoZqCA",
+        "5b4351bc-0366-41bd-9b8c-b9ecea2bc34d": "s1:qjucVg",
+        "drafts.5b4351bc-0366-41bd-9b8c-b9ecea2bc34d": "s1:c0On5g",
+        "versions.agent-rPrQAF.5b4351bc-0366-41bd-9b8c-b9ecea2bc34d": "s1:w6VO+A",
+        "0ae4f72b-6571-4755-8b08-674bbb929a80": "s1:XiJB6Q",
+        "drafts.0ae4f72b-6571-4755-8b08-674bbb929a80": "s1:dwE9hg",
+        "versions.agent-rPrQAF.0ae4f72b-6571-4755-8b08-674bbb929a80": "s1:InDHjA",
+        "parentId": "s1:puRjZw",
+        "drafts.parentId": "s1:pRR4wQ",
+        "versions.agent-rPrQAF.parentId": "s1:bbDh9w",
+        "1d88565f-25aa-4732-9de5-b806f60e3d3c": "s1:sm2iFA",
+        "drafts.1d88565f-25aa-4732-9de5-b806f60e3d3c": "s1:hcVtGA",
+        "versions.agent-rPrQAF.1d88565f-25aa-4732-9de5-b806f60e3d3c": "s1:x1Haqw",
+        "972d5567-9abe-4065-99db-e4afff327735": "s1:MtyfHA",
+        "429fc5c2-ec3b-4744-9cf1-08ddf7a972b8": "s1:LgQU1Q",
+        "drafts.972d5567-9abe-4065-99db-e4afff327735": "s1:Bq0oug",
+        "versions.agent-rPrQAF.972d5567-9abe-4065-99db-e4afff327735": "s1:CGLLjQ",
+        "drafts.429fc5c2-ec3b-4744-9cf1-08ddf7a972b8": "s1:bE6hBA",
+        "versions.agent-rPrQAF.429fc5c2-ec3b-4744-9cf1-08ddf7a972b8": "s1:YQ4J8w",
+        "drafts.f35f91d6-1c46-4173-a32f-29042c40124f": "s1:4Uo66A",
+        "f35f91d6-1c46-4173-a32f-29042c40124f": "s1:LDkXew",
+        "versions.agent-rPrQAF.f35f91d6-1c46-4173-a32f-29042c40124f": "s1:RP8Tag",
+        "drafts.jrr-tolkien": "s1:k19/cw",
+        "jrr-tolkien": "s1:0V591g",
+        "versions.agent-rPrQAF.jrr-tolkien": "s1:pUaPXg",
+        "4ae98a12-e826-43d1-ac0a-8ff3f680ebed": "s1:3PKuzg",
+        "drafts.4ae98a12-e826-43d1-ac0a-8ff3f680ebed": "s1:GGuYzg",
+        "versions.agent-rPrQAF.4ae98a12-e826-43d1-ac0a-8ff3f680ebed": "s1:BIX/HQ",
+        "author1": "s1:lkl/Lw",
+        "drafts.author1": "s1:a09Buw",
+        "versions.agent-rPrQAF.author1": "s1:WqCtOw",
+        "drafts.bce10eec-8f3d-44fc-9275-494917490439": "s1:6+StxA",
+        "bce10eec-8f3d-44fc-9275-494917490439": "s1:H1MkcA",
+        "versions.agent-rPrQAF.bce10eec-8f3d-44fc-9275-494917490439": "s1:BzMlvg",
+        "e9e22e4b-ecbb-402d-b656-100fe50b153e": "s1:AjbTrA",
+        "versions.agent-rPrQAF.e9e22e4b-ecbb-402d-b656-100fe50b153e": "s1:QnYD9g",
+        "drafts.e9e22e4b-ecbb-402d-b656-100fe50b153e": "s1:eXeOCw",
+        "0f4312f8-b278-4713-ac71-730ec1392804": "s1:S6IVDg",
+        "drafts.0f4312f8-b278-4713-ac71-730ec1392804": "s1:eUz9tw",
+        "versions.agent-rPrQAF.0f4312f8-b278-4713-ac71-730ec1392804": "s1:494jXQ",
+        "drafts.985e66d6-164c-4436-bf6f-e7a14c719eda": "s1:5L3ffg",
+        "985e66d6-164c-4436-bf6f-e7a14c719eda": "s1:uyrlMw",
+        "versions.agent-rPrQAF.985e66d6-164c-4436-bf6f-e7a14c719eda": "s1:tMUz5Q",
+        "drafts.demo-vision-author-1": "s1:OrHkjQ",
+        "demo-vision-author-1": "s1:gQ6D0Q",
+        "versions.agent-rPrQAF.demo-vision-author-1": "s1:YP01+w",
+        "drafts.drill-poc-carol": "s1:CbZH0Q",
+        "drill-poc-carol": "s1:9D71vw",
+        "versions.agent-rPrQAF.drill-poc-carol": "s1:TwnY1w",
+        "afb2ffda-b411-40af-b518-ebbc93c93413": "s1:7+0fhA",
+        "drafts.afb2ffda-b411-40af-b518-ebbc93c93413": "s1:479Odg",
+        "0252b2ee-2aa8-4bb2-b9f8-372825d2064b": "s1:6W5WMw",
+        "versions.agent-rPrQAF.afb2ffda-b411-40af-b518-ebbc93c93413": "s1:7JpYxw",
+        "drafts.0252b2ee-2aa8-4bb2-b9f8-372825d2064b": "s1:f8PuOA",
+        "versions.agent-rPrQAF.0252b2ee-2aa8-4bb2-b9f8-372825d2064b": "s1:7tJPVA",
+        "80e12d49-4146-4d57-b61b-706c82466fd8": "s1:dj5JJA",
+        "drafts.80e12d49-4146-4d57-b61b-706c82466fd8": "s1:0pe9IA",
+        "versions.agent-rPrQAF.80e12d49-4146-4d57-b61b-706c82466fd8": "s1:cZI3KQ",
+        "78fde439-fcf2-40f5-9a04-66b538e7dd3d": "s1:rrAqMg",
+        "drafts.78fde439-fcf2-40f5-9a04-66b538e7dd3d": "s1:QT5w9Q",
+        "versions.agent-rPrQAF.78fde439-fcf2-40f5-9a04-66b538e7dd3d": "s1:i3ZmsQ",
+        "drafts.drafts.03d08532-319f-44b6-a655-15f2e7bea8f6": "s1:fALELQ",
+        "versions.agent-rPrQAF.drafts.03d08532-319f-44b6-a655-15f2e7bea8f6": "s1:TwWEaA",
+        "vrtBoxAuthor1786443892": "s1:nvXpxA",
+        "versions.agent-rPrQAF.vrtBoxAuthor1786443892": "s1:8qY9jA",
+        "drafts.vrtBoxAuthor1786443892": "s1:UJMbqQ",
+        "versions.agent-rPrQAF.455f06d4-12b5-4cf0-9489-a1a56e5877f5": "s1:1vb++g",
+        "drafts.455f06d4-12b5-4cf0-9489-a1a56e5877f5": "s1:dTRpZQ",
+        "455f06d4-12b5-4cf0-9489-a1a56e5877f5": "s1:9arn+w",
+        "0c54af6f-1f64-4a6b-b3a5-fd2ccff9e6d6": "s1:zFCiVw",
+        "drafts.0c54af6f-1f64-4a6b-b3a5-fd2ccff9e6d6": "s1:ZNMWog",
+        "drafts.1621fd54-0d2d-46b2-ac08-002c541d7e99": "s1:8dn7wQ",
+        "5c60eb63-aef4-4c2d-9d1b-24707ab18258": "s1:Mrj0YQ",
+        "1621fd54-0d2d-46b2-ac08-002c541d7e99": "s1:f1Aupw",
+        "drafts.5c60eb63-aef4-4c2d-9d1b-24707ab18258": "s1:U8F9sA",
+        "drafts.062912c8-80c0-4245-b6a2-ebb8258b4fbe": "s1:WoAmlQ",
+        "drafts.20ea004c-b9b0-44b5-8c9e-b00e365b3b13": "s1:maStug",
+        "20ea004c-b9b0-44b5-8c9e-b00e365b3b13": "s1:BN/0QA",
+        "drafts.8b9e4109-ca44-45e7-82a8-b0c946811dbe": "s1:rcGQRw",
+        "restricted.2e7d3498-7c2d-4e9c-9fe5-50c8340fef63": "s1:4qcuVQ",
+        "8b9e4109-ca44-45e7-82a8-b0c946811dbe": "s1:SmxVHw",
+        "drafts.restricted.2e7d3498-7c2d-4e9c-9fe5-50c8340fef63": "s1:mt2OQg",
+        "41583d1d-7e38-4cac-881e-f4280c60497a": "s1:g72Y/g",
+        "c82f2cab-c14a-41e2-bdaa-546167e57068": "s1:zEl51Q",
+        "drafts.41583d1d-7e38-4cac-881e-f4280c60497a": "s1:DeoX/Q",
+        "drafts.c82f2cab-c14a-41e2-bdaa-546167e57068": "s1:6yXXDg",
+        "bcba431d-d04c-4fd8-ad05-b7ec688597b1": "s1:ngRmCA",
+        "drafts.5e38dfbd-6073-44bd-9a07-35fd347899f1": "s1:1TxgQg",
+        "5e38dfbd-6073-44bd-9a07-35fd347899f1": "s1:YS4O7g",
+        "drafts.bcba431d-d04c-4fd8-ad05-b7ec688597b1": "s1:8prRsA",
+        "rp-1112-t1": "s1:GQvcJw",
+        "capybara": "s1:2VWSlQ",
+        "drafts.capybara": "s1:RwJF8w",
+        "drafts.rp-1112-t1": "s1:+wK7Ew",
+        "ce3e2c9a-38b2-48f7-b0bd-5d9d1606cd82": "s1:ziWIew",
+        "0d9e07ab-266b-484b-a66f-59f48dca9a77": "s1:S+Xo7A",
+        "drafts.ce3e2c9a-38b2-48f7-b0bd-5d9d1606cd82": "s1:lUl/BQ",
+        "drafts.0d9e07ab-266b-484b-a66f-59f48dca9a77": "s1:EWLgEw",
+        "versions.agent-rPrQAF.capybara": "s1:j/9Ldg",
+        "versions.agent-rPrQAF.5e38dfbd-6073-44bd-9a07-35fd347899f1": "s1:yAE0Xw",
+        "drafts.6421a924-ad49-421b-b756-48cb29a42a41": "s1:zUJxlw",
+        "6421a924-ad49-421b-b756-48cb29a42a41": "s1:8b464A",
+        "versions.agent-rPrQAF.6421a924-ad49-421b-b756-48cb29a42a41": "s1:4GtaBg",
+        "versions.agent-rPrQAF.1a26bf72-2f17-429c-84aa-5c03d0e2b929": "s1:itwcMA",
+        "1a26bf72-2f17-429c-84aa-5c03d0e2b929": "s1:kQSrmQ",
+        "drafts.1a26bf72-2f17-429c-84aa-5c03d0e2b929": "s1:/n7yjw",
+        "6db1cf15-d1de-4331-a16e-91f7e27d8e02": "s1:W3Mc4A",
+        "drafts.6db1cf15-d1de-4331-a16e-91f7e27d8e02": "s1:wDeEGw",
+        "drafts.drafts.1cfbb8f7-06c5-4a1a-8cbe-37d4c8b35286": "s1:lCuoYw",
+        "versions.agent-rPrQAF.1cfbb8f7-06c5-4a1a-8cbe-37d4c8b35286": "s1:3QRcNQ",
+        "drafts.1cfbb8f7-06c5-4a1a-8cbe-37d4c8b35286": "s1:HBevsw",
+        "1cfbb8f7-06c5-4a1a-8cbe-37d4c8b35286": "s1:o1D0Sg",
+        "versions.agent-rPrQAF.drafts.1cfbb8f7-06c5-4a1a-8cbe-37d4c8b35286": "s1:cn7guQ",
+        "b8210ba9-79e4-4f8d-944a-524ed6c8b5dc": "s1:NCMN6w",
+        "drafts.4d8a58d2-d66e-4e08-aef0-bff6f106e379": "s1:2ej/Hw",
+        "4d8a58d2-d66e-4e08-aef0-bff6f106e379": "s1:JJvm3g",
+        "drafts.b8210ba9-79e4-4f8d-944a-524ed6c8b5dc": "s1:W0Cprg",
+        "versions.agent-rPrQAF.29b49d27-4eb3-4b05-a950-d0aba160eef4-does-not-exist": "s1:MtFvuA",
+        "drafts.29b49d27-4eb3-4b05-a950-d0aba160eef4-does-not-exist": "s1:5qr4qw",
+        "29b49d27-4eb3-4b05-a950-d0aba160eef4-does-not-exist": "s1:yWl9Sw",
+        "48b1eaab-5c75-4146-ad7e-1e370ef0dfc5": "s1:h5Y0IA",
+        "drafts.48b1eaab-5c75-4146-ad7e-1e370ef0dfc5": "s1:N/tefA",
+        "drafts.3c5f4f9a-e1cb-4a3e-91ed-6b925f0f3ca1": "s1:oKhJEA",
+        "3c5f4f9a-e1cb-4a3e-91ed-6b925f0f3ca1": "s1:0MKauA",
+        "drafts.19c9b064-f101-4c62-ad47-7cb523cc2da2": "s1:jZBBkg",
+        "versions.agent-rPrQAF.19c9b064-f101-4c62-ad47-7cb523cc2da2": "s1:ZUNP+A",
+        "19c9b064-f101-4c62-ad47-7cb523cc2da2": "s1:P9k+PQ",
+        "drafts.079ed7a0-80ac-49b8-aa6a-4843b02843b1": "s1:IPu6HQ",
+        "079ed7a0-80ac-49b8-aa6a-4843b02843b1": "s1:pu2mTA",
+        "1eb6dd2d-4e97-4aad-88cf-b12b79d26896": "s1:HWTTRA",
+        "drafts.1eb6dd2d-4e97-4aad-88cf-b12b79d26896": "s1:I2dOSg",
+        "foo.2e7d3498-7c2d-4e9c-9fe5-50c8340fef63": "s1:GKWJYQ",
+        "drafts.foo.2e7d3498-7c2d-4e9c-9fe5-50c8340fef63": "s1:iGHVnA",
+        "drafts.image-8dcc1391e06e4b4acbdc6bbf2e8c8588d537cbb8-4896x3264-jpg": "s1:nEIs/Q",
+        "versions.agent-rPrQAF.image-8dcc1391e06e4b4acbdc6bbf2e8c8588d537cbb8-4896x3264-jpg": "s1:a3J87g",
+        "image-8dcc1391e06e4b4acbdc6bbf2e8c8588d537cbb8-4896x3264-jpg": "s1:Xl1hwA",
+        "versions.agent-rPrQAF.image-ace9b55070990015b0d961f30d936c1e60c8ad8a-333x500-jpg": "s1:11rVSg",
+        "image-ace9b55070990015b0d961f30d936c1e60c8ad8a-333x500-jpg": "s1:c17SUA",
+        "drafts.image-ace9b55070990015b0d961f30d936c1e60c8ad8a-333x500-jpg": "s1:n8zjKA"
+      },
+      "slugs": {
+        "no-such-slug": "s1:Tcxmrg",
+        "some-slug-4": "s1:07vTGg"
+      },
+      "allTypes": [
+        "actionsTest",
+        "allFieldsGroupHidden",
+        "allNativeInputComponents",
+        "allTypes",
+        "annotationCustomTypeTest",
+        "arrayCapabilities",
+        "arrayModalWidthReproTest",
+        "arrayOfStringsGridCustomInputTest",
+        "arraysTest",
+        "article",
+        "author",
+        "blocksTest",
+        "book",
+        "booleansTest",
+        "circularCrossDatasetReferenceTest",
+        "codeTest",
+        "collapsibleObjects",
+        "collectionEntry",
+        "commentsDebug",
+        "conditionalFieldsTest",
+        "conditionalFieldsWithPathTest",
+        "conditionalFieldset",
+        "crossDatasetReferenceTest",
+        "customInputsTest",
+        "customInputsWithPatches",
+        "customPlugins",
+        "dateTest",
+        "dateTimeValidation",
+        "dateValidation",
+        "datetimeTest",
+        "decorations",
+        "deprecatedDocument",
+        "deprecatedFields",
+        "documentActionsTest",
+        "documentFormOnlyArticle",
+        "documentI18nTest",
+        "documentWithHoistedPt",
+        "domAttrsAsFieldNames",
+        "edenNewsletter",
+        "edenStory",
+        "emailsTest",
+        "empty",
+        "entryCollection",
+        "fieldActionsTest",
+        "fieldComponentsTest",
+        "fieldGroups",
+        "fieldGroupsDefault",
+        "fieldGroupsMany",
+        "fieldGroupsWithFieldsets",
+        "fieldGroupsWithFieldsetsHidden",
+        "fieldGroupsWithI18n",
+        "fieldGroupsWithValidation",
+        "fieldValidationInferReproDoc",
+        "fieldsetsTest",
+        "filesTest",
+        "formBuilderReproDoc",
+        "formComponentsApi",
+        "formInputTest",
+        "formulariesModule",
+        "galeriFoto",
+        "gallery",
+        "geopointTest",
+        "globalDocumentReferenceTest",
+        "hakkimizda",
+        "hiddenCurrentUserTest",
+        "hiddenFieldValidationTest",
+        "house",
+        "imagesTest",
+        "initialFullScreenPTE",
+        "initialValuesTest",
+        "inspectorsTest",
+        "internationalizedArrayTest",
+        "invalidPreviews",
+        "issue4516AddFilterIntentLink",
+        "languageFilterDebug",
+        "lazyComponents",
+        "liveQueryPlaygroundDoc",
+        "localesStudioLocalizationTest",
+        "locationResolverTest",
+        "longValidationTest",
+        "manyEditors",
+        "manyFieldsTest",
+        "manyViews",
+        "media.folder",
+        "media.tag",
+        "navbarSettings",
+        "nestedArrayInsertMenuRepro",
+        "newsletterCard",
+        "newsletterEdition",
+        "noScheduledDrafts",
+        "noTitleField",
+        "noVersionsLiveEdit",
+        "numbersTest",
+        "objectsDebug",
+        "objectsTest",
+        "pageDocRepro",
+        "pangolinProduct",
+        "patchOnMountDebug",
+        "person",
+        "playlist",
+        "pokemon",
+        "pokemonAbility",
+        "pokemonGeneration",
+        "pokemonType",
+        "poppers",
+        "post",
+        "presence",
+        "presenceDebug",
+        "previewImageUrlTest",
+        "previewMediaTest",
+        "previewSelectBugRepro",
+        "ptReference",
+        "pt_allTheBellsAndWhistles",
+        "pt_annotationValidationFocus",
+        "pt_customBlockEditors",
+        "pt_customMarkersTest",
+        "pt_customWithDefaults",
+        "radio",
+        "readOnlyTest",
+        "recursiveArraysTest",
+        "recursiveDocument",
+        "recursiveObjectTest",
+        "recursivePopoverTest",
+        "referenceTest",
+        "referenceWithKeyContainingPeriods",
+        "releasesOnly",
+        "removeRestoreActionTest",
+        "reservedKeywordsTest",
+        "restrictedVersionActionsTest",
+        "sanity.assist.schemaType.annotations",
+        "sanity.fileAsset",
+        "sanity.imageAsset",
+        "sanity.previewUrlSecret",
+        "sanity.previewUrlShareAccess",
+        "sapp1454",
+        "sapp2402",
+        "sapp3289Block",
+        "sapp3290Block",
+        "sapp3571doc",
+        "scrollBug",
+        "sdkProjectionNoSuspense",
+        "sectionDocRepro",
+        "shadowRootFreezeRepro",
+        "simpleArrayOfObjects",
+        "simpleBlock",
+        "simpleReferences",
+        "singletonCampaign",
+        "slugsTest",
+        "species",
+        "standaloneTableDoc",
+        "stringsTest",
+        "system.group",
+        "system.release",
+        "system.retention",
+        "system.schema",
+        "system.variant",
+        "textsTest",
+        "thesis",
+        "todo",
+        "translation.metadata",
+        "twoArgValidationRepro",
+        "typeWithNoToplevelStrings",
+        "ui5ReviewAllFields",
+        "ui5ReviewStates",
+        "ui5ReviewTravelDestination",
+        "ui5ReviewTravelOperator",
+        "uploadsTest",
+        "urlsTest",
+        "v3-example1",
+        "v3-validation",
+        "validationCI",
+        "validationSuggestedFixes",
+        "validationTest",
+        "variantConditions",
+        "variantsOnly",
+        "videosTest",
+        "virtualizationDebug",
+        "virtualizationInObject",
+        "vision.sharedQuery",
+        "withObjectFieldsOrder"
+      ]
+    },
+    "pokedex": {
+      "anyTag": "s1:dmg4pA",
+      "types": {
+        "pokemonMove": "s1:YWE1tQ",
+        "pokemonType": "s1:x4ndDQ",
+        "pokemonGeneration": "s1:/Hydcg",
+        "sanity.imageAsset": "s1:BeByIw",
+        "pokemonAbility": "s1:xiP1IA",
+        "pokemon": "s1:82h/SA",
+        "sanity.imageDimensions": "s1:Iy6s9A",
+        "pokemon_generation_2": "s1:HjLwWQ",
+        "pokemon_generation_1": "s1:3yn4pw"
+      },
+      "ids": {
+        "pokemon_type_dark": "s1:2ggiCQ",
+        "drafts.pokemon_type_dark": "s1:8B2/Fg",
+        "image-00162a1af96043bc26c70bbab24a4ee2c05c50cc-96x96-png": "s1:uAZ65w",
+        "drafts.image-00162a1af96043bc26c70bbab24a4ee2c05c50cc-96x96-png": "s1:axiHGQ",
+        "drafts.pokemon_type_bug": "s1:jQBu/Q",
+        "pokemon_type_bug": "s1:4H8Nzg",
+        "pokemon_type_dragon": "s1:6m1lFA",
+        "drafts.pokemon_type_dragon": "s1:mZRy9Q",
+        "pokemon_type_grass": "s1:0JowbA",
+        "pokemon_type_psychic": "s1:kt8ztw",
+        "drafts.pokemon_type_psychic": "s1:Q2wcKg",
+        "drafts.pokemon_type_grass": "s1:2v5BiA",
+        "pokemon_type_ghost": "s1:nBttjA",
+        "drafts.pokemon_type_ghost": "s1:/MmXwQ",
+        "drafts.pokemon_generation_1": "s1:dCxhDQ",
+        "pokemon_generation_1": "s1:00XJoQ",
+        "pokemon_generation_2": "s1:Es4LXg",
+        "pokemon_move_absorb": "s1:p4tfGg",
+        "drafts.pokemon_generation_2": "s1:6DWaDA",
+        "drafts.image-00099debfd6303a675ad9c951433ea96193ccec2-475x475-png": "s1:2jDhmw",
+        "image-00099debfd6303a675ad9c951433ea96193ccec2-475x475-png": "s1:ctmmAg",
+        "pokemon_ability_aerilate": "s1:C1RKOQ",
+        "drafts.pokemon_ability_aerilate": "s1:sj0ujg",
+        "drafts.pokemon_generation_9": "s1:Tye4IQ",
+        "pokemon_generation_9": "s1:JBekEw",
+        "pokemon_species_accelgor": "s1:3ZM/cA",
+        "drafts.pokemon_species_abomasnow": "s1:o0XJtA",
+        "pokemon_species_abomasnow": "s1:qYJ7DA",
+        "drafts.pokemon_species_accelgor": "s1:m4ytJQ",
+        "image-1a91ac951284404a7f80fd6749a5ecef529e75e3-475x475-png": "s1:q86JVw",
+        "drafts.image-9b1e9d51565c8dd1206ee7578bd160201daad0a2-475x475-png": "s1:VTt49g",
+        "image-9b1e9d51565c8dd1206ee7578bd160201daad0a2-475x475-png": "s1:rhZquQ",
+        "image-810f6812d3f2f3f02323f65b8c07d6ff817a3117-475x475-png": "s1:9jhLRw",
+        "drafts.image-1a91ac951284404a7f80fd6749a5ecef529e75e3-475x475-png": "s1:qE7WgA",
+        "drafts.image-810f6812d3f2f3f02323f65b8c07d6ff817a3117-475x475-png": "s1:xTTIJA",
+        "drafts.pokemon_type_water": "s1:yhUUMA",
+        "pokemon_type_water": "s1:WOkP/w",
+        "pokemon_ability_adaptability": "s1:V3GvMg",
+        "drafts.pokemon_ability_adaptability": "s1:P1hYHA",
+        "pokemon_generation_6": "s1:yF5+9Q",
+        "pokemon_generation_4": "s1:8KlW0w",
+        "drafts.pokemon_generation_4": "s1:koICyQ",
+        "drafts.pokemon_generation_6": "s1:ccNrGg",
+        "drafts.pokemon_generation_3": "s1:o2bH6Q",
+        "pokemon_generation_3": "s1:Hai0Rg",
+        "pokemon_generation_5": "s1:ZF7dHA",
+        "drafts.pokemon_generation_5": "s1:dh5vHA",
+        "pokemon_generation_8": "s1:X6M2Dw",
+        "drafts.pokemon_generation_8": "s1:EMTExA",
+        "pokemon_generation_7": "s1:Ez9n8g",
+        "drafts.pokemon_generation_7": "s1:1l2DiQ",
+        "drafts.pokemon_species_abra": "s1:OvU6Bw",
+        "pokemon_species_abra": "s1:OY5LSQ",
+        "drafts.pokemon_species_shelmet": "s1:04F5RA",
+        "pokemon_species_shelmet": "s1:LaCLaw",
+        "drafts.pokemon_species_snover": "s1:/k4B6w",
+        "pokemon_species_snover": "s1:3fHIgA",
+        "pokemon_species_doublade": "s1:ymVFHw",
+        "drafts.pokemon_species_doublade": "s1:7jnQuQ",
+        "pokemon_species_lairon": "s1:wZdiOg",
+        "drafts.pokemon_species_lairon": "s1:BzalVg",
+        "pokemon_species_kadabra": "s1:xsUv2Q",
+        "pokemon_species_milcery": "s1:gmUCOw",
+        "drafts.pokemon_species_kadabra": "s1:CM4uYw",
+        "drafts.pokemon_species_milcery": "s1:PUIHGg",
+        "pokemon_species_swablu": "s1:FBD+jg",
+        "pokemon_species_aipom": "s1:Op0ygw",
+        "drafts.pokemon_species_swablu": "s1:fSQaaA",
+        "drafts.pokemon_species_aipom": "s1:S0loaw",
+        "drafts.pokemon_species_foongus": "s1:KXAFYw",
+        "pokemon_species_foongus": "s1:IpK3Gg",
+        "pokemon_species_flaaffy": "s1:QYsCCQ",
+        "drafts.pokemon_species_flaaffy": "s1:OILwjQ",
+        "pokemon_species_primeape": "s1:kHtHnw",
+        "drafts.pokemon_species_primeape": "s1:5p4rUQ",
+        "pokemon_species_applin": "s1:sbrXXA",
+        "drafts.pokemon_species_applin": "s1:Fhh0sA",
+        "pokemon_species_dewpider": "s1:0EiE3w",
+        "drafts.pokemon_species_dewpider": "s1:XAtFRA",
+        "pokemon_species_ekans": "s1:d6r/Tw",
+        "drafts.pokemon_species_ekans": "s1:YeTxLQ",
+        "pokemon_species_dolliv": "s1:+uPrcg",
+        "pokemon_species_growlithe": "s1:oN9w5Q",
+        "drafts.pokemon_species_dolliv": "s1:uaHAZg",
+        "drafts.pokemon_species_growlithe": "s1:MMSkwQ",
+        "pokemon_species_duraludon": "s1:0XUZaQ",
+        "drafts.pokemon_species_duraludon": "s1:ZUvZDg",
+        "pokemon_species_archen": "s1:b9na4A",
+        "drafts.pokemon_species_archen": "s1:DFmZEA",
+        "pokemon_species_frigibax": "s1:xzVRxA",
+        "drafts.pokemon_species_frigibax": "s1:za0j6A",
+        "pokemon_species_spinarak": "s1:qzbayQ",
+        "drafts.pokemon_species_spinarak": "s1:3uqDNA",
+        "pokemon_species_anorith": "s1:ZPxDaQ",
+        "drafts.pokemon_species_anorith": "s1:B9XcSw",
+        "pokemon_species_charcadet": "s1:OSa14A",
+        "drafts.pokemon_species_charcadet": "s1:WCQXqQ",
+        "pokemon_species_spritzee": "s1:UOh6qw",
+        "drafts.pokemon_species_spritzee": "s1:Qbrf4Q",
+        "pokemon_species_amaura": "s1:KgZAtQ",
+        "drafts.pokemon_species_amaura": "s1:H+JHuQ",
+        "pokemon_species_bergmite": "s1:0qc/Tw",
+        "drafts.pokemon_species_bergmite": "s1:O/cTBg",
+        "drafts.pokemon_species_marill": "s1:C3/PFw",
+        "pokemon_species_marill": "s1:OpBLcw",
+        "pokemon_species_shuppet": "s1:x8Gacg",
+        "drafts.pokemon_species_shuppet": "s1:x84foA",
+        "pokemon_species_binacle": "s1:j1uFqw",
+        "drafts.pokemon_species_binacle": "s1:IiRwHw",
+        "pokemon_species_arrokuda": "s1:kTs+nQ",
+        "drafts.pokemon_species_arrokuda": "s1:QyxjQg",
+        "pokemon_species_basculin": "s1:UQiG4A",
+        "drafts.pokemon_species_basculin": "s1:n7dpqg",
+        "pokemon_species_shieldon": "s1:xiFfrA",
+        "drafts.pokemon_species_shieldon": "s1:w2NU/A",
+        "pokemon_species_arctibax": "s1:Gc524A",
+        "drafts.pokemon_species_arctibax": "s1:JlvurQ",
+        "pokemon_species_chikorita": "s1:CIxANg",
+        "drafts.pokemon_species_chikorita": "s1:45r4pA",
+        "pokemon_species_cubchoo": "s1:mB3pNw",
+        "drafts.pokemon_species_cubchoo": "s1:FHofww",
+        "pokemon_species_silcoon": "s1:iWD0TQ",
+        "drafts.pokemon_species_silcoon": "s1:3mhZVw",
+        "pokemon_species_kakuna": "s1:I6e1Kg",
+        "drafts.pokemon_species_kakuna": "s1:Oh0nhw",
+        "pokemon_species_elgyem": "s1:EBXvPQ",
+        "drafts.pokemon_species_elgyem": "s1:rP6fEg",
+        "pokemon_species_tadbulb": "s1:g6ICKA",
+        "drafts.pokemon_species_tadbulb": "s1:y9M6uA",
+        "pokemon_species_gloom": "s1:qDhlKA",
+        "drafts.pokemon_species_gloom": "s1:aC8rug",
+        "pokemon_species_stufful": "s1:Mu2Dhw",
+        "drafts.pokemon_species_stufful": "s1:PkhG0A",
+        "pokemon_species_bidoof": "s1:W4c28w",
+        "drafts.pokemon_species_bidoof": "s1:u60+Wg",
+        "pokemon_species_pawniard": "s1:Vlhq6Q",
+        "drafts.pokemon_species_pawniard": "s1:vWOL2A",
+        "pokemon_species_wartortle": "s1:TGqlpQ",
+        "drafts.pokemon_species_wartortle": "s1:dZAPiw",
+        "drafts.pokemon_species_combusken": "s1:blsryA",
+        "pokemon_species_combusken": "s1:wqzeqg",
+        "pokemon_species_chansey": "s1:yeqDhw",
+        "drafts.pokemon_species_chansey": "s1:RWJw6Q",
+        "pokemon_species_roggenrola": "s1:IVsU2Q",
+        "drafts.pokemon_species_roggenrola": "s1:QFPjBg",
+        "pokemon_species_yamper": "s1:JYwFNA",
+        "drafts.pokemon_species_yamper": "s1:7EQ4sA",
+        "pokemon_species_fennekin": "s1:eTcN4g",
+        "drafts.pokemon_species_fennekin": "s1:KTE7jA",
+        "pokemon_species_bramblin": "s1:UO1ejA",
+        "drafts.pokemon_species_bramblin": "s1:1RKORg",
+        "drafts.pokemon_species_rufflet": "s1:LLMAyA",
+        "pokemon_species_rufflet": "s1:+8Zo1Q",
+        "pokemon_species_shroomish": "s1:3irZ0w",
+        "drafts.pokemon_species_shroomish": "s1:bHIHQQ",
+        "pokemon_species_popplio": "s1:tRcodQ",
+        "drafts.pokemon_species_popplio": "s1:ynxVBw",
+        "pokemon_species_bronzor": "s1:006sAg",
+        "drafts.pokemon_species_bronzor": "s1:OV1v2w",
+        "pokemon_species_metapod": "s1:Kp1YUw",
+        "drafts.pokemon_species_metapod": "s1:jN8C+g",
+        "pokemon_species_cacnea": "s1:rl3C0A",
+        "drafts.pokemon_species_cacnea": "s1:pEmUMw",
+        "drafts.pokemon_type_fairy": "s1:KKI3jg",
+        "pokemon_type_fairy": "s1:ROMOGg",
+        "drafts.pokemon_move_absorb": "s1:+1iwtg",
+        "drafts.pokemon_move_10-000-000-volt-thunderbolt": "s1:T2xVmQ",
+        "pokemon_move_10-000-000-volt-thunderbolt": "s1:PQh3pw",
+        "missing-id": "s1:HU0crw",
+        "drafts.missing-id": "s1:jMrsQQ",
+        "drafts.pokemon_species_absol": "s1:A3Mr/g",
+        "pokemon_species_absol": "s1:kMsrVg",
+        "pokemon_species_alcremie": "s1:sq9sXQ",
+        "drafts.pokemon_species_aegislash": "s1:51c4iA",
+        "pokemon_species_aegislash": "s1:oI5ntw",
+        "drafts.pokemon_species_alcremie": "s1:C3u++A",
+        "pokemon_species_arbok": "s1:QOJxIw",
+        "drafts.pokemon_species_alakazam": "s1:5PzrXA",
+        "pokemon_species_alakazam": "s1:BAvmrg",
+        "drafts.pokemon_species_arbok": "s1:ISavPg",
+        "pokemon_species_arcanine": "s1:3u5ERA",
+        "pokemon_move_aqua-cutter": "s1:0odD8g",
+        "pokemon_move_alluring-voice": "s1:02mUXg",
+        "drafts.pokemon_move_alluring-voice": "s1:HNPfMw",
+        "pokemon_ability_anger-shell": "s1:KOeo7g",
+        "drafts.pokemon_ability_anger-shell": "s1:q3ruzg",
+        "drafts.pokemon_ability_blaze": "s1:IgBEoA",
+        "pokemon_ability_blaze": "s1:VQy+GA",
+        "pokemon_type_ice": "s1:8XcuSQ",
+        "drafts.pokemon_type_ice": "s1:rnrPDw"
+      },
+      "slugs": {
+        "water": "s1:qKLxIQ",
+        "no-such-slug-847832": "s1:spE/lw",
+        "blaze": "s1:wd5PKA"
+      },
+      "allTypes": [
+        "pokemon",
+        "pokemonAbility",
+        "pokemonGeneration",
+        "pokemonMove",
+        "pokemonType",
+        "sanity.imageAsset",
+        "system.group",
+        "system.retention"
+      ]
+    },
+    "playground": {
+      "anyTag": "s1:ZsxxaQ",
+      "types": {},
+      "ids": {},
+      "slugs": {},
+      "allTypes": [
+        "allTypes",
+        "arraysTest",
+        "author",
+        "blocksTest",
+        "book",
+        "circularCrossDatasetReferenceTest",
+        "codeTest",
+        "commentsDebug",
+        "crossDatasetReferenceTest",
+        "crossDatasetToken",
+        "crossProjectToken",
+        "datetimeTest",
+        "empty",
+        "fieldGroupsDefault",
+        "fieldGroupsWithFieldsetsHidden",
+        "fieldsetsTest",
+        "filesTest",
+        "focusTest",
+        "imagesTest",
+        "inspectorsTest",
+        "internationalizedArrayTest",
+        "manyEditors",
+        "mux.apiKey",
+        "muxVideoPost",
+        "playlist",
+        "poppers",
+        "presence",
+        "pt_allTheBellsAndWhistles",
+        "pt_customMarkersTest",
+        "referenceTest",
+        "sanity.assist.schemaType.annotations",
+        "sanity.assist.task.status",
+        "sanity.fileAsset",
+        "sanity.imageAsset",
+        "sanity.previewUrlSecret",
+        "sanity.previewUrlShareAccess",
+        "simpleBlock",
+        "slugsTest",
+        "species",
+        "stringsTest",
+        "system.group",
+        "system.release",
+        "system.retention",
+        "system.schema",
+        "tasks.task",
+        "testImageError",
+        "thesis",
+        "unsplashImagePost",
+        "unsplashImagePostSimple",
+        "validationCI"
+      ]
+    }
+  },
+  "queries": [
+    {
+      "shape": "deref-count",
+      "dataset": "test",
+      "perspective": "drafts",
+      "query": "count(*[_type == \"imagesTest\" && defined(mainImage.asset->_id)])",
+      "params": {},
+      "tags": ["s1:WgXfrg", "s1:s+D/Iw", "s1:NxPXIQ", "s1:CVVh5A", "s1:g6Z0Hg", "s1:+YVBfA"],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"imagesTest\"]{\"v\": global::coalesce(mainImage.asset._dataset + \":\" + mainImage.asset._ref, mainImage.asset._ref)}.v))[0...101]": [
+          "image-095619352713d813bed1c153c992783c5cea302f-2257x60-jpg",
+          "image-3269e1a892aa9a3f2459efb3dc65e2ebb9d64e80-3692x950-png",
+          "image-2f6b31098bcc4a7c9824b3279c471a290bd50b0d-1350x778-png",
+          "image-45a81654d1cd811ef6ed3141401942c16e014eea-833x767-png",
+          "image-75ff22d8c679ccd6a1c7102de64d5fff8c1988fd-300x200-svg",
+          "image-a33a5106f06bc6c952ae231e226500a3429ce2a6-100x133-jpg",
+          "image-585c50ade3bc510054516a2aea5dc2cb0fbef20c-987x1481-jpg",
+          "image-400cb7ac2535b60bb405a98282fa91f4f3436e38-3024x4032-jpg",
+          "image-b631a3b8a8e51054cc252c637dfa366084438902-3627x2557-jpg",
+          "image-eeb1baf83b62177d2bbf858ec71d08fffc8d0555-1022x1024-jpg",
+          "image-9ecd3be0f976e42d1beb28973af0b1722239fbd0-900x900-svg",
+          "image-eca53d85ec83704801ead6c8be368fd377f8aaef-512x512-png",
+          "image-8c070b768dd69704bed9737ec33cc16788c2c28a-3680x2378-png",
+          "image-0f4e94f8b1fe1865541867ee394b0b5ed74b3601-2342x1561-jpg",
+          "image-24da0dd1e4bf2eb2d15cfd3fa3f1a542a0e3815c-1024x1024-svg",
+          "image-1706300e867af86cb6d4747b2be376d4cd6c6b08-321x436-webp",
+          "image-8a57a572c73daf66828437949af38245a3157141-3528x5292-jpg",
+          "image-f8dd685353b574947a4a7988b3b1d4196fa1d5b1-1000x1334-webp",
+          "image-b327fff366e912209bf398d05b807152b0c27d33-3024x4032-jpg",
+          "image-fc3d95f664b26fd13f0a0833dcbe8ee61ea338d0-1730x1297-png",
+          "image-8e30b2ee51b439becf3434a5b532993379d79f56-3024x4032-jpg",
+          "image-1015ac4fba234943997dfbe8e049f35f901fbcb0-3024x4032-jpg",
+          "image-51f8b66c03c791b0ef9634be40cbd2e198e74907-124x42-png",
+          "image-c673538ff0ee4720290de1441c0ee7a37447a820-768x1024-jpg",
+          "image-3cfe62e55515589a7ad0e4b41de325d87032f901-240x240-jpg",
+          "image-e7395f250f60405c30ca47035c458a0162b1be6d-500x500-jpg",
+          "image-24886d1be3a0d1cf026c345cc85c41b4de04cab5-1080x1346-jpg",
+          "image-3bd7937b69b0c5e250006d3b81a35fcca5a709fb-1024x1024-webp",
+          "image-2abfb77f88c8c2fa40355d5cc2d951012b558716-1200x1500-png",
+          "image-71d94bb780fc3658332a1d06b8086da3747b53bf-355x288-gif",
+          "image-e91e9a6c3dd307f5155b38516a57a8b7d1b03a00-1006x1012-jpg",
+          "image-ee04af9d8da3b468c7055952d977ec231001d3ca-1024x1024-png",
+          "image-6407ef46dd62a89c1f180058c25dd361640e726f-1122x1600-png",
+          "image-4b7bcee85d23d0b046a97b99986ed4c34358fe6e-966x1336-png",
+          "image-05a698aff4e5dd85aceda08af7f53f96c1215159-1920x1280-avif",
+          "image-0cff13e35facece20a3b70eda88c42155212428a-2267x3400-jpg",
+          "image-0ac20e4005b670df909f485a2629c98973bebbfa-4080x2710-jpg",
+          "image-7ce86c3b2ebc699356944b8ece100737dfaa2c64-1536x2048-jpg",
+          "image-f0f45708ab6334f07528fce1bf230e29388e64e7-1588x564-svg",
+          "image-593cecbcdde9d0ea5ac29c7aacbd5f90576bae84-400x88-png",
+          "image-424095ee342dda1a6f11afc70894f2ae6232b655-1071x3000-jpg",
+          "image-274226143c52371e0f52087a4d59e0963bea28c8-1364x1166-png",
+          "image-7984b72b4bcdbaf2dfc95e6ad5dee4a345afb2c5-900x1348-png",
+          "image-67da86af0d03a254fbe14dafb2e9f61b11dfd835-4032x3024-jpg",
+          "image-f0083c85d4748c1739978224043c468f956e0848-4032x3024-jpg",
+          "image-c5cf794f021ac76dd1bb61ca22032ce18935708c-1302x1302-svg",
+          "image-7a450942c7845e53e1daddaffc2999f719352e16-3024x4032-jpg",
+          "image-7a90081310fe7ba16a0ebdfb296e44c9f17efda3-4182x258-png",
+          "image-7ba0cf69cd391ba79e3c88ef65ad8eaf2546380f-735x725-jpg",
+          "image-7ad53088a31d59019056bc503b0ac29a10bf3ba1-1626x1012-gif",
+          "image-f270c727fc60933934a2758c7daf289aba0f5531-4032x3024-jpg",
+          "image-e467221568a4032aba9682734f599751761ec92d-4032x3024-jpg",
+          "image-32ad6d5ec3079e19bde3ec989ba7ddd941faf05b-1080x1080-jpg",
+          "image-3796908990435a15f04b3f3f6de218ab45f078f1-642x171-png",
+          "drafts.image-eeb1baf83b62177d2bbf858ec71d08fffc8d0555-1022x1024-jpg",
+          "image-e5919e1011753e0a946cea6f65f427899fa8de9c-1920x1080-jpg",
+          "image-3c928ff534e485250ab0e7c45bd23db381b4a7e5-512x512-svg",
+          "image-38465858362406697b31c24ea6cae068588d4969-1920x1080-jpg",
+          "image-48bd3c0b3fb6a9def4d3ce58e82ecc3a56ede2d9-1450x1450-png",
+          "image-cdf091d1b1cfd56eed57794c1758f2fed9fa7663-298x310-png",
+          "image-cf336b036056c98d8881ac6815dc26d3da03e5c0-3730x5594-jpg",
+          "image-beb0edba3d2ee0d0558d5e4d08bd16b509c4aaf0-120x120-png",
+          "image-9f12b431901c646ac2bc35c20dde32e7f3b1b4b0-1228x1410-jpg",
+          "image-0cc19ad2737a8a0e6a9d94f2cb654e56835f9adb-2063x2750-jpg",
+          "image-bb6b42fe684c7848630bdbd921c092a3405136d3-3719x6615-jpg",
+          "image-4af4353791af3fd4594c59f5bdc9f5f4a4aba3db-6240x4160-jpg",
+          "image-faef8873f6a7c470d546836d9713d5f34d0ffe15-360x360-png",
+          "image-d4293280f186e553662ea1f5e7de4665d15711d6-5000x7512-jpg",
+          "image-848d6c2d6f17ed1f068c6c21a039dcee1940ac22-774x381-gif",
+          "image-7043683f252ddf32d2062ce17a79e732e50ecc1f-702x432-png",
+          "image-f6834ea7c03a3f106838aee55bfdcb1e725a1ad3-1600x1200-webp",
+          "image-bff124e5f54c57db67d2ca4c1fd926462de24dab-600x600-jpg",
+          "image-3e0908f3e3a859781c6635fad6ff4e9029d1e225-1024x768-jpg",
+          "image-c37187d4b40ed68352f89ebdf50f79e16390f602-180x180-png",
+          "image-b2b5c470b449e9326d2b483d23a2ba9ff33965b5-327x436-webp",
+          "image-e4b210d506d47d29952b0174faf9c30e672a691c-3024x4032-jpg",
+          "image-85c19ae3aa6efc899014b26d7459982f93f00cec-3264x2448-jpg",
+          "image-e125c9d7cddf15b1c9f53d1d88266e4fa0970bf0-1228x1410-png",
+          "image-b202177cfe56f7c8813cd769e24df1b2650fcfab-480x204-gif",
+          "image-c7aedaded508eb2804e5b5e14612104de17494ab-2000x1000-png",
+          "image-11c905d664fb25d9fc15c0e89eed2fda4525a6a2-1600x2015-webp",
+          "image-47e4e6600d66ef6c4eb3896073e53ecd9e46ddc5-512x512-webp",
+          "image-dd129f8f1f615f0a0985777d5673e769c5f9ca94-1800x1200-jpg",
+          "image-6eece8558a0e5d10b97b398ee12576f2b91e270e-70x70-png",
+          "image-d205623e32983f9e6fbd00f3f644289da079bf2b-1334x814-png",
+          "image-d1f0911bb18038f1088aea40b7abf81d90320eda-4032x3024-jpg",
+          "image-b35e652b4ef4ed4f22e453ed75dd87bce193091b-3024x4032-jpg",
+          "image-960f61136a1c6be3ff6a2ccee71c4fbe10ff0e1d-512x512-png",
+          "image-d6d2a9433ee87b4970e55f6a2ef5789c3614cf93-4240x2832-jpg",
+          "image-6689f3560bf9c41a39c09ff58cb4a3c552e7281d-300x200-png",
+          "image-41ded61809c05ca9c491a4e2c8e5d6d19f0329bd-1514x210-png",
+          "image-f1e9444331a52a84eed5ff3bafbd02515833f88e-600x600-webp",
+          "image-b5681d9d0b2b6c922238e7c694500dd7c1349b19-256x256-jpg",
+          "image-10ef0852612a8a23c90e2991ebd6605f2522c417-11846x9945-jpg",
+          "image-cb3a1de386d0033b9946bcb77bb398d407065561-5935x3957-jpg",
+          "image-57575ea0ce92e00a5edcfcaa852894fe0f083a17-776x1163-avif",
+          "image-a404ad4dfa456edb362f03d5657c869b4af5b8dd-2000x202-png",
+          "image-ea6db6c70f7330629346b5f04ad0181dcc615608-800x749-png",
+          "image-af8a6792c1a3427cb1c8c0abcd8a84e3b83c262f-1024x1024-webp",
+          "image-ca415655eab6b737e00fe410cdc0ea58d1321959-2237x1333-jpg",
+          "image-929fc07c4e73c86ef45354b1431f1521798e71db-3528x5292-heif"
+        ],
+        "array::unique(array::compact(*[_type == \"imagesTest\"]{\"v\": mainImage.asset->._type}.v))[0...101]": [
+          "sanity.imageAsset"
+        ],
+        "array::unique(array::compact(*[_type == \"imagesTest\"]{\"v\": select(!global::defined(mainImage.asset->._id) => global::coalesce(mainImage.asset._dataset + \":\" + mainImage.asset._ref, mainImage.asset._ref))}.v))[0...101]": [
+          "drafts.image-eeb1baf83b62177d2bbf858ec71d08fffc8d0555-1022x1024-jpg",
+          "drafts.image-47e4e6600d66ef6c4eb3896073e53ecd9e46ddc5-512x512-webp"
+        ]
+      },
+      "meanings": {
+        "s1:WgXfrg": {
+          "kind": "id",
+          "id": "drafts.image-47e4e6600d66ef6c4eb3896073e53ecd9e46ddc5-512x512-webp"
+        },
+        "s1:s+D/Iw": {
+          "kind": "type",
+          "type": "sanity.imageAsset"
+        },
+        "s1:NxPXIQ": {
+          "kind": "id",
+          "id": "drafts.image-eeb1baf83b62177d2bbf858ec71d08fffc8d0555-1022x1024-jpg"
+        },
+        "s1:CVVh5A": {
+          "kind": "type",
+          "type": "imagesTest"
+        },
+        "s1:g6Z0Hg": {
+          "kind": "id",
+          "id": "drafts.drafts.image-47e4e6600d66ef6c4eb3896073e53ecd9e46ddc5-512x512-webp"
+        },
+        "s1:+YVBfA": {
+          "kind": "id",
+          "id": "drafts.drafts.image-eeb1baf83b62177d2bbf858ec71d08fffc8d0555-1022x1024-jpg"
+        }
+      }
+    },
+    {
+      "shape": "count-type",
+      "dataset": "pokedex",
+      "perspective": "published",
+      "query": "count(*[_type == \"pokemonMove\"])",
+      "params": {},
+      "tags": ["s1:YWE1tQ"],
+      "traces": {},
+      "meanings": {
+        "s1:YWE1tQ": {
+          "kind": "type",
+          "type": "pokemonMove"
+        }
+      }
+    },
+    {
+      "shape": "type-not",
+      "dataset": "pokedex",
+      "perspective": "drafts",
+      "query": "*[_type != \"pokemonType\" && defined(_id)][0...2]{_type}",
+      "params": {},
+      "result": [
+        {
+          "_type": "system.group"
+        },
+        {
+          "_type": "system.group"
+        }
+      ],
+      "tags": ["s1:dmg4pA"],
+      "traces": {},
+      "meanings": {
+        "s1:dmg4pA": {
+          "kind": "any"
+        }
+      }
+    },
+    {
+      "shape": "id-literal",
+      "dataset": "pokedex",
+      "perspective": "raw",
+      "query": "*[_id == \"pokemon_type_dark\"]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_type_dark"
+        }
+      ],
+      "tags": ["s1:2ggiCQ"],
+      "traces": {},
+      "meanings": {
+        "s1:2ggiCQ": {
+          "kind": "id",
+          "id": "pokemon_type_dark"
+        }
+      }
+    },
+    {
+      "shape": "asset-id",
+      "dataset": "pokedex",
+      "perspective": "published",
+      "query": "*[_id == \"image-00162a1af96043bc26c70bbab24a4ee2c05c50cc-96x96-png\"]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "image-00162a1af96043bc26c70bbab24a4ee2c05c50cc-96x96-png"
+        }
+      ],
+      "tags": ["s1:uAZ65w"],
+      "traces": {},
+      "meanings": {
+        "s1:uAZ65w": {
+          "kind": "id",
+          "id": "image-00162a1af96043bc26c70bbab24a4ee2c05c50cc-96x96-png"
+        }
+      }
+    },
+    {
+      "shape": "array-deref",
+      "dataset": "pokedex",
+      "perspective": "published",
+      "query": "*[_type == \"pokemonType\" && defined(strongAgainst)][0...3]{_id, \"r\": strongAgainst[]->_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_type_bug"
+        },
+        {
+          "_id": "pokemon_type_dark"
+        },
+        {
+          "_id": "pokemon_type_dragon"
+        }
+      ],
+      "tags": ["s1:kt8ztw", "s1:2ggiCQ", "s1:0JowbA", "s1:nBttjA", "s1:6m1lFA", "s1:x4ndDQ"],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"pokemonType\" && global::defined(strongAgainst)][0...3]{\"v\": strongAgainst[]{\"v\": global::coalesce(@._dataset + \":\" + @._ref, @._ref)}.v}.v[]))[0...101]": [
+          "pokemon_type_grass",
+          "pokemon_type_psychic",
+          "pokemon_type_dark",
+          "pokemon_type_ghost",
+          "pokemon_type_dragon"
+        ],
+        "array::unique(array::compact(*[_type == \"pokemonType\" && global::defined(strongAgainst)][0...3]{\"v\": strongAgainst[]{\"v\": @->._type}.v}.v[]))[0...101]": [
+          "pokemonType"
+        ]
+      },
+      "meanings": {
+        "s1:kt8ztw": {
+          "kind": "id",
+          "id": "pokemon_type_psychic"
+        },
+        "s1:2ggiCQ": {
+          "kind": "id",
+          "id": "pokemon_type_dark"
+        },
+        "s1:0JowbA": {
+          "kind": "id",
+          "id": "pokemon_type_grass"
+        },
+        "s1:nBttjA": {
+          "kind": "id",
+          "id": "pokemon_type_ghost"
+        },
+        "s1:6m1lFA": {
+          "kind": "id",
+          "id": "pokemon_type_dragon"
+        },
+        "s1:x4ndDQ": {
+          "kind": "type",
+          "type": "pokemonType"
+        }
+      }
+    },
+    {
+      "shape": "join-references",
+      "dataset": "pokedex",
+      "perspective": "drafts",
+      "query": "*[_type == \"pokemonGeneration\"][0...2]{_id, \"back\": *[_type == \"pokemonMove\" && references(^._id)][0...2]{_id}}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_generation_1",
+          "back": [
+            {
+              "_id": "pokemon_move_absorb"
+            },
+            {
+              "_id": "pokemon_move_acid"
+            }
+          ]
+        },
+        {
+          "_id": "pokemon_generation_2",
+          "back": [
+            {
+              "_id": "pokemon_move_aeroblast"
+            },
+            {
+              "_id": "pokemon_move_ancient-power"
+            }
+          ]
+        }
+      ],
+      "tags": ["s1:YWE1tQ", "s1:/Hydcg"],
+      "traces": {},
+      "meanings": {
+        "s1:YWE1tQ": {
+          "kind": "type",
+          "type": "pokemonMove"
+        },
+        "s1:/Hydcg": {
+          "kind": "type",
+          "type": "pokemonGeneration"
+        }
+      }
+    },
+    {
+      "shape": "asset-type",
+      "dataset": "pokedex",
+      "perspective": "raw",
+      "query": "*[_type == \"sanity.imageAsset\"][0...2]{_id, url}",
+      "params": {},
+      "result": [
+        {
+          "_id": "image-00099debfd6303a675ad9c951433ea96193ccec2-475x475-png"
+        },
+        {
+          "_id": "image-00162a1af96043bc26c70bbab24a4ee2c05c50cc-96x96-png"
+        }
+      ],
+      "tags": ["s1:BeByIw"],
+      "traces": {},
+      "meanings": {
+        "s1:BeByIw": {
+          "kind": "type",
+          "type": "sanity.imageAsset"
+        }
+      }
+    },
+    {
+      "shape": "id-param",
+      "dataset": "pokedex",
+      "perspective": "published",
+      "query": "*[_id == $id][0]{_id, _type}",
+      "params": {
+        "id": "pokemon_ability_aerilate"
+      },
+      "result": {
+        "_id": "pokemon_ability_aerilate",
+        "_type": "pokemonAbility"
+      },
+      "tags": ["s1:C1RKOQ"],
+      "traces": {},
+      "meanings": {
+        "s1:C1RKOQ": {
+          "kind": "id",
+          "id": "pokemon_ability_aerilate"
+        }
+      }
+    },
+    {
+      "shape": "or-type-id",
+      "dataset": "pokedex",
+      "perspective": "raw",
+      "query": "*[_type == \"pokemonType\" || _id == \"pokemon_generation_9\"][0...3]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_generation_9"
+        },
+        {
+          "_id": "pokemon_type_bug"
+        },
+        {
+          "_id": "pokemon_type_dark"
+        }
+      ],
+      "tags": ["s1:JBekEw", "s1:x4ndDQ"],
+      "traces": {},
+      "meanings": {
+        "s1:JBekEw": {
+          "kind": "id",
+          "id": "pokemon_generation_9"
+        },
+        "s1:x4ndDQ": {
+          "kind": "type",
+          "type": "pokemonType"
+        }
+      }
+    },
+    {
+      "shape": "deref-projection",
+      "dataset": "pokedex",
+      "perspective": "raw",
+      "query": "*[_type == \"pokemonType\" && defined(generation)][0...3]{_id, \"r\": generation->{_id, _type}}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_type_bug",
+          "r": {
+            "_id": "pokemon_generation_1",
+            "_type": "pokemonGeneration"
+          }
+        },
+        {
+          "_id": "pokemon_type_dark",
+          "r": {
+            "_id": "pokemon_generation_2",
+            "_type": "pokemonGeneration"
+          }
+        },
+        {
+          "_id": "pokemon_type_dragon",
+          "r": {
+            "_id": "pokemon_generation_1",
+            "_type": "pokemonGeneration"
+          }
+        }
+      ],
+      "tags": ["s1:00XJoQ", "s1:Es4LXg", "s1:x4ndDQ"],
+      "traces": {},
+      "meanings": {
+        "s1:00XJoQ": {
+          "kind": "id",
+          "id": "pokemon_generation_1"
+        },
+        "s1:Es4LXg": {
+          "kind": "id",
+          "id": "pokemon_generation_2"
+        },
+        "s1:x4ndDQ": {
+          "kind": "type",
+          "type": "pokemonType"
+        }
+      }
+    },
+    {
+      "shape": "defined-ref",
+      "dataset": "pokedex",
+      "perspective": "drafts",
+      "query": "*[_type == \"pokemon\" && defined(evolvesFrom._ref)][0...3]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_species_abomasnow"
+        },
+        {
+          "_id": "pokemon_species_accelgor"
+        },
+        {
+          "_id": "pokemon_species_aegislash"
+        }
+      ],
+      "tags": ["s1:82h/SA"],
+      "traces": {},
+      "meanings": {
+        "s1:82h/SA": {
+          "kind": "type",
+          "type": "pokemon"
+        }
+      }
+    },
+    {
+      "shape": "image-asset",
+      "dataset": "pokedex",
+      "perspective": "published",
+      "query": "*[_type == \"pokemon\" && defined(artwork)][0...3]{\"url\": artwork.asset->url}",
+      "params": {},
+      "result": [{}, {}, {}],
+      "tags": ["s1:82h/SA", "s1:rhZquQ", "s1:q86JVw", "s1:9jhLRw"],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"pokemon\" && global::defined(artwork)][0...3]{\"v\": global::coalesce(artwork.asset._dataset + \":\" + artwork.asset._ref, artwork.asset._ref)}.v))[0...101]": [
+          "image-9b1e9d51565c8dd1206ee7578bd160201daad0a2-475x475-png",
+          "image-1a91ac951284404a7f80fd6749a5ecef529e75e3-475x475-png",
+          "image-810f6812d3f2f3f02323f65b8c07d6ff817a3117-475x475-png"
+        ],
+        "array::unique(array::compact(*[_type == \"pokemon\" && global::defined(artwork)][0...3]{\"v\": artwork.asset->._type}.v))[0...101]": [
+          "sanity.imageAsset"
+        ]
+      },
+      "meanings": {
+        "s1:82h/SA": {
+          "kind": "type",
+          "type": "pokemon"
+        },
+        "s1:rhZquQ": {
+          "kind": "id",
+          "id": "image-9b1e9d51565c8dd1206ee7578bd160201daad0a2-475x475-png"
+        },
+        "s1:q86JVw": {
+          "kind": "id",
+          "id": "image-1a91ac951284404a7f80fd6749a5ecef529e75e3-475x475-png"
+        },
+        "s1:9jhLRw": {
+          "kind": "id",
+          "id": "image-810f6812d3f2f3f02323f65b8c07d6ff817a3117-475x475-png"
+        }
+      }
+    },
+    {
+      "shape": "slug-literal",
+      "dataset": "pokedex",
+      "perspective": "raw",
+      "query": "*[_type == \"pokemonType\" && slug.current == \"water\"]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_type_water"
+        }
+      ],
+      "tags": ["s1:qKLxIQ"],
+      "traces": {},
+      "meanings": {
+        "s1:qKLxIQ": {
+          "kind": "slug",
+          "slug": "water"
+        }
+      }
+    },
+    {
+      "shape": "image-coalesce",
+      "dataset": "pokedex",
+      "perspective": "drafts",
+      "query": "*[_type == \"pokemon\" && defined(artwork)][0...3]{\"img\": coalesce(artwork.asset->url, \"none\")}",
+      "params": {},
+      "result": [{}, {}, {}],
+      "tags": [
+        "s1:rhZquQ",
+        "s1:VTt49g",
+        "s1:q86JVw",
+        "s1:qE7WgA",
+        "s1:9jhLRw",
+        "s1:xTTIJA",
+        "s1:82h/SA"
+      ],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"pokemon\" && global::defined(artwork)][0...3]{\"v\": global::coalesce(artwork.asset._dataset + \":\" + artwork.asset._ref, artwork.asset._ref)}.v))[0...101]": [
+          "image-9b1e9d51565c8dd1206ee7578bd160201daad0a2-475x475-png",
+          "image-1a91ac951284404a7f80fd6749a5ecef529e75e3-475x475-png",
+          "image-810f6812d3f2f3f02323f65b8c07d6ff817a3117-475x475-png"
+        ],
+        "array::unique(array::compact(*[_type == \"pokemon\" && global::defined(artwork)][0...3]{\"v\": artwork.asset->._type}.v))[0...101]": [
+          "sanity.imageAsset"
+        ]
+      },
+      "meanings": {
+        "s1:rhZquQ": {
+          "kind": "id",
+          "id": "image-9b1e9d51565c8dd1206ee7578bd160201daad0a2-475x475-png"
+        },
+        "s1:VTt49g": {
+          "kind": "id",
+          "id": "drafts.image-9b1e9d51565c8dd1206ee7578bd160201daad0a2-475x475-png"
+        },
+        "s1:q86JVw": {
+          "kind": "id",
+          "id": "image-1a91ac951284404a7f80fd6749a5ecef529e75e3-475x475-png"
+        },
+        "s1:qE7WgA": {
+          "kind": "id",
+          "id": "drafts.image-1a91ac951284404a7f80fd6749a5ecef529e75e3-475x475-png"
+        },
+        "s1:9jhLRw": {
+          "kind": "id",
+          "id": "image-810f6812d3f2f3f02323f65b8c07d6ff817a3117-475x475-png"
+        },
+        "s1:xTTIJA": {
+          "kind": "id",
+          "id": "drafts.image-810f6812d3f2f3f02323f65b8c07d6ff817a3117-475x475-png"
+        },
+        "s1:82h/SA": {
+          "kind": "type",
+          "type": "pokemon"
+        }
+      }
+    },
+    {
+      "shape": "deref-filter-first",
+      "dataset": "pokedex",
+      "perspective": "drafts",
+      "query": "*[defined(generation->_id) && _type == \"pokemonAbility\"][0...2]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_ability_adaptability"
+        },
+        {
+          "_id": "pokemon_ability_aerilate"
+        }
+      ],
+      "tags": [
+        "s1:Hai0Rg",
+        "s1:o2bH6Q",
+        "s1:X6M2Dw",
+        "s1:Ez9n8g",
+        "s1:ccNrGg",
+        "s1:dh5vHA",
+        "s1:JBekEw",
+        "s1:Tye4IQ",
+        "s1:EMTExA",
+        "s1:xiP1IA",
+        "s1:ZF7dHA",
+        "s1:8KlW0w",
+        "s1:koICyQ",
+        "s1:yF5+9Q",
+        "s1:1l2DiQ"
+      ],
+      "traces": {
+        "array::unique(array::compact(*{\"v\": global::coalesce(generation._dataset + \":\" + generation._ref, generation._ref)}.v))[0...101]": [
+          "pokemon_generation_4",
+          "pokemon_generation_6",
+          "pokemon_generation_3",
+          "pokemon_generation_5",
+          "pokemon_generation_9",
+          "pokemon_generation_8",
+          "pokemon_generation_7",
+          "pokemon_generation_1",
+          "pokemon_generation_2"
+        ],
+        "array::unique(array::compact(*{\"v\": generation->._type}.v))[0...101]": [
+          "pokemonGeneration"
+        ]
+      },
+      "meanings": {
+        "s1:Hai0Rg": {
+          "kind": "id",
+          "id": "pokemon_generation_3"
+        },
+        "s1:o2bH6Q": {
+          "kind": "id",
+          "id": "drafts.pokemon_generation_3"
+        },
+        "s1:X6M2Dw": {
+          "kind": "id",
+          "id": "pokemon_generation_8"
+        },
+        "s1:Ez9n8g": {
+          "kind": "id",
+          "id": "pokemon_generation_7"
+        },
+        "s1:ccNrGg": {
+          "kind": "id",
+          "id": "drafts.pokemon_generation_6"
+        },
+        "s1:dh5vHA": {
+          "kind": "id",
+          "id": "drafts.pokemon_generation_5"
+        },
+        "s1:JBekEw": {
+          "kind": "id",
+          "id": "pokemon_generation_9"
+        },
+        "s1:Tye4IQ": {
+          "kind": "id",
+          "id": "drafts.pokemon_generation_9"
+        },
+        "s1:EMTExA": {
+          "kind": "id",
+          "id": "drafts.pokemon_generation_8"
+        },
+        "s1:xiP1IA": {
+          "kind": "type",
+          "type": "pokemonAbility"
+        },
+        "s1:ZF7dHA": {
+          "kind": "id",
+          "id": "pokemon_generation_5"
+        },
+        "s1:8KlW0w": {
+          "kind": "id",
+          "id": "pokemon_generation_4"
+        },
+        "s1:koICyQ": {
+          "kind": "id",
+          "id": "drafts.pokemon_generation_4"
+        },
+        "s1:yF5+9Q": {
+          "kind": "id",
+          "id": "pokemon_generation_6"
+        },
+        "s1:1l2DiQ": {
+          "kind": "id",
+          "id": "drafts.pokemon_generation_7"
+        }
+      }
+    },
+    {
+      "shape": "id-in-list",
+      "dataset": "pokedex",
+      "perspective": "raw",
+      "query": "*[_id in [\"pokemon_species_abomasnow\", \"pokemon_species_abra\"]]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_species_abomasnow"
+        },
+        {
+          "_id": "pokemon_species_abra"
+        }
+      ],
+      "tags": ["s1:OY5LSQ", "s1:qYJ7DA"],
+      "traces": {},
+      "meanings": {
+        "s1:OY5LSQ": {
+          "kind": "id",
+          "id": "pokemon_species_abra"
+        },
+        "s1:qYJ7DA": {
+          "kind": "id",
+          "id": "pokemon_species_abomasnow"
+        }
+      }
+    },
+    {
+      "shape": "id-in-subquery",
+      "dataset": "pokedex",
+      "perspective": "raw",
+      "query": "*[_id in *[_type == \"pokemonAbility\"][0...2]._id]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_ability_adaptability"
+        },
+        {
+          "_id": "pokemon_ability_aerilate"
+        }
+      ],
+      "tags": ["s1:V3GvMg", "s1:C1RKOQ", "s1:xiP1IA"],
+      "traces": {},
+      "meanings": {
+        "s1:V3GvMg": {
+          "kind": "id",
+          "id": "pokemon_ability_adaptability"
+        },
+        "s1:C1RKOQ": {
+          "kind": "id",
+          "id": "pokemon_ability_aerilate"
+        },
+        "s1:xiP1IA": {
+          "kind": "type",
+          "type": "pokemonAbility"
+        }
+      }
+    },
+    {
+      "shape": "group-type-deref",
+      "dataset": "pokedex",
+      "perspective": "published",
+      "query": "*[(_type == \"pokemon\") && (evolvesFrom->_type == \"pokemon\")][0...2]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_species_abomasnow"
+        },
+        {
+          "_id": "pokemon_species_accelgor"
+        }
+      ],
+      "tags": [
+        "s1:006sAg",
+        "s1:ymVFHw",
+        "s1:+uPrcg",
+        "s1:0qc/Tw",
+        "s1:xiFfrA",
+        "s1:Gc524A",
+        "s1:mB3pNw",
+        "s1:W4c28w",
+        "s1:3irZ0w",
+        "s1:xsUv2Q",
+        "s1:QYsCCQ",
+        "s1:oN9w5Q",
+        "s1:kTs+nQ",
+        "s1:UQiG4A",
+        "s1:TGqlpQ",
+        "s1:yeqDhw",
+        "s1:IVsU2Q",
+        "s1:82h/SA",
+        "s1:gmUCOw",
+        "s1:FBD+jg",
+        "s1:IpK3Gg",
+        "s1:sbrXXA",
+        "s1:b9na4A",
+        "s1:OSa14A",
+        "s1:eTcN4g",
+        "s1:UOh6qw",
+        "s1:x8Gacg",
+        "s1:iWD0TQ",
+        "s1:g6ICKA",
+        "s1:wqzeqg",
+        "s1:UO1ejA",
+        "s1:Kp1YUw",
+        "s1:LaCLaw",
+        "s1:kHtHnw",
+        "s1:xzVRxA",
+        "s1:KgZAtQ",
+        "s1:CIxANg",
+        "s1:EBXvPQ",
+        "s1:Vlhq6Q",
+        "s1:+8Zo1Q",
+        "s1:wZdiOg",
+        "s1:Op0ygw",
+        "s1:0EiE3w",
+        "s1:0XUZaQ",
+        "s1:I6e1Kg",
+        "s1:JYwFNA",
+        "s1:3fHIgA",
+        "s1:d6r/Tw",
+        "s1:OpBLcw",
+        "s1:qzbayQ",
+        "s1:ZPxDaQ",
+        "s1:j1uFqw",
+        "s1:qDhlKA",
+        "s1:Mu2Dhw",
+        "s1:tRcodQ"
+      ],
+      "traces": {
+        "array::unique(array::compact(*[(_type == \"pokemon\")]{\"v\": global::coalesce(evolvesFrom._dataset + \":\" + evolvesFrom._ref, evolvesFrom._ref)}.v))[0...101]": [
+          "pokemon_species_snover",
+          "pokemon_species_shelmet",
+          "pokemon_species_doublade",
+          "pokemon_species_lairon",
+          "pokemon_species_kadabra",
+          "pokemon_species_milcery",
+          "pokemon_species_swablu",
+          "pokemon_species_aipom",
+          "pokemon_species_foongus",
+          "pokemon_species_flaaffy",
+          "pokemon_species_primeape",
+          "pokemon_species_applin",
+          "pokemon_species_dewpider",
+          "pokemon_species_ekans",
+          "pokemon_species_dolliv",
+          "pokemon_species_growlithe",
+          "pokemon_species_duraludon",
+          "pokemon_species_archen",
+          "pokemon_species_frigibax",
+          "pokemon_species_spinarak",
+          "pokemon_species_anorith",
+          "pokemon_species_charcadet",
+          "pokemon_species_spritzee",
+          "pokemon_species_amaura",
+          "pokemon_species_bergmite",
+          "pokemon_species_marill",
+          "pokemon_species_shuppet",
+          "pokemon_species_binacle",
+          "pokemon_species_arrokuda",
+          "pokemon_species_basculin",
+          "pokemon_species_shieldon",
+          "pokemon_species_arctibax",
+          "pokemon_species_chikorita",
+          "pokemon_species_cubchoo",
+          "pokemon_species_silcoon",
+          "pokemon_species_kakuna",
+          "pokemon_species_elgyem",
+          "pokemon_species_tadbulb",
+          "pokemon_species_gloom",
+          "pokemon_species_stufful",
+          "pokemon_species_bidoof",
+          "pokemon_species_pawniard",
+          "pokemon_species_wartortle",
+          "pokemon_species_combusken",
+          "pokemon_species_chansey",
+          "pokemon_species_roggenrola",
+          "pokemon_species_yamper",
+          "pokemon_species_fennekin",
+          "pokemon_species_bramblin",
+          "pokemon_species_rufflet",
+          "pokemon_species_shroomish",
+          "pokemon_species_popplio",
+          "pokemon_species_bronzor",
+          "pokemon_species_metapod",
+          "pokemon_species_cacnea",
+          "pokemon_species_numel",
+          "pokemon_species_rolycoly",
+          "pokemon_species_tirtouga",
+          "pokemon_species_wurmple",
+          "pokemon_species_sizzlipede",
+          "pokemon_species_cetoddle",
+          "pokemon_species_lampent",
+          "pokemon_species_happiny",
+          "pokemon_species_charmeleon",
+          "pokemon_species_grubbin",
+          "pokemon_species_charmander",
+          "pokemon_species_cherubi",
+          "pokemon_species_quilladin",
+          "pokemon_species_chingling",
+          "pokemon_species_minccino",
+          "pokemon_species_raboot",
+          "pokemon_species_clauncher",
+          "pokemon_species_baltoy",
+          "pokemon_species_clefairy",
+          "pokemon_species_cleffa",
+          "pokemon_species_wooper",
+          "pokemon_species_shellder",
+          "pokemon_species_carkol",
+          "pokemon_species_yamask",
+          "pokemon_species_torchic",
+          "pokemon_species_gurdurr",
+          "pokemon_species_cufant",
+          "pokemon_species_corvisquire",
+          "pokemon_species_rookidee",
+          "pokemon_species_cosmog",
+          "pokemon_species_crabrawler",
+          "pokemon_species_lileep",
+          "pokemon_species_corphish",
+          "pokemon_species_golbat",
+          "pokemon_species_fuecoco",
+          "pokemon_species_totodile",
+          "pokemon_species_dwebble",
+          "pokemon_species_corsola",
+          "pokemon_species_fidough",
+          "pokemon_species_darumaka",
+          "pokemon_species_rowlet",
+          "pokemon_species_dartrix",
+          "pokemon_species_skitty",
+          "pokemon_species_braixen",
+          "pokemon_species_seel",
+          "pokemon_species_oshawott"
+        ],
+        "array::unique(array::compact(*[(_type == \"pokemon\")]{\"v\": evolvesFrom->._type}.v))[0...101]": [
+          "pokemon"
+        ],
+        "array::unique(array::compact(*[(_type == \"pokemon\")]{\"v\": select(!global::defined(evolvesFrom->._id) => global::coalesce(evolvesFrom._dataset + \":\" + evolvesFrom._ref, evolvesFrom._ref))}.v))[0...101]": []
+      },
+      "meanings": {
+        "s1:006sAg": {
+          "kind": "id",
+          "id": "pokemon_species_bronzor"
+        },
+        "s1:ymVFHw": {
+          "kind": "id",
+          "id": "pokemon_species_doublade"
+        },
+        "s1:+uPrcg": {
+          "kind": "id",
+          "id": "pokemon_species_dolliv"
+        },
+        "s1:0qc/Tw": {
+          "kind": "id",
+          "id": "pokemon_species_bergmite"
+        },
+        "s1:xiFfrA": {
+          "kind": "id",
+          "id": "pokemon_species_shieldon"
+        },
+        "s1:Gc524A": {
+          "kind": "id",
+          "id": "pokemon_species_arctibax"
+        },
+        "s1:mB3pNw": {
+          "kind": "id",
+          "id": "pokemon_species_cubchoo"
+        },
+        "s1:W4c28w": {
+          "kind": "id",
+          "id": "pokemon_species_bidoof"
+        },
+        "s1:3irZ0w": {
+          "kind": "id",
+          "id": "pokemon_species_shroomish"
+        },
+        "s1:xsUv2Q": {
+          "kind": "id",
+          "id": "pokemon_species_kadabra"
+        },
+        "s1:QYsCCQ": {
+          "kind": "id",
+          "id": "pokemon_species_flaaffy"
+        },
+        "s1:oN9w5Q": {
+          "kind": "id",
+          "id": "pokemon_species_growlithe"
+        },
+        "s1:kTs+nQ": {
+          "kind": "id",
+          "id": "pokemon_species_arrokuda"
+        },
+        "s1:UQiG4A": {
+          "kind": "id",
+          "id": "pokemon_species_basculin"
+        },
+        "s1:TGqlpQ": {
+          "kind": "id",
+          "id": "pokemon_species_wartortle"
+        },
+        "s1:yeqDhw": {
+          "kind": "id",
+          "id": "pokemon_species_chansey"
+        },
+        "s1:IVsU2Q": {
+          "kind": "id",
+          "id": "pokemon_species_roggenrola"
+        },
+        "s1:82h/SA": {
+          "kind": "type",
+          "type": "pokemon"
+        },
+        "s1:gmUCOw": {
+          "kind": "id",
+          "id": "pokemon_species_milcery"
+        },
+        "s1:FBD+jg": {
+          "kind": "id",
+          "id": "pokemon_species_swablu"
+        },
+        "s1:IpK3Gg": {
+          "kind": "id",
+          "id": "pokemon_species_foongus"
+        },
+        "s1:sbrXXA": {
+          "kind": "id",
+          "id": "pokemon_species_applin"
+        },
+        "s1:b9na4A": {
+          "kind": "id",
+          "id": "pokemon_species_archen"
+        },
+        "s1:OSa14A": {
+          "kind": "id",
+          "id": "pokemon_species_charcadet"
+        },
+        "s1:eTcN4g": {
+          "kind": "id",
+          "id": "pokemon_species_fennekin"
+        },
+        "s1:UOh6qw": {
+          "kind": "id",
+          "id": "pokemon_species_spritzee"
+        },
+        "s1:x8Gacg": {
+          "kind": "id",
+          "id": "pokemon_species_shuppet"
+        },
+        "s1:iWD0TQ": {
+          "kind": "id",
+          "id": "pokemon_species_silcoon"
+        },
+        "s1:g6ICKA": {
+          "kind": "id",
+          "id": "pokemon_species_tadbulb"
+        },
+        "s1:wqzeqg": {
+          "kind": "id",
+          "id": "pokemon_species_combusken"
+        },
+        "s1:UO1ejA": {
+          "kind": "id",
+          "id": "pokemon_species_bramblin"
+        },
+        "s1:Kp1YUw": {
+          "kind": "id",
+          "id": "pokemon_species_metapod"
+        },
+        "s1:LaCLaw": {
+          "kind": "id",
+          "id": "pokemon_species_shelmet"
+        },
+        "s1:kHtHnw": {
+          "kind": "id",
+          "id": "pokemon_species_primeape"
+        },
+        "s1:xzVRxA": {
+          "kind": "id",
+          "id": "pokemon_species_frigibax"
+        },
+        "s1:KgZAtQ": {
+          "kind": "id",
+          "id": "pokemon_species_amaura"
+        },
+        "s1:CIxANg": {
+          "kind": "id",
+          "id": "pokemon_species_chikorita"
+        },
+        "s1:EBXvPQ": {
+          "kind": "id",
+          "id": "pokemon_species_elgyem"
+        },
+        "s1:Vlhq6Q": {
+          "kind": "id",
+          "id": "pokemon_species_pawniard"
+        },
+        "s1:+8Zo1Q": {
+          "kind": "id",
+          "id": "pokemon_species_rufflet"
+        },
+        "s1:wZdiOg": {
+          "kind": "id",
+          "id": "pokemon_species_lairon"
+        },
+        "s1:Op0ygw": {
+          "kind": "id",
+          "id": "pokemon_species_aipom"
+        },
+        "s1:0EiE3w": {
+          "kind": "id",
+          "id": "pokemon_species_dewpider"
+        },
+        "s1:0XUZaQ": {
+          "kind": "id",
+          "id": "pokemon_species_duraludon"
+        },
+        "s1:I6e1Kg": {
+          "kind": "id",
+          "id": "pokemon_species_kakuna"
+        },
+        "s1:JYwFNA": {
+          "kind": "id",
+          "id": "pokemon_species_yamper"
+        },
+        "s1:3fHIgA": {
+          "kind": "id",
+          "id": "pokemon_species_snover"
+        },
+        "s1:d6r/Tw": {
+          "kind": "id",
+          "id": "pokemon_species_ekans"
+        },
+        "s1:OpBLcw": {
+          "kind": "id",
+          "id": "pokemon_species_marill"
+        },
+        "s1:qzbayQ": {
+          "kind": "id",
+          "id": "pokemon_species_spinarak"
+        },
+        "s1:ZPxDaQ": {
+          "kind": "id",
+          "id": "pokemon_species_anorith"
+        },
+        "s1:j1uFqw": {
+          "kind": "id",
+          "id": "pokemon_species_binacle"
+        },
+        "s1:qDhlKA": {
+          "kind": "id",
+          "id": "pokemon_species_gloom"
+        },
+        "s1:Mu2Dhw": {
+          "kind": "id",
+          "id": "pokemon_species_stufful"
+        },
+        "s1:tRcodQ": {
+          "kind": "id",
+          "id": "pokemon_species_popplio"
+        }
+      }
+    },
+    {
+      "shape": "array-first-deref",
+      "dataset": "pokedex",
+      "perspective": "raw",
+      "query": "*[_type == \"pokemonType\" && defined(noEffectAgainst)][0...3]{\"r\": noEffectAgainst[0]->_id}",
+      "params": {},
+      "result": [{}, {}, {}],
+      "tags": ["s1:x4ndDQ", "s1:ROMOGg"],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"pokemonType\" && global::defined(noEffectAgainst)][0...3]{\"v\": global::coalesce(noEffectAgainst[0]._dataset + \":\" + noEffectAgainst[0]._ref, noEffectAgainst[0]._ref)}.v))[0...101]": [
+          "pokemon_type_fairy"
+        ],
+        "array::unique(array::compact(*[_type == \"pokemonType\" && global::defined(noEffectAgainst)][0...3]{\"v\": noEffectAgainst[0]->._type}.v))[0...101]": [
+          "pokemonType"
+        ]
+      },
+      "meanings": {
+        "s1:x4ndDQ": {
+          "kind": "type",
+          "type": "pokemonType"
+        },
+        "s1:ROMOGg": {
+          "kind": "id",
+          "id": "pokemon_type_fairy"
+        }
+      }
+    },
+    {
+      "shape": "references-literal",
+      "dataset": "pokedex",
+      "perspective": "published",
+      "query": "*[references(\"pokemon_generation_9\")][0...3]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_ability_anger-shell"
+        },
+        {
+          "_id": "pokemon_ability_armor-tail"
+        },
+        {
+          "_id": "pokemon_ability_aura-guard"
+        }
+      ],
+      "tags": ["s1:dmg4pA"],
+      "traces": {},
+      "meanings": {
+        "s1:dmg4pA": {
+          "kind": "any"
+        }
+      }
+    },
+    {
+      "shape": "versionOf",
+      "dataset": "pokedex",
+      "perspective": "published",
+      "query": "*[sanity::versionOf(\"pokemon_ability_big-pecks\")]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_ability_big-pecks"
+        }
+      ],
+      "tags": ["s1:dmg4pA"],
+      "traces": {},
+      "meanings": {
+        "s1:dmg4pA": {
+          "kind": "any"
+        }
+      }
+    },
+    {
+      "shape": "or-ids",
+      "dataset": "pokedex",
+      "perspective": "published",
+      "query": "*[_id == \"pokemon_move_10-000-000-volt-thunderbolt\" || _id == \"pokemon_move_absorb\"]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_move_10-000-000-volt-thunderbolt"
+        },
+        {
+          "_id": "pokemon_move_absorb"
+        }
+      ],
+      "tags": ["s1:PQh3pw", "s1:p4tfGg"],
+      "traces": {},
+      "meanings": {
+        "s1:PQh3pw": {
+          "kind": "id",
+          "id": "pokemon_move_10-000-000-volt-thunderbolt"
+        },
+        "s1:p4tfGg": {
+          "kind": "id",
+          "id": "pokemon_move_absorb"
+        }
+      }
+    },
+    {
+      "shape": "deref-coalesce",
+      "dataset": "pokedex",
+      "perspective": "raw",
+      "query": "*[_type == \"pokemon\" && defined(generation)][0...3]{\"n\": coalesce(generation->title, generation->name, \"none\")}",
+      "params": {},
+      "result": [{}, {}, {}],
+      "tags": ["s1:82h/SA", "s1:8KlW0w", "s1:00XJoQ", "s1:Hai0Rg"],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"pokemon\" && global::defined(generation)][0...3]{\"v\": global::coalesce(generation._dataset + \":\" + generation._ref, generation._ref)}.v))[0...101]": [
+          "pokemon_generation_4",
+          "pokemon_generation_1",
+          "pokemon_generation_3"
+        ],
+        "array::unique(array::compact(*[_type == \"pokemon\" && global::defined(generation)][0...3]{\"v\": generation->._type}.v))[0...101]": [
+          "pokemonGeneration"
+        ]
+      },
+      "meanings": {
+        "s1:82h/SA": {
+          "kind": "type",
+          "type": "pokemon"
+        },
+        "s1:8KlW0w": {
+          "kind": "id",
+          "id": "pokemon_generation_4"
+        },
+        "s1:00XJoQ": {
+          "kind": "id",
+          "id": "pokemon_generation_1"
+        },
+        "s1:Hai0Rg": {
+          "kind": "id",
+          "id": "pokemon_generation_3"
+        }
+      }
+    },
+    {
+      "shape": "deref-select",
+      "dataset": "pokedex",
+      "perspective": "published",
+      "query": "*[_type == \"pokemonType\"][0...3]{\"n\": select(defined(generation) => generation->_id, \"none\")}",
+      "params": {},
+      "result": [{}, {}, {}],
+      "tags": ["s1:x4ndDQ", "s1:00XJoQ", "s1:Es4LXg"],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"pokemonType\"][0...3]{\"v\": global::coalesce(generation._dataset + \":\" + generation._ref, generation._ref)}.v))[0...101]": [
+          "pokemon_generation_1",
+          "pokemon_generation_2"
+        ],
+        "array::unique(array::compact(*[_type == \"pokemonType\"][0...3]{\"v\": generation->._type}.v))[0...101]": [
+          "pokemonGeneration"
+        ]
+      },
+      "meanings": {
+        "s1:x4ndDQ": {
+          "kind": "type",
+          "type": "pokemonType"
+        },
+        "s1:00XJoQ": {
+          "kind": "id",
+          "id": "pokemon_generation_1"
+        },
+        "s1:Es4LXg": {
+          "kind": "id",
+          "id": "pokemon_generation_2"
+        }
+      }
+    },
+    {
+      "shape": "image-asset-projection",
+      "dataset": "pokedex",
+      "perspective": "published",
+      "query": "*[_type == \"pokemon\" && defined(artwork)][0...2]{artwork{asset->{_id, url, metadata{dimensions}}}}",
+      "params": {},
+      "result": [
+        {
+          "artwork": {
+            "asset": {
+              "_id": "image-9b1e9d51565c8dd1206ee7578bd160201daad0a2-475x475-png",
+              "metadata": {
+                "dimensions": {
+                  "_type": "sanity.imageDimensions"
+                }
+              }
+            }
+          }
+        },
+        {
+          "artwork": {
+            "asset": {
+              "_id": "image-1a91ac951284404a7f80fd6749a5ecef529e75e3-475x475-png",
+              "metadata": {
+                "dimensions": {
+                  "_type": "sanity.imageDimensions"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "tags": ["s1:82h/SA", "s1:rhZquQ", "s1:q86JVw"],
+      "traces": {},
+      "meanings": {
+        "s1:82h/SA": {
+          "kind": "type",
+          "type": "pokemon"
+        },
+        "s1:rhZquQ": {
+          "kind": "id",
+          "id": "image-9b1e9d51565c8dd1206ee7578bd160201daad0a2-475x475-png"
+        },
+        "s1:q86JVw": {
+          "kind": "id",
+          "id": "image-1a91ac951284404a7f80fd6749a5ecef529e75e3-475x475-png"
+        }
+      }
+    },
+    {
+      "shape": "id-in-param",
+      "dataset": "pokedex",
+      "perspective": "published",
+      "query": "*[_id in $ids]{_id}",
+      "params": {
+        "ids": ["pokemon_type_bug", "pokemon_type_dark", "missing-id"]
+      },
+      "result": [
+        {
+          "_id": "pokemon_type_bug"
+        },
+        {
+          "_id": "pokemon_type_dark"
+        }
+      ],
+      "tags": ["s1:HU0crw", "s1:4H8Nzg", "s1:2ggiCQ"],
+      "traces": {},
+      "meanings": {
+        "s1:HU0crw": {
+          "kind": "id",
+          "id": "missing-id"
+        },
+        "s1:4H8Nzg": {
+          "kind": "id",
+          "id": "pokemon_type_bug"
+        },
+        "s1:2ggiCQ": {
+          "kind": "id",
+          "id": "pokemon_type_dark"
+        }
+      }
+    },
+    {
+      "shape": "deref-attr",
+      "dataset": "pokedex",
+      "perspective": "published",
+      "query": "*[_type == \"pokemon\" && defined(evolvesFrom)][0...3]{\"n\": evolvesFrom->_type}",
+      "params": {},
+      "result": [{}, {}, {}],
+      "tags": ["s1:LaCLaw", "s1:ymVFHw", "s1:82h/SA", "s1:3fHIgA"],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"pokemon\" && global::defined(evolvesFrom)][0...3]{\"v\": evolvesFrom->._type}.v))[0...101]": [
+          "pokemon"
+        ],
+        "array::unique(array::compact(*[_type == \"pokemon\" && global::defined(evolvesFrom)][0...3]{\"v\": global::coalesce(evolvesFrom._dataset + \":\" + evolvesFrom._ref, evolvesFrom._ref)}.v))[0...101]": [
+          "pokemon_species_snover",
+          "pokemon_species_shelmet",
+          "pokemon_species_doublade"
+        ]
+      },
+      "meanings": {
+        "s1:LaCLaw": {
+          "kind": "id",
+          "id": "pokemon_species_shelmet"
+        },
+        "s1:ymVFHw": {
+          "kind": "id",
+          "id": "pokemon_species_doublade"
+        },
+        "s1:82h/SA": {
+          "kind": "type",
+          "type": "pokemon"
+        },
+        "s1:3fHIgA": {
+          "kind": "id",
+          "id": "pokemon_species_snover"
+        }
+      }
+    },
+    {
+      "shape": "deref-root",
+      "dataset": "pokedex",
+      "perspective": "drafts",
+      "query": "*[_type == \"pokemonAbility\" && defined(generation)][0].generation->_id",
+      "params": {},
+      "tags": ["s1:8KlW0w", "s1:koICyQ", "s1:xiP1IA"],
+      "traces": {
+        "array::unique(array::compact([*[_type == \"pokemonAbility\" && global::defined(generation)][0].generation->._type]))[0...101]": [
+          "pokemonGeneration"
+        ],
+        "array::unique(array::compact([global::coalesce(*[_type == \"pokemonAbility\" && global::defined(generation)][0].generation._dataset + \":\" + *[_type == \"pokemonAbility\" && global::defined(generation)][0].generation._ref, *[_type == \"pokemonAbility\" && global::defined(generation)][0].generation._ref)]))[0...101]": [
+          "pokemon_generation_4"
+        ]
+      },
+      "meanings": {
+        "s1:8KlW0w": {
+          "kind": "id",
+          "id": "pokemon_generation_4"
+        },
+        "s1:koICyQ": {
+          "kind": "id",
+          "id": "drafts.pokemon_generation_4"
+        },
+        "s1:xiP1IA": {
+          "kind": "type",
+          "type": "pokemonAbility"
+        }
+      }
+    },
+    {
+      "shape": "join-parent-type",
+      "dataset": "pokedex",
+      "perspective": "raw",
+      "query": "*[_type == \"pokemonType\" && defined(generation)][0...2]{\"r\": *[_type == ^.generation._ref][0]}",
+      "params": {},
+      "result": [{}, {}],
+      "tags": ["s1:3yn4pw", "s1:HjLwWQ", "s1:x4ndDQ"],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"pokemonType\" && global::defined(generation)][0...2]{\"v\": @.generation._ref}.v))[0...101]": [
+          "pokemon_generation_1",
+          "pokemon_generation_2"
+        ]
+      },
+      "meanings": {
+        "s1:3yn4pw": {
+          "kind": "type",
+          "type": "pokemon_generation_1"
+        },
+        "s1:HjLwWQ": {
+          "kind": "type",
+          "type": "pokemon_generation_2"
+        },
+        "s1:x4ndDQ": {
+          "kind": "type",
+          "type": "pokemonType"
+        }
+      }
+    },
+    {
+      "shape": "slug-missing",
+      "dataset": "pokedex",
+      "perspective": "raw",
+      "query": "*[slug.current == \"no-such-slug-847832\"]{_id}",
+      "params": {},
+      "result": [],
+      "tags": ["s1:spE/lw"],
+      "traces": {},
+      "meanings": {
+        "s1:spE/lw": {
+          "kind": "slug",
+          "slug": "no-such-slug-847832"
+        }
+      }
+    },
+    {
+      "shape": "score-order",
+      "dataset": "pokedex",
+      "perspective": "drafts",
+      "query": "*[_type == \"pokemon\"] | score(typeEffectiveness match \"Wea*\") | order(_score desc)[0...3]{_id, _score}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_species_abomasnow"
+        },
+        {
+          "_id": "pokemon_species_abra"
+        },
+        {
+          "_id": "pokemon_species_absol"
+        }
+      ],
+      "tags": ["s1:82h/SA"],
+      "traces": {},
+      "meanings": {
+        "s1:82h/SA": {
+          "kind": "type",
+          "type": "pokemon"
+        }
+      }
+    },
+    {
+      "shape": "array-deref-in-filter",
+      "dataset": "pokedex",
+      "perspective": "raw",
+      "query": "*[_type == \"pokemon\" && count(signatureMoves[]->_id) > 0][0...2]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_species_aegislash"
+        },
+        {
+          "_id": "pokemon_species_alcremie"
+        }
+      ],
+      "tags": ["s1:82h/SA", "s1:YWE1tQ"],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"pokemon\"]{\"v\": signatureMoves[]{\"v\": global::coalesce(@._dataset + \":\" + @._ref, @._ref)}.v}.v[]))[0...101]": [
+          "pokemon_move_kings-shield",
+          "pokemon_move_decorate",
+          "pokemon_move_apple-acid",
+          "pokemon_move_judgment",
+          "pokemon_move_electro-shot",
+          "pokemon_move_armor-cannon",
+          "pokemon_move_freezing-glare",
+          "pokemon_move_mountain-gale",
+          "pokemon_move_glaive-rush",
+          "pokemon_move_mind-blown",
+          "pokemon_move_head-charge",
+          "pokemon_move_esper-wing",
+          "pokemon_move_glacial-lance",
+          "pokemon_move_astral-barrage",
+          "pokemon_move_bitter-blade",
+          "pokemon_move_chatter",
+          "pokemon_move_court-change",
+          "pokemon_move_pyro-ball",
+          "pokemon_move_tar-shot",
+          "pokemon_move_floral-healing",
+          "pokemon_move_lunar-dance",
+          "pokemon_move_lunar-blessing",
+          "pokemon_move_dark-void",
+          "pokemon_move_spirit-shackle",
+          "pokemon_move_triple-arrows",
+          "pokemon_move_anchor-shot",
+          "pokemon_move_roar-of-time",
+          "pokemon_move_diamond-storm",
+          "pokemon_move_order-up",
+          "pokemon_move_dragon-darts",
+          "pokemon_move_bouncy-bubble",
+          "pokemon_move_buzzy-buzz",
+          "pokemon_move_sizzly-slide",
+          "pokemon_move_glitzy-glow",
+          "pokemon_move_baddy-bad",
+          "pokemon_move_sappy-seed",
+          "pokemon_move_freezy-frost",
+          "pokemon_move_sparkly-swirl",
+          "pokemon_move_chloroblast",
+          "pokemon_move_springtide-storm",
+          "pokemon_move_lumina-crash",
+          "pokemon_move_dynamax-cannon",
+          "pokemon_move_eternabeam",
+          "pokemon_move_no-retreat",
+          "pokemon_move_grav-apple",
+          "pokemon_move_light-of-ruin",
+          "pokemon_move_techno-blast",
+          "pokemon_move_make-it-rain",
+          "pokemon_move_shadow-force",
+          "pokemon_move_burning-bulwark",
+          "pokemon_move_doodle",
+          "pokemon_move_precipice-blades",
+          "pokemon_move_magic-powder",
+          "pokemon_move_magma-storm",
+          "pokemon_move_hyperspace-hole",
+          "pokemon_move_hyperspace-fury",
+          "pokemon_move_fickle-beam",
+          "pokemon_move_snipe-shot",
+          "pokemon_move_mighty-cleave",
+          "pokemon_move_tachyon-cutter",
+          "pokemon_move_psyblade",
+          "pokemon_move_doom-desire",
+          "pokemon_move_secret-sword",
+          "pokemon_move_kowtow-cleave",
+          "pokemon_move_stone-axe",
+          "pokemon_move_fairy-lock",
+          "pokemon_move_clanging-scales",
+          "pokemon_move_clangorous-soul",
+          "pokemon_move_collision-course",
+          "pokemon_move_origin-pulse",
+          "pokemon_move_glaciate",
+          "pokemon_move_freeze-shock",
+          "pokemon_move_ice-burn",
+          "pokemon_move_sandsear-storm",
+          "pokemon_move_mist-ball",
+          "pokemon_move_luster-purge",
+          "pokemon_move_victory-dance",
+          "pokemon_move_aeroblast",
+          "pokemon_move_accelerock",
+          "pokemon_move_fleur-cannon",
+          "pokemon_move_shadow-bone",
+          "pokemon_move_spectral-thief",
+          "pokemon_move_double-iron-bash",
+          "pokemon_move_relic-song",
+          "pokemon_move_flower-trick",
+          "pokemon_move_psystrike",
+          "pokemon_move_electro-drift",
+          "pokemon_move_fiery-wrath",
+          "pokemon_move_aura-wheel",
+          "pokemon_move_prismatic-laser",
+          "pokemon_move_photon-geyser",
+          "pokemon_move_obstruct",
+          "pokemon_move_ivy-cudgel",
+          "pokemon_move_instruct",
+          "pokemon_move_revelation-dance",
+          "pokemon_move_jet-punch",
+          "pokemon_move_spacial-rend",
+          "pokemon_move_double-shock",
+          "pokemon_move_malignant-chain",
+          "pokemon_move_zippy-zap",
+          "pokemon_move_splishy-splash"
+        ],
+        "array::unique(array::compact(*[_type == \"pokemon\"]{\"v\": signatureMoves[]{\"v\": @->._type}.v}.v[]))[0...101]": [
+          "pokemonMove"
+        ],
+        "array::unique(array::compact(*[_type == \"pokemon\"]{\"v\": signatureMoves[]{\"v\": select(!global::defined(@->._id) => global::coalesce(@._dataset + \":\" + @._ref, @._ref))}.v}.v[]))[0...101]": []
+      },
+      "meanings": {
+        "s1:82h/SA": {
+          "kind": "type",
+          "type": "pokemon"
+        },
+        "s1:YWE1tQ": {
+          "kind": "type",
+          "type": "pokemonMove"
+        }
+      }
+    },
+    {
+      "shape": "type-filter",
+      "dataset": "pokedex",
+      "perspective": "published",
+      "query": "*[_type == \"pokemonGeneration\"][0...3]",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_generation_1",
+          "_type": "pokemonGeneration"
+        },
+        {
+          "_id": "pokemon_generation_2",
+          "_type": "pokemonGeneration"
+        },
+        {
+          "_id": "pokemon_generation_3",
+          "_type": "pokemonGeneration"
+        }
+      ],
+      "tags": ["s1:/Hydcg"],
+      "traces": {},
+      "meanings": {
+        "s1:/Hydcg": {
+          "kind": "type",
+          "type": "pokemonGeneration"
+        }
+      }
+    },
+    {
+      "shape": "id-in-path",
+      "dataset": "pokedex",
+      "perspective": "drafts",
+      "query": "*[_id in path(\"drafts.**\") && _type == \"pokemonMove\"][0...3]{_id}",
+      "params": {},
+      "result": [],
+      "tags": ["s1:YWE1tQ"],
+      "traces": {},
+      "meanings": {
+        "s1:YWE1tQ": {
+          "kind": "type",
+          "type": "pokemonMove"
+        }
+      }
+    },
+    {
+      "shape": "order-slice-inclusive",
+      "dataset": "pokedex",
+      "perspective": "raw",
+      "query": "*[_type == \"pokemon\"] | order(_createdAt asc)[1..3]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_species_alakazam"
+        },
+        {
+          "_id": "pokemon_species_arbok"
+        },
+        {
+          "_id": "pokemon_species_arcanine"
+        }
+      ],
+      "tags": ["s1:82h/SA"],
+      "traces": {},
+      "meanings": {
+        "s1:82h/SA": {
+          "kind": "type",
+          "type": "pokemon"
+        }
+      }
+    },
+    {
+      "shape": "type-param",
+      "dataset": "pokedex",
+      "perspective": "published",
+      "query": "*[_type == $type][0...3]{_id, _type}",
+      "params": {
+        "type": "pokemonType"
+      },
+      "result": [
+        {
+          "_id": "pokemon_type_bug",
+          "_type": "pokemonType"
+        },
+        {
+          "_id": "pokemon_type_dark",
+          "_type": "pokemonType"
+        },
+        {
+          "_id": "pokemon_type_dragon",
+          "_type": "pokemonType"
+        }
+      ],
+      "tags": ["s1:x4ndDQ"],
+      "traces": {},
+      "meanings": {
+        "s1:x4ndDQ": {
+          "kind": "type",
+          "type": "pokemonType"
+        }
+      }
+    },
+    {
+      "shape": "type-in-param",
+      "dataset": "pokedex",
+      "perspective": "drafts",
+      "query": "*[_type in $types][0...4]{_type}",
+      "params": {
+        "types": ["pokemonMove", "pokemonType"]
+      },
+      "result": [
+        {
+          "_type": "pokemonMove"
+        },
+        {
+          "_type": "pokemonMove"
+        },
+        {
+          "_type": "pokemonMove"
+        },
+        {
+          "_type": "pokemonMove"
+        }
+      ],
+      "tags": ["s1:YWE1tQ", "s1:x4ndDQ"],
+      "traces": {},
+      "meanings": {
+        "s1:YWE1tQ": {
+          "kind": "type",
+          "type": "pokemonMove"
+        },
+        "s1:x4ndDQ": {
+          "kind": "type",
+          "type": "pokemonType"
+        }
+      }
+    },
+    {
+      "shape": "ref-eq",
+      "dataset": "pokedex",
+      "perspective": "drafts",
+      "query": "*[_type == \"pokemonMove\" && generation._ref == \"pokemon_generation_9\"][0...3]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_move_alluring-voice"
+        },
+        {
+          "_id": "pokemon_move_aqua-cutter"
+        },
+        {
+          "_id": "pokemon_move_aqua-step"
+        }
+      ],
+      "tags": ["s1:YWE1tQ"],
+      "traces": {},
+      "meanings": {
+        "s1:YWE1tQ": {
+          "kind": "type",
+          "type": "pokemonMove"
+        }
+      }
+    },
+    {
+      "shape": "not-id",
+      "dataset": "pokedex",
+      "perspective": "raw",
+      "query": "*[_type == \"pokemonAbility\" && !(_id == \"pokemon_ability_anger-shell\")][0...2]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_ability_adaptability"
+        },
+        {
+          "_id": "pokemon_ability_aerilate"
+        }
+      ],
+      "tags": ["s1:xiP1IA"],
+      "traces": {},
+      "meanings": {
+        "s1:xiP1IA": {
+          "kind": "type",
+          "type": "pokemonAbility"
+        }
+      }
+    },
+    {
+      "shape": "array-membership-id-in",
+      "dataset": "pokedex",
+      "perspective": "drafts",
+      "query": "*[_type == \"pokemonType\" && defined(resistantTo)][0...2]{\"r\": *[_id in ^.resistantTo[]._ref]{_id}}",
+      "params": {},
+      "result": [
+        {
+          "r": [
+            {
+              "_id": "pokemon_type_fighting"
+            },
+            {
+              "_id": "pokemon_type_grass"
+            },
+            {
+              "_id": "pokemon_type_ground"
+            }
+          ]
+        },
+        {
+          "r": [
+            {
+              "_id": "pokemon_type_dark"
+            },
+            {
+              "_id": "pokemon_type_ghost"
+            }
+          ]
+        }
+      ],
+      "tags": ["s1:dmg4pA"],
+      "traces": {},
+      "meanings": {
+        "s1:dmg4pA": {
+          "kind": "any"
+        }
+      }
+    },
+    {
+      "shape": "slug-param",
+      "dataset": "pokedex",
+      "perspective": "raw",
+      "query": "*[slug.current == $slug][0]{_id}",
+      "params": {
+        "slug": "blaze"
+      },
+      "result": {
+        "_id": "pokemon_ability_blaze"
+      },
+      "tags": ["s1:wd5PKA"],
+      "traces": {},
+      "meanings": {
+        "s1:wd5PKA": {
+          "kind": "slug",
+          "slug": "blaze"
+        }
+      }
+    },
+    {
+      "shape": "count-defined",
+      "dataset": "pokedex",
+      "perspective": "drafts",
+      "query": "{\"n\": count(*[_type == \"pokemonMove\" && defined(_id)]), \"ids\": *[_type == \"pokemonMove\"][0...2]._id}",
+      "params": {},
+      "result": {},
+      "tags": ["s1:YWE1tQ"],
+      "traces": {},
+      "meanings": {
+        "s1:YWE1tQ": {
+          "kind": "type",
+          "type": "pokemonMove"
+        }
+      }
+    },
+    {
+      "shape": "join-parent-ref",
+      "dataset": "pokedex",
+      "perspective": "raw",
+      "query": "*[_type == \"pokemonType\" && defined(generation)][0...2]{_id, \"r\": *[_id == ^.generation._ref][0]{_id}}",
+      "params": {},
+      "result": [
+        {
+          "_id": "pokemon_type_bug",
+          "r": {
+            "_id": "pokemon_generation_1"
+          }
+        },
+        {
+          "_id": "pokemon_type_dark",
+          "r": {
+            "_id": "pokemon_generation_2"
+          }
+        }
+      ],
+      "tags": ["s1:x4ndDQ", "s1:00XJoQ", "s1:Es4LXg"],
+      "traces": {},
+      "meanings": {
+        "s1:x4ndDQ": {
+          "kind": "type",
+          "type": "pokemonType"
+        },
+        "s1:00XJoQ": {
+          "kind": "id",
+          "id": "pokemon_generation_1"
+        },
+        "s1:Es4LXg": {
+          "kind": "id",
+          "id": "pokemon_generation_2"
+        }
+      }
+    },
+    {
+      "shape": "array-filter-deref",
+      "dataset": "pokedex",
+      "perspective": "raw",
+      "query": "*[_type == \"pokemon\" && defined(types)][0...3]{\"r\": types[defined(_ref)][0...2]->_id}",
+      "params": {},
+      "result": [{}, {}, {}],
+      "tags": ["s1:8XcuSQ", "s1:kt8ztw", "s1:82h/SA", "s1:2ggiCQ", "s1:0JowbA"],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"pokemon\" && global::defined(types)][0...3]{\"v\": types[global::defined(_ref)][0...2]{\"v\": global::coalesce(@._dataset + \":\" + @._ref, @._ref)}.v}.v[]))[0...101]": [
+          "pokemon_type_grass",
+          "pokemon_type_ice",
+          "pokemon_type_psychic",
+          "pokemon_type_dark"
+        ],
+        "array::unique(array::compact(*[_type == \"pokemon\" && global::defined(types)][0...3]{\"v\": types[global::defined(_ref)][0...2]{\"v\": @->._type}.v}.v[]))[0...101]": [
+          "pokemonType"
+        ]
+      },
+      "meanings": {
+        "s1:8XcuSQ": {
+          "kind": "id",
+          "id": "pokemon_type_ice"
+        },
+        "s1:kt8ztw": {
+          "kind": "id",
+          "id": "pokemon_type_psychic"
+        },
+        "s1:82h/SA": {
+          "kind": "type",
+          "type": "pokemon"
+        },
+        "s1:2ggiCQ": {
+          "kind": "id",
+          "id": "pokemon_type_dark"
+        },
+        "s1:0JowbA": {
+          "kind": "id",
+          "id": "pokemon_type_grass"
+        }
+      }
+    },
+    {
+      "shape": "slice-param",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF"],
+      "query": "*[_type == \"species\"][0...$n]{_id}",
+      "params": {
+        "n": 2
+      },
+      "result": [
+        {
+          "_id": "06078a39-266b-494c-ad1f-52a0568800b2"
+        },
+        {
+          "_id": "062912c8-80c0-4245-b6a2-ebb8258b4fbe"
+        }
+      ],
+      "tags": ["s1:8rchCA"],
+      "traces": {},
+      "meanings": {
+        "s1:8rchCA": {
+          "kind": "type",
+          "type": "species"
+        }
+      }
+    },
+    {
+      "shape": "type-in-param",
+      "dataset": "test",
+      "perspective": "drafts",
+      "query": "*[_type in $types][0...4]{_type}",
+      "params": {
+        "types": ["author", "slugsTest"]
+      },
+      "result": [
+        {
+          "_type": "author"
+        },
+        {
+          "_type": "author"
+        },
+        {
+          "_type": "author"
+        },
+        {
+          "_type": "author"
+        }
+      ],
+      "tags": ["s1:KfGgSw", "s1:TcMVJQ"],
+      "traces": {},
+      "meanings": {
+        "s1:KfGgSw": {
+          "kind": "type",
+          "type": "slugsTest"
+        },
+        "s1:TcMVJQ": {
+          "kind": "type",
+          "type": "author"
+        }
+      }
+    },
+    {
+      "shape": "image-asset-projection",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF", "drafts"],
+      "query": "*[_type == \"simpleReferences\" && defined(image)][0...2]{image{asset->{_id, url, metadata{dimensions}}}}",
+      "params": {},
+      "result": [
+        {
+          "image": {
+            "asset": {
+              "_id": "image-08e5a88716d82c6e8a5803115d2cf5933ab35916-774x389-png",
+              "metadata": {
+                "dimensions": {
+                  "_type": "sanity.imageDimensions"
+                }
+              }
+            }
+          }
+        },
+        {
+          "image": {
+            "asset": {
+              "_id": "image-e3cb01560b72bfbfe15da1c72e280339905a3179-768x768-png",
+              "metadata": {
+                "dimensions": {
+                  "_type": "sanity.imageDimensions"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "tags": [
+        "s1:HvR1YA",
+        "s1:Ka6xlg",
+        "s1:8mpzgA",
+        "s1:7fZb8g",
+        "s1:wqtGeQ",
+        "s1:Tj0XJA",
+        "s1:R+nLCg"
+      ],
+      "traces": {},
+      "meanings": {
+        "s1:HvR1YA": {
+          "kind": "type",
+          "type": "simpleReferences"
+        },
+        "s1:Ka6xlg": {
+          "kind": "id",
+          "id": "versions.agent-rPrQAF.image-08e5a88716d82c6e8a5803115d2cf5933ab35916-774x389-png"
+        },
+        "s1:8mpzgA": {
+          "kind": "id",
+          "id": "image-e3cb01560b72bfbfe15da1c72e280339905a3179-768x768-png"
+        },
+        "s1:7fZb8g": {
+          "kind": "id",
+          "id": "versions.agent-rPrQAF.image-e3cb01560b72bfbfe15da1c72e280339905a3179-768x768-png"
+        },
+        "s1:wqtGeQ": {
+          "kind": "id",
+          "id": "drafts.image-e3cb01560b72bfbfe15da1c72e280339905a3179-768x768-png"
+        },
+        "s1:Tj0XJA": {
+          "kind": "id",
+          "id": "image-08e5a88716d82c6e8a5803115d2cf5933ab35916-774x389-png"
+        },
+        "s1:R+nLCg": {
+          "kind": "id",
+          "id": "drafts.image-08e5a88716d82c6e8a5803115d2cf5933ab35916-774x389-png"
+        }
+      }
+    },
+    {
+      "shape": "group-type-deref",
+      "dataset": "test",
+      "perspective": "raw",
+      "query": "*[(_type == \"author\") && (bestFriend->_type == \"author\")][0...2]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "000f6f66-5a70-48a6-a22d-6ef54d77512f"
+        },
+        {
+          "_id": "007f7c5a-cde0-47dc-8fd2-8c9b676767e5"
+        }
+      ],
+      "tags": [
+        "s1:zIhJcQ",
+        "s1:nJMxzQ",
+        "s1:YKrqeQ",
+        "s1:rs56tw",
+        "s1:vOGXPw",
+        "s1:8hBqJQ",
+        "s1:TcMVJQ",
+        "s1:gV8oSA",
+        "s1:DxOjrg",
+        "s1:NCYZRA",
+        "s1:Z5JcZg",
+        "s1:9X61mw",
+        "s1:uQbf2Q",
+        "s1:WoJ/sQ",
+        "s1:+7yGUA",
+        "s1:05rekw",
+        "s1:CiBn2A",
+        "s1:lsKVxA",
+        "s1:4u7UEg",
+        "s1:83riNQ",
+        "s1:65oSBA",
+        "s1:Ck/VWA"
+      ],
+      "traces": {
+        "array::unique(array::compact(*[(_type == \"author\")]{\"v\": global::coalesce(bestFriend._dataset + \":\" + bestFriend._ref, bestFriend._ref)}.v))[0...101]": [
+          "0154f201-bb53-4048-b9e3-7f7cdcad15fb",
+          "04c86968-2e91-4ba0-9dbc-be947fdf807e",
+          "0214c09c-6892-4d00-97ed-96537158648f",
+          "07669397-0b55-4ace-9ab4-1f8c08d28372",
+          "foo-bar",
+          "007f7c5a-cde0-47dc-8fd2-8c9b676767e5",
+          "e1a3faf4-3e5d-4193-a1ad-05ab6aae8ffe",
+          "01db1d0e-6146-4e14-931c-f9dae21a9db2",
+          "2cc5e39e-cf57-43c1-8871-4536d247016d",
+          "8dac0001-be5a-4699-af2c-2a300456b24e",
+          "12ba77fa-38db-4155-85f5-864a8996be58",
+          "3f977480-daf1-4d16-be59-7ae39b94ca73",
+          "01e4fdce-0ffb-44be-b6df-72cd22bc3abf",
+          "0149fe75-1e83-41f4-b62f-3c73d823c152",
+          "0f633e58-d313-429f-a93a-ba77b4adc871",
+          "8ab96211-501c-45e3-9eb0-4ed1da1b50df",
+          "311cc6a3-6e4f-4aa9-a44a-074efa0d898d",
+          "03d08532-319f-44b6-a655-15f2e7bea8f6",
+          "0b55e4c4-f70b-4ca1-8afd-d09e82d8ad13",
+          "560e8040-0f4f-49e2-a8a3-792c2cac1a9b",
+          "0c9d9135-0d20-44a1-9ec1-54ea41ce84d1",
+          "aa663f51-5c00-444c-9182-7ed8d253d5e8",
+          "24ffc985-6d8a-42d5-a225-0df64fe2e78e",
+          "0c3343e3-d860-4e76-b6ac-e1aaf910049e",
+          "c283326f-9539-40d2-90dc-5a7ba579f89a",
+          "49f90c6d-578d-4be1-b8d3-f67f93e6e101",
+          "660d3245-7931-470b-ac75-bca49b5e62fd",
+          "2368f054-6933-4428-9039-9299330a840f",
+          "818bfe36-e12e-4d43-8f66-b72495a10b6a",
+          "6948f035-ab61-4bd6-880c-ba5ab08bfa75",
+          "67347eb9-d404-4e47-9085-0c24f352846b",
+          "65ada624-8ea2-4df0-8f98-17d383310c8e",
+          "1b9c5e03-79d1-49fd-8efa-d05279240070",
+          "27b96abd-9642-442c-9c1d-fa42932a67b0",
+          "6943e756-3f66-4330-8317-dfa06330bbe2",
+          "aa42f33d-61bc-4912-89bb-5ae96fb56c53",
+          "135d5af1-3974-48a5-8147-f1f60290b519",
+          "drafts.03d08532-319f-44b6-a655-15f2e7bea8f6",
+          "8c4a70b4-506b-442f-9f74-b660ac6103b4",
+          "bb076f4b-c07f-416a-bc51-a99b56348baf",
+          "846f43ac-440b-4f22-815d-8d9440bf56aa",
+          "foo-author",
+          "d80d708a-786e-492b-8ff9-fa33e241340b",
+          "55a0e970-eda8-4508-a70d-59bd68290b0e",
+          "e76bccdf-0fa6-4292-a14a-478334d98301",
+          "1b314468-494a-46a8-a7cc-131d790fcdb7",
+          "47f9de2a-875e-4684-887b-98046d5e554e",
+          "8701af36-f4e2-4f32-b13e-fc522ddb381f",
+          "4ef7ac6e-e40e-4b6a-afd0-b28a3d8f00d9",
+          "3c065b1e-5d77-490e-aa34-3a860c880b36",
+          "3e507934-9b91-40fd-9d78-b1ff17f6ae33",
+          "696ed1b1-dff5-4d86-8c6f-cbe0bd502047",
+          "26c8159f-57a7-42bc-828a-31ed2beed2fa",
+          "da063bbe-b5a6-4f14-898a-da6513267a30",
+          "e1853f56-ade8-41a1-abf2-3c99833aa50e",
+          "5b6adff5-fc17-47d6-a8c2-43c4a401a5a1",
+          "026f223b-b8e7-417b-8ac8-1bf8574c2c63",
+          "09addd72-b9d4-4e64-bb16-005802625c6b",
+          "0aaedd66-6d0b-4eb3-b030-1090a36561fb",
+          "4b380dfc-1b9d-4459-bb83-20d72d3c5802",
+          "07d7b810-858a-44c5-b9e6-7c564123e5a3",
+          "bcb1eb33-c972-4c14-a6d7-6df00fc8463f",
+          "drafts.a75d8cda-f0aa-4fda-aba0-3925b4a83531",
+          "6998dcae-2a0b-4048-aab4-f570868be6bb",
+          "0351430a-dc9a-48b0-a5bb-7976aec67065",
+          "711bc94e-be8f-46ab-bb2a-efa963c01a01",
+          "28fd39c6-f035-457a-9d12-ace9223982a0",
+          "0ae4f72b-6571-4755-8b08-674bbb929a80",
+          "2acdcf1e-6e4e-436f-8089-1d4ccba4efe5",
+          "0961858b-fc49-4889-877d-c077a4535c2d",
+          "5c000374-1e37-44ed-baec-41625e09efb7",
+          "4aabdac0-9381-43ae-9aa5-fa9c502ef87d",
+          "9dc8808b-9e3d-4614-9eec-e951a6c0a7d7",
+          "840b23c3-bf01-4b1e-abf0-48deaa3f3086",
+          "b9d410df-058b-4c80-a7d2-b100356c3313",
+          "7b6e2569-ad95-4c25-983b-66e516a00395",
+          "5ac0575a-4260-4dfb-87b3-b42f50c721e6",
+          "0a5a5f52-84ce-4653-8b47-0a5cff8c942b",
+          "45c6a2b7-0a2d-4b0f-9294-8098be661349",
+          "b6277162-b010-4f3b-a444-8685161b30f3",
+          "15ec0bfd-9083-44c6-abc1-68ac58025d85",
+          "d4d776fb-037c-4b54-a91c-5c25601f8f0f",
+          "4c2c6a4a-3c5a-43a9-95ea-e7a2e08a1fa8",
+          "2d67d149-a47b-4500-9ca1-4ecc0c3a0b43",
+          "f932b679-bdbb-4857-a8ae-31da00df67a3",
+          "79f95146-0a65-4fda-91e1-a2ccff263046",
+          "jrr-tolkien",
+          "25f553ce-02ca-4135-8436-1f31b86820a0",
+          "ba71fe9c-b917-431d-a530-a7aa4b440d88",
+          "4a2c6fc5-5a8c-4538-ac85-41bfc830b30f",
+          "c02a019d-e431-46ed-8085-e23ec9cc1541",
+          "533d33bd-776f-48ab-ac54-e388c62f0f3f",
+          "27fa3ad6-f034-43b1-85e7-9e60b95fd306",
+          "drafts.20d5d13c-c414-4211-9dfe-a4eedda9acdf",
+          "1f75a2e3-8e20-4786-b385-2f6b2ce73e0e",
+          "80c2f041-1ab0-42bd-b763-a5d2fd3b65d9",
+          "852ef7a7-526f-45d2-94e6-d86971444139",
+          "24d45d49-b458-40f4-8080-4eda1ae1b0ca",
+          "7084f0e4-da4a-424a-9b48-25541758bc6a",
+          "d1bf67f6-d793-4222-ac06-0579998cf9d5",
+          "995c93b2-7926-4d16-bbf7-5c79ebd0cecb"
+        ],
+        "array::unique(array::compact(*[(_type == \"author\")]{\"v\": bestFriend->._type}.v))[0...101]": [
+          "author"
+        ],
+        "array::unique(array::compact(*[(_type == \"author\")]{\"v\": select(!global::defined(bestFriend->._id) => global::coalesce(bestFriend._dataset + \":\" + bestFriend._ref, bestFriend._ref))}.v))[0...101]": [
+          "4ef7ac6e-e40e-4b6a-afd0-b28a3d8f00d9",
+          "696ed1b1-dff5-4d86-8c6f-cbe0bd502047",
+          "09addd72-b9d4-4e64-bb16-005802625c6b",
+          "0aaedd66-6d0b-4eb3-b030-1090a36561fb",
+          "4b380dfc-1b9d-4459-bb83-20d72d3c5802",
+          "07d7b810-858a-44c5-b9e6-7c564123e5a3",
+          "6998dcae-2a0b-4048-aab4-f570868be6bb",
+          "0351430a-dc9a-48b0-a5bb-7976aec67065",
+          "711bc94e-be8f-46ab-bb2a-efa963c01a01",
+          "2acdcf1e-6e4e-436f-8089-1d4ccba4efe5",
+          "5c000374-1e37-44ed-baec-41625e09efb7",
+          "9dc8808b-9e3d-4614-9eec-e951a6c0a7d7",
+          "b9d410df-058b-4c80-a7d2-b100356c3313",
+          "45c6a2b7-0a2d-4b0f-9294-8098be661349",
+          "b6277162-b010-4f3b-a444-8685161b30f3",
+          "d4d776fb-037c-4b54-a91c-5c25601f8f0f",
+          "4c2c6a4a-3c5a-43a9-95ea-e7a2e08a1fa8",
+          "2d67d149-a47b-4500-9ca1-4ecc0c3a0b43",
+          "f932b679-bdbb-4857-a8ae-31da00df67a3",
+          "79f95146-0a65-4fda-91e1-a2ccff263046",
+          "ba71fe9c-b917-431d-a530-a7aa4b440d88",
+          "4a2c6fc5-5a8c-4538-ac85-41bfc830b30f",
+          "533d33bd-776f-48ab-ac54-e388c62f0f3f",
+          "27fa3ad6-f034-43b1-85e7-9e60b95fd306",
+          "7084f0e4-da4a-424a-9b48-25541758bc6a",
+          "d1bf67f6-d793-4222-ac06-0579998cf9d5",
+          "995c93b2-7926-4d16-bbf7-5c79ebd0cecb",
+          "6890cfc0-c277-4387-b8b2-db50ddd4c641",
+          "9c71bd40-bd2b-4c9d-82dc-0ff6c227de0c",
+          "a48b4880-573e-4884-b976-adc04065f2d9",
+          "987aa2e3-cd7e-4c1b-a78e-50700bd17ad1",
+          "2b8e0272-6a07-499e-8b28-20ab052abc16",
+          "54d90c4d-9a9b-48d9-a1f4-9965525e531d",
+          "782130b7-9e65-4f96-ae33-2ff6aef00266",
+          "109e7d4f-4a15-4b6a-906f-e27d5e103ed0",
+          "d864d88b-2563-4998-a6be-c74eed55b646",
+          "7f85924e-0382-4f05-8d16-ab9e734a9255",
+          "3d7507f6-4617-450e-b236-64687238ec2f",
+          "460a282d-3793-4b17-b748-83ee103c7730",
+          "666ed785-e51d-4e38-a85e-61c446f54c28",
+          "b54a44e1-6c64-4eae-bee8-81b4f3edc9a4",
+          "c2c26c4c-c3bf-46b8-9994-1f4e56727800",
+          "5db86a29-5b00-48f0-881c-617bd9a5ee7e"
+        ]
+      },
+      "meanings": {
+        "s1:zIhJcQ": {
+          "kind": "id",
+          "id": "04c86968-2e91-4ba0-9dbc-be947fdf807e"
+        },
+        "s1:nJMxzQ": {
+          "kind": "id",
+          "id": "07669397-0b55-4ace-9ab4-1f8c08d28372"
+        },
+        "s1:YKrqeQ": {
+          "kind": "id",
+          "id": "e1a3faf4-3e5d-4193-a1ad-05ab6aae8ffe"
+        },
+        "s1:rs56tw": {
+          "kind": "id",
+          "id": "8ab96211-501c-45e3-9eb0-4ed1da1b50df"
+        },
+        "s1:vOGXPw": {
+          "kind": "id",
+          "id": "0b55e4c4-f70b-4ca1-8afd-d09e82d8ad13"
+        },
+        "s1:8hBqJQ": {
+          "kind": "id",
+          "id": "01e4fdce-0ffb-44be-b6df-72cd22bc3abf"
+        },
+        "s1:TcMVJQ": {
+          "kind": "type",
+          "type": "author"
+        },
+        "s1:gV8oSA": {
+          "kind": "id",
+          "id": "0214c09c-6892-4d00-97ed-96537158648f"
+        },
+        "s1:DxOjrg": {
+          "kind": "id",
+          "id": "2cc5e39e-cf57-43c1-8871-4536d247016d"
+        },
+        "s1:NCYZRA": {
+          "kind": "id",
+          "id": "12ba77fa-38db-4155-85f5-864a8996be58"
+        },
+        "s1:Z5JcZg": {
+          "kind": "id",
+          "id": "3f977480-daf1-4d16-be59-7ae39b94ca73"
+        },
+        "s1:9X61mw": {
+          "kind": "id",
+          "id": "0149fe75-1e83-41f4-b62f-3c73d823c152"
+        },
+        "s1:uQbf2Q": {
+          "kind": "id",
+          "id": "0f633e58-d313-429f-a93a-ba77b4adc871"
+        },
+        "s1:WoJ/sQ": {
+          "kind": "id",
+          "id": "foo-bar"
+        },
+        "s1:+7yGUA": {
+          "kind": "id",
+          "id": "007f7c5a-cde0-47dc-8fd2-8c9b676767e5"
+        },
+        "s1:05rekw": {
+          "kind": "id",
+          "id": "311cc6a3-6e4f-4aa9-a44a-074efa0d898d"
+        },
+        "s1:CiBn2A": {
+          "kind": "id",
+          "id": "0c9d9135-0d20-44a1-9ec1-54ea41ce84d1"
+        },
+        "s1:lsKVxA": {
+          "kind": "id",
+          "id": "0154f201-bb53-4048-b9e3-7f7cdcad15fb"
+        },
+        "s1:4u7UEg": {
+          "kind": "id",
+          "id": "01db1d0e-6146-4e14-931c-f9dae21a9db2"
+        },
+        "s1:83riNQ": {
+          "kind": "id",
+          "id": "8dac0001-be5a-4699-af2c-2a300456b24e"
+        },
+        "s1:65oSBA": {
+          "kind": "id",
+          "id": "03d08532-319f-44b6-a655-15f2e7bea8f6"
+        },
+        "s1:Ck/VWA": {
+          "kind": "id",
+          "id": "560e8040-0f4f-49e2-a8a3-792c2cac1a9b"
+        }
+      }
+    },
+    {
+      "shape": "join-parent-ref",
+      "dataset": "test",
+      "perspective": "drafts",
+      "query": "*[_type == \"book\" && defined(author)][0...2]{_id, \"r\": *[_id == ^.author._ref][0]{_id}}",
+      "params": {},
+      "result": [
+        {
+          "_id": "002694ea-cd01-4f38-99e0-20da158b9e5c",
+          "r": {
+            "_id": "174fd1fa-0bb6-4cdd-b30c-777082917a03"
+          }
+        },
+        {
+          "_id": "01a673ff-fd6b-4390-b1f7-fae2275f7414",
+          "r": {
+            "_id": "trigger-doc"
+          }
+        }
+      ],
+      "tags": ["s1:5yf61g", "s1:uB88Sg", "s1:pNsFNA", "s1:d2PSNw", "s1:0IF5OA"],
+      "traces": {},
+      "meanings": {
+        "s1:5yf61g": {
+          "kind": "id",
+          "id": "174fd1fa-0bb6-4cdd-b30c-777082917a03"
+        },
+        "s1:uB88Sg": {
+          "kind": "id",
+          "id": "trigger-doc"
+        },
+        "s1:pNsFNA": {
+          "kind": "id",
+          "id": "drafts.174fd1fa-0bb6-4cdd-b30c-777082917a03"
+        },
+        "s1:d2PSNw": {
+          "kind": "id",
+          "id": "drafts.trigger-doc"
+        },
+        "s1:0IF5OA": {
+          "kind": "type",
+          "type": "book"
+        }
+      }
+    },
+    {
+      "shape": "versionOf",
+      "dataset": "test",
+      "perspective": "drafts",
+      "query": "*[sanity::versionOf(\"6b51c9de-1641-42e6-b57a-2455478edab5\")]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "6b51c9de-1641-42e6-b57a-2455478edab5"
+        }
+      ],
+      "tags": ["s1:JAVAQw"],
+      "traces": {},
+      "meanings": {
+        "s1:JAVAQw": {
+          "kind": "any"
+        }
+      }
+    },
+    {
+      "shape": "references-param",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF", "drafts"],
+      "query": "*[_type == \"referenceTest\" && references($id)][0...3]{_id}",
+      "params": {
+        "id": "062912c8-80c0-4245-b6a2-ebb8258b4fbe"
+      },
+      "result": [
+        {
+          "_id": "0334ffa7-ca4d-40c5-8829-8dc837cb3504"
+        },
+        {
+          "_id": "ca2a845e-bce4-43b3-9506-43afc7f9df15"
+        },
+        {
+          "_id": "e89cd9ca-0685-44c2-bee3-645ac93024d7"
+        }
+      ],
+      "tags": ["s1:xk8kaQ"],
+      "traces": {},
+      "meanings": {
+        "s1:xk8kaQ": {
+          "kind": "type",
+          "type": "referenceTest"
+        }
+      }
+    },
+    {
+      "shape": "ref-eq",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF", "drafts"],
+      "query": "*[_type == \"imagesTest\" && mainImage.asset._ref == \"drafts.image-eeb1baf83b62177d2bbf858ec71d08fffc8d0555-1022x1024-jpg\"][0...3]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "7b275d68-b416-4f18-8263-7971fa09a639"
+        }
+      ],
+      "tags": ["s1:CVVh5A"],
+      "traces": {},
+      "meanings": {
+        "s1:CVVh5A": {
+          "kind": "type",
+          "type": "imagesTest"
+        }
+      }
+    },
+    {
+      "shape": "or-ids",
+      "dataset": "test",
+      "perspective": "drafts",
+      "query": "*[_id == \"002694ea-cd01-4f38-99e0-20da158b9e5c\" || _id == \"01a673ff-fd6b-4390-b1f7-fae2275f7414\"]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "002694ea-cd01-4f38-99e0-20da158b9e5c"
+        },
+        {
+          "_id": "01a673ff-fd6b-4390-b1f7-fae2275f7414"
+        }
+      ],
+      "tags": ["s1:8D/DDA", "s1:oID7Nw", "s1:G4ynPQ", "s1:HD+vTg"],
+      "traces": {},
+      "meanings": {
+        "s1:8D/DDA": {
+          "kind": "id",
+          "id": "002694ea-cd01-4f38-99e0-20da158b9e5c"
+        },
+        "s1:oID7Nw": {
+          "kind": "id",
+          "id": "drafts.002694ea-cd01-4f38-99e0-20da158b9e5c"
+        },
+        "s1:G4ynPQ": {
+          "kind": "id",
+          "id": "01a673ff-fd6b-4390-b1f7-fae2275f7414"
+        },
+        "s1:HD+vTg": {
+          "kind": "id",
+          "id": "drafts.01a673ff-fd6b-4390-b1f7-fae2275f7414"
+        }
+      }
+    },
+    {
+      "shape": "score-order",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF"],
+      "query": "*[_type == \"thesis\"] | score(title match \"Dup*\") | order(_score desc)[0...3]{_id, _score}",
+      "params": {},
+      "result": [
+        {
+          "_id": "A5tU6RFyBea0LYVlfNp9Sl"
+        },
+        {
+          "_id": "Sln1mToh8ZDMZr1ZTPhJ7Z"
+        },
+        {
+          "_id": "c3561c0b-531d-418e-adc1-b0f0d042b000"
+        }
+      ],
+      "tags": ["s1:xW33og"],
+      "traces": {},
+      "meanings": {
+        "s1:xW33og": {
+          "kind": "type",
+          "type": "thesis"
+        }
+      }
+    },
+    {
+      "shape": "asset-type",
+      "dataset": "test",
+      "perspective": "raw",
+      "query": "*[_type == \"sanity.imageAsset\"][0...2]{_id, url}",
+      "params": {},
+      "result": [
+        {
+          "_id": "drafts.image-07cd7d7e08947f4620044cbc00b184fa17c5f157-61x68-gif"
+        },
+        {
+          "_id": "drafts.image-47e4e6600d66ef6c4eb3896073e53ecd9e46ddc5-512x512-webp"
+        }
+      ],
+      "tags": ["s1:s+D/Iw"],
+      "traces": {},
+      "meanings": {
+        "s1:s+D/Iw": {
+          "kind": "type",
+          "type": "sanity.imageAsset"
+        }
+      }
+    },
+    {
+      "shape": "id-in-path",
+      "dataset": "test",
+      "perspective": "drafts",
+      "query": "*[_id in path(\"drafts.**\") && _type == \"thesis\"][0...3]{_id}",
+      "params": {},
+      "result": [],
+      "tags": ["s1:xW33og"],
+      "traces": {},
+      "meanings": {
+        "s1:xW33og": {
+          "kind": "type",
+          "type": "thesis"
+        }
+      }
+    },
+    {
+      "shape": "deref-order",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF"],
+      "query": "*[_type == \"book\" && defined(author)] | order(author->_createdAt desc)[0...3]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "656b91db-9383-4aca-b113-872ef7dc737d"
+        },
+        {
+          "_id": "Z6gQ6PfY7T5m4WQd1tV4tz"
+        },
+        {
+          "_id": "jordan-drop-a.b361414c-3f87-42a5-84ef-40a1cc11b4a2"
+        }
+      ],
+      "tags": [
+        "s1:0IF5OA",
+        "s1:65oSBA",
+        "s1:p+derQ",
+        "s1:puRjZw",
+        "s1:6WPpow",
+        "s1:iIRfUA",
+        "s1:TwWEaA",
+        "s1:GeCqVw",
+        "s1:opnmCA",
+        "s1:uWy64A",
+        "s1:bbDh9w",
+        "s1:TcMVJQ"
+      ],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"book\" && global::defined(author)]{\"v\": global::coalesce(author._dataset + \":\" + author._ref, author._ref)}.v))[0...101]": [
+          "174fd1fa-0bb6-4cdd-b30c-777082917a03",
+          "01db1d0e-6146-4e14-931c-f9dae21a9db2",
+          "e1a3faf4-3e5d-4193-a1ad-05ab6aae8ffe",
+          "0214c09c-6892-4d00-97ed-96537158648f",
+          "bbadbf93-a456-4168-888e-ecafb15a9040",
+          "01e4fdce-0ffb-44be-b6df-72cd22bc3abf",
+          "0b55e4c4-f70b-4ca1-8afd-d09e82d8ad13",
+          "9cf92af9-2e20-49b5-b784-df31a4116ea4",
+          "07669397-0b55-4ace-9ab4-1f8c08d28372",
+          "03d08532-319f-44b6-a655-15f2e7bea8f6",
+          "15ec0bfd-9083-44c6-abc1-68ac58025d85",
+          "67347eb9-d404-4e47-9085-0c24f352846b",
+          "0149fe75-1e83-41f4-b62f-3c73d823c152",
+          "0744c4d0-3f03-464b-a24d-dd39abf0a45b",
+          "grrm",
+          "cf3ab059-0d03-48aa-9cab-b4dc3a26ec9f",
+          "0154f201-bb53-4048-b9e3-7f7cdcad15fb",
+          "2b7c646e-a078-417c-8f66-2df2c5453c3d",
+          "cf40e419-b609-4f41-9128-6315ee84e939",
+          "af96bc38-dcd1-456b-b65f-a56530140195",
+          "foo-author",
+          "947b0c69-726b-4507-be7b-ee8fd84ec6f1",
+          "aa663f51-5c00-444c-9182-7ed8d253d5e8",
+          "eeab9530-edfa-461e-b056-825aee994d34",
+          "3ea7284c-54c2-4a71-b831-88d720dffe4a",
+          "foo-bar",
+          "9364f20e-9592-4f07-9d7c-430e45ed13b8",
+          "c0d933ff-420a-445b-ad5e-5761c947649f",
+          "3c065b1e-5d77-490e-aa34-3a860c880b36",
+          "3bd2f464-6eba-4cc1-9adb-d2a97ea4680c",
+          "453ccfc8-da94-4573-aa9c-8253b0773a21",
+          "9d9ebac9-5c28-46e3-a659-6acab20fc20c",
+          "57d08918-8e5d-4f28-94f1-7d8deabcd3f3",
+          "1f933beb-2ff1-405b-823c-75317dbd55fc",
+          "fd330e83-5162-408c-bd14-a191da79974e",
+          "4cccbafe-6143-49eb-b8c1-e4437c7b9a6a",
+          "840b23c3-bf01-4b1e-abf0-48deaa3f3086",
+          "drafts.20d5d13c-c414-4211-9dfe-a4eedda9acdf",
+          "0608e654-d272-4551-ac55-a6ddd9a7369e",
+          "bc3b845a-1e71-4893-a137-a793a96d2b37",
+          "jordan-drop-a.0154f201-bb53-4048-b9e3-7f7cdcad15fb",
+          "a0a6c8ff-56ee-4f2f-84e6-25db3a135c8b",
+          "6ff8e386-710a-4ccd-9e91-1fae9e27ebd3",
+          "c13f39b7-9530-4e33-a3d2-622976ecb058",
+          "a3670715-6b5d-4535-a8ae-71771df33255",
+          "1f75a2e3-8e20-4786-b385-2f6b2ce73e0e",
+          "5b4351bc-0366-41bd-9b8c-b9ecea2bc34d",
+          "0ae4f72b-6571-4755-8b08-674bbb929a80",
+          "parentId",
+          "1d88565f-25aa-4732-9de5-b806f60e3d3c",
+          "972d5567-9abe-4065-99db-e4afff327735",
+          "429fc5c2-ec3b-4744-9cf1-08ddf7a972b8",
+          "f35f91d6-1c46-4173-a32f-29042c40124f",
+          "jrr-tolkien",
+          "4ae98a12-e826-43d1-ac0a-8ff3f680ebed",
+          "author1",
+          "bce10eec-8f3d-44fc-9275-494917490439",
+          "e9e22e4b-ecbb-402d-b656-100fe50b153e",
+          "0f4312f8-b278-4713-ac71-730ec1392804",
+          "985e66d6-164c-4436-bf6f-e7a14c719eda",
+          "demo-vision-author-1",
+          "drill-poc-carol",
+          "afb2ffda-b411-40af-b518-ebbc93c93413",
+          "0252b2ee-2aa8-4bb2-b9f8-372825d2064b",
+          "80e12d49-4146-4d57-b61b-706c82466fd8",
+          "78fde439-fcf2-40f5-9a04-66b538e7dd3d",
+          "drafts.03d08532-319f-44b6-a655-15f2e7bea8f6",
+          "vrtBoxAuthor1786443892"
+        ],
+        "array::unique(array::compact(*[_type == \"book\" && global::defined(author)]{\"v\": author->._type}.v))[0...101]": [
+          "author"
+        ]
+      },
+      "meanings": {
+        "s1:0IF5OA": {
+          "kind": "type",
+          "type": "book"
+        },
+        "s1:65oSBA": {
+          "kind": "id",
+          "id": "03d08532-319f-44b6-a655-15f2e7bea8f6"
+        },
+        "s1:p+derQ": {
+          "kind": "id",
+          "id": "drafts.03d08532-319f-44b6-a655-15f2e7bea8f6"
+        },
+        "s1:puRjZw": {
+          "kind": "id",
+          "id": "parentId"
+        },
+        "s1:6WPpow": {
+          "kind": "id",
+          "id": "versions.agent-rPrQAF.03d08532-319f-44b6-a655-15f2e7bea8f6"
+        },
+        "s1:iIRfUA": {
+          "kind": "id",
+          "id": "versions.agent-rPrQAF.20d5d13c-c414-4211-9dfe-a4eedda9acdf"
+        },
+        "s1:TwWEaA": {
+          "kind": "id",
+          "id": "versions.agent-rPrQAF.drafts.03d08532-319f-44b6-a655-15f2e7bea8f6"
+        },
+        "s1:GeCqVw": {
+          "kind": "id",
+          "id": "20d5d13c-c414-4211-9dfe-a4eedda9acdf"
+        },
+        "s1:opnmCA": {
+          "kind": "id",
+          "id": "drafts.20d5d13c-c414-4211-9dfe-a4eedda9acdf"
+        },
+        "s1:uWy64A": {
+          "kind": "id",
+          "id": "versions.agent-rPrQAF.drafts.20d5d13c-c414-4211-9dfe-a4eedda9acdf"
+        },
+        "s1:bbDh9w": {
+          "kind": "id",
+          "id": "versions.agent-rPrQAF.parentId"
+        },
+        "s1:TcMVJQ": {
+          "kind": "type",
+          "type": "author"
+        }
+      }
+    },
+    {
+      "shape": "count-type",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF", "drafts"],
+      "query": "count(*[_type == \"referenceTest\"])",
+      "params": {},
+      "tags": ["s1:xk8kaQ"],
+      "traces": {},
+      "meanings": {
+        "s1:xk8kaQ": {
+          "kind": "type",
+          "type": "referenceTest"
+        }
+      }
+    },
+    {
+      "shape": "not-id",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF"],
+      "query": "*[_type == \"slugsTest\" && !(_id == \"455f06d4-12b5-4cf0-9489-a1a56e5877f5\")][0...2]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "0c54af6f-1f64-4a6b-b3a5-fd2ccff9e6d6"
+        },
+        {
+          "_id": "0e0757b0-fb2b-4421-987b-7ec32251fc11"
+        }
+      ],
+      "tags": ["s1:KfGgSw"],
+      "traces": {},
+      "meanings": {
+        "s1:KfGgSw": {
+          "kind": "type",
+          "type": "slugsTest"
+        }
+      }
+    },
+    {
+      "shape": "deref-attr",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF"],
+      "query": "*[_type == \"crossDatasetReferenceTest\" && defined(bookOrAuthorInPlayground)][0...3]{\"n\": bookOrAuthorInPlayground->_type}",
+      "params": {},
+      "result": [{}, {}, {}],
+      "tags": ["s1:d/C+Vw", "s1:ZsxxaQ"],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"crossDatasetReferenceTest\" && global::defined(bookOrAuthorInPlayground)][0...3]{\"v\": global::coalesce(bookOrAuthorInPlayground._dataset + \":\" + bookOrAuthorInPlayground._ref, bookOrAuthorInPlayground._ref)}.v))[0...101]": [
+          "playground:8b9e4109-ca44-45e7-82a8-b0c946811dbe",
+          "playground:foo.2e7d3498-7c2d-4e9c-9fe5-50c8340fef63",
+          "playground:47082918-ff7d-43ec-8284-e64a00bcbd0d"
+        ],
+        "array::unique(array::compact(*[_type == \"crossDatasetReferenceTest\" && global::defined(bookOrAuthorInPlayground)][0...3]{\"v\": bookOrAuthorInPlayground->._type}.v))[0...101]": [
+          "book",
+          "author"
+        ]
+      },
+      "meanings": {
+        "s1:d/C+Vw": {
+          "kind": "type",
+          "type": "crossDatasetReferenceTest"
+        },
+        "s1:ZsxxaQ": {
+          "kind": "dataset",
+          "dataset": "playground"
+        }
+      }
+    },
+    {
+      "shape": "string-filter",
+      "dataset": "test",
+      "perspective": "published",
+      "query": "*[_type == \"crossDatasetReferenceTest\" && title == \"Cross dataset reference test\"][0...3]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "1621fd54-0d2d-46b2-ac08-002c541d7e99"
+        },
+        {
+          "_id": "5c60eb63-aef4-4c2d-9d1b-24707ab18258"
+        }
+      ],
+      "tags": ["s1:d/C+Vw"],
+      "traces": {},
+      "meanings": {
+        "s1:d/C+Vw": {
+          "kind": "type",
+          "type": "crossDatasetReferenceTest"
+        }
+      }
+    },
+    {
+      "shape": "deref-nested",
+      "dataset": "test",
+      "perspective": "published",
+      "query": "*[_type == \"book\" && defined(author)][0...3]{\"r\": author->{_id, \"i\": bestFriend->{_id, _type}}}",
+      "params": {},
+      "result": [
+        {
+          "r": {
+            "_id": "174fd1fa-0bb6-4cdd-b30c-777082917a03",
+            "i": {
+              "_id": "foo-bar",
+              "_type": "author"
+            }
+          }
+        },
+        {
+          "r": {
+            "_id": "01db1d0e-6146-4e14-931c-f9dae21a9db2",
+            "i": {
+              "_id": "foo-bar",
+              "_type": "author"
+            }
+          }
+        },
+        {
+          "r": {
+            "_id": "e1a3faf4-3e5d-4193-a1ad-05ab6aae8ffe",
+            "i": {
+              "_id": "0149fe75-1e83-41f4-b62f-3c73d823c152",
+              "_type": "author"
+            }
+          }
+        }
+      ],
+      "tags": ["s1:0IF5OA", "s1:5yf61g", "s1:YKrqeQ", "s1:WoJ/sQ", "s1:9X61mw", "s1:4u7UEg"],
+      "traces": {},
+      "meanings": {
+        "s1:0IF5OA": {
+          "kind": "type",
+          "type": "book"
+        },
+        "s1:5yf61g": {
+          "kind": "id",
+          "id": "174fd1fa-0bb6-4cdd-b30c-777082917a03"
+        },
+        "s1:YKrqeQ": {
+          "kind": "id",
+          "id": "e1a3faf4-3e5d-4193-a1ad-05ab6aae8ffe"
+        },
+        "s1:WoJ/sQ": {
+          "kind": "id",
+          "id": "foo-bar"
+        },
+        "s1:9X61mw": {
+          "kind": "id",
+          "id": "0149fe75-1e83-41f4-b62f-3c73d823c152"
+        },
+        "s1:4u7UEg": {
+          "kind": "id",
+          "id": "01db1d0e-6146-4e14-931c-f9dae21a9db2"
+        }
+      }
+    },
+    {
+      "shape": "type-in-list",
+      "dataset": "test",
+      "perspective": "published",
+      "query": "*[_type in [\"imagesTest\", \"book\", \"nonexistent\"]][0...4]{_type}",
+      "params": {},
+      "result": [
+        {
+          "_type": "book"
+        },
+        {
+          "_type": "book"
+        },
+        {
+          "_type": "book"
+        },
+        {
+          "_type": "book"
+        }
+      ],
+      "tags": ["s1:CVVh5A", "s1:EwYhuw", "s1:0IF5OA"],
+      "traces": {},
+      "meanings": {
+        "s1:CVVh5A": {
+          "kind": "type",
+          "type": "imagesTest"
+        },
+        "s1:EwYhuw": {
+          "kind": "type",
+          "type": "nonexistent"
+        },
+        "s1:0IF5OA": {
+          "kind": "type",
+          "type": "book"
+        }
+      }
+    },
+    {
+      "shape": "id-in-subquery",
+      "dataset": "test",
+      "perspective": "raw",
+      "query": "*[_id in *[_type == \"species\"][0...2]._id]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "06078a39-266b-494c-ad1f-52a0568800b2"
+        },
+        {
+          "_id": "062912c8-80c0-4245-b6a2-ebb8258b4fbe"
+        }
+      ],
+      "tags": ["s1:5wVr0Q", "s1:MwMsDw", "s1:8rchCA"],
+      "traces": {},
+      "meanings": {
+        "s1:5wVr0Q": {
+          "kind": "id",
+          "id": "06078a39-266b-494c-ad1f-52a0568800b2"
+        },
+        "s1:MwMsDw": {
+          "kind": "id",
+          "id": "062912c8-80c0-4245-b6a2-ebb8258b4fbe"
+        },
+        "s1:8rchCA": {
+          "kind": "type",
+          "type": "species"
+        }
+      }
+    },
+    {
+      "shape": "deref-filter",
+      "dataset": "test",
+      "perspective": "raw",
+      "query": "*[_type == \"crossDatasetReferenceTest\" && bookInPlayground->_type == \"undefined\"][0...3]{_id}",
+      "params": {},
+      "result": [],
+      "tags": [
+        "s1:d/C+Vw",
+        "s1:BN/0QA",
+        "s1:SmxVHw",
+        "s1:zEl51Q",
+        "s1:4qcuVQ",
+        "s1:g72Y/g",
+        "s1:ZsxxaQ"
+      ],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"crossDatasetReferenceTest\"]{\"v\": global::coalesce(bookInPlayground._dataset + \":\" + bookInPlayground._ref, bookInPlayground._ref)}.v))[0...101]": [
+          "playground:c82f2cab-c14a-41e2-bdaa-546167e57068",
+          "playground:4203c6bd-98c2-418e-9558-3ed56ebaf1d8",
+          "playground:bbf1f148-336d-4dac-b3b8-6e87fa9ab914",
+          "playground:67751861-06d1-4fe6-8338-6495827cce2a",
+          "playground:foo.2e7d3498-7c2d-4e9c-9fe5-50c8340fef63",
+          "20ea004c-b9b0-44b5-8c9e-b00e365b3b13",
+          "8b9e4109-ca44-45e7-82a8-b0c946811dbe",
+          "playground:8b9e4109-ca44-45e7-82a8-b0c946811dbe",
+          "restricted.2e7d3498-7c2d-4e9c-9fe5-50c8340fef63",
+          "playground:0b65dafe-9f7a-4494-9f29-e864b5142856",
+          "playground:2a643111-a2d3-493e-bb01-4fe240181151",
+          "41583d1d-7e38-4cac-881e-f4280c60497a",
+          "playground:a1d8d20f-4308-4e40-ba65-ac0c0f32f0ea",
+          "playground:restricted.2e7d3498-7c2d-4e9c-9fe5-50c8340fef63",
+          "playground:2e7d3498-7c2d-4e9c-9fe5-50c8340fef63",
+          "c82f2cab-c14a-41e2-bdaa-546167e57068",
+          "playground:329c49d8-e1d7-412c-aae4-ebe81b7f6c7d",
+          "playground:89d91f85-dd5f-4ac3-8e85-b13399ea53c0",
+          "playground:0015674c-33e7-47b7-98ae-9ea3590aacde"
+        ],
+        "array::unique(array::compact(*[_type == \"crossDatasetReferenceTest\"]{\"v\": bookInPlayground->._type}.v))[0...101]": [
+          "book"
+        ]
+      },
+      "meanings": {
+        "s1:d/C+Vw": {
+          "kind": "type",
+          "type": "crossDatasetReferenceTest"
+        },
+        "s1:BN/0QA": {
+          "kind": "id",
+          "id": "20ea004c-b9b0-44b5-8c9e-b00e365b3b13"
+        },
+        "s1:SmxVHw": {
+          "kind": "id",
+          "id": "8b9e4109-ca44-45e7-82a8-b0c946811dbe"
+        },
+        "s1:zEl51Q": {
+          "kind": "id",
+          "id": "c82f2cab-c14a-41e2-bdaa-546167e57068"
+        },
+        "s1:4qcuVQ": {
+          "kind": "id",
+          "id": "restricted.2e7d3498-7c2d-4e9c-9fe5-50c8340fef63"
+        },
+        "s1:g72Y/g": {
+          "kind": "id",
+          "id": "41583d1d-7e38-4cac-881e-f4280c60497a"
+        },
+        "s1:ZsxxaQ": {
+          "kind": "dataset",
+          "dataset": "playground"
+        }
+      }
+    },
+    {
+      "shape": "deref-filter-first",
+      "dataset": "test",
+      "perspective": "published",
+      "query": "*[defined(referenceField->_id) && _type == \"simpleReferences\"][0...2]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "5e38dfbd-6073-44bd-9a07-35fd347899f1"
+        },
+        {
+          "_id": "bcba431d-d04c-4fd8-ad05-b7ec688597b1"
+        }
+      ],
+      "tags": ["s1:YS4O7g", "s1:2VWSlQ", "s1:GQvcJw", "s1:HvR1YA"],
+      "traces": {
+        "array::unique(array::compact(*{\"v\": global::coalesce(referenceField._dataset + \":\" + referenceField._ref, referenceField._ref)}.v))[0...101]": [
+          "5e38dfbd-6073-44bd-9a07-35fd347899f1",
+          "capybara",
+          "rp-1112-t1"
+        ],
+        "array::unique(array::compact(*{\"v\": referenceField->._type}.v))[0...101]": [
+          "simpleReferences"
+        ]
+      },
+      "meanings": {
+        "s1:YS4O7g": {
+          "kind": "id",
+          "id": "5e38dfbd-6073-44bd-9a07-35fd347899f1"
+        },
+        "s1:2VWSlQ": {
+          "kind": "id",
+          "id": "capybara"
+        },
+        "s1:GQvcJw": {
+          "kind": "id",
+          "id": "rp-1112-t1"
+        },
+        "s1:HvR1YA": {
+          "kind": "type",
+          "type": "simpleReferences"
+        }
+      }
+    },
+    {
+      "shape": "type-filter",
+      "dataset": "test",
+      "perspective": "drafts",
+      "query": "*[_type == \"referenceTest\"][0...3]",
+      "params": {},
+      "result": [
+        {
+          "_id": "0253a5d1-307e-4737-b0d5-02d54680a186",
+          "_originalId": "drafts.0253a5d1-307e-4737-b0d5-02d54680a186",
+          "_type": "referenceTest",
+          "filtered": {
+            "book": {
+              "_ref": "749f58b5-81f6-4f97-8c53-9bcb1d2f8b98",
+              "_type": "reference"
+            }
+          },
+          "multiTypeRef": {
+            "_ref": "ce3e2c9a-38b2-48f7-b0bd-5d9d1606cd82",
+            "_type": "reference"
+          },
+          "selfRef": {
+            "_ref": "0d9e07ab-266b-484b-a66f-59f48dca9a77",
+            "_type": "reference"
+          }
+        },
+        {
+          "_id": "026006ec-4c5d-4eb0-ac88-44ee4d10795d",
+          "_originalId": "drafts.026006ec-4c5d-4eb0-ac88-44ee4d10795d",
+          "_type": "referenceTest",
+          "array": [
+            {
+              "_ref": "13cfa9ae-e362-4f48-b098-f519b5806dc0",
+              "_type": "reference"
+            }
+          ],
+          "arrayOfCustomReferences": [
+            {
+              "_type": "strongAuthorRef"
+            }
+          ],
+          "multiTypeRef": {
+            "_type": "reference"
+          },
+          "selfRef": {
+            "_ref": "273c0310-e9a8-4a5d-96be-1b1b90bebc93",
+            "_type": "reference"
+          }
+        },
+        {
+          "_id": "032ff9e7-1d4e-4ec8-a68a-9cc55fba66fa",
+          "_originalId": "drafts.032ff9e7-1d4e-4ec8-a68a-9cc55fba66fa",
+          "_type": "referenceTest",
+          "selfRef": {
+            "_ref": "7a261432-102c-4004-a66a-0202cb406b8f",
+            "_type": "reference"
+          }
+        }
+      ],
+      "tags": ["s1:xk8kaQ"],
+      "traces": {},
+      "meanings": {
+        "s1:xk8kaQ": {
+          "kind": "type",
+          "type": "referenceTest"
+        }
+      }
+    },
+    {
+      "shape": "id-literal",
+      "dataset": "test",
+      "perspective": "published",
+      "query": "*[_id == \"0214c09c-6892-4d00-97ed-96537158648f\"]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "0214c09c-6892-4d00-97ed-96537158648f"
+        }
+      ],
+      "tags": ["s1:gV8oSA"],
+      "traces": {},
+      "meanings": {
+        "s1:gV8oSA": {
+          "kind": "id",
+          "id": "0214c09c-6892-4d00-97ed-96537158648f"
+        }
+      }
+    },
+    {
+      "shape": "deref-coalesce",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF", "drafts"],
+      "query": "*[_type == \"simpleReferences\" && defined(referenceField)][0...3]{\"n\": coalesce(referenceField->title, referenceField->name, \"none\")}",
+      "params": {},
+      "result": [{}, {}, {}],
+      "tags": [
+        "s1:j/9Ldg",
+        "s1:RwJF8w",
+        "s1:yAE0Xw",
+        "s1:1TxgQg",
+        "s1:HvR1YA",
+        "s1:2VWSlQ",
+        "s1:YS4O7g",
+        "s1:8b464A",
+        "s1:4GtaBg",
+        "s1:zUJxlw"
+      ],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"simpleReferences\" && global::defined(referenceField)][0...3]{\"v\": global::coalesce(referenceField._dataset + \":\" + referenceField._ref, referenceField._ref)}.v))[0...101]": [
+          "capybara",
+          "5e38dfbd-6073-44bd-9a07-35fd347899f1",
+          "6421a924-ad49-421b-b756-48cb29a42a41"
+        ],
+        "array::unique(array::compact(*[_type == \"simpleReferences\" && global::defined(referenceField)][0...3]{\"v\": referenceField->._type}.v))[0...101]": [
+          "simpleReferences"
+        ]
+      },
+      "meanings": {
+        "s1:j/9Ldg": {
+          "kind": "id",
+          "id": "versions.agent-rPrQAF.capybara"
+        },
+        "s1:RwJF8w": {
+          "kind": "id",
+          "id": "drafts.capybara"
+        },
+        "s1:yAE0Xw": {
+          "kind": "id",
+          "id": "versions.agent-rPrQAF.5e38dfbd-6073-44bd-9a07-35fd347899f1"
+        },
+        "s1:1TxgQg": {
+          "kind": "id",
+          "id": "drafts.5e38dfbd-6073-44bd-9a07-35fd347899f1"
+        },
+        "s1:HvR1YA": {
+          "kind": "type",
+          "type": "simpleReferences"
+        },
+        "s1:2VWSlQ": {
+          "kind": "id",
+          "id": "capybara"
+        },
+        "s1:YS4O7g": {
+          "kind": "id",
+          "id": "5e38dfbd-6073-44bd-9a07-35fd347899f1"
+        },
+        "s1:8b464A": {
+          "kind": "id",
+          "id": "6421a924-ad49-421b-b756-48cb29a42a41"
+        },
+        "s1:4GtaBg": {
+          "kind": "id",
+          "id": "versions.agent-rPrQAF.6421a924-ad49-421b-b756-48cb29a42a41"
+        },
+        "s1:zUJxlw": {
+          "kind": "id",
+          "id": "drafts.6421a924-ad49-421b-b756-48cb29a42a41"
+        }
+      }
+    },
+    {
+      "shape": "array-membership",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF", "drafts"],
+      "query": "*[_type == \"playlist\" && \"3c5f4f9a-e1cb-4a3e-91ed-6b925f0f3ca1\" in playlists[]._ref][0...3]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "1a26bf72-2f17-429c-84aa-5c03d0e2b929"
+        }
+      ],
+      "tags": ["s1:XOz86A"],
+      "traces": {},
+      "meanings": {
+        "s1:XOz86A": {
+          "kind": "type",
+          "type": "playlist"
+        }
+      }
+    },
+    {
+      "shape": "slug-in",
+      "dataset": "test",
+      "perspective": "published",
+      "query": "*[slug.current in [\"some-slug-4\", \"no-such-slug\"]]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "6db1cf15-d1de-4331-a16e-91f7e27d8e02"
+        }
+      ],
+      "tags": ["s1:07vTGg", "s1:Tcxmrg"],
+      "traces": {},
+      "meanings": {
+        "s1:07vTGg": {
+          "kind": "slug",
+          "slug": "some-slug-4"
+        },
+        "s1:Tcxmrg": {
+          "kind": "slug",
+          "slug": "no-such-slug"
+        }
+      }
+    },
+    {
+      "shape": "count-defined",
+      "dataset": "test",
+      "perspective": "drafts",
+      "query": "{\"n\": count(*[_type == \"thesis\" && defined(_id)]), \"ids\": *[_type == \"thesis\"][0...2]._id}",
+      "params": {},
+      "result": {},
+      "tags": ["s1:xW33og"],
+      "traces": {},
+      "meanings": {
+        "s1:xW33og": {
+          "kind": "type",
+          "type": "thesis"
+        }
+      }
+    },
+    {
+      "shape": "deref-root",
+      "dataset": "test",
+      "perspective": "published",
+      "query": "*[_type == \"book\" && defined(author)][0].author->_id",
+      "params": {},
+      "tags": ["s1:0IF5OA", "s1:5yf61g"],
+      "traces": {
+        "array::unique(array::compact([*[_type == \"book\" && global::defined(author)][0].author->._type]))[0...101]": [
+          "author"
+        ],
+        "array::unique(array::compact([global::coalesce(*[_type == \"book\" && global::defined(author)][0].author._dataset + \":\" + *[_type == \"book\" && global::defined(author)][0].author._ref, *[_type == \"book\" && global::defined(author)][0].author._ref)]))[0...101]": [
+          "174fd1fa-0bb6-4cdd-b30c-777082917a03"
+        ]
+      },
+      "meanings": {
+        "s1:0IF5OA": {
+          "kind": "type",
+          "type": "book"
+        },
+        "s1:5yf61g": {
+          "kind": "id",
+          "id": "174fd1fa-0bb6-4cdd-b30c-777082917a03"
+        }
+      }
+    },
+    {
+      "shape": "draft-id",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF"],
+      "query": "*[_id == \"drafts.1cfbb8f7-06c5-4a1a-8cbe-37d4c8b35286\"]{_id}",
+      "params": {},
+      "result": [],
+      "tags": ["s1:cn7guQ", "s1:HBevsw"],
+      "traces": {},
+      "meanings": {
+        "s1:cn7guQ": {
+          "kind": "id",
+          "id": "versions.agent-rPrQAF.drafts.1cfbb8f7-06c5-4a1a-8cbe-37d4c8b35286"
+        },
+        "s1:HBevsw": {
+          "kind": "id",
+          "id": "drafts.1cfbb8f7-06c5-4a1a-8cbe-37d4c8b35286"
+        }
+      }
+    },
+    {
+      "shape": "type-not",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF"],
+      "query": "*[_type != \"crossDatasetReferenceTest\" && defined(_id)][0...2]{_type}",
+      "params": {},
+      "result": [
+        {
+          "_type": "author"
+        },
+        {
+          "_type": "book"
+        }
+      ],
+      "tags": ["s1:JAVAQw"],
+      "traces": {},
+      "meanings": {
+        "s1:JAVAQw": {
+          "kind": "any"
+        }
+      }
+    },
+    {
+      "shape": "order-slice-inclusive",
+      "dataset": "test",
+      "perspective": "drafts",
+      "query": "*[_type == \"crossDatasetReferenceTest\"] | order(_createdAt asc)[1..3]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "4d8a58d2-d66e-4e08-aef0-bff6f106e379"
+        },
+        {
+          "_id": "b8210ba9-79e4-4f8d-944a-524ed6c8b5dc"
+        },
+        {
+          "_id": "5c60eb63-aef4-4c2d-9d1b-24707ab18258"
+        }
+      ],
+      "tags": ["s1:d/C+Vw"],
+      "traces": {},
+      "meanings": {
+        "s1:d/C+Vw": {
+          "kind": "type",
+          "type": "crossDatasetReferenceTest"
+        }
+      }
+    },
+    {
+      "shape": "id-missing",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF"],
+      "query": "*[_id == \"29b49d27-4eb3-4b05-a950-d0aba160eef4-does-not-exist\"]{_id}",
+      "params": {},
+      "result": [],
+      "tags": ["s1:MtFvuA", "s1:yWl9Sw"],
+      "traces": {},
+      "meanings": {
+        "s1:MtFvuA": {
+          "kind": "id",
+          "id": "versions.agent-rPrQAF.29b49d27-4eb3-4b05-a950-d0aba160eef4-does-not-exist"
+        },
+        "s1:yWl9Sw": {
+          "kind": "id",
+          "id": "29b49d27-4eb3-4b05-a950-d0aba160eef4-does-not-exist"
+        }
+      }
+    },
+    {
+      "shape": "deref-select",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF"],
+      "query": "*[_type == \"referenceTest\"][0...3]{\"n\": select(defined(someWeakRef) => someWeakRef->_id, \"none\")}",
+      "params": {},
+      "result": [{}, {}, {}],
+      "tags": ["s1:xk8kaQ"],
+      "traces": {},
+      "meanings": {
+        "s1:xk8kaQ": {
+          "kind": "type",
+          "type": "referenceTest"
+        }
+      }
+    },
+    {
+      "shape": "asset-id",
+      "dataset": "test",
+      "perspective": "published",
+      "query": "*[_id == \"drafts.image-07cd7d7e08947f4620044cbc00b184fa17c5f157-61x68-gif\"]{_id}",
+      "params": {},
+      "result": [],
+      "tags": ["s1:+EH+yA"],
+      "traces": {},
+      "meanings": {
+        "s1:+EH+yA": {
+          "kind": "id",
+          "id": "drafts.image-07cd7d7e08947f4620044cbc00b184fa17c5f157-61x68-gif"
+        }
+      }
+    },
+    {
+      "shape": "string-match",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF"],
+      "query": "*[_type == \"thesis\" && title match \"Dup*\"][0...3]{_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "A5tU6RFyBea0LYVlfNp9Sl"
+        },
+        {
+          "_id": "Sln1mToh8ZDMZr1ZTPhJ7Z"
+        },
+        {
+          "_id": "c3561c0b-531d-418e-adc1-b0f0d042b000"
+        }
+      ],
+      "tags": ["s1:xW33og"],
+      "traces": {},
+      "meanings": {
+        "s1:xW33og": {
+          "kind": "type",
+          "type": "thesis"
+        }
+      }
+    },
+    {
+      "shape": "id-computed",
+      "dataset": "test",
+      "perspective": "published",
+      "query": "*[_id == lower($id)][0...2]{_id}",
+      "params": {
+        "id": "48B1EAAB-5C75-4146-AD7E-1E370EF0DFC5"
+      },
+      "result": [
+        {
+          "_id": "48b1eaab-5c75-4146-ad7e-1e370ef0dfc5"
+        }
+      ],
+      "tags": ["s1:h5Y0IA"],
+      "traces": {},
+      "meanings": {
+        "s1:h5Y0IA": {
+          "kind": "id",
+          "id": "48b1eaab-5c75-4146-ad7e-1e370ef0dfc5"
+        }
+      }
+    },
+    {
+      "shape": "array-deref",
+      "dataset": "test",
+      "perspective": "published",
+      "query": "*[_type == \"playlist\" && defined(playlists)][0...3]{_id, \"r\": playlists[]->_id}",
+      "params": {},
+      "result": [
+        {
+          "_id": "1a26bf72-2f17-429c-84aa-5c03d0e2b929"
+        }
+      ],
+      "tags": ["s1:0MKauA", "s1:XOz86A"],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"playlist\" && global::defined(playlists)][0...3]{\"v\": playlists[]{\"v\": @->._type}.v}.v[]))[0...101]": [
+          "playlist"
+        ],
+        "array::unique(array::compact(*[_type == \"playlist\" && global::defined(playlists)][0...3]{\"v\": playlists[]{\"v\": global::coalesce(@._dataset + \":\" + @._ref, @._ref)}.v}.v[]))[0...101]": [
+          "3c5f4f9a-e1cb-4a3e-91ed-6b925f0f3ca1"
+        ]
+      },
+      "meanings": {
+        "s1:0MKauA": {
+          "kind": "id",
+          "id": "3c5f4f9a-e1cb-4a3e-91ed-6b925f0f3ca1"
+        },
+        "s1:XOz86A": {
+          "kind": "type",
+          "type": "playlist"
+        }
+      }
+    },
+    {
+      "shape": "id-param",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF"],
+      "query": "*[_id == $id][0]{_id, _type}",
+      "params": {
+        "id": "19c9b064-f101-4c62-ad47-7cb523cc2da2"
+      },
+      "result": {
+        "_id": "19c9b064-f101-4c62-ad47-7cb523cc2da2",
+        "_type": "crossDatasetReferenceTest"
+      },
+      "tags": ["s1:P9k+PQ", "s1:ZUNP+A"],
+      "traces": {},
+      "meanings": {
+        "s1:P9k+PQ": {
+          "kind": "id",
+          "id": "19c9b064-f101-4c62-ad47-7cb523cc2da2"
+        },
+        "s1:ZUNP+A": {
+          "kind": "id",
+          "id": "versions.agent-rPrQAF.19c9b064-f101-4c62-ad47-7cb523cc2da2"
+        }
+      }
+    },
+    {
+      "shape": "deref-projection",
+      "dataset": "test",
+      "perspective": "drafts",
+      "query": "*[_type == \"crossDatasetReferenceTest\" && defined(bookInPlayground)][0...3]{_id, \"r\": bookInPlayground->{_id, _type}}",
+      "params": {},
+      "result": [
+        {
+          "_id": "079ed7a0-80ac-49b8-aa6a-4843b02843b1",
+          "r": {
+            "_id": "c82f2cab-c14a-41e2-bdaa-546167e57068",
+            "_type": "book"
+          }
+        },
+        {
+          "_id": "19c9b064-f101-4c62-ad47-7cb523cc2da2",
+          "r": {
+            "_id": "foo.2e7d3498-7c2d-4e9c-9fe5-50c8340fef63",
+            "_type": "book"
+          }
+        },
+        {
+          "_id": "1eb6dd2d-4e97-4aad-88cf-b12b79d26896",
+          "r": {
+            "_id": "c82f2cab-c14a-41e2-bdaa-546167e57068",
+            "_type": "book"
+          }
+        }
+      ],
+      "tags": ["s1:d/C+Vw", "s1:ZsxxaQ"],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"crossDatasetReferenceTest\" && global::defined(bookInPlayground)][0...3]{\"v\": global::coalesce(bookInPlayground._dataset + \":\" + bookInPlayground._ref, bookInPlayground._ref)}.v))[0...101]": [
+          "playground:c82f2cab-c14a-41e2-bdaa-546167e57068",
+          "playground:foo.2e7d3498-7c2d-4e9c-9fe5-50c8340fef63"
+        ],
+        "array::unique(array::compact(*[_type == \"crossDatasetReferenceTest\" && global::defined(bookInPlayground)][0...3]{\"v\": bookInPlayground->._type}.v))[0...101]": [
+          "book"
+        ]
+      },
+      "meanings": {
+        "s1:d/C+Vw": {
+          "kind": "type",
+          "type": "crossDatasetReferenceTest"
+        },
+        "s1:ZsxxaQ": {
+          "kind": "dataset",
+          "dataset": "playground"
+        }
+      }
+    },
+    {
+      "shape": "image-asset",
+      "dataset": "test",
+      "perspective": ["agent-rPrQAF"],
+      "query": "*[_type == \"author\" && defined(image)][0...3]{\"url\": image.asset->url}",
+      "params": {},
+      "result": [{}, {}, {}],
+      "tags": ["s1:TcMVJQ", "s1:Xl1hwA", "s1:a3J87g", "s1:11rVSg", "s1:c17SUA"],
+      "traces": {
+        "array::unique(array::compact(*[_type == \"author\" && global::defined(image)][0...3]{\"v\": image.asset->._type}.v))[0...101]": [
+          "sanity.imageAsset"
+        ],
+        "array::unique(array::compact(*[_type == \"author\" && global::defined(image)][0...3]{\"v\": global::coalesce(image.asset._dataset + \":\" + image.asset._ref, image.asset._ref)}.v))[0...101]": [
+          "image-8dcc1391e06e4b4acbdc6bbf2e8c8588d537cbb8-4896x3264-jpg",
+          "image-ace9b55070990015b0d961f30d936c1e60c8ad8a-333x500-jpg"
+        ]
+      },
+      "meanings": {
+        "s1:TcMVJQ": {
+          "kind": "type",
+          "type": "author"
+        },
+        "s1:Xl1hwA": {
+          "kind": "id",
+          "id": "image-8dcc1391e06e4b4acbdc6bbf2e8c8588d537cbb8-4896x3264-jpg"
+        },
+        "s1:a3J87g": {
+          "kind": "id",
+          "id": "versions.agent-rPrQAF.image-8dcc1391e06e4b4acbdc6bbf2e8c8588d537cbb8-4896x3264-jpg"
+        },
+        "s1:11rVSg": {
+          "kind": "id",
+          "id": "versions.agent-rPrQAF.image-ace9b55070990015b0d961f30d936c1e60c8ad8a-333x500-jpg"
+        },
+        "s1:c17SUA": {
+          "kind": "id",
+          "id": "image-ace9b55070990015b0d961f30d936c1e60c8ad8a-333x500-jpg"
+        }
+      }
+    }
+  ]
+}
