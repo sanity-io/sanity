@@ -917,8 +917,29 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.params.resize':
     'Resize params: drag or use the arrow keys; double-click or press Enter to fit the content again',
+  /** Accessible label of the `…` menu next to the params view tabs */
+  'vision.params.actions': 'Params actions',
   /** Accessible label of the button next to the params view tabs that copies the params */
   'vision.params.copy': 'Copy params',
+  /** Shown in the params export dialog when the workspace schema could not be read */
+  'vision.params.export.source-no-schema':
+    'Inferred from how the query uses each param. The workspace schema could not be read, so params compared with fields are typed only as far as the query tells.',
+  /** Note at the top of the dialog exporting types for the params */
+  'vision.params.export.source':
+    'Inferred from how the query uses each param, against the workspace schema, the same way the params form types them.',
+  /** Caution in the params export dialog when the query does not parse */
+  'vision.params.export.syntax-error':
+    'The query does not parse, so its params are typed as unknown until it does.',
+  /** Title of the dialog exporting TypeScript types for the params */
+  'vision.params.export.title-typescript': 'Export params as TypeScript',
+  /** Title of the dialog exporting a Zod schema for the params */
+  'vision.params.export.title-zod': 'Export params as Zod',
+  /** Menu item in the params `…` menu exporting TypeScript types for the params */
+  'vision.params.export-typescript': 'Export TypeScript…',
+  /** Tooltip of the params export menu items when the query uses no params */
+  'vision.params.export-unavailable': 'The query uses no params to export types for',
+  /** Menu item in the params `…` menu exporting a Zod schema for the params */
+  'vision.params.export-zod': 'Export Zod…',
   /** Accessible label of the button next to the params view tabs that reformats the params JSON */
   'vision.params.format': 'Format params',
   /** Tab showing the params as a form inferred from the query */

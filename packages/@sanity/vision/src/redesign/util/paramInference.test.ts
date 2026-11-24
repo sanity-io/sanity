@@ -203,6 +203,25 @@ describe('inferQueryParams', () => {
     })
   })
 
+  it('marks params the query expects to be null', () => {
+    const inference = inferQueryParams(
+      '*[(!defined($status) || status == $status) && $author != null && title == coalesce($title, "Untitled")]{"n": $limit}',
+      {schema, documentTypes},
+    )
+    expect(inference.params.map(({name, nullable}) => [name, nullable])).toEqual([
+      ['status', true],
+      ['author', true],
+      ['title', true],
+      ['limit', undefined],
+    ])
+    // The other alternatives of `coalesce` say what the param holds
+    expect(inference.params[2].type).toEqual({kind: 'string', array: false})
+  })
+
+  it('does not narrow a param to the literal it is compared with', () => {
+    expect(typeOf('*[$type == "post"]', 'type')).toEqual({kind: 'string', array: false})
+  })
+
   it('lists the params of a query that does not parse, without types', () => {
     const inference = inferQueryParams('*[_type == $type && title == $title', {
       schema,

@@ -744,6 +744,11 @@
   white-space: normal;
 }
 
+/* A disabled menu item lets the pointer through to its wrapper, which carries the tooltip */
+.disabledMenuItemTarget > [disabled] {
+  pointer-events: none;
+}
+
 .exportUnavailableHint {
   display: block;
   overflow: visible;

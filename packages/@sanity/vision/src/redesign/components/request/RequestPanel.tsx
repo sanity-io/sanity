@@ -77,6 +77,7 @@ import {GenerateQueryButton} from './GenerateQueryButton'
 import {LintFix} from './LintFix'
 import {LiveButton} from './LiveButton'
 import {OptionsPanel} from './OptionsPanel'
+import {ParamsActionsMenu} from './ParamsActionsMenu'
 import {ParamsForm} from './ParamsForm'
 import {ParamsPanel} from './ParamsPanel'
 import {QueryActionsMenu} from './QueryActionsMenu'
@@ -441,14 +442,22 @@ export function RequestPanel(props: RequestPanelProps) {
                 selected={paramsView === 'form'}
               />
             </TabList>
-            <EditorCornerActions
-              copied={copied === 'params'}
-              copyLabel={t('vision.params.copy')}
-              formatLabel={canFormatParams ? t('vision.params.format') : undefined}
-              onCopy={onCopyParams}
-              onFormat={onFormatParams}
-              testIdPrefix="vision-params"
-            />
+            <Flex
+              alignItems="center"
+              data-testid="vision-params-toolbar-actions"
+              flexShrink={0}
+              gap={1}
+            >
+              <EditorCornerActions
+                copied={copied === 'params'}
+                copyLabel={t('vision.params.copy')}
+                formatLabel={canFormatParams ? t('vision.params.format') : undefined}
+                onCopy={onCopyParams}
+                onFormat={onFormatParams}
+                testIdPrefix="vision-params"
+              />
+              <ParamsActionsMenu tab={tab} />
+            </Flex>
           </Flex>
         ),
         content: (
