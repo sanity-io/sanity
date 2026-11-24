@@ -62,7 +62,16 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
   const [status, setStatus] = useState<QueryAgentStatus>({type: 'idle'})
   const controllerRef = useRef<AbortController | null>(null)
 
-  useEffect(() => () => controllerRef.current?.abort(), [])
+  // Hiding a query tab or Vision tears this effect down (Activity) and aborts the request; the
+  // component stays mounted with its state, so the status has to go back to idle or Fix with AI
+  // (and the prompt bar) stay stuck on "running" with their buttons disabled
+  useEffect(
+    () => () => {
+      controllerRef.current?.abort()
+      setStatus({type: 'idle'})
+    },
+    [],
+  )
 
   // The editors replace their content in one undoable step, so undo brings back what the tab had;
   // the query is formatted first so that step is the only one. Undo does not bring back a title,
@@ -103,6 +112,10 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
       const controller = new AbortController()
       controllerRef.current = controller
       setStatus({type: 'running', attempt: 1})
+      const clearIfCurrent = () => {
+        // A superseded run has already replaced the controller; leave its status alone
+        if (controllerRef.current === controller) setStatus({type: 'idle'})
+      }
       try {
         const generated = await ask({
           client,
@@ -119,8 +132,13 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
           },
           controller.signal,
         )
+        // open returns without writing when the request was aborted mid-format
+        if (controller.signal.aborted) clearIfCurrent()
       } catch (error) {
-        if (controller.signal.aborted) return
+        if (controller.signal.aborted) {
+          clearIfCurrent()
+          return
+        }
         const limit = readAiCreditsLimit(error)
         if (limit) {
           reportAiCreditsLimit(client, limit)
