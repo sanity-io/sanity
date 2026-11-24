@@ -13,6 +13,7 @@ import {
 import {Flex} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
+import {isEditTransactionEvent} from './timelineRows'
 
 export interface TimelineItemProps {
   event: DocumentGroupEvent
@@ -62,7 +63,11 @@ export function EventTimelineItem({event, isSelected, onSelect, optionsMenu}: Ti
             width: '100%',
           }}
         >
-          <Event event={event} showChangesBy="tooltip" />
+          {/* A transaction has a single author, already shown as the row avatar. */}
+          <Event
+            event={event}
+            showChangesBy={isEditTransactionEvent(event) ? 'hidden' : 'tooltip'}
+          />
         </Card>
       </Tooltip>
       {optionsMenu}

@@ -13,12 +13,18 @@ import {
   LoadingBlock,
   useTranslation,
 } from 'sanity'
-import {Text, Flex, Box} from 'ui5'
+import {Text, Flex, Box, type Space} from 'ui5'
 
 import {ExpandableTimelineItemButton} from '../expandableTimelineItemButton'
 import {ListWrapper, Root} from '../timeline.styled'
 import {EventTimelineItem} from './EventTimelineItem'
 import {PublishedEventMenu} from './PublishedEventMenu'
+import {
+  getAncestorIds,
+  getTimelineRows,
+  getTransactionCounts,
+  type TimelineRow,
+} from './timelineRows'
 
 interface TimelineProps {
   events: DocumentGroupEvent[]
@@ -48,6 +54,9 @@ const CHILDREN_ITEMS_VARIANTS: Variants = {
 
 const ITEM_HEIGHT = 57
 
+/** Left padding of a row, by how deep it is nested. */
+const DEPTH_PADDING: Space[] = [1, 4, 5]
+
 const TIMELINE_LIST_WRAPPER_ID = 'timeline-list-wrapper'
 
 export const EventsTimeline = ({
@@ -61,64 +70,67 @@ export const EventsTimeline = ({
 }: TimelineProps) => {
   const [mounted, setMounted] = useState(false)
   const {t} = useTranslation('studio')
-  const [expandedParents, setExpandedParents] = useState<Set<string>>(() => {
-    if (selectedEventId) {
-      // Find that event and if it has a parent, expand the parent.
-      const selectedEvent = allEvents.find((event) => event.id === selectedEventId)
-      if (selectedEvent && 'parentId' in selectedEvent && selectedEvent.parentId) {
-        return new Set([selectedEvent.parentId])
-      }
+  // Expand every event the selected event is nested under, so it is visible.
+  const [initialExpansion] = useState(() => {
+    const parentIds = getAncestorIds(allEvents, selectedEventId)
+    return {
+      parentIds,
+      editGroups: allEvents.filter(
+        (event) =>
+          parentIds.includes(event.id) && isEditDocumentVersionEvent(event) && !event.isTransaction,
+      ),
     }
-    return new Set()
   })
+  const [expandedParents, setExpandedParents] = useState<Set<string>>(
+    () => new Set(initialExpansion.parentIds),
+  )
   const [expandingParents, setExpandingParents] = useState<Set<string>>(new Set())
 
-  const events = useMemo(() => {
-    return allEvents.filter((event) => {
-      if (isCreateDocumentVersionEvent(event) && event.parentId) {
-        // Check if it's the last event in the list, in that case, we want to show it
-        const isLastEvent = allEvents[allEvents.length - 1].id === event.id
-        if (isLastEvent) return true
-        return expandedParents.has(event.parentId)
-      }
-      if (isEditDocumentVersionEvent(event) && event.parentId) {
-        return expandedParents.has(event.parentId)
-      }
-      return true
-    })
-  }, [expandedParents, allEvents])
+  const transactionCounts = useMemo(() => getTransactionCounts(allEvents), [allEvents])
+  const rows = useMemo(
+    () => getTimelineRows({events: allEvents, expandedParents}),
+    [allEvents, expandedParents],
+  )
+
+  useEffect(() => {
+    // Edit groups expanded to show the selected transaction are frozen like the ones the user
+    // expands, so new edits don't regroup them.
+    for (const editGroup of initialExpansion.editGroups) {
+      void fetchEventChildren(editGroup)
+    }
+  }, [fetchEventChildren, initialExpansion])
 
   const handleExpandParent = useCallback(
     (event: DocumentGroupEvent) => async () => {
       const parentId = event.id
+      const isExpanding = !expandedParents.has(parentId)
 
-      let isExpanding = false
       setExpandedParents((prev) => {
         const next = new Set(prev)
-
-        if (prev.has(parentId)) next.delete(parentId)
-        else {
-          isExpanding = true
-          next.add(parentId)
-        }
-
+        if (isExpanding) next.add(parentId)
+        else next.delete(parentId)
         return next
       })
-      if (isExpanding) {
-        setExpandingParents((prev) => {
-          const next = new Set(prev)
-          next.add(parentId)
-          return next
-        })
-        await fetchEventChildren(event)
-        setExpandingParents((prev) => {
-          const next = new Set(prev)
-          next.delete(parentId)
-          return next
-        })
+      if (!isExpanding) return
+
+      if (isEditDocumentVersionEvent(event)) {
+        // The transactions are listed already, expanding only freezes the group.
+        void fetchEventChildren(event)
+        return
       }
+      setExpandingParents((prev) => {
+        const next = new Set(prev)
+        next.add(parentId)
+        return next
+      })
+      await fetchEventChildren(event)
+      setExpandingParents((prev) => {
+        const next = new Set(prev)
+        next.delete(parentId)
+        return next
+      })
     },
-    [fetchEventChildren, setExpandingParents],
+    [expandedParents, fetchEventChildren, setExpandingParents],
   )
 
   const handleSelectChunk = useCallback(
@@ -138,7 +150,8 @@ export const EventsTimeline = ({
         (isPublishDocumentVersionEvent(event) &&
           documentVariantType === 'draft' &&
           event.creationEvent) ||
-        (isDeleteDocumentVersionEvent(event) && event.creationEvent)
+        (isDeleteDocumentVersionEvent(event) && event.creationEvent) ||
+        (isEditDocumentVersionEvent(event) && transactionCounts.has(event.id))
       ) {
         return (
           <ExpandableTimelineItemButton
@@ -149,11 +162,12 @@ export const EventsTimeline = ({
       }
       return null
     },
-    [expandedParents, handleExpandParent],
+    [expandedParents, handleExpandParent, transactionCounts],
   )
 
-  const renderItem = useCallback<CommandListRenderItemCallback<DocumentGroupEvent[][number]>>(
-    (event, {activeIndex}) => {
+  const renderItem = useCallback<CommandListRenderItemCallback<TimelineRow>>(
+    (row, {activeIndex}) => {
+      const {event, depth} = row
       /**
        * The create version event will be present while expanding (loading the edits), so we are attaching to it the loading block at the top.
        * - publishEvent (expanding?)
@@ -164,7 +178,7 @@ export const EventsTimeline = ({
         event.parentId &&
         expandingParents.has(event.parentId)
 
-      const isLastEvent = activeIndex === events.length - 1
+      const isLastEvent = activeIndex === rows.length - 1
       if (showExpandingLoader) {
         return (
           <TimelineItemWrapper
@@ -188,13 +202,7 @@ export const EventsTimeline = ({
           exit="exit"
           initial="initial"
           variants={'parentId' in event ? CHILDREN_ITEMS_VARIANTS : undefined}
-          paddingLeft={
-            (isEditDocumentVersionEvent(event) || isCreateDocumentVersionEvent(event)) &&
-            event.parentId &&
-            !isLastEvent
-              ? 4
-              : 1
-          }
+          paddingLeft={DEPTH_PADDING[Math.min(depth, DEPTH_PADDING.length - 1)]}
         >
           <EventTimelineItem
             event={event}
@@ -212,14 +220,14 @@ export const EventsTimeline = ({
       selectedEventId,
       handleSelectChunk,
       renderOptionsMenu,
-      events.length,
+      rows.length,
       hasMoreEvents,
     ],
   )
 
   // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
   useEffect(() => setMounted(true), [])
-  const selectedIndex = events.findIndex((event) => event.id === selectedEventId)
+  const selectedIndex = rows.findIndex((row) => row.event.id === selectedEventId)
 
   return (
     <Root
@@ -234,7 +242,7 @@ export const EventsTimeline = ({
       $visible={!selectedIndex || mounted}
       data-ui="timeline"
     >
-      {events.length > 0 ? (
+      {rows.length > 0 ? (
         <ListWrapper
           flexDirection="column"
           $maxHeight={listMaxHeight}
@@ -247,7 +255,7 @@ export const EventsTimeline = ({
             initialIndex={selectedIndex}
             initialScrollAlign="center"
             itemHeight={ITEM_HEIGHT}
-            items={events}
+            items={rows}
             onEndReached={onLoadMore}
             onEndReachedIndexOffset={20}
             overscan={5}
