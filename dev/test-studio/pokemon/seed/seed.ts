@@ -36,11 +36,29 @@ const CACHE_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', '.cache')
 const CONCURRENCY = Number(args.concurrency)
 const LIMIT = args.limit ? Number(args.limit) : undefined
 
+/** Document ids must not contain dots, so anything outside `[a-zA-Z0-9_-]` becomes a hyphen. */
+const idPart = (part: string | number) => String(part).replace(/[^a-zA-Z0-9_-]/g, '-')
+
 const ids = {
-  pokemon: (name: string) => `${POKEMON_ID_PREFIX}species.${name}`,
-  type: (name: string) => `${POKEMON_ID_PREFIX}type.${name}`,
-  ability: (name: string) => `${POKEMON_ID_PREFIX}ability.${name}`,
-  generation: (number: number) => `${POKEMON_ID_PREFIX}generation.${number}`,
+  pokemon: (name: string) => `${POKEMON_ID_PREFIX}species_${idPart(name)}`,
+  type: (name: string) => `${POKEMON_ID_PREFIX}type_${idPart(name)}`,
+  ability: (name: string) => `${POKEMON_ID_PREFIX}ability_${idPart(name)}`,
+  generation: (number: number) => `${POKEMON_ID_PREFIX}generation_${idPart(number)}`,
+}
+
+/** Throws when a document `_id` or a reference `_ref` anywhere in `value` contains a dot. */
+function assertNoDottedIds(value: unknown, path = '$') {
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => assertNoDottedIds(item, `${path}[${index}]`))
+    return
+  }
+  if (typeof value !== 'object' || value === null) return
+  for (const [key, child] of Object.entries(value)) {
+    if ((key === '_id' || key === '_ref') && typeof child === 'string' && child.includes('.')) {
+      throw new Error(`${path}.${key} is "${child}", but document ids must not contain dots`)
+    }
+    assertNoDottedIds(child, `${path}.${key}`)
+  }
 }
 
 /* -------------------------------------------------------------------------------------------- */
@@ -500,7 +518,7 @@ async function resolveImage(key: string, source: ImageSource): Promise<ResolvedI
     url: source.url,
     assetId: `image-${sha1}-${width}x${height}-png`,
     buffer,
-    filename: `${key.replace(POKEMON_ID_PREFIX, '').replace(/[.:]/g, '-')}.png`,
+    filename: `${key.replace(POKEMON_ID_PREFIX, '').replace(/[._:]/g, '-')}.png`,
   }
   if (!source.cropToContent || !bounds) return resolved
 
@@ -589,24 +607,68 @@ async function writeDocuments(client: SanityClient, label: string, docs: Doc[]) 
   }
 }
 
-/** Removes `pokemon` documents that were not written by this script and would clash with it. */
+/**
+ * The types the seed writes, in the order their stale documents can be deleted. Every reference is
+ * strong, so a document can only be deleted once nothing that stays references it: species go
+ * first, then the abilities and types they point at, then the generations those point at. Species
+ * reference each other (evolutions) and so do types (damage relations), so those references are
+ * unset before the documents are deleted; otherwise a batch would fail on a reference to a
+ * document in a later batch.
+ */
+const STALE_TIERS: {type: string; unset: string[]}[] = [
+  {type: 'pokemon', unset: ['evolvesFrom', 'evolutions']},
+  {type: 'pokemonAbility', unset: []},
+  {
+    type: 'pokemonType',
+    unset: [
+      'strongAgainst',
+      'notVeryEffectiveAgainst',
+      'noEffectAgainst',
+      'weakTo',
+      'resistantTo',
+      'immuneTo',
+    ],
+  },
+  {type: 'pokemonGeneration', unset: []},
+]
+
+/**
+ * Removes `pokemon` documents that were not written by this script and would clash with it, such
+ * as the ones an earlier version of it wrote under ids that contained dots.
+ */
 async function pruneStaleDocuments(client: SanityClient) {
-  const stale = await client.fetch<string[]>(
-    `*[_type in ["pokemon", "pokemonType", "pokemonAbility", "pokemonGeneration"]
-      && !(_id in path($prefix)) && !(_id in path($draftPrefix))]._id`,
-    {prefix: `${POKEMON_ID_PREFIX}**`, draftPrefix: `drafts.${POKEMON_ID_PREFIX}**`},
+  const stale = await client.fetch<{_id: string; _type: string}[]>(
+    `*[_type in $types
+      && !string::startsWith(_id, $prefix) && !string::startsWith(_id, $draftPrefix)]{_id, _type}`,
+    {
+      types: STALE_TIERS.map((tier) => tier.type),
+      prefix: POKEMON_ID_PREFIX,
+      draftPrefix: `drafts.${POKEMON_ID_PREFIX}`,
+    },
   )
   if (stale.length === 0) return
   console.log(`Deleting ${stale.length} stale documents that were not created by this script…`)
-  for (const batch of chunk(stale, 100)) {
-    const transaction = client.transaction()
-    batch.forEach((id) => transaction.delete(id))
-    await transaction.commit({visibility: 'async'})
+  for (const tier of STALE_TIERS) {
+    const tierIds = stale.filter((doc) => doc._type === tier.type).map((doc) => doc._id)
+    if (tier.unset.length > 0) {
+      for (const batch of chunk(tierIds, 100)) {
+        const transaction = client.transaction()
+        batch.forEach((id) => transaction.patch(id, {unset: tier.unset}))
+        await transaction.commit({visibility: 'sync'})
+      }
+    }
+    for (const batch of chunk(tierIds, 100)) {
+      const transaction = client.transaction()
+      batch.forEach((id) => transaction.delete(id))
+      await transaction.commit({visibility: 'sync'})
+    }
   }
 }
 
 async function main() {
   const {generationDocs, typeDocs, abilityDocs, pokemonDocs, images} = await buildDocuments()
+
+  assertNoDottedIds([...generationDocs, ...typeDocs, ...abilityDocs, ...pokemonDocs])
 
   console.log(`Downloading ${images.size} images…`)
   const resolved = new Map(

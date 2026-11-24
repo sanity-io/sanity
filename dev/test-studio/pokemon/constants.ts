@@ -1,6 +1,9 @@
-/** Every document the seed script writes has an id in this namespace, so it never collides with
- * other documents in the dataset. */
-export const POKEMON_ID_PREFIX = 'pokemon.'
+/**
+ * Every document the seed script writes has an id in this namespace, so it never collides with
+ * other documents in the dataset. Ids use underscores as separators: a dot in a document id makes
+ * it path-scoped (private), which the studio and the public API treat differently.
+ */
+export const POKEMON_ID_PREFIX = 'pokemon_'
 
 export const POKEMON_TYPE_NAMES = [
   'normal',
