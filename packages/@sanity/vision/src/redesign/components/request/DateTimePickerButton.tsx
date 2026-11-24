@@ -11,6 +11,8 @@ import {
 import {useTranslation} from 'sanity/i18n'
 import {Flex, Text} from 'ui5'
 
+import * as styles from '../redesign.module.css'
+
 /** The calendar shows and picks times in the local time zone; nothing stores a choice for it */
 const TIME_ZONE_SCOPE = {type: 'input', id: 'vision.params'} as const
 
@@ -88,6 +90,7 @@ export function DateTimePickerButton(props: DateTimePickerButtonProps) {
         <LayerProvider zOffset={1000}>
           <Popover
             animate
+            className={styles.popoverScroll}
             constrainSize
             fallbackPlacements={FALLBACK_PLACEMENTS}
             content={

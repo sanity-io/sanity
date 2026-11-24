@@ -345,7 +345,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                         }
                         id={`vision-saved-query-menu-${query._key}`}
                         menu={
-                          <Menu>
+                          <Menu className={styles.popoverScroll}>
                             <MenuItem
                               icon={LaunchIcon}
                               onClick={() => openInNewTab(item)}

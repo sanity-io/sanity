@@ -62,7 +62,7 @@ export function ParamsActionsMenu({tab, params}: ParamsActionsMenuProps) {
             }
             id={`vision-params-menu-${tab.id}`}
             menu={
-              <Menu data-testid="vision-params-menu">
+              <Menu className={styles.popoverScroll} data-testid="vision-params-menu">
                 <ExportMenuItem
                   data-testid="vision-params-export-typescript"
                   disabled={!hasParams}

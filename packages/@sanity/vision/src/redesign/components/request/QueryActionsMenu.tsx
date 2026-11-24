@@ -65,7 +65,7 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
             }
             id={`vision-query-menu-${tab.id}`}
             menu={
-              <Menu>
+              <Menu className={styles.popoverScroll}>
                 <MenuItem
                   data-testid="vision-export-query"
                   disabled={!request}

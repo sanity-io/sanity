@@ -28,6 +28,7 @@ import {useParamsInference} from '../../hooks/useParamsInference'
 import {isObjectParam} from '../../util/objectParams'
 import {type InferredParam, type ParamKind, type ParamType} from '../../util/paramInference'
 import * as fieldGrid from '../fieldGrid.module.css'
+import * as styles from '../redesign.module.css'
 import {VisionTooltip} from '../VisionTooltip'
 import {DateTimePickerButton} from './DateTimePickerButton'
 import {ObjectParamInput} from './ObjectParamInput'
@@ -244,7 +245,7 @@ function DocumentTypeInput(props: DocumentTypeInputProps) {
       openButton
       options={options}
       placeholder={placeholder}
-      popover={{constrainSize: true, portal: true}}
+      popover={{className: styles.popoverScroll, constrainSize: true, portal: true}}
       renderOption={renderDocumentTypeOption}
       value={heldValue ?? text}
     />

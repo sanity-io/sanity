@@ -372,6 +372,7 @@ export function MutateTab(props: MutateTabProps) {
     <Flex data-testid="vision-mutate" flexDirection="column" height="100%">
       {/* Scrolls only in a drawer too short for the least room the editor takes */}
       <Flex
+        className={styles.nestedScroll}
         flexBasis="0%"
         flexDirection="column"
         flexGrow={1}
@@ -442,7 +443,7 @@ export function MutateTab(props: MutateTabProps) {
                     }
                     id={tabElementId('vision-mutate-add')}
                     menu={
-                      <Menu>
+                      <Menu className={styles.popoverScroll}>
                         <MenuItem
                           data-testid="vision-mutate-add-patch"
                           fontSize={1}
@@ -498,6 +499,7 @@ export function MutateTab(props: MutateTabProps) {
           </Flex>
           {hasOutcome && (
             <Flex
+              className={styles.nestedScroll}
               data-testid="vision-mutate-outcome"
               flexDirection="column"
               gap={4}
