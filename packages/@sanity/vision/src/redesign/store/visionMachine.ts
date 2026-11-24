@@ -481,6 +481,7 @@ export const visionMachine = setup({
           {guard: {type: 'isResultView', params: {view: 'tree'}}, target: '.tree'},
           {guard: {type: 'isResultView', params: {view: 'json'}}, target: '.json'},
           {guard: {type: 'isResultView', params: {view: 'graph'}}, target: '.graph'},
+          {guard: {type: 'isResultView', params: {view: 'documents'}}, target: '.documents'},
         ],
       },
       states: {
@@ -488,12 +489,14 @@ export const visionMachine = setup({
           always: [
             {guard: {type: 'wasResultView', params: {view: 'tree'}}, target: 'tree'},
             {guard: {type: 'wasResultView', params: {view: 'graph'}}, target: 'graph'},
+            {guard: {type: 'wasResultView', params: {view: 'documents'}}, target: 'documents'},
             {target: 'json'},
           ],
         },
         tree: {},
         json: {},
         graph: {},
+        documents: {},
       },
     },
     optionsPanel: {
@@ -588,6 +591,7 @@ export function selectParamsView(snapshot: VisionSnapshot): VisionParamsView {
 
 export function selectResultView(snapshot: VisionSnapshot): VisionResultView {
   if (snapshot.matches({resultView: 'tree'})) return 'tree'
+  if (snapshot.matches({resultView: 'documents'})) return 'documents'
   return snapshot.matches({resultView: 'graph'}) ? 'graph' : 'json'
 }
 
