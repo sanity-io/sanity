@@ -1,8 +1,14 @@
 import {describe, expect, it} from 'vitest'
 
-import {createDocumentVersionEvent, DRAFT_ID, minutesAfterBase} from './__fixtures__/events.fixture'
+import {
+  createDocumentVersionEvent,
+  DRAFT_ID,
+  minutesAfterBase,
+  publishDocumentVersionEvent,
+} from './__fixtures__/events.fixture'
 import {editTransaction} from './__fixtures__/transactions.fixture'
 import {
+  addEditTransactionEvents,
   getEditEvents,
   getEffectState,
   mergeEditEvents,
@@ -385,6 +391,71 @@ describe('getEditEvents()', () => {
       const [expanded] = getEditEvents([fetchedEdit], DRAFT_ID)
       const events = [...getEditEvents([liveEdit], DRAFT_ID), {...expanded, parentId: 'tx-publish'}]
       expect(mergeEditEvents(events)).toEqual(events)
+    })
+  })
+
+  describe('addEditTransactionEvents()', () => {
+    const transactions = [
+      editTransaction({id: 'tx-1', timestamp: minutesAfterBase(1), author: 'author-1'}),
+      editTransaction({id: 'tx-2', timestamp: minutesAfterBase(2), author: 'author-2'}),
+      editTransaction({id: 'tx-3', timestamp: minutesAfterBase(3), author: 'author-1'}),
+    ]
+
+    it('lists the transactions older than the group revision after the group, newest first', () => {
+      const [group] = getEditEvents(transactions, DRAFT_ID)
+      const create = createDocumentVersionEvent()
+
+      const result = addEditTransactionEvents([group, create])
+
+      expect(result).toEqual([
+        group,
+        {
+          type: 'editDocumentVersion',
+          documentId: DRAFT_ID,
+          documentVariantType: 'draft',
+          id: 'tx-2',
+          revisionId: 'tx-2',
+          timestamp: minutesAfterBase(2),
+          author: 'author-2',
+          contributors: ['author-2'],
+          transactions: [group.transactions[1]],
+          parentId: 'tx-3',
+          isTransaction: true,
+        },
+        expect.objectContaining({id: 'tx-1', parentId: 'tx-3', isTransaction: true}),
+        create,
+      ])
+    })
+
+    it('lists nothing for an edit event with a single transaction', () => {
+      const events = getEditEvents(transactions.slice(0, 1), DRAFT_ID)
+      expect(addEditTransactionEvents(events)).toEqual(events)
+    })
+
+    it('skips the publish revision when the group id was re-pointed at its second transaction', () => {
+      // `addParentToEvents` moves the id of the last edit before a publish to its second
+      // transaction, as the first one is the revision the publish event already stands for.
+      const [group] = getEditEvents(transactions, DRAFT_ID)
+      const publish = publishDocumentVersionEvent({id: 'tx-3', versionRevisionId: 'tx-3'})
+      const nested = {...group, id: 'tx-2', parentId: publish.id}
+
+      const result = addEditTransactionEvents([publish, nested])
+
+      expect(result.map((event) => event.id)).toEqual(['tx-3', 'tx-2', 'tx-1'])
+      expect(result[2]).toMatchObject({parentId: 'tx-2', isTransaction: true})
+    })
+
+    it('lists the transactions of edit events nested under an expanded publish', () => {
+      const [group] = getEditEvents(transactions, DRAFT_ID)
+      const nested = {...group, parentId: 'tx-publish'}
+
+      const result = addEditTransactionEvents([nested])
+
+      expect(result.map((event) => [event.id, 'parentId' in event && event.parentId])).toEqual([
+        ['tx-3', 'tx-publish'],
+        ['tx-2', 'tx-3'],
+        ['tx-1', 'tx-3'],
+      ])
     })
   })
 

@@ -183,17 +183,22 @@ function createDraftBackend(
   }
 }
 
-/** The events as the timeline lists them, edit events with the transactions they group. */
+/**
+ * The events as the timeline lists them while no event is expanded, edit events with the
+ * transactions they group.
+ */
 function timeline(events: DocumentGroupEvent[] | undefined) {
-  return events?.map((event) =>
-    isEditDocumentVersionEvent(event)
-      ? {
-          type: event.type,
-          id: event.id,
-          transactions: event.transactions.map((tx) => tx.revisionId),
-        }
-      : {type: event.type, id: event.id},
-  )
+  return events
+    ?.filter((event) => !(isEditDocumentVersionEvent(event) && event.isTransaction))
+    .map((event) =>
+      isEditDocumentVersionEvent(event)
+        ? {
+            type: event.type,
+            id: event.id,
+            transactions: event.transactions.map((tx) => tx.revisionId),
+          }
+        : {type: event.type, id: event.id},
+    )
 }
 
 describe('createEventsStore (integration)', () => {
@@ -571,6 +576,14 @@ describe('createEventsStore (integration)', () => {
       expect(timeline(creatorPane.values.at(-1)?.events)).toEqual(expected)
       expect(timeline(otherPane.values.at(-1)?.events)).toEqual(expected)
     })
+    // The older edit is also listed on its own under the group, for when the user expands it.
+    for (const pane of [creatorPane, otherPane]) {
+      expect(pane.values.at(-1)?.events[1]).toMatchObject({
+        id: 'tx-edit-1',
+        parentId: 'tx-edit-2',
+        isTransaction: true,
+      })
+    }
     creatorPane.close()
     otherPane.close()
   })

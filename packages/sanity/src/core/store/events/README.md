@@ -87,3 +87,5 @@ The **Edit Event** is a special case. It is not returned directly by the API but
 2. Processing new transactions as they are received in real-time through change listeners.
 
 Each source groups its own transactions, so `createEventsObservable` regroups consecutive edit events together (`mergeEditEvents`): edits made within the merge window end up in the same event whether the studio fetched them or received them live.
+
+An edit event keeps the transactions it grouped, so the last step of `createEventsObservable` lists them right after it (`addEditTransactionEvents`): one `editDocumentVersion` event per transaction older than the group's own revision, with `isTransaction: true` and `parentId` pointing at the group. The timeline hides them until the user expands the group, and selecting one shows the document at that transaction. They are always part of the events list, so a `rev` pointing at a transaction resolves after a reload too.

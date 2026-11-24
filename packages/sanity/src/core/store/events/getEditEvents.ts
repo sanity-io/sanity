@@ -193,3 +193,45 @@ export function mergeEditEvents(events: DocumentGroupEvent[]): DocumentGroupEven
   endRun()
   return result
 }
+
+/**
+ * Lists the transactions of every grouped edit event as events of their own, right after the
+ * group, so the timeline can expand the group and the user can select the document at any of
+ * them. Runs last in the events pipeline (after the variant transforms), so the listed
+ * transactions are never regrouped or re-parented.
+ *
+ * - Only the transactions older than the group's own revision (the transaction whose `revisionId`
+ *   is the group's `id`) are listed, newest first. The newest transaction is the group itself;
+ *   when `addParentToEvents` re-pointed the group's id at its second transaction, the first one
+ *   is the revision of the publish event that follows it. Either way every revision is listed
+ *   once.
+ * - Each listed transaction is an `editDocumentVersion` event with that single transaction,
+ *   `isTransaction: true` and `parentId` set to the group's id.
+ */
+export function addEditTransactionEvents(events: DocumentGroupEvent[]): DocumentGroupEvent[] {
+  const result: DocumentGroupEvent[] = []
+  for (const event of events) {
+    result.push(event)
+    if (!isEditDocumentVersionEvent(event) || event.isTransaction) continue
+
+    const ownTransactionIndex = event.transactions.findIndex(
+      (transaction) => transaction.revisionId === event.id,
+    )
+    for (const transaction of event.transactions.slice(ownTransactionIndex + 1)) {
+      result.push({
+        type: 'editDocumentVersion',
+        documentId: event.documentId,
+        documentVariantType: event.documentVariantType,
+        id: transaction.revisionId,
+        revisionId: transaction.revisionId,
+        timestamp: transaction.timestamp,
+        author: transaction.author,
+        contributors: [transaction.author],
+        transactions: [transaction],
+        parentId: event.id,
+        isTransaction: true,
+      })
+    }
+  }
+  return result
+}
