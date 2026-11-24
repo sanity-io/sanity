@@ -1,8 +1,9 @@
 import {type Anthropic} from '@anthropic-ai/sdk'
 
-import {getModel, MODEL_EFFORT, SHORTLIST_SIZE, TEXT_LIMITS} from './config'
+import {getModel, MODEL_EFFORT, SHORTLIST_SIZE, TEXT_LIMITS, URGENT_SOAK_DAYS} from './config'
 import {GENERAL_CONCERN, type Prompt} from './prompt'
 import {stripControlChars} from './render'
+import {pluralSuffix} from './rules'
 import {
   type Candidate,
   type Evaluation,
@@ -150,6 +151,22 @@ export function summariseHardReasons(evaluation: Evaluation): string {
   return entries.length > 0 ? entries.join(', ') : 'no candidates'
 }
 
+function describeTopPick(evaluation: Evaluation, version: string): string {
+  const eligibleCount = evaluation.eligible.length
+  const urgentReason = evaluation.candidates.find(
+    (candidate) => candidate.version === version,
+  )?.urgentReason
+  const eligibleSummary = `${eligibleCount} version${pluralSuffix(eligibleCount)} ${eligibleCount === 1 ? 'is' : 'are'} eligible.`
+  const soak = `ranks first after a ${URGENT_SOAK_DAYS} day soak`
+  if (urgentReason === 'stable-patch') {
+    return `${version} patches stable ${evaluation.currentStable}, so it ${soak}. ${eligibleSummary}`
+  }
+  if (urgentReason === 'stable-at-risk-fix') {
+    return `${version} is the oldest eligible version that fixes the regression in stable ${evaluation.currentStable}, so it ${soak}. ${eligibleSummary}`
+  }
+  return `${version} is the newest of ${eligibleCount} eligible version${pluralSuffix(eligibleCount)}.`
+}
+
 export function deterministicRecommendation(
   evaluation: Evaluation,
   reason: ModelFailureReason,
@@ -168,7 +185,7 @@ export function deterministicRecommendation(
     headline: top ? `Promote ${top.version}` : 'Hold: no version is eligible to promote',
     rationale: cleanText(
       top
-        ? `${top.version} is the newest of ${evaluation.eligible.length} eligible versions. ${top.reason}`
+        ? `${describeTopPick(evaluation, top.version)} ${top.reason}`
         : `No version passes the hard rules. Blocking reasons: ${summariseHardReasons(evaluation)}.`,
       TEXT_LIMITS.rationale,
     ),

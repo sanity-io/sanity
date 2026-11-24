@@ -1,6 +1,6 @@
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
-import {makeEvaluation, makeEvidence} from './__fixtures__/factories'
+import {makeCandidate, makeEvaluation, makeEvidence} from './__fixtures__/factories'
 import {MODEL_ENV_VAR, SHORTLIST_SIZE, TEXT_LIMITS} from './config'
 import {
   askModel,
@@ -199,6 +199,60 @@ describe('deterministicRecommendation', () => {
       confidence: null,
       headline: 'Promote 6.23.0',
     })
+  })
+
+  test('says the newest version leads when no candidate is urgent', () => {
+    const result = deterministicRecommendation(makeEvaluation(), 'no-api-key')
+    expect(result.rationale).toContain('6.23.0 is the newest of 3 eligible versions.')
+  })
+
+  test('explains a stable patch leading instead of calling it the newest', () => {
+    const evaluation = makeEvaluation({
+      candidates: [
+        makeCandidate('6.15.1', {ageDays: 3, urgentReason: 'stable-patch'}),
+        makeCandidate('6.17.0', {ageDays: 30}),
+      ],
+      eligible: ['6.15.1', '6.17.0'],
+      shortlist: ['6.15.1', '6.17.0'],
+    })
+    const result = deterministicRecommendation(evaluation, 'no-api-key')
+    expect(result.rationale).toContain(
+      '6.15.1 patches stable 6.15.0, so it ranks first after a 1 day soak. 2 versions are eligible.',
+    )
+    expect(result.rationale).not.toContain('newest')
+  })
+
+  test('explains a regression fix leading instead of calling it the newest', () => {
+    const evaluation = makeEvaluation({
+      candidates: [
+        makeCandidate('6.15.2', {ageDays: 3, urgentReason: 'stable-at-risk-fix'}),
+        makeCandidate('6.17.0', {ageDays: 30}),
+      ],
+      eligible: ['6.15.2', '6.17.0'],
+      shortlist: ['6.15.2', '6.17.0'],
+    })
+    const result = deterministicRecommendation(evaluation, 'no-api-key')
+    expect(result.rationale).toContain(
+      '6.15.2 is the oldest eligible version that fixes the regression in stable 6.15.0, so it ranks first after a 1 day soak. 2 versions are eligible.',
+    )
+    expect(result.rationale).not.toContain('newest')
+  })
+
+  test('uses singular wording when a single version is eligible', () => {
+    const newest = deterministicRecommendation(
+      makeEvaluation({eligible: ['6.23.0'], shortlist: ['6.23.0']}),
+      'no-api-key',
+    )
+    expect(newest.rationale).toContain('6.23.0 is the newest of 1 eligible version.')
+    const patch = deterministicRecommendation(
+      makeEvaluation({
+        candidates: [makeCandidate('6.15.1', {ageDays: 3, urgentReason: 'stable-patch'})],
+        eligible: ['6.15.1'],
+        shortlist: ['6.15.1'],
+      }),
+      'no-api-key',
+    )
+    expect(patch.rationale).toContain('after a 1 day soak. 1 version is eligible.')
   })
 
   test('holds when nothing is eligible and names the blocking reasons', () => {

@@ -324,7 +324,7 @@ function adoptionShareOf(evidence: Evidence, version: string): number | null {
   return total > 0 ? (downloads[version] ?? 0) / total : null
 }
 
-function pluralSuffix(count: number): string {
+export function pluralSuffix(count: number): string {
   return count === 1 ? '' : 's'
 }
 
