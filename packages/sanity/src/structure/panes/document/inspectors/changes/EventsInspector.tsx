@@ -1,6 +1,6 @@
 import {diffInput, wrap} from '@sanity/diff'
 import {type Path} from '@sanity/types'
-import {BoundaryElementProvider, Card, Spinner} from '@sanity/ui'
+import {BoundaryElementProvider, Card} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type ReactElement, type ReactNode, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
@@ -25,7 +25,7 @@ import {
   useTranslation,
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
-import {Text, Flex, Box, Grid} from 'ui5'
+import {Spinner, Text, Flex, Box, Grid} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
