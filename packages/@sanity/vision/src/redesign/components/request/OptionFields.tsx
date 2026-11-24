@@ -73,13 +73,17 @@ export function ApiVersionField({
   const isValid = validateApiVersion(shownValue)
   const lockedHintId = useId()
   const options = useMemo(() => getApiVersionOptions([value]), [value])
-  // The version the list opened on. Typing stores each keystroke, so comparing the query to the
-  // live value would match every option; this stays on the text the list opened with until it closes.
+  // The text the list opened with. Each keystroke is stored, so the query and the stored version
+  // are the same string while typing; remembering the opening text is what keeps that from
+  // matching every option.
   const openQuery = useRef<string | null>(null)
   const committedVersion = useRef(shownValue)
   useEffect(() => {
     committedVersion.current = shownValue
   }, [shownValue])
+  // Autocomplete clears its query when `value` changes, which would show every option again.
+  // Hold the version the field opened with until the edit ends, and let the stored version move.
+  const [heldValue, setHeldValue] = useState<string | null>(null)
 
   const change = useCallback(
     (next: string) => {
@@ -171,12 +175,15 @@ export function ApiVersionField({
             }}
             onChange={change}
             onQueryChange={(query) => {
-              // `null` is the list closing. The stored version follows the text while it is open.
+              // `null` is the list closing.
               if (query === null) {
                 openQuery.current = null
+                setHeldValue(null)
                 return
               }
-              if (!locked) change(query)
+              if (locked) return
+              setHeldValue((current) => current ?? shownValue)
+              change(query)
             }}
             openButton
             options={options}
@@ -184,7 +191,7 @@ export function ApiVersionField({
             placeholder={DEFAULT_API_VERSION}
             popover={{constrainSize: true, portal: true}}
             renderOption={renderOption}
-            value={shownValue}
+            value={heldValue ?? shownValue}
           />
         </Box>
       </Tooltip>
