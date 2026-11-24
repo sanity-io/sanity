@@ -1,5 +1,4 @@
 import {JsonInspector} from '@rexxars/react-json-inspector'
-import {CopyIcon} from '@sanity/icons/Copy'
 import {LinkIcon} from '@sanity/icons/Link'
 import {rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
@@ -10,6 +9,7 @@ import {IntentLink} from 'sanity/router'
 
 import {getAtKeypath} from '../util/getAtKeypath'
 import * as styles from './ResultView.module.css'
+import {ResultViewRowActions} from './ResultViewRowActions'
 
 const lru = new LRU({maxSize: 50000})
 
@@ -28,7 +28,7 @@ interface ResultViewWrapperStyle extends CSSProperties {
   '--vision-result-syntax-number': string
 }
 
-function ResultViewWrapper({children, copyable}: {children: ReactNode; copyable?: boolean}) {
+function ResultViewWrapper({children, rowActions}: {children: ReactNode; rowActions: boolean}) {
   const {color, font, space} = useThemeV2()
   const codeSize = font.code.sizes[2]
   const style: ResultViewWrapperStyle = {
@@ -49,7 +49,9 @@ function ResultViewWrapper({children, copyable}: {children: ReactNode; copyable?
   return (
     <div
       className={
-        copyable ? `${styles.resultViewWrapper} ${styles.copyableResult}` : styles.resultViewWrapper
+        rowActions
+          ? `${styles.resultViewWrapper} ${styles.withRowActions}`
+          : styles.resultViewWrapper
       }
       style={style}
     >
@@ -58,12 +60,18 @@ function ResultViewWrapper({children, copyable}: {children: ReactNode; copyable?
   )
 }
 
-/** A copy button next to every property of the tree, copying the property's value */
+/**
+ * A copy button after every property of the tree, copying the property's value. With it, `_id`
+ * and `_ref` values get an edit button next to it instead of the inline link.
+ */
 export interface ResultViewCopy {
   /** Accessible name and tooltip of the buttons */
   label: string
-  /** `keypath` is the property's dotted path from the root, empty for the root itself */
-  onCopy: (value: unknown, keypath: string) => void
+  /**
+   * `keypath` is the property's dotted path from the root, empty for the root itself. Resolves
+   * whether the value was copied.
+   */
+  onCopy: (value: unknown, keypath: string) => Promise<boolean>
 }
 
 interface ResultLabelContextValue {
@@ -88,7 +96,7 @@ export function ResultView(props: {
 
   if (isRecord(data) || Array.isArray(data)) {
     return (
-      <ResultViewWrapper copyable={Boolean(copy)}>
+      <ResultViewWrapper rowActions={Boolean(copy)}>
         <ResultLabelContext value={labelContext}>
           <JsonInspector
             data={data}
@@ -105,36 +113,54 @@ export function ResultView(props: {
   return <Code language="json">{JSON.stringify(data)}</Code>
 }
 
-function InteractiveLabel(props: {value: string; isKey: boolean; keypath: string}) {
-  const context = use(ResultLabelContext)
-  if (props.isKey) {
-    return context?.copy ? (
-      <CopyNodeButton copy={context.copy} data={context.data} keypath={props.keypath} />
-    ) : null
-  }
-  return context?.linkDocuments ? <DocumentEditLabel {...props} /> : null
+interface InteractiveLabelProps {
+  value: string
+  originalValue: unknown
+  isKey: boolean
+  keypath: string
 }
 
-function CopyNodeButton(props: {copy: ResultViewCopy; data: unknown; keypath: string}) {
-  const {copy, data, keypath} = props
+function InteractiveLabel(props: InteractiveLabelProps) {
+  const context = use(ResultLabelContext)
+  if (!context) return null
+  if (context.copy) return <RowActionsLabel {...props} context={context} copy={context.copy} />
+  return context.linkDocuments ? <DocumentEditLabel {...props} /> : null
+}
+
+/**
+ * The inspector renders a label after a line's key, and after its value when the value is a
+ * primitive. The actions follow a primitive's value, and an object's or array's summary: they sit
+ * in its key's label, which the stylesheet moves to the end of the line. The root has the result's
+ * own Copy button instead.
+ */
+function RowActionsLabel(
+  props: InteractiveLabelProps & {context: ResultLabelContextValue; copy: ResultViewCopy},
+) {
+  const {originalValue, isKey, keypath, context, copy} = props
+  const target = isKey && keypath ? getAtKeypath(context.data, keypath) : undefined
+  const composite = typeof target?.value === 'object' && target.value !== null
+  if (isKey ? !composite : !keypath) return null
+
+  const value = isKey ? target?.value : originalValue
+  const editId =
+    !isKey &&
+    context.linkDocuments &&
+    typeof originalValue === 'string' &&
+    isDocumentIdPath(keypath)
+      ? originalValue
+      : undefined
   return (
-    <button
-      aria-label={copy.label}
-      className={styles.copyNodeButton}
-      data-testid="result-copy-node"
-      onClick={(event) => {
-        // The button sits in the line's label, which toggles the node when clicked
-        event.preventDefault()
-        event.stopPropagation()
-        const found = getAtKeypath(data, keypath)
-        if (found) copy.onCopy(found.value, keypath)
-      }}
-      title={copy.label}
-      type="button"
-    >
-      <CopyIcon />
-    </button>
+    <ResultViewRowActions
+      copyLabel={copy.label}
+      editId={editId}
+      onCopy={() => copy.onCopy(value, keypath)}
+    />
   )
+}
+
+function isDocumentIdPath(keypath: string): boolean {
+  const key = keypath.slice(keypath.lastIndexOf('.') + 1)
+  return key === '_id' || key === '_ref'
 }
 
 function DocumentEditLabel(props: {value: string; isKey: boolean; keypath: string}) {
