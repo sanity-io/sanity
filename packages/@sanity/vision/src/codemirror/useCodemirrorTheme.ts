@@ -1,4 +1,4 @@
-import {HighlightStyle, syntaxHighlighting} from '@codemirror/language'
+import {HighlightStyle, syntaxHighlighting, type TagStyle} from '@codemirror/language'
 import {type Extension} from '@codemirror/state'
 import {EditorView} from '@codemirror/view'
 import {tags as t} from '@lezer/highlight'
@@ -109,11 +109,17 @@ function createTheme(theme: Theme) {
 
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 function createHighlight(theme: Theme) {
+  return HighlightStyle.define(createHighlightSpecs(theme))
+}
+
+/** The editors' syntax colors by highlight tag, which code shown outside an editor uses too */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+export function createHighlightSpecs(theme: Theme): TagStyle[] {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const c = theme.sanity.color.base
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const s = theme.sanity.color.syntax
-  return HighlightStyle.define([
+  return [
     {tag: t.keyword, color: s.keyword},
     {tag: [t.propertyName, t.name, t.deleted, t.character, t.macroName], color: s.property},
     {tag: [t.function(t.variableName), t.labelName], color: s.function},
@@ -144,5 +150,5 @@ function createHighlight(theme: Theme) {
     {tag: [t.atom, t.bool, t.special(t.variableName)], color: s.boolean},
     {tag: [t.processingInstruction, t.string, t.inserted], color: s.string},
     {tag: t.invalid, color: c.fg},
-  ])
+  ]
 }

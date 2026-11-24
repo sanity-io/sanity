@@ -1,5 +1,7 @@
 import {defineEvent} from '@sanity/telemetry'
 
+import {type VisionExportSnippetId} from '../redesign/store/types'
+
 /**
  * Temporary adoption events. They compare the same operations in classic and redesigned
  * Vision for a few months, then get removed. Payloads never include query text, parameter
@@ -100,7 +102,7 @@ export const VisionLintUsed = defineEvent<{action: 'open' | 'fix'}>({
     'The finding and the query are not recorded.',
 })
 
-export const VisionSnippetCopied = defineEvent<{snippet: 'curl' | 'client' | 'next-sanity'}>({
+export const VisionSnippetCopied = defineEvent<{snippet: VisionExportSnippetId}>({
   name: 'Vision Snippet Copied',
   version: 1,
   description:

@@ -10,6 +10,8 @@ import {
   type VisionDatasetMode,
   type VisionDrawer,
   type VisionEditorSettings,
+  type VisionExportSnippetId,
+  type VisionExportSnippetSettings,
   type VisionResponseSettings,
   type VisionHistoryDiffSettings,
   type VisionPanelsState,
@@ -51,6 +53,21 @@ const DEFAULT_AI_SETTINGS: VisionAiSettings = {
 
 const DEFAULT_EDITOR_SETTINGS: VisionEditorSettings = {
   autoFormatOnResize: true,
+}
+
+/** The Export query dialog's tabs, in the order they come in until the user reorders them */
+export const EXPORT_SNIPPET_IDS: readonly VisionExportSnippetId[] = [
+  'client',
+  'curl',
+  'next-sanity',
+  'astro',
+  'sveltekit',
+  'nuxt',
+]
+
+const DEFAULT_EXPORT_SNIPPET_SETTINGS: VisionExportSnippetSettings = {
+  order: [...EXPORT_SNIPPET_IDS],
+  hidden: [],
 }
 
 /** Looking up sync tags sends queries of its own, so it waits until it is switched on */
@@ -156,6 +173,10 @@ export function createInitialState(defaults: VisionStorageDefaults): VisionPersi
     ai: {...DEFAULT_AI_SETTINGS},
     editor: {...DEFAULT_EDITOR_SETTINGS},
     response: {...DEFAULT_RESPONSE_SETTINGS},
+    exportSnippets: {
+      order: [...DEFAULT_EXPORT_SNIPPET_SETTINGS.order],
+      hidden: [...DEFAULT_EXPORT_SNIPPET_SETTINGS.hidden],
+    },
     functions: [],
   }
 }
@@ -319,6 +340,27 @@ function sanitizeResponseSettings(value: unknown): VisionResponseSettings {
   return {resolveSyncTags: response.resolveSyncTags === true}
 }
 
+function isExportSnippetId(value: unknown): value is VisionExportSnippetId {
+  return EXPORT_SNIPPET_IDS.includes(value as VisionExportSnippetId)
+}
+
+/**
+ * Every snippet once, in the stored order, with snippets added since the order was saved at the
+ * end; the dialog always has a tab to show, so hiding every snippet shows them all again
+ */
+export function sanitizeExportSnippetSettings(value: unknown): VisionExportSnippetSettings {
+  const stored = isPlainObject(value) ? value : {}
+  const known = (list: unknown) => [
+    ...new Set(Array.isArray(list) ? list.filter(isExportSnippetId) : []),
+  ]
+  const order = known(stored.order)
+  for (const id of EXPORT_SNIPPET_IDS) {
+    if (!order.includes(id)) order.push(id)
+  }
+  const hidden = known(stored.hidden)
+  return {order, hidden: hidden.length < order.length ? hidden : []}
+}
+
 /** Saved functions with an id and a declaration, the first of each id; state saved before had none */
 function sanitizeFunctions(value: unknown): VisionSavedFunction[] {
   if (!Array.isArray(value)) return []
@@ -381,9 +423,21 @@ export function loadVisionState(
   const ai = sanitizeAiSettings(stored.ai)
   const editor = sanitizeEditorSettings(stored.editor)
   const response = sanitizeResponseSettings(stored.response)
+  const exportSnippets = sanitizeExportSnippetSettings(stored.exportSnippets)
   const functions = sanitizeFunctions(stored.functions)
   if (tabs.length === 0) {
-    return {...initial, settings, sidebar, panels, historyDiff, ai, editor, response, functions}
+    return {
+      ...initial,
+      settings,
+      sidebar,
+      panels,
+      historyDiff,
+      ai,
+      editor,
+      response,
+      exportSnippets,
+      functions,
+    }
   }
 
   const activeTabId =
@@ -402,6 +456,7 @@ export function loadVisionState(
     ai,
     editor,
     response,
+    exportSnippets,
     functions,
   }
 }

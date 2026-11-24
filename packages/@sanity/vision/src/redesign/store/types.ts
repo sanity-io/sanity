@@ -115,6 +115,23 @@ export interface VisionAiSettings {
   explainQuery: boolean
 }
 
+/** The code snippets the Export query dialog can show, one per tab */
+export type VisionExportSnippetId =
+  | 'client'
+  | 'curl'
+  | 'next-sanity'
+  | 'astro'
+  | 'sveltekit'
+  | 'nuxt'
+
+/** Which snippets the Export query dialog shows, and in what order */
+export interface VisionExportSnippetSettings {
+  /** Every snippet, in tab order */
+  order: VisionExportSnippetId[]
+  /** Snippets left out of the dialog; never all of them */
+  hidden: VisionExportSnippetId[]
+}
+
 /** How the query editor behaves */
 export interface VisionEditorSettings {
   /**
@@ -153,6 +170,7 @@ export interface VisionPersistedState {
   ai: VisionAiSettings
   editor: VisionEditorSettings
   response: VisionResponseSettings
+  exportSnippets: VisionExportSnippetSettings
   /** The functions library, most recently saved first */
   functions: VisionSavedFunction[]
 }

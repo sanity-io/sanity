@@ -212,6 +212,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.export-query.copied': 'Snippet copied to clipboard',
   /** Label for the button that copies a code snippet */
   'vision.export-query.copy': 'Copy snippet',
+  /** Label for the button that copies every file of a code snippet, each under a comment with its path */
+  'vision.export-query.copy-all': 'Copy all files',
   /** Explanation at the top of the export query dialog */
   'vision.export-query.description':
     'Run this query outside of the studio with one of these snippets.',
@@ -220,7 +222,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'The query and params come to {{size}} characters as search params; from {{limit}} on, @sanity/client sends them as a JSON body rather than in the URL, so the snippet does the same.',
   /** Title of the dialog that exports the query as code snippets */
   'vision.export-query.title': 'Export query',
-  /** Note about authentication in the export query dialog */
+  /** Note under a snippet that reads an API token, because its perspective includes drafts or releases */
+  'vision.export-query.token-env-note':
+    'The {{perspective}} perspective returns drafts or release versions, which only an authenticated request can read. Set SANITY_API_TOKEN to a token with read access, on the server only.',
+  /**
+   * Note about authentication in the export query dialog
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.export-query.token-note':
     'Private datasets need an API token. Public datasets can drop the Authorization header.',
   /** Toast shown after the generated code was copied */
@@ -1342,6 +1351,17 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'When the query editor gets wider or narrower, a query laid out by Prettify is laid out again for the new width. Queries you formatted yourself are left as they are.',
   /** Title of the settings section about the query editor */
   'vision.settings.editor.title': 'Query editor',
+  /** Explains the settings that pick the snippets of the Export query dialog and their order */
+  'vision.settings.export-snippets.description':
+    'The snippets the Export query dialog offers, as its tabs in this order. Switch off the ones you do not use; the choice is saved in this browser.',
+  /** Accessible label of the button that moves an export snippet one tab later */
+  'vision.settings.export-snippets.move-down': 'Move {{snippet}} down',
+  /** Accessible label of the button that moves an export snippet one tab earlier */
+  'vision.settings.export-snippets.move-up': 'Move {{snippet}} up',
+  /** Button that shows every export snippet again, in the default order */
+  'vision.settings.export-snippets.reset': 'Reset to defaults',
+  /** Title of the settings that pick the snippets of the Export query dialog */
+  'vision.settings.export-snippets.title': 'Export snippets',
   /** Explains the setting listing the fields left out of History diffs */
   'vision.settings.history-diff.description':
     'One field path per line. A path matches at any depth of a result, so _rev hides the revision of every document in it. Each diff can still show them.',

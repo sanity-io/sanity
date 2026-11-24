@@ -414,7 +414,45 @@ describe('visionMachine', () => {
       },
       editor: {autoFormatOnResize: true},
       response: {resolveSyncTags: false},
+      exportSnippets: {
+        order: ['client', 'curl', 'next-sanity', 'astro', 'sveltekit', 'nuxt'],
+        hidden: [],
+      },
       functions: [],
+    })
+  })
+
+  it('reorders and hides export snippets, never all of them, and resets them when storage is cleared', () => {
+    const harness = createHarness()
+    harness.actor.send({
+      type: 'exportSnippets.update',
+      settings: {order: ['curl', 'astro', 'client', 'next-sanity', 'sveltekit', 'nuxt']},
+    })
+    harness.actor.send({
+      type: 'exportSnippets.update',
+      settings: {hidden: ['client', 'next-sanity', 'sveltekit', 'nuxt']},
+    })
+    expect(selectPersistedState(harness.snapshot()).exportSnippets).toEqual({
+      order: ['curl', 'astro', 'client', 'next-sanity', 'sveltekit', 'nuxt'],
+      hidden: ['client', 'next-sanity', 'sveltekit', 'nuxt'],
+    })
+
+    // Hiding the last two visible snippets is ignored
+    harness.actor.send({
+      type: 'exportSnippets.update',
+      settings: {hidden: ['client', 'curl', 'astro', 'next-sanity', 'sveltekit', 'nuxt']},
+    })
+    expect(harness.snapshot().context.exportSnippets.hidden).toEqual([
+      'client',
+      'next-sanity',
+      'sveltekit',
+      'nuxt',
+    ])
+
+    harness.actor.send({type: 'storage.clear'})
+    expect(harness.snapshot().context.exportSnippets).toEqual({
+      order: ['client', 'curl', 'next-sanity', 'astro', 'sveltekit', 'nuxt'],
+      hidden: [],
     })
   })
 
