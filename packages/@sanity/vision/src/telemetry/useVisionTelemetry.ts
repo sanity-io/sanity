@@ -21,7 +21,7 @@ export interface VisionTelemetry {
   datasetChanged: () => void
   perspectiveChanged: () => void
   apiVersionChanged: (custom: boolean) => void
-  copied: (target: 'query' | 'url') => void
+  copied: (target: 'query' | 'params' | 'url') => void
   agentAction: (
     action: 'generate-query' | 'edit-query' | 'fix-lint' | 'generate-mutations' | 'explain',
   ) => void
@@ -59,7 +59,7 @@ export function useVisionTelemetry(): VisionTelemetry {
   )
 
   const copied = useCallback(
-    (target: 'query' | 'url') => {
+    (target: 'query' | 'params' | 'url') => {
       telemetry.log(VisionCopied, {target})
     },
     [telemetry],

@@ -6,7 +6,8 @@ import {matchVisionShortcut, type VisionShortcutId} from '../util/shortcuts'
 interface VisionDocumentEventsOptions {
   /** Events outside this element (other studio UI, dialogs) are ignored */
   rootElement: HTMLElement | null
-  onShortcut: (shortcut: VisionShortcutId) => void
+  /** Receives the shortcut and its key event, whose target is the element that has focus */
+  onShortcut: (shortcut: VisionShortcutId, event: KeyboardEvent) => void
   /**
    * Receives pasted text; returning `true` claims the paste (it is not inserted), so anything
    * that is not a query URL still pastes natively.
@@ -31,7 +32,7 @@ export function useVisionDocumentEvents({
     if (!shortcut) return
     event.preventDefault()
     event.stopPropagation()
-    onShortcut(shortcut)
+    onShortcut(shortcut, event)
   })
 
   const handlePaste = useEffectEvent((event: ClipboardEvent) => {

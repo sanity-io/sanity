@@ -196,6 +196,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.delta.revision.none-before': 'Nothing: the change creates the document',
   /** Accessible label for the button that closes the sidebar drawer */
   'vision.drawer.close': 'Close panel',
+  /** The Copy button in the corner of the query and params editors, for a few seconds after a copy */
+  'vision.editor.copied': 'Copied',
+  /** Button in the corner of the query and params editors that copies their text */
+  'vision.editor.copy': 'Copy',
+  /** Button in the corner of the query and params editors that reformats their text */
+  'vision.editor.format': 'Format',
+  /** Tooltip and accessible label of the `…` buttons that open a menu of more actions */
+  'vision.actions.more': 'More actions',
   /** Toast shown after a code snippet was copied */
   'vision.export-query.copied': 'Snippet copied to clipboard',
   /** Label for the button that copies a code snippet */
@@ -888,6 +896,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.params.resize':
     'Resize params: drag or use the arrow keys; double-click or press Enter to fit the content again',
+  /** Accessible label of the button next to the params view tabs that copies the params */
+  'vision.params.copy': 'Copy params',
+  /** Accessible label of the button next to the params view tabs that reformats the params JSON */
+  'vision.params.format': 'Format params',
   /** Tab showing the params as a form inferred from the query */
   'vision.params.view.form': 'Form',
   /** Tab showing the params as JSON */
@@ -915,22 +927,32 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Tooltip when automatic refetching is not available for the API version */
   'vision.query.auto-refetch.unsupported':
     'Refetching automatically needs API version v2021-03-25 or later.',
-  /** Toast shown after the query was copied */
+  /**
+   * Toast shown after the query was copied
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.query.copied': 'Query copied to clipboard',
-  /** Menu item copying the query text */
+  /** Accessible label of the button in the query editor's corner that copies the query */
   'vision.query.copy': 'Copy query',
   /** Menu item opening the export query dialog */
   'vision.query.export': 'Export query…',
+  /** Accessible label of the button in the query editor's corner that reformats the query */
+  'vision.query.format': 'Format query',
   /**
    * Label floating over the GROQ editor
    * @deprecated no longer in use
    */
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.query.label': 'Query',
-  /** Menu item reformatting the query */
+  /**
+   * Menu item reformatting the query
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.query.prettify': 'Prettify query',
   /** Toast shown when the query could not be reformatted */
-  'vision.query.prettify.failed': 'Could not prettify the query',
+  'vision.query.prettify.failed': 'Could not format the query',
   /** Menu item saving the query to the personal saved queries */
   'vision.query.save': 'Save query',
   /** The Fetch button while a fetch is running, stopping it; paired with Stop live */
@@ -1287,16 +1309,16 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.shortcuts.close': 'Close dialogs and menus',
   /** Shortcut that lists the functions matching the name being typed in the query editor */
   'vision.shortcuts.complete': 'Complete a function name',
-  /** Shortcut description: copy the query */
-  'vision.shortcuts.copy-query': 'Copy the query',
+  /** Shortcut description: copy the query, or the params while they have focus */
+  'vision.shortcuts.copy-query': 'Copy the query, or the params while they have focus',
   /** Shortcut that turns the selected projection, or the one around the cursor, into a custom function */
   'vision.shortcuts.extract-function': 'Extract the projection at the cursor to a function',
   /** Shortcut description: run the query */
   'vision.shortcuts.fetch': 'Fetch the query',
   /** Shortcut description: move the cursor to the next lint finding in the query editor */
   'vision.shortcuts.next-finding': 'Jump to the next lint finding',
-  /** Shortcut description: reformat the query */
-  'vision.shortcuts.prettify': 'Prettify the query',
+  /** Shortcut description: reformat the query, or the params JSON while it has focus */
+  'vision.shortcuts.prettify': 'Format the query, or the params JSON while it has focus',
   /** Title of the keyboard shortcuts dialog */
   'vision.shortcuts.title': 'Keyboard shortcuts',
   /** Sidebar toggle: show icons only */

@@ -13,6 +13,7 @@ import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {type VisionQueryRunData} from '../../../telemetry/vision.telemetry'
 import {useAutoFormatOnResize} from '../../hooks/useAutoFormatOnResize'
 import {useContentSize} from '../../hooks/useContentSize'
+import {useCopiedFeedback} from '../../hooks/useCopiedFeedback'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {useFollowNavbarPerspective} from '../../hooks/useFollowNavbarPerspective'
 import {useLiveSubscription} from '../../hooks/useLiveSubscription'
@@ -34,6 +35,7 @@ import {
   selectWorkspaceDataset,
 } from '../../store/visionMachine'
 import {cx} from '../../util/cx'
+import {formatParams} from '../../util/formatParams'
 import {type TextRange} from '../../util/groqFunctions'
 import {type QueryLintFinding} from '../../util/groqLint'
 import {
@@ -49,6 +51,7 @@ import {parsedQueryToTabInit} from '../../util/savedQueryTab'
 import {type VisionShortcutId} from '../../util/shortcuts'
 import {useQueryTabSplitSizes} from '../queryTabLayout'
 import * as styles from '../redesign.module.css'
+import {isParamsContentTarget} from '../request/paramsContent'
 import {RequestPanel} from '../request/RequestPanel'
 import {ResizableSplit} from '../ResizableSplit'
 import {type QueryEdit} from '../response/FunctionsTab'
@@ -370,11 +373,36 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
     }
   }, [formatQuery, t, telemetry, toast])
 
+  // The Copy buttons in the editors' corners read Copied after a copy, rather than a toast saying so
+  const {copied, markCopied} = useCopiedFeedback<'query' | 'params'>()
   const copyQuery = useCallback(() => {
-    void copyToClipboard(tab.query, t('vision.query.copied')).then((copied) => {
-      if (copied) telemetry.copied('query')
+    void copyToClipboard(tab.query).then((didCopy) => {
+      if (!didCopy) return
+      markCopied('query')
+      telemetry.copied('query')
     })
-  }, [copyToClipboard, t, tab.query, telemetry])
+  }, [copyToClipboard, markCopied, tab.query, telemetry])
+  // The params as they are now, with an edit still waiting in the debounce
+  const readLatestParams = useCallback(() => {
+    setParams.flush()
+    const latest = actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id)
+    return latest?.rawParams ?? tab.rawParams
+  }, [actorRef, setParams, tab.id, tab.rawParams])
+  const copyParams = useCallback(() => {
+    void copyToClipboard(readLatestParams()).then((didCopy) => {
+      if (!didCopy) return
+      markCopied('params')
+      telemetry.copied('params')
+    })
+  }, [copyToClipboard, markCopied, readLatestParams, telemetry])
+  // Formats the params in the JSON editor; the form has nothing to format
+  const formatParamsJson = useCallback(() => {
+    if (!paramsEditorRef.current) return
+    const formatted = formatParams(readLatestParams())
+    if (formatted === null) return
+    paramsEditorRef.current.resetEditorContent(formatted)
+    setParamsNow(formatted)
+  }, [readLatestParams, setParamsNow])
 
   // A lint finding or a function declaration picked on a phone, where the editor is `display: none`
   // behind the response pane, or inert under a sidebar drawer, which covers the tool: it cannot
@@ -508,16 +536,20 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
 
   useVisionDocumentEvents({
     rootElement,
-    onShortcut: (shortcut: VisionShortcutId) => {
+    onShortcut: (shortcut: VisionShortcutId, event: KeyboardEvent) => {
+      // Copy and Format act on the params while the params panel has focus, else on the query
+      const inParams = isParamsContentTarget(event.target)
       switch (shortcut) {
         case 'fetch':
           run({type: 'shortcut'})
           break
         case 'prettify':
-          void prettify()
+          if (inParams) formatParamsJson()
+          else void prettify()
           break
         case 'copy-query':
-          copyQuery()
+          if (inParams) copyParams()
+          else copyQuery()
           break
         default: {
           const unhandled: never = shortcut
@@ -586,7 +618,10 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
       formatForEditor={formatForEditor}
       isFetching={isFetching}
       onCancel={cancel}
+      copied={copied}
+      onCopyParams={copyParams}
       onCopyQuery={copyQuery}
+      onFormatParams={formatParamsJson}
       lintFindings={lintFindings}
       onEditQuery={editQuery}
       onLintFindings={setLintFindings}
@@ -595,7 +630,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
       onParamsFlush={flushParams}
       onParamsReplace={replaceParams}
       onRevealRange={revealRange}
-      onPrettify={() => void prettify()}
+      onFormatQuery={() => void prettify()}
       onQueryChange={setQuery}
       onRun={() => run({type: 'manual'})}
       onToggleAutoRefetch={toggleAutoRefetch}

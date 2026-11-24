@@ -1,12 +1,12 @@
 import {BookmarkIcon} from '@sanity/icons/Bookmark'
 import {CodeIcon} from '@sanity/icons/Code'
-import {CodeBlockIcon} from '@sanity/icons/CodeBlock'
-import {CopyIcon} from '@sanity/icons/Copy'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {Button} from '@sanity/ui'
-import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
-import {useCallback, useState} from 'react'
+import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
+import {Tooltip} from '@sanity/ui/tooltip'
+import {type RefAttributes, useCallback, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
+import {Text} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type QueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
@@ -14,7 +14,6 @@ import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {useSaveCurrentQuery} from '../../hooks/useSaveCurrentQuery'
 import {type QueryRequest, type VisionTab} from '../../store/types'
 import {usePendingEdits} from '../../store/VisionActorContext'
-import {VISION_SHORTCUTS} from '../../util/shortcuts'
 import {ExportQueryDialog} from './ExportQueryDialog'
 
 export interface QueryActionsMenuProps {
@@ -22,12 +21,10 @@ export interface QueryActionsMenuProps {
   request: QueryRequest | null
   buildRequest: QueryRequestBuilder['buildRequest']
   resolved: ResolvedRequest
-  onCopyQuery: () => void
-  onPrettify: () => void
 }
 
 export function QueryActionsMenu(props: QueryActionsMenuProps) {
-  const {tab, request, buildRequest, resolved, onCopyQuery, onPrettify} = props
+  const {tab, request, buildRequest, resolved} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const pendingEdits = usePendingEdits()
   const [exportOpen, setExportOpen] = useState(false)
@@ -44,32 +41,14 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
     <>
       <MenuButton
         button={
-          <Button
+          <MoreActionsButton
             aria-label={t('vision.query.actions')}
             data-testid="vision-query-menu-button"
-            icon={EllipsisHorizontalIcon}
-            mode="bleed"
-            padding={2}
           />
         }
         id={`vision-query-menu-${tab.id}`}
         menu={
           <Menu>
-            <MenuItem
-              data-testid="vision-copy-query"
-              hotkeys={VISION_SHORTCUTS['copy-query'].keys}
-              icon={CopyIcon}
-              onClick={onCopyQuery}
-              text={t('vision.query.copy')}
-            />
-            <MenuItem
-              data-testid="vision-prettify"
-              hotkeys={VISION_SHORTCUTS.prettify.keys}
-              icon={CodeBlockIcon}
-              onClick={onPrettify}
-              text={t('vision.query.prettify')}
-            />
-            <MenuDivider />
             <MenuItem
               data-testid="vision-export-query"
               disabled={!request}
@@ -97,5 +76,31 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
         />
       )}
     </>
+  )
+}
+
+/**
+ * The `...` button with its tooltip. `MenuButton` clones the element it is given to attach its
+ * handlers, so the props go to the inner button rather than to the tooltip
+ */
+function MoreActionsButton(
+  props: {'aria-label': string; 'data-testid'?: string} & RefAttributes<HTMLButtonElement>,
+) {
+  const {ref, ...rest} = props
+  const {t} = useTranslation(visionLocaleNamespace)
+
+  return (
+    <Tooltip
+      animate
+      content={
+        <Text as="div" size={1} trim={true}>
+          {t('vision.actions.more')}
+        </Text>
+      }
+      placement="top"
+      portal
+    >
+      <Button {...rest} icon={EllipsisHorizontalIcon} mode="bleed" padding={2} ref={ref} />
+    </Tooltip>
   )
 }
