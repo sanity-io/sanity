@@ -27,6 +27,7 @@ import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {useAiFeatures} from '../../aiFeatures'
 import {useCanFormatQuery} from '../../hooks/useCanFormatQuery'
 import {useContentSize} from '../../hooks/useContentSize'
+import {useParamHighlight} from '../../hooks/useParamHighlight'
 import {useQueryAgent} from '../../hooks/useQueryAgent'
 import {type QueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
@@ -53,6 +54,7 @@ import {createGroqFunctionExtensions} from '../../util/groqFunctionEditor'
 import {parseGroq, readQueryFunctions, type TextRange} from '../../util/groqFunctions'
 import {createGroqLintExtensions, type QueryLintFinding, worstSeverity} from '../../util/groqLint'
 import {NO_QUERY_PARAM_NAMES, queryParamNames} from '../../util/groqParamCompletions'
+import {queryParamHighlight} from '../../util/paramHighlight'
 import {queryEndSlot} from '../../util/queryEndSlot'
 import {isQueryParamName} from '../../util/queryParamName'
 import {createQuerySchema} from '../../util/schemaCheck'
@@ -249,6 +251,7 @@ export function RequestPanel(props: RequestPanelProps) {
     () => [
       ...groqExtensions,
       redesignEditorTheme,
+      queryParamHighlight,
       ...lintExtensions,
       ...functionExtensions,
       functionLibrary.of(library),
@@ -293,6 +296,7 @@ export function RequestPanel(props: RequestPanelProps) {
   }, [panelState, telemetry])
   const panelRef = useRef<SplitWithBottomPanelHandle>(null)
   const paramsView = useVisionSelector(selectParamsView)
+  const {highlightParam, formFocusProps} = useParamHighlight(queryEditorRef)
   const tabElementId = useTabElementId()
   const paramsContentId = tabElementId('vision-request-params-content')
   const paramsJsonTabId = tabElementId('vision-params-view-json')
@@ -462,16 +466,19 @@ export function RequestPanel(props: RequestPanelProps) {
           <Flex data-vision-params-content="" flexDirection="column">
             <Box id={paramsContentId}>
               {paramsView === 'form' ? (
-                <ParamsForm
-                  onChange={onParamsReplace}
-                  onSubmit={onParamsSubmit}
-                  params={params}
-                  query={tab.query}
-                />
+                <div {...formFocusProps}>
+                  <ParamsForm
+                    onChange={onParamsReplace}
+                    onSubmit={onParamsSubmit}
+                    params={params}
+                    query={tab.query}
+                  />
+                </div>
               ) : (
                 <>
                   <ParamsPanel
                     editorRef={paramsEditorRef}
+                    onActiveParamChange={highlightParam}
                     onChange={onParamsChange}
                     params={params}
                     value={tab.rawParams}
@@ -546,6 +553,8 @@ export function RequestPanel(props: RequestPanelProps) {
     copied,
     declaredFunctions,
     fitParams,
+    formFocusProps,
+    highlightParam,
     lintAgent,
     functionCount,
     library,
