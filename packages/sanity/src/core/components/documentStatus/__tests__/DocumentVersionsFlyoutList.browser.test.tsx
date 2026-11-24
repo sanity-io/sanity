@@ -102,12 +102,10 @@ function contrast(a: string, b: string): number {
 const SELECTED_BLUE = {
   light: {
     strong: 'rgb(64, 67, 231)', // blue-600
-    title: 'rgb(255, 255, 255)', // white
     pale: 'rgb(245, 248, 255)', // blue-50
   },
   dark: {
     strong: 'rgb(117, 149, 255)', // blue-400
-    title: 'rgb(19, 20, 27)', // black
     pale: 'rgb(16, 18, 40)', // blue-950
   },
 } as const
@@ -275,7 +273,11 @@ describe('DocumentVersionsFlyoutList', () => {
       const subtitle = germanRow.getByTestId('document-versions-flyout-row-line').element()
       const diamond = row.querySelector('[data-testid="document-versions-flyout-row-marks"] svg')!
       await expect.element(germanRow).toHaveStyle({backgroundColor: blue})
-      expect(getComputedStyle(title).color).toBe(SELECTED_BLUE[scheme].title)
+      // White on the light blue, the palette's black on the dark blue. Read from the theme, since
+      // UI 5 changes its black between releases.
+      expect(getComputedStyle(title).color).toBe(
+        scheme === 'light' ? 'rgb(255, 255, 255)' : resolvedColor(row, 'var(--black)'),
+      )
       expect(getComputedStyle(subtitle).color).toBe(
         resolvedColor(row, 'light-dark(var(--blue-100), var(--blue-900))'),
       )
