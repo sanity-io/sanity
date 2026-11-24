@@ -405,6 +405,14 @@ describe('ParamsForm', () => {
     expect(params()).toEqual({types: ['author']})
   })
 
+  it('shows only the first 100 items of a huge list param', () => {
+    const ids = Array.from({length: 250}, (_, index) => `id-${index}`)
+    const {field} = renderForm('*[_id in $ids]', JSON.stringify({ids}))
+    expect(within(field('ids')).getAllByRole('textbox')).toHaveLength(100)
+    expect(screen.getByTestId('vision-params-form-ids-truncated').textContent).toContain('250')
+    expect(screen.getByTestId('vision-params-form-ids-add')).toHaveProperty('disabled', true)
+  })
+
   it('sends the items of a boolean list as booleans', () => {
     const {field, params} = renderForm('*[_type == "post" && featured in $flags]')
     fireEvent.click(screen.getByTestId('vision-params-form-flags-add'))

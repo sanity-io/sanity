@@ -490,6 +490,15 @@ describe('buildExportSnippets', () => {
     expect(code).toContain(`['__proto__']: {polluted: true}`)
   })
 
+  it('exports deeply nested params without overflowing the call stack', () => {
+    let deep: Record<string, unknown> = {x: 1}
+    for (let index = 0; index < 5000; index++) {
+      deep = {nested: deep}
+    }
+    expect(() => buildExportSnippets(createInput({params: {deep}}))).not.toThrow()
+    expect(file(createInput({params: {deep}}), 'client')).toContain('null')
+  })
+
   it('joins the files of a snippet under comments with their paths for the Copy all button', () => {
     expect(exportSnippetText(snippet(createInput(), 'nuxt'))).toMatch(
       /^\/\/ nuxt\.config\.ts\n[\s\S]+\n\n<!-- pages\/index\.vue -->\n<script setup/,

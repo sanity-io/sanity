@@ -445,6 +445,9 @@ function BooleanInput(props: {
   )
 }
 
+/** Items past this stay editable in the JSON view so the Form does not mount thousands of rows */
+const MAX_FORM_LIST_ITEMS = 100
+
 function ListInput(props: {
   param: InferredParam
   items: unknown[]
@@ -456,9 +459,11 @@ function ListInput(props: {
   const {param, items, listId, documentTypes, disabled, onChange} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const {kind} = param.type
+  const shown = items.slice(0, MAX_FORM_LIST_ITEMS)
+  const truncated = items.length > MAX_FORM_LIST_ITEMS
   return (
     <Stack gap={2}>
-      {items.map((item, index) => (
+      {shown.map((item, index) => (
         // Items have no identity of their own; an index keyed input shows the value it is given
         // oxlint-disable-next-line react/no-array-index-key
         <Flex alignItems="center" gap={1} key={index}>
@@ -487,10 +492,24 @@ function ListInput(props: {
           />
         </Flex>
       ))}
+      {truncated && (
+        <Text
+          data-testid={`vision-params-form-${param.name}-truncated`}
+          muted
+          size={1}
+          as="div"
+          trim={true}
+        >
+          {t('vision.params-form.list-truncated', {
+            shown: MAX_FORM_LIST_ITEMS,
+            count: items.length,
+          })}
+        </Text>
+      )}
       <Flex>
         <Button
           data-testid={`vision-params-form-${param.name}-add`}
-          disabled={disabled}
+          disabled={disabled || truncated}
           fontSize={1}
           icon={AddIcon}
           mode="ghost"

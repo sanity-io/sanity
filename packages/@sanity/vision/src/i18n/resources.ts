@@ -955,6 +955,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.panel.source-map': 'Content Source Map',
   /** Button adding an item to a list param in the params form */
   'vision.params-form.add-item': 'Add item',
+  /**
+   * Shown under a list param in the Form view when it has more items than the form renders.
+   * Switch to the JSON view to edit the rest.
+   */
+  'vision.params-form.list-truncated':
+    'Showing the first {{shown}} of {{count}} items. Switch to JSON to edit the rest.',
   /** Placeholder of a params form field that takes any JSON value */
   'vision.params-form.any-placeholder': 'Any JSON value; other text is sent as a string',
   /** Accessible label of the button setting a param the query treats as optional to null */

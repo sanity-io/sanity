@@ -207,4 +207,10 @@ describe('flattenTraceValues', () => {
     expect(flattenTraceValues(['a', ['b', ['c', 1, null]], '', {d: 'd'}])).toEqual(['a', 'b', 'c'])
     expect(flattenTraceValues(null)).toEqual([])
   })
+
+  it('flattens a huge array without overflowing the call stack', () => {
+    const huge = Array.from({length: 150_000}, () => 'a')
+    expect(() => flattenTraceValues(huge)).not.toThrow()
+    expect(flattenTraceValues(huge)).toHaveLength(150_000)
+  })
 })

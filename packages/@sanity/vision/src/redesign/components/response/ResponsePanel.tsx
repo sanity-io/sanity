@@ -37,6 +37,7 @@ import {cx} from '../../util/cx'
 import {getAvailableRowFields} from '../../util/documentListFields'
 import {canImproveDocumentList, getRowTypes, parseDocumentList} from '../../util/documentListResult'
 import {haveSameQuery} from '../../util/queryRequest'
+import {stringifyResultJson} from '../../util/stringifyResultJson'
 import {fetchSyncTagSourceMap} from '../../util/syncTagLookup'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
 import {CopyButton} from '../CopyButton'
@@ -236,22 +237,23 @@ export function ResponsePanel(props: ResponsePanelProps) {
       resultView === 'graph')
   const {scrolled: resultScrolled, setScroller: setResultScroller} = useScrolledFromTop()
   const copyToClipboard = useCopyToClipboard()
-  // The Copy button confirms the copy itself, so no toast
-  const copyResult = useCallback(
-    () => copyToClipboard(JSON.stringify(result, null, 2)),
-    [copyToClipboard, result],
-  )
+  // Same text as the JSON view (depth-truncated / soft-capped); never a bare misleading `null`
+  const copyResult = useCallback(() => {
+    return copyToClipboard(stringifyResultJson(result).text)
+  }, [copyToClipboard, result])
   // Text is copied as it is (an ID, a slug) and everything else as indented JSON
   const copyValue = useMemo(
     (): ResultViewCopy => ({
       label: t('vision.result.copy-value'),
-      onCopy: (value, keypath) =>
-        copyToClipboard(
-          typeof value === 'string' ? value : JSON.stringify(value, null, 2),
+      onCopy: (value, keypath) => {
+        const text = typeof value === 'string' ? value : stringifyResultJson(value).text
+        return copyToClipboard(
+          text,
           keypath
             ? t('vision.result.copied-value', {path: describeKeypath(keypath)})
             : t('vision.result.copied'),
-        ),
+        )
+      },
     }),
     [copyToClipboard, t],
   )

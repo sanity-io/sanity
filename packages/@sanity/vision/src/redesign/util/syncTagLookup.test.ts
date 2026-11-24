@@ -755,6 +755,15 @@ describe('collectSyncTagCandidates', () => {
       datasets: [],
     })
   })
+
+  it('walks a huge array result without overflowing the call stack', () => {
+    const huge = Array.from({length: 150_000}, (_, index) => ({_id: `id${index}`}))
+    expect(() => collectSyncTagCandidates(huge)).not.toThrow()
+    const {ids} = collectSyncTagCandidates(huge)
+    // Visited budget stops after the root array and its first items
+    expect(ids.length).toBeGreaterThan(0)
+    expect(ids.length).toBeLessThan(huge.length * 2)
+  })
 })
 
 describe('formatSyncTagMeaning', () => {

@@ -1,6 +1,8 @@
+import {safeJsonStringify} from '../../util/safeJsonStringify'
+
 /** Approximate wire size of a JSON value, in UTF-8 bytes */
 export function getPayloadBytes(value: unknown): number {
-  const json = JSON.stringify(value)
+  const json = safeJsonStringify(value)
   if (typeof json !== 'string') {
     return 0
   }

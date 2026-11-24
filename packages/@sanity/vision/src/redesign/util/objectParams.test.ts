@@ -46,6 +46,16 @@ describe('objectParams', () => {
     expect(previewObject(objectFields(range, undefined), undefined)).toBe('')
   })
 
+  it('caps deeply nested object previews instead of overflowing the call stack', () => {
+    let deep: Record<string, unknown> = {leaf: 1}
+    for (let index = 0; index < 3000; index++) {
+      deep = {a: deep}
+    }
+    const fields = objectFields(range, {a: deep})
+    expect(() => previewObject(fields, {a: deep})).not.toThrow()
+    expect(previewObject(fields, {a: deep})).toContain('{…}')
+  })
+
   it('sets and removes keys', () => {
     expect(setObjectKey(undefined, 'min', 1)).toEqual({min: 1})
     expect(setObjectKey({min: 1, max: 2}, 'min', undefined)).toEqual({max: 2})
