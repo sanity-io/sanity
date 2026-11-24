@@ -70,9 +70,8 @@ const DEFAULT_EXPORT_SNIPPET_SETTINGS: VisionExportSnippetSettings = {
   hidden: [],
 }
 
-/** Looking up sync tags sends queries of its own, so it waits until it is switched on */
 const DEFAULT_RESPONSE_SETTINGS: VisionResponseSettings = {
-  resolveSyncTags: false,
+  resolveSyncTags: true,
   sourceMapEnabled: false,
   resultSourceMap: true,
 }
@@ -356,11 +355,14 @@ function sanitizeEditorSettings(value: unknown): VisionEditorSettings {
   return {autoFormatOnResize: editor.autoFormatOnResize !== false}
 }
 
-/** A setting stays off unless it was switched on; state saved before the settings existed has all off */
+/**
+ * Resolving sync tags stays on unless it was switched off, and the Content Source Map features stay
+ * off unless they were switched on; state saved before a setting existed reads as its default
+ */
 function sanitizeResponseSettings(value: unknown): VisionResponseSettings {
   const response = isPlainObject(value) ? value : {}
   return {
-    resolveSyncTags: response.resolveSyncTags === true,
+    resolveSyncTags: response.resolveSyncTags !== false,
     sourceMapEnabled: response.sourceMapEnabled === true,
     resultSourceMap:
       response.resultSourceMap === 'withKeyArraySelector' ? 'withKeyArraySelector' : true,

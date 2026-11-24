@@ -1570,7 +1570,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.settings.response.resolve-sync-tags': 'Resolve sync tags',
   /** Description of the switch that lets the Sync tags row show what each tag stands for */
   'vision.settings.response.resolve-sync-tags.description':
-    'Click Sync tags in the Response panel to switch between the tags and the documents they stand for: every document, a type, an id or a slug. Finding them sends a few extra queries to the dataset the response came from.',
+    'Show the documents each sync tag in the Response panel stands for: every document, a type, an id or a slug. Click Sync tags to switch to the tags as they came. Finding the documents sends a few extra queries to the dataset the response came from.',
   /** Title of the settings section about the Response panel */
   'vision.settings.response.title': 'Response panel',
   /** Switch in the settings that turns the Content Source Map features on */
