@@ -32,6 +32,7 @@ import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'
 import {spinnerContainer} from './EventsInspector.css'
 import {getPublishedComparisonBase, getPublishedSiblingScopeId} from './getPublishedComparisonBase'
+import {getSinceEvents} from './getSinceEvents'
 import {scroller} from './Scroller.css'
 
 const DIFF_INITIAL_VALUE = {
@@ -177,20 +178,7 @@ export function EventsInspector({showChanges}: {showChanges: boolean}): ReactEle
     ]
   }, [events, revision?.revisionId, sinceRevision?.revisionId])
 
-  const sinceEvents = useMemo(() => {
-    // The sinceEvents need to account the toEvent showing only events that are older than the toEvent
-    if (!toEvent) return events.slice(1)
-    return events.slice(events.indexOf(toEvent) + 1).map((event) => {
-      // If the to event has a parent id, we need to remove the parent id from the since events or they won't be rendered, as they have no parent to expand.
-      if (
-        ('parentId' in toEvent && 'parentId' in event && event.parentId === toEvent.parentId) ||
-        ('parentId' in event && toEvent.id === event.parentId)
-      ) {
-        return {...event, parentId: undefined}
-      }
-      return event
-    })
-  }, [events, toEvent])
+  const sinceEvents = useMemo(() => getSinceEvents(events, toEvent), [events, toEvent])
   if (!events.length) {
     return (
       <Box paddingX={2}>
