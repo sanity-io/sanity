@@ -4,7 +4,6 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Button, Card, Select, Stack, TextInput} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {dequal} from 'dequal/lite'
 import JSON5 from 'json5'
 import {type KeyboardEvent, type ReactNode, type Ref, useId, useState} from 'react'
@@ -17,6 +16,7 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {useParamsInference} from '../../hooks/useParamsInference'
 import {type InferredParam, type ParamKind, type ParamType} from '../../util/paramInference'
 import * as fieldGrid from '../fieldGrid.module.css'
+import {VisionTooltip} from '../VisionTooltip'
 import {DateTimePickerButton} from './DateTimePickerButton'
 
 type Translate = TFunction<typeof visionLocaleNamespace>
@@ -414,8 +414,7 @@ function ParamField(props: {
           )}
         </InfoTip>
         {required && (
-          <Tooltip
-            animate
+          <VisionTooltip
             content={
               <Flex alignItems="center" gap={2}>
                 <Icon icon={ErrorOutlineIcon} size={1} tone="critical" />
@@ -425,12 +424,11 @@ function ParamField(props: {
               </Flex>
             }
             placement="top"
-            portal
           >
             <Box data-testid={`vision-params-form-${param.name}-required`} paddingX={1}>
               <Icon aria-label={required} icon={ErrorOutlineIcon} size={1} tone="critical" />
             </Box>
-          </Tooltip>
+          </VisionTooltip>
         )}
       </Flex>
       {input}
@@ -461,15 +459,13 @@ function ParamField(props: {
 function InfoTip(props: {label: string; testId: string; children: ReactNode}) {
   const {label, testId, children} = props
   return (
-    <Tooltip
-      animate
+    <VisionTooltip
       content={
         <Stack data-testid={`${testId}-content`} gap={2}>
           {children}
         </Stack>
       }
       placement="top"
-      portal
     >
       <Button
         aria-label={label}
@@ -479,7 +475,7 @@ function InfoTip(props: {label: string; testId: string; children: ReactNode}) {
         mode="bleed"
         padding={1}
       />
-    </Tooltip>
+    </VisionTooltip>
   )
 }
 

@@ -1,7 +1,8 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Stack} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {Box, PressArea, Text} from 'ui5'
+
+import {VisionTooltip} from './VisionTooltip'
 
 interface InfoTooltipProps {
   /** The explanation, one paragraph per entry */
@@ -15,13 +16,12 @@ interface InfoTooltipProps {
 export function InfoTooltip({content, label, testId}: InfoTooltipProps) {
   const paragraphs = typeof content === 'string' ? [content] : content
   return (
-    <Tooltip
-      animate
+    <VisionTooltip
       content={
         <Box data-testid={testId ? `${testId}-content` : undefined} style={{maxWidth: 320}}>
           <Stack gap={3}>
             {paragraphs.map((paragraph) => (
-              <Text key={paragraph} size={1} as="p">
+              <Text key={paragraph} size={1} as="p" trim={true}>
                 {paragraph}
               </Text>
             ))}
@@ -29,13 +29,12 @@ export function InfoTooltip({content, label, testId}: InfoTooltipProps) {
         </Box>
       }
       placement="top"
-      portal
     >
       <PressArea aria-label={label} data-testid={testId} type="button">
         <Text muted size={1}>
           <InfoOutlineIcon />
         </Text>
       </PressArea>
-    </Tooltip>
+    </VisionTooltip>
   )
 }

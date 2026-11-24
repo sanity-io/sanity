@@ -3,10 +3,8 @@ import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {PackageIcon} from '@sanity/icons/Package'
 import {Button} from '@sanity/ui'
 import {Menu, MenuButton, MenuItem, type MenuItemProps} from '@sanity/ui/menu'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
-import {Text} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VisionTab} from '../../store/types'
@@ -14,6 +12,7 @@ import {usePendingEdits} from '../../store/VisionActorContext'
 import {findParamNames} from '../../util/paramInference'
 import * as styles from '../redesign.module.css'
 import {type TypesExportFormat} from '../response/ExportTypesDialog'
+import {VisionTooltip} from '../VisionTooltip'
 import {ExportParamsTypesDialog} from './ExportParamsTypesDialog'
 
 export interface ParamsActionsMenuProps {
@@ -40,17 +39,11 @@ export function ParamsActionsMenu({tab}: ParamsActionsMenuProps) {
 
   return (
     <>
-      <Tooltip
-        animate
-        content={
-          <Text as="div" size={1}>
-            {moreActions}
-          </Text>
-        }
+      <VisionTooltip
+        content={moreActions}
         // The tooltip would cover the menu it names
         disabled={menuOpen}
         placement="top"
-        portal
       >
         {/* The tooltip attaches to this wrapper, which leaves the button's ref to the menu */}
         <span className={styles.tooltipTarget} data-testid="vision-params-menu-tooltip-target">
@@ -89,7 +82,7 @@ export function ParamsActionsMenu({tab}: ParamsActionsMenuProps) {
             popover={{animate: true, portal: true, placement: 'bottom-end'}}
           />
         </span>
-      </Tooltip>
+      </VisionTooltip>
       {exportFormat && (
         <ExportParamsTypesDialog
           format={exportFormat}
@@ -114,19 +107,10 @@ function ExportMenuItem(
   const {t} = useTranslation(visionLocaleNamespace)
   if (!props.disabled) return <MenuItem {...props} />
   return (
-    <Tooltip
-      animate
-      content={
-        <Text as="div" size={1}>
-          {t('vision.params.export-unavailable')}
-        </Text>
-      }
-      placement="left"
-      portal
-    >
+    <VisionTooltip content={t('vision.params.export-unavailable')} placement="left">
       <div className={styles.disabledMenuItemTarget}>
         <MenuItem {...props} />
       </div>
-    </Tooltip>
+    </VisionTooltip>
   )
 }
