@@ -187,13 +187,29 @@ describe('inferQueryParams', () => {
       format: 'datetime',
     })
     expect(typeOf('*[_id == $id]', 'id').format).toBe('document-id')
-    expect(typeOf('*[count(tags) > $n]', 'n', WITHOUT_SCHEMA).kind).toBe('number')
+    expect(typeOf('*[count(tags) > $n]', 'n', WITHOUT_SCHEMA)).toEqual({
+      kind: 'integer',
+      array: false,
+      min: 0,
+    })
+    expect(typeOf('*[length(title) < $max]', 'max', WITHOUT_SCHEMA)).toEqual({
+      kind: 'integer',
+      array: false,
+      min: 0,
+    })
     expect(typeOf('*[!$hidden]', 'hidden', WITHOUT_SCHEMA).kind).toBe('boolean')
     expect(typeOf('*[]{"x": select($flag => 1, 2)}', 'flag', WITHOUT_SCHEMA).kind).toBe('boolean')
     expect(typeOf('*[string::startsWith(title, $prefix)]', 'prefix', WITHOUT_SCHEMA).kind).toBe(
       'string',
     )
-    expect(typeOf('*[round(views, $digits) > 1]', 'digits', WITHOUT_SCHEMA).kind).toBe('integer')
+    expect(typeOf('*[round(views, $digits) > 1]', 'digits', WITHOUT_SCHEMA)).toEqual({
+      kind: 'integer',
+      array: false,
+      min: 0,
+    })
+    // `round()` with no arguments does not parse, and inference still lists the other params
+    expect(() => inferQueryParams('*[round() && $ok]')).not.toThrow()
+    expect(inferQueryParams('*[round() && $ok]').params.map((param) => param.name)).toEqual(['ok'])
     expect(typeOf('*[]{"n": math::sum($values)}', 'values', WITHOUT_SCHEMA)).toEqual({
       kind: 'number',
       array: true,
@@ -351,8 +367,8 @@ describe('inferQueryParams', () => {
     expect(range.name).toBe('range')
     expect(range.type).toEqual({kind: 'any', array: false})
     expect(range.fields?.map(({name, type}) => [name, type])).toEqual([
-      ['min', {kind: 'number', array: false}],
-      ['max', {kind: 'number', array: false}],
+      ['min', {kind: 'integer', array: false, min: 0}],
+      ['max', {kind: 'integer', array: false, min: 0}],
       ['limits', {kind: 'any', array: false}],
       ['flag', {kind: 'boolean', array: false}],
     ])

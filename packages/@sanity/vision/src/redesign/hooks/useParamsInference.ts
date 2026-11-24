@@ -3,7 +3,8 @@ import {useMemo} from 'react'
 import {type Schema, useSchema} from 'sanity'
 
 import {getDocumentTypeNames} from '../util/documentTypes'
-import {inferQueryParams, type ParamInference} from '../util/paramInference'
+import {getNumberRules} from '../util/numberRules'
+import {inferQueryParams, type NumberRules, type ParamInference} from '../util/paramInference'
 import {getGroqSchema} from '../util/typegen/evaluateQueryType'
 
 export interface ParamsInference extends ParamInference {
@@ -31,12 +32,20 @@ export function useParamsInference(
     }
   }, [schema])
   const documentTypes = useMemo(() => (schema ? getDocumentTypeNames(schema) : []), [schema])
+  const numberRules = useMemo(
+    () =>
+      schema
+        ? (documentType: string, path: string[]): NumberRules | undefined =>
+            getNumberRules(schema, documentType, path)
+        : undefined,
+    [schema],
+  )
   return useMemo(
     () => ({
-      ...inferQueryParams(query, {schema: groqSchema, documentTypes, values}),
+      ...inferQueryParams(query, {schema: groqSchema, documentTypes, numberRules, values}),
       groqSchema,
       schemaUnavailable: !groqSchema,
     }),
-    [documentTypes, groqSchema, query, values],
+    [documentTypes, groqSchema, numberRules, query, values],
   )
 }

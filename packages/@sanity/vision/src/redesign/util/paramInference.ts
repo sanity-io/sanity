@@ -32,6 +32,23 @@ export interface ParamType {
   /** The values the schema allows, offered as suggestions; others can still be entered */
   options?: string[]
   format?: ParamFormat
+  /** The smallest number a number input offers, from the query or a field's validation */
+  min?: number
+  /** The largest number a number input offers */
+  max?: number
+  /** The step of a number input: `1` for a whole number, or from a field's `precision()` */
+  step?: number
+}
+
+/**
+ * The `min`, `max`, `integer` and `precision` rules of one number field. `{}` is a number field
+ * with no rules; a missing field is not represented
+ */
+export interface NumberRules {
+  min?: number
+  max?: number
+  integer?: boolean
+  precision?: number
 }
 
 export interface InferredParam {
@@ -69,6 +86,11 @@ export interface InferParamsOptions {
   documentTypes?: string[]
   /** The params' current values, typed for a param the query says nothing about */
   values?: Record<string, unknown>
+  /**
+   * The number rules of a field of a document type, given its path. A param compared with the
+   * field, or used as an end of its range, takes the loosest bounds across the types in scope
+   */
+  numberRules?: (documentType: string, path: string[]) => NumberRules | undefined
 }
 
 const ANY: ParamType = {kind: 'any', array: false}
@@ -290,11 +312,16 @@ interface Expected {
   node: TypeNode
   format?: ParamFormat
   integer?: true
+  min?: number
+  max?: number
+  step?: number
 }
 
 const TEXT: Expected = {node: STRING}
 const NUMERIC: Expected = {node: NUMBER}
 const INTEGER: Expected = {node: NUMBER, integer: true}
+/** `count()` and `length()` are whole numbers from 0 */
+const COUNT: Expected = {node: NUMBER, integer: true, min: 0}
 const CONDITION: Expected = {node: BOOLEAN}
 const DATETIME: Expected = {node: STRING, format: 'datetime'}
 const DOCUMENT_ID: Expected = {node: STRING, format: 'document-id'}
@@ -341,7 +368,7 @@ const SIGNATURES: Record<string, Signature> = {
     args: [],
     rest: {node: union([STRING, arrayOf(STRING)]), format: 'document-id'},
   },
-  'global::round': {args: [NUMERIC, INTEGER]},
+  'global::round': {args: [NUMERIC, {...INTEGER, min: 0}]},
   'global::string': {args: [{node: union([STRING, NUMBER, BOOLEAN])}]},
   'global::upper': {args: [TEXT]},
   'string::lower': {args: [TEXT]},
@@ -373,9 +400,9 @@ const SIGNATURES: Record<string, Signature> = {
  * (`count(tags) > $min` without the schema), and for the format of a date and time
  */
 const RETURNS: Record<string, Expected> = {
-  'global::count': NUMERIC,
+  'global::count': COUNT,
   'global::dateTime': DATETIME,
-  'global::length': NUMERIC,
+  'global::length': COUNT,
   'global::lower': TEXT,
   'global::now': DATETIME,
   'global::round': NUMERIC,
@@ -480,6 +507,8 @@ const RETURNED = 'the query only returns it'
 const CHECKED = 'the query only checks whether it is set'
 const ORDERED = 'it is only used to order by'
 const ARITHMETIC = new Set<OpCall>(['-', '*', '/', '%', '**'])
+/** A param compared this way with a field can take that field's validation bounds */
+const ORDERINGS = new Set<OpCall>(['==', '!=', '<', '<=', '>', '>='])
 /** Nodes that hold a param without using it, so its usage is the param alone */
 const CONTAINERS = new Set<ExprNode['type']>(['Array', 'Object', 'Projection', 'Select'])
 
@@ -1013,7 +1042,15 @@ function resolveComparison(
       // The schema's `_type`s include the asset documents, which the workspace does not list
       const node = (hinted && intersect(hinted.node, type)) ?? type
       const format = hinted?.format && holdsStrings(node) ? hinted.format : undefined
-      base = {node, ...(format && {format})}
+      // The schema types `count()` as a number; the query still says it is a whole number from 0
+      base = {
+        node,
+        ...(format && {format}),
+        ...(hinted?.integer && {integer: true as const}),
+        ...(hinted?.min !== undefined && {min: hinted.min}),
+        ...(hinted?.max !== undefined && {max: hinted.max}),
+        ...(hinted?.step !== undefined && {step: hinted.step}),
+      }
     }
   }
   if (!base || base.node.type === 'null') {
@@ -1029,7 +1066,76 @@ function resolveComparison(
       ? `GROQ never finds it in \`${text}\`, whose elements are not strings, numbers or booleans`
       : `GROQ never finds it equal to \`${text}\`, which is not a string, number or boolean`
   }
-  return {...base, node: op === 'in' && !paramOnLeft ? arrayOf(node) : node}
+  const typed: Expected = {...base, node: op === 'in' && !paramOnLeft ? arrayOf(node) : node}
+  // `+` reaches here too: it is not in the arithmetic set, and an offset still takes no field bounds
+  return op === 'range' || ORDERINGS.has(op) ? withNumberBounds(typed, expr, scope, options) : typed
+}
+
+/** `field` or `object.field` of the element in scope, as a path */
+function attributePath(node: ExprNode): string[] | undefined {
+  const path: string[] = []
+  let current: ExprNode | undefined = unwrapGroups(node)
+  while (current?.type === 'AccessAttribute') {
+    path.unshift(current.name)
+    current = current.base ? unwrapGroups(current.base) : undefined
+  }
+  return path.length > 0 && (!current || current.type === 'This') ? path : undefined
+}
+
+/**
+ * A number param compared with a document field, or used as an end of its range, takes that
+ * field's validation bounds. A bound holds only when every matching type that has the field sets
+ * one, and then the loosest value, so a number valid for any of those types is not flagged.
+ * Arithmetic never asks: a scale or an offset is not constrained by the field it is used with.
+ */
+function withNumberBounds(
+  expected: Expected,
+  counterpart: ExprNode,
+  scope: Scope,
+  options: InferParamsOptions,
+): Expected {
+  const {schema, numberRules} = options
+  if (!schema || !numberRules || !scope.documents) return expected
+  const numbers = members(expected.node)
+  if (numbers.length === 0 || numbers.some((member) => member.type !== 'number')) return expected
+  const path = attributePath(counterpart)
+  if (!path) return expected
+  const documentTypes = probe(scope, {type: 'AccessAttribute', name: '_type'}, schema)
+  if (!documentTypes) return expected
+  const names: string[] = []
+  for (const member of members(withoutNull(documentTypes))) {
+    if (member.type !== 'string' || member.value === undefined) return expected
+    names.push(member.value)
+  }
+  const ruleSets: NumberRules[] = []
+  for (const name of names) {
+    const rules = numberRules(name, path)
+    if (rules) ruleSets.push(rules)
+  }
+  if (ruleSets.length === 0) return expected
+  const loosest = (values: (number | undefined)[], pick: (...picked: number[]) => number) =>
+    values.every((value) => value !== undefined) ? pick(...values) : undefined
+  const min = loosest(
+    ruleSets.map((rules) => rules.min),
+    Math.min,
+  )
+  const max = loosest(
+    ruleSets.map((rules) => rules.max),
+    Math.max,
+  )
+  const precision = loosest(
+    ruleSets.map((rules) => rules.precision),
+    Math.max,
+  )
+  const integer =
+    expected.integer || ruleSets.every((rules) => rules.integer === true || rules.precision === 0)
+  return {
+    ...expected,
+    ...(integer && {integer: true as const}),
+    ...(min !== undefined && {min}),
+    ...(max !== undefined && {max}),
+    ...(!integer && precision !== undefined && {step: 10 ** -precision}),
+  }
 }
 
 /**
@@ -1066,8 +1172,34 @@ function combine(expectations: Expected[]): Expected | undefined {
       }
     }
     const format = result.format ?? next.format
-    const integer = result.integer ?? next.integer
-    result = {node, ...(format && {format}), ...(integer && {integer})}
+    const integer = result.integer || next.integer
+    // A bound from one use stands, and two bounds take the stricter, so every use accepts it
+    const min =
+      result.min === undefined
+        ? next.min
+        : next.min === undefined
+          ? result.min
+          : Math.max(result.min, next.min)
+    const max =
+      result.max === undefined
+        ? next.max
+        : next.max === undefined
+          ? result.max
+          : Math.min(result.max, next.max)
+    const step =
+      result.step === undefined
+        ? next.step
+        : next.step === undefined
+          ? result.step
+          : Math.max(result.step, next.step)
+    result = {
+      node,
+      ...(format && {format}),
+      ...(integer && {integer: true as const}),
+      ...(min !== undefined && {min}),
+      ...(max !== undefined && {max}),
+      ...(step !== undefined && {step}),
+    }
   }
   return result
 }
@@ -1097,7 +1229,13 @@ function scalarType(node: TypeNode, expected: Expected): ParamType | undefined {
     return {kind: 'string', array: false, ...(options && {options}), ...(format && {format})}
   }
   if (all.every((member) => member.type === 'number')) {
-    return {kind: expected.integer ? 'integer' : 'number', array: false}
+    return {
+      kind: expected.integer ? 'integer' : 'number',
+      array: false,
+      ...(expected.min !== undefined && {min: expected.min}),
+      ...(expected.max !== undefined && {max: expected.max}),
+      ...(expected.step !== undefined && {step: expected.step}),
+    }
   }
   if (all.every((member) => member.type === 'boolean')) return {kind: 'boolean', array: false}
   return undefined

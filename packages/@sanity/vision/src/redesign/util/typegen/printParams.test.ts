@@ -153,7 +153,7 @@ const MATRIX: Record<string, Row> = {
     zod: [
       '  /** Document ID, or a list of them */',
       '  author: z.union([z.string(), z.array(z.string())]),',
-      '  minCategories: z.number(),',
+      '  minCategories: z.number().int(),',
     ],
   },
   'schema fields, their listed values and membership both ways': {
