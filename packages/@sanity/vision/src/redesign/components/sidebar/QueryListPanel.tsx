@@ -348,7 +348,9 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                     </Box>
                     <Box className={sidebarStyles.queryRowMenu} paddingTop={1}>
                       <MenuButton
-                        button={<ContextMenuButton />}
+                        button={
+                          <ContextMenuButton tooltipProps={{content: t('vision.actions.more')}} />
+                        }
                         id={`vision-saved-query-menu-${query._key}`}
                         menu={
                           <Menu>

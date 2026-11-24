@@ -267,7 +267,9 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', (
     {name: 'default', title: 'Test', projectId: 'test-project', dataset: 'test'},
     {name: 'staging', title: 'Staging', projectId: 'test-project', dataset: 'staging'},
   ],
-  ContextMenuButton: (props: Record<string, unknown>) => <button type="button" {...props} />,
+  ContextMenuButton: ({tooltipProps, ...props}: {tooltipProps?: {content?: string}}) => (
+    <button data-tooltip={tooltipProps?.content} type="button" {...props} />
+  ),
   NO_UPSELL_DATA: {upsellData: null, hasError: false},
   useUpsellData: () => ({
     upsellData$: upsellMocks.content$,
@@ -603,6 +605,18 @@ function shownTab(): HTMLElement {
 
 function getQueryEditor(): HTMLTextAreaElement {
   return within(within(shownTab()).getByTestId('vision-query-editor')).getByTestId(
+    'codemirror-mock',
+  ) as HTMLTextAreaElement
+}
+
+/** The keys of the Copy shortcut, Cmd/Ctrl+Shift+C (`mod` is Ctrl in jsdom) */
+const COPY_KEYS = {key: 'c', ctrlKey: true, shiftKey: true, which: 67, keyCode: 67}
+/** The keys of the Format shortcut, Cmd/Ctrl+Shift+P */
+const FORMAT_KEYS = {key: 'p', ctrlKey: true, shiftKey: true, which: 80, keyCode: 80}
+
+/** The shown tab's params JSON editor */
+function getParamsEditor(): HTMLTextAreaElement {
+  return within(within(shownTab()).getByTestId('vision-params-editor')).getByTestId(
     'codemirror-mock',
   ) as HTMLTextAreaElement
 }
@@ -3094,8 +3108,7 @@ describe('VisionRedesign', () => {
     typeQuery(compact)
 
     // Without a laid-out editor to measure, lines wrap at the formatter's default width
-    fireEvent.click(screen.getByTestId('vision-query-menu-button'))
-    fireEvent.click(screen.getByTestId('vision-prettify'))
+    fireEvent.click(await screen.findByTestId('vision-query-format'))
 
     const formatted = [
       '*[_type == "author" && name match $q] {',
@@ -3106,6 +3119,8 @@ describe('VisionRedesign', () => {
     ].join('\n')
     await waitFor(() => expect(getQueryEditor().value).toBe(formatted))
     await waitFor(() => expect(getStoredState().tabs[0].query).toBe(formatted))
+    // A formatted query has nothing left to format
+    await waitFor(() => expect(screen.queryByTestId('vision-query-format')).toBeNull())
 
     // A narrow editor wraps at its own width, so the result needs no sideways scrolling. The
     // width is measured again for the formatted line count: here the one-line query measures
@@ -3117,8 +3132,10 @@ describe('VisionRedesign', () => {
       widthsAsked.push(lines)
       return (lines ?? 1) > 5 ? 30 : 40
     }
-    fireEvent.click(screen.getByTestId('vision-query-menu-button'))
-    fireEvent.click(screen.getByTestId('vision-prettify'))
+    const formatButton = await screen.findByTestId('vision-query-format')
+    // Deciding whether to offer Format measures too; only the click's measuring counts here
+    widthsAsked.length = 0
+    fireEvent.click(formatButton)
 
     const narrow = [
       '*[',
@@ -3134,16 +3151,160 @@ describe('VisionRedesign', () => {
     ].join('\n')
     await waitFor(() => expect(getQueryEditor().value).toBe(narrow))
     // Measured for the query's one line, then for the 7 lines of the first pass and the 10 of the
-    // second. Auto-formatting on resize then measures the editor as it is (no line count)
-    expect(widthsAsked.filter((lines) => lines !== undefined)).toEqual([1, 7, 10])
+    // second. Offering Format again measures the formatted query, and auto-formatting on resize
+    // measures the editor as it is (no line count)
+    await waitFor(() => expect(screen.queryByTestId('vision-query-format')).toBeNull())
+    expect(widthsAsked.filter((lines) => lines !== undefined)).toEqual([1, 7, 10, 10, 10])
 
+    // A query that does not parse offers no Format button; the shortcut says why it cannot format
     typeQuery('*[_type == "author"')
-    fireEvent.click(screen.getByTestId('vision-query-menu-button'))
-    fireEvent.click(screen.getByTestId('vision-prettify'))
+    fireEvent.keyDown(getQueryEditor(), FORMAT_KEYS)
 
     await screen.findByText('vision.query.prettify.failed', undefined, {timeout: 3000})
     expect(screen.getByText("expected ']' following expression")).toBeTruthy()
     expect(getQueryEditor().value).toBe('*[_type == "author"')
+    expect(screen.queryByTestId('vision-query-format')).toBeNull()
+  })
+
+  it('offers Format on the query only when formatting would change it, and Copy always', async () => {
+    renderRedesign()
+    const tab = () => within(shownTab())
+
+    typeQuery('*[_type=="author"]')
+    expect(tab().getByTestId('vision-query-copy')).toBeTruthy()
+    await waitFor(() => expect(tab().queryByTestId('vision-query-format')).not.toBeNull())
+    expect(tab().getByTestId('vision-query-format').getAttribute('aria-label')).toBe(
+      'vision.query.format',
+    )
+
+    // Already formatted
+    typeQuery('*[_type == "author"]')
+    await waitFor(() => expect(tab().queryByTestId('vision-query-format')).toBeNull())
+
+    // Does not parse
+    typeQuery('*[_type=="author"')
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(tab().queryByTestId('vision-query-format')).toBeNull()
+    expect(tab().getByTestId('vision-query-copy')).toBeTruthy()
+  })
+
+  it('offers Format on the JSON params only when it would change them, and only Copy in the form', async () => {
+    renderRedesign()
+    const tab = () => within(shownTab())
+
+    // The default, empty params have nothing to format
+    expect(tab().getByTestId('vision-params-copy')).toBeTruthy()
+    expect(tab().queryByTestId('vision-params-format')).toBeNull()
+
+    fireEvent.change(getParamsEditor(), {target: {value: '{"id":"a"}'}})
+    const format = await tab().findByTestId('vision-params-format', undefined, {timeout: 3000})
+    expect(format.getAttribute('aria-label')).toBe('vision.params.format')
+    fireEvent.click(format)
+    expect(getParamsEditor().value).toBe('{\n  "id": "a"\n}')
+    await waitFor(() => expect(getStoredState().tabs[0].rawParams).toBe('{\n  "id": "a"\n}'))
+    await waitFor(() => expect(tab().queryByTestId('vision-params-format')).toBeNull())
+
+    // Formatting would drop the comment, so it is not offered
+    fireEvent.change(getParamsEditor(), {target: {value: '{"id":"a" /* keep */}'}})
+    await waitFor(() => expect(getStoredState().tabs[0].rawParams).toBe('{"id":"a" /* keep */}'))
+    expect(tab().queryByTestId('vision-params-format')).toBeNull()
+
+    fireEvent.change(getParamsEditor(), {target: {value: '{"id":"a"}'}})
+    await tab().findByTestId('vision-params-format', undefined, {timeout: 3000})
+    fireEvent.click(document.getElementById('vision-params-view-form') as HTMLElement)
+    expect(tab().queryByTestId('vision-params-format')).toBeNull()
+    expect(tab().getByTestId('vision-params-copy')).toBeTruthy()
+  })
+
+  it('switches Copy to Copied with a check for a moment, without a toast, and only once it copied', async () => {
+    renderRedesign()
+    const writeText = vi.fn(() => Promise.resolve())
+    const clipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
+    Object.defineProperty(navigator, 'clipboard', {value: {writeText}, configurable: true})
+    try {
+      typeQuery('*[_type == "author"]')
+      const copy = () => within(shownTab()).getByTestId('vision-query-copy')
+      expect(text(copy())).toBe('vision.editor.copy')
+      expect(copy().getAttribute('aria-label')).toBe('vision.query.copy')
+
+      fireEvent.click(copy())
+      await waitFor(() => expect(text(copy())).toBe('vision.editor.copied'))
+      expect(writeText).toHaveBeenCalledWith('*[_type == "author"]')
+      expect(copy().getAttribute('aria-label')).toBe('vision.editor.copied')
+      expect(copy().querySelector('[data-copied="true"]')).not.toBeNull()
+      expect(screen.queryByText('vision.query.copied')).toBeNull()
+      // The params' Copy button is not the one that copied
+      expect(text(within(shownTab()).getByTestId('vision-params-copy'))).toBe('vision.editor.copy')
+
+      await waitFor(() => expect(text(copy())).toBe('vision.editor.copy'), {timeout: 3000})
+      expect(copy().querySelector('[data-copied="true"]')).toBeNull()
+
+      writeText.mockRejectedValueOnce(new Error('denied'))
+      fireEvent.click(copy())
+      await waitFor(() => expect(writeText).toHaveBeenCalledTimes(2))
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      expect(text(copy())).toBe('vision.editor.copy')
+    } finally {
+      if (clipboard) Object.defineProperty(navigator, 'clipboard', clipboard)
+      else Reflect.deleteProperty(navigator, 'clipboard')
+    }
+  })
+
+  it('copies and formats the params with the shortcuts while they have focus, and the query otherwise', async () => {
+    renderRedesign()
+    const writeText = vi.fn(() => Promise.resolve())
+    const clipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
+    Object.defineProperty(navigator, 'clipboard', {value: {writeText}, configurable: true})
+    try {
+      const query = '*[_type=="author"&&_id==$id]'
+      typeQuery(query)
+      // Still in the debounce: the shortcuts act on what the editor shows
+      fireEvent.change(getParamsEditor(), {target: {value: '{"id":"a"}'}})
+
+      fireEvent.keyDown(getParamsEditor(), COPY_KEYS)
+      await waitFor(() => expect(writeText).toHaveBeenLastCalledWith('{"id":"a"}'))
+      await waitFor(() =>
+        expect(text(within(shownTab()).getByTestId('vision-params-copy'))).toBe(
+          'vision.editor.copied',
+        ),
+      )
+      expect(text(within(shownTab()).getByTestId('vision-query-copy'))).toBe('vision.editor.copy')
+
+      fireEvent.keyDown(getParamsEditor(), FORMAT_KEYS)
+      expect(getParamsEditor().value).toBe('{\n  "id": "a"\n}')
+      await waitFor(() => expect(getStoredState().tabs[0].rawParams).toBe('{\n  "id": "a"\n}'))
+      expect(getQueryEditor().value).toBe(query)
+
+      fireEvent.keyDown(getQueryEditor(), COPY_KEYS)
+      await waitFor(() => expect(writeText).toHaveBeenLastCalledWith(query))
+      await waitFor(() =>
+        expect(text(within(shownTab()).getByTestId('vision-query-copy'))).toBe(
+          'vision.editor.copied',
+        ),
+      )
+
+      fireEvent.keyDown(getQueryEditor(), FORMAT_KEYS)
+      await waitFor(() => expect(getQueryEditor().value).toBe('*[_type == "author" && _id == $id]'))
+      expect(getParamsEditor().value).toBe('{\n  "id": "a"\n}')
+    } finally {
+      if (clipboard) Object.defineProperty(navigator, 'clipboard', clipboard)
+      else Reflect.deleteProperty(navigator, 'clipboard')
+    }
+  })
+
+  it('keeps Export and Save in the query actions menu, behind a More actions tooltip', async () => {
+    renderRedesign()
+    const button = within(shownTab()).getByTestId('vision-query-menu-button')
+    expect(button.getAttribute('aria-label')).toBe('vision.query.actions')
+
+    fireEvent.mouseEnter(button)
+    await screen.findByText('vision.actions.more')
+
+    fireEvent.click(button)
+    await screen.findByTestId('vision-save-query')
+    expect(screen.getByTestId('vision-export-query')).toBeTruthy()
+    expect(screen.queryByTestId('vision-copy-query')).toBeNull()
+    expect(screen.queryByTestId('vision-prettify')).toBeNull()
   })
 
   it('starts Live with a fetch of the current request, not the last fetched one', async () => {
@@ -4316,8 +4477,7 @@ describe('VisionRedesign adoption telemetry', () => {
     Object.defineProperty(navigator, 'clipboard', {value: {writeText}, configurable: true})
     try {
       typeQuery('*[_type == "author"]')
-      fireEvent.click(screen.getByTestId('vision-query-menu-button'))
-      fireEvent.click(screen.getByTestId('vision-copy-query'))
+      fireEvent.click(within(shownTab()).getByTestId('vision-query-copy'))
       await waitFor(() =>
         expect(logged(VisionCopied.name)).toEqual([[VisionCopied, {target: 'query'}]]),
       )
@@ -4409,17 +4569,15 @@ describe('VisionRedesign adoption telemetry', () => {
     fireEvent.click(screen.getByTestId('vision-tab-close'))
     expect(logged(VisionTabsChanged.name)).toHaveLength(3)
 
-    typeQuery('*[_type == "author"]')
-    fireEvent.click(screen.getByTestId('vision-query-menu-button'))
-    fireEvent.click(screen.getByTestId('vision-prettify'))
+    typeQuery('*[_type=="author"]')
+    fireEvent.click(await screen.findByTestId('vision-query-format'))
     await waitFor(() =>
       expect(logged(VisionQueryPrettified.name)).toEqual([
         [VisionQueryPrettified, {outcome: 'success'}],
       ]),
     )
     typeQuery('*[_type == "author"')
-    fireEvent.click(screen.getByTestId('vision-query-menu-button'))
-    fireEvent.click(screen.getByTestId('vision-prettify'))
+    fireEvent.keyDown(getQueryEditor(), FORMAT_KEYS)
     await waitFor(() =>
       expect(logged(VisionQueryPrettified.name).at(-1)).toEqual([
         VisionQueryPrettified,

@@ -25,6 +25,8 @@ import {type Params} from '../../../components/VisionGui'
 import {visionLocaleNamespace} from '../../../i18n'
 import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {useAiFeatures} from '../../aiFeatures'
+import {useCanFormatQuery} from '../../hooks/useCanFormatQuery'
+import {useContentSize} from '../../hooks/useContentSize'
 import {useQueryAgent} from '../../hooks/useQueryAgent'
 import {type QueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
@@ -37,6 +39,7 @@ import {
 } from '../../store/types'
 import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectFunctionLibrary, selectParamsView} from '../../store/visionMachine'
+import {formatParams} from '../../util/formatParams'
 import {
   functionLibrary,
   NO_QUERY_PARAM_VALUES,
@@ -65,6 +68,7 @@ import {
 } from '../SplitWithBottomPanel'
 import {useTabElementId} from '../tabs/queryTabShown'
 import {ApiVersionButton, type RevealedOption} from './ApiVersionButton'
+import {EditorCornerActions} from './EditorCornerActions'
 import {GenerateQueryBar, type QueryBarMode} from './GenerateQueryBar'
 import {GenerateQueryButton} from './GenerateQueryButton'
 import {LintFix} from './LintFix'
@@ -100,13 +104,19 @@ export interface RequestPanelProps {
   onOptionsChange: (options: Partial<VisionTabOptions>) => void
   onRun: () => void
   onCancel: () => void
-  onPrettify: () => void
+  /** Formats the query in its editor */
+  onFormatQuery: () => void
   /**
-   * Formats a query for the width of the query editor, as Prettify does; rejects when it does not
+   * Formats a query for the width of the query editor, as Format does; rejects when it does not
    * parse
    */
   formatForEditor: (query: string) => Promise<string>
   onCopyQuery: () => void
+  onCopyParams: () => void
+  /** Formats the params in the JSON editor */
+  onFormatParams: () => void
+  /** Which editor's Copy button reads Copied, after a copy */
+  copied: 'query' | 'params' | null
   onToggleAutoRefetch: () => void
   /** The query editor's lint diagnostics, whenever they change */
   onLintFindings: (findings: QueryLintFinding[]) => void
@@ -152,9 +162,12 @@ export function RequestPanel(props: RequestPanelProps) {
     onOptionsChange,
     onRun,
     onCancel,
-    onPrettify,
+    onFormatQuery,
     formatForEditor,
     onCopyQuery,
+    onCopyParams,
+    onFormatParams,
+    copied,
     onToggleAutoRefetch,
     onLintFindings,
     lintFindings,
@@ -333,6 +346,16 @@ export function RequestPanel(props: RequestPanelProps) {
     panelRef.current?.fitToContent()
   }, [])
 
+  // Format is offered only where it would change something: never for text that does not parse,
+  // and again after the editor is resized, since formatting wraps to its width
+  const [queryEditorElement, setQueryEditorElement] = useState<HTMLDivElement | null>(null)
+  const queryEditorSize = useContentSize(queryEditorElement)
+  const canFormatQuery = useCanFormatQuery(tab.query, formatForEditor, queryEditorSize)
+  const canFormatParams = useMemo(
+    () => paramsView === 'json' && formatParams(tab.rawParams) !== null,
+    [paramsView, tab.rawParams],
+  )
+
   const lintCount = lintFindings.length
   const functionCount = declaredFunctions.length
   const panelTabs = useMemo((): CollapsiblePanelTab[] => {
@@ -344,8 +367,14 @@ export function RequestPanel(props: RequestPanelProps) {
           <Icon icon={ErrorOutlineIcon} muted size={1} tone="critical" />
         ),
         content: (
-          <Flex flexDirection="column">
-            <Flex justifyContent="flex-start" paddingTop={2} paddingX={2}>
+          <Flex data-vision-params-content="" flexDirection="column">
+            <Flex
+              alignItems="center"
+              gap={2}
+              justifyContent="space-between"
+              paddingTop={2}
+              paddingX={2}
+            >
               <TabList aria-label={t('vision.params.view.label')} gap={1}>
                 <Tab
                   aria-controls={paramsContentId}
@@ -368,6 +397,14 @@ export function RequestPanel(props: RequestPanelProps) {
                   selected={paramsView === 'form'}
                 />
               </TabList>
+              <EditorCornerActions
+                copied={copied === 'params'}
+                copyLabel={t('vision.params.copy')}
+                formatLabel={canFormatParams ? t('vision.params.format') : undefined}
+                onCopy={onCopyParams}
+                onFormat={onFormatParams}
+                testIdPrefix="vision-params"
+              />
             </Flex>
             <Box id={paramsContentId}>
               {paramsView === 'form' ? (
@@ -446,6 +483,8 @@ export function RequestPanel(props: RequestPanelProps) {
     ]
   }, [
     canFixLint,
+    canFormatParams,
+    copied,
     declaredFunctions,
     fitParams,
     lintAgent,
@@ -453,7 +492,9 @@ export function RequestPanel(props: RequestPanelProps) {
     library,
     lintCount,
     lintFindings,
+    onCopyParams,
     onEditQuery,
+    onFormatParams,
     onOptionsChange,
     onParamsChange,
     onParamsFlush,
@@ -531,8 +572,6 @@ export function RequestPanel(props: RequestPanelProps) {
           </Tooltip>
           <QueryActionsMenu
             buildRequest={buildRequest}
-            onCopyQuery={onCopyQuery}
-            onPrettify={onPrettify}
             request={request}
             resolved={resolved}
             tab={tab}
@@ -554,12 +593,23 @@ export function RequestPanel(props: RequestPanelProps) {
           flexGrow={1}
           minHeight="0"
           minWidth="0"
+          ref={setQueryEditorElement}
         >
           <Box className={styles.paneLabel}>
             <Flex alignItems="center" gap={2}>
               <Label aria-label={t('query.label')} muted size={1}>
                 {t('query.label')}
               </Label>
+              <Flex alignItems="center" className={styles.labelActions} gap={1}>
+                <EditorCornerActions
+                  copied={copied === 'query'}
+                  copyLabel={t('vision.query.copy')}
+                  formatLabel={canFormatQuery ? t('vision.query.format') : undefined}
+                  onCopy={onCopyQuery}
+                  onFormat={onFormatQuery}
+                  testIdPrefix="vision-query"
+                />
+              </Flex>
             </Flex>
           </Box>
           <VisionCodeMirror
