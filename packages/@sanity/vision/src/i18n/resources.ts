@@ -1228,6 +1228,13 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.settings.clear-storage.success': 'Storage cleared',
   /** Explanation at the top of the settings dialog */
   'vision.settings.description': 'Defaults for new tabs. Open tabs keep their own options.',
+  /** Switch in the settings that reformats a prettified query when the query editor is resized */
+  'vision.settings.editor.auto-format-on-resize': 'Auto-format GROQ on resize',
+  /** Description of the switch that reformats a prettified query when the query editor is resized */
+  'vision.settings.editor.auto-format-on-resize.description':
+    'When the query editor gets wider or narrower, a query laid out by Prettify is laid out again for the new width. Queries you formatted yourself are left as they are.',
+  /** Title of the settings section about the query editor */
+  'vision.settings.editor.title': 'Query editor',
   /** Explains the setting listing the fields left out of History diffs */
   'vision.settings.history-diff.description':
     'One field path per line. A path matches at any depth of a result, so _rev hides the revision of every document in it. Each diff can still show them.',

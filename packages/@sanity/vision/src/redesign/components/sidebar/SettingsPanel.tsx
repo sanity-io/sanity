@@ -167,6 +167,7 @@ export function SettingsPanel() {
   const datasets = useVisionSelector(selectDatasets)
   const workspaceDataset = useVisionSelector(selectWorkspaceDataset)
   const settings = useVisionSelector((snapshot) => snapshot.context.settings)
+  const editorSettings = useVisionSelector((snapshot) => snapshot.context.editor)
   const [confirmClear, setConfirmClear] = useState(false)
   // The "Other" input may hold an unfinished version; only usable ones become the default
   const [apiVersionDraft, setApiVersionDraft] = useState(settings.apiVersion)
@@ -256,6 +257,23 @@ export function SettingsPanel() {
           onChange={(useCdn) => actorRef.send({type: 'settings.update', settings: {useCdn}})}
           testId="vision-settings-use-cdn"
         />
+
+        <Card border padding={3} radius={2}>
+          <Stack gap={4}>
+            <Text size={1} weight="medium" as="div" trim={true}>
+              {t('vision.settings.editor.title')}
+            </Text>
+            <SwitchField
+              checked={editorSettings.autoFormatOnResize}
+              description={t('vision.settings.editor.auto-format-on-resize.description')}
+              onChange={(autoFormatOnResize) =>
+                actorRef.send({type: 'editor.update', settings: {autoFormatOnResize}})
+              }
+              testId="vision-settings-auto-format-on-resize"
+              title={t('vision.settings.editor.auto-format-on-resize')}
+            />
+          </Stack>
+        </Card>
 
         <Card border padding={3} radius={2}>
           <HiddenDiffFieldsSetting />

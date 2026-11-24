@@ -145,6 +145,7 @@ describe('visionStorage', () => {
       },
       historyDiff: {hiddenFields: ['_rev', 'meta.version']},
       ai: {enabled: true, generateQuery: false, generateMutations: true, explainQuery: false},
+      editor: {autoFormatOnResize: false},
       functions: [{id: 'ex::author', declaration: 'fn ex::author($ref) = $ref->{name}'}],
     }
     saveVisionState('proj', saved)
@@ -331,6 +332,23 @@ describe('visionStorage', () => {
 
     localStorage.setItem(getVisionStorageKey('proj'), JSON.stringify({...withoutAi, ai: 'off'}))
     expect(loadVisionState('proj', defaults).ai).toEqual(allOn)
+  })
+
+  it('keeps auto-formatting on resize on unless it was switched off', () => {
+    const {editor: _editor, ...withoutEditor} = createInitialState(defaults)
+    expect(createInitialState(defaults).editor).toEqual({autoFormatOnResize: true})
+
+    const load = (editor?: unknown) => {
+      localStorage.setItem(
+        getVisionStorageKey('proj'),
+        JSON.stringify(editor === undefined ? withoutEditor : {...withoutEditor, editor}),
+      )
+      return loadVisionState('proj', defaults).editor
+    }
+    expect(load()).toEqual({autoFormatOnResize: true})
+    expect(load({autoFormatOnResize: false})).toEqual({autoFormatOnResize: false})
+    expect(load({autoFormatOnResize: 'no'})).toEqual({autoFormatOnResize: true})
+    expect(load('off')).toEqual({autoFormatOnResize: true})
   })
 
   it('returns a fresh state for missing, malformed or outdated storage', () => {

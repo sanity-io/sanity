@@ -9,6 +9,7 @@ import {
   type VisionAiSettings,
   type VisionDatasetMode,
   type VisionDrawer,
+  type VisionEditorSettings,
   type VisionHistoryDiffSettings,
   type VisionPanelsState,
   type VisionPersistedState,
@@ -43,6 +44,10 @@ const DEFAULT_AI_SETTINGS: VisionAiSettings = {
   generateQuery: true,
   generateMutations: true,
   explainQuery: true,
+}
+
+const DEFAULT_EDITOR_SETTINGS: VisionEditorSettings = {
+  autoFormatOnResize: true,
 }
 
 export interface VisionStorageDefaults {
@@ -141,6 +146,7 @@ export function createInitialState(defaults: VisionStorageDefaults): VisionPersi
     panels: {...DEFAULT_PANELS},
     historyDiff: {hiddenFields: [...DEFAULT_HIDDEN_DIFF_FIELDS]},
     ai: {...DEFAULT_AI_SETTINGS},
+    editor: {...DEFAULT_EDITOR_SETTINGS},
     functions: [],
   }
 }
@@ -288,6 +294,12 @@ function sanitizeAiSettings(value: unknown): VisionAiSettings {
   }
 }
 
+/** A setting stays on unless it was switched off; state saved before the settings existed has all on */
+function sanitizeEditorSettings(value: unknown): VisionEditorSettings {
+  const editor = isPlainObject(value) ? value : {}
+  return {autoFormatOnResize: editor.autoFormatOnResize !== false}
+}
+
 /** Saved functions with an id and a declaration, the first of each id; state saved before had none */
 function sanitizeFunctions(value: unknown): VisionSavedFunction[] {
   if (!Array.isArray(value)) return []
@@ -348,9 +360,10 @@ export function loadVisionState(
   const panels = sanitizePanels(stored.panels)
   const historyDiff = sanitizeHistoryDiff(stored.historyDiff)
   const ai = sanitizeAiSettings(stored.ai)
+  const editor = sanitizeEditorSettings(stored.editor)
   const functions = sanitizeFunctions(stored.functions)
   if (tabs.length === 0) {
-    return {...initial, settings, sidebar, panels, historyDiff, ai, functions}
+    return {...initial, settings, sidebar, panels, historyDiff, ai, editor, functions}
   }
 
   const activeTabId =
@@ -367,6 +380,7 @@ export function loadVisionState(
     panels,
     historyDiff,
     ai,
+    editor,
     functions,
   }
 }
