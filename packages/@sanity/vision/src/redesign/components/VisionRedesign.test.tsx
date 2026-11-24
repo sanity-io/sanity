@@ -749,12 +749,9 @@ describe('VisionRedesign', () => {
 
     const queryEditor = screen.getByTestId('vision-query-editor')
     expect(queryEditor).toBeTruthy()
-    // The header above the editor is GROQ; the shared query label stays "Query"
-    const header = within(queryEditor).getByText('vision.query.label')
-    expect(header.closest('[data-ui="Label"]')?.getAttribute('aria-label')).toBe(
-      'vision.query.label',
-    )
-    expect(visionLocaleStrings['vision.query.label']).toBe('GROQ')
+    const header = within(queryEditor).getByText('query.label')
+    expect(header.closest('[data-ui="Label"]')?.getAttribute('aria-label')).toBe('query.label')
+    expect(within(queryEditor).queryByText('vision.query.label')).toBeNull()
     expect(visionLocaleStrings['query.label']).toBe('Query')
     expect(screen.getByTestId('vision-params-editor')).toBeTruthy()
     expect(screen.queryByTestId('vision-options')).toBeNull()
