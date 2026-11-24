@@ -1608,14 +1608,25 @@ describe('createLegacyAuthStore: currentUser attributes', () => {
     vi.restoreAllMocks()
   })
 
-  it('preserves attributes from /users/me response', async () => {
-    const mock = createMockClientFactory()
+  it('opts in to attributes on the /users/me request', async () => {
+    const makeClient = (options: SanityClientConfig): SanityClient =>
+      ({
+        request: vi.fn(({url, query}: {url: string; query?: Record<string, string>}) => {
+          if (url !== '/users/me') return Promise.resolve({})
+
+          const {attributes, ...user} = MOCK_USER
+          const optedIn =
+            options.apiVersion === 'v2026-11-24' && query?.includeUserAttributes === 'true'
+
+          return Promise.resolve(optedIn ? {...user, attributes} : user)
+        }),
+      }) as unknown as SanityClient
 
     const store = _createLegacyAuthStore({
       projectId: PROJECT_ID,
       dataset: DATASET,
       loginMethod: 'cookie',
-      clientFactory: mock.factory,
+      clientFactory: makeClient,
       getSessionId: () => undefined,
       consumeHashToken: () => undefined,
     })
