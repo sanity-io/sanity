@@ -21,6 +21,7 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {TimelineError} from '../TimelineError'
 import {EventsTimeline} from './EventsTimeline'
 import {root} from './EventsTimelineMenu.css'
+import {isEditTransactionEvent} from './timelineRows'
 
 interface TimelineMenuProps {
   event: DocumentGroupEvent | null
@@ -33,6 +34,11 @@ const TIMELINE_MENU_PORTAL = 'timeline-menu'
 
 const formatParams = {
   timestamp: {dateStyle: 'medium', timeStyle: 'short'},
+}
+
+// The transactions of an edit event are told apart by their time, down to the second.
+const transactionFormatParams = {
+  timestamp: {dateStyle: 'medium', timeStyle: 'medium'},
 }
 
 export function EventsTimelineMenu({event, events, mode, placement}: TimelineMenuProps) {
@@ -155,23 +161,19 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
     selectRev,
   ])
 
-  const revLabel = event
+  const eventLabel = event
     ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[event.documentVariantType][event.type], {
         context: 'timestamp',
         timestamp: new Date(event.timestamp),
-        formatParams,
+        formatParams: isEditTransactionEvent(event) ? transactionFormatParams : formatParams,
       })
-    : t('timeline.latest-revision')
+    : null
 
-  const sinceLabel = event
-    ? t(TIMELINE_ITEM_I18N_KEY_MAPPING[event.documentVariantType][event.type], {
-        context: 'timestamp',
-        timestamp: new Date(event.timestamp),
-        formatParams,
-      })
-    : events.length > 0
-      ? t('timeline.since-version-missing')
-      : t('timeline.no-previous-events')
+  const revLabel = eventLabel ?? t('timeline.latest-revision')
+
+  const sinceLabel =
+    eventLabel ??
+    (events.length > 0 ? t('timeline.since-version-missing') : t('timeline.no-previous-events'))
 
   const buttonLabel = mode === 'rev' ? revLabel : sinceLabel
   const portalElements = useMemo(

@@ -70,6 +70,12 @@ const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
   useTemporalPhrase: true,
 }
 
+const DATE_TIME_FORMAT_OPTIONS = {dateStyle: 'medium', timeStyle: 'short'} as const
+// The transactions of an edit event happen within minutes of each other, so they are told apart
+// by their time, down to the second.
+const TRANSACTION_DATE_TIME_FORMAT_OPTIONS = {dateStyle: 'medium', timeStyle: 'medium'} as const
+const TRANSACTION_TIME_FORMAT_OPTIONS = {timeStyle: 'medium'} as const
+
 const AvatarSkeleton = styled(Skeleton)((props) => {
   const theme = getTheme_v2(props.theme)
   return css`
@@ -170,8 +176,12 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
 
   const IconComponent = TIMELINE_ICON_COMPONENTS[type]
   const contributors = 'contributors' in event ? event.contributors || [] : []
+  const isTransaction = isEditDocumentVersionEvent(event) && Boolean(event.isTransaction)
 
-  const dateFormat = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
+  const dateFormat = useDateTimeFormat(
+    isTransaction ? TRANSACTION_DATE_TIME_FORMAT_OPTIONS : DATE_TIME_FORMAT_OPTIONS,
+  )
+  const timeFormat = useDateTimeFormat(TRANSACTION_TIME_FORMAT_OPTIONS)
   const date = new Date(timestamp)
 
   const updatedTimeAgo = useRelativeTime(date || '', RELATIVE_TIME_OPTIONS)
@@ -217,7 +227,7 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
             title={formattedTimestamp}
             trim={true}
           >
-            {updatedTimeAgo}
+            {isTransaction ? timeFormat.format(date) : updatedTimeAgo}
           </Text>
         </VStack>
 
