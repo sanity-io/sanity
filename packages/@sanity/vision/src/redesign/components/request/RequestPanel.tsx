@@ -614,12 +614,6 @@ export function RequestPanel(props: RequestPanelProps) {
               tone={isFetching ? 'critical' : 'primary'}
             />
           </Tooltip>
-          <QueryActionsMenu
-            buildRequest={buildRequest}
-            request={request}
-            resolved={resolved}
-            tab={tab}
-          />
         </ActionRail>
       }
       id="vision-request"
@@ -648,14 +642,22 @@ export function RequestPanel(props: RequestPanelProps) {
             <Label aria-label={t('query.label')} className={styles.paneToolbarLabel} muted size={1}>
               {t('query.label')}
             </Label>
-            <EditorCornerActions
-              copied={copied === 'query'}
-              copyLabel={t('vision.query.copy')}
-              formatLabel={canFormatQuery ? t('vision.query.format') : undefined}
-              onCopy={onCopyQuery}
-              onFormat={onFormatQuery}
-              testIdPrefix="vision-query"
-            />
+            <Flex alignItems="center" data-testid="vision-query-toolbar-actions" gap={1}>
+              <EditorCornerActions
+                copied={copied === 'query'}
+                copyLabel={t('vision.query.copy')}
+                formatLabel={canFormatQuery ? t('vision.query.format') : undefined}
+                onCopy={onCopyQuery}
+                onFormat={onFormatQuery}
+                testIdPrefix="vision-query"
+              />
+              <QueryActionsMenu
+                buildRequest={buildRequest}
+                request={request}
+                resolved={resolved}
+                tab={tab}
+              />
+            </Flex>
           </div>
           <div className={styles.paneScroll} data-fill="" ref={setQueryScroller}>
             <VisionCodeMirror
