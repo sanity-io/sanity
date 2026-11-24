@@ -25,7 +25,7 @@ interface Region {
 const highlighters = new WeakMap<readonly TagStyle[], Highlighter>()
 
 /** Tags each node with the index of the first spec that styles it, which is how the editors pick */
-function getHighlighter(specs: readonly TagStyle[]): Highlighter {
+export function getHighlighter(specs: readonly TagStyle[]): Highlighter {
   let highlighter = highlighters.get(specs)
   if (!highlighter) {
     highlighter = tagHighlighter(
