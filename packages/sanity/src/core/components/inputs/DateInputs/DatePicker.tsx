@@ -4,6 +4,12 @@ import {type TimeZoneScope} from '../../../hooks/useTimeZone'
 import {Calendar, type CalendarProps} from './calendar/Calendar'
 import {type CalendarLabels} from './calendar/types'
 
+/**
+ * The calendar of the date and date-time inputs: day presets, a month grid and, with
+ * `selectTime`, a time input with a "Set to current time" shortcut.
+ *
+ * @internal
+ */
 export function DatePicker(
   props: Omit<ComponentProps<'div'>, 'onChange'> & {
     value?: Date

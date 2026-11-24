@@ -166,6 +166,7 @@ import type {
   CrossDatasetReferencePreview,
   CustomComponentPaneNode,
   DashboardLink,
+  DatePicker,
   decodeJsonParams,
   decodePath,
   DEFAULT_INTENT_HANDLER,
@@ -1444,6 +1445,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('DashboardLink', () => {
     expectTypeOf<typeof DashboardLink>().toBeFunction()
+  })
+  test('DatePicker', () => {
+    expectTypeOf<typeof DatePicker>().toBeFunction()
   })
   test('decodeJsonParams', () => {
     expectTypeOf<typeof decodeJsonParams>().toBeFunction()
