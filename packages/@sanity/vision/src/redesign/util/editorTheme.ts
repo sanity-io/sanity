@@ -2,6 +2,7 @@ import {Prec, type Extension} from '@codemirror/state'
 import {EditorView} from '@codemirror/view'
 
 import {paramsExtensions, resultJsonExtensions} from '../../codemirror/extensions'
+import {PARAM_HIGHLIGHT_CLASS} from './paramHighlight'
 
 const HAS_SELECTION_CLASS = 'cm-vision-hasSelection'
 
@@ -71,6 +72,14 @@ export const redesignEditorTheme: Extension = [
         borderRadius: '2px',
         boxShadow:
           'inset 0 0 0 1px color-mix(in srgb, var(--card-badge-critical-fg-color) 45%, transparent)',
+      },
+      // References to the param being edited in the params pane, marked the same way in the
+      // primary tone while focus is in that pane rather than in this editor
+      [`&.cm-editor .${PARAM_HIGHLIGHT_CLASS}`]: {
+        backgroundColor: 'color-mix(in srgb, var(--card-badge-primary-fg-color) 14%, transparent)',
+        borderRadius: '2px',
+        boxShadow:
+          'inset 0 0 0 1px color-mix(in srgb, var(--card-badge-primary-fg-color) 50%, transparent)',
       },
     }),
   ),

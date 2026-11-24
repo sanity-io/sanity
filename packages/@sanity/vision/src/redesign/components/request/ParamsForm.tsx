@@ -372,6 +372,7 @@ function ParamField(props: {
     <Stack
       className={wide ? fieldGrid.fieldGridWide : undefined}
       data-testid={`vision-params-form-${param.name}`}
+      data-vision-param={param.name}
       gap={2}
     >
       <Flex alignItems="center" gap={1}>
