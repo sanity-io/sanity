@@ -5,6 +5,7 @@ import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../i18n'
+import {useScrolledFromTop} from '../hooks/useScrolledFromTop'
 import {cx} from '../util/cx'
 import * as motion from './CollapsiblePanel.module.css'
 import * as styles from './redesign.module.css'
@@ -33,6 +34,11 @@ export interface CollapsiblePanelTab {
    * editor, a graph, a virtual list) rather than growing with what it shows
    */
   fill?: boolean
+  /**
+   * A row of controls above the content (the params' view tabs, the source map's view menu). It
+   * stays in place while the content scrolls below it.
+   */
+  toolbar?: ReactNode
   content: ReactNode
 }
 
@@ -70,6 +76,7 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
   const elementId = (suffix: string) => tabElementId(`${idPrefix}-${suffix}`)
   const activeTab = tabs.find((tab) => tab.id === activeTabId) || tabs[0]
   const stripRef = useRef<HTMLDivElement>(null)
+  const {scrolled: bodyScrolled, setScroller: setBodyScroller} = useScrolledFromTop()
   // Changes when the tabs do, rather than with every new array of them
   const tabIds = tabs.map((tab) => tab.id).join(' ')
 
@@ -161,17 +168,33 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
           className={cx(motion.body, styles.panelBody)}
           flex={1}
           id={elementId(`${activeTab.id}-panel`)}
-          overflow="auto"
         >
-          {/*
-            Not stretched to the panel: its height is the tab's content, which fit-to-content
-            measures. A stretched child would report the panel it sits in.
-          */}
+          {activeTab.toolbar && (
+            <div
+              className={styles.paneToolbar}
+              data-scrolled={bodyScrolled}
+              data-vision-panel-toolbar=""
+            >
+              {activeTab.toolbar}
+            </div>
+          )}
           <div
-            className={cx(styles.panelContent, activeTab.fill && styles.panelContentFill)}
-            data-vision-panel-content=""
+            className={styles.paneScroll}
+            data-fill={activeTab.fill ? '' : undefined}
+            // Each tab's content (and each of its views that fill the panel or not) starts at its top
+            key={`${activeTab.id}:${Boolean(activeTab.fill)}`}
+            ref={setBodyScroller}
           >
-            {activeTab.content}
+            {/*
+              Not stretched to the panel: its height is the tab's content, which fit-to-content
+              measures. A stretched child would report the panel it sits in.
+            */}
+            <div
+              className={cx(styles.panelContent, activeTab.fill && styles.panelContentFill)}
+              data-vision-panel-content=""
+            >
+              {activeTab.content}
+            </div>
           </div>
         </TabPanel>
       )}

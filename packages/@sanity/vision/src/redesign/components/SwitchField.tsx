@@ -42,11 +42,15 @@ export function SwitchField(props: SwitchFieldProps) {
             {title}
           </Text>
           {info && (
-            <InfoTooltip
-              content={info}
-              label={infoLabel ?? (typeof title === 'string' ? title : '')}
-              testId={testId ? `${testId}-info` : undefined}
-            />
+            // The info button fills its container, so unwrapped it would take half the row and
+            // wrap the title
+            <Box flexShrink={0}>
+              <InfoTooltip
+                content={info}
+                label={infoLabel ?? (typeof title === 'string' ? title : '')}
+                testId={testId ? `${testId}-info` : undefined}
+              />
+            </Box>
           )}
         </Flex>
         {description && (

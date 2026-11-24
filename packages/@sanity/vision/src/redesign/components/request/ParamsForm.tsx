@@ -15,6 +15,7 @@ import {type Params} from '../../../components/VisionGui'
 import {visionLocaleNamespace} from '../../../i18n'
 import {useParamsInference} from '../../hooks/useParamsInference'
 import {type InferredParam, type ParamKind, type ParamType} from '../../util/paramInference'
+import * as fieldGrid from '../fieldGrid.module.css'
 
 type Translate = TFunction<typeof visionLocaleNamespace>
 
@@ -277,6 +278,7 @@ function ParamField(props: {
   const problem = isSet ? describeProblem(type, value, t) : undefined
 
   const required = isSet ? undefined : t('vision.params-form.required')
+  const wide = type.array || (type.kind === 'any' && typeof value === 'object' && value !== null)
 
   let input
   if (type.kind === 'boolean' && !type.array) {
@@ -335,7 +337,11 @@ function ParamField(props: {
   }
 
   return (
-    <Stack data-testid={`vision-params-form-${param.name}`} gap={2}>
+    <Stack
+      className={wide ? fieldGrid.fieldGridWide : undefined}
+      data-testid={`vision-params-form-${param.name}`}
+      gap={2}
+    >
       <Flex alignItems="center" gap={1}>
         <Text as="label" htmlFor={inputId} size={1} weight="medium" trim={true}>
           <InlineCode>{`$${param.name}`}</InlineCode>
@@ -482,17 +488,21 @@ export function ParamsForm({query, params, onChange}: ParamsFormProps) {
           {t('vision.params-form.empty')}
         </Text>
       )}
-      {inference.params.map((param) => (
-        <ParamField
-          disabled={disabled}
-          isSet={Object.hasOwn(values, param.name)}
-          key={param.name}
-          onChange={(value) => setValue(param.name, value)}
-          param={param}
-          schemaNote={schemaNoteInDetails}
-          value={values[param.name]}
-        />
-      ))}
+      {inference.params.length > 0 && (
+        <div className={fieldGrid.fieldGrid}>
+          {inference.params.map((param) => (
+            <ParamField
+              disabled={disabled}
+              isSet={Object.hasOwn(values, param.name)}
+              key={param.name}
+              onChange={(value) => setValue(param.name, value)}
+              param={param}
+              schemaNote={schemaNoteInDetails}
+              value={values[param.name]}
+            />
+          ))}
+        </div>
+      )}
       {unused.length > 0 && (
         <Stack data-testid="vision-params-form-unused" gap={2}>
           <Flex alignItems="center" gap={1}>

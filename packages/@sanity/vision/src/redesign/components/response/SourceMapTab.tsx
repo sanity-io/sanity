@@ -1,6 +1,6 @@
-import {type ReactNode, useMemo} from 'react'
+import {useMemo} from 'react'
 import {useTranslation} from 'sanity/i18n'
-import {Text, Box, Flex} from 'ui5'
+import {Text, Box} from 'ui5'
 
 import {ResultView, type ResultViewCopy} from '../../../components/ResultView'
 import {visionLocaleNamespace} from '../../../i18n'
@@ -18,8 +18,6 @@ export interface SourceMapTabProps {
   meta: VisionResponseMeta | undefined
   dataset: string
   view: SourceMapView
-  /** Picks the view, on a row of its own above it. Not shown while there is no source map. */
-  viewMenu: ReactNode
   /** Id of the element showing the source map, which the view menu controls */
   id: string
   copy: ResultViewCopy
@@ -30,7 +28,7 @@ export interface SourceMapTabProps {
  * Documents lists the documents it maps the result to, whether or not the result projected their
  * `_id` and `_type`.
  */
-export function SourceMapTab({meta, dataset, view, viewMenu, id, copy}: SourceMapTabProps) {
+export function SourceMapTab({meta, dataset, view, id, copy}: SourceMapTabProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const sourceMap = meta?.resultSourceMap
   const documents = useMemo(
@@ -50,23 +48,9 @@ export function SourceMapTab({meta, dataset, view, viewMenu, id, copy}: SourceMa
 
   return (
     <div className={styles.sourceMapTab} data-fill={view === 'tree' ? undefined : ''}>
-      <Flex
-        alignItems="center"
-        className={styles.sourceMapToolbar}
-        data-testid="vision-source-map-toolbar"
-        padding={2}
-      >
-        {viewMenu}
-      </Flex>
       {documents ? (
         <div data-testid="vision-source-map">
-          <DocumentListView
-            datasetName={dataset}
-            flush
-            id={id}
-            resolvePreviews
-            parsed={documents}
-          />
+          <DocumentListView datasetName={dataset} id={id} resolvePreviews parsed={documents} />
         </div>
       ) : view === 'json' ? (
         <div data-testid="vision-source-map">

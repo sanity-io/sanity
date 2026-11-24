@@ -30,6 +30,7 @@ import {useContentSize} from '../../hooks/useContentSize'
 import {useQueryAgent} from '../../hooks/useQueryAgent'
 import {type QueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
+import {useScrolledFromTop} from '../../hooks/useScrolledFromTop'
 import {
   type QueryRequest,
   type VisionParamsView,
@@ -39,6 +40,8 @@ import {
 } from '../../store/types'
 import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectFunctionLibrary, selectParamsView} from '../../store/visionMachine'
+import {cx} from '../../util/cx'
+import {redesignEditorTheme} from '../../util/editorTheme'
 import {formatParams} from '../../util/formatParams'
 import {
   functionLibrary,
@@ -241,6 +244,7 @@ export function RequestPanel(props: RequestPanelProps) {
   const queryExtensions = useMemo(
     () => [
       ...groqExtensions,
+      redesignEditorTheme,
       ...lintExtensions,
       ...functionExtensions,
       functionLibrary.of(library),
@@ -378,6 +382,7 @@ export function RequestPanel(props: RequestPanelProps) {
   // and again after the editor is resized, since formatting wraps to its width
   const [queryEditorElement, setQueryEditorElement] = useState<HTMLDivElement | null>(null)
   const queryEditorSize = useContentSize(queryEditorElement)
+  const {scrolled: queryScrolled, setScroller: setQueryScroller} = useScrolledFromTop()
   const canFormatQuery = useCanFormatQuery(
     tab.query,
     formatForEditor,
@@ -399,46 +404,52 @@ export function RequestPanel(props: RequestPanelProps) {
         icon: params.valid ? undefined : (
           <Icon icon={ErrorOutlineIcon} muted size={1} tone="critical" />
         ),
+        toolbar: (
+          <Flex
+            alignItems="center"
+            data-vision-params-content=""
+            flexGrow={1}
+            gap={2}
+            minWidth="0"
+            justifyContent="space-between"
+            paddingBottom={1}
+            paddingTop={2}
+            paddingX={2}
+          >
+            <TabList aria-label={t('vision.params.view.label')} gap={1}>
+              <Tab
+                aria-controls={paramsContentId}
+                fontSize={1}
+                id={paramsJsonTabId}
+                label={t('vision.params.view.json')}
+                onClick={() => setParamsView('json')}
+                onDoubleClick={fitParams}
+                padding={2}
+                selected={paramsView === 'json'}
+              />
+              <Tab
+                aria-controls={paramsContentId}
+                fontSize={1}
+                id={paramsFormTabId}
+                label={t('vision.params.view.form')}
+                onClick={() => setParamsView('form')}
+                onDoubleClick={fitParams}
+                padding={2}
+                selected={paramsView === 'form'}
+              />
+            </TabList>
+            <EditorCornerActions
+              copied={copied === 'params'}
+              copyLabel={t('vision.params.copy')}
+              formatLabel={canFormatParams ? t('vision.params.format') : undefined}
+              onCopy={onCopyParams}
+              onFormat={onFormatParams}
+              testIdPrefix="vision-params"
+            />
+          </Flex>
+        ),
         content: (
           <Flex data-vision-params-content="" flexDirection="column">
-            <Flex
-              alignItems="center"
-              gap={2}
-              justifyContent="space-between"
-              paddingTop={2}
-              paddingX={2}
-            >
-              <TabList aria-label={t('vision.params.view.label')} gap={1}>
-                <Tab
-                  aria-controls={paramsContentId}
-                  fontSize={1}
-                  id={paramsJsonTabId}
-                  label={t('vision.params.view.json')}
-                  onClick={() => setParamsView('json')}
-                  onDoubleClick={fitParams}
-                  padding={2}
-                  selected={paramsView === 'json'}
-                />
-                <Tab
-                  aria-controls={paramsContentId}
-                  fontSize={1}
-                  id={paramsFormTabId}
-                  label={t('vision.params.view.form')}
-                  onClick={() => setParamsView('form')}
-                  onDoubleClick={fitParams}
-                  padding={2}
-                  selected={paramsView === 'form'}
-                />
-              </TabList>
-              <EditorCornerActions
-                copied={copied === 'params'}
-                copyLabel={t('vision.params.copy')}
-                formatLabel={canFormatParams ? t('vision.params.format') : undefined}
-                onCopy={onCopyParams}
-                onFormat={onFormatParams}
-                testIdPrefix="vision-params"
-              />
-            </Flex>
             <Box id={paramsContentId}>
               {paramsView === 'form' ? (
                 <ParamsForm onChange={onParamsReplace} params={params} query={tab.query} />
@@ -619,38 +630,42 @@ export function RequestPanel(props: RequestPanelProps) {
       testId="vision-request-column"
     >
       <Flex className={styles.querySection} ref={querySectionRef}>
-        <Box
+        <Flex
           className={styles.editorContainer}
           data-testid="vision-query-editor"
           flexBasis="0%"
+          flexDirection="column"
           flexGrow={1}
           minHeight="0"
           minWidth="0"
           ref={setQueryEditorElement}
         >
-          <Box className={styles.paneLabel}>
-            <Flex alignItems="center" gap={2}>
-              <Label aria-label={t('query.label')} muted size={1}>
-                {t('query.label')}
-              </Label>
-              <Flex alignItems="center" className={styles.labelActions} gap={1}>
-                <EditorCornerActions
-                  copied={copied === 'query'}
-                  copyLabel={t('vision.query.copy')}
-                  formatLabel={canFormatQuery ? t('vision.query.format') : undefined}
-                  onCopy={onCopyQuery}
-                  onFormat={onFormatQuery}
-                  testIdPrefix="vision-query"
-                />
-              </Flex>
-            </Flex>
-          </Box>
-          <VisionCodeMirror
-            extensions={queryExtensions}
-            initialValue={tab.query}
-            onChange={onQueryChange}
-            ref={queryEditorRef}
-          />
+          <div
+            className={cx(styles.paneToolbar, styles.paneToolbarMain)}
+            data-scrolled={queryScrolled}
+            data-testid="vision-query-toolbar"
+          >
+            <Label aria-label={t('query.label')} className={styles.paneToolbarLabel} muted size={1}>
+              {t('query.label')}
+            </Label>
+            <EditorCornerActions
+              copied={copied === 'query'}
+              copyLabel={t('vision.query.copy')}
+              formatLabel={canFormatQuery ? t('vision.query.format') : undefined}
+              onCopy={onCopyQuery}
+              onFormat={onFormatQuery}
+              testIdPrefix="vision-query"
+            />
+          </div>
+          <div className={styles.paneScroll} data-fill="" ref={setQueryScroller}>
+            <VisionCodeMirror
+              extensions={queryExtensions}
+              initialValue={tab.query}
+              onChange={onQueryChange}
+              ref={queryEditorRef}
+              underHeader
+            />
+          </div>
           {endMode &&
             createPortal(
               barMode ? (
@@ -674,7 +689,7 @@ export function RequestPanel(props: RequestPanelProps) {
               ),
               generateSlot,
             )}
-        </Box>
+        </Flex>
       </Flex>
     </SplitWithBottomPanel>
   )

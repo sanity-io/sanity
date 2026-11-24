@@ -751,7 +751,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Description for the "Include content source map" switch, in its info tooltip */
   'vision.options.include-source-map.description':
     'Adds resultSourceMap to the response, shown in the Content Source Map tab.',
-  /** The short line under the "Include content source map" switch; the rest is in its tooltip */
+  /**
+   * The short line under the "Include content source map" switch; the rest is in its tooltip
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.include-source-map.summary': 'Adds resultSourceMap to the response',
   /** Label of the switch that sends queries to the API CDN */
   'vision.options.use-cdn': 'Use the API CDN',

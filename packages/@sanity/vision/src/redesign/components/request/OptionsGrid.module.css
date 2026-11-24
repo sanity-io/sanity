@@ -1,0 +1,21 @@
+.container {
+  container: optionsGrid / inline-size;
+}
+
+/* Fields flow into as many 180px-or-wider columns as fit the request column */
+.grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.startRow {
+  grid-column-start: 1;
+}
+
+/* Two columns and the gap between them; a single column fits only one */
+@container optionsGrid (min-width: 372px) {
+  .wide {
+    grid-column-end: span 2;
+  }
+}

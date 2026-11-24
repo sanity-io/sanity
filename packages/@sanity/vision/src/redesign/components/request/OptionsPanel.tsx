@@ -8,7 +8,6 @@ import {type VisionTabOptions} from '../../store/types'
 import {useVisionSelector} from '../../store/VisionActorContext'
 import {selectDatasets, selectWorkspaceDataset} from '../../store/visionMachine'
 import {CdnBlockedNotice} from '../CdnBlockedNotice'
-import * as styles from '../redesign.module.css'
 import {SwitchField} from '../SwitchField'
 import {DatasetField} from './DatasetField'
 import {
@@ -18,6 +17,7 @@ import {
   usePerspectiveOptionName,
   VariantSelect,
 } from './OptionFields'
+import {OptionsGrid, OptionsGridCell} from './OptionsGrid'
 
 export interface OptionsPanelProps {
   options: VisionTabOptions
@@ -34,7 +34,7 @@ export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
   return (
     <Box data-testid="vision-options" padding={3}>
       <Stack gap={4}>
-        <div className={styles.optionsGrid}>
+        <OptionsGrid>
           <DatasetField
             dataset={options.dataset}
             datasets={datasets}
@@ -60,21 +60,25 @@ export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
             onChange={(variant) => onChange({variant})}
             value={options.variant}
           />
-        </div>
-        <SwitchField
-          checked={options.includeSourceMap}
-          description={t('vision.options.include-source-map.summary')}
-          info={t('vision.options.include-source-map.description')}
-          onChange={(includeSourceMap) => onChange({includeSourceMap})}
-          testId="vision-option-source-map"
-          title={t('vision.options.include-source-map')}
-        />
-        <UseCdnField
-          checked={options.useCdn}
-          notes={resolved.isCdnAnonymous ? [t('vision.options.use-cdn.anonymous')] : []}
-          onChange={(useCdn) => onChange({useCdn})}
-          testId="vision-option-use-cdn"
-        />
+          <OptionsGridCell startRow wide>
+            <SwitchField
+              checked={options.includeSourceMap}
+              info={t('vision.options.include-source-map.description')}
+              onChange={(includeSourceMap) => onChange({includeSourceMap})}
+              testId="vision-option-source-map"
+              title={t('vision.options.include-source-map')}
+            />
+          </OptionsGridCell>
+          <OptionsGridCell wide>
+            <UseCdnField
+              checked={options.useCdn}
+              notes={resolved.isCdnAnonymous ? [t('vision.options.use-cdn.anonymous')] : []}
+              onChange={(useCdn) => onChange({useCdn})}
+              showSummary={false}
+              testId="vision-option-use-cdn"
+            />
+          </OptionsGridCell>
+        </OptionsGrid>
         {resolved.isCdnBlockedByPerspective && (
           <CdnBlockedNotice
             onUsePublished={() => onChange({perspective: 'published'})}

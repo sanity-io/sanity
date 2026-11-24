@@ -50,7 +50,7 @@ export function ResultViewMenu<View extends string>({
           fontSize={1}
           gap={2}
           iconRight={ChevronDownIcon}
-          mode="ghost"
+          mode="bleed"
           padding={2}
           text={active.label}
         />

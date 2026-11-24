@@ -118,27 +118,72 @@
   flex: 1 1 0%;
 }
 
-/* The query and result labels, floating over their panes with equal top and left insets */
-.paneLabel {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  right: 0;
-  z-index: 10;
-  pointer-events: none;
+/*
+ * The toolbar of a pane (the query's and the result's label with their actions, the params' view
+ * tabs): a row of its own above the content, which scrolls below it, so the content never shows
+ * through it and the content's scrollbar never runs alongside it. Its bottom rule is drawn only
+ * while the content is scrolled away from its top.
+ */
+.paneToolbar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  border-bottom: 1px solid transparent;
+  background-color: var(--card-bg-color);
+  transition: border-color 120ms ease;
+}
+
+.paneToolbar[data-scrolled='true'] {
+  border-bottom-color: var(--card-border-color);
+}
+
+/* The query's and the result's toolbar, as tall as the bars along the bottom of the tool */
+.paneToolbarMain {
+  height: var(--vision-bottom-bar-height);
+  padding: 0 8px 0 12px;
+}
+
+.paneToolbarLabel {
+  flex: 1 1 auto;
+  min-width: 0;
   user-select: none;
 }
 
 /*
- * Controls in a pane label's row: unlike the label they take the pointer. Out of the row's flow,
- * so that their height never moves the label. 5px from the top of the pane, the inset of the
- * bottom panels' tabs, which keeps them clear of the editor's first line.
+ * The content under a pane's toolbar. When it scrolls itself it keeps its scrollbar's track
+ * whether or not the content overflows, like the Structure tool's list panes, so the content's
+ * width never jumps when it starts or stops overflowing. The studio styles `::-webkit-scrollbar`
+ * (`GlobalStyle`), and WebKit reserves nothing for a styled scrollbar with `scrollbar-gutter`, so
+ * the track is kept with `overflow-y: scroll`; a track with nothing to scroll paints nothing.
+ * Firefox, which ignores those styles, keeps `overflow: auto`.
  */
-.labelActions {
-  position: absolute;
-  top: -7px;
-  right: 8px;
-  pointer-events: auto;
+.paneScroll {
+  position: relative;
+  flex: 1 1 0%;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+/* Content that scrolls inside its own box (an editor, a graph, a virtual list) */
+.paneScroll[data-fill] {
+  overflow: hidden;
+}
+
+/*
+ * A pane-filling editor's scroller keeps its track the same way. The doubled class beats
+ * CodeMirror's own `overflow: auto`, which it injects after this stylesheet.
+ */
+@supports selector(::-webkit-scrollbar) {
+  .paneScroll:not([data-fill]) {
+    overflow-y: scroll;
+  }
+
+  .paneScroll.paneScroll[data-fill] :global(.cm-scroller) {
+    overflow-y: scroll;
+  }
 }
 
 /*
@@ -198,6 +243,13 @@
   border-top: 1px solid var(--card-border-color);
 }
 
+/* Stacks the toolbar over the scroll container; doubled to beat the tab panel's own display */
+.panelBody.panelBody {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 /* Tab headers of the bottom panels scroll sideways rather than wrap when space is tight */
 .panelTabs {
   min-width: 0;
@@ -253,29 +305,13 @@
 }
 
 /*
- * The Content Source Map tab: its view menu on a row of its own above the view. A view that
- * scrolls inside its own box gets the rest of the panel's height below that row.
+ * The Content Source Map tab, under its view menu in the panel's toolbar. A view that scrolls
+ * inside its own box gets the panel's height.
  */
 .sourceMapTab[data-fill] {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   height: 100%;
-}
-
-/* A tree grows with the source map and scrolls the panel; its view menu stays in sight */
-.sourceMapToolbar {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  border-bottom: 1px solid var(--card-border-color);
-  background-color: var(--card-bg-color);
-}
-
-/* Option fields flow into as many columns as fit the request column */
-.optionsGrid {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
 /* Hides the request or response pane in the single-column phone layout */
@@ -371,14 +407,79 @@
  * background can cover it and merge with the panel below (a border would be clipped away by the
  * strip's overflow instead).
  */
+/* Holds the scrolling strip and the scroll thumb laid over its bottom edge */
+.tabStrip {
+  position: relative;
+  flex-shrink: 0;
+}
+
+/*
+ * Scrolls sideways once the tabs overflow, with its native scrollbar hidden: that one takes a row
+ * of its own below the tabs. `.tabScrollThumb` stands in for it. The bottom rule is drawn at the
+ * tabs' edge and stays put while the tabs scroll.
+ */
 .tabBar {
+  position: relative;
   overflow-x: auto;
   overflow-y: hidden;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+  scroll-padding-inline-end: 36px;
   flex-shrink: 0;
-  height: 36px;
-  background: var(--card-bg2-color);
-  box-shadow: inset 0 -1px 0 var(--card-border-color);
+  background:
+    linear-gradient(var(--card-border-color), var(--card-border-color)) 0 35px / 100% 1px no-repeat,
+    var(--card-bg2-color);
+}
+
+/* WebKit before `scrollbar-width`, which the studio's `::-webkit-scrollbar` styles would size */
+.tabBar::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+ * An editor-style overlay scrollbar: a thin thumb with no track, over the tabs' bottom edge, that
+ * shows while the strip is hovered, scrolled or dragged. `useOverlayScrollThumb` sizes and moves
+ * it, and keeps it clear of the pinned new tab button.
+ */
+.tabScrollThumb {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  height: 3px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--card-muted-fg-color) 45%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 300ms ease,
+    background-color 100ms ease;
+}
+
+/* A taller hit area than the thumb draws, so it is easy to grab */
+.tabScrollThumb::before {
+  content: '';
+  position: absolute;
+  inset: -5px 0 0;
+}
+
+.tabScrollThumb[data-overflowing='true'][data-scrolling='true'],
+.tabScrollThumb[data-overflowing='true'][data-dragging='true'] {
+  opacity: 1;
+  pointer-events: auto;
+  transition-duration: 100ms;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tabStrip:hover .tabScrollThumb[data-overflowing='true'] {
+    opacity: 1;
+    pointer-events: auto;
+    transition-duration: 100ms;
+  }
+
+  .tabScrollThumb:hover,
+  .tabScrollThumb[data-dragging='true'] {
+    background: color-mix(in srgb, var(--card-muted-fg-color) 75%, transparent);
+  }
 }
 
 /* Bleed buttons paint the card background, which reads as white boxes on the tinted strip */
@@ -390,6 +491,7 @@
 .tabList {
   display: flex;
   align-items: stretch;
+  height: 36px;
 }
 
 /* The draggable wrapper around each tab; motion positions it while dragging and reordering */
@@ -530,21 +632,46 @@
   min-width: 120px;
 }
 
-/* A square cell at the strip's height, right after the last tab's rule */
+/*
+ * Holds the new tab button right after the last tab, and pins it to the strip's right edge once
+ * the tabs overflow, so it stays whole while the tabs scroll underneath it. Its own background
+ * and rules cover them; the left rule lands on the last tab's when nothing overflows.
+ */
+.newTabSlot {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  flex-shrink: 0;
+  height: 36px;
+  background: var(--card-bg2-color);
+  box-shadow:
+    -1px 0 0 var(--card-border-color),
+    inset 0 -1px 0 var(--card-border-color);
+}
+
+/* A square cell at the strip's height */
 .newTabButton {
   flex-shrink: 0;
   width: 36px;
   height: 36px;
 }
 
+/* The result pane: its toolbar, and the result scrolling below it */
 .resultContainer {
   position: relative;
   flex: 1 1 0%;
   min-width: 0;
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
   /* Turning critical for a failed fetch, and back, is a color change */
   transition: background-color 200ms ease;
+}
+
+/* Doubled to beat the card's own display */
+.resultContainer.resultContainer {
+  display: flex;
+  flex-direction: column;
 }
 
 /*
