@@ -1,4 +1,4 @@
-import {type ObjectAttribute, type ObjectTypeNode} from 'groq-js'
+import {type ObjectAttribute, type ObjectTypeNode, type TypeNode} from 'groq-js'
 
 import {isIdentifierName} from './naming'
 
@@ -43,4 +43,20 @@ export function flattenObject(node: ObjectTypeNode): FlatObject {
     rest = rest.rest
   }
   return {attributes, rest}
+}
+
+/** An object whose `_key`, declared by it or by a rest it is spread from, is optional */
+function withOptionalKey(object: ObjectTypeNode): ObjectTypeNode {
+  const key = object.attributes._key
+  if (key) return {...object, attributes: {...object.attributes, _key: {...key, optional: true}}}
+  return object.rest?.type === 'object' ? {...object, rest: withOptionalKey(object.rest)} : object
+}
+
+/**
+ * An array's members as a JSON value holds them: a document gives every member a `_key`, which
+ * a value sent as a param or kept outside a document need not have
+ */
+export function withOptionalKeys(member: TypeNode): TypeNode {
+  if (member.type === 'union') return {...member, of: member.of.map(withOptionalKeys)}
+  return member.type === 'object' ? withOptionalKey(member) : member
 }

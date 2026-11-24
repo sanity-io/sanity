@@ -216,6 +216,44 @@ describe('inferQueryParams', () => {
     })
   })
 
+  it('types each side of a match, and what a plus adds a param to', () => {
+    // `match` takes strings on either side, whatever the other side is
+    expect(typeOf('*[$text match $pattern]', 'text', WITHOUT_SCHEMA).kind).toBe('string')
+    expect(typeOf('*[$text match $pattern]', 'pattern', WITHOUT_SCHEMA).kind).toBe('string')
+    // `+` joins lists and merges objects as well as adding numbers and strings
+    expect(typeOf('*[_type == "post"]{"all": $extra + tags}', 'extra')).toEqual({
+      kind: 'string',
+      array: true,
+    })
+    expect(typeOf('*[_type == "post"]{"label": title + $suffix}', 'suffix').kind).toBe('string')
+    expect(paramOf('*[_type == "post"]{"place": location + $place}', 'place').node).toEqual({
+      type: 'inline',
+      name: 'geopoint',
+    })
+    // A list or object literal stands for lists or objects of its primitives, not its values
+    expect(typeOf('*[_type == "post"]{"all": $more + ["a", "b"]}', 'more')).toEqual({
+      kind: 'string',
+      array: true,
+    })
+    expect(paramOf('*[_type == "post"]{"merged": $base + {"n": 1}}', 'base').node).toEqual({
+      type: 'object',
+      attributes: {n: {type: 'objectAttribute', value: {type: 'number'}}},
+    })
+    expect(paramOf('*[_type == "post"]{"t": coalesce($tags, ["news"])}', 'tags').node).toEqual({
+      type: 'array',
+      of: {type: 'string'},
+    })
+    // `count()` is a whole number from 0, but what is added to it or stands in for it need not be
+    expect(typeOf('*[count(tags) + $offset > 2]', 'offset', WITHOUT_SCHEMA)).toEqual({
+      kind: 'number',
+      array: false,
+    })
+    expect(typeOf('*[]{"n": coalesce($n, count(tags))}', 'n', WITHOUT_SCHEMA)).toEqual({
+      kind: 'number',
+      array: false,
+    })
+  })
+
   it('types params of nested queries in their own scope', () => {
     const inference = inferQueryParams(
       '*[_type == "post"]{title, "related": *[_type == "post" && _id != $current && status == $status]}',
@@ -237,6 +275,15 @@ describe('inferQueryParams', () => {
       kind: 'string',
       array: true,
     })
+    // Lists intersect on equal elements, and objects never are: a list of references takes any
+    // list, the IDs they hold a list of IDs
+    expect(
+      paramOf('*[_type == "post" && array::intersects(categories, $categories)]', 'categories')
+        .node,
+    ).toEqual({type: 'array', of: {type: 'unknown'}})
+    expect(
+      typeOf('*[_type == "post" && array::intersects(categories[]._ref, $ids)]', 'ids'),
+    ).toEqual({kind: 'string', array: true, format: 'document-id'})
   })
 
   it('lists params it cannot type, with where they are used and why', () => {

@@ -1,6 +1,12 @@
-import {type ArrayTypeNode, type ObjectTypeNode, type SchemaType, type TypeNode} from 'groq-js'
+import {
+  type ArrayTypeNode,
+  type ObjectTypeNode,
+  type SchemaType,
+  type TypeNode,
+  type UnionTypeNode,
+} from 'groq-js'
 
-import {flattenObject, indent, MAX_LINE_WIDTH, printTypeKey} from './printUtils'
+import {flattenObject, indent, MAX_LINE_WIDTH, printTypeKey, withOptionalKeys} from './printUtils'
 import {collectReferencedTypes, createSchemaIdentifiers, resolveSchemaType} from './schemaTypes'
 
 /** Declares the symbol `sanity typegen` keys a reference's target type on */
@@ -9,6 +15,8 @@ const REFERENCE_SYMBOL_DECLARATION =
 
 /** Declares the helper `sanity typegen` prints arrays of named types with */
 const ARRAY_OF_DECLARATION = 'type ArrayOf<T> = Array<T & { _key: string }>;'
+/** The helper for JSON values, whose members need not carry the `_key` a document gives them */
+const JSON_ARRAY_OF_DECLARATION = 'type ArrayOf<T> = Array<T & { _key?: string }>;'
 
 /**
  * Prints groq-js type nodes as TypeScript types the way `@sanity/codegen`'s `SchemaTypeGenerator`
@@ -21,6 +29,8 @@ export interface TypeScriptPrinter {
   readonly usesArrayOf: boolean
   /** Whether something printed so far refers to `internalGroqTypeReferenceTo` */
   readonly usesReferenceSymbol: boolean
+  /** Whether it prints the types of JSON values (see `PrintTypeScriptOptions`) */
+  readonly jsonValues: boolean
 }
 
 /** Joins the members of a union, or breaks them onto their own lines when they do not fit */
@@ -33,6 +43,11 @@ function joinUnion(members: string[], depth: number): string {
     return inline
   }
   return members.map((member) => `\n${indent(depth + 1)}| ${member}`).join('')
+}
+
+/** A union's members, with a union nested in it replaced by its own, so they all share the lines */
+function unionMembers(node: UnionTypeNode): TypeNode[] {
+  return node.of.flatMap((member) => (member.type === 'union' ? unionMembers(member) : [member]))
 }
 
 /** `Array<T>`, letting a union broken onto its own lines close the angle bracket on a new one */
@@ -60,7 +75,8 @@ export function createTypeScriptPrinter(
     )
   }
 
-  function printArray(node: ArrayTypeNode, depth: number): string {
+  function printArray(array: ArrayTypeNode, depth: number): string {
+    const node = jsonValues ? {...array, of: withOptionalKeys(array.of)} : array
     // An array of named types gets `_key` through `ArrayOf`, since the members of an array in a
     // document carry one that the named type itself does not declare
     const arrayOf = (): string => {
@@ -147,18 +163,20 @@ export function createTypeScriptPrinter(
         return printInline(node.name)
       case 'array':
         return printArray(node, depth)
-      case 'union':
+      case 'union': {
+        const members = unionMembers(node)
         // Extracted schemas have empty unions (a Portable Text list item without styles)
-        if (node.of.length === 0) return 'never'
-        if (node.of.length === 1) return print(node.of[0], depth)
+        if (members.length === 0) return 'never'
+        if (members.length === 1) return print(members[0], depth)
         return joinUnion(
-          node.of.map((member) => {
+          members.map((member) => {
             const printed = print(member, depth)
             // `{…} & Ref | {…}` parses right but reads wrong
             return isIntersection(member) ? `(${printed})` : printed
           }),
           depth,
         )
+      }
       case 'object':
         return printObject(node, depth)
       default:
@@ -175,6 +193,7 @@ export function createTypeScriptPrinter(
     get usesReferenceSymbol() {
       return usesReferenceSymbol
     },
+    jsonValues,
   }
 }
 
@@ -182,7 +201,9 @@ export function createTypeScriptPrinter(
 export function printHelperDeclarations(printer: TypeScriptPrinter): string[] {
   const helpers: string[] = []
   if (printer.usesReferenceSymbol) helpers.push(REFERENCE_SYMBOL_DECLARATION)
-  if (printer.usesArrayOf) helpers.push(ARRAY_OF_DECLARATION)
+  if (printer.usesArrayOf) {
+    helpers.push(printer.jsonValues ? JSON_ARRAY_OF_DECLARATION : ARRAY_OF_DECLARATION)
+  }
   return helpers
 }
 
@@ -202,8 +223,9 @@ export interface PrintTypeScriptOptions {
   schema?: SchemaType
   /**
    * Prints the type of values sent as JSON, as the Zod schema infers it: without the symbol that
-   * brands references, and with an object without attributes as `Record<string, never>` rather
-   * than typegen's `{}`, which is any value but null and undefined
+   * brands references, with array members whose `_key` is optional, and with an object without
+   * attributes as `Record<string, never>` rather than typegen's `{}`, which is any value but null
+   * and undefined
    */
   jsonValues?: boolean
 }

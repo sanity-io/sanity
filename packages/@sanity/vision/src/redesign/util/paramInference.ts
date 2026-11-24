@@ -244,14 +244,36 @@ function elementOf(type: TypeNode): TypeNode {
   return union(members(type).map((member) => (member.type === 'array' ? member.of : member)))
 }
 
-/** A literal's primitive: comparing with `"admin"` takes any string, not only that one */
+/**
+ * A literal's primitive: comparing with `"admin"` takes any string, not only that one, and a
+ * default of `["a"]` any list of strings
+ */
 function widen(type: TypeNode): TypeNode {
   return union(
-    members(type).map((member) =>
-      member.type === 'string' || member.type === 'number' || member.type === 'boolean'
-        ? {type: member.type}
-        : member,
-    ),
+    members(type).map((member): TypeNode => {
+      if (member.type === 'string' || member.type === 'number' || member.type === 'boolean') {
+        return {type: member.type}
+      }
+      if (member.type === 'array') return {...member, of: widen(member.of)}
+      if (member.type !== 'object') return member
+      const attributes = Object.entries(member.attributes).map(
+        ([name, attribute]) => [name, {...attribute, value: widen(attribute.value)}] as const,
+      )
+      return {...member, attributes: Object.fromEntries(attributes)}
+    }),
+  )
+}
+
+/** Whether an expression is a literal, or a list or object of literals alone */
+function isLiteral(expr: ExprNode): boolean {
+  const node = unwrapGroups(expr)
+  if (node.type === 'Value') return true
+  if (node.type === 'Array') return node.elements.every((element) => isLiteral(element.value))
+  return (
+    node.type === 'Object' &&
+    node.attributes.every(
+      (attribute) => attribute.type === 'ObjectAttributeValue' && isLiteral(attribute.value),
+    )
   )
 }
 
@@ -348,7 +370,7 @@ interface Signature {
   args: Expected[]
   /** What the arguments past `args` take */
   rest?: Expected
-  /** Whether the arguments hold the same type, so a param takes the type of the others */
+  /** Whether the arguments are lists whose elements are compared, so a param lists the others' */
   alike?: true
 }
 
@@ -483,8 +505,11 @@ function isDocuments(node: ExprNode): boolean {
 /** A param on one side of an operator, with the expression on the other side */
 interface Comparison {
   counterpart: ExprNode
-  /** `same` holds what the counterpart holds: an alternative of `coalesce()` */
-  op: OpCall | 'range' | 'same'
+  /**
+   * `same` holds what the counterpart holds: an alternative of `coalesce()`, an operand of `+`.
+   * `elements` lists values equal to the counterpart's elements: `array::intersects()`
+   */
+  op: OpCall | 'range' | 'same' | 'elements'
   paramOnLeft: boolean
   scope: Scope
 }
@@ -508,7 +533,7 @@ const CHECKED = 'the query only checks whether it is set'
 const ORDERED = 'it is only used to order by'
 const ARITHMETIC = new Set<OpCall>(['-', '*', '/', '%', '**'])
 /** A param compared this way with a field can take that field's validation bounds */
-const ORDERINGS = new Set<OpCall>(['==', '!=', '<', '<=', '>', '>='])
+const ORDERINGS = new Set<Comparison['op']>(['==', '!=', '<', '<=', '>', '>='])
 /** Nodes that hold a param without using it, so its usage is the param alone */
 const CONTAINERS = new Set<ExprNode['type']>(['Array', 'Object', 'Projection', 'Select'])
 
@@ -643,11 +668,13 @@ function collect(ast: ExprNode): Occurrence[] {
   const noteOpCall = (node: OpCallNode, scope: Scope) => {
     const left = asParameter(node.left)
     const right = asParameter(node.right)
-    // Two params say nothing about each other, and two fields involve no param
+    // Two params say nothing about each other, unless the operator types each side on its own,
+    // and two fields involve no param
     if (Boolean(left) === Boolean(right)) {
-      if (left && right && ARITHMETIC.has(node.op)) {
-        note(node.left, node, {expected: NUMERIC})
-        note(node.right, node, {expected: NUMERIC})
+      const expected = node.op === 'match' ? TEXT : ARITHMETIC.has(node.op) && NUMERIC
+      if (left && right && expected) {
+        note(node.left, node, {expected})
+        note(node.right, node, {expected})
       }
       return
     }
@@ -659,6 +686,9 @@ function collect(ast: ExprNode): Occurrence[] {
       note(param, node, {expected: TEXT})
     } else if (ARITHMETIC.has(node.op)) {
       note(param, node, {expected: NUMERIC})
+    } else if (node.op === '+') {
+      // `+` adds numbers and joins strings and lists, and merges objects: both sides alike
+      note(param, node, {comparison: {counterpart, op: 'same', paramOnLeft: Boolean(left), scope}})
     } else {
       note(param, node, {comparison: {counterpart, op: node.op, paramOnLeft: Boolean(left), scope}})
     }
@@ -712,7 +742,9 @@ function collect(ast: ExprNode): Occurrence[] {
     for (const arg of node.args) {
       if (!asParameter(arg)) continue
       for (const other of others) {
-        note(arg, node, {comparison: {counterpart: other, op: 'same', paramOnLeft: true, scope}})
+        note(arg, node, {
+          comparison: {counterpart: other, op: 'elements', paramOnLeft: true, scope},
+        })
       }
     }
   }
@@ -1035,10 +1067,13 @@ function resolveComparison(
   const probed = probe(scope, expr, options.schema ?? [])
   let base: Expected | undefined = hinted
   if (probed && probed.type !== 'unknown') {
-    // A comparison with a literal, as in `$role == "admin"`, is about a value of that primitive
-    const type = expr.type === 'Value' ? widen(probed) : withoutNull(probed)
+    // A comparison with a literal, as in `$role == "admin"`, is about a value of that primitive,
+    // and so is a default or an operand of `+`, as in `coalesce($tags, ["news"])`, while
+    // `$mode in ["draft", "review"]` lists the values to pick from
+    const literal = expr.type === 'Value' || (op === 'same' && isLiteral(expr))
+    const type = literal ? widen(probed) : withoutNull(probed)
     // An attribute the schema does not have evaluates to null, which says nothing about the value
-    if (type.type !== 'null' || expr.type === 'Value') {
+    if (type.type !== 'null' || literal) {
       // The schema's `_type`s include the asset documents, which the workspace does not list
       const node = (hinted && intersect(hinted.node, type)) ?? type
       const format = hinted?.format && holdsStrings(node) ? hinted.format : undefined
@@ -1058,16 +1093,22 @@ function resolveComparison(
       ? `the schema does not type \`${text}\`, which it is compared with`
       : `\`${text}\`, which it is compared with, needs the workspace schema to be typed`
   }
-  if (op === 'same') return base
-  const compared = op === 'in' && paramOnLeft ? withoutNull(elementOf(base.node)) : base.node
-  const node = comparable(compared)
+  // An operand of `+` or a `coalesce()` alternative holds the same kind of value, but the
+  // counterpart's bounds do not hold for it: `count(tags) + $offset` takes a negative offset
+  if (op === 'same') return {node: base.node, ...(base.format && {format: base.format})}
+  // `$value in list` and `array::intersects(list, $values)` compare with the list's elements
+  const ofElements = op === 'elements' || (op === 'in' && paramOnLeft)
+  const node = comparable(ofElements ? withoutNull(elementOf(base.node)) : base.node)
   if (!node) {
-    return op === 'in' && paramOnLeft
+    if (op === 'elements') {
+      return `GROQ never finds its elements in \`${text}\`, whose elements are not strings, numbers or booleans`
+    }
+    return ofElements
       ? `GROQ never finds it in \`${text}\`, whose elements are not strings, numbers or booleans`
       : `GROQ never finds it equal to \`${text}\`, which is not a string, number or boolean`
   }
-  const typed: Expected = {...base, node: op === 'in' && !paramOnLeft ? arrayOf(node) : node}
-  // `+` reaches here too: it is not in the arithmetic set, and an offset still takes no field bounds
+  const listed = op === 'elements' || (op === 'in' && !paramOnLeft)
+  const typed: Expected = {...base, node: listed ? arrayOf(node) : node}
   return op === 'range' || ORDERINGS.has(op) ? withNumberBounds(typed, expr, scope, options) : typed
 }
 

@@ -1,6 +1,7 @@
 import {type SchemaType, type TypeNode} from 'groq-js'
 import {describe, expect, it} from 'vitest'
 
+import {typecheckParams} from '../../../../test/typecheck'
 import {inferTypeFromValue, mergeTypeNodes} from './inferTypeFromValue'
 import {toResultTypeName} from './naming'
 import {printTypeScript} from './printTypeScript'
@@ -792,4 +793,47 @@ describe('printZod', () => {
     )
     expect(output).not.toContain('export type BlockContent =')
   })
+
+  it(
+    'prints JSON values whose list members may leave out `_key`, with no brand in recursive types',
+    {timeout: 60_000},
+    async () => {
+      const linked: SchemaType = [
+        ...schema,
+        {
+          type: 'type',
+          name: 'linkedNode',
+          value: {
+            type: 'object',
+            attributes: {
+              target: {
+                type: 'objectAttribute',
+                value: {
+                  type: 'object',
+                  attributes: {_ref: {type: 'objectAttribute', value: {type: 'string'}}},
+                  dereferencesTo: 'author',
+                },
+              },
+              next: {
+                type: 'objectAttribute',
+                value: {type: 'array', of: {type: 'inline', name: 'linkedNode'}},
+                optional: true,
+              },
+            },
+          },
+        },
+      ]
+      const node: TypeNode = {type: 'inline', name: 'linkedNode'}
+      const options = {typeName: 'R', schema: linked, jsonValues: true}
+      const typescript = printTypeScript(node, options)
+      const zod = printZod(node, options)
+      expect(typescript).toContain('type ArrayOf<T> = Array<T & { _key?: string }>;')
+      expect(typescript).toContain('  next?: ArrayOf<LinkedNode>;')
+      // The recursive type annotates the Zod schema, so it is printed as a JSON value as well
+      expect(zod).toContain('type ArrayOf<T> = Array<T & { _key?: string }>;')
+      expect(zod).toContain('  z.array(member.and(z.object({ _key: z.string().optional() })))')
+      expect(`${typescript}\n${zod}`).not.toContain('internalGroqTypeReferenceTo')
+      expect(await typecheckParams([{typeName: 'R', typescript, zod}])).toBe('')
+    },
+  )
 })
