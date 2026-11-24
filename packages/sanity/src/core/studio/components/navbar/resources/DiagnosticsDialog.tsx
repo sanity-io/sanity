@@ -1,6 +1,6 @@
 /* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
 import {DownloadIcon} from '@sanity/icons/Download'
-import {Card, Spinner} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {
   useCallback,
@@ -11,7 +11,7 @@ import {
   useState,
   version as reactVersion,
 } from 'react'
-import {Text, Flex, VStack} from 'ui5'
+import {Spinner, Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'

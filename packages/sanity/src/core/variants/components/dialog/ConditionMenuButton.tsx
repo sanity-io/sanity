@@ -3,11 +3,10 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {
   // oxlint-disable-next-line no-restricted-imports -- the trigger lays out icon + title + chevron as custom children, which the studio Button wrapper does not support (same as WorkspaceMenuButton)
   Button as UIButton,
-  Spinner,
 } from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type ComponentProps, type ComponentType, type CSSProperties, useId} from 'react'
-import {Text, Box, Flex, Icon} from 'ui5'
+import {Spinner, Text, Box, Flex, Icon} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'

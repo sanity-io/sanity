@@ -1,7 +1,7 @@
-import {Card, Spinner, Text} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {use, useCallback, useMemo} from 'react'
-import {Flex} from 'ui5'
+import {Spinner, Flex} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useCurrentUser} from '../../../store/user/hooks'

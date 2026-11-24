@@ -1,8 +1,8 @@
-import {Card, Layer, Spinner, useMediaIndex} from '@sanity/ui'
+import {Card, Layer, useMediaIndex} from '@sanity/ui'
 import {AnimatePresence} from 'motion/react'
 import {Suspense} from 'react'
 import {css, styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Spinner, Flex, Box} from 'ui5'
 
 import {type ActiveToolLayoutProps} from '../../config/studio/types'
 import {TasksStudioSidebar} from '../components/sidebar/TasksSidebar'
