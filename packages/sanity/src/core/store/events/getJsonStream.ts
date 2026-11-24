@@ -1,11 +1,15 @@
-import {ClientError, ServerError, type RequestHandler} from '@sanity/client'
+import {
+  ClientError,
+  ServerError,
+  type RequestHandler,
+  type RequestHandlerOptions,
+} from '@sanity/client'
 import {
   type TransactionLogEventWithMutations,
   type TransactionLogEventWithEffects,
 } from '@sanity/types'
 
 import {DEFAULT_STUDIO_CLIENT_HEADERS} from '../../studioClient'
-import {isInvalidSessionError} from '../../util/apiErrors'
 
 type StreamResult =
   | (TransactionLogEventWithEffects & TransactionLogEventWithMutations)
@@ -16,30 +20,42 @@ export async function getJsonStream(
   token: string | undefined,
   /**
    * The studio client request handler, when this fetch runs inside a Studio.
-   * History is loaded with `fetch` (NDJSON), so it never passes through that
-   * handler on its own. An invalid-session 401 (including history's
-   * no-credentials answer, see {@link withSessionErrorCode}) is handed to it so
-   * the studio logs the user out and shows the login screen.
+   * History is loaded with `fetch` (NDJSON) rather than through the client, so
+   * the fetch runs as the handler's `next`: the handler can renew the token and
+   * retry, or claim an invalid session (see {@link withSessionErrorCode}) and
+   * keep the promise pending while the studio shows the login screen.
    */
   requestHandler?: RequestHandler,
 ): Promise<ReadableStream<StreamResult>> {
-  const options: RequestInit = token
-    ? {headers: {...DEFAULT_STUDIO_CLIENT_HEADERS, Authorization: `Bearer ${token}`}}
-    : {credentials: 'include', headers: DEFAULT_STUDIO_CLIENT_HEADERS}
-  const response = await fetch(url, options)
+  const request: RequestHandlerOptions = {
+    url,
+    method: 'GET',
+    headers: token
+      ? {...DEFAULT_STUDIO_CLIENT_HEADERS, Authorization: `Bearer ${token}`}
+      : DEFAULT_STUDIO_CLIENT_HEADERS,
+  }
+  if (!requestHandler) return fetchJsonStream(request)
+  // `next` resolves to the stream here, not a parsed body: the studio's
+  // handlers pass the result through untouched.
+  const result = await requestHandler(request, fetchJsonStream)
+  if (!(result instanceof ReadableStream)) {
+    throw new Error('The request handler did not return the history stream')
+  }
+  return result
+}
+
+async function fetchJsonStream(
+  request: RequestHandlerOptions,
+): Promise<ReadableStream<StreamResult>> {
+  const url = request.url
+  const headers = new Headers(request.headers)
+  const response = await fetch(url, {
+    headers,
+    // Without a token, the studio signs in with its cookie.
+    ...(headers.has('authorization') ? {} : {credentials: 'include'}),
+  })
   if (!response.ok) {
-    const error = await toHttpError(response, url)
-    if (requestHandler && isInvalidSessionError(error)) {
-      // The handler claims the 401 and parks its own promise (forced logout).
-      // This call stays fire-and-forget so the throw below still unwinds the
-      // caller; a handler that rejects with the same error is ignored.
-      void requestHandler({url, method: 'GET'}, () => Promise.reject(error)).catch(
-        (handlerError) => {
-          if (handlerError !== error) console.error(handlerError)
-        },
-      )
-    }
-    throw error
+    throw await toHttpError(response, url)
   }
   return getStream(response)
 }

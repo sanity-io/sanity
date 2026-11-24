@@ -3,7 +3,6 @@ import {type SanityClient} from '@sanity/client'
 import {type Diff, type ObjectDiff} from '@sanity/diff'
 
 import {type Annotation, type Chunk} from '../../../field/types'
-import {isInvalidSessionError} from '../../../util/apiErrors'
 import {type RemoteSnapshotVersionEvent} from '../../document/document-pair/checkoutPair'
 import {getJsonStream} from '../../events/getJsonStream'
 import {Aligner} from './Aligner'
@@ -278,9 +277,6 @@ export class TimelineController {
     try {
       await this.fetchMoreTransactions()
     } catch (err) {
-      // Invalid-session failures are already reported to the studio request
-      // handler inside `getJsonStream`, which logs the user out.
-      if (isInvalidSessionError(err) && this.client.config().requestHandler) return
       this._didErr = true
       this.handler?.(err, this)
       return

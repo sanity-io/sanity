@@ -1,4 +1,4 @@
-import {ClientError, isHttpError, ServerError} from '@sanity/client'
+import {ClientError, isHttpError, type RequestHandler, ServerError} from '@sanity/client'
 import {filter, firstValueFrom, take} from 'rxjs'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
@@ -16,6 +16,18 @@ async function readAll<T>(stream: ReadableStream<T>): Promise<T[]> {
     const result = await reader.read()
     if (result.done) return items
     items.push(result.value)
+  }
+}
+
+/** Retries an invalid-session rejection once with a renewed token, like the OAuth auth store. */
+const renewingRequestHandler: RequestHandler = async (request, next) => {
+  try {
+    return await next(request)
+  } catch (err) {
+    if (!isInvalidSessionError(err)) throw err
+    const headers = new Headers(request.headers)
+    headers.set('authorization', 'Bearer renewed')
+    return next({...request, headers})
   }
 }
 
@@ -75,7 +87,21 @@ describe('getJsonStream', () => {
     expect(error.message).toContain('HTTP 503')
   })
 
-  it('hands a no-credentials 401 to the studio request handler, then still rejects', async () => {
+  it('sends the token as a bearer header, and the cookie without one', async () => {
+    const fetchMock = vi.fn(async (_url: string, _init: RequestInit) => new Response(''))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await getJsonStream(URL, 'token')
+    await getJsonStream(URL, undefined)
+
+    const [[, withToken], [, withCookie]] = fetchMock.mock.calls
+    expect(new Headers(withToken.headers).get('authorization')).toBe('Bearer token')
+    expect(withToken.credentials).toBeUndefined()
+    expect(new Headers(withCookie.headers).has('authorization')).toBe(false)
+    expect(withCookie.credentials).toBe('include')
+  })
+
+  it('turns a no-credentials 401 into an invalid-session error', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue(
@@ -87,9 +113,8 @@ describe('getJsonStream', () => {
         ),
       ),
     )
-    const requestHandler = vi.fn(() => new Promise(() => {}))
 
-    const error = await getJsonStream(URL, undefined, requestHandler).catch((err) => err)
+    const error = await getJsonStream(URL, undefined).catch((err) => err)
 
     expect(error).toBeInstanceOf(ClientError)
     expect(isInvalidSessionError(error)).toBe(true)
@@ -98,10 +123,26 @@ describe('getJsonStream', () => {
       description: 'Authentication required',
       type: 'unauthenticatedError',
     })
-    expect(requestHandler).toHaveBeenCalledWith({url: URL, method: 'GET'}, expect.any(Function))
   })
 
-  it('logs the user out through the studio request handler on a no-credentials 401', async () => {
+  it('runs the fetch through the request handler, which can retry it with a new token', async () => {
+    const fetchMock = vi.fn(async (_url: string, init: RequestInit) => {
+      return new Headers(init.headers).get('authorization') === 'Bearer renewed'
+        ? new Response('{"id":"tx1"}\n')
+        : new Response(
+            JSON.stringify({error: 'Unauthorized', errorCode: 'SIO-401-AEX', message: 'Expired'}),
+            {status: 401, headers: {'content-type': 'application/json'}},
+          )
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const stream = await getJsonStream(URL, 'expired', renewingRequestHandler)
+
+    expect(await readAll(stream)).toEqual([{id: 'tx1'}])
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('stays pending while the studio request handler logs the user out on a no-credentials 401', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue(
@@ -114,8 +155,9 @@ describe('getJsonStream', () => {
       ),
     )
     const channel = createRequestErrorChannel()
+    const settled = vi.fn()
 
-    await getJsonStream(URL, undefined, createStudioRequestHandler({channel})).catch(() => {})
+    void getJsonStream(URL, undefined, createStudioRequestHandler({channel})).then(settled, settled)
 
     const claim = await firstValueFrom(
       channel.claim$.pipe(
@@ -124,9 +166,10 @@ describe('getJsonStream', () => {
       ),
     )
     expect(claim).toMatchObject({type: 'unauthorized'})
+    expect(settled).not.toHaveBeenCalled()
   })
 
-  it('keeps a 401 without a session signal from the studio request handler', async () => {
+  it('rejects with a 401 without a session signal, which the studio request handler leaves to the caller', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue(
@@ -136,12 +179,14 @@ describe('getJsonStream', () => {
         }),
       ),
     )
-    const requestHandler = vi.fn(() => new Promise(() => {}))
+    const channel = createRequestErrorChannel()
 
-    const error = await getJsonStream(URL, 'token', requestHandler).catch((err) => err)
+    const error = await getJsonStream(URL, 'token', createStudioRequestHandler({channel})).catch(
+      (err) => err,
+    )
 
     expect(error).toBeInstanceOf(ClientError)
     expect(isInvalidSessionError(error)).toBe(false)
-    expect(requestHandler).not.toHaveBeenCalled()
+    expect(error.statusCode).toBe(401)
   })
 })
