@@ -258,7 +258,7 @@ export function RequestPanel(props: RequestPanelProps) {
   // another was showing, the panel expands if it was collapsed, and once its fields have mounted
   // the API version field (or, while a variant locks it, the wrapper that stands in for it) takes
   // focus, or the perspective while that keeps the queries off the API CDN. The override chips
-  // next to it show the dataset, perspective or variant field they name.
+  // around it show the dataset, perspective or variant field they name.
   const revealOption = useCallback(
     (option: RevealedOption) => {
       setPanelState((current) => ({...current, activeTabId: 'options', collapsed: false}))
@@ -419,9 +419,20 @@ export function RequestPanel(props: RequestPanelProps) {
       fitOnTabDoubleClick
       footer={
         <ActionRail testId="vision-query-actions">
-          <ApiVersionButton onReveal={revealOption} resolved={resolved} />
-          <RequestOverrideChips onReveal={revealOption} options={tab.options} resolved={resolved} />
-          <Box flexBasis="0%" flexGrow={1} />
+          <Flex
+            alignItems="center"
+            className={styles.actionRailChips}
+            data-testid="vision-query-action-chips"
+            flexBasis="0%"
+            flexGrow={1}
+            gap={2}
+            justifyContent="flex-start"
+            minWidth="0"
+          >
+            <RequestOverrideChips onReveal={revealOption} options={tab.options} resolved={resolved}>
+              <ApiVersionButton onReveal={revealOption} resolved={resolved} />
+            </RequestOverrideChips>
+          </Flex>
           <LiveButton
             active={tab.autoRefetch}
             canFetch={request !== null}

@@ -1444,6 +1444,50 @@ describe('VisionRedesign', () => {
     )
   })
 
+  it('lists the dataset chip before the API version, with fetch actions outside the chip strip', () => {
+    const initial = createInitialState(DEFAULTS)
+    const tab = createTab(initial.settings, {
+      id: 'overrides',
+      query: '*',
+      options: {
+        datasetMode: 'pinned',
+        dataset: 'staging',
+        perspective: 'raw',
+        variant: 'none',
+        useCdn: true,
+      },
+    })
+    saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'overrides'})
+    renderRedesign({...BASE_PERSPECTIVE, selectedVariantNames: ['french']})
+
+    // Same order as the Options panel: dataset, API version, perspective, variant. The strip is
+    // what scrolls when the bar is narrow; Live fetch, Fetch and the menu stay after it.
+    const actions = screen.getByTestId('vision-query-actions')
+    const chips = within(actions).getByTestId('vision-query-action-chips')
+    expect(
+      [...chips.querySelectorAll('button')].map((button) => button.getAttribute('data-testid')),
+    ).toEqual([
+      'vision-override-dataset-button',
+      'vision-api-version-button',
+      'vision-override-perspective-button',
+      'vision-override-variant-button',
+    ])
+    expect(text(within(chips).getByTestId('vision-api-version-button'))).toBe(
+      'vision.api-version.button-cdn:v2025-02-19',
+    )
+
+    const fetchButton = within(actions).getByTestId('vision-fetch-button')
+    const liveButton = within(actions).getByTestId('vision-auto-refetch')
+    expect(chips.contains(fetchButton)).toBe(false)
+    expect(chips.contains(liveButton)).toBe(false)
+    expect(chips.compareDocumentPosition(liveButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    )
+    expect(chips.compareDocumentPosition(fetchButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    )
+  })
+
   it('says at every control that calls Agent Actions that it uses AI credits', async () => {
     renderRedesign()
     // Tooltips stay mounted while closed, so the note is in the document for every control shown:

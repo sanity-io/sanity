@@ -181,6 +181,21 @@
   white-space: nowrap;
 }
 
+/*
+ * Option chips in the query column's bottom bar. They scroll sideways when the bar is narrow,
+ * the same way the tab strip does, and start at the left so the first chip stays whole. The
+ * Live fetch, Fetch and menu buttons sit outside this strip and do not move with it.
+ */
+.actionRailChips {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+/* A chip keeps its width; the strip scrolls instead of cutting it down */
+.actionRailChips > * {
+  flex-shrink: 0;
+}
+
 /* The query editor fills the main area of the request column, and never less than this */
 .querySection {
   position: relative;
