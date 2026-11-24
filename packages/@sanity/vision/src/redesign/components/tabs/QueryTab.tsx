@@ -728,6 +728,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
         onChange={(size) => setSplitSizes((sizes) => ({...sizes, [layout]: size}))}
         onReset={() => setSplitSizes((sizes) => ({...sizes, [layout]: undefined}))}
         size={splitSizes[layout] ?? defaultSplitSize}
+        snapToCenter
         // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- layout mode, not user-facing text
         split={layout === 'stacked' ? 'horizontal' : 'vertical'}
         testId="vision-split"
