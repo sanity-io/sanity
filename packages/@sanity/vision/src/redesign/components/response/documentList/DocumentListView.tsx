@@ -20,8 +20,6 @@ export interface DocumentListViewProps {
   className?: string
   /** The dataset the result came from; rows link only when it is the workspace's dataset */
   datasetName: string
-  /** Starts the list at the top, for a pane without the result's floating view controls */
-  flush?: boolean
   id: string
   parsed: ParsedDocumentList
   /** Rows show the live preview from their schema type's preview config, for rows without their own */
@@ -35,7 +33,6 @@ export interface DocumentListViewProps {
 export function DocumentListView({
   className,
   datasetName,
-  flush,
   id,
   parsed,
   resolvePreviews = false,
@@ -44,7 +41,6 @@ export function DocumentListView({
   return (
     <Flex
       className={className ? `${styles.root} ${className}` : styles.root}
-      data-flush={flush || undefined}
       flexDirection="column"
       id={id}
     >
@@ -119,11 +115,7 @@ function DocumentList({
 }
 
 function Notice({children}: {children: ReactNode}) {
-  return (
-    <Box padding={3} paddingTop={6}>
-      {children}
-    </Box>
-  )
+  return <Box padding={3}>{children}</Box>
 }
 
 function Guidance({problem}: {problem: DocumentListProblem}) {

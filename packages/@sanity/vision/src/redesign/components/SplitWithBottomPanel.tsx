@@ -126,11 +126,16 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
         `[data-testid="${id}-panel"]`,
       )?.firstElementChild
       const content = container?.querySelector<HTMLElement>('[data-vision-panel-content]')
+      const toolbar = container?.querySelector<HTMLElement>('[data-vision-panel-toolbar]')
       if (!split || !(header instanceof HTMLElement) || !content) return
       const size = bottomPanelSizeToFit({
         headerHeight: header.offsetHeight,
-        // The divider under the header is the top border of the body around the content
-        contentHeight: content.offsetHeight + (content.parentElement?.clientTop ?? 0),
+        // The divider under the header is the top border of the body around the toolbar and the
+        // scrolling content
+        contentHeight:
+          content.offsetHeight +
+          (toolbar?.offsetHeight ?? 0) +
+          (content.parentElement?.parentElement?.clientTop ?? 0),
         containerHeight: split.clientHeight,
         minMainHeight: MIN_MAIN_HEIGHT,
         handleSize: SPLIT_HANDLE_SIZE,
