@@ -18,7 +18,7 @@ import {type VisionResponseMeta} from '../../store/types'
 import {regionOfShard} from '../../util/apiRegions'
 import {formatBytes} from '../../util/payloadSize'
 import {formatSyncTagMeaning} from '../../util/syncTagLookup'
-import {sortSyncTags} from '../../util/syncTags'
+import {isWildcardSyncTag, sortSyncTags} from '../../util/syncTags'
 import {browserLocation} from '../../util/timeZoneLocation'
 import {CdnBlockedNotice} from '../CdnBlockedNotice'
 import {InfoTooltip} from '../InfoTooltip'
@@ -30,6 +30,8 @@ const LABEL: CSSProperties = {whiteSpace: 'nowrap'}
 const INLINE_ICON: CSSProperties = {height: 0, display: 'flex', alignItems: 'center'}
 /** Narrower than this, the details wrap below the globe */
 const DETAILS_MIN_WIDTH: CSSProperties = {minWidth: 280}
+/** Wraps the explanation instead of stretching the tooltip across the page */
+const WILDCARD_TOOLTIP: CSSProperties = {maxWidth: 280}
 const MUTED: CSSProperties = {color: 'var(--card-muted-fg-color)'}
 
 /** A row of the grid, whose label sits on the baseline of the first line of its value */
@@ -148,6 +150,33 @@ function SyncTagsRow(props: {
         >
           {tags.map((tag) => {
             const meaning = resolved?.get(tag)
+            const shown = meaning ? formatSyncTagMeaning(meaning) : tag
+            if (isWildcardSyncTag(shown) || isWildcardSyncTag(tag)) {
+              return (
+                <Tooltip
+                  animate
+                  content={
+                    <Box style={WILDCARD_TOOLTIP}>
+                      <Text size={1} as="div">
+                        {t('vision.response.sync-tags.wildcard')}
+                      </Text>
+                    </Box>
+                  }
+                  key={tag}
+                  portal
+                >
+                  <Ui5Badge
+                    data-resolved={resolved ? meaning !== undefined : undefined}
+                    data-wildcard=""
+                    tone="critical"
+                  >
+                    <Text size={0} as="span" trim={true}>
+                      {shown}
+                    </Text>
+                  </Ui5Badge>
+                </Tooltip>
+              )
+            }
             return (
               <Ui5Badge
                 data-resolved={resolved ? meaning !== undefined : undefined}
@@ -158,7 +187,7 @@ function SyncTagsRow(props: {
                 tone={meaning ? 'positive' : undefined}
               >
                 <Text size={0} as="span" trim={true}>
-                  {meaning ? formatSyncTagMeaning(meaning) : tag}
+                  {shown}
                 </Text>
               </Ui5Badge>
             )
