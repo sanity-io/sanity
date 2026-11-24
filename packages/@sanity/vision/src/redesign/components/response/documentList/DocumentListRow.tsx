@@ -5,13 +5,18 @@ import {Tooltip} from '@sanity/ui/tooltip'
 import {type ReactNode, useCallback, useMemo} from 'react'
 import {
   getPublishedId,
+  getVersionFromId,
+  isDraftId,
   type PreviewProps,
+  type PerspectiveStack,
   PreviewCard,
   SanityDefaultPreview,
+  type SchemaType,
   useDataset,
   useProjectId,
   useSchema,
 } from 'sanity'
+import {useValuePreview} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
 import {useIntentLink} from 'sanity/router'
 import {Text} from 'ui5'
@@ -34,17 +39,36 @@ function isPreviewMedia(media: unknown): media is NonNullable<PreviewProps['medi
   return typeof media === 'object' && media !== null && !Array.isArray(media)
 }
 
+const PUBLISHED_PERSPECTIVE: PerspectiveStack = []
+const DRAFTS_PERSPECTIVE: PerspectiveStack = ['drafts']
+
+/**
+ * The perspective that sees the document an id names. The preview store observes the published id
+ * through a perspective, and without one it only sees published documents.
+ */
+function previewPerspective(id: string): PerspectiveStack {
+  if (isDraftId(id)) return DRAFTS_PERSPECTIVE
+  const release = getVersionFromId(id)
+  return release ? [release] : PUBLISHED_PERSPECTIVE
+}
+
 /**
  * One result row. A string `_type` opens the document when the result is from the workspace's dataset; without one the row is still the title,
  * subtitle, media and id from the result. An unknown type uses the plain document icon. A row for
  * a document in another project or dataset (a cross-dataset reference) never opens it.
+ *
+ * With `resolvePreview`, a row from the workspace's dataset whose type is in the schema shows the
+ * live preview from that type's preview config instead, falling back to the id while it loads or
+ * when the preview has no title.
  */
 export function DocumentListRow({
   document,
   linkDocuments,
+  resolvePreview = false,
 }: {
   document: DocumentListDocument
   linkDocuments: boolean
+  resolvePreview?: boolean
 }) {
   const schema = useSchema()
   const projectId = useProjectId()
@@ -54,16 +78,12 @@ export function DocumentListRow({
     (document._dataset !== undefined && document._dataset !== dataset)
   const type = linkDocuments && !isRemote ? document._type : undefined
   const schemaType = document._type ? schema.get(document._type) : undefined
-  const media = useMemo(() => previewMedia(document.media), [document.media])
-  const preview = (
-    <SanityDefaultPreview
-      icon={schemaType?.icon ?? DocumentIcon}
-      layout="default"
-      subtitle={document.subtitle}
-      title={document.title ?? document._id}
-      {...media}
-    />
-  )
+  const preview =
+    resolvePreview && type && schemaType ? (
+      <ResolvedPreview document={document} schemaType={schemaType} type={type} />
+    ) : (
+      <ResultPreview document={document} icon={schemaType?.icon} />
+    )
 
   return (
     <div className={styles.row} data-testid="vision-document-list-row">
@@ -81,6 +101,53 @@ export function DocumentListRow({
         {type ? <OpenInNewTabButton id={document._id} type={type} /> : null}
       </div>
     </div>
+  )
+}
+
+function ResultPreview({
+  document,
+  icon,
+}: {
+  document: DocumentListDocument
+  icon: SchemaType['icon']
+}) {
+  const media = useMemo(() => previewMedia(document.media), [document.media])
+  return (
+    <SanityDefaultPreview
+      icon={icon ?? DocumentIcon}
+      layout="default"
+      subtitle={document.subtitle}
+      title={document.title ?? document._id}
+      {...media}
+    />
+  )
+}
+
+function ResolvedPreview({
+  document,
+  schemaType,
+  type,
+}: {
+  document: DocumentListDocument
+  schemaType: SchemaType
+  type: string
+}) {
+  const value = useMemo(() => ({_id: document._id, _type: type}), [document._id, type])
+  const perspectiveStack = useMemo(() => previewPerspective(document._id), [document._id])
+  const {value: resolved} = useValuePreview({
+    perspectiveStack,
+    schemaType,
+    value,
+  })
+  const title = typeof resolved?.title === 'string' && resolved.title ? resolved.title : undefined
+  return (
+    <SanityDefaultPreview
+      icon={schemaType.icon ?? DocumentIcon}
+      layout="default"
+      media={resolved?.media}
+      subtitle={title ? (resolved?.subtitle ?? document._id) : document.subtitle}
+      title={title ?? document.title ?? document._id}
+    />
   )
 }
 

@@ -23,6 +23,8 @@ vi.mock('sanity', () => ({
   useDataset: () => 'workspace-dataset',
   useProjectId: () => 'workspace-project',
   getPublishedId: (id: string) => id.replace(/^(drafts\.|versions\.[^.]+\.)/, ''),
+  isDraftId: (id: string) => id.startsWith('drafts.'),
+  getVersionFromId: (id: string) => /^versions\.([^.]+)\./.exec(id)?.[1],
   CommandList: ({
     items,
     renderItem,
@@ -73,6 +75,22 @@ vi.mock('sanity', () => ({
     ),
 }))
 
+const previews = new Map<string, {title?: string; subtitle?: string}>()
+const useValuePreview = vi.fn(
+  ({value}: {value: {_id: string}; schemaType: unknown; perspectiveStack: unknown}) => {
+    const preview = previews.get(value._id)
+    return preview ? {isLoading: false, value: preview} : {isLoading: true}
+  },
+)
+
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
+  useValuePreview: (props: {
+    value: {_id: string}
+    schemaType: unknown
+    perspectiveStack: unknown
+  }) => useValuePreview(props),
+}))
+
 vi.mock('sanity/router', () => ({
   useIntentLink: ({intent, params}: {intent: string; params: {id: string; type: string}}) => ({
     href: `/intent/${intent}/id=${params.id};type=${params.type}`,
@@ -112,17 +130,29 @@ function renderParsed(result: unknown, datasetName = 'workspace-dataset') {
   renderList(parseDocumentList(result), datasetName)
 }
 
-function renderList(parsed: ParsedDocumentList, datasetName = 'workspace-dataset') {
+function renderList(
+  parsed: ParsedDocumentList,
+  datasetName = 'workspace-dataset',
+  resolvePreviews = false,
+) {
   render(
     <ThemeProvider theme={theme}>
       <LayerProvider>
-        <DocumentListView datasetName={datasetName} id="vision-result-content" parsed={parsed} />
+        <DocumentListView
+          datasetName={datasetName}
+          id="vision-result-content"
+          parsed={parsed}
+          resolvePreviews={resolvePreviews}
+        />
       </LayerProvider>
     </ThemeProvider>,
   )
 }
 
-afterEach(() => cleanup())
+afterEach(() => {
+  cleanup()
+  previews.clear()
+})
 
 describe('DocumentListView', () => {
   it('lists the result, including a row with no type and an unknown type', () => {
@@ -195,6 +225,55 @@ describe('DocumentListView', () => {
     expect(rows[2].querySelector('a')).toBeNull()
     expect(rows[3].querySelector('a')).toBeNull()
     expect(screen.getAllByTestId('vision-document-list-copy-id')).toHaveLength(4)
+  })
+
+  it('resolves schema previews for workspace rows, falling back to the id', () => {
+    previews.set('drafts.ada', {title: 'Ada Lovelace', subtitle: 'Mathematician'})
+    previews.set('versions.spring.untitled', {})
+    renderList(
+      parseSourceMapDocuments({
+        documents: [
+          {_id: 'drafts.ada', _type: 'author'},
+          {_id: 'loading', _type: 'author'},
+          {_id: 'versions.spring.untitled', _type: 'author'},
+          {_id: 'unknown', _type: 'unknownType'},
+          {_id: 'remote', _type: 'author', _projectId: 'other-project', _dataset: 'other-dataset'},
+        ],
+      }),
+      'workspace-dataset',
+      true,
+    )
+
+    expect(screen.getAllByTestId('vision-document-list-row').map((row) => row.textContent)).toEqual(
+      [
+        'Ada LovelaceMathematician',
+        'loading',
+        'versions.spring.untitled',
+        'unknown',
+        'remoteother-project · other-dataset',
+      ],
+    )
+    expect(new Set(useValuePreview.mock.calls.map(([props]) => props.value._id))).toEqual(
+      new Set(['drafts.ada', 'loading', 'versions.spring.untitled']),
+    )
+    const perspectives = new Map(
+      useValuePreview.mock.calls.map(([props]) => [props.value._id, props.perspectiveStack]),
+    )
+    expect(Object.fromEntries(perspectives)).toEqual({
+      'drafts.ada': ['drafts'],
+      'loading': [],
+      'versions.spring.untitled': ['spring'],
+    })
+  })
+
+  it('does not resolve previews for a result from another dataset', () => {
+    renderList(
+      parseSourceMapDocuments({documents: [{_id: 'ada', _type: 'author'}]}),
+      'other-dataset',
+      true,
+    )
+    expect(screen.getByTestId('vision-document-list-row').textContent).toBe('ada')
+    expect(useValuePreview).not.toHaveBeenCalled()
   })
 
   it('puts the panel id on the root so the tab can control it', () => {
