@@ -211,6 +211,7 @@ function ChangeRow(props: {change: DocumentChange; hiddenPaths: string[][]; expa
             aria-expanded={expanded}
             data-testid="vision-mutate-change-toggle"
             fontSize={1}
+            gap={2}
             icon={expanded ? ChevronDownIcon : ChevronRightIcon}
             mode="bleed"
             onClick={() => setExpanded((value) => !value)}
