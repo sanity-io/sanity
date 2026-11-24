@@ -1,4 +1,4 @@
-import {type RefObject, useEffect, useEffectEvent, useRef} from 'react'
+import {type RefObject, useEffect, useEffectEvent, useRef, useState} from 'react'
 
 import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
 import {type AutoFormatOnResize, createAutoFormatOnResize} from '../util/autoFormatOnResize'
@@ -25,8 +25,12 @@ export interface UseAutoFormatOnResizeOptions {
  * changes: a drag of a divider or a resize of the window. Waits for the resize to settle and
  * leaves the query alone while a divider that resizes the editor is being dragged, or the query
  * is being typed in.
+ *
+ * Returns whether the query is about to be reformatted, or may be (see
+ * {@link AutoFormatOnResize.pending}): a resize is under way or settling, or its reformat is
+ * in flight. Format is not offered then, since the reformat is about to do it.
  */
-export function useAutoFormatOnResize(options: UseAutoFormatOnResizeOptions): void {
+export function useAutoFormatOnResize(options: UseAutoFormatOnResizeOptions): boolean {
   const {container, layout, editorRef, enabled, query, getQuery, formatForEditor, onFormatted} =
     options
   const isEnabled = useEffectEvent(() => enabled)
@@ -37,6 +41,7 @@ export function useAutoFormatOnResize(options: UseAutoFormatOnResizeOptions): vo
     onFormatted(formatted)
   })
   const controllerRef = useRef<AutoFormatOnResize | null>(null)
+  const [pending, setPending] = useState(false)
 
   useEffect(() => {
     const editorElement = container?.querySelector('[data-testid="vision-query-editor"]')
@@ -55,6 +60,7 @@ export function useAutoFormatOnResize(options: UseAutoFormatOnResizeOptions): vo
       format: formatGroq,
       formatForEditor: formatForEditorEvent,
       apply,
+      onPendingChange: setPending,
     })
     const observer = new ResizeObserver(() => controller.resized())
     observer.observe(editorElement)
@@ -63,6 +69,7 @@ export function useAutoFormatOnResize(options: UseAutoFormatOnResizeOptions): vo
       observer.disconnect()
       controller.dispose()
       controllerRef.current = null
+      setPending(false)
     }
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- the split remounts the editor element when the layout changes, so it is looked up and observed again
   }, [container, editorRef, layout])
@@ -72,4 +79,6 @@ export function useAutoFormatOnResize(options: UseAutoFormatOnResizeOptions): vo
   useEffect(() => {
     controllerRef.current?.sync(query)
   }, [query])
+
+  return enabled && pending
 }

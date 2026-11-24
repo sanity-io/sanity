@@ -11,6 +11,7 @@ import {queryRunnerMachine, type QueryRunnerRef} from './queryRunnerMachine'
 import {
   type VisionAiSettings,
   type VisionEditorSettings,
+  type VisionResponseSettings,
   type VisionDialog,
   type VisionDrawer,
   type VisionHistoryDiffSettings,
@@ -47,6 +48,7 @@ export interface VisionContext {
   historyDiff: VisionHistoryDiffSettings
   ai: VisionAiSettings
   editor: VisionEditorSettings
+  response: VisionResponseSettings
   /** The functions library, most recently saved first */
   functions: VisionSavedFunction[]
   /** One query runner per open tab, keyed by tab id */
@@ -94,6 +96,7 @@ export type VisionEvent =
   | {type: 'historyDiff.update'; settings: Partial<VisionHistoryDiffSettings>}
   | {type: 'ai.update'; settings: Partial<VisionAiSettings>}
   | {type: 'editor.update'; settings: Partial<VisionEditorSettings>}
+  | {type: 'response.update'; settings: Partial<VisionResponseSettings>}
   /** Saves a function to the library, replacing the one with its id */
   | {type: 'functions.save'; fn: VisionSavedFunction}
   | {type: 'functions.remove'; id: string}
@@ -255,6 +258,7 @@ export const visionMachine = setup({
           historyDiff: fresh.historyDiff,
           ai: fresh.ai,
           editor: fresh.editor,
+          response: fresh.response,
           functions: fresh.functions,
           runners: spawnRunners(spawn, fresh.tabs),
           fetchOnOpen: {},
@@ -274,6 +278,7 @@ export const visionMachine = setup({
     historyDiff: input.persisted.historyDiff,
     ai: input.persisted.ai,
     editor: input.persisted.editor,
+    response: input.persisted.response,
     functions: input.persisted.functions,
     runners: spawnRunners(spawn, input.persisted.tabs),
     loadRevisions: {},
@@ -380,6 +385,11 @@ export const visionMachine = setup({
     'editor.update': {
       actions: assign({
         editor: ({context, event}) => ({...context.editor, ...event.settings}),
+      }),
+    },
+    'response.update': {
+      actions: assign({
+        response: ({context, event}) => ({...context.response, ...event.settings}),
       }),
     },
     'functions.save': {
@@ -563,6 +573,7 @@ export function selectPersistedState(snapshot: VisionSnapshot): VisionPersistedS
     historyDiff: snapshot.context.historyDiff,
     ai: snapshot.context.ai,
     editor: snapshot.context.editor,
+    response: snapshot.context.response,
     functions: snapshot.context.functions,
   }
 }

@@ -107,6 +107,12 @@ export interface RequestPanelProps {
   /** Formats the query in its editor */
   onFormatQuery: () => void
   /**
+   * Whether auto-format on resize is about to reformat the query: a resize of the query editor is
+   * under way or settling. Format is not offered then, since it would flash up before the
+   * reformat takes it away
+   */
+  autoFormatPending: boolean
+  /**
    * Formats a query for the width of the query editor, as Format does; rejects when it does not
    * parse
    */
@@ -163,6 +169,7 @@ export function RequestPanel(props: RequestPanelProps) {
     onRun,
     onCancel,
     onFormatQuery,
+    autoFormatPending,
     formatForEditor,
     onCopyQuery,
     onCopyParams,
@@ -353,7 +360,12 @@ export function RequestPanel(props: RequestPanelProps) {
   // and again after the editor is resized, since formatting wraps to its width
   const [queryEditorElement, setQueryEditorElement] = useState<HTMLDivElement | null>(null)
   const queryEditorSize = useContentSize(queryEditorElement)
-  const canFormatQuery = useCanFormatQuery(tab.query, formatForEditor, queryEditorSize)
+  const canFormatQuery = useCanFormatQuery(
+    tab.query,
+    formatForEditor,
+    queryEditorSize,
+    autoFormatPending,
+  )
   const canFormatParams = useMemo(
     () => paramsView === 'json' && formatParams(tab.rawParams) !== null,
     [paramsView, tab.rawParams],

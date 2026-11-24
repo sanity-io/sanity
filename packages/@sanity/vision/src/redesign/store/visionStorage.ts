@@ -10,6 +10,7 @@ import {
   type VisionDatasetMode,
   type VisionDrawer,
   type VisionEditorSettings,
+  type VisionResponseSettings,
   type VisionHistoryDiffSettings,
   type VisionPanelsState,
   type VisionPersistedState,
@@ -50,6 +51,11 @@ const DEFAULT_AI_SETTINGS: VisionAiSettings = {
 
 const DEFAULT_EDITOR_SETTINGS: VisionEditorSettings = {
   autoFormatOnResize: true,
+}
+
+/** Looking up sync tags sends queries of its own, so it waits until it is switched on */
+const DEFAULT_RESPONSE_SETTINGS: VisionResponseSettings = {
+  resolveSyncTags: false,
 }
 
 export interface VisionStorageDefaults {
@@ -149,6 +155,7 @@ export function createInitialState(defaults: VisionStorageDefaults): VisionPersi
     historyDiff: {hiddenFields: [...DEFAULT_HIDDEN_DIFF_FIELDS]},
     ai: {...DEFAULT_AI_SETTINGS},
     editor: {...DEFAULT_EDITOR_SETTINGS},
+    response: {...DEFAULT_RESPONSE_SETTINGS},
     functions: [],
   }
 }
@@ -304,6 +311,12 @@ function sanitizeEditorSettings(value: unknown): VisionEditorSettings {
   return {autoFormatOnResize: editor.autoFormatOnResize !== false}
 }
 
+/** A setting stays off unless it was switched on; state saved before the settings existed has all off */
+function sanitizeResponseSettings(value: unknown): VisionResponseSettings {
+  const response = isPlainObject(value) ? value : {}
+  return {resolveSyncTags: response.resolveSyncTags === true}
+}
+
 /** Saved functions with an id and a declaration, the first of each id; state saved before had none */
 function sanitizeFunctions(value: unknown): VisionSavedFunction[] {
   if (!Array.isArray(value)) return []
@@ -365,9 +378,10 @@ export function loadVisionState(
   const historyDiff = sanitizeHistoryDiff(stored.historyDiff)
   const ai = sanitizeAiSettings(stored.ai)
   const editor = sanitizeEditorSettings(stored.editor)
+  const response = sanitizeResponseSettings(stored.response)
   const functions = sanitizeFunctions(stored.functions)
   if (tabs.length === 0) {
-    return {...initial, settings, sidebar, panels, historyDiff, ai, editor, functions}
+    return {...initial, settings, sidebar, panels, historyDiff, ai, editor, response, functions}
   }
 
   const activeTabId =
@@ -385,6 +399,7 @@ export function loadVisionState(
     historyDiff,
     ai,
     editor,
+    response,
     functions,
   }
 }

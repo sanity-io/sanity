@@ -1,3 +1,4 @@
+import {type SyncTag} from '@sanity/client'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {Badge, Button, Stack, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
@@ -13,15 +14,18 @@ import {isApiCdnHost} from '../../../util/parseQueryUrl'
 import {encodedQuerySizeOfUrl, QUERY_URL_SIZE_LIMIT} from '../../../util/queryRequestMethod'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
+import {type SyncTagLookupSource, useSyncTagLookup} from '../../hooks/useSyncTagLookup'
 import {type VisionResponseMeta} from '../../store/types'
 import {regionOfShard} from '../../util/apiRegions'
 import {formatBytes} from '../../util/payloadSize'
 import {type LocalAnswer, localRoundTrip} from '../../util/queryNetwork'
+import {formatSyncTagMeaning} from '../../util/syncTagLookup'
 import {sortSyncTags} from '../../util/syncTags'
 import {browserLocation, offsetLocation} from '../../util/timeZoneLocation'
 import {CdnBlockedNotice} from '../CdnBlockedNotice'
 import {InfoTooltip} from '../InfoTooltip'
 import {NetworkGlobe} from './NetworkGlobe'
+import * as styles from './syncTagsToggle.module.css'
 
 const LABEL: CSSProperties = {whiteSpace: 'nowrap'}
 /** Keeps the info button from making its row taller than the text next to it */
@@ -31,7 +35,7 @@ const DETAILS_MIN_WIDTH: CSSProperties = {minWidth: 280}
 const MUTED: CSSProperties = {color: 'var(--card-muted-fg-color)'}
 
 /** A row of the grid, whose label sits on the baseline of the first line of its value */
-function MetaRow({label, children}: {label: string; children: ReactNode}) {
+function MetaRow({label, children}: {label: ReactNode; children: ReactNode}) {
   return (
     <>
       <Text
@@ -88,13 +92,128 @@ export interface ResponseMetaTabProps {
   resolved: Pick<ResolvedRequest, 'useCdn' | 'isCdnBlockedByPerspective'>
   /** The tab's perspective as the perspective select names it, for why the CDN is not used */
   perspectiveName: string
+  /** Where the Sync tags row looks up what the tags stand for; absent while the setting is off */
+  syncTagLookup?: SyncTagLookupSource
+}
+
+const NO_SYNC_TAGS: readonly SyncTag[] = []
+
+/**
+ * The response's sync tags. With the lookup on, the label is a button that switches between the
+ * tags as they came and what they stand for; a tag the lookup could not find stays as it came.
+ */
+function SyncTagsRow(props: {
+  meta: VisionResponseMeta | undefined
+  lookup: SyncTagLookupSource | undefined
+  notApplicable: string
+}) {
+  const {meta, lookup, notApplicable} = props
+  const {t} = useTranslation(visionLocaleNamespace)
+  const tags = useMemo(() => (meta ? sortSyncTags(meta.syncTags) : NO_SYNC_TAGS), [meta])
+  const {pressed, toggle, state} = useSyncTagLookup(lookup, tags)
+  const label = t('vision.response.sync-tags')
+
+  if (tags.length === 0) {
+    return (
+      <MetaRow label={label}>
+        <Text muted size={1} as="div" trim={true}>
+          {meta ? t('vision.response.sync-tags.none') : notApplicable}
+        </Text>
+      </MetaRow>
+    )
+  }
+
+  const resolved = state.status === 'resolved' ? state.resolved : undefined
+  const unresolvedCount = resolved ? tags.filter((tag) => !resolved.has(tag)).length : 0
+  let note: ReactNode = null
+  if (state.status === 'loading') note = t('vision.response.sync-tags.resolving')
+  else if (state.status === 'failed') {
+    note = t('vision.response.sync-tags.resolve-failed', {message: state.message})
+  } else if (unresolvedCount > 0) {
+    note = t('vision.response.sync-tags.partly-resolved', {
+      count: unresolvedCount,
+      total: tags.length,
+    })
+  }
+
+  return (
+    <MetaRow
+      label={
+        lookup ? (
+          <Tooltip
+            animate
+            content={
+              <Text size={1} as="div" trim={true}>
+                {pressed
+                  ? t('vision.response.sync-tags.show-raw')
+                  : t('vision.response.sync-tags.show-resolved')}
+              </Text>
+            }
+            portal
+          >
+            <button
+              aria-pressed={pressed}
+              className={styles.toggle}
+              data-testid="vision-meta-sync-tags-toggle"
+              onClick={toggle}
+              type="button"
+            >
+              {label}
+            </button>
+          </Tooltip>
+        ) : (
+          label
+        )
+      }
+    >
+      <Stack gap={2}>
+        <Flex
+          aria-busy={state.status === 'loading' || undefined}
+          data-testid="vision-meta-sync-tags"
+          flexWrap="wrap"
+          gap={1}
+        >
+          {tags.map((tag) => {
+            const meaning = resolved?.get(tag)
+            return (
+              <Ui5Badge
+                data-resolved={resolved ? meaning !== undefined : undefined}
+                key={tag}
+                title={
+                  resolved ? (meaning ? tag : t('vision.response.sync-tags.unresolved')) : undefined
+                }
+                tone={meaning ? 'positive' : undefined}
+              >
+                <Text size={0} as="span" trim={true}>
+                  {meaning ? formatSyncTagMeaning(meaning) : tag}
+                </Text>
+              </Ui5Badge>
+            )
+          })}
+        </Flex>
+        {note && (
+          <Text
+            data-testid="vision-meta-sync-tags-note"
+            muted
+            size={0}
+            as="div"
+            role="status"
+            trim={true}
+          >
+            {note}
+          </Text>
+        )}
+      </Stack>
+    </MetaRow>
+  )
 }
 
 /**
  * The shown response and how it travelled: its timing and size, which endpoint answered it,
  * whether from the CDN's cache, and where the query ran, on a globe from roughly where you are
  */
-export function ResponseMetaTab({meta, url, resolved, perspectiveName}: ResponseMetaTabProps) {
+export function ResponseMetaTab(props: ResponseMetaTabProps) {
+  const {meta, url, resolved, perspectiveName, syncTagLookup} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const copyToClipboard = useCopyToClipboard()
   const telemetry = useVisionTelemetry()
@@ -293,23 +412,7 @@ export function ResponseMetaTab({meta, url, resolved, perspectiveName}: Response
                   </MetaRow>
                 </>
               )}
-              <MetaRow label={t('vision.response.sync-tags')}>
-                {meta && meta.syncTags.length > 0 ? (
-                  <Flex data-testid="vision-meta-sync-tags" flexWrap="wrap" gap={1}>
-                    {sortSyncTags(meta.syncTags).map((tag) => (
-                      <Ui5Badge key={tag}>
-                        <Text size={0} as="span" trim={true}>
-                          {tag}
-                        </Text>
-                      </Ui5Badge>
-                    ))}
-                  </Flex>
-                ) : (
-                  <Text muted size={1} as="div" trim={true}>
-                    {meta ? t('vision.response.sync-tags.none') : notApplicable}
-                  </Text>
-                )}
-              </MetaRow>
+              <SyncTagsRow lookup={syncTagLookup} meta={meta} notApplicable={notApplicable} />
               {!local && network?.traceId && (
                 <MetaRow label={t('vision.network.trace')}>
                   <Text size={1} truncate={1} as="div" trim={true}>

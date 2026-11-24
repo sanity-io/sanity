@@ -52,14 +52,7 @@ export function CopyButton({onCopy, disabled, testId = 'vision-copy'}: CopyButto
       mode="bleed"
       onClick={() => void handleClick()}
       padding={2}
-      text={
-        // Both labels take up the space, so the button keeps its width (and the controls left of
-        // it their place) when the label changes
-        <span aria-live="polite" className={styles.copyLabels} data-copied={copied}>
-          <span data-label="copy">{t('vision.copy')}</span>
-          <span data-label="copied">{t('vision.copied')}</span>
-        </span>
-      }
+      text={<span aria-live="polite">{copied ? t('vision.copied') : t('vision.copy')}</span>}
     />
   )
 }

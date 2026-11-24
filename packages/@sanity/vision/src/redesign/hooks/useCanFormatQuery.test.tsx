@@ -64,4 +64,54 @@ describe('useCanFormatQuery', () => {
     expect(formatForEditor).toHaveBeenCalledTimes(2)
     expect(result.current).toBe(false)
   })
+  it('offers no Format while held, and not the answer for the replaced query once the hold ends', async () => {
+    // Wrapped for the width it was laid out for before, and so for any other query too
+    const formatForEditor = vi.fn(async (query: string) =>
+      query.endsWith('formatted') ? query : `${query} formatted`,
+    )
+    const {result, rerender} = renderHook(
+      ({query, hold}: {query: string; hold: boolean}) =>
+        useCanFormatQuery(query, formatForEditor, null, hold),
+      {initialProps: {query: 'query', hold: false}},
+    )
+    await act(async () => {})
+    expect(result.current).toBe(true)
+
+    // A resize begins: the answer is true, and stays hidden
+    rerender({query: 'query', hold: true})
+    expect(result.current).toBe(false)
+    await act(async () => {})
+    expect(result.current).toBe(false)
+
+    // The reformat lands in the same render that ends the hold: the stale `true` must not show
+    const seen: boolean[] = []
+    rerender({query: 'query formatted', hold: false})
+    seen.push(result.current)
+    await act(async () => {})
+    seen.push(result.current)
+    expect(seen).toEqual([false, false])
+
+    // Typing is not held back: the answer for the previous query stands until the next arrives
+    rerender({query: 'query formatted', hold: false})
+    formatForEditor.mockImplementation(async (query: string) => `${query} more`)
+    rerender({query: 'typed', hold: false})
+    expect(result.current).toBe(false)
+    await act(async () => {})
+    expect(result.current).toBe(true)
+    rerender({query: 'typed again', hold: false})
+    expect(result.current).toBe(true)
+  })
+
+  it('offers Format again when a hold ends without the query having changed', async () => {
+    const formatForEditor = vi.fn(async (query: string) => `${query} formatted`)
+    const {result, rerender} = renderHook(
+      ({hold}: {hold: boolean}) => useCanFormatQuery('query', formatForEditor, null, hold),
+      {initialProps: {hold: false}},
+    )
+    await act(async () => {})
+    rerender({hold: true})
+    expect(result.current).toBe(false)
+    rerender({hold: false})
+    expect(result.current).toBe(true)
+  })
 })

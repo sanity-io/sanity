@@ -347,7 +347,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
   const autoFormatOnResize = useVisionSelector(
     (snapshot) => snapshot.context.editor.autoFormatOnResize,
   )
-  useAutoFormatOnResize({
+  const autoFormatPending = useAutoFormatOnResize({
     container: splitContainer,
     layout,
     editorRef: queryEditorRef,
@@ -614,6 +614,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
 
   const requestPanel = (
     <RequestPanel
+      autoFormatPending={autoFormatPending}
       buildRequest={buildRequest}
       formatForEditor={formatForEditor}
       isFetching={isFetching}
