@@ -30,6 +30,7 @@ import {type DocumentVariantType} from '../../../util/getDocumentVariantType'
 import {getDocumentVersionVariantId} from '../../../util/getDocumentVersionVariant'
 import {isRecord} from '../../../util/isRecord'
 import {getVariantId} from '../../../variants/tool/util'
+import {listenerGate} from '../../listenerGate/listenerGate'
 import {
   type BufferedDocumentEvent,
   createBufferedDocument,
@@ -696,6 +697,16 @@ export function checkoutPair(
       })
     : EMPTY
 
+  // The pair learns that a commit went through from its own listener, so while local mutations
+  // are pending, every listener stays connected, even on a page that has been hidden for long
+  // enough to give its connections up (`beta.releaseBackgroundListeners`). The hold is released
+  // when the pair is consistent again, or torn down.
+  const listenerHold$ = consistent$.pipe(
+    switchMap((isConsistent) =>
+      isConsistent ? EMPTY : new Observable<never>(() => listenerGate.acquireHold()),
+    ),
+  )
+
   const pendingEnd$ = transactionsPendingEvents$.pipe(filter((ev) => ev.phase === 'end'))
   const commitResolved$ = merge(pendingEnd$, commits$)
 
@@ -745,6 +756,7 @@ export function checkoutPair(
       commitError$,
       commitRetriesEvents$,
       pendingMutationsAtTeardown$,
+      listenerHold$,
     ),
   ).pipe(
     mergeMap(() => EMPTY),

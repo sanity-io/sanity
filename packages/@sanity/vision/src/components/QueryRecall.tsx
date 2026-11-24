@@ -5,14 +5,13 @@ import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {UsersIcon} from '@sanity/icons/Users'
 import {Badge, Button, Card, Dialog, Tab, TabList, TextInput} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {dequal as isEqual} from 'dequal/lite'
 import {type ComponentProps, type ReactElement, useCallback, useState} from 'react'
 import {ContextMenuButton, UserAvatar, useDateTimeFormat, useTranslation} from 'sanity'
-import {Text, Flex, Box, VStack, type VStackProps} from 'ui5'
+import {Code, Text, Flex, Box, VStack, type VStackProps} from 'ui5'
 
 import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
@@ -573,16 +572,20 @@ export function QueryRecall({
                           padding={2}
                           style={{maxWidth: '420px', maxHeight: '220px', overflow: 'auto'}}
                         >
-                          <Code size={1}>{fullQueryPreview}</Code>
+                          <Code size={1} trim>
+                            {fullQueryPreview}
+                          </Code>
                         </Box>
                       }
                       placement="top"
                       portal
                     >
-                      <Code size={1}>{shortQueryPreview}</Code>
+                      <Code size={1} trim>
+                        {shortQueryPreview}
+                      </Code>
                     </Tooltip>
                   ) : (
-                    <Code />
+                    <Code trim />
                   )}
 
                   {compactMode ? (

@@ -1,4 +1,4 @@
-import {type ClientPerspective, type SanityClient} from '@sanity/client'
+import {type ClientPerspective, type ReconnectEvent, type SanityClient} from '@sanity/client'
 import {
   asyncScheduler,
   defer,
@@ -10,6 +10,7 @@ import {
   of,
   partition,
   share,
+  skipWhile,
   throttleTime,
   throwError,
   timer,
@@ -21,6 +22,7 @@ import {
   createSearch,
   createSWR,
   getSearchableTypes,
+  pauseWhileDocumentHidden,
   reconnectListener,
   retryTransientFetch,
   type SanityDocumentLike,
@@ -151,27 +153,38 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
   // re-fetch the documents that match the search query (see below).
   // We use a separate listener since the search query is too large to use in a listen query.
   const events$ = defer(() => {
-    return client.listen(`*[${groqFilter}]`, params, {
-      events: ['welcome', 'mutation', 'reconnect'],
-      includeAllVersions: true,
-      includeResult: false,
-      visibility: 'query',
-      tag: 'listen-search-query',
-    })
+    return client
+      .listen(`*[${groqFilter}]`, params, {
+        events: ['welcome', 'mutation', 'reconnect'],
+        includeAllVersions: true,
+        includeResult: false,
+        visibility: 'query',
+        tag: 'listen-search-query',
+      })
+      .pipe(
+        // Applied before the gate so every connection, including one opened when the page is
+        // shown again, gets its own reconnects and connect timeout, and time spent paused never
+        // counts towards them.
+        reconnectListener(),
+        mergeMap((ev, i) => {
+          // When a connection is successfully established, the first event will be 'welcome'
+          if (i > 0 || ev.type === 'welcome') {
+            return of(ev)
+          }
+          // If we can't establish a connection to the /listen endpoint, the first event we receive will be 'reconnect'
+          if (ev.type === 'reconnect') {
+            return of(LISTENER_UNAVAILABLE)
+          }
+          // if it's neither welcome nor reconnect, something unexpected has happened.
+          return throwError(() => new Error(`Received unexpected type of first event "${ev.type}"`))
+        }),
+        // The list keeps its documents and shows that it is reconnecting until the new
+        // connection's `welcome` fetches them again
+        pauseWhileDocumentHidden({onPause: (): ReconnectEvent => ({type: 'reconnect'})}),
+      )
   }).pipe(
-    reconnectListener(),
-    mergeMap((ev, i) => {
-      // When a connection is successfully established, the first event will be 'welcome'
-      if (i > 0 || ev.type === 'welcome') {
-        return of(ev)
-      }
-      // If we can't establish a connection to the /listen endpoint, the first event we receive will be 'reconnect'
-      if (ev.type === 'reconnect') {
-        return of(LISTENER_UNAVAILABLE)
-      }
-      // if it's neither welcome nor reconnect, something unexpected has happened.
-      return throwError(() => new Error(`Received unexpected type of first event "${ev.type}"`))
-    }),
+    // A pause before the first 'welcome' has nothing to report: the list has not connected yet
+    skipWhile((ev) => ev.type === 'reconnect'),
     share(),
   )
 
@@ -179,6 +192,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
     events$,
     (ev) => ev.type === 'welcome' || ev.type === 'unavailable',
   )
+  const [reconnect$, mutation$] = partition(mutationAndReconnect$, (ev) => ev.type === 'reconnect')
 
   const swrKey = JSON.stringify({
     fiilter: groqFilter,
@@ -193,7 +207,10 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
 
   return merge(
     fetchTriggers$,
-    mutationAndReconnect$.pipe(throttleTime(1000, asyncScheduler, {leading: true, trailing: true})),
+    // Unthrottled, like `welcome`, so a throttled 'reconnect' can never arrive after the
+    // `welcome` of the connection that replaced it and leave the list reconnecting
+    reconnect$,
+    mutation$.pipe(throttleTime(1000, asyncScheduler, {leading: true, trailing: true})),
   ).pipe(
     exhaustMapWithTrailing((event): Observable<SearchQueryEvent> => {
       if (event.type === 'reconnect') {

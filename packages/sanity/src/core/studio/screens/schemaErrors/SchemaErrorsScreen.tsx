@@ -1,9 +1,8 @@
 import {type Schema} from '@sanity/types'
 import {Card, Heading} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useToast} from '@sanity/ui/toast'
 import {useEffect} from 'react'
-import {Text, Container, Flex, Grid, VStack} from 'ui5'
+import {Code, Text, Container, Flex, Grid, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {type SchemaErrorContext} from '../../../config/SchemaError'
@@ -25,7 +24,9 @@ function ContextRow(props: {label: string; value: string}) {
       <Text size={1} weight="medium" as="div" trim={true}>
         {props.label}
       </Text>
-      <Code size={1}>{props.value}</Code>
+      <Code size={1} trim>
+        {props.value}
+      </Code>
     </>
   )
 }

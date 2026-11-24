@@ -35,7 +35,7 @@ import {
 import {prepareI18n} from '../i18n/i18nConfig'
 import {type LocaleSource} from '../i18n/types'
 import {resolveListenerCountingFetch} from '../network/listenerCount'
-import {acceptReleaseMetadataFields} from '../releases/metadata/compileReleaseMetadataType'
+import {attributeListeners} from '../network/listenerCountWarning'
 import {createSchema} from '../schema/createSchema'
 import {createLegacyAuthStore} from '../store/auth/legacy/createLegacyAuthStore'
 import {createOAuthAuthStore} from '../store/auth/oauth/createOAuthAuthStore'
@@ -94,6 +94,7 @@ import {
   newDocumentOptionsResolver,
   onUncaughtErrorResolver,
   partialIndexingEnabledReducer,
+  releaseBackgroundListenersEnabledReducer,
   reactActivityModeEnabledReducer,
   releaseActionsReducer,
   resolveProductionUrlReducer,
@@ -111,7 +112,6 @@ import {createBifurClient} from './createBifurClient'
 import {createDefaultIcon} from './createDefaultIcon'
 import {initialDocumentFieldActions} from './document/fieldActions'
 import {documentFieldActionsReducer} from './document/fieldActions/reducer'
-import {resolveReleaseMetadataFields} from './releases/metadataFields'
 import {resolveConfigProperty} from './resolveConfigProperty'
 import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
 import {resolveSchemaTypes} from './resolveSchemaTypes'
@@ -123,6 +123,7 @@ import {
   type MissingConfigFile,
   type PluginOptions,
   type PreparedConfig,
+  type ReleaseMetadataConfig,
   type SingletonDefinition,
   type SingleWorkspace,
   type Source,
@@ -549,6 +550,7 @@ export function prepareConfig(
             authenticated,
             auth,
             i18n,
+            releaseMetadata: defaultPluginsOptions.releases.metadata ?? {},
           })
         }),
         shareReplay(1),
@@ -682,6 +684,8 @@ interface ResolveSourceOptions {
   authenticated: boolean
   auth: AuthStore
   i18n: {i18next: i18n; source: LocaleSource}
+  /** Resolved once per workspace, with the default plugins options. */
+  releaseMetadata: ReleaseMetadataConfig
 }
 
 function resolveSource({
@@ -692,6 +696,7 @@ function resolveSource({
   authenticated,
   auth,
   i18n,
+  releaseMetadata,
 }: ResolveSourceOptions): Source {
   const {dataset, projectId} = config
   const bifur = createBifurClient(client, auth.token)
@@ -703,7 +708,9 @@ function resolveSource({
     }
 
     if (!clients[options.apiVersion]) {
-      clients[options.apiVersion] = client.withConfig(options)
+      const versionedClient = client.withConfig(options)
+      clients[options.apiVersion] =
+        isDev && isBrowser ? attributeListeners(versionedClient) : versionedClient
     }
 
     return clients[options.apiVersion]
@@ -1019,6 +1026,9 @@ function resolveSource({
     reactActivityMode: {
       enabled: reactActivityModeEnabledReducer({config, initialValue: false}),
     },
+    releaseBackgroundListeners: {
+      enabled: releaseBackgroundListenersEnabledReducer({config, initialValue: false}),
+    },
   }
 
   // Upload the schema descriptor to Content Lake, but only when the user is
@@ -1039,11 +1049,6 @@ function resolveSource({
         return undefined
       })
     : Promise.resolve(undefined)
-
-  const releaseMetadataFields = acceptReleaseMetadataFields(
-    resolveReleaseMetadataFields(config),
-    schema,
-  )
 
   const source: Source = {
     type: 'source',
@@ -1311,9 +1316,9 @@ function resolveSource({
               propertyName: 'releases.actions',
               reducer: releaseActionsReducer,
             }),
-          metadata: {fields: releaseMetadataFields},
+          metadata: releaseMetadata,
         }
-      : {enabled: true, metadata: {fields: releaseMetadataFields}},
+      : {enabled: true, metadata: releaseMetadata},
   }
 
   return source

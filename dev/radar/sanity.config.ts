@@ -15,6 +15,11 @@ export default defineConfig({
   icon: RadarIcon,
   projectId: 'mhfozd0z',
   dataset: 'bench',
+  auth: {
+    experimental_oauth: {
+      clientId: 'oc-8c9215e5de71',
+    },
+  },
   // Trends first (the dashboard and default view), then the investigation
   // tools (releases, bisect, pasted diagnostics), then raw document access —
   // comparisons last, it's the least visited

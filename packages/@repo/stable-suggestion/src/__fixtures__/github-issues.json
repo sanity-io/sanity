@@ -1,0 +1,79 @@
+[
+  {
+    "number": 15773,
+    "title": "Synthetic report one",
+    "body": "Seen after upgrading to 6.22.0 in a test project.",
+    "html_url": "https://github.com/sanity-io/sanity/issues/15773",
+    "created_at": "2026-11-05T08:46:45Z",
+    "closed_at": null,
+    "labels": [
+      {
+        "name": "Bug"
+      }
+    ]
+  },
+  {
+    "number": 16063,
+    "title": "Synthetic report two",
+    "body": "Happens on v6.23.0, fine on 6.21.0.",
+    "html_url": "https://github.com/sanity-io/sanity/issues/16063",
+    "created_at": "2026-11-14T05:40:38Z",
+    "closed_at": null,
+    "labels": [
+      {
+        "name": "Bug"
+      }
+    ]
+  },
+  {
+    "number": 15874,
+    "title": "Synthetic report three",
+    "body": "Reproduced with 6.23.0, since resolved.",
+    "html_url": "https://github.com/sanity-io/sanity/issues/15874",
+    "created_at": "2026-11-11T05:37:06Z",
+    "closed_at": "2026-11-11T13:51:18Z",
+    "labels": [
+      {
+        "name": "Bug"
+      }
+    ]
+  },
+  {
+    "number": 16212,
+    "title": "Synthetic request four",
+    "body": "Would like this in 6.24.0.",
+    "html_url": "https://github.com/sanity-io/sanity/issues/16212",
+    "created_at": "2026-11-19T19:16:32Z",
+    "closed_at": null,
+    "labels": [
+      {
+        "name": "Feature"
+      }
+    ]
+  },
+  {
+    "number": 15612,
+    "title": "Synthetic report five",
+    "body": "Versions seen: 6.23.0-next.1, 16.23.0 and 6.23.01 only. Also 6.20.0.",
+    "html_url": "https://github.com/sanity-io/sanity/issues/15612",
+    "created_at": "2026-10-25T08:23:30Z",
+    "closed_at": null,
+    "labels": [
+      {
+        "name": "Bug"
+      }
+    ]
+  },
+  {
+    "number": 15900,
+    "title": "Synthetic pull request six",
+    "body": "Mentions 6.23.0 but is a pull request.",
+    "html_url": "https://github.com/sanity-io/sanity/issues/15900",
+    "created_at": "2026-11-08T10:00:00Z",
+    "closed_at": null,
+    "labels": [],
+    "pull_request": {
+      "url": "synthetic"
+    }
+  }
+]

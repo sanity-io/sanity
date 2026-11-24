@@ -1,8 +1,7 @@
 import {Badge, Button, Card, Label, Select, Stack, TextInput} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useCallback, useEffect, useState} from 'react'
 import {useTranslation} from 'sanity'
-import {Text, Box, Flex, Grid} from 'ui5'
+import {Code, Text, Box, Flex, Grid} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type QueryRequest} from '../../store/types'
@@ -418,7 +417,7 @@ function DeltaResult(props: {
       )}
       {evaluation.status === 'done' && typeof evaluation.value !== 'boolean' && (
         <Card border className={styles.drawerScroller} padding={3} radius={2}>
-          <Code data-testid="vision-delta-value" size={1}>
+          <Code data-testid="vision-delta-value" size={1} trim>
             {JSON.stringify(evaluation.value, null, 2) ?? 'null'}
           </Code>
         </Card>

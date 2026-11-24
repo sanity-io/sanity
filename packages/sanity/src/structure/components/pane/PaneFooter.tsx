@@ -21,7 +21,13 @@ export function PaneFooter(props: PaneFooterProps & RefAttributes<HTMLDivElement
 
   return (
     <LegacyLayerProvider zOffset="paneFooter">
-      <Root data-testid="pane-footer" hidden={collapsed} ref={ref}>
+      <Root
+        data-testid="pane-footer"
+        // Stable CSS hook for hiding the document footer. Public contract: do not rename or remove.
+        data-sanity-document-footer=""
+        hidden={collapsed}
+        ref={ref}
+      >
         <RootCard tone="inherit">
           <Box padding={padding}>{children}</Box>
         </RootCard>

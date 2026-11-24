@@ -29,7 +29,7 @@
     "chalk": "^6.0.1",
     "esbuild": "0.28.2",
     "groq-js": "^2.0.3",
-    "mendoza": "^3.0.8",
+    "mendoza": "^6.0.0",
     "playwright": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

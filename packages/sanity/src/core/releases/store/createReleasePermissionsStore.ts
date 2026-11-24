@@ -23,7 +23,7 @@ async function dryRun(
  *
  * @returns an object with the following properties:
  * * checkWithPermissionGuard - a function that checks if the user has permissions to perform a release action by adding dryRun properties
- * * permissions - an object with the permissions for each action, filled in as the checks settle
+ * * permissions - an object with the permissions for each action and release, filled in as the checks settle
  *
  * @internal
  */
@@ -55,14 +55,17 @@ export function createReleasePermissionsStore(
       return Promise.resolve(true)
     }
 
-    const cached = checks.get(action.name)
+    // Whether an action is allowed can depend on the documents in the release, so a result is
+    // only reused for the same release. Non-string arguments (a schedule date) are not part of it.
+    const key = [action.name, ...args.filter((arg) => typeof arg === 'string')].join(':')
+    const cached = checks.get(key)
     if (cached) return cached
 
     const check = dryRun(action, args).then((allowed) => {
-      permissions[action.name] = allowed
+      permissions[key] = allowed
       return allowed
     })
-    checks.set(action.name, check)
+    checks.set(key, check)
 
     return check
   }

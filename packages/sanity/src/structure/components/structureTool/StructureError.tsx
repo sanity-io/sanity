@@ -1,10 +1,9 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {SyncIcon} from '@sanity/icons/Sync'
 import {Card, Container, Heading} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
-import {Text, Box, Flex, VStack, Link} from 'ui5'
+import {Code, Text, Box, Flex, VStack, Link} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
@@ -65,7 +64,7 @@ export function StructureError({error, onReload}: StructureErrorProps) {
               <Text size={1} weight="medium" as="div" trim={true} tone="critical">
                 {t('structure-error.structure-path.label')}
               </Text>
-              <Code>
+              <Code trim>
                 {/* TODO: it seems like the path is off by one and includes */}
                 {/* `root` twice  */}
                 {path.slice(1).map((segment, i) => (
@@ -79,7 +78,7 @@ export function StructureError({error, onReload}: StructureErrorProps) {
             <Text size={1} weight="medium" as="div" trim={true} tone="critical">
               {t('structure-error.error.label')}
             </Text>
-            <Code>{showStack ? formatStack(stack) : error.message}</Code>
+            <Code trim>{showStack ? formatStack(stack) : error.message}</Code>
           </Flex>
 
           {helpId && (

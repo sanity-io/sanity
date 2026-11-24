@@ -1,9 +1,8 @@
 import {type SanityClient} from '@sanity/client'
 import {Button, Card, Stack} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {type Schema, useSchema, useTranslation} from 'sanity'
-import {Text, Flex} from 'ui5'
+import {Code, Text, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {reportAiCreditsGranted, reportAiCreditsLimit, useAiCredits} from '../../hooks/useAiCredits'
@@ -155,7 +154,9 @@ export function GenerateQueryBar({tab, client, formatForEditor, onClose}: Genera
               </Text>
               {lastAttempt && (
                 <>
-                  <Code size={1}>{lastAttempt.query}</Code>
+                  <Code size={1} trim>
+                    {lastAttempt.query}
+                  </Code>
                   <Flex>
                     <Button
                       data-testid="vision-generate-open-anyway"

@@ -1,6 +1,5 @@
 import {Card} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
-import {VStack} from 'ui5'
+import {Code, VStack} from 'ui5'
 
 import {useSearchState} from '../../../contexts/search/useSearchState'
 
@@ -18,11 +17,17 @@ export function DebugFilterQuery() {
   return (
     <Card padding={4} tone="transparent">
       <VStack gap={3}>
-        <Code size={1} weight="medium">
+        <Code
+          size={1}
+          style={{
+            fontWeight: 'var(--medium)',
+          }}
+          trim
+        >
           Filter
         </Code>
         {filter && (
-          <Code size={1} style={{whiteSpace: 'normal'}}>
+          <Code size={1} style={{whiteSpace: 'normal'}} trim>
             {filter}
           </Code>
         )}

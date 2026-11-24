@@ -1,10 +1,9 @@
 import {type ClientError, ServerError} from '@sanity/client'
 import {Button, Card, Heading, Tab, TabList, TabPanel} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {lazy, type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {CorsOriginErrorScreen, useClient, useProjectId, useStudioErrorHandler} from 'sanity'
 import {useRouter} from 'sanity/router'
-import {Text, Container, Flex, Box, VStack} from 'ui5'
+import {Code, Text, Container, Flex, Box, VStack} from 'ui5'
 
 import {
   installCheckCorsFetchInterceptor,
@@ -279,7 +278,7 @@ function DemoRow({demo}: {demo: DemoEntry}) {
               <Text muted size={0} weight="semibold" as="div" trim={true}>
                 Result
               </Text>
-              <Code size={1} style={{whiteSpace: 'pre-wrap'}}>
+              <Code size={1} style={{whiteSpace: 'pre-wrap'}} trim>
                 {demo.result}
               </Code>
             </VStack>
