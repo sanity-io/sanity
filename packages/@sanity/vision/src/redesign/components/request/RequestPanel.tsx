@@ -41,6 +41,7 @@ import {
 import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectFunctionLibrary, selectParamsView} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
+import {redesignEditorTheme} from '../../util/editorTheme'
 import {formatParams} from '../../util/formatParams'
 import {
   functionLibrary,
@@ -243,6 +244,7 @@ export function RequestPanel(props: RequestPanelProps) {
   const queryExtensions = useMemo(
     () => [
       ...groqExtensions,
+      redesignEditorTheme,
       ...lintExtensions,
       ...functionExtensions,
       functionLibrary.of(library),
