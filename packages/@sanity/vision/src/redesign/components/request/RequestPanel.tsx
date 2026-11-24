@@ -84,9 +84,6 @@ import {ParamsPanel} from './ParamsPanel'
 import {QueryActionsMenu} from './QueryActionsMenu'
 import {RequestOverrideChips} from './RequestOverrideChips'
 
-/** The request column's bottom panel starts about as tall as a short params document */
-const DEFAULT_BOTTOM_PANEL_SIZE = {columns: 220, stacked: 180, mobile: 160}
-
 export interface RequestPanelProps {
   tab: VisionTab
   params: Params
@@ -588,7 +585,7 @@ export function RequestPanel(props: RequestPanelProps) {
 
   return (
     <SplitWithBottomPanel
-      defaultBottomSize={DEFAULT_BOTTOM_PANEL_SIZE}
+      column="request"
       fitOnTabDoubleClick
       footer={
         <ActionRail testId="vision-query-actions">
