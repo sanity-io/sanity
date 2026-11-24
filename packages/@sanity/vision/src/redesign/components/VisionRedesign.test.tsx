@@ -2453,6 +2453,39 @@ describe('VisionRedesign', () => {
     expect(getQueryEditor().value).toBe(fixed)
   })
 
+  it('resets Fix with AI when the query tab is hidden while a fix is running', async () => {
+    const {replyToPrompts} = renderRedesign()
+    const query = '*[_type == "post" && author->name == "x"]'
+    typeQuery(query)
+    openRequestTab('lint')
+    act(() =>
+      lintMocks.report?.([
+        {
+          from: 21,
+          to: 29,
+          line: 1,
+          column: 22,
+          severity: 'warning',
+          message: 'Avoid `->` in a filter',
+          source: 'groq-lint/join-in-filter',
+        },
+      ]),
+    )
+    // Never settles: the abort has to clear the running status on its own
+    replyToPrompts(new Promise(() => {}))
+    fireEvent.click(screen.getByTestId('vision-lint-fix'))
+    expect(screen.getByTestId('vision-lint-fix-progress')).toBeTruthy()
+    expect(isDisabled(screen.getByTestId('vision-lint-fix'))).toBe(true)
+
+    // Another query tab hides this one in an Activity boundary: effects clean up and abort, state stays
+    fireEvent.click(screen.getByTestId('vision-new-tab'))
+    fireEvent.click(within(screen.getAllByTestId('vision-tab')[0]).getByTestId('vision-tab-button'))
+    openRequestTab('lint')
+    expect(screen.getByTestId('vision-lint-fix')).toBeTruthy()
+    expect(screen.queryByTestId('vision-lint-fix-progress')).toBeNull()
+    expect(isDisabled(screen.getByTestId('vision-lint-fix'))).toBe(false)
+  })
+
   it('offers no Fix with AI when the config turns it off', () => {
     renderRedesign(BASE_PERSPECTIVE, {ai: {fixLint: false}})
     typeQuery('*[_type == "post" && author->name == "x"]')
