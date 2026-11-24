@@ -19,23 +19,29 @@ export interface SwitchFieldProps {
   children?: ReactNode
 }
 
-/** A switch with its title and description beside it, the switch level with the title */
+/**
+ * A switch with its title and description beside it, the switch level with the title. Without a
+ * description the switch, title and info icon share one centre line, so a row of them lines up
+ * with the inputs beside it.
+ */
 export function SwitchField(props: SwitchFieldProps) {
   const {checked, onChange, title, description, info, infoLabel, testId, disabled, children} = props
+  const singleLine = !description && !children
   return (
     // A click on the info button does not toggle the switch: a label skips activation for clicks
     // on interactive content inside it
-    <Flex alignItems="flex-start" as="label" gap={3}>
+    <Flex alignItems={singleLine ? 'center' : 'flex-start'} as="label" gap={2}>
       {/* A ui5 box has no minimum width, so a long description would squeeze it and run over the
-          switch */}
-      <Box flexShrink={0} paddingTop={1}>
+          switch. As a flex container it drops the line box an inline switch would sit on, which
+          would leave room for descenders under it and push it off the centre line. */}
+      <Flex flexShrink={0} paddingTop={singleLine ? 0 : 1}>
         <Switch
           checked={checked}
           data-testid={testId}
           disabled={disabled}
           onChange={(event) => onChange(event.currentTarget.checked)}
         />
-      </Box>
+      </Flex>
       <Stack gap={2}>
         <Flex alignItems="center" gap={1}>
           <Text size={1} weight="medium" as="div" trim={true}>
@@ -44,13 +50,13 @@ export function SwitchField(props: SwitchFieldProps) {
           {info && (
             // The info button fills its container, so unwrapped it would take half the row and
             // wrap the title
-            <Box flexShrink={0}>
+            <Flex flexShrink={0}>
               <InfoTooltip
                 content={info}
                 label={infoLabel ?? (typeof title === 'string' ? title : '')}
                 testId={testId ? `${testId}-info` : undefined}
               />
-            </Box>
+            </Flex>
           )}
         </Flex>
         {description && (
