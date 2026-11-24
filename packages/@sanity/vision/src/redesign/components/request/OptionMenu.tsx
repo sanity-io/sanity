@@ -5,6 +5,7 @@ import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {
   type ChangeEvent,
   type ReactNode,
+  type Ref,
   type RefObject,
   useCallback,
   useEffect,
@@ -39,6 +40,11 @@ interface OptionMenuButtonProps {
   searchQuery?: string
   onSearchQueryChange?: (query: string) => void
   onClose?: () => void
+  /**
+   * An element of the menu the menu opens no taller than: it ends where this element ends, or
+   * at the edge of the viewport, and scrolls the items after it
+   */
+  foldRef?: RefObject<HTMLElement | null>
 }
 
 /**
@@ -57,15 +63,36 @@ export function OptionMenuButton({
   searchQuery = '',
   onSearchQueryChange,
   onClose,
+  foldRef,
 }: OptionMenuButtonProps) {
   const [open, setOpen] = useState(false)
   const searchRef = useRef<HTMLInputElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
   const hasSearch = searchPlaceholder !== undefined
+  const [foldHeight, setFoldHeight] = useState<number | undefined>(undefined)
 
   useFocusOnOpen(open && hasSearch, searchRef)
 
+  // Measured once per opening, so the menu keeps its height while the search filters the items
+  useEffect(() => {
+    if (!open || !foldRef) return undefined
+    // The menu is laid out a frame after it opens
+    const frame = requestAnimationFrame(() => {
+      const menu = menuRef.current
+      const fold = foldRef.current
+      if (!menu || !fold || menu.offsetHeight === 0) return
+      // The popover scales in, so the rectangles are scaled back to layout pixels
+      const menuRect = menu.getBoundingClientRect()
+      const scale = menuRect.height / menu.offsetHeight || 1
+      const bottom = (fold.getBoundingClientRect().bottom - menuRect.top) / scale
+      setFoldHeight(Math.ceil(bottom + menu.scrollTop))
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [open, foldRef])
+
   const handleClose = useCallback(() => {
     setOpen(false)
+    setFoldHeight(undefined)
     onClose?.()
   }, [onClose])
 
@@ -91,10 +118,11 @@ export function OptionMenuButton({
           data-testid={`${testId}-menu`}
           gap={0}
           padding={0}
+          ref={menuRef}
           // Width is inline so it wins over the menu's own `min-width: 0`. Display stays the
           // component's: a stylesheet `display` ties `@sanity/ui`'s `:not([hidden])` rule and
           // loses in a production build.
-          style={MENU_STYLE}
+          style={foldHeight === undefined ? MENU_STYLE : {...MENU_STYLE, maxHeight: foldHeight}}
         >
           {hasSearch && (
             <Box borderBottom flexShrink={0} padding={2}>
@@ -150,8 +178,8 @@ function useFocusOnOpen(open: boolean, ref: RefObject<HTMLInputElement | null>) 
 /** A group heading, as the navbar perspective menu labels its release types */
 export function OptionMenuGroupLabel({children}: {children: string}) {
   return (
-    <Box paddingBottom={1} paddingLeft={2} paddingTop={3}>
-      <Label muted size={1} style={{textTransform: 'uppercase'}}>
+    <Box paddingBottom={1} paddingLeft={2} paddingTop={2}>
+      <Label muted size={0} style={{textTransform: 'uppercase'}}>
         {children}
       </Label>
     </Box>
@@ -159,10 +187,20 @@ export function OptionMenuGroupLabel({children}: {children: string}) {
 }
 
 /** A group of items, under a heading like the navbar menu's release types, or none */
-export function OptionMenuSection({title, children}: {title?: string; children: ReactNode}) {
+export function OptionMenuSection({
+  title,
+  testId,
+  children,
+  ref,
+}: {
+  title?: string
+  testId?: string
+  children: ReactNode
+  ref?: Ref<HTMLDivElement>
+}) {
   return (
-    <Card borderBottom className={styles.section} padding={1}>
-      <VStack gap={1}>
+    <Card borderBottom className={styles.section} data-testid={testId} padding={1} ref={ref}>
+      <VStack gap={0}>
         {title && <OptionMenuGroupLabel>{title}</OptionMenuGroupLabel>}
         {children}
       </VStack>
@@ -186,7 +224,7 @@ export function OptionItemContent({title, subtitle, icon}: OptionItemContentProp
   return (
     <Flex alignItems="flex-start" gap={1}>
       {icon && (
-        <Box flexShrink={0} paddingX={3} paddingY={2}>
+        <Box flexShrink={0} paddingX={2} paddingY={1}>
           {icon}
         </Box>
       )}
@@ -197,7 +235,7 @@ export function OptionItemContent({title, subtitle, icon}: OptionItemContentProp
         minWidth="0"
         paddingLeft={icon ? 0 : 2}
         paddingRight={2}
-        paddingY={2}
+        paddingY={1}
       >
         <Text
           as="div"
@@ -212,7 +250,7 @@ export function OptionItemContent({title, subtitle, icon}: OptionItemContentProp
         {subtitle && (
           <Text
             as="div"
-            size={1}
+            size={0}
             style={{color: 'var(--card-muted-fg-color)'}}
             title={subtitle}
             trim={true}
@@ -259,7 +297,7 @@ export function OptionMenuItem({
 /** Shown in place of the items when the search matches none */
 export function OptionMenuNoMatches({children}: {children: string}) {
   return (
-    <Box padding={3}>
+    <Box padding={2}>
       <Text muted size={1}>
         {children}
       </Text>

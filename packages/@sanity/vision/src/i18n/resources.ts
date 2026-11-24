@@ -808,8 +808,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.options.dataset.pinned': 'Pinned; the workspace may use another dataset',
   /** Placeholder of the search field at the top of the dataset menu */
   'vision.options.dataset.search-placeholder': 'Search datasets',
-  /** Heading of the dataset menu's datasets other than the workspace's, which Auto stands for */
+  /** Heading of the dataset menu's datasets no workspace of this project uses */
   'vision.options.dataset.other-datasets': 'Other datasets',
+  /** Heading of the dataset menu's datasets the other workspaces of this project use */
+  'vision.options.dataset.workspace-datasets': 'Workspace datasets',
   /**
    * Heading of the dataset menu's group of datasets other workspaces of this project use
    * @deprecated no longer in use
