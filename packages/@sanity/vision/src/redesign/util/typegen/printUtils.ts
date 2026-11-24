@@ -1,7 +1,11 @@
 import {type ObjectAttribute, type ObjectTypeNode} from 'groq-js'
 
+import {isIdentifierName} from './naming'
+
 const INDENT = '  '
-const IDENTIFIER = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/
+
+/** Past this many columns a union is broken onto one line per member, as a formatter would */
+export const MAX_LINE_WIDTH = 80
 
 export function indent(depth: number): string {
   return INDENT.repeat(depth)
@@ -9,7 +13,7 @@ export function indent(depth: number): string {
 
 /** Member keys of a TypeScript type literal: bare when valid identifiers, quoted otherwise */
 export function printTypeKey(key: string): string {
-  return IDENTIFIER.test(key) ? key : JSON.stringify(key)
+  return isIdentifierName(key) ? key : JSON.stringify(key)
 }
 
 /**
@@ -39,9 +43,4 @@ export function flattenObject(node: ObjectTypeNode): FlatObject {
     rest = rest.rest
   }
   return {attributes, rest}
-}
-
-/** The distinct printed members of a union, in order of first appearance */
-export function uniqueMembers(printed: string[]): string[] {
-  return [...new Set(printed)]
 }

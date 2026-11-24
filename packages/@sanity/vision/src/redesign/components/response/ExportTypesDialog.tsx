@@ -5,11 +5,11 @@ import {useTranslation} from 'sanity/i18n'
 import {parseParams} from '../../../components/ParamsEditor'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VisionTab} from '../../store/types'
-import {toQueryConstantName} from '../../util/exportSnippets'
 import {evaluateQueryType} from '../../util/typegen/evaluateQueryType'
+import {toQueryVariableName, toResultTypeName} from '../../util/typegen/naming'
 import {printTypeScript} from '../../util/typegen/printTypeScript'
 import {printZod} from '../../util/typegen/printZod'
-import {toTypeName} from '../../util/typegen/schemaTypes'
+import {createSchemaIdentifiers} from '../../util/typegen/schemaTypes'
 import {ExportCodeDialog} from '../ExportCodeDialog'
 
 export type TypesExportFormat = 'typescript' | 'zod'
@@ -22,12 +22,6 @@ export interface ExportTypesDialogProps {
   /** Only a result fetched for the current query and params may stand in for the schema */
   resultIsCurrent: boolean
   onClose: () => void
-}
-
-/** `AUTHOR_QUERY` becomes `AuthorQueryResult` */
-function toResultTypeName(query: string): string {
-  const constant = toQueryConstantName(query)
-  return `${toTypeName(constant.toLowerCase().replace(/_/g, ' '))}Result`
 }
 
 export function ExportTypesDialog({
@@ -53,7 +47,11 @@ export function ExportTypesDialog({
     if (evaluation.source === 'none') {
       return {source: evaluation.source, code: undefined, schemaError: evaluation.schemaError}
     }
-    const typeName = toResultTypeName(tab.query)
+    // Named as `sanity typegen` would name the result of a query variable called after the tab
+    const typeName = toResultTypeName(
+      toQueryVariableName(tab.query, tab.title),
+      new Set(createSchemaIdentifiers(evaluation.schema).values()),
+    )
     const code =
       format === 'typescript'
         ? printTypeScript(evaluation.node, {typeName, schema: evaluation.schema})
@@ -63,7 +61,7 @@ export function ExportTypesDialog({
       code,
       schemaError: evaluation.source === 'result' ? evaluation.schemaError : undefined,
     }
-  }, [format, hasResult, result, resultIsCurrent, schema, t, tab.query, tab.rawParams])
+  }, [format, hasResult, result, resultIsCurrent, schema, t, tab.query, tab.rawParams, tab.title])
 
   const sourceNote =
     output.source === 'schema'
@@ -89,7 +87,10 @@ export function ExportTypesDialog({
         output.schemaError
           ? {
               testId: 'vision-export-types-schema-error',
-              text: t('vision.export-types.schema-error', {message: output.schemaError.message}),
+              text: t('vision.export-types.schema-unavailable', {
+                message: output.schemaError.message,
+              }),
+              tone: 'neutral',
             }
           : undefined
       }

@@ -1,7 +1,6 @@
-import {toQueryConstantName} from '../exportSnippets'
 import {type InferredParam, type ParamType} from '../paramInference'
+import {toQueryVariableName} from './naming'
 import {indent, printLiteralKey, printTypeKey} from './printUtils'
-import {toTypeName} from './schemaTypes'
 
 /** Beyond this, a union or a list of values goes on lines of its own, as a formatter would put it */
 const MAX_LINE_LENGTH = 80
@@ -13,10 +12,10 @@ const FORMAT_COMMENTS: Partial<Record<NonNullable<ParamType['format']>, string>>
   'datetime': 'ISO 8601 date and time',
 }
 
-/** `AUTHOR_QUERY` becomes `AuthorQueryParams`, next to the result's `AuthorQueryResult` */
+/** `*[_type == "author"]` becomes `AuthorQueryParams`, next to the result's `AuthorQueryResult` */
 export function toParamsTypeName(query: string): string {
-  const constant = toQueryConstantName(query)
-  return `${toTypeName(constant.toLowerCase().replace(/_/g, ' '))}Params`
+  const variableName = toQueryVariableName(query)
+  return `${variableName.charAt(0).toUpperCase()}${variableName.slice(1)}Params`
 }
 
 /** The comment above a param's property, when its type says less than the inference knows */
