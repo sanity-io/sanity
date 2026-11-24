@@ -11,29 +11,17 @@ const fadeIn = keyframes({
   to: {opacity: 1},
 })
 
-const slideUp = keyframes({
-  from: {transform: 'translateY(0)'},
-  to: {transform: 'translateY(-15px)'},
-})
-
-const slideDown = keyframes({
-  from: {transform: 'translateY(0)'},
-  to: {transform: 'translateY(10px)'},
-})
-
 // The root is a plain `div`, or a `Layer` when `fill` is set: `Layer`'s own static rule sets
 // `position: relative` (0,1,0), which `cardFill` overrides, so the root classes are doubled.
+// The spinner and the label stack in flow, so the gap keeps them apart in every frame.
 export const card = css({
   '&&': {
     alignItems: 'center',
     boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
+    gap: 'var(--space-3)',
     justifyContent: 'center',
-  },
-  // The spinner and the label are `Text` primitives, which set `position: relative` (0,1,0)
-  '&& > *': {
-    position: 'absolute',
   },
 })
 
@@ -77,18 +65,11 @@ export const cardDebug = css({
   },
 })
 
+// On a plain `span` around the spinner, so it needs no `&&`: nothing else styles the wrapper
 export const spinner = css({
-  '&&': {
-    animation: `500ms ease-out ${SPINNER_DELAY}ms 1 normal both running ${fadeIn}`,
-  },
-})
-
-export const spinnerAnimatePosition = css({
-  '&&': {
-    animation: `500ms ease-out ${SPINNER_DELAY}ms 1 normal both running ${fadeIn}, 750ms ease-out ${TEXT_DELAY}ms 1 normal both running ${slideUp}`,
-  },
+  animation: `500ms ease-out ${SPINNER_DELAY}ms 1 normal both running ${fadeIn}`,
 })
 
 export const text = css({
-  animation: `1500ms ease-out ${TEXT_DELAY}ms 1 normal both running ${fadeIn}, 750ms ease-out ${TEXT_DELAY}ms 1 normal both running ${slideDown}`,
+  animation: `1500ms ease-out ${TEXT_DELAY}ms 1 normal both running ${fadeIn}`,
 })

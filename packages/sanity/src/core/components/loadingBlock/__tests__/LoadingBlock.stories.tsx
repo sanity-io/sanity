@@ -18,8 +18,8 @@ function Region(props: {children: ReactNode}) {
 /**
  * A generic loading container: a centred `Spinner` and an optional label. The
  * timing is deliberate anti-flash behaviour: nothing is painted for the first
- * 750ms, then the spinner fades in; with `showText` the label follows after
- * 2000ms and the spinner slides up to make room. `fill` absolutely positions
+ * 750ms, then the spinner fades in; with `showText` the label, stacked below
+ * the spinner, fades in after 2000ms. `fill` absolutely positions
  * the block over a `position: relative` parent (pane overlays); without it the
  * block stretches to its flow container with a 75px floor. Rendered inside
  * `TestWrapper` because the default "Loading" label resolves through studio

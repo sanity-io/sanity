@@ -1,17 +1,9 @@
-import {Layer, Spinner} from '@sanity/ui'
+import {Layer} from '@sanity/ui'
 import {clsx} from 'clsx'
-import {Text} from 'ui5'
+import {Spinner, Text} from 'ui5'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {
-  card,
-  cardDebug,
-  cardFill,
-  cardFlow,
-  spinner,
-  spinnerAnimatePosition,
-  text,
-} from './LoadingBlock.css'
+import {card, cardDebug, cardFill, cardFlow, spinner, text} from './LoadingBlock.css'
 
 // Enable to force debug background
 const DEBUG_MODE = false
@@ -46,7 +38,14 @@ export function LoadingBlock({fill, showText, title}: LoadingTestProps) {
       className={clsx(card, fill ? cardFill : cardFlow, DEBUG_MODE && cardDebug)}
       data-testid="loading-block"
     >
-      <Spinner className={showText ? spinnerAnimatePosition : spinner} muted />
+      {/* The fade runs on a wrapper: the ui5 Spinner's own `animation` is its rotation */}
+      <span className={spinner}>
+        <Spinner
+          style={{
+            color: 'var(--foreground-low)',
+          }}
+        />
+      </span>
       {showText && <LoadingText title={title} />}
     </Root>
   )
