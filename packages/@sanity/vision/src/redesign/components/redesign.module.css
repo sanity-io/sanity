@@ -17,9 +17,17 @@
   border-top: 1px solid var(--card-border-color);
 }
 
-.panelHeader {
+/*
+ * A row of a bottom panel: its tab header, and the toolbar rows of its tabs (the params' view tabs
+ * and actions, the Lint tab's Fix with AI). They share the header's height and insets, so a
+ * toolbar's first and last buttons line up with the tabs and the collapse toggle above them, and
+ * are centered on the same line within their row.
+ */
+.panelBar {
+  box-sizing: border-box;
   flex-shrink: 0;
   height: var(--vision-bottom-bar-height);
+  padding-inline: 8px;
 }
 
 /* `ResizableSplit`: two panes and the divider between them */

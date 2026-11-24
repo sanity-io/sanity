@@ -107,13 +107,7 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
 
   return (
     <Flex data-testid={`${idPrefix}-panel`} flexDirection="column" height="100%" minHeight="0">
-      <Flex
-        alignItems="center"
-        className={styles.panelHeader}
-        gap={2}
-        justifyContent="space-between"
-        paddingX={2}
-      >
+      <Flex alignItems="center" className={styles.panelBar} gap={2} justifyContent="space-between">
         <Box className={styles.panelTabs} ref={stripRef}>
           <TabList gap={1}>
             {tabs.map((tab) => (

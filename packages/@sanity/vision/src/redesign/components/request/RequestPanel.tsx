@@ -409,14 +409,12 @@ export function RequestPanel(props: RequestPanelProps) {
         toolbar: (
           <Flex
             alignItems="center"
+            className={styles.panelBar}
             data-vision-params-content=""
             flexGrow={1}
             gap={2}
             minWidth="0"
             justifyContent="space-between"
-            paddingBottom={1}
-            paddingTop={2}
-            paddingX={2}
           >
             <TabList aria-label={t('vision.params.view.label')} gap={1}>
               <Tab
