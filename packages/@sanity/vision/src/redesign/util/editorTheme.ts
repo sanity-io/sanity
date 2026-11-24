@@ -24,9 +24,10 @@ export const redesignEditorTheme: Extension = [
   Prec.highest(
     EditorView.theme({
       // The divider is drawn as a background so that it starts at the first line, below the
-      // content's top padding, rather than running up into the label that floats over it
+      // content's top padding, rather than running up into the label that floats over it. The
+      // gutters stick to the left while long lines scroll sideways, so they stay opaque over them.
       '&.cm-editor .cm-gutters': {
-        backgroundColor: 'transparent',
+        backgroundColor: 'var(--card-bg-color)',
         backgroundImage: 'linear-gradient(var(--card-border-color), var(--card-border-color))',
         backgroundOrigin: 'border-box',
         backgroundPosition: 'right bottom',
