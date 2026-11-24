@@ -1579,7 +1579,7 @@ importers:
   packages/@repo/stable-suggestion:
     dependencies:
       '@anthropic-ai/sdk':
-        specifier: ^1.10.0
+        specifier: ^1.12.0
         version: 1.12.0(zod@4.6.7)
       '@repo/utils':
         specifier: workspace:*
