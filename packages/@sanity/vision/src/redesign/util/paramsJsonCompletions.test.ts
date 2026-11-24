@@ -15,28 +15,37 @@ import {
 const NOW = new Date('2026-01-02T03:04:05.000Z')
 const now = () => NOW
 
+interface SetupOptions {
+  explicit?: boolean
+  /** Document type names suggested for a `_type` param */
+  documentTypes?: string[]
+}
+
 /** `|` in `marked` is the cursor; without one it is at the end */
-function setup(marked: string, query: string, {explicit = false} = {}) {
+function setup(marked: string, query: string, options: SetupOptions = {}) {
   const pos = marked.includes('|') ? marked.indexOf('|') : marked.length
   const doc = marked.replace('|', '')
-  const {params} = inferQueryParams(query)
+  const {params} = inferQueryParams(query, {documentTypes: options.documentTypes})
   const state = EditorState.create({
     doc,
     selection: EditorSelection.cursor(pos),
     extensions: [javascriptLanguage, paramsJsonInferredParams.of(params)],
   })
-  const result = paramsJsonCompletions(new CompletionContext(state, pos, explicit), now)
-  return {state, result}
+  const result = paramsJsonCompletions(
+    new CompletionContext(state, pos, options.explicit ?? false),
+    now,
+  )
+  return {state, pos, result}
 }
 
-function labels(doc: string, query: string, options?: {explicit?: boolean}) {
+function labels(doc: string, query: string, options?: SetupOptions) {
   const {result} = setup(doc, query, options)
   return result ? result.options.map((option) => option.label) : null
 }
 
 /** Accepts the completion with `label` and returns the document */
-function accept(doc: string, query: string, label: string): string {
-  const {state, result} = setup(doc, query)
+function accept(doc: string, query: string, label: string, options?: SetupOptions): string {
+  const {state, result} = setup(doc, query, options)
   const completion = result?.options.find((option) => option.label === label)
   if (!completion || typeof completion.apply !== 'function') {
     throw new Error(`No completion ${label}`)
@@ -91,6 +100,44 @@ describe('paramsJsonCompletions', () => {
     expect(labels('{"year": 1, "min": 2, "extra": 3, x', QUERY)).toBeNull()
     expect(labels('{\n  ', QUERY)).toBeNull()
     expect(labels('{\n  ', QUERY, {explicit: true})).toEqual(['year', 'min', 'extra'])
+  })
+
+  it('completes explicitly inside an empty string value without doubling the quotes', () => {
+    const query = '*[_type == $type]'
+    const types = ['author', 'movie']
+    const marked = '{ "type": "|" }'
+    const {pos, result} = setup(marked, query, {explicit: true, documentTypes: types})
+    // The filter text is empty, so every value is offered, not only those starting with `"`
+    expect(result?.from).toBe(pos)
+    expect(result?.to).toBe(pos)
+    expect(result?.options.map((option) => option.label)).toEqual(['"author"', '"movie"'])
+    expect(accept(marked, query, '"author"', {explicit: true, documentTypes: types})).toBe(
+      '{ "type": "author" }',
+    )
+    // Typing inside the quotes filters on the JSON so far, closing quote excluded
+    const typed = setup('{ "type": "au|" }', query, {documentTypes: types})
+    const pattern = typed.state.sliceDoc(typed.result!.from, typed.result!.to ?? typed.pos)
+    expect(pattern).toBe('"au')
+    expect(
+      typed
+        .result!.options.map((option) => option.label)
+        .filter((label) => label.startsWith(pattern)),
+    ).toEqual(['"author"'])
+  })
+
+  it('completes explicitly inside an empty string of a non-string param', () => {
+    const query = '*[$featured && published]'
+    expect(labels('{ "featured": "|" }', query, {explicit: true})).toEqual(['false', 'true'])
+    expect(accept('{ "featured": "|" }', query, 'false', {explicit: true})).toBe(
+      '{ "featured": false }',
+    )
+  })
+
+  it('completes explicitly inside an empty key and at an empty object', () => {
+    expect(labels('{ "|"}', QUERY, {explicit: true})).toEqual(['year', 'min', 'extra'])
+    expect(accept('{ "|"}', QUERY, 'year', {explicit: true})).toBe('{ "year": 0}')
+    expect(labels('{ |}', QUERY, {explicit: true})).toEqual(['year', 'min', 'extra'])
+    expect(labels('{|}', QUERY, {explicit: true})).toEqual(['year', 'min', 'extra'])
   })
 })
 
