@@ -306,7 +306,6 @@ function ParamField(props: {
   const problem = isSet && !(isNull && param.nullable) ? describeProblem(type, value, t) : undefined
 
   const required = isSet ? undefined : t('vision.params-form.required')
-  const wide = type.array || (type.kind === 'any' && typeof value === 'object' && value !== null)
 
   let input
   if (type.kind === 'boolean' && !type.array) {
@@ -379,12 +378,7 @@ function ParamField(props: {
   }
 
   return (
-    <Stack
-      className={wide ? fieldGrid.fieldGridWide : undefined}
-      data-testid={`vision-params-form-${param.name}`}
-      data-vision-param={param.name}
-      gap={2}
-    >
+    <Stack data-testid={`vision-params-form-${param.name}`} data-vision-param={param.name} gap={2}>
       <Flex alignItems="center" gap={1}>
         <Text as="label" htmlFor={inputId} size={1} weight="medium" trim={true}>
           <InlineCode>{`$${param.name}`}</InlineCode>

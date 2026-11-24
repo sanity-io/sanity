@@ -6,7 +6,7 @@
   grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
 }
 
-/* A field that grows (a list, an object) takes the whole row */
-.fieldGridWide {
-  grid-column: 1 / -1;
+/* A long value (a list item, an object's JSON) scrolls inside its input instead of widening the column */
+.fieldGrid > * {
+  min-width: 0;
 }
