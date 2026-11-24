@@ -467,7 +467,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.history.reason.generated': 'Generated query',
   /** History reason: a link to the tool named a query URL, which opened in a tab and ran */
   'vision.history.reason.link': 'Opened link',
-  /** History reason: mutations were applied from the Mutate panel */
+  /**
+   * History reason: mutations were applied from the Mutate panel
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.history.reason.mutation': 'Mutations applied',
   /** History reason: a live event matched the query's sync tags */
   'vision.history.reason.live': 'Live update',
@@ -476,7 +480,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /**
    * History reason: the Live fetch button was pressed, which fetches and then refetches
    * automatically
+   * @deprecated no longer in use
    */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.history.reason.live-start': 'Live fetch started',
   /** History reason: a saved query was loaded into a tab that refetches automatically */
   'vision.history.reason.load': 'Query loaded',
@@ -556,10 +562,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    */
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.live.active': 'Live',
-  /** Button in the request column's action bar that fetches and then refetches automatically */
+  /** Button in the request column's action bar that refetches automatically */
   'vision.live.button': 'Live fetch',
   /** Tooltip of the Live button while automatic refetching is off */
-  'vision.live.button.start': 'Fetch, then fetch again whenever the documents in the result change',
+  'vision.live.button.start': 'Fetch again whenever the documents in the result change',
   /** Tooltip of the Stop live button, while the tab refetches automatically */
   'vision.live.button.stop':
     'Stop fetching when the documents in the result change. Fetch still fetches on demand, for results no document change touches, like now()',

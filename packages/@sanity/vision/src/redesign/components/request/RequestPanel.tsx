@@ -106,6 +106,8 @@ export interface RequestPanelProps {
   onParamsFlush: () => void
   onOptionsChange: (options: Partial<VisionTabOptions>) => void
   onRun: () => void
+  /** Enter in a params form field, which fetches like the fetch shortcut */
+  onParamsSubmit: () => void
   onCancel: () => void
   /** Formats the query in its editor */
   onFormatQuery: () => void
@@ -170,6 +172,7 @@ export function RequestPanel(props: RequestPanelProps) {
     onParamsFlush,
     onOptionsChange,
     onRun,
+    onParamsSubmit,
     onCancel,
     onFormatQuery,
     autoFormatPending,
@@ -452,7 +455,12 @@ export function RequestPanel(props: RequestPanelProps) {
           <Flex data-vision-params-content="" flexDirection="column">
             <Box id={paramsContentId}>
               {paramsView === 'form' ? (
-                <ParamsForm onChange={onParamsReplace} params={params} query={tab.query} />
+                <ParamsForm
+                  onChange={onParamsReplace}
+                  onSubmit={onParamsSubmit}
+                  params={params}
+                  query={tab.query}
+                />
               ) : (
                 <>
                   <ParamsPanel
@@ -543,6 +551,7 @@ export function RequestPanel(props: RequestPanelProps) {
     onParamsChange,
     onParamsFlush,
     onParamsReplace,
+    onParamsSubmit,
     onRevealRange,
     params,
     paramsContentId,

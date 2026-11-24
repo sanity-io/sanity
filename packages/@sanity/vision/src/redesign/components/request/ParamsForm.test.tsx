@@ -1,7 +1,7 @@
 import {Schema} from '@sanity/schema'
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
-import {cleanup, fireEvent, render, screen, within} from '@testing-library/react'
+import {cleanup, createEvent, fireEvent, render, screen, within} from '@testing-library/react'
 import JSON5 from 'json5'
 import {type ReactNode, useState} from 'react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
@@ -67,25 +67,28 @@ function toParams(raw: string): Params {
 }
 
 // Holds the params text like the tab does, so typing round-trips through the parsed params
-function Harness({query, initial}: {query: string; initial: string}) {
+function Harness(props: {query: string; initial: string; onSubmit: () => void}) {
+  const {query, initial, onSubmit} = props
   const [raw, setRaw] = useState(initial)
   return (
     <>
-      <ParamsForm onChange={setRaw} params={toParams(raw)} query={query} />
+      <ParamsForm onChange={setRaw} onSubmit={onSubmit} params={toParams(raw)} query={query} />
       <output data-testid="raw">{raw}</output>
     </>
   )
 }
 
 function renderForm(query: string, initial = '{}') {
+  const onSubmit = vi.fn()
   render(
     <ThemeProvider theme={theme}>
       <LayerProvider>
-        <Harness initial={initial} query={query} />
+        <Harness initial={initial} onSubmit={onSubmit} query={query} />
       </LayerProvider>
     </ThemeProvider>,
   )
   return {
+    onSubmit,
     params: () => JSON.parse(screen.getByTestId('raw').textContent || '{}') as unknown,
     field: (name: string) => screen.getByTestId(`vision-params-form-${name}`),
     input: (name: string) =>
@@ -242,6 +245,35 @@ describe('ParamsForm', () => {
       'disabled',
       true,
     )
+  })
+
+  it('submits on Enter in any field, keeping Enter for compositions, buttons and the shortcut', () => {
+    const {field, input, onSubmit} = renderForm(
+      '*[_type == "post" && title match $title && featured == $featured && _type in $types][0...$limit]',
+    )
+    fireEvent.click(screen.getByTestId('vision-params-form-types-add'))
+    const fields = [
+      input('title'),
+      within(field('limit')).getByRole('textbox'),
+      within(field('featured')).getByRole('combobox'),
+      within(field('types')).getByRole('combobox'),
+    ]
+    for (const [index, target] of fields.entries()) {
+      const enter = createEvent.keyDown(target, {key: 'Enter', keyCode: 13})
+      fireEvent(target, enter)
+      // No native form submission or select popup on top of the fetch
+      expect(enter.defaultPrevented).toBe(true)
+      expect(onSubmit).toHaveBeenCalledTimes(index + 1)
+    }
+    onSubmit.mockClear()
+
+    fireEvent.keyDown(input('title'), {key: 'Enter', isComposing: true})
+    fireEvent.keyDown(input('title'), {key: 'Enter', keyCode: 229})
+    fireEvent.keyDown(input('title'), {key: 'Enter', ctrlKey: true})
+    fireEvent.keyDown(input('title'), {key: 'Enter', metaKey: true})
+    fireEvent.keyDown(input('title'), {key: 'a'})
+    fireEvent.keyDown(screen.getByTestId('vision-params-form-types-add'), {key: 'Enter'})
+    expect(onSubmit).not.toHaveBeenCalled()
   })
 
   it('explains a query without params', () => {

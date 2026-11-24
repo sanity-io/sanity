@@ -3,7 +3,16 @@ import {ClientError, type LiveEvent, type SanityClient} from '@sanity/client'
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
-import {act, cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
+import {
+  act,
+  cleanup,
+  createEvent,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import JSON5 from 'json5'
 import {
   Activity,
@@ -726,6 +735,29 @@ function limitError(reasonCode = 'default_budget_limit_reached'): ClientError {
   })
 }
 
+/** Writes one patch in the Mutate panel, dry runs it and applies it */
+async function applyPatchFromMutatePanel(
+  respondToRequestsBy: ReturnType<typeof renderRedesign>['respondToRequestsBy'],
+) {
+  respondToRequestsBy((_url, options) =>
+    options.query?.dryRun
+      ? {
+          results: [
+            {id: 'a', operation: 'update', document: {_id: 'a', _type: 'post', title: 'New'}},
+          ],
+        }
+      : {transactionId: 'tx-1', results: [{id: 'a', operation: 'update'}]},
+  )
+  fireEvent.click(screen.getByTestId('vision-sidebar-mutate'))
+  fireEvent.change(within(screen.getByTestId('vision-mutate-editor')).getByRole('textbox'), {
+    target: {value: '[{"patch": {"id": "a", "set": {"title": "New"}}}]'},
+  })
+  fireEvent.click(screen.getByTestId('vision-mutate-preview'))
+  await screen.findByTestId('vision-mutate-preview-result')
+  fireEvent.click(screen.getByTestId('vision-mutate-apply'))
+  await screen.findByTestId('vision-mutate-applied')
+}
+
 describe('VisionRedesign', () => {
   afterEach(() => {
     cleanup()
@@ -764,7 +796,7 @@ describe('VisionRedesign', () => {
     expect(text(screen.getByTestId('vision-result'))).toContain('vision.result.empty')
   })
 
-  it('fetches with Live and refetches until Stop live, with Fetch still fetching meanwhile', async () => {
+  it('turns Live on and off without fetching, with Fetch still fetching meanwhile', async () => {
     const {fetchCalls} = renderRedesign()
     const actions = screen.getByTestId('vision-query-actions')
     const live = within(actions).getByTestId('vision-auto-refetch')
@@ -777,25 +809,36 @@ describe('VisionRedesign', () => {
 
     typeQuery('{"now": now()}')
     await waitFor(() => expect(isDisabled(live)).toBe(false))
+    // Turning it on only starts listening: nothing is fetched and the result stays empty
     fireEvent.click(live)
-    await waitFor(() => expect(fetchCalls).toHaveLength(1))
     expect(text(live)).toBe('vision.live.stop')
     await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(true))
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchCalls).toHaveLength(0)
+    expect(text(screen.getByTestId('vision-result'))).toContain('vision.result.empty')
 
     // Fetch still fetches on demand, for results no document change touches, like now()
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
-    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
     expect(text(live)).toBe('vision.live.stop')
     fireEvent.click(document.getElementById('vision-response-history-tab') as HTMLElement)
-    await waitFor(() => expect(screen.getAllByTestId('vision-history-entry')).toHaveLength(2))
-    const entries = screen.getAllByTestId('vision-history-entry')
-    expect(text(entries[0])).toContain('vision.history.reason.manual')
-    expect(text(entries[1])).toContain('vision.history.reason.live-start')
+    await waitFor(() => expect(screen.getAllByTestId('vision-history-entry')).toHaveLength(1))
+    expect(text(screen.getByTestId('vision-history-entry'))).toContain(
+      'vision.history.reason.manual',
+    )
 
+    // Turning it off fetches nothing either
     fireEvent.click(live)
     expect(text(live)).toBe('vision.live.button')
     await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(false))
-    expect(fetchCalls).toHaveLength(2)
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchCalls).toHaveLength(1)
+    // On again, after a fetch, it still leaves the shown result alone
+    fireEvent.click(live)
+    await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(true))
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchCalls).toHaveLength(1)
+    expect(screen.getAllByTestId('vision-history-entry')).toHaveLength(1)
   })
 
   it('explains why Live is unavailable on an API version without sync tags', () => {
@@ -887,6 +930,43 @@ describe('VisionRedesign', () => {
     // The editor shows what the form wrote
     fireEvent.click(document.getElementById('vision-params-view-json') as HTMLElement)
     expect(JSON.parse(paramsEditor().value)).toEqual({limit: 3, type: 'author'})
+  })
+
+  it('fetches on Enter in a params form field, as the fetch shortcut does', async () => {
+    const {fetchCalls} = renderRedesign()
+    const formInput = (name: string) =>
+      screen.getByTestId(`vision-params-form-${name}`).querySelector('input') as HTMLInputElement
+    typeQuery('*[description match $description][0...$limit]')
+    fireEvent.click(document.getElementById('vision-params-view-form') as HTMLElement)
+
+    fireEvent.change(formInput('description'), {target: {value: 'electric'}})
+    // Enter that ends an IME composition belongs to the composition
+    fireEvent.keyDown(formInput('description'), {key: 'Enter', isComposing: true})
+    fireEvent.keyDown(formInput('description'), {key: 'Enter', keyCode: 229})
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchCalls).toHaveLength(0)
+
+    const enter = createEvent.keyDown(formInput('description'), {key: 'Enter', keyCode: 13})
+    fireEvent(formInput('description'), enter)
+    expect(enter.defaultPrevented).toBe(true)
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(fetchCalls[0].params).toEqual({description: 'electric'})
+
+    fireEvent.change(formInput('limit'), {target: {value: '5'}})
+    fireEvent.keyDown(formInput('limit'), {key: 'Enter', keyCode: 13})
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(fetchCalls[1].params).toEqual({description: 'electric', limit: 5})
+
+    // Mod+Enter stays the tool-wide shortcut, which fetches once
+    fireEvent.keyDown(formInput('limit'), {key: 'Enter', ctrlKey: true, which: 13, keyCode: 13})
+    await waitFor(() => expect(fetchCalls).toHaveLength(3))
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchCalls).toHaveLength(3)
+
+    fireEvent.click(document.getElementById('vision-response-history-tab') as HTMLElement)
+    const reasons = screen.getAllByTestId('vision-history-entry').map((entry) => text(entry))
+    expect(reasons).toHaveLength(3)
+    for (const reason of reasons) expect(reason).toContain('vision.history.reason.shortcut')
   })
 
   it('prefills the JSON params editor with params the query references, keeping existing values', async () => {
@@ -1222,30 +1302,18 @@ describe('VisionRedesign', () => {
     )
   })
 
-  it('applies mutations a dry run showed, to the tab’s dataset, and fetches the query again', async () => {
-    const {fetchCalls, documents, requestCalls, respondToRequestsBy} = renderRedesign()
+  it('applies mutations a dry run showed, to the tab’s dataset, without fetching the query again', async () => {
+    preferTreeView()
+    const {fetchCalls, documents, requestCalls, respondToRequestsBy, respondWith} = renderRedesign()
     typeQuery('*[_type == "post"]')
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    await waitFor(() => expect(text(screen.getByTestId('result-json'))).toContain('Variant title'))
 
+    // A refetch would show this; neither the dry run nor applying makes one
+    respondWith({result: [{title: 'New'}], ms: 3, syncTags: ['s1:abc']})
     documents.set('a', {_id: 'a', _type: 'post', title: 'Old'})
-    respondToRequestsBy((_url, options) =>
-      options.query?.dryRun
-        ? {
-            results: [
-              {id: 'a', operation: 'update', document: {_id: 'a', _type: 'post', title: 'New'}},
-            ],
-          }
-        : {transactionId: 'tx-1', results: [{id: 'a', operation: 'update'}]},
-    )
-    fireEvent.click(screen.getByTestId('vision-sidebar-mutate'))
-    fireEvent.change(within(screen.getByTestId('vision-mutate-editor')).getByRole('textbox'), {
-      target: {value: '[{"patch": {"id": "a", "set": {"title": "New"}}}]'},
-    })
-    fireEvent.click(screen.getByTestId('vision-mutate-preview'))
-    await screen.findByTestId('vision-mutate-preview-result')
-    fireEvent.click(screen.getByTestId('vision-mutate-apply'))
-    await screen.findByTestId('vision-mutate-applied')
+    await applyPatchFromMutatePanel(respondToRequestsBy)
 
     expect(
       requestCalls.map(({options}) => [options.url, options.method, options.query?.dryRun]),
@@ -1253,11 +1321,49 @@ describe('VisionRedesign', () => {
       ['/v2025-02-19/data/mutate/test', 'POST', 'true'],
       ['/v2025-02-19/data/mutate/test', 'POST', undefined],
     ])
-    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchCalls).toHaveLength(1)
+    expect(text(screen.getByTestId('result-json'))).toContain('Variant title')
+    expect(text(screen.getByTestId('result-json'))).not.toContain('New')
     fireEvent.click(document.getElementById('vision-response-history-tab') as HTMLElement)
-    expect(text(screen.getAllByTestId('vision-history-entry')[0])).toContain(
-      'vision.history.reason.mutation',
-    )
+    expect(screen.getAllByTestId('vision-history-entry')).toHaveLength(1)
+  })
+
+  it('leaves refetching after applied mutations to Live, through its listener', async () => {
+    preferTreeView()
+    const {
+      fetchCalls,
+      documents,
+      liveEvents,
+      liveSubscriptionCount,
+      respondToRequestsBy,
+      respondWith,
+    } = renderRedesign()
+    typeQuery('*[_type == "post"]')
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
+    await waitFor(() => expect(liveSubscriptionCount()).toBe(1))
+    expect(fetchCalls).toHaveLength(1)
+
+    respondWith({result: [{title: 'New'}], ms: 3, syncTags: ['s1:abc']})
+    documents.set('a', {_id: 'a', _type: 'post', title: 'Old'})
+    await applyPatchFromMutatePanel(respondToRequestsBy)
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchCalls).toHaveLength(1)
+    expect(text(screen.getByTestId('result-json'))).toContain('Variant title')
+
+    // The change reaches the listener, which refetches
+    act(() => {
+      liveEvents.next({type: 'message', id: 'tx-1', tags: ['s1:abc']})
+    })
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    await waitFor(() => expect(text(screen.getByTestId('result-json'))).toContain('New'))
+    fireEvent.click(document.getElementById('vision-response-history-tab') as HTMLElement)
+    const entries = screen.getAllByTestId('vision-history-entry')
+    expect(entries).toHaveLength(2)
+    expect(text(entries[0])).toContain('vision.history.reason.live')
+    expect(text(entries[1])).toContain('vision.history.reason.manual')
   })
 
   it('offers WebMCP tools while it is open, which read and run queries and open them in tabs', async () => {
@@ -3298,11 +3404,12 @@ describe('VisionRedesign', () => {
     preferTreeView()
     const {fetchCalls, liveEvents, liveSubscriptionCount, respondWith} = renderRedesign()
     typeQuery('*[_type == "author"]')
-    // Live fetches like Fetch, then follows the response's sync tags
-    fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
-
+    // Live follows the shown response's sync tags, without fetching on its own
+    fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
     await waitFor(() => expect(liveSubscriptionCount()).toBe(1))
+    expect(fetchCalls).toHaveLength(1)
     // The bottom bar's Stop live is what shows the tab is live; neither the tab nor the result
     // carries a badge for it
     expect(screen.queryByText('vision.live.active')).toBeNull()
@@ -3323,7 +3430,7 @@ describe('VisionRedesign', () => {
     const entries = screen.getAllByTestId('vision-history-entry')
     expect(text(entries[0])).toContain('vision.history.reason.live')
     expect(text(entries[0])).toContain('s1:abc')
-    expect(text(entries[1])).toContain('vision.history.reason.live-start')
+    expect(text(entries[1])).toContain('vision.history.reason.manual')
 
     // The next response's tags are the ones that count now
     act(() => {
@@ -3667,25 +3774,28 @@ describe('VisionRedesign', () => {
     expect(screen.queryByTestId('vision-prettify')).toBeNull()
   })
 
-  it('starts Live with a fetch of the current request, not the last fetched one', async () => {
-    const {fetchCalls} = renderRedesign()
+  it('starts Live without fetching, then refetches the last fetched request on a relevant change', async () => {
+    const {fetchCalls, liveEvents, liveSubscriptionCount} = renderRedesign()
     typeQuery('*[_type == "author"]')
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
 
-    // The dataset changes while refetching is off, so the runner still holds the old request
-    openRequestTab('options')
-    pickDataset('staging')
-    fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
-
-    await waitFor(() => expect(fetchCalls).toHaveLength(2))
-    expect(fetchCalls[1].config.dataset).toBe('staging')
-
-    // Like Fetch, starting it again fetches again
+    // Turning Live on, off and on again fetches nothing
     fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
     fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
-    await waitFor(() => expect(fetchCalls).toHaveLength(3))
+    fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
     await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(true))
+    await waitFor(() => expect(liveSubscriptionCount()).toBeGreaterThan(0))
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchCalls).toHaveLength(1)
+
+    // A relevant change replays the request that was fetched, query edits typed since included
+    typeQuery('*[_type == "book"]')
+    act(() => {
+      liveEvents.next({type: 'message', id: '1', tags: ['s1:abc']})
+    })
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(fetchCalls[1].query).toBe('*[_type == "author"]')
   })
 
   it('fetches a query loaded into a tab that refetches automatically', async () => {
@@ -3703,8 +3813,10 @@ describe('VisionRedesign', () => {
     }
     const {fetchCalls} = renderRedesign()
     typeQuery('*[_type == "author"]')
-    fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
+    await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(true))
 
     // A pasted URL loads a new query and pins its dataset in one go, and runs it as pasted; live
     // refetches replay the runner's last request, which the load clears, so it is not fetched
@@ -3825,12 +3937,13 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
     expect(fetchCalls[0].params).toEqual({id: 'fresh'})
 
-    // The same goes for turning automatic refetching on: the session starts from the params
-    // typed just before, not from the ones still waiting in the debounce
+    // The same goes for the fetch shortcut
     fireEvent.change(paramsEditor, {target: {value: '{"id": "fresher"}'}})
-    fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
+    fireEvent.keyDown(getQueryEditor(), {key: 'Enter', ctrlKey: true, which: 13, keyCode: 13})
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].params).toEqual({id: 'fresher'})
+    fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
+    await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(true))
 
     // And for the fetch an option change starts while refetching automatically: it carries the
     // params typed just before the change, not the ones the previous fetch went out with.
@@ -4740,7 +4853,7 @@ describe('VisionRedesign adoption telemetry', () => {
     editorMocks.visibleColumns = undefined
   })
 
-  it('records a fetch, a shortcut and Live once each, and params only when the run has them', async () => {
+  it('records a fetch, a shortcut and starting Live once each, and params only when the run has them', async () => {
     const {fetchCalls, setPerspective} = renderRedesign()
     expect(logged(VisionTabsChanged.name)).toEqual([
       [VisionTabsChanged, {count: 1, action: 'open'}],
@@ -4766,8 +4879,10 @@ describe('VisionRedesign adoption telemetry', () => {
     ])
     expect(logged(VisionParamsUsed.name)).toEqual([[VisionParamsUsed, {mode: 'fetch'}]])
 
+    // Starting Live counts as a listen run, though it fetches nothing
     fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
-    await waitFor(() => expect(fetchCalls).toHaveLength(3))
+    await waitFor(() => expect(logged(VisionQueryRun.name)).toHaveLength(3))
+    expect(fetchCalls).toHaveLength(2)
     expect(logged(VisionQueryRun.name).at(-1)).toEqual([
       VisionQueryRun,
       {mode: 'listen', trigger: 'button', hasParams: true},

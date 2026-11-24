@@ -61,22 +61,19 @@ import {useQueryTabShown, useTabElementId} from './queryTabShown'
 
 const MIN_PANE_SIZE = {columns: 280, stacked: 160}
 
-/** Fetch, the fetch shortcut, and starting Live. Reloads and setting changes are not query runs. */
+/** Fetch and the fetch shortcut. Reloads and setting changes are not query runs. */
 function recordedQueryRun(reason: FetchReason, hasParams: boolean): VisionQueryRunData | null {
   switch (reason.type) {
     case 'manual':
       return {mode: 'fetch', trigger: 'button', hasParams}
     case 'shortcut':
       return {mode: 'fetch', trigger: 'shortcut', hasParams}
-    case 'live-start':
-      return {mode: 'listen', trigger: 'button', hasParams}
     case 'options':
     case 'load':
     case 'resume':
     case 'generated':
     case 'paste':
     case 'link':
-    case 'mutation':
     case 'live':
       return null
     default: {
@@ -281,9 +278,6 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
     [buildCurrentRequest, layout, runnerRef, telemetry],
   )
   const cancel = useCallback(() => runnerRef.send({type: 'cancel'}), [runnerRef])
-  const refetchAfterMutations = useCallback(() => {
-    run({type: 'mutation'})
-  }, [run])
   const setOptions = useCallback(
     (options: Partial<VisionTabOptions>) =>
       actorRef.send({type: 'tab.setOptions', id: tab.id, options}),
@@ -305,16 +299,22 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
     },
     [resolved.dataset, setOptions, tab.options, telemetry, workspaceDataset],
   )
-  // Live is an alternative to Fetch: it fetches the current request (live refetches replay the
-  // runner's last one, which may date from before the options or the query changed), and then
-  // refetches automatically until stopped
+  // Live only starts listening: the shown result stays until a relevant change refetches the
+  // runner's last request, or until Fetch. Stopping it fetches nothing either
   const toggleAutoRefetch = useCallback(() => {
     if (tab.autoRefetch) {
       actorRef.send({type: 'tab.setAutoRefetch', id: tab.id, autoRefetch: false})
-    } else if (run({type: 'live-start'})) {
-      actorRef.send({type: 'tab.setAutoRefetch', id: tab.id, autoRefetch: true})
+      return
     }
-  }, [actorRef, run, tab.autoRefetch, tab.id])
+    const current = buildCurrentRequest()
+    if (!current) return
+    telemetry.queryRun({
+      mode: 'listen',
+      trigger: 'button',
+      hasParams: Object.keys(current.params).length > 0,
+    })
+    actorRef.send({type: 'tab.setAutoRefetch', id: tab.id, autoRefetch: true})
+  }, [actorRef, buildCurrentRequest, tab.autoRefetch, tab.id, telemetry])
 
   // Formats a query to wrap at the width the editor has, so it needs no sideways scrolling.
   // Formatting changes the line count, and with it the line-number gutter's width and whether a
@@ -634,6 +634,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
       onFormatQuery={() => void prettify()}
       onQueryChange={setQuery}
       onRun={() => run({type: 'manual'})}
+      onParamsSubmit={() => run({type: 'shortcut'})}
       onToggleAutoRefetch={toggleAutoRefetch}
       params={params}
       paramsEditorRef={paramsEditorRef}
@@ -644,13 +645,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
     />
   )
   const responsePanel = (
-    <ResponsePanel
-      onMutationsApplied={refetchAfterMutations}
-      request={request}
-      resolved={resolved}
-      runnerRef={runnerRef}
-      tab={tab}
-    />
+    <ResponsePanel request={request} resolved={resolved} runnerRef={runnerRef} tab={tab} />
   )
 
   const panelProps = {

@@ -32,16 +32,12 @@ function describeFetchReason(reason: FetchReason, t: TFunction<'vision'>): strin
       return t('vision.history.reason.load')
     case 'resume':
       return t('vision.history.reason.resume')
-    case 'live-start':
-      return t('vision.history.reason.live-start')
     case 'generated':
       return t('vision.history.reason.generated')
     case 'paste':
       return t('vision.history.reason.paste')
     case 'link':
       return t('vision.history.reason.link')
-    case 'mutation':
-      return t('vision.history.reason.mutation')
     case 'live':
       return reason.matchedTags.length > 0
         ? t('vision.history.reason.live')

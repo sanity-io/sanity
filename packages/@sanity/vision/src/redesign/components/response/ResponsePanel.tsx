@@ -56,12 +56,10 @@ export interface ResponsePanelProps {
   resolved: ResolvedRequest
   /** What the tab would fetch right now; tells whether the shown result is for the current query */
   request: QueryRequest | null
-  /** Mutations were applied from the Mutate panel, and the result may have changed */
-  onMutationsApplied: () => void
 }
 
 export function ResponsePanel(props: ResponsePanelProps) {
-  const {tab, runnerRef, resolved, request, onMutationsApplied} = props
+  const {tab, runnerRef, resolved, request} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const tabElementId = useTabElementId()
   const resultContentId = tabElementId('vision-result-content')
@@ -313,7 +311,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
             dataset={resolved.dataset}
             hiddenFields={hiddenDiffFields}
             mutate={mutate}
-            onApplied={onMutationsApplied}
             result={hasResult ? result : undefined}
           />
         )
