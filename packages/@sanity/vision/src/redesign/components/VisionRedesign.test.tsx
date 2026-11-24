@@ -2317,7 +2317,7 @@ describe('VisionRedesign', () => {
     expect(screen.queryByTestId('vision-option-api-version-option-vX')).toBeNull()
   })
 
-  it('lists the dataset chip before the API version, with fetch actions outside the chip strip', () => {
+  it('orders the chips like the Options fields, API version first, with fetch actions outside the chip strip', () => {
     const initial = createInitialState(DEFAULTS)
     const tab = createTab(initial.settings, {
       id: 'overrides',
@@ -2333,18 +2333,34 @@ describe('VisionRedesign', () => {
     saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'overrides'})
     renderRedesign({...BASE_PERSPECTIVE, selectedVariantNames: ['french']})
 
-    // Same order as the Options panel: dataset, API version, perspective, variant. The strip is
-    // what scrolls when the bar is narrow; Live fetch, Fetch and the menu stay after it.
+    // The strip is what scrolls when the bar is narrow; Live fetch, Fetch and the menu stay after it
     const actions = screen.getByTestId('vision-query-actions')
     const chips = within(actions).getByTestId('vision-query-action-chips')
-    expect(
-      [...chips.querySelectorAll('button')].map((button) => button.getAttribute('data-testid')),
-    ).toEqual([
-      'vision-override-dataset-button',
+    const chipOrder = [...chips.querySelectorAll('button')].map((button) =>
+      button.getAttribute('data-testid'),
+    )
+    expect(chipOrder).toEqual([
       'vision-api-version-button',
+      'vision-override-dataset-button',
       'vision-override-perspective-button',
       'vision-override-variant-button',
     ])
+
+    // The fields each chip reveals, in the order the Options panel lists them
+    openRequestTab('options')
+    const fieldOfChip: Record<string, string> = {
+      'vision-api-version-button': 'vision-option-api-version-select',
+      'vision-override-dataset-button': 'vision-option-dataset-select',
+      'vision-override-perspective-button': 'vision-option-perspective-select',
+      'vision-override-variant-button': 'vision-option-variant-select',
+    }
+    const chipFields = new Set(Object.values(fieldOfChip))
+    const fieldOrder = [
+      ...screen.getByTestId('vision-options-grid').querySelectorAll<HTMLElement>('[data-testid]'),
+    ]
+      .map((element) => element.dataset.testid ?? '')
+      .filter((testId) => chipFields.has(testId))
+    expect(chipOrder.map((testId) => fieldOfChip[testId ?? ''])).toEqual(fieldOrder)
     expect(text(within(chips).getByTestId('vision-api-version-button'))).toBe(
       'vision.api-version.button-cdn:v2025-02-19',
     )

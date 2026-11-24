@@ -601,9 +601,12 @@ export function RequestPanel(props: RequestPanelProps) {
             justifyContent="flex-start"
             minWidth="0"
           >
-            <RequestOverrideChips onReveal={revealOption} options={tab.options} resolved={resolved}>
-              <ApiVersionButton onReveal={revealOption} resolved={resolved} />
-            </RequestOverrideChips>
+            <RequestOverrideChips
+              apiVersionButton={<ApiVersionButton onReveal={revealOption} resolved={resolved} />}
+              onReveal={revealOption}
+              options={tab.options}
+              resolved={resolved}
+            />
           </Flex>
           <LiveButton
             active={tab.autoRefetch}
