@@ -10,7 +10,10 @@ import * as motion from './CollapsiblePanel.module.css'
 import * as styles from './redesign.module.css'
 import {useTabElementId} from './tabs/queryTabShown'
 
-/** Height of the tab header, which is all that remains of a collapsed panel */
+/**
+ * Height of the tab header, which is all that remains of a collapsed panel. The tool's root sets
+ * it as `--vision-bottom-bar-height`, the height of every bar along the bottom of the tool.
+ */
 export const PANEL_HEADER_HEIGHT = 35
 
 export interface CollapsiblePanelTab {
@@ -94,9 +97,8 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
     <Flex data-testid={`${idPrefix}-panel`} flexDirection="column" height="100%" minHeight="0">
       <Flex
         alignItems="center"
-        flexShrink={0}
+        className={styles.panelHeader}
         gap={2}
-        height={`${PANEL_HEADER_HEIGHT}px`}
         justifyContent="space-between"
         paddingX={2}
       >
