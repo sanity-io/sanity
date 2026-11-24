@@ -350,6 +350,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
           // The shown result stays while a newer fetch is in flight, and dims if that takes long
           data-refreshing={hasResult && status === 'fetching'}
           data-testid="vision-result"
+          display="flex"
           tone={status === 'failed' ? 'critical' : 'default'}
         >
           <div

@@ -97,3 +97,18 @@ describe('CollapsiblePanel', () => {
     expect(screen.getByTestId('history-content')).toBeTruthy()
   })
 })
+
+describe('CollapsiblePanel layout', () => {
+  // The body's `display: flex` comes from the tab panel's own `display` prop, not from the
+  // redesign's stylesheet: @sanity/ui's Box writes `.x:not([hidden]) {display: block}`, as
+  // specific as a doubled class, and its runtime stylesheet follows the linked one in a built
+  // studio, so a stylesheet rule tying with it lost there and the panel's scroll container, and
+  // a graph filling it, got no height. jsdom resolves the runtime stylesheet and no CSS module,
+  // so this asserts the prop's rule alone.
+  it('stacks the toolbar over the scroll container through its own display rule', () => {
+    render(<Harness />)
+    const panel = screen.getByTestId('response-content').closest('[role="tabpanel"]')
+    expect(panel).not.toBeNull()
+    expect(getComputedStyle(panel!).display).toBe('flex')
+  })
+})

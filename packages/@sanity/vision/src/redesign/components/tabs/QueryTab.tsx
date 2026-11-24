@@ -692,9 +692,10 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
         </Flex>
         <Box
           aria-labelledby={tabElementId('vision-mobile-request-tab')}
-          className={cx(styles.paneFill, mobilePane !== 'request' && styles.hiddenPane)}
+          className={styles.paneFill}
           flexBasis="0%"
           flexGrow={1}
+          hidden={mobilePane !== 'request'}
           id={tabElementId('vision-mobile-request-pane')}
           role="tabpanel"
         >
@@ -702,9 +703,10 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
         </Box>
         <Box
           aria-labelledby={tabElementId('vision-mobile-response-tab')}
-          className={cx(styles.paneFill, mobilePane !== 'response' && styles.hiddenPane)}
+          className={styles.paneFill}
           flexBasis="0%"
           flexGrow={1}
+          hidden={mobilePane !== 'response'}
           id={tabElementId('vision-mobile-response-pane')}
           role="tabpanel"
         >
