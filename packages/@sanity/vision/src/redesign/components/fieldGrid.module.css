@@ -6,6 +6,16 @@
   grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
 }
 
+/*
+ * auto-fit collapses the tracks a lone field does not land in, so that field becomes the whole
+ * row (a type autocomplete then spans the panel). Keep the empty tracks when there is one field,
+ * so it stays one column of the same grid — including on a wide panel, and full width only when
+ * the panel itself fits a single column.
+ */
+.fieldGrid:has(> :only-child) {
+  grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr));
+}
+
 /* A long value (a list item, an object's JSON) scrolls inside its input instead of widening the column */
 .fieldGrid > * {
   min-width: 0;
