@@ -19,6 +19,19 @@ export function sortSyncTags(tags: readonly SyncTag[]): SyncTag[] {
   return tags.toSorted(tagCollator.compare)
 }
 
+/** The forms of the tag that covers the whole dataset, once any `s1:` prefix is removed */
+const WILDCARD_SYNC_TAGS = new Set(['*', 'ALL'])
+
+/**
+ * Whether a sync tag covers the whole dataset, so that any change in it invalidates the response:
+ * `*` or `ALL`, with or without the `s1:` prefix. Pass a tag as the response carried it or as the
+ * lookup shows it; a hashed tag is a wildcard only once it is resolved to `*`.
+ */
+export function isWildcardSyncTag(tag: string): boolean {
+  const bare = tag.trim().replace(/^s\d+:/, '')
+  return WILDCARD_SYNC_TAGS.has(bare.toUpperCase())
+}
+
 /** Sync tags shared by a live event and the last query response, in the order the event lists them */
 export function getMatchingSyncTags(
   eventTags: readonly SyncTag[],

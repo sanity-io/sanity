@@ -2,6 +2,7 @@ import {readFileSync} from 'node:fs'
 import {createRequire} from 'node:module'
 import {dirname, join} from 'node:path'
 
+import {type SyncTag} from '@sanity/client'
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
@@ -491,5 +492,73 @@ describe('ResponseMetaTab sync tag lookup', () => {
     fireEvent.click(toggle())
     expect(screen.getByRole('status').textContent).toBe('vision.response.sync-tags.resolving')
     expect(failing.calls()).toBe(2)
+  })
+})
+
+describe('ResponseMetaTab wildcard sync tags', () => {
+  afterEach(() => cleanup())
+
+  const badgeOf = (text: string) => {
+    const badge = within(screen.getByTestId('vision-meta-sync-tags'))
+      .getByText(text)
+      .closest('[data-ui="Badge"]')
+    if (!(badge instanceof HTMLElement)) throw new Error(`No badge for ${text}`)
+    return badge
+  }
+
+  /** The tone ui5 gives a badge, as the class that styles it */
+  const toneOf = (badge: HTMLElement) =>
+    [...badge.classList].find((name) => name.startsWith('sui-tone-'))
+
+  async function hover(element: HTMLElement) {
+    await act(async () => {
+      fireEvent.mouseEnter(element)
+      await new Promise((resolve) => setTimeout(resolve, 600))
+    })
+  }
+
+  it.each(['*', 's1:*', 'ALL', 's1:ALL'])(
+    'shows the %s tag as critical, explaining that any change refetches',
+    async (tag) => {
+      await renderTab({meta: {...meta(cdnMiss), syncTags: [tag as SyncTag, 's1:book']}})
+      expect(toneOf(badgeOf(tag))).toBe('sui-tone-critical')
+      expect(toneOf(badgeOf('s1:book'))).toBe('sui-tone-neutral')
+      expect(badgeOf(tag).getAttribute('title')).toBeNull()
+
+      const openTooltips = () =>
+        screen
+          .queryAllByText('vision.response.sync-tags.wildcard')
+          .filter((text) => text.closest('[style*="display: none"]') === null)
+      expect(openTooltips()).toHaveLength(0)
+      await hover(badgeOf(tag))
+      expect(openTooltips()).toHaveLength(1)
+    },
+  )
+
+  it('shows a tag the lookup resolved to the whole dataset as critical, and the others as positive', async () => {
+    const {client, release} = lookupClient()
+    await renderTab({
+      meta: {...meta(cdnMiss), syncTags: ['s1:any', 's1:book']},
+      syncTagLookup: {client, result: [{_type: 'book'}]},
+    })
+    expect(toneOf(badgeOf('s1:any'))).toBe('sui-tone-neutral')
+
+    fireEvent.click(screen.getByRole('button', {name: 'vision.response.sync-tags'}))
+    await release()
+    expect(toneOf(badgeOf('*'))).toBe('sui-tone-critical')
+    expect(toneOf(badgeOf('_type == "book"'))).toBe('sui-tone-positive')
+
+    await hover(badgeOf('*'))
+    expect(
+      screen
+        .getAllByText('vision.response.sync-tags.wildcard')
+        .filter((text) => text.closest('[style*="display: none"]') === null),
+    ).toHaveLength(1)
+  })
+
+  it('gives a specific tag no wildcard tooltip', async () => {
+    await renderTab({meta: {...meta(cdnMiss), syncTags: ['s1:book']}})
+    await hover(badgeOf('s1:book'))
+    expect(screen.queryByText('vision.response.sync-tags.wildcard')).toBeNull()
   })
 })
