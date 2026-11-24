@@ -49,7 +49,7 @@ export function SourceMapTab({meta, dataset, view, id, copy}: SourceMapTabProps)
   if (documents) {
     return (
       <div className={styles.panelFillView} data-testid="vision-source-map">
-        <DocumentListView datasetName={dataset} flush id={id} parsed={documents} />
+        <DocumentListView datasetName={dataset} flush id={id} resolvePreviews parsed={documents} />
       </div>
     )
   }
