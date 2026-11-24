@@ -289,7 +289,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
       if (options.datasetMode !== undefined || options.dataset !== undefined) {
         const mode = options.datasetMode ?? tab.options.datasetMode
         const dataset =
-          mode === 'workspace' ? workspaceDataset : (options.dataset ?? tab.options.dataset)
+          mode === 'auto' ? workspaceDataset : (options.dataset ?? tab.options.dataset)
         if (dataset !== resolved.dataset) telemetry.datasetChanged()
       }
       if ('perspective' in options && options.perspective !== tab.options.perspective) {

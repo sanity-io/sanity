@@ -133,7 +133,7 @@ function readStoredState(storage: Storage, projectId: string): string | null {
 export function resolveDefaultSettings(defaults: VisionStorageDefaults): VisionSettings {
   const apiVersion = prefixApiVersion(defaults.defaultApiVersion)
   return {
-    datasetMode: 'workspace',
+    datasetMode: 'auto',
     dataset: resolveWorkspaceDataset(defaults),
     apiVersion: validateApiVersion(apiVersion) ? apiVersion : DEFAULT_API_VERSION,
     perspective: 'global',
@@ -194,10 +194,33 @@ function sanitizePerspective(value: unknown): VisionPerspective {
 }
 
 /**
+ * The stored dataset mode, or `undefined` to use the fallback. A dataset pinned before the pin
+ * button gave way to Auto and overrides is an override of that dataset, and one that followed
+ * the workspace is Auto; a pin of a dataset the project no longer has reads as Auto too. State
+ * saved before `datasetMode` existed always stored a dataset: the workspace's was the default
+ * back then, so it reads as Auto, any other one was chosen on purpose and is an override.
+ */
+function sanitizeDatasetMode(
+  value: Record<string, unknown>,
+  dataset: string | undefined,
+  defaults: VisionStorageDefaults,
+): VisionDatasetMode | undefined {
+  switch (value.datasetMode) {
+    case 'auto':
+    case 'workspace':
+      return 'auto'
+    case 'override':
+    case 'pinned':
+      return dataset === undefined ? 'auto' : 'override'
+    default:
+      if (dataset === undefined || 'datasetMode' in value) return undefined
+      return dataset === resolveWorkspaceDataset(defaults) ? 'auto' : 'override'
+  }
+}
+
+/**
  * The options stored for a tab or as the settings, each field falling back to `fallback` when
- * missing or unusable. State saved before `datasetMode` existed always stored a dataset: the
- * workspace's was the default back then, so it keeps following the workspace, any other one
- * was chosen on purpose and stays pinned.
+ * missing or unusable
  */
 function sanitizeOptions(
   value: Record<string, unknown>,
@@ -208,17 +231,14 @@ function sanitizeOptions(
     typeof value.dataset === 'string' && defaults.datasets.includes(value.dataset)
       ? value.dataset
       : undefined
-  let legacyMode: VisionDatasetMode | undefined
-  if (dataset !== undefined && !('datasetMode' in value)) {
-    legacyMode = dataset === resolveWorkspaceDataset(defaults) ? 'workspace' : 'pinned'
-  }
+  const datasetMode = sanitizeDatasetMode(value, dataset, defaults) ?? fallback.datasetMode
   const apiVersion = typeof value.apiVersion === 'string' ? value.apiVersion : fallback.apiVersion
   return {
-    datasetMode:
-      value.datasetMode === 'pinned' || value.datasetMode === 'workspace'
-        ? value.datasetMode
-        : (legacyMode ?? fallback.datasetMode),
-    dataset: dataset ?? fallback.dataset,
+    datasetMode,
+    // On `auto` the stored dataset only seeded the pin button, which is gone: it reads as the
+    // workspace's, so a later override starts from what the tab queried
+    dataset:
+      datasetMode === 'auto' ? resolveWorkspaceDataset(defaults) : (dataset ?? fallback.dataset),
     apiVersion: validateApiVersion(apiVersion) ? apiVersion : fallback.apiVersion,
     perspective:
       'perspective' in value ? sanitizePerspective(value.perspective) : fallback.perspective,

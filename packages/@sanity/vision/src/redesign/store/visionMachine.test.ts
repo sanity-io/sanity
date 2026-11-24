@@ -157,7 +157,7 @@ describe('visionMachine', () => {
     harness.actor.send({
       type: 'tab.setOptions',
       id: tab.id,
-      options: {datasetMode: 'pinned', dataset: 'staging'},
+      options: {datasetMode: 'override', dataset: 'staging'},
     })
 
     expect(harness.tabs()[0]).toMatchObject({
@@ -165,7 +165,7 @@ describe('visionMachine', () => {
       rawParams: '{"a": 1}',
       autoRefetch: true,
       options: {
-        datasetMode: 'pinned',
+        datasetMode: 'override',
         dataset: 'staging',
         perspective: 'global',
         variant: 'global',

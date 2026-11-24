@@ -1166,7 +1166,7 @@ describe('VisionRedesign', () => {
     expect(JSON.parse(getStoredState().tabs[1].rawParams)).toEqual({limit: 3})
     expect(getStoredState().tabs[1].options).toMatchObject({
       apiVersion: 'v2025-02-19',
-      datasetMode: 'pinned',
+      datasetMode: 'override',
       dataset: 'test',
       perspective: 'drafts',
     })
@@ -2064,7 +2064,7 @@ describe('VisionRedesign', () => {
       id: 'overrides',
       query: '*',
       options: {
-        datasetMode: 'pinned',
+        datasetMode: 'override',
         dataset: 'staging',
         perspective: 'raw',
         variant: 'none',
@@ -3568,7 +3568,7 @@ describe('VisionRedesign', () => {
       id: 'restored',
       title: 'Restored',
       query: '*[_type == "book"]',
-      options: {datasetMode: 'pinned', dataset: 'staging', perspective: 'drafts'},
+      options: {datasetMode: 'override', dataset: 'staging', perspective: 'drafts'},
     })
     saveVisionState(PROJECT_ID, {
       ...initial,
@@ -4473,7 +4473,7 @@ describe('VisionRedesign', () => {
     expect(fetchCalls[0].config.dataset).toBe('staging')
     await waitFor(() =>
       expect(getStoredState().tabs[0].options).toMatchObject({
-        datasetMode: 'pinned',
+        datasetMode: 'override',
         dataset: 'staging',
       }),
     )
@@ -4490,13 +4490,13 @@ describe('VisionRedesign', () => {
     fireEvent.click(screen.getByTestId('vision-option-dataset-pin'))
     await waitFor(() =>
       expect(getStoredState().tabs[0].options).toMatchObject({
-        datasetMode: 'pinned',
+        datasetMode: 'override',
         dataset: 'test',
       }),
     )
     fireEvent.click(screen.getByTestId('vision-option-dataset-follow'))
     await waitFor(() =>
-      expect(getStoredState().tabs[0].options).toMatchObject({datasetMode: 'workspace'}),
+      expect(getStoredState().tabs[0].options).toMatchObject({datasetMode: 'auto'}),
     )
   })
 
@@ -4581,7 +4581,7 @@ describe('VisionRedesign', () => {
     // The URL names its dataset, so the tab stops following the workspace's
     await waitFor(() =>
       expect(getStoredState().tabs[0].options).toMatchObject({
-        datasetMode: 'pinned',
+        datasetMode: 'override',
         dataset: 'staging',
       }),
     )
@@ -4634,7 +4634,7 @@ describe('VisionRedesign', () => {
     await waitFor(
       () =>
         expect(getStoredState().tabs[0].options).toEqual({
-          datasetMode: 'pinned',
+          datasetMode: 'override',
           dataset: 'staging',
           apiVersion: 'v2021-10-21',
           perspective: 'published',
@@ -4757,7 +4757,7 @@ describe('VisionRedesign', () => {
     openRequestTab('options')
     expect(selectValue('vision-option-dataset-select')).toBe('test')
     await waitFor(() =>
-      expect(getStoredState().tabs[0].options).toMatchObject({datasetMode: 'workspace'}),
+      expect(getStoredState().tabs[0].options).toMatchObject({datasetMode: 'auto'}),
     )
   })
 

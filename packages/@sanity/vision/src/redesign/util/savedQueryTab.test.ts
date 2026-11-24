@@ -55,7 +55,7 @@ describe('savedQueryTab', () => {
 
     expect(
       matches(
-        {...tab, options: {...tab.options, datasetMode: 'pinned', dataset: 'staging'}},
+        {...tab, options: {...tab.options, datasetMode: 'override', dataset: 'staging'}},
         saved,
       ),
     ).toBe(false)
@@ -136,7 +136,7 @@ describe('savedQueryTab', () => {
       options: {
         includeSourceMap: false,
         useCdn: false,
-        datasetMode: 'pinned',
+        datasetMode: 'override',
         dataset: 'production',
         apiVersion: 'v2025-02-19',
         perspective: 'drafts',
