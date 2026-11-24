@@ -18,8 +18,10 @@ try {
 }
 
 /**
- * @hidden
- * @beta
+ * The version of the `sanity` package the Studio is running. Use it to display or report which Studio
+ * version is in use.
+ *
+ * @public
  */
 export const SANITY_VERSION =
   buildVersion || (typeof __PKG_VERSION__ === 'string' ? __PKG_VERSION__ : `${version}-dev`)
