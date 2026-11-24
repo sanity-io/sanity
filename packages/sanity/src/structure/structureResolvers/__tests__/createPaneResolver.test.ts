@@ -60,4 +60,19 @@ describe('createResolvedPaneNodeStream async child errors', () => {
     await expect(resolution).rejects.toBeInstanceOf(PaneResolutionError)
     await expect(resolution).rejects.toMatchObject({cause: childError})
   })
+
+  it('leaves a failed dynamic import of an async child resolver unwrapped', async () => {
+    const importError = new TypeError(
+      'Failed to fetch dynamically imported module: https://example.com/chunk.js',
+    )
+    const resolution = lastValueFrom(
+      createResolvedPaneNodeStream({
+        routerPanesStream: observableOf([[{id: 'item'}]]),
+        rootPaneNode: createRootPane(() => Promise.reject(importError)),
+        structureContext,
+      }),
+    )
+
+    await expect(resolution).rejects.toBe(importError)
+  })
 })

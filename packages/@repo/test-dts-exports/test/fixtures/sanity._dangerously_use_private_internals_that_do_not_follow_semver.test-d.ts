@@ -423,6 +423,7 @@ import type {
   isFieldChange,
   isGoingToUnpublish,
   isGroupChange,
+  isImportError,
   isInvalidSessionError,
   IsLastPaneProvider,
   isNetworkError,
@@ -2172,6 +2173,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('isGroupChange', () => {
     expectTypeOf<typeof isGroupChange>().toBeFunction()
+  })
+  test('isImportError', () => {
+    expectTypeOf<typeof isImportError>().toBeFunction()
   })
   test('isInvalidSessionError', () => {
     expectTypeOf<typeof isInvalidSessionError>().toBeFunction()

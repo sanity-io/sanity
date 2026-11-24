@@ -147,14 +147,12 @@ describe('StructureToolBoundary', {timeout: 20_000}, () => {
     }
     render(studioAtRouterState(intentState))
     expect(await screen.findByText(STRUCTURE_ERROR_HEADING)).toBeVisible()
-    await waitFor(() => expect(attempts).toBeGreaterThan(0))
     const attemptsAfterError = attempts
 
-    await act(async () => {
-      await Promise.resolve()
-    })
+    await act(() => new Promise((resolve) => setTimeout(resolve, 0)))
 
     expect(attempts).toBe(attemptsAfterError)
+    expect(onNavigate).not.toHaveBeenCalled()
     expect(screen.getByText(STRUCTURE_ERROR_HEADING)).toBeVisible()
   })
 })

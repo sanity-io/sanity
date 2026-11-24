@@ -913,6 +913,7 @@ import type {
   isGroupChange,
   isImage,
   isImageSchemaType,
+  isImportError,
   isIndexSegment,
   isIndexTuple,
   isInvalidSessionError,
@@ -4636,6 +4637,9 @@ describe('sanity', () => {
   })
   test('isImageSchemaType', () => {
     expectTypeOf<typeof isImageSchemaType>().toBeFunction()
+  })
+  test('isImportError', () => {
+    expectTypeOf<typeof isImportError>().toBeFunction()
   })
   test('isIndexSegment', () => {
     expectTypeOf<typeof isIndexSegment>().toBeFunction()

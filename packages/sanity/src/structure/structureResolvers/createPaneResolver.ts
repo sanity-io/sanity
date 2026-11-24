@@ -1,6 +1,6 @@
 import {from, isObservable, type Observable, of as observableOf, throwError} from 'rxjs'
 import {catchError, publishReplay, refCount, switchMap} from 'rxjs/operators'
-import {isRecord} from 'sanity'
+import {isImportError, isRecord} from 'sanity'
 
 import {type PaneNode, type RouterPaneSiblingContext, type UnresolvedPaneNode} from '../types'
 import {PaneResolutionError} from './PaneResolutionError'
@@ -52,7 +52,13 @@ const rethrowWithPaneResolutionErrors: PaneResolverMiddleware =
 export function withAsyncPaneResolutionErrors(resolvePane: PaneResolver): PaneResolver {
   return (unresolvedPane, context, flatIndex) =>
     resolvePane(unresolvedPane, context, flatIndex).pipe(
-      catchError((error) => throwError(() => toPaneResolutionError(error, context))),
+      catchError((error) =>
+        throwError(() =>
+          error instanceof Error && isImportError(error)
+            ? error
+            : toPaneResolutionError(error, context),
+        ),
+      ),
     )
 }
 

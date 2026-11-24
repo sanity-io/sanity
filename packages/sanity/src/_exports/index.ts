@@ -411,6 +411,7 @@ export {
   type DocumentGroupInventoryReferencePreviewLinkProps,
 } from '../core/documentGroupInventory/types'
 export {isDev, isProd} from '../core/environment'
+export {isImportError} from '../core/error/isImportError'
 export {FeedbackDialog, type FeedbackDialogProps} from '../core/feedback/components/FeedbackDialog'
 export {
   StudioFeedbackDialog,
