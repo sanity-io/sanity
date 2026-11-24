@@ -7,6 +7,7 @@ import {useSavedQueries} from '../../hooks/useSavedQueries'
 import {useVisionTelemetry} from '../../telemetry/useVisionTelemetry'
 import {type VisionConfig} from '../../types'
 import {useContentSize} from '../hooks/useContentSize'
+import {type VisionTab} from '../store/types'
 import {
   createPendingEdits,
   PendingEditsContext,
@@ -73,6 +74,21 @@ function QueryTabActivity(props: QueryTabProps & {shown: boolean}) {
 }
 const QueryTabActivityMemo = memo(QueryTabActivity)
 
+/**
+ * The open tabs in the order they were opened, whatever order the tab bar shows them in. React
+ * moves the DOM nodes of keyed siblings whose order changes, and a moved tab loses its scroll
+ * positions and restarts its transitions, so dragging a tab in the bar must not reorder the panes
+ */
+function useOpenOrder(tabs: VisionTab[]): VisionTab[] {
+  const [ids, setIds] = useState(() => tabs.map((tab) => tab.id))
+  const byId = new Map(tabs.map((tab) => [tab.id, tab]))
+  const kept = ids.filter((id) => byId.has(id))
+  const known = new Set(kept)
+  const next = kept.concat(tabs.filter((tab) => !known.has(tab.id)).map((tab) => tab.id))
+  if (next.length !== ids.length || next.some((id, index) => id !== ids[index])) setIds(next)
+  return next.flatMap((id) => byId.get(id) ?? [])
+}
+
 export interface VisionRedesignProps {
   config: VisionConfig
   datasets: string[]
@@ -106,6 +122,7 @@ export function VisionRedesign(props: VisionRedesignProps) {
 
   const activeTab = useSelector(actorRef, selectActiveTab)
   const tabs = useSelector(actorRef, (snapshot) => snapshot.context.tabs)
+  const paneTabs = useOpenOrder(tabs)
   // The tab shown when the tool opens lifts its panels in; tabs shown later appear in place
   const [firstTabId] = useState(activeTab.id)
   const tabCount = tabs.length
@@ -166,7 +183,7 @@ export function VisionRedesign(props: VisionRedesignProps) {
                             rather than remounting it: a tab shown again keeps its elements and
                             its state, and its editors their selection, undo history and scroll
                           */}
-                          {tabs.map((tab) => (
+                          {paneTabs.map((tab) => (
                             <QueryTabActivityMemo
                               animateFirstShow={tab.id === firstTabId}
                               key={tab.id}
