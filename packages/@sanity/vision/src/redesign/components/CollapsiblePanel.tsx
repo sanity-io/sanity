@@ -23,8 +23,8 @@ export interface CollapsiblePanelTab {
   /** Rendered after the label, for instance a count or a warning icon */
   icon?: ReactNode
   /**
-   * Draws the tab like a Content Releases filter chip. The Lint tab uses `critical` once the
-   * query has findings, so the count in its label reads as a soft red pill in the tab row.
+   * Draws the tab like a Content Releases filter chip. The Lint tab uses the tone of the worst
+   * finding once the query has any, so the count in its label reads as a soft pill in the tab row.
    */
   tone?: ButtonTone
   /** Softens `tone`, the way the releases Errors chip does */

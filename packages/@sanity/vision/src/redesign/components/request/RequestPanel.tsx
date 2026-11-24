@@ -51,7 +51,7 @@ import {
 } from '../../util/groqEditorContext'
 import {createGroqFunctionExtensions} from '../../util/groqFunctionEditor'
 import {parseGroq, readQueryFunctions, type TextRange} from '../../util/groqFunctions'
-import {createGroqLintExtensions, type QueryLintFinding} from '../../util/groqLint'
+import {createGroqLintExtensions, type QueryLintFinding, worstSeverity} from '../../util/groqLint'
 import {NO_QUERY_PARAM_NAMES, queryParamNames} from '../../util/groqParamCompletions'
 import {queryEndSlot} from '../../util/queryEndSlot'
 import {isQueryParamName} from '../../util/queryParamName'
@@ -63,7 +63,7 @@ import {type CollapsiblePanelTab} from '../CollapsiblePanel'
 import {useRequestBottomPanel} from '../queryTabLayout'
 import * as styles from '../redesign.module.css'
 import {FunctionsTab, type QueryEdit} from '../response/FunctionsTab'
-import {LintTab} from '../response/LintTab'
+import {LintTab, severityTone} from '../response/LintTab'
 import {
   type BottomPanelState,
   SplitWithBottomPanel,
@@ -399,6 +399,7 @@ export function RequestPanel(props: RequestPanelProps) {
   )
 
   const lintCount = lintFindings.length
+  const lintSeverity = worstSeverity(lintFindings)
   const functionCount = declaredFunctions.length
   const panelTabs = useMemo((): CollapsiblePanelTab[] => {
     return [
@@ -496,10 +497,10 @@ export function RequestPanel(props: RequestPanelProps) {
         id: 'lint',
         label:
           lintCount > 0 ? t('vision.panel.lint-count', {count: lintCount}) : t('vision.panel.lint'),
-        // A count of zero stays a plain tab. Any findings use the releases Errors chip: a soft
-        // red pill, with the count in the label, in the same row as the other tabs
+        // A count of zero stays a plain tab. Findings use the releases Errors chip: a soft pill,
+        // with the count in the label, toned by the worst severity among them
         muted: lintCount > 0,
-        tone: lintCount > 0 ? 'critical' : undefined,
+        tone: lintSeverity ? severityTone(lintSeverity) : undefined,
         content: (
           <LintTab
             action={
@@ -552,6 +553,7 @@ export function RequestPanel(props: RequestPanelProps) {
     functionCount,
     library,
     lintCount,
+    lintSeverity,
     lintFindings,
     onCopyParams,
     onEditQuery,

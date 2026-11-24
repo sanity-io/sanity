@@ -64,6 +64,18 @@ export interface GroqQueryParam {
  */
 const DISABLED_LINT_RULES: Record<string, boolean> = {unlimited_query: false}
 
+/**
+ * Rules whose finding Vision reports at a lower severity than `groq-lint` does: ordering on a
+ * computed value, a computed value in a filter and a comparison of two non-literal expressions.
+ * Whether any of them is slow depends on the data and the plan, which Explain shows, so the lint
+ * only hints at them.
+ */
+const SEVERITY_OVERRIDES: Record<string, GroqFindingSeverity> = {
+  'order-on-expr': 'warning',
+  'computed-value-in-filter': 'warning',
+  'non-literal-comparison': 'warning',
+}
+
 let groqWasm: Promise<GroqWasmModule> | undefined
 
 function loadGroqWasm(): Promise<GroqWasmModule> {
@@ -168,13 +180,22 @@ export async function lintGroq(query: string): Promise<GroqFinding[]> {
   return toGroqFindings(findings, query)
 }
 
-/** Converts the wasm findings' spans into ranges of `query`; a finding without a span covers all of it */
+/**
+ * Converts the wasm findings' spans into ranges of `query`; a finding without a span covers all of
+ * it. Applies {@link SEVERITY_OVERRIDES}.
+ */
 export function toGroqFindings(findings: WasmFinding[], query: string): GroqFinding[] {
   const clamp = (index: number) => Math.max(0, Math.min(index, query.length))
   return findings.map(({ruleId, message, severity, span}) => {
     const from = span ? clamp(span.start.offset) : 0
     const to = span ? Math.max(from, clamp(span.end.offset)) : query.length
-    return {ruleId, message: message.trim(), severity, from, to}
+    return {
+      ruleId,
+      message: message.trim(),
+      severity: SEVERITY_OVERRIDES[ruleId] ?? severity,
+      from,
+      to,
+    }
   })
 }
 

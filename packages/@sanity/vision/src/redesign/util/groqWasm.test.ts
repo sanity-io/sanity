@@ -74,6 +74,27 @@ describe('lintGroq', () => {
     expect(query.slice(findings[0].from, findings[0].to)).toBe('author->')
   })
 
+  it('reports ordering on a computed value as a warning, since Explain shows the cost', async () => {
+    const query = '*[_type == "pokemon"] | order(baseStats.attack desc, name asc)'
+    const findings = await lintGroq(query)
+
+    expect(findings.map((finding) => [finding.ruleId, finding.severity])).toEqual([
+      ['order-on-expr', 'warning'],
+    ])
+    expect(findings[0].message).toContain('Avoid ordering on computed values')
+  })
+
+  it('reports computed values in filters and non-literal comparisons as warnings', async () => {
+    const query =
+      '*[_type == "pokemon" && baseStats.attack + 1 == 50 && baseStats.attack == baseStats.defense]'
+    const findings = await lintGroq(query)
+
+    expect(findings.map((finding) => [finding.ruleId, finding.severity])).toEqual([
+      ['computed-value-in-filter', 'warning'],
+      ['non-literal-comparison', 'warning'],
+    ])
+  })
+
   it('returns nothing for a blank query', async () => {
     expect(await lintGroq('')).toEqual([])
   })
@@ -100,6 +121,29 @@ describe('lintGroq', () => {
     const error = await syntaxErrorOf(lintGroq('*[_type == "a"'))
     expect(error.message).toBe("expected ']' following expression")
     expect([error.from, error.to]).toEqual([1, 14])
+  })
+
+  it('lowers the severity of the rules Explain covers, and of no other', () => {
+    const finding = {message: 'm', severity: 'error', span: undefined} as const
+    const ruleIds = [
+      'order-on-expr',
+      'computed-value-in-filter',
+      'non-literal-comparison',
+      'join-in-filter',
+      'very-large-query',
+    ]
+    expect(
+      toGroqFindings(
+        ruleIds.map((ruleId) => ({...finding, ruleId})),
+        '*',
+      ).map((result) => [result.ruleId, result.severity]),
+    ).toEqual([
+      ['order-on-expr', 'warning'],
+      ['computed-value-in-filter', 'warning'],
+      ['non-literal-comparison', 'warning'],
+      ['join-in-filter', 'error'],
+      ['very-large-query', 'error'],
+    ])
   })
 
   it('covers the whole query with a finding that has no span, whatever its characters', () => {
