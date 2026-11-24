@@ -36,6 +36,12 @@ export interface GroqEditorLabels {
   systemField: string
   /** Completions of document type names, for types without a title */
   documentType: string
+  /** Link at the end of an operator's hover documentation */
+  operatorReference: string
+  /** Under a `$param`'s type in its hover, when the type is its value in the params */
+  paramValue: string
+  /** Under a `$param`'s type in its hover, when the params give it no value yet */
+  paramNotSet: string
   /** Called when a lint suggestion or a library declaration is applied */
   onApplySuggestion?: () => void
 }
