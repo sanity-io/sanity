@@ -6,9 +6,23 @@ import {highlightedParamOf, setHighlightedParam} from '../util/paramHighlight'
 /** Set on a Params form field, with the name of the param it edits */
 const PARAM_NAME_ATTRIBUTE = 'data-vision-param'
 
-function paramNameOf(element: EventTarget): string | null {
-  if (!(element instanceof Element)) return null
-  return element.closest(`[${PARAM_NAME_ATTRIBUTE}]`)?.getAttribute(PARAM_NAME_ATTRIBUTE) ?? null
+/**
+ * The param `node` is in. A field's own elements carry the attribute. An autocomplete list does
+ * not: it is portaled, and the input points at that list with `aria-owns`, so an option in the
+ * list still belongs to the field inside `pane`.
+ */
+function paramNameOf(pane: Element, node: EventTarget | null): string | null {
+  if (!(node instanceof Element)) return null
+  const direct = node.closest(`[${PARAM_NAME_ATTRIBUTE}]`)?.getAttribute(PARAM_NAME_ATTRIBUTE)
+  if (direct) return direct
+  const listId = node.closest('[role="listbox"]')?.id
+  if (!listId) return null
+  for (const owner of pane.querySelectorAll('[aria-owns]')) {
+    const owns = owner.getAttribute('aria-owns')
+    if (!owns?.split(/\s+/).includes(listId)) continue
+    return owner.closest(`[${PARAM_NAME_ATTRIBUTE}]`)?.getAttribute(PARAM_NAME_ATTRIBUTE) ?? null
+  }
+  return null
 }
 
 /**
@@ -32,11 +46,15 @@ export function useParamHighlight(queryEditorRef: RefObject<VisionCodeMirrorHand
     () => ({
       // A form that unmounts with focus in it reports no blur
       ref: () => () => highlightParam(null),
-      onFocus: (event: FocusEvent<HTMLElement>) => highlightParam(paramNameOf(event.target)),
+      onFocus: (event: FocusEvent<HTMLElement>) => {
+        highlightParam(paramNameOf(event.currentTarget, event.target))
+      },
       onBlur: (event: FocusEvent<HTMLElement>) => {
-        if (!event.relatedTarget || !event.currentTarget.contains(event.relatedTarget)) {
-          highlightParam(null)
-        }
+        const next = event.relatedTarget
+        // The list is portaled outside this element, but focus there is still in its field
+        if (next instanceof Node && event.currentTarget.contains(next)) return
+        if (paramNameOf(event.currentTarget, next)) return
+        highlightParam(null)
       },
     }),
     [highlightParam],

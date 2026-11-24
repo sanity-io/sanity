@@ -126,6 +126,32 @@ describe('jsonParamNameAt', () => {
     expect(jsonParamNameAt('{"search": "unterminated', 14)).toBe('search')
     expect(jsonParamNameAt('{"a": 1, "sea', 12)).toBe('sea')
   })
+
+  test('names an unquoted key, not the quoted value after it', () => {
+    const text = '{type: "post", search: 1}'
+    expect(jsonParamNameAt(text, text.indexOf('type'))).toBe('type')
+    expect(jsonParamNameAt(text, text.indexOf('post'))).toBe('type')
+    expect(jsonParamNameAt(text, text.indexOf('search'))).toBe('search')
+  })
+
+  test('names a single-quoted key', () => {
+    const text = "{'search': 'hello'}"
+    expect(jsonParamNameAt(text, text.indexOf('search'))).toBe('search')
+    expect(jsonParamNameAt(text, text.indexOf('hello'))).toBe('search')
+  })
+
+  test('names the key after a line comment, not a name written in the comment', () => {
+    const text = '{\n  // "search"\n  type: "post"\n}'
+    expect(jsonParamNameAt(text, text.indexOf('search'))).toBeNull()
+    expect(jsonParamNameAt(text, text.indexOf('type'))).toBe('type')
+    expect(jsonParamNameAt(text, text.indexOf('post'))).toBe('type')
+  })
+
+  test('skips a block comment when it looks for the key', () => {
+    const text = '{ /* "search" */ type: "post" }'
+    expect(jsonParamNameAt(text, text.indexOf('search'))).toBeNull()
+    expect(jsonParamNameAt(text, text.indexOf('type'))).toBe('type')
+  })
 })
 
 describe('paramsJsonActiveParam', () => {

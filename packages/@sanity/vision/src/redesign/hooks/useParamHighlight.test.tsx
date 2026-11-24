@@ -6,6 +6,7 @@ import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {cleanup, fireEvent, render, screen, within} from '@testing-library/react'
 import {type ReactNode, type RefObject} from 'react'
+import {createPortal} from 'react-dom'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
@@ -127,4 +128,55 @@ describe('useParamHighlight with the Params form', () => {
     expect(view?.state.doc.toString()).toBe(QUERY)
     expect(view?.hasFocus).toBe(false)
   })
+
+  it("keeps the highlight while focus is in the field's portaled list", () => {
+    const selection = EditorSelection.create([EditorSelection.range(2, 7)])
+    render(<PortalHarness queryEditorRef={queryEditor(selection)} />)
+    const field = screen.getByTestId('type-input')
+    const option = screen.getByTestId('type-option')
+
+    fireEvent.focus(field)
+    expect(marked()).toEqual(['$title', '$title'])
+
+    // Arrowing into the list blurs the input and focuses the option, outside the field's DOM
+    fireEvent.blur(field, {relatedTarget: option})
+    expect(marked()).toEqual(['$title', '$title'])
+
+    fireEvent.focus(option)
+    expect(marked()).toEqual(['$title', '$title'])
+
+    fireEvent.blur(option, {relatedTarget: screen.getByTestId('outside')})
+    expect(marked()).toEqual([])
+
+    expect(view?.state.selection.eq(selection)).toBe(true)
+    expect(view?.hasFocus).toBe(false)
+  })
 })
+
+function PortalHarness({
+  queryEditorRef,
+}: {
+  queryEditorRef: RefObject<VisionCodeMirrorHandle | null>
+}) {
+  const {formFocusProps} = useParamHighlight(queryEditorRef)
+  return (
+    <>
+      <div {...formFocusProps}>
+        <div data-vision-param="title">
+          <input aria-owns="title-listbox" data-testid="type-input" />
+          {createPortal(
+            <div id="title-listbox" role="listbox">
+              <button data-testid="type-option" type="button">
+                post
+              </button>
+            </div>,
+            document.body,
+          )}
+        </div>
+      </div>
+      <button data-testid="outside" type="button">
+        outside
+      </button>
+    </>
+  )
+}
