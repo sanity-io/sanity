@@ -1,7 +1,18 @@
-import {type ImageCropDimensions} from '@sanity/types'
+import {type ImageAspectRatio, type ImageCrop, type ImageCropDimensions} from '@sanity/types'
 
-import {nearestAllowedRatio, type ResolvedImageAspectRatio} from './aspectRatio'
-import {croppedDimensions, dimensionsAtLeast, type ImagePixelRect} from './cropDimensions'
+import {
+  nearestAllowedRatio,
+  ratioMatchesConstraint,
+  resolveAspectRatio,
+  type ResolvedImageAspectRatio,
+} from './aspectRatio'
+import {
+  croppedDimensions,
+  dimensionsAtLeast,
+  getImageRefDimensions,
+  type ImagePixelRect,
+  pixelRectToCrop,
+} from './cropDimensions'
 
 /**
  * The largest size at `ratio` that fits inside `bounds`, matching `bounds` exactly on the axis that
@@ -67,4 +78,27 @@ export function defaultCropRect(
         nearestAllowedRatio(sourceRatio, {...constraint, snapRatios: roomyRatios}),
       )
     : nearest
+}
+
+/**
+ * The crop to write when the image asset `ref` is set on a field with `aspectRatio`, at a listed
+ * ratio that holds `minDimensions` when one can. `undefined` when the field has no ratio, the
+ * asset cannot be cropped, or its ratio already fits.
+ *
+ * @internal
+ */
+export function getDefaultImageCrop(
+  ref: string,
+  aspectRatio: ImageAspectRatio | undefined,
+  minDimensions?: ImageCropDimensions,
+): ImageCrop | undefined {
+  const source = getImageRefDimensions(ref)
+  if (aspectRatio === undefined || source === undefined) {
+    return undefined
+  }
+  const constraint = resolveAspectRatio(aspectRatio)
+  if (ratioMatchesConstraint(source.width / source.height, constraint)) {
+    return undefined
+  }
+  return pixelRectToCrop(defaultCropRect(source, constraint, minDimensions), source)
 }

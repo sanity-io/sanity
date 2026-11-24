@@ -14,8 +14,18 @@ import {
 } from '@sanity/util/image'
 import {describe, expect, test} from 'vitest'
 
+import {prepareI18n} from '../../../../../i18n/i18nConfig'
+import {validationLocaleNamespace} from '../../../../../i18n/localeNamespaces'
+import {type LocaleResourceRecord} from '../../../../../i18n/types'
 import {createSchema} from '../../../../../schema/createSchema'
-import {getImageToolPath, getInitialToolCrop} from '../imageToolOptions'
+import {
+  getCropAspectRatioMessageOptions,
+  getCropSizeStatus,
+  getHotspotPreviews,
+  getImageToolPath,
+  getInitialToolCrop,
+  hasCropSizeReadout,
+} from '../imageToolOptions'
 
 const IMAGE_OPTIONS: Record<string, ImageOptions | undefined> = {
   plain: undefined,
@@ -195,4 +205,152 @@ describe('getInitialToolCrop', () => {
       expect(dimensions && dimensionsAtLeast(dimensions, minimum)).toBe(true)
     },
   )
+})
+
+describe('hotspot previews', () => {
+  test('keeps the common ratios without an aspect ratio', () => {
+    expect(getHotspotPreviews({hotspot: true}).map(({title}) => title)).toEqual([
+      '3:4',
+      'Square',
+      '16:9',
+      'Panorama',
+    ])
+  })
+
+  test.each([
+    {name: 'fixed ratio', aspectRatio: 16 / 9, titles: ['16:9']},
+    {name: 'range', aspectRatio: {min: 4 / 3, max: 16 / 9}, titles: ['4:3', '16:9']},
+    {name: 'list', aspectRatio: [16 / 9, 1, 4 / 3], titles: ['1:1', '4:3', '16:9']},
+  ])('shows one preview per allowed ratio of a $name', ({aspectRatio, titles}) => {
+    const previews = getHotspotPreviews({hotspot: true, aspectRatio})
+    expect(previews.map(({title}) => title)).toEqual(titles)
+    expect(previews.map((preview) => preview.aspectRatio)).toEqual(
+      titles.map((title) => {
+        const [width, height] = title.split(':').map(Number)
+        return expect.closeTo(width / height)
+      }),
+    )
+  })
+
+  test('shows one preview for a range with equal bounds', () => {
+    expect(getHotspotPreviews({aspectRatio: {min: 1, max: 1}})).toEqual([
+      {title: '1:1', aspectRatio: 1},
+    ])
+  })
+
+  test.each([
+    {name: 'listed previews', previews: [{title: 'Banner', aspectRatio: 3}]},
+    {name: 'no previews', previews: []},
+  ])('keeps $name set on the field over its aspect ratio', ({previews}) => {
+    expect(getHotspotPreviews({hotspot: {previews}, aspectRatio: 1})).toBe(previews)
+  })
+
+  test('falls back to the aspect ratio when an untyped schema sets the hotspot to null', () => {
+    const hotspot: unknown = null
+    expect(getHotspotPreviews({hotspot, aspectRatio: 1} as ImageOptions)).toEqual([
+      {title: '1:1', aspectRatio: 1},
+    ])
+  })
+})
+
+describe('crop size readout', () => {
+  test.each([
+    {name: 'plain', options: undefined, shown: false},
+    {name: 'hotspot', options: {hotspot: true}, shown: false},
+    {name: 'aspectRatio', options: {aspectRatio: 1}, shown: true},
+    {name: 'minDimensions', options: {minDimensions: {width: 10, height: 10}}, shown: true},
+    {
+      name: 'recommendedDimensions',
+      options: {hotspot: true, recommendedDimensions: {width: 10, height: 10}},
+      shown: true,
+    },
+  ])('is shown for a $name image: $shown', ({options, shown}) => {
+    expect(hasCropSizeReadout(options)).toBe(shown)
+  })
+
+  const SIZES: ImageOptions = {
+    minDimensions: {width: 800, height: 450},
+    recommendedDimensions: {width: 1600, height: 900},
+  }
+
+  test.each([
+    {name: 'the minimum', dimensions: {width: 799, height: 900}, tone: 'critical'},
+    {name: 'the recommended size', dimensions: {width: 1600, height: 899}, tone: 'caution'},
+    {name: 'neither', dimensions: {width: 1600, height: 900}, tone: undefined},
+  ])('flags a crop below $name', ({dimensions, tone}) => {
+    expect(getCropSizeStatus(dimensions, SIZES).tone).toBe(tone)
+  })
+
+  test('names the threshold the crop is below', () => {
+    expect(getCropSizeStatus({width: 100, height: 100}, SIZES).threshold).toEqual(
+      SIZES.minDimensions,
+    )
+    expect(getCropSizeStatus({width: 1000, height: 500}, SIZES).threshold).toEqual(
+      SIZES.recommendedDimensions,
+    )
+  })
+
+  test('flags nothing without a size option', () => {
+    expect(getCropSizeStatus({width: 1, height: 1}, {aspectRatio: 1}).tone).toBeUndefined()
+  })
+})
+
+describe('getCropAspectRatioMessageOptions', () => {
+  const MESSAGE_KEY = 'validation:object.image-aspect-ratio-mismatch'
+
+  async function createValidationT(overrides: LocaleResourceRecord, locale = 'en-US') {
+    const {i18next} = prepareI18n({
+      projectId: 'test',
+      dataset: 'test',
+      name: 'test',
+      i18n: {
+        bundles: [{locale, namespace: validationLocaleNamespace, resources: overrides}],
+        locales: [{id: locale, title: locale, weekInfo: {firstDay: 1, weekend: [6, 7]}}],
+      },
+    })
+    await i18next.init()
+    await i18next.changeLanguage(locale)
+    await i18next.loadNamespaces(validationLocaleNamespace)
+    return i18next.t
+  }
+
+  test.each([
+    {name: 'a fixed ratio', aspectRatio: 16 / 9, expected: '16:9'},
+    {name: 'a range', aspectRatio: {min: 4 / 3, max: 16 / 9}, expected: 'between 4:3 and 16:9'},
+    {name: 'a list of two', aspectRatio: [1, 16 / 9], expected: '1:1 or 16:9'},
+    {name: 'a list', aspectRatio: [1, 4 / 3, 16 / 9], expected: '1:1, 4:3, or 16:9'},
+  ])('words $name the way the validation message does', async ({aspectRatio, expected}) => {
+    const t = await createValidationT({})
+    expect(t(MESSAGE_KEY, getCropAspectRatioMessageOptions({aspectRatio}))).toBe(
+      `Cropped image aspect ratio must be ${expected}`,
+    )
+  })
+
+  test('leaves the words around a range and a list to the locale', async () => {
+    const t = await createValidationT(
+      {
+        'object.image-aspect-ratio-mismatch_list':
+          'Seitenverhältnis {{ratios, list(type: disjunction)}}',
+        'object.image-aspect-ratio-mismatch_range': 'Seitenverhältnis zwischen {{min}} und {{max}}',
+      },
+      'de-DE',
+    )
+    const range = getCropAspectRatioMessageOptions({aspectRatio: {min: 4 / 3, max: 16 / 9}})
+    const list = getCropAspectRatioMessageOptions({aspectRatio: [1, 4 / 3, 16 / 9]})
+    const longList = getCropAspectRatioMessageOptions({aspectRatio: [1, 4 / 3, 16 / 9, 2]})
+    expect(t(MESSAGE_KEY, range)).toBe('Seitenverhältnis zwischen 4:3 und 16:9')
+    expect(t(MESSAGE_KEY, list)).toBe('Seitenverhältnis 1:1, 4:3 oder 16:9')
+    expect(t(MESSAGE_KEY, longList)).toBe('Seitenverhältnis 1:1, 4:3, 16:9 oder 2:1')
+    expect([list, longList].map((options) => t(MESSAGE_KEY, options).includes(' or '))).toEqual([
+      false,
+      false,
+    ])
+  })
+
+  test('states nothing without an aspect ratio', () => {
+    expect(
+      getCropAspectRatioMessageOptions({minDimensions: {width: 10, height: 10}}),
+    ).toBeUndefined()
+    expect(getCropAspectRatioMessageOptions(undefined)).toBeUndefined()
+  })
 })
