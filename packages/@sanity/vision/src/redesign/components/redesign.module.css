@@ -580,6 +580,25 @@
   filter: blur(2px);
 }
 
+/* Wraps a menu button so a tooltip can attach to it without taking the button's ref */
+.tooltipTarget {
+  display: inline-flex;
+}
+
+/* "Copy" and "Copied" stacked, so the button is as wide as the longer one whichever shows */
+.copyLabels {
+  display: inline-grid;
+}
+
+.copyLabels > span {
+  grid-area: 1 / 1;
+}
+
+.copyLabels[data-copied='true'] > [data-label='copy'],
+.copyLabels[data-copied='false'] > [data-label='copied'] {
+  visibility: hidden;
+}
+
 /*
  * MenuItem clips its `text` to one line, so the reason a CSV file cannot be built is rendered
  * as a child of the item. It wraps under the label instead of being cut off, and the child's

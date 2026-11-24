@@ -19,9 +19,8 @@ export interface CopyResultButtonProps {
 }
 
 /**
- * Copies the result from the response panel's bottom action bar, and confirms it where the click
- * happened: the copy icon turns into a checkmark for a moment, next to the toast the copy pushes.
- * A document row uses the same button as an icon.
+ * Copies from a result and confirms it where the click happened: the copy icon turns into a
+ * checkmark for a moment, next to the toast the copy pushes. A document row uses it as an icon.
  */
 export function CopyResultButton({
   label,

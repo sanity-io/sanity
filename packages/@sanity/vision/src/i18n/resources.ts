@@ -158,6 +158,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Title for popover that explains what "Perspectives" are */
   'settings.perspectives.title': 'Perspectives',
 
+  /** Copy button of a pane header, for a moment after it copied */
+  'vision.copied': 'Copied',
+  /** Copy button of a pane header, copying what the pane shows */
+  'vision.copy': 'Copy',
   /** Label of the document after the change in the Delta panel */
   'vision.delta.after': 'After',
   /** Label of the document before the change in the Delta panel */
@@ -997,11 +1001,15 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    */
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.result.actions': 'Result actions',
-  /** Toast shown after the result was copied */
+  /** Toast shown after the whole result was copied from the result tree or graph */
   'vision.result.copied': 'Result copied to clipboard',
   /** Toast shown after a value in the result was copied, with its path such as [0].author.name */
   'vision.result.copied-value': 'Copied {{path}}',
-  /** Button in the result's action bar copying the result as JSON */
+  /**
+   * Button in the result's action bar copying the result as JSON
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.result.copy': 'Copy result',
   /** Button next to each property in the result tree, copying its value */
   'vision.result.copy-value': 'Copy value',
@@ -1172,7 +1180,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.result.documents.unknown-type': 'Unknown type: {{type}}',
   /** Empty state of the result view */
   'vision.result.empty': 'Run the query to see its result here',
-  /** Button opening the menu of ways to export the result */
+  /**
+   * Button opening the menu of ways to export the result
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.result.export': 'Export…',
   /** Menu item saving the result as a CSV file */
   'vision.result.export-csv': 'Save as CSV…',
@@ -1212,15 +1224,19 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.result.export-typescript': 'Export TypeScript…',
   /** Menu item opening the Zod export dialog */
   'vision.result.export-zod': 'Export Zod…',
-  /** Tab listing a result shaped `*[]{_id, _type, title?, subtitle?, media?}` as document previews */
+  /** Tooltip and accessible label of the result header's menu of export and save options */
+  'vision.result.more-actions': 'More actions',
+  /** Accessible label of the result view dropdown, with the view it shows such as JSON */
+  'vision.result.view.button': 'Result view: {{view}}',
+  /** View listing a result shaped `*[]{_id, _type, title?, subtitle?, media?}` as document previews */
   'vision.result.view.documents': 'Documents',
-  /** Tab showing the result as a graph of its objects and arrays */
+  /** View showing the result as a graph of its objects and arrays */
   'vision.result.view.graph': 'Graph',
-  /** Tab showing the result as indented JSON text, to select and copy from */
+  /** View showing the result as indented JSON text, to select and copy from */
   'vision.result.view.json': 'JSON',
-  /** Accessible label of the tabs that switch how the result shows */
+  /** Accessible label of the menu that switches how the result shows */
   'vision.result.view.label': 'Result view',
-  /** Tab showing the result as a tree to browse */
+  /** View showing the result as a tree to browse */
   'vision.result.view.tree': 'Tree',
   /** Empty state of the saved queries panel */
   'vision.saved.empty': 'No saved queries yet. Save the current query with the + button.',
