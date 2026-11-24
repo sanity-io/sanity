@@ -58,7 +58,6 @@ export function PromptRow(props: PromptRowProps) {
         />
       </Box>
       <Button
-        className={styles.pressable}
         data-testid={`${testIdPrefix}-submit`}
         disabled={!value.trim() || pending}
         fontSize={1}
