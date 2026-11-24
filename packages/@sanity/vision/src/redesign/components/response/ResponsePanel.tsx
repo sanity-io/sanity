@@ -27,12 +27,8 @@ import {
   type VisionTab,
   type VisionTabDrawer,
 } from '../../store/types'
-import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
-import {
-  selectOpenTabDrawer,
-  selectResultView,
-  selectSourceMapEnabled,
-} from '../../store/visionMachine'
+import {useTabDrawerSlot, useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
+import {selectResultView, selectSourceMapEnabled} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
 import {getAvailableRowFields} from '../../util/documentListFields'
 import {canImproveDocumentList, getRowTypes, parseDocumentList} from '../../util/documentListResult'
@@ -378,7 +374,8 @@ export function ResponsePanel(props: ResponsePanelProps) {
       : panelState
 
   // The tab's tools open in the sidebar's drawer
-  const tabDrawer = useVisionSelector(selectOpenTabDrawer)
+  // The tool follows the drawer as it shows, so it comes and goes with the drawer
+  const {drawer: tabDrawer} = useTabDrawerSlot()
   const renderTabDrawer = (drawer: VisionTabDrawer): ReactNode => {
     switch (drawer) {
       case 'delta':

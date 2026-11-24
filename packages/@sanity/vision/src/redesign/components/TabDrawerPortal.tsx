@@ -11,7 +11,6 @@ import {useTabDrawerSlot} from '../store/VisionActorContext'
 export function TabDrawerPortal({children}: {children: ReactNode}) {
   const {element} = useTabDrawerSlot()
   const portal = usePortal()
-  if (!element) return null
   return (
     <PortalProvider element={element}>
       <Portal>

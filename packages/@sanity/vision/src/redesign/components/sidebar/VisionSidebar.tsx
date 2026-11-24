@@ -13,8 +13,6 @@ import {
   type ComponentType,
   type MouseEvent,
   useCallback,
-  useEffect,
-  useEffectEvent,
   useRef,
   useState,
   ViewTransition,
@@ -32,11 +30,12 @@ import {
 } from '../../store/VisionActorContext'
 import {selectOpenDrawer} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
-import {SIDEBAR_PANE, SIDEBAR_TRANSITION, startLayoutTransition} from '../panelTransitions'
+import {SIDEBAR_PANE} from '../panelTransitions'
 import * as styles from '../redesign.module.css'
 import {VisionTooltip} from '../VisionTooltip'
 import * as sidebarStyles from './sidebar.module.css'
 import {SidebarDrawer} from './SidebarDrawer'
+import {useShownInSidebar} from './useShownInSidebar'
 
 /**
  * The collapsed rail's tooltips wait before the first one opens, so a pointer crossing the rail
@@ -118,29 +117,15 @@ function SidebarItem({
   )
 }
 
-/**
- * The machine's state is read through an external store, which React always renders at once.
- * Beside the tabs area the sidebar shows a change a transition later, which the rail, the drawer
- * and the tabs area animate together. On phones the rail and the drawer float over the tool and
- * move nothing, so they follow at once.
- */
-function useShownInSidebar<T>(value: T, immediate: boolean): T {
-  const [shown, setShown] = useState(value)
-  useOnValueChange(value, (next) => {
-    if (immediate) setShown(next)
-    else startLayoutTransition(SIDEBAR_TRANSITION, () => setShown(next))
-  })
-  // A change made while the tool was hidden in an `<Activity>` is not reported above, so showing
-  // the tool again catches up at once: there is nothing on screen to animate from
-  const catchUp = useEffectEvent(() => setShown(value))
-  useEffect(() => {
-    // oxlint-disable-next-line react/set-state-in-effect -- a change the hidden tool missed can only be noticed once its effects run again
-    catchUp()
-  }, [])
-  return immediate ? value : shown
+export interface VisionSidebarProps {
+  /**
+   * The drawer as it shows, which follows the machine's a transition later beside the tabs area
+   * (see `useShownInSidebar`). The tab that renders a tool into the drawer follows it too.
+   */
+  shownDrawer: VisionDrawer | null
 }
 
-export function VisionSidebar() {
+export function VisionSidebar({shownDrawer}: VisionSidebarProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const actorRef = useVisionActor()
   const {layout, switchToClassic} = useVisionExperience()
@@ -148,7 +133,6 @@ export function VisionSidebar() {
   const drawer = useVisionSelector(selectOpenDrawer)
   const isMobile = layout === 'mobile'
   const expanded = useShownInSidebar(railExpanded, isMobile)
-  const shownDrawer = useShownInSidebar(drawer, isMobile)
 
   // The rail button that opened the drawer, remembered from its click: the drawer is a modal
   // dialog on phones, and focus goes back there once it has closed. Not read when the drawer's
