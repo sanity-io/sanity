@@ -99,6 +99,27 @@ Fix those problems and change nothing else. ${KEEP_COMMENTS}
 
 Reply with JSON: an object with "query" (the whole fixed query, comments included, without code fences) and "params" (an object with a value for every parameter the query uses, or an empty object).`
 
+const IMPROVE_INSTRUCTION = `You make GROQ queries for the Sanity Content Lake faster.
+
+The query:
+$query
+
+The values of its parameters:
+$params
+
+The ways to improve it that a review of its query plan found:
+$suggestions
+
+The document types in the dataset:
+$schema
+
+How to write GROQ:
+$reference
+
+Make those improvements. The query must still return the same data in the same shape: leave out a suggestion that would change what it returns. ${KEEP_COMMENTS}
+
+Reply with JSON: an object with "query" (the whole improved query, comments included, without code fences) and "params" (an object with a value for every parameter the query uses, or an empty object).`
+
 const RETRY_INSTRUCTION = `
 
 Your previous attempt was rejected by the Content Lake:
@@ -294,6 +315,34 @@ export function editQuery(options: EditQueryOptions): Promise<GeneratedQuery> {
     ...rest,
     instruction: EDIT_INSTRUCTION,
     instructionParams: {query, params: JSON.stringify(params), request, schema},
+  })
+}
+
+export interface ImproveQueryOptions extends QueryAgentOptions {
+  /** The query to improve, as it is in the editor */
+  query: string
+  /** The values of its parameters */
+  params: Record<string, unknown>
+  /** The Explain panel's suggestions for the query, each one sentence */
+  suggestions: string[]
+}
+
+/**
+ * Makes the Explain panel's suggestions to a query with Agent Actions: the query, its parameters,
+ * the suggestions, the workspace's document types and a GROQ primer go in. The query comes back
+ * whole, comments kept, as an edit's does.
+ */
+export function improveQuery(options: ImproveQueryOptions): Promise<GeneratedQuery> {
+  const {query, params, suggestions, schema, ...rest} = options
+  return promptForQuery({
+    ...rest,
+    instruction: IMPROVE_INSTRUCTION,
+    instructionParams: {
+      query,
+      params: JSON.stringify(params),
+      suggestions: suggestions.map((suggestion) => `- ${suggestion}`).join('\n'),
+      schema,
+    },
   })
 }
 

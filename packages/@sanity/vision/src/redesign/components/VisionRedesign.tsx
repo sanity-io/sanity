@@ -18,10 +18,10 @@ import {
   VisionActorContext,
   type VisionExperience,
   VisionExperienceContext,
-  type VisionLayout,
 } from '../store/VisionActorContext'
 import {selectActiveTab, selectOpenDrawer, visionMachine} from '../store/visionMachine'
 import {loadVisionState, type VisionStorageDefaults} from '../store/visionStorage'
+import {estimateVisionLayoutWidths, getVisionLayout} from '../util/visionLayout'
 import {AiCreditsUpsellProvider} from './AiCreditsUpsell'
 import {AiFeaturesProvider} from './AiFeaturesProvider'
 import {PANEL_HEADER_HEIGHT} from './CollapsiblePanel'
@@ -34,17 +34,6 @@ import {HiddenQueryTabContext} from './tabs/queryTabShown'
 import {VisionDialogs} from './VisionDialogs'
 import {VisionUrlState} from './VisionUrlState'
 import {VisionWebMcp} from './VisionWebMcp'
-
-/** Below this width the request and response columns stack */
-const STACKED_BREAKPOINT = 900
-/** Below this width one column shows at a time and the sidebar floats over the content */
-const MOBILE_BREAKPOINT = 600
-
-function getVisionLayout(width: number): VisionLayout {
-  if (width < MOBILE_BREAKPOINT) return 'mobile'
-  if (width < STACKED_BREAKPOINT) return 'stacked'
-  return 'columns'
-}
 
 /**
  * The first tooltip waits a moment so passing the pointer over a control does not flash one; once
@@ -101,10 +90,13 @@ export function VisionRedesign(props: VisionRedesignProps) {
   const {config, datasets, projectId, defaultDataset, onSwitchToClassic} = props
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const rootSize = useContentSize(rootElement)
-  // Until measured, fall back to the viewport so the first paint is close to the final layout
-  const layout = getVisionLayout(
-    rootSize?.width || (typeof window === 'undefined' ? STACKED_BREAKPOINT : window.innerWidth),
-  )
+  const [tabsElement, setTabsElement] = useState<HTMLDivElement | null>(null)
+  const tabsSize = useContentSize(tabsElement)
+  const [estimate] = useState(estimateVisionLayoutWidths)
+  const layout = getVisionLayout({
+    tool: rootSize?.width || estimate.tool,
+    tabs: tabsSize?.width || estimate.tabs,
+  })
 
   const defaults = useMemo(
     (): VisionStorageDefaults => ({
@@ -168,6 +160,7 @@ export function VisionRedesign(props: VisionRedesignProps) {
                     >
                       <VisionSidebar />
                       <Flex
+                        data-testid="vision-tabs-area"
                         flexBasis="0%"
                         flexDirection="column"
                         flexGrow={1}
@@ -175,6 +168,7 @@ export function VisionRedesign(props: VisionRedesignProps) {
                         inert={layout === 'mobile' && openDrawer !== null}
                         minWidth="0"
                         overflow="hidden"
+                        ref={setTabsElement}
                       >
                         <QueryTabBar />
                         <QueryTabLayoutProvider>

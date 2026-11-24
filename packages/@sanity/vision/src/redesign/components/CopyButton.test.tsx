@@ -34,6 +34,8 @@ function renderButton(onCopy: () => Promise<boolean>, disabled?: boolean) {
 const button = () => screen.getByTestId('vision-copy')
 const copied = () => button().getAttribute('data-copied') === 'true'
 const shownLabel = () => button().textContent?.trim()
+const shownIcon = () =>
+  button().querySelector('[data-sanity-icon]')?.getAttribute('data-sanity-icon')
 
 async function click() {
   await act(async () => {
@@ -52,7 +54,7 @@ describe('CopyButton', () => {
     renderButton(() => Promise.resolve(true))
     expect(copied()).toBe(false)
     expect(shownLabel()).toBe('vision.copy')
-    expect(button().querySelector('[data-glyph="copy"]')).toBeTruthy()
+    expect(shownIcon()).toBe('copy')
   })
 
   it('reads Copied with a checkmark for a few seconds after a copy', async () => {
@@ -63,6 +65,7 @@ describe('CopyButton', () => {
     expect(onCopy).toHaveBeenCalledTimes(1)
     expect(copied()).toBe(true)
     expect(shownLabel()).toBe('vision.copied')
+    expect(shownIcon()).toBe('checkmark')
 
     act(() => {
       vi.advanceTimersByTime(COPIED_FEEDBACK_MS - 1)
@@ -73,6 +76,7 @@ describe('CopyButton', () => {
     })
     expect(copied()).toBe(false)
     expect(shownLabel()).toBe('vision.copy')
+    expect(shownIcon()).toBe('copy')
   })
 
   it('reads Copied longer when copied again meanwhile', async () => {

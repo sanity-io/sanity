@@ -6,7 +6,7 @@ import {Button, Card, Select, Stack, TextInput} from '@sanity/ui'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {dequal} from 'dequal/lite'
 import JSON5 from 'json5'
-import {type ReactNode, useId, useState} from 'react'
+import {type KeyboardEvent, type ReactNode, useId, useState} from 'react'
 import {type TFunction} from 'sanity'
 import {InlineCode, useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex, Icon} from 'ui5'
@@ -24,6 +24,21 @@ export interface ParamsFormProps {
   params: Params
   /** Called with the params' new JSON */
   onChange: (rawParams: string) => void
+  /** Enter in a field, which fetches like the fetch shortcut */
+  onSubmit: () => void
+}
+
+/**
+ * Enter in a field that does not take it as input. The fetch shortcut (mod+Enter) is left to the
+ * tool-wide handler, Enter that ends an IME composition stays with the composition, and a
+ * multiline field or a button keeps its own Enter
+ */
+function isSubmitKey(event: KeyboardEvent<HTMLElement>): boolean {
+  if (event.key !== 'Enter' || event.metaKey || event.ctrlKey || event.altKey) return false
+  // oxlint-disable-next-line typescript/no-deprecated -- Safari reports the Enter that ends an IME composition with keyCode 229 and isComposing false
+  if (event.nativeEvent.isComposing || event.keyCode === 229) return false
+  const {target} = event
+  return target instanceof HTMLSelectElement || target instanceof HTMLInputElement
 }
 
 function preview(value: unknown): string {
@@ -445,7 +460,7 @@ function InfoTip(props: {label: string; testId: string; children: ReactNode}) {
  * schema, like typegen). Values that fit are easy to enter (document types and option lists are
  * suggested, numbers become numbers), and values that do not are still sent, for testing.
  */
-export function ParamsForm({query, params, onChange}: ParamsFormProps) {
+export function ParamsForm({query, params, onChange, onSubmit}: ParamsFormProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const inference = useParamsInference(query)
   const values = params.parsed ?? {}
@@ -470,7 +485,16 @@ export function ParamsForm({query, params, onChange}: ParamsFormProps) {
   const schemaNoteInDetails = schemaUnavailable && unused.length === 0
 
   return (
-    <Stack data-testid="vision-params-form" gap={4} padding={3}>
+    <Stack
+      data-testid="vision-params-form"
+      gap={4}
+      onKeyDown={(event) => {
+        if (!isSubmitKey(event)) return
+        event.preventDefault()
+        onSubmit()
+      }}
+      padding={3}
+    >
       {disabled && (
         <Card padding={3} radius={2} tone="caution">
           <Text size={1} as="div" trim={true} tone="caution">

@@ -115,6 +115,23 @@ export interface VisionAiSettings {
   explainQuery: boolean
 }
 
+/** The code snippets the Export query dialog can show, one per tab */
+export type VisionExportSnippetId =
+  | 'client'
+  | 'curl'
+  | 'next-sanity'
+  | 'astro'
+  | 'sveltekit'
+  | 'nuxt'
+
+/** Which snippets the Export query dialog shows, and in what order */
+export interface VisionExportSnippetSettings {
+  /** Every snippet, in tab order */
+  order: VisionExportSnippetId[]
+  /** Snippets left out of the dialog; never all of them */
+  hidden: VisionExportSnippetId[]
+}
+
 /** How the query editor behaves */
 export interface VisionEditorSettings {
   /**
@@ -153,6 +170,7 @@ export interface VisionPersistedState {
   ai: VisionAiSettings
   editor: VisionEditorSettings
   response: VisionResponseSettings
+  exportSnippets: VisionExportSnippetSettings
   /** The functions library, most recently saved first */
   functions: VisionSavedFunction[]
 }
@@ -165,16 +183,12 @@ export type FetchReason =
   | {type: 'load'}
   /** A tab that refetches automatically was shown again, with nothing current to replay */
   | {type: 'resume'}
-  /** The Live button, which fetches like Fetch and then refetches automatically */
-  | {type: 'live-start'}
   /** A tab opened with a generated query, fetched as it is shown */
   | {type: 'generated'}
   /** A query URL pasted into the tab, run as pasted, as the classic tool does */
   | {type: 'paste'}
   /** A query URL a link to the tool named, opened in a tab of its own and run as written */
   | {type: 'link'}
-  /** Mutations applied from the Mutate panel, after which the result may have changed */
-  | {type: 'mutation'}
   /** `eventId` is the live event's, which makes the API CDN answer with content at least as new */
   | {type: 'live'; matchedTags: SyncTag[]; eventId?: string}
 

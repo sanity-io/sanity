@@ -1,6 +1,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo} from 'react'
 
+import {type VisionExportSnippetId} from '../redesign/store/types'
 import {
   VisionAgentActionInvoked,
   VisionApiVersionChanged,
@@ -23,12 +24,18 @@ export interface VisionTelemetry {
   apiVersionChanged: (custom: boolean) => void
   copied: (target: 'query' | 'params' | 'url') => void
   agentAction: (
-    action: 'generate-query' | 'edit-query' | 'fix-lint' | 'generate-mutations' | 'explain',
+    action:
+      | 'generate-query'
+      | 'edit-query'
+      | 'fix-lint'
+      | 'generate-mutations'
+      | 'explain'
+      | 'improve-query',
   ) => void
   tabsChanged: (count: number, action: 'open' | 'add' | 'close') => void
   queryPrettified: (outcome: 'success' | 'error') => void
   lintUsed: (action: 'open' | 'fix') => void
-  snippetCopied: (snippet: 'curl' | 'client' | 'next-sanity') => void
+  snippetCopied: (snippet: VisionExportSnippetId) => void
 }
 
 /** Adoption events for the Vision tool. See `vision.telemetry.ts`. */
@@ -66,7 +73,15 @@ export function useVisionTelemetry(): VisionTelemetry {
   )
 
   const agentAction = useCallback(
-    (action: 'generate-query' | 'edit-query' | 'fix-lint' | 'generate-mutations' | 'explain') => {
+    (
+      action:
+        | 'generate-query'
+        | 'edit-query'
+        | 'fix-lint'
+        | 'generate-mutations'
+        | 'explain'
+        | 'improve-query',
+    ) => {
       telemetry.log(VisionAgentActionInvoked, {action})
     },
     [telemetry],
@@ -94,7 +109,7 @@ export function useVisionTelemetry(): VisionTelemetry {
   )
 
   const snippetCopied = useCallback(
-    (snippet: 'curl' | 'client' | 'next-sanity') => {
+    (snippet: VisionExportSnippetId) => {
       telemetry.log(VisionSnippetCopied, {snippet})
     },
     [telemetry],

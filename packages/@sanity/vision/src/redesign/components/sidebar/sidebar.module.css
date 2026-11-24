@@ -79,3 +79,10 @@
     }
   }
 }
+
+/* The export snippets in settings are an ordered list for assistive technology, without markers */
+.plainList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}

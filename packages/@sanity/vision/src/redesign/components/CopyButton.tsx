@@ -5,7 +5,6 @@ import {useEffect, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
 
 import {visionLocaleNamespace} from '../../i18n'
-import * as styles from './redesign.module.css'
 
 /** How long the button reads "Copied" after a copy */
 export const COPIED_FEEDBACK_MS = 2000
@@ -43,12 +42,7 @@ export function CopyButton({onCopy, disabled, testId = 'vision-copy'}: CopyButto
       disabled={disabled}
       fontSize={1}
       gap={2}
-      icon={
-        <span className={styles.copyGlyphs} data-copied={copied}>
-          <CopyIcon data-glyph="copy" />
-          <CheckmarkIcon data-glyph="check" />
-        </span>
-      }
+      icon={copied ? CheckmarkIcon : CopyIcon}
       mode="bleed"
       onClick={() => void handleClick()}
       padding={2}

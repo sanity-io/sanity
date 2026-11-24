@@ -17,7 +17,7 @@ import {
   usePerspectiveOptionName,
   VariantSelect,
 } from './OptionFields'
-import {OptionsGrid, OptionsGridCell} from './OptionsGrid'
+import {OptionsGrid, OptionsGridToggleCell} from './OptionsGrid'
 
 export interface OptionsPanelProps {
   options: VisionTabOptions
@@ -35,6 +35,13 @@ export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
     <Box data-testid="vision-options" padding={3}>
       <Stack gap={4}>
         <OptionsGrid>
+          <ApiVersionField
+            id="vision-option-api-version"
+            locked={resolved.isApiVersionLocked}
+            onChange={(apiVersion) => onChange({apiVersion})}
+            trackQueryChanges
+            value={options.apiVersion}
+          />
           <DatasetField
             dataset={options.dataset}
             datasets={datasets}
@@ -42,13 +49,6 @@ export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
             mode={options.datasetMode}
             onChange={onChange}
             workspaceDataset={workspaceDataset}
-          />
-          <ApiVersionField
-            id="vision-option-api-version"
-            locked={resolved.isApiVersionLocked}
-            onChange={(apiVersion) => onChange({apiVersion})}
-            trackQueryChanges
-            value={options.apiVersion}
           />
           <PerspectiveSelect
             id="vision-option-perspective"
@@ -60,16 +60,7 @@ export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
             onChange={(variant) => onChange({variant})}
             value={options.variant}
           />
-          <OptionsGridCell startRow wide>
-            <SwitchField
-              checked={options.includeSourceMap}
-              info={t('vision.options.include-source-map.description')}
-              onChange={(includeSourceMap) => onChange({includeSourceMap})}
-              testId="vision-option-source-map"
-              title={t('vision.options.include-source-map')}
-            />
-          </OptionsGridCell>
-          <OptionsGridCell wide>
+          <OptionsGridToggleCell>
             <UseCdnField
               checked={options.useCdn}
               notes={resolved.isCdnAnonymous ? [t('vision.options.use-cdn.anonymous')] : []}
@@ -77,7 +68,16 @@ export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
               showSummary={false}
               testId="vision-option-use-cdn"
             />
-          </OptionsGridCell>
+          </OptionsGridToggleCell>
+          <OptionsGridToggleCell wide>
+            <SwitchField
+              checked={options.includeSourceMap}
+              info={t('vision.options.include-source-map.description')}
+              onChange={(includeSourceMap) => onChange({includeSourceMap})}
+              testId="vision-option-source-map"
+              title={t('vision.options.include-source-map')}
+            />
+          </OptionsGridToggleCell>
         </OptionsGrid>
         {resolved.isCdnBlockedByPerspective && (
           <CdnBlockedNotice

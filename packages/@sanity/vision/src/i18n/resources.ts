@@ -212,6 +212,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.export-query.copied': 'Snippet copied to clipboard',
   /** Label for the button that copies a code snippet */
   'vision.export-query.copy': 'Copy snippet',
+  /** Label for the button that copies every file of a code snippet, each under a comment with its path */
+  'vision.export-query.copy-all': 'Copy all files',
   /** Explanation at the top of the export query dialog */
   'vision.export-query.description':
     'Run this query outside of the studio with one of these snippets.',
@@ -220,7 +222,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'The query and params come to {{size}} characters as search params; from {{limit}} on, @sanity/client sends them as a JSON body rather than in the URL, so the snippet does the same.',
   /** Title of the dialog that exports the query as code snippets */
   'vision.export-query.title': 'Export query',
-  /** Note about authentication in the export query dialog */
+  /** Note under a snippet that reads an API token, because its perspective includes drafts or releases */
+  'vision.export-query.token-env-note':
+    'The {{perspective}} perspective returns drafts or release versions, which only an authenticated request can read. Set SANITY_API_TOKEN to a token with read access, on the server only.',
+  /**
+   * Note about authentication in the export query dialog
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.export-query.token-note':
     'Private datasets need an API token. Public datasets can drop the Authorization header.',
   /** Toast shown after the generated code was copied */
@@ -316,16 +325,27 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.edit.submit': 'Edit',
   /** Explanation at the top of the Explain panel */
   'vision.explain.description':
-    'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps. Explain this to me has Sanity Agent Actions describe the query and its plan in plain words, which uses one AI credit.',
+    'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps. Explain this to me has Sanity Agent Actions describe the query in plain words, say whether it runs well and suggest how to improve it, which uses one AI credit.',
   /** Explanation at the top of the Explain panel when the AI explanation is switched off */
   'vision.explain.description-plan':
     'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps.',
+  /** Toggle under the explanation showing how the query plan runs the query, step by step */
+  'vision.explain.details': 'How it runs, in detail',
   /** Shown in the Explain panel while there is no valid query to explain */
   'vision.explain.empty': 'Write a query to explain it.',
   /** Button in the Explain panel asking Agent Actions to explain the query and its plan */
   'vision.explain.explain': 'Explain this to me',
   /** Shown when the explanation could not be written */
   'vision.explain.failed': 'The query could not be explained: {{message}}',
+  /** Button under the explanation's suggestions that has Agent Actions make them to the query */
+  'vision.explain.improve': 'Improve query',
+  /** Explanation under the Improve query button */
+  'vision.explain.improve.description':
+    'Sanity Agent Actions make these changes to the GROQ, with the document types, and the Content Lake checks each attempt; every attempt uses one AI credit. It replaces this tab’s query and runs; undo in the editor brings the previous query back.',
+  /** Shown when the query could not be improved, above the reason */
+  'vision.explain.improve.failed': 'The query could not be improved',
+  /** Shown while the first attempt at the improved query is written */
+  'vision.explain.improve.progress': 'Improving the query…',
   /** A count the index computes without reading the documents */
   'vision.explain.insight.aggregate': 'Counted in the index, without reading the documents.',
   /** A subquery the plan runs once for all documents */
@@ -353,6 +373,15 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.explain.plan-failed': 'The query plan could not be fetched: {{message}}',
   /** Heading of the query plan in the Explain panel */
   'vision.explain.plan-title': 'Query plan',
+  /** Heading of the explanation's list of changes that would make the query faster */
+  'vision.explain.suggestions.title': 'Here are ways you can improve your query',
+  /** Verdict of an explanation: the query does slow work, but there is no faster way to get its data */
+  'vision.explain.verdict.cannot-improve':
+    'This query takes some work, but there isn’t really a faster way to get this data',
+  /** Verdict of an explanation: a change to the query would make it faster */
+  'vision.explain.verdict.improvable': 'This query can be faster',
+  /** Verdict of an explanation: the query runs well as it is */
+  'vision.explain.verdict.performant': 'This is a good, fast query',
   /** Button of a library function the query does not declare, which declares it at the top */
   'vision.functions.add': 'Add to query',
   /** Shown on a library function the query declares the same way */
@@ -467,7 +496,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.history.reason.generated': 'Generated query',
   /** History reason: a link to the tool named a query URL, which opened in a tab and ran */
   'vision.history.reason.link': 'Opened link',
-  /** History reason: mutations were applied from the Mutate panel */
+  /**
+   * History reason: mutations were applied from the Mutate panel
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.history.reason.mutation': 'Mutations applied',
   /** History reason: a live event matched the query's sync tags */
   'vision.history.reason.live': 'Live update',
@@ -476,7 +509,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /**
    * History reason: the Live fetch button was pressed, which fetches and then refetches
    * automatically
+   * @deprecated no longer in use
    */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.history.reason.live-start': 'Live fetch started',
   /** History reason: a saved query was loaded into a tab that refetches automatically */
   'vision.history.reason.load': 'Query loaded',
@@ -556,10 +591,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    */
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.live.active': 'Live',
-  /** Button in the request column's action bar that fetches and then refetches automatically */
+  /** Button in the request column's action bar that refetches automatically */
   'vision.live.button': 'Live fetch',
   /** Tooltip of the Live button while automatic refetching is off */
-  'vision.live.button.start': 'Fetch, then fetch again whenever the documents in the result change',
+  'vision.live.button.start': 'Fetch again whenever the documents in the result change',
   /** Tooltip of the Stop live button, while the tab refetches automatically */
   'vision.live.button.stop':
     'Stop fetching when the documents in the result change. Fetch still fetches on demand, for results no document change touches, like now()',
@@ -587,7 +622,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.mutate.apply-needs-preview': 'Apply sends what a dry run showed: run one first.',
   /** Shown once the mutations were applied */
   'vision.mutate.applied':
-    'Applied to {{dataset}} in transaction {{transactionId}}. Documents changed: {{count}}. The query was fetched again.',
+    'Applied to {{dataset}} in transaction {{transactionId}}. Documents changed: {{count}}.',
   /** Option giving array items without a _key one */
   'vision.mutate.auto-keys': 'Add a _key to array items that have none',
   /** Under the option giving array items a _key */
@@ -932,8 +967,29 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.params.resize':
     'Resize params: drag or use the arrow keys; double-click or press Enter to fit the content again',
+  /** Accessible label of the `…` menu next to the params view tabs */
+  'vision.params.actions': 'Params actions',
   /** Accessible label of the button next to the params view tabs that copies the params */
   'vision.params.copy': 'Copy params',
+  /** Shown in the params export dialog when the workspace schema could not be read */
+  'vision.params.export.source-no-schema':
+    'Inferred from how the query uses each param. The workspace schema could not be read, so params compared with fields are typed only as far as the query tells.',
+  /** Note at the top of the dialog exporting types for the params */
+  'vision.params.export.source':
+    'Inferred from how the query uses each param, against the workspace schema, the same way the params form types them.',
+  /** Caution in the params export dialog when the query does not parse */
+  'vision.params.export.syntax-error':
+    'The query does not parse, so its params are typed as unknown until it does.',
+  /** Title of the dialog exporting TypeScript types for the params */
+  'vision.params.export.title-typescript': 'Export params as TypeScript',
+  /** Title of the dialog exporting a Zod schema for the params */
+  'vision.params.export.title-zod': 'Export params as Zod',
+  /** Menu item in the params `…` menu exporting TypeScript types for the params */
+  'vision.params.export-typescript': 'Export TypeScript…',
+  /** Tooltip of the params export menu items when the query uses no params */
+  'vision.params.export-unavailable': 'The query uses no params to export types for',
+  /** Menu item in the params `…` menu exporting a Zod schema for the params */
+  'vision.params.export-zod': 'Export Zod…',
   /** Accessible label of the button next to the params view tabs that reformats the params JSON */
   'vision.params.format': 'Format params',
   /** Tab showing the params as a form inferred from the query */
@@ -1357,6 +1413,17 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'When the query editor gets wider or narrower, a query laid out by Prettify is laid out again for the new width. Queries you formatted yourself are left as they are.',
   /** Title of the settings section about the query editor */
   'vision.settings.editor.title': 'Query editor',
+  /** Explains the settings that pick the snippets of the Export query dialog and their order */
+  'vision.settings.export-snippets.description':
+    'The snippets the Export query dialog offers, as its tabs in this order. Switch off the ones you do not use; the choice is saved in this browser.',
+  /** Accessible label of the button that moves an export snippet one tab later */
+  'vision.settings.export-snippets.move-down': 'Move {{snippet}} down',
+  /** Accessible label of the button that moves an export snippet one tab earlier */
+  'vision.settings.export-snippets.move-up': 'Move {{snippet}} up',
+  /** Button that shows every export snippet again, in the default order */
+  'vision.settings.export-snippets.reset': 'Reset to defaults',
+  /** Title of the settings that pick the snippets of the Export query dialog */
+  'vision.settings.export-snippets.title': 'Export snippets',
   /** Explains the setting listing the fields left out of History diffs */
   'vision.settings.history-diff.description':
     'One field path per line. A path matches at any depth of a result, so _rev hides the revision of every document in it. Each diff can still show them.',

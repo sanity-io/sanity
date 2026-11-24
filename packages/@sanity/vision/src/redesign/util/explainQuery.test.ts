@@ -2,7 +2,12 @@ import {type PromptRequest} from '@sanity/client'
 import {describe, expect, it} from 'vitest'
 
 import {QUERY_URL_SIZE_LIMIT} from '../../util/queryRequestMethod'
-import {type ExplainQueryClient, explainQuery, fetchQueryPlan} from './explainQuery'
+import {
+  type ExplainQueryClient,
+  explainQuery,
+  fetchQueryPlan,
+  toQueryExplanation,
+} from './explainQuery'
 
 const PLAN = 'Pipeline {\n  r1: StreamStep {\n    $0: Fetch {Filter: (_type == "author")}\n  }\n}\n'
 
@@ -88,10 +93,25 @@ describe('fetchQueryPlan', () => {
 
 describe('explainQuery', () => {
   it('asks Agent Actions on the experimental API with the query, its params and the plan', async () => {
-    const {client, prompts} = createClient({prompt: '  It fetches authors.\n\nNothing is slow.  '})
-    expect(await explainQuery(client, query, PLAN)).toBe('It fetches authors.\n\nNothing is slow.')
+    const {client, prompts} = createClient({
+      prompt: {
+        summary: '  It fetches authors.  ',
+        verdict: 'improvable',
+        verdictReason: 'The filter reads every document.',
+        suggestions: ['Filter on `_type` first.', '  ', 3],
+        details: 'The Fetch reads authors.\n\nNothing else runs.',
+      },
+    })
+    expect(await explainQuery(client, query, PLAN)).toEqual({
+      summary: 'It fetches authors.',
+      verdict: 'improvable',
+      verdictReason: 'The filter reads every document.',
+      suggestions: ['Filter on `_type` first.'],
+      details: 'The Fetch reads authors.\n\nNothing else runs.',
+    })
     expect(prompts).toHaveLength(1)
     expect(prompts[0].apiVersion).toBe('vX')
+    expect(prompts[0].request.format).toBe('json')
     expect(prompts[0].request.instructionParams).toEqual({
       query: '*[_type == $type]',
       params: '{"type":"author"}',
@@ -102,11 +122,43 @@ describe('explainQuery', () => {
     expect(prompts[0].request.instruction).toContain('$plan')
     expect(prompts[0].request.instruction).toContain('$glossary')
     expect(prompts[0].request.instruction).not.toContain('$0')
+    for (const verdict of ['performant', 'cannot-improve', 'improvable']) {
+      expect(prompts[0].request.instruction).toContain(`"${verdict}"`)
+    }
   })
 
-  it('rejects an empty explanation', async () => {
-    const {client} = createClient({prompt: '   '})
+  it('rejects an explanation without a summary', async () => {
+    const {client} = createClient({prompt: {summary: '   ', verdict: 'performant'}})
     await expect(explainQuery(client, query, PLAN)).rejects.toThrow(
+      'The explanation came back empty',
+    )
+  })
+})
+
+describe('toQueryExplanation', () => {
+  it('judges a reply without a known verdict by whether it suggests anything', () => {
+    expect(toQueryExplanation({summary: 'A', verdict: 'fast', suggestions: []})).toMatchObject({
+      verdict: 'performant',
+      suggestions: [],
+    })
+    expect(toQueryExplanation({summary: 'A', suggestions: ['Add a limit.']})).toMatchObject({
+      verdict: 'improvable',
+      suggestions: ['Add a limit.'],
+    })
+  })
+
+  it('keeps the verdict the model gave', () => {
+    expect(toQueryExplanation({summary: 'A', verdict: 'cannot-improve'})).toEqual({
+      summary: 'A',
+      verdict: 'cannot-improve',
+      verdictReason: '',
+      suggestions: [],
+      details: '',
+    })
+  })
+
+  it('rejects a reply that is not an object', () => {
+    expect(() => toQueryExplanation('It fetches authors.')).toThrow(
       'The explanation came back empty',
     )
   })

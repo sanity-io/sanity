@@ -26,6 +26,7 @@ import {
   VariantSelect,
 } from '../request/OptionFields'
 import {SwitchField} from '../SwitchField'
+import {ExportSnippetsSettings} from './ExportSnippetsSettings'
 
 /** One field path per line (commas work too), each once */
 function parseFieldList(text: string): string[] {
@@ -304,6 +305,8 @@ export function SettingsPanel() {
         <Card border padding={3} radius={2}>
           <HiddenDiffFieldsSetting />
         </Card>
+
+        <ExportSnippetsSettings />
 
         <AiSettings />
 

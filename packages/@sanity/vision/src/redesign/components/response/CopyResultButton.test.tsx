@@ -31,8 +31,10 @@ function renderButton(onCopy: () => Promise<boolean>) {
   )
 }
 
-const copied = () =>
-  screen.getByTestId('vision-copy-result-glyphs').getAttribute('data-copied') === 'true'
+const button = () => screen.getByTestId('vision-copy-result')
+const copied = () => button().getAttribute('data-copied') === 'true'
+const shownIcon = () =>
+  button().querySelector('[data-sanity-icon]')?.getAttribute('data-sanity-icon')
 
 async function click() {
   await act(async () => {
@@ -55,6 +57,7 @@ describe('CopyResultButton', () => {
     await click()
     expect(onCopy).toHaveBeenCalledTimes(1)
     expect(copied()).toBe(true)
+    expect(shownIcon()).toBe('checkmark')
 
     act(() => {
       vi.advanceTimersByTime(COPIED_FEEDBACK_MS - 1)
@@ -64,6 +67,7 @@ describe('CopyResultButton', () => {
       vi.advanceTimersByTime(1)
     })
     expect(copied()).toBe(false)
+    expect(shownIcon()).toBe('copy')
   })
 
   it('keeps the checkmark longer when copied again while it shows', async () => {
@@ -91,9 +95,8 @@ describe('CopyResultButton', () => {
 
   it('shows its label next to the copy icon', () => {
     renderButton(() => Promise.resolve(true))
-    const button = screen.getByTestId('vision-copy-result')
-    expect(button.textContent).toBe('Copy result')
-    expect(button.contains(screen.getByTestId('vision-copy-result-glyphs'))).toBe(true)
+    expect(button().textContent).toBe('Copy result')
+    expect(shownIcon()).toBe('copy')
   })
 
   it('copies nothing while disabled', async () => {

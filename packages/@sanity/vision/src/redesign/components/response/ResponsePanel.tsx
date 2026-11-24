@@ -12,6 +12,7 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {describeKeypath} from '../../../util/getAtKeypath'
 import {canEncodeCsv, getCsvBlobUrl, getJsonBlobUrl} from '../../../util/getBlobUrl'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
+import {useQueryAgent} from '../../hooks/useQueryAgent'
 import {useQueryExplain} from '../../hooks/useQueryExplain'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {useScrolledFromTop} from '../../hooks/useScrolledFromTop'
@@ -56,12 +57,14 @@ export interface ResponsePanelProps {
   resolved: ResolvedRequest
   /** What the tab would fetch right now; tells whether the shown result is for the current query */
   request: QueryRequest | null
-  /** Mutations were applied from the Mutate panel, and the result may have changed */
-  onMutationsApplied: () => void
+  /** The tab's params, which Improve query starts from; undefined while they do not parse */
+  params: Record<string, unknown> | undefined
+  /** Formats a query for the query editor, as Prettify does */
+  formatForEditor: (query: string) => Promise<string>
 }
 
 export function ResponsePanel(props: ResponsePanelProps) {
-  const {tab, runnerRef, resolved, request, onMutationsApplied} = props
+  const {tab, runnerRef, resolved, request, params, formatForEditor} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const tabElementId = useTabElementId()
   const resultContentId = tabElementId('vision-result-content')
@@ -134,6 +137,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
     }
   }, [resolveSyncTags, result, resultSourceMap, settledRequest])
   const queryExplain = useQueryExplain(request)
+  const improveAgent = useQueryAgent({tab, client: resolved.client, formatForEditor})
   const perspectiveName = usePerspectiveOptionName(resolved.tabPerspective)
   const delta = useDeltaPanel()
   const mutate = useMutatePanel()
@@ -243,9 +247,12 @@ export function ResponsePanel(props: ResponsePanelProps) {
             canExplain={request !== null}
             client={resolved.client}
             explanation={queryExplain.explanation}
+            improveAgent={improveAgent}
             onExplain={() => void queryExplain.explain()}
             onShowPlan={queryExplain.showPlan}
+            params={params}
             plan={queryExplain.plan}
+            tab={tab}
           />
         ),
       },
@@ -283,7 +290,9 @@ export function ResponsePanel(props: ResponsePanelProps) {
       hasSourceMap,
       hiddenDiffFields,
       history,
+      improveAgent,
       meta,
+      params,
       perspectiveName,
       queryExplain,
       request,
@@ -294,6 +303,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
       sourceMapViews,
       syncTagLookup,
       t,
+      tab,
       tabElementId,
       url,
     ],
@@ -313,7 +323,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
             dataset={resolved.dataset}
             hiddenFields={hiddenDiffFields}
             mutate={mutate}
-            onApplied={onMutationsApplied}
             result={hasResult ? result : undefined}
           />
         )

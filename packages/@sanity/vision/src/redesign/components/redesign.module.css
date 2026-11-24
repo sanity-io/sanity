@@ -1,5 +1,7 @@
+/* Sizes inside the tool follow the tool's width, not the window's */
 .root {
   position: relative;
+  container: visionTool / inline-size;
 }
 
 /*
@@ -74,6 +76,12 @@
   background: var(--card-shadow-ambient-color);
   outline: 2px solid var(--card-focus-ring-color);
   outline-offset: -2px;
+}
+
+/* Held at equal halves: the line takes the focus color while it is dragged or focused */
+.splitHandle[data-snapped='true'][data-dragging='true'],
+.splitHandle[data-snapped='true']:focus-visible {
+  background: var(--card-focus-ring-color);
 }
 
 .splitHandleVertical {
@@ -382,7 +390,7 @@
 
 /* The tab's tools and the settings take more room than a list of queries */
 .sidebarDrawerWide {
-  width: min(480px, 45vw);
+  width: min(480px, 45cqi);
 }
 
 /*
@@ -727,28 +735,6 @@
   }
 }
 
-/* The copy icon and the checkmark that confirms a copy, stacked and crossfaded */
-.copyGlyphs {
-  display: inline-grid;
-  /* Lines the stacked glyphs up with the label, like a lone icon sits in a button's text */
-  vertical-align: middle;
-}
-
-.copyGlyphs > svg {
-  grid-area: 1 / 1;
-  transition:
-    opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
-    transform 200ms cubic-bezier(0.23, 1, 0.32, 1),
-    filter 200ms cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.copyGlyphs[data-copied='true'] > [data-glyph='copy'],
-.copyGlyphs[data-copied='false'] > [data-glyph='check'] {
-  opacity: 0;
-  transform: scale(0.9);
-  filter: blur(2px);
-}
-
 /* Wraps a menu button so a tooltip can attach to it without taking the button's ref */
 .tooltipTarget {
   display: inline-flex;
@@ -764,6 +750,11 @@
   padding-top: 0;
   overflow: visible;
   white-space: normal;
+}
+
+/* A disabled menu item lets the pointer through to its wrapper, which carries the tooltip */
+.disabledMenuItemTarget > [disabled] {
+  pointer-events: none;
 }
 
 .exportUnavailableHint {
@@ -790,8 +781,7 @@
 /* Less motion: views and confirmations still fade, nothing moves or scales */
 @media (prefers-reduced-motion: reduce) {
   .resultView,
-  .resultEnter,
-  .copyGlyphs > svg {
+  .resultEnter {
     transition-property: opacity;
   }
 
@@ -811,6 +801,37 @@
 .codeBlock {
   max-height: 50vh;
   overflow: auto;
+}
+
+/* The tabs of the Export query dialog scroll sideways on a narrow screen instead of squeezing */
+.exportTabs {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+/* The path of a snippet file, above its code */
+.exportFileHeader {
+  border-bottom: 1px solid var(--card-border-color);
+}
+
+/*
+ * Long lines of an export snippet wrap rather than scroll the code sideways; the copied text keeps
+ * its own lines
+ */
+.exportCode pre,
+.exportCode code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* The highlighted code of a snippet file, in the card's colors where no token colors it */
+.exportCodeBlock {
+  margin: 0;
+  color: var(--card-code-fg-color, var(--card-fg-color));
+}
+
+.exportCodeBlock code {
+  font: inherit;
 }
 
 /*

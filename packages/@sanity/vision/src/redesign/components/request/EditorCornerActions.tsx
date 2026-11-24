@@ -8,7 +8,6 @@ import {Flex, Text} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {VISION_SHORTCUTS} from '../../util/shortcuts'
-import * as styles from '../redesign.module.css'
 
 export interface EditorCornerActionsProps {
   /** Prefixes the buttons' test IDs: `<testIdPrefix>-format`, `<testIdPrefix>-copy` */
@@ -80,12 +79,7 @@ export function EditorCornerActions(props: EditorCornerActionsProps) {
           data-testid={`${testIdPrefix}-copy`}
           fontSize={1}
           gap={2}
-          icon={
-            <span className={styles.copyGlyphs} data-copied={copied}>
-              <CopyIcon data-glyph="copy" />
-              <CheckmarkIcon data-glyph="check" />
-            </span>
-          }
+          icon={copied ? CheckmarkIcon : CopyIcon}
           mode="bleed"
           onClick={onCopy}
           padding={2}

@@ -53,6 +53,21 @@ export const redesignEditorTheme: Extension = [
       '&.cm-editor .cm-gutter:last-child .cm-activeLineGutter': {
         boxShadow: 'inset -1px 0 0 var(--card-border-color)',
       },
+      // Bracket matching is marked with a faint tint and a hairline outline instead of the base
+      // theme's saturated fill. The outline is an inset shadow so the mark takes no extra space,
+      // and both are translucent so they read on the active line band as well as off it.
+      '&.cm-editor.cm-focused .cm-matchingBracket': {
+        backgroundColor: 'color-mix(in srgb, var(--card-muted-fg-color) 12%, transparent)',
+        borderRadius: '2px',
+        boxShadow:
+          'inset 0 0 0 1px color-mix(in srgb, var(--card-muted-fg-color) 45%, transparent)',
+      },
+      '&.cm-editor.cm-focused .cm-nonmatchingBracket': {
+        backgroundColor: 'color-mix(in srgb, var(--card-badge-critical-fg-color) 12%, transparent)',
+        borderRadius: '2px',
+        boxShadow:
+          'inset 0 0 0 1px color-mix(in srgb, var(--card-badge-critical-fg-color) 45%, transparent)',
+      },
     }),
   ),
 ]

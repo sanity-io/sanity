@@ -77,6 +77,7 @@ import {GenerateQueryButton} from './GenerateQueryButton'
 import {LintFix} from './LintFix'
 import {LiveButton} from './LiveButton'
 import {OptionsPanel} from './OptionsPanel'
+import {ParamsActionsMenu} from './ParamsActionsMenu'
 import {ParamsForm} from './ParamsForm'
 import {ParamsPanel} from './ParamsPanel'
 import {QueryActionsMenu} from './QueryActionsMenu'
@@ -106,6 +107,8 @@ export interface RequestPanelProps {
   onParamsFlush: () => void
   onOptionsChange: (options: Partial<VisionTabOptions>) => void
   onRun: () => void
+  /** Enter in a params form field, which fetches like the fetch shortcut */
+  onParamsSubmit: () => void
   onCancel: () => void
   /** Formats the query in its editor */
   onFormatQuery: () => void
@@ -170,6 +173,7 @@ export function RequestPanel(props: RequestPanelProps) {
     onParamsFlush,
     onOptionsChange,
     onRun,
+    onParamsSubmit,
     onCancel,
     onFormatQuery,
     autoFormatPending,
@@ -438,21 +442,34 @@ export function RequestPanel(props: RequestPanelProps) {
                 selected={paramsView === 'form'}
               />
             </TabList>
-            <EditorCornerActions
-              copied={copied === 'params'}
-              copyLabel={t('vision.params.copy')}
-              formatLabel={canFormatParams ? t('vision.params.format') : undefined}
-              onCopy={onCopyParams}
-              onFormat={onFormatParams}
-              testIdPrefix="vision-params"
-            />
+            <Flex
+              alignItems="center"
+              data-testid="vision-params-toolbar-actions"
+              flexShrink={0}
+              gap={1}
+            >
+              <EditorCornerActions
+                copied={copied === 'params'}
+                copyLabel={t('vision.params.copy')}
+                formatLabel={canFormatParams ? t('vision.params.format') : undefined}
+                onCopy={onCopyParams}
+                onFormat={onFormatParams}
+                testIdPrefix="vision-params"
+              />
+              <ParamsActionsMenu tab={tab} />
+            </Flex>
           </Flex>
         ),
         content: (
           <Flex data-vision-params-content="" flexDirection="column">
             <Box id={paramsContentId}>
               {paramsView === 'form' ? (
-                <ParamsForm onChange={onParamsReplace} params={params} query={tab.query} />
+                <ParamsForm
+                  onChange={onParamsReplace}
+                  onSubmit={onParamsSubmit}
+                  params={params}
+                  query={tab.query}
+                />
               ) : (
                 <>
                   <ParamsPanel
@@ -543,6 +560,7 @@ export function RequestPanel(props: RequestPanelProps) {
     onParamsChange,
     onParamsFlush,
     onParamsReplace,
+    onParamsSubmit,
     onRevealRange,
     params,
     paramsContentId,
@@ -614,12 +632,6 @@ export function RequestPanel(props: RequestPanelProps) {
               tone={isFetching ? 'critical' : 'primary'}
             />
           </Tooltip>
-          <QueryActionsMenu
-            buildRequest={buildRequest}
-            request={request}
-            resolved={resolved}
-            tab={tab}
-          />
         </ActionRail>
       }
       id="vision-request"
@@ -648,14 +660,22 @@ export function RequestPanel(props: RequestPanelProps) {
             <Label aria-label={t('query.label')} className={styles.paneToolbarLabel} muted size={1}>
               {t('query.label')}
             </Label>
-            <EditorCornerActions
-              copied={copied === 'query'}
-              copyLabel={t('vision.query.copy')}
-              formatLabel={canFormatQuery ? t('vision.query.format') : undefined}
-              onCopy={onCopyQuery}
-              onFormat={onFormatQuery}
-              testIdPrefix="vision-query"
-            />
+            <Flex alignItems="center" data-testid="vision-query-toolbar-actions" gap={1}>
+              <EditorCornerActions
+                copied={copied === 'query'}
+                copyLabel={t('vision.query.copy')}
+                formatLabel={canFormatQuery ? t('vision.query.format') : undefined}
+                onCopy={onCopyQuery}
+                onFormat={onFormatQuery}
+                testIdPrefix="vision-query"
+              />
+              <QueryActionsMenu
+                buildRequest={buildRequest}
+                request={request}
+                resolved={resolved}
+                tab={tab}
+              />
+            </Flex>
           </div>
           <div className={styles.paneScroll} data-fill="" ref={setQueryScroller}>
             <VisionCodeMirror
