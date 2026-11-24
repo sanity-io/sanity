@@ -1,7 +1,15 @@
 import {Schema} from '@sanity/schema'
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
-import {cleanup, createEvent, fireEvent, render, screen, within} from '@testing-library/react'
+import {
+  cleanup,
+  createEvent,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import JSON5 from 'json5'
 import {type ReactNode, useState} from 'react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
@@ -54,6 +62,15 @@ vi.stubGlobal(
 )
 
 const theme = buildTheme()
+
+/** The options of the open autocomplete, which jsdom reports as clipped and so hidden */
+function optionTexts() {
+  return screen
+    .queryAllByRole('listbox', {hidden: true})
+    .filter((listbox) => !(listbox instanceof HTMLDataListElement))
+    .flatMap((listbox) => within(listbox).queryAllByRole('option', {hidden: true}))
+    .map((option) => option.textContent)
+}
 
 function toParams(raw: string): Params {
   try {
@@ -116,12 +133,15 @@ describe('ParamsForm', () => {
         'vision.params-form.type.any',
       ].map((type) => `vision.params-form.type-detail:${JSON.stringify({type})}`),
     )
-    // The document types are suggested; the input points at the list
-    const typeInput = within(field('type')).getByRole('combobox')
-    const list = document.getElementById(typeInput.getAttribute('list') || '')
+    // The document types are listed by an autocomplete, the options of a string by its suggestions
+    fireEvent.focus(within(field('type')).getByRole('combobox'))
+    fireEvent.click(within(field('type')).getByLabelText('Open'))
+    expect(optionTexts()).toEqual(['author', 'post'])
+    const statusInput = within(field('status')).getByRole('combobox')
+    const list = document.getElementById(statusInput.getAttribute('list') || '')
     expect([...(list?.querySelectorAll('option') ?? [])].map((option) => option.value)).toEqual([
-      'author',
-      'post',
+      'draft',
+      'published',
     ])
     // The details live in the info icon's tooltip, the missing value is flagged like a required field
     expect(
@@ -161,6 +181,33 @@ describe('ParamsForm', () => {
 
     fireEvent.change(typeInput, {target: {value: ''}})
     expect(params()).toEqual({title: 'x'})
+  })
+
+  it('narrows the document types to what is typed, and picks one from the list', async () => {
+    const {field, params} = renderForm('*[_type == $type]')
+    const typeInput = within(field('type')).getByRole('combobox')
+    fireEvent.focus(typeInput)
+    fireEvent.change(typeInput, {target: {value: 'AU'}})
+    expect(optionTexts()).toEqual(['author'])
+    expect(params()).toEqual({type: 'AU'})
+
+    fireEvent.keyDown(typeInput, {key: 'ArrowDown'})
+    const [listbox] = screen
+      .getAllByRole('listbox', {hidden: true})
+      .filter((element) => !(element instanceof HTMLDataListElement))
+    fireEvent.keyDown(within(listbox).getByRole('option', {hidden: true}), {key: 'Enter'})
+    await waitFor(() => expect(params()).toEqual({type: 'author'}))
+    expect(typeInput).toHaveProperty('value', 'author')
+    expect(typeInput.getAttribute('aria-expanded')).toBe('false')
+  })
+
+  it('lists every document type when a filled value opens the list', () => {
+    const {field} = renderForm('*[_type == $type]', '{"type": "post"}')
+    const typeInput = within(field('type')).getByRole('combobox')
+    fireEvent.focus(typeInput)
+    fireEvent.click(within(field('type')).getByLabelText('Open'))
+    expect(optionTexts()).toEqual(['author', 'post'])
+    expect(typeInput).toHaveProperty('value', 'post')
   })
 
   it('sends numbers as numbers, keeping the text as typed, and other text as text', () => {
