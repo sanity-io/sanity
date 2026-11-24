@@ -2,20 +2,35 @@
   container: optionsGrid / inline-size;
 }
 
-/* Fields flow into as many 180px-or-wider columns as fit the request column */
-.grid {
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/*
+ * The selects flow into as many 180px-or-wider columns as fit, like the params form's
+ * `fieldGrid`, and the columns share the whole row between the fields there are
+ */
+.fields {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
 }
 
-.startRow {
-  grid-column-start: 1;
+/*
+ * The toggles have a grid of their own, so they split their row in two halves instead of lining
+ * up with whichever of the selects' columns they happen to fall on
+ */
+.toggles {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr);
 }
 
-/* Two columns and the gap between them; a single column fits only one */
+/* Two 180px columns and the gap between them */
 @container optionsGrid (min-width: 372px) {
-  .wide {
-    grid-column-end: span 2;
+  .toggles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
