@@ -4691,23 +4691,62 @@ describe('VisionRedesign', () => {
       }),
     )
 
-    // Picking the workspace's own dataset is still an override: it stays if the workspace changes
-    pickDataset('test')
-    expect(datasetSelect().value).toBe('test')
-    fireEvent.click(screen.getByTestId('vision-fetch-button'))
-    await waitFor(() => expect(fetchCalls).toHaveLength(2))
-    expect(fetchCalls[1].config.dataset).toBe('test')
-    await waitFor(() =>
-      expect(getStoredState().tabs[0].options).toMatchObject({
-        datasetMode: 'override',
-        dataset: 'test',
-      }),
-    )
+    // Auto stands for the workspace's own dataset, which has no item of its own
+    fireEvent.click(datasetSelect())
+    expect(screen.getByTestId('vision-option-dataset-item-auto')).toBeTruthy()
+    expect(screen.queryByTestId('vision-option-dataset-item-test')).toBeNull()
+    fireEvent.click(datasetSelect())
 
     pickMenuItem('vision-option-dataset-select', 'auto')
     await waitFor(() =>
       expect(getStoredState().tabs[0].options).toMatchObject({datasetMode: 'auto'}),
     )
+    expect(datasetSelect().value).toBe('test')
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(fetchCalls[1].config.dataset).toBe('test')
+  })
+
+  it('checks Auto for a tab pinned to the workspace dataset', () => {
+    const initial = createInitialState(DEFAULTS)
+    const tab = createTab(initial.settings, {
+      id: 'pinned',
+      options: {datasetMode: 'override', dataset: 'test'},
+    })
+    saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'pinned'})
+    renderRedesign()
+    openRequestTab('options')
+
+    fireEvent.click(screen.getByTestId('vision-option-dataset-select'))
+    expect(screen.getByTestId('vision-option-dataset-item-auto').getAttribute('aria-checked')).toBe(
+      'true',
+    )
+  })
+
+  it('lists today first in the API version list, then dated versions, vX and v1', async () => {
+    renderRedesign()
+    openRequestTab('options')
+    // A bare `v` matches every version
+    fireEvent.change(screen.getByTestId('vision-option-api-version-select'), {
+      target: {value: 'v'},
+    })
+    const today = `v${new Date().toISOString().split('T')[0]}`
+    const optionIds = () =>
+      screen
+        .getAllByTestId(/^vision-option-api-version-option-/)
+        .map((option) => option.dataset.testid?.replace('vision-option-api-version-option-', ''))
+
+    await waitFor(() => expect(optionIds()[0]).toBe(today))
+    expect(optionIds().filter((id) => id === today)).toHaveLength(1)
+    expect(optionIds().slice(-2)).toEqual(['vX', 'v1'])
+    const todayOption = screen.getByTestId(`vision-option-api-version-option-${today}`)
+    expect(todayOption.textContent).toContain('vision.options.api-version.today')
+    expect(todayOption.textContent).toContain(today)
+    expect(screen.getByTestId('vision-option-api-version-option-v1').textContent).toContain(
+      'vision.options.api-version.legacy',
+    )
+    // A typed query lists the matches without the group headings
+    expect(screen.queryByText('vision.options.api-version.dated')).toBeNull()
   })
 
   it('switches a tab on its own perspective back to the global one when the navbar changes', async () => {

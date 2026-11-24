@@ -16,6 +16,7 @@ import {SwitchField} from '../SwitchField'
 import {DatasetField} from './DatasetField'
 import {
   ApiVersionField,
+  FieldLabel,
   PerspectiveSelect,
   UseCdnField,
   usePerspectiveOptionName,
@@ -65,15 +66,18 @@ export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
             onChange={(variant) => onChange({variant})}
             value={options.variant}
           />
-          <OptionsGridToggleCell>
-            <UseCdnField
-              checked={options.useCdn}
-              notes={resolved.isCdnAnonymous ? [t('vision.options.use-cdn.anonymous')] : []}
-              onChange={(useCdn) => onChange({useCdn})}
-              showSummary={false}
-              testId="vision-option-use-cdn"
-            />
-          </OptionsGridToggleCell>
+          <Stack gap={2}>
+            <FieldLabel>{t('vision.options.caching-label')}</FieldLabel>
+            <OptionsGridToggleCell>
+              <UseCdnField
+                checked={options.useCdn}
+                notes={resolved.isCdnAnonymous ? [t('vision.options.use-cdn.anonymous')] : []}
+                onChange={(useCdn) => onChange({useCdn})}
+                showSummary={false}
+                testId="vision-option-use-cdn"
+              />
+            </OptionsGridToggleCell>
+          </Stack>
           {sourceMapEnabled && (
             <OptionsGridToggleCell wide>
               <SwitchField

@@ -118,6 +118,7 @@ export function OptionMenuButton({
       onClose={handleClose}
       onOpen={() => setOpen(true)}
       popover={{
+        animate: true,
         constrainSize: true,
         fallbackPlacements: ['top-start'],
         placement: 'bottom-start',
@@ -146,35 +147,92 @@ function useFocusOnOpen(open: boolean, ref: RefObject<HTMLInputElement | null>) 
   }, [open, ref])
 }
 
+/** A group heading, as the navbar perspective menu labels its release types */
+export function OptionMenuGroupLabel({children}: {children: string}) {
+  return (
+    <Box paddingBottom={1} paddingLeft={2} paddingTop={3}>
+      <Label muted size={1} style={{textTransform: 'uppercase'}}>
+        {children}
+      </Label>
+    </Box>
+  )
+}
+
 /** A group of items, under a heading like the navbar menu's release types, or none */
 export function OptionMenuSection({title, children}: {title?: string; children: ReactNode}) {
   return (
     <Card borderBottom className={styles.section} padding={1}>
       <VStack gap={1}>
-        {title && (
-          <Box paddingBottom={1} paddingLeft={2} paddingTop={3}>
-            <Label muted size={1} style={{textTransform: 'uppercase'}}>
-              {title}
-            </Label>
-          </Box>
-        )}
+        {title && <OptionMenuGroupLabel>{title}</OptionMenuGroupLabel>}
         {children}
       </VStack>
     </Card>
   )
 }
 
-interface OptionMenuItemProps {
-  testId: string
+export interface OptionItemContentProps {
   title: string
+  /** A muted line under the title, cut to one line with the whole of it on hover */
   subtitle?: string
   /** Shown before the title, like the perspective dots of the navbar menu */
   icon?: ReactNode
+}
+
+/**
+ * What an Options picker's item shows, spaced like the navbar perspective menu's items. The
+ * colours follow the card, so they stay readable on the hovered and selected backgrounds.
+ */
+export function OptionItemContent({title, subtitle, icon}: OptionItemContentProps) {
+  return (
+    <Flex alignItems="flex-start" gap={1}>
+      {icon && (
+        <Box flexShrink={0} paddingX={3} paddingY={2}>
+          {icon}
+        </Box>
+      )}
+      <Flex
+        flexDirection="column"
+        flexGrow={1}
+        gap={2}
+        minWidth="0"
+        paddingLeft={icon ? 0 : 2}
+        paddingRight={2}
+        paddingY={2}
+      >
+        <Text
+          as="div"
+          size={1}
+          style={{color: 'var(--card-fg-color)'}}
+          trim={true}
+          truncate={1}
+          weight="medium"
+        >
+          {title}
+        </Text>
+        {subtitle && (
+          <Text
+            as="div"
+            size={1}
+            style={{color: 'var(--card-muted-fg-color)'}}
+            title={subtitle}
+            trim={true}
+            truncate={1}
+          >
+            {subtitle}
+          </Text>
+        )}
+      </Flex>
+    </Flex>
+  )
+}
+
+interface OptionMenuItemProps extends OptionItemContentProps {
+  testId: string
   selected: boolean
   onClick: () => void
 }
 
-/** An item laid out like the navbar perspective menu's: icon, title, and a muted line under it */
+/** A radio item of an Options picker's menu */
 export function OptionMenuItem({
   testId,
   title,
@@ -193,32 +251,7 @@ export function OptionMenuItem({
       role="menuitemradio"
       selected={selected}
     >
-      <Flex alignItems="flex-start" gap={1}>
-        <Flex flexShrink={0} paddingX={3} paddingY={2}>
-          {icon}
-        </Flex>
-        <Flex
-          flexDirection="column"
-          flexGrow={1}
-          gap={2}
-          minWidth="0"
-          paddingRight={2}
-          paddingY={2}
-        >
-          <Text size={1} weight="medium" style={{color: 'var(--card-fg-color)'}}>
-            {title}
-          </Text>
-          {subtitle && (
-            <Text
-              className={styles.subtitle}
-              size={1}
-              style={{color: 'var(--card-muted-fg-color)'}}
-            >
-              {subtitle}
-            </Text>
-          )}
-        </Flex>
-      </Flex>
+      <OptionItemContent icon={icon} subtitle={subtitle} title={title} />
     </MenuItem>
   )
 }
