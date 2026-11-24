@@ -94,7 +94,11 @@ export function GenerateQueryBar(props: GenerateQueryBarProps) {
               request: description,
               schema: schema ? summarizeSchema(schema, description) : '',
             }),
-      {prompt: description, comment: mode === 'generate'},
+      {
+        prompt: description,
+        comment: mode === 'generate',
+        keepParams: mode === 'edit' && params === undefined,
+      },
     )
   }, [enabled, mode, params, request, run, schema, tab.query, telemetry])
 

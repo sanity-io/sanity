@@ -2380,6 +2380,44 @@ describe('VisionRedesign', () => {
     expect(text(screen.getByTestId('vision-tab-button'))).toBe('Reading list')
   })
 
+  it('keeps params that do not parse when Agent Actions edit or fix the query', async () => {
+    const {promptCalls, replyToPrompts} = renderRedesign()
+    const halfTyped = '{"limit": '
+    typeQuery('*[_type == "post"][0...$limit]')
+    openRequestTab('params')
+    fireEvent.change(
+      within(screen.getByTestId('vision-params-editor')).getByTestId('codemirror-mock'),
+      {target: {value: halfTyped}},
+    )
+    await waitFor(() => expect(getStoredState().tabs[0].rawParams).toBe(halfTyped))
+    replyToPrompts({query: '*[_type == "post"][0...$limit]{_id}', params: {limit: 5}})
+
+    editFrom('Only the IDs')
+    await waitFor(() => expect(getQueryEditor().value).toContain('_id'))
+    expect(promptCalls[0].request).toMatchObject({instructionParams: {params: '{}'}})
+    expect(getStoredState().tabs[0].rawParams).toBe(halfTyped)
+
+    openRequestTab('lint')
+    act(() =>
+      lintMocks.report?.([
+        {
+          from: 0,
+          to: 1,
+          line: 1,
+          column: 1,
+          severity: 'warning',
+          message: 'A problem',
+          source: 'groq-lint/example',
+        },
+      ]),
+    )
+    replyToPrompts({query: '*[_type == "page"][0...$limit]', params: {limit: 5}})
+    fireEvent.click(screen.getByTestId('vision-lint-fix'))
+    await waitFor(() => expect(getQueryEditor().value).toContain('"page"'))
+    expect(promptCalls[1].request).toMatchObject({instructionParams: {params: '{}'}})
+    expect(getStoredState().tabs[0].rawParams).toBe(halfTyped)
+  })
+
   it('fixes the lint findings with Agent Actions from the Lint panel', async () => {
     const {fetchCalls, promptCalls, replyToPrompts} = renderRedesign()
     const query = '*[_type == "post" && author->name == "x"]'

@@ -54,7 +54,7 @@ export function LintFix({tab, params, findings, client, agent}: LintFixProps) {
           diagnostics: findings,
           schema: schema ? summarizeSchema(schema, tab.query) : '',
         }),
-      {comment: false},
+      {comment: false, keepParams: params === undefined},
     )
   }, [findings, params, run, schema, tab.query, telemetry])
 

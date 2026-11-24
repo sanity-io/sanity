@@ -17,6 +17,8 @@ export type QueryAgentStatus =
       /** The description the attempts were written from, if the user wrote one */
       prompt: string | undefined
       lastAttempt: GeneratedQuery | undefined
+      /** Whether the tab's own params text stays when the last attempt is opened */
+      keepParams: boolean
       /** The credits the request was turned down for, when that is what failed */
       limit: AiCredits | undefined
     }
@@ -33,6 +35,11 @@ export interface QueryAgentOpenOptions {
   prompt?: string
   /** Runs the query once it is in the editor */
   fetch: boolean
+  /**
+   * Leaves the tab's params text as it is. For a request that started from params that did not
+   * parse, which went to the model as empty: what it made up must not replace what the user typed.
+   */
+  keepParams?: boolean
 }
 
 export interface UseQueryAgentOptions {
@@ -76,7 +83,7 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
         id: tab.id,
         tab: {
           query,
-          rawParams: JSON.stringify(generated.params, null, 2),
+          ...(options.keepParams ? {} : {rawParams: JSON.stringify(generated.params, null, 2)}),
           ...(named ? {title: generated.title} : {}),
         },
         fetch: options.fetch ? 'generated' : undefined,
@@ -90,7 +97,7 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
   const run = useCallback(
     async (
       ask: (request: QueryAgentRequest) => Promise<GeneratedQuery>,
-      options: {prompt?: string; comment: boolean},
+      options: {prompt?: string; comment: boolean; keepParams?: boolean},
     ) => {
       controllerRef.current?.abort()
       const controller = new AbortController()
@@ -105,7 +112,11 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
         reportAiCreditsGranted(client)
         await open(
           generated,
-          {prompt: options.comment ? options.prompt : undefined, fetch: true},
+          {
+            prompt: options.comment ? options.prompt : undefined,
+            fetch: true,
+            keepParams: options.keepParams,
+          },
           controller.signal,
         )
       } catch (error) {
@@ -120,6 +131,7 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
           message: error instanceof Error ? error.message : String(error),
           prompt: options.comment ? options.prompt : undefined,
           lastAttempt: error instanceof GenerateQueryError ? error.lastAttempt : undefined,
+          keepParams: options.keepParams === true,
           limit,
         })
       }
@@ -130,7 +142,11 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
   /** Opens the last rejected attempt, without running it */
   const openLastAttempt = useCallback(() => {
     if (status.type !== 'failed' || !status.lastAttempt) return
-    void open(status.lastAttempt, {prompt: status.prompt, fetch: false})
+    void open(status.lastAttempt, {
+      prompt: status.prompt,
+      fetch: false,
+      keepParams: status.keepParams,
+    })
   }, [open, status])
 
   return useMemo(() => ({status, run, openLastAttempt}), [status, run, openLastAttempt])
