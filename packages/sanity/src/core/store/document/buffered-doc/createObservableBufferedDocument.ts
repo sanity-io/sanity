@@ -1,5 +1,6 @@
 import {BufferedDocument, Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
+import {applyPatch, type RawPatch} from 'mendoza'
 import {BehaviorSubject, EMPTY, merge, type Observable, Subject} from 'rxjs'
 import {
   distinctUntilChanged,
@@ -147,6 +148,9 @@ export const createObservableBufferedDocument = (listenerEvent$: Observable<List
 
   const createInitialBufferedDocument = (initialSnapshot: SanityDocument | null) => {
     const bufferedDocument = new BufferedDocument(initialSnapshot)
+    // Build the copy of the stored document from the listener's Mendoza effects, which are
+    // Content Lake's own diff, instead of replaying its mutations through the mutator.
+    bufferedDocument.document.applyEffects = (doc, patch) => applyPatch(doc, patch as RawPatch)
     latestBufferedDocument = bufferedDocument
     const owner: CommitRequestOwner = {
       isCurrent: () => !replacedBufferedDocuments.has(bufferedDocument),

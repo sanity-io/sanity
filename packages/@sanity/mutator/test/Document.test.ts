@@ -1,6 +1,8 @@
+import {applyPatch, type RawPatch} from 'mendoza'
 import {expect, test} from 'vitest'
 
 import {Document, Mutation} from '../src/document'
+import {type Doc} from '../src/document/types'
 import {DocumentTester} from './util/DocumentTester'
 
 test('simple remote mutation', () => {
@@ -174,6 +176,13 @@ test('simple local mutation arriving out of order', () => {
     .assertBOTH('numbers', [2, 1])
 })
 
+/** A document that builds HEAD from effects with Mendoza, as Studio sets it up. */
+function effectsDocument(doc: Doc | null): Document {
+  const document = new Document(doc)
+  document.applyEffects = (base, patch) => applyPatch(base, patch as RawPatch)
+  return document
+}
+
 // A real Content Lake listener event: set the title to "Hello brave world" and insert "tech" after
 // the last tag. Content Lake computed the effects without `_rev`.
 const effectsBase = {
@@ -241,7 +250,7 @@ const realEvent = (withEffects: boolean) =>
   })
 
 test("builds HEAD from an incoming mutation's effects, with _rev from its result", () => {
-  const doc = new Document(effectsBase)
+  const doc = effectsDocument(effectsBase)
   doc.arrive(realEvent(true))
   expect(doc.HEAD).toEqual({
     ...effectsBase,
@@ -255,7 +264,7 @@ test("builds HEAD from an incoming mutation's effects, with _rev from its result
 test('builds HEAD from effects when the mutator would apply the mutations differently', () => {
   // Content Lake deep-merges a `merge` patch, which the mutator skips.
   const {_rev, ...stored} = {...effectsBase, meta: {a: 1}}
-  const doc = new Document(effectsBase)
+  const doc = effectsDocument(effectsBase)
   doc.arrive(
     new Mutation({
       transactionId: 'rev-2',
@@ -269,7 +278,7 @@ test('builds HEAD from effects when the mutator would apply the mutations differ
 })
 
 test('replays the mutations of an incoming mutation without effects', () => {
-  const doc = new Document(effectsBase)
+  const doc = effectsDocument(effectsBase)
   doc.arrive(realEvent(false))
   expect(doc.HEAD).toMatchObject({
     title: 'Hello brave world',
@@ -282,13 +291,13 @@ test('replays the mutations of an incoming mutation without effects', () => {
 test('replays the mutations when the effects do not apply to HEAD', () => {
   // HEAD has drifted from the revision the effects were computed on: it has no tags.
   const {tags: _tags, ...drifted} = effectsBase
-  const doc = new Document(drifted)
+  const doc = effectsDocument(drifted)
   doc.arrive(realEvent(true))
   expect(doc.HEAD).toMatchObject({title: 'Hello brave world', _rev: 'rev-2'})
 })
 
 test('builds a deleted HEAD from effects', () => {
-  const doc = new Document(effectsBase)
+  const doc = effectsDocument(effectsBase)
   doc.arrive(
     new Mutation({
       transactionId: 'rev-2',
@@ -302,7 +311,7 @@ test('builds a deleted HEAD from effects', () => {
 })
 
 test('replays the mutations of an incoming mutation with effects but no resulting revision', () => {
-  const doc = new Document(effectsBase)
+  const doc = effectsDocument(effectsBase)
   const {resultRev: _resultRev, ...withoutResultRev} = realEvent(true).params
   doc.applyIncoming(new Mutation(withoutResultRev))
   expect(doc.HEAD).toMatchObject({
@@ -323,7 +332,7 @@ const withEffect = (apply: unknown, previousRev: string | undefined = 'rev-1') =
 const {_rev: _baseRev, ...storedBase} = effectsBase
 
 test('creates HEAD from the effects of a mutation that creates the document', () => {
-  const doc = new Document(null)
+  const doc = effectsDocument(null)
   doc.arrive(
     new Mutation({
       transactionId: 'rev-1',
@@ -336,18 +345,18 @@ test('creates HEAD from the effects of a mutation that creates the document', ()
 })
 
 test('throws for a mutation on another revision, as without effects', () => {
-  const doc = new Document(effectsBase)
+  const doc = effectsDocument(effectsBase)
   expect(() => doc.applyIncoming(withEffect([0, storedBase], 'rev-0'))).toThrow('Previous revision')
 })
 
 test('does not apply effects computed against a document to a missing HEAD', () => {
-  const doc = new Document(null)
+  const doc = effectsDocument(null)
   expect(() => doc.applyIncoming(withEffect([0, storedBase]))).toThrow()
   expect(doc.HEAD).toBeNull()
 })
 
 test('replays the mutations when the effects are not a Mendoza patch', () => {
-  const doc = new Document(effectsBase)
+  const doc = effectsDocument(effectsBase)
   doc.arrive(withEffect({}))
   expect(doc.HEAD).toMatchObject({title: 'Set by the mutations', _rev: 'rev-2'})
 })
@@ -359,11 +368,20 @@ test.each([
   ['a document without a _type', {_id: 'drafts.post-1', title: 'x'}],
   ['a document with an undefined field', {...storedBase, undefined: 'x'}],
 ])('replays the mutations when the effects give %s', (_case, result) => {
-  const doc = new Document(effectsBase)
+  const doc = effectsDocument(effectsBase)
   doc.arrive(withEffect([0, result]))
   expect(doc.HEAD).toMatchObject({
     _id: 'drafts.post-1',
     title: 'Set by the mutations',
     _rev: 'rev-2',
+  })
+})
+
+test('replays the mutations when no effect applier is set', () => {
+  const doc = new Document(effectsBase)
+  doc.arrive(realEvent(true))
+  expect(doc.HEAD).toMatchObject({
+    title: 'Hello brave world',
+    _updatedAt: '2026-11-20T13:56:20.000Z',
   })
 })
