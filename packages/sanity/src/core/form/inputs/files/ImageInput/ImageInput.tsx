@@ -83,10 +83,11 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
 
   const imageOptions = schemaType.options
   const storedHotspot = value?.hotspot
+  const storedAssetRef = value?.asset?._ref
   const handleAssetChange = useCallback(
     (patch: FormPatch | FormPatch[] | PatchEvent) =>
-      onChange(withDefaultCrop(patch, imageOptions, storedHotspot)),
-    [imageOptions, onChange, storedHotspot],
+      onChange(withDefaultCrop(patch, imageOptions, storedHotspot, storedAssetRef)),
+    [imageOptions, onChange, storedAssetRef, storedHotspot],
   )
 
   const {

@@ -15,7 +15,7 @@ function validateCropOptions(options: Record<string, unknown> | undefined) {
   const {aspectRatio, minDimensions, recommendedDimensions} = options ?? {}
   const invalidAspectRatio = isSetButInvalid(aspectRatio, isValidImageAspectRatio)
     ? [
-        error(
+        warning(
           'Invalid image `options.aspectRatio` - must be a positive number (`16 / 9`), a `{min, max}` range of positive numbers with `min` no greater than `max`, or a non-empty array of positive numbers',
         ),
       ]
@@ -23,7 +23,7 @@ function validateCropOptions(options: Record<string, unknown> | undefined) {
   const invalidDimensions = Object.entries({minDimensions, recommendedDimensions})
     .filter(([, dimensions]) => isSetButInvalid(dimensions, isValidImageCropDimensions))
     .map(([name]) =>
-      error(
+      warning(
         `Invalid image \`options.${name}\` - must be an object with a positive \`width\` and \`height\` in pixels`,
       ),
     )

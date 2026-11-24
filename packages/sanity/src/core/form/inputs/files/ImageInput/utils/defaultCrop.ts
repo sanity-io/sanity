@@ -22,16 +22,18 @@ function isHotspotUnset(patch: FormPatch): boolean {
 /**
  * Patches writing the default crop for a newly set asset, and moving `hotspot` inside it, or
  * clearing the previous asset's crop when the asset already fits. A field with no valid
- * `aspectRatio` or `minDimensions` gets none, so it keeps whatever crop it had.
+ * `aspectRatio` or `minDimensions` gets none, so it keeps whatever crop it had, and so does a
+ * field that already holds the asset.
  */
 export function getDefaultCropPatches(
   assetRef: string | undefined,
   options: ImageOptions | undefined,
   hotspot?: ImageHotspot,
+  currentAssetRef?: string,
 ): FormPatch[] {
   const {aspectRatio, minDimensions} = getValidImageCropOptions(options)
   const isUnconstrained = aspectRatio === undefined && minDimensions === undefined
-  if (assetRef === undefined || isUnconstrained) {
+  if (assetRef === undefined || assetRef === currentAssetRef || isUnconstrained) {
     return []
   }
   const crop = getDefaultImageCrop(assetRef, aspectRatio, minDimensions)
@@ -52,13 +54,14 @@ export function withDefaultCrop(
   patch: FormPatch | FormPatch[] | PatchEvent,
   options: ImageOptions | undefined,
   hotspot?: ImageHotspot,
+  currentAssetRef?: string,
 ): PatchEvent {
   const {patches} = PatchEvent.from(patch)
   const keptHotspot = patches.some(isHotspotUnset) ? undefined : hotspot
   return PatchEvent.from(
     patches.flatMap((current) => [
       current,
-      ...getDefaultCropPatches(getSetAssetRef(current), options, keptHotspot),
+      ...getDefaultCropPatches(getSetAssetRef(current), options, keptHotspot, currentAssetRef),
     ]),
   )
 }

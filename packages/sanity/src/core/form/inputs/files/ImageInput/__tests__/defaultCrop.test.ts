@@ -45,6 +45,19 @@ describe('withDefaultCrop', () => {
     ).toHaveLength(2)
   })
 
+  test('keeps the crop when the field already holds the asset', () => {
+    const {patches} = withDefaultCrop([setAsset(WIDE_REF)], {aspectRatio: 1}, undefined, WIDE_REF)
+    expect(patches.map(({type, path}) => `${type} ${path.join('.')}`)).toEqual(['set asset'])
+  })
+
+  test('writes the default crop when the field holds a different asset', () => {
+    const {patches} = withDefaultCrop([setAsset(WIDE_REF)], {aspectRatio: 1}, undefined, SQUARE_REF)
+    expect(patches.map(({type, path}) => `${type} ${path.join('.')}`)).toEqual([
+      'set asset',
+      'set crop',
+    ])
+  })
+
   test('clears the crop when the asset already fits', () => {
     const {patches} = withDefaultCrop([setAsset(SQUARE_REF)], {aspectRatio: 1})
     expect(patches.map(({type, path}) => `${type} ${path.join('.')}`)).toEqual([

@@ -237,6 +237,33 @@ describe('ImageInput default crop', () => {
     })
   })
 
+  it('keeps the crop when the selected asset is the one the field already holds', async () => {
+    const value = {
+      _type: 'image',
+      asset: {_type: 'reference', _ref: WIDE_REF},
+      crop: CENTERED_SQUARE_CROP,
+    }
+    const assetSource = createMockAssetSourceWithMediaLibraryUploader({browseAssetId: WIDE_REF})
+    const {onChange} = await renderWithOptions(
+      {aspectRatio: 1},
+      {assetSources: [assetSource], value},
+    )
+
+    await userEvent.click(screen.getByTestId('options-menu-button'))
+    await userEvent.click(await screen.findByTestId('image-object-input-browse-button'), {
+      pointerEventsCheck: 0,
+    })
+
+    await waitFor(() => {
+      expect(
+        changePatches(onChange).some((patches) =>
+          patches.some((patch) => patch.type === 'set' && patch.path.join('.') === 'asset'),
+        ),
+      ).toBe(true)
+    })
+    expect(cropAfterAsset(onChange)).toBeUndefined()
+  })
+
   it('clears a stale crop when its asset source uploader replaces the asset with one that fits', async () => {
     const value = {
       _type: 'image',

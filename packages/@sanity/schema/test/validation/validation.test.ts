@@ -826,21 +826,23 @@ describe('Validation test', () => {
       [[]],
       [[1, 0]],
       [[1, Number.POSITIVE_INFINITY]],
-    ])('rejects aspectRatio %o', (aspectRatio) => {
-      expect(messages({aspectRatio}, 'error')).toEqual([
+    ])('warns about aspectRatio %o', (aspectRatio) => {
+      expect(messages({aspectRatio}, 'error')).toHaveLength(0)
+      expect(messages({aspectRatio}, 'warning')).toEqual([
         expect.stringContaining('Invalid image `options.aspectRatio`'),
       ])
     })
 
     test.each([['minDimensions'], ['recommendedDimensions']])(
-      'accepts and rejects %s',
+      'accepts and warns about %s',
       (option) => {
         expect(imageProblems({[option]: {width: 800, height: 450}})).toHaveLength(0)
-        expect(messages({[option]: {width: 0, height: 450}}, 'error')).toEqual([
+        expect(messages({[option]: {width: 0, height: 450}}, 'error')).toHaveLength(0)
+        expect(messages({[option]: {width: 0, height: 450}}, 'warning')).toEqual([
           expect.stringContaining(`Invalid image \`options.${option}\``),
         ])
-        expect(messages({[option]: {width: 800}}, 'error')).toHaveLength(1)
-        expect(messages({[option]: {width: '800', height: 450}}, 'error')).toHaveLength(1)
+        expect(messages({[option]: {width: 800}}, 'warning')).toHaveLength(1)
+        expect(messages({[option]: {width: '800', height: 450}}, 'warning')).toHaveLength(1)
       },
     )
 
