@@ -24,6 +24,8 @@ export function GenerateQueryButton(props: GenerateQueryButtonProps) {
     <Button
       data-testid="vision-generate-query"
       fontSize={1}
+      // The button's default gap is one step wider than this padding
+      gap={2}
       padding={2}
       {...rest}
       icon={AnimatedSparklesIcon}
