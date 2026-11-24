@@ -1,8 +1,8 @@
 import {javascriptLanguage} from '@codemirror/lang-javascript'
 import {bracketMatching, foldCode} from '@codemirror/language'
 import {EditorSelection, EditorState} from '@codemirror/state'
-import {EditorView, lineNumbers} from '@codemirror/view'
-import {afterEach, describe, expect, onTestFinished, test} from 'vitest'
+import {EditorView, highlightActiveLine, lineNumbers} from '@codemirror/view'
+import {afterEach, describe, expect, onTestFinished, test, vi} from 'vitest'
 
 import {redesignEditorTheme, redesignFolding} from './editorTheme'
 
@@ -47,6 +47,34 @@ describe('redesignEditorTheme', () => {
     expect(style.position).toBe('sticky')
     expect(style.backgroundColor).toBe('rgb(1, 2, 3)')
     expect(style.boxShadow).toMatch(/^rgb\(1, 2, 3\) -1px 0px/)
+  })
+
+  test('carries the active line band across the content right border, up to the scrollbar', async () => {
+    const card = document.createElement('div')
+    card.style.setProperty('--card-code-bg-color', 'rgb(4, 5, 6)')
+    card.style.setProperty('--vision-editor-content-border-right-width', '20px')
+    document.body.append(card)
+    onTestFinished(() => card.remove())
+    view = new EditorView({
+      state: EditorState.create({
+        doc: '{\n\n}',
+        selection: EditorSelection.cursor(2),
+        extensions: [highlightActiveLine(), redesignEditorTheme],
+      }),
+      parent: card,
+    })
+    view.focus()
+    await vi.waitFor(() => expect(view?.dom.classList.contains('cm-focused')).toBe(true))
+
+    const activeLine = view.contentDOM.querySelector<HTMLElement>('.cm-activeLine')
+    expect(activeLine?.textContent).toBe('')
+    const style = getComputedStyle(activeLine!)
+    expect(style.backgroundColor).toBe('rgb(4, 5, 6)')
+    expect(style.boxShadow).toBe('rgb(4, 5, 6) 20px 0px')
+
+    view.dispatch({selection: EditorSelection.range(0, 3)})
+    const selectedLine = view.contentDOM.querySelector<HTMLElement>('.cm-activeLine')
+    expect(getComputedStyle(selectedLine!).boxShadow).not.toContain('rgb(4, 5, 6)')
   })
 
   test.each([

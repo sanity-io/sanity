@@ -85,6 +85,14 @@ export const redesignEditorTheme: Extension = [
         {
           backgroundColor: 'var(--card-code-bg-color)',
         },
+      // A line's background stops at the content's padding box, short of the transparent right
+      // border Vision leaves after the longest line, so a copy of the band is shifted across that
+      // border to reach the scrollbar on every line. It is a shadow rather than wider lines because
+      // CodeMirror measures full-line selections against the lines' right padding.
+      [`&.cm-editor.cm-focused:not(.${HAS_SELECTION_CLASS}) .cm-activeLine`]: {
+        boxShadow:
+          'var(--vision-editor-content-border-right-width, 0px) 0 0 var(--card-code-bg-color)',
+      },
       '&.cm-editor.cm-focused .cm-activeLineGutter': {
         color: 'var(--card-fg-color)',
       },
