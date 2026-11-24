@@ -1,10 +1,10 @@
 import {useCallback, useEffect, useState} from 'react'
 
 import {
-  collectSyncTagCandidates,
   resolveSyncTags,
   type SyncTagLookupClient,
   type SyncTagMeaning,
+  type SyncTagSourceMap,
 } from '../util/syncTagLookup'
 
 /** Sync tags lookup for the shown response, from the Response panel's settings */
@@ -13,6 +13,10 @@ export interface SyncTagLookupSource {
   client: SyncTagLookupClient
   /** The response's result, read for the ids and slugs its tags may stand for */
   result: unknown
+  /** The response's `resultSourceMap`, which lists the documents the result read */
+  resultSourceMap?: SyncTagSourceMap
+  /** Fetches the source map for a response that does not carry one, when it is needed */
+  loadSourceMap?: (signal: AbortSignal | undefined) => Promise<SyncTagSourceMap | undefined>
 }
 
 export type SyncTagLookupState =
@@ -54,7 +58,9 @@ export function useSyncTagLookup(
     const controller = new AbortController()
     const {signal} = controller
     resolveSyncTags(source.client, tags, {
-      candidates: collectSyncTagCandidates(source.result),
+      result: source.result,
+      sourceMap: source.resultSourceMap,
+      loadSourceMap: source.loadSourceMap,
       signal,
     }).then(
       (resolved) => setSettled({key, status: 'resolved', resolved}),

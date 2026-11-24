@@ -25,6 +25,7 @@ import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectOpenTabDrawer, selectResultView} from '../../store/visionMachine'
 import {parseDocumentList} from '../../util/documentListResult'
 import {haveSameQuery} from '../../util/queryRequest'
+import {fetchSyncTagSourceMap} from '../../util/syncTagLookup'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
 import {CopyButton} from '../CopyButton'
 import {useResponseBottomPanel} from '../queryTabLayout'
@@ -123,11 +124,19 @@ export function ResponsePanel(props: ResponsePanelProps) {
   const resolveSyncTags = useVisionSelector((snapshot) => snapshot.context.response.resolveSyncTags)
   // Looked up with the client the shown result came from: its tags were computed for its dataset,
   // which the tab's options may already have moved away from
-  const settledClient = settledRequest?.client
-  const syncTagLookup = useMemo(
-    () => (resolveSyncTags && settledClient ? {client: settledClient, result} : undefined),
-    [resolveSyncTags, result, settledClient],
-  )
+  const resultSourceMap = meta?.resultSourceMap
+  const syncTagLookup = useMemo(() => {
+    if (!resolveSyncTags || !settledRequest) return undefined
+    const {client, query, params} = settledRequest
+    return {
+      client,
+      result,
+      resultSourceMap,
+      // A result that dereferences does not show the documents it read; the source map does
+      loadSourceMap: (signal: AbortSignal | undefined) =>
+        fetchSyncTagSourceMap(client, query, params, signal),
+    }
+  }, [resolveSyncTags, result, resultSourceMap, settledRequest])
   const queryExplain = useQueryExplain(request)
   const perspectiveName = usePerspectiveOptionName(resolved.tabPerspective)
   const delta = useDeltaPanel()

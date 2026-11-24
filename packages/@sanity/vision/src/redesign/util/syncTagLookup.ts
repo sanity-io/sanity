@@ -5,17 +5,28 @@ export type SyncTagMeaning =
   | {kind: 'id'; id: string}
   | {kind: 'slug'; slug: string}
 
-interface ProbeOptions {
+interface FetchOptions {
   filterResponse: false
   /** Every document as stored, so a filter on one id matches that document alone */
-  perspective: 'raw'
-  /** `raw` needs the studio's credentials, which the API CDN never receives */
+  perspective?: 'raw'
+  /** The probes need the studio's credentials, which the API CDN never receives */
   useCdn: false
   returnQuery: false
-  resultSourceMap: false
+  resultSourceMap: boolean
   stega: false
   tag: string
   signal: AbortSignal | undefined
+}
+
+/** The documents of a response's `resultSourceMap`, which lists every document a result reads */
+export interface SyncTagSourceMap {
+  documents?: readonly {_id: string; _type?: string; _projectId?: string; _dataset?: string}[]
+}
+
+interface ProbeResponse {
+  result: unknown
+  syncTags?: readonly string[]
+  resultSourceMap?: SyncTagSourceMap
 }
 
 /** The client calls the lookup makes; a `SanityClient` has them */
@@ -25,33 +36,39 @@ export interface SyncTagLookupClient {
     dataset?: string
     apiHost?: string
     apiVersion?: string
+    perspective?: string | readonly string[]
   }
   fetch(
     query: string,
-    params: Record<string, string>,
-    options: ProbeOptions,
+    params: Record<string, unknown>,
+    options: FetchOptions,
   ): Promise<ProbeResponse>
-}
-
-interface ProbeResponse {
-  result: unknown
-  syncTags?: readonly string[]
 }
 
 /** Values from the response that its tags may have been computed from */
 export interface SyncTagCandidates {
+  /**
+   * Documents the result reads without showing their ids, as a `->` does: those in its source
+   * map, and the targets of its references. Each in its published, draft and version forms.
+   */
+  referencedIds: string[]
   types: string[]
-  ids: string[]
   slugs: string[]
+  /** Documents the result shows by `_id`, each in its published, draft and version forms */
+  ids: string[]
 }
 
 /** Probe queries one lookup sends at most, past the one listing the dataset's types */
-export const MAX_SYNC_TAG_PROBES = 100
+export const MAX_SYNC_TAG_PROBES = 250
 const PROBE_CONCURRENCY = 4
 /** Nodes of the result read for candidates; a large result is sampled from its start */
 const MAX_RESULT_NODES = 5_000
 
 const TYPES_QUERY = 'array::unique(*._type)'
+const DRAFTS_PREFIX = 'drafts.'
+const VERSIONS_PREFIX = 'versions.'
+/** Perspective names that are not releases */
+const RESERVED_PERSPECTIVES = new Set(['published', 'drafts', 'raw', 'previewDrafts'])
 
 interface Probe {
   key: string
@@ -125,16 +142,98 @@ async function fetchProbe(
 }
 
 /**
- * The `_type`s, `_id`s and `slug.current`s in a query result, each once and in the order they
- * appear. Ids and slugs in a result are the likeliest sources of its tags, and probing those it
- * shows first resolves a typical response in a handful of queries. A query sent with a
- * perspective that overlays drafts depends on the draft of each published document as well,
- * which the result shows under the published id, so those drafts are candidates too.
+ * The `resultSourceMap` of a query, fetched with the options the lookup's probes use. A result
+ * carries it only when the request asked for it, and without it a result that dereferences with
+ * `->` does not show which documents it read.
  */
-export function collectSyncTagCandidates(result: unknown): SyncTagCandidates {
+export async function fetchSyncTagSourceMap(
+  client: SyncTagLookupClient,
+  query: string,
+  params: Record<string, unknown>,
+  signal: AbortSignal | undefined,
+): Promise<SyncTagSourceMap | undefined> {
+  const response = await client.fetch(query, params, {
+    filterResponse: false,
+    useCdn: false,
+    returnQuery: false,
+    resultSourceMap: true,
+    stega: false,
+    tag: 'vision.sync-tags',
+    signal,
+  })
+  return response.resultSourceMap
+}
+
+/** Releases a perspective stack names, whose versions a query may read */
+function releasesOfPerspective(perspective: string | readonly string[] | undefined): string[] {
+  const stack = typeof perspective === 'string' ? [perspective] : (perspective ?? [])
+  return stack.filter((name) => !RESERVED_PERSPECTIVES.has(name))
+}
+
+/** The id of the published document an id stands for, and the release when it is a version's */
+function parseDocumentId(id: string): {publishedId: string; release: string | undefined} {
+  if (id.startsWith(DRAFTS_PREFIX))
+    return {publishedId: id.slice(DRAFTS_PREFIX.length), release: undefined}
+  if (id.startsWith(VERSIONS_PREFIX)) {
+    const rest = id.slice(VERSIONS_PREFIX.length)
+    const dot = rest.indexOf('.')
+    if (dot > 0) return {publishedId: rest.slice(dot + 1), release: rest.slice(0, dot)}
+  }
+  return {publishedId: id, release: undefined}
+}
+
+/**
+ * Each id as it is, then the other forms of the same document: the published id, the draft and
+ * a version in each release the ids or the perspective name. A query reads whichever form its
+ * perspective picks, and its tags cover them all, so one form being listed tells nothing about
+ * which of the others the tag was computed from.
+ */
+function expandIds(ids: readonly string[], perspectiveReleases: readonly string[]): string[] {
+  const releases = new Set(perspectiveReleases)
+  for (const id of ids) {
+    const {release} = parseDocumentId(id)
+    if (release) releases.add(release)
+  }
+  const expanded = new Set<string>()
+  for (const id of ids) {
+    expanded.add(id)
+    const {publishedId} = parseDocumentId(id)
+    expanded.add(publishedId)
+    expanded.add(`${DRAFTS_PREFIX}${publishedId}`)
+    for (const release of releases) expanded.add(`${VERSIONS_PREFIX}${release}.${publishedId}`)
+  }
+  return [...expanded]
+}
+
+export interface CollectSyncTagCandidatesOptions {
+  /** The perspective stack's releases, for the versions of each document to probe */
+  perspective?: string | readonly string[]
+}
+
+/**
+ * The `_type`s, `_id`s and `slug.current`s a query result and its source map show, each once and
+ * in the order they appear, and the ids it only points to. A result that dereferences does not
+ * show the documents it read, but its source map lists them, and its `_ref`s name the same
+ * documents when there is no source map. Those are the likeliest sources of its tags.
+ */
+export function collectSyncTagCandidates(
+  result: unknown,
+  sourceMap?: SyncTagSourceMap,
+  options: CollectSyncTagCandidatesOptions = {},
+): SyncTagCandidates {
   const types = new Set<string>()
   const ids = new Set<string>()
+  const refs = new Set<string>()
+  const sourceMapIds = new Set<string>()
   const slugs = new Set<string>()
+
+  for (const document of sourceMap?.documents ?? []) {
+    // A document of another dataset is not one a probe here can find
+    if (document._projectId || document._dataset) continue
+    if (typeof document._id === 'string' && document._id) sourceMapIds.add(document._id)
+    if (typeof document._type === 'string' && document._type) types.add(document._type)
+  }
+
   const queue: unknown[] = [result]
   let visited = 0
   while (queue.length > 0 && visited < MAX_RESULT_NODES) {
@@ -146,7 +245,9 @@ export function collectSyncTagCandidates(result: unknown): SyncTagCandidates {
     }
     if (!node || typeof node !== 'object') continue
     const record = node as Record<string, unknown>
-    if (typeof record._type === 'string' && record._type) types.add(record._type)
+    if (typeof record._ref === 'string' && record._ref) refs.add(record._ref)
+    // A reference's `_type` is `reference`, which says nothing about the document it points to
+    else if (typeof record._type === 'string' && record._type) types.add(record._type)
     for (const id of [record._id, record._originalId]) {
       if (typeof id === 'string' && id) ids.add(id)
     }
@@ -159,30 +260,46 @@ export function collectSyncTagCandidates(result: unknown): SyncTagCandidates {
       if (value && typeof value === 'object') queue.push(value)
     }
   }
-  const drafts = [...ids]
-    .filter((id) => !id.startsWith('drafts.') && !id.startsWith('versions.'))
-    .map((id) => `drafts.${id}`)
-  return {types: [...types], ids: [...new Set([...ids, ...drafts])], slugs: [...slugs]}
+
+  const releases = releasesOfPerspective(options.perspective)
+  return {
+    // The source map is exact; the references are what a result without one still reveals
+    referencedIds: expandIds([...sourceMapIds, ...refs], releases),
+    types: [...types],
+    slugs: [...slugs],
+    ids: expandIds([...ids], releases),
+  }
 }
 
 export interface ResolveSyncTagsOptions {
-  candidates?: SyncTagCandidates
+  /** The result the tags came with, read for the documents they may stand for */
+  result?: unknown
+  /** The result's `resultSourceMap`, when the request asked for it */
+  sourceMap?: SyncTagSourceMap
+  /**
+   * Fetches the source map when the request did not ask for it, and some tags are still
+   * unresolved after probing what the result itself shows
+   */
+  loadSourceMap?: (signal: AbortSignal | undefined) => Promise<SyncTagSourceMap | undefined>
   signal?: AbortSignal
 }
 
 /**
  * Finds what each tag stands for by asking the API for the tags of queries whose meaning is
  * known: the list of every type (whose tag covers the whole dataset), then one count per type,
- * id and slug, until every tag is found or the probes run out. What the result shows goes first
- * (its types, ids and slugs), then the dataset's other types. A tag no probe answered with is
- * left out of the map.
+ * id and slug, until every tag is found or the probes run out.
+ *
+ * The probes go in the order a tag is most likely found: the documents the result dereferences
+ * (source map, then `_ref`s), its types and slugs, the ids it shows, and last the dataset's other
+ * types. Without a source map, `loadSourceMap` is asked for one once what the result shows has
+ * not resolved everything. A tag no probe answered with is left out of the map.
  */
 export async function resolveSyncTags(
   client: SyncTagLookupClient,
   tags: readonly string[],
   options: ResolveSyncTagsOptions = {},
 ): Promise<Map<string, SyncTagMeaning>> {
-  const {candidates = {types: [], ids: [], slugs: []}, signal} = options
+  const {result, sourceMap, loadSourceMap, signal} = options
   const resolved = new Map<string, SyncTagMeaning>()
   const remaining = new Set(tags)
   if (remaining.size === 0) return resolved
@@ -204,45 +321,62 @@ export async function resolveSyncTags(
   const answers = probeCache.get(key) ?? new Map<string, string | null>()
   probeCache.set(key, answers)
 
-  const seen = new Set<string>()
-  const probes: Probe[] = []
-  for (const probe of [
-    ...candidates.types.map(typeProbe),
-    ...candidates.ids.map(idProbe),
-    ...candidates.slugs.map(slugProbe),
-    ...known.types.map(typeProbe),
-  ]) {
-    if (seen.has(probe.key)) continue
-    seen.add(probe.key)
-    probes.push(probe)
-  }
-
   const settle = (probe: Probe, tag: string | null) => {
     if (tag && remaining.delete(tag)) resolved.set(tag, probe.meaning)
   }
 
-  // Answers already known cost nothing, so they are read before anything is sent
-  const unanswered: Probe[] = []
-  for (const probe of probes) {
-    const answer = answers.get(probe.key)
-    if (answer === undefined) unanswered.push(probe)
-    else settle(probe, answer)
+  const seen = new Set<string>()
+  let budget = MAX_SYNC_TAG_PROBES
+  /** Probes in order, skipping those already asked about and reading cached answers for free */
+  const run = async (probes: readonly Probe[]) => {
+    const queue: Probe[] = []
+    for (const probe of probes) {
+      if (seen.has(probe.key)) continue
+      seen.add(probe.key)
+      const answer = answers.get(probe.key)
+      if (answer === undefined) queue.push(probe)
+      else settle(probe, answer)
+    }
+    const worker = async () => {
+      while (remaining.size > 0 && queue.length > 0 && budget > 0) {
+        signal?.throwIfAborted()
+        const probe = queue.shift()!
+        budget--
+        const response = await fetchProbe(client, probe.query, probe.params, signal)
+        // A count over one filter carries that filter's tag alone; anything else is not its tag
+        const tag = response.syncTags?.length === 1 ? response.syncTags[0] : null
+        answers.set(probe.key, tag)
+        settle(probe, tag)
+      }
+    }
+    await Promise.all(Array.from({length: PROBE_CONCURRENCY}, worker))
+    signal?.throwIfAborted()
   }
 
-  const queue = unanswered.slice(0, MAX_SYNC_TAG_PROBES)
-  const worker = async () => {
-    while (remaining.size > 0 && queue.length > 0) {
+  const perspective = client.config().perspective
+  const probesFor = (candidates: SyncTagCandidates): Probe[] => [
+    ...candidates.referencedIds.map(idProbe),
+    ...candidates.types.map(typeProbe),
+    ...candidates.slugs.map(slugProbe),
+    ...candidates.ids.map(idProbe),
+  ]
+
+  await run(probesFor(collectSyncTagCandidates(result, sourceMap, {perspective})))
+
+  if (remaining.size > 0 && !sourceMap && loadSourceMap) {
+    let loaded: SyncTagSourceMap | undefined
+    try {
+      loaded = await loadSourceMap(signal)
+    } catch {
+      // Without a source map the rest is still worth probing, but an abort ends the lookup
       signal?.throwIfAborted()
-      const probe = queue.shift()!
-      const response = await fetchProbe(client, probe.query, probe.params, signal)
-      // A count over one filter carries that filter's tag alone; anything else is not its tag
-      const tag = response.syncTags?.length === 1 ? response.syncTags[0] : null
-      answers.set(probe.key, tag)
-      settle(probe, tag)
+    }
+    if (loaded) {
+      await run(probesFor(collectSyncTagCandidates(result, loaded, {perspective})))
     }
   }
-  await Promise.all(Array.from({length: PROBE_CONCURRENCY}, worker))
-  signal?.throwIfAborted()
+
+  await run(known.types.map(typeProbe))
   return resolved
 }
 
