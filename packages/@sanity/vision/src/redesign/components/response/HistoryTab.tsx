@@ -222,6 +222,7 @@ function HistoryEntry(props: {
             aria-expanded={expanded}
             data-testid="vision-history-changes-toggle"
             fontSize={1}
+            gap={2}
             icon={
               <span className={motion.chevron}>
                 <ChevronRightIcon />
