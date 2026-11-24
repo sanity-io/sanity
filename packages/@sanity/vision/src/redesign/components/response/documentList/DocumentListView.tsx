@@ -24,6 +24,11 @@ export interface DocumentListViewProps {
   parsed: ParsedDocumentList
   /** Rows show the live preview from their schema type's preview config, for rows without their own */
   resolvePreviews?: boolean
+  /**
+   * Offered over the rows, or under the expected shape when the result is not a document list:
+   * the AI action that changes the query for the list to show it
+   */
+  action?: ReactNode
 }
 
 /**
@@ -36,6 +41,7 @@ export function DocumentListView({
   id,
   parsed,
   resolvePreviews = false,
+  action,
 }: DocumentListViewProps) {
   const linkDocuments = useDataset() === datasetName
   return (
@@ -44,6 +50,9 @@ export function DocumentListView({
       flexDirection="column"
       id={id}
     >
+      {action && parsed.ok && parsed.documents.length > 0 && (
+        <Box className={styles.action}>{action}</Box>
+      )}
       <Box className={styles.body}>
         {parsed.ok ? (
           parsed.documents.length === 0 ? (
@@ -57,7 +66,7 @@ export function DocumentListView({
             />
           )
         ) : (
-          <Guidance problem={parsed.problem} />
+          <Guidance action={action} problem={parsed.problem} />
         )}
       </Box>
     </Flex>
@@ -118,7 +127,7 @@ function Notice({children}: {children: ReactNode}) {
   return <Box padding={3}>{children}</Box>
 }
 
-function Guidance({problem}: {problem: DocumentListProblem}) {
+function Guidance({action, problem}: {action: ReactNode; problem: DocumentListProblem}) {
   const {t} = useTranslation(visionLocaleNamespace)
   const reason =
     problem.kind === 'not-array'
@@ -137,6 +146,7 @@ function Guidance({problem}: {problem: DocumentListProblem}) {
         <Text size={1}>
           <code className={styles.shape}>{DOCUMENT_LIST_SHAPE}</code>
         </Text>
+        {action}
       </Flex>
     </Notice>
   )

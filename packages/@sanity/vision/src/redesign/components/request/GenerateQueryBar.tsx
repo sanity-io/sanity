@@ -12,8 +12,9 @@ import {useAiFeatures} from '../../aiFeatures'
 import {useAiCredits} from '../../hooks/useAiCredits'
 import {useQueryAgent} from '../../hooks/useQueryAgent'
 import {type VisionTab} from '../../store/types'
+import {describeDocumentListFields} from '../../util/documentListFields'
 import {editQuery, generateQuery, MAX_GENERATE_ATTEMPTS} from '../../util/generateQuery'
-import {summarizeSchema} from '../../util/schemaSummary'
+import {getRequestedDocumentTypes, summarizeSchema} from '../../util/schemaSummary'
 import {AiCreditsStatus} from '../AiCreditsStatus'
 import * as overlays from '../overlays.module.css'
 import {PromptRow} from '../PromptRow'
@@ -93,6 +94,9 @@ export function GenerateQueryBar(props: GenerateQueryBarProps) {
               ...agent,
               request: description,
               schema: schema ? summarizeSchema(schema, description) : '',
+              listFields: schema
+                ? describeDocumentListFields(schema, getRequestedDocumentTypes(schema, description))
+                : undefined,
             }),
       {
         prompt: description,

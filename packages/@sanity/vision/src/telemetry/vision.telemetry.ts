@@ -76,6 +76,7 @@ export const VisionAgentActionInvoked = defineEvent<{
     | 'generate-mutations'
     | 'explain'
     | 'improve-query'
+    | 'fit-document-list'
 }>({
   name: 'Vision Agent Action Invoked',
   version: 1,
