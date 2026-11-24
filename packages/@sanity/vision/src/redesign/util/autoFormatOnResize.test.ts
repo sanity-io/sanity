@@ -13,6 +13,8 @@ function createEditor(initial: {query: string; width: number}) {
     enabled: true,
     busy: false,
     formats: 0,
+    /** Every change of the controller's `pending`, in order */
+    pendingChanges: [] as boolean[],
   }
   const controller = createAutoFormatOnResize({
     measure: () => editor.width,
@@ -21,6 +23,7 @@ function createEditor(initial: {query: string; width: number}) {
     isBusy: () => editor.busy,
     format: formatGroq,
     formatForEditor: (query) => formatGroq(query, editor.width),
+    onPendingChange: (pending) => editor.pendingChanges.push(pending),
     apply: (formatted) => {
       editor.formats++
       editor.query = formatted
@@ -202,5 +205,142 @@ describe('createAutoFormatOnResize', () => {
     controller.dispose()
     await settle()
     expect(editor.query).toBe(query)
+  })
+  describe('pending', () => {
+    it('is pending from the first change of a resize until the reformat has been applied', async () => {
+      const {editor, controller, resize} = createEditor({
+        query: await formatGroq(QUERY, 80),
+        width: 80,
+      })
+      expect(controller.pending).toBe(false)
+
+      resize(70)
+      await settle(0)
+      expect(controller.pending).toBe(true)
+
+      // A drag keeps it pending, however long it pauses on the way
+      editor.busy = true
+      for (const width of [60, 50, 40]) {
+        resize(width)
+        await settle(RESIZE_SETTLE_MS * 2)
+        expect(controller.pending).toBe(true)
+      }
+
+      editor.busy = false
+      resize(30)
+      await settle(RESIZE_SETTLE_MS - 1)
+      expect(controller.pending).toBe(true)
+      await settle(1)
+      expect(editor.formats).toBe(1)
+      expect(controller.pending).toBe(false)
+      expect(editor.pendingChanges).toEqual([true, false])
+    })
+
+    it('is released once the reformat is applied, with the new query already in place', async () => {
+      let queryWhenReleased: string | undefined
+      const editor = {query: await formatGroq(QUERY, 80), width: 80}
+      const controller = createAutoFormatOnResize({
+        measure: () => editor.width,
+        getQuery: () => editor.query,
+        isEnabled: () => true,
+        isBusy: () => false,
+        format: formatGroq,
+        formatForEditor: (query) => formatGroq(query, editor.width),
+        apply: (formatted) => {
+          editor.query = formatted
+          controller.sync(formatted)
+        },
+        onPendingChange: (pending) => {
+          if (!pending) queryWhenReleased = editor.query
+        },
+      })
+
+      editor.width = 30
+      controller.resized()
+      await settle()
+      expect(queryWhenReleased).toBe(await formatGroq(QUERY, 30))
+    })
+
+    it('is not pending for a query the formatter did not lay out, which Format stays on', async () => {
+      const handFormatted = '*[_type == "movie"] {\n    _id,   title\n}'
+      for (const query of [handFormatted, '', '*[_type == "movie" && ']) {
+        const {editor, controller, resize} = createEditor({query, width: 80})
+        resize(30)
+        await settle(0)
+        expect(controller.pending).toBe(false)
+        await settle()
+        expect(editor.pendingChanges).toEqual([])
+      }
+
+      const edited = `${await formatGroq(QUERY, 80)} `
+      const {editor, controller, resize} = createEditor({query: edited, width: 80})
+      resize(30)
+      await settle(0)
+      expect(controller.pending).toBe(false)
+      expect(editor.pendingChanges).toEqual([])
+    })
+
+    it('is not pending while the setting is off', async () => {
+      const {editor, controller, resize} = createEditor({
+        query: await formatGroq(QUERY, 80),
+        width: 80,
+      })
+      editor.enabled = false
+      resize(30)
+      await settle(0)
+      expect(controller.pending).toBe(false)
+      await settle()
+      expect(editor.pendingChanges).toEqual([])
+    })
+
+    it('is released when the resize ends with nothing to reformat', async () => {
+      const short = await formatGroq('*[_type == "movie"]', 80)
+      const {editor, controller, resize} = createEditor({query: short, width: 80})
+
+      resize(120)
+      await settle(0)
+      expect(controller.pending).toBe(true)
+      await settle()
+      expect(controller.pending).toBe(false)
+      expect(editor.pendingChanges).toEqual([true, false])
+    })
+
+    it('is released when the query was edited while the resize settled', async () => {
+      const {editor, controller, resize} = createEditor({
+        query: await formatGroq(QUERY, 80),
+        width: 80,
+      })
+      resize(30)
+      await settle(RESIZE_SETTLE_MS - 1)
+      editor.query = `${editor.query}\n`
+      await settle(1)
+      expect(controller.pending).toBe(false)
+    })
+
+    it('stays pending across a resize that starts while the reformat is in flight', async () => {
+      const query = await formatGroq(QUERY, 80)
+      const {editor, controller, resize} = createEditor({query, width: 80})
+      resize(30)
+      // The settle has begun and its reformat is in flight when the editor changes again
+      await vi.advanceTimersByTimeAsync(RESIZE_SETTLE_MS)
+      resize(60)
+      await settle(0)
+      expect(controller.pending).toBe(true)
+      await settle()
+      expect(controller.pending).toBe(false)
+      expect(editor.pendingChanges.at(-1)).toBe(false)
+    })
+
+    it('is released when disposed, and reports nothing after', async () => {
+      const {editor, controller, resize} = createEditor({
+        query: await formatGroq(QUERY, 80),
+        width: 80,
+      })
+      resize(30)
+      await settle(0)
+      controller.dispose()
+      await settle()
+      expect(editor.pendingChanges).toEqual([true])
+    })
   })
 })

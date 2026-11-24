@@ -3269,6 +3269,82 @@ describe('VisionRedesign', () => {
     expect(screen.queryByTestId('vision-query-format')).toBeNull()
   })
 
+  describe('Format while the query editor is resized', () => {
+    const COMPACT =
+      '*[_type=="author"&&name match $q]{_id,name,"posts":*[references(^._id)]{title}}'
+    /** Long enough for the resize to settle, Format's recheck to run, and the reformat to land */
+    const SETTLED_MS = 800
+
+    /** Counts the renders in which the query's Format button is on the page */
+    function watchFormatButton() {
+      const sightings = {count: 0}
+      const look = () => {
+        if (screen.queryByTestId('vision-query-format')) sightings.count++
+      }
+      const observer = new MutationObserver(look)
+      observer.observe(document.body, {childList: true, subtree: true})
+      return {sightings, stop: () => observer.disconnect()}
+    }
+
+    async function renderFormattedForWidth(width: number) {
+      const rendered = renderRedesign()
+      editorMocks.visibleColumns = width
+      typeQuery(COMPACT)
+      fireEvent.click(await screen.findByTestId('vision-query-format'))
+      await waitFor(() => expect(getQueryEditor().value).toContain('\n'))
+      await waitFor(() => expect(screen.queryByTestId('vision-query-format')).toBeNull())
+      const editorElement = within(shownTab()).getByTestId('vision-query-editor')
+      resizeElement(editorElement, {width: 600, height: 400})
+      await new Promise((resolve) => setTimeout(resolve, SETTLED_MS))
+      expect(screen.queryByTestId('vision-query-format')).toBeNull()
+      return {...rendered, editorElement}
+    }
+
+    it('never offers Format for a query that auto-format is about to reformat', async () => {
+      const {editorElement} = await renderFormattedForWidth(80)
+      const before = getQueryEditor().value
+      const {sightings, stop} = watchFormatButton()
+
+      // Dragging a handle: the editor narrows in steps, with pauses longer than Format's recheck
+      editorMocks.visibleColumns = 30
+      for (const width of [500, 400, 300]) {
+        resizeElement(editorElement, {width, height: 400})
+        await new Promise((resolve) => setTimeout(resolve, 150))
+      }
+      await new Promise((resolve) => setTimeout(resolve, SETTLED_MS))
+      stop()
+
+      expect(getQueryEditor().value).not.toBe(before)
+      expect(screen.queryByTestId('vision-query-format')).toBeNull()
+      expect(sightings.count).toBe(0)
+    })
+
+    it('offers Format again for a query that was laid out by hand, also while it is resized', async () => {
+      const {editorElement} = await renderFormattedForWidth(80)
+      typeQuery('*[_type=="author"]')
+      await screen.findByTestId('vision-query-format')
+
+      editorMocks.visibleColumns = 30
+      resizeElement(editorElement, {width: 300, height: 400})
+      await new Promise((resolve) => setTimeout(resolve, SETTLED_MS))
+      expect(getQueryEditor().value).toBe('*[_type=="author"]')
+      expect(screen.getByTestId('vision-query-format')).toBeTruthy()
+    })
+
+    it('offers Format for a formatted query when auto-format on resize is off', async () => {
+      const {editorElement} = await renderFormattedForWidth(80)
+      fireEvent.click(screen.getByTestId('vision-sidebar-settings'))
+      fireEvent.click(await screen.findByTestId('vision-settings-auto-format-on-resize'))
+      await waitFor(() => expect(getStoredState().editor.autoFormatOnResize).toBe(false))
+      const before = getQueryEditor().value
+
+      editorMocks.visibleColumns = 30
+      resizeElement(editorElement, {width: 300, height: 400})
+      await screen.findByTestId('vision-query-format', undefined, {timeout: 2000})
+      expect(getQueryEditor().value).toBe(before)
+    })
+  })
+
   it('offers Format on the query only when formatting would change it, and Copy always', async () => {
     renderRedesign()
     const tab = () => within(shownTab())
