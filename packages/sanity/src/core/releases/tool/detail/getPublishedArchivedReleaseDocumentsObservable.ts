@@ -38,7 +38,7 @@ const buildPublishedArchivedReleaseDocumentsObservable = ({
     map((documents) => ({
       loading: false,
       results: documents.filter(isNonNullable).map((document) => ({
-        // A revision read from history has none of the existence flags of a live release document
+        // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- a revision read from history has none of the existence flags of a live release document
         document: document as DocumentInRelease['document'],
         memoKey: uuid(),
         validation: {validation: [], hasError: false, isValidating: false},
