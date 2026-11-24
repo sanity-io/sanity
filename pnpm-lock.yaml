@@ -2115,8 +2115,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0(react-dom@19.3.1)(react@19.3.1)
       '@sanity-labs/groq-wasm':
-        specifier: ^1.2.7
-        version: 1.2.7
+        specifier: ^1.3.1
+        version: 1.3.1
       '@sanity/client':
         specifier: 'catalog:'
         version: 8.17.0(vitest@5.1.1)
@@ -8817,8 +8817,8 @@ packages:
     resolution: {integrity: sha512-SuaCvywAoZ0gbPFKI5B+TinSQaBiVlQlCTDvZOvCFwUioEngkfYxDhIeh1S8fV9lNQ+l3suF8xAlRPEYxyh7nA==}
     engines: {node: '>=20.19 <22 || >=22.12'}
 
-  '@sanity-labs/groq-wasm@1.2.7':
-    resolution: {integrity: sha512-M3KHJjL3fFxqKyHy8e35VEcox9JyuVRkcTY344V6idYrLviNugLjuRV0gLN54MZq6n14f7QRJ1ZVS6p4/D7P8w==}
+  '@sanity-labs/groq-wasm@1.3.1':
+    resolution: {integrity: sha512-yBE7DwpsX/dFtCRU1xRbPd65miEEfODzrXoVS1QeXX3Z1k87cUDFWfKwYf6BbAeuBESOjyPcGmiAH2Ognw6ZvQ==}
     engines: {node: '>=22.3.0'}
 
   '@sanity-labs/oclif-plugin-skills-flag@0.2.1':
@@ -22584,7 +22584,7 @@ snapshots:
 
   '@sanity-labs/design-tokens@0.0.2-alpha.12': {}
 
-  '@sanity-labs/groq-wasm@1.2.7': {}
+  '@sanity-labs/groq-wasm@1.3.1': {}
 
   '@sanity-labs/oclif-plugin-skills-flag@0.2.1(@oclif/core@4.14.0)':
     dependencies:
