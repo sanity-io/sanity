@@ -33,11 +33,7 @@ function renderButton(onCopy: () => Promise<boolean>, disabled?: boolean) {
 
 const button = () => screen.getByTestId('vision-copy')
 const copied = () => button().getAttribute('data-copied') === 'true'
-/** The label that shows: both are rendered so the button keeps its width */
-const shownLabel = () =>
-  button()
-    .querySelector(`[data-label="${copied() ? 'copied' : 'copy'}"]`)
-    ?.textContent?.trim()
+const shownLabel = () => button().textContent?.trim()
 
 async function click() {
   await act(async () => {
