@@ -2,7 +2,8 @@ import {LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
 import {act, cleanup, fireEvent, render, screen, within} from '@testing-library/react'
-import {afterEach, describe, expect, it, vi} from 'vitest'
+import {Activity} from 'react'
+import {afterEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
 import {encodeQueryString} from '../../../util/encodeQueryString'
 import {encodedQuerySize, QUERY_URL_SIZE_LIMIT} from '../../../util/queryRequestMethod'
@@ -149,6 +150,94 @@ describe('ResponseMetaTab', () => {
     })
     expect(cobe.update).toHaveBeenCalled()
     expect(canvas?.hasAttribute('data-ready')).toBe(true)
+  })
+
+  it('keeps the settled globe as a still picture when its tab is hidden and shown again', async () => {
+    const drawImage = vi.fn()
+    const getContext = vi
+      .spyOn(HTMLCanvasElement.prototype, 'getContext')
+      .mockImplementation(((type: string) => (type === '2d' ? {drawImage} : null)) as never)
+    // The globe has finished turning by its first frame
+    const frame = vi
+      .spyOn(window, 'requestAnimationFrame')
+      .mockImplementation((callback) => window.setTimeout(() => callback(1e9), 0))
+    onTestFinished(() => {
+      getContext.mockRestore()
+      frame.mockRestore()
+    })
+    const ui = (mode: 'visible' | 'hidden') => (
+      <ThemeProvider theme={theme}>
+        <ToastProvider>
+          <LayerProvider>
+            <Activity mode={mode}>
+              <ResponseMetaTab
+                meta={meta(cdnMiss)}
+                perspectiveName="published"
+                resolved={{useCdn: true, isCdnBlockedByPerspective: false}}
+                url={meta(cdnMiss).url}
+              />
+            </Activity>
+          </LayerProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    )
+    let view: ReturnType<typeof render> | undefined
+    await act(async () => {
+      view = render(ui('visible'))
+    })
+    await act(async () => {
+      await new Promise((resolve) => requestAnimationFrame(resolve))
+    })
+    const still = screen.getByTestId('vision-network-globe').querySelector('canvas')
+    expect(drawImage).toHaveBeenCalledTimes(1)
+    expect(still?.hasAttribute('data-ready')).toBe(true)
+    // The WebGL globe is no longer needed once its picture is copied
+    expect(cobe.destroy).toHaveBeenCalledTimes(1)
+    expect(cobe.createGlobe).toHaveBeenCalledTimes(1)
+
+    await act(async () => view?.rerender(ui('hidden')))
+    await act(async () => view?.rerender(ui('visible')))
+    expect(screen.getByTestId('vision-network-globe').querySelector('canvas')).toBe(still)
+    expect(cobe.createGlobe).toHaveBeenCalledTimes(1)
+  })
+
+  it('settles the globe when its tab is hidden while it is still turning', async () => {
+    const drawImage = vi.fn()
+    const getContext = vi
+      .spyOn(HTMLCanvasElement.prototype, 'getContext')
+      .mockImplementation(((type: string) => (type === '2d' ? {drawImage} : null)) as never)
+    onTestFinished(() => getContext.mockRestore())
+    const ui = (mode: 'visible' | 'hidden') => (
+      <ThemeProvider theme={theme}>
+        <ToastProvider>
+          <LayerProvider>
+            <Activity mode={mode}>
+              <ResponseMetaTab
+                meta={meta(cdnMiss)}
+                perspectiveName="published"
+                resolved={{useCdn: true, isCdnBlockedByPerspective: false}}
+                url={meta(cdnMiss).url}
+              />
+            </Activity>
+          </LayerProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    )
+    let view: ReturnType<typeof render> | undefined
+    await act(async () => {
+      view = render(ui('visible'))
+    })
+    await act(async () => {
+      await new Promise((resolve) => requestAnimationFrame(resolve))
+    })
+    expect(drawImage).not.toHaveBeenCalled()
+
+    await act(async () => view?.rerender(ui('hidden')))
+    expect(drawImage).toHaveBeenCalledTimes(1)
+    const still = screen.getByTestId('vision-network-globe').querySelector('canvas')
+    await act(async () => view?.rerender(ui('visible')))
+    expect(screen.getByTestId('vision-network-globe').querySelector('canvas')).toBe(still)
+    expect(cobe.createGlobe).toHaveBeenCalledTimes(1)
   })
 
   it('shows a CDN cache hit without a way to the API', async () => {

@@ -4,14 +4,7 @@ import {buildTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
 import {act, cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import JSON5 from 'json5'
-import {
-  Activity,
-  type ReactNode,
-  type RefAttributes,
-  useImperativeHandle,
-  useLayoutEffect,
-  useRef,
-} from 'react'
+import {Activity, type ReactNode, type RefAttributes, useImperativeHandle, useRef} from 'react'
 import {defer, type Observable, of, Subject} from 'rxjs'
 import {type PerspectiveContextValue} from 'sanity'
 import {
@@ -48,6 +41,7 @@ import {
 } from '../store/visionStorage'
 import {parseQueryPaste} from '../util/parseQueryPaste'
 import * as styles from './redesign.module.css'
+import {QUERY_TAB_PANEL_ID} from './tabs/QueryTabBar'
 import {VisionRedesign} from './VisionRedesign'
 
 const telemetry = vi.hoisted(() => ({log: vi.fn()}))
@@ -302,29 +296,11 @@ vi.mock('../../codemirror/VisionCodeMirror', () => ({
     initialValue,
     onChange,
     ref,
-    stateKey,
   }: {
     initialValue?: string
     onChange?: (value: string) => void
-    stateKey?: string
   } & RefAttributes<VisionCodeMirrorHandle>) {
     const textareaRef = useRef<HTMLTextAreaElement>(null)
-    // Like the editor, the mock keeps one document per `stateKey` in the same element: a key
-    // change shows that key's last document, or `initialValue` for a key it has not seen
-    const documentsRef = useRef(new Map<string, string>())
-    const shownKeyRef = useRef(stateKey)
-    useLayoutEffect(() => {
-      const previousKey = shownKeyRef.current
-      if (previousKey === stateKey) return
-      shownKeyRef.current = stateKey
-      const textarea = textareaRef.current
-      if (!textarea) return
-      if (previousKey !== undefined) documentsRef.current.set(previousKey, textarea.value)
-      textarea.value =
-        (stateKey === undefined ? undefined : documentsRef.current.get(stateKey)) ??
-        initialValue ??
-        ''
-    }, [initialValue, stateKey])
     useImperativeHandle(ref, () => ({
       resetEditorContent: (content: string) => {
         if (textareaRef.current) textareaRef.current.value = content
@@ -555,8 +531,20 @@ function renderRedesign(
   }
 }
 
+/**
+ * The shown query tab. Every open tab stays mounted, the others hidden, so a query for an element
+ * every tab renders is scoped to this one
+ */
+function shownTab(): HTMLElement {
+  const tab = screen
+    .getAllByTestId('vision-query-tab')
+    .find((candidate) => !candidate.closest('[style*="display: none"]'))
+  if (!tab) throw new Error('No query tab is shown')
+  return tab
+}
+
 function getQueryEditor(): HTMLTextAreaElement {
-  return within(screen.getByTestId('vision-query-editor')).getByTestId(
+  return within(within(shownTab()).getByTestId('vision-query-editor')).getByTestId(
     'codemirror-mock',
   ) as HTMLTextAreaElement
 }
@@ -729,7 +717,7 @@ describe('VisionRedesign', () => {
     saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'old'})
     renderRedesign()
 
-    const live = screen.getByTestId('vision-auto-refetch')
+    const live = within(shownTab()).getByTestId('vision-auto-refetch')
     expect(isDisabled(live)).toBe(true)
     expect(live.hasAttribute('aria-pressed')).toBe(false)
     const wrapper = live.parentElement as HTMLElement
@@ -1386,7 +1374,7 @@ describe('VisionRedesign', () => {
     typeQuery('*[_type == "book"]{"author": ex::author(author)}')
     expect(text(functionsTab())).not.toContain('1')
     expect(functionsPanel()).toBeTruthy()
-    const [saved] = screen.getAllByTestId('vision-library-function')
+    const [saved] = within(functionsPanel()).getAllByTestId('vision-library-function')
     fireEvent.click(within(saved).getByTestId('vision-function-add'))
     expect(getQueryEditor().value).toBe(
       `${declaration};\n\n*[_type == "book"]{"author": ex::author(author)}`,
@@ -2392,10 +2380,8 @@ describe('VisionRedesign', () => {
     let tabs = screen.getAllByTestId('vision-tab')
     expect(tabs).toHaveLength(2)
     expect(within(tabs[1]).getByRole('tab').getAttribute('aria-selected')).toBe('true')
-    expect(within(tabs[1]).getByRole('tab').getAttribute('aria-controls')).toBe(
-      screen.getByTestId('vision-query-tab').id,
-    )
-    expect(screen.getByTestId('vision-query-tab').getAttribute('role')).toBe('tabpanel')
+    expect(within(tabs[1]).getByRole('tab').getAttribute('aria-controls')).toBe(shownTab().id)
+    expect(shownTab().getAttribute('role')).toBe('tabpanel')
     expect(getQueryEditor().value).toBe('')
 
     const selectedTab = () =>
@@ -2504,60 +2490,10 @@ describe('VisionRedesign', () => {
     expect(text(screen.getByTestId('vision-tab-button'))).toContain('vision.tabs.untitled')
   })
 
-  it('switches tabs without remounting the tab shell, the panels or the editors', async () => {
+  it('keeps the query, params, result and panel state of each tab apart', async () => {
     const {fetchCalls} = renderRedesign()
     const paramsEditor = () =>
-      within(screen.getByTestId('vision-params-editor')).getByTestId(
-        'codemirror-mock',
-      ) as HTMLTextAreaElement
-    // The elements a remount would replace: the shell, both panels with their open tab bodies,
-    // the editors and the result area. Each panel's `@starting-style` entry transition replays
-    // when its body is mounted, which was the flicker on every switch between two empty tabs
-    const shell = () => screen.getByTestId('vision-query-tab')
-    const requestPanel = () => screen.getByTestId('vision-request-panel')
-    const paramsBody = () => document.getElementById('vision-request-params-panel') as HTMLElement
-    const responsePanel = () => document.getElementById('vision-response') as HTMLElement
-    const result = () => screen.getByTestId('vision-result')
-    const before = {
-      shell: shell(),
-      requestPanel: requestPanel(),
-      paramsBody: paramsBody(),
-      paramsView: document.getElementById('vision-params-view-json') as HTMLElement,
-      queryEditor: getQueryEditor(),
-      paramsEditor: paramsEditor(),
-      responsePanel: responsePanel(),
-      result: result(),
-    }
-    expect(text(result())).toContain('vision.result.empty')
-
-    fireEvent.click(screen.getByTestId('vision-new-tab'))
-    expect(screen.getAllByTestId('vision-tab')).toHaveLength(2)
-    expect(shell()).toBe(before.shell)
-    expect(requestPanel()).toBe(before.requestPanel)
-    expect(paramsBody()).toBe(before.paramsBody)
-    expect(document.getElementById('vision-params-view-json')).toBe(before.paramsView)
-    expect(getQueryEditor()).toBe(before.queryEditor)
-    expect(paramsEditor()).toBe(before.paramsEditor)
-    expect(responsePanel()).toBe(before.responsePanel)
-    expect(result()).toBe(before.result)
-    expect(text(result())).toContain('vision.result.empty')
-
-    fireEvent.click(within(screen.getAllByTestId('vision-tab')[0]).getByTestId('vision-tab-button'))
-    expect(shell()).toBe(before.shell)
-    expect(getQueryEditor()).toBe(before.queryEditor)
-    expect(paramsEditor()).toBe(before.paramsEditor)
-    expect(result()).toBe(before.result)
-    // Showing a tab fetches nothing by itself
-    expect(fetchCalls).toHaveLength(0)
-    expect(screen.getByTestId('vision-query-tab').getAttribute('aria-labelledby')).toBe(
-      within(screen.getAllByTestId('vision-tab')[0]).getByRole('tab').id,
-    )
-  })
-
-  it('keeps the query, params, result and panel state of each tab apart in the shared shell', async () => {
-    const {fetchCalls} = renderRedesign()
-    const paramsEditor = () =>
-      within(screen.getByTestId('vision-params-editor')).getByTestId(
+      within(within(shownTab()).getByTestId('vision-params-editor')).getByTestId(
         'codemirror-mock',
       ) as HTMLTextAreaElement
     const tabButton = (index: number) =>
@@ -2565,18 +2501,20 @@ describe('VisionRedesign', () => {
 
     typeQuery('*[_type == $type]')
     fireEvent.change(paramsEditor(), {target: {value: '{"type": "author"}'}})
-    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
-    fireEvent.click(screen.getByTestId('vision-fetch-button'))
-    await waitFor(() => expect(screen.getByTestId('vision-result-json')).toBeTruthy())
+    await waitFor(() =>
+      expect(isDisabled(within(shownTab()).getByTestId('vision-fetch-button'))).toBe(false),
+    )
+    fireEvent.click(within(shownTab()).getByTestId('vision-fetch-button'))
+    await waitFor(() => expect(within(shownTab()).getByTestId('vision-result-json')).toBeTruthy())
     expect(fetchCalls).toHaveLength(1)
 
-    // The new tab starts empty, in the same editors
+    // The new tab starts empty, in editors of its own
     fireEvent.click(screen.getByTestId('vision-new-tab'))
     expect(getQueryEditor().value).toBe('')
     expect(paramsEditor().value).toBe(DEFAULT_PARAMS)
-    expect(screen.queryByTestId('vision-result-json')).toBeNull()
-    expect(text(screen.getByTestId('vision-result'))).toContain('vision.result.empty')
-    expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(true)
+    expect(within(shownTab()).queryByTestId('vision-result-json')).toBeNull()
+    expect(text(within(shownTab()).getByTestId('vision-result'))).toContain('vision.result.empty')
+    expect(isDisabled(within(shownTab()).getByTestId('vision-fetch-button'))).toBe(true)
     expect(fetchCalls).toHaveLength(1)
     // The debounced params edit of the first tab was committed to that tab, not this one
     await waitFor(() => {
@@ -2591,7 +2529,7 @@ describe('VisionRedesign', () => {
     // Back on the first tab: its query, params and result are shown again, without refetching
     fireEvent.click(tabButton(0))
     expect(getQueryEditor().value).toBe('*[_type == $type]')
-    expect(screen.getByTestId('vision-result-json')).toBeTruthy()
+    expect(within(shownTab()).getByTestId('vision-result-json')).toBeTruthy()
     expect(fetchCalls).toHaveLength(1)
     expect(paramsEditor().value).toBe('{"type": "author"}')
     await waitFor(() => expect(getStoredState().tabs[1].rawParams).toBe('{"limit": 2}'))
@@ -2599,13 +2537,45 @@ describe('VisionRedesign', () => {
     fireEvent.click(tabButton(1))
     expect(getQueryEditor().value).toBe('*[_type == "book"]')
     expect(paramsEditor().value).toBe('{"limit": 2}')
-    expect(screen.queryByTestId('vision-result-json')).toBeNull()
+    expect(within(shownTab()).queryByTestId('vision-result-json')).toBeNull()
 
     // Running the second tab's query reads that tab's params
-    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
-    fireEvent.click(screen.getByTestId('vision-fetch-button'))
+    await waitFor(() =>
+      expect(isDisabled(within(shownTab()).getByTestId('vision-fetch-button'))).toBe(false),
+    )
+    fireEvent.click(within(shownTab()).getByTestId('vision-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1]).toMatchObject({query: '*[_type == "book"]', params: {limit: 2}})
+  })
+
+  it('keeps every open tab mounted, hiding the others, with the element ids in the shown one only', async () => {
+    const {fetchCalls} = renderRedesign()
+    typeQuery('*[_type == "author"]')
+    const firstEditor = getQueryEditor()
+
+    fireEvent.click(screen.getByTestId('vision-new-tab'))
+    typeQuery('*[_type == "book"]')
+    expect(screen.getAllByTestId('vision-query-tab')).toHaveLength(2)
+    expect(getQueryEditor()).not.toBe(firstEditor)
+    expect(firstEditor.isConnected).toBe(true)
+    expect(firstEditor.closest('[style*="display: none"]')).not.toBeNull()
+    // Labels, tab panels and the code that looks elements up by id reach the shown tab's
+    for (const id of [QUERY_TAB_PANEL_ID, 'vision-request-params-tab', 'vision-result-content']) {
+      expect(document.querySelectorAll(`[id="${id}"]`)).toHaveLength(1)
+      expect(shownTab().contains(document.getElementById(id))).toBe(true)
+    }
+
+    // Only the shown tab answers the keyboard shortcuts
+    fireEvent.keyDown(getQueryEditor(), {key: 'Enter', ctrlKey: true, which: 13, keyCode: 13})
+    await waitFor(() => expect(fetchCalls).toHaveLength(1))
+    expect(fetchCalls[0]).toMatchObject({query: '*[_type == "book"]'})
+
+    // Switching back shows the same elements again rather than new ones
+    fireEvent.click(within(screen.getAllByTestId('vision-tab')[0]).getByTestId('vision-tab-button'))
+    expect(getQueryEditor()).toBe(firstEditor)
+    expect(getQueryEditor().value).toBe('*[_type == "author"]')
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchCalls).toHaveLength(1)
   })
 
   it('only derives types from a result that was fetched for the current query', async () => {
@@ -2669,7 +2639,7 @@ describe('VisionRedesign', () => {
     const {fetchCalls, liveEvents, liveSubscriptionCount, respondWith} = renderRedesign()
     typeQuery('*[_type == "author"]')
     // Live fetches like Fetch, then follows the response's sync tags
-    fireEvent.click(screen.getByTestId('vision-auto-refetch'))
+    fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
 
     await waitFor(() => expect(liveSubscriptionCount()).toBe(1))
@@ -2725,7 +2695,9 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(text(screen.getByTestId('result-json'))).toContain('Caught up'))
     expect(liveSubscriptionCount()).toBe(1)
     expect(screen.queryByText('vision.live.active')).toBeNull()
-    expect(screen.getByTestId('vision-auto-refetch').textContent).toContain('vision.live.stop')
+    expect(within(shownTab()).getByTestId('vision-auto-refetch').textContent).toContain(
+      'vision.live.stop',
+    )
 
     // Nothing relevant while away: back to live without a refetch
     fireEvent.click(within(screen.getAllByTestId('vision-tab')[1]).getByTestId('vision-tab-button'))
@@ -2814,14 +2786,14 @@ describe('VisionRedesign', () => {
     // The dataset changes while refetching is off, so the runner still holds the old request
     openRequestTab('options')
     pickDataset('staging')
-    fireEvent.click(screen.getByTestId('vision-auto-refetch'))
+    fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
 
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].config.dataset).toBe('staging')
 
     // Like Fetch, starting it again fetches again
-    fireEvent.click(screen.getByTestId('vision-auto-refetch'))
-    fireEvent.click(screen.getByTestId('vision-auto-refetch'))
+    fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
+    fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
     await waitFor(() => expect(fetchCalls).toHaveLength(3))
     await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(true))
   })
@@ -2841,7 +2813,7 @@ describe('VisionRedesign', () => {
     }
     const {fetchCalls} = renderRedesign()
     typeQuery('*[_type == "author"]')
-    fireEvent.click(screen.getByTestId('vision-auto-refetch'))
+    fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
 
     // A pasted URL loads a new query and pins its dataset in one go, and runs it as pasted; live
@@ -2888,7 +2860,7 @@ describe('VisionRedesign', () => {
     })
 
     // Without automatic refetching such a load only replaces the query
-    fireEvent.click(screen.getByTestId('vision-auto-refetch'))
+    fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
     await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(false))
     typeQuery('*[_type == "person"]')
     await loadSavedQuery()
@@ -2966,7 +2938,7 @@ describe('VisionRedesign', () => {
     // The same goes for turning automatic refetching on: the session starts from the params
     // typed just before, not from the ones still waiting in the debounce
     fireEvent.change(paramsEditor, {target: {value: '{"id": "fresher"}'}})
-    fireEvent.click(screen.getByTestId('vision-auto-refetch'))
+    fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(fetchCalls[1].params).toEqual({id: 'fresher'})
 
@@ -3739,7 +3711,7 @@ describe('VisionRedesign', () => {
     renderRedesign()
     const split = await screen.findByTestId('vision-split')
     // The tab container's size gives the default share, the split's own its bounds
-    resizeElement(screen.getByTestId('vision-query-tab'), {width: 1200, height: 700})
+    resizeElement(shownTab(), {width: 1200, height: 700})
     resizeElement(split, {width: 1200, height: 700})
     const handle = screen.getByTestId('vision-split-handle')
     const requestPane = split.firstElementChild as HTMLElement
@@ -3786,7 +3758,7 @@ describe('VisionRedesign', () => {
   it('renders a switched-to or new tab with the layout already in place, in its first render', async () => {
     renderRedesign()
     const split = await screen.findByTestId('vision-split')
-    resizeElement(screen.getByTestId('vision-query-tab'), {width: 1200, height: 700})
+    resizeElement(shownTab(), {width: 1200, height: 700})
     resizeElement(split, {width: 1200, height: 700})
     fireEvent.keyDown(screen.getByTestId('vision-split-handle'), {key: 'ArrowRight'})
     fireEvent.click(document.getElementById('vision-response-history-tab') as HTMLElement)
@@ -3795,7 +3767,8 @@ describe('VisionRedesign', () => {
     // Each tab mounts its own panels, which nothing has measured yet: the split and the bottom
     // panels have to come from what the tab before them showed, or they paint in a default first
     const expectSameLayout = () => {
-      const requestPane = screen.getByTestId('vision-split').firstElementChild as HTMLElement
+      const requestPane = within(shownTab()).getByTestId('vision-split')
+        .firstElementChild as HTMLElement
       expect(requestPane.style.flex).toBe('0 0 616px')
       for (const id of ['vision-response-history-tab', 'vision-request-lint-tab']) {
         expect(document.getElementById(id)?.getAttribute('aria-selected')).toBe('true')
@@ -3891,7 +3864,7 @@ describe('VisionRedesign adoption telemetry', () => {
     ])
     expect(logged(VisionParamsUsed.name)).toEqual([[VisionParamsUsed, {mode: 'fetch'}]])
 
-    fireEvent.click(screen.getByTestId('vision-auto-refetch'))
+    fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
     await waitFor(() => expect(fetchCalls).toHaveLength(3))
     expect(logged(VisionQueryRun.name).at(-1)).toEqual([
       VisionQueryRun,

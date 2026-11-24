@@ -22,9 +22,9 @@ import {
 import {groq} from '@sanity/lezer-groq'
 
 /**
- * Holds the undo history, so an editor that shows another document (another tab's query) can
- * drop the history of the one before it, or bring back the one saved for it, by reconfiguring
- * this compartment: a state field only starts over when it is taken out of the configuration
+ * Holds the undo history, so an editor whose view is created again (its tab hidden and shown
+ * again) can bring back the history of the one before it: a state field only takes a new initial
+ * value when it is taken out of the configuration and put back in
  */
 export const historyCompartment = new Compartment()
 

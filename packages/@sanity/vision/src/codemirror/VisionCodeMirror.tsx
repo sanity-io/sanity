@@ -1,10 +1,10 @@
 import {history, historyField} from '@codemirror/commands'
-import {type EditorState, type Extension, Transaction} from '@codemirror/state'
-import {type Command, type EditorView} from '@codemirror/view'
+import {forceParsing} from '@codemirror/language'
+import {type EditorState, type Extension, type StateEffect, Transaction} from '@codemirror/state'
+import {type Command, type EditorView, type ViewUpdate} from '@codemirror/view'
 import {rem, useTheme} from '@sanity/ui'
 import CodeMirror, {
   EditorSelection,
-  ExternalChange,
   type ReactCodeMirrorProps,
   type ReactCodeMirrorRef,
 } from '@uiw/react-codemirror'
@@ -14,7 +14,6 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
-  useLayoutEffect,
   useRef,
   useState,
   type RefAttributes,
@@ -63,34 +62,6 @@ function EditorRoot({
   )
 }
 
-/**
- * Shows another document in a live view, as if the view had been created for it: the text is
- * replaced in one step that is kept out of the undo history (and out of `onChange`, like the
- * value sync of `@uiw/react-codemirror`), and the history field is then taken out of the
- * configuration and put back, which empties it, or starts it from the one `saved` for this
- * document when `saved` still reads the same text as `doc` (the document may have been changed
- * from outside the editor meanwhile, and a history for other text cannot be replayed on it).
- * The view keeps its configuration, so extensions reconfigured since the state was saved (a
- * theme, the lint reporting) stay current. The two steps are separate dispatches (one update
- * carrying both reconfigurations does not settle), both made before the browser paints.
- */
-function showDocument(view: EditorView, doc: string, saved: EditorState | undefined): void {
-  const restore = saved !== undefined && saved.doc.toString() === doc
-  const savedHistory = restore ? saved.field(historyField, false) : undefined
-  view.dispatch({
-    changes: {from: 0, to: view.state.doc.length, insert: doc},
-    selection: restore ? saved.selection : EditorSelection.cursor(doc.length),
-    annotations: [Transaction.addToHistory.of(false), ExternalChange.of(true)],
-    effects: historyCompartment.reconfigure([]),
-    scrollIntoView: true,
-  })
-  view.dispatch({
-    effects: historyCompartment.reconfigure(
-      savedHistory === undefined ? history() : [history(), historyField.init(() => savedHistory)],
-    ),
-  })
-}
-
 export interface VisionCodeMirrorHandle {
   resetEditorContent: (newContent: string) => void
   /** Edits the document like typing would: undoable, the selection mapped through the edits */
@@ -111,20 +82,11 @@ export function VisionCodeMirror({
   ref,
   onChange,
   initialValue: initialValueProp,
-  stateKey,
   extensions,
   autoHeight = false,
   underHeader = autoHeight,
 }: Pick<ReactCodeMirrorProps, 'onChange'> & {
   initialValue: ReactCodeMirrorProps['value']
-  /**
-   * Names the document the editor shows (a tab id). When it changes, the editor keeps the
-   * document, selection and undo history it had for the previous key, shows the one it kept for
-   * the new key, or `initialValue` with an empty history where it kept none, and does so in the
-   * same view, in the commit that changes it: nothing is torn down and nothing paints empty.
-   * Without a key the editor shows one document for as long as it is mounted.
-   */
-  stateKey?: string
   extensions: Extension[]
   /**
    * Sizes the editor to its document instead of filling its container, for an editor that sits
@@ -148,31 +110,62 @@ export function VisionCodeMirror({
   // tool is hidden only reaches this component as a new `initialValue`, and the next view must
   // show it rather than the document from before hiding.
   const [value, setValue] = useState(initialValueProp)
-  const [hasView, setHasView] = useState(false)
+  const [liveView, setLiveView] = useState<EditorView | null>(null)
+  const hasView = liveView !== null
   const [seenInitialValue, setSeenInitialValue] = useState(initialValueProp)
-  // Another key means another document: `initialValue` leads again, as it does for a new view
-  const [seenStateKey, setSeenStateKey] = useState(stateKey)
-  const keyChanged = stateKey !== seenStateKey
-  if (keyChanged) {
-    setSeenStateKey(stateKey)
-    setSeenInitialValue(initialValueProp)
-    setValue(initialValueProp)
-  } else if (initialValueProp !== seenInitialValue) {
+  if (initialValueProp !== seenInitialValue) {
     setSeenInitialValue(initialValueProp)
     if (!hasView) setValue(initialValueProp)
   }
-  const codeMirrorRef = useRef<ReactCodeMirrorRef>(null)
+  // A new view starts with the cursor at the start, no undo history and no scroll. When it shows
+  // the document the previous view had, it takes over that view's selection, history and scroll,
+  // so a tab shown again looks and undoes as it did when it was hidden. The scroll is recorded as
+  // it happens: by the time the view is destroyed its tab is already hidden, with no layout
+  const lastState = useRef<EditorState | undefined>(undefined)
+  const lastScroll = useRef<StateEffect<unknown> | undefined>(undefined)
+  const handleUpdate = useCallback((update: ViewUpdate) => {
+    lastState.current = update.state
+  }, [])
   const handleCreateEditor = useCallback((view: EditorView) => {
+    const previous = lastState.current
+    lastState.current = view.state
+    if (previous && previous.doc.eq(view.state.doc)) {
+      const previousHistory = previous.field(historyField, false)
+      const keepsHistory =
+        previousHistory !== undefined && historyCompartment.get(view.state) !== undefined
+      view.dispatch({
+        selection: previous.selection,
+        annotations: Transaction.addToHistory.of(false),
+        effects: keepsHistory ? historyCompartment.reconfigure([]) : [],
+      })
+      // Taking the history out and putting it back with its old value must be two transactions:
+      // in one, the field would keep its current value
+      if (keepsHistory) {
+        view.dispatch({
+          effects: historyCompartment.reconfigure([
+            history(),
+            historyField.init(() => previousHistory),
+          ]),
+        })
+      }
+      if (lastScroll.current) view.dispatch({effects: lastScroll.current})
+      // A new state parses only the start of a long document and the rest while idle, so folds
+      // that end further down (the gutter's markers) would show up frames after the view; the old
+      // view had them all
+      forceParsing(view, view.state.doc.length, 50)
+    } else {
+      lastScroll.current = undefined
+    }
     // A new view draws its gutters before it has read the content's top padding, and only lines
     // them up with the text in its first measure, after the browser has painted: the line numbers
     // would show a frame too high, every time a tab mounts its editors. Reading the layout makes
     // the view take that measure now
     view.lineBlockAtHeight(0)
-    setHasView(true)
+    setLiveView(view)
   }, [])
   useEffect(() => {
     // The view is destroyed by the child's effect cleanups, which run along with this one
-    return () => setHasView(false)
+    return () => setLiveView(null)
   }, [])
 
   const handleChange = useCallback<NonNullable<ReactCodeMirrorProps['onChange']>>(
@@ -184,6 +177,15 @@ export function VisionCodeMirror({
   )
   const sanityTheme = useTheme()
   const theme = useCodemirrorTheme(sanityTheme)
+  const codeMirrorRef = useRef<ReactCodeMirrorRef>(null)
+  useEffect(() => {
+    if (!liveView) return undefined
+    const recordScroll = () => {
+      lastScroll.current = liveView.scrollSnapshot()
+    }
+    liveView.scrollDOM.addEventListener('scroll', recordScroll, {passive: true})
+    return () => liveView.scrollDOM.removeEventListener('scroll', recordScroll)
+  }, [liveView])
 
   const resetEditorContent = useCallback((newContent: string) => {
     // Mirrored first, so a call made while there is no view still reaches the next one
@@ -245,28 +247,6 @@ export function VisionCodeMirror({
     [resetEditorContent, applyChanges, runCommand, selectRange, getVisibleColumnsOfEditor],
   )
 
-  // The states kept per key, for as long as the editor is mounted (a closed tab's state is a
-  // small immutable value, kept until then). The view is swapped in a layout effect, before the
-  // browser paints the commit that changed the key. Without a view (hidden inside an
-  // `<Activity>` boundary) there is nothing to keep, and the next view is created from `value`,
-  // which the key change has just set.
-  const savedStatesRef = useRef<Map<string, EditorState> | null>(null)
-  const shownStateKeyRef = useRef(stateKey)
-  useLayoutEffect(() => {
-    const previousKey = shownStateKeyRef.current
-    if (previousKey === stateKey) return
-    shownStateKeyRef.current = stateKey
-    const view = codeMirrorRef.current?.view
-    if (!view) return
-    const savedStates = (savedStatesRef.current ??= new Map())
-    if (previousKey !== undefined) savedStates.set(previousKey, view.state)
-    showDocument(
-      view,
-      initialValueProp ?? '',
-      stateKey === undefined ? undefined : savedStates.get(stateKey),
-    )
-  }, [initialValueProp, stateKey])
-
   return (
     <EditorRoot autoHeight={autoHeight} underHeader={underHeader}>
       <CodeMirror
@@ -277,6 +257,7 @@ export function VisionCodeMirror({
         value={value}
         onChange={handleChange}
         onCreateEditor={handleCreateEditor}
+        onUpdate={handleUpdate}
       />
     </EditorRoot>
   )

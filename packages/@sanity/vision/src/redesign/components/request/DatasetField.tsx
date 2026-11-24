@@ -16,6 +16,7 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {type VisionDatasetMode} from '../../store/types'
 import {useVisionSelector} from '../../store/VisionActorContext'
 import {selectProjectId} from '../../store/visionMachine'
+import {useTabElementId} from '../tabs/queryTabShown'
 
 export interface DatasetMenuEntry {
   dataset: string
@@ -100,6 +101,7 @@ export function DatasetField({
   onChange,
 }: DatasetFieldProps) {
   const {t} = useTranslation(visionLocaleNamespace)
+  const elementId = useTabElementId()(id)
   const workspace = useWorkspace()
   const workspaces = useWorkspaces()
   const projectId = useVisionSelector(selectProjectId)
@@ -184,7 +186,7 @@ export function DatasetField({
 
   return (
     <Stack gap={2}>
-      <Text as="label" htmlFor={id} muted size={1} weight="medium" trim={true}>
+      <Text as="label" htmlFor={elementId} muted size={1} weight="medium" trim={true}>
         {t('settings.dataset-label')}
       </Text>
       <Flex gap={1}>
@@ -204,7 +206,7 @@ export function DatasetField({
                 value={shownDataset}
               />
             }
-            id={id}
+            id={elementId}
             menu={
               <Menu data-testid={`${id}-menu`} padding={0} style={{minWidth: 280}}>
                 <Box padding={2} borderBottom>

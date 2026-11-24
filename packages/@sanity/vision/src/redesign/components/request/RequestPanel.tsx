@@ -12,6 +12,7 @@ import {
   useEffectEvent,
   useMemo,
   useRef,
+  useState,
 } from 'react'
 import {type Schema, useSchema} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
@@ -25,7 +26,6 @@ import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {useAiFeatures} from '../../aiFeatures'
 import {type QueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
-import {useScopedState} from '../../hooks/useScopedState'
 import {
   type QueryRequest,
   type VisionParamsView,
@@ -55,6 +55,7 @@ import {
   SplitWithBottomPanel,
   type SplitWithBottomPanelHandle,
 } from '../SplitWithBottomPanel'
+import {useTabElementId} from '../tabs/queryTabShown'
 import {ApiVersionButton, type RevealedOption} from './ApiVersionButton'
 import {GenerateQueryBar} from './GenerateQueryBar'
 import {GenerateQueryButton} from './GenerateQueryButton'
@@ -219,6 +220,10 @@ export function RequestPanel(props: RequestPanelProps) {
   }, [panelState, telemetry])
   const panelRef = useRef<SplitWithBottomPanelHandle>(null)
   const paramsView = useVisionSelector(selectParamsView)
+  const tabElementId = useTabElementId()
+  const paramsContentId = tabElementId('vision-request-params-content')
+  const paramsJsonTabId = tabElementId('vision-params-view-json')
+  const paramsFormTabId = tabElementId('vision-params-view-form')
   const setParamsView = useCallback(
     (view: VisionParamsView) => actorRef.send({type: 'params.view', view}),
     [actorRef],
@@ -242,8 +247,7 @@ export function RequestPanel(props: RequestPanelProps) {
 
   const querySectionRef = useRef<HTMLDivElement>(null)
   const {generateQuery: canGenerate} = useAiFeatures()
-  // Opened for a tab; another tab starts with it closed
-  const [generatorState, setGeneratorOpen] = useScopedState(tab.id, false)
+  const [generatorState, setGeneratorOpen] = useState(false)
   const generatorOpen = canGenerate && generatorState
   // Closing hands the keyboard back to the query editor, where the bar was opened from
   const closeGenerator = useCallback(() => {
@@ -253,7 +257,7 @@ export function RequestPanel(props: RequestPanelProps) {
         ?.querySelector<HTMLElement>('[data-testid="vision-query-editor"] .cm-content')
         ?.focus(),
     )
-  }, [setGeneratorOpen])
+  }, [])
 
   // The API version button shows the field that changes what it says: the Options tab opens if
   // another was showing, the panel expands if it was collapsed, and once its fields have mounted
@@ -264,21 +268,25 @@ export function RequestPanel(props: RequestPanelProps) {
     (option: RevealedOption) => {
       setPanelState((current) => ({...current, activeTabId: 'options', collapsed: false}))
       requestAnimationFrame(() => {
-        const options = document.getElementById('vision-request-options-panel')
+        const options = document.getElementById(tabElementId('vision-request-options-panel'))
         const field =
           option !== 'apiVersion'
-            ? options?.querySelector<HTMLElement>(`#vision-option-${option}`)
+            ? options?.querySelector<HTMLElement>(
+                `[id="${tabElementId(`vision-option-${option}`)}"]`,
+              )
             : (options?.querySelector<HTMLElement>(
                 'input[data-testid="vision-option-api-version-custom"], [data-testid="vision-option-api-version-custom"] input',
               ) ??
               options?.querySelector<HTMLElement>(
                 '[data-testid="vision-option-api-version-wrap"][tabindex]',
               ) ??
-              options?.querySelector<HTMLElement>('#vision-option-api-version'))
+              options?.querySelector<HTMLElement>(
+                `[id="${tabElementId('vision-option-api-version')}"]`,
+              ))
         field?.focus()
       })
     },
-    [setPanelState],
+    [setPanelState, tabElementId],
   )
 
   const fitParams = useCallback((event: MouseEvent<HTMLButtonElement>) => {
@@ -302,9 +310,9 @@ export function RequestPanel(props: RequestPanelProps) {
             <Flex justifyContent="flex-start" paddingTop={2} paddingX={2}>
               <TabList aria-label={t('vision.params.view.label')} gap={1}>
                 <Tab
-                  aria-controls="vision-request-params-content"
+                  aria-controls={paramsContentId}
                   fontSize={1}
-                  id="vision-params-view-json"
+                  id={paramsJsonTabId}
                   label={t('vision.params.view.json')}
                   onClick={() => setParamsView('json')}
                   onDoubleClick={fitParams}
@@ -313,9 +321,9 @@ export function RequestPanel(props: RequestPanelProps) {
                   title={fitTitle}
                 />
                 <Tab
-                  aria-controls="vision-request-params-content"
+                  aria-controls={paramsContentId}
                   fontSize={1}
-                  id="vision-params-view-form"
+                  id={paramsFormTabId}
                   label={t('vision.params.view.form')}
                   onClick={() => setParamsView('form')}
                   onDoubleClick={fitParams}
@@ -325,7 +333,7 @@ export function RequestPanel(props: RequestPanelProps) {
                 />
               </TabList>
             </Flex>
-            <Box id="vision-request-params-content">
+            <Box id={paramsContentId}>
               {paramsView === 'form' ? (
                 <ParamsForm onChange={onParamsReplace} params={params} query={tab.query} />
               ) : (
@@ -334,7 +342,6 @@ export function RequestPanel(props: RequestPanelProps) {
                     editorRef={paramsEditorRef}
                     onChange={onParamsChange}
                     params={params}
-                    tabId={tab.id}
                     value={tab.rawParams}
                   />
                   <FlushOnUnmount onUnmount={onParamsFlush} />
@@ -399,14 +406,16 @@ export function RequestPanel(props: RequestPanelProps) {
     onParamsReplace,
     onRevealRange,
     params,
+    paramsContentId,
     paramsEditorRef,
+    paramsFormTabId,
+    paramsJsonTabId,
     paramsView,
     removeFunction,
     resolved,
     saveFunction,
     setParamsView,
     t,
-    tab.id,
     tab.options,
     tab.query,
     tab.rawParams,
@@ -525,7 +534,6 @@ export function RequestPanel(props: RequestPanelProps) {
             initialValue={tab.query}
             onChange={onQueryChange}
             ref={queryEditorRef}
-            stateKey={tab.id}
           />
         </Box>
       </Flex>

@@ -1,6 +1,6 @@
 import {TooltipDelayGroupProvider} from '@sanity/ui/tooltip'
 import {useActorRef, useSelector} from '@xstate/react'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import {Activity, memo, useEffect, useMemo, useRef, useState} from 'react'
 import {Flex} from 'ui5'
 
 import {useSavedQueries} from '../../hooks/useSavedQueries'
@@ -26,8 +26,9 @@ import {AiFeaturesProvider} from './AiFeaturesProvider'
 import {QueryTabLayoutProvider} from './queryTabLayout'
 import * as styles from './redesign.module.css'
 import {VisionSidebar} from './sidebar/VisionSidebar'
-import {QueryTab} from './tabs/QueryTab'
+import {QueryTab, type QueryTabProps} from './tabs/QueryTab'
 import {QueryTabBar} from './tabs/QueryTabBar'
+import {HiddenQueryTabContext} from './tabs/queryTabShown'
 import {VisionDialogs} from './VisionDialogs'
 import {VisionUrlState} from './VisionUrlState'
 import {VisionWebMcp} from './VisionWebMcp'
@@ -48,6 +49,22 @@ function getVisionLayout(width: number): VisionLayout {
  * one is open, its neighbours open without waiting, as in the studio's own toolbars
  */
 const TOOLTIP_DELAY = {open: 400}
+
+/**
+ * A tab in the list of open ones, mounted for as long as it is open and hidden while another is
+ * shown. Memoized, as a hidden tab has nothing to render again when the shown one changes
+ */
+function QueryTabActivity(props: QueryTabProps & {shown: boolean}) {
+  const {shown, tab, ...rest} = props
+  return (
+    <Activity mode={shown ? 'visible' : 'hidden'}>
+      <HiddenQueryTabContext value={shown ? null : tab.id}>
+        <QueryTab tab={tab} {...rest} />
+      </HiddenQueryTabContext>
+    </Activity>
+  )
+}
+const QueryTabActivityMemo = memo(QueryTabActivity)
 
 export interface VisionRedesignProps {
   config: VisionConfig
@@ -81,7 +98,10 @@ export function VisionRedesign(props: VisionRedesignProps) {
   usePersistVisionState(actorRef, projectId)
 
   const activeTab = useSelector(actorRef, selectActiveTab)
-  const tabCount = useSelector(actorRef, (snapshot) => snapshot.context.tabs.length)
+  const tabs = useSelector(actorRef, (snapshot) => snapshot.context.tabs)
+  // The tab shown when the tool opens lifts its panels in; tabs shown later appear in place
+  const [firstTabId] = useState(activeTab.id)
+  const tabCount = tabs.length
   const telemetry = useVisionTelemetry()
   const tabCountRef = useRef<number | null>(null)
   useEffect(() => {
@@ -133,7 +153,20 @@ export function VisionRedesign(props: VisionRedesignProps) {
                       >
                         <QueryTabBar />
                         <QueryTabLayoutProvider>
-                          <QueryTab tab={activeTab} rootElement={rootElement} />
+                          {/*
+                            Every tab stays mounted, so switching tabs hides one and shows another
+                            rather than remounting it: a tab shown again keeps its elements and
+                            its state, and its editors their selection, undo history and scroll
+                          */}
+                          {tabs.map((tab) => (
+                            <QueryTabActivityMemo
+                              animateFirstShow={tab.id === firstTabId}
+                              key={tab.id}
+                              rootElement={rootElement}
+                              shown={tab.id === activeTab.id}
+                              tab={tab}
+                            />
+                          ))}
                         </QueryTabLayoutProvider>
                       </Flex>
                     </Flex>
