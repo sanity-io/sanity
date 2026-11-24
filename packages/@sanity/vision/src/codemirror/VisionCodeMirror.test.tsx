@@ -6,6 +6,7 @@ import {act, render} from '@testing-library/react'
 import {Activity, type RefObject} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
+import {EDITOR_FONT_SIZE, firstEditorLineStyle} from './editorMetrics'
 import {historyCompartment} from './extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from './VisionCodeMirror'
 
@@ -78,6 +79,15 @@ describe('VisionCodeMirror', () => {
 
     expect(paddingTop(true)).toBe('0px')
     expect(paddingTop(false)).not.toBe('0px')
+    // Text set beside an editor under a header takes its first line's box from the same metrics
+    expect(firstEditorLineStyle.paddingTop).toBe(paddingTop(true))
+  })
+
+  it('sizes its text from the shared editor metrics', () => {
+    const {container, unmount} = render(editor('visible', {current: null}, vi.fn()))
+    const root = container.firstElementChild as HTMLElement
+    expect(root.style.getPropertyValue('--vision-editor-font-size')).toBe(`${EDITOR_FONT_SIZE}px`)
+    unmount()
   })
 
   it('lines its gutters up with the text in the commit that creates the view', () => {

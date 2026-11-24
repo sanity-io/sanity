@@ -31,6 +31,7 @@ import {
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
+import {editorContentPaddingTop, editorLineHeight} from '../../codemirror/editorMetrics'
 import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
 import visionLocaleStrings from '../../i18n/resources'
 import {
@@ -814,6 +815,13 @@ describe('VisionRedesign', () => {
     expect(isDisabled(copy)).toBe(true)
     expect(isDisabled(within(actions).getByTestId('vision-result-menu-button'))).toBe(false)
     expect(text(screen.getByTestId('vision-result'))).toContain('vision.result.empty')
+  })
+
+  it('sets the empty result in the box of the query editor first line', () => {
+    renderRedesign()
+    const empty = within(screen.getByTestId('vision-result')).getByTestId('vision-result-empty')
+    expect(empty.style.paddingTop).toBe(editorContentPaddingTop([], true))
+    expect(empty.style.lineHeight).toBe(editorLineHeight)
   })
 
   it('turns Live on and off without fetching, with Fetch still fetching meanwhile', async () => {
