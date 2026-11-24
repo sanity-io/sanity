@@ -1,3 +1,4 @@
+import {configure} from '@chromatic-com/vitest'
 import {BoundaryElementProvider, Flex} from '@sanity/ui'
 import noop from 'lodash-es/noop.js'
 import {of} from 'rxjs'
@@ -88,5 +89,17 @@ describe('WorkspaceMenuButton', () => {
     await expect.poll(() => menu.element().getBoundingClientRect().height).toBeGreaterThan(100)
 
     await settleChromaticEndState()
+  })
+
+  // The navbar row is as tall as its tallest button. A taller one here puts the navbar's bottom
+  // edge on a half pixel, and Chrome then draws the navbar's bottom shadow under the panes.
+  test('is no taller than the 25px logo mark beside it', async () => {
+    configure({disableAutoSnapshot: true})
+
+    await render(<WorkspaceMenuButtonHarness />)
+
+    const button = page.getByRole('button', {name: 'Production'})
+    await expect.element(button).toBeVisible()
+    expect(button.element().getBoundingClientRect().height).toBeLessThanOrEqual(25)
   })
 })
