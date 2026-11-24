@@ -2,35 +2,34 @@
   container: optionsGrid / inline-size;
 }
 
-.stack {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
 /*
- * The selects flow into as many 180px-or-wider columns as fit, like the params form's
- * `fieldGrid`, and the columns share the whole row between the fields there are
+ * The selects and toggles flow into as many 180px-or-wider columns as fit, like the params
+ * form's `fieldGrid`. `auto-fit` collapses the columns no cell lands in, so the cells
+ * share the whole row
  */
-.fields {
+.grid {
+  /* The height of a picker's control, without its label: the line the toggles centre on */
+  --vision-options-control-height: 25px;
+
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
 }
 
 /*
- * The toggles have a grid of their own, so they split their row in two halves instead of lining
- * up with whichever of the selects' columns they happen to fall on
+ * A toggle sits at the bottom of its cell, centred on a line as tall as a picker's control, so
+ * beside the pickers it lines up with their controls rather than their labels
  */
-.toggles {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: minmax(0, 1fr);
+.toggle {
+  align-items: center;
+  align-self: end;
+  display: flex;
+  min-height: var(--vision-options-control-height);
 }
 
-/* Two 180px columns and the gap between them */
+/* Two 180px columns and the gap between them: below that a two-column span would overflow */
 @container optionsGrid (min-width: 372px) {
-  .toggles {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .wide {
+    grid-column: span 2;
   }
 }

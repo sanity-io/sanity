@@ -17,7 +17,7 @@ import {
   usePerspectiveOptionName,
   VariantSelect,
 } from './OptionFields'
-import {OptionsGrid} from './OptionsGrid'
+import {OptionsGrid, OptionsGridToggleCell} from './OptionsGrid'
 
 export interface OptionsPanelProps {
   options: VisionTabOptions
@@ -34,55 +34,51 @@ export function OptionsPanel({options, resolved, onChange}: OptionsPanelProps) {
   return (
     <Box data-testid="vision-options" padding={3}>
       <Stack gap={4}>
-        <OptionsGrid
-          fields={
-            <>
-              <DatasetField
-                dataset={options.dataset}
-                datasets={datasets}
-                id="vision-option-dataset"
-                mode={options.datasetMode}
-                onChange={onChange}
-                workspaceDataset={workspaceDataset}
-              />
-              <ApiVersionField
-                id="vision-option-api-version"
-                locked={resolved.isApiVersionLocked}
-                onChange={(apiVersion) => onChange({apiVersion})}
-                trackQueryChanges
-                value={options.apiVersion}
-              />
-              <PerspectiveSelect
-                id="vision-option-perspective"
-                onChange={(perspective) => onChange({perspective})}
-                value={options.perspective}
-              />
-              <VariantSelect
-                id="vision-option-variant"
-                onChange={(variant) => onChange({variant})}
-                value={options.variant}
-              />
-            </>
-          }
-          toggles={
-            <>
-              <SwitchField
-                checked={options.includeSourceMap}
-                info={t('vision.options.include-source-map.description')}
-                onChange={(includeSourceMap) => onChange({includeSourceMap})}
-                testId="vision-option-source-map"
-                title={t('vision.options.include-source-map')}
-              />
-              <UseCdnField
-                checked={options.useCdn}
-                notes={resolved.isCdnAnonymous ? [t('vision.options.use-cdn.anonymous')] : []}
-                onChange={(useCdn) => onChange({useCdn})}
-                showSummary={false}
-                testId="vision-option-use-cdn"
-              />
-            </>
-          }
-        />
+        <OptionsGrid>
+          <ApiVersionField
+            id="vision-option-api-version"
+            locked={resolved.isApiVersionLocked}
+            onChange={(apiVersion) => onChange({apiVersion})}
+            trackQueryChanges
+            value={options.apiVersion}
+          />
+          <DatasetField
+            dataset={options.dataset}
+            datasets={datasets}
+            id="vision-option-dataset"
+            mode={options.datasetMode}
+            onChange={onChange}
+            workspaceDataset={workspaceDataset}
+          />
+          <PerspectiveSelect
+            id="vision-option-perspective"
+            onChange={(perspective) => onChange({perspective})}
+            value={options.perspective}
+          />
+          <VariantSelect
+            id="vision-option-variant"
+            onChange={(variant) => onChange({variant})}
+            value={options.variant}
+          />
+          <OptionsGridToggleCell>
+            <UseCdnField
+              checked={options.useCdn}
+              notes={resolved.isCdnAnonymous ? [t('vision.options.use-cdn.anonymous')] : []}
+              onChange={(useCdn) => onChange({useCdn})}
+              showSummary={false}
+              testId="vision-option-use-cdn"
+            />
+          </OptionsGridToggleCell>
+          <OptionsGridToggleCell wide>
+            <SwitchField
+              checked={options.includeSourceMap}
+              info={t('vision.options.include-source-map.description')}
+              onChange={(includeSourceMap) => onChange({includeSourceMap})}
+              testId="vision-option-source-map"
+              title={t('vision.options.include-source-map')}
+            />
+          </OptionsGridToggleCell>
+        </OptionsGrid>
         {resolved.isCdnBlockedByPerspective && (
           <CdnBlockedNotice
             onUsePublished={() => onChange({perspective: 'published'})}

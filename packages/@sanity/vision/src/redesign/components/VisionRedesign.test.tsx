@@ -1501,6 +1501,29 @@ describe('VisionRedesign', () => {
     }
   })
 
+  it('orders the options in the DOM as they read, so tabbing follows the grid', () => {
+    renderRedesign()
+    openRequestTab('options')
+    const grid = screen.getByTestId('vision-options-grid')
+    const order = [
+      'vision-option-api-version-select',
+      'vision-option-dataset-select',
+      'vision-option-perspective-select',
+      'vision-option-variant-select',
+      'vision-option-use-cdn',
+      'vision-option-source-map',
+    ]
+    const rendered = [...grid.querySelectorAll<HTMLElement>('[data-testid]')]
+      .map((element) => element.dataset.testid)
+      .filter((testId): testId is string => order.includes(testId ?? ''))
+    expect(rendered).toEqual(order.filter((testId) => rendered.includes(testId)))
+    expect(rendered.slice(0, 3)).toEqual(order.slice(0, 3))
+    expect(rendered).toContain('vision-option-use-cdn')
+    // Tab order is DOM order only while nothing jumps the queue with a positive tabindex
+    const tabbable = grid.querySelectorAll<HTMLElement>('select, input, button, [tabindex]')
+    expect([...tabbable].filter((element) => element.tabIndex > 0)).toEqual([])
+  })
+
   it('sends queries to the API CDN when asked, unless the perspective is one it does not serve', async () => {
     const {fetchCalls} = renderRedesign()
     typeQuery('*[_type == "post"]')
