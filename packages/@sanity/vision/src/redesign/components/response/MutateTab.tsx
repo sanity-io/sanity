@@ -317,8 +317,6 @@ export interface MutateTabProps {
   result: unknown
   /** Fields the diffs leave out, as History's do */
   hiddenFields: string[]
-  /** Called once mutations are applied, to fetch the query again */
-  onApplied: () => void
 }
 
 /**
@@ -327,7 +325,7 @@ export interface MutateTabProps {
  * one transaction once the dry run of exactly those mutations has been seen
  */
 export function MutateTab(props: MutateTabProps) {
-  const {mutate, client, dataset, canRequest, result, hiddenFields, onApplied} = props
+  const {mutate, client, dataset, canRequest, result, hiddenFields} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const {state} = mutate
   const tabElementId = useTabElementId()
@@ -364,7 +362,7 @@ export function MutateTab(props: MutateTabProps) {
   }
   const applyPreviewed = async () => {
     if (!run || !previewIsCurrent) return
-    if (await mutate.apply(client, run, dataset)) onApplied()
+    await mutate.apply(client, run, dataset)
   }
   const hasOutcome =
     state.failure !== undefined || state.applied !== undefined || state.preview !== undefined
