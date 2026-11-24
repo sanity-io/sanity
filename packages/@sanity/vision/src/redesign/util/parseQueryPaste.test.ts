@@ -64,7 +64,7 @@ describe('parseCurlQuery', () => {
         apiVersion: 'v2025-02-19',
         perspective: 'published',
         variant: undefined,
-        includeSourceMap: false,
+        resultSourceMap: undefined,
         useCdn: true,
       },
       ['curl'],

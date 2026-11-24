@@ -6,6 +6,8 @@ import {type Params} from '../../components/VisionGui'
 import {visionLocaleNamespace} from '../../i18n'
 import {encodeQueryString} from '../../util/encodeQueryString'
 import {type QueryRequest, type VisionTab} from '../store/types'
+import {useVisionSelector} from '../store/VisionActorContext'
+import {selectSourceMapRequest} from '../store/visionMachine'
 import {type ResolvedRequest, useResolvedRequest} from './useResolvedRequest'
 
 export interface QueryRequestBuilder {
@@ -24,7 +26,8 @@ export interface QueryRequestBuilder {
 export function useQueryRequestBuilder(tab: VisionTab): QueryRequestBuilder {
   const {t} = useTranslation(visionLocaleNamespace)
   const resolved = useResolvedRequest(tab.options)
-  const {includeSourceMap} = tab.options
+  const sourceMapPreference = useVisionSelector(selectSourceMapRequest)
+  const resultSourceMap = tab.options.includeSourceMap ? sourceMapPreference : undefined
   const {client, perspective, variant, isValidApiVersion, useCdn} = resolved
 
   const buildRequest = useCallback(
@@ -36,15 +39,15 @@ export function useQueryRequestBuilder(tab: VisionTab): QueryRequestBuilder {
       const urlOptions: Record<string, string | string[]> = {
         ...(perspective !== undefined ? {perspective} : {}),
         ...(variant ? {variant} : {}),
-        ...(includeSourceMap ? {resultSourceMap: 'true'} : {}),
+        ...(resultSourceMap === undefined ? {} : {resultSourceMap: String(resultSourceMap)}),
       }
       const url = client.getUrl(
         client.getDataUrl('query', encodeQueryString(query, params.parsed, urlOptions)),
         useCdn,
       )
-      return {client, query, params: params.parsed || {}, includeSourceMap, useCdn, url}
+      return {client, query, params: params.parsed || {}, resultSourceMap, useCdn, url}
     },
-    [client, includeSourceMap, isValidApiVersion, perspective, t, useCdn, variant],
+    [client, isValidApiVersion, perspective, resultSourceMap, t, useCdn, variant],
   )
 
   const params = useMemo(() => parseParams(tab.rawParams, t), [tab.rawParams, t])

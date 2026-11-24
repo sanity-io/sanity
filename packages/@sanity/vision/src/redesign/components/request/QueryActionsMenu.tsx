@@ -100,7 +100,6 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
           onClose={() => setExportOpen(false)}
           request={request}
           resolved={resolved}
-          tab={tab}
         />
       )}
     </>

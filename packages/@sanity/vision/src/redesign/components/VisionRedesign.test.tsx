@@ -233,6 +233,7 @@ vi.mock('sanity', async () => {
     useWorkspace: () => sanityMocks.workspace,
     useProjectStore: () => ({getOrganizationId: () => organizationId$}),
     useNumberFormat: () => new Intl.NumberFormat('en'),
+    ReleaseAvatarIcon: () => null,
     getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),
     useSchema: () => undefined,
     useCurrentUser: () => ({id: 'user-1'}),
@@ -682,6 +683,18 @@ function isItemDisabled(element: HTMLElement): boolean {
 
 function getStoredState() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
+}
+
+/** Switches the Content Source Map features on in the stored settings, before rendering */
+function enableSourceMaps(response: Record<string, unknown> = {}) {
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({
+      ...getStoredState(),
+      version: 1,
+      response: {sourceMapEnabled: true, ...response},
+    }),
+  )
 }
 
 function text(element: HTMLElement): string {
@@ -1978,6 +1991,7 @@ describe('VisionRedesign', () => {
   })
 
   it('shows the content source map as JSON, Tree, Graph or Documents from its toolbar row', async () => {
+    enableSourceMaps()
     const {respondWith} = renderRedesign()
     const resultSourceMap = {
       documents: [
@@ -2051,6 +2065,178 @@ describe('VisionRedesign', () => {
     ).toBeNull()
     // The result keeps its own view
     expect(text(screen.getByTestId('vision-result-view-button'))).toBe('vision.result.view.json')
+  })
+
+  describe('content source maps', () => {
+    function openSettings() {
+      fireEvent.click(screen.getByTestId('vision-sidebar-settings'))
+      return within(screen.getByTestId('vision-drawer-settings'))
+    }
+
+    function openOptions() {
+      fireEvent.click(document.getElementById('vision-request-options-tab') as HTMLElement)
+    }
+
+    const sourceMapTab = () => document.getElementById('vision-response-source-map-tab')
+
+    async function fetchQuery() {
+      typeQuery('*[_type == "author"]{name}')
+      await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
+      fireEvent.click(screen.getByTestId('vision-fetch-button'))
+      await screen.findByTestId('vision-result-json')
+    }
+
+    /** The curl and @sanity/client snippets of the Export query dialog */
+    async function exportedQuery(): Promise<string> {
+      fireEvent.click(screen.getByTestId('vision-query-menu-button'))
+      fireEvent.click(screen.getByTestId('vision-export-query'))
+      const dialog = await screen.findByTestId('vision-export-query-dialog')
+      const snippet = (id: string) => {
+        fireEvent.click(document.getElementById(`vision-export-${id}-tab`) as HTMLElement)
+        return text(document.getElementById(`vision-export-${id}-panel`) as HTMLElement)
+      }
+      const code = `${snippet('curl')}\n${snippet('client')}`
+      fireEvent.keyDown(dialog, {key: 'Escape'})
+      await waitFor(() => expect(screen.queryByTestId('vision-export-query-dialog')).toBeNull())
+      return code
+    }
+
+    it('are off by default: no option, no tab, and no source map asked for', async () => {
+      const {fetchCalls} = renderRedesign()
+      openOptions()
+      expect(screen.getByTestId('vision-options')).toBeTruthy()
+      expect(screen.queryByTestId('vision-option-source-map')).toBeNull()
+      expect(sourceMapTab()).toBeNull()
+
+      await fetchQuery()
+      expect(fetchCalls.at(-1)?.options.resultSourceMap).toBeUndefined()
+      expect(await exportedQuery()).not.toContain('resultSourceMap')
+
+      // Only the opt-in shows in the settings until it is switched on
+      const settings = openSettings()
+      expect(settings.queryByTestId('vision-settings-include-source-map')).toBeNull()
+      expect(settings.queryByTestId('vision-settings-source-map-format')).toBeNull()
+      fireEvent.click(settings.getByTestId('vision-settings-source-map-enabled'))
+      await waitFor(() => expect(getStoredState().response).toMatchObject({sourceMapEnabled: true}))
+      expect(settings.getByTestId('vision-settings-include-source-map')).toBeTruthy()
+      expect(settings.getByTestId('vision-settings-source-map-format')).toBeTruthy()
+      expect(screen.getByTestId('vision-option-source-map')).toBeTruthy()
+      expect(sourceMapTab()).toBeTruthy()
+    })
+
+    it('ask for none once switched off, whatever the tab option says', async () => {
+      enableSourceMaps()
+      const {fetchCalls} = renderRedesign()
+      openOptions()
+      fireEvent.click(screen.getByTestId('vision-option-source-map'))
+      await fetchQuery()
+      expect(fetchCalls.at(-1)?.options.resultSourceMap).toBe(true)
+      const exported = await exportedQuery()
+      expect(exported).toContain('resultSourceMap=true')
+      expect(exported).toContain('filterResponse: false')
+      expect(exported).toContain('resultSourceMap: true')
+
+      fireEvent.click(openSettings().getByTestId('vision-settings-source-map-enabled'))
+      await waitFor(() => expect(screen.queryByTestId('vision-option-source-map')).toBeNull())
+      await waitFor(() => expect(getStoredState().tabs?.[0].options.includeSourceMap).toBe(true))
+      expect(sourceMapTab()).toBeNull()
+
+      const fetches = fetchCalls.length
+      fireEvent.click(screen.getByTestId('vision-fetch-button'))
+      await waitFor(() => expect(fetchCalls.length).toBeGreaterThan(fetches))
+      expect(fetchCalls.at(-1)?.options.resultSourceMap).toBeUndefined()
+      expect(await exportedQuery()).not.toContain('resultSourceMap')
+    })
+
+    it('fall back to the Response tab when the Content Source Map tab was open', async () => {
+      enableSourceMaps()
+      renderRedesign()
+      await fetchQuery()
+      fireEvent.click(sourceMapTab() as HTMLElement)
+      expect(await screen.findByTestId('vision-source-map-empty')).toBeTruthy()
+
+      fireEvent.click(openSettings().getByTestId('vision-settings-source-map-enabled'))
+      await waitFor(() => expect(sourceMapTab()).toBeNull())
+      expect(screen.queryByTestId('vision-source-map-empty')).toBeNull()
+      const responseTab = document.getElementById('vision-response-response-tab') as HTMLElement
+      expect(responseTab.getAttribute('aria-selected')).toBe('true')
+      expect(document.getElementById('vision-response-response-panel')?.textContent).not.toBe('')
+    })
+
+    it('fetches a source map once from the empty tab, leaving the result and the option alone', async () => {
+      enableSourceMaps({resultSourceMap: 'withKeyArraySelector'})
+      const {fetchCalls, respondWith} = renderRedesign()
+      respondWith({result: [{name: 'Ada'}], ms: 3})
+      await fetchQuery()
+      fireEvent.click(sourceMapTab() as HTMLElement)
+      const empty = await screen.findByTestId('vision-source-map-empty')
+      const fetches = fetchCalls.length
+
+      const resultSourceMap = {documents: [{_id: 'a', _type: 'author'}], paths: [], mappings: {}}
+      respondWith({result: [{name: 'Grace'}], ms: 4, resultSourceMap})
+      fireEvent.click(within(empty).getByTestId('vision-source-map-fetch'))
+      const sourceMap = await screen.findByTestId('vision-source-map')
+      expect(fetchCalls).toHaveLength(fetches + 1)
+      expect(fetchCalls.at(-1)?.options).toMatchObject({
+        filterResponse: false,
+        resultSourceMap: 'withKeyArraySelector',
+      })
+      expect(within(sourceMap).getByTestId('result-json').textContent).toBe(
+        JSON.stringify(resultSourceMap),
+      )
+      expect(screen.getByTestId('vision-source-map-one-off')).toBeTruthy()
+      // The result still shows the response it had, and the option stays off
+      expect(
+        (
+          within(screen.getByTestId('vision-result-json')).getByTestId(
+            'codemirror-mock',
+          ) as HTMLTextAreaElement
+        ).value,
+      ).toContain('Ada')
+      await waitFor(() => expect(getStoredState().tabs?.[0].options.includeSourceMap).toBe(false))
+
+      // The next fetch drops the source map it fetched
+      respondWith({result: [{name: 'Ada'}], ms: 3})
+      fireEvent.click(screen.getByTestId('vision-fetch-button'))
+      expect(await screen.findByTestId('vision-source-map-empty')).toBeTruthy()
+      expect(fetchCalls.at(-1)?.options.resultSourceMap).toBeUndefined()
+    })
+
+    it('opens Options on the include switch from the empty tab', async () => {
+      enableSourceMaps()
+      renderRedesign()
+      await fetchQuery()
+      fireEvent.click(sourceMapTab() as HTMLElement)
+      const empty = await screen.findByTestId('vision-source-map-empty')
+      fireEvent.click(within(empty).getByTestId('vision-source-map-show-option'))
+      await waitFor(() =>
+        expect(document.activeElement).toBe(screen.getByTestId('vision-option-source-map')),
+      )
+      expect(
+        document.getElementById('vision-request-options-tab')?.getAttribute('aria-selected'),
+      ).toBe('true')
+    })
+
+    it('send the source map format picked in the settings, to fetches and exports', async () => {
+      enableSourceMaps()
+      const {fetchCalls} = renderRedesign()
+      openOptions()
+      fireEvent.click(screen.getByTestId('vision-option-source-map'))
+      const format = openSettings().getByTestId(
+        'vision-settings-source-map-format',
+      ) as HTMLSelectElement
+      expect(format.value).toBe('true')
+      fireEvent.change(format, {target: {value: 'withKeyArraySelector'}})
+      await waitFor(() =>
+        expect(getStoredState().response).toMatchObject({resultSourceMap: 'withKeyArraySelector'}),
+      )
+
+      await fetchQuery()
+      expect(fetchCalls.at(-1)?.options.resultSourceMap).toBe('withKeyArraySelector')
+      const exported = await exportedQuery()
+      expect(exported).toContain('resultSourceMap=withKeyArraySelector')
+      expect(exported).toContain("resultSourceMap: 'withKeyArraySelector'")
+    })
   })
 
   it('keeps JSON for a result that is not a document list, and explains it from Documents', async () => {
@@ -2669,7 +2855,7 @@ describe('VisionRedesign', () => {
       const toggle = settings.getByTestId('vision-settings-resolve-sync-tags')
       expect(isChecked(toggle)).toBe(false)
       fireEvent.click(toggle)
-      await waitFor(() => expect(getStoredState().response).toEqual({resolveSyncTags: true}))
+      await waitFor(() => expect(getStoredState().response).toMatchObject({resolveSyncTags: true}))
       expect(isChecked(toggle)).toBe(true)
     })
 
