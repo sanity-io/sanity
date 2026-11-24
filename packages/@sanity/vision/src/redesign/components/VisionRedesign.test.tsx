@@ -3088,6 +3088,42 @@ describe('VisionRedesign', () => {
     expect(text(screen.getByTestId('vision-tab-button'))).toContain('vision.tabs.untitled')
   })
 
+  it('keeps every tab pane in place, without moving its DOM node, when the tabs are reordered', () => {
+    renderRedesign()
+    fireEvent.click(screen.getByTestId('vision-new-tab'))
+    fireEvent.click(screen.getByTestId('vision-new-tab'))
+    const tabIds = () =>
+      screen.getAllByTestId('vision-tab-button').map((button) => button.getAttribute('id'))
+    const initialOrder = tabIds()
+    const panes = screen.getAllByTestId('vision-query-tab')
+    expect(panes).toHaveLength(3)
+    const shown = shownTab()
+
+    // A node React moves is removed and inserted again, which is what resets a pane's scroll
+    const observer = new MutationObserver(() => {})
+    observer.observe(document.body, {childList: true, subtree: true})
+    const moveActiveTab = (key: 'ArrowLeft' | 'ArrowRight') =>
+      fireEvent.keyDown(
+        screen.getAllByRole('tab').find((tab) => tab.getAttribute('aria-selected') === 'true')!,
+        {key, shiftKey: true},
+      )
+    // The keyboard sends the same reorder a drag does, one swap at a time
+    moveActiveTab('ArrowLeft')
+    moveActiveTab('ArrowLeft')
+    expect(tabIds()).toEqual([initialOrder[2], initialOrder[0], initialOrder[1]])
+    moveActiveTab('ArrowRight')
+    expect(tabIds()).toEqual([initialOrder[0], initialOrder[2], initialOrder[1]])
+    const moved = observer
+      .takeRecords()
+      .flatMap((record) => [...record.removedNodes, ...record.addedNodes])
+      .filter((node) => panes.some((pane) => node === pane || node.contains(pane)))
+    observer.disconnect()
+
+    expect(moved).toEqual([])
+    expect(screen.getAllByTestId('vision-query-tab')).toEqual(panes)
+    expect(shownTab()).toBe(shown)
+  })
+
   it('keeps the query, params, result and panel state of each tab apart', async () => {
     const {fetchCalls} = renderRedesign()
     const paramsEditor = () =>
