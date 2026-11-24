@@ -69,7 +69,13 @@ export const VisionCopied = defineEvent<{target: 'query' | 'params' | 'url'}>({
 })
 
 export const VisionAgentActionInvoked = defineEvent<{
-  action: 'generate-query' | 'edit-query' | 'fix-lint' | 'generate-mutations' | 'explain'
+  action:
+    | 'generate-query'
+    | 'edit-query'
+    | 'fix-lint'
+    | 'generate-mutations'
+    | 'explain'
+    | 'improve-query'
 }>({
   name: 'Vision Agent Action Invoked',
   version: 1,

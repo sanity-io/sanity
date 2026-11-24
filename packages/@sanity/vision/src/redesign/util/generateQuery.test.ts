@@ -10,6 +10,7 @@ import {
   generatedQueryComment,
   generateQuery,
   GenerateQueryError,
+  improveQuery,
   MAX_GENERATE_ATTEMPTS,
 } from './generateQuery'
 import {type QueryLintFinding} from './groqLint'
@@ -315,6 +316,41 @@ describe('fixQueryLint', () => {
     expect(prompts[0].instruction).toContain('Keep every comment')
     expect(prompts[0].instruction).toContain('never delete one')
     expect(checks).toEqual([{query: `select(false => (\n${fixed}\n))`, params: {type: 'post'}}])
+  })
+})
+
+describe('improveQuery', () => {
+  it('sends the query, its params and the suggestions as a list, and checks the improved query', async () => {
+    const current =
+      '// Generated with the prompt: posts\n*[_type == $type && references(*[_type == "author"]._id)]'
+    const improved = '// Generated with the prompt: posts\n*[_type == $type && defined(author)]'
+    const {client, prompts, checks} = createClient({
+      replies: [{query: improved, params: {type: 'post'}}],
+    })
+
+    expect(
+      await improveQuery({
+        query: current,
+        params: {type: 'post'},
+        suggestions: ['Check `defined(author)` instead of the subquery.', 'Add a slice.'],
+        schema,
+        client,
+      }),
+    ).toEqual({query: improved, params: {type: 'post'}, title: undefined})
+    expect(prompts[0]).toMatchObject({
+      format: 'json',
+      instructionParams: {
+        query: current,
+        params: '{"type":"post"}',
+        suggestions: '- Check `defined(author)` instead of the subquery.\n- Add a slice.',
+        schema,
+      },
+    })
+    expect(prompts[0].instruction).toContain('$suggestions')
+    expect(prompts[0].instruction).not.toContain('defined(author)')
+    expect(prompts[0].instruction).toContain('same data in the same shape')
+    expect(prompts[0].instruction).toContain('Keep every comment')
+    expect(checks).toEqual([{query: `select(false => (\n${improved}\n))`, params: {type: 'post'}}])
   })
 })
 

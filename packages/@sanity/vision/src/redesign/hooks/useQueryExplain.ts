@@ -5,13 +5,14 @@ import {useAiFeatures} from '../aiFeatures'
 import {useAiCreditsUpsell} from '../components/AiCreditsUpsellContext'
 import {type QueryRequest} from '../store/types'
 import {type AiCredits, readAiCreditsLimit} from '../util/aiCredits'
-import {explainQuery, fetchQueryPlan} from '../util/explainQuery'
+import {explainQuery, fetchQueryPlan, type QueryExplanation} from '../util/explainQuery'
 import {reportAiCreditsGranted, reportAiCreditsLimit} from './useAiCredits'
 
-export type ExplainStep =
+/** A step of the Explain panel; `Result` is what it comes back with: the plan's text by default */
+export type ExplainStep<Result = string> =
   | {status: 'idle'}
   | {status: 'loading'; url: string}
-  | {status: 'done'; url: string; text: string}
+  | {status: 'done'; url: string; result: Result}
   | {
       status: 'failed'
       url: string
@@ -20,7 +21,7 @@ export type ExplainStep =
       limit: AiCredits | undefined
     }
 
-const IDLE: ExplainStep = {status: 'idle'}
+const IDLE = {status: 'idle'} as const
 
 function toMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error)
@@ -33,20 +34,20 @@ function toMessage(error: unknown): string {
  */
 export function useQueryExplain(request: QueryRequest | null) {
   const [plan, setPlan] = useState<ExplainStep>(IDLE)
-  const [explanation, setExplanation] = useState<ExplainStep>(IDLE)
+  const [explanation, setExplanation] = useState<ExplainStep<QueryExplanation>>(IDLE)
   const upsell = useAiCreditsUpsell()
   const {explainQuery: canExplain} = useAiFeatures()
   const url = request?.url
-  const currentPlan = plan.status !== 'idle' && plan.url === url ? plan : IDLE
-  const currentExplanation =
+  const currentPlan: ExplainStep = plan.status !== 'idle' && plan.url === url ? plan : IDLE
+  const currentExplanation: ExplainStep<QueryExplanation> =
     canExplain && explanation.status !== 'idle' && explanation.url === url ? explanation : IDLE
 
   const loadPlan = useCallback(async (current: QueryRequest): Promise<string | undefined> => {
     setPlan({status: 'loading', url: current.url})
     try {
-      const text = await fetchQueryPlan(current.client, current)
-      setPlan({status: 'done', url: current.url, text})
-      return text
+      const result = await fetchQueryPlan(current.client, current)
+      setPlan({status: 'done', url: current.url, result})
+      return result
     } catch (error) {
       setPlan({status: 'failed', url: current.url, message: toMessage(error), limit: undefined})
       return undefined
@@ -62,15 +63,15 @@ export function useQueryExplain(request: QueryRequest | null) {
     if (!request || !canExplain) return
     telemetry.agentAction('explain')
     setExplanation({status: 'loading', url: request.url})
-    const planText = currentPlan.status === 'done' ? currentPlan.text : await loadPlan(request)
+    const planText = currentPlan.status === 'done' ? currentPlan.result : await loadPlan(request)
     if (planText === undefined) {
       setExplanation(IDLE)
       return
     }
     try {
-      const text = await explainQuery(request.client, request, planText)
+      const result = await explainQuery(request.client, request, planText)
       reportAiCreditsGranted(request.client)
-      setExplanation({status: 'done', url: request.url, text})
+      setExplanation({status: 'done', url: request.url, result})
     } catch (error) {
       const limit = readAiCreditsLimit(error)
       if (limit) {
