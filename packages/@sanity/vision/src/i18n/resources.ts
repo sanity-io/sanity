@@ -361,15 +361,24 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Part of the filter runs in memory; the expression follows */
   'vision.explain.insight.filter-in-memory':
     'Part of the filter runs in memory, after reading: every document the index lets through is read first, which gets slow on large datasets. Joins (->) and functions in a filter cannot use the index.',
+  /** The in-memory filter when the verdict is that the query cannot be faster */
+  'vision.explain.insight.filter-in-memory.cannot-improve':
+    'Part of the filter runs in memory, after the documents are read. That is the work this data takes, and there isn’t a faster way.',
   /** The index sorts and limits while reading */
   'vision.explain.insight.index-sort-limit':
     'The index sorts and limits the documents while reading them.',
   /** The plan slices in memory */
   'vision.explain.insight.slice-in-memory':
     'The slice is taken in memory after reading, not as a limit while reading.',
+  /** The in-memory slice when the verdict is that the query cannot be faster */
+  'vision.explain.insight.slice-in-memory.cannot-improve':
+    'The slice is taken in memory, after reading. That is the work this data takes, and there isn’t a faster way.',
   /** The plan sorts in memory */
   'vision.explain.insight.sort-in-memory':
     'Sorting happens in memory, after reading every match. Sort by attributes the index can sort by.',
+  /** The in-memory sort when the verdict is that the query cannot be faster */
+  'vision.explain.insight.sort-in-memory.cannot-improve':
+    'Sorting happens in memory, after reading every match. That is the work this data takes, and there isn’t a faster way.',
   /** Link under the plan insights to the guide on fast queries */
   'vision.explain.insights.guide': 'High performance GROQ',
   /** Heading of the plan insights in the Explain panel */

@@ -23,6 +23,7 @@ import {splitMessage} from '../../util/groqLint'
 import {
   HIGH_PERFORMANCE_GROQ_URL,
   type PlanInsight,
+  presentPlanInsights,
   readPlanInsights,
 } from '../../util/planInsights'
 import {AgentActionsTooltip} from '../AgentActionsTooltip'
@@ -239,7 +240,10 @@ export function ExplainTab(props: ExplainTabProps) {
   const {explainQuery: aiExplain, editQuery: aiEdit} = useAiFeatures()
   const explaining = explanation.status === 'loading'
   const planText = plan.status === 'done' ? plan.result : undefined
+  const verdict = explanation.status === 'done' ? explanation.result.verdict : undefined
   const insights = useMemo(() => (planText ? readPlanInsights(planText) : []), [planText])
+  // A verdict must not sit beside a card that calls the same query slow
+  const presented = useMemo(() => presentPlanInsights(insights, verdict), [insights, verdict])
   // The credits as the failed request reported them, or as last read
   const limit =
     explanation.status === 'failed'
@@ -304,12 +308,12 @@ export function ExplainTab(props: ExplainTabProps) {
             {t('vision.explain.plan-failed', {message: plan.message})}
           </Text>
         )}
-        {plan.status === 'done' && insights.length > 0 && (
+        {plan.status === 'done' && presented.insights.length > 0 && (
           <Stack className={motion.reveal} data-testid="vision-plan-insights" gap={2}>
             <Label muted size={0}>
               {t('vision.explain.insights.title')}
             </Label>
-            {insights.map((insight, index) => (
+            {presented.insights.map((insight, index) => (
               <Card
                 border
                 data-testid="vision-plan-insight"
@@ -320,15 +324,13 @@ export function ExplainTab(props: ExplainTabProps) {
               >
                 <Stack gap={3}>
                   <Text size={1} as="div" trim={true} tone={insight.tone}>
-                    {describeInsight(insight, t)}
+                    {t(insight.message)}
                   </Text>
-                  {insight.kind === 'filter-in-memory' && (
-                    <Code size={1}>{insight.expression}</Code>
-                  )}
+                  {insight.expression && <Code size={1}>{insight.expression}</Code>}
                 </Stack>
               </Card>
             ))}
-            {insights.some((insight) => insight.tone === 'caution') && (
+            {presented.showGuide && (
               <Text muted size={1} as="div" trim={true}>
                 <a href={HIGH_PERFORMANCE_GROQ_URL} rel="noreferrer" target="_blank">
                   {t('vision.explain.insights.guide')}
@@ -339,7 +341,7 @@ export function ExplainTab(props: ExplainTabProps) {
         )}
         {plan.status === 'done' && (
           <Stack
-            className={cx(motion.reveal, insights.length > 0 && motion.revealSecond)}
+            className={cx(motion.reveal, presented.insights.length > 0 && motion.revealSecond)}
             data-testid="vision-query-plan"
             gap={2}
           >
