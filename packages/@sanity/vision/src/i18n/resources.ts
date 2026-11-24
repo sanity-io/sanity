@@ -593,7 +593,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.mutate.apply-needs-preview': 'Apply sends what a dry run showed: run one first.',
   /** Shown once the mutations were applied */
   'vision.mutate.applied':
-    'Applied to {{dataset}} in transaction {{transactionId}}. Documents changed: {{count}}. The query was fetched again.',
+    'Applied to {{dataset}} in transaction {{transactionId}}. Documents changed: {{count}}.',
   /** Option giving array items without a _key one */
   'vision.mutate.auto-keys': 'Add a _key to array items that have none',
   /** Under the option giving array items a _key */
