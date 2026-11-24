@@ -2216,6 +2216,16 @@ describe('VisionRedesign', () => {
       expect(webMcpTools).toBe(7)
     })
 
+    it('switches sync tag lookup on from the settings, and keeps it on', async () => {
+      renderRedesign()
+      const settings = openSettings()
+      const toggle = settings.getByTestId('vision-settings-resolve-sync-tags')
+      expect(isChecked(toggle)).toBe(false)
+      fireEvent.click(toggle)
+      await waitFor(() => expect(getStoredState().response).toEqual({resolveSyncTags: true}))
+      expect(isChecked(toggle)).toBe(true)
+    })
+
     it('turns off every AI feature with the switch for all of them, and reads no AI credits', async () => {
       const view = renderRedesign()
       const settings = openSettings()

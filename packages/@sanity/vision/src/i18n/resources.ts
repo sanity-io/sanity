@@ -999,6 +999,19 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.response.sync-tags': 'Sync tags',
   /** Shown when the response carried no sync tags */
   'vision.response.sync-tags.none': 'No sync tags in the response',
+  /** Under the sync tags when some of them stand for nothing the lookup could find */
+  'vision.response.sync-tags.partly-resolved':
+    '{{count}} of {{total}} sync tags could not be resolved and are shown as they came.',
+  /** Under the sync tags when looking up what they stand for failed */
+  'vision.response.sync-tags.resolve-failed': 'Could not resolve the sync tags: {{message}}',
+  /** Under the sync tags while the lookup of what they stand for is running */
+  'vision.response.sync-tags.resolving': 'Resolving sync tags…',
+  /** Tooltip of the Sync tags label while it shows what the tags stand for */
+  'vision.response.sync-tags.show-raw': 'Show the sync tags as they came',
+  /** Tooltip of the Sync tags label while it shows the tags as they came */
+  'vision.response.sync-tags.show-resolved': 'Show what the sync tags stand for',
+  /** Tooltip of a sync tag the lookup could not resolve */
+  'vision.response.sync-tags.unresolved': 'Not resolved',
   /** Under the query URL when the request went out as a POST body rather than that URL */
   'vision.response.url.sent-as-post':
     'Sent as a POST body: the query and params are too long for a URL, so @sanity/client sent them as JSON. Pasting this URL into Vision still loads the query.',
@@ -1323,6 +1336,13 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.settings.history-diff.reset': 'Reset to the defaults',
   /** Label of the setting listing the fields left out of History diffs */
   'vision.settings.history-diff.title': 'Fields hidden from History diffs',
+  /** Switch in the settings that lets the Sync tags row show what each tag stands for */
+  'vision.settings.response.resolve-sync-tags': 'Resolve sync tags',
+  /** Description of the switch that lets the Sync tags row show what each tag stands for */
+  'vision.settings.response.resolve-sync-tags.description':
+    'Click Sync tags in the Response panel to switch between the tags and the documents they stand for: every document, a type, an id or a slug. Finding them sends a few extra queries to the dataset the response came from.',
+  /** Title of the settings section about the Response panel */
+  'vision.settings.response.title': 'Response panel',
   /** Title of the settings dialog */
   'vision.settings.title': 'Settings',
   /** Empty state of the shared queries panel */

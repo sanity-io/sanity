@@ -1,0 +1,33 @@
+/*
+ * The Sync tags label as a button: it reads as the label beside it, with a dotted underline to
+ * show it does something, and keeps the text's baseline so the row stays aligned
+ */
+.toggle {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-decoration-color: color-mix(in srgb, currentColor 60%, transparent);
+  text-underline-offset: 3px;
+}
+
+.toggle:hover,
+.toggle[aria-pressed='true'] {
+  color: var(--card-fg-color);
+}
+
+.toggle[aria-pressed='true'] {
+  text-decoration-style: solid;
+}
+
+.toggle:focus-visible {
+  outline: 1px solid var(--card-focus-ring-color);
+  outline-offset: 2px;
+}

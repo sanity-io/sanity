@@ -121,6 +121,15 @@ export interface VisionEditorSettings {
   autoFormatOnResize: boolean
 }
 
+/** What the Response panel shows about a response */
+export interface VisionResponseSettings {
+  /**
+   * The Sync tags row can switch between the tags as they came and the documents they stand for,
+   * found with extra queries to the dataset the response came from
+   */
+  resolveSyncTags: boolean
+}
+
 /** A custom GROQ function kept in the functions library, to declare in any query */
 export interface VisionSavedFunction {
   /** `ns::name`, unique in the library */
@@ -140,6 +149,7 @@ export interface VisionPersistedState {
   historyDiff: VisionHistoryDiffSettings
   ai: VisionAiSettings
   editor: VisionEditorSettings
+  response: VisionResponseSettings
   /** The functions library, most recently saved first */
   functions: VisionSavedFunction[]
 }
