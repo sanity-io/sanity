@@ -1,7 +1,7 @@
 import {bracketMatching} from '@codemirror/language'
 import {EditorSelection, EditorState} from '@codemirror/state'
-import {EditorView} from '@codemirror/view'
-import {afterEach, describe, expect, test} from 'vitest'
+import {EditorView, lineNumbers} from '@codemirror/view'
+import {afterEach, describe, expect, onTestFinished, test} from 'vitest'
 
 import {redesignEditorTheme} from './editorTheme'
 
@@ -25,6 +25,27 @@ describe('redesignEditorTheme', () => {
 
     view.dispatch({selection: EditorSelection.cursor(4)})
     expect(view.dom.classList.contains('cm-vision-hasSelection')).toBe(false)
+  })
+
+  test('covers the pixel column left of the sticky gutters in the card background', () => {
+    const card = document.createElement('div')
+    card.style.setProperty('--card-bg-color', 'rgb(1, 2, 3)')
+    document.body.append(card)
+    onTestFinished(() => card.remove())
+    view = new EditorView({
+      state: EditorState.create({
+        doc: '{\n  "a": 1\n}',
+        extensions: [lineNumbers(), redesignEditorTheme],
+      }),
+      parent: card,
+    })
+
+    const gutters = view.dom.querySelector('.cm-gutters')
+    expect(gutters).not.toBeNull()
+    const style = getComputedStyle(gutters!)
+    expect(style.position).toBe('sticky')
+    expect(style.backgroundColor).toBe('rgb(1, 2, 3)')
+    expect(style.boxShadow).toMatch(/^rgb\(1, 2, 3\) -1px 0px/)
   })
 
   test.each([
