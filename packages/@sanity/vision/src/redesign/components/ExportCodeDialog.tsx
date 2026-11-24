@@ -14,8 +14,11 @@ export interface ExportCodeDialogProps {
   header: string
   /** Where the code comes from, above it */
   note: string
-  /** Why the code is weaker than it could be, in a caution card under the note */
-  warning?: {testId: string; text: string}
+  /**
+   * Why the code is weaker than it could be, under the note: in a caution card, or as plain
+   * muted text when the reason is expected and nothing is wrong (`neutral`)
+   */
+  warning?: {testId: string; text: string; tone?: 'caution' | 'neutral'}
   /** The generated TypeScript; without it there is only the note */
   code: string | undefined
   onClose: () => void
@@ -48,7 +51,12 @@ export function ExportCodeDialog({
           <Text data-testid={`${id}-source`} muted size={1} as="div" trim={true}>
             {note}
           </Text>
-          {warning && (
+          {warning && warning.tone === 'neutral' && (
+            <Text data-testid={warning.testId} muted size={1} as="div" trim={true}>
+              {warning.text}
+            </Text>
+          )}
+          {warning && warning.tone !== 'neutral' && (
             <Card border padding={3} radius={2} tone="caution">
               <Text data-testid={warning.testId} size={1} as="div" trim={true} tone="caution">
                 {warning.text}

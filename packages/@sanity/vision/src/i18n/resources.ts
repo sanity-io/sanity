@@ -238,8 +238,15 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.export-types.copy': 'Copy code',
   /** Shown in the types dialog when there is neither a schema evaluation nor a result */
   'vision.export-types.empty': 'Fetch the query first so there is a result to derive types from.',
-  /** Why the workspace schema could not be used for the types; shown with the result fallback */
+  /**
+   * Why the workspace schema could not be used for the types; shown with the result fallback
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.export-types.schema-error': 'Schema evaluation failed: {{message}}',
+  /** Why the workspace schema could not be used for the types; shown under the result fallback note */
+  'vision.export-types.schema-unavailable':
+    'The workspace schema could not be used for this query: {{message}}',
   /** Note shown when the types were derived from the fetched result instead of the schema */
   'vision.export-types.source.result':
     'Inferred from the fetched result, since the query could not be evaluated against the workspace schema.',
