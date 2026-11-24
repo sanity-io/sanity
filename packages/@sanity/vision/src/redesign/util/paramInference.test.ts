@@ -57,9 +57,23 @@ describe('inferQueryParams', () => {
     expect(param).toEqual({
       name: 'description',
       node: {type: 'string'},
-      type: {kind: 'string', array: false},
+      type: {kind: 'string', array: false, format: 'semantic-query'},
       usages: ['text::semanticSimilarity($description)'],
     })
+  })
+
+  it('keeps the semantic-query format when the param is also matched as text', () => {
+    const param = paramOf(
+      '*[_type == "post" && title match $search] | score(text::semanticSimilarity($search))',
+      'search',
+    )
+    expect(param.type).toEqual({kind: 'string', array: false, format: 'semantic-query'})
+    expect(param.usages).toContain('text::semanticSimilarity($search)')
+  })
+
+  it('keeps the argument of text::query a plain string', () => {
+    const param = paramOf('*[title match text::query($search)]', 'search')
+    expect(param.type).toEqual({kind: 'string', array: false})
   })
 
   it('does not offer the parameters of the custom functions the query declares', () => {

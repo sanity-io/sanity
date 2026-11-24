@@ -22,7 +22,7 @@ import {inferTypeFromValue} from './typegen/inferTypeFromValue'
 export type ParamKind = 'string' | 'number' | 'integer' | 'boolean' | 'any'
 
 /** What the strings of a `string` param stand for, for the hint and the input helpers */
-export type ParamFormat = 'document-type' | 'document-id' | 'datetime'
+export type ParamFormat = 'document-type' | 'document-id' | 'datetime' | 'semantic-query'
 
 /** A param's type as the params form offers it */
 export interface ParamType {
@@ -340,6 +340,8 @@ interface Expected {
 }
 
 const TEXT: Expected = {node: STRING}
+/** The query text of `text::semanticSimilarity()`, offered as a multiline field */
+const SEMANTIC_QUERY: Expected = {node: STRING, format: 'semantic-query'}
 const NUMERIC: Expected = {node: NUMBER}
 const INTEGER: Expected = {node: NUMBER, integer: true}
 /** `count()` and `length()` are whole numbers from 0 */
@@ -414,7 +416,7 @@ const SIGNATURES: Record<string, Signature> = {
   'sanity::partOfRelease': {args: [TEXT]},
   'sanity::versionOf': {args: [DOCUMENT_ID]},
   'text::query': {args: [TEXT]},
-  'text::semanticSimilarity': {args: [TEXT]},
+  'text::semanticSimilarity': {args: [SEMANTIC_QUERY]},
 }
 
 /**
