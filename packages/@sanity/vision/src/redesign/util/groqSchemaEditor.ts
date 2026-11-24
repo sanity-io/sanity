@@ -129,7 +129,7 @@ export function schemaFieldCompletions(context: CompletionContext): CompletionRe
   const options: Completion[] = []
   if (reference) {
     for (const name of REFERENCE_FIELDS) {
-      options.push({label: name, type: 'property', detail: labels.systemField, boost: -1})
+      options.push({label: name, type: 'property', detail: labels.systemField})
     }
   } else {
     for (const field of fieldsOfShape(scope)) {
@@ -144,12 +144,34 @@ export function schemaFieldCompletions(context: CompletionContext): CompletionRe
     }
     for (const name of SYSTEM_FIELD_ORDER) {
       if (SYSTEM_FIELDS.has(name)) {
-        options.push({label: name, type: 'property', detail: labels.systemField, boost: -1})
+        options.push({label: name, type: 'property', detail: labels.systemField})
       }
     }
   }
-  if (options.length === 0) return null
-  return {from, options, validFor: /^\w*$/}
+  const matching = filterByTyped(options, word?.text ?? '')
+  if (matching.length === 0) return null
+  return {from, options: matching, filter: false}
+}
+
+/**
+ * The options that start with, or else contain, what is typed, in the order given. The list is
+ * not left to CodeMirror's filter: it ranks every option a source filters itself above every
+ * option it filters for it, so the generic functions of the function source, which do their own
+ * filtering, would sit above the schema's fields. A source that does not filter lists its options
+ * in the order the sources are registered and the options are given, so the fields come first,
+ * the schema's own before the system fields.
+ */
+function filterByTyped(options: Completion[], typed: string): Completion[] {
+  if (!typed) return options
+  const needle = typed.toLowerCase()
+  const starting: Completion[] = []
+  const containing: Completion[] = []
+  for (const option of options) {
+    const label = option.label.toLowerCase()
+    if (label.startsWith(needle)) starting.push(option)
+    else if (label.includes(needle)) containing.push(option)
+  }
+  return [...starting, ...containing]
 }
 
 /**
