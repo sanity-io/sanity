@@ -83,3 +83,12 @@
     transition: none;
   }
 }
+
+/*
+ * Never rubber-bands sideways (see "Overscroll" in `redesign.module.css`). The doubled class beats
+ * `CommandList`'s own `overscroll-behavior: contain`, which it loads after this stylesheet; the
+ * vertical axis keeps that.
+ */
+.commandList.commandList {
+  overscroll-behavior-x: none;
+}

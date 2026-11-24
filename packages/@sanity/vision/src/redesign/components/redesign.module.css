@@ -910,3 +910,49 @@
 .queryTabRevealing *::after {
   transition: none !important;
 }
+
+/*
+ * Overscroll. Nothing rubber-bands sideways: a sideways bounce shifts the gutter, and a sideways
+ * swipe handed on past the edge turns into the browser's back and forward gesture. The long
+ * panes (the editors, the result, the bottom panels) keep their vertical bounce. Nested
+ * scrollers (strips, drawers, menus, the sidebar) keep it to themselves rather than chaining it
+ * into the studio.
+ */
+.paneScroll {
+  overscroll-behavior-x: none;
+}
+
+.root :global(.cm-scroller) {
+  overscroll-behavior-x: none;
+}
+
+.tabBar,
+.panelTabs,
+.actionRailChips,
+.exportTabs,
+.scrollArea,
+.drawerScroller,
+.codeBlock,
+.nestedScroll {
+  overscroll-behavior: none contain;
+}
+
+/* A text field in a drawer (the settings' hidden diff fields) */
+.nestedScroll textarea {
+  overscroll-behavior: none contain;
+}
+
+/*
+ * A portaled menu, picker or autocomplete scrolls inside the popover (its wrapper, the menu or the
+ * listbox) and never hands the scroll on to whatever is under it. It has no scrollers that should
+ * chain, so every element in it gets the rule; on one that does not scroll it does nothing. A menu
+ * button's popover takes no class of its own, so its wrapper is found from the menu inside it.
+ */
+.popoverScroll,
+.popoverScroll * {
+  overscroll-behavior: none contain;
+}
+
+[data-ui='Popover__wrapper']:has(.popoverScroll) {
+  overscroll-behavior: none contain;
+}

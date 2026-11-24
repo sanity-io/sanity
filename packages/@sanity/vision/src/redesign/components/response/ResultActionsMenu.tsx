@@ -86,7 +86,7 @@ export function ResultActionsMenu({
             }
             id={`vision-result-menu-${tab.id}`}
             menu={
-              <Menu data-testid="vision-result-menu">
+              <Menu className={styles.popoverScroll} data-testid="vision-result-menu">
                 <MenuItem
                   data-testid="vision-export-json"
                   disabled={!getJsonUrl}

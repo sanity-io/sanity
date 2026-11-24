@@ -13,6 +13,7 @@ import {
 } from 'react'
 import {Box, Flex, Text, VStack} from 'ui5'
 
+import * as redesignStyles from '../redesign.module.css'
 import * as styles from './OptionMenu.module.css'
 
 /** Fits the menu to its labels, between a minimum and a maximum, and scrolls the rest */
@@ -88,6 +89,7 @@ export function OptionMenuButton({
       id={id}
       menu={
         <Menu
+          className={redesignStyles.popoverScroll}
           data-testid={`${testId}-menu`}
           gap={0}
           padding={0}

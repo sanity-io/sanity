@@ -42,6 +42,7 @@ function TabDrawerSlotElement({drawer}: {drawer: VisionDrawer}) {
   const {setElement} = useTabDrawerSlot()
   return (
     <Box
+      className={styles.nestedScroll}
       data-testid={`vision-drawer-${drawer}-content`}
       flexBasis="0%"
       flexGrow={1}
@@ -59,7 +60,13 @@ function DrawerContent({drawer}: {drawer: VisionDrawer}): ReactNode {
       return <QueryListPanel key={drawer} mode={drawer} />
     case 'settings':
       return (
-        <Box flexBasis="0%" flexGrow={1} minHeight="0" overflow="auto">
+        <Box
+          className={styles.nestedScroll}
+          flexBasis="0%"
+          flexGrow={1}
+          minHeight="0"
+          overflow="auto"
+        >
           <SettingsPanel />
         </Box>
       )

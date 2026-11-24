@@ -5,6 +5,7 @@ import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {useTranslation} from 'sanity/i18n'
 
 import {visionLocaleNamespace} from '../../../i18n'
+import * as styles from '../redesign.module.css'
 
 /** A way the result panel can show the result */
 export interface ResultViewOption<View extends string> {
@@ -57,7 +58,11 @@ export function ResultViewMenu<View extends string>({
       }
       id={id}
       menu={
-        <Menu aria-label={t('vision.result.view.label')} data-testid={`${testId}-menu`}>
+        <Menu
+          aria-label={t('vision.result.view.label')}
+          className={styles.popoverScroll}
+          data-testid={`${testId}-menu`}
+        >
           {views.map((view) => (
             <MenuItem
               aria-checked={view.id === active.id}
