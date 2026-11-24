@@ -1,4 +1,5 @@
 import {AddIcon} from '@sanity/icons/Add'
+import {CloseIcon} from '@sanity/icons/Close'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {TrashIcon} from '@sanity/icons/Trash'
@@ -134,7 +135,9 @@ function fromText(text: string, kind: ParamKind, empty: unknown): unknown {
   if (kind === 'boolean' && (text === 'true' || text === 'false')) return text === 'true'
   if (kind === 'any') {
     try {
-      return JSON5.parse(text)
+      // Typed text never becomes null; optional params have a control for that
+      const parsed: unknown = JSON5.parse(text)
+      return parsed === null ? text : parsed
     } catch {
       return text
     }
@@ -290,7 +293,9 @@ function ParamField(props: {
   const listId = useId()
   const {type} = param
   const options = type.options && type.options.length > 0 ? type.options : undefined
-  const problem = isSet ? describeProblem(type, value, t) : undefined
+  // A text field shows null as its placeholder, so the text "null" can be told apart and typed
+  const isNull = value === null && !type.array
+  const problem = isSet && !(isNull && param.nullable) ? describeProblem(type, value, t) : undefined
 
   const required = isSet ? undefined : t('vision.params-form.required')
   const wide = type.array || (type.kind === 'any' && typeof value === 'object' && value !== null)
@@ -318,6 +323,10 @@ function ParamField(props: {
       />
     )
   } else {
+    let placeholder = t('vision.params-form.not-set')
+    if (isNull) placeholder = t('vision.params-form.null')
+    else if (type.kind === 'any' || type.array)
+      placeholder = t('vision.params-form.any-placeholder')
     input = (
       <Flex alignItems="center" gap={1}>
         <Box flexBasis="0%" flexGrow={1} minWidth="0">
@@ -329,12 +338,8 @@ function ParamField(props: {
             kind={type.array ? 'any' : type.kind}
             listId={options && listId}
             onChange={onChange}
-            placeholder={
-              type.kind === 'any' || type.array
-                ? t('vision.params-form.any-placeholder')
-                : t('vision.params-form.not-set')
-            }
-            value={value}
+            placeholder={placeholder}
+            value={isNull ? undefined : value}
           />
         </Box>
         {type.format === 'datetime' && (
@@ -345,6 +350,18 @@ function ParamField(props: {
             onClick={() => onChange(new Date().toISOString())}
             padding={2}
             text={t('vision.params-form.now')}
+          />
+        )}
+        {param.nullable && !type.array && (
+          <Button
+            aria-label={t('vision.params-form.clear', {name: param.name})}
+            data-testid={`vision-params-form-${param.name}-clear`}
+            disabled={disabled || value === null}
+            fontSize={1}
+            icon={CloseIcon}
+            mode="bleed"
+            onClick={() => onChange(null)}
+            padding={2}
           />
         )}
       </Flex>

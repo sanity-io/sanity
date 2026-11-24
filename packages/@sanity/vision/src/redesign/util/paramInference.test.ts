@@ -218,6 +218,22 @@ describe('inferQueryParams', () => {
     expect(inference.params[2].type).toEqual({kind: 'string', array: false})
   })
 
+  it('reads `!$param || …` as an optional param, not a boolean', () => {
+    const inference = inferQueryParams('*[(!$title || title == $title) && !$flag]', {
+      schema,
+      documentTypes,
+    })
+    expect(inference.params).toEqual([
+      {
+        name: 'title',
+        type: {kind: 'string', array: false},
+        usages: ['!$title', 'title == $title'],
+        nullable: true,
+      },
+      {name: 'flag', type: {kind: 'boolean', array: false}, usages: ['!$flag']},
+    ])
+  })
+
   it('does not narrow a param to the literal it is compared with', () => {
     expect(typeOf('*[$type == "post"]', 'type')).toEqual({kind: 'string', array: false})
   })

@@ -180,6 +180,54 @@ describe('ParamsForm', () => {
     )
   })
 
+  it('sends what is typed into a text field as text, "null" included', () => {
+    const {field, input, params} = renderForm('*[_type == "post" && title == $title]')
+    fireEvent.change(input('title'), {target: {value: 'null'}})
+    expect(params()).toEqual({title: 'null'})
+    expect(input('title')).toHaveProperty('value', 'null')
+    expect(within(field('title')).queryByTestId('vision-params-form-title-problem')).toBeNull()
+    // Only params the query treats as optional can be set to null
+    expect(within(field('title')).queryByTestId('vision-params-form-title-clear')).toBeNull()
+  })
+
+  it('sets a param the query treats as optional to null, and back to text when typed', () => {
+    const {field, input, params} = renderForm(
+      '*[_type == "post" && (!defined($title) || title == $title)]',
+      '{"title": "null"}',
+    )
+    const clear = within(field('title')).getByTestId('vision-params-form-title-clear')
+    expect(clear.getAttribute('aria-label')).toBe('vision.params-form.clear:{"name":"title"}')
+    fireEvent.click(clear)
+    expect(params()).toEqual({title: null})
+    // Null is the placeholder, not text, and is not flagged
+    expect(input('title')).toHaveProperty('value', '')
+    expect(input('title')).toHaveProperty('placeholder', 'vision.params-form.null')
+    expect(within(field('title')).queryByTestId('vision-params-form-title-problem')).toBeNull()
+    expect(within(field('title')).queryByTestId('vision-params-form-title-required')).toBeNull()
+    expect(clear).toHaveProperty('disabled', true)
+
+    fireEvent.change(input('title'), {target: {value: 'null'}})
+    expect(params()).toEqual({title: 'null'})
+    expect(input('title')).toHaveProperty('value', 'null')
+    expect(clear).toHaveProperty('disabled', false)
+  })
+
+  it('offers the null control for every way a query makes a param optional', () => {
+    const {field} = renderForm(
+      '*[_type == "post" && ($a == null || title == $a) && (!$b || title == $b) && title == coalesce($c, title) && title == $d]',
+    )
+    for (const name of ['a', 'b', 'c']) {
+      expect(within(field(name)).getByTestId(`vision-params-form-${name}-clear`)).toBeTruthy()
+    }
+    expect(within(field('d')).queryByTestId('vision-params-form-d-clear')).toBeNull()
+  })
+
+  it('shows null as the placeholder of an untyped optional param too', () => {
+    const {input} = renderForm('*[defined($g)]', '{"g": null}')
+    expect(input('g')).toHaveProperty('value', '')
+    expect(input('g')).toHaveProperty('placeholder', 'vision.params-form.null')
+  })
+
   it('offers true and false for a boolean, and any JSON for an untyped param', () => {
     const {field, input, params} = renderForm(
       '*[_type == "post" && featured == $featured]{"extra": $extra}',
@@ -192,6 +240,10 @@ describe('ParamsForm', () => {
     expect(input('extra')).toHaveProperty('value', '{a: [1, 2]}')
     fireEvent.change(input('extra'), {target: {value: 'plain text'}})
     expect(params()).toEqual({featured: false, extra: 'plain text'})
+    // Typed text is never null, even where JSON is parsed
+    fireEvent.change(input('extra'), {target: {value: 'null'}})
+    expect(params()).toEqual({featured: false, extra: 'null'})
+    expect(input('extra')).toHaveProperty('value', 'null')
   })
 
   it('edits a list param item by item', () => {

@@ -933,6 +933,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.add-item': 'Add item',
   /** Placeholder of a params form field that takes any JSON value */
   'vision.params-form.any-placeholder': 'Any JSON value; other text is sent as a string',
+  /** Accessible label of the button setting a param the query treats as optional to null */
+  'vision.params-form.clear': 'Set ${{name}} to null',
   /** Accessible label of the info icon showing a params form field's type and usages */
   'vision.params-form.details': 'About ${{name}}',
   /** Shown in the params form when the query uses no params */
@@ -969,6 +971,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'Types come from the query alone: the workspace schema could not be read.',
   /** Placeholder of a params form field without a value, and the unset choice of a boolean */
   'vision.params-form.not-set': 'Not set',
+  /** Placeholder of a params form field whose param is null; typing sends text instead */
+  'vision.params-form.null': 'null',
   /** Button setting a date and time param to the current time */
   'vision.params-form.now': 'Now',
   /** Button removing a param the query does not use from the params */
