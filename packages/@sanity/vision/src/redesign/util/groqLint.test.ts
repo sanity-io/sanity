@@ -13,10 +13,12 @@ import {
 import {
   collectFindings,
   groqLintSource,
+  type QueryLintFinding,
   renderMessage,
   splitMessage,
   syntaxErrorDiagnostic,
   toDiagnostics,
+  worstSeverity,
 } from './groqLint'
 import * as groqWasm from './groqWasm'
 import {createQuerySchema} from './schemaCheck'
@@ -321,5 +323,24 @@ describe('syntaxErrorDiagnostic', () => {
         source: 'groq',
       },
     )
+  })
+})
+
+describe('worstSeverity', () => {
+  const finding = (severity: QueryLintFinding['severity']): QueryLintFinding => ({
+    from: 0,
+    to: 1,
+    line: 1,
+    column: 1,
+    severity,
+    message: 'm',
+    source: undefined,
+  })
+
+  it('picks the most severe finding, so a lone warning does not read as an error', () => {
+    expect(worstSeverity([])).toBeUndefined()
+    expect(worstSeverity([finding('warning')])).toBe('warning')
+    expect(worstSeverity([finding('hint'), finding('info')])).toBe('info')
+    expect(worstSeverity([finding('warning'), finding('error'), finding('info')])).toBe('error')
   })
 })
