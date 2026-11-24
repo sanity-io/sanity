@@ -24,6 +24,8 @@ export interface DocumentListViewProps {
   flush?: boolean
   id: string
   parsed: ParsedDocumentList
+  /** Rows show the live preview from their schema type's preview config, for rows without their own */
+  resolvePreviews?: boolean
 }
 
 /**
@@ -36,6 +38,7 @@ export function DocumentListView({
   flush,
   id,
   parsed,
+  resolvePreviews = false,
 }: DocumentListViewProps) {
   const linkDocuments = useDataset() === datasetName
   return (
@@ -50,7 +53,12 @@ export function DocumentListView({
           parsed.documents.length === 0 ? (
             <Empty />
           ) : (
-            <DocumentList documents={parsed.documents} id={id} linkDocuments={linkDocuments} />
+            <DocumentList
+              documents={parsed.documents}
+              id={id}
+              linkDocuments={linkDocuments}
+              resolvePreviews={resolvePreviews}
+            />
           )
         ) : (
           <Guidance problem={parsed.problem} />
@@ -75,10 +83,12 @@ function DocumentList({
   documents,
   id,
   linkDocuments,
+  resolvePreviews,
 }: {
   documents: DocumentListDocument[]
   id: string
   linkDocuments: boolean
+  resolvePreviews: boolean
 }) {
   const {t} = useTranslation(visionLocaleNamespace)
   return (
@@ -97,7 +107,11 @@ function DocumentList({
       paddingBottom={1}
       paddingX={2}
       renderItem={(document) => (
-        <DocumentListRow document={document} linkDocuments={linkDocuments} />
+        <DocumentListRow
+          document={document}
+          linkDocuments={linkDocuments}
+          resolvePreview={resolvePreviews}
+        />
       )}
       wrapAround={false}
     />
