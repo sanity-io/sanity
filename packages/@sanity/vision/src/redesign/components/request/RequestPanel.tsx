@@ -297,7 +297,6 @@ export function RequestPanel(props: RequestPanelProps) {
   const lintCount = lintFindings.length
   const functionCount = declaredFunctions.length
   const panelTabs = useMemo((): CollapsiblePanelTab[] => {
-    const fitTitle = t('vision.panel.fit-content')
     return [
       {
         id: 'params',
@@ -318,7 +317,6 @@ export function RequestPanel(props: RequestPanelProps) {
                   onDoubleClick={fitParams}
                   padding={2}
                   selected={paramsView === 'json'}
-                  title={fitTitle}
                 />
                 <Tab
                   aria-controls={paramsContentId}
@@ -329,7 +327,6 @@ export function RequestPanel(props: RequestPanelProps) {
                   onDoubleClick={fitParams}
                   padding={2}
                   selected={paramsView === 'form'}
-                  title={fitTitle}
                 />
               </TabList>
             </Flex>

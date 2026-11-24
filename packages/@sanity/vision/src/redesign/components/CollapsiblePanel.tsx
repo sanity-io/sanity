@@ -125,7 +125,6 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
                 }
                 muted={tab.muted}
                 padding={2}
-                title={onTabDoubleClick ? t('vision.panel.fit-content') : undefined}
                 tone={tab.tone}
                 // A tablist always has a selected tab; collapsing hides its panel, no more
                 selected={tab.id === activeTab.id}
