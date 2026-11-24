@@ -12,6 +12,7 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {describeKeypath} from '../../../util/getAtKeypath'
 import {canEncodeCsv, getCsvBlobUrl, getJsonBlobUrl} from '../../../util/getBlobUrl'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
+import {useOneOffSourceMap} from '../../hooks/useOneOffSourceMap'
 import {useQueryAgent} from '../../hooks/useQueryAgent'
 import {useQueryExplain} from '../../hooks/useQueryExplain'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
@@ -24,14 +25,18 @@ import {
   type VisionTabDrawer,
 } from '../../store/types'
 import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
-import {selectOpenTabDrawer, selectResultView} from '../../store/visionMachine'
+import {
+  selectOpenTabDrawer,
+  selectResultView,
+  selectSourceMapEnabled,
+} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
 import {parseDocumentList} from '../../util/documentListResult'
 import {haveSameQuery} from '../../util/queryRequest'
 import {fetchSyncTagSourceMap} from '../../util/syncTagLookup'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
 import {CopyButton} from '../CopyButton'
-import {useResponseBottomPanel} from '../queryTabLayout'
+import {useRequestBottomPanel, useResponseBottomPanel} from '../queryTabLayout'
 import * as styles from '../redesign.module.css'
 import {usePerspectiveOptionName} from '../request/OptionFields'
 import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
@@ -173,7 +178,32 @@ export function ResponsePanel(props: ResponsePanelProps) {
     [t],
   )
   const sourceMapContentId = tabElementId('vision-source-map-content')
-  const hasSourceMap = meta?.resultSourceMap !== undefined
+  const sourceMapEnabled = useVisionSelector(selectSourceMapEnabled)
+  const oneOffSourceMap = useOneOffSourceMap(request, meta)
+  const sourceMap = meta?.resultSourceMap ?? oneOffSourceMap.sourceMap
+  const hasSourceMap = sourceMap !== undefined
+  const {setState: setRequestPanelState} = useRequestBottomPanel()
+  const revealSourceMapOption = useCallback(() => {
+    setRequestPanelState((current) => ({...current, activeTabId: 'options', collapsed: false}))
+    // The Options tab's fields mount with the render that opens it
+    requestAnimationFrame(() => {
+      const field = document
+        .getElementById(tabElementId('vision-request-options-panel'))
+        ?.querySelector<HTMLInputElement>('[data-testid="vision-option-source-map"]')
+      if (!field) return
+      field.focus({focusVisible: true} as FocusOptions)
+      const row = field.closest('label')
+      row?.scrollIntoView?.({block: 'nearest'})
+      // A focus ring alone is easy to miss after a click elsewhere, so the row flashes once
+      row?.animate?.(
+        [
+          {outline: '2px solid var(--card-focus-ring-color)', outlineOffset: '4px'},
+          {outline: '2px solid transparent', outlineOffset: '4px'},
+        ],
+        {duration: 1600, easing: 'ease-out'},
+      )
+    })
+  }, [setRequestPanelState, tabElementId])
   const resultViews = useMemo((): ResultViewOption<VisionResultView>[] => {
     const views: ResultViewOption<VisionResultView>[] = [
       {id: 'json', label: t('vision.result.view.json')},
@@ -262,7 +292,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
         fill: hasSourceMap && sourceMapView !== 'tree',
         // Picks the view, above it; there is nothing to pick while there is no source map
         toolbar: hasSourceMap ? (
-          <Flex alignItems="center" data-testid="vision-source-map-toolbar" padding={2}>
+          <Flex alignItems="center" data-testid="vision-source-map-toolbar" gap={2} padding={2}>
             <ResultViewMenu
               controls={sourceMapContentId}
               id={tabElementId('vision-source-map-view-menu')}
@@ -272,6 +302,11 @@ export function ResponsePanel(props: ResponsePanelProps) {
               value={sourceMapView}
               views={sourceMapViews}
             />
+            {meta?.resultSourceMap === undefined && (
+              <Text data-testid="vision-source-map-one-off" muted size={1} trim={true}>
+                {t('vision.source-map.one-off')}
+              </Text>
+            )}
           </Flex>
         ) : undefined,
         content: (
@@ -279,7 +314,10 @@ export function ResponsePanel(props: ResponsePanelProps) {
             copy={copyValue}
             dataset={resultDataset}
             id={sourceMapContentId}
-            meta={meta}
+            onFetch={request ? oneOffSourceMap.fetch : undefined}
+            onRevealOption={revealSourceMapOption}
+            oneOff={oneOffSourceMap}
+            sourceMap={sourceMap}
             view={sourceMapView}
           />
         ),
@@ -292,12 +330,15 @@ export function ResponsePanel(props: ResponsePanelProps) {
       history,
       improveAgent,
       meta,
+      oneOffSourceMap,
       params,
       perspectiveName,
       queryExplain,
       request,
       resolved,
       resultDataset,
+      revealSourceMapOption,
+      sourceMap,
       sourceMapContentId,
       sourceMapView,
       sourceMapViews,
@@ -308,6 +349,16 @@ export function ResponsePanel(props: ResponsePanelProps) {
       url,
     ],
   )
+  // The Content Source Map tab is hidden while its features are switched off, and the panel
+  // shows Result if it was the open one
+  const shownPanelTabs = sourceMapEnabled
+    ? panelTabs
+    : panelTabs.filter((panelTab) => panelTab.id !== 'source-map')
+  // The Content Source Map tab may be the open one when its features are switched off
+  const shownPanelState =
+    !sourceMapEnabled && panelState.activeTabId === 'source-map'
+      ? {...panelState, activeTabId: 'response'}
+      : panelState
 
   // The tab's tools open in the sidebar's drawer
   const tabDrawer = useVisionSelector(selectOpenTabDrawer)
@@ -341,8 +392,8 @@ export function ResponsePanel(props: ResponsePanelProps) {
         fitOnTabDoubleClick
         id="vision-response"
         onStateChange={setPanelState}
-        state={panelState}
-        tabs={panelTabs}
+        state={shownPanelState}
+        tabs={shownPanelTabs}
         testId="vision-response-panel"
       >
         <Card

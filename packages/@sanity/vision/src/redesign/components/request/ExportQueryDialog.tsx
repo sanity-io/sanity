@@ -22,7 +22,7 @@ import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {encodedQuerySize, QUERY_URL_SIZE_LIMIT} from '../../../util/queryRequestMethod'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
-import {type QueryRequest, type VisionTab} from '../../store/types'
+import {type QueryRequest} from '../../store/types'
 import {useVisionSelector} from '../../store/VisionActorContext'
 import {selectProjectId} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
@@ -41,7 +41,6 @@ import * as styles from '../redesign.module.css'
 const COPIED_FEEDBACK_MS = 1500
 
 export interface ExportQueryDialogProps {
-  tab: VisionTab
   request: QueryRequest
   resolved: ResolvedRequest
   onClose: () => void
@@ -126,7 +125,7 @@ function SnippetFile(props: {
   )
 }
 
-export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQueryDialogProps) {
+export function ExportQueryDialog({request, resolved, onClose}: ExportQueryDialogProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const copyToClipboard = useCopyToClipboard()
   const telemetry = useVisionTelemetry()
@@ -153,12 +152,12 @@ export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQuery
       apiVersion: resolved.apiVersion,
       perspective: resolved.perspective,
       variant: resolved.variant,
-      includeSourceMap: tab.options.includeSourceMap,
+      resultSourceMap: request.resultSourceMap,
       // What the user asked for: a perspective that keeps the request off the CDN in Vision does
       // the same in the snippets' clients, which should still say what the user chose
       useCdn: resolved.useCdn || resolved.isCdnBlockedByPerspective,
     }),
-    [projectId, request, resolved, tab.options.includeSourceMap],
+    [projectId, request, resolved],
   )
   const snippets = useMemo(
     () =>

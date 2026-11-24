@@ -20,6 +20,7 @@ import {
   type VisionPanelsState,
   type VisionParamsView,
   type VisionPersistedState,
+  type VisionResultSourceMap,
   type VisionResultView,
   type VisionSavedFunction,
   type VisionSettings,
@@ -602,6 +603,22 @@ export function selectPersistedState(snapshot: VisionSnapshot): VisionPersistedS
 
 export function selectFunctionLibrary(snapshot: VisionSnapshot): VisionSavedFunction[] {
   return snapshot.context.functions
+}
+
+/** Whether the Content Source Map features are switched on in the settings */
+export function selectSourceMapEnabled(snapshot: VisionSnapshot): boolean {
+  return snapshot.context.response.sourceMapEnabled
+}
+
+/**
+ * The `resultSourceMap` a query asks for when its "Include content source map" option is on;
+ * `undefined` while the Content Source Map features are off
+ */
+export function selectSourceMapRequest(
+  snapshot: VisionSnapshot,
+): VisionResultSourceMap | undefined {
+  const {sourceMapEnabled, resultSourceMap} = snapshot.context.response
+  return sourceMapEnabled ? resultSourceMap : undefined
 }
 
 export function selectParamsView(snapshot: VisionSnapshot): VisionParamsView {

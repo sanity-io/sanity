@@ -1496,6 +1496,23 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'Click Sync tags in the Response panel to switch between the tags and the documents they stand for: every document, a type, an id or a slug. Finding them sends a few extra queries to the dataset the response came from.',
   /** Title of the settings section about the Response panel */
   'vision.settings.response.title': 'Response panel',
+  /** Switch in the settings that turns the Content Source Map features on */
+  'vision.settings.source-map.enabled': 'Content Source Map features',
+  /** Description of the switch in the settings that turns the Content Source Map features on */
+  'vision.settings.source-map.enabled.description':
+    'Shows the "Include content source map" option and the Content Source Map tab. While off, queries and Export query snippets never ask for a source map.',
+  /** Label of the setting picking the `resultSourceMap` value queries send */
+  'vision.settings.source-map.format': 'Source map format',
+  /** Option of the content source map format setting: `resultSourceMap: true` */
+  'vision.settings.source-map.format.default': 'Standard (true)',
+  /** Description of the setting picking the `resultSourceMap` value queries send */
+  'vision.settings.source-map.format.description':
+    'The resultSourceMap value sent whenever a query asks for a source map: with "Include content source map" on, from Fetch source map, and in the Export query snippets.',
+  /** Option of the content source map format setting: `resultSourceMap: 'withKeyArraySelector'` */
+  'vision.settings.source-map.format.with-key-array-selector':
+    'Array items by _key (withKeyArraySelector)',
+  /** Title of the settings section about Content Source Maps */
+  'vision.settings.source-map.title': 'Content Source Map',
   /** Title of the settings dialog */
   'vision.settings.title': 'Settings',
   /** Empty state of the shared queries panel */
@@ -1532,8 +1549,23 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Sidebar item opening the keyboard shortcuts dialog */
   'vision.sidebar.shortcuts': 'Keyboard shortcuts',
   /** Empty state of the content source map panel */
-  'vision.source-map.empty':
-    'No content source map in the response. Turn on "Include content source map" under Options and fetch again.',
+  'vision.source-map.empty': 'This response has no content source map.',
+  /** Empty state of the content source map panel after "Fetch source map" came back without one */
+  'vision.source-map.empty-after-fetch': 'The query came back without a content source map.',
+  /** Button in the content source map panel that runs the query once with a source map */
+  'vision.source-map.fetch': 'Fetch source map',
+  /** Explains the "Fetch source map" button */
+  'vision.source-map.fetch.description':
+    'Runs the query once with a source map, just for this tab. The result and your options stay as they are.',
+  /** Shown when "Fetch source map" failed; `message` is the error */
+  'vision.source-map.fetch.error': 'Could not fetch the source map: {{message}}',
+  /** Explains the "Include content source map" option, next to the button that shows it */
+  'vision.source-map.include-hint':
+    'To get a source map with every fetch, turn on "Include content source map" in Options. The Export query snippets then ask for one too.',
+  /** Beside the content source map's view menu, when the map came from "Fetch source map" */
+  'vision.source-map.one-off': 'Fetched once, until the next fetch',
+  /** Button in the content source map panel that opens Options on "Include content source map" */
+  'vision.source-map.show-option': 'Show option',
   /** Accessible label of the divider between the result and the response details panel */
   'vision.split.bottom-panel':
     'Resize the response details panel: drag or use the arrow keys; Home and End go to the bounds, Enter resets',

@@ -9,7 +9,7 @@ function request(query: string, params: Record<string, unknown>): QueryRequest {
     client: {} as SanityClient,
     query,
     params,
-    includeSourceMap: false,
+    resultSourceMap: undefined,
     useCdn: false,
     url: '',
   }
@@ -27,6 +27,6 @@ describe('haveSameQuery', () => {
 
   it('ignores the request options', () => {
     const a = request('*', {})
-    expect(haveSameQuery(a, {...a, includeSourceMap: true, url: 'https://elsewhere'})).toBe(true)
+    expect(haveSameQuery(a, {...a, resultSourceMap: true, url: 'https://elsewhere'})).toBe(true)
   })
 })

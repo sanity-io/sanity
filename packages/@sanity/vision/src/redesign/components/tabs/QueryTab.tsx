@@ -32,6 +32,7 @@ import {
   selectDatasets,
   selectOpenDrawer,
   selectParamsView,
+  selectSourceMapRequest,
   selectWorkspaceDataset,
 } from '../../store/visionMachine'
 import {cx} from '../../util/cx'
@@ -174,6 +175,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
   const [lintFindings, setLintFindings] = useState<QueryLintFinding[]>([])
 
   const {resolved, params, request, buildRequest} = useQueryRequestBuilder(tab)
+  const sourceMapPreference = useVisionSelector(selectSourceMapRequest)
   const isVariantsEnabled = useVariantsEnabled()
   const isFetching = useSelector(runnerRef, selectIsFetching)
 
@@ -460,7 +462,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
     const current = buildRequest(lastRequest.query, JSON.stringify(lastRequest.params))
     if (
       current &&
-      (current.url !== lastRequest.url || current.includeSourceMap !== lastRequest.includeSourceMap)
+      (current.url !== lastRequest.url || current.resultSourceMap !== lastRequest.resultSourceMap)
     ) {
       runnerRef.send({type: 'fetch', request: current, reason: {type: 'resume'}})
     }
@@ -515,7 +517,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
     resolved.perspective,
     resolved.variant,
     resolved.useCdn,
-    tab.options.includeSourceMap,
+    tab.options.includeSourceMap && sourceMapPreference,
   ])}`
   useOnValueChange(refetchKey, (key, previous) => {
     if (!tab.autoRefetch) return

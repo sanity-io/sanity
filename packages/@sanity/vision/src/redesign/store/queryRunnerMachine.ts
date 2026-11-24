@@ -168,7 +168,7 @@ export const queryRunnerMachine = setup({
     >(({input, signal}) =>
       fetchWithNetwork(input.request.client, input.request.query, input.request.params, {
         filterResponse: false,
-        resultSourceMap: input.request.includeSourceMap || undefined,
+        resultSourceMap: input.request.resultSourceMap,
         // Per request: the client ignores a configured `useCdn` while it signs in with a cookie
         useCdn: input.request.useCdn,
         // The live event that triggered the refetch, so the CDN does not answer from its cache

@@ -158,7 +158,11 @@ describe('visionStorage', () => {
         explainQuery: false,
       },
       editor: {autoFormatOnResize: false},
-      response: {resolveSyncTags: true},
+      response: {
+        resolveSyncTags: true,
+        sourceMapEnabled: true,
+        resultSourceMap: 'withKeyArraySelector' as const,
+      },
       exportSnippets: {
         order: [
           'curl' as const,
@@ -387,7 +391,11 @@ describe('visionStorage', () => {
 
   it('keeps sync tag lookup off unless it was switched on', () => {
     const {response: _response, ...withoutResponse} = createInitialState(defaults)
-    expect(createInitialState(defaults).response).toEqual({resolveSyncTags: false})
+    expect(createInitialState(defaults).response).toEqual({
+      resolveSyncTags: false,
+      sourceMapEnabled: false,
+      resultSourceMap: true,
+    })
 
     const load = (response?: unknown) => {
       localStorage.setItem(
@@ -396,10 +404,49 @@ describe('visionStorage', () => {
       )
       return loadVisionState('proj', defaults).response
     }
-    expect(load()).toEqual({resolveSyncTags: false})
-    expect(load({resolveSyncTags: true})).toEqual({resolveSyncTags: true})
-    expect(load({resolveSyncTags: 'yes'})).toEqual({resolveSyncTags: false})
-    expect(load('on')).toEqual({resolveSyncTags: false})
+    expect(load()).toEqual({resolveSyncTags: false, sourceMapEnabled: false, resultSourceMap: true})
+    expect(load({resolveSyncTags: true})).toMatchObject({resolveSyncTags: true})
+    expect(load({resolveSyncTags: 'yes'})).toEqual({
+      resolveSyncTags: false,
+      sourceMapEnabled: false,
+      resultSourceMap: true,
+    })
+    expect(load('on')).toEqual({
+      resolveSyncTags: false,
+      sourceMapEnabled: false,
+      resultSourceMap: true,
+    })
+  })
+
+  it('keeps the Content Source Map features off, and the plain source map, unless picked', () => {
+    const {response: _response, ...withoutResponse} = createInitialState(defaults)
+    const load = (response: unknown) => {
+      localStorage.setItem(
+        getVisionStorageKey('proj'),
+        JSON.stringify({...withoutResponse, response}),
+      )
+      return loadVisionState('proj', defaults).response
+    }
+    expect(load({resolveSyncTags: false})).toEqual({
+      resolveSyncTags: false,
+      sourceMapEnabled: false,
+      resultSourceMap: true,
+    })
+    expect(load({sourceMapEnabled: true, resultSourceMap: 'withKeyArraySelector'})).toEqual({
+      resolveSyncTags: false,
+      sourceMapEnabled: true,
+      resultSourceMap: 'withKeyArraySelector',
+    })
+    expect(load({sourceMapEnabled: 'yes', resultSourceMap: 'withKeys'})).toEqual({
+      resolveSyncTags: false,
+      sourceMapEnabled: false,
+      resultSourceMap: true,
+    })
+    expect(load({sourceMapEnabled: true, resultSourceMap: false})).toEqual({
+      resolveSyncTags: false,
+      sourceMapEnabled: true,
+      resultSourceMap: true,
+    })
   })
 
   it('keeps every export snippet once, in the stored order, and never hides them all', () => {

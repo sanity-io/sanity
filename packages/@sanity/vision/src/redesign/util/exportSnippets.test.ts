@@ -34,11 +34,11 @@ function createInput(
   const apiVersion = overrides.apiVersion ?? 'v2025-02-19'
   const useCdn = overrides.useCdn ?? true
   const options = new URLSearchParams()
-  const {perspective, variant, includeSourceMap} = overrides
+  const {perspective, variant, resultSourceMap} = overrides
   if (perspective)
     options.set('perspective', Array.isArray(perspective) ? perspective.join(',') : perspective)
   if (variant) options.set('variant', variant)
-  if (includeSourceMap) options.set('resultSourceMap', 'true')
+  if (resultSourceMap) options.set('resultSourceMap', String(resultSourceMap))
   const host = useCdn && (!perspective || perspective === 'published') ? 'apicdn' : 'api'
   const search = encodeQueryString(query, params)
   const extra = options.toString()
@@ -51,7 +51,7 @@ function createInput(
     apiVersion,
     perspective,
     variant,
-    includeSourceMap: includeSourceMap ?? false,
+    resultSourceMap,
     useCdn,
   }
 }
@@ -225,7 +225,7 @@ describe('buildExportSnippets', () => {
     const query = `*[_type == 'author' && _id == $id]{name} // ${'x'.repeat(QUERY_URL_SIZE_LIMIT)}`
     const params = {id: "it's"}
     expect(queryRequestMethod(query, params)).toBe('POST')
-    const input = createInput({query, params, perspective: 'drafts', includeSourceMap: true})
+    const input = createInput({query, params, perspective: 'drafts', resultSourceMap: true})
 
     const curl = snippet(input, 'curl')
     expect(curl.method).toBe('POST')
@@ -434,7 +434,7 @@ describe('buildExportSnippets', () => {
       perspective: ['rSummer', 'drafts'],
       variant: 'de-DE',
       apiVersion: 'vX',
-      includeSourceMap: true,
+      resultSourceMap: true,
       useCdn: false,
     })
     expect(file(input, 'client')).toMatchInlineSnapshot(`
@@ -461,6 +461,24 @@ describe('buildExportSnippets', () => {
     `)
     expect(file(input, 'next-sanity', 0)).toContain('  resultSourceMap: true,')
     expect(file(input, 'next-sanity', 1)).toContain('const {data, sourceMap} = await sanityFetch(')
+  })
+
+  it('asks for the keyed source map when that format is picked, and for none when it is off', () => {
+    const keyed = createInput({perspective: 'drafts', resultSourceMap: 'withKeyArraySelector'})
+    expect(file(keyed, 'client')).toContain("resultSourceMap: 'withKeyArraySelector'")
+    expect(file(keyed, 'next-sanity', 0)).toContain("  resultSourceMap: 'withKeyArraySelector',")
+    expect(file(keyed, 'curl')).toContain('resultSourceMap=withKeyArraySelector')
+    for (const id of ['astro', 'sveltekit', 'nuxt'] as const) {
+      expect(exportSnippetText(snippet(keyed, id))).toContain(
+        "resultSourceMap: 'withKeyArraySelector'",
+      )
+    }
+
+    for (const built of buildExportSnippets(createInput({perspective: 'drafts'}))) {
+      const text = exportSnippetText(built)
+      expect(text).not.toContain('resultSourceMap')
+      expect(text).not.toContain('sourceMap')
+    }
   })
 
   it('writes a params key that would set the prototype as a computed property', () => {
