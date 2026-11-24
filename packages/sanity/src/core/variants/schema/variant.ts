@@ -1,4 +1,4 @@
-import {defineField, defineType} from '@sanity/types'
+import {defineArrayMember, defineField, defineType} from '@sanity/types'
 
 import {VARIANT_DOCUMENT_TYPE} from '../store/constants'
 import {VARIANT_METADATA_TYPE_NAME} from './variantMetadata'
@@ -7,9 +7,6 @@ import {VARIANT_METADATA_TYPE_NAME} from './variantMetadata'
  * Variant definitions are stored at `_.variants.<name>` and are written through
  * `sanity.action.variant.definition.*`, never through document patches, so the type is read-only
  * and kept out of templates, search and the default Structure lists.
- *
- * `conditions` is not declared: it maps condition keys chosen per definition to values, and an
- * object type can only describe a fixed set of fields.
  *
  * @internal
  */
@@ -25,6 +22,25 @@ export const variantSchema = defineType({
       name: 'name',
       title: 'Name',
       type: 'string',
+    }),
+    defineField({
+      name: 'conditions',
+      title: 'Conditions',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          name: 'condition',
+          title: 'Condition',
+          type: 'object',
+          fields: [
+            defineField({name: 'condition', title: 'Condition', type: 'string'}),
+            defineField({name: 'value', title: 'Value', type: 'string'}),
+          ],
+          preview: {
+            select: {title: 'condition', subtitle: 'value'},
+          },
+        }),
+      ],
     }),
     defineField({
       name: 'priority',

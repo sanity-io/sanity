@@ -1,5 +1,5 @@
 import {extractManifestSchemaTypes, extractSchema} from '@sanity/schema/_internal'
-import {defineField, isObjectSchemaType} from '@sanity/types'
+import {defineField, isArraySchemaType, isObjectSchemaType} from '@sanity/types'
 import {validateDocument} from '@sanity/validation'
 import {describe, expect, it, vi} from 'vitest'
 
@@ -46,6 +46,16 @@ describe('variant schema types from the variants plugin', () => {
       : undefined
     expect(metadataField?.type.name).toBe(VARIANT_METADATA_TYPE_NAME)
     expect(fieldNames(source)).toEqual(CORE_FIELD_NAMES)
+
+    const conditionsType = isObjectSchemaType(variant)
+      ? variant.fields.find((field) => field.name === 'conditions')?.type
+      : undefined
+    if (!isArraySchemaType(conditionsType)) throw new Error('Expected conditions to be an array')
+    expect(
+      conditionsType.of.map((member) =>
+        isObjectSchemaType(member) ? member.fields.map((field) => field.name) : [],
+      ),
+    ).toEqual([['condition', 'value']])
   })
 
   it('leaves both types out when variants are disabled', async () => {
@@ -219,7 +229,7 @@ describe('variant schema types from the variants plugin', () => {
       _rev: 'rev',
       name: 'loyal',
       priority: 0,
-      // `conditions` is left out: `system.variant` doesn't declare it yet
+      conditions: [{_key: 'audience', condition: 'audience', value: 'loyal'}],
     }
 
     const client = source.getClient({apiVersion: '2025-02-19'})
