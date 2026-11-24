@@ -2317,6 +2317,19 @@ describe('VisionRedesign', () => {
     )
   })
 
+  it('narrows the API version list to what was typed', () => {
+    renderRedesign()
+    openRequestTab('options')
+    fireEvent.change(screen.getByTestId('vision-option-api-version-select'), {
+      target: {value: '2021'},
+    })
+
+    expect(screen.getByTestId('vision-option-api-version-option-v2021-10-21')).toBeTruthy()
+    expect(screen.getByTestId('vision-option-api-version-option-v2021-03-25')).toBeTruthy()
+    expect(screen.queryByTestId('vision-option-api-version-option-v1')).toBeNull()
+    expect(screen.queryByTestId('vision-option-api-version-option-vX')).toBeNull()
+  })
+
   it('lists the dataset chip before the API version, with fetch actions outside the chip strip', () => {
     const initial = createInitialState(DEFAULTS)
     const tab = createTab(initial.settings, {
