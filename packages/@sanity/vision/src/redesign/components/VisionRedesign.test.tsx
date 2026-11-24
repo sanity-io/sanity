@@ -3650,8 +3650,14 @@ describe('VisionRedesign', () => {
     renderRedesign()
     const button = within(shownTab()).getByTestId('vision-query-menu-button')
     expect(button.getAttribute('aria-label')).toBe('vision.query.actions')
+    // It sits in the query pane's toolbar, after Copy, like the result's menu; not in the bottom bar
+    const toolbarActions = within(shownTab()).getByTestId('vision-query-toolbar-actions')
+    expect(toolbarActions.contains(button)).toBe(true)
+    const copy = within(toolbarActions).getByTestId('vision-query-copy')
+    expect(copy.compareDocumentPosition(button) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(within(shownTab()).getByTestId('vision-query-actions').contains(button)).toBe(false)
 
-    fireEvent.mouseEnter(button)
+    fireEvent.mouseEnter(within(shownTab()).getByTestId('vision-query-menu-tooltip-target'))
     await screen.findByText('vision.actions.more')
 
     fireEvent.click(button)
