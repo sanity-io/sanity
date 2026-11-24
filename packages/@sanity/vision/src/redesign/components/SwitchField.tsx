@@ -14,13 +14,14 @@ export interface SwitchFieldProps {
   /** Names the info icon for assistive technology */
   infoLabel?: string
   testId?: string
+  disabled?: boolean
   /** More lines under the description */
   children?: ReactNode
 }
 
 /** A switch with its title and description beside it, the switch level with the title */
 export function SwitchField(props: SwitchFieldProps) {
-  const {checked, onChange, title, description, info, infoLabel, testId, children} = props
+  const {checked, onChange, title, description, info, infoLabel, testId, disabled, children} = props
   return (
     // A click on the info button does not toggle the switch: a label skips activation for clicks
     // on interactive content inside it
@@ -31,6 +32,7 @@ export function SwitchField(props: SwitchFieldProps) {
         <Switch
           checked={checked}
           data-testid={testId}
+          disabled={disabled}
           onChange={(event) => onChange(event.currentTarget.checked)}
         />
       </Box>
@@ -40,11 +42,15 @@ export function SwitchField(props: SwitchFieldProps) {
             {title}
           </Text>
           {info && (
-            <InfoTooltip
-              content={info}
-              label={infoLabel ?? (typeof title === 'string' ? title : '')}
-              testId={testId ? `${testId}-info` : undefined}
-            />
+            // The info button fills its container, so unwrapped it would take half the row and
+            // wrap the title
+            <Box flexShrink={0}>
+              <InfoTooltip
+                content={info}
+                label={infoLabel ?? (typeof title === 'string' ? title : '')}
+                testId={testId ? `${testId}-info` : undefined}
+              />
+            </Box>
           )}
         </Flex>
         {description && (

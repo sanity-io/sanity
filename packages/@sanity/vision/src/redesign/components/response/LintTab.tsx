@@ -1,4 +1,5 @@
 import {Badge, Card, Stack} from '@sanity/ui'
+import {type ReactNode} from 'react'
 import {type TFunction} from 'sanity'
 import {InlineCode, useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
@@ -45,10 +46,12 @@ export interface LintTabProps {
   findings: QueryLintFinding[]
   /** Called with the finding to show in the editor */
   onReveal: (finding: QueryLintFinding) => void
+  /** Shown above the findings, while there are any */
+  action?: ReactNode
 }
 
 /** The query editor's lint diagnostics as a list; each one selects its range in the editor */
-export function LintTab({findings, onReveal}: LintTabProps) {
+export function LintTab({findings, onReveal, action}: LintTabProps) {
   const {t} = useTranslation(visionLocaleNamespace)
 
   if (findings.length === 0) {
@@ -63,6 +66,7 @@ export function LintTab({findings, onReveal}: LintTabProps) {
 
   return (
     <Stack data-testid="vision-lint">
+      {action}
       {findings.map((finding) => (
         <Card
           as="button"

@@ -2,22 +2,23 @@ import {useToast} from '@sanity/ui/toast'
 import {useCallback} from 'react'
 
 /**
- * Copies text to the clipboard and confirms with a toast. Falls back to a hidden textarea and
+ * Copies text to the clipboard and confirms with a toast titled `successTitle`; without one, the
+ * control that copied confirms it instead. A failed copy is always reported in a toast. Falls back to a hidden textarea and
  * `execCommand` where the async clipboard API is unavailable (insecure contexts, some webviews).
  * Resolves whether the text was copied.
  */
-export function useCopyToClipboard(): (text: string, successTitle: string) => Promise<boolean> {
+export function useCopyToClipboard(): (text: string, successTitle?: string) => Promise<boolean> {
   const toast = useToast()
 
   return useCallback(
-    async (text: string, successTitle: string) => {
+    async (text: string, successTitle?: string) => {
       try {
         if (navigator.clipboard?.writeText) {
           await navigator.clipboard.writeText(text)
         } else {
           copyWithTextarea(text)
         }
-        toast.push({closable: true, status: 'success', title: successTitle})
+        if (successTitle) toast.push({closable: true, status: 'success', title: successTitle})
         return true
       } catch (err) {
         toast.push({

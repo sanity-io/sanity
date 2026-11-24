@@ -11,7 +11,9 @@ import {useVariantsEnabled} from '../../../hooks/useVariantsEnabled'
 import {visionLocaleNamespace} from '../../../i18n'
 import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {type VisionQueryRunData} from '../../../telemetry/vision.telemetry'
+import {useAutoFormatOnResize} from '../../hooks/useAutoFormatOnResize'
 import {useContentSize} from '../../hooks/useContentSize'
+import {useCopiedFeedback} from '../../hooks/useCopiedFeedback'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {useFollowNavbarPerspective} from '../../hooks/useFollowNavbarPerspective'
 import {useLiveSubscription} from '../../hooks/useLiveSubscription'
@@ -25,7 +27,6 @@ import {
   useVisionActor,
   useVisionExperience,
   useVisionSelector,
-  type VisionLayout,
 } from '../../store/VisionActorContext'
 import {
   selectDatasets,
@@ -34,6 +35,7 @@ import {
   selectWorkspaceDataset,
 } from '../../store/visionMachine'
 import {cx} from '../../util/cx'
+import {formatParams} from '../../util/formatParams'
 import {type TextRange} from '../../util/groqFunctions'
 import {type QueryLintFinding} from '../../util/groqLint'
 import {
@@ -47,12 +49,15 @@ import {parseQueryPaste} from '../../util/parseQueryPaste'
 import {isQueryParamName} from '../../util/queryParamName'
 import {parsedQueryToTabInit} from '../../util/savedQueryTab'
 import {type VisionShortcutId} from '../../util/shortcuts'
+import {useQueryTabSplitSizes} from '../queryTabLayout'
 import * as styles from '../redesign.module.css'
+import {isParamsContentTarget} from '../request/paramsContent'
 import {RequestPanel} from '../request/RequestPanel'
 import {ResizableSplit} from '../ResizableSplit'
 import {type QueryEdit} from '../response/FunctionsTab'
 import {ResponsePanel} from '../response/ResponsePanel'
 import {getQueryTabId, QUERY_TAB_PANEL_ID} from './QueryTabBar'
+import {useQueryTabShown, useTabElementId} from './queryTabShown'
 
 const MIN_PANE_SIZE = {columns: 280, stacked: 160}
 
@@ -109,18 +114,24 @@ const MAX_LAYOUT_FRAMES = 30
 
 type MobilePane = 'request' | 'response'
 
-interface QueryTabProps {
+export interface QueryTabProps {
+  /**
+   * Whether the tab's panels play their entry transitions the first time it is shown. Only the
+   * tab shown when the tool opens does: a tab opened or switched to afterwards appears at once
+   */
+  animateFirstShow: boolean
   tab: VisionTab
   /** The tool's root element; keyboard shortcuts and pastes outside it are ignored */
   rootElement: HTMLDivElement | null
 }
 
 /**
- * One open tab: the request and response columns, wired to the tab's query runner actor. Only
- * the active tab is mounted, so this component also owns the keyboard shortcuts and the
- * paste-a-query-URL handler.
+ * One open tab: the request and response columns, wired to the tab's query runner actor. Every
+ * open tab stays mounted, the others hidden in an `<Activity>` boundary whose effects are torn
+ * down, so the shown tab alone handles the keyboard shortcuts and the paste-a-query-URL handler
+ * (both registered in effects), and its live subscription and fetches pause while it is hidden.
  */
-export function QueryTab({tab, rootElement}: QueryTabProps) {
+export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
   const copyToClipboard = useCopyToClipboard()
@@ -132,10 +143,32 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   const runnerRef = useVisionSelector((snapshot) => snapshot.context.runners[tab.id])
   const loadRevision = useVisionSelector((snapshot) => snapshot.context.loadRevisions[tab.id] || 0)
 
+  const tabElementId = useTabElementId()
   const [splitContainer, setSplitContainer] = useState<HTMLDivElement | null>(null)
+  // A hidden tab is shown again with `display: none` lifted, which starts every
+  // `@starting-style` transition inside it over. They are switched off for the frames around a
+  // reveal (and a first show, unless the tab animates it), as the tab was already on screen
+  const shown = useQueryTabShown()
+  const [wasShown, setWasShown] = useState(shown)
+  const [revealing, setRevealing] = useState(!animateFirstShow)
+  if (shown !== wasShown) {
+    setWasShown(shown)
+    if (shown) setRevealing(true)
+  }
+  useEffect(() => {
+    if (!shown || !revealing) return undefined
+    let next = 0
+    const first = requestAnimationFrame(() => {
+      next = requestAnimationFrame(() => setRevealing(false))
+    })
+    return () => {
+      cancelAnimationFrame(first)
+      cancelAnimationFrame(next)
+    }
+  }, [revealing, shown])
   const splitContainerSize = useContentSize(splitContainer)
   // Dragged sizes are remembered per layout: a column width makes no sense as a stacked height
-  const [splitSizes, setSplitSizes] = useState<Partial<Record<VisionLayout, number>>>({})
+  const {splitSizes, setSplitSizes} = useQueryTabSplitSizes()
   const [mobilePane, setMobilePane] = useState<MobilePane>('request')
 
   const queryEditorRef = useRef<VisionCodeMirrorHandle>(null)
@@ -210,7 +243,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     const timeoutId = setTimeout(() => void prefillParams(tab.query), PARAMS_PREFILL_IDLE_MS)
     // Focus leaving the editor writes immediately. Focus moving inside it (the gutter, a
     // completion) is not leaving it
-    const editor = rootElement?.querySelector('[data-testid="vision-query-editor"]')
+    const editor = splitContainer?.querySelector('[data-testid="vision-query-editor"]')
     const handleFocusOut = (event: Event) => {
       const next = event instanceof FocusEvent ? event.relatedTarget : null
       if (next instanceof Node && editor?.contains(next)) return
@@ -221,7 +254,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       clearTimeout(timeoutId)
       editor?.removeEventListener('focusout', handleFocusOut)
     }
-  }, [rootElement, tab.query])
+  }, [splitContainer, tab.query])
 
   // The request a fetch of the tab's own query should carry right now: params typed within the
   // debounce window belong to it, so they are committed first and the request is built from what
@@ -311,6 +344,20 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     setQuery(formatted)
   }, [actorRef, formatForEditor, setQuery, tab])
 
+  const autoFormatOnResize = useVisionSelector(
+    (snapshot) => snapshot.context.editor.autoFormatOnResize,
+  )
+  const autoFormatPending = useAutoFormatOnResize({
+    container: splitContainer,
+    layout,
+    editorRef: queryEditorRef,
+    enabled: autoFormatOnResize,
+    query: tab.query,
+    getQuery: () => actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id)?.query ?? '',
+    formatForEditor,
+    onFormatted: setQuery,
+  })
+
   const prettify = useCallback(async () => {
     try {
       await formatQuery()
@@ -326,11 +373,36 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     }
   }, [formatQuery, t, telemetry, toast])
 
+  // The Copy buttons in the editors' corners read Copied after a copy, rather than a toast saying so
+  const {copied, markCopied} = useCopiedFeedback<'query' | 'params'>()
   const copyQuery = useCallback(() => {
-    void copyToClipboard(tab.query, t('vision.query.copied')).then((copied) => {
-      if (copied) telemetry.copied('query')
+    void copyToClipboard(tab.query).then((didCopy) => {
+      if (!didCopy) return
+      markCopied('query')
+      telemetry.copied('query')
     })
-  }, [copyToClipboard, t, tab.query, telemetry])
+  }, [copyToClipboard, markCopied, tab.query, telemetry])
+  // The params as they are now, with an edit still waiting in the debounce
+  const readLatestParams = useCallback(() => {
+    setParams.flush()
+    const latest = actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id)
+    return latest?.rawParams ?? tab.rawParams
+  }, [actorRef, setParams, tab.id, tab.rawParams])
+  const copyParams = useCallback(() => {
+    void copyToClipboard(readLatestParams()).then((didCopy) => {
+      if (!didCopy) return
+      markCopied('params')
+      telemetry.copied('params')
+    })
+  }, [copyToClipboard, markCopied, readLatestParams, telemetry])
+  // Formats the params in the JSON editor; the form has nothing to format
+  const formatParamsJson = useCallback(() => {
+    if (!paramsEditorRef.current) return
+    const formatted = formatParams(readLatestParams())
+    if (formatted === null) return
+    paramsEditorRef.current.resetEditorContent(formatted)
+    setParamsNow(formatted)
+  }, [readLatestParams, setParamsNow])
 
   // A lint finding or a function declaration picked on a phone, where the editor is `display: none`
   // behind the response pane, or inert under a sidebar drawer, which covers the tool: it cannot
@@ -369,13 +441,6 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
     queryEditorRef.current?.resetEditorContent(tab.query)
     paramsEditorRef.current?.resetEditorContent(tab.rawParams)
     runnerRef.send({type: 'clear'})
-  })
-
-  useLiveSubscription({
-    runnerRef,
-    dataset: resolved.dataset,
-    enabled: tab.autoRefetch && resolved.supportsSyncTags,
-    tabId: tab.id,
   })
 
   // A tab that refetches automatically resumes with a current result when it mounts. After a
@@ -429,6 +494,13 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   useEffect(() => {
     resumeAutoRefetch()
   }, [])
+  // After the resume above, whose fetch makes the paused subscription's catch-up refetch moot
+  useLiveSubscription({
+    runnerRef,
+    dataset: resolved.dataset,
+    enabled: tab.autoRefetch && resolved.supportsSyncTags,
+    tabId: tab.id,
+  })
   useEffect(() => {
     // oxlint-disable-next-line react/set-state-in-effect -- a tab opened with fetch-on-open runs its query once, when it mounts
     if (fetchOnOpen) void fetchOpenedQuery()
@@ -464,16 +536,20 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
 
   useVisionDocumentEvents({
     rootElement,
-    onShortcut: (shortcut: VisionShortcutId) => {
+    onShortcut: (shortcut: VisionShortcutId, event: KeyboardEvent) => {
+      // Copy and Format act on the params while the params panel has focus, else on the query
+      const inParams = isParamsContentTarget(event.target)
       switch (shortcut) {
         case 'fetch':
           run({type: 'shortcut'})
           break
         case 'prettify':
-          void prettify()
+          if (inParams) formatParamsJson()
+          else void prettify()
           break
         case 'copy-query':
-          copyQuery()
+          if (inParams) copyParams()
+          else copyQuery()
           break
         default: {
           const unhandled: never = shortcut
@@ -538,11 +614,15 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
 
   const requestPanel = (
     <RequestPanel
+      autoFormatPending={autoFormatPending}
       buildRequest={buildRequest}
       formatForEditor={formatForEditor}
       isFetching={isFetching}
       onCancel={cancel}
+      copied={copied}
+      onCopyParams={copyParams}
       onCopyQuery={copyQuery}
+      onFormatParams={formatParamsJson}
       lintFindings={lintFindings}
       onEditQuery={editQuery}
       onLintFindings={setLintFindings}
@@ -551,7 +631,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
       onParamsFlush={flushParams}
       onParamsReplace={replaceParams}
       onRevealRange={revealRange}
-      onPrettify={() => void prettify()}
+      onFormatQuery={() => void prettify()}
       onQueryChange={setQuery}
       onRun={() => run({type: 'manual'})}
       onToggleAutoRefetch={toggleAutoRefetch}
@@ -575,8 +655,10 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
 
   const panelProps = {
     'aria-labelledby': getQueryTabId(tab.id),
+    'className': cx(revealing && styles.queryTabRevealing),
     'data-testid': 'vision-query-tab',
-    'id': QUERY_TAB_PANEL_ID,
+    'id': tabElementId(QUERY_TAB_PANEL_ID),
+    'ref': setSplitContainer,
     'role': 'tabpanel',
   } as const
 
@@ -587,18 +669,18 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
         <Flex borderBottom flexShrink={0} justifyContent="center" paddingY={1}>
           <TabList gap={1}>
             <Tab
-              aria-controls="vision-mobile-request-pane"
+              aria-controls={tabElementId('vision-mobile-request-pane')}
               fontSize={1}
-              id="vision-mobile-request-tab"
+              id={tabElementId('vision-mobile-request-tab')}
               label={t('query.label')}
               onClick={() => setMobilePane('request')}
               padding={2}
               selected={mobilePane === 'request'}
             />
             <Tab
-              aria-controls="vision-mobile-response-pane"
+              aria-controls={tabElementId('vision-mobile-response-pane')}
               fontSize={1}
-              id="vision-mobile-response-tab"
+              id={tabElementId('vision-mobile-response-tab')}
               label={t('result.label')}
               onClick={() => setMobilePane('response')}
               padding={2}
@@ -607,21 +689,21 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
           </TabList>
         </Flex>
         <Box
-          aria-labelledby="vision-mobile-request-tab"
+          aria-labelledby={tabElementId('vision-mobile-request-tab')}
           className={cx(styles.paneFill, mobilePane !== 'request' && styles.hiddenPane)}
           flexBasis="0%"
           flexGrow={1}
-          id="vision-mobile-request-pane"
+          id={tabElementId('vision-mobile-request-pane')}
           role="tabpanel"
         >
           {requestPanel}
         </Box>
         <Box
-          aria-labelledby="vision-mobile-response-tab"
+          aria-labelledby={tabElementId('vision-mobile-response-tab')}
           className={cx(styles.paneFill, mobilePane !== 'response' && styles.hiddenPane)}
           flexBasis="0%"
           flexGrow={1}
-          id="vision-mobile-response-pane"
+          id={tabElementId('vision-mobile-response-pane')}
           role="tabpanel"
         >
           {responsePanel}
@@ -642,7 +724,7 @@ export function QueryTab({tab, rootElement}: QueryTabProps) {
   // wider window is clamped by the split for as long as the window is narrower (the request
   // pane wins when there is no room for both)
   return (
-    <Box {...panelProps} className={styles.splitPaneContainer} ref={setSplitContainer}>
+    <Box {...panelProps} className={cx(styles.splitPaneContainer, panelProps.className)}>
       <ResizableSplit
         key={layout}
         label={t('vision.split.request-response')}

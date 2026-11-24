@@ -316,11 +316,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                         </Box>
                       ) : (
                         <Button
-                          className={cx(
-                            styles.listItemButton,
-                            sidebarStyles.pressable,
-                            sidebarStyles.pressableRow,
-                          )}
+                          className={cx(styles.listItemButton, sidebarStyles.pressable)}
                           data-testid="vision-saved-query-open"
                           justify="flex-start"
                           mode="bleed"
@@ -352,7 +348,9 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                     </Box>
                     <Box className={sidebarStyles.queryRowMenu} paddingTop={1}>
                       <MenuButton
-                        button={<ContextMenuButton />}
+                        button={
+                          <ContextMenuButton tooltipProps={{content: t('vision.actions.more')}} />
+                        }
                         id={`vision-saved-query-menu-${query._key}`}
                         menu={
                           <Menu>

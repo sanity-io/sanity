@@ -36,8 +36,35 @@ export interface SchemaFinding {
   suggestion?: {text: string; from: number; to: number}
 }
 
+/** A field name the query reads, and what it is read from */
+export interface FieldVisit {
+  /** The identifier naming the field */
+  from: number
+  to: number
+  /** The value the field is read from */
+  scope: Shape
+}
+
+export interface QuerySchemaOptions {
+  /**
+   * The values the query runs with: a `_type` compared to a parameter (`_type == $type`,
+   * `_type in $types`) is narrowed by the parameter's value, as a string literal would narrow it
+   */
+  params?: Readonly<Record<string, unknown>>
+  /** Called for every field name the query reads, with the value it reads it from */
+  onField?: (visit: FieldVisit) => void
+  /** Called for `*`, `@`, `^` and `->` with the value each stands for */
+  onValue?: (visit: ValueVisit) => void
+}
+
+export interface ValueVisit {
+  from: number
+  to: number
+  shape: Shape
+}
+
 /** The shape of a value as the schema knows it */
-type Shape =
+export type Shape =
   | {kind: 'unknown'}
   /** A string, number or boolean of this schema type */
   | {kind: 'value'; type: string}
@@ -133,7 +160,7 @@ function chainName(type: SchemaType): string[] {
   return names
 }
 
-function fieldsOf(type: SchemaType): {name: string; type: SchemaType}[] {
+export function fieldsOf(type: SchemaType): {name: string; type: SchemaType}[] {
   try {
     return 'fields' in type && Array.isArray(type.fields) ? type.fields : []
   } catch {
@@ -244,7 +271,7 @@ function stringValue(node: GroqNode, query: string): string | undefined {
   return text.slice(1, -1)
 }
 
-interface Context {
+interface Context extends QuerySchemaOptions {
   query: string
   schema: QuerySchema
   findings: SchemaFinding[]
@@ -252,16 +279,34 @@ interface Context {
   parents: Shape[]
 }
 
+/** A type name a `_type` condition names; `param` is the parameter whose value it is */
+interface TypeName {
+  name: string
+  node: GroqNode
+  param?: string
+}
+
+/** A type name a string or parameter node holds */
+function typeNameOf(node: GroqNode, context: Context): TypeName | undefined {
+  if (node.name === 'Parameter') {
+    const param = textOf(context.query, node)
+    const value = context.params?.[param.slice(1)]
+    return typeof value === 'string' ? {name: value, node, param} : undefined
+  }
+  const name = stringValue(node, context.query)
+  return name === undefined ? undefined : {name, node}
+}
+
 /**
  * The document types a filter's condition pins `_type` to (`_type == "post"`,
- * `_type in ["post", "page"]`, joined with `&&` and `||`, in parentheses), with the string node
- * of each name; `null` when it does not pin them
+ * `_type in ["post", "page"]`, `_type == $type` with the parameter's value, joined with `&&` and
+ * `||`, in parentheses), with the node of each name; `null` when it does not pin them
  */
-function typeConstraint(nodes: GroqNode[], query: string): {name: string; node: GroqNode}[] | null {
+function typeConstraint(nodes: GroqNode[], context: Context): TypeName[] | null {
   const disjuncts = splitBy(nodes, 'Or').map((disjunct) => {
-    let constraint: {name: string; node: GroqNode}[] | null = null
+    let constraint: TypeName[] | null = null
     for (const conjunct of splitBy(disjunct, 'And')) {
-      const names = conjunctConstraint(conjunct, query)
+      const names = conjunctConstraint(conjunct, context)
       if (names === null) continue
       constraint =
         constraint === null
@@ -274,53 +319,66 @@ function typeConstraint(nodes: GroqNode[], query: string): {name: string; node: 
   return disjuncts.flatMap((disjunct) => disjunct ?? [])
 }
 
-function conjunctConstraint(
-  nodes: GroqNode[],
-  query: string,
-): {name: string; node: GroqNode}[] | null {
+function conjunctConstraint(nodes: GroqNode[], context: Context): TypeName[] | null {
+  const {query} = context
   if (nodes.length === 1 && nodes[0].name === 'ParenExpression') {
-    return typeConstraint(innerOf(nodes[0]), query)
+    return typeConstraint(innerOf(nodes[0]), context)
   }
   if (nodes.length !== 3) return null
   const [left, operator, right] = nodes
   const isType = (node: GroqNode) => node.name === 'Identifier' && textOf(query, node) === '_type'
   if (operator.name === 'EqualityOp' && textOf(query, operator) === '==') {
-    const string = isType(left) ? right : isType(right) ? left : undefined
-    const name = string ? stringValue(string, query) : undefined
-    return string && name !== undefined ? [{name, node: string}] : null
+    const value = isType(left) ? right : isType(right) ? left : undefined
+    const name = value ? typeNameOf(value, context) : undefined
+    return name ? [name] : null
+  }
+  if (operator.name === 'In' && isType(left) && right.name === 'Parameter') {
+    const param = textOf(query, right)
+    const values = context.params?.[param.slice(1)]
+    return Array.isArray(values) && values.every((value) => typeof value === 'string')
+      ? values.map((name: string) => ({name, node: right, param}))
+      : null
   }
   if (operator.name === 'In' && isType(left) && right.name === 'ArrayLiteral') {
     const items = innerOf(right).filter((item) => item.name !== ',')
-    const names = items.map((item) => ({name: stringValue(item, query), node: item}))
-    return names.every((entry) => entry.name !== undefined)
-      ? names.map((entry) => ({name: entry.name ?? '', node: entry.node}))
-      : null
+    const names = items.map((item) => typeNameOf(item, context))
+    return names.every((name) => name !== undefined) ? names : null
   }
   return null
 }
 
+/** Where an unknown type name came from, for the start of the message about it */
+function unknownTypeSubject({name, param}: TypeName): string {
+  return param ? `\`${param}\` is \`${JSON.stringify(name)}\`, but the` : 'The'
+}
+
+/** A suggestion for a type name, written in place of the string; a parameter's value is not in the query */
+function typeSuggestion(entry: TypeName, suggestion: string | undefined) {
+  return suggestion && !entry.param
+    ? {suggestion: {text: JSON.stringify(suggestion), from: entry.node.from, to: entry.node.to}}
+    : {}
+}
+
 /** The scope narrowed by a condition on `_type`, reporting type names nothing in it has */
 function narrow(scope: Shape, condition: GroqNode[], context: Context): Shape {
-  const constraint = typeConstraint(condition, context.query)
+  const constraint = typeConstraint(condition, context)
   if (!constraint) return scope
   const {documents} = context.schema
   if (scope.kind === 'documents') {
     const types: SchemaType[] = []
-    for (const {name, node} of constraint) {
-      const type = documents.get(name)
+    for (const entry of constraint) {
+      const type = documents.get(entry.name)
       if (type) {
         types.push(type)
         continue
       }
-      const suggestion = closest(name, documents.keys())
+      const suggestion = closest(entry.name, documents.keys())
       context.findings.push({
         rule: 'unknown-type',
-        from: node.from,
-        to: node.to,
-        message: `The schema has no document type named \`${name}\`.${suggestion ? ` Did you mean \`${suggestion}\`?` : ''}`,
-        ...(suggestion
-          ? {suggestion: {text: JSON.stringify(suggestion), from: node.from, to: node.to}}
-          : {}),
+        from: entry.node.from,
+        to: entry.node.to,
+        message: `${unknownTypeSubject(entry)} schema has no document type named \`${entry.name}\`.${suggestion ? ` Did you mean \`${suggestion}\`?` : ''}`,
+        ...typeSuggestion(entry, suggestion),
       })
     }
     return types.length > 0 ? {kind: 'object', types: unique(types)} : UNKNOWN
@@ -328,7 +386,8 @@ function narrow(scope: Shape, condition: GroqNode[], context: Context): Shape {
   if (scope.kind === 'object') {
     const names = new Set(constraint.map((entry) => entry.name))
     const types = scope.types.filter((type) => names.has(type.name))
-    for (const {name, node} of constraint) {
+    for (const entry of constraint) {
+      const {name} = entry
       if (scope.types.some((type) => type.name === name) || documents.has(name)) continue
       const suggestion = closest(
         name,
@@ -336,12 +395,10 @@ function narrow(scope: Shape, condition: GroqNode[], context: Context): Shape {
       )
       context.findings.push({
         rule: 'unknown-type',
-        from: node.from,
-        to: node.to,
-        message: `Nothing here is of type \`${name}\`: it is ${quoteList(typeNames(scope))}.${suggestion ? ` Did you mean \`${suggestion}\`?` : ''}`,
-        ...(suggestion
-          ? {suggestion: {text: JSON.stringify(suggestion), from: node.from, to: node.to}}
-          : {}),
+        from: entry.node.from,
+        to: entry.node.to,
+        message: `${entry.param ? `\`${entry.param}\` is \`${JSON.stringify(name)}\`, but nothing` : 'Nothing'} here is of type \`${name}\`: it is ${quoteList(typeNames(scope))}.${suggestion ? ` Did you mean \`${suggestion}\`?` : ''}`,
+        ...typeSuggestion(entry, suggestion),
       })
     }
     return types.length > 0 ? {kind: 'object', types} : scope
@@ -378,6 +435,7 @@ interface Holder {
 /** The shape of field `name` of a value, reporting a field the value cannot have */
 function field(shape: Shape, nameNode: GroqNode, context: Context, holder?: Holder): Shape {
   const name = textOf(context.query, nameNode)
+  context.onField?.({from: nameNode.from, to: nameNode.to, scope: shape})
   switch (shape.kind) {
     case 'unknown':
     case 'documents':
@@ -532,6 +590,12 @@ function evaluateArguments(call: GroqNode, scope: Shape, context: Context): void
   for (const arg of splitBy(args, ',')) evaluate(arg, scope, context)
 }
 
+/** The `->` of a dereference, with the documents it reaches */
+function reportArrow(node: GroqNode, shape: Shape, context: Context): void {
+  const arrow = node.getChild('Deref') ?? node
+  context.onValue?.({from: arrow.from, to: arrow.to, shape})
+}
+
 /** A primary node followed by its postfix chain: `author->{name}`, `*[_type == "post"]` */
 function evaluateChain(nodes: GroqNode[], scope: Shape, context: Context): Shape {
   const [head, ...rest] = nodes
@@ -578,6 +642,15 @@ function evaluateChain(nodes: GroqNode[], scope: Shape, context: Context): Shape
     default:
       shape = UNKNOWN
   }
+  if (head.name === 'This' || head.name === 'Parent') {
+    context.onValue?.({from: head.from, to: head.to, shape})
+  }
+  // `*` stands for the documents the filters right after it leave
+  let everything = head.name === 'Everything'
+  const reportEverything = () => {
+    if (everything) context.onValue?.({from: head.from, to: head.to, shape})
+    everything = false
+  }
 
   let previous: GroqNode = head
   // The chain so far, which the next step applies to
@@ -586,6 +659,7 @@ function evaluateChain(nodes: GroqNode[], scope: Shape, context: Context): Shape
     dot,
   })
   for (const node of rest) {
+    if (node.name !== 'Filter') reportEverything()
     switch (node.name) {
       case 'DotAccess': {
         const name = node.getChild('Identifier')
@@ -594,9 +668,11 @@ function evaluateChain(nodes: GroqNode[], scope: Shape, context: Context): Shape
       }
       case 'Dereference':
         shape = dereference(shape, node, context, holder())
+        reportArrow(node, shape, context)
         break
       case 'DerefAccess': {
         shape = dereference(shape, node, context, holder())
+        reportArrow(node, shape, context)
         const name = node.getChild('Identifier')
         shape = name ? field(shape, name, context) : UNKNOWN
         break
@@ -615,6 +691,7 @@ function evaluateChain(nodes: GroqNode[], scope: Shape, context: Context): Shape
     }
     previous = node
   }
+  reportEverything()
   return shape
 }
 
@@ -672,17 +749,161 @@ function evaluate(nodes: GroqNode[], scope: Shape, context: Context): Shape {
   return alone && shapes.length === 1 ? shapes[0] : UNKNOWN
 }
 
-export function checkQuerySchema(
+/**
+ * Walks the whole query, also when it does not parse: the editor's grammar recovers from errors,
+ * and what it could not read is left unchecked
+ */
+function analyzeQuery(
   tree: GroqTree,
   query: string,
   schema: QuerySchema,
+  options: QuerySchemaOptions,
 ): SchemaFinding[] {
-  if (hasSyntaxErrors(tree)) return []
-  const context: Context = {query, schema, findings: [], parents: []}
+  const context: Context = {...options, query, schema, findings: [], parents: []}
   // Function bodies read their parameter, whose shape the query does not say
   const nodes = childrenOf(tree.topNode).filter(
     (node) => node.name !== 'FunctionDef' && node.name !== ';',
   )
-  evaluate(nodes, UNKNOWN, context)
+  try {
+    evaluate(nodes, UNKNOWN, context)
+  } catch {
+    // An error node where the evaluator expects an expression: what was read so far stands
+  }
   return context.findings
 }
+
+export function checkQuerySchema(
+  tree: GroqTree,
+  query: string,
+  schema: QuerySchema,
+  options: QuerySchemaOptions = {},
+): SchemaFinding[] {
+  if (hasSyntaxErrors(tree)) return []
+  return analyzeQuery(tree, query, schema, options)
+}
+
+/**
+ * Every field name the query reads, with the value it reads it from; works on a query that does
+ * not parse, as far as the editor's grammar recovers
+ */
+export function visitQueryFields(
+  tree: GroqTree,
+  query: string,
+  schema: QuerySchema,
+  params?: Readonly<Record<string, unknown>>,
+): FieldVisit[] {
+  const visits: FieldVisit[] = []
+  analyzeQuery(tree, query, schema, {params, onField: (visit) => visits.push(visit)})
+  return visits
+}
+
+/** Every field name the query reads, and every `*`, `@`, `^` and `->` with what it stands for */
+export function inspectQuery(
+  tree: GroqTree,
+  query: string,
+  schema: QuerySchema,
+  params?: Readonly<Record<string, unknown>>,
+): {fields: FieldVisit[]; values: ValueVisit[]} {
+  const fields: FieldVisit[] = []
+  const values: ValueVisit[] = []
+  analyzeQuery(tree, query, schema, {
+    params,
+    onField: (visit) => fields.push(visit),
+    onValue: (visit) => values.push(visit),
+  })
+  return {fields, values}
+}
+
+/** A field an object of one of a shape's types can hold, with every type that declares it */
+export interface ShapeField {
+  name: string
+  type: SchemaType
+  /** The types that declare the field, an inline object by the field that holds it */
+  owners: string[]
+}
+
+/**
+ * The fields a value of this shape holds, as far as the schema knows: those of its object types
+ * (of each item of an array), or a reference's own; empty when the schema does not say
+ */
+export function fieldsOfShape(shape: Shape): ShapeField[] {
+  switch (shape.kind) {
+    case 'array':
+      return fieldsOfShape(shape.of)
+    case 'object': {
+      const fields = new Map<string, ShapeField>()
+      for (const type of shape.types) {
+        const owner = type.name === 'object' ? (shape.label ?? type.name) : type.name
+        for (const candidate of fieldsOf(type)) {
+          const existing = fields.get(candidate.name)
+          if (existing) {
+            if (!existing.owners.includes(owner)) existing.owners.push(owner)
+          } else {
+            fields.set(candidate.name, {
+              name: candidate.name,
+              type: candidate.type,
+              owners: [owner],
+            })
+          }
+        }
+      }
+      return [...fields.values()]
+    }
+    case 'unknown':
+    case 'documents':
+    case 'reference':
+    case 'value':
+      return []
+    default: {
+      const unhandled: never = shape
+      return unhandled
+    }
+  }
+}
+
+/** A value's type as the hover shows it: `author`, `array of (book | author)`, `reference → author` */
+export function describeShape(shape: Shape): string {
+  switch (shape.kind) {
+    case 'unknown':
+      return 'unknown'
+    case 'value':
+      return shape.type
+    case 'object':
+      return typeNames(shape).join(' | ')
+    case 'documents':
+      return 'document'
+    case 'reference': {
+      const targets = unique(shape.types).map((type) => type.name)
+      return targets.length > 0 ? `reference → ${targets.join(' | ')}` : 'reference'
+    }
+    case 'array': {
+      const item = describeShape(shape.of)
+      return `array of ${item.includes(' | ') ? `(${item})` : item}`
+    }
+    default: {
+      const unhandled: never = shape
+      return unhandled
+    }
+  }
+}
+
+/**
+ * The `_type` values an object of this shape can have, or none when one of its types is an
+ * inline object, whose `_type` the schema does not name
+ */
+export function typeValuesOf(shape: Shape): string[] | undefined {
+  if (shape.kind === 'array') return typeValuesOf(shape.of)
+  if (shape.kind === 'reference') return ['reference']
+  if (shape.kind !== 'object' || shape.types.some((type) => type.name === 'object')) {
+    return undefined
+  }
+  return unique(shape.types).map((type) => type.name)
+}
+
+/** Whether a value of this shape is an object (or a reference, or an array of them) */
+export function isObjectShape(shape: Shape): boolean {
+  if (shape.kind === 'array') return isObjectShape(shape.of)
+  return shape.kind === 'object' || shape.kind === 'reference'
+}
+
+export {REFERENCE_FIELDS, SYSTEM_FIELDS}

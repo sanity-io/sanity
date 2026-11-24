@@ -9,6 +9,9 @@ import {
 
 import {queryRunnerMachine, type QueryRunnerRef} from './queryRunnerMachine'
 import {
+  type VisionAiSettings,
+  type VisionEditorSettings,
+  type VisionResponseSettings,
   type VisionDialog,
   type VisionDrawer,
   type VisionHistoryDiffSettings,
@@ -43,6 +46,9 @@ export interface VisionContext {
   activeTabId: string
   settings: VisionSettings
   historyDiff: VisionHistoryDiffSettings
+  ai: VisionAiSettings
+  editor: VisionEditorSettings
+  response: VisionResponseSettings
   /** The functions library, most recently saved first */
   functions: VisionSavedFunction[]
   /** One query runner per open tab, keyed by tab id */
@@ -88,6 +94,9 @@ export type VisionEvent =
   | {type: 'tab.load'; id: string; tab: Omit<VisionTabInit, 'id'>; fetch?: FetchOnOpenSource}
   | {type: 'settings.update'; settings: Partial<VisionSettings>}
   | {type: 'historyDiff.update'; settings: Partial<VisionHistoryDiffSettings>}
+  | {type: 'ai.update'; settings: Partial<VisionAiSettings>}
+  | {type: 'editor.update'; settings: Partial<VisionEditorSettings>}
+  | {type: 'response.update'; settings: Partial<VisionResponseSettings>}
   /** Saves a function to the library, replacing the one with its id */
   | {type: 'functions.save'; fn: VisionSavedFunction}
   | {type: 'functions.remove'; id: string}
@@ -169,7 +178,7 @@ export const visionMachine = setup({
       context.restoredPanels[params.panel],
     wasParamsForm: ({context}) => context.restoredPanels.paramsView === 'form',
     wasResultView: ({context}, params: {view: VisionResultView}) =>
-      context.restoredPanels.resultView === params.view,
+      context.restoredPanels.resultViewer === params.view,
     isResultView: ({event}, params: {view: VisionResultView}) =>
       event.type === 'result.view' && event.view === params.view,
     isParamsView: ({event}, params: {view: VisionParamsView}) =>
@@ -247,6 +256,9 @@ export const visionMachine = setup({
           activeTabId: fresh.activeTabId,
           settings: fresh.settings,
           historyDiff: fresh.historyDiff,
+          ai: fresh.ai,
+          editor: fresh.editor,
+          response: fresh.response,
           functions: fresh.functions,
           runners: spawnRunners(spawn, fresh.tabs),
           fetchOnOpen: {},
@@ -264,6 +276,9 @@ export const visionMachine = setup({
     activeTabId: input.persisted.activeTabId,
     settings: input.persisted.settings,
     historyDiff: input.persisted.historyDiff,
+    ai: input.persisted.ai,
+    editor: input.persisted.editor,
+    response: input.persisted.response,
     functions: input.persisted.functions,
     runners: spawnRunners(spawn, input.persisted.tabs),
     loadRevisions: {},
@@ -362,6 +377,21 @@ export const visionMachine = setup({
         historyDiff: ({context, event}) => ({...context.historyDiff, ...event.settings}),
       }),
     },
+    'ai.update': {
+      actions: assign({
+        ai: ({context, event}) => ({...context.ai, ...event.settings}),
+      }),
+    },
+    'editor.update': {
+      actions: assign({
+        editor: ({context, event}) => ({...context.editor, ...event.settings}),
+      }),
+    },
+    'response.update': {
+      actions: assign({
+        response: ({context, event}) => ({...context.response, ...event.settings}),
+      }),
+    },
     'functions.save': {
       actions: assign({
         functions: ({context, event}) => [
@@ -380,7 +410,7 @@ export const visionMachine = setup({
         '.sidebar.collapsed',
         '.paramsPanel.expanded',
         '.paramsView.json',
-        '.resultView.tree',
+        '.resultView.json',
         '.optionsPanel.expanded',
         '.drawer.closed',
         '.dialog.closed',
@@ -451,19 +481,22 @@ export const visionMachine = setup({
           {guard: {type: 'isResultView', params: {view: 'tree'}}, target: '.tree'},
           {guard: {type: 'isResultView', params: {view: 'json'}}, target: '.json'},
           {guard: {type: 'isResultView', params: {view: 'graph'}}, target: '.graph'},
+          {guard: {type: 'isResultView', params: {view: 'documents'}}, target: '.documents'},
         ],
       },
       states: {
         restoring: {
           always: [
-            {guard: {type: 'wasResultView', params: {view: 'json'}}, target: 'json'},
+            {guard: {type: 'wasResultView', params: {view: 'tree'}}, target: 'tree'},
             {guard: {type: 'wasResultView', params: {view: 'graph'}}, target: 'graph'},
-            {target: 'tree'},
+            {guard: {type: 'wasResultView', params: {view: 'documents'}}, target: 'documents'},
+            {target: 'json'},
           ],
         },
         tree: {},
         json: {},
         graph: {},
+        documents: {},
       },
     },
     optionsPanel: {
@@ -538,9 +571,12 @@ export function selectPersistedState(snapshot: VisionSnapshot): VisionPersistedS
       params: isPanelExpanded(snapshot, 'params'),
       options: isPanelExpanded(snapshot, 'options'),
       paramsView: selectParamsView(snapshot),
-      resultView: selectResultView(snapshot),
+      resultViewer: selectResultView(snapshot),
     },
     historyDiff: snapshot.context.historyDiff,
+    ai: snapshot.context.ai,
+    editor: snapshot.context.editor,
+    response: snapshot.context.response,
     functions: snapshot.context.functions,
   }
 }
@@ -554,8 +590,9 @@ export function selectParamsView(snapshot: VisionSnapshot): VisionParamsView {
 }
 
 export function selectResultView(snapshot: VisionSnapshot): VisionResultView {
-  if (snapshot.matches({resultView: 'json'})) return 'json'
-  return snapshot.matches({resultView: 'graph'}) ? 'graph' : 'tree'
+  if (snapshot.matches({resultView: 'tree'})) return 'tree'
+  if (snapshot.matches({resultView: 'documents'})) return 'documents'
+  return snapshot.matches({resultView: 'graph'}) ? 'graph' : 'json'
 }
 
 export function isPanelExpanded(snapshot: VisionSnapshot, panel: VisionPanel): boolean {

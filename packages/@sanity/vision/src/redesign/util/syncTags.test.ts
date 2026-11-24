@@ -1,7 +1,7 @@
 import {type SyncTag} from '@sanity/client'
 import {describe, expect, it} from 'vitest'
 
-import {getLiveRefetchTags, getMatchingSyncTags, sortSyncTags} from './syncTags'
+import {getLiveRefetchTags, getMatchingSyncTags, isWildcardSyncTag, sortSyncTags} from './syncTags'
 
 describe('syncTags', () => {
   it('sorts tags alphabetically for showing them, leaving the list it got alone', () => {
@@ -38,5 +38,14 @@ describe('syncTags', () => {
     expect(getLiveRefetchTags({type: 'message', id: '1', tags: ['s1:a']}, ['s1:a'])).toEqual([
       's1:a',
     ])
+  })
+
+  it('knows the tags that cover the whole dataset, with or without the prefix', () => {
+    for (const tag of ['*', 's1:*', 'ALL', 's1:ALL', 'all', ' * ']) {
+      expect(isWildcardSyncTag(tag)).toBe(true)
+    }
+    for (const tag of ['s1:0IF5OA', '_type == "book"', '*[_type == "book"]', 's1:ALLY', '']) {
+      expect(isWildcardSyncTag(tag)).toBe(false)
+    }
   })
 })

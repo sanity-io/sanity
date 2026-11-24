@@ -32,6 +32,12 @@ const EDITOR_LABELS: GroqEditorLabels = {
   extract: 'Extract to function',
   addFromLibrary: 'Declare it',
   useSuggestion: (suggestion) => `Use ${suggestion}`,
+  fieldOf: (types) => `Field of ${types}`,
+  systemField: 'System field',
+  documentType: 'Document type',
+  operatorReference: 'Operators',
+  paramValue: 'In params',
+  paramNotSet: 'Not in params',
 }
 
 function viewOf(doc: string) {
@@ -75,10 +81,7 @@ describe('schema findings', () => {
         diagnostic.severity,
         diagnostic.actions?.map((action) => action.name),
       ]),
-    ).toEqual([
-      ['[_type == "athor"]', 'groq-lint/unlimited-query', 'warning', undefined],
-      ['"athor"', 'vision/unknown-type', 'warning', ['Use "author"']],
-    ])
+    ).toEqual([['"athor"', 'vision/unknown-type', 'warning', ['Use "author"']]])
 
     // With the type fixed, its fields are checked
     const fixed = diagnostics.find((diagnostic) => diagnostic.source === 'vision/unknown-type')
@@ -87,7 +90,6 @@ describe('schema findings', () => {
     expect(view.state.doc.toString()).toBe('*[_type == "author"]{nmae, "f": bestFriend.name}')
     const next = await groqLintSource(view)
     expect(next.map((diagnostic) => [diagnostic.source, diagnostic.actions?.[0].name])).toEqual([
-      ['groq-lint/unlimited-query', undefined],
       ['vision/unknown-field', 'Use name'],
       ['vision/not-a-reference', 'Use ->'],
     ])
@@ -121,10 +123,7 @@ describe('groqLintSource', () => {
         diagnostic.severity,
         query.slice(diagnostic.from, diagnostic.to),
       ]),
-    ).toEqual([
-      ['groq-lint/unlimited-query', 'warning', '[_type == "post" && author->name == "x"]'],
-      ['groq-lint/join-in-filter', 'error', 'author->'],
-    ])
+    ).toEqual([['groq-lint/join-in-filter', 'error', 'author->']])
   })
 
   it('reports a query that does not parse as a single error', async () => {
@@ -142,16 +141,19 @@ describe('groqLintSource', () => {
     ])
   })
 
-  it('warns about an unsliced query that is otherwise clean', async () => {
-    const query = '*[_type == "post"]{title}'
-    const diagnostics = await groqLintSource(viewOf(query))
-    expect(
-      diagnostics.map((diagnostic) => [
-        diagnostic.source,
-        query.slice(diagnostic.from, diagnostic.to),
-      ]),
-    ).toEqual([['groq-lint/unlimited-query', '[_type == "post"]']])
+  it('does not flag an unsliced query, which is what exploring a dataset starts from', async () => {
+    expect(await groqLintSource(viewOf('*[_type == "pokemon"]'))).toEqual([])
+    expect(await groqLintSource(viewOf('*[_type == "post"]{title}'))).toEqual([])
     expect(await groqLintSource(viewOf('*[_type == "post"][0...10]{title}'))).toEqual([])
+  })
+
+  it('still flags other groq-lint rules on an unsliced query', async () => {
+    const query = '*[_type == "pokemon" && trainer->name == "x"]'
+    const diagnostics = await groqLintSource(viewOf(query))
+    expect(diagnostics.map((diagnostic) => diagnostic.source)).toEqual(['groq-lint/join-in-filter'])
+    expect(
+      diagnostics.some((diagnostic) => diagnostic.source === 'groq-lint/unlimited-query'),
+    ).toBe(false)
   })
 
   it('leaves the wasm alone for a blank document, which every new tab starts as', async () => {
@@ -173,7 +175,6 @@ describe('groqLintSource', () => {
       ]),
     ).toEqual([
       ['vision/parameter-reuse', '$p'],
-      ['groq-lint/unlimited-query', '*'],
       ['vision/arity', 'count'],
     ])
     const rendered = diagnostics
@@ -207,11 +208,8 @@ describe('groqLintSource', () => {
       }),
     })
     const diagnostics = await groqLintSource(view)
-    expect(diagnostics.map((diagnostic) => diagnostic.source)).toEqual([
-      'groq-lint/unlimited-query',
-      'vision/unknown-function',
-    ])
-    const diagnostic = diagnostics[1]
+    expect(diagnostics.map((diagnostic) => diagnostic.source)).toEqual(['vision/unknown-function'])
+    const diagnostic = diagnostics[0]
 
     expect(diagnostic.source).toBe('vision/unknown-function')
     expect(diagnostic.actions?.map((action) => action.name)).toEqual(['Declare it'])

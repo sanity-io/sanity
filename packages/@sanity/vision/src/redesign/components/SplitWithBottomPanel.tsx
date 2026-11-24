@@ -1,3 +1,4 @@
+import {BoundaryElementProvider} from '@sanity/ui'
 import {
   type Dispatch,
   type ReactNode,
@@ -86,6 +87,7 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
   const setPanelState = onStateChange ?? setUncontrolled
   const bottomSize = panelState.bottomSizes[layout] ?? defaultBottomSize[layout]
   const containerRef = useRef<HTMLDivElement>(null)
+  const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
   const [fitRequest, setFitRequest] = useState(0)
 
   const selectTab = useCallback(
@@ -124,10 +126,16 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
         `[data-testid="${id}-panel"]`,
       )?.firstElementChild
       const content = container?.querySelector<HTMLElement>('[data-vision-panel-content]')
+      const toolbar = container?.querySelector<HTMLElement>('[data-vision-panel-toolbar]')
       if (!split || !(header instanceof HTMLElement) || !content) return
       const size = bottomPanelSizeToFit({
         headerHeight: header.offsetHeight,
-        contentHeight: content.offsetHeight,
+        // The divider under the header is the top border of the body around the toolbar and the
+        // scrolling content
+        contentHeight:
+          content.offsetHeight +
+          (toolbar?.offsetHeight ?? 0) +
+          (content.parentElement?.parentElement?.clientTop ?? 0),
         containerHeight: split.clientHeight,
         minMainHeight: MIN_MAIN_HEIGHT,
         handleSize: SPLIT_HANDLE_SIZE,
@@ -148,46 +156,50 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
     return () => cancelAnimationFrame(frame)
   }, [fitRequest, id, layout, setPanelState, testId])
 
+  // Tooltips, popovers and menus opened in this column stay inside it, rather than spilling over
+  // the divider into the other one
   return (
-    <Flex data-testid={testId} flexDirection="column" height="100%">
-      <Box className={styles.splitPaneContainer} ref={containerRef}>
-        <ResizableSplit
-          allowResize={!panelState.collapsed}
-          label={t('vision.split.bottom-panel')}
-          minSecondarySize={MIN_MAIN_HEIGHT}
-          minSize={PANEL_HEADER_HEIGHT}
-          onChange={(size) =>
-            setPanelState((current) => ({
-              ...current,
-              bottomSizes: {...current.bottomSizes, [layout]: size},
-            }))
-          }
-          onReset={() =>
-            setPanelState((current) => ({
-              ...current,
-              bottomSizes: {...current.bottomSizes, [layout]: undefined},
-            }))
-          }
-          primary="second"
-          size={panelState.collapsed ? PANEL_HEADER_HEIGHT : bottomSize}
-          split="horizontal"
-          testId={`${testId}-split`}
-        >
-          <Flex className={styles.paneFill}>{children}</Flex>
-          <Box className={styles.paneFill}>
-            <CollapsiblePanel
-              activeTabId={panelState.activeTabId}
-              collapsed={panelState.collapsed}
-              id={id}
-              onTabChange={selectTab}
-              onTabDoubleClick={fitOnTabDoubleClick ? requestFit : undefined}
-              onToggle={toggle}
-              tabs={tabs}
-            />
-          </Box>
-        </ResizableSplit>
-      </Box>
-      {footer}
+    <Flex data-testid={testId} flexDirection="column" height="100%" ref={setBoundaryElement}>
+      <BoundaryElementProvider element={boundaryElement}>
+        <Box className={styles.splitPaneContainer} ref={containerRef}>
+          <ResizableSplit
+            allowResize={!panelState.collapsed}
+            label={t('vision.split.bottom-panel')}
+            minSecondarySize={MIN_MAIN_HEIGHT}
+            minSize={PANEL_HEADER_HEIGHT}
+            onChange={(size) =>
+              setPanelState((current) => ({
+                ...current,
+                bottomSizes: {...current.bottomSizes, [layout]: size},
+              }))
+            }
+            onReset={() =>
+              setPanelState((current) => ({
+                ...current,
+                bottomSizes: {...current.bottomSizes, [layout]: undefined},
+              }))
+            }
+            primary="second"
+            size={panelState.collapsed ? PANEL_HEADER_HEIGHT : bottomSize}
+            split="horizontal"
+            testId={`${testId}-split`}
+          >
+            <Flex className={styles.paneFill}>{children}</Flex>
+            <Box className={styles.paneFill}>
+              <CollapsiblePanel
+                activeTabId={panelState.activeTabId}
+                collapsed={panelState.collapsed}
+                id={id}
+                onTabChange={selectTab}
+                onTabDoubleClick={fitOnTabDoubleClick ? requestFit : undefined}
+                onToggle={toggle}
+                tabs={tabs}
+              />
+            </Box>
+          </ResizableSplit>
+        </Box>
+        {footer}
+      </BoundaryElementProvider>
     </Flex>
   )
 }

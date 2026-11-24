@@ -8,12 +8,15 @@ import {uuid} from '@sanity/uuid'
 import {dequal} from 'dequal/lite'
 import {
   type ActorRefFromLogic,
+  and,
   assign,
+  enqueueActions,
   fromObservable,
   fromPromise,
   raise,
   setup,
   type SnapshotFrom,
+  stateIn,
 } from 'xstate'
 
 import {queryRequestMethod} from '../../util/queryRequestMethod'
@@ -61,13 +64,21 @@ export interface QueryRunnerContext {
   history: FetchHistoryEntry[]
   liveClient: SanityClient | undefined
   liveError: Error | undefined
+  /**
+   * What the paused subscription heard that would have refetched the query: the matched sync
+   * tags of every relevant event and the latest event's id, replayed as one refetch on resume
+   */
+  liveMissed: {matchedTags: SyncTag[]; eventId: string | undefined} | undefined
 }
 
 export type QueryRunnerEvent =
   | {type: 'fetch'; request: QueryRequest; reason: FetchReason}
   | {type: 'cancel'}
   | {type: 'clear'}
+  /** Starts the subscription, or resumes a paused one when the client is the same */
   | {type: 'live.enable'; client: SanityClient}
+  /** Keeps the subscription but stops refetching, remembering relevant events instead */
+  | {type: 'live.pause'}
   | {type: 'live.disable'}
 
 export interface QueryRunnerInput {
@@ -76,6 +87,31 @@ export interface QueryRunnerInput {
 
 function toError(value: unknown): Error {
   return value instanceof Error ? value : new Error(String(value))
+}
+
+function liveEventId(event: LiveEvent | undefined): string | undefined {
+  return event && 'id' in event && typeof event.id === 'string' ? event.id : undefined
+}
+
+/**
+ * The sync tags a live event matched, when it should refetch the tab's query: an empty list for
+ * a restart, `null` for an irrelevant event
+ */
+function relevantLiveTags(
+  context: QueryRunnerContext,
+  event: LiveEvent | undefined,
+  {paused}: {paused: boolean},
+): SyncTag[] | null {
+  if (context.request === undefined) return null
+  // A paused subscription has already connected, so a welcome means it reconnected, and changes
+  // made while it was down sent no message
+  if (paused && event?.type === 'welcome') return []
+  const matched = getLiveRefetchTags(event, context.syncTags)
+  if (matched === null) return null
+  // The tags belong to the response shown; a message matching them says nothing about a
+  // different request in flight, which would only be restarted by it. A restart (no tags)
+  // replays whatever the current request is
+  return matched.length === 0 || context.request.url === context.syncTagsUrl ? matched : null
 }
 
 function appendHistory(
@@ -115,7 +151,9 @@ function compareWithPrevious(
  * (sync tag) subscription. The `request` region owns the fetch lifecycle; a new `fetch` event
  * while one is in flight aborts it through the promise actor's signal and starts over. The `live`
  * region subscribes to the Live Content API while enabled and raises a `fetch` whenever an event
- * carries a sync tag from the last response.
+ * carries a sync tag from the last response. While paused (its tab is in the background) the
+ * subscription stays up but only remembers relevant events, and resuming refetches once if any
+ * arrived.
  */
 export const queryRunnerMachine = setup({
   types: {} as {
@@ -150,6 +188,8 @@ export const queryRunnerMachine = setup({
     storeRequest: assign({
       request: ({context, event}) => (event.type === 'fetch' ? event.request : context.request),
       reason: ({context, event}) => (event.type === 'fetch' ? event.reason : context.reason),
+      // Any fetch brings the result up to date, so the events a paused subscription heard are moot
+      liveMissed: undefined,
     }),
     markStarted: assign({
       startedAt: () => Date.now(),
@@ -177,6 +217,7 @@ export const queryRunnerMachine = setup({
         event.type === 'live.enable' ? event.client : context.liveClient,
       liveError: undefined,
     }),
+    clearLiveMissed: assign({liveMissed: undefined}),
   },
 }).createMachine({
   id: 'queryRunner',
@@ -196,6 +237,7 @@ export const queryRunnerMachine = setup({
     history: [],
     liveClient: undefined,
     liveError: undefined,
+    liveMissed: undefined,
   }),
   states: {
     request: {
@@ -312,42 +354,56 @@ export const queryRunnerMachine = setup({
       initial: 'off',
       states: {
         off: {
-          entry: assign({liveError: undefined}),
+          entry: assign({liveError: undefined, liveMissed: undefined}),
           on: {
             'live.enable': {target: 'on', actions: 'storeLiveClient'},
           },
         },
         on: {
+          initial: 'active',
           invoke: {
             src: 'liveEvents',
             input: ({context}) => ({client: context.liveClient as SanityClient}),
-            onSnapshot: {
-              guard: ({context, event}) => {
-                if (context.request === undefined) return false
-                const matched = getLiveRefetchTags(event.snapshot.context, context.syncTags)
-                if (matched === null) return false
-                // The tags belong to the response shown; a message matching them says nothing
-                // about a different request in flight, which would only be restarted by it. A
-                // restart (no tags) replays whatever the current request is
-                return matched.length === 0 || context.request.url === context.syncTagsUrl
+            onSnapshot: [
+              {
+                guard: and([
+                  stateIn({live: {on: 'active'}}),
+                  ({context, event}) =>
+                    relevantLiveTags(context, event.snapshot.context, {paused: false}) !== null,
+                ]),
+                actions: raise(({context, event}) => {
+                  const liveEvent = event.snapshot.context
+                  const eventId = liveEventId(liveEvent)
+                  return {
+                    type: 'fetch' as const,
+                    request: context.request as QueryRequest,
+                    reason: {
+                      type: 'live' as const,
+                      matchedTags: relevantLiveTags(context, liveEvent, {paused: false}) ?? [],
+                      ...(eventId === undefined ? {} : {eventId}),
+                    },
+                  }
+                }),
               },
-              actions: raise(({context, event}) => {
-                const liveEvent = event.snapshot.context
-                const eventId =
-                  liveEvent && 'id' in liveEvent && typeof liveEvent.id === 'string'
-                    ? liveEvent.id
-                    : undefined
-                return {
-                  type: 'fetch' as const,
-                  request: context.request as QueryRequest,
-                  reason: {
-                    type: 'live' as const,
-                    matchedTags: getLiveRefetchTags(liveEvent, context.syncTags) || [],
-                    ...(eventId === undefined ? {} : {eventId}),
+              {
+                guard: and([
+                  stateIn({live: {on: 'paused'}}),
+                  ({context, event}) =>
+                    relevantLiveTags(context, event.snapshot.context, {paused: true}) !== null,
+                ]),
+                actions: assign({
+                  liveMissed: ({context, event}) => {
+                    const liveEvent = event.snapshot.context
+                    const matched = relevantLiveTags(context, liveEvent, {paused: true}) ?? []
+                    const previous = context.liveMissed?.matchedTags ?? []
+                    return {
+                      matchedTags: [...new Set([...previous, ...matched])],
+                      eventId: liveEventId(liveEvent) ?? context.liveMissed?.eventId,
+                    }
                   },
-                }
-              }),
-            },
+                }),
+              },
+            ],
             onError: {
               target: 'failed',
               actions: assign({liveError: ({event}) => toError(event.error)}),
@@ -355,8 +411,37 @@ export const queryRunnerMachine = setup({
           },
           on: {
             'live.disable': {target: 'off'},
-            // A new client (for instance after switching dataset) needs a new subscription
-            'live.enable': {target: 'on', reenter: true, actions: 'storeLiveClient'},
+            'live.enable': [
+              // Back on the same subscription: resume, catching up on what it heard while paused
+              {
+                guard: ({context, event}) => event.client === context.liveClient,
+                target: '.active',
+              },
+              // A new client (for instance after switching dataset) needs a new subscription
+              {target: 'on', reenter: true, actions: ['storeLiveClient', 'clearLiveMissed']},
+            ],
+          },
+          states: {
+            active: {
+              // One refetch for everything heard while paused, and none when nothing relevant was
+              entry: enqueueActions(({context, enqueue}) => {
+                const missed = context.liveMissed
+                if (!missed || context.request === undefined) return
+                enqueue.raise({
+                  type: 'fetch',
+                  request: context.request,
+                  reason: {
+                    type: 'live',
+                    matchedTags: missed.matchedTags,
+                    ...(missed.eventId === undefined ? {} : {eventId: missed.eventId}),
+                  },
+                })
+              }),
+              on: {
+                'live.pause': {target: 'paused'},
+              },
+            },
+            paused: {},
           },
         },
         failed: {

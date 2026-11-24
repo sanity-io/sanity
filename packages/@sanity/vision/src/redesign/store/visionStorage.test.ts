@@ -141,9 +141,19 @@ describe('visionStorage', () => {
         params: true,
         options: false,
         paramsView: 'form' as const,
-        resultView: 'json' as const,
+        resultViewer: 'tree' as const,
       },
       historyDiff: {hiddenFields: ['_rev', 'meta.version']},
+      ai: {
+        enabled: true,
+        generateQuery: false,
+        editQuery: true,
+        fixLint: false,
+        generateMutations: true,
+        explainQuery: false,
+      },
+      editor: {autoFormatOnResize: false},
+      response: {resolveSyncTags: true},
       functions: [{id: 'ex::author', declaration: 'fn ex::author($ref) = $ref->{name}'}],
     }
     saveVisionState('proj', saved)
@@ -239,7 +249,7 @@ describe('visionStorage', () => {
     expect(loaded.activeTabId).toBe('dup')
   })
 
-  it('reads state saved before the panels existed as having them expanded, params as JSON, the result as a tree', () => {
+  it('reads state saved before the panels existed as having them expanded, params as JSON, the result as JSON', () => {
     const {panels: _panels, ...withoutPanels} = createInitialState(defaults)
     localStorage.setItem(getVisionStorageKey('proj'), JSON.stringify(withoutPanels))
 
@@ -247,22 +257,39 @@ describe('visionStorage', () => {
       params: true,
       options: true,
       paramsView: 'json',
-      resultView: 'tree',
+      resultViewer: 'json',
     })
 
     localStorage.setItem(
       getVisionStorageKey('proj'),
       JSON.stringify({
         ...withoutPanels,
-        panels: {params: false, paramsView: 'table', resultView: 'chart'},
+        panels: {params: false, paramsView: 'table', resultViewer: 'chart'},
       }),
     )
     expect(loadVisionState('proj', defaults).panels).toEqual({
       params: false,
       options: true,
       paramsView: 'json',
-      resultView: 'tree',
+      resultViewer: 'json',
     })
+  })
+
+  it('shows the result as JSON for state saved while the tree was the default, unless the graph was chosen', () => {
+    const state = createInitialState(defaults)
+    const load = (panels: Record<string, unknown>) => {
+      localStorage.setItem(getVisionStorageKey('proj'), JSON.stringify({...state, panels}))
+      return loadVisionState('proj', defaults).panels.resultViewer
+    }
+    // The tree was written for every session back then, chosen or not
+    expect(load({resultView: 'tree'})).toBe('json')
+    expect(load({resultView: 'json'})).toBe('json')
+    expect(load({resultView: 'graph'})).toBe('graph')
+    // Written since, every view is a choice
+    expect(load({resultViewer: 'tree'})).toBe('tree')
+    expect(load({resultViewer: 'graph'})).toBe('graph')
+    expect(load({resultViewer: 'documents'})).toBe('documents')
+    expect(load({resultViewer: 'tree', resultView: 'graph'})).toBe('tree')
   })
 
   it('hides the default fields from history diffs unless others were chosen', () => {
@@ -287,6 +314,76 @@ describe('visionStorage', () => {
       JSON.stringify({...withoutHistoryDiff, historyDiff: {hiddenFields: []}}),
     )
     expect(loadVisionState('proj', defaults).historyDiff).toEqual({hiddenFields: []})
+  })
+
+  it('keeps each AI setting on unless it was switched off', () => {
+    const {ai: _ai, ...withoutAi} = createInitialState(defaults)
+    const allOn = {
+      enabled: true,
+      generateQuery: true,
+      editQuery: true,
+      fixLint: true,
+      generateMutations: true,
+      explainQuery: true,
+    }
+    expect(createInitialState(defaults).ai).toEqual(allOn)
+
+    // State saved before the settings existed
+    localStorage.setItem(getVisionStorageKey('proj'), JSON.stringify(withoutAi))
+    expect(loadVisionState('proj', defaults).ai).toEqual(allOn)
+
+    localStorage.setItem(
+      getVisionStorageKey('proj'),
+      JSON.stringify({
+        ...withoutAi,
+        ai: {enabled: false, generateQuery: 'no', editQuery: false, explainQuery: false},
+      }),
+    )
+    expect(loadVisionState('proj', defaults).ai).toEqual({
+      enabled: false,
+      generateQuery: true,
+      editQuery: false,
+      fixLint: true,
+      generateMutations: true,
+      explainQuery: false,
+    })
+
+    localStorage.setItem(getVisionStorageKey('proj'), JSON.stringify({...withoutAi, ai: 'off'}))
+    expect(loadVisionState('proj', defaults).ai).toEqual(allOn)
+  })
+
+  it('keeps auto-formatting on resize on unless it was switched off', () => {
+    const {editor: _editor, ...withoutEditor} = createInitialState(defaults)
+    expect(createInitialState(defaults).editor).toEqual({autoFormatOnResize: true})
+
+    const load = (editor?: unknown) => {
+      localStorage.setItem(
+        getVisionStorageKey('proj'),
+        JSON.stringify(editor === undefined ? withoutEditor : {...withoutEditor, editor}),
+      )
+      return loadVisionState('proj', defaults).editor
+    }
+    expect(load()).toEqual({autoFormatOnResize: true})
+    expect(load({autoFormatOnResize: false})).toEqual({autoFormatOnResize: false})
+    expect(load({autoFormatOnResize: 'no'})).toEqual({autoFormatOnResize: true})
+    expect(load('off')).toEqual({autoFormatOnResize: true})
+  })
+
+  it('keeps sync tag lookup off unless it was switched on', () => {
+    const {response: _response, ...withoutResponse} = createInitialState(defaults)
+    expect(createInitialState(defaults).response).toEqual({resolveSyncTags: false})
+
+    const load = (response?: unknown) => {
+      localStorage.setItem(
+        getVisionStorageKey('proj'),
+        JSON.stringify(response === undefined ? withoutResponse : {...withoutResponse, response}),
+      )
+      return loadVisionState('proj', defaults).response
+    }
+    expect(load()).toEqual({resolveSyncTags: false})
+    expect(load({resolveSyncTags: true})).toEqual({resolveSyncTags: true})
+    expect(load({resolveSyncTags: 'yes'})).toEqual({resolveSyncTags: false})
+    expect(load('on')).toEqual({resolveSyncTags: false})
   })
 
   it('returns a fresh state for missing, malformed or outdated storage', () => {

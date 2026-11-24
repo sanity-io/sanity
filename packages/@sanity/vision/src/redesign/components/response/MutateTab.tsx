@@ -1,7 +1,6 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
-import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {Badge, type BadgeTone, Button, Card, Label, Stack} from '@sanity/ui'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {Suspense, useCallback, useId, useMemo, useState} from 'react'
@@ -11,6 +10,7 @@ import {Text, Box, Flex, Grid} from 'ui5'
 
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {visionLocaleNamespace} from '../../../i18n'
+import {useAiFeatures} from '../../aiFeatures'
 import {type AiCreditsClient} from '../../util/aiCredits'
 import {type GenerateMutationsClient} from '../../util/generateMutations'
 import {
@@ -34,7 +34,9 @@ import {
 import {omitFields, parseFieldPaths} from '../../util/omitFields'
 import {AgentActionsTooltip} from '../AgentActionsTooltip'
 import * as styles from '../redesign.module.css'
+import {AnimatedSparklesIcon} from '../request/AnimatedSparklesIcon'
 import {SwitchField} from '../SwitchField'
+import {useTabElementId} from '../tabs/queryTabShown'
 import {GenerateMutationsBar} from './GenerateMutationsBar'
 import {JsonEditor} from './JsonEditor'
 import {CodeDiffLoader, DiffBoundary} from './LazyCodeDiff'
@@ -328,7 +330,10 @@ export function MutateTab(props: MutateTabProps) {
   const {mutate, client, dataset, canRequest, result, hiddenFields, onApplied} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const {state} = mutate
-  const [generatorOpen, setGeneratorOpen] = useState(false)
+  const tabElementId = useTabElementId()
+  const {generateMutations: canGenerate} = useAiFeatures()
+  const [generatorState, setGeneratorOpen] = useState(false)
+  const generatorOpen = canGenerate && generatorState
 
   const input = useMemo(() => readMutations(state.text), [state.text])
   const options = useMemo(
@@ -411,14 +416,13 @@ export function MutateTab(props: MutateTabProps) {
             <JsonEditor
               actions={
                 <Flex alignItems="center" gap={1}>
-                  {!generatorOpen && (
+                  {canGenerate && !generatorOpen && (
                     <AgentActionsTooltip title={t('vision.mutate.generate.button')}>
                       <Button
                         aria-label={t('vision.mutate.generate.button')}
-                        className={styles.pressable}
                         data-testid="vision-mutate-generate"
                         fontSize={1}
-                        icon={SparklesIcon}
+                        icon={AnimatedSparklesIcon}
                         mode="bleed"
                         onClick={() => setGeneratorOpen(true)}
                         padding={2}
@@ -437,7 +441,7 @@ export function MutateTab(props: MutateTabProps) {
                         text={t('vision.mutate.add')}
                       />
                     }
-                    id="vision-mutate-add"
+                    id={tabElementId('vision-mutate-add')}
                     menu={
                       <Menu>
                         <MenuItem

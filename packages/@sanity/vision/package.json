@@ -78,7 +78,7 @@
     "@pierre/diffs": "1.6.4",
     "@rexxars/react-json-inspector": "^9.0.1",
     "@rexxars/react-split-pane": "^1.0.0",
-    "@sanity-labs/groq-wasm": "^1.2.4",
+    "@sanity-labs/groq-wasm": "^1.3.1",
     "@sanity/client": "catalog:",
     "@sanity/color": "^3.0.9",
     "@sanity/icons": "^5.4.0",
@@ -116,6 +116,7 @@
     "@tsdown/css": "catalog:",
     "@types/lodash-es": "^4.17.12",
     "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "jsdom": "catalog:",
     "lightningcss": "^1.33.0",
@@ -132,6 +133,7 @@
   },
   "peerDependencies": {
     "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "sanity": "workspace:^"
   },
   "browserslist": [

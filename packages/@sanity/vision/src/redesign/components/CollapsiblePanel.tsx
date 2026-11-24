@@ -5,11 +5,16 @@ import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../i18n'
+import {useScrolledFromTop} from '../hooks/useScrolledFromTop'
 import {cx} from '../util/cx'
 import * as motion from './CollapsiblePanel.module.css'
 import * as styles from './redesign.module.css'
+import {useTabElementId} from './tabs/queryTabShown'
 
-/** Height of the tab header, which is all that remains of a collapsed panel */
+/**
+ * Height of the tab header, which is all that remains of a collapsed panel. The tool's root sets
+ * it as `--vision-bottom-bar-height`, the height of every bar along the bottom of the tool.
+ */
 export const PANEL_HEADER_HEIGHT = 35
 
 export interface CollapsiblePanelTab {
@@ -24,6 +29,16 @@ export interface CollapsiblePanelTab {
   tone?: ButtonTone
   /** Softens `tone`, the way the releases Errors chip does */
   muted?: boolean
+  /**
+   * Stretches the content to the panel, for content that scrolls or pans inside its own box (an
+   * editor, a graph, a virtual list) rather than growing with what it shows
+   */
+  fill?: boolean
+  /**
+   * A row of controls above the content (the params' view tabs, the source map's view menu). It
+   * stays in place while the content scrolls below it.
+   */
+  toolbar?: ReactNode
   content: ReactNode
 }
 
@@ -57,8 +72,11 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
     onTabDoubleClick,
   } = props
   const {t} = useTranslation(visionLocaleNamespace)
+  const tabElementId = useTabElementId()
+  const elementId = (suffix: string) => tabElementId(`${idPrefix}-${suffix}`)
   const activeTab = tabs.find((tab) => tab.id === activeTabId) || tabs[0]
   const stripRef = useRef<HTMLDivElement>(null)
+  const {scrolled: bodyScrolled, setScroller: setBodyScroller} = useScrolledFromTop()
   // Changes when the tabs do, rather than with every new array of them
   const tabIds = tabs.map((tab) => tab.id).join(' ')
 
@@ -68,7 +86,8 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
   useEffect(() => {
     const strip = stripRef.current
     if (!strip) return undefined
-    const tabElement = (tabId: string) => document.getElementById(`${idPrefix}-${tabId}-tab`)
+    const tabElement = (tabId: string) =>
+      strip.querySelector<HTMLElement>(`[id="${tabElementId(`${idPrefix}-${tabId}-tab`)}"]`)
     const reveal = () => {
       const tab = tabElement(activeTab.id)
       if (!tab) return
@@ -84,16 +103,14 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
       if (tab) observer.observe(tab)
     }
     return () => observer.disconnect()
-  }, [activeTab.id, idPrefix, tabIds])
+  }, [activeTab.id, idPrefix, tabElementId, tabIds])
 
   return (
     <Flex data-testid={`${idPrefix}-panel`} flexDirection="column" height="100%" minHeight="0">
       <Flex
         alignItems="center"
-        borderBottom={!collapsed}
-        flexShrink={0}
+        className={styles.panelHeader}
         gap={2}
-        height={`${PANEL_HEADER_HEIGHT}px`}
         justifyContent="space-between"
         paddingX={2}
       >
@@ -101,11 +118,10 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
           <TabList gap={1}>
             {tabs.map((tab) => (
               <Tab
-                aria-controls={`${idPrefix}-${tab.id}-panel`}
-                className={motion.pressable}
+                aria-controls={elementId(`${tab.id}-panel`)}
                 fontSize={1}
                 icon={tab.icon}
-                id={`${idPrefix}-${tab.id}-tab`}
+                id={elementId(`${tab.id}-tab`)}
                 key={tab.id}
                 label={tab.label}
                 onClick={() => {
@@ -122,7 +138,6 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
                 }
                 muted={tab.muted}
                 padding={2}
-                title={onTabDoubleClick ? t('vision.panel.fit-content') : undefined}
                 tone={tab.tone}
                 // A tablist always has a selected tab; collapsing hides its panel, no more
                 selected={tab.id === activeTab.id}
@@ -131,10 +146,10 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
           </TabList>
         </Box>
         <Button
-          aria-controls={collapsed ? undefined : `${idPrefix}-${activeTab.id}-panel`}
+          aria-controls={collapsed ? undefined : elementId(`${activeTab.id}-panel`)}
           aria-expanded={!collapsed}
           aria-label={collapsed ? t('vision.panel.expand') : t('vision.panel.collapse')}
-          className={cx(motion.pressable, motion.toggle)}
+          className={motion.toggle}
           data-testid={`${idPrefix}-panel-toggle`}
           fontSize={1}
           icon={
@@ -149,18 +164,37 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
       </Flex>
       {!collapsed && (
         <TabPanel
-          aria-labelledby={`${idPrefix}-${activeTab.id}-tab`}
-          className={motion.body}
+          aria-labelledby={elementId(`${activeTab.id}-tab`)}
+          className={cx(motion.body, styles.panelBody)}
           flex={1}
-          id={`${idPrefix}-${activeTab.id}-panel`}
-          overflow="auto"
+          id={elementId(`${activeTab.id}-panel`)}
         >
-          {/*
-            Not stretched to the panel: its height is the tab's content, which fit-to-content
-            measures. A stretched child would report the panel it sits in.
-          */}
-          <div className={styles.panelContent} data-vision-panel-content="">
-            {activeTab.content}
+          {activeTab.toolbar && (
+            <div
+              className={styles.paneToolbar}
+              data-scrolled={bodyScrolled}
+              data-vision-panel-toolbar=""
+            >
+              {activeTab.toolbar}
+            </div>
+          )}
+          <div
+            className={styles.paneScroll}
+            data-fill={activeTab.fill ? '' : undefined}
+            // Each tab's content (and each of its views that fill the panel or not) starts at its top
+            key={`${activeTab.id}:${Boolean(activeTab.fill)}`}
+            ref={setBodyScroller}
+          >
+            {/*
+              Not stretched to the panel: its height is the tab's content, which fit-to-content
+              measures. A stretched child would report the panel it sits in.
+            */}
+            <div
+              className={cx(styles.panelContent, activeTab.fill && styles.panelContentFill)}
+              data-vision-panel-content=""
+            >
+              {activeTab.content}
+            </div>
           </div>
         </TabPanel>
       )}

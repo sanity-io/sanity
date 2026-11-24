@@ -43,11 +43,12 @@ function isStudioDiagnostics(value: unknown): value is StudioDiagnostics {
     return false
   }
 
-  const {listen, protocol, requestHistory, requests} = network
+  const {listen, listeners, protocol, requestHistory, requests} = network
   if (
     !isRecord(listen) ||
     !isListenDiagnostic(listen.first) ||
     !isListenDiagnostic(listen.secondWhileFirstOpen) ||
+    (listeners !== undefined && !isListenerCounts(listeners)) ||
     !isProtocolDiagnostic(protocol) ||
     !isRequestHistory(requestHistory) ||
     !Array.isArray(requests) ||
@@ -82,6 +83,10 @@ function isListenDiagnostic(value: unknown): boolean {
     isStatus(value.status) &&
     typeof value.timedOut === 'boolean'
   )
+}
+
+function isListenerCounts(value: unknown): boolean {
+  return isRecord(value) && typeof value.open === 'number' && typeof value.peak === 'number'
 }
 
 function isProtocolDiagnostic(value: unknown): boolean {

@@ -1,9 +1,7 @@
-import {DocumentSheetIcon} from '@sanity/icons/DocumentSheet'
-import {JsonIcon} from '@sanity/icons/Json'
-import {Badge, Card, Label, Tab, TabList} from '@sanity/ui'
+import {Badge, Card, Label} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
-import {type ReactNode, useCallback, useMemo} from 'react'
+import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
@@ -16,6 +14,7 @@ import {canEncodeCsv, getCsvBlobUrl, getJsonBlobUrl} from '../../../util/getBlob
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {useQueryExplain} from '../../hooks/useQueryExplain'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
+import {useScrolledFromTop} from '../../hooks/useScrolledFromTop'
 import {type QueryRunnerRef, selectRequestStatus} from '../../store/queryRunnerMachine'
 import {
   type QueryRequest,
@@ -25,25 +24,29 @@ import {
 } from '../../store/types'
 import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectOpenTabDrawer, selectResultView} from '../../store/visionMachine'
+import {cx} from '../../util/cx'
+import {parseDocumentList} from '../../util/documentListResult'
 import {haveSameQuery} from '../../util/queryRequest'
-import {ActionRail} from '../ActionRail'
+import {fetchSyncTagSourceMap} from '../../util/syncTagLookup'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
+import {CopyButton} from '../CopyButton'
+import {useResponseBottomPanel} from '../queryTabLayout'
 import * as styles from '../redesign.module.css'
 import {usePerspectiveOptionName} from '../request/OptionFields'
 import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
 import {TabDrawerPortal} from '../TabDrawerPortal'
-import {CopyResultButton} from './CopyResultButton'
+import {useTabElementId} from '../tabs/queryTabShown'
 import {DeltaTab, useDeltaPanel} from './DeltaTab'
-import {DownloadButton} from './DownloadButton'
+import {DocumentListView} from './documentList/DocumentListView'
 import {ExplainTab} from './ExplainTab'
 import {HistoryTab} from './HistoryTab'
 import {MutateTab, useMutatePanel} from './MutateTab'
-import {NetworkTab} from './NetworkTab'
 import {ResponseMetaTab} from './ResponseMetaTab'
 import {ResultActionsMenu} from './ResultActionsMenu'
 import {ResultGraph} from './ResultGraph'
 import {ResultJson} from './ResultJson'
-import {SourceMapTab} from './SourceMapTab'
+import {type ResultViewOption, ResultViewMenu} from './ResultViewMenu'
+import {SourceMapTab, type SourceMapView} from './SourceMapTab'
 
 const DEFAULT_BOTTOM_PANEL_SIZE = {columns: 220, stacked: 180, mobile: 160}
 
@@ -60,7 +63,10 @@ export interface ResponsePanelProps {
 export function ResponsePanel(props: ResponsePanelProps) {
   const {tab, runnerRef, resolved, request, onMutationsApplied} = props
   const {t} = useTranslation(visionLocaleNamespace)
+  const tabElementId = useTabElementId()
+  const resultContentId = tabElementId('vision-result-content')
   const toast = useToast()
+  const {state: panelState, setState: setPanelState} = useResponseBottomPanel()
 
   const status = useSelector(runnerRef, selectRequestStatus)
   const result = useSelector(runnerRef, (snapshot) => snapshot.context.result)
@@ -83,7 +89,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
   const hiddenDiffFields = useVisionSelector(
     (snapshot) => snapshot.context.historyDiff.hiddenFields,
   )
-  const isLive = useSelector(runnerRef, (snapshot) => snapshot.matches({live: 'on'}))
 
   // A response stays on screen while a newer fetch is in flight, and its actions stay with it;
   // a failed fetch or a cleared tab drops `meta` together with the result
@@ -112,20 +117,80 @@ export function ResponsePanel(props: ResponsePanelProps) {
     [t, toast],
   )
 
+  const resolveSyncTags = useVisionSelector((snapshot) => snapshot.context.response.resolveSyncTags)
+  // Looked up with the client the shown result came from: its tags were computed for its dataset,
+  // which the tab's options may already have moved away from
+  const resultSourceMap = meta?.resultSourceMap
+  const syncTagLookup = useMemo(() => {
+    if (!resolveSyncTags || !settledRequest) return undefined
+    const {client, query, params} = settledRequest
+    return {
+      client,
+      result,
+      resultSourceMap,
+      // A result that dereferences does not show the documents it read; the source map does
+      loadSourceMap: (signal: AbortSignal | undefined) =>
+        fetchSyncTagSourceMap(client, query, params, signal),
+    }
+  }, [resolveSyncTags, result, resultSourceMap, settledRequest])
   const queryExplain = useQueryExplain(request)
   const perspectiveName = usePerspectiveOptionName(resolved.tabPerspective)
   const delta = useDeltaPanel()
   const mutate = useMutatePanel()
   const actorRef = useVisionActor()
-  const resultView = useVisionSelector(selectResultView)
-  const setResultView = useCallback(
-    (view: VisionResultView) => actorRef.send({type: 'result.view', view}),
-    [actorRef],
+  // The last view picked in any tab, JSON until one is. The result's shape never picks one.
+  const storedResultView = useVisionSelector(selectResultView)
+  const parsedDocuments = useMemo(
+    () => (hasResult && storedResultView === 'documents' ? parseDocumentList(result) : undefined),
+    [hasResult, result, storedResultView],
   )
+  const settledQuery = settledRequest?.query ?? ''
+  // Documents picked for this query shows its guidance when the result is not a document list.
+  // Otherwise a remembered Documents shows such a result as JSON and stays remembered.
+  const [documentsPickedFor, setDocumentsPickedFor] = useState<string | undefined>(undefined)
+  const resultView =
+    parsedDocuments?.ok === false && documentsPickedFor !== settledQuery ? 'json' : storedResultView
+  const setResultView = useCallback(
+    (view: VisionResultView) => {
+      setDocumentsPickedFor(view === 'documents' ? settledQuery : undefined)
+      actorRef.send({type: 'result.view', view})
+    },
+    [actorRef, settledQuery],
+  )
+  // The source map's view is the panel's own, and starts on the tree it always showed
+  const [sourceMapView, setSourceMapView] = useState<SourceMapView>('tree')
+  const sourceMapViews = useMemo(
+    (): ResultViewOption<SourceMapView>[] => [
+      {id: 'json', label: t('vision.result.view.json')},
+      {id: 'tree', label: t('vision.result.view.tree')},
+      {id: 'graph', label: t('vision.result.view.graph')},
+      {id: 'documents', label: t('vision.result.view.documents')},
+    ],
+    [t],
+  )
+  const sourceMapContentId = tabElementId('vision-source-map-content')
+  const hasSourceMap = meta?.resultSourceMap !== undefined
+  const resultViews = useMemo((): ResultViewOption<VisionResultView>[] => {
+    const views: ResultViewOption<VisionResultView>[] = [
+      {id: 'json', label: t('vision.result.view.json')},
+      {id: 'tree', label: t('vision.result.view.tree')},
+      {id: 'graph', label: t('vision.result.view.graph')},
+    ]
+    // Documents is a choice whenever a result is showing, including one the list cannot open
+    if (hasResult) views.push({id: 'documents', label: t('vision.result.view.documents')})
+    return views
+  }, [hasResult, t])
+  const resultFills =
+    hasResult &&
+    ((resultView === 'documents' && parsedDocuments !== undefined) ||
+      resultView === 'json' ||
+      resultView === 'graph')
+  const {scrolled: resultScrolled, setScroller: setResultScroller} = useScrolledFromTop()
   const copyToClipboard = useCopyToClipboard()
+  // The Copy button confirms the copy itself, so no toast
   const copyResult = useCallback(
-    () => copyToClipboard(JSON.stringify(result, null, 2), t('vision.result.copied')),
-    [copyToClipboard, result, t],
+    () => copyToClipboard(JSON.stringify(result, null, 2)),
+    [copyToClipboard, result],
   )
   // Text is copied as it is (an ID, a slug) and everything else as indented JSON
   const copyValue = useMemo(
@@ -147,12 +212,15 @@ export function ResponsePanel(props: ResponsePanelProps) {
       {
         id: 'response',
         label: t('vision.panel.response'),
-        content: <ResponseMetaTab meta={meta} url={url} />,
-      },
-      {
-        id: 'network',
-        label: t('vision.panel.network'),
-        content: <NetworkTab meta={meta} perspectiveName={perspectiveName} resolved={resolved} />,
+        content: (
+          <ResponseMetaTab
+            meta={meta}
+            perspectiveName={perspectiveName}
+            resolved={resolved}
+            syncTagLookup={syncTagLookup}
+            url={url}
+          />
+        ),
       },
       {
         id: 'history',
@@ -184,10 +252,35 @@ export function ResponsePanel(props: ResponsePanelProps) {
       {
         id: 'source-map',
         label: t('vision.panel.source-map'),
-        content: <SourceMapTab dataset={resultDataset} meta={meta} />,
+        fill: hasSourceMap && sourceMapView !== 'tree',
+        // Picks the view, above it; there is nothing to pick while there is no source map
+        toolbar: hasSourceMap ? (
+          <Flex alignItems="center" data-testid="vision-source-map-toolbar" padding={2}>
+            <ResultViewMenu
+              controls={sourceMapContentId}
+              id={tabElementId('vision-source-map-view-menu')}
+              onChange={setSourceMapView}
+              placement="bottom-start"
+              testId="vision-source-map-view"
+              value={sourceMapView}
+              views={sourceMapViews}
+            />
+          </Flex>
+        ) : undefined,
+        content: (
+          <SourceMapTab
+            copy={copyValue}
+            dataset={resultDataset}
+            id={sourceMapContentId}
+            meta={meta}
+            view={sourceMapView}
+          />
+        ),
       },
     ],
     [
+      copyValue,
+      hasSourceMap,
       hiddenDiffFields,
       history,
       meta,
@@ -196,7 +289,12 @@ export function ResponsePanel(props: ResponsePanelProps) {
       request,
       resolved,
       resultDataset,
+      sourceMapContentId,
+      sourceMapView,
+      sourceMapViews,
+      syncTagLookup,
       t,
+      tabElementId,
       url,
     ],
   )
@@ -232,37 +330,9 @@ export function ResponsePanel(props: ResponsePanelProps) {
       <SplitWithBottomPanel
         defaultBottomSize={DEFAULT_BOTTOM_PANEL_SIZE}
         fitOnTabDoubleClick
-        footer={
-          <ActionRail testId="vision-result-actions">
-            <DownloadButton
-              download="query-result.json"
-              getBlobUrl={hasResult ? getJsonUrl : undefined}
-              icon={JsonIcon}
-              label={t('vision.result.export-json')}
-              testId="vision-export-json"
-            />
-            <DownloadButton
-              download="query-result.csv"
-              getBlobUrl={canExportCsv ? getCsvUrl : undefined}
-              icon={DocumentSheetIcon}
-              label={t('vision.result.export-csv')}
-              onUnavailable={reportCsvUnavailable}
-              testId="vision-export-csv"
-              tooltip={
-                hasResult && !canExportCsv
-                  ? t('result.save-result-as-csv.not-csv-encodable')
-                  : undefined
-              }
-            />
-            <ResultActionsMenu
-              hasResult={hasResult}
-              result={result}
-              resultIsCurrent={resultIsCurrent}
-              tab={tab}
-            />
-          </ActionRail>
-        }
         id="vision-response"
+        onStateChange={setPanelState}
+        state={panelState}
         tabs={panelTabs}
         testId="vision-response-panel"
       >
@@ -273,97 +343,100 @@ export function ResponsePanel(props: ResponsePanelProps) {
           data-testid="vision-result"
           tone={status === 'failed' ? 'critical' : 'default'}
         >
-          <Box className={styles.resultLabel}>
-            <Flex alignItems="center" gap={2}>
-              <Label muted size={1}>
-                {t('result.label')}
-              </Label>
-              {isLive && (
-                <Badge className={styles.resultEnter} fontSize={0} tone="positive">
-                  {t('vision.live.active')}
-                </Badge>
-              )}
-              <Box flexBasis="0%" flexGrow={1} />
-              {hasResult && (
-                <Flex alignItems="center" className={styles.labelActions} gap={1}>
-                  <TabList aria-label={t('vision.result.view.label')} gap={1}>
-                    <Tab
-                      aria-controls="vision-result-content"
-                      fontSize={1}
-                      id="vision-result-view-tree"
-                      label={t('vision.result.view.tree')}
-                      onClick={() => setResultView('tree')}
-                      padding={2}
-                      selected={resultView === 'tree'}
-                    />
-                    <Tab
-                      aria-controls="vision-result-content"
-                      fontSize={1}
-                      id="vision-result-view-json"
-                      label={t('vision.result.view.json')}
-                      onClick={() => setResultView('json')}
-                      padding={2}
-                      selected={resultView === 'json'}
-                    />
-                    <Tab
-                      aria-controls="vision-result-content"
-                      fontSize={1}
-                      id="vision-result-view-graph"
-                      label={t('vision.result.view.graph')}
-                      onClick={() => setResultView('graph')}
-                      padding={2}
-                      selected={resultView === 'graph'}
-                    />
-                  </TabList>
-                  <CopyResultButton label={t('vision.result.copy')} onCopy={copyResult} />
-                </Flex>
-              )}
+          <div
+            className={cx(styles.paneToolbar, styles.paneToolbarMain)}
+            data-scrolled={resultScrolled}
+            data-testid="vision-result-toolbar"
+          >
+            <Label className={styles.paneToolbarLabel} muted size={1}>
+              {t('result.label')}
+            </Label>
+            <Flex alignItems="center" data-testid="vision-result-actions" gap={1}>
+              {/* First: the row is anchored on the right, so "Copied" grows to the left */}
+              <CopyButton disabled={!hasResult} onCopy={copyResult} testId="vision-copy-result" />
+              <ResultViewMenu
+                controls={resultContentId}
+                id={tabElementId('vision-result-view-menu')}
+                onChange={setResultView}
+                value={resultView}
+                views={resultViews}
+              />
+              <ResultActionsMenu
+                csvUnavailableHint={
+                  hasResult && !canExportCsv
+                    ? t('result.save-result-as-csv.not-csv-encodable')
+                    : undefined
+                }
+                getCsvUrl={canExportCsv ? getCsvUrl : undefined}
+                getJsonUrl={hasResult ? getJsonUrl : undefined}
+                hasResult={hasResult}
+                onCsvUnavailable={reportCsvUnavailable}
+                result={result}
+                resultIsCurrent={resultIsCurrent}
+                tab={tab}
+              />
             </Flex>
-          </Box>
-          {hasResult && resultView === 'json' ? (
-            <ResultJson className={styles.resultView} id="vision-result-content" value={result} />
-          ) : hasResult && resultView === 'graph' ? (
-            <ResultGraph
-              className={styles.resultView}
-              copy={copyValue}
-              id="vision-result-content"
-              value={result}
-            />
-          ) : (
-            <Box id="vision-result-content" padding={3} paddingTop={5}>
-              {status === 'fetching' && (
-                <Box className={styles.resultSpinner} marginTop={3}>
-                  <DelayedSpinner />
-                </Box>
-              )}
-              {status === 'failed' && error && (
-                <div className={styles.resultEnter}>
-                  <QueryErrorDialog
-                    apiVersion={failedConfig?.apiVersion ?? resolved.apiVersion}
-                    error={error}
-                    perspective={failedConfig ? failedConfig.perspective : resolved.perspective}
-                    variant={
-                      failedConfig
-                        ? typeof failedConfig.variant === 'string'
-                          ? failedConfig.variant
-                          : undefined
-                        : resolved.variant
-                    }
-                  />
-                </div>
-              )}
-              {hasResult && resultView === 'tree' && (
-                <div className={styles.resultView}>
-                  <ResultView copy={copyValue} data={result} datasetName={resultDataset} />
-                </div>
-              )}
-              {status === 'idle' && (
-                <Text muted size={1} as="div" trim={true}>
-                  {t('vision.result.empty')}
-                </Text>
-              )}
-            </Box>
-          )}
+          </div>
+          <div
+            className={styles.paneScroll}
+            // JSON, Graph and Documents scroll or pan inside their own box
+            data-fill={resultFills ? '' : undefined}
+            // Each view starts at its top
+            key={resultFills ? resultView : 'scroll'}
+            ref={setResultScroller}
+          >
+            {hasResult && parsedDocuments && resultView === 'documents' ? (
+              <DocumentListView
+                className={styles.resultView}
+                datasetName={resultDataset}
+                id={resultContentId}
+                parsed={parsedDocuments}
+              />
+            ) : hasResult && resultView === 'json' ? (
+              <ResultJson className={styles.resultView} id={resultContentId} value={result} />
+            ) : hasResult && resultView === 'graph' ? (
+              <ResultGraph
+                className={styles.resultView}
+                copy={copyValue}
+                id={resultContentId}
+                value={result}
+              />
+            ) : (
+              <Box id={resultContentId} padding={3}>
+                {status === 'fetching' && (
+                  <Box className={styles.resultSpinner} marginTop={3}>
+                    <DelayedSpinner />
+                  </Box>
+                )}
+                {status === 'failed' && error && (
+                  <div className={styles.resultEnter}>
+                    <QueryErrorDialog
+                      apiVersion={failedConfig?.apiVersion ?? resolved.apiVersion}
+                      error={error}
+                      perspective={failedConfig ? failedConfig.perspective : resolved.perspective}
+                      variant={
+                        failedConfig
+                          ? typeof failedConfig.variant === 'string'
+                            ? failedConfig.variant
+                            : undefined
+                          : resolved.variant
+                      }
+                    />
+                  </div>
+                )}
+                {hasResult && resultView === 'tree' && (
+                  <div className={styles.resultView}>
+                    <ResultView copy={copyValue} data={result} datasetName={resultDataset} />
+                  </div>
+                )}
+                {status === 'idle' && (
+                  <Text muted size={1} as="div" trim={true}>
+                    {t('vision.result.empty')}
+                  </Text>
+                )}
+              </Box>
+            )}
+          </div>
         </Card>
       </SplitWithBottomPanel>
     </>

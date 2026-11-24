@@ -184,6 +184,32 @@ describe('checkQuerySchema', () => {
     ).toEqual(['nope'])
   })
 
+  it('narrows `_type` compared to a parameter by its value in the params', () => {
+    const withParams = (query: string, params: Record<string, unknown>) =>
+      checkQuerySchema(parseGroq(query), query, schema, {params})
+    const slices = (query: string, params: Record<string, unknown>) =>
+      withParams(query, params).map((finding) => query.slice(finding.from, finding.to))
+
+    expect(slices('*[_type == $type]{name, nmae}', {type: 'author'})).toEqual(['nmae'])
+    expect(slices('*[$type == _type && nmae == "x"]', {type: 'author'})).toEqual(['nmae'])
+    expect(slices('*[_type in $types]{title, name, nope}', {types: ['author', 'book']})).toEqual([
+      'nope',
+    ])
+    expect(slices('*[_type in [$a, "book"]]{name, nope}', {a: 'author'})).toEqual(['nope'])
+    // A parameter without a usable value narrows nothing
+    expect(slices('*[_type == $type]{nope}', {type: 42})).toEqual([])
+    expect(slices('*[_type in $types]{nope}', {types: 'author'})).toEqual([])
+
+    // A value the schema has no type for is reported on the parameter, without a quick fix
+    const [finding] = withParams('*[_type == $type]{name}', {type: 'athor'})
+    expect(finding).toMatchObject({
+      rule: 'unknown-type',
+      message:
+        '`$type` is `"athor"`, but the schema has no document type named `athor`. Did you mean `author`?',
+    })
+    expect(finding.suggestion).toBeUndefined()
+  })
+
   it('leaves alone what the schema cannot tell', () => {
     // No type filter, a parameter, system fields, spreads, slices, function bodies, syntax errors
     expect(flagged('*[nmae == "x"]{whatever}')).toEqual([])

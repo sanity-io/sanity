@@ -53,6 +53,7 @@ import {formBuilderReproTool} from './plugins/form-builder-repro/plugin'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
 import {wave} from './plugins/input/wave-plugin'
 import {languageFilter} from './plugins/language-filter/plugin'
+import {listenerFloodTool} from './plugins/listener-flood/plugin'
 import {presenceDebug} from './plugins/presence-debug/plugin'
 import {routerDebugTool} from './plugins/router-debug/plugin'
 import {styleOutline} from './plugins/style-outline/plugin'
@@ -276,6 +277,7 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       }),
       themerTool(),
       routerDebugTool(),
+      listenerFloodTool(),
       // Opt-in (Vercel test-studio). Must stay this exact member expression.
       ...(process.env.SANITY_STUDIO_STYLE_OUTLINE === 'true' ? [styleOutline()] : []),
       formBuilderReproTool(),
@@ -929,14 +931,17 @@ export default defineConfig([
     title: 'Pokédex',
     subtitle: 'Pokémon, types and abilities from PokéAPI',
     projectId: 'ppsg7ml5',
-    dataset: 'test',
+    dataset: 'pokedex',
     ...envConfig.production,
     auth: sanitySandboxAuth,
     basePath: '/pokemon',
     icon: PokeballIcon,
-    // Shares the `test` dataset, but only knows its own document types (see `pokemon/README.md`)
     schema: {types: pokemonSchemaTypes},
-    plugins: [structureTool({icon: PokeballIcon, structure: pokemonStructure}), visionTool()],
+    plugins: [
+      structureTool({icon: PokeballIcon, structure: pokemonStructure}),
+      visionTool(),
+      themerTool(),
+    ],
     releases: {enabled: false},
     scheduledDrafts: {enabled: false},
     scheduledPublishing: {enabled: false},

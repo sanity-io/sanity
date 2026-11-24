@@ -6,12 +6,16 @@ import {getStorage, VISION_STORAGE_KEY_PREFIX} from '../../util/localStorage'
 import {prefixApiVersion} from '../../util/prefixApiVersion'
 import {validateApiVersion} from '../../util/validateApiVersion'
 import {
+  type VisionAiSettings,
   type VisionDatasetMode,
   type VisionDrawer,
+  type VisionEditorSettings,
+  type VisionResponseSettings,
   type VisionHistoryDiffSettings,
   type VisionPanelsState,
   type VisionPersistedState,
   type VisionPerspective,
+  type VisionResultView,
   type VisionSavedFunction,
   type VisionSettings,
   type VisionSidebarState,
@@ -29,11 +33,30 @@ const DEFAULT_PANELS: VisionPanelsState = {
   params: true,
   options: true,
   paramsView: 'json',
-  resultView: 'tree',
+  resultViewer: 'json',
 }
 
 /** Fields that change with every revision, so a diff of them says nothing about the content */
 export const DEFAULT_HIDDEN_DIFF_FIELDS = ['_rev', '_updatedAt', '_system.base.rev']
+
+/** Every AI feature stays on until the user switches it off */
+const DEFAULT_AI_SETTINGS: VisionAiSettings = {
+  enabled: true,
+  generateQuery: true,
+  editQuery: true,
+  fixLint: true,
+  generateMutations: true,
+  explainQuery: true,
+}
+
+const DEFAULT_EDITOR_SETTINGS: VisionEditorSettings = {
+  autoFormatOnResize: true,
+}
+
+/** Looking up sync tags sends queries of its own, so it waits until it is switched on */
+const DEFAULT_RESPONSE_SETTINGS: VisionResponseSettings = {
+  resolveSyncTags: false,
+}
 
 export interface VisionStorageDefaults {
   datasets: string[]
@@ -130,6 +153,9 @@ export function createInitialState(defaults: VisionStorageDefaults): VisionPersi
     sidebar: {expanded: false, drawer: null},
     panels: {...DEFAULT_PANELS},
     historyDiff: {hiddenFields: [...DEFAULT_HIDDEN_DIFF_FIELDS]},
+    ai: {...DEFAULT_AI_SETTINGS},
+    editor: {...DEFAULT_EDITOR_SETTINGS},
+    response: {...DEFAULT_RESPONSE_SETTINGS},
     functions: [],
   }
 }
@@ -227,7 +253,7 @@ function sanitizeSidebar(value: unknown): VisionSidebarState {
 
 /**
  * A panel stays expanded unless it was explicitly collapsed, the params show as JSON unless the
- * form was chosen, and the result as a tree unless JSON was; state saved before any of them
+ * form was chosen, and the result as JSON unless another view was; state saved before any of them
  * existed reads that way
  */
 function sanitizePanels(value: unknown): VisionPanelsState {
@@ -236,9 +262,21 @@ function sanitizePanels(value: unknown): VisionPanelsState {
     params: panels.params !== false,
     options: panels.options !== false,
     paramsView: panels.paramsView === 'form' ? 'form' : 'json',
-    resultView:
-      panels.resultView === 'json' || panels.resultView === 'graph' ? panels.resultView : 'tree',
+    resultViewer: sanitizeResultViewer(panels),
   }
+}
+
+/**
+ * State saved before JSON became the default kept the view as `resultView`, written whether or
+ * not it was chosen: its `tree` was the default then, so only `graph` reads as a choice
+ */
+function sanitizeResultViewer(panels: Record<string, unknown>): VisionResultView {
+  if (!('resultViewer' in panels)) return panels.resultView === 'graph' ? 'graph' : 'json'
+  return panels.resultViewer === 'tree' ||
+    panels.resultViewer === 'graph' ||
+    panels.resultViewer === 'documents'
+    ? panels.resultViewer
+    : 'json'
 }
 
 /** Unique, trimmed paths; state saved before the setting existed hides the default fields */
@@ -254,6 +292,31 @@ function sanitizeHistoryDiff(value: unknown): VisionHistoryDiffSettings {
       ),
     ],
   }
+}
+
+/** A setting stays on unless it was switched off; state saved before the settings existed has all on */
+function sanitizeAiSettings(value: unknown): VisionAiSettings {
+  const ai = isPlainObject(value) ? value : {}
+  return {
+    enabled: ai.enabled !== false,
+    generateQuery: ai.generateQuery !== false,
+    editQuery: ai.editQuery !== false,
+    fixLint: ai.fixLint !== false,
+    generateMutations: ai.generateMutations !== false,
+    explainQuery: ai.explainQuery !== false,
+  }
+}
+
+/** A setting stays on unless it was switched off; state saved before the settings existed has all on */
+function sanitizeEditorSettings(value: unknown): VisionEditorSettings {
+  const editor = isPlainObject(value) ? value : {}
+  return {autoFormatOnResize: editor.autoFormatOnResize !== false}
+}
+
+/** A setting stays off unless it was switched on; state saved before the settings existed has all off */
+function sanitizeResponseSettings(value: unknown): VisionResponseSettings {
+  const response = isPlainObject(value) ? value : {}
+  return {resolveSyncTags: response.resolveSyncTags === true}
 }
 
 /** Saved functions with an id and a declaration, the first of each id; state saved before had none */
@@ -315,9 +378,12 @@ export function loadVisionState(
   const sidebar = sanitizeSidebar(stored.sidebar)
   const panels = sanitizePanels(stored.panels)
   const historyDiff = sanitizeHistoryDiff(stored.historyDiff)
+  const ai = sanitizeAiSettings(stored.ai)
+  const editor = sanitizeEditorSettings(stored.editor)
+  const response = sanitizeResponseSettings(stored.response)
   const functions = sanitizeFunctions(stored.functions)
   if (tabs.length === 0) {
-    return {...initial, settings, sidebar, panels, historyDiff, functions}
+    return {...initial, settings, sidebar, panels, historyDiff, ai, editor, response, functions}
   }
 
   const activeTabId =
@@ -333,6 +399,9 @@ export function loadVisionState(
     sidebar,
     panels,
     historyDiff,
+    ai,
+    editor,
+    response,
     functions,
   }
 }

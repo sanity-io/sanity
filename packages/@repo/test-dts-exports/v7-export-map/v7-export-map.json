@@ -493,6 +493,8 @@
     "withReleaseReferences": "value"
   },
   "@sanity/vision": {
+    "VisionAiConfig": "type",
+    "VisionAiFeatures": "type",
     "VisionLocaleResourceKeys": "type",
     "VisionToolConfig": "type",
     "visionTool": "value"

@@ -290,7 +290,7 @@ describe('visionMachine', () => {
   it('restores and toggles the params and options panels independently', () => {
     const harness = createHarness({
       ...createInitialState(defaults),
-      panels: {params: true, options: false, paramsView: 'json', resultView: 'tree'},
+      panels: {params: true, options: false, paramsView: 'json', resultViewer: 'tree'},
     })
 
     expect(isPanelExpanded(harness.snapshot(), 'params')).toBe(true)
@@ -309,7 +309,7 @@ describe('visionMachine', () => {
   it('restores, switches and persists how the params are edited', () => {
     const harness = createHarness({
       ...createInitialState(defaults),
-      panels: {params: true, options: true, paramsView: 'form', resultView: 'tree'},
+      panels: {params: true, options: true, paramsView: 'form', resultViewer: 'tree'},
     })
     expect(selectParamsView(harness.snapshot())).toBe('form')
 
@@ -325,30 +325,51 @@ describe('visionMachine', () => {
     expect(selectParamsView(harness.snapshot())).toBe('json')
   })
 
+  it('shows the result as JSON in a fresh session', () => {
+    const harness = createHarness()
+    expect(selectResultView(harness.snapshot())).toBe('json')
+    expect(selectPersistedState(harness.snapshot()).panels.resultViewer).toBe('json')
+
+    harness.actor.send({type: 'tab.add'})
+    expect(selectResultView(harness.snapshot())).toBe('json')
+  })
+
   it('restores, switches and persists how the result shows', () => {
     const harness = createHarness({
       ...createInitialState(defaults),
-      panels: {params: true, options: true, paramsView: 'json', resultView: 'json'},
+      panels: {params: true, options: true, paramsView: 'json', resultViewer: 'tree'},
     })
-    expect(selectResultView(harness.snapshot())).toBe('json')
+    expect(selectResultView(harness.snapshot())).toBe('tree')
 
     harness.actor.send({type: 'result.view', view: 'tree'})
     expect(selectResultView(harness.snapshot())).toBe('tree')
-    expect(selectPersistedState(harness.snapshot()).panels.resultView).toBe('tree')
+    expect(selectPersistedState(harness.snapshot()).panels.resultViewer).toBe('tree')
     harness.actor.send({type: 'result.view', view: 'json'})
-    expect(selectPersistedState(harness.snapshot()).panels.resultView).toBe('json')
+    expect(selectPersistedState(harness.snapshot()).panels.resultViewer).toBe('json')
     harness.actor.send({type: 'result.view', view: 'graph'})
     expect(selectResultView(harness.snapshot())).toBe('graph')
-    expect(selectPersistedState(harness.snapshot()).panels.resultView).toBe('graph')
+    expect(selectPersistedState(harness.snapshot()).panels.resultViewer).toBe('graph')
+    harness.actor.send({type: 'result.view', view: 'documents'})
+    expect(selectResultView(harness.snapshot())).toBe('documents')
+    expect(selectPersistedState(harness.snapshot()).panels.resultViewer).toBe('documents')
+    // A new tab opens on the remembered view
+    harness.actor.send({type: 'tab.add'})
+    expect(selectResultView(harness.snapshot())).toBe('documents')
 
     harness.actor.send({type: 'storage.clear'})
-    expect(selectResultView(harness.snapshot())).toBe('tree')
+    expect(selectResultView(harness.snapshot())).toBe('json')
 
     const restored = createHarness({
       ...createInitialState(defaults),
-      panels: {params: true, options: true, paramsView: 'json', resultView: 'graph'},
+      panels: {params: true, options: true, paramsView: 'json', resultViewer: 'graph'},
     })
     expect(selectResultView(restored.snapshot())).toBe('graph')
+
+    const restoredDocuments = createHarness({
+      ...createInitialState(defaults),
+      panels: {params: true, options: true, paramsView: 'json', resultViewer: 'documents'},
+    })
+    expect(selectResultView(restoredDocuments.snapshot())).toBe('documents')
   })
 
   it('updates, persists and resets the fields hidden from history diffs', () => {
@@ -381,9 +402,61 @@ describe('visionMachine', () => {
       activeTabId: harness.snapshot().context.activeTabId,
       settings: harness.snapshot().context.settings,
       sidebar: {expanded: true, drawer: 'saved'},
-      panels: {params: true, options: false, paramsView: 'json', resultView: 'tree'},
+      panels: {params: true, options: false, paramsView: 'json', resultViewer: 'json'},
       historyDiff: {hiddenFields: ['_rev', '_updatedAt', '_system.base.rev']},
+      ai: {
+        enabled: true,
+        generateQuery: true,
+        editQuery: true,
+        fixLint: true,
+        generateMutations: true,
+        explainQuery: true,
+      },
+      editor: {autoFormatOnResize: true},
+      response: {resolveSyncTags: false},
       functions: [],
+    })
+  })
+
+  it('updates the response settings, persists them, and switches them back off when storage is cleared', () => {
+    const harness = createHarness()
+    harness.actor.send({type: 'response.update', settings: {resolveSyncTags: true}})
+    expect(selectPersistedState(harness.snapshot()).response).toEqual({resolveSyncTags: true})
+
+    harness.actor.send({type: 'storage.clear'})
+    expect(harness.snapshot().context.response).toEqual({resolveSyncTags: false})
+  })
+
+  it('updates the editor settings, persists them, and turns them back on when storage is cleared', () => {
+    const harness = createHarness()
+    harness.actor.send({type: 'editor.update', settings: {autoFormatOnResize: false}})
+    expect(selectPersistedState(harness.snapshot()).editor).toEqual({autoFormatOnResize: false})
+
+    harness.actor.send({type: 'storage.clear'})
+    expect(harness.snapshot().context.editor).toEqual({autoFormatOnResize: true})
+  })
+
+  it('updates the AI settings, persists them, and turns them all back on when storage is cleared', () => {
+    const harness = createHarness()
+    harness.actor.send({type: 'ai.update', settings: {generateMutations: false}})
+    harness.actor.send({type: 'ai.update', settings: {enabled: false}})
+    expect(selectPersistedState(harness.snapshot()).ai).toEqual({
+      enabled: false,
+      generateQuery: true,
+      editQuery: true,
+      fixLint: true,
+      generateMutations: false,
+      explainQuery: true,
+    })
+
+    harness.actor.send({type: 'storage.clear'})
+    expect(harness.snapshot().context.ai).toEqual({
+      enabled: true,
+      generateQuery: true,
+      editQuery: true,
+      fixLint: true,
+      generateMutations: true,
+      explainQuery: true,
     })
   })
 

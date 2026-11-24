@@ -24,23 +24,9 @@
   }
 }
 
-/*
- * Press feedback. Buttons in `@sanity/ui` change their background on hover, and the transition
- * softens that change; the scale on press says the click registered.
- */
+/* Buttons in `@sanity/ui` change their background on hover, and the transition softens that change */
 .pressable {
-  transition:
-    transform 160ms var(--sidebar-ease-out),
-    background-color 100ms ease;
-}
-
-.pressable:active:not(:disabled) {
-  transform: scale(0.95);
-}
-
-/* A full-width row moves less than an icon button: the same scale reads as a jump on a wide row */
-.pressableRow:active:not(:disabled) {
-  transform: scale(0.98);
+  transition: background-color 100ms ease;
 }
 
 /* The drawer comes out from under the rail */
@@ -73,25 +59,13 @@
 }
 
 .queryRowMenu button {
-  transition:
-    transform 160ms var(--sidebar-ease-out),
-    background-color 100ms ease;
-}
-
-.queryRowMenu button:active:not(:disabled) {
-  transform: scale(0.95);
+  transition: background-color 100ms ease;
 }
 
 /* Fades and colour changes stay, as they help without moving anything; movement goes */
 @media (prefers-reduced-motion: reduce) {
   .rail {
     transition: none;
-  }
-
-  .pressable:active:not(:disabled),
-  .pressableRow:active:not(:disabled),
-  .queryRowMenu button:active:not(:disabled) {
-    transform: none;
   }
 
   .drawer,

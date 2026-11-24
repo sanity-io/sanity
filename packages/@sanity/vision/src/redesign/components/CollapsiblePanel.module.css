@@ -1,17 +1,8 @@
 /*
  * Motion of the response column's bottom panel. Tab changes do not animate: they are frequent and
- * often keyboard driven. Pressing a tab or the toggle gives feedback, the toggle's chevron turns
- * with the panel's state, and the body eases in when the panel expands; it leaves at once.
+ * often keyboard driven. The toggle's chevron turns with the panel's state, and the body eases in
+ * when the panel expands; it leaves at once.
  */
-
-/* A pressed tab or toggle gives a little, and springs back as fast */
-.pressable {
-  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.pressable:active {
-  transform: scale(0.97);
-}
 
 /* One chevron for both states, turned rather than swapped, so the change reads as one motion */
 .toggleChevron {
@@ -41,10 +32,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pressable:active {
-    transform: none;
-  }
-
   .toggleChevron {
     transition: none;
   }
