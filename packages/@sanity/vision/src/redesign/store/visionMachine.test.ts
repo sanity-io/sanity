@@ -392,7 +392,14 @@ describe('visionMachine', () => {
       sidebar: {expanded: true, drawer: 'saved'},
       panels: {params: true, options: false, paramsView: 'json', resultViewer: 'json'},
       historyDiff: {hiddenFields: ['_rev', '_updatedAt', '_system.base.rev']},
-      ai: {enabled: true, generateQuery: true, generateMutations: true, explainQuery: true},
+      ai: {
+        enabled: true,
+        generateQuery: true,
+        editQuery: true,
+        fixLint: true,
+        generateMutations: true,
+        explainQuery: true,
+      },
       editor: {autoFormatOnResize: true},
       functions: [],
     })
@@ -414,6 +421,8 @@ describe('visionMachine', () => {
     expect(selectPersistedState(harness.snapshot()).ai).toEqual({
       enabled: false,
       generateQuery: true,
+      editQuery: true,
+      fixLint: true,
       generateMutations: false,
       explainQuery: true,
     })
@@ -422,6 +431,8 @@ describe('visionMachine', () => {
     expect(harness.snapshot().context.ai).toEqual({
       enabled: true,
       generateQuery: true,
+      editQuery: true,
+      fixLint: true,
       generateMutations: true,
       explainQuery: true,
     })

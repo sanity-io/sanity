@@ -1,4 +1,3 @@
-import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {Button, Card, Label, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useMemo} from 'react'
@@ -20,6 +19,7 @@ import {
 } from '../../util/planInsights'
 import {AgentActionsTooltip} from '../AgentActionsTooltip'
 import {AiCreditsStatus} from '../AiCreditsStatus'
+import {AnimatedSparklesIcon} from '../request/AnimatedSparklesIcon'
 import * as motion from './responseTabs.module.css'
 
 /** What a plan insight means, as the Explain panel and the WebMCP explain tool say it */
@@ -89,7 +89,7 @@ export function ExplainTab(props: ExplainTabProps) {
                 data-testid="vision-explain-button"
                 disabled={!canExplain || explaining}
                 fontSize={1}
-                icon={SparklesIcon}
+                icon={AnimatedSparklesIcon}
                 loading={explaining}
                 onClick={onExplain}
                 padding={2}

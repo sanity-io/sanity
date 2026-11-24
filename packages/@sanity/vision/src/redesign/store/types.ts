@@ -106,6 +106,8 @@ export interface VisionAiSettings {
   /** `false` switches every AI feature off, whatever the per-feature settings say */
   enabled: boolean
   generateQuery: boolean
+  editQuery: boolean
+  fixLint: boolean
   generateMutations: boolean
   explainQuery: boolean
 }
