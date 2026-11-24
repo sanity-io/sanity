@@ -53,6 +53,14 @@ export interface QuerySchemaOptions {
   params?: Readonly<Record<string, unknown>>
   /** Called for every field name the query reads, with the value it reads it from */
   onField?: (visit: FieldVisit) => void
+  /** Called for `*`, `@`, `^` and `->` with the value each stands for */
+  onValue?: (visit: ValueVisit) => void
+}
+
+export interface ValueVisit {
+  from: number
+  to: number
+  shape: Shape
 }
 
 /** The shape of a value as the schema knows it */
@@ -582,6 +590,12 @@ function evaluateArguments(call: GroqNode, scope: Shape, context: Context): void
   for (const arg of splitBy(args, ',')) evaluate(arg, scope, context)
 }
 
+/** The `->` of a dereference, with the documents it reaches */
+function reportArrow(node: GroqNode, shape: Shape, context: Context): void {
+  const arrow = node.getChild('Deref') ?? node
+  context.onValue?.({from: arrow.from, to: arrow.to, shape})
+}
+
 /** A primary node followed by its postfix chain: `author->{name}`, `*[_type == "post"]` */
 function evaluateChain(nodes: GroqNode[], scope: Shape, context: Context): Shape {
   const [head, ...rest] = nodes
@@ -628,6 +642,15 @@ function evaluateChain(nodes: GroqNode[], scope: Shape, context: Context): Shape
     default:
       shape = UNKNOWN
   }
+  if (head.name === 'This' || head.name === 'Parent') {
+    context.onValue?.({from: head.from, to: head.to, shape})
+  }
+  // `*` stands for the documents the filters right after it leave
+  let everything = head.name === 'Everything'
+  const reportEverything = () => {
+    if (everything) context.onValue?.({from: head.from, to: head.to, shape})
+    everything = false
+  }
 
   let previous: GroqNode = head
   // The chain so far, which the next step applies to
@@ -636,6 +659,7 @@ function evaluateChain(nodes: GroqNode[], scope: Shape, context: Context): Shape
     dot,
   })
   for (const node of rest) {
+    if (node.name !== 'Filter') reportEverything()
     switch (node.name) {
       case 'DotAccess': {
         const name = node.getChild('Identifier')
@@ -644,9 +668,11 @@ function evaluateChain(nodes: GroqNode[], scope: Shape, context: Context): Shape
       }
       case 'Dereference':
         shape = dereference(shape, node, context, holder())
+        reportArrow(node, shape, context)
         break
       case 'DerefAccess': {
         shape = dereference(shape, node, context, holder())
+        reportArrow(node, shape, context)
         const name = node.getChild('Identifier')
         shape = name ? field(shape, name, context) : UNKNOWN
         break
@@ -665,6 +691,7 @@ function evaluateChain(nodes: GroqNode[], scope: Shape, context: Context): Shape
     }
     previous = node
   }
+  reportEverything()
   return shape
 }
 
@@ -770,6 +797,23 @@ export function visitQueryFields(
   return visits
 }
 
+/** Every field name the query reads, and every `*`, `@`, `^` and `->` with what it stands for */
+export function inspectQuery(
+  tree: GroqTree,
+  query: string,
+  schema: QuerySchema,
+  params?: Readonly<Record<string, unknown>>,
+): {fields: FieldVisit[]; values: ValueVisit[]} {
+  const fields: FieldVisit[] = []
+  const values: ValueVisit[] = []
+  analyzeQuery(tree, query, schema, {
+    params,
+    onField: (visit) => fields.push(visit),
+    onValue: (visit) => values.push(visit),
+  })
+  return {fields, values}
+}
+
 /** A field an object of one of a shape's types can hold, with every type that declares it */
 export interface ShapeField {
   name: string
@@ -815,6 +859,45 @@ export function fieldsOfShape(shape: Shape): ShapeField[] {
       return unhandled
     }
   }
+}
+
+/** A value's type as the hover shows it: `author`, `array of (book | author)`, `reference → author` */
+export function describeShape(shape: Shape): string {
+  switch (shape.kind) {
+    case 'unknown':
+      return 'unknown'
+    case 'value':
+      return shape.type
+    case 'object':
+      return typeNames(shape).join(' | ')
+    case 'documents':
+      return 'document'
+    case 'reference': {
+      const targets = unique(shape.types).map((type) => type.name)
+      return targets.length > 0 ? `reference → ${targets.join(' | ')}` : 'reference'
+    }
+    case 'array': {
+      const item = describeShape(shape.of)
+      return `array of ${item.includes(' | ') ? `(${item})` : item}`
+    }
+    default: {
+      const unhandled: never = shape
+      return unhandled
+    }
+  }
+}
+
+/**
+ * The `_type` values an object of this shape can have, or none when one of its types is an
+ * inline object, whose `_type` the schema does not name
+ */
+export function typeValuesOf(shape: Shape): string[] | undefined {
+  if (shape.kind === 'array') return typeValuesOf(shape.of)
+  if (shape.kind === 'reference') return ['reference']
+  if (shape.kind !== 'object' || shape.types.some((type) => type.name === 'object')) {
+    return undefined
+  }
+  return unique(shape.types).map((type) => type.name)
 }
 
 /** Whether a value of this shape is an object (or a reference, or an array of them) */

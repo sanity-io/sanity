@@ -27,6 +27,9 @@ const LABELS: GroqEditorLabels = {
   fieldOf: (types) => `Field of ${types}`,
   systemField: 'System field',
   documentType: 'Document type',
+  operatorReference: 'Operators',
+  paramValue: 'In params',
+  paramNotSet: 'Not in params',
 }
 
 const LIBRARY: VisionSavedFunction[] = [

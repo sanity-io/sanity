@@ -523,6 +523,13 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.schema.editor.document-type': 'Document type',
   /** Under a field's type in its completion info and hover: the schema types that declare it */
   'vision.schema.editor.field-of': 'Field of {{types}}',
+  /** Link at the end of an operator's hover documentation in the query editor */
+  'vision.schema.editor.operator-reference': 'GROQ operators reference',
+  /** Under a param's type in its hover, when the params give it no value yet */
+  'vision.schema.editor.param-not-set':
+    'No value in the params yet; expected from how the query uses it',
+  /** Under a param's type in its hover: the type is its value in the params */
+  'vision.schema.editor.param-value': 'Its value in the params',
   /** Completion detail of the fields every document or reference has (`_id`, `_ref`) */
   'vision.schema.editor.system-field': 'System field',
   /** Title the browser shows for the WebMCP tool that lints a query */
