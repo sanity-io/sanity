@@ -335,7 +335,11 @@ export class BufferedDocument {
     }
 
     const oldLocal = this.LOCAL
-    this.LOCAL = this.commits.reduce((doc, commit) => commit.apply(doc), this.document.EDGE)
+    // A commit waiting to be retried may already have landed, with its response lost. Its echo
+    // is in EDGE then, and the retry is answered as already existing, so it is not applied again.
+    this.LOCAL = this.commits
+      .filter((commit) => !commit.transactionId || !this.document.hasApplied(commit.transactionId))
+      .reduce((doc, commit) => commit.apply(doc), this.document.EDGE)
     this.LOCAL = this.buffer.rebase(this.LOCAL)
 
     // Copy over rev, since we don't care if it changed, we only care about the content
