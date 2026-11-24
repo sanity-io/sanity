@@ -1,8 +1,8 @@
 import {useEffect, useMemo, useRef} from 'react'
 
-import {resultJsonExtensions} from '../../../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
 import {cx} from '../../util/cx'
+import {redesignResultJsonExtensions} from '../../util/editorTheme'
 import * as styles from '../redesign.module.css'
 
 /**
@@ -24,7 +24,7 @@ export function ResultJson(props: {className?: string; id: string; value: unknow
       id={props.id}
     >
       <VisionCodeMirror
-        extensions={resultJsonExtensions}
+        extensions={redesignResultJsonExtensions}
         initialValue={text}
         ref={editorRef}
         underHeader

@@ -2,8 +2,8 @@ import {Card, Label} from '@sanity/ui'
 import {type ReactNode, useEffect, useRef} from 'react'
 import {Box, Flex} from 'ui5'
 
-import {paramsExtensions} from '../../../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
+import {redesignParamsExtensions} from '../../util/editorTheme'
 import * as styles from '../redesign.module.css'
 
 /**
@@ -38,7 +38,7 @@ export function JsonEditor(props: {
       </Flex>
       <Card border className={styles.jsonEditorBox} data-testid={testId} radius={2}>
         <VisionCodeMirror
-          extensions={paramsExtensions}
+          extensions={redesignParamsExtensions}
           initialValue={value}
           onChange={(text) => {
             shown.current = text
