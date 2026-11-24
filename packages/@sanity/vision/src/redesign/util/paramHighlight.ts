@@ -7,6 +7,7 @@ import {
   StateField,
 } from '@codemirror/state'
 import {Decoration, type DecorationSet, EditorView} from '@codemirror/view'
+import JSON5 from 'json5'
 
 export const PARAM_HIGHLIGHT_CLASS = 'cm-vision-paramMatch'
 
@@ -74,16 +75,41 @@ export function highlightedParamOf(state: EditorState): string | null {
 
 /** Index of the quote that ends the string starting at `start`, or the text's end */
 function stringEnd(text: string, start: number): number {
+  const quote = text[start]
   for (let i = start + 1; i < text.length; i++) {
     if (text[i] === '\\') i++
-    else if (text[i] === '"') return i
+    else if (text[i] === quote) return i
   }
   return text.length
 }
 
+/** Last index of a `//` or block comment starting at `start`, or `start` when there is none */
+function commentEnd(text: string, start: number): number {
+  const next = text[start + 1]
+  if (next === '/') {
+    const newline = text.indexOf('\n', start + 2)
+    return newline === -1 ? text.length : newline
+  }
+  if (next === '*') {
+    const close = text.indexOf('*/', start + 2)
+    return close === -1 ? text.length : close + 1
+  }
+  return start
+}
+
+function isIdentStart(char: string): boolean {
+  return (
+    char === '_' || char === '$' || (char >= 'A' && char <= 'Z') || (char >= 'a' && char <= 'z')
+  )
+}
+
+function isIdentPart(char: string): boolean {
+  return isIdentStart(char) || (char >= '0' && char <= '9')
+}
+
 function keyName(raw: string): string {
   try {
-    const parsed: unknown = JSON.parse(raw)
+    const parsed: unknown = JSON5.parse(raw)
     return typeof parsed === 'string' ? parsed : raw.slice(1, -1)
   } catch {
     return raw.slice(1)
@@ -91,9 +117,10 @@ function keyName(raw: string): string {
 }
 
 /**
- * The top-level key of the params JSON whose key or value holds the position, `null` between
- * entries or outside the object. Scans the text rather than parsing it, so it still answers
- * while the JSON is being typed and does not parse.
+ * The top-level key of the params text whose key or value holds the position, `null` between
+ * entries or outside the object. Params are JSON5, so a key may be double-quoted, single-quoted
+ * or an unquoted identifier, and `//` and block comments are skipped. Scans the text rather than
+ * parsing it, so it still answers while the text is being typed and does not parse.
  */
 export function jsonParamNameAt(text: string, pos: number): string | null {
   const stack: string[] = []
@@ -104,7 +131,14 @@ export function jsonParamNameAt(text: string, pos: number): string | null {
   for (let i = 0; i < text.length; i++) {
     const char = text[i]
     const topLevel = stack.length === 1 && stack[0] === '{'
-    if (char === '"') {
+    if (char === '/') {
+      const end = commentEnd(text, i)
+      if (end !== i) {
+        i = end
+        continue
+      }
+    }
+    if (char === '"' || char === "'") {
       const end = stringEnd(text, i)
       if (topLevel && expectKey) {
         key = keyName(text.slice(i, end + 1))
@@ -112,6 +146,13 @@ export function jsonParamNameAt(text: string, pos: number): string | null {
         expectKey = false
       }
       i = end
+    } else if (topLevel && expectKey && isIdentStart(char)) {
+      let end = i + 1
+      while (end < text.length && isIdentPart(text[end])) end++
+      key = text.slice(i, end)
+      keyStart = i
+      expectKey = false
+      i = end - 1
     } else if (char === '{' || char === '[') {
       stack.push(char)
       if (stack.length === 1 && char === '{') expectKey = true
