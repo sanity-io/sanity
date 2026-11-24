@@ -8,15 +8,32 @@ import {type EditorState} from '@codemirror/state'
 import {type Tooltip} from '@codemirror/view'
 import {type SchemaType} from 'sanity'
 
-import {groqEditorLabels, queryParamValues, querySchema} from './groqEditorContext'
-import {type GroqNode, parseGroq} from './groqFunctions'
 import {
+  type GroqEditorLabels,
+  groqEditorLabels,
+  queryParamValues,
+  querySchema,
+} from './groqEditorContext'
+import {type GroqNode, parseGroq} from './groqFunctions'
+import {type DocParts, renderDoc} from './groqHoverDoc'
+import {
+  findGroqOperator,
+  findGroqValueDoc,
+  findSystemField,
+  GROQ_OPERATORS_REFERENCE_URL,
+  isOperatorNode,
+} from './groqOperatorReference'
+import {inferQueryParams} from './paramInference'
+import {
+  describeShape,
   fieldsOfShape,
+  inspectQuery,
   isObjectShape,
   REFERENCE_FIELDS,
   type Shape,
   type ShapeField,
   SYSTEM_FIELDS,
+  typeValuesOf,
   visitQueryFields,
 } from './schemaCheck'
 
@@ -80,19 +97,8 @@ function describeField(field: ShapeField, fieldOf: (types: string) => string): s
 }
 
 function renderFieldInfo(code: string, lines: string[]): HTMLElement {
-  const dom = document.createElement('div')
-  dom.className = 'cm-vision-function-doc'
-  const pre = document.createElement('pre')
-  pre.className = 'cm-vision-function-code'
-  pre.textContent = code
-  dom.append(pre)
-  for (const line of lines) {
-    const paragraph = document.createElement('p')
-    paragraph.className = 'cm-vision-function-description'
-    paragraph.textContent = line
-    dom.append(paragraph)
-  }
-  return dom
+  const [description, ...notes] = lines
+  return renderDoc({code, description, notes})
 }
 
 /** The value a field name typed at `from`…`to` is read from, as far as the schema knows */
@@ -198,27 +204,180 @@ export function typeValueCompletions(context: CompletionContext): CompletionResu
   return {from, options, validFor: /^[\w.-]*$/}
 }
 
-/** The schema type of the field under the pointer, with its title, description and owners */
-export function fieldHoverAt(state: EditorState, pos: number, side: -1 | 1): Tooltip | null {
-  const schema = state.facet(querySchema)
-  const labels = state.facet(groqEditorLabels)
-  if (!schema || !labels) return null
-  const node = syntaxTree(state).resolveInner(pos, side)
-  if (node.name !== 'Identifier') return null
-  const query = state.doc.toString()
-  const visits = visitQueryFields(parseGroq(query), query, schema, state.facet(queryParamValues))
-  const visit = visits.find((candidate) => candidate.from === node.from)
-  if (!visit) return null
-  const name = query.slice(node.from, node.to)
-  const field = fieldsOfShape(visit.scope).find((candidate) => candidate.name === name)
-  if (!field) return null
-  const typeLabel = describeFieldType(field.type)
+const MAX_LITERAL_LENGTH = 120
+const MAX_LIST_OPTIONS = 12
+
+/** A value as a literal type, the way typegen prints it: `"author"`, `["a", "b"]`, `42` */
+function literalType(value: unknown): string {
+  const text = JSON.stringify(value) ?? 'undefined'
+  return text.length > MAX_LITERAL_LENGTH ? `${text.slice(0, MAX_LITERAL_LENGTH - 1)}…` : text
+}
+
+function unionOf(values: readonly unknown[]): string {
+  return values.map(literalType).join(' | ')
+}
+
+/** A field's type, or the values its `options.list` allows: `"draft" | "published"` */
+function fieldTypeOf(type: SchemaType): string {
+  try {
+    const list: unknown = type.options && 'list' in type.options ? type.options.list : undefined
+    if (type.jsonType !== 'array' && Array.isArray(list) && list.length > 0) {
+      const values = list.map((item: unknown) =>
+        item && typeof item === 'object' && 'value' in item ? item.value : item,
+      )
+      if (
+        values.length <= MAX_LIST_OPTIONS &&
+        values.every((value) => typeof value === 'string' || typeof value === 'number')
+      ) {
+        return unionOf(values)
+      }
+    }
+  } catch {
+    // An options list the schema resolves lazily and cannot: its type is shown instead
+  }
+  return describeFieldType(type)
+}
+
+function itemShape(shape: Shape): Shape {
+  return shape.kind === 'array' ? itemShape(shape.of) : shape
+}
+
+/** The type of the field `name`, read from a value of shape `scope`, with what the schema says of it */
+function fieldDoc(name: string, scope: Shape, labels: GroqEditorLabels): DocParts | undefined {
+  const field = fieldsOfShape(scope).find((candidate) => candidate.name === name)
+  if (field) {
+    const [description, ...notes] = describeField(field, labels.fieldOf)
+    return {code: `${name}: ${fieldTypeOf(field.type)}`, description, notes}
+  }
+  const item = itemShape(scope)
+  const known =
+    item.kind === 'reference'
+      ? REFERENCE_FIELDS.has(name)
+      : item.kind === 'unknown'
+        ? SYSTEM_FIELDS.has(name) || REFERENCE_FIELDS.has(name)
+        : SYSTEM_FIELDS.has(name)
+  const system = known ? findSystemField(name) : undefined
+  if (!system) return undefined
+  const typeValues = name === '_type' ? typeValuesOf(scope) : undefined
   return {
-    pos: node.from,
-    end: node.to,
+    code: `${name}: ${typeValues ? unionOf(typeValues) : system.type}`,
+    description: system.description,
+    notes: [labels.systemField],
+  }
+}
+
+/** A `$param`'s value in the params, or the type the query expects of it when it has none yet */
+function paramDoc(
+  name: string,
+  state: EditorState,
+  query: string,
+  labels: GroqEditorLabels,
+): DocParts {
+  const params = state.facet(queryParamValues)
+  // The params form fills in `""` for each param the query uses, until it is given a value
+  if (Object.hasOwn(params, name) && params[name] !== '') {
+    return {code: `$${name}: ${literalType(params[name])}`, notes: [labels.paramValue]}
+  }
+  const schema = state.facet(querySchema)
+  const inferred = inferQueryParams(query, {
+    documentTypes: schema ? [...schema.documents.keys()] : undefined,
+  }).params.find((param) => param.name === name)?.type
+  const base = inferred?.options ? unionOf(inferred.options) : (inferred?.kind ?? 'any')
+  const type = inferred?.array ? `array of ${inferred.options ? `(${base})` : base}` : base
+  return {code: `$${name}: ${type}`, notes: [labels.paramNotSet]}
+}
+
+function stringLiteral(text: string): string | undefined {
+  if (!text.startsWith('"')) return text.slice(1, -1)
+  try {
+    const value: unknown = JSON.parse(text)
+    return typeof value === 'string' ? value : undefined
+  } catch {
+    return undefined
+  }
+}
+
+interface Hover {
+  from: number
+  to: number
+  doc: DocParts
+}
+
+function hoverOf(state: EditorState, pos: number, side: -1 | 1): Hover | undefined {
+  const labels = state.facet(groqEditorLabels)
+  if (!labels) return undefined
+  const schema = state.facet(querySchema)
+  const query = state.doc.toString()
+  const node = syntaxTree(state).resolveInner(pos, side)
+  const at = {from: node.from, to: node.to}
+  const text = query.slice(node.from, node.to)
+  const inspect = () =>
+    schema
+      ? inspectQuery(parseGroq(query), query, schema, state.facet(queryParamValues))
+      : undefined
+
+  if (node.name === 'Parameter') {
+    return {...at, doc: paramDoc(text.slice(1), state, query, labels)}
+  }
+  if (node.name === 'Identifier') {
+    const visit = inspect()?.fields.find((candidate) => candidate.from === node.from)
+    const doc = visit ? fieldDoc(text, visit.scope, labels) : undefined
+    return doc ? {...at, doc} : undefined
+  }
+  if (node.name === 'Everything' || node.name === 'This' || node.name === 'Parent') {
+    const visit = inspect()?.values.find((candidate) => candidate.from === node.from)
+    const shape = visit && visit.shape.kind !== 'unknown' ? describeShape(visit.shape) : undefined
+    return {
+      ...at,
+      doc: {code: shape ? `${text}: ${shape}` : text, description: findGroqValueDoc(text)},
+    }
+  }
+  const string = node.parent?.name === 'String' ? node.parent : node.name === 'String' ? node : null
+  if (string) {
+    // A document type name, as `_type` is compared to
+    const value = stringLiteral(query.slice(string.from, string.to))
+    const type = value === undefined ? undefined : schema?.documents.get(value)
+    if (!type) return undefined
+    return {
+      from: string.from,
+      to: string.to,
+      doc: {code: literalType(value), description: type.title, notes: [labels.documentType]},
+    }
+  }
+  if (isOperatorNode(node.name)) {
+    const operator = findGroqOperator(text)
+    if (!operator) return undefined
+    let code = operator.signature
+    if (node.name === 'Deref') {
+      const visit = inspect()?.values.find((candidate) => candidate.from === node.from)
+      // After `[]`, each item's reference leads to one document
+      const target = visit ? itemShape(visit.shape) : undefined
+      if (target && target.kind !== 'unknown') code = `<reference> -> ${describeShape(target)}`
+    }
+    return {
+      ...at,
+      doc: {
+        code,
+        description: operator.description,
+        link: {href: GROQ_OPERATORS_REFERENCE_URL, text: labels.operatorReference},
+      },
+    }
+  }
+  return undefined
+}
+
+/**
+ * The resolved type of what the pointer is on, the way typegen would print it: a field (`_type`
+ * of a filtered query is `"pokemon"`), a system attribute, a `$param` by its value in the params,
+ * `*`, `@`, `^` and `->` by what they stand for, and an operator with its documentation
+ */
+export function typeHoverAt(state: EditorState, pos: number, side: -1 | 1): Tooltip | null {
+  const hover = hoverOf(state, pos, side)
+  if (!hover) return null
+  return {
+    pos: hover.from,
+    end: hover.to,
     above: true,
-    create: () => ({
-      dom: renderFieldInfo(`${name}: ${typeLabel}`, describeField(field, labels.fieldOf)),
-    }),
+    create: () => ({dom: renderDoc(hover.doc)}),
   }
 }

@@ -643,17 +643,28 @@ function preferTreeView() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify({version: 1, panels: {resultViewer: 'tree'}}))
 }
 
-/** Opens the result's Export… menu, and returns the open one among the mounted menus */
-async function openExportMenu(): Promise<HTMLElement> {
-  fireEvent.click(screen.getByTestId('vision-result-export-button'))
+/** Clicks a menu button, and returns the open menu among the mounted copies of `menuTestId` */
+async function openMenu(buttonTestId: string, menuTestId: string): Promise<HTMLElement> {
+  fireEvent.click(screen.getByTestId(buttonTestId))
   let menu: HTMLElement | undefined
   await waitFor(() => {
     menu = screen
-      .getAllByTestId('vision-result-export-menu')
+      .getAllByTestId(menuTestId)
       .find((candidate) => !candidate.closest('[style*="display: none"]'))
     expect(menu).toBeTruthy()
   })
   return menu as HTMLElement
+}
+
+/** Opens the result header's "More actions" menu */
+function openExportMenu(): Promise<HTMLElement> {
+  return openMenu('vision-result-menu-button', 'vision-result-menu')
+}
+
+/** Picks a result view from the result header's view dropdown */
+async function pickResultView(view: string) {
+  const menu = await openMenu('vision-result-view-button', 'vision-result-view-menu')
+  fireEvent.click(within(menu).getByTestId(`vision-result-view-${view}`))
 }
 
 function isItemDisabled(element: HTMLElement): boolean {
@@ -744,13 +755,12 @@ describe('VisionRedesign', () => {
     expect(
       within(screen.getByTestId('vision-query-actions')).getByTestId('vision-fetch-button'),
     ).toBe(fetchButton)
+    // The result's controls sit in its header, and nothing is left below the panel
     const actions = screen.getByTestId('vision-result-actions')
+    expect(screen.getByTestId('vision-result').contains(actions)).toBe(true)
     const copy = within(actions).getByTestId('vision-copy-result')
-    expect(text(copy)).toBe('vision.result.copy')
     expect(isDisabled(copy)).toBe(true)
-    expect(text(within(actions).getByTestId('vision-result-export-button'))).toBe(
-      'vision.result.export',
-    )
+    expect(isDisabled(within(actions).getByTestId('vision-result-menu-button'))).toBe(false)
     expect(text(screen.getByTestId('vision-result'))).toContain('vision.result.empty')
   })
 
@@ -1470,7 +1480,7 @@ describe('VisionRedesign', () => {
     )
   })
 
-  it('shows the result as JSON text by default, copies it from the action bar, and remembers another view', async () => {
+  it('shows the result as JSON text by default, copies it from the header, and remembers another view picked from the dropdown', async () => {
     const {respondWith} = renderRedesign()
     const result = {title: 'Copy me'}
     respondWith({result, ms: 3})
@@ -1487,30 +1497,55 @@ describe('VisionRedesign', () => {
         JSON.stringify(result, null, 2),
       )
       expect(screen.queryByTestId('result-json')).toBeNull()
-      const views = within(screen.getByTestId('vision-result')).getAllByRole('tab')
-      expect(views.map((view) => view.id)).toEqual([
+      // The view dropdown names the shown view, and the menu lists every view with it checked
+      const viewButton = screen.getByTestId('vision-result-view-button')
+      expect(text(viewButton)).toBe('vision.result.view.json')
+      expect(viewButton.getAttribute('aria-controls')).toBe(json.id)
+      expect(within(screen.getByTestId('vision-result')).queryAllByRole('tab')).toHaveLength(0)
+      const viewMenu = await openMenu('vision-result-view-button', 'vision-result-view-menu')
+      const views = within(viewMenu).getAllByRole('menuitemradio', {hidden: true})
+      expect(views.map((view) => view.getAttribute('data-testid'))).toEqual([
         'vision-result-view-json',
         'vision-result-view-tree',
         'vision-result-view-graph',
         'vision-result-view-documents',
       ])
-      expect(views[0].getAttribute('aria-selected')).toBe('true')
-      expect(views[0].getAttribute('aria-controls')).toBe(json.id)
+      expect(views.map((view) => view.getAttribute('aria-checked'))).toEqual([
+        'true',
+        'false',
+        'false',
+        'false',
+      ])
+      fireEvent.keyDown(viewMenu, {key: 'Escape'})
       await waitFor(() => expect(getStoredState()?.panels.resultViewer).toBe('json'))
 
-      // Copying lives in the action bar, not next to the views
-      const copy = screen.getByTestId('vision-copy-result')
-      expect(within(screen.getByTestId('vision-result')).queryByTestId('vision-copy-result')).toBe(
-        null,
-      )
-      expect(screen.getByTestId('vision-result-actions').contains(copy)).toBe(true)
+      // The view dropdown, Copy and the "More actions" menu, in that order
+      const actions = screen.getByTestId('vision-result-actions')
+      expect(
+        Array.from(actions.querySelectorAll('[data-testid]'), (el) =>
+          el.getAttribute('data-testid'),
+        ).filter((id) =>
+          ['vision-result-view-button', 'vision-copy-result', 'vision-result-menu-button'].includes(
+            id ?? '',
+          ),
+        ),
+      ).toEqual(['vision-result-view-button', 'vision-copy-result', 'vision-result-menu-button'])
+      const copy = within(actions).getByTestId('vision-copy-result')
       fireEvent.click(copy)
       await waitFor(() => expect(writeText).toHaveBeenCalledWith(JSON.stringify(result, null, 2)))
+      // It confirms the copy itself rather than with a toast
+      await waitFor(() => expect(copy.getAttribute('data-copied')).toBe('true'))
+      expect(screen.queryByText('vision.result.copied')).toBeNull()
 
-      fireEvent.click(document.getElementById('vision-result-view-tree') as HTMLElement)
+      await pickResultView('tree')
       expect(screen.getByTestId('result-json')).toBeTruthy()
       expect(screen.queryByTestId('vision-result-json')).toBeNull()
+      expect(text(screen.getByTestId('vision-result-view-button'))).toBe('vision.result.view.tree')
       await waitFor(() => expect(getStoredState().panels.resultViewer).toBe('tree'))
+
+      await pickResultView('graph')
+      expect(screen.queryByTestId('result-json')).toBeNull()
+      await waitFor(() => expect(getStoredState().panels.resultViewer).toBe('graph'))
     } finally {
       if (clipboard) Object.defineProperty(navigator, 'clipboard', clipboard)
       else Reflect.deleteProperty(navigator, 'clipboard')
@@ -1530,23 +1565,24 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
 
-    const documentsTab = () => document.getElementById('vision-result-view-documents')
     await waitFor(() => expect(screen.getByTestId('vision-document-list-mock')).toBeTruthy())
     expect(text(screen.getByTestId('vision-document-list-mock'))).toBe('a,drafts.b')
-    expect(documentsTab()?.getAttribute('aria-selected')).toBe('true')
+    expect(text(screen.getByTestId('vision-result-view-button'))).toBe(
+      'vision.result.view.documents',
+    )
     expect(screen.queryByTestId('result-json')).toBeNull()
 
     // Another view is kept for the query, and the documents are a click away
-    fireEvent.click(document.getElementById('vision-result-view-tree') as HTMLElement)
+    await pickResultView('tree')
     expect(screen.getByTestId('result-json')).toBeTruthy()
     expect(screen.queryByTestId('vision-document-list-mock')).toBeNull()
-    expect(documentsTab()?.getAttribute('aria-selected')).toBe('false')
+    expect(text(screen.getByTestId('vision-result-view-button'))).toBe('vision.result.view.tree')
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
     expect(screen.getByTestId('result-json')).toBeTruthy()
     expect(screen.queryByTestId('vision-document-list-mock')).toBeNull()
 
-    fireEvent.click(documentsTab() as HTMLElement)
+    await pickResultView('documents')
     expect(screen.getByTestId('vision-document-list-mock')).toBeTruthy()
   })
 
@@ -1558,7 +1594,7 @@ describe('VisionRedesign', () => {
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(screen.getByTestId('vision-document-list-mock')).toBeTruthy())
 
-    fireEvent.click(document.getElementById('vision-result-view-tree') as HTMLElement)
+    await pickResultView('tree')
     expect(screen.getByTestId('result-json')).toBeTruthy()
 
     // Switching tabs hides this one; coming back must not reopen the document list
@@ -1566,9 +1602,10 @@ describe('VisionRedesign', () => {
     fireEvent.click(screen.getAllByTestId('vision-tab-button')[0])
     expect(screen.getByTestId('result-json')).toBeTruthy()
     expect(screen.queryByTestId('vision-document-list-mock')).toBeNull()
-    expect(
-      document.getElementById('vision-result-view-documents')?.getAttribute('aria-selected'),
-    ).toBe('false')
+    // The other tab stays mounted, so the shown view is the one in the visible tab
+    expect(text(within(shownTab()).getByTestId('vision-result-view-button'))).toBe(
+      'vision.result.view.tree',
+    )
   })
 
   it('keeps JSON for a result that is not a document list, and explains it from Documents', async () => {
@@ -1578,10 +1615,9 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(screen.getByTestId('vision-result-json')).toBeTruthy())
-    const documentsTab = document.getElementById('vision-result-view-documents')
-    expect(documentsTab?.getAttribute('aria-selected')).toBe('false')
+    expect(text(screen.getByTestId('vision-result-view-button'))).toBe('vision.result.view.json')
 
-    fireEvent.click(documentsTab as HTMLElement)
+    await pickResultView('documents')
     expect(text(screen.getByTestId('vision-document-list-mock'))).toBe('not-array')
     expect(screen.queryByTestId('vision-result-json')).toBeNull()
   })
@@ -1597,9 +1633,9 @@ describe('VisionRedesign', () => {
     respondWith({result: [], ms: 3})
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(text(screen.getByTestId('vision-document-list-mock'))).toBe(''))
-    expect(
-      document.getElementById('vision-result-view-documents')?.getAttribute('aria-selected'),
-    ).toBe('true')
+    expect(text(screen.getByTestId('vision-result-view-button'))).toBe(
+      'vision.result.view.documents',
+    )
   })
 
   it('keeps the current view for an empty array, and shows the empty list from Documents', async () => {
@@ -1609,11 +1645,10 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(screen.getByTestId('vision-result-json')).toBeTruthy())
-    const documentsTab = document.getElementById('vision-result-view-documents')
-    expect(documentsTab?.getAttribute('aria-selected')).toBe('false')
+    expect(text(screen.getByTestId('vision-result-view-button'))).toBe('vision.result.view.json')
     expect(screen.queryByTestId('vision-document-list-mock')).toBeNull()
 
-    fireEvent.click(documentsTab as HTMLElement)
+    await pickResultView('documents')
     expect(text(screen.getByTestId('vision-document-list-mock'))).toBe('')
   })
 
@@ -2380,6 +2415,44 @@ describe('VisionRedesign', () => {
     expect(text(screen.getByTestId('vision-tab-button'))).toBe('Reading list')
   })
 
+  it('keeps params that do not parse when Agent Actions edit or fix the query', async () => {
+    const {promptCalls, replyToPrompts} = renderRedesign()
+    const halfTyped = '{"limit": '
+    typeQuery('*[_type == "post"][0...$limit]')
+    openRequestTab('params')
+    fireEvent.change(
+      within(screen.getByTestId('vision-params-editor')).getByTestId('codemirror-mock'),
+      {target: {value: halfTyped}},
+    )
+    await waitFor(() => expect(getStoredState().tabs[0].rawParams).toBe(halfTyped))
+    replyToPrompts({query: '*[_type == "post"][0...$limit]{_id}', params: {limit: 5}})
+
+    editFrom('Only the IDs')
+    await waitFor(() => expect(getQueryEditor().value).toContain('_id'))
+    expect(promptCalls[0].request).toMatchObject({instructionParams: {params: '{}'}})
+    expect(getStoredState().tabs[0].rawParams).toBe(halfTyped)
+
+    openRequestTab('lint')
+    act(() =>
+      lintMocks.report?.([
+        {
+          from: 0,
+          to: 1,
+          line: 1,
+          column: 1,
+          severity: 'warning',
+          message: 'A problem',
+          source: 'groq-lint/example',
+        },
+      ]),
+    )
+    replyToPrompts({query: '*[_type == "page"][0...$limit]', params: {limit: 5}})
+    fireEvent.click(screen.getByTestId('vision-lint-fix'))
+    await waitFor(() => expect(getQueryEditor().value).toContain('"page"'))
+    expect(promptCalls[1].request).toMatchObject({instructionParams: {params: '{}'}})
+    expect(getStoredState().tabs[0].rawParams).toBe(halfTyped)
+  })
+
   it('fixes the lint findings with Agent Actions from the Lint panel', async () => {
     const {fetchCalls, promptCalls, replyToPrompts} = renderRedesign()
     const query = '*[_type == "post" && author->name == "x"]'
@@ -2451,6 +2524,39 @@ describe('VisionRedesign', () => {
     await act(async () => answer({query: fixed, params: {}}))
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
     expect(getQueryEditor().value).toBe(fixed)
+  })
+
+  it('resets Fix with AI when the query tab is hidden while a fix is running', async () => {
+    const {replyToPrompts} = renderRedesign()
+    const query = '*[_type == "post" && author->name == "x"]'
+    typeQuery(query)
+    openRequestTab('lint')
+    act(() =>
+      lintMocks.report?.([
+        {
+          from: 21,
+          to: 29,
+          line: 1,
+          column: 22,
+          severity: 'warning',
+          message: 'Avoid `->` in a filter',
+          source: 'groq-lint/join-in-filter',
+        },
+      ]),
+    )
+    // Never settles: the abort has to clear the running status on its own
+    replyToPrompts(new Promise(() => {}))
+    fireEvent.click(screen.getByTestId('vision-lint-fix'))
+    expect(screen.getByTestId('vision-lint-fix-progress')).toBeTruthy()
+    expect(isDisabled(screen.getByTestId('vision-lint-fix'))).toBe(true)
+
+    // Another query tab hides this one in an Activity boundary: effects clean up and abort, state stays
+    fireEvent.click(screen.getByTestId('vision-new-tab'))
+    fireEvent.click(within(screen.getAllByTestId('vision-tab')[0]).getByTestId('vision-tab-button'))
+    openRequestTab('lint')
+    expect(screen.getByTestId('vision-lint-fix')).toBeTruthy()
+    expect(screen.queryByTestId('vision-lint-fix-progress')).toBeNull()
+    expect(isDisabled(screen.getByTestId('vision-lint-fix'))).toBe(false)
   })
 
   it('offers no Fix with AI when the config turns it off', () => {
@@ -2615,7 +2721,7 @@ describe('VisionRedesign', () => {
     }
   })
 
-  it('offers the file exports first in the Export… menu, then the type exports', async () => {
+  it('offers the file exports first in the More actions menu, then the type exports', async () => {
     const {respondWith} = renderRedesign()
     typeQuery('*[_type == "author"]')
     respondWith({result: [{title: 'Exported'}], ms: 5, syncTags: []})
@@ -2623,18 +2729,15 @@ describe('VisionRedesign', () => {
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await screen.findByTestId('vision-result-json')
 
+    // An icon button, named by its tooltip
     const actions = screen.getByTestId('vision-result-actions')
-    expect(
-      Array.from(actions.querySelectorAll('[data-testid]'), (el) =>
-        el.getAttribute('data-testid'),
-      ).filter((id) => id === 'vision-copy-result' || id === 'vision-result-export-button'),
-    ).toEqual(['vision-copy-result', 'vision-result-export-button'])
-    expect(text(within(actions).getByTestId('vision-result-export-button'))).toBe(
-      'vision.result.export',
-    )
-    expect(
-      within(actions).getByTestId('vision-result-export-button').querySelectorAll('svg'),
-    ).toHaveLength(1)
+    const menuButton = within(actions).getByTestId('vision-result-menu-button')
+    expect(text(menuButton)).toBe('')
+    expect(menuButton.querySelectorAll('svg')).toHaveLength(1)
+    expect(menuButton.getAttribute('aria-label')).toBe('vision.result.more-actions')
+    expect(visionLocaleStrings['vision.result.more-actions']).toBe('More actions')
+    fireEvent.mouseEnter(screen.getByTestId('vision-result-menu-tooltip-target'))
+    expect(await screen.findByText('vision.result.more-actions')).toBeTruthy()
 
     const menu = await openExportMenu()
     const entries = Array.from(menu.querySelectorAll('[data-testid^="vision-export-"], hr'), (el) =>

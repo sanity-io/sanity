@@ -1,10 +1,11 @@
 import {CodeIcon} from '@sanity/icons/Code'
 import {DocumentSheetIcon} from '@sanity/icons/DocumentSheet'
-import {DownloadIcon} from '@sanity/icons/Download'
+import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {JsonIcon} from '@sanity/icons/Json'
 import {PackageIcon} from '@sanity/icons/Package'
 import {Button, Text} from '@sanity/ui'
 import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
+import {Tooltip} from '@sanity/ui/tooltip'
 import {useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
 
@@ -30,7 +31,10 @@ export interface ResultActionsMenuProps {
   onCsvUnavailable: () => void
 }
 
-/** The response panel's export menu: the result as a file, or types inferred from it */
+/**
+ * The "More actions" menu in the result panel's header: the result as a file, or types inferred
+ * from it
+ */
 export function ResultActionsMenu({
   tab,
   result,
@@ -43,6 +47,7 @@ export function ResultActionsMenu({
 }: ResultActionsMenuProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const [exportFormat, setExportFormat] = useState<TypesExportFormat | null>(null)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const download = (
     getUrl: (() => string | undefined) | undefined,
@@ -56,61 +61,80 @@ export function ResultActionsMenu({
 
   // MenuItem ellipsizes `text`, so the reason there is no CSV file is a child of the item
   const csvUnavailable = Boolean(csvUnavailableHint) && !getCsvUrl
+  const moreActions = t('vision.result.more-actions')
 
   return (
     <>
-      <MenuButton
-        button={
-          <Button
-            data-testid="vision-result-export-button"
-            gap={2}
-            icon={DownloadIcon}
-            mode="ghost"
-            padding={2}
-            text={t('vision.result.export')}
+      <Tooltip
+        animate
+        content={
+          <Text size={1} as="div">
+            {moreActions}
+          </Text>
+        }
+        // The tooltip would cover the menu it names
+        disabled={menuOpen}
+        placement="top"
+        portal
+      >
+        {/* The tooltip attaches to this wrapper, which leaves the button's ref to the menu */}
+        <span className={styles.tooltipTarget} data-testid="vision-result-menu-tooltip-target">
+          <MenuButton
+            button={
+              <Button
+                aria-label={moreActions}
+                data-testid="vision-result-menu-button"
+                fontSize={1}
+                icon={EllipsisHorizontalIcon}
+                mode="bleed"
+                padding={2}
+              />
+            }
+            id={`vision-result-menu-${tab.id}`}
+            menu={
+              <Menu data-testid="vision-result-menu">
+                <MenuItem
+                  data-testid="vision-export-json"
+                  disabled={!getJsonUrl}
+                  icon={JsonIcon}
+                  onClick={() => download(getJsonUrl, 'query-result.json')}
+                  text={t('vision.result.export-json')}
+                />
+                <MenuItem
+                  className={csvUnavailable ? styles.exportCsvUnavailable : undefined}
+                  data-testid="vision-export-csv"
+                  disabled={!getCsvUrl}
+                  icon={DocumentSheetIcon}
+                  onClick={() => download(getCsvUrl, 'query-result.csv', onCsvUnavailable)}
+                  text={t('vision.result.export-csv')}
+                >
+                  {csvUnavailable ? (
+                    <Text className={styles.exportUnavailableHint} muted size={1}>
+                      {csvUnavailableHint}
+                    </Text>
+                  ) : null}
+                </MenuItem>
+                <MenuDivider />
+                <MenuItem
+                  data-testid="vision-export-typescript"
+                  icon={CodeIcon}
+                  onClick={() => setExportFormat('typescript')}
+                  text={t('vision.result.export-typescript')}
+                />
+                <MenuItem
+                  data-testid="vision-export-zod"
+                  icon={PackageIcon}
+                  onClick={() => setExportFormat('zod')}
+                  text={t('vision.result.export-zod')}
+                />
+              </Menu>
+            }
+            onClose={() => setMenuOpen(false)}
+            onOpen={() => setMenuOpen(true)}
+            popover={{animate: true, portal: true, placement: 'bottom-end'}}
           />
-        }
-        id={`vision-result-export-menu-${tab.id}`}
-        menu={
-          <Menu data-testid="vision-result-export-menu">
-            <MenuItem
-              data-testid="vision-export-json"
-              disabled={!getJsonUrl}
-              icon={JsonIcon}
-              onClick={() => download(getJsonUrl, 'query-result.json')}
-              text={t('vision.result.export-json')}
-            />
-            <MenuItem
-              className={csvUnavailable ? styles.exportCsvUnavailable : undefined}
-              data-testid="vision-export-csv"
-              disabled={!getCsvUrl}
-              icon={DocumentSheetIcon}
-              onClick={() => download(getCsvUrl, 'query-result.csv', onCsvUnavailable)}
-              text={t('vision.result.export-csv')}
-            >
-              {csvUnavailable ? (
-                <Text className={styles.exportUnavailableHint} muted size={1}>
-                  {csvUnavailableHint}
-                </Text>
-              ) : null}
-            </MenuItem>
-            <MenuDivider />
-            <MenuItem
-              data-testid="vision-export-typescript"
-              icon={CodeIcon}
-              onClick={() => setExportFormat('typescript')}
-              text={t('vision.result.export-typescript')}
-            />
-            <MenuItem
-              data-testid="vision-export-zod"
-              icon={PackageIcon}
-              onClick={() => setExportFormat('zod')}
-              text={t('vision.result.export-zod')}
-            />
-          </Menu>
-        }
-        popover={{animate: true, portal: true, placement: 'top-end'}}
-      />
+        </span>
+      </Tooltip>
       {exportFormat && (
         <ExportTypesDialog
           format={exportFormat}

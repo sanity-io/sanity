@@ -19,8 +19,8 @@ import {
 import {createGroqFunctionExtensions} from './groqFunctionEditor'
 import {
   describeFieldType,
-  fieldHoverAt,
   schemaFieldCompletions,
+  typeHoverAt,
   typeValueCompletions,
 } from './groqSchemaEditor'
 import {createQuerySchema, fieldsOf} from './schemaCheck'
@@ -39,6 +39,9 @@ const LABELS: GroqEditorLabels = {
   fieldOf: (types) => `Field of ${types}`,
   systemField: 'System field',
   documentType: 'Document type',
+  operatorReference: 'Operators',
+  paramValue: 'In params',
+  paramNotSet: 'Not in params',
 }
 
 const schema = createQuerySchema(
@@ -72,6 +75,19 @@ const schema = createQuerySchema(
             name: 'chapters',
             type: 'array',
             of: [{type: 'object', fields: [{name: 'heading', type: 'string'}]}],
+          },
+        ],
+      },
+      {
+        name: 'pokemon',
+        type: 'document',
+        fields: [
+          {name: 'isLegendary', type: 'boolean'},
+          {name: 'trainers', type: 'array', of: [{type: 'reference', to: [{type: 'author'}]}]},
+          {
+            name: 'status',
+            type: 'string',
+            options: {list: [{title: 'Wild', value: 'wild'}, 'caught']},
           },
         ],
       },
@@ -200,22 +216,103 @@ describe('typeValueCompletions', () => {
   })
 })
 
-describe('fieldHoverAt', () => {
-  it('shows the field type, description and the types that declare it', () => {
+/** The hover's text where `at` is in `doc`, or null when there is none */
+function hoverText(
+  doc: string,
+  at: string,
+  {params = {}, offset = 0}: {params?: Record<string, unknown>; offset?: number} = {},
+): string | null {
+  const state = EditorState.create({
+    doc,
+    extensions: [
+      groq(),
+      groqEditorLabels.of(LABELS),
+      querySchema.of(schema),
+      queryParamValues.of(params),
+    ],
+  })
+  const tooltip = typeHoverAt(state, doc.indexOf(at) + offset, 1)
+  return tooltip?.create(undefined as never).dom.textContent ?? null
+}
+
+describe('typeHoverAt', () => {
+  it('resolves `_type` in a projection to the types the filter pins', () => {
+    const doc = '*[_type == "pokemon" && isLegendary == true] | order(_createdAt asc) { _type }'
+    expect(hoverText(doc, '_type }')).toContain('_type: "pokemon"')
+    expect(hoverText('*[_type in ["author", "book"]]{_type}', '_type}')).toContain(
+      '_type: "author" | "book"',
+    )
+    expect(hoverText('*[_type == "book"]{author{_type}}', '_type}')).toContain('_type: "reference"')
+  })
+
+  it('shows a field type, description and the types that declare it', () => {
     const doc = '*[_type == $type]{name}'
-    const {state} = stateOf(doc, {type: 'author'})
-    const tooltip = fieldHoverAt(state, doc.indexOf('name') + 1, 1)
-    expect(tooltip).toMatchObject({pos: doc.indexOf('name'), end: doc.indexOf('name') + 4})
-    const dom = tooltip?.create(undefined as never).dom
-    expect(dom?.textContent).toContain('name: string')
-    expect(dom?.textContent).toContain('Full name')
-    expect(dom?.textContent).toContain('Field of author')
+    const text = hoverText(doc, 'name', {params: {type: 'author'}, offset: 1})
+    expect(text).toContain('name: string')
+    expect(text).toContain('Full name')
+    expect(text).toContain('Field of author')
+  })
+
+  it('lists the values a field allows', () => {
+    expect(hoverText('*[_type == "pokemon"]{status}', 'status')).toContain(
+      'status: "wild" | "caught"',
+    )
+  })
+
+  it('types system attributes, also of documents the query has not narrowed', () => {
+    expect(hoverText('*[_type == "author"]{_createdAt}', '_createdAt')).toContain(
+      '_createdAt: string',
+    )
+    expect(hoverText('*[_id == "x"]', '_id')).toContain('_id: string')
+    expect(hoverText('*[_type == "book"]{"weak": author._weak}', '_weak')).toContain(
+      '_weak: boolean',
+    )
   })
 
   it('shows nothing for a field the schema does not declare', () => {
-    const doc = '*[_type == "author"]{nope}'
-    const {state} = stateOf(doc)
-    expect(fieldHoverAt(state, doc.indexOf('nope') + 1, 1)).toBeNull()
+    expect(hoverText('*[_type == "author"]{nope}', 'nope')).toBeNull()
+    expect(hoverText('*[_type == "author"]{_ref}', '_ref')).toBeNull()
+  })
+
+  it('shows a param by its value in the params, or the type the query expects of it', () => {
+    expect(hoverText('*[_type == $type]', '$type', {params: {type: 'author'}})).toBe(
+      '$type: "author"In params',
+    )
+    expect(
+      hoverText('*[_type in $types]', '$types', {params: {types: ['author', 'book']}}),
+    ).toContain('$types: ["author","book"]')
+    expect(hoverText('*[_type == $type]', '$type')).toContain(
+      '$type: "author" | "book" | "pokemon"',
+    )
+    expect(hoverText('*[_type == "author"][0...$limit]', '$limit')).toContain('$limit: integer')
+    expect(hoverText('*[_type == "author"][0...$limit]', '$limit', {params: {limit: ''}})).toBe(
+      '$limit: integerNot in params',
+    )
+  })
+
+  it('resolves `*`, `@`, `^` and `->` to what they stand for', () => {
+    expect(hoverText('*[_type == "book"]{title}', '*')).toContain('*: array of book')
+    expect(hoverText('*[_type == "book"]{"me": @}', '@')).toContain('@: book')
+    expect(hoverText('*[_type == "book"]{author->{"b": ^}}', '^')).toContain('^: book')
+    expect(hoverText('*[_type == "book"]{author->{name}}', '->')).toContain('<reference> -> author')
+    expect(hoverText('*[_type == "pokemon"]{"t": trainers[]->name}', '->')).toContain(
+      '<reference> -> author',
+    )
+  })
+
+  it('documents operators', () => {
+    const doc = '*[_type == "book" && !defined(title) || title match "x*"]'
+    expect(hoverText(doc, '==')).toContain('<any> == <any> <boolean>')
+    expect(hoverText(doc, '&&')).toContain('True when both sides are true')
+    expect(hoverText(doc, 'match')).toContain('Full-text match')
+    expect(hoverText(doc, '&&')).toContain('Operators')
+  })
+
+  it('names the document type a string stands for', () => {
+    expect(hoverText('*[_type == "author"]', '"author"', {offset: 1})).toBe(
+      '"author"AuthorDocument type',
+    )
+    expect(hoverText('*[title == "x"]', '"x"', {offset: 1})).toBeNull()
   })
 })
 
