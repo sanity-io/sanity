@@ -19,3 +19,4 @@ export {
   isSvgImageRef,
   pixelRectToCrop,
 } from '../image/cropDimensions'
+export {defaultCropRect, largestRectForRatio, largestSizeForRatio} from '../image/defaultCrop'

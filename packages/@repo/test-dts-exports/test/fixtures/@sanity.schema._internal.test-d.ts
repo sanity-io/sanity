@@ -23,6 +23,8 @@ import type {
   groupProblems,
   IconResolver,
   isActionEnabled,
+  isHotspotEnabled,
+  isImageToolEnabled,
   isInternalValidator,
   isValidImageAspectRatio,
   isValidImageCropDimensions,
@@ -120,6 +122,12 @@ describe('@sanity/schema/_internal', () => {
   })
   test('isActionEnabled', () => {
     expectTypeOf<typeof isActionEnabled>().not.toBeNever()
+  })
+  test('isHotspotEnabled', () => {
+    expectTypeOf<typeof isHotspotEnabled>().toBeFunction()
+  })
+  test('isImageToolEnabled', () => {
+    expectTypeOf<typeof isImageToolEnabled>().toBeFunction()
   })
   test('isInternalValidator', () => {
     expectTypeOf<typeof isInternalValidator>().toBeFunction()

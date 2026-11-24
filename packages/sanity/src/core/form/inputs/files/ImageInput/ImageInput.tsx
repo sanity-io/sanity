@@ -1,4 +1,5 @@
 import {isImageSource} from '@sanity/asset-utils'
+import {isImageToolEnabled} from '@sanity/schema/_internal'
 import {
   type AssetFromSource,
   type AssetSource,
@@ -28,6 +29,7 @@ import {AssetSourceBrowser} from '../common/AssetSourceBrowser'
 import {AssetSourceDialog} from '../common/AssetSourceDialog'
 import {UploadProgress} from '../common/UploadProgress'
 import {useAssetSource} from '../common/useAssetSource'
+import {getImageToolPath} from '../ImageToolInput/imageToolOptions'
 import {ImageAccessPolicy} from './ImageAccessPolicy'
 import {ImageInputAsset} from './ImageInputAsset'
 import {ImageInputAssetMenu} from './ImageInputAssetMenu'
@@ -109,10 +111,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     [handleSelectFilesToUpload],
   )
 
-  const isImageToolEnabled = useCallback(() => {
-    const hotspotOptions = get(schemaType, 'options.hotspot')
-    return typeof hotspotOptions === 'object' || hotspotOptions === true
-  }, [schemaType])
+  const imageToolEnabled = isImageToolEnabled(schemaType.options)
+  const imageToolPath = getImageToolPath(schemaType.options)
   const valueIsArrayElement = useCallback(() => {
     const parentPathSegment = path.slice(-1)[0]
 
@@ -200,8 +200,8 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
   }, [onChange, value, valueIsArrayElement])
 
   const handleOpenDialog = useCallback(() => {
-    onPathFocus(['hotspot'])
-  }, [onPathFocus])
+    onPathFocus(imageToolPath)
+  }, [imageToolPath, onPathFocus])
 
   const handleCloseDialog = useCallback(() => {
     onPathFocus([])
@@ -269,7 +269,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         onOpenSourceForUpload={handleOpenSourceForUpload}
         handleSelectImageFromAssetSource={handleSelectImageFromAssetSource}
         imageUrlBuilder={imageUrlBuilder}
-        isImageToolEnabled={isImageToolEnabled()}
+        isImageToolEnabled={imageToolEnabled}
         isMenuOpen={isMenuOpen}
         observeAsset={observeAsset}
         onOpenInSource={handleOpenInSource}
@@ -292,7 +292,7 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     handleSelectFileToUpload,
     handleSelectImageFromAssetSource,
     imageUrlBuilder,
-    isImageToolEnabled,
+    imageToolEnabled,
     isMenuOpen,
     menuButtonRef,
     observeAsset,
@@ -400,14 +400,14 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     (inputProps: Omit<InputProps, 'renderDefault'>) => {
       return (
         <ImageInputHotspotInput
-          isImageToolEnabled={isImageToolEnabled()}
+          isImageToolEnabled={imageToolEnabled}
           handleCloseDialog={handleCloseDialog}
           imageInputProps={props}
           inputProps={inputProps}
         />
       )
     },
-    [handleCloseDialog, isImageToolEnabled, props],
+    [handleCloseDialog, imageToolEnabled, props],
   )
   const renderAssetSource = useCallback(() => {
     if (!selectedAssetSource) return null
@@ -440,13 +440,14 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
     value,
   ])
 
-  // we use the hotspot field as the "owner" of both hotspot and crop
-  const hotspotField = useMemo(
+  // one field "owns" both hotspot and crop, see `getImageToolPath`
+  const imageToolField = useMemo(
     () =>
       members.find(
-        (member): member is FieldMember => member.kind === 'field' && member.name === 'hotspot',
+        (member): member is FieldMember =>
+          member.kind === 'field' && member.name === imageToolPath[0],
       ),
-    [members],
+    [imageToolPath, members],
   )
 
   return (
@@ -512,10 +513,10 @@ function BaseImageInputComponent(props: BaseImageInputProps): React.JSX.Element 
         )
       })}
 
-      {hotspotField && focusPath[0] === 'hotspot' && (
+      {imageToolField && focusPath[0] === imageToolPath[0] && (
         <FormInput
           {...props}
-          absolutePath={hotspotField.field.path}
+          absolutePath={imageToolField.field.path}
           renderInput={renderHotspotInput}
         />
       )}
