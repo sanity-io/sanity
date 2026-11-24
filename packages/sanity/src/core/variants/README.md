@@ -23,11 +23,22 @@ Variant definitions are stored as system documents:
 A variant document currently contains:
 
 - `_id` and `_type`
-- `conditions: Record<string, string>`
+- `conditions: VariantCondition[]`, each entry `{_key, condition, value}` (for example `{_key: 'k1', condition: 'audience', value: 'loyal'}`)
 - `priority`, defaulting to `0`
 - optional `metadata`, currently used for `title` and Portable Text `description`
 
-`conditions` is persisted as an object because that is the shape expected by the document. The UI does not edit that object directly. It keeps condition rows locally while the user is typing so duplicate keys, incomplete rows, and partial key edits do not collapse or lose values.
+The UI does not edit `conditions` directly. It keeps condition rows locally while the user is typing so duplicate keys, incomplete rows, and partial key edits do not lose values.
+
+### Legacy object-shaped conditions
+
+`conditions` used to be an object (`{audience: 'loyal', country: 'uk'}`), and Content Lake keeps returning that shape for definitions that have not been migrated yet. The Studio supports both shapes while the data is migrated:
+
+- The store query returns `StoredSystemVariant`, whose `conditions` can be either shape. `normalizeStoredVariant` (`store/normalizeStoredVariant.ts`) converts every definition into a `SystemVariant` with the array shape before it enters the store state, so everything that reads from `useAllVariants` only sees arrays.
+- Legacy entries are keyed by their condition name (`_key: 'audience'`), so each refetch produces the same keys.
+- `needsMigration` is `true` on definitions that arrived in the legacy shape. It is computed by the store and never written back: `EditableSystemVariant` does not include it.
+- Create and edit always write the array shape, so saving the edit dialog also migrates a definition.
+- The overview shows a banner with a "Migrate all" action when any definition needs migration, and the detail page shows the same banner for that definition alone (`tool/VariantConditionsMigrationBanner.tsx`, `hooks/useMigrateVariantConditions.ts`).
+- The migration itself (`migrateVariantConditions` in `store/createVariantOperationsStore.ts`) is mocked until Content Lake ships the patch action: it writes nothing, and the store's `VARIANTS_MIGRATED` action only clears `needsMigration` locally, so the next refetch flags those definitions again.
 
 ## Store And Operations
 
@@ -43,6 +54,7 @@ Write operations live in `store/createVariantOperationsStore.ts` and go through 
 - `createVariant` issues a `sanity.action.variant.definition.create` action.
 - `updateVariant` issues a `sanity.action.variant.definition.edit` action that sets `conditions`, `priority`, and optional `metadata` (unsetting `metadata` when absent).
 - `deleteVariant` issues a `sanity.action.variant.definition.delete` action.
+- `migrateVariantConditions` rewrites legacy object-shaped `conditions` to the array shape. It is mocked for now (see [Legacy object-shaped conditions](#legacy-object-shaped-conditions)).
 
 The action payloads are typed locally through the temporary `SanityClientWithVariantsActions` wrapper in `store/variantsClient.ts`. That wrapper exists only until `@sanity/client` exports these variant definition action types.
 
@@ -94,13 +106,13 @@ interface ConditionRow {
 }
 ```
 
-This row state is an important part of the form architecture. Persisting conditions as an object is fine after validation, but object keys are awkward while editing:
+This row state is an important part of the form architecture. The persisted conditions must be complete and unique, which rows being edited are not:
 
-- duplicate keys collapse in an object
+- two rows can hold the same key while the user is typing
 - incomplete rows cannot be represented safely
 - partial key edits can move or lose values
 
-The form only serializes rows back to `variant.conditions` when every row has both a key and value and there are no duplicate keys.
+A row's `id` is the `_key` of the condition it was loaded from (a new row gets a random key), so a condition keeps its `_key` when its key or value changes. The form only serializes rows back to `variant.conditions` when every row has both a key and value and there are no duplicate keys.
 
 Covered behavior:
 

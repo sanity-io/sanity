@@ -9,7 +9,7 @@ This document explains how document variant editing works in the Studio. It is t
 
 A **variant definition** is a system document describing a condition set under which alternative content applies (for example `locale: fr` or `audience: loyal-customers`):
 
-- Type `system.variant`, id path `_.variants.<suffix>` (`VARIANT_DOCUMENTS_PATH` in `store/constants.ts`), shape `SystemVariant` in [`types.ts`](./types.ts) — `conditions: Record<string, string>`, `priority`, optional `metadata.title`.
+- Type `system.variant`, id path `_.variants.<suffix>` (`VARIANT_DOCUMENTS_PATH` in `store/constants.ts`), shape `SystemVariant` in [`types.ts`](./types.ts) — `conditions: VariantCondition[]` (`{_key, condition, value}` entries; legacy object-shaped data is normalized by the variants store, see [`README.md`](./README.md#legacy-object-shaped-conditions)), `priority`, optional `metadata.title`.
 - Definitions are managed through the Variants tool and fetched studio-wide by `useAllVariants` (a store refetched on changes reported by the global listener store).
 
 A **variant document** is alternative content for a base document under one variant. It is a _version document_:
