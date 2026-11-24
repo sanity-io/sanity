@@ -4,7 +4,12 @@ import {cleanup, render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
-import {DOCUMENT_LIST_SHAPE, parseDocumentList} from '../../../util/documentListResult'
+import {
+  DOCUMENT_LIST_SHAPE,
+  type ParsedDocumentList,
+  parseDocumentList,
+  parseSourceMapDocuments,
+} from '../../../util/documentListResult'
 import {DocumentListView} from './DocumentListView'
 
 const schemaTypes = new Map<string, unknown>([['author', {name: 'author', title: 'Author'}]])
@@ -16,6 +21,7 @@ const schema = {
 vi.mock('sanity', () => ({
   useSchema: () => schema,
   useDataset: () => 'workspace-dataset',
+  useProjectId: () => 'workspace-project',
   getPublishedId: (id: string) => id.replace(/^(drafts\.|versions\.[^.]+\.)/, ''),
   CommandList: ({
     items,
@@ -103,14 +109,14 @@ vi.stubGlobal(
 const theme = buildTheme()
 
 function renderParsed(result: unknown, datasetName = 'workspace-dataset') {
+  renderList(parseDocumentList(result), datasetName)
+}
+
+function renderList(parsed: ParsedDocumentList, datasetName = 'workspace-dataset') {
   render(
     <ThemeProvider theme={theme}>
       <LayerProvider>
-        <DocumentListView
-          datasetName={datasetName}
-          id="vision-result-content"
-          parsed={parseDocumentList(result)}
-        />
+        <DocumentListView datasetName={datasetName} id="vision-result-content" parsed={parsed} />
       </LayerProvider>
     </ThemeProvider>,
   )
@@ -157,6 +163,38 @@ describe('DocumentListView', () => {
     expect(row.querySelector('a')).toBeNull()
     expect(screen.queryByTestId('vision-document-list-open')).toBeNull()
     expect(screen.getByTestId('vision-document-list-copy-id')).toBeTruthy()
+  })
+
+  it('lists the documents of a source map, linking only those in the workspace dataset', () => {
+    renderList(
+      parseSourceMapDocuments({
+        documents: [
+          {_id: 'ada', _type: 'author'},
+          {
+            _id: 'local',
+            _type: 'author',
+            _projectId: 'workspace-project',
+            _dataset: 'workspace-dataset',
+          },
+          {_id: 'remote', _type: 'author', _projectId: 'other-project', _dataset: 'other-dataset'},
+          {_id: 'sibling', _type: 'author', _dataset: 'other-dataset'},
+        ],
+      }),
+    )
+
+    const rows = screen.getAllByTestId('vision-document-list-row')
+    expect(rows.map((row) => row.textContent)).toEqual([
+      'ada',
+      'localworkspace-project · workspace-dataset',
+      'remoteother-project · other-dataset',
+      'siblingother-dataset',
+    ])
+    expect(
+      screen.getAllByTestId('vision-document-list-link').map((link) => link.getAttribute('href')),
+    ).toEqual(['/intent/edit/id=ada;type=author', '/intent/edit/id=local;type=author'])
+    expect(rows[2].querySelector('a')).toBeNull()
+    expect(rows[3].querySelector('a')).toBeNull()
+    expect(screen.getAllByTestId('vision-document-list-copy-id')).toHaveLength(4)
   })
 
   it('puts the panel id on the root so the tab can control it', () => {

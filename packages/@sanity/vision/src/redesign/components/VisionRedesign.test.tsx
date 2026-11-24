@@ -1608,6 +1608,77 @@ describe('VisionRedesign', () => {
     )
   })
 
+  it('shows the content source map as JSON, Tree, Graph or Documents from its tab header', async () => {
+    const {respondWith} = renderRedesign()
+    const resultSourceMap = {
+      documents: [
+        {_id: 'drafts.a', _type: 'author'},
+        {_id: 'b', _type: 'book', _projectId: 'other-project', _dataset: 'other-dataset'},
+      ],
+      paths: ["$['title']"],
+      mappings: {
+        "$[0]['name']": {type: 'value', source: {type: 'documentValue', document: 0, path: 0}},
+      },
+    }
+    // The result projects neither `_id` nor `_type`, and Documents still lists the mapped documents
+    respondWith({result: [{name: 'Ada'}], ms: 3, resultSourceMap})
+    typeQuery('*[_type == "author"]{name}')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
+    await screen.findByTestId('vision-result-json')
+
+    fireEvent.click(document.getElementById('vision-response-source-map-tab') as HTMLElement)
+    const sourceMap = await screen.findByTestId('vision-source-map')
+    // The tree it always showed comes first, with the switcher in the panel header
+    expect(within(sourceMap).getByTestId('result-json').textContent).toBe(
+      JSON.stringify(resultSourceMap),
+    )
+    const viewButton = screen.getByTestId('vision-source-map-view-button')
+    expect(text(viewButton)).toBe('vision.result.view.tree')
+    expect(viewButton.getAttribute('aria-controls')).toBe(sourceMap.id)
+    const menu = await openMenu('vision-source-map-view-button', 'vision-source-map-view-menu')
+    expect(
+      within(menu)
+        .getAllByRole('menuitemradio', {hidden: true})
+        .map((item) => item.getAttribute('data-testid')),
+    ).toEqual([
+      'vision-source-map-view-json',
+      'vision-source-map-view-tree',
+      'vision-source-map-view-graph',
+      'vision-source-map-view-documents',
+    ])
+
+    fireEvent.click(within(menu).getByTestId('vision-source-map-view-documents'))
+    expect((await screen.findAllByTestId('vision-document-list-mock')).at(-1)?.textContent).toBe(
+      'drafts.a,b',
+    )
+
+    const pickSourceMapView = async (view: string) => {
+      const viewMenu = await openMenu(
+        'vision-source-map-view-button',
+        'vision-source-map-view-menu',
+      )
+      fireEvent.click(within(viewMenu).getByTestId(`vision-source-map-view-${view}`))
+    }
+    await pickSourceMapView('json')
+    const json = within(screen.getByTestId('vision-source-map')).getByTestId('vision-result-json')
+    expect((within(json).getByTestId('codemirror-mock') as HTMLTextAreaElement).value).toBe(
+      JSON.stringify(resultSourceMap, null, 2),
+    )
+
+    await pickSourceMapView('graph')
+    expect(
+      screen
+        .getByTestId('vision-source-map')
+        .querySelector('#' + CSS.escape(viewButton.getAttribute('aria-controls') ?? '')),
+    ).toBeTruthy()
+    expect(
+      within(screen.getByTestId('vision-source-map')).queryByTestId('vision-result-json'),
+    ).toBeNull()
+    // The result keeps its own view
+    expect(text(screen.getByTestId('vision-result-view-button'))).toBe('vision.result.view.json')
+  })
+
   it('keeps JSON for a result that is not a document list, and explains it from Documents', async () => {
     const {respondWith} = renderRedesign()
     respondWith({result: {count: 1}, ms: 3})

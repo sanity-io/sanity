@@ -25,6 +25,13 @@ export interface CollapsiblePanelTab {
   tone?: ButtonTone
   /** Softens `tone`, the way the releases Errors chip does */
   muted?: boolean
+  /** Controls for the open tab's content, shown at the end of the header while the panel is open */
+  actions?: ReactNode
+  /**
+   * Stretches the content to the panel, for content that scrolls or pans inside its own box (an
+   * editor, a graph, a virtual list) rather than growing with what it shows
+   */
+  fill?: boolean
   content: ReactNode
 }
 
@@ -131,22 +138,25 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
             ))}
           </TabList>
         </Box>
-        <Button
-          aria-controls={collapsed ? undefined : elementId(`${activeTab.id}-panel`)}
-          aria-expanded={!collapsed}
-          aria-label={collapsed ? t('vision.panel.expand') : t('vision.panel.collapse')}
-          className={motion.toggle}
-          data-testid={`${idPrefix}-panel-toggle`}
-          fontSize={1}
-          icon={
-            <span className={motion.toggleChevron}>
-              <ChevronDownIcon />
-            </span>
-          }
-          mode="bleed"
-          onClick={onToggle}
-          padding={2}
-        />
+        <Flex alignItems="center" flexShrink={0} gap={1}>
+          {!collapsed && activeTab.actions}
+          <Button
+            aria-controls={collapsed ? undefined : elementId(`${activeTab.id}-panel`)}
+            aria-expanded={!collapsed}
+            aria-label={collapsed ? t('vision.panel.expand') : t('vision.panel.collapse')}
+            className={motion.toggle}
+            data-testid={`${idPrefix}-panel-toggle`}
+            fontSize={1}
+            icon={
+              <span className={motion.toggleChevron}>
+                <ChevronDownIcon />
+              </span>
+            }
+            mode="bleed"
+            onClick={onToggle}
+            padding={2}
+          />
+        </Flex>
       </Flex>
       {!collapsed && (
         <TabPanel
@@ -160,7 +170,10 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
             Not stretched to the panel: its height is the tab's content, which fit-to-content
             measures. A stretched child would report the panel it sits in.
           */}
-          <div className={styles.panelContent} data-vision-panel-content="">
+          <div
+            className={cx(styles.panelContent, activeTab.fill && styles.panelContentFill)}
+            data-vision-panel-content=""
+          >
             {activeTab.content}
           </div>
         </TabPanel>
