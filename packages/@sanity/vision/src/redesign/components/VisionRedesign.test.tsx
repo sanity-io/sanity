@@ -4020,7 +4020,7 @@ describe('VisionRedesign', () => {
     fireEvent.click(screen.getByTestId('vision-query-menu-button'))
     fireEvent.click(screen.getByTestId('vision-export-query'))
     const dialog = await screen.findByTestId('vision-export-query-dialog')
-    expect(text(dialog)).toContain('"exported"')
+    expect(text(dialog)).toContain("{id: 'exported'}")
     expect(text(dialog)).not.toContain('"saved"')
 
     // Save from the sidebar, which has no access to the tab's debounce of its own
@@ -4055,6 +4055,14 @@ describe('VisionRedesign', () => {
       fireEvent.click(copy)
       await waitFor(() => expect(copy.getAttribute('data-copied')).toBe('true'))
 
+      // The highlighted code reads exactly as the snippet copies
+      const copied = writeText.mock.lastCall?.at(0)
+      const shown = screen
+        .getAllByTestId('vision-export-file')
+        .map((file) => file.querySelector('pre'))
+        .find((pre) => pre?.textContent === copied)
+      expect(shown?.querySelectorAll('span[style]').length).toBeGreaterThan(1)
+
       // Another snippet has not been copied yet
       const tabs = within(screen.getByTestId('vision-export-query-dialog')).getAllByRole('tab', {
         hidden: true,
@@ -4080,6 +4088,58 @@ describe('VisionRedesign', () => {
       if (clipboard) Object.defineProperty(navigator, 'clipboard', clipboard)
       else Reflect.deleteProperty(navigator, 'clipboard')
     }
+  })
+
+  it('shows the export snippets the settings keep, in their order, and remembers it', async () => {
+    renderRedesign()
+    typeQuery('*[_type == "post"]')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
+    const exportTabs = async () => {
+      fireEvent.click(screen.getByTestId('vision-query-menu-button'))
+      fireEvent.click(screen.getByTestId('vision-export-query'))
+      const dialog = await screen.findByTestId('vision-export-query-dialog')
+      const titles = within(dialog)
+        .getAllByRole('tab', {hidden: true})
+        .map((tab) => text(tab))
+      fireEvent.keyDown(dialog, {key: 'Escape'})
+      await waitFor(() => expect(screen.queryByTestId('vision-export-query-dialog')).toBeNull())
+      return titles
+    }
+    expect(await exportTabs()).toEqual([
+      '@sanity/client',
+      'curl',
+      'next-sanity',
+      '@sanity/astro',
+      '@sanity/sveltekit',
+      '@nuxtjs/sanity',
+    ])
+
+    fireEvent.click(screen.getByTestId('vision-sidebar-settings'))
+    const settings = within(screen.getByTestId('vision-drawer-settings'))
+    const reset = settings.getByTestId('vision-settings-export-snippets-reset')
+    expect(isDisabled(reset)).toBe(true)
+    for (const id of ['client', 'next-sanity', 'sveltekit', 'nuxt']) {
+      fireEvent.click(settings.getByTestId(`vision-settings-export-snippet-${id}`))
+    }
+    // Astro moves up past curl
+    fireEvent.click(settings.getByTestId('vision-settings-export-snippet-astro-up'))
+    fireEvent.click(settings.getByTestId('vision-settings-export-snippet-astro-up'))
+    fireEvent.click(settings.getByTestId('vision-settings-export-snippet-astro-up'))
+    // The last snippet left cannot be switched off
+    fireEvent.click(settings.getByTestId('vision-settings-export-snippet-curl'))
+    expect(isDisabled(settings.getByTestId('vision-settings-export-snippet-astro'))).toBe(true)
+    expect(isDisabled(reset)).toBe(false)
+
+    expect(await exportTabs()).toEqual(['@sanity/astro'])
+    await waitFor(() =>
+      expect(getStoredState().exportSnippets).toEqual({
+        order: ['astro', 'client', 'curl', 'next-sanity', 'sveltekit', 'nuxt'],
+        hidden: ['client', 'next-sanity', 'sveltekit', 'nuxt', 'curl'],
+      }),
+    )
+
+    fireEvent.click(reset)
+    expect(await exportTabs()).toHaveLength(6)
   })
 
   it('locks the API version to the variants version and sends the navbar variant with the global perspective', async () => {

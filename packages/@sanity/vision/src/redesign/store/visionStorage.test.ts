@@ -154,6 +154,17 @@ describe('visionStorage', () => {
       },
       editor: {autoFormatOnResize: false},
       response: {resolveSyncTags: true},
+      exportSnippets: {
+        order: [
+          'curl' as const,
+          'astro' as const,
+          'client' as const,
+          'next-sanity' as const,
+          'sveltekit' as const,
+          'nuxt' as const,
+        ],
+        hidden: ['next-sanity' as const, 'nuxt' as const],
+      },
       functions: [{id: 'ex::author', declaration: 'fn ex::author($ref) = $ref->{name}'}],
     }
     saveVisionState('proj', saved)
@@ -384,6 +395,37 @@ describe('visionStorage', () => {
     expect(load({resolveSyncTags: true})).toEqual({resolveSyncTags: true})
     expect(load({resolveSyncTags: 'yes'})).toEqual({resolveSyncTags: false})
     expect(load('on')).toEqual({resolveSyncTags: false})
+  })
+
+  it('keeps every export snippet once, in the stored order, and never hides them all', () => {
+    const {exportSnippets: _exportSnippets, ...withoutSnippets} = createInitialState(defaults)
+    const defaultOrder = ['client', 'curl', 'next-sanity', 'astro', 'sveltekit', 'nuxt']
+    expect(createInitialState(defaults).exportSnippets).toEqual({order: defaultOrder, hidden: []})
+
+    const load = (exportSnippets?: unknown) => {
+      localStorage.setItem(
+        getVisionStorageKey('proj'),
+        JSON.stringify(
+          exportSnippets === undefined ? withoutSnippets : {...withoutSnippets, exportSnippets},
+        ),
+      )
+      return loadVisionState('proj', defaults).exportSnippets
+    }
+    // State saved before the setting existed
+    expect(load()).toEqual({order: defaultOrder, hidden: []})
+    expect(load('off')).toEqual({order: defaultOrder, hidden: []})
+    // Unknown and repeated snippets are dropped, and snippets added since come last
+    expect(
+      load({order: ['curl', 'gone', 'curl', 'astro'], hidden: ['client', 'gone', 'client']}),
+    ).toEqual({
+      order: ['curl', 'astro', 'client', 'next-sanity', 'sveltekit', 'nuxt'],
+      hidden: ['client'],
+    })
+    // The dialog always has a tab to show
+    expect(load({order: defaultOrder, hidden: defaultOrder})).toEqual({
+      order: defaultOrder,
+      hidden: [],
+    })
   })
 
   it('returns a fresh state for missing, malformed or outdated storage', () => {

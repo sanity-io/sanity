@@ -803,6 +803,37 @@
   overflow: auto;
 }
 
+/* The tabs of the Export query dialog scroll sideways on a narrow screen instead of squeezing */
+.exportTabs {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+/* The path of a snippet file, above its code */
+.exportFileHeader {
+  border-bottom: 1px solid var(--card-border-color);
+}
+
+/*
+ * Long lines of an export snippet wrap rather than scroll the code sideways; the copied text keeps
+ * its own lines
+ */
+.exportCode pre,
+.exportCode code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* The highlighted code of a snippet file, in the card's colors where no token colors it */
+.exportCodeBlock {
+  margin: 0;
+  color: var(--card-code-fg-color, var(--card-fg-color));
+}
+
+.exportCodeBlock code {
+  font: inherit;
+}
+
 /*
  * Single-line, ellipsized query preview. @sanity/ui's Code trims its line box with
  * pseudo-elements, so the ellipsis is applied to a wrapper with the code rendered inline.
