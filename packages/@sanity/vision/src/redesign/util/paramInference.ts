@@ -22,7 +22,7 @@ export interface InferredParam {
   type: ParamType
   /** The expressions that use the param, as GROQ */
   usages: string[]
-  /** The query expects null too: `defined($param)`, `coalesce($param, …)`, `$param == null` */
+  /** The query expects null too: `defined($param)`, `coalesce($param, …)`, `$param == null`, `!$param || …` */
   nullable?: true
 }
 
@@ -332,6 +332,7 @@ function resolve(
 function collectUsages(ast: ExprNode, options: InferParamsOptions): Usage[] {
   const usages: Usage[] = []
   const handled = new Set<ExprNode>()
+  const guards = new Set<ExprNode>()
 
   const report = (
     param: ExprNode,
@@ -395,11 +396,17 @@ function collectUsages(ast: ExprNode, options: InferParamsOptions): Usage[] {
       }
       case 'And':
       case 'Or':
-        report(node.left, node, {kind: 'boolean', array: false})
+        // `!$param || …` skips the rest when the param is not given: it is optional, not a boolean
+        if (node.type === 'Or' && node.left.type === 'Not' && node.left.base.type === 'Parameter') {
+          guards.add(node.left)
+          report(node.left.base, node.left, undefined, true)
+        } else {
+          report(node.left, node, {kind: 'boolean', array: false})
+        }
         report(node.right, node, {kind: 'boolean', array: false})
         break
       case 'Not':
-        report(node.base, node, {kind: 'boolean', array: false})
+        if (!guards.has(node)) report(node.base, node, {kind: 'boolean', array: false})
         break
       case 'Select':
         for (const alternative of node.alternatives) {
