@@ -1206,6 +1206,18 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    */
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.result.documents.error': 'The documents could not be loaded: {{message}}',
+  /** Button in the document list that has Agent Actions change the query for the list to show it */
+  'vision.result.documents.fit': 'Update query with AI',
+  /** Shown beside the button over a list whose rows lack attributes the list shows, which it names */
+  'vision.result.documents.fit.description':
+    'These rows have no {{fields}}. Agent Actions can add them to the query, keeping its filter and comments; every attempt uses one AI credit.',
+  /** Shown under the expected shape when the result is not a document list */
+  'vision.result.documents.fit.description-invalid':
+    'Agent Actions can change the query to list documents, keeping its filter and comments; every attempt uses one AI credit.',
+  /** Shown when the query could not be changed for the document list, above the reason */
+  'vision.result.documents.fit.failed': 'The query could not be updated',
+  /** Shown while the first attempt at the query for the document list is written */
+  'vision.result.documents.fit.progress': 'Updating the query for the list…',
   /** Shown when the result is not an array, so Documents cannot list it */
   'vision.result.documents.invalid.not-array':
     'This result is not an array, so Documents cannot list it. _id is required. _type, title, subtitle and media are optional. Expected shape:',

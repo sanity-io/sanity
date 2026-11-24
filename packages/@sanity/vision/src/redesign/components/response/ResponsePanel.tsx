@@ -2,6 +2,7 @@ import {Badge, Card, Label} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {type Schema, useSchema} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
@@ -11,6 +12,7 @@ import {ResultView, type ResultViewCopy} from '../../../components/ResultView'
 import {visionLocaleNamespace} from '../../../i18n'
 import {describeKeypath} from '../../../util/getAtKeypath'
 import {canEncodeCsv, getCsvBlobUrl, getJsonBlobUrl} from '../../../util/getBlobUrl'
+import {useAiFeatures} from '../../aiFeatures'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {useOneOffSourceMap} from '../../hooks/useOneOffSourceMap'
 import {useQueryAgent} from '../../hooks/useQueryAgent'
@@ -31,7 +33,8 @@ import {
   selectSourceMapEnabled,
 } from '../../store/visionMachine'
 import {cx} from '../../util/cx'
-import {parseDocumentList} from '../../util/documentListResult'
+import {getAvailableRowFields} from '../../util/documentListFields'
+import {canImproveDocumentList, getRowTypes, parseDocumentList} from '../../util/documentListResult'
 import {haveSameQuery} from '../../util/queryRequest'
 import {fetchSyncTagSourceMap} from '../../util/syncTagLookup'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
@@ -44,6 +47,7 @@ import {TabDrawerPortal} from '../TabDrawerPortal'
 import {useTabElementId} from '../tabs/queryTabShown'
 import {DeltaTab, useDeltaPanel} from './DeltaTab'
 import {DocumentListView} from './documentList/DocumentListView'
+import {FitDocumentListQuery} from './documentList/FitDocumentListQuery'
 import {ExplainTab} from './ExplainTab'
 import {HistoryTab} from './HistoryTab'
 import {MutateTab, useMutatePanel} from './MutateTab'
@@ -143,6 +147,8 @@ export function ResponsePanel(props: ResponsePanelProps) {
   }, [resolveSyncTags, result, resultSourceMap, settledRequest])
   const queryExplain = useQueryExplain(request)
   const improveAgent = useQueryAgent({tab, client: resolved.client, formatForEditor})
+  const documentListAgent = useQueryAgent({tab, client: resolved.client, formatForEditor})
+  const {editQuery: aiEdit} = useAiFeatures()
   const perspectiveName = usePerspectiveOptionName(resolved.tabPerspective)
   const delta = useDeltaPanel()
   const mutate = useMutatePanel()
@@ -153,6 +159,14 @@ export function ResponsePanel(props: ResponsePanelProps) {
     () => (hasResult && storedResultView === 'documents' ? parseDocumentList(result) : undefined),
     [hasResult, result, storedResultView],
   )
+  const schema = useSchema() as Schema | undefined
+  const documentListImprovable = useMemo(() => {
+    if (!parsedDocuments) return false
+    const available = schema
+      ? getAvailableRowFields(schema, getRowTypes(parsedDocuments))
+      : undefined
+    return canImproveDocumentList(parsedDocuments, available)
+  }, [parsedDocuments, schema])
   const settledQuery = settledRequest?.query ?? ''
   // Documents picked for this query shows its guidance when the result is not a document list.
   // Otherwise a remembered Documents shows such a result as JSON and stays remembered.
@@ -452,6 +466,20 @@ export function ResponsePanel(props: ResponsePanelProps) {
                 datasetName={resultDataset}
                 id={resultContentId}
                 parsed={parsedDocuments}
+                action={
+                  aiEdit &&
+                  (documentListAgent.status.type === 'running' ||
+                    (resultIsCurrent && documentListImprovable)) ? (
+                    <FitDocumentListQuery
+                      agent={documentListAgent}
+                      client={resolved.client}
+                      params={params}
+                      parsed={parsedDocuments}
+                      result={result}
+                      tab={tab}
+                    />
+                  ) : undefined
+                }
               />
             ) : hasResult && resultView === 'json' ? (
               <ResultJson className={styles.resultView} id={resultContentId} value={result} />

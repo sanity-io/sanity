@@ -30,7 +30,8 @@ export interface VisionTelemetry {
       | 'fix-lint'
       | 'generate-mutations'
       | 'explain'
-      | 'improve-query',
+      | 'improve-query'
+      | 'fit-document-list',
   ) => void
   tabsChanged: (count: number, action: 'open' | 'add' | 'close') => void
   queryPrettified: (outcome: 'success' | 'error') => void
@@ -80,7 +81,8 @@ export function useVisionTelemetry(): VisionTelemetry {
         | 'fix-lint'
         | 'generate-mutations'
         | 'explain'
-        | 'improve-query',
+        | 'improve-query'
+        | 'fit-document-list',
     ) => {
       telemetry.log(VisionAgentActionInvoked, {action})
     },
