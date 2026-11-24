@@ -8,6 +8,7 @@ import {
   type PointerEvent,
   type RefObject,
   useCallback,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react'
@@ -220,6 +221,8 @@ export function QueryTabBar() {
   const activeTabId = useVisionSelector((snapshot) => snapshot.context.activeTabId)
   const [editingId, setEditingId] = useState<string | null>(null)
   const listRef = useRef<HTMLDivElement | null>(null)
+  const barRef = useRef<HTMLDivElement | null>(null)
+  const newTabSlotRef = useRef<HTMLDivElement | null>(null)
   const reducedMotion = useReducedMotion()
   // Whether the last change to the strip came from the keyboard. Shift+Arrow and Delete repeat
   // fast, and a slide on every press makes the strip feel slower than the keys
@@ -256,6 +259,22 @@ export function QueryTabBar() {
     },
     [focusTab],
   )
+
+  // Keep the active tab whole in the strip when it changes, a new tab included, clear of the new
+  // tab button pinned over the right edge. Layout offsets rather than bounding boxes, so a tab
+  // that is still scaling in or sliding into place measures where it ends up.
+  useLayoutEffect(() => {
+    const bar = barRef.current
+    const item = listRef.current
+      ?.querySelector(`#${getQueryTabId(activeTabId)}`)
+      ?.closest<HTMLElement>('[data-testid="vision-tab-item"]')
+    if (!bar || !item) return
+    const visibleWidth = bar.clientWidth - (newTabSlotRef.current?.offsetWidth ?? 0)
+    if (item.offsetLeft < bar.scrollLeft) bar.scrollLeft = item.offsetLeft
+    else if (item.offsetLeft + item.offsetWidth > bar.scrollLeft + visibleWidth) {
+      bar.scrollLeft = item.offsetLeft + item.offsetWidth - visibleWidth
+    }
+  }, [activeTabId])
 
   const reorder = useCallback(
     (ordered: VisionTab[]) =>
@@ -316,6 +335,7 @@ export function QueryTabBar() {
       data-testid="vision-tab-bar"
       flexShrink={0}
       onPointerDownCapture={() => setKeyboardDriven(false)}
+      ref={barRef}
     >
       <Reorder.Group
         aria-label={t('vision.tabs.label')}
@@ -348,17 +368,19 @@ export function QueryTabBar() {
           />
         ))}
       </Reorder.Group>
-      <Button
-        aria-label={t('vision.tabs.new-tab')}
-        className={styles.newTabButton}
-        data-testid="vision-new-tab"
-        fontSize={1}
-        icon={AddIcon}
-        mode="bleed"
-        onClick={() => actorRef.send({type: 'tab.add'})}
-        padding={2}
-        radius={0}
-      />
+      <div className={styles.newTabSlot} ref={newTabSlotRef}>
+        <Button
+          aria-label={t('vision.tabs.new-tab')}
+          className={styles.newTabButton}
+          data-testid="vision-new-tab"
+          fontSize={1}
+          icon={AddIcon}
+          mode="bleed"
+          onClick={() => actorRef.send({type: 'tab.add'})}
+          padding={2}
+          radius={0}
+        />
+      </div>
     </Flex>
   )
 }

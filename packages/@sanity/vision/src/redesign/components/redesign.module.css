@@ -371,14 +371,22 @@
  * background can cover it and merge with the panel below (a border would be clipped away by the
  * strip's overflow instead).
  */
+/*
+ * Scrolls sideways once the tabs overflow. No `scrollbar-width` here: setting it makes Chromium
+ * ignore the studio's `::-webkit-scrollbar` styles, which give this strip the same thin thumb on
+ * a transparent track as the Structure tool's lists. That scrollbar takes its own room below the
+ * tabs, so the strip grows by it rather than squeezing them. The bottom rule is drawn at the
+ * tabs' edge, above the scrollbar, and stays put while the tabs scroll.
+ */
 .tabBar {
+  position: relative;
   overflow-x: auto;
   overflow-y: hidden;
-  scrollbar-width: thin;
+  scroll-padding-inline-end: 36px;
   flex-shrink: 0;
-  height: 36px;
-  background: var(--card-bg2-color);
-  box-shadow: inset 0 -1px 0 var(--card-border-color);
+  background:
+    linear-gradient(var(--card-border-color), var(--card-border-color)) 0 35px / 100% 1px no-repeat,
+    var(--card-bg2-color);
 }
 
 /* Bleed buttons paint the card background, which reads as white boxes on the tinted strip */
@@ -390,6 +398,7 @@
 .tabList {
   display: flex;
   align-items: stretch;
+  height: 36px;
 }
 
 /* The draggable wrapper around each tab; motion positions it while dragging and reordering */
@@ -530,7 +539,25 @@
   min-width: 120px;
 }
 
-/* A square cell at the strip's height, right after the last tab's rule */
+/*
+ * Holds the new tab button right after the last tab, and pins it to the strip's right edge once
+ * the tabs overflow, so it stays whole while the tabs scroll underneath it. Its own background
+ * and rules cover them; the left rule lands on the last tab's when nothing overflows.
+ */
+.newTabSlot {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  flex-shrink: 0;
+  height: 36px;
+  background: var(--card-bg2-color);
+  box-shadow:
+    -1px 0 0 var(--card-border-color),
+    inset 0 -1px 0 var(--card-border-color);
+}
+
+/* A square cell at the strip's height */
 .newTabButton {
   flex-shrink: 0;
   width: 36px;
