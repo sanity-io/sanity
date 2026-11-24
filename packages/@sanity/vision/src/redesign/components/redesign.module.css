@@ -2,6 +2,24 @@
   position: relative;
 }
 
+/*
+ * The bars along the bottom of the tool, side by side: the sidebar's toggle, the request column's
+ * action bar and the response column's tab header. Each is `--vision-bottom-bar-height` tall
+ * under a 1px top rule (the header's rule is the split divider above it), so the three rules
+ * form one line.
+ */
+.bottomBar {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  height: calc(var(--vision-bottom-bar-height) + 1px);
+  border-top: 1px solid var(--card-border-color);
+}
+
+.panelHeader {
+  flex-shrink: 0;
+  height: var(--vision-bottom-bar-height);
+}
+
 /* `ResizableSplit`: two panes and the divider between them */
 .splitRoot {
   display: flex;
@@ -227,6 +245,12 @@
   align-self: flex-start;
   display: flow-root;
   width: 100%;
+}
+
+/* Content that scrolls inside its own box takes the panel's height; fitting it keeps the size */
+.panelContentFill,
+.panelFillView {
+  height: 100%;
 }
 
 /* Option fields flow into as many columns as fit the request column */

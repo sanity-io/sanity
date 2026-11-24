@@ -43,7 +43,7 @@ import {ResultActionsMenu} from './ResultActionsMenu'
 import {ResultGraph} from './ResultGraph'
 import {ResultJson} from './ResultJson'
 import {type ResultViewOption, ResultViewMenu} from './ResultViewMenu'
-import {SourceMapTab} from './SourceMapTab'
+import {SourceMapTab, type SourceMapView} from './SourceMapTab'
 
 const DEFAULT_BOTTOM_PANEL_SIZE = {columns: 220, stacked: 180, mobile: 160}
 
@@ -170,6 +170,19 @@ export function ResponsePanel(props: ResponsePanelProps) {
     },
     [actorRef, settledQuery, tab.id],
   )
+  // The source map's view is the panel's own, and starts on the tree it always showed
+  const [sourceMapView, setSourceMapView] = useState<SourceMapView>('tree')
+  const sourceMapViews = useMemo(
+    (): ResultViewOption<SourceMapView>[] => [
+      {id: 'json', label: t('vision.result.view.json')},
+      {id: 'tree', label: t('vision.result.view.tree')},
+      {id: 'graph', label: t('vision.result.view.graph')},
+      {id: 'documents', label: t('vision.result.view.documents')},
+    ],
+    [t],
+  )
+  const sourceMapContentId = tabElementId('vision-source-map-content')
+  const hasSourceMap = meta?.resultSourceMap !== undefined
   const resultViews = useMemo((): ResultViewOption<VisionResultView | 'documents'>[] => {
     const views: ResultViewOption<VisionResultView | 'documents'>[] = [
       {id: 'json', label: t('vision.result.view.json')},
@@ -246,10 +259,31 @@ export function ResponsePanel(props: ResponsePanelProps) {
       {
         id: 'source-map',
         label: t('vision.panel.source-map'),
-        content: <SourceMapTab dataset={resultDataset} meta={meta} />,
+        actions: hasSourceMap ? (
+          <ResultViewMenu
+            controls={sourceMapContentId}
+            id={tabElementId('vision-source-map-view-menu')}
+            onChange={setSourceMapView}
+            testId="vision-source-map-view"
+            value={sourceMapView}
+            views={sourceMapViews}
+          />
+        ) : undefined,
+        fill: hasSourceMap && sourceMapView !== 'tree',
+        content: (
+          <SourceMapTab
+            copy={copyValue}
+            dataset={resultDataset}
+            id={sourceMapContentId}
+            meta={meta}
+            view={sourceMapView}
+          />
+        ),
       },
     ],
     [
+      copyValue,
+      hasSourceMap,
       hiddenDiffFields,
       history,
       meta,
@@ -258,8 +292,12 @@ export function ResponsePanel(props: ResponsePanelProps) {
       request,
       resolved,
       resultDataset,
+      sourceMapContentId,
+      sourceMapView,
+      sourceMapViews,
       syncTagLookup,
       t,
+      tabElementId,
       url,
     ],
   )
@@ -319,6 +357,8 @@ export function ResponsePanel(props: ResponsePanelProps) {
                 data-testid="vision-result-actions"
                 gap={1}
               >
+                {/* First: the row is anchored on the right, so "Copied" grows to the left */}
+                <CopyButton disabled={!hasResult} onCopy={copyResult} testId="vision-copy-result" />
                 <ResultViewMenu
                   controls={resultContentId}
                   id={tabElementId('vision-result-view-menu')}
@@ -326,7 +366,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
                   value={resultView}
                   views={resultViews}
                 />
-                <CopyButton disabled={!hasResult} onCopy={copyResult} testId="vision-copy-result" />
                 <ResultActionsMenu
                   csvUnavailableHint={
                     hasResult && !canExportCsv

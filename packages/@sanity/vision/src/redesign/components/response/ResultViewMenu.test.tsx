@@ -30,7 +30,7 @@ const VIEWS: ResultViewOption<View>[] = [
   {id: 'documents', label: 'Documents'},
 ]
 
-function Harness({onChange}: {onChange: (view: View) => void}) {
+function Harness({onChange, testId}: {onChange: (view: View) => void; testId?: string}) {
   const [view, setView] = useState<View>('json')
   return (
     <ThemeProvider theme={theme}>
@@ -42,6 +42,7 @@ function Harness({onChange}: {onChange: (view: View) => void}) {
             onChange(next)
             setView(next)
           }}
+          testId={testId}
           value={view}
           views={VIEWS}
         />
@@ -87,5 +88,11 @@ describe('ResultViewMenu', () => {
     fireEvent.click(within(await openMenu()).getByTestId('vision-result-view-documents'))
     expect(onChange).toHaveBeenCalledWith('documents')
     expect(screen.getByTestId('vision-result-view-button').textContent).toBe('Documents')
+  })
+
+  it('prefixes its test ids, so a second menu in another panel can be told apart', () => {
+    render(<Harness onChange={vi.fn()} testId="vision-source-map-view" />)
+    expect(screen.getByTestId('vision-source-map-view-button').textContent).toBe('JSON')
+    expect(screen.queryByTestId('vision-result-view-button')).toBeNull()
   })
 })
