@@ -69,6 +69,8 @@ const DRAFTS_PREFIX = 'drafts.'
 const VERSIONS_PREFIX = 'versions.'
 /** Perspective names that are not releases */
 const RESERVED_PERSPECTIVES = new Set(['published', 'drafts', 'raw', 'previewDrafts'])
+/** Ids the asset pipeline gives image and file assets, which never have drafts or versions */
+const ASSET_ID_PATTERN = /^(?:image-[a-f0-9]+-\d+x\d+-[a-z0-9]+|file-[a-f0-9]+-[a-z0-9]+)$/i
 
 interface Probe {
   key: string
@@ -186,7 +188,8 @@ function parseDocumentId(id: string): {publishedId: string; release: string | un
  * Each id as it is, then the other forms of the same document: the published id, the draft and
  * a version in each release the ids or the perspective name. A query reads whichever form its
  * perspective picks, and its tags cover them all, so one form being listed tells nothing about
- * which of the others the tag was computed from.
+ * which of the others the tag was computed from. An asset is only ever published, so its id is
+ * probed as it is.
  */
 function expandIds(ids: readonly string[], perspectiveReleases: readonly string[]): string[] {
   const releases = new Set(perspectiveReleases)
@@ -199,6 +202,7 @@ function expandIds(ids: readonly string[], perspectiveReleases: readonly string[
     expanded.add(id)
     const {publishedId} = parseDocumentId(id)
     expanded.add(publishedId)
+    if (ASSET_ID_PATTERN.test(publishedId)) continue
     expanded.add(`${DRAFTS_PREFIX}${publishedId}`)
     for (const release of releases) expanded.add(`${VERSIONS_PREFIX}${release}.${publishedId}`)
   }
@@ -289,9 +293,9 @@ export interface ResolveSyncTagsOptions {
  * known: the list of every type (whose tag covers the whole dataset), then one count per type,
  * id and slug, until every tag is found or the probes run out.
  *
- * The probes go in the order a tag is most likely found: the documents the result dereferences
- * (source map, then `_ref`s), its types and slugs, the ids it shows, and last the dataset's other
- * types. Without a source map, `loadSourceMap` is asked for one once what the result shows has
+ * The probes go in the order a tag is most likely found within the budget: the result's types and
+ * slugs, the documents it dereferences (source map, then `_ref`s), the ids it shows, and last the
+ * dataset's other types. Without a source map, `loadSourceMap` is asked for one once what the result shows has
  * not resolved everything. A tag no probe answered with is left out of the map.
  */
 export async function resolveSyncTags(
@@ -354,10 +358,12 @@ export async function resolveSyncTags(
   }
 
   const perspective = client.config().perspective
+  // Types and slugs are few and cover many documents each, while a large result can list more
+  // ids than the budget holds, so the ids go last
   const probesFor = (candidates: SyncTagCandidates): Probe[] => [
-    ...candidates.referencedIds.map(idProbe),
     ...candidates.types.map(typeProbe),
     ...candidates.slugs.map(slugProbe),
+    ...candidates.referencedIds.map(idProbe),
     ...candidates.ids.map(idProbe),
   ]
 
