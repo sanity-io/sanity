@@ -233,7 +233,6 @@ vi.mock('sanity', async () => {
     useWorkspace: () => sanityMocks.workspace,
     useProjectStore: () => ({getOrganizationId: () => organizationId$}),
     useNumberFormat: () => new Intl.NumberFormat('en'),
-    ReleaseAvatarIcon: () => null,
     getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),
     useSchema: () => undefined,
     useCurrentUser: () => ({id: 'user-1'}),

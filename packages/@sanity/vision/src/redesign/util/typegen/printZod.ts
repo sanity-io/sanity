@@ -10,7 +10,7 @@ import {flattenObject, indent, MAX_LINE_WIDTH, printLiteralKey} from './printUti
 import {collectReferencedTypes, createSchemaIdentifiers, resolveSchemaType} from './schemaTypes'
 
 /** The Zod counterpart of typegen's `ArrayOf<T>`: an array whose members carry a `_key` */
-export const ARRAY_OF_ZOD_DECLARATION = [
+const ARRAY_OF_ZOD_DECLARATION = [
   '/** Members of an array in a document carry a `_key` the named type does not declare */',
   'const arrayOf = <T extends z.ZodTypeAny>(member: T) =>',
   '  z.array(member.and(z.object({ _key: z.string() })))',

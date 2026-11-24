@@ -4,11 +4,11 @@ import {flattenObject, indent, MAX_LINE_WIDTH, printTypeKey} from './printUtils'
 import {collectReferencedTypes, createSchemaIdentifiers, resolveSchemaType} from './schemaTypes'
 
 /** Declares the symbol `sanity typegen` keys a reference's target type on */
-export const REFERENCE_SYMBOL_DECLARATION =
+const REFERENCE_SYMBOL_DECLARATION =
   'export declare const internalGroqTypeReferenceTo: unique symbol;'
 
 /** Declares the helper `sanity typegen` prints arrays of named types with */
-export const ARRAY_OF_DECLARATION = 'type ArrayOf<T> = Array<T & { _key: string }>;'
+const ARRAY_OF_DECLARATION = 'type ArrayOf<T> = Array<T & { _key: string }>;'
 
 /**
  * Prints groq-js type nodes as TypeScript types the way `@sanity/codegen`'s `SchemaTypeGenerator`
@@ -24,7 +24,7 @@ export interface TypeScriptPrinter {
 }
 
 /** Joins the members of a union, or breaks them onto their own lines when they do not fit */
-export function joinUnion(members: string[], depth: number): string {
+function joinUnion(members: string[], depth: number): string {
   const inline = members.join(' | ')
   if (members.some((member) => member.includes('\n'))) {
     return inline

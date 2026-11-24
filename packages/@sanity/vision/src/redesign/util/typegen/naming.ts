@@ -4,14 +4,14 @@ import {deriveQuerySubject} from '../tabTitle'
  * Identifiers `sanity typegen` declares itself and never hands out to a schema type or a query
  * result, as `@sanity/codegen`'s `RESERVED_IDENTIFIERS`
  */
-export const RESERVED_IDENTIFIERS: ReadonlySet<string> = new Set([
+const RESERVED_IDENTIFIERS: ReadonlySet<string> = new Set([
   'SanityQueries',
   'AllSanitySchemaTypes',
   'internalGroqTypeReferenceTo',
   'ArrayOf',
 ])
 
-export const IDENTIFIER = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/
+const IDENTIFIER = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/
 
 /** Whether `input` can be written bare as a TypeScript identifier or object key */
 export function isIdentifierName(input: string): boolean {
