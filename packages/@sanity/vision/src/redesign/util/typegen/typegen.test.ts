@@ -137,6 +137,15 @@ describe('inferTypeFromValue', () => {
     ).toEqual({type: 'array', of: {type: 'number'}})
   })
 
+  it('caps deeply nested values instead of overflowing the call stack', () => {
+    let deep: unknown = null
+    for (let index = 0; index < 5000; index++) {
+      deep = {a: deep}
+    }
+    expect(() => inferTypeFromValue(deep)).not.toThrow()
+    expect(inferTypeFromValue(deep).type).toBe('object')
+  })
+
   it('keeps a "__proto__" projection key as an ordinary attribute', () => {
     const items: unknown[] = JSON.parse('[{"__proto__": 1, "a": "x"}, {"a": "y"}]')
     const node = inferTypeFromValue(items)

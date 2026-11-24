@@ -421,6 +421,20 @@ describe('inferQueryParams', () => {
     ])
   })
 
+  it('keeps a "__proto__" object-param key as an ordinary attribute', () => {
+    const {params} = inferQueryParams('*[_id == $doc.__proto__]')
+    expect(params).toHaveLength(1)
+    const {node} = params[0]
+    expect(node.type).toBe('object')
+    if (node.type !== 'object') return
+    expect(Object.keys(node.attributes)).toEqual(['__proto__'])
+    expect(Object.getPrototypeOf(node.attributes)).toBeNull()
+    expect(node.attributes.__proto__).toEqual({
+      type: 'objectAttribute',
+      value: {type: 'string'},
+    })
+  })
+
   it('gives no keys to a param the query only reads whole', () => {
     expect(inferQueryParams('*[_type == $type]', {documentTypes}).params[0].fields).toBeUndefined()
   })

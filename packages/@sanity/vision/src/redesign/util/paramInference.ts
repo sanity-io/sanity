@@ -1348,7 +1348,8 @@ function buildParam(
 }
 
 function objectOfFields(fields: InferredParam[]): TypeNode {
-  const attributes: Record<string, ObjectAttribute> = {}
+  // Null prototype: a field named `__proto__` must stay an ordinary attribute
+  const attributes: Record<string, ObjectAttribute> = Object.create(null)
   for (const field of fields) {
     const value = field.node.type === 'unknown' ? (field.valueNode ?? UNKNOWN) : field.node
     attributes[field.name] = {

@@ -462,12 +462,15 @@ export function collectQuerySyncTagCandidates(
 export function flattenTraceValues(result: unknown): string[] {
   const values: string[] = []
   const queue: unknown[] = [result]
-  while (queue.length > 0) {
-    const node = queue.shift()
+  // Index walk: `shift()` is O(n) per step and `push(...huge)` overflows the call stack
+  for (let head = 0; head < queue.length; head++) {
+    const node = queue[head]
     if (typeof node === 'string') {
       if (node) values.push(node)
     } else if (Array.isArray(node)) {
-      queue.push(...node)
+      for (const item of node) {
+        queue.push(item)
+      }
     }
   }
   return values

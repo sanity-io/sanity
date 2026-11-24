@@ -1,3 +1,5 @@
+import {safeJsonStringify} from './safeJsonStringify'
+
 /**
  * The search params of a query request as `@sanity/client` writes them (`encodeQueryString` in
  * its `src/data`): the query, then each param as `$name` with its value as JSON, then the
@@ -12,7 +14,9 @@ export function encodeQueryString(
   searchParams.set('query', query)
 
   for (const [key, value] of Object.entries(params)) {
-    if (value !== undefined) searchParams.set(`$${key}`, JSON.stringify(value))
+    if (value === undefined) continue
+    const json = safeJsonStringify(value)
+    if (json !== undefined) searchParams.set(`$${key}`, json)
   }
 
   for (const [key, value] of Object.entries(options)) {

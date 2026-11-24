@@ -6,6 +6,7 @@ import {
   queryRequestMethod,
   splitQuerySearchParams,
 } from '../../util/queryRequestMethod'
+import {safeJsonStringify} from '../../util/safeJsonStringify'
 import {type VisionExportSnippetId, type VisionResultSourceMap} from '../store/types'
 
 export type ExportSnippetId = VisionExportSnippetId
@@ -106,14 +107,26 @@ function toPropertyKey(key: string): string {
   return IDENTIFIER.test(key) ? key : toSingleQuoted(key)
 }
 
-function toInlineLiteral(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(toInlineLiteral).join(', ')}]`
+/** Nesting past this is printed as `null` so a deep params value cannot blow the call stack */
+const MAX_INLINE_DEPTH = 32
+
+function toInlineLiteral(value: unknown, depth = 0): string {
+  if (depth > MAX_INLINE_DEPTH) return 'null'
+  if (Array.isArray(value)) {
+    return `[${value.map((entry) => toInlineLiteral(entry, depth + 1)).join(', ')}]`
+  }
   if (value !== null && typeof value === 'object') {
     const entries = Object.entries(value).filter(([, entry]) => entry !== undefined)
-    return `{${entries.map(([key, entry]) => `${toPropertyKey(key)}: ${toInlineLiteral(entry)}`).join(', ')}}`
+    return `{${entries
+      .map(([key, entry]) => `${toPropertyKey(key)}: ${toInlineLiteral(entry, depth + 1)}`)
+      .join(', ')}}`
   }
   if (typeof value === 'string') return toSingleQuoted(value)
-  return JSON.stringify(value) ?? 'null'
+  try {
+    return JSON.stringify(value) ?? 'null'
+  } catch {
+    return 'null'
+  }
 }
 
 /**
@@ -121,18 +134,23 @@ function toInlineLiteral(value: unknown): string {
  * keys, on one line when short and one entry per line otherwise. `indent` is the indentation of
  * the line the literal starts on.
  */
-function toJsLiteral(value: unknown, indent = ''): string {
-  const inline = toInlineLiteral(value)
+function toJsLiteral(value: unknown, indent = '', depth = 0): string {
+  if (depth > MAX_INLINE_DEPTH) return 'null'
+  const inline = toInlineLiteral(value, depth)
   if (inline.length <= 48 || value === null || typeof value !== 'object') return inline
   const inner = `${indent}  `
   if (Array.isArray(value)) {
     if (value.length === 0) return inline
-    return `[\n${value.map((entry) => `${inner}${toJsLiteral(entry, inner)},`).join('\n')}\n${indent}]`
+    return `[\n${value
+      .map((entry) => `${inner}${toJsLiteral(entry, inner, depth + 1)},`)
+      .join('\n')}\n${indent}]`
   }
   const entries = Object.entries(value).filter(([, entry]) => entry !== undefined)
   if (entries.length === 0) return inline
   return `{\n${entries
-    .map(([key, entry]) => `${inner}${toPropertyKey(key)}: ${toJsLiteral(entry, inner)},`)
+    .map(
+      ([key, entry]) => `${inner}${toPropertyKey(key)}: ${toJsLiteral(entry, inner, depth + 1)},`,
+    )
     .join('\n')}\n${indent}}`
 }
 
@@ -452,7 +470,10 @@ function curlSnippet(context: SnippetContext): ExportSnippet {
     if (context.usesToken) lines.push(authorization)
   } else {
     url.search = options.toString()
-    const body = JSON.stringify({query: input.query, params: input.params}, null, 2)
+    const body =
+      safeJsonStringify({query: input.query, params: input.params}, 2) ??
+      safeJsonStringify({query: input.query, params: {}}) ??
+      '{}'
     lines = [
       `curl ${toShellQuoted(url.href)}`,
       ...(context.usesToken ? [authorization] : []),

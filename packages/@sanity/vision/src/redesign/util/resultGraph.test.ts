@@ -92,6 +92,19 @@ describe('buildResultGraph', () => {
     const [row] = long.nodes[0].rows
     expect(row.kind === 'value' && row.text).toBe(`"${'x'.repeat(39)}…"`)
   })
+
+  it('builds a graph of a huge array without materializing every entry', () => {
+    const value = Array.from({length: 200_000}, (_, index) => index)
+    const start = performance.now()
+    const graph = buildResultGraph(value)
+    expect(performance.now() - start).toBeLessThan(250)
+    expect(graph.nodes[0].rows).toHaveLength(MAX_GRAPH_ROWS + 1)
+    expect(graph.nodes[0].rows.at(-1)).toEqual({
+      kind: 'more',
+      count: value.length - MAX_GRAPH_ROWS,
+    })
+    expect(graph.partialNodes).toEqual([{id: '', entries: value.length}])
+  })
 })
 
 describe('layoutResultGraph', () => {

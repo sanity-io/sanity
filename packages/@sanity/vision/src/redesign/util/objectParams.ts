@@ -62,19 +62,33 @@ export function objectFields(param: InferredParam, value: unknown): InferredPara
   )
 }
 
+/** Nesting past this is summed up as `…` so a deep value cannot blow the call stack */
+const MAX_PREVIEW_DEPTH = 8
+
 /** One line for an object's value, like `min: 0, max: 10000` */
-export function previewObject(fields: InferredParam[], value: unknown): string {
+export function previewObject(fields: InferredParam[], value: unknown, depth = 0): string {
   const object = isPlainObject(value) ? value : {}
   return fields
     .filter((field) => Object.hasOwn(object, field.name))
     .map((field) => {
       const item = object[field.name]
-      const text = isPlainObject(item)
-        ? `{${previewObject(
-            Object.keys(item).map((name) => ({name, node: UNKNOWN, type: ANY, usages: []})),
-            item,
-          )}}`
-        : (JSON.stringify(item) ?? String(item))
+      let text: string
+      if (isPlainObject(item)) {
+        text =
+          depth >= MAX_PREVIEW_DEPTH
+            ? '{…}'
+            : `{${previewObject(
+                Object.keys(item).map((name) => ({name, node: UNKNOWN, type: ANY, usages: []})),
+                item,
+                depth + 1,
+              )}}`
+      } else {
+        try {
+          text = JSON.stringify(item) ?? String(item)
+        } catch {
+          text = String(item)
+        }
+      }
       return `${field.name}: ${text}`
     })
     .join(', ')

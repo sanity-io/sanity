@@ -306,11 +306,16 @@ export function collectSyncTagCandidates(
 
   const queue: unknown[] = [result]
   let visited = 0
-  while (queue.length > 0 && visited < MAX_RESULT_NODES) {
-    const node = queue.shift()
+  // Index walk: `shift()` is O(n) per step and `push(...huge)` overflows the call stack
+  for (let head = 0; head < queue.length && visited < MAX_RESULT_NODES; head++) {
+    const node = queue[head]
     visited++
     if (Array.isArray(node)) {
-      queue.push(...node)
+      // Only enqueue what the visit budget can still take
+      const room = MAX_RESULT_NODES - visited
+      for (let index = 0; index < node.length && index < room; index++) {
+        queue.push(node[index])
+      }
       continue
     }
     if (!node || typeof node !== 'object') continue
