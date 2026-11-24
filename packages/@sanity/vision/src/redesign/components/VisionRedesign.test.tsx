@@ -3815,6 +3815,7 @@ describe('VisionRedesign', () => {
       const bottomPane = split.lastElementChild as HTMLElement
       const initialFlex = bottomPane.style.flex
       const tab = document.getElementById(`vision-request-${id}-tab`) as HTMLElement
+      expect(tab.hasAttribute('title')).toBe(false)
 
       fireEvent.click(tab)
       expect(tab.getAttribute('aria-selected')).toBe('true')
@@ -3824,6 +3825,17 @@ describe('VisionRedesign', () => {
       await waitFor(() => expect(bottomPane.style.flex).toBe('0 0 335px'))
     },
   )
+
+  it('shows no fit tooltip on the panel tabs or the params view tabs', async () => {
+    renderRedesign()
+    await screen.findByTestId('vision-request-column-split')
+    fireEvent.click(document.getElementById('vision-request-params-tab') as HTMLElement)
+
+    expect(document.getElementById('vision-params-view-json')).not.toBeNull()
+    expect(document.getElementById('vision-response-response-tab')).not.toBeNull()
+    const titled = [...document.querySelectorAll('[role="tab"][title]')].map((tab) => tab.id)
+    expect(titled).toEqual([])
+  })
 })
 
 function logged(name: string): unknown[][] {

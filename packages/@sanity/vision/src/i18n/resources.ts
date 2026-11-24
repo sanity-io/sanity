@@ -739,7 +739,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.panel.collapse': 'Collapse panel',
   /** Accessible label for expanding a bottom panel */
   'vision.panel.expand': 'Expand panel',
-  /** Tooltip of a control that sizes its bottom panel to the open tab */
+  /**
+   * Tooltip of a control that sizes its bottom panel to the open tab
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.panel.fit-content': 'Double-click to fit the panel to its content',
   /** Label of the "Explain" tab in the response panel: the query plan and an explanation */
   'vision.panel.explain': 'Explain',
