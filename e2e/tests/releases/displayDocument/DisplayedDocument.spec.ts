@@ -179,9 +179,16 @@ test.describe('displayedDocument', () => {
 
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toBeVisible()
 
-      // inventory: only the published variant exists, so it's the displayed document
+      // inventory: in Drafts with no draft yet, the form shows the published version and the
+      // first edit creates the draft. That draft shows as a ghost row in the Draft set, marked
+      // open; the published row it reads from is not the open one.
       await openDocumentGroupInventory(page)
-      await expect(getInventoryVariant(page, 'Published')).toHaveAttribute('data-selected')
+      await expect(
+        getDocumentGroupInventory(page)
+          .locator('[data-variant-set="Draft"]')
+          .getByTestId('pending-draft-row'),
+      ).toHaveAttribute('data-current')
+      await expect(getInventoryVariant(page, 'Published')).not.toHaveAttribute('data-selected')
 
       // field
       await expect(page.getByTestId('field-name').getByTestId('string-input')).toHaveValue(
