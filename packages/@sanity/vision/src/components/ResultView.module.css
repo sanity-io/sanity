@@ -5,11 +5,13 @@
  * which gives every selector in it the specificity of the most specific one.
  */
 
+/* Long keys and values wrap anywhere, so no line is wider than the pane */
 .resultViewWrapper :global(.json-inspector) {
   font-family: var(--vision-result-code-family);
   font-size: var(--vision-result-code-font-size);
   line-height: var(--vision-result-code-line-height);
   color: var(--card-code-fg-color);
+  overflow-wrap: anywhere;
 }
 
 .resultViewWrapper :global(.json-inspector .json-inspector__selection) {
@@ -215,6 +217,20 @@
   order: 1;
 }
 
+/*
+ * A key too long for the pane wraps, while the short summary after it stays whole. The key's text
+ * shrinks to a character with `overflow-wrap: anywhere`, so the line never outgrows the pane.
+ */
+.withRowActions
+  :global(
+    .json-inspector
+      .json-inspector__leaf_composite:not(.json-inspector__leaf_root)
+      > .json-inspector__line
+      > .json-inspector__value
+  ) {
+  flex-shrink: 0;
+}
+
 .resultViewWrapper
   :global(
     .json-inspector
@@ -244,7 +260,6 @@
 
 .resultViewWrapper :global(.json-inspector .json-inspector__value_string) {
   color: var(--vision-result-syntax-string);
-  word-break: break-word;
 }
 
 .resultViewWrapper :global(.json-inspector .json-inspector__value_boolean) {

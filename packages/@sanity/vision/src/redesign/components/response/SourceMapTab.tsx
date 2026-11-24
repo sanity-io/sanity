@@ -118,7 +118,7 @@ export function SourceMapTab(props: SourceMapTabProps) {
           <ResultGraph copy={copy} id={id} value={sourceMap} />
         </div>
       ) : (
-        <Box data-testid="vision-source-map" id={id} padding={3}>
+        <Box className={styles.treeContent} data-testid="vision-source-map" id={id} padding={3}>
           <ResultView copy={copy} data={sourceMap} datasetName={dataset} />
         </Box>
       )}

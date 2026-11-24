@@ -463,7 +463,11 @@ export function ResponsePanel(props: ResponsePanelProps) {
                 value={result}
               />
             ) : (
-              <Box id={resultContentId} padding={3}>
+              <Box
+                className={hasResult && resultView === 'tree' ? styles.treeContent : undefined}
+                id={resultContentId}
+                padding={3}
+              >
                 {status === 'fetching' && (
                   <Box className={styles.resultSpinner} marginTop={3}>
                     <DelayedSpinner />
