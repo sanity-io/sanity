@@ -10,13 +10,23 @@ export const FORMAT_RECHECK_MS = 200
  * The formatter wraps to the editor's width, so a resize is checked again once it settles. A box
  * with no width (the editor hidden or not yet measured) is not one: that check would format for
  * the formatter's default width.
+ *
+ * `hold` is set while something else is about to lay the query out (auto-format on resize): no
+ * Format then, whatever the answer is. The query that lands at the end of the hold is not given
+ * the answer for the query it replaced, which would offer Format for a moment on a query that
+ * has just been formatted.
  */
 export function useCanFormatQuery(
   query: string,
   formatForEditor: (query: string) => Promise<string>,
   editorSize: {width: number; height: number} | null,
+  hold = false,
 ): boolean {
-  const [canFormat, setCanFormat] = useState(false)
+  const [answer, setAnswer] = useState<{query: string | undefined; canFormat: boolean}>({
+    query: undefined,
+    canFormat: false,
+  })
+  const [wasHeld, setWasHeld] = useState(false)
   const seenQuery = useRef<string | undefined>(undefined)
   // Empty when the editor has no box yet, so a hidden editor is not formatted for a default width
   const layout =
@@ -30,10 +40,10 @@ export function useCanFormatQuery(
     const check = () => {
       formatForEditor(query).then(
         (formatted) => {
-          if (current) setCanFormat(formatted !== query)
+          if (current) setAnswer({query, canFormat: formatted !== query})
         },
         () => {
-          if (current) setCanFormat(false)
+          if (current) setAnswer({query, canFormat: false})
         },
       )
     }
@@ -50,5 +60,11 @@ export function useCanFormatQuery(
     }
   }, [formatForEditor, layout, query])
 
-  return canFormat
+  const answered = answer.query === query
+  // Adjusted while rendering: an effect would leave a render in between, which shows the stale answer
+  if (hold && !wasHeld) setWasHeld(true)
+  else if (!hold && wasHeld && answered) setWasHeld(false)
+
+  if (hold || (wasHeld && !answered)) return false
+  return answer.canFormat
 }
