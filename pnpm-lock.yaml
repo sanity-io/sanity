@@ -2516,8 +2516,8 @@ importers:
         specifier: ^1.3.2
         version: 1.3.2
       isomorphic-dompurify:
-        specifier: 3.19.0
-        version: 3.19.0(@noble/hashes@2.4.0)
+        specifier: 4.8.0
+        version: 4.8.0(@noble/hashes@2.4.0)
       json-reduce:
         specifier: ^3.0.0
         version: 3.0.0
@@ -13403,9 +13403,9 @@ packages:
     resolution: {integrity: sha512-WhB9zCku7EGTj/HQQRz5aUQEUeoQZH2bWcltRErOpymJ4boYE6wL9Tbr23krRPSZ+C5zqNSrSw+Cc7sZZ4b7vg==}
     engines: {node: '>=0.10.0'}
 
-  isomorphic-dompurify@3.19.0:
-    resolution: {integrity: sha512-ynZ/6cVv4Trpt1FEd5TkHsHtLs+y/YQGb+ocIIVRdc+DkiYRbxlEL/IiSeSeQXwopQcG5FhoeIUJa1l26IgSpw==}
-    engines: {node: ^20.19.0 || ^22.13.0 || >=24.0.0}
+  isomorphic-dompurify@4.8.0:
+    resolution: {integrity: sha512-NeJbMkmJQ72DudwaDP5OvMTmRTv0Rgp8oRIEpbGtxzIgKoALAE0D7lpvRRiX4fpnGrlIIGjrh92bl3XdsqYDQw==}
+    engines: {node: ^22.22.2 || ^24.15.0 || >=26.0.0}
 
   isomorphic-ws@5.0.0:
     resolution: {integrity: sha512-muId7Zzn9ywDsyXgTIafTry2sV3nySZeUDe6YedVd1Hvuuep5AsIlqK+XefWpYTyJG5e503F2xIuT2lcU6rCSw==}
@@ -28070,13 +28070,13 @@ snapshots:
 
   isobject@3.0.1: {}
 
-  isomorphic-dompurify@3.19.0(@noble/hashes@2.4.0):
+  isomorphic-dompurify@4.8.0(@noble/hashes@2.4.0):
     dependencies:
       dompurify: 3.4.18
-      jsdom: 29.1.1(@noble/hashes@2.4.0)
+      jsdom: 31.0.1(@noble/hashes@2.4.0)
     transitivePeerDependencies:
+      - '@napi-rs/canvas'
       - '@noble/hashes'
-      - canvas
 
   isomorphic-ws@5.0.0(ws@8.21.3):
     dependencies:
