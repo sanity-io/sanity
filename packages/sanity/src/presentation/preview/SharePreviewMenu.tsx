@@ -8,13 +8,13 @@ import {
   enablePreviewAccessSharing,
 } from '@sanity/preview-url-secret/toggle-preview-access-sharing'
 import {setSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
-import {Card, Spinner, Switch} from '@sanity/ui'
+import {Card, Switch} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {AnimatePresence, motion} from 'motion/react'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {pauseWhileDocumentHidden, useClient, useCurrentUser, useTranslation} from 'sanity'
-import {Text, Grid, Box, VStack} from 'ui5'
+import {Spinner, Text, Grid, Box, VStack} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'
 import {MenuButton} from '../../ui-components/menuButton/MenuButton'
@@ -280,7 +280,7 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
                     <AnimatePresence>
                       {busy ? (
                         <MotionSpinner
-                          muted
+                          style={{color: 'var(--foreground-low)'}}
                           initial={{opacity: 0}}
                           animate={{opacity: 1}}
                           exit={{opacity: 0}}

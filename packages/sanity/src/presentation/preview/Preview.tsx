@@ -11,7 +11,7 @@ import {
   urlSearchParamVercelSetBypassCookie,
   type VercelSetBypassCookieValue,
 } from '@sanity/preview-url-secret/constants'
-import {Card, Label, Spinner, usePrefersReducedMotion} from '@sanity/ui'
+import {Card, Label, usePrefersReducedMotion} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {AnimatePresence, motion, MotionConfig} from 'motion/react'
@@ -28,7 +28,7 @@ import {
 } from 'react'
 import {flushSync} from 'react-dom'
 import {Translate, useCurrentUser, useTranslation} from 'sanity'
-import {Code, Text, Flex, VStack} from 'ui5'
+import {Spinner, Code, Text, Flex, VStack} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
 import {Button} from '../../ui-components/button/Button'
@@ -520,7 +520,11 @@ export const Preview = memo(function PreviewComponent(
                         flexDirection="column"
                         gap={4}
                       >
-                        <Spinner muted />
+                        <Spinner
+                          style={{
+                            color: 'var(--foreground-low)',
+                          }}
+                        />
                         <Text
                           muted
                           size={1}
@@ -565,7 +569,11 @@ export const Preview = memo(function PreviewComponent(
                     flexDirection="column"
                     gap={4}
                   >
-                    <Spinner muted />
+                    <Spinner
+                      style={{
+                        color: 'var(--foreground-low)',
+                      }}
+                    />
                     <Text muted size={1} as="div" trim={true}>
                       {t('preview-frame.status', {context: 'loading'})}
                     </Text>
