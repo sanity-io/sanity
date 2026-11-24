@@ -1,5 +1,6 @@
-import {test} from 'vitest'
+import {expect, test} from 'vitest'
 
+import {Document, Mutation} from '../src/document'
 import {DocumentTester} from './util/DocumentTester'
 
 test('simple remote mutation', () => {
@@ -171,4 +172,141 @@ test('simple local mutation arriving out of order', () => {
     .onMutationDidNotFire()
     .isConsistent()
     .assertBOTH('numbers', [2, 1])
+})
+
+// A real Content Lake listener event: set the title to "Hello brave world" and insert "tech" after
+// the last tag. Content Lake computed the effects without `_rev`.
+const effectsBase = {
+  _id: 'drafts.post-1',
+  _type: 'post',
+  title: 'Hello world',
+  tags: ['news', 'sports'],
+  _createdAt: '2026-11-20T13:56:19.700Z',
+  _updatedAt: '2026-11-20T13:56:19.700Z',
+  _rev: 'rev-1',
+}
+const realEvent = (withEffects: boolean) =>
+  new Mutation({
+    transactionId: 'rev-2',
+    previousRev: 'rev-1',
+    resultRev: 'rev-2',
+    // Later than the stored `_updatedAt`, to tell which one HEAD took.
+    timestamp: '2026-11-20T13:56:20.000Z',
+    mutations: [
+      {
+        patch: {
+          id: 'drafts.post-1',
+          set: {title: 'Hello brave world'},
+          insert: {after: 'tags[-1]', items: ['tech']},
+        },
+      },
+    ],
+    ...(withEffects && {
+      effects: {
+        apply: [
+          11,
+          3,
+          23,
+          0,
+          20,
+          22,
+          '811',
+          23,
+          23,
+          24,
+          15,
+          11,
+          4,
+          21,
+          0,
+          2,
+          20,
+          'tech',
+          15,
+          11,
+          5,
+          23,
+          0,
+          6,
+          22,
+          'brave ',
+          23,
+          6,
+          11,
+          15,
+        ],
+        revert: [],
+      },
+    }),
+  })
+
+test("builds HEAD from an incoming mutation's effects, with _rev from its result", () => {
+  const doc = new Document(effectsBase)
+  doc.arrive(realEvent(true))
+  expect(doc.HEAD).toEqual({
+    ...effectsBase,
+    title: 'Hello brave world',
+    tags: ['news', 'sports', 'tech'],
+    _updatedAt: '2026-11-20T13:56:19.811Z',
+    _rev: 'rev-2',
+  })
+})
+
+test('builds HEAD from effects when the mutator would apply the mutations differently', () => {
+  // Content Lake deep-merges a `merge` patch, which the mutator skips.
+  const {_rev, ...stored} = {...effectsBase, meta: {a: 1}}
+  const doc = new Document(effectsBase)
+  doc.arrive(
+    new Mutation({
+      transactionId: 'rev-2',
+      previousRev: 'rev-1',
+      resultRev: 'rev-2',
+      mutations: [{patch: {id: 'drafts.post-1', merge: {meta: {a: 1}}}} as never],
+      effects: {apply: [0, stored], revert: []},
+    }),
+  )
+  expect(doc.HEAD).toEqual({...stored, _rev: 'rev-2'})
+})
+
+test('replays the mutations of an incoming mutation without effects', () => {
+  const doc = new Document(effectsBase)
+  doc.arrive(realEvent(false))
+  expect(doc.HEAD).toMatchObject({
+    title: 'Hello brave world',
+    tags: ['news', 'sports', 'tech'],
+    _updatedAt: '2026-11-20T13:56:20.000Z',
+    _rev: 'rev-2',
+  })
+})
+
+test('replays the mutations when the effects do not apply to HEAD', () => {
+  // HEAD has drifted from the revision the effects were computed on: it has no tags.
+  const {tags, ...drifted} = effectsBase
+  const doc = new Document(drifted)
+  doc.arrive(realEvent(true))
+  expect(doc.HEAD).toMatchObject({title: 'Hello brave world', _rev: 'rev-2'})
+})
+
+test('builds a deleted HEAD from effects', () => {
+  const doc = new Document(effectsBase)
+  doc.arrive(
+    new Mutation({
+      transactionId: 'rev-2',
+      previousRev: 'rev-1',
+      resultRev: 'rev-2',
+      mutations: [{delete: {id: 'drafts.post-1'}}],
+      effects: {apply: [0, null], revert: []},
+    }),
+  )
+  expect(doc.HEAD).toBeNull()
+})
+
+test('replays the mutations of an incoming mutation with effects but no resulting revision', () => {
+  const doc = new Document(effectsBase)
+  const {resultRev, ...withoutResultRev} = realEvent(true).params
+  doc.applyIncoming(new Mutation(withoutResultRev))
+  expect(doc.HEAD).toMatchObject({
+    title: 'Hello brave world',
+    _updatedAt: '2026-11-20T13:56:20.000Z',
+  })
 })

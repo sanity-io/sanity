@@ -52,6 +52,7 @@
     "@sanity/types": "workspace:*",
     "@sanity/uuid": "^3.0.3",
     "dequal": "catalog:",
+    "mendoza": "^6.0.0",
     "obug": "^3.0.0"
   },
   "devDependencies": {

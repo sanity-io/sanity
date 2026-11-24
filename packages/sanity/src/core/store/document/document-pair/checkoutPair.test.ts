@@ -792,7 +792,8 @@ function createMutationEvent(
     transactionId,
     previousRev,
     resultRev,
-    effects: {apply: [], revert: []},
+    // No effects: the buffered document replays `mutations`, which tests set as they need. An
+    // empty effect next to mutations that change the document would contradict them.
     mutations: [],
     transactionTotalEvents: 1,
     transactionCurrentEvent: 1,
@@ -2581,7 +2582,7 @@ describe('checkoutPair -- document rebase telemetry', () => {
     draft.mutate(draft.patch([{set: {title: 'local edit'}}]))
 
     // Inject a remote mutation with actual mutations that change the document.
-    // The BufferedDocument rebase is triggered by the `mutations` field (not mendoza `effects`).
+    // Without `effects`, the BufferedDocument replays the `mutations` field.
     // Empty mutations produce a no-op that doesn't trigger a rebase.
     listenerSubject.next({
       ...createMutationEvent('remote-tx', 'draftId', 'any', 'rev2'),

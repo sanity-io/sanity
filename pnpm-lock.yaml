@@ -1877,6 +1877,9 @@ importers:
       dequal:
         specifier: 'catalog:'
         version: 2.0.3
+      mendoza:
+        specifier: ^6.0.0
+        version: 6.0.0
       obug:
         specifier: ^3.0.0
         version: 3.0.0
