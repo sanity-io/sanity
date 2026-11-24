@@ -16,6 +16,7 @@ import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
+import {useOverlayScrollThumb} from '../../hooks/useOverlayScrollThumb'
 import {type VisionTab} from '../../store/types'
 import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {deriveTabTitle} from '../../util/tabTitle'
@@ -223,6 +224,7 @@ export function QueryTabBar() {
   const listRef = useRef<HTMLDivElement | null>(null)
   const barRef = useRef<HTMLDivElement | null>(null)
   const newTabSlotRef = useRef<HTMLDivElement | null>(null)
+  const scrollThumbRef = useRef<HTMLDivElement | null>(null)
   const reducedMotion = useReducedMotion()
   // Whether the last change to the strip came from the keyboard. Shift+Arrow and Delete repeat
   // fast, and a slide on every press makes the strip feel slower than the keys
@@ -328,59 +330,74 @@ export function QueryTabBar() {
     [activeTabId, actorRef, focusTab, reorder, tabs],
   )
 
+  useOverlayScrollThumb({
+    scrollerRef: barRef,
+    contentRef: listRef,
+    thumbRef: scrollThumbRef,
+    endInsetRef: newTabSlotRef,
+  })
+
   return (
-    <Flex
-      alignItems="stretch"
-      className={styles.tabBar}
-      data-testid="vision-tab-bar"
-      flexShrink={0}
-      onPointerDownCapture={() => setKeyboardDriven(false)}
-      ref={barRef}
-    >
-      <Reorder.Group
-        aria-label={t('vision.tabs.label')}
-        as="div"
-        axis="x"
-        className={styles.tabList}
-        onReorder={reorder}
-        ref={listRef}
-        role="tablist"
-        values={tabs}
+    <div className={styles.tabStrip}>
+      <Flex
+        alignItems="stretch"
+        className={styles.tabBar}
+        data-testid="vision-tab-bar"
+        flexShrink={0}
+        onPointerDownCapture={() => setKeyboardDriven(false)}
+        ref={barRef}
       >
-        {tabs.map((tab) => (
-          <TabHandle
-            editing={editingId === tab.id}
-            entering={enteringIds.has(tab.id)}
-            key={tab.id}
-            layoutTransition={layoutTransition}
-            listRef={listRef}
-            onKeyDown={handleTabKeyDown}
-            onCancelRename={() => stopRenaming(tab.id)}
-            onClose={() => actorRef.send({type: 'tab.close', id: tab.id})}
-            onRename={(title) => {
-              stopRenaming(tab.id)
-              actorRef.send({type: 'tab.rename', id: tab.id, title})
-            }}
-            onSelect={() => actorRef.send({type: 'tab.select', id: tab.id})}
-            onStartRename={() => setEditingId(tab.id)}
-            selected={tab.id === activeTabId}
-            tab={tab}
+        <Reorder.Group
+          aria-label={t('vision.tabs.label')}
+          as="div"
+          axis="x"
+          className={styles.tabList}
+          onReorder={reorder}
+          ref={listRef}
+          role="tablist"
+          values={tabs}
+        >
+          {tabs.map((tab) => (
+            <TabHandle
+              editing={editingId === tab.id}
+              entering={enteringIds.has(tab.id)}
+              key={tab.id}
+              layoutTransition={layoutTransition}
+              listRef={listRef}
+              onKeyDown={handleTabKeyDown}
+              onCancelRename={() => stopRenaming(tab.id)}
+              onClose={() => actorRef.send({type: 'tab.close', id: tab.id})}
+              onRename={(title) => {
+                stopRenaming(tab.id)
+                actorRef.send({type: 'tab.rename', id: tab.id, title})
+              }}
+              onSelect={() => actorRef.send({type: 'tab.select', id: tab.id})}
+              onStartRename={() => setEditingId(tab.id)}
+              selected={tab.id === activeTabId}
+              tab={tab}
+            />
+          ))}
+        </Reorder.Group>
+        <div className={styles.newTabSlot} ref={newTabSlotRef}>
+          <Button
+            aria-label={t('vision.tabs.new-tab')}
+            className={styles.newTabButton}
+            data-testid="vision-new-tab"
+            fontSize={1}
+            icon={AddIcon}
+            mode="bleed"
+            onClick={() => actorRef.send({type: 'tab.add'})}
+            padding={2}
+            radius={0}
           />
-        ))}
-      </Reorder.Group>
-      <div className={styles.newTabSlot} ref={newTabSlotRef}>
-        <Button
-          aria-label={t('vision.tabs.new-tab')}
-          className={styles.newTabButton}
-          data-testid="vision-new-tab"
-          fontSize={1}
-          icon={AddIcon}
-          mode="bleed"
-          onClick={() => actorRef.send({type: 'tab.add'})}
-          padding={2}
-          radius={0}
-        />
-      </div>
-    </Flex>
+        </div>
+      </Flex>
+      <div
+        aria-hidden
+        className={styles.tabScrollThumb}
+        data-testid="vision-tab-scroll-thumb"
+        ref={scrollThumbRef}
+      />
+    </div>
   )
 }
