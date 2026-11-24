@@ -38,9 +38,20 @@ function drawerTitle(drawer: VisionDrawer, t: TFunction<'vision'>): string {
   }
 }
 
-/** The active tab renders its tool into this element (see `TabDrawerSlot`) */
+/**
+ * Shows the element the active tab renders its tool into (see `TabDrawerSlot`). It is attached
+ * in the commit that mounts the drawer, so a view transition already pictures the tool in it
+ */
 function TabDrawerSlotElement({drawer}: {drawer: VisionDrawer}) {
-  const {setElement} = useTabDrawerSlot()
+  const {element} = useTabDrawerSlot()
+  const attach = useCallback(
+    (container: HTMLDivElement | null) => {
+      if (!container) return undefined
+      container.append(element)
+      return () => element.remove()
+    },
+    [element],
+  )
   return (
     <Box
       className={styles.nestedScroll}
@@ -49,7 +60,7 @@ function TabDrawerSlotElement({drawer}: {drawer: VisionDrawer}) {
       flexGrow={1}
       minHeight="0"
       overflow="auto"
-      ref={setElement}
+      ref={attach}
     />
   )
 }
@@ -103,55 +114,63 @@ export function SidebarDrawer({drawer, overlay}: SidebarDrawerProps) {
     [close, overlay],
   )
 
+  // Swapping one drawer for another resizes it, like the tabs area next to it
+  const drawerElement = (
+    <ViewTransition default={SIDEBAR_PANE} enter={DRAWER_ENTER} exit={DRAWER_EXIT}>
+      <Flex
+        aria-label={overlay ? title : undefined}
+        aria-modal={overlay || undefined}
+        borderRight
+        className={cx(
+          styles.sidebarDrawer,
+          sidebarStyles.drawer,
+          drawer !== 'saved' && drawer !== 'shared' && styles.sidebarDrawerWide,
+          overlay && styles.sidebarDrawerOverlay,
+          overlay && sidebarStyles.drawerOverlay,
+        )}
+        data-testid={`vision-drawer-${drawer}`}
+        flexDirection="column"
+        height="100%"
+        onKeyDown={handleKeyDown}
+        role={overlay ? 'dialog' : undefined}
+      >
+        <Flex
+          alignItems="center"
+          borderBottom
+          flexShrink={0}
+          gap={2}
+          justifyContent="space-between"
+          paddingLeft={3}
+          paddingRight={2}
+          paddingY={2}
+        >
+          <Text size={1} weight="medium" as="div" trim={true}>
+            {title}
+          </Text>
+          <Button
+            aria-label={t('vision.drawer.close')}
+            className={sidebarStyles.pressable}
+            icon={CloseIcon}
+            mode="bleed"
+            onClick={close}
+            padding={2}
+          />
+        </Flex>
+        <DrawerContent drawer={drawer} />
+      </Flex>
+    </ViewTransition>
+  )
+
   // Floating over the tool, the drawer is a modal dialog: the rest of the tool is inert (see
   // VisionRedesign and VisionSidebar), focus moves to its close button on open, Tab stays inside it (the
-  // studio chrome above is not inert), and focus returns to the opener on close (VisionSidebar)
-  return (
-    <TrapFocus autoFocus disabled={!overlay} lockProps={TRAP_FOCUS_PROPS}>
-      {/* Swapping one drawer for another resizes it, like the tabs area next to it */}
-      <ViewTransition default={SIDEBAR_PANE} enter={DRAWER_ENTER} exit={DRAWER_EXIT}>
-        <Flex
-          aria-label={overlay ? title : undefined}
-          aria-modal={overlay || undefined}
-          borderRight
-          className={cx(
-            styles.sidebarDrawer,
-            sidebarStyles.drawer,
-            drawer !== 'saved' && drawer !== 'shared' && styles.sidebarDrawerWide,
-            overlay && styles.sidebarDrawerOverlay,
-            overlay && sidebarStyles.drawerOverlay,
-          )}
-          data-testid={`vision-drawer-${drawer}`}
-          flexDirection="column"
-          height="100%"
-          onKeyDown={handleKeyDown}
-          role={overlay ? 'dialog' : undefined}
-        >
-          <Flex
-            alignItems="center"
-            borderBottom
-            flexShrink={0}
-            gap={2}
-            justifyContent="space-between"
-            paddingLeft={3}
-            paddingRight={2}
-            paddingY={2}
-          >
-            <Text size={1} weight="medium" as="div" trim={true}>
-              {title}
-            </Text>
-            <Button
-              aria-label={t('vision.drawer.close')}
-              className={sidebarStyles.pressable}
-              icon={CloseIcon}
-              mode="bleed"
-              onClick={close}
-              padding={2}
-            />
-          </Flex>
-          <DrawerContent drawer={drawer} />
-        </Flex>
-      </ViewTransition>
+  // studio chrome above is not inert), and focus returns to the opener on close (VisionSidebar).
+  // Beside the tabs area it is not, and stays out of the lock: inside the lock's wrapper, React does
+  // not see the drawer come in or go in a view transition, which then leaves it out of the picture
+  return overlay ? (
+    <TrapFocus autoFocus lockProps={TRAP_FOCUS_PROPS}>
+      {drawerElement}
     </TrapFocus>
+  ) : (
+    drawerElement
   )
 }

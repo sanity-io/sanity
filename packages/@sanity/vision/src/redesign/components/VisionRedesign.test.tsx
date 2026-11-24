@@ -621,13 +621,20 @@ interface ViewTransitionCall {
 
 /**
  * A browser's view transitions, which jsdom lacks, so React takes the path it takes in a browser:
- * the update runs on the next microtask and the animations end at once. Returns the
- * `document.startViewTransition` spy, whose calls carry the transition types
+ * the update runs on the next microtask and the animations end at once. `onPicture` is called where
+ * the browser pictures the page: as the transition starts (the old state) and once its update has
+ * run (the new state). Returns the `document.startViewTransition` spy, whose calls carry the
+ * transition types
  */
-function stubViewTransitions() {
+function stubViewTransitions(onPicture?: (state: 'old' | 'new') => void) {
   const root = document.documentElement
   const startViewTransition = vi.fn((options: ViewTransitionCall) => {
-    const updateCallbackDone = Promise.resolve().then(() => options.update?.())
+    onPicture?.('old')
+    const updateCallbackDone = (async () => {
+      await Promise.resolve()
+      await options.update?.()
+      onPicture?.('new')
+    })()
     const ready = updateCallbackDone.then(() => undefined)
     return {updateCallbackDone, ready, finished: ready, skipTransition: () => {}}
   })
@@ -5262,6 +5269,39 @@ describe('VisionRedesign', () => {
     await waitFor(() =>
       expect(transitionTypes()).toEqual([['vision-panel'], ['vision-sidebar'], ['vision-sidebar']]),
     )
+  })
+
+  it('pictures the Mutate drawer with its tool in it as the drawer comes in and as it leaves', async () => {
+    const pictures: {state: 'old' | 'new'; drawer: boolean; mutate: boolean}[] = []
+    stubViewTransitions((state) => {
+      pictures.push({
+        state,
+        // React names the elements a view transition animates on their own
+        drawer: Boolean(screen.queryByTestId('vision-drawer-mutate')?.style.viewTransitionName),
+        mutate: screen.queryByTestId('vision-mutate') !== null,
+      })
+    })
+    renderRedesign()
+
+    // The tab renders the tool for the drawer as it shows, so the drawer slides in with the tool
+    // in it and slides out with the tool still in it, rather than empty
+    fireEvent.click(screen.getByTestId('vision-sidebar-mutate'))
+    await screen.findByTestId('vision-mutate')
+    await waitFor(() => expect(pictures).toHaveLength(2))
+    expect(pictures).toEqual([
+      {state: 'old', drawer: false, mutate: false},
+      {state: 'new', drawer: true, mutate: true},
+    ])
+    expect(
+      within(screen.getByTestId('vision-drawer-mutate-content')).getByTestId('vision-mutate'),
+    ).toBeTruthy()
+
+    fireEvent.click(screen.getByTestId('vision-sidebar-mutate'))
+    await waitFor(() => expect(pictures).toHaveLength(4))
+    expect(pictures.slice(2)).toEqual([
+      {state: 'old', drawer: true, mutate: true},
+      {state: 'new', drawer: false, mutate: false},
+    ])
   })
 
   it('opens and closes the phone drawer at once, inert behind it only while it shows', async () => {

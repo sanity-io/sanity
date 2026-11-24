@@ -29,11 +29,12 @@
 /*
  * A pane's box moves to its new size while its picture stays at its own size, anchored at the top
  * left and cut off by the box: stretching the old and new pictures to the box in between, the
- * default, squashes text. The new picture covers the old one rather than fading over it.
+ * default, squashes text. The new picture covers the old one rather than fading over it. The
+ * timing matches a tab opened by a click (`.tab[data-entering]`).
  */
 ::view-transition-group(.vision-pane) {
   overflow: clip;
-  animation-duration: 220ms;
+  animation-duration: 200ms;
   animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
@@ -53,7 +54,7 @@
  */
 ::view-transition-group(.vision-tabs-area) {
   overflow: clip;
-  animation-duration: 220ms;
+  animation-duration: 200ms;
   animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
@@ -69,8 +70,9 @@
   animation: none;
 }
 
+/* A drawer comes out from under the rail, as its own transition does (`.drawer`), and goes back */
 ::view-transition-new(.vision-drawer-enter):only-child {
-  animation: vision-drawer-enter 220ms cubic-bezier(0.23, 1, 0.32, 1) both;
+  animation: vision-drawer-enter 200ms cubic-bezier(0.23, 1, 0.32, 1) both;
 }
 
 ::view-transition-old(.vision-drawer-exit):only-child {
@@ -80,22 +82,43 @@
 @keyframes vision-drawer-enter {
   from {
     opacity: 0;
-    transform: translateX(-24px);
+    transform: translateX(-16px);
   }
 }
 
 @keyframes vision-drawer-exit {
   to {
     opacity: 0;
-    transform: translateX(-24px);
+    transform: translateX(-16px);
   }
 }
 
-/* Panes take their new place at once */
+@keyframes vision-drawer-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes vision-drawer-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/*
+ * Movement goes and fades stay, as for a tab opened by a click: panes, the rail and the tabs area
+ * take their new place at once, and a drawer fades in or out where it stands
+ */
 @media (prefers-reduced-motion: reduce) {
-  :root:active-view-transition-type(vision-panel, vision-sidebar)::view-transition-group(*),
-  :root:active-view-transition-type(vision-panel, vision-sidebar)::view-transition-old(*),
-  :root:active-view-transition-type(vision-panel, vision-sidebar)::view-transition-new(*) {
+  :root:active-view-transition-type(vision-panel, vision-sidebar)::view-transition-group(*) {
     animation: none !important;
+  }
+
+  ::view-transition-new(.vision-drawer-enter):only-child {
+    animation-name: vision-drawer-fade-in;
+  }
+
+  ::view-transition-old(.vision-drawer-exit):only-child {
+    animation-name: vision-drawer-fade-out;
   }
 }

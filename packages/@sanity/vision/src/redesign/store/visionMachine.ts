@@ -665,8 +665,12 @@ export function selectOpenDrawer(snapshot: VisionSnapshot): VisionDrawer | null 
 
 const TAB_DRAWERS: readonly VisionTabDrawer[] = ['delta', 'mutate']
 
+/** The drawer when it shows one of the active tab's tools */
+export function toTabDrawer(drawer: VisionDrawer | null): VisionTabDrawer | null {
+  return TAB_DRAWERS.find((tabDrawer) => tabDrawer === drawer) ?? null
+}
+
 /** The open drawer while it shows one of the active tab's tools */
 export function selectOpenTabDrawer(snapshot: VisionSnapshot): VisionTabDrawer | null {
-  const drawer = selectOpenDrawer(snapshot)
-  return TAB_DRAWERS.find((tabDrawer) => tabDrawer === drawer) ?? null
+  return toTabDrawer(selectOpenDrawer(snapshot))
 }

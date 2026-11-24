@@ -28,7 +28,7 @@ import {
   type VisionExperience,
   VisionExperienceContext,
 } from '../store/VisionActorContext'
-import {selectActiveTab, selectOpenDrawer, visionMachine} from '../store/visionMachine'
+import {selectActiveTab, selectOpenDrawer, toTabDrawer, visionMachine} from '../store/visionMachine'
 import {loadVisionState, type VisionStorageDefaults} from '../store/visionStorage'
 import {cx} from '../util/cx'
 import {estimateVisionLayoutWidths, getVisionLayout} from '../util/visionLayout'
@@ -38,6 +38,7 @@ import {PANEL_HEADER_HEIGHT} from './CollapsiblePanel'
 import {TABS_AREA} from './panelTransitions'
 import {QueryTabLayoutProvider} from './queryTabLayout'
 import * as styles from './redesign.module.css'
+import {useShownInSidebar} from './sidebar/useShownInSidebar'
 import {VisionSidebar} from './sidebar/VisionSidebar'
 import {QueryTab, type QueryTabProps} from './tabs/QueryTab'
 import {QueryTabBar} from './tabs/QueryTabBar'
@@ -58,6 +59,16 @@ interface VisionRootStyle extends CSSProperties {
 }
 
 const ROOT_STYLE: VisionRootStyle = {'--vision-bottom-bar-height': `${PANEL_HEADER_HEIGHT}px`}
+
+/**
+ * The element the active tab renders a tool into (see `TabDrawerSlot`). It takes no part in the
+ * layout, so the tool lays out in the drawer as if the drawer held it directly
+ */
+function createTabDrawerElement(): HTMLElement {
+  const element = document.createElement('div')
+  element.style.display = 'contents'
+  return element
+}
 
 /**
  * A tab in the list of open ones, mounted for as long as it is open and hidden while another is
@@ -146,10 +157,12 @@ export function VisionRedesign(props: VisionRedesignProps) {
   )
   const savedQueries = useSavedQueries()
   const [pendingEdits] = useState(createPendingEdits)
-  const [tabDrawerElement, setTabDrawerElement] = useState<HTMLElement | null>(null)
+  const shownDrawer = useShownInSidebar(openDrawer, layout === 'mobile')
+  const shownTabDrawer = toTabDrawer(shownDrawer)
+  const [tabDrawerElement] = useState(createTabDrawerElement)
   const tabDrawerSlot = useMemo(
-    (): TabDrawerSlot => ({element: tabDrawerElement, setElement: setTabDrawerElement}),
-    [tabDrawerElement],
+    (): TabDrawerSlot => ({element: tabDrawerElement, drawer: shownTabDrawer}),
+    [shownTabDrawer, tabDrawerElement],
   )
 
   return (
@@ -170,7 +183,7 @@ export function VisionRedesign(props: VisionRedesignProps) {
                       ref={setRootElement}
                       style={ROOT_STYLE}
                     >
-                      <VisionSidebar />
+                      <VisionSidebar shownDrawer={shownDrawer} />
                       <ViewTransition default={TABS_AREA}>
                         <Flex
                           data-testid="vision-tabs-area"
