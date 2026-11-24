@@ -15,14 +15,19 @@ import {
 } from 'sanity'
 import {Text, Flex, Box, type Space} from 'ui5'
 
+import {Button} from '../../../../../ui-components/button/Button'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {ExpandableTimelineItemButton} from '../expandableTimelineItemButton'
 import {ListWrapper, Root} from '../timeline.styled'
 import {EventTimelineItem} from './EventTimelineItem'
 import {PublishedEventMenu} from './PublishedEventMenu'
 import {
   getAncestorIds,
+  getInitialRevealedTransactions,
   getTimelineRows,
   getTransactionCounts,
+  INITIAL_TRANSACTIONS,
+  MORE_TRANSACTIONS,
   type TimelineRow,
 } from './timelineRows'
 
@@ -70,6 +75,7 @@ export const EventsTimeline = ({
 }: TimelineProps) => {
   const [mounted, setMounted] = useState(false)
   const {t} = useTranslation('studio')
+  const {t: tStructure} = useTranslation(structureLocaleNamespace)
   // Expand every event the selected event is nested under, so it is visible.
   const [initialExpansion] = useState(() => {
     const parentIds = getAncestorIds(allEvents, selectedEventId)
@@ -85,11 +91,25 @@ export const EventsTimeline = ({
     () => new Set(initialExpansion.parentIds),
   )
   const [expandingParents, setExpandingParents] = useState<Set<string>>(new Set())
+  const [revealedTransactions, setRevealedTransactions] = useState<Map<string, number>>(() =>
+    getInitialRevealedTransactions(allEvents, selectedEventId),
+  )
 
   const transactionCounts = useMemo(() => getTransactionCounts(allEvents), [allEvents])
   const rows = useMemo(
-    () => getTimelineRows({events: allEvents, expandedParents}),
-    [allEvents, expandedParents],
+    () => getTimelineRows({events: allEvents, expandedParents, revealedTransactions}),
+    [allEvents, expandedParents, revealedTransactions],
+  )
+
+  const handleShowMore = useCallback(
+    (parentId: string) => () => {
+      setRevealedTransactions((prev) => {
+        const next = new Map(prev)
+        next.set(parentId, (prev.get(parentId) ?? INITIAL_TRANSACTIONS) + MORE_TRANSACTIONS)
+        return next
+      })
+    },
+    [],
   )
 
   useEffect(() => {
@@ -167,7 +187,30 @@ export const EventsTimeline = ({
 
   const renderItem = useCallback<CommandListRenderItemCallback<TimelineRow>>(
     (row, {activeIndex}) => {
-      const {event, depth} = row
+      const paddingLeft = DEPTH_PADDING[Math.min(row.depth, DEPTH_PADDING.length - 1)]
+      if (row.type === 'showMore') {
+        return (
+          <TimelineItemWrapper
+            paddingRight={1}
+            paddingLeft={paddingLeft}
+            animate="animate"
+            exit="exit"
+            initial="initial"
+            variants={CHILDREN_ITEMS_VARIANTS}
+          >
+            <Flex alignItems="center" style={{height: ITEM_HEIGHT}}>
+              <Button
+                data-testid="timeline-show-more-button"
+                mode="bleed"
+                onClick={handleShowMore(row.parentId)}
+                text={tStructure('timeline-item.show-more')}
+                width="fill"
+              />
+            </Flex>
+          </TimelineItemWrapper>
+        )
+      }
+      const {event} = row
       /**
        * The create version event will be present while expanding (loading the edits), so we are attaching to it the loading block at the top.
        * - publishEvent (expanding?)
@@ -202,7 +245,7 @@ export const EventsTimeline = ({
           exit="exit"
           initial="initial"
           variants={'parentId' in event ? CHILDREN_ITEMS_VARIANTS : undefined}
-          paddingLeft={DEPTH_PADDING[Math.min(depth, DEPTH_PADDING.length - 1)]}
+          paddingLeft={paddingLeft}
         >
           <EventTimelineItem
             event={event}
@@ -219,15 +262,19 @@ export const EventsTimeline = ({
       expandingParents,
       selectedEventId,
       handleSelectChunk,
+      handleShowMore,
       renderOptionsMenu,
       rows.length,
       hasMoreEvents,
+      tStructure,
     ],
   )
 
   // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
   useEffect(() => setMounted(true), [])
-  const selectedIndex = rows.findIndex((row) => row.event.id === selectedEventId)
+  const selectedIndex = rows.findIndex(
+    (row) => row.type === 'event' && row.event.id === selectedEventId,
+  )
 
   return (
     <Root

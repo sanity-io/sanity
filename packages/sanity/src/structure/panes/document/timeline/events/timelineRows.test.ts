@@ -8,6 +8,7 @@ import {describe, expect, it} from 'vitest'
 
 import {
   getAncestorIds,
+  getInitialRevealedTransactions,
   getTimelineRows,
   getTransactionCounts,
   isEditTransactionEvent,
@@ -75,7 +76,7 @@ const EVENTS: DocumentGroupEvent[] = [
 
 const shown = (expandedParents: string[], events = EVENTS) =>
   getTimelineRows({events, expandedParents: new Set(expandedParents)}).map(
-    (row) => `${'  '.repeat(row.depth)}${row.event.id}`,
+    (row) => `${'  '.repeat(row.depth)}${row.type === 'event' ? row.event.id : 'show more'}`,
   )
 
 describe('getTimelineRows', () => {
@@ -116,6 +117,51 @@ describe('getTimelineRows', () => {
 
   it('keeps showing a creation event nested under a publish when it is the last event', () => {
     expect(shown([], EVENTS.slice(0, -1))).toEqual(['group', 'publish', 'create'])
+  })
+})
+
+describe('paging the transactions of an edit group', () => {
+  const transactionIds = Array.from({length: 35}, (_, index) => `tx-${index + 1}`)
+  const events: DocumentGroupEvent[] = [
+    edit('group'),
+    ...transactionIds.map((id) => transaction(id, 'group')),
+    edit('older'),
+  ]
+  const rows = (revealedTransactions?: Map<string, number>) =>
+    getTimelineRows({events, expandedParents: new Set(['group']), revealedTransactions})
+
+  it('shows the first 10 transactions followed by a "Show more" row', () => {
+    const result = rows()
+    expect(result).toHaveLength(1 + 10 + 1 + 1)
+    expect(result.slice(1, 11).map((row) => row.type === 'event' && row.event.id)).toEqual(
+      transactionIds.slice(0, 10),
+    )
+    expect(result[11]).toEqual({type: 'showMore', parentId: 'group', depth: 1})
+    expect(result[12]).toMatchObject({type: 'event', event: {id: 'older'}})
+  })
+
+  it('shows as many transactions as revealed, and no "Show more" once all are shown', () => {
+    expect(rows(new Map([['group', 30]])).filter((row) => row.type === 'showMore')).toHaveLength(1)
+    expect(rows(new Map([['group', 30]]))).toHaveLength(1 + 30 + 1 + 1)
+
+    const all = rows(new Map([['group', 50]]))
+    expect(all).toHaveLength(1 + 35 + 1)
+    expect(all.some((row) => row.type === 'showMore')).toBe(false)
+  })
+
+  it('pages the transactions shown at the top level when their group is not in the list', () => {
+    const result = getTimelineRows({events: events.slice(1), expandedParents: new Set()})
+    expect(result).toHaveLength(10 + 1 + 1)
+    expect(result[10]).toEqual({type: 'showMore', parentId: 'group', depth: 0})
+  })
+
+  it('reveals enough transactions to show a selected transaction past the first 10', () => {
+    expect(getInitialRevealedTransactions(events, 'tx-10')).toEqual(new Map())
+    expect(getInitialRevealedTransactions(events, 'tx-11')).toEqual(new Map([['group', 30]]))
+    expect(getInitialRevealedTransactions(events, 'tx-30')).toEqual(new Map([['group', 30]]))
+    expect(getInitialRevealedTransactions(events, 'tx-31')).toEqual(new Map([['group', 50]]))
+    expect(getInitialRevealedTransactions(events, 'group')).toEqual(new Map())
+    expect(getInitialRevealedTransactions(events, undefined)).toEqual(new Map())
   })
 })
 

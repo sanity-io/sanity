@@ -4,6 +4,11 @@ import {
   isEditDocumentVersionEvent,
 } from 'sanity'
 
+/** How many transactions of an edit group are shown when it is expanded. */
+export const INITIAL_TRANSACTIONS = 10
+/** How many more transactions each "Show more" reveals. */
+export const MORE_TRANSACTIONS = 20
+
 export interface TimelineEventRow {
   type: 'event'
   event: DocumentGroupEvent
@@ -11,7 +16,15 @@ export interface TimelineEventRow {
   depth: number
 }
 
-export type TimelineRow = TimelineEventRow
+/** Follows the last shown transaction of an edit group that has more of them. */
+export interface TimelineShowMoreRow {
+  type: 'showMore'
+  /** The id of the edit group. */
+  parentId: string
+  depth: number
+}
+
+export type TimelineRow = TimelineEventRow | TimelineShowMoreRow
 
 function getParentId(event: DocumentGroupEvent): string | undefined {
   return isEditDocumentVersionEvent(event) || isCreateDocumentVersionEvent(event)
@@ -37,6 +50,26 @@ export function getTransactionCounts(events: DocumentGroupEvent[]): Map<string, 
     }
   }
   return counts
+}
+
+/**
+ * How many transactions to show for each edit group so the selected one is shown: when it is past
+ * the first {@link INITIAL_TRANSACTIONS}, as many as "Show more" would have revealed to reach it.
+ */
+export function getInitialRevealedTransactions(
+  events: DocumentGroupEvent[],
+  selectedEventId: string | undefined,
+): Map<string, number> {
+  const selected = events.find((event) => event.id === selectedEventId)
+  const parentId = selected && isEditTransactionEvent(selected) ? getParentId(selected) : undefined
+  if (!parentId) return new Map()
+
+  const index = events
+    .filter((event) => isEditTransactionEvent(event) && getParentId(event) === parentId)
+    .indexOf(selected!)
+  if (index < INITIAL_TRANSACTIONS) return new Map()
+  const steps = Math.ceil((index + 1 - INITIAL_TRANSACTIONS) / MORE_TRANSACTIONS)
+  return new Map([[parentId, INITIAL_TRANSACTIONS + steps * MORE_TRANSACTIONS]])
 }
 
 /** The ids of the events the event with `eventId` is nested under, closest first. */
@@ -65,19 +98,26 @@ export function getAncestorIds(
  * - An event without a parent, or whose parent isn't in the list (e.g. the From list starts
  *   after it), is a top-level row.
  * - A nested event is shown when its parent is expanded and shown, one level deeper.
+ * - Only the first transactions of an edit group are shown, as many as `revealedTransactions`
+ *   holds for it ({@link INITIAL_TRANSACTIONS} by default), followed by a "Show more" row when it
+ *   has more.
  * - Known quirk kept from before: a creation event nested under a publish is shown at the top
  *   level when it is the last event in the list, even if the publish is collapsed.
  */
 export function getTimelineRows({
   events,
   expandedParents,
+  revealedTransactions = new Map(),
 }: {
   events: DocumentGroupEvent[]
   expandedParents: ReadonlySet<string>
+  revealedTransactions?: ReadonlyMap<string, number>
 }): TimelineRow[] {
   const eventIds = new Set(events.map((event) => event.id))
   const lastEventId = events.at(-1)?.id
+  const transactionCounts = getTransactionCounts(events)
   const shownDepths = new Map<string, number>()
+  const shownTransactions = new Map<string, number>()
   const rows: TimelineRow[] = []
 
   for (const event of events) {
@@ -91,6 +131,18 @@ export function getTimelineRows({
       depth = shownDepths.get(parentId)! + 1
     }
     if (depth === undefined) continue
+
+    if (parentId && isEditTransactionEvent(event)) {
+      const index = shownTransactions.get(parentId) ?? 0
+      const revealed = revealedTransactions.get(parentId) ?? INITIAL_TRANSACTIONS
+      if (index >= revealed) continue
+      shownTransactions.set(parentId, index + 1)
+      rows.push({type: 'event', event, depth})
+      if (index === revealed - 1 && (transactionCounts.get(parentId) ?? 0) > revealed) {
+        rows.push({type: 'showMore', parentId, depth})
+      }
+      continue
+    }
 
     if (!shownDepths.has(event.id)) shownDepths.set(event.id, depth)
     rows.push({type: 'event', event, depth})
