@@ -36,6 +36,7 @@ import {omitFields, parseFieldPaths} from '../../util/omitFields'
 import {AgentActionsTooltip} from '../AgentActionsTooltip'
 import * as styles from '../redesign.module.css'
 import {SwitchField} from '../SwitchField'
+import {useTabElementId} from '../tabs/queryTabShown'
 import {GenerateMutationsBar} from './GenerateMutationsBar'
 import {JsonEditor} from './JsonEditor'
 import {CodeDiffLoader, DiffBoundary} from './LazyCodeDiff'
@@ -329,6 +330,7 @@ export function MutateTab(props: MutateTabProps) {
   const {mutate, client, dataset, canRequest, result, hiddenFields, onApplied} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const {state} = mutate
+  const tabElementId = useTabElementId()
   const {generateMutations: canGenerate} = useAiFeatures()
   const [generatorState, setGeneratorOpen] = useState(false)
   const generatorOpen = canGenerate && generatorState
@@ -440,7 +442,7 @@ export function MutateTab(props: MutateTabProps) {
                         text={t('vision.mutate.add')}
                       />
                     }
-                    id="vision-mutate-add"
+                    id={tabElementId('vision-mutate-add')}
                     menu={
                       <Menu>
                         <MenuItem

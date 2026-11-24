@@ -10,7 +10,7 @@ import {historyCompartment} from './extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from './VisionCodeMirror'
 
 const NO_EXTENSIONS: Extension[] = []
-/** The undo history as the editors have it, in the compartment a document switch reconfigures */
+/** The undo history as the tool's editors hold it */
 const HISTORY: Extension[] = [historyCompartment.of(history())]
 
 function editor(
@@ -19,7 +19,6 @@ function editor(
   onChange: () => void,
   initialValue = '',
   extensions = NO_EXTENSIONS,
-  stateKey?: string,
 ) {
   return (
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -30,20 +29,10 @@ function editor(
           initialValue={initialValue}
           onChange={onChange}
           extensions={extensions}
-          stateKey={stateKey}
         />
       </Activity>
     </ThemeProvider>
   )
-}
-
-/** Edits the document the way typing does: recorded in the undo history, reported as a change */
-function type(view: EditorView, insert: string) {
-  view.dispatch({
-    changes: {from: view.state.doc.length, insert},
-    selection: {anchor: view.state.doc.length + insert.length},
-    userEvent: 'input.type',
-  })
 }
 
 describe('VisionCodeMirror', () => {
@@ -96,6 +85,50 @@ describe('VisionCodeMirror', () => {
     expect(content()).toBe('*[_type == "author"]')
   })
 
+  it('brings back its selection and undo history when hidden and shown again', () => {
+    const ref: RefObject<VisionCodeMirrorHandle | null> = {current: null}
+    const {container, rerender, unmount} = render(editor('visible', ref, vi.fn(), '{}', HISTORY))
+    const content = () => container.querySelector('.cm-content')?.textContent
+    const view = () =>
+      EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement) ?? undefined
+
+    act(() => ref.current?.applyChanges([{from: 1, to: 1, insert: '"limit": 3'}]))
+    act(() => ref.current?.selectRange(2, 7))
+    const hiddenView = view()
+
+    // A query tab switched away from and back to: the view is created again, with the old one's
+    // selection and history rather than a cursor at the start and nothing to undo
+    rerender(editor('hidden', ref, vi.fn(), '{}', HISTORY))
+    rerender(editor('visible', ref, vi.fn(), '{}', HISTORY))
+    expect(view()).not.toBe(hiddenView)
+    expect(content()).toBe('{"limit": 3}')
+    expect(view()?.state.selection.main).toMatchObject({from: 2, to: 7})
+
+    let undone: boolean | undefined
+    act(() => {
+      undone = ref.current?.runCommand(undo)
+    })
+    expect(undone).toBe(true)
+    expect(content()).toBe('{}')
+    unmount()
+  })
+
+  it('starts over with a document that changed while hidden', () => {
+    const ref: RefObject<VisionCodeMirrorHandle | null> = {current: null}
+    const {container, rerender, unmount} = render(editor('visible', ref, vi.fn(), '*', HISTORY))
+    act(() => ref.current?.applyChanges([{from: 1, to: 1, insert: '[0]'}]))
+
+    rerender(editor('hidden', ref, vi.fn(), '*', HISTORY))
+    rerender(editor('hidden', ref, vi.fn(), '*[_type == "author"]', HISTORY))
+    rerender(editor('visible', ref, vi.fn(), '*[_type == "author"]', HISTORY))
+
+    const view = EditorView.findFromDOM(container.querySelector('.cm-editor') as HTMLElement)
+    expect(view?.state.selection.main.head).toBe(0)
+    // The edits belonged to the replaced document
+    expect(ref.current?.runCommand(undo)).toBe(false)
+    unmount()
+  })
+
   it('shows an initialValue that changed while hidden, and only then', () => {
     const ref: RefObject<VisionCodeMirrorHandle | null> = {current: null}
     const onChange = vi.fn()
@@ -117,100 +150,5 @@ describe('VisionCodeMirror', () => {
     expect(content()).toBe('*[_type == "author"]')
     // The parent already holds that value; nothing is echoed back as an edit
     expect(onChange).not.toHaveBeenCalled()
-  })
-
-  describe('stateKey', () => {
-    it('shows the document kept for a key, or initialValue for a new one, in the same view', () => {
-      const ref: RefObject<VisionCodeMirrorHandle | null> = {current: null}
-      const onChange = vi.fn()
-      const {container, rerender, unmount} = render(
-        editor('visible', ref, onChange, '*[_type == "author"]', HISTORY, 'a'),
-      )
-      const editorElement = () => container.querySelector('.cm-editor') as HTMLElement
-      const view = EditorView.findFromDOM(editorElement()) as EditorView
-      const content = () => view.state.doc.toString()
-      act(() => type(view, ' | order(name)'))
-      act(() => view.dispatch({selection: {anchor: 3}}))
-      expect(onChange).toHaveBeenCalledTimes(1)
-
-      // Another tab, whose query the editor has not shown yet: its initialValue, in the view
-      // that is already on the page, with the cursor at the end
-      rerender(editor('visible', ref, onChange, '*[_type == "book"]', HISTORY, 'b'))
-      expect(EditorView.findFromDOM(editorElement())).toBe(view)
-      expect(content()).toBe('*[_type == "book"]')
-      expect(view.state.selection.main.head).toBe('*[_type == "book"]'.length)
-      act(() => type(view, '[0]'))
-
-      // Back to the first: the document as it was left, with its selection
-      rerender(editor('visible', ref, onChange, '*[_type == "author"] | order(name)', HISTORY, 'a'))
-      expect(EditorView.findFromDOM(editorElement())).toBe(view)
-      expect(content()).toBe('*[_type == "author"] | order(name)')
-      expect(view.state.selection.main.head).toBe(3)
-
-      rerender(editor('visible', ref, onChange, '*[_type == "book"][0]', HISTORY, 'b'))
-      expect(content()).toBe('*[_type == "book"][0]')
-      // Showing another document is not an edit; the two typed changes were the only ones
-      expect(onChange).toHaveBeenCalledTimes(2)
-      unmount()
-    })
-
-    it('keeps an undo history per key', () => {
-      const ref: RefObject<VisionCodeMirrorHandle | null> = {current: null}
-      const {container, rerender, unmount} = render(
-        editor('visible', ref, vi.fn(), 'a', HISTORY, 'a'),
-      )
-      const view = EditorView.findFromDOM(
-        container.querySelector('.cm-editor') as HTMLElement,
-      ) as EditorView
-      const undone = () => {
-        let result: boolean | undefined
-        act(() => {
-          result = ref.current?.runCommand(undo)
-        })
-        return result
-      }
-      act(() => type(view, '1'))
-      expect(view.state.doc.toString()).toBe('a1')
-
-      // A new document starts with nothing to undo: the first tab's edits are not its own
-      rerender(editor('visible', ref, vi.fn(), 'b', HISTORY, 'b'))
-      expect(undone()).toBe(false)
-      expect(view.state.doc.toString()).toBe('b')
-      act(() => type(view, '2'))
-
-      // Each document's own history comes back with it
-      rerender(editor('visible', ref, vi.fn(), 'a1', HISTORY, 'a'))
-      expect(undone()).toBe(true)
-      expect(view.state.doc.toString()).toBe('a')
-      expect(undone()).toBe(false)
-
-      rerender(editor('visible', ref, vi.fn(), 'b2', HISTORY, 'b'))
-      expect(undone()).toBe(true)
-      expect(view.state.doc.toString()).toBe('b')
-      unmount()
-    })
-
-    it('shows initialValue rather than a kept document that was changed from outside', () => {
-      const ref: RefObject<VisionCodeMirrorHandle | null> = {current: null}
-      const {container, rerender, unmount} = render(
-        editor('visible', ref, vi.fn(), 'a', HISTORY, 'a'),
-      )
-      const view = EditorView.findFromDOM(
-        container.querySelector('.cm-editor') as HTMLElement,
-      ) as EditorView
-      act(() => type(view, '1'))
-      rerender(editor('visible', ref, vi.fn(), 'b', HISTORY, 'b'))
-
-      // The first tab's query was replaced meanwhile (a loaded history entry): the parent's value
-      // wins, and the old history, recorded against other text, is not replayed on it
-      rerender(editor('visible', ref, vi.fn(), 'loaded', HISTORY, 'a'))
-      expect(view.state.doc.toString()).toBe('loaded')
-      let undone: boolean | undefined
-      act(() => {
-        undone = ref.current?.runCommand(undo)
-      })
-      expect(undone).toBe(false)
-      unmount()
-    })
   })
 })

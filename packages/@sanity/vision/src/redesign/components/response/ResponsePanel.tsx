@@ -31,6 +31,7 @@ import * as styles from '../redesign.module.css'
 import {usePerspectiveOptionName} from '../request/OptionFields'
 import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
 import {TabDrawerPortal} from '../TabDrawerPortal'
+import {useTabElementId} from '../tabs/queryTabShown'
 import {CopyResultButton} from './CopyResultButton'
 import {DeltaTab, useDeltaPanel} from './DeltaTab'
 import {ExplainTab} from './ExplainTab'
@@ -54,55 +55,11 @@ export interface ResponsePanelProps {
   onMutationsApplied: () => void
 }
 
-interface TabDrawerToolsProps {
-  resolved: ResolvedRequest
-  request: QueryRequest | null
-  hiddenDiffFields: string[]
-  result: unknown
-  onMutationsApplied: () => void
-}
-
-/**
- * The tab's tools, open in the sidebar's drawer. Mounted per tab (keyed on its id by the
- * panel), so the document typed into Delta and the mutations written in Mutate stay with the
- * tab while its drawer is closed, and another tab starts with both empty; a request that
- * settles after the user has moved on lands in the instance that was unmounted with the tab.
- */
-function TabDrawerTools(props: TabDrawerToolsProps) {
-  const {resolved, request, hiddenDiffFields, result, onMutationsApplied} = props
-  const delta = useDeltaPanel()
-  const mutate = useMutatePanel()
-  const tabDrawer = useVisionSelector(selectOpenTabDrawer)
-  if (!tabDrawer) return null
-
-  const renderTabDrawer = (drawer: VisionTabDrawer): ReactNode => {
-    switch (drawer) {
-      case 'delta':
-        return <DeltaTab delta={delta} request={request} />
-      case 'mutate':
-        return (
-          <MutateTab
-            canRequest={resolved.isValidApiVersion}
-            client={resolved.client}
-            dataset={resolved.dataset}
-            hiddenFields={hiddenDiffFields}
-            mutate={mutate}
-            onApplied={onMutationsApplied}
-            result={result}
-          />
-        )
-      default: {
-        const unknownDrawer: never = drawer
-        return String(unknownDrawer)
-      }
-    }
-  }
-  return <TabDrawerPortal>{renderTabDrawer(tabDrawer)}</TabDrawerPortal>
-}
-
 export function ResponsePanel(props: ResponsePanelProps) {
   const {tab, runnerRef, resolved, request, onMutationsApplied} = props
   const {t} = useTranslation(visionLocaleNamespace)
+  const tabElementId = useTabElementId()
+  const resultContentId = tabElementId('vision-result-content')
   const toast = useToast()
   const {state: panelState, setState: setPanelState} = useResponseBottomPanel()
 
@@ -157,6 +114,8 @@ export function ResponsePanel(props: ResponsePanelProps) {
 
   const queryExplain = useQueryExplain(request)
   const perspectiveName = usePerspectiveOptionName(resolved.tabPerspective)
+  const delta = useDeltaPanel()
+  const mutate = useMutatePanel()
   const actorRef = useVisionActor()
   const resultView = useVisionSelector(selectResultView)
   const setResultView = useCallback(
@@ -244,16 +203,34 @@ export function ResponsePanel(props: ResponsePanelProps) {
     ],
   )
 
+  // The tab's tools open in the sidebar's drawer
+  const tabDrawer = useVisionSelector(selectOpenTabDrawer)
+  const renderTabDrawer = (drawer: VisionTabDrawer): ReactNode => {
+    switch (drawer) {
+      case 'delta':
+        return <DeltaTab delta={delta} request={request} />
+      case 'mutate':
+        return (
+          <MutateTab
+            canRequest={resolved.isValidApiVersion}
+            client={resolved.client}
+            dataset={resolved.dataset}
+            hiddenFields={hiddenDiffFields}
+            mutate={mutate}
+            onApplied={onMutationsApplied}
+            result={hasResult ? result : undefined}
+          />
+        )
+      default: {
+        const unknownDrawer: never = drawer
+        return String(unknownDrawer)
+      }
+    }
+  }
+
   return (
     <>
-      <TabDrawerTools
-        hiddenDiffFields={hiddenDiffFields}
-        key={tab.id}
-        onMutationsApplied={onMutationsApplied}
-        request={request}
-        resolved={resolved}
-        result={hasResult ? result : undefined}
-      />
+      {tabDrawer && <TabDrawerPortal>{renderTabDrawer(tabDrawer)}</TabDrawerPortal>}
       <SplitWithBottomPanel
         defaultBottomSize={DEFAULT_BOTTOM_PANEL_SIZE}
         fitOnTabDoubleClick
@@ -302,27 +279,27 @@ export function ResponsePanel(props: ResponsePanelProps) {
                 <Flex alignItems="center" className={styles.labelActions} gap={1}>
                   <TabList aria-label={t('vision.result.view.label')} gap={1}>
                     <Tab
-                      aria-controls="vision-result-content"
+                      aria-controls={resultContentId}
                       fontSize={1}
-                      id="vision-result-view-json"
+                      id={tabElementId('vision-result-view-json')}
                       label={t('vision.result.view.json')}
                       onClick={() => setResultView('json')}
                       padding={2}
                       selected={resultView === 'json'}
                     />
                     <Tab
-                      aria-controls="vision-result-content"
+                      aria-controls={resultContentId}
                       fontSize={1}
-                      id="vision-result-view-tree"
+                      id={tabElementId('vision-result-view-tree')}
                       label={t('vision.result.view.tree')}
                       onClick={() => setResultView('tree')}
                       padding={2}
                       selected={resultView === 'tree'}
                     />
                     <Tab
-                      aria-controls="vision-result-content"
+                      aria-controls={resultContentId}
                       fontSize={1}
-                      id="vision-result-view-graph"
+                      id={tabElementId('vision-result-view-graph')}
                       label={t('vision.result.view.graph')}
                       onClick={() => setResultView('graph')}
                       padding={2}
@@ -334,16 +311,16 @@ export function ResponsePanel(props: ResponsePanelProps) {
             </Flex>
           </Box>
           {hasResult && resultView === 'json' ? (
-            <ResultJson className={styles.resultView} id="vision-result-content" value={result} />
+            <ResultJson className={styles.resultView} id={resultContentId} value={result} />
           ) : hasResult && resultView === 'graph' ? (
             <ResultGraph
               className={styles.resultView}
               copy={copyValue}
-              id="vision-result-content"
+              id={resultContentId}
               value={result}
             />
           ) : (
-            <Box id="vision-result-content" padding={3} paddingTop={5}>
+            <Box id={resultContentId} padding={3} paddingTop={5}>
               {status === 'fetching' && (
                 <Box className={styles.resultSpinner} marginTop={3}>
                   <DelayedSpinner />
