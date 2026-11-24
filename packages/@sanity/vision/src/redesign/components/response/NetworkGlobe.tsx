@@ -60,6 +60,23 @@ function enlargeDots(canvas: HTMLCanvasElement): void {
     shaderSource(shader, source.replace(DOT_RADIUS, LARGER_DOT_RADIUS))
 }
 
+/**
+ * The settled picture of a globe, as a plain canvas: a copy of the WebGL canvas's last frame,
+ * taken in the callback that drew it, before the browser composites and clears it
+ */
+function stillOf(canvas: HTMLCanvasElement): HTMLCanvasElement | undefined {
+  const still = document.createElement('canvas')
+  still.width = canvas.width
+  still.height = canvas.height
+  still.className = canvas.className
+  still.style.cssText = canvas.style.cssText
+  still.dataset.ready = ''
+  const context = still.getContext('2d')
+  if (!context) return undefined
+  context.drawImage(canvas, 0, 0)
+  return still
+}
+
 function toRadians(degrees: number): number {
   return (degrees * Math.PI) / 180
 }
@@ -97,15 +114,26 @@ export interface NetworkGlobeProps {
  * travelled there. cobe draws with WebGL on each `update`, so it is drawn once per change and
  * not animated; without WebGL it stays blank and the text next to it says the same. cobe moves
  * its canvas around in the DOM and a destroyed globe leaves it unusable, so each picture gets a
- * canvas of its own that React does not manage.
+ * canvas of its own that React does not manage. Once the globe has stopped turning, or its tab
+ * is hidden after it has drawn, its canvas is swapped for a still copy of the settled picture and
+ * the globe destroyed, freeing its WebGL context; the still stays when the effect is torn down by
+ * hiding the tab, so showing the tab again shows it as it was instead of turning the globe in once
+ * more.
  */
 export function NetworkGlobe({you, api, reachedApi}: NetworkGlobeProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const dark = useThemeV2().color._dark
+  const settledRef = useRef<{key: string; still: HTMLCanvasElement} | null>(null)
 
   useEffect(() => {
     const container = containerRef.current
-    if (!container || (!you && !api)) return undefined
+    if (!container) return undefined
+    const key = JSON.stringify([you, api, reachedApi, dark])
+    const settled = settledRef.current
+    if (settled?.key === key && container.contains(settled.still)) return undefined
+    settledRef.current = null
+    container.replaceChildren()
+    if (!you && !api) return undefined
     const canvas = document.createElement('canvas')
     canvas.className = motion.globe
     canvas.style.width = `${SIZE}px`
@@ -150,6 +178,17 @@ export function NetworkGlobe({you, api, reachedApi}: NetworkGlobeProps) {
           const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
           const started = performance.now()
           let frame = 0
+          // The settled picture replaces the globe as soon as the turn ends, or when the tab is
+          // hidden before it has: hidden mid-turn, it shows the end of the turn when shown again
+          const settle = () => {
+            globe.update(to)
+            const still = stillOf(canvas)
+            globe.destroy()
+            destroy = undefined
+            if (!still) return
+            canvas.replaceWith(still)
+            settledRef.current = {key, still}
+          }
           const draw = (now: number) => {
             const progress = Math.min((now - started) / SETTLE_MS, 1)
             const eased = reduceMotion ? 1 : 1 - (1 - progress) ** 3
@@ -158,12 +197,17 @@ export function NetworkGlobe({you, api, reachedApi}: NetworkGlobeProps) {
               theta: from.theta + (to.theta - from.theta) * eased,
             })
             canvas.dataset.ready = ''
-            if (progress < 1) frame = requestAnimationFrame(draw)
+            if (progress < 1) {
+              frame = requestAnimationFrame(draw)
+              return
+            }
+            settle()
           }
           frame = requestAnimationFrame(draw)
           destroy = () => {
             cancelAnimationFrame(frame)
-            globe.destroy()
+            if (canvas.dataset.ready === undefined) globe.destroy()
+            else settle()
           }
         } catch {
           // No WebGL: the globe stays blank
@@ -173,7 +217,7 @@ export function NetworkGlobe({you, api, reachedApi}: NetworkGlobeProps) {
     return () => {
       cancelled = true
       destroy?.()
-      container.replaceChildren()
+      if (!settledRef.current) container.replaceChildren()
     }
   }, [api, dark, reachedApi, you])
 

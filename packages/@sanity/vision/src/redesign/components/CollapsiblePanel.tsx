@@ -8,6 +8,7 @@ import {visionLocaleNamespace} from '../../i18n'
 import {cx} from '../util/cx'
 import * as motion from './CollapsiblePanel.module.css'
 import * as styles from './redesign.module.css'
+import {useTabElementId} from './tabs/queryTabShown'
 
 /** Height of the tab header, which is all that remains of a collapsed panel */
 export const PANEL_HEADER_HEIGHT = 35
@@ -57,6 +58,8 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
     onTabDoubleClick,
   } = props
   const {t} = useTranslation(visionLocaleNamespace)
+  const tabElementId = useTabElementId()
+  const elementId = (suffix: string) => tabElementId(`${idPrefix}-${suffix}`)
   const activeTab = tabs.find((tab) => tab.id === activeTabId) || tabs[0]
   const stripRef = useRef<HTMLDivElement>(null)
   // Changes when the tabs do, rather than with every new array of them
@@ -68,7 +71,8 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
   useEffect(() => {
     const strip = stripRef.current
     if (!strip) return undefined
-    const tabElement = (tabId: string) => document.getElementById(`${idPrefix}-${tabId}-tab`)
+    const tabElement = (tabId: string) =>
+      strip.querySelector<HTMLElement>(`[id="${tabElementId(`${idPrefix}-${tabId}-tab`)}"]`)
     const reveal = () => {
       const tab = tabElement(activeTab.id)
       if (!tab) return
@@ -84,7 +88,7 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
       if (tab) observer.observe(tab)
     }
     return () => observer.disconnect()
-  }, [activeTab.id, idPrefix, tabIds])
+  }, [activeTab.id, idPrefix, tabElementId, tabIds])
 
   return (
     <Flex data-testid={`${idPrefix}-panel`} flexDirection="column" height="100%" minHeight="0">
@@ -100,11 +104,11 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
           <TabList gap={1}>
             {tabs.map((tab) => (
               <Tab
-                aria-controls={`${idPrefix}-${tab.id}-panel`}
+                aria-controls={elementId(`${tab.id}-panel`)}
                 className={motion.pressable}
                 fontSize={1}
                 icon={tab.icon}
-                id={`${idPrefix}-${tab.id}-tab`}
+                id={elementId(`${tab.id}-tab`)}
                 key={tab.id}
                 label={tab.label}
                 onClick={() => {
@@ -130,7 +134,7 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
           </TabList>
         </Box>
         <Button
-          aria-controls={collapsed ? undefined : `${idPrefix}-${activeTab.id}-panel`}
+          aria-controls={collapsed ? undefined : elementId(`${activeTab.id}-panel`)}
           aria-expanded={!collapsed}
           aria-label={collapsed ? t('vision.panel.expand') : t('vision.panel.collapse')}
           className={cx(motion.pressable, motion.toggle)}
@@ -148,10 +152,10 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
       </Flex>
       {!collapsed && (
         <TabPanel
-          aria-labelledby={`${idPrefix}-${activeTab.id}-tab`}
+          aria-labelledby={elementId(`${activeTab.id}-tab`)}
           className={cx(motion.body, styles.panelBody)}
           flex={1}
-          id={`${idPrefix}-${activeTab.id}-panel`}
+          id={elementId(`${activeTab.id}-panel`)}
           overflow="auto"
         >
           {/*

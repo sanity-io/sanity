@@ -726,3 +726,14 @@
 .listItemButton > [data-ui='Box'] {
   width: 100%;
 }
+
+/*
+ * A query tab shown again (`QueryTab`), for the frames around the reveal: lifting the hidden
+ * tab's `display: none` would start every `@starting-style` transition inside it over
+ */
+.queryTabRevealing,
+.queryTabRevealing *,
+.queryTabRevealing *::before,
+.queryTabRevealing *::after {
+  transition: none !important;
+}
