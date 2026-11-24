@@ -111,6 +111,13 @@ describe('suggestedParamValue', () => {
     expect(
       paramValueOptions({
         name: 'kind',
+        node: {
+          type: 'union',
+          of: [
+            {type: 'string', value: 'a'},
+            {type: 'string', value: 'b'},
+          ],
+        },
         type: {kind: 'string', array: false, options: ['a', 'b']},
         usages: [],
         nullable: true,

@@ -48,6 +48,7 @@ catalog:
   '@vitest/browser-playwright': ^5.1.1
   cobe: ^2.0.1
   dequal: ^2.0.3
+  fast-check: ^4.11.0
   get-it: ^9.7.0
   jsdom: ^31.0.1
   oxc-parser: ^0.159.0
@@ -71,6 +72,7 @@ catalog:
   vite: ^8.3.8
   vitest: ^5.1.1
   vitest-browser-react: ^2.3.0
+  zod: ^4.6.7
 
 autoDedupe: true
 catalogMode: prefer

@@ -463,9 +463,20 @@ describe('ParamsForm', () => {
               onFocus={onFocus}
               param={{
                 name: 'range',
+                node: {
+                  type: 'object',
+                  attributes: {min: {type: 'objectAttribute', value: {type: 'number'}}},
+                },
                 type: {kind: 'any', array: false},
                 usages: [],
-                fields: [{name: 'min', type: {kind: 'number', array: false}, usages: []}],
+                fields: [
+                  {
+                    name: 'min',
+                    node: {type: 'number'},
+                    type: {kind: 'number', array: false},
+                    usages: [],
+                  },
+                ],
               }}
               renderField={(field) => <input aria-label={field.name} />}
               value={{min: 1}}

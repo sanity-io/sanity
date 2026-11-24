@@ -4,6 +4,7 @@ import {
   createTypeScriptPrinter,
   joinKeyAndValue,
   printHelperDeclarations,
+  type PrintRoot,
   sortBySchemaOrder,
 } from './printTypeScript'
 import {flattenObject, indent, MAX_LINE_WIDTH, printLiteralKey} from './printUtils'
@@ -173,7 +174,11 @@ function printZodNode(node: TypeNode, depth: number, context: PrintContext): str
  * the schema types the result references are declared first, dependencies before dependents,
  * with `z.lazy` breaking the cycles and `z.infer` giving the result type.
  */
-export function printZod(node: TypeNode, options: PrintZodOptions): string {
+export function printZod(
+  node: TypeNode,
+  options: PrintZodOptions,
+  printRoot: PrintRoot = (print) => print(node, 0),
+): string {
   const identifiers = createSchemaIdentifiers(options.schema)
   const {order, cyclic} = collectReferencedTypes(node, options.schema)
   const context: PrintContext = {identifiers, cyclic, inDeclarations: true, usesArrayOf: false}
@@ -207,8 +212,9 @@ export function printZod(node: TypeNode, options: PrintZodOptions): string {
 
   context.inDeclarations = false
   const resultSchema = schemaName(options.typeName)
+  const root = printRoot((child, depth) => printZodNode(child, depth, context))
   declarations.push(
-    `export const ${resultSchema} = ${printZodNode(node, 0, context)}`,
+    `export const ${resultSchema} = ${root}`,
     `export type ${options.typeName} = z.infer<typeof ${resultSchema}>`,
   )
 

@@ -3766,7 +3766,7 @@ describe('VisionRedesign', () => {
     fireEvent.click(within(menu).getByTestId('vision-params-export-typescript'))
     await waitFor(() =>
       expect(text(screen.getByTestId('vision-export-params-code'))).toContain(
-        'export type AuthorQueryParams = {\n  /** Could not be inferred from the query */\n  name: unknown;\n  limit: number;\n};',
+        'export type AuthorQueryParams = {\n  /** Could not be inferred because `name`, which it is compared with, needs the workspace schema to be typed */\n  name: unknown;\n  limit: number;\n};',
       ),
     )
     fireEvent.keyDown(screen.getByTestId('vision-export-params-dialog'), {key: 'Escape'})

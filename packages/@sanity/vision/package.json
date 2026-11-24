@@ -118,6 +118,7 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
+    "fast-check": "catalog:",
     "jsdom": "catalog:",
     "lightningcss": "^1.33.0",
     "oxc-transform-react": "catalog:",
@@ -129,7 +130,8 @@
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "zod": "catalog:"
   },
   "peerDependencies": {
     "react": "^19.3.1",
