@@ -104,7 +104,7 @@ function printRefinements(param: InferredParam, node: TypeNode): string {
  * it: the API rejects a query that references a param it was not sent, but accepts `null`.
  */
 export function printParamsZod(params: InferredParam[], options: PrintParamsOptions): string {
-  return printZod(paramsNode(params), options, (print) => {
+  return printZod(paramsNode(params), {...options, jsonValues: true}, (print) => {
     if (params.length === 0) return 'z.object({})'
     const properties = params.map((param) => {
       const node = printedNode(param)

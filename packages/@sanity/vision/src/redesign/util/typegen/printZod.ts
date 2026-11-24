@@ -7,7 +7,13 @@ import {
   type PrintRoot,
   sortBySchemaOrder,
 } from './printTypeScript'
-import {flattenObject, indent, MAX_LINE_WIDTH, printLiteralKey} from './printUtils'
+import {
+  flattenObject,
+  indent,
+  MAX_LINE_WIDTH,
+  printLiteralKey,
+  withOptionalKeys,
+} from './printUtils'
 import {collectReferencedTypes, createSchemaIdentifiers, resolveSchemaType} from './schemaTypes'
 
 /** The Zod counterpart of typegen's `ArrayOf<T>`: an array whose members carry a `_key` */
@@ -17,11 +23,20 @@ const ARRAY_OF_ZOD_DECLARATION = [
   '  z.array(member.and(z.object({ _key: z.string() })))',
 ].join('\n')
 
+/** `arrayOf` for JSON values, whose members need not carry the `_key` a document gives them */
+const JSON_ARRAY_OF_ZOD_DECLARATION = [
+  '/** Members of an array may leave out the `_key` they carry in a document */',
+  'const arrayOf = <T extends z.ZodTypeAny>(member: T) =>',
+  '  z.array(member.and(z.object({ _key: z.string().optional() })))',
+].join('\n')
+
 export interface PrintZodOptions {
   /** Name of the query result type (see `toResultTypeName`); its schema gets a `Schema` suffix */
   typeName: string
   /** Schema the `inline` references point into; the types referenced are emitted as well */
   schema?: SchemaType
+  /** Validates values sent as JSON, as `PrintTypeScriptOptions['jsonValues']` types them */
+  jsonValues?: boolean
 }
 
 interface PrintContext {
@@ -31,6 +46,7 @@ interface PrintContext {
   cyclic: ReadonlySet<string>
   /** Whether schema type declarations are being printed; the result schema comes after them all */
   inDeclarations: boolean
+  jsonValues: boolean
   usesArrayOf: boolean
 }
 
@@ -62,7 +78,8 @@ function printList(helper: string, members: string[], depth: number): string {
   return `${helper}([\n${members.map((member) => `${inner}${member},`).join('\n')}\n${indent(depth)}])`
 }
 
-function printArray(node: ArrayTypeNode, depth: number, context: PrintContext): string {
+function printArray(array: ArrayTypeNode, depth: number, context: PrintContext): string {
+  const node = context.jsonValues ? {...array, of: withOptionalKeys(array.of)} : array
   const arrayOf = (): string => {
     context.usesArrayOf = true
     return `arrayOf(${printZodNode(node.of, depth, context)})`
@@ -181,7 +198,14 @@ export function printZod(
 ): string {
   const identifiers = createSchemaIdentifiers(options.schema)
   const {order, cyclic} = collectReferencedTypes(node, options.schema)
-  const context: PrintContext = {identifiers, cyclic, inDeclarations: true, usesArrayOf: false}
+  const jsonValues = options.jsonValues ?? false
+  const context: PrintContext = {
+    identifiers,
+    cyclic,
+    inDeclarations: true,
+    jsonValues,
+    usesArrayOf: false,
+  }
   const declarations: string[] = []
 
   // TypeScript cannot infer a type through `z.lazy`, so a recursive schema is annotated with an
@@ -192,7 +216,7 @@ export function printZod(
       cyclic.has(name) ? identifier : `z.infer<typeof ${schemaName(identifier)}>`,
     ]),
   )
-  const typePrinter = createTypeScriptPrinter(typeIdentifiers)
+  const typePrinter = createTypeScriptPrinter(typeIdentifiers, {jsonValues})
   for (const name of sortBySchemaOrder([...cyclic], options.schema)) {
     const resolved = resolveSchemaType(options.schema, name)
     if (!resolved) continue
@@ -219,7 +243,9 @@ export function printZod(
   )
 
   const helpers = printHelperDeclarations(typePrinter)
-  if (context.usesArrayOf) helpers.push(ARRAY_OF_ZOD_DECLARATION)
+  if (context.usesArrayOf) {
+    helpers.push(jsonValues ? JSON_ARRAY_OF_ZOD_DECLARATION : ARRAY_OF_ZOD_DECLARATION)
+  }
 
   return [`import {z} from 'zod'`, ...helpers, ...declarations].join('\n\n')
 }
