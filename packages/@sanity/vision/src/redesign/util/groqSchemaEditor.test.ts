@@ -1,8 +1,14 @@
-import {CompletionContext} from '@codemirror/autocomplete'
+import {
+  CompletionContext,
+  completionStatus,
+  currentCompletions,
+  startCompletion,
+} from '@codemirror/autocomplete'
 import {EditorSelection, EditorState} from '@codemirror/state'
+import {EditorView} from '@codemirror/view'
 import {groq} from '@sanity/lezer-groq'
 import {Schema} from '@sanity/schema'
-import {describe, expect, it} from 'vitest'
+import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {
   type GroqEditorLabels,
@@ -10,6 +16,7 @@ import {
   queryParamValues,
   querySchema,
 } from './groqEditorContext'
+import {createGroqFunctionExtensions} from './groqFunctionEditor'
 import {
   describeFieldType,
   fieldHoverAt,
@@ -108,8 +115,15 @@ describe('schemaFieldCompletions', () => {
       expect.arrayContaining([...AUTHOR_FIELDS, ...DOCUMENT_FIELDS]),
     )
     expect(fields('*[_type == "author"]{name, |}')).toEqual(expect.arrayContaining(AUTHOR_FIELDS))
-    expect(fields('*[_type == "author" && na|]')).toEqual(expect.arrayContaining(AUTHOR_FIELDS))
-    expect(fields('*[_type == "book"]{ti|}')).toEqual(expect.arrayContaining(['title', 'author']))
+    expect(fields('*[_type == "author" && na|]')).toEqual(['name'])
+    expect(fields('*[_type == "book"]{ti|}')).toEqual(['title'])
+  })
+
+  it('lists what starts with what is typed before what only contains it', () => {
+    const labels = fields('*[_type == "book"]{a|}')
+    expect(labels?.[0]).toBe('author')
+    expect(labels).toContain('chapters')
+    expect(fields('*[_type == "book"]{ap|}')).toEqual(['chapters'])
   })
 
   it('narrows `_type == $type` by the value in the params JSON', () => {
@@ -209,5 +223,63 @@ describe('describeFieldType', () => {
   it('names references by their targets', () => {
     const author = fieldsOf(schema.documents.get('book')!).find((field) => field.name === 'author')!
     expect(describeFieldType(author.type)).toBe('reference → author')
+  })
+})
+
+describe('completion ranking', () => {
+  const views: EditorView[] = []
+  afterEach(() => {
+    views.splice(0).forEach((view) => view.destroy())
+  })
+
+  /** The menu the editor opens at `|`, as the labels in the order it lists them */
+  async function menu(docWithCursor: string, params: Record<string, unknown> = {}) {
+    const {state: base, pos} = stateOf(docWithCursor, params)
+    const state = EditorState.create({
+      doc: base.doc,
+      selection: EditorSelection.cursor(pos),
+      extensions: [
+        groq(),
+        ...createGroqFunctionExtensions(LABELS),
+        querySchema.of(schema),
+        queryParamValues.of(params),
+      ],
+    })
+    const view = new EditorView({state, parent: document.body})
+    views.push(view)
+    startCompletion(view)
+    await vi.waitFor(() => expect(completionStatus(view.state)).toBe('active'))
+    return currentCompletions(view.state).map((completion) => completion.label)
+  }
+
+  const isFunction = (label: string) => /^[a-z]+::[a-zA-Z]+$/.test(label) || label === 'count'
+
+  it('lists the schema fields before the generic functions in a projection', async () => {
+    const labels = await menu('*[_type == "author"]{|}')
+    const lastField = Math.max(...AUTHOR_FIELDS.map((name) => labels.indexOf(name)))
+    const firstFunction = labels.findIndex(isFunction)
+    expect(lastField).toBeGreaterThan(-1)
+    expect(firstFunction).toBeGreaterThan(lastField)
+    expect(labels).toContain('text::semanticSimilarity')
+    expect(labels).toContain('user::attributes')
+  })
+
+  it('lists the fields of a type a param pins before the functions too', async () => {
+    const labels = await menu('*[_type == $type]{|}', {type: 'book'})
+    expect(labels.slice(0, 3)).toEqual(['title', 'author', 'chapters'])
+    expect(labels.indexOf('chapters')).toBeLessThan(labels.indexOf('text::semanticSimilarity'))
+  })
+
+  it('keeps the fields ahead of functions that match what is typed', async () => {
+    const labels = await menu('*[_type == "book"]{c|}')
+    expect(labels.indexOf('chapters')).toBe(0)
+    expect(labels.findIndex(isFunction)).toBeGreaterThan(0)
+    expect(labels).toContain('count')
+  })
+
+  it('lists the system fields after the fields the schema declares', async () => {
+    const labels = await menu('*[_type == "book"]{|}')
+    expect(labels.indexOf('chapters')).toBeLessThan(labels.indexOf('_id'))
+    expect(labels.indexOf('_id')).toBeLessThan(labels.findIndex(isFunction))
   })
 })
