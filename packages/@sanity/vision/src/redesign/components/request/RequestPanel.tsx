@@ -12,7 +12,6 @@ import {
   useEffectEvent,
   useMemo,
   useRef,
-  useState,
 } from 'react'
 import {type Schema, useSchema} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
@@ -26,6 +25,7 @@ import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {useAiFeatures} from '../../aiFeatures'
 import {type QueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
+import {useScopedState} from '../../hooks/useScopedState'
 import {
   type QueryRequest,
   type VisionParamsView,
@@ -242,7 +242,8 @@ export function RequestPanel(props: RequestPanelProps) {
 
   const querySectionRef = useRef<HTMLDivElement>(null)
   const {generateQuery: canGenerate} = useAiFeatures()
-  const [generatorState, setGeneratorOpen] = useState(false)
+  // Opened for a tab; another tab starts with it closed
+  const [generatorState, setGeneratorOpen] = useScopedState(tab.id, false)
   const generatorOpen = canGenerate && generatorState
   // Closing hands the keyboard back to the query editor, where the bar was opened from
   const closeGenerator = useCallback(() => {
@@ -252,7 +253,7 @@ export function RequestPanel(props: RequestPanelProps) {
         ?.querySelector<HTMLElement>('[data-testid="vision-query-editor"] .cm-content')
         ?.focus(),
     )
-  }, [])
+  }, [setGeneratorOpen])
 
   // The API version button shows the field that changes what it says: the Options tab opens if
   // another was showing, the panel expands if it was collapsed, and once its fields have mounted
@@ -333,6 +334,7 @@ export function RequestPanel(props: RequestPanelProps) {
                     editorRef={paramsEditorRef}
                     onChange={onParamsChange}
                     params={params}
+                    tabId={tab.id}
                     value={tab.rawParams}
                   />
                   <FlushOnUnmount onUnmount={onParamsFlush} />
@@ -404,6 +406,7 @@ export function RequestPanel(props: RequestPanelProps) {
     saveFunction,
     setParamsView,
     t,
+    tab.id,
     tab.options,
     tab.query,
     tab.rawParams,
@@ -522,6 +525,7 @@ export function RequestPanel(props: RequestPanelProps) {
             initialValue={tab.query}
             onChange={onQueryChange}
             ref={queryEditorRef}
+            stateKey={tab.id}
           />
         </Box>
       </Flex>

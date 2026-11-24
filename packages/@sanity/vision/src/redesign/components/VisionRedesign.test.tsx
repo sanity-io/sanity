@@ -4,7 +4,14 @@ import {buildTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
 import {act, cleanup, fireEvent, render, screen, waitFor, within} from '@testing-library/react'
 import JSON5 from 'json5'
-import {Activity, type ReactNode, type RefAttributes, useImperativeHandle, useRef} from 'react'
+import {
+  Activity,
+  type ReactNode,
+  type RefAttributes,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+} from 'react'
 import {defer, type Observable, of, Subject} from 'rxjs'
 import {type PerspectiveContextValue} from 'sanity'
 import {
@@ -34,6 +41,7 @@ import {QUERY_URL_SIZE_LIMIT} from '../../util/queryRequestMethod'
 import {resetAiCredits} from '../hooks/useAiCredits'
 import {
   createInitialState,
+  DEFAULT_PARAMS,
   createTab,
   getVisionStorageKey,
   saveVisionState,
@@ -294,11 +302,29 @@ vi.mock('../../codemirror/VisionCodeMirror', () => ({
     initialValue,
     onChange,
     ref,
+    stateKey,
   }: {
     initialValue?: string
     onChange?: (value: string) => void
+    stateKey?: string
   } & RefAttributes<VisionCodeMirrorHandle>) {
     const textareaRef = useRef<HTMLTextAreaElement>(null)
+    // Like the editor, the mock keeps one document per `stateKey` in the same element: a key
+    // change shows that key's last document, or `initialValue` for a key it has not seen
+    const documentsRef = useRef(new Map<string, string>())
+    const shownKeyRef = useRef(stateKey)
+    useLayoutEffect(() => {
+      const previousKey = shownKeyRef.current
+      if (previousKey === stateKey) return
+      shownKeyRef.current = stateKey
+      const textarea = textareaRef.current
+      if (!textarea) return
+      if (previousKey !== undefined) documentsRef.current.set(previousKey, textarea.value)
+      textarea.value =
+        (stateKey === undefined ? undefined : documentsRef.current.get(stateKey)) ??
+        initialValue ??
+        ''
+    }, [initialValue, stateKey])
     useImperativeHandle(ref, () => ({
       resetEditorContent: (content: string) => {
         if (textareaRef.current) textareaRef.current.value = content
@@ -2476,6 +2502,110 @@ describe('VisionRedesign', () => {
     fireEvent.click(within(tabs[0]).getByTestId('vision-tab-close'))
     expect(screen.getAllByTestId('vision-tab')).toHaveLength(1)
     expect(text(screen.getByTestId('vision-tab-button'))).toContain('vision.tabs.untitled')
+  })
+
+  it('switches tabs without remounting the tab shell, the panels or the editors', async () => {
+    const {fetchCalls} = renderRedesign()
+    const paramsEditor = () =>
+      within(screen.getByTestId('vision-params-editor')).getByTestId(
+        'codemirror-mock',
+      ) as HTMLTextAreaElement
+    // The elements a remount would replace: the shell, both panels with their open tab bodies,
+    // the editors and the result area. Each panel's `@starting-style` entry transition replays
+    // when its body is mounted, which was the flicker on every switch between two empty tabs
+    const shell = () => screen.getByTestId('vision-query-tab')
+    const requestPanel = () => screen.getByTestId('vision-request-panel')
+    const paramsBody = () => document.getElementById('vision-request-params-panel') as HTMLElement
+    const responsePanel = () => document.getElementById('vision-response') as HTMLElement
+    const result = () => screen.getByTestId('vision-result')
+    const before = {
+      shell: shell(),
+      requestPanel: requestPanel(),
+      paramsBody: paramsBody(),
+      paramsView: document.getElementById('vision-params-view-json') as HTMLElement,
+      queryEditor: getQueryEditor(),
+      paramsEditor: paramsEditor(),
+      responsePanel: responsePanel(),
+      result: result(),
+    }
+    expect(text(result())).toContain('vision.result.empty')
+
+    fireEvent.click(screen.getByTestId('vision-new-tab'))
+    expect(screen.getAllByTestId('vision-tab')).toHaveLength(2)
+    expect(shell()).toBe(before.shell)
+    expect(requestPanel()).toBe(before.requestPanel)
+    expect(paramsBody()).toBe(before.paramsBody)
+    expect(document.getElementById('vision-params-view-json')).toBe(before.paramsView)
+    expect(getQueryEditor()).toBe(before.queryEditor)
+    expect(paramsEditor()).toBe(before.paramsEditor)
+    expect(responsePanel()).toBe(before.responsePanel)
+    expect(result()).toBe(before.result)
+    expect(text(result())).toContain('vision.result.empty')
+
+    fireEvent.click(within(screen.getAllByTestId('vision-tab')[0]).getByTestId('vision-tab-button'))
+    expect(shell()).toBe(before.shell)
+    expect(getQueryEditor()).toBe(before.queryEditor)
+    expect(paramsEditor()).toBe(before.paramsEditor)
+    expect(result()).toBe(before.result)
+    // Showing a tab fetches nothing by itself
+    expect(fetchCalls).toHaveLength(0)
+    expect(screen.getByTestId('vision-query-tab').getAttribute('aria-labelledby')).toBe(
+      within(screen.getAllByTestId('vision-tab')[0]).getByRole('tab').id,
+    )
+  })
+
+  it('keeps the query, params, result and panel state of each tab apart in the shared shell', async () => {
+    const {fetchCalls} = renderRedesign()
+    const paramsEditor = () =>
+      within(screen.getByTestId('vision-params-editor')).getByTestId(
+        'codemirror-mock',
+      ) as HTMLTextAreaElement
+    const tabButton = (index: number) =>
+      within(screen.getAllByTestId('vision-tab')[index]).getByTestId('vision-tab-button')
+
+    typeQuery('*[_type == $type]')
+    fireEvent.change(paramsEditor(), {target: {value: '{"type": "author"}'}})
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
+    await waitFor(() => expect(screen.getByTestId('vision-result-json')).toBeTruthy())
+    expect(fetchCalls).toHaveLength(1)
+
+    // The new tab starts empty, in the same editors
+    fireEvent.click(screen.getByTestId('vision-new-tab'))
+    expect(getQueryEditor().value).toBe('')
+    expect(paramsEditor().value).toBe(DEFAULT_PARAMS)
+    expect(screen.queryByTestId('vision-result-json')).toBeNull()
+    expect(text(screen.getByTestId('vision-result'))).toContain('vision.result.empty')
+    expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(true)
+    expect(fetchCalls).toHaveLength(1)
+    // The debounced params edit of the first tab was committed to that tab, not this one
+    await waitFor(() => {
+      const stored = getStoredState()
+      expect(stored.tabs[0].rawParams).toBe('{"type": "author"}')
+      expect(stored.tabs[1].rawParams).toBe(DEFAULT_PARAMS)
+    })
+
+    typeQuery('*[_type == "book"]')
+    fireEvent.change(paramsEditor(), {target: {value: '{"limit": 2}'}})
+
+    // Back on the first tab: its query, params and result are shown again, without refetching
+    fireEvent.click(tabButton(0))
+    expect(getQueryEditor().value).toBe('*[_type == $type]')
+    expect(screen.getByTestId('vision-result-json')).toBeTruthy()
+    expect(fetchCalls).toHaveLength(1)
+    expect(paramsEditor().value).toBe('{"type": "author"}')
+    await waitFor(() => expect(getStoredState().tabs[1].rawParams).toBe('{"limit": 2}'))
+
+    fireEvent.click(tabButton(1))
+    expect(getQueryEditor().value).toBe('*[_type == "book"]')
+    expect(paramsEditor().value).toBe('{"limit": 2}')
+    expect(screen.queryByTestId('vision-result-json')).toBeNull()
+
+    // Running the second tab's query reads that tab's params
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vision-fetch-button'))
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(fetchCalls[1]).toMatchObject({query: '*[_type == "book"]', params: {limit: 2}})
   })
 
   it('only derives types from a result that was fetched for the current query', async () => {

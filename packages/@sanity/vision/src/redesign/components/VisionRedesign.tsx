@@ -133,7 +133,7 @@ export function VisionRedesign(props: VisionRedesignProps) {
                       >
                         <QueryTabBar />
                         <QueryTabLayoutProvider>
-                          <QueryTab key={activeTab.id} tab={activeTab} rootElement={rootElement} />
+                          <QueryTab tab={activeTab} rootElement={rootElement} />
                         </QueryTabLayoutProvider>
                       </Flex>
                     </Flex>

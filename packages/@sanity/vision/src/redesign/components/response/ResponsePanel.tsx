@@ -54,6 +54,52 @@ export interface ResponsePanelProps {
   onMutationsApplied: () => void
 }
 
+interface TabDrawerToolsProps {
+  resolved: ResolvedRequest
+  request: QueryRequest | null
+  hiddenDiffFields: string[]
+  result: unknown
+  onMutationsApplied: () => void
+}
+
+/**
+ * The tab's tools, open in the sidebar's drawer. Mounted per tab (keyed on its id by the
+ * panel), so the document typed into Delta and the mutations written in Mutate stay with the
+ * tab while its drawer is closed, and another tab starts with both empty; a request that
+ * settles after the user has moved on lands in the instance that was unmounted with the tab.
+ */
+function TabDrawerTools(props: TabDrawerToolsProps) {
+  const {resolved, request, hiddenDiffFields, result, onMutationsApplied} = props
+  const delta = useDeltaPanel()
+  const mutate = useMutatePanel()
+  const tabDrawer = useVisionSelector(selectOpenTabDrawer)
+  if (!tabDrawer) return null
+
+  const renderTabDrawer = (drawer: VisionTabDrawer): ReactNode => {
+    switch (drawer) {
+      case 'delta':
+        return <DeltaTab delta={delta} request={request} />
+      case 'mutate':
+        return (
+          <MutateTab
+            canRequest={resolved.isValidApiVersion}
+            client={resolved.client}
+            dataset={resolved.dataset}
+            hiddenFields={hiddenDiffFields}
+            mutate={mutate}
+            onApplied={onMutationsApplied}
+            result={result}
+          />
+        )
+      default: {
+        const unknownDrawer: never = drawer
+        return String(unknownDrawer)
+      }
+    }
+  }
+  return <TabDrawerPortal>{renderTabDrawer(tabDrawer)}</TabDrawerPortal>
+}
+
 export function ResponsePanel(props: ResponsePanelProps) {
   const {tab, runnerRef, resolved, request, onMutationsApplied} = props
   const {t} = useTranslation(visionLocaleNamespace)
@@ -111,8 +157,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
 
   const queryExplain = useQueryExplain(request)
   const perspectiveName = usePerspectiveOptionName(resolved.tabPerspective)
-  const delta = useDeltaPanel()
-  const mutate = useMutatePanel()
   const actorRef = useVisionActor()
   const resultView = useVisionSelector(selectResultView)
   const setResultView = useCallback(
@@ -200,34 +244,16 @@ export function ResponsePanel(props: ResponsePanelProps) {
     ],
   )
 
-  // The tab's tools open in the sidebar's drawer
-  const tabDrawer = useVisionSelector(selectOpenTabDrawer)
-  const renderTabDrawer = (drawer: VisionTabDrawer): ReactNode => {
-    switch (drawer) {
-      case 'delta':
-        return <DeltaTab delta={delta} request={request} />
-      case 'mutate':
-        return (
-          <MutateTab
-            canRequest={resolved.isValidApiVersion}
-            client={resolved.client}
-            dataset={resolved.dataset}
-            hiddenFields={hiddenDiffFields}
-            mutate={mutate}
-            onApplied={onMutationsApplied}
-            result={hasResult ? result : undefined}
-          />
-        )
-      default: {
-        const unknownDrawer: never = drawer
-        return String(unknownDrawer)
-      }
-    }
-  }
-
   return (
     <>
-      {tabDrawer && <TabDrawerPortal>{renderTabDrawer(tabDrawer)}</TabDrawerPortal>}
+      <TabDrawerTools
+        hiddenDiffFields={hiddenDiffFields}
+        key={tab.id}
+        onMutationsApplied={onMutationsApplied}
+        request={request}
+        resolved={resolved}
+        result={hasResult ? result : undefined}
+      />
       <SplitWithBottomPanel
         defaultBottomSize={DEFAULT_BOTTOM_PANEL_SIZE}
         fitOnTabDoubleClick
