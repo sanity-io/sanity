@@ -1253,6 +1253,9 @@ describe('VisionRedesign', () => {
     expect(text(screen.getByTestId('vision-explain-verdict'))).toBe(
       'vision.explain.verdict.performantThe index does the work.',
     )
+    // The verdict says the query is fast, so the warning that the filter gets slow is gone
+    expect(screen.queryByTestId('vision-plan-insight')).toBeNull()
+    expect(screen.queryByText('vision.explain.insights.guide')).toBeNull()
     // The technical walkthrough waits behind a toggle
     expect(screen.queryByTestId('vision-explanation-details')).toBeNull()
     const details = screen.getByTestId('vision-explanation-details-toggle')
@@ -1303,6 +1306,63 @@ describe('VisionRedesign', () => {
       // Nothing to show for the plan's detail without a walkthrough
       expect(screen.queryByTestId('vision-explanation-details-toggle')).toBeNull()
     })
+
+    it.each([
+      ['performant', 'positive', 'vision.explain.insight.index-sort-limit', false],
+      [
+        'cannot-improve',
+        'neutral',
+        'vision.explain.insight.filter-in-memory.cannot-improve',
+        false,
+      ],
+      ['improvable', 'caution', 'vision.explain.insight.filter-in-memory', true],
+    ] as const)(
+      'does not let What stands out contradict a %s verdict',
+      async (verdict, tone, message, guide) => {
+        const view = renderRedesign()
+        const plan = [
+          'Pipeline {',
+          '  r1: StreamStep { $0: Fetch { Sort: _createdAt desc',
+          '      Limit: 10 } }',
+          '  r3: FilterStep { Source: r2, Expr: eq($1.name, "x") }',
+          '}',
+        ].join('\n')
+        view.respondToRequests({result: [], explain: plan})
+        view.replyToPrompts({
+          summary: 'It finds books.',
+          verdict,
+          verdictReason: 'Because.',
+          suggestions: [],
+          details: '',
+        })
+        typeQuery('*[_type == "book"]')
+        fireEvent.click(document.getElementById('vision-response-explain-tab') as HTMLElement)
+        await waitFor(() =>
+          expect(isDisabled(screen.getByTestId('vision-explain-button'))).toBe(false),
+        )
+        // No verdict yet: the heuristic stands, warning included
+        fireEvent.click(screen.getByTestId('vision-explain-plan-button'))
+        await waitFor(() => expect(screen.getByTestId('vision-query-plan')).toBeTruthy())
+        const before = screen.getAllByTestId('vision-plan-insight')[0]
+        expect(before.getAttribute('data-tone')).toBe('caution')
+        expect(before.querySelector('[data-ui="Text"]')?.textContent).toBe(
+          'vision.explain.insight.filter-in-memory',
+        )
+        expect(screen.getByText('vision.explain.insights.guide')).toBeTruthy()
+
+        fireEvent.click(screen.getByTestId('vision-explain-button'))
+        await screen.findByTestId('vision-explain-verdict')
+        const [card] = screen.getAllByTestId('vision-plan-insight')
+        expect(card.getAttribute('data-tone')).toBe(tone)
+        expect(card.querySelector('[data-ui="Text"]')?.textContent).toBe(message)
+        expect(card.textContent).not.toContain('gets slow')
+        if (guide) {
+          expect(screen.getByText('vision.explain.insights.guide')).toBeTruthy()
+        } else {
+          expect(screen.queryByText('vision.explain.insights.guide')).toBeNull()
+        }
+      },
+    )
 
     it('offers no suggestions and no Improve query when there is nothing to change', async () => {
       const view = renderRedesign()
