@@ -153,6 +153,7 @@ describe('visionStorage', () => {
         explainQuery: false,
       },
       editor: {autoFormatOnResize: false},
+      response: {resolveSyncTags: true},
       functions: [{id: 'ex::author', declaration: 'fn ex::author($ref) = $ref->{name}'}],
     }
     saveVisionState('proj', saved)
@@ -365,6 +366,23 @@ describe('visionStorage', () => {
     expect(load({autoFormatOnResize: false})).toEqual({autoFormatOnResize: false})
     expect(load({autoFormatOnResize: 'no'})).toEqual({autoFormatOnResize: true})
     expect(load('off')).toEqual({autoFormatOnResize: true})
+  })
+
+  it('keeps sync tag lookup off unless it was switched on', () => {
+    const {response: _response, ...withoutResponse} = createInitialState(defaults)
+    expect(createInitialState(defaults).response).toEqual({resolveSyncTags: false})
+
+    const load = (response?: unknown) => {
+      localStorage.setItem(
+        getVisionStorageKey('proj'),
+        JSON.stringify(response === undefined ? withoutResponse : {...withoutResponse, response}),
+      )
+      return loadVisionState('proj', defaults).response
+    }
+    expect(load()).toEqual({resolveSyncTags: false})
+    expect(load({resolveSyncTags: true})).toEqual({resolveSyncTags: true})
+    expect(load({resolveSyncTags: 'yes'})).toEqual({resolveSyncTags: false})
+    expect(load('on')).toEqual({resolveSyncTags: false})
   })
 
   it('returns a fresh state for missing, malformed or outdated storage', () => {

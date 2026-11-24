@@ -120,6 +120,14 @@ export function ResponsePanel(props: ResponsePanelProps) {
     [t, toast],
   )
 
+  const resolveSyncTags = useVisionSelector((snapshot) => snapshot.context.response.resolveSyncTags)
+  // Looked up with the client the shown result came from: its tags were computed for its dataset,
+  // which the tab's options may already have moved away from
+  const settledClient = settledRequest?.client
+  const syncTagLookup = useMemo(
+    () => (resolveSyncTags && settledClient ? {client: settledClient, result} : undefined),
+    [resolveSyncTags, result, settledClient],
+  )
   const queryExplain = useQueryExplain(request)
   const perspectiveName = usePerspectiveOptionName(resolved.tabPerspective)
   const delta = useDeltaPanel()
@@ -203,6 +211,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
             meta={meta}
             perspectiveName={perspectiveName}
             resolved={resolved}
+            syncTagLookup={syncTagLookup}
             url={url}
           />
         ),
@@ -249,6 +258,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
       request,
       resolved,
       resultDataset,
+      syncTagLookup,
       t,
       url,
     ],

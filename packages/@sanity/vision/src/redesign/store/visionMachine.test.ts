@@ -401,8 +401,18 @@ describe('visionMachine', () => {
         explainQuery: true,
       },
       editor: {autoFormatOnResize: true},
+      response: {resolveSyncTags: false},
       functions: [],
     })
+  })
+
+  it('updates the response settings, persists them, and switches them back off when storage is cleared', () => {
+    const harness = createHarness()
+    harness.actor.send({type: 'response.update', settings: {resolveSyncTags: true}})
+    expect(selectPersistedState(harness.snapshot()).response).toEqual({resolveSyncTags: true})
+
+    harness.actor.send({type: 'storage.clear'})
+    expect(harness.snapshot().context.response).toEqual({resolveSyncTags: false})
   })
 
   it('updates the editor settings, persists them, and turns them back on when storage is cleared', () => {

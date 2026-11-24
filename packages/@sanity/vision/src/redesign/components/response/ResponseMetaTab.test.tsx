@@ -13,6 +13,7 @@ import {encodeQueryString} from '../../../util/encodeQueryString'
 import {encodedQuerySize, QUERY_URL_SIZE_LIMIT} from '../../../util/queryRequestMethod'
 import {type VisionResponseMeta} from '../../store/types'
 import {type QueryNetwork} from '../../util/queryNetwork'
+import {clearSyncTagLookupCache, type SyncTagLookupClient} from '../../util/syncTagLookup'
 import {ResponseMetaTab} from './ResponseMetaTab'
 
 const cobe = vi.hoisted(() => {
@@ -374,5 +375,121 @@ describe('ResponseMetaTab rows', () => {
         element = element.parentElement
       }
     }
+  })
+})
+
+/** A client resolving `s1:book` (a type) and `s1:any`, holding every answer until `release` */
+function lookupClient(options: {fail?: boolean} = {}) {
+  const pending: (() => void)[] = []
+  let calls = 0
+  const client: SyncTagLookupClient = {
+    config: () => ({projectId: 'p', dataset: 'd', apiHost: 'https://api'}),
+    fetch: (query, params) => {
+      calls++
+      return new Promise((resolve, reject) => {
+        pending.push(() => {
+          if (options.fail) reject(new Error('Network down'))
+          else if (query === 'array::unique(*._type)') {
+            resolve({result: ['book'], syncTags: ['s1:any']})
+          } else resolve({result: 0, syncTags: params.type === 'book' ? ['s1:book'] : []})
+        })
+      })
+    },
+  }
+  return {
+    client,
+    calls: () => calls,
+    release: async () => {
+      // Each answer can send the next probe, so settle until nothing is left waiting
+      while (pending.length > 0) {
+        await act(async () => {
+          for (const answer of pending.splice(0)) answer()
+        })
+      }
+    },
+  }
+}
+
+describe('ResponseMetaTab sync tag lookup', () => {
+  afterEach(() => {
+    cleanup()
+    clearSyncTagLookupCache()
+  })
+
+  const tagged: VisionResponseMeta = {
+    ...meta(cdnMiss),
+    syncTags: ['s1:book', 's1:mystery', 's1:any'],
+  }
+  const toggle = () => screen.getByRole('button', {name: 'vision.response.sync-tags'})
+  const pills = () =>
+    within(screen.getByTestId('vision-meta-sync-tags'))
+      .getAllByText(/./)
+      .map((pill) => pill.textContent)
+
+  it('keeps the row as it is while the setting is off', async () => {
+    await renderTab({meta: tagged})
+    expect(screen.queryByTestId('vision-meta-sync-tags-toggle')).toBeNull()
+    expect(pills()).toEqual(['s1:any', 's1:book', 's1:mystery'])
+  })
+
+  it('keeps the row as it is when the response has no tags to resolve', async () => {
+    const {client, calls} = lookupClient()
+    await renderTab({meta: meta(cdnMiss), syncTagLookup: {client, result: []}})
+    expect(screen.queryByTestId('vision-meta-sync-tags-toggle')).toBeNull()
+    expect(screen.getByText('vision.response.sync-tags.none')).toBeTruthy()
+    expect(calls()).toBe(0)
+  })
+
+  it('switches between the raw and the resolved tags, marking those it could not resolve', async () => {
+    const {client, calls, release} = lookupClient()
+    await renderTab({meta: tagged, syncTagLookup: {client, result: [{_type: 'book'}]}})
+
+    expect(toggle().getAttribute('aria-pressed')).toBe('false')
+    // Nothing is asked of the API before the resolved values are first shown
+    expect(calls()).toBe(0)
+
+    fireEvent.click(toggle())
+    expect(toggle().getAttribute('aria-pressed')).toBe('true')
+    expect(screen.getByTestId('vision-meta-sync-tags').getAttribute('aria-busy')).toBe('true')
+    expect(screen.getByRole('status').textContent).toBe('vision.response.sync-tags.resolving')
+    expect(pills()).toEqual(['s1:any', 's1:book', 's1:mystery'])
+
+    await release()
+    expect(screen.getByTestId('vision-meta-sync-tags').getAttribute('aria-busy')).toBeNull()
+    expect(pills()).toEqual(['*', '_type == "book"', 's1:mystery'])
+    const mystery = screen.getByText('s1:mystery').closest('[data-resolved]')
+    expect(mystery?.getAttribute('data-resolved')).toBe('false')
+    expect(mystery?.getAttribute('title')).toBe('vision.response.sync-tags.unresolved')
+    expect(screen.getByRole('status').textContent).toBe(
+      'vision.response.sync-tags.partly-resolved:{"count":1,"total":3}',
+    )
+
+    fireEvent.click(toggle())
+    expect(toggle().getAttribute('aria-pressed')).toBe('false')
+    expect(pills()).toEqual(['s1:any', 's1:book', 's1:mystery'])
+    expect(screen.queryByRole('status')).toBeNull()
+
+    // Shown again, the answers are already known
+    const sent = calls()
+    fireEvent.click(toggle())
+    expect(pills()).toEqual(['*', '_type == "book"', 's1:mystery'])
+    expect(calls()).toBe(sent)
+  })
+
+  it('says when the lookup failed, keeps the raw tags, and tries again when shown again', async () => {
+    const failing = lookupClient({fail: true})
+    await renderTab({meta: tagged, syncTagLookup: {client: failing.client, result: []}})
+
+    fireEvent.click(toggle())
+    await failing.release()
+    expect(screen.getByRole('status').textContent).toBe(
+      'vision.response.sync-tags.resolve-failed:{"message":"Network down"}',
+    )
+    expect(pills()).toEqual(['s1:any', 's1:book', 's1:mystery'])
+
+    fireEvent.click(toggle())
+    fireEvent.click(toggle())
+    expect(screen.getByRole('status').textContent).toBe('vision.response.sync-tags.resolving')
+    expect(failing.calls()).toBe(2)
   })
 })

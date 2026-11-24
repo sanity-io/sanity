@@ -176,6 +176,7 @@ export function SettingsPanel() {
   const workspaceDataset = useVisionSelector(selectWorkspaceDataset)
   const settings = useVisionSelector((snapshot) => snapshot.context.settings)
   const editorSettings = useVisionSelector((snapshot) => snapshot.context.editor)
+  const responseSettings = useVisionSelector((snapshot) => snapshot.context.response)
   const [confirmClear, setConfirmClear] = useState(false)
   // The "Other" input may hold an unfinished version; only usable ones become the default
   const [apiVersionDraft, setApiVersionDraft] = useState(settings.apiVersion)
@@ -279,6 +280,23 @@ export function SettingsPanel() {
               }
               testId="vision-settings-auto-format-on-resize"
               title={t('vision.settings.editor.auto-format-on-resize')}
+            />
+          </Stack>
+        </Card>
+
+        <Card border padding={3} radius={2}>
+          <Stack gap={4}>
+            <Text size={1} weight="medium" as="div" trim={true}>
+              {t('vision.settings.response.title')}
+            </Text>
+            <SwitchField
+              checked={responseSettings.resolveSyncTags}
+              description={t('vision.settings.response.resolve-sync-tags.description')}
+              onChange={(resolveSyncTags) =>
+                actorRef.send({type: 'response.update', settings: {resolveSyncTags}})
+              }
+              testId="vision-settings-resolve-sync-tags"
+              title={t('vision.settings.response.resolve-sync-tags')}
             />
           </Stack>
         </Card>
