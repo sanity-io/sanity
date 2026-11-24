@@ -314,13 +314,6 @@
   height: 100%;
 }
 
-/* Option fields flow into as many columns as fit the request column */
-.optionsGrid {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-}
-
 /* Hides the request or response pane in the single-column phone layout */
 .hiddenPane.hiddenPane {
   display: none;

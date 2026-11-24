@@ -232,15 +232,23 @@ interface UseCdnFieldProps {
   onChange: (useCdn: boolean) => void
   /** How the CDN answers the query */
   notes?: string[]
+  /** The short line under the switch; the Options pane leaves it to the info tooltip */
+  showSummary?: boolean
 }
 
 /** The `useCdn` switch: queries go to the cached API CDN instead of the live API */
-export function UseCdnField({testId, checked, onChange, notes = []}: UseCdnFieldProps) {
+export function UseCdnField({
+  testId,
+  checked,
+  onChange,
+  notes = [],
+  showSummary = true,
+}: UseCdnFieldProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   return (
     <SwitchField
       checked={checked}
-      description={t('vision.options.use-cdn.summary')}
+      description={showSummary ? t('vision.options.use-cdn.summary') : undefined}
       info={[t('vision.options.use-cdn.description'), ...notes]}
       onChange={onChange}
       testId={testId}
