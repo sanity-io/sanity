@@ -28,6 +28,8 @@ const schema = Schema.compile({
         {name: 'title', type: 'string'},
         {name: 'status', type: 'string', options: {list: ['draft', 'published']}},
         {name: 'featured', type: 'boolean'},
+        {name: 'rating', type: 'number'},
+        {name: 'tags', type: 'array', of: [{type: 'string'}]},
       ],
     },
     {name: 'author', type: 'document', fields: [{name: 'name', type: 'string'}]},
@@ -211,18 +213,52 @@ describe('ParamsForm', () => {
     expect(typeInput).toHaveProperty('value', 'post')
   })
 
-  it('sends numbers as numbers, keeping the text as typed, and other text as text', () => {
-    const {field, input, params} = renderForm('*[_type == "post"][0...$limit]')
-    fireEvent.change(input('limit'), {target: {value: '1.'}})
-    expect(params()).toEqual({limit: 1})
-    expect(input('limit')).toHaveProperty('value', '1.')
-    fireEvent.change(input('limit'), {target: {value: '1.5'}})
-    expect(params()).toEqual({limit: 1.5})
+  it('takes numbers in a number input and sends them as JSON numbers', () => {
+    const {field, params} = renderForm('*[_type == "post" && rating > $rating][0...$limit]')
+    const rating = within(field('rating')).getByRole('spinbutton')
+    expect(rating).toHaveProperty('type', 'number')
+    // Any number, like a Studio number field without rules
+    expect(rating.getAttribute('step')).toBe('any')
+    expect(rating.getAttribute('min')).toBeNull()
+    fireEvent.change(rating, {target: {value: '-2.5'}})
+    expect(params()).toEqual({rating: -2.5})
+
+    // A slice bound steps in whole numbers, and a fraction is still sent, with its note
+    const limit = within(field('limit')).getByRole('spinbutton')
+    expect(limit.getAttribute('step')).toBe('1')
+    fireEvent.change(limit, {target: {value: '1.5'}})
+    expect(params()).toEqual({rating: -2.5, limit: 1.5})
     expect(within(field('limit')).getByTestId('vision-params-form-limit-problem').textContent).toBe(
       'vision.params-form.invalid.integer',
     )
-    fireEvent.change(input('limit'), {target: {value: 'ten'}})
-    expect(params()).toEqual({limit: 'ten'})
+    fireEvent.change(limit, {target: {value: ''}})
+    expect(params()).toEqual({rating: -2.5})
+  })
+
+  it('bounds counts and rounding places to whole numbers from 0', () => {
+    const {field, params} = renderForm(
+      '*[_type == "post" && count(tags) >= $minimum]{"r": round(rating, $precision)}',
+    )
+    for (const name of ['minimum', 'precision']) {
+      const input = within(field(name)).getByRole('spinbutton')
+      expect([input.getAttribute('min'), input.getAttribute('step')]).toEqual(['0', '1'])
+      expect(input).toHaveProperty('inputMode', 'numeric')
+      expect(screen.getByTestId(`vision-params-form-${name}-type`).textContent).toBe(
+        `vision.params-form.type-detail:${JSON.stringify({
+          type: `vision.params-form.type.min:${JSON.stringify({type: 'vision.params-form.type.integer', min: 0})}`,
+        })}`,
+      )
+    }
+    fireEvent.change(within(field('minimum')).getByRole('spinbutton'), {target: {value: '-1'}})
+    expect(params()).toEqual({minimum: -1})
+    expect(
+      within(field('minimum')).getByTestId('vision-params-form-minimum-problem').textContent,
+    ).toBe('vision.params-form.invalid.min:{"min":0}')
+  })
+
+  it('shows a number param that holds something else as text, with its note', () => {
+    const {field, input} = renderForm('*[_type == "post"][0...$limit]', '{"limit": "ten"}')
+    expect(input('limit')).toHaveProperty('value', 'ten')
     expect(within(field('limit')).getByTestId('vision-params-form-limit-problem').textContent).toBe(
       'vision.params-form.invalid.number',
     )
@@ -276,11 +312,71 @@ describe('ParamsForm', () => {
     expect(input('g')).toHaveProperty('placeholder', 'vision.params-form.null')
   })
 
-  it('offers true and false for a boolean, and any JSON for an untyped param', () => {
+  it('forwards focus and blur from a number input and a switch to the form', () => {
+    const onFocus = vi.fn()
+    const onBlur = vi.fn()
+    const {field} = renderForm('*[_type == "post" && rating > $rating && featured == $featured]')
+    const form = screen.getByTestId('vision-params-form')
+    form.addEventListener('focusin', onFocus)
+    form.addEventListener('focusout', onBlur)
+    for (const input of [
+      within(field('rating')).getByRole('spinbutton'),
+      within(field('featured')).getByRole('checkbox'),
+    ]) {
+      input.focus()
+      expect(document.activeElement).toBe(input)
+      input.blur()
+    }
+    expect(onFocus).toHaveBeenCalledTimes(2)
+    expect(onBlur).toHaveBeenCalledTimes(2)
+  })
+
+  it('toggles a boolean with a switch, not set until it is switched', () => {
+    const {field, params} = renderForm('*[_type == "post" && featured == $featured]')
+    const toggle = within(field('featured')).getByRole('checkbox') as HTMLInputElement
+    expect(toggle.indeterminate).toBe(true)
+    expect(within(field('featured')).getByText('vision.params-form.not-set')).toBeTruthy()
+    // The field label points at the switch
+    expect(within(field('featured')).getByLabelText('$featured')).toBe(toggle)
+
+    fireEvent.click(toggle)
+    expect(params()).toEqual({featured: true})
+    expect(toggle.indeterminate).toBe(false)
+    expect(toggle.checked).toBe(true)
+    fireEvent.click(toggle)
+    expect(params()).toEqual({featured: false})
+    expect(toggle.checked).toBe(false)
+    expect(within(field('featured')).getByText('false')).toBeTruthy()
+  })
+
+  it('switches a boolean that holds something else to a boolean, with a note until then', () => {
+    const {field, params} = renderForm(
+      '*[_type == "post" && $includeSummary]',
+      '{"includeSummary": "yes"}',
+    )
+    const toggle = within(field('includeSummary')).getByRole('checkbox') as HTMLInputElement
+    expect(toggle.indeterminate).toBe(true)
+    expect(
+      within(field('includeSummary')).getByTestId('vision-params-form-includeSummary-problem'),
+    ).toBeTruthy()
+    fireEvent.click(toggle)
+    expect(params()).toEqual({includeSummary: true})
+  })
+
+  it('edits number list items in number inputs', () => {
+    const {field, params} = renderForm('*[_type == "post" && rating in $ratings]')
+    fireEvent.click(screen.getByTestId('vision-params-form-ratings-add'))
+    expect(params()).toEqual({ratings: [0]})
+    fireEvent.change(within(field('ratings')).getByRole('spinbutton'), {target: {value: '4'}})
+    expect(params()).toEqual({ratings: [4]})
+  })
+
+  it('offers any JSON for an untyped param next to a boolean', () => {
     const {field, input, params} = renderForm(
       '*[_type == "post" && featured == $featured]{"extra": $extra}',
     )
-    fireEvent.change(within(field('featured')).getByRole('combobox'), {target: {value: 'false'}})
+    fireEvent.click(within(field('featured')).getByRole('checkbox'))
+    fireEvent.click(within(field('featured')).getByRole('checkbox'))
     expect(params()).toEqual({featured: false})
 
     fireEvent.change(input('extra'), {target: {value: '{a: [1, 2]}'}})
@@ -354,14 +450,14 @@ describe('ParamsForm', () => {
     fireEvent.click(screen.getByTestId('vision-params-form-types-add'))
     const fields = [
       input('title'),
-      within(field('limit')).getByRole('textbox'),
-      within(field('featured')).getByRole('combobox'),
+      within(field('limit')).getByRole('spinbutton'),
+      within(field('featured')).getByRole('checkbox'),
       within(field('types')).getByRole('combobox'),
     ]
     for (const [index, target] of fields.entries()) {
       const enter = createEvent.keyDown(target, {key: 'Enter', keyCode: 13})
       fireEvent(target, enter)
-      // No native form submission or select popup on top of the fetch
+      // No native form submission or toggle on top of the fetch
       expect(enter.defaultPrevented).toBe(true)
       expect(onSubmit).toHaveBeenCalledTimes(index + 1)
     }
@@ -397,9 +493,11 @@ describe('ParamsForm', () => {
 
     fireEvent.click(screen.getByTestId('vision-params-form-countRange-object'))
     const dialog = screen.getByTestId('vision-params-form-countRange-dialog')
-    const min = within(within(dialog).getByTestId('vision-params-form-countRange.min')).getByRole(
-      'textbox',
-    )
+    const minField = within(dialog).getByTestId('vision-params-form-countRange.min')
+    const min = within(minField).getByRole('spinbutton')
+    // Compared with count(), so a whole number from 0, like the same comparison on its own
+    expect(min).toHaveProperty('type', 'number')
+    expect([min.getAttribute('min'), min.getAttribute('step')]).toEqual(['0', '1'])
     expect(min).toHaveProperty('value', '0')
     fireEvent.change(min, {target: {value: '5'}})
     expect(params()).toEqual({countRange: {min: 5, max: 10000}})
@@ -418,12 +516,12 @@ describe('ParamsForm', () => {
     fireEvent.click(screen.getByTestId('vision-params-form-filter-object'))
     const dialog = screen.getByTestId('vision-params-form-filter-dialog')
     expect(within(dialog).getByTestId('vision-params-form-filter.label')).toBeTruthy()
-    fireEvent.change(
-      within(within(dialog).getByTestId('vision-params-form-filter.featured')).getByRole(
-        'combobox',
-      ),
-      {target: {value: 'true'}},
-    )
+    const featured = within(
+      within(dialog).getByTestId('vision-params-form-filter.featured'),
+    ).getByRole('checkbox') as HTMLInputElement
+    expect(featured.indeterminate).toBe(true)
+    fireEvent.click(featured)
+    expect(featured.checked).toBe(true)
     expect(params()).toEqual({filter: {label: 'x', featured: true}})
   })
 
@@ -435,12 +533,13 @@ describe('ParamsForm', () => {
     fireEvent.click(screen.getByTestId('vision-params-form-range-object'))
     fireEvent.click(screen.getByTestId('vision-params-form-range.limits-object'))
     const nested = screen.getByTestId('vision-params-form-range.limits-dialog')
-    fireEvent.change(
-      within(within(nested).getByTestId('vision-params-form-range.limits.low')).getByRole(
-        'textbox',
-      ),
-      {target: {value: '3'}},
+    const low = within(within(nested).getByTestId('vision-params-form-range.limits.low')).getByRole(
+      'spinbutton',
     )
+    // A number with no rules: any step, and still sent as a JSON number
+    expect(low).toHaveProperty('type', 'number')
+    expect(low.getAttribute('step')).toBe('any')
+    fireEvent.change(low, {target: {value: '3'}})
     expect(params()).toEqual({range: {limits: {low: 3}}})
     expect(screen.getByTestId('vision-params-form-range-object-preview').textContent).toBe(
       'limits: {low: 3}',

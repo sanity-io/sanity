@@ -30,8 +30,8 @@ describe('objectParams', () => {
         ({name, type}) => [name, type],
       ),
     ).toEqual([
-      ['min', {kind: 'number', array: false}],
-      ['max', {kind: 'number', array: false}],
+      ['min', {kind: 'integer', array: false, min: 0}],
+      ['max', {kind: 'integer', array: false, min: 0}],
       ['label', {kind: 'string', array: false}],
       ['at', {kind: 'string', array: false, format: 'datetime'}],
       ['tags', {kind: 'string', array: true}],

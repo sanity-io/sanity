@@ -970,10 +970,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.invalid.boolean': 'Not true or false; sent as {{value}}',
   /** A document type param's value is not a document type of the workspace; it is sent anyway */
   'vision.params-form.invalid.document-type': 'Not a document type in this workspace; sent anyway',
-  /** A whole number param (a slice bound) holds a fraction */
-  'vision.params-form.invalid.integer': 'Not a whole number, which slices need',
+  /** A whole number param (a slice bound, a count, a field of whole numbers) holds a fraction */
+  'vision.params-form.invalid.integer': 'Not a whole number; sent anyway',
   /** A list param's value is not a list; it is sent anyway */
   'vision.params-form.invalid.list': 'Not a list; sent as {{value}}',
+  /** A number param's value is above the largest value the query or the schema takes */
+  'vision.params-form.invalid.max': 'More than {{max}}; sent anyway',
+  /** A number param's value is below the smallest value the query or the schema takes */
+  'vision.params-form.invalid.min': 'Less than {{min}}; sent anyway',
   /** A number param's value is not a number; it is sent anyway */
   'vision.params-form.invalid.number': 'Not a number; sent as text',
   /** A param's value is not one of the values the schema allows; it is sent anyway */
@@ -993,7 +997,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Shown in the params form when the workspace schema could not be read */
   'vision.params-form.no-schema':
     'Types come from the query alone: the workspace schema could not be read.',
-  /** Placeholder of a params form field without a value, and the unset choice of a boolean */
+  /** Placeholder of a params form field without a value, and the state of an unset boolean */
   'vision.params-form.not-set': 'Not set',
   /** Placeholder of a params form field whose param is null; typing sends text instead */
   'vision.params-form.null': 'null',
@@ -1033,12 +1037,18 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.type.integer': 'whole number',
   /** Type hint of a params form field: a list of values */
   'vision.params-form.type.list': 'list, each {{type}}',
+  /** Type hint of a params form field: a number with a largest value */
+  'vision.params-form.type.max': '{{type}}, at most {{max}}',
+  /** Type hint of a params form field: a number with a smallest value */
+  'vision.params-form.type.min': '{{type}}, at least {{min}}',
   /** Type hint of a params form field: a number */
   'vision.params-form.type.number': 'number',
   /** Type hint of a params form field: an object whose keys the query reads */
   'vision.params-form.type.object': 'object',
   /** Type hint of a params form field: one of the values the schema allows */
   'vision.params-form.type.options': '{{type}}, one of {{count}} values',
+  /** Type hint of a params form field: a number between a smallest and a largest value */
+  'vision.params-form.type.range': '{{type}}, from {{min}} to {{max}}',
   /** Type hint of a params form field: text */
   'vision.params-form.type.string': 'text',
   /** In the details tooltip of a params form field: the type of value the query expects */

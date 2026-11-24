@@ -3,11 +3,12 @@ import {CloseIcon} from '@sanity/icons/Close'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Button, Card, Select, Stack, TextInput} from '@sanity/ui'
+import {Button, Card, Stack, Switch, TextInput} from '@sanity/ui'
 import {Autocomplete} from '@sanity/ui/autocomplete'
 import {dequal} from 'dequal/lite'
 import JSON5 from 'json5'
 import {
+  type FocusEventHandler,
   type KeyboardEvent,
   type ReactNode,
   type Ref,
@@ -92,6 +93,13 @@ function describeType(type: ParamType, t: Translate): string {
   if (type.options && type.format !== 'document-type') {
     base = t('vision.params-form.type.options', {type: base, count: type.options.length})
   }
+  if (type.min !== undefined && type.max !== undefined) {
+    base = t('vision.params-form.type.range', {type: base, min: type.min, max: type.max})
+  } else if (type.min !== undefined) {
+    base = t('vision.params-form.type.min', {type: base, min: type.min})
+  } else if (type.max !== undefined) {
+    base = t('vision.params-form.type.max', {type: base, max: type.max})
+  }
   return type.array ? t('vision.params-form.type.list', {type: base}) : base
 }
 
@@ -117,12 +125,18 @@ function describeProblem(type: ParamType, value: unknown, t: Translate): string 
       }
       return undefined
     case 'integer':
-      if (typeof value === 'number' && !Number.isInteger(value)) {
+    case 'number':
+      if (typeof value !== 'number') return t('vision.params-form.invalid.number')
+      if (type.kind === 'integer' && !Number.isInteger(value)) {
         return t('vision.params-form.invalid.integer')
       }
-      return typeof value === 'number' ? undefined : t('vision.params-form.invalid.number')
-    case 'number':
-      return typeof value === 'number' ? undefined : t('vision.params-form.invalid.number')
+      if (type.min !== undefined && value < type.min) {
+        return t('vision.params-form.invalid.min', {min: type.min})
+      }
+      if (type.max !== undefined && value > type.max) {
+        return t('vision.params-form.invalid.max', {max: type.max})
+      }
+      return undefined
     case 'boolean':
       return typeof value === 'boolean'
         ? undefined
@@ -146,7 +160,7 @@ function fromText(text: string, kind: ParamKind, empty: unknown): unknown {
     const number = Number(text)
     return text.trim() !== '' && Number.isFinite(number) ? number : text
   }
-  // The items of a boolean list are typed in; a single boolean has its select
+  // The items of a boolean list are typed in; a single boolean has its switch
   if (kind === 'boolean' && (text === 'true' || text === 'false')) return text === 'true'
   if (kind === 'any') {
     try {
@@ -252,11 +266,38 @@ function DocumentTypeInput(props: DocumentTypeInputProps) {
   )
 }
 
+function scrollParent(element: HTMLElement): HTMLElement | Window {
+  for (let parent = element.parentElement; parent; parent = parent.parentElement) {
+    const {overflowY} = window.getComputedStyle(parent)
+    if (
+      (overflowY === 'auto' || overflowY === 'scroll') &&
+      parent.scrollHeight > parent.clientHeight
+    )
+      return parent
+  }
+  return window
+}
+
+/** A focused number input steps its value on wheel in Chromium; scroll instead, like Studio's */
+function preventWheel(event: WheelEvent) {
+  const input = event.currentTarget
+  if (!(input instanceof HTMLElement) || document.activeElement !== input) return
+  event.preventDefault()
+  scrollParent(input).scrollBy({top: event.deltaY, left: event.deltaX, behavior: 'instant'})
+}
+
+function assignRef<T>(ref: Ref<T> | undefined, value: T | null) {
+  if (typeof ref === 'function') ref(value)
+  else if (ref) ref.current = value
+}
+
 interface ValueInputProps {
   id?: string
   /** For inputs no label points at (list items) */
   label?: string
   kind: ParamKind
+  /** The bounds of a number input */
+  bounds?: Pick<ParamType, 'min' | 'max' | 'step'>
   listId: string | undefined
   /** Picked from with an autocomplete instead of the suggestions list */
   documentTypes: string[] | undefined
@@ -271,6 +312,8 @@ interface ValueInputProps {
   suffix?: ReactNode
   ref?: Ref<HTMLInputElement>
   onChange: (value: unknown) => void
+  onFocus?: FocusEventHandler<HTMLInputElement>
+  onBlur?: FocusEventHandler<HTMLInputElement>
 }
 
 function ValueInput(props: ValueInputProps) {
@@ -278,6 +321,7 @@ function ValueInput(props: ValueInputProps) {
     id,
     label,
     kind,
+    bounds,
     listId,
     documentTypes,
     value,
@@ -285,13 +329,39 @@ function ValueInput(props: ValueInputProps) {
     disabled,
     invalid,
     placeholder,
-    onChange,
   } = props
-  const {ref, suffix} = props
+  const {ref, suffix, onChange, onFocus, onBlur} = props
   // The text as typed, for as long as it is what the param holds: "1." or "02" read as numbers,
   // and showing the number instead would rewrite the text under the caret
   const [draft, setDraft] = useState<{text: string; value: unknown}>()
   const text = draft && dequal(draft.value, value) ? draft.text : toText(value, kind)
+  // A number input, like a Studio number field, unless the param holds something it cannot show
+  const numeric =
+    (kind === 'number' || kind === 'integer') && (value === undefined || typeof value === 'number')
+  const [input, setInput] = useState<HTMLInputElement | null>(null)
+  const inputRef = useCallback(
+    (element: HTMLInputElement | null) => {
+      setInput(element)
+      assignRef(ref, element)
+    },
+    [ref],
+  )
+
+  useEffect(() => {
+    if (!numeric || !input) return undefined
+    input.addEventListener('wheel', preventWheel)
+    return () => input.removeEventListener('wheel', preventWheel)
+  }, [input, numeric])
+
+  let step: number | 'any' | undefined
+  let inputMode: 'numeric' | 'decimal' | 'text' | undefined
+  if (numeric) {
+    step = kind === 'integer' ? 1 : (bounds?.step ?? 'any')
+    // Without a minus key on a numeric keypad, only an input that takes no negatives gets one
+    const nonNegative = bounds?.min !== undefined && bounds.min >= 0
+    if (nonNegative) inputMode = kind === 'integer' ? 'numeric' : 'decimal'
+    else inputMode = 'text'
+  }
 
   if (documentTypes) {
     return (
@@ -316,53 +386,62 @@ function ValueInput(props: ValueInputProps) {
       disabled={disabled}
       fontSize={1}
       id={id}
-      inputMode={kind === 'number' || kind === 'integer' ? 'decimal' : undefined}
+      inputMode={inputMode}
       list={listId}
+      max={numeric ? bounds?.max : undefined}
+      min={numeric ? bounds?.min : undefined}
+      onBlur={onBlur}
       onChange={(event) => {
-        const next = event.currentTarget.value
+        const target = event.currentTarget
+        const next = target.value
+        // Text a number input cannot read (Firefox lets it be typed) leaves the param as it is
+        if (numeric && next === '' && target.validity.badInput) return
         const nextValue = fromText(next, kind, empty)
         setDraft({text: next, value: nextValue})
         onChange(nextValue)
       }}
+      onFocus={onFocus}
       placeholder={placeholder}
-      ref={ref}
+      ref={inputRef}
+      step={step}
       suffix={suffix}
+      type={numeric ? 'number' : undefined}
       value={text}
     />
   )
 }
 
+/** A boolean param, as the switch of a Studio boolean field; not set until it is switched */
 function BooleanInput(props: {
   id: string
   value: unknown
-  isSet: boolean
   disabled: boolean
   invalid: string | undefined
   onChange: (value: unknown) => void
+  onFocus?: FocusEventHandler<HTMLInputElement>
+  onBlur?: FocusEventHandler<HTMLInputElement>
 }) {
-  const {id, value, isSet, disabled, invalid, onChange} = props
+  const {id, value, disabled, invalid, onChange, onFocus, onBlur} = props
   const {t} = useTranslation(visionLocaleNamespace)
-  let selected = ''
-  if (typeof value === 'boolean') selected = String(value)
-  else if (isSet) selected = 'other'
+  const isBoolean = typeof value === 'boolean'
   return (
-    <Select
-      customValidity={invalid}
-      disabled={disabled}
-      fontSize={1}
-      id={id}
-      onChange={(event) => {
-        const next = event.currentTarget.value
-        if (next === 'other') return
-        onChange(next === '' ? undefined : next === 'true')
-      }}
-      value={selected}
-    >
-      <option value="">{t('vision.params-form.not-set')}</option>
-      <option value="true">{String(true)}</option>
-      <option value="false">{String(false)}</option>
-      {selected === 'other' && <option value="other">{preview(value)}</option>}
-    </Select>
+    <Card border radius={2} tone={invalid ? 'critical' : undefined}>
+      <Flex alignItems="center" gap={3} paddingX={3} paddingY={2}>
+        <Switch
+          checked={value === true}
+          data-testid="vision-params-form-switch"
+          disabled={disabled}
+          id={id}
+          indeterminate={!isBoolean}
+          onBlur={onBlur}
+          onChange={() => onChange(value !== true)}
+          onFocus={onFocus}
+        />
+        <Text muted={!isBoolean} size={1} as="div" trim={true}>
+          {isBoolean ? String(value) : t('vision.params-form.not-set')}
+        </Text>
+      </Flex>
+    </Card>
   )
 }
 
@@ -385,6 +464,7 @@ function ListInput(props: {
         <Flex alignItems="center" gap={1} key={index}>
           <Box flexBasis="0%" flexGrow={1} minWidth="0">
             <ValueInput
+              bounds={param.type}
               disabled={disabled}
               documentTypes={documentTypes}
               empty=""
@@ -479,7 +559,6 @@ function ParamField(props: {
         disabled={disabled}
         id={inputId}
         invalid={required}
-        isSet={isSet}
         onChange={onChange}
         value={value}
       />
@@ -505,6 +584,7 @@ function ParamField(props: {
       <Flex alignItems="center" gap={1}>
         <Box flexBasis="0%" flexGrow={1} minWidth="0">
           <ValueInput
+            bounds={type}
             disabled={disabled}
             documentTypes={type.array ? undefined : documentTypes}
             empty={undefined}
