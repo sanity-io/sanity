@@ -3585,13 +3585,13 @@ describe('VisionRedesign', () => {
       await waitFor(() => expect(text(copy())).toBe('vision.editor.copied'))
       expect(writeText).toHaveBeenCalledWith('*[_type == "author"]')
       expect(copy().getAttribute('aria-label')).toBe('vision.editor.copied')
-      expect(copy().querySelector('[data-copied="true"]')).not.toBeNull()
+      expect(copy().querySelector('[data-sanity-icon="checkmark"]')).not.toBeNull()
       expect(screen.queryByText('vision.query.copied')).toBeNull()
       // The params' Copy button is not the one that copied
       expect(text(within(shownTab()).getByTestId('vision-params-copy'))).toBe('vision.editor.copy')
 
       await waitFor(() => expect(text(copy())).toBe('vision.editor.copy'), {timeout: 3000})
-      expect(copy().querySelector('[data-copied="true"]')).toBeNull()
+      expect(copy().querySelector('[data-sanity-icon="copy"]')).not.toBeNull()
 
       writeText.mockRejectedValueOnce(new Error('denied'))
       fireEvent.click(copy())

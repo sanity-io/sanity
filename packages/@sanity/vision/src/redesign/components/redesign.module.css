@@ -727,28 +727,6 @@
   }
 }
 
-/* The copy icon and the checkmark that confirms a copy, stacked and crossfaded */
-.copyGlyphs {
-  display: inline-grid;
-  /* Lines the stacked glyphs up with the label, like a lone icon sits in a button's text */
-  vertical-align: middle;
-}
-
-.copyGlyphs > svg {
-  grid-area: 1 / 1;
-  transition:
-    opacity 200ms cubic-bezier(0.23, 1, 0.32, 1),
-    transform 200ms cubic-bezier(0.23, 1, 0.32, 1),
-    filter 200ms cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-.copyGlyphs[data-copied='true'] > [data-glyph='copy'],
-.copyGlyphs[data-copied='false'] > [data-glyph='check'] {
-  opacity: 0;
-  transform: scale(0.9);
-  filter: blur(2px);
-}
-
 /* Wraps a menu button so a tooltip can attach to it without taking the button's ref */
 .tooltipTarget {
   display: inline-flex;
@@ -790,8 +768,7 @@
 /* Less motion: views and confirmations still fade, nothing moves or scales */
 @media (prefers-reduced-motion: reduce) {
   .resultView,
-  .resultEnter,
-  .copyGlyphs > svg {
+  .resultEnter {
     transition-property: opacity;
   }
 
