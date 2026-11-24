@@ -110,6 +110,15 @@ export interface VisionAiSettings {
   explainQuery: boolean
 }
 
+/** How the query editor behaves */
+export interface VisionEditorSettings {
+  /**
+   * Reformats a query laid out for the editor's old width (as Prettify does) for the new one
+   * once a resize of the query editor settles; a query laid out by hand is never touched
+   */
+  autoFormatOnResize: boolean
+}
+
 /** A custom GROQ function kept in the functions library, to declare in any query */
 export interface VisionSavedFunction {
   /** `ns::name`, unique in the library */
@@ -128,6 +137,7 @@ export interface VisionPersistedState {
   panels: VisionPanelsState
   historyDiff: VisionHistoryDiffSettings
   ai: VisionAiSettings
+  editor: VisionEditorSettings
   /** The functions library, most recently saved first */
   functions: VisionSavedFunction[]
 }

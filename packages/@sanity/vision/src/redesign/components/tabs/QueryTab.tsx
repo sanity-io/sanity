@@ -11,6 +11,7 @@ import {useVariantsEnabled} from '../../../hooks/useVariantsEnabled'
 import {visionLocaleNamespace} from '../../../i18n'
 import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {type VisionQueryRunData} from '../../../telemetry/vision.telemetry'
+import {useAutoFormatOnResize} from '../../hooks/useAutoFormatOnResize'
 import {useContentSize} from '../../hooks/useContentSize'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {useFollowNavbarPerspective} from '../../hooks/useFollowNavbarPerspective'
@@ -339,6 +340,20 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
     queryEditorRef.current?.resetEditorContent(formatted)
     setQuery(formatted)
   }, [actorRef, formatForEditor, setQuery, tab])
+
+  const autoFormatOnResize = useVisionSelector(
+    (snapshot) => snapshot.context.editor.autoFormatOnResize,
+  )
+  useAutoFormatOnResize({
+    container: splitContainer,
+    layout,
+    editorRef: queryEditorRef,
+    enabled: autoFormatOnResize,
+    query: tab.query,
+    getQuery: () => actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id)?.query ?? '',
+    formatForEditor,
+    onFormatted: setQuery,
+  })
 
   const prettify = useCallback(async () => {
     try {

@@ -23,6 +23,10 @@ import {historyCompartment} from './extensions'
 import {useCodemirrorTheme} from './useCodemirrorTheme'
 import {getVisibleColumns} from './visibleColumns'
 import * as styles from './VisionCodeMirror.module.css'
+import {whitespaceChanges} from './whitespaceChanges'
+
+/** How long after a typed edit the editor still counts as being edited */
+const EDITING_IDLE_MS = 1_000
 
 interface EditorRootStyle extends CSSProperties {
   '--vision-editor-line-padding-left': string
@@ -76,6 +80,15 @@ export interface VisionCodeMirrorHandle {
    * scrollbar); `undefined` while the editor has no layout (hidden, or not mounted yet)
    */
   getVisibleColumns: (lines?: number) => number | undefined
+  /**
+   * Replaces the document with a reformatted version of it, outside the undo history: undo steps
+   * over it to the edits made before, which are mapped through it. Only the whitespace that
+   * differs is replaced, so the selection stays on the same tokens, and the scroll position
+   * follows the text at the top of the editor.
+   */
+  reformat: (formatted: string) => void
+  /** Whether an input method composition is open, or the document was typed into just now */
+  isEditing: () => boolean
 }
 
 export function VisionCodeMirror({
@@ -123,8 +136,12 @@ export function VisionCodeMirror({
   // it happens: by the time the view is destroyed its tab is already hidden, with no layout
   const lastState = useRef<EditorState | undefined>(undefined)
   const lastScroll = useRef<StateEffect<unknown> | undefined>(undefined)
+  const lastTypedAt = useRef(-Infinity)
   const handleUpdate = useCallback((update: ViewUpdate) => {
     lastState.current = update.state
+    if (update.transactions.some((tr) => tr.isUserEvent('input') || tr.isUserEvent('delete'))) {
+      lastTypedAt.current = performance.now()
+    }
   }, [])
   const handleCreateEditor = useCallback((view: EditorView) => {
     const previous = lastState.current
@@ -235,6 +252,27 @@ export function VisionCodeMirror({
     return editorView ? getVisibleColumns(editorView, {lines}) : undefined
   }, [])
 
+  const reformat = useCallback((formatted: string) => {
+    const editorView = codeMirrorRef.current?.view
+    if (!editorView) {
+      setValue(formatted)
+      return
+    }
+    const changes = whitespaceChanges(editorView.state.doc.toString(), formatted)
+    if (changes.length === 0) return
+    editorView.dispatch({
+      changes,
+      annotations: Transaction.addToHistory.of(false),
+      effects: editorView.scrollSnapshot(),
+    })
+  }, [])
+
+  const isEditing = useCallback(() => {
+    const editorView = codeMirrorRef.current?.view
+    if (!editorView) return false
+    return editorView.composing || performance.now() - lastTypedAt.current < EDITING_IDLE_MS
+  }, [])
+
   useImperativeHandle(
     ref,
     () => ({
@@ -243,8 +281,18 @@ export function VisionCodeMirror({
       runCommand,
       selectRange,
       getVisibleColumns: getVisibleColumnsOfEditor,
+      reformat,
+      isEditing,
     }),
-    [resetEditorContent, applyChanges, runCommand, selectRange, getVisibleColumnsOfEditor],
+    [
+      resetEditorContent,
+      applyChanges,
+      runCommand,
+      selectRange,
+      getVisibleColumnsOfEditor,
+      reformat,
+      isEditing,
+    ],
   )
 
   return (

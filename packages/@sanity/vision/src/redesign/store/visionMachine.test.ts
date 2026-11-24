@@ -393,8 +393,18 @@ describe('visionMachine', () => {
       panels: {params: true, options: false, paramsView: 'json', resultViewer: 'json'},
       historyDiff: {hiddenFields: ['_rev', '_updatedAt', '_system.base.rev']},
       ai: {enabled: true, generateQuery: true, generateMutations: true, explainQuery: true},
+      editor: {autoFormatOnResize: true},
       functions: [],
     })
+  })
+
+  it('updates the editor settings, persists them, and turns them back on when storage is cleared', () => {
+    const harness = createHarness()
+    harness.actor.send({type: 'editor.update', settings: {autoFormatOnResize: false}})
+    expect(selectPersistedState(harness.snapshot()).editor).toEqual({autoFormatOnResize: false})
+
+    harness.actor.send({type: 'storage.clear'})
+    expect(harness.snapshot().context.editor).toEqual({autoFormatOnResize: true})
   })
 
   it('updates the AI settings, persists them, and turns them all back on when storage is cleared', () => {

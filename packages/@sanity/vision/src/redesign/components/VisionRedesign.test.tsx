@@ -336,6 +336,11 @@ vi.mock('../../codemirror/VisionCodeMirror', () => ({
         typeof editorMocks.visibleColumns === 'function'
           ? editorMocks.visibleColumns(lines)
           : editorMocks.visibleColumns,
+      reformat: (formatted: string) => {
+        if (textareaRef.current) textareaRef.current.value = formatted
+        onChange?.(formatted)
+      },
+      isEditing: () => false,
     }))
     return (
       <textarea
@@ -2886,8 +2891,9 @@ describe('VisionRedesign', () => {
       '}',
     ].join('\n')
     await waitFor(() => expect(getQueryEditor().value).toBe(narrow))
-    // Measured for the query's one line, then for the 7 lines of the first pass and the 10 of the second
-    expect(widthsAsked).toEqual([1, 7, 10])
+    // Measured for the query's one line, then for the 7 lines of the first pass and the 10 of the
+    // second. Auto-formatting on resize then measures the editor as it is (no line count)
+    expect(widthsAsked.filter((lines) => lines !== undefined)).toEqual([1, 7, 10])
 
     typeQuery('*[_type == "author"')
     fireEvent.click(screen.getByTestId('vision-query-menu-button'))
