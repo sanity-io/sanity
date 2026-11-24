@@ -1,5 +1,7 @@
+/* Sizes inside the tool follow the tool's width, not the window's */
 .root {
   position: relative;
+  container: visionTool / inline-size;
 }
 
 /*
@@ -382,7 +384,7 @@
 
 /* The tab's tools and the settings take more room than a list of queries */
 .sidebarDrawerWide {
-  width: min(480px, 45vw);
+  width: min(480px, 45cqi);
 }
 
 /*

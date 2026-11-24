@@ -4710,6 +4710,33 @@ describe('VisionRedesign', () => {
     }
   })
 
+  it('stacks the columns when the sidebar takes their room, without the window changing', async () => {
+    renderRedesign()
+    const root = await screen.findByTestId('vision-root')
+    const tabsArea = screen.getByTestId('vision-tabs-area')
+    resizeElement(root, {width: 1200, height: 800})
+    resizeElement(tabsArea, {width: 1151, height: 800})
+    expect(root.dataset.visionLayout).toBe('columns')
+    expect(screen.getByTestId('vision-split-handle').getAttribute('aria-orientation')).toBe(
+      'vertical',
+    )
+
+    // A drawer opens beside the rail: the tool keeps its width, the tabs area loses 300px
+    resizeElement(tabsArea, {width: 851 - 1, height: 800})
+    expect(root.dataset.visionLayout).toBe('stacked')
+    expect(screen.getByTestId('vision-split-handle').getAttribute('aria-orientation')).toBe(
+      'horizontal',
+    )
+
+    // Closing it gives the room back
+    resizeElement(tabsArea, {width: 1151, height: 800})
+    expect(root.dataset.visionLayout).toBe('columns')
+
+    // The phone layout follows the whole tool, so a floating drawer cannot switch it back out
+    resizeElement(root, {width: 560, height: 800})
+    expect(root.dataset.visionLayout).toBe('mobile')
+  })
+
   it('keeps both panes of the main split at their minimum size, from the keyboard as well', async () => {
     renderRedesign()
     const split = await screen.findByTestId('vision-split')
