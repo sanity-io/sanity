@@ -7,9 +7,10 @@ const HAS_SELECTION_CLASS = 'cm-vision-hasSelection'
 
 /**
  * The redesign's gutter and active line, drawn from the card's CSS variables so they follow the
- * light and dark schemes: muted line numbers on the editor's own background, with no border, and,
- * in the focused editor, the active line number in the text color over a full-width band in the
- * code background color, the way Structure's inspect dialog highlights a line.
+ * light and dark schemes: muted line numbers on the editor's own background, set apart from the
+ * code by a thin divider, and, in the focused editor, the active line number in the text color
+ * over a full-width band in the code background color, the way Structure's inspect dialog
+ * highlights a line.
  *
  * The band is opaque and lines paint over the selection layer, so it is left out while anything
  * is selected rather than hiding the selection on its line.
@@ -22,9 +23,15 @@ export const redesignEditorTheme: Extension = [
   // whose light and dark variants are as specific
   Prec.highest(
     EditorView.theme({
+      // The divider is drawn as a background so that it starts at the first line, below the
+      // content's top padding, rather than running up into the label that floats over it
       '&.cm-editor .cm-gutters': {
         backgroundColor: 'transparent',
-        backgroundImage: 'none',
+        backgroundImage: 'linear-gradient(var(--card-border-color), var(--card-border-color))',
+        backgroundOrigin: 'border-box',
+        backgroundPosition: 'right bottom',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: '1px calc(100% - var(--vision-editor-content-padding-top, 0px))',
         border: 'none',
         color: 'color-mix(in srgb, var(--card-muted-fg-color) 70%, transparent)',
       },
@@ -41,6 +48,10 @@ export const redesignEditorTheme: Extension = [
         },
       '&.cm-editor.cm-focused .cm-activeLineGutter': {
         color: 'var(--card-fg-color)',
+      },
+      // The band's opaque background covers the divider, so the outermost gutter redraws it
+      '&.cm-editor .cm-gutter:last-child .cm-activeLineGutter': {
+        boxShadow: 'inset -1px 0 0 var(--card-border-color)',
       },
     }),
   ),
