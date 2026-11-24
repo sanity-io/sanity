@@ -35,7 +35,12 @@ import {
 } from '../../store/types'
 import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectFunctionLibrary, selectParamsView} from '../../store/visionMachine'
-import {functionLibrary, querySchema} from '../../util/groqEditorContext'
+import {
+  functionLibrary,
+  NO_QUERY_PARAM_VALUES,
+  queryParamValues,
+  querySchema,
+} from '../../util/groqEditorContext'
 import {createGroqFunctionExtensions} from '../../util/groqFunctionEditor'
 import {parseGroq, readQueryFunctions, type TextRange} from '../../util/groqFunctions'
 import {createGroqLintExtensions, type QueryLintFinding} from '../../util/groqLint'
@@ -171,6 +176,9 @@ export function RequestPanel(props: RequestPanelProps) {
         extract: t('vision.functions.editor.extract'),
         addFromLibrary: t('vision.functions.editor.add-from-library'),
         useSuggestion: (suggestion) => t('vision.lint.use-suggestion', {suggestion}),
+        fieldOf: (types) => t('vision.schema.editor.field-of', {types}),
+        systemField: t('vision.schema.editor.system-field'),
+        documentType: t('vision.schema.editor.document-type'),
         onApplySuggestion: () => telemetry.lintUsed('fix'),
       }),
     [t, telemetry],
@@ -184,6 +192,7 @@ export function RequestPanel(props: RequestPanelProps) {
     const names = Object.keys(params.parsed).filter(isQueryParamName)
     return names.length === 0 ? NO_QUERY_PARAM_NAMES : names
   }, [params.parsed, params.valid])
+  const paramValues = params.valid && params.parsed ? params.parsed : NO_QUERY_PARAM_VALUES
   const queryExtensions = useMemo(
     () => [
       ...groqExtensions,
@@ -191,9 +200,10 @@ export function RequestPanel(props: RequestPanelProps) {
       ...functionExtensions,
       functionLibrary.of(library),
       queryParamNames.of(paramNames),
+      queryParamValues.of(paramValues),
       ...(workspaceSchema ? [querySchema.of(workspaceSchema)] : []),
     ],
-    [functionExtensions, library, lintExtensions, paramNames, workspaceSchema],
+    [functionExtensions, library, lintExtensions, paramNames, paramValues, workspaceSchema],
   )
   const actorRef = useVisionActor()
   const {state: panelState, setState: setPanelState} = useRequestBottomPanel()

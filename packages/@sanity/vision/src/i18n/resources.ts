@@ -488,6 +488,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.lint.severity.warning': 'Warning',
   /** Lint action writing the type, field or operator a schema finding suggests */
   'vision.lint.use-suggestion': 'Use {{suggestion}}',
+  /** Completion detail of a document type name without a title, in `_type == "…"` */
+  'vision.schema.editor.document-type': 'Document type',
+  /** Under a field's type in its completion info and hover: the schema types that declare it */
+  'vision.schema.editor.field-of': 'Field of {{types}}',
+  /** Completion detail of the fields every document or reference has (`_id`, `_ref`) */
+  'vision.schema.editor.system-field': 'System field',
   /** Title the browser shows for the WebMCP tool that lints a query */
   'vision.webmcp.check-query': 'Check a GROQ query in Vision',
   /** Title the browser shows for the WebMCP tool that describes the workspace schema */
