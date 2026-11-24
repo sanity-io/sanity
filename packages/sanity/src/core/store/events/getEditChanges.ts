@@ -9,7 +9,8 @@ import {getDocumentAtRevision} from './getDocumentAtRevision'
 import {buildDocumentForDiffInput} from './getDocumentChanges'
 import {getDocumentTransactions} from './getDocumentTransactions'
 
-interface EditChanges {
+/** @internal */
+export interface EditChanges {
   loading: boolean
   diff: ObjectDiff | null
   error: Error | null
