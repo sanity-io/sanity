@@ -16,7 +16,7 @@ import {
   useState,
 } from 'react'
 import {MountedToolsContext, NavbarContext, RouterContext} from 'sanity/_singletons'
-import {RouteScope, useRouter, useRouterState} from 'sanity/router'
+import {RouteScope, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 import {Flex} from 'ui5'
 
@@ -30,7 +30,6 @@ import {StudioReadyMeasured} from './__telemetry__/bootstrap.telemetry'
 import {useMountedTools} from './mountedTools/useMountedTools'
 import {useNetworkProtocolCheck} from './networkCheck/useNetworkProtocolCheck'
 import {NoToolsScreen} from './screens/NoToolsScreen'
-import {RedirectingScreen} from './screens/RedirectingScreen'
 import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
 import {useActiveToolLayoutComponent} from './studio-components-hooks/useActiveToolLayoutComponent'
 import {useNavbarComponent} from './studio-components-hooks/useNavbarComponent'
@@ -102,7 +101,6 @@ export function StudioLayoutComponent() {
 
   const defaultRouteTools = useMemo(() => tools.filter(isDefaultRouteTool), [tools])
 
-  const router = useRouter()
   const activeToolName = useRouterState(
     useCallback(
       (routerState) => (typeof routerState.tool === 'string' ? routerState.tool : undefined),
@@ -208,27 +206,6 @@ export function StudioLayoutComponent() {
   const Navbar = useNavbarComponent()
   const ActiveToolLayout = useActiveToolLayoutComponent()
 
-  /**
-   * Handle legacy URL redirects from `/desk` to `/structure`
-   */
-  const isLegacyDeskRedirect =
-    !activeTool &&
-    (activeToolName === 'desk' || !activeToolName) &&
-    typeof window !== 'undefined' &&
-    /\/desk(\/|$)/.test(window.location.pathname) &&
-    tools.some((tool) => tool.name === 'structure')
-
-  useEffect(() => {
-    if (!isLegacyDeskRedirect) {
-      return
-    }
-
-    router.navigateUrl({
-      path: window.location.pathname.replace(/\/desk/, '/structure'),
-      replace: true,
-    })
-  }, [isLegacyDeskRedirect, router])
-
   const getErrorScreen = useCallback((error: Error, onReset: () => void) => {
     if (isDocumentLimitError(error)) {
       return <DocumentLimitsUpsellPanel error={error} onReset={onReset} />
@@ -247,9 +224,8 @@ export function StudioLayoutComponent() {
           <Navbar />
         </NavbarContext.Provider>
         <UnclaimedProjectNudge />
-        {isLegacyDeskRedirect && <RedirectingScreen />}
         {!activeTool && defaultRouteTools.length === 0 && <NoToolsScreen />}
-        {tools.length > 0 && !activeTool && activeToolName && !isLegacyDeskRedirect && (
+        {tools.length > 0 && !activeTool && activeToolName && (
           <ToolNotFoundScreen toolName={activeToolName} />
         )}
         {searchFullscreenOpen && (
