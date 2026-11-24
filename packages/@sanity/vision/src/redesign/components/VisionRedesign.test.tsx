@@ -47,6 +47,8 @@ import {
   getVisionStorageKey,
   saveVisionState,
 } from '../store/visionStorage'
+import type * as groqLintModule from '../util/groqLint'
+import {type QueryLintFinding} from '../util/groqLint'
 import {parseQueryPaste} from '../util/parseQueryPaste'
 import {queryEndSlotElement} from '../util/queryEndSlot'
 import * as styles from './redesign.module.css'
@@ -144,6 +146,22 @@ function upsellContent(result: UpsellDataResult): Observable<UpsellDataResult> {
 const editorMocks = vi.hoisted(() => ({
   visibleColumns: undefined as number | ((lines: number | undefined) => number) | undefined,
 }))
+
+/** Reports lint findings for the shown query editor, as its linter would once it has run */
+const lintMocks = vi.hoisted(() => ({
+  report: undefined as ((findings: QueryLintFinding[]) => void) | undefined,
+}))
+
+vi.mock('../util/groqLint', async (importOriginal) => {
+  const actual = await importOriginal<typeof groqLintModule>()
+  return {
+    ...actual,
+    createGroqLintExtensions: (onFindings: (findings: QueryLintFinding[]) => void) => {
+      lintMocks.report = onFindings
+      return actual.createGroqLintExtensions(onFindings)
+    },
+  }
+})
 
 /** The elements each mocked `ResizeObserver` watches, so a test can hand one a measurement */
 const resizeObservers = new Set<{callback: ResizeObserverCallback; elements: Set<Element>}>()
@@ -598,6 +616,12 @@ function generateFrom(description: string) {
   fireEvent.click(screen.getByTestId('vision-generate-query'))
   fireEvent.change(screen.getByTestId('vision-generate-request'), {target: {value: description}})
   fireEvent.click(screen.getByTestId('vision-generate-submit'))
+}
+
+function editFrom(description: string) {
+  fireEvent.click(screen.getByTestId('vision-edit-query'))
+  fireEvent.change(screen.getByTestId('vision-edit-request'), {target: {value: description}})
+  fireEvent.click(screen.getByTestId('vision-edit-submit'))
 }
 
 /** Shows results as the tree, which renders them as text the tests can read */
@@ -1993,6 +2017,8 @@ describe('VisionRedesign', () => {
     async function shownAiControls(ai: VisionAiConfig | undefined) {
       const tools = captureWebMcpTools()
       const view = renderRedesign(BASE_PERSPECTIVE, {ai})
+      // Generate is offered for an empty query, Edit once it has text in it
+      const generateQuery = screen.queryByTestId('vision-generate-query') !== null
       typeQuery('*[_type == "post"]')
       fireEvent.click(document.getElementById('vision-response-explain-tab') as HTMLElement)
       // The query plan is no AI feature: it is there in every configuration
@@ -2007,7 +2033,8 @@ describe('VisionRedesign', () => {
       return {
         view,
         shown: {
-          generateQuery: screen.queryByTestId('vision-generate-query') !== null,
+          generateQuery,
+          editQuery: screen.queryByTestId('vision-edit-query') !== null,
           generateMutations: screen.queryByTestId('vision-mutate-generate') !== null,
           explainQuery: screen.queryByTestId('vision-explain-button') !== null,
         },
@@ -2023,7 +2050,12 @@ describe('VisionRedesign', () => {
       ['an empty object', {}],
     ] as const)('keeps every AI feature on when it is %s', async (_label, ai) => {
       const {shown, explainDescription, creditNotes, webMcpTools} = await shownAiControls(ai)
-      expect(shown).toEqual({generateQuery: true, generateMutations: true, explainQuery: true})
+      expect(shown).toEqual({
+        generateQuery: true,
+        editQuery: true,
+        generateMutations: true,
+        explainQuery: true,
+      })
       expect(webMcpTools).toBe(7)
       expect(explainDescription).toContain('vision.explain.description')
       expect(explainDescription).not.toContain('vision.explain.description-plan')
@@ -2033,7 +2065,12 @@ describe('VisionRedesign', () => {
     it('hides every AI feature with false, reads no AI credits and calls no Agent Actions', async () => {
       const {shown, explainDescription, creditNotes, view, webMcpTools} =
         await shownAiControls(false)
-      expect(shown).toEqual({generateQuery: false, generateMutations: false, explainQuery: false})
+      expect(shown).toEqual({
+        generateQuery: false,
+        editQuery: false,
+        generateMutations: false,
+        explainQuery: false,
+      })
       // The WebMCP tools spend no AI credits and stay registered
       expect(webMcpTools).toBe(7)
       // The plan stays, described without the explanation
@@ -2051,12 +2088,14 @@ describe('VisionRedesign', () => {
 
     it.each([
       ['generateQuery', {generateQuery: false}],
+      ['editQuery', {editQuery: false}],
       ['generateMutations', {generateMutations: false}],
       ['explainQuery', {explainQuery: false}],
     ] as const)('switches off only %s when it alone is false', async (key, ai) => {
       const {shown} = await shownAiControls(ai)
       expect(shown).toEqual({
         generateQuery: true,
+        editQuery: true,
         generateMutations: true,
         explainQuery: true,
         [key]: false,
@@ -2068,8 +2107,13 @@ describe('VisionRedesign', () => {
         generateQuery: true,
         generateMutations: false,
       })
-      expect(shown).toEqual({generateQuery: true, generateMutations: false, explainQuery: true})
-      // Generate over the query editor and Explain this to me
+      expect(shown).toEqual({
+        generateQuery: true,
+        editQuery: true,
+        generateMutations: false,
+        explainQuery: true,
+      })
+      // Edit under the query and Explain this to me
       expect(creditNotes).toBe(2)
     })
 
@@ -2086,7 +2130,14 @@ describe('VisionRedesign', () => {
       renderRedesign()
       const settings = openSettings()
       expect(settings.getByTestId('vision-settings-ai')).toBeTruthy()
-      for (const id of ['enabled', 'generateQuery', 'generateMutations', 'explainQuery']) {
+      for (const id of [
+        'enabled',
+        'generateQuery',
+        'editQuery',
+        'fixLint',
+        'generateMutations',
+        'explainQuery',
+      ]) {
         expect(isChecked(settings.getByTestId(`vision-settings-ai-${id}`))).toBe(true)
       }
       expect(screen.getByTestId('vision-generate-query')).toBeTruthy()
@@ -2097,6 +2148,8 @@ describe('VisionRedesign', () => {
         expect(getStoredState().ai).toEqual({
           enabled: true,
           generateQuery: false,
+          editQuery: true,
+          fixLint: true,
           generateMutations: true,
           explainQuery: true,
         }),
@@ -2104,7 +2157,12 @@ describe('VisionRedesign', () => {
       cleanup()
 
       const {shown, webMcpTools} = await shownAiControls(undefined)
-      expect(shown).toEqual({generateQuery: false, generateMutations: true, explainQuery: true})
+      expect(shown).toEqual({
+        generateQuery: false,
+        editQuery: true,
+        generateMutations: true,
+        explainQuery: true,
+      })
       // The WebMCP tools spend no AI credits and stay registered
       expect(webMcpTools).toBe(7)
     })
@@ -2115,7 +2173,13 @@ describe('VisionRedesign', () => {
       fireEvent.click(settings.getByTestId('vision-settings-ai-enabled'))
       await waitFor(() => expect(getStoredState().ai.enabled).toBe(false))
       // The per-feature switches read as off and wait for the switch for all of them
-      for (const id of ['generateQuery', 'generateMutations', 'explainQuery']) {
+      for (const id of [
+        'generateQuery',
+        'editQuery',
+        'fixLint',
+        'generateMutations',
+        'explainQuery',
+      ]) {
         const toggle = settings.getByTestId(`vision-settings-ai-${id}`)
         expect(isChecked(toggle)).toBe(false)
         expect(isDisabled(toggle)).toBe(true)
@@ -2124,7 +2188,12 @@ describe('VisionRedesign', () => {
       view.unmount()
 
       const {shown, webMcpTools, creditNotes, view: next} = await shownAiControls(undefined)
-      expect(shown).toEqual({generateQuery: false, generateMutations: false, explainQuery: false})
+      expect(shown).toEqual({
+        generateQuery: false,
+        editQuery: false,
+        generateMutations: false,
+        explainQuery: false,
+      })
       expect(webMcpTools).toBe(7)
       expect(creditNotes).toBe(0)
       expect(next.aiCreditsRequests).toHaveLength(0)
@@ -2134,16 +2203,30 @@ describe('VisionRedesign', () => {
       const initial = createInitialState(DEFAULTS)
       saveVisionState(PROJECT_ID, {
         ...initial,
-        ai: {enabled: true, generateQuery: true, generateMutations: false, explainQuery: true},
+        ai: {
+          enabled: true,
+          generateQuery: true,
+          editQuery: true,
+          fixLint: true,
+          generateMutations: false,
+          explainQuery: true,
+        },
       })
-      const {shown} = await shownAiControls({explainQuery: false})
-      expect(shown).toEqual({generateQuery: true, generateMutations: false, explainQuery: false})
+      const {shown} = await shownAiControls({explainQuery: false, fixLint: false})
+      expect(shown).toEqual({
+        generateQuery: true,
+        editQuery: true,
+        generateMutations: false,
+        explainQuery: false,
+      })
 
       const settings = openSettings()
       expect(settings.getByTestId('vision-settings-ai-enabled')).toBeTruthy()
       expect(settings.getByTestId('vision-settings-ai-generateQuery')).toBeTruthy()
       expect(settings.getByTestId('vision-settings-ai-generateMutations')).toBeTruthy()
+      expect(settings.getByTestId('vision-settings-ai-editQuery')).toBeTruthy()
       expect(settings.queryByTestId('vision-settings-ai-explainQuery')).toBeNull()
+      expect(settings.queryByTestId('vision-settings-ai-fixLint')).toBeNull()
     })
 
     it('shows no AI settings when the config turns every AI feature off', () => {
@@ -2189,53 +2272,192 @@ describe('VisionRedesign', () => {
     const tabs = screen.getAllByTestId('vision-tab')
     expect(tabs).toHaveLength(1)
     expect(text(tabs[0])).toContain('Recent authors')
+    // Under a comment that keeps the description the query was generated from
     expect(fetchCalls[1].query).toBe(
-      '*[_type == "author"] | order(_createdAt desc)[0...10] { _id, name }',
+      '// Generated with the prompt: The 10 most recent authors\n' +
+        '*[_type == "author"] | order(_createdAt desc)[0...10] { _id, name }',
     )
     expect(getQueryEditor().value).toBe(fetchCalls[1].query)
+    // The query has text in it now, so Edit takes Generate's place
+    expect(screen.queryByTestId('vision-generate-query')).toBeNull()
+    expect(screen.getByTestId('vision-edit-query')).toBeTruthy()
     fireEvent.click(document.getElementById('vision-response-history-tab') as HTMLElement)
     expect(text(screen.getByTestId('vision-history-entry'))).toContain(
       'vision.history.reason.generated',
     )
   })
 
-  it('replaces the query of a tab that has one, keeping its title, and closes on Escape', async () => {
-    const {fetchCalls, replyToPrompts} = renderRedesign()
+  it('offers Generate only while the query is empty, and Edit once it has text in it', () => {
+    renderRedesign()
+    expect(screen.getByTestId('vision-generate-query')).toBeTruthy()
+    expect(screen.queryByTestId('vision-edit-query')).toBeNull()
+
     typeQuery('*[_type == "post"]')
+    expect(screen.queryByTestId('vision-generate-query')).toBeNull()
+    expect(screen.getByTestId('vision-edit-query')).toBeTruthy()
+
+    // Whitespace alone counts as empty
+    typeQuery('  \n ')
+    expect(screen.getByTestId('vision-generate-query')).toBeTruthy()
+    expect(screen.queryByTestId('vision-edit-query')).toBeNull()
+  })
+
+  it('keeps the comment on one line for a description with a line separator in it', async () => {
+    const {fetchCalls, replyToPrompts} = renderRedesign()
+    replyToPrompts({query: '*[_type == "author"]', params: {}})
+
+    generateFrom('Authors\u2028newest first')
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(getQueryEditor().value).toBe(
+      '// Generated with the prompt: Authors\\u2028newest first\n*[_type == "author"]',
+    )
+  })
+
+  it('edits the query of the tab with Agent Actions, keeping its title, and closes on Escape', async () => {
+    const {fetchCalls, promptCalls, replyToPrompts} = renderRedesign()
+    typeQuery('// Posts\n*[_type == "post"][0...$limit]')
+    openRequestTab('params')
+    fireEvent.change(
+      within(screen.getByTestId('vision-params-editor')).getByTestId('codemirror-mock'),
+      {target: {value: '{"limit": 5}'}},
+    )
+    await waitFor(() => expect(getStoredState().tabs[0].rawParams).toBe('{"limit": 5}'))
     replyToPrompts(
       {
-        query: '*[_type == "author"] | order(_createdAt desc)[0...$limit]{_id, name}',
-        params: {limit: 10},
-        title: 'Authors',
+        query: '// Posts\n*[_type == "post"] | order(_createdAt desc)[0...$limit]{_id, title}',
+        params: {limit: 5},
+        title: 'Posts',
       },
       {query: '*[_type == "book"]', params: {}, title: 'Books'},
     )
 
-    fireEvent.click(screen.getByTestId('vision-generate-query'))
-    fireEvent.keyDown(screen.getByTestId('vision-generate-request'), {key: 'Escape'})
-    expect(screen.queryByTestId('vision-generate-bar')).toBeNull()
+    fireEvent.click(screen.getByTestId('vision-edit-query'))
+    fireEvent.keyDown(screen.getByTestId('vision-edit-request'), {key: 'Escape'})
+    expect(screen.queryByTestId('vision-edit-bar')).toBeNull()
 
-    generateFrom('Authors')
+    editFrom('Newest first, with their titles')
     await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(promptCalls[0].request).toMatchObject({
+      format: 'json',
+      instructionParams: {
+        query: '// Posts\n*[_type == "post"][0...$limit]',
+        params: '{"limit":5}',
+        request: 'Newest first, with their titles',
+      },
+    })
     expect(screen.getAllByTestId('vision-tab')).toHaveLength(1)
-    // Formatted for the editor, as Prettify would, before it replaced the query
+    // Formatted for the editor, with the comments the model kept and none added
     expect(fetchCalls[1].query).toBe(
-      '*[_type == "author"] | order(_createdAt desc)[0...$limit] { _id, name }',
+      '// Posts\n*[_type == "post"] | order(_createdAt desc)[0...$limit] { _id, title }',
     )
-    expect(fetchCalls[1].params).toEqual({limit: 10})
+    expect(fetchCalls[1].params).toEqual({limit: 5})
     expect(getQueryEditor().value).toBe(fetchCalls[1].query)
     // The title still comes from the query, so it follows an undo in the editor too
-    expect(text(screen.getByTestId('vision-tab-button'))).toBe('author')
+    expect(text(screen.getByTestId('vision-tab-button'))).toBe('post')
 
     // A title the tab was given stays
     fireEvent.keyDown(within(screen.getByTestId('vision-tab')).getByRole('tab'), {key: 'F2'})
     const titleInput = screen.getByTestId('vision-tab-title-input')
     fireEvent.change(titleInput, {target: {value: 'Reading list'}})
     fireEvent.keyDown(titleInput, {key: 'Enter'})
-    generateFrom('Books')
+    editFrom('Books instead')
     await waitFor(() => expect(fetchCalls).toHaveLength(4))
     expect(getQueryEditor().value).toBe('*[_type == "book"]')
     expect(text(screen.getByTestId('vision-tab-button'))).toBe('Reading list')
+  })
+
+  it('fixes the lint findings with Agent Actions from the Lint panel', async () => {
+    const {fetchCalls, promptCalls, replyToPrompts} = renderRedesign()
+    const query = '*[_type == "post" && author->name == "x"]'
+    typeQuery(query)
+    openRequestTab('lint')
+    expect(screen.queryByTestId('vision-lint-fix')).toBeNull()
+
+    act(() =>
+      lintMocks.report?.([
+        {
+          from: 21,
+          to: 29,
+          line: 1,
+          column: 22,
+          severity: 'warning',
+          message: 'Avoid `->` in a filter',
+          source: 'groq-lint/join-in-filter',
+        },
+      ]),
+    )
+    replyToPrompts({query: '*[_type == "post" && author._ref in *[name == "x"]._id]', params: {}})
+    fireEvent.click(screen.getByTestId('vision-lint-fix'))
+
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(promptCalls[0].request).toMatchObject({
+      format: 'json',
+      instructionParams: {
+        query,
+        params: '{}',
+        diagnostics:
+          '- Line 1, column 22 (warning, groq-lint/join-in-filter): Avoid `->` in a filter',
+      },
+    })
+    // No comment is added: the fix is made to the query that was there
+    expect(getQueryEditor().value).toBe('*[_type == "post" && author._ref in *[name == "x"]._id]')
+  })
+
+  it('loads the fixed query when the Lint tab closes while the fix is running', async () => {
+    const {fetchCalls, replyToPrompts} = renderRedesign()
+    const query = '*[_type == "post" && author->name == "x"]'
+    const fixed = '*[_type == "post" && author._ref in *[name == "x"]._id]'
+    typeQuery(query)
+    openRequestTab('lint')
+    act(() =>
+      lintMocks.report?.([
+        {
+          from: 21,
+          to: 29,
+          line: 1,
+          column: 22,
+          severity: 'warning',
+          message: 'Avoid `->` in a filter',
+          source: 'groq-lint/join-in-filter',
+        },
+      ]),
+    )
+    let answer: (reply: {query: string; params: Record<string, never>}) => void = () => {}
+    replyToPrompts(
+      new Promise((resolve) => {
+        answer = resolve
+      }),
+    )
+    fireEvent.click(screen.getByTestId('vision-lint-fix'))
+
+    // Another tab takes the request panel, unmounting the Lint tab's content
+    openRequestTab('params')
+    expect(screen.queryByTestId('vision-lint-fix')).toBeNull()
+
+    await act(async () => answer({query: fixed, params: {}}))
+    await waitFor(() => expect(fetchCalls).toHaveLength(2))
+    expect(getQueryEditor().value).toBe(fixed)
+  })
+
+  it('offers no Fix with AI when the config turns it off', () => {
+    renderRedesign(BASE_PERSPECTIVE, {ai: {fixLint: false}})
+    typeQuery('*[_type == "post" && author->name == "x"]')
+    openRequestTab('lint')
+    act(() =>
+      lintMocks.report?.([
+        {
+          from: 21,
+          to: 29,
+          line: 1,
+          column: 22,
+          severity: 'warning',
+          message: 'Avoid `->` in a filter',
+          source: 'groq-lint/join-in-filter',
+        },
+      ]),
+    )
+    expect(screen.getByTestId('vision-lint-finding')).toBeTruthy()
+    expect(screen.queryByTestId('vision-lint-fix')).toBeNull()
   })
 
   it('offers the last attempt when every generated query is rejected', async () => {

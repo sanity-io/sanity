@@ -24,9 +24,16 @@ describe('resolveAiFeatures', () => {
   it('turns every feature off with false', () => {
     expect(resolveAiFeatures(false)).toEqual({
       generateQuery: false,
+      editQuery: false,
+      fixLint: false,
       generateMutations: false,
       explainQuery: false,
     })
+  })
+
+  it('turns Edit and Fix with AI off one at a time', () => {
+    expect(resolveAiFeatures({editQuery: false})).toEqual({...ALL_AI_FEATURES, editQuery: false})
+    expect(resolveAiFeatures({fixLint: false})).toEqual({...ALL_AI_FEATURES, fixLint: false})
   })
 
   it('turns off only the features an object sets to false', () => {
@@ -43,7 +50,14 @@ describe('resolveAiFeatures', () => {
 })
 
 describe('resolveEffectiveAiFeatures', () => {
-  const allOn = {enabled: true, generateQuery: true, generateMutations: true, explainQuery: true}
+  const allOn = {
+    enabled: true,
+    generateQuery: true,
+    editQuery: true,
+    fixLint: true,
+    generateMutations: true,
+    explainQuery: true,
+  }
 
   it('leaves on what the config leaves on while the user keeps everything on', () => {
     expect(resolveEffectiveAiFeatures(resolveAiFeatures(undefined), allOn)).toEqual(ALL_AI_FEATURES)
@@ -61,6 +75,18 @@ describe('resolveEffectiveAiFeatures', () => {
     )
   })
 
+  it('turns off Edit and Fix with AI when the user switches them off', () => {
+    expect(
+      resolveEffectiveAiFeatures(resolveAiFeatures(true), {...allOn, editQuery: false}),
+    ).toEqual({...ALL_AI_FEATURES, editQuery: false})
+    expect(resolveEffectiveAiFeatures(resolveAiFeatures(true), {...allOn, fixLint: false})).toEqual(
+      {...ALL_AI_FEATURES, fixLint: false},
+    )
+    expect(resolveEffectiveAiFeatures(resolveAiFeatures({fixLint: false}), allOn).fixLint).toBe(
+      false,
+    )
+  })
+
   it('turns off the features the user switches off', () => {
     expect(
       resolveEffectiveAiFeatures(resolveAiFeatures(true), {...allOn, explainQuery: false}),
@@ -72,6 +98,8 @@ describe('resolveEffectiveAiFeatures', () => {
     expect(resolveEffectiveAiFeatures(configured, allOn).generateQuery).toBe(false)
     expect(resolveEffectiveAiFeatures(configured, {...allOn, generateMutations: false})).toEqual({
       generateQuery: false,
+      editQuery: true,
+      fixLint: true,
       generateMutations: false,
       explainQuery: true,
     })
