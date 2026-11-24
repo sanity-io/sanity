@@ -956,6 +956,171 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.result.copy': 'Copy result',
   /** Button next to each property in the result tree, copying its value */
   'vision.result.copy-value': 'Copy value',
+  /** Button on a row of the document list copying the document's ID */
+  'vision.result.documents.copy-id': 'Copy ID',
+  /** Toast confirming the document list copied a document's ID */
+  'vision.result.documents.copied-id': 'Copied {{id}}',
+  /**
+   * Number of documents the document list shows, while a search or a type narrows it
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.count-of': '{{shown}} of {{count}}',
+  /** Empty state of a document list whose result lists no documents */
+  'vision.result.documents.empty': 'The result lists no documents',
+  /**
+   * Shown when the documents of the document list could not be fetched
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.error': 'The documents could not be loaded: {{message}}',
+  /** Shown when the result is not an array, so Documents cannot list it */
+  'vision.result.documents.invalid.not-array':
+    'This result is not an array, so Documents cannot list it. _id is required. _type, title, subtitle and media are optional. Expected shape:',
+  /** Shown when some items of the result have no _id, with how many and how many items there are */
+  'vision.result.documents.invalid.missing-id':
+    '{{count}} of {{total}} items have no _id, so Documents cannot list them. _id is required. _type, title, subtitle and media are optional. Expected shape:',
+  /**
+   * Accessible label of the menu choosing how the document list lays out its documents
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.layout.aria-label': 'Change layout',
+  /**
+   * Layout of the document list as cards with large media
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.layout.card': 'Cards',
+  /**
+   * Layout of the document list with one line per document
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.layout.compact': 'Compact view',
+  /**
+   * Layout of the document list with a title and a subtitle per document
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.layout.default': 'Default view',
+  /**
+   * Layout of the document list with a title, a subtitle and a description per document
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.layout.detail': 'Detailed view',
+  /**
+   * Layout of the document list as a grid of media tiles
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.layout.media': 'Media grid',
+  /**
+   * Row of the document list for an ID no document has in the current perspective
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.missing': 'Not found in the current perspective',
+  /**
+   * Shown instead of rows when a search or a type matches none of the listed documents
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.no-match': 'No documents match',
+  /** Button on a row of the document list opening the document in a new browser tab */
+  'vision.result.documents.open-new-tab': 'Open in new tab',
+  /**
+   * Shown instead of the document list when the result is from another dataset than the workspace's
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.other-dataset':
+    'Documents are listed from the workspace dataset, {{workspaceDataset}}, and this result is from {{dataset}}. Switch the dataset to {{workspaceDataset}} to list them.',
+  /**
+   * Accessible label of the search field of the document list
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.search.aria-label': 'Search list',
+  /**
+   * Placeholder of the search field of the document list
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.search.placeholder': 'Search list',
+  /**
+   * Notice of a document list result with items that are not IDs, which are left out
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.skipped': 'Items without an ID left out: {{count}}',
+  /**
+   * Accessible label of the menu choosing how the document list is sorted
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.sort.aria-label': 'Sort documents',
+  /**
+   * Sort option of the document list: the newest documents first
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.sort.created': 'Recently created',
+  /**
+   * Sort option of the document list: the ordering the result gives as `defaultOrdering`
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.sort.custom': 'Query ordering',
+  /**
+   * Label of the sort menu of the document list, with the selected sort
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.sort.label': 'Sorted by {{order}}',
+  /**
+   * Sort option of the document list: the order the result lists the documents in
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.sort.result': 'Result order',
+  /**
+   * Sort option of the document list: by preview title, alphabetically
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.sort.title': 'Title A–Z',
+  /**
+   * Sort option of the document list: by document type
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.sort.type': 'Schema type',
+  /**
+   * Sort option of the document list: the most recently edited documents first
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.sort.updated': 'Recently updated',
+  /**
+   * Accessible label of the buttons narrowing the document list to one document type
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.types.aria-label': 'Filter by type',
+  /**
+   * Button showing documents of every type in the document list
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.types.all': 'All',
+  /**
+   * Row of the document list for a document of a type the schema does not have
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.result.documents.unknown-type': 'Unknown type: {{type}}',
   /** Empty state of the result view */
   'vision.result.empty': 'Run the query to see its result here',
   /** Button opening the menu of ways to export the result */
@@ -998,6 +1163,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.result.export-typescript': 'Export TypeScript…',
   /** Menu item opening the Zod export dialog */
   'vision.result.export-zod': 'Export Zod…',
+  /** Tab listing a result shaped `*[]{_id, _type, title?, subtitle?, media?}` as document previews */
+  'vision.result.view.documents': 'Documents',
   /** Tab showing the result as a graph of its objects and arrays */
   'vision.result.view.graph': 'Graph',
   /** Tab showing the result as indented JSON text, to select and copy from */

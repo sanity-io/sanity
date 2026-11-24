@@ -1,7 +1,7 @@
 import {Badge, Card, Label, Tab, TabList} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
-import {type ReactNode, useCallback, useMemo} from 'react'
+import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
@@ -23,6 +23,7 @@ import {
 } from '../../store/types'
 import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectOpenTabDrawer, selectResultView} from '../../store/visionMachine'
+import {parseDocumentList} from '../../util/documentListResult'
 import {haveSameQuery} from '../../util/queryRequest'
 import {ActionRail} from '../ActionRail'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
@@ -34,6 +35,7 @@ import {TabDrawerPortal} from '../TabDrawerPortal'
 import {useTabElementId} from '../tabs/queryTabShown'
 import {CopyResultButton} from './CopyResultButton'
 import {DeltaTab, useDeltaPanel} from './DeltaTab'
+import {DocumentListView} from './documentList/DocumentListView'
 import {ExplainTab} from './ExplainTab'
 import {HistoryTab} from './HistoryTab'
 import {MutateTab, useMutatePanel} from './MutateTab'
@@ -44,6 +46,12 @@ import {ResultJson} from './ResultJson'
 import {SourceMapTab} from './SourceMapTab'
 
 const DEFAULT_BOTTOM_PANEL_SIZE = {columns: 220, stacked: 180, mobile: 160}
+
+/**
+ * The query a tab left the document list for. Switching tabs hides this panel in an `<Activity>`
+ * boundary, which keeps its state, and the map keeps the choice if the panel remounts.
+ */
+const dismissedDocumentListQuery = new Map<string, string>()
 
 export interface ResponsePanelProps {
   tab: VisionTab
@@ -117,10 +125,42 @@ export function ResponsePanel(props: ResponsePanelProps) {
   const delta = useDeltaPanel()
   const mutate = useMutatePanel()
   const actorRef = useVisionActor()
-  const resultView = useVisionSelector(selectResultView)
+  const storedResultView = useVisionSelector(selectResultView)
+  // A non-empty array of `{_id, _type?, title?, subtitle?, media?}` opens as documents. Picking another
+  // view keeps that view for the query. A result that does not fit stays on the stored view, and
+  // Documents is still there so the guidance can be opened.
+  const parsedDocuments = useMemo(
+    () => (hasResult ? parseDocumentList(result) : undefined),
+    [hasResult, result],
+  )
+  const settledQuery = settledRequest?.query ?? ''
+  const [documentsDismissedFor, setDocumentsDismissedFor] = useState<string | undefined>(() =>
+    dismissedDocumentListQuery.get(tab.id),
+  )
+  const [forcedDocumentsQuery, setForcedDocumentsQuery] = useState<string | undefined>(undefined)
+  const opensDocuments = parsedDocuments?.ok === true && parsedDocuments.documents.length > 0
+  const autoOpensDocuments = opensDocuments && documentsDismissedFor !== settledQuery
+  // Once Documents is open for the query it stays open, also when a refetch returns `[]`
+  if (autoOpensDocuments && forcedDocumentsQuery !== settledQuery) {
+    setForcedDocumentsQuery(settledQuery)
+  }
+  const showDocuments =
+    parsedDocuments !== undefined && (autoOpensDocuments || forcedDocumentsQuery === settledQuery)
+  const resultView = showDocuments ? 'documents' : storedResultView
   const setResultView = useCallback(
-    (view: VisionResultView) => actorRef.send({type: 'result.view', view}),
-    [actorRef],
+    (view: VisionResultView | 'documents') => {
+      if (view === 'documents') {
+        dismissedDocumentListQuery.delete(tab.id)
+        setDocumentsDismissedFor(undefined)
+        setForcedDocumentsQuery(settledQuery)
+        return
+      }
+      dismissedDocumentListQuery.set(tab.id, settledQuery)
+      setDocumentsDismissedFor(settledQuery)
+      setForcedDocumentsQuery(undefined)
+      actorRef.send({type: 'result.view', view})
+    },
+    [actorRef, settledQuery, tab.id],
   )
   const copyToClipboard = useCopyToClipboard()
   const copyResult = useCallback(
@@ -305,12 +345,30 @@ export function ResponsePanel(props: ResponsePanelProps) {
                       padding={2}
                       selected={resultView === 'graph'}
                     />
+                    {hasResult && (
+                      <Tab
+                        aria-controls={resultContentId}
+                        fontSize={1}
+                        id={tabElementId('vision-result-view-documents')}
+                        label={t('vision.result.view.documents')}
+                        onClick={() => setResultView('documents')}
+                        padding={2}
+                        selected={resultView === 'documents'}
+                      />
+                    )}
                   </TabList>
                 </Flex>
               )}
             </Flex>
           </Box>
-          {hasResult && resultView === 'json' ? (
+          {hasResult && parsedDocuments && resultView === 'documents' ? (
+            <DocumentListView
+              className={styles.resultView}
+              datasetName={resultDataset}
+              id={resultContentId}
+              parsed={parsedDocuments}
+            />
+          ) : hasResult && resultView === 'json' ? (
             <ResultJson className={styles.resultView} id={resultContentId} value={result} />
           ) : hasResult && resultView === 'graph' ? (
             <ResultGraph
