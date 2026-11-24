@@ -13,7 +13,6 @@ const SCHEDULED_DRAFT: ReleaseDocument = {
 
 const BASE = {
   activeReleases: [activeASAPRelease, SCHEDULED_DRAFT],
-  archivedReleases: [archivedScheduledRelease],
   releasesLoading: false,
   releasesEnabled: true,
   isDraftModelEnabled: true,
@@ -38,11 +37,13 @@ describe('resolveStickyPerspectiveName', () => {
     ).toEqual({name: 'published', ignored: 'drafts'})
   })
 
-  it('falls back to the default for a release that does not exist', () => {
-    expect(resolveStickyPerspectiveName({...BASE, perspective: 'BlackFriday'})).toEqual({
-      name: undefined,
-      ignored: 'unknown-release',
+  it('keeps an id that names no release, since it can be an anonymous bundle', () => {
+    expect(resolveStickyPerspectiveName({...BASE, perspective: 'anon-rAbc123'})).toEqual({
+      name: 'anon-rAbc123',
     })
+    expect(
+      resolveStickyPerspectiveName({...BASE, perspective: 'anon-rAbc123', releasesEnabled: false}),
+    ).toEqual({name: 'anon-rAbc123'})
   })
 
   it('keeps an unknown release while the releases are loading', () => {

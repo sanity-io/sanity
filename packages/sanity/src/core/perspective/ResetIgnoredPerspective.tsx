@@ -10,7 +10,6 @@ import {useSetPerspective} from './useSetPerspective'
 const TOAST_TITLE_KEYS: Record<IgnoredPerspectiveReason, string | undefined> = {
   // The studio never writes `?perspective=drafts`; nothing to explain.
   'drafts': undefined,
-  'unknown-release': 'release.toast.unknown-perspective.title',
   'releases-off': 'release.toast.releases-off-perspective.title',
 }
 
