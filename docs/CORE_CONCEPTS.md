@@ -378,7 +378,7 @@ Tools are top-level views or "apps" within Sanity Studio. They appear in the mai
 
 ### Built-in Tools
 
-- **Desk** (or Structure) - Document editing interface
+- **Structure** - Document editing interface
 - **Vision** - GROQ query playground
 - **Scheduled Publishing** - View scheduled publishes
 
@@ -386,7 +386,7 @@ Tools are top-level views or "apps" within Sanity Studio. They appear in the mai
 
 ```typescript
 interface Tool<Options = any> {
-  name: string // URL segment (e.g., 'desk')
+  name: string // URL segment (e.g., 'structure')
   title: string // Display name
   icon?: ComponentType // Navigation icon
   component: ComponentType<{tool: Tool<Options>}>

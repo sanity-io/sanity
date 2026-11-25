@@ -61,12 +61,12 @@ describe('pandaCssImportPlugin()', () => {
     expect(
       libraryEntryIds('/repo/packages/sanity', {
         index: './src/_exports/index.ts',
-        desk: './src/_exports/desk.ts',
+        structure: './src/_exports/structure.ts',
       }),
     ).toEqual(
       new Set([
         '/repo/packages/sanity/src/_exports/index.ts',
-        '/repo/packages/sanity/src/_exports/desk.ts',
+        '/repo/packages/sanity/src/_exports/structure.ts',
       ]),
     )
     expect(libraryEntryIds('/repo/packages/sanity', './src/index.ts')).toEqual(

@@ -74,10 +74,6 @@
       "monorepo": "./src/_exports/dashboard.ts",
       "default": "./lib/dashboard.js"
     },
-    "./desk": {
-      "monorepo": "./src/_exports/desk.ts",
-      "default": "./lib/desk.js"
-    },
     "./i18n": {
       "monorepo": "./src/_exports/i18n.ts",
       "default": "./lib/i18n.js"
@@ -125,7 +121,6 @@
       "./_unstable-embedded": "./lib/_unstable-embedded.js",
       "./cli": "./lib/cli.js",
       "./dashboard": "./lib/dashboard.js",
-      "./desk": "./lib/desk.js",
       "./i18n": "./lib/i18n.js",
       "./media-library": "./lib/media-library.js",
       "./media-library-island-runtime": "./lib/media-library-island-runtime.js",
