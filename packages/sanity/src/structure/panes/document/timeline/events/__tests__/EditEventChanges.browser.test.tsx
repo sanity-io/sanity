@@ -32,6 +32,17 @@ const authorType = defineType({
   fields: [
     {name: 'name', title: 'Name', type: 'string'},
     {name: 'role', title: 'Role', type: 'string'},
+    {
+      name: 'translations',
+      title: 'Translations',
+      type: 'object',
+      fields: [{name: 'sv', title: 'Swedish', type: 'string'}],
+    },
+    {
+      name: 'summary',
+      title: 'A summary of the author for the people browsing the list of authors',
+      type: 'string',
+    },
   ],
 })
 
@@ -185,6 +196,57 @@ describe('EventTimelineItem changes', () => {
     )
     expect(getComputedStyle(added).color).toBe(
       resolvedColor(addedCard, '--card-badge-positive-fg-color'),
+    )
+  })
+
+  it('lists the titles of the fields an edit changed next to its label, two at most', async () => {
+    const {changes$} = renderItem(EDIT_EVENT)
+
+    changes$.next({
+      loading: false,
+      error: null,
+      diff: diffInput(
+        wrap({name: 'Ada'}, null),
+        wrap({name: 'Ada Lovelace', role: 'developer', translations: {sv: 'Ada'}}, null),
+      ) as ObjectDiff,
+    })
+    const titles = page.getByTestId('changed-field-titles')
+    await expect.element(titles).toBeVisible()
+    expect(titles.element().textContent).toBe('Name, Role, and more')
+    expect(titles.element().getAttribute('title')).toBe('Name, Role, Translations › Swedish')
+    // Secondary to the label, in the card's muted color.
+    expect(getComputedStyle(titles.element()).color).toBe(
+      resolvedColor(titles.element(), '--card-muted-fg-color'),
+    )
+  })
+
+  it('shows the title path of a nested field, and truncates what does not fit', async () => {
+    const {changes$} = renderItem(EDIT_EVENT)
+    const card = page.getByTestId('timeline-item-button')
+    await expect.element(card).toBeVisible()
+    const rowHeight = card.element().getBoundingClientRect().height
+
+    changes$.next({
+      loading: false,
+      error: null,
+      diff: diffInput(
+        wrap({}, null),
+        wrap({translations: {sv: 'Ada'}, summary: 'Mathematician'}, null),
+      ) as ObjectDiff,
+    })
+    const titles = page.getByTestId('changed-field-titles')
+    await expect.element(titles).toBeVisible()
+    // A chevron separates the segments of a title path, like the change list headers.
+    expect(titles.element().querySelectorAll('svg')).toHaveLength(1)
+    expect(titles.element().textContent).toBe(
+      'TranslationsSwedish, A summary of the author for the people browsing the list of authors',
+    )
+    // The titles stay on the label's line, cut short, and the row keeps its height.
+    const line = titles.element().firstElementChild!
+    expect(line.scrollWidth).toBeGreaterThan(line.clientWidth)
+    expect(card.element().getBoundingClientRect().height).toBe(rowHeight)
+    expect(card.element().getBoundingClientRect().right).toBeLessThanOrEqual(
+      card.element().parentElement!.getBoundingClientRect().right,
     )
   })
 

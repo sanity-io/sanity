@@ -1,11 +1,23 @@
 import {Card} from '@sanity/ui'
-import {type DocumentGroupEvent, type EditDocumentVersionEvent, LocaleProvider} from 'sanity'
+import {NEVER} from 'rxjs'
+import {
+  type DocumentGroupEvent,
+  type EditDocumentVersionEvent,
+  LocaleProvider,
+  type useEvents,
+} from 'sanity'
+import {DocumentPaneContext, EventsContext} from 'sanity/_singletons'
 import {describe, expect, it, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
+import {type DocumentPaneContextValue} from '../../../DocumentPaneContext'
 import {EventsTimeline} from '../EventsTimeline'
+
+// The rows load what each edit changed; that stays loading here.
+const EVENTS_STORE = {getEditChanges: () => NEVER} as unknown as ReturnType<typeof useEvents>
+const DOCUMENT_PANE = {documentId: 'article-1'} as unknown as DocumentPaneContextValue
 
 const BASE_TIME = Date.parse('2020-06-15T12:00:00.000Z')
 const secondsBefore = (seconds: number) => new Date(BASE_TIME - seconds * 1000).toISOString()
@@ -76,17 +88,21 @@ function Harness({
   return (
     <TestWrapper schemaTypes={[]}>
       <LocaleProvider>
-        <Card padding={2} style={{width: 360}}>
-          <EventsTimeline
-            events={EVENTS}
-            fetchEventChildren={fetchEventChildren}
-            hasMoreEvents={false}
-            listMaxHeight="4000px"
-            onLoadMore={() => {}}
-            onSelect={onSelect}
-            selectedEventId={selectedEventId}
-          />
-        </Card>
+        <EventsContext.Provider value={EVENTS_STORE}>
+          <DocumentPaneContext value={DOCUMENT_PANE}>
+            <Card padding={2} style={{width: 360}}>
+              <EventsTimeline
+                events={EVENTS}
+                fetchEventChildren={fetchEventChildren}
+                hasMoreEvents={false}
+                listMaxHeight="4000px"
+                onLoadMore={() => {}}
+                onSelect={onSelect}
+                selectedEventId={selectedEventId}
+              />
+            </Card>
+          </DocumentPaneContext>
+        </EventsContext.Provider>
       </LocaleProvider>
     </TestWrapper>
   )

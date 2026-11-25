@@ -3,7 +3,7 @@ import {type Observable, of, Subscription} from 'rxjs'
 
 import {createEventsObservable} from './createEventsObservable'
 import {getDocumentChanges} from './getDocumentChanges'
-import {getEditChanges} from './getEditChanges'
+import {createEditChanges} from './getEditChanges'
 import {getExpandEvents} from './getExpandEvents'
 import {getInitialFetchEvents} from './getInitialFetchEvents'
 import {getRemoteTransactionsSubscription} from './getRemoteTransactionsSubscription'
@@ -50,7 +50,7 @@ function createIdleEventsStore() {
  * - `eventsObservable$`: the final `{events, nextCursor, loading, error}` stream for the UI.
  * - `getDocumentChanges(revision$, since$)`: annotated diff stream between two revisions.
  * - `getEditChanges({fromRevisionId, toRevisionId})`: what a range of edit transactions changed
- *   (see `getEditChanges`).
+ *   (see `createEditChanges`).
  * - `handleExpandEvent`, `loadMoreEvents`, `reloadEvents`: imperative actions.
  * - `remoteTransactionsListener`: call to activate the remote listener; returns the subscription
  *   (the caller owns unsubscription — `useEventsStore` ties it to the component lifecycle).
@@ -102,13 +102,7 @@ export function createEventsStore({
         since$: since$,
       })
     },
-    getEditChanges: ({
-      fromRevisionId,
-      toRevisionId,
-    }: {
-      fromRevisionId: string
-      toRevisionId: string
-    }) => getEditChanges({client, documentId, fromRevisionId, toRevisionId}),
+    getEditChanges: createEditChanges({client, documentId}),
     handleExpandEvent: handleExpandEvent,
     loadMoreEvents: initialEvents.loadMore,
     reloadEvents: initialEvents.reloadEvents,

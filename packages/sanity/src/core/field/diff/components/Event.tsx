@@ -1,6 +1,6 @@
 import {type AvatarSize, AvatarStack, Skeleton} from '@sanity/ui'
 import {getTheme_v2, type ThemeColorAvatarColorKey} from '@sanity/ui/theme'
-import {useMemo} from 'react'
+import {type ReactNode, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 import {Text, Box, Flex, VStack, Icon} from 'ui5'
 
@@ -166,11 +166,13 @@ function PublishEventReleaseBadge({releaseId}: {releaseId: string | undefined}) 
 interface TimelineItemProps {
   event: DocumentGroupEvent
   showChangesBy: 'tooltip' | 'inline' | 'hidden'
+  /** The fields the event changed, shown next to its label (see `ChangedFieldTitles`). */
+  changedFields?: ReactNode
 }
 /**
  * @internal
  */
-export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
+export function Event({event, showChangesBy = 'tooltip', changedFields}: TimelineItemProps) {
   const {t} = useTranslation('studio')
   const {type, timestamp, documentVariantType} = event
 
@@ -208,16 +210,19 @@ export function Event({event, showChangesBy = 'tooltip'}: TimelineItemProps) {
             {IconComponent && <Icon icon={IconComponent} size={0} />}
           </IconBox>
         </div>
-        <VStack gap={2}>
-          <Text size={1} weight="medium" as="div" trim={true}>
-            {t(TIMELINE_ITEM_I18N_KEY_MAPPING[documentVariantType][type])}
-            {isPublishDocumentVersionEvent(event) && documentVariantType === 'published' && (
-              <>
-                {' '}
-                <PublishEventReleaseBadge releaseId={event.releaseId} />
-              </>
-            )}
-          </Text>
+        <VStack gap={2} style={{minWidth: 0}}>
+          <Flex alignItems="center" gap={2} style={{minWidth: 0}}>
+            <Text size={1} weight="medium" as="div" trim={true} style={{flexShrink: 0}}>
+              {t(TIMELINE_ITEM_I18N_KEY_MAPPING[documentVariantType][type])}
+              {isPublishDocumentVersionEvent(event) && documentVariantType === 'published' && (
+                <>
+                  {' '}
+                  <PublishEventReleaseBadge releaseId={event.releaseId} />
+                </>
+              )}
+            </Text>
+            {changedFields}
+          </Flex>
 
           <Text
             as="time"

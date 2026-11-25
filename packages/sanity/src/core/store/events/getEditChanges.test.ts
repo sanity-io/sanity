@@ -6,7 +6,7 @@ import {createMockClient, createTranslogFetchStub} from './__fixtures__/mockClie
 import {editTransaction} from './__fixtures__/transactions.fixture'
 import {clearDocumentRevisionCache} from './getDocumentAtRevision'
 import {clearDocumentTransactionsCache} from './getDocumentTransactions'
-import {getEditChanges} from './getEditChanges'
+import {createEditChanges} from './getEditChanges'
 
 const tx1 = editTransaction({
   id: 'tx-1',
@@ -35,14 +35,14 @@ function stubTranslog() {
 }
 
 function setup(documents: Record<string, unknown> = {}) {
-  const {client} = createMockClient({
+  const {client, requests} = createMockClient({
     respond: (request) => {
       const revision = new URL(request.url, 'https://example.test').searchParams.get('revision')
       const document = revision && documents[revision]
       return {documents: document ? [document] : []}
     },
   })
-  return client
+  return {getEditChanges: createEditChanges({client, documentId: DRAFT_ID}), requests}
 }
 
 const AT_TX_2 = {
@@ -53,7 +53,7 @@ const AT_TX_2 = {
   role: 'designer',
 }
 
-describe('getEditChanges', () => {
+describe('createEditChanges', () => {
   beforeEach(() => {
     clearDocumentRevisionCache()
     clearDocumentTransactionsCache()
@@ -65,10 +65,10 @@ describe('getEditChanges', () => {
 
   it('diffs the document before the first transaction with the one after the last, without annotations', async () => {
     const translog = stubTranslog()
-    const client = setup({'tx-2': AT_TX_2})
+    const {getEditChanges} = setup({'tx-2': AT_TX_2})
 
     const {values, subscription} = collectEmissions(
-      getEditChanges({client, documentId: DRAFT_ID, fromRevisionId: 'tx-1', toRevisionId: 'tx-2'}),
+      getEditChanges({fromRevisionId: 'tx-1', toRevisionId: 'tx-2'}),
     )
     await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
     subscription.unsubscribe()
@@ -97,10 +97,10 @@ describe('getEditChanges', () => {
 
   it('diffs a single transaction with the document before it', async () => {
     stubTranslog()
-    const client = setup({'tx-2': AT_TX_2})
+    const {getEditChanges} = setup({'tx-2': AT_TX_2})
 
     const {values, subscription} = collectEmissions(
-      getEditChanges({client, documentId: DRAFT_ID, fromRevisionId: 'tx-2', toRevisionId: 'tx-2'}),
+      getEditChanges({fromRevisionId: 'tx-2', toRevisionId: 'tx-2'}),
     )
     await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
     subscription.unsubscribe()
@@ -112,10 +112,10 @@ describe('getEditChanges', () => {
 
   it('emits an error when the document at the last revision is missing', async () => {
     stubTranslog()
-    const client = setup({})
+    const {getEditChanges} = setup({})
 
     const {values, subscription} = collectEmissions(
-      getEditChanges({client, documentId: DRAFT_ID, fromRevisionId: 'tx-1', toRevisionId: 'tx-2'}),
+      getEditChanges({fromRevisionId: 'tx-1', toRevisionId: 'tx-2'}),
     )
     await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
     subscription.unsubscribe()
@@ -132,14 +132,61 @@ describe('getEditChanges', () => {
       'fetch',
       createTranslogFetchStub(() => ({error: {type: 'translogUnavailable'}})).fetch,
     )
-    const client = setup({'tx-2': AT_TX_2})
+    const {getEditChanges} = setup({'tx-2': AT_TX_2})
 
     const {values, subscription} = collectEmissions(
-      getEditChanges({client, documentId: DRAFT_ID, fromRevisionId: 'tx-1', toRevisionId: 'tx-2'}),
+      getEditChanges({fromRevisionId: 'tx-1', toRevisionId: 'tx-2'}),
     )
     await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
     subscription.unsubscribe()
 
     expect(values.at(-1)).toMatchObject({diff: null, error: new Error('translogUnavailable')})
+  })
+
+  it('computes a range within an already computed one without fetching anything', async () => {
+    const translog = stubTranslog()
+    const {getEditChanges, requests} = setup({'tx-2': AT_TX_2})
+
+    const group = collectEmissions(getEditChanges({fromRevisionId: 'tx-1', toRevisionId: 'tx-2'}))
+    await vi.waitFor(() => expect(group.values.at(-1)?.loading).toBe(false))
+    group.subscription.unsubscribe()
+    const fetches = translog.calls.length + requests.length
+
+    // E.g. the transactions listed under the group whose changes were shown.
+    const first = collectEmissions(getEditChanges({fromRevisionId: 'tx-1', toRevisionId: 'tx-1'}))
+    const last = collectEmissions(getEditChanges({fromRevisionId: 'tx-2', toRevisionId: 'tx-2'}))
+    first.subscription.unsubscribe()
+    last.subscription.unsubscribe()
+
+    expect(translog.calls.length + requests.length).toBe(fetches)
+    expect(first.values).toHaveLength(1)
+    expect(first.values[0].diff?.fields.name).toMatchObject({
+      fromValue: 'Ada',
+      toValue: 'Ada Lovelace',
+    })
+    expect(first.values[0].diff?.fields.role).toMatchObject({action: 'unchanged'})
+    expect(last.values).toHaveLength(1)
+    expect(last.values[0].diff?.fields.role).toMatchObject({
+      fromValue: 'developer',
+      toValue: 'designer',
+    })
+  })
+
+  it('fetches a range once for every subscriber while it loads', async () => {
+    const translog = stubTranslog()
+    const {getEditChanges, requests} = setup({'tx-2': AT_TX_2})
+
+    const card = collectEmissions(getEditChanges({fromRevisionId: 'tx-1', toRevisionId: 'tx-2'}))
+    const popover = collectEmissions(getEditChanges({fromRevisionId: 'tx-1', toRevisionId: 'tx-2'}))
+    await vi.waitFor(() => {
+      expect(card.values.at(-1)?.loading).toBe(false)
+      expect(popover.values.at(-1)?.loading).toBe(false)
+    })
+    card.subscription.unsubscribe()
+    popover.subscription.unsubscribe()
+
+    expect(requests).toHaveLength(1)
+    expect(translog.calls).toHaveLength(2)
+    expect(popover.values.at(-1)).toEqual(card.values.at(-1))
   })
 })

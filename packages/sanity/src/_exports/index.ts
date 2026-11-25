@@ -445,6 +445,7 @@ export {
 } from '../core/field/diff/annotations/helpers'
 export {useAnnotationColor, useDiffAnnotationColor} from '../core/field/diff/annotations/hooks'
 export {ChangeBreadcrumb} from '../core/field/diff/components/ChangeBreadcrumb'
+export {ChangedFieldTitles} from '../core/field/diff/components/ChangedFieldTitles'
 export {ChangeList, type ChangeListProps} from '../core/field/diff/components/ChangeList'
 export {
   ChangeResolver,

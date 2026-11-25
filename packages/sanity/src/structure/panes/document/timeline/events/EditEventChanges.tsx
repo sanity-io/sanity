@@ -1,12 +1,10 @@
 import {type Path} from '@sanity/types'
 import {Spinner} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
-import {useObservable} from 'react-rx'
 import {
   ChangeList,
   type DocumentChangeContextInstance,
   type EditDocumentVersionEvent,
-  useEvents,
   useTranslation,
 } from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
@@ -15,8 +13,7 @@ import {Box, Flex, Text} from 'ui5'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {editEventChanges} from './EditEventChanges.css'
-
-const INITIAL_CHANGES = {loading: true, diff: null, error: null}
+import {useEditEventChanges} from './useEditEventChanges'
 
 function PassThroughFieldWrapper(props: {
   path: Path
@@ -31,18 +28,10 @@ function PassThroughFieldWrapper(props: {
  * change and without revert actions.
  */
 export function EditEventChanges({event}: {event: EditDocumentVersionEvent}) {
-  const {getEditChanges} = useEvents()
   const {documentId, schemaType, value} = useDocumentPane()
   const {t} = useTranslation('studio')
   const {t: tStructure} = useTranslation(structureLocaleNamespace)
-
-  const toRevisionId = event.revisionId
-  const fromRevisionId = event.transactions.at(-1)?.revisionId ?? toRevisionId
-  const changes$ = useMemo(
-    () => getEditChanges({fromRevisionId, toRevisionId}),
-    [getEditChanges, fromRevisionId, toRevisionId],
-  )
-  const {loading, diff, error} = useObservable(changes$, INITIAL_CHANGES)
+  const {loading, diff, error} = useEditEventChanges(event)
 
   const documentContext = useMemo<DocumentChangeContextInstance>(
     () => ({
