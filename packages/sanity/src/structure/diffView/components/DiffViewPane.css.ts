@@ -44,4 +44,10 @@ export const readOnlyPane = css({
     backgroundColor: '#321615',
     color: '#ffdedc',
   },
+  // The inputs draw removed text at half opacity, which halves its contrast, worst in dark mode.
+  // Here the red and the strikethrough already mark it, so it keeps full contrast. Tripled to win
+  // over the inputs' own two-class rule.
+  '&&& del': {
+    opacity: 1,
+  },
 })
