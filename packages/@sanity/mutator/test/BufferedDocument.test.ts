@@ -341,3 +341,28 @@ test('pending local patch on an array index removed by a remote patch rebases cl
     .didRebase()
     .assertLOCAL('items', [{title: 'one'}])
 })
+
+test('pending local patch on a document deleted by a remote publish does not crash', () => {
+  new BufferedDocumentTester({
+    _id: 'drafts.article',
+    _type: 'article',
+    _rev: 'before-publish',
+    title: 'Hello',
+  })
+    .stage('simulate a keystroke typed after clicking publish (staged patch)')
+    .localPatch({
+      id: 'drafts.article',
+      set: {
+        title: 'Hello world',
+      },
+    })
+    .hasLocalEdits()
+    .stage('commit the local patch so it is in flight')
+    .commit()
+    .stage('the remote publish arrives and deletes the draft')
+    .remoteMutation('before-publish', 'after-publish', {
+      delete: {id: 'drafts.article'},
+    })
+    .didRebase()
+    .assertALLDeleted()
+})
