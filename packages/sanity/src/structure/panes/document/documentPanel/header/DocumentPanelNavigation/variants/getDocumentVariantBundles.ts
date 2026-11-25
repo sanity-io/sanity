@@ -1,5 +1,4 @@
-import {type VersionInfoDocumentStub} from 'sanity'
-
+import {type VersionInfoDocumentStub} from '../../../../../../../core/releases/store/types'
 import {LATEST, PUBLISHED} from '../../../../../../../core/releases/util/const'
 import {getDocumentVersionVariantId} from '../../../../../../../core/util/getDocumentVersionVariant'
 

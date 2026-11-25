@@ -637,6 +637,12 @@ Rules that follow from this:
   core tests do. `src/presentation` imports internals relatively for the same reasons, and
   because a lazily loaded module (an i18n `resources` chunk, a `lazy()` component) that imports
   the entry drags the whole barrel in with it.
+- The repo's own code imports no `@internal` name from a public entry, including the `@internal`
+  types that are still exported there, and the four areas never import the internals entry.
+  `test/no-internal-imports-from-public-entries.test.ts` in `@repo/test-dts-exports` checks both
+  (it reads the built `.d.ts` files, so build first). When a component switches to a relative
+  import, a test that stubs the name with `vi.mock('sanity', …)` has to mock the declaring
+  module instead.
 - A symbol carries exactly one release tag. `@internal` plus `@beta`/`@public` on the same
   declaration is a bug, not a way to say "beta but hidden" — use `@hidden` with `@beta` for that.
 - Tagging something `@public`/`@beta` moves it onto a public entry; tagging it `@internal` moves

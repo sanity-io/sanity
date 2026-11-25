@@ -1,6 +1,5 @@
 import {useMemo} from 'react'
 import {
-  type AgentVersionDisplay,
   getPublishedId,
   getVersionFromId,
   getVersionId,
@@ -11,7 +10,10 @@ import {
 } from 'sanity'
 
 import {isPublishedPerspective} from '../../../../../../../core/releases/util/util'
-import {useAgentVersionDisplay} from '../../../../../../../core/store/agent/useAgentVersionDisplay'
+import {
+  useAgentVersionDisplay,
+  type AgentVersionDisplay,
+} from '../../../../../../../core/store/agent/useAgentVersionDisplay'
 import {DEFAULT_VARIANT_TYPE_KEY} from '../../../../../../../core/variants/util/variantType'
 import {isLiveEditEnabled} from '../../../../../../components/paneItem/helpers'
 import {usePerspectiveNavigator} from '../../../../../../hooks/usePerspectiveNavigator'

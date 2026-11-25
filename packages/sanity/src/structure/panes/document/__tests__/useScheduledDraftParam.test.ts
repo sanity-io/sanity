@@ -1,6 +1,6 @@
-import {type VersionInfoDocumentStub} from 'sanity'
 import {describe, expect, it} from 'vitest'
 
+import {type VersionInfoDocumentStub} from '../../../../core/releases/store/types'
 import {getScheduledDraftForLane} from '../useScheduledDraftParam'
 
 const VARIANT_ID = '_.variants.loyal'

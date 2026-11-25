@@ -1,14 +1,9 @@
 import {renderHook} from '@testing-library/react'
-import {
-  getVersionFromId,
-  type ObjectSchemaType,
-  useDocumentVersions,
-  usePerspective,
-  type VersionInfoDocumentStub,
-} from 'sanity'
+import {getVersionFromId, type ObjectSchemaType, useDocumentVersions, usePerspective} from 'sanity'
 import {afterEach, beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
+import {type VersionInfoDocumentStub} from '../../../../../../../../core/releases/store/types'
 import {useAgentVersionDisplay} from '../../../../../../../../core/store/agent/useAgentVersionDisplay'
 import {usePerspectiveNavigator} from '../../../../../../../hooks/usePerspectiveNavigator'
 import {type DocumentPaneContextValue} from '../../../../../DocumentPaneContext'
