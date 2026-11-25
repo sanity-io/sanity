@@ -296,6 +296,11 @@ function commitMutations(
  * can make the retry succeed, so the buffered edits must be preserved
  * rather than wiped mid-edit. The session itself is handled separately by
  * the force-logout flow.
+ *
+ * 409 is terminal except for two error types carved out below: a
+ * `transactionAlreadyExistsError` means an earlier attempt of this commit
+ * landed (a success), and a `transactionConflictError` is contention while
+ * committing, which Content Lake rolled back (retried).
  */
 const TERMINAL_COMMIT_STATUSES = new Set([400, 401, 402, 403, 404, 409, 410, 412, 413, 422])
 
@@ -393,10 +398,15 @@ function submitCommitRequest(
         request.success()
         return of<CommitAttemptResult>({type: 'success', result: {transactionId}})
       }
+      // Contention while committing: Content Lake rolled the transaction back, so the retry can
+      // resend it under the same transaction id.
+      const isTransactionConflict =
+        statusCode === 409 && getResponseErrorType(error) === 'transactionConflictError'
       if (
         statusCode !== undefined &&
         TERMINAL_COMMIT_STATUSES.has(statusCode) &&
-        !isInvalidSessionError(error)
+        !isInvalidSessionError(error) &&
+        !isTransactionConflict
       ) {
         observer.beforeCancel(request, error, statusCode)
         request.cancel(error)
