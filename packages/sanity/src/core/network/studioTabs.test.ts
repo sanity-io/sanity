@@ -122,6 +122,14 @@ describe('studio tab lock', () => {
     expect(studioTabs.getPeakStudioTabCount()).toBe(1)
   })
 
+  it('exposes the tracked scope only while tracking', () => {
+    expect(studioTabs.getTrackedStudioTabScope()).toBeUndefined()
+    const stop = studioTabs.startTrackingStudioTabs(SCOPE)
+    expect(studioTabs.getTrackedStudioTabScope()).toBe(SCOPE)
+    stop()
+    expect(studioTabs.getTrackedStudioTabScope()).toBeUndefined()
+  })
+
   it('republishes once, with the latest count, after changes settle for 250ms', async () => {
     studioTabs.startTrackingStudioTabs(SCOPE)
     await vi.runAllTimersAsync()

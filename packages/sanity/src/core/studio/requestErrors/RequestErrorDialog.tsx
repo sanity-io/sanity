@@ -5,6 +5,10 @@ import {type ReactNode, startTransition, useCallback, useEffect, useState} from 
 import {Text, VStack, Flex, Box, Icon, Link} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
+import {classifyStall, type StallKind} from '../../network/classifyStall'
+import {getMeasuredApiProtocol} from '../../network/isUsingLegacyHttp'
+import {snapshot} from '../../network/listenerLedger'
+import {getTrackedStudioTabScope} from '../../network/studioTabs'
 import {reloadStudio} from '../reloadStudio'
 import {type RequestErrorClaim} from './types'
 
@@ -38,7 +42,43 @@ const NETWORK_TROUBLESHOOTING: {key: string; content: ReactNode}[] = [
   {key: 'tabs', content: 'Try closing other Studio tabs.'},
 ]
 
+const SUGGEST_CLOSING_TABS: Record<StallKind, boolean> = {
+  'unmeasured': true,
+  'not-listener-limit': false,
+  'this-tab-over-limit': true,
+  'this-tab-heavy': true,
+  'too-many-tabs': true,
+}
+
+async function shouldSuggestClosingTabs(): Promise<boolean> {
+  const scope = getTrackedStudioTabScope()
+  if (scope === undefined) return true
+  const ledgerSnapshot = await snapshot(scope)
+  const stallKind = classifyStall({
+    snapshot: ledgerSnapshot,
+    protocol: getMeasuredApiProtocol(scope),
+  })
+  return SUGGEST_CLOSING_TABS[stallKind]
+}
+
 function NetworkTroubleshooting() {
+  const [isTabsTipVisible, setIsTabsTipVisible] = useState(true)
+
+  useEffect(() => {
+    let isCancelled = false
+    void shouldSuggestClosingTabs().then((shouldSuggest) => {
+      if (isCancelled) return
+      setIsTabsTipVisible(shouldSuggest)
+    })
+    return () => {
+      isCancelled = true
+    }
+  }, [])
+
+  const tips = NETWORK_TROUBLESHOOTING.filter((tip) =>
+    tip.key === 'tabs' ? isTabsTipVisible : true,
+  )
+
   return (
     <Card border radius={2} padding={3} tone="transparent">
       <VStack gap={3}>
@@ -46,7 +86,7 @@ function NetworkTroubleshooting() {
           Troubleshooting
         </Text>
         <VStack as="ul" gap={3} style={{margin: 0, paddingLeft: '1.25em'}}>
-          {NETWORK_TROUBLESHOOTING.map((tip) => (
+          {tips.map((tip) => (
             <Box as="li" key={tip.key}>
               <Text size={1} muted as="div" trim={true}>
                 {tip.content}

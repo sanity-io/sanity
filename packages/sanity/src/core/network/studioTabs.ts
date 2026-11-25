@@ -54,6 +54,15 @@ export function getPeakStudioTabCount(): number | undefined {
 }
 
 /**
+ * The scope this tab publishes its listener count in, or `undefined` until tracking starts.
+ *
+ * @internal
+ */
+export function getTrackedStudioTabScope(): string | undefined {
+  return studioTabs.scope
+}
+
+/**
  * An id for this tab, stable for the life of the page.
  *
  * @internal
