@@ -5,7 +5,7 @@ It is used by the `sanity-io/sanity` GitHub workflow and can also be run from
 the terminal while developing or testing.
 
 The GitHub Action installs root dependencies and runs the same `pnpm issue-triage`
-scripts as local development via `tsx`. Use Node 22.18 or newer locally.
+scripts as local development via `tsx`. Use Node 24.11 or newer locally.
 
 Like other helpers under `scripts/`, this folder is not a workspace package.
 There is no local `package.json`, build output, or install step.
