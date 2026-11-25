@@ -43,5 +43,5 @@ export interface BaseImageInputProps extends ObjectInputProps<
   observeAsset: (documentId: string) => Observable<ImageAsset>
   resolveUploader: UploaderResolver
   client: SanityClient
-  t: (key: string, values?: Record<string, string>) => string
+  t: (...args: [key: string] | [key: string, values: Record<string, string>]) => string
 }
