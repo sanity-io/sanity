@@ -873,7 +873,9 @@ export interface WorkspaceOptions extends SourceOptions {
     legacy?: boolean
   }
   /**
-   * @internal
+   * Enables or disables tasks in this workspace. Enabled by default.
+   *
+   * @public
    */
   tasks?: DefaultPluginsWorkspaceOptions['tasks']
   /**
@@ -1310,7 +1312,11 @@ export interface Source {
      */
     schemaDescriptorId: Promise<string | undefined>
   }
-  /** @beta */
+  /**
+   * Whether tasks are enabled for this source.
+   *
+   * @public
+   */
   tasks?: WorkspaceOptions['tasks']
 
   scheduledDrafts?: {
