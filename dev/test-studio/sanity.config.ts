@@ -620,7 +620,7 @@ export default defineConfig([
     scheduledPublishing: {
       enabled: false,
     },
-    unstable_tasks: {
+    tasks: {
       enabled: false,
     },
     mediaLibrary: {
@@ -692,7 +692,7 @@ export default defineConfig([
     auth: {
       loginMethod: 'token',
     },
-    unstable_tasks: {
+    tasks: {
       enabled: true,
     },
     mediaLibrary: {
@@ -740,7 +740,7 @@ export default defineConfig([
     auth: {
       loginMethod: 'token',
     },
-    unstable_tasks: {
+    tasks: {
       enabled: true,
     },
     mediaLibrary: {
