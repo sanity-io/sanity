@@ -1,10 +1,10 @@
 import {dequal as isEqual} from 'dequal/lite'
 import {lazy, memo, Suspense, useEffect} from 'react'
+
 import {
   recordStructurePaneKind,
   type StructurePaneKind,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
-
+} from '../../core/studio/telemetry/paneKindRegistry'
 import {PaneRouterProvider} from '../components/paneRouter/PaneRouterProvider'
 import {type PaneNode} from '../types'
 import {LoadingPane} from './loading'

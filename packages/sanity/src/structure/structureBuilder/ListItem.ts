@@ -1,13 +1,10 @@
 import {type SchemaType} from '@sanity/types'
 import startCase from 'lodash-es/startCase.js'
 import {type Observable} from 'rxjs'
-import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  type I18nTextRecord,
-  isRecord,
-  type SingletonDefinition,
-} from 'sanity'
+import {type I18nTextRecord, type SingletonDefinition} from 'sanity'
 
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../core/studioClient'
+import {isRecord} from '../../core/util/isRecord'
 import {type ChildResolver, type ItemChild} from './ChildResolver'
 import {HELP_URL, SerializeError} from './SerializeError'
 import {

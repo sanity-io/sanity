@@ -1,7 +1,9 @@
 import {Stack} from '@sanity/ui'
 import {useMemo, useRef, useState} from 'react'
-import {type WorkspaceSummary} from 'sanity'
-import {useWorkspaces} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {
+  useWorkspaces,
+  type WorkspaceSummary,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 

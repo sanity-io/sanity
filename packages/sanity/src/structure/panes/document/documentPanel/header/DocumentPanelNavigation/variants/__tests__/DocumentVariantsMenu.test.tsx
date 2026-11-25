@@ -1,16 +1,11 @@
 import {render, screen, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {
-  getVersionFromId,
-  type SystemVariant,
-  useDocumentVersions,
-  usePerspective,
-  type VersionInfoDocumentStub,
-} from 'sanity'
+import {getVersionFromId, type SystemVariant, useDocumentVersions, usePerspective} from 'sanity'
 import {afterEach, beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
 import {useSetVariant} from '../../../../../../../../core/perspective/useSetVariant'
+import {type VersionInfoDocumentStub} from '../../../../../../../../core/releases/store/types'
 import {useActiveReleases} from '../../../../../../../../core/releases/store/useActiveReleases'
 import {isAgentBundleName} from '../../../../../../../../core/store/agent/createAgentBundlesStore'
 import {useAgentVersionDisplay} from '../../../../../../../../core/store/agent/useAgentVersionDisplay'

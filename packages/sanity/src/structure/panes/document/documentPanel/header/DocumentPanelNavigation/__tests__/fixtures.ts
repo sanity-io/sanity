@@ -1,9 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {
-  type PerspectiveContextValue,
-  type SystemVariant,
-  type VersionInfoDocumentStub,
-} from 'sanity'
+import {type PerspectiveContextValue, type SystemVariant} from 'sanity'
+
+import {type VersionInfoDocumentStub} from '../../../../../../../core/releases/store/types'
 
 /** The document every fixture version belongs to. */
 export const GROUP_ID = 'article-1'
