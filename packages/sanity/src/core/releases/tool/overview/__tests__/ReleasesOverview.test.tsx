@@ -227,6 +227,34 @@ async function mountAndFlush(...args: Parameters<typeof render>) {
   return view
 }
 
+async function mountOverviewRows(searchParams: [string, string][]) {
+  mockRouterReturn.state = {_searchParams: searchParams}
+  await mountAndFlush(<TestComponent />, {wrapper: await getWrapper()})
+  return screen.getAllByTestId('table-row')
+}
+
+function scheduledDraft(
+  id: string,
+  overrides: Partial<ReleaseDocument>,
+  intendedPublishAt?: string,
+): ReleaseDocument {
+  return {
+    ...activeScheduledRelease,
+    _id: `_.releases.${id}`,
+    name: id,
+    state: 'published',
+    metadata: {
+      ...activeScheduledRelease.metadata,
+      title: id,
+      cardinality: 'one',
+      intendedPublishAt,
+    },
+    ...overrides,
+  }
+}
+
+const shownDate = (iso: string) => format(new Date(iso), 'PP')
+
 describe('ReleasesOverview', () => {
   beforeEach(() => {
     mockUseActiveReleases.mockRestore()
@@ -1501,6 +1529,81 @@ describe('ReleasesOverview', () => {
       for (const call of mockNavigate.mock.calls) {
         expect(call[1]).toEqual({replace: true})
       }
+    })
+  })
+
+  describe('archived scheduled drafts', () => {
+    const publishedOnTime = scheduledDraft('rOnTime', {
+      publishAt: '2026-06-01T10:00:00Z',
+      publishedAt: '2026-06-01T10:00:01Z',
+    })
+    // Sorting by `publishAt` would put this one below `publishedOnTime`
+    const publishedLate = scheduledDraft('rLate', {
+      publishAt: '2026-04-24T08:34:00Z',
+      publishedAt: '2026-07-01T16:48:08Z',
+    })
+    const newest = scheduledDraft('rNewest', {
+      publishAt: '2026-09-30T09:03:00Z',
+      publishedAt: '2026-09-30T09:03:01Z',
+    })
+    // Archived before it ran, so it has no `publishAt` and shows its intended publish date
+    const archivedBeforeRunning = scheduledDraft(
+      'rNeverRan',
+      {state: 'archived'},
+      '2026-08-01T12:00:00Z',
+    )
+    const archivedScheduledDrafts = [publishedOnTime, publishedLate, newest, archivedBeforeRunning]
+
+    beforeEach(async () => {
+      // Earlier tests replace the router's return value, which outlives them
+      vi.mocked(useRouter).mockReset()
+      vi.mocked(useScheduledDraftsEnabled).mockReturnValue(true)
+      mockUseActiveReleases.mockReturnValue({...useActiveReleasesMockReturn, data: []})
+      mockUseArchivedReleases.mockReturnValue({
+        ...useArchivedReleasesMockReturn,
+        data: archivedScheduledDrafts,
+      })
+      mockUseAllReleases.mockReturnValue({
+        ...useAllReleasesMockReturn,
+        data: archivedScheduledDrafts,
+        map: new Map(archivedScheduledDrafts.map((release) => [release._id, release])),
+      })
+    })
+
+    afterEach(() => {
+      mockRouterReturn.state = {}
+    })
+
+    it('lists the latest published first, by the date each row shows', async () => {
+      const rows = await mountOverviewRows([
+        ['group', 'archived'],
+        ['view', 'drafts'],
+      ])
+
+      expect(rows).toHaveLength(4)
+      within(rows[0]).getByText(new RegExp(shownDate(newest.publishedAt!)))
+      within(rows[1]).getByText(new RegExp(shownDate('2026-08-01T12:00:00Z')))
+      within(rows[2]).getByText(new RegExp(shownDate(publishedLate.publishedAt!)))
+      within(rows[3]).getByText(new RegExp(shownDate(publishedOnTime.publishedAt!)))
+    })
+
+    it('keeps listing active scheduled drafts with the soonest first', async () => {
+      const later = scheduledDraft('rLater', {
+        state: 'scheduled',
+        publishAt: '2027-03-01T10:00:00Z',
+      })
+      const sooner = scheduledDraft('rSooner', {
+        state: 'scheduled',
+        publishAt: '2027-01-01T10:00:00Z',
+      })
+      mockUseActiveReleases.mockReturnValue({...useActiveReleasesMockReturn, data: [later, sooner]})
+      mockUseReleasesMetadata.mockReturnValue({...useReleasesMetadataMockReturn, data: {}})
+
+      const rows = await mountOverviewRows([['view', 'drafts']])
+
+      expect(rows).toHaveLength(2)
+      within(rows[0]).getByText(new RegExp(shownDate(sooner.publishAt!)))
+      within(rows[1]).getByText(new RegExp(shownDate(later.publishAt!)))
     })
   })
 })
