@@ -385,3 +385,111 @@ test('replays the mutations when no effect applier is set', () => {
     _updatedAt: '2026-11-20T13:56:20.000Z',
   })
 })
+
+/** The local mutation a retry sends again, under the transaction id of its first attempt. */
+const retriedSetTitle = () =>
+  new Mutation({
+    transactionId: 't2',
+    resultRev: 't2',
+    mutations: [{patch: {id: 'a', set: {title: 'Hello!'}}}],
+  })
+
+const retriedIncrement = (previousRev?: string) =>
+  new Mutation({
+    transactionId: 't2',
+    resultRev: 't2',
+    ...(previousRev && {previousRev}),
+    mutations: [{patch: {id: 'a', inc: {count: 1}}}],
+  })
+
+test('a retried mutation whose echo already arrived is not applied again', () => {
+  // The first attempt lands, but its response is lost: the attempt is reported as failed, then
+  // the server's echo arrives. The retry reuses the transaction id and is answered as already
+  // existing, which is reported as success.
+  const doc = new Document({_id: 'a', _type: 't', _rev: '1', title: 'Hello'})
+
+  doc.stage(retriedSetTitle()).failure()
+  doc.arrive(
+    new Mutation({
+      transactionId: 't2',
+      resultRev: 't2',
+      previousRev: '1',
+      mutations: [{patch: {id: 'a', set: {title: 'Hello!'}}}],
+    }),
+  )
+  doc.stage(retriedSetTitle()).success()
+
+  expect(doc.submitted).toHaveLength(0)
+  expect(doc.pending).toHaveLength(0)
+  expect(doc.EDGE).toMatchObject({title: 'Hello!', _rev: 't2'})
+  expect(doc.isConsistent()).toBe(true)
+})
+
+test('a retried mutation is not applied again when another mutation arrived after its echo', () => {
+  // As above, but another user's mutation lands on top of the echo before the retry is
+  // answered, so HEAD's revision is no longer the retried transaction's id.
+  const doc = new Document({_id: 'a', _type: 't', _rev: '1', count: 0})
+
+  doc.stage(retriedIncrement()).failure()
+  doc.arrive(retriedIncrement('1'))
+  doc.arrive(
+    new Mutation({
+      transactionId: 'b1',
+      resultRev: 'b1',
+      previousRev: 't2',
+      mutations: [{patch: {id: 'a', set: {title: 'Other'}}}],
+    }),
+  )
+  const retry = doc.stage(retriedIncrement())
+  // While the retry is in flight, the local view already has its echo and does not apply it again.
+  expect(doc.EDGE).toMatchObject({count: 1})
+  retry.success()
+
+  expect(doc.submitted).toHaveLength(0)
+  expect(doc.pending).toHaveLength(0)
+  expect(doc.EDGE).toMatchObject({count: 1, title: 'Other', _rev: 'b1'})
+  expect(doc.isConsistent()).toBe(true)
+})
+
+test('a retried mutation is not applied again when a snapshot reset already includes it', () => {
+  // The document is reset from a snapshot taken after the first attempt landed, so its echo never
+  // arrives as a mutation. Another user's mutation then moves HEAD past the snapshot's revision.
+  const doc = new Document({_id: 'a', _type: 't', _rev: '1', count: 0})
+
+  doc.stage(retriedIncrement()).failure()
+  doc.reset({_id: 'a', _type: 't', _rev: 't2', count: 1})
+  doc.arrive(
+    new Mutation({
+      transactionId: 'b1',
+      resultRev: 'b1',
+      previousRev: 't2',
+      mutations: [{patch: {id: 'a', set: {title: 'Other'}}}],
+    }),
+  )
+  doc.stage(retriedIncrement()).success()
+
+  expect(doc.submitted).toHaveLength(0)
+  expect(doc.EDGE).toMatchObject({count: 1, title: 'Other', _rev: 'b1'})
+  expect(doc.isConsistent()).toBe(true)
+})
+
+test('remembers the most recent 1000 applied transaction ids', () => {
+  const doc = new Document({_id: 'a', _type: 't', _rev: '0', count: 0})
+  for (let i = 1; i <= 1001; i++) {
+    doc.arrive(
+      new Mutation({
+        transactionId: `r${i}`,
+        resultRev: `r${i}`,
+        previousRev: i === 1 ? '0' : `r${i - 1}`,
+        mutations: [{patch: {id: 'a', inc: {count: 1}}}],
+      }),
+    )
+  }
+
+  // The initial revision and 1001 mutations: the two oldest are forgotten.
+  expect(doc.appliedTransactionIds.size).toBe(1000)
+  expect(doc.appliedTransactionIds.has('0')).toBe(false)
+  expect(doc.appliedTransactionIds.has('r1')).toBe(false)
+  expect(doc.appliedTransactionIds.has('r2')).toBe(true)
+  expect(doc.appliedTransactionIds.has('r1001')).toBe(true)
+})
