@@ -434,7 +434,7 @@ export function PerspectiveSelect({id, value, onChange}: PerspectiveSelectProps)
       <FieldLabel htmlFor={elementId}>{t('settings.perspective-label')}</FieldLabel>
       <OptionMenuButton
         id={elementId}
-        onClose={() => setQuery('')}
+        onOpen={() => setQuery('')}
         onSearchQueryChange={setQuery}
         searchPlaceholder={t('vision.options.perspective.search-placeholder')}
         searchQuery={query}

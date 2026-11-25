@@ -4,11 +4,14 @@ import {Button, Card, Label, TextInput} from '@sanity/ui'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {
   type ChangeEvent,
+  type FocusEvent,
+  type KeyboardEvent,
+  type PointerEvent,
   type ReactNode,
   type Ref,
   type RefObject,
   useCallback,
-  useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react'
@@ -27,6 +30,9 @@ const MENU_STYLE = {
   overflow: 'auto',
 } as const
 
+/** The keys `@sanity/ui`'s menu answers with a focus move, also when they are pressed in the search */
+const MENU_FOCUS_KEYS = new Set(['ArrowDown', 'ArrowUp', 'End', 'Home', 'Tab'])
+
 interface OptionMenuButtonProps {
   /** Id of the trigger, which the field's label points at */
   id: string
@@ -42,7 +48,12 @@ interface OptionMenuButtonProps {
   searchPlaceholder?: string
   searchQuery?: string
   onSearchQueryChange?: (query: string) => void
-  onClose?: () => void
+  /**
+   * Called as the menu opens, in the same render: the place to reset the search. The menu
+   * stays mounted while closed and fades out when it closes, so a reset then would re-filter the
+   * items in view.
+   */
+  onOpen?: () => void
   /**
    * An element of the menu the menu opens no taller than: it ends where this element ends, or
    * at the edge of the viewport, and scrolls the items after it
@@ -65,39 +76,65 @@ export function OptionMenuButton({
   searchPlaceholder,
   searchQuery = '',
   onSearchQueryChange,
-  onClose,
+  onOpen,
   foldRef,
 }: OptionMenuButtonProps) {
   const [open, setOpen] = useState(false)
-  const searchRef = useRef<HTMLInputElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
-  const hasSearch = searchPlaceholder !== undefined
+  const searchRef = useRef<HTMLInputElement>(null)
   const [foldHeight, setFoldHeight] = useState<number | undefined>(undefined)
+  const hasSearch = searchPlaceholder !== undefined
 
-  useFocusOnOpen(open && hasSearch, searchRef)
+  // The search field takes focus before the opened menu is painted, so focus never shows
+  // anywhere else first, and keeps it until the user moves it. `@sanity/ui`'s menu focuses its
+  // selected item (or, after a keyboard open, its first) on its own a frame after a re-render
+  // that follows the opening, at no fixed delay the field could wait out: until the first key
+  // or pointer input in the menu, a focus move onto an item is that one, and the field takes
+  // focus back.
+  useLayoutEffect(() => {
+    if (open) searchRef.current?.focus({preventScroll: true})
+  }, [open])
+  const focusMovedByUserRef = useRef(false)
+  const handleMenuFocus = useCallback(
+    (event: FocusEvent<HTMLDivElement>) => {
+      const search = searchRef.current
+      if (!hasSearch || !search || focusMovedByUserRef.current || event.target === search) return
+      search.focus({preventScroll: true})
+    },
+    [hasSearch],
+  )
+  const handleMenuPointer = useCallback((event: PointerEvent<HTMLDivElement>) => {
+    if (event.target !== searchRef.current) focusMovedByUserRef.current = true
+  }, [])
+  const handleMenuKeyDown = useCallback((event: KeyboardEvent<HTMLDivElement>) => {
+    // Typing in the search moves no focus; only the keys the menu turns into a focus move do
+    if (event.target !== searchRef.current || MENU_FOCUS_KEYS.has(event.key)) {
+      focusMovedByUserRef.current = true
+    }
+  }, [])
 
-  // Measured once per opening, so the menu keeps its height while the search filters the items
-  useEffect(() => {
-    if (!open || !foldRef) return undefined
-    // The menu is laid out a frame after it opens
-    const frame = requestAnimationFrame(() => {
-      const menu = menuRef.current
-      const fold = foldRef.current
-      if (!menu || !fold || menu.offsetHeight === 0) return
-      // The popover scales in, so the rectangles are scaled back to layout pixels
-      const menuRect = menu.getBoundingClientRect()
-      const scale = menuRect.height / menu.offsetHeight || 1
-      const bottom = (fold.getBoundingClientRect().bottom - menuRect.top) / scale
-      setFoldHeight(Math.ceil(bottom + menu.scrollTop))
-    })
-    return () => cancelAnimationFrame(frame)
+  // Measured once per opening, before the menu is painted, so it never shows at another height
+  // first; it keeps the height while the search filters the items, and through the fade-out,
+  // until the next opening measures again. The fold's offset in the menu does not depend on
+  // where the popover has put the menu, or on how tall the viewport lets it be.
+  useLayoutEffect(() => {
+    if (!open || !foldRef) return
+    const menu = menuRef.current
+    const fold = foldRef.current
+    if (!menu || !fold || menu.offsetHeight === 0) return
+    // The popover scales in, so the rectangles are scaled back to layout pixels
+    const menuRect = menu.getBoundingClientRect()
+    const scale = menuRect.height / menu.offsetHeight || 1
+    const bottom = (fold.getBoundingClientRect().bottom - menuRect.top) / scale
+    setFoldHeight(Math.ceil(bottom + menu.scrollTop))
   }, [open, foldRef])
 
-  const handleClose = useCallback(() => {
-    setOpen(false)
-    setFoldHeight(undefined)
-    onClose?.()
-  }, [onClose])
+  const handleOpen = useCallback(() => {
+    focusMovedByUserRef.current = false
+    setOpen(true)
+    onOpen?.()
+  }, [onOpen])
+  const handleClose = useCallback(() => setOpen(false), [])
 
   return (
     <MenuButton
@@ -121,6 +158,10 @@ export function OptionMenuButton({
           className={cx(redesignStyles.popoverScroll, themeStyles.themeTokens)}
           data-testid={`${testId}-menu`}
           gap={0}
+          onFocus={handleMenuFocus}
+          onKeyDownCapture={handleMenuKeyDown}
+          onPointerDownCapture={handleMenuPointer}
+          onPointerMoveCapture={handleMenuPointer}
           padding={0}
           ref={menuRef}
           // Width is inline so it wins over the menu's own `min-width: 0`. Display stays the
@@ -148,7 +189,7 @@ export function OptionMenuButton({
         </Menu>
       }
       onClose={handleClose}
-      onOpen={() => setOpen(true)}
+      onOpen={handleOpen}
       popover={{
         animate: true,
         constrainSize: true,
@@ -159,24 +200,6 @@ export function OptionMenuButton({
       }}
     />
   )
-}
-
-/**
- * Focuses the search field once the menu has opened. The menu moves focus to its first item a
- * frame after a keyboard open, so the search field takes it back a frame later.
- */
-function useFocusOnOpen(open: boolean, ref: RefObject<HTMLInputElement | null>) {
-  useEffect(() => {
-    if (!open) return undefined
-    let second = 0
-    const first = requestAnimationFrame(() => {
-      second = requestAnimationFrame(() => ref.current?.focus())
-    })
-    return () => {
-      cancelAnimationFrame(first)
-      cancelAnimationFrame(second)
-    }
-  }, [open, ref])
 }
 
 /** A group heading, as the navbar perspective menu labels its release types */
