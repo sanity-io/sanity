@@ -183,17 +183,8 @@ describe('getPublishedArchivedReleaseDocumentsObservable', () => {
   })
 
   it('keeps the documents of the same release apart in each dataset', async () => {
-    const clientFor = (dataset: string) =>
-      createMockSanityClientAsClient(
-        {
-          requests: {
-            '*': {documents: [{...createDocument('versions.rShared.doc1'), _rev: dataset}]},
-          },
-        },
-        {dataset},
-      )
-    const production = clientFor('production')
-    const staging = clientFor('staging')
+    const production = clientForDataset('production')
+    const staging = clientForDataset('staging')
     const release = createRelease('rShared', ['doc1'])
 
     const fromProduction = firstValueFrom(
