@@ -309,6 +309,7 @@ overrides:
 
 patchedDependencies:
   '@sanity/document-internationalization@6.3.1': 0d32f0c8e1ab59db75e8792e094fb40a5ae425632ce1637fb1a36cce3d2c2323
+  sanity-plugin-media@6.6.3: b3578565bf28cceec4100ed1b09bff1e82447e2d1c1e40f92ae547281d1e574a
 
 importers:
 
@@ -914,7 +915,7 @@ importers:
         version: 5.3.10(@sanity/assist@6.3.0)(@sanity/language-filter@5.0.24)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)
       sanity-plugin-media:
         specifier: ^6.6.3
-        version: 6.6.3(@sinclair/typebox@0.25.24)(@standard-schema/spec@1.1.0)(@types/react@19.3.0)(ajv@8.20.0)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)(supports-color@8.1.1)(valibot@1.5.0)(vitest@5.1.1)
+        version: 6.6.3(patch_hash=b3578565bf28cceec4100ed1b09bff1e82447e2d1c1e40f92ae547281d1e574a)(@sinclair/typebox@0.25.24)(@standard-schema/spec@1.1.0)(@types/react@19.3.0)(ajv@8.20.0)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)(supports-color@8.1.1)(valibot@1.5.0)(vitest@5.1.1)
       sanity-test-studio:
         specifier: workspace:*
         version: link:../test-studio
@@ -1060,7 +1061,7 @@ importers:
         version: 5.3.10(@sanity/assist@6.3.0)(@sanity/language-filter@5.0.24)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)
       sanity-plugin-media:
         specifier: ^6.6.3
-        version: 6.6.3(@sinclair/typebox@0.25.24)(@standard-schema/spec@1.1.0)(@types/react@19.3.0)(ajv@8.20.0)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)(supports-color@8.1.1)(valibot@1.5.0)(vitest@5.1.1)
+        version: 6.6.3(patch_hash=b3578565bf28cceec4100ed1b09bff1e82447e2d1c1e40f92ae547281d1e574a)(@sinclair/typebox@0.25.24)(@standard-schema/spec@1.1.0)(@types/react@19.3.0)(ajv@8.20.0)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)(supports-color@8.1.1)(valibot@1.5.0)(vitest@5.1.1)
       styled-components:
         specifier: 'catalog:'
         version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
@@ -30825,7 +30826,7 @@ snapshots:
       - remix
       - styled-components
 
-  sanity-plugin-media@6.6.3(@sinclair/typebox@0.25.24)(@standard-schema/spec@1.1.0)(@types/react@19.3.0)(ajv@8.20.0)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)(supports-color@8.1.1)(valibot@1.5.0)(vitest@5.1.1):
+  sanity-plugin-media@6.6.3(patch_hash=b3578565bf28cceec4100ed1b09bff1e82447e2d1c1e40f92ae547281d1e574a)(@sinclair/typebox@0.25.24)(@standard-schema/spec@1.1.0)(@types/react@19.3.0)(ajv@8.20.0)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)(supports-color@8.1.1)(valibot@1.5.0)(vitest@5.1.1):
     dependencies:
       '@hookform/resolvers': 6.0.2(@sinclair/typebox@0.25.24)(@standard-schema/spec@1.1.0)(ajv@8.20.0)(react-hook-form@7.90.0)(valibot@1.5.0)(zod@4.6.7)
       '@reduxjs/toolkit': 2.13.0(react-redux@9.3.0)(react@19.3.1)
