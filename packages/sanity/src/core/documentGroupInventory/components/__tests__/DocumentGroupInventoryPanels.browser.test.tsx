@@ -1265,7 +1265,14 @@ describe('ConfirmDeleteDialog, open beta baseline', () => {
       />,
     )
 
-    await expect.element($dialog.getByText('Delete the Default document?')).toBeVisible()
+    // The title says the Default can't be deleted, rather than asking a question the notice
+    // answers with no, and the notice doesn't say it a second time
+    await expect
+      .element($dialog.getByText("The Default document can't be deleted yet"))
+      .toBeVisible()
+    expect($dialog.getByText("The Default document can't be deleted yet").elements()).toHaveLength(
+      1,
+    )
     const $delete = $dialog.getByRole('button', {name: 'Delete', exact: true})
     await expect.element($delete).toBeDisabled()
     await expect
