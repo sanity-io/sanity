@@ -173,7 +173,10 @@ export const EventsTimeline = ({
           documentVariantType === 'draft' &&
           event.creationEvent) ||
         (isDeleteDocumentVersionEvent(event) && event.creationEvent) ||
-        (isEditDocumentVersionEvent(event) && transactionCounts.has(event.id))
+        // The newest listed transaction shares its id with the group, but has nothing to expand.
+        (isEditDocumentVersionEvent(event) &&
+          !event.isTransaction &&
+          transactionCounts.has(event.id))
       ) {
         return (
           <ExpandableTimelineItemButton

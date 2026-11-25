@@ -130,6 +130,8 @@ describe('EventsTimeline', () => {
     // Expanding freezes the group in the store (nothing is fetched for edit events).
     expect(fetchEventChildren).toHaveBeenCalledWith(EVENTS[0])
     await expect.poll(() => rows().length).toBe(1 + 10 + 1)
+    // Only the group can be expanded, also its newest transaction that shares its id.
+    expect(document.querySelectorAll('[data-sanity-icon="chevron-left"]')).toHaveLength(1)
     const showMore = page.getByTestId('timeline-show-more-button')
     await expect.element(showMore).toBeVisible()
     await expect.element(showMore).toHaveTextContent('Show more')
