@@ -14,6 +14,7 @@ import {Box, Flex, Text} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
+import {editEventChanges} from './EditEventChanges.css'
 
 const INITIAL_CHANGES = {loading: true, diff: null, error: null}
 
@@ -82,7 +83,7 @@ export function EditEventChanges({event}: {event: EditDocumentVersionEvent}) {
   }
   return (
     <DocumentChangeContext.Provider value={documentContext}>
-      <Box data-testid="edit-event-changes">
+      <Box className={editEventChanges} data-testid="edit-event-changes">
         <ChangeList diff={diff} schemaType={schemaType} />
       </Box>
     </DocumentChangeContext.Provider>

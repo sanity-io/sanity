@@ -104,6 +104,16 @@ function PaneProviders({
   )
 }
 
+/** The computed value of a color variable as seen from inside `element`. */
+function resolvedColor(element: Element, variable: string): string {
+  const probe = document.createElement('span')
+  probe.style.color = `var(${variable})`
+  element.append(probe)
+  const color = getComputedStyle(probe).color
+  probe.remove()
+  return color
+}
+
 function renderItem(event: EditDocumentVersionEvent | PublishDocumentVersionEvent) {
   const changes$ = new BehaviorSubject<EditChanges>({loading: true, diff: null, error: null})
   const getEditChanges = vi.fn<GetEditChanges>(() => changes$ as Observable<EditChanges>)
@@ -141,6 +151,41 @@ describe('EventTimelineItem changes', () => {
     expect(
       changes.element().querySelectorAll('[data-testid^="single-change-revert-button"]'),
     ).toHaveLength(0)
+  })
+
+  it('shows additions on a green background and removals on a red one', async () => {
+    const {changes$} = renderItem(EDIT_EVENT)
+
+    await userEvent.hover(page.getByTestId('timeline-item-button'))
+    changes$.next({
+      loading: false,
+      error: null,
+      diff: diffInput(
+        wrap({name: 'Ada Lovelace'}, null),
+        wrap({name: 'Ada', role: 'developer'}, null),
+      ) as ObjectDiff,
+    })
+    const changes = page.getByTestId('edit-event-changes')
+    await expect.element(changes.getByText('Role', {exact: true})).toBeVisible()
+
+    const removed = changes.element().querySelector('del')!
+    const added = changes.element().querySelector('ins')!
+    expect(removed.textContent).toBe(' Lovelace')
+    expect(added.textContent).toBe('developer')
+    const removedCard = removed.closest('[data-ui="diff-card"]')!
+    const addedCard = added.closest('[data-ui="diff-card"]')!
+    expect(getComputedStyle(removedCard).backgroundColor).toBe(
+      resolvedColor(removedCard, '--card-badge-critical-bg-color'),
+    )
+    expect(getComputedStyle(removed).color).toBe(
+      resolvedColor(removedCard, '--card-badge-critical-fg-color'),
+    )
+    expect(getComputedStyle(addedCard).backgroundColor).toBe(
+      resolvedColor(addedCard, '--card-badge-positive-bg-color'),
+    )
+    expect(getComputedStyle(added).color).toBe(
+      resolvedColor(addedCard, '--card-badge-positive-fg-color'),
+    )
   })
 
   it('shows the changes of a single listed transaction', async () => {
