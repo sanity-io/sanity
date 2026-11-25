@@ -5,6 +5,10 @@ import {lazy, type ReactNode, Suspense, useEffect, useMemo} from 'react'
 import {LoadingBlock} from '../components/loadingBlock/LoadingBlock'
 import {preloadWorkspaceSourceResolver} from '../config/prepareConfig'
 import {errorReporter} from '../error/errorReporter'
+import {
+  ActiveWorkspaceLocaleProvider,
+  FallbackLocaleProvider,
+} from '../i18n/components/LocaleProvider'
 import {UserColorManagerProvider} from '../user-color/provider'
 import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher/ActiveWorkspaceMatcher'
 import {AuthBoundary} from './AuthBoundary'
@@ -74,42 +78,46 @@ export function StudioProvider({
     <DeferredTelemetryProvider>
       <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
         <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
-          <StudioErrorBoundary>
-            <StudioRootErrorHandler>
-              <WorkspacesProvider
-                config={config}
-                basePath={basePath}
-                LoadingComponent={LoadingBlock}
-                primaryProjectId={primaryProjectId}
-              >
-                <VisibleWorkspacesProvider>
-                  <ActiveWorkspaceMatcher
-                    unstable_history={history}
-                    NotFoundComponent={NotFoundScreen}
-                    LoadingComponent={LoadingBlock}
-                  >
-                    <StudioThemeProvider>
-                      <UserColorManagerProvider>
-                        <ConfigErrorGate>
-                          {noAuthBoundary ? (
-                            _children
-                          ) : (
-                            <AuthBoundary
-                              LoadingComponent={LoadingBlock}
-                              AuthenticateComponent={AuthenticateScreen}
-                              NotAuthenticatedComponent={NotAuthenticatedScreen}
-                            >
-                              {_children}
-                            </AuthBoundary>
-                          )}
-                        </ConfigErrorGate>
-                      </UserColorManagerProvider>
-                    </StudioThemeProvider>
-                  </ActiveWorkspaceMatcher>
-                </VisibleWorkspacesProvider>
-              </WorkspacesProvider>
-            </StudioRootErrorHandler>
-          </StudioErrorBoundary>
+          <FallbackLocaleProvider>
+            <StudioErrorBoundary>
+              <StudioRootErrorHandler>
+                <WorkspacesProvider
+                  config={config}
+                  basePath={basePath}
+                  LoadingComponent={LoadingBlock}
+                  primaryProjectId={primaryProjectId}
+                >
+                  <VisibleWorkspacesProvider>
+                    <ActiveWorkspaceMatcher
+                      unstable_history={history}
+                      NotFoundComponent={NotFoundScreen}
+                      LoadingComponent={LoadingBlock}
+                    >
+                      <ActiveWorkspaceLocaleProvider>
+                        <StudioThemeProvider>
+                          <UserColorManagerProvider>
+                            <ConfigErrorGate>
+                              {noAuthBoundary ? (
+                                _children
+                              ) : (
+                                <AuthBoundary
+                                  LoadingComponent={LoadingBlock}
+                                  AuthenticateComponent={AuthenticateScreen}
+                                  NotAuthenticatedComponent={NotAuthenticatedScreen}
+                                >
+                                  {_children}
+                                </AuthBoundary>
+                              )}
+                            </ConfigErrorGate>
+                          </UserColorManagerProvider>
+                        </StudioThemeProvider>
+                      </ActiveWorkspaceLocaleProvider>
+                    </ActiveWorkspaceMatcher>
+                  </VisibleWorkspacesProvider>
+                </WorkspacesProvider>
+              </StudioRootErrorHandler>
+            </StudioErrorBoundary>
+          </FallbackLocaleProvider>
         </ToastProvider>
       </ColorSchemeProvider>
     </DeferredTelemetryProvider>
