@@ -1,7 +1,8 @@
-import {Card, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
+import {Heading} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -71,7 +72,7 @@ export function createOAuthLoginComponent({
 
     return (
       <Stack gap={4}>
-        <Heading align="center" size={1}>
+        <Heading as="h2" align="center" size={1} trim>
           {t('login.oauth.title')}
         </Heading>
         {startError && (
