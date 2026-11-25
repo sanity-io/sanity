@@ -46,6 +46,14 @@ function setup(options: {documentIds?: string[]; failFirstRequestWith?: number} 
   return {getClient: () => client, requestedIds}
 }
 
+/** A client whose history answers with a revision of `versions.rShared.doc1` named after the dataset */
+function clientForDataset(dataset: string) {
+  return createMockSanityClientAsClient(
+    {requests: {'*': {documents: [{...createDocument('versions.rShared.doc1'), _rev: dataset}]}}},
+    {dataset},
+  )
+}
+
 function documentIdsOf(result: {results: {document: {_id: string}}[]}) {
   return result.results.map(({document}) => document._id)
 }
