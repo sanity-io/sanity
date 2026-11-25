@@ -10,7 +10,7 @@ import {
   dimensionsMatchConstraint,
   resolveAspectRatio,
 } from '@sanity/util/image'
-import {describe, expect, test} from 'vitest'
+import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
@@ -371,6 +371,16 @@ describe('image tool input', () => {
   })
 
   describe('on a portrait image in a 16:9 field', () => {
+    beforeEach(() => {
+      // Firefox rejects capture for synthetic pointer ids
+      vi.spyOn(Element.prototype, 'setPointerCapture').mockImplementation(() => undefined)
+      vi.spyOn(Element.prototype, 'releasePointerCapture').mockImplementation(() => undefined)
+    })
+
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+
     const WIDESCREEN_SCHEMA = createImageSchema({
       hotspot: true,
       aspectRatio: 16 / 9,
