@@ -58,7 +58,6 @@ function createWorkspace(options: {
     hidden: options.hidden,
     projectId: 'p',
     dataset: 'd',
-    schema: {} as WorkspaceSummary['schema'],
     i18n: {} as WorkspaceSummary['i18n'],
     theme: {} as WorkspaceSummary['theme'],
     icon: null,

@@ -1,3 +1,4 @@
+import {firstValueFrom} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type WorkspaceOptions} from '../../../../config/types'
@@ -11,8 +12,8 @@ const SESSION_ID = 'sid-abcdefghijklmnopqrstuvwxyz'
 const TOKEN = 'tok-abcdefghijklmnopqrstuvwxyz0123456789'
 const CLAIM_URL = 'https://www.sanity.io/manage/claim/some-claim-token'
 
-// A field pointing at a type that does not exist: `prepareConfig` throws a
-// `SchemaError` while resolving the workspace, before it creates the auth store.
+// A field pointing at a type that does not exist: resolving the workspace fails
+// with a `SchemaError`, so the studio never renders.
 const brokenWorkspace: WorkspaceOptions = {
   name: 'broken',
   basePath: '/',
@@ -34,7 +35,10 @@ async function bootWithBrokenSchema() {
   // the hash is set, the way a page load after a redirect would.
   const {prepareConfig} = await import('../../../../config/prepareConfig')
   const {SchemaError} = await import('../../../../config/SchemaError')
-  expect(() => prepareConfig([brokenWorkspace])).toThrow(SchemaError)
+  const [workspace] = prepareConfig([brokenWorkspace]).workspaces
+  // oxlint-disable-next-line no-deprecated -- the source is where the schema compiles
+  const [{source}] = workspace.__internal.sources
+  await expect(firstValueFrom(source)).rejects.toThrow(SchemaError)
 }
 
 // Cold imports of the config modules are slow, and each test re-imports them.

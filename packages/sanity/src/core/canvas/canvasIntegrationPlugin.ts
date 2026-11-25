@@ -5,7 +5,7 @@ import {useLinkToCanvasAction} from './actions/LinkToCanvas/LinkToCanvasAction'
 import {useUnlinkFromCanvasAction} from './actions/UnlinkFromCanvas/UnlinkFromCanvasAction'
 import {canvasUsEnglishLocaleBundle} from './i18n'
 
-export const CANVAS_INTEGRATION_NAME = 'sanity/canvas-integration'
+const CANVAS_INTEGRATION_NAME = 'sanity/canvas-integration'
 
 export const canvasIntegration = definePlugin(() => {
   return {
