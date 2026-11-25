@@ -19,9 +19,7 @@ export function CommonDateDirectionInput({
   direction: 'after' | 'before'
   isDateTime: boolean
 }) {
-  const {
-    state: {fullscreen},
-  } = useSearchState()
+  const {fullscreen} = useSearchState()
   const {t} = useTranslation()
 
   const roundDay = useMemo(() => {

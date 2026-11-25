@@ -1,12 +1,11 @@
 import {Card} from '@sanity/ui'
 import {Code, VStack} from 'ui5'
 
-import {useSearchState} from '../../../contexts/search/useSearchState'
+import {selectDocumentTypesNarrowed} from '../../../contexts/search/searchSelectors'
+import {useSearchSelector} from '../../../contexts/search/useSearchState'
 
 export function DebugDocumentTypesNarrowed() {
-  const {
-    state: {documentTypesNarrowed},
-  } = useSearchState()
+  const documentTypesNarrowed = useSearchSelector(selectDocumentTypesNarrowed)
 
   return (
     <Card borderTop padding={4} tone="transparent">

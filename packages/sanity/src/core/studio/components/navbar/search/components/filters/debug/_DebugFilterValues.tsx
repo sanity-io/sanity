@@ -1,7 +1,8 @@
 import {Card} from '@sanity/ui'
 import {Code, VStack} from 'ui5'
 
-import {useSearchState} from '../../../contexts/search/useSearchState'
+import {selectDefinitions} from '../../../contexts/search/searchSelectors'
+import {useSearchSelector} from '../../../contexts/search/useSearchState'
 import {type SearchFilter} from '../../../types'
 import {getFieldFromFilter} from '../../../utils/filterUtils'
 
@@ -10,9 +11,7 @@ interface DebugFilterValuesProps {
 }
 
 export function DebugFilterValues({filter}: DebugFilterValuesProps) {
-  const {
-    state: {definitions},
-  } = useSearchState()
+  const definitions = useSearchSelector(selectDefinitions)
   const fieldDefinition = getFieldFromFilter(definitions.fields, filter)
 
   return (

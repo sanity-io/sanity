@@ -8,7 +8,7 @@ import {CommandList} from '../../../../../../components/commandList/CommandList'
 import {type CommandListRenderItemCallback} from '../../../../../../components/commandList/types'
 import {useTranslation} from '../../../../../../i18n/hooks/useTranslation'
 import {type WeightedHit} from '../../../../../../search/common/types'
-import {useSearchState} from '../../contexts/search/useSearchState'
+import {useSearchSelector, useSearchState} from '../../contexts/search/useSearchState'
 import {useRecentSearchesStore} from '../../datastores/recentSearches'
 import {NoResults} from '../NoResults'
 import {SearchError} from '../SearchError'
@@ -38,23 +38,27 @@ export function SearchResults({
   previewPerspective,
   previewVariant,
 }: SearchResultsProps) {
-  const {
-    dispatch,
-    onClose,
-    setSearchCommandList,
-    state: {debug, filters, fullscreen, lastActiveIndex, result, terms, cursor},
-  } = useSearchState()
+  const {fullscreen, onClose, searchActorRef, searchCommandListRef} = useSearchState()
+  const hits = useSearchSelector((snapshot) => snapshot.context.result.hits)
+  const loaded = useSearchSelector((snapshot) => snapshot.context.result.loaded)
+  const loading = useSearchSelector((snapshot) => snapshot.context.result.loading)
+  const error = useSearchSelector((snapshot) => snapshot.context.result.error)
+  const isLoadingFirstPage = useSearchSelector(
+    (snapshot) => snapshot.context.result.loading && snapshot.context.cursor === null,
+  )
+  const lastActiveIndex = useSearchSelector((snapshot) => snapshot.context.lastActiveIndex)
+  const debug = useSearchSelector((snapshot) => snapshot.context.debug)
   const {t} = useTranslation()
   const recentSearchesStore = useRecentSearchesStore()
 
   // deferral only pays off because CommandList is memo()'d, so the urgent render skips the heavy row subtree
-  const deferredHits = useDeferredValue(result.hits)
-  const isPending = deferredHits !== result.hits
+  const deferredHits = useDeferredValue(hits)
+  const isPending = deferredHits !== hits
 
-  // requiring result.hits too hides the stale list the instant an empty result settles
-  const hasSearchResults = deferredHits.length > 0 && result.hits.length > 0
-  const hasNoSearchResults = result.hits.length === 0 && result.loaded
-  const hasError = result.error
+  // requiring hits too hides the stale list the instant an empty result settles
+  const hasSearchResults = deferredHits.length > 0 && hits.length > 0
+  const hasNoSearchResults = hits.length === 0 && loaded
+  const hasError = error
 
   /**
    * Add current search to recent searches, trigger child item click and close search
@@ -62,6 +66,8 @@ export function SearchResults({
   const handleSearchResultClick = useCallback(
     (e: MouseEvent<HTMLElement>) => {
       if (recentSearchesStore) {
+        // Read on click rather than subscribing, so typing doesn't re-render the results
+        const {filters, terms} = searchActorRef.getSnapshot().context
         recentSearchesStore.addSearch(terms, filters)
       }
       // We don't want to close the search if they are opening their result in a new tab
@@ -69,12 +75,12 @@ export function SearchResults({
         onClose?.()
       }
     },
-    [filters, onClose, recentSearchesStore, terms],
+    [onClose, recentSearchesStore, searchActorRef],
   )
 
   const handleEndReached = useCallback(() => {
-    dispatch({type: 'PAGE_INCREMENT'})
-  }, [dispatch])
+    searchActorRef.send({type: 'PAGE_INCREMENT'})
+  }, [searchActorRef])
 
   const renderItem = useCallback<CommandListRenderItemCallback<WeightedHit>>(
     (item) => {
@@ -116,11 +122,8 @@ export function SearchResults({
 
           {/* Results */}
           <Flex
-            aria-busy={result.loading || isPending}
-            className={clsx(
-              searchResultsInnerFlex,
-              result.loading && cursor === null && loadingFirstPage,
-            )}
+            aria-busy={loading || isPending}
+            className={clsx(searchResultsInnerFlex, isLoadingFirstPage && loadingFirstPage)}
             flexBasis="0%"
             flexGrow={1}
           >
@@ -142,7 +145,7 @@ export function SearchResults({
                     onEndReached={handleEndReached}
                     paddingX={2}
                     paddingY={1}
-                    ref={setSearchCommandList}
+                    ref={searchCommandListRef}
                     renderItem={renderItem}
                   />
                 )}
