@@ -199,6 +199,17 @@ describe('EventTimelineItem changes', () => {
     )
   })
 
+  it('shows the contributors of an edit once, as the avatars of the row', async () => {
+    renderItem({...EDIT_EVENT, contributors: ['doug', 'pedro']})
+
+    const card = page.getByTestId('timeline-item-button')
+    await expect.element(card).toBeVisible()
+    const stacks = card.element().querySelectorAll('[data-ui="AvatarStack"]')
+    expect(stacks).toHaveLength(1)
+    // One entry per contributor (the mock workspace only resolves `doug`, the other one loads).
+    expect(stacks[0].children).toHaveLength(2)
+  })
+
   it('lists the titles of the fields an edit changed next to its label, two at most', async () => {
     const {changes$} = renderItem(EDIT_EVENT)
 

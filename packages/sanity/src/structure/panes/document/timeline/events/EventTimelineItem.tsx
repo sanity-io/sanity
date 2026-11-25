@@ -18,7 +18,6 @@ import {Tooltip, type TooltipProps} from '../../../../../ui-components/tooltip/T
 import {useDocumentPane} from '../../useDocumentPane'
 import {ChangedFieldTitles} from './ChangedFieldTitles'
 import {EditEventChanges} from './EditEventChanges'
-import {isEditTransactionEvent} from './timelineRows'
 import {useEditEventChanges} from './useEditEventChanges'
 
 export interface TimelineItemProps {
@@ -46,8 +45,8 @@ function EditEvent({event}: {event: EditDocumentVersionEvent}) {
     <Event
       event={event}
       changedFields={diff && <ChangedFieldTitles diff={diff} schemaType={schemaType} />}
-      // A transaction has a single author, already shown as the row avatar.
-      showChangesBy={isEditTransactionEvent(event) ? 'hidden' : 'tooltip'}
+      // The row's avatars are already the edit's contributors.
+      showChangesBy="hidden"
     />
   )
 }
