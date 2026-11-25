@@ -189,6 +189,24 @@ remain as aliases for the corresponding CLI commands. CI-only commands
 
 Useful `bench run` flags: `--headed`, `--throttle 1` (disable CPU throttle), `--seed 42` (reproducible bootstrap), `--sessions N`, `--budget <seconds>`, `--json-out <path>`, `--fail-on-verdict` (used by the self-test), `--no-network-emulation` (pageLoad).
 
+### Export costs on the auto-updating boot path
+
+`pnpm bench export-costs` measures what each runtime export of the CDN-served `sanity` bundle costs an auto-updating studio (`deployment.autoUpdates`), which loads that bundle without tree shaking. It needs the packages built (`pnpm build`), and it does the rest itself:
+
+1. Builds the CDN bundle (`packages/sanity/package.bundle.ts`) and captures its module graph.
+2. Builds an auto-updating variant of the bench studio, serves both, and records what three steps load: the login screen, coming back from login, and a reload with auth.
+3. For each export of each entry a step loads, computes the modules only that export reaches (exclusive cost, the upper bound of a saving) and the part nothing else in the build reaches (the lower bound), in raw, minified, gzip and brotli, and reads its release tag from TSDoc.
+4. Rebuilds without the top candidates, one at a time and then together, reruns the steps and reports the measured per-step saving.
+
+```bash
+pnpm bench export-costs                           # report in perf/bench/.export-costs/export-costs.md (+ .json)
+pnpm bench export-costs --verify 0                # analysis only, no rebuilds
+pnpm bench export-costs --verify-name structure:DocumentPaneProvider --verify-name buildLegacyTheme
+pnpm bench export-costs --repeat 3                # median and range over 3 runs of every measurement
+```
+
+Exports another entry or the studio imports by specifier are marked and never verified, because removing them breaks the studio rather than measuring a saving.
+
 **Absolute numbers are host-relative.** CPU throttling multiplies whatever the host gives — the printed calibration score (fixed workload, higher = slower) is recorded in every result so runs can be compared honestly. On a loaded laptop expect noise; A/B verdicts absorb it, absolute numbers don't.
 
 ## Adding a scenario
