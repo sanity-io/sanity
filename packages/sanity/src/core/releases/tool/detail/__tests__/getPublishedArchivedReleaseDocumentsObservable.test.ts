@@ -174,6 +174,34 @@ describe('getPublishedArchivedReleaseDocumentsObservable', () => {
     expect(requestedIds).toHaveLength(2)
   })
 
+  it('keeps the documents of the same release apart in each dataset', async () => {
+    const clientFor = (dataset: string) =>
+      createMockSanityClientAsClient(
+        {
+          requests: {
+            '*': {documents: [{...createDocument('versions.rShared.doc1'), _rev: dataset}]},
+          },
+        },
+        {dataset},
+      )
+    const production = clientFor('production')
+    const staging = clientFor('staging')
+    const release = createRelease('rShared', ['doc1'])
+
+    const fromProduction = firstValueFrom(
+      getPublishedArchivedReleaseDocumentsObservable({getClient: () => production, release}),
+    )
+    const fromStaging = firstValueFrom(
+      getPublishedArchivedReleaseDocumentsObservable({getClient: () => staging, release}),
+    )
+    await vi.advanceTimersByTimeAsync(20)
+
+    expect((await fromProduction).results.map(({document}) => document._rev)).toEqual([
+      'production',
+    ])
+    expect((await fromStaging).results.map(({document}) => document._rev)).toEqual(['staging'])
+  })
+
   it('reads the documents again once the release has a new revision', async () => {
     const {getClient, requestedIds} = setup({documentIds: ['versions.rRev.doc1']})
 

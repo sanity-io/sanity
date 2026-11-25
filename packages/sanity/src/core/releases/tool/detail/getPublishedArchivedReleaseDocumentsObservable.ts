@@ -1,4 +1,4 @@
-import {type ReleaseDocument} from '@sanity/client'
+import {type ReleaseDocument, type SanityClient} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
 import {of} from 'rxjs'
 import {catchError, map, shareReplay, tap} from 'rxjs/operators'
@@ -24,17 +24,16 @@ export function resetPublishedArchivedReleaseDocumentsCacheForTests(): void {
 }
 
 const buildPublishedArchivedReleaseDocumentsObservable = ({
-  getClient,
+  client,
   release,
 }: {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  getClient: ReturnType<typeof useSource>['getClient']
+  client: SanityClient
   release: ReleaseDocument
 }): BundleDocumentsObservableResult => {
   const documentIds = release.finalDocumentStates?.map(({id}) => id) ?? []
   if (!documentIds.length) return of({loading: false, results: [], error: null})
 
-  return loadLastRevisionDocuments(getClient(RELEASES_STUDIO_CLIENT_OPTIONS), documentIds).pipe(
+  return loadLastRevisionDocuments(client, documentIds).pipe(
     map((documents) => ({
       loading: false,
       results: documents.filter(isNonNullable).map((document) => ({
@@ -58,8 +57,8 @@ const buildPublishedArchivedReleaseDocumentsObservable = ({
  * {@link loadLastRevisionDocuments}. No validation or availability checks are performed.
  *
  * Published and archived releases are terminal states, so the result is cached for the session and
- * shared across subscribers, keyed by the release id and revision. A failed read is not cached, so
- * the next subscriber tries again.
+ * shared across subscribers, keyed by the dataset, release id and revision. A failed read is not
+ * cached, so the next subscriber tries again.
  *
  * @internal
  */
@@ -71,14 +70,15 @@ export const getPublishedArchivedReleaseDocumentsObservable = ({
   getClient: ReturnType<typeof useSource>['getClient']
   release: ReleaseDocument
 }): BundleDocumentsObservableResult => {
-  // An archived release that is restored and archived again has a new revision, and its documents
-  // a new last revision
-  const cacheKey = `${getReleaseIdFromReleaseDocumentId(release._id)}-${release._rev}`
+  const client = getClient(RELEASES_STUDIO_CLIENT_OPTIONS)
+  // The same release id can exist in another dataset of the studio. An archived release that is
+  // restored and archived again has a new revision, and its documents a new last revision
+  const cacheKey = `${client.config().dataset}-${getReleaseIdFromReleaseDocumentId(release._id)}-${release._rev}`
   const cached = publishedArchivedReleaseDocumentsCache[cacheKey]
   if (cached) return cached
 
   const documents$: BundleDocumentsObservableResult =
-    buildPublishedArchivedReleaseDocumentsObservable({getClient, release}).pipe(
+    buildPublishedArchivedReleaseDocumentsObservable({client, release}).pipe(
       tap(({error}) => {
         if (error && publishedArchivedReleaseDocumentsCache[cacheKey] === documents$) {
           delete publishedArchivedReleaseDocumentsCache[cacheKey]
