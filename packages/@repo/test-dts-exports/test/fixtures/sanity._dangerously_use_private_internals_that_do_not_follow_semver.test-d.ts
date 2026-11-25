@@ -2570,7 +2570,7 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
     expectTypeOf<ObjectInputMemberProps>().toBeObject()
   })
   test('ObjectInputMembers', () => {
-    expectTypeOf<typeof ObjectInputMembers>().toBeFunction()
+    expectTypeOf<typeof ObjectInputMembers>().not.toBeNever()
   })
   test('ObjectMembers', () => {
     expectTypeOf<typeof ObjectMembers>().not.toBeNever()

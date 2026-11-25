@@ -423,7 +423,6 @@ export {
 export {type FieldValueError} from '../core/field/validation'
 export {type FIXME} from '../core/FIXME'
 export {EditPortal} from '../core/form/components/EditPortal'
-export {EnhancedObjectDialog} from '../core/form/components/EnhancedObjectDialog'
 export {type FormFieldProps} from '../core/form/components/formField/FormField'
 export {
   FormFieldHeaderText,
@@ -452,60 +451,67 @@ export {type FieldActionsProps} from '../core/form/field/actions/FieldActionsRes
 export {type FormBuilderContextValue} from '../core/form/FormBuilderContext'
 export {useDidUpdate} from '../core/form/hooks/useDidUpdate'
 export {ArrayOfObjectsFunctions} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
-export {ArrayOfObjectsInput} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsInput'
 // Code-split facades. Same names and props; the implementation loads on first render so the
 // form runtime and the Portable Text editor are not in the login screen's import graph.
 export {
+  ArrayOfObjectOptionsInput,
+  ArrayOfObjectsInput,
   ArrayOfObjectsItem,
+  ArrayOfOptionsInput,
+  ArrayOfPrimitiveOptionsInput,
+  ArrayOfPrimitivesInput,
+  ArrayOfPrimitivesItem,
+  CrossDatasetReferenceInput,
+  DateInput,
+  DateTimeInput,
+  EnhancedObjectDialog,
+  FileInput,
   FormBuilder,
   FormField,
   FormInput,
+  FormProvider,
+  ImageInput,
   MemberField,
   MemberFieldError,
+  MemberFieldSet,
+  ObjectInput,
   ObjectInputMember,
+  ObjectInputMembers,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  ObjectMembers,
   PortableTextInput as BlockEditor,
   PortableTextInput,
+  ReferenceInput,
+  SlugInput,
+  StringInput,
+  TagsArrayInput,
+  UniversalArrayInput,
 } from '../core/form/lazy'
 export {type VirtualizerScrollInstance} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/useVirtualizerScrollInstance'
 export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-export {ArrayOfObjectOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfObjectOptionsInput'
-export {ArrayOfOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfOptionsInput'
-export {ArrayOfPrimitiveOptionsInput} from '../core/form/inputs/arrays/ArrayOfOptionsInput/ArrayOfPrimitiveOptionsInput'
 export {ArrayOfPrimitivesFunctions} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesFunctions'
-export {ArrayOfPrimitivesInput} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesInput'
-export {UniversalArrayInput} from '../core/form/inputs/arrays/UniversalArrayInput'
 export {BooleanInput} from '../core/form/inputs/BooleanInput'
-export {DateInput, type DateInputProps} from '../core/form/inputs/DateInputs/DateInput'
-export {DateTimeInput, type DateTimeInputProps} from '../core/form/inputs/DateInputs/DateTimeInput'
+export {type DateInputProps} from '../core/form/inputs/DateInputs/DateInput'
+export {type DateTimeInputProps} from '../core/form/inputs/DateInputs/DateTimeInput'
 export {EmailInput, type EmailInputProps} from '../core/form/inputs/EmailInput'
 export {type AssetAccessPolicy} from '../core/form/inputs/files/types'
 export {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
-export {ObjectInput} from '../core/form/inputs/ObjectInput/ObjectInput'
 export {type PortableTextMemberItem} from '../core/form/inputs/PortableText/PortableTextInput'
 export {type CreateReferenceOption} from '../core/form/inputs/ReferenceInput/types'
 export {SelectInput} from '../core/form/inputs/SelectInput'
-export {SlugInput, type SlugInputProps} from '../core/form/inputs/Slug/SlugInput'
-export {StringInput} from '../core/form/inputs/StringInput/StringInput'
-export {TagsArrayInput, type TagsArrayInputProps} from '../core/form/inputs/TagsArrayInput'
+export {type SlugInputProps} from '../core/form/inputs/Slug/SlugInput'
+export {type TagsArrayInputProps} from '../core/form/inputs/TagsArrayInput'
 export {TelephoneInput, type TelephoneInputProps} from '../core/form/inputs/TelephoneInput'
 export {TextInput, type TextInputProps} from '../core/form/inputs/TextInput'
 export {UrlInput, type UrlInputProps} from '../core/form/inputs/UrlInput'
 export {type ArrayOfObjectsMemberProps} from '../core/form/members/array/ArrayOfObjectsInputMember'
 export {type ArrayOfObjectsInputMembersProps} from '../core/form/members/array/ArrayOfObjectsInputMembers'
 export {type MemberItemProps} from '../core/form/members/array/items/ArrayOfObjectsItem'
-export {
-  ArrayOfPrimitivesItem,
-  type PrimitiveMemberItemProps,
-} from '../core/form/members/array/items/ArrayOfPrimitivesItem'
+export {type PrimitiveMemberItemProps} from '../core/form/members/array/items/ArrayOfPrimitivesItem'
 export {MemberItemError} from '../core/form/members/array/MemberItemError'
 export {type MemberFieldProps} from '../core/form/members/object/MemberField'
-export {MemberFieldSet} from '../core/form/members/object/MemberFieldset'
 export {type ObjectInputMemberProps} from '../core/form/members/object/ObjectInputMember'
-export {
-  ObjectInputMembers, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  ObjectMembers,
-  type ObjectMembersProps,
-} from '../core/form/members/object/ObjectInputMembers'
+export {type ObjectMembersProps} from '../core/form/members/object/ObjectInputMembers'
 export {
   dec,
   diffMatchPatch,
@@ -609,23 +615,11 @@ export {
   type TemplateOption,
 } from '../core/form/studio/contexts/ReferenceInputOptions'
 export {type FormBuilderProps} from '../core/form/studio/FormBuilder'
-export {FormProvider, type FormProviderProps} from '../core/form/studio/FormProvider'
-export {
-  StudioCrossDatasetReferenceInput as CrossDatasetReferenceInput,
-  type StudioCrossDatasetReferenceInputProps as CrossDatasetReferenceInputProps,
-} from '../core/form/studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
-export {
-  StudioReferenceInput as ReferenceInput,
-  type StudioReferenceInputProps as ReferenceInputProps,
-} from '../core/form/studio/inputs/reference/StudioReferenceInput'
-export {
-  StudioFileInput as FileInput,
-  type FileInputProps,
-} from '../core/form/studio/inputs/StudioFileInput'
-export {
-  StudioImageInput as ImageInput,
-  type ImageInputProps,
-} from '../core/form/studio/inputs/StudioImageInput'
+export {type FormProviderProps} from '../core/form/studio/FormProvider'
+export {type StudioCrossDatasetReferenceInputProps as CrossDatasetReferenceInputProps} from '../core/form/studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
+export {type StudioReferenceInputProps as ReferenceInputProps} from '../core/form/studio/inputs/reference/StudioReferenceInput'
+export {type FileInputProps} from '../core/form/studio/inputs/StudioFileInput'
+export {type ImageInputProps} from '../core/form/studio/inputs/StudioImageInput'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useEnhancedObjectDialog} from '../core/form/studio/tree-editing/context/enabled/useEnhancedObjectDialog'
 export {
@@ -1177,9 +1171,8 @@ export {
   type SearchPartialIndexSettings, // oxlint-disable-next-line no-deprecated -- only the overload without field paths is deprecated
   useSearchMaxFieldDepth,
 } from '../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
+export {StudioNavbar, StudioToolMenu} from '../core/studio/components/navbar/LazyStudioNavbar'
 export {StudioLogo} from '../core/studio/components/navbar/StudioLogo'
-export {StudioNavbar} from '../core/studio/components/navbar/StudioNavbar'
-export {StudioToolMenu} from '../core/studio/components/navbar/tools/StudioToolMenu'
 export {ToolLink, type ToolLinkProps} from '../core/studio/components/navbar/tools/ToolLink'
 export {CopyPasteProvider, useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
 export {

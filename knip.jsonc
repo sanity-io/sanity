@@ -134,6 +134,8 @@
       "ignoreIssues": {
         // The deprecated unstable_useValuePreview is an intentional compatibility alias.
         "src/core/preview/useValuePreview.ts": ["duplicates"],
+        // The deprecated ObjectMembers is an intentional compatibility alias of ObjectInputMembers.
+        "src/core/form/lazy.tsx": ["duplicates"],
       },
       "ignoreBinaries": ["tzutil"],
       "ignoreDependencies": [

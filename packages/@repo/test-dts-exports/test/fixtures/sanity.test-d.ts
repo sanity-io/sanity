@@ -1561,7 +1561,7 @@ describe('sanity', () => {
     expectTypeOf<ArrayOfEntry<any>>().not.toBeNever()
   })
   test('ArrayOfObjectOptionsInput', () => {
-    expectTypeOf<typeof ArrayOfObjectOptionsInput>().toBeFunction()
+    expectTypeOf<typeof ArrayOfObjectOptionsInput>().not.toBeNever()
   })
   test('ArrayOfObjectsComponents', () => {
     expectTypeOf<ArrayOfObjectsComponents>().toBeObject()
@@ -1573,7 +1573,7 @@ describe('sanity', () => {
     expectTypeOf<typeof ArrayOfObjectsFunctions>().toBeFunction()
   })
   test('ArrayOfObjectsInput', () => {
-    expectTypeOf<typeof ArrayOfObjectsInput>().toBeFunction()
+    expectTypeOf<typeof ArrayOfObjectsInput>().not.toBeNever()
   })
   test('ArrayOfObjectsInputMembersProps', () => {
     expectTypeOf<ArrayOfObjectsInputMembersProps>().toBeObject()
@@ -1594,10 +1594,10 @@ describe('sanity', () => {
     expectTypeOf<ArrayOfObjectsMemberProps>().toBeObject()
   })
   test('ArrayOfOptionsInput', () => {
-    expectTypeOf<typeof ArrayOfOptionsInput>().toBeFunction()
+    expectTypeOf<typeof ArrayOfOptionsInput>().not.toBeNever()
   })
   test('ArrayOfPrimitiveOptionsInput', () => {
-    expectTypeOf<typeof ArrayOfPrimitiveOptionsInput>().toBeFunction()
+    expectTypeOf<typeof ArrayOfPrimitiveOptionsInput>().not.toBeNever()
   })
   test('ArrayOfPrimitivesComponents', () => {
     expectTypeOf<ArrayOfPrimitivesComponents>().toBeObject()
@@ -1615,13 +1615,13 @@ describe('sanity', () => {
     expectTypeOf<typeof ArrayOfPrimitivesFunctions>().toBeFunction()
   })
   test('ArrayOfPrimitivesInput', () => {
-    expectTypeOf<ArrayOfPrimitivesInput>().not.toBeNever()
+    expectTypeOf<typeof ArrayOfPrimitivesInput>().not.toBeNever()
   })
   test('ArrayOfPrimitivesInputProps', () => {
     expectTypeOf<ArrayOfPrimitivesInputProps<any, any>>().toBeObject()
   })
   test('ArrayOfPrimitivesItem', () => {
-    expectTypeOf<typeof ArrayOfPrimitivesItem>().toBeFunction()
+    expectTypeOf<typeof ArrayOfPrimitivesItem>().not.toBeNever()
   })
   test('ArrayOfPrimitivesItemMember', () => {
     expectTypeOf<ArrayOfPrimitivesItemMember<any>>().toBeObject()
@@ -2307,7 +2307,7 @@ describe('sanity', () => {
     expectTypeOf<CrossDatasetReferenceDefinition>().toBeObject()
   })
   test('CrossDatasetReferenceInput', () => {
-    expectTypeOf<typeof CrossDatasetReferenceInput>().toBeFunction()
+    expectTypeOf<typeof CrossDatasetReferenceInput>().not.toBeNever()
   })
   test('CrossDatasetReferenceInputProps', () => {
     expectTypeOf<CrossDatasetReferenceInputProps>().not.toBeNever()
@@ -2344,7 +2344,7 @@ describe('sanity', () => {
     expectTypeOf<DateDefinition>().toBeObject()
   })
   test('DateInput', () => {
-    expectTypeOf<typeof DateInput>().toBeFunction()
+    expectTypeOf<typeof DateInput>().not.toBeNever()
   })
   test('DateInputProps', () => {
     expectTypeOf<DateInputProps>().not.toBeNever()
@@ -2363,7 +2363,7 @@ describe('sanity', () => {
     expectTypeOf<DatetimeDefinition>().toBeObject()
   })
   test('DateTimeInput', () => {
-    expectTypeOf<typeof DateTimeInput>().toBeFunction()
+    expectTypeOf<typeof DateTimeInput>().not.toBeNever()
   })
   test('DateTimeInputProps', () => {
     expectTypeOf<DateTimeInputProps>().not.toBeNever()
@@ -2887,7 +2887,7 @@ describe('sanity', () => {
     expectTypeOf<EmptyProps>().toBeObject()
   })
   test('EnhancedObjectDialog', () => {
-    expectTypeOf<typeof EnhancedObjectDialog>().toBeFunction()
+    expectTypeOf<typeof EnhancedObjectDialog>().not.toBeNever()
   })
   test('EnumListProps', () => {
     expectTypeOf<EnumListProps<any>>().toBeObject()
@@ -3039,7 +3039,7 @@ describe('sanity', () => {
     expectTypeOf<FileDefinition>().toBeObject()
   })
   test('FileInput', () => {
-    expectTypeOf<typeof FileInput>().toBeFunction()
+    expectTypeOf<typeof FileInput>().not.toBeNever()
   })
   test('FileInputProps', () => {
     expectTypeOf<FileInputProps>().not.toBeNever()
@@ -3183,7 +3183,7 @@ describe('sanity', () => {
     expectTypeOf<FormPatchOrigin>().not.toBeNever()
   })
   test('FormProvider', () => {
-    expectTypeOf<typeof FormProvider>().toBeFunction()
+    expectTypeOf<typeof FormProvider>().not.toBeNever()
   })
   test('FormProviderProps', () => {
     expectTypeOf<FormProviderProps>().toBeObject()
@@ -3414,7 +3414,7 @@ describe('sanity', () => {
     expectTypeOf<ImageHotspot>().toBeObject()
   })
   test('ImageInput', () => {
-    expectTypeOf<typeof ImageInput>().toBeFunction()
+    expectTypeOf<typeof ImageInput>().not.toBeNever()
   })
   test('ImageInputProps', () => {
     expectTypeOf<ImageInputProps>().not.toBeNever()
@@ -4197,7 +4197,7 @@ describe('sanity', () => {
     expectTypeOf<ObjectInputMemberProps>().toBeObject()
   })
   test('ObjectInputMembers', () => {
-    expectTypeOf<typeof ObjectInputMembers>().toBeFunction()
+    expectTypeOf<typeof ObjectInputMembers>().not.toBeNever()
   })
   test('ObjectInputProps', () => {
     expectTypeOf<ObjectInputProps<any, any>>().toBeObject()
@@ -4570,7 +4570,7 @@ describe('sanity', () => {
     expectTypeOf<ReferenceFilterSearchOptions>().not.toBeNever()
   })
   test('ReferenceInput', () => {
-    expectTypeOf<typeof ReferenceInput>().toBeFunction()
+    expectTypeOf<typeof ReferenceInput>().not.toBeNever()
   })
   test('ReferenceInputOptions', () => {
     expectTypeOf<ReferenceInputOptions>().toBeObject()
@@ -5004,7 +5004,7 @@ describe('sanity', () => {
     expectTypeOf<SlugifierFn>().not.toBeNever()
   })
   test('SlugInput', () => {
-    expectTypeOf<typeof SlugInput>().toBeFunction()
+    expectTypeOf<typeof SlugInput>().not.toBeNever()
   })
   test('SlugInputProps', () => {
     expectTypeOf<SlugInputProps>().not.toBeNever()
@@ -5119,7 +5119,7 @@ describe('sanity', () => {
     expectTypeOf<StringFormNode<any>>().not.toBeNever()
   })
   test('StringInput', () => {
-    expectTypeOf<typeof StringInput>().toBeFunction()
+    expectTypeOf<typeof StringInput>().not.toBeNever()
   })
   test('StringInputProps', () => {
     expectTypeOf<StringInputProps<any>>().toBeObject()
@@ -5179,7 +5179,7 @@ describe('sanity', () => {
     expectTypeOf<StudioManifest>().toBeObject()
   })
   test('StudioNavbar', () => {
-    expectTypeOf<typeof StudioNavbar>().toBeFunction()
+    expectTypeOf<typeof StudioNavbar>().not.toBeNever()
   })
   test('StudioNotificationPayload', () => {
     expectTypeOf<StudioNotificationPayload>().toBeObject()
@@ -5200,7 +5200,7 @@ describe('sanity', () => {
     expectTypeOf<StudioThemeColorSchemeKey>().not.toBeNever()
   })
   test('StudioToolMenu', () => {
-    expectTypeOf<typeof StudioToolMenu>().toBeFunction()
+    expectTypeOf<typeof StudioToolMenu>().not.toBeNever()
   })
   test('StudioWorkspaceManifest', () => {
     expectTypeOf<StudioWorkspaceManifest>().toBeObject()
@@ -5221,7 +5221,7 @@ describe('sanity', () => {
     expectTypeOf<SystemVariant>().toBeObject()
   })
   test('TagsArrayInput', () => {
-    expectTypeOf<typeof TagsArrayInput>().toBeFunction()
+    expectTypeOf<typeof TagsArrayInput>().not.toBeNever()
   })
   test('TagsArrayInputProps', () => {
     expectTypeOf<TagsArrayInputProps>().not.toBeNever()
@@ -5417,7 +5417,7 @@ describe('sanity', () => {
     expectTypeOf<UnitFormatter>().not.toBeNever()
   })
   test('UniversalArrayInput', () => {
-    expectTypeOf<typeof UniversalArrayInput>().toBeFunction()
+    expectTypeOf<typeof UniversalArrayInput>().not.toBeNever()
   })
   test('UnpublishDocumentEvent', () => {
     expectTypeOf<UnpublishDocumentEvent>().toBeObject()
