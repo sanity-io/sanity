@@ -116,6 +116,20 @@ describe('getTimelineRows', () => {
     expect(shown([], EVENTS.slice(2))).toEqual(['group-tx-2', 'publish', 'oldest'])
   })
 
+  it('shows events at the top level when only a transaction sharing their parent id is listed', () => {
+    // The newest transaction of a group shares its id with the group, or with the publish.
+    expect(shown([], [transaction('group', 'group'), transaction('group-tx-1', 'group')])).toEqual([
+      'group',
+      'group-tx-1',
+    ])
+    expect(
+      shown(
+        [],
+        [edit('published-group', {parentId: 'publish'}), transaction('publish', 'published-group')],
+      ),
+    ).toEqual(['published-group'])
+  })
+
   it('keeps showing a creation event nested under a publish when it is the last event', () => {
     expect(shown([], EVENTS.slice(0, -1))).toEqual(['group', 'publish', 'create'])
   })

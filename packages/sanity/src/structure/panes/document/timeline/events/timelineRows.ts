@@ -125,7 +125,11 @@ export function getTimelineRows({
   expandedParents: ReadonlySet<string>
   revealedTransactions?: ReadonlyMap<string, number>
 }): TimelineRow[] {
-  const eventIds = new Set(events.map((event) => event.id))
+  // A listed transaction is never a parent, and the newest one shares its id with its group (or
+  // the publish), so it must not count as that parent being in the list.
+  const eventIds = new Set(
+    events.filter((event) => !isEditTransactionEvent(event)).map((event) => event.id),
+  )
   const lastEventId = events.at(-1)?.id
   const transactionCounts = getTransactionCounts(events)
   const shownDepths = new Map<string, number>()
