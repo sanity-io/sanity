@@ -3,6 +3,8 @@ import {CopyIcon} from '@sanity/icons/Copy'
 import {Button} from '@sanity/ui'
 import {useEffect, useState} from 'react'
 
+import {VisionTooltip} from '../VisionTooltip'
+
 /** How long the button shows its checkmark after a copy */
 export const COPIED_FEEDBACK_MS = 1500
 
@@ -18,7 +20,8 @@ export interface CopyResultButtonProps {
 
 /**
  * Copies from a result and confirms it where the click happened: the copy icon turns into a
- * checkmark for a moment, next to the toast the copy pushes. A document row uses it as an icon.
+ * checkmark for a moment, next to the toast the copy pushes. A document row uses it as an icon,
+ * labelled by its tooltip.
  */
 export function CopyResultButton({
   label,
@@ -39,7 +42,7 @@ export function CopyResultButton({
     if (await onCopy()) setCopiedAt(Date.now())
   }
 
-  return (
+  const button = (
     <Button
       aria-label={iconOnly ? label : undefined}
       data-copied={copiedAt !== null}
@@ -52,5 +55,12 @@ export function CopyResultButton({
       padding={2}
       text={iconOnly ? undefined : label}
     />
+  )
+  return iconOnly ? (
+    <VisionTooltip content={label} placement="bottom">
+      {button}
+    </VisionTooltip>
+  ) : (
+    button
   )
 }

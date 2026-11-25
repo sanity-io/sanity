@@ -25,7 +25,7 @@ function renderButton(onCopy: () => Promise<boolean>, disabled?: boolean) {
   render(
     <ThemeProvider theme={theme}>
       <LayerProvider>
-        <CopyButton disabled={disabled} onCopy={onCopy} />
+        <CopyButton disabled={disabled} label="Copy result" onCopy={onCopy} />
       </LayerProvider>
     </ThemeProvider>,
   )
@@ -33,7 +33,8 @@ function renderButton(onCopy: () => Promise<boolean>, disabled?: boolean) {
 
 const button = () => screen.getByTestId('vision-copy')
 const copied = () => button().getAttribute('data-copied') === 'true'
-const shownLabel = () => button().textContent?.trim()
+const shownText = () => button().textContent?.trim()
+const shownLabel = () => button().getAttribute('aria-label')
 const shownIcon = () =>
   button().querySelector('[data-sanity-icon]')?.getAttribute('data-sanity-icon')
 
@@ -50,14 +51,15 @@ describe('CopyButton', () => {
     vi.useRealTimers()
   })
 
-  it('reads Copy with the copy icon until it copies', () => {
+  it('is an icon labelled with what it copies until it copies', () => {
     renderButton(() => Promise.resolve(true))
     expect(copied()).toBe(false)
-    expect(shownLabel()).toBe('vision.copy')
+    expect(shownText()).toBe('')
+    expect(shownLabel()).toBe('Copy result')
     expect(shownIcon()).toBe('copy')
   })
 
-  it('reads Copied with a checkmark for a few seconds after a copy', async () => {
+  it('turns into a checkmark labelled Copied for a few seconds after a copy', async () => {
     const onCopy = vi.fn(() => Promise.resolve(true))
     renderButton(onCopy)
 
@@ -66,6 +68,7 @@ describe('CopyButton', () => {
     expect(copied()).toBe(true)
     expect(shownLabel()).toBe('vision.copied')
     expect(shownIcon()).toBe('checkmark')
+    expect(document.querySelector('[aria-live="polite"]')?.textContent).toBe('vision.copied')
 
     act(() => {
       vi.advanceTimersByTime(COPIED_FEEDBACK_MS - 1)
@@ -75,11 +78,12 @@ describe('CopyButton', () => {
       vi.advanceTimersByTime(1)
     })
     expect(copied()).toBe(false)
-    expect(shownLabel()).toBe('vision.copy')
+    expect(shownLabel()).toBe('Copy result')
     expect(shownIcon()).toBe('copy')
+    expect(document.querySelector('[aria-live="polite"]')?.textContent).toBe('')
   })
 
-  it('reads Copied longer when copied again meanwhile', async () => {
+  it('stays Copied longer when copied again meanwhile', async () => {
     renderButton(() => Promise.resolve(true))
     await click()
     act(() => {
@@ -96,7 +100,7 @@ describe('CopyButton', () => {
     expect(copied()).toBe(false)
   })
 
-  it('keeps reading Copy when the copy failed', async () => {
+  it('keeps the copy icon when the copy failed', async () => {
     renderButton(() => Promise.resolve(false))
     await click()
     expect(copied()).toBe(false)
