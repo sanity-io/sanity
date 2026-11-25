@@ -364,7 +364,6 @@ import type {
   getErrorMessage,
   getExpandOperations,
   GetFormValueProvider,
-  GetHookCollectionState,
   getIdPair,
   getInitialValueStream,
   getItemKey,
@@ -937,7 +936,6 @@ import type {
   VisibleWorkspacesContextValue,
   VisibleWorkspacesProvider,
   visitDiff,
-  WithReferringDocuments,
   withRouter,
   WithRouter,
   WithRouterProps,
@@ -2040,9 +2038,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('GetFormValueProvider', () => {
     expectTypeOf<typeof GetFormValueProvider>().toBeFunction()
-  })
-  test('GetHookCollectionState', () => {
-    expectTypeOf<typeof GetHookCollectionState>().toBeFunction()
   })
   test('getIdPair', () => {
     expectTypeOf<typeof getIdPair>().toBeFunction()
@@ -3764,9 +3759,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('visitDiff', () => {
     expectTypeOf<typeof visitDiff>().toBeFunction()
-  })
-  test('WithReferringDocuments', () => {
-    expectTypeOf<typeof WithReferringDocuments>().toBeFunction()
   })
   test('withRouter', () => {
     expectTypeOf<typeof withRouter>().toBeFunction()

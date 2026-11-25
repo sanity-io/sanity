@@ -100,10 +100,6 @@ export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
 export {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
 export {type ErrorActionsProps} from '../core/components/errorActions/ErrorActions'
 export {type ErrorWithId} from '../core/components/errorActions/types'
-export {
-  type GetHookCollectionStateProps,
-  type HookCollectionActionHook,
-} from '../core/components/hookCollection/types'
 export {Hotkeys, type HotkeysProps} from '../core/components/Hotkeys'
 export {
   InsufficientPermissionsMessage,
@@ -177,8 +173,6 @@ export {
   UserAvatar,
   type UserAvatarProps,
 } from '../core/components/userAvatar/UserAvatar'
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export {WithReferringDocuments} from '../core/components/WithReferringDocuments'
 export {type ZIndexContextValue} from '../core/components/zOffsets/types'
 export {
   type AuthConfig,
