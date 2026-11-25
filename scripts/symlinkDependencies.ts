@@ -2,7 +2,7 @@
 /**
  * Symlinks this monorepo's packages into a target studio's node_modules.
  *
- * Runs directly in node (22.18+ strips types and detects ESM syntax
+ * Runs directly in node (24.11+ strips types and detects ESM syntax
  * natively): `node scripts/symlinkDependencies.ts <targetDir>`
  */
 import fs from 'node:fs'

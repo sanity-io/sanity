@@ -28,7 +28,7 @@ same script with `--format markdown --prs`. Read that comment first when reviewi
 in plain sight and the per-file table sits behind the collapsed `Per-file coverage` toggle.
 
 The script is `scripts/visualCoverage.ts`. It has no dependencies and runs under `tsx` or plain
-Node 22.18+ (`node scripts/visualCoverage.ts`).
+Node 24.11+ (`node scripts/visualCoverage.ts`).
 
 ## What counts as covered
 
