@@ -15,6 +15,7 @@
  * b) https://beta.reactjs.org/apis/react-dom/server/renderToString
  */
 import {type SanityClient} from '@sanity/client'
+import {render, waitFor} from '@testing-library/react'
 import {act} from 'react'
 import {hydrateRoot} from 'react-dom/client'
 import {renderToStaticMarkup, renderToString} from 'react-dom/server'
@@ -61,5 +62,16 @@ describe('Studio', () => {
 
     spy.mockReset()
     spy.mockRestore()
+  })
+
+  it('loads the workspace when the auth boundary is disabled', async () => {
+    const types = vi.fn(() => [])
+
+    // oxlint-disable-next-line testing-library/no-unnecessary-act -- StudioProvider suspends via lazy/Suspense on mount
+    await act(async () => {
+      render(<Studio config={{...config, schema: {types}}} unstable_noAuthBoundary />)
+    })
+
+    await waitFor(() => expect(types).toHaveBeenCalledOnce())
   })
 })
