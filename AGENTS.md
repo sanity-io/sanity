@@ -554,6 +554,15 @@ pnpm lint:fix          # Auto-fix issues (oxfmt + oxlint --fix)
 
 All packages use **ESM** (`"type": "module"`). TypeScript strict mode is enabled.
 
+### Browser support: Baseline 2026
+
+Studio v7 supports [Baseline 2026](https://web.dev/baseline) (`baseline 2026 with downstream`), fixed for the life of the major (see "Browser support" in `packages/sanity/README.md`). Any web platform feature in Baseline 2026 (CSS or JS, `light-dark()`, nesting, `Promise.withResolvers` and so on) can be used without a fallback, a polyfill or a feature check. A feature that is only Baseline Newly available in 2027 or later still needs a fallback.
+
+- **One source of truth.** Every published package declares `"browserslist": ["node >=24.11", "baseline 2026 with downstream"]`, written by `pnpm normalize-pkgfields` and checked by `packages/@repo/test-exports/test/browserslist.test.mjs`. Change the query there, never in a build config.
+- **The builds derive their CSS targets from that field** through `@repo/browser-targets`: the Lightning CSS targets of the `panda` and `css` pipelines in `@repo/tsdown.config` (the published `bundle.css`), and Vite's `build.cssTarget` in `@repo/package.bundle` (the auto-updating CDN bundle) and `dev/test-studio/sanity.cli.ts`. The published JS keeps tsdown's `engines.node` target: Node.js 24.11 ships an older V8 than every Baseline 2026 engine, so it binds JS syntax lowering. Code that also runs in Node.js (schema compilation, validation, the CLI entries, `@sanity/util`) must stick to what Node.js 24.11 supports as well.
+- **Do not raise a Vite build's JS `target` to Baseline 2026.** Rolldown skips its transform for modules that are already JS when the target needs no syntax lowering (any target from Chrome 134 / ES2026 up), and Vite's Oxc plugin has compiled every TSX module to JS by then, so the `styledComponents` transform plugin of the CDN bundle silently stops running (no display names, no `/* @__PURE__ */` annotations). `package.bundle.test.ts` builds a styled component with the bundle's settings to catch this.
+- **Baseline 2026 data can still grow until the year ends**, as features reach Baseline in late 2026. A `browserslist`/`baseline-browser-mapping` bump can then raise the resolved minimum versions; the query itself stays.
+
 Rules that the linter already enforces (restricted imports, type-aware rules, React Compiler rules, i18n rules, module boundaries) are not repeated in this guide — run `pnpm lint` and follow the reported messages, which explain the expected pattern.
 
 ### LAW: Dynamic imports of named exports use dedicated entrypoints
@@ -637,6 +646,12 @@ Rules that follow from this:
   core tests do. `src/presentation` imports internals relatively for the same reasons, and
   because a lazily loaded module (an i18n `resources` chunk, a `lazy()` component) that imports
   the entry drags the whole barrel in with it.
+- The repo's own code imports no `@internal` name from a public entry, including the `@internal`
+  types that are still exported there, and the four areas never import the internals entry.
+  `test/no-internal-imports-from-public-entries.test.ts` in `@repo/test-dts-exports` checks both
+  (it reads the built `.d.ts` files, so build first). When a component switches to a relative
+  import, a test that stubs the name with `vi.mock('sanity', …)` has to mock the declaring
+  module instead.
 - A symbol carries exactly one release tag. `@internal` plus `@beta`/`@public` on the same
   declaration is a bug, not a way to say "beta but hidden" — use `@hidden` with `@beta` for that.
 - Tagging something `@public`/`@beta` moves it onto a public entry; tagging it `@internal` moves

@@ -1,6 +1,8 @@
+import {viteBuildTarget} from '@repo/browser-targets'
 import {viteCssModules} from '@repo/css-modules-kit'
 import {studioPandaCss} from '@repo/pandacss/vite'
 import {defineCliConfig} from 'sanity/cli'
+import sanityPkg from 'sanity/package.json' with {type: 'json'}
 import {defaultClientConditions, mergeConfig} from 'vite'
 
 import {groqStoreWorkers} from './plugins/groq-store-wasm/vite'
@@ -60,9 +62,16 @@ export default defineCliConfig({
       plugins: [groqStoreWorkers(), ...(command === 'serve' ? studioPandaCss() : [])],
       // Needed due to the monorepo setup, optimizeDeps will cause duplication of context providers when it chunks lazy imports so we have to disable optimization
       optimizeDeps: {exclude: ['sanity']},
-      // One upfront stylesheet, the way a studio that installs `sanity` from npm loads its
-      // `bundle.css`, instead of a sheet per lazy chunk. Needs @sanity/cli-build >= 7.0.1 to link it
-      build: {cssCodeSplit: false},
+      build: {
+        // One upfront stylesheet, the way a studio that installs `sanity` from npm loads its
+        // `bundle.css`, instead of a sheet per lazy chunk. Needs @sanity/cli-build >= 7.0.1 to
+        // link it
+        cssCodeSplit: false,
+        // The browsers `sanity` supports (its `browserslist` field, Baseline 2026), which the
+        // auto-updating CDN bundle lowers its CSS for too. The JS `target` keeps the `sanity build`
+        // default for the reason given in `@repo/package.bundle`
+        cssTarget: viteBuildTarget(sanityPkg.browserslist),
+      },
     })
 
     if (isViteDevToolsEnabled) {

@@ -276,15 +276,18 @@ export function prepareConfig(
           requestErrorChannel: options?.requestErrorChannel,
           requestFailureDiagnostics: options?.requestFailureDiagnostics,
         })
-        // Prepared here, not with the rest of the source: the login screen translates with it. The
-        // default plugins are only loaded with the source, so their locale bundles are added here.
-        const i18n = prepareI18n({
-          ...source,
-          plugins: [
-            ...(source.plugins ?? []),
-            ...getDefaultPluginsLocalePlugins(defaultPluginsOptions, declaredPlugins),
-          ],
-        })
+        // Deferred until the active workspace's login screen renders or the authenticated source
+        // loads. The default plugins are only loaded with the source, so their locale bundles are
+        // added here.
+        const getI18n = createMemoizedGetter(() =>
+          prepareI18n({
+            ...source,
+            plugins: [
+              ...(source.plugins ?? []),
+              ...getDefaultPluginsLocalePlugins(defaultPluginsOptions, declaredPlugins),
+            ],
+          }),
+        )
         const source$ = loadResolveWorkspaceSource().pipe(
           switchMap((resolveWorkspaceSource) =>
             resolveWorkspaceSource({
@@ -294,7 +297,7 @@ export function prepareConfig(
               workspaceName: rawWorkspace.name || 'default',
               defaultPluginsOptions,
               auth,
-              i18n,
+              i18n: getI18n(),
             }),
           ),
           shareReplay(1),
@@ -306,7 +309,12 @@ export function prepareConfig(
           dataset: source.dataset,
           title: source.title || startCase(source.name),
           auth,
-          i18n: i18n.source,
+          get i18n() {
+            return getI18n().source
+          },
+          get i18next() {
+            return getI18n().i18next
+          },
           source: source$,
         }
       },
@@ -320,7 +328,9 @@ export function prepareConfig(
       basePath: joinBasePath(rootPath, rootSource.basePath),
       dataset: rootSource.dataset,
       apiHost: rootSource.apiHost,
-      i18n: resolvedSources[0].i18n,
+      get i18n() {
+        return resolvedSources[0].i18n
+      },
       customIcon: !!rootSource.icon,
       icon: normalizeIcon(rootSource.icon, title, `${rootSource.projectId} ${rootSource.dataset}`),
       name: rootSource.name || 'default',
@@ -341,6 +351,26 @@ export function prepareConfig(
   })
 
   return {type: 'prepared-config', workspaces}
+}
+
+type MemoizedResult<T> = {type: 'success'; value: T} | {type: 'failure'; error: unknown}
+
+function createMemoizedGetter<T>(factory: () => T): () => T {
+  let result: MemoizedResult<T> | undefined
+
+  return function getMemoizedValue(): T {
+    if (result?.type === 'success') return result.value
+    if (result?.type === 'failure') throw result.error
+
+    try {
+      const value = factory()
+      result = {type: 'success', value}
+      return value
+    } catch (error) {
+      result = {type: 'failure', error}
+      throw error
+    }
+  }
 }
 
 function getAuthStore(

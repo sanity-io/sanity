@@ -1,10 +1,6 @@
-import {
-  isDraftVersion,
-  isPublishedVersion,
-  isReleaseVersion,
-  type VersionInfoDocumentStub,
-} from 'sanity'
+import {isDraftVersion, isPublishedVersion, isReleaseVersion} from 'sanity'
 
+import {type VersionInfoDocumentStub} from '../../../../../../../core/releases/store/types'
 import {isAgentBundleName} from '../../../../../../../core/store/agent/createAgentBundlesStore'
 import {getDocumentVersionVariantId} from '../../../../../../../core/util/getDocumentVersionVariant'
 

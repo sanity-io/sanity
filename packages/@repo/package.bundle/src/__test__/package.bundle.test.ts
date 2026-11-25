@@ -1,8 +1,12 @@
+import {mkdtemp, rm, writeFile} from 'node:fs/promises'
+import {tmpdir} from 'node:os'
+import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
+import {lightningCssTargets, viteBuildTarget} from '@repo/browser-targets'
 import {cssModulesPattern} from '@repo/css-modules-kit'
 import {Features, transform} from 'lightningcss'
-import {type PluginOption} from 'vite'
+import {build, type PluginOption, type Rolldown} from 'vite'
 import {describe, expect, it} from 'vitest'
 
 import {
@@ -17,21 +21,61 @@ function pluginNames(plugins: PluginOption): string[] {
   return plugins && typeof plugins === 'object' && 'name' in plugins ? [plugins.name] : []
 }
 
+const OPTIONS = {
+  version: '9.9.9-test.1',
+  browserslist: ['node >=24.11', 'baseline 2026 with downstream'],
+}
+
 describe('createDefaultConfig()', () => {
   it('injects the provided version as the __PKG_VERSION__ define', () => {
-    const config = createDefaultConfig({version: '9.9.9-test.1', styles: 'panda'})
+    const config = createDefaultConfig({...OPTIONS, styles: 'panda'})
     expect(config.define?.['__PKG_VERSION__']).toBe('"9.9.9-test.1"')
   })
 
+  it('lowers the CSS for the browsers of the provided browserslist', () => {
+    const config = createDefaultConfig({...OPTIONS, styles: 'panda'})
+    expect(config.build?.cssTarget).toEqual(viteBuildTarget(OPTIONS.browserslist))
+    expect(config.build?.target).toBeUndefined()
+  })
+
+  it('applies the styled-components transform with the JS target it builds for', async () => {
+    const {build: buildOptions} = createDefaultConfig({...OPTIONS, styles: 'panda'})
+    const root = await mkdtemp(path.join(tmpdir(), 'package-bundle-'))
+    try {
+      // Vite's Oxc plugin compiles TSX before Rolldown sees it, so plain JS is what Rolldown gets
+      await writeFile(
+        path.join(root, 'box.js'),
+        "import {styled} from 'styled-components'\nexport const Box = styled.div`color: red;`\n",
+      )
+      const output = await build({
+        root,
+        configFile: false,
+        logLevel: 'silent',
+        build: {
+          target: buildOptions?.target,
+          write: false,
+          minify: false,
+          lib: {entry: 'box.js', formats: ['es']},
+          rolldownOptions: {
+            external: ['styled-components'],
+            transform: buildOptions?.rolldownOptions?.transform,
+          },
+        },
+      })
+      const [{output: chunks}] = [output].flat() as Rolldown.RolldownOutput[]
+      expect(chunks[0].code).toContain('withConfig')
+    } finally {
+      await rm(root, {recursive: true, force: true})
+    }
+  })
+
   it('excludes the Lightning CSS light-dark polyfill', () => {
-    const config = createDefaultConfig({version: '9.9.9-test.1', styles: 'panda'})
+    const config = createDefaultConfig({...OPTIONS, styles: 'panda'})
     expect(config.css?.lightningcss?.exclude).toBe(Features.LightDark)
   })
 
   it('compiles the .css.ts modules of a Panda package with Panda only', () => {
-    const names = pluginNames(
-      createDefaultConfig({version: '9.9.9-test.1', styles: 'panda'}).plugins,
-    )
+    const names = pluginNames(createDefaultConfig({...OPTIONS, styles: 'panda'}).plugins)
     expect(names).toEqual(
       expect.arrayContaining([
         'pandacss',
@@ -43,7 +87,7 @@ describe('createDefaultConfig()', () => {
   })
 
   it('compiles the CSS modules of a CSS modules package with Lightning CSS and no Panda', () => {
-    const config = createDefaultConfig({version: '9.9.9-test.1', styles: 'css-modules'})
+    const config = createDefaultConfig({...OPTIONS, styles: 'css-modules'})
     expect(config.css).toEqual({
       transformer: 'lightningcss',
       lightningcss: {cssModules: {pattern: cssModulesPattern}, exclude: Features.LightDark},
@@ -83,7 +127,8 @@ describe('pandaCssImportPlugin()', () => {
 
 /**
  * Vite 8's default CSS minify target (`baseline-widely-available`): Chrome 111,
- * Edge 111, Firefox 114, Safari 16.4. Those browsers predate native `light-dark()`.
+ * Edge 111, Firefox 114, Safari 16.4. Those browsers predate native `light-dark()`,
+ * which makes them the targets that exercise the polyfill exclude.
  */
 const VITE_BASELINE_WIDELY_AVAILABLE_TARGETS = {
   chrome: 111 << 16,
@@ -111,7 +156,7 @@ describe('Lightning CSS light-dark minify', () => {
   })
 
   it('preserves light-dark() when the bundle config exclude is applied', () => {
-    const config = createDefaultConfig({version: '9.9.9-test.1', styles: 'panda'})
+    const config = createDefaultConfig({...OPTIONS, styles: 'panda'})
     const {code} = transform({
       filename: 'theme.css',
       code: Buffer.from(LIGHT_DARK_CSS),
@@ -125,6 +170,19 @@ describe('Lightning CSS light-dark minify', () => {
     expect(css).not.toContain('--lightningcss-light')
     expect(css).not.toContain('--lightningcss-dark')
   })
+
+  it('preserves light-dark() for the Baseline 2026 browsers without the exclude', () => {
+    const {code} = transform({
+      filename: 'theme.css',
+      code: Buffer.from(LIGHT_DARK_CSS),
+      minify: true,
+      targets: lightningCssTargets(OPTIONS.browserslist),
+    })
+    const css = code.toString()
+
+    expect(css).toContain('light-dark(')
+    expect(css).not.toContain('--lightningcss-light')
+  })
 })
 
 describe('Panda --made-with-panda marker', () => {
@@ -133,7 +191,7 @@ describe('Panda --made-with-panda marker', () => {
 
   // The options Vite's CSS minifier hands Lightning CSS (`minifyCSS` spreads `css.lightningcss`)
   function minifyLikeVite(styles: 'panda' | 'css-modules') {
-    const {css} = createDefaultConfig({version: '9.9.9-test.1', styles})
+    const {css} = createDefaultConfig({...OPTIONS, styles})
     return transform({
       ...css?.lightningcss,
       filename: 'index.css',
@@ -153,8 +211,7 @@ describe('Panda --made-with-panda marker', () => {
 
   it('leaves the custom properties of a CSS modules package alone', () => {
     expect(
-      createDefaultConfig({version: '9.9.9-test.1', styles: 'css-modules'}).css?.lightningcss
-        ?.unusedSymbols,
+      createDefaultConfig({...OPTIONS, styles: 'css-modules'}).css?.lightningcss?.unusedSymbols,
     ).toBeUndefined()
   })
 })

@@ -2,6 +2,7 @@ import {createClient, type RequestHandler} from '@sanity/client'
 import {firstValueFrom, merge} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {type LocaleDefinition} from '../../i18n/types'
 import {getCollectedConfigWarnings} from '../configWarnings'
 import {prepareConfig} from '../prepareConfig'
 import {SchemaError} from '../SchemaError'
@@ -192,6 +193,59 @@ describe('prepareConfig — workspace hidden property', () => {
     ])
 
     expect(workspaces.find((w) => w.name === 'callback')?.hidden).toBe(hidden)
+  })
+})
+
+describe('prepareConfig — lazy i18n resolution', () => {
+  it('exposes the source i18next instance lazily with the configured locale', () => {
+    const locales = vi.fn((previous: LocaleDefinition[]) => [
+      ...previous,
+      {
+        id: 'nb-NO',
+        title: 'Norsk',
+        weekInfo: {firstDay: 1 as const, weekend: [6, 7] as (1 | 2 | 3 | 4 | 5 | 6 | 7)[]},
+      },
+    ])
+    const {workspaces} = prepareConfig(createWorkspace({i18n: {locales}}))
+    // oxlint-disable-next-line no-deprecated -- source i18next is only reachable here
+    const [rootSource] = workspaces[0].__internal.sources
+
+    expect(locales).not.toHaveBeenCalled()
+
+    const i18next = rootSource.i18next
+    expect(locales).toHaveBeenCalledOnce()
+    expect(rootSource.i18next).toBe(i18next)
+    expect(i18next.options.supportedLngs).toEqual(expect.arrayContaining(['en-US', 'nb-NO']))
+  })
+
+  it('initializes workspace i18n only on first access without initializing sibling workspaces', () => {
+    const firstLocales = vi.fn((previous: LocaleDefinition[]) => previous)
+    const secondLocales = vi.fn((previous: LocaleDefinition[]) => previous)
+    const {workspaces} = prepareConfig([
+      createWorkspace({name: 'first', basePath: '/first', i18n: {locales: firstLocales}}),
+      createWorkspace({name: 'second', basePath: '/second', i18n: {locales: secondLocales}}),
+    ])
+
+    expect(firstLocales).not.toHaveBeenCalled()
+    expect(secondLocales).not.toHaveBeenCalled()
+
+    const i18n = workspaces[0].i18n
+    expect(firstLocales).toHaveBeenCalledOnce()
+    expect(workspaces[0].i18n).toBe(i18n)
+    expect(firstLocales).toHaveBeenCalledOnce()
+    expect(secondLocales).not.toHaveBeenCalled()
+  })
+
+  it('defers and memoizes i18n configuration errors', () => {
+    const locales = vi.fn(() => {
+      throw new Error('invalid locale config')
+    })
+    const {workspaces} = prepareConfig(createWorkspace({i18n: {locales}}))
+
+    expect(locales).not.toHaveBeenCalled()
+    expect(() => workspaces[0].i18n).toThrow('invalid locale config')
+    expect(() => workspaces[0].i18n).toThrow('invalid locale config')
+    expect(locales).toHaveBeenCalledOnce()
   })
 })
 

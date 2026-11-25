@@ -6,6 +6,7 @@ export interface PackageManifest {
   dependencies?: Record<string, string>
   devDependencies?: Record<string, string>
   engines?: Record<string, string>
+  browserslist?: string | string[]
   keywords?: string[]
 }
 

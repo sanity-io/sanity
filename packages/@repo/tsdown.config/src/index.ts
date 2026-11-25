@@ -1,3 +1,6 @@
+import {cwd} from 'node:process'
+
+import {lightningCssTargets, readPackageBrowserslist} from '@repo/browser-targets'
 import {defineConfig as defineTsdownConfig, type PackageOptions} from '@sanity/tsdown-config'
 import {type UserConfig} from 'tsdown'
 
@@ -19,8 +22,19 @@ import {type UserConfig} from 'tsdown'
  * - `outDir: 'lib'` - the packages publish `lib`, not tsdown's default `dist`
  * - `clean: ['lib']` - remove `lib` before each build (include `outDir` when overriding with
  *   a package-specific array; a `string[]` replaces tsdown's default of cleaning only `outDir`)
+ * - the extracted CSS of the `panda` and `css` pipelines is lowered for the browsers of the
+ *   package's own `browserslist` field (Baseline 2026, see "Browser support" in the `sanity`
+ *   README), instead of the `@sanity/browserslist-config` fallback that `@sanity/tsdown-config`
+ *   applies when the target names no browsers. The JS target stays the one tsdown derives from
+ *   `engines.node`: Node.js 24.11 is older than every Baseline 2026 browser engine, so it is the
+ *   binding constraint for JS syntax
  */
 export function defineConfig(options: PackageOptions = {}): Promise<UserConfig> {
+  const {css} = options
+  const panda = options.panda === true ? {} : options.panda
+  const targets =
+    panda || css ? lightningCssTargets(readPackageBrowserslist(options.cwd ?? cwd())) : {}
+
   return defineTsdownConfig({
     tsconfig: 'tsconfig.lib.json',
     dts: {generator: 'tsgo'},
@@ -28,6 +42,8 @@ export function defineConfig(options: PackageOptions = {}): Promise<UserConfig> 
     outDir: 'lib',
     clean: ['lib'],
     ...options,
+    ...(panda && {panda: {...panda, lightningcss: {targets, ...panda.lightningcss}}}),
+    ...(css && {css: {...css, lightningcss: {targets, ...css.lightningcss}}}),
     define: {__DEV__: 'false', ...options.define},
   })
 }

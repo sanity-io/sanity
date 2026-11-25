@@ -10,12 +10,12 @@ import {
   useDocumentVersions,
   useListFormat,
   usePerspective,
-  type VersionInfoDocumentStub,
 } from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Flex} from 'ui5'
 
 import {useSetVariant} from '../../../../../../../core/perspective/useSetVariant'
+import {type VersionInfoDocumentStub} from '../../../../../../../core/releases/store/types'
 import {useActiveReleases} from '../../../../../../../core/releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../../../../../../core/releases/util/const'
 import {isAgentBundleName} from '../../../../../../../core/store/agent/createAgentBundlesStore'

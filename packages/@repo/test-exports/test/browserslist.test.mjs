@@ -1,0 +1,32 @@
+import assert from 'node:assert/strict'
+import {execSync} from 'node:child_process'
+import {readFileSync} from 'node:fs'
+import path from 'node:path'
+import {test} from 'node:test'
+import {fileURLToPath} from 'node:url'
+
+// Studio v7 supports Baseline 2026 (https://web.dev/baseline), fixed for the life of the major.
+// `pnpm normalize-pkgfields` writes this field, and the package builds read it for their CSS
+// lowering targets (@repo/browser-targets).
+const EXPECTED_BROWSERSLIST = ['node >=24.11', 'baseline 2026 with downstream']
+const repoRoot = path.resolve(fileURLToPath(new URL('../../../../', import.meta.url)))
+const packagesDir = path.join(repoRoot, 'packages')
+
+const packages = JSON.parse(
+  execSync('pnpm ls -r --json --depth -1', {
+    cwd: repoRoot,
+    encoding: 'utf-8',
+    maxBuffer: 10 * 1024 * 1024,
+  }),
+)
+
+for (const pkg of packages) {
+  if (!pkg.path.startsWith(`${packagesDir}${path.sep}`)) continue
+
+  const manifest = JSON.parse(readFileSync(path.join(pkg.path, 'package.json'), 'utf8'))
+  if (manifest.private) continue
+
+  void test(`${manifest.name} declares browserslist ${JSON.stringify(EXPECTED_BROWSERSLIST)}`, () => {
+    assert.deepEqual(manifest.browserslist, EXPECTED_BROWSERSLIST)
+  })
+}
