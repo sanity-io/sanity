@@ -13,13 +13,13 @@ import {
 } from '../../network/listenerStall'
 import {ListenerStallDetected} from '../__telemetry__/listeners.telemetry'
 
-const workspaceTelemetry: {logger: TelemetryLogger<unknown> | undefined} = {logger: undefined}
+const workspaceStallLogger: {logger: TelemetryLogger<unknown> | undefined} = {logger: undefined}
 let lastReportedStallOccurrence = 0
 
 /**
- * Classifies each listener stall detected in this tab and logs `ListenerStallDetected` once
- * per occurrence. Render it directly inside `DeferredTelemetryProvider`, above `AuthBoundary`, so
- * a stall during boot is buffered until a workspace's telemetry store mounts.
+ * Classifies each listener stall detected in this tab and logs `ListenerStallDetected` once per
+ * occurrence. It mounts under `DeferredTelemetryProvider` so a boot stall (on `/users/me`, before
+ * any workspace mounts) is buffered until a workspace's telemetry store mounts.
  *
  * @internal
  */
@@ -29,7 +29,10 @@ export function ListenerStallTelemetry(): null {
   useEffect(
     () =>
       subscribeListenerStall((stall) => {
-        void reportListenerStall({stall, fallbackTelemetry: deferredTelemetry})
+        void reportListenerStall({
+          stall,
+          resolveTelemetry: () => workspaceStallLogger.logger ?? deferredTelemetry,
+        })
       }),
     [deferredTelemetry],
   )
@@ -38,21 +41,19 @@ export function ListenerStallTelemetry(): null {
 }
 
 /**
- * Sends `ListenerStallTelemetry`'s events straight to `telemetry` while mounted. Render it inside
- * the workspace's `TelemetryProvider`: it drains the deferred buffer each time its `store` prop
- * changes, so events logged to the buffer afterward would never send.
+ * Hands `ListenerStallTelemetry`'s reporter the workspace logger while mounted. The workspace
+ * `TelemetryProvider` drains the deferred buffer only when its store changes, so events buffered
+ * afterwards would never send.
  *
  * @internal
  */
-export function ListenerStallWorkspaceTelemetry(props: {
-  telemetry: TelemetryLogger<unknown>
-}): null {
+export function ListenerStallWorkspaceLogger(props: {telemetry: TelemetryLogger<unknown>}): null {
   const {telemetry} = props
 
   useEffect(() => {
-    workspaceTelemetry.logger = telemetry
+    workspaceStallLogger.logger = telemetry
     return () => {
-      if (workspaceTelemetry.logger === telemetry) workspaceTelemetry.logger = undefined
+      if (workspaceStallLogger.logger === telemetry) workspaceStallLogger.logger = undefined
     }
   }, [telemetry])
 
@@ -61,15 +62,16 @@ export function ListenerStallWorkspaceTelemetry(props: {
 
 async function reportListenerStall(options: {
   stall: DetectedStall
-  fallbackTelemetry: TelemetryLogger<unknown>
+  resolveTelemetry: () => TelemetryLogger<unknown>
 }): Promise<void> {
-  const {stall, fallbackTelemetry} = options
+  const {stall, resolveTelemetry} = options
   if (stall.stallOccurrence <= lastReportedStallOccurrence) return
   lastReportedStallOccurrence = stall.stallOccurrence
 
   const ledgerSnapshot = await snapshot(stall.host)
   const protocol = getMeasuredApiProtocol(stall.host)
-  const telemetry = workspaceTelemetry.logger ?? fallbackTelemetry
+  // Picks up a workspace logger that mounted during the snapshot.
+  const telemetry = resolveTelemetry()
 
   telemetry.log(ListenerStallDetected, {
     kind: classifyStall({snapshot: ledgerSnapshot, protocol}),

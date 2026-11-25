@@ -34,7 +34,7 @@ async function setUpStall() {
     vi.fn(() => new Promise(() => undefined)),
   )
 
-  const {ListenerStallTelemetry, ListenerStallWorkspaceTelemetry} =
+  const {ListenerStallTelemetry, ListenerStallWorkspaceLogger} =
     await import('../ListenerStallTelemetry')
   const {resolveListenerCountingFetch} = await import('../../../network/listenerCount')
   const {startTrackingStudioTabs} = await import('../../../network/studioTabs')
@@ -60,7 +60,7 @@ async function setUpStall() {
     },
     workspaceReporter: (
       <TelemetryProvider store={store}>
-        <ListenerStallWorkspaceTelemetry telemetry={store.logger} />
+        <ListenerStallWorkspaceLogger telemetry={store.logger} />
       </TelemetryProvider>
     ),
   }
@@ -148,4 +148,38 @@ it('logs one event per stall straight to the workspace store when two instances 
     expect(logSpy).toHaveBeenCalledWith(ListenerStallDetected, expectedBootStallEvent),
   )
   expect(logSpy).toHaveBeenCalledTimes(1)
+})
+
+it('falls back to the deferred logger after the workspace logger unmounts', async () => {
+  const {ListenerStallTelemetry, ListenerStallDetected, store, stallBoot, workspaceReporter} =
+    await setUpStall()
+  const logSpy = vi.spyOn(store.logger, 'log')
+  const resumeSpy = vi.spyOn(store.logger, 'resume')
+
+  const {rerender} = render(
+    <DeferredTelemetryProvider>
+      <ListenerStallTelemetry />
+      {workspaceReporter}
+    </DeferredTelemetryProvider>,
+  )
+  rerender(
+    <DeferredTelemetryProvider>
+      <ListenerStallTelemetry />
+    </DeferredTelemetryProvider>,
+  )
+  await stallBoot()
+  expect(logSpy).not.toHaveBeenCalled()
+
+  rerender(
+    <DeferredTelemetryProvider>
+      <ListenerStallTelemetry />
+      {workspaceReporter}
+    </DeferredTelemetryProvider>,
+  )
+
+  await vi.waitFor(() =>
+    expect(resumeSpy).toHaveBeenCalledWith([
+      expect.objectContaining({event: ListenerStallDetected, data: expectedBootStallEvent}),
+    ]),
+  )
 })
