@@ -168,6 +168,15 @@ describe('shouldShowReleaseInView', () => {
   })
 })
 
+function archivedDraft(id: string, finalDocumentStates?: {id: string}[]): ReleaseDocument {
+  return {
+    ...archivedScheduledRelease,
+    _id: `_.releases.${id}`,
+    metadata: {...archivedScheduledRelease.metadata, cardinality: 'one'},
+    ...(finalDocumentStates ? {finalDocumentStates} : {}),
+  }
+}
+
 describe('filterReleasesForOverview', () => {
   const scheduled: ReleaseDocument = {
     ...scheduledRelease,
@@ -353,5 +362,20 @@ describe('filterReleasesForOverview', () => {
 
     expect(activeResult).toEqual([scheduledWithDate])
     expect(pausedResult).toEqual([pausedWithDate])
+  })
+
+  it('leaves out archived scheduled drafts that recorded no document', () => {
+    const withDocument = archivedDraft('withDocument', [{id: 'versions.withDocument.doc'}])
+    const withoutDocuments = archivedDraft('withoutDocuments')
+    const withEmptyDocuments = archivedDraft('withEmptyDocuments', [])
+
+    expect(
+      filterReleasesForOverview({
+        releases: [],
+        archivedReleases: [withDocument, withoutDocuments, withEmptyDocuments],
+        cardinalityView: 'drafts',
+        releaseGroupMode: 'archived',
+      }),
+    ).toEqual([withDocument])
   })
 })

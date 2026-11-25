@@ -249,6 +249,7 @@ function scheduledDraft(
       cardinality: 'one',
       intendedPublishAt,
     },
+    finalDocumentStates: [{id: `versions.${id}.document`}],
     ...overrides,
   }
 }
@@ -1552,7 +1553,19 @@ describe('ReleasesOverview', () => {
       {state: 'archived'},
       '2026-08-01T12:00:00Z',
     )
-    const archivedScheduledDrafts = [publishedOnTime, publishedLate, newest, archivedBeforeRunning]
+    // Published with no document, so there is nothing to list
+    const publishedWithoutDocument = scheduledDraft('rNoDocument', {
+      publishAt: '2026-10-15T10:00:00Z',
+      publishedAt: '2026-10-15T10:00:01Z',
+      finalDocumentStates: undefined,
+    })
+    const archivedScheduledDrafts = [
+      publishedOnTime,
+      publishedLate,
+      newest,
+      archivedBeforeRunning,
+      publishedWithoutDocument,
+    ]
 
     beforeEach(async () => {
       // Earlier tests replace the router's return value, which outlives them
@@ -1585,6 +1598,17 @@ describe('ReleasesOverview', () => {
       within(rows[1]).getByText(new RegExp(shownDate('2026-08-01T12:00:00Z')))
       within(rows[2]).getByText(new RegExp(shownDate(publishedLate.publishedAt!)))
       within(rows[3]).getByText(new RegExp(shownDate(publishedOnTime.publishedAt!)))
+    })
+
+    it('does not list scheduled drafts that were published without a document', async () => {
+      await mountOverviewRows([
+        ['group', 'archived'],
+        ['view', 'drafts'],
+      ])
+
+      expect(
+        screen.queryByText(new RegExp(shownDate(publishedWithoutDocument.publishedAt!))),
+      ).toBeNull()
     })
 
     it('keeps listing active scheduled drafts with the soonest first', async () => {

@@ -136,21 +136,13 @@ describe('scheduled draft rows without a document', () => {
       expect(screen.queryByTestId('scheduled-draft-published-document-link')).toBeNull()
     })
 
-    it('says there is no document when a published scheduled draft recorded none', async () => {
-      mockDocumentsResult({})
-
-      await renderDocumentCell(scheduledDraft('published', null))
-
-      expect(await screen.findByText('No document in this release')).toBeInTheDocument()
-      expect(document.querySelector('[data-ui="Skeleton"]')).toBeNull()
-    })
-
     it('says there is no document when an active scheduled draft has none', async () => {
       mockDocumentsResult({})
 
       await renderDocumentCell(scheduledDraft('active', null))
 
       expect(await screen.findByText('No document in this release')).toBeInTheDocument()
+      expect(document.querySelector('[data-ui="Skeleton"]')).toBeNull()
     })
 
     it('says the document could not be loaded when reading it failed', async () => {
@@ -187,7 +179,7 @@ describe('scheduled draft rows without a document', () => {
     })
 
     it.each([
-      ['has no document', scheduledDraft('published', null), null],
+      ['has no document', scheduledDraft('active', null), null],
       ['could not be loaded', scheduledDraft('published'), new Error('Too many requests')],
       ['is still loading', scheduledDraft('published'), null, true],
     ])('shows no info icon when the document %s', async (_, release, error, loading = false) => {
