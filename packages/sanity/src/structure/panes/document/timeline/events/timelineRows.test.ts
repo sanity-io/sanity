@@ -116,6 +116,26 @@ describe('getTimelineRows', () => {
     expect(shown([], EVENTS.slice(2))).toEqual(['group-tx-2', 'publish', 'oldest'])
   })
 
+  it('does not take a listed transaction sharing an id with a missing parent for that parent', () => {
+    // The From list when the publish is the To event: the newest transaction of the edit group
+    // under it is the publish's own revision, so it shares the publish's id.
+    const fromList: DocumentGroupEvent[] = [
+      edit('published-group', {parentId: 'publish'}),
+      transaction('publish', 'published-group'),
+      transaction('published-group-tx-1', 'published-group'),
+      create,
+      edit('oldest'),
+    ]
+    expect(shown([], fromList)).toEqual(['published-group', 'create', 'oldest'])
+    expect(shown(['published-group'], fromList)).toEqual([
+      'published-group',
+      '  publish',
+      '  published-group-tx-1',
+      'create',
+      'oldest',
+    ])
+  })
+
   it('keeps showing a creation event nested under a publish when it is the last event', () => {
     expect(shown([], EVENTS.slice(0, -1))).toEqual(['group', 'publish', 'create'])
   })

@@ -125,7 +125,11 @@ export function getTimelineRows({
   expandedParents: ReadonlySet<string>
   revealedTransactions?: ReadonlyMap<string, number>
 }): TimelineRow[] {
-  const eventIds = new Set(events.map((event) => event.id))
+  // A listed transaction can share its id with its group or with a publish (the newest one is
+  // their revision), but it is never a parent: it doesn't make a missing parent present.
+  const parentIds = new Set(
+    events.filter((event) => !isEditTransactionEvent(event)).map((event) => event.id),
+  )
   const lastEventId = events.at(-1)?.id
   const transactionCounts = getTransactionCounts(events)
   const shownDepths = new Map<string, number>()
@@ -135,7 +139,7 @@ export function getTimelineRows({
   for (const event of events) {
     const parentId = getParentId(event)
     let depth: number | undefined
-    if (!parentId || !eventIds.has(parentId)) {
+    if (!parentId || !parentIds.has(parentId)) {
       depth = 0
     } else if (isCreateDocumentVersionEvent(event) && event.id === lastEventId) {
       depth = 0
