@@ -1,9 +1,9 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {SyncIcon} from '@sanity/icons/Sync'
-import {Card, Container, Heading} from '@sanity/ui'
+import {Card, Container} from '@sanity/ui'
 import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
-import {Code, Text, Box, Flex, VStack, Link} from 'ui5'
+import {Heading, Code, Text, Box, Flex, VStack, Link} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../i18n'
@@ -56,7 +56,9 @@ export function StructureError({error, onReload}: StructureErrorProps) {
   return (
     <Card height="fill" overflow="auto" padding={4} sizing="border" tone="critical">
       <Container>
-        <Heading as="h2">{t('structure-error.header.text')}</Heading>
+        <Heading as="h2" trim>
+          {t('structure-error.header.text')}
+        </Heading>
 
         <Card marginTop={4} padding={4} radius={2} overflow="auto" shadow={1} tone="inherit">
           {path.length > 0 && (
