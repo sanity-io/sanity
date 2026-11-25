@@ -909,10 +909,12 @@ describe('ConfirmDeleteDialog, open beta (option C)', () => {
       />,
     )
 
-    await expect.element($dialog.getByText('Delete the Default document?')).toBeVisible()
+    // Only the blocked Default is selected: the title says so, and the notice lists the reasons
+    // without repeating it
+    await expect.element($dialog).toHaveAccessibleName("The Default document can't be deleted yet")
     await expect
       .element($dialog.getByTestId('default-blocked'))
-      .toMatchTextContent("The Default document can't be deleted yet")
+      .not.toMatchTextContent("The Default document can't be deleted yet")
     await expect
       .element($dialog.getByTestId('blocked-by-links'))
       .toHaveTextContent(
@@ -949,10 +951,10 @@ describe('ConfirmDeleteDialog, open beta (option C)', () => {
       />,
     )
 
-    await expect.element($dialog.getByText('Delete the published document?')).toBeVisible()
+    await expect.element($dialog).toHaveAccessibleName("This document can't be deleted yet")
     await expect
       .element($dialog.getByTestId('default-blocked'))
-      .toMatchTextContent("This document can't be deleted yet")
+      .not.toMatchTextContent("This document can't be deleted yet")
     await expect
       .element($dialog.getByTestId('blocked-by-links'))
       .toHaveTextContent(
