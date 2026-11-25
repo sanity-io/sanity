@@ -11,8 +11,9 @@ import {Translate} from '../../../../i18n/Translate'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import {FormField} from '../../../components/formField/FormField'
-import {set} from '../../../patch/patch'
+import {set, setIfMissing} from '../../../patch/patch'
 import {PatchEvent} from '../../../patch/PatchEvent'
+import {type FormPatch} from '../../../patch/types'
 import {type MissingKeysError} from '../../../store/types/memberErrors'
 
 interface Props {
@@ -26,11 +27,15 @@ export function MissingKeysAlert(props: Props) {
   const handleFixMissingKeys = useCallback(() => {
     onChange(
       PatchEvent.from(
-        (error.value || []).flatMap((val, i) => {
-          if (typeof val._key === 'string' && val._key.length > 0) {
+        (error.value || []).flatMap((item, index): FormPatch[] => {
+          if (typeof item._key === 'string' && item._key.length > 0) {
             return []
           }
-          return [set(randomKey(), [i, '_key'])]
+          // setIfMissing is a no-op if another client keyed the item; it cannot replace ''
+          if (item._key === '') {
+            return [set(randomKey(), [index, '_key'])]
+          }
+          return [setIfMissing(randomKey(), [index, '_key'])]
         }),
       ),
     )
