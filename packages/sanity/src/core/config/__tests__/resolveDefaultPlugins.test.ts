@@ -2,9 +2,12 @@ import {describe, expect, it} from 'vitest'
 
 import {commentsInspector} from '../../comments-v2/plugin/inspector'
 import {commentsInspector as commentsLegacyInspector} from '../../comments/plugin/inspector'
+import {localeBundlesReducer} from '../configPropertyReducers'
+import {getDefaultPluginsLocalePlugins, getDefaultPluginsOptions} from '../defaultPluginsOptions'
 import {definePlugin} from '../definePlugin'
-import {getDefaultPlugins, getDefaultPluginsOptions} from '../resolveDefaultPlugins'
-import {type WorkspaceOptions} from '../types'
+import {resolveConfigProperty} from '../resolveConfigProperty'
+import {getDefaultPlugins} from '../resolveDefaultPlugins'
+import {type PluginOptions, type WorkspaceOptions} from '../types'
 
 const workspace = (overrides: Partial<WorkspaceOptions> = {}): WorkspaceOptions => ({
   name: 'default',
@@ -74,5 +77,46 @@ describe('getDefaultPlugins', () => {
 
     expect(names).not.toContain('sanity/schedules')
     expect(names).not.toContain('sanity/singleDocRelease')
+  })
+})
+
+function localeBundles(config: WorkspaceOptions, plugins: PluginOptions[]) {
+  return resolveConfigProperty({
+    config: {...config, plugins},
+    context: {projectId: config.projectId, dataset: config.dataset},
+    propertyName: 'i18n.bundles',
+    reducer: localeBundlesReducer,
+    initialValue: [],
+  })
+}
+
+describe('getDefaultPluginsLocalePlugins', () => {
+  const userPlugin = definePlugin({name: 'user-plugin'})
+
+  it.each([
+    ['the default options', workspace()],
+    ['user plugins', workspace({plugins: [userPlugin()]})],
+    ['legacy comments', workspace({comments: {legacy: true}})],
+    [
+      'variants and the media library',
+      workspace({beta: {variants: {enabled: true}}, mediaLibrary: {enabled: true}}),
+    ],
+    [
+      'every optional default plugin turned off',
+      workspace({
+        tasks: {enabled: false},
+        releases: {enabled: false},
+        scheduledDrafts: {enabled: false},
+        scheduledPublishing: {enabled: false},
+        apps: {canvas: {enabled: false}},
+      }),
+    ],
+  ])('adds the locale bundles of the default plugins included with %s', (_, config) => {
+    const options = getDefaultPluginsOptions(config)
+    const plugins = getDefaultPlugins(options, config.plugins)
+    const localePlugins = getDefaultPluginsLocalePlugins(options, config.plugins)
+
+    expect(localePlugins.map((plugin) => plugin.name)).toEqual(plugins.map((plugin) => plugin.name))
+    expect(localeBundles(config, localePlugins)).toEqual(localeBundles(config, plugins))
   })
 })

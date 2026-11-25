@@ -28,7 +28,7 @@ const DocumentBannerInput = lazy(lazyDocumentBannerInput)
 /**
  * @internal
  */
-export const SCHEDULED_PUBLISHING_NAME = 'sanity/scheduled-publishing'
+const SCHEDULED_PUBLISHING_NAME = 'sanity/scheduled-publishing'
 
 /**
  * @internal
