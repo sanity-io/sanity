@@ -608,8 +608,9 @@ export function ReleasesOverview() {
               overflow="auto"
             >
               <Table<TableRelease>
-                // for resetting filter and sort on table when filter, group or view changed
-                key={releaseFilterDate ? 'by_date' : `${cardinalityView}-${releaseGroupMode}`}
+                // Resets the table's search and sort, which it only takes from `defaultSort` when it
+                // mounts, when the date filter is set or cleared, or the view or group changes
+                key={`${releaseFilterDate ? 'by_date' : 'all'}-${cardinalityView}-${releaseGroupMode}`}
                 defaultSort={getDefaultTableSort(cardinalityView, releaseGroupMode)}
                 loading={loadingTableData}
                 data={filteredReleases}
