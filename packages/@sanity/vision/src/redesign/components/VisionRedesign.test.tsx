@@ -4822,8 +4822,8 @@ describe('VisionRedesign', () => {
     expect(optionIds().filter((id) => id === today)).toHaveLength(1)
     expect(optionIds().slice(-2)).toEqual(['vX', 'v1'])
     const todayOption = screen.getByTestId(`vision-option-api-version-option-${today}`)
-    expect(todayOption.textContent).toContain('vision.options.api-version.today')
-    expect(todayOption.textContent).toContain(today)
+    // Titled with the version like the other options, with "Today" under it
+    expect(todayOption.textContent).toBe(`${today}vision.options.api-version.today`)
     expect(screen.getByTestId('vision-option-api-version-option-v1').textContent).toContain(
       'vision.options.api-version.legacy',
     )
