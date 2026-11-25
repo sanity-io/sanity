@@ -1,12 +1,10 @@
-import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Card} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {map} from 'rxjs'
 import {IntentLink} from 'sanity/router'
-import {Box, Flex, Icon} from 'ui5'
+import {Box} from 'ui5'
 
-import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {SanityDefaultPreview} from '../../../../preview/components/SanityDefaultPreview'
 import {useDocumentPreviewStore} from '../../../../store/datastores'
@@ -14,6 +12,7 @@ import {useDocumentPreviewValues} from '../../../../tasks/hooks/useDocumentPrevi
 import {getPublishedId} from '../../../../util/draftUtils'
 import {releasesLocaleNamespace} from '../../../i18n'
 import {type InjectedTableProps} from '../../components/Table/types'
+import {type ScheduledDraftMissingDocument} from '../hooks/useScheduledDraftRowDocument'
 
 interface PublishedDocumentTypeState {
   loading: boolean
@@ -23,6 +22,16 @@ interface PublishedDocumentTypeState {
 const LOADING_DOCUMENT_TYPE: PublishedDocumentTypeState = {loading: true, documentType: undefined}
 const PUBLISHED_PERSPECTIVE_STACK: string[] = []
 const PUBLISHED_PERSPECTIVE_SEARCH_PARAMS: [string, string][] = [['perspective', 'published']]
+
+function MutedPreview({title, subtitle}: {title: string; subtitle?: string}) {
+  return (
+    <SanityDefaultPreview
+      title={<span style={{color: 'var(--card-muted-fg-color)'}}>{title}</span>}
+      subtitle={subtitle}
+      layout="default"
+    />
+  )
+}
 
 function PublishedDocumentPreviewLink({
   documentId,
@@ -66,54 +75,40 @@ function PublishedDocumentPreview({documentId}: {documentId: string}) {
   )
   const {loading, documentType} = useObservable(documentType$, LOADING_DOCUMENT_TYPE)
 
+  if (loading) return <SanityDefaultPreview isPlaceholder layout="default" />
   if (documentType) {
     return <PublishedDocumentPreviewLink documentId={documentId} documentType={documentType} />
   }
-  return (
-    <SanityDefaultPreview
-      isPlaceholder={loading}
-      title={t('document-preview.no-published-document')}
-      layout="default"
-    />
-  )
+  return <MutedPreview title={t('document-preview.no-published-document')} subtitle={documentId} />
 }
 
 /**
- * The document preview of a published or archived scheduled draft whose document has no revision
- * left in history, because the dataset's history retention has removed it. Previews the published
- * document instead, linking to it, and explains why with an info icon.
+ * The document column of a scheduled draft that has no document to show. When history has no
+ * revision of the document left, the published document is previewed instead, linking to it.
  */
-export function ScheduledDraftHistoryUnavailablePreview({
+export function ScheduledDraftMissingDocumentPreview({
   cellProps,
-  documentId,
+  missingDocument,
 }: {
   cellProps: InjectedTableProps
-  documentId: string
+  missingDocument: ScheduledDraftMissingDocument
 }) {
   const {t} = useTranslation(releasesLocaleNamespace)
 
   return (
     <Box {...cellProps} flexBasis="0%" flexGrow={1} padding={1} paddingLeft={2} paddingRight={2}>
-      <Flex alignItems="center" gap={2}>
-        <Box flexBasis="0%" flexGrow={1}>
-          <PublishedDocumentPreview documentId={getPublishedId(documentId)} />
-        </Box>
-        <Box paddingRight={3}>
-          <Tooltip
-            portal
-            placement="bottom-end"
-            content={t('document-preview.history-unavailable')}
-          >
-            <Icon
-              data-testid="scheduled-draft-history-unavailable"
-              muted
-              size={1}
-              style={{margin: '-0.375rem'}}
-              icon={InfoOutlineIcon}
-            />
-          </Tooltip>
-        </Box>
-      </Flex>
+      {missingDocument.reason === 'history-removed' && (
+        <PublishedDocumentPreview documentId={getPublishedId(missingDocument.documentId)} />
+      )}
+      {missingDocument.reason === 'error' && (
+        <MutedPreview
+          title={t('document-preview.error')}
+          subtitle={missingDocument.documentId && getPublishedId(missingDocument.documentId)}
+        />
+      )}
+      {missingDocument.reason === 'no-document' && (
+        <MutedPreview title={t('document-preview.no-document')} />
+      )}
     </Box>
   )
 }
