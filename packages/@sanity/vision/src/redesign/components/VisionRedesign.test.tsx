@@ -4123,6 +4123,9 @@ describe('VisionRedesign', () => {
     expect(tab().getByTestId('vision-query-format').getAttribute('aria-label')).toBe(
       'vision.query.format',
     )
+    expect(
+      tab().getByTestId('vision-query-format').querySelector('[data-sanity-icon="prettify"]'),
+    ).not.toBeNull()
 
     // Already formatted
     typeQuery('*[_type == "author"]')
@@ -4163,7 +4166,7 @@ describe('VisionRedesign', () => {
     expect(tab().getByTestId('vision-params-copy')).toBeTruthy()
   })
 
-  it('switches Copy to Copied with a check for a moment, without a toast, and only once it copied', async () => {
+  it('shows Copy as an icon that turns into a check labelled Copied for a moment, without a toast, and only once it copied', async () => {
     renderRedesign()
     const writeText = vi.fn(() => Promise.resolve())
     const clipboard = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
@@ -4171,26 +4174,30 @@ describe('VisionRedesign', () => {
     try {
       typeQuery('*[_type == "author"]')
       const copy = () => within(shownTab()).getByTestId('vision-query-copy')
-      expect(text(copy())).toBe('vision.editor.copy')
+      expect(text(copy())).toBe('')
       expect(copy().getAttribute('aria-label')).toBe('vision.query.copy')
 
       fireEvent.click(copy())
-      await waitFor(() => expect(text(copy())).toBe('vision.editor.copied'))
+      await waitFor(() => expect(copy().getAttribute('aria-label')).toBe('vision.editor.copied'))
       expect(writeText).toHaveBeenCalledWith('*[_type == "author"]')
-      expect(copy().getAttribute('aria-label')).toBe('vision.editor.copied')
+      expect(text(copy())).toBe('')
       expect(copy().querySelector('[data-sanity-icon="checkmark"]')).not.toBeNull()
       expect(screen.queryByText('vision.query.copied')).toBeNull()
       // The params' Copy button is not the one that copied
-      expect(text(within(shownTab()).getByTestId('vision-params-copy'))).toBe('vision.editor.copy')
+      expect(within(shownTab()).getByTestId('vision-params-copy').getAttribute('aria-label')).toBe(
+        'vision.params.copy',
+      )
 
-      await waitFor(() => expect(text(copy())).toBe('vision.editor.copy'), {timeout: 3000})
+      await waitFor(() => expect(copy().getAttribute('aria-label')).toBe('vision.query.copy'), {
+        timeout: 3000,
+      })
       expect(copy().querySelector('[data-sanity-icon="copy"]')).not.toBeNull()
 
       writeText.mockRejectedValueOnce(new Error('denied'))
       fireEvent.click(copy())
       await waitFor(() => expect(writeText).toHaveBeenCalledTimes(2))
       await new Promise((resolve) => setTimeout(resolve, 50))
-      expect(text(copy())).toBe('vision.editor.copy')
+      expect(copy().getAttribute('aria-label')).toBe('vision.query.copy')
     } finally {
       if (clipboard) Object.defineProperty(navigator, 'clipboard', clipboard)
       else Reflect.deleteProperty(navigator, 'clipboard')
@@ -4211,11 +4218,13 @@ describe('VisionRedesign', () => {
       fireEvent.keyDown(getParamsEditor(), COPY_KEYS)
       await waitFor(() => expect(writeText).toHaveBeenLastCalledWith('{"id":"a"}'))
       await waitFor(() =>
-        expect(text(within(shownTab()).getByTestId('vision-params-copy'))).toBe(
-          'vision.editor.copied',
-        ),
+        expect(
+          within(shownTab()).getByTestId('vision-params-copy').getAttribute('aria-label'),
+        ).toBe('vision.editor.copied'),
       )
-      expect(text(within(shownTab()).getByTestId('vision-query-copy'))).toBe('vision.editor.copy')
+      expect(within(shownTab()).getByTestId('vision-query-copy').getAttribute('aria-label')).toBe(
+        'vision.query.copy',
+      )
 
       fireEvent.keyDown(getParamsEditor(), FORMAT_KEYS)
       expect(getParamsEditor().value).toBe('{\n  "id": "a"\n}')
@@ -4225,7 +4234,7 @@ describe('VisionRedesign', () => {
       fireEvent.keyDown(getQueryEditor(), COPY_KEYS)
       await waitFor(() => expect(writeText).toHaveBeenLastCalledWith(query))
       await waitFor(() =>
-        expect(text(within(shownTab()).getByTestId('vision-query-copy'))).toBe(
+        expect(within(shownTab()).getByTestId('vision-query-copy').getAttribute('aria-label')).toBe(
           'vision.editor.copied',
         ),
       )

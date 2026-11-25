@@ -160,7 +160,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
 
   /** Copy button of a pane header, for a moment after it copied */
   'vision.copied': 'Copied',
-  /** Copy button of a pane header, copying what the pane shows */
+  /**
+   * Copy button of a pane header, copying what the pane shows
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.copy': 'Copy',
   /** Label of the document after the change in the Delta panel */
   'vision.delta.after': 'After',
@@ -202,7 +206,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.drawer.close': 'Close panel',
   /** The Copy button in the corner of the query and params editors, for a few seconds after a copy */
   'vision.editor.copied': 'Copied',
-  /** Button in the corner of the query and params editors that copies their text */
+  /**
+   * Button in the corner of the query and params editors that copies their text
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.editor.copy': 'Copy',
   /** Button in the corner of the query and params editors that reformats their text */
   'vision.editor.format': 'Format',
@@ -214,6 +222,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.export-query.copy': 'Copy snippet',
   /** Label for the button that copies every file of a code snippet, each under a comment with its path */
   'vision.export-query.copy-all': 'Copy all files',
+  /** Accessible label and tooltip of the icon button in a file's header that copies that file */
+  'vision.export-query.copy-file': 'Copy file',
   /** Explanation at the top of the export query dialog */
   'vision.export-query.description':
     'Run this query outside of the studio with one of these snippets.',
