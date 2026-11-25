@@ -94,7 +94,6 @@ export {
   type UnserializedListItemChild,
 } from '../structure/structureBuilder/ListItem'
 export {
-  getOrderingMenuItemsForSchemaType,
   type KnownMenuItemParams,
   type MenuItem,
   type MenuItemActionType,
@@ -166,4 +165,3 @@ export {
   type StructureToolPaneActionHandler,
   type UnresolvedPaneNode,
 } from '../structure/types'
-export {useStructureTool} from '../structure/useStructureTool'

@@ -4,11 +4,9 @@ import {type RefAttributes, type SVGProps, useCallback, useMemo, useState} from 
 import {
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
-  getVariantTitle,
   getVersionFromId,
   getVersionId,
   type SystemVariant,
-  useActiveReleases,
   useDocumentVersions,
   useListFormat,
   usePerspective,
@@ -18,12 +16,14 @@ import {useTranslation} from 'sanity/i18n'
 import {Flex} from 'ui5'
 
 import {useSetVariant} from '../../../../../../../core/perspective/useSetVariant'
+import {useActiveReleases} from '../../../../../../../core/releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../../../../../../core/releases/util/const'
 import {isAgentBundleName} from '../../../../../../../core/store/agent/createAgentBundlesStore'
 import {useAgentVersionDisplay} from '../../../../../../../core/store/agent/useAgentVersionDisplay'
 import {useAllVariants} from '../../../../../../../core/variants/store/useAllVariants'
 import {
   filterVariantsForSearch,
+  getVariantTitle,
   isDefaultVariant,
 } from '../../../../../../../core/variants/tool/util'
 import {
