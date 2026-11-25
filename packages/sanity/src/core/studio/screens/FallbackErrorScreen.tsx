@@ -1,6 +1,6 @@
 /* oxlint-disable i18next/no-literal-string */
-import {Card, Heading} from '@sanity/ui'
-import {Code, Text, Container, VStack, Flex} from 'ui5'
+import {Card} from '@sanity/ui'
+import {Heading, Code, Text, Container, VStack, Flex} from 'ui5'
 
 import {ErrorActions} from '../../components/errorActions/ErrorActions'
 import {isDev, isProd} from '../../environment'
@@ -43,7 +43,9 @@ export function FallbackErrorScreen(props: {
         <Container size={3}>
           <VStack gap={6}>
             <VStack gap={4}>
-              <Heading>{heading}</Heading>
+              <Heading as="h1" trim>
+                {heading}
+              </Heading>
               <Text as="div" trim={true}>
                 An error occurred that Sanity Studio was unable to recover from.
               </Text>

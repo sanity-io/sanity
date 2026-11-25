@@ -1,8 +1,8 @@
 import {type Schema} from '@sanity/types'
-import {Card, Heading} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useEffect} from 'react'
-import {Code, Text, Container, Flex, Grid, VStack} from 'ui5'
+import {Heading, Code, Text, Container, Flex, Grid, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {type SchemaErrorContext} from '../../../config/SchemaError'
@@ -91,7 +91,9 @@ export function SchemaErrorsScreen({schema, context}: SchemaErrorsScreenProps) {
       <Container size={1}>
         <VStack gap={5}>
           <Flex justifyContent="space-between" alignItems="center" gap={2}>
-            <Heading as="h1">{t('schema-errors.title', 'Schema errors')}</Heading>
+            <Heading as="h1" trim>
+              {t('schema-errors.title', 'Schema errors')}
+            </Heading>
             <Button
               text={t(
                 'about-dialog.version-info.copy-to-clipboard-button.text',

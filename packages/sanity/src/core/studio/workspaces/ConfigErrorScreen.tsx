@@ -1,10 +1,10 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Heading} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
-import {Text, Container, Flex, VStack, Box} from 'ui5'
+import {Heading, Text, Container, Flex, VStack, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
@@ -202,7 +202,7 @@ function ConfigErrorLayout(props: {
             <ChooseAnotherWorkspaceButton
               onChooseAnotherWorkspace={props.onChooseAnotherWorkspace}
             />
-            <Heading as="h1" size={2}>
+            <Heading as="h1" size={2} trim>
               {props.heading}
             </Heading>
             <Text size={2} muted as="div" trim={true}>
