@@ -427,8 +427,12 @@ export function ResponsePanel(props: ResponsePanelProps) {
               {t('result.label')}
             </Label>
             <Flex alignItems="center" data-testid="vision-result-actions" gap={1}>
-              {/* First: the row is anchored on the right, so "Copied" grows to the left */}
-              <CopyButton disabled={!hasResult} onCopy={copyResult} testId="vision-copy-result" />
+              <CopyButton
+                disabled={!hasResult}
+                label={t('vision.result.copy')}
+                onCopy={copyResult}
+                testId="vision-copy-result"
+              />
               <ResultViewMenu
                 controls={resultContentId}
                 id={tabElementId('vision-result-view-menu')}

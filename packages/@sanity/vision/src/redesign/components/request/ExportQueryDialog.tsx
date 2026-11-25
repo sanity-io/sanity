@@ -96,6 +96,7 @@ function SnippetFile(props: {
   onCopy: (code: string) => Promise<boolean>
 }) {
   const {file, index, onCopy} = props
+  const {t} = useTranslation(visionLocaleNamespace)
   return (
     <Card border data-testid="vision-export-file" overflow="hidden" radius={2} tone="transparent">
       {file.path && (
@@ -114,6 +115,7 @@ function SnippetFile(props: {
             </SanityText>
           </Box>
           <CopyButton
+            label={t('vision.export-query.copy-file')}
             onCopy={() => onCopy(file.code)}
             testId={`vision-export-file-copy-${index}`}
           />
