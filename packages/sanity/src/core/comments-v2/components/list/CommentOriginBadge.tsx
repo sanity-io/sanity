@@ -20,6 +20,12 @@ const IconSlotRoot = styled.div`
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  width: 11px;
+  height: 11px;
+
+  & svg {
+    flex-shrink: 0;
+  }
 
   &[data-status='published'] {
     --card-icon-color: var(--card-badge-positive-dot-color);
