@@ -1,11 +1,11 @@
 /* oxlint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {SyncIcon} from '@sanity/icons/Sync'
-import {Card, Heading, Inline} from '@sanity/ui'
+import {Card, Inline} from '@sanity/ui'
 import {useEffect, useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {of, take, timer} from 'rxjs'
 import {map} from 'rxjs/operators'
-import {Code, Text, Container, VStack, Flex} from 'ui5'
+import {Heading, Code, Text, Container, VStack, Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isDev} from '../../environment'
@@ -50,7 +50,9 @@ export function ImportErrorScreen(props: {error: Error; eventId?: string; autoRe
         <Container size={3}>
           <VStack gap={6}>
             <VStack gap={4}>
-              <Heading>Import error</Heading>
+              <Heading as="h1" trim>
+                Import error
+              </Heading>
               <Text as="div" trim={true}>
                 An error occurred during dynamic import.
               </Text>
