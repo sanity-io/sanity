@@ -8,7 +8,8 @@
  * - `baseline`: the open beta baseline (the real code at the normal paths).
  * - `c`: the option C proposal (#15984).
  *
- * Read from the `?delete=main|baseline|c` search param, then sessionStorage. Defaults to `baseline`.
+ * Read from the `?delete=main|baseline|c` search param, then sessionStorage. Defaults to `c` (Faheem,
+ * 25 Nov: reviewers test option C without adding `?delete=c`).
  */
 import {useSyncExternalStore} from 'react'
 
@@ -22,9 +23,9 @@ export const DELETE_MODE_LABELS: Record<DeleteMode, string> = {
   c: 'Option C',
 }
 
-const DEFAULT_MODE: DeleteMode = 'baseline'
+const DEFAULT_MODE: DeleteMode = 'c'
 const SEARCH_PARAM = 'delete'
-const STORAGE_KEY = 'sanity.reviewBuild.deleteMode'
+const STORAGE_KEY = 'sanity.reviewBuild.deleteMode.v2'
 
 const listeners = new Set<() => void>()
 
