@@ -72,6 +72,18 @@ export function getInitialRevealedTransactions(
   return new Map([[parentId, INITIAL_TRANSACTIONS + steps * MORE_TRANSACTIONS]])
 }
 
+/**
+ * The row to highlight for the selected event. The newest transaction listed under an edit group
+ * shares its id with the group (they are the same revision), so the most nested row with that id
+ * is the one highlighted: the transaction when the group is expanded, the group otherwise.
+ */
+export function getSelectedRowIndex(
+  rows: TimelineRow[],
+  selectedEventId: string | undefined,
+): number {
+  return rows.findLastIndex((row) => row.type === 'event' && row.event.id === selectedEventId)
+}
+
 /** The ids of the events the event with `eventId` is nested under, closest first. */
 export function getAncestorIds(
   events: DocumentGroupEvent[],

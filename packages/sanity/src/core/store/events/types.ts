@@ -506,6 +506,15 @@ export interface EventsStore {
     loading: boolean
     error: Error | null
   }>
+  /**
+   * What the edit transactions from `fromRevisionId` to `toRevisionId` (both included) changed,
+   * without attribution.
+   */
+  getEditChanges: (range: {fromRevisionId: string; toRevisionId: string}) => Observable<{
+    diff: ObjectDiff | null
+    loading: boolean
+    error: Error | null
+  }>
   expandEvent: (event: DocumentGroupEvent) => Promise<void>
   lastNonDeletedRevId: string | null
   getDocumentAtRevision: (revision: string) => Observable<EventsStoreRevision | null>

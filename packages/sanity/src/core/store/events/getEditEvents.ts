@@ -234,11 +234,11 @@ export function mergeEditEvents(
  * them. Runs last in the events pipeline (after the variant transforms), so the listed
  * transactions are never regrouped or re-parented.
  *
- * - Only the transactions older than the group's own revision (the transaction whose `revisionId`
- *   is the group's `id`) are listed, newest first. The newest transaction is the group itself;
- *   when `addParentToEvents` re-pointed the group's id at its second transaction, the first one
- *   is the revision of the publish event that follows it. Either way every revision is listed
- *   once.
+ * - Every transaction of a group of more than one is listed, newest first, so each of them can be
+ *   inspected on its own. The newest one is the same revision as the group (or, when
+ *   `addParentToEvents` re-pointed the group's id at its second transaction, as the publish event
+ *   that follows it), so its id is shared with that event: lookups by id find the group (or the
+ *   publish) first, and the timeline highlights the most nested row of a selected id.
  * - Each listed transaction is an `editDocumentVersion` event with that single transaction,
  *   `isTransaction: true` and `parentId` set to the group's id.
  */
@@ -247,11 +247,9 @@ export function addEditTransactionEvents(events: DocumentGroupEvent[]): Document
   for (const event of events) {
     result.push(event)
     if (!isEditDocumentVersionEvent(event) || event.isTransaction) continue
+    if (event.transactions.length < 2) continue
 
-    const ownTransactionIndex = event.transactions.findIndex(
-      (transaction) => transaction.revisionId === event.id,
-    )
-    for (const transaction of event.transactions.slice(ownTransactionIndex + 1)) {
+    for (const transaction of event.transactions) {
       result.push({
         type: 'editDocumentVersion',
         documentId: event.documentId,

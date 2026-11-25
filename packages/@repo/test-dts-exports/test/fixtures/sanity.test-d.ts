@@ -708,6 +708,7 @@ import type {
   getAnnotationColor,
   getApiErrorCode,
   getCalendarLabels,
+  getChangedFieldTitles,
   getConfigContextFromSource,
   getCreatableVariantTarget,
   getDefaultVariant,
@@ -4029,6 +4030,9 @@ describe('sanity', () => {
   })
   test('getCalendarLabels', () => {
     expectTypeOf<typeof getCalendarLabels>().toBeFunction()
+  })
+  test('getChangedFieldTitles', () => {
+    expectTypeOf<typeof getChangedFieldTitles>().toBeFunction()
   })
   test('getConfigContextFromSource', () => {
     expectTypeOf<typeof getConfigContextFromSource>().toBeFunction()

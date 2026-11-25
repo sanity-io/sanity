@@ -577,13 +577,12 @@ describe('createEventsStore (integration)', () => {
       expect(timeline(creatorPane.values.at(-1)?.events)).toEqual(expected)
       expect(timeline(otherPane.values.at(-1)?.events)).toEqual(expected)
     })
-    // The older edit is also listed on its own under the group, for when the user expands it.
+    // Both edits are also listed on their own under the group, for when the user expands it.
     for (const pane of [creatorPane, otherPane]) {
-      expect(pane.values.at(-1)?.events[1]).toMatchObject({
-        id: 'tx-edit-1',
-        parentId: 'tx-edit-2',
-        isTransaction: true,
-      })
+      expect(pane.values.at(-1)?.events.slice(1, 3)).toEqual([
+        expect.objectContaining({id: 'tx-edit-2', parentId: 'tx-edit-2', isTransaction: true}),
+        expect.objectContaining({id: 'tx-edit-1', parentId: 'tx-edit-2', isTransaction: true}),
+      ])
     }
     creatorPane.close()
     otherPane.close()
@@ -628,7 +627,7 @@ describe('createEventsStore (integration)', () => {
         {type: 'createDocumentVersion', id: 'tx-create'},
       ]),
     )
-    expect(pane.values.at(-1)?.events[2]).toMatchObject({
+    expect(pane.values.at(-1)?.events[3]).toMatchObject({
       id: 'tx-edit-1',
       parentId: 'tx-edit-2',
       isTransaction: true,
