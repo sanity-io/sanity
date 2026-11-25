@@ -39,7 +39,6 @@ import type {
   ProblemPathTypeSegment,
   processSchemaSynchronization,
   resolveSearchConfig,
-  resolveSearchConfigForBaseFieldPaths,
   SchemaSynchronizationRequest,
   SchemaSynchronizationResult,
   StoredWorkspaceSchema,
@@ -166,9 +165,6 @@ describe('@sanity/schema/_internal', () => {
   })
   test('resolveSearchConfig', () => {
     expectTypeOf<typeof resolveSearchConfig>().toBeFunction()
-  })
-  test('resolveSearchConfigForBaseFieldPaths', () => {
-    expectTypeOf<typeof resolveSearchConfigForBaseFieldPaths>().toBeFunction()
   })
   test('SchemaSynchronizationRequest', () => {
     expectTypeOf<SchemaSynchronizationRequest>().not.toBeNever()
