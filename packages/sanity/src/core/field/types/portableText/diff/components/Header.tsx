@@ -14,19 +14,12 @@ const headingSizes: Record<string, HeadingSize | undefined> = {
 const StyledHeading = styled(Heading)`
   &:not([hidden]) {
     display: inline;
-    text-transform: none;
-    margin: 0;
-
-    &::before,
-    &::after {
-      content: unset;
-    }
   }
 `
 
 export function Header({style, children}: {style: string; children: ReactNode}): React.JSX.Element {
   return (
-    <StyledHeading forwardedAs="h2" size={headingSizes[style]} trim>
+    <StyledHeading forwardedAs="h2" size={headingSizes[style]}>
       {children}
     </StyledHeading>
   )
