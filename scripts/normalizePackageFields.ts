@@ -12,8 +12,8 @@ transformPkgs((pkgManifest: PackageManifest, {relativeDir}) => {
   const name = pkgManifest.name.split('/').slice(-1)[0]
 
   // Published packages must declare engines.node so publint does not warn and consumers
-  // do not install on unsupported Node. Leave private packages' engines untouched
-  // (some, e.g. @repo/debug-proxy, pin a tighter range).
+  // do not install on unsupported Node. Leave private packages' engines untouched;
+  // they are kept in step with this range by hand.
   const engines = pkgManifest.private
     ? pkgManifest.engines
     : {...pkgManifest.engines, node: supportedNodeVersionRange}
