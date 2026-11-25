@@ -1,4 +1,4 @@
-import {type DashboardTopics, type ValueOf} from '@sanity/sdk/dashboard'
+import {type DashboardTopics, type ValueOf, type ViewApplication} from '@sanity/sdk/dashboard'
 import {describe, expect, it} from 'vitest'
 
 import {stubMessageBusHost} from '../../../../../../test/testUtils/stubMessageBusHost'
@@ -24,6 +24,19 @@ function assetSourceInterface(fields: {name: string; moduleId: string}): Interfa
     type: 'asset_source',
     metadata: null,
     ...fields,
+  }
+}
+
+function expectedViewInterface(
+  record: InterfaceRecord,
+  viewApplication: ViewApplication,
+): FederatedAssetSourceView['interface'] {
+  if (record.type !== 'asset_source') throw new Error(`Expected asset_source, got ${record.type}`)
+  const {type: _type, ...rest} = record
+  return {
+    ...rest,
+    surface: 'asset_source',
+    application: viewApplication,
   }
 }
 
@@ -76,6 +89,7 @@ function installation(fields: {id: string} & Partial<ListedInstallation>): Liste
       slug: 'installed-app',
       icon: null,
       organizationId: 'publisher-org',
+      updatedAt: '',
       config: {},
     },
     activeConfig: null,
@@ -146,7 +160,17 @@ describe('discoverFederatedAssetSourceViews', () => {
         title: 'select',
         remote: {name: 'media-app', entry: 'https://media.example/mf-manifest.json'},
         moduleId: 'media-app/views/select/asset_source',
-        interface: select,
+        interface: expectedViewInterface(select, {
+          id: 'media-app',
+          type: 'studio',
+          isLocal: false,
+          name: 'media-library',
+          title: 'Media Library',
+          reference: '',
+          icon: null,
+          slug: null,
+          organizationId: 'org-1',
+        }),
       },
     ])
     expect(views?.every(isMediaLibraryView)).toBe(true)
@@ -191,7 +215,17 @@ describe('discoverFederatedAssetSourceViews', () => {
         title: 'picker',
         remote: {name: 'dev-app', entry: 'http://localhost:3334/mf-manifest.json'},
         moduleId: 'dev-app/views/picker/asset_source',
-        interface: picker,
+        interface: expectedViewInterface(picker, {
+          id: 'dev-app',
+          type: 'studio',
+          isLocal: true,
+          name: 'example-asset-source',
+          title: 'Example',
+          reference: '',
+          icon: null,
+          slug: null,
+          organizationId: 'org-1',
+        }),
       },
     ])
     expect(views?.some(isMediaLibraryView)).toBe(false)
@@ -218,7 +252,17 @@ describe('discoverFederatedAssetSourceViews', () => {
           entry: 'https://installed-app--apps--publisher-org.sanity.run/mf-manifest.json',
         },
         moduleId: 'installation-1/views/stock/asset_source',
-        interface: stock,
+        interface: expectedViewInterface(stock, {
+          id: 'installation-1',
+          type: 'installation',
+          isLocal: false,
+          name: 'installed-app',
+          title: 'Installed app',
+          reference: 'sanity/installed-app',
+          icon: null,
+          slug: 'installed-app',
+          organizationId: 'publisher-org',
+        }),
       },
     ])
   })
@@ -260,7 +304,17 @@ describe('discoverFederatedAssetSourceViews', () => {
       title: 'library',
       remote: {name: 'local-media', entry: 'http://localhost:3337/mf-manifest.json'},
       moduleId: 'local-media/views/library/asset_source',
-      interface: libraryInterface,
+      interface: expectedViewInterface(libraryInterface, {
+        id: 'local-media',
+        type: 'coreApp',
+        isLocal: true,
+        name: 'media-library',
+        title: 'Media Library',
+        reference: '',
+        icon: null,
+        slug: null,
+        organizationId: 'org-1',
+      }),
     }
 
     it('prefers the local dev server over an installation listed before it', () => {
@@ -274,6 +328,7 @@ describe('discoverFederatedAssetSourceViews', () => {
             slug: 'media',
             icon: null,
             organizationId: 'org-1',
+            updatedAt: '',
             config: {},
           },
           interfaces: [assetSourceInterface({name: 'library', moduleId: 'views/library'})],
