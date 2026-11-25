@@ -143,11 +143,11 @@ export function ApiVersionField({
           }
           subtitle={
             option.group === 'today'
-              ? option.value
+              ? todayTitle
               : option.note && t(API_VERSION_NOTE_KEYS[option.note])
           }
           testId={`${id}-option-${option.value}`}
-          title={option.group === 'today' ? todayTitle : option.value}
+          title={option.value}
         />
       )
     },
