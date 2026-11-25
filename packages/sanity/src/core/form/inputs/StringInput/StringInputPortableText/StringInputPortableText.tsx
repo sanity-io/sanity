@@ -54,6 +54,13 @@ const StyledInput = styled(PortableTextEditable)<
   ${responsiveInputPaddingStyle}
   ${textInputFontSizeStyle}
   ${stringDiffContainerStyles}
+
+  /* A text value's line breaks show as lines, and long lines wrap */
+  &[data-multiline] {
+    align-items: flex-start;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
 `
 
 const StyledEditorRepresentation = styled(Card)<TextInputRepresentationStyleProps>(
@@ -73,7 +80,19 @@ const StyledPlaceholder = styled.span<TextInputResponsivePaddingStyleProps>`
  * @beta
  */
 export function StringInputPortableText(props: StringInputProps) {
+  return <PortableTextStringInput {...props} multiline={false} />
+}
+
+/**
+ * The Portable Text Editor input behind {@link StringInputPortableText}. With `multiline`, the
+ * value keeps its line breaks and wraps over as many lines as it needs, for a `text` field's
+ * inline changes; the string stays one span, so the diff offsets are the same as a string's.
+ *
+ * @internal
+ */
+export function PortableTextStringInput(props: StringInputProps & {multiline: boolean}) {
   const {
+    multiline,
     elementProps,
     onChange,
     value: definitiveValue,
@@ -170,12 +189,18 @@ export function StringInputPortableText(props: StringInputProps) {
   return (
     <StyledRoot>
       <EditorProvider initialConfig={initialConfig}>
-        <OneLinePlugin />
+        {!multiline && <OneLinePlugin />}
         <EventListenerPlugin on={handleEditorEvent} />
         <FocusBridgePlugin focusRef={focusRef} />
         <UpdateValuePlugin value={props.value} />
         <UpdateReadOnlyPlugin readOnly={props.readOnly ?? false} />
-        <BehaviorPlugin behaviors={[plainTextPasteBehaviour, plainTextOneLineBehaviour]} />
+        <BehaviorPlugin
+          behaviors={
+            multiline
+              ? [plainTextPasteBehaviour, plainTextLineBreakBehaviour]
+              : [plainTextPasteBehaviour, plainTextOneLineBehaviour]
+          }
+        />
         <StyledInput
           className={props.validationError ? INVALID_CLASS_NAME : undefined}
           style={style}
@@ -189,6 +214,7 @@ export function StringInputPortableText(props: StringInputProps) {
           data-scheme={rootTheme.scheme}
           data-tone={rootTheme.tone}
           data-testid="string-input-portable-text"
+          data-multiline={multiline || undefined}
         />
       </EditorProvider>
       <StyledEditorRepresentation
@@ -281,4 +307,13 @@ const plainTextOneLineBehaviour = defineBehavior({
       }),
     ],
   ],
+})
+
+/**
+ * A line break in a `text` value is a new line character in its one span, not a new block, so
+ * the value stays a plain string.
+ */
+const plainTextLineBreakBehaviour = defineBehavior({
+  on: 'insert.break',
+  actions: [() => [raise({type: 'insert.text', text: '\n'})]],
 })

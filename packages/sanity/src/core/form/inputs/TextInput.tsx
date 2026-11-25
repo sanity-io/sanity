@@ -3,6 +3,7 @@ import {TextArea} from '@sanity/ui'
 import {styled} from 'styled-components'
 
 import {type StringInputProps} from '../types/inputProps'
+import {PortableTextStringInput} from './StringInput/StringInputPortableText/StringInputPortableText'
 
 /**
  *
@@ -24,6 +25,12 @@ const StyledTextArea = styled(TextArea)`
  */
 export function TextInput(props: TextInputProps) {
   const {schemaType, validationError, value, elementProps} = props
+
+  // Inline changes, as in the comparison view, need text that can be coloured, which a text area
+  // can't hold. Read-only only: there is no typing to keep in step with a text area's behaviour.
+  if (props.displayInlineChanges && props.readOnly) {
+    return <PortableTextStringInput {...props} multiline />
+  }
 
   return (
     <StyledTextArea
