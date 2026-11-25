@@ -456,7 +456,7 @@ describe('getEditEvents()', () => {
       editTransaction({id: 'tx-3', timestamp: minutesAfterBase(3), author: 'author-1'}),
     ]
 
-    it('lists the transactions older than the group revision after the group, newest first', () => {
+    it('lists every transaction of the group after it, newest first', () => {
       const [group] = getEditEvents(transactions, DRAFT_ID)
       const create = createDocumentVersionEvent()
 
@@ -464,6 +464,8 @@ describe('getEditEvents()', () => {
 
       expect(result).toEqual([
         group,
+        // The newest transaction is the group's own revision, so they share the id.
+        expect.objectContaining({id: 'tx-3', parentId: 'tx-3', isTransaction: true}),
         {
           type: 'editDocumentVersion',
           documentId: DRAFT_ID,
@@ -487,7 +489,7 @@ describe('getEditEvents()', () => {
       expect(addEditTransactionEvents(events)).toEqual(events)
     })
 
-    it('skips the publish revision when the group id was re-pointed at its second transaction', () => {
+    it('lists the publish revision too when the group id was re-pointed at its second transaction', () => {
       // `addParentToEvents` moves the id of the last edit before a publish to its second
       // transaction, as the first one is the revision the publish event already stands for.
       const [group] = getEditEvents(transactions, DRAFT_ID)
@@ -496,8 +498,12 @@ describe('getEditEvents()', () => {
 
       const result = addEditTransactionEvents([publish, nested])
 
-      expect(result.map((event) => event.id)).toEqual(['tx-3', 'tx-2', 'tx-1'])
-      expect(result[2]).toMatchObject({parentId: 'tx-2', isTransaction: true})
+      expect(result.map((event) => event.id)).toEqual(['tx-3', 'tx-2', 'tx-3', 'tx-2', 'tx-1'])
+      expect(result.slice(2)).toEqual([
+        expect.objectContaining({parentId: 'tx-2', isTransaction: true}),
+        expect.objectContaining({parentId: 'tx-2', isTransaction: true}),
+        expect.objectContaining({parentId: 'tx-2', isTransaction: true}),
+      ])
     })
 
     it('lists the transactions of edit events nested under an expanded publish', () => {
@@ -508,6 +514,7 @@ describe('getEditEvents()', () => {
 
       expect(result.map((event) => [event.id, 'parentId' in event && event.parentId])).toEqual([
         ['tx-3', 'tx-publish'],
+        ['tx-3', 'tx-3'],
         ['tx-2', 'tx-3'],
         ['tx-1', 'tx-3'],
       ])

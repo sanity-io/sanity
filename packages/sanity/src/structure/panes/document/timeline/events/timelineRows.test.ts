@@ -9,6 +9,7 @@ import {describe, expect, it} from 'vitest'
 import {
   getAncestorIds,
   getInitialRevealedTransactions,
+  getSelectedRowIndex,
   getTimelineRows,
   getTransactionCounts,
   isEditTransactionEvent,
@@ -162,6 +163,31 @@ describe('paging the transactions of an edit group', () => {
     expect(getInitialRevealedTransactions(events, 'tx-31')).toEqual(new Map([['group', 50]]))
     expect(getInitialRevealedTransactions(events, 'group')).toEqual(new Map())
     expect(getInitialRevealedTransactions(events, undefined)).toEqual(new Map())
+  })
+})
+
+describe('getSelectedRowIndex', () => {
+  // The newest transaction listed under a group shares its id with the group.
+  const events: DocumentGroupEvent[] = [
+    edit('group'),
+    transaction('group', 'group'),
+    transaction('group-tx-1', 'group'),
+  ]
+  const rows = (expandedParents: string[]) =>
+    getTimelineRows({events, expandedParents: new Set(expandedParents)})
+
+  it('highlights the group while it is collapsed', () => {
+    expect(getSelectedRowIndex(rows([]), 'group')).toBe(0)
+  })
+
+  it('highlights the newest transaction instead of the group once it is expanded', () => {
+    expect(getSelectedRowIndex(rows(['group']), 'group')).toBe(1)
+    expect(getSelectedRowIndex(rows(['group']), 'group-tx-1')).toBe(2)
+  })
+
+  it('is -1 when the selected event is not shown', () => {
+    expect(getSelectedRowIndex(rows([]), 'group-tx-1')).toBe(-1)
+    expect(getSelectedRowIndex(rows([]), undefined)).toBe(-1)
   })
 })
 

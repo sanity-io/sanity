@@ -184,6 +184,12 @@ describe('createEventsObservable', () => {
       }),
       expect.objectContaining({
         type: 'editDocumentVersion',
+        id: 'tx-live',
+        parentId: 'tx-live',
+        isTransaction: true,
+      }),
+      expect.objectContaining({
+        type: 'editDocumentVersion',
         id: 'tx-fetched',
         parentId: 'tx-live',
         isTransaction: true,
@@ -229,10 +235,12 @@ describe('createEventsObservable', () => {
       })),
     ).toEqual([
       {id: 'tx-5', parentId: undefined, isTransaction: undefined},
+      {id: 'tx-5', parentId: 'tx-5', isTransaction: true},
       {id: 'tx-4', parentId: 'tx-5', isTransaction: true},
       {id: 'tx-published-version', parentId: undefined, isTransaction: undefined},
       // addParentToEvents nests the published edits under the publish, but not their transactions.
       {id: 'tx-2', parentId: 'tx-published-version', isTransaction: undefined},
+      {id: 'tx-2', parentId: 'tx-2', isTransaction: true},
       {id: 'tx-1', parentId: 'tx-2', isTransaction: true},
       {id: create.id, parentId: 'tx-published-version', isTransaction: undefined},
     ])
@@ -277,6 +285,7 @@ describe('createEventsObservable', () => {
     ).toEqual([
       ['tx-3', undefined],
       ['tx-2', undefined],
+      ['tx-2', 'tx-2'],
       ['tx-1', 'tx-2'],
       [create.id, undefined],
     ])

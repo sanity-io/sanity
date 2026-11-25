@@ -10,8 +10,8 @@ import {EventsTimeline} from '../EventsTimeline'
 const BASE_TIME = Date.parse('2020-06-15T12:00:00.000Z')
 const secondsBefore = (seconds: number) => new Date(BASE_TIME - seconds * 1000).toISOString()
 
-// An edit event grouping 36 transactions, 5 seconds apart, newest first: `rev-36` is the group
-// itself and the other 35 are listed under it.
+// An edit event grouping 36 transactions, 5 seconds apart, newest first, all listed under it:
+// `rev-36` is both the group and its newest transaction.
 const transactions: EditDocumentVersionEvent['transactions'] = Array.from(
   {length: 36},
   (_, index) => ({
@@ -39,7 +39,7 @@ function editEvent(overrides: Partial<EditDocumentVersionEvent>): EditDocumentVe
 
 const EVENTS: DocumentGroupEvent[] = [
   editEvent({}),
-  ...transactions.slice(1).map((transaction) =>
+  ...transactions.map((transaction) =>
     editEvent({
       id: transaction.revisionId,
       revisionId: transaction.revisionId,
@@ -93,6 +93,7 @@ function Harness({
 }
 
 const rows = () => Array.from(document.querySelectorAll<HTMLElement>('[data-ui="timelineItem"]'))
+const isPressed = (row: HTMLElement) => row.hasAttribute('data-pressed')
 const rowFor = (timestamp: string) =>
   document.querySelector<HTMLElement>(
     `[data-ui="timelineItem"][data-chunk-timestamp="${timestamp}"]`,
@@ -128,7 +129,7 @@ describe('EventsTimeline', () => {
     await userEvent.click(showMore)
     await expect.poll(() => rows().length).toBe(1 + 30 + 1)
     await userEvent.click(page.getByTestId('timeline-show-more-button'))
-    await expect.poll(() => rows().length).toBe(1 + 35 + 1)
+    await expect.poll(() => rows().length).toBe(1 + 36 + 1)
     await expect.element(page.getByTestId('timeline-show-more-button')).not.toBeInTheDocument()
 
     await userEvent.click(rowFor(transactions[20].timestamp)!)
@@ -147,12 +148,31 @@ describe('EventsTimeline', () => {
       />,
     )
 
-    // rev-5 is the 31st listed transaction: 10 + 20 + 20 revealed shows all 35 of them.
-    await expect.poll(() => rows().length).toBe(1 + 35 + 1)
-    const isPressed = (row: HTMLElement) => row.hasAttribute('data-pressed')
+    // rev-5 is the 32nd listed transaction: 10 + 20 + 20 revealed shows all 36 of them.
+    await expect.poll(() => rows().length).toBe(1 + 36 + 1)
     expect(isPressed(rowFor(transactions[31].timestamp)!)).toBe(true)
     expect(rows().filter(isPressed)).toHaveLength(1)
     // The group expanded for the selection is frozen too.
     expect(fetchEventChildren).toHaveBeenCalledWith(EVENTS[0])
+  })
+
+  it('highlights the newest transaction instead of the selected group once it is expanded', async () => {
+    void render(
+      <Harness
+        onSelect={vi.fn()}
+        fetchEventChildren={() => Promise.resolve()}
+        selectedEventId="rev-36"
+      />,
+    )
+
+    await expect.poll(() => rows().length).toBe(2)
+    expect(rows().map(isPressed)).toEqual([true, false])
+
+    await userEvent.click(
+      document.querySelector('[data-sanity-icon="chevron-left"]')!.closest('button')!,
+    )
+    await expect.poll(() => rows().length).toBe(1 + 10 + 1)
+    // The group and its newest transaction are the same revision, only one of them is highlighted.
+    expect(rows().filter(isPressed)).toEqual([rows()[1]])
   })
 })

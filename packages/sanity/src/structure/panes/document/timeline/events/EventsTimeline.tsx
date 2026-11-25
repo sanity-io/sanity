@@ -24,6 +24,7 @@ import {PublishedEventMenu} from './PublishedEventMenu'
 import {
   getAncestorIds,
   getInitialRevealedTransactions,
+  getSelectedRowIndex,
   getTimelineRows,
   getTransactionCounts,
   INITIAL_TRANSACTIONS,
@@ -100,6 +101,7 @@ export const EventsTimeline = ({
     () => getTimelineRows({events: allEvents, expandedParents, revealedTransactions}),
     [allEvents, expandedParents, revealedTransactions],
   )
+  const selectedIndex = getSelectedRowIndex(rows, selectedEventId)
 
   const handleShowMore = useCallback(
     (parentId: string) => () => {
@@ -249,7 +251,7 @@ export const EventsTimeline = ({
         >
           <EventTimelineItem
             event={event}
-            isSelected={event.id === selectedEventId}
+            isSelected={activeIndex === selectedIndex}
             onSelect={handleSelectChunk}
             optionsMenu={renderOptionsMenu(event)}
           />
@@ -260,7 +262,7 @@ export const EventsTimeline = ({
     },
     [
       expandingParents,
-      selectedEventId,
+      selectedIndex,
       handleSelectChunk,
       handleShowMore,
       renderOptionsMenu,
@@ -272,9 +274,6 @@ export const EventsTimeline = ({
 
   // oxlint-disable-next-line react/set-state-in-effect -- pre-existing violation, to be fixed in a follow-up
   useEffect(() => setMounted(true), [])
-  const selectedIndex = rows.findIndex(
-    (row) => row.type === 'event' && row.event.id === selectedEventId,
-  )
 
   return (
     <Root
