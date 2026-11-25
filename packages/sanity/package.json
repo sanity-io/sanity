@@ -310,7 +310,7 @@
     "baseline 2024"
   ],
   "engines": {
-    "node": ">=22.12"
+    "node": ">=24.11"
   },
   "inlinedDependencies": {
     "@sanity/visual-editing-csm": "3.0.19",
