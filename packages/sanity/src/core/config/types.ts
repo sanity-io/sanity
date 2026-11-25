@@ -1416,7 +1416,6 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
   apiHost?: string
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme: StudioTheme
-  schema: Schema
   i18n: LocaleSource
   /**
    * @internal
@@ -1429,7 +1428,6 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
       dataset: string
       title: string
       auth: AuthStore
-      schema: Schema
       i18n: LocaleSource
       source: Observable<Source>
     }>

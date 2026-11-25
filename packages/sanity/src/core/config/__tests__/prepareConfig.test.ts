@@ -1,4 +1,5 @@
 import {createClient, type RequestHandler} from '@sanity/client'
+import {firstValueFrom, merge} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getCollectedConfigWarnings} from '../configWarnings'
@@ -249,18 +250,25 @@ describe('prepareConfig — schema error context', () => {
     },
   ]
 
-  function captureSchemaError(workspaces: WorkspaceOptions[]): SchemaError {
-    try {
-      prepareConfig(workspaces)
-    } catch (err) {
-      expect(err).toBeInstanceOf(SchemaError)
-      return err as SchemaError
-    }
-    throw new Error('expected prepareConfig to throw a SchemaError')
+  async function captureSchemaError(workspaces: WorkspaceOptions[]): Promise<SchemaError> {
+    const {workspaces: prepared} = prepareConfig(workspaces)
+    const sources = prepared.flatMap((workspace) =>
+      // oxlint-disable-next-line no-deprecated -- the sources are where the schema compiles
+      workspace.__internal.sources.map(({source}) => source),
+    )
+    const error = await firstValueFrom(merge(...sources)).catch((err: unknown) => err)
+    expect(error).toBeInstanceOf(SchemaError)
+    return error as SchemaError
   }
 
-  it('names the workspace, project and dataset that failed to compile', () => {
-    const error = captureSchemaError([
+  it('compiles the schema when a source is resolved, not when the config is prepared', () => {
+    expect(() =>
+      prepareConfig([createWorkspace({name: 'broken', schema: {types: brokenSchemaTypes}})]),
+    ).not.toThrow()
+  })
+
+  it('names the workspace, project and dataset that failed to compile', async () => {
+    const error = await captureSchemaError([
       createWorkspace({
         name: 'healthy',
         basePath: '/healthy',
@@ -283,8 +291,8 @@ describe('prepareConfig — schema error context', () => {
     })
   })
 
-  it('distinguishes a nested source from its workspace', () => {
-    const error = captureSchemaError([
+  it('distinguishes a nested source from its workspace', async () => {
+    const error = await captureSchemaError([
       createWorkspace({
         name: 'broken',
         basePath: '/broken',
@@ -309,8 +317,8 @@ describe('prepareConfig — schema error context', () => {
     })
   })
 
-  it('falls back to "default" for an unnamed workspace', () => {
-    const error = captureSchemaError([
+  it('falls back to "default" for an unnamed workspace', async () => {
+    const error = await captureSchemaError([
       {
         basePath: '/',
         projectId: 'riot',

@@ -5,7 +5,7 @@ import {mediaLibrarySchemas} from './schemas'
 /**
  * @internal
  */
-export const MEDIA_LIBRARY_NAME = 'sanity/media-library'
+const MEDIA_LIBRARY_NAME = 'sanity/media-library'
 
 /**
  * @internal

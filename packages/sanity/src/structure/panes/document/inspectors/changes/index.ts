@@ -2,9 +2,11 @@ import {RestoreIcon} from '@sanity/icons/Restore'
 import {type DocumentInspector} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 
+import {createLazyComponent} from '../../../../../core/components/lazy/createLazyComponent'
 import {useStructureTool} from '../../../../useStructureTool'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'
-import {ChangesTabs} from './ChangesTabs'
+
+const ChangesTabsLazy = createLazyComponent(() => import('./ChangesTabs.lazy'))
 
 export const changesInspector: DocumentInspector = {
   name: HISTORY_INSPECTOR_NAME,
@@ -18,7 +20,7 @@ export const changesInspector: DocumentInspector = {
       title: t('changes.title'),
     }
   },
-  component: ChangesTabs,
+  component: ChangesTabsLazy,
   onClose: ({params}) => ({
     params: {
       ...params,

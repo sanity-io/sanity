@@ -44,7 +44,6 @@ function createWorkspace(
     basePath,
     projectId: 'test',
     dataset: 'test',
-    schema: {} as WorkspaceSummary['schema'],
     i18n: {} as WorkspaceSummary['i18n'],
     theme: {} as WorkspaceSummary['theme'],
     icon: null,

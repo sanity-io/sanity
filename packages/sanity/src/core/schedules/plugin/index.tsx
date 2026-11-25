@@ -14,8 +14,6 @@ import {useReleasesToolAvailable} from '../hooks/useReleasesToolAvailable'
 
 const ReleasesTool = lazy(() => import('../../releases/tool/ReleasesTool'))
 
-export {SCHEDULES_NAME} from '../constants'
-
 /**
  * @internal
  */

@@ -691,7 +691,8 @@ each dropped name before regenerating:
 - A dropped **value** (`const`, `function`) was never importable: the emitted `.js` never exported
   it, so `import {name}` failed to link. Making it a real export is an API decision, and it can cost
   more than it looks — re-exporting `videoTypeName` pulled a 44 kB chunk of form and React code into
-  `sanity/media-library`, which `sideEffects: true` keeps a consumer from tree-shaking away.
+  `sanity/media-library`, which a consumer could not tree-shake away while the package declared
+  `sideEffects: true` (it now lists only the stylesheet and the barrels that import it).
 - Load-bearing exceptions exist. `@sanity/util`'s `Options` and `Parser` are exported from
   `createSafeJsonParser` because `@sanity/migrate` imports `Parser` in its own `.d.ts`, and
   `lib-check.test.ts` runs with `skipLibCheck: false`.
