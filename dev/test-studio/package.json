@@ -56,6 +56,7 @@
     "ui5": "catalog:"
   },
   "devDependencies": {
+    "@repo/browser-targets": "workspace:*",
     "@repo/css-modules-kit": "workspace:*",
     "@repo/pandacss": "workspace:*",
     "@repo/test-config": "workspace:*",

@@ -8,6 +8,7 @@
   "types": "./src/index.ts",
   "scripts": {},
   "devDependencies": {
+    "@repo/browser-targets": "workspace:*",
     "@repo/tsconfig": "workspace:*",
     "@sanity/tsdown-config": "catalog:",
     "@types/node": "catalog:",
