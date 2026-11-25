@@ -1,42 +1,17 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {type ObjectSchemaType} from '@sanity/types'
 import {Fragment, useMemo} from 'react'
+import {getChangedFieldTitles, type ObjectDiff, useTranslation} from 'sanity'
 import {Text} from 'ui5'
 
-import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {type ObjectDiff} from '../../types'
-import {buildObjectChangeList} from '../changes/buildChangeList'
-import {flattenChangeNode} from '../changes/helpers'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {changedFieldTitles, titleSeparator} from './ChangedFieldTitles.css'
 
 const MAX_TITLES = 2
 
 /**
- * The title paths of the fields `diff` changes, the way the change list heads them (`#n` for an
- * array item), each listed once.
- */
-function getChangedFieldTitles(schemaType: ObjectSchemaType, diff: ObjectDiff): string[][] {
-  const seen = new Set<string>()
-  const titles: string[][] = []
-  for (const change of buildObjectChangeList(schemaType, diff, [], []).flatMap(flattenChangeNode)) {
-    if (change.hidden === true) continue
-    const title = change.titlePath.flatMap((segment) => {
-      if (typeof segment === 'string') return [segment]
-      return change.showIndex ? [`#${(segment.toIndex ?? segment.fromIndex ?? 0) + 1}`] : []
-    })
-    const key = JSON.stringify(title)
-    if (title.length === 0 || seen.has(key)) continue
-    seen.add(key)
-    titles.push(title)
-  }
-  return titles
-}
-
-/**
  * A one-line summary of the fields `diff` changes: the first two title paths, and "and more"
  * when there are others.
- *
- * @internal
  */
 export function ChangedFieldTitles({
   diff,
@@ -45,7 +20,7 @@ export function ChangedFieldTitles({
   diff: ObjectDiff
   schemaType: ObjectSchemaType
 }) {
-  const {t} = useTranslation()
+  const {t} = useTranslation(structureLocaleNamespace)
   const titles = useMemo(() => getChangedFieldTitles(schemaType, diff), [schemaType, diff])
 
   if (titles.length === 0) return null
@@ -72,7 +47,7 @@ export function ChangedFieldTitles({
           ))}
         </Fragment>
       ))}
-      {titles.length > MAX_TITLES && `, ${t('changes.changed-fields.and-more')}`}
+      {titles.length > MAX_TITLES && `, ${t('timeline-item.changed-fields.and-more')}`}
     </Text>
   )
 }

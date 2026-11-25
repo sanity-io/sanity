@@ -1,7 +1,6 @@
 import {BoundaryElementProvider, Card} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
 import {
-  ChangedFieldTitles,
   type DocumentGroupEvent,
   type EditDocumentVersionEvent,
   Event,
@@ -17,6 +16,7 @@ import {Box, Flex} from 'ui5'
 
 import {Tooltip, type TooltipProps} from '../../../../../ui-components/tooltip/Tooltip'
 import {useDocumentPane} from '../../useDocumentPane'
+import {ChangedFieldTitles} from './ChangedFieldTitles'
 import {EditEventChanges} from './EditEventChanges'
 import {isEditTransactionEvent} from './timelineRows'
 import {useEditEventChanges} from './useEditEventChanges'

@@ -166,7 +166,7 @@ function PublishEventReleaseBadge({releaseId}: {releaseId: string | undefined}) 
 interface TimelineItemProps {
   event: DocumentGroupEvent
   showChangesBy: 'tooltip' | 'inline' | 'hidden'
-  /** The fields the event changed, shown next to its label (see `ChangedFieldTitles`). */
+  /** The fields the event changed, shown next to its label. */
   changedFields?: ReactNode
 }
 /**

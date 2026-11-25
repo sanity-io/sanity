@@ -40,7 +40,6 @@ import type {
   ChangeBreadcrumb,
   ChangeConnectorRoot,
   ChangeConnectorRootProps,
-  ChangedFieldTitles,
   ChangeFieldWrapper,
   ChangeIndicator,
   ChangeIndicatorProps,
@@ -332,6 +331,7 @@ import type {
   getAnnotationColor,
   getApiErrorCode,
   getCalendarLabels,
+  getChangedFieldTitles,
   getConfigContextFromSource,
   getCreatableVariantTarget,
   getDefaultVariant,
@@ -1030,9 +1030,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('ChangeConnectorRootProps', () => {
     expectTypeOf<ChangeConnectorRootProps>().toBeObject()
-  })
-  test('ChangedFieldTitles', () => {
-    expectTypeOf<typeof ChangedFieldTitles>().toBeFunction()
   })
   test('ChangeFieldWrapper', () => {
     expectTypeOf<typeof ChangeFieldWrapper>().not.toBeNever()
@@ -1907,6 +1904,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('getCalendarLabels', () => {
     expectTypeOf<typeof getCalendarLabels>().toBeFunction()
+  })
+  test('getChangedFieldTitles', () => {
+    expectTypeOf<typeof getChangedFieldTitles>().toBeFunction()
   })
   test('getConfigContextFromSource', () => {
     expectTypeOf<typeof getConfigContextFromSource>().toBeFunction()

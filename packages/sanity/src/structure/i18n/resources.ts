@@ -862,6 +862,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'timeline-item.menu.action-collapse': 'Collapse',
   /** The text for the expand action in the timeline item menu */
   'timeline-item.menu.action-expand': 'Expand',
+  /** Ends the list of the fields an edit changed, in the timeline, when it changed more fields than the ones listed */
+  'timeline-item.changed-fields.and-more': 'and more',
   /** The text shown when hovering an edit in the timeline, when what it changed could not be loaded */
   'timeline-item.changes.error': 'Could not load the changes',
   /** The text for the button that shows more of the transactions of an expanded edit in the timeline */
