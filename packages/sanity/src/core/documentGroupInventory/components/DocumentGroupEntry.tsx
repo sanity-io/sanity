@@ -42,6 +42,7 @@ export function DocumentGroupEntry({
   onContextMenu,
   primaryActionRef,
   presence,
+  actions,
 }: {
   variant: Variant
   releases: Map<string, ReleaseDocument>
@@ -79,6 +80,11 @@ export function DocumentGroupEntry({
    * leaves the presence column empty.
    */
   presence?: VersionPresenceList
+  /**
+   * Buttons at the row's end, above its primary action. The single list shown with Content
+   * Variants off has no set headers, so a scheduled row carries its own way to unschedule (pause).
+   */
+  actions?: ReactNode
 }) {
   const {t} = useTranslation(studioLocaleNamespace)
   const {document} = variant
@@ -174,6 +180,11 @@ export function DocumentGroupEntry({
                   </StatusBadge>
                 </Tooltip>
               )}
+            </div>
+          )}
+          {actions !== undefined && (
+            <div className="version-actions" data-testid="version-actions">
+              {actions}
             </div>
           )}
         </div>

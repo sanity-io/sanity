@@ -1639,6 +1639,41 @@ describe('Inventory selection', () => {
     await settleChromaticEndState()
   })
 
+  it('puts a row action at the end of the row, above the row, so a click does not open the version', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const opened: string[] = []
+    const paused: string[] = []
+    void render(
+      <TestWrapper schemaTypes={SCHEMA_TYPES}>
+        <Card style={{width: 300}}>
+          <DocumentGroupEntry
+            variant={IN_SCHEDULED_RELEASE}
+            releases={SELECTION_RELEASES}
+            onPrimaryAction={() => opened.push(IN_SCHEDULED_RELEASE.id)}
+            actions={
+              <button type="button" onClick={() => paused.push(IN_SCHEDULED_RELEASE.id)}>
+                Pause
+              </button>
+            }
+          />
+        </Card>
+      </TestWrapper>,
+    )
+
+    const action = page.getByRole('button', {name: 'Pause'})
+    await expect.element(action).toBeVisible()
+    const actions = document.querySelector<HTMLElement>('[data-testid="version-actions"]')!
+    const title = document.querySelector<HTMLElement>('[data-testid="version-title"]')!
+    // Beside the text on its line, at the end of the row
+    expect(actions.getBoundingClientRect().left).toBeGreaterThan(title.getBoundingClientRect().left)
+
+    await userEvent.click(action)
+    expect(paused).toEqual([IN_SCHEDULED_RELEASE.id])
+    expect(opened).toEqual([])
+
+    await settleChromaticEndState()
+  })
+
   it('reaches the group checkbox by keyboard while nothing is selected', async () => {
     const refs = startSelectionHarness()
     void render(<SelectionPanel refs={refs} />)

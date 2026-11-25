@@ -224,6 +224,18 @@ export const VariantSetEntry = styled.div(({theme}) => {
       align-items: center;
     }
 
+    /*
+     * A row's own buttons, as Pause on a scheduled row of the single list. Above the row's
+     * invisible primary action, so a click reaches the button and not the version.
+     */
+    .version-actions {
+      display: flex;
+      position: relative;
+      z-index: 1;
+      flex: 0 0 auto;
+      align-items: center;
+    }
+
     .primary-action {
       appearance: none;
       position: absolute;
