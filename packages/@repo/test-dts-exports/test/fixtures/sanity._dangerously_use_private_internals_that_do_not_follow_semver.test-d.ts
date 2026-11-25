@@ -40,6 +40,7 @@ import type {
   ChangeBreadcrumb,
   ChangeConnectorRoot,
   ChangeConnectorRootProps,
+  ChangedFieldTitles,
   ChangeFieldWrapper,
   ChangeIndicator,
   ChangeIndicatorProps,
@@ -1029,6 +1030,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('ChangeConnectorRootProps', () => {
     expectTypeOf<ChangeConnectorRootProps>().toBeObject()
+  })
+  test('ChangedFieldTitles', () => {
+    expectTypeOf<typeof ChangedFieldTitles>().toBeFunction()
   })
   test('ChangeFieldWrapper', () => {
     expectTypeOf<typeof ChangeFieldWrapper>().not.toBeNever()

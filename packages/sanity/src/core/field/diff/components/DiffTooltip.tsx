@@ -12,7 +12,7 @@ import {useUser} from '../../../store/user/hooks'
 import {type AnnotationDetails, type Diff} from '../../types'
 import {getAnnotationAtPath} from '../annotations/helpers'
 import {useAnnotationColor} from '../annotations/hooks'
-import {EventSummary} from '../components/EventSummary'
+import {Event} from '../components/Event'
 
 /** @internal */
 export interface DiffTooltipProps extends TooltipProps {
@@ -84,7 +84,7 @@ function AnnotationItem({annotation}: {annotation: AnnotationDetails}) {
       {annotation.event ? (
         <>
           <Card borderBottom marginBottom={2} />
-          <EventSummary event={annotation.event} showChangesBy="inline" />
+          <Event event={annotation.event} showChangesBy="inline" />
         </>
       ) : (
         <Inline gap={2}>

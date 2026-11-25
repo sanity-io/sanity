@@ -35,6 +35,8 @@ function getChangedFieldTitles(schemaType: ObjectSchemaType, diff: ObjectDiff): 
 /**
  * A one-line summary of the fields `diff` changes: the first two title paths, and "and more"
  * when there are others.
+ *
+ * @internal
  */
 export function ChangedFieldTitles({
   diff,
