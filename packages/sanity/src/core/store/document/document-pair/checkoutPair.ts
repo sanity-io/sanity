@@ -469,9 +469,33 @@ export function checkoutPair(
           }
         }
       : undefined,
-    onListenerWelcomeTime,
-    onListenerResumeTime,
-    onListenerResumePayload,
+    onListenerWelcomeTime: onListenerWelcomeTime
+      ? (event) => {
+          try {
+            onListenerWelcomeTime(event)
+          } catch {
+            // Telemetry callbacks must never kill the document pipeline
+          }
+        }
+      : undefined,
+    onListenerResumeTime: onListenerResumeTime
+      ? (event) => {
+          try {
+            onListenerResumeTime(event)
+          } catch {
+            // Telemetry callbacks must never kill the document pipeline
+          }
+        }
+      : undefined,
+    onListenerResumePayload: onListenerResumePayload
+      ? (event) => {
+          try {
+            onListenerResumePayload(event)
+          } catch {
+            // Telemetry callbacks must never kill the document pipeline
+          }
+        }
+      : undefined,
     tag,
     snapshotFetchErrorHandler,
   }).pipe(share())
