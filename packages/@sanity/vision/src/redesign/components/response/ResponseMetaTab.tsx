@@ -1,7 +1,6 @@
 import {type SyncTag} from '@sanity/client'
 import {CopyIcon} from '@sanity/icons/Copy'
 import {Badge, Button, Stack, TextInput} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {type CSSProperties, type ReactNode, useMemo} from 'react'
 import {useTranslation} from 'sanity/i18n'
 import {Badge as Ui5Badge, Text, Box, Flex, Grid} from 'ui5'
@@ -17,11 +16,12 @@ import {type SyncTagLookupSource, useSyncTagLookup} from '../../hooks/useSyncTag
 import {type VisionResponseMeta} from '../../store/types'
 import {regionOfShard} from '../../util/apiRegions'
 import {formatBytes} from '../../util/payloadSize'
-import {formatSyncTagMeaning} from '../../util/syncTagLookup'
+import {formatSyncTagMeaning, MAX_SYNC_TAG_PROBES} from '../../util/syncTagLookup'
 import {isWildcardSyncTag, sortSyncTags} from '../../util/syncTags'
 import {browserLocation} from '../../util/timeZoneLocation'
 import {CdnBlockedNotice} from '../CdnBlockedNotice'
 import {InfoTooltip} from '../InfoTooltip'
+import {VisionTooltip} from '../VisionTooltip'
 import {NetworkGlobe} from './NetworkGlobe'
 import * as styles from './syncTagsToggle.module.css'
 
@@ -115,16 +115,12 @@ function SyncTagsRow(props: {
     <MetaRow
       label={
         lookup ? (
-          <Tooltip
-            animate
+          <VisionTooltip
             content={
-              <Text size={1} as="div" trim={true}>
-                {pressed
-                  ? t('vision.response.sync-tags.show-raw')
-                  : t('vision.response.sync-tags.show-resolved')}
-              </Text>
+              pressed
+                ? t('vision.response.sync-tags.show-raw')
+                : t('vision.response.sync-tags.show-resolved')
             }
-            portal
           >
             <button
               aria-pressed={pressed}
@@ -135,7 +131,7 @@ function SyncTagsRow(props: {
             >
               {label}
             </button>
-          </Tooltip>
+          </VisionTooltip>
         ) : (
           label
         )
@@ -151,19 +147,26 @@ function SyncTagsRow(props: {
           {tags.map((tag) => {
             const meaning = resolved?.get(tag)
             const shown = meaning ? formatSyncTagMeaning(meaning) : tag
+            // A tag that covers a whole dataset: this one, or another read through a reference
+            let wholeDataset: string | undefined
             if (isWildcardSyncTag(shown) || isWildcardSyncTag(tag)) {
+              wholeDataset = t('vision.response.sync-tags.wildcard')
+            } else if (meaning?.kind === 'dataset') {
+              wholeDataset = t('vision.response.sync-tags.other-dataset', {
+                dataset: meaning.dataset,
+              })
+            }
+            if (wholeDataset) {
               return (
-                <Tooltip
-                  animate
+                <VisionTooltip
                   content={
                     <Box style={WILDCARD_TOOLTIP}>
-                      <Text size={1} as="div">
-                        {t('vision.response.sync-tags.wildcard')}
+                      <Text size={1} as="div" trim={true}>
+                        {wholeDataset}
                       </Text>
                     </Box>
                   }
                   key={tag}
-                  portal
                 >
                   <Ui5Badge
                     data-resolved={resolved ? meaning !== undefined : undefined}
@@ -174,7 +177,7 @@ function SyncTagsRow(props: {
                       {shown}
                     </Text>
                   </Ui5Badge>
-                </Tooltip>
+                </VisionTooltip>
               )
             }
             return (
@@ -182,7 +185,11 @@ function SyncTagsRow(props: {
                 data-resolved={resolved ? meaning !== undefined : undefined}
                 key={tag}
                 title={
-                  resolved ? (meaning ? tag : t('vision.response.sync-tags.unresolved')) : undefined
+                  resolved
+                    ? meaning
+                      ? tag
+                      : t('vision.response.sync-tags.unresolved', {budget: MAX_SYNC_TAG_PROBES})
+                    : undefined
                 }
                 tone={meaning ? 'positive' : undefined}
               >
@@ -386,15 +393,7 @@ export function ResponseMetaTab(props: ResponseMetaTabProps) {
                         value={url}
                       />
                     </Box>
-                    <Tooltip
-                      animate
-                      content={
-                        <Text size={1} as="div" trim={true}>
-                          {t('action.copy-url-to-clipboard')}
-                        </Text>
-                      }
-                      portal
-                    >
+                    <VisionTooltip content={t('action.copy-url-to-clipboard')}>
                       <Button
                         aria-label={t('action.copy-url-to-clipboard')}
                         icon={CopyIcon}
@@ -408,7 +407,7 @@ export function ResponseMetaTab(props: ResponseMetaTabProps) {
                         }
                         padding={2}
                       />
-                    </Tooltip>
+                    </VisionTooltip>
                   </Flex>
                 </MetaRow>
               )}

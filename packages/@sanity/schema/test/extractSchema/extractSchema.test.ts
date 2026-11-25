@@ -1,7 +1,7 @@
 import assert, {strictEqual} from 'node:assert'
 
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
-import {type DocumentSchemaType} from 'groq-js'
+import {type DocumentSchemaType, parse, typeEvaluate} from 'groq-js'
 import {describe, expect, test} from 'vitest'
 
 import {Schema} from '../../src/legacy/Schema'
@@ -1303,4 +1303,204 @@ test('reference regression: references pointing to hoisted type', () => {
   expect(postType.attributes.authorRef.value.type).toEqual('inline')
   assert(postType.attributes.authorRef.value.type === 'inline') // this is a workaround for TS
   expect(postType.attributes.authorRef.value.name).toEqual('author.reference')
+})
+
+describe('document types that embed themselves', () => {
+  test('a document with a field of its own type is hoisted where it recurses', () => {
+    const schema = createSchema(
+      {
+        name: 'test',
+        types: [
+          defineType({
+            name: 'recursiveDocument',
+            type: 'document',
+            fields: [
+              defineField({name: 'title', type: 'string'}),
+              defineField({name: 'myself', type: 'recursiveDocument'}),
+            ],
+          }),
+        ],
+      },
+      true,
+    )
+
+    const extracted = extractSchema(schema)
+    expect(extracted.map((type) => type.name)).toStrictEqual([
+      'recursiveDocument',
+      'recursiveDocument.inline',
+    ])
+
+    const document = extracted.find((type) => type.name === 'recursiveDocument')
+    assert(document?.type === 'document')
+    expect(document.attributes.myself.value).toEqual({
+      type: 'inline',
+      name: 'recursiveDocument.inline',
+    })
+
+    // The hoisted declaration is the embedded form of the document: `_type` and the fields, with
+    // the recursion going through the declaration itself
+    expect(extracted.find((type) => type.name === 'recursiveDocument.inline')).toEqual({
+      type: 'type',
+      name: 'recursiveDocument.inline',
+      value: {
+        type: 'object',
+        attributes: {
+          _type: {type: 'objectAttribute', value: {type: 'string', value: 'recursiveDocument'}},
+          title: {type: 'objectAttribute', value: {type: 'string'}, optional: true},
+          myself: {
+            type: 'objectAttribute',
+            value: {type: 'inline', name: 'recursiveDocument.inline'},
+            optional: true,
+          },
+        },
+      },
+    })
+
+    // groq-js resolves the recursion through the declaration
+    const result = typeEvaluate(
+      parse('*[_type == "recursiveDocument"][0].myself.myself'),
+      extracted,
+    )
+    expect(result).toEqual({
+      type: 'union',
+      of: [{type: 'inline', name: 'recursiveDocument.inline'}, {type: 'null'}],
+    })
+    expect(
+      typeEvaluate(parse('*[_type == "recursiveDocument"][0].myself.myself.title'), extracted),
+    ).toEqual({type: 'union', of: [{type: 'string'}, {type: 'null'}]})
+  })
+
+  test('a document that recurses through an array member is hoisted where it recurses', () => {
+    const schema = createSchema(
+      {
+        name: 'test',
+        types: [
+          defineType({
+            name: 'tree',
+            type: 'document',
+            fields: [
+              defineField({name: 'title', type: 'string'}),
+              defineField({
+                name: 'children',
+                type: 'array',
+                of: [
+                  defineArrayMember({type: 'tree'}),
+                  defineArrayMember({
+                    type: 'object',
+                    name: 'leaf',
+                    fields: [defineField({name: 'label', type: 'string'})],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      },
+      true,
+    )
+
+    const extracted = extractSchema(schema)
+    const document = extracted.find((type) => type.name === 'tree')
+    assert(document?.type === 'document')
+    const children = document.attributes.children.value
+    assert(children.type === 'array')
+    assert(children.of.type === 'union')
+    expect(children.of.of[0]).toEqual({
+      type: 'object',
+      attributes: {_key: {type: 'objectAttribute', value: {type: 'string'}}},
+      rest: {type: 'inline', name: 'tree.inline'},
+    })
+
+    const hoisted = extracted.find((type) => type.name === 'tree.inline')
+    assert(hoisted?.type === 'type')
+    assert(hoisted.value.type === 'object')
+    expect(hoisted.value.attributes._type.value).toEqual({type: 'string', value: 'tree'})
+    expect(Object.keys(hoisted.value.attributes)).toStrictEqual(['_type', 'title', 'children'])
+
+    expect(() =>
+      typeEvaluate(parse('*[_type == "tree"]{children[]{title}}'), extracted),
+    ).not.toThrow()
+  })
+
+  test('two documents that embed each other are hoisted where they recurse', () => {
+    const schema = createSchema(
+      {
+        name: 'test',
+        types: [
+          defineType({
+            name: 'person',
+            type: 'document',
+            fields: [
+              defineField({name: 'name', type: 'string'}),
+              defineField({name: 'pet', type: 'pet'}),
+            ],
+          }),
+          defineType({
+            name: 'pet',
+            type: 'document',
+            fields: [
+              defineField({name: 'name', type: 'string'}),
+              defineField({name: 'owner', type: 'person'}),
+            ],
+          }),
+        ],
+      },
+      true,
+    )
+
+    const extracted = extractSchema(schema)
+    expect(extracted.map((type) => type.name).toSorted()).toStrictEqual([
+      'person',
+      'person.inline',
+      'pet',
+      'pet.inline',
+    ])
+
+    // Each document embeds the other, and the embedded document refers back through the hoisted
+    // declaration of the document being converted
+    const person = extracted.find((type) => type.name === 'person')
+    assert(person?.type === 'document')
+    const pet = person.attributes.pet.value
+    assert(pet.type === 'object')
+    expect(pet.attributes.owner.value).toEqual({type: 'inline', name: 'person.inline'})
+
+    const personInline = extracted.find((type) => type.name === 'person.inline')
+    assert(personInline?.type === 'type' && personInline.value.type === 'object')
+    const petInInline = personInline.value.attributes.pet.value
+    assert(petInInline.type === 'object')
+    expect(petInInline.attributes.owner.value).toEqual({type: 'inline', name: 'person.inline'})
+
+    expect(() =>
+      typeEvaluate(parse('*[_type == "person"][0].pet.owner.pet.owner.name'), extracted),
+    ).not.toThrow()
+  })
+
+  test('a hoisted document name does not collide with a schema type of that name', () => {
+    const schema = createSchema(
+      {
+        name: 'test',
+        types: [
+          defineType({
+            name: 'node',
+            type: 'document',
+            fields: [defineField({name: 'parent', type: 'node'})],
+          }),
+          defineType({
+            name: 'node.inline',
+            type: 'object',
+            fields: [defineField({name: 'title', type: 'string'})],
+          }),
+        ],
+      },
+      true,
+    )
+
+    const extracted = extractSchema(schema)
+    const document = extracted.find((type) => type.name === 'node')
+    assert(document?.type === 'document')
+    expect(document.attributes.parent.value).toEqual({type: 'inline', name: 'node.inline1'})
+    expect(extracted.find((type) => type.name === 'node.inline1')?.type).toBe('type')
+    // The schema's own `node.inline` object type is still there as itself
+    expect(extracted.find((type) => type.name === 'node.inline')?.type).toBe('type')
+  })
 })

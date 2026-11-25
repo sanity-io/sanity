@@ -1,7 +1,7 @@
 /*
  * Motion for the icon rail and the drawer it opens. Only transform and opacity animate, apart from
- * the rail's width, and nothing animates on close: the drawer leaves at once and focus goes back
- * to the rail.
+ * the rail's width, and nothing here animates on close: the drawer leaves at once and focus goes
+ * back to the rail. A view transition of the sidebar replaces both (see `panelTransitions.ts`).
  */
 .sidebar {
   --sidebar-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -53,6 +53,18 @@
   }
 }
 
+/*
+ * A view transition of the sidebar moves the rail and the drawer itself, from their old size and
+ * place to their new ones. Their own transitions would play a second motion inside its pictures.
+ */
+:global(:root:active-view-transition-type(vision-sidebar)) .rail {
+  transition: none;
+}
+
+:global(:root:active-view-transition-type(vision-sidebar)) .drawer {
+  transition: none;
+}
+
 /* A row in the saved and shared lists: its tone follows the query it opens in a tab */
 .queryRow {
   transition: background-color 100ms ease;
@@ -78,4 +90,11 @@
       transform: none;
     }
   }
+}
+
+/* The export snippets in settings are an ordered list for assistive technology, without markers */
+.plainList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }

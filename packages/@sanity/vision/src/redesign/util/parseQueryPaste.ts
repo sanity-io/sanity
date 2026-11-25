@@ -20,7 +20,6 @@ const VALUED_OPTIONS = new Set([
   '--capath',
   '--ciphers',
   '--connect-timeout',
-  '--data-urlencode',
   '--dns-servers',
   '--etag-compare',
   '--etag-save',
@@ -91,6 +90,7 @@ const VALUED_OPTIONS = new Set([
 const DATA_OPTIONS = new Set([
   '-d',
   '--data',
+  '--data-urlencode',
   '--data-raw',
   '--data-binary',
   '--data-ascii',
@@ -98,6 +98,23 @@ const DATA_OPTIONS = new Set([
 ])
 
 for (const option of DATA_OPTIONS) VALUED_OPTIONS.add(option)
+
+/**
+ * A `--data-urlencode` item as curl sends it: `name=content` with the content encoded, `=content`
+ * and `content` encoded whole. Items read from a file (`@file`, `name@file`) cannot be followed
+ * and are left out.
+ */
+function encodeDataItem(item: string): string | undefined {
+  const equals = item.indexOf('=')
+  const at = item.indexOf('@')
+  if (equals !== -1 && (at === -1 || equals < at)) {
+    const name = item.slice(0, equals)
+    const content = encodeURIComponent(item.slice(equals + 1))
+    return name ? `${name}=${content}` : content
+  }
+  if (at !== -1) return undefined
+  return encodeURIComponent(item)
+}
 
 const HTTP_URL = /^https?:\/\//i
 
@@ -121,6 +138,12 @@ function parseCurlCommand(text: string): CurlRequest | null {
 
   let url: string | undefined
   const data: string[] = []
+  // `-G` sends the data in the URL's query string instead of a body
+  let get = false
+  const pushData = (option: string, value: string) => {
+    const item = option === '--data-urlencode' ? encodeDataItem(value) : value
+    if (item !== undefined) data.push(item)
+  }
 
   for (let i = 1; i < words.length; i++) {
     let word = words[i]
@@ -140,9 +163,10 @@ function parseCurlCommand(text: string): CurlRequest | null {
         i++
         value = words[i]
       }
+      if (word === '--get') get = true
       if (value === undefined) continue
       if (word === '--url') url ??= value
-      else if (DATA_OPTIONS.has(word)) data.push(value)
+      else if (DATA_OPTIONS.has(word)) pushData(word, value)
       continue
     }
 
@@ -152,6 +176,7 @@ function parseCurlCommand(text: string): CurlRequest | null {
       // word (`-sSd BODY`)
       for (let j = 1; j < word.length; j++) {
         const option = `-${word[j]}`
+        if (option === '-G') get = true
         if (!VALUED_OPTIONS.has(option)) continue
         let value: string | undefined
         if (j + 1 < word.length) {
@@ -160,7 +185,7 @@ function parseCurlCommand(text: string): CurlRequest | null {
           i++
           value = words[i]
         }
-        if (value !== undefined && DATA_OPTIONS.has(option)) data.push(value)
+        if (value !== undefined && DATA_OPTIONS.has(option)) pushData(option, value)
         break
       }
       continue
@@ -170,6 +195,10 @@ function parseCurlCommand(text: string): CurlRequest | null {
   }
 
   if (url === undefined) return null
+  if (get && data.length > 0) {
+    const separator = url.includes('?') ? '&' : '?'
+    return {url: `${url}${separator}${data.join('&')}`, data: undefined}
+  }
   return {url, data: data.length > 0 ? data.join('&') : undefined}
 }
 
@@ -190,8 +219,9 @@ function parseQueryBody(data: string): {query: string; params: Record<string, un
 /**
  * Parses a curl command for a Content Lake query into the pieces of a tab, as a browser's network
  * tab copies it ("Copy as cURL") or Vision's own export writes it. The query and its params may
- * be in the URL or, as `@sanity/client` sends them once they are too long for a URL, in a JSON
- * body (`-d`, `--data-raw`, `--json`, …); a body wins over the URL, as it does at the API. The
+ * be in the URL, in data that `-G` adds to it (`--data-urlencode 'query=…'`, as the export writes
+ * them) or, as `@sanity/client` sends them once they are too long for a URL, in a JSON body
+ * (`-d`, `--data-raw`, `--json`, …); a body wins over the URL, as it does at the API. The
  * rest of the request is read off the URL as for a pasted one (`parseQueryUrl`): the API version
  * and the dataset from its path, the perspective, the variant and the source map option from its
  * query string. Options a tab has no setting for (`tag`, `returnQuery`, …) and curl options the

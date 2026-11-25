@@ -1,11 +1,17 @@
 import {type ObjectAttribute, type ObjectTypeNode, type TypeNode} from 'groq-js'
 
+/** Nesting past this becomes `unknown` so a deep result cannot blow the call stack */
+const MAX_INFER_DEPTH = 32
+
 /**
  * Infers a groq-js type node from a fetched value. Used when the query cannot be evaluated
  * against the schema. Arrays of objects are merged into one object type per `_type` literal,
  * with attributes that only some items carry marked optional.
  */
-export function inferTypeFromValue(value: unknown): TypeNode {
+export function inferTypeFromValue(value: unknown, depth = 0): TypeNode {
+  if (depth > MAX_INFER_DEPTH) {
+    return {type: 'unknown'}
+  }
   if (value === null) {
     return {type: 'null'}
   }
@@ -21,9 +27,12 @@ export function inferTypeFromValue(value: unknown): TypeNode {
         if (value.length === 0) {
           return {type: 'array', of: {type: 'unknown'}}
         }
-        return {type: 'array', of: mergeTypeNodes(value.map(inferTypeFromValue))}
+        return {
+          type: 'array',
+          of: mergeTypeNodes(value.map((item) => inferTypeFromValue(item, depth + 1))),
+        }
       }
-      return inferObject(value as Record<string, unknown>)
+      return inferObject(value as Record<string, unknown>, depth)
     default:
       return {type: 'unknown'}
   }
@@ -34,10 +43,10 @@ function createAttributeMap(): Record<string, ObjectAttribute> {
   return Object.create(null) as Record<string, ObjectAttribute>
 }
 
-function inferObject(value: Record<string, unknown>): ObjectTypeNode {
+function inferObject(value: Record<string, unknown>, depth: number): ObjectTypeNode {
   const attributes = createAttributeMap()
   for (const [key, attributeValue] of Object.entries(value)) {
-    const inferred = inferTypeFromValue(attributeValue)
+    const inferred = inferTypeFromValue(attributeValue, depth + 1)
     attributes[key] = {
       type: 'objectAttribute',
       // `_type` discriminates unions of documents and blocks, so its literal is worth keeping

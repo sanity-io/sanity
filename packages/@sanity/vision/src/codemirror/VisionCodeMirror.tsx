@@ -14,12 +14,15 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
   type RefAttributes,
 } from 'react'
 
+import {EDITOR_FONT_SIZE, editorContentPaddingTop} from './editorMetrics'
 import {historyCompartment} from './extensions'
+import {visionTooltips} from './tooltips'
 import {useCodemirrorTheme} from './useCodemirrorTheme'
 import {getVisibleColumns} from './visibleColumns'
 import * as styles from './VisionCodeMirror.module.css'
@@ -29,6 +32,7 @@ import {whitespaceChanges} from './whitespaceChanges'
 const EDITING_IDLE_MS = 1_000
 
 interface EditorRootStyle extends CSSProperties {
+  '--vision-editor-font-size': string
   '--vision-editor-line-padding-left': string
   '--vision-editor-content-border-right-width': string
   '--vision-editor-content-padding-top': string
@@ -45,13 +49,13 @@ function EditorRoot({
 }) {
   const {sanity} = useTheme()
   const style: EditorRootStyle = {
+    '--vision-editor-font-size': `${EDITOR_FONT_SIZE}px`,
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     '--vision-editor-line-padding-left': `${rem(sanity.space[3])}`,
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     '--vision-editor-content-border-right-width': `${rem(sanity.space[4])}`,
-    // The tall top padding makes room for the label floating over a pane-filling editor
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    '--vision-editor-content-padding-top': `${rem(sanity.space[underHeader ? 3 : 5])}`,
+    '--vision-editor-content-padding-top': editorContentPaddingTop(sanity.space, underHeader),
   }
 
   return (
@@ -108,7 +112,7 @@ export function VisionCodeMirror({
   autoHeight?: boolean
   /**
    * The editor sits under a header rather than under a label floating over it, so its content
-   * needs less top padding
+   * starts flush under the header
    */
   underHeader?: boolean
 } & RefAttributes<VisionCodeMirrorHandle>) {
@@ -194,6 +198,7 @@ export function VisionCodeMirror({
   )
   const sanityTheme = useTheme()
   const theme = useCodemirrorTheme(sanityTheme)
+  const editorExtensions = useMemo(() => [visionTooltips, ...extensions], [extensions])
   const codeMirrorRef = useRef<ReactCodeMirrorRef>(null)
   useEffect(() => {
     if (!liveView) return undefined
@@ -301,7 +306,7 @@ export function VisionCodeMirror({
         ref={codeMirrorRef}
         basicSetup={false}
         theme={theme}
-        extensions={extensions}
+        extensions={editorExtensions}
         value={value}
         onChange={handleChange}
         onCreateEditor={handleCreateEditor}

@@ -32,7 +32,14 @@
     "!lib/analyze-data.md"
   ],
   "type": "module",
-  "sideEffects": true,
+  "sideEffects": [
+    "./lib/bundle.css",
+    "./lib/index.js",
+    "./lib/structure.js",
+    "./lib/presentation.js",
+    "./lib/_unstable-embedded.js",
+    "./lib/_dangerously_use_private_internals_that_do_not_follow_semver.js"
+  ],
   "types": "./lib/index.d.ts",
   "imports": {
     "#styled-system/*": "./styled-system/*/index.js"
@@ -65,10 +72,6 @@
     "./dashboard": {
       "monorepo": "./src/_exports/dashboard.ts",
       "default": "./lib/dashboard.js"
-    },
-    "./desk": {
-      "monorepo": "./src/_exports/desk.ts",
-      "default": "./lib/desk.js"
     },
     "./i18n": {
       "monorepo": "./src/_exports/i18n.ts",
@@ -117,7 +120,6 @@
       "./_unstable-embedded": "./lib/_unstable-embedded.js",
       "./cli": "./lib/cli.js",
       "./dashboard": "./lib/dashboard.js",
-      "./desk": "./lib/desk.js",
       "./i18n": "./lib/i18n.js",
       "./media-library": "./lib/media-library.js",
       "./media-library-island-runtime": "./lib/media-library-island-runtime.js",
@@ -285,7 +287,7 @@
     "@vitest/browser-playwright": "catalog:",
     "blob-polyfill": "^9.0.20240710",
     "chromatic": "^18.15.1",
-    "fast-check": "^4.11.0",
+    "fast-check": "catalog:",
     "jsdom": "catalog:",
     "oxc-transform-react": "catalog:",
     "react": "catalog:",
@@ -310,7 +312,7 @@
     "baseline 2024"
   ],
   "engines": {
-    "node": ">=22.12"
+    "node": ">=24.11"
   },
   "inlinedDependencies": {
     "@sanity/visual-editing-csm": "3.0.19",

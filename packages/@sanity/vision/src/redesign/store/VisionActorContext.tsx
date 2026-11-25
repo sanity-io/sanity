@@ -3,6 +3,7 @@ import {createContext, use, useLayoutEffect} from 'react'
 
 import {type useSavedQueries} from '../../hooks/useSavedQueries'
 import {onLocalStorageCleared} from '../../util/localStorage'
+import {type VisionTabDrawer} from './types'
 import {selectPersistedState, type VisionActorRef, type VisionSnapshot} from './visionMachine'
 import {saveVisionState} from './visionStorage'
 
@@ -99,12 +100,15 @@ export function useSavedQueriesApi(): SavedQueriesApi {
 }
 
 /**
- * Where the open drawer shows one of the active tab's tools (`VisionTabDrawer`): the drawer renders
- * the element, and the tab renders the tool into it, from where it has everything the tool needs
+ * Where the open drawer shows one of the active tab's tools (`VisionTabDrawer`): the tab renders
+ * the tool into the element, from where it has everything the tool needs, and the drawer shows the
+ * element. The element outlives the drawer, so the tool is already in it when the drawer comes in
+ * and still in it as the drawer leaves, in the transition that moves the drawer.
  */
 export interface TabDrawerSlot {
-  element: HTMLElement | null
-  setElement: (element: HTMLElement | null) => void
+  element: HTMLElement
+  /** The tool the drawer shows, which follows the drawer as it shows rather than the machine */
+  drawer: VisionTabDrawer | null
 }
 
 export const TabDrawerSlotContext = createContext<TabDrawerSlot | null>(null)

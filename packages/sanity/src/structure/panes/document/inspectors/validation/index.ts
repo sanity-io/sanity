@@ -12,12 +12,14 @@ import {
 } from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 
+import {createLazyComponent} from '../../../../../core/components/lazy/createLazyComponent'
 import {mergeParseErrors} from '../../../../../core/form/store/utils/mergeParseErrors'
 import {useParseErrors} from '../../../../../core/form/studio/contexts/ParseErrors'
 import {isGoingToUnpublish} from '../../../../../core/releases/util/isGoingToUnpublish'
 import {VALIDATION_INSPECTOR_NAME} from '../../constants'
 import {useDocumentPane} from '../../useDocumentPane'
-import {ValidationInspector} from './ValidationInspector'
+
+const ValidationInspectorLazy = createLazyComponent(() => import('./ValidationInspector.lazy'))
 
 function useMenuItem(_props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
   const {t} = useTranslation('validation')
@@ -65,6 +67,6 @@ function useMenuItem(_props: DocumentInspectorUseMenuItemProps): DocumentInspect
 
 export const validationInspector: DocumentInspector = {
   name: VALIDATION_INSPECTOR_NAME,
-  component: ValidationInspector,
+  component: ValidationInspectorLazy,
   useMenuItem,
 }

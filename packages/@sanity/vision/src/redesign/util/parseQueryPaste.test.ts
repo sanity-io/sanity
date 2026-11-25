@@ -54,25 +54,45 @@ describe('parseCurlQuery', () => {
     const query = `*[_type == 'author' && _id == $id]{name} // ${'x'.repeat(QUERY_URL_SIZE_LIMIT)}`
     const params = {id: "it's", limit: 2}
     // The POST form Vision exports: the options in the URL, the query and params as JSON
-    const [curl] = buildExportSnippets({
-      query,
-      params,
-      url: `${base}${encodeQueryString(query, params)}&perspective=published`,
-      projectId: 'abc123',
-      dataset: 'production',
-      apiVersion: 'v2025-02-19',
-      perspective: 'published',
-      variant: undefined,
-      includeSourceMap: false,
-      useCdn: true,
-    })
+    const [curl] = buildExportSnippets(
+      {
+        query,
+        params,
+        url: `${base}${encodeQueryString(query, params)}&perspective=published`,
+        projectId: 'abc123',
+        dataset: 'production',
+        apiVersion: 'v2025-02-19',
+        perspective: 'published',
+        variant: undefined,
+        resultSourceMap: undefined,
+        useCdn: true,
+      },
+      ['curl'],
+    )
     expect(curl.method).toBe('POST')
 
-    const parsed = parseCurlQuery(curl.code, datasets)
+    const parsed = parseCurlQuery(curl.files[0].code, datasets)
     expect(parsed).toMatchObject({query, params, perspective: 'published', useCdn: true})
     // The URL is the GET form of the request, which Vision's URL field and saved queries use
     expect(parseQueryUrl(parsed?.url ?? '', datasets)).toEqual(parsed)
     expect(parsed?.url).toContain('perspective=published')
+  })
+
+  it('reads a GET request that curl builds from -G and --data-urlencode, encoding as curl does', () => {
+    const expected = {
+      query: '*[_type == "post" && title match $q]',
+      params: {q: 'a & b=c'},
+      perspective: 'drafts',
+    }
+    const args = `--data-urlencode 'query=*[_type == "post" && title match $q]' --data-urlencode '$q="a & b=c"' --data-urlencode 'perspective=drafts'`
+
+    expect(parseCurlQuery(`curl -G '${base}' ${args}`, datasets)).toMatchObject(expected)
+    expect(parseCurlQuery(`curl --get '${base}' ${args}`, datasets)).toMatchObject(expected)
+    expect(parseCurlQuery(`curl -sG '${base}' ${args}`, datasets)).toMatchObject(expected)
+    // Reading a file is left to the tab
+    expect(
+      parseCurlQuery(`curl -G '${base}?query=*' --data-urlencode 'q@file'`, datasets),
+    ).toMatchObject({query: '*', params: {}})
   })
 
   it('reads the body from every way curl takes one, in bash quoting', () => {
@@ -152,7 +172,7 @@ describe('parseCurlQuery', () => {
       query: '*',
       rawParams: '{}',
       options: {
-        datasetMode: 'pinned',
+        datasetMode: 'override',
         dataset: 'staging',
         apiVersion: 'v2021-10-21',
         perspective: undefined,
@@ -192,7 +212,7 @@ describe('parseCurlQuery', () => {
     )
     expect(full).toMatchObject(expected)
     expect(parsedQueryToTabInit(full).options).toStrictEqual({
-      datasetMode: 'pinned',
+      datasetMode: 'override',
       dataset: 'production',
       apiVersion: 'v2025-02-19',
       perspective: 'published',

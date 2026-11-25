@@ -68,7 +68,7 @@ function createHarness() {
     client: {} as SanityClient,
     query: '*[_type == "author"]',
     params: {},
-    includeSourceMap: false,
+    resultSourceMap: undefined,
     useCdn: false,
     url: 'https://example.api.sanity.io/v2025-02-19/data/query/test?query=*',
     ...overrides,

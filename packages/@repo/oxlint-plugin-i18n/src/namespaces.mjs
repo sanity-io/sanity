@@ -97,7 +97,7 @@ export const namespaces = {
     constants: ['structureLocaleNamespace'],
     resources: ['packages/sanity/src/structure/i18n/resources.ts'],
     registeredBy: '`structureTool()`',
-    allowedIn: ['packages/sanity/src/structure/', 'packages/sanity/src/desk/'],
+    allowedIn: ['packages/sanity/src/structure/'],
   },
   'presentation': {
     constants: ['presentationLocaleNamespace'],

@@ -16,6 +16,10 @@ import {useTabElementId} from './tabs/queryTabShown'
  * it as `--vision-bottom-bar-height`, the height of every bar along the bottom of the tool.
  */
 export const PANEL_HEADER_HEIGHT = 35
+/** A bar along the bottom of the tool (`.bottomBar`), the 1px rule along its top included */
+export const BOTTOM_BAR_HEIGHT = PANEL_HEADER_HEIGHT + 1
+/** The rule between the tab header and the panel's body (`.panelBody`) */
+export const PANEL_BODY_BORDER = 1
 
 export interface CollapsiblePanelTab {
   id: string
@@ -23,8 +27,8 @@ export interface CollapsiblePanelTab {
   /** Rendered after the label, for instance a count or a warning icon */
   icon?: ReactNode
   /**
-   * Draws the tab like a Content Releases filter chip. The Lint tab uses `critical` once the
-   * query has findings, so the count in its label reads as a soft red pill in the tab row.
+   * Draws the tab like a Content Releases filter chip. The Lint tab uses the tone of the worst
+   * finding once the query has any, so the count in its label reads as a soft pill in the tab row.
    */
   tone?: ButtonTone
   /** Softens `tone`, the way the releases Errors chip does */
@@ -107,18 +111,13 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
 
   return (
     <Flex data-testid={`${idPrefix}-panel`} flexDirection="column" height="100%" minHeight="0">
-      <Flex
-        alignItems="center"
-        className={styles.panelHeader}
-        gap={2}
-        justifyContent="space-between"
-        paddingX={2}
-      >
+      <Flex alignItems="center" className={styles.panelBar} gap={2} justifyContent="space-between">
         <Box className={styles.panelTabs} ref={stripRef}>
           <TabList gap={1}>
             {tabs.map((tab) => (
               <Tab
                 aria-controls={elementId(`${tab.id}-panel`)}
+                data-tone={tab.tone}
                 fontSize={1}
                 icon={tab.icon}
                 id={elementId(`${tab.id}-tab`)}
@@ -166,6 +165,7 @@ export function CollapsiblePanel(props: CollapsiblePanelProps) {
         <TabPanel
           aria-labelledby={elementId(`${activeTab.id}-tab`)}
           className={cx(motion.body, styles.panelBody)}
+          display="flex"
           flex={1}
           id={elementId(`${activeTab.id}-panel`)}
         >

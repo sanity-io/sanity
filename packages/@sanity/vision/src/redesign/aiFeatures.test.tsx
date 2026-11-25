@@ -120,7 +120,7 @@ describe('useQueryExplain', () => {
       client,
       query: '*',
       params: {},
-      includeSourceMap: false,
+      resultSourceMap: undefined,
       useCdn: false,
       url: 'https://p.api.sanity.io/v2025-02-19/data/query/test?query=*',
     }

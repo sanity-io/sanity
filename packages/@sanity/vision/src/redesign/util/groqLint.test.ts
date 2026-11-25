@@ -8,15 +8,19 @@ import {
   functionLibrary,
   type GroqEditorLabels,
   groqEditorLabels,
+  queryParamValues,
   querySchema,
 } from './groqEditorContext'
 import {
   collectFindings,
   groqLintSource,
+  PARAM_LINT_MARK_CLASS,
+  type QueryLintFinding,
   renderMessage,
   splitMessage,
   syntaxErrorDiagnostic,
   toDiagnostics,
+  worstSeverity,
 } from './groqLint'
 import * as groqWasm from './groqWasm'
 import {createQuerySchema} from './schemaCheck'
@@ -99,6 +103,54 @@ describe('schema findings', () => {
     reference.actions[0].apply(view, reference.from, reference.to)
     expect(view.state.doc.toString()).toBe('*[_type == "author"]{nmae, "f": bestFriend->name}')
     expect(onApplySuggestion).toHaveBeenCalledTimes(2)
+    view.destroy()
+  })
+
+  it('reports a param value the schema has no type for at the param, with the fix for the params', async () => {
+    const query = '*[_type == $type]{nmae}'
+    const view = new EditorView({
+      state: EditorState.create({
+        doc: query,
+        extensions: [
+          groqEditorLabels.of(EDITOR_LABELS),
+          querySchema.of(SCHEMA),
+          queryParamValues.of({type: 'athor'}),
+        ],
+      }),
+    })
+    const diagnostics = await groqLintSource(view)
+    const [typeDiagnostic] = diagnostics
+    expect(typeDiagnostic).toMatchObject({
+      source: 'vision/unknown-type',
+      markClass: PARAM_LINT_MARK_CLASS,
+    })
+    // Its fix is in the params, not in the query
+    expect(typeDiagnostic.actions).toBeUndefined()
+
+    const state = view.state.update(setDiagnostics(view.state, diagnostics)).state
+    expect(collectFindings(state)).toEqual([
+      expect.objectContaining({
+        source: 'vision/unknown-type',
+        param: {name: 'type', path: [], value: 'athor', suggestion: 'author'},
+      }),
+    ])
+    view.destroy()
+  })
+
+  it('collects the quick fix of a query finding, at its offsets in the query', async () => {
+    const query = '*[_type == "author"]{nmae}'
+    const view = new EditorView({
+      state: EditorState.create({
+        doc: query,
+        extensions: [groqEditorLabels.of(EDITOR_LABELS), querySchema.of(SCHEMA)],
+      }),
+    })
+    const diagnostics = await groqLintSource(view)
+    const state = view.state.update(setDiagnostics(view.state, diagnostics)).state
+    const [finding] = collectFindings(state)
+    expect(finding.param).toBeUndefined()
+    const from = query.indexOf('nmae')
+    expect(finding.fix).toEqual({from, to: from + 4, insert: 'name'})
     view.destroy()
   })
 
@@ -321,5 +373,24 @@ describe('syntaxErrorDiagnostic', () => {
         source: 'groq',
       },
     )
+  })
+})
+
+describe('worstSeverity', () => {
+  const finding = (severity: QueryLintFinding['severity']): QueryLintFinding => ({
+    from: 0,
+    to: 1,
+    line: 1,
+    column: 1,
+    severity,
+    message: 'm',
+    source: undefined,
+  })
+
+  it('picks the most severe finding, so a lone warning does not read as an error', () => {
+    expect(worstSeverity([])).toBeUndefined()
+    expect(worstSeverity([finding('warning')])).toBe('warning')
+    expect(worstSeverity([finding('hint'), finding('info')])).toBe('info')
+    expect(worstSeverity([finding('warning'), finding('error'), finding('info')])).toBe('error')
   })
 })

@@ -60,10 +60,34 @@ function describeValue(value: unknown): {text: string; type: GraphValueType} {
   return {text: 'null', type: 'null'}
 }
 
-function entriesOf(value: Record<string, unknown> | unknown[]): [string, unknown][] {
-  return Array.isArray(value)
-    ? value.map((item, index) => [String(index), item])
-    : Object.entries(value)
+/**
+ * The entries a node lists, capped just past `MAX_GRAPH_ROWS` so a huge array or object does not
+ * materialize every pair before the row limit kicks in. `total` is the uncapped length, for the
+ * "N more" row.
+ */
+function entriesOf(value: Record<string, unknown> | unknown[]): {
+  entries: [string, unknown][]
+  total: number
+} {
+  const limit = MAX_GRAPH_ROWS + 1
+  if (Array.isArray(value)) {
+    const total = value.length
+    const length = Math.min(total, limit)
+    const entries: [string, unknown][] = []
+    for (let index = 0; index < length; index++) {
+      entries.push([String(index), value[index]])
+    }
+    return {entries, total}
+  }
+  const keys = Object.keys(value)
+  const total = keys.length
+  const length = Math.min(total, limit)
+  const entries: [string, unknown][] = []
+  for (let index = 0; index < length; index++) {
+    const key = keys[index]
+    entries.push([key, value[key]])
+  }
+  return {entries, total}
 }
 
 export function buildResultGraph(value: unknown, maxNodes = MAX_GRAPH_NODES): ResultGraph {
@@ -96,12 +120,12 @@ export function buildResultGraph(value: unknown, maxNodes = MAX_GRAPH_NODES): Re
   }[] = [{value, id: '', depth: 0}]
   for (let head = 0; head < queue.length; head++) {
     const item = queue[head]
-    const entries = entriesOf(item.value)
+    const {entries, total} = entriesOf(item.value)
     const rows: GraphRow[] = []
     for (const [index, [key, entry]] of entries.entries()) {
       if (index === MAX_GRAPH_ROWS) {
-        rows.push({kind: 'more', count: entries.length - index})
-        partialNodes.push({id: item.id, entries: entries.length})
+        rows.push({kind: 'more', count: total - index})
+        partialNodes.push({id: item.id, entries: total})
         break
       }
       if (!isComposite(entry)) {

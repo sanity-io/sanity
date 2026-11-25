@@ -83,16 +83,6 @@ const defaultCustomProperties: LegacyThemeProps = {
   // Focus
   '--focus-color': blue[500].hex,
 
-  // Screen
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  '--screen-medium-break': '512px',
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  '--screen-default-break': '640px',
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  '--screen-large-break': '960px',
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  '--screen-xlarge-break': '1600px',
-
   // State
   '--state-info-color': blue[500].hex,
   '--state-success-color': green[500].hex,

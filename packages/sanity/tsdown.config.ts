@@ -13,7 +13,6 @@ export default defineConfig({
     '_singletons.js',
     '_createContext.js',
     'cli.js',
-    'desk.js',
     'migrate.js',
     'presentation.js',
     'router.js',
@@ -29,10 +28,13 @@ export default defineConfig({
   // names, extracts their CSS into `lib/bundle.css` and wires up the conditional `./bundle.css`
   // export pattern (self-referential import + node shim), like the `rollup: {vanillaExtract: true}`
   // option in `@sanity/pkg-utils` did for vanilla-extract.
-  // The `import 'sanity/bundle.css'` this injects into the entry barrels is also why package.json
-  // declares `sideEffects: true`: with `false` or a `*.css` allowlist, bundlers bypass the
-  // side-effect-free barrels and eliminate the bare CSS import together with them, before the
-  // stylesheet's own side-effect status is ever consulted (see #13322 and #13332).
+  // The `import 'sanity/bundle.css'` this injects into the entry barrels is why package.json lists
+  // those barrels in `sideEffects` next to the stylesheet: with `false` or a `*.css` allowlist,
+  // bundlers bypass the side-effect-free barrels and eliminate the bare CSS import together with
+  // them, before the stylesheet's own side-effect status is ever consulted (see #13322 and
+  // #13332). Every other file stays side-effect free, so a bundler can drop the chunks a studio
+  // never uses; `sideEffects: true` made it evaluate every chunk an entry imports.
+  // `@repo/test-exports` checks the list against the barrels that import the stylesheet.
   // The stylesheet stays unminified so the diff between two published versions is readable, and
   // ships without Panda's cascade layers: CSS outside any layer beats every layered rule
   // regardless of specificity, so a layered stylesheet would lose its hover, focus and selected

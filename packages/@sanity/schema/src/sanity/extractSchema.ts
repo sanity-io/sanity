@@ -89,6 +89,19 @@ export function extractSchema(
    */
   const hoistedRefMap = new Map<string, string>()
 
+  /**
+   * Document types whose fields are being converted right now, as a top level type or embedded in
+   * another type. A document type that shows up again while it is on this stack would embed
+   * itself without end, so it is referenced through a hoisted declaration instead.
+   */
+  const embeddingDocuments = new Set<string>()
+
+  /**
+   * Document type name → name of the hoisted declaration of its embedded form, for the document
+   * types that embed themselves (directly, or through other types)
+   */
+  const hoistedDocumentMap = new Map<string, string>()
+
   // `repeated` maps ObjectField instances → hoisted type names. When the same inline type (e.g., `blocksTest`)
   // is used in multiple documents, Sanity's compiled schema reuses the same ObjectField object reference. This
   // allows us to detect repetition via object identity, not structural comparison.
@@ -136,6 +149,17 @@ export function extractSchema(
     }
 
     schema.push(base)
+
+    // A document type that embeds itself is referenced through this declaration wherever it
+    // recurses: its embedded form, which is the document without its system fields except `_type`
+    const hoistedName = base.type === 'document' && hoistedDocumentMap.get(typeName)
+    if (hoistedName) {
+      schema.push({
+        type: 'type',
+        name: hoistedName,
+        value: {type: 'object', attributes: embeddedDocumentAttributes(base)},
+      })
+    }
   })
 
   /**
@@ -174,7 +198,7 @@ export function extractSchema(
 
     if (typeName === 'document' && isObjectType(schemaType)) {
       const defaultAttributes = documentDefaultFields(schemaType.name)
-      const object = createObject(schemaType)
+      const object = whileEmbedding(schemaType.name, () => createObject(schemaType))
 
       return {
         name: schemaType.name,
@@ -233,8 +257,42 @@ export function extractSchema(
       if (!isDocType) {
         return {type: 'inline', name: schemaType.type?.name} satisfies InlineTypeNode
       }
+
+      return convertEmbeddedDocument(schemaType, schemaType.type.name)
     }
 
+    return convertSchemaTypeByKind(schemaType)
+  }
+
+  /**
+   * Converts a use of a document type as a field or array member. The document is embedded, unless
+   * it is one of the documents being embedded right now: embedding it again would never end
+   * (a document with a field of its own type, or two documents with fields of each other's types),
+   * so that use becomes a reference to a hoisted declaration of the document's embedded form.
+   */
+  function convertEmbeddedDocument(schemaType: SanitySchemaType, documentName: string): TypeNode {
+    if (!embeddingDocuments.has(documentName)) {
+      return whileEmbedding(documentName, () => convertSchemaTypeByKind(schemaType))
+    }
+    const hoistedName =
+      hoistedDocumentMap.get(documentName) ?? reserveRefName(getInlineDocumentName(documentName))
+    if (hoistedName === null) {
+      return {type: 'unknown'} satisfies UnknownTypeNode
+    }
+    hoistedDocumentMap.set(documentName, hoistedName)
+    return {type: 'inline', name: hoistedName} satisfies InlineTypeNode
+  }
+
+  function whileEmbedding<T>(documentName: string, convert: () => T): T {
+    embeddingDocuments.add(documentName)
+    try {
+      return convert()
+    } finally {
+      embeddingDocuments.delete(documentName)
+    }
+  }
+
+  function convertSchemaTypeByKind(schemaType: SanitySchemaType): TypeNode {
     if (isStringType(schemaType)) {
       return createStringTypeNodeDefintion(schemaType)
     }
@@ -436,6 +494,26 @@ export function extractSchema(
 
 function getInlineRefName(typeName: string) {
   return `${typeName}.reference`
+}
+
+function getInlineDocumentName(typeName: string) {
+  return `${typeName}.inline`
+}
+
+/**
+ * The attributes a document has when it is embedded in another type: its `_type` and its fields,
+ * without the other system fields (`_id`, `_createdAt`, `_updatedAt`, `_rev`) a stored document
+ * has. This is what `createObject` produces for a field of a document type.
+ */
+function embeddedDocumentAttributes(document: DocumentSchemaType): Record<string, ObjectAttribute> {
+  const systemFields = new Set(Object.keys(documentDefaultFields(document.name)))
+  const attributes: Record<string, ObjectAttribute> = {_type: document.attributes._type}
+  for (const [name, attribute] of Object.entries(document.attributes)) {
+    if (!systemFields.has(name)) {
+      attributes[name] = attribute
+    }
+  }
+  return attributes
 }
 
 function createKeyField(): ObjectAttribute<StringTypeNode> {

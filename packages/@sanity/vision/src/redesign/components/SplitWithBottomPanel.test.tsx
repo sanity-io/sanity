@@ -39,7 +39,6 @@ vi.stubGlobal(
 
 const theme = buildTheme()
 const EXPERIENCE: VisionExperience = {layout: 'columns', switchToClassic: () => {}}
-const DEFAULT_BOTTOM_SIZE = {columns: 200, stacked: 160, mobile: 160}
 
 /** Renders the test id of the boundary element its overlays would be kept inside */
 function BoundaryProbe({testId}: {testId: string}) {
@@ -47,10 +46,10 @@ function BoundaryProbe({testId}: {testId: string}) {
   return <span data-boundary={boundary?.dataset.testid ?? 'none'} data-testid={testId} />
 }
 
-function Pane({name}: {name: string}) {
+function Pane({name}: {name: 'request' | 'response'}) {
   return (
     <SplitWithBottomPanel
-      defaultBottomSize={DEFAULT_BOTTOM_SIZE}
+      column={name}
       footer={<BoundaryProbe testId={`${name}-footer-probe`} />}
       id={`vision-${name}`}
       tabs={[

@@ -25,20 +25,6 @@ vi.mock('sanity', () => ({
   getPublishedId: (id: string) => id.replace(/^(drafts\.|versions\.[^.]+\.)/, ''),
   isDraftId: (id: string) => id.startsWith('drafts.'),
   getVersionFromId: (id: string) => /^versions\.([^.]+)\./.exec(id)?.[1],
-  CommandList: ({
-    items,
-    renderItem,
-  }: {
-    items: unknown[]
-    renderItem: (item: unknown, context: {activeIndex: number}) => ReactNode
-  }) => (
-    <div data-testid="command-list">
-      {items.map((item, index) => (
-        // oxlint-disable-next-line react/no-array-index-key -- a stand-in for the virtualized list
-        <div key={index}>{renderItem(item, {activeIndex: index})}</div>
-      ))}
-    </div>
-  ),
   SanityDefaultPreview: ({
     title,
     subtitle,
@@ -84,6 +70,20 @@ const useValuePreview = vi.fn(
 )
 
 vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
+  CommandList: ({
+    items,
+    renderItem,
+  }: {
+    items: unknown[]
+    renderItem: (item: unknown, context: {activeIndex: number}) => ReactNode
+  }) => (
+    <div data-testid="command-list">
+      {items.map((item, index) => (
+        // oxlint-disable-next-line react/no-array-index-key -- a stand-in for the virtualized list
+        <div key={index}>{renderItem(item, {activeIndex: index})}</div>
+      ))}
+    </div>
+  ),
   useValuePreview: (props: {
     value: {_id: string}
     schemaType: unknown
@@ -134,6 +134,7 @@ function renderList(
   parsed: ParsedDocumentList,
   datasetName = 'workspace-dataset',
   resolvePreviews = false,
+  action?: ReactNode,
 ) {
   render(
     <ThemeProvider theme={theme}>
@@ -143,6 +144,7 @@ function renderList(
           id="vision-result-content"
           parsed={parsed}
           resolvePreviews={resolvePreviews}
+          action={action}
         />
       </LayerProvider>
     </ThemeProvider>,
@@ -302,5 +304,22 @@ describe('DocumentListView', () => {
     ).toBeTruthy()
     expect(screen.getByText(DOCUMENT_LIST_SHAPE)).toBeTruthy()
     expect(screen.queryByTestId('vision-document-list-row')).toBeNull()
+  })
+
+  it('offers the action over the rows of a list', () => {
+    renderList(parseDocumentList([{_id: 'ada'}]), undefined, false, <button>Fit</button>)
+    expect(screen.getByRole('button', {name: 'Fit'})).toBeTruthy()
+    expect(screen.getByTestId('command-list')).toBeTruthy()
+  })
+
+  it('offers the action under the expected shape of a result that is not a list', () => {
+    renderList(parseDocumentList(42), undefined, false, <button>Fit</button>)
+    expect(screen.getByRole('button', {name: 'Fit'})).toBeTruthy()
+    expect(screen.getByText(DOCUMENT_LIST_SHAPE)).toBeTruthy()
+  })
+
+  it('offers no action for an empty list', () => {
+    renderList(parseDocumentList([]), undefined, false, <button>Fit</button>)
+    expect(screen.queryByRole('button', {name: 'Fit'})).toBeNull()
   })
 })

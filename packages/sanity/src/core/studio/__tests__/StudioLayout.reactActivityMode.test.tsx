@@ -73,10 +73,6 @@ vi.mock('../screens/NoToolsScreen', () => ({
   NoToolsScreen: () => <div data-testid="no-tools" />,
 }))
 
-vi.mock('../screens/RedirectingScreen', () => ({
-  RedirectingScreen: () => <div data-testid="redirecting" />,
-}))
-
 vi.mock('../screens/ToolNotFoundScreen', () => ({
   ToolNotFoundScreen: () => <div data-testid="tool-not-found" />,
 }))

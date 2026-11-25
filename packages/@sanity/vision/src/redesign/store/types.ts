@@ -3,8 +3,11 @@ import {type ContentSourceMap, type SanityClient, type SyncTag} from '@sanity/cl
 import {type QueryRequestMethod} from '../../util/queryRequestMethod'
 import {type QueryNetwork} from '../util/queryNetwork'
 
-/** Whether a tab queries the workspace's dataset, following it, or one pinned by hand */
-export type VisionDatasetMode = 'workspace' | 'pinned'
+/**
+ * Whether a tab queries the workspace's dataset (`auto`, following it when the workspace
+ * changes) or one chosen by hand (`override`, which stays put)
+ */
+export type VisionDatasetMode = 'auto' | 'override'
 
 /**
  * A tab's perspective. `global` follows the studio's navbar (the pinned release stack,
@@ -25,7 +28,7 @@ export type VisionVariantMode = 'global' | 'none'
 /** Per-tab request options */
 export interface VisionTabOptions {
   datasetMode: VisionDatasetMode
-  /** The pinned dataset; while following the workspace, this is what pinning starts from */
+  /** The overriding dataset; on `auto`, the workspace's dataset when the tab was last saved */
   dataset: string
   /**
    * Any API version, listed in `API_VERSIONS` or typed into the "Other" input. May be unfinished
@@ -115,6 +118,23 @@ export interface VisionAiSettings {
   explainQuery: boolean
 }
 
+/** The code snippets the Export query dialog can show, one per tab */
+export type VisionExportSnippetId =
+  | 'client'
+  | 'curl'
+  | 'next-sanity'
+  | 'astro'
+  | 'sveltekit'
+  | 'nuxt'
+
+/** Which snippets the Export query dialog shows, and in what order */
+export interface VisionExportSnippetSettings {
+  /** Every snippet, in tab order */
+  order: VisionExportSnippetId[]
+  /** Snippets left out of the dialog; never all of them */
+  hidden: VisionExportSnippetId[]
+}
+
 /** How the query editor behaves */
 export interface VisionEditorSettings {
   /**
@@ -124,6 +144,12 @@ export interface VisionEditorSettings {
   autoFormatOnResize: boolean
 }
 
+/**
+ * The `resultSourceMap` value sent when a query asks for a content source map: the plain source
+ * map, or the one whose array paths select items by `_key` (`@sanity/client` accepts both)
+ */
+export type VisionResultSourceMap = true | 'withKeyArraySelector'
+
 /** What the Response panel shows about a response */
 export interface VisionResponseSettings {
   /**
@@ -131,6 +157,17 @@ export interface VisionResponseSettings {
    * found with extra queries to the dataset the response came from
    */
   resolveSyncTags: boolean
+  /**
+   * Turns on the Content Source Map features: the "Include content source map" option and the
+   * Content Source Map tab. While off, no query or export snippet asks for a source map, whatever
+   * the tabs' options say.
+   */
+  sourceMapEnabled: boolean
+  /**
+   * Sent by every fetch that asks for a content source map: with "Include content source map"
+   * on, from the Content Source Map tab's one-off fetch, and in the Export query snippets
+   */
+  resultSourceMap: VisionResultSourceMap
 }
 
 /** A custom GROQ function kept in the functions library, to declare in any query */
@@ -153,6 +190,7 @@ export interface VisionPersistedState {
   ai: VisionAiSettings
   editor: VisionEditorSettings
   response: VisionResponseSettings
+  exportSnippets: VisionExportSnippetSettings
   /** The functions library, most recently saved first */
   functions: VisionSavedFunction[]
 }
@@ -165,16 +203,12 @@ export type FetchReason =
   | {type: 'load'}
   /** A tab that refetches automatically was shown again, with nothing current to replay */
   | {type: 'resume'}
-  /** The Live button, which fetches like Fetch and then refetches automatically */
-  | {type: 'live-start'}
   /** A tab opened with a generated query, fetched as it is shown */
   | {type: 'generated'}
   /** A query URL pasted into the tab, run as pasted, as the classic tool does */
   | {type: 'paste'}
   /** A query URL a link to the tool named, opened in a tab of its own and run as written */
   | {type: 'link'}
-  /** Mutations applied from the Mutate panel, after which the result may have changed */
-  | {type: 'mutation'}
   /** `eventId` is the live event's, which makes the API CDN answer with content at least as new */
   | {type: 'live'; matchedTags: SyncTag[]; eventId?: string}
 
@@ -240,7 +274,8 @@ export interface QueryRequest {
   client: SanityClient
   query: string
   params: Record<string, unknown>
-  includeSourceMap: boolean
+  /** Asks for a content source map with this value; `undefined` asks for none */
+  resultSourceMap: VisionResultSourceMap | undefined
   /** Sent to the API CDN; `url` has its host */
   useCdn: boolean
   /** The GET URL of the request, shown in the response panel and used for saved queries */

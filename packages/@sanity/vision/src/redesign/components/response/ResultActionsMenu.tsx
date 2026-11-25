@@ -5,13 +5,15 @@ import {JsonIcon} from '@sanity/icons/Json'
 import {PackageIcon} from '@sanity/icons/Package'
 import {Button, Text} from '@sanity/ui'
 import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
-import {Tooltip} from '@sanity/ui/tooltip'
 import {useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VisionTab} from '../../store/types'
+import {cx} from '../../util/cx'
 import * as styles from '../redesign.module.css'
+import * as themeStyles from '../themeTokens.module.css'
+import {VisionTooltip} from '../VisionTooltip'
 import {downloadFile} from './downloadFile'
 import {ExportTypesDialog, type TypesExportFormat} from './ExportTypesDialog'
 
@@ -65,17 +67,11 @@ export function ResultActionsMenu({
 
   return (
     <>
-      <Tooltip
-        animate
-        content={
-          <Text size={1} as="div">
-            {moreActions}
-          </Text>
-        }
+      <VisionTooltip
+        content={moreActions}
         // The tooltip would cover the menu it names
         disabled={menuOpen}
         placement="top"
-        portal
       >
         {/* The tooltip attaches to this wrapper, which leaves the button's ref to the menu */}
         <span className={styles.tooltipTarget} data-testid="vision-result-menu-tooltip-target">
@@ -92,7 +88,10 @@ export function ResultActionsMenu({
             }
             id={`vision-result-menu-${tab.id}`}
             menu={
-              <Menu data-testid="vision-result-menu">
+              <Menu
+                className={cx(styles.popoverScroll, themeStyles.themeTokens)}
+                data-testid="vision-result-menu"
+              >
                 <MenuItem
                   data-testid="vision-export-json"
                   disabled={!getJsonUrl}
@@ -134,7 +133,7 @@ export function ResultActionsMenu({
             popover={{animate: true, portal: true, placement: 'bottom-end'}}
           />
         </span>
-      </Tooltip>
+      </VisionTooltip>
       {exportFormat && (
         <ExportTypesDialog
           format={exportFormat}

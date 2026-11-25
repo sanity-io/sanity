@@ -18,7 +18,11 @@ export interface DocumentRule extends RuleDef<DocumentRule, SanityDocument> {}
 export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
   type: 'document'
   liveEdit?: boolean
-  /** @beta */
+  /**
+   * Sort orders to offer in the sort menu of this type's document list.
+   *
+   * @public
+   */
   orderings?: SortOrdering[]
   options?: DocumentOptions
   validation?: ValidationBuilder<DocumentRule, SanityDocument>

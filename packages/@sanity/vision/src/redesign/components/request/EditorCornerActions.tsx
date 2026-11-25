@@ -1,13 +1,13 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {CodeBlockIcon} from '@sanity/icons/CodeBlock'
 import {CopyIcon} from '@sanity/icons/Copy'
-import {Button, Hotkeys} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
+import {Button} from '@sanity/ui'
 import {useTranslation} from 'sanity/i18n'
-import {Flex, Text} from 'ui5'
+import {Flex, VisuallyHidden} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {VISION_SHORTCUTS} from '../../util/shortcuts'
+import {PrettifyIcon} from '../PrettifyIcon'
+import {VisionTooltip} from '../VisionTooltip'
 
 export interface EditorCornerActionsProps {
   /** Prefixes the buttons' test IDs: `<testIdPrefix>-format`, `<testIdPrefix>-copy` */
@@ -18,24 +18,13 @@ export interface EditorCornerActionsProps {
   /** Accessible label of Copy, naming what it copies */
   copyLabel: string
   onCopy: () => void
-  /** Whether Copy reads Copied, with a checkmark, after a copy */
+  /** Whether Copy shows a checkmark, labelled Copied, after a copy */
   copied: boolean
 }
 
-function ShortcutTooltipContent({label, keys}: {label: string; keys: string[]}) {
-  return (
-    <Flex alignItems="center" gap={2} padding={1}>
-      <Text as="div" size={1} trim={true}>
-        {label}
-      </Text>
-      <Hotkeys fontSize={0} keys={keys} />
-    </Flex>
-  )
-}
-
 /**
- * Format and Copy, in the top right corner of an editor. Copy confirms where it was clicked: it
- * reads Copied, with its copy icon turned into a checkmark, for a moment
+ * Format and Copy, in the top right corner of an editor. Copy is an icon, and confirms where it
+ * was clicked: its copy icon turns into a checkmark, and its label into Copied, for a moment
  */
 export function EditorCornerActions(props: EditorCornerActionsProps) {
   const {testIdPrefix, formatLabel, onFormat, copyLabel, onCopy, copied} = props
@@ -44,48 +33,41 @@ export function EditorCornerActions(props: EditorCornerActionsProps) {
   return (
     <Flex alignItems="center" gap={1}>
       {formatLabel && onFormat && (
-        <Tooltip
-          animate
-          content={
-            <ShortcutTooltipContent keys={VISION_SHORTCUTS.prettify.keys} label={formatLabel} />
-          }
+        <VisionTooltip
+          content={formatLabel}
+          hotkeys={VISION_SHORTCUTS.prettify.keys}
           placement="bottom"
-          portal
         >
           <Button
             aria-label={formatLabel}
             data-testid={`${testIdPrefix}-format`}
             fontSize={1}
             gap={2}
-            icon={CodeBlockIcon}
+            icon={PrettifyIcon}
             mode="bleed"
             onClick={onFormat}
             padding={2}
             text={t('vision.editor.format')}
           />
-        </Tooltip>
+        </VisionTooltip>
       )}
-      <Tooltip
-        animate
-        content={
-          <ShortcutTooltipContent keys={VISION_SHORTCUTS['copy-query'].keys} label={copyLabel} />
-        }
+      <VisionTooltip
+        content={copied ? t('vision.editor.copied') : copyLabel}
+        hotkeys={VISION_SHORTCUTS['copy-query'].keys}
         placement="bottom"
-        portal
       >
         <Button
           aria-label={copied ? t('vision.editor.copied') : copyLabel}
           data-copied={copied}
           data-testid={`${testIdPrefix}-copy`}
           fontSize={1}
-          gap={2}
           icon={copied ? CheckmarkIcon : CopyIcon}
           mode="bleed"
           onClick={onCopy}
           padding={2}
-          text={copied ? t('vision.editor.copied') : t('vision.editor.copy')}
         />
-      </Tooltip>
+      </VisionTooltip>
+      <VisuallyHidden aria-live="polite">{copied ? t('vision.editor.copied') : ''}</VisuallyHidden>
     </Flex>
   )
 }

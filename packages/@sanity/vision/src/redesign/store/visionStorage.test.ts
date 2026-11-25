@@ -28,7 +28,7 @@ describe('visionStorage', () => {
 
   it('resolves settings from the tool defaults: following the workspace and the navbar', () => {
     expect(resolveDefaultSettings(defaults)).toEqual({
-      datasetMode: 'workspace',
+      datasetMode: 'auto',
       dataset: 'production',
       apiVersion: 'v2025-02-19',
       perspective: 'global',
@@ -46,7 +46,7 @@ describe('visionStorage', () => {
         defaultApiVersion: 'not-a-version',
       }),
     ).toEqual({
-      datasetMode: 'workspace',
+      datasetMode: 'auto',
       dataset: 'staging',
       apiVersion: DEFAULT_API_VERSION,
       perspective: 'global',
@@ -58,7 +58,7 @@ describe('visionStorage', () => {
 
   it('keeps an unlisted default API version on new tabs', () => {
     const options = createTabOptions({
-      datasetMode: 'workspace',
+      datasetMode: 'auto',
       dataset: 'production',
       apiVersion: 'v2022-01-01',
       perspective: 'raw',
@@ -129,7 +129,12 @@ describe('visionStorage', () => {
       query: '*[_type == "author"]',
       title: 'Authors',
       autoRefetch: true,
-      options: {perspective: 'published', datasetMode: 'pinned', dataset: 'staging', useCdn: true},
+      options: {
+        perspective: 'published',
+        datasetMode: 'override',
+        dataset: 'staging',
+        useCdn: true,
+      },
     })
     const saved = {
       ...state,
@@ -153,7 +158,22 @@ describe('visionStorage', () => {
         explainQuery: false,
       },
       editor: {autoFormatOnResize: false},
-      response: {resolveSyncTags: true},
+      response: {
+        resolveSyncTags: true,
+        sourceMapEnabled: true,
+        resultSourceMap: 'withKeyArraySelector' as const,
+      },
+      exportSnippets: {
+        order: [
+          'curl' as const,
+          'astro' as const,
+          'client' as const,
+          'next-sanity' as const,
+          'sveltekit' as const,
+          'nuxt' as const,
+        ],
+        hidden: ['next-sanity' as const, 'nuxt' as const],
+      },
       functions: [{id: 'ex::author', declaration: 'fn ex::author($ref) = $ref->{name}'}],
     }
     saveVisionState('proj', saved)
@@ -369,9 +389,12 @@ describe('visionStorage', () => {
     expect(load('off')).toEqual({autoFormatOnResize: true})
   })
 
-  it('keeps sync tag lookup off unless it was switched on', () => {
+  it('keeps sync tag lookup on unless it was switched off', () => {
     const {response: _response, ...withoutResponse} = createInitialState(defaults)
-    expect(createInitialState(defaults).response).toEqual({resolveSyncTags: false})
+    const on = {resolveSyncTags: true, sourceMapEnabled: false, resultSourceMap: true}
+    expect(createInitialState(defaults).response).toEqual(on)
+    // Nothing stored: a new user
+    expect(loadVisionState('proj', defaults).response).toEqual(on)
 
     const load = (response?: unknown) => {
       localStorage.setItem(
@@ -380,10 +403,83 @@ describe('visionStorage', () => {
       )
       return loadVisionState('proj', defaults).response
     }
-    expect(load()).toEqual({resolveSyncTags: false})
-    expect(load({resolveSyncTags: true})).toEqual({resolveSyncTags: true})
-    expect(load({resolveSyncTags: 'yes'})).toEqual({resolveSyncTags: false})
-    expect(load('on')).toEqual({resolveSyncTags: false})
+    expect(load()).toEqual(on)
+    expect(load({})).toEqual(on)
+    expect(load({resolveSyncTags: 'yes'})).toEqual(on)
+    expect(load('on')).toEqual(on)
+    expect(load({resolveSyncTags: false})).toEqual({...on, resolveSyncTags: false})
+
+    // State from before the current storage key, and state without tabs, read the same way
+    localStorage.clear()
+    localStorage.setItem(getLegacyVisionStorageKey('proj'), JSON.stringify(withoutResponse))
+    expect(loadVisionState('proj', defaults).response).toEqual(on)
+    localStorage.setItem(
+      getVisionStorageKey('proj'),
+      JSON.stringify({...withoutResponse, tabs: [], response: {resolveSyncTags: false}}),
+    )
+    expect(loadVisionState('proj', defaults).response).toEqual({...on, resolveSyncTags: false})
+  })
+
+  it('keeps the Content Source Map features off, and the plain source map, unless picked', () => {
+    const {response: _response, ...withoutResponse} = createInitialState(defaults)
+    const load = (response: unknown) => {
+      localStorage.setItem(
+        getVisionStorageKey('proj'),
+        JSON.stringify({...withoutResponse, response}),
+      )
+      return loadVisionState('proj', defaults).response
+    }
+    expect(load({resolveSyncTags: false})).toEqual({
+      resolveSyncTags: false,
+      sourceMapEnabled: false,
+      resultSourceMap: true,
+    })
+    expect(load({sourceMapEnabled: true, resultSourceMap: 'withKeyArraySelector'})).toEqual({
+      resolveSyncTags: true,
+      sourceMapEnabled: true,
+      resultSourceMap: 'withKeyArraySelector',
+    })
+    expect(load({sourceMapEnabled: 'yes', resultSourceMap: 'withKeys'})).toEqual({
+      resolveSyncTags: true,
+      sourceMapEnabled: false,
+      resultSourceMap: true,
+    })
+    expect(load({sourceMapEnabled: true, resultSourceMap: false})).toEqual({
+      resolveSyncTags: true,
+      sourceMapEnabled: true,
+      resultSourceMap: true,
+    })
+  })
+
+  it('keeps every export snippet once, in the stored order, and never hides them all', () => {
+    const {exportSnippets: _exportSnippets, ...withoutSnippets} = createInitialState(defaults)
+    const defaultOrder = ['client', 'curl', 'next-sanity', 'astro', 'sveltekit', 'nuxt']
+    expect(createInitialState(defaults).exportSnippets).toEqual({order: defaultOrder, hidden: []})
+
+    const load = (exportSnippets?: unknown) => {
+      localStorage.setItem(
+        getVisionStorageKey('proj'),
+        JSON.stringify(
+          exportSnippets === undefined ? withoutSnippets : {...withoutSnippets, exportSnippets},
+        ),
+      )
+      return loadVisionState('proj', defaults).exportSnippets
+    }
+    // State saved before the setting existed
+    expect(load()).toEqual({order: defaultOrder, hidden: []})
+    expect(load('off')).toEqual({order: defaultOrder, hidden: []})
+    // Unknown and repeated snippets are dropped, and snippets added since come last
+    expect(
+      load({order: ['curl', 'gone', 'curl', 'astro'], hidden: ['client', 'gone', 'client']}),
+    ).toEqual({
+      order: ['curl', 'astro', 'client', 'next-sanity', 'sveltekit', 'nuxt'],
+      hidden: ['client'],
+    })
+    // The dialog always has a tab to show
+    expect(load({order: defaultOrder, hidden: defaultOrder})).toEqual({
+      order: defaultOrder,
+      hidden: [],
+    })
   })
 
   it('returns a fresh state for missing, malformed or outdated storage', () => {
@@ -450,7 +546,7 @@ describe('visionStorage', () => {
     // A dataset other than the workspace's was chosen on purpose, so it stays pinned; the
     // navbar-following perspective keeps its meaning under its new name, and variants follow the navbar
     expect(loaded.tabs[0].options).toEqual({
-      datasetMode: 'pinned',
+      datasetMode: 'override',
       dataset: 'staging',
       apiVersion: 'v2025-02-19',
       perspective: 'global',
@@ -460,10 +556,32 @@ describe('visionStorage', () => {
     })
     // The workspace's dataset was the old default, so it keeps following the workspace
     expect(loaded.settings).toMatchObject({
-      datasetMode: 'workspace',
+      datasetMode: 'auto',
       dataset: 'production',
       perspective: 'raw',
     })
+  })
+
+  it('reads a pinned dataset as an override and one following the workspace as Auto', () => {
+    const state = createInitialState(defaults)
+    localStorage.setItem(
+      getVisionStorageKey('proj'),
+      JSON.stringify({
+        ...state,
+        settings: {...state.settings, datasetMode: 'workspace', dataset: 'staging'},
+        tabs: [
+          {
+            ...state.tabs[0],
+            options: {...state.tabs[0].options, datasetMode: 'pinned', dataset: 'staging'},
+          },
+        ],
+      }),
+    )
+
+    const loaded = loadVisionState('proj', defaults)
+    expect(loaded.tabs[0].options).toMatchObject({datasetMode: 'override', dataset: 'staging'})
+    // Following the workspace resets the stored dataset to the workspace's
+    expect(loaded.settings).toMatchObject({datasetMode: 'auto', dataset: 'production'})
   })
 
   it('keeps the API default perspective of a tab and of the settings across a reload', () => {

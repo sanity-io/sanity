@@ -15,18 +15,18 @@ const MAX_LIST_VALUES = 12
 /** Nested objects are described this deep, enough for `slug.current` or `image.asset` */
 const MAX_DEPTH = 2
 
-function isReferenceType(type: SchemaType): type is ReferenceSchemaType {
+export function isReferenceType(type: SchemaType): type is ReferenceSchemaType {
   for (let current: SchemaType | undefined = type; current; current = current.type) {
     if (current.name === 'reference') return 'to' in type
   }
   return false
 }
 
-function isArrayType(type: SchemaType): type is ArraySchemaType {
+export function isArrayType(type: SchemaType): type is ArraySchemaType {
   return type.jsonType === 'array'
 }
 
-function isBlockType(type: SchemaType): boolean {
+export function isBlockType(type: SchemaType): boolean {
   for (let current: SchemaType | undefined = type; current; current = current.type) {
     if (current.name === 'block') return true
   }
@@ -73,7 +73,7 @@ function describeType(type: SchemaType, depth: number): string {
   return values ? `${type.name} (${values})` : type.name
 }
 
-function words(text: string): string[] {
+export function words(text: string): string[] {
   return text
     .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
     .toLowerCase()
@@ -89,23 +89,37 @@ function singular(word: string): string {
 }
 
 /**
- * The workspace's document types for a prompt that writes GROQ: the types `request` seems to be
- * about (every word of the type's name or title appears in it, plurals included) with their
- * fields, the others by name
+ * The document types `request` seems to be about: every word of the type's name or title appears
+ * in it, plurals included. These are the types a prompt describes field by field.
  */
-export function summarizeSchema(schema: Schema, request: string): string {
+export function getRequestedDocumentTypes(schema: Schema, request: string): string[] {
   const requested = new Set(words(request).flatMap((word) => [word, singular(word)]))
   const mentions = (text: string | undefined) => {
     const textWords = text ? words(text) : []
     return textWords.length > 0 && textWords.every((word) => requested.has(word))
   }
+  const names: string[] = []
+  for (const name of getDocumentTypeNames(schema)) {
+    if (names.length >= MAX_DETAILED_TYPES) break
+    const type = name.includes('.') ? undefined : schema.get(name)
+    if (type && (mentions(name) || mentions(type.title))) names.push(name)
+  }
+  return names
+}
+
+/**
+ * The workspace's document types for a prompt that writes GROQ: the types `request` seems to be
+ * about (see {@link getRequestedDocumentTypes}) with their fields, the others by name
+ */
+export function summarizeSchema(schema: Schema, request: string): string {
+  const requested = new Set(getRequestedDocumentTypes(schema, request))
   const names = getDocumentTypeNames(schema).filter((name) => !name.includes('.'))
   const detailed: string[] = []
   const others: string[] = []
   for (const name of names) {
     const type = schema.get(name)
     if (!type) continue
-    if (detailed.length < MAX_DETAILED_TYPES && (mentions(name) || mentions(type.title))) {
+    if (requested.has(name)) {
       const fields = 'fields' in type ? type.fields : []
       const title = type.title && type.title !== name ? ` (${type.title})` : ''
       detailed.push(`- ${name}${title}: ${describeFields(fields, 1)}`)

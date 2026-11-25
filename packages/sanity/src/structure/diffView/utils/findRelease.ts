@@ -1,11 +1,12 @@
 import {
-  getReleaseIdFromReleaseDocumentId,
   getVersionFromId,
   isDraftId,
   isPublishedId,
   type ReleaseDocument,
   type TargetPerspective,
 } from 'sanity'
+
+import {getReleaseIdFromReleaseDocumentId} from '../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
 
 /**
  * If the provided document id represents a version, find and return the corresponding release

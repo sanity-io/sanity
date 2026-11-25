@@ -1,19 +1,19 @@
 import {Button} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
-import {type ReactNode, useMemo} from 'react'
+import {Fragment, type ReactNode, useMemo} from 'react'
 import {usePerspective} from 'sanity'
 import {
   getDefaultVariant,
   getVariantTitle,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
-import {Text} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type ResolvedRequest, useRequestEnvironment} from '../../hooks/useResolvedRequest'
 import {type VisionTabOptions} from '../../store/types'
 import {getRequestOverrides} from '../../util/requestOverrides'
+import {VisionTooltip} from '../VisionTooltip'
 import {type RevealedOption} from './ApiVersionButton'
+import {OPTION_FIELD_ORDER, type OptionField} from './optionFieldOrder'
 import {useGlobalPerspectiveName, usePerspectiveOptionName} from './OptionFields'
 
 export interface RequestOverrideChipsProps {
@@ -21,11 +21,8 @@ export interface RequestOverrideChipsProps {
   resolved: Pick<ResolvedRequest, 'tabPerspective'>
   /** Shows a field in the Options panel */
   onReveal: (option: RevealedOption) => void
-  /**
-   * The API version button. It sits after the dataset chip and before perspective and variant,
-   * the same order as the Options panel.
-   */
-  children?: ReactNode
+  /** The API version button, which takes the API version field's place in the order */
+  apiVersionButton: ReactNode
 }
 
 interface OverrideChipProps {
@@ -37,16 +34,7 @@ interface OverrideChipProps {
 
 function OverrideChip({testId, text, tooltip, onClick}: OverrideChipProps) {
   return (
-    <Tooltip
-      animate
-      content={
-        <Text size={1} as="div" trim={true}>
-          {tooltip}
-        </Text>
-      }
-      placement="top"
-      portal
-    >
+    <VisionTooltip content={tooltip} placement="top">
       <Button
         data-testid={testId}
         fontSize={1}
@@ -55,20 +43,20 @@ function OverrideChip({testId, text, tooltip, onClick}: OverrideChipProps) {
         padding={2}
         text={text}
       />
-    </Tooltip>
+    </VisionTooltip>
   )
 }
 
 /**
  * Chips in the query column's bottom bar for the options where the tab departs from the studio's
- * global state, so that stays visible while the Options panel is collapsed. Dataset comes first,
- * then `children` (the API version button), then perspective and variant.
+ * global state, so that stays visible while the Options panel is collapsed. They follow the order
+ * of the Options panel's fields, the API version button first.
  */
 export function RequestOverrideChips({
   options,
   resolved,
   onReveal,
-  children,
+  apiVersionButton,
 }: RequestOverrideChipsProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const environment = useRequestEnvironment()
@@ -78,40 +66,46 @@ export function RequestOverrideChips({
   const {selectedVariants} = usePerspective()
   const selectedVariant = getDefaultVariant(selectedVariants)
 
+  const chips: Partial<Record<OptionField, ReactNode>> = {
+    apiVersion: apiVersionButton,
+    dataset: overrides.dataset && (
+      <OverrideChip
+        onClick={() => onReveal('dataset')}
+        testId="vision-override-dataset-button"
+        text={t('vision.overrides.dataset.button', {dataset: overrides.dataset.dataset})}
+        tooltip={t('vision.overrides.dataset.tooltip', overrides.dataset)}
+      />
+    ),
+    perspective: overrides.perspective && (
+      <OverrideChip
+        onClick={() => onReveal('perspective')}
+        testId="vision-override-perspective-button"
+        text={t('vision.overrides.perspective.button', {perspective: perspectiveName})}
+        tooltip={t('vision.overrides.perspective.tooltip', {
+          perspective: perspectiveName,
+          globalPerspective: globalPerspectiveName,
+        })}
+      />
+    ),
+    variant: overrides.variant && (
+      <OverrideChip
+        onClick={() => onReveal('variant')}
+        testId="vision-override-variant-button"
+        text={t('vision.overrides.variant.button')}
+        tooltip={t('vision.overrides.variant.tooltip', {
+          variant: selectedVariant
+            ? getVariantTitle(selectedVariant)
+            : overrides.variant.globalVariant,
+        })}
+      />
+    ),
+  }
+
   return (
     <>
-      {overrides.dataset && (
-        <OverrideChip
-          onClick={() => onReveal('dataset')}
-          testId="vision-override-dataset-button"
-          text={t('vision.overrides.dataset.button', {dataset: overrides.dataset.dataset})}
-          tooltip={t('vision.overrides.dataset.tooltip', overrides.dataset)}
-        />
-      )}
-      {children}
-      {overrides.perspective && (
-        <OverrideChip
-          onClick={() => onReveal('perspective')}
-          testId="vision-override-perspective-button"
-          text={t('vision.overrides.perspective.button', {perspective: perspectiveName})}
-          tooltip={t('vision.overrides.perspective.tooltip', {
-            perspective: perspectiveName,
-            globalPerspective: globalPerspectiveName,
-          })}
-        />
-      )}
-      {overrides.variant && (
-        <OverrideChip
-          onClick={() => onReveal('variant')}
-          testId="vision-override-variant-button"
-          text={t('vision.overrides.variant.button')}
-          tooltip={t('vision.overrides.variant.tooltip', {
-            variant: selectedVariant
-              ? getVariantTitle(selectedVariant)
-              : overrides.variant.globalVariant,
-          })}
-        />
-      )}
+      {OPTION_FIELD_ORDER.map((field) => (
+        <Fragment key={field}>{chips[field]}</Fragment>
+      ))}
     </>
   )
 }

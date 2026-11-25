@@ -160,7 +160,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
 
   /** Copy button of a pane header, for a moment after it copied */
   'vision.copied': 'Copied',
-  /** Copy button of a pane header, copying what the pane shows */
+  /**
+   * Copy button of a pane header, copying what the pane shows
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.copy': 'Copy',
   /** Label of the document after the change in the Delta panel */
   'vision.delta.after': 'After',
@@ -202,7 +206,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.drawer.close': 'Close panel',
   /** The Copy button in the corner of the query and params editors, for a few seconds after a copy */
   'vision.editor.copied': 'Copied',
-  /** Button in the corner of the query and params editors that copies their text */
+  /**
+   * Button in the corner of the query and params editors that copies their text
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.editor.copy': 'Copy',
   /** Button in the corner of the query and params editors that reformats their text */
   'vision.editor.format': 'Format',
@@ -212,6 +220,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.export-query.copied': 'Snippet copied to clipboard',
   /** Label for the button that copies a code snippet */
   'vision.export-query.copy': 'Copy snippet',
+  /** Label for the button that copies every file of a code snippet, each under a comment with its path */
+  'vision.export-query.copy-all': 'Copy all files',
+  /** Accessible label and tooltip of the icon button in a file's header that copies that file */
+  'vision.export-query.copy-file': 'Copy file',
   /** Explanation at the top of the export query dialog */
   'vision.export-query.description':
     'Run this query outside of the studio with one of these snippets.',
@@ -220,7 +232,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'The query and params come to {{size}} characters as search params; from {{limit}} on, @sanity/client sends them as a JSON body rather than in the URL, so the snippet does the same.',
   /** Title of the dialog that exports the query as code snippets */
   'vision.export-query.title': 'Export query',
-  /** Note about authentication in the export query dialog */
+  /** Note under a snippet that reads an API token, because its perspective includes drafts or releases */
+  'vision.export-query.token-env-note':
+    'The {{perspective}} perspective returns drafts or release versions, which only an authenticated request can read. Set SANITY_API_TOKEN to a token with read access, on the server only.',
+  /**
+   * Note about authentication in the export query dialog
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.export-query.token-note':
     'Private datasets need an API token. Public datasets can drop the Authorization header.',
   /** Toast shown after the generated code was copied */
@@ -229,8 +248,15 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.export-types.copy': 'Copy code',
   /** Shown in the types dialog when there is neither a schema evaluation nor a result */
   'vision.export-types.empty': 'Fetch the query first so there is a result to derive types from.',
-  /** Why the workspace schema could not be used for the types; shown with the result fallback */
+  /**
+   * Why the workspace schema could not be used for the types; shown with the result fallback
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.export-types.schema-error': 'Schema evaluation failed: {{message}}',
+  /** Why the workspace schema could not be used for the types; shown under the result fallback note */
+  'vision.export-types.schema-unavailable':
+    'The workspace schema could not be used for this query: {{message}}',
   /** Note shown when the types were derived from the fetched result instead of the schema */
   'vision.export-types.source.result':
     'Inferred from the fetched result, since the query could not be evaluated against the workspace schema.',
@@ -316,16 +342,27 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.edit.submit': 'Edit',
   /** Explanation at the top of the Explain panel */
   'vision.explain.description':
-    'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps. Explain this to me has Sanity Agent Actions describe the query and its plan in plain words, which uses one AI credit.',
+    'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps. Explain this to me has Sanity Agent Actions describe the query in plain words, say whether it runs well and suggest how to improve it, which uses one AI credit.',
   /** Explanation at the top of the Explain panel when the AI explanation is switched off */
   'vision.explain.description-plan':
     'The query plan is how the Content Lake runs the query: what it reads, filters and sorts while reading, and what is left for later steps.',
+  /** Toggle under the explanation showing how the query plan runs the query, step by step */
+  'vision.explain.details': 'How it runs, in detail',
   /** Shown in the Explain panel while there is no valid query to explain */
   'vision.explain.empty': 'Write a query to explain it.',
   /** Button in the Explain panel asking Agent Actions to explain the query and its plan */
   'vision.explain.explain': 'Explain this to me',
   /** Shown when the explanation could not be written */
   'vision.explain.failed': 'The query could not be explained: {{message}}',
+  /** Button under the explanation's suggestions that has Agent Actions make them to the query */
+  'vision.explain.improve': 'Improve query',
+  /** Explanation under the Improve query button */
+  'vision.explain.improve.description':
+    'Sanity Agent Actions make these changes to the GROQ, with the document types, and the Content Lake checks each attempt; every attempt uses one AI credit. It replaces this tab’s query and runs; undo in the editor brings the previous query back.',
+  /** Shown when the query could not be improved, above the reason */
+  'vision.explain.improve.failed': 'The query could not be improved',
+  /** Shown while the first attempt at the improved query is written */
+  'vision.explain.improve.progress': 'Improving the query…',
   /** A count the index computes without reading the documents */
   'vision.explain.insight.aggregate': 'Counted in the index, without reading the documents.',
   /** A subquery the plan runs once for all documents */
@@ -334,15 +371,24 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Part of the filter runs in memory; the expression follows */
   'vision.explain.insight.filter-in-memory':
     'Part of the filter runs in memory, after reading: every document the index lets through is read first, which gets slow on large datasets. Joins (->) and functions in a filter cannot use the index.',
+  /** The in-memory filter when the verdict is that the query cannot be faster */
+  'vision.explain.insight.filter-in-memory.cannot-improve':
+    'Part of the filter runs in memory, after the documents are read. That is the work this data takes, and there isn’t a faster way.',
   /** The index sorts and limits while reading */
   'vision.explain.insight.index-sort-limit':
     'The index sorts and limits the documents while reading them.',
   /** The plan slices in memory */
   'vision.explain.insight.slice-in-memory':
     'The slice is taken in memory after reading, not as a limit while reading.',
+  /** The in-memory slice when the verdict is that the query cannot be faster */
+  'vision.explain.insight.slice-in-memory.cannot-improve':
+    'The slice is taken in memory, after reading. That is the work this data takes, and there isn’t a faster way.',
   /** The plan sorts in memory */
   'vision.explain.insight.sort-in-memory':
     'Sorting happens in memory, after reading every match. Sort by attributes the index can sort by.',
+  /** The in-memory sort when the verdict is that the query cannot be faster */
+  'vision.explain.insight.sort-in-memory.cannot-improve':
+    'Sorting happens in memory, after reading every match. That is the work this data takes, and there isn’t a faster way.',
   /** Link under the plan insights to the guide on fast queries */
   'vision.explain.insights.guide': 'High performance GROQ',
   /** Heading of the plan insights in the Explain panel */
@@ -353,6 +399,15 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.explain.plan-failed': 'The query plan could not be fetched: {{message}}',
   /** Heading of the query plan in the Explain panel */
   'vision.explain.plan-title': 'Query plan',
+  /** Heading of the explanation's list of changes that would make the query faster */
+  'vision.explain.suggestions.title': 'Here are ways you can improve your query',
+  /** Verdict of an explanation: the query does slow work, but there is no faster way to get its data */
+  'vision.explain.verdict.cannot-improve':
+    'This query takes some work, but there isn’t really a faster way to get this data',
+  /** Verdict of an explanation: a change to the query would make it faster */
+  'vision.explain.verdict.improvable': 'This query can be faster',
+  /** Verdict of an explanation: the query runs well as it is */
+  'vision.explain.verdict.performant': 'This is a good, fast query',
   /** Button of a library function the query does not declare, which declares it at the top */
   'vision.functions.add': 'Add to query',
   /** Shown on a library function the query declares the same way */
@@ -467,7 +522,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.history.reason.generated': 'Generated query',
   /** History reason: a link to the tool named a query URL, which opened in a tab and ran */
   'vision.history.reason.link': 'Opened link',
-  /** History reason: mutations were applied from the Mutate panel */
+  /**
+   * History reason: mutations were applied from the Mutate panel
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.history.reason.mutation': 'Mutations applied',
   /** History reason: a live event matched the query's sync tags */
   'vision.history.reason.live': 'Live update',
@@ -476,7 +535,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /**
    * History reason: the Live fetch button was pressed, which fetches and then refetches
    * automatically
+   * @deprecated no longer in use
    */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.history.reason.live-start': 'Live fetch started',
   /** History reason: a saved query was loaded into a tab that refetches automatically */
   'vision.history.reason.load': 'Query loaded',
@@ -511,8 +572,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.lint.fix.open-anyway': 'Open the last attempt',
   /** Shown while the fixed query is written */
   'vision.lint.fix.progress': 'Fixing the query…',
+  /** Button in the Lint panel when every listed problem has a suggestion, which it writes in place without Agent Actions */
+  'vision.lint.fix.suggestions': 'Apply suggestions',
   /** Where a lint finding sits in the query, shown under its message */
   'vision.lint.position': 'Line {{line}}, column {{column}}',
+  /** Where a lint finding caused by a param's value is: the param, and the item in it (`type`, `types[1]`) */
+  'vision.lint.position-param': 'Params · {{param}}',
   /** Severity badge of a lint finding */
   'vision.lint.severity.error': 'Error',
   /** Severity badge of a lint finding */
@@ -556,10 +621,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    */
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.live.active': 'Live',
-  /** Button in the request column's action bar that fetches and then refetches automatically */
+  /** Button in the request column's action bar that refetches automatically */
   'vision.live.button': 'Live fetch',
   /** Tooltip of the Live button while automatic refetching is off */
-  'vision.live.button.start': 'Fetch, then fetch again whenever the documents in the result change',
+  'vision.live.button.start': 'Fetch again whenever the documents in the result change',
   /** Tooltip of the Stop live button, while the tab refetches automatically */
   'vision.live.button.stop':
     'Stop fetching when the documents in the result change. Fetch still fetches on demand, for results no document change touches, like now()',
@@ -587,7 +652,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.mutate.apply-needs-preview': 'Apply sends what a dry run showed: run one first.',
   /** Shown once the mutations were applied */
   'vision.mutate.applied':
-    'Applied to {{dataset}} in transaction {{transactionId}}. Documents changed: {{count}}. The query was fetched again.',
+    'Applied to {{dataset}} in transaction {{transactionId}}. Documents changed: {{count}}.',
   /** Option giving array items without a _key one */
   'vision.mutate.auto-keys': 'Add a _key to array items that have none',
   /** Under the option giving array items a _key */
@@ -707,23 +772,77 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.network.use-cdn-hint.label': 'About the API CDN',
   /** Label of the browser's marker on the Response panel's globe, placed from its time zone */
   'vision.network.you': 'You',
-  /** Heading of the dataset menu's entry for the dataset the current workspace uses */
+  /**
+   * Next to the newest dated version in the API version list
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
+  'vision.options.api-version.latest': 'Latest',
+  /** Heading of the API version list's dated versions, below its Today option */
+  'vision.options.api-version.dated': 'Dated versions',
+  /** Under the first option of the API version list, which is today's date */
+  'vision.options.api-version.today': 'Today',
+  /** Under the API version content variants need, in the API version list */
+  'vision.options.api-version.variants': 'Required for variants',
+  /** Under vX in the API version list */
+  'vision.options.api-version.experimental': 'Experimental',
+  /** Under v1 in the API version list */
+  'vision.options.api-version.legacy': 'Legacy, not recommended',
+  /** The first and default option of the dataset, perspective and variant menus, which follows the workspace and navbar */
+  'vision.options.auto': 'Auto',
+  /** What a picker's button shows while Auto is selected; the name is what Auto resolves to */
+  'vision.options.auto.button': 'Auto ({{name}})',
+  /** Under the dataset menu's Auto option: the workspace's dataset, which it follows */
+  'vision.options.dataset.auto.subtitle': 'Workspace dataset: {{dataset}}',
+  /**
+   * Heading of the dataset menu's entry for the dataset the current workspace uses
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.dataset.current-workspace': 'Current workspace',
-  /** In the pin button's tooltip while the tab follows the workspace's dataset */
+  /**
+   * In the pin button's tooltip while the tab follows the workspace's dataset
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.dataset.follows-workspace': 'Follows the workspace',
   /** Shown in the dataset menu when the search matches no dataset */
   'vision.options.dataset.no-matches': 'No datasets match',
-  /** Button that pins the current dataset so the tab stops following the workspace */
+  /**
+   * Button that pins the current dataset so the tab stops following the workspace
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.dataset.pin': 'Pin a dataset',
-  /** In the pin button's tooltip while a dataset is pinned */
+  /**
+   * In the pin button's tooltip while a dataset is pinned
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.dataset.pinned': 'Pinned; the workspace may use another dataset',
   /** Placeholder of the search field at the top of the dataset menu */
   'vision.options.dataset.search-placeholder': 'Search datasets',
-  /** Heading of the dataset menu's group of datasets other workspaces of this project use */
+  /** Heading of the dataset menu's datasets no workspace of this project uses */
+  'vision.options.dataset.other-datasets': 'Other datasets',
+  /** Heading of the dataset menu's datasets the other workspaces of this project use */
+  'vision.options.dataset.workspace-datasets': 'Workspace datasets',
+  /**
+   * Heading of the dataset menu's group of datasets other workspaces of this project use
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.dataset.used-by-workspaces': 'Used by workspaces',
-  /** Heading of the dataset menu's group of datasets no workspace of this project uses */
+  /**
+   * Heading of the dataset menu's group of datasets no workspace of this project uses
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.dataset.unused': 'Not used by any workspaces',
-  /** Button that makes the tab follow the workspace's dataset again */
+  /**
+   * Button that makes the tab follow the workspace's dataset again
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.dataset.use-workspace': 'Use the workspace dataset',
   /** Label for the "Include content source map" switch */
   'vision.options.include-source-map': 'Include content source map',
@@ -736,6 +855,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    */
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.include-source-map.summary': 'Adds resultSourceMap to the response',
+  /** Label of the Options field that holds the API CDN switch */
+  'vision.options.caching-label': 'Caching',
   /** Label of the switch that sends queries to the API CDN */
   'vision.options.use-cdn': 'Use the API CDN',
   /** Note in the API CDN switch's info tooltip while the studio signs in with a cookie */
@@ -756,12 +877,43 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.options.use-cdn.summary': 'Cached responses, for published and raw',
   /** Button in the API CDN notice switching the tab to the published perspective */
   'vision.options.use-cdn.use-published': 'Use the published perspective',
-  /** Perspective option following the studio navbar; the name is the release, published or drafts */
+  /**
+   * Perspective option following the studio navbar; the name is the release, published or drafts
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.perspective.global': 'Global ({{name}})',
-  /** Variant option sending the navbar's variant, named */
+  /**
+   * Variant option sending the navbar's variant, named
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.variant.global': 'Global ({{name}})',
-  /** Variant option sending the navbar's variant while none is selected there */
+  /**
+   * Variant option sending the navbar's variant while none is selected there
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.options.variant.global-none': 'Global (none selected)',
+  /** Under the perspective menu's Auto option; the name is the navbar's perspective */
+  'vision.options.perspective.auto.subtitle': 'Follows the studio: {{name}}',
+  /** Under the perspective menu's API default option */
+  'vision.options.perspective.default.subtitle': 'Whatever the API version defaults to',
+  /** Heading of the perspective menu's group of perspectives only Vision offers */
+  'vision.options.perspective.more': 'More perspectives',
+  /** Shown in the perspective menu when the search matches no perspective */
+  'vision.options.perspective.no-matches': 'No perspectives match',
+  /** Under the perspective menu's raw option */
+  'vision.options.perspective.raw.subtitle':
+    'Every document as stored, drafts and versions included',
+  /** Placeholder of the search field at the top of the perspective menu */
+  'vision.options.perspective.search-placeholder': 'Search perspectives',
+  /** Under the variant menu's Auto option; the name is the navbar's variant */
+  'vision.options.variant.auto.subtitle': 'Follows the studio: {{name}}',
+  /** Under the variant menu's Auto option while the navbar has no variant selected */
+  'vision.options.variant.auto.subtitle-none': 'Follows the studio, which has none selected',
+  /** Under the variant menu's None option */
+  'vision.options.variant.none.subtitle': 'Queries without a variant',
   /** Variant option sending no variant */
   'vision.options.variant.none': 'None',
   /** Label of the variant field */
@@ -819,8 +971,16 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.panel.source-map': 'Content Source Map',
   /** Button adding an item to a list param in the params form */
   'vision.params-form.add-item': 'Add item',
+  /**
+   * Shown under a list param in the Form view when it has more items than the form renders.
+   * Switch to the JSON view to edit the rest.
+   */
+  'vision.params-form.list-truncated':
+    'Showing the first {{shown}} of {{count}} items. Switch to JSON to edit the rest.',
   /** Placeholder of a params form field that takes any JSON value */
   'vision.params-form.any-placeholder': 'Any JSON value; other text is sent as a string',
+  /** Accessible label of the button setting a param the query treats as optional to null */
+  'vision.params-form.clear': 'Set ${{name}} to null',
   /** Accessible label of the info icon showing a params form field's type and usages */
   'vision.params-form.details': 'About ${{name}}',
   /** Shown in the params form when the query uses no params */
@@ -832,10 +992,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.invalid.boolean': 'Not true or false; sent as {{value}}',
   /** A document type param's value is not a document type of the workspace; it is sent anyway */
   'vision.params-form.invalid.document-type': 'Not a document type in this workspace; sent anyway',
-  /** A whole number param (a slice bound) holds a fraction */
-  'vision.params-form.invalid.integer': 'Not a whole number, which slices need',
+  /** A whole number param (a slice bound, a count, a field of whole numbers) holds a fraction */
+  'vision.params-form.invalid.integer': 'Not a whole number; sent anyway',
   /** A list param's value is not a list; it is sent anyway */
   'vision.params-form.invalid.list': 'Not a list; sent as {{value}}',
+  /** A number param's value is above the largest value the query or the schema takes */
+  'vision.params-form.invalid.max': 'More than {{max}}; sent anyway',
+  /** A number param's value is below the smallest value the query or the schema takes */
+  'vision.params-form.invalid.min': 'Less than {{min}}; sent anyway',
   /** A number param's value is not a number; it is sent anyway */
   'vision.params-form.invalid.number': 'Not a number; sent as text',
   /** A param's value is not one of the values the schema allows; it is sent anyway */
@@ -855,9 +1019,20 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Shown in the params form when the workspace schema could not be read */
   'vision.params-form.no-schema':
     'Types come from the query alone: the workspace schema could not be read.',
-  /** Placeholder of a params form field without a value, and the unset choice of a boolean */
+  /** Placeholder of a params form field without a value, and the state of an unset boolean */
   'vision.params-form.not-set': 'Not set',
-  /** Button setting a date and time param to the current time */
+  /** Placeholder of a params form field whose param is null; typing sends text instead */
+  'vision.params-form.null': 'null',
+  /** Accessible label of the preview of an object param, which opens a dialog to edit its keys */
+  'vision.params-form.object.edit': 'Edit {{name}}',
+  /** In the dialog of an object param whose keys are neither read by the query nor set */
+  'vision.params-form.object.empty':
+    'The query reads no keys of this param. Use the params JSON to add some.',
+  /**
+   * Button setting a date and time param to the current time
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.params-form.now': 'Now',
   /** Button removing a param the query does not use from the params */
   'vision.params-form.remove': 'Remove',
@@ -884,10 +1059,18 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.type.integer': 'whole number',
   /** Type hint of a params form field: a list of values */
   'vision.params-form.type.list': 'list, each {{type}}',
+  /** Type hint of a params form field: a number with a largest value */
+  'vision.params-form.type.max': '{{type}}, at most {{max}}',
+  /** Type hint of a params form field: a number with a smallest value */
+  'vision.params-form.type.min': '{{type}}, at least {{min}}',
   /** Type hint of a params form field: a number */
   'vision.params-form.type.number': 'number',
+  /** Type hint of a params form field: an object whose keys the query reads */
+  'vision.params-form.type.object': 'object',
   /** Type hint of a params form field: one of the values the schema allows */
   'vision.params-form.type.options': '{{type}}, one of {{count}} values',
+  /** Type hint of a params form field: a number between a smallest and a largest value */
+  'vision.params-form.type.range': '{{type}}, from {{min}} to {{max}}',
   /** Type hint of a params form field: text */
   'vision.params-form.type.string': 'text',
   /** In the details tooltip of a params form field: the type of value the query expects */
@@ -911,8 +1094,29 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.params.resize':
     'Resize params: drag or use the arrow keys; double-click or press Enter to fit the content again',
+  /** Accessible label of the `…` menu next to the params view tabs */
+  'vision.params.actions': 'Params actions',
   /** Accessible label of the button next to the params view tabs that copies the params */
   'vision.params.copy': 'Copy params',
+  /** Shown in the params export dialog when the workspace schema could not be read */
+  'vision.params.export.source-no-schema':
+    'Inferred from how the query uses each param. The workspace schema could not be read, so params compared with fields are typed only as far as the query tells.',
+  /** Note at the top of the dialog exporting types for the params */
+  'vision.params.export.source':
+    'Inferred from how the query uses each param, against the workspace schema, the same way the params form types them.',
+  /** Caution in the params export dialog when the query does not parse */
+  'vision.params.export.syntax-error':
+    'The query does not parse, so its params are typed as unknown until it does.',
+  /** Title of the dialog exporting TypeScript types for the params */
+  'vision.params.export.title-typescript': 'Export params as TypeScript',
+  /** Title of the dialog exporting a Zod schema for the params */
+  'vision.params.export.title-zod': 'Export params as Zod',
+  /** Menu item in the params `…` menu exporting TypeScript types for the params */
+  'vision.params.export-typescript': 'Export TypeScript…',
+  /** Tooltip of the params export menu items when the query uses no params */
+  'vision.params.export-unavailable': 'The query uses no params to export types for',
+  /** Menu item in the params `…` menu exporting a Zod schema for the params */
+  'vision.params.export-zod': 'Export Zod…',
   /** Accessible label of the button next to the params view tabs that reformats the params JSON */
   'vision.params.format': 'Format params',
   /** Tab showing the params as a form inferred from the query */
@@ -1015,10 +1219,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Tooltip of the Sync tags label while it shows the tags as they came */
   'vision.response.sync-tags.show-resolved': 'Show what the sync tags stand for',
   /** Tooltip of a sync tag the lookup could not resolve */
-  'vision.response.sync-tags.unresolved': 'Not resolved',
+  'vision.response.sync-tags.unresolved':
+    'Not resolved: no type, slug, document or dataset the query compares or reads answered with this tag within the lookup’s {{budget}} probes.',
   /** Tooltip of the sync tag that stands for the whole dataset, the `*` or `ALL` tag */
   'vision.response.sync-tags.wildcard':
     'This tag covers the whole dataset. With Sanity Live or live fetch, any change in the dataset triggers a refetch.',
+  /** Tooltip of a sync tag that stands for the whole of another dataset, read through a cross-dataset reference */
+  'vision.response.sync-tags.other-dataset':
+    'This tag covers the whole of the dataset “{{dataset}}”, read through a cross-dataset reference. With Sanity Live or live fetch, any change in that dataset triggers a refetch.',
   /** Under the query URL when the request went out as a POST body rather than that URL */
   'vision.response.url.sent-as-post':
     'Sent as a POST body: the query and params are too long for a URL, so @sanity/client sent them as JSON. Pasting this URL into Vision still loads the query.',
@@ -1058,6 +1266,18 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    */
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.result.documents.error': 'The documents could not be loaded: {{message}}',
+  /** Button in the document list that has Agent Actions change the query for the list to show it */
+  'vision.result.documents.fit': 'Update query with AI',
+  /** Shown beside the button over a list whose rows lack attributes the list shows, which it names */
+  'vision.result.documents.fit.description':
+    'These rows have no {{fields}}. Agent Actions can add them to the query, keeping its filter and comments; every attempt uses one AI credit.',
+  /** Shown under the expected shape when the result is not a document list */
+  'vision.result.documents.fit.description-invalid':
+    'Agent Actions can change the query to list documents, keeping its filter and comments; every attempt uses one AI credit.',
+  /** Shown when the query could not be changed for the document list, above the reason */
+  'vision.result.documents.fit.failed': 'The query could not be updated',
+  /** Shown while the first attempt at the query for the document list is written */
+  'vision.result.documents.fit.progress': 'Updating the query for the list…',
   /** Shown when the result is not an array, so Documents cannot list it */
   'vision.result.documents.invalid.not-array':
     'This result is not an array, so Documents cannot list it. _id is required. _type, title, subtitle and media are optional. Expected shape:',
@@ -1205,6 +1425,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    */
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.result.documents.unknown-type': 'Unknown type: {{type}}',
+  /** Tooltip and accessible label of the button after an `_id` or `_ref` in the result tree, opening that document */
+  'vision.result.edit-document': 'Edit document',
   /** Empty state of the result view */
   'vision.result.empty': 'Run the query to see its result here',
   /**
@@ -1336,6 +1558,17 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'When the query editor gets wider or narrower, a query laid out by Prettify is laid out again for the new width. Queries you formatted yourself are left as they are.',
   /** Title of the settings section about the query editor */
   'vision.settings.editor.title': 'Query editor',
+  /** Explains the settings that pick the snippets of the Export query dialog and their order */
+  'vision.settings.export-snippets.description':
+    'The snippets the Export query dialog offers, as its tabs in this order. Switch off the ones you do not use; the choice is saved in this browser.',
+  /** Accessible label of the button that moves an export snippet one tab later */
+  'vision.settings.export-snippets.move-down': 'Move {{snippet}} down',
+  /** Accessible label of the button that moves an export snippet one tab earlier */
+  'vision.settings.export-snippets.move-up': 'Move {{snippet}} up',
+  /** Button that shows every export snippet again, in the default order */
+  'vision.settings.export-snippets.reset': 'Reset to defaults',
+  /** Title of the settings that pick the snippets of the Export query dialog */
+  'vision.settings.export-snippets.title': 'Export snippets',
   /** Explains the setting listing the fields left out of History diffs */
   'vision.settings.history-diff.description':
     'One field path per line. A path matches at any depth of a result, so _rev hides the revision of every document in it. Each diff can still show them.',
@@ -1347,9 +1580,26 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.settings.response.resolve-sync-tags': 'Resolve sync tags',
   /** Description of the switch that lets the Sync tags row show what each tag stands for */
   'vision.settings.response.resolve-sync-tags.description':
-    'Click Sync tags in the Response panel to switch between the tags and the documents they stand for: every document, a type, an id or a slug. Finding them sends a few extra queries to the dataset the response came from.',
+    'Show the documents each sync tag in the Response panel stands for: every document, a type, an id or a slug. Click Sync tags to switch to the tags as they came. Finding the documents sends a few extra queries to the dataset the response came from.',
   /** Title of the settings section about the Response panel */
   'vision.settings.response.title': 'Response panel',
+  /** Switch in the settings that turns the Content Source Map features on */
+  'vision.settings.source-map.enabled': 'Content Source Map features',
+  /** Description of the switch in the settings that turns the Content Source Map features on */
+  'vision.settings.source-map.enabled.description':
+    'Shows the "Include content source map" option and the Content Source Map tab. While off, queries and Export query snippets never ask for a source map.',
+  /** Label of the setting picking the `resultSourceMap` value queries send */
+  'vision.settings.source-map.format': 'Source map format',
+  /** Option of the content source map format setting: `resultSourceMap: true` */
+  'vision.settings.source-map.format.default': 'Standard (true)',
+  /** Description of the setting picking the `resultSourceMap` value queries send */
+  'vision.settings.source-map.format.description':
+    'The resultSourceMap value sent whenever a query asks for a source map: with "Include content source map" on, from Fetch source map, and in the Export query snippets.',
+  /** Option of the content source map format setting: `resultSourceMap: 'withKeyArraySelector'` */
+  'vision.settings.source-map.format.with-key-array-selector':
+    'Array items by _key (withKeyArraySelector)',
+  /** Title of the settings section about Content Source Maps */
+  'vision.settings.source-map.title': 'Content Source Map',
   /** Title of the settings dialog */
   'vision.settings.title': 'Settings',
   /** Empty state of the shared queries panel */
@@ -1386,8 +1636,23 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Sidebar item opening the keyboard shortcuts dialog */
   'vision.sidebar.shortcuts': 'Keyboard shortcuts',
   /** Empty state of the content source map panel */
-  'vision.source-map.empty':
-    'No content source map in the response. Turn on "Include content source map" under Options and fetch again.',
+  'vision.source-map.empty': 'This response has no content source map.',
+  /** Empty state of the content source map panel after "Fetch source map" came back without one */
+  'vision.source-map.empty-after-fetch': 'The query came back without a content source map.',
+  /** Button in the content source map panel that runs the query once with a source map */
+  'vision.source-map.fetch': 'Fetch source map',
+  /** Explains the "Fetch source map" button */
+  'vision.source-map.fetch.description':
+    'Runs the query once with a source map, just for this tab. The result and your options stay as they are.',
+  /** Shown when "Fetch source map" failed; `message` is the error */
+  'vision.source-map.fetch.error': 'Could not fetch the source map: {{message}}',
+  /** Explains the "Include content source map" option, next to the button that shows it */
+  'vision.source-map.include-hint':
+    'To get a source map with every fetch, turn on "Include content source map" in Options. The Export query snippets then ask for one too.',
+  /** Beside the content source map's view menu, when the map came from "Fetch source map" */
+  'vision.source-map.one-off': 'Fetched once, until the next fetch',
+  /** Button in the content source map panel that opens Options on "Include content source map" */
+  'vision.source-map.show-option': 'Show option',
   /** Accessible label of the divider between the result and the response details panel */
   'vision.split.bottom-panel':
     'Resize the response details panel: drag or use the arrow keys; Home and End go to the bounds, Enter resets',

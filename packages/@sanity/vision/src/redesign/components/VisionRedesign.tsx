@@ -1,6 +1,15 @@
 import {TooltipDelayGroupProvider} from '@sanity/ui/tooltip'
 import {useActorRef, useSelector} from '@xstate/react'
-import {Activity, type CSSProperties, memo, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  Activity,
+  type CSSProperties,
+  memo,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  ViewTransition,
+} from 'react'
 import {Flex} from 'ui5'
 
 import {useSavedQueries} from '../../hooks/useSavedQueries'
@@ -18,33 +27,26 @@ import {
   VisionActorContext,
   type VisionExperience,
   VisionExperienceContext,
-  type VisionLayout,
 } from '../store/VisionActorContext'
-import {selectActiveTab, selectOpenDrawer, visionMachine} from '../store/visionMachine'
+import {selectActiveTab, selectOpenDrawer, toTabDrawer, visionMachine} from '../store/visionMachine'
 import {loadVisionState, type VisionStorageDefaults} from '../store/visionStorage'
+import {cx} from '../util/cx'
+import {estimateVisionLayoutWidths, getVisionLayout} from '../util/visionLayout'
 import {AiCreditsUpsellProvider} from './AiCreditsUpsell'
 import {AiFeaturesProvider} from './AiFeaturesProvider'
 import {PANEL_HEADER_HEIGHT} from './CollapsiblePanel'
+import {TABS_AREA} from './panelTransitions'
 import {QueryTabLayoutProvider} from './queryTabLayout'
 import * as styles from './redesign.module.css'
+import {useShownInSidebar} from './sidebar/useShownInSidebar'
 import {VisionSidebar} from './sidebar/VisionSidebar'
 import {QueryTab, type QueryTabProps} from './tabs/QueryTab'
 import {QueryTabBar} from './tabs/QueryTabBar'
 import {HiddenQueryTabContext} from './tabs/queryTabShown'
+import * as themeStyles from './themeTokens.module.css'
 import {VisionDialogs} from './VisionDialogs'
 import {VisionUrlState} from './VisionUrlState'
 import {VisionWebMcp} from './VisionWebMcp'
-
-/** Below this width the request and response columns stack */
-const STACKED_BREAKPOINT = 900
-/** Below this width one column shows at a time and the sidebar floats over the content */
-const MOBILE_BREAKPOINT = 600
-
-function getVisionLayout(width: number): VisionLayout {
-  if (width < MOBILE_BREAKPOINT) return 'mobile'
-  if (width < STACKED_BREAKPOINT) return 'stacked'
-  return 'columns'
-}
 
 /**
  * The first tooltip waits a moment so passing the pointer over a control does not flash one; once
@@ -57,6 +59,16 @@ interface VisionRootStyle extends CSSProperties {
 }
 
 const ROOT_STYLE: VisionRootStyle = {'--vision-bottom-bar-height': `${PANEL_HEADER_HEIGHT}px`}
+
+/**
+ * The element the active tab renders a tool into (see `TabDrawerSlot`). It takes no part in the
+ * layout, so the tool lays out in the drawer as if the drawer held it directly
+ */
+function createTabDrawerElement(): HTMLElement {
+  const element = document.createElement('div')
+  element.style.display = 'contents'
+  return element
+}
 
 /**
  * A tab in the list of open ones, mounted for as long as it is open and hidden while another is
@@ -101,10 +113,13 @@ export function VisionRedesign(props: VisionRedesignProps) {
   const {config, datasets, projectId, defaultDataset, onSwitchToClassic} = props
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const rootSize = useContentSize(rootElement)
-  // Until measured, fall back to the viewport so the first paint is close to the final layout
-  const layout = getVisionLayout(
-    rootSize?.width || (typeof window === 'undefined' ? STACKED_BREAKPOINT : window.innerWidth),
-  )
+  const [tabsElement, setTabsElement] = useState<HTMLDivElement | null>(null)
+  const tabsSize = useContentSize(tabsElement)
+  const [estimate] = useState(estimateVisionLayoutWidths)
+  const layout = getVisionLayout({
+    tool: rootSize?.width || estimate.tool,
+    tabs: tabsSize?.width || estimate.tabs,
+  })
 
   const defaults = useMemo(
     (): VisionStorageDefaults => ({
@@ -142,10 +157,12 @@ export function VisionRedesign(props: VisionRedesignProps) {
   )
   const savedQueries = useSavedQueries()
   const [pendingEdits] = useState(createPendingEdits)
-  const [tabDrawerElement, setTabDrawerElement] = useState<HTMLElement | null>(null)
+  const shownDrawer = useShownInSidebar(openDrawer, layout === 'mobile')
+  const shownTabDrawer = toTabDrawer(shownDrawer)
+  const [tabDrawerElement] = useState(createTabDrawerElement)
   const tabDrawerSlot = useMemo(
-    (): TabDrawerSlot => ({element: tabDrawerElement, setElement: setTabDrawerElement}),
-    [tabDrawerElement],
+    (): TabDrawerSlot => ({element: tabDrawerElement, drawer: shownTabDrawer}),
+    [shownTabDrawer, tabDrawerElement],
   )
 
   return (
@@ -158,7 +175,7 @@ export function VisionRedesign(props: VisionRedesignProps) {
                 <AiCreditsUpsellProvider projectId={projectId}>
                   <TooltipDelayGroupProvider delay={TOOLTIP_DELAY}>
                     <Flex
-                      className={styles.root}
+                      className={cx(styles.root, themeStyles.themeTokens)}
                       data-testid="vision-root"
                       data-vision-layout={layout}
                       height="100%"
@@ -166,34 +183,38 @@ export function VisionRedesign(props: VisionRedesignProps) {
                       ref={setRootElement}
                       style={ROOT_STYLE}
                     >
-                      <VisionSidebar />
-                      <Flex
-                        flexBasis="0%"
-                        flexDirection="column"
-                        flexGrow={1}
-                        // Under a phone's full-width drawer the tabs area is covered and must not take focus
-                        inert={layout === 'mobile' && openDrawer !== null}
-                        minWidth="0"
-                        overflow="hidden"
-                      >
-                        <QueryTabBar />
-                        <QueryTabLayoutProvider>
-                          {/*
-                            Every tab stays mounted, so switching tabs hides one and shows another
-                            rather than remounting it: a tab shown again keeps its elements and
-                            its state, and its editors their selection, undo history and scroll
-                          */}
-                          {paneTabs.map((tab) => (
-                            <QueryTabActivityMemo
-                              animateFirstShow={tab.id === firstTabId}
-                              key={tab.id}
-                              rootElement={rootElement}
-                              shown={tab.id === activeTab.id}
-                              tab={tab}
-                            />
-                          ))}
-                        </QueryTabLayoutProvider>
-                      </Flex>
+                      <VisionSidebar shownDrawer={shownDrawer} />
+                      <ViewTransition default={TABS_AREA}>
+                        <Flex
+                          data-testid="vision-tabs-area"
+                          flexBasis="0%"
+                          flexDirection="column"
+                          flexGrow={1}
+                          // Under a phone's full-width drawer the tabs area is covered and must not take focus
+                          inert={layout === 'mobile' && openDrawer !== null}
+                          minWidth="0"
+                          overflow="hidden"
+                          ref={setTabsElement}
+                        >
+                          <QueryTabBar />
+                          <QueryTabLayoutProvider>
+                            {/*
+                              Every tab stays mounted, so switching tabs hides one and shows another
+                              rather than remounting it: a tab shown again keeps its elements and
+                              its state, and its editors their selection, undo history and scroll
+                            */}
+                            {paneTabs.map((tab) => (
+                              <QueryTabActivityMemo
+                                animateFirstShow={tab.id === firstTabId}
+                                key={tab.id}
+                                rootElement={rootElement}
+                                shown={tab.id === activeTab.id}
+                                tab={tab}
+                              />
+                            ))}
+                          </QueryTabLayoutProvider>
+                        </Flex>
+                      </ViewTransition>
                     </Flex>
                     <VisionDialogs />
                     <VisionUrlState tab={activeTab} />

@@ -6,6 +6,7 @@ import {act, render} from '@testing-library/react'
 import {Activity, type RefObject} from 'react'
 import {describe, expect, it, vi} from 'vitest'
 
+import {EDITOR_FONT_SIZE, firstEditorLineStyle} from './editorMetrics'
 import {historyCompartment} from './extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from './VisionCodeMirror'
 
@@ -54,6 +55,38 @@ describe('VisionCodeMirror', () => {
     expect(undone).toBe(true)
     expect(content()).toBe('*[_type == "post"]')
     // Destroying the view cancels the measuring that undo scheduled, which jsdom cannot do
+    unmount()
+  })
+
+  it('starts its content flush under a header, and below a floating label otherwise', () => {
+    const paddingTop = (underHeader: boolean) => {
+      const {container, unmount} = render(
+        // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+        <ThemeProvider theme={studioTheme}>
+          <VisionCodeMirror
+            initialValue=""
+            onChange={vi.fn()}
+            extensions={NO_EXTENSIONS}
+            underHeader={underHeader}
+          />
+        </ThemeProvider>,
+      )
+      const root = container.firstElementChild as HTMLElement
+      const value = root.style.getPropertyValue('--vision-editor-content-padding-top')
+      unmount()
+      return value
+    }
+
+    expect(paddingTop(true)).toBe('0px')
+    expect(paddingTop(false)).not.toBe('0px')
+    // Text set beside an editor under a header takes its first line's box from the same metrics
+    expect(firstEditorLineStyle.paddingTop).toBe(paddingTop(true))
+  })
+
+  it('sizes its text from the shared editor metrics', () => {
+    const {container, unmount} = render(editor('visible', {current: null}, vi.fn()))
+    const root = container.firstElementChild as HTMLElement
+    expect(root.style.getPropertyValue('--vision-editor-font-size')).toBe(`${EDITOR_FONT_SIZE}px`)
     unmount()
   })
 

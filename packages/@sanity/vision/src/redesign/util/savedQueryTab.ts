@@ -25,7 +25,7 @@ export function parsedQueryToTabInit(parsed: ParsedQueryUrl): VisionTabInit {
   }
   if (parsed.isKnownDataset) {
     // A URL names its dataset, so the tab stops following the workspace's
-    options.datasetMode = 'pinned'
+    options.datasetMode = 'override'
     options.dataset = parsed.dataset
   }
   if (parsed.apiVersion) {

@@ -14,7 +14,11 @@ import {encodeQueryString} from '../../../util/encodeQueryString'
 import {encodedQuerySize, QUERY_URL_SIZE_LIMIT} from '../../../util/queryRequestMethod'
 import {type VisionResponseMeta} from '../../store/types'
 import {type QueryNetwork} from '../../util/queryNetwork'
-import {clearSyncTagLookupCache, type SyncTagLookupClient} from '../../util/syncTagLookup'
+import {
+  clearSyncTagLookupCache,
+  MAX_SYNC_TAG_PROBES,
+  type SyncTagLookupClient,
+} from '../../util/syncTagLookup'
 import {ResponseMetaTab} from './ResponseMetaTab'
 
 const cobe = vi.hoisted(() => {
@@ -379,24 +383,29 @@ describe('ResponseMetaTab rows', () => {
   })
 })
 
-/** A client resolving `s1:book` (a type) and `s1:any`, holding every answer until `release` */
+/**
+ * A client resolving `s1:book` (a type), `s1:any` and `s1:other-any` (the dataset `other`),
+ * holding every answer until `release`
+ */
 function lookupClient(options: {fail?: boolean} = {}) {
   const pending: (() => void)[] = []
   let calls = 0
-  const client: SyncTagLookupClient = {
-    config: () => ({projectId: 'p', dataset: 'd', apiHost: 'https://api'}),
+  const clientOf = (dataset: string): SyncTagLookupClient => ({
+    config: () => ({projectId: 'p', dataset, apiHost: 'https://api'}),
     fetch: (query, params) => {
       calls++
       return new Promise((resolve, reject) => {
         pending.push(() => {
           if (options.fail) reject(new Error('Network down'))
           else if (query === 'array::unique(*._type)') {
-            resolve({result: ['book'], syncTags: ['s1:any']})
+            resolve({result: ['book'], syncTags: [dataset === 'd' ? 's1:any' : 's1:other-any']})
           } else resolve({result: 0, syncTags: params.type === 'book' ? ['s1:book'] : []})
         })
       })
     },
-  }
+    withConfig: (config) => clientOf(config.dataset),
+  })
+  const client = clientOf('d')
   return {
     client,
     calls: () => calls,
@@ -441,15 +450,10 @@ describe('ResponseMetaTab sync tag lookup', () => {
     expect(calls()).toBe(0)
   })
 
-  it('switches between the raw and the resolved tags, marking those it could not resolve', async () => {
+  it('shows the resolved tags first and switches to the raw ones, marking those it could not resolve', async () => {
     const {client, calls, release} = lookupClient()
     await renderTab({meta: tagged, syncTagLookup: {client, result: [{_type: 'book'}]}})
 
-    expect(toggle().getAttribute('aria-pressed')).toBe('false')
-    // Nothing is asked of the API before the resolved values are first shown
-    expect(calls()).toBe(0)
-
-    fireEvent.click(toggle())
     expect(toggle().getAttribute('aria-pressed')).toBe('true')
     expect(screen.getByTestId('vision-meta-sync-tags').getAttribute('aria-busy')).toBe('true')
     expect(screen.getByRole('status').textContent).toBe('vision.response.sync-tags.resolving')
@@ -460,7 +464,9 @@ describe('ResponseMetaTab sync tag lookup', () => {
     expect(pills()).toEqual(['*', '_type == "book"', 's1:mystery'])
     const mystery = screen.getByText('s1:mystery').closest('[data-resolved]')
     expect(mystery?.getAttribute('data-resolved')).toBe('false')
-    expect(mystery?.getAttribute('title')).toBe('vision.response.sync-tags.unresolved')
+    expect(mystery?.getAttribute('title')).toBe(
+      `vision.response.sync-tags.unresolved:{"budget":${MAX_SYNC_TAG_PROBES}}`,
+    )
     expect(screen.getByRole('status').textContent).toBe(
       'vision.response.sync-tags.partly-resolved:{"count":1,"total":3}',
     )
@@ -481,7 +487,6 @@ describe('ResponseMetaTab sync tag lookup', () => {
     const failing = lookupClient({fail: true})
     await renderTab({meta: tagged, syncTagLookup: {client: failing.client, result: []}})
 
-    fireEvent.click(toggle())
     await failing.release()
     expect(screen.getByRole('status').textContent).toBe(
       'vision.response.sync-tags.resolve-failed:{"message":"Network down"}',
@@ -543,7 +548,6 @@ describe('ResponseMetaTab wildcard sync tags', () => {
     })
     expect(toneOf(badgeOf('s1:any'))).toBe('sui-tone-neutral')
 
-    fireEvent.click(screen.getByRole('button', {name: 'vision.response.sync-tags'}))
     await release()
     expect(toneOf(badgeOf('*'))).toBe('sui-tone-critical')
     expect(toneOf(badgeOf('_type == "book"'))).toBe('sui-tone-positive')
@@ -552,6 +556,23 @@ describe('ResponseMetaTab wildcard sync tags', () => {
     expect(
       screen
         .getAllByText('vision.response.sync-tags.wildcard')
+        .filter((text) => text.closest('[style*="display: none"]') === null),
+    ).toHaveLength(1)
+  })
+
+  it('shows a tag resolved to another dataset as critical, naming the dataset', async () => {
+    const {client, release} = lookupClient()
+    await renderTab({
+      meta: {...meta(cdnMiss), syncTags: ['s1:other-any', 's1:book']},
+      syncTagLookup: {client, result: [{_type: 'book', author: {_ref: 'r', _dataset: 'other'}}]},
+    })
+    await release()
+    expect(toneOf(badgeOf('* in dataset "other"'))).toBe('sui-tone-critical')
+
+    await hover(badgeOf('* in dataset "other"'))
+    expect(
+      screen
+        .getAllByText('vision.response.sync-tags.other-dataset:{"dataset":"other"}')
         .filter((text) => text.closest('[style*="display: none"]') === null),
     ).toHaveLength(1)
   })

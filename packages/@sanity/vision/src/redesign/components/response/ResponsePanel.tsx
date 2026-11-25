@@ -2,16 +2,21 @@ import {Badge, Card, Label} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {type Schema, useSchema} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
+import {firstEditorLineStyle} from '../../../codemirror/editorMetrics'
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {QueryErrorDialog} from '../../../components/QueryErrorDialog'
 import {ResultView, type ResultViewCopy} from '../../../components/ResultView'
 import {visionLocaleNamespace} from '../../../i18n'
 import {describeKeypath} from '../../../util/getAtKeypath'
 import {canEncodeCsv, getCsvBlobUrl, getJsonBlobUrl} from '../../../util/getBlobUrl'
+import {useAiFeatures} from '../../aiFeatures'
 import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
+import {useOneOffSourceMap} from '../../hooks/useOneOffSourceMap'
+import {useQueryAgent} from '../../hooks/useQueryAgent'
 import {useQueryExplain} from '../../hooks/useQueryExplain'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {useScrolledFromTop} from '../../hooks/useScrolledFromTop'
@@ -22,15 +27,17 @@ import {
   type VisionTab,
   type VisionTabDrawer,
 } from '../../store/types'
-import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
-import {selectOpenTabDrawer, selectResultView} from '../../store/visionMachine'
+import {useTabDrawerSlot, useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
+import {selectResultView, selectSourceMapEnabled} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
-import {parseDocumentList} from '../../util/documentListResult'
+import {getAvailableRowFields} from '../../util/documentListFields'
+import {canImproveDocumentList, getRowTypes, parseDocumentList} from '../../util/documentListResult'
 import {haveSameQuery} from '../../util/queryRequest'
+import {stringifyResultJson} from '../../util/stringifyResultJson'
 import {fetchSyncTagSourceMap} from '../../util/syncTagLookup'
 import {type CollapsiblePanelTab} from '../CollapsiblePanel'
 import {CopyButton} from '../CopyButton'
-import {useResponseBottomPanel} from '../queryTabLayout'
+import {useRequestBottomPanel, useResponseBottomPanel} from '../queryTabLayout'
 import * as styles from '../redesign.module.css'
 import {usePerspectiveOptionName} from '../request/OptionFields'
 import {SplitWithBottomPanel} from '../SplitWithBottomPanel'
@@ -38,6 +45,7 @@ import {TabDrawerPortal} from '../TabDrawerPortal'
 import {useTabElementId} from '../tabs/queryTabShown'
 import {DeltaTab, useDeltaPanel} from './DeltaTab'
 import {DocumentListView} from './documentList/DocumentListView'
+import {FitDocumentListQuery} from './documentList/FitDocumentListQuery'
 import {ExplainTab} from './ExplainTab'
 import {HistoryTab} from './HistoryTab'
 import {MutateTab, useMutatePanel} from './MutateTab'
@@ -48,20 +56,20 @@ import {ResultJson} from './ResultJson'
 import {type ResultViewOption, ResultViewMenu} from './ResultViewMenu'
 import {SourceMapTab, type SourceMapView} from './SourceMapTab'
 
-const DEFAULT_BOTTOM_PANEL_SIZE = {columns: 220, stacked: 180, mobile: 160}
-
 export interface ResponsePanelProps {
   tab: VisionTab
   runnerRef: QueryRunnerRef
   resolved: ResolvedRequest
   /** What the tab would fetch right now; tells whether the shown result is for the current query */
   request: QueryRequest | null
-  /** Mutations were applied from the Mutate panel, and the result may have changed */
-  onMutationsApplied: () => void
+  /** The tab's params, which Improve query starts from; undefined while they do not parse */
+  params: Record<string, unknown> | undefined
+  /** Formats a query for the query editor, as Prettify does */
+  formatForEditor: (query: string) => Promise<string>
 }
 
 export function ResponsePanel(props: ResponsePanelProps) {
-  const {tab, runnerRef, resolved, request, onMutationsApplied} = props
+  const {tab, runnerRef, resolved, request, params, formatForEditor} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const tabElementId = useTabElementId()
   const resultContentId = tabElementId('vision-result-content')
@@ -126,6 +134,8 @@ export function ResponsePanel(props: ResponsePanelProps) {
     const {client, query, params} = settledRequest
     return {
       client,
+      query,
+      params,
       result,
       resultSourceMap,
       // A result that dereferences does not show the documents it read; the source map does
@@ -134,6 +144,9 @@ export function ResponsePanel(props: ResponsePanelProps) {
     }
   }, [resolveSyncTags, result, resultSourceMap, settledRequest])
   const queryExplain = useQueryExplain(request)
+  const improveAgent = useQueryAgent({tab, client: resolved.client, formatForEditor})
+  const documentListAgent = useQueryAgent({tab, client: resolved.client, formatForEditor})
+  const {editQuery: aiEdit} = useAiFeatures()
   const perspectiveName = usePerspectiveOptionName(resolved.tabPerspective)
   const delta = useDeltaPanel()
   const mutate = useMutatePanel()
@@ -144,6 +157,14 @@ export function ResponsePanel(props: ResponsePanelProps) {
     () => (hasResult && storedResultView === 'documents' ? parseDocumentList(result) : undefined),
     [hasResult, result, storedResultView],
   )
+  const schema = useSchema() as Schema | undefined
+  const documentListImprovable = useMemo(() => {
+    if (!parsedDocuments) return false
+    const available = schema
+      ? getAvailableRowFields(schema, getRowTypes(parsedDocuments))
+      : undefined
+    return canImproveDocumentList(parsedDocuments, available)
+  }, [parsedDocuments, schema])
   const settledQuery = settledRequest?.query ?? ''
   // Documents picked for this query shows its guidance when the result is not a document list.
   // Otherwise a remembered Documents shows such a result as JSON and stays remembered.
@@ -169,7 +190,32 @@ export function ResponsePanel(props: ResponsePanelProps) {
     [t],
   )
   const sourceMapContentId = tabElementId('vision-source-map-content')
-  const hasSourceMap = meta?.resultSourceMap !== undefined
+  const sourceMapEnabled = useVisionSelector(selectSourceMapEnabled)
+  const oneOffSourceMap = useOneOffSourceMap(request, meta)
+  const sourceMap = meta?.resultSourceMap ?? oneOffSourceMap.sourceMap
+  const hasSourceMap = sourceMap !== undefined
+  const {setState: setRequestPanelState} = useRequestBottomPanel()
+  const revealSourceMapOption = useCallback(() => {
+    setRequestPanelState((current) => ({...current, activeTabId: 'options', collapsed: false}))
+    // The Options tab's fields mount with the render that opens it
+    requestAnimationFrame(() => {
+      const field = document
+        .getElementById(tabElementId('vision-request-options-panel'))
+        ?.querySelector<HTMLInputElement>('[data-testid="vision-option-source-map"]')
+      if (!field) return
+      field.focus({focusVisible: true} as FocusOptions)
+      const row = field.closest('label')
+      row?.scrollIntoView?.({block: 'nearest'})
+      // A focus ring alone is easy to miss after a click elsewhere, so the row flashes once
+      row?.animate?.(
+        [
+          {outline: '2px solid var(--card-focus-ring-color)', outlineOffset: '4px'},
+          {outline: '2px solid transparent', outlineOffset: '4px'},
+        ],
+        {duration: 1600, easing: 'ease-out'},
+      )
+    })
+  }, [setRequestPanelState, tabElementId])
   const resultViews = useMemo((): ResultViewOption<VisionResultView>[] => {
     const views: ResultViewOption<VisionResultView>[] = [
       {id: 'json', label: t('vision.result.view.json')},
@@ -187,22 +233,23 @@ export function ResponsePanel(props: ResponsePanelProps) {
       resultView === 'graph')
   const {scrolled: resultScrolled, setScroller: setResultScroller} = useScrolledFromTop()
   const copyToClipboard = useCopyToClipboard()
-  // The Copy button confirms the copy itself, so no toast
-  const copyResult = useCallback(
-    () => copyToClipboard(JSON.stringify(result, null, 2)),
-    [copyToClipboard, result],
-  )
+  // Same text as the JSON view (depth-truncated / soft-capped); never a bare misleading `null`
+  const copyResult = useCallback(() => {
+    return copyToClipboard(stringifyResultJson(result).text)
+  }, [copyToClipboard, result])
   // Text is copied as it is (an ID, a slug) and everything else as indented JSON
   const copyValue = useMemo(
     (): ResultViewCopy => ({
       label: t('vision.result.copy-value'),
-      onCopy: (value, keypath) =>
-        void copyToClipboard(
-          typeof value === 'string' ? value : JSON.stringify(value, null, 2),
+      onCopy: (value, keypath) => {
+        const text = typeof value === 'string' ? value : stringifyResultJson(value).text
+        return copyToClipboard(
+          text,
           keypath
             ? t('vision.result.copied-value', {path: describeKeypath(keypath)})
             : t('vision.result.copied'),
-        ),
+        )
+      },
     }),
     [copyToClipboard, t],
   )
@@ -243,9 +290,12 @@ export function ResponsePanel(props: ResponsePanelProps) {
             canExplain={request !== null}
             client={resolved.client}
             explanation={queryExplain.explanation}
+            improveAgent={improveAgent}
             onExplain={() => void queryExplain.explain()}
             onShowPlan={queryExplain.showPlan}
+            params={params}
             plan={queryExplain.plan}
+            tab={tab}
           />
         ),
       },
@@ -255,7 +305,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
         fill: hasSourceMap && sourceMapView !== 'tree',
         // Picks the view, above it; there is nothing to pick while there is no source map
         toolbar: hasSourceMap ? (
-          <Flex alignItems="center" data-testid="vision-source-map-toolbar" padding={2}>
+          <Flex alignItems="center" data-testid="vision-source-map-toolbar" gap={2} padding={2}>
             <ResultViewMenu
               controls={sourceMapContentId}
               id={tabElementId('vision-source-map-view-menu')}
@@ -265,6 +315,11 @@ export function ResponsePanel(props: ResponsePanelProps) {
               value={sourceMapView}
               views={sourceMapViews}
             />
+            {meta?.resultSourceMap === undefined && (
+              <Text data-testid="vision-source-map-one-off" muted size={1} trim={true}>
+                {t('vision.source-map.one-off')}
+              </Text>
+            )}
           </Flex>
         ) : undefined,
         content: (
@@ -272,7 +327,10 @@ export function ResponsePanel(props: ResponsePanelProps) {
             copy={copyValue}
             dataset={resultDataset}
             id={sourceMapContentId}
-            meta={meta}
+            onFetch={request ? oneOffSourceMap.fetch : undefined}
+            onRevealOption={revealSourceMapOption}
+            oneOff={oneOffSourceMap}
+            sourceMap={sourceMap}
             view={sourceMapView}
           />
         ),
@@ -283,24 +341,41 @@ export function ResponsePanel(props: ResponsePanelProps) {
       hasSourceMap,
       hiddenDiffFields,
       history,
+      improveAgent,
       meta,
+      oneOffSourceMap,
+      params,
       perspectiveName,
       queryExplain,
       request,
       resolved,
       resultDataset,
+      revealSourceMapOption,
+      sourceMap,
       sourceMapContentId,
       sourceMapView,
       sourceMapViews,
       syncTagLookup,
       t,
+      tab,
       tabElementId,
       url,
     ],
   )
+  // The Content Source Map tab is hidden while its features are switched off, and the panel
+  // shows Result if it was the open one
+  const shownPanelTabs = sourceMapEnabled
+    ? panelTabs
+    : panelTabs.filter((panelTab) => panelTab.id !== 'source-map')
+  // The Content Source Map tab may be the open one when its features are switched off
+  const shownPanelState =
+    !sourceMapEnabled && panelState.activeTabId === 'source-map'
+      ? {...panelState, activeTabId: 'response'}
+      : panelState
 
   // The tab's tools open in the sidebar's drawer
-  const tabDrawer = useVisionSelector(selectOpenTabDrawer)
+  // The tool follows the drawer as it shows, so it comes and goes with the drawer
+  const {drawer: tabDrawer} = useTabDrawerSlot()
   const renderTabDrawer = (drawer: VisionTabDrawer): ReactNode => {
     switch (drawer) {
       case 'delta':
@@ -313,7 +388,6 @@ export function ResponsePanel(props: ResponsePanelProps) {
             dataset={resolved.dataset}
             hiddenFields={hiddenDiffFields}
             mutate={mutate}
-            onApplied={onMutationsApplied}
             result={hasResult ? result : undefined}
           />
         )
@@ -328,12 +402,12 @@ export function ResponsePanel(props: ResponsePanelProps) {
     <>
       {tabDrawer && <TabDrawerPortal>{renderTabDrawer(tabDrawer)}</TabDrawerPortal>}
       <SplitWithBottomPanel
-        defaultBottomSize={DEFAULT_BOTTOM_PANEL_SIZE}
+        column="response"
         fitOnTabDoubleClick
         id="vision-response"
         onStateChange={setPanelState}
-        state={panelState}
-        tabs={panelTabs}
+        state={shownPanelState}
+        tabs={shownPanelTabs}
         testId="vision-response-panel"
       >
         <Card
@@ -341,6 +415,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
           // The shown result stays while a newer fetch is in flight, and dims if that takes long
           data-refreshing={hasResult && status === 'fetching'}
           data-testid="vision-result"
+          display="flex"
           tone={status === 'failed' ? 'critical' : 'default'}
         >
           <div
@@ -352,8 +427,12 @@ export function ResponsePanel(props: ResponsePanelProps) {
               {t('result.label')}
             </Label>
             <Flex alignItems="center" data-testid="vision-result-actions" gap={1}>
-              {/* First: the row is anchored on the right, so "Copied" grows to the left */}
-              <CopyButton disabled={!hasResult} onCopy={copyResult} testId="vision-copy-result" />
+              <CopyButton
+                disabled={!hasResult}
+                label={t('vision.result.copy')}
+                onCopy={copyResult}
+                testId="vision-copy-result"
+              />
               <ResultViewMenu
                 controls={resultContentId}
                 id={tabElementId('vision-result-view-menu')}
@@ -391,6 +470,20 @@ export function ResponsePanel(props: ResponsePanelProps) {
                 datasetName={resultDataset}
                 id={resultContentId}
                 parsed={parsedDocuments}
+                action={
+                  aiEdit &&
+                  (documentListAgent.status.type === 'running' ||
+                    (resultIsCurrent && documentListImprovable)) ? (
+                    <FitDocumentListQuery
+                      agent={documentListAgent}
+                      client={resolved.client}
+                      params={params}
+                      parsed={parsedDocuments}
+                      result={result}
+                      tab={tab}
+                    />
+                  ) : undefined
+                }
               />
             ) : hasResult && resultView === 'json' ? (
               <ResultJson className={styles.resultView} id={resultContentId} value={result} />
@@ -402,7 +495,14 @@ export function ResponsePanel(props: ResponsePanelProps) {
                 value={result}
               />
             ) : (
-              <Box id={resultContentId} padding={3}>
+              <Box
+                className={hasResult && resultView === 'tree' ? styles.treeContent : undefined}
+                id={resultContentId}
+                paddingBottom={3}
+                // The empty state takes its top offset from the query editor's first line instead
+                paddingTop={status === 'idle' ? 0 : 3}
+                paddingX={3}
+              >
                 {status === 'fetching' && (
                   <Box className={styles.resultSpinner} marginTop={3}>
                     <DelayedSpinner />
@@ -430,7 +530,13 @@ export function ResponsePanel(props: ResponsePanelProps) {
                   </div>
                 )}
                 {status === 'idle' && (
-                  <Text muted size={1} as="div" trim={true}>
+                  <Text
+                    as="div"
+                    data-testid="vision-result-empty"
+                    muted
+                    size={1}
+                    style={firstEditorLineStyle}
+                  >
                     {t('vision.result.empty')}
                   </Text>
                 )}

@@ -1,5 +1,7 @@
+/* Sizes inside the tool follow the tool's width, not the window's */
 .root {
   position: relative;
+  container: visionTool / inline-size;
 }
 
 /*
@@ -15,9 +17,17 @@
   border-top: 1px solid var(--card-border-color);
 }
 
-.panelHeader {
+/*
+ * A row of a bottom panel: its tab header, and the toolbar rows of its tabs (the params' view tabs
+ * and actions, the Lint tab's Fix with AI). They share the header's height and insets, so a
+ * toolbar's first and last buttons line up with the tabs and the collapse toggle above them, and
+ * are centered on the same line within their row.
+ */
+.panelBar {
+  box-sizing: border-box;
   flex-shrink: 0;
   height: var(--vision-bottom-bar-height);
+  padding-inline: 8px;
 }
 
 /* `ResizableSplit`: two panes and the divider between them */
@@ -74,6 +84,12 @@
   background: var(--card-shadow-ambient-color);
   outline: 2px solid var(--card-focus-ring-color);
   outline-offset: -2px;
+}
+
+/* Held at equal halves: the line takes the focus color while it is dragged or focused */
+.splitHandle[data-snapped='true'][data-dragging='true'],
+.splitHandle[data-snapped='true']:focus-visible {
+  background: var(--card-focus-ring-color);
 }
 
 .splitHandleVertical {
@@ -237,17 +253,16 @@
 /*
  * The divider under a bottom panel's tab header belongs to the expanded body, so the header keeps
  * the same height inside its borders whether the panel is expanded or collapsed, and its tabs the
- * same whole-pixel insets above and below
+ * same whole-pixel insets above and below. The body stacks the toolbar over the scroll container;
+ * it sets `display: flex` itself, through its `display` prop: `@sanity/ui`'s Box writes its
+ * display as `.x:not([hidden])`, as specific as a doubled class, and its runtime stylesheet
+ * follows this one in a built studio, so a doubled class here lost to it there (and won in
+ * `sanity dev`, where this stylesheet is injected later).
  */
 .panelBody {
-  border-top: 1px solid var(--card-border-color);
-}
-
-/* Stacks the toolbar over the scroll container; doubled to beat the tab panel's own display */
-.panelBody.panelBody {
-  display: flex;
   flex-direction: column;
   min-height: 0;
+  border-top: 1px solid var(--card-border-color);
 }
 
 /* Tab headers of the bottom panels scroll sideways rather than wrap when space is tight */
@@ -314,11 +329,6 @@
   height: 100%;
 }
 
-/* Hides the request or response pane in the single-column phone layout */
-.hiddenPane.hiddenPane {
-  display: none;
-}
-
 .editorContainer {
   position: relative;
   height: 100%;
@@ -382,7 +392,7 @@
 
 /* The tab's tools and the settings take more room than a list of queries */
 .sidebarDrawerWide {
-  width: min(480px, 45vw);
+  width: min(480px, 45cqi);
 }
 
 /*
@@ -668,9 +678,8 @@
   transition: background-color 200ms ease;
 }
 
-/* Doubled to beat the card's own display */
-.resultContainer.resultContainer {
-  display: flex;
+/* The card sets `display: flex` through its `display` prop; see `.panelBody` */
+.resultContainer {
   flex-direction: column;
 }
 
@@ -716,6 +725,15 @@
   }
 }
 
+/*
+ * The tree wraps to the pane's width and never scrolls sideways. Its hover band reaches past the
+ * lines into this box's padding and beyond, and is clipped here at the pane's edges rather than
+ * widening the pane's scroller.
+ */
+.treeContent {
+  overflow-x: clip;
+}
+
 /* The delayed spinner fades in rather than popping up */
 .resultSpinner [data-ui='Spinner'] {
   transition: opacity 200ms cubic-bezier(0.23, 1, 0.32, 1);
@@ -742,6 +760,11 @@
   padding-top: 0;
   overflow: visible;
   white-space: normal;
+}
+
+/* A disabled menu item lets the pointer through to its wrapper, which carries the tooltip */
+.disabledMenuItemTarget > [disabled] {
+  pointer-events: none;
 }
 
 .exportUnavailableHint {
@@ -788,6 +811,37 @@
 .codeBlock {
   max-height: 50vh;
   overflow: auto;
+}
+
+/* The tabs of the Export query dialog scroll sideways on a narrow screen instead of squeezing */
+.exportTabs {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+/* The path of a snippet file, above its code */
+.exportFileHeader {
+  border-bottom: 1px solid var(--card-border-color);
+}
+
+/*
+ * Long lines of an export snippet wrap rather than scroll the code sideways; the copied text keeps
+ * its own lines
+ */
+.exportCode pre,
+.exportCode code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* The highlighted code of a snippet file, in the card's colors where no token colors it */
+.exportCodeBlock {
+  margin: 0;
+  color: var(--card-code-fg-color, var(--card-fg-color));
+}
+
+.exportCodeBlock code {
+  font: inherit;
 }
 
 /*
@@ -855,4 +909,55 @@
 .queryTabRevealing *::before,
 .queryTabRevealing *::after {
   transition: none !important;
+}
+
+/*
+ * Overscroll. Nothing rubber-bands sideways: a sideways bounce shifts the gutter, and a sideways
+ * swipe handed on past the edge turns into the browser's back and forward gesture. The long
+ * panes (the editors, the result, the bottom panels) keep their vertical bounce. Nested
+ * scrollers (strips, drawers, menus, the sidebar) keep it to themselves rather than chaining it
+ * into the studio.
+ */
+.paneScroll {
+  overscroll-behavior-x: none;
+}
+
+.root :global(.cm-scroller) {
+  overscroll-behavior-x: none;
+}
+
+.tabBar,
+.panelTabs,
+.actionRailChips,
+.exportTabs,
+.scrollArea,
+.drawerScroller,
+.codeBlock,
+.nestedScroll {
+  overscroll-behavior: none contain;
+}
+
+/* A text field in a drawer (the settings' hidden diff fields) */
+.nestedScroll textarea {
+  overscroll-behavior: none contain;
+}
+
+/*
+ * A portaled menu, picker or autocomplete scrolls inside the popover (its wrapper, the menu or the
+ * listbox) and never hands the scroll on to whatever is under it. It has no scrollers that should
+ * chain, so every element in it gets the rule; on one that does not scroll it does nothing. A menu
+ * button's popover takes no class of its own, so its wrapper is found from the menu inside it.
+ */
+.popoverScroll,
+.popoverScroll * {
+  overscroll-behavior: none contain;
+}
+
+[data-ui='Popover__wrapper']:has(.popoverScroll) {
+  overscroll-behavior: none contain;
+}
+
+/* A document-id field is one grid column. Its menu is wider, so a preview title fits. */
+.documentIdMenu {
+  min-width: 280px;
 }

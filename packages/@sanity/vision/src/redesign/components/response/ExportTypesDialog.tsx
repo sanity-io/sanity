@@ -1,21 +1,16 @@
-import {CopyIcon} from '@sanity/icons/Copy'
-import {Button, Card, Dialog, Stack} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useMemo} from 'react'
 import {useSchema} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
-import {Text, Box, Flex} from 'ui5'
 
 import {parseParams} from '../../../components/ParamsEditor'
 import {visionLocaleNamespace} from '../../../i18n'
-import {useCopyToClipboard} from '../../hooks/useCopyToClipboard'
 import {type VisionTab} from '../../store/types'
-import {toQueryConstantName} from '../../util/exportSnippets'
 import {evaluateQueryType} from '../../util/typegen/evaluateQueryType'
+import {toQueryVariableName, toResultTypeName} from '../../util/typegen/naming'
 import {printTypeScript} from '../../util/typegen/printTypeScript'
 import {printZod} from '../../util/typegen/printZod'
-import {toTypeName} from '../../util/typegen/schemaTypes'
-import * as styles from '../redesign.module.css'
+import {createSchemaIdentifiers} from '../../util/typegen/schemaTypes'
+import {ExportCodeDialog} from '../ExportCodeDialog'
 
 export type TypesExportFormat = 'typescript' | 'zod'
 
@@ -29,12 +24,6 @@ export interface ExportTypesDialogProps {
   onClose: () => void
 }
 
-/** `AUTHOR_QUERY` becomes `AuthorQueryResult` */
-function toResultTypeName(query: string): string {
-  const constant = toQueryConstantName(query)
-  return `${toTypeName(constant.toLowerCase().replace(/_/g, ' '))}Result`
-}
-
 export function ExportTypesDialog({
   tab,
   format,
@@ -44,7 +33,6 @@ export function ExportTypesDialog({
   onClose,
 }: ExportTypesDialogProps) {
   const {t} = useTranslation(visionLocaleNamespace)
-  const copyToClipboard = useCopyToClipboard()
   const schema = useSchema()
 
   const output = useMemo(() => {
@@ -59,7 +47,11 @@ export function ExportTypesDialog({
     if (evaluation.source === 'none') {
       return {source: evaluation.source, code: undefined, schemaError: evaluation.schemaError}
     }
-    const typeName = toResultTypeName(tab.query)
+    // Named as `sanity typegen` would name the result of a query variable called after the tab
+    const typeName = toResultTypeName(
+      toQueryVariableName(tab.query, tab.title),
+      new Set(createSchemaIdentifiers(evaluation.schema).values()),
+    )
     const code =
       format === 'typescript'
         ? printTypeScript(evaluation.node, {typeName, schema: evaluation.schema})
@@ -69,7 +61,7 @@ export function ExportTypesDialog({
       code,
       schemaError: evaluation.source === 'result' ? evaluation.schemaError : undefined,
     }
-  }, [format, hasResult, result, resultIsCurrent, schema, t, tab.query, tab.rawParams])
+  }, [format, hasResult, result, resultIsCurrent, schema, t, tab.query, tab.rawParams, tab.title])
 
   const sourceNote =
     output.source === 'schema'
@@ -81,63 +73,27 @@ export function ExportTypesDialog({
           : t('vision.export-types.empty')
 
   return (
-    <Dialog
-      animate
-      data-testid="vision-export-types-dialog"
+    <ExportCodeDialog
+      code={output.code}
       header={
         format === 'typescript'
           ? t('vision.export-types.title-typescript')
           : t('vision.export-types.title-zod')
       }
-      id="vision-export-types-dialog"
-      onClickOutside={onClose}
+      id="vision-export-types"
+      note={sourceNote}
       onClose={onClose}
-      width={2}
-    >
-      <Box padding={4}>
-        <Stack gap={4}>
-          <Text data-testid="vision-export-types-source" muted size={1} as="div" trim={true}>
-            {sourceNote}
-          </Text>
-          {output.schemaError && (
-            <Card border padding={3} radius={2} tone="caution">
-              <Text
-                data-testid="vision-export-types-schema-error"
-                size={1}
-                as="div"
-                trim={true}
-                tone="caution"
-              >
-                {t('vision.export-types.schema-error', {message: output.schemaError.message})}
-              </Text>
-            </Card>
-          )}
-          {output.code && (
-            <>
-              <Card
-                border
-                className={styles.codeBlock}
-                overflow="auto"
-                padding={3}
-                radius={2}
-                tone="transparent"
-              >
-                <Code data-testid="vision-export-types-code" language="typescript" size={1}>
-                  {output.code}
-                </Code>
-              </Card>
-              <Flex justifyContent="flex-end">
-                <Button
-                  icon={CopyIcon}
-                  mode="ghost"
-                  onClick={() => void copyToClipboard(output.code, t('vision.export-types.copied'))}
-                  text={t('vision.export-types.copy')}
-                />
-              </Flex>
-            </>
-          )}
-        </Stack>
-      </Box>
-    </Dialog>
+      warning={
+        output.schemaError
+          ? {
+              testId: 'vision-export-types-schema-error',
+              text: t('vision.export-types.schema-unavailable', {
+                message: output.schemaError.message,
+              }),
+              tone: 'neutral',
+            }
+          : undefined
+      }
+    />
   )
 }

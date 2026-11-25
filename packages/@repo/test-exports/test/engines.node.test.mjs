@@ -5,7 +5,7 @@ import path from 'node:path'
 import {test} from 'node:test'
 import {fileURLToPath} from 'node:url'
 
-const EXPECTED_NODE_ENGINE = '>=22.12'
+const EXPECTED_NODE_ENGINE = '>=24.11'
 const repoRoot = path.resolve(fileURLToPath(new URL('../../../../', import.meta.url)))
 const packagesDir = path.join(repoRoot, 'packages')
 

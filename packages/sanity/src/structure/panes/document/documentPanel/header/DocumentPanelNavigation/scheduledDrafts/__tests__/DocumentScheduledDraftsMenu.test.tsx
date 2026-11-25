@@ -1,16 +1,13 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {render, screen, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {
-  useActiveReleases,
-  useDocumentVersions,
-  usePerspective,
-  useScheduledDraftsEnabled,
-  type VersionInfoDocumentStub,
-} from 'sanity'
+import {useDocumentVersions, usePerspective} from 'sanity'
 import {afterEach, beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
+import {type VersionInfoDocumentStub} from '../../../../../../../../core/releases/store/types'
+import {useActiveReleases} from '../../../../../../../../core/releases/store/useActiveReleases'
+import {useScheduledDraftsEnabled} from '../../../../../../../../core/singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {usePaneRouter} from '../../../../../../../components/paneRouter/usePaneRouter'
 import {usePerspectiveNavigator} from '../../../../../../../hooks/usePerspectiveNavigator'
 import {structureUsEnglishLocaleBundle} from '../../../../../../../i18n'
@@ -27,9 +24,14 @@ import {DocumentScheduledDraftsMenu} from '../DocumentScheduledDraftsMenu'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useActiveReleases: vi.fn(),
   useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
+}))
+
+vi.mock('../../../../../../../../core/releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(),
+}))
+vi.mock('../../../../../../../../core/singleDocRelease/hooks/useScheduledDraftsEnabled', () => ({
   useScheduledDraftsEnabled: vi.fn(),
 }))
 

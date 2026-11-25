@@ -11,6 +11,7 @@ import {queryRunnerMachine, type QueryRunnerRef} from './queryRunnerMachine'
 import {
   type VisionAiSettings,
   type VisionEditorSettings,
+  type VisionExportSnippetSettings,
   type VisionResponseSettings,
   type VisionDialog,
   type VisionDrawer,
@@ -19,6 +20,7 @@ import {
   type VisionPanelsState,
   type VisionParamsView,
   type VisionPersistedState,
+  type VisionResultSourceMap,
   type VisionResultView,
   type VisionSavedFunction,
   type VisionSettings,
@@ -33,6 +35,7 @@ import {
   createInitialState,
   createTab,
   resolveWorkspaceDataset,
+  sanitizeExportSnippetSettings,
   type VisionStorageDefaults,
 } from './visionStorage'
 
@@ -49,6 +52,7 @@ export interface VisionContext {
   ai: VisionAiSettings
   editor: VisionEditorSettings
   response: VisionResponseSettings
+  exportSnippets: VisionExportSnippetSettings
   /** The functions library, most recently saved first */
   functions: VisionSavedFunction[]
   /** One query runner per open tab, keyed by tab id */
@@ -97,6 +101,8 @@ export type VisionEvent =
   | {type: 'ai.update'; settings: Partial<VisionAiSettings>}
   | {type: 'editor.update'; settings: Partial<VisionEditorSettings>}
   | {type: 'response.update'; settings: Partial<VisionResponseSettings>}
+  /** Hiding the last visible snippet is ignored: the dialog always has a tab to show */
+  | {type: 'exportSnippets.update'; settings: Partial<VisionExportSnippetSettings>}
   /** Saves a function to the library, replacing the one with its id */
   | {type: 'functions.save'; fn: VisionSavedFunction}
   | {type: 'functions.remove'; id: string}
@@ -259,6 +265,7 @@ export const visionMachine = setup({
           ai: fresh.ai,
           editor: fresh.editor,
           response: fresh.response,
+          exportSnippets: fresh.exportSnippets,
           functions: fresh.functions,
           runners: spawnRunners(spawn, fresh.tabs),
           fetchOnOpen: {},
@@ -279,6 +286,7 @@ export const visionMachine = setup({
     ai: input.persisted.ai,
     editor: input.persisted.editor,
     response: input.persisted.response,
+    exportSnippets: input.persisted.exportSnippets,
     functions: input.persisted.functions,
     runners: spawnRunners(spawn, input.persisted.tabs),
     loadRevisions: {},
@@ -390,6 +398,17 @@ export const visionMachine = setup({
     'response.update': {
       actions: assign({
         response: ({context, event}) => ({...context.response, ...event.settings}),
+      }),
+    },
+    'exportSnippets.update': {
+      guard: ({context, event}) => {
+        const order = event.settings.order ?? context.exportSnippets.order
+        const hidden = event.settings.hidden ?? context.exportSnippets.hidden
+        return order.some((id) => !hidden.includes(id))
+      },
+      actions: assign({
+        exportSnippets: ({context, event}) =>
+          sanitizeExportSnippetSettings({...context.exportSnippets, ...event.settings}),
       }),
     },
     'functions.save': {
@@ -577,12 +596,29 @@ export function selectPersistedState(snapshot: VisionSnapshot): VisionPersistedS
     ai: snapshot.context.ai,
     editor: snapshot.context.editor,
     response: snapshot.context.response,
+    exportSnippets: snapshot.context.exportSnippets,
     functions: snapshot.context.functions,
   }
 }
 
 export function selectFunctionLibrary(snapshot: VisionSnapshot): VisionSavedFunction[] {
   return snapshot.context.functions
+}
+
+/** Whether the Content Source Map features are switched on in the settings */
+export function selectSourceMapEnabled(snapshot: VisionSnapshot): boolean {
+  return snapshot.context.response.sourceMapEnabled
+}
+
+/**
+ * The `resultSourceMap` a query asks for when its "Include content source map" option is on;
+ * `undefined` while the Content Source Map features are off
+ */
+export function selectSourceMapRequest(
+  snapshot: VisionSnapshot,
+): VisionResultSourceMap | undefined {
+  const {sourceMapEnabled, resultSourceMap} = snapshot.context.response
+  return sourceMapEnabled ? resultSourceMap : undefined
 }
 
 export function selectParamsView(snapshot: VisionSnapshot): VisionParamsView {
@@ -629,8 +665,12 @@ export function selectOpenDrawer(snapshot: VisionSnapshot): VisionDrawer | null 
 
 const TAB_DRAWERS: readonly VisionTabDrawer[] = ['delta', 'mutate']
 
+/** The drawer when it shows one of the active tab's tools */
+export function toTabDrawer(drawer: VisionDrawer | null): VisionTabDrawer | null {
+  return TAB_DRAWERS.find((tabDrawer) => tabDrawer === drawer) ?? null
+}
+
 /** The open drawer while it shows one of the active tab's tools */
 export function selectOpenTabDrawer(snapshot: VisionSnapshot): VisionTabDrawer | null {
-  const drawer = selectOpenDrawer(snapshot)
-  return TAB_DRAWERS.find((tabDrawer) => tabDrawer === drawer) ?? null
+  return toTabDrawer(selectOpenDrawer(snapshot))
 }

@@ -1,6 +1,7 @@
 import {describe, expect, it} from 'vitest'
 
-import {readPlanInsights} from './planInsights'
+import resources from '../../i18n/resources'
+import {presentPlanInsights, readPlanInsights} from './planInsights'
 
 // Plans the API returned for the queries in the test names
 const SORT_AND_LIMIT = `Pipeline {
@@ -82,5 +83,64 @@ describe('readPlanInsights', () => {
       'sort-in-memory',
       'slice-in-memory',
     ])
+  })
+})
+
+describe('presentPlanInsights', () => {
+  const filter = readPlanInsights(JOIN_IN_FILTER)[0]
+  const sorted = readPlanInsights(SORT_AND_LIMIT)[0]
+  const memory = readPlanInsights(
+    'Pipeline {\n  r2: SortStep {\n    Source: r1\n  }\n  r3: SliceStep {\n    Source: r2\n  }\n}',
+  )
+  const all = [filter, sorted, ...memory]
+
+  it('leaves the heuristic alone when there is no verdict or the query can be improved', () => {
+    for (const verdict of [undefined, 'improvable' as const]) {
+      const presented = presentPlanInsights(all, verdict)
+      expect(presented.showGuide).toBe(true)
+      expect(
+        presented.insights.map((insight) => [insight.kind, insight.tone, insight.message]),
+      ).toEqual([
+        ['filter-in-memory', 'caution', 'vision.explain.insight.filter-in-memory'],
+        ['index-sort-limit', 'positive', 'vision.explain.insight.index-sort-limit'],
+        ['sort-in-memory', 'caution', 'vision.explain.insight.sort-in-memory'],
+        ['slice-in-memory', 'caution', 'vision.explain.insight.slice-in-memory'],
+      ])
+    }
+  })
+
+  it('drops the warnings that would call a fast query slow', () => {
+    const presented = presentPlanInsights(all, 'performant')
+    expect(presented.showGuide).toBe(false)
+    expect(presented.insights).toEqual([
+      {
+        kind: 'index-sort-limit',
+        tone: 'positive',
+        message: 'vision.explain.insight.index-sort-limit',
+      },
+    ])
+  })
+
+  it('restates unavoidable work without calling it slow or linking the guide', () => {
+    const presented = presentPlanInsights(all, 'cannot-improve')
+    expect(presented.showGuide).toBe(false)
+    expect(presented.insights.map((insight) => insight.message)).toEqual([
+      'vision.explain.insight.filter-in-memory.cannot-improve',
+      'vision.explain.insight.index-sort-limit',
+      'vision.explain.insight.sort-in-memory.cannot-improve',
+      'vision.explain.insight.slice-in-memory.cannot-improve',
+    ])
+    expect(presented.insights.map((insight) => insight.tone)).toEqual([
+      'neutral',
+      'positive',
+      'neutral',
+      'neutral',
+    ])
+    expect(presented.insights[0]).toMatchObject({
+      expression: 'and(eq($0._type, "book"), eq($1.name, "x"))',
+    })
+    for (const insight of presented.insights) {
+      expect(resources[insight.message].toLowerCase()).not.toContain('slow')
+    }
   })
 })

@@ -1,10 +1,11 @@
-import {HighlightStyle, syntaxHighlighting} from '@codemirror/language'
+import {HighlightStyle, syntaxHighlighting, type TagStyle} from '@codemirror/language'
 import {type Extension} from '@codemirror/state'
 import {EditorView} from '@codemirror/view'
 import {tags as t} from '@lezer/highlight'
-import {hues} from '@sanity/color'
 import {rem, type Theme} from '@sanity/ui'
 import {useMemo} from 'react'
+
+import {EDITOR_LINE_HEIGHT} from './editorMetrics'
 
 // The explicit return type keeps declaration emit portable (TS2883): without it the inferred
 // type references `Extension` from @codemirror/state through a non-portable .pnpm path
@@ -21,9 +22,9 @@ function createTheme(theme: Theme) {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const {color, fonts} = theme.sanity
   const card = color.card.enabled
-  const cursor = hues.blue[color.dark ? 400 : 500].hex
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const selection = hues.gray[theme.sanity.color.dark ? 900 : 100].hex
+  // The editors render inside a studio card, so its tokens follow the theme, custom ones too
+  const cursor = 'var(--card-focus-ring-color)'
+  const selection = 'color-mix(in srgb, var(--card-focus-ring-color) 22%, transparent)'
 
   return EditorView.theme(
     {
@@ -34,6 +35,10 @@ function createTheme(theme: Theme) {
 
       '.cm-content': {
         caretColor: cursor,
+      },
+
+      '.cm-scroller': {
+        lineHeight: String(EDITOR_LINE_HEIGHT),
       },
 
       '.cm-editor': {
@@ -109,11 +114,17 @@ function createTheme(theme: Theme) {
 
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 function createHighlight(theme: Theme) {
+  return HighlightStyle.define(createHighlightSpecs(theme))
+}
+
+/** The editors' syntax colors by highlight tag, which code shown outside an editor uses too */
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+export function createHighlightSpecs(theme: Theme): TagStyle[] {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const c = theme.sanity.color.base
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   const s = theme.sanity.color.syntax
-  return HighlightStyle.define([
+  return [
     {tag: t.keyword, color: s.keyword},
     {tag: [t.propertyName, t.name, t.deleted, t.character, t.macroName], color: s.property},
     {tag: [t.function(t.variableName), t.labelName], color: s.function},
@@ -144,5 +155,5 @@ function createHighlight(theme: Theme) {
     {tag: [t.atom, t.bool, t.special(t.variableName)], color: s.boolean},
     {tag: [t.processingInstruction, t.string, t.inserted], color: s.string},
     {tag: t.invalid, color: c.fg},
-  ])
+  ]
 }

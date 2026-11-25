@@ -1,8 +1,9 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {AddIcon} from '@sanity/icons/Add'
 import {type SchemaType, type SortOrderingItem} from '@sanity/types'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, type InitialValueTemplateItem} from 'sanity'
+import {type InitialValueTemplateItem} from 'sanity'
 
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../core/studioClient'
 import {type ChildResolver, type ChildResolverOptions, type ItemChild} from './ChildResolver'
 import {DocumentBuilder} from './Document'
 import {

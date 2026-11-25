@@ -1,9 +1,9 @@
 import {RestoreIcon} from '@sanity/icons/Restore'
 import {TrashIcon} from '@sanity/icons/Trash'
-import {Button, Card, Stack, TextArea} from '@sanity/ui'
+import {Button, Card, Select, Stack, TextArea} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {dequal} from 'dequal/lite'
-import {useCallback, useState} from 'react'
+import {type ChangeEvent, useCallback, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
@@ -26,6 +26,7 @@ import {
   VariantSelect,
 } from '../request/OptionFields'
 import {SwitchField} from '../SwitchField'
+import {ExportSnippetsSettings} from './ExportSnippetsSettings'
 
 /** One field path per line (commas work too), each once */
 function parseFieldList(text: string): string[] {
@@ -165,6 +166,90 @@ function AiSettings() {
   )
 }
 
+/**
+ * The opt-in to the Content Source Map features, and while they are on, whether new tabs include
+ * a source map and which `resultSourceMap` value they send
+ */
+function SourceMapSettings() {
+  const {t} = useTranslation(visionLocaleNamespace)
+  const actorRef = useVisionActor()
+  const includeSourceMap = useVisionSelector(
+    (snapshot) => snapshot.context.settings.includeSourceMap,
+  )
+  const {sourceMapEnabled, resultSourceMap} = useVisionSelector(
+    (snapshot) => snapshot.context.response,
+  )
+
+  return (
+    <Card border data-testid="vision-settings-source-map" padding={3} radius={2}>
+      <Stack gap={4}>
+        <Text size={1} weight="medium" as="div" trim={true}>
+          {t('vision.settings.source-map.title')}
+        </Text>
+        <SwitchField
+          checked={sourceMapEnabled}
+          description={t('vision.settings.source-map.enabled.description')}
+          onChange={(enabled) =>
+            actorRef.send({type: 'response.update', settings: {sourceMapEnabled: enabled}})
+          }
+          testId="vision-settings-source-map-enabled"
+          title={t('vision.settings.source-map.enabled')}
+        />
+        {sourceMapEnabled && (
+          <>
+            <SwitchField
+              checked={includeSourceMap}
+              description={t('vision.options.include-source-map.description')}
+              onChange={(checked) =>
+                actorRef.send({type: 'settings.update', settings: {includeSourceMap: checked}})
+              }
+              testId="vision-settings-include-source-map"
+              title={t('vision.options.include-source-map')}
+            />
+            <Stack gap={2}>
+              <Text
+                as="label"
+                htmlFor="vision-settings-source-map-format"
+                size={1}
+                weight="medium"
+                trim={true}
+              >
+                {t('vision.settings.source-map.format')}
+              </Text>
+              <Text muted size={1} as="div" trim={true}>
+                {t('vision.settings.source-map.format.description')}
+              </Text>
+              <Select
+                data-testid="vision-settings-source-map-format"
+                fontSize={1}
+                id="vision-settings-source-map-format"
+                onChange={(event: ChangeEvent<HTMLSelectElement>) =>
+                  actorRef.send({
+                    type: 'response.update',
+                    settings: {
+                      resultSourceMap:
+                        event.currentTarget.value === 'withKeyArraySelector'
+                          ? 'withKeyArraySelector'
+                          : true,
+                    },
+                  })
+                }
+                padding={2}
+                value={String(resultSourceMap)}
+              >
+                <option value="true">{t('vision.settings.source-map.format.default')}</option>
+                <option value="withKeyArraySelector">
+                  {t('vision.settings.source-map.format.with-key-array-selector')}
+                </option>
+              </Select>
+            </Stack>
+          </>
+        )}
+      </Stack>
+    </Card>
+  )
+}
+
 /** The settings, in the sidebar's drawer */
 export function SettingsPanel() {
   const {t} = useTranslation(visionLocaleNamespace)
@@ -252,15 +337,6 @@ export function SettingsPanel() {
           value={settings.variant}
         />
 
-        <SwitchField
-          checked={settings.includeSourceMap}
-          description={t('vision.options.include-source-map.description')}
-          onChange={(includeSourceMap) =>
-            actorRef.send({type: 'settings.update', settings: {includeSourceMap}})
-          }
-          title={t('vision.options.include-source-map')}
-        />
-
         <UseCdnField
           checked={settings.useCdn}
           onChange={(useCdn) => actorRef.send({type: 'settings.update', settings: {useCdn}})}
@@ -304,6 +380,9 @@ export function SettingsPanel() {
         <Card border padding={3} radius={2}>
           <HiddenDiffFieldsSetting />
         </Card>
+
+        <ExportSnippetsSettings />
+        <SourceMapSettings />
 
         <AiSettings />
 

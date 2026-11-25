@@ -33,12 +33,9 @@ export {
 } from './assets/types'
 export {isCrossDatasetReference} from './crossDatasetReference/asserters'
 export {
-  type CrossDatasetReferenceFilterResolver,
-  type CrossDatasetReferenceFilterSearchOptions,
   type CrossDatasetReferenceSchemaType,
   type CrossDatasetReferenceValue,
   type CrossDatasetType,
-  type WeakCrossDatasetReferenceValue,
 } from './crossDatasetReference/types'
 export {isKeyedObject, isSanityDocument, isTypedObject} from './documents/asserters'
 export {

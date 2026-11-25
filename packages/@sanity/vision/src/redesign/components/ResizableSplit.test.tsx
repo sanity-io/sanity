@@ -35,22 +35,28 @@ function measure(width: number, height: number) {
 
 interface HarnessProps extends Partial<Omit<ResizableSplitProps, 'children' | 'onChange'>> {
   defaultSize?: number
-  onChange?: (size: number) => void
+  onChange?: (size: number, snapped: boolean) => void
 }
 
 function Harness({defaultSize = 300, onChange, ...props}: HarnessProps) {
   const [size, setSize] = useState<number | undefined>(undefined)
+  const [snapped, setSnapped] = useState(false)
   return (
     <ResizableSplit
       label="Resize"
       minSecondarySize={100}
       minSize={100}
-      onChange={(next) => {
+      onChange={(next, nextSnapped) => {
         setSize(next)
-        onChange?.(next)
+        setSnapped(nextSnapped)
+        onChange?.(next, nextSnapped)
       }}
-      onReset={() => setSize(undefined)}
+      onReset={() => {
+        setSize(undefined)
+        setSnapped(false)
+      }}
       size={size ?? defaultSize}
+      snapped={snapped}
       split="vertical"
       testId="split"
       {...props}
@@ -178,6 +184,123 @@ describe('ResizableSplit', () => {
     expect(screen.getByTestId('split-handle').getAttribute('aria-valuemax')).toBeNull()
     measure(801, 400)
     expect(primaryPane().style.flex).toBe('0 0 600px')
+  })
+
+  it('snaps a drag near equal halves to them, and lets go past the threshold', () => {
+    const onChange = vi.fn()
+    render(<Harness onChange={onChange} snapToCenter />)
+    // 801px: the center is 400, the threshold 12px
+    measure(801, 400)
+    const handle = screen.getByTestId('split-handle')
+    expect(handle.getAttribute('data-snapped')).toBe('false')
+
+    fireEvent.pointerDown(handle, {button: 0, clientX: 300, pointerId: 1})
+    fireEvent.pointerMove(handle, {clientX: 391})
+    expect(primaryPane().style.flex).toBe('0 0 400px')
+    expect(handle.getAttribute('data-snapped')).toBe('true')
+    fireEvent.pointerMove(handle, {clientX: 412})
+    expect(primaryPane().style.flex).toBe('0 0 400px')
+    // Past the threshold the pane catches up with the pointer instead of jumping to it
+    fireEvent.pointerMove(handle, {clientX: 418})
+    expect(primaryPane().style.flex).toBe('0 0 412px')
+    expect(handle.getAttribute('data-snapped')).toBe('false')
+    fireEvent.pointerMove(handle, {clientX: 430})
+    expect(primaryPane().style.flex).toBe('0 0 430px')
+    // Snapping back, then letting go there, reports the center like any other size
+    fireEvent.pointerMove(handle, {clientX: 405})
+    fireEvent.pointerUp(handle)
+    expect(onChange).toHaveBeenLastCalledWith(400, true)
+    expect(primaryPane().style.flex).toBe('0 0 400px')
+  })
+
+  it('keeps snapped equal halves through container resizes until a drag moves off them', () => {
+    const onChange = vi.fn()
+    render(<Harness onChange={onChange} snapToCenter />)
+    measure(801, 400)
+    const handle = screen.getByTestId('split-handle')
+    fireEvent.pointerDown(handle, {button: 0, clientX: 300, pointerId: 1})
+    fireEvent.pointerMove(handle, {clientX: 395})
+    fireEvent.pointerUp(handle)
+    expect(onChange).toHaveBeenLastCalledWith(400, true)
+
+    // Narrower and wider containers (a window resize, the Studio sidebar) keep the halves equal
+    measure(601, 400)
+    expect(primaryPane().style.flex).toBe('0 0 300px')
+    expect(handle.getAttribute('data-snapped')).toBe('true')
+    expect(handle.getAttribute('aria-valuenow')).toBe('300')
+    measure(1201, 400)
+    expect(primaryPane().style.flex).toBe('0 0 600px')
+    expect(handle.getAttribute('data-snapped')).toBe('true')
+
+    // A drag off the center drops the snap, and later resizes keep the dragged size
+    fireEvent.pointerDown(handle, {button: 0, clientX: 600, pointerId: 1})
+    fireEvent.pointerMove(handle, {clientX: 700})
+    fireEvent.pointerUp(handle)
+    expect(onChange).toHaveBeenLastCalledWith(700, false)
+    measure(1001, 400)
+    expect(primaryPane().style.flex).toBe('0 0 700px')
+    expect(handle.getAttribute('data-snapped')).toBe('false')
+
+    // Dragging back onto the center snaps again
+    fireEvent.pointerDown(handle, {button: 0, clientX: 700, pointerId: 1})
+    fireEvent.pointerMove(handle, {clientX: 505})
+    fireEvent.pointerUp(handle)
+    expect(onChange).toHaveBeenLastCalledWith(500, true)
+    measure(801, 400)
+    expect(primaryPane().style.flex).toBe('0 0 400px')
+    expect(handle.getAttribute('data-snapped')).toBe('true')
+  })
+
+  it('does not jump when a drag starts just outside the snap zone', () => {
+    // 801px: the center is 400 and the snap zone 12px, so 418 is in the ramp band but not held
+    render(<Harness defaultSize={418} snapToCenter />)
+    measure(801, 400)
+    const handle = screen.getByTestId('split-handle')
+    fireEvent.pointerDown(handle, {button: 0, clientX: 300, pointerId: 1})
+    fireEvent.pointerMove(handle, {clientX: 300})
+    expect(primaryPane().style.flex).toBe('0 0 418px')
+    fireEvent.pointerMove(handle, {clientX: 305})
+    expect(primaryPane().style.flex).toBe('0 0 423px')
+    expect(handle.getAttribute('data-snapped')).toBe('false')
+  })
+
+  it('stops an arrow key step that would pass over equal halves on them', () => {
+    render(<Harness defaultSize={390} snapToCenter />)
+    measure(801, 400)
+    const handle = screen.getByTestId('split-handle')
+
+    fireEvent.keyDown(handle, {key: 'ArrowRight'})
+    expect(primaryPane().style.flex).toBe('0 0 400px')
+    expect(handle.getAttribute('data-snapped')).toBe('true')
+    fireEvent.keyDown(handle, {key: 'ArrowRight'})
+    expect(primaryPane().style.flex).toBe('0 0 416px')
+    fireEvent.keyDown(handle, {key: 'ArrowLeft', shiftKey: true})
+    expect(primaryPane().style.flex).toBe('0 0 400px')
+    // Home and End still go to the bounds
+    fireEvent.keyDown(handle, {key: 'End'})
+    expect(primaryPane().style.flex).toBe('0 0 700px')
+  })
+
+  it('does not snap when equal halves would break a minimum, or without the option', () => {
+    render(<Harness defaultSize={300} minSecondarySize={100} minSize={420} snapToCenter />)
+    measure(801, 400)
+    const handle = screen.getByTestId('split-handle')
+    fireEvent.pointerDown(handle, {button: 0, clientX: 420, pointerId: 1})
+    fireEvent.pointerMove(handle, {clientX: 400})
+    expect(primaryPane().style.flex).toBe('0 0 420px')
+    fireEvent.pointerUp(handle)
+    cleanup()
+
+    ResizeObserverMock.instances = []
+    render(<Harness />)
+    measure(801, 400)
+    fireEvent.pointerDown(screen.getByTestId('split-handle'), {
+      button: 0,
+      clientX: 300,
+      pointerId: 1,
+    })
+    fireEvent.pointerMove(screen.getByTestId('split-handle'), {clientX: 395})
+    expect(primaryPane().style.flex).toBe('0 0 395px')
   })
 
   it('takes the divider out of the way while resizing is not allowed', () => {

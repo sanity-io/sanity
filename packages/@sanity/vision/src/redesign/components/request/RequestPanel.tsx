@@ -1,8 +1,6 @@
-import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {PlayIcon} from '@sanity/icons/Play'
 import {StopIcon} from '@sanity/icons/Stop'
-import {Badge, Button, Hotkeys, Label, Tab, TabList} from '@sanity/ui'
-import {Tooltip} from '@sanity/ui/tooltip'
+import {Badge, Button, Label, Tab, TabList} from '@sanity/ui'
 import {
   type MouseEvent,
   type RefObject,
@@ -17,7 +15,7 @@ import {
 import {createPortal} from 'react-dom'
 import {type Schema, useSchema} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
-import {Text, Box, Flex, Icon} from 'ui5'
+import {Box, Flex} from 'ui5'
 
 import {groqExtensions} from '../../../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
@@ -27,6 +25,7 @@ import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {useAiFeatures} from '../../aiFeatures'
 import {useCanFormatQuery} from '../../hooks/useCanFormatQuery'
 import {useContentSize} from '../../hooks/useContentSize'
+import {useParamHighlight} from '../../hooks/useParamHighlight'
 import {useQueryAgent} from '../../hooks/useQueryAgent'
 import {type QueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
@@ -41,7 +40,7 @@ import {
 import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectFunctionLibrary, selectParamsView} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
-import {redesignEditorTheme} from '../../util/editorTheme'
+import {redesignEditorTheme, redesignFolding} from '../../util/editorTheme'
 import {formatParams} from '../../util/formatParams'
 import {
   functionLibrary,
@@ -51,8 +50,11 @@ import {
 } from '../../util/groqEditorContext'
 import {createGroqFunctionExtensions} from '../../util/groqFunctionEditor'
 import {parseGroq, readQueryFunctions, type TextRange} from '../../util/groqFunctions'
-import {createGroqLintExtensions, type QueryLintFinding} from '../../util/groqLint'
+import {createGroqLintExtensions, type QueryLintFinding, worstSeverity} from '../../util/groqLint'
 import {NO_QUERY_PARAM_NAMES, queryParamNames} from '../../util/groqParamCompletions'
+import {applyParamFixes, applyQueryEdits, type LintFixPlan} from '../../util/lintFixPlan'
+import {queryParamHighlight} from '../../util/paramHighlight'
+import {isParamLintFinding, type ParamLintTarget, paramValueRange} from '../../util/paramLint'
 import {queryEndSlot} from '../../util/queryEndSlot'
 import {isQueryParamName} from '../../util/queryParamName'
 import {createQuerySchema} from '../../util/schemaCheck'
@@ -63,13 +65,14 @@ import {type CollapsiblePanelTab} from '../CollapsiblePanel'
 import {useRequestBottomPanel} from '../queryTabLayout'
 import * as styles from '../redesign.module.css'
 import {FunctionsTab, type QueryEdit} from '../response/FunctionsTab'
-import {LintTab} from '../response/LintTab'
+import {LintTab, severityTone} from '../response/LintTab'
 import {
   type BottomPanelState,
   SplitWithBottomPanel,
   type SplitWithBottomPanelHandle,
 } from '../SplitWithBottomPanel'
 import {useTabElementId} from '../tabs/queryTabShown'
+import {VisionTooltip} from '../VisionTooltip'
 import {ApiVersionButton, type RevealedOption} from './ApiVersionButton'
 import {EditorCornerActions} from './EditorCornerActions'
 import {GenerateQueryBar, type QueryBarMode} from './GenerateQueryBar'
@@ -77,13 +80,11 @@ import {GenerateQueryButton} from './GenerateQueryButton'
 import {LintFix} from './LintFix'
 import {LiveButton} from './LiveButton'
 import {OptionsPanel} from './OptionsPanel'
+import {ParamsActionsMenu} from './ParamsActionsMenu'
 import {ParamsForm} from './ParamsForm'
 import {ParamsPanel} from './ParamsPanel'
 import {QueryActionsMenu} from './QueryActionsMenu'
 import {RequestOverrideChips} from './RequestOverrideChips'
-
-/** The request column's bottom panel starts about as tall as a short params document */
-const DEFAULT_BOTTOM_PANEL_SIZE = {columns: 220, stacked: 180, mobile: 160}
 
 export interface RequestPanelProps {
   tab: VisionTab
@@ -106,6 +107,8 @@ export interface RequestPanelProps {
   onParamsFlush: () => void
   onOptionsChange: (options: Partial<VisionTabOptions>) => void
   onRun: () => void
+  /** Enter in a params form field, which fetches like the fetch shortcut */
+  onParamsSubmit: () => void
   onCancel: () => void
   /** Formats the query in its editor */
   onFormatQuery: () => void
@@ -170,6 +173,7 @@ export function RequestPanel(props: RequestPanelProps) {
     onParamsFlush,
     onOptionsChange,
     onRun,
+    onParamsSubmit,
     onCancel,
     onFormatQuery,
     autoFormatPending,
@@ -244,7 +248,9 @@ export function RequestPanel(props: RequestPanelProps) {
   const queryExtensions = useMemo(
     () => [
       ...groqExtensions,
+      redesignFolding,
       redesignEditorTheme,
+      queryParamHighlight,
       ...lintExtensions,
       ...functionExtensions,
       functionLibrary.of(library),
@@ -289,6 +295,7 @@ export function RequestPanel(props: RequestPanelProps) {
   }, [panelState, telemetry])
   const panelRef = useRef<SplitWithBottomPanelHandle>(null)
   const paramsView = useVisionSelector(selectParamsView)
+  const {highlightParam, formFocusProps} = useParamHighlight(queryEditorRef)
   const tabElementId = useTabElementId()
   const paramsContentId = tabElementId('vision-request-params-content')
   const paramsJsonTabId = tabElementId('vision-params-view-json')
@@ -359,9 +366,6 @@ export function RequestPanel(props: RequestPanelProps) {
                 `[id="${tabElementId(`vision-option-${option}`)}"]`,
               )
             : (options?.querySelector<HTMLElement>(
-                'input[data-testid="vision-option-api-version-custom"], [data-testid="vision-option-api-version-custom"] input',
-              ) ??
-              options?.querySelector<HTMLElement>(
                 '[data-testid="vision-option-api-version-wrap"][tabindex]',
               ) ??
               options?.querySelector<HTMLElement>(
@@ -371,6 +375,105 @@ export function RequestPanel(props: RequestPanelProps) {
       })
     },
     [setPanelState, tabElementId],
+  )
+
+  const showParams = useCallback(
+    () => setPanelState((current) => ({...current, activeTabId: 'params', collapsed: false})),
+    [setPanelState],
+  )
+  const paramLintFindings = useMemo(() => lintFindings.filter(isParamLintFinding), [lintFindings])
+  const paramSuggestionLabel = useCallback(
+    (suggestion: string) => t('vision.lint.use-suggestion', {suggestion}),
+    [t],
+  )
+  const onParamSuggestionApplied = useCallback(() => telemetry.lintUsed('fix'), [telemetry])
+
+  // The value a param finding is about is selected where the params show: in the JSON editor, or
+  // the param's field in the form. The panel may have to expand first, so the editor or the
+  // field can take a few frames to be there.
+  const revealParamValue = useCallback(
+    (target: ParamLintTarget) => {
+      const reveal = (): boolean => {
+        if (paramsView === 'form') {
+          const field = document
+            .getElementById(paramsContentId)
+            ?.querySelector<HTMLElement>(`[data-vision-param="${CSS.escape(target.name)}"]`)
+          if (!field) return false
+          field.scrollIntoView({block: 'nearest'})
+          const label = field.querySelector('label')
+          const input =
+            label?.control ?? field.querySelector<HTMLElement>('input, textarea, select')
+          input?.focus({preventScroll: true})
+          if (input instanceof HTMLInputElement) input.select()
+          return true
+        }
+        const editor = paramsEditorRef.current
+        return (
+          editor?.runCommand((view) => {
+            const range = paramValueRange(view.state.doc.toString(), target)
+            if (range) editor.selectRange(range.from, range.to)
+            return true
+          }) ?? false
+        )
+      }
+      let attempts = 5
+      const attempt = () => {
+        attempts--
+        if (!reveal() && attempts > 0) requestAnimationFrame(attempt)
+      }
+      requestAnimationFrame(attempt)
+    },
+    [paramsContentId, paramsEditorRef, paramsView],
+  )
+  const revealFinding = useCallback(
+    (finding: QueryLintFinding) => {
+      if (!finding.param) {
+        onRevealRange(finding)
+        return
+      }
+      showParams()
+      revealParamValue(finding.param)
+    },
+    [onRevealRange, revealParamValue, showParams],
+  )
+
+  // Quick fixes from the Lint panel are written where they belong: the query's in the query
+  // editor, the params' in the params editor while it shows, or in the params text otherwise
+  const applyLintFixes = useCallback(
+    ({queryEdits, paramFixes}: Pick<LintFixPlan, 'queryEdits' | 'paramFixes'>) => {
+      let query = tab.query
+      queryEditorRef.current?.runCommand((view) => {
+        query = view.state.doc.toString()
+        return true
+      })
+      if (queryEdits.length > 0) {
+        query = applyQueryEdits(query, queryEdits)
+        if (queryEditorRef.current) queryEditorRef.current.applyChanges(queryEdits)
+        else onQueryChange(query)
+      }
+      let rawParams = tab.rawParams
+      if (paramFixes.length > 0) {
+        const editor = paramsView === 'json' ? paramsEditorRef.current : null
+        editor?.runCommand((view) => {
+          rawParams = view.state.doc.toString()
+          return true
+        })
+        const fixed = applyParamFixes(rawParams, paramFixes)
+        rawParams = fixed.text
+        if (editor?.runCommand(() => true)) editor.applyChanges(fixed.changes)
+        else onParamsReplace(rawParams)
+      }
+      return {query, rawParams}
+    },
+    [
+      onParamsReplace,
+      onQueryChange,
+      paramsEditorRef,
+      paramsView,
+      queryEditorRef,
+      tab.query,
+      tab.rawParams,
+    ],
   )
 
   const fitParams = useCallback((event: MouseEvent<HTMLButtonElement>) => {
@@ -395,26 +498,25 @@ export function RequestPanel(props: RequestPanelProps) {
   )
 
   const lintCount = lintFindings.length
+  const lintSeverity = worstSeverity(lintFindings)
   const functionCount = declaredFunctions.length
   const panelTabs = useMemo((): CollapsiblePanelTab[] => {
     return [
       {
         id: 'params',
         label: t('params.label'),
-        icon: params.valid ? undefined : (
-          <Icon icon={ErrorOutlineIcon} muted size={1} tone="critical" />
-        ),
+        // Params that do not parse get the Lint tab's chip for an error
+        muted: !params.valid,
+        tone: params.valid ? undefined : severityTone('error'),
         toolbar: (
           <Flex
             alignItems="center"
+            className={styles.panelBar}
             data-vision-params-content=""
             flexGrow={1}
             gap={2}
             minWidth="0"
             justifyContent="space-between"
-            paddingBottom={1}
-            paddingTop={2}
-            paddingX={2}
           >
             <TabList aria-label={t('vision.params.view.label')} gap={1}>
               <Tab
@@ -438,27 +540,50 @@ export function RequestPanel(props: RequestPanelProps) {
                 selected={paramsView === 'form'}
               />
             </TabList>
-            <EditorCornerActions
-              copied={copied === 'params'}
-              copyLabel={t('vision.params.copy')}
-              formatLabel={canFormatParams ? t('vision.params.format') : undefined}
-              onCopy={onCopyParams}
-              onFormat={onFormatParams}
-              testIdPrefix="vision-params"
-            />
+            <Flex
+              alignItems="center"
+              data-testid="vision-params-toolbar-actions"
+              flexShrink={0}
+              gap={1}
+            >
+              <EditorCornerActions
+                copied={copied === 'params'}
+                copyLabel={t('vision.params.copy')}
+                formatLabel={canFormatParams ? t('vision.params.format') : undefined}
+                onCopy={onCopyParams}
+                onFormat={onFormatParams}
+                testIdPrefix="vision-params"
+              />
+              <ParamsActionsMenu params={paramValues} tab={tab} />
+            </Flex>
           </Flex>
         ),
         content: (
           <Flex data-vision-params-content="" flexDirection="column">
             <Box id={paramsContentId}>
               {paramsView === 'form' ? (
-                <ParamsForm onChange={onParamsReplace} params={params} query={tab.query} />
+                <div {...formFocusProps}>
+                  <ParamsForm
+                    client={resolved.client}
+                    lintFindings={paramLintFindings}
+                    onApplySuggestion={onParamSuggestionApplied}
+                    onChange={onParamsReplace}
+                    onSubmit={onParamsSubmit}
+                    params={params}
+                    query={tab.query}
+                  />
+                </div>
               ) : (
                 <>
                   <ParamsPanel
                     editorRef={paramsEditorRef}
+                    lintFindings={paramLintFindings}
+                    onActiveParamChange={highlightParam}
+                    onApplySuggestion={onParamSuggestionApplied}
                     onChange={onParamsChange}
                     params={params}
+                    query={tab.query}
+                    suggestionLabel={paramSuggestionLabel}
                     value={tab.rawParams}
                   />
                   <FlushOnUnmount onUnmount={onParamsFlush} />
@@ -479,10 +604,10 @@ export function RequestPanel(props: RequestPanelProps) {
         id: 'lint',
         label:
           lintCount > 0 ? t('vision.panel.lint-count', {count: lintCount}) : t('vision.panel.lint'),
-        // A count of zero stays a plain tab. Any findings use the releases Errors chip: a soft
-        // red pill, with the count in the label, in the same row as the other tabs
+        // A count of zero stays a plain tab. Findings use the releases Errors chip: a soft pill,
+        // with the count in the label, toned by the worst severity among them
         muted: lintCount > 0,
-        tone: lintCount > 0 ? 'critical' : undefined,
+        tone: lintSeverity ? severityTone(lintSeverity) : undefined,
         content: (
           <LintTab
             action={
@@ -491,13 +616,15 @@ export function RequestPanel(props: RequestPanelProps) {
                   agent={lintAgent}
                   client={resolved.client}
                   findings={lintFindings}
+                  onApplyFixes={applyLintFixes}
+                  onParamsFixed={showParams}
                   params={params.valid ? params.parsed : undefined}
                   tab={tab}
                 />
               ) : undefined
             }
             findings={lintFindings}
-            onReveal={onRevealRange}
+            onReveal={revealFinding}
           />
         ),
       },
@@ -526,15 +653,24 @@ export function RequestPanel(props: RequestPanelProps) {
       },
     ]
   }, [
+    applyLintFixes,
+    onParamSuggestionApplied,
+    paramLintFindings,
+    paramSuggestionLabel,
+    revealFinding,
+    showParams,
     canFixLint,
     canFormatParams,
     copied,
     declaredFunctions,
     fitParams,
+    formFocusProps,
+    highlightParam,
     lintAgent,
     functionCount,
     library,
     lintCount,
+    lintSeverity,
     lintFindings,
     onCopyParams,
     onEditQuery,
@@ -543,8 +679,10 @@ export function RequestPanel(props: RequestPanelProps) {
     onParamsChange,
     onParamsFlush,
     onParamsReplace,
+    onParamsSubmit,
     onRevealRange,
     params,
+    paramValues,
     paramsContentId,
     paramsEditorRef,
     paramsFormTabId,
@@ -564,7 +702,7 @@ export function RequestPanel(props: RequestPanelProps) {
 
   return (
     <SplitWithBottomPanel
-      defaultBottomSize={DEFAULT_BOTTOM_PANEL_SIZE}
+      column="request"
       fitOnTabDoubleClick
       footer={
         <ActionRail testId="vision-query-actions">
@@ -578,9 +716,12 @@ export function RequestPanel(props: RequestPanelProps) {
             justifyContent="flex-start"
             minWidth="0"
           >
-            <RequestOverrideChips onReveal={revealOption} options={tab.options} resolved={resolved}>
-              <ApiVersionButton onReveal={revealOption} resolved={resolved} />
-            </RequestOverrideChips>
+            <RequestOverrideChips
+              apiVersionButton={<ApiVersionButton onReveal={revealOption} resolved={resolved} />}
+              onReveal={revealOption}
+              options={tab.options}
+              resolved={resolved}
+            />
           </Flex>
           <LiveButton
             active={tab.autoRefetch}
@@ -588,18 +729,10 @@ export function RequestPanel(props: RequestPanelProps) {
             onToggle={onToggleAutoRefetch}
             supported={resolved.supportsSyncTags}
           />
-          <Tooltip
-            animate
-            content={
-              <Flex alignItems="center" gap={2} padding={1}>
-                <Text size={1} as="div" trim={true}>
-                  {runDescription}
-                </Text>
-                {!isFetching && <Hotkeys fontSize={0} keys={VISION_SHORTCUTS.fetch.keys} />}
-              </Flex>
-            }
+          <VisionTooltip
+            content={runDescription}
+            hotkeys={isFetching ? undefined : VISION_SHORTCUTS.fetch.keys}
             placement="top"
-            portal
           >
             <Button
               aria-label={runDescription}
@@ -613,7 +746,7 @@ export function RequestPanel(props: RequestPanelProps) {
               text={runLabel}
               tone={isFetching ? 'critical' : 'primary'}
             />
-          </Tooltip>
+          </VisionTooltip>
         </ActionRail>
       }
       id="vision-request"

@@ -226,7 +226,7 @@ Every event in a batch is enriched with a `TelemetryContext` object before sendi
 
         // Dynamic (updated on navigation)
         orgId: "org_xyz",
-        activeTool: "desk",
+        activeTool: "structure",
         workspaceCount: 2,
         activeWorkspace: "default",
         activeProjectId: "abc123",

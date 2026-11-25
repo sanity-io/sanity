@@ -5,11 +5,13 @@
  * which gives every selector in it the specificity of the most specific one.
  */
 
+/* Long keys and values wrap anywhere, so no line is wider than the pane */
 .resultViewWrapper :global(.json-inspector) {
   font-family: var(--vision-result-code-family);
   font-size: var(--vision-result-code-font-size);
   line-height: var(--vision-result-code-line-height);
   color: var(--card-code-fg-color);
+  overflow-wrap: anywhere;
 }
 
 .resultViewWrapper :global(.json-inspector .json-inspector__selection) {
@@ -93,43 +95,140 @@
 }
 
 /*
- * Copies the value of the property on its line. It sits at the line's end, out of the flow so
- * the tree's layout is the same with or without it, and shows while the line is hovered or the
- * button focused.
+ * The Copy and Edit buttons after a line's value. They stay in the flow and take the room of the
+ * line's height whether shown or not, so hovering a line never moves its text, and show while the
+ * line is hovered or one of them has focus.
  */
-.copyNodeButton {
-  appearance: none;
-  background: none;
-  border: 0;
-  border-radius: 2px;
-  color: var(--card-muted-fg-color);
-  cursor: pointer;
+.rowActions {
   display: inline-flex;
-  font-size: 1.2em;
-  line-height: var(--vision-result-code-line-height);
+  align-items: center;
+  gap: 2px;
+  height: var(--vision-result-code-line-height);
+  margin-left: 0.5em;
+  vertical-align: top;
   opacity: 0;
-  padding: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
 }
 
-.copyNodeButton:hover {
+.resultViewWrapper :global(.json-inspector .json-inspector__line:hover) .rowActions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.rowActions:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (hover: none) {
+  .rowActions {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rowActions {
+    transition: none;
+  }
+}
+
+/* The element the button's tooltip attaches to */
+.rowActionTarget {
+  display: inline-flex;
+}
+
+.rowActionButton {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--vision-result-code-line-height);
+  height: var(--vision-result-code-line-height);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: none;
+  color: var(--card-muted-fg-color);
+  cursor: pointer;
+  font-size: var(--vision-result-code-line-height);
+  text-decoration: none;
+}
+
+.rowActionButton svg {
+  display: block;
+}
+
+.rowActionButton:hover {
+  background: color-mix(in srgb, var(--card-fg-color) 10%, transparent);
   color: var(--card-fg-color);
 }
 
-.copyNodeButton:focus-visible {
-  opacity: 1;
+.rowActionButton:focus-visible {
   outline: 1px solid var(--card-focus-ring-color);
+  outline-offset: -1px;
+  color: var(--card-fg-color);
 }
 
-.resultViewWrapper :global(.json-inspector .json-inspector__line:hover) .copyNodeButton {
-  opacity: 1;
+/*
+ * An object's or array's line has its actions in its key's label, as the inspector renders none
+ * after the summary. The key's children join the line's flex layout, which puts the actions last.
+ * The toggle keeps its trailing space, which a flex item would otherwise drop.
+ */
+.withRowActions
+  :global(
+    .json-inspector
+      .json-inspector__leaf_composite:not(.json-inspector__leaf_root)
+      > .json-inspector__line
+  ) {
+  display: flex;
+  align-items: center;
 }
 
-/* Set on the wrapper when every property has a copy button: long values wrap before the button */
-.copyableResult :global(.json-inspector .json-inspector__line) {
-  padding-right: 1.5em;
+.withRowActions
+  :global(
+    .json-inspector
+      .json-inspector__leaf_composite:not(.json-inspector__leaf_root)
+      > .json-inspector__line::before
+  ) {
+  white-space: pre;
+}
+
+.withRowActions
+  :global(
+    .json-inspector
+      .json-inspector__leaf_composite:not(.json-inspector__leaf_root)
+      > .json-inspector__line
+      > .json-inspector__key
+  ) {
+  display: contents;
+}
+
+.withRowActions
+  :global(
+    .json-inspector
+      .json-inspector__leaf_composite:not(.json-inspector__leaf_root)
+      > .json-inspector__line
+      > .json-inspector__key
+  )
+  .rowActions {
+  order: 1;
+}
+
+/*
+ * A key too long for the pane wraps, while the short summary after it stays whole. The key's text
+ * shrinks to a character with `overflow-wrap: anywhere`, so the line never outgrows the pane.
+ */
+.withRowActions
+  :global(
+    .json-inspector
+      .json-inspector__leaf_composite:not(.json-inspector__leaf_root)
+      > .json-inspector__line
+      > .json-inspector__value
+  ) {
+  flex-shrink: 0;
 }
 
 .resultViewWrapper
@@ -161,7 +260,6 @@
 
 .resultViewWrapper :global(.json-inspector .json-inspector__value_string) {
   color: var(--vision-result-syntax-string);
-  word-break: break-word;
 }
 
 .resultViewWrapper :global(.json-inspector .json-inspector__value_boolean) {

@@ -32,21 +32,15 @@ import {
   selectDatasets,
   selectOpenDrawer,
   selectParamsView,
+  selectSourceMapRequest,
   selectWorkspaceDataset,
 } from '../../store/visionMachine'
 import {cx} from '../../util/cx'
 import {formatParams} from '../../util/formatParams'
 import {type TextRange} from '../../util/groqFunctions'
 import {type QueryLintFinding} from '../../util/groqLint'
-import {
-  extractQueryParams,
-  formatGroq,
-  type GroqQueryParam,
-  GroqSyntaxError,
-} from '../../util/groqWasm'
-import {addMissingParams, missingParamNames} from '../../util/paramsPrefill'
+import {formatGroq, GroqSyntaxError} from '../../util/groqWasm'
 import {parseQueryPaste} from '../../util/parseQueryPaste'
-import {isQueryParamName} from '../../util/queryParamName'
 import {parsedQueryToTabInit} from '../../util/savedQueryTab'
 import {type VisionShortcutId} from '../../util/shortcuts'
 import {useQueryTabSplitSizes} from '../queryTabLayout'
@@ -61,22 +55,19 @@ import {useQueryTabShown, useTabElementId} from './queryTabShown'
 
 const MIN_PANE_SIZE = {columns: 280, stacked: 160}
 
-/** Fetch, the fetch shortcut, and starting Live. Reloads and setting changes are not query runs. */
+/** Fetch and the fetch shortcut. Reloads and setting changes are not query runs. */
 function recordedQueryRun(reason: FetchReason, hasParams: boolean): VisionQueryRunData | null {
   switch (reason.type) {
     case 'manual':
       return {mode: 'fetch', trigger: 'button', hasParams}
     case 'shortcut':
       return {mode: 'fetch', trigger: 'shortcut', hasParams}
-    case 'live-start':
-      return {mode: 'listen', trigger: 'button', hasParams}
     case 'options':
     case 'load':
     case 'resume':
     case 'generated':
     case 'paste':
     case 'link':
-    case 'mutation':
     case 'live':
       return null
     default: {
@@ -100,11 +91,6 @@ function countLines(text: string): number {
 const DEFAULT_REQUEST_SHARE = {columns: 0.5, stacked: 0.6}
 /** Params are parsed on every change, so typing is debounced like in the classic tool */
 const PARAMS_DEBOUNCE_MS = 333
-/**
- * How long a query goes unedited before its referenced params are written into the JSON editor.
- * Shorter than this, a `$` being typed would land as `""` and then `"f"` before the name exists.
- */
-const PARAMS_PREFILL_IDLE_MS = 3_000
 /**
  * A tab opened for a generated query lays out over its first frames (the split measures its
  * container), so the editor's width counts once it has stayed the same this many frames
@@ -168,7 +154,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
   }, [revealing, shown])
   const splitContainerSize = useContentSize(splitContainer)
   // Dragged sizes are remembered per layout: a column width makes no sense as a stacked height
-  const {splitSizes, setSplitSizes} = useQueryTabSplitSizes()
+  const {splitSizes, setSplitSizes, splitSnapped, setSplitSnapped} = useQueryTabSplitSizes()
   const [mobilePane, setMobilePane] = useState<MobilePane>('request')
 
   const queryEditorRef = useRef<VisionCodeMirrorHandle>(null)
@@ -177,6 +163,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
   const [lintFindings, setLintFindings] = useState<QueryLintFinding[]>([])
 
   const {resolved, params, request, buildRequest} = useQueryRequestBuilder(tab)
+  const sourceMapPreference = useVisionSelector(selectSourceMapRequest)
   const isVariantsEnabled = useVariantsEnabled()
   const isFetching = useSelector(runnerRef, selectIsFetching)
 
@@ -208,54 +195,6 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
     [setParams, setParamsNow],
   )
 
-  // Params a query references ($foo, $bar) are written into the JSON params editor once the
-  // query field blurs, or once it has been idle, without touching any key already there. Writing
-  // on each keystroke turns a `$` that is still being typed into `""` and then `"f"`. A bare `$`
-  // parses as an empty name, which is not a key. The form view has its own, richer inference
-  // (groq-js based, with types) and is unaffected: paramsEditorRef is only set while the JSON
-  // view is mounted
-  const prefillParams = useEffectEvent(async (query: string) => {
-    if (!paramsEditorRef.current) return
-    let referenced: GroqQueryParam[]
-    try {
-      referenced = await extractQueryParams(query)
-    } catch {
-      return // the query does not parse yet; nothing reliable to prefill from
-    }
-    const referencedNames = referenced.map((param) => param.name).filter(isQueryParamName)
-    if (referencedNames.length === 0) return
-    // The wasm module loads lazily; re-check everything that could have changed meanwhile: the
-    // query may have moved on, or the params panel may have collapsed or switched to the form.
-    // An edit still waiting in the params debounce is committed first, so a key just typed in
-    // is read rather than clobbered by a snapshot taken before it
-    if (!paramsEditorRef.current) return
-    setParams.flush()
-    const latest = actorRef.getSnapshot().context.tabs.find((it) => it.id === tab.id)
-    if (!latest || latest.query !== query) return
-    const missing = missingParamNames(referencedNames, latest.rawParams, t)
-    if (!missing || missing.length === 0) return
-    const nextRawParams = addMissingParams(latest.rawParams, missing)
-    if (nextRawParams === latest.rawParams) return
-    paramsEditorRef.current.resetEditorContent(nextRawParams)
-    setParamsNow(nextRawParams)
-  })
-  useEffect(() => {
-    const timeoutId = setTimeout(() => void prefillParams(tab.query), PARAMS_PREFILL_IDLE_MS)
-    // Focus leaving the editor writes immediately. Focus moving inside it (the gutter, a
-    // completion) is not leaving it
-    const editor = splitContainer?.querySelector('[data-testid="vision-query-editor"]')
-    const handleFocusOut = (event: Event) => {
-      const next = event instanceof FocusEvent ? event.relatedTarget : null
-      if (next instanceof Node && editor?.contains(next)) return
-      void prefillParams(tab.query)
-    }
-    editor?.addEventListener('focusout', handleFocusOut)
-    return () => {
-      clearTimeout(timeoutId)
-      editor?.removeEventListener('focusout', handleFocusOut)
-    }
-  }, [splitContainer, tab.query])
-
   // The request a fetch of the tab's own query should carry right now: params typed within the
   // debounce window belong to it, so they are committed first and the request is built from what
   // the machine holds now rather than from the last render. Every such fetch (a run, an options
@@ -281,9 +220,6 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
     [buildCurrentRequest, layout, runnerRef, telemetry],
   )
   const cancel = useCallback(() => runnerRef.send({type: 'cancel'}), [runnerRef])
-  const refetchAfterMutations = useCallback(() => {
-    run({type: 'mutation'})
-  }, [run])
   const setOptions = useCallback(
     (options: Partial<VisionTabOptions>) =>
       actorRef.send({type: 'tab.setOptions', id: tab.id, options}),
@@ -295,7 +231,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
       if (options.datasetMode !== undefined || options.dataset !== undefined) {
         const mode = options.datasetMode ?? tab.options.datasetMode
         const dataset =
-          mode === 'workspace' ? workspaceDataset : (options.dataset ?? tab.options.dataset)
+          mode === 'auto' ? workspaceDataset : (options.dataset ?? tab.options.dataset)
         if (dataset !== resolved.dataset) telemetry.datasetChanged()
       }
       if ('perspective' in options && options.perspective !== tab.options.perspective) {
@@ -305,16 +241,22 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
     },
     [resolved.dataset, setOptions, tab.options, telemetry, workspaceDataset],
   )
-  // Live is an alternative to Fetch: it fetches the current request (live refetches replay the
-  // runner's last one, which may date from before the options or the query changed), and then
-  // refetches automatically until stopped
+  // Live only starts listening: the shown result stays until a relevant change refetches the
+  // runner's last request, or until Fetch. Stopping it fetches nothing either
   const toggleAutoRefetch = useCallback(() => {
     if (tab.autoRefetch) {
       actorRef.send({type: 'tab.setAutoRefetch', id: tab.id, autoRefetch: false})
-    } else if (run({type: 'live-start'})) {
-      actorRef.send({type: 'tab.setAutoRefetch', id: tab.id, autoRefetch: true})
+      return
     }
-  }, [actorRef, run, tab.autoRefetch, tab.id])
+    const current = buildCurrentRequest()
+    if (!current) return
+    telemetry.queryRun({
+      mode: 'listen',
+      trigger: 'button',
+      hasParams: Object.keys(current.params).length > 0,
+    })
+    actorRef.send({type: 'tab.setAutoRefetch', id: tab.id, autoRefetch: true})
+  }, [actorRef, buildCurrentRequest, tab.autoRefetch, tab.id, telemetry])
 
   // Formats a query to wrap at the width the editor has, so it needs no sideways scrolling.
   // Formatting changes the line count, and with it the line-number gutter's width and whether a
@@ -460,7 +402,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
     const current = buildRequest(lastRequest.query, JSON.stringify(lastRequest.params))
     if (
       current &&
-      (current.url !== lastRequest.url || current.includeSourceMap !== lastRequest.includeSourceMap)
+      (current.url !== lastRequest.url || current.resultSourceMap !== lastRequest.resultSourceMap)
     ) {
       runnerRef.send({type: 'fetch', request: current, reason: {type: 'resume'}})
     }
@@ -515,7 +457,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
     resolved.perspective,
     resolved.variant,
     resolved.useCdn,
-    tab.options.includeSourceMap,
+    tab.options.includeSourceMap && sourceMapPreference,
   ])}`
   useOnValueChange(refetchKey, (key, previous) => {
     if (!tab.autoRefetch) return
@@ -634,6 +576,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
       onFormatQuery={() => void prettify()}
       onQueryChange={setQuery}
       onRun={() => run({type: 'manual'})}
+      onParamsSubmit={() => run({type: 'shortcut'})}
       onToggleAutoRefetch={toggleAutoRefetch}
       params={params}
       paramsEditorRef={paramsEditorRef}
@@ -645,7 +588,8 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
   )
   const responsePanel = (
     <ResponsePanel
-      onMutationsApplied={refetchAfterMutations}
+      formatForEditor={formatForEditor}
+      params={params.valid ? params.parsed : undefined}
       request={request}
       resolved={resolved}
       runnerRef={runnerRef}
@@ -690,9 +634,10 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
         </Flex>
         <Box
           aria-labelledby={tabElementId('vision-mobile-request-tab')}
-          className={cx(styles.paneFill, mobilePane !== 'request' && styles.hiddenPane)}
+          className={styles.paneFill}
           flexBasis="0%"
           flexGrow={1}
+          hidden={mobilePane !== 'request'}
           id={tabElementId('vision-mobile-request-pane')}
           role="tabpanel"
         >
@@ -700,9 +645,10 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
         </Box>
         <Box
           aria-labelledby={tabElementId('vision-mobile-response-tab')}
-          className={cx(styles.paneFill, mobilePane !== 'response' && styles.hiddenPane)}
+          className={styles.paneFill}
           flexBasis="0%"
           flexGrow={1}
+          hidden={mobilePane !== 'response'}
           id={tabElementId('vision-mobile-response-pane')}
           role="tabpanel"
         >
@@ -730,9 +676,17 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
         label={t('vision.split.request-response')}
         minSecondarySize={minSize}
         minSize={minSize}
-        onChange={(size) => setSplitSizes((sizes) => ({...sizes, [layout]: size}))}
-        onReset={() => setSplitSizes((sizes) => ({...sizes, [layout]: undefined}))}
+        onChange={(size, snapped) => {
+          setSplitSizes((sizes) => ({...sizes, [layout]: size}))
+          setSplitSnapped(snapped)
+        }}
+        onReset={() => {
+          setSplitSizes((sizes) => ({...sizes, [layout]: undefined}))
+          setSplitSnapped(false)
+        }}
         size={splitSizes[layout] ?? defaultSplitSize}
+        snapToCenter
+        snapped={splitSnapped}
         // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals -- layout mode, not user-facing text
         split={layout === 'stacked' ? 'horizontal' : 'vertical'}
         testId="vision-split"

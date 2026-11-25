@@ -166,6 +166,7 @@ import type {
   CrossDatasetReferencePreview,
   CustomComponentPaneNode,
   DashboardLink,
+  DatePicker,
   decodeJsonParams,
   decodePath,
   DEFAULT_INTENT_HANDLER,
@@ -363,7 +364,6 @@ import type {
   getErrorMessage,
   getExpandOperations,
   GetFormValueProvider,
-  GetHookCollectionState,
   getIdPair,
   getInitialValueStream,
   getItemKey,
@@ -936,7 +936,6 @@ import type {
   VisibleWorkspacesContextValue,
   VisibleWorkspacesProvider,
   visitDiff,
-  WithReferringDocuments,
   withRouter,
   WithRouter,
   WithRouterProps,
@@ -1444,6 +1443,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('DashboardLink', () => {
     expectTypeOf<typeof DashboardLink>().toBeFunction()
+  })
+  test('DatePicker', () => {
+    expectTypeOf<typeof DatePicker>().toBeFunction()
   })
   test('decodeJsonParams', () => {
     expectTypeOf<typeof decodeJsonParams>().toBeFunction()
@@ -2037,9 +2039,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('GetFormValueProvider', () => {
     expectTypeOf<typeof GetFormValueProvider>().toBeFunction()
   })
-  test('GetHookCollectionState', () => {
-    expectTypeOf<typeof GetHookCollectionState>().toBeFunction()
-  })
   test('getIdPair', () => {
     expectTypeOf<typeof getIdPair>().toBeFunction()
   })
@@ -2566,7 +2565,7 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
     expectTypeOf<ObjectInputMemberProps>().toBeObject()
   })
   test('ObjectInputMembers', () => {
-    expectTypeOf<typeof ObjectInputMembers>().toBeFunction()
+    expectTypeOf<typeof ObjectInputMembers>().not.toBeNever()
   })
   test('ObjectMembers', () => {
     expectTypeOf<typeof ObjectMembers>().not.toBeNever()
@@ -3760,9 +3759,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('visitDiff', () => {
     expectTypeOf<typeof visitDiff>().toBeFunction()
-  })
-  test('WithReferringDocuments', () => {
-    expectTypeOf<typeof WithReferringDocuments>().toBeFunction()
   })
   test('withRouter', () => {
     expectTypeOf<typeof withRouter>().toBeFunction()

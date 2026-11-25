@@ -1,0 +1,73 @@
+/*
+ * `ui5` colors its components from a fixed palette of its own (`--foreground-high` and the rest,
+ * set on `:root` and by its `sui-tone-*` classes), and picks the light or dark half by the page's
+ * color scheme rather than the studio's. Here every element reads them from the card tokens of the
+ * studio theme instead, so `ui5` text follows any theme, custom ones too, in either scheme. They
+ * are declared on each element, not inherited, so they resolve against the nearest card: a v4
+ * button or menu item that swaps its card colors on hover or selection recolors the `ui5` text in
+ * it. Toned elements, and everything in them, take the theme's colors for that tone.
+ */
+.themeTokens,
+.themeTokens :where(:not([class*='sui-tone-'], [class*='sui-tone-'] *)) {
+  --backdrop: var(--card-bg-color);
+  --background-high: var(--card-bg-color);
+  --background-low: var(--card-bg-color);
+  --background-high-emphasized: var(--card-fg-color);
+  --background-low-emphasized: var(--card-muted-fg-color);
+  --separator-high: var(--card-border-color);
+  --foreground-high: var(--card-fg-color);
+  --foreground-low: var(--card-muted-fg-color);
+  --foreground-high-emphasized: var(--card-bg-color);
+  --foreground-low-emphasized: var(--card-bg-color);
+  --active-foreground-normal: var(--card-fg-color);
+  --focus-outline: 2px solid var(--card-focus-ring-color);
+}
+
+.themeTokens [class~='sui-tone-default'] {
+  --backdrop: var(--card-bg-color);
+  --background-high: var(--card-bg-color);
+  --background-low: var(--card-bg-color);
+  --separator-high: var(--card-border-color);
+  --foreground-high: var(--card-fg-color);
+  --foreground-low: var(--card-muted-fg-color);
+}
+
+.themeTokens [class~='sui-tone-neutral'] {
+  --background-high: var(--card-badge-neutral-bg-color);
+  --background-low: var(--card-badge-neutral-bg-color);
+  --separator-high: var(--card-border-color);
+  --foreground-high: var(--card-badge-neutral-fg-color);
+  --foreground-low: var(--card-muted-fg-color);
+}
+
+.themeTokens [class~='sui-tone-suggest'] {
+  --background-high: var(--card-badge-suggest-bg-color);
+  --background-low: var(--card-badge-suggest-bg-color);
+  --separator-high: var(--card-badge-suggest-dot-color);
+  --foreground-high: var(--card-badge-suggest-fg-color);
+  --foreground-low: var(--card-badge-suggest-fg-color);
+}
+
+.themeTokens [class~='sui-tone-positive'] {
+  --background-high: var(--card-badge-positive-bg-color);
+  --background-low: var(--card-badge-positive-bg-color);
+  --separator-high: var(--card-badge-positive-dot-color);
+  --foreground-high: var(--card-badge-positive-fg-color);
+  --foreground-low: var(--card-badge-positive-fg-color);
+}
+
+.themeTokens [class~='sui-tone-caution'] {
+  --background-high: var(--card-badge-caution-bg-color);
+  --background-low: var(--card-badge-caution-bg-color);
+  --separator-high: var(--card-badge-caution-dot-color);
+  --foreground-high: var(--card-badge-caution-fg-color);
+  --foreground-low: var(--card-badge-caution-fg-color);
+}
+
+.themeTokens [class~='sui-tone-critical'] {
+  --background-high: var(--card-badge-critical-bg-color);
+  --background-low: var(--card-badge-critical-bg-color);
+  --separator-high: var(--card-badge-critical-dot-color);
+  --foreground-high: var(--card-badge-critical-fg-color);
+  --foreground-low: var(--card-badge-critical-fg-color);
+}

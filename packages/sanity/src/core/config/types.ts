@@ -1412,7 +1412,11 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
   apiHost?: string
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   theme: StudioTheme
-  schema: Schema
+  /**
+   * The locale source. Initialized and memoized on first access.
+   *
+   * @remarks Object spread, enumeration, and serialization access this enumerable getter.
+   */
   i18n: LocaleSource
   /**
    * @internal
@@ -1425,8 +1429,9 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
       dataset: string
       title: string
       auth: AuthStore
-      schema: Schema
       i18n: LocaleSource
+      /** The source's i18next instance. Initialized and memoized on first access. */
+      i18next: i18n
       source: Observable<Source>
     }>
   }
@@ -1453,11 +1458,6 @@ export interface ScheduledPublishingPluginOptions {
    * Sanity is enabling it by default in the config, {@link "../scheduledPublishing/constants.ts"}
    */
   __internal__workspaceEnabled?: boolean
-  /**
-   * Whether to show the use releases warning banner in the tool.
-   * @deprecated The banner this controls is no longer being used
-   */
-  showReleasesBanner?: boolean
 }
 
 /**
@@ -1780,47 +1780,6 @@ export type VariantTypesConfig =
  * Configuration for studio beta features.
  * */
 export interface BetaFeatures {
-  form?: {
-    /** @deprecated `enhancedObjectDialog` has been removed. The enhanced object dialog is now always enabled and is considered the default studio experience. */
-    enhancedObjectDialog?: never
-  }
-
-  /**
-   * @deprecated - The Start in Create flow has been removed and will be updated in an upcoming studio release.
-   */
-  create?: {
-    /**
-     * When true, a "Start in Sanity Create" action will be shown for all new documents, in place of regular document actions,
-     * when the following are true:
-     * - the origin of the current url is listed under Studios in sanity.to/manage (OR fallbackStudioOrigin is provided)
-     * - [origin]/static/create-manifest.json is available over HTTP GET
-     *
-     * The manifest file is automatically created and deployed when deploying studios with `sanity deploy`
-     *
-     * @see #fallbackStudioOrigin
-     */
-    startInCreateEnabled?: boolean
-
-    /**
-     * To show the "Start in Create" button on localhost, or in studios not listed under Studios in https://www.sanity.io/manage
-     * provide a fallback origin as a string.
-     *
-     * The string must be the exactly equal `name` as shown for the Studio in manage, and the studio must have create-manifest.json available.
-     *
-     * If the provided fallback Studio does not expose create-manifest.json "Start in Sanity Create" will fail when using the fallback.
-     *
-     * Example: `wonderful.sanity.studio`
-     *
-     * Keep in mind that when fallback origin is used, Sanity Create will used the schema types and dataset in the *deployed* Studio,
-     * not from localhost.
-     *
-     * To see data synced from Sanity Create in your localhost Studio, you must ensure that the deployed fallback studio uses the same
-     * workspace and schemas as your local configuration.
-     *
-     * @see #startInCreateEnabled
-     */
-    fallbackStudioOrigin?: string
-  }
   /**
    * Config for the history events API .
    *

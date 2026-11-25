@@ -5,11 +5,13 @@ import {describe, expect, it, vi} from 'vitest'
 import {
   describeDiagnostics,
   editQuery,
+  fitQueryToDocumentList,
   fixQueryLint,
   type GenerateQueryClient,
   generatedQueryComment,
   generateQuery,
   GenerateQueryError,
+  improveQuery,
   MAX_GENERATE_ATTEMPTS,
 } from './generateQuery'
 import {type QueryLintFinding} from './groqLint'
@@ -179,6 +181,116 @@ describe('generateQuery', () => {
   })
 })
 
+describe('generateQuery for the Documents view', () => {
+  const listFields =
+    'The row attributes of those document types, from their previews:\n- author: "title": lastName; "media": avatar'
+
+  it('asks for the row attributes in a list of documents, with the attributes of the requested types', async () => {
+    const {client, prompts} = createClient({replies: [{query: '*[_type == "author"]', params: {}}]})
+
+    await generateQuery({request, schema, listFields, client})
+
+    expect(prompts[0].instructionParams).toMatchObject({request, schema, listFields})
+    const instruction = prompts[0].instruction
+    expect(instruction).toContain('When the request asks for a list of documents')
+    expect(instruction).toContain('_id, _type, "title"')
+    expect(instruction).toContain('"subtitle"')
+    expect(instruction).toContain('"media"')
+    // Templated, so a $ in a type's field paths is not read as a param
+    expect(instruction).toContain('$listFields')
+    expect(instruction).not.toContain(listFields)
+  })
+
+  it('tells the model to leave counts, single documents and other shapes alone', async () => {
+    const {client, prompts} = createClient({replies: [{query: 'count(*)', params: {}}]})
+
+    await generateQuery({request: 'How many authors are there?', schema, client})
+
+    const instruction = prompts[0].instruction
+    expect(instruction).toContain('Leave the row attributes out of every other kind of query')
+    expect(instruction).toContain('a count or another number')
+    expect(instruction).toContain('a single document')
+    expect(instruction).toContain('an object of aggregates or groups')
+  })
+
+  it('has the model pick the attributes from the fields when no previews are known', async () => {
+    const {client, prompts} = createClient({replies: [{query: 'count(*)', params: {}}]})
+
+    await generateQuery({request, schema, client})
+
+    expect(prompts[0].instructionParams?.listFields).toBe(
+      'Pick the row attributes from the fields of the document types.',
+    )
+  })
+
+  it('leaves edits to the change the user describes', async () => {
+    const {client, prompts} = createClient({replies: [{query: 'count(*)', params: {}}]})
+
+    await editQuery({
+      request: 'Count them',
+      query: '*[_type == "author"]',
+      params: {},
+      schema,
+      client,
+    })
+
+    expect(prompts[0].instruction).not.toContain('$listFields')
+    expect(prompts[0].instruction).not.toContain('"subtitle"')
+  })
+})
+
+describe('fitQueryToDocumentList', () => {
+  const current = '// The authors\n*[_type == $type]{name}'
+  const fitted =
+    '// The authors\n*[_type == $type]{_id, _type, "title": name, "media": avatar, name}'
+  const result = 'An array of 3 documents, none of which has _id.'
+  const listFields =
+    'The row attributes of those document types, from their previews:\n- author: "title": name; "media": avatar'
+
+  it('sends the query, its params, what it returns and the row attributes, and checks the result', async () => {
+    const {client, prompts, checks} = createClient({
+      replies: [{query: fitted, params: {type: 'author'}}],
+    })
+
+    expect(
+      await fitQueryToDocumentList({
+        query: current,
+        params: {type: 'author'},
+        result,
+        listFields,
+        schema,
+        client,
+      }),
+    ).toEqual({query: fitted, params: {type: 'author'}, title: undefined})
+    expect(prompts[0]).toMatchObject({
+      format: 'json',
+      instructionParams: {
+        query: current,
+        params: '{"type":"author"}',
+        result,
+        listFields,
+        schema,
+      },
+    })
+    expect(checks).toEqual([{query: `select(false => (\n${fitted}\n))`, params: {type: 'author'}}])
+  })
+
+  it('keeps the selection and the comments, and lists a single document as a list of one', async () => {
+    const {client, prompts} = createClient({replies: [{query: fitted, params: {type: 'author'}}]})
+
+    await fitQueryToDocumentList({query: current, params: {}, result, schema, client})
+
+    const instruction = prompts[0].instruction
+    expect(instruction).toContain('Keep what the query selects')
+    expect(instruction).toContain('a list of one')
+    expect(instruction).toMatch(/comment/i)
+    expect(instruction).toContain('"media"')
+    expect(prompts[0].instructionParams?.listFields).toBe(
+      'Pick the row attributes from the fields of the document types.',
+    )
+  })
+})
+
 describe('editQuery', () => {
   const current = '// Generated with the prompt: authors\n*[_type == $type]'
 
@@ -315,6 +427,72 @@ describe('fixQueryLint', () => {
     expect(prompts[0].instruction).toContain('Keep every comment')
     expect(prompts[0].instruction).toContain('never delete one')
     expect(checks).toEqual([{query: `select(false => (\n${fixed}\n))`, params: {type: 'post'}}])
+    expect(prompts[0].instructionParams?.target).toBe('The problems are in the query.')
+  })
+
+  it('says when the problems are in the values of the params', async () => {
+    const query = '*[_type == $type]'
+    const {client, prompts} = createClient({replies: [{query, params: {type: 'post'}}]})
+    const param: QueryLintFinding = {
+      from: 11,
+      to: 16,
+      line: 1,
+      column: 12,
+      severity: 'warning',
+      message: '`$type` is `"psot"`, but the schema has no document type named `psot`.',
+      source: 'vision/unknown-type',
+      param: {name: 'type', path: [], value: 'psot'},
+    }
+
+    await fixQueryLint({
+      query,
+      params: {type: 'psot'},
+      diagnostics: [param],
+      target: 'params',
+      schema,
+      client,
+    })
+    expect(prompts[0].instruction).toContain('$target')
+    expect(prompts[0].instructionParams).toMatchObject({
+      target: expect.stringContaining('values of its parameters'),
+      diagnostics:
+        '- Params, the value of $type (warning, vision/unknown-type): `$type` is `"psot"`, but the schema has no document type named `psot`.',
+    })
+  })
+})
+
+describe('improveQuery', () => {
+  it('sends the query, its params and the suggestions as a list, and checks the improved query', async () => {
+    const current =
+      '// Generated with the prompt: posts\n*[_type == $type && references(*[_type == "author"]._id)]'
+    const improved = '// Generated with the prompt: posts\n*[_type == $type && defined(author)]'
+    const {client, prompts, checks} = createClient({
+      replies: [{query: improved, params: {type: 'post'}}],
+    })
+
+    expect(
+      await improveQuery({
+        query: current,
+        params: {type: 'post'},
+        suggestions: ['Check `defined(author)` instead of the subquery.', 'Add a slice.'],
+        schema,
+        client,
+      }),
+    ).toEqual({query: improved, params: {type: 'post'}, title: undefined})
+    expect(prompts[0]).toMatchObject({
+      format: 'json',
+      instructionParams: {
+        query: current,
+        params: '{"type":"post"}',
+        suggestions: '- Check `defined(author)` instead of the subquery.\n- Add a slice.',
+        schema,
+      },
+    })
+    expect(prompts[0].instruction).toContain('$suggestions')
+    expect(prompts[0].instruction).not.toContain('defined(author)')
+    expect(prompts[0].instruction).toContain('same data in the same shape')
+    expect(prompts[0].instruction).toContain('Keep every comment')
+    expect(checks).toEqual([{query: `select(false => (\n${improved}\n))`, params: {type: 'post'}}])
   })
 })
 

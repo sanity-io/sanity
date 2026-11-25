@@ -111,12 +111,7 @@ function createClient(respond: (options: RequestOptions) => unknown, replies: un
   return {client, request, prompt}
 }
 
-function Harness(props: {
-  client: MutateTabClient
-  dataset?: string
-  result?: unknown
-  onApplied?: () => void
-}) {
+function Harness(props: {client: MutateTabClient; dataset?: string; result?: unknown}) {
   const mutate = useMutatePanel()
   return (
     <MutateTab
@@ -125,7 +120,6 @@ function Harness(props: {
       dataset={props.dataset ?? 'test'}
       hiddenFields={['_rev', '_updatedAt']}
       mutate={mutate}
-      onApplied={props.onApplied ?? (() => undefined)}
       result={props.result}
     />
   )
@@ -164,8 +158,7 @@ describe('MutateTab', () => {
     const {client, request} = createClient((options) =>
       options.query.dryRun ? DRY_RUN : {transactionId: 'tx-1', results: DRY_RUN.results},
     )
-    const onApplied = vi.fn()
-    renderTab({client, onApplied})
+    renderTab({client})
 
     write(PATCH)
     expect(button('vision-mutate-apply').disabled).toBe(true)
@@ -202,7 +195,6 @@ describe('MutateTab', () => {
       query: {returnIds: 'true', visibility: 'sync', autoGenerateArrayKeys: 'true'},
     })
     expect(request.mock.calls[1][0].query).not.toHaveProperty('dryRun')
-    expect(onApplied).toHaveBeenCalledTimes(1)
     expect(screen.getByTestId('vision-mutate-applied').textContent).toBe(
       'vision.mutate.applied:{"dataset":"test","transactionId":"tx-1","count":3}',
     )
@@ -316,8 +308,7 @@ describe('MutateTab', () => {
         options.query.dryRun ? dryRun : {transactionId: 'tx-2', results: dryRun.results},
       [{mutations: generated}],
     )
-    const onApplied = vi.fn()
-    renderTab({client, onApplied, result: [{_id: 'a', _type: 'post', title: 'Old'}]})
+    renderTab({client, result: [{_id: 'a', _type: 'post', title: 'Old'}]})
     write('[{"delete": {"id": "b"}}]')
 
     fireEvent.click(screen.getByTestId('vision-mutate-generate'))
@@ -348,7 +339,6 @@ describe('MutateTab', () => {
     await screen.findByTestId('vision-mutate-applied')
     expect(request.mock.calls[1][0]).toMatchObject({body: {mutations: generated}})
     expect(request.mock.calls[1][0].query).not.toHaveProperty('dryRun')
-    expect(onApplied).toHaveBeenCalledTimes(1)
   })
 
   it('offers the last attempt when the dry run turns every generated one down', async () => {

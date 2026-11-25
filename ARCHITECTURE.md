@@ -341,7 +341,6 @@ packages/sanity/src/
 ├── router/                  # Client-side routing
 ├── structure/              # Structure tool
 ├── presentation/           # Presentation tool
-├── desk/                   # Legacy desk tool (deprecated)
 └── _exports/               # Public API exports
 ```
 

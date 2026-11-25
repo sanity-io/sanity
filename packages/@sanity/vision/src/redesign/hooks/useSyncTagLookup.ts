@@ -11,6 +11,10 @@ import {
 export interface SyncTagLookupSource {
   /** The client the response was fetched with, so probes run where its tags were computed */
   client: SyncTagLookupClient
+  /** The query, read for what it compares and dereferences without showing it in the result */
+  query?: string
+  /** The params the query ran with */
+  params?: Record<string, unknown>
   /** The response's result, read for the ids and slugs its tags may stand for */
   result: unknown
   /** The response's `resultSourceMap`, which lists the documents the result read */
@@ -38,15 +42,15 @@ function lookupKey(client: SyncTagLookupClient, tags: readonly string[]): string
 }
 
 /**
- * Whether the Sync tags row shows the tags as they came or what they stand for, and the lookup
- * behind it. Nothing is asked of the API until the resolved values are first shown; while they
- * are, each new set of tags (a refetch, another query) is looked up as it arrives.
+ * Whether the Sync tags row shows what the tags stand for, as it does at first, or the tags as they
+ * came, and the lookup behind it. While the resolved values are shown, each new set of tags (a
+ * refetch, another query) is looked up as it arrives.
  */
 export function useSyncTagLookup(
   source: SyncTagLookupSource | undefined,
   tags: readonly string[],
 ): {pressed: boolean; toggle: () => void; state: SyncTagLookupState} {
-  const [pressed, setPressed] = useState(false)
+  const [pressed, setPressed] = useState(true)
   const [settled, setSettled] = useState<Settled>()
   const key = source && tags.length > 0 ? lookupKey(source.client, tags) : undefined
   const current = settled && settled.key === key ? settled : undefined
@@ -58,6 +62,8 @@ export function useSyncTagLookup(
     const controller = new AbortController()
     const {signal} = controller
     resolveSyncTags(source.client, tags, {
+      query: source.query,
+      params: source.params,
       result: source.result,
       sourceMap: source.resultSourceMap,
       loadSourceMap: source.loadSourceMap,

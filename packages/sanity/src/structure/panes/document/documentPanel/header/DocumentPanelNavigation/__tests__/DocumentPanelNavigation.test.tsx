@@ -1,18 +1,13 @@
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {
-  getVersionFromId,
-  type ObjectSchemaType,
-  useActiveReleases,
-  useDocumentVersions,
-  usePerspective,
-  useScheduledDraftsEnabled,
-} from 'sanity'
+import {getVersionFromId, type ObjectSchemaType, useDocumentVersions, usePerspective} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
+import {useActiveReleases} from '../../../../../../../core/releases/store/useActiveReleases'
 import {useReleasesToolAvailable} from '../../../../../../../core/schedules/hooks/useReleasesToolAvailable'
 import {useSingleDocRelease} from '../../../../../../../core/singleDocRelease/context/SingleDocReleaseProvider'
+import {useScheduledDraftsEnabled} from '../../../../../../../core/singleDocRelease/hooks/useScheduledDraftsEnabled'
 import {useAgentVersionDisplay} from '../../../../../../../core/store/agent/useAgentVersionDisplay'
 import {useAllVariants} from '../../../../../../../core/variants/store/useAllVariants'
 import {usePerspectiveNavigator} from '../../../../../../hooks/usePerspectiveNavigator'
@@ -24,9 +19,13 @@ import {createPerspective, createRelease, createVariant, createVersion, GROUP_ID
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useActiveReleases: vi.fn(),
   useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
+}))
+vi.mock('../../../../../../../core/releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(),
+}))
+vi.mock('../../../../../../../core/singleDocRelease/hooks/useScheduledDraftsEnabled', () => ({
   useScheduledDraftsEnabled: vi.fn(),
 }))
 

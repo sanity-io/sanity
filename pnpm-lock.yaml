@@ -243,6 +243,9 @@ catalogs:
     dequal:
       specifier: ^2.0.3
       version: 2.0.3
+    fast-check:
+      specifier: ^4.11.0
+      version: 4.11.0
     get-it:
       specifier: ^9.7.0
       version: 9.7.0
@@ -297,12 +300,16 @@ catalogs:
     vitest-browser-react:
       specifier: ^2.3.0
       version: 2.3.0
+    zod:
+      specifier: ^4.6.7
+      version: 4.6.7
 
 overrides:
   vitest: ^5.1.1
 
 patchedDependencies:
   '@sanity/document-internationalization@6.3.1': 0d32f0c8e1ab59db75e8792e094fb40a5ae425632ce1637fb1a36cce3d2c2323
+  sanity-plugin-media@6.6.3: b3578565bf28cceec4100ed1b09bff1e82447e2d1c1e40f92ae547281d1e574a
 
 importers:
 
@@ -908,7 +915,7 @@ importers:
         version: 5.3.10(@sanity/assist@6.3.0)(@sanity/language-filter@5.0.24)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)
       sanity-plugin-media:
         specifier: ^6.6.3
-        version: 6.6.3(@sinclair/typebox@0.25.24)(@standard-schema/spec@1.1.0)(@types/react@19.3.0)(ajv@8.20.0)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)(supports-color@8.1.1)(valibot@1.5.0)(vitest@5.1.1)
+        version: 6.6.3(patch_hash=b3578565bf28cceec4100ed1b09bff1e82447e2d1c1e40f92ae547281d1e574a)(@sinclair/typebox@0.25.24)(@standard-schema/spec@1.1.0)(@types/react@19.3.0)(ajv@8.20.0)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)(supports-color@8.1.1)(valibot@1.5.0)(vitest@5.1.1)
       sanity-test-studio:
         specifier: workspace:*
         version: link:../test-studio
@@ -1054,7 +1061,7 @@ importers:
         version: 5.3.10(@sanity/assist@6.3.0)(@sanity/language-filter@5.0.24)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)
       sanity-plugin-media:
         specifier: ^6.6.3
-        version: 6.6.3(@sinclair/typebox@0.25.24)(@standard-schema/spec@1.1.0)(@types/react@19.3.0)(ajv@8.20.0)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)(supports-color@8.1.1)(valibot@1.5.0)(vitest@5.1.1)
+        version: 6.6.3(patch_hash=b3578565bf28cceec4100ed1b09bff1e82447e2d1c1e40f92ae547281d1e574a)(@sinclair/typebox@0.25.24)(@standard-schema/spec@1.1.0)(@types/react@19.3.0)(ajv@8.20.0)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)(supports-color@8.1.1)(valibot@1.5.0)(vitest@5.1.1)
       styled-components:
         specifier: 'catalog:'
         version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
@@ -2120,9 +2127,6 @@ importers:
       '@sanity/client':
         specifier: 'catalog:'
         version: 8.17.0(vitest@5.1.1)
-      '@sanity/color':
-        specifier: ^3.0.9
-        version: 3.0.9
       '@sanity/icons':
         specifier: ^5.4.0
         version: 5.4.0(react@19.3.1)
@@ -2229,6 +2233,9 @@ importers:
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 6.3.0(@rolldown/plugin-babel@0.3.1)(oxc-transform-react@0.158.0)(vite@8.3.8)
+      fast-check:
+        specifier: 'catalog:'
+        version: 4.11.0
       jsdom:
         specifier: 'catalog:'
         version: 31.0.1(@noble/hashes@2.4.0)
@@ -2265,6 +2272,9 @@ importers:
       vitest:
         specifier: ^5.1.1
         version: 5.1.1(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@24.19.2)(@vitest/browser-playwright@5.1.1)(@vitest/coverage-v8@5.1.1)(@vitest/ui@5.1.1)(jsdom@31.0.1)(vite@8.3.8)
+      zod:
+        specifier: 'catalog:'
+        version: 4.6.7
 
   packages/groq: {}
 
@@ -2680,7 +2690,7 @@ importers:
         specifier: ^18.15.1
         version: 18.15.1(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.4)
       fast-check:
-        specifier: ^4.11.0
+        specifier: 'catalog:'
         version: 4.11.0
       jsdom:
         specifier: 'catalog:'
@@ -24948,7 +24958,7 @@ snapshots:
       tar-stream: 3.1.7
       undici: 7.30.1
       xdg-app-paths: 5.1.0
-      zod: 4.1.11
+      zod: 4.6.7
     transitivePeerDependencies:
       - bare-abort-controller
       - react-native-b4a
@@ -30778,7 +30788,7 @@ snapshots:
       async-retry: 1.3.3
       debug: 4.4.3(supports-color@8.1.1)
       ws: 8.23.0
-      zod: 4.1.11
+      zod: 4.6.7
     transitivePeerDependencies:
       - bare-abort-controller
       - bufferutil
@@ -30816,7 +30826,7 @@ snapshots:
       - remix
       - styled-components
 
-  sanity-plugin-media@6.6.3(@sinclair/typebox@0.25.24)(@standard-schema/spec@1.1.0)(@types/react@19.3.0)(ajv@8.20.0)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)(supports-color@8.1.1)(valibot@1.5.0)(vitest@5.1.1):
+  sanity-plugin-media@6.6.3(patch_hash=b3578565bf28cceec4100ed1b09bff1e82447e2d1c1e40f92ae547281d1e574a)(@sinclair/typebox@0.25.24)(@standard-schema/spec@1.1.0)(@types/react@19.3.0)(ajv@8.20.0)(react-dom@19.3.1)(react@19.3.1)(sanity@packages+sanity)(styled-components@6.6.0)(supports-color@8.1.1)(valibot@1.5.0)(vitest@5.1.1):
     dependencies:
       '@hookform/resolvers': 6.0.2(@sinclair/typebox@0.25.24)(@standard-schema/spec@1.1.0)(ajv@8.20.0)(react-hook-form@7.90.0)(valibot@1.5.0)(zod@4.6.7)
       '@reduxjs/toolkit': 2.13.0(react-redux@9.3.0)(react@19.3.1)

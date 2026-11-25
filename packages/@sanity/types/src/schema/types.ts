@@ -107,7 +107,11 @@ export interface Schema {
   parent?: Schema
 }
 
-/** @beta */
+/**
+ * A field to sort by in a {@link SortOrdering}, and the direction to sort it in.
+ *
+ * @public
+ */
 export interface SortOrderingItem {
   field: string
   direction: 'asc' | 'desc'
@@ -131,7 +135,12 @@ export interface SortOrderingItem {
 /** @public */
 export type I18nTextRecord<K extends string> = {[P in K]?: {key: string; ns: string}}
 
-/** @beta */
+/**
+ * A named sort order for documents of a type. Studio lists each one in the sort menu of the
+ * type's document list, alongside the default orderings. Fields in `by` are applied in order.
+ *
+ * @public
+ */
 export type SortOrdering = {
   title: string
   i18n?: I18nTextRecord<'title'>
@@ -439,7 +448,9 @@ export interface ObjectSchemaType extends BaseSchemaType {
   /** @alpha */
   __experimental_formPreviewTitle?: boolean
   /**
-   * @beta
+   * Sort orders to offer in the sort menu of this type's document list.
+   *
+   * @public
    */
   orderings?: SortOrdering[]
 

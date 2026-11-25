@@ -1,10 +1,12 @@
 import {type SchemaType, type TypeNode} from 'groq-js'
 import {describe, expect, it} from 'vitest'
 
+import {typecheckParams} from '../../../../test/typecheck'
 import {inferTypeFromValue, mergeTypeNodes} from './inferTypeFromValue'
+import {toResultTypeName} from './naming'
 import {printTypeScript} from './printTypeScript'
 import {printZod} from './printZod'
-import {collectReferencedTypes, toTypeName} from './schemaTypes'
+import {collectReferencedTypes, createSchemaIdentifiers} from './schemaTypes'
 
 const schema: SchemaType = [
   {
@@ -136,6 +138,15 @@ describe('inferTypeFromValue', () => {
     ).toEqual({type: 'array', of: {type: 'number'}})
   })
 
+  it('caps deeply nested values instead of overflowing the call stack', () => {
+    let deep: unknown = null
+    for (let index = 0; index < 5000; index++) {
+      deep = {a: deep}
+    }
+    expect(() => inferTypeFromValue(deep)).not.toThrow()
+    expect(inferTypeFromValue(deep).type).toBe('object')
+  })
+
   it('keeps a "__proto__" projection key as an ordinary attribute', () => {
     const items: unknown[] = JSON.parse('[{"__proto__": 1, "a": "x"}, {"a": "y"}]')
     const node = inferTypeFromValue(items)
@@ -208,12 +219,22 @@ describe('inferTypeFromValue', () => {
 })
 
 describe('schemaTypes', () => {
-  it('converts names to type names', () => {
-    expect(toTypeName('author')).toBe('Author')
-    expect(toTypeName('blockContent')).toBe('BlockContent')
-    expect(toTypeName('my-type.v2')).toBe('MyTypeV2')
-    expect(toTypeName('2fast')).toBe('_2fast')
-    expect(toTypeName('')).toBe('Unknown')
+  it('names schema types in schema order, the way typegen does', () => {
+    const identifiers = createSchemaIdentifiers([
+      {name: 'author', type: 'type', value: {type: 'string'}},
+      {name: 'foo-bar', type: 'type', value: {type: 'string'}},
+      {name: 'foo.bar', type: 'type', value: {type: 'number'}},
+      {name: '2fast', type: 'type', value: {type: 'number'}},
+      {name: 'ArrayOf', type: 'type', value: {type: 'number'}},
+    ])
+    expect([...identifiers]).toEqual([
+      ['author', 'Author'],
+      ['foo-bar', 'FooBar'],
+      ['foo.bar', 'FooBar_2'],
+      ['2fast', '_fast'],
+      ['ArrayOf', 'ArrayOf_2'],
+    ])
+    expect(createSchemaIdentifiers(undefined).size).toBe(0)
   })
 
   it('collects referenced types in dependency order and detects cycles', () => {
@@ -235,7 +256,7 @@ describe('schemaTypes', () => {
 })
 
 describe('printTypeScript', () => {
-  it('prints the result type followed by the referenced schema types', () => {
+  it('prints the result type followed by the referenced schema types in schema order', () => {
     const node: TypeNode = {
       type: 'array',
       of: {
@@ -247,9 +268,8 @@ describe('printTypeScript', () => {
             value: {type: 'union', of: [{type: 'string'}, {type: 'null'}]},
           },
           'weird-key': {type: 'objectAttribute', value: {type: 'number', value: 1}, optional: true},
-          'bio': {type: 'objectAttribute', value: {type: 'inline', name: 'blockContent'}},
+          'author': {type: 'objectAttribute', value: {type: 'inline', name: 'author'}},
         },
-        rest: {type: 'unknown'},
       },
     }
 
@@ -259,9 +279,15 @@ describe('printTypeScript', () => {
         '  _id: string;',
         '  name: string | null;',
         '  "weird-key"?: 1;',
-        '  bio: BlockContent;',
-        '  [key: string]: unknown;',
+        '  author: Author;',
         '}>;',
+        '',
+        'export type Author = {',
+        '  _id: string;',
+        '  _type: "author";',
+        '  name?: string;',
+        '  bio?: BlockContent;',
+        '};',
         '',
         'export type BlockContent = Array<{',
         '  _key: string;',
@@ -271,33 +297,145 @@ describe('printTypeScript', () => {
     )
   })
 
-  it('prints literals, documents, intersections and empty objects', () => {
+  it('prints literals, intersections, empty objects and unknown rests like typegen', () => {
     const node: TypeNode = {
       type: 'object',
       attributes: {
         kind: {type: 'objectAttribute', value: {type: 'string', value: 'a'}},
         flag: {type: 'objectAttribute', value: {type: 'boolean', value: true}},
-        author: {type: 'objectAttribute', value: {type: 'inline', name: 'author'}},
         empty: {type: 'objectAttribute', value: {type: 'object', attributes: {}}},
+        // A spread of something the schema cannot narrow makes the whole object unknown
+        spread: {
+          type: 'objectAttribute',
+          value: {
+            type: 'object',
+            attributes: {a: {type: 'objectAttribute', value: {type: 'string'}}},
+            rest: {type: 'unknown'},
+          },
+        },
       },
       rest: {type: 'inline', name: 'treeNode'},
     }
-    const output = printTypeScript(node, {typeName: 'Result', schema})
-    expect(output).toContain('  kind: "a";')
-    expect(output).toContain('  flag: true;')
-    expect(output).toContain('  empty: {};')
-    expect(output).toContain('} & TreeNode;')
-    expect(output).toContain(
-      'export type Author = {\n  _id: string;\n  _type: "author";\n  name?: string;\n  bio?: BlockContent;\n};',
-    )
-    expect(output).toContain(
-      'export type TreeNode = {\n  label: string;\n  children?: Array<TreeNode>;\n};',
+    expect(printTypeScript(node, {typeName: 'Result', schema})).toBe(
+      [
+        'type ArrayOf<T> = Array<T & { _key: string }>;',
+        '',
+        'export type Result = {',
+        '  kind: "a";',
+        '  flag: true;',
+        '  empty: {};',
+        '  spread: unknown;',
+        '} & TreeNode;',
+        '',
+        'export type TreeNode = {',
+        '  label: string;',
+        '  children?: ArrayOf<TreeNode>;',
+        '};',
+      ].join('\n'),
     )
   })
 
-  it('prints unknown for references outside the schema', () => {
+  it('declares the helpers typegen relies on when something printed needs them', () => {
+    const node: TypeNode = {
+      type: 'array',
+      of: {
+        type: 'object',
+        attributes: {
+          _ref: {type: 'objectAttribute', value: {type: 'string'}},
+          _type: {type: 'objectAttribute', value: {type: 'string', value: 'reference'}},
+        },
+        dereferencesTo: 'author',
+      },
+    }
+    expect(printTypeScript(node, {typeName: 'Refs', schema})).toBe(
+      [
+        'export declare const internalGroqTypeReferenceTo: unique symbol;',
+        '',
+        'export type Refs = Array<{',
+        '  _ref: string;',
+        '  _type: "reference";',
+        '  [internalGroqTypeReferenceTo]?: "author";',
+        '}>;',
+      ].join('\n'),
+    )
+
+    expect(printTypeScript({type: 'inline', name: 'book'}, {typeName: 'BookResult', schema})).toBe(
+      [
+        'type ArrayOf<T> = Array<T & { _key: string }>;',
+        '',
+        'export type BookResult = Book;',
+        '',
+        'export type Chapter = {',
+        '  title: string;',
+        '  book: Book;',
+        '};',
+        '',
+        'export type Book = {',
+        '  chapters: ArrayOf<Chapter>;',
+        '};',
+      ].join('\n'),
+    )
+  })
+
+  it('splits arrays that mix named and anonymous members, as typegen does', () => {
+    const node: TypeNode = {
+      type: 'array',
+      of: {
+        type: 'union',
+        of: [
+          {type: 'inline', name: 'chapter'},
+          {type: 'inline', name: 'treeNode'},
+          {
+            type: 'object',
+            attributes: {_key: {type: 'objectAttribute', value: {type: 'string'}}},
+            rest: {type: 'inline', name: 'author'},
+          },
+          {type: 'string'},
+        ],
+      },
+    }
+    expect(printTypeScript(node, {typeName: 'Mixed', schema}).split('\n\n')[1]).toBe(
+      [
+        'export type Mixed = Array<({',
+        '  _key: string;',
+        '} & Author) | string> | ArrayOf<Chapter | TreeNode>;',
+      ].join('\n'),
+    )
+  })
+
+  it('breaks a long union of literals onto one line per member', () => {
+    const styles = ['normal', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'lead', 'small']
+    const node: TypeNode = {
+      type: 'object',
+      attributes: {
+        style: {
+          type: 'objectAttribute',
+          value: {type: 'union', of: styles.map((value) => ({type: 'string', value}))},
+          optional: true,
+        },
+      },
+    }
+    expect(printTypeScript(node, {typeName: 'Block'})).toBe(
+      [
+        'export type Block = {',
+        '  style?:',
+        ...styles.map(
+          (style, index) => `    | "${style}"${index === styles.length - 1 ? ';' : ''}`,
+        ),
+        '};',
+      ].join('\n'),
+    )
+    expect(printTypeScript({type: 'array', of: node.attributes.style.value}, {typeName: 'S'})).toBe(
+      ['export type S = Array<', ...styles.map((style) => `  | "${style}"`), '>;'].join('\n'),
+    )
+  })
+
+  it('points out references the schema cannot resolve', () => {
     expect(printTypeScript({type: 'inline', name: 'missing'}, {typeName: 'R'})).toBe(
-      'export type R = Missing;\n\nexport type Missing = unknown;',
+      'export type R = unknown /* Unable to locate the referenced type "missing" in schema */;',
+    )
+    expect(printZod({type: 'inline', name: 'missing'}, {typeName: 'R'}).split('\n\n')[1]).toBe(
+      'export const RSchema = z.unknown() /* Unable to locate the referenced type "missing" in schema */',
     )
   })
 
@@ -315,30 +453,33 @@ describe('printTypeScript', () => {
         c: {type: 'objectAttribute', value: {type: 'inline', name: 'result'}},
       },
     }
+    // A tab without a title or query gets `Result`, which the schema type already took
+    const typeName = toResultTypeName('', new Set(createSchemaIdentifiers(colliding).values()))
+    expect(typeName).toBe('Result_2')
 
-    expect(printTypeScript(node, {typeName: 'Result', schema: colliding})).toBe(
+    expect(printTypeScript(node, {typeName, schema: colliding})).toBe(
       [
-        'export type Result = {',
+        'export type Result_2 = {',
         '  a: FooBar;',
-        '  b: FooBar2;',
-        '  c: Result2;',
+        '  b: FooBar_2;',
+        '  c: Result;',
         '};',
         '',
         'export type FooBar = string;',
         '',
-        'export type FooBar2 = number;',
+        'export type FooBar_2 = number;',
         '',
-        'export type Result2 = boolean;',
+        'export type Result = boolean;',
       ].join('\n'),
     )
 
-    const zod = printZod(node, {typeName: 'Result', schema: colliding})
+    const zod = printZod(node, {typeName, schema: colliding})
     expect(zod).toContain('export const FooBarSchema = z.string()')
-    expect(zod).toContain('export const FooBar2Schema = z.number()')
-    expect(zod).toContain('export const Result2Schema = z.boolean()')
-    expect(zod).toContain('  b: FooBar2Schema,')
-    expect(zod).toContain('  c: Result2Schema,')
-    expect(zod).toContain('export const ResultSchema = z.object({')
+    expect(zod).toContain('export const FooBar_2Schema = z.number()')
+    expect(zod).toContain('export const ResultSchema = z.boolean()')
+    expect(zod).toContain('  b: FooBar_2Schema,')
+    expect(zod).toContain('  c: ResultSchema,')
+    expect(zod).toContain('export const Result_2Schema = z.object({')
   })
 
   it('leaves the built-in Array to the arrays it prints when a schema type is named array', () => {
@@ -365,20 +506,22 @@ describe('printTypeScript', () => {
 
     expect(printTypeScript(node, {typeName: 'Result', schema: named})).toBe(
       [
-        'export type Result = Array<Array2>;',
+        'type ArrayOf<T> = Array<T & { _key: string }>;',
         '',
-        'export type Array2 = {',
-        '  items?: Array<Array2>;',
+        'export type Result = ArrayOf<Array_2>;',
+        '',
+        'export type Array_2 = {',
+        '  items?: ArrayOf<Array_2>;',
         '};',
       ].join('\n'),
     )
 
-    // The recursive type makes the Zod output declare the TypeScript types as well
+    // The recursive type makes the Zod output declare the TypeScript type as well
     const zod = printZod(node, {typeName: 'Result', schema: named})
-    expect(zod).toContain('export type Array2 = {\n  items?: Array<Array2>;\n};')
-    expect(zod).toContain('export const Array2Schema: z.ZodType<Array2> = z.object({')
-    expect(zod).toContain('  items: z.array(z.lazy(() => Array2Schema)).optional(),')
-    expect(zod).toContain('export const ResultSchema = z.array(Array2Schema)')
+    expect(zod).toContain('export type Array_2 = {\n  items?: ArrayOf<Array_2>;\n};')
+    expect(zod).toContain('export const Array_2Schema: z.ZodType<Array_2> = z.object({')
+    expect(zod).toContain('  items: arrayOf(z.lazy(() => Array_2Schema)).optional(),')
+    expect(zod).toContain('export const ResultSchema = arrayOf(Array_2Schema)')
     expect(zod).not.toContain('export type Array =')
   })
 })
@@ -406,9 +549,26 @@ describe('printZod', () => {
               ],
             },
           },
+          status: {
+            type: 'objectAttribute',
+            value: {
+              type: 'union',
+              of: [
+                {type: 'string', value: 'draft'},
+                {type: 'string', value: 'published'},
+              ],
+            },
+          },
           bio: {type: 'objectAttribute', value: {type: 'inline', name: 'blockContent'}},
+          spread: {
+            type: 'objectAttribute',
+            value: {
+              type: 'object',
+              attributes: {a: {type: 'objectAttribute', value: {type: 'string'}}},
+              rest: {type: 'unknown'},
+            },
+          },
         },
-        rest: {type: 'unknown'},
       },
     }
 
@@ -424,30 +584,139 @@ describe('printZod', () => {
         'export const AuthorsResultSchema = z.array(z.object({',
         '  _id: z.string(),',
         '  name: z.string().nullable().optional(),',
-        '  kind: z.union([',
-        '    z.literal("a"),',
-        '    z.literal(2),',
-        '  ]),',
+        '  kind: z.union([z.literal("a"), z.literal(2)]),',
+        '  status: z.enum(["draft", "published"]),',
         '  bio: BlockContentSchema,',
-        '}).passthrough())',
+        '  spread: z.unknown(),',
+        '}))',
         '',
         'export type AuthorsResult = z.infer<typeof AuthorsResultSchema>',
       ].join('\n'),
     )
   })
 
+  it('indents the members of a union that does not fit on one line', () => {
+    const node: TypeNode = {
+      type: 'object',
+      attributes: {
+        item: {
+          type: 'objectAttribute',
+          value: {
+            type: 'union',
+            of: [
+              {
+                type: 'object',
+                attributes: {
+                  _type: {type: 'objectAttribute', value: {type: 'string', value: 'a'}},
+                },
+              },
+              {
+                type: 'object',
+                attributes: {
+                  _type: {type: 'objectAttribute', value: {type: 'string', value: 'b'}},
+                },
+              },
+            ],
+          },
+        },
+      },
+    }
+    expect(printZod(node, {typeName: 'R'}).split('\n\n')[1]).toBe(
+      [
+        'export const RSchema = z.object({',
+        '  item: z.union([',
+        '    z.object({',
+        '      _type: z.literal("a"),',
+        '    }),',
+        '    z.object({',
+        '      _type: z.literal("b"),',
+        '    }),',
+        '  ]),',
+        '})',
+      ].join('\n'),
+    )
+  })
+
+  it('models arrays of named types, references and intersections like the TypeScript output', () => {
+    const node: TypeNode = {
+      type: 'object',
+      attributes: {
+        author: {
+          type: 'objectAttribute',
+          value: {
+            type: 'object',
+            attributes: {
+              _ref: {type: 'objectAttribute', value: {type: 'string'}},
+              _weak: {type: 'objectAttribute', value: {type: 'boolean'}, optional: true},
+            },
+            dereferencesTo: 'author',
+          },
+        },
+        chapters: {
+          type: 'objectAttribute',
+          value: {type: 'array', of: {type: 'inline', name: 'blockContent'}},
+        },
+        mixed: {
+          type: 'objectAttribute',
+          value: {
+            type: 'array',
+            of: {
+              type: 'union',
+              of: [
+                {type: 'inline', name: 'blockContent'},
+                {
+                  type: 'object',
+                  attributes: {_key: {type: 'objectAttribute', value: {type: 'string'}}},
+                  rest: {type: 'inline', name: 'author'},
+                },
+              ],
+            },
+          },
+        },
+      },
+    }
+    const output = printZod(node, {typeName: 'R', schema})
+    expect(output).toContain(
+      [
+        '/** Members of an array in a document carry a `_key` the named type does not declare */',
+        'const arrayOf = <T extends z.ZodTypeAny>(member: T) =>',
+        '  z.array(member.and(z.object({ _key: z.string() })))',
+      ].join('\n'),
+    )
+    // The symbol typegen keys the reference target on is a type-level detail Zod cannot check
+    expect(output).toContain(
+      [
+        '  author: z.object({',
+        '    _ref: z.string(),',
+        '    _weak: z.boolean().optional(),',
+        '  }),',
+        '  chapters: arrayOf(BlockContentSchema),',
+        '  mixed: z.union([',
+        '    z.array(z.object({',
+        '      _key: z.string(),',
+        '    }).and(AuthorSchema)),',
+        '    arrayOf(BlockContentSchema),',
+        '  ]),',
+      ].join('\n'),
+    )
+    expect(output).not.toContain('internalGroqTypeReferenceTo')
+  })
+
   it('breaks cycles with z.lazy and handles null-only unions', () => {
     const output = printZod({type: 'inline', name: 'treeNode'}, {typeName: 'Tree', schema})
     // The explicit type keeps z.infer meaningful where TypeScript cannot see through z.lazy
+    expect(output).toContain('type ArrayOf<T> = Array<T & { _key: string }>;')
     expect(output).toContain(
-      ['export type TreeNode = {', '  label: string;', '  children?: Array<TreeNode>;', '};'].join(
-        '\n',
-      ),
+      [
+        'export type TreeNode = {',
+        '  label: string;',
+        '  children?: ArrayOf<TreeNode>;',
+        '};',
+      ].join('\n'),
     )
     expect(output).toContain('export const TreeNodeSchema: z.ZodType<TreeNode> = z.object({')
-    expect(output).toContain('  children: z.array(z.lazy(() => TreeNodeSchema)).optional(),')
+    expect(output).toContain('  children: arrayOf(z.lazy(() => TreeNodeSchema)).optional(),')
     expect(output).toContain('export const TreeSchema = TreeNodeSchema')
-    expect(output).not.toContain('ZodTypeAny')
 
     expect(printZod({type: 'union', of: [{type: 'null'}]}, {typeName: 'N'})).toContain(
       'export const NSchema = z.null()',
@@ -487,8 +756,93 @@ describe('printZod', () => {
     // Both types are declared, so either annotation resolves whatever it mentions
     expect(output).toContain('export type Chapter = {')
     expect(output).toContain('export type Book = {')
-    expect(output).toContain('  chapters: z.array(z.lazy(() => ChapterSchema)),')
+    expect(output).toContain('  chapters: arrayOf(z.lazy(() => ChapterSchema)),')
     // The result schema comes after both declarations, so it references them directly
     expect(output).toContain('export const BookResultSchema = BookSchema')
   })
+
+  it('infers the types a recursive type mentions from their schemas instead of redeclaring them', () => {
+    const author = schema[0]
+    if (author.type !== 'document') throw new Error('expected the author document')
+    const threaded: SchemaType = [
+      {
+        ...author,
+        attributes: {
+          ...author.attributes,
+          thread: {type: 'objectAttribute', value: {type: 'inline', name: 'thread'}},
+        },
+      },
+      ...schema.slice(1),
+      {
+        type: 'type',
+        name: 'thread',
+        value: {
+          type: 'object',
+          attributes: {
+            author: {type: 'objectAttribute', value: {type: 'inline', name: 'author'}},
+            replies: {
+              type: 'objectAttribute',
+              value: {type: 'array', of: {type: 'inline', name: 'thread'}},
+            },
+          },
+        },
+      },
+    ]
+    const output = printZod({type: 'inline', name: 'author'}, {typeName: 'R', schema: threaded})
+    expect(output).toContain(
+      [
+        'export type Author = {',
+        '  _id: string;',
+        '  _type: "author";',
+        '  name?: string;',
+        '  bio?: z.infer<typeof BlockContentSchema>;',
+        '  thread: Thread;',
+        '};',
+      ].join('\n'),
+    )
+    expect(output).not.toContain('export type BlockContent =')
+  })
+
+  it(
+    'prints JSON values whose list members may leave out `_key`, with no brand in recursive types',
+    {timeout: 60_000},
+    async () => {
+      const linked: SchemaType = [
+        ...schema,
+        {
+          type: 'type',
+          name: 'linkedNode',
+          value: {
+            type: 'object',
+            attributes: {
+              target: {
+                type: 'objectAttribute',
+                value: {
+                  type: 'object',
+                  attributes: {_ref: {type: 'objectAttribute', value: {type: 'string'}}},
+                  dereferencesTo: 'author',
+                },
+              },
+              next: {
+                type: 'objectAttribute',
+                value: {type: 'array', of: {type: 'inline', name: 'linkedNode'}},
+                optional: true,
+              },
+            },
+          },
+        },
+      ]
+      const node: TypeNode = {type: 'inline', name: 'linkedNode'}
+      const options = {typeName: 'R', schema: linked, jsonValues: true}
+      const typescript = printTypeScript(node, options)
+      const zod = printZod(node, options)
+      expect(typescript).toContain('type ArrayOf<T> = Array<T & { _key?: string }>;')
+      expect(typescript).toContain('  next?: ArrayOf<LinkedNode>;')
+      // The recursive type annotates the Zod schema, so it is printed as a JSON value as well
+      expect(zod).toContain('type ArrayOf<T> = Array<T & { _key?: string }>;')
+      expect(zod).toContain('  z.array(member.and(z.object({ _key: z.string().optional() })))')
+      expect(`${typescript}\n${zod}`).not.toContain('internalGroqTypeReferenceTo')
+      expect(await typecheckParams([{typeName: 'R', typescript, zod}])).toBe('')
+    },
+  )
 })

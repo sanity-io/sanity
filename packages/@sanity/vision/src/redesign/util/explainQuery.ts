@@ -74,7 +74,7 @@ const PLAN_GLOSSARY = `How to read the plan:
 - SortStep and SliceStep: sort or slice in memory after reading, rather than in the index.
 Describe steps only by these meanings. For a step not listed here, say what its name suggests and that it is not described here.`
 
-const EXPLAIN_INSTRUCTION = `Explain a GROQ query of the Sanity Content Lake to a developer who wrote it.
+const EXPLAIN_INSTRUCTION = `Explain a GROQ query of the Sanity Content Lake to someone new to Sanity, who may not know GROQ or databases.
 
 The query:
 $query
@@ -87,24 +87,72 @@ $plan
 
 $glossary
 
-First say in a sentence or two what the query fetches and returns. Then walk through how the plan runs it: what the Fetch step reads, which filters, sorting and limits it applies while reading, and what is left for later steps such as projections and joins. End with anything that could make it slow on a large dataset, or say that nothing stands out. Write plain text in short paragraphs, without markdown headings or code fences.`
+Reply with JSON: an object with these attributes.
+- "summary": what the query finds and returns, and in broad strokes how the Content Lake gets it, in two to four short sentences of everyday words. Do not name plan steps (Fetch, FilterStep and so on), and explain any term a beginner would not know.
+- "verdict": exactly one of "performant" (the query is fast and nothing needs to change), "cannot-improve" (it does slow work, but there is no faster way to get this data; it takes this work either way) or "improvable" (a change to the query would make it faster).
+- "verdictReason": one plain sentence saying why that verdict fits this query.
+- "suggestions": an array of concrete changes to the query that would make it faster or lighter, each one sentence a beginner can act on, naming the part of the query to change. Quote GROQ in backticks. An empty array when there is nothing worth changing, which is always the case for "performant".
+- "details": how the plan runs the query, for readers who want the technical detail: what the Fetch step reads, which filters, sorting and limits it applies while reading, and what is left for later steps such as projections and joins. Short paragraphs separated by blank lines, plain text without markdown headings or code fences.`
 
 /** Agent Actions only exist on the experimental API */
 const AGENT_API_VERSION = 'vX'
+
+/** How well a query runs, as the explanation judges it */
+export type QueryVerdict = 'performant' | 'cannot-improve' | 'improvable'
+
+const QUERY_VERDICTS: readonly QueryVerdict[] = ['performant', 'cannot-improve', 'improvable']
+
+/** An explanation of a query and its plan, written by Agent Actions */
+export interface QueryExplanation {
+  /** What the query does and how it runs, in plain words */
+  summary: string
+  verdict: QueryVerdict
+  /** Why the verdict fits; empty when the model gave no reason */
+  verdictReason: string
+  /** Changes to the query that would make it faster, each one sentence */
+  suggestions: string[]
+  /** How the plan runs the query, step by step; empty when the model left it out */
+  details: string
+}
+
+function readString(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
+function readVerdict(value: unknown, suggestions: string[]): QueryVerdict {
+  const verdict = QUERY_VERDICTS.find((known) => known === value)
+  if (verdict) return verdict
+  return suggestions.length > 0 ? 'improvable' : 'performant'
+}
+
+/** The model's reply as an explanation; a reply without a summary is no explanation */
+export function toQueryExplanation(response: unknown): QueryExplanation {
+  const record = isPlainObject(response) ? response : {}
+  const summary = readString(record.summary)
+  if (!summary) throw new Error('The explanation came back empty')
+  const suggestions = Array.isArray(record.suggestions)
+    ? record.suggestions.map(readString).filter(Boolean)
+    : []
+  return {
+    summary,
+    verdict: readVerdict(record.verdict, suggestions),
+    verdictReason: readString(record.verdictReason),
+    suggestions,
+    details: readString(record.details),
+  }
+}
 
 /** A plain-language explanation of a query and its plan, written by Agent Actions */
 export async function explainQuery(
   client: ExplainQueryClient,
   {query, params}: ExplainedQuery,
   plan: string,
-): Promise<string> {
+): Promise<QueryExplanation> {
   const response = await client.withConfig({apiVersion: AGENT_API_VERSION}).agent.action.prompt({
     instruction: EXPLAIN_INSTRUCTION,
     instructionParams: {query, params: JSON.stringify(params), plan, glossary: PLAN_GLOSSARY},
+    format: 'json',
     temperature: 0.2,
   })
-  if (typeof response !== 'string' || !response.trim()) {
-    throw new Error('The explanation came back empty')
-  }
-  return response.trim()
+  return toQueryExplanation(response)
 }

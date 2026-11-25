@@ -23,7 +23,7 @@ Keep this section at the top of the file. The same rules are restated in [Pull R
 
 ## Prerequisites
 
-- **Node.js**: v24 or latest LTS. Published packages must declare `"engines": { "node": ">=22.12" }` (`pnpm normalize-pkgfields` keeps this in sync; publint warns if the field is missing).
+- **Node.js**: v24.11 or newer (24.11.0 is the [first Node 24 LTS release](https://github.com/nodejs/node/blob/main/doc/changelogs/CHANGELOG_V24.md#24.11.0)). Published packages must declare `"engines": { "node": ">=24.11" }` (`pnpm normalize-pkgfields` keeps this in sync; publint warns if the field is missing). Private packages carry the same range, kept in step by hand. CI runs the unit tests on Node 24.11 (the minimum, pinned exactly) and 26.
 - **Package Manager**: pnpm v10+ (exact version managed via `packageManager` field in package.json)
 
 ## Quick Reference
@@ -637,6 +637,12 @@ Rules that follow from this:
   core tests do. `src/presentation` imports internals relatively for the same reasons, and
   because a lazily loaded module (an i18n `resources` chunk, a `lazy()` component) that imports
   the entry drags the whole barrel in with it.
+- The repo's own code imports no `@internal` name from a public entry, including the `@internal`
+  types that are still exported there, and the four areas never import the internals entry.
+  `test/no-internal-imports-from-public-entries.test.ts` in `@repo/test-dts-exports` checks both
+  (it reads the built `.d.ts` files, so build first). When a component switches to a relative
+  import, a test that stubs the name with `vi.mock('sanity', …)` has to mock the declaring
+  module instead.
 - A symbol carries exactly one release tag. `@internal` plus `@beta`/`@public` on the same
   declaration is a bug, not a way to say "beta but hidden" — use `@hidden` with `@beta` for that.
 - Tagging something `@public`/`@beta` moves it onto a public entry; tagging it `@internal` moves
@@ -691,7 +697,8 @@ each dropped name before regenerating:
 - A dropped **value** (`const`, `function`) was never importable: the emitted `.js` never exported
   it, so `import {name}` failed to link. Making it a real export is an API decision, and it can cost
   more than it looks — re-exporting `videoTypeName` pulled a 44 kB chunk of form and React code into
-  `sanity/media-library`, which `sideEffects: true` keeps a consumer from tree-shaking away.
+  `sanity/media-library`, which a consumer could not tree-shake away while the package declared
+  `sideEffects: true` (it now lists only the stylesheet and the barrels that import it).
 - Load-bearing exceptions exist. `@sanity/util`'s `Options` and `Parser` are exported from
   `createSafeJsonParser` because `@sanity/migrate` imports `Parser` in its own `.d.ts`, and
   `lib-check.test.ts` runs with `skipLibCheck: false`.
@@ -1808,13 +1815,13 @@ No Docker, databases, or other local services are required for unit tests, lint,
 - **Install agent skills with `pnpm dlx skills`, not `npx skills`.** This repo is pnpm-only, and the Cloud VM's `npx` wrapper often fails with `sh: 1: skills: not found`. Use the pnpm equivalent and skip prompts:
 
   ```bash
-  export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"
+  export PATH="$HOME/.nvm/versions/node/<v24.x>/bin:$PATH"   # see the Node version note below
   pnpm dlx skills add <owner/repo> --skill <name> -y
   pnpm dlx skills add <owner/repo> -y   # all skills in the repo
   pnpm dlx skills list
   ```
 
-- **Node version:** the VM runs Node 22.x, which satisfies the repo engine range (`>=22.12`). A couple of internal tooling packages print a harmless `Unsupported engine` warning wanting Node `>=22.18`; it does not affect testing or running the studio. However, **`pnpm build` requires Node >= 22.18**: the packages build with `tsdown`, which loads its `tsdown.config.ts` through Node's native TypeScript support and fails on older Node 22.x (e.g. the VM default `v22.14.0`) with `Failed to import module "unrun"`. A new enough runtime is available via nvm: `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH"` (the installed version differs between VM images — check `ls ~/.nvm/versions/node/`, e.g. `v22.23.3`).
+- **Node version:** the repo requires Node `>=24.11`, and the VM's default Node may be older (it was 22.x as of July 2026). Check `node --version`: below 24.11, `pnpm install` warns `Unsupported engine`, and on old enough versions `pnpm build` fails with `Failed to import module "unrun"` because `tsdown` loads its `tsdown.config.ts` through Node's native TypeScript support. If it is older, put a Node 24.11+ runtime from nvm first on the `PATH`: `export PATH="$HOME/.nvm/versions/node/<v24.x>/bin:$PATH"`, where `<v24.x>` is whichever 24.x release `ls ~/.nvm/versions/node/` lists (the installed versions differ between VM images). If none is installed, run `nvm install 24` first.
 - **`pnpm build` can fail in the VM with `unable to spawn child process: Exec format error (os error 8)`.** Turbo itself starts (it prints its version and the task graph) but cannot spawn the per-package build, so every task fails within milliseconds. Reproducible on a clean `main` and independent of the Node version, so it is an environment artifact, not your change. Build through pnpm instead — `-r run` executes in topological order, same as turbo: `pnpm -r --filter="./packages/*" --filter="./packages/@sanity/*" run build`.
 - **Every `turbo run` (`pnpm build`, `pnpm test:exports`) appends a `turborepo-agent-rules` block to `AGENTS.md` when it detects an AI agent**, even when its tasks then fail with the spawn error above. The block is not part of your change: revert it with `git checkout -- AGENTS.md`. `pnpm test:exports` fails the same way, so after building through pnpm run its two packages directly: in `packages/@repo/test-dts-exports`, `node generate.mjs && pnpm exec oxfmt "test/fixtures/**"` regenerates the d.ts fixtures (no diff means the export surface is unchanged) and `pnpm exec vitest run` checks them; in `packages/@repo/test-exports`, `pnpm test` runs the ESM/CJS checks.
 - **`pnpm build` may dirty `packages/sanity/package.json`.** tsdown auto-generates the `inlinedDependencies` field on every build, and in this VM the computed set can differ from what is committed (e.g. `@sanity/sdk` and `zustand` get dropped) even on a clean checkout of `main`. That churn is an environment artifact, not part of your change — revert it with `git checkout -- packages/sanity/package.json` (re-applying any edits of your own) instead of committing it.
@@ -1841,7 +1848,7 @@ No Docker, databases, or other local services are required for unit tests, lint,
 
 The e2e suite runs against the staging project `ittbm412` (see `.env.example`) on `api.sanity.work`. `STUDIO_E2E_AUTH_TOKEN` is injected into the VM for exactly this: it is a `manage-datasets` robot token on that project, so specs run the way CI runs them, with no source edits. Do not reach for `STUDIO_AUTH_TOKEN` or `SANITY_TEST_STUDIO_AUTH_TOKEN` here — those are production tokens and get 401 "Session not found" against `api.sanity.work`.
 
-1. **Build the packages.** `export PATH="$HOME/.nvm/versions/node/v22.22.2/bin:$PATH" && pnpm build`, then `git checkout packages/sanity/package.json` — the build rewrites its `inlinedDependencies`.
+1. **Build the packages.** `export PATH="$HOME/.nvm/versions/node/<v24.x>/bin:$PATH" && pnpm build` (see the Node version note under Gotchas), then `git checkout packages/sanity/package.json` — the build rewrites its `inlinedDependencies`.
 
 2. **Install the browsers** (not preinstalled): `pnpm --filter e2e exec playwright install chromium firefox`.
 

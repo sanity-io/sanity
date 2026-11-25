@@ -10,6 +10,8 @@ import {
   type VisionDatasetMode,
   type VisionDrawer,
   type VisionEditorSettings,
+  type VisionExportSnippetId,
+  type VisionExportSnippetSettings,
   type VisionResponseSettings,
   type VisionHistoryDiffSettings,
   type VisionPanelsState,
@@ -53,9 +55,25 @@ const DEFAULT_EDITOR_SETTINGS: VisionEditorSettings = {
   autoFormatOnResize: true,
 }
 
-/** Looking up sync tags sends queries of its own, so it waits until it is switched on */
+/** The Export query dialog's tabs, in the order they come in until the user reorders them */
+export const EXPORT_SNIPPET_IDS: readonly VisionExportSnippetId[] = [
+  'client',
+  'curl',
+  'next-sanity',
+  'astro',
+  'sveltekit',
+  'nuxt',
+]
+
+const DEFAULT_EXPORT_SNIPPET_SETTINGS: VisionExportSnippetSettings = {
+  order: [...EXPORT_SNIPPET_IDS],
+  hidden: [],
+}
+
 const DEFAULT_RESPONSE_SETTINGS: VisionResponseSettings = {
-  resolveSyncTags: false,
+  resolveSyncTags: true,
+  sourceMapEnabled: false,
+  resultSourceMap: true,
 }
 
 export interface VisionStorageDefaults {
@@ -116,7 +134,7 @@ function readStoredState(storage: Storage, projectId: string): string | null {
 export function resolveDefaultSettings(defaults: VisionStorageDefaults): VisionSettings {
   const apiVersion = prefixApiVersion(defaults.defaultApiVersion)
   return {
-    datasetMode: 'workspace',
+    datasetMode: 'auto',
     dataset: resolveWorkspaceDataset(defaults),
     apiVersion: validateApiVersion(apiVersion) ? apiVersion : DEFAULT_API_VERSION,
     perspective: 'global',
@@ -156,6 +174,10 @@ export function createInitialState(defaults: VisionStorageDefaults): VisionPersi
     ai: {...DEFAULT_AI_SETTINGS},
     editor: {...DEFAULT_EDITOR_SETTINGS},
     response: {...DEFAULT_RESPONSE_SETTINGS},
+    exportSnippets: {
+      order: [...DEFAULT_EXPORT_SNIPPET_SETTINGS.order],
+      hidden: [...DEFAULT_EXPORT_SNIPPET_SETTINGS.hidden],
+    },
     functions: [],
   }
 }
@@ -173,10 +195,33 @@ function sanitizePerspective(value: unknown): VisionPerspective {
 }
 
 /**
+ * The stored dataset mode, or `undefined` to use the fallback. A dataset pinned before the pin
+ * button gave way to Auto and overrides is an override of that dataset, and one that followed
+ * the workspace is Auto; a pin of a dataset the project no longer has reads as Auto too. State
+ * saved before `datasetMode` existed always stored a dataset: the workspace's was the default
+ * back then, so it reads as Auto, any other one was chosen on purpose and is an override.
+ */
+function sanitizeDatasetMode(
+  value: Record<string, unknown>,
+  dataset: string | undefined,
+  defaults: VisionStorageDefaults,
+): VisionDatasetMode | undefined {
+  switch (value.datasetMode) {
+    case 'auto':
+    case 'workspace':
+      return 'auto'
+    case 'override':
+    case 'pinned':
+      return dataset === undefined ? 'auto' : 'override'
+    default:
+      if (dataset === undefined || 'datasetMode' in value) return undefined
+      return dataset === resolveWorkspaceDataset(defaults) ? 'auto' : 'override'
+  }
+}
+
+/**
  * The options stored for a tab or as the settings, each field falling back to `fallback` when
- * missing or unusable. State saved before `datasetMode` existed always stored a dataset: the
- * workspace's was the default back then, so it keeps following the workspace, any other one
- * was chosen on purpose and stays pinned.
+ * missing or unusable
  */
 function sanitizeOptions(
   value: Record<string, unknown>,
@@ -187,17 +232,14 @@ function sanitizeOptions(
     typeof value.dataset === 'string' && defaults.datasets.includes(value.dataset)
       ? value.dataset
       : undefined
-  let legacyMode: VisionDatasetMode | undefined
-  if (dataset !== undefined && !('datasetMode' in value)) {
-    legacyMode = dataset === resolveWorkspaceDataset(defaults) ? 'workspace' : 'pinned'
-  }
+  const datasetMode = sanitizeDatasetMode(value, dataset, defaults) ?? fallback.datasetMode
   const apiVersion = typeof value.apiVersion === 'string' ? value.apiVersion : fallback.apiVersion
   return {
-    datasetMode:
-      value.datasetMode === 'pinned' || value.datasetMode === 'workspace'
-        ? value.datasetMode
-        : (legacyMode ?? fallback.datasetMode),
-    dataset: dataset ?? fallback.dataset,
+    datasetMode,
+    // On `auto` the stored dataset only seeded the pin button, which is gone: it reads as the
+    // workspace's, so a later override starts from what the tab queried
+    dataset:
+      datasetMode === 'auto' ? resolveWorkspaceDataset(defaults) : (dataset ?? fallback.dataset),
     apiVersion: validateApiVersion(apiVersion) ? apiVersion : fallback.apiVersion,
     perspective:
       'perspective' in value ? sanitizePerspective(value.perspective) : fallback.perspective,
@@ -313,10 +355,39 @@ function sanitizeEditorSettings(value: unknown): VisionEditorSettings {
   return {autoFormatOnResize: editor.autoFormatOnResize !== false}
 }
 
-/** A setting stays off unless it was switched on; state saved before the settings existed has all off */
+/**
+ * Resolving sync tags stays on unless it was switched off, and the Content Source Map features stay
+ * off unless they were switched on; state saved before a setting existed reads as its default
+ */
 function sanitizeResponseSettings(value: unknown): VisionResponseSettings {
   const response = isPlainObject(value) ? value : {}
-  return {resolveSyncTags: response.resolveSyncTags === true}
+  return {
+    resolveSyncTags: response.resolveSyncTags !== false,
+    sourceMapEnabled: response.sourceMapEnabled === true,
+    resultSourceMap:
+      response.resultSourceMap === 'withKeyArraySelector' ? 'withKeyArraySelector' : true,
+  }
+}
+
+function isExportSnippetId(value: unknown): value is VisionExportSnippetId {
+  return EXPORT_SNIPPET_IDS.includes(value as VisionExportSnippetId)
+}
+
+/**
+ * Every snippet once, in the stored order, with snippets added since the order was saved at the
+ * end; the dialog always has a tab to show, so hiding every snippet shows them all again
+ */
+export function sanitizeExportSnippetSettings(value: unknown): VisionExportSnippetSettings {
+  const stored = isPlainObject(value) ? value : {}
+  const known = (list: unknown) => [
+    ...new Set(Array.isArray(list) ? list.filter(isExportSnippetId) : []),
+  ]
+  const order = known(stored.order)
+  for (const id of EXPORT_SNIPPET_IDS) {
+    if (!order.includes(id)) order.push(id)
+  }
+  const hidden = known(stored.hidden)
+  return {order, hidden: hidden.length < order.length ? hidden : []}
 }
 
 /** Saved functions with an id and a declaration, the first of each id; state saved before had none */
@@ -381,9 +452,21 @@ export function loadVisionState(
   const ai = sanitizeAiSettings(stored.ai)
   const editor = sanitizeEditorSettings(stored.editor)
   const response = sanitizeResponseSettings(stored.response)
+  const exportSnippets = sanitizeExportSnippetSettings(stored.exportSnippets)
   const functions = sanitizeFunctions(stored.functions)
   if (tabs.length === 0) {
-    return {...initial, settings, sidebar, panels, historyDiff, ai, editor, response, functions}
+    return {
+      ...initial,
+      settings,
+      sidebar,
+      panels,
+      historyDiff,
+      ai,
+      editor,
+      response,
+      exportSnippets,
+      functions,
+    }
   }
 
   const activeTabId =
@@ -402,6 +485,7 @@ export function loadVisionState(
     ai,
     editor,
     response,
+    exportSnippets,
     functions,
   }
 }

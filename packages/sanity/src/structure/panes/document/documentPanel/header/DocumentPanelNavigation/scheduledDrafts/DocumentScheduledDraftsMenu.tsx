@@ -5,18 +5,20 @@ import {useCallback, useMemo, useState} from 'react'
 import {
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
-  isCardinalityOneRelease,
   ReleaseAvatar,
-  useActiveReleases,
   useDocumentVersions,
   usePerspective,
-  useScheduledDraftsEnabled,
 } from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 
 import {isReleaseDocument} from '../../../../../../../core/releases/store/types'
+import {useActiveReleases} from '../../../../../../../core/releases/store/useActiveReleases'
 import {getReleaseTone} from '../../../../../../../core/releases/util/getReleaseTone'
-import {isPausedCardinalityOneRelease} from '../../../../../../../core/util/releaseUtils'
+import {useScheduledDraftsEnabled} from '../../../../../../../core/singleDocRelease/hooks/useScheduledDraftsEnabled'
+import {
+  isCardinalityOneRelease,
+  isPausedCardinalityOneRelease,
+} from '../../../../../../../core/util/releaseUtils'
 import {DEFAULT_VARIANT_TYPE_KEY} from '../../../../../../../core/variants/util/variantType'
 import {MenuItem} from '../../../../../../../ui-components/menuItem/MenuItem'
 import {usePaneRouter} from '../../../../../../components/paneRouter/usePaneRouter'

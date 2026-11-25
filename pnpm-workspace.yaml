@@ -48,6 +48,7 @@ catalog:
   '@vitest/browser-playwright': ^5.1.1
   cobe: ^2.0.1
   dequal: ^2.0.3
+  fast-check: ^4.11.0
   get-it: ^9.7.0
   jsdom: ^31.0.1
   oxc-parser: ^0.159.0
@@ -71,6 +72,7 @@ catalog:
   vite: ^8.3.8
   vitest: ^5.1.1
   vitest-browser-react: ^2.3.0
+  zod: ^4.6.7
 
 autoDedupe: true
 catalogMode: prefer
@@ -185,3 +187,7 @@ patchedDependencies:
   # exports them from 'sanity/i18n' since the i18n runtime exports moved. The patch rewrites those
   # two imports. Drop once a release of the plugin that supports this sanity major ships
   '@sanity/document-internationalization@6.3.1': patches/@sanity__document-internationalization@6.3.1.patch
+  # 6.6.3 imports WithReferringDocuments from 'sanity', which v7 no longer exports. The patch
+  # declares the same render-prop wrapper inside the plugin on top of useReferringDocuments(id, []),
+  # so behavior is unchanged. Drop once a plugin release that uses the hook ships
+  sanity-plugin-media@6.6.3: patches/sanity-plugin-media@6.6.3.patch

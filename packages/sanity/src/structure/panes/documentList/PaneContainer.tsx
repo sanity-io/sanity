@@ -2,16 +2,11 @@ import {Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {dequal as isEqual} from 'dequal/lite'
 import {memo, useCallback, useMemo, useState} from 'react'
-import {
-  type GeneralDocumentListLayoutKey,
-  type ObjectSchemaType,
-  useSchema,
-  useSource,
-} from 'sanity'
+import {type GeneralDocumentListLayoutKey, type ObjectSchemaType, useSchema} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 
 import {useI18nText} from '../../../core/i18n/hooks/useI18nText'
-import {SourceProvider} from '../../../core/studio/source'
+import {SourceProvider, useSource} from '../../../core/studio/source'
 import {EMPTY_ARRAY} from '../../../core/util/empty'
 import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'

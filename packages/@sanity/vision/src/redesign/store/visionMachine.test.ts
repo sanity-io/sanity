@@ -12,6 +12,8 @@ import {
   selectParamsView,
   selectResultView,
   selectPersistedState,
+  selectSourceMapEnabled,
+  selectSourceMapRequest,
   visionMachine,
 } from './visionMachine'
 import {createInitialState, createTab, getVisionStorageKey, saveVisionState} from './visionStorage'
@@ -157,7 +159,7 @@ describe('visionMachine', () => {
     harness.actor.send({
       type: 'tab.setOptions',
       id: tab.id,
-      options: {datasetMode: 'pinned', dataset: 'staging'},
+      options: {datasetMode: 'override', dataset: 'staging'},
     })
 
     expect(harness.tabs()[0]).toMatchObject({
@@ -165,7 +167,7 @@ describe('visionMachine', () => {
       rawParams: '{"a": 1}',
       autoRefetch: true,
       options: {
-        datasetMode: 'pinned',
+        datasetMode: 'override',
         dataset: 'staging',
         perspective: 'global',
         variant: 'global',
@@ -413,18 +415,87 @@ describe('visionMachine', () => {
         explainQuery: true,
       },
       editor: {autoFormatOnResize: true},
-      response: {resolveSyncTags: false},
+      response: {resolveSyncTags: true, sourceMapEnabled: false, resultSourceMap: true},
+      exportSnippets: {
+        order: ['client', 'curl', 'next-sanity', 'astro', 'sveltekit', 'nuxt'],
+        hidden: [],
+      },
       functions: [],
     })
   })
 
-  it('updates the response settings, persists them, and switches them back off when storage is cleared', () => {
+  it('reorders and hides export snippets, never all of them, and resets them when storage is cleared', () => {
     const harness = createHarness()
-    harness.actor.send({type: 'response.update', settings: {resolveSyncTags: true}})
-    expect(selectPersistedState(harness.snapshot()).response).toEqual({resolveSyncTags: true})
+    harness.actor.send({
+      type: 'exportSnippets.update',
+      settings: {order: ['curl', 'astro', 'client', 'next-sanity', 'sveltekit', 'nuxt']},
+    })
+    harness.actor.send({
+      type: 'exportSnippets.update',
+      settings: {hidden: ['client', 'next-sanity', 'sveltekit', 'nuxt']},
+    })
+    expect(selectPersistedState(harness.snapshot()).exportSnippets).toEqual({
+      order: ['curl', 'astro', 'client', 'next-sanity', 'sveltekit', 'nuxt'],
+      hidden: ['client', 'next-sanity', 'sveltekit', 'nuxt'],
+    })
+
+    // Hiding the last two visible snippets is ignored
+    harness.actor.send({
+      type: 'exportSnippets.update',
+      settings: {hidden: ['client', 'curl', 'astro', 'next-sanity', 'sveltekit', 'nuxt']},
+    })
+    expect(harness.snapshot().context.exportSnippets.hidden).toEqual([
+      'client',
+      'next-sanity',
+      'sveltekit',
+      'nuxt',
+    ])
 
     harness.actor.send({type: 'storage.clear'})
-    expect(harness.snapshot().context.response).toEqual({resolveSyncTags: false})
+    expect(harness.snapshot().context.exportSnippets).toEqual({
+      order: ['client', 'curl', 'next-sanity', 'astro', 'sveltekit', 'nuxt'],
+      hidden: [],
+    })
+  })
+
+  it('asks for a source map only while the Content Source Map features are on', () => {
+    const harness = createHarness()
+    expect(selectSourceMapEnabled(harness.snapshot())).toBe(false)
+    expect(selectSourceMapRequest(harness.snapshot())).toBeUndefined()
+
+    harness.actor.send({type: 'response.update', settings: {sourceMapEnabled: true}})
+    expect(selectSourceMapRequest(harness.snapshot())).toBe(true)
+    harness.actor.send({
+      type: 'response.update',
+      settings: {resultSourceMap: 'withKeyArraySelector'},
+    })
+    expect(selectSourceMapRequest(harness.snapshot())).toBe('withKeyArraySelector')
+
+    harness.actor.send({type: 'response.update', settings: {sourceMapEnabled: false}})
+    expect(selectSourceMapEnabled(harness.snapshot())).toBe(false)
+    expect(selectSourceMapRequest(harness.snapshot())).toBeUndefined()
+  })
+
+  it('updates the response settings, persists them, and restores the defaults when storage is cleared', () => {
+    const harness = createHarness()
+    expect(harness.snapshot().context.response.resolveSyncTags).toBe(true)
+    harness.actor.send({type: 'response.update', settings: {resolveSyncTags: false}})
+    harness.actor.send({
+      type: 'response.update',
+      settings: {sourceMapEnabled: true, resultSourceMap: 'withKeyArraySelector'},
+    })
+    expect(selectPersistedState(harness.snapshot()).response).toEqual({
+      resolveSyncTags: false,
+      sourceMapEnabled: true,
+      resultSourceMap: 'withKeyArraySelector',
+    })
+
+    harness.actor.send({type: 'storage.clear'})
+    expect(harness.snapshot().context.response).toEqual({
+      resolveSyncTags: true,
+      sourceMapEnabled: false,
+      resultSourceMap: true,
+    })
   })
 
   it('updates the editor settings, persists them, and turns them back on when storage is cleared', () => {

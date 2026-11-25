@@ -231,6 +231,7 @@ export function DeltaTab({delta, request}: DeltaTabProps) {
   return (
     // Scrolls only in a drawer too short for the least room the documents take
     <Flex
+      className={styles.nestedScroll}
       data-testid="vision-delta"
       flexDirection="column"
       gap={4}
@@ -363,6 +364,7 @@ function DeltaResult(props: {
   const {t} = useTranslation(visionLocaleNamespace)
   return (
     <Flex
+      className={styles.nestedScroll}
       data-testid="vision-delta-result"
       flexDirection="column"
       gap={3}
