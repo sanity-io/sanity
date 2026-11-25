@@ -6,6 +6,7 @@
     "rootDir": ".",
     "module": "esnext",
     "noEmit": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["node"]
   }
 }

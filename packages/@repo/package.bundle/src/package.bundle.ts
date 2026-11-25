@@ -2,6 +2,7 @@ import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {pandacss} from '@pandacss/vite'
+import {type BrowserslistQueries, viteBuildTarget} from '@repo/browser-targets'
 import {viteCssModules} from '@repo/css-modules-kit'
 import {MADE_WITH_PANDA_SYMBOL} from '@sanity/pandacss-tsdown-plugin'
 import {removeCascadeLayers} from '@sanity/pandacss-tsdown-plugin/vite'
@@ -34,6 +35,13 @@ export interface DefaultConfigOptions {
    */
   version: string
   /**
+   * The `browserslist` field of the package being bundled (Baseline 2026 for Studio v7, see
+   * "Browser support" in the `sanity` README). The bundle's JS and CSS are lowered for exactly
+   * these browsers, so an auto-updating studio gets the same browser support as one built from
+   * the npm package.
+   */
+  browserslist: BrowserslistQueries
+  /**
    * How the package styles its components: Panda CSS `.css.ts` modules (`sanity`, from the
    * package's own `panda.config.ts`) or CSS modules (`@sanity/vision`, compiled with the Lightning
    * CSS scoping and class names of its package build, see @repo/css-modules-kit).
@@ -41,18 +49,22 @@ export interface DefaultConfigOptions {
   styles: 'panda' | 'css-modules'
 }
 
-export function createDefaultConfig({version, styles}: DefaultConfigOptions): UserConfig {
+export function createDefaultConfig({
+  version,
+  browserslist,
+  styles,
+}: DefaultConfigOptions): UserConfig {
   const cssModules = styles === 'css-modules' ? viteCssModules : undefined
 
   return {
     appType: 'custom',
-    // Vite 8 minifies CSS with Lightning CSS against `baseline-widely-available`
-    // (Chrome 111 / Safari 16.4). That target still down-transpiles `light-dark()`
-    // into `--lightningcss-light` / `--lightningcss-dark` toggled only by
-    // `prefers-color-scheme`, so Studio theme colors follow the OS instead of
-    // `color-scheme` when the two disagree. Disable the polyfill — same as
-    // Tailwind — rather than raising `build.cssTarget` (that would change other
-    // CSS lowering). See https://github.com/parcel-bundler/lightningcss/issues/873
+    // Lightning CSS polyfills `light-dark()` for targets that predate it (Vite 8's default
+    // `baseline-widely-available`, Chrome 111 / Safari 16.4, did) with `--lightningcss-light` /
+    // `--lightningcss-dark` toggled only by `prefers-color-scheme`, so Studio theme colors would
+    // follow the OS instead of `color-scheme` when the two disagree. Every Baseline 2026 browser
+    // supports `light-dark()`, so `build.target` below already leaves it alone; the polyfill
+    // stays disabled — same as Tailwind — so it can never come back through a target change.
+    // See https://github.com/parcel-bundler/lightningcss/issues/873
     //
     // Panda puts a `:root {--made-with-panda: '🐼'}` marker in every stylesheet it generates, and
     // has no option to leave it out. The package build drops it by listing it in Lightning CSS's
@@ -105,6 +117,11 @@ export function createDefaultConfig({version, styles}: DefaultConfigOptions): Us
       }),
     ],
     build: {
+      // The JS `target` stays at Vite's default (`baseline-widely-available`): Rolldown skips its
+      // transform for modules that are already JS (Vite's Oxc plugin has compiled the TSX) when
+      // the target needs no syntax lowering, which every Baseline 2026 engine is, and the
+      // `styledComponents` transform plugin below is skipped along with it
+      cssTarget: viteBuildTarget(browserslist),
       emptyOutDir: true,
       sourcemap: true,
       lib: {

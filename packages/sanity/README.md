@@ -76,6 +76,12 @@ Check out [the docs](https://www.sanity.io/docs/sanity-studio) and [plugins](htt
 - Query images for metadata like dominant colors, sizes, geo-location, and EXIF metadata.
 - [Rich text that can be serialized into any markup language](https://www.sanity.io/guides/introduction-to-portable-text).
 
+## Browser support
+
+Sanity Studio v7 supports the browsers of [Baseline 2026](https://web.dev/baseline): every browser version that supports all the web platform features that were Baseline Newly available by the end of 2026. That is the current and recent versions of Chrome, Edge, Firefox and Safari on desktop, iOS and Android, and the browsers built on their engines. The target stays the same for the whole of v7, and the next major picks a new Baseline year.
+
+The browserslist query is [`baseline 2026 with downstream`](https://browsersl.ist/#q=baseline+2026+with+downstream), which the published packages declare in their `browserslist` field. Plugin authors can use the same query to target the same browsers. Contributors can rely on any feature that is part of Baseline 2026 without a fallback or a polyfill.
+
 ## Stay up to date
 
 - Follow us on [X](https://x.com/sanity_io)

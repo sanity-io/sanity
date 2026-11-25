@@ -308,8 +308,8 @@
     "styled-components": "^6.1.15"
   },
   "browserslist": [
-    "node >=22.12",
-    "baseline 2024"
+    "node >=24.11",
+    "baseline 2026 with downstream"
   ],
   "engines": {
     "node": ">=24.11"
