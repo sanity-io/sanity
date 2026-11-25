@@ -1,8 +1,8 @@
 /* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
 import {DownloadIcon} from '@sanity/icons/Download'
-import {Badge, type BadgeTone, Box, Card, Heading, Switch} from '@sanity/ui'
+import {Badge, type BadgeTone, Box, Card, Switch} from '@sanity/ui'
 import {type ReactNode, useState} from 'react'
-import {Text, Flex, Grid, type GapProps, type TextProps, VStack} from 'ui5'
+import {Heading, Text, Flex, Grid, type GapProps, type TextProps, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {LISTENER_WARNING_THRESHOLD} from '../../../../network/listenerCountWarning'
@@ -190,7 +190,7 @@ export function DiagnosticsReport({
         />
 
         <VStack gap={2}>
-          <Heading as="h2" size={1}>
+          <Heading as="h2" size={1} trim>
             Listen connection tests
           </Heading>
           <Grid
@@ -215,7 +215,7 @@ export function DiagnosticsReport({
         </VStack>
 
         <VStack gap={2}>
-          <Heading as="h2" size={1}>
+          <Heading as="h2" size={1} trim>
             API request tests
           </Heading>
           <VStack gap={2}>
@@ -268,7 +268,7 @@ function ReportSection({
     <Card border data-testid={testId} padding={4} radius={2}>
       <VStack gap={4}>
         <Flex position="relative">
-          <Heading as="h2" size={1}>
+          <Heading as="h2" size={1} trim>
             {title}
           </Heading>
           {action ? (
