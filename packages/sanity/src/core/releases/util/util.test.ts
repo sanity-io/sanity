@@ -168,11 +168,15 @@ describe('shouldShowReleaseInView', () => {
   })
 })
 
-function archivedDraft(id: string, finalDocumentStates?: {id: string}[]): ReleaseDocument {
+function archivedRelease(
+  id: string,
+  cardinality: 'one' | 'many',
+  finalDocumentStates?: {id: string}[],
+): ReleaseDocument {
   return {
     ...archivedScheduledRelease,
     _id: `_.releases.${id}`,
-    metadata: {...archivedScheduledRelease.metadata, cardinality: 'one'},
+    metadata: {...archivedScheduledRelease.metadata, cardinality},
     ...(finalDocumentStates ? {finalDocumentStates} : {}),
   }
 }
@@ -365,9 +369,9 @@ describe('filterReleasesForOverview', () => {
   })
 
   it('leaves out archived scheduled drafts that recorded no document', () => {
-    const withDocument = archivedDraft('withDocument', [{id: 'versions.withDocument.doc'}])
-    const withoutDocuments = archivedDraft('withoutDocuments')
-    const withEmptyDocuments = archivedDraft('withEmptyDocuments', [])
+    const withDocument = archivedRelease('withDocument', 'one', [{id: 'versions.withDocument.doc'}])
+    const withoutDocuments = archivedRelease('withoutDocuments', 'one')
+    const withEmptyDocuments = archivedRelease('withEmptyDocuments', 'one', [])
 
     expect(
       filterReleasesForOverview({
@@ -377,5 +381,22 @@ describe('filterReleasesForOverview', () => {
         releaseGroupMode: 'archived',
       }),
     ).toEqual([withDocument])
+  })
+
+  it('keeps archived releases that recorded no document in the releases view', () => {
+    const withDocument = archivedRelease('withDocument', 'many', [
+      {id: 'versions.withDocument.doc'},
+    ])
+    const withoutDocuments = archivedRelease('withoutDocuments', 'many')
+    const withEmptyDocuments = archivedRelease('withEmptyDocuments', 'many', [])
+
+    expect(
+      filterReleasesForOverview({
+        releases: [],
+        archivedReleases: [withDocument, withoutDocuments, withEmptyDocuments],
+        cardinalityView: 'releases',
+        releaseGroupMode: 'archived',
+      }),
+    ).toEqual([withDocument, withoutDocuments, withEmptyDocuments])
   })
 })
