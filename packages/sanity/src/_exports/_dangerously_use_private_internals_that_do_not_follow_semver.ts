@@ -125,7 +125,6 @@ export {
   serializeError,
   useCopyErrorDetails,
 } from '../core/components/errorActions/useCopyErrorDetails'
-export {GetHookCollectionState} from '../core/components/hookCollection/GetHookCollectionState'
 export {DatePicker} from '../core/components/inputs/DateInputs/DatePicker'
 export {type InsufficientPermissionsMessageProps} from '../core/components/InsufficientPermissionsMessage'
 export {LoadingBlock} from '../core/components/loadingBlock/LoadingBlock'
@@ -386,6 +385,12 @@ export {CreateButton as CreateReferenceButton} from '../core/form/inputs/Referen
 export {ReferenceAutocomplete} from '../core/form/inputs/ReferenceInput/ReferenceAutocomplete'
 export {type CreateReferenceOption} from '../core/form/inputs/ReferenceInput/types'
 export {
+  MemberFieldSet,
+  ObjectInputMembers,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  ObjectMembers,
+} from '../core/form/lazy'
+export {
   ArrayOfObjectsInputMember,
   type ArrayOfObjectsMemberProps,
 } from '../core/form/members/array/ArrayOfObjectsInputMember'
@@ -394,14 +399,8 @@ export {
   type ArrayOfObjectsInputMembersProps,
 } from '../core/form/members/array/ArrayOfObjectsInputMembers'
 export {type MemberFieldProps} from '../core/form/members/object/MemberField'
-export {MemberFieldSet} from '../core/form/members/object/MemberFieldset'
 export {type ObjectInputMemberProps} from '../core/form/members/object/ObjectInputMember'
-export {
-  ObjectInputMembers,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  ObjectMembers,
-  type ObjectMembersProps,
-} from '../core/form/members/object/ObjectInputMembers'
+export {type ObjectMembersProps} from '../core/form/members/object/ObjectInputMembers'
 export {prefixPath, SANITY_PATCH_TYPE} from '../core/form/patch/patch'
 export {resolveConditionalProperty} from '../core/form/store/conditional-property/resolveConditionalProperty'
 export {setAtPath} from '../core/form/store/stateTreeHelper'
@@ -1177,8 +1176,6 @@ export {type StudioManifest} from '../core/studio/manifest/types'
 export {type StudioWorkspaceManifest} from '../core/studio/manifest/types'
 export {TextWithTone} from '../core/components/textWithTone/TextWithTone'
 export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-// oxlint-disable-next-line no-deprecated -- deprecated API stays available on the internals entry until it is removed
-export {WithReferringDocuments} from '../core/components/WithReferringDocuments'
 export {collate} from '../core/util/draftUtils'
 export {createDefaultIcon} from '../core/config/createDefaultIcon'
 export {createHookFromObservableFactory} from '../core/util/createHookFromObservableFactory'

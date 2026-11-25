@@ -3,7 +3,6 @@ import {userEvent} from '@testing-library/user-event'
 import {
   getVersionFromId,
   type SystemVariant,
-  useActiveReleases,
   useDocumentVersions,
   usePerspective,
   type VersionInfoDocumentStub,
@@ -12,6 +11,7 @@ import {afterEach, beforeAll, beforeEach, describe, expect, it, type Mock, vi} f
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
 import {useSetVariant} from '../../../../../../../../core/perspective/useSetVariant'
+import {useActiveReleases} from '../../../../../../../../core/releases/store/useActiveReleases'
 import {isAgentBundleName} from '../../../../../../../../core/store/agent/createAgentBundlesStore'
 import {useAgentVersionDisplay} from '../../../../../../../../core/store/agent/useAgentVersionDisplay'
 import {useAllVariants} from '../../../../../../../../core/variants/store/useAllVariants'
@@ -29,9 +29,11 @@ import {DocumentVariantsMenu} from '../DocumentVariantsMenu'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useActiveReleases: vi.fn(),
   useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
+}))
+vi.mock('../../../../../../../../core/releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(),
 }))
 
 vi.mock('../../../../../../../../core/perspective/useSetVariant', () => ({

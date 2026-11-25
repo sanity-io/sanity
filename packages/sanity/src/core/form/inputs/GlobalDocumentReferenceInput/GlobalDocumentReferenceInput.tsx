@@ -238,7 +238,7 @@ export function GlobalDocumentReferenceInput(props: GlobalDocumentReferenceInput
     }
 
     if (typeof schemaType.studioUrl === 'string') {
-      return `${schemaType.studioUrl}/desk/intent/edit/id=${documentId};type=${loadableReferenceInfo.result.type}/`
+      return `${schemaType.studioUrl}/intent/edit/id=${documentId};type=${loadableReferenceInfo.result.type}/`
     }
 
     return schemaType.studioUrl({

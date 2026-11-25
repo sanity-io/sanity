@@ -37,7 +37,6 @@
         "./src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts"
       ],
       "sanity/cli": ["./src/_exports/cli.ts"],
-      "sanity/desk": ["./src/_exports/desk.ts"],
       "sanity/i18n": ["./src/_exports/i18n.ts"],
       "sanity/media-library": ["./src/_exports/media-library.ts"],
       "sanity/migrate": ["./src/_exports/migrate.ts"],

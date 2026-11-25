@@ -74,6 +74,9 @@ interface PopoverProps extends SharedProps {
   onClose: () => void
 }
 
+/** @internal */
+export type EnhancedObjectDialogProps = PopoverProps | DialogProps
+
 function onDragEnter(event: DragEvent<HTMLDivElement>) {
   return event.stopPropagation()
 }
@@ -90,7 +93,7 @@ function onDrop(event: DragEvent<HTMLDivElement>) {
  * When multiple dialogs are open, only the top-most dialog is visible.
  * Non-top dialogs are hidden via CSS while preserving their state.
  */
-export function EnhancedObjectDialog(props: PopoverProps | DialogProps): React.JSX.Element {
+export function EnhancedObjectDialog(props: EnhancedObjectDialogProps): React.JSX.Element {
   const {children, header, type, width} = props
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)

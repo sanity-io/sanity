@@ -1,5 +1,6 @@
 import {type ReactNode} from 'react'
-import {CommandList, useDataset} from 'sanity'
+import {useDataset} from 'sanity'
+import {CommandList} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
 import {Box, Flex, Text} from 'ui5'
 

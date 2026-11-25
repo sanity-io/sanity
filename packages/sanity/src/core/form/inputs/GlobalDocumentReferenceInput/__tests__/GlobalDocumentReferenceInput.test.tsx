@@ -162,6 +162,57 @@ describe('render states', () => {
 
     expect(screen.getByTestId('alert-reference-strength-mismatch')).toBeInTheDocument()
   })
+
+  test('a string studioUrl links to the edit intent at the root of that studio', async () => {
+    const TestProvider = await createWrapperComponent()
+
+    const getReferenceInfo = vi.fn(() =>
+      of({
+        id: 'foo',
+        type: 'product',
+        availability: AVAILABLE,
+        preview: {
+          published: {title: `Foo`},
+        },
+      }),
+    )
+
+    const value = {
+      _type: 'productReference',
+      _ref: 'dataset:myProject.myDataset:foo',
+    } satisfies GlobalDocumentReferenceValue
+
+    await renderGlobalDocumentReferenceInput({
+      fieldDefinition: {
+        name: 'productReference',
+        type: 'globalDocumentReference',
+        resourceType: 'dataset',
+        resourceId: 'myProject.myDataset',
+        studioUrl: 'https://studio.example.com',
+        to: [
+          {
+            type: 'product',
+            preview: {
+              select: {
+                title: 'title',
+              },
+            },
+          },
+        ],
+      },
+      getReferenceInfo,
+      render: (inputProps) => (
+        <TestProvider>
+          <GlobalDocumentReferenceInput {...inputProps} value={value} />
+        </TestProvider>
+      ),
+    })
+
+    expect(screen.getByRole('link')).toHaveAttribute(
+      'href',
+      'https://studio.example.com/intent/edit/id=foo;type=product/',
+    )
+  })
 })
 
 describe('user interaction happy paths', () => {

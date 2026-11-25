@@ -44,7 +44,6 @@
         "partialMatch": false
       },
       {"type": "sanity/cli__contents", "pattern": "src/cli", "partialMatch": false},
-      {"type": "sanity/desk__contents", "pattern": "src/desk", "partialMatch": false},
       {"type": "sanity/router__contents", "pattern": "src/router", "partialMatch": false},
       {
         "type": "sanity/structure__contents",
@@ -65,7 +64,6 @@
       },
       {"category": "sanity/_internal", "pattern": "src/_exports/_internal.ts"},
       {"category": "sanity/cli", "pattern": "src/_exports/cli.ts"},
-      {"category": "sanity/desk", "pattern": "src/_exports/desk.ts"},
       {"category": "sanity/i18n", "pattern": "src/_exports/i18n.ts"},
       {"category": "sanity/router", "pattern": "src/_exports/router.ts"},
       {
@@ -688,38 +686,6 @@
                         "categories": [
                           "sanity/router",
                           "sanity/router__shared",
-                          "sanity/_singletons"
-                        ]
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "from": {"file": {"categories": "sanity/desk"}},
-                "allow": {
-                  "to": [
-                    {"element": {"type": ["sanity/desk__contents", "sanity/structure__contents"]}},
-                    {"file": {"categories": "sanity/structure"}}
-                  ]
-                }
-              },
-              {
-                "from": {"element": {"type": "sanity/desk__contents"}},
-                "allow": {
-                  "to": [
-                    {
-                      "element": {
-                        "type": ["sanity/desk__contents", "sanity/structure__contents"]
-                      }
-                    },
-                    {
-                      "file": {
-                        "categories": [
-                          "sanity",
-                          "sanity/router",
-                          "sanity/_internal",
-                          "sanity/structure",
                           "sanity/_singletons"
                         ]
                       }
