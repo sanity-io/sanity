@@ -12,6 +12,7 @@ import {releasesLocaleNamespace} from '../../../i18n'
 import {ReleaseDocumentPreview} from '../../components/ReleaseDocumentPreview'
 import {type VisibleColumn} from '../../components/Table/types'
 import {type TableRelease} from '../ReleasesOverview'
+import {ScheduledDraftHistoryUnavailablePreview} from './ScheduledDraftHistoryUnavailablePreview'
 
 export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] = ({
   datum: release,
@@ -22,7 +23,24 @@ export const ScheduledDraftDocumentPreview: VisibleColumn<TableRelease>['cell'] 
     firstDocument,
     firstDocumentValidation,
     loading: documentsLoading,
+    error: documentsError,
   } = useScheduledDraftDocument(release._id && !release.isLoading ? release._id : undefined)
+
+  // A published or archived scheduled draft reads its document from history, which answers with no
+  // revision once the dataset's history retention has removed it
+  const finalDocumentId = release.finalDocumentStates?.[0]?.id
+  if (
+    finalDocumentId &&
+    !release.isLoading &&
+    (release.state === 'published' || release.state === 'archived') &&
+    !documentsLoading &&
+    !documentsError &&
+    !firstDocument
+  ) {
+    return (
+      <ScheduledDraftHistoryUnavailablePreview cellProps={cellProps} documentId={finalDocumentId} />
+    )
+  }
 
   const isLoading = release.isLoading || documentsLoading || !firstDocument
 
