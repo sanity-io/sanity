@@ -581,7 +581,6 @@ import type {
   getDocumentPairPermissions,
   getDocumentVariantType,
   getDraftId,
-  GetHookCollectionStateProps,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   getProviderTitle,
@@ -609,7 +608,6 @@ import type {
   HistoryClearedEvent,
   HistoryStore,
   HistoryStoreOptions,
-  HookCollectionActionHook,
   Hotkeys,
   HotkeysProps,
   HotspotOptions,
@@ -1423,7 +1421,6 @@ import type {
   WelcomeEvent,
   WidenInitialValue,
   WidenValidation,
-  WithReferringDocuments,
   WithVersion,
   Workspace,
   WorkspaceHiddenContext,
@@ -3190,9 +3187,6 @@ describe('sanity', () => {
   test('getDraftId', () => {
     expectTypeOf<typeof getDraftId>().toBeFunction()
   })
-  test('GetHookCollectionStateProps', () => {
-    expectTypeOf<GetHookCollectionStateProps<any, any>>().toBeObject()
-  })
   test('getPreviewStateObservable', () => {
     expectTypeOf<typeof getPreviewStateObservable>().toBeFunction()
   })
@@ -3273,9 +3267,6 @@ describe('sanity', () => {
   })
   test('HistoryStoreOptions', () => {
     expectTypeOf<HistoryStoreOptions>().toBeObject()
-  })
-  test('HookCollectionActionHook', () => {
-    expectTypeOf<HookCollectionActionHook<any, any>>().toBeObject()
   })
   test('Hotkeys', () => {
     expectTypeOf<typeof Hotkeys>().toBeFunction()
@@ -5728,9 +5719,6 @@ describe('sanity', () => {
   })
   test('WidenValidation', () => {
     expectTypeOf<WidenValidation>().toBeObject()
-  })
-  test('WithReferringDocuments', () => {
-    expectTypeOf<typeof WithReferringDocuments>().toBeFunction()
   })
   test('WithVersion', () => {
     expectTypeOf<WithVersion<any>>().not.toBeNever()

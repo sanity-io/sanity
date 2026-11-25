@@ -125,7 +125,6 @@ export {
   serializeError,
   useCopyErrorDetails,
 } from '../core/components/errorActions/useCopyErrorDetails'
-export {GetHookCollectionState} from '../core/components/hookCollection/GetHookCollectionState'
 export {DatePicker} from '../core/components/inputs/DateInputs/DatePicker'
 export {type InsufficientPermissionsMessageProps} from '../core/components/InsufficientPermissionsMessage'
 export {LoadingBlock} from '../core/components/loadingBlock/LoadingBlock'
@@ -1177,8 +1176,6 @@ export {type StudioManifest} from '../core/studio/manifest/types'
 export {type StudioWorkspaceManifest} from '../core/studio/manifest/types'
 export {TextWithTone} from '../core/components/textWithTone/TextWithTone'
 export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-// oxlint-disable-next-line no-deprecated -- deprecated API stays available on the internals entry until it is removed
-export {WithReferringDocuments} from '../core/components/WithReferringDocuments'
 export {collate} from '../core/util/draftUtils'
 export {createDefaultIcon} from '../core/config/createDefaultIcon'
 export {createHookFromObservableFactory} from '../core/util/createHookFromObservableFactory'
