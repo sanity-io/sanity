@@ -1,7 +1,6 @@
 import {BoundaryElementProvider, Card} from '@sanity/ui'
-import {type MouseEvent, useCallback} from 'react'
+import {type MouseEvent, useCallback, useMemo} from 'react'
 import {
-  ChangedFieldTitles,
   type DocumentGroupEvent,
   type EditDocumentVersionEvent,
   Event,
@@ -41,11 +40,12 @@ const CHANGES_TOOLTIP_PROPS: Partial<TooltipProps> = {
 function EditEvent({event}: {event: EditDocumentVersionEvent}) {
   const {schemaType} = useDocumentPane()
   const {diff} = useEditEventChanges(event)
+  const changes = useMemo(() => (diff ? {diff, schemaType} : undefined), [diff, schemaType])
 
   return (
     <Event
       event={event}
-      changedFields={diff && <ChangedFieldTitles diff={diff} schemaType={schemaType} />}
+      changes={changes}
       // A transaction has a single author, already shown as the row avatar.
       showChangesBy={isEditTransactionEvent(event) ? 'hidden' : 'tooltip'}
     />
