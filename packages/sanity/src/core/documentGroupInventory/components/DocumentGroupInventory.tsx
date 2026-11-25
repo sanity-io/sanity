@@ -1,7 +1,9 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ChangeEvent,
   type ComponentType,
+  type ReactNode,
   type RefAttributes,
   useEffect,
   useImperativeHandle,
@@ -763,6 +765,19 @@ const Select: ComponentType<{
                   perspectiveList={perspectiveList}
                   selectionBlockedReason={setSelection.blockedReasons.get(variant.id)}
                   onToggleSelection={(shiftKey) => toggleVariant(variant.id, shiftKey)}
+                  // The single list shown with Content Variants off has no set headers, so a
+                  // scheduled row offers its own Unschedule (Pause), and a paused scheduled draft
+                  // its own Schedule, where the set header would have.
+                  actions={
+                    set.bundle
+                      ? undefined
+                      : getScheduleRowAction({
+                          release: getRelease(variant),
+                          blocked: setSelection.blockedReasons.has(variant.id),
+                          documentType,
+                          versionId: variant.id,
+                        })
+                  }
                 />
               ),
             )}
@@ -771,6 +786,32 @@ const Select: ComponentType<{
       })}
     </>
   )
+}
+
+/**
+ * The way out of a schedule for one row: Unschedule (Pause, for a scheduled draft) while its
+ * release is scheduled, Schedule again once a scheduled draft is paused. The set header offers the
+ * same when the inventory shows sets.
+ */
+function getScheduleRowAction({
+  release,
+  blocked,
+  documentType,
+  versionId,
+}: {
+  release: ReleaseDocument | undefined
+  blocked: boolean
+  documentType: string
+  versionId: string
+}): ReactNode {
+  if (!release) return undefined
+  if (blocked) return <UnscheduleReleaseAction release={release} />
+  if (isPausedCardinalityOneRelease(release)) {
+    return (
+      <ScheduleDraftAction documentType={documentType} release={release} versionId={versionId} />
+    )
+  }
+  return undefined
 }
 
 /**
@@ -835,6 +876,8 @@ const ManagedVariantRow: ComponentType<{
   selectionBlockedReason: SelectionBlockedReason | undefined
   /** Toggles this version's selection; with Shift, selects a range within its group. */
   onToggleSelection: (shiftKey: boolean) => void
+  /** Buttons at the row's end. */
+  actions?: ReactNode
 }> = ({
   variant,
   presence,
@@ -848,6 +891,7 @@ const ManagedVariantRow: ComponentType<{
   perspectiveList,
   selectionBlockedReason,
   onToggleSelection,
+  actions,
 }) => {
   const {t} = useTranslation(studioLocaleNamespace)
   const releasesToolAvailable = useReleasesEnabled()
@@ -914,6 +958,7 @@ const ManagedVariantRow: ComponentType<{
         isSelected={isSelected}
         presence={presence}
         servedStatus={servedStatus}
+        actions={actions}
         primaryActionRef={setReferenceElement}
         onContextMenu={contextMenuHandler}
         onPrimaryAction={() => onSelect(document)}
