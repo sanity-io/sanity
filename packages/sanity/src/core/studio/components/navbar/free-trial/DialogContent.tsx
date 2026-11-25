@@ -1,7 +1,6 @@
 import {CloseIcon} from '@sanity/icons/Close'
-import {Heading} from '@sanity/ui'
 import {styled} from 'styled-components'
-import {Flex, Box} from 'ui5'
+import {Heading, Flex, Box} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../ui-components/dialog/Dialog'
@@ -114,7 +113,9 @@ export function DialogContent({
       )}
       <Flex padding={3} flexDirection={'column'}>
         <Box paddingX={2} marginTop={3}>
-          <Heading size={2}>{content.headingText}</Heading>
+          <Heading as="h2" size={2} trim>
+            {content.headingText}
+          </Heading>
         </Box>
         <Box marginTop={4} paddingBottom={3}>
           <UpsellDescriptionSerializer blocks={content.descriptionText} />

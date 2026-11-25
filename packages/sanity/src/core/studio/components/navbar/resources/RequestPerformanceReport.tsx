@@ -1,8 +1,8 @@
 /* oxlint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-string-literals, @sanity/i18n/no-attribute-template-literals -- Diagnostics uses fixed English terminology so support and users see the same technical labels. */
-import {Card, Heading} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {memo, type PointerEvent as ReactPointerEvent, useCallback, useMemo, useState} from 'react'
 import {styled} from 'styled-components'
-import {Text, Flex, VStack} from 'ui5'
+import {Heading, Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {
@@ -239,7 +239,7 @@ export function RequestPerformanceReport({
   return (
     <VStack gap={2}>
       <Flex alignItems="center" gap={3} justifyContent="space-between" flexWrap="wrap">
-        <Heading as="h2" size={1}>
+        <Heading as="h2" size={1} trim>
           Recent request timings
         </Heading>
         <Text muted size={1} as="div" trim={true}>
