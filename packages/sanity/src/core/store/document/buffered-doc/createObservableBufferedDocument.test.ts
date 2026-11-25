@@ -1,10 +1,13 @@
 import {type SanityDocument} from '@sanity/types'
 import {Subject} from 'rxjs'
-import {expect, test} from 'vitest'
+import {afterEach, expect, test} from 'vitest'
 
 import {type ListenerEvent} from '../getPairListener'
 import {mutationEvent} from '../utils/__test__/test-utils'
-import {createObservableBufferedDocument} from './createObservableBufferedDocument'
+import {
+  type CommitRequest,
+  createObservableBufferedDocument,
+} from './createObservableBufferedDocument'
 
 const INITIAL: SanityDocument = {
   _id: 'drafts.doc-1',
@@ -74,4 +77,33 @@ test('a remote patch that cannot apply to the local document does not error the 
   expect(afterHealthy?.body).toMatchObject([
     {_key: 'a', children: [{_key: 'a1', text: 'hello world'}]},
   ])
+})
+
+const unhandled: unknown[] = []
+const onUnhandled = (reason: unknown) => unhandled.push(reason)
+afterEach(() => {
+  process.off('unhandledRejection', onUnhandled)
+  unhandled.length = 0
+})
+
+test('commits cancelled by a terminal error leave no unhandled rejections', async () => {
+  process.on('unhandledRejection', onUnhandled)
+  const listenerEvent$ = new Subject<ListenerEvent>()
+  const buffered = createObservableBufferedDocument(listenerEvent$)
+  const requests: CommitRequest[] = []
+  buffered.commitRequest$.subscribe((request) => requests.push(request))
+  buffered.updates$.subscribe()
+  listenerEvent$.next({type: 'snapshot', documentId: 'drafts.doc-1', document: INITIAL})
+
+  // The first commit is in flight while two more queue behind it.
+  for (const text of ['a', 'b', 'c']) {
+    buffered.addMutation({patch: {id: 'drafts.doc-1', set: {title: text}}})
+    buffered.commit()
+  }
+  expect(requests).toHaveLength(1)
+
+  // A terminal error (a 422, say) cancels the in-flight commit, which rejects every queued one.
+  requests[0]!.cancel(new Error('injected 422'))
+  await new Promise((resolve) => setTimeout(resolve, 10))
+  expect(unhandled).toEqual([])
 })
