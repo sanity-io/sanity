@@ -78,6 +78,19 @@ describe('getDefaultPlugins', () => {
     expect(names).not.toContain('sanity/schedules')
     expect(names).not.toContain('sanity/singleDocRelease')
   })
+
+  it('leaves the tasks plugin out when tasks.enabled is false', () => {
+    expect(pluginNames(workspace())).toContain('sanity/tasks')
+    expect(pluginNames(workspace({tasks: {enabled: false}}))).not.toContain('sanity/tasks')
+  })
+
+  it('throws when the removed unstable_tasks option is still configured', () => {
+    const legacyConfig = workspace({unstable_tasks: {enabled: false}} as Partial<WorkspaceOptions>)
+
+    expect(() => getDefaultPluginsOptions(legacyConfig)).toThrow(
+      'The `unstable_tasks` option has been removed. Use `tasks` instead.',
+    )
+  })
 })
 
 function localeBundles(config: WorkspaceOptions, plugins: PluginOptions[]) {
