@@ -155,7 +155,6 @@ import type {
   collate,
   CollatedHit,
   ColorSchemeProviderProps,
-  CombinedDocument,
   CommandListElementType,
   CommandListGetItemDisabledCallback,
   CommandListGetItemKeyCallback,
@@ -418,7 +417,6 @@ import type {
   DocumentRebaseEvent,
   DocumentRebaseTelemetryEvent,
   DocumentRemoteMutationEvent,
-  DocumentRemoteMutationVersionEvent,
   DocumentRevision,
   DocumentRule,
   DocumentStackAvailability,
@@ -903,7 +901,6 @@ import type {
   OperatorButtonValueComponentProps,
   OperatorInputComponentProps,
   Pair,
-  ParsedTimeRef,
   ParseError,
   PartialContext,
   PartialExcept,
@@ -1121,7 +1118,6 @@ import type {
   SelectedPerspective,
   SelectInput,
   Selection,
-  SelectionState,
   SendFeedbackOptions,
   Sentiment,
   Serializeable,
@@ -1241,12 +1237,6 @@ import type {
   TextWithToneProps,
   TFunction,
   TimeAgoOpts,
-  Timeline,
-  TimelineController,
-  TimelineControllerOptions,
-  TimelineOptions,
-  TimelineState,
-  TimelineStore,
   TitledListValue,
   ToastParams,
   Tool,
@@ -1257,7 +1247,6 @@ import type {
   TrackedChange,
   TrackerContextGetSnapshot,
   TrackerContextStore,
-  Transaction,
   TransactionLogEvent,
   TransactionLogEventWithEffects,
   TransactionLogEventWithMutations,
@@ -1899,9 +1888,6 @@ describe('sanity', () => {
   })
   test('ColorSchemeProviderProps', () => {
     expectTypeOf<ColorSchemeProviderProps>().toBeObject()
-  })
-  test('CombinedDocument', () => {
-    expectTypeOf<CombinedDocument>().toBeObject()
   })
   test('CommandListElementType', () => {
     expectTypeOf<CommandListElementType>().not.toBeNever()
@@ -2693,9 +2679,6 @@ describe('sanity', () => {
   })
   test('DocumentRemoteMutationEvent', () => {
     expectTypeOf<DocumentRemoteMutationEvent>().toBeObject()
-  })
-  test('DocumentRemoteMutationVersionEvent', () => {
-    expectTypeOf<DocumentRemoteMutationVersionEvent>().not.toBeNever()
   })
   test('DocumentRevision', () => {
     expectTypeOf<DocumentRevision>().not.toBeNever()
@@ -4157,9 +4140,6 @@ describe('sanity', () => {
   test('Pair', () => {
     expectTypeOf<Pair>().not.toBeNever()
   })
-  test('ParsedTimeRef', () => {
-    expectTypeOf<ParsedTimeRef>().not.toBeNever()
-  })
   test('ParseError', () => {
     expectTypeOf<ParseError>().toBeObject()
   })
@@ -4813,9 +4793,6 @@ describe('sanity', () => {
   test('Selection', () => {
     expectTypeOf<Selection>().not.toBeNever()
   })
-  test('SelectionState', () => {
-    expectTypeOf<SelectionState>().not.toBeNever()
-  })
   test('SendFeedbackOptions', () => {
     expectTypeOf<SendFeedbackOptions>().toBeObject()
   })
@@ -5176,24 +5153,6 @@ describe('sanity', () => {
   test('TimeAgoOpts', () => {
     expectTypeOf<TimeAgoOpts>().toBeObject()
   })
-  test('Timeline', () => {
-    expectTypeOf<Timeline>().not.toBeNever()
-  })
-  test('TimelineController', () => {
-    expectTypeOf<TimelineController>().not.toBeNever()
-  })
-  test('TimelineControllerOptions', () => {
-    expectTypeOf<TimelineControllerOptions>().not.toBeNever()
-  })
-  test('TimelineOptions', () => {
-    expectTypeOf<TimelineOptions>().toBeObject()
-  })
-  test('TimelineState', () => {
-    expectTypeOf<TimelineState>().toBeObject()
-  })
-  test('TimelineStore', () => {
-    expectTypeOf<TimelineStore>().toBeObject()
-  })
   test('TitledListValue', () => {
     expectTypeOf<TitledListValue<any>>().toBeObject()
   })
@@ -5223,9 +5182,6 @@ describe('sanity', () => {
   })
   test('TrackerContextStore', () => {
     expectTypeOf<TrackerContextStore<any>>().toBeObject()
-  })
-  test('Transaction', () => {
-    expectTypeOf<Transaction>().toBeObject()
   })
   test('TransactionLogEvent', () => {
     expectTypeOf<TransactionLogEvent>().toBeObject()
