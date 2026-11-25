@@ -143,11 +143,11 @@ export function ApiVersionField({
           }
           subtitle={
             option.group === 'today'
-              ? option.value
+              ? todayTitle
               : option.note && t(API_VERSION_NOTE_KEYS[option.note])
           }
           testId={`${id}-option-${option.value}`}
-          title={option.group === 'today' ? todayTitle : option.value}
+          title={option.value}
         />
       )
     },
@@ -434,7 +434,7 @@ export function PerspectiveSelect({id, value, onChange}: PerspectiveSelectProps)
       <FieldLabel htmlFor={elementId}>{t('settings.perspective-label')}</FieldLabel>
       <OptionMenuButton
         id={elementId}
-        onClose={() => setQuery('')}
+        onOpen={() => setQuery('')}
         onSearchQueryChange={setQuery}
         searchPlaceholder={t('vision.options.perspective.search-placeholder')}
         searchQuery={query}

@@ -4805,6 +4805,41 @@ describe('VisionRedesign', () => {
     )
   })
 
+  it('keeps focus in the dataset search until the user moves it, and opens unfiltered', () => {
+    renderRedesign()
+    openRequestTab('options')
+    const select = screen.getByTestId('vision-option-dataset-select')
+
+    fireEvent.click(select)
+    const search = screen.getByTestId('vision-option-dataset-search') as HTMLInputElement
+    expect(document.activeElement).toBe(search)
+
+    // Typing in the search moves no focus, so it does not turn the guard below off
+    fireEvent.keyDown(search, {key: 's'})
+    // The menu focuses its selected item on its own, a frame after it opened
+    const auto = screen.getByTestId('vision-option-dataset-item-auto')
+    act(() => auto.focus())
+    expect(document.activeElement).toBe(search)
+
+    fireEvent.change(search, {target: {value: 'stag'}})
+    expect(screen.getByTestId('vision-option-dataset-item-staging')).toBeTruthy()
+    expect(screen.queryByTestId('vision-option-dataset-item-auto')).toBeNull()
+
+    // A focus move the user asked for stands
+    fireEvent.keyDown(search, {key: 'ArrowDown'})
+    const staging = screen.getByTestId('vision-option-dataset-item-staging')
+    act(() => staging.focus())
+    expect(document.activeElement).toBe(staging)
+
+    // The search is reset as the menu opens, not as it closes, which would re-filter the
+    // items while the menu fades out
+    fireEvent.keyDown(staging, {key: 'Escape'})
+    fireEvent.click(select)
+    expect((screen.getByTestId('vision-option-dataset-search') as HTMLInputElement).value).toBe('')
+    expect(screen.getByTestId('vision-option-dataset-item-auto')).toBeTruthy()
+    expect(document.activeElement).toBe(screen.getByTestId('vision-option-dataset-search'))
+  })
+
   it('lists today first in the API version list, then dated versions, vX and v1', async () => {
     renderRedesign()
     openRequestTab('options')
@@ -4822,8 +4857,8 @@ describe('VisionRedesign', () => {
     expect(optionIds().filter((id) => id === today)).toHaveLength(1)
     expect(optionIds().slice(-2)).toEqual(['vX', 'v1'])
     const todayOption = screen.getByTestId(`vision-option-api-version-option-${today}`)
-    expect(todayOption.textContent).toContain('vision.options.api-version.today')
-    expect(todayOption.textContent).toContain(today)
+    // Titled with the version like the other options, with "Today" under it
+    expect(todayOption.textContent).toBe(`${today}vision.options.api-version.today`)
     expect(screen.getByTestId('vision-option-api-version-option-v1').textContent).toContain(
       'vision.options.api-version.legacy',
     )

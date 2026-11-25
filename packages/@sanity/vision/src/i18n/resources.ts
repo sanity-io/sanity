@@ -791,7 +791,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.options.api-version.latest': 'Latest',
   /** Heading of the API version list's dated versions, below its Today option */
   'vision.options.api-version.dated': 'Dated versions',
-  /** The first option of the API version list, today's date, which it shows under this title */
+  /** Under the first option of the API version list, which is today's date */
   'vision.options.api-version.today': 'Today',
   /** Under the API version content variants need, in the API version list */
   'vision.options.api-version.variants': 'Required for variants',

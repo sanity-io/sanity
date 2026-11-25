@@ -396,21 +396,6 @@ export interface ValidationError {
    * @deprecated prefer `path`
    */
   paths?: Path[]
-
-  /**
-   * @deprecated Unused. Was used to store the results from `.either()` /`.all()`
-   */
-  children?: ValidationMarker[]
-
-  /**
-   * @deprecated Unused. Was used to signal if this error came from an `.either()`/`.all()`.
-   */
-  operation?: 'AND' | 'OR'
-
-  /**
-   * @deprecated Unused. Was relevant when validation error was used as a class.
-   */
-  cloneWithMessage?(message: string): ValidationError
 }
 
 /** @public */

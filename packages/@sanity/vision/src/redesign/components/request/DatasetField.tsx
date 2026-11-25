@@ -133,7 +133,7 @@ export function DatasetField({
       <OptionMenuButton
         foldRef={foldRef}
         id={elementId}
-        onClose={() => setQuery('')}
+        onOpen={() => setQuery('')}
         onSearchQueryChange={setQuery}
         searchPlaceholder={t('vision.options.dataset.search-placeholder')}
         searchQuery={query}

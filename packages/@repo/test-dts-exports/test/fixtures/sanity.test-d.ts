@@ -273,8 +273,6 @@ import type {
   CreateWorkspaceFromConfigOptions,
   CrossDatasetReferenceComponents,
   CrossDatasetReferenceDefinition,
-  CrossDatasetReferenceFilterResolver,
-  CrossDatasetReferenceFilterSearchOptions,
   CrossDatasetReferenceInput,
   CrossDatasetReferenceInputProps,
   CrossDatasetReferenceSchemaType,
@@ -1466,7 +1464,6 @@ import type {
   VirtualizerScrollInstance,
   VirtualizerScrollInstanceProvider,
   VisibleWorkspacesContextValue,
-  WeakCrossDatasetReferenceValue,
   WeakGlobalDocumentReferenceValue,
   WeakReference,
   WelcomeBackEvent,
@@ -2308,12 +2305,6 @@ describe('sanity', () => {
   test('CrossDatasetReferenceDefinition', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<CrossDatasetReferenceDefinition>().toBeObject()
-  })
-  test('CrossDatasetReferenceFilterResolver', () => {
-    expectTypeOf<CrossDatasetReferenceFilterResolver>().not.toBeNever()
-  })
-  test('CrossDatasetReferenceFilterSearchOptions', () => {
-    expectTypeOf<CrossDatasetReferenceFilterSearchOptions>().not.toBeNever()
   })
   test('CrossDatasetReferenceInput', () => {
     expectTypeOf<typeof CrossDatasetReferenceInput>().toBeFunction()
@@ -5909,9 +5900,6 @@ describe('sanity', () => {
   })
   test('VisibleWorkspacesContextValue', () => {
     expectTypeOf<VisibleWorkspacesContextValue>().toBeObject()
-  })
-  test('WeakCrossDatasetReferenceValue', () => {
-    expectTypeOf<WeakCrossDatasetReferenceValue>().toBeObject()
   })
   test('WeakGlobalDocumentReferenceValue', () => {
     expectTypeOf<WeakGlobalDocumentReferenceValue>().toBeObject()

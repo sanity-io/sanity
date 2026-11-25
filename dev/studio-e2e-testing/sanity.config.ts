@@ -141,9 +141,6 @@ const defaultConfig = defineConfig({
     enabled: true,
     actions: [TestReleaseAction],
   },
-  create: {
-    startInCreateEnabled: false,
-  },
   mediaLibrary: {
     enabled: true,
   },
