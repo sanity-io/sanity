@@ -199,7 +199,11 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
           variantsById={variantsById}
         />
         {isDefaultBlocked && (
-          <BlockedNotice id={blockedReasonId} variantCount={description.blockingVariantCount} />
+          <BlockedNotice
+            id={blockedReasonId}
+            showHeading={deletableIds.length > 0}
+            variantCount={description.blockingVariantCount}
+          />
         )}
         {/* While the Default is blocked it is not deleted, so the links to it don't apply. */}
         {warnIncomingReferences && !isDefaultBlocked && (
@@ -252,6 +256,11 @@ function getHeader({
   selectedCount: number
 }): string {
   const {includesDefault, deletableIds, blockedIds} = description
+  // Only the blocked Default is selected: the title says it can't be deleted, rather than asking a
+  // question the notice below then answers with no.
+  if (blockedIds.length > 0 && deletableIds.length === 0) {
+    return t('document-group.delete.blocked.heading')
+  }
   if (blockedIds.length > 0 && deletableIds.length > 0) {
     // The title counts what the button deletes, out of what was selected.
     return t('document-group.delete.some-of-title', {
@@ -392,7 +401,16 @@ function VersionChipRow({id, variant}: {id: string; variant: Variant | undefined
   )
 }
 
-function BlockedNotice({id, variantCount}: {id: string; variantCount: number}) {
+function BlockedNotice({
+  id,
+  showHeading,
+  variantCount,
+}: {
+  id: string
+  /** Off when the dialog's title already says the Default can't be deleted yet. */
+  showHeading: boolean
+  variantCount: number
+}) {
   const {t} = useTranslation(studioLocaleNamespace)
   const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   return (
@@ -407,9 +425,11 @@ function BlockedNotice({id, variantCount}: {id: string; variantCount: number}) {
         />
         <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
           <VStack gap={3}>
-            <Text size={1} as="div" trim={true} weight="medium" tone="critical">
-              {t('document-group.delete.blocked.heading')}
-            </Text>
+            {showHeading && (
+              <Text size={1} as="div" trim={true} weight="medium" tone="critical">
+                {t('document-group.delete.blocked.heading')}
+              </Text>
+            )}
             <VStack as="ul" gap={3} style={{paddingInlineStart: 0, listStyle: 'none', margin: 0}}>
               <li data-testid="blocked-by-variants">
                 <Text size={1} as="div" trim={true}>
