@@ -11,6 +11,7 @@ import {createSchema} from '../../../../../schema/createSchema'
 import {applyAll} from '../../../../patch/applyPatch'
 import {set, unset} from '../../../../patch/patch'
 import {PatchEvent} from '../../../../patch/PatchEvent'
+import {type FormPatch} from '../../../../patch/types'
 import {withDefaultCrop} from '../utils/defaultCrop'
 
 const WIDE_REF = 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-2000x1000-jpg'
@@ -18,6 +19,14 @@ const SQUARE_REF = 'image-a75b03fdd5b5fa36947bf2b776a542e0c940f682-1000x1000-jpg
 
 function setAsset(ref: string) {
   return set({_type: 'reference', _ref: ref}, ['asset'])
+}
+
+function describePatches(patches: FormPatch[]) {
+  return patches.map(({type, path}) => `${type} ${path.join('.')}`)
+}
+
+function browseChange(ref: string) {
+  return [unset(['hotspot']), unset(['crop']), unset(['media']), setAsset(ref)]
 }
 
 describe('withDefaultCrop', () => {
@@ -45,14 +54,32 @@ describe('withDefaultCrop', () => {
     ).toHaveLength(2)
   })
 
-  test('keeps the crop when the field already holds the asset', () => {
-    const {patches} = withDefaultCrop([setAsset(WIDE_REF)], {aspectRatio: 1}, undefined, WIDE_REF)
-    expect(patches.map(({type, path}) => `${type} ${path.join('.')}`)).toEqual(['set asset'])
+  test('keeps the crop and hotspot when a constrained field reselects its asset', () => {
+    const {patches} = withDefaultCrop(browseChange(WIDE_REF), {aspectRatio: 1}, undefined, WIDE_REF)
+    expect(describePatches(patches)).toEqual(['unset media', 'set asset'])
+  })
+
+  test('keeps the legacy unsets when an unconstrained field reselects its asset', () => {
+    const {patches} = withDefaultCrop(browseChange(WIDE_REF), undefined, undefined, WIDE_REF)
+    expect(describePatches(patches)).toEqual([
+      'unset hotspot',
+      'unset crop',
+      'unset media',
+      'set asset',
+    ])
   })
 
   test('writes the default crop when the field holds a different asset', () => {
-    const {patches} = withDefaultCrop([setAsset(WIDE_REF)], {aspectRatio: 1}, undefined, SQUARE_REF)
-    expect(patches.map(({type, path}) => `${type} ${path.join('.')}`)).toEqual([
+    const {patches} = withDefaultCrop(
+      browseChange(WIDE_REF),
+      {aspectRatio: 1},
+      undefined,
+      SQUARE_REF,
+    )
+    expect(describePatches(patches)).toEqual([
+      'unset hotspot',
+      'unset crop',
+      'unset media',
       'set asset',
       'set crop',
     ])

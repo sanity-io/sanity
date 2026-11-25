@@ -161,6 +161,33 @@ function tooSmallHint(width: number, height: number): string {
   return `This image is too small to crop to ${width} × ${height} px. Upload a larger image.`
 }
 
+const VALIDATION_MESSAGE = 'Image failed custom validation'
+
+function ValidatedImageToolInputHarness() {
+  const schemaTypes = [
+    defineType({
+      type: 'document',
+      name: 'test',
+      title: 'Test',
+      fields: [
+        defineField({
+          type: 'image',
+          name: 'image',
+          title: 'Image',
+          options: {hotspot: true},
+          components: {input: ImageToolSchemaInput},
+          validation: (rule) => rule.custom(() => VALIDATION_MESSAGE),
+        }),
+      ],
+    }),
+  ]
+  return (
+    <TestWrapper schemaTypes={schemaTypes}>
+      <TestForm document={DOCUMENT} />
+    </TestWrapper>
+  )
+}
+
 function getCropSize() {
   return page.getByTestId('image-tool-crop-size')
 }
@@ -173,6 +200,17 @@ describe('image tool input', () => {
     await waitForFixtureImage()
     await expect.element(page.getByText('Hotspot & Crop')).toBeVisible()
     await settleChromaticEndState()
+  })
+
+  test('shows the image validation in the dialog header', async () => {
+    void render(<ValidatedImageToolInputHarness />)
+
+    await waitForFixtureImage()
+    await expect.element(page.getByText('Hotspot & Crop')).toBeVisible()
+    const toolField = page.getByText('Hotspot & Crop').element().closest('[data-level]')
+    await expect
+      .poll(() => toolField?.querySelector('[data-testid="input-validation-icon-error"]'))
+      .toBeInstanceOf(Element)
   })
 
   test('warns that hotspot and crop might not apply to an SVG asset', async () => {

@@ -174,6 +174,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
     path,
     focusPath = EMPTY_ARRAY,
     presence,
+    validation,
     onChange,
     schemaType,
     onPathFocus,
@@ -283,6 +284,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
       }
       deprecated={schemaType.deprecated}
       path={path}
+      validation={validation}
       __unstable_presence={presence}
     >
       {isSvg ? (

@@ -1,6 +1,7 @@
 import {getValidImageCropOptions} from '@sanity/schema/_internal'
 import {type ImageHotspot, type ImageOptions} from '@sanity/types'
 import {getDefaultImageCrop} from '@sanity/util/image'
+import reject from 'lodash-es/reject.js'
 
 import {set, unset} from '../../../../patch/patch'
 import {PatchEvent} from '../../../../patch/PatchEvent'
@@ -15,8 +16,21 @@ export function getSetAssetRef(patch: FormPatch): string | undefined {
   return typeof ref === 'string' ? ref : undefined
 }
 
+function isFieldUnset(patch: FormPatch, field: 'crop' | 'hotspot'): boolean {
+  return patch.type === 'unset' && patch.path.length === 1 && patch.path[0] === field
+}
+
 function isHotspotUnset(patch: FormPatch): boolean {
-  return patch.type === 'unset' && patch.path.length === 1 && patch.path[0] === 'hotspot'
+  return isFieldUnset(patch, 'hotspot')
+}
+
+function isCropOrHotspotUnset(patch: FormPatch): boolean {
+  return isFieldUnset(patch, 'crop') || isHotspotUnset(patch)
+}
+
+function isConstrained(options: ImageOptions | undefined): boolean {
+  const {aspectRatio, minDimensions} = getValidImageCropOptions(options)
+  return aspectRatio !== undefined || minDimensions !== undefined
 }
 
 /**
@@ -56,7 +70,14 @@ export function withDefaultCrop(
   hotspot?: ImageHotspot,
   currentAssetRef?: string,
 ): PatchEvent {
-  const {patches} = PatchEvent.from(patch)
+  const {patches: incomingPatches} = PatchEvent.from(patch)
+  const isSameAssetReselect =
+    currentAssetRef !== undefined &&
+    isConstrained(options) &&
+    incomingPatches.some((current) => getSetAssetRef(current) === currentAssetRef)
+  const patches = isSameAssetReselect
+    ? reject(incomingPatches, isCropOrHotspotUnset)
+    : incomingPatches
   const keptHotspot = patches.some(isHotspotUnset) ? undefined : hotspot
   return PatchEvent.from(
     patches.flatMap((current) => [

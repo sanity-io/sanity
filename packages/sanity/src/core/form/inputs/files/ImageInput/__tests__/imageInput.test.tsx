@@ -242,6 +242,7 @@ describe('ImageInput default crop', () => {
       _type: 'image',
       asset: {_type: 'reference', _ref: WIDE_REF},
       crop: CENTERED_SQUARE_CROP,
+      hotspot: {x: 0.5, y: 0.5, width: 0.2, height: 0.2},
     }
     const assetSource = createMockAssetSourceWithMediaLibraryUploader({browseAssetId: WIDE_REF})
     const {onChange} = await renderWithOptions(
@@ -262,6 +263,13 @@ describe('ImageInput default crop', () => {
       ).toBe(true)
     })
     expect(cropAfterAsset(onChange)).toBeUndefined()
+    const unsetsCropOrHotspot = changePatches(onChange).some((patches) =>
+      patches.some(
+        (patch) =>
+          patch.type === 'unset' && (patch.path[0] === 'crop' || patch.path[0] === 'hotspot'),
+      ),
+    )
+    expect(unsetsCropOrHotspot).toBe(false)
   })
 
   it('clears a stale crop when its asset source uploader replaces the asset with one that fits', async () => {
