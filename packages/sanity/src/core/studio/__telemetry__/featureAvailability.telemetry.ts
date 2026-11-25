@@ -80,7 +80,6 @@ export function collectWorkspaceFeatures(workspace: Workspace): WorkspaceFeature
     canvasEnabled: workspace.apps?.canvas?.enabled,
     variantsEnabled: workspace.beta?.variants?.enabled,
     documentGroupInventoryEnabled: workspace.beta?.documentGroupInventory?.enabled,
-    // oxlint-disable-next-line no-deprecated -- keep reporting the deprecated opt-out until it is removed
     eventsApiReleasesEnabled: workspace.beta?.eventsAPI?.releases,
     announcementsEnabled: workspace.announcements?.enabled,
     draftsEnabled: workspace.document.drafts.enabled,
