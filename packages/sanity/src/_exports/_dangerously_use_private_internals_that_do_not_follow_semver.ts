@@ -386,6 +386,12 @@ export {CreateButton as CreateReferenceButton} from '../core/form/inputs/Referen
 export {ReferenceAutocomplete} from '../core/form/inputs/ReferenceInput/ReferenceAutocomplete'
 export {type CreateReferenceOption} from '../core/form/inputs/ReferenceInput/types'
 export {
+  MemberFieldSet,
+  ObjectInputMembers,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  ObjectMembers,
+} from '../core/form/lazy'
+export {
   ArrayOfObjectsInputMember,
   type ArrayOfObjectsMemberProps,
 } from '../core/form/members/array/ArrayOfObjectsInputMember'
@@ -394,14 +400,8 @@ export {
   type ArrayOfObjectsInputMembersProps,
 } from '../core/form/members/array/ArrayOfObjectsInputMembers'
 export {type MemberFieldProps} from '../core/form/members/object/MemberField'
-export {MemberFieldSet} from '../core/form/members/object/MemberFieldset'
 export {type ObjectInputMemberProps} from '../core/form/members/object/ObjectInputMember'
-export {
-  ObjectInputMembers,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  ObjectMembers,
-  type ObjectMembersProps,
-} from '../core/form/members/object/ObjectInputMembers'
+export {type ObjectMembersProps} from '../core/form/members/object/ObjectInputMembers'
 export {prefixPath, SANITY_PATCH_TYPE} from '../core/form/patch/patch'
 export {resolveConditionalProperty} from '../core/form/store/conditional-property/resolveConditionalProperty'
 export {setAtPath} from '../core/form/store/stateTreeHelper'

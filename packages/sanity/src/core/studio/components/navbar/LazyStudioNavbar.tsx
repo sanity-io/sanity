@@ -1,5 +1,5 @@
 import {createLazyComponent} from '../../../components/lazy/createLazyComponent'
-import {type NavbarProps} from '../../../config/studio/types'
+import {type NavbarProps, type ToolMenuProps} from '../../../config/studio/types'
 
 // The navbar (search, releases menu, presence, user menu, help resources) is the heaviest part
 // of the studio shell, and nothing renders it before the user is authenticated. Exporting this
@@ -13,10 +13,22 @@ import {type NavbarProps} from '../../../config/studio/types'
 // `StudioLayoutComponent` has always said there is deliberately no boundary around the navbar
 // because its height depends on what it renders, and that still holds.
 /**
- * The default Studio navbar. Renders the actual navbar once its code has loaded.
+ * The default Studio navbar. Renders the actual navbar once its code has loaded, for custom
+ * navbars that render the default one.
  *
- * @internal
+ * @hidden
+ * @beta
  */
-export const LazyStudioNavbar = createLazyComponent<Omit<NavbarProps, 'renderDefault'>>(
+export const StudioNavbar = createLazyComponent<Omit<NavbarProps, 'renderDefault'>>(
   () => import('./StudioNavbar.lazy'),
+)
+
+/**
+ * The default tool menu, from the same chunk as the navbar that renders it.
+ *
+ * @hidden
+ * @beta
+ */
+export const StudioToolMenu = createLazyComponent<ToolMenuProps>(() =>
+  import('./StudioNavbar.lazy').then((module) => ({default: module.StudioToolMenu})),
 )
