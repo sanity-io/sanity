@@ -23,4 +23,10 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
       // T5: the document that shows the shipped field marks on every node kind (open fm-1 as Members, in Published).
       S.documentTypeListItem('fieldMarksTest').title('Field marks test'),
+      S.divider(),
+      // Numbered sets for the delete tasks in the review guide (6.1-6.3): safe to delete, kept out of the Books lists.
+      S.listItem()
+        .id('practiceDoc')
+        .title('Practice: safe to delete')
+        .child(S.documentTypeList('practiceDoc').title('Practice: safe to delete').defaultOrdering([{field: 'title', direction: 'asc'}])),
     ])
