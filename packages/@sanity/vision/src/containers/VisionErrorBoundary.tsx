@@ -1,8 +1,8 @@
 /* oxlint-disable @sanity/i18n/no-attribute-string-literals */
 /* oxlint-disable i18next/no-literal-string */
-import {Button, Card, Heading} from '@sanity/ui'
+import {Button, Card} from '@sanity/ui'
 import {Component, type PropsWithChildren} from 'react'
-import {Code, Container, VStack} from 'ui5'
+import {Heading, Code, Container, VStack} from 'ui5'
 
 import {clearLocalStorage} from '../util/localStorage'
 
@@ -76,7 +76,9 @@ export class VisionErrorBoundary extends Component<
               />
             </div>
 
-            <Heading>An error occurred</Heading>
+            <Heading as="h2" trim>
+              An error occurred
+            </Heading>
 
             <Card border radius={2} overflow="auto" padding={4} tone="inherit">
               <VStack gap={4}>
