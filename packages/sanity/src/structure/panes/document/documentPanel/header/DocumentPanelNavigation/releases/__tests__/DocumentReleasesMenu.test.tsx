@@ -3,7 +3,6 @@ import {render, screen, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {
   type SingleWorkspace,
-  useActiveReleases,
   useDocumentVersions,
   usePerspective,
   type VersionInfoDocumentStub,
@@ -11,6 +10,7 @@ import {
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
+import {useActiveReleases} from '../../../../../../../../core/releases/store/useActiveReleases'
 import {useReleasesToolAvailable} from '../../../../../../../../core/schedules/hooks/useReleasesToolAvailable'
 import {usePerspectiveNavigator} from '../../../../../../../hooks/usePerspectiveNavigator'
 import {structureUsEnglishLocaleBundle} from '../../../../../../../i18n'
@@ -27,9 +27,11 @@ import {DocumentReleasesMenu} from '../DocumentReleasesMenu'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useActiveReleases: vi.fn(),
   useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
+}))
+vi.mock('../../../../../../../../core/releases/store/useActiveReleases', () => ({
+  useActiveReleases: vi.fn(),
 }))
 
 vi.mock('../../../../../../../../core/schedules/hooks/useReleasesToolAvailable', () => ({

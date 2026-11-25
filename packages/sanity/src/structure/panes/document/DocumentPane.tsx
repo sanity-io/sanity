@@ -1,13 +1,7 @@
 import {type Path} from '@sanity/types'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import {memo, Suspense, useMemo} from 'react'
-import {
-  CopyPasteProvider,
-  getDefaultVariant,
-  getPublishedId,
-  usePerspective,
-  useSource,
-} from 'sanity'
+import {CopyPasteProvider, getPublishedId, usePerspective} from 'sanity'
 import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, VStack} from 'ui5'
 
@@ -16,9 +10,10 @@ import {
   getCreatableVariantTarget,
   useTargetDocumentState,
 } from '../../../core/hooks/useTargetDocumentState'
+import {getDefaultVariant} from '../../../core/perspective/getDefaultVariant'
 import {useDocumentType} from '../../../core/store/document/hooks/useDocumentType'
 import {useTemplatePermissions} from '../../../core/store/grants/templatePermissions'
-import {SourceProvider} from '../../../core/studio/source'
+import {SourceProvider, useSource} from '../../../core/studio/source'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DiffViewDocumentLayout} from '../../diffView/plugin/DiffViewDocumentLayout'
 import {structureLocaleNamespace} from '../../i18n'

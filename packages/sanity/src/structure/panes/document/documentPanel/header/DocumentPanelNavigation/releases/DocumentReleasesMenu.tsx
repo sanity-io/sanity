@@ -4,10 +4,8 @@ import {useCallback, useMemo, useState} from 'react'
 import {
   getPublishedId,
   getReleaseIdFromReleaseDocumentId,
-  isCardinalityOneRelease,
   ReleaseAvatar,
   ReleaseAvatarIcon,
-  useActiveReleases,
   useDocumentVersions,
   useGetDefaultPerspective,
   usePerspective,
@@ -17,8 +15,10 @@ import {useTranslation} from 'sanity/i18n'
 
 import {useFormatRelativeLocalePublishDate} from '../../../../../../../core/releases/hooks/useFormatRelativeLocalePublishDate'
 import {isReleaseDocument} from '../../../../../../../core/releases/store/types'
+import {useActiveReleases} from '../../../../../../../core/releases/store/useActiveReleases'
 import {getReleaseTone} from '../../../../../../../core/releases/util/getReleaseTone'
 import {useReleasesToolAvailable} from '../../../../../../../core/schedules/hooks/useReleasesToolAvailable'
+import {isCardinalityOneRelease} from '../../../../../../../core/util/releaseUtils'
 import {DEFAULT_VARIANT_TYPE_KEY} from '../../../../../../../core/variants/util/variantType'
 import {MenuItem} from '../../../../../../../ui-components/menuItem/MenuItem'
 import {usePerspectiveNavigator} from '../../../../../../hooks/usePerspectiveNavigator'

@@ -25,20 +25,6 @@ vi.mock('sanity', () => ({
   getPublishedId: (id: string) => id.replace(/^(drafts\.|versions\.[^.]+\.)/, ''),
   isDraftId: (id: string) => id.startsWith('drafts.'),
   getVersionFromId: (id: string) => /^versions\.([^.]+)\./.exec(id)?.[1],
-  CommandList: ({
-    items,
-    renderItem,
-  }: {
-    items: unknown[]
-    renderItem: (item: unknown, context: {activeIndex: number}) => ReactNode
-  }) => (
-    <div data-testid="command-list">
-      {items.map((item, index) => (
-        // oxlint-disable-next-line react/no-array-index-key -- a stand-in for the virtualized list
-        <div key={index}>{renderItem(item, {activeIndex: index})}</div>
-      ))}
-    </div>
-  ),
   SanityDefaultPreview: ({
     title,
     subtitle,
@@ -84,6 +70,20 @@ const useValuePreview = vi.fn(
 )
 
 vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
+  CommandList: ({
+    items,
+    renderItem,
+  }: {
+    items: unknown[]
+    renderItem: (item: unknown, context: {activeIndex: number}) => ReactNode
+  }) => (
+    <div data-testid="command-list">
+      {items.map((item, index) => (
+        // oxlint-disable-next-line react/no-array-index-key -- a stand-in for the virtualized list
+        <div key={index}>{renderItem(item, {activeIndex: index})}</div>
+      ))}
+    </div>
+  ),
   useValuePreview: (props: {
     value: {_id: string}
     schemaType: unknown

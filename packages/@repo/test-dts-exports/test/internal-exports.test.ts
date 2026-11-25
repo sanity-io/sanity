@@ -1,9 +1,9 @@
 /**
  * `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` is the canonical import
  * path for everything the Studio exports as an implementation detail. The public entries hide
- * the *runtime* ones, with one exception: a name a published plugin already imports from a public
- * entry stays there, because a missing named export is an ESM *link* error that stops the studio
- * booting, and auto-updating studios pick up a minor without a rebuild.
+ * the *runtime* ones. Studio 6 kept the ones published plugins import on the public entries too,
+ * because a missing named export is an ESM *link* error that stops the studio booting, and
+ * auto-updating studios pick up a minor without a rebuild; Studio 7 drops them.
  *
  * Three invariants, all checked against the built `.d.ts` files so they see what consumers see
  * (including symbols that reach a barrel through intermediate re-exports):
@@ -50,83 +50,13 @@ const PUBLIC_ENTRIES = {
 
 /**
  * `@internal` *runtime* declarations that stay reachable from a public entry, and why. Everything
- * here is also exported from the internals entry, which is the path to migrate to; these bindings
- * exist so that upgrading `sanity` alone cannot stop a studio from booting.
+ * listed here must also be exported from the internals entry, which is the path to migrate to.
  *
- * The package list comes from packing every `sanity-plugin-*` and `@sanity/*` package the npm
- * registry returns (312 packages) and scanning the shipped `dist` for named imports of the names
- * this stack moves. Drop a name once the packages behind it no longer import it; the next major
- * drops the rest.
- *
+ * Studio v7 keeps none: the names v6 kept for published plugins are only on the internals entry,
+ * so a plugin that still imports one from a public entry fails to link until it moves the import.
  * Type-only declarations are not listed here — see the note at the top of the file.
  */
-const KEPT_FOR_COMPATIBILITY: Record<string, Readonly<Record<string, string>>> = {
-  'sanity': {
-    CommandList: '@sanity/agent-context, @sanity/context',
-    ContextMenuButton: '@sanity/vision, sanity-plugin-s3-media',
-    FieldPresenceWithOverlay: 'sanity-plugin-icon-manager, sanity-plugin-inline-icon-manager',
-    LoadingBlock: 'sanity-plugin-s3-media',
-    MemberFieldSet: 'sanity-plugin-google-translate',
-    ObjectInputMembers: 'sanity-plugin-image-field',
-    RELEASES_STUDIO_CLIENT_OPTIONS: '@sanity/vision',
-    SANITY_PATCH_TYPE: 'sanity-plugin-pt-string, sanity-plugin-rich-table',
-    VARIANTS_STUDIO_CLIENT_OPTIONS: '@sanity/vision',
-    _isType: 'sanity-plugin-s3-media',
-    defineLocalesResources: '@sanity/vision',
-    getAnnotationAtPath: 'sanity-plugin-google-maps-zoom',
-    getDefaultVariant: '@sanity/vision',
-    getValueAtPath: '@sanity/agent-context, @sanity/context',
-    getVariantTitle: '@sanity/vision',
-    isArray: 'sanity-plugin-table-of-contents',
-    isCardinalityOneRelease: '@sanity/vision',
-    isDraft: 'sanity-plugin-phrase',
-    isString: 'sanity-plugin-table-of-contents',
-    prefixPath:
-      '@sanity/hierarchical-document-list, sanity-plugin-melting-hierarchical-document-list',
-    prepareForPreview: 'sanity-plugin-phrase',
-    resolveInitialValue: '@sanity/workflow-studio-plugin',
-    sortReleases: '@sanity/vision',
-    useActiveReleases: '@sanity/vision, @sanity/workflow-studio-plugin',
-    // A third hit came from a personal republish of another plugin; these two carry it.
-    useColorScheme: 'sanity-plugin-netlify, sanity-plugin-seofields',
-    useDocumentValuePermissions: 'sanity-plugin-trash',
-    useInitialValueResolverContext: '@sanity/workflow-studio-plugin',
-    useIsReleaseActive: '@sanity/workflow-studio-plugin',
-    useKeyValueStore: '@sanity/vision',
-    useScheduledDraftsEnabled: '@sanity/vision',
-    useSource: '@sanity/workflow-studio, sanity-plugin-prefixed-slug',
-    useUserColor: 'sanity-plugin-google-maps-zoom',
-    useValuePreview: '@sanity/workflow-studio-plugin, sanity-plugin-link-checker',
-    useWorkspaces: '@sanity/cross-dataset-duplicator, sanity-plugin-workspace-home',
-
-    // Already deprecated before this PR. Their removal is governed by their own deprecation —
-    // several say "the next major" in so many words — rather than by the internals moving, which
-    // is the reasoning #14842 established for a deprecated export.
-    defaultTheme: 'deprecated; removal governed by its deprecation',
-    EditScheduleForm: 'deprecated; removal governed by its deprecation',
-    ImperativeToast: 'deprecated; removal governed by its deprecation',
-    isPerspectiveRaw: 'deprecated; removal governed by its deprecation',
-    ObjectMembers: 'deprecated; removal governed by its deprecation',
-    unstable_useObserveDocument: 'deprecated alias of useUnstableObserveDocument, which stays',
-    unstable_useValuePreview: 'deprecated alias of useValuePreview, which stays',
-    useEnhancedObjectDialog: 'deprecated; removal governed by its deprecation',
-    useSearchMaxFieldDepth: 'deprecated; removal governed by its deprecation',
-    useTimelineSelector: 'deprecated; removal governed by its deprecation',
-    useTimelineStore: 'deprecated; removal governed by its deprecation',
-    useUnique: 'deprecated; removal governed by its deprecation',
-
-    useColorSchemeOptions: 'companion of useColorScheme (a function, not a type)',
-  },
-  'sanity/router': {
-    // Deprecated before this PR; see the note above.
-    WithRouter: 'deprecated; removal governed by its deprecation',
-    withRouter: 'deprecated; removal governed by its deprecation',
-  },
-  'sanity/structure': {
-    getOrderingMenuItemsForSchemaType: 'sanity-plugin-md-notes',
-    useStructureTool: 'sanity-plugin-structure-inbox',
-  },
-}
+const KEPT_FOR_COMPATIBILITY: Record<string, Readonly<Record<string, string>>> = {}
 
 /**
  * Exports that stay on a public entry *without* a matching internals-entry line, because the

@@ -57,7 +57,6 @@ import type {
   GenericListBuilder,
   GenericListInput,
   GenericViewBuilder,
-  getOrderingMenuItemsForSchemaType,
   IncomingReferenceAction,
   IncomingReferencesOptions,
   InitialValueTemplateItemBuilder,
@@ -137,7 +136,6 @@ import type {
   usePaneRouter,
   UserComponent,
   UserViewComponent,
-  useStructureTool,
   View,
   ViewBuilder,
 } from 'sanity/structure'
@@ -305,9 +303,6 @@ describe('sanity/structure', () => {
   })
   test('GenericViewBuilder', () => {
     expectTypeOf<GenericViewBuilder<any, any>>().not.toBeNever()
-  })
-  test('getOrderingMenuItemsForSchemaType', () => {
-    expectTypeOf<typeof getOrderingMenuItemsForSchemaType>().toBeFunction()
   })
   test('IncomingReferenceAction', () => {
     expectTypeOf<IncomingReferenceAction>().not.toBeNever()
@@ -545,9 +540,6 @@ describe('sanity/structure', () => {
   })
   test('UserViewComponent', () => {
     expectTypeOf<UserViewComponent<any>>().not.toBeNever()
-  })
-  test('useStructureTool', () => {
-    expectTypeOf<typeof useStructureTool>().toBeFunction()
   })
   test('View', () => {
     expectTypeOf<View>().not.toBeNever()
