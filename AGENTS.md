@@ -761,6 +761,13 @@ code off that path. Measure it on the CDN build, not on `sanity build` output:
   `PreloadStudioShell`, mounted inside `AuthBoundary`, so the fetch overlaps with workspace loading.
   It imports the same `.lazy.ts` shims the `lazy()` components do, so the preload warms the chunks
   they request.
+- The studio's own strings (`src/core/i18n/bundles/studio/resources.ts`) load on demand through
+  `resources: () => import('./resources')`, like the structure and presentation bundles. The
+  fallback i18n instance requests them through the i18n backend when it is created, and
+  `FallbackLocaleProvider` wraps the pre-workspace screens in a `Suspense` whose fallback is a
+  `LoadingBlock` without text (the text variant translates). A test that builds an i18n instance
+  and asserts synchronously awaits `i18next.loadNamespaces(…)` after `init()` (`createTestProvider`
+  does): `init()` resolves before a lazy bundle has arrived.
 - Exporting a `memo()`-wrapped component through a facade changes `typeof` from `object` to
   `function` in `test/__snapshots__/exports.test.ts.snap`, and the declaration it emits from a
   `const` to a function, so the generated fixtures in `@repo/test-dts-exports` switch from
@@ -856,7 +863,7 @@ changing which plugin registers one.
 
 ### Locale resources: never delete a key
 
-Never delete a key from an en-US locale resource file (`bundles/studio.ts`, the plugins'
+Never delete a key from an en-US locale resource file (`bundles/studio/resources.ts`, the plugins'
 `i18n/resources.ts`). Studios on older versions still read keys the current code has stopped
 using, and they load translations from the same locale packages, which track these resources.
 Changing a key's value is fine. When a key falls out of use, keep it and add
