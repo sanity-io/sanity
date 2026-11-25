@@ -11,10 +11,9 @@ import {Translate} from '../../../../i18n/Translate'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import {FormField} from '../../../components/formField/FormField'
-import {set, setIfMissing} from '../../../patch/patch'
 import {PatchEvent} from '../../../patch/PatchEvent'
-import {type FormPatch} from '../../../patch/types'
 import {type MissingKeysError} from '../../../store/types/memberErrors'
+import {getMissingKeyPatches} from './missingKeyPatches'
 
 interface Props {
   error: MissingKeysError
@@ -25,20 +24,7 @@ interface Props {
 export function MissingKeysAlert(props: Props) {
   const {error, onChange, path} = props
   const handleFixMissingKeys = useCallback(() => {
-    onChange(
-      PatchEvent.from(
-        (error.value || []).flatMap((item, index): FormPatch[] => {
-          if (typeof item._key === 'string' && item._key.length > 0) {
-            return []
-          }
-          // setIfMissing is a no-op if another client keyed the item; it cannot replace ''
-          if (item._key === '') {
-            return [set(randomKey(), [index, '_key'])]
-          }
-          return [setIfMissing(randomKey(), [index, '_key'])]
-        }),
-      ),
-    )
+    onChange(PatchEvent.from(getMissingKeyPatches(error.value || [], randomKey)))
   }, [error, onChange])
 
   const {t} = useTranslation()
