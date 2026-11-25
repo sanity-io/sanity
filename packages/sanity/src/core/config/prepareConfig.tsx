@@ -200,6 +200,16 @@ function loadResolveWorkspaceSource(): Observable<typeof resolveWorkspaceSource>
 }
 
 /**
+ * Starts loading the code that resolves a source before the first source is subscribed to, so
+ * the fetch overlaps with loading the rest of the authenticated studio.
+ *
+ * @internal
+ */
+export function preloadWorkspaceSourceResolver(): void {
+  void import('./resolveWorkspaceSource')
+}
+
+/**
  * Takes in a config (created from the `defineConfig` function) and returns
  * an array of `WorkspaceSummary`. Note: this only partially resolves a config.
  *
