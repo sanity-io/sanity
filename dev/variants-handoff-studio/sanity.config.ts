@@ -207,7 +207,7 @@ const DATASET_WITHOUT_VARIANTS = process.env.SANITY_STUDIO_DATASET || 'v7-ux-rev
 // otherwise change the documents the open beta test cases use.
 const DATASET_DRAFTS_OFF = process.env.SANITY_STUDIO_DATASET || 'drafts-off-review'
 
-// Open Beta Review Studio (19 Nov, Jordan's ask): the open beta workspace first, then four switch combinations to compare
+// Open Beta Review Studio (19 Nov, Jordan's ask): the open beta workspace first, then the switch combinations to compare
 // against it. The first workspace is where the studio address lands.
 const openBetaWorkspaces = [
   reviewWorkspace({
@@ -242,6 +242,18 @@ const openBetaWorkspaces = [
     title: 'Only Releases (Variants off)',
     basePath: '/releases-only',
     dataset: DATASET_WITHOUT_VARIANTS,
+    variants: false,
+    releases: true,
+    drafts: true,
+  }),
+  // 25 Nov (Faheem): Variants off over the data that has variants, as in a studio that turns Variants off after making
+  // some. Case 10.2 needs it: the published document stays blocked from deletion while its hidden variants exist. A
+  // workspace of its own, so the Releases-only cases keep their data without variant versions.
+  reviewWorkspace({
+    name: 'variants-turned-off',
+    title: 'Variants turned off (data has variants)',
+    basePath: '/variants-turned-off',
+    dataset: DATASET_WITH_VARIANTS,
     variants: false,
     releases: true,
     drafts: true,
