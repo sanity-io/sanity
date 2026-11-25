@@ -3,7 +3,7 @@ import {SearchIcon} from '@sanity/icons/Search'
 // oxlint-disable-next-line no-restricted-imports -- the chevron trigger needs the hit-area style only @sanity/ui Button accepts
 import {Button, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
-import {type ChangeEvent, lazy, Suspense, useCallback, useState} from 'react'
+import {type ChangeEvent, type ComponentProps, lazy, Suspense, useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 import {Box, Flex} from 'ui5'
 
@@ -15,6 +15,7 @@ import {oversizedButtonStyle} from '../../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {useGetDefaultPerspective} from '../../useGetDefaultPerspective'
 import {useSetPerspective} from '../../useSetPerspective'
+import {AnimatedWidthSibling} from '../AnimatedTextWidth'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
 import {usePerspectiveDetailLinkTrigger} from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
@@ -26,6 +27,19 @@ import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 const OversizedButton = styled(Button)`
   ${oversizedButtonStyle}
 `
+
+/**
+ * The classic pill's chevron, captured on its own so it slides with the animated label. The menu
+ * clones this element to attach its ref and handlers, so it forwards every prop to the button.
+ * Wrapping the whole menu instead would also capture its open popover, which is portaled under it.
+ */
+function ReleasesMenuChevron(props: ComponentProps<typeof OversizedButton>) {
+  return (
+    <AnimatedWidthSibling>
+      <OversizedButton {...props} />
+    </AnimatedWidthSibling>
+  )
+}
 
 // Opened from the menu, so the dialog (form, date handling) is fetched on first use rather
 // than with the navbar. Opening the menu starts the fetch, so the chunk is normally there by
@@ -143,7 +157,7 @@ export function ReleasesMenu({
           variantsEnabled ? (
             <ReleasesMenuChip fullWidth={fullWidth} />
           ) : (
-            <OversizedButton
+            <ReleasesMenuChevron
               aria-label={t('release.navbar.open-releases')}
               data-testid="global-perspective-menu-button"
               iconRight={ChevronDownIcon}

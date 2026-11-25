@@ -9,12 +9,18 @@ import {Text, Box} from 'ui5'
 import {Button} from '../../../ui-components/button/Button'
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {AnimatedTextWidth} from './AnimatedTextWidth'
+import {
+  AnimatedTextWidth,
+  AnimatedWidthPill,
+  AnimatedWidthSibling,
+  useWidthMorphValue,
+} from './AnimatedTextWidth'
 import {
   perspectiveButtonCard,
   perspectiveButtonCardFullWidth,
   perspectiveButtonClear,
   perspectiveButtonDivider,
+  perspectiveButtonEnd,
   perspectiveButtonTrigger,
   perspectiveButtonTriggerFullWidth,
 } from './GlobalPerspectiveButton.css'
@@ -57,6 +63,8 @@ export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
   const {t} = useTranslation()
   const clearLabel = t('perspective.action.clear')
   const showFullText = fullText !== undefined && fullText !== text
+  // The label beside it changes a transition later, so the clear control appears and goes with it.
+  const showClear = useWidthMorphValue(Boolean(handleClearPerspective), fullWidth)
 
   const handleClearMouseDown = useCallback((event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
@@ -70,10 +78,44 @@ export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
     [handleClearPerspective],
   )
 
-  return (
+  const trigger = (
+    <UIButton
+      {...buttonProps}
+      aria-label={showFullText ? fullText : buttonProps['aria-label']}
+      className={clsx(perspectiveButtonTrigger, fullWidth && perspectiveButtonTriggerFullWidth)}
+      gap={2}
+      icon={icon}
+      iconRight={ChevronDownIcon}
+      justify={fullWidth ? 'flex-start' : undefined}
+      mode="bleed"
+      padding={2}
+      ref={ref}
+      radius={0}
+      text={text}
+    />
+  )
+
+  const clearControl = showClear ? (
+    <div className={perspectiveButtonEnd}>
+      <div aria-hidden className={perspectiveButtonDivider} />
+      <Button
+        aria-label={clearLabel}
+        className={perspectiveButtonClear}
+        data-testid="global-perspective-button-clear"
+        icon={CloseIcon}
+        mode="bleed"
+        onClick={handleClear}
+        onMouseDown={handleClearMouseDown}
+        tooltipProps={{content: clearLabel}}
+      />
+    </div>
+  ) : null
+
+  const chip = (
     <Card
       border
       className={clsx(perspectiveButtonCard, fullWidth && perspectiveButtonCardFullWidth)}
+      data-has-clear={showClear ? '' : undefined}
       data-ui="GlobalPerspectiveButton"
       display="flex"
       flex="none"
@@ -90,37 +132,16 @@ export function GlobalPerspectiveButton(props: GlobalPerspectiveButtonProps) {
         portal
         disabled={!showFullText}
       >
-        <UIButton
-          {...buttonProps}
-          aria-label={showFullText ? fullText : buttonProps['aria-label']}
-          className={clsx(perspectiveButtonTrigger, fullWidth && perspectiveButtonTriggerFullWidth)}
-          gap={2}
-          icon={icon}
-          iconRight={ChevronDownIcon}
-          justify={fullWidth ? 'flex-start' : undefined}
-          mode="bleed"
-          padding={2}
-          ref={ref}
-          radius={0}
-          text={fullWidth ? text : <AnimatedTextWidth text={text}>{text}</AnimatedTextWidth>}
-        />
+        {fullWidth ? trigger : <AnimatedTextWidth text={text}>{trigger}</AnimatedTextWidth>}
       </Tooltip>
 
-      {handleClearPerspective ? (
-        <>
-          <div aria-hidden className={perspectiveButtonDivider} />
-          <Button
-            aria-label={clearLabel}
-            className={perspectiveButtonClear}
-            data-testid="global-perspective-button-clear"
-            icon={CloseIcon}
-            mode="bleed"
-            onClick={handleClear}
-            onMouseDown={handleClearMouseDown}
-            tooltipProps={{content: clearLabel}}
-          />
-        </>
-      ) : null}
+      {clearControl && !fullWidth ? (
+        <AnimatedWidthSibling>{clearControl}</AnimatedWidthSibling>
+      ) : (
+        clearControl
+      )}
     </Card>
   )
+
+  return fullWidth ? chip : <AnimatedWidthPill>{chip}</AnimatedWidthPill>
 }

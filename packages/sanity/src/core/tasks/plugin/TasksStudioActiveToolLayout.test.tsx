@@ -2,7 +2,7 @@ import {LayerProvider, studioTheme, ThemeProvider, useMediaIndex} from '@sanity/
 import {render, screen} from '@testing-library/react'
 import {act} from 'react'
 import {TasksModePromiseContext, TasksNavigationContext} from 'sanity/_singletons'
-import {afterEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeAll, describe, expect, it, vi} from 'vitest'
 
 import {type Tool} from '../../config/types'
 import {type TasksMode} from '../context/enabled/types'
@@ -15,6 +15,11 @@ vi.mock(import('@sanity/ui'), async (importOriginal) => {
 })
 
 const tool: Tool = {name: 'structure', title: 'Structure', component: () => null}
+
+// The layout lazy loads the sidebar; transforming it here keeps that out of the tests' timeouts
+beforeAll(async () => {
+  await import('../components/sidebar/TasksSidebar')
+}, 60_000)
 
 afterEach(() => {
   vi.mocked(useMediaIndex).mockReturnValue(2)

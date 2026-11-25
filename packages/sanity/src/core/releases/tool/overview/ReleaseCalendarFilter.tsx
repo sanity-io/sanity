@@ -1,7 +1,5 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {format} from 'date-fns/format'
-import {AnimatePresence, motion} from 'motion/react'
-import {useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {
@@ -71,8 +69,6 @@ export const RELEASE_CALENDAR_FILTER_DAY: Record<
   drafts: DraftsCalendarFilterDay,
 }
 
-const MotionButton = motion.create(Button)
-
 export const DateFilterButton = ({
   filterDate,
   onClear,
@@ -80,34 +76,16 @@ export const DateFilterButton = ({
   filterDate: Date
   onClear: () => void
 }) => {
-  const [isExiting, setIsExiting] = useState(false)
-
-  const handleOnExitComplete = useMemo(
-    () => () => {
-      setIsExiting(false)
-      onClear()
-    },
-    [onClear],
-  )
-
   if (!filterDate) return null
 
   return (
-    <AnimatePresence onExitComplete={handleOnExitComplete}>
-      {!isExiting && (
-        <MotionButton
-          data-testid="selected-date-filter"
-          initial={{width: 0, opacity: 0}}
-          animate={{width: 'auto', opacity: 1}}
-          exit={{width: 0, opacity: 0}}
-          transition={{duration: 0.35, ease: 'easeInOut'}}
-          iconRight={CloseIcon}
-          mode="bleed"
-          onClick={() => setIsExiting(true)}
-          selected
-          text={format(filterDate, 'PPP')}
-        />
-      )}
-    </AnimatePresence>
+    <Button
+      data-testid="selected-date-filter"
+      iconRight={CloseIcon}
+      mode="bleed"
+      onClick={onClear}
+      selected
+      text={format(filterDate, 'PPP')}
+    />
   )
 }

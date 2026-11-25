@@ -1,9 +1,9 @@
-import {motion} from 'motion/react'
 import {lazy, Suspense, use, useCallback} from 'react'
 import {Container, Flex} from 'ui5'
 
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {FallbackErrorScreen} from '../../../studio/screens/FallbackErrorScreen'
+import {panel} from './DocumentLimitsUpsellPanel.css'
 import {useDocumentLimitsUpsellContext} from './DocumentLimitUpsellProvider'
 
 // The studio layout renders this panel only once a tool fails on the document limit
@@ -48,11 +48,7 @@ function DocumentLimitsUpsellPanelContent({error, onReset}: DocumentLimitsUpsell
 
   return (
     <Flex height="100%" justifyContent="center" alignItems="center" padding={4}>
-      <motion.div
-        initial={{opacity: 0, scale: 0.95}}
-        animate={{opacity: 1, scale: 1}}
-        transition={{duration: 0.2}}
-      >
+      <div className={panel}>
         <Container size={0}>
           <UpsellPanel
             data={upsellData}
@@ -60,7 +56,7 @@ function DocumentLimitsUpsellPanelContent({error, onReset}: DocumentLimitsUpsell
             onSecondaryClick={handleSecondaryButtonClick}
           />
         </Container>
-      </motion.div>
+      </div>
     </Flex>
   )
 }

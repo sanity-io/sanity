@@ -78,7 +78,7 @@ const DIALOG_ACTION: NavbarAction[] = [
   {location: 'sidebar', name: 'open-dialog', render: () => <OpenDialogAction />},
 ]
 
-function NavDrawerHarness({actions}: {actions?: NavbarAction[]}) {
+function NavDrawerHarness({actions, isOpen}: {actions?: NavbarAction[]; isOpen: boolean}) {
   return (
     <TestWrapper schemaTypes={[]}>
       <RouterProvider router={router} state={{tool: 'structure'}} onNavigate={noop}>
@@ -88,7 +88,7 @@ function NavDrawerHarness({actions}: {actions?: NavbarAction[]}) {
               <NavDrawer
                 __internal_actions={actions}
                 activeToolName="structure"
-                isOpen
+                isOpen={isOpen}
                 onClose={noop}
                 tools={TOOLS}
               />
@@ -98,6 +98,24 @@ function NavDrawerHarness({actions}: {actions?: NavbarAction[]}) {
       </RouterProvider>
     </TestWrapper>
   )
+}
+
+/**
+ * Renders the drawer closed and opens it once the test pane has faded in. The drawer slides in
+ * as a view transition, and Chromium 159 crashes a page that starts one in an iframe, which is
+ * where Vitest runs the tests, while a CSS transition is running.
+ */
+async function renderOpenDrawer(actions?: NavbarAction[]) {
+  const {rerender} = await render(<NavDrawerHarness actions={actions} isOpen={false} />)
+  await expect.element(page.getByTestId('pane')).toBeVisible()
+  await expect
+    .poll(
+      () =>
+        document.querySelector('[data-ui="PaneLayout"][data-mounted]') !== null &&
+        !document.getAnimations().some((animation) => animation instanceof CSSTransition),
+    )
+    .toBe(true)
+  await rerender(<NavDrawerHarness actions={actions} isOpen />)
 }
 
 // The backdrop and the sliding card both carry `data-open`; the card is the
@@ -113,14 +131,14 @@ function drawerLeft() {
  * slide-in card with the current user header and close button, the vertical
  * tool menu with the active tool selected, the appearance menu and the manage
  * menu with the manage-project and invite links. The workspace list has one
- * entry, so the home / workspace switcher row is absent. The drawer animates
- * in with a spring, so the test waits for the card to stop moving.
+ * entry, so the home / workspace switcher row is absent. The test waits until the
+ * card is flush with the left edge.
  */
 describe('NavDrawer', () => {
   test('renders the open drawer with user, tools, appearance and manage menus', async () => {
     const {settleChromaticEndState} = testHelpers()
 
-    await render(<NavDrawerHarness />)
+    await renderOpenDrawer()
 
     await expect.element(page.getByText('Doug')).toBeVisible()
     await expect.element(page.getByRole('link', {name: 'Structure'})).toBeVisible()
@@ -128,9 +146,14 @@ describe('NavDrawer', () => {
     await expect.element(page.getByRole('link', {name: 'Manage project'})).toBeVisible()
     await expect.element(page.getByRole('link', {name: 'Invite members'})).toBeVisible()
 
-    // The spring transition ends with the card flush against the left edge.
+    // The slide animates snapshots of the card, which sits flush against the left edge throughout.
     await expectStable(drawerLeft)
     expect(drawerLeft()).toBe(0)
+
+    // The focus lock moves focus to Close on mount, and Close opens its tooltip on focus after
+    // the tooltip delay. Wait for it, so the pointer park in `settleChromaticEndState` closes it
+    // instead of the tooltip opening after the park.
+    await expect.element(page.getByText('Close menu')).toBeVisible()
 
     await settleChromaticEndState()
   })
@@ -138,7 +161,7 @@ describe('NavDrawer', () => {
   test('lets a dialog opened from the drawer keep focus', async () => {
     const {settleChromaticEndState} = testHelpers()
 
-    await render(<NavDrawerHarness actions={DIALOG_ACTION} />)
+    await renderOpenDrawer(DIALOG_ACTION)
     await expectStable(drawerLeft)
 
     await page.getByRole('button', {name: 'Open dialog'}).click()

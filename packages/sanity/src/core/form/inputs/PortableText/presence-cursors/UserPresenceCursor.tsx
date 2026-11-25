@@ -1,39 +1,15 @@
 import {type ColorTints} from '@sanity/color'
 import {getTheme_v2} from '@sanity/ui/theme'
-import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
-import {useCallback, useEffect, useId, useMemo, useReducer, useState} from 'react'
+import {lazy, Suspense, useCallback, useEffect, useId, useMemo, useReducer, useState} from 'react'
 import {css, styled} from 'styled-components'
-import {Text, Box} from 'ui5'
 
 import {usePresenceReporter} from '../../../../presence/overlay/tracker'
 import {type FieldPresenceData, type FormNodePresence} from '../../../../presence/types'
 import {useUserColor} from '../../../../user-color/hooks'
+import {DOT_SIZE} from './constants'
 
-const DOT_SIZE = 6
-
-const CONTENT_BOX_VARIANTS: Variants = {
-  animate: {opacity: 1, scaleX: 1, scaleY: 1},
-  exit: {opacity: 0, scaleX: 0, scaleY: 0.5},
-  initial: {opacity: 0, scaleX: 0, scaleY: 0.5},
-}
-
-const CONTENT_BOX_TRANSITION: Transition = {
-  duration: 0.3,
-  ease: 'easeInOut',
-  type: 'spring',
-  bounce: 0,
-}
-
-const CONTENT_TEXT_VARIANTS: Variants = {
-  animate: {opacity: 1},
-  exit: {opacity: 0},
-  initial: {opacity: 0},
-}
-
-const CONTENT_TEXT_TRANSITION: Transition = {
-  duration: 0.2,
-  delay: 0.15,
-}
+const loadUserPresenceCursorLabel = () => import('./UserPresenceCursorLabel')
+const UserPresenceCursorLabel = lazy(loadUserPresenceCursorLabel)
 
 const CursorLine = styled.span<{$tints: ColorTints}>(({theme, $tints}) => {
   const isDark = getTheme_v2(theme)?.color._dark
@@ -79,30 +55,6 @@ const CursorDot = styled.div`
     height: ${DOT_SIZE * 3}px;
     opacity: 0.5;
   }
-`
-
-const UserBox = styled(motion.create(Box))(({theme}) => {
-  const radius = getTheme_v2(theme)?.radius[4]
-
-  return css`
-    position: absolute;
-    top: -${DOT_SIZE * 1.5}px;
-    left: -${DOT_SIZE * 0.75}px;
-    transform-origin: left;
-    white-space: nowrap;
-    padding: 3px 6px;
-    box-sizing: border-box;
-    border-radius: ${radius}px;
-    background-color: var(--presence-cursor-bg);
-    z-index: 1;
-    mix-blend-mode: unset;
-    user-select: none;
-  `
-})
-
-const UserText = styled(motion.create(Text))`
-  color: var(--presence-cursor-fg);
-  mix-blend-mode: unset;
 `
 
 interface UserPresenceCursorProps {
@@ -159,7 +111,16 @@ export function UserPresenceCursor(props: UserPresenceCursorProps): React.JSX.El
     return () => scrollParent.removeEventListener('scroll', publish)
   }, [scrollParent])
 
-  const handleMouseEnter = useCallback(() => setHovered(true), [])
+  useEffect(() => {
+    void loadUserPresenceCursorLabel()
+  }, [])
+
+  // The label stays mounted once shown, so it can animate out
+  const [hasHovered, setHasHovered] = useState(false)
+  const handleMouseEnter = useCallback(() => {
+    setHovered(true)
+    setHasHovered(true)
+  }, [])
   const handleMouseLeave = useCallback(() => setHovered(false), [])
 
   const testId = useMemo(
@@ -177,32 +138,11 @@ export function UserPresenceCursor(props: UserPresenceCursorProps): React.JSX.El
         onMouseLeave={handleMouseLeave}
         ref={setElement}
       >
-        <AnimatePresence>
-          {hovered && (
-            <UserBox
-              animate="animate"
-              exit="exit"
-              flex={1}
-              initial="initial"
-              transition={CONTENT_BOX_TRANSITION}
-              variants={CONTENT_BOX_VARIANTS}
-            >
-              <UserText
-                animate="animate"
-                exit="exit"
-                initial="initial"
-                size={0}
-                transition={CONTENT_TEXT_TRANSITION}
-                variants={CONTENT_TEXT_VARIANTS}
-                weight="medium"
-                forwardedAs="div"
-                trim={true}
-              >
-                {user.displayName}
-              </UserText>
-            </UserBox>
-          )}
-        </AnimatePresence>
+        {hasHovered && (
+          <Suspense fallback={null}>
+            <UserPresenceCursorLabel displayName={user.displayName} visible={hovered} />
+          </Suspense>
+        )}
 
         <CursorDot />
       </CursorLine>

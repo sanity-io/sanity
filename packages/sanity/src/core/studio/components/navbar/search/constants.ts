@@ -19,3 +19,6 @@ export const POPOVER_MAX_WIDTH = 800 // px
 export const POPOVER_VERTICAL_MARGIN = 5 // px
 
 export const POPOVER_RADIUS = 3
+
+/** The transition type of opening and closing the search popover */
+export const SEARCH_POPOVER_TRANSITION = 'sanity-search-popover'

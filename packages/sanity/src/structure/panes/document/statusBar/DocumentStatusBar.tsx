@@ -1,6 +1,5 @@
 import {Card} from '@sanity/ui'
-import {motion} from 'motion/react'
-import {type Ref, useCallback, useMemo, useState} from 'react'
+import {lazy, type Ref, Suspense, useCallback, useMemo, useState} from 'react'
 import {usePerspective} from 'sanity'
 import {Flex} from 'ui5'
 
@@ -13,8 +12,8 @@ import {SpacerButton} from '../../../components/spacerButton/SpacerButton'
 import {EMPTY_PARAMS} from '../constants'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
+import {root} from './DocumentStatusBar.css'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
-import {DocumentStatusLine} from './DocumentStatusLine'
 import {RevisionStatusLine} from './RevisionStatusLine'
 import {useResizeObserver} from './useResizeObserver'
 
@@ -24,7 +23,15 @@ export interface DocumentStatusBarProps {
 
 const CONTAINER_BREAKPOINT = 480 // px
 
-const AnimatedCard = motion.create(Card)
+const loadDocumentStatusLine = () => import('./DocumentStatusLine')
+const DocumentStatusLine = lazy(loadDocumentStatusLine)
+
+// The document pane evaluates this module before the footer paints. Starting the
+// chunk here, rather than in an effect, means the status line is usually ready
+// when the row first renders, instead of popping in beside badges that are
+// already on screen. The import still waits for a document pane, so it stays
+// off the studio boot path.
+void loadDocumentStatusLine()
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
@@ -91,10 +98,9 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   }
 
   return (
-    <AnimatedCard
+    <Card
+      className={root}
       key={showingRevision ? 'revision' : 'published'}
-      initial={{opacity: 0.2}}
-      animate={{opacity: 1, transition: {duration: 0.3}}}
       tone={showingRevision ? 'caution' : undefined}
       radius={3}
       ref={setRootElement}
@@ -118,7 +124,13 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
             paddingRight={3}
           >
             <Flex alignItems="center">
-              {showingRevision ? <RevisionStatusLine /> : <DocumentStatusLine />}
+              {showingRevision ? (
+                <RevisionStatusLine />
+              ) : (
+                <Suspense fallback={null}>
+                  <DocumentStatusLine />
+                </Suspense>
+              )}
               <SpacerButton />
             </Flex>
             <DocumentBadges />
@@ -135,6 +147,6 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
           </Flex>
         </Flex>
       )}
-    </AnimatedCard>
+    </Card>
   )
 }

@@ -2,15 +2,20 @@ import {type ReleaseDocument} from '@sanity/client'
 import {CloseIcon} from '@sanity/icons/Close'
 import {Card, Layer, useLayer} from '@sanity/ui'
 import {clsx} from 'clsx'
-import {AnimatePresence, motion} from 'motion/react'
-import {type ComponentProps, useEffect} from 'react'
+import {type ComponentProps, type ReactNode, useEffect, ViewTransition} from 'react'
 import TrapFocus from 'react-focus-lock'
 import {Text, Box, Flex} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {Resizable} from '../../../components/resizer/Resizable'
+import {useViewTransitionValue} from '../../../components/viewTransition/useViewTransitionValue'
+import {useViewTransitionStyles} from '../../../components/viewTransition/viewTransitionStyles'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {
+  STUDIO_RESIZE_TRANSITION_TYPE,
+  studioViewTransitionClass,
+} from '../../../viewTransitions/transitionTypes'
 import {releasesLocaleNamespace} from '../../i18n'
 import {type ReleaseEvents} from './events/useReleaseEvents'
 import {ReleaseActivityList} from './ReleaseActivityList'
@@ -28,12 +33,43 @@ interface ReleaseDashboardActivityPanelProps {
   overlay?: boolean
   onClose?: () => void
 }
-const MotionFlex = motion.create(Flex)
-const MotionCard = motion.create(Card)
-
 function FillHeight(props: ComponentProps<'div'>) {
   const {className, ...rest} = props
   return <div {...rest} className={clsx(fillHeight, className)} />
+}
+
+/** The transition type of opening and closing the in-flow panel, which resizes the column beside it */
+const ACTIVITY_PANEL_TOGGLE = 'sanity-activity-panel-toggle'
+/** The transition type of opening and closing the overlay drawer, which leaves the layout as it is */
+const ACTIVITY_DRAWER_TOGGLE = 'sanity-activity-drawer-toggle'
+
+const PANEL_TOGGLE_TYPES = [ACTIVITY_PANEL_TOGGLE, STUDIO_RESIZE_TRANSITION_TYPE]
+const DRAWER_TOGGLE_TYPES = [ACTIVITY_DRAWER_TOGGLE]
+
+const PANEL_REVEAL = studioViewTransitionClass({
+  default: 'none',
+  [ACTIVITY_PANEL_TOGGLE]: 'sanity-vt-reveal-end',
+})
+const PUSHED_CONTENT = studioViewTransitionClass({
+  default: 'none',
+  [ACTIVITY_PANEL_TOGGLE]: 'sanity-vt-width',
+})
+const SCRIM_FADE = studioViewTransitionClass({
+  default: 'none',
+  [ACTIVITY_DRAWER_TOGGLE]: 'sanity-vt-fade',
+})
+const DRAWER_SLIDE = studioViewTransitionClass({
+  default: 'none',
+  [ACTIVITY_DRAWER_TOGGLE]: 'sanity-vt-drawer-end',
+})
+
+/**
+ * The column the in-flow panel pushes aside. Its width morphs over the span in which the panel is
+ * uncovered from the end edge, so the column and the panel meet at every frame instead of the
+ * column jumping to its new width before the panel arrives. Its child must render one element.
+ */
+export function ActivityPanelPushedContent({children}: {children: ReactNode}) {
+  return <ViewTransition default={PUSHED_CONTENT}>{children}</ViewTransition>
 }
 // In overlay mode the panel is not part of the layout, so Escape is the keyboard escape hatch (in
 // addition to the header close button and the Activity toggle). It sits in its own Layer so it only
@@ -61,9 +97,11 @@ export function ReleaseDashboardActivityPanel({
 }: ReleaseDashboardActivityPanelProps) {
   const {t} = useTranslation(releasesLocaleNamespace)
   const {t: tCore} = useTranslation()
+  const shown = useViewTransitionValue(show, overlay ? DRAWER_TOGGLE_TYPES : PANEL_TOGGLE_TYPES)
+  useViewTransitionStyles()
 
   const content = (
-    <MotionFlex flexBasis="auto" flexGrow={0} flexShrink={0} height="100%" flexDirection="column">
+    <Flex flexBasis="auto" flexGrow={0} flexShrink={0} height="100%" flexDirection="column">
       <Flex alignItems="center" gap={2} justifyContent="space-between" padding={4}>
         <Text size={1} weight="medium" as="div" trim={true}>
           {t('activity.panel.title')}
@@ -97,7 +135,7 @@ export function ReleaseDashboardActivityPanel({
         loadMore={events.loadMore}
         isLoading={events.loading}
       />
-    </MotionFlex>
+    </Flex>
   )
 
   if (overlay) {
@@ -108,25 +146,17 @@ export function ReleaseDashboardActivityPanel({
     return (
       <>
         {/* An empty Layer purely to participate in the layer stack, so the Escape handler can tell
-            when a dialog/popover is open above the overlay. Kept outside AnimatePresence (it is not
-            animated) and as a sibling of the scrim/drawer so their absolute positioning is untouched. */}
+            when a dialog/popover is open above the overlay. It follows `show` rather than the
+            deferred visual, so Escape dismisses immediately while the snapshot is still sliding. */}
         {show && (
           <Layer>
             <OverlayEscapeHandler onClose={onClose} />
           </Layer>
         )}
-        {/* The scrim and drawer are direct, keyed children of AnimatePresence — not wrapped in a
-            fragment — so their exit animations actually run on close (AnimatePresence only tracks
-            direct keyed motion children). */}
-        <AnimatePresence>
-          {show && (
-            <motion.div
-              key="activity-overlay-scrim"
+        {shown && (
+          <ViewTransition default={SCRIM_FADE}>
+            <div
               onClick={onClose}
-              initial={{opacity: 0}}
-              animate={{opacity: 1}}
-              exit={{opacity: 0}}
-              transition={{duration: 0.2}}
               style={{
                 position: 'absolute',
                 inset: 0,
@@ -134,10 +164,11 @@ export function ReleaseDashboardActivityPanel({
                 background: 'rgba(0, 0, 0, 0.45)',
               }}
             />
-          )}
-          {show && (
-            <MotionCard
-              key="activity-overlay-drawer"
+          </ViewTransition>
+        )}
+        {shown && (
+          <ViewTransition default={DRAWER_SLIDE}>
+            <Card
               // Modal drawer: announce it as a modal dialog to assistive tech (aria-modal), and trap
               // focus inside it (TrapFocus below) so keyboard users can't Tab to the covered rail/
               // table behind the scrim, with focus restored to the trigger on close.
@@ -146,10 +177,6 @@ export function ReleaseDashboardActivityPanel({
               aria-label={t('activity.panel.title')}
               borderLeft
               shadow={4}
-              initial={{x: '100%'}}
-              animate={{x: 0}}
-              exit={{x: '100%'}}
-              transition={{type: 'spring', bounce: 0, duration: 0.2}}
               style={{
                 position: 'absolute',
                 top: 0,
@@ -160,12 +187,13 @@ export function ReleaseDashboardActivityPanel({
                 flexDirection: 'column',
               }}
             >
-              {/* preventScroll on both the open (focusOptions) and close (returnFocus) focus moves:
-                  the drawer mounts translated off-screen (translateX(100%)) and then slides in, so a
-                  default focus() would scroll the off-screen target into view and jerk the whole
-                  layout left→right before the animation settles. preventScroll keeps the focus move
-                  (a11y) without the scroll (the flash). */}
+              {/* preventScroll on both the open (focusOptions) and close (returnFocus) focus moves.
+                  The slide is a snapshot, but focusing the newly mounted drawer still scrolls the
+                  page to it. preventScroll keeps the focus move without that jump. `shown` lags
+                  `show` until the drawer's exit transition commits, so the lock lets go on the
+                  urgent close and focus goes back to the trigger right away. */}
               <TrapFocus
+                disabled={!show}
                 returnFocus={{preventScroll: true}}
                 autoFocus
                 // react-focus-lock's own docs use focusOptions={{preventScroll: true}} as the
@@ -184,34 +212,29 @@ export function ReleaseDashboardActivityPanel({
                   {content}
                 </Resizable>
               </TrapFocus>
-            </MotionCard>
-          )}
-        </AnimatePresence>
+            </Card>
+          </ViewTransition>
+        )}
       </>
     )
   }
 
-  return (
-    <AnimatePresence>
-      {show && (
-        <motion.div
-          animate={{width: 'auto', opacity: 1}}
-          initial={{width: 0, opacity: 0}}
-          exit={{width: 0, opacity: 0}}
-          transition={{type: 'spring', bounce: 0, duration: 0.2}}
+  // `enter` and `exit` only run when the boundary itself mounts and unmounts, so it is rendered
+  // with the panel rather than around a child that comes and goes.
+  return shown ? (
+    <ViewTransition default={PANEL_REVEAL}>
+      <div style={{display: 'flex', maxHeight: '100%'}}>
+        <Resizable
+          as={FillHeight}
+          minWidth={320}
+          maxWidth={800}
+          initialWidth={320}
+          resizerPosition="left"
+          style={{display: 'flex', flexDirection: 'column', flex: 'none', maxHeight: '100%'}}
         >
-          <Resizable
-            as={FillHeight}
-            minWidth={320}
-            maxWidth={800}
-            initialWidth={320}
-            resizerPosition="left"
-            style={{display: 'flex', flexDirection: 'column', flex: 'none', maxHeight: '100%'}}
-          >
-            {content}
-          </Resizable>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  )
+          {content}
+        </Resizable>
+      </div>
+    </ViewTransition>
+  ) : null
 }

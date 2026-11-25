@@ -7,7 +7,17 @@ import {
   PortalProvider,
   useMediaIndex,
 } from '@sanity/ui'
-import {useCallback, use, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  lazy,
+  Suspense,
+  startTransition,
+  useCallback,
+  use,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
@@ -29,7 +39,6 @@ import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
 import {FreeTrial} from './free-trial/FreeTrial'
 import {FreeTrialProvider} from './free-trial/FreeTrialProvider'
 import {HomeButton} from './home/HomeButton'
-import {NavDrawer} from './navDrawer/NavDrawer'
 import {NewDocumentButton} from './new-document/NewDocumentButton'
 import {useNewDocumentOptions} from './new-document/useNewDocumentOptions'
 import {PresenceMenu} from './presence/PresenceMenu'
@@ -41,6 +50,10 @@ import {SearchDialog} from './search/SearchDialog'
 import {navbar, navGrid, navTools} from './StudioNavbar.css'
 import {UserMenu} from './userMenu/UserMenu'
 import {WorkspaceMenuButton} from './workspace/WorkspaceMenuButton'
+
+const NavDrawer = lazy(() =>
+  import('./navDrawer/NavDrawer').then((module) => ({default: module.NavDrawer})),
+)
 
 const EMPTY_ARRAY: [] = []
 
@@ -88,6 +101,8 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   const ToolMenu = useToolMenuComponent()
 
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
+  // The drawer stays mounted once opened, so the next open does not wait on the chunk again.
+  const [hasOpenedDrawer, setHasOpenedDrawer] = useState<boolean>(false)
 
   const routerStateRef = useRef<RouterState>(routerState)
   const workspaceNameRef = useRef<string>(name)
@@ -158,7 +173,10 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   }, [drawerButtonEl])
 
   const handleOpenDrawer = useCallback(() => {
-    setDrawerOpen(true)
+    startTransition(() => {
+      setHasOpenedDrawer(true)
+      setDrawerOpen(true)
+    })
   }, [])
 
   const actionNodes = useMemo(() => {
@@ -298,15 +316,17 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
           </Grid>
         </RootCard>
 
-        {!shouldRender.tools && (
-          <NavDrawer
-            __internal_actions={actions}
-            activeToolName={activeToolName}
-            isOpen={drawerOpen}
-            onClose={handleCloseDrawer}
-            showPerspectives={shouldRender.perspectivesInDrawer}
-            tools={tools}
-          />
+        {!shouldRender.tools && hasOpenedDrawer && (
+          <Suspense fallback={null}>
+            <NavDrawer
+              __internal_actions={actions}
+              activeToolName={activeToolName}
+              isOpen={drawerOpen}
+              onClose={handleCloseDrawer}
+              showPerspectives={shouldRender.perspectivesInDrawer}
+              tools={tools}
+            />
+          </Suspense>
         )}
       </RootLayer>
     </FreeTrialProvider>

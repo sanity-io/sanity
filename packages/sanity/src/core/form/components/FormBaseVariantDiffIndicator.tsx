@@ -1,39 +1,27 @@
-import {AnimatePresence, motion} from 'motion/react'
-import {type ComponentType, type CSSProperties} from 'react'
-import {Icon} from 'ui5'
+import {type ComponentType, lazy, Suspense, useState} from 'react'
 
-import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
-import {RhombusIcon} from '../../components/temporary-icons/Rhombus'
-import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {type BaseFieldProps} from '../types/fieldProps'
+
+const FormBaseVariantDiffIndicatorPresence = lazy(
+  () => import('./FormBaseVariantDiffIndicatorPresence'),
+)
 
 type Props = Pick<BaseFieldProps, 'changedFromBaseVariant'>
 
 export const FormBaseVariantDiffIndicator: ComponentType<Props> = ({changedFromBaseVariant}) => {
-  const {t} = useTranslation()
+  // The indicator stays mounted once shown, so it can fade out
+  const [hasChanged, setHasChanged] = useState(changedFromBaseVariant)
+  if (changedFromBaseVariant && !hasChanged) {
+    setHasChanged(true)
+  }
+
+  if (!hasChanged) {
+    return null
+  }
 
   return (
-    <AnimatePresence>
-      {changedFromBaseVariant && (
-        <motion.div
-          data-testid="base-variant-diff-indicator"
-          initial={{opacity: 0}}
-          exit={{opacity: 0}}
-          animate={{opacity: 1}}
-        >
-          <Tooltip content={t('changes.from-base-variant.label')} placement="left">
-            <Icon
-              size={3}
-              icon={<RhombusIcon />}
-              style={
-                {
-                  '--icon-color': 'var(--card-badge-suggest-icon-color)',
-                } as CSSProperties
-              }
-            />
-          </Tooltip>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <Suspense fallback={null}>
+      <FormBaseVariantDiffIndicatorPresence changedFromBaseVariant={changedFromBaseVariant} />
+    </Suspense>
   )
 }

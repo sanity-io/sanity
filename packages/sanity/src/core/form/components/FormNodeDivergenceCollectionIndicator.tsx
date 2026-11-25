@@ -1,15 +1,11 @@
 import {type Path} from '@sanity/types'
-import {AnimatePresence} from 'motion/react'
-import {type PropsWithChildren, type ComponentType} from 'react'
+import {type ComponentType, lazy, Suspense} from 'react'
 
-import {DivergenceCollectionIndicator} from '../../divergence/components/DivergenceCollectionIndicator'
-import {
-  type DivergenceNavigator,
-  selectDivergenceCount,
-  selectFirstDescendantDivergence,
-} from '../../divergence/divergenceNavigator'
-import {useVersionRelease} from '../../hooks/useVersionRelease'
 import {useDocumentDivergences} from '../contexts/DivergencesProvider'
+
+const FormNodeDivergenceCollectionIndicatorEnabled = lazy(
+  () => import('./FormNodeDivergenceCollectionIndicatorEnabled'),
+)
 
 interface Props {
   path: Path
@@ -23,37 +19,11 @@ export const FormNodeDivergenceCollectionIndicator: ComponentType<Props> = (prop
   }
 
   return (
-    <FormNodeDivergenceCollectionIndicatorEnabled
-      {...props}
-      divergenceNavigator={divergenceNavigator}
-    />
-  )
-}
-
-const FormNodeDivergenceCollectionIndicatorEnabled: ComponentType<
-  PropsWithChildren<Props & {divergenceNavigator: DivergenceNavigator & {enabled: true}}>
-> = ({divergenceNavigator, path}) => {
-  const divergenceCount = selectDivergenceCount(divergenceNavigator.state, path)
-
-  const firstDescendantDivergence = selectFirstDescendantDivergence(divergenceNavigator.state, path)
-
-  const {release: upstreamBundle} = useVersionRelease(divergenceNavigator.state.upstreamId ?? '')
-
-  return (
-    <AnimatePresence>
-      {typeof divergenceCount !== 'undefined' &&
-        typeof divergenceNavigator.state.upstreamId !== 'undefined' && (
-          <DivergenceCollectionIndicator
-            divergenceCount={divergenceCount}
-            upstreamId={divergenceNavigator.state.upstreamId}
-            upstreamBundle={upstreamBundle}
-            onClick={() => {
-              if (typeof firstDescendantDivergence !== 'undefined') {
-                divergenceNavigator.focusDivergence(firstDescendantDivergence.path)
-              }
-            }}
-          />
-        )}
-    </AnimatePresence>
+    <Suspense fallback={null}>
+      <FormNodeDivergenceCollectionIndicatorEnabled
+        {...props}
+        divergenceNavigator={divergenceNavigator}
+      />
+    </Suspense>
   )
 }

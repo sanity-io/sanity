@@ -13,6 +13,7 @@ import {
   useMemo,
   useRef,
   useState,
+  ViewTransition,
 } from 'react'
 import {useRouter} from 'sanity/router'
 import {Box, Flex} from 'ui5'
@@ -20,6 +21,11 @@ import {Box, Flex} from 'ui5'
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'
 import {CalendarFilter} from '../../../components/inputs/DateFilters/calendar/CalendarFilter'
+import {useViewTransitionValue} from '../../../components/viewTransition/useViewTransitionValue'
+import {
+  useViewTransitionStyles,
+  VIEW_TRANSITION_WIDTH_MS,
+} from '../../../components/viewTransition/viewTransitionStyles'
 import useDialogTimeZone from '../../../hooks/useDialogTimeZone'
 import {useTimeZone} from '../../../hooks/useTimeZone'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -30,6 +36,7 @@ import {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../../../studio/constants'
 import {useWorkspace} from '../../../studio/workspace'
 import {isCardinalityOneRelease, isPausedCardinalityOneRelease} from '../../../util/releaseUtils'
 import {useAllVariants} from '../../../variants/store/useAllVariants'
+import {studioViewTransitionClass} from '../../../viewTransitions/transitionTypes'
 import {CreateReleaseDialog} from '../../components/dialog/CreateReleaseDialog'
 import {useReleasesUpsell} from '../../contexts/upsell/useReleasesUpsell'
 import {useCreateReleaseAvailability} from '../../hooks/useCreateReleaseAvailability'
@@ -85,6 +92,28 @@ function toLocalDateComponents(utcDate: Date, utcToZoneDate: (date: Date) => Dat
   return new Date(tz.getFullYear(), tz.getMonth(), tz.getDate())
 }
 
+/** The transition type of setting or clearing the date filter, which brings its chip in or out */
+const DATE_FILTER_TRANSITION = 'sanity-release-date-filter'
+const DATE_FILTER_TYPES = [DATE_FILTER_TRANSITION]
+
+const DATE_CHIP = studioViewTransitionClass('none')
+const DATE_CHIP_ENTER = studioViewTransitionClass({
+  default: 'none',
+  [DATE_FILTER_TRANSITION]: 'sanity-vt-width-in',
+})
+const DATE_CHIP_EXIT = studioViewTransitionClass({
+  default: 'none',
+  [DATE_FILTER_TRANSITION]: 'sanity-vt-width-out',
+})
+
+/** How long the archived picker waits for the chip's exit snapshot. */
+function chipExitHoldMs(): number {
+  const root = window.document
+  if (!('startViewTransition' in root) || typeof root.startViewTransition !== 'function') return 0
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return 0
+  return VIEW_TRANSITION_WIDTH_MS
+}
+
 export function ReleasesOverview() {
   const {data: allReleases, loading: loadingReleases} = useActiveReleases()
   const {data: allArchivedReleases} = useArchivedReleases()
@@ -110,6 +139,22 @@ export function ReleasesOverview() {
   const [releaseFilterDate, setReleaseFilterDate] = useState<Date | undefined>(
     getInitialFilterDate(router),
   )
+  // The list filters on the urgent value. The chip lags by one transition so its width can morph.
+  const shownFilterDate = useViewTransitionValue(releaseFilterDate, DATE_FILTER_TYPES)
+  // The exit snapshot keeps the chip's box. The archived picker stays out of
+  // that slot until the snapshot is gone, or the two controls show at once.
+  const [trackedShownDate, setTrackedShownDate] = useState(shownFilterDate)
+  const [holdPicker, setHoldPicker] = useState(false)
+  if (shownFilterDate !== trackedShownDate) {
+    setTrackedShownDate(shownFilterDate)
+    setHoldPicker(shownFilterDate === undefined && trackedShownDate !== undefined)
+  }
+  useEffect(() => {
+    if (!holdPicker) return
+    const id = window.setTimeout(() => setHoldPicker(false), chipExitHoldMs())
+    return () => window.clearTimeout(id)
+  }, [holdPicker])
+  useViewTransitionStyles()
   const [showReleaseNotFound, setShowReleaseNotFound] = useState<boolean>(() =>
     getInitialReleaseNotFound(router),
   )
@@ -550,9 +595,17 @@ export function ReleasesOverview() {
 
               <Flex flexBasis="0%" flexGrow={1} gap={1} style={narrowFilterStyle}>
                 {loadingOrHasReleases &&
-                  (releaseFilterDate ? (
-                    <DateFilterButton filterDate={releaseFilterDate} onClear={clearFilterDate} />
-                  ) : (
+                  (shownFilterDate ? (
+                    <ViewTransition
+                      default={DATE_CHIP}
+                      enter={DATE_CHIP_ENTER}
+                      exit={DATE_CHIP_EXIT}
+                    >
+                      <span style={{display: 'inline-block', verticalAlign: 'top'}}>
+                        <DateFilterButton filterDate={shownFilterDate} onClear={clearFilterDate} />
+                      </span>
+                    </ViewTransition>
+                  ) : holdPicker ? null : (
                     currentArchivedPicker
                   ))}
               </Flex>

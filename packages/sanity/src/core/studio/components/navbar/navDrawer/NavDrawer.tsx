@@ -1,7 +1,6 @@
 import {CloseIcon} from '@sanity/icons/Close'
 import {Card, Layer, usePortal} from '@sanity/ui'
-import {AnimatePresence, motion, type Transition, type Variants} from 'motion/react'
-import {type KeyboardEvent, memo, useCallback, useMemo} from 'react'
+import {type KeyboardEvent, memo, useCallback, useMemo, ViewTransition} from 'react'
 import TrapFocus, {type ReactFocusLockProps} from 'react-focus-lock'
 import {styled} from 'styled-components'
 import {Text, Box, Flex, VStack} from 'ui5'
@@ -9,10 +8,14 @@ import {Text, Box, Flex, VStack} from 'ui5'
 import {Button} from '../../../../../ui-components/button/Button'
 import {CapabilityGate} from '../../../../components/CapabilityGate'
 import {UserAvatar} from '../../../../components/userAvatar/UserAvatar'
+import {useMountCommitted} from '../../../../components/viewTransition/useMountCommitted'
+import {useViewTransitionValue} from '../../../../components/viewTransition/useViewTransitionValue'
+import {useViewTransitionStyles} from '../../../../components/viewTransition/viewTransitionStyles'
 import {type NavbarAction} from '../../../../config/studio/types'
 import {type Tool} from '../../../../config/types'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {GlobalPerspectiveNav} from '../../../../perspective/navbar/GlobalPerspectiveNav'
+import {studioViewTransitionClass} from '../../../../viewTransitions/transitionTypes'
 import {useColorSchemeSetValue} from '../../../colorScheme'
 import {useToolMenuComponent} from '../../../studio-components-hooks/useToolMenuComponent'
 import {useWorkspace} from '../../../workspace'
@@ -23,43 +26,30 @@ import {WorkspaceMenuButton} from '../workspace/WorkspaceMenuButton'
 import {AppearanceMenu} from './ApperanceMenu'
 import {LocaleMenu} from './LocaleMenu'
 import {ManageMenu} from './ManageMenu'
+import {drawerFocusLock} from './NavDrawer.css'
 
-const ANIMATION_TRANSITION: Transition = {
-  bounce: 0,
-  damping: 20,
-  mass: 0.5,
-  stiffness: 200,
-  type: 'spring',
-}
+/** The transition type of opening and closing the drawer */
+const NAV_DRAWER_TRANSITION = 'sanity-nav-drawer'
+const NAV_DRAWER_TYPES = [NAV_DRAWER_TRANSITION]
 
-const BACKDROP_VARIANTS: Variants = {
-  open: {
-    opacity: 1,
-  },
-  closed: {
-    opacity: 0,
-  },
-}
-
-const INNER_CARD_VARIANTS: Variants = {
-  open: {
-    x: '0%',
-  },
-  closed: {
-    x: '-100%',
-  },
-}
+const BACKDROP_FADE = studioViewTransitionClass({
+  default: 'none',
+  [NAV_DRAWER_TRANSITION]: 'sanity-vt-fade',
+})
+const DRAWER_SLIDE = studioViewTransitionClass({
+  default: 'none',
+  [NAV_DRAWER_TRANSITION]: 'sanity-vt-drawer',
+})
 
 const Root = styled(Layer)`
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
   height: 100%;
 `
 
-const BackdropMotion = styled(motion.create(Card))`
-  position: absolute;
+const Backdrop = styled(Layer)`
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -67,7 +57,7 @@ const BackdropMotion = styled(motion.create(Card))`
   background: var(--card-shadow-penumbra-color);
 `
 
-const InnerCardMotion = styled(motion.create(Card))`
+const InnerCard = styled(Card)`
   position: relative;
   pointer-events: all;
   flex-direction: column;
@@ -128,6 +118,13 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
     [onClose],
   )
 
+  // The drawer mounts already open, the first time it is opened. It slides in a commit after its
+  // mount, like on every later open, and that mount does not insert its boundaries (see
+  // `useMountCommitted`).
+  const mountCommitted = useMountCommitted()
+  const shown = useViewTransitionValue(isOpen && mountCommitted, NAV_DRAWER_TYPES)
+  useViewTransitionStyles()
+
   const actionNodes = useMemo(() => {
     return actions
       ?.filter((v) => v.location === 'sidebar')
@@ -152,31 +149,28 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
       })
   }, [actions, handleActionClick])
 
+  if (!shown) return null
+
+  // React only animates a `<ViewTransition>` in and out when no element above it mounts or
+  // unmounts in the same commit, so each boundary is the outermost element of what it brings in:
+  // the backdrop is a layer of its own, and the focus lock sits inside the drawer's layer.
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <TrapFocus returnFocus whiteList={trapDrawerFocus}>
-          <Root onKeyDown={handleKeyDown}>
-            <BackdropMotion
-              animate="open"
-              data-open={isOpen}
-              exit="closed"
-              initial="closed"
-              onClick={onClose}
-              transition={ANIMATION_TRANSITION}
-              variants={BACKDROP_VARIANTS}
-            />
-            <InnerCardMotion
-              animate="open"
-              data-open={isOpen}
-              display="flex"
-              exit="closed"
-              height="fill"
-              initial="closed"
-              shadow={1}
-              transition={ANIMATION_TRANSITION}
-              variants={INNER_CARD_VARIANTS}
-            >
+    <>
+      <ViewTransition default={BACKDROP_FADE}>
+        <Backdrop data-open="true" data-testid="nav-drawer-backdrop" onClick={onClose} />
+      </ViewTransition>
+      <ViewTransition default={DRAWER_SLIDE}>
+        <Root data-testid="nav-drawer" onKeyDown={handleKeyDown}>
+          {/* `shown` lags `isOpen` so the drawer can slide out. Disable the lock on the urgent
+              close, or it pulls focus back in for the whole exit. `returnFocus` then restores the
+              menu button once the lock deactivates. */}
+          <TrapFocus
+            className={drawerFocusLock}
+            disabled={!isOpen}
+            returnFocus
+            whiteList={trapDrawerFocus}
+          >
+            <InnerCard data-open="true" display="flex" height="fill" shadow={1}>
               <Card borderBottom>
                 <Flex gap={3} padding={3} flexDirection="column">
                   <Flex alignItems="center">
@@ -260,10 +254,10 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               <CapabilityGate capability="globalUserMenu">
                 <UserMenuAuthAction layout="drawer" />
               </CapabilityGate>
-            </InnerCardMotion>
-          </Root>
-        </TrapFocus>
-      )}
-    </AnimatePresence>
+            </InnerCard>
+          </TrapFocus>
+        </Root>
+      </ViewTransition>
+    </>
   )
 })
