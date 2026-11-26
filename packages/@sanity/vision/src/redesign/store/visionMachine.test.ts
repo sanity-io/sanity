@@ -421,7 +421,81 @@ describe('visionMachine', () => {
         hidden: [],
       },
       functions: [],
+      openedSavedQueries: [],
     })
+  })
+
+  it('opens saved queries as tabs after the open ones, once each, without switching tabs', () => {
+    const harness = createHarness()
+    const [first] = harness.tabs()
+    harness.actor.send({type: 'settings.update', settings: {perspective: 'drafts'}})
+
+    harness.actor.send({
+      type: 'savedQueries.open',
+      queries: [
+        {
+          key: 'pages',
+          tab: {title: 'Pages', query: '*[_type == "page"]', options: {perspective: 'raw'}},
+        },
+        // Already shown by a tab, or holding nothing a tab can show
+        {key: 'shown', tab: null},
+        {key: 'posts', tab: {query: '*[_type == "post"]'}},
+      ],
+    })
+
+    const tabs = harness.tabs()
+    expect(tabs.map((tab) => [tab.title, tab.query])).toEqual([
+      [undefined, ''],
+      ['Pages', '*[_type == "page"]'],
+      [undefined, '*[_type == "post"]'],
+    ])
+    // What a saved query does not state comes from the settings, as for any new tab
+    expect(tabs[1].options.perspective).toBe('raw')
+    expect(tabs[2].options.perspective).toBe('drafts')
+    expect(harness.snapshot().context.activeTabId).toBe(first.id)
+    expect(harness.runnerIds()).toEqual(tabs.map((tab) => tab.id).sort())
+    expect(selectPersistedState(harness.snapshot()).openedSavedQueries).toEqual([
+      'pages',
+      'shown',
+      'posts',
+    ])
+
+    // A recorded key never opens again, also in a batch with new ones, and a key opens once
+    harness.actor.send({
+      type: 'savedQueries.open',
+      queries: [
+        {key: 'posts', tab: {query: '*[_type == "post"]'}},
+        {key: 'authors', tab: {query: '*[_type == "author"]'}},
+        {key: 'authors', tab: {query: '*[_type == "author"]'}},
+      ],
+    })
+    expect(harness.tabs().map((tab) => tab.query)).toEqual([
+      '',
+      '*[_type == "page"]',
+      '*[_type == "post"]',
+      '*[_type == "author"]',
+    ])
+    expect(harness.snapshot().context.openedSavedQueries).toEqual([
+      'pages',
+      'shown',
+      'posts',
+      'authors',
+    ])
+
+    const {tabs: before} = harness.snapshot().context
+    harness.actor.send({type: 'savedQueries.open', queries: [{key: 'pages', tab: {query: '*'}}]})
+    expect(harness.snapshot().context.tabs).toBe(before)
+  })
+
+  it('restores the saved queries opened as tabs, and keeps them when storage is cleared', () => {
+    const initial = createInitialState(defaults)
+    const harness = createHarness({...initial, openedSavedQueries: ['pages']})
+    harness.actor.send({type: 'savedQueries.open', queries: [{key: 'posts', tab: {query: '*'}}]})
+    expect(harness.tabs()).toHaveLength(2)
+
+    harness.actor.send({type: 'storage.clear'})
+    expect(harness.tabs()).toHaveLength(1)
+    expect(harness.snapshot().context.openedSavedQueries).toEqual(['pages', 'posts'])
   })
 
   it('reorders and hides export snippets, never all of them, and resets them when storage is cleared', () => {

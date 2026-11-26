@@ -1278,6 +1278,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.saved.load-in-current-tab': 'Load into current tab',
   /** Menu item opening a saved query in a new tab */
   'vision.saved.open-in-new-tab': 'Open in new tab',
+  /** Toast shown when saved queries were opened as tabs, which happens once in each browser */
+  'vision.saved.opened-as-tabs': 'Saved queries opened as tabs: {{count}}',
   /** Menu item renaming a saved query */
   'vision.saved.rename': 'Rename',
   /** Accessible label for the button saving the current query */
@@ -1327,9 +1329,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.settings.clear-storage.confirm': 'Yes, clear storage',
   /** Explanation of what clearing the storage does */
   'vision.settings.clear-storage.description':
-    'Deletes your personal saved queries and the functions library, and resets the open tabs and these defaults in this browser. Shared queries are kept.',
-  /** Toast shown when the saved queries could not be cleared */
-  'vision.settings.clear-storage.error': 'Could not clear the saved queries',
+    'Deletes the functions library and resets the open tabs and these defaults in this browser. Saved and shared queries are kept.',
   /** Toast shown after the storage was cleared */
   'vision.settings.clear-storage.success': 'Storage cleared',
   /** Explanation at the top of the settings dialog */

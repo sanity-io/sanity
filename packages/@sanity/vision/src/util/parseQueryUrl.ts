@@ -24,7 +24,10 @@ export interface ParsedQueryUrl {
    */
   isKnownDataset: boolean
   apiVersion: string | undefined
-  /** The perspective exactly as the URL states it (a release stack included), if any */
+  /**
+   * The perspective as the URL states it (a release stack included), if any. `previewDrafts`, the
+   * API's old name for `drafts` that the classic tool saved queries with, reads as `drafts`.
+   */
   urlPerspective: string | undefined
   /** Only set for perspectives the tool can represent (`raw`, `published`, `drafts`) */
   perspective: SupportedPerspective | undefined
@@ -72,7 +75,8 @@ export function parseQueryUrl(data: string, datasets: readonly string[]): Parsed
     return null
   }
 
-  const urlPerspective = parts.options.perspective
+  const urlPerspective =
+    parts.options.perspective === 'previewDrafts' ? 'drafts' : parts.options.perspective
   const perspective =
     urlPerspective &&
     isSupportedPerspective(urlPerspective) &&

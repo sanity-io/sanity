@@ -11,7 +11,7 @@ import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
 import {validateApiVersion} from '../../../util/validateApiVersion'
 import {AI_FEATURE_KEYS, type AiFeature, useConfiguredAiFeatures} from '../../aiFeatures'
-import {useSavedQueriesApi, useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
+import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectDatasets, selectWorkspaceDataset} from '../../store/visionMachine'
 import {DEFAULT_HIDDEN_DIFF_FIELDS} from '../../store/visionStorage'
 import {DatasetField} from '../request/DatasetField'
@@ -266,7 +266,6 @@ export function SettingsPanel() {
   const actorRef = useVisionActor()
   const updateSetting = useSettingsUpdate()
   const telemetry = useVisionTelemetry()
-  const {clearQueries} = useSavedQueriesApi()
   const datasets = useVisionSelector(selectDatasets)
   const workspaceDataset = useVisionSelector(selectWorkspaceDataset)
   const settings = useVisionSelector((snapshot) => snapshot.context.settings)
@@ -286,20 +285,8 @@ export function SettingsPanel() {
     [updateSetting],
   )
 
-  const handleClearStorage = useCallback(async () => {
+  const handleClearStorage = useCallback(() => {
     setConfirmClear(false)
-    // The saved queries live on the server; nothing local is dropped until they are gone
-    try {
-      await clearQueries()
-    } catch (err) {
-      toast.push({
-        closable: true,
-        status: 'error',
-        title: t('vision.settings.clear-storage.error'),
-        description: err instanceof Error ? err.message : String(err),
-      })
-      return
-    }
     actorRef.send({type: 'storage.clear'})
     telemetry.settingsChanged('storage-cleared')
     toast.push({
@@ -307,7 +294,7 @@ export function SettingsPanel() {
       status: 'success',
       title: t('vision.settings.clear-storage.success'),
     })
-  }, [actorRef, clearQueries, t, telemetry, toast])
+  }, [actorRef, t, telemetry, toast])
 
   return (
     <Box data-testid="vision-settings" padding={4}>
@@ -406,7 +393,7 @@ export function SettingsPanel() {
                   <Button
                     data-testid="vision-clear-storage-confirm"
                     icon={TrashIcon}
-                    onClick={() => void handleClearStorage()}
+                    onClick={handleClearStorage}
                     text={t('vision.settings.clear-storage.confirm')}
                     tone="critical"
                   />

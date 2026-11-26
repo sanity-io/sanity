@@ -193,6 +193,11 @@ export interface VisionPersistedState {
   exportSnippets: VisionExportSnippetSettings
   /** The functions library, most recently saved first */
   functions: VisionSavedFunction[]
+  /**
+   * The keys of the personal saved queries this browser has opened as tabs, or found a tab
+   * already showing, so each opens once: a closed one stays closed on the next load
+   */
+  openedSavedQueries: string[]
 }
 
 /** A lint finding as the Lint tab listed it when Fix with AI was asked to fix it */

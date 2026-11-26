@@ -48,7 +48,15 @@ function moveLeftBothCopies(error: unknown, keptCopy: 'shared' | 'personal'): Er
   )
 }
 
-export function useSavedQueries(): {
+export function useSavedQueries(
+  options: {
+    /**
+     * Called with the key of a personal query a save or an unshare is about to write, before the
+     * list shows it
+     */
+    onCreatePersonalQuery?: (key: string) => void
+  } = {},
+): {
   queries: QueryConfig[]
   /** Resolves with the key of the saved query (the document id of a shared one) */
   saveQuery: (query: Omit<QueryConfig, '_key'>) => Promise<string>
@@ -58,8 +66,6 @@ export function useSavedQueries(): {
   shareQuery: (key: string) => Promise<void>
   /** Moves a shared query the current user owns back to their personal list */
   unshareQuery: (key: string) => Promise<void>
-  /** Removes every personal query; shared ones are left alone */
-  clearQueries: () => Promise<void>
   saving: boolean
   deleting: string[]
   /** Keys of the queries a share or unshare is moving right now */
@@ -68,11 +74,11 @@ export function useSavedQueries(): {
   deleteQueryError: Error | undefined
   error: Error | undefined
 } {
+  const {onCreatePersonalQuery} = options
   const {
     items: personalItems,
     error: personalError,
     set: setPersonalQuery,
-    clear: clearQueries,
   } = useStudioPreferenceList('studio.vision-tool.saved-queries')
   const workspaceClient = useClient({apiVersion: DEFAULT_API_VERSION})
   const currentUser = useCurrentUser()
@@ -205,10 +211,18 @@ export function useSavedQueries(): {
         }
 
         const newQuery = {...query, _key: uuid()}
+        onCreatePersonalQuery?.(newQuery._key)
         await setPersonalQuery(newQuery._key, newQuery)
         return newQuery._key
       }),
-    [currentUser, workspaceClient, mapSharedQueries, runSave, setPersonalQuery],
+    [
+      currentUser,
+      workspaceClient,
+      mapSharedQueries,
+      onCreatePersonalQuery,
+      runSave,
+      setPersonalQuery,
+    ],
   )
 
   const updateQuery = useCallback(
@@ -379,7 +393,6 @@ export function useSavedQueries(): {
     deleteQuery,
     shareQuery,
     unshareQuery,
-    clearQueries,
     saving: pendingSaves > 0,
     deleting,
     moving,
