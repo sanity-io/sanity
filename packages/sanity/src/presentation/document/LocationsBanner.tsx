@@ -9,9 +9,9 @@ import {type ObjectSchemaType} from 'sanity'
 import {PresentationContext} from 'sanity/_singletons'
 import {useTranslation} from 'sanity/i18n'
 import {useIntentLink} from 'sanity/router'
-import {usePaneRouter} from 'sanity/structure'
 import {Text, Flex, Box, Icon} from 'ui5'
 
+import {usePaneRouter} from '../../structure/components/paneRouter/usePaneRouter'
 import {DEFAULT_TOOL_NAME, DEFAULT_TOOL_TITLE} from '../constants'
 import {presentationLocaleNamespace} from '../i18n'
 import {

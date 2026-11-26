@@ -8,23 +8,17 @@ import type {
   IntentLink,
   IntentLinkProps,
   IntentParameters,
-  InternalSearchParam,
   Link,
   LinkProps,
-  MatchError,
-  MatchOk,
-  MatchResult,
   NavigateBaseOptions,
   NavigateOptions,
   NavigateOptionsWithState,
-  NextStateOrOptions,
   route,
   Route,
   RouteChildren,
   RouteNodeOptions,
   RouteObject,
   Router,
-  RouterContext,
   RouterContextValue,
   RouterNode,
   RouterProvider,
@@ -45,7 +39,6 @@ import type {
   useRouterState,
   useStateLink,
   UseStateLinkOptions,
-  WithRouterProps,
 } from 'sanity/router'
 import {describe, expectTypeOf, test} from 'vitest'
 
@@ -65,23 +58,11 @@ describe('sanity/router', () => {
   test('IntentParameters', () => {
     expectTypeOf<IntentParameters>().not.toBeNever()
   })
-  test('InternalSearchParam', () => {
-    expectTypeOf<InternalSearchParam>().not.toBeNever()
-  })
   test('Link', () => {
     expectTypeOf<typeof Link>().toBeFunction()
   })
   test('LinkProps', () => {
     expectTypeOf<LinkProps>().toBeObject()
-  })
-  test('MatchError', () => {
-    expectTypeOf<MatchError>().toBeObject()
-  })
-  test('MatchOk', () => {
-    expectTypeOf<MatchOk>().toBeObject()
-  })
-  test('MatchResult', () => {
-    expectTypeOf<MatchResult>().not.toBeNever()
   })
   test('NavigateBaseOptions', () => {
     expectTypeOf<NavigateBaseOptions>().toBeObject()
@@ -91,9 +72,6 @@ describe('sanity/router', () => {
   })
   test('NavigateOptionsWithState', () => {
     expectTypeOf<NavigateOptionsWithState>().toBeObject()
-  })
-  test('NextStateOrOptions', () => {
-    expectTypeOf<NextStateOrOptions>().not.toBeNever()
   })
   test('route', () => {
     expectTypeOf<typeof route>().not.toBeNever()
@@ -112,9 +90,6 @@ describe('sanity/router', () => {
   })
   test('Router', () => {
     expectTypeOf<Router>().toBeObject()
-  })
-  test('RouterContext', () => {
-    expectTypeOf<typeof RouterContext>().not.toBeNever()
   })
   test('RouterContextValue', () => {
     expectTypeOf<RouterContextValue>().toBeObject()
@@ -176,8 +151,5 @@ describe('sanity/router', () => {
   })
   test('UseStateLinkOptions', () => {
     expectTypeOf<UseStateLinkOptions>().toBeObject()
-  })
-  test('WithRouterProps', () => {
-    expectTypeOf<WithRouterProps>().toBeObject()
   })
 })

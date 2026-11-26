@@ -3,9 +3,10 @@
  * `sanity/structure`, `sanity/router`, `sanity/presentation` and `sanity/i18n` entries. Inside
  * `packages/sanity` they are imported relatively from the module that declares them; everywhere
  * else (`@sanity/vision`, the dev, example and perf studios, the e2e suite, the test harnesses)
- * they are imported from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`.
+ * they are imported from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` or
+ * its `/structure`, `/router` and `/presentation` subpaths.
  *
- * The public entries still export `@internal` types (`internal-exports.test.ts`). Nothing at build
+ * `sanity` and `sanity/i18n` still export `@internal` types (`internal-exports.test.ts`). Nothing at build
  * time keeps the repo's own code off them, so this test does, keeping the boundary visible to
  * plugin authors reading the source. A name counts when the built `.d.ts` of the public entry tags
  * it `@internal` *and* the internals entry exports it.
@@ -22,13 +23,12 @@
  * not analysed, so do not introduce them for these entries.
  */
 import fs from 'node:fs'
-import os from 'node:os'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {type ExportedDeclarations, Node, Project} from 'ts-morph'
 import ts from 'typescript'
-import {afterAll, beforeAll, describe, expect, test} from 'vitest'
+import {beforeAll, describe, expect, test} from 'vitest'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '../../../..')
@@ -56,6 +56,9 @@ const SCANNED_DIRS = [
 
 const SKIPPED_DIRS = new Set(['node_modules', 'lib', 'dist', '.sanity', 'storybook-static'])
 const SOURCE_FILE = /\.(ts|tsx|mts|cts|js|jsx|mjs)$/
+
+/** Reading and scanning every file in `SCANNED_DIRS` takes several seconds on a CI runner. */
+const SCAN_TIMEOUT = 60_000
 
 function isInternal(declaration: ExportedDeclarations): boolean {
   const docs = Node.isVariableDeclaration(declaration)
@@ -199,10 +202,21 @@ function importAliases(source: ts.SourceFile): Map<string, string> {
   return aliases
 }
 
-function importedNames(file: string, entries: Record<string, Set<string>>): Hit[] {
+/**
+ * `importedNames` only matches specifiers written as string literals, so a file that never spells
+ * an entry in quotes cannot report a hit and does not need to be parsed.
+ */
+function mentionsEntry(text: string, entries: Record<string, Set<string>>): boolean {
+  return Object.keys(entries).some(
+    (entry) => text.includes(`'${entry}'`) || text.includes(`"${entry}"`),
+  )
+}
+
+function importedNames(file: string, text: string, entries: Record<string, Set<string>>): Hit[] {
+  if (!mentionsEntry(text, entries)) return []
   const source = ts.createSourceFile(
     file,
-    fs.readFileSync(file, 'utf8'),
+    text,
     ts.ScriptTarget.Latest,
     true,
     file.endsWith('x') ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
@@ -252,18 +266,26 @@ describe('repo code does not import @internal symbols from the public entries', 
     ]),
   )
 
-  for (const dir of SCANNED_DIRS) {
-    test(dir, () => {
+  const offendersByDir = new Map<string, string[]>()
+  beforeAll(() => {
+    for (const dir of SCANNED_DIRS) {
       const offenders: string[] = []
       for (const file of walk(path.join(repoRoot, dir))) {
-        for (const {specifier, names} of importedNames(file, entries)) {
+        const text = fs.readFileSync(file, 'utf8')
+        for (const {specifier, names} of importedNames(file, text, entries)) {
           offenders.push(
             `${path.relative(repoRoot, file)}: {${names.join(', ')}} from '${specifier}'`,
           )
         }
       }
+      offendersByDir.set(dir, offenders)
+    }
+  }, SCAN_TIMEOUT)
+
+  for (const dir of SCANNED_DIRS) {
+    test(dir, () => {
       expect(
-        offenders,
+        offendersByDir.get(dir),
         `Import @internal symbols relatively (inside packages/sanity) or from sanity/_dangerously_use_private_internals_that_do_not_follow_semver (everywhere else), not from the public entries.`,
       ).toEqual([])
     })
@@ -276,15 +298,14 @@ const RE_EXPORTED_AREAS = ['core', 'structure', 'router', 'presentation'].map((a
 )
 
 describe('the areas the internals entry re-exports do not import it', () => {
-  for (const dir of RE_EXPORTED_AREAS) {
-    test(dir, () => {
+  const offendersByDir = new Map<string, string[]>()
+  beforeAll(() => {
+    for (const dir of RE_EXPORTED_AREAS) {
       const offenders: string[] = []
       for (const file of walk(path.join(repoRoot, dir))) {
-        const source = ts.createSourceFile(
-          file,
-          fs.readFileSync(file, 'utf8'),
-          ts.ScriptTarget.Latest,
-        )
+        const text = fs.readFileSync(file, 'utf8')
+        if (!text.includes(INTERNALS_ENTRY)) continue
+        const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest)
         const visit = (node: ts.Node) => {
           const specifier =
             (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) && node.moduleSpecifier
@@ -296,16 +317,26 @@ describe('the areas the internals entry re-exports do not import it', () => {
                       node.expression.expression.text === 'vi'))
                 ? node.arguments[0]
                 : undefined
-          if (specifier && ts.isStringLiteral(specifier) && specifier.text === INTERNALS_ENTRY) {
+          if (
+            specifier &&
+            ts.isStringLiteral(specifier) &&
+            (specifier.text === INTERNALS_ENTRY || specifier.text.startsWith(`${INTERNALS_ENTRY}/`))
+          ) {
             offenders.push(path.relative(repoRoot, file))
           }
           ts.forEachChild(node, visit)
         }
         visit(source)
       }
+      offendersByDir.set(dir, [...new Set(offenders)])
+    }
+  }, SCAN_TIMEOUT)
+
+  for (const dir of RE_EXPORTED_AREAS) {
+    test(dir, () => {
       expect(
-        [...new Set(offenders)],
-        `Import internals relatively from the declaring module, not from ${INTERNALS_ENTRY}.`,
+        offendersByDir.get(dir),
+        `Import internals relatively from the declaring module, not from ${INTERNALS_ENTRY} or its subpaths.`,
       ).toEqual([])
     })
   }
@@ -335,6 +366,11 @@ describe('importedNames', () => {
       expected: [{specifier: 'sanity', names: ['useEditState']}],
     },
     {
+      name: 'named import with a double-quoted specifier',
+      source: `import {useDocumentPane} from "sanity/structure"\n`,
+      expected: [{specifier: 'sanity/structure', names: ['useDocumentPane']}],
+    },
+    {
       name: 'namespace import, value and type position',
       source: [
         `import * as S from 'sanity'`,
@@ -347,7 +383,7 @@ describe('importedNames', () => {
     },
     {
       name: 'dynamic import, destructured',
-      source: `export async function f() { const {useDocumentPane, usePaneRouter} = await import('sanity/structure'); return [useDocumentPane, usePaneRouter] }\n`,
+      source: `export async function f() { const {useDocumentPane, structureTool} = await import('sanity/structure'); return [useDocumentPane, structureTool] }\n`,
       expected: [{specifier: 'sanity/structure', names: ['useDocumentPane']}],
     },
     {
@@ -390,7 +426,7 @@ describe('importedNames', () => {
       source: [
         `import {defineConfig} from 'sanity'`,
         `import * as S from 'sanity/structure'`,
-        `export const a = S.usePaneRouter`,
+        `export const a = S.structureTool`,
         `export const p = import('sanity/router').then((m) => m.useRouter)`,
       ].join('\n'),
       expected: [],
@@ -407,19 +443,9 @@ describe('importedNames', () => {
     },
   ]
 
-  let dir: string
-  beforeAll(() => {
-    dir = fs.mkdtempSync(path.join(os.tmpdir(), 'no-internal-imports-'))
-  })
-  afterAll(() => {
-    fs.rmSync(dir, {recursive: true, force: true})
-  })
-
   for (const [index, {name, source, expected}] of cases.entries()) {
     test(name, () => {
-      const file = path.join(dir, `case-${index}.tsx`)
-      fs.writeFileSync(file, source)
-      expect(importedNames(file, entries)).toEqual(expected)
+      expect(importedNames(`case-${index}.tsx`, source, entries)).toEqual(expected)
     })
   }
 })

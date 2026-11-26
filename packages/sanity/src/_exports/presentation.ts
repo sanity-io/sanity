@@ -24,7 +24,6 @@ export {
   type PresentationStateParams,
   type PresentationViewport,
   type PreviewUrlOption,
-  type PreviewUrlResolver,
   type PreviewUrlResolverOptions,
   type StructureDocumentPaneParams,
 } from '../presentation/types'

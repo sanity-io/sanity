@@ -22,6 +22,8 @@
  * so moving one buys no bytes and only costs breakage. They stay on the entry that exported them,
  * and are re-exported from the internals entry as well. A type moves only when it describes
  * something nobody outside Sanity should need, and even then leaving it is acceptable.
+ * `sanity/structure`, `sanity/router` and `sanity/presentation` are the exception: Studio 7 moves
+ * their types too, to subpaths of the internals entry (see the last test in this file).
  *
  * The internals entry is deliberately *not* checked for "nothing but `@internal` here": versions
  * 6.17.0 through 6.20.0 shipped it as the migration target for names that have since become
@@ -33,7 +35,7 @@ import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import {type ExportedDeclarations, Node, Project} from 'ts-morph'
-import {describe, expect, test} from 'vitest'
+import {beforeAll, describe, expect, test} from 'vitest'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const sanityLibDir = path.resolve(__dirname, '../../../sanity/lib')
@@ -160,6 +162,92 @@ describe('the internals entry is a superset, and the public compatibility list i
       expect(
         stale,
         `KEPT_FOR_COMPATIBILITY lists names \`${entry}\` no longer exports. Drop them from the list.`,
+      ).toEqual([])
+    })
+  }
+})
+
+/**
+ * Studio 7 keeps implementation details off `sanity/structure`, `sanity/router` and
+ * `sanity/presentation`, types included: whatever is tagged `@internal`, `@hidden` or
+ * `@deprecated` is exported from the matching subpath of the internals entry instead. Unlike the
+ * checks above, these cover declarations re-exported from dependencies too, because the entry
+ * decides what it re-exports.
+ */
+const PRIVATE_SUBPATHS = {
+  'sanity/structure': 'structure',
+  'sanity/router': 'router',
+  'sanity/presentation': 'presentation',
+} as const
+
+const PRIVATE_TAGS = new Set(['internal', 'hidden', 'deprecated'])
+
+function privateTagsOf(declaration: ExportedDeclarations): string[] {
+  const docs = Node.isVariableDeclaration(declaration)
+    ? (declaration.getVariableStatement()?.getJsDocs() ?? [])
+    : Node.isJSDocable(declaration)
+      ? declaration.getJsDocs()
+      : []
+  return docs.flatMap((doc) =>
+    doc
+      .getTags()
+      .map((tag) => tag.getTagName())
+      .filter((tag) => PRIVATE_TAGS.has(tag)),
+  )
+}
+
+/** Binding the built `.d.ts` files and the chunks they import takes seconds on a CI runner. */
+const DTS_PARSE_TIMEOUT = 60_000
+
+describe('structure, router and presentation keep their internals on subpaths', () => {
+  /** Built `.d.ts` file → export name → whether one of its declarations has a private tag. */
+  const privacyByFile = new Map<string, Map<string, boolean>>()
+  const dtsFilesOf = (subpath: string) => ({
+    entry: `${subpath}.d.ts`,
+    internals: path.join(
+      '_dangerously_use_private_internals_that_do_not_follow_semver',
+      `${subpath}.d.ts`,
+    ),
+  })
+  const exportsOf = (dtsFile: string, isPrivate: boolean) =>
+    [...(privacyByFile.get(dtsFile) ?? [])]
+      .filter(([, privateExport]) => privateExport === isPrivate)
+      .map(([name]) => name)
+
+  beforeAll(() => {
+    const project = new Project({skipAddingFilesFromTsConfig: true})
+    for (const subpath of Object.values(PRIVATE_SUBPATHS)) {
+      for (const dtsFile of Object.values(dtsFilesOf(subpath))) {
+        const sourceFile = project.addSourceFileAtPath(path.join(sanityLibDir, dtsFile))
+        privacyByFile.set(
+          dtsFile,
+          new Map(
+            [...sourceFile.getExportedDeclarations()].map(([name, declarations]) => [
+              name,
+              declarations.some((declaration) => privateTagsOf(declaration).length > 0),
+            ]),
+          ),
+        )
+      }
+    }
+  }, DTS_PARSE_TIMEOUT)
+
+  for (const [entry, subpath] of Object.entries(PRIVATE_SUBPATHS)) {
+    const internalsSubpath = `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/${subpath}`
+    const dtsFiles = dtsFilesOf(subpath)
+
+    test(`${entry} exports nothing tagged @internal, @hidden or @deprecated`, () => {
+      expect(
+        exportsOf(dtsFiles.entry, true),
+        `Move these exports from \`${entry}\` to \`${internalsSubpath}\`.`,
+      ).toEqual([])
+    })
+
+    test(`${internalsSubpath} exports only declarations tagged @internal, @hidden or @deprecated`, () => {
+      expect(privacyByFile.get(dtsFiles.internals)?.size).toBeGreaterThan(0)
+      expect(
+        exportsOf(dtsFiles.internals, false),
+        `These exports are public API: export them from \`${entry}\` instead.`,
       ).toEqual([])
     })
   }

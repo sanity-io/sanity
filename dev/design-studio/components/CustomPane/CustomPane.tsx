@@ -1,6 +1,6 @@
 import {Button, Card} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {usePaneRouter} from 'sanity/structure'
+import {usePaneRouter} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure'
 import {Flex} from 'ui5'
 
 export function CustomPane(props: any) {

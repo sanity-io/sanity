@@ -3,17 +3,13 @@
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
 import type {
-  BackLinkProps,
   BaseGenericList,
   BaseIntentParams,
-  BaseResolvedPaneNode,
   BaseView,
   BuildableComponent,
   BuildableGenericList,
   BuildableList,
-  Builder,
   Child,
-  ChildLinkProps,
   ChildObservable,
   ChildResolver,
   ChildResolverOptions,
@@ -24,15 +20,11 @@ import type {
   ComponentInput,
   ComponentView,
   ComponentViewBuilder,
-  ConfirmDeleteDialogProps,
-  CustomComponentPaneNode,
   DefaultDocumentNodeContext,
   DefaultDocumentNodeResolver,
   defineIncomingReferenceDecoration,
   Divider,
   DocumentBuilder,
-  DocumentFieldMenuActionNode,
-  DocumentInspectorHeader,
   DocumentList,
   DocumentListBuilder,
   DocumentListInput,
@@ -40,17 +32,11 @@ import type {
   DocumentListItemBuilder,
   DocumentListItemInput,
   DocumentListOptions,
-  DocumentListPaneNode,
-  DocumentListPaneProps,
   DocumentNode,
   DocumentOptions,
-  DocumentPaneNode,
-  DocumentPaneProvider,
-  DocumentPaneProviderProps,
   DocumentTypeListBuilder,
   DocumentTypeListInput,
   EditorNode,
-  EditReferenceOptions,
   FormView,
   FormViewBuilder,
   GenericList,
@@ -78,62 +64,33 @@ import type {
   ListItemDisplayOptions,
   ListItemInput,
   ListItemSerializeOptions,
-  ListPaneNode,
   MenuItem,
   MenuItemActionType,
   MenuItemBuilder,
   MenuItemGroup,
   MenuItemGroupBuilder,
   MenuItemParamsType,
-  PaneLayout,
-  PaneListItem,
-  PaneListItemDivider,
-  PaneMenuItem,
-  PaneMenuItemGroup,
-  PaneNode,
-  PaneNodeResolver,
-  PaneRouterContext,
-  PaneRouterContextValue,
-  ParameterizedLinkProps,
   PartialDocumentList,
   PartialDocumentListItem,
   PartialDocumentNode,
   PartialListItem,
   PartialMenuItem,
-  ReferenceChildLinkProps,
-  RouterPaneGroup,
-  RouterPanes,
-  RouterPaneSibling,
-  RouterPaneSiblingContext,
   Serializable,
-  SerializablePaneNode,
   SerializeOptions,
   SerializePath,
   SingletonListBuilder,
-  SortMenuItem,
-  StrictVersionLayeringOptions,
   StructureBuilder,
-  StructureBuilderOptions,
   StructureContext,
   structureLocaleNamespace,
   StructureLocaleResourceKeys,
   StructureNode,
   StructureResolver,
-  StructureResolverContext,
   structureTool,
-  StructureToolContextValue,
-  StructureToolFeatures,
   StructureToolMenuItem,
   StructureToolOptions,
-  StructureToolPaneActionHandler,
-  StructureToolProviderProps,
-  UnresolvedPaneNode,
   UnserializedListItem,
   UnserializedListItemChild,
   useDocumentPane,
-  useDocumentTitle,
-  UseDocumentTitle,
-  usePaneRouter,
   UserComponent,
   UserViewComponent,
   View,
@@ -142,17 +99,11 @@ import type {
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/structure', () => {
-  test('BackLinkProps', () => {
-    expectTypeOf<BackLinkProps>().toBeObject()
-  })
   test('BaseGenericList', () => {
     expectTypeOf<BaseGenericList>().toBeObject()
   })
   test('BaseIntentParams', () => {
     expectTypeOf<BaseIntentParams>().toBeObject()
-  })
-  test('BaseResolvedPaneNode', () => {
-    expectTypeOf<BaseResolvedPaneNode<any>>().toBeObject()
   })
   test('BaseView', () => {
     expectTypeOf<BaseView>().toBeObject()
@@ -166,14 +117,8 @@ describe('sanity/structure', () => {
   test('BuildableList', () => {
     expectTypeOf<BuildableList>().toBeObject()
   })
-  test('Builder', () => {
-    expectTypeOf<Builder>().not.toBeNever()
-  })
   test('Child', () => {
     expectTypeOf<Child>().not.toBeNever()
-  })
-  test('ChildLinkProps', () => {
-    expectTypeOf<ChildLinkProps>().toBeObject()
   })
   test('ChildObservable', () => {
     expectTypeOf<ChildObservable>().toBeObject()
@@ -205,12 +150,6 @@ describe('sanity/structure', () => {
   test('ComponentViewBuilder', () => {
     expectTypeOf<ComponentViewBuilder>().not.toBeNever()
   })
-  test('ConfirmDeleteDialogProps', () => {
-    expectTypeOf<ConfirmDeleteDialogProps>().toBeObject()
-  })
-  test('CustomComponentPaneNode', () => {
-    expectTypeOf<CustomComponentPaneNode>().toBeObject()
-  })
   test('DefaultDocumentNodeContext', () => {
     expectTypeOf<DefaultDocumentNodeContext>().toBeObject()
   })
@@ -225,12 +164,6 @@ describe('sanity/structure', () => {
   })
   test('DocumentBuilder', () => {
     expectTypeOf<DocumentBuilder>().not.toBeNever()
-  })
-  test('DocumentFieldMenuActionNode', () => {
-    expectTypeOf<DocumentFieldMenuActionNode>().not.toBeNever()
-  })
-  test('DocumentInspectorHeader', () => {
-    expectTypeOf<typeof DocumentInspectorHeader>().toBeFunction()
   })
   test('DocumentList', () => {
     expectTypeOf<DocumentList>().toBeObject()
@@ -253,26 +186,11 @@ describe('sanity/structure', () => {
   test('DocumentListOptions', () => {
     expectTypeOf<DocumentListOptions>().toBeObject()
   })
-  test('DocumentListPaneNode', () => {
-    expectTypeOf<DocumentListPaneNode>().toBeObject()
-  })
-  test('DocumentListPaneProps', () => {
-    expectTypeOf<DocumentListPaneProps>().not.toBeNever()
-  })
   test('DocumentNode', () => {
     expectTypeOf<DocumentNode>().toBeObject()
   })
   test('DocumentOptions', () => {
     expectTypeOf<DocumentOptions>().toBeObject()
-  })
-  test('DocumentPaneNode', () => {
-    expectTypeOf<DocumentPaneNode>().toBeObject()
-  })
-  test('DocumentPaneProvider', () => {
-    expectTypeOf<typeof DocumentPaneProvider>().not.toBeNever()
-  })
-  test('DocumentPaneProviderProps', () => {
-    expectTypeOf<DocumentPaneProviderProps>().not.toBeNever()
   })
   test('DocumentTypeListBuilder', () => {
     expectTypeOf<DocumentTypeListBuilder>().not.toBeNever()
@@ -282,9 +200,6 @@ describe('sanity/structure', () => {
   })
   test('EditorNode', () => {
     expectTypeOf<EditorNode>().toBeObject()
-  })
-  test('EditReferenceOptions', () => {
-    expectTypeOf<EditReferenceOptions>().toBeObject()
   })
   test('FormView', () => {
     expectTypeOf<FormView>().toBeObject()
@@ -367,9 +282,6 @@ describe('sanity/structure', () => {
   test('ListItemSerializeOptions', () => {
     expectTypeOf<ListItemSerializeOptions>().toBeObject()
   })
-  test('ListPaneNode', () => {
-    expectTypeOf<ListPaneNode>().toBeObject()
-  })
   test('MenuItem', () => {
     expectTypeOf<MenuItem>().toBeObject()
   })
@@ -388,36 +300,6 @@ describe('sanity/structure', () => {
   test('MenuItemParamsType', () => {
     expectTypeOf<MenuItemParamsType>().not.toBeNever()
   })
-  test('PaneLayout', () => {
-    expectTypeOf<typeof PaneLayout>().toBeFunction()
-  })
-  test('PaneListItem', () => {
-    expectTypeOf<PaneListItem<any>>().toBeObject()
-  })
-  test('PaneListItemDivider', () => {
-    expectTypeOf<PaneListItemDivider>().toBeObject()
-  })
-  test('PaneMenuItem', () => {
-    expectTypeOf<PaneMenuItem>().toBeObject()
-  })
-  test('PaneMenuItemGroup', () => {
-    expectTypeOf<PaneMenuItemGroup>().toBeObject()
-  })
-  test('PaneNode', () => {
-    expectTypeOf<PaneNode>().not.toBeNever()
-  })
-  test('PaneNodeResolver', () => {
-    expectTypeOf<PaneNodeResolver>().not.toBeNever()
-  })
-  test('PaneRouterContext', () => {
-    expectTypeOf<typeof PaneRouterContext>().not.toBeNever()
-  })
-  test('PaneRouterContextValue', () => {
-    expectTypeOf<PaneRouterContextValue>().toBeObject()
-  })
-  test('ParameterizedLinkProps', () => {
-    expectTypeOf<ParameterizedLinkProps>().toBeObject()
-  })
   test('PartialDocumentList', () => {
     expectTypeOf<PartialDocumentList>().toBeObject()
   })
@@ -433,26 +315,8 @@ describe('sanity/structure', () => {
   test('PartialMenuItem', () => {
     expectTypeOf<PartialMenuItem>().not.toBeNever()
   })
-  test('ReferenceChildLinkProps', () => {
-    expectTypeOf<ReferenceChildLinkProps>().toBeObject()
-  })
-  test('RouterPaneGroup', () => {
-    expectTypeOf<RouterPaneGroup>().not.toBeNever()
-  })
-  test('RouterPanes', () => {
-    expectTypeOf<RouterPanes>().not.toBeNever()
-  })
-  test('RouterPaneSibling', () => {
-    expectTypeOf<RouterPaneSibling>().toBeObject()
-  })
-  test('RouterPaneSiblingContext', () => {
-    expectTypeOf<RouterPaneSiblingContext>().toBeObject()
-  })
   test('Serializable', () => {
     expectTypeOf<Serializable<any>>().toBeObject()
-  })
-  test('SerializablePaneNode', () => {
-    expectTypeOf<SerializablePaneNode>().not.toBeNever()
   })
   test('SerializeOptions', () => {
     expectTypeOf<SerializeOptions>().toBeObject()
@@ -463,17 +327,8 @@ describe('sanity/structure', () => {
   test('SingletonListBuilder', () => {
     expectTypeOf<SingletonListBuilder>().not.toBeNever()
   })
-  test('SortMenuItem', () => {
-    expectTypeOf<SortMenuItem>().toBeObject()
-  })
-  test('StrictVersionLayeringOptions', () => {
-    expectTypeOf<StrictVersionLayeringOptions>().toBeObject()
-  })
   test('StructureBuilder', () => {
     expectTypeOf<StructureBuilder>().toBeObject()
-  })
-  test('StructureBuilderOptions', () => {
-    expectTypeOf<StructureBuilderOptions>().toBeObject()
   })
   test('StructureContext', () => {
     expectTypeOf<StructureContext>().toBeObject()
@@ -490,32 +345,14 @@ describe('sanity/structure', () => {
   test('StructureResolver', () => {
     expectTypeOf<StructureResolver>().not.toBeNever()
   })
-  test('StructureResolverContext', () => {
-    expectTypeOf<StructureResolverContext>().toBeObject()
-  })
   test('structureTool', () => {
     expectTypeOf<typeof structureTool>().not.toBeNever()
-  })
-  test('StructureToolContextValue', () => {
-    expectTypeOf<StructureToolContextValue>().toBeObject()
-  })
-  test('StructureToolFeatures', () => {
-    expectTypeOf<StructureToolFeatures>().toBeObject()
   })
   test('StructureToolMenuItem', () => {
     expectTypeOf<StructureToolMenuItem>().toBeObject()
   })
   test('StructureToolOptions', () => {
     expectTypeOf<StructureToolOptions>().toBeObject()
-  })
-  test('StructureToolPaneActionHandler', () => {
-    expectTypeOf<StructureToolPaneActionHandler>().not.toBeNever()
-  })
-  test('StructureToolProviderProps', () => {
-    expectTypeOf<StructureToolProviderProps>().toBeObject()
-  })
-  test('UnresolvedPaneNode', () => {
-    expectTypeOf<UnresolvedPaneNode>().not.toBeNever()
   })
   test('UnserializedListItem', () => {
     expectTypeOf<UnserializedListItem>().toBeObject()
@@ -525,15 +362,6 @@ describe('sanity/structure', () => {
   })
   test('useDocumentPane', () => {
     expectTypeOf<typeof useDocumentPane>().toBeFunction()
-  })
-  test('useDocumentTitle', () => {
-    expectTypeOf<typeof useDocumentTitle>().toBeFunction()
-  })
-  test('UseDocumentTitle', () => {
-    expectTypeOf<UseDocumentTitle>().toBeObject()
-  })
-  test('usePaneRouter', () => {
-    expectTypeOf<typeof usePaneRouter>().toBeFunction()
   })
   test('UserComponent', () => {
     expectTypeOf<UserComponent>().not.toBeNever()

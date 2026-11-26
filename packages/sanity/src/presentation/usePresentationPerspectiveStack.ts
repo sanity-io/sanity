@@ -1,6 +1,6 @@
 import {use, useMemo} from 'react'
 import {usePerspective} from 'sanity'
-import {PaneRouterContext} from 'sanity/structure'
+import {PaneRouterContext} from 'sanity/_singletons'
 
 export function usePresentationPerspectiveStack() {
   const {perspectiveStack} = usePerspective()
