@@ -31,7 +31,7 @@
     "@octokit/rest": "^22.0.1",
     "@optique/core": "catalog:",
     "@optique/run": "catalog:",
-    "@portabletext/toolkit": "^6.0.0",
+    "@portabletext/toolkit": "^6.1.0",
     "@sanity/client": "catalog:",
     "@sanity/id-utils": "^1.1.0",
     "@sanity/mutate": "^0.18.4",
