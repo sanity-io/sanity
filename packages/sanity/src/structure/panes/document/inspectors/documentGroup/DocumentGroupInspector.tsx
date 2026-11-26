@@ -1,6 +1,5 @@
 import {useMemo, useState} from 'react'
 import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
   type DocumentInspectorProps,
   getReleaseIdFromReleaseDocumentId,
   readVersionType,
@@ -19,6 +18,7 @@ import {type DocumentGroupInventoryComponents} from '../../../../../core/documen
 import {useSetVariant} from '../../../../../core/perspective/useSetVariant'
 import {type VersionInfoDocumentStub} from '../../../../../core/releases/store/types'
 import {isGoingToUnpublish} from '../../../../../core/releases/util/isGoingToUnpublish'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../core/studioClient'
 import {getDocumentVersionVariantId} from '../../../../../core/util/getDocumentVersionVariant'
 import {ReferencePreviewLink} from '../../../../components/confirmDeleteDialog/ReferencePreviewLink'
 import {referringDocuments} from '../../../../components/confirmDeleteDialog/useReferringDocuments'

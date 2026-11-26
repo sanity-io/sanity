@@ -5,10 +5,11 @@ import {
 } from '@sanity/ui'
 import {AnimatePresence, motion} from 'motion/react'
 import {useCallback, useEffect, useLayoutEffect, useState} from 'react'
-import {AvatarSkeleton, usePerspective, UserAvatar, useRelativeTime, useSyncState} from 'sanity'
+import {usePerspective, UserAvatar, useRelativeTime, useSyncState} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box} from 'ui5'
 
+import {AvatarSkeleton} from '../../../../core/components/userAvatar/UserAvatar'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from '../../../../core/field/diff/components/constants'
 import {getTargetScopeId} from '../../../../core/hooks/useTargetDocumentState'
 import {isPublishedPerspective} from '../../../../core/releases/util/util'

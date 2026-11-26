@@ -10,7 +10,6 @@ import {useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useStat
 import {
   createPatchChannel,
   type DocumentFieldAction,
-  FormBuilder,
   type FormBuilderProps,
   type FormNodePresence,
   type PatchEvent,
@@ -22,6 +21,7 @@ import {
   type Workspace,
 } from 'sanity'
 import {
+  FormBuilder,
   EMPTY_ARRAY,
   getExpandOperations,
   ScrollContainer,

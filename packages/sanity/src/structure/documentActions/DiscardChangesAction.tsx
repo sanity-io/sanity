@@ -2,7 +2,6 @@ import {ResetIcon} from '@sanity/icons/Reset'
 import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
-  InsufficientPermissionsMessage,
   isPublishedId,
   useCurrentUser,
   useDocumentOperation,
@@ -10,6 +9,7 @@ import {
 } from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 
+import {InsufficientPermissionsMessage} from '../../core/components/InsufficientPermissionsMessage'
 import {
   getPairTarget,
   getTargetScopeId,
