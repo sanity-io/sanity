@@ -1,4 +1,5 @@
 import {type SanityClient} from '@sanity/client'
+import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {BehaviorSubject, map} from 'rxjs'
 
 import {getDocumentTransactions} from './getDocumentTransactions'
@@ -54,7 +55,9 @@ export function isExpandableEvent(event: DocumentGroupEvent): event is (
  *   failures surface as unhandled rejections (tracked as a known issue).
  *
  * `expandedEvents$` emits the flattened list of all expanded edit events, and `frozenEditGroups$`
- * the expanded edit groups; both are consumed by `createEventsObservable`. Edit groups stay frozen
+ * the expanded edit groups; both are consumed by `createEventsObservable`. `expandedTransactions$`
+ * emits the transactions fetched for each expanded event, set before its edit events emit, so what
+ * they changed can be rebuilt without fetching them again. Edit groups stay frozen
  * for the lifetime of the store, also when the UI collapses them: unfreezing would regroup them
  * with newer edits, and the list would move under the user.
  */
@@ -64,6 +67,7 @@ export function getExpandEvents({documentId, client}: {client: SanityClient; doc
     map((expandedEventsMap) => Array.from(expandedEventsMap.values()).flatMap((v) => v)),
   )
   const frozenEditGroups$ = new BehaviorSubject<FrozenEditGroups>(new Map())
+  const expandedTransactions$ = new BehaviorSubject<TransactionLogEventWithEffects[][]>([])
 
   const freezeEditGroup = (event: EditDocumentVersionEvent) => {
     if (event.parentId || event.isTransaction) return
@@ -101,6 +105,7 @@ export function getExpandEvents({documentId, client}: {client: SanityClient; doc
         parentId: event.id,
       }))
 
+      expandedTransactions$.next([...expandedTransactions$.getValue(), transactions])
       const value = expandedEventsMap$.getValue()
       value.set(event.id, editEvents)
       expandedEventsMap$.next(value)
@@ -109,5 +114,10 @@ export function getExpandEvents({documentId, client}: {client: SanityClient; doc
     }
   }
 
-  return {handleExpandEvent, expandedEvents$, frozenEditGroups$: frozenEditGroups$.asObservable()}
+  return {
+    handleExpandEvent,
+    expandedEvents$,
+    expandedTransactions$: expandedTransactions$.asObservable(),
+    frozenEditGroups$: frozenEditGroups$.asObservable(),
+  }
 }

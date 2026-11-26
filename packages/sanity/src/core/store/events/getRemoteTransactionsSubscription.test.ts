@@ -225,6 +225,38 @@ describe('getRemoteTransactionsSubscription', () => {
     subscription.unsubscribe()
   })
 
+  it('tracks the document of the viewed variant: its snapshot, then the head of each mutation', () => {
+    const {liveDocument$, remoteTransactions$, subscription} = setup(DRAFT_ID)
+    const {values: documents, subscription: documentsSubscription} = collectEmissions(liveDocument$)
+    const snapshot = {
+      _id: DRAFT_ID,
+      _type: 'testDocument',
+      _createdAt: BASE_TIME,
+      _updatedAt: BASE_TIME,
+      _rev: 'tx-snapshot',
+    }
+
+    snapshots$.next({type: 'snapshot', version: 'draft', document: snapshot} as never)
+    snapshots$.next({type: 'snapshot', version: 'published', document: {...snapshot}} as never)
+    const mutation = remoteMutationEvent({
+      transactionId: 'tx-remote-1',
+      head: {...snapshot, _rev: 'tx-remote-1'},
+    })
+    const transactionsWhenMoved: string[][] = []
+    const moves = liveDocument$.subscribe(() =>
+      transactionsWhenMoved.push(remoteTransactions$.value.map((tx) => tx.id)),
+    )
+    snapshots$.next(mutation)
+    snapshots$.next(remoteMutationEvent({version: 'published'}))
+
+    expect(documents).toEqual([undefined, snapshot, mutation.head])
+    // The transaction is appended before the document moves to it.
+    expect(transactionsWhenMoved.at(-1)).toEqual(['tx-remote-1'])
+    moves.unsubscribe()
+    documentsSubscription.unsubscribe()
+    subscription.unsubscribe()
+  })
+
   it('listens to the whole document pair, including the version id when applicable', () => {
     setup(VERSION_ID).subscription.unsubscribe()
 

@@ -1,11 +1,18 @@
 import {type SanityClient} from '@sanity/client'
-import {type MendozaPatch, type TransactionLogEventWithEffects} from '@sanity/types'
-import {BehaviorSubject, filter, map} from 'rxjs'
+import {
+  type MendozaPatch,
+  type SanityDocument,
+  type TransactionLogEventWithEffects,
+} from '@sanity/types'
+import {BehaviorSubject, map} from 'rxjs'
 
 import {getDraftId, getPublishedId, isVersionId} from '../../util/draftUtils'
 import {type DocumentVariantType, getDocumentVariantType} from '../../util/getDocumentVariantType'
 import {type DocumentRemoteMutationEvent} from '../document/buffered-doc/types'
-import {type WithVersion} from '../document/document-pair/checkoutPair'
+import {
+  type RemoteSnapshotVersionEvent,
+  type WithVersion,
+} from '../document/document-pair/checkoutPair'
 import {remoteSnapshots} from '../document/document-pair/remoteSnapshots'
 import {getEditEvents, getEffectState, toUpdateLiveDocumentEvents} from './getEditEvents'
 import {remoteMutationToTransaction} from './utils'
@@ -69,8 +76,14 @@ export function classifyRemoteMutation(
  *   projects them to `updateLiveDocument` events when the document is live edit.
  *
  * Returns `remoteTransactions$` (consumed by `getDocumentChanges` for diffing while viewing the
- * latest version), `remoteEdits$` (merged into the events list), and `subscribe` which activates
- * the listener and returns the rxjs subscription.
+ * latest version), `remoteEdits$` (merged into the events list), `liveDocument$` and `subscribe`
+ * which activates the listener and returns the rxjs subscription.
+ *
+ * `liveDocument$` is the document of the variant being viewed as the server has it, with its
+ * `_rev`: the snapshot the listener starts from (replayed to late subscribers), then the `head` of
+ * every remote mutation. It is `undefined` until the listener delivered one, and `null` when the
+ * document doesn't exist. Remote transactions are appended before it moves, so it never points at a
+ * transaction `remoteTransactions$` doesn't have yet.
  *
  * Known quirk: `remoteTransactions$` only resets on created/deleted effects, so it accumulates
  * without bound during long editing sessions (tracked as a known issue).
@@ -83,6 +96,7 @@ export function getRemoteTransactionsSubscription({
   onRefetch,
 }: GetRemoteTransactionsSubscriptionOptions) {
   const remoteTransactions$ = new BehaviorSubject<TransactionLogEventWithEffects[]>([])
+  const liveDocument$ = new BehaviorSubject<SanityDocument | null | undefined>(undefined)
   const remoteEdits$ = remoteTransactions$.pipe(
     map((transactions) => getEditEvents(transactions, documentId)),
     map((events) => (isLiveEdit ? toUpdateLiveDocumentEvents(events) : events)),
@@ -119,7 +133,14 @@ export function getRemoteTransactionsSubscription({
     }
   }
 
-  const subscription = remoteSnapshots(
+  const onSnapshotReceived = (event: RemoteSnapshotVersionEvent) => {
+    if (event.type === 'remoteMutation') onMutationReceived(event)
+    if (event.version === documentVariantType) {
+      liveDocument$.next((event.type === 'snapshot' ? event.document : event.head) ?? null)
+    }
+  }
+
+  const snapshots$ = remoteSnapshots(
     client,
     {
       draftId: getDraftId(documentId),
@@ -131,11 +152,12 @@ export function getRemoteTransactionsSubscription({
         : {}),
     },
     documentType,
-  ).pipe(filter((event) => event.type === 'remoteMutation'))
+  )
 
   return {
     remoteTransactions$,
     remoteEdits$,
-    subscribe: () => subscription.subscribe(onMutationReceived),
+    liveDocument$: liveDocument$.asObservable(),
+    subscribe: () => snapshots$.subscribe(onSnapshotReceived),
   }
 }

@@ -47,15 +47,18 @@ describe('getInitialFetchEvents', () => {
   it('draft: fetches events, assigns ids, and synthesizes edit events from the baseline revision', async () => {
     const apiCreate = createDocumentVersionEvent()
     const {client, requests} = createMockClient({respond: eventsResponse(DRAFT_ID, [apiCreate])})
-    mockGetDocumentTransactions.mockResolvedValue([
-      editTransaction({id: 'tx-edit-1', timestamp: minutesAfterBase(1)}),
-    ])
+    const transaction = editTransaction({id: 'tx-edit-1', timestamp: minutesAfterBase(1)})
+    mockGetDocumentTransactions.mockResolvedValue([transaction])
 
-    const {events$} = getInitialFetchEvents({client, documentId: DRAFT_ID})
+    const {events$, editTransactions$} = getInitialFetchEvents({client, documentId: DRAFT_ID})
+    const fetched = collectEmissions(editTransactions$)
     const {values, subscription} = collectEmissions(events$)
     await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
     subscription.unsubscribe()
+    fetched.subscription.unsubscribe()
 
+    // Kept, so what the edit events changed is rebuilt without fetching them again.
+    expect(fetched.values.at(-1)).toEqual([[transaction]])
     expect(requests[0].url).toContain(`/events/documents/${DRAFT_ID}?limit=100`)
     // Transactions are fetched from the newest revision-bearing event to the present.
     expect(mockGetDocumentTransactions).toHaveBeenCalledWith({
