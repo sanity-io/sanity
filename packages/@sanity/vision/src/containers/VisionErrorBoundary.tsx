@@ -9,10 +9,7 @@ import {clearLocalStorage} from '../util/localStorage'
 /**
  * @internal
  */
-export type VisionErrorBoundaryProps = PropsWithChildren<{
-  /** Called before the children are rendered again, so a failed lazy import gets another try */
-  onRetry?: () => void
-}>
+export type VisionErrorBoundaryProps = PropsWithChildren
 
 /**
  * @internal
@@ -40,7 +37,6 @@ export class VisionErrorBoundary extends Component<
   }
 
   handleRetryRender = () => {
-    this.props.onRetry?.()
     this.setState((prev) => ({error: null, numRetries: prev.numRetries + 1}))
   }
 

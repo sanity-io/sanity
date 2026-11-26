@@ -1,5 +1,5 @@
 import {createClient, type LiveEvent, type RawQueryResponse} from '@sanity/client'
-import {Subject} from 'rxjs'
+import {concat, NEVER, of, Subject} from 'rxjs'
 import {describe, expect, it} from 'vitest'
 import {createActor, fromObservable, fromPromise, waitFor} from 'xstate'
 
@@ -10,6 +10,7 @@ import {
   MAX_HISTORY_ENTRIES,
   MAX_KEPT_RESULTS,
   queryRunnerMachine,
+  selectLiveConnected,
 } from './queryRunnerMachine'
 import {type QueryRequest} from './types'
 
@@ -530,6 +531,59 @@ describe('queryRunnerMachine', () => {
     expect(harness.snapshot().context.reason).toEqual({type: 'live', matchedTags: []})
   })
 
+  it('is connected from the welcome of its subscription until a reconnect, go-away or stop', () => {
+    const harness = createHarness()
+    const connected = () => selectLiveConnected(harness.snapshot())
+    harness.actor.send({type: 'live.enable', client: testClient})
+    expect(harness.snapshot().matches({live: 'on'})).toBe(true)
+    expect(connected()).toBe(false)
+
+    harness.liveEvents.next({type: 'welcome'})
+    expect(connected()).toBe(true)
+    harness.liveEvents.next({type: 'message', id: '1', tags: ['s1:a']})
+    expect(connected()).toBe(true)
+
+    harness.liveEvents.next({type: 'reconnect'})
+    expect(connected()).toBe(false)
+    harness.liveEvents.next({type: 'welcome'})
+    expect(connected()).toBe(true)
+    harness.liveEvents.next({type: 'goaway', id: '2', reason: 'connection limit reached'})
+    expect(connected()).toBe(false)
+    harness.liveEvents.next({type: 'welcome'})
+
+    // A paused subscription stays up, and a welcome while paused is a reconnect that connects it
+    harness.actor.send({type: 'live.pause'})
+    expect(connected()).toBe(true)
+    harness.liveEvents.next({type: 'reconnect'})
+    expect(connected()).toBe(false)
+    harness.liveEvents.next({type: 'welcome'})
+    expect(connected()).toBe(true)
+
+    // Another client means another subscription, which has to connect first
+    harness.actor.send({type: 'live.enable', client: testClient})
+    expect(connected()).toBe(false)
+    harness.liveEvents.next({type: 'welcome'})
+    expect(connected()).toBe(true)
+
+    harness.actor.send({type: 'live.disable'})
+    expect(connected()).toBe(false)
+    expect(harness.snapshot().context.liveConnected).toBe(false)
+  })
+
+  it('is connected when its subscription replays the welcome as it subscribes', () => {
+    // The client shares a connection between subscribers, and replays its welcome to later ones
+    const machine = queryRunnerMachine.provide({
+      actors: {
+        liveEvents: fromObservable(() => concat(of<LiveEvent>({type: 'welcome'}), NEVER)),
+      },
+    })
+    const actor = createActor(machine, {input: {tabId: 'tab-1'}})
+    actor.start()
+    actor.send({type: 'live.enable', client: testClient})
+    expect(selectLiveConnected(actor.getSnapshot())).toBe(true)
+    actor.stop()
+  })
+
   it('resubscribes when live is re-enabled with a new client and stops when disabled', () => {
     const harness = createHarness()
     harness.actor.send({type: 'live.enable', client: testClient})
@@ -544,7 +598,7 @@ describe('queryRunnerMachine', () => {
   describe('while paused', () => {
     async function liveHarness() {
       const harness = createHarness()
-      const client = {} as SanityClient
+      const client = testClient
       harness.actor.send({type: 'fetch', request: harness.request(), reason: {type: 'manual'}})
       harness.fetches[0].resolve({result: 1, syncTags: ['s1:a', 's1:b']})
       await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'settled'}))
@@ -646,7 +700,7 @@ describe('queryRunnerMachine', () => {
       harness.actor.send({type: 'live.pause'})
       harness.liveEvents.next({type: 'message', id: '1', tags: ['s1:a']})
 
-      harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+      harness.actor.send({type: 'live.enable', client: testClient})
       expect(harness.liveSubscriptionCount()).toBe(2)
       expect(harness.snapshot().context.liveMissed).toBeUndefined()
       expect(harness.fetches).toHaveLength(1)
@@ -656,10 +710,12 @@ describe('queryRunnerMachine', () => {
   it('reports live subscription errors and recovers when re-enabled', () => {
     const harness = createHarness()
     harness.actor.send({type: 'live.enable', client: testClient})
+    harness.liveEvents.next({type: 'welcome'})
     harness.liveEvents.error(new Error('offline'))
 
     expect(harness.snapshot().matches({live: 'failed'})).toBe(true)
     expect(harness.snapshot().context.liveError?.message).toBe('offline')
+    expect(harness.snapshot().context.liveConnected).toBe(false)
 
     harness.actor.send({type: 'live.disable'})
     expect(harness.snapshot().matches({live: 'off'})).toBe(true)

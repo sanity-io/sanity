@@ -11,12 +11,7 @@ import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
 import {validateApiVersion} from '../../../util/validateApiVersion'
 import {AI_FEATURE_KEYS, type AiFeature, useConfiguredAiFeatures} from '../../aiFeatures'
-import {
-  useSavedQueriesApi,
-  useVisionActor,
-  useVisionExperience,
-  useVisionSelector,
-} from '../../store/VisionActorContext'
+import {useSavedQueriesApi, useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectDatasets, selectWorkspaceDataset} from '../../store/visionMachine'
 import {DEFAULT_HIDDEN_DIFF_FIELDS} from '../../store/visionStorage'
 import {DatasetField} from '../request/DatasetField'
@@ -271,7 +266,6 @@ export function SettingsPanel() {
   const actorRef = useVisionActor()
   const updateSetting = useSettingsUpdate()
   const telemetry = useVisionTelemetry()
-  const {switchToClassic} = useVisionExperience()
   const {clearQueries} = useSavedQueriesApi()
   const datasets = useVisionSelector(selectDatasets)
   const workspaceDataset = useVisionSelector(selectWorkspaceDataset)
@@ -313,9 +307,7 @@ export function SettingsPanel() {
       status: 'success',
       title: t('vision.settings.clear-storage.success'),
     })
-    // Clearing storage also ends the redesigned experience, which unmounts this panel
-    switchToClassic()
-  }, [actorRef, clearQueries, switchToClassic, t, telemetry, toast])
+  }, [actorRef, clearQueries, t, telemetry, toast])
 
   return (
     <Box data-testid="vision-settings" padding={4}>
@@ -402,26 +394,6 @@ export function SettingsPanel() {
         <SourceMapSettings />
 
         <AiSettings />
-
-        <Card border padding={3} radius={2}>
-          <Stack gap={3}>
-            <Text size={1} weight="medium" as="div" trim={true}>
-              {t('vision.redesign.settings.title')}
-            </Text>
-            <Text muted size={1} as="div" trim={true}>
-              {t('vision.redesign.settings.description')}
-            </Text>
-            <Flex>
-              <Button
-                data-testid="vision-settings-classic"
-                icon={RestoreIcon}
-                mode="ghost"
-                onClick={() => switchToClassic('settings')}
-                text={t('vision.redesign.switch-to-classic')}
-              />
-            </Flex>
-          </Stack>
-        </Card>
 
         <Card border padding={3} radius={2} tone={confirmClear ? 'critical' : 'default'}>
           <Stack gap={3}>
