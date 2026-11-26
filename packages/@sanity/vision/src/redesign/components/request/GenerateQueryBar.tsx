@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {Button, Card, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
-import {useCallback, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {type Schema, useSchema} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Flex} from 'ui5'
@@ -13,6 +13,7 @@ import {useAiCredits} from '../../hooks/useAiCredits'
 import {useQueryAgent} from '../../hooks/useQueryAgent'
 import {type VisionTab} from '../../store/types'
 import {describeDocumentListFields} from '../../util/documentListFields'
+import {hasDatasetEmbeddings} from '../../util/embeddings'
 import {editQuery, generateQuery, MAX_GENERATE_ATTEMPTS} from '../../util/generateQuery'
 import {getRequestedDocumentTypes, summarizeSchema} from '../../util/schemaSummary'
 import {AiCreditsStatus} from '../AiCreditsStatus'
@@ -72,6 +73,12 @@ export function GenerateQueryBar(props: GenerateQueryBarProps) {
     formatForEditor,
     onOpened: onClose,
   })
+
+  // What the prompt teaches depends on whether the dataset has embeddings; reading that while the
+  // request is typed keeps it off the time a generation takes
+  useEffect(() => {
+    if (enabled) void hasDatasetEmbeddings(client)
+  }, [client, enabled])
 
   const telemetry = useVisionTelemetry()
   // A generated query opens with a comment naming the description; an edited one keeps whatever

@@ -60,3 +60,25 @@ requests to PokéAPI.
 | `--concurrency <n>` | `8`        | Parallel requests to PokéAPI and the Sanity API                                                                    |
 | `--dry-run`         |            | Write the documents to `pokemon/.cache/pokedex.ndjson` instead, ready for `sanity dataset import`; no token needed |
 | `--no-prune`        |            | Keep documents of the Pokédex types whose IDs do not start with `pokemon_`                                         |
+
+## Evaluating Vision's query generator
+
+The `pokedex` dataset has embeddings, which makes it a good place to check the GROQ that Vision's
+AI query generator writes. The eval asks for queries the way Vision does, runs each one against the
+dataset and grades the result against a query written by hand. It covers a vague description that
+needs semantic search (also with the embeddings read as disabled, where it must not be used), exact
+requests that must not use semantic search (a name, a type and generation, a count, a top five by
+weight, a flag, the most common ability) and two edits of an existing query. It reads the dataset
+and uses AI credits, and it writes nothing. The packages must be built first (`pnpm build`):
+
+```sh
+SANITY_AUTH_TOKEN=<token> pnpm --filter sanity-test-studio eval:pokemon-queries
+```
+
+| Option          | Default       | Description                                     |
+| --------------- | ------------- | ----------------------------------------------- |
+| `--project-id`  | `ppsg7ml5`    | Project to query                                |
+| `--dataset`     | `pokedex`     | Dataset to query                                |
+| `--api-version` | `v2025-02-19` | API version the queries run with                |
+| `--runs <n>`    | `3`           | How many times each case is generated           |
+| `--only <text>` |               | Only run the cases whose name contains the text |

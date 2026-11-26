@@ -1,11 +1,20 @@
 import {type PromptRequest} from '@sanity/client'
 
 import {isPlainObject} from '../../util/isPlainObject'
+import {type EmbeddingsClient, hasDatasetEmbeddings} from './embeddings'
 import {type QueryLintFinding} from './groqLint'
+import {buildGroqReference} from './groqReference'
 import {type LintAgentTarget} from './lintFixPlan'
 
 /** What `generateQuery` needs of a client; a `SanityClient` has it */
-export interface GenerateQueryClient {
+export interface GenerateQueryClient extends EmbeddingsClient {
+  config: () => {
+    apiHost?: string
+    projectId?: string
+    dataset?: string
+    apiVersion?: string
+    perspective?: string | string[]
+  }
   fetch: (
     query: string,
     params: Record<string, unknown>,
@@ -22,28 +31,16 @@ export const MAX_GENERATE_ATTEMPTS = 3
 const MAX_TITLE_LENGTH = 60
 
 /**
- * How GROQ works, for the model: the patterns a query needs, and the jq, SQL and JavaScript
- * habits models fall back on (the API rejects those, and a retry quotes its error)
- */
-const GROQ_REFERENCE = `GROQ is the query language of the Sanity Content Lake. It is not jq, SQL or JavaScript.
-- A query usually starts with * (every document), filtered in brackets: *[_type == "movie" && releaseYear >= 1979]
-- A projection picks and computes attributes: {_id, title, "director": director->name, "castCount": count(cast)}
-- Order with the order() pipe function, then slice: *[_type == "movie"] | order(releaseDate desc, title asc)[0...10]
-- [0...10] is the first ten (the end is excluded), [0] is the first match alone
-- To pick some documents by one order and show them in another, slice first and order again: *[_type == "movie"] | order(_createdAt desc)[0...10] | order(title asc)
-- Follow references with ->: author->name, categories[]->title; find documents that reference another with references($id)
-- Text search: title match "word*"; membership: "news" in tags; logic: &&, ||, !; existence: defined(field)
-- Functions include count(), defined(), coalesce(), select(), round(), lower(), upper(), now(), dateTime(), string::split(), array::unique(), math::sum(), pt::text()
-- Parameters are names that start with $ (like $type); their values are given separately
-- Every document has _id, _type, _createdAt, _updatedAt and _rev; "recent" or "newest" usually means _createdAt desc
-- Use the field names of the schema; when the request names something the schema lacks, use the closest field
-- Never use jq or SQL syntax: no .[] or .field after a pipe, no sort_by(), map() or select(.x), no LIMIT, ORDER BY or SELECT`
-
-/**
  * Line comments carry context the query cannot (the prompt a query was generated from, notes the
  * user wrote), and models drop them when they rewrite a query
  */
 const KEEP_COMMENTS = `Keep every comment (a line starting with //) of the query, including a "// Generated with the prompt:" comment at the top. Update a comment only when the change makes it inaccurate, and never delete one.`
+
+/**
+ * The user wrote, or already reviewed, the query an edit starts from: a model that rewrites it
+ * from scratch makes the change hard to see in the diff and loses choices the user made
+ */
+const MINIMAL_EDIT = `Make the smallest change that does what is asked, to the query as it is. Keep its structure, filters, projection, attribute names, order, slices, parameter names and line breaks wherever the change does not touch them, and write new parts in the style of the existing ones. Only rework a part when the change cannot be made otherwise, like a request to rank by relevance in a query that sorts by title: then change how that part ranks and keep the rest. Keep the values of parameters the query still uses, add values for new ones and drop those it no longer uses.`
 
 /**
  * What Vision's Documents view shows of each item of a list: a row as wide as the result pane,
@@ -94,7 +91,7 @@ $schema
 How to write GROQ:
 $reference
 
-${KEEP_COMMENTS}
+${MINIMAL_EDIT} ${KEEP_COMMENTS}
 
 Reply with JSON: an object with "query" (the whole query with the change made, comments included, without code fences) and "params" (an object with a value for every parameter the query uses, or an empty object).`
 
@@ -320,6 +317,12 @@ async function promptForQuery(
 ): Promise<GeneratedQuery> {
   const {instruction, instructionParams, client, onAttempt, signal} = options
   const agent = client.withConfig({apiVersion: AGENT_API_VERSION}).agent.action
+  const {apiVersion, perspective} = client.config()
+  const reference = buildGroqReference({
+    embeddings: await hasDatasetEmbeddings(client),
+    apiVersion,
+    perspective,
+  })
   let previous: {attempt: GeneratedQuery; problem: string} | undefined
 
   for (let attempt = 1; attempt <= MAX_GENERATE_ATTEMPTS; attempt++) {
@@ -330,7 +333,7 @@ async function promptForQuery(
       instruction: previous ? `${instruction}${RETRY_INSTRUCTION}` : instruction,
       instructionParams: {
         ...instructionParams,
-        reference: GROQ_REFERENCE,
+        reference,
         ...(previous
           ? {previous: `${JSON.stringify(previous.attempt)}\nError: ${previous.problem}`}
           : {}),
