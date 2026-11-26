@@ -11,6 +11,7 @@ import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {useAiCredits} from '../../hooks/useAiCredits'
 import {type QueryAgent} from '../../hooks/useQueryAgent'
 import {type VisionTab} from '../../store/types'
+import {aiLintFindings} from '../../util/aiQueryChange'
 import {fixQueryLint, MAX_GENERATE_ATTEMPTS} from '../../util/generateQuery'
 import {type QueryLintFinding} from '../../util/groqLint'
 import {type LintFixPlan, planLintFix, shiftFindings} from '../../util/lintFixPlan'
@@ -107,13 +108,25 @@ export function LintFix({
         }),
       {
         comment: false,
+        ai: {action: 'fix-lint', findings: aiLintFindings(findings)},
         keepParams: fixedParams === undefined,
         keepQuery: target === 'params',
         // The Lint tab shows the agent's progress and failure, so the params show once it is done
         onOpened: paramFixes.length > 0 || target !== 'query' ? onParamsFixed : undefined,
       },
     )
-  }, [onApplyFixes, onParamsFixed, params, plan, run, schema, tab.query, tab.rawParams, telemetry])
+  }, [
+    findings,
+    onApplyFixes,
+    onParamsFixed,
+    params,
+    plan,
+    run,
+    schema,
+    tab.query,
+    tab.rawParams,
+    telemetry,
+  ])
 
   const running = status.type === 'running'
   const shownCredits =

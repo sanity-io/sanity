@@ -84,7 +84,7 @@ export function FitDocumentListQuery({
           listFields: schema ? describeDocumentListFields(schema, types) : undefined,
           schema: schema ? summarizeSchema(schema, `${tab.query}\n${types.join(' ')}`) : '',
         }),
-      {comment: false, keepParams: params === undefined},
+      {comment: false, keepParams: params === undefined, ai: {action: 'fit-document-list'}},
     )
   }, [params, parsed, result, run, schema, tab.query, telemetry])
 

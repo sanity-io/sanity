@@ -9,6 +9,7 @@ import {
 
 import {queryRunnerMachine, type QueryRunnerRef} from './queryRunnerMachine'
 import {
+  type AiQueryChange,
   type VisionAiSettings,
   type VisionEditorSettings,
   type VisionExportSnippetSettings,
@@ -40,7 +41,12 @@ import {
 } from './visionStorage'
 
 /** Where the query a tab fetches as soon as it is shown came from */
-export type FetchOnOpenSource = 'generated' | 'paste' | 'link'
+export type FetchOnOpenSource =
+  | 'generated'
+  | 'paste'
+  | 'link'
+  /** A query an AI action wrote, recorded in the fetch's history entry */
+  | {type: 'generated'; ai: AiQueryChange}
 
 export interface VisionContext {
   projectId: string

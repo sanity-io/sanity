@@ -7,7 +7,7 @@ import {Button, Card, type CardTone, Label, Stack} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {type ComponentType, useId, useMemo, useState} from 'react'
 import {type TFunction} from 'sanity'
-import {InlineCode, useTranslation} from 'sanity/i18n'
+import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
@@ -19,7 +19,6 @@ import {type VisionTab} from '../../store/types'
 import {type AiCredits} from '../../util/aiCredits'
 import {cx} from '../../util/cx'
 import {type QueryExplanation, type QueryVerdict} from '../../util/explainQuery'
-import {splitMessage} from '../../util/groqLint'
 import {
   HIGH_PERFORMANCE_GROQ_URL,
   type PlanInsight,
@@ -31,6 +30,7 @@ import {AiCreditsStatus} from '../AiCreditsStatus'
 import {AnimatedSparklesIcon} from '../request/AnimatedSparklesIcon'
 import {ImproveQuery, type ImproveQueryProps} from './ImproveQuery'
 import * as motion from './responseTabs.module.css'
+import {RichText} from './RichText'
 
 const VERDICTS = {
   'performant': {
@@ -53,13 +53,6 @@ const VERDICTS = {
   {tone: CardTone; icon: ComponentType; title: `vision.explain.verdict.${QueryVerdict}`}
 >
 
-/** Text with the GROQ it quotes in backticks shown as code */
-function RichText({text}: {text: string}) {
-  return splitMessage(text).map((segment, index) =>
-    segment.code ? <InlineCode key={index}>{segment.text}</InlineCode> : segment.text,
-  )
-}
-
 function Paragraphs({text, muted}: {text: string; muted?: boolean}) {
   return text
     .split(/\n+/)
@@ -74,7 +67,7 @@ function Paragraphs({text, muted}: {text: string; muted?: boolean}) {
 interface ExplanationProps {
   explanation: QueryExplanation
   /** Makes the suggestions to the query; undefined while editing queries with AI is off */
-  improve: Omit<ImproveQueryProps, 'suggestions'> | undefined
+  improve: Omit<ImproveQueryProps, 'summary' | 'suggestions'> | undefined
 }
 
 /**
@@ -142,7 +135,7 @@ function Explanation({explanation, improve}: ExplanationProps) {
                 </Flex>
               ))}
             </Stack>
-            {improve && <ImproveQuery {...improve} suggestions={suggestions} />}
+            {improve && <ImproveQuery {...improve} summary={summary} suggestions={suggestions} />}
           </Stack>
         )}
         {details && (
