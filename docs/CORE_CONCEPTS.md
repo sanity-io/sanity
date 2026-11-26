@@ -764,10 +764,11 @@ import {
   getDraftId,
   getPublishedId,
   isDraftId,
-
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {
   // Hooks
   useSchema,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1'
 ```
 
 ### Directory Structure

@@ -1,5 +1,5 @@
 diff --git a/dist/index.js b/dist/index.js
-index 84b9f1f85ae0ae930cdb63235e9a46ced26a5d86..828331ba79322efdb16ebccaf28f4a686e28d532 100644
+index 84b9f1f85ae0ae930cdb63235e9a46ced26a5d86..b46c3d5eeb75819bdc0f9681b2c30f1798a35a9d 100644
 --- a/dist/index.js
 +++ b/dist/index.js
 @@ -3,7 +3,8 @@ import { c } from "react/compiler-runtime";
@@ -19,7 +19,7 @@ index 84b9f1f85ae0ae930cdb63235e9a46ced26a5d86..828331ba79322efdb16ebccaf28f4a68
 -import { structureLocaleNamespace, useDocumentPane, usePaneRouter } from "sanity/structure";
 +import { structureLocaleNamespace, useDocumentPane } from "sanity/structure";
 +import { usePaneRouter } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure";
-+import { PatchEvent, Preview, TextWithTone, getDraftId, getVersionFromId, getVersionId, isVersionId, pathToString, useDocumentOperation, useDocumentPairPermissions, useDocumentStore, useEditState, useSchema, useUnstableObserveDocument, useValidationStatus, DEFAULT_STUDIO_CLIENT_OPTIONS, InsufficientPermissionsMessage } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver";
++import { PatchEvent, Preview, getDraftId, getVersionFromId, getVersionId, isVersionId, pathToString, useDocumentOperation, useDocumentPairPermissions, useDocumentStore, useEditState, useUnstableObserveDocument, useValidationStatus, DEFAULT_STUDIO_CLIENT_OPTIONS, InsufficientPermissionsMessage } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver"; import { TextWithTone, useSchema } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1";
  import { TranslateIcon } from "@sanity/icons/Translate";
  import { Popover } from "@sanity/ui/popover";
  import { CogIcon } from "@sanity/icons/Cog";

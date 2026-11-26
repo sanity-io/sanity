@@ -261,7 +261,6 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', a
   return {
     useProjectStore: () => ({getOrganizationId: () => organizationId$}),
     getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),
-    useSchema: () => undefined,
     UserAvatar: () => null,
     ReleaseAvatarIcon: () => null,
     useActiveReleases: vi.fn(() => ({data: [], loading: false})),
@@ -302,6 +301,9 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', a
       ) : null,
   }
 })
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1', () => ({
+  useSchema: () => undefined,
+}))
 
 vi.mock('sanity/router', () => ({
   IntentLink: ({children}: {children: ReactNode}) => <a href="#intent">{children}</a>,

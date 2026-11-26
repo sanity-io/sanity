@@ -13,11 +13,11 @@ import {
   getPublishedId,
   getVersionFromId,
   isDraftId,
-  useSchema,
   PreviewCard,
   SanityDefaultPreview,
   useValuePreview,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {useSchema} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1'
 import {useTranslation} from 'sanity/i18n'
 import {useIntentLink} from 'sanity/router'
 

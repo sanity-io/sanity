@@ -51,7 +51,6 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', (
     schemaType: unknown
     perspectiveStack: unknown
   }) => useValuePreview(props),
-  useSchema: () => schema,
   getPublishedId: (id: string) => id.replace(/^(drafts\.|versions\.[^.]+\.)/, ''),
   isDraftId: (id: string) => id.startsWith('drafts.'),
   getVersionFromId: (id: string) => /^versions\.([^.]+)\./.exec(id)?.[1],
@@ -89,6 +88,9 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', (
     ) : (
       <div>{children}</div>
     ),
+}))
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1', () => ({
+  useSchema: () => schema,
 }))
 
 vi.mock('sanity/router', () => ({
