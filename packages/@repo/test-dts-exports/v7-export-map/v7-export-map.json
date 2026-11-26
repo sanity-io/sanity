@@ -1308,6 +1308,7 @@
     "defineArrayMember": "value",
     "defineAssetAspect": "value",
     "defineConfig": "value",
+    "defineDocumentFieldAction": "value",
     "defineDocumentInspector": "value",
     "defineField": "value",
     "definePlugin": "value",

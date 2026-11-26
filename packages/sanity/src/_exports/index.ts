@@ -102,6 +102,7 @@ export {
   type DocumentBadgeDescription,
   type DocumentBadgeProps,
 } from '../core/config/document/badges'
+export {defineDocumentFieldAction} from '../core/config/document/fieldActions/define'
 export {
   type DocumentFieldAction,
   type DocumentFieldActionDivider,
