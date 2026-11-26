@@ -82,7 +82,10 @@ describe('SelectVariantDefinition', () => {
     const menu = await openMenu(new Set())
 
     expect(MIN_MENU_WIDTH).toBe(288)
-    expect(menu.style.minWidth).toBe(`min(${MIN_MENU_WIDTH}px, calc(100vw - 24px))`)
+    // jsdom 31 serializes the nested calc() as a sum (`-24px + 100vw`); older versions keep it
+    expect(menu.style.minWidth.replace('-24px + 100vw', 'calc(100vw - 24px)')).toBe(
+      `min(${MIN_MENU_WIDTH}px, calc(100vw - 24px))`,
+    )
   })
 
   it('starts empty, with the hint and a variant mark', () => {
