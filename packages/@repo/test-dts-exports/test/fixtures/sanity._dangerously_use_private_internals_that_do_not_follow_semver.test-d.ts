@@ -515,6 +515,7 @@ import type {
   isFieldChange,
   isGoingToUnpublish,
   isGroupChange,
+  isImportError,
   isIndexSegment,
   isIndexTuple,
   isInvalidSessionError,
@@ -2656,6 +2657,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('isGroupChange', () => {
     expectTypeOf<typeof isGroupChange>().toBeFunction()
+  })
+  test('isImportError', () => {
+    expectTypeOf<typeof isImportError>().toBeFunction()
   })
   test('isIndexSegment', () => {
     expectTypeOf<typeof isIndexSegment>().toBeFunction()
