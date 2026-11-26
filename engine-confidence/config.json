@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "pinnedHash": "66509d3510778a0861b1626cc40beef94603f40a4dddd16dc79c9fefb3f3a819",
+  "version": 2,
+  "pinnedHash": "822b14b4cbee6370f9a0ddc72948b84bb4a82ef59c1d3a111c4c77766106a4ca",
   "stryker": {
     "timeoutMs": 60000,
     "concurrency": 4,

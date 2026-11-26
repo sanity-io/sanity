@@ -23,6 +23,7 @@ import {type Previewable} from './types'
 /**
  * @internal
  * @deprecated use useValuePreview instead
+ * @alias
  */
 export const unstable_useValuePreview = useValuePreview
 

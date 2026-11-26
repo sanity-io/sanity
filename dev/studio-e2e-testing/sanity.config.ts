@@ -151,6 +151,9 @@ const defaultConfig = defineConfig({
     variants: {
       enabled: true,
     },
+    releaseBackgroundListeners: {
+      enabled: true,
+    },
   },
 })
 

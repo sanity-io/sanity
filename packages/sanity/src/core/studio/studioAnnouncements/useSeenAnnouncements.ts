@@ -10,7 +10,9 @@ const RESET_PARAM = 'reset-announcements'
  */
 export function useSeenAnnouncements(): [string[] | undefined, (seen: string[]) => void] {
   const router = useRouter()
-  const {value, status, set} = useStudioPreference('studio.announcement.seen')
+  const {value, status, set} = useStudioPreference('studio.announcement.seen', {
+    refetchInterval: false,
+  })
   const resetAnnouncementsParams = new URLSearchParams(router.state._searchParams).get(RESET_PARAM)
 
   useEffect(() => {

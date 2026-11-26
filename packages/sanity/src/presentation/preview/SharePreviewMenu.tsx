@@ -13,7 +13,7 @@ import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {AnimatePresence, motion} from 'motion/react'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
-import {useClient, useCurrentUser, useTranslation} from 'sanity'
+import {pauseWhileDocumentHidden, useClient, useCurrentUser, useTranslation} from 'sanity'
 import {Text, Grid, Box, VStack} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'
@@ -167,18 +167,30 @@ export function SharePreviewMenu(props: SharePreviewMenuProps): React.JSX.Elemen
         setSecret(result)
       }
     }
-    const subscription = client.live.events().subscribe({
-      next: (event) => {
-        if (event.type === 'message') {
-          controller.abort()
-          controller = new AbortController()
-          if (event.tags.some((tag) => usedTags.includes(tag))) {
-            void fetchShareSecret(event.id, controller.signal)
+    const subscription = client.live
+      .events()
+      .pipe(
+        // Paused while the page is hidden, and read from scratch when it is shown again
+        pauseWhileDocumentHidden({onResume: () => ({type: 'resume' as const})}),
+      )
+      .subscribe({
+        next: (event) => {
+          if (event.type === 'resume') {
+            // Changes may have been missed while the page was hidden
+            controller.abort()
+            controller = new AbortController()
+            void fetchShareSecret(null, controller.signal)
           }
-        }
-      },
-      error: setError,
-    })
+          if (event.type === 'message') {
+            controller.abort()
+            controller = new AbortController()
+            if (event.tags.some((tag) => usedTags.includes(tag))) {
+              void fetchShareSecret(event.id, controller.signal)
+            }
+          }
+        },
+        error: setError,
+      })
 
     void fetchShareSecret(null, controller.signal).finally(() => setLoading(false))
 

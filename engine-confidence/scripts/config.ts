@@ -4,7 +4,7 @@ import path from 'node:path'
 
 import {type CatalogueSuiteId, type StrykerTargetId} from '@repo/utils/engine-confidence'
 
-import {engineConfidenceDirectory, repositoryRoot} from './paths'
+import {engineConfidenceDirectory} from './paths'
 
 export interface UnitSuiteConfig {
   project: string
@@ -41,9 +41,6 @@ export interface Tier1Target {
 
 export type Tier1Config = Record<StrykerTargetId, Tier1Target>
 
-// Fixes the runner joining describe and test names with ' ' where Vitest 5 filters on ' > '
-export const STRYKER_PATCH_PATH = 'patches/@stryker-mutator__vitest-runner@10.0.0.patch'
-
 export function readJsonFile<Shape>(filePath: string): Shape {
   return JSON.parse(readFileSync(filePath, 'utf8')) as Shape
 }
@@ -75,10 +72,7 @@ function strykerSpecifiersOf(directory: string): Record<string, string> {
  * sha256 over everything that defines the measurement, in a fixed order. The catalogue and the
  * installed Vitest version are left out: growth and Renovate bumps must not break the series.
  */
-export function computePinnedHash(
-  directory = engineConfidenceDirectory,
-  patchPath = path.join(repositoryRoot, STRYKER_PATCH_PATH),
-): string {
+export function computePinnedHash(directory = engineConfidenceDirectory): string {
   const config = readPinnedConfig(directory)
   const strykerDirectory = path.join(directory, 'stryker')
   const strykerFiles = readdirSync(strykerDirectory)
@@ -92,7 +86,6 @@ export function computePinnedHash(
     ['tier1.json', readFileSync(path.join(directory, 'tier1.json'), 'utf8')],
     ['exclusions.json', readFileSync(path.join(directory, 'exclusions.json'), 'utf8')],
     ...(strykerFiles as Array<[string, string]>),
-    ['patch', readFileSync(patchPath, 'utf8')],
     ['stryker-specifiers', JSON.stringify(strykerSpecifiersOf(directory))],
   ]
   const hash = createHash('sha256')

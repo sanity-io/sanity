@@ -30,6 +30,20 @@ afterEach(async () => {
 })
 ;(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true
 
+// jsdom lays nothing out, so Floating UI's `hide` middleware reads all-zero rects and reports
+// every reference element as fully clipped, and `@sanity/ui` renders its *open* popovers with
+// the `hidden` attribute (`data-placement` is what its floating cards carry). From jsdom 31 the
+// UA stylesheet's `[hidden] {display: none}` also decides what can take focus, so nothing inside
+// an open popover could be focused or typed into. Override the attribute for those cards; the
+// closed ones stay hidden by the inline `display: none !important` that `<Activity>` sets. A few
+// files in this project run in the `node` environment (`@vitest-environment node`), where there
+// is no document to style.
+if (typeof document !== 'undefined') {
+  const floatingCardStyles = document.createElement('style')
+  floatingCardStyles.textContent = '[data-placement][hidden] { display: flex; }'
+  document.head.append(floatingCardStyles)
+}
+
 // get rid of context warning
 const warn = console.warn
 const error = console.error

@@ -5,7 +5,7 @@ import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservablePromise} from 'react-rx'
 import {take} from 'rxjs/operators'
-import {Text, Box, Flex, VStack, Icon} from 'ui5'
+import {Text, Box, Flex, VStack} from 'ui5'
 
 import {MenuButton, type MenuButtonProps} from '../../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -55,16 +55,16 @@ export function WorkspaceMenuButton() {
       button={
         <Flex onPointerEnter={handlePreload} onFocus={handlePreload}>
           <Tooltip content={t('workspaces.select-workspace-tooltip')} portal>
-            <UIButton mode="bleed" padding={2} width="fill">
-              <Flex alignItems="center" gap={2}>
-                <Box>
-                  <Text size={1} truncate={1} weight="medium" as="div" trim={true}>
-                    {activeWorkspace.title}
-                  </Text>
-                </Box>
-                <Icon size={1} icon={ChevronDownIcon} style={{margin: '-0.375rem'}} />
-              </Flex>
-            </UIButton>
+            {/* Not a ui5 `Text` child: its trimmed size 1 label is 9.5px tall, which makes this
+                button 25.5px and puts the navbar's bottom edge, and its shadow, on a half pixel. */}
+            <UIButton
+              gap={2}
+              iconRight={ChevronDownIcon}
+              mode="bleed"
+              padding={2}
+              text={activeWorkspace.title}
+              width="fill"
+            />
           </Tooltip>
         </Flex>
       }

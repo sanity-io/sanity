@@ -125,6 +125,8 @@ export interface ListItem {
    * effect. See {@link ListItemCount}
    */
   count?: ListItemCount
+  /** Id of the singleton document this item opens. Set by `singleton()` */
+  singletonDocumentId?: string
 }
 
 /**
@@ -150,6 +152,8 @@ export interface UnserializedListItem {
   displayOptions?: ListItemDisplayOptions
   /** List item schema. See {@link SchemaType} */
   schemaType?: SchemaType | string
+  /** Set by `singleton()`: id of the singleton document, used to show its status in the list */
+  singletonDocumentId?: string
 }
 
 /**
@@ -292,7 +296,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
    * @returns list item builder based on child provided. See {@link ListItemBuilder}
    */
   child(child: UnserializedListItemChild): ListItemBuilder {
-    return this.clone({child})
+    return this.clone({child, singletonDocumentId: undefined})
   }
 
   /**
@@ -309,7 +313,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
    * @returns list item builder based on schema type provided. See {@link ListItemBuilder}
    */
   schemaType(schemaType: SchemaType | string): ListItemBuilder {
-    return this.clone({schemaType})
+    return this.clone({schemaType, singletonDocumentId: undefined})
   }
 
   /**
@@ -352,6 +356,7 @@ export class ListItemBuilder implements Serializable<ListItem> {
       schemaType: definition.schemaType,
       child:
         this.spec.child ?? this._context.getStructureBuilder().document().singleton(definition.id),
+      singletonDocumentId: definition.documentId,
     })
   }
 

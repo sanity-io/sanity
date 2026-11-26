@@ -8,6 +8,8 @@ import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
 import {isConnectionSessionError, isUnauthorizedError} from '../../util/apiErrors'
 import {getVersionFromId} from '../../util/draftUtils'
+import {reconnectListener} from '../../util/reconnectListener'
+import {pauseWhileDocumentHidden} from '../listenerGate/listenerGate'
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {debug} from './debug'
 import {
@@ -204,6 +206,10 @@ export function getPairListener(
         },
       ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent | WelcomeBackEvent | ResetEvent>
     ).pipe(
+      reconnectListener(),
+      // A paused listener is a dropped connection: `reconnect` marks the pair as reconnecting
+      // until the new connection's `welcome` fetches fresh snapshots.
+      pauseWhileDocumentHidden({onPause: (): ReconnectEvent => ({type: 'reconnect'})}),
       tap((event) => {
         if (event.type === 'welcome' || event.type === 'welcomeback') credentialChecks = 0
       }),
@@ -228,22 +234,39 @@ export function getPairListener(
     ),
   )
 
-  const pairEvents$ = sharedEvents.pipe(
-    concatMap((event) => {
-      const shouldSyncDocument =
-        event.type === 'reset' ||
-        // note: resumability may not be enabled – if so, treat welcome the same way as a reset
-        event.type === 'welcome'
-      return shouldSyncDocument
-        ? fetchInitialDocumentSnapshots().pipe(
-            mergeMap(({draft, published, version}) => [
-              createSnapshotEvent(draftId, draft),
-              createSnapshotEvent(publishedId, published),
-              ...(versionId ? [createSnapshotEvent(versionId, version)] : []),
-            ]),
-          )
-        : of(event)
-    }),
+  const pairEvents$ = defer(() => {
+    let hasSnapshots = false
+    return sharedEvents.pipe(
+      concatMap((event) => {
+        const shouldSyncDocument =
+          event.type === 'reset' ||
+          // note: resumability may not be enabled – if so, treat welcome the same way as a reset
+          event.type === 'welcome' ||
+          // The listener is down before it delivered anything: the snapshots are fetched without
+          // it, so the document can be shown while it reconnects, and again once it welcomes.
+          (event.type === 'reconnect' && !hasSnapshots)
+        if (!shouldSyncDocument) {
+          return of(event)
+        }
+        hasSnapshots = true
+        const snapshots$ = fetchInitialDocumentSnapshots().pipe(
+          mergeMap(({draft, published, version}) => [
+            createSnapshotEvent(draftId, draft),
+            createSnapshotEvent(publishedId, published),
+            ...(versionId ? [createSnapshotEvent(versionId, version)] : []),
+          ]),
+        )
+        // The connection state follows the connection events alone, and a form is editable once
+        // it reads connected. A reconnect goes before its snapshots, so they are not shown as
+        // live. A welcome or reset goes after them: until the fresh snapshots have replaced the
+        // documents, the pair still holds the copies from before the outage, and edits made on
+        // those would be built on content the listener missed.
+        return event.type === 'reconnect'
+          ? concat(of(event), snapshots$)
+          : concat(snapshots$, of(event))
+      }),
+    )
+  }).pipe(
     scan(
       (
         acc: {
