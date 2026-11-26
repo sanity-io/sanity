@@ -6,7 +6,6 @@ import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {Button, Card, TextInput} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
@@ -16,7 +15,7 @@ import {
   ContextMenuButton,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
-import {Text, Box, Flex} from 'ui5'
+import {Code, Text, Box, Flex} from 'ui5'
 
 import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {type QueryConfig} from '../../../hooks/useSavedQueries'
@@ -395,7 +394,9 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                             </Text>
                             {preview && (
                               <Box className={styles.previewCode}>
-                                <Code size={0}>{preview}</Code>
+                                <Code size={0} trim>
+                                  {preview}
+                                </Code>
                               </Box>
                             )}
                             <Flex alignItems="center" gap={2}>

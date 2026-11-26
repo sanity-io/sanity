@@ -1,0 +1,568 @@
+{
+  "time": {
+    "4.20.3": "2025-12-04T14:45:53.518Z",
+    "6.9.0-next.6": "2026-08-03T10:08:43.685Z",
+    "6.9.0-next.7": "2026-08-03T10:33:15.342Z",
+    "6.9.0-next.8": "2026-08-03T11:02:49.465Z",
+    "6.9.0-next.9": "2026-08-03T11:28:04.640Z",
+    "6.9.0-next.11": "2026-08-03T11:46:33.456Z",
+    "6.9.0-next.12": "2026-08-03T12:11:10.028Z",
+    "6.9.0-next.13": "2026-08-03T12:36:39.603Z",
+    "6.9.0-next.16": "2026-08-03T13:52:20.778Z",
+    "6.9.0-next.17": "2026-08-03T14:12:31.612Z",
+    "6.9.0-next.18": "2026-08-03T14:30:01.159Z",
+    "6.9.0-next.19": "2026-08-03T14:54:11.550Z",
+    "6.9.0-next.20": "2026-08-03T15:24:38.052Z",
+    "6.9.0-next.21": "2026-08-03T16:07:03.441Z",
+    "6.9.0-next.22": "2026-08-03T16:55:17.004Z",
+    "6.9.0-next.23": "2026-08-03T18:12:46.910Z",
+    "6.9.0-next.30": "2026-08-03T18:34:43.506Z",
+    "6.9.0-next.31": "2026-08-03T19:00:06.937Z",
+    "6.9.0-next.32": "2026-08-03T19:26:00.018Z",
+    "6.9.0-next.33": "2026-08-03T20:49:22.258Z",
+    "6.9.0-next.36": "2026-08-03T21:10:57.794Z",
+    "6.9.0-next.37": "2026-08-03T21:35:41.087Z",
+    "6.9.0-next.38": "2026-08-04T07:08:33.059Z",
+    "6.9.0-next.39": "2026-08-04T09:01:13.374Z",
+    "6.9.0-next.44": "2026-08-04T09:26:12.772Z",
+    "6.9.0-next.45": "2026-08-04T09:51:12.883Z",
+    "6.9.0-next.46": "2026-08-04T10:18:53.358Z",
+    "6.9.0-next.47": "2026-08-04T10:37:12.321Z",
+    "6.9.0-next.49": "2026-08-04T11:01:41.839Z",
+    "6.9.0-next.50": "2026-08-04T11:27:10.974Z",
+    "6.9.0-next.51": "2026-08-04T12:39:55.551Z",
+    "6.9.0-next.52": "2026-08-04T13:01:17.654Z",
+    "6.9.0": "2026-08-04T14:05:07.366Z",
+    "6.9.1-next.1": "2026-08-04T14:30:45.324Z",
+    "6.9.1-next.2": "2026-08-04T15:10:33.052Z",
+    "6.9.1-next.3": "2026-08-04T17:44:59.129Z",
+    "6.9.1-next.4": "2026-08-05T09:39:58.332Z",
+    "6.9.1-next.6": "2026-08-05T09:57:54.298Z",
+    "6.9.1-next.7": "2026-08-05T18:10:42.934Z",
+    "6.9.1-next.8": "2026-08-06T07:26:32.311Z",
+    "6.9.1-next.9": "2026-08-06T07:58:01.615Z",
+    "6.9.1-next.10": "2026-08-06T12:28:17.797Z",
+    "6.9.1-next.11": "2026-08-06T12:52:54.148Z",
+    "6.9.1-next.12": "2026-08-06T13:14:31.617Z",
+    "6.9.1": "2026-08-06T14:17:04.209Z",
+    "6.9.2-next.1": "2026-08-06T14:37:41.852Z",
+    "6.9.2-next.3": "2026-08-06T15:02:52.463Z",
+    "6.9.2-next.4": "2026-08-07T05:22:04.578Z",
+    "6.9.2-next.5": "2026-08-07T05:40:31.999Z",
+    "6.9.2-next.6": "2026-08-07T06:47:00.961Z",
+    "6.9.2-next.8": "2026-08-07T07:05:27.264Z",
+    "6.9.2-next.9": "2026-08-07T07:24:09.261Z",
+    "6.9.2-next.15": "2026-08-07T07:49:07.829Z",
+    "6.9.2-next.16": "2026-08-07T12:35:14.199Z",
+    "6.9.2-next.17": "2026-08-07T13:39:33.389Z",
+    "6.9.2-next.18": "2026-08-07T14:31:35.436Z",
+    "6.9.2-next.19": "2026-08-07T14:55:38.428Z",
+    "6.9.2-next.20": "2026-08-07T16:04:18.668Z",
+    "6.9.2-next.21": "2026-08-07T17:23:18.509Z",
+    "6.9.2-next.22": "2026-08-07T17:52:03.790Z",
+    "6.9.2-next.23": "2026-08-07T18:19:28.398Z",
+    "6.9.2-next.24": "2026-08-10T08:54:54.734Z",
+    "6.9.2-next.25": "2026-08-10T11:07:41.821Z",
+    "6.9.2-next.26": "2026-08-10T11:25:57.083Z",
+    "6.9.2-next.27": "2026-08-10T12:22:31.754Z",
+    "6.9.2-next.28": "2026-08-10T12:41:01.248Z",
+    "6.9.2-next.29": "2026-08-10T13:18:54.677Z",
+    "6.9.2-next.30": "2026-08-10T13:44:41.695Z",
+    "6.9.2-next.34": "2026-08-10T14:11:48.499Z",
+    "6.9.2-next.35": "2026-08-10T14:57:03.573Z",
+    "6.9.2-next.37": "2026-08-10T15:24:22.392Z",
+    "6.9.2-next.38": "2026-08-10T17:49:57.536Z",
+    "6.9.2-next.40": "2026-08-10T18:09:07.053Z",
+    "6.9.2-next.41": "2026-08-11T10:10:26.839Z",
+    "6.9.2-next.42": "2026-08-11T10:35:05.824Z",
+    "6.9.2-next.64": "2026-08-11T10:54:55.766Z",
+    "6.9.2-next.67": "2026-08-11T11:14:57.814Z",
+    "6.9.2-next.70": "2026-08-11T11:34:46.292Z",
+    "6.9.2-next.73": "2026-08-11T12:01:25.578Z",
+    "6.9.2-next.74": "2026-08-11T12:29:49.850Z",
+    "6.9.2-next.75": "2026-08-11T14:56:51.340Z",
+    "6.9.2": "2026-08-11T16:08:06.911Z",
+    "6.9.3-next.1": "2026-08-11T16:55:28.826Z",
+    "6.9.3-next.2": "2026-08-11T18:21:51.971Z",
+    "6.9.3-next.3": "2026-08-11T19:52:11.768Z",
+    "6.9.3-next.4": "2026-08-12T10:40:58.370Z",
+    "6.9.3-next.5": "2026-08-12T10:59:19.900Z",
+    "6.10.0-next.6": "2026-08-12T12:03:55.890Z",
+    "6.10.0-next.7": "2026-08-12T12:56:39.566Z",
+    "6.10.0-next.8": "2026-08-12T13:34:44.527Z",
+    "6.10.0-next.9": "2026-08-12T14:00:34.962Z",
+    "6.10.0-next.10": "2026-08-12T14:38:31.994Z",
+    "6.10.0-next.11": "2026-08-12T18:10:21.784Z",
+    "6.10.0-next.12": "2026-08-12T18:49:42.012Z",
+    "6.10.0-next.13": "2026-08-13T01:12:16.261Z",
+    "6.10.0-next.14": "2026-08-13T09:45:42.886Z",
+    "6.10.0-next.15": "2026-08-13T10:12:12.878Z",
+    "6.10.0-next.16": "2026-08-13T14:00:01.274Z",
+    "6.10.0-next.18": "2026-08-13T14:38:49.054Z",
+    "6.10.0-next.19": "2026-08-13T15:07:02.664Z",
+    "6.10.0-next.20": "2026-08-13T15:39:38.837Z",
+    "6.10.0-next.21": "2026-08-13T16:07:06.257Z",
+    "6.10.0-next.22": "2026-08-13T16:43:42.930Z",
+    "6.10.0-next.23": "2026-08-14T08:23:08.896Z",
+    "6.10.0-next.24": "2026-08-14T10:08:50.534Z",
+    "6.10.0-next.31": "2026-08-14T14:28:27.816Z",
+    "6.10.0-next.37": "2026-08-15T07:17:08.218Z",
+    "6.10.0-next.40": "2026-08-17T07:27:41.162Z",
+    "6.10.0-next.50": "2026-08-17T14:12:55.069Z",
+    "6.10.0-next.53": "2026-08-18T07:22:28.148Z",
+    "6.10.0-next.87": "2026-08-18T14:19:16.102Z",
+    "6.10.0": "2026-08-18T15:14:10.025Z",
+    "6.10.1-next.3": "2026-08-18T18:28:26.210Z",
+    "6.10.1-next.6": "2026-08-18T21:58:26.104Z",
+    "6.10.1": "2026-08-18T21:58:54.620Z",
+    "6.10.2-next.5": "2026-08-18T23:49:03.926Z",
+    "6.10.2-next.10": "2026-08-19T07:22:08.251Z",
+    "6.10.2-next.18": "2026-08-19T12:11:24.530Z",
+    "6.10.2-next.25": "2026-08-19T13:15:56.039Z",
+    "6.11.0-next.32": "2026-08-20T07:23:45.172Z",
+    "6.11.0-next.38": "2026-08-20T11:02:11.699Z",
+    "6.11.0-next.49": "2026-08-20T14:20:18.166Z",
+    "6.11.0-next.58": "2026-08-21T07:23:00.821Z",
+    "6.11.0-next.62": "2026-08-21T14:17:27.332Z",
+    "6.11.0-next.68": "2026-08-21T16:15:24.862Z",
+    "6.11.0-next.70": "2026-08-22T07:17:50.830Z",
+    "6.11.0-next.107": "2026-08-24T14:20:32.113Z",
+    "6.11.0-next.109": "2026-08-25T07:23:06.544Z",
+    "6.11.0-next.118": "2026-08-25T14:21:59.176Z",
+    "6.11.0": "2026-08-25T17:05:28.139Z",
+    "6.11.1-next.6": "2026-08-26T07:23:10.507Z",
+    "6.12.0-next.18": "2026-08-26T14:21:31.074Z",
+    "6.12.0-next.25": "2026-08-27T10:24:12.791Z",
+    "6.12.0-next.32": "2026-08-27T17:51:05.161Z",
+    "6.12.0-next.46": "2026-08-28T10:38:05.282Z",
+    "6.12.0-next.52": "2026-08-28T13:35:19.829Z",
+    "6.12.0-next.60": "2026-08-28T18:06:45.971Z",
+    "6.12.0-next.63": "2026-08-31T07:22:43.588Z",
+    "6.12.0-next.68": "2026-08-31T14:17:36.854Z",
+    "6.12.0-next.75": "2026-09-01T07:16:56.603Z",
+    "6.12.0-next.95": "2026-09-01T12:13:58.726Z",
+    "6.12.0-next.112": "2026-09-01T14:16:33.041Z",
+    "6.12.0": "2026-09-01T15:24:02.786Z",
+    "6.12.1-next.1": "2026-09-02T07:18:31.279Z",
+    "6.13.0-next.7": "2026-09-02T14:15:48.375Z",
+    "6.13.0-next.17": "2026-09-03T07:17:09.748Z",
+    "6.13.0-next.37": "2026-09-03T13:51:34.068Z",
+    "6.13.0-next.39": "2026-09-03T14:17:15.747Z",
+    "6.13.0-next.55": "2026-09-04T07:17:19.453Z",
+    "6.13.0-next.62": "2026-09-04T14:00:08.472Z",
+    "6.13.0-next.65": "2026-09-05T07:15:21.364Z",
+    "6.13.0-next.66": "2026-09-07T07:24:26.373Z",
+    "6.13.0-next.79": "2026-09-07T14:17:15.945Z",
+    "6.13.0-next.83": "2026-09-07T15:41:12.893Z",
+    "6.13.0-next.85": "2026-09-08T07:17:11.410Z",
+    "6.13.0-next.89": "2026-09-08T14:18:16.038Z",
+    "6.13.0": "2026-09-08T15:06:37.045Z",
+    "6.13.1-next.3": "2026-09-09T07:16:43.035Z",
+    "6.13.1-next.26": "2026-09-09T14:15:23.968Z",
+    "6.13.1": "2026-09-09T14:48:15.602Z",
+    "6.13.2-next.3": "2026-09-10T07:16:01.513Z",
+    "6.13.2-next.18": "2026-09-10T13:41:33.947Z",
+    "6.13.2-next.23": "2026-09-11T07:21:29.313Z",
+    "6.13.2": "2026-09-11T13:21:05.242Z",
+    "6.13.3-next.3": "2026-09-11T13:50:45.725Z",
+    "6.13.3-next.5": "2026-09-11T14:22:44.822Z",
+    "6.13.3-next.7": "2026-09-12T07:19:33.148Z",
+    "6.14.0-next.10": "2026-09-14T14:22:17.232Z",
+    "6.14.0-next.14": "2026-09-15T07:24:15.556Z",
+    "6.14.0-next.15": "2026-09-15T14:26:27.853Z",
+    "6.14.0": "2026-09-15T14:55:47.006Z",
+    "6.14.1-next.1": "2026-09-16T07:22:30.731Z",
+    "6.14.1": "2026-09-16T09:00:41.026Z",
+    "6.15.0-next.3": "2026-09-17T07:23:11.235Z",
+    "6.15.0": "2026-09-17T13:43:22.259Z",
+    "6.15.1-next.5": "2026-09-18T07:29:49.456Z",
+    "6.16.0-next.20": "2026-09-18T14:21:49.326Z",
+    "6.16.0-next.21": "2026-09-19T07:17:54.332Z",
+    "6.16.0-next.23": "2026-09-20T07:19:30.460Z",
+    "6.16.0-next.28": "2026-09-21T07:31:31.956Z",
+    "6.16.0-next.39": "2026-09-21T14:21:25.320Z",
+    "6.16.0-next.82": "2026-09-22T07:20:44.924Z",
+    "6.16.0-next.96": "2026-09-22T13:03:49.253Z",
+    "6.16.0-next.99": "2026-09-22T14:18:24.347Z",
+    "6.16.0": "2026-09-22T14:42:47.465Z",
+    "6.16.1-next.5": "2026-09-23T07:24:43.322Z",
+    "0.3.0": "2018-11-20T10:06:15.282Z",
+    "0.4.0": "2018-11-20T10:09:29.797Z"
+  },
+  "versions": {
+    "4.20.3": {},
+    "6.9.0-next.6": {},
+    "6.9.0-next.7": {},
+    "6.9.0-next.8": {},
+    "6.9.0-next.9": {},
+    "6.9.0-next.11": {},
+    "6.9.0-next.12": {},
+    "6.9.0-next.13": {},
+    "6.9.0-next.16": {},
+    "6.9.0-next.17": {},
+    "6.9.0-next.18": {},
+    "6.9.0-next.19": {},
+    "6.9.0-next.20": {},
+    "6.9.0-next.21": {},
+    "6.9.0-next.22": {},
+    "6.9.0-next.23": {},
+    "6.9.0-next.30": {},
+    "6.9.0-next.31": {},
+    "6.9.0-next.32": {},
+    "6.9.0-next.33": {},
+    "6.9.0-next.36": {},
+    "6.9.0-next.37": {},
+    "6.9.0-next.38": {},
+    "6.9.0-next.39": {},
+    "6.9.0-next.44": {},
+    "6.9.0-next.45": {},
+    "6.9.0-next.46": {},
+    "6.9.0-next.47": {},
+    "6.9.0-next.49": {},
+    "6.9.0-next.50": {},
+    "6.9.0-next.51": {},
+    "6.9.0-next.52": {},
+    "6.9.0": {},
+    "6.9.1-next.1": {},
+    "6.9.1-next.2": {},
+    "6.9.1-next.3": {},
+    "6.9.1-next.4": {},
+    "6.9.1-next.6": {},
+    "6.9.1-next.7": {},
+    "6.9.1-next.8": {},
+    "6.9.1-next.9": {},
+    "6.9.1-next.10": {},
+    "6.9.1-next.11": {},
+    "6.9.1-next.12": {},
+    "6.9.1": {},
+    "6.9.2-next.1": {},
+    "6.9.2-next.3": {},
+    "6.9.2-next.4": {},
+    "6.9.2-next.5": {},
+    "6.9.2-next.6": {},
+    "6.9.2-next.8": {},
+    "6.9.2-next.9": {},
+    "6.9.2-next.15": {},
+    "6.9.2-next.16": {},
+    "6.9.2-next.17": {},
+    "6.9.2-next.18": {},
+    "6.9.2-next.19": {},
+    "6.9.2-next.20": {},
+    "6.9.2-next.21": {},
+    "6.9.2-next.22": {},
+    "6.9.2-next.23": {},
+    "6.9.2-next.24": {},
+    "6.9.2-next.25": {},
+    "6.9.2-next.26": {},
+    "6.9.2-next.27": {},
+    "6.9.2-next.28": {},
+    "6.9.2-next.29": {},
+    "6.9.2-next.30": {},
+    "6.9.2-next.34": {},
+    "6.9.2-next.35": {},
+    "6.9.2-next.37": {},
+    "6.9.2-next.38": {},
+    "6.9.2-next.40": {},
+    "6.9.2-next.41": {},
+    "6.9.2-next.42": {},
+    "6.9.2-next.64": {},
+    "6.9.2-next.67": {},
+    "6.9.2-next.70": {},
+    "6.9.2-next.73": {},
+    "6.9.2-next.74": {},
+    "6.9.2-next.75": {},
+    "6.9.2": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.9.3-next.1": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.9.3-next.2": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.9.3-next.3": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.9.3-next.4": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.9.3-next.5": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.6": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.7": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.8": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.9": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.10": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.11": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.12": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.13": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.14": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.15": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.16": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.18": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.19": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.20": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.21": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.22": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.23": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.24": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.31": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.37": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.40": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.50": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.53": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0-next.87": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.0": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.1-next.3": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.1-next.6": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.1": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.2-next.5": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.2-next.10": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.2-next.18": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.10.2-next.25": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.11.0-next.32": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.11.0-next.38": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.11.0-next.49": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.11.0-next.58": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.11.0-next.62": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.11.0-next.68": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.11.0-next.70": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.11.0-next.107": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.11.0-next.109": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.11.0-next.118": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.11.0": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.11.1-next.6": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.12.0-next.18": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.12.0-next.25": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.12.0-next.32": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.12.0-next.46": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.12.0-next.52": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.12.0-next.60": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.12.0-next.63": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.12.0-next.68": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.12.0-next.75": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.12.0-next.95": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.12.0-next.112": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.12.0": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.12.1-next.1": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.0-next.7": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.0-next.17": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.0-next.37": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.0-next.39": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.0-next.55": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.0-next.62": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.0-next.65": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.0-next.66": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.0-next.79": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.0-next.83": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.0-next.85": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.0-next.89": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.0": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.1-next.3": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.1-next.26": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.1": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.2-next.3": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.2-next.18": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.2-next.23": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.2": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.3-next.3": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.3-next.5": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.13.3-next.7": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.14.0-next.10": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.14.0-next.14": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.14.0-next.15": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.14.0": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.14.1-next.1": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "6.14.1": {},
+    "6.15.0-next.3": {},
+    "6.15.0": {},
+    "6.15.1-next.5": {},
+    "6.16.0-next.20": {},
+    "6.16.0-next.21": {},
+    "6.16.0-next.23": {},
+    "6.16.0-next.28": {},
+    "6.16.0-next.39": {},
+    "6.16.0-next.82": {},
+    "6.16.0-next.96": {},
+    "6.16.0-next.99": {},
+    "6.16.0": {},
+    "6.16.1-next.5": {},
+    "0.3.0": {
+      "deprecated": "synthetic deprecation message"
+    },
+    "0.4.0": {
+      "deprecated": "synthetic deprecation message"
+    }
+  }
+}

@@ -1,9 +1,8 @@
 /* oxlint-disable i18next/no-literal-string */
 import {Card} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import startCase from 'lodash-es/startCase.js'
 import {useEffect} from 'react'
-import {Text, Flex, Box} from 'ui5'
+import {Code, Text, Flex, Box} from 'ui5'
 
 /**
  * @internal
@@ -34,7 +33,7 @@ export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
       </Flex>
 
       <Card tone="critical" overflow="auto" padding={4}>
-        <Code>{message}</Code>
+        <Code trim>{message}</Code>
       </Card>
 
       <Flex as="ul" flexDirection="column" gap={2}>
@@ -42,7 +41,7 @@ export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
           // oxlint-disable-next-line no-array-index-key
           <Flex key={index} as="li" gap={2} alignItems="center">
             <Box>
-              <Code>{name}</Code>
+              <Code trim>{name}</Code>
             </Box>
             <Box>
               <Text muted size={1} as="div" trim={true}>
@@ -60,7 +59,7 @@ export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
           </Text>
 
           <Box overflow="auto" marginTop={4}>
-            <Code>{stack}</Code>
+            <Code trim>{stack}</Code>
           </Box>
         </details>
       )}

@@ -1,9 +1,9 @@
 import {Card} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {dequal as isEqual} from 'dequal/lite'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {type GeneralDocumentListLayoutKey, type ObjectSchemaType} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
+import {Code} from 'ui5'
 
 import {useSchema} from '../../../core/hooks/useSchema'
 import {useI18nText} from '../../../core/i18n/hooks/useI18nText'
@@ -313,7 +313,7 @@ export const PaneContainer = memo(function PaneContainer(
       >
         {_DEBUG && (
           <Card padding={4} tone="transparent">
-            <Code>{pane.source || '(none)'}</Code>
+            <Code trim>{pane.source || '(none)'}</Code>
           </Card>
         )}
 

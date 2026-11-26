@@ -1,10 +1,9 @@
 import {studioPath} from '@sanity/client/csm'
 import {Card, Label} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {type ErrorInfo, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {type Path} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
-import {VStack} from 'ui5'
+import {Code, VStack} from 'ui5'
 
 import {LoadingBlock} from '../../core/components/loadingBlock/LoadingBlock'
 import {decodeJsonParams} from '../../router/utils/jsonParamsEncoding'
@@ -97,7 +96,7 @@ export function DocumentPane(props: {
               <Label muted size={0}>
                 {t('presentation-error.label')}
               </Label>
-              <Code className={wrappedCode} size={1}>
+              <Code className={wrappedCode} size={1} trim>
                 {errorParams.error.message}
               </Code>
             </VStack>

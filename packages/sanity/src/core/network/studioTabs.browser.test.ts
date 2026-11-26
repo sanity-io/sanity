@@ -81,8 +81,8 @@ describe('studio tab locks (real Web Locks)', () => {
     const tab = await openTab()
 
     tab.studioTabs.startTrackingStudioTabs(scope)
-    tab.listenerCount.openListener()
-    tab.listenerCount.openListener()
+    tab.listenerCount.openListener(scope)
+    tab.listenerCount.openListener(scope)
 
     await expect.poll(() => heldLockNames(scope)).toEqual([`${tab.studioTabs.getStudioTabId()}:2`])
   })
@@ -93,8 +93,8 @@ describe('studio tab locks (real Web Locks)', () => {
     tabs.forEach((tab) => tab.studioTabs.startTrackingStudioTabs(scope))
     await expect.poll(async () => (await heldTabLocks(scope)).length).toBe(2)
 
-    const releases = tabs.map((tab) => tab.listenerCount.openListener())
-    tabs[0].listenerCount.openListener()
+    const releases = tabs.map((tab) => tab.listenerCount.openListener(scope))
+    tabs[0].listenerCount.openListener(scope)
     releases[1]()
 
     await expect
@@ -116,7 +116,7 @@ describe('studio tab locks (real Web Locks)', () => {
 
     const churn = Array.from({length: 6}).reduce<Promise<void>>(async (previous) => {
       await previous
-      const release = tab.listenerCount.openListener()
+      const release = tab.listenerCount.openListener(scope)
       await delay(260)
       release()
       await delay(260)
@@ -151,7 +151,7 @@ describe('studio tab locks (real Web Locks)', () => {
     const tabs = await openTabs(6)
 
     tabs.forEach((tab) => tab.studioTabs.startTrackingStudioTabs(scope))
-    tabs.forEach((tab) => tab.listenerCount.openListener())
+    tabs.forEach((tab) => tab.listenerCount.openListener(scope))
 
     await expect
       .poll(() => tabs.map((tab) => tab.studioTabs.getPeakStudioTabCount()))

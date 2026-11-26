@@ -3,13 +3,6 @@ import {studioTheme} from '@sanity/ui'
 const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
 
-// Enable debug mode when the current URL contains the below fragment.
-// Must be prefixed with `_debug_`
-export const DEBUG_FRAGMENT = '_debug_search_score'
-
-// Display debug filter information: shared document types and field values
-export const DEBUG_MODE = false
-
 // Max number of records to fetch per search request - intentionally set high to workaround
 // current limitations with studio search config
 export const SEARCH_LIMIT = 1000

@@ -1,11 +1,10 @@
 import {BulbOutlineIcon} from '@sanity/icons/BulbOutline'
 import {UnknownIcon} from '@sanity/icons/Unknown'
 import {Card, type Theme, useClickOutsideEvent} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {resolveTypeName} from '@sanity/util/content'
 import {type FocusEvent, useCallback, useRef, useState} from 'react'
 import {styled} from 'styled-components'
-import {Text, VStack, Flex, Box, Icon} from 'ui5'
+import {Code, Text, VStack, Flex, Box, Icon} from 'ui5'
 
 import {Popover} from '../../../../ui-components/popover/Popover'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -87,7 +86,7 @@ export function IncompatibleItemType(props: Props) {
                 {t('inputs.array.error.json-representation-description')}
               </Text>
               <Card padding={2} overflow="auto" border>
-                <Code size={1} as="pre" language="json">
+                <Code size={1} language="json" trim>
                   {JSON.stringify(value, null, 2)}
                 </Code>
               </Card>

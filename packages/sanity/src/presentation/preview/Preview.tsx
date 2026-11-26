@@ -12,7 +12,6 @@ import {
   type VercelSetBypassCookieValue,
 } from '@sanity/preview-url-secret/constants'
 import {Card, Label, Spinner, usePrefersReducedMotion} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {AnimatePresence, motion, MotionConfig} from 'motion/react'
@@ -31,7 +30,7 @@ import {
 import {flushSync} from 'react-dom'
 import {useCurrentUser} from 'sanity'
 import {Translate, useTranslation} from 'sanity/i18n'
-import {Text, Flex, VStack} from 'ui5'
+import {Code, Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -604,7 +603,7 @@ export const Preview = memo(function PreviewComponent(
                               <Label muted size={0}>
                                 {t('preview-frame.overlay.connection-status.label')}
                               </Label>
-                              <Code size={1}>
+                              <Code size={1} trim>
                                 {t('channel.status', {context: overlaysConnection})}
                               </Code>
                             </VStack>
@@ -617,7 +616,7 @@ export const Preview = memo(function PreviewComponent(
                               <Label muted size={0}>
                                 {t('preview-frame.loader.connection-status.label')}
                               </Label>
-                              <Code size={1}>
+                              <Code size={1} trim>
                                 {t('channel.status', {context: loadersConnection})}
                               </Code>
                             </VStack>

@@ -36,8 +36,7 @@ describe('createVariantOperationsStore', () => {
     const variant = createEditableVariant()
     const client = mockClient()
 
-    // @ts-expect-error -- pre-existing, fix later
-    const store = createVariantOperationsStore({client: client as SanityClient})
+    const store = createVariantOperationsStore({client: client as unknown as SanityClient})
 
     await expect(store.createVariant(variant)).resolves.toEqual(ACTION_RESULT)
     expect(client.action).toHaveBeenCalledWith(
@@ -56,8 +55,7 @@ describe('createVariantOperationsStore', () => {
     const variant = createEditableVariant()
     const client = mockClient()
 
-    // @ts-expect-error -- pre-existing, fix later
-    const store = createVariantOperationsStore({client: client as SanityClient})
+    const store = createVariantOperationsStore({client: client as unknown as SanityClient})
 
     await expect(store.updateVariant(variant)).resolves.toEqual(ACTION_RESULT)
 
@@ -88,8 +86,7 @@ describe('createVariantOperationsStore', () => {
 
     const client = mockClient()
 
-    // @ts-expect-error -- pre-existing, fix later
-    const store = createVariantOperationsStore({client: client as SanityClient})
+    const store = createVariantOperationsStore({client: client as unknown as SanityClient})
 
     await expect(store.updateVariant(variantWithoutMetadata)).resolves.toEqual(ACTION_RESULT)
 
@@ -112,8 +109,7 @@ describe('createVariantOperationsStore', () => {
   it('deletes a variant definition with the delete action', async () => {
     const client = mockClient()
 
-    // @ts-expect-error -- pre-existing, fix later
-    const store = createVariantOperationsStore({client: client as SanityClient})
+    const store = createVariantOperationsStore({client: client as unknown as SanityClient})
 
     await expect(store.deleteVariant(DOCUMENT_ID)).resolves.toEqual(ACTION_RESULT)
 
@@ -129,8 +125,7 @@ describe('createVariantOperationsStore', () => {
   it('forwards action options to the delete action so it can be dry-run', async () => {
     const client = mockClient()
 
-    // @ts-expect-error -- pre-existing, fix later
-    const store = createVariantOperationsStore({client: client as SanityClient})
+    const store = createVariantOperationsStore({client: client as unknown as SanityClient})
 
     await expect(store.deleteVariant(DOCUMENT_ID, {dryRun: true})).resolves.toEqual(ACTION_RESULT)
 

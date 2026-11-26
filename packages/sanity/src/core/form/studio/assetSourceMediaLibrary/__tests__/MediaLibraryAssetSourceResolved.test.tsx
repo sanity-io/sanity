@@ -62,12 +62,23 @@ const VIEW: FederatedAssetSourceView = {
   moduleId: 'ml-app/views/picker/asset_source',
   interface: {
     id: 'ml-app-picker',
-    type: 'asset_source',
+    surface: 'asset_source',
     name: 'picker',
     title: 'Media Library',
     version: '1',
     moduleId: 'views/picker',
     metadata: null,
+    application: {
+      id: 'ml-app',
+      type: 'coreApp',
+      isLocal: false,
+      name: 'media-library',
+      title: 'Media Library',
+      reference: '',
+      icon: null,
+      slug: null,
+      organizationId: 'test-org-id',
+    },
   },
 }
 

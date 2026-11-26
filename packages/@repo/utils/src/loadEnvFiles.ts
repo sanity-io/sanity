@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+// oxlint-disable-next-line import/extensions -- dotenv's `exports` maps the bare specifier to a `.cjs` file and offers no subpath without an extension to import instead
 import dotenv from 'dotenv'
 
 import {MONOREPO_ROOT} from './constants'

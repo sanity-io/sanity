@@ -1,13 +1,14 @@
 import {Button, Card} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {usePaneRouter} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure'
-import {Flex} from 'ui5'
+import {Code, Flex} from 'ui5'
 
 export function CustomPane(props: any) {
   return (
     <Card height="fill" tone="transparent">
       <Flex padding={2} gap={1} flexDirection="column">
-        <Code language="json">{JSON.stringify(props, null, 2)}</Code>
+        <Code language="json" trim>
+          {JSON.stringify(props, null, 2)}
+        </Code>
         <Item id="foo" />
         <Item id="bar" />
         <Item id="baz" />

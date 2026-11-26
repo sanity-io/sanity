@@ -1,9 +1,11 @@
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {EarthGlobeIcon} from '@sanity/icons/EarthGlobe'
 import {Card} from '@sanity/ui'
+import noop from 'lodash-es/noop.js'
 import {Text, Flex, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {DetailBackButton} from '../DetailBackButton'
 import {DetailIdentity} from '../DetailIdentity'
 import {DetailPropertiesPanel} from '../DetailPropertiesPanel'
 
@@ -19,9 +21,10 @@ const CLAMPED_DESCRIPTION =
 
 /**
  * Chromatic sentinel for the post-migration ui5 detail layout: identity
- * (placeholder opacity, four-line overflow clamp) and properties panel
- * (glyph column alignment, title-leading offset). Copy is a fixture (no
- * live releases).
+ * (placeholder opacity, four-line overflow clamp), properties panel
+ * (glyph column alignment, title-leading offset), and the bleed back
+ * button whose negative margin lines the label up with the pane edge.
+ * Copy is a fixture (no live releases).
  */
 export function DetailLayoutStory() {
   return (
@@ -62,6 +65,13 @@ export function DetailLayoutStory() {
             </Text>
             <DetailIdentity title={undefined} titlePlaceholder="Untitled release" />
           </VStack>
+          <Flex alignItems="flex-start" flexDirection="column" gap={2}>
+            <Text muted size={1} weight="medium" as="div" trim={true}>
+              back button
+            </Text>
+            <DetailBackButton onClick={noop} text="Back to all releases" />
+            <DetailBackButton onClick={noop} text="Back to all variants" />
+          </Flex>
         </VStack>
       </Card>
     </TestWrapper>

@@ -16,6 +16,12 @@ export interface SubmissionResponder {
 }
 
 /**
+ * How many applied transaction ids a document remembers. A retry reaches the server within
+ * minutes of its first attempt, and far fewer transactions than this land on one document then.
+ */
+const MAX_APPLIED_TRANSACTION_IDS = 1000
+
+/**
  * Models a document as it is changed by our own local patches and remote patches coming in from
  * the server. Consolidates incoming patches with our own submitted patches and maintains two
  * versions of the document. EDGE is the optimistic document that the user sees that will always
@@ -96,6 +102,12 @@ export class Document {
    */
   lastStagedAt: Date | null = null
 
+  /**
+   * Transaction ids recently applied to HEAD, oldest first. A retried submission answered as
+   * already existing checks this to tell whether its earlier attempt's echo already arrived.
+   */
+  appliedTransactionIds = new Set<string>()
+
   constructor(doc: Doc | null) {
     this.reset(doc)
     this.HEAD = doc
@@ -104,6 +116,8 @@ export class Document {
 
   // Reset the state of the Document, used to recover from unsavory states by reloading the document
   reset(doc: Doc | null): void {
+    // The snapshot includes the transaction that produced its revision, which may be one of ours.
+    if (doc?._rev) this.recordApplied(doc._rev)
     this.incoming = []
     this.submitted = []
     this.pending = []
@@ -132,7 +146,8 @@ export class Document {
 
     debug('Staging mutation %s (pushed to pending)', mutation.transactionId)
     this.pending.push(mutation)
-    this.EDGE = mutation.apply(this.EDGE)
+    // A retry of a transaction that already landed is in HEAD, and so in EDGE, already.
+    if (!this.hasApplied(mutation.transactionId)) this.EDGE = mutation.apply(this.EDGE)
 
     if (this.onMutation && !silent) {
       this.onMutation({
@@ -263,6 +278,7 @@ export class Document {
     )
 
     this.HEAD = mut.apply(this.HEAD)
+    this.recordApplied(mut.transactionId)
 
     if (this.onRemoteMutation) {
       this.onRemoteMutation(mut)
@@ -362,9 +378,34 @@ export class Document {
     return true
   }
 
+  // Whether HEAD already includes the transaction, for example a retry of one that landed
+  hasApplied(transactionId: string | undefined): boolean {
+    return transactionId !== undefined && this.appliedTransactionIds.has(transactionId)
+  }
+
+  // Remembers a transaction id as applied to HEAD, forgetting the oldest beyond the limit
+  recordApplied(transactionId: string): void {
+    this.appliedTransactionIds.add(transactionId)
+    if (this.appliedTransactionIds.size > MAX_APPLIED_TRANSACTION_IDS) {
+      const [oldest] = this.appliedTransactionIds
+      this.appliedTransactionIds.delete(oldest)
+    }
+  }
+
   pendingSuccessfullySubmitted(pendingTxnId: string): void {
     if (this.pending.length === 0) {
       // If there are no pending, it has probably arrived allready
+      return
+    }
+
+    // The server's echo of this mutation was already applied: an earlier attempt landed while its
+    // response was lost, and a retry with the same transaction id was answered as already
+    // existing. Waiting for another echo would apply it a second time on top of HEAD. Other
+    // users' mutations may have arrived after the echo, so HEAD's revision alone does not show
+    // it. HEAD only changes through `applyIncoming` and `reset`, and both record the id.
+    if (this.hasApplied(pendingTxnId)) {
+      this.pending = this.pending.filter((mutation) => mutation.transactionId !== pendingTxnId)
+      this.rebase([])
       return
     }
 
@@ -408,7 +449,10 @@ export class Document {
 
   rebase(incomingMutations: Mutation[]): void {
     const oldEdge = this.EDGE
-    this.EDGE = Mutation.applyAll(this.HEAD, this.submitted.concat(this.pending))
+    this.EDGE = Mutation.applyAll(
+      this.HEAD,
+      this.submitted.concat(this.pending).filter((mut) => !this.hasApplied(mut.transactionId)),
+    )
 
     // Copy over rev, since we don't care if it changed, we only care about the content
     if (oldEdge !== null && this.EDGE !== null) {

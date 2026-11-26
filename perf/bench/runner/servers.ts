@@ -15,13 +15,18 @@ export interface RunningSide {
  * instance (perfect state isolation between sides). Both speak HTTP/2+TLS —
  * see mock-api/tls.ts for why h1 is not an option.
  */
-export async function startSide(side: BenchSide, distDir: string): Promise<RunningSide> {
+export async function startSide(
+  side: BenchSide,
+  distDir: string,
+  options: {maxConcurrentStreams?: number} = {},
+): Promise<RunningSide> {
   const tls = await getBenchTls()
   const mock = createMockApi({
     port: side.apiPort,
     projectId: side.projectId,
     dataset: DATASET,
     tls,
+    maxConcurrentStreams: options.maxConcurrentStreams,
   })
   try {
     await mock.listen()

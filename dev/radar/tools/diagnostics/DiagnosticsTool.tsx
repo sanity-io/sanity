@@ -1,11 +1,11 @@
-import {Box, Button, Card, Heading, TextArea} from '@sanity/ui'
+import {Box, Button, Card, TextArea} from '@sanity/ui'
 import {type SyntheticEvent, useCallback, useId, useRef, useState} from 'react'
 import {
   DiagnosticsReport,
   parseStudioDiagnostics,
   type StudioDiagnostics,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
-import {Text, Container, Flex, VStack} from 'ui5'
+import {Heading, Text, Container, Flex, VStack} from 'ui5'
 
 /**
  * The in-studio twin of dev/studio-diagnostics-viewer: paste the JSON copied
@@ -53,7 +53,7 @@ export function DiagnosticsTool() {
               <form onSubmit={handleSubmit}>
                 <VStack gap={4}>
                   <VStack gap={3}>
-                    <Heading as="h2" size={2}>
+                    <Heading as="h2" size={2} trim>
                       Paste diagnostics output
                     </Heading>
                     <Text muted size={1} as="div" trim={true}>
