@@ -155,7 +155,7 @@
     }
   },
   "scripts": {
-    "build": "tsdown",
+    "build": "node src/_exports/tombstones/build.mjs",
     "build:bundle": "vite build --configLoader runner --config package.bundle.ts",
     "coverage": "vitest --coverage",
     "prepare": "panda codegen",
@@ -163,7 +163,7 @@
     "test": "vitest run",
     "test:browser": "VITEST_CHROMIUM_GC_DISK_THRESHOLD_GB=1000000 vitest run -c vitest.browser.config.mts",
     "test:fuzz": "vitest run -c vitest.fuzz.config.mts",
-    "watch": "tsdown --watch"
+    "watch": "node src/_exports/tombstones/build.mjs --watch"
   },
   "dependencies": {
     "@algorithm.ts/lcs": "^4.0.6",

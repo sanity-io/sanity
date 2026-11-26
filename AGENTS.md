@@ -782,6 +782,71 @@ code off that path. Measure it on the CDN build, not on `sanity build` output:
   `const` to a function, so the generated fixtures in `@repo/test-dts-exports` switch from
   `not.toBeNever()` to `toBeFunction()`; regenerate both.
 
+### Export tombstones (v7)
+
+When v7 removes or moves an export from `sanity` (or a subpath entry), do **not** delete the name
+silently. Add a type-only tombstone so TypeScript reports the migration at each usage instead of a
+bare "has no exported member" error. Prior art: `@sanity/ui` v4 (`packages/ui/src/exports/index.ts`)
+and `@sanity/icons` v5 (`packages/icons/scripts/generate.ts`).
+
+**Hard rule:** tombstones live only in the `.d.ts` output. No runtime JS exports, stubs, throwing
+functions, or re-exports from a separate tombstones module — TypeScript emits a runtime
+`export {Name} from …` for those and the name then fails to link. Put `export declare const Name:
+never` (values) or `export type Name = never` (types) **inline in the entry barrel**, with a
+`@deprecated` JSDoc that names the replacement or migration path.
+
+**Public import paths in messages and docs:** every `@deprecated` message, `@example`, README,
+and AGENTS.md sample that tells a consumer where to import from must use the public entry
+(`'sanity'`, `'sanity/structure'`, `'sanity/i18n'`,
+`'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'`, …). Never cite relative
+paths (`'./Studio'`) or `src/` paths there.
+
+**What needs a tombstone comes from a diff, not a list.**
+`packages/@repo/test-dts-exports/test/tombstones.test.ts` (part of `pnpm test:exports`, so it runs
+in CI) downloads the package the npm `latest` tag points at, reads every exported name, values and
+types, of every entry of it and of the workspace build with ts-morph
+(`packages/@repo/test-dts-exports/tombstones/surface.mjs`), and fails with a list of:
+
+- exports of `sanity@latest` that the workspace neither exports at the same entry nor tombstones.
+  Each line names the export and its entry, says where the workspace exports it now (if anywhere),
+  and carries a suggested manifest entry to start from. A value the entry now exports only as a
+  type (through `export type * from`) counts as removed: its tombstone shadows the type-only
+  re-export;
+- whole entries the workspace dropped that `"removedEntries"` does not list (`./desk` is listed:
+  `sanity/desk` does not resolve in v7 and gets no stub);
+- stale tombstones: names exported again, names `sanity@latest` never exported, or entries the
+  workspace no longer has;
+- tombstones whose kind differs from what `sanity@latest` exported (`value` needs
+  `export declare const`, `type` needs `export type`);
+- tombstones whose message starts with ``Moved to `<entry>` `` while that entry does not export
+  the name, which happens when a name moves again (from the internals entry to one of its
+  subpaths, for example).
+
+The same suite checks that every tombstone in the built `.d.ts` is `never` with exactly its
+manifest message, and that no tombstone is a runtime export of its entry's JS. The download is
+cached per version under `packages/sanity/node_modules/.cache/sanity-latest/`, where the published
+`.d.ts` resolves the same dependencies as the workspace build. The regular dts fixtures
+(`test/fixtures/*.test-d.ts`) and `v7-export-map.json` leave tombstones out: they list real
+exports only.
+
+`pnpm --filter sanity build` runs `tombstones/build.mjs`, which strips the generated
+`// <tombstones>` blocks before `tsdown` and appends them to the matching `lib/*.d.ts` after.
+Feeding hundreds of inline `export declare` lines to rolldown-plugin-dts can mark unrelated value
+re-exports (e.g. `SANITY_VERSION`) as type-only; the strip/append keeps monorepo source tombstones
+intact while the published types stay correct.
+
+When the suite reports a missing export:
+
+1. Add it to `packages/sanity/src/_exports/tombstones/manifest.json` under its entry's subpath
+   (`"."`, `"./structure"`, …, the key from the `sanity` package's `exports` map):
+   `{ "name": "Foo", "kind": "value" | "type", "message": "Moved to \`sanity/i18n\`. Import \`{Foo}\` from \`sanity/i18n\` instead of \`sanity\`." }`.
+   Check where the export went before keeping the suggested message: a name that is exported
+   elsewhere may be an unrelated export with the same name.
+2. Run `node packages/sanity/src/_exports/tombstones/generate.mjs`, which rewrites the
+   `// <tombstones>` … `// </tombstones>` block in each barrel the manifest names.
+3. Rebuild (`pnpm --filter sanity build`) and run
+   `pnpm --filter @repo/test-dts-exports exec vitest run test/tombstones.test.ts`.
+
 ### v7 export map: v6 exports everything at the path v7 uses
 
 Plugins support Studio v6 (`main`) and v7 (`next-major`) with one version by importing from the
@@ -795,6 +860,7 @@ in it is missing. On `next-major`, a test fails when the built export map differ
 and another when the file has entries `origin/main`'s copy lacks. When either fails, add the
 export to `main` first (a re-export, never a copy of the module), then copy the file over.
 On `main`, the internals entry's completeness test accepts the non-`@internal` names v7 puts there.
+Type-only export tombstones are excluded from the map (see [Export tombstones (v7)](#export-tombstones-v7)).
 
 ### Effect events: native `useEffectEvent`, never in dependency arrays
 
@@ -1910,14 +1976,3 @@ Debugging notes:
 - To reproduce load-related flakiness, throttle the browser from within the spec: `const cdp = await page.context().newCDPSession(page); await cdp.send('Emulation.setCPUThrottlingRate', {rate: 8})` (chromium only). Stub a slow or eventually-consistent backend with `page.route('**/data/query/**', …)`; the global search query is identifiable by its `findability-source: global` GROQ comment.
 - Every branch with a PR gets its own `End-to-End Tests` run (8 shards) against the same staging project, and the shards share GitHub's runner IP range. Pushing a whole stack of PRs at once therefore rate-limits the runs against each other: the failed attempts show the studio's "Too many requests" dialog in the `error-context` page snapshot and in `studio-request-error.txt`, with dozens of flaky retries. Push (or re-run) stacked branches a few at a time instead of all at once, and treat a run whose failures all show that dialog as platform-caused, not as a regression.
 - A new Playwright version means a new browser-cache key. The `install` job creates it, but when several runs start together only one can reserve the key and the others log `Unable to reserve cache with key … another job may be creating this cache`; their `playwright-test` shards then miss the restore and fall back to installing browsers themselves. `e2e/globalSetup.ts` always launches chromium (it warms the preview with the first configured project), so that fallback installs chromium alongside the matrix browser — a firefox shard without chromium fails in global setup with `browserType.launch: Executable doesn't exist` before running a single test.
-
-<!-- BEGIN:turborepo-agent-rules -->
-
-# This is NOT the Turborepo you know
-
-Turborepo configuration, task behavior, and CLI commands can vary between installed versions and may differ from your training data. Resolve the `turbo` package from this file's directory or relevant workspace; in monorepos, it may not be visible from the repository root. For example, run `node -p "require.resolve('turbo/package.json')"` from a workspace that depends on `turbo`.
-
-Read `docs/README.md` inside that installed package first, then read the relevant pages from its `docs/` directory before changing Turborepo configuration or commands. Heed deprecation notices. These bundled docs match the installed package version and are available without network access.
-
-This block is written and re-added by `turbo` before repository-scoped commands when an AI agent is detected. In the Turborepo source repository, its template is defined in `crates/turborepo-cli/src/cli/agent_guidance.rs`. Removing the managed block while updates are enabled means a later qualifying invocation will add it again. Set `"agentGuidance": false` in the root `turbo.json` or `turbo.jsonc` to opt out; this does not remove an existing block. Keep the block committed with your work to avoid an uncommitted change on the next agent invocation.
-<!-- END:turborepo-agent-rules -->
