@@ -15,10 +15,10 @@
     "start": "sanity preview"
   },
   "dependencies": {
-    "@portabletext/editor": "^8.2.15",
-    "@portabletext/html": "^2.0.3",
-    "@portabletext/plugin-character-pair-decorator": "^9.0.29",
-    "@portabletext/react": "^8.0.1",
+    "@portabletext/editor": "^8.2.17",
+    "@portabletext/html": "^2.0.4",
+    "@portabletext/plugin-character-pair-decorator": "^9.0.31",
+    "@portabletext/react": "^8.0.2",
     "@repo/utils": "workspace:*",
     "@sanity/assist": "^6.3.0",
     "@sanity/client": "catalog:",
