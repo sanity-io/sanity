@@ -214,15 +214,19 @@ export class FakeServer {
     transactionId: string,
     resultRev: string,
   ): void {
-    const previousRev = this.head._rev
-    const next = new Mutation({mutations, transactionId, resultRev}).apply(this.head)
+    const previous = this.head
+    const next = new Mutation({mutations, transactionId, resultRev}).apply(previous)
     if (!next) throw new Error('Fuzz documents are never deleted')
     this.head = next as SanityDocument
+    // Content Lake computes effects without `_rev`. A whole-value effect (Mendoza op 0) stands in
+    // for its diff, so the Studio builds its copy from the effects as it does against Content Lake.
+    const {_rev: previousRev, ...previousWithoutRev} = previous
+    const {_rev: _nextRev, ...nextWithoutRev} = next
     this.pendingListenerEvents.push({
       type: 'mutation',
       documentId: DOCUMENT_ID,
       transactionId,
-      effects: {revert: [], apply: []},
+      effects: {revert: [0, previousWithoutRev], apply: [0, nextWithoutRev]},
       mutations,
       previousRev,
       resultRev,

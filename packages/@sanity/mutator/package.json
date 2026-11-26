@@ -59,6 +59,7 @@
     "@repo/tsconfig": "workspace:*",
     "@repo/tsdown.config": "workspace:*",
     "@types/node": "catalog:",
+    "mendoza": "^6.0.0",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",

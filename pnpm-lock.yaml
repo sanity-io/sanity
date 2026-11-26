@@ -1888,6 +1888,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 26.6.6
+      mendoza:
+        specifier: ^6.0.0
+        version: 6.0.0
       tsdown:
         specifier: 'catalog:'
         version: 0.23.7(@tsdown/css@0.23.7)(@vitejs/devtools@0.8.3)(oxc-resolver@11.24.2)(publint@0.3.25)(tsx@4.23.15)(typescript@7.0.2)

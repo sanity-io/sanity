@@ -8,6 +8,7 @@ export function mutationEvent({
   mutations = [],
   transition = 'update',
   messageReceivedAt = new Date().toISOString(),
+  effects,
 }: {
   documentId?: string
   previousRev: string
@@ -15,12 +16,18 @@ export function mutationEvent({
   mutations?: MutationPayload[]
   transition?: MutationEvent['transition']
   messageReceivedAt?: string
+  /**
+   * Content Lake's Mendoza effects. Left out by default, so the mutations are replayed: an effect
+   * that does not match the mutations would make the event contradict itself.
+   */
+  effects?: MutationEvent['effects']
 }): MutationEvent {
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- `effects` is left out unless given
   return {
     type: 'mutation',
     documentId,
     transactionId: resultRev,
-    effects: {revert: [], apply: []},
+    ...(effects ? {effects} : {}),
     mutations,
     previousRev: previousRev,
     resultRev: resultRev,
@@ -29,7 +36,7 @@ export function mutationEvent({
     transactionCurrentEvent: 1,
     transactionTotalEvents: 1,
     visibility: 'transaction',
-  }
+  } as MutationEvent
 }
 
 /**

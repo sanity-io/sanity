@@ -108,6 +108,13 @@ export class Document {
    */
   appliedTransactionIds = new Set<string>()
 
+  /**
+   * Applies a Mendoza patch to a document, for example `applyPatch` from `mendoza`. When set, HEAD
+   * is built from the effects of incoming mutations, which is exactly what Content Lake stored.
+   * When unset, their mutations are replayed.
+   */
+  applyEffects?: (document: Record<string, unknown> | null, patch: unknown[]) => unknown
+
   constructor(doc: Doc | null) {
     this.reset(doc)
     this.HEAD = doc
@@ -277,7 +284,7 @@ export class Document {
       this.HEAD && this.HEAD._rev,
     )
 
-    this.HEAD = mut.apply(this.HEAD)
+    this.HEAD = applyToHead(this.HEAD, mut, this.applyEffects)
     this.recordApplied(mut.transactionId)
 
     if (this.onRemoteMutation) {
@@ -464,4 +471,71 @@ export class Document {
       this.onRebase(this.EDGE, incomingMutations, this.pending)
     }
   }
+}
+
+/**
+ * The document after an incoming mutation. Content Lake's Mendoza effects are its own diff from
+ * the previous revision to the stored result, so applying them gives exactly what it stored, even
+ * for patches that the mutator interprets differently (or not at all, as `merge`). The mutations
+ * are replayed instead when no effect applier is set, when the event has no usable effects, when
+ * HEAD is not the revision the effects were computed from, or when applying them fails or gives
+ * something that is not a document.
+ */
+function applyToHead(
+  head: Doc | null,
+  mut: Mutation,
+  applyEffects: Document['applyEffects'],
+): Doc | null {
+  const apply = mut.effects?.apply
+  // An effect only applies to the revision it was computed from. On any other revision the
+  // replay throws for the mismatched previous revision, as it did before effects were used.
+  if (
+    !applyEffects ||
+    !Array.isArray(apply) ||
+    !mut.resultRev ||
+    (mut.previousRev || undefined) !== head?._rev
+  ) {
+    return mut.apply(head)
+  }
+  // Content Lake computes effects without `_rev`, and Mendoza addresses object fields by their
+  // position among the sorted keys, so `_rev` must be absent when the effect is applied.
+  let base: Record<string, unknown> | null = null
+  if (head) {
+    const {_rev, ...withoutRev} = head
+    base = withoutRev
+  }
+  let next: unknown
+  try {
+    next = applyEffects(base, apply)
+  } catch (error) {
+    // Mendoza throws when HEAD differs from the document the effect was computed on, which means
+    // HEAD has drifted from Content Lake.
+    debug('Could not apply effects of %s, replaying its mutations: %s', mut.transactionId, error)
+    return mut.apply(head)
+  }
+  if (next === null) return null
+  if (!isEffectResult(next, head)) {
+    // Mendoza does not detect every drift: a shifted key index can write or delete the wrong field
+    // without throwing. This catches results that are no longer a document, not every such case.
+    debug('Effects of %s did not give a document, replaying its mutations', mut.transactionId)
+    return mut.apply(head)
+  }
+  return {...next, _rev: mut.resultRev}
+}
+
+/**
+ * Whether applying effects gave a document: an object with a string `_id` (the same as HEAD's)
+ * and `_type`, and no `undefined` field that HEAD did not have, which Mendoza writes when a key
+ * index points past the end of the object.
+ */
+function isEffectResult(next: unknown, head: Doc | null): next is Doc {
+  if (typeof next !== 'object' || next === null || Array.isArray(next)) return false
+  return (
+    '_id' in next &&
+    typeof next._id === 'string' &&
+    '_type' in next &&
+    typeof next._type === 'string' &&
+    (head === null || next._id === head._id) &&
+    (!('undefined' in next) || (head !== null && 'undefined' in head))
+  )
 }
