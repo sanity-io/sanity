@@ -89,13 +89,25 @@ async function assertParses(snippetFile: ExportSnippetFile) {
   await transformWithOxc(code, filename, {})
 }
 
-const PERSPECTIVES: {name: string; perspective?: ClientPerspective; apiVersion?: string}[] = [
+const PERSPECTIVES: {
+  name: string
+  perspective?: ClientPerspective
+  apiVersion?: string
+  /** The perspective a paste reads, when it is not the one exported */
+  pastedPerspective?: string
+}[] = [
   {name: 'the API default on a version that reads published', apiVersion: 'v2025-02-19'},
   {name: 'the API default on a version that reads raw', apiVersion: 'v2021-10-21'},
   {name: 'published', perspective: 'published'},
   {name: 'drafts', perspective: 'drafts'},
   {name: 'raw', perspective: 'raw'},
-  {name: 'previewDrafts', perspective: 'previewDrafts', apiVersion: 'v2023-08-01'},
+  {
+    name: 'previewDrafts',
+    perspective: 'previewDrafts',
+    apiVersion: 'v2023-08-01',
+    // The API's old name for drafts
+    pastedPerspective: 'drafts',
+  },
   {name: 'a release stack', perspective: ['rSummer', 'drafts']},
 ]
 
@@ -110,7 +122,7 @@ const PARAMS: {name: string; params: Record<string, unknown>; query: string}[] =
 ]
 
 describe('buildExportSnippets', () => {
-  describe.each(PERSPECTIVES)('with $name', ({perspective, apiVersion}) => {
+  describe.each(PERSPECTIVES)('with $name', ({perspective, apiVersion, pastedPerspective}) => {
     describe.each(PARAMS)('and $name', ({params, query}) => {
       const input = createInput({perspective, apiVersion, params, query})
       const snippets = buildExportSnippets(input)
@@ -144,7 +156,7 @@ describe('buildExportSnippets', () => {
         })
         // Vision only switches to the perspectives it has a setting for, but the URL keeps them all
         expect(parsed?.urlPerspective).toEqual(
-          Array.isArray(perspective) ? perspective.join(',') : perspective,
+          pastedPerspective ?? (Array.isArray(perspective) ? perspective.join(',') : perspective),
         )
       })
     })

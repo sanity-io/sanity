@@ -25,6 +25,7 @@
     {"name": "i18next", "specifier": "eslint-plugin-i18next"},
     {"name": "@sanity/i18n", "specifier": "@sanity/eslint-plugin-i18n"},
     {"name": "@repo/i18n", "specifier": "@repo/oxlint-plugin-i18n"},
+    {"name": "@repo/studio", "specifier": "@repo/oxlint-plugin-studio"},
     {"name": "boundaries", "specifier": "eslint-plugin-boundaries"},
     {"name": "testing-library", "specifier": "eslint-plugin-testing-library"}
   ],
@@ -384,6 +385,11 @@
         "packages/sanity/src/core/field/types/portableText/diff/PTDiff.tsx"
       ],
       "rules": {"import/no-cycle": "off"}
+    },
+    {
+      // A studio evaluates its config before it renders the login screen
+      "files": ["**/sanity.config.{ts,tsx,js,jsx,mjs,mts}"],
+      "rules": {"@repo/studio/no-internals-before-sign-in": "error"}
     },
     {
       "files": ["scripts/**/*", "examples/functions/**/*"],

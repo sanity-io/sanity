@@ -6,8 +6,6 @@ import type {
   ActionComponent,
   ActiveToolLayoutProps,
   AddonDatasetContextValue,
-  AddonDatasetProvider,
-  ALL_FIELDS_GROUP,
   Annotation,
   AnnotationDetails,
   ApiConfig,
@@ -21,24 +19,16 @@ import type {
   ArrayInputMoveItemEvent,
   ArrayItemError,
   ArrayOfEntry,
-  ArrayOfObjectOptionsInput,
   ArrayOfObjectsComponents,
   ArrayOfObjectsFormNode,
-  ArrayOfObjectsFunctions,
   ArrayOfObjectsInputProps,
-  ArrayOfObjectsItem,
   ArrayOfObjectsItemMember,
   ArrayOfObjectsMember,
-  ArrayOfOptionsInput,
-  ArrayOfPrimitiveOptionsInput,
   ArrayOfPrimitivesComponents,
   ArrayOfPrimitivesElementType,
   ArrayOfPrimitivesFieldProps,
   ArrayOfPrimitivesFormNode,
-  ArrayOfPrimitivesFunctions,
-  ArrayOfPrimitivesInput,
   ArrayOfPrimitivesInputProps,
-  ArrayOfPrimitivesItem,
   ArrayOfPrimitivesItemMember,
   ArrayOfPrimitivesMember,
   ArrayOfType,
@@ -75,7 +65,6 @@ import type {
   AuthState,
   AuthStore,
   AutocompleteString,
-  AvatarSkeleton,
   BaseActionDescription,
   BaseEvent,
   BaseFeedbackTags,
@@ -93,15 +82,11 @@ import type {
   BlockDecoratorDefinition,
   BlockDecoratorProps,
   BlockDefinition,
-  BlockEditor,
-  BlockImagePreview,
-  BlockImagePreviewProps,
   BlockListDefinition,
   BlockListItemProps,
   BlockListObjectField,
   BlockMarksDefinition,
   BlockOptions,
-  BlockPreview,
   BlockProps,
   BlockRule,
   BlockSchemaType,
@@ -112,7 +97,6 @@ import type {
   BooleanDefinition,
   BooleanFieldProps,
   BooleanFormNode,
-  BooleanInput,
   BooleanInputProps,
   BooleanOptions,
   BooleanRule,
@@ -120,13 +104,8 @@ import type {
   BufferedDocumentEvent,
   CanvasAppOptions,
   CanvasNotificationPayload,
-  ChangeIndicator,
-  ChangeIndicatorProps,
-  ChangeList,
-  ChangeListProps,
   Chunk,
   ChunkType,
-  CircularProgress,
   CollapseOptions,
   CommentBaseCreatePayload,
   CommentBaseCreatePayloadLegacy,
@@ -177,8 +156,6 @@ import type {
   CommentUpdatePayload,
   CommentUpdatePayloadLegacy,
   CommittedEvent,
-  CompactPreview,
-  CompactPreviewProps,
   ComplexElementProps,
   ComposableOption,
   ComputeDiff,
@@ -190,7 +167,6 @@ import type {
   ConfigContext,
   CopyOptions,
   CopyPasteContextType,
-  CopyPasteProvider,
   createConfig,
   createDefaultIcon,
   CreateDocumentVersionEvent,
@@ -203,7 +179,6 @@ import type {
   CreateSquashedMutation,
   CrossDatasetReferenceComponents,
   CrossDatasetReferenceDefinition,
-  CrossDatasetReferenceInput,
   CrossDatasetReferenceInputProps,
   CrossDatasetReferenceSchemaType,
   CrossDatasetReferenceValue,
@@ -215,26 +190,17 @@ import type {
   DashboardNotificationPayload,
   DateComponents,
   DateDefinition,
-  DateInput,
   DateInputProps,
   DateOptions,
   DateRule,
   DatetimeComponents,
   DatetimeDefinition,
-  DateTimeInput,
   DateTimeInputProps,
   DatetimeOptions,
   DatetimeRule,
   dec,
   DecorationMember,
-  DEFAULT_ANNOTATIONS,
-  DEFAULT_BLOCK_STYLES,
-  DEFAULT_DECORATORS,
-  DEFAULT_LIST_TYPES,
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
   DefaultPluginsWorkspaceOptions,
-  DefaultPreview,
-  DefaultPreviewProps,
   defineArrayMember,
   DefineArrayMemberBase,
   defineAssetAspect,
@@ -257,16 +223,7 @@ import type {
   DeprecatedProperty,
   DeprecatedSchemaType,
   DeprecationConfiguration,
-  DetailPreview,
-  DetailPreviewProps,
-  DiffCard,
-  DiffCardProps,
-  DiffFromTo,
-  DiffFromToProps,
   diffMatchPatch,
-  DiffTooltip,
-  DiffTooltipProps,
-  DiffTooltipWithAnnotationsProps,
   DocumentActionComponent,
   DocumentActionConfirmDialogProps,
   DocumentActionCustomDialogComponentProps,
@@ -318,16 +275,12 @@ import type {
   DocumentOptions,
   DocumentPairPermissionsListener,
   DocumentPluginOptions,
-  DocumentPreviewPresence,
-  DocumentPreviewPresenceProps,
   DocumentPreviewStore,
   DocumentRebaseEvent,
   DocumentRemoteMutationEvent,
   DocumentRevision,
   DocumentRule,
   DocumentStackAvailability,
-  DocumentStatus,
-  DocumentStatusIndicator,
   DocumentStore,
   DocumentSystem,
   DocumentSystemRef,
@@ -336,7 +289,6 @@ import type {
   DocumentVersion,
   DocumentVersionEvent,
   DraftId,
-  DRAFTS_FOLDER,
   DraftsModelDocument,
   DraftsModelDocumentAvailability,
   DuplicateActionProps,
@@ -345,16 +297,13 @@ import type {
   DynamicFeedbackTags,
   EditDocumentVersionEvent,
   EditorChange,
-  EditPortal,
   EditStateFor,
   EmailComponents,
   EmailDefinition,
-  EmailInput,
   EmailInputProps,
   EmailOptions,
   EmailRule,
   EmptyProps,
-  EnhancedObjectDialog,
   EnumListProps,
   EventsStoreRevision,
   FederatedAssetSourcesConfig,
@@ -380,7 +329,6 @@ import type {
   FileAsset,
   FileComponents,
   FileDefinition,
-  FileInput,
   FileInputProps,
   FileLike,
   FileOptions,
@@ -389,26 +337,17 @@ import type {
   FileValue,
   FormattableMeasurementUnit,
   FormattedDuration,
-  FormBuilder,
   FormBuilderContextValue,
   FormBuilderCustomMarkersComponent,
   FormBuilderInputComponentMap,
   FormBuilderMarkersComponent,
   FormBuilderProps,
-  FormCallbacksProvider,
   FormComponents,
   FormDecPatch,
   FormDiffMatchPatch,
   FormDocumentValue,
-  FormField,
   FormFieldGroup,
-  FormFieldHeaderText,
-  FormFieldHeaderTextProps,
-  FormFieldProps,
-  FormFieldValidationStatus,
-  FormFieldValidationStatusProps,
   FormIncPatch,
-  FormInput,
   FormInsertPatch,
   FormInsertPatchPosition,
   FormNodePresence,
@@ -417,7 +356,6 @@ import type {
   FormPatchBase,
   FormPatchJSONValue,
   FormPatchOrigin,
-  FormProvider,
   FormProviderProps,
   FormSetIfMissingPatch,
   FormSetPatch,
@@ -440,8 +378,6 @@ import type {
   GroupableActionDescription,
   HistoryClearedEvent,
   HistoryStore,
-  Hotkeys,
-  HotkeysProps,
   HotspotOptions,
   HotspotPreview,
   I18nSearchOperatorDescriptionKey,
@@ -455,7 +391,6 @@ import type {
   ImageDefinition,
   ImageDimensions,
   ImageHotspot,
-  ImageInput,
   ImageInputProps,
   ImageMetadata,
   ImageMetadataType,
@@ -486,16 +421,11 @@ import type {
   InitialValueSuccessMsg,
   InitialValueTemplateItem,
   InlineFieldDefinition,
-  InlinePreview,
-  InlinePreviewProps,
   InputOnSelectFileFunctionProps,
   InputProps,
   insert,
   InsertMenuOptions,
   InsertPatch,
-  InsufficientPermissionsMessage,
-  InsufficientPermissionsMessageProps,
-  IntentButton,
   IntrinsicArrayOfBase,
   IntrinsicArrayOfDefinition,
   IntrinsicBase,
@@ -518,14 +448,9 @@ import type {
   isBlockStyleObjectField,
   isBooleanInputProps,
   isBooleanSchemaType,
-  isCreateIfNotExistsMutation,
-  isCreateMutation,
-  isCreateOrReplaceMutation,
-  isCreateSquashedMutation,
   isCrossDatasetReference,
   isCrossDatasetReferenceSchemaType,
   isDateTimeSchemaType,
-  isDeleteMutation,
   isDeprecatedSchemaType,
   isDeprecationConfiguration,
   isDocumentSchemaType,
@@ -533,16 +458,11 @@ import type {
   isGlobalDocumentReference,
   isImage,
   isImageSchemaType,
-  isIndexSegment,
-  isIndexTuple,
-  isKeyedObject,
-  isKeySegment,
   isNumberInputProps,
   isNumberSchemaType,
   isObjectInputProps,
   isObjectItemProps,
   isObjectSchemaType,
-  isPatchMutation,
   isPortableTextListBlock,
   isPortableTextSpan,
   isPortableTextTextBlock,
@@ -551,26 +471,17 @@ import type {
   isReferenceSchemaType,
   isSanityDefinedAction,
   isSanityDocument,
-  isSearchStrategy,
   isSlug,
   isSpanSchemaType,
   isStringInputProps,
   isStringSchemaType,
-  isTitledListValue,
   isTypedObject,
-  isValidationError,
-  isValidationErrorMarker,
-  isValidationInfo,
-  isValidationInfoMarker,
-  isValidationWarning,
-  isValidationWarningMarker,
   ItemProps,
   KeyedObject,
   KeyedSegment,
   LayoutProps,
   LegacyAuthConfig,
   LegacyThemeProps,
-  LinearProgress,
   ListenQueryOptions,
   Loadable,
   LoadableLegacy,
@@ -594,7 +505,6 @@ import type {
   MarkdownConfig,
   MaybeAllowUnknownProps,
   MaybePreview,
-  MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME,
   MediaAssetTypes,
   MediaLibraryAssetAspectDefinition,
   MediaLibraryAssetAspectDocument,
@@ -604,8 +514,6 @@ import type {
   MediaLibraryConfig,
   MediaLibraryFilter,
   MediaLibraryOptions,
-  MediaPreview,
-  MediaPreviewProps,
   MediaValidationValue,
   MediaValidator,
   MemberItemProps,
@@ -772,8 +680,6 @@ import type {
   ResolvedUploader,
   ResolveProductionUrlContext,
   Role,
-  RovingFocusNavigationType,
-  RovingFocusProps,
   Rule,
   RuleBuilder,
   RuleClass,
@@ -811,7 +717,6 @@ import type {
   SearchOperatorInput,
   SearchOperatorParams,
   SearchOperatorType,
-  searchStrategies,
   SearchStrategy,
   SearchValueFormatterContext,
   SelectedPerspective,
@@ -850,7 +755,6 @@ import type {
   SpanTextObjectField,
   StateTree,
   StaticLocaleResourceBundle,
-  StatusButtonProps,
   StrictDefinition,
   StrictVersionLayeringOptions,
   StringComponents,
@@ -904,7 +808,6 @@ import type {
   TranslationProps,
   TypeAliasDefinition,
   TypeAnnotationMismatchError,
-  typed,
   TypedObject,
   TypeReference,
   TypeTarget,
@@ -946,7 +849,6 @@ import type {
   User,
   UserAttributeType,
   UserAttributeValue,
-  UserAvatarProps,
   useReferringDocuments,
   UserListWithPermissionsHookValue,
   UserListWithPermissionsOptions,
@@ -995,12 +897,6 @@ describe('sanity', () => {
   test('AddonDatasetContextValue', () => {
     expectTypeOf<AddonDatasetContextValue>().toBeObject()
   })
-  test('AddonDatasetProvider', () => {
-    expectTypeOf<typeof AddonDatasetProvider>().toBeNever()
-  })
-  test('ALL_FIELDS_GROUP', () => {
-    expectTypeOf<typeof ALL_FIELDS_GROUP>().toBeNever()
-  })
   test('Annotation', () => {
     expectTypeOf<Annotation>().not.toBeNever()
   })
@@ -1041,35 +937,20 @@ describe('sanity', () => {
   test('ArrayOfEntry', () => {
     expectTypeOf<ArrayOfEntry<any>>().not.toBeNever()
   })
-  test('ArrayOfObjectOptionsInput', () => {
-    expectTypeOf<typeof ArrayOfObjectOptionsInput>().toBeNever()
-  })
   test('ArrayOfObjectsComponents', () => {
     expectTypeOf<ArrayOfObjectsComponents>().toBeObject()
   })
   test('ArrayOfObjectsFormNode', () => {
     expectTypeOf<ArrayOfObjectsFormNode<any, any>>().toBeObject()
   })
-  test('ArrayOfObjectsFunctions', () => {
-    expectTypeOf<typeof ArrayOfObjectsFunctions>().toBeNever()
-  })
   test('ArrayOfObjectsInputProps', () => {
     expectTypeOf<ArrayOfObjectsInputProps<any, any>>().toBeObject()
-  })
-  test('ArrayOfObjectsItem', () => {
-    expectTypeOf<typeof ArrayOfObjectsItem>().toBeNever()
   })
   test('ArrayOfObjectsItemMember', () => {
     expectTypeOf<ArrayOfObjectsItemMember<any>>().toBeObject()
   })
   test('ArrayOfObjectsMember', () => {
     expectTypeOf<ArrayOfObjectsMember>().not.toBeNever()
-  })
-  test('ArrayOfOptionsInput', () => {
-    expectTypeOf<typeof ArrayOfOptionsInput>().toBeNever()
-  })
-  test('ArrayOfPrimitiveOptionsInput', () => {
-    expectTypeOf<typeof ArrayOfPrimitiveOptionsInput>().toBeNever()
   })
   test('ArrayOfPrimitivesComponents', () => {
     expectTypeOf<ArrayOfPrimitivesComponents>().toBeObject()
@@ -1083,17 +964,8 @@ describe('sanity', () => {
   test('ArrayOfPrimitivesFormNode', () => {
     expectTypeOf<ArrayOfPrimitivesFormNode<any, any>>().toBeObject()
   })
-  test('ArrayOfPrimitivesFunctions', () => {
-    expectTypeOf<typeof ArrayOfPrimitivesFunctions>().toBeNever()
-  })
-  test('ArrayOfPrimitivesInput', () => {
-    expectTypeOf<typeof ArrayOfPrimitivesInput>().toBeNever()
-  })
   test('ArrayOfPrimitivesInputProps', () => {
     expectTypeOf<ArrayOfPrimitivesInputProps<any, any>>().toBeObject()
-  })
-  test('ArrayOfPrimitivesItem', () => {
-    expectTypeOf<typeof ArrayOfPrimitivesItem>().toBeNever()
   })
   test('ArrayOfPrimitivesItemMember', () => {
     expectTypeOf<ArrayOfPrimitivesItemMember<any>>().toBeObject()
@@ -1203,9 +1075,6 @@ describe('sanity', () => {
   test('AutocompleteString', () => {
     expectTypeOf<AutocompleteString>().not.toBeNever()
   })
-  test('AvatarSkeleton', () => {
-    expectTypeOf<typeof AvatarSkeleton>().toBeNever()
-  })
   test('BaseActionDescription', () => {
     expectTypeOf<BaseActionDescription>().toBeObject()
   })
@@ -1260,15 +1129,6 @@ describe('sanity', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<BlockDefinition>().toBeObject()
   })
-  test('BlockEditor', () => {
-    expectTypeOf<typeof BlockEditor>().toBeNever()
-  })
-  test('BlockImagePreview', () => {
-    expectTypeOf<typeof BlockImagePreview>().toBeNever()
-  })
-  test('BlockImagePreviewProps', () => {
-    expectTypeOf<BlockImagePreviewProps>().toBeNever()
-  })
   test('BlockListDefinition', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<BlockListDefinition>().toBeObject()
@@ -1284,9 +1144,6 @@ describe('sanity', () => {
   })
   test('BlockOptions', () => {
     expectTypeOf<BlockOptions>().toBeObject()
-  })
-  test('BlockPreview', () => {
-    expectTypeOf<typeof BlockPreview>().toBeNever()
   })
   test('BlockProps', () => {
     expectTypeOf<BlockProps>().toBeObject()
@@ -1320,9 +1177,6 @@ describe('sanity', () => {
   test('BooleanFormNode', () => {
     expectTypeOf<BooleanFormNode<any>>().not.toBeNever()
   })
-  test('BooleanInput', () => {
-    expectTypeOf<typeof BooleanInput>().toBeNever()
-  })
   test('BooleanInputProps', () => {
     expectTypeOf<BooleanInputProps<any>>().toBeObject()
   })
@@ -1344,26 +1198,11 @@ describe('sanity', () => {
   test('CanvasNotificationPayload', () => {
     expectTypeOf<CanvasNotificationPayload>().toBeObject()
   })
-  test('ChangeIndicator', () => {
-    expectTypeOf<typeof ChangeIndicator>().toBeNever()
-  })
-  test('ChangeIndicatorProps', () => {
-    expectTypeOf<ChangeIndicatorProps>().toBeNever()
-  })
-  test('ChangeList', () => {
-    expectTypeOf<typeof ChangeList>().toBeNever()
-  })
-  test('ChangeListProps', () => {
-    expectTypeOf<ChangeListProps>().toBeNever()
-  })
   test('Chunk', () => {
     expectTypeOf<Chunk>().not.toBeNever()
   })
   test('ChunkType', () => {
     expectTypeOf<ChunkType>().not.toBeNever()
-  })
-  test('CircularProgress', () => {
-    expectTypeOf<typeof CircularProgress>().toBeNever()
   })
   test('CollapseOptions', () => {
     expectTypeOf<CollapseOptions>().toBeObject()
@@ -1515,12 +1354,6 @@ describe('sanity', () => {
   test('CommittedEvent', () => {
     expectTypeOf<CommittedEvent>().toBeObject()
   })
-  test('CompactPreview', () => {
-    expectTypeOf<typeof CompactPreview>().toBeNever()
-  })
-  test('CompactPreviewProps', () => {
-    expectTypeOf<CompactPreviewProps>().toBeNever()
-  })
   test('ComplexElementProps', () => {
     expectTypeOf<ComplexElementProps>().toBeObject()
   })
@@ -1553,9 +1386,6 @@ describe('sanity', () => {
   })
   test('CopyPasteContextType', () => {
     expectTypeOf<CopyPasteContextType>().toBeObject()
-  })
-  test('CopyPasteProvider', () => {
-    expectTypeOf<typeof CopyPasteProvider>().toBeNever()
   })
   test('createConfig', () => {
     expectTypeOf<typeof createConfig>().toBeFunction()
@@ -1594,9 +1424,6 @@ describe('sanity', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<CrossDatasetReferenceDefinition>().toBeObject()
   })
-  test('CrossDatasetReferenceInput', () => {
-    expectTypeOf<typeof CrossDatasetReferenceInput>().toBeNever()
-  })
   test('CrossDatasetReferenceInputProps', () => {
     expectTypeOf<CrossDatasetReferenceInputProps>().not.toBeNever()
   })
@@ -1631,9 +1458,6 @@ describe('sanity', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<DateDefinition>().toBeObject()
   })
-  test('DateInput', () => {
-    expectTypeOf<typeof DateInput>().toBeNever()
-  })
   test('DateInputProps', () => {
     expectTypeOf<DateInputProps>().not.toBeNever()
   })
@@ -1650,9 +1474,6 @@ describe('sanity', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<DatetimeDefinition>().toBeObject()
   })
-  test('DateTimeInput', () => {
-    expectTypeOf<typeof DateTimeInput>().toBeNever()
-  })
   test('DateTimeInputProps', () => {
     expectTypeOf<DateTimeInputProps>().not.toBeNever()
   })
@@ -1668,29 +1489,8 @@ describe('sanity', () => {
   test('DecorationMember', () => {
     expectTypeOf<DecorationMember>().toBeObject()
   })
-  test('DEFAULT_ANNOTATIONS', () => {
-    expectTypeOf<typeof DEFAULT_ANNOTATIONS>().toBeNever()
-  })
-  test('DEFAULT_BLOCK_STYLES', () => {
-    expectTypeOf<typeof DEFAULT_BLOCK_STYLES>().toBeNever()
-  })
-  test('DEFAULT_DECORATORS', () => {
-    expectTypeOf<typeof DEFAULT_DECORATORS>().toBeNever()
-  })
-  test('DEFAULT_LIST_TYPES', () => {
-    expectTypeOf<typeof DEFAULT_LIST_TYPES>().toBeNever()
-  })
-  test('DEFAULT_STUDIO_CLIENT_OPTIONS', () => {
-    expectTypeOf<typeof DEFAULT_STUDIO_CLIENT_OPTIONS>().toBeNever()
-  })
   test('DefaultPluginsWorkspaceOptions', () => {
     expectTypeOf<DefaultPluginsWorkspaceOptions>().not.toBeNever()
-  })
-  test('DefaultPreview', () => {
-    expectTypeOf<typeof DefaultPreview>().toBeNever()
-  })
-  test('DefaultPreviewProps', () => {
-    expectTypeOf<DefaultPreviewProps>().toBeNever()
   })
   test('defineArrayMember', () => {
     expectTypeOf<typeof defineArrayMember>().toBeFunction()
@@ -1758,35 +1558,8 @@ describe('sanity', () => {
   test('DeprecationConfiguration', () => {
     expectTypeOf<DeprecationConfiguration>().toBeObject()
   })
-  test('DetailPreview', () => {
-    expectTypeOf<typeof DetailPreview>().toBeNever()
-  })
-  test('DetailPreviewProps', () => {
-    expectTypeOf<DetailPreviewProps>().toBeNever()
-  })
-  test('DiffCard', () => {
-    expectTypeOf<typeof DiffCard>().toBeNever()
-  })
-  test('DiffCardProps', () => {
-    expectTypeOf<DiffCardProps>().toBeNever()
-  })
-  test('DiffFromTo', () => {
-    expectTypeOf<typeof DiffFromTo>().toBeNever()
-  })
-  test('DiffFromToProps', () => {
-    expectTypeOf<DiffFromToProps>().toBeNever()
-  })
   test('diffMatchPatch', () => {
     expectTypeOf<typeof diffMatchPatch>().toBeFunction()
-  })
-  test('DiffTooltip', () => {
-    expectTypeOf<typeof DiffTooltip>().toBeNever()
-  })
-  test('DiffTooltipProps', () => {
-    expectTypeOf<DiffTooltipProps>().toBeNever()
-  })
-  test('DiffTooltipWithAnnotationsProps', () => {
-    expectTypeOf<DiffTooltipWithAnnotationsProps>().toBeNever()
   })
   test('DocumentActionComponent', () => {
     expectTypeOf<DocumentActionComponent>().toBeObject()
@@ -1942,12 +1715,6 @@ describe('sanity', () => {
   test('DocumentPluginOptions', () => {
     expectTypeOf<DocumentPluginOptions>().toBeObject()
   })
-  test('DocumentPreviewPresence', () => {
-    expectTypeOf<typeof DocumentPreviewPresence>().toBeNever()
-  })
-  test('DocumentPreviewPresenceProps', () => {
-    expectTypeOf<DocumentPreviewPresenceProps>().toBeNever()
-  })
   test('DocumentPreviewStore', () => {
     expectTypeOf<DocumentPreviewStore>().toBeObject()
   })
@@ -1965,12 +1732,6 @@ describe('sanity', () => {
   })
   test('DocumentStackAvailability', () => {
     expectTypeOf<DocumentStackAvailability>().toBeObject()
-  })
-  test('DocumentStatus', () => {
-    expectTypeOf<typeof DocumentStatus>().toBeNever()
-  })
-  test('DocumentStatusIndicator', () => {
-    expectTypeOf<typeof DocumentStatusIndicator>().toBeNever()
   })
   test('DocumentStore', () => {
     expectTypeOf<DocumentStore>().toBeObject()
@@ -1996,9 +1757,6 @@ describe('sanity', () => {
   test('DraftId', () => {
     expectTypeOf<DraftId>().not.toBeNever()
   })
-  test('DRAFTS_FOLDER', () => {
-    expectTypeOf<typeof DRAFTS_FOLDER>().toBeNever()
-  })
   test('DraftsModelDocument', () => {
     expectTypeOf<DraftsModelDocument<any>>().toBeObject()
   })
@@ -2023,9 +1781,6 @@ describe('sanity', () => {
   test('EditorChange', () => {
     expectTypeOf<EditorChange>().not.toBeNever()
   })
-  test('EditPortal', () => {
-    expectTypeOf<typeof EditPortal>().toBeNever()
-  })
   test('EditStateFor', () => {
     expectTypeOf<EditStateFor>().toBeObject()
   })
@@ -2035,9 +1790,6 @@ describe('sanity', () => {
   test('EmailDefinition', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<EmailDefinition>().toBeObject()
-  })
-  test('EmailInput', () => {
-    expectTypeOf<typeof EmailInput>().toBeNever()
   })
   test('EmailInputProps', () => {
     expectTypeOf<EmailInputProps>().not.toBeNever()
@@ -2050,9 +1802,6 @@ describe('sanity', () => {
   })
   test('EmptyProps', () => {
     expectTypeOf<EmptyProps>().toBeObject()
-  })
-  test('EnhancedObjectDialog', () => {
-    expectTypeOf<typeof EnhancedObjectDialog>().toBeNever()
   })
   test('EnumListProps', () => {
     expectTypeOf<EnumListProps<any>>().toBeObject()
@@ -2131,9 +1880,6 @@ describe('sanity', () => {
     // This export has 2 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
     expectTypeOf<FileDefinition>().toBeObject()
   })
-  test('FileInput', () => {
-    expectTypeOf<typeof FileInput>().toBeNever()
-  })
   test('FileInputProps', () => {
     expectTypeOf<FileInputProps>().not.toBeNever()
   })
@@ -2158,9 +1904,6 @@ describe('sanity', () => {
   test('FormattedDuration', () => {
     expectTypeOf<FormattedDuration>().toBeObject()
   })
-  test('FormBuilder', () => {
-    expectTypeOf<typeof FormBuilder>().toBeNever()
-  })
   test('FormBuilderContextValue', () => {
     expectTypeOf<FormBuilderContextValue>().toBeObject()
   })
@@ -2176,9 +1919,6 @@ describe('sanity', () => {
   test('FormBuilderProps', () => {
     expectTypeOf<FormBuilderProps>().toBeObject()
   })
-  test('FormCallbacksProvider', () => {
-    expectTypeOf<typeof FormCallbacksProvider>().toBeNever()
-  })
   test('FormComponents', () => {
     expectTypeOf<FormComponents>().toBeObject()
   })
@@ -2191,32 +1931,11 @@ describe('sanity', () => {
   test('FormDocumentValue', () => {
     expectTypeOf<FormDocumentValue>().toBeObject()
   })
-  test('FormField', () => {
-    expectTypeOf<typeof FormField>().toBeNever()
-  })
   test('FormFieldGroup', () => {
     expectTypeOf<FormFieldGroup>().toBeObject()
   })
-  test('FormFieldHeaderText', () => {
-    expectTypeOf<typeof FormFieldHeaderText>().toBeNever()
-  })
-  test('FormFieldHeaderTextProps', () => {
-    expectTypeOf<FormFieldHeaderTextProps>().toBeNever()
-  })
-  test('FormFieldProps', () => {
-    expectTypeOf<FormFieldProps>().toBeNever()
-  })
-  test('FormFieldValidationStatus', () => {
-    expectTypeOf<typeof FormFieldValidationStatus>().toBeNever()
-  })
-  test('FormFieldValidationStatusProps', () => {
-    expectTypeOf<FormFieldValidationStatusProps>().toBeNever()
-  })
   test('FormIncPatch', () => {
     expectTypeOf<FormIncPatch>().toBeObject()
-  })
-  test('FormInput', () => {
-    expectTypeOf<typeof FormInput>().toBeNever()
   })
   test('FormInsertPatch', () => {
     expectTypeOf<FormInsertPatch>().toBeObject()
@@ -2241,9 +1960,6 @@ describe('sanity', () => {
   })
   test('FormPatchOrigin', () => {
     expectTypeOf<FormPatchOrigin>().not.toBeNever()
-  })
-  test('FormProvider', () => {
-    expectTypeOf<typeof FormProvider>().toBeNever()
   })
   test('FormProviderProps', () => {
     expectTypeOf<FormProviderProps>().toBeObject()
@@ -2312,12 +2028,6 @@ describe('sanity', () => {
   test('HistoryStore', () => {
     expectTypeOf<HistoryStore>().toBeObject()
   })
-  test('Hotkeys', () => {
-    expectTypeOf<typeof Hotkeys>().toBeNever()
-  })
-  test('HotkeysProps', () => {
-    expectTypeOf<HotkeysProps>().toBeNever()
-  })
   test('HotspotOptions', () => {
     expectTypeOf<HotspotOptions>().toBeObject()
   })
@@ -2357,9 +2067,6 @@ describe('sanity', () => {
   })
   test('ImageHotspot', () => {
     expectTypeOf<ImageHotspot>().toBeObject()
-  })
-  test('ImageInput', () => {
-    expectTypeOf<typeof ImageInput>().toBeNever()
   })
   test('ImageInputProps', () => {
     expectTypeOf<ImageInputProps>().not.toBeNever()
@@ -2451,12 +2158,6 @@ describe('sanity', () => {
   test('InlineFieldDefinition', () => {
     expectTypeOf<InlineFieldDefinition>().not.toBeNever()
   })
-  test('InlinePreview', () => {
-    expectTypeOf<typeof InlinePreview>().toBeNever()
-  })
-  test('InlinePreviewProps', () => {
-    expectTypeOf<InlinePreviewProps>().toBeNever()
-  })
   test('InputOnSelectFileFunctionProps', () => {
     expectTypeOf<InputOnSelectFileFunctionProps>().toBeObject()
   })
@@ -2471,15 +2172,6 @@ describe('sanity', () => {
   })
   test('InsertPatch', () => {
     expectTypeOf<InsertPatch>().not.toBeNever()
-  })
-  test('InsufficientPermissionsMessage', () => {
-    expectTypeOf<typeof InsufficientPermissionsMessage>().toBeNever()
-  })
-  test('InsufficientPermissionsMessageProps', () => {
-    expectTypeOf<InsufficientPermissionsMessageProps>().toBeNever()
-  })
-  test('IntentButton', () => {
-    expectTypeOf<typeof IntentButton>().toBeNever()
   })
   test('IntrinsicArrayOfBase', () => {
     expectTypeOf<IntrinsicArrayOfBase>().not.toBeNever()
@@ -2547,18 +2239,6 @@ describe('sanity', () => {
   test('isBooleanSchemaType', () => {
     expectTypeOf<typeof isBooleanSchemaType>().toBeFunction()
   })
-  test('isCreateIfNotExistsMutation', () => {
-    expectTypeOf<typeof isCreateIfNotExistsMutation>().toBeFunction()
-  })
-  test('isCreateMutation', () => {
-    expectTypeOf<typeof isCreateMutation>().toBeFunction()
-  })
-  test('isCreateOrReplaceMutation', () => {
-    expectTypeOf<typeof isCreateOrReplaceMutation>().toBeFunction()
-  })
-  test('isCreateSquashedMutation', () => {
-    expectTypeOf<typeof isCreateSquashedMutation>().toBeFunction()
-  })
   test('isCrossDatasetReference', () => {
     expectTypeOf<typeof isCrossDatasetReference>().toBeFunction()
   })
@@ -2567,9 +2247,6 @@ describe('sanity', () => {
   })
   test('isDateTimeSchemaType', () => {
     expectTypeOf<typeof isDateTimeSchemaType>().toBeFunction()
-  })
-  test('isDeleteMutation', () => {
-    expectTypeOf<typeof isDeleteMutation>().toBeFunction()
   })
   test('isDeprecatedSchemaType', () => {
     expectTypeOf<typeof isDeprecatedSchemaType>().toBeFunction()
@@ -2592,18 +2269,6 @@ describe('sanity', () => {
   test('isImageSchemaType', () => {
     expectTypeOf<typeof isImageSchemaType>().toBeFunction()
   })
-  test('isIndexSegment', () => {
-    expectTypeOf<typeof isIndexSegment>().toBeFunction()
-  })
-  test('isIndexTuple', () => {
-    expectTypeOf<typeof isIndexTuple>().toBeFunction()
-  })
-  test('isKeyedObject', () => {
-    expectTypeOf<typeof isKeyedObject>().toBeFunction()
-  })
-  test('isKeySegment', () => {
-    expectTypeOf<typeof isKeySegment>().toBeFunction()
-  })
   test('isNumberInputProps', () => {
     expectTypeOf<typeof isNumberInputProps>().toBeFunction()
   })
@@ -2618,9 +2283,6 @@ describe('sanity', () => {
   })
   test('isObjectSchemaType', () => {
     expectTypeOf<typeof isObjectSchemaType>().toBeFunction()
-  })
-  test('isPatchMutation', () => {
-    expectTypeOf<typeof isPatchMutation>().toBeFunction()
   })
   test('isPortableTextListBlock', () => {
     expectTypeOf<typeof isPortableTextListBlock>().toBeFunction()
@@ -2646,9 +2308,6 @@ describe('sanity', () => {
   test('isSanityDocument', () => {
     expectTypeOf<typeof isSanityDocument>().toBeFunction()
   })
-  test('isSearchStrategy', () => {
-    expectTypeOf<typeof isSearchStrategy>().toBeFunction()
-  })
   test('isSlug', () => {
     expectTypeOf<typeof isSlug>().toBeFunction()
   })
@@ -2661,29 +2320,8 @@ describe('sanity', () => {
   test('isStringSchemaType', () => {
     expectTypeOf<typeof isStringSchemaType>().toBeFunction()
   })
-  test('isTitledListValue', () => {
-    expectTypeOf<typeof isTitledListValue>().toBeFunction()
-  })
   test('isTypedObject', () => {
     expectTypeOf<typeof isTypedObject>().toBeFunction()
-  })
-  test('isValidationError', () => {
-    expectTypeOf<typeof isValidationError>().toBeFunction()
-  })
-  test('isValidationErrorMarker', () => {
-    expectTypeOf<typeof isValidationErrorMarker>().toBeFunction()
-  })
-  test('isValidationInfo', () => {
-    expectTypeOf<typeof isValidationInfo>().toBeFunction()
-  })
-  test('isValidationInfoMarker', () => {
-    expectTypeOf<typeof isValidationInfoMarker>().toBeFunction()
-  })
-  test('isValidationWarning', () => {
-    expectTypeOf<typeof isValidationWarning>().toBeFunction()
-  })
-  test('isValidationWarningMarker', () => {
-    expectTypeOf<typeof isValidationWarningMarker>().toBeFunction()
   })
   test('ItemProps', () => {
     expectTypeOf<ItemProps>().not.toBeNever()
@@ -2702,9 +2340,6 @@ describe('sanity', () => {
   })
   test('LegacyThemeProps', () => {
     expectTypeOf<LegacyThemeProps>().toBeObject()
-  })
-  test('LinearProgress', () => {
-    expectTypeOf<typeof LinearProgress>().toBeNever()
   })
   test('ListenQueryOptions', () => {
     expectTypeOf<ListenQueryOptions>().toBeObject()
@@ -2775,9 +2410,6 @@ describe('sanity', () => {
   test('MaybePreview', () => {
     expectTypeOf<MaybePreview<any, any>>().not.toBeNever()
   })
-  test('MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME', () => {
-    expectTypeOf<typeof MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME>().toBeNever()
-  })
   test('MediaAssetTypes', () => {
     expectTypeOf<MediaAssetTypes>().not.toBeNever()
   })
@@ -2804,12 +2436,6 @@ describe('sanity', () => {
   })
   test('MediaLibraryOptions', () => {
     expectTypeOf<MediaLibraryOptions>().toBeObject()
-  })
-  test('MediaPreview', () => {
-    expectTypeOf<typeof MediaPreview>().toBeNever()
-  })
-  test('MediaPreviewProps', () => {
-    expectTypeOf<MediaPreviewProps>().toBeNever()
   })
   test('MediaValidationValue', () => {
     expectTypeOf<MediaValidationValue<any>>().toBeObject()
@@ -3314,12 +2940,6 @@ describe('sanity', () => {
   test('Role', () => {
     expectTypeOf<Role>().toBeObject()
   })
-  test('RovingFocusNavigationType', () => {
-    expectTypeOf<RovingFocusNavigationType>().toBeNever()
-  })
-  test('RovingFocusProps', () => {
-    expectTypeOf<RovingFocusProps>().toBeNever()
-  })
   test('Rule', () => {
     expectTypeOf<Rule>().toBeObject()
   })
@@ -3430,9 +3050,6 @@ describe('sanity', () => {
   })
   test('SearchOperatorType', () => {
     expectTypeOf<SearchOperatorType>().not.toBeNever()
-  })
-  test('searchStrategies', () => {
-    expectTypeOf<typeof searchStrategies>().not.toBeNever()
   })
   test('SearchStrategy', () => {
     expectTypeOf<SearchStrategy>().not.toBeNever()
@@ -3548,9 +3165,6 @@ describe('sanity', () => {
   })
   test('StaticLocaleResourceBundle', () => {
     expectTypeOf<StaticLocaleResourceBundle>().not.toBeNever()
-  })
-  test('StatusButtonProps', () => {
-    expectTypeOf<StatusButtonProps>().toBeNever()
   })
   test('StrictDefinition', () => {
     expectTypeOf<StrictDefinition>().not.toBeNever()
@@ -3713,9 +3327,6 @@ describe('sanity', () => {
   test('TypeAnnotationMismatchError', () => {
     expectTypeOf<TypeAnnotationMismatchError>().not.toBeNever()
   })
-  test('typed', () => {
-    expectTypeOf<typeof typed>().toBeFunction()
-  })
   test('TypedObject', () => {
     expectTypeOf<TypedObject>().toBeObject()
   })
@@ -3840,9 +3451,6 @@ describe('sanity', () => {
   })
   test('UserAttributeValue', () => {
     expectTypeOf<UserAttributeValue>().not.toBeNever()
-  })
-  test('UserAvatarProps', () => {
-    expectTypeOf<UserAvatarProps>().toBeNever()
   })
   test('useReferringDocuments', () => {
     expectTypeOf<typeof useReferringDocuments>().toBeFunction()

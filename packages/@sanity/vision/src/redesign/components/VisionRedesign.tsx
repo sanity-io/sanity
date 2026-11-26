@@ -4,6 +4,7 @@ import {
   Activity,
   type CSSProperties,
   memo,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -35,6 +36,7 @@ import {estimateVisionLayoutWidths, getVisionLayout} from '../util/visionLayout'
 import {AiCreditsUpsellProvider} from './AiCreditsUpsell'
 import {AiFeaturesProvider} from './AiFeaturesProvider'
 import {PANEL_HEADER_HEIGHT} from './CollapsiblePanel'
+import {OpenSavedQueriesAsTabs} from './OpenSavedQueriesAsTabs'
 import {TABS_AREA} from './panelTransitions'
 import {QueryTabLayoutProvider} from './queryTabLayout'
 import * as styles from './redesign.module.css'
@@ -151,7 +153,12 @@ export function VisionRedesign(props: VisionRedesignProps) {
   }, [tabCount, telemetry])
   const openDrawer = useSelector(actorRef, selectOpenDrawer)
   const experience = useMemo((): VisionExperience => ({layout}), [layout])
-  const savedQueries = useSavedQueries()
+  // Recorded before the list shows them, the queries saved or unshared here open no tabs
+  const recordSavedQuery = useCallback(
+    (key: string) => actorRef.send({type: 'savedQueries.open', queries: [{key, tab: null}]}),
+    [actorRef],
+  )
+  const savedQueries = useSavedQueries({onCreatePersonalQuery: recordSavedQuery})
   const [pendingEdits] = useState(createPendingEdits)
   const shownDrawer = useShownInSidebar(openDrawer, layout === 'mobile')
   const shownTabDrawer = toTabDrawer(shownDrawer)
@@ -214,6 +221,7 @@ export function VisionRedesign(props: VisionRedesignProps) {
                     </Flex>
                     <VisionDialogs />
                     <VisionUrlState tab={activeTab} />
+                    <OpenSavedQueriesAsTabs />
                     <VisionWebMcp tab={activeTab} />
                   </TooltipDelayGroupProvider>
                 </AiCreditsUpsellProvider>

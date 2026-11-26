@@ -3,7 +3,7 @@ import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {type Schema} from 'sanity'
-import {useSchema} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {useSchema} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 

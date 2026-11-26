@@ -1,5 +1,5 @@
 diff --git a/dist/index.js b/dist/index.js
-index 83373412f20dd5d82438874e867a751f0c023d88..578c98052f3df4023de17b790c1ed2d1cfb48603 100644
+index 83373412f20dd5d82438874e867a751f0c023d88..ff04558d195eb0c112d4348aceb115a9ef0c8c64 100644
 --- a/dist/index.js
 +++ b/dist/index.js
 @@ -1,8 +1,10 @@
@@ -11,7 +11,7 @@ index 83373412f20dd5d82438874e867a751f0c023d88..578c98052f3df4023de17b790c1ed2d1
 -import { DocumentInspectorHeader, DocumentPaneProvider, PaneRouterContext, useDocumentPane, usePaneRouter } from "sanity/structure";
 +import { useDocumentPane } from "sanity/structure";
 +import { DocumentInspectorHeader, DocumentPaneProvider, PaneRouterContext, usePaneRouter } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure";
-+import { MemberFieldError, ObjectInputMember, PatchEvent, PerspectiveProvider, PresenceOverlay, StatusButton, VirtualizerScrollInstanceProvider, createPatchChannel, fromMutationPatches, getDraftId, getPublishedId, getVersionFromId, getVersionId, isKeySegment, isRecord, isVersionId, pathToString, stringToPath, typed, useColorSchemeValue, useDocumentPresence, useDocumentStore, useEditState, useFormCallbacks, useSchema, useSyncState, useWorkspaceSchemaId, FormBuilder, FormCallbacksProvider, FormFieldHeaderText, FormInput } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver";
++import { MemberFieldError, ObjectInputMember, PatchEvent, PerspectiveProvider, PresenceOverlay, StatusButton, VirtualizerScrollInstanceProvider, createPatchChannel, fromMutationPatches, getDraftId, getPublishedId, getVersionFromId, getVersionId, isKeySegment, isRecord, isVersionId, pathToString, stringToPath, typed, useColorSchemeValue, useDocumentPresence, useDocumentStore, useEditState, useFormCallbacks, useSyncState, useWorkspaceSchemaId, FormBuilder, FormCallbacksProvider, FormFieldHeaderText, FormInput } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver"; import { useSchema } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1";
  import { createContext, isValidElement, useCallback, useContext, useEffect, useEffectEvent, useId, useMemo, useReducer, useRef, useState } from "react";
  import { Fragment, jsx, jsxs } from "react/jsx-runtime";
  import { useToast } from "@sanity/ui/toast";

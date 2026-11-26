@@ -94,6 +94,16 @@ describe('parseQueryUrl', () => {
     expect(parsed?.hasUnsupportedPerspective).toBe(true)
   })
 
+  it('reads previewDrafts, the old name of the drafts perspective, as drafts', () => {
+    const parsed = parseQueryUrl(
+      'https://abc123.api.sanity.io/v2021-10-21/data/query/production?query=*&perspective=previewDrafts',
+      datasets,
+    )
+    expect(parsed?.urlPerspective).toBe('drafts')
+    expect(parsed?.perspective).toBe('drafts')
+    expect(parsed?.hasUnsupportedPerspective).toBe(false)
+  })
+
   it('takes the whole text to be the URL, not a fragment of it', () => {
     const url = 'https://abc123.api.sanity.io/v2025-02-19/data/query/production?query=*'
     expect(parseQueryUrl(url, datasets)?.query).toBe('*')

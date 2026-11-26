@@ -112,6 +112,15 @@ export function getLegacyVisionStorageKey(projectId: string): string {
   return `${VISION_STORAGE_KEY_PREFIX}vista:${projectId}`
 }
 
+/**
+ * Where the classic tool keeps the query in its editor, with its params, dataset, API version and
+ * perspective. Read when no state is stored yet, so an upgrade from the classic tool keeps that
+ * query; left in place, since the classic tool still reads it on releases that have it.
+ */
+export function getClassicVisionStorageKey(projectId: string): string {
+  return `${VISION_STORAGE_KEY_PREFIX}${projectId}`
+}
+
 function readStoredState(storage: Storage, projectId: string): string | null {
   const key = getVisionStorageKey(projectId)
   const current = storage.getItem(key)
@@ -181,15 +190,18 @@ export function createInitialState(defaults: VisionStorageDefaults): VisionPersi
       hidden: [...DEFAULT_EXPORT_SNIPPET_SETTINGS.hidden],
     },
     functions: [],
+    openedSavedQueries: [],
   }
 }
 
 /**
- * The classic tool's `pinnedRelease` (and state saved before `global` existed) reads as `global`;
- * `null` is how the API default is stored (see `saveVisionState`)
+ * The classic tool's `pinnedRelease` (and state saved before `global` existed) reads as `global`,
+ * and its `previewDrafts`, the API's old name for `drafts`, as `drafts`; `null` is how the API
+ * default is stored (see `saveVisionState`)
  */
 function sanitizePerspective(value: unknown): VisionPerspective {
   if (value === 'pinnedRelease') return 'global'
+  if (value === 'previewDrafts') return 'drafts'
   if (value === null) return undefined
   return VISION_PERSPECTIVES.includes(value as VisionPerspective)
     ? (value as VisionPerspective)
@@ -411,9 +423,51 @@ function sanitizeFunctions(value: unknown): VisionSavedFunction[] {
   return functions
 }
 
+/** Unique keys; state saved before saved queries opened as tabs has none */
+function sanitizeOpenedSavedQueries(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return [...new Set(value.filter((key): key is string => typeof key === 'string'))]
+}
+
+/**
+ * A fresh state whose tab holds the query the classic tool last showed, with its params and
+ * request options, or the fresh state as it is when the classic tool left no query. The classic
+ * tool ran queries on the `raw` perspective until another one was picked, and its
+ * `pinnedRelease` reads as `global`.
+ */
+function seedFromClassicTool(
+  storage: Storage,
+  projectId: string,
+  initial: VisionPersistedState,
+  defaults: VisionStorageDefaults,
+): VisionPersistedState {
+  let classic: unknown
+  try {
+    classic = JSON.parse(storage.getItem(getClassicVisionStorageKey(projectId)) || 'null')
+  } catch {
+    return initial
+  }
+  if (!isPlainObject(classic) || typeof classic.query !== 'string' || !classic.query.trim()) {
+    return initial
+  }
+
+  const tab = createTab(initial.settings, {
+    id: initial.activeTabId,
+    query: classic.query,
+    rawParams: typeof classic.params === 'string' ? classic.params : DEFAULT_PARAMS,
+    options: sanitizeOptions(
+      {perspective: 'raw', ...classic},
+      createTabOptions(initial.settings),
+      defaults,
+    ),
+  })
+  return {...initial, tabs: [tab]}
+}
+
 /**
  * Loads the persisted state for a project, dropping anything that no longer validates (unknown
- * datasets, malformed tabs, ...). Returns a fresh state when nothing usable is stored.
+ * datasets, malformed tabs, ...). Returns a fresh state when nothing usable is stored; when
+ * nothing is stored at all, its tab holds the query the classic tool last showed.
  */
 export function loadVisionState(
   projectId: string,
@@ -427,7 +481,11 @@ export function loadVisionState(
 
   let stored: unknown
   try {
-    stored = JSON.parse(readStoredState(storage, projectId) || 'null')
+    const raw = readStoredState(storage, projectId)
+    if (raw === null) {
+      return seedFromClassicTool(storage, projectId, initial, defaults)
+    }
+    stored = JSON.parse(raw)
   } catch {
     return initial
   }
@@ -456,6 +514,7 @@ export function loadVisionState(
   const response = sanitizeResponseSettings(stored.response)
   const exportSnippets = sanitizeExportSnippetSettings(stored.exportSnippets)
   const functions = sanitizeFunctions(stored.functions)
+  const openedSavedQueries = sanitizeOpenedSavedQueries(stored.openedSavedQueries)
   if (tabs.length === 0) {
     return {
       ...initial,
@@ -468,6 +527,7 @@ export function loadVisionState(
       response,
       exportSnippets,
       functions,
+      openedSavedQueries,
     }
   }
 
@@ -489,6 +549,7 @@ export function loadVisionState(
     response,
     exportSnippets,
     functions,
+    openedSavedQueries,
   }
 }
 
