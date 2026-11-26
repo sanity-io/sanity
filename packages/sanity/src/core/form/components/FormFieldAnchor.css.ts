@@ -24,7 +24,10 @@ export const formFieldAnchor = css({
     // `data-gutter-label-anchored` marks such a child; the property is `formFieldLabelAnchorPath`,
     // spelled out so Panda can extract the rule.
     '&:has(> [data-gutter-label-anchored]:first-child)': {
-      positionAnchor: 'var(--form-field-label-anchor-path)',
+      // Falls back to the input's anchor when the gutter sets no label anchor (a form that compares
+      // nothing, or a mark rendered without the comparison context), so the mark never loses its
+      // anchor while it fades out.
+      positionAnchor: 'var(--form-field-label-anchor-path, var(--form-field-anchor-path))',
     },
   },
 })
