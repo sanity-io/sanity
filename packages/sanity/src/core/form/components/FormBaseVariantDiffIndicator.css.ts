@@ -20,21 +20,6 @@ export const chip = css({
 })
 
 /**
- * A glyph before a chip's name. The release avatar draws a block svg and trims it with an inline
- * negative margin, which leaves a margin box about as small as the glyph. This box centres that
- * margin box on the chip's text line. The chip used to fake the line position with a scale and a
- * vertical-align offset, and the dot rendered raised, like a superscript asterisk.
- */
-export const chipGlyph = css({
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flex: 'none',
-  width: '1em',
-  height: '1em',
-})
-
-/**
  * The mark's button, drawn as the bare icon it was before: no chrome, and a focus ring that follows the
  * icon so a keyboard user can see where focus is.
  */

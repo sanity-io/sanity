@@ -1,5 +1,5 @@
 import {AnimatePresence, motion} from 'motion/react'
-import {type ComponentType, type ReactNode, useContext} from 'react'
+import {type ComponentType, useContext} from 'react'
 import {BaseVariantComparisonContext} from 'sanity/_singletons'
 import {Flex, Text} from 'ui5'
 
