@@ -1806,14 +1806,14 @@ export interface BetaFeatures {
     v2?: boolean
   }
   /**
-   * Control whether the document group inventory is switched on.
+   * Control whether the preview of the new document group inventory is
+   * switched on.
    *
    * This is the new UI for managing and navigating versions and variants of
    * documents. It replaces the version chips that currently appear at the top
    * of the document editor.
    *
-   * It is on by default. Set `enabled` to `false` to switch it off. It stays on
-   * while `beta.variants.enabled` is true, because variants depend on it.
+   * It is switched on automatically when `beta.variants.enabled` is true.
    */
   documentGroupInventory?: {
     enabled?: boolean
