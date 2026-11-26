@@ -1,7 +1,7 @@
-import {Box, Button, Card, Heading, TextArea} from '@sanity/ui'
+import {Box, Button, Card, TextArea} from '@sanity/ui'
 import {lazy, Suspense, type SyntheticEvent, useCallback, useId, useRef, useState} from 'react'
 import {type StudioDiagnostics} from 'sanity'
-import {Text, Flex, VStack} from 'ui5'
+import {Heading, Text, Flex, VStack} from 'ui5'
 
 // Loaded on demand so the initial paste screen doesn't carry the sanity
 // package; the report and the parser share the same lazy chunk. Module-scope
@@ -70,7 +70,7 @@ export function App() {
             <form onSubmit={handleSubmit}>
               <VStack gap={4}>
                 <VStack gap={3}>
-                  <Heading as="h2" size={2}>
+                  <Heading as="h2" size={2} trim>
                     Paste diagnostics output
                   </Heading>
                   <Text muted size={1} as="div" trim={true}>
@@ -133,7 +133,7 @@ function ReportLoadingState() {
 function ViewerHeader() {
   return (
     <VStack gap={2}>
-      <Heading as="h1" size={3}>
+      <Heading as="h1" size={3} trim>
         Studio diagnostics viewer
       </Heading>
       <Text muted size={1} as="div" trim={true}>

@@ -3,6 +3,7 @@ import {vi} from 'vitest'
 
 import {type MutationPayload} from '../../src/core/store/document/buffered-doc/types'
 import {type IdPair} from '../../src/core/store/document/types'
+import {listenerGate} from '../../src/core/store/listenerGate/listenerGate'
 import {FakeContentLake} from './fakeContentLake'
 import {
   createStudioOperationsClient,
@@ -21,10 +22,16 @@ export type Step =
   | {client: string; do: 'rejectCommit'; statusCode: number}
   | {client: string; do: 'listener'; mode: 'auto' | 'hold'; latencyMs?: number}
   | {client: string; do: 'releaseEvents'; count?: number; order?: 'fifo' | 'reverse'}
+  | {client: string; do: 'snapshotFetches'; mode: 'auto' | 'hold'}
+  | {client: string; do: 'releaseSnapshotFetches'}
   | {client: string; do: 'dropEvent'}
   | {client: string; do: 'disconnect'}
   | {client: string; do: 'reconnect'; resume: boolean}
+  | {client: string; do: 'breakListener'}
+  | {client: string; do: 'restoreListener'}
+  | {client: string; do: 'failListener'}
   | {do: 'outside'; mutations: MutationPayload[]}
+  | {do: 'setDocumentVisibility'; visibility: DocumentVisibilityState}
   | {do: 'advance'; ms: number}
   | {do: 'settle'}
 
@@ -35,6 +42,8 @@ export interface SyncTestDefinition {
   initial: SanityDocument[]
   idPair: IdPair
   clients: string[]
+  /** Clients whose listener is down before they check the pair out */
+  listenersDown?: string[]
   steps: Step[]
 }
 
@@ -44,12 +53,17 @@ export interface World {
   idPair: IdPair
   advance: (ms: number) => Promise<void>
   settle: () => Promise<void>
+  /** Whether the listener gate lets listeners connect (`beta.releaseBackgroundListeners`) */
+  listenersActive: () => boolean
+  setDocumentVisibility: (visibility: DocumentVisibilityState) => void
   teardown: () => void
 }
 
 export interface RunOptions {
   schema?: Schema
   typeName?: string
+  /** `hidden` opens the clients in a background tab */
+  initialDocumentVisibility?: DocumentVisibilityState
 }
 
 let worldCounter = 0
@@ -60,6 +74,36 @@ const SETTLE_QUIET_ROUNDS = 2
 
 async function advanceTimers(ms: number): Promise<void> {
   await vi.advanceTimersByTimeAsync(ms)
+}
+
+/**
+ * Every client of a world runs on the same page, so hiding it hides them all, and they share the
+ * listener gate, which is enabled as with `beta.releaseBackgroundListeners`. While the page is
+ * visible, the gate lets every listener connect.
+ */
+function createDocumentVisibility(initialVisibility: DocumentVisibilityState) {
+  let visibility = initialVisibility
+  const visibilitySpy = vi
+    .spyOn(document, 'visibilityState', 'get')
+    .mockImplementation(() => visibility)
+  const releaseListenerGate = listenerGate.enable()
+  let listenersActive = true
+  const gateSubscription = listenerGate.active$.subscribe((active) => {
+    listenersActive = active
+  })
+
+  return {
+    setVisibility: (next: DocumentVisibilityState) => {
+      visibility = next
+      document.dispatchEvent(new Event('visibilitychange'))
+    },
+    listenersActive: () => listenersActive,
+    teardown: () => {
+      gateSubscription.unsubscribe()
+      releaseListenerGate()
+      visibilitySpy.mockRestore()
+    },
+  }
 }
 
 function createEngineClient(
@@ -80,9 +124,13 @@ export async function createWorld(
   options: RunOptions = {},
 ): Promise<World> {
   vi.useFakeTimers()
+  const documentVisibility = createDocumentVisibility(
+    options.initialDocumentVisibility ?? 'visible',
+  )
   worldCounter += 1
   const dataset = `sync-${worldCounter}`
   const lake = new FakeContentLake(definition.initial)
+  definition.listenersDown?.forEach((clientId) => lake.client(clientId).breakListener())
   const clients = Object.fromEntries(
     definition.clients.map((clientId) => [
       clientId,
@@ -117,6 +165,7 @@ export async function createWorld(
 
   function teardown(): void {
     Object.values(clients).forEach((client) => client.teardown())
+    documentVisibility.teardown()
     vi.useRealTimers()
   }
 
@@ -126,6 +175,8 @@ export async function createWorld(
     idPair: definition.idPair,
     advance: advanceTimers,
     settle,
+    listenersActive: documentVisibility.listenersActive,
+    setDocumentVisibility: documentVisibility.setVisibility,
     teardown,
   }
   // Listener welcome and snapshot fetch land on the first timer tick.
@@ -144,6 +195,10 @@ async function runStep(world: World, step: Step): Promise<void> {
   if (step.do === 'settle') return world.settle()
   if (step.do === 'outside') {
     world.lake.mutateFromOutside(step.mutations)
+    return world.advance(0)
+  }
+  if (step.do === 'setDocumentVisibility') {
+    world.setDocumentVisibility(step.visibility)
     return world.advance(0)
   }
   const client = world.clients[step.client]
@@ -174,6 +229,12 @@ async function runStep(world: World, step: Step): Promise<void> {
     case 'releaseEvents':
       controls.releaseHeldEvents({count: step.count, order: step.order})
       break
+    case 'snapshotFetches':
+      controls.snapshotFetches = {mode: step.mode}
+      break
+    case 'releaseSnapshotFetches':
+      controls.releaseSnapshotFetches()
+      break
     case 'dropEvent':
       controls.dropNextHeldEvent()
       break
@@ -182,6 +243,15 @@ async function runStep(world: World, step: Step): Promise<void> {
       break
     case 'reconnect':
       controls.reconnect({resume: step.resume})
+      break
+    case 'breakListener':
+      controls.breakListener()
+      break
+    case 'restoreListener':
+      controls.restoreListener()
+      break
+    case 'failListener':
+      controls.failListener()
       break
     default:
       throw new Error(`Unknown step ${JSON.stringify(step)}`)

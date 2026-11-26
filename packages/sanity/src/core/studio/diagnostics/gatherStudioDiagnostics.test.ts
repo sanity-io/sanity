@@ -1,9 +1,19 @@
-import {type ListenEvent, type SanityClient} from '@sanity/client'
+import {
+  createClient as createSanityClient,
+  type ListenEvent,
+  type SanityClient,
+} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
 import {Observable, of} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type ApiNetworkDiagnostic} from '../../network/isUsingLegacyHttp'
+import {
+  getListenerCounts,
+  openListener,
+  resolveListenerCountingFetch,
+  subscribeListenerCounts,
+} from '../../network/listenerCount'
 import {
   formatStudioDiagnostics,
   gatherStudioDiagnostics,
@@ -45,13 +55,63 @@ beforeEach(() => {
   )
 })
 
+const releaseListeners: Array<() => void> = []
+
 afterEach(() => {
+  releaseListeners.splice(0).forEach((release) => release())
   mocks.getApiNetworkDiagnostic.mockReset()
   vi.restoreAllMocks()
   vi.unstubAllGlobals()
 })
 
 describe('gatherStudioDiagnostics', () => {
+  it('reports the listeners open before its own probes run', async () => {
+    mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
+    releaseListeners.push(openListener(), openListener())
+    const {client} = createClient()
+
+    const diagnostics = await gatherStudioDiagnostics(createOptions(client))
+
+    expect(diagnostics.network.listeners?.open).toBe(2)
+    expect(diagnostics.network.listeners?.peak).toBeGreaterThanOrEqual(2)
+  })
+
+  it('does not count its own listen probes as listeners', async () => {
+    mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
+    const encoder = new TextEncoder()
+    vi.mocked(fetch).mockImplementation(async (_input, init) => {
+      if (new Headers(init?.headers).get('accept')?.includes('text/event-stream')) {
+        const body = new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.enqueue(encoder.encode('event: welcome\ndata: {"listenerName":"test"}\n\n'))
+          },
+        })
+        return new Response(body, {headers: {'content-type': 'text/event-stream'}})
+      }
+      return new Response(JSON.stringify({result: 1}), {
+        headers: {'content-type': 'application/json'},
+      })
+    })
+    const studioClient = createSanityClient({
+      apiVersion: '2025-02-19',
+      dataset: 'production',
+      projectId: 'project-id',
+      requestTagPrefix: 'sanity.studio',
+      resolveFetch: resolveListenerCountingFetch,
+      useCdn: false,
+    })
+    const peakBefore = getListenerCounts().peak
+    const onCountsChange = vi.fn()
+    const unsubscribe = subscribeListenerCounts(onCountsChange)
+
+    const diagnostics = await gatherStudioDiagnostics(createOptions(studioClient))
+    unsubscribe()
+
+    expect(diagnostics.network.listen.first).toMatchObject({status: 'success'})
+    expect(getListenerCounts().peak).toBe(peakBefore)
+    expect(onCountsChange).not.toHaveBeenCalled()
+  })
+
   it('gathers support-ready details and keeps the first listener open during the second', async () => {
     mocks.getApiNetworkDiagnostic.mockReturnValue(of(protocolDiagnostic))
     const {client, getMaximumActiveListeners} = createClient()

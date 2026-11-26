@@ -1,7 +1,6 @@
 import {Card} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {type CSSProperties} from 'react'
-import {Text, Flex, VStack} from 'ui5'
+import {Code, Text, Flex, VStack} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type DiffComponent} from '../../types'
@@ -33,7 +32,7 @@ export const JsonFieldDiff: DiffComponent = ({diff}) => {
   const from = diff.fromValue !== undefined && diff.fromValue !== null && (
     <DiffCard as="del" diff={diff} style={cardStyles}>
       <div className={codeWrapper}>
-        <Code language="json" size={1}>
+        <Code language="json" size={1} trim>
           {jsonify(diff.fromValue)}
         </Code>
       </div>
@@ -43,7 +42,7 @@ export const JsonFieldDiff: DiffComponent = ({diff}) => {
   const to = diff.toValue !== undefined && diff.toValue !== null && (
     <DiffCard as="ins" diff={diff} style={cardStyles}>
       <div className={codeWrapper}>
-        <Code language="json" size={1}>
+        <Code language="json" size={1} trim>
           {jsonify(diff.toValue)}
         </Code>
       </div>

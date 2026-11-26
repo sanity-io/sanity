@@ -1,9 +1,10 @@
 import {render, screen, waitFor} from '@testing-library/react'
 import {useLayoutEffect} from 'react'
+import {Subject} from 'rxjs'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
-import {type PathSyncChannel} from '../../types/pathSyncChannel'
+import {type PathSyncState} from '../../types/pathSyncChannel'
 import {DiffViewPane} from '../DiffViewPane'
 
 const portalBoundaryCapture = vi.hoisted(() => ({current: null as HTMLElement | null}))
@@ -32,7 +33,7 @@ describe('DiffViewPane portal boundary', () => {
         documentType="author"
         documentId="doc-1"
         scrollElement={null}
-        syncChannel={{} as PathSyncChannel}
+        syncChannel={new Subject<PathSyncState>()}
         compareDocument={{type: 'author', id: 'drafts.doc-1'}}
       />,
       {wrapper},

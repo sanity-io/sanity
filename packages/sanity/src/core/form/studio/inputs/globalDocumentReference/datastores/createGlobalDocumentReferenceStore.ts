@@ -1,4 +1,4 @@
-import {type SanityClient, type SanityDocument} from '@sanity/client'
+import {type ReconnectEvent, type SanityClient, type SanityDocument} from '@sanity/client'
 import {type GlobalDocumentReferenceSchemaType} from '@sanity/types'
 import uniq from 'lodash-es/uniq.js'
 import {type Observable, timer} from 'rxjs'
@@ -8,6 +8,7 @@ import {LISTENER_RESET_DELAY} from '../../../../../preview/constants'
 import {createPathObserver} from '../../../../../preview/createPathObserver'
 import {debounceCollect} from '../../../../../preview/utils/debounceCollect'
 import {shareReplayLatest} from '../../../../../preview/utils/shareReplayLatest'
+import {pauseWhileDocumentHidden} from '../../../../../store/listenerGate/listenerGate'
 import {type GlobalDocumentReferenceInfo} from '../../../../inputs/GlobalDocumentReferenceInput/types'
 import {getReferenceClient} from './getReferenceClient'
 import {createGetReferenceInfo} from './getReferenceInfo'
@@ -74,9 +75,13 @@ function createReferencedResource(client: SanityClient): ReferencedResource {
       },
     )
     .pipe(
+      // A paused listener's previews keep their last value, and the new connection's `welcome`
+      // fetches them again. `reconnect` replaces the replayed `welcome`, so a preview that
+      // subscribes while paused waits for the new connection.
+      pauseWhileDocumentHidden({onPause: (): ReconnectEvent => ({type: 'reconnect'})}),
       // Late subscribers need the `welcome` that already arrived to fetch their initial value
       shareReplayLatest({
-        predicate: (event) => event.type === 'welcome',
+        predicate: (event) => event.type === 'welcome' || event.type === 'reconnect',
         resetOnRefCountZero: () => timer(LISTENER_RESET_DELAY),
       }),
     )

@@ -179,6 +179,23 @@ describe('DocumentPanelHeader', () => {
 
   it('leaves the attribute off the collapsed pane header', async () => {
     mockUsePane.mockReturnValue({collapsed: true, isLast: false} as ReturnType<typeof usePane>)
+    // The header shows its title once the snapshots of the (new) document have loaded.
+    mockUseDocumentPane.mockReturnValue({
+      ...documentPaneValue(),
+      editState: {
+        id: 'doc-1',
+        type: 'test',
+        draft: null,
+        published: null,
+        version: null,
+        liveEdit: false,
+        liveEditSchemaType: false,
+        ready: true,
+        transactionSyncLock: null,
+        release: undefined,
+        scopeId: undefined,
+      },
+    })
 
     render(<DocumentPanelHeader menuItems={[]} />, {wrapper})
 

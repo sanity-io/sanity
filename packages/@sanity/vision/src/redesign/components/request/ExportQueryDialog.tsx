@@ -1,9 +1,8 @@
 import {CopyIcon} from '@sanity/icons/Copy'
 import {Button, Card, Dialog, Stack, Tab, TabList, TabPanel} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useMemo, useState} from 'react'
 import {useTranslation} from 'sanity'
-import {Text, Box, Flex} from 'ui5'
+import {Code, Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {encodedQuerySize, QUERY_URL_SIZE_LIMIT} from '../../../util/queryRequestMethod'
@@ -86,7 +85,7 @@ export function ExportQueryDialog({tab, request, resolved, onClose}: ExportQuery
               radius={2}
               tone="transparent"
             >
-              <Code language={active.language} size={1}>
+              <Code language={active.language} size={1} trim>
                 {active.code}
               </Code>
             </Card>

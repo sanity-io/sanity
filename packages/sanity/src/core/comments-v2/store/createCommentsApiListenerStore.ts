@@ -9,6 +9,7 @@ import {
 import {defer, type Observable} from 'rxjs'
 import {filter} from 'rxjs/operators'
 
+import {pauseWhileDocumentHidden} from '../../store/listenerGate/listenerGate'
 import {shareListenerEvents} from '../../store/sharedListener/shareListenerEvents'
 
 /**
@@ -85,6 +86,9 @@ export function createCommentsApiListenerStore({
       (event: ListenEvent<CollaborationCommentDocument>): event is CommentsApiListenerEvent =>
         event.type === 'welcome' || event.type === 'reconnect' || event.type === 'mutation',
     ),
+    // A paused listener reconnects like a dropped one: the comments refetch on its `welcome`,
+    // and a subscriber that arrives while it is paused waits for that `welcome`
+    pauseWhileDocumentHidden({onPause: (): ReconnectEvent => ({type: 'reconnect'})}),
     shareListenerEvents(),
   )
 

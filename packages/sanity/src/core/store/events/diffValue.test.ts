@@ -1,5 +1,5 @@
 import {type StringInput} from '@sanity/diff'
-import {incremental} from 'mendoza'
+import * as incremental from 'mendoza/incremental'
 import {describe, expect, it} from 'vitest'
 
 import {type Annotation, type ObjectDiff} from '../../field/types'

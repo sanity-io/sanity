@@ -15,6 +15,11 @@ This skill assumes a **side-by-side** setup:
 - **v5 alias** (usually `ui5`) — v5 installed under a package alias, e.g. `"ui5": "npm:@sanity/ui@alpha"` in `package.json`
 - Migrated components import from the alias; unmigrated ones still import from `@sanity/ui`
 
+Imports from a subpath entry count for its package: `@sanity/ui/code`, `@sanity/ui/tooltip`,
+`@sanity/ui/menu` and the other v4 subpath entries count as `@sanity/ui`, and `ui5/…` counts as
+the alias. Several v4 components are only importable from their subpath (`Code`, `Tooltip`,
+`Popover`), so an exact package match would report them as never used.
+
 Both can coexist during a gradual, per-component migration.
 
 ## When to use
@@ -116,14 +121,14 @@ If discover mode finds **no v5 imports**, report that and stop — do not attemp
 
 Example output columns:
 
-| Column                  | Meaning                                                       |
-| ----------------------- | ------------------------------------------------------------- |
-| **v5 imp**              | Files with a value import of this component from the v5 alias |
-| **leg imp**             | Files still importing from `@sanity/ui`                       |
-| **imp tot**             | Union of import files (both packages in one file counts once) |
-| **jsx mig / unm / tot** | `<LocalName>` instances via alias-resolved bindings           |
-| **jsx %**               | `jsx mig / jsx tot`                                           |
-| **sty mig / unm / tot** | `styled(LocalName)` at definition sites                       |
+| Column                  | Meaning                                                        |
+| ----------------------- | -------------------------------------------------------------- |
+| **v5 imp**              | Files with a value import of this component from the v5 alias  |
+| **leg imp**             | Files still importing from `@sanity/ui` or one of its subpaths |
+| **imp tot**             | Union of import files (both packages in one file counts once)  |
+| **jsx mig / unm / tot** | `<LocalName>` instances via alias-resolved bindings            |
+| **jsx %**               | `jsx mig / jsx tot`                                            |
+| **sty mig / unm / tot** | `styled(LocalName)` at definition sites                        |
 
 The **component list** comes from v5 imports (discover mode) or from `--component` flags. Discover mode omits components not yet on v5; `--component` always reports the named component(s).
 

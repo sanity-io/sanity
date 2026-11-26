@@ -1,10 +1,9 @@
 import {TrashIcon} from '@sanity/icons/Trash'
 import {Badge, Button, Card, Label, Stack} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {useMemo} from 'react'
 import {useTranslation} from 'sanity'
-import {Text, Box, Flex} from 'ui5'
+import {Code, Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VisionSavedFunction} from '../../store/types'
@@ -47,10 +46,14 @@ function FunctionPreview({signature, body}: {signature: string; body: string}) {
   return (
     <Stack gap={2}>
       <Box className={styles.previewCode}>
-        <Code size={1}>{signature}</Code>
+        <Code size={1} trim>
+          {signature}
+        </Code>
       </Box>
       <Box className={styles.previewCode}>
-        <Code size={0}>{body}</Code>
+        <Code size={0} trim>
+          {body}
+        </Code>
       </Box>
     </Stack>
   )
@@ -212,7 +215,9 @@ export function FunctionsTab(props: FunctionsTabProps) {
                   shortcut: EXTRACT_FUNCTION_SHORTCUT.keys.join('+'),
                 })}
               </Text>
-              <Code size={1}>{DECLARATION_EXAMPLE}</Code>
+              <Code size={1} trim>
+                {DECLARATION_EXAMPLE}
+              </Code>
             </Stack>
           ) : (
             declarations.map((declaration) => (

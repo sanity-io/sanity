@@ -1,3 +1,10 @@
+<!--
+This is a public repository, so everything in this PR is public.
+Describe the problem generically. Scrub customer and organization names, project IDs, dataset names, domains, people's names, customer-specific schema or field names, support case details, and internal system or architecture details.
+Leave out unreleased plans, long-term architecture direction, roadmap, company strategy, and other sensitive internal information.
+To give context, reference a ticket by its ID or link.
+-->
+
 ### Description
 
 <!--
