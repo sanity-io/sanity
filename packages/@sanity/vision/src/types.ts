@@ -13,15 +13,11 @@ export interface VisionProps {
  */
 export interface VisionBetaConfig {
   /**
-   * The redesigned Vision experience: query tabs, a collapsible sidebar with saved and shared
-   * queries, live refetching through sync tags, response details and export helpers.
+   * Has no effect: Vision always shows the classic tool.
+   *
+   * @deprecated Has no effect and can be removed from the config.
    */
   redesign?: {
-    /**
-     * When `true`, the classic tool shows a dismissible toast inviting users to try the redesign,
-     * and users who opt in get the redesigned tool (remembered per project in the browser). They
-     * can switch back from the redesigned tool's sidebar or settings. Defaults to `false`.
-     */
     enabled?: boolean
   }
 }
