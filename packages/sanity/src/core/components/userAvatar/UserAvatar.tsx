@@ -27,7 +27,8 @@ interface AvatarSkeletonProps {
 
 /**
  * A loading skeleton element representing a user avatar
- * @beta
+ * @internal
+ * @hidden
  */
 export const AvatarSkeleton = styled(Skeleton)<AvatarSkeletonProps>((props) => {
   const theme = getTheme_v2(props.theme)
@@ -40,8 +41,9 @@ export const AvatarSkeleton = styled(Skeleton)<AvatarSkeletonProps>((props) => {
 })
 
 /**
+ * @internal
  * @hidden
- * @beta */
+ */
 export interface UserAvatarProps {
   __unstable_hideInnerStroke?: AvatarProps['__unstable_hideInnerStroke']
   animateArrowFrom?: AvatarPosition
@@ -73,8 +75,9 @@ function nameToInitials(fullName: string) {
 }
 
 /**
+ * @internal
  * @hidden
- * @beta */
+ */
 export function UserAvatar(props: UserAvatarProps) {
   const {user, withTooltip, ...restProps} = props
   // Untyped callers still pass legacy string sizes, which neither `Avatar` nor the skeletons take

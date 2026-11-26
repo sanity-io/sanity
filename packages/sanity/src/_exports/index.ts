@@ -68,12 +68,6 @@ export {
   type PreviewProps,
 } from '../core/components/previews/types'
 export {
-  type RovingFocusNavigationType,
-  type RovingFocusProps,
-} from '../core/components/rovingFocus/types'
-export {type StatusButtonProps} from '../core/components/StatusButton'
-export {type UserAvatarProps} from '../core/components/userAvatar/UserAvatar'
-export {
   type AuthConfig,
   type AuthProvider,
   type LoginMethod,
