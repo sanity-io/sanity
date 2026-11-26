@@ -67,14 +67,21 @@ export type VisionTabInit = Partial<Omit<VisionTab, 'options'>> & {
   options?: Partial<VisionTabOptions>
 }
 
+/** A closed tab, which the Restore tabs drawer reopens as it was until it is purged */
+export interface VisionClosedTab {
+  tab: VisionTab
+  /** ISO timestamp for when the tab was closed */
+  closedAt: string
+}
+
 /** Defaults applied to tabs created with the "+" button */
 export type VisionSettings = VisionTabOptions
 
 /** The active tab's tools, which the tab renders into the drawer (see `TabDrawerSlot`) */
 export type VisionTabDrawer = 'delta' | 'mutate'
 
-/** What the sidebar opens next to it: the query lists, the active tab's tools and the settings */
-export type VisionDrawer = 'saved' | 'shared' | VisionTabDrawer | 'settings'
+/** What the sidebar opens next to it: the tab lists, the active tab's tools and the settings */
+export type VisionDrawer = 'closed-tabs' | 'shared' | VisionTabDrawer | 'settings'
 
 export type VisionDialog = 'shortcuts'
 
@@ -199,6 +206,8 @@ export interface VisionPersistedState {
   exportSnippets: VisionExportSnippetSettings
   /** The functions library, most recently saved first */
   functions: VisionSavedFunction[]
+  /** The tabs closed in this browser that the Restore tabs drawer lists, most recently closed first */
+  closedTabs: VisionClosedTab[]
   /**
    * The keys of the personal saved queries this browser has opened as tabs, or found a tab
    * already showing, so each opens once: a closed one stays closed on the next load

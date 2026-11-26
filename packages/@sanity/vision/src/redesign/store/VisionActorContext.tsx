@@ -49,8 +49,8 @@ export function useVisionExperience(): VisionExperience {
 /**
  * Edits still waiting in an editor debounce (params edits reach the machine debounced). The
  * mounted tab registers how to commit them, and an action that reads the tab from the machine
- * commits first, so it sees what the editors show: Run, Save and Export in the tab's menu, and
- * Save in the sidebar, which has no other way to reach the tab's debounce.
+ * commits first, so it sees what the editors show: Run, Export and Share in the tab's menu, and
+ * closing the tab from the tab strip, which has no other way to reach the tab's debounce.
  */
 export interface PendingEdits {
   /** Registers a commit for the mounted tab's pending edits; returns the unregister */

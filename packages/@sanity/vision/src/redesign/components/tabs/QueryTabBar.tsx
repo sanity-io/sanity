@@ -20,7 +20,12 @@ import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
 import {useOverlayScrollThumb} from '../../hooks/useOverlayScrollThumb'
 import {type VisionTab} from '../../store/types'
-import {useSavedQueriesApi, useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
+import {
+  usePendingEdits,
+  useSavedQueriesApi,
+  useVisionActor,
+  useVisionSelector,
+} from '../../store/VisionActorContext'
 import {findSharedQuery} from '../../util/savedQueryTab'
 import {deriveTabTitle} from '../../util/tabTitle'
 import * as styles from '../redesign.module.css'
@@ -239,6 +244,7 @@ function TabHandle(props: TabHandleProps) {
 export function QueryTabBar() {
   const {t} = useTranslation(visionLocaleNamespace)
   const actorRef = useVisionActor()
+  const pendingEdits = usePendingEdits()
   const telemetry = useVisionTelemetry()
   const tabs = useVisionSelector((snapshot) => snapshot.context.tabs)
   const activeTabId = useVisionSelector((snapshot) => snapshot.context.activeTabId)
@@ -283,6 +289,16 @@ export function QueryTabBar() {
       if (focusInStrip) requestAnimationFrame(() => focusTab(id))
     },
     [focusTab],
+  )
+
+  // Restore tabs keeps a closed tab as its editors showed it: a params edit still in the debounce
+  // is committed first, since the tab is gone by the time its editor unmounts and commits it
+  const closeTab = useCallback(
+    (id: string) => {
+      pendingEdits.commit()
+      actorRef.send({type: 'tab.close', id})
+    },
+    [actorRef, pendingEdits],
   )
 
   // Keep the active tab whole in the strip when it changes, a new tab included, clear of the new
@@ -335,7 +351,7 @@ export function QueryTabBar() {
       if (event.key === 'Delete') {
         event.preventDefault()
         setKeyboardDriven(true)
-        actorRef.send({type: 'tab.close', id: activeTabId})
+        closeTab(activeTabId)
         // The tab that takes over may be brand new (closing the last tab), so it only exists
         // after React has rendered the new snapshot
         const nextId = actorRef.getSnapshot().context.activeTabId
@@ -366,7 +382,7 @@ export function QueryTabBar() {
       if (next.id !== activeTabId) telemetry.tabUsed('select')
       focusTab(next.id)
     },
-    [activeTabId, actorRef, focusTab, reorder, tabs, telemetry],
+    [activeTabId, actorRef, closeTab, focusTab, reorder, tabs, telemetry],
   )
 
   useOverlayScrollThumb({
@@ -406,7 +422,7 @@ export function QueryTabBar() {
               onDragEnd={handleDragEnd}
               onKeyDown={handleTabKeyDown}
               onCancelRename={() => stopRenaming(tab.id)}
-              onClose={() => actorRef.send({type: 'tab.close', id: tab.id})}
+              onClose={() => closeTab(tab.id)}
               onRename={(title, changed) => {
                 stopRenaming(tab.id)
                 actorRef.send({type: 'tab.rename', id: tab.id, title})

@@ -232,8 +232,30 @@ export const VisionSharedTabsSearched = defineEvent({
   description: 'User searched the shared Vision tabs. The search text is not recorded.',
 })
 
+/**
+ * The Restore tabs drawer lists the tabs closed in the last 30 days
+ * - `restore`: reopened a closed tab
+ * - `delete`: deleted a closed tab for good
+ */
+export type VisionClosedTabAction = 'restore' | 'delete'
+
+export const VisionClosedTabUsed = defineEvent<{action: VisionClosedTabAction}>({
+  name: 'Vision Closed Tab Used',
+  version: 1,
+  description:
+    'User restored a closed Vision tab, or deleted it for good. ' +
+    'The query and its title are not recorded.',
+})
+
+/** User started filtering the Restore tabs drawer by text, once per search rather than per keystroke */
+export const VisionClosedTabsSearched = defineEvent({
+  name: 'Vision Closed Tabs Searched',
+  version: 1,
+  description: 'User searched the closed Vision tabs. The search text is not recorded.',
+})
+
 /** The sidebar's drawers */
-export type VisionDrawerId = 'saved' | 'shared' | 'delta' | 'mutate' | 'settings'
+export type VisionDrawerId = 'closed-tabs' | 'shared' | 'delta' | 'mutate' | 'settings'
 
 export const VisionDrawerOpened = defineEvent<{drawer: VisionDrawerId}>({
   name: 'Vision Drawer Opened',

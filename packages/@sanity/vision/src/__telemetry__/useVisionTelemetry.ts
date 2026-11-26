@@ -5,6 +5,8 @@ import {
   VisionAgentActionInvoked,
   VisionAiUpsellOpened,
   VisionApiVersionChanged,
+  VisionClosedTabsSearched,
+  VisionClosedTabUsed,
   VisionCopied,
   VisionDatasetChanged,
   VisionDeltaLoaded,
@@ -27,8 +29,6 @@ import {
   VisionQueryUrlPasted,
   VisionPanelTabOpened,
   VisionResultExported,
-  VisionSavedQueriesFiltered,
-  VisionSavedQueryUsed,
   VisionSettingsChanged,
   VisionSharedTabsSearched,
   VisionSharedTabUsed,
@@ -38,6 +38,7 @@ import {
   VisionTabUsed,
   VisionViewChanged,
   type VisionAgentAction,
+  type VisionClosedTabAction,
   type VisionCopyTarget,
   type VisionDialogId,
   type VisionDocumentOpenSource,
@@ -50,8 +51,6 @@ import {
   type VisionQueryRunData,
   type VisionPanelTab,
   type VisionResultExportFormat,
-  type VisionSavedQueriesFilter,
-  type VisionSavedQueryAction,
   type VisionSettingsSection,
   type VisionSharedTabAction,
   type VisionShortcut,
@@ -72,8 +71,6 @@ export interface VisionTelemetry {
   apiVersionChanged: (custom: boolean) => void
   copied: (target: VisionCopyTarget) => void
   queryUrlPasted: () => void
-  savedQuery: (action: VisionSavedQueryAction, shared: boolean) => void
-  savedQueriesFiltered: (filter: VisionSavedQueriesFilter) => void
   resultExported: (format: VisionResultExportFormat) => void
   documentOpened: (source: VisionDocumentOpenSource) => void
   panelToggled: (panel: VisionPanel, open: boolean) => void
@@ -81,6 +78,8 @@ export interface VisionTelemetry {
   tabUsed: (action: VisionTabAction) => void
   sharedTab: (action: VisionSharedTabAction) => void
   sharedTabsSearched: () => void
+  closedTab: (action: VisionClosedTabAction) => void
+  closedTabsSearched: () => void
   drawerOpened: (drawer: VisionDrawerId) => void
   dialogOpened: (dialog: VisionDialogId) => void
   panelTabOpened: (tab: VisionPanelTab) => void
@@ -117,8 +116,6 @@ export function useVisionTelemetry(): VisionTelemetry {
       apiVersionChanged: (custom) => telemetry.log(VisionApiVersionChanged, {custom}),
       copied: (target) => telemetry.log(VisionCopied, {target}),
       queryUrlPasted: () => telemetry.log(VisionQueryUrlPasted),
-      savedQuery: (action, shared) => telemetry.log(VisionSavedQueryUsed, {action, shared}),
-      savedQueriesFiltered: (filter) => telemetry.log(VisionSavedQueriesFiltered, {filter}),
       resultExported: (format) => telemetry.log(VisionResultExported, {format}),
       documentOpened: (source) => telemetry.log(VisionDocumentOpened, {source}),
       panelToggled: (panel, open) => telemetry.log(VisionPanelToggled, {panel, open}),
@@ -126,6 +123,8 @@ export function useVisionTelemetry(): VisionTelemetry {
       tabUsed: (action) => telemetry.log(VisionTabUsed, {action}),
       sharedTab: (action) => telemetry.log(VisionSharedTabUsed, {action}),
       sharedTabsSearched: () => telemetry.log(VisionSharedTabsSearched),
+      closedTab: (action) => telemetry.log(VisionClosedTabUsed, {action}),
+      closedTabsSearched: () => telemetry.log(VisionClosedTabsSearched),
       drawerOpened: (drawer) => telemetry.log(VisionDrawerOpened, {drawer}),
       dialogOpened: (dialog) => telemetry.log(VisionDialogOpened, {dialog}),
       panelTabOpened: (tab) => telemetry.log(VisionPanelTabOpened, {tab}),

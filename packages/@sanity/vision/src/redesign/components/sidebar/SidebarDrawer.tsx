@@ -12,6 +12,7 @@ import {useTabDrawerSlot, useVisionActor} from '../../store/VisionActorContext'
 import {cx} from '../../util/cx'
 import {DRAWER_ENTER, DRAWER_EXIT, SIDEBAR_PANE} from '../panelTransitions'
 import * as styles from '../redesign.module.css'
+import {ClosedTabsPanel} from './ClosedTabsPanel'
 import {QueryListPanel} from './QueryListPanel'
 import {SettingsPanel} from './SettingsPanel'
 import * as sidebarStyles from './sidebar.module.css'
@@ -21,8 +22,8 @@ const TRAP_FOCUS_PROPS = {style: {display: 'contents'}}
 
 function drawerTitle(drawer: VisionDrawer, t: TFunction<'vision'>): string {
   switch (drawer) {
-    case 'saved':
-      return t('vision.sidebar.saved-queries')
+    case 'closed-tabs':
+      return t('vision.sidebar.closed-tabs')
     case 'shared':
       return t('vision.sidebar.shared-queries')
     case 'delta':
@@ -67,9 +68,10 @@ function TabDrawerSlotElement({drawer}: {drawer: VisionDrawer}) {
 
 function DrawerContent({drawer}: {drawer: VisionDrawer}): ReactNode {
   switch (drawer) {
-    case 'saved':
+    case 'closed-tabs':
+      return <ClosedTabsPanel />
     case 'shared':
-      return <QueryListPanel key={drawer} mode={drawer} />
+      return <QueryListPanel />
     case 'settings':
       return (
         <Box
@@ -124,7 +126,7 @@ export function SidebarDrawer({drawer, overlay}: SidebarDrawerProps) {
         className={cx(
           styles.sidebarDrawer,
           sidebarStyles.drawer,
-          drawer !== 'saved' && drawer !== 'shared' && styles.sidebarDrawerWide,
+          drawer !== 'closed-tabs' && drawer !== 'shared' && styles.sidebarDrawerWide,
           overlay && styles.sidebarDrawerOverlay,
           overlay && sidebarStyles.drawerOverlay,
         )}
