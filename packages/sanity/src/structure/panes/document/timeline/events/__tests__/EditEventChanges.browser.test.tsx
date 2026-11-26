@@ -180,39 +180,37 @@ describe('EventTimelineItem changes', () => {
     expect(getComputedStyle(scroller).maxHeight).not.toBe('none')
   })
 
-  it('shows additions on a green background and removals on a red one', async () => {
+  it('colors each change with its author, and tells who made it when hovering it', async () => {
     const {changes$} = renderItem(EDIT_EVENT)
 
     await userEvent.hover(page.getByTestId('timeline-item-button'))
+    const annotation = {author: 'doug', timestamp: TIMESTAMP}
     changes$.next({
       loading: false,
       error: null,
       diff: diffInput(
-        wrap({name: 'Ada Lovelace'}, null),
-        wrap({name: 'Ada', role: 'developer'}, null),
+        wrap({name: 'Ada'}, annotation),
+        wrap({name: 'Ada Lovelace'}, annotation),
       ) as ObjectDiff,
     })
     const changes = page.getByTestId('edit-event-changes')
-    await expect.element(changes.getByText('Role', {exact: true})).toBeVisible()
+    await expect.element(changes.getByText('Name', {exact: true})).toBeVisible()
 
-    const removed = changes.element().querySelector('del')!
     const added = changes.element().querySelector('ins')!
-    expect(removed.textContent).toBe(' Lovelace')
-    expect(added.textContent).toBe('developer')
-    const removedCard = removed.closest('[data-ui="diff-card"]')!
-    const addedCard = added.closest('[data-ui="diff-card"]')!
-    expect(getComputedStyle(removedCard).backgroundColor).toBe(
-      resolvedColor(removedCard, '--card-badge-critical-bg-color'),
-    )
-    expect(getComputedStyle(removed).color).toBe(
-      resolvedColor(removedCard, '--card-badge-critical-fg-color'),
-    )
-    expect(getComputedStyle(addedCard).backgroundColor).toBe(
-      resolvedColor(addedCard, '--card-badge-positive-bg-color'),
-    )
-    expect(getComputedStyle(added).color).toBe(
-      resolvedColor(addedCard, '--card-badge-positive-fg-color'),
-    )
+    expect(added.textContent).toBe(' Lovelace')
+    const card = added.closest<HTMLElement>('[data-ui="diff-card"]')!
+    await userEvent.hover(card)
+    const label = page.getByText('Added', {exact: true})
+    await expect.element(label).toBeVisible()
+    const tooltip = page.elementLocator(label.element().closest('[data-ui="Tooltip"]')!)
+    const author = tooltip.getByText('Doug', {exact: true})
+    await expect.element(author).toBeVisible()
+    // The changes stay open under the author's tooltip.
+    await expect.element(changes).toBeVisible()
+    // The card has the color of its author, the one of the author's pill in the tooltip.
+    const pill = author.element().closest<HTMLElement>('[style*="background-color"]')!
+    expect(getComputedStyle(card).backgroundColor).toBe(getComputedStyle(pill).backgroundColor)
+    expect(getComputedStyle(card).backgroundColor).not.toBe(resolvedColor(card, '--card-bg-color'))
   })
 
   it('shows the contributors of an edit once, as the avatars of the row', async () => {

@@ -12,7 +12,6 @@ import {Box, Flex, Text} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
-import {editEventChanges} from './EditEventChanges.css'
 import {useEditEventChanges} from './useEditEventChanges'
 
 function PassThroughFieldWrapper(props: {
@@ -24,8 +23,8 @@ function PassThroughFieldWrapper(props: {
 }
 
 /**
- * What an edit event changed, condensed: the diff of its transactions, without who made each
- * change and without revert actions.
+ * What an edit event changed, condensed: the diff of its transactions, with who made each change
+ * but without revert actions.
  */
 export function EditEventChanges({event}: {event: EditDocumentVersionEvent}) {
   const {documentId, schemaType, value} = useDocumentPane()
@@ -72,7 +71,7 @@ export function EditEventChanges({event}: {event: EditDocumentVersionEvent}) {
   }
   return (
     <DocumentChangeContext.Provider value={documentContext}>
-      <Box className={editEventChanges} data-testid="edit-event-changes">
+      <Box data-testid="edit-event-changes">
         <ChangeList diff={diff} schemaType={schemaType} />
       </Box>
     </DocumentChangeContext.Provider>

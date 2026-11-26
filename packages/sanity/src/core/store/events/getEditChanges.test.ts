@@ -1,29 +1,66 @@
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {collectEmissions} from './__fixtures__/collect.fixture'
-import {DRAFT_ID, minutesAfterBase} from './__fixtures__/events.fixture'
+import {BASE_TIME, DRAFT_ID, minutesAfterBase} from './__fixtures__/events.fixture'
 import {createMockClient, createTranslogFetchStub} from './__fixtures__/mockClient'
-import {editTransaction} from './__fixtures__/transactions.fixture'
+import {editTransaction, type TranslogEntry} from './__fixtures__/transactions.fixture'
 import {clearDocumentRevisionCache} from './getDocumentAtRevision'
 import {clearDocumentTransactionsCache} from './getDocumentTransactions'
 import {createEditChanges} from './getEditChanges'
 
-const tx1 = editTransaction({
+/** The mendoza patch that sets fields of a document: `[17, value, key]` for each. */
+function setFields(fields: Record<string, unknown>): unknown[] {
+  return Object.entries(fields).flatMap(([key, value]) => [17, value, key])
+}
+
+/**
+ * An edit that sets fields of the document with the mendoza patches the translog records, so each
+ * change is attributed to the transaction that made it.
+ */
+function fieldsTransaction({
+  id,
+  author,
+  timestamp,
+  apply,
+  revert,
+}: {
+  id: string
+  author: string
+  timestamp: string
+  apply: Record<string, unknown>
+  revert: Record<string, unknown>
+}): TranslogEntry {
+  return {
+    ...editTransaction({id, author, timestamp}),
+    effects: {[DRAFT_ID]: {apply: setFields(apply), revert: setFields(revert)}},
+  }
+}
+
+const tx1 = fieldsTransaction({
   id: 'tx-1',
+  author: 'ada',
   timestamp: minutesAfterBase(1),
-  before: {_id: DRAFT_ID, name: 'Ada', role: 'developer'},
-  after: {_id: DRAFT_ID, name: 'Ada Lovelace', role: 'developer'},
+  apply: {name: 'Ada Lovelace', _updatedAt: minutesAfterBase(1)},
+  revert: {name: 'Ada', _updatedAt: BASE_TIME},
 })
-const tx2 = editTransaction({
+const tx2 = fieldsTransaction({
   id: 'tx-2',
+  author: 'grace',
   timestamp: minutesAfterBase(2),
-  before: {_id: DRAFT_ID, name: 'Ada Lovelace', role: 'developer'},
-  after: {_id: DRAFT_ID, name: 'Ada Lovelace', role: 'designer'},
+  apply: {role: 'designer', _updatedAt: minutesAfterBase(2)},
+  revert: {role: 'developer', _updatedAt: minutesAfterBase(1)},
+})
+const tx3 = fieldsTransaction({
+  id: 'tx-3',
+  author: 'grace',
+  timestamp: minutesAfterBase(3),
+  apply: {_updatedAt: minutesAfterBase(3)},
+  revert: {_updatedAt: minutesAfterBase(2)},
 })
 
 /** The translog as the API serves it: a range includes its `fromTransaction`. */
 function stubTranslog() {
-  const translog = [tx1, tx2]
+  const translog = [tx1, tx2, tx3]
   const stub = createTranslogFetchStub((url) => {
     const params = new URL(url).searchParams
     const from = translog.findIndex((entry) => entry.id === params.get('fromTransaction'))
@@ -49,9 +86,15 @@ const AT_TX_2 = {
   _id: DRAFT_ID,
   _type: 'author',
   _rev: 'tx-2',
+  _createdAt: BASE_TIME,
+  _updatedAt: minutesAfterBase(2),
   name: 'Ada Lovelace',
   role: 'designer',
 }
+const AT_TX_3 = {...AT_TX_2, _rev: 'tx-3', _updatedAt: minutesAfterBase(3)}
+
+const ADA_AT_TX_1 = {author: 'ada', timestamp: minutesAfterBase(1)}
+const GRACE_AT_TX_2 = {author: 'grace', timestamp: minutesAfterBase(2)}
 
 describe('createEditChanges', () => {
   beforeEach(() => {
@@ -63,7 +106,7 @@ describe('createEditChanges', () => {
     vi.unstubAllGlobals()
   })
 
-  it('diffs the document before the first transaction with the one after the last, without annotations', async () => {
+  it('diffs the document before the first transaction with the one after the last, attributing each change', async () => {
     const translog = stubTranslog()
     const {getEditChanges} = setup({'tx-2': AT_TX_2})
 
@@ -80,14 +123,16 @@ describe('createEditChanges', () => {
       action: 'changed',
       fromValue: 'Ada',
       toValue: 'Ada Lovelace',
-      annotation: null,
+      annotation: ADA_AT_TX_1,
     })
     expect(diff?.fields.role).toMatchObject({
       action: 'changed',
       fromValue: 'developer',
       toValue: 'designer',
-      annotation: null,
+      annotation: GRACE_AT_TX_2,
     })
+    // The system fields the transactions touched aren't changes of the document.
+    expect(Object.keys(diff?.fields ?? {}).toSorted()).toEqual(['name', 'role'])
     // The first transaction is fetched on its own, the translog leaves it out of a range.
     expect(translog.calls.map((url) => new URL(url).searchParams.toString())).toEqual([
       expect.stringContaining('fromTransaction=tx-1&toTransaction=tx-1'),
@@ -107,7 +152,43 @@ describe('createEditChanges', () => {
 
     const {diff} = values.at(-1)!
     expect(diff?.fields.name).toMatchObject({action: 'unchanged'})
-    expect(diff?.fields.role).toMatchObject({fromValue: 'developer', toValue: 'designer'})
+    expect(diff?.fields.role).toMatchObject({
+      fromValue: 'developer',
+      toValue: 'designer',
+      annotation: GRACE_AT_TX_2,
+    })
+  })
+
+  it('has no changes for a transaction that only touched system fields', async () => {
+    stubTranslog()
+    const {getEditChanges} = setup({'tx-3': AT_TX_3})
+
+    const {values, subscription} = collectEmissions(
+      getEditChanges({fromRevisionId: 'tx-3', toRevisionId: 'tx-3'}),
+    )
+    await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
+    subscription.unsubscribe()
+
+    const {diff, error} = values.at(-1)!
+    expect(error).toBeNull()
+    expect(diff).toMatchObject({action: 'unchanged', isChanged: false})
+  })
+
+  it('emits an error when the transactions of the range are missing', async () => {
+    vi.stubGlobal('fetch', createTranslogFetchStub(() => []).fetch)
+    const {getEditChanges} = setup({'tx-2': AT_TX_2})
+
+    const {values, subscription} = collectEmissions(
+      getEditChanges({fromRevisionId: 'tx-1', toRevisionId: 'tx-2'}),
+    )
+    await vi.waitFor(() => expect(values.at(-1)?.loading).toBe(false))
+    subscription.unsubscribe()
+
+    expect(values.at(-1)).toEqual({
+      loading: false,
+      diff: null,
+      error: new Error('Missing transactions for revision tx-1'),
+    })
   })
 
   it('emits an error when the document at the last revision is missing', async () => {
@@ -163,12 +244,14 @@ describe('createEditChanges', () => {
     expect(first.values[0].diff?.fields.name).toMatchObject({
       fromValue: 'Ada',
       toValue: 'Ada Lovelace',
+      annotation: ADA_AT_TX_1,
     })
     expect(first.values[0].diff?.fields.role).toMatchObject({action: 'unchanged'})
     expect(last.values).toHaveLength(1)
     expect(last.values[0].diff?.fields.role).toMatchObject({
       fromValue: 'developer',
       toValue: 'designer',
+      annotation: GRACE_AT_TX_2,
     })
   })
 

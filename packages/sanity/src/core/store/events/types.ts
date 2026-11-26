@@ -508,7 +508,7 @@ export interface EventsStore {
   }>
   /**
    * What the edit transactions from `fromRevisionId` to `toRevisionId` (both included) changed,
-   * without attribution.
+   * attributed to the transaction that made each change.
    */
   getEditChanges: (range: {fromRevisionId: string; toRevisionId: string}) => Observable<{
     diff: ObjectDiff | null

@@ -5,7 +5,7 @@ import {type ObjectDiff} from '../../field/types'
 import {diffValue, type EventMeta} from './diffValue'
 import {type DocumentGroupEvent, isEditDocumentVersionEvent} from './types'
 
-function omitRev(document: SanityDocument): Omit<SanityDocument, '_rev'> {
+function omitRev(document: Partial<SanityDocument>): Omit<Partial<SanityDocument>, '_rev'> {
   const {_rev, ...doc} = document
   return doc
 }
@@ -35,7 +35,7 @@ export function calculateDiff({
   transactions,
   events = [],
 }: {
-  initialDoc: SanityDocument
+  initialDoc: Partial<SanityDocument>
   finalDoc?: SanityDocument
   transactions: TransactionLogEventWithEffects[]
   events: DocumentGroupEvent[]

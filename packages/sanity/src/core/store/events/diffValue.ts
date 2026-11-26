@@ -250,9 +250,9 @@ export function diffValue({
 }: {
   transactions: TransactionLogEventWithEffects[]
   fromValue: incremental.Value<EventMeta>
-  fromRaw: Omit<SanityDocument, '_rev'>
+  fromRaw: Omit<Partial<SanityDocument>, '_rev'>
   toValue: incremental.Value<EventMeta>
-  toRaw: Omit<SanityDocument, '_rev'>
+  toRaw: Omit<Partial<SanityDocument>, '_rev'>
 }) {
   const fromInput = wrapValue<EventMeta>(fromValue, fromRaw, {
     fromValue(value) {
