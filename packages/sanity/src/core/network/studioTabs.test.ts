@@ -49,12 +49,20 @@ describe('parseStudioTabLock', () => {
       scope: 'api.sanity.io',
       tabId: 'tab-1',
       count: 4,
+      isStalled: false,
     })
     expect(parseStudioTabLock('sanity-listener-tab:api.sanity.io:tab-1:4:stalled')).toEqual({
       scope: 'api.sanity.io',
       tabId: 'tab-1',
       count: 4,
+      isStalled: false,
     })
+  })
+
+  it('reads the stalled flag', async () => {
+    const {parseStudioTabLock} = await import('./studioTabs')
+
+    expect(parseStudioTabLock('sanity-listener-tab:api.sanity.io:tab-1:4:s')?.isStalled).toBe(true)
   })
 
   it('round-trips a scope that contains a port', async () => {
@@ -64,6 +72,7 @@ describe('parseStudioTabLock', () => {
       scope: 'localhost:3900',
       tabId: 'tab-1',
       count: 2,
+      isStalled: false,
     })
   })
 
@@ -113,11 +122,19 @@ describe('studio tab lock', () => {
     expect(studioTabs.getPeakStudioTabCount()).toBe(1)
   })
 
+  it('exposes the tracked scope only while tracking', () => {
+    expect(studioTabs.getTrackedStudioTabScope()).toBeUndefined()
+    const stop = studioTabs.startTrackingStudioTabs(SCOPE)
+    expect(studioTabs.getTrackedStudioTabScope()).toBe(SCOPE)
+    stop()
+    expect(studioTabs.getTrackedStudioTabScope()).toBeUndefined()
+  })
+
   it('republishes once, with the latest count, after changes settle for 250ms', async () => {
     studioTabs.startTrackingStudioTabs(SCOPE)
     await vi.runAllTimersAsync()
 
-    const releases = [1, 2, 3, 4, 5].map(() => listenerCount.openListener())
+    const releases = [1, 2, 3, 4, 5].map(() => listenerCount.openListener(SCOPE))
     releases[0]()
     await vi.advanceTimersByTimeAsync(249)
     expect(fakeLocks.requested).toHaveLength(1)
@@ -136,7 +153,7 @@ describe('studio tab lock', () => {
     const lockName = (count: number) =>
       `sanity-listener-tab:${SCOPE}:${studioTabs.getStudioTabId()}:${count}`
 
-    listenerCount.openListener()
+    listenerCount.openListener(SCOPE)
     await vi.runAllTimersAsync()
 
     expect(fakeLocks.events).toEqual([
@@ -153,7 +170,7 @@ describe('studio tab lock', () => {
     studioTabs.startTrackingStudioTabs(SCOPE)
     await vi.runAllTimersAsync()
 
-    listenerCount.openListener()
+    listenerCount.openListener(SCOPE)
     await vi.runAllTimersAsync()
 
     expect(fakeLocks.held).toEqual([
@@ -170,11 +187,11 @@ describe('studio tab lock', () => {
     vi.spyOn(fakeLocks.locks, 'request').mockRejectedValueOnce(
       new DOMException('The document is not fully active', 'InvalidStateError'),
     )
-    listenerCount.openListener()
+    listenerCount.openListener(SCOPE)
     await vi.runAllTimersAsync()
     expect(fakeLocks.held).toEqual([lockName(0)])
 
-    listenerCount.openListener()
+    listenerCount.openListener(SCOPE)
     await vi.runAllTimersAsync()
     expect(fakeLocks.held).toEqual([lockName(2)])
   })
@@ -183,7 +200,7 @@ describe('studio tab lock', () => {
     studioTabs.startTrackingStudioTabs(SCOPE)
     await vi.runAllTimersAsync()
 
-    const releases = Array.from({length: 11}, () => listenerCount.openListener())
+    const releases = Array.from({length: 11}, () => listenerCount.openListener(SCOPE))
     await releases.reduce(async (previous, release) => {
       await previous
       release()
@@ -197,7 +214,7 @@ describe('studio tab lock', () => {
     studioTabs.startTrackingStudioTabs(SCOPE)
     await vi.runAllTimersAsync()
 
-    listenerCount.openListener()()
+    listenerCount.openListener(SCOPE)()
     await vi.runAllTimersAsync()
 
     expect(fakeLocks.requested).toHaveLength(1)
@@ -222,7 +239,7 @@ describe('studio tab lock', () => {
     await vi.runAllTimersAsync()
 
     stop()
-    listenerCount.openListener()
+    listenerCount.openListener(SCOPE)
     await vi.runAllTimersAsync()
 
     expect(fakeLocks.held).toEqual([])
@@ -234,7 +251,7 @@ describe('studio tab lock', () => {
     const stop = studioTabs.startTrackingStudioTabs(SCOPE)
     await vi.runAllTimersAsync()
 
-    listenerCount.openListener()
+    listenerCount.openListener(SCOPE)
     vi.advanceTimersByTime(250)
     stop()
     await vi.runAllTimersAsync()
@@ -289,5 +306,36 @@ describe('studio tab lock', () => {
 
     expect(withoutLocks.getPeakStudioTabCount()).toBeUndefined()
     expect(fakeLocks.requested).toEqual([])
+  })
+
+  it('swaps to a lock name ending in :s when flagged stalled, taking it before releasing the old one', async () => {
+    studioTabs.startTrackingStudioTabs(SCOPE)
+    await vi.runAllTimersAsync()
+    const lockName = (isStalled: boolean) =>
+      `sanity-listener-tab:${SCOPE}:${studioTabs.getStudioTabId()}:0${isStalled ? ':s' : ''}`
+
+    studioTabs.setStalled(true)
+    await vi.runAllTimersAsync()
+    expect(fakeLocks.events).toEqual([
+      `acquired ${lockName(false)}`,
+      `acquired ${lockName(true)}`,
+      `released ${lockName(false)}`,
+    ])
+
+    studioTabs.setStalled(false)
+    await vi.runAllTimersAsync()
+    expect(fakeLocks.held).toEqual([lockName(false)])
+  })
+
+  it('takes no lock when flagged stalled before tracking, then publishes the first lock already stalled', async () => {
+    studioTabs.setStalled(true)
+    await vi.runAllTimersAsync()
+    expect(fakeLocks.requested).toEqual([])
+
+    studioTabs.startTrackingStudioTabs(SCOPE)
+    await vi.runAllTimersAsync()
+    expect(fakeLocks.held).toEqual([
+      `sanity-listener-tab:${SCOPE}:${studioTabs.getStudioTabId()}:0:s`,
+    ])
   })
 })
