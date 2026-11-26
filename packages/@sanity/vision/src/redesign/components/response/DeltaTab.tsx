@@ -4,6 +4,7 @@ import {useCallback, useEffect, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex, Grid} from 'ui5'
 
+import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type QueryRequest} from '../../store/types'
 import {
@@ -159,6 +160,7 @@ export interface DeltaTabProps {
  */
 export function DeltaTab({delta, request}: DeltaTabProps) {
   const {t} = useTranslation(visionLocaleNamespace)
+  const telemetry = useVisionTelemetry()
   const {state} = delta
   const query = request?.query.trim() ? request.query : ''
   // The params by value, so a new object with the same params does not evaluate again
@@ -218,6 +220,11 @@ export function DeltaTab({delta, request}: DeltaTabProps) {
     readDocumentValue(state.afterText),
   )
   const client = request?.client
+  const load = () => {
+    if (!client) return
+    telemetry.deltaLoaded()
+    void delta.load(client, state.documentId)
+  }
   const formatTime = new Intl.DateTimeFormat(undefined, {dateStyle: 'medium', timeStyle: 'medium'})
   const revisionOptions = (state.revisions ?? []).map((revision) => (
     <option key={revision.id} value={revision.id}>
@@ -253,7 +260,7 @@ export function DeltaTab({delta, request}: DeltaTabProps) {
               fontSize={1}
               onChange={(event) => delta.setDocumentId(event.currentTarget.value)}
               onKeyDown={(event) => {
-                if (event.key === 'Enter' && client) void delta.load(client, state.documentId)
+                if (event.key === 'Enter') load()
               }}
               padding={2}
               value={state.documentId}
@@ -266,7 +273,7 @@ export function DeltaTab({delta, request}: DeltaTabProps) {
           fontSize={1}
           loading={state.loading}
           mode="ghost"
-          onClick={() => client && void delta.load(client, state.documentId)}
+          onClick={load}
           padding={2}
           text={t('vision.delta.load')}
         />

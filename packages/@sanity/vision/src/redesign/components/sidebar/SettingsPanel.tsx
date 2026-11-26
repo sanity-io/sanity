@@ -3,10 +3,11 @@ import {TrashIcon} from '@sanity/icons/Trash'
 import {Button, Card, Select, Stack, TextArea} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {dequal} from 'dequal/lite'
-import {type ChangeEvent, useCallback, useState} from 'react'
+import {type ChangeEvent, useCallback, useRef, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
+import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
 import {validateApiVersion} from '../../../util/validateApiVersion'
 import {AI_FEATURE_KEYS, type AiFeature, useConfiguredAiFeatures} from '../../aiFeatures'
@@ -27,6 +28,7 @@ import {
 } from '../request/OptionFields'
 import {SwitchField} from '../SwitchField'
 import {ExportSnippetsSettings} from './ExportSnippetsSettings'
+import {useSettingsUpdate} from './useSettingsUpdate'
 
 /** One field path per line (commas work too), each once */
 function parseFieldList(text: string): string[] {
@@ -42,14 +44,17 @@ function parseFieldList(text: string): string[] {
 
 function HiddenDiffFieldsSetting() {
   const {t} = useTranslation(visionLocaleNamespace)
-  const actorRef = useVisionActor()
+  const updateSetting = useSettingsUpdate()
+  const telemetry = useVisionTelemetry()
+  // The fields when the list was focused: typing is recorded once, when the list loses focus
+  const fieldsOnFocus = useRef<string[] | null>(null)
   const hiddenFields = useVisionSelector((snapshot) => snapshot.context.historyDiff.hiddenFields)
   // The text as typed, for as long as it lists the stored fields: a new line being started or a
   // path being typed would otherwise be tidied away under the caret
   const [draft, setDraft] = useState<{text: string; fields: string[]}>()
   const text = draft && dequal(draft.fields, hiddenFields) ? draft.text : hiddenFields.join('\n')
-  const update = (fields: string[]) =>
-    actorRef.send({type: 'historyDiff.update', settings: {hiddenFields: fields}})
+  const update = (fields: string[], options?: {record?: boolean}) =>
+    updateSetting({type: 'historyDiff.update', settings: {hiddenFields: fields}}, options)
 
   return (
     <Stack gap={3}>
@@ -71,11 +76,20 @@ function HiddenDiffFieldsSetting() {
         data-testid="vision-settings-hidden-diff-fields"
         fontSize={1}
         id="vision-settings-hidden-diff-fields"
+        onBlur={() => {
+          if (fieldsOnFocus.current && !dequal(fieldsOnFocus.current, hiddenFields)) {
+            telemetry.settingsChanged('history-diff')
+          }
+          fieldsOnFocus.current = null
+        }}
         onChange={(event) => {
           const next = event.currentTarget.value
           const fields = parseFieldList(next)
           setDraft({text: next, fields})
-          update(fields)
+          update(fields, {record: false})
+        }}
+        onFocus={() => {
+          fieldsOnFocus.current = hiddenFields
         }}
         rows={4}
         value={text}
@@ -125,7 +139,7 @@ const AI_FEATURE_TEXT = {
  */
 function AiSettings() {
   const {t} = useTranslation(visionLocaleNamespace)
-  const actorRef = useVisionActor()
+  const updateSetting = useSettingsUpdate()
   const configured = useConfiguredAiFeatures()
   const settings = useVisionSelector((snapshot) => snapshot.context.ai)
   const features = AI_FEATURE_KEYS.filter((feature) => configured[feature])
@@ -144,7 +158,7 @@ function AiSettings() {
         </Stack>
         <SwitchField
           checked={settings.enabled}
-          onChange={(enabled) => actorRef.send({type: 'ai.update', settings: {enabled}})}
+          onChange={(enabled) => updateSetting({type: 'ai.update', settings: {enabled}})}
           testId="vision-settings-ai-enabled"
           title={t('vision.settings.ai.enabled')}
         />
@@ -155,7 +169,7 @@ function AiSettings() {
             disabled={!settings.enabled}
             key={feature}
             onChange={(checked) =>
-              actorRef.send({type: 'ai.update', settings: {[feature]: checked}})
+              updateSetting({type: 'ai.update', settings: {[feature]: checked}})
             }
             testId={`vision-settings-ai-${feature}`}
             title={t(AI_FEATURE_TEXT[feature].title)}
@@ -172,7 +186,7 @@ function AiSettings() {
  */
 function SourceMapSettings() {
   const {t} = useTranslation(visionLocaleNamespace)
-  const actorRef = useVisionActor()
+  const updateSetting = useSettingsUpdate()
   const includeSourceMap = useVisionSelector(
     (snapshot) => snapshot.context.settings.includeSourceMap,
   )
@@ -190,7 +204,7 @@ function SourceMapSettings() {
           checked={sourceMapEnabled}
           description={t('vision.settings.source-map.enabled.description')}
           onChange={(enabled) =>
-            actorRef.send({type: 'response.update', settings: {sourceMapEnabled: enabled}})
+            updateSetting({type: 'response.update', settings: {sourceMapEnabled: enabled}})
           }
           testId="vision-settings-source-map-enabled"
           title={t('vision.settings.source-map.enabled')}
@@ -201,7 +215,7 @@ function SourceMapSettings() {
               checked={includeSourceMap}
               description={t('vision.options.include-source-map.description')}
               onChange={(checked) =>
-                actorRef.send({type: 'settings.update', settings: {includeSourceMap: checked}})
+                updateSetting({type: 'settings.update', settings: {includeSourceMap: checked}})
               }
               testId="vision-settings-include-source-map"
               title={t('vision.options.include-source-map')}
@@ -224,7 +238,7 @@ function SourceMapSettings() {
                 fontSize={1}
                 id="vision-settings-source-map-format"
                 onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-                  actorRef.send({
+                  updateSetting({
                     type: 'response.update',
                     settings: {
                       resultSourceMap:
@@ -255,6 +269,8 @@ export function SettingsPanel() {
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
   const actorRef = useVisionActor()
+  const updateSetting = useSettingsUpdate()
+  const telemetry = useVisionTelemetry()
   const {switchToClassic} = useVisionExperience()
   const {clearQueries} = useSavedQueriesApi()
   const datasets = useVisionSelector(selectDatasets)
@@ -270,10 +286,10 @@ export function SettingsPanel() {
     (apiVersion: string) => {
       setApiVersionDraft(apiVersion)
       if (validateApiVersion(apiVersion)) {
-        actorRef.send({type: 'settings.update', settings: {apiVersion}})
+        updateSetting({type: 'settings.update', settings: {apiVersion}})
       }
     },
-    [actorRef],
+    [updateSetting],
   )
 
   const handleClearStorage = useCallback(async () => {
@@ -291,6 +307,7 @@ export function SettingsPanel() {
       return
     }
     actorRef.send({type: 'storage.clear'})
+    telemetry.settingsChanged('storage-cleared')
     toast.push({
       closable: true,
       status: 'success',
@@ -298,7 +315,7 @@ export function SettingsPanel() {
     })
     // Clearing storage also ends the redesigned experience, which unmounts this panel
     switchToClassic()
-  }, [actorRef, clearQueries, switchToClassic, t, toast])
+  }, [actorRef, clearQueries, switchToClassic, t, telemetry, toast])
 
   return (
     <Box data-testid="vision-settings" padding={4}>
@@ -312,7 +329,7 @@ export function SettingsPanel() {
           datasets={datasets}
           id="vision-settings-dataset"
           mode={settings.datasetMode}
-          onChange={(dataset) => actorRef.send({type: 'settings.update', settings: dataset})}
+          onChange={(dataset) => updateSetting({type: 'settings.update', settings: dataset})}
           workspaceDataset={workspaceDataset}
         />
 
@@ -326,20 +343,20 @@ export function SettingsPanel() {
         <PerspectiveSelect
           id="vision-settings-perspective"
           onChange={(perspective) =>
-            actorRef.send({type: 'settings.update', settings: {perspective}})
+            updateSetting({type: 'settings.update', settings: {perspective}})
           }
           value={settings.perspective}
         />
 
         <VariantSelect
           id="vision-settings-variant"
-          onChange={(variant) => actorRef.send({type: 'settings.update', settings: {variant}})}
+          onChange={(variant) => updateSetting({type: 'settings.update', settings: {variant}})}
           value={settings.variant}
         />
 
         <UseCdnField
           checked={settings.useCdn}
-          onChange={(useCdn) => actorRef.send({type: 'settings.update', settings: {useCdn}})}
+          onChange={(useCdn) => updateSetting({type: 'settings.update', settings: {useCdn}})}
           testId="vision-settings-use-cdn"
         />
 
@@ -352,7 +369,7 @@ export function SettingsPanel() {
               checked={editorSettings.autoFormatOnResize}
               description={t('vision.settings.editor.auto-format-on-resize.description')}
               onChange={(autoFormatOnResize) =>
-                actorRef.send({type: 'editor.update', settings: {autoFormatOnResize}})
+                updateSetting({type: 'editor.update', settings: {autoFormatOnResize}})
               }
               testId="vision-settings-auto-format-on-resize"
               title={t('vision.settings.editor.auto-format-on-resize')}
@@ -369,7 +386,7 @@ export function SettingsPanel() {
               checked={responseSettings.resolveSyncTags}
               description={t('vision.settings.response.resolve-sync-tags.description')}
               onChange={(resolveSyncTags) =>
-                actorRef.send({type: 'response.update', settings: {resolveSyncTags}})
+                updateSetting({type: 'response.update', settings: {resolveSyncTags}})
               }
               testId="vision-settings-resolve-sync-tags"
               title={t('vision.settings.response.resolve-sync-tags')}
@@ -399,7 +416,7 @@ export function SettingsPanel() {
                 data-testid="vision-settings-classic"
                 icon={RestoreIcon}
                 mode="ghost"
-                onClick={switchToClassic}
+                onClick={() => switchToClassic('settings')}
                 text={t('vision.redesign.switch-to-classic')}
               />
             </Flex>

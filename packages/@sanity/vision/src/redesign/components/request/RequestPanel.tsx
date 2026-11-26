@@ -18,11 +18,11 @@ import {useSchema} from 'sanity/_dangerously_use_private_internals_that_do_not_f
 import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 
+import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {groqExtensions} from '../../../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
 import {type Params} from '../../../components/VisionGui'
 import {visionLocaleNamespace} from '../../../i18n'
-import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {useAiFeatures} from '../../aiFeatures'
 import {useCanFormatQuery} from '../../hooks/useCanFormatQuery'
 import {useContentSize} from '../../hooks/useContentSize'
@@ -215,6 +215,10 @@ export function RequestPanel(props: RequestPanelProps) {
         paramValue: t('vision.schema.editor.param-value'),
         paramNotSet: t('vision.schema.editor.param-not-set'),
         onApplySuggestion: () => telemetry.lintUsed('fix'),
+        onExtractFunction: (via) => {
+          if (via === 'shortcut') telemetry.shortcutUsed('extract-function')
+          telemetry.functionUsed('extract')
+        },
       }),
     [t, telemetry],
   )
@@ -302,8 +306,11 @@ export function RequestPanel(props: RequestPanelProps) {
   const paramsJsonTabId = tabElementId('vision-params-view-json')
   const paramsFormTabId = tabElementId('vision-params-view-form')
   const setParamsView = useCallback(
-    (view: VisionParamsView) => actorRef.send({type: 'params.view', view}),
-    [actorRef],
+    (view: VisionParamsView) => {
+      if (view !== paramsView) telemetry.viewChanged('params', view)
+      actorRef.send({type: 'params.view', view})
+    },
+    [actorRef, paramsView, telemetry],
   )
   const saveFunction = useCallback(
     (fn: VisionSavedFunction) => actorRef.send({type: 'functions.save', fn}),

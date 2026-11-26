@@ -2,6 +2,7 @@ import {useToast} from '@sanity/ui/toast'
 import {useCallback} from 'react'
 import {useTranslation} from 'sanity/i18n'
 
+import {useVisionTelemetry} from '../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../i18n'
 import {type VisionTab} from '../store/types'
 import {usePendingEdits, useSavedQueriesApi, useVisionActor} from '../store/VisionActorContext'
@@ -25,6 +26,7 @@ export function useSaveCurrentQuery(
   const actorRef = useVisionActor()
   const pendingEdits = usePendingEdits()
   const {queries, saveQuery, saving} = useSavedQueriesApi()
+  const telemetry = useVisionTelemetry()
 
   const saveCurrent = useCallback(async () => {
     pendingEdits.commit()
@@ -48,6 +50,7 @@ export function useSaveCurrentQuery(
         savedAt: new Date().toISOString(),
         title: latest.title || deriveTabTitle(latest.query) || t('label.untitled-query'),
       })
+      telemetry.savedQuery('save', false)
       toast.push({closable: true, status: 'success', title: t('save-query.success')})
     } catch (err) {
       toast.push({
@@ -57,7 +60,7 @@ export function useSaveCurrentQuery(
         description: err instanceof Error ? err.message : String(err),
       })
     }
-  }, [actorRef, buildRequest, pendingEdits, queries, saveQuery, t, tab, toast])
+  }, [actorRef, buildRequest, pendingEdits, queries, saveQuery, t, tab, telemetry, toast])
 
   return {saveCurrent, canSave: Boolean(request) && !saving}
 }

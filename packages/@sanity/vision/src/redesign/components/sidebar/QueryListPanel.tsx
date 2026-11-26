@@ -19,6 +19,7 @@ import {
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
+import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {type QueryConfig} from '../../../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type ParsedQueryUrl, parseQueryUrl} from '../../../util/parseQueryUrl'
@@ -52,6 +53,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
   const actorRef = useVisionActor()
+  const telemetry = useVisionTelemetry()
   const activeTab = useVisionSelector(selectActiveTab)
   const tabs = useVisionSelector((snapshot) => snapshot.context.tabs)
   const datasets = useVisionSelector(selectDatasets)
@@ -156,6 +158,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
   const openInNewTab = useCallback(
     ({query, parsed}: QueryListItem) => {
       if (!parsed) return
+      telemetry.savedQuery('open-in-new-tab', Boolean(query.shared))
       const existing = findTabShowing(parsed)
       if (existing) {
         actorRef.send({type: 'tab.select', id: existing.id})
@@ -164,16 +167,17 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
         warnAboutUnrepresentable(parsed)
       }
     },
-    [actorRef, findTabShowing, warnAboutUnrepresentable],
+    [actorRef, findTabShowing, telemetry, warnAboutUnrepresentable],
   )
 
   const loadIntoCurrentTab = useCallback(
     ({query, parsed}: QueryListItem) => {
       if (!parsed) return
+      telemetry.savedQuery('load', Boolean(query.shared))
       actorRef.send({type: 'tab.load', id: activeTab.id, tab: savedQueryToTabInit(query, parsed)})
       warnAboutUnrepresentable(parsed)
     },
-    [actorRef, activeTab.id, warnAboutUnrepresentable],
+    [actorRef, activeTab.id, telemetry, warnAboutUnrepresentable],
   )
 
   // Enter and Escape unmount the rename field while it has focus; a blur delivered on the way
@@ -201,11 +205,12 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
       if (!title || title === query.title) return
       try {
         await updateQuery({...query, title})
+        telemetry.savedQuery('rename', Boolean(query.shared))
       } catch (err) {
         reportError(err)
       }
     },
-    [editingTitle, reportError, updateQuery],
+    [editingTitle, reportError, telemetry, updateQuery],
   )
 
   const handleConfirmShare = useCallback(async () => {
@@ -214,22 +219,24 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
     setShareCandidate(null)
     try {
       await shareQuery(candidate._key)
+      telemetry.savedQuery('share', true)
       toast.push({closable: true, status: 'success', title: t('save-query.shared-success')})
     } catch (err) {
       reportError(err)
     }
-  }, [reportError, shareCandidate, shareQuery, t, toast])
+  }, [reportError, shareCandidate, shareQuery, t, telemetry, toast])
 
   const handleUnshare = useCallback(
     async (query: QueryConfig) => {
       try {
         await unshareQuery(query._key)
+        telemetry.savedQuery('unshare', false)
         toast.push({closable: true, status: 'success', title: t('save-query.unshared-success')})
       } catch (err) {
         reportError(err)
       }
     },
-    [reportError, t, toast, unshareQuery],
+    [reportError, t, telemetry, toast, unshareQuery],
   )
 
   const emptyText = search.trim()
@@ -245,7 +252,11 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
           <TextInput
             fontSize={1}
             icon={SearchIcon}
-            onChange={(event) => setSearch(event.currentTarget.value)}
+            onChange={(event) => {
+              const next = event.currentTarget.value
+              if (!search && next) telemetry.savedQueriesFiltered('search')
+              setSearch(next)
+            }}
             padding={2}
             placeholder={t('label.search-queries')}
             value={search}
@@ -389,7 +400,10 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                                 <MenuItem
                                   disabled={isMoving}
                                   icon={TrashIcon}
-                                  onClick={() => void deleteQuery(query._key)}
+                                  onClick={() => {
+                                    telemetry.savedQuery('delete', Boolean(query.shared))
+                                    void deleteQuery(query._key)
+                                  }}
                                   text={t('action.delete')}
                                   tone="critical"
                                 />

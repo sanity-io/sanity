@@ -1,6 +1,7 @@
 import {useSelector} from '@xstate/react'
 import {createContext, use, useLayoutEffect} from 'react'
 
+import {type VisionUiSwitchSource} from '../../__telemetry__/vision.telemetry'
 import {type useSavedQueries} from '../../hooks/useSavedQueries'
 import {onLocalStorageCleared} from '../../util/localStorage'
 import {type VisionTabDrawer} from './types'
@@ -34,8 +35,11 @@ export type VisionLayout = 'columns' | 'stacked' | 'mobile'
 
 export interface VisionExperience {
   layout: VisionLayout
-  /** Leaves the redesigned experience and returns to the classic Vision tool */
-  switchToClassic: () => void
+  /**
+   * Leaves the redesigned experience and returns to the classic Vision tool. `source` says where
+   * the user asked to switch; without one, the switch is not recorded as the user's choice.
+   */
+  switchToClassic: (source?: VisionUiSwitchSource) => void
 }
 
 export const VisionExperienceContext = createContext<VisionExperience | null>(null)

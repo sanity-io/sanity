@@ -9,6 +9,7 @@ import {
   useUpsellData,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
+import {useVisionTelemetry} from '../../__telemetry__/useVisionTelemetry'
 import {useKnownAiCredits} from '../hooks/useAiCredits'
 import {type AiCredits, canUpsellAiCredits} from '../util/aiCredits'
 import {
@@ -53,7 +54,14 @@ export function AiCreditsUpsellProvider({projectId, children}: AiCreditsUpsellPr
   }, [upsellData$])
 
   const [openedFrom, setOpenedFrom] = useState<AiCreditsUpsellSource | null>(null)
-  const openDialog = useCallback((source: AiCreditsUpsellSource) => setOpenedFrom(source), [])
+  const telemetry = useVisionTelemetry()
+  const openDialog = useCallback(
+    (source: AiCreditsUpsellSource) => {
+      telemetry.aiUpsellOpened()
+      setOpenedFrom(source)
+    },
+    [telemetry],
+  )
   const requestTurnedDown = useCallback((limit: AiCredits) => {
     if (canUpsellAiCredits(limit)) setOpenedFrom('agent_action')
   }, [])

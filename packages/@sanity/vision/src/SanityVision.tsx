@@ -1,6 +1,8 @@
-import {type ComponentProps, useCallback} from 'react'
+import {type ComponentProps, useCallback, useEffect, useRef} from 'react'
 import {type Tool, useClient} from 'sanity'
 
+import {useVisionTelemetry} from './__telemetry__/useVisionTelemetry'
+import {type VisionUiSwitchSource} from './__telemetry__/vision.telemetry'
 import {DEFAULT_API_VERSION} from './apiVersions'
 import {VisionGui} from './components/VisionGui'
 import {VisionContainer} from './containers/VisionContainer'
@@ -33,17 +35,34 @@ function SanityVision(props: SanityVisionProps) {
   const preference = useRedesignPreference(projectId)
   const showRedesign = preference.optedIn
 
+  const telemetry = useVisionTelemetry()
+  // Once per mount: an `<Activity>` reveal re-runs effects without remounting
+  const openedRef = useRef(false)
+  useEffect(() => {
+    if (openedRef.current) return
+    openedRef.current = true
+    telemetry.opened(showRedesign ? 'redesign' : 'classic')
+  }, [showRedesign, telemetry])
+
   const optIn = useCallback(
-    () => writeRedesignPreference(projectId, {optedIn: true, dismissed: false}),
-    [projectId],
+    (source: VisionUiSwitchSource) => {
+      telemetry.uiSwitched('redesign', source)
+      writeRedesignPreference(projectId, {optedIn: true, dismissed: false})
+    },
+    [projectId, telemetry],
   )
-  const dismiss = useCallback(
-    () => writeRedesignPreference(projectId, {dismissed: true}),
-    [projectId],
-  )
+  const optInFromPrompt = useCallback(() => optIn('prompt'), [optIn])
+  const optInFromControls = useCallback(() => optIn('controls'), [optIn])
+  const dismiss = useCallback(() => {
+    telemetry.redesignPromptDismissed()
+    writeRedesignPreference(projectId, {dismissed: true})
+  }, [projectId, telemetry])
   const switchToClassic = useCallback(
-    () => writeRedesignPreference(projectId, {optedIn: false, dismissed: false}),
-    [projectId],
+    (source?: VisionUiSwitchSource) => {
+      if (source) telemetry.uiSwitched('classic', source)
+      writeRedesignPreference(projectId, {optedIn: false, dismissed: false})
+    },
+    [projectId, telemetry],
   )
 
   return (
@@ -53,12 +72,17 @@ function SanityVision(props: SanityVisionProps) {
           showRedesign ? (
             <VisionRedesignLoader {...loaded} config={config} onSwitchToClassic={switchToClassic} />
           ) : (
-            <VisionGui {...loaded} client={client} config={config} onSwitchToRedesign={optIn} />
+            <VisionGui
+              {...loaded}
+              client={client}
+              config={config}
+              onSwitchToRedesign={optInFromControls}
+            />
           )
         }
       </VisionContainer>
       {!showRedesign && !preference.dismissed && (
-        <RedesignToast onAccept={optIn} onDismiss={dismiss} />
+        <RedesignToast onAccept={optInFromPrompt} onDismiss={dismiss} />
       )}
     </VisionErrorBoundary>
   )
