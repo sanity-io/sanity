@@ -8,6 +8,7 @@ import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
 import {useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
 
+import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VisionTab} from '../../store/types'
 import {cx} from '../../util/cx'
@@ -48,17 +49,30 @@ export function ResultActionsMenu({
   onCsvUnavailable,
 }: ResultActionsMenuProps) {
   const {t} = useTranslation(visionLocaleNamespace)
-  const [exportFormat, setExportFormat] = useState<TypesExportFormat | null>(null)
+  const telemetry = useVisionTelemetry()
+  const [exportFormat, setExportFormatState] = useState<TypesExportFormat | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
 
   const download = (
+    format: 'json' | 'csv',
     getUrl: (() => string | undefined) | undefined,
     filename: string,
     onUnavailable?: () => void,
   ) => {
     const url = getUrl?.()
-    if (url) downloadFile(url, filename)
-    else onUnavailable?.()
+    if (!url) {
+      onUnavailable?.()
+      return
+    }
+    telemetry.resultExported(format)
+    downloadFile(url, filename)
+  }
+  const setExportFormat = (format: TypesExportFormat | null) => {
+    if (format) {
+      telemetry.resultExported(format)
+      telemetry.dialogOpened('export-result-types')
+    }
+    setExportFormatState(format)
   }
 
   // MenuItem ellipsizes `text`, so the reason there is no CSV file is a child of the item
@@ -96,7 +110,7 @@ export function ResultActionsMenu({
                   data-testid="vision-export-json"
                   disabled={!getJsonUrl}
                   icon={JsonIcon}
-                  onClick={() => download(getJsonUrl, 'query-result.json')}
+                  onClick={() => download('json', getJsonUrl, 'query-result.json')}
                   text={t('vision.result.export-json')}
                 />
                 <MenuItem
@@ -104,7 +118,7 @@ export function ResultActionsMenu({
                   data-testid="vision-export-csv"
                   disabled={!getCsvUrl}
                   icon={DocumentSheetIcon}
-                  onClick={() => download(getCsvUrl, 'query-result.csv', onCsvUnavailable)}
+                  onClick={() => download('csv', getCsvUrl, 'query-result.csv', onCsvUnavailable)}
                   text={t('vision.result.export-csv')}
                 >
                   {csvUnavailable ? (

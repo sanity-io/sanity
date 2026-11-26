@@ -6,6 +6,7 @@ import {Menu, MenuButton, MenuItem, type MenuItemProps} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
 
+import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VisionTab} from '../../store/types'
 import {usePendingEdits} from '../../store/VisionActorContext'
@@ -27,6 +28,7 @@ export interface ParamsActionsMenuProps {
 export function ParamsActionsMenu({tab, params}: ParamsActionsMenuProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const pendingEdits = usePendingEdits()
+  const telemetry = useVisionTelemetry()
   const [exportFormat, setExportFormat] = useState<TypesExportFormat | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const hasParams = useMemo(() => findParamNames(tab.query).length > 0, [tab.query])
@@ -36,9 +38,10 @@ export function ParamsActionsMenu({tab, params}: ParamsActionsMenuProps) {
     (format: TypesExportFormat) => {
       // A query edit still in the debounce is what the types are for
       pendingEdits.commit()
+      telemetry.dialogOpened('export-params-types')
       setExportFormat(format)
     },
-    [pendingEdits],
+    [pendingEdits, telemetry],
   )
 
   return (

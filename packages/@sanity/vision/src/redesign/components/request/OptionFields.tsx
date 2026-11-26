@@ -14,10 +14,10 @@ import {
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Icon, VisuallyHidden} from 'ui5'
 
+import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {DEFAULT_API_VERSION, VARIANTS_API_VERSION} from '../../../apiVersions'
 import {useVariantsEnabled} from '../../../hooks/useVariantsEnabled'
 import {visionLocaleNamespace} from '../../../i18n'
-import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {prefixApiVersion} from '../../../util/prefixApiVersion'
 import {validateApiVersion} from '../../../util/validateApiVersion'
 import {type VisionPerspective, type VisionVariantMode} from '../../store/types'

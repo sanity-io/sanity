@@ -7,6 +7,7 @@ import {type TFunction, useDateTimeFormat} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
+import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {visionLocaleNamespace} from '../../../i18n'
 import {formatMeasuredDuration} from '../../../util/formatDuration'
@@ -277,6 +278,7 @@ function HistoryEntry(props: {
 }) {
   const {entry, previous, hiddenFields, hiddenPaths} = props
   const {t} = useTranslation(visionLocaleNamespace)
+  const telemetry = useVisionTelemetry()
   const formatTime = useDateTimeFormat({timeStyle: 'medium'})
   const notApplicable = t('result.timing-not-applicable')
   const [expanded, setExpanded] = useState(false)
@@ -409,7 +411,10 @@ function HistoryEntry(props: {
               </span>
             }
             mode="bleed"
-            onClick={() => setExpanded((value) => !value)}
+            onClick={() => {
+              if (!expanded) telemetry.historyUsed('view-changes')
+              setExpanded((value) => !value)
+            }}
             padding={1}
             text={t('vision.history.changes')}
           />
@@ -490,7 +495,10 @@ function HistoryEntry(props: {
                 <Button
                   fontSize={1}
                   mode="ghost"
-                  onClick={retry}
+                  onClick={() => {
+                    telemetry.historyUsed('retry')
+                    retry()
+                  }}
                   padding={2}
                   text={t('vision.history.changes-retry')}
                 />
@@ -547,7 +555,10 @@ function HistoryEntry(props: {
                             data-testid="vision-history-hidden-toggle"
                             fontSize={1}
                             mode="bleed"
-                            onClick={() => setShowHidden((value) => !value)}
+                            onClick={() => {
+                              if (!showHidden) telemetry.historyUsed('show-hidden')
+                              setShowHidden((value) => !value)
+                            }}
                             padding={1}
                             text={t(
                               showHidden

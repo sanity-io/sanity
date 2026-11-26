@@ -8,11 +8,12 @@ import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VisionExportSnippetId} from '../../store/types'
-import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
+import {useVisionSelector} from '../../store/VisionActorContext'
 import {EXPORT_SNIPPET_IDS} from '../../store/visionStorage'
 import {EXPORT_SNIPPET_TITLES} from '../../util/exportSnippets'
 import {SwitchField} from '../SwitchField'
 import * as sidebarStyles from './sidebar.module.css'
+import {useSettingsUpdate} from './useSettingsUpdate'
 
 function move(order: VisionExportSnippetId[], index: number, offset: -1 | 1) {
   const next = [...order]
@@ -24,7 +25,7 @@ function move(order: VisionExportSnippetId[], index: number, offset: -1 | 1) {
 /** Which snippets the Export query dialog shows, and the order of its tabs */
 export function ExportSnippetsSettings() {
   const {t} = useTranslation(visionLocaleNamespace)
-  const actorRef = useVisionActor()
+  const updateSetting = useSettingsUpdate()
   const {order, hidden} = useVisionSelector((snapshot) => snapshot.context.exportSnippets)
   const visibleCount = order.length - hidden.length
   const isDefault = dequal(order, EXPORT_SNIPPET_IDS) && hidden.length === 0
@@ -52,7 +53,7 @@ export function ExportSnippetsSettings() {
                     // The dialog always has a tab to show
                     disabled={visible && visibleCount === 1}
                     onChange={(checked) =>
-                      actorRef.send({
+                      updateSetting({
                         type: 'exportSnippets.update',
                         settings: {
                           hidden: checked
@@ -75,7 +76,7 @@ export function ExportSnippetsSettings() {
                     icon={ArrowUpIcon}
                     mode="bleed"
                     onClick={() =>
-                      actorRef.send({
+                      updateSetting({
                         type: 'exportSnippets.update',
                         settings: {order: move(order, index, -1)},
                       })
@@ -91,7 +92,7 @@ export function ExportSnippetsSettings() {
                     icon={ArrowDownIcon}
                     mode="bleed"
                     onClick={() =>
-                      actorRef.send({
+                      updateSetting({
                         type: 'exportSnippets.update',
                         settings: {order: move(order, index, 1)},
                       })
@@ -111,7 +112,7 @@ export function ExportSnippetsSettings() {
             icon={RestoreIcon}
             mode="ghost"
             onClick={() =>
-              actorRef.send({
+              updateSetting({
                 type: 'exportSnippets.update',
                 settings: {order: [...EXPORT_SNIPPET_IDS], hidden: []},
               })

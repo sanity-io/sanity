@@ -5,8 +5,8 @@ import {useSchema} from 'sanity/_dangerously_use_private_internals_that_do_not_f
 import {useTranslation} from 'sanity/i18n'
 import {Text, Flex} from 'ui5'
 
+import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
-import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
 import {useAiFeatures} from '../../aiFeatures'
 import {reportAiCreditsGranted, reportAiCreditsLimit, useAiCredits} from '../../hooks/useAiCredits'
 import {type AiCredits, type AiCreditsClient, readAiCreditsLimit} from '../../util/aiCredits'

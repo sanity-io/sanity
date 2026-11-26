@@ -232,7 +232,9 @@ export function functionCompletions(context: CompletionContext): CompletionResul
  * Makes the selection a custom function when it is a projection that can be one, or with nothing
  * selected the projection around the cursor
  */
-export const extractSelectionToFunction: Command = (view) => {
+export const extractSelectionToFunction: Command = (view) => extractToFunction(view, 'shortcut')
+
+function extractToFunction(view: EditorView, via: 'button' | 'shortcut'): boolean {
   const extraction = extractFunction(
     view.state.doc.toString(),
     view.state.selection.main,
@@ -246,6 +248,7 @@ export const extractSelectionToFunction: Command = (view) => {
     scrollIntoView: true,
     userEvent: 'input.extract',
   })
+  view.state.facet(groqEditorLabels)?.onExtractFunction?.(via)
   view.focus()
   return true
 }
@@ -268,7 +271,7 @@ function extractTooltips(state: EditorState): readonly Tooltip[] {
         button.dataset.testid = 'vision-extract-function'
         // Keeps the editor focused and the selection in place until the click lands
         button.addEventListener('mousedown', (event) => event.preventDefault())
-        button.addEventListener('click', () => extractSelectionToFunction(view))
+        button.addEventListener('click', () => extractToFunction(view, 'button'))
         const dom = element('div', 'cm-vision-extract', button)
         return {dom}
       },

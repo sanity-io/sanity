@@ -6,11 +6,11 @@ import {useCallback, useEffect, useMemo, useRef, useState, useEffectEvent} from 
 import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 
+import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
+import {type VisionQueryRunData} from '../../../__telemetry__/vision.telemetry'
 import {type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
 import {useVariantsEnabled} from '../../../hooks/useVariantsEnabled'
 import {visionLocaleNamespace} from '../../../i18n'
-import {useVisionTelemetry} from '../../../telemetry/useVisionTelemetry'
-import {type VisionQueryRunData} from '../../../telemetry/vision.telemetry'
 import {useAutoFormatOnResize} from '../../hooks/useAutoFormatOnResize'
 import {useContentSize} from '../../hooks/useContentSize'
 import {useCopiedFeedback} from '../../hooks/useCopiedFeedback'
@@ -220,7 +220,10 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
     },
     [buildCurrentRequest, layout, runnerRef, telemetry],
   )
-  const cancel = useCallback(() => runnerRef.send({type: 'cancel'}), [runnerRef])
+  const cancel = useCallback(() => {
+    telemetry.queryCancelled('fetch')
+    runnerRef.send({type: 'cancel'})
+  }, [runnerRef, telemetry])
   const setOptions = useCallback(
     (options: Partial<VisionTabOptions>) =>
       actorRef.send({type: 'tab.setOptions', id: tab.id, options}),
@@ -238,6 +241,18 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
       if ('perspective' in options && options.perspective !== tab.options.perspective) {
         telemetry.perspectiveChanged()
       }
+      if (options.variant !== undefined && options.variant !== tab.options.variant) {
+        telemetry.optionToggled('variant', options.variant === 'global')
+      }
+      if (
+        options.includeSourceMap !== undefined &&
+        options.includeSourceMap !== tab.options.includeSourceMap
+      ) {
+        telemetry.optionToggled('source-map', options.includeSourceMap)
+      }
+      if (options.useCdn !== undefined && options.useCdn !== tab.options.useCdn) {
+        telemetry.optionToggled('cdn', options.useCdn)
+      }
       setOptions(options)
     },
     [resolved.dataset, setOptions, tab.options, telemetry, workspaceDataset],
@@ -247,6 +262,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
   const toggleAutoRefetch = useCallback(() => {
     if (tab.autoRefetch) {
       actorRef.send({type: 'tab.setAutoRefetch', id: tab.id, autoRefetch: false})
+      telemetry.queryCancelled('listen')
       return
     }
     const current = buildCurrentRequest()
@@ -483,6 +499,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
     onShortcut: (shortcut: VisionShortcutId, event: KeyboardEvent) => {
       // Copy and Format act on the params while the params panel has focus, else on the query
       const inParams = isParamsContentTarget(event.target)
+      telemetry.shortcutUsed(shortcut)
       switch (shortcut) {
         case 'fetch':
           run({type: 'shortcut'})
@@ -506,6 +523,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
       if (!parsed) {
         return false
       }
+      telemetry.queryUrlPasted()
       actorRef.send({
         type: 'tab.load',
         id: tab.id,

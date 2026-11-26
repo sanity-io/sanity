@@ -1,6 +1,6 @@
 import {useCallback, useState} from 'react'
 
-import {useVisionTelemetry} from '../../telemetry/useVisionTelemetry'
+import {useVisionTelemetry} from '../../__telemetry__/useVisionTelemetry'
 import {useAiFeatures} from '../aiFeatures'
 import {useAiCreditsUpsell} from '../components/AiCreditsUpsellContext'
 import {type QueryRequest} from '../store/types'
@@ -54,11 +54,13 @@ export function useQueryExplain(request: QueryRequest | null) {
     }
   }, [])
 
-  const showPlan = useCallback(() => {
-    if (request) void loadPlan(request)
-  }, [loadPlan, request])
-
   const telemetry = useVisionTelemetry()
+  const showPlan = useCallback(() => {
+    if (!request) return
+    telemetry.queryPlanShown()
+    void loadPlan(request)
+  }, [loadPlan, request, telemetry])
+
   const explain = useCallback(async () => {
     if (!request || !canExplain) return
     telemetry.agentAction('explain')

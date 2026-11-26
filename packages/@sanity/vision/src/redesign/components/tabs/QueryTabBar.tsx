@@ -15,6 +15,7 @@ import {
 import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 
+import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
 import {useOverlayScrollThumb} from '../../hooks/useOverlayScrollThumb'
 import {type VisionTab} from '../../store/types'
@@ -101,9 +102,11 @@ interface TabHandleProps {
   onSelect: () => void
   onClose: () => void
   onStartRename: () => void
-  onRename: (title: string) => void
+  /** `changed` is false when the title was committed as it was shown */
+  onRename: (title: string, changed: boolean) => void
   onCancelRename: () => void
   onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => void
+  onDragEnd: () => void
 }
 
 /**
@@ -124,6 +127,7 @@ function TabHandle(props: TabHandleProps) {
     onRename,
     onCancelRename,
     onKeyDown,
+    onDragEnd,
   } = props
   const {t} = useTranslation(visionLocaleNamespace)
   const title = getTabTitle(tab, t('vision.tabs.untitled'))
@@ -161,7 +165,10 @@ function TabHandle(props: TabHandleProps) {
       dragElastic={0.1}
       dragListener={false}
       layout="position"
-      onDragEnd={() => setDragging(false)}
+      onDragEnd={() => {
+        setDragging(false)
+        onDragEnd()
+      }}
       onDragStart={() => setDragging(true)}
       transition={layoutTransition}
       value={tab}
@@ -176,7 +183,11 @@ function TabHandle(props: TabHandleProps) {
         role="presentation"
       >
         {editing ? (
-          <TabTitleInput onCancel={onCancelRename} onCommit={onRename} title={title} />
+          <TabTitleInput
+            onCancel={onCancelRename}
+            onCommit={(next) => onRename(next, next !== title)}
+            title={title}
+          />
         ) : (
           // A plain button, so the whole tab is its hit area and the tab paints hover and focus
           <button
@@ -218,6 +229,7 @@ function TabHandle(props: TabHandleProps) {
 export function QueryTabBar() {
   const {t} = useTranslation(visionLocaleNamespace)
   const actorRef = useVisionActor()
+  const telemetry = useVisionTelemetry()
   const tabs = useVisionSelector((snapshot) => snapshot.context.tabs)
   const activeTabId = useVisionSelector((snapshot) => snapshot.context.activeTabId)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -283,6 +295,20 @@ export function QueryTabBar() {
       actorRef.send({type: 'tab.reorder', ids: ordered.map((tab) => tab.id)}),
     [actorRef],
   )
+  // A drag reorders on every swap it passes, so it is recorded once, when it ends
+  const draggedRef = useRef(false)
+  const reorderByDrag = useCallback(
+    (ordered: VisionTab[]) => {
+      draggedRef.current = true
+      reorder(ordered)
+    },
+    [reorder],
+  )
+  const handleDragEnd = useCallback(() => {
+    if (!draggedRef.current) return
+    draggedRef.current = false
+    telemetry.tabUsed('reorder')
+  }, [telemetry])
 
   // The ARIA tabs keyboard pattern: arrows, Home and End move between tabs and activate them,
   // Delete closes the focused tab (the close button itself stays out of the tab order) and F2
@@ -315,6 +341,7 @@ export function QueryTabBar() {
         ;[ordered[index], ordered[target]] = [ordered[target], ordered[index]]
         setKeyboardDriven(true)
         reorder(ordered)
+        telemetry.tabUsed('reorder')
         return
       }
       let nextIndex: number | undefined
@@ -325,9 +352,10 @@ export function QueryTabBar() {
       event.preventDefault()
       const next = tabs[nextIndex]
       actorRef.send({type: 'tab.select', id: next.id})
+      if (next.id !== activeTabId) telemetry.tabUsed('select')
       focusTab(next.id)
     },
-    [activeTabId, actorRef, focusTab, reorder, tabs],
+    [activeTabId, actorRef, focusTab, reorder, tabs, telemetry],
   )
 
   useOverlayScrollThumb({
@@ -352,7 +380,7 @@ export function QueryTabBar() {
           as="div"
           axis="x"
           className={styles.tabList}
-          onReorder={reorder}
+          onReorder={reorderByDrag}
           ref={listRef}
           role="tablist"
           values={tabs}
@@ -364,14 +392,19 @@ export function QueryTabBar() {
               key={tab.id}
               layoutTransition={layoutTransition}
               listRef={listRef}
+              onDragEnd={handleDragEnd}
               onKeyDown={handleTabKeyDown}
               onCancelRename={() => stopRenaming(tab.id)}
               onClose={() => actorRef.send({type: 'tab.close', id: tab.id})}
-              onRename={(title) => {
+              onRename={(title, changed) => {
                 stopRenaming(tab.id)
                 actorRef.send({type: 'tab.rename', id: tab.id, title})
+                if (changed) telemetry.tabUsed('rename')
               }}
-              onSelect={() => actorRef.send({type: 'tab.select', id: tab.id})}
+              onSelect={() => {
+                if (tab.id !== activeTabId) telemetry.tabUsed('select')
+                actorRef.send({type: 'tab.select', id: tab.id})
+              }}
               onStartRename={() => setEditingId(tab.id)}
               selected={tab.id === activeTabId}
               tab={tab}

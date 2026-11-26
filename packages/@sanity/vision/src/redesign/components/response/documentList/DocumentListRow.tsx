@@ -21,6 +21,7 @@ import {
 import {useTranslation} from 'sanity/i18n'
 import {useIntentLink} from 'sanity/router'
 
+import {useVisionTelemetry} from '../../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../../i18n'
 import {useCopyToClipboard} from '../../../hooks/useCopyToClipboard'
 import {type DocumentListDocument} from '../../../util/documentListResult'
@@ -156,6 +157,7 @@ function ResolvedPreview({
 function DocumentLinkCard({id, type, children}: {id: string; type: string; children: ReactNode}) {
   const params = useMemo(() => ({id: getPublishedId(id), type}), [id, type])
   const {href, onClick} = useIntentLink({intent: 'edit', params})
+  const telemetry = useVisionTelemetry()
   return (
     <PreviewCard
       __unstable_focusRing
@@ -163,7 +165,10 @@ function DocumentLinkCard({id, type, children}: {id: string; type: string; child
       data-as="a"
       data-testid="vision-document-list-link"
       href={href}
-      onClick={onClick}
+      onClick={(event) => {
+        telemetry.documentOpened('document-list')
+        onClick(event)
+      }}
       radius={2}
       tone="inherit"
     >
@@ -176,6 +181,7 @@ function OpenInNewTabButton({id, type}: {id: string; type: string}) {
   const {t} = useTranslation(visionLocaleNamespace)
   const params = useMemo(() => ({id: getPublishedId(id), type}), [id, type])
   const {href} = useIntentLink({intent: 'edit', params})
+  const telemetry = useVisionTelemetry()
   const label = t('vision.result.documents.open-new-tab')
   return (
     <VisionTooltip content={label} placement="bottom">
@@ -187,6 +193,7 @@ function OpenInNewTabButton({id, type}: {id: string; type: string}) {
         href={href}
         icon={LaunchIcon}
         mode="bleed"
+        onClick={() => telemetry.documentOpened('document-list')}
         padding={2}
         rel="noopener noreferrer"
         target="_blank"

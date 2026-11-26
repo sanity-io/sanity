@@ -12,8 +12,9 @@ import {
 } from 'react'
 import {Flex} from 'ui5'
 
+import {useVisionTelemetry} from '../../__telemetry__/useVisionTelemetry'
+import {type VisionUiSwitchSource} from '../../__telemetry__/vision.telemetry'
 import {useSavedQueries} from '../../hooks/useSavedQueries'
-import {useVisionTelemetry} from '../../telemetry/useVisionTelemetry'
 import {type VisionConfig} from '../../types'
 import {useContentSize} from '../hooks/useContentSize'
 import {type VisionTab} from '../store/types'
@@ -106,7 +107,7 @@ export interface VisionRedesignProps {
   datasets: string[]
   projectId: string
   defaultDataset: string
-  onSwitchToClassic: () => void
+  onSwitchToClassic: (source?: VisionUiSwitchSource) => void
 }
 
 export function VisionRedesign(props: VisionRedesignProps) {

@@ -19,6 +19,7 @@ import {
 import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box, VStack, type VStackProps} from 'ui5'
 
+import {useVisionTelemetry} from '../__telemetry__/useVisionTelemetry'
 import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
 import * as styles from './QueryRecall.module.css'
@@ -68,6 +69,7 @@ export function QueryRecall({
   const {saveQuery, updateQuery, queries, deleteQuery, shareQuery, unshareQuery, saving, deleting} =
     useSavedQueries()
   const {t} = useTranslation(visionLocaleNamespace)
+  const telemetry = useVisionTelemetry()
   const formatDate = useDateTimeFormat({
     month: 'short',
     day: 'numeric',
@@ -84,6 +86,14 @@ export function QueryRecall({
   const [selectedUrl, setSelectedUrl] = useState<string | undefined>(url)
   const [pendingUnshareKeys, setPendingUnshareKeys] = useState<string[]>([])
   const [shareDialogQuery, setShareDialogQuery] = useState<QueryConfig | null>(null)
+
+  const selectFilter = useCallback(
+    (filter: QueryFilter) => {
+      if (filter !== queryFilter) telemetry.savedQueriesFiltered(filter)
+      setQueryFilter(filter)
+    },
+    [queryFilter, telemetry],
+  )
 
   const handleSave = useCallback(async () => {
     // Generate the correct URL first
@@ -128,6 +138,7 @@ export function QueryRecall({
         savedAt: new Date().toISOString(),
         title: t('label.untitled-query'),
       })
+      telemetry.savedQuery('save', false)
       setSelectedUrl(newUrl)
       toast.push({
         closable: true,
@@ -152,6 +163,7 @@ export function QueryRecall({
     generateUrl,
     formatDate,
     saveQuery,
+    telemetry,
   ])
 
   const handleShareQuery = useCallback((query: QueryConfig) => {
@@ -165,6 +177,7 @@ export function QueryRecall({
       // One move: when removing the personal copy fails, the shared one is taken back and the
       // move rejects, rather than the query staying in both lists behind a success toast
       await shareQuery(shareDialogQuery._key)
+      telemetry.savedQuery('share', true)
       toast.push({
         closable: true,
         status: 'success',
@@ -179,7 +192,7 @@ export function QueryRecall({
       })
     }
     setShareDialogQuery(null)
-  }, [shareDialogQuery, shareQuery, t, toast])
+  }, [shareDialogQuery, shareQuery, t, telemetry, toast])
 
   const handleUnshareQuery = useCallback(
     async (query: QueryConfig) => {
@@ -214,6 +227,7 @@ export function QueryRecall({
       try {
         // One move, like sharing: a personal copy that cannot replace the shared one is taken back
         await unshareQuery(query._key)
+        telemetry.savedQuery('unshare', false)
         toast.push({
           closable: true,
           status: 'success',
@@ -229,7 +243,7 @@ export function QueryRecall({
       }
       clearPending()
     },
-    [formatDate, getStateFromUrl, queries, t, toast, unshareQuery],
+    [formatDate, getStateFromUrl, queries, t, telemetry, toast, unshareQuery],
   )
 
   const handleTitleSave = useCallback(
@@ -242,6 +256,7 @@ export function QueryRecall({
           ...query,
           title: newTitle,
         })
+        if (newTitle !== query.title) telemetry.savedQuery('rename', Boolean(query.shared))
         // Clear optimistic title on success
         setOptimisticTitles((prev) => {
           const next = {...prev}
@@ -263,7 +278,7 @@ export function QueryRecall({
         })
       }
     },
-    [updateQuery, toast, t],
+    [updateQuery, telemetry, toast, t],
   )
 
   const handleUpdate = useCallback(
@@ -309,6 +324,7 @@ export function QueryRecall({
           url: newUrl,
           savedAt: new Date().toISOString(),
         })
+        telemetry.savedQuery('update', Boolean(query.shared))
         setSelectedUrl(newUrl)
         toast.push({
           closable: true,
@@ -334,6 +350,7 @@ export function QueryRecall({
       t,
       queries,
       getStateFromUrl,
+      telemetry,
     ],
   )
 
@@ -372,7 +389,11 @@ export function QueryRecall({
             placeholder={t('label.search-queries')}
             icon={SearchIcon}
             value={searchQuery}
-            onChange={(event) => setSearchQuery(event.currentTarget.value)}
+            onChange={(event) => {
+              const next = event.currentTarget.value
+              if (!searchQuery && next) telemetry.savedQueriesFiltered('search')
+              setSearchQuery(next)
+            }}
           />
         </Box>
         <Box paddingX={3} paddingBottom={2}>
@@ -382,21 +403,21 @@ export function QueryRecall({
               aria-controls="vision-query-recall-list"
               label={t('label.all')}
               selected={queryFilter === 'all'}
-              onClick={() => setQueryFilter('all')}
+              onClick={() => selectFilter('all')}
             />
             <Tab
               id="query-filter-personal"
               aria-controls="vision-query-recall-list"
               label={t('label.personal')}
               selected={queryFilter === 'personal'}
-              onClick={() => setQueryFilter('personal')}
+              onClick={() => selectFilter('personal')}
             />
             <Tab
               id="query-filter-shared"
               aria-controls="vision-query-recall-list"
               label={t('label.shared')}
               selected={queryFilter === 'shared'}
-              onClick={() => setQueryFilter('shared')}
+              onClick={() => selectFilter('shared')}
             />
           </TabList>
         </Box>
@@ -429,6 +450,7 @@ export function QueryRecall({
                   setSelectedUrl(q.url) // Update the selected query immediately
                   const parsedUrl = getStateFromUrl(q.url)
                   if (parsedUrl) {
+                    telemetry.savedQuery('load', Boolean(q.shared))
                     setStateFromParsedUrl(parsedUrl)
                   }
                 }}
@@ -552,6 +574,7 @@ export function QueryRecall({
                                     text={t('action.delete')}
                                     onClick={(event) => {
                                       event.stopPropagation()
+                                      telemetry.savedQuery('delete', Boolean(q.shared))
                                       void deleteQuery(q._key)
                                     }}
                                   />

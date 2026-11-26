@@ -5,6 +5,7 @@ import {useMemo} from 'react'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
+import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VisionSavedFunction} from '../../store/types'
 import {cx} from '../../util/cx'
@@ -64,6 +65,7 @@ function DeclaredFunction(props: {
 }) {
   const {declaration, saved, onSave, onReveal} = props
   const {t} = useTranslation(visionLocaleNamespace)
+  const telemetry = useVisionTelemetry()
   const upToDate = saved !== undefined && isSameDeclaration(saved.declaration, declaration.text)
 
   return (
@@ -73,7 +75,10 @@ function DeclaredFunction(props: {
         as="button"
         className={cx(styles.lintFindingButton, styles.shrinkable)}
         flex={1}
-        onClick={() => onReveal(declaration.range)}
+        onClick={() => {
+          telemetry.functionUsed('reveal')
+          onReveal(declaration.range)
+        }}
         paddingX={3}
         paddingY={2}
         radius={2}
@@ -94,7 +99,10 @@ function DeclaredFunction(props: {
             data-testid="vision-function-save"
             fontSize={1}
             mode="ghost"
-            onClick={() => onSave({id: declaration.id, declaration: declaration.text})}
+            onClick={() => {
+              telemetry.functionUsed('save')
+              onSave({id: declaration.id, declaration: declaration.text})
+            }}
             padding={2}
             text={saved ? t('vision.functions.update') : t('vision.functions.save')}
           />
@@ -113,6 +121,7 @@ function LibraryFunction(props: {
 }) {
   const {saved, query, declared, onEdit, onRemove} = props
   const {t} = useTranslation(visionLocaleNamespace)
+  const telemetry = useVisionTelemetry()
   const parsed = useMemo(() => parseDeclaration(saved.declaration), [saved.declaration])
 
   let action = null
@@ -122,7 +131,10 @@ function LibraryFunction(props: {
         data-testid="vision-function-add"
         fontSize={1}
         mode="ghost"
-        onClick={() => onEdit(declarationInsertion(query, saved.declaration))}
+        onClick={() => {
+          telemetry.functionUsed('insert')
+          onEdit(declarationInsertion(query, saved.declaration))
+        }}
         padding={2}
         text={t('vision.functions.add')}
       />
@@ -133,7 +145,10 @@ function LibraryFunction(props: {
         data-testid="vision-function-replace"
         fontSize={1}
         mode="ghost"
-        onClick={() => onEdit({...declared.range, insert: saved.declaration})}
+        onClick={() => {
+          telemetry.functionUsed('replace')
+          onEdit({...declared.range, insert: saved.declaration})
+        }}
         padding={2}
         text={t('vision.functions.replace')}
       />
@@ -163,7 +178,10 @@ function LibraryFunction(props: {
             fontSize={1}
             icon={TrashIcon}
             mode="bleed"
-            onClick={() => onRemove(saved.id)}
+            onClick={() => {
+              telemetry.functionUsed('remove')
+              onRemove(saved.id)
+            }}
             padding={2}
             tone="critical"
           />
