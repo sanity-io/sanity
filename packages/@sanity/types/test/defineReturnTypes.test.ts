@@ -72,20 +72,6 @@ describe('define helper return types', () => {
 
     const unknownStrictFalsePropIsRequired: {doc18n: unknown} = looseString
     const unknownStrictFalseOptionIsRequired: {options: {custom: unknown}} = looseString
-
-    void titleIsRequired
-    void descriptionIsRequired
-    void hiddenIsRequired
-    void readOnlyIsRequired
-    void liveEditIsRequired
-    void initialValueIsRequired
-    void deprecatedIsRequired
-    void optionsIsRequired
-    void previewIsRequired
-    void nestedOptionsAreRequired
-    void omittedPreviewIsNotRequired
-    void unknownStrictFalsePropIsRequired
-    void unknownStrictFalseOptionIsRequired
   })
 
   it('should preserve supplied optional properties on defineField return values', () => {
@@ -115,12 +101,6 @@ describe('define helper return types', () => {
 
     //@ts-expect-error options is not known to be required when it was not defined
     const omittedOptionsAreNotRequired: {options: unknown} = fieldWithoutOptions
-
-    void titleIsRequired
-    void validationIsRequired
-    void initialValueIsRequired
-    void nestedOptionsAreRequired
-    void omittedOptionsAreNotRequired
   })
 
   it('should preserve supplied optional properties on defineArrayMember return values', () => {
@@ -149,12 +129,5 @@ describe('define helper return types', () => {
 
     //@ts-expect-error name is not known to be required when it was not defined
     const omittedNameIsNotRequired: {name: unknown} = arrayMemberWithoutName
-
-    void nameIsRequired
-    void titleIsRequired
-    void validationIsRequired
-    void initialValueIsRequired
-    void nestedOptionsAreRequired
-    void omittedNameIsNotRequired
   })
 })

@@ -34,7 +34,6 @@ describe('alias type test', () => {
     })
 
     const looselyAssignableToStringOptions: StringOptions | undefined = notStringDef.options
-    void looselyAssignableToStringOptions
 
     const narrowedAlias = defineType(
       {

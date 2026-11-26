@@ -90,10 +90,11 @@ export function useDeltaPanel(): DeltaPanel {
         beforeText: toText(before),
       }))
     } catch (error) {
+      const loadError = error instanceof Error ? error.message : String(error)
       setState((current) => ({
         ...current,
         loading: false,
-        loadError: error instanceof Error ? error.message : String(error),
+        loadError,
       }))
     }
   }, [])
@@ -114,9 +115,10 @@ export function useDeltaPanel(): DeltaPanel {
           current[key] === revision ? {...current, [textKey]: toText(document)} : current,
         )
       } catch (error) {
+        const loadError = error instanceof Error ? error.message : String(error)
         setState((current) => ({
           ...current,
-          loadError: error instanceof Error ? error.message : String(error),
+          loadError,
         }))
       }
     },
