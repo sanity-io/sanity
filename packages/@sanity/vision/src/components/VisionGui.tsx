@@ -46,7 +46,6 @@ import {encodeQueryString} from '../util/encodeQueryString'
 import {isVisionPasteTarget} from '../util/isVisionPasteTarget'
 import {getLocalStorage} from '../util/localStorage'
 import {parseApiQueryString, type ParsedApiQueryString} from '../util/parseApiQueryString'
-import {SANITY_QUERY_URL} from '../util/parseQueryUrl'
 import {prefixApiVersion} from '../util/prefixApiVersion'
 import {validateApiVersion} from '../util/validateApiVersion'
 import {ParamsEditor, parseParams} from './ParamsEditor'
@@ -72,6 +71,9 @@ function nodeContains(node: Node, other: EventTarget | Node | null): boolean {
 
   return node === other || !!(node.compareDocumentPosition(other as Node) & 16)
 }
+
+// Matches Content Lake query and listen URLs on any domain, custom CDN domains included
+const SANITY_QUERY_URL = /\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
 
 const isRunHotkey = (event: KeyboardEvent) =>
   isHotkey('ctrl+enter', event) || isHotkey('mod+enter', event)
@@ -100,8 +102,6 @@ interface VisionGuiProps extends VisionProps {
   datasets: string[]
   projectId: string | undefined
   defaultDataset: string
-  /** Opens the redesigned Vision; only passed while `beta.redesign.enabled` offers it */
-  onSwitchToRedesign?: () => void
 }
 
 export interface ParsedUrlState {
@@ -116,7 +116,7 @@ export interface ParsedUrlState {
 }
 
 export function VisionGui(props: VisionGuiProps) {
-  const {datasets, config, projectId, defaultDataset, onSwitchToRedesign} = props
+  const {datasets, config, projectId, defaultDataset} = props
   const toast = useToast()
   const telemetry = useVisionTelemetry()
   const {t} = useTranslation(visionLocaleNamespace)
@@ -814,7 +814,6 @@ export function VisionGui(props: VisionGuiProps) {
                       listenInProgress={listenInProgress}
                       onQueryExecution={() => handleQueryExecution({trigger: 'button'})}
                       onListenExecution={handleListenExecution}
-                      onSwitchToRedesign={onSwitchToRedesign}
                     />
                   </InputContainer>
                 </SplitPane>

@@ -13,17 +13,10 @@ export interface VisionProps {
  */
 export interface VisionBetaConfig {
   /**
-   * The redesigned Vision experience: query tabs, a collapsible sidebar with saved and shared
-   * queries, live refetching through sync tags, response details and export helpers.
+   * @deprecated Remove this option: this version of Vision is the classic tool only. The
+   * redesigned Vision ships in the stable `@sanity/vision@^7` release, where it needs no option.
    */
-  redesign?: {
-    /**
-     * When `true`, the classic tool shows a dismissible toast inviting users to try the redesign,
-     * and users who opt in get the redesigned tool (remembered per project in the browser). They
-     * can switch back from the redesigned tool's sidebar or settings. Defaults to `false`.
-     */
-    enabled?: boolean
-  }
+  redesign?: never
 }
 
 export interface VisionConfig {

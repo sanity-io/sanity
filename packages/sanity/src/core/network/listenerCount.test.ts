@@ -161,11 +161,81 @@ describe('listener count subscription', () => {
     const subscriber = vi.fn()
     const unsubscribe = listenerCount.subscribeListenerCounts(subscriber)
 
-    const release = listenerCount.openListener()
+    const release = listenerCount.openListener('abc123.api.sanity.io')
     release()
     unsubscribe()
-    listenerCount.openListener()
+    listenerCount.openListener('abc123.api.sanity.io')
 
     expect(subscriber.mock.calls).toEqual([[{open: 1, peak: 1}], [{open: 0, peak: 1}]])
+  })
+})
+
+describe('listener counts by host', () => {
+  let listenerCount: ListenerCountModule
+
+  beforeEach(async () => {
+    vi.resetModules()
+    listenerCount = await import('./listenerCount')
+  })
+
+  it('sums open listeners on every project host into its root scope, including the root host itself', () => {
+    const release = listenerCount.openListener('abc123.api.sanity.io')
+    listenerCount.openListener('abc123.api.sanity.io')
+    listenerCount.openListener('def456.api.sanity.io')
+    listenerCount.openListener('api.sanity.io')
+    listenerCount.openListener('other.io')
+    release()
+
+    expect(listenerCount.getListenerCountForScope('api.sanity.io')).toBe(3)
+  })
+})
+
+describe('pending request tracking', () => {
+  let listenerCount: ListenerCountModule
+
+  beforeEach(async () => {
+    vi.resetModules()
+    vi.useFakeTimers()
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => new Promise(() => undefined)),
+    )
+    listenerCount = await import('./listenerCount')
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.unstubAllGlobals()
+  })
+
+  it('counts only a stalled listener as a stalled request, not a stalled GROQ query held just as long', async () => {
+    const countingFetch = listenerCount.resolveListenerCountingFetch()
+
+    void countingFetch('https://abc123.api.sanity.io/v1/data/listen', {
+      headers: EVENT_STREAM_HEADERS,
+    })
+    void countingFetch('https://abc123.api.sanity.io/v1/data/query', {method: 'POST'})
+    await vi.advanceTimersByTimeAsync(10_000)
+
+    expect(listenerCount.countStalledRequests(10_000)).toBe(1)
+  })
+
+  it('never tracks an asset upload as pending, but still tracks a JSON query sent as a POST', async () => {
+    const countingFetch = listenerCount.resolveListenerCountingFetch()
+
+    void countingFetch('https://abc123.api.sanity.io/v1/assets/images/production', {
+      method: 'POST',
+      body: 'not actually binary',
+    })
+    await vi.advanceTimersByTimeAsync(10_000)
+    expect(listenerCount.getOldestPendingRequest()).toBeUndefined()
+
+    void countingFetch('https://abc123.api.sanity.io/v1/data/query/production', {
+      method: 'POST',
+      body: JSON.stringify({query: '*[_type == "post"]'}),
+    })
+    expect(listenerCount.getOldestPendingRequest()?.url).toBe(
+      'https://abc123.api.sanity.io/v1/data/query/production',
+    )
   })
 })

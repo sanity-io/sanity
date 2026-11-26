@@ -35,8 +35,8 @@ catalog:
   '@sanity/migrate': ^8.0.5
   '@sanity/pandacss-tsdown-plugin': ^0.3.4
   '@sanity/schema-descriptor-utils': 1.4.0
-  '@sanity/sdk': ^3.16.0
-  '@sanity/sdk-react': ^3.16.0
+  '@sanity/sdk': ^3.17.0
+  '@sanity/sdk-react': ^3.17.0
   '@sanity/telemetry': ^1.1.0
   '@sanity/tsdown-config': ^0.33.0
   '@sanity/ui': ^4.4.13
@@ -46,7 +46,6 @@ catalog:
   '@types/react-is': ^19.3.0
   '@vitejs/plugin-react': ^6.3.0
   '@vitest/browser-playwright': ^5.1.1
-  cobe: ^2.0.1
   dequal: ^2.0.3
   get-it: ^9.7.0
   jsdom: ^31.0.1
@@ -55,12 +54,11 @@ catalog:
   playwright: 1.65.1
   react: ^19.3.1
   react-dom: ^19.3.1
-  react-focus-lock: ^2.13.7
   react-is: ^19.3.1
   react-rx: ^7.1.0
   rimraf: ^6.1.4
   storybook: ^10.6.8
-  styled-components: ^6.6.0
+  styled-components: ^6.7.0
   # Exact version on purpose (like @sanity/workbench): bumps are explicit so published
   # packages ship the version we validated instead of whatever the alpha dist-tag points to
   ui5: npm:@sanity/ui@5.0.0-alpha.28
@@ -108,8 +106,8 @@ minimumReleaseAgeExclude:
   - '@storybook/react@10.6.9'
   - 'chromatic@18.15.3'
   - 'storybook@10.6.9'
-  # Fresh patch; exclude so 1.7.1 can install before the age gate
-  - '@pierre/diffs@1.7.1'
+  # Fresh release; exclude so 6.7.0 can install before the age gate
+  - 'styled-components@6.7.0'
   - '@sanity/*'
   - '@sanity-labs/*'
   - '@yuku-codegen/*'
@@ -163,8 +161,6 @@ minimumReleaseAgeExclude:
   - 'sanity-plugin-media'
   - 'sanity-plugin-asset-source-unsplash'
   - 'sanity-plugin-utils'
-  # Fresh patch; exclude so 6.6.0 can install before the 3-day age gate
-  - 'styled-components@6.6.0'
   - 'tsx'
   - 'tsdown'
   # Ships with tsdown and pins that release as its peer, so it is younger than the age gate on the same bumps
@@ -186,7 +182,7 @@ minimumReleaseAgeExclude:
 
 overrides:
   # Keep styled-components CSSObject compatible with @sanity/ui's responsive styles.
-  'styled-components@6.6.0>csstype': 3.2.4
+  'styled-components@6.7.0>csstype': 3.2.4
   vitest: 'catalog:'
 
 preferWorkspacePackages: true
@@ -199,7 +195,6 @@ trustPolicyExclude:
   # @sanity/cli 8.32.1 requires @sanity/codegen ^8.3.2. 8.3.1 shipped provenance;
   # 8.3.3 did not, from the same publisher
   - '@sanity/codegen@8.3.3'
-  - '@pierre/theme@2.1.0'
   # 2.2.2 was published with weaker trust evidence than earlier releases
   - lefthook@2.2.2
   - rxjs@7.8.2

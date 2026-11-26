@@ -1,6 +1,7 @@
 import {DesktopIcon} from '@sanity/icons/Desktop'
 import {MobileDeviceIcon} from '@sanity/icons/MobileDevice'
 import {PanelLeftIcon} from '@sanity/icons/PanelLeft'
+import {PanelRightIcon} from '@sanity/icons/PanelRight'
 import {RefreshIcon} from '@sanity/icons/Refresh'
 import {Card, Hotkeys, Switch} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
@@ -30,6 +31,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
     canSharePreviewAccess,
     canToggleSharePreviewAccess,
     canUseSharedPreviewAccess,
+    documentPanelOpen,
     iframeRef,
     initialUrl,
     navigatorEnabled,
@@ -44,6 +46,7 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
     previewUrl,
     setViewport,
     targetOrigin,
+    toggleDocumentPanel,
     toggleNavigator,
     toggleOverlay,
     viewport,
@@ -264,6 +267,23 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
           />
         </Flex>
       )}
+
+      <Button
+        aria-label={t('preview-frame.document-panel.toggle-button.aria-label')}
+        icon={PanelRightIcon}
+        mode="bleed"
+        onClick={toggleDocumentPanel}
+        selected={documentPanelOpen}
+        tooltipProps={{
+          content: (
+            <Text size={1} as="div" trim={true}>
+              {t('preview-frame.document-panel.toggle-button.tooltip')}
+            </Text>
+          ),
+          fallbackPlacements: ['bottom-end'],
+          placement: 'bottom',
+        }}
+      />
     </Flex>
   )
 }

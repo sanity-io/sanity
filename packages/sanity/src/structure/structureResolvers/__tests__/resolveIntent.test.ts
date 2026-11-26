@@ -566,4 +566,31 @@ describe('resolveIntent', () => {
 
     await expect(result).rejects.toThrow('broken child')
   })
+
+  it('keeps async child resolver errors unwrapped so request errors stay classifiable', async () => {
+    const source = await getMockSource({config: {schema: mockSchema}})
+    // @ts-expect-error -- pre-existing, fix later
+    const S = createStructureBuilder({source})
+    const requestError = Object.assign(new Error('Service unavailable'), {statusCode: 503})
+
+    const rootPaneNode = S.list()
+      .title('Content')
+      .items([
+        S.listItem()
+          .title('Remote')
+          .child(async () => {
+            throw requestError
+          }),
+      ]) as unknown as UnresolvedPaneNode
+
+    const result = resolveIntent({
+      intent: 'edit',
+      params: {id: 'book123', type: 'book'},
+      payload: undefined,
+      rootPaneNode,
+      structureContext: null as any,
+    })
+
+    await expect(result).rejects.toBe(requestError)
+  })
 })
