@@ -1,9 +1,9 @@
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {useDocumentVersions} from 'sanity'
 import {test as baseTest, beforeEach, describe, expect, type MockedFunction, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
+import {useDocumentVersions} from '../../../../../../core/releases/hooks/useDocumentVersions'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
 import {type DocumentPaneContextValue} from '../../../DocumentPaneContext'
 import {useDocumentPane} from '../../../useDocumentPane'
@@ -13,8 +13,7 @@ vi.mock('../../../useDocumentPane', () => ({
   useDocumentPane: vi.fn(),
 }))
 
-vi.mock('sanity', async (importOriginal) => ({
-  ...(await importOriginal<Record<string, unknown>>()),
+vi.mock('../../../../../../core/releases/hooks/useDocumentVersions', () => ({
   useDocumentVersions: vi.fn(),
 }))
 

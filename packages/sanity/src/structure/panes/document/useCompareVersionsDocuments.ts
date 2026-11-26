@@ -1,11 +1,9 @@
 import {type SanityDocument} from '@sanity/types'
 import {useMemo} from 'react'
-import {
-  type DocumentIdStack,
-  type EditStateFor,
-  useDocumentIdStack,
-  useDocumentVersions,
-} from 'sanity'
+
+import {type DocumentIdStack, useDocumentIdStack} from '../../../core/hooks/useDocumentIdStack'
+import {useDocumentVersions} from '../../../core/releases/hooks/useDocumentVersions'
+import {type EditStateFor} from '../../../core/store/document/document-pair/editState'
 
 /**
  * The pair of document ids the "Compare versions" action opens the comparison with.
