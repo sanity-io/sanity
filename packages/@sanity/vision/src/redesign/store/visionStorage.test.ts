@@ -26,12 +26,12 @@ describe('visionStorage', () => {
     localStorage.clear()
   })
 
-  it('resolves settings from the tool defaults: following the workspace and the navbar', () => {
+  it('resolves settings from the tool defaults: following the workspace, on published', () => {
     expect(resolveDefaultSettings(defaults)).toEqual({
       datasetMode: 'auto',
       dataset: 'production',
       apiVersion: 'v2025-02-19',
-      perspective: 'global',
+      perspective: 'published',
       variant: 'global',
       includeSourceMap: false,
       useCdn: false,
@@ -49,7 +49,7 @@ describe('visionStorage', () => {
       datasetMode: 'auto',
       dataset: 'staging',
       apiVersion: DEFAULT_API_VERSION,
-      perspective: 'global',
+      perspective: 'published',
       variant: 'global',
       includeSourceMap: false,
       useCdn: false,
@@ -586,21 +586,36 @@ describe('visionStorage', () => {
 
   it('keeps the API default perspective of a tab and of the settings across a reload', () => {
     const initial = createInitialState(defaults)
-    expect(initial.settings.perspective).toBe('global')
+    expect(initial.settings.perspective).toBe('published')
 
-    // A tab on the API default while the settings say Global: the tab must not fall back to them
+    // A tab on the API default while the settings say Published: the tab must not fall back to them
     const tab = createTab(initial.settings, {id: 'default', options: {perspective: undefined}})
     saveVisionState('tab', {...initial, tabs: [tab], activeTabId: 'default'})
     // JSON has no undefined, so the choice is written as null rather than left out
     expect(localStorage.getItem(getVisionStorageKey('tab'))).toContain('"perspective":null')
     expect(loadVisionState('tab', defaults).tabs[0].options.perspective).toBeUndefined()
 
-    // Settings on the API default must not fall back to the built-in Global either
+    // Settings on the API default must not fall back to the built-in Published either
     saveVisionState('settings', {
       ...initial,
       settings: {...initial.settings, perspective: undefined},
     })
     expect(loadVisionState('settings', defaults).settings.perspective).toBeUndefined()
+  })
+
+  it('keeps a stored perspective over the Published default', () => {
+    const initial = createInitialState(defaults)
+    const tab = createTab(initial.settings, {id: 'auto', options: {perspective: 'global'}})
+    saveVisionState('proj', {
+      ...initial,
+      tabs: [tab],
+      activeTabId: 'auto',
+      settings: {...initial.settings, perspective: 'drafts'},
+    })
+
+    const loaded = loadVisionState('proj', defaults)
+    expect(loaded.tabs[0].options.perspective).toBe('global')
+    expect(loaded.settings.perspective).toBe('drafts')
   })
 
   it('stores state under the classic Vision prefix so "Clear cache" resets both tools', () => {
