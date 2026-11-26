@@ -37,6 +37,7 @@ import {
   useEditState,
   useMiddlewareComponents,
   useTranslation,
+  useWorkspace,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
 import {CommentsEnabledContext, ReviewChangesContext} from 'sanity/_singletons'
@@ -85,6 +86,8 @@ export function DiffViewPane({
   const containerElement = useRef<HTMLDivElement | null>(null)
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
+  // The read-only sides and their styling belong to Content Variants; without it, main's panes
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
 
   const DocumentLayout = useMiddlewareComponents({
     pick: pickDocumentLayoutComponent,
@@ -121,7 +124,7 @@ export function DiffViewPane({
         >
           <BoundaryElementProvider element={boundaryElement}>
             <DiffViewPaneLayout
-              className={readOnlyPane}
+              className={variantsEnabled ? readOnlyPane : undefined}
               ref={setBoundaryElement}
               style={{
                 '--grid-area': `${role}-document`,
@@ -180,6 +183,9 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
   const {data: releases} = useActiveReleases()
   const [patchChannel] = useState(() => createPatchChannel())
   const perspective = useMemo(() => findRelease(documentId, releases), [documentId, releases])
+  // The comparison view's open beta behaviour (read-only sides, marks against the Reference, the
+  // missing version message) belongs to Content Variants. Without it, the panes are main's.
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
 
   const {
     editState,
@@ -205,17 +211,18 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
     releaseId: getVersionFromId(documentId),
     comparisonValue: compareValue,
     displayInlineChanges: true,
-    // Compare is for reading: neither side can be edited from here
-    readOnly: true,
-    // The Comparing with side marks the fields that differ from the Reference, in place of the
-    // base variant; the Reference side marks nothing
-    fieldMarkBase: role === 'next' ? (compareValue ?? null) : null,
+    // With Variants, compare is for reading: neither side can be edited from here
+    readOnly: variantsEnabled,
+    // With Variants, the Comparing with side marks the fields that differ from the Reference, in
+    // place of the base variant; the Reference side marks nothing
+    fieldMarkBase: variantsEnabled ? (role === 'next' ? (compareValue ?? null) : null) : undefined,
   })
 
   const isLoading = formState === null || !ready
   // A URL can name a version that no longer exists (discarded, or published and gone). The form
   // would show an empty new document; say so instead.
-  const isMissing = !isLoading && pickVersion(documentId, editState) === undefined
+  const isMissing =
+    variantsEnabled && !isLoading && pickVersion(documentId, editState) === undefined
 
   const pathSyncChannel = usePathSyncChannel({
     id: role,
@@ -271,11 +278,11 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
         changedFromBaseVariant={formState.changedFromBaseVariant}
         baseVariantValue={formState.baseVariantValue}
         hasBaseVariant={formState.hasBaseVariant}
-        fieldMarksCompareWithReference
+        fieldMarksCompareWithReference={variantsEnabled}
         presence={formState.presence}
         // The whole form is read-only, which the form's own members read from here (closing an
         // empty array item, for one, then never tries to patch it)
-        readOnly
+        readOnly={variantsEnabled || undefined}
         schemaType={schemaType}
         value={value}
         compareValue={compareValue}

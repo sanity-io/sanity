@@ -1,5 +1,6 @@
 import {dequal as isEqual} from 'dequal/lite'
 import {useEffect, useMemo, useRef} from 'react'
+import {useWorkspace} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {
@@ -65,6 +66,9 @@ export function useDiffViewState({
   const mode = searchParams.get(DIFF_VIEW_SEARCH_PARAMETER)
   const anyParamSet = [previousDocument, nextDocument, mode].some((param) => param !== null)
   const previousState = useRef<DiffViewState | undefined>(undefined)
+  // Opening with only the previous side belongs to Content Variants: its picker fills the empty
+  // side. Without Variants, a missing next side is an error, as on main.
+  const allowMissingNext = Boolean(useWorkspace().beta?.variants?.enabled)
 
   const params = useMemo(
     () =>
@@ -72,8 +76,9 @@ export function useDiffViewState({
         previousDocument: previousDocument ?? '',
         nextDocument: nextDocument ?? '',
         mode: mode ?? '',
+        allowMissingNext,
       }),
-    [mode, nextDocument, previousDocument],
+    [allowMissingNext, mode, nextDocument, previousDocument],
   )
 
   useEffect(() => {
@@ -150,10 +155,12 @@ function parseParams({
   previousDocument,
   nextDocument,
   mode,
+  allowMissingNext,
 }: {
   previousDocument: string
   nextDocument: string
   mode: string
+  allowMissingNext: boolean
 }): ParamsSuccess | ParamsError {
   const errors: DiffViewStateErrorWithInput[] = []
 
@@ -173,9 +180,9 @@ function parseParams({
     errors.push(['invalidPreviousDocumentParam', previousDocument])
   }
 
-  // An absent next document is allowed: the view opens with only the previous side. A next
-  // document that is present but malformed is still an error.
-  const hasNextDocument = nextDocument !== ''
+  // With Variants, an absent next document is allowed: the view opens with only the previous
+  // side. A next document that is present but malformed is always an error.
+  const hasNextDocument = nextDocument !== '' || !allowMissingNext
   if (
     hasNextDocument &&
     (typeof nextDocumentType === 'undefined' || typeof nextDocumentId === 'undefined')

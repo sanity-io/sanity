@@ -21,6 +21,7 @@ import {
   useDocumentVersions,
   useDocumentVersionTitle,
   useTranslation,
+  useWorkspace,
   type VersionInfoDocumentStub,
 } from 'sanity'
 import {Flex} from 'ui5'
@@ -50,6 +51,8 @@ export const DocumentGroupPickerMenu: ComponentType<{
   const [open, setOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)
+  // The empty and missing picker labels belong to Content Variants; without it, main's labels
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   const groupId = groupDocumentId ?? document.id ?? ''
   // The version list loads apart from the variants and releases. Until it has, the picked version
   // is not found, and the button would fall back to the raw scope id from the URL.
@@ -131,10 +134,15 @@ export const DocumentGroupPickerMenu: ComponentType<{
             text={
               document.id === undefined
                 ? tStructure('compare-versions.picker.placeholder')
-                : variantsLoading || releasesLoading || versionsLoading
-                  ? tCore('common.loading')
-                  : // Loaded, and the URL names no version of this document
-                    tStructure('compare-versions.picker.missing')
+                : !variantsEnabled
+                  ? // Without Variants, main's label: the raw id while the version is not found
+                    variantsLoading || releasesLoading
+                    ? tCore('common.loading')
+                    : (getVersionFromId(document.id) ?? document.id)
+                  : variantsLoading || releasesLoading || versionsLoading
+                    ? tCore('common.loading')
+                    : // Loaded, and the URL names no version of this document
+                      tStructure('compare-versions.picker.missing')
             }
           />
         )}

@@ -6,6 +6,7 @@ import {describe, expect, it, vi} from 'vitest'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {type PathSyncState} from '../../types/pathSyncChannel'
 import {DiffViewPane} from '../DiffViewPane'
+import {readOnlyPane} from '../DiffViewPane.css'
 
 const portalBoundaryCapture = vi.hoisted(() => ({current: null as HTMLElement | null}))
 
@@ -44,5 +45,40 @@ describe('DiffViewPane portal boundary', () => {
     await waitFor(() => {
       expect(portalBoundaryCapture.current).toBe(pane)
     })
+  })
+})
+
+describe('DiffViewPane with Variants off', () => {
+  async function renderPane(variantsEnabled: boolean) {
+    const wrapper = await createTestProvider({
+      config: variantsEnabled ? {beta: {variants: {enabled: true}}} : undefined,
+    })
+    render(
+      <DiffViewPane
+        role="next"
+        documentType="author"
+        documentId="doc-1"
+        scrollElement={null}
+        syncChannel={new Subject<PathSyncState>()}
+        compareDocument={{type: 'author', id: 'drafts.doc-1'}}
+      />,
+      {wrapper},
+    )
+    const pane = screen.getByTestId('diffView-document-panel-portal').parentElement
+    return pane?.className.split(' ') ?? []
+  }
+
+  it("keeps main's pane, without the read-only styling", async () => {
+    const classes = await renderPane(false)
+    for (const className of readOnlyPane.split(' ')) {
+      expect(classes).not.toContain(className)
+    }
+  })
+
+  it('styles the pane read-only with Variants on', async () => {
+    const classes = await renderPane(true)
+    for (const className of readOnlyPane.split(' ')) {
+      expect(classes).toContain(className)
+    }
   })
 })

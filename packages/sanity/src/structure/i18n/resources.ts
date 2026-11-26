@@ -365,8 +365,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'compare-versions.status.draft': 'Draft',
   /** The string used to label published documents */
   'compare-versions.status.published': 'Published',
+  /** The title used when comparing versions of a document, with Content Variants on */
+  'compare-versions.comparison-view.title': 'Comparison view',
   /** The title used when comparing versions of a document */
-  'compare-versions.title': 'Comparison view',
+  'compare-versions.title': 'Compare versions',
   /** The next side of Compare versions before a version is picked to compare with */
   'compare-versions.empty.description': 'Pick a version above to compare with',
   /** The next side's picker in Compare versions before a version is picked */

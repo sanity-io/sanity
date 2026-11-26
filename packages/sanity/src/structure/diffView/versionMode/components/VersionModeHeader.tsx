@@ -1,6 +1,7 @@
 import {ArrowRightIcon} from '@sanity/icons/ArrowRight'
 import {CloseIcon} from '@sanity/icons/Close'
 import {LockIcon} from '@sanity/icons/Lock'
+import {TransferIcon} from '@sanity/icons/Transfer'
 import {
   Badge,
   // oxlint-disable-next-line no-restricted-imports -- we need more control over how the `Button` component is rendered
@@ -70,6 +71,9 @@ export const VersionModeHeader: ComponentType<
   const releasesIds = documentVersions.flatMap((id) => getVersionFromId(id) ?? [])
   const {beta} = useWorkspace()
   const hasDocumentGroupInventory = beta?.documentGroupInventory?.enabled === true
+  // The comparison view's open beta changes (side labels, the direction arrow, a next side that
+  // can be empty) belong to Variants. Without it, the header is main's.
+  const variantsEnabled = Boolean(beta?.variants?.enabled)
 
   const releases = useMemo(() => {
     return activeReleases.data.filter((release) => {
@@ -105,37 +109,96 @@ export const VersionModeHeader: ComponentType<
     }
   }
 
+  const previousMenu =
+    typeof documents?.previous !== 'undefined' &&
+    (hasDocumentGroupInventory ? (
+      <DocumentGroupPickerMenu
+        role="previous"
+        document={documents.previous}
+        onSelectDocument={onSelectPreviousRelease}
+      />
+    ) : (
+      // oxlint-disable-next-line no-deprecated -- Remove once `beta.documentGroupInventory.enabled` is not optional.
+      <VersionMenu
+        releases={releases}
+        releasesState={releasesState}
+        onSelectRelease={onSelectPreviousRelease}
+        role="previous"
+        documentId={documentId}
+        state={state}
+        document={documents.previous}
+      />
+    ))
+
+  const nextVersionMenu = typeof documents?.next !== 'undefined' && (
+    // oxlint-disable-next-line no-deprecated -- Remove once `beta.documentGroupInventory.enabled` is not optional.
+    <VersionMenu
+      releases={releases}
+      releasesState={releasesState}
+      onSelectRelease={onSelectNextRelease}
+      role="next"
+      documentId={documentId}
+      state={state}
+      document={documents.next}
+    />
+  )
+
+  const closeButton = (
+    <Box
+      padding={3}
+      style={{
+        justifySelf: 'end',
+      }}
+    >
+      <Button icon={CloseIcon} mode="bleed" onClick={exitDiffView} padding={2} />
+    </Box>
+  )
+
+  if (!variantsEnabled) {
+    // Without Variants, the header is main's: no side labels, and the swap icon between the sides
+    return (
+      <header className={versionModeHeaderLayout}>
+        <div className={versionModeHeaderLayoutSection}>
+          <Box padding={4}>
+            <Text as="h1" size={1} muted trim={true}>
+              {t('compare-versions.title')}
+            </Text>
+          </Box>
+          {previousMenu}
+        </div>
+        <Flex alignItems="center" paddingX={3}>
+          <Icon size={1} icon={TransferIcon} style={{margin: '-0.375rem'}} />
+        </Flex>
+        <div className={versionModeHeaderLayoutSection}>
+          {typeof documents?.next !== 'undefined' &&
+            (hasDocumentGroupInventory ? (
+              <DocumentGroupPickerMenu
+                role="next"
+                document={documents.next}
+                onSelectDocument={onSelectNextRelease}
+              />
+            ) : (
+              nextVersionMenu
+            ))}
+          {closeButton}
+        </div>
+      </header>
+    )
+  }
+
   return (
     <header className={versionModeHeaderLayout}>
       <div className={versionModeHeaderLayoutSection}>
         <Box padding={4}>
           <Text as="h1" size={1} muted trim={true}>
-            {t('compare-versions.title')}
+            {t('compare-versions.comparison-view.title')}
           </Text>
         </Box>
         <Flex alignItems="center" gap={2} style={{minWidth: 0}}>
           <Text size={1} muted data-testid="diff-view-side-label-previous">
             {t('compare-versions.side.reference')}
           </Text>
-          {typeof documents?.previous !== 'undefined' &&
-            (hasDocumentGroupInventory ? (
-              <DocumentGroupPickerMenu
-                role="previous"
-                document={documents.previous}
-                onSelectDocument={onSelectPreviousRelease}
-              />
-            ) : (
-              // oxlint-disable-next-line no-deprecated -- Remove once `beta.documentGroupInventory.enabled` is not optional.
-              <VersionMenu
-                releases={releases}
-                releasesState={releasesState}
-                onSelectRelease={onSelectPreviousRelease}
-                role="previous"
-                documentId={documentId}
-                state={state}
-                document={documents.previous}
-              />
-            ))}
+          {previousMenu}
         </Flex>
       </div>
       <Flex alignItems="center" paddingX={3}>
@@ -157,28 +220,10 @@ export const VersionModeHeader: ComponentType<
               onSelectDocument={onSelectNextRelease}
             />
           ) : (
-            typeof documents?.next !== 'undefined' && (
-              // oxlint-disable-next-line no-deprecated -- Remove once `beta.documentGroupInventory.enabled` is not optional.
-              <VersionMenu
-                releases={releases}
-                releasesState={releasesState}
-                onSelectRelease={onSelectNextRelease}
-                role="next"
-                documentId={documentId}
-                state={state}
-                document={documents.next}
-              />
-            )
+            nextVersionMenu
           )}
         </Flex>
-        <Box
-          padding={3}
-          style={{
-            justifySelf: 'end',
-          }}
-        >
-          <Button icon={CloseIcon} mode="bleed" onClick={exitDiffView} padding={2} />
-        </Box>
+        {closeButton}
       </div>
     </header>
   )
