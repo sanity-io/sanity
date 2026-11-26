@@ -3,6 +3,7 @@ import {type AssetSourceUploadEvent, type SchemaType} from '@sanity/types'
 import {Observable} from 'rxjs'
 import {describe, expect, it, vi, beforeEach, afterEach} from 'vitest'
 
+import {createMockSanityClientAsClient} from '../../../../../../test/mocks/mockSanityClient'
 import {set} from '../../../patch/patch'
 import {UPLOAD_STATUS_KEY} from '../../uploads/constants'
 import {resolveUploader} from '../../uploads/resolveUploader'
@@ -37,7 +38,7 @@ describe('DatasetUploader', () => {
 
   it('abort() unsubscribes underlying uploads so onChange stops receiving patches', async () => {
     const onChange = vi.fn()
-    const UploaderClass = createDatasetUploader({client: {} as SanityClient})
+    const UploaderClass = createDatasetUploader({client: createMockSanityClientAsClient()})
     const uploader = new UploaderClass()
 
     uploader.upload([new File(['x'], 'doc.pdf', {type: 'application/pdf'})], {
@@ -63,7 +64,7 @@ describe('DatasetUploader', () => {
 
     const onChange = vi.fn()
     const events: AssetSourceUploadEvent[] = []
-    const UploaderClass = createDatasetUploader({client: {} as SanityClient})
+    const UploaderClass = createDatasetUploader({client: createMockSanityClientAsClient()})
     const uploader = new UploaderClass()
 
     uploader.subscribe((event) => {

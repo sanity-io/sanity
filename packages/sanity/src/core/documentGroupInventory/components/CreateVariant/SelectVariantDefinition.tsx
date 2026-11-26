@@ -1,12 +1,10 @@
-import {clsx} from 'clsx'
-import {type ComponentType, type RefAttributes, type SVGProps} from 'react'
+import {type ComponentType} from 'react'
 
-import {RhombusIconLarge, RhombusOutlineIcon} from '../../../components/temporary-icons/Rhombus'
+import {VariantMark} from '../../../../ui-components/variantMark'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {getVariantTitle} from '../../../variants/tool/util'
 import {type SystemVariant} from '../../../variants/types'
-import {createVariantDefinitionIcon} from './CreateVariant.css'
 import {CreateVariantPicker, type CreateVariantPickerOption} from './CreateVariantPicker'
 
 interface Props {
@@ -19,21 +17,7 @@ interface Props {
 }
 
 // As in the document's Variants pill menu: a filled diamond for a variant the document has a
-// version in, an outline for one it has not, both in the variant colour.
-// The menu item's `Icon` clones the icon with its own class, so the variant colour is merged with it.
-type IconProps = SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>
-
-function FilledVariantIcon(props: IconProps) {
-  return (
-    <RhombusIconLarge {...props} className={clsx(props.className, createVariantDefinitionIcon)} />
-  )
-}
-
-function OutlineVariantIcon(props: IconProps) {
-  return (
-    <RhombusOutlineIcon {...props} className={clsx(props.className, createVariantDefinitionIcon)} />
-  )
-}
+// version in, an outline for one it has not. The mark owns its colour.
 
 /**
  * The variant picker groups the definitions the way the Variants pill menu does: "Has N variants"
@@ -53,7 +37,7 @@ export const SelectVariantDefinition: ComponentType<Props> = ({
 
   return (
     <CreateVariantPicker
-      icon={RhombusIconLarge}
+      icon={<VariantMark size="row" />}
       label={t('document-group.create-variant.variant-label')}
       description={t('document-group.create-variant.variant-description')}
       testId="create-variant-variant-menu"
@@ -84,6 +68,6 @@ function toOption(
   return {
     key: variantDefinition._id,
     text: getVariantTitle(variantDefinition),
-    icon: hasVersion ? FilledVariantIcon : OutlineVariantIcon,
+    icon: <VariantMark size="row" fill={hasVersion ? 'filled' : 'outline'} />,
   }
 }

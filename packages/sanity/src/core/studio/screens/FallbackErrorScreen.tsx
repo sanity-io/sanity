@@ -1,7 +1,6 @@
 /* oxlint-disable i18next/no-literal-string */
-import {Card, Heading} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
-import {Text, Container, VStack, Flex} from 'ui5'
+import {Card} from '@sanity/ui'
+import {Heading, Code, Text, Container, VStack, Flex} from 'ui5'
 
 import {ErrorActions} from '../../components/errorActions/ErrorActions'
 import {isDev, isProd} from '../../environment'
@@ -44,7 +43,9 @@ export function FallbackErrorScreen(props: {
         <Container size={3}>
           <VStack gap={6}>
             <VStack gap={4}>
-              <Heading>{heading}</Heading>
+              <Heading as="h1" trim>
+                {heading}
+              </Heading>
               <Text as="div" trim={true}>
                 An error occurred that Sanity Studio was unable to recover from.
               </Text>
@@ -58,12 +59,26 @@ export function FallbackErrorScreen(props: {
                 <Card border radius={2} overflow="auto" padding={4} tone="critical">
                   <VStack gap={4}>
                     {message && (
-                      <Code weight={'bold'} size={1}>
+                      <Code
+                        size={1}
+                        style={{
+                          fontWeight: 'var(--bold)',
+                        }}
+                        trim
+                      >
                         {message}
                       </Code>
                     )}
-                    {stack && <Code size={1}>{stack}</Code>}
-                    {eventId && <Code size={1}>Event ID: {eventId}</Code>}
+                    {stack && (
+                      <Code size={1} trim>
+                        {stack}
+                      </Code>
+                    )}
+                    {eventId && (
+                      <Code size={1} trim>
+                        Event ID: {eventId}
+                      </Code>
+                    )}
                   </VStack>
                 </Card>
               )}
@@ -79,7 +94,9 @@ export function FallbackErrorScreen(props: {
                       issue the request, or delegate it to the Studio&apos;s built-in error UI:
                     </Text>
                     <Card border radius={1} overflow="auto" padding={3} tone="transparent">
-                      <Code size={1}>{TIP_SNIPPET}</Code>
+                      <Code size={1} trim>
+                        {TIP_SNIPPET}
+                      </Code>
                     </Card>
                     <Text size={1} muted as="div" trim={true} tone="caution">
                       This tip is only shown in development.

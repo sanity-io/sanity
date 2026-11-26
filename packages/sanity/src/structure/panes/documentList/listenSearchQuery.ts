@@ -1,4 +1,4 @@
-import {type ClientPerspective, type SanityClient} from '@sanity/client'
+import {type ClientPerspective, type ReconnectEvent, type SanityClient} from '@sanity/client'
 import {
   asyncScheduler,
   defer,
@@ -13,7 +13,6 @@ import {
   skipWhile,
   throttleTime,
   throwError,
-  timeout,
   timer,
 } from 'rxjs'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
@@ -23,6 +22,9 @@ import {
   createSearch,
   createSWR,
   getSearchableTypes,
+  pauseWhileDocumentHidden,
+  reconnectListener,
+  retryTransientFetch,
   type SanityDocumentLike,
   type Schema,
   type SearchFactoryOptions,
@@ -63,18 +65,18 @@ export type SearchQueryEvent =
   | {
       type: 'reconnect'
     }
-  | {type: 'result'; documents: SanityDocumentLike[]}
+  | {type: 'result'; documents: SanityDocumentLike[]; connected: boolean}
+
+/**
+ * The listener failed before it connected: the list is fetched for it as it is for `welcome`, but
+ * it is not live until the listener connects and the list is fetched again.
+ */
+const LISTENER_UNAVAILABLE = {type: 'unavailable'} as const
 
 export interface SearchQueryState {
   connected: boolean
   fromCache: boolean
   documents: SanityDocumentLike[]
-}
-
-const CONNECT_TIMEOUT_MS = 30_000
-
-class TimeoutError extends Error {
-  readonly name = 'TimeoutError'
 }
 
 const swr = createSWR<{connected: boolean; documents: SanityDocumentLike[]}>({maxSize: 100})
@@ -151,39 +153,46 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
   // re-fetch the documents that match the search query (see below).
   // We use a separate listener since the search query is too large to use in a listen query.
   const events$ = defer(() => {
-    return client.listen(`*[${groqFilter}]`, params, {
-      events: ['welcome', 'mutation', 'reconnect'],
-      includeAllVersions: true,
-      includeResult: false,
-      visibility: 'query',
-      tag: 'listen-search-query',
-    })
+    return client
+      .listen(`*[${groqFilter}]`, params, {
+        events: ['welcome', 'mutation', 'reconnect'],
+        includeAllVersions: true,
+        includeResult: false,
+        visibility: 'query',
+        tag: 'listen-search-query',
+      })
+      .pipe(
+        // Applied before the gate so every connection, including one opened when the page is
+        // shown again, gets its own reconnects and connect timeout, and time spent paused never
+        // counts towards them.
+        reconnectListener(),
+        mergeMap((ev, i) => {
+          // When a connection is successfully established, the first event will be 'welcome'
+          if (i > 0 || ev.type === 'welcome') {
+            return of(ev)
+          }
+          // If we can't establish a connection to the /listen endpoint, the first event we receive will be 'reconnect'
+          if (ev.type === 'reconnect') {
+            return of(LISTENER_UNAVAILABLE)
+          }
+          // if it's neither welcome nor reconnect, something unexpected has happened.
+          return throwError(() => new Error(`Received unexpected type of first event "${ev.type}"`))
+        }),
+        // The list keeps its documents and shows that it is reconnecting until the new
+        // connection's `welcome` fetches them again
+        pauseWhileDocumentHidden({onPause: (): ReconnectEvent => ({type: 'reconnect'})}),
+      )
   }).pipe(
-    // A 'reconnect' before 'welcome' means the client is retrying the connection, so keep waiting
+    // A pause before the first 'welcome' has nothing to report: the list has not connected yet
     skipWhile((ev) => ev.type === 'reconnect'),
-    timeout({
-      first: CONNECT_TIMEOUT_MS,
-      with: () =>
-        throwError(
-          () =>
-            new TimeoutError(
-              `Timed out after ${CONNECT_TIMEOUT_MS}ms waiting for the listener to connect`,
-            ),
-        ),
-    }),
-    mergeMap((ev, i) => {
-      const isFirst = i === 0
-      // When a connection is successfully established, the first event will be 'welcome'
-      if (isFirst && ev.type !== 'welcome') {
-        // if it's not, something unexpected has happened.
-        return throwError(() => new Error(`Received unexpected type of first event "${ev.type}"`))
-      }
-      return of(ev)
-    }),
     share(),
   )
 
-  const [welcome$, mutationAndReconnect$] = partition(events$, (ev) => ev.type === 'welcome')
+  const [fetchTriggers$, mutationAndReconnect$] = partition(
+    events$,
+    (ev) => ev.type === 'welcome' || ev.type === 'unavailable',
+  )
+  const [reconnect$, mutation$] = partition(mutationAndReconnect$, (ev) => ev.type === 'reconnect')
 
   const swrKey = JSON.stringify({
     fiilter: groqFilter,
@@ -197,15 +206,23 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
   })
 
   return merge(
-    welcome$,
-    mutationAndReconnect$.pipe(throttleTime(1000, asyncScheduler, {leading: true, trailing: true})),
+    fetchTriggers$,
+    // Unthrottled, like `welcome`, so a throttled 'reconnect' can never arrive after the
+    // `welcome` of the connection that replaced it and leave the list reconnecting
+    reconnect$,
+    mutation$.pipe(throttleTime(1000, asyncScheduler, {leading: true, trailing: true})),
   ).pipe(
     exhaustMapWithTrailing((event): Observable<SearchQueryEvent> => {
+      if (event.type === 'reconnect') {
+        return of(event)
+      }
       // Get the types names to use for searching.
       // If we have a static list of types, we can skip fetching the types and use the static list.
       const typeNames$ = staticTypeNames
         ? of(staticTypeNames)
-        : client.observable.fetch(`array::unique(*[${groqFilter}][]._type)`, params)
+        : client.observable
+            .fetch(`array::unique(*[${groqFilter}][]._type)`, params)
+            .pipe(retryTransientFetch())
 
       // Use the type names to create a search query and fetch the documents that match the query.
       return typeNames$.pipe(
@@ -259,8 +276,14 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
             }
 
             return search(searchTerms, searchOptions).pipe(
+              // A failed fetch would end the list, close its listener and show the error screen.
+              retryTransientFetch(),
               map((result) => result.hits.map(({hit}) => hit)),
-              map((hits) => ({type: 'result' as const, documents: hits})),
+              map((hits) => ({
+                type: 'result' as const,
+                documents: hits,
+                connected: event.type !== 'unavailable',
+              })),
             )
           }
 
@@ -269,9 +292,6 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
             // If the event we are responding to arrives with visibility != query, we add a little delay to allow for the updated document to be available for queries
             // See https://www.sanity.io/docs/listening#visibility-c4786e55c3ff
             return timer(1200).pipe(mergeMap(doFetch))
-          }
-          if (event.type === 'reconnect') {
-            return of(event)
           }
           return doFetch()
         }),
@@ -282,7 +302,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
         acc: null | {connected: boolean; documents: SanityDocumentLike[]},
         event: SearchQueryEvent,
       ) => ({
-        connected: event.type !== 'reconnect',
+        connected: event.type === 'result' && event.connected,
         documents: event.type === 'result' ? event.documents : acc?.documents || [],
       }),
       null as null | {connected: boolean; documents: SanityDocumentLike[]},

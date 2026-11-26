@@ -2,6 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {firstValueFrom} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {createMockSanityClientAsClient} from '../../../test/mocks/mockSanityClient'
 import {getApiNetworkDiagnostic, getCachedApiProtocol, isUsingLegacyHttp} from './isUsingLegacyHttp'
 
 describe('isUsingLegacyHttp', () => {
@@ -320,7 +321,7 @@ describe('isUsingLegacyHttp', () => {
       vi.stubGlobal('PerformanceObserver', undefined)
       vi.stubGlobal('PerformanceResourceTiming', undefined)
 
-      const client = {} as SanityClient
+      const client = createMockSanityClientAsClient()
       await expect(firstValueFrom(getApiNetworkDiagnostic(client))).resolves.toEqual({
         durationMs: 0,
         protocol: 'unknown',

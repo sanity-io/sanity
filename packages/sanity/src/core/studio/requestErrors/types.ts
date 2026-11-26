@@ -37,6 +37,8 @@ export type RequestErrorClaim =
   | {type: 'networkError'; error: Error; retryable: boolean}
   | {type: 'serverError'; error: HttpError; retryable: boolean}
   | {type: 'rateLimited'; error: HttpError; retryAfterSeconds?: number; retryable: boolean}
+  /** A listener (`client.listen()`) failed in a way it cannot recover from. */
+  | {type: 'listenerError'; error: Error; retryable: boolean}
   | {
       type: 'unauthorized'
       error: HttpError

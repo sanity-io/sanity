@@ -11,6 +11,7 @@ import {
 } from '../../federatedAssetSource/types'
 import {DEFAULT_API_VERSION} from '../constants'
 import {useMediaLibraryIds} from '../hooks/useMediaLibraryIds'
+import {useReportAssetSourceResolved} from '../hooks/useReportAssetSourceResolved'
 import {useValidateAssetCandidate} from '../hooks/useValidateAssetCandidate'
 import {MediaLibraryAssetSource} from '../shared/MediaLibraryAssetSource'
 import {MediaLibraryProvider} from '../shared/MediaLibraryProvider'
@@ -51,9 +52,24 @@ export function FederatedMediaLibraryAssetSource(
   const client = useClient({apiVersion: DEFAULT_API_VERSION})
   const projectId = client.config().projectId
   const [unavailable, setUnavailable] = useState(false)
+  const [openedAt] = useState(() => performance.now())
+  const reportResolved = useReportAssetSourceResolved(sourceProps.action ?? 'select')
+
+  const handleMounted = () => {
+    reportResolved({
+      outcome: 'federated',
+      reason: null,
+      durationMs: Math.round(performance.now() - openedAt),
+    })
+  }
 
   // The React Compiler memoizes this; identity is stable across renders.
   const handleUnavailable = (reason: unknown) => {
+    reportResolved({
+      outcome: 'iframe_fallback',
+      reason: 'load_failed',
+      durationMs: Math.round(performance.now() - openedAt),
+    })
     // The dying view may have left upload files mid-flight (`uploading`) or
     // individually failed (`error`) — its writer is gone, so nothing else
     // will ever move them, and the iframe fallback dialog only issues its
@@ -106,6 +122,7 @@ export function FederatedMediaLibraryAssetSource(
       {/* The body-level portal escape lives in FederatedAssetSourceDialog,
           shared with third-party brokered views. */}
       <FederatedMediaLibraryDialog
+        onMounted={handleMounted}
         onUnavailable={handleUnavailable}
         sourceProps={sourceProps}
         view={view}
@@ -121,11 +138,12 @@ export function FederatedMediaLibraryAssetSource(
  * title.
  */
 function FederatedMediaLibraryDialog(props: {
+  onMounted: () => void
   onUnavailable: (reason: unknown) => void
   sourceProps: AssetSourceComponentProps & RefAttributes<HTMLDivElement>
   view: FederatedAssetSourceView
 }): ReactNode {
-  const {onUnavailable, sourceProps, view} = props
+  const {onMounted, onUnavailable, sourceProps, view} = props
   const {t} = useTranslation()
   const mediaLibraryIds = useMediaLibraryIds()
 
@@ -188,6 +206,7 @@ function FederatedMediaLibraryDialog(props: {
     <FederatedAssetSourceDialog
       dialogHeaderTitle={title}
       extraViewProps={extraViewProps}
+      onMounted={onMounted}
       onUnavailable={onUnavailable}
       ref={ref}
       sourceProps={sourceProps}

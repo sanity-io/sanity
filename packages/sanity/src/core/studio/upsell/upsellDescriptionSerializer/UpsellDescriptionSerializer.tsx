@@ -7,12 +7,12 @@ import {
 import {Icon as IconWrapper, type IconSymbol} from '@sanity/icons'
 import {LinkIcon} from '@sanity/icons/Link'
 import {type PortableTextBlock} from '@sanity/types'
-import {Card, Heading} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ReactNode, useContext, useEffect, useMemo, useState} from 'react'
 import {UpsellDescriptionSerializerContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
-import {Text, Flex, Box, Icon} from 'ui5'
+import {Heading, Text, Flex, Box, Icon} from 'ui5'
 
 import {interpolateTemplate} from '../../../util/interpolateTemplate'
 import {transformBlocks} from './helpers'
@@ -138,7 +138,7 @@ function H2Block(props: {children: ReactNode}) {
   const {children} = props
   return (
     <Box paddingX={2} marginY={4}>
-      <Heading size={2} as="h2">
+      <Heading size={2} as="h2" trim>
         {children}
       </Heading>
     </Box>
@@ -149,7 +149,7 @@ function H3Block(props: {children: ReactNode}) {
   const {children} = props
   return (
     <Box paddingX={2} marginY={4}>
-      <Heading size={1} as="h3">
+      <Heading size={1} as="h3" trim>
         {children}
       </Heading>
     </Box>

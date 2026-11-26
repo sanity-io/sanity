@@ -50,3 +50,30 @@ export function getVariantPublishedSibling({
 }): VersionInfoDocumentStub | undefined {
   return getTargetDocument({bundle: 'published', variant, documentVersions})
 }
+
+/**
+ * The base version a variant is compared with: the base in the same slot, else
+ * the nearest base below it, by the same fall-through as the document's content. In a release: that release, then Drafts, then Published.
+ * In Drafts: Drafts, then Published. In Published: Published. Undefined when the document has no base version at all.
+ *
+ * @internal
+ */
+export function getBaseComparisonTarget({
+  bundle,
+  documentVersions,
+}: {
+  bundle: PerspectiveBundle
+  documentVersions: DocumentPerspectiveState['versions']
+}): VersionInfoDocumentStub | undefined {
+  const order: PerspectiveBundle[] =
+    bundle === 'published'
+      ? ['published']
+      : bundle === 'drafts'
+        ? ['drafts', 'published']
+        : [bundle, 'drafts', 'published']
+  for (const slot of order) {
+    const found = getTargetDocument({bundle: slot, variant: undefined, documentVersions})
+    if (found) return found
+  }
+  return undefined
+}

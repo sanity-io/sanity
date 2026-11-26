@@ -61,6 +61,27 @@ describe('useReleasePermissions', () => {
       expect(results).toEqual([true, true])
       expect(mockAction).toHaveBeenCalledTimes(1)
     })
+
+    it('should check each release separately', async () => {
+      const mockAction = vi.fn((releaseId: string) =>
+        releaseId === '_.releases.restricted' ? Promise.reject(permissionError) : Promise.resolve(),
+      )
+      const store = createReleasePermissionsStore(true)
+
+      expect(await store.checkWithPermissionGuard(mockAction, '_.releases.open')).toBe(true)
+      expect(await store.checkWithPermissionGuard(mockAction, '_.releases.restricted')).toBe(false)
+      expect(await store.checkWithPermissionGuard(mockAction, '_.releases.open')).toBe(true)
+      expect(mockAction).toHaveBeenCalledTimes(2)
+    })
+
+    it('should reuse a check for the same release regardless of non-string arguments', async () => {
+      const mockAction = vi.fn((_releaseId: string, _date: Date) => Promise.resolve())
+      const store = createReleasePermissionsStore(true)
+
+      await store.checkWithPermissionGuard(mockAction, '_.releases.a', new Date(1))
+      await store.checkWithPermissionGuard(mockAction, '_.releases.a', new Date(2))
+      expect(mockAction).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('when content release feature is disabled', () => {

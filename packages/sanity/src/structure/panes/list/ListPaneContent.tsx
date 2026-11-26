@@ -126,6 +126,7 @@ export function ListPaneContent(props: ListPaneContentProps) {
           pressed={pressed}
           schemaType={item.schemaType}
           selected={selected}
+          singletonDocumentId={item.singletonDocumentId}
           title={getI18nText(item).title}
           value={value}
         />

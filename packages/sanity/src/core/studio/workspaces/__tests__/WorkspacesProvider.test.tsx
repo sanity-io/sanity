@@ -4,6 +4,7 @@ import {describe, expect, it, vi} from 'vitest'
 
 import {type Config, type WorkspaceSummary} from '../../../config/types'
 import {type AuthStore} from '../../../store/auth/types'
+import {registeredListenerErrorHandler} from '../../../util/listenerErrorHandlers'
 import type * as RequestErrorChannelModule from '../../requestErrors/createRequestErrorChannel'
 import {WorkspacesProvider} from '../WorkspacesProvider'
 
@@ -193,5 +194,20 @@ describe('WorkspacesProvider forced logout', () => {
     })
     expect(screen.getByText('ready')).toBeInTheDocument()
     expect(logout).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('WorkspacesProvider listener error handler', () => {
+  it('registers its request error channel until it unmounts', async () => {
+    harness.claimProjectId = undefined
+    harness.workspaces = [workspace('listenproj', () => Promise.resolve())]
+    expect(registeredListenerErrorHandler()).toBeUndefined()
+
+    const view = renderProvider()
+    await screen.findByText('ready')
+    expect(registeredListenerErrorHandler()).toBeDefined()
+
+    view.unmount()
+    expect(registeredListenerErrorHandler()).toBeUndefined()
   })
 })

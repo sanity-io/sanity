@@ -1,6 +1,6 @@
 /* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type Diff, diffInput} from '@sanity/diff'
-import {type incremental} from 'mendoza'
+import type * as incremental from 'mendoza/incremental'
 
 import {type Annotation, type Chunk} from '../../../field/types'
 import {wrapValue} from '../../events/diffValue'

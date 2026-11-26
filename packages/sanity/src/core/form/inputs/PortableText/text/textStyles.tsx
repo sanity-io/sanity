@@ -1,10 +1,10 @@
-import {Heading} from '@sanity/ui'
 import {type ComponentProps, type ComponentType, type HTMLProps} from 'react'
 import {styled} from 'styled-components'
-import {Text} from 'ui5'
+import {Heading, Text} from 'ui5'
 
 type TextStyleProps = Omit<HTMLProps<HTMLDivElement>, 'as' | 'ref'>
 type BlockQuoteStyleProps = Omit<HTMLProps<HTMLQuoteElement>, 'as' | 'ref'>
+type HeadingStyleProps = Omit<ComponentProps<typeof Heading>, 'as'>
 
 /**
  * Without this container, editing with Android breaks due to how Text is styled via `responsiveFont` in `@sanity/ui`
@@ -31,7 +31,7 @@ export const Normal = ({children, ...rest}: TextStyleProps) => (
  * Styled component for Portable Text 'h1' style
  */
 export const Heading1 = ({children, ...rest}: TextStyleProps) => (
-  <Heading as="h1" data-testid="text-style--h1" size={5} {...rest}>
+  <Heading as="h1" data-testid="text-style--h1" size={5} {...(rest as HeadingStyleProps)} trim>
     <TextContainer>{children}</TextContainer>
   </Heading>
 )
@@ -40,7 +40,7 @@ export const Heading1 = ({children, ...rest}: TextStyleProps) => (
  * Styled component for Portable Text 'h2' style
  */
 export const Heading2 = ({children, ...rest}: TextStyleProps) => (
-  <Heading as="h2" data-testid="text-style--h2" size={4} {...rest}>
+  <Heading as="h2" data-testid="text-style--h2" size={4} {...(rest as HeadingStyleProps)} trim>
     <TextContainer>{children}</TextContainer>
   </Heading>
 )
@@ -49,7 +49,7 @@ export const Heading2 = ({children, ...rest}: TextStyleProps) => (
  * Styled component for Portable Text 'h3' style
  */
 export const Heading3 = ({children, ...rest}: TextStyleProps) => (
-  <Heading as="h3" data-testid="text-style--h3" size={3} {...rest}>
+  <Heading as="h3" data-testid="text-style--h3" size={3} {...(rest as HeadingStyleProps)} trim>
     <TextContainer>{children}</TextContainer>
   </Heading>
 )
@@ -58,7 +58,7 @@ export const Heading3 = ({children, ...rest}: TextStyleProps) => (
  * Styled component for Portable Text 'h4' style
  */
 export const Heading4 = ({children, ...rest}: TextStyleProps) => (
-  <Heading as="h4" data-testid="text-style--h4" size={2} {...rest}>
+  <Heading as="h4" data-testid="text-style--h4" size={2} {...(rest as HeadingStyleProps)} trim>
     <TextContainer>{children}</TextContainer>
   </Heading>
 )
@@ -67,7 +67,7 @@ export const Heading4 = ({children, ...rest}: TextStyleProps) => (
  * Styled component for Portable Text 'h5' style
  */
 export const Heading5 = ({children, ...rest}: TextStyleProps) => (
-  <Heading as="h5" data-testid="text-style--h5" size={1} {...rest}>
+  <Heading as="h5" data-testid="text-style--h5" size={1} {...(rest as HeadingStyleProps)} trim>
     <TextContainer>{children}</TextContainer>
   </Heading>
 )
@@ -76,7 +76,7 @@ export const Heading5 = ({children, ...rest}: TextStyleProps) => (
  * Styled component for Portable Text 'h6' style
  */
 export const Heading6 = ({children, ...rest}: TextStyleProps) => (
-  <Heading as="h6" data-testid="text-style--h6" size={0} {...rest}>
+  <Heading as="h6" data-testid="text-style--h6" size={0} {...(rest as HeadingStyleProps)} trim>
     <TextContainer>{children}</TextContainer>
   </Heading>
 )

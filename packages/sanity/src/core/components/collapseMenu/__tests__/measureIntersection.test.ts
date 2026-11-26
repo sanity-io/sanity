@@ -1,4 +1,4 @@
-import {afterEach, describe, expect, it, vi} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {measureIntersection, reachesThreshold} from '../measureIntersection'
 
@@ -18,11 +18,16 @@ interface Layout {
   scale?: number
 }
 
-/** An element whose layout is the given box, in its own pixels; jsdom lays nothing out itself */
+/**
+ * An element whose layout is the given box, in its own pixels; jsdom lays nothing out itself.
+ * Attached to the document, since `getComputedStyle` resolves nothing for a detached element.
+ */
 function element(box: Box, {border = 0, overflow, scrollbar = 0, scale = 1}: Layout = {}) {
   const el = document.createElement('div')
+  document.body.append(el)
   if (overflow) el.style.overflow = overflow
-  if (border) el.style.borderWidth = `${border}px`
+  // A border without a style computes to a width of 0, as in browsers
+  if (border) el.style.border = `${border}px solid`
   el.getBoundingClientRect = () =>
     DOMRect.fromRect({
       x: box.x * scale,
@@ -44,11 +49,15 @@ function element(box: Box, {border = 0, overflow, scrollbar = 0, scale = 1}: Lay
 
 afterEach(() => {
   vi.restoreAllMocks()
+  document.body.replaceChildren()
 })
 
 describe('measureIntersection', () => {
   // A 100px wide row, like the hidden measurement row of CollapseTabList
-  const root = element({x: 0, y: 0, width: 100, height: 20})
+  let root: HTMLElement
+  beforeEach(() => {
+    root = element({x: 0, y: 0, width: 100, height: 20})
+  })
 
   it('reports a target inside the root as intersecting at every threshold', () => {
     const target = element({x: 10, y: 0, width: 60, height: 20})
