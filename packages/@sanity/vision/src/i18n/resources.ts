@@ -478,6 +478,19 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.generate.progress-retry': 'Fixing the query (attempt {{attempt}} of {{max}})…',
   /** Button generating the query */
   'vision.generate.submit': 'Generate',
+  /** Heading of the explanation summary an AI improvement of the query followed, in the history */
+  'vision.history.ai.explanation': 'Explanation',
+  /** In a history entry, what the AI was asked when it fitted the query to the document list */
+  'vision.history.ai.fit-document-list':
+    'Asked to change the query so the Documents view can list its result',
+  /** Heading of the lint findings Fix with AI was asked to fix, in the history */
+  'vision.history.ai.lint-findings': 'Lint findings',
+  /** Where a lint finding Fix with AI was asked to fix is, in the history */
+  'vision.history.ai.lint-location': 'Line {{line}}, column {{column}}',
+  /** Heading of the description the user wrote for Generate query or Edit with AI, in the history */
+  'vision.history.ai.prompt': 'Prompt',
+  /** Heading of the explanation's suggestions an AI improvement made, in the history */
+  'vision.history.ai.suggestions': 'Suggestions',
   /** A history entry whose result differs from the previous result, which is no longer kept */
   'vision.history.changed': 'Changed',
   /** Badge on a history entry the API CDN answered */
@@ -495,6 +508,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.history.changes-retry': 'Retry',
   /** Above the changes of a history entry: the fetch they are compared with */
   'vision.history.compared-with': 'Compared with the fetch at {{time}}',
+  /**
+   * Label of the diff of the GROQ query in the changes of a history entry an AI action wrote: the
+   * query the action started from, and the one it wrote
+   */
+  'vision.history.diff.ai-query': 'Query before and after AI',
   /** Label of the diff of the GROQ params in a history entry's changes */
   'vision.history.diff.params': 'Params',
   /** Label of the diff of the GROQ query in a history entry's changes */
@@ -520,6 +538,16 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.history.only-hidden-changed': 'Only hidden fields changed',
   /** History reason: a tab opened with a generated query fetched it */
   'vision.history.reason.generated': 'Generated query',
+  /** History reason: Edit with AI changed the tab's query as the user described, and ran it */
+  'vision.history.reason.ai.edit': 'Edited with AI',
+  /** History reason: Fix with AI in the Lint panel fixed the query's lint findings, and ran it */
+  'vision.history.reason.ai.fix-lint': 'Lint issues fixed with AI',
+  /** History reason: AI rewrote the query so its result lists documents, and ran it */
+  'vision.history.reason.ai.fit-document-list': 'Updated for the document list with AI',
+  /** History reason: Generate query wrote a query from the user's description, and ran it */
+  'vision.history.reason.ai.generate': 'Generated with AI',
+  /** History reason: Improve query made the explanation's suggestions to the query, and ran it */
+  'vision.history.reason.ai.improve': 'Improved with AI from the explanation',
   /** History reason: a link to the tool named a query URL, which opened in a tab and ran */
   'vision.history.reason.link': 'Opened link',
   /**

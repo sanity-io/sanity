@@ -108,6 +108,7 @@ export function GenerateQueryBar(props: GenerateQueryBarProps) {
       {
         prompt: description,
         comment: mode === 'generate',
+        ai: {action: mode, prompt: description},
         keepParams: mode === 'edit' && params === undefined,
       },
     )

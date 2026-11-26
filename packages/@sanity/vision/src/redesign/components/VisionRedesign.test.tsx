@@ -1450,6 +1450,16 @@ describe('VisionRedesign', () => {
       await waitFor(() => expect(view.fetchCalls).toHaveLength(2))
       // The explanation was for the query that was there
       await waitFor(() => expect(screen.queryByTestId('vision-explanation')).toBeNull())
+      // History keeps the explanation the improvement followed
+      fireEvent.click(document.getElementById('vision-response-history-tab') as HTMLElement)
+      const [entry] = screen.getAllByTestId('vision-history-entry')
+      expect(text(entry)).toContain('vision.history.reason.ai.improve')
+      expect(text(entry)).toContain('It finds posts.')
+      expect(
+        within(within(entry).getByTestId('vision-history-ai-suggestions'))
+          .getAllByRole('listitem')
+          .map((item) => item.textContent),
+      ).toEqual(['1.Filter on _type before the join.', '2.Add a slice such as [0...10].'])
     })
 
     it('shows the verdict and suggestions but no Improve query with editQuery off', async () => {
@@ -1760,9 +1770,8 @@ describe('VisionRedesign', () => {
     const perspectiveSelect = () =>
       screen.getByTestId('vision-option-perspective-select') as HTMLSelectElement
     const apiVersionButton = () => screen.getByTestId('vision-api-version-button')
-    // Global with the navbar on published: the navbar's `['published']` stack is sent as the
-    // published perspective, which the CDN serves
-    expect(perspectiveSelect().value).toBe('global')
+    // Published, the default, which the CDN serves
+    expect(perspectiveSelect().value).toBe('published')
     fireEvent.click(screen.getByTestId('vision-option-use-cdn'))
     expect(text(apiVersionButton())).toBe('vision.api-version.button-cdn:v2025-02-19')
     expect(screen.queryByTestId('vision-option-use-cdn-blocked')).toBeNull()
@@ -3022,9 +3031,12 @@ describe('VisionRedesign', () => {
     // The query has text in it now, so Edit takes Generate's place
     expect(screen.queryByTestId('vision-generate-query')).toBeNull()
     expect(screen.getByTestId('vision-edit-query')).toBeTruthy()
+    // History keeps the action and the prompt, which the bar no longer shows
     fireEvent.click(document.getElementById('vision-response-history-tab') as HTMLElement)
-    expect(text(screen.getByTestId('vision-history-entry'))).toContain(
-      'vision.history.reason.generated',
+    const entry = screen.getByTestId('vision-history-entry')
+    expect(text(entry)).toContain('vision.history.reason.ai.generate')
+    expect(text(within(entry).getByTestId('vision-history-ai-prompt'))).toBe(
+      'The 10 most recent authors',
     )
   })
 
@@ -4381,6 +4393,7 @@ describe('VisionRedesign', () => {
       id: 'live',
       query: '*[_type == "author"]',
       autoRefetch: true,
+      options: {perspective: 'global'},
     })
     saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'live'})
     const {fetchCalls, liveSubscriptionCount} = renderRedesign()
@@ -4608,7 +4621,11 @@ describe('VisionRedesign', () => {
 
   it('locks the API version to the variants version and sends the navbar variant with the global perspective', async () => {
     const initial = createInitialState(DEFAULTS)
-    const tab = createTab(initial.settings, {id: 'pinned', query: '*[_id == "a"]'})
+    const tab = createTab(initial.settings, {
+      id: 'pinned',
+      query: '*[_id == "a"]',
+      options: {perspective: 'global'},
+    })
     saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'pinned'})
 
     const {fetchCalls} = renderRedesign({...BASE_PERSPECTIVE, selectedVariantNames: ['french']})
@@ -4694,7 +4711,11 @@ describe('VisionRedesign', () => {
       beta: {variants: {enabled: false}},
     }
     const initial = createInitialState(DEFAULTS)
-    const tab = createTab(initial.settings, {id: 'pinned', query: '*[_id == "a"]'})
+    const tab = createTab(initial.settings, {
+      id: 'pinned',
+      query: '*[_id == "a"]',
+      options: {perspective: 'global'},
+    })
     saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'pinned'})
 
     // A variant the URL still carries for the navbar is not one the studio shows
@@ -5059,7 +5080,7 @@ describe('VisionRedesign', () => {
   it('puts the tab on the API default when the pasted URL has no perspective', async () => {
     const {fetchCalls} = renderRedesign()
     openRequestTab('options')
-    expect(selectValue('vision-option-perspective-select')).toBe('global')
+    expect(selectValue('vision-option-perspective-select')).toBe('published')
 
     fireEvent.paste(document.body, {
       clipboardData: {
@@ -5156,6 +5177,7 @@ describe('VisionRedesign', () => {
       renderRedesign()
       typeQuery('*')
       openRequestTab('options')
+      pickMenuItem('vision-option-perspective-select', 'global')
       expect(selectValue('vision-option-perspective-select')).toBe('global')
 
       fireEvent.click(screen.getByTestId('vision-sidebar-saved'))
@@ -5683,8 +5705,8 @@ describe('VisionRedesign adoption telemetry', () => {
     pickDataset('staging')
     expect(logged(VisionDatasetChanged.name)).toEqual([[VisionDatasetChanged]])
 
-    pickMenuItem('vision-option-perspective-select', 'published')
-    pickMenuItem('vision-option-perspective-select', 'published')
+    pickMenuItem('vision-option-perspective-select', 'drafts')
+    pickMenuItem('vision-option-perspective-select', 'drafts')
     expect(logged(VisionPerspectiveChanged.name)).toEqual([[VisionPerspectiveChanged]])
 
     const apiVersion = screen.getByTestId('vision-option-api-version-select')

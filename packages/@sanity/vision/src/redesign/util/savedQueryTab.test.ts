@@ -2,16 +2,20 @@ import {describe, expect, it} from 'vitest'
 
 import {parseQueryUrl} from '../../util/parseQueryUrl'
 import {type RequestEnvironment, resolveRequestOptions} from '../hooks/useResolvedRequest'
-import {type VisionTab} from '../store/types'
+import {type VisionSettings, type VisionTab} from '../store/types'
 import {createInitialState, createTab} from '../store/visionStorage'
 import {parsedQueryToTabInit, savedQueryToTabInit, tabMatchesParsedQuery} from './savedQueryTab'
 
 const datasets = ['production', 'staging']
-const {settings} = createInitialState({
-  datasets,
-  defaultDataset: 'production',
-  defaultApiVersion: '2025-02-19',
-})
+/** Tabs that follow the navbar, so a saved request is matched through the navbar's perspective */
+const settings: VisionSettings = {
+  ...createInitialState({
+    datasets,
+    defaultDataset: 'production',
+    defaultApiVersion: '2025-02-19',
+  }).settings,
+  perspective: 'global',
+}
 
 /** A studio on the `drafts` perspective with variants on but none selected */
 const environment: RequestEnvironment = {
@@ -67,7 +71,7 @@ describe('savedQueryTab', () => {
   })
 
   it('matches through the request the tab would send, not its stored options', () => {
-    // A tab on the default `global` perspective saved the navbar's `drafts`
+    // A tab on the `global` perspective saved the navbar's `drafts`
     const global = createTab(settings, {query: '*'})
     expect(global.options.perspective).toBe('global')
     expect(matches(global, url('*', {perspective: 'drafts'}))).toBe(true)

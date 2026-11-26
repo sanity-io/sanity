@@ -2,9 +2,10 @@ import {type SanityClient} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {useAiCreditsUpsell} from '../components/AiCreditsUpsellContext'
-import {type VisionTab} from '../store/types'
+import {type AiQueryAction, type AiQueryChange, type VisionTab} from '../store/types'
 import {useVisionActor} from '../store/VisionActorContext'
 import {type AiCredits, readAiCreditsLimit} from '../util/aiCredits'
+import {aiGeneratedFetch} from '../util/aiQueryChange'
 import {type GeneratedQuery, generatedQueryComment, GenerateQueryError} from '../util/generateQuery'
 import {reportAiCreditsGranted, reportAiCreditsLimit} from './useAiCredits'
 
@@ -44,6 +45,8 @@ export interface QueryAgentOpenOptions {
   keepParams?: boolean
   /** Leaves the tab's query as it is, for a request that was only to change the params */
   keepQuery?: boolean
+  /** The action that wrote the query and what it was given, for the fetch's history entry */
+  ai?: AiQueryChange
 }
 
 export interface UseQueryAgentOptions {
@@ -101,7 +104,7 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
           ...(options.keepParams ? {} : {rawParams: JSON.stringify(generated.params, null, 2)}),
           ...(named ? {title: generated.title} : {}),
         },
-        fetch: options.fetch ? 'generated' : undefined,
+        fetch: options.fetch ? aiGeneratedFetch(options.ai) : undefined,
       })
       setStatus({type: 'idle'})
       onOpened?.()
@@ -117,6 +120,8 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
         comment: boolean
         keepParams?: boolean
         keepQuery?: boolean
+        /** What History records about the action, without the query it started from */
+        ai?: AiQueryAction
         /** Called once the result is in the editors */
         onOpened?: () => void
       },
@@ -125,6 +130,7 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
       const controller = new AbortController()
       controllerRef.current = controller
       setStatus({type: 'running', attempt: 1})
+      const fromQuery = tab.query
       const clearIfCurrent = () => {
         // A superseded run has already replaced the controller; leave its status alone
         if (controllerRef.current === controller) setStatus({type: 'idle'})
@@ -143,6 +149,7 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
             fetch: true,
             keepParams: options.keepParams,
             keepQuery: options.keepQuery,
+            ai: options.ai ? {...options.ai, fromQuery} : undefined,
           },
           controller.signal,
         )
@@ -170,7 +177,7 @@ export function useQueryAgent({tab, client, formatForEditor, onOpened}: UseQuery
         })
       }
     },
-    [client, open, upsell],
+    [client, open, tab.query, upsell],
   )
 
   /** Opens the last rejected attempt, without running it */

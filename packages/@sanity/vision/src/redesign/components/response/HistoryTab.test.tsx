@@ -32,6 +32,7 @@ vi.mock('sanity', () => ({
 }))
 vi.mock('sanity/i18n', () => ({
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
+  InlineCode: (props: {children: string}) => <code>{props.children}</code>,
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) =>
       options ? `${key}:${JSON.stringify(options)}` : key,
@@ -438,6 +439,105 @@ describe('HistoryTab', () => {
     } satisfies FetchHistoryEntry['network']
     renderTab([entry('local', 1, {ms: 1, e2eMs: 12.43, network: local})])
     expect(screen.queryByTestId('vision-history-cdn')).toBeNull()
+  })
+
+  it('names the AI action that wrote a query and shows the prompt it was given', () => {
+    const [generated, edited, plain] = renderTab([
+      entry('generated', 3, {
+        query: '*[_type == "movie"]',
+        reason: {
+          type: 'generated',
+          ai: {action: 'generate', prompt: 'All movies\nnewest first', fromQuery: ''},
+        },
+      }),
+      entry('edited', 2, {
+        reason: {type: 'generated', ai: {action: 'edit', prompt: 'Only ids', fromQuery: '*'}},
+      }),
+      entry('plain', 1, {reason: {type: 'generated'}}),
+    ])
+    expect(generated.textContent).toContain('vision.history.reason.ai.generate')
+    expect(within(generated).getByTestId('vision-history-ai-prompt').textContent).toBe(
+      'All movies\nnewest first',
+    )
+    expect(edited.textContent).toContain('vision.history.reason.ai.edit')
+    expect(within(edited).getByTestId('vision-history-ai-prompt').textContent).toBe('Only ids')
+    // A query an agent outside the tool opened says nothing about a prompt
+    expect(plain.textContent).toContain('vision.history.reason.generated')
+    expect(within(plain).queryByTestId('vision-history-ai')).toBeNull()
+  })
+
+  it('lists the lint findings and the explanation the AI fixes followed', () => {
+    const [fixed, improved] = renderTab([
+      entry('fixed', 2, {
+        reason: {
+          type: 'generated',
+          ai: {
+            action: 'fix-lint',
+            fromQuery: '*[_type == "movei"]',
+            findings: [{line: 1, column: 12, severity: 'warning', message: 'Unknown type'}],
+          },
+        },
+      }),
+      entry('improved', 1, {
+        reason: {
+          type: 'generated',
+          ai: {
+            action: 'improve',
+            fromQuery: '*',
+            summary: 'Reads every document',
+            suggestions: ['Filter by type', 'Project fewer fields'],
+          },
+        },
+      }),
+    ])
+    expect(fixed.textContent).toContain('vision.history.reason.ai.fix-lint')
+    const findings = within(fixed).getByTestId('vision-history-ai-findings')
+    expect(findings.textContent).toContain('Unknown type')
+    expect(findings.textContent).toContain('vision.history.ai.lint-location:{"line":1,"column":12}')
+
+    expect(improved.textContent).toContain('vision.history.reason.ai.improve')
+    expect(improved.textContent).toContain('Reads every document')
+    expect(
+      within(within(improved).getByTestId('vision-history-ai-suggestions'))
+        .getAllByRole('listitem')
+        .map((item) => item.textContent),
+    ).toEqual(['1.Filter by type', '2.Project fewer fields'])
+  })
+
+  it('diffs an AI query with the query the action started from, not the previous fetch', async () => {
+    const [edited] = renderTab([
+      entry('edited', 6, {
+        query: '*[_type == "author"]{_id, name}',
+        result: two,
+        reason: {
+          type: 'generated',
+          ai: {action: 'edit', prompt: 'Add the name', fromQuery: '*[_type == "author"]{_id}'},
+        },
+      }),
+      entry('previous', 5, {query: '*', result: two}),
+    ])
+    fireEvent.click(within(edited).getByTestId('vision-history-changes-toggle'))
+    const query = await within(edited).findByTestId('vision-history-diff-query')
+    expect(within(query).getByText('vision.history.diff.ai-query')).toBeTruthy()
+    expect(await diffedTexts(query)).toEqual({
+      lang: 'text',
+      previous: '*[\n  _type\n    == "author"\n] {\n  _id\n}\n',
+      next: '*[\n  _type\n    == "author"\n] {\n  _id,\n  name\n}\n',
+    })
+  })
+
+  it('shows the changes of a query generated into an empty tab, with nothing fetched before', async () => {
+    const [generated] = renderTab([
+      entry('generated', 1, {
+        query: '*[_type == "author"]',
+        reason: {type: 'generated', ai: {action: 'generate', prompt: 'Authors', fromQuery: ''}},
+      }),
+    ])
+    fireEvent.click(within(generated).getByTestId('vision-history-changes-toggle'))
+    const changes = within(generated).getByTestId('vision-history-changes')
+    expect(changes.textContent).not.toContain('vision.history.compared-with')
+    const query = await within(changes).findByTestId('vision-history-diff-query')
+    expect((await diffedTexts(query)).next).toBe('*[\n  _type\n    == "author"\n]\n')
   })
 
   it('writes a short duration in milliseconds and a longer one in seconds', () => {

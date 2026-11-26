@@ -137,7 +137,9 @@ export function resolveDefaultSettings(defaults: VisionStorageDefaults): VisionS
     datasetMode: 'auto',
     dataset: resolveWorkspaceDataset(defaults),
     apiVersion: validateApiVersion(apiVersion) ? apiVersion : DEFAULT_API_VERSION,
-    perspective: 'global',
+    // Published, not `global`: the studio defaults to drafts, which a production client without a
+    // token never sees, so a query that works here would come back empty there
+    perspective: 'published',
     variant: 'global',
     includeSourceMap: false,
     useCdn: false,

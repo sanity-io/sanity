@@ -1,4 +1,5 @@
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {Badge, Button, Card, Stack} from '@sanity/ui'
 import {dequal} from 'dequal/lite'
 import {type ReactNode, Suspense, use, useId, useMemo, useState} from 'react'
@@ -9,17 +10,25 @@ import {Text, Box, Flex} from 'ui5'
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {visionLocaleNamespace} from '../../../i18n'
 import {formatMeasuredDuration} from '../../../util/formatDuration'
-import {type FetchHistoryEntry, type FetchReason} from '../../store/types'
+import {
+  type AiLintFinding,
+  type AiQueryChange,
+  type FetchHistoryEntry,
+  type FetchReason,
+} from '../../store/types'
 import {omitFields, parseFieldPaths} from '../../util/omitFields'
 import {formatExecutionTime} from '../../util/queryNetwork'
 import {
   formatQueryForDiff,
   getRequestChanges,
+  type RequestChange,
   type RequestChangeId,
 } from '../../util/requestChanges'
 import {sortSyncTags} from '../../util/syncTags'
+import * as styles from './historyTab.module.css'
 import {CodeDiffLoader, DiffBoundary} from './LazyCodeDiff'
 import * as motion from './responseTabs.module.css'
+import {RichText} from './RichText'
 
 function describeFetchReason(reason: FetchReason, t: TFunction<'vision'>): string {
   switch (reason.type) {
@@ -34,7 +43,7 @@ function describeFetchReason(reason: FetchReason, t: TFunction<'vision'>): strin
     case 'resume':
       return t('vision.history.reason.resume')
     case 'generated':
-      return t('vision.history.reason.generated')
+      return reason.ai ? describeAiAction(reason.ai, t) : t('vision.history.reason.generated')
     case 'paste':
       return t('vision.history.reason.paste')
     case 'link':
@@ -48,6 +57,156 @@ function describeFetchReason(reason: FetchReason, t: TFunction<'vision'>): strin
       return String(exhaustive)
     }
   }
+}
+
+function describeAiAction(change: AiQueryChange, t: TFunction<'vision'>): string {
+  switch (change.action) {
+    case 'generate':
+      return t('vision.history.reason.ai.generate')
+    case 'edit':
+      return t('vision.history.reason.ai.edit')
+    case 'fix-lint':
+      return t('vision.history.reason.ai.fix-lint')
+    case 'improve':
+      return t('vision.history.reason.ai.improve')
+    case 'fit-document-list':
+      return t('vision.history.reason.ai.fit-document-list')
+    default: {
+      const exhaustive: never = change
+      return String(exhaustive)
+    }
+  }
+}
+
+const SEVERITY_TONE = {
+  error: 'critical',
+  warning: 'caution',
+  info: 'primary',
+  hint: 'default',
+} as const satisfies Record<AiLintFinding['severity'], string>
+
+function AiSection(props: {label: string; children: ReactNode}) {
+  return (
+    <Stack gap={2}>
+      <Text muted size={0} weight="medium" as="div" trim={true}>
+        {props.label}
+      </Text>
+      {props.children}
+    </Stack>
+  )
+}
+
+/**
+ * What an AI action that wrote the query was given: the description the user wrote, the lint
+ * findings it fixed, or the explanation it followed. The panel that ran it clears once the query
+ * is in the editor, so this is where it can be read again.
+ */
+function AiTrigger(props: {change: AiQueryChange}) {
+  const {change} = props
+  const {t} = useTranslation(visionLocaleNamespace)
+  let content: ReactNode
+  switch (change.action) {
+    case 'generate':
+    case 'edit':
+      content = (
+        <AiSection label={t('vision.history.ai.prompt')}>
+          <Text className={styles.prompt} data-testid="vision-history-ai-prompt" size={1} as="div">
+            {change.prompt}
+          </Text>
+        </AiSection>
+      )
+      break
+    case 'fix-lint':
+      content = (
+        <AiSection label={t('vision.history.ai.lint-findings')}>
+          <Stack as="ul" className={styles.list} data-testid="vision-history-ai-findings" gap={2}>
+            {change.findings.map((finding, index) => (
+              <Flex alignItems="flex-start" as="li" gap={2} key={index}>
+                <Badge fontSize={0} tone={SEVERITY_TONE[finding.severity]}>
+                  {finding.severity}
+                </Badge>
+                <Stack flex={1} gap={2}>
+                  <Text size={1} as="div">
+                    <RichText text={finding.message} />
+                  </Text>
+                  <Text muted size={0} as="div" trim={true}>
+                    {t('vision.history.ai.lint-location', {
+                      line: finding.line,
+                      column: finding.column,
+                    })}
+                  </Text>
+                </Stack>
+              </Flex>
+            ))}
+          </Stack>
+        </AiSection>
+      )
+      break
+    case 'improve':
+      content = (
+        <>
+          {change.summary && (
+            <AiSection label={t('vision.history.ai.explanation')}>
+              <Text className={styles.prompt} size={1} as="div">
+                <RichText text={change.summary} />
+              </Text>
+            </AiSection>
+          )}
+          {change.suggestions.length > 0 && (
+            <AiSection label={t('vision.history.ai.suggestions')}>
+              <Stack
+                as="ol"
+                className={styles.list}
+                data-testid="vision-history-ai-suggestions"
+                gap={2}
+              >
+                {change.suggestions.map((suggestion, index) => (
+                  <Flex as="li" gap={2} key={index}>
+                    <Text muted size={1} as="span">
+                      {index + 1}.
+                    </Text>
+                    <Text className={styles.prompt} size={1} as="div">
+                      <RichText text={suggestion} />
+                    </Text>
+                  </Flex>
+                ))}
+              </Stack>
+            </AiSection>
+          )}
+        </>
+      )
+      break
+    case 'fit-document-list':
+      content = (
+        <Text muted size={1} as="div">
+          {t('vision.history.ai.fit-document-list')}
+        </Text>
+      )
+      break
+    default: {
+      const exhaustive: never = change
+      content = String(exhaustive)
+    }
+  }
+  return (
+    <Card
+      className={styles.trigger}
+      data-action={change.action}
+      data-testid="vision-history-ai"
+      padding={3}
+      radius={2}
+      tone="suggest"
+    >
+      <Flex gap={3}>
+        <Text className={styles.icon} size={1} as="div">
+          <SparklesIcon />
+        </Text>
+        <Stack flex={1} gap={3}>
+          {content}
+        </Stack>
+      </Flex>
+    </Card>
+  )
 }
 
 function describeRequestChange(id: RequestChangeId, t: TFunction<'vision'>): string {
@@ -123,18 +282,31 @@ function HistoryEntry(props: {
   const [expanded, setExpanded] = useState(false)
   const [showHidden, setShowHidden] = useState(false)
   const changesId = useId()
-  const requestChanges = useMemo(
-    () => (previous ? getRequestChanges(previous, entry) : []),
-    [entry, previous],
-  )
+  const ai = entry.reason.type === 'generated' ? entry.reason.ai : undefined
+  // A query an AI action wrote is compared with the one the action started from, which may have
+  // been edited since the previous fetch; the params and URL are compared with that fetch
+  const queryBefore = ai ? ai.fromQuery : previous?.query
+  const requestChanges = useMemo(() => {
+    const changes = previous ? getRequestChanges(previous, entry) : []
+    if (!ai) return changes
+    const rest = changes.filter((change) => change.id !== 'query')
+    if (ai.fromQuery === entry.query) return rest
+    const query: RequestChange = {
+      id: 'query',
+      previous: ai.fromQuery,
+      next: entry.query,
+      lang: 'text',
+    }
+    return [query, ...rest]
+  }, [ai, entry, previous])
   // Formatted once the changes are shown. The promise is made here rather than in `QueryDiff`,
   // which suspends on it, since a component that suspends while mounting keeps no state or memo
   const queryTexts = useMemo(() => {
-    if (!expanded || !previous || previous.query === entry.query) return undefined
-    return Promise.all([formatQueryForDiff(previous.query), formatQueryForDiff(entry.query)]).then(
+    if (!expanded || queryBefore === undefined || queryBefore === entry.query) return undefined
+    return Promise.all([formatQueryForDiff(queryBefore), formatQueryForDiff(entry.query)]).then(
       ([previousText, nextText]) => ({previous: previousText, next: nextText}),
     )
-  }, [entry.query, expanded, previous])
+  }, [entry.query, expanded, queryBefore])
   const nextResult = entry.result
   const previousResult = previous?.result
   const resultComparable =
@@ -198,7 +370,14 @@ function HistoryEntry(props: {
           trim={true}
           tone={entry.status === 'error' ? 'critical' : undefined}
         >
-          {describeFetchReason(entry.reason, t)}
+          <Flex alignItems="center" as="span" gap={2}>
+            {ai && (
+              <span className={styles.icon}>
+                <SparklesIcon />
+              </span>
+            )}
+            {describeFetchReason(entry.reason, t)}
+          </Flex>
         </Text>
         {entry.reason.type === 'live' &&
           sortSyncTags(entry.reason.matchedTags).map((tag) => (
@@ -270,7 +449,12 @@ function HistoryEntry(props: {
           </Text>
         </Box>
       )}
-      {comparable && expanded && previous && (
+      {ai && (
+        <Box paddingTop={2}>
+          <AiTrigger change={ai} />
+        </Box>
+      )}
+      {comparable && expanded && (
         <Stack
           className={motion.reveal}
           data-testid="vision-history-changes"
@@ -278,17 +462,19 @@ function HistoryEntry(props: {
           id={changesId}
           paddingTop={2}
         >
-          <Text
-            muted
-            size={1}
-            as="div"
-            trim={true}
-            tone={entry.status === 'error' ? 'critical' : undefined}
-          >
-            {t('vision.history.compared-with', {
-              time: formatTime.format(new Date(previous.requestedAt)),
-            })}
-          </Text>
+          {previous && (
+            <Text
+              muted
+              size={1}
+              as="div"
+              trim={true}
+              tone={entry.status === 'error' ? 'critical' : undefined}
+            >
+              {t('vision.history.compared-with', {
+                time: formatTime.format(new Date(previous.requestedAt)),
+              })}
+            </Text>
+          )}
           <DiffBoundary
             renderFallback={(retry) => (
               <Flex alignItems="center" gap={2}>
@@ -316,7 +502,11 @@ function HistoryEntry(props: {
                 {requestChanges.map((change) => (
                   <DiffSection
                     key={change.id}
-                    label={describeRequestChange(change.id, t)}
+                    label={
+                      ai && change.id === 'query'
+                        ? t('vision.history.diff.ai-query')
+                        : describeRequestChange(change.id, t)
+                    }
                     testId={`vision-history-diff-${change.id}`}
                   >
                     {change.id === 'query' && queryTexts ? (

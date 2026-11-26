@@ -19,6 +19,8 @@ export interface ImproveQueryProps {
   tab: VisionTab
   /** The tab's params, which the improvement starts from */
   params: Record<string, unknown> | undefined
+  /** The explanation's summary, which History shows with the suggestions */
+  summary: string
   /** The explanation's suggestions, the changes the improvement makes */
   suggestions: string[]
   /** The tab's client: attempts are checked with its dataset, API version and perspective */
@@ -36,7 +38,14 @@ export interface ImproveQueryProps {
  * query, as Edit makes a described change. The improved query replaces the tab's query and
  * params, and runs.
  */
-export function ImproveQuery({tab, params, suggestions, client, agent}: ImproveQueryProps) {
+export function ImproveQuery({
+  tab,
+  params,
+  summary,
+  suggestions,
+  client,
+  agent,
+}: ImproveQueryProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const schema = useSchema() as Schema | undefined
   const credits = useAiCredits(client)
@@ -54,9 +63,13 @@ export function ImproveQuery({tab, params, suggestions, client, agent}: ImproveQ
           suggestions,
           schema: schema ? summarizeSchema(schema, `${suggestions.join('\n')}\n${tab.query}`) : '',
         }),
-      {comment: false, keepParams: params === undefined},
+      {
+        comment: false,
+        keepParams: params === undefined,
+        ai: {action: 'improve', summary, suggestions},
+      },
     )
-  }, [params, run, schema, suggestions, tab.query, telemetry])
+  }, [params, run, schema, summary, suggestions, tab.query, telemetry])
 
   const running = status.type === 'running'
   const shownCredits =
