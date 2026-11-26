@@ -37,6 +37,8 @@ import {fileURLToPath} from 'node:url'
 import {type ExportedDeclarations, Node, Project} from 'ts-morph'
 import {beforeAll, describe, expect, test} from 'vitest'
 
+import {isTombstoneDeclaration} from '../tombstones/surface.mjs'
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const sanityLibDir = path.resolve(__dirname, '../../../sanity/lib')
 
@@ -170,9 +172,10 @@ describe('the internals entry is a superset, and the public compatibility list i
 /**
  * Studio 7 keeps implementation details off `sanity/structure`, `sanity/router` and
  * `sanity/presentation`, types included: whatever is tagged `@internal`, `@hidden` or
- * `@deprecated` is exported from the matching subpath of the internals entry instead. Unlike the
- * checks above, these cover declarations re-exported from dependencies too, because the entry
- * decides what it re-exports.
+ * `@deprecated` is exported from the matching subpath of the internals entry instead, and the
+ * public entry keeps a `never` tombstone that names the new path (`test/tombstones.test.ts` covers
+ * those). Unlike the checks above, these cover declarations re-exported from dependencies too,
+ * because the entry decides what it re-exports.
  */
 const PRIVATE_SUBPATHS = {
   'sanity/structure': 'structure',
@@ -200,7 +203,10 @@ function privateTagsOf(declaration: ExportedDeclarations): string[] {
 const DTS_PARSE_TIMEOUT = 60_000
 
 describe('structure, router and presentation keep their internals on subpaths', () => {
-  /** Built `.d.ts` file → export name → whether one of its declarations has a private tag. */
+  /**
+   * Built `.d.ts` file → export name → whether one of its declarations has a private tag.
+   * Tombstones are left out.
+   */
   const privacyByFile = new Map<string, Map<string, boolean>>()
   const dtsFilesOf = (subpath: string) => ({
     entry: `${subpath}.d.ts`,
@@ -222,10 +228,12 @@ describe('structure, router and presentation keep their internals on subpaths', 
         privacyByFile.set(
           dtsFile,
           new Map(
-            [...sourceFile.getExportedDeclarations()].map(([name, declarations]) => [
-              name,
-              declarations.some((declaration) => privateTagsOf(declaration).length > 0),
-            ]),
+            [...sourceFile.getExportedDeclarations()]
+              .filter(([, declarations]) => !declarations.every(isTombstoneDeclaration))
+              .map(([name, declarations]) => [
+                name,
+                declarations.some((declaration) => privateTagsOf(declaration).length > 0),
+              ]),
           ),
         )
       }
@@ -239,7 +247,7 @@ describe('structure, router and presentation keep their internals on subpaths', 
     test(`${entry} exports nothing tagged @internal, @hidden or @deprecated`, () => {
       expect(
         exportsOf(dtsFiles.entry, true),
-        `Move these exports from \`${entry}\` to \`${internalsSubpath}\`.`,
+        `Move these exports to \`${internalsSubpath}\` and leave a tombstone on \`${entry}\`.`,
       ).toEqual([])
     })
 
