@@ -184,6 +184,9 @@ patchedDependencies:
   # The patches below rewrite imports of names that v7 no longer exports from the sanity root to the
   # private internals entry. Drop each one once a release of the plugin that supports this sanity
   # major ships.
+  # The @sanity/assist, @sanity/document-internationalization and sanity-plugin-utils patches also
+  # rewrite names that moved off sanity/structure and sanity/router to the /structure and /router
+  # subpaths of that entry.
   '@sanity/assist@6.3.0': patches/@sanity__assist@6.3.0.patch
   '@sanity/code-input@7.3.16': patches/@sanity__code-input@7.3.16.patch
   # Also rewrites defineLocaleResourceBundle / useTranslation to sanity/i18n.

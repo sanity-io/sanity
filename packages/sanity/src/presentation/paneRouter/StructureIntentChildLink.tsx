@@ -1,8 +1,8 @@
 import {type RefAttributes} from 'react'
 import {type IntentJsonParams, type IntentParameters, IntentLink} from 'sanity/router'
-import {type ChildLinkProps} from 'sanity/structure'
 
 import {getPublishedId} from '../../core/util/draftUtils'
+import {type ChildLinkProps} from '../../structure/components/paneRouter/types'
 
 /**
  * Opens a child document in the structure tool (new tab) when it is not part of the

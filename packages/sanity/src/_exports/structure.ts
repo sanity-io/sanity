@@ -1,28 +1,12 @@
-export {type ConfirmDeleteDialogProps} from '../structure/components/confirmDeleteDialog/ConfirmDeleteDialog'
 export {defineIncomingReferenceDecoration} from '../structure/components/incomingReferencesDecoration/defineIncomingReferenceDecoration'
 export {isIncomingReferenceCreation} from '../structure/components/incomingReferencesDecoration/isIncomingReferenceCreation'
 export {
   type IncomingReferenceAction,
   type IncomingReferencesOptions,
 } from '../structure/components/incomingReferencesDecoration/types'
-export {PaneLayout} from '../structure/components/pane/PaneLayout'
-export {
-  type BackLinkProps,
-  type ChildLinkProps,
-  type EditReferenceOptions,
-  type PaneRouterContextValue,
-  type ParameterizedLinkProps,
-  type ReferenceChildLinkProps,
-} from '../structure/components/paneRouter/types'
-export {PaneRouterContext, usePaneRouter} from '../structure/components/paneRouter/usePaneRouter'
 export {structureLocaleNamespace} from '../structure/i18n'
 export {type StructureLocaleResourceKeys} from '../structure/i18n/resources'
-export {DocumentInspectorHeader} from '../structure/panes/document/documentInspector/DocumentInspectorHeader'
-export {DocumentPaneProviderWrapper as DocumentPaneProvider} from '../structure/panes/document/DocumentPaneProviderWrapper'
-export {type DocumentPaneProviderProps} from '../structure/panes/document/types'
 export {useDocumentPane} from '../structure/panes/document/useDocumentPane'
-export {useDocumentTitle, type UseDocumentTitle} from '../structure/panes/document/useDocumentTitle'
-export {type DocumentListPaneProps} from '../structure/panes/documentList'
 export {
   type ChildObservable,
   type ChildResolver,
@@ -35,7 +19,6 @@ export {
   ComponentBuilder,
   type ComponentInput,
 } from '../structure/structureBuilder/Component'
-export {type StructureBuilderOptions} from '../structure/structureBuilder/createStructureBuilder'
 export {
   DocumentBuilder,
   type DocumentOptions,
@@ -100,12 +83,10 @@ export {
   MenuItemBuilder,
   type MenuItemParamsType,
   type PartialMenuItem,
-  type SortMenuItem,
   type MenuItem as StructureToolMenuItem,
 } from '../structure/structureBuilder/MenuItem'
 export {type MenuItemGroup, MenuItemGroupBuilder} from '../structure/structureBuilder/MenuItemGroup'
 export {
-  type Builder,
   type Child,
   type Collection,
   type CollectionBuilder,
@@ -137,31 +118,4 @@ export {
   type ViewBuilder,
 } from '../structure/structureBuilder/views/View'
 export {structureTool} from '../structure/structureTool'
-export {type StructureToolProviderProps} from '../structure/StructureToolProvider'
-export {
-  type BaseResolvedPaneNode,
-  type CustomComponentPaneNode,
-  type DocumentFieldMenuActionNode,
-  type DocumentListPaneNode,
-  type DocumentPaneNode,
-  type ListPaneNode,
-  type PaneListItem,
-  type PaneListItemDivider,
-  type PaneMenuItem,
-  type PaneMenuItemGroup,
-  type PaneNode,
-  type PaneNodeResolver,
-  type RouterPaneGroup,
-  type RouterPanes,
-  type RouterPaneSibling,
-  type RouterPaneSiblingContext,
-  type SerializablePaneNode,
-  type StrictVersionLayeringOptions,
-  type StructureResolver,
-  type StructureResolverContext,
-  type StructureToolContextValue,
-  type StructureToolFeatures,
-  type StructureToolOptions,
-  type StructureToolPaneActionHandler,
-  type UnresolvedPaneNode,
-} from '../structure/types'
+export {type StructureResolver, type StructureToolOptions} from '../structure/types'
