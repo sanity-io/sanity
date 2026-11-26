@@ -68,12 +68,6 @@ export {
   type PreviewProps,
 } from '../core/components/previews/types'
 export {
-  type RovingFocusNavigationType,
-  type RovingFocusProps,
-} from '../core/components/rovingFocus/types'
-export {type StatusButtonProps} from '../core/components/StatusButton'
-export {type UserAvatarProps} from '../core/components/userAvatar/UserAvatar'
-export {
   type AuthConfig,
   type AuthProvider,
   type LoginMethod,
@@ -925,4 +919,20 @@ export declare const MediaPreview: never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
 export type MediaPreviewProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type RovingFocusNavigationType = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type RovingFocusProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type StatusButtonProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type UserAvatarProps = never
 // </tombstones-pending-sapp-5036>

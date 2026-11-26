@@ -3311,10 +3311,10 @@ describe('sanity', () => {
     expectTypeOf<Role>().toBeObject()
   })
   test('RovingFocusNavigationType', () => {
-    expectTypeOf<RovingFocusNavigationType>().not.toBeNever()
+    expectTypeOf<RovingFocusNavigationType>().toBeNever()
   })
   test('RovingFocusProps', () => {
-    expectTypeOf<RovingFocusProps>().toBeObject()
+    expectTypeOf<RovingFocusProps>().toBeNever()
   })
   test('Rule', () => {
     expectTypeOf<Rule>().toBeObject()
@@ -3546,7 +3546,7 @@ describe('sanity', () => {
     expectTypeOf<StaticLocaleResourceBundle>().not.toBeNever()
   })
   test('StatusButtonProps', () => {
-    expectTypeOf<StatusButtonProps>().not.toBeNever()
+    expectTypeOf<StatusButtonProps>().toBeNever()
   })
   test('StrictDefinition', () => {
     expectTypeOf<StrictDefinition>().not.toBeNever()
@@ -3838,7 +3838,7 @@ describe('sanity', () => {
     expectTypeOf<UserAttributeValue>().not.toBeNever()
   })
   test('UserAvatarProps', () => {
-    expectTypeOf<UserAvatarProps>().toBeObject()
+    expectTypeOf<UserAvatarProps>().toBeNever()
   })
   test('useReferringDocuments', () => {
     expectTypeOf<typeof useReferringDocuments>().toBeFunction()

@@ -1271,10 +1271,14 @@ export {
 export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
 export {useCommentsMode} from '../core/comments-v2/hooks/useCommentsMode'
 export {useCommentsMode as useCommentsModeLegacy} from '../core/comments/hooks/useCommentsMode'
-export {StatusButton} from '../core/components/StatusButton'
+export {StatusButton, type StatusButtonProps} from '../core/components/StatusButton'
 export {TemplatePreview} from '../core/components/previews/template/TemplatePreview'
+export {
+  type RovingFocusNavigationType,
+  type RovingFocusProps,
+} from '../core/components/rovingFocus/types'
 export {useRovingFocus} from '../core/components/rovingFocus/useRovingFocus'
-export {UserAvatar} from '../core/components/userAvatar/UserAvatar'
+export {UserAvatar, type UserAvatarProps} from '../core/components/userAvatar/UserAvatar'
 export {useDidUpdate} from '../core/form/hooks/useDidUpdate'
 export {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
 export {SelectInput} from '../core/form/inputs/SelectInput'
