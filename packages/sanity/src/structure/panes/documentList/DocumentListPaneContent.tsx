@@ -2,13 +2,7 @@ import {type SanityDocument} from '@sanity/types'
 import {Container, Heading} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {
-  type GeneralPreviewLayoutKey,
-  getPublishedId,
-  isDev,
-  SanityDefaultPreview,
-  useSchema,
-} from 'sanity'
+import {type GeneralPreviewLayoutKey} from 'sanity'
 import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box} from 'ui5'
 
@@ -17,6 +11,10 @@ import {type CommandListRenderItemCallback} from '../../../core/components/comma
 import {Delay} from '../../../core/components/Delay'
 import {ErrorActions} from '../../../core/components/errorActions/ErrorActions'
 import {LoadingBlock} from '../../../core/components/loadingBlock/LoadingBlock'
+import {isDev} from '../../../core/environment'
+import {useSchema} from '../../../core/hooks/useSchema'
+import {SanityDefaultPreview} from '../../../core/preview/components/SanityDefaultPreview'
+import {getPublishedId} from '../../../core/util/draftUtils'
 import {paneCommandList} from '../../components/pane/PaneCommandList.css'
 import {PaneContent} from '../../components/pane/PaneContent'
 import {usePane} from '../../components/pane/usePane'

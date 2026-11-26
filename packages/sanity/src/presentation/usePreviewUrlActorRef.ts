@@ -1,9 +1,11 @@
 import {useActorRef, useSelector} from '@xstate/react'
 import {useEffect} from 'react'
-import {useActiveWorkspace, useClient, useCurrentUser, useGrantsStore} from 'sanity'
+import {useClient, useCurrentUser} from 'sanity'
 import {useRouter} from 'sanity/router'
 import {fromObservable} from 'xstate'
 
+import {useGrantsStore} from '../core/store/datastores'
+import {useActiveWorkspace} from '../core/studio/activeWorkspaceMatcher/useActiveWorkspace'
 import {defineCreatePreviewSecretActor} from './actors/create-preview-secret'
 import {defineReadSharedSecretActor} from './actors/read-shared-secret'
 import {defineResolveAllowPatternsActor} from './actors/resolve-allow-patterns'

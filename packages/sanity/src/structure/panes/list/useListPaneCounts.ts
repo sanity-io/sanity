@@ -2,13 +2,9 @@ import {useEffect, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {BehaviorSubject, combineLatest, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, startWith, switchMap} from 'rxjs/operators'
-import {
-  type DocumentPreviewStore,
-  type PerspectiveStack,
-  useDocumentPreviewStore,
-  usePerspective,
-} from 'sanity'
+import {type DocumentPreviewStore, type PerspectiveStack, usePerspective} from 'sanity'
 
+import {useDocumentPreviewStore} from '../../../core/store/datastores'
 import {type ListItemCount} from '../../structureBuilder/ListItem'
 import {type PaneListItem, type PaneListItemDivider} from '../../types'
 

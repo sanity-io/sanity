@@ -1,8 +1,9 @@
 import {render} from '@testing-library/react'
-import {useDocumentVersions, usePerspective, useWorkspace} from 'sanity'
+import {usePerspective, useWorkspace} from 'sanity'
 import {type Mock, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {getTargetScopeId} from '../../../../../core/hooks/useTargetDocumentState'
+import {useDocumentVersions} from '../../../../../core/releases/hooks/useDocumentVersions'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../../useDocumentPane'
 import {CommentsWrapper} from '../CommentsWrapper'
@@ -16,7 +17,6 @@ let capturedCommentsProviderProps: Record<string, unknown> | undefined
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useDocumentVersions: vi.fn(() => ({data: [], versions: [], loading: false})),
   usePerspective: vi.fn(() => ({
     selectedPerspectiveName: undefined,
     selectedReleaseId: undefined,
@@ -28,6 +28,11 @@ vi.mock('sanity', async (importOriginal) => ({
   useWorkspace: vi.fn(() => ({
     comments: {legacy: false},
   })),
+}))
+
+vi.mock('../../../../../core/releases/hooks/useDocumentVersions', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useDocumentVersions: vi.fn(() => ({data: [], versions: [], loading: false})),
 }))
 
 // The comments providers and hooks moved off the `sanity` root, so they are mocked where they

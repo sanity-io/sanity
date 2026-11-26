@@ -5,12 +5,7 @@ import {
   MenuItem,
 } from '@sanity/ui/menu'
 import {useCallback} from 'react'
-import {
-  getReleaseIdFromReleaseDocumentId,
-  getVersionFromId,
-  type PublishDocumentVersionEvent,
-  useWorkspace,
-} from 'sanity'
+import {type PublishDocumentVersionEvent, useWorkspace} from 'sanity'
 import {Translate, useTranslation} from 'sanity/i18n'
 import {IntentLink} from 'sanity/router'
 import {Text, Flex} from 'ui5'
@@ -23,7 +18,9 @@ import {RELEASES_INTENT} from '../../../../../core/releases/plugin'
 import {isReleaseDocument} from '../../../../../core/releases/store/types'
 import {useAllReleases} from '../../../../../core/releases/store/useAllReleases'
 import {getReleaseDocumentIdFromReleaseId} from '../../../../../core/releases/util/getReleaseDocumentIdFromReleaseId'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
+import {getVersionFromId} from '../../../../../core/util/draftUtils'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'

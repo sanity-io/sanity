@@ -1,9 +1,10 @@
 import {type Path, type SanityDocument, type SchemaType} from '@sanity/types'
-import {getPublishedId, useDocumentPreviewStore} from 'sanity'
 
 import {PreviewCard} from '../../../core/components/previewCard/PreviewCard'
 import {pathToString} from '../../../core/field/paths/helpers'
+import {useDocumentPreviewStore} from '../../../core/store/datastores'
 import {useDocumentPresence} from '../../../core/store/presence/useDocumentPresence'
+import {getPublishedId} from '../../../core/util/draftUtils'
 import {PaneItemPreview} from '../paneItem/PaneItemPreview'
 import {usePaneRouter} from '../paneRouter/usePaneRouter'
 

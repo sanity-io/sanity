@@ -19,22 +19,19 @@ import {
   useRef,
   useState,
 } from 'react'
-import {
-  type GeneralPreviewLayoutKey,
-  getPublishedId,
-  PreviewCard,
-  SanityDefaultPreview,
-  useDocumentPresence,
-  useDocumentPreviewStore,
-  useDocumentVersions,
-  useEditState,
-  useNumberFormat,
-  useSchema,
-} from 'sanity'
+import {type GeneralPreviewLayoutKey, useNumberFormat} from 'sanity'
 import {Text, Box, Flex, Icon} from 'ui5'
 
 import {DocumentVersionsStatusIndicator} from '../../../core/components/documentStatusIndicator/DocumentVersionsStatusIndicator'
+import {PreviewCard} from '../../../core/components/previewCard/PreviewCard'
 import {type FIXME} from '../../../core/FIXME'
+import {useEditState} from '../../../core/hooks/useEditState'
+import {useSchema} from '../../../core/hooks/useSchema'
+import {SanityDefaultPreview} from '../../../core/preview/components/SanityDefaultPreview'
+import {useDocumentVersions} from '../../../core/releases/hooks/useDocumentVersions'
+import {useDocumentPreviewStore} from '../../../core/store/datastores'
+import {useDocumentPresence} from '../../../core/store/presence/useDocumentPresence'
+import {getPublishedId} from '../../../core/util/draftUtils'
 import {MissingSchemaType} from '../MissingSchemaType'
 import {usePaneRouter} from '../paneRouter/usePaneRouter'
 import {PaneItemPreview} from './PaneItemPreview'

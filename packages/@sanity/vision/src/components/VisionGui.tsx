@@ -20,15 +20,10 @@ import {
   useState,
   useEffectEvent,
 } from 'react'
-import {
-  getReleaseIdFromReleaseDocumentId,
-  type PerspectiveStack,
-  useClient,
-  usePerspective,
-  useWorkspace,
-} from 'sanity'
+import {type PerspectiveStack, useClient, usePerspective, useWorkspace} from 'sanity'
 import {
   getDefaultVariant,
+  getReleaseIdFromReleaseDocumentId,
   isCardinalityOneRelease,
   sortReleases,
   useActiveReleases,

@@ -1,7 +1,8 @@
 import {Stack, Text} from '@sanity/ui'
 import {Suspense, useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {type StringInputProps, useDocumentStore} from 'sanity'
+import {type StringInputProps} from 'sanity'
+import {useDocumentStore} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 const LISTEN_QUERY_COUNT = 60
 const LISTEN_QUERY_INDEXES = [...Array(LISTEN_QUERY_COUNT).keys()]

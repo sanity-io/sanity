@@ -56,12 +56,13 @@ Each user can also switch AI features off for themselves, all at once or one at 
 
 ### Only enabling it for development
 
-If you only want the Vision tool available in development (e.g., not in deployed studios), you can import and use the `isDev` constant from the `sanity` package:
+If you only want the Vision tool available in development (e.g., not in deployed studios), you can import and use the `isDev` constant from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`:
 
 ```ts
 import {visionTool} from '@sanity/vision'
 // `sanity.config.ts` / `sanity.config.js`:
-import {defineConfig, isDev} from 'sanity'
+import {defineConfig} from 'sanity'
+import {isDev} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 const devOnlyPlugins = [visionTool()]
 

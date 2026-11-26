@@ -1,17 +1,18 @@
 diff --git a/dist/index.js b/dist/index.js
-index 79dd3301701b5f8eb9754132b2ef6dd0038dbd2a..d512fbdeddbd3bc101188a1f774482ca08caeb6a 100644
+index 79dd3301701b5f8eb9754132b2ef6dd0038dbd2a..f6b987deb7a99ff56b3abe569232bc279a31aa29 100644
 --- a/dist/index.js
 +++ b/dist/index.js
-@@ -1,7 +1,7 @@
+@@ -1,7 +1,8 @@
  import "@sanity/ui/styles.css";
  import { EditIcon } from "@sanity/icons/Edit";
  import { ImageIcon } from "@sanity/icons/Image";
 -import { Preview, WithReferringDocuments, definePlugin, getPublishedId, useClient, useColorSchemeValue, useDocumentStore, useFormValue, useSchema } from "sanity";
-+import { Preview, definePlugin, getPublishedId, useClient, useColorSchemeValue, useDocumentStore, useFormValue, useReferringDocuments, useSchema } from "sanity";
++import { definePlugin, useClient, useFormValue, useReferringDocuments } from "sanity";
++import { Preview, getPublishedId, useColorSchemeValue, useDocumentStore, useSchema } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver";
  import { c } from "react/compiler-runtime";
  import { Box, Button, Card, Checkbox, Container, Dialog, Flex, Grid, Inline, Label, Portal, PortalProvider, Spinner, Stack, Switch, Tab, TabList, TabPanel, Text, TextArea, TextInput, Tree, TreeItem, rem, studioTheme, useLayer, useMediaIndex, usePortal } from "@sanity/ui";
  import { createContext, memo, useContext, useEffect, useMemo, useRef, useState } from "react";
-@@ -59,6 +59,9 @@ import { UploadIcon } from "@sanity/icons/Upload";
+@@ -59,6 +60,9 @@ import { UploadIcon } from "@sanity/icons/Upload";
  import { ChevronUpIcon } from "@sanity/icons/ChevronUp";
  import { formatRelative } from "date-fns/formatRelative";
  import { useDropzone } from "react-dropzone";

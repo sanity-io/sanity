@@ -14,14 +14,11 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs'
-import {
-  getDraftId,
-  getPublishedId,
-  type PreviewValue,
-  useDocumentPreviewStore,
-  useSchema,
-} from 'sanity'
+import {type PreviewValue} from 'sanity'
 
+import {useSchema} from '../../core/hooks/useSchema'
+import {useDocumentPreviewStore} from '../../core/store/datastores'
+import {getDraftId, getPublishedId} from '../../core/util/draftUtils'
 import {type VisualEditingConnection} from '../types'
 
 type Ref = {

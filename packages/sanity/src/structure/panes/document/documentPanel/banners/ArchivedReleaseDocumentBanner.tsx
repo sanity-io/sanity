@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {getReleaseIdFromReleaseDocumentId, type TargetPerspective} from 'sanity'
+import {type TargetPerspective} from 'sanity'
 import {Translate, useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 
@@ -7,6 +7,7 @@ import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle
 import {VersionInlineBadge} from '../../../../../core/releases/components/VersionInlineBadge'
 import {useArchivedReleases} from '../../../../../core/releases/store/useArchivedReleases'
 import {LATEST} from '../../../../../core/releases/util/const'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
 import {isCardinalityOneRelease} from '../../../../../core/util/releaseUtils'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'

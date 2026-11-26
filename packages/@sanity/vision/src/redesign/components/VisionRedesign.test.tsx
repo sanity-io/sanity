@@ -224,22 +224,14 @@ vi.stubGlobal(
 
 vi.mock('sanity', async () => {
   const {useSyncExternalStore} = await import('react')
-  const {of} = await import('rxjs')
-  // The project store's organization ID, stable like the real store's
-  const organizationId$ = of('org-1')
   return {
     usePerspective: () =>
       useSyncExternalStore(sanityMocks.subscribePerspective, sanityMocks.getPerspective),
     useClient: sanityMocks.useClient,
     useWorkspace: () => sanityMocks.workspace,
-    useProjectStore: () => ({getOrganizationId: () => organizationId$}),
     useNumberFormat: () => new Intl.NumberFormat('en'),
-    getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),
-    useSchema: () => undefined,
     useCurrentUser: () => ({id: 'user-1'}),
     useDateTimeFormat: () => ({format: () => 'a date'}),
-    UserAvatar: () => null,
-    ReleaseAvatarIcon: () => null,
   }
 })
 vi.mock('sanity/i18n', () => ({
@@ -263,44 +255,54 @@ vi.mock('sanity/i18n', () => ({
 // Internals that Vision imports from the internals entry; mocked without the real barrel so the
 // structure modules it re-exports do not load against the partial `sanity` mock above. The upsell
 // content request and dialog are stood in for here too: a test can answer and read them back.
-vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
-  useActiveReleases: vi.fn(() => ({data: [], loading: false})),
-  useScheduledDraftsEnabled: vi.fn(() => false),
-  defineLocalesResources: (_namespace: string, resources: unknown) => resources,
-  VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'v2025-08-18'},
-  RELEASES_STUDIO_CLIENT_OPTIONS: {apiVersion: '2025-02-19'},
-  isCardinalityOneRelease: () => false,
-  sortReleases: <T,>(releases: T[]) => releases,
-  getVariantTitle: (variant: {title?: string}) => variant.title,
-  getDefaultVariant: <T,>(selected?: readonly T[]) => selected?.[0],
-  useKeyValueStore: () => ({getKey: vi.fn(), setKey: vi.fn()}),
-  useWorkspaces: () => [
-    {name: 'default', title: 'Test', projectId: 'test-project', dataset: 'test'},
-    {name: 'staging', title: 'Staging', projectId: 'test-project', dataset: 'staging'},
-  ],
-  ContextMenuButton: ({tooltipProps, ...props}: {tooltipProps?: {content?: string}}) => (
-    <button data-tooltip={tooltipProps?.content} type="button" {...props} />
-  ),
-  NO_UPSELL_DATA: {upsellData: null, hasError: false},
-  useUpsellData: () => ({
-    upsellData$: upsellMocks.content$,
-    telemetryLogs: upsellMocks.telemetryLogs,
-  }),
-  UpsellDialog: ({data, onClose, onPrimaryClick, onSecondaryClick}: UpsellDialogProps) =>
-    data ? (
-      <div aria-label={data.id} data-testid="upsell-dialog" role="dialog">
-        <a href={data.ctaButton.url} onClick={onPrimaryClick}>
-          {data.ctaButton.text}
-        </a>
-        <a href={data.secondaryButton.url} onClick={onSecondaryClick}>
-          {data.secondaryButton.text}
-        </a>
-        <button data-testid="upsell-dialog-close" onClick={onClose} type="button">
-          Close
-        </button>
-      </div>
-    ) : null,
-}))
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', async () => {
+  const {of} = await import('rxjs')
+  // The project store's organization ID, stable like the real store's
+  const organizationId$ = of('org-1')
+  return {
+    useProjectStore: () => ({getOrganizationId: () => organizationId$}),
+    getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),
+    useSchema: () => undefined,
+    UserAvatar: () => null,
+    ReleaseAvatarIcon: () => null,
+    useActiveReleases: vi.fn(() => ({data: [], loading: false})),
+    useScheduledDraftsEnabled: vi.fn(() => false),
+    defineLocalesResources: (_namespace: string, resources: unknown) => resources,
+    VARIANTS_STUDIO_CLIENT_OPTIONS: {apiVersion: 'v2025-08-18'},
+    RELEASES_STUDIO_CLIENT_OPTIONS: {apiVersion: '2025-02-19'},
+    isCardinalityOneRelease: () => false,
+    sortReleases: <T,>(releases: T[]) => releases,
+    getVariantTitle: (variant: {title?: string}) => variant.title,
+    getDefaultVariant: <T,>(selected?: readonly T[]) => selected?.[0],
+    useKeyValueStore: () => ({getKey: vi.fn(), setKey: vi.fn()}),
+    useWorkspaces: () => [
+      {name: 'default', title: 'Test', projectId: 'test-project', dataset: 'test'},
+      {name: 'staging', title: 'Staging', projectId: 'test-project', dataset: 'staging'},
+    ],
+    ContextMenuButton: ({tooltipProps, ...props}: {tooltipProps?: {content?: string}}) => (
+      <button data-tooltip={tooltipProps?.content} type="button" {...props} />
+    ),
+    NO_UPSELL_DATA: {upsellData: null, hasError: false},
+    useUpsellData: () => ({
+      upsellData$: upsellMocks.content$,
+      telemetryLogs: upsellMocks.telemetryLogs,
+    }),
+    UpsellDialog: ({data, onClose, onPrimaryClick, onSecondaryClick}: UpsellDialogProps) =>
+      data ? (
+        <div aria-label={data.id} data-testid="upsell-dialog" role="dialog">
+          <a href={data.ctaButton.url} onClick={onPrimaryClick}>
+            {data.ctaButton.text}
+          </a>
+          <a href={data.secondaryButton.url} onClick={onSecondaryClick}>
+            {data.secondaryButton.text}
+          </a>
+          <button data-testid="upsell-dialog-close" onClick={onClose} type="button">
+            Close
+          </button>
+        </div>
+      ) : null,
+  }
+})
 
 vi.mock('sanity/router', () => ({
   IntentLink: ({children}: {children: ReactNode}) => <a href="#intent">{children}</a>,

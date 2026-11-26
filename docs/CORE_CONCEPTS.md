@@ -123,7 +123,7 @@ import {
   isPublishedId, // Check if ID is published
   isVersionId, // Check if ID is in a release
   getVersionId, // Get version ID for a release
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 ```
 
 ### Live Edit
@@ -743,14 +743,8 @@ import {
   defineType,
   defineField,
 
-  // Document utilities
-  getDraftId,
-  getPublishedId,
-  isDraftId,
-
   // Hooks
   useClient,
-  useSchema,
   usePerspective,
   useActiveReleases,
 
@@ -765,6 +759,15 @@ import {
   type Tool,
   type Plugin,
 } from 'sanity'
+import {
+  // Document utilities
+  getDraftId,
+  getPublishedId,
+  isDraftId,
+
+  // Hooks
+  useSchema,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 ```
 
 ### Directory Structure

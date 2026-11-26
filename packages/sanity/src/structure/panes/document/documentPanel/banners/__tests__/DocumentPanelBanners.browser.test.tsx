@@ -7,11 +7,6 @@ import {
   type EditStateFor,
   type PerspectiveContextValue,
   type SystemVariant,
-  useCanvasCompanionDoc,
-  useDocumentStore,
-  useDocumentVersions,
-  useOnlyHasVersions,
-  useSchema,
   useWorkspace,
 } from 'sanity'
 import {
@@ -28,12 +23,17 @@ import {page} from 'vitest/browser'
 
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
+import {useCanvasCompanionDoc} from '../../../../../../core/canvas/actions/useCanvasCompanionDoc'
 import {useCanvasNavigate} from '../../../../../../core/canvas/useCanvasNavigate'
 import {type WorkspaceSummary} from '../../../../../../core/config/types'
+import {useSchema} from '../../../../../../core/hooks/useSchema'
 import {type TargetDocumentState} from '../../../../../../core/hooks/useTargetDocumentState'
+import {useDocumentVersions} from '../../../../../../core/releases/hooks/useDocumentVersions'
+import {useOnlyHasVersions} from '../../../../../../core/releases/hooks/useOnlyHasVersions'
 import {type VersionInfoDocumentStub} from '../../../../../../core/releases/store/types'
 import {useActiveReleases} from '../../../../../../core/releases/store/useActiveReleases'
 import {useArchivedReleases} from '../../../../../../core/releases/store/useArchivedReleases'
+import {useDocumentStore} from '../../../../../../core/store/datastores'
 import {type PaneRouterContextValue} from '../../../../../components/paneRouter/types'
 import {type Panes} from '../../../../../structureResolvers/useResolvedPanes'
 import {type PaneNode} from '../../../../../types'

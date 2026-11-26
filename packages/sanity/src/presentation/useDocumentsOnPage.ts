@@ -1,8 +1,8 @@
 import {validateApiPerspective} from '@sanity/client'
 import {dequal as isEqual} from 'dequal/lite'
 import {type RefObject, useCallback, useMemo, useRef, useState} from 'react'
-import {getPublishedId} from 'sanity'
 
+import {getPublishedId} from '../core/util/draftUtils'
 import {type FrameState, type PresentationPerspective} from './types'
 import {defineWarnOnce} from './util/warnOnce'
 

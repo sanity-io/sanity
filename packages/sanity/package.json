@@ -37,6 +37,7 @@
     "./lib/index.js",
     "./lib/structure.js",
     "./lib/presentation.js",
+    "./lib/media-library.js",
     "./lib/_unstable-embedded.js",
     "./lib/_dangerously_use_private_internals_that_do_not_follow_semver.js"
   ],

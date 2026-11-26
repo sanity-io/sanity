@@ -4,8 +4,9 @@ import {Card, Stack} from '@sanity/ui'
 import {Autocomplete} from '@sanity/ui/autocomplete'
 import {MenuDivider} from '@sanity/ui/menu'
 import {type ReactNode, useCallback, useEffect, useId, useMemo, useRef, useState} from 'react'
-import {ReleaseAvatarIcon, usePerspective, useWorkspace} from 'sanity'
+import {usePerspective, useWorkspace} from 'sanity'
 import {
+  ReleaseAvatarIcon,
   getDefaultVariant,
   getVariantTitle,
   useScheduledDraftsEnabled,

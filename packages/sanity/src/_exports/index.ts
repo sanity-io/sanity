@@ -3,27 +3,7 @@ import '@sanity/ui/styles.css'
 // oxlint-disable-next-line import/no-unassigned-import -- side effect: keeps the module augmentations declared by this module on the public type surface
 import '../core/form/types/definitionExtensions'
 
-export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
-export {type ConnectorContextValue} from '../core/changeIndicators/ConnectorContext'
-export {type ChangeConnectorRootProps} from '../core/changeIndicators/overlay/ChangeConnectorRoot'
-export {
-  type ChangeIndicatorTrackerContextValue,
-  type TrackedArea,
-  type TrackedChange,
-} from '../core/changeIndicators/types'
-export {
-  type CommentInputHandle,
-  type CommentInputProps,
-} from '../core/comments-v2/components/pte/comment-input/CommentInput'
-export {
-  type CommentInputHandle as CommentInputHandleLegacy,
-  type CommentInputProps as CommentInputPropsLegacy,
-} from '../core/comments/components/pte/comment-input/CommentInput'
 export {type CommentsIntentProviderProps} from '../core/comments/context/intent/CommentsIntentProvider'
-export {type CommentsSelectedPath} from '../core/comments-v2/context/selected-path/types'
-export {type CommentsSelectedPath as CommentsSelectedPathLegacy} from '../core/comments/context/selected-path/types'
-export {useCommentsMode} from '../core/comments-v2/hooks/useCommentsMode'
-export {useCommentsMode as useCommentsModeLegacy} from '../core/comments/hooks/useCommentsMode'
 export {
   type CommentBaseCreatePayload,
   type CommentContext,
@@ -77,29 +57,7 @@ export {
   type CommentUpdatePayload as CommentUpdatePayloadLegacy,
   type Loadable as LoadableLegacy,
 } from '../core/comments/types'
-export {type BetaBadgeProps} from '../core/components/BetaBadge'
-export {type CollapseMenuProps} from '../core/components/collapseMenu/CollapseMenu'
-export {
-  type CollapseMenuButtonProps,
-  type CommonProps,
-} from '../core/components/collapseMenu/CollapseMenuButton'
-export {
-  type CommandListElementType,
-  type CommandListGetItemDisabledCallback,
-  type CommandListGetItemKeyCallback,
-  type CommandListGetItemSelectedCallback,
-  type CommandListHandle,
-  type CommandListItemContext,
-  type CommandListProps,
-  type CommandListRenderItemCallback,
-} from '../core/components/commandList/types'
-export {type ErrorActionsProps} from '../core/components/errorActions/ErrorActions'
-export {type ErrorWithId} from '../core/components/errorActions/types'
-export {PreviewCard, type PreviewCardContextValue} from '../core/components/previewCard/PreviewCard'
-export {
-  TemplatePreview,
-  type TemplatePreviewProps,
-} from '../core/components/previews/template/TemplatePreview'
+export {type TemplatePreviewProps} from '../core/components/previews/template/TemplatePreview'
 export {
   type GeneralDocumentListLayoutKey,
   type GeneralPreviewLayoutKey,
@@ -110,39 +68,19 @@ export {
   type PreviewProps,
 } from '../core/components/previews/types'
 export {
-  type TrackerContextGetSnapshot,
-  type TrackerContextStore,
-} from '../core/components/react-track-elements/hooks'
-export {
-  type IsEqualFunction,
-  type Reported,
-  type ReporterHook,
-} from '../core/components/react-track-elements/types'
-export {type RelativeTimeProps} from '../core/components/RelativeTime'
-export {
   type RovingFocusNavigationType,
   type RovingFocusProps,
 } from '../core/components/rovingFocus/types'
-export {useRovingFocus} from '../core/components/rovingFocus/useRovingFocus'
-export {type ScrollContainerProps} from '../core/components/scroll/scrollContainer'
-export {type ScrollContextValue, type ScrollEventHandler} from '../core/components/scroll/types'
-export {StatusButton, type StatusButtonProps} from '../core/components/StatusButton'
-export {TextWithTone, type TextWithToneProps} from '../core/components/textWithTone/TextWithTone'
-export {type ToastParams} from '../core/components/transitional/ImperativeToast'
-export {type ZIndexContextValueKey} from '../core/components/transitional/LegacyLayerProvider'
-export {UserAvatar, type UserAvatarProps} from '../core/components/userAvatar/UserAvatar'
-export {type ZIndexContextValue} from '../core/components/zOffsets/types'
+export {type StatusButtonProps} from '../core/components/StatusButton'
+export {type UserAvatarProps} from '../core/components/userAvatar/UserAvatar'
 export {
   type AuthConfig,
   type AuthProvider,
-  type CookielessCompatibleLoginMethod,
   type LoginMethod,
   type OAuthAuthConfig,
   type OAuthConfig,
   type LegacyAuthConfig,
 } from '../core/config/auth/types'
-export {type ConfigPropertyErrorOptions} from '../core/config/ConfigPropertyError'
-export {type ConfigResolutionErrorOptions} from '../core/config/ConfigResolutionError'
 export {createDefaultIcon} from '../core/config/createDefaultIcon'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {createConfig, defineConfig} from '../core/config/defineConfig'
@@ -170,7 +108,6 @@ export {
   type DocumentBadgeDescription,
   type DocumentBadgeProps,
 } from '../core/config/document/badges'
-export {defineDocumentFieldAction} from '../core/config/document/fieldActions/define'
 export {
   type DocumentFieldAction,
   type DocumentFieldActionDivider,
@@ -199,13 +136,12 @@ export {
   type ReleaseActionProps,
   type ReleaseActionsContext,
 } from '../core/config/releases/actions'
-export {type CreateWorkspaceFromConfigOptions, resolveConfig} from '../core/config/resolveConfig'
-export {SchemaError, type SchemaErrorContext} from '../core/config/SchemaError'
+export {resolveConfig} from '../core/config/resolveConfig'
+export {SchemaError} from '../core/config/SchemaError'
 export {
   type ActiveToolLayoutProps,
   type LayoutProps,
   type LogoProps,
-  type NavbarAction,
   type NavbarProps,
   type ProviderProps,
   type StudioComponents,
@@ -217,13 +153,10 @@ export {
   type AppsOptions,
   type AssetSourceResolver,
   type AsyncComposableOption,
-  type AsyncConfigPropertyReducer,
   type BaseActionDescription,
-  type BetaFeatures,
   type ComposableOption,
   type Config,
   type ConfigContext,
-  type ConfigPropertyReducer,
   type DefaultPluginsWorkspaceOptions,
   type DocumentActionsContext,
   type DocumentActionsResolver,
@@ -237,11 +170,9 @@ export {
   type DocumentLanguageFilterComponent,
   type DocumentLanguageFilterContext,
   type DocumentLanguageFilterResolver,
-  type DocumentLayoutProps,
   type DocumentPluginOptions,
   type FederatedAssetSourcesConfig,
   type FederatedAssetSourceViewInfo,
-  type FormBuilderComponentResolverContext,
   type GroupableActionDescription,
   type MediaLibraryConfig,
   type MissingConfigFile,
@@ -251,7 +182,6 @@ export {
   type PartialContext,
   type Plugin,
   type PluginOptions,
-  type PreparedConfig,
   type ReleaseActionsResolver,
   type ReleaseMetadataConfig,
   type ResolveProductionUrlContext,
@@ -267,160 +197,50 @@ export {
   type TemplateResolver,
   type Tool,
   type UnresolvedSingletonDefinition,
-  type VariantConditionMap,
-  type VariantConditions,
-  type VariantConditionsContext,
-  type VariantConditionValue,
-  type VariantTypeConfig,
-  type VariantTypeContext,
-  type VariantTypesConfig,
   type Workspace,
   type WorkspaceHiddenContext,
   type WorkspaceHiddenProperty,
   type WorkspaceOptions,
-  type WorkspaceSummary,
 } from '../core/config/types'
-export {
-  type DocumentGroupInventoryHandle,
-  type DocumentGroupInventoryProps,
-} from '../core/documentGroupInventory/components/DocumentGroupInventory'
-export {type DocumentGroupInventoryFeedbackActionProps} from '../core/documentGroupInventory/components/DocumentGroupInventoryFeedbackAction'
-export {useDocumentVersionTitle} from '../core/hooks/useDocumentVersionTitle'
-export {
-  type DocumentGroupInventoryComponents,
-  type DocumentGroupInventoryPerspectiveList,
-  type DocumentGroupInventoryReferencePreviewLinkProps,
-} from '../core/documentGroupInventory/types'
-export {isDev} from '../core/environment'
-export {type FeedbackDialogProps} from '../core/feedback/components/FeedbackDialog'
-export {type StudioFeedbackDialogProps} from '../core/feedback/components/StudioFeedbackDialog'
-export {type UseFeedbackReturn} from '../core/feedback/hooks/useFeedback'
-export {
-  type SendFeedbackOptions,
-  type UseInStudioFeedbackReturn,
-} from '../core/feedback/hooks/useInStudioFeedback'
+export {type SendFeedbackOptions} from '../core/feedback/hooks/useInStudioFeedback'
 export {
   type BaseFeedbackTags,
   type DynamicFeedbackTags,
-  type FeedbackContextValue,
   type FeedbackPayload,
-  type Sentiment,
   type TagValue,
 } from '../core/feedback/types'
-export {type DiffVisitor, getDiffAtPath} from '../core/field/diff/annotations/helpers'
-export {useAnnotationColor, useDiffAnnotationColor} from '../core/field/diff/annotations/hooks'
-export {type ChangeResolverProps} from '../core/field/diff/components/ChangeResolver'
-export {
-  type DiffErrorBoundaryProps,
-  type DiffErrorBoundaryState,
-} from '../core/field/diff/components/DiffErrorBoundary'
-export {type DiffInspectWrapperProps} from '../core/field/diff/components/DiffInspectWrapper'
-export {type FromToProps} from '../core/field/diff/components/FromTo'
-export {type FromToArrowDirection} from '../core/field/diff/components/FromToArrow'
-export {type MetaInfoProps} from '../core/field/diff/components/MetaInfo'
-export {type DocumentChangeContextInstance} from '../core/field/diff/contexts/DocumentChangeContext'
-export {pathsAreEqual, pathToString, stringToPath} from '../core/field/paths/helpers'
-export {type FieldPreviewComponent} from '../core/field/preview/types'
 export {
   type Annotation,
   type AnnotationDetails,
-  type ArrayDiff,
-  type ArrayItemMetadata,
-  type BooleanDiff,
-  type ChangeNode,
-  type ChangeTitlePath,
   type Chunk,
   type ChunkType,
-  type Diff,
-  type DiffComponent,
-  type DiffComponentOptions,
-  type DiffComponentResolver,
-  type DiffProps,
-  type FieldChangeNode,
-  type FieldOperationsAPI,
-  type FromToIndex,
-  type GroupChangeNode,
-  type ItemDiff,
-  type NullDiff,
-  type NumberDiff,
-  type ObjectDiff,
-  type ReferenceDiff,
-  type StringDiff,
-  type StringDiffSegment,
-  type StringSegmentChanged,
-  type StringSegmentUnchanged,
-  type TypeChangeDiff,
 } from '../core/field/types'
-export {type FieldValueError} from '../core/field/validation'
-export {type FIXME} from '../core/FIXME'
 
-export {type FormFieldSetProps} from '../core/form/components/formField/FormFieldSet'
-export {type FieldStatusProps} from '../core/form/components/formField/FormFieldStatus'
-export {
-  type FormFieldValidation,
-  type FormFieldValidationError,
-  type FormFieldValidationInfo,
-  type FormFieldValidationWarning,
-} from '../core/form/components/formField/types'
-export {
-  type FormInputAbsolutePathArg,
-  type FormInputRelativePathArg,
-} from '../core/form/components/FormInput'
-export {type FormValueContextValue, useFormValue} from '../core/form/contexts/FormValue'
+export {useFormValue} from '../core/form/contexts/FormValue'
 export {useGetFormValue} from '../core/form/contexts/GetFormValue'
-export {type FieldActionMenuProps} from '../core/form/field/actions/FieldActionMenu'
-export {type FieldActionsProps} from '../core/form/field/actions/FieldActionsResolver'
 export {type FormBuilderContextValue} from '../core/form/FormBuilderContext'
-export {useDidUpdate} from '../core/form/hooks/useDidUpdate'
 // Code-split facades. Same names and props; the implementation loads on first render so the
 // form runtime and the Portable Text editor are not in the login screen's import graph.
-export {
-  ArrayOfObjectsInput,
-  MemberField,
-  MemberFieldError,
-  ObjectInput,
-  ObjectInputMember,
-  PortableTextInput,
-  ReferenceInput,
-  SlugInput,
-  StringInput,
-  TagsArrayInput,
-  UniversalArrayInput,
-} from '../core/form/lazy'
-export {type VirtualizerScrollInstance} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/useVirtualizerScrollInstance'
-export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 
 export {type DateInputProps} from '../core/form/inputs/DateInputs/DateInput'
 export {type DateTimeInputProps} from '../core/form/inputs/DateInputs/DateTimeInput'
 export {type EmailInputProps} from '../core/form/inputs/EmailInput'
 export {type AssetAccessPolicy} from '../core/form/inputs/files/types'
-export {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
-export {type PortableTextMemberItem} from '../core/form/inputs/PortableText/PortableTextInput'
-export {type CreateReferenceOption} from '../core/form/inputs/ReferenceInput/types'
-export {SelectInput} from '../core/form/inputs/SelectInput'
 export {type SlugInputProps} from '../core/form/inputs/Slug/SlugInput'
 export {type TagsArrayInputProps} from '../core/form/inputs/TagsArrayInput'
-export {TelephoneInput, type TelephoneInputProps} from '../core/form/inputs/TelephoneInput'
-export {TextInput, type TextInputProps} from '../core/form/inputs/TextInput'
-export {UrlInput, type UrlInputProps} from '../core/form/inputs/UrlInput'
-export {type ArrayOfObjectsMemberProps} from '../core/form/members/array/ArrayOfObjectsInputMember'
-export {type ArrayOfObjectsInputMembersProps} from '../core/form/members/array/ArrayOfObjectsInputMembers'
+export {type TelephoneInputProps} from '../core/form/inputs/TelephoneInput'
+export {type TextInputProps} from '../core/form/inputs/TextInput'
+export {type UrlInputProps} from '../core/form/inputs/UrlInput'
 export {type MemberItemProps} from '../core/form/members/array/items/ArrayOfObjectsItem'
 export {type PrimitiveMemberItemProps} from '../core/form/members/array/items/ArrayOfPrimitivesItem'
-export {MemberItemError} from '../core/form/members/array/MemberItemError'
-export {type MemberFieldProps} from '../core/form/members/object/MemberField'
-export {type ObjectInputMemberProps} from '../core/form/members/object/ObjectInputMember'
-export {type ObjectMembersProps} from '../core/form/members/object/ObjectInputMembers'
 export {dec, diffMatchPatch, inc, insert, set, setIfMissing, unset} from '../core/form/patch/patch'
 export {
-  createPatchChannel,
   type MutationPatchMsg,
   type PatchChannel,
   type PatchMsg,
   type PatchMsgSubscriber,
   type RebasePatchMsg,
 } from '../core/form/patch/PatchChannel'
-export {PatchEvent} from '../core/form/patch/PatchEvent'
 export {
   type FormDecPatch,
   type FormDiffMatchPatch,
@@ -467,8 +287,6 @@ export {
   type BaseFormNode,
   type BooleanFormNode,
   type ComputeDiff,
-  type DocumentFormNode,
-  type HiddenField,
   type NodeChronologyProps,
   type NodeDiffProps,
   type NumberFormNode,
@@ -479,25 +297,6 @@ export {
   type StringFormNode,
 } from '../core/form/store/types/nodes'
 export {type StateTree} from '../core/form/store/types/state'
-export {type FormState, type UseFormStateOptions} from '../core/form/store/useFormState'
-export {
-  type ExpandFieldSetOperation,
-  type ExpandOperation,
-  type ExpandPathOperation,
-  type SetActiveGroupOperation,
-} from '../core/form/store/utils/getExpandOperations'
-export {type ParseError} from '../core/form/store/utils/mergeParseErrors'
-export {
-  createSanityMediaLibraryFileSource,
-  createSanityMediaLibraryImageSource,
-} from '../core/form/studio/assetSourceMediaLibrary/createAssetSource'
-export {type FormCallbacksValue, useFormCallbacks} from '../core/form/studio/contexts/FormCallbacks'
-export {
-  type EditReferenceLinkComponentProps,
-  type EditReferenceOptions,
-  type ReferenceInputOptions,
-  type TemplateOption,
-} from '../core/form/studio/contexts/ReferenceInputOptions'
 export {type FormBuilderProps} from '../core/form/studio/FormBuilder'
 export {type FormProviderProps} from '../core/form/studio/FormProvider'
 export {type StudioCrossDatasetReferenceInputProps as CrossDatasetReferenceInputProps} from '../core/form/studio/inputs/crossDatasetReference/StudioCrossDatasetReferenceInput'
@@ -509,7 +308,6 @@ export {
   type FileLike,
   type ResolvedUploader,
   type Uploader,
-  type UploaderDef,
   type UploaderResolver,
   type UploadOptions,
   type UploadProgressEvent,
@@ -518,7 +316,6 @@ export {
   type ArrayInputFunctionsProps,
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type FormBuilderCustomMarkersComponent,
-  type FormBuilderFilterFieldFn,
   type FormBuilderInputComponentMap,
   type FormBuilderMarkersComponent,
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -560,12 +357,9 @@ export {
   type ArrayOfPrimitivesFieldProps,
   type BaseFieldProps,
   type BooleanFieldProps,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  type FieldCommentsProps,
   type FieldProps,
   type NumberFieldProps,
   type ObjectFieldProps,
-  type PrimitiveFieldProps,
   type StringFieldProps,
 } from '../core/form/types/fieldProps'
 export {type FormDocumentValue} from '../core/form/types/formDocumentValue'
@@ -607,43 +401,19 @@ export {
   type RenderPreviewCallback,
   type RenderPreviewCallbackProps,
 } from '../core/form/types/renderCallback'
-export {useFormBuilder} from '../core/form/useFormBuilder'
-export {fromMutationPatches, type MutationPatch} from '../core/form/utils/mutationPatch'
-export {TransformPatches} from '../core/form/utils/TransformPatches'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {useClient} from '../core/hooks/useClient'
-export {type ConnectionState} from '../core/hooks/useConnectionState'
 export {useDataset} from '../core/hooks/useDataset'
 export {useDateTimeFormat, type UseDateTimeFormatOptions} from '../core/hooks/useDateTimeFormat'
-export {useDialogStack} from '../core/hooks/useDialogStack'
-export {type DocumentIdStack} from '../core/hooks/useDocumentIdStack'
-export {useDocumentOperation} from '../core/hooks/useDocumentOperation'
-export {type DocumentSyncState} from '../core/hooks/useDocumentSyncState'
-export {useEditState} from '../core/hooks/useEditState'
 export {
   type FormattedDuration,
   useFormattedDuration,
   type UseFormattedDurationOptions,
 } from '../core/hooks/useFormattedDuration'
-export {type GlobalCopyPasteElementHandler} from '../core/hooks/useGlobalCopyPasteElementHandler'
 export {useListFormat, type UseListFormatOptions} from '../core/hooks/useListFormat'
-export {type UseManageFavoriteProps} from '../core/hooks/useManageFavorite'
 export {useNumberFormat, type UseNumberFormatOptions} from '../core/hooks/useNumberFormat'
 export {useProjectId} from '../core/hooks/useProjectId'
 export {type DocumentField, useReferringDocuments} from '../core/hooks/useReferringDocuments'
-export {type RelativeTimeOptions, useRelativeTime} from '../core/hooks/useRelativeTime'
-export {useSchema} from '../core/hooks/useSchema'
-export {useSetImmediateValidation} from '../core/hooks/useSetImmediateValidation'
-export {type SyncState, useSyncState} from '../core/hooks/useSyncState'
-export {
-  type CreatableTargetDocument,
-  type TargetDocumentState,
-} from '../core/hooks/useTargetDocumentState'
-export {type TargetScopeIdOptions} from '../core/hooks/useTargetScopeId'
-export {useTemplates} from '../core/hooks/useTemplates'
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export {type TimeAgoOpts, useTimeAgo} from '../core/hooks/useTimeAgo'
-export {useTools} from '../core/hooks/useTools'
 export {
   type FormattableMeasurementUnit,
   type UnitFormatter,
@@ -654,14 +424,9 @@ export {
   type UserListWithPermissionsHookValue,
   type UserListWithPermissionsOptions,
   type UserWithPermission,
-  useUserListWithPermissions,
 } from '../core/hooks/useUserListWithPermissions'
-// oxlint-disable-next-line no-deprecated -- only the boolean overload is deprecated
-export {useValidationStatus} from '../core/hooks/useValidationStatus'
-export {useWorkspaceSchemaId} from '../core/hooks/useWorkspaceSchemaId'
 export {type StudioLocaleResourceKeys} from '../core/i18n/bundles/studio'
 export {type ValidationLocaleResourceKeys} from '../core/i18n/bundles/validation'
-export {type I18nNode} from '../core/i18n/hooks/useI18nText'
 export {
   type UseTranslationOptions,
   type UseTranslationResponse,
@@ -683,136 +448,44 @@ export {
   type LocaleWeekInfo,
   type StaticLocaleResourceBundle,
 } from '../core/i18n/types'
-export {type PerspectiveNotWriteableReason} from '../core/perspective/isPerspectiveWriteable'
-export {PerspectiveProvider} from '../core/perspective/PerspectiveProvider'
 export {
   type PerspectiveContextValue,
   type PerspectiveStack,
   type ReleaseId,
-  type ReleasesNavMenuItemPropsGetter,
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type SelectedPerspective,
   type TargetPerspective,
 } from '../core/perspective/types'
-export {useGetDefaultPerspective} from '../core/perspective/useGetDefaultPerspective'
 export {usePerspective} from '../core/perspective/usePerspective'
-export {type FieldPresenceInnerProps, type FieldPresenceProps} from '../core/presence/FieldPresence'
-export {PresenceOverlay, type PresenceOverlayProps} from '../core/presence/overlay/PresenceOverlay'
-export {type PresenceScopeProps} from '../core/presence/PresenceScope'
-export {
-  type FieldPresenceData,
-  type FormNodePresence,
-  type Location,
-  type Position,
-  type PresentUser,
-  type Rect,
-  type RegionWithIntersectionDetails,
-  type ReportedRegionWithRect,
-  type Size,
-} from '../core/presence/types'
-export {Preview} from '../core/preview/components/Preview'
-export {
-  SanityDefaultPreview,
-  type SanityDefaultPreviewProps,
-} from '../core/preview/components/SanityDefaultPreview'
+export {type FormNodePresence} from '../core/presence/types'
 export {
   type DocumentPreviewStore,
-  type DocumentPreviewStoreOptions,
   type ObserveForPreviewFn,
 } from '../core/preview/documentPreviewStore'
 export {
   type ApiConfig,
-  type AvailabilityReason,
-  type AvailabilityResponse,
   type DocumentAvailability,
   type DocumentStackAvailability,
   type DraftsModelDocument,
   type DraftsModelDocumentAvailability,
   type FieldName,
-  type Id,
   type InvalidationChannelEvent,
   type ObserveDocumentAvailabilityFn,
-  type ObserveDocumentTypeFromIdFn,
   type ObservePathsFn,
   type PreparedSnapshot,
   type Previewable,
   type PreviewableType,
   type PreviewPath,
-  type Selection,
 } from '../core/preview/types'
-export {useUnstableObserveDocument} from '../core/preview/useObserveDocument'
-export {getPreviewStateObservable} from '../core/preview/utils/getPreviewStateObservable'
-export {getPreviewValueWithFallback} from '../core/preview/utils/getPreviewValueWithFallback'
-export {ReleaseAvatar, ReleaseAvatarIcon} from '../core/releases/components/ReleaseAvatar'
-export {useDocumentVersions} from '../core/releases/hooks/useDocumentVersions'
-export {useDocumentVersionTypeSortedList} from '../core/releases/hooks/useDocumentVersionTypeSortedList'
-export {useOnlyHasVersions} from '../core/releases/hooks/useOnlyHasVersions'
-export {RELEASE_DOCUMENT_TYPE} from '../core/releases/store/constants'
-export {type VersionInfoDocumentStub} from '../core/releases/store/types'
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export {useDocumentVersionInfo} from '../core/releases/store/useDocumentVersionInfo'
-export {getReleaseIdFromReleaseDocumentId} from '../core/releases/util/getReleaseIdFromReleaseDocumentId'
-export {getDocumentIsInPerspective} from '../core/releases/util/util'
-// oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
-export {useScheduleAction as ScheduleAction} from '../core/scheduled-publishing/plugin/documentActions/schedule/ScheduleAction'
-// oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API stays public until it is removed
-export {ScheduledBadge} from '../core/scheduled-publishing/plugin/documentBadges/scheduled/ScheduledBadge'
 export {createSchema} from '../core/schema/createSchema'
-export {
-  type PartialIndexFieldPaths,
-  type SearchFactoryOptions,
-  type SearchOptions,
-  type SearchSort,
-  type SearchTerms,
-} from '../core/search/common/types'
-export {
-  type SearchMachineContext,
-  type SearchMachineEmitted,
-  type SearchMachineEvent,
-  type SearchMachineInput,
-} from '../core/search/searchMachine'
-export {
-  type SearchMachineState,
-  type UseSearchMachineOptions,
-} from '../core/search/useSearchMachine'
-export {type AgentVersionDisplay} from '../core/store/agent/useAgentVersionDisplay'
-export {type RequestFailureDiagnostics} from '../core/studio/requestErrors/diagnoseRequestFailure'
-export {type MockAuthStoreOptions} from '../core/store/auth/mock/createMockAuthStore'
-export {getProviderTitle} from '@sanity/access-ui'
 export {
   type AuthProbeResult,
   type AuthState,
   type AuthStore,
-  type HandleCallbackResult,
   type LoginComponentProps,
-  type OAuthCallbackResult,
-  type LegacyCallbackResult,
 } from '../core/store/auth/types'
+export {type BufferedDocumentEvent} from '../core/store/document/buffered-doc/createBufferedDocument'
 export {
-  type ConnectedStatus,
-  type ConnectingStatus,
-  type ConnectionStatus,
-  type ConnectionStatusStore,
-  type ConnectionStatusStoreOptions,
-  type ErrorStatus,
-  type RetryingStatus,
-} from '../core/store/connection-status/connection-status-store'
-export {
-  useDocumentPreviewStore,
-  useDocumentStore,
-  useGrantsStore,
-  useHistoryStore,
-  usePresenceStore,
-  useProjectStore,
-  useUserStore,
-} from '../core/store/datastores'
-export {
-  type BufferedDocumentEvent,
-  type BufferedDocumentWrapper,
-} from '../core/store/document/buffered-doc/createBufferedDocument'
-export {type CommitRequest} from '../core/store/document/buffered-doc/createObservableBufferedDocument'
-export {
-  type CommitFunction,
   type CommittedEvent,
   type DocumentMutationEvent,
   type DocumentRebaseEvent,
@@ -822,7 +495,6 @@ export {
   type SnapshotEvent,
 } from '../core/store/document/buffered-doc/types'
 export {
-  type CommitError,
   type DocumentVersion,
   type DocumentVersionEvent,
   type MutationResult,
@@ -835,47 +507,17 @@ export {
   type OperationError,
   type OperationSuccess,
 } from '../core/store/document/document-pair/operationEvents'
-export {
-  type MapDocument,
-  type Operation,
-  type OperationArgs,
-  type OperationImpl,
-  type OperationsAPI,
-} from '../core/store/document/document-pair/operations/types'
-export {type DocumentVersionSnapshots} from '../core/store/document/document-pair/snapshotPair'
-export {
-  type DocumentStore,
-  type DocumentStoreOptions,
-  type QueryParams,
-} from '../core/store/document/document-store'
-export {
-  type DocumentPairLoadedEvent,
-  type DocumentRebaseTelemetryEvent,
-  type DocumentStoreExtraOptions,
-  type InitialSnapshotEvent,
-  type LatencyReportEvent,
-  type ListenerEvent,
-  type MutationPerformanceEvent,
-} from '../core/store/document/getPairListener'
-export {type DocumentTypeResolveState} from '../core/store/document/hooks/useDocumentType'
-export {useDocumentValues} from '../core/store/document/hooks/useDocumentValues'
+export {type MapDocument} from '../core/store/document/document-pair/operations/types'
+export {type DocumentStore, type QueryParams} from '../core/store/document/document-store'
 export {type InitialValueOptions} from '../core/store/document/initialValue/initialValue'
 export {
   type InitialValueErrorMsg,
   type InitialValueLoadingMsg,
   type InitialValueMsg,
-  type InitialValueState,
   type InitialValueSuccessMsg,
 } from '../core/store/document/initialValue/types'
-export {type ListenQueryOptions, type ListenQueryParams} from '../core/store/document/listenQuery'
-export {
-  type DocumentPairPermissionsListener,
-  type DocumentPairTarget,
-  type IdPair,
-  type MutationEvent,
-  type PendingMutationsEvent,
-} from '../core/store/document/types'
-export {useResolveInitialValueForType} from '../core/store/document/useResolveInitialValueForType'
+export {type ListenQueryOptions} from '../core/store/document/listenQuery'
+export {type DocumentPairPermissionsListener} from '../core/store/document/types'
 export {
   type BaseEvent,
   type CreateDocumentVersionEvent,
@@ -883,22 +525,9 @@ export {
   type DeleteDocumentGroupEvent,
   type DeleteDocumentVersionEvent,
   type DocumentGroupEvent,
-  type DocumentVersionEventType,
   type EditDocumentVersionEvent,
-  type EventsStore,
   type EventsStoreRevision,
   type HistoryClearedEvent,
-  isCreateDocumentVersionEvent,
-  isCreateLiveDocumentEvent,
-  isDeleteDocumentGroupEvent,
-  isDeleteDocumentVersionEvent,
-  isEditDocumentVersionEvent,
-  isNonSelectableTerminalEvent,
-  isPublishDocumentVersionEvent,
-  isScheduleDocumentVersionEvent,
-  isUnpublishDocumentEvent,
-  isUnscheduleDocumentVersionEvent,
-  isUpdateLiveDocumentEvent,
   type PublishDocumentVersionEvent,
   type ScheduleDocumentVersionEvent,
   type UnpublishDocumentEvent,
@@ -906,42 +535,12 @@ export {
   type UpdateLiveDocumentEvent,
 } from '../core/store/events/types'
 export {
-  type DocumentPairPermissionsOptions,
-  type DocumentPermission,
-  getDocumentPairPermissions,
-  useDocumentPairPermissions,
-} from '../core/store/grants/documentPairPermissions'
-export {type DocumentValuePermissionsOptions} from '../core/store/grants/documentValuePermissions'
-export {type GrantsStoreOptions} from '../core/store/grants/grantsStore'
-export {
-  type TemplatePermissionsOptions,
-  type TemplatePermissionsResult,
-} from '../core/store/grants/templatePermissions'
-export {
   type DocumentValuePermission,
-  type EvaluationParams,
-  type Grant,
   type GrantsStore,
   type PermissionCheckResult,
 } from '../core/store/grants/types'
-export {
-  type DocumentRevision,
-  type HistoryStore,
-  type HistoryStoreOptions,
-} from '../core/store/history/createHistoryStore'
-/* oxlint-disable no-deprecated -- the key-value store types stay exported while deprecated, until their removal lands */
-export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
-/* oxlint-enable no-deprecated */
+export {type DocumentRevision, type HistoryStore} from '../core/store/history/createHistoryStore'
 export {type PresenceStore} from '../core/store/presence/presence-store'
-export {
-  type DocumentPresence,
-  type GlobalPresence,
-  type PresenceLocation,
-  type Session,
-  type Status,
-  type UserSessionPair,
-} from '../core/store/presence/types'
-export {useDocumentPresence} from '../core/store/presence/useDocumentPresence'
 export {
   type ProjectData,
   type ProjectDatasetData,
@@ -949,30 +548,9 @@ export {
   type ProjectOrganizationData,
   type ProjectStore,
 } from '../core/store/project/types'
-export {type StoreRequestErrorHandler} from '../core/store/requestErrorHandler'
-export {
-  type ResourceCache,
-  type ResourceCacheProviderProps,
-} from '../core/store/ResourceCacheProvider'
 export {useCurrentUser} from '../core/store/user/hooks'
-export {type UserStore, type UserStoreOptions} from '../core/store/user/userStore'
-export {type ActiveWorkspaceMatcherProps} from '../core/studio/activeWorkspaceMatcher/ActiveWorkspaceMatcher'
-export {type ActiveWorkspaceMatcherContextValue} from '../core/studio/activeWorkspaceMatcher/ActiveWorkspaceMatcherContext'
-export {
-  type MatchWorkspaceOptions,
-  type MatchWorkspaceResult,
-} from '../core/studio/activeWorkspaceMatcher/matchWorkspace'
-export {useActiveWorkspace} from '../core/studio/activeWorkspaceMatcher/useActiveWorkspace'
+export {type UserStore} from '../core/store/user/userStore'
 export {type AddonDatasetContextValue} from '../core/studio/addonDataset/types'
-export {useAddonDataset} from '../core/studio/addonDataset/useAddonDataset'
-export {
-  type ColorSchemeProviderProps,
-  useColorSchemeSetValue,
-  useColorSchemeValue,
-} from '../core/studio/colorScheme'
-export {type DiagnosticsReportProps} from '../core/studio/components/navbar/resources/DiagnosticsReport'
-export {type SearchPopoverProps} from '../core/studio/components/navbar/search/components/SearchPopover'
-export {type SearchContextValue} from '../core/studio/components/navbar/search/contexts/search/SearchContext'
 export {
   defineSearchFilter,
   defineSearchFilterOperators,
@@ -994,14 +572,7 @@ export {
   type ValuelessSearchOperatorBuilder,
   type ValuelessSearchOperatorParams,
 } from '../core/studio/components/navbar/search/definitions/operators/operatorTypes'
-export {
-  type PartialIndexSettings,
-  type SearchPartialIndexSettings,
-} from '../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
-export {StudioNavbar, StudioToolMenu} from '../core/studio/components/navbar/LazyStudioNavbar'
-export {StudioLogo} from '../core/studio/components/navbar/StudioLogo'
-export {ToolLink, type ToolLinkProps} from '../core/studio/components/navbar/tools/ToolLink'
-export {useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
+export {type ToolLinkProps} from '../core/studio/components/navbar/tools/ToolLink'
 export {
   type BaseOptions,
   type CopyOptions,
@@ -1010,50 +581,17 @@ export {
   type PasteOptions,
   type SanityClipboardItem,
 } from '../core/studio/copyPaste/types'
-export {type StudioDiagnostics} from '../core/studio/diagnostics/gatherStudioDiagnostics'
-export {type StudioDiagnosticsBridgeApi} from '../core/studio/diagnostics/StudioDiagnosticsBridge'
-export {
-  generateStudioManifest,
-  type GenerateStudioManifestOptions,
-} from '../core/studio/manifest/generateStudioManifest'
-export {
-  type ManifestWorkspaceInput,
-  type StudioManifest,
-  type StudioWorkspaceManifest,
-} from '../core/studio/manifest/types'
+export {generateStudioManifest} from '../core/studio/manifest/generateStudioManifest'
 export {uploadSchema} from '../core/studio/manifest/uploadSchema'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {renderStudio} from '../core/studio/renderStudio'
 export {
-  type ConfigErrorClassification,
-  isTimeoutError,
-  type RequestErrorClassification,
-} from '../core/studio/requestErrors/classify'
-export {
-  type RequestErrorChannel,
-  type RequestErrorClaim,
   type RequestErrorReportOptions,
   type StudioErrorHandler,
 } from '../core/studio/requestErrors/types'
-export {useStudioErrorHandler} from '../core/studio/requestErrors/useStudioErrorHandler'
-export {type SourceProviderProps} from '../core/studio/source'
-export {Studio, type StudioProps} from '../core/studio/Studio'
-export {type NavbarContextValue, StudioLayout} from '../core/studio/StudioLayout'
-export {StudioProvider, type StudioProviderProps} from '../core/studio/StudioProvider'
-export {type UpsellDialogViewedInfo} from '../core/studio/upsell/__telemetry__/upsell.telemetry'
-export {type InterpolationProp} from '../core/studio/upsell/upsellDescriptionSerializer/UpsellDescriptionSerializer'
-export {useWorkspace, type WorkspaceProviderProps} from '../core/studio/workspace'
-export {type ErrorMessageProps} from '../core/studio/workspaceLoader/ErrorMessage'
-export {type WorkspaceLike} from '../core/studio/workspaces/types'
-export {type ValidateWorkspaceOptions} from '../core/studio/workspaces/validateWorkspaces'
-export {type VisibleWorkspacesContextValue} from '../core/studio/workspaces/VisibleWorkspacesProvider'
-export {type WorkspacesContextValue} from '../core/studio/workspaces/WorkspacesContext'
-export {
-  type CorsCheckResult,
-  type CorsProbeOutcome,
-  type WorkspacesProviderProps,
-} from '../core/studio/workspaces/WorkspacesProvider'
-export {type Serializeable} from '../core/templates/resolve'
+export {type StudioProps} from '../core/studio/Studio'
+export {type StudioProviderProps} from '../core/studio/StudioProvider'
+export {useWorkspace} from '../core/studio/workspace'
 export {
   type InitialValueTemplateItem,
   type ResolvedTemplate,
@@ -1066,67 +604,13 @@ export {
   type TypeTarget,
 } from '../core/templates/types'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export {buildLegacyTheme} from '../core/theme/_legacy/theme'
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export {type LegacyThemeProps, type LegacyThemeTints} from '../core/theme/_legacy/types'
+export {type LegacyThemeProps} from '../core/theme/_legacy/types'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {type StudioTheme, type StudioThemeColorSchemeKey} from '../core/theme/types'
-export {useUserColorManager} from '../core/user-color/hooks'
-export {type UserColorManagerOptions} from '../core/user-color/manager'
-export {type UserColorManagerProviderProps} from '../core/user-color/provider'
-export {
-  type HexColor,
-  type UserColor,
-  type UserColorHue,
-  type UserColorManager,
-  type UserId,
-} from '../core/user-color/types'
-export {
-  createHookFromObservableFactory,
-  type LoadingTuple,
-  type ReactHook,
-} from '../core/util/createHookFromObservableFactory'
-export {
-  collate,
-  type CollatedHit,
-  documentIdEquals,
-  type DraftId,
-  getDraftId,
-  getPublishedId,
-  getVersionFromId,
-  getVersionId,
-  isDraftId,
-  isPublishedId,
-  isVersionId,
-  type PublishedId,
-  type SystemBundle,
-  systemBundles,
-  VERSION_FOLDER,
-} from '../core/util/draftUtils'
-export {type DocumentVariantType, getDocumentVariantType} from '../core/util/getDocumentVariantType'
-export {getReferencePaths} from '../core/util/getReferencePaths'
-export {isRecord} from '../core/util/isRecord'
-export {type PartialExcept} from '../core/util/PartialExcept'
-export {type CardinalityOneRelease} from '../core/util/releaseUtils'
-export {truncateString} from '../core/util/unicodeString'
-export {
-  type ErrorState,
-  type LoadableState,
-  type LoadedState,
-  type LoadingState,
-} from '../core/util/useLoadable'
-export {userHasRole} from '../core/util/userHasRole'
-export {type StructureNodeIdValidationResult} from '../core/util/validateStructureNodeId'
-export {
-  isDraftVersion,
-  isPublishedVersion,
-  isReleaseVersion,
-  isVariantVersion,
-  readVersionType,
-  type VersionType,
-} from '../core/util/versionsUtils'
+export {type DraftId, type PublishedId, type SystemBundle} from '../core/util/draftUtils'
+export {type DocumentVariantType} from '../core/util/getDocumentVariantType'
+export {type VersionType} from '../core/util/versionsUtils'
 export {type ValidateDocumentOptions, validateDocument} from '../core/validation'
-export {type ValidationContext} from '@sanity/validation/_internal'
 export {type SystemVariant} from '../core/variants/types'
 export {SANITY_VERSION} from '../core/version'
 export {

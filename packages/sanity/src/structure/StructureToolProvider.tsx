@@ -1,9 +1,10 @@
 import {type ReactNode, useMemo, useState} from 'react'
-import {useDocumentStore, usePerspective} from 'sanity'
+import {usePerspective} from 'sanity'
 import {StructureToolContext} from 'sanity/_singletons'
 
 import {useConfigContextFromSource} from '../core/config/useConfigContextFromSource'
 import {getDefaultVariant} from '../core/perspective/getDefaultVariant'
+import {useDocumentStore} from '../core/store/datastores'
 import {useSource} from '../core/studio/source'
 import {createStructureBuilder} from './structureBuilder/createStructureBuilder'
 import {type DefaultDocumentNodeResolver} from './structureBuilder/types'

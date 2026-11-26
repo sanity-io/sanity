@@ -22,8 +22,9 @@ import {
   takeUntil,
   withLatestFrom,
 } from 'rxjs/operators'
-import {useSchema, useWorkspace} from 'sanity'
+import {useWorkspace} from 'sanity'
 
+import {useSchema} from '../../../core/hooks/useSchema'
 import {useSearchMaxFieldDepth} from '../../../core/studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 import {catchWithCount} from '../../../core/util/catchWithCount'
 import {measureFirstMatch} from '../../../core/util/measureFirstEmission'

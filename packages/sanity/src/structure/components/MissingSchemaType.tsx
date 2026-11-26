@@ -1,8 +1,9 @@
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
 import {type SanityDocument} from '@sanity/types'
-import {type GeneralPreviewLayoutKey, SanityDefaultPreview} from 'sanity'
+import {type GeneralPreviewLayoutKey} from 'sanity'
 import {Translate, useTranslation} from 'sanity/i18n'
 
+import {SanityDefaultPreview} from '../../core/preview/components/SanityDefaultPreview'
 import {structureLocaleNamespace} from '../i18n'
 
 export interface MissingSchemaTypeProps {
