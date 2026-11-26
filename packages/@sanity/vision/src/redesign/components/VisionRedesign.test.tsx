@@ -41,6 +41,8 @@ import {
   VisionPerspectiveChanged,
   VisionQueryPrettified,
   VisionQueryRun,
+  VisionSharedTabsSearched,
+  VisionSharedTabUsed,
   VisionSnippetCopied,
   VisionTabsChanged,
 } from '../../__telemetry__/vision.telemetry'
@@ -90,8 +92,10 @@ const sanityMocks = vi.hoisted(() => {
     getPerspective: () => perspective,
     useClient: vi.fn(),
     saveQuery: vi.fn((_query: {url: string}) => Promise.resolve('saved-key')),
-    // What the mocked saved queries hook lists and reports as being moved
-    savedQueries: {queries: [] as unknown[], moving: [] as string[]},
+    updateQuery: vi.fn((_query: {_key: string; url: string}) => Promise.resolve()),
+    unshareQuery: vi.fn((_key: string) => Promise.resolve()),
+    // What the mocked saved queries hook lists
+    savedQueries: {queries: [] as unknown[]},
     // The workspace the tool runs in: variants on, as the tests of the variant option need
     workspace: {document: {drafts: {enabled: true}}, beta: {variants: {enabled: true}}},
     // The tool's router: its state as the URL gives it, and the navigations made
@@ -315,18 +319,17 @@ vi.mock('../../hooks/useSavedQueries', () => ({
     onCreatePersonalQuery,
   }: {onCreatePersonalQuery?: (key: string) => void} = {}) => ({
     queries: sanityMocks.savedQueries.queries,
+    sharedQueriesLoaded: true,
     // Reports the key `saveQuery` resolves with before it does, as the hook does before writing
     saveQuery: (query: {url: string; shared?: boolean}) => {
       if (!query.shared) onCreatePersonalQuery?.('saved-key')
       return sanityMocks.saveQuery(query)
     },
-    updateQuery: vi.fn(),
+    updateQuery: sanityMocks.updateQuery,
     deleteQuery: vi.fn(),
-    shareQuery: vi.fn(),
-    unshareQuery: vi.fn(),
+    unshareQuery: sanityMocks.unshareQuery,
     saving: false,
     deleting: [],
-    moving: sanityMocks.savedQueries.moving,
     saveQueryError: undefined,
     deleteQueryError: undefined,
     error: undefined,
@@ -757,6 +760,53 @@ function personalSavedQuery(key: string, title: string, query: string, savedAt: 
   }
 }
 
+/** A shared query on the same request, as the saved queries hook lists `vision.sharedQuery` documents */
+function sharedSavedQuery(key: string, title: string, query: string, own: boolean) {
+  return {
+    ...personalSavedQuery(key, title, query, '2026-01-01T00:00:00Z'),
+    shared: true,
+    authorId: own ? 'user-1' : 'user-2',
+    isOwnedByCurrentUser: own,
+  }
+}
+
+/** Stores one tab on the request of `personalSavedQuery`, shared as `sharedId`, before rendering */
+function storeTabSharedAs(sharedId: string, title: string, query: string) {
+  const initial = createInitialState(DEFAULTS)
+  const tab = createTab(initial.settings, {
+    id: 'shared-tab',
+    title,
+    query,
+    options: {
+      datasetMode: 'override',
+      dataset: 'staging',
+      apiVersion: 'v2025-02-19',
+      perspective: 'published',
+      variant: 'none',
+    },
+    sharedId,
+  })
+  saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: tab.id})
+}
+
+/** Opens the menu of a query in the drawer, which names its button by the query's key */
+async function openDrawerItemMenu(key: string): Promise<HTMLElement> {
+  const id = `vision-saved-query-menu-${key}`
+  fireEvent.click(document.getElementById(id) as HTMLElement)
+  let menu: HTMLElement | null = null
+  await waitFor(() => {
+    menu = document.querySelector<HTMLElement>(`[aria-labelledby="${id}"]`)
+    expect(menu).toBeTruthy()
+  })
+  return menu as unknown as HTMLElement
+}
+
+function menuItemLabels(menu: HTMLElement): string[] {
+  return within(menu)
+    .getAllByRole('menuitem', {hidden: true})
+    .map((menuItem) => text(menuItem))
+}
+
 /** Switches the Content Source Map features on in the stored settings, before rendering */
 function enableSourceMaps(response: Record<string, unknown> = {}) {
   localStorage.setItem(
@@ -860,7 +910,7 @@ describe('VisionRedesign', () => {
     localStorage.clear()
     resetAiCredits()
     sanityMocks.setPerspective(BASE_PERSPECTIVE)
-    sanityMocks.savedQueries = {queries: [], moving: []}
+    sanityMocks.savedQueries = {queries: []}
     sanityMocks.router.state = {}
     sanityMocks.workspace = {document: {drafts: {enabled: true}}, beta: {variants: {enabled: true}}}
     editorMocks.visibleColumns = undefined
@@ -4350,7 +4400,6 @@ describe('VisionRedesign', () => {
           savedAt: '2026-01-01T00:00:00Z',
         },
       ],
-      moving: [],
     }
     recordOpenedSavedQueries(['saved-pages'])
     const {fetchCalls} = renderRedesign()
@@ -4794,7 +4843,6 @@ describe('VisionRedesign', () => {
           savedAt: '2026-01-01T00:00:00Z',
         },
       ],
-      moving: [],
     }
     recordOpenedSavedQueries(['saved-french'])
     renderRedesign({...BASE_PERSPECTIVE, selectedVariantNames: ['french']})
@@ -5154,7 +5202,6 @@ describe('VisionRedesign', () => {
             savedAt: '2026-01-01T00:00:00Z',
           },
         ],
-        moving: [],
       }
       recordOpenedSavedQueries(['saved-french'])
       renderRedesign()
@@ -5202,7 +5249,6 @@ describe('VisionRedesign', () => {
             savedAt: '2026-01-01T00:00:00Z',
           },
         ],
-        moving: [],
       }
       recordOpenedSavedQueries(['saved-1'])
       renderRedesign()
@@ -5256,7 +5302,6 @@ describe('VisionRedesign', () => {
             savedAt: '2025-12-01T00:00:00Z',
           },
         ],
-        moving: [],
       }
       renderRedesign()
 
@@ -5312,7 +5357,6 @@ describe('VisionRedesign', () => {
       queries: [
         personalSavedQuery('saved-pages', 'Pages', '*[_type == "page"]', '2026-01-01T00:00:00Z'),
       ],
-      moving: [],
     }
     show()
 
@@ -5339,7 +5383,6 @@ describe('VisionRedesign', () => {
       queries: [
         personalSavedQuery('saved-pages', 'Pages', '*[_type == "page"]', '2026-01-01T00:00:00Z'),
       ],
-      moving: [],
     }
     renderRedesign()
 
@@ -5363,7 +5406,6 @@ describe('VisionRedesign', () => {
       queries: [
         {_key: 'saved-key', shared: false, title: 'Pages', url, savedAt: '2026-01-01T00:00:00Z'},
       ],
-      moving: [],
     }
     show()
 
@@ -5394,7 +5436,7 @@ describe('VisionRedesign', () => {
         '*[_type == "page"]',
         '2026-01-01T00:00:00Z',
       )
-      sanityMocks.savedQueries = {queries: [pages], moving: []}
+      sanityMocks.savedQueries = {queries: [pages]}
       renderRedesign()
       await waitFor(() => expect(screen.getAllByTestId('vision-tab')).toHaveLength(2))
       typeQuery('*[_type == "author"]')
@@ -5404,7 +5446,7 @@ describe('VisionRedesign', () => {
       fireEvent.click(screen.getByTestId('vision-sidebar-settings'))
       fireEvent.click(await screen.findByTestId('vision-clear-storage'))
       // The list arrives again, as it does whenever the saved queries change
-      sanityMocks.savedQueries = {queries: [pages], moving: []}
+      sanityMocks.savedQueries = {queries: [pages]}
       fireEvent.click(screen.getByTestId('vision-clear-storage-confirm'))
 
       // The saved query stays saved, and the tab it opened stays closed
@@ -5424,42 +5466,237 @@ describe('VisionRedesign', () => {
     },
   )
 
-  it('leaves a saved query alone while a share or unshare is moving it', async () => {
-    const shared = {
-      _key: 'shared-1',
-      shared: true,
-      authorId: 'user-1',
-      isOwnedByCurrentUser: true,
-      title: 'Authors',
-      url: `https://${PROJECT_ID}.api.sanity.io/v2025-02-19/data/query/test?query=*`,
-      savedAt: '2026-01-01T00:00:00Z',
+  it('shares a tab once the user confirms, without saving it as a personal query', async () => {
+    sanityMocks.saveQuery.mockResolvedValueOnce('shared-new')
+    const {show} = renderRedesign()
+    typeQuery('*[_type == "page"]')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
+
+    const menu = await openMenu('vision-query-menu-button', 'vision-query-menu')
+    expect(within(menu).queryByTestId('vision-unshare-tab')).toBeNull()
+    fireEvent.click(within(menu).getByTestId('vision-share-tab'))
+    // A shared tab is a document in the dataset, so nothing is shared before the user confirms
+    const dialog = await screen.findByTestId('vision-share-tab-dialog')
+    expect(text(dialog)).toContain('save-query.share-warning')
+    expect(sanityMocks.saveQuery).not.toHaveBeenCalled()
+    fireEvent.click(within(dialog).getByTestId('vision-share-tab-confirm'))
+
+    await waitFor(() => expect(getStoredState().tabs[0].sharedId).toBe('shared-new'))
+    expect(sanityMocks.saveQuery).toHaveBeenCalledTimes(1)
+    expect(sanityMocks.saveQuery).toHaveBeenCalledWith(
+      expect.objectContaining({shared: true, title: 'page'}),
+    )
+    const [[{url}]] = sanityMocks.saveQuery.mock.calls
+    expect(new URL(url).searchParams.get('query')).toBe('*[_type == "page"]')
+    expect(getStoredState().openedSavedQueries).toEqual([])
+    expect(telemetry.log).toHaveBeenCalledWith(VisionSharedTabUsed, {action: 'share'})
+    await screen.findByText('vision.tabs.share-success')
+
+    // Listed as shared, the tab is marked as such and, unchanged, has nothing to share again
+    sanityMocks.savedQueries = {
+      queries: [
+        {
+          _key: 'shared-new',
+          shared: true,
+          authorId: 'user-1',
+          isOwnedByCurrentUser: true,
+          title: 'page',
+          url,
+          savedAt: '2026-01-01T00:00:00Z',
+        },
+      ],
     }
-    sanityMocks.savedQueries = {queries: [shared], moving: ['shared-1']}
+    show()
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('vision-tab')).queryByRole('img', {name: 'vision.tabs.shared'}),
+      ).not.toBeNull(),
+    )
+    const sharedMenu = await openMenu('vision-query-menu-button', 'vision-query-menu')
+    expect(within(sharedMenu).queryByTestId('vision-share-tab')).toBeNull()
+    expect(within(sharedMenu).getByTestId('vision-unshare-tab')).toBeTruthy()
+  })
+
+  it('shares a shared tab again in place once it changed, without asking again', async () => {
+    sanityMocks.savedQueries = {
+      queries: [sharedSavedQuery('shared-pages', 'Pages', '*[_type == "page"]', true)],
+    }
+    storeTabSharedAs('shared-pages', 'Pages', '*[_type == "page"]')
+    renderRedesign()
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
+
+    typeQuery('*[_type == "post"]')
+    const menu = await openMenu('vision-query-menu-button', 'vision-query-menu')
+    fireEvent.click(within(menu).getByTestId('vision-share-tab'))
+
+    await waitFor(() => expect(sanityMocks.updateQuery).toHaveBeenCalledTimes(1))
+    expect(screen.queryByTestId('vision-share-tab-dialog')).toBeNull()
+    expect(sanityMocks.saveQuery).not.toHaveBeenCalled()
+    const [[updated]] = sanityMocks.updateQuery.mock.calls
+    expect(updated).toMatchObject({_key: 'shared-pages', shared: true, title: 'Pages'})
+    expect(new URL(updated.url).searchParams.get('query')).toBe('*[_type == "post"]')
+    expect(telemetry.log).toHaveBeenCalledWith(VisionSharedTabUsed, {action: 'update'})
+    await screen.findByText('vision.tabs.share-update-success')
+  })
+
+  it('unshares a tab from its menu, keeping it open', async () => {
+    sanityMocks.savedQueries = {
+      queries: [sharedSavedQuery('shared-pages', 'Pages', '*[_type == "page"]', true)],
+    }
+    storeTabSharedAs('shared-pages', 'Pages', '*[_type == "page"]')
     renderRedesign()
 
+    const menu = await openMenu('vision-query-menu-button', 'vision-query-menu')
+    expect(within(menu).queryByTestId('vision-share-tab')).toBeNull()
+    fireEvent.click(within(menu).getByTestId('vision-unshare-tab'))
+
+    await waitFor(() => expect(getStoredState().tabs[0].sharedId).toBeUndefined())
+    expect(sanityMocks.unshareQuery).toHaveBeenCalledWith('shared-pages')
+    expect(screen.getAllByTestId('vision-tab')).toHaveLength(1)
+    expect(getQueryEditor().value).toBe('*[_type == "page"]')
+    expect(telemetry.log).toHaveBeenCalledWith(VisionSharedTabUsed, {action: 'unshare'})
+    await screen.findByText('vision.tabs.unshare-success')
+  })
+
+  it('keeps a tab shared when unsharing it fails', async () => {
+    sanityMocks.savedQueries = {
+      queries: [sharedSavedQuery('shared-pages', 'Pages', '*[_type == "page"]', true)],
+    }
+    sanityMocks.unshareQuery.mockRejectedValueOnce(new Error('permission denied'))
+    storeTabSharedAs('shared-pages', 'Pages', '*[_type == "page"]')
+    renderRedesign()
+
+    const menu = await openMenu('vision-query-menu-button', 'vision-query-menu')
+    fireEvent.click(within(menu).getByTestId('vision-unshare-tab'))
+
+    await screen.findByText('vision.tabs.unshare-failed')
+    expect(getStoredState().tabs[0].sharedId).toBe('shared-pages')
+    expect(telemetry.log).not.toHaveBeenCalledWith(VisionSharedTabUsed, {action: 'unshare'})
+  })
+
+  it("does not share a tab twice, and links the tab to the share when it is the user's own", async () => {
+    const own = sharedSavedQuery('shared-pages', 'Pages', '*[_type == "page"]', true)
+    sanityMocks.savedQueries = {queries: [own]}
+    // The tab shows the shared query, but is not linked to it
+    storeTabSharedAs('shared-gone', 'Pages', '*[_type == "page"]')
+    renderRedesign()
+
+    const menu = await openMenu('vision-query-menu-button', 'vision-query-menu')
+    fireEvent.click(within(menu).getByTestId('vision-share-tab'))
+
+    await screen.findByText('vision.tabs.already-shared')
+    expect(screen.queryByTestId('vision-share-tab-dialog')).toBeNull()
+    expect(sanityMocks.saveQuery).not.toHaveBeenCalled()
+    await waitFor(() => expect(getStoredState().tabs[0].sharedId).toBe('shared-pages'))
+  })
+
+  it('offers each shared tab in the drawer the actions its author has', async () => {
+    sanityMocks.savedQueries = {
+      queries: [
+        sharedSavedQuery('shared-pages', 'Pages', '*[_type == "page"]', true),
+        sharedSavedQuery('shared-posts', 'Posts', '*[_type == "post"]', false),
+      ],
+    }
+    renderRedesign()
     fireEvent.click(screen.getByTestId('vision-sidebar-shared'))
-    const item = await screen.findByTestId('vision-saved-query')
-    fireEvent.click(within(item).getByRole('button', {expanded: false}))
+    await waitFor(() => expect(screen.getAllByTestId('vision-saved-query')).toHaveLength(2))
 
-    // The menu is portaled, so its items are found from the one whose test id names the query
-    const unshare = screen.getByTestId('vision-saved-query-unshare')
-    const menu = unshare.closest<HTMLElement>('[role="menu"]')
-    if (!menu) throw new Error('The unshare item is not inside a menu')
-    const [open, load, rename, remove] = within(menu)
-      .getAllByRole('menuitem', {hidden: true})
-      .filter((menuItem) => menuItem !== unshare)
+    expect(menuItemLabels(await openDrawerItemMenu('shared-posts'))).toEqual([
+      'vision.saved.open-in-new-tab',
+      'vision.saved.load-in-current-tab',
+    ])
+    fireEvent.keyDown(document.activeElement || document.body, {key: 'Escape'})
+    expect(menuItemLabels(await openDrawerItemMenu('shared-pages'))).toEqual([
+      'vision.saved.open-in-new-tab',
+      'vision.saved.load-in-current-tab',
+      'vision.saved.rename',
+      'vision.tabs.unshare',
+    ])
 
-    // Opening and loading stay available; the mutations wait for the query to arrive in the
-    // other list
-    expect(text(open)).toBe('vision.saved.open-in-new-tab')
-    expect(isDisabled(open)).toBe(false)
-    expect(text(load)).toBe('vision.saved.load-in-current-tab')
-    expect(isDisabled(load)).toBe(false)
-    expect(text(rename)).toBe('vision.saved.rename')
-    expect(isDisabled(rename)).toBe(true)
-    expect(isDisabled(unshare)).toBe(true)
-    expect(text(remove)).toBe('action.delete')
-    expect(isDisabled(remove)).toBe(true)
+    // A personal saved query is deleted, not shared, from the Saved queries drawer
+    sanityMocks.savedQueries = {
+      queries: [personalSavedQuery('saved-pages', 'Pages', '*[_type == "page"]', '2026-01-01')],
+    }
+    recordOpenedSavedQueries(['saved-pages'])
+    cleanup()
+    renderRedesign()
+    fireEvent.click(screen.getByTestId('vision-sidebar-saved'))
+    await screen.findByTestId('vision-saved-query')
+    expect(menuItemLabels(await openDrawerItemMenu('saved-pages'))).toEqual([
+      'vision.saved.open-in-new-tab',
+      'vision.saved.load-in-current-tab',
+      'vision.saved.rename',
+      'action.delete',
+    ])
+  })
+
+  it('links the tabs opened from shared tabs the user shared, and only those', async () => {
+    sanityMocks.savedQueries = {
+      queries: [
+        sharedSavedQuery('shared-pages', 'Pages', '*[_type == "page"]', true),
+        sharedSavedQuery('shared-posts', 'Posts', '*[_type == "post"]', false),
+      ],
+    }
+    renderRedesign()
+    fireEvent.click(screen.getByTestId('vision-sidebar-shared'))
+    const [own, teammate] = await screen.findAllByTestId('vision-saved-query')
+
+    fireEvent.click(within(own).getByTestId('vision-saved-query-open'))
+    fireEvent.click(within(teammate).getByTestId('vision-saved-query-open'))
+    await waitFor(() => expect(getStoredState().tabs).toHaveLength(3))
+    expect(getStoredState().tabs.slice(1)).toMatchObject([
+      {title: 'Pages', query: '*[_type == "page"]', sharedId: 'shared-pages'},
+      {title: 'Posts', query: '*[_type == "post"]'},
+    ])
+    expect(getStoredState().tabs[2].sharedId).toBeUndefined()
+    expect(telemetry.log).toHaveBeenCalledWith(VisionSharedTabUsed, {action: 'open'})
+    const handles = screen.getAllByTestId('vision-tab')
+    expect(within(handles[1]).queryByRole('img', {name: 'vision.tabs.shared'})).not.toBeNull()
+    expect(within(handles[2]).queryByRole('img', {name: 'vision.tabs.shared'})).toBeNull()
+
+    // Opened again, the linked tab is selected even after it changed
+    typeQuery('*[_type == "author"]')
+    fireEvent.click(within(handles[1]).getByTestId('vision-tab-button'))
+    typeQuery('*[_type == "page" && defined(title)]')
+    fireEvent.click(within(handles[2]).getByTestId('vision-tab-button'))
+    fireEvent.click(within(own).getByTestId('vision-saved-query-open'))
+    await waitFor(() => expect(getQueryEditor().value).toBe('*[_type == "page" && defined(title)]'))
+    expect(screen.getAllByTestId('vision-tab')).toHaveLength(3)
+
+    fireEvent.change(within(screen.getByTestId('vision-drawer-shared')).getByRole('textbox'), {
+      target: {value: 'pa'},
+    })
+    expect(telemetry.log).toHaveBeenCalledWith(VisionSharedTabsSearched)
+  })
+
+  it('unshares a shared tab from the drawer, keeping its query open in a tab', async () => {
+    sanityMocks.savedQueries = {
+      queries: [
+        sharedSavedQuery('shared-pages', 'Pages', '*[_type == "page"]', true),
+        sharedSavedQuery('shared-posts', 'Posts', '*[_type == "post"]', true),
+      ],
+    }
+    storeTabSharedAs('shared-pages', 'Pages', '*[_type == "page"]')
+    renderRedesign()
+    fireEvent.click(screen.getByTestId('vision-sidebar-shared'))
+    await waitFor(() => expect(screen.getAllByTestId('vision-saved-query')).toHaveLength(2))
+
+    // The tab shared as it stays open, no longer shared
+    fireEvent.click(
+      within(await openDrawerItemMenu('shared-pages')).getByText('vision.tabs.unshare'),
+    )
+    await waitFor(() => expect(getStoredState().tabs[0].sharedId).toBeUndefined())
+    expect(sanityMocks.unshareQuery).toHaveBeenCalledWith('shared-pages')
+    expect(getStoredState().tabs).toHaveLength(1)
+    expect(telemetry.log).toHaveBeenCalledWith(VisionSharedTabUsed, {action: 'unshare'})
+
+    // One no tab shows opens in a tab of its own, so unsharing it does not lose it
+    fireEvent.click(
+      within(await openDrawerItemMenu('shared-posts')).getByText('vision.tabs.unshare'),
+    )
+    await waitFor(() => expect(getStoredState().tabs).toHaveLength(2))
+    expect(getStoredState().tabs[1]).toMatchObject({title: 'Posts', query: '*[_type == "post"]'})
+    expect(getStoredState().tabs[1].sharedId).toBeUndefined()
   })
 
   it('waits before the first rail tooltip opens and then opens its neighbours at once', async () => {
@@ -5836,7 +6073,7 @@ describe('VisionRedesign adoption telemetry', () => {
     localStorage.clear()
     resetAiCredits()
     sanityMocks.setPerspective(BASE_PERSPECTIVE)
-    sanityMocks.savedQueries = {queries: [], moving: []}
+    sanityMocks.savedQueries = {queries: []}
     sanityMocks.router.state = {}
     sanityMocks.workspace = {document: {drafts: {enabled: true}}, beta: {variants: {enabled: true}}}
     editorMocks.visibleColumns = undefined

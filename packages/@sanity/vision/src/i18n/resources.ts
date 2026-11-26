@@ -64,9 +64,17 @@ const visionLocaleStrings = defineLocalesResources('vision', {
    */
   // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'action.save-query': 'Save query',
-  /** Label for saving a shared query */
+  /**
+   * Label for saving a shared query
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'action.save-shared-query': 'Save as shared',
-  /** Label for unsharing a query */
+  /**
+   * Label for unsharing a query
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'action.unshare': 'Unshare',
   /**
    * Label for updating a query
@@ -191,11 +199,19 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Warning displayed before sharing a query */
   'save-query.share-warning':
     'Shared queries are stored as documents in your dataset and count toward your document quota.',
-  /** Save shared query success label */
+  /**
+   * Save shared query success label
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'save-query.shared-success': 'Shared query saved',
   /** Save success label */
   'save-query.success': 'Query saved',
-  /** Save unshared query success label */
+  /**
+   * Save unshared query success label
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'save-query.unshared-success': 'Query moved to personal',
 
   /** Label for the "API version" dropdown in settings */
@@ -1385,9 +1401,9 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.settings.source-map.title': 'Content Source Map',
   /** Title of the settings dialog */
   'vision.settings.title': 'Settings',
-  /** Empty state of the shared queries panel */
+  /** Empty state of the shared tabs panel */
   'vision.shared.empty':
-    'No shared queries yet. Share a saved query to make it available to everyone using this dataset.',
+    'No shared tabs yet. To share one with everyone using this dataset, use Share tab in the More actions menu above its query.',
   /** Shortcut description: close dialogs and menus */
   'vision.shortcuts.close': 'Close dialogs and menus',
   /** Shortcut that lists the functions matching the name being typed in the query editor */
@@ -1414,8 +1430,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.sidebar.saved-queries': 'Saved queries',
   /** Sidebar item opening the settings dialog */
   'vision.sidebar.settings': 'Settings',
-  /** Sidebar item and drawer title for shared queries */
-  'vision.sidebar.shared-queries': 'Shared queries',
+  /** Sidebar item and drawer title for shared tabs, the tabs stored as shared queries */
+  'vision.sidebar.shared-queries': 'Shared tabs',
   /** Sidebar item opening the keyboard shortcuts dialog */
   'vision.sidebar.shortcuts': 'Keyboard shortcuts',
   /** Empty state of the content source map panel */
@@ -1442,14 +1458,35 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Accessible label of the divider between the request and response panes */
   'vision.split.request-response':
     'Resize the request and response panes: drag or use the arrow keys; Home and End go to the bounds, Enter resets',
+  /** Toast shown when the tab being shared is the same query as one already shared */
+  'vision.tabs.already-shared': 'This tab is already shared',
   /** Accessible label for the button closing a query tab */
   'vision.tabs.close-tab': 'Close tab',
   /** Accessible label for the list of query tabs */
   'vision.tabs.label': 'Query tabs',
   /** Accessible label for the button opening a new query tab */
   'vision.tabs.new-tab': 'New tab',
+  /**
+   * Menu item sharing a tab with everyone using the dataset, or sharing a shared tab again after
+   * it changed, and the title of the dialog confirming a first share
+   */
+  'vision.tabs.share': 'Share tab',
+  /** Toast shown when sharing a tab failed */
+  'vision.tabs.share-failed': 'Could not share the tab',
+  /** Toast shown when a tab was shared */
+  'vision.tabs.share-success': 'Tab shared',
+  /** Toast shown when a shared tab was shared again, replacing what was shared */
+  'vision.tabs.share-update-success': 'Shared tab updated',
+  /** Accessible label of the icon marking a tab the user shared */
+  'vision.tabs.shared': 'Shared tab',
   /** Placeholder of the input renaming a tab */
   'vision.tabs.title-placeholder': 'Tab title',
+  /** Menu item that stops sharing a tab: the tab stays open, only for the user who shared it */
+  'vision.tabs.unshare': 'Unshare tab',
+  /** Toast shown when unsharing a tab failed */
+  'vision.tabs.unshare-failed': 'Could not unshare the tab',
+  /** Toast shown when a tab was unshared */
+  'vision.tabs.unshare-success': 'Tab unshared',
   /** Title of a tab whose query is still empty */
   'vision.tabs.untitled': 'Untitled query',
 } as const)

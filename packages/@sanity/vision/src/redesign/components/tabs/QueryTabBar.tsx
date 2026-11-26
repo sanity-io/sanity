@@ -1,5 +1,6 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {CloseIcon} from '@sanity/icons/Close'
+import {UsersIcon} from '@sanity/icons/Users'
 import {Button, Text, TextInput} from '@sanity/ui'
 import {type Transition, Reorder, useDragControls, useReducedMotion} from 'motion/react'
 import {
@@ -19,7 +20,8 @@ import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
 import {useOverlayScrollThumb} from '../../hooks/useOverlayScrollThumb'
 import {type VisionTab} from '../../store/types'
-import {useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
+import {useSavedQueriesApi, useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
+import {findSharedQuery} from '../../util/savedQueryTab'
 import {deriveTabTitle} from '../../util/tabTitle'
 import * as styles from '../redesign.module.css'
 
@@ -93,6 +95,8 @@ function TabTitleInput({title, onCommit, onCancel}: TabTitleInputProps) {
 interface TabHandleProps {
   tab: VisionTab
   selected: boolean
+  /** The tab is shared as a shared query the current user shared (`VisionTab.sharedId`) */
+  shared: boolean
   editing: boolean
   /** Added by a click since the strip mounted, so it fades in rather than popping into place */
   entering: boolean
@@ -117,6 +121,7 @@ function TabHandle(props: TabHandleProps) {
   const {
     tab,
     selected,
+    shared,
     editing,
     entering,
     layoutTransition,
@@ -205,6 +210,11 @@ function TabHandle(props: TabHandleProps) {
             tabIndex={selected ? 0 : -1}
             type="button"
           >
+            {shared && (
+              <Text className={styles.tabSharedIcon} muted size={1}>
+                <UsersIcon aria-label={t('vision.tabs.shared')} role="img" />
+              </Text>
+            )}
             <Text className={styles.tabTitle} muted={!selected} size={1} textOverflow="ellipsis">
               {title}
             </Text>
@@ -232,6 +242,7 @@ export function QueryTabBar() {
   const telemetry = useVisionTelemetry()
   const tabs = useVisionSelector((snapshot) => snapshot.context.tabs)
   const activeTabId = useVisionSelector((snapshot) => snapshot.context.activeTabId)
+  const {queries} = useSavedQueriesApi()
   const [editingId, setEditingId] = useState<string | null>(null)
   const listRef = useRef<HTMLDivElement | null>(null)
   const barRef = useRef<HTMLDivElement | null>(null)
@@ -407,6 +418,7 @@ export function QueryTabBar() {
               }}
               onStartRename={() => setEditingId(tab.id)}
               selected={tab.id === activeTabId}
+              shared={findSharedQuery(tab, queries) !== undefined}
               tab={tab}
             />
           ))}

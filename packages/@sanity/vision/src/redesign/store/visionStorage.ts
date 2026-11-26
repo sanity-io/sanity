@@ -166,6 +166,7 @@ export function createTab(settings: VisionSettings, tab: VisionTabInit = {}): Vi
     query: '',
     rawParams: DEFAULT_PARAMS,
     autoRefetch: false,
+    sharedId: undefined,
     ...tab,
     options: {...createTabOptions(settings), ...tab.options},
   }
@@ -292,6 +293,7 @@ function sanitizeTab(
     rawParams: typeof value.rawParams === 'string' ? value.rawParams : DEFAULT_PARAMS,
     autoRefetch: value.autoRefetch === true,
     options: sanitizeOptions(options, createTabOptions(settings), defaults),
+    sharedId: typeof value.sharedId === 'string' ? value.sharedId : undefined,
   })
 }
 
