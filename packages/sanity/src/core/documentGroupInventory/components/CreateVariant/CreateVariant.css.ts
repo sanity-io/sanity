@@ -32,8 +32,25 @@ export const createVariantPickerLabel = css({
 })
 
 export const createVariantPickerTrigger = css({
-  minInlineSize: 0,
-  gridColumn: '2',
+  'minInlineSize': 0,
+  'gridColumn': '2',
+
+  // Reads as a select: the value fills the row and the chevron sits at the right edge, muted.
+  '& [data-ui="MenuButton"] > [data-ui="Box"] > [data-ui="Flex"] > [data-ui="Box"]': {
+    flex: 1,
+    minWidth: 0,
+    textAlign: 'start',
+  },
+  '& [data-ui="MenuButton"] > [data-ui="Box"] > [data-ui="Flex"] > [data-ui="Box"] [data-ui="Text"] > span':
+    {
+      display: 'block',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+    },
+  '& [data-ui="MenuButton"] > [data-ui="Box"] > [data-ui="Flex"] > [data-ui="Text"]:last-child': {
+    color: 'var(--card-muted-fg-color)',
+  },
 })
 
 const formRow = css.raw({

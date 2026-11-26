@@ -2,8 +2,6 @@
 
 import {type RefAttributes, type SVGProps} from 'react'
 
-type IconProps = SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>
-
 export function RhombusIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) {
   const {ref, ...rest} = props
   return (
@@ -25,8 +23,8 @@ export function RhombusIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSV
   )
 }
 
-/** A variant the document has no version in. */
-export function RhombusOutlineIcon(props: IconProps) {
+/** A variant the document has no version in: the diamond drawn as an outline. */
+export function RhombusOutlineIcon(props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) {
   return (
     <svg
       data-sanity-icon="rhombus-outline"
@@ -42,7 +40,7 @@ export function RhombusOutlineIcon(props: IconProps) {
         fill="currentColor"
         stroke="currentColor"
         strokeWidth="0.3"
-      ></path>
+      />
     </svg>
   )
 }
