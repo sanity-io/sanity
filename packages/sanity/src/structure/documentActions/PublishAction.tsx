@@ -32,6 +32,7 @@ import {
   PublishButtonDisabledComplete,
   PublishButtonDisabledStart,
   PublishButtonClicked,
+  VariantDocumentPublished,
 } from './__telemetry__/documentActions.telemetry'
 import {PUBLISH_DISABLED_REASON} from './operationDisabledReasons'
 
@@ -65,7 +66,9 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const {selectedPerspective, selectedVariantNames} = usePerspective()
   const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const [publishState, setPublishState] = useState<
-    {status: 'publishing'; publishRevision: string | undefined} | {status: 'published'} | null
+    | {status: 'publishing'; publishRevision: string | undefined; isVariantTarget: boolean}
+    | {status: 'published'}
+    | null
   >(null)
 
   const {changesOpen, documentId, documentType, value, targetDocumentState} = useDocumentPane()
@@ -118,7 +121,11 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const doPublish = useCallback(() => {
     publish.execute(isVariantTarget ? {publishedRevisionId: currentPublishRevision} : undefined)
     telemetry.log(PublishButtonClicked, {documentId: id, stage: 'started'})
-    setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
+    setPublishState({
+      status: 'publishing',
+      publishRevision: currentPublishRevision,
+      isVariantTarget,
+    })
   }, [publish, isVariantTarget, currentPublishRevision, telemetry, id])
 
   useEffect(() => {
@@ -166,6 +173,11 @@ export const usePublishAction: DocumentActionComponent = (props) => {
 
     if (didPublish) {
       telemetry.log(PublishButtonClicked, {documentId: id, stage: 'completed'})
+      if (publishState.isVariantTarget) {
+        telemetry.log(VariantDocumentPublished, {
+          previouslyPublished: publishState.publishRevision !== undefined,
+        })
+      }
     }
 
     const nextState = didPublish ? PUBLISHED_STATE : null

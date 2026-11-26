@@ -4,7 +4,9 @@ import deepCompare from 'react-fast-compare'
 import {
   type DocumentActionProps,
   type EditStateFor,
+  type SystemVariant,
   type TargetDocumentState,
+  type VersionInfoDocumentStub,
   useDocumentOperation,
   useDocumentPairPermissions,
   useEditState,
@@ -102,6 +104,58 @@ function keystroke(rev: string) {
   return {draft, editState, targetDocumentState, props}
 }
 
+const VARIANT: SystemVariant = {
+  _id: '_.variants.alpha-audience',
+  _type: 'system.variant',
+  _createdAt: '2024-01-01T00:00:00Z',
+  _updatedAt: '2024-01-01T00:00:00Z',
+  _rev: 'rev-alpha-audience',
+  conditions: {audience: 'alpha'},
+  priority: 0,
+}
+
+function versionStub(
+  id: string,
+  rev: string,
+  {bundleId, inVariant = true}: {bundleId?: string; inVariant?: boolean} = {},
+): VersionInfoDocumentStub {
+  return {
+    _id: id,
+    _type: 'author',
+    _rev: rev,
+    _createdAt: '2024-01-01T00:00:00Z',
+    _updatedAt: '2024-01-01T00:00:00Z',
+    _system: {
+      bundleId,
+      group: {_ref: ID, _weak: true},
+      ...(inVariant ? {variants: [{_ref: VARIANT._id, _key: 'variant'}]} : {}),
+    },
+  }
+}
+
+/**
+ * The same keystroke on the drafts version of a variant, whose published version has revision
+ * `publishedRevision` (none when the variant was never published).
+ */
+function variantKeystroke(rev: string, publishedRevision: string | undefined) {
+  const state = keystroke(rev)
+  const draft = versionStub(`versions.scope-draft.${ID}`, `draft-${rev}`, {bundleId: 'drafts'})
+  const targetDocumentState: TargetDocumentState = {
+    status: 'ready',
+    targetDocument: draft,
+    scopeId: 'scope-draft',
+    variant: VARIANT,
+    siblings: {
+      published: publishedRevision
+        ? versionStub(`versions.scope-published.${ID}`, publishedRevision)
+        : undefined,
+      draft,
+      version: undefined,
+    },
+  }
+  return {...state, targetDocumentState}
+}
+
 function applyKeystroke(
   state: ReturnType<typeof keystroke>,
   {
@@ -132,6 +186,10 @@ let operations: {publish: {disabled: false; execute: Mock}}
 beforeAll(async () => {
   wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
 })
+
+function variantPublishedEvents() {
+  return telemetry.log.mock.calls.filter(([event]) => event.name === 'Variant Document Published')
+}
 
 async function renderPublishAction(props: DocumentActionProps) {
   const rendered = renderHook(usePublishAction, {wrapper, initialProps: props})
@@ -207,5 +265,66 @@ describe('usePublishAction', () => {
     act(() => result.current?.onHandle?.())
     expect(operations.publish.execute).not.toHaveBeenCalled()
     expect(immediate()).toEqual({enabled: true})
+  })
+
+  describe('variant documents', () => {
+    it.each([
+      ['replaces an earlier published version', 'published-variant-1', true],
+      ['publishes the variant for the first time', undefined, false],
+    ] as const)(
+      'reports the publish once it lands when it %s',
+      async (_, publishedRevision, previouslyPublished) => {
+        const before = variantKeystroke('1', publishedRevision)
+        applyKeystroke(before)
+        const {result, rerender} = await renderPublishAction(before.props)
+
+        act(() => result.current?.onHandle?.())
+        expect(operations.publish.execute).toHaveBeenCalledWith({
+          publishedRevisionId: publishedRevision,
+        })
+        expect(variantPublishedEvents()).toHaveLength(0)
+
+        const after = variantKeystroke('1', 'published-variant-2')
+        applyKeystroke(after)
+        rerender(after.props)
+
+        await waitFor(() => {
+          expect(variantPublishedEvents()).toEqual([
+            [expect.objectContaining({name: 'Variant Document Published'}), {previouslyPublished}],
+          ])
+        })
+      },
+    )
+
+    it('does not report publishing a document outside a variant', async () => {
+      const before = keystroke('1')
+      applyKeystroke(before)
+      const {result, rerender} = await renderPublishAction(before.props)
+
+      act(() => result.current?.onHandle?.())
+
+      const after = keystroke('1')
+      after.targetDocumentState = {
+        status: 'ready',
+        targetDocument: undefined,
+        scopeId: undefined,
+        variant: undefined,
+        siblings: {
+          published: versionStub(ID, 'published-2', {inVariant: false}),
+          draft: undefined,
+          version: undefined,
+        },
+      }
+      applyKeystroke(after)
+      rerender(after.props)
+
+      await waitFor(() => {
+        expect(telemetry.log).toHaveBeenCalledWith(
+          expect.objectContaining({name: 'Publish Button Clicked'}),
+          {documentId: ID, stage: 'completed'},
+        )
+      })
+      expect(variantPublishedEvents()).toHaveLength(0)
+    })
   })
 })

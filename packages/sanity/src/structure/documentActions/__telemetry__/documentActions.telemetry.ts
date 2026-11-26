@@ -41,6 +41,24 @@ export const PublishButtonClicked = defineEvent<DocumentIdInfo & StageInfo>({
   description: 'Logs when a publish operation is started, completed, or failed',
 })
 
+interface VariantDocumentPublishedInfo {
+  /**
+   * The variant already had a published version, which this publish replaced
+   */
+  previouslyPublished: boolean
+}
+
+/**
+ * Logged next to the `completed` stage of {@link PublishButtonClicked} when the published
+ * document belongs to a content variant. Variant versions in a release are published with the
+ * release, not from the document pane, so they never reach this event.
+ */
+export const VariantDocumentPublished = defineEvent<VariantDocumentPublishedInfo>({
+  name: 'Variant Document Published',
+  version: 1,
+  description: 'User published a variant document from the document pane, outside of a release',
+})
+
 export const PublishButtonDisabledStart = defineEvent<DocumentIdInfo & PublishButtonDisabledInfo>({
   name: 'Publish Button Becomes Disabled - Started',
   version: 1,
