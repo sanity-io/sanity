@@ -14,11 +14,10 @@ import {savedQueryToTabInit, tabMatchesParsedQuery} from '../util/savedQueryTab'
 /**
  * Opens the personal saved queries as tabs the user can edit, run and close, so the queries saved
  * in the classic tool are there after an upgrade. Each opens once per browser (see
- * `savedQueries.open`): a reload adds nothing, and a closed one stays closed. A query saved or
- * unshared here is recorded as it is written, and one a tab already shows is recorded without
- * opening another. The list loads from the server after the tool opens, so whatever arrives later
- * opens then. The tabs open newest first, after the open ones. Shared queries stay in their own
- * drawer.
+ * `savedQueries.open`): a reload adds nothing, and a closed one stays closed, listed in the
+ * Restore tabs drawer like any closed tab. One a tab already shows is recorded without opening
+ * another. The list loads from the server after the tool opens, so whatever arrives later opens
+ * then. The tabs open newest first, after the open ones. Shared queries stay in their own drawer.
  */
 export function OpenSavedQueriesAsTabs() {
   const {t} = useTranslation(visionLocaleNamespace)

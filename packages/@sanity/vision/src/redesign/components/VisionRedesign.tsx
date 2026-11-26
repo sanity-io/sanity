@@ -4,7 +4,6 @@ import {
   Activity,
   type CSSProperties,
   memo,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -153,12 +152,7 @@ export function VisionRedesign(props: VisionRedesignProps) {
   }, [tabCount, telemetry])
   const openDrawer = useSelector(actorRef, selectOpenDrawer)
   const experience = useMemo((): VisionExperience => ({layout}), [layout])
-  // Recorded before the list shows them, the queries saved or unshared here open no tabs
-  const recordSavedQuery = useCallback(
-    (key: string) => actorRef.send({type: 'savedQueries.open', queries: [{key, tab: null}]}),
-    [actorRef],
-  )
-  const savedQueries = useSavedQueries({onCreatePersonalQuery: recordSavedQuery})
+  const savedQueries = useSavedQueries()
   const [pendingEdits] = useState(createPendingEdits)
   const shownDrawer = useShownInSidebar(openDrawer, layout === 'mobile')
   const shownTabDrawer = toTabDrawer(shownDrawer)

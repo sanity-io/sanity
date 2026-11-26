@@ -1,4 +1,3 @@
-import {BookmarkIcon} from '@sanity/icons/Bookmark'
 import {CodeIcon} from '@sanity/icons/Code'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
@@ -13,7 +12,6 @@ import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type QueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
-import {useSaveCurrentQuery} from '../../hooks/useSaveCurrentQuery'
 import {useShareTab} from '../../hooks/useShareTab'
 import {type QueryRequest, type VisionTab} from '../../store/types'
 import {usePendingEdits} from '../../store/VisionActorContext'
@@ -30,10 +28,7 @@ export interface QueryActionsMenuProps {
   resolved: ResolvedRequest
 }
 
-/**
- * The "More actions" menu in the query pane's toolbar, next to Copy: export or save the query,
- * or share the tab
- */
+/** The "More actions" menu in the query pane's toolbar, next to Copy: export the query or share the tab */
 export function QueryActionsMenu(props: QueryActionsMenuProps) {
   const {tab, request, buildRequest, resolved} = props
   const {t} = useTranslation(visionLocaleNamespace)
@@ -42,7 +37,6 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
   const [exportOpen, setExportOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const moreActions = t('vision.actions.more')
-  const {saveCurrent, canSave} = useSaveCurrentQuery(tab, {request, buildRequest})
   const shareTab = useShareTab(tab, {request, buildRequest, resolved})
 
   const openExport = useCallback(() => {
@@ -86,13 +80,6 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
                   icon={CodeIcon}
                   onClick={openExport}
                   text={t('vision.query.export')}
-                />
-                <MenuItem
-                  data-testid="vision-save-query"
-                  disabled={!canSave}
-                  icon={BookmarkIcon}
-                  onClick={() => void saveCurrent()}
-                  text={t('vision.query.save')}
                 />
                 {shareTab.canShare && (
                   <MenuItem

@@ -67,7 +67,7 @@ export function useShareTab(
   const pendingEdits = usePendingEdits()
   const telemetry = useVisionTelemetry()
   const datasets = useVisionSelector(selectDatasets)
-  const {queries, sharedQueriesLoaded, saveQuery, updateQuery, unshareQuery, saving} =
+  const {queries, sharedQueriesLoaded, shareQuery, updateSharedQuery, unshareQuery, saving} =
     useSavedQueriesApi()
   const [confirming, setConfirming] = useState(false)
 
@@ -115,7 +115,7 @@ export function useShareTab(
   const shareAgain = useCallback(
     async (shared: QueryConfig, {url, title}: {url: string; title: string}) => {
       try {
-        await updateQuery({...shared, url, title, savedAt: new Date().toISOString()})
+        await updateSharedQuery({...shared, url, title, savedAt: new Date().toISOString()})
         telemetry.sharedTab('update')
         toast.push({
           closable: true,
@@ -126,7 +126,7 @@ export function useShareTab(
         reportShareError(err)
       }
     },
-    [reportShareError, t, telemetry, toast, updateQuery],
+    [reportShareError, t, telemetry, toast, updateSharedQuery],
   )
 
   const share = useCallback(() => {
@@ -173,8 +173,7 @@ export function useShareTab(
     const current = readCurrent()
     if (!current) return
     try {
-      const sharedId = await saveQuery({
-        shared: true,
+      const sharedId = await shareQuery({
         url: current.url,
         title: current.title,
         savedAt: new Date().toISOString(),
@@ -185,7 +184,7 @@ export function useShareTab(
     } catch (err) {
       reportShareError(err)
     }
-  }, [actorRef, readCurrent, reportShareError, saveQuery, t, tab.id, telemetry, toast])
+  }, [actorRef, readCurrent, reportShareError, shareQuery, t, tab.id, telemetry, toast])
 
   const cancelShare = useCallback(() => setConfirming(false), [])
 
@@ -202,10 +201,10 @@ export function useShareTab(
       })
       return
     }
-    actorRef.send({type: 'tab.setSharedId', id: tab.id, sharedId: undefined})
+    actorRef.send({type: 'sharedQuery.unshared', sharedId: sharedQuery._key})
     telemetry.sharedTab('unshare')
     toast.push({closable: true, status: 'success', title: t('vision.tabs.unshare-success')})
-  }, [actorRef, sharedQuery, t, tab.id, telemetry, toast, unshareQuery])
+  }, [actorRef, sharedQuery, t, telemetry, toast, unshareQuery])
 
   return {
     sharedQuery,

@@ -1,3 +1,4 @@
+import {uuid} from '@sanity/uuid'
 import {
   type ActorRefFromLogic,
   assign,
@@ -7,10 +8,12 @@ import {
   type Spawner,
 } from 'xstate'
 
+import {addClosedTab, keepRecentClosedTabs} from './closedTabs'
 import {queryRunnerMachine, type QueryRunnerRef} from './queryRunnerMachine'
 import {
   type AiQueryChange,
   type VisionAiSettings,
+  type VisionClosedTab,
   type VisionEditorSettings,
   type VisionExportSnippetSettings,
   type VisionResponseSettings,
@@ -61,6 +64,8 @@ export interface VisionContext {
   exportSnippets: VisionExportSnippetSettings
   /** The functions library, most recently saved first */
   functions: VisionSavedFunction[]
+  /** The tabs closed in this browser, most recently closed first (see `closedTab.restore`) */
+  closedTabs: VisionClosedTab[]
   /** The personal saved queries this browser has opened as tabs (see `savedQueries.open`) */
   openedSavedQueries: string[]
   /** One query runner per open tab, keyed by tab id */
@@ -90,6 +95,7 @@ export type VisionEvent =
   | {type: 'tab.add'; tab?: VisionTabInit; fetch?: FetchOnOpenSource}
   /** The tab fetched on being shown, as `tab.add` or `tab.load` asked */
   | {type: 'tab.fetchedOnOpen'; id: string}
+  /** Closes a tab, which the Restore tabs drawer lists unless it holds nothing */
   | {type: 'tab.close'; id: string}
   | {type: 'tab.select'; id: string}
   /** The complete set of open tab ids in their new order */
@@ -101,6 +107,10 @@ export type VisionEvent =
   | {type: 'tab.setOptions'; id: string; options: Partial<VisionTabOptions>}
   /** Links the tab to the shared query it is shared as, or unlinks it (see `VisionTab.sharedId`) */
   | {type: 'tab.setSharedId'; id: string; sharedId: string | undefined}
+  /** The shared query was renamed: the open and closed tabs linked to it take its new title */
+  | {type: 'sharedQuery.renamed'; sharedId: string; title: string}
+  /** The shared query was unshared: the open and closed tabs linked to it are unlinked */
+  | {type: 'sharedQuery.unshared'; sharedId: string}
   /**
    * `fetch` has the tab fetch the loaded query (it is the active tab, so right away), as a query
    * from that source
@@ -112,6 +122,12 @@ export type VisionEvent =
    * `tab` is only recorded: a tab already shows it, or its URL holds no query to show
    */
   | {type: 'savedQueries.open'; queries: {key: string; tab: VisionTabInit | null}[]}
+  /** Reopens a closed tab, by its tab id, after the open ones and shows it */
+  | {type: 'closedTab.restore'; id: string}
+  /** Deletes a closed tab for good, by its tab id */
+  | {type: 'closedTab.delete'; id: string}
+  /** Purges the closed tabs kept for `CLOSED_TAB_RETENTION_MS` */
+  | {type: 'closedTabs.purge'}
   | {type: 'settings.update'; settings: Partial<VisionSettings>}
   | {type: 'historyDiff.update'; settings: Partial<VisionHistoryDiffSettings>}
   | {type: 'ai.update'; settings: Partial<VisionAiSettings>}
@@ -168,6 +184,28 @@ function updateTab(
   const next = tabs.slice()
   next[index] = updated
   return next
+}
+
+/**
+ * Updates the open and closed tabs linked to a shared query (`VisionTab.sharedId`). A closed tab
+ * is restored with its link, so it follows the shared query like an open one
+ */
+function updateLinkedTabs(
+  context: VisionContext,
+  sharedId: string,
+  update: (tab: VisionTab) => VisionTab,
+): Pick<VisionContext, 'tabs' | 'closedTabs'> {
+  const isLinked = (tab: VisionTab) => tab.sharedId === sharedId
+  return {
+    tabs: context.tabs.some(isLinked)
+      ? context.tabs.map((tab) => (isLinked(tab) ? update(tab) : tab))
+      : context.tabs,
+    closedTabs: context.closedTabs.some(({tab}) => isLinked(tab))
+      ? context.closedTabs.map((closed) =>
+          isLinked(closed.tab) ? {...closed, tab: update(closed.tab)} : closed,
+        )
+      : context.closedTabs,
+  }
 }
 
 /**
@@ -238,6 +276,9 @@ export const visionMachine = setup({
       if (index === -1) {
         return
       }
+      enqueue.assign({
+        closedTabs: addClosedTab(context.closedTabs, context.tabs[index], Date.now()),
+      })
       const runner = context.runners[event.id]
       if (runner) {
         enqueue.stopChild(runner)
@@ -286,6 +327,25 @@ export const visionMachine = setup({
         openedSavedQueries: [...recorded],
       }
     }),
+    restoreClosedTab: assign(({context, event, spawn}) => {
+      if (event.type !== 'closedTab.restore') {
+        return {}
+      }
+      const closed = context.closedTabs.find(({tab}) => tab.id === event.id)
+      if (!closed) {
+        return {}
+      }
+      // Tab ids key the runners and the React list, so one taken since restores under a new id
+      const tab = context.tabs.some(({id}) => id === closed.tab.id)
+        ? {...closed.tab, id: uuid()}
+        : closed.tab
+      return {
+        tabs: [...context.tabs, tab],
+        activeTabId: tab.id,
+        runners: {...context.runners, [tab.id]: spawnRunner(spawn, tab.id)},
+        closedTabs: context.closedTabs.filter((entry) => entry !== closed),
+      }
+    }),
     // The saved queries this browser opened stay recorded, so clearing does not open them again
     clearStorage: enqueueActions(({context, enqueue}) => {
       for (const runner of Object.values(context.runners)) {
@@ -304,6 +364,7 @@ export const visionMachine = setup({
           response: fresh.response,
           exportSnippets: fresh.exportSnippets,
           functions: fresh.functions,
+          closedTabs: fresh.closedTabs,
           runners: spawnRunners(spawn, fresh.tabs),
           fetchOnOpen: {},
         }
@@ -325,12 +386,13 @@ export const visionMachine = setup({
     response: input.persisted.response,
     exportSnippets: input.persisted.exportSnippets,
     functions: input.persisted.functions,
+    closedTabs: input.persisted.closedTabs,
     openedSavedQueries: input.persisted.openedSavedQueries,
     runners: spawnRunners(spawn, input.persisted.tabs),
     loadRevisions: {},
     fetchOnOpen: {},
     restoredSidebar: input.persisted.sidebar,
-    drawer: input.persisted.sidebar.drawer ?? 'saved',
+    drawer: input.persisted.sidebar.drawer ?? 'closed-tabs',
     restoredPanels: input.persisted.panels,
   }),
   on: {
@@ -405,6 +467,19 @@ export const visionMachine = setup({
           ),
       }),
     },
+    'sharedQuery.renamed': {
+      actions: assign(({context, event}) =>
+        updateLinkedTabs(context, event.sharedId, (tab) => ({
+          ...tab,
+          title: event.title.trim() || undefined,
+        })),
+      ),
+    },
+    'sharedQuery.unshared': {
+      actions: assign(({context, event}) =>
+        updateLinkedTabs(context, event.sharedId, (tab) => ({...tab, sharedId: undefined})),
+      ),
+    },
     'tab.load': {
       actions: assign({
         tabs: ({context, event}) =>
@@ -422,6 +497,18 @@ export const visionMachine = setup({
       }),
     },
     'savedQueries.open': {actions: 'openSavedQueries'},
+    'closedTab.restore': {actions: 'restoreClosedTab'},
+    'closedTab.delete': {
+      actions: assign({
+        closedTabs: ({context, event}) => context.closedTabs.filter(({tab}) => tab.id !== event.id),
+      }),
+    },
+    'closedTabs.purge': {
+      actions: assign(({context}) => {
+        const closedTabs = keepRecentClosedTabs(context.closedTabs, Date.now())
+        return closedTabs.length === context.closedTabs.length ? {} : {closedTabs}
+      }),
+    },
     'settings.update': {
       actions: assign({
         settings: ({context, event}) => ({...context.settings, ...event.settings}),
@@ -645,12 +732,17 @@ export function selectPersistedState(snapshot: VisionSnapshot): VisionPersistedS
     response: snapshot.context.response,
     exportSnippets: snapshot.context.exportSnippets,
     functions: snapshot.context.functions,
+    closedTabs: snapshot.context.closedTabs,
     openedSavedQueries: snapshot.context.openedSavedQueries,
   }
 }
 
 export function selectFunctionLibrary(snapshot: VisionSnapshot): VisionSavedFunction[] {
   return snapshot.context.functions
+}
+
+export function selectClosedTabs(snapshot: VisionSnapshot): VisionClosedTab[] {
+  return snapshot.context.closedTabs
 }
 
 /** Whether the Content Source Map features are switched on in the settings */

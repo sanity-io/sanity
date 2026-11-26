@@ -1,9 +1,9 @@
 import {BoltIcon} from '@sanity/icons/Bolt'
-import {BookmarkIcon} from '@sanity/icons/Bookmark'
 import {CogIcon} from '@sanity/icons/Cog'
 import {DoubleChevronLeftIcon} from '@sanity/icons/DoubleChevronLeft'
 import {DoubleChevronRightIcon} from '@sanity/icons/DoubleChevronRight'
 import {EditIcon} from '@sanity/icons/Edit'
+import {RestoreIcon} from '@sanity/icons/Restore'
 import {TransferIcon} from '@sanity/icons/Transfer'
 import {UsersIcon} from '@sanity/icons/Users'
 import {Button} from '@sanity/ui'
@@ -188,11 +188,11 @@ export function VisionSidebar({shownDrawer}: VisionSidebarProps) {
           />
           <SidebarItem
             expanded={expanded}
-            icon={BookmarkIcon}
-            label={t('vision.sidebar.saved-queries')}
-            onClick={(event) => toggleDrawer('saved', event)}
-            selected={drawer === 'saved'}
-            testId="vision-sidebar-saved"
+            icon={RestoreIcon}
+            label={t('vision.sidebar.closed-tabs')}
+            onClick={(event) => toggleDrawer('closed-tabs', event)}
+            selected={drawer === 'closed-tabs'}
+            testId="vision-sidebar-closed-tabs"
           />
           <Box borderTop marginTop={1} paddingTop={1}>
             <Flex flexDirection="column" gap={1}>

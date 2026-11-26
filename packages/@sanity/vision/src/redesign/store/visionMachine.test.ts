@@ -1,10 +1,12 @@
-import {beforeEach, describe, expect, it} from 'vitest'
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 import {createActor, createMachine} from 'xstate'
 
+import {CLOSED_TAB_RETENTION_MS} from './closedTabs'
 import {type VisionPersistedState, type VisionTab} from './types'
 import {
   isPanelExpanded,
   selectActiveTab,
+  selectClosedTabs,
   selectOpenDialog,
   selectFunctionLibrary,
   selectOpenDrawer,
@@ -43,6 +45,10 @@ function createHarness(persisted: VisionPersistedState = createInitialState(defa
 function withTabs(tabs: VisionTab[], activeTabId = tabs[0].id): VisionPersistedState {
   const initial = createInitialState(defaults)
   return {...initial, tabs, activeTabId}
+}
+
+function closedIds(harness: ReturnType<typeof createHarness>): string[] {
+  return selectClosedTabs(harness.snapshot()).map(({tab}) => tab.id)
 }
 
 describe('visionMachine', () => {
@@ -246,15 +252,15 @@ describe('visionMachine', () => {
     harness.actor.send({type: 'sidebar.toggle'})
     expect(harness.snapshot().matches({sidebar: 'collapsed'})).toBe(true)
 
-    harness.actor.send({type: 'drawer.toggle', drawer: 'saved'})
-    expect(selectOpenDrawer(harness.snapshot())).toBe('saved')
-    harness.actor.send({type: 'drawer.toggle', drawer: 'saved'})
+    harness.actor.send({type: 'drawer.toggle', drawer: 'closed-tabs'})
+    expect(selectOpenDrawer(harness.snapshot())).toBe('closed-tabs')
+    harness.actor.send({type: 'drawer.toggle', drawer: 'closed-tabs'})
     expect(selectOpenDrawer(harness.snapshot())).toBeNull()
     harness.actor.send({type: 'drawer.toggle', drawer: 'shared'})
     harness.actor.send({type: 'drawer.close'})
     expect(selectOpenDrawer(harness.snapshot())).toBeNull()
 
-    // One drawer at a time: the tab's tools and the settings open in it like the query lists
+    // One drawer at a time: the tab's tools and the settings open in it like the tab lists
     harness.actor.send({type: 'drawer.toggle', drawer: 'delta'})
     expect(selectOpenDrawer(harness.snapshot())).toBe('delta')
     expect(selectOpenTabDrawer(harness.snapshot())).toBe('delta')
@@ -413,7 +419,7 @@ describe('visionMachine', () => {
   it('derives the persisted slice from context and UI states', () => {
     const harness = createHarness()
     harness.actor.send({type: 'sidebar.toggle'})
-    harness.actor.send({type: 'drawer.toggle', drawer: 'saved'})
+    harness.actor.send({type: 'drawer.toggle', drawer: 'closed-tabs'})
     harness.actor.send({type: 'panel.toggle', panel: 'options'})
 
     const persisted = selectPersistedState(harness.snapshot())
@@ -422,7 +428,7 @@ describe('visionMachine', () => {
       tabs: harness.tabs(),
       activeTabId: harness.snapshot().context.activeTabId,
       settings: harness.snapshot().context.settings,
-      sidebar: {expanded: true, drawer: 'saved'},
+      sidebar: {expanded: true, drawer: 'closed-tabs'},
       panels: {params: true, options: false, paramsView: 'json', resultViewer: 'json'},
       historyDiff: {hiddenFields: ['_rev', '_updatedAt', '_system.base.rev']},
       ai: {
@@ -440,7 +446,189 @@ describe('visionMachine', () => {
         hidden: [],
       },
       functions: [],
+      closedTabs: [],
       openedSavedQueries: [],
+    })
+  })
+
+  describe('closed tabs', () => {
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('lists a closed tab first unless it holds nothing, and restores it as it was after the open ones', () => {
+      vi.useFakeTimers({now: new Date('2026-03-01T12:00:00Z')})
+      const initial = createInitialState(defaults)
+      const tabs = [
+        createTab(initial.settings, {id: 'a', query: '*[_type == "a"]'}),
+        createTab(initial.settings, {
+          id: 'b',
+          title: 'Shared b',
+          query: '*[_type == "b"]',
+          rawParams: '{"b": 1}',
+          sharedId: 'shared-b',
+        }),
+        createTab(initial.settings, {id: 'blank'}),
+        createTab(initial.settings, {id: 'c', query: '*[_type == "c"]'}),
+      ]
+      const harness = createHarness(withTabs(tabs, 'b'))
+
+      harness.actor.send({type: 'tab.close', id: 'blank'})
+      harness.actor.send({type: 'tab.close', id: 'b'})
+      vi.setSystemTime(new Date('2026-03-01T12:05:00Z'))
+      harness.actor.send({type: 'tab.close', id: 'a'})
+      expect(selectClosedTabs(harness.snapshot())).toEqual([
+        {tab: tabs[0], closedAt: '2026-03-01T12:05:00.000Z'},
+        {tab: tabs[1], closedAt: '2026-03-01T12:00:00.000Z'},
+      ])
+      expect(selectPersistedState(harness.snapshot()).closedTabs).toBe(
+        selectClosedTabs(harness.snapshot()),
+      )
+
+      harness.actor.send({type: 'closedTab.restore', id: 'b'})
+      expect(harness.tabs()).toEqual([tabs[3], tabs[1]])
+      expect(harness.snapshot().context.activeTabId).toBe('b')
+      expect(harness.runnerIds()).toEqual(['b', 'c'])
+      expect(closedIds(harness)).toEqual(['a'])
+
+      // Restored, it is no longer listed, so restoring it again opens nothing
+      harness.actor.send({type: 'closedTab.restore', id: 'b'})
+      expect(harness.tabs().map((tab) => tab.id)).toEqual(['c', 'b'])
+    })
+
+    it('lists a tab and a query once, as most recently closed', () => {
+      vi.useFakeTimers({now: new Date('2026-03-01T12:00:00Z')})
+      const harness = createHarness()
+      harness.actor.send({type: 'tab.add', tab: {id: 'posts', query: '*[_type == "post"]'}})
+      harness.actor.send({type: 'tab.close', id: 'posts'})
+
+      vi.setSystemTime(new Date('2026-03-02T12:00:00Z'))
+      harness.actor.send({type: 'tab.add', tab: {id: 'again', query: '*[_type == "post"]'}})
+      harness.actor.send({type: 'tab.close', id: 'again'})
+      expect(closedIds(harness)).toEqual(['again'])
+
+      harness.actor.send({type: 'closedTab.restore', id: 'again'})
+      harness.actor.send({type: 'tab.rename', id: 'again', title: 'Posts'})
+      harness.actor.send({type: 'tab.close', id: 'again'})
+      expect(
+        selectClosedTabs(harness.snapshot()).map(({tab, closedAt}) => [tab.title, closedAt]),
+      ).toEqual([['Posts', '2026-03-02T12:00:00.000Z']])
+    })
+
+    it('deletes a closed tab for good', () => {
+      const harness = createHarness()
+      harness.actor.send({type: 'tab.add', tab: {id: 'posts', query: '*[_type == "post"]'}})
+      harness.actor.send({type: 'tab.add', tab: {id: 'pages', query: '*[_type == "page"]'}})
+      harness.actor.send({type: 'tab.close', id: 'posts'})
+      harness.actor.send({type: 'tab.close', id: 'pages'})
+
+      harness.actor.send({type: 'closedTab.delete', id: 'posts'})
+      expect(closedIds(harness)).toEqual(['pages'])
+      harness.actor.send({type: 'closedTab.restore', id: 'posts'})
+      expect(harness.tabs().map((tab) => tab.id)).not.toContain('posts')
+    })
+
+    it('purges a closed tab 30 days after it was closed', () => {
+      const closedAt = Date.parse('2026-03-01T12:00:00Z')
+      vi.useFakeTimers({now: closedAt})
+      const harness = createHarness()
+      harness.actor.send({type: 'tab.add', tab: {id: 'old', query: '*[_type == "old"]'}})
+      harness.actor.send({type: 'tab.close', id: 'old'})
+      vi.setSystemTime(new Date('2026-03-15T12:00:00Z'))
+      harness.actor.send({type: 'tab.add', tab: {id: 'recent', query: '*[_type == "recent"]'}})
+      harness.actor.send({type: 'tab.close', id: 'recent'})
+
+      vi.setSystemTime(closedAt + CLOSED_TAB_RETENTION_MS - 1)
+      const before = selectClosedTabs(harness.snapshot())
+      harness.actor.send({type: 'closedTabs.purge'})
+      expect(selectClosedTabs(harness.snapshot())).toBe(before)
+      expect(closedIds(harness)).toEqual(['recent', 'old'])
+
+      vi.setSystemTime(closedAt + CLOSED_TAB_RETENTION_MS)
+      harness.actor.send({type: 'closedTabs.purge'})
+      expect(closedIds(harness)).toEqual(['recent'])
+
+      // Closing a tab purges too
+      vi.setSystemTime(new Date('2026-04-14T12:00:00Z'))
+      harness.actor.send({type: 'tab.add', tab: {id: 'new', query: '*[_type == "new"]'}})
+      harness.actor.send({type: 'tab.close', id: 'new'})
+      expect(closedIds(harness)).toEqual(['new'])
+    })
+
+    it('restores a closed tab under a new id when an open tab took its id', () => {
+      const harness = createHarness()
+      harness.actor.send({type: 'tab.add', tab: {id: 'posts', query: '*[_type == "post"]'}})
+      harness.actor.send({type: 'tab.close', id: 'posts'})
+      harness.actor.send({type: 'tab.add', tab: {id: 'posts', query: '*'}})
+
+      harness.actor.send({type: 'closedTab.restore', id: 'posts'})
+      const tabs = harness.tabs()
+      const restored = tabs[tabs.length - 1]
+      expect(restored.id).not.toBe('posts')
+      expect(restored.query).toBe('*[_type == "post"]')
+      expect(harness.snapshot().context.activeTabId).toBe(restored.id)
+      expect(harness.runnerIds()).toEqual(tabs.map((tab) => tab.id).sort())
+    })
+
+    it('renames and unlinks the open and closed tabs linked to a shared query', () => {
+      const initial = createInitialState(defaults)
+      const tabs = [
+        createTab(initial.settings, {
+          id: 'pages',
+          title: 'Pages',
+          query: '*[_type == "page"]',
+          sharedId: 'shared-pages',
+        }),
+        createTab(initial.settings, {
+          id: 'pages-titles',
+          title: 'Pages',
+          query: '*[_type == "page"]{title}',
+          sharedId: 'shared-pages',
+        }),
+        createTab(initial.settings, {
+          id: 'posts',
+          title: 'Posts',
+          query: '*[_type == "post"]',
+          sharedId: 'shared-posts',
+        }),
+      ]
+      const harness = createHarness(withTabs(tabs))
+      harness.actor.send({type: 'tab.close', id: 'pages-titles'})
+
+      harness.actor.send({
+        type: 'sharedQuery.renamed',
+        sharedId: 'shared-pages',
+        title: 'All pages',
+      })
+      expect(harness.tabs().map((tab) => tab.title)).toEqual(['All pages', 'Posts'])
+      expect(selectClosedTabs(harness.snapshot())[0].tab.title).toBe('All pages')
+
+      harness.actor.send({type: 'sharedQuery.unshared', sharedId: 'shared-pages'})
+      expect(harness.tabs().map((tab) => tab.sharedId)).toEqual([undefined, 'shared-posts'])
+      expect(selectClosedTabs(harness.snapshot())[0].tab).toMatchObject({
+        id: 'pages-titles',
+        title: 'All pages',
+        sharedId: undefined,
+      })
+
+      // With no tab linked to it any more, neither list changes
+      const {tabs: openBefore, closedTabs: closedBefore} = harness.snapshot().context
+      harness.actor.send({type: 'sharedQuery.unshared', sharedId: 'shared-pages'})
+      expect(harness.tabs()).toBe(openBefore)
+      expect(selectClosedTabs(harness.snapshot())).toBe(closedBefore)
+    })
+
+    it('restores the closed tabs, and clears them with the storage', () => {
+      const initial = createInitialState(defaults)
+      const closed = {
+        tab: createTab(initial.settings, {id: 'posts', query: '*[_type == "post"]'}),
+        closedAt: new Date().toISOString(),
+      }
+      const harness = createHarness({...initial, closedTabs: [closed]})
+      expect(selectClosedTabs(harness.snapshot())).toEqual([closed])
+
+      harness.actor.send({type: 'storage.clear'})
+      expect(selectClosedTabs(harness.snapshot())).toEqual([])
     })
   })
 

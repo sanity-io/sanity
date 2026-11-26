@@ -179,8 +179,8 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
   )
   const setParams = useMemo(() => debounce(setParamsNow, PARAMS_DEBOUNCE_MS), [setParamsNow])
   useEffect(() => () => setParams.flush(), [setParams])
-  // Save and Export (in the menu and in the sidebar) commit a params edit still waiting in the
-  // debounce before they read the tab, as Run does
+  // Export, Share and closing the tab commit a params edit still waiting in the debounce before
+  // they read the tab, as Run does
   const pendingEdits = usePendingEdits()
   useEffect(() => pendingEdits.register(() => setParams.flush()), [pendingEdits, setParams])
   const flushParams = useCallback(() => setParams.flush(), [setParams])

@@ -13,7 +13,6 @@ import {
   waitFor,
   within,
 } from '@testing-library/react'
-import JSON5 from 'json5'
 import {
   Activity,
   type ReactNode,
@@ -34,6 +33,8 @@ import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'v
 import {
   VisionAgentActionInvoked,
   VisionApiVersionChanged,
+  VisionClosedTabsSearched,
+  VisionClosedTabUsed,
   VisionCopied,
   VisionDatasetChanged,
   VisionLintUsed,
@@ -41,6 +42,8 @@ import {
   VisionPerspectiveChanged,
   VisionQueryPrettified,
   VisionQueryRun,
+  VisionSavedQueriesFiltered,
+  VisionSavedQueryUsed,
   VisionSharedTabsSearched,
   VisionSharedTabUsed,
   VisionSnippetCopied,
@@ -91,8 +94,8 @@ const sanityMocks = vi.hoisted(() => {
     },
     getPerspective: () => perspective,
     useClient: vi.fn(),
-    saveQuery: vi.fn((_query: {url: string}) => Promise.resolve('saved-key')),
-    updateQuery: vi.fn((_query: {_key: string; url: string}) => Promise.resolve()),
+    shareQuery: vi.fn((_query: {url: string; title?: string}) => Promise.resolve('shared-key')),
+    updateSharedQuery: vi.fn((_query: {_key: string; url: string}) => Promise.resolve()),
     unshareQuery: vi.fn((_key: string) => Promise.resolve()),
     // What the mocked saved queries hook lists
     savedQueries: {queries: [] as unknown[]},
@@ -315,23 +318,13 @@ vi.mock('sanity/router', () => ({
 }))
 
 vi.mock('../../hooks/useSavedQueries', () => ({
-  useSavedQueries: ({
-    onCreatePersonalQuery,
-  }: {onCreatePersonalQuery?: (key: string) => void} = {}) => ({
+  useSavedQueries: () => ({
     queries: sanityMocks.savedQueries.queries,
     sharedQueriesLoaded: true,
-    // Reports the key `saveQuery` resolves with before it does, as the hook does before writing
-    saveQuery: (query: {url: string; shared?: boolean}) => {
-      if (!query.shared) onCreatePersonalQuery?.('saved-key')
-      return sanityMocks.saveQuery(query)
-    },
-    updateQuery: sanityMocks.updateQuery,
-    deleteQuery: vi.fn(),
+    shareQuery: sanityMocks.shareQuery,
+    updateSharedQuery: sanityMocks.updateSharedQuery,
     unshareQuery: sanityMocks.unshareQuery,
     saving: false,
-    deleting: [],
-    saveQueryError: undefined,
-    deleteQueryError: undefined,
     error: undefined,
   }),
 }))
@@ -740,14 +733,6 @@ function getStoredState() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
 }
 
-/**
- * Stores the state of a browser that opened these saved queries as tabs before and closed them,
- * so the tests of the saved queries drawer start with one empty tab
- */
-function recordOpenedSavedQueries(keys: string[]) {
-  saveVisionState(PROJECT_ID, {...createInitialState(DEFAULTS), openedSavedQueries: keys})
-}
-
 /** A personal saved query of a request to the `staging` dataset on the `published` perspective */
 function personalSavedQuery(key: string, title: string, query: string, savedAt: string) {
   const search = new URLSearchParams({query, perspective: 'published'})
@@ -789,9 +774,8 @@ function storeTabSharedAs(sharedId: string, title: string, query: string) {
   saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: tab.id})
 }
 
-/** Opens the menu of a query in the drawer, which names its button by the query's key */
-async function openDrawerItemMenu(key: string): Promise<HTMLElement> {
-  const id = `vision-saved-query-menu-${key}`
+/** Opens the menu of a drawer item, by the id of the button that opens it */
+async function openMenuOfButton(id: string): Promise<HTMLElement> {
   fireEvent.click(document.getElementById(id) as HTMLElement)
   let menu: HTMLElement | null = null
   await waitFor(() => {
@@ -799,6 +783,16 @@ async function openDrawerItemMenu(key: string): Promise<HTMLElement> {
     expect(menu).toBeTruthy()
   })
   return menu as unknown as HTMLElement
+}
+
+/** Opens the menu of a query in the Shared tabs drawer, which names its button by the query's key */
+function openDrawerItemMenu(key: string): Promise<HTMLElement> {
+  return openMenuOfButton(`vision-saved-query-menu-${key}`)
+}
+
+/** Opens the menu of a tab in the Restore tabs drawer, which names its button by the tab's id */
+function openClosedTabMenu(id: string): Promise<HTMLElement> {
+  return openMenuOfButton(`vision-closed-tab-menu-${id}`)
 }
 
 function menuItemLabels(menu: HTMLElement): string[] {
@@ -4337,7 +4331,7 @@ describe('VisionRedesign', () => {
     }
   })
 
-  it('keeps Export and Save in the query actions menu, behind a More actions tooltip', async () => {
+  it('keeps Export and Share tab in the query actions menu, behind a More actions tooltip', async () => {
     renderRedesign()
     const button = within(shownTab()).getByTestId('vision-query-menu-button')
     expect(button.getAttribute('aria-label')).toBe('vision.query.actions')
@@ -4359,8 +4353,10 @@ describe('VisionRedesign', () => {
     )
 
     fireEvent.click(button)
-    await screen.findByTestId('vision-save-query')
-    expect(screen.getByTestId('vision-export-query')).toBeTruthy()
+    await screen.findByTestId('vision-export-query')
+    expect(screen.getByTestId('vision-share-tab')).toBeTruthy()
+    // A query is kept in its tab, which closing lists in Restore tabs; there is no Save
+    expect(screen.queryByTestId('vision-save-query')).toBeNull()
     expect(screen.queryByTestId('vision-copy-query')).toBeNull()
     expect(screen.queryByTestId('vision-prettify')).toBeNull()
   })
@@ -4391,17 +4387,8 @@ describe('VisionRedesign', () => {
 
   it('fetches a query loaded into a tab that refetches automatically', async () => {
     sanityMocks.savedQueries = {
-      queries: [
-        {
-          _key: 'saved-pages',
-          shared: false,
-          title: 'Pages',
-          url: 'https://abc.api.sanity.io/v2025-02-19/data/query/staging?query=*%5B_type+%3D%3D+%22page%22%5D',
-          savedAt: '2026-01-01T00:00:00Z',
-        },
-      ],
+      queries: [sharedSavedQuery('shared-pages', 'Pages', '*[_type == "page"]', false)],
     }
-    recordOpenedSavedQueries(['saved-pages'])
     const {fetchCalls} = renderRedesign()
     typeQuery('*[_type == "author"]')
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
@@ -4429,21 +4416,21 @@ describe('VisionRedesign', () => {
     await new Promise((resolve) => setTimeout(resolve, 50))
     expect(fetchCalls).toHaveLength(2)
 
-    // A saved query loaded into the tab has no run of its own, so the live tab fetches it in place
+    // A shared tab loaded into the tab has no run of its own, so the live tab fetches it in place
     // of the runner's cleared request
-    const loadSavedQuery = async () => {
+    const loadSharedTab = async () => {
       if (!screen.queryByTestId('vision-saved-query')) {
-        fireEvent.click(screen.getByTestId('vision-sidebar-saved'))
+        fireEvent.click(screen.getByTestId('vision-sidebar-shared'))
       }
       const item = await screen.findByTestId('vision-saved-query')
       fireEvent.click(within(item).getByRole('button', {expanded: false}))
       const load = screen
         .getAllByRole('menuitem', {hidden: true})
         .find((menuItem) => text(menuItem) === 'vision.saved.load-in-current-tab')
-      if (!load) throw new Error('The saved query menu has no load item')
+      if (!load) throw new Error('The shared tab menu has no load item')
       fireEvent.click(load)
     }
-    await loadSavedQuery()
+    await loadSharedTab()
     await waitFor(() => expect(fetchCalls).toHaveLength(3))
     expect(fetchCalls[2].query).toBe('*[_type == "page"]')
     await waitFor(() => {
@@ -4456,7 +4443,7 @@ describe('VisionRedesign', () => {
     fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
     await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(false))
     typeQuery('*[_type == "person"]')
-    await loadSavedQuery()
+    await loadSharedTab()
     await waitFor(() => expect(getQueryEditor().value).toBe('*[_type == "page"]'))
     await new Promise((resolve) => setTimeout(resolve, 50))
     expect(fetchCalls).toHaveLength(3)
@@ -4551,23 +4538,22 @@ describe('VisionRedesign', () => {
     expect(fetchCalls).toHaveLength(3)
   })
 
-  it('saves and exports params typed just before, ahead of the debounce', async () => {
+  it('shares and exports params typed just before, ahead of the debounce', async () => {
     renderRedesign()
     typeQuery('*[_id == $id]')
     await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
     const paramsEditor = within(screen.getByTestId('vision-params-editor')).getByTestId(
       'codemirror-mock',
     )
-    const savedUrls = () => sanityMocks.saveQuery.mock.calls.map(([query]) => query.url)
 
-    // Save from the query menu
-    fireEvent.change(paramsEditor, {target: {value: '{"id": "saved"}'}})
+    // Share from the query menu
+    fireEvent.change(paramsEditor, {target: {value: '{"id": "shared"}'}})
     fireEvent.click(screen.getByTestId('vision-query-menu-button'))
-    fireEvent.click(screen.getByTestId('vision-save-query'))
-    await waitFor(() => expect(savedUrls()).toHaveLength(1))
-    expect(savedUrls()[0]).toContain(
-      `${encodeURIComponent('$id')}=${encodeURIComponent('"saved"')}`,
-    )
+    fireEvent.click(screen.getByTestId('vision-share-tab'))
+    fireEvent.click(await screen.findByTestId('vision-share-tab-confirm'))
+    await waitFor(() => expect(sanityMocks.shareQuery).toHaveBeenCalledTimes(1))
+    const [[{url}]] = sanityMocks.shareQuery.mock.calls
+    expect(url).toContain(`${encodeURIComponent('$id')}=${encodeURIComponent('"shared"')}`)
 
     // Export shows the request built from the params just typed
     fireEvent.change(paramsEditor, {target: {value: '{"id": "exported"}'}})
@@ -4575,16 +4561,7 @@ describe('VisionRedesign', () => {
     fireEvent.click(screen.getByTestId('vision-export-query'))
     const dialog = await screen.findByTestId('vision-export-query-dialog')
     expect(text(dialog)).toContain("{id: 'exported'}")
-    expect(text(dialog)).not.toContain('"saved"')
-
-    // Save from the sidebar, which has no access to the tab's debounce of its own
-    fireEvent.change(paramsEditor, {target: {value: '{"id": "sidebar"}'}})
-    fireEvent.click(screen.getByTestId('vision-sidebar-saved'))
-    fireEvent.click(await screen.findByTestId('vision-save-current-query'))
-    await waitFor(() => expect(savedUrls()).toHaveLength(2))
-    expect(savedUrls()[1]).toContain(
-      `${encodeURIComponent('$id')}=${encodeURIComponent('"sidebar"')}`,
-    )
+    expect(text(dialog)).not.toContain('"shared"')
   })
 
   it('confirms a copied export snippet on the copy button for a moment, and only once it copied', async () => {
@@ -4827,7 +4804,7 @@ describe('VisionRedesign', () => {
     expect(screen.queryByTestId('vision-settings-variant-select')).toBeNull()
   })
 
-  it('says a pasted or saved variant is not sent where the workspace has variants switched off', async () => {
+  it('says a pasted or shared variant is not sent where the workspace has variants switched off', async () => {
     sanityMocks.workspace = {
       document: {drafts: {enabled: true}},
       beta: {variants: {enabled: false}},
@@ -4836,15 +4813,14 @@ describe('VisionRedesign', () => {
     sanityMocks.savedQueries = {
       queries: [
         {
-          _key: 'saved-french',
-          shared: false,
+          _key: 'shared-french',
+          shared: true,
           title: 'French',
           url,
           savedAt: '2026-01-01T00:00:00Z',
         },
       ],
     }
-    recordOpenedSavedQueries(['saved-french'])
     renderRedesign({...BASE_PERSPECTIVE, selectedVariantNames: ['french']})
     fireEvent.paste(document.body, {clipboardData: {getData: () => url}})
     await waitFor(() => expect(getQueryEditor().value).toBe('*'))
@@ -4852,9 +4828,9 @@ describe('VisionRedesign', () => {
     await screen.findByText('vision.paste.variants-disabled')
     expect(screen.queryByText('vision.paste.unavailable-variant')).toBeNull()
 
-    fireEvent.click(screen.getByTestId('vision-sidebar-saved'))
+    fireEvent.click(screen.getByTestId('vision-sidebar-shared'))
     const open = await screen.findByTestId('vision-saved-query-open')
-    // The pasted tab sends no variant, so it does not show this saved query
+    // The pasted tab sends no variant, so it does not show this shared tab
     expect(open.hasAttribute('data-selected')).toBe(false)
     fireEvent.click(open)
     await screen.findByText('vision.saved.variants-disabled')
@@ -5189,23 +5165,22 @@ describe('VisionRedesign', () => {
   })
 
   it(
-    'says so when an opened saved query used a variant the navbar does not have selected',
+    'says so when an opened shared tab used a variant the navbar does not have selected',
     {timeout: 15_000},
     async () => {
       sanityMocks.savedQueries = {
         queries: [
           {
-            _key: 'saved-french',
-            shared: false,
+            _key: 'shared-french',
+            shared: true,
             title: 'French',
             url: `https://${PROJECT_ID}.api.sanity.io/v2025-08-18/data/query/test?query=*&variant=french`,
             savedAt: '2026-01-01T00:00:00Z',
           },
         ],
       }
-      recordOpenedSavedQueries(['saved-french'])
       renderRedesign()
-      fireEvent.click(screen.getByTestId('vision-sidebar-saved'))
+      fireEvent.click(screen.getByTestId('vision-sidebar-shared'))
       const open = await screen.findByTestId('vision-saved-query-open')
       // Not open anywhere: no tab sends the french variant
       expect(open.hasAttribute('data-selected')).toBe(false)
@@ -5235,37 +5210,36 @@ describe('VisionRedesign', () => {
   })
 
   it(
-    'recognizes the tab showing a saved query through the request it sends',
+    'recognizes the tab showing a shared tab through the request it sends',
     {timeout: 15_000},
     async () => {
       sanityMocks.savedQueries = {
         queries: [
           {
-            _key: 'saved-1',
-            shared: false,
+            _key: 'shared-1',
+            shared: true,
             title: 'Everything',
-            // Saved from a tab on the `global` perspective while the navbar was on `published`
+            // Shared from a tab on the `global` perspective while the navbar was on `published`
             url: `https://${PROJECT_ID}.api.sanity.io/v2025-02-19/data/query/test?query=*&perspective=published`,
             savedAt: '2026-01-01T00:00:00Z',
           },
         ],
       }
-      recordOpenedSavedQueries(['saved-1'])
       renderRedesign()
       typeQuery('*')
       openRequestTab('options')
       pickMenuItem('vision-option-perspective-select', 'global')
       expect(selectValue('vision-option-perspective-select')).toBe('global')
 
-      fireEvent.click(screen.getByTestId('vision-sidebar-saved'))
+      fireEvent.click(screen.getByTestId('vision-sidebar-shared'))
       const open = await screen.findByTestId('vision-saved-query-open')
-      // The tab's options say `global`, but the request it sends is the saved one, so the query
+      // The tab's options say `global`, but the request it sends is the shared one, so the query
       // shows as open and opening it selects the tab rather than adding one
       expect(open.hasAttribute('data-selected')).toBe(true)
       fireEvent.click(open)
       expect(screen.getAllByTestId('vision-tab')).toHaveLength(1)
 
-      // Once the navbar moves to drafts the tab would send another request, so the saved query
+      // Once the navbar moves to drafts the tab would send another request, so the shared tab
       // is no longer open and opening it adds a tab of its own
       act(() => sanityMocks.setPerspective({...BASE_PERSPECTIVE, perspectiveStack: ['drafts']}))
       await waitFor(() => expect(open.hasAttribute('data-selected')).toBe(false))
@@ -5336,7 +5310,7 @@ describe('VisionRedesign', () => {
       expect(screen.getAllByTestId('vision-tab')).toHaveLength(3)
       expect(screen.queryByText('vision.saved.opened-as-tabs')).toBeNull()
 
-      // A closed one stays closed
+      // A closed one stays closed, listed in Restore tabs like any closed tab
       fireEvent.click(
         within(screen.getAllByTestId('vision-tab')[2]).getByTestId('vision-tab-close'),
       )
@@ -5346,6 +5320,9 @@ describe('VisionRedesign', () => {
       await new Promise((resolve) => setTimeout(resolve, 50))
       expect(screen.getAllByTestId('vision-tab')).toHaveLength(2)
       expect(screen.queryByText('vision.saved.opened-as-tabs')).toBeNull()
+      fireEvent.click(screen.getByTestId('vision-sidebar-closed-tabs'))
+      const closed = await screen.findAllByTestId('vision-closed-tab')
+      expect(closed.map(text)).toEqual([expect.stringContaining('Posts')])
     },
   )
 
@@ -5391,30 +5368,6 @@ describe('VisionRedesign', () => {
     expect(screen.queryByText('vision.saved.opened-as-tabs')).toBeNull()
   })
 
-  it('does not open a query saved here as a tab of its own when the list shows it', async () => {
-    const {show} = renderRedesign()
-    typeQuery('*[_type == "page"]')
-    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
-    fireEvent.click(screen.getByTestId('vision-query-menu-button'))
-    fireEvent.click(screen.getByTestId('vision-save-query'))
-    await waitFor(() => expect(sanityMocks.saveQuery).toHaveBeenCalledTimes(1))
-    const [[{url}]] = sanityMocks.saveQuery.mock.calls
-
-    // The tab changes before the list shows the saved query
-    typeQuery('*[_type == "post"]')
-    sanityMocks.savedQueries = {
-      queries: [
-        {_key: 'saved-key', shared: false, title: 'Pages', url, savedAt: '2026-01-01T00:00:00Z'},
-      ],
-    }
-    show()
-
-    await waitFor(() => expect(getStoredState().openedSavedQueries).toEqual(['saved-key']))
-    await new Promise((resolve) => setTimeout(resolve, 50))
-    expect(screen.getAllByTestId('vision-tab')).toHaveLength(1)
-    expect(screen.queryByText('vision.saved.opened-as-tabs')).toBeNull()
-  })
-
   it('opens on the query the classic tool last showed', () => {
     localStorage.setItem(
       `sanityVision:${PROJECT_ID}`,
@@ -5427,7 +5380,7 @@ describe('VisionRedesign', () => {
   })
 
   it(
-    'clears the storage from the settings dialog, keeping the saved queries',
+    'clears the storage from the settings dialog, closed tabs included, keeping the saved queries',
     {timeout: 15_000},
     async () => {
       const pages = personalSavedQuery(
@@ -5439,9 +5392,13 @@ describe('VisionRedesign', () => {
       sanityMocks.savedQueries = {queries: [pages]}
       renderRedesign()
       await waitFor(() => expect(screen.getAllByTestId('vision-tab')).toHaveLength(2))
+      fireEvent.click(
+        within(screen.getAllByTestId('vision-tab')[1]).getByTestId('vision-tab-close'),
+      )
+      await waitFor(() => expect(getStoredState().closedTabs).toHaveLength(1))
       typeQuery('*[_type == "author"]')
       fireEvent.click(screen.getByTestId('vision-new-tab'))
-      await waitFor(() => expect(getStoredState().tabs).toHaveLength(3))
+      await waitFor(() => expect(getStoredState().tabs).toHaveLength(2))
 
       fireEvent.click(screen.getByTestId('vision-sidebar-settings'))
       fireEvent.click(await screen.findByTestId('vision-clear-storage'))
@@ -5449,13 +5406,14 @@ describe('VisionRedesign', () => {
       sanityMocks.savedQueries = {queries: [pages]}
       fireEvent.click(screen.getByTestId('vision-clear-storage-confirm'))
 
-      // The saved query stays saved, and the tab it opened stays closed
+      // The saved query stays saved, and the tab it opened stays closed, no longer listed
       await waitFor(() => expect(screen.getAllByTestId('vision-tab')).toHaveLength(1))
       expect(getQueryEditor().value).toBe('')
       await waitFor(() => {
         const stored = getStoredState()
         expect(stored.tabs).toHaveLength(1)
         expect(stored.tabs[0].query).toBe('')
+        expect(stored.closedTabs).toEqual([])
         expect(stored.openedSavedQueries).toEqual(['saved-pages'])
       })
       await new Promise((resolve) => setTimeout(resolve, 50))
@@ -5466,8 +5424,8 @@ describe('VisionRedesign', () => {
     },
   )
 
-  it('shares a tab once the user confirms, without saving it as a personal query', async () => {
-    sanityMocks.saveQuery.mockResolvedValueOnce('shared-new')
+  it('shares a tab once the user confirms', async () => {
+    sanityMocks.shareQuery.mockResolvedValueOnce('shared-new')
     const {show} = renderRedesign()
     typeQuery('*[_type == "page"]')
     await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
@@ -5478,15 +5436,13 @@ describe('VisionRedesign', () => {
     // A shared tab is a document in the dataset, so nothing is shared before the user confirms
     const dialog = await screen.findByTestId('vision-share-tab-dialog')
     expect(text(dialog)).toContain('save-query.share-warning')
-    expect(sanityMocks.saveQuery).not.toHaveBeenCalled()
+    expect(sanityMocks.shareQuery).not.toHaveBeenCalled()
     fireEvent.click(within(dialog).getByTestId('vision-share-tab-confirm'))
 
     await waitFor(() => expect(getStoredState().tabs[0].sharedId).toBe('shared-new'))
-    expect(sanityMocks.saveQuery).toHaveBeenCalledTimes(1)
-    expect(sanityMocks.saveQuery).toHaveBeenCalledWith(
-      expect.objectContaining({shared: true, title: 'page'}),
-    )
-    const [[{url}]] = sanityMocks.saveQuery.mock.calls
+    expect(sanityMocks.shareQuery).toHaveBeenCalledTimes(1)
+    expect(sanityMocks.shareQuery).toHaveBeenCalledWith(expect.objectContaining({title: 'page'}))
+    const [[{url}]] = sanityMocks.shareQuery.mock.calls
     expect(new URL(url).searchParams.get('query')).toBe('*[_type == "page"]')
     expect(getStoredState().openedSavedQueries).toEqual([])
     expect(telemetry.log).toHaveBeenCalledWith(VisionSharedTabUsed, {action: 'share'})
@@ -5529,10 +5485,10 @@ describe('VisionRedesign', () => {
     const menu = await openMenu('vision-query-menu-button', 'vision-query-menu')
     fireEvent.click(within(menu).getByTestId('vision-share-tab'))
 
-    await waitFor(() => expect(sanityMocks.updateQuery).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(sanityMocks.updateSharedQuery).toHaveBeenCalledTimes(1))
     expect(screen.queryByTestId('vision-share-tab-dialog')).toBeNull()
-    expect(sanityMocks.saveQuery).not.toHaveBeenCalled()
-    const [[updated]] = sanityMocks.updateQuery.mock.calls
+    expect(sanityMocks.shareQuery).not.toHaveBeenCalled()
+    const [[updated]] = sanityMocks.updateSharedQuery.mock.calls
     expect(updated).toMatchObject({_key: 'shared-pages', shared: true, title: 'Pages'})
     expect(new URL(updated.url).searchParams.get('query')).toBe('*[_type == "post"]')
     expect(telemetry.log).toHaveBeenCalledWith(VisionSharedTabUsed, {action: 'update'})
@@ -5586,7 +5542,7 @@ describe('VisionRedesign', () => {
 
     await screen.findByText('vision.tabs.already-shared')
     expect(screen.queryByTestId('vision-share-tab-dialog')).toBeNull()
-    expect(sanityMocks.saveQuery).not.toHaveBeenCalled()
+    expect(sanityMocks.shareQuery).not.toHaveBeenCalled()
     await waitFor(() => expect(getStoredState().tabs[0].sharedId).toBe('shared-pages'))
   })
 
@@ -5612,22 +5568,22 @@ describe('VisionRedesign', () => {
       'vision.saved.rename',
       'vision.tabs.unshare',
     ])
+  })
 
-    // A personal saved query is deleted, not shared, from the Saved queries drawer
+  it('lists only the shared tabs in the Shared tabs drawer', async () => {
     sanityMocks.savedQueries = {
-      queries: [personalSavedQuery('saved-pages', 'Pages', '*[_type == "page"]', '2026-01-01')],
+      queries: [
+        sharedSavedQuery('shared-pages', 'Pages', '*[_type == "page"]', true),
+        personalSavedQuery('saved-posts', 'Posts', '*[_type == "post"]', '2026-01-01T00:00:00Z'),
+      ],
     }
-    recordOpenedSavedQueries(['saved-pages'])
-    cleanup()
     renderRedesign()
-    fireEvent.click(screen.getByTestId('vision-sidebar-saved'))
-    await screen.findByTestId('vision-saved-query')
-    expect(menuItemLabels(await openDrawerItemMenu('saved-pages'))).toEqual([
-      'vision.saved.open-in-new-tab',
-      'vision.saved.load-in-current-tab',
-      'vision.saved.rename',
-      'action.delete',
-    ])
+    // The personal saved query opens as a tab instead
+    await waitFor(() => expect(screen.getAllByTestId('vision-tab')).toHaveLength(2))
+
+    fireEvent.click(screen.getByTestId('vision-sidebar-shared'))
+    const items = await screen.findAllByTestId('vision-saved-query')
+    expect(items.map(text)).toEqual([expect.stringContaining('Pages')])
   })
 
   it('links the tabs opened from shared tabs the user shared, and only those', async () => {
@@ -5699,6 +5655,205 @@ describe('VisionRedesign', () => {
     expect(getStoredState().tabs[1].sharedId).toBeUndefined()
   })
 
+  it('unshares a shared tab whose tab was closed, keeping it in Restore tabs instead of reopening it', async () => {
+    sanityMocks.savedQueries = {
+      queries: [sharedSavedQuery('shared-pages', 'Pages', '*[_type == "page"]', true)],
+    }
+    const initial = createInitialState(DEFAULTS)
+    const tabs = [
+      createTab(initial.settings, {id: 'posts', query: '*[_type == "post"]'}),
+      createTab(initial.settings, {
+        id: 'pages',
+        title: 'Pages',
+        query: '*[_type == "page"]',
+        sharedId: 'shared-pages',
+      }),
+    ]
+    saveVisionState(PROJECT_ID, {...initial, tabs, activeTabId: 'posts'})
+    renderRedesign()
+
+    fireEvent.click(within(screen.getAllByTestId('vision-tab')[1]).getByTestId('vision-tab-close'))
+    await waitFor(() => expect(getStoredState().closedTabs).toHaveLength(1))
+
+    fireEvent.click(screen.getByTestId('vision-sidebar-shared'))
+    await screen.findByTestId('vision-saved-query')
+    fireEvent.click(
+      within(await openDrawerItemMenu('shared-pages')).getByText('vision.tabs.unshare'),
+    )
+    await waitFor(() => expect(getStoredState().closedTabs[0].tab.sharedId).toBeUndefined())
+    expect(sanityMocks.unshareQuery).toHaveBeenCalledWith('shared-pages')
+    expect(getStoredState().closedTabs[0].tab).toMatchObject({id: 'pages', title: 'Pages'})
+    expect(getStoredState().tabs.map((tab: {id: string}) => tab.id)).toEqual(['posts'])
+  })
+
+  it('lists a closed tab in Restore tabs, restores it after the open tabs, and deletes one for good', async () => {
+    const initial = createInitialState(DEFAULTS)
+    const tabs = [
+      createTab(initial.settings, {id: 'posts', title: 'Posts', query: '*[_type == "post"]'}),
+      createTab(initial.settings, {id: 'pages', query: '*[_type == "page"]{title}'}),
+      createTab(initial.settings, {id: 'authors', query: '*[_type == "author"]'}),
+    ]
+    saveVisionState(PROJECT_ID, {...initial, tabs, activeTabId: 'authors'})
+    renderRedesign()
+
+    fireEvent.click(within(screen.getAllByTestId('vision-tab')[1]).getByTestId('vision-tab-close'))
+    fireEvent.click(within(screen.getAllByTestId('vision-tab')[0]).getByTestId('vision-tab-close'))
+    await waitFor(() => expect(getStoredState().closedTabs).toHaveLength(2))
+
+    // Most recently closed first, each with when it was closed
+    fireEvent.click(screen.getByTestId('vision-sidebar-closed-tabs'))
+    const drawer = await screen.findByTestId('vision-drawer-closed-tabs')
+    const rows = within(drawer).getAllByTestId('vision-closed-tab')
+    expect(rows.map(text)).toEqual([
+      expect.stringContaining('Posts'),
+      expect.stringContaining('page'),
+    ])
+    expect(text(rows[0])).toContain('vision.closed-tabs.closed-at')
+
+    // Restored, the tab opens as it was after the open ones, and shows
+    fireEvent.click(within(rows[0]).getByTestId('vision-closed-tab-restore'))
+    await waitFor(() => expect(getQueryEditor().value).toBe('*[_type == "post"]'))
+    await waitFor(() =>
+      expect(getStoredState().tabs.map((tab: {id: string}) => tab.id)).toEqual([
+        'authors',
+        'posts',
+      ]),
+    )
+    expect(getStoredState().tabs[1].title).toBe('Posts')
+    expect(within(drawer).getAllByTestId('vision-closed-tab')).toHaveLength(1)
+    expect(telemetry.log).toHaveBeenCalledWith(VisionClosedTabUsed, {action: 'restore'})
+
+    // Deleted from its menu, a closed tab is gone for good
+    const menu = await openClosedTabMenu('pages')
+    expect(menuItemLabels(menu)).toEqual([
+      'vision.closed-tabs.restore',
+      'vision.closed-tabs.delete',
+    ])
+    fireEvent.click(within(menu).getByTestId('vision-closed-tab-delete'))
+    await waitFor(() => expect(getStoredState().closedTabs).toEqual([]))
+    expect(within(drawer).queryByTestId('vision-closed-tab')).toBeNull()
+    expect(text(drawer)).toContain('vision.closed-tabs.empty')
+    expect(screen.getAllByTestId('vision-tab')).toHaveLength(2)
+    expect(telemetry.log).toHaveBeenCalledWith(VisionClosedTabUsed, {action: 'delete'})
+    expect(logged(VisionSavedQueryUsed.name)).toEqual([])
+  })
+
+  it('keeps params typed just before closing a tab in Restore tabs, ahead of the debounce', async () => {
+    const initial = createInitialState(DEFAULTS)
+    const tabs = [
+      createTab(initial.settings, {id: 'posts', query: '*[_type == "post" && _id == $id]'}),
+      createTab(initial.settings, {id: 'blank'}),
+    ]
+    saveVisionState(PROJECT_ID, {...initial, tabs, activeTabId: 'posts'})
+    renderRedesign()
+
+    // Closed with its close button
+    fireEvent.change(getParamsEditor(), {target: {value: '{"id": "typed"}'}})
+    fireEvent.click(within(screen.getAllByTestId('vision-tab')[0]).getByTestId('vision-tab-close'))
+    await waitFor(() => expect(getStoredState().closedTabs).toHaveLength(1))
+    expect(getStoredState().closedTabs[0].tab).toMatchObject({
+      id: 'posts',
+      rawParams: '{"id": "typed"}',
+    })
+
+    // Closed with Delete, a tab that holds nothing but the params just typed is kept too
+    fireEvent.change(getParamsEditor(), {target: {value: '{"limit": 2}'}})
+    fireEvent.keyDown(within(screen.getByTestId('vision-tab')).getByRole('tab'), {key: 'Delete'})
+    await waitFor(() => expect(getStoredState().closedTabs).toHaveLength(2))
+    expect(getStoredState().closedTabs[0].tab).toMatchObject({
+      id: 'blank',
+      rawParams: '{"limit": 2}',
+    })
+
+    // Restored, the tab shows the params its editor showed when it was closed
+    fireEvent.click(screen.getByTestId('vision-sidebar-closed-tabs'))
+    const drawer = await screen.findByTestId('vision-drawer-closed-tabs')
+    const posts = within(drawer)
+      .getAllByTestId('vision-closed-tab')
+      .find((row) => text(row).includes('post'))
+    if (!posts) throw new Error('The closed posts tab is not listed')
+    fireEvent.click(within(posts).getByTestId('vision-closed-tab-restore'))
+    await waitFor(() => expect(getParamsEditor().value).toBe('{"id": "typed"}'))
+  })
+
+  it('searches the closed tabs by title and query, recording each search once', async () => {
+    const initial = createInitialState(DEFAULTS)
+    const closedAt = new Date().toISOString()
+    saveVisionState(PROJECT_ID, {
+      ...initial,
+      closedTabs: [
+        {
+          tab: createTab(initial.settings, {
+            id: 'posts',
+            title: 'Posts',
+            query: '*[_type == "post"]',
+          }),
+          closedAt,
+        },
+        {tab: createTab(initial.settings, {id: 'pages', query: '*[_type == "page"]'}), closedAt},
+      ],
+    })
+    renderRedesign()
+    fireEvent.click(screen.getByTestId('vision-sidebar-closed-tabs'))
+    const drawer = await screen.findByTestId('vision-drawer-closed-tabs')
+    const search = within(drawer).getByRole('textbox')
+    const rows = () => within(drawer).queryAllByTestId('vision-closed-tab').map(text)
+
+    fireEvent.change(search, {target: {value: 'p'}})
+    fireEvent.change(search, {target: {value: 'pos'}})
+    expect(rows()).toEqual([expect.stringContaining('Posts')])
+    fireEvent.change(search, {target: {value: '"page"'}})
+    expect(rows()).toEqual([expect.stringContaining('page')])
+    fireEvent.change(search, {target: {value: 'author'}})
+    expect(rows()).toEqual([])
+    expect(text(drawer)).toContain('vision.saved.empty-search')
+    expect(logged(VisionClosedTabsSearched.name)).toHaveLength(1)
+
+    // Cleared and typed into again, it is another search
+    fireEvent.change(search, {target: {value: ''}})
+    fireEvent.change(search, {target: {value: 'p'}})
+    expect(logged(VisionClosedTabsSearched.name)).toHaveLength(2)
+    expect(logged(VisionSavedQueriesFiltered.name)).toEqual([])
+  })
+
+  it('purges a closed tab 30 days after it was closed, also while the tool stays open', async () => {
+    vi.useFakeTimers({now: new Date('2026-03-31T12:00:00Z'), toFake: ['Date']})
+    onTestFinished(() => {
+      vi.useRealTimers()
+    })
+    const initial = createInitialState(DEFAULTS)
+    const closed = (id: string, closedAt: string) => ({
+      tab: createTab(initial.settings, {id, title: id, query: `*[_type == "${id}"]`}),
+      closedAt,
+    })
+    saveVisionState(PROJECT_ID, {
+      ...initial,
+      closedTabs: [
+        closed('recent', '2026-03-30T12:00:00.000Z'),
+        closed('older', '2026-03-02T12:00:00.000Z'),
+        // Closed 30 days ago, it is not loaded
+        closed('expired', '2026-03-01T12:00:00.000Z'),
+      ],
+    })
+    renderRedesign()
+    const rows = () => screen.queryAllByTestId('vision-closed-tab').map(text)
+    fireEvent.click(screen.getByTestId('vision-sidebar-closed-tabs'))
+    await waitFor(() =>
+      expect(rows()).toEqual([expect.stringContaining('recent'), expect.stringContaining('older')]),
+    )
+
+    // Two days on, with the tool open all along, the drawer purges as it opens again
+    vi.setSystemTime(new Date('2026-04-02T12:00:00Z'))
+    fireEvent.click(screen.getByTestId('vision-sidebar-closed-tabs'))
+    fireEvent.click(screen.getByTestId('vision-sidebar-closed-tabs'))
+    await waitFor(() => expect(rows()).toEqual([expect.stringContaining('recent')]))
+    await waitFor(() =>
+      expect(getStoredState().closedTabs.map(({tab}: {tab: {id: string}}) => tab.id)).toEqual([
+        'recent',
+      ]),
+    )
+  })
+
   it('waits before the first rail tooltip opens and then opens its neighbours at once', async () => {
     renderRedesign()
     // A closed tooltip can stay mounted under a hidden `<Activity>`, so only a shown one counts
@@ -5715,9 +5870,9 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(tooltip('vision.sidebar.shared-queries')).toBeDefined())
 
     fireEvent.mouseLeave(shared)
-    fireEvent.mouseEnter(screen.getByTestId('vision-sidebar-saved'))
+    fireEvent.mouseEnter(screen.getByTestId('vision-sidebar-closed-tabs'))
     await act(() => new Promise((resolve) => setTimeout(resolve, 50)))
-    expect(tooltip('vision.sidebar.saved-queries')).toBeDefined()
+    expect(tooltip('vision.sidebar.closed-tabs')).toBeDefined()
   })
 
   it('sets the fields hidden from history diffs in the settings', async () => {
@@ -5778,8 +5933,8 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(transitionTypes()).toEqual([['vision-panel']]))
     await waitFor(() => expect(toggle.getAttribute('aria-expanded')).toBe('false'))
 
-    fireEvent.click(screen.getByTestId('vision-sidebar-saved'))
-    await screen.findByTestId('vision-drawer-saved')
+    fireEvent.click(screen.getByTestId('vision-sidebar-closed-tabs'))
+    await screen.findByTestId('vision-drawer-closed-tabs')
     fireEvent.click(screen.getByTestId('vision-sidebar-toggle'))
     await waitFor(() =>
       expect(transitionTypes()).toEqual([['vision-panel'], ['vision-sidebar'], ['vision-sidebar']]),
@@ -5828,12 +5983,12 @@ describe('VisionRedesign', () => {
       const rail = screen.getByTestId('vision-sidebar')
 
       // Floating over the tool, the drawer moves nothing, so it shows with the click that opens it
-      fireEvent.click(screen.getByTestId('vision-sidebar-saved'))
-      const drawer = screen.getByTestId('vision-drawer-saved')
+      fireEvent.click(screen.getByTestId('vision-sidebar-closed-tabs'))
+      const drawer = screen.getByTestId('vision-drawer-closed-tabs')
       expect(rail.hasAttribute('inert')).toBe(true)
 
       fireEvent.click(within(drawer).getByRole('button', {name: 'vision.drawer.close'}))
-      expect(screen.queryByTestId('vision-drawer-saved')).toBeNull()
+      expect(screen.queryByTestId('vision-drawer-closed-tabs')).toBeNull()
       expect(rail.hasAttribute('inert')).toBe(false)
       await act(async () => {})
       expect(startViewTransition).not.toHaveBeenCalled()
@@ -5848,11 +6003,11 @@ describe('VisionRedesign', () => {
     Object.defineProperty(window, 'innerWidth', {configurable: true, value: 500})
     try {
       const {hide, show} = renderRedesign()
-      const opener = screen.getByTestId('vision-sidebar-saved')
+      const opener = screen.getByTestId('vision-sidebar-closed-tabs')
       opener.focus()
       fireEvent.click(opener)
 
-      const drawer = await screen.findByTestId('vision-drawer-saved')
+      const drawer = await screen.findByTestId('vision-drawer-closed-tabs')
       expect(drawer.getAttribute('role')).toBe('dialog')
       expect(drawer.getAttribute('aria-modal')).toBe('true')
       // The rail behind the drawer is inert; the drawer's close button takes focus
@@ -5868,7 +6023,7 @@ describe('VisionRedesign', () => {
       await waitFor(() => expect(document.activeElement).toBe(closeButton))
 
       fireEvent.keyDown(drawer, {key: 'Escape'})
-      await waitFor(() => expect(screen.queryByTestId('vision-drawer-saved')).toBeNull())
+      await waitFor(() => expect(screen.queryByTestId('vision-drawer-closed-tabs')).toBeNull())
       await waitFor(() => expect(document.activeElement).toBe(opener))
     } finally {
       Object.defineProperty(window, 'innerWidth', {configurable: true, value: innerWidth})
