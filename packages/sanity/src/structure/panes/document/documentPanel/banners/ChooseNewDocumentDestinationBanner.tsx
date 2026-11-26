@@ -16,7 +16,7 @@ import {
   useWorkspace,
   VersionInlineBadge,
 } from 'sanity'
-import {Text} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
@@ -60,10 +60,13 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
   const {t: tCore} = useTranslation()
 
   const {
+    beta,
     document: {
       drafts: {enabled: isDraftModelEnabled},
     },
   } = useWorkspace()
+  // With Variants off the destination menu stays inline after the text, as it was
+  const variantsEnabled = Boolean(beta?.variants?.enabled)
 
   const menuItemProps = useCallback<ReleasesNavMenuItemPropsGetter>(
     ({perspective}) => ({
@@ -81,35 +84,53 @@ export const ChooseNewDocumentDestinationBanner: ComponentType<Props> = ({
     ? releaseDoc.metadata.title || tCore('release.placeholder-untitled-release')
     : undefined
 
+  const message = (
+    <Text size={1} as="div" trim={true} tone="caution">
+      {reason === 'PUBLISHED_NOT_WRITEABLE' &&
+        t('banners.choose-new-document-destination.cannot-create-published-document')}
+      {reason === 'DRAFTS_NOT_WRITEABLE' &&
+        t('banners.choose-new-document-destination.cannot-create-draft-document')}
+      {reason === 'RELEASE_NOT_ACTIVE' && releaseDoc && releaseTitle && (
+        <Translate
+          t={t}
+          i18nKey="banners.choose-new-document-destination.release-inactive"
+          values={{
+            title: releaseTitle,
+          }}
+          components={{VersionBadge: ReleaseInactiveVersionBadge}}
+          componentProps={{
+            fallbackTitle: tCore('release.placeholder-untitled-release'),
+            releaseDoc,
+          }}
+        />
+      )}
+      <> {t('banners.choose-new-document-destination.choose-destination')}</>
+    </Text>
+  )
+
+  if (!variantsEnabled) {
+    return (
+      <Banner
+        tone="caution"
+        icon={WarningOutlineIcon}
+        data-testid="choose-new-document-destination-banner"
+        content={
+          <Flex alignItems="center" gap={2}>
+            {message}
+            <ReleasesNav menuItemProps={menuItemProps} />
+          </Flex>
+        }
+      />
+    )
+  }
+
   return (
     <Banner
       tone="caution"
       icon={WarningOutlineIcon}
       data-testid="choose-new-document-destination-banner"
       actions={<ReleasesNav menuItemProps={menuItemProps} />}
-      content={
-        <Text size={1} as="div" trim={true} tone="caution">
-          {reason === 'PUBLISHED_NOT_WRITEABLE' &&
-            t('banners.choose-new-document-destination.cannot-create-published-document')}
-          {reason === 'DRAFTS_NOT_WRITEABLE' &&
-            t('banners.choose-new-document-destination.cannot-create-draft-document')}
-          {reason === 'RELEASE_NOT_ACTIVE' && releaseDoc && releaseTitle && (
-            <Translate
-              t={t}
-              i18nKey="banners.choose-new-document-destination.release-inactive"
-              values={{
-                title: releaseTitle,
-              }}
-              components={{VersionBadge: ReleaseInactiveVersionBadge}}
-              componentProps={{
-                fallbackTitle: tCore('release.placeholder-untitled-release'),
-                releaseDoc,
-              }}
-            />
-          )}
-          <> {t('banners.choose-new-document-destination.choose-destination')}</>
-        </Text>
-      }
+      content={message}
     />
   )
 }

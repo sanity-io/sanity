@@ -13,9 +13,10 @@ import {
   useConditionalToast,
   useTranslation,
   useVersionOperations,
+  useWorkspace,
   VersionInlineBadge,
 } from 'sanity'
-import {Text} from 'ui5'
+import {Text, type TextProps} from 'ui5'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
@@ -69,6 +70,9 @@ export function DocumentNotInReleaseBanner({
 }) {
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
+  // With Variants off the banner keeps its earlier release tint, copy and button tone
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+  const tone = getReleaseTone(currentRelease ?? LATEST)
 
   const {createVersion} = useVersionOperations()
   const isAnonymousBundle = typeof currentRelease === 'string'
@@ -125,7 +129,45 @@ export function DocumentNotInReleaseBanner({
       ? 'banners.release.not-in-release-asap'
       : releaseType === 'undecided'
         ? 'banners.release.not-in-release-undecided'
-        : 'banners.release.not-in-release'
+        : 'banners.release.not-in-release-yet'
+
+  if (!variantsEnabled) {
+    return (
+      <Banner
+        tone={tone}
+        content={
+          <Text size={1} as="div" trim={true} tone={tone as TextProps['tone']}>
+            <Translate
+              i18nKey="banners.release.not-in-release"
+              t={t}
+              values={{
+                title: releaseTitle,
+              }}
+              components={{VersionBadge}}
+              componentProps={{
+                currentRelease,
+                fallbackTitle: tCore('release.placeholder-untitled-release'),
+              }}
+            />
+          </Text>
+        }
+        // Adding to a scheduled release is not allowed
+        action={
+          isScheduledRelease
+            ? undefined
+            : {
+                text: isAgentBundleName(currentRelease)
+                  ? t('banners.release.action.add-to-bundle')
+                  : t('banners.release.action.add-to-release'),
+                tone: tone,
+                disabled: Boolean(versionCreateState),
+                onClick: handleAddToRelease,
+                mode: 'default',
+              }
+        }
+      />
+    )
+  }
 
   return (
     <Banner

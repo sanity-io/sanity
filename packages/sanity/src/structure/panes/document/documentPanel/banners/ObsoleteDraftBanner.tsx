@@ -10,8 +10,9 @@ import {
   useDocumentOperation,
   usePerspective,
   useTranslation,
+  useWorkspace,
 } from 'sanity'
-import {Text} from 'ui5'
+import {Text, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {useDiffViewRouter} from '../../../../diffView/hooks/useDiffViewRouter'
@@ -45,6 +46,8 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
   const {t} = useTranslation(structureLocaleNamespace)
   const [actionRequested, setActionRequested] = useState<'publish' | 'discard'>()
   const telemetry = useTelemetry()
+  // With Variants off the banner keeps its earlier layout and its green Publish button
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   const {selectedVariants} = usePerspective()
   const selectedVariant = getDefaultVariant(selectedVariants)
   const {targetDocumentState} = useDocumentPane()
@@ -110,56 +113,82 @@ export const ObsoleteDraftBanner: ComponentType<ObsoleteDraftBannerProps> = ({
     })
   }
 
+  const message = (
+    <Text size={1} weight="medium" as="div" trim={true}>
+      <Translate t={t} i18nKey={i18nKey} values={{schemaType: schemaType.title}} />
+    </Text>
+  )
+  const compareButton = (
+    <Button
+      text={t('banners.obsolete-draft.actions.compare-draft.text')}
+      mode="ghost"
+      disabled={!publishedId || Boolean(actionRequested)}
+      tooltipProps={{
+        content: t('banners.obsolete-draft.actions.compare-draft.tooltip'),
+        disabled: Boolean(publishedId),
+      }}
+      onClick={compareDraft}
+    />
+  )
+  const publishButton = (
+    <Button
+      onClick={handlePublish}
+      text={t('banners.obsolete-draft.actions.publish-draft.text')}
+      disabled={Boolean(actionRequested) || Boolean(publishDisabled)}
+      tooltipProps={
+        publishDisabledReason
+          ? {content: publishDisabledReason}
+          : isEditBlocking
+            ? {content: t('banners.live-edit-draft-banner.publish.tooltip')}
+            : undefined
+      }
+      loading={isPublishing}
+      tone={variantsEnabled ? 'default' : 'positive'}
+    />
+  )
+  const discardButton = (
+    <Button
+      onClick={handleDiscard}
+      disabled={!draftId || Boolean(actionRequested) || Boolean(discardChanges.disabled)}
+      text={t('banners.obsolete-draft.actions.discard-draft.text')}
+      tooltipProps={
+        discardDisabledReason
+          ? {content: discardDisabledReason}
+          : isEditBlocking
+            ? {content: t('banners.live-edit-draft-banner.discard.tooltip')}
+            : undefined
+      }
+      loading={isDiscarding}
+      mode={variantsEnabled ? 'ghost' : undefined}
+      tone="caution"
+    />
+  )
+
+  if (!variantsEnabled) {
+    return (
+      <Banner
+        content={
+          <Flex alignItems="center" justifyContent="space-between" gap={2}>
+            {message}
+            {compareButton}
+            {publishButton}
+            {discardButton}
+          </Flex>
+        }
+        data-testid="live-edit-type-banner"
+        icon={ErrorOutlineIcon}
+      />
+    )
+  }
+
   return (
     <Banner
-      content={
-        <Text size={1} weight="medium" as="div" trim={true}>
-          <Translate t={t} i18nKey={i18nKey} values={{schemaType: schemaType.title}} />
-        </Text>
-      }
+      content={message}
       actions={
         <>
-          <Button
-            text={t('banners.obsolete-draft.actions.compare-draft.text')}
-            mode="ghost"
-            disabled={!publishedId || Boolean(actionRequested)}
-            tooltipProps={{
-              content: t('banners.obsolete-draft.actions.compare-draft.tooltip'),
-              disabled: Boolean(publishedId),
-            }}
-            onClick={compareDraft}
-          />
-          <BannerPrimaryAction>
-            <Button
-              onClick={handlePublish}
-              text={t('banners.obsolete-draft.actions.publish-draft.text')}
-              disabled={Boolean(actionRequested) || Boolean(publishDisabled)}
-              tooltipProps={
-                publishDisabledReason
-                  ? {content: publishDisabledReason}
-                  : isEditBlocking
-                    ? {content: t('banners.live-edit-draft-banner.publish.tooltip')}
-                    : undefined
-              }
-              loading={isPublishing}
-              tone="default"
-            />
-          </BannerPrimaryAction>
-          <Button
-            onClick={handleDiscard}
-            disabled={!draftId || Boolean(actionRequested) || Boolean(discardChanges.disabled)}
-            text={t('banners.obsolete-draft.actions.discard-draft.text')}
-            tooltipProps={
-              discardDisabledReason
-                ? {content: discardDisabledReason}
-                : isEditBlocking
-                  ? {content: t('banners.live-edit-draft-banner.discard.tooltip')}
-                  : undefined
-            }
-            loading={isDiscarding}
-            mode="ghost"
-            tone="caution"
-          />
+          {compareButton}
+          <BannerPrimaryAction>{publishButton}</BannerPrimaryAction>
+          {discardButton}
         </>
       }
       data-testid="live-edit-type-banner"

@@ -93,6 +93,9 @@ const legacyArticle = defineType({
 
 const schemaTypes = [article, legacyArticle]
 
+/** The open beta banners (layout, neutral primary actions, copy) only show with Variants on. */
+const VARIANTS_ON = {variants: {enabled: true}}
+
 const DOCUMENT_ID = 'article-1'
 const CREATED_AT = '2025-01-02T12:00:00Z'
 const UPDATED_AT = '2025-01-03T12:00:00Z'
@@ -450,6 +453,39 @@ describe('document panel banners', () => {
     await settleChromaticEndState()
   })
 
+  it('keeps the earlier not-in-release banner when Variants is off', async () => {
+    await render(
+      <>
+        <TestWrapper schemaTypes={schemaTypes}>
+          <div data-testid="variants-off">
+            <BannerHarness>
+              <DocumentNotInReleaseBanner documentId={DOCUMENT_ID} currentRelease={springRelease} />
+            </BannerHarness>
+          </div>
+        </TestWrapper>
+        <TestWrapper schemaTypes={schemaTypes} betaFeatures={VARIANTS_ON}>
+          <div data-testid="variants-on">
+            <BannerHarness>
+              <DocumentNotInReleaseBanner documentId={DOCUMENT_ID} currentRelease={springRelease} />
+            </BannerHarness>
+          </div>
+        </TestWrapper>
+      </>,
+    )
+
+    const off = page.getByTestId('variants-off')
+    const on = page.getByTestId('variants-on')
+    await expect.element(off.getByRole('button', {name: 'Add to release'})).toBeEnabled()
+    await expect.element(on.getByRole('button', {name: 'Add to release'})).toBeEnabled()
+    // Off: the earlier copy, no icon, the button inline in the row (no action column)
+    await expect.element(off).toMatchTextContent(/Not in the\s*Spring launch\s*release\./)
+    expect(off.element().querySelector('svg[data-sanity-icon="info-outline"]')).toBeNull()
+    // On: the open beta copy and the info icon
+    await expect.element(on).toMatchTextContent(/isn't in the/)
+    expect(on.element().querySelector('svg[data-sanity-icon="info-outline"]')).not.toBeNull()
+    await settleChromaticEndState()
+  })
+
   it('keeps Add to release filled while the document inventory opens and closes', async () => {
     function Toggling() {
       const [open, setOpen] = useState(false)
@@ -465,7 +501,7 @@ describe('document panel banners', () => {
       )
     }
     await render(
-      <TestWrapper schemaTypes={schemaTypes}>
+      <TestWrapper schemaTypes={schemaTypes} betaFeatures={VARIANTS_ON}>
         <div style={{width: 640}}>
           <Toggling />
         </div>
@@ -502,7 +538,7 @@ describe('document panel banners', () => {
   it('keeps Add to release the filled button while the document inventory is open, in light and dark', async () => {
     const inventoryOpen = {params: {inspect: DOCUMENT_GROUP_INSPECTOR_NAME}}
     await render(
-      <TestWrapper schemaTypes={schemaTypes}>
+      <TestWrapper schemaTypes={schemaTypes} betaFeatures={VARIANTS_ON}>
         <div data-testid="closed">
           <BannerHarness>
             <DocumentNotInReleaseBanner documentId={DOCUMENT_ID} currentRelease={springRelease} />
@@ -968,7 +1004,7 @@ describe('document panel banners', () => {
 
   it('offers to resolve an obsolete draft', async () => {
     await render(
-      <TestWrapper schemaTypes={schemaTypes}>
+      <TestWrapper schemaTypes={schemaTypes} betaFeatures={VARIANTS_ON}>
         <BannerHarness
           pane={{targetDocumentState: readyState({published: publishedStub, draft: draftStub})}}
         >
