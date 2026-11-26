@@ -1,7 +1,6 @@
 /// <reference types="vite/client" />
 import {useCallback} from 'react'
-import {defineConfig} from 'sanity'
-import {defineDocumentFieldAction} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {defineConfig, defineDocumentFieldAction} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
 import {STUDIO_DATASET, STUDIO_PROJECT_ID} from '../tests/config/constants'

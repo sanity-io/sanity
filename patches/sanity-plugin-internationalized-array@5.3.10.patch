@@ -6,7 +6,7 @@ index 56519ec695ee317090e6e9e1f0a287648a1f5308..9402489df50ba619c3269369319f1ae9
  import "@sanity/ui/styles.css";
  import { languageFilter, useLanguageFilterStudioContext } from "@sanity/language-filter";
 -import { ArrayOfObjectsItem, MemberItemError, PatchEvent, defineDocumentFieldAction, defineField, definePlugin, insert, isDocumentSchemaType, isObjectInputProps, isSanityDocument, set, setIfMissing, unset, useClient, useFormValue, useGetFormValue, useSchema, useWorkspace } from "sanity";
-+import { defineField, definePlugin, insert, isDocumentSchemaType, isObjectInputProps, isSanityDocument, set, setIfMissing, unset, useClient, useFormValue, useGetFormValue, useWorkspace } from "sanity";
++import { defineDocumentFieldAction, defineField, definePlugin, insert, isDocumentSchemaType, isObjectInputProps, isSanityDocument, set, setIfMissing, unset, useClient, useFormValue, useGetFormValue, useWorkspace } from "sanity";
  import { c } from "react/compiler-runtime";
  import { Box, Button, Card, Flex, Grid, Label, Spinner, Stack, Text } from "@sanity/ui";
  import { useToast } from "@sanity/ui/toast";
@@ -14,7 +14,7 @@ index 56519ec695ee317090e6e9e1f0a287648a1f5308..9402489df50ba619c3269369319f1ae9
  import camelCase from "lodash-es/camelCase.js";
  import upperFirst from "lodash-es/upperFirst.js";
  import { EventsContext } from "sanity/_singletons";
-+import { MemberItemError, PatchEvent, defineDocumentFieldAction, useSchema, ArrayOfObjectsItem } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver";
++import { MemberItemError, PatchEvent, useSchema, ArrayOfObjectsItem } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver";
  import { Menu, MenuButton, MenuDivider, MenuItem } from "@sanity/ui/menu";
  import { Code } from "@sanity/ui/code";
  import { WarningOutlineIcon } from "@sanity/icons/WarningOutline";
