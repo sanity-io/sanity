@@ -594,7 +594,7 @@ async function collateObjectValue({
         const query = targetSchemaType.options?.filter
           ? `*[sanity::versionOf($publishedId)]|order(_updatedAt)[0]`
           : `*[sanity::versionOf($publishedId)]|order(_updatedAt)[0]{_id, _type}`
-        const reference = await (options.client as SanityClient).fetch(query, {
+        const reference = await options.client.fetch(query, {
           publishedId: getPublishedId(sourceValue._ref),
         })
 

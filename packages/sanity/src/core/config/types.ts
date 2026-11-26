@@ -5,11 +5,14 @@ import {
   type BaseSchemaType,
   type CurrentUser,
   type FieldDefinition,
+  type FieldGroupDefinition,
+  type FieldsetDefinition,
   type ObjectSchemaType,
   type SanityDocumentLike,
   type Schema,
   type SchemaType,
   type SchemaTypeDefinition,
+  type SchemaValidationValue,
   type SearchStrategy,
 } from '@sanity/types'
 import {type ButtonTone} from '@sanity/ui'
@@ -1298,13 +1301,11 @@ export interface Source {
      */
     actions?: (props: PartialContext<ReleaseActionsContext>) => ReleaseActionComponent[]
     /**
-     * Extra metadata fields, compiled as a private object schema and edited with the studio form.
-     * Rendered on create and in the edit dialog only while `beta.variants` is enabled.
+     * The `releases.metadata` of the workspace and its plugins, merged. The releases plugin adds
+     * it to the `sanity.releaseMetadata` schema type, without fields named like a core field.
      * Empty when no workspace or plugin configured any.
      */
-    metadata?: {
-      fields?: FieldDefinition[]
-    }
+    metadata?: ReleaseMetadataConfig
   }
 
   /** Configuration for studio features.
@@ -1513,17 +1514,45 @@ export type DefaultPluginsWorkspaceOptions = {
      */
     actions?: ReleaseActionComponent[] | ReleaseActionsResolver
     /**
-     * Field definitions stored on release metadata. The same `defineField` definitions used in
-     * Structure. Studio renders them on create and in the edit-release dialog while
-     * `beta.variants` is enabled. This is not a component slot.
+     * Fields stored on release metadata, with the fieldsets, groups and validation that
+     * organize them. They are added to the `sanity.releaseMetadata` schema type, and Studio
+     * renders them on create and in the edit-release dialog while `beta.variants` is enabled.
      *
      * @beta
      */
-    metadata?: {
-      fields?: FieldDefinition[]
-    }
+    metadata?: ReleaseMetadataConfig
   }
   mediaLibrary?: MediaLibraryConfig
+}
+
+/**
+ * The part of the `sanity.releaseMetadata` object type a workspace or plugin configures. The
+ * core fields (`title`, `description`, `releaseType`, `intendedPublishAt` and `cardinality`)
+ * always come first and can't be redeclared: a field with one of those names is dropped with a
+ * warning.
+ *
+ * Plugins and the root config are merged in order: a later field, fieldset or group with the
+ * same name replaces the earlier one, with a warning, and every config's validation applies.
+ *
+ * @example
+ * ```ts
+ * defineConfig({
+ *   releases: {
+ *     metadata: {
+ *       fieldsets: [{name: 'review', title: 'Review'}],
+ *       fields: [defineField({name: 'legalReview', type: 'string', fieldset: 'review'})],
+ *     },
+ *   },
+ * })
+ * ```
+ *
+ * @beta
+ */
+export interface ReleaseMetadataConfig {
+  fields?: FieldDefinition[]
+  fieldsets?: FieldsetDefinition[]
+  groups?: FieldGroupDefinition[]
+  validation?: SchemaValidationValue
 }
 
 /**
@@ -1841,6 +1870,24 @@ export interface BetaFeatures {
    * https://react.dev/reference/react/Activity#troubleshooting
    */
   reactActivityMode?: {
+    enabled?: boolean
+  }
+  /**
+   * Close the Studio's real-time listener connections while its browser tab is in the background,
+   * and open them again when the tab is shown.
+   *
+   * Browsers limit how many connections a site can keep open at once, and every Studio tab
+   * counts against the same limit. With many Studio tabs open, listeners in the tab you are
+   * working in can fail to connect. With this switched on, a tab that has been hidden for 30
+   * seconds gives its listener connections up, and a tab opened in the background does not
+   * connect until it is first shown. When the tab is shown again, the Studio reconnects and
+   * refreshes whatever changed in the meantime. A document with changes that have not been
+   * saved yet keeps every listener connected until the changes are saved.
+   *
+   * This feature is not ready for production yet. Only enable it to test in development and
+   * staging environments.
+   */
+  releaseBackgroundListeners?: {
     enabled?: boolean
   }
 }

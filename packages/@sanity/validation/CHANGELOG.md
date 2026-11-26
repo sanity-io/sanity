@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.25.0](https://github.com/sanity-io/sanity/compare/v6.24.0...v6.25.0) (2026-11-24)
+
+### Bug Fixes
+
+* **validation:** satisfy oxlint no-unsafe-class-instance-assignment ([#16383](https://github.com/sanity-io/sanity/issues/16383)) ([48ef048](https://github.com/sanity-io/sanity/commit/48ef048560493e3dcd7296378d4f51c9105d6e15))
 ## [6.24.0](https://github.com/sanity-io/sanity/compare/v6.23.0...v6.24.0) (2026-11-17)
 
 ### Bug Fixes

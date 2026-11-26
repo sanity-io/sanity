@@ -2,11 +2,11 @@
 import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
 import {ArrowLeftIcon} from '@sanity/icons/ArrowLeft'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
-import {Badge, Card, Heading} from '@sanity/ui'
+import {Badge, Card} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
-import {Text, Box, Flex, VStack, Icon, Link} from 'ui5'
+import {Heading, Text, Box, Flex, VStack, Icon, Link} from 'ui5'
 
 import {Button, type ButtonProps} from '../../../../ui-components/button/Button'
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
@@ -248,7 +248,7 @@ export function createLoginComponent({
 
     return (
       <VStack gap={4}>
-        <Heading align="center" size={1}>
+        <Heading as="h2" align="center" size={1} trim>
           Choose login provider
         </Heading>
 

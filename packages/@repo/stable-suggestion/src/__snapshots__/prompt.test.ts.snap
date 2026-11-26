@@ -1,0 +1,190 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`buildPrompt > user content matches the snapshot 1`] = `
+{
+  "adoption": [
+    {
+      "adoptionShare": 0.156,
+      "version": "6.23.0",
+    },
+    {
+      "adoptionShare": 0.085,
+      "version": "6.22.0",
+    },
+    {
+      "adoptionShare": 0.085,
+      "version": "6.21.0",
+    },
+    {
+      "adoptionShare": 0.085,
+      "version": "6.24.0",
+    },
+  ],
+  "asOf": "2026-11-17T18:10:00Z",
+  "currentStable": {
+    "ageDays": 49,
+    "version": "6.15.0",
+  },
+  "dataStatus": {
+    "downloads": "ok",
+    "issues": "ok",
+    "regressions": "ok",
+    "sqrl": "ok",
+  },
+  "deterministicShortlist": [
+    "6.23.0",
+    "6.22.0",
+    "6.21.0",
+  ],
+  "eligible": [
+    "6.23.0",
+    "6.22.0",
+    "6.21.0",
+  ],
+  "hardRules": [
+    {
+      "hard": [],
+      "version": "6.23.0",
+    },
+    {
+      "hard": [],
+      "version": "6.22.0",
+    },
+    {
+      "hard": [],
+      "version": "6.21.0",
+    },
+    {
+      "hard": [
+        {
+          "code": "too-new",
+          "detail": "published less than 7 days ago",
+        },
+      ],
+      "version": "6.24.0",
+    },
+  ],
+  "issues": {
+    "openIssueNumbers": [
+      {
+        "openIssueNumbers": [
+          101,
+          102,
+        ],
+        "version": "6.23.0",
+      },
+      {
+        "openIssueNumbers": [
+          101,
+        ],
+        "version": "6.22.0",
+      },
+      {
+        "openIssueNumbers": [],
+        "version": "6.21.0",
+      },
+      {
+        "openIssueNumbers": [],
+        "version": "6.24.0",
+      },
+    ],
+    "titles": [
+      {
+        "number": 101,
+        "title": "Example issue title",
+      },
+    ],
+  },
+  "issuesInRange": [
+    {
+      "number": 101,
+      "title": "Example issue title",
+      "versions": [
+        "6.22.0",
+        "6.23.0",
+      ],
+    },
+  ],
+  "latest": "6.24.0",
+  "regressions": [],
+  "soak": [
+    {
+      "ageDays": 7.1,
+      "urgentReason": null,
+      "version": "6.23.0",
+    },
+    {
+      "ageDays": 14.1,
+      "urgentReason": null,
+      "version": "6.22.0",
+    },
+    {
+      "ageDays": 19.4,
+      "urgentReason": null,
+      "version": "6.21.0",
+    },
+    {
+      "ageDays": 0.2,
+      "urgentReason": null,
+      "version": "6.24.0",
+    },
+  ],
+  "softFlags": [
+    {
+      "soft": [],
+      "version": "6.23.0",
+    },
+    {
+      "soft": [],
+      "version": "6.22.0",
+    },
+    {
+      "soft": [],
+      "version": "6.21.0",
+    },
+    {
+      "soft": [],
+      "version": "6.24.0",
+    },
+  ],
+  "sqrl": [
+    {
+      "sqrl": {
+        "regressedInputs": [],
+        "reliabilityEvents": 0,
+        "score": 114.4,
+      },
+      "sqrlBaseline": 109,
+      "version": "6.23.0",
+    },
+    {
+      "sqrl": {
+        "regressedInputs": [],
+        "reliabilityEvents": 0,
+        "score": 114.4,
+      },
+      "sqrlBaseline": 109,
+      "version": "6.22.0",
+    },
+    {
+      "sqrl": {
+        "regressedInputs": [],
+        "reliabilityEvents": 0,
+        "score": 114.4,
+      },
+      "sqrlBaseline": 109,
+      "version": "6.21.0",
+    },
+    {
+      "sqrl": {
+        "regressedInputs": [],
+        "reliabilityEvents": 0,
+        "score": 114.4,
+      },
+      "sqrlBaseline": 109,
+      "version": "6.24.0",
+    },
+  ],
+  "stableSplit": null,
+}
+`;

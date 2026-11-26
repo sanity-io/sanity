@@ -3,7 +3,7 @@ import {describe, expect, it} from 'vitest'
 
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {getDocumentVersionVariantId} from '../getDocumentVersionVariant'
-import {getTargetDocument} from '../getTargetDocument'
+import {getBaseComparisonTarget, getTargetDocument} from '../getTargetDocument'
 
 const PUBLISHED_ID = 'article-1'
 const groupRef = {_type: 'reference', _ref: PUBLISHED_ID, _weak: true} as const
@@ -303,5 +303,46 @@ describe('getTargetDocument', () => {
         getTargetDocument({bundle: 'drafts', variant: undefined, documentVersions: []}),
       ).toBeUndefined()
     })
+  })
+})
+
+describe('getBaseComparisonTarget', () => {
+  const without = (...omit: VersionInfoDocumentStub[]) =>
+    documentVersions.filter((version) => !omit.includes(version))
+
+  it('compares with the base in the same slot when it exists', () => {
+    expect(getBaseComparisonTarget({bundle: 'rASAP', documentVersions})).toBe(releaseDefault)
+    expect(getBaseComparisonTarget({bundle: 'drafts', documentVersions})).toBe(draftDefault)
+    expect(getBaseComparisonTarget({bundle: 'published', documentVersions})).toBe(publishedDefault)
+  })
+
+  it('falls back from a release to the base draft, then the base published', () => {
+    expect(
+      getBaseComparisonTarget({bundle: 'rASAP', documentVersions: without(releaseDefault)}),
+    ).toBe(draftDefault)
+    expect(
+      getBaseComparisonTarget({
+        bundle: 'rASAP',
+        documentVersions: without(releaseDefault, draftDefault),
+      }),
+    ).toBe(publishedDefault)
+  })
+
+  it('falls back from Drafts to the base published, never upwards', () => {
+    expect(
+      getBaseComparisonTarget({bundle: 'drafts', documentVersions: without(draftDefault)}),
+    ).toBe(publishedDefault)
+    expect(
+      getBaseComparisonTarget({bundle: 'published', documentVersions: without(publishedDefault)}),
+    ).toBeUndefined()
+  })
+
+  it('finds nothing when the document has no base version', () => {
+    expect(
+      getBaseComparisonTarget({
+        bundle: 'rASAP',
+        documentVersions: without(releaseDefault, draftDefault, publishedDefault),
+      }),
+    ).toBeUndefined()
   })
 })

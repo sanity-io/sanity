@@ -45,6 +45,7 @@ import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../
 import {useResolvedPanesList} from '../../../../structureResolvers/useResolvedPanesList'
 import {type PaneMenuItem} from '../../../../types'
 import {useStructureTool} from '../../../../useStructureTool'
+import {isDocumentLoading} from '../../isDocumentLoading'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentPaneCollapsed, DocumentPaneMaximized} from './__telemetry__/focus.telemetry'
@@ -107,7 +108,7 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
     onSetMaximizedPane,
     menuItemGroups,
     schemaType,
-    connectionState,
+
     views,
     unstable_languageFilter,
     documentId,
@@ -211,7 +212,7 @@ export const DocumentPanelHeader = memo(function DocumentPanelHeader(
         <PaneHeader
           border
           ref={ref}
-          loading={connectionState === 'connecting' && !editState?.draft && !editState?.published}
+          loading={isDocumentLoading(editState)}
           title={title}
           tabIndex={tabIndex}
           backButton={backButton}

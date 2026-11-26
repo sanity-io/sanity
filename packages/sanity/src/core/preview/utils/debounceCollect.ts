@@ -1,4 +1,4 @@
-import {Observable, type Subscriber} from 'rxjs'
+import {Observable, type Subscriber, type Subscription} from 'rxjs'
 
 import {isNonNullable} from '../../util/isNonNullable'
 
@@ -6,6 +6,13 @@ interface QueueItem {
   args: any[]
   observer: Subscriber<any>
   completed: boolean
+  /** The batch the item was sent in, once it has been flushed */
+  batch?: Batch
+}
+
+interface Batch {
+  items: QueueItem[]
+  subscription?: Subscription
 }
 
 // Takes an observable returning function and returns a debounced function that, when called
@@ -33,8 +40,13 @@ export function debounceCollect(fn: any, wait: number) {
       const id = idx++
       queue[id] = queueItem
       return () => {
-        // console.log('completed', queueItem.args)
         queueItem.completed = true
+        // A batch that no caller is waiting for any more is unsubscribed, which cancels its
+        // request, and any retry of it.
+        const batch = queueItem.batch
+        if (batch && batch.items.every((item) => item.completed)) {
+          batch.subscription?.unsubscribe()
+        }
       }
     })
   }
@@ -67,7 +79,13 @@ export function debounceCollect(fn: any, wait: number) {
         return queueItem && queueItem.args
       })
       .filter(isNonNullable)
-    fn(collectedArgs).subscribe({
+    const batch: Batch = {
+      items: queueItemIds.map((id) => currentlyFlushingQueue[id]).filter(isNonNullable),
+    }
+    for (const item of batch.items) {
+      item.batch = batch
+    }
+    batch.subscription = fn(collectedArgs).subscribe({
       next(results: any[]) {
         results.forEach((result, i) => {
           const queueItem = currentlyFlushingQueue[queueItemIds[i]]

@@ -74,7 +74,7 @@ export function FileAsset(props: FileAssetProps) {
   }
 
   return (
-    <div style={elementProps.style}>
+    <div style={{...elementProps.style, minWidth: 0}}>
       {isStale && (
         <Box marginBottom={2}>
           <UploadWarning onClearStale={onClearUploadStatus} />

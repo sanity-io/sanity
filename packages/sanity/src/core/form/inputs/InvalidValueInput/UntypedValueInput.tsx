@@ -1,7 +1,6 @@
 import {Card} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo} from 'react'
-import {Text, Grid, VStack} from 'ui5'
+import {Code, Text, Grid, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {isDev} from '../../../environment'
@@ -129,7 +128,9 @@ export function UntypedValueInput({validTypes, value, onChange}: UntypedValueInp
             </Text>
 
             <Card border overflow="auto" padding={2} radius={2} tone="inherit">
-              <Code language="json">{JSON.stringify(value, null, 2)}</Code>
+              <Code language="json" trim>
+                {JSON.stringify(value, null, 2)}
+              </Code>
             </Card>
           </VStack>
 

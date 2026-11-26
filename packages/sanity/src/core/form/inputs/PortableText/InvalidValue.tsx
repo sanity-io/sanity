@@ -5,9 +5,8 @@ import {
   Button,
   Card,
 } from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
-import {Text, Box, Flex, Grid, VStack} from 'ui5'
+import {Code, Text, Box, Flex, Grid, VStack} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../i18n/Translate'
@@ -95,7 +94,9 @@ export function InvalidValue(props: InvalidValueProps) {
         </Text>
 
         <Card border overflow="auto" padding={2} tone="inherit">
-          <Code language="json">{JSON.stringify(resolution.item, null, 2)}</Code>
+          <Code language="json" trim>
+            {JSON.stringify(resolution.item, null, 2)}
+          </Code>
         </Card>
       </VStack>
     </Alert>

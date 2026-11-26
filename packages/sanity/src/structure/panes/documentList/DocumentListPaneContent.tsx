@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/types'
-import {Container, Heading} from '@sanity/ui'
+import {Container} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
@@ -16,7 +16,7 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import {Text, Flex, Box} from 'ui5'
+import {Heading, Text, Flex, Box} from 'ui5'
 
 import {paneCommandList} from '../../components/pane/PaneCommandList.css'
 import {PaneContent} from '../../components/pane/PaneContent'
@@ -212,7 +212,9 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
         <Flex alignItems="center" flexDirection="column" height="100%" justifyContent="center">
           <Container width={1}>
             <Flex paddingX={4} paddingY={5} gap={4} flexDirection="column">
-              <Heading as="h3">{t('panes.document-list-pane.error.title')}</Heading>
+              <Heading as="h3" trim>
+                {t('panes.document-list-pane.error.title')}
+              </Heading>
               <Text as="p" trim={true}>
                 {isDev ? (
                   <Translate
