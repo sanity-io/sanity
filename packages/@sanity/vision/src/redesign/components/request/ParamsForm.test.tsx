@@ -45,7 +45,6 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', (
   createSearch: (types: {name: string}[], client: unknown, options: unknown) =>
     createSearch(types, client, options),
   useValuePreview: (props: {value: {_id: string}}) => useValuePreview(props),
-  useSchema: () => schema,
   isDraftId: (id: string) => id.startsWith('drafts.'),
   getVersionFromId: (id: string) => {
     const match = /^versions\.([^.]+)\./.exec(id)
@@ -57,6 +56,9 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', (
       {subtitle ? ` ${subtitle}` : ''}
     </span>
   ),
+}))
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1', () => ({
+  useSchema: () => schema,
 }))
 
 const schema = Schema.compile({

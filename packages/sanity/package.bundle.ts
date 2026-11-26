@@ -12,6 +12,8 @@ export default defineConfig(() => {
           '_singletons': './src/_exports/_singletons.ts',
           '_dangerously_use_private_internals_that_do_not_follow_semver':
             './src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts',
+          '_dangerously_use_private_internals_that_do_not_follow_semver/1':
+            './src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/1.ts',
           '_dangerously_use_private_internals_that_do_not_follow_semver/presentation':
             './src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/presentation.ts',
           '_dangerously_use_private_internals_that_do_not_follow_semver/router':

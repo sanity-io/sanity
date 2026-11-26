@@ -8,7 +8,7 @@ index 79dd3301701b5f8eb9754132b2ef6dd0038dbd2a..f6b987deb7a99ff56b3abe569232bc27
  import { ImageIcon } from "@sanity/icons/Image";
 -import { Preview, WithReferringDocuments, definePlugin, getPublishedId, useClient, useColorSchemeValue, useDocumentStore, useFormValue, useSchema } from "sanity";
 +import { definePlugin, useClient, useFormValue, useReferringDocuments } from "sanity";
-+import { Preview, getPublishedId, useColorSchemeValue, useDocumentStore, useSchema } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver";
++import { Preview, getPublishedId, useColorSchemeValue, useDocumentStore } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver"; import { useSchema } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1";
  import { c } from "react/compiler-runtime";
  import { Box, Button, Card, Checkbox, Container, Dialog, Flex, Grid, Inline, Label, Portal, PortalProvider, Spinner, Stack, Switch, Tab, TabList, TabPanel, Text, TextArea, TextInput, Tree, TreeItem, rem, studioTheme, useLayer, useMediaIndex, usePortal } from "@sanity/ui";
  import { createContext, memo, useContext, useEffect, useMemo, useRef, useState } from "react";

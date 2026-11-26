@@ -61,6 +61,8 @@ export interface VisionContext {
   exportSnippets: VisionExportSnippetSettings
   /** The functions library, most recently saved first */
   functions: VisionSavedFunction[]
+  /** The personal saved queries this browser has opened as tabs (see `savedQueries.open`) */
+  openedSavedQueries: string[]
   /** One query runner per open tab, keyed by tab id */
   runners: Record<string, QueryRunnerRef>
   /**
@@ -102,6 +104,12 @@ export type VisionEvent =
    * from that source
    */
   | {type: 'tab.load'; id: string; tab: Omit<VisionTabInit, 'id'>; fetch?: FetchOnOpenSource}
+  /**
+   * Opens personal saved queries as tabs after the open ones, leaving the active tab as it is,
+   * and records their keys so each opens once; a key already recorded is skipped. One without a
+   * `tab` is only recorded: a tab already shows it, or its URL holds no query to show
+   */
+  | {type: 'savedQueries.open'; queries: {key: string; tab: VisionTabInit | null}[]}
   | {type: 'settings.update'; settings: Partial<VisionSettings>}
   | {type: 'historyDiff.update'; settings: Partial<VisionHistoryDiffSettings>}
   | {type: 'ai.update'; settings: Partial<VisionAiSettings>}
@@ -256,6 +264,27 @@ export const visionMachine = setup({
           : context.activeTabId
       enqueue.assign({tabs: remaining, activeTabId, runners})
     }),
+    openSavedQueries: assign(({context, event, spawn}) => {
+      if (event.type !== 'savedQueries.open') {
+        return {}
+      }
+      const recorded = new Set(context.openedSavedQueries)
+      const queries = event.queries.filter(({key}) => {
+        if (recorded.has(key)) return false
+        recorded.add(key)
+        return true
+      })
+      if (queries.length === 0) {
+        return {}
+      }
+      const tabs = queries.flatMap(({tab}) => (tab ? [createTab(context.settings, tab)] : []))
+      return {
+        tabs: [...context.tabs, ...tabs],
+        runners: {...context.runners, ...spawnRunners(spawn, tabs)},
+        openedSavedQueries: [...recorded],
+      }
+    }),
+    // The saved queries this browser opened stay recorded, so clearing does not open them again
     clearStorage: enqueueActions(({context, enqueue}) => {
       for (const runner of Object.values(context.runners)) {
         enqueue.stopChild(runner)
@@ -294,6 +323,7 @@ export const visionMachine = setup({
     response: input.persisted.response,
     exportSnippets: input.persisted.exportSnippets,
     functions: input.persisted.functions,
+    openedSavedQueries: input.persisted.openedSavedQueries,
     runners: spawnRunners(spawn, input.persisted.tabs),
     loadRevisions: {},
     fetchOnOpen: {},
@@ -381,6 +411,7 @@ export const visionMachine = setup({
           event.fetch ? {...context.fetchOnOpen, [event.id]: event.fetch} : context.fetchOnOpen,
       }),
     },
+    'savedQueries.open': {actions: 'openSavedQueries'},
     'settings.update': {
       actions: assign({
         settings: ({context, event}) => ({...context.settings, ...event.settings}),
@@ -604,6 +635,7 @@ export function selectPersistedState(snapshot: VisionSnapshot): VisionPersistedS
     response: snapshot.context.response,
     exportSnippets: snapshot.context.exportSnippets,
     functions: snapshot.context.functions,
+    openedSavedQueries: snapshot.context.openedSavedQueries,
   }
 }
 

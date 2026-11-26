@@ -726,7 +726,6 @@ import type {
   remoteSnapshots,
   removeDupes,
   removeMissingReferences,
-  renderStudio,
   Reported,
   ReportedRegionWithRect,
   ReporterHook,
@@ -827,21 +826,16 @@ import type {
   StructureToolPaneActionHandler,
   StructureToolProvider,
   StructureToolProviderProps,
-  Studio,
   StudioAnnouncementsCard,
   StudioAnnouncementsDialog,
   StudioDiagnostics,
-  StudioDiagnosticsBridge,
-  StudioDiagnosticsBridgeApi,
   StudioFeedbackDialog,
   StudioFeedbackDialogProps,
   StudioFeedbackProvider,
-  StudioLayout,
   StudioLayoutComponent,
   StudioLogo,
   StudioManifest,
   StudioNavbar,
-  StudioProvider,
   StudioToolMenu,
   StudioWorkspaceManifest,
   supportsTouch,
@@ -856,8 +850,6 @@ import type {
   TemplatePermissionsResult,
   TemplatePreview,
   TextInput,
-  TextWithTone,
-  TextWithToneProps,
   TimeAgoOpts,
   TIMELINE_ITEM_I18N_KEY_MAPPING,
   ToastParams,
@@ -1027,7 +1019,6 @@ import type {
   UserStoreOptions,
   useScheduledDraftDocument,
   useScheduledDraftsEnabled,
-  useSchema,
   useSearchMachine,
   UseSearchMachineOptions,
   useSearchMaxFieldDepth,
@@ -3290,10 +3281,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('removeMissingReferences', () => {
     expectTypeOf<typeof removeMissingReferences>().not.toBeNever()
   })
-  test('renderStudio', () => {
-    // This export has 3 declarations, run `TEST_DTS_EXPORTS_DIAGNOSTICS=duplicates pnpm generate:dts-exports` to see where each declaration is coming from
-    expectTypeOf<typeof renderStudio>().toBeFunction()
-  })
   test('Reported', () => {
     expectTypeOf<Reported<any>>().not.toBeNever()
   })
@@ -3594,9 +3581,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('StructureToolProviderProps', () => {
     expectTypeOf<StructureToolProviderProps>().toBeObject()
   })
-  test('Studio', () => {
-    expectTypeOf<typeof Studio>().toBeFunction()
-  })
   test('StudioAnnouncementsCard', () => {
     expectTypeOf<typeof StudioAnnouncementsCard>().toBeFunction()
   })
@@ -3606,12 +3590,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('StudioDiagnostics', () => {
     expectTypeOf<StudioDiagnostics>().toBeObject()
   })
-  test('StudioDiagnosticsBridge', () => {
-    expectTypeOf<typeof StudioDiagnosticsBridge>().toBeFunction()
-  })
-  test('StudioDiagnosticsBridgeApi', () => {
-    expectTypeOf<StudioDiagnosticsBridgeApi>().toBeObject()
-  })
   test('StudioFeedbackDialog', () => {
     expectTypeOf<typeof StudioFeedbackDialog>().toBeFunction()
   })
@@ -3620,9 +3598,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('StudioFeedbackProvider', () => {
     expectTypeOf<typeof StudioFeedbackProvider>().toBeFunction()
-  })
-  test('StudioLayout', () => {
-    expectTypeOf<typeof StudioLayout>().toBeFunction()
   })
   test('StudioLayoutComponent', () => {
     expectTypeOf<typeof StudioLayoutComponent>().toBeFunction()
@@ -3635,9 +3610,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('StudioNavbar', () => {
     expectTypeOf<typeof StudioNavbar>().not.toBeNever()
-  })
-  test('StudioProvider', () => {
-    expectTypeOf<typeof StudioProvider>().toBeFunction()
   })
   test('StudioToolMenu', () => {
     expectTypeOf<typeof StudioToolMenu>().not.toBeNever()
@@ -3680,12 +3652,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('TextInput', () => {
     expectTypeOf<typeof TextInput>().toBeFunction()
-  })
-  test('TextWithTone', () => {
-    expectTypeOf<typeof TextWithTone>().toBeFunction()
-  })
-  test('TextWithToneProps', () => {
-    expectTypeOf<TextWithToneProps>().not.toBeNever()
   })
   test('TimeAgoOpts', () => {
     expectTypeOf<TimeAgoOpts>().toBeObject()
@@ -4194,9 +4160,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useScheduledDraftsEnabled', () => {
     expectTypeOf<typeof useScheduledDraftsEnabled>().toBeFunction()
-  })
-  test('useSchema', () => {
-    expectTypeOf<typeof useSchema>().toBeFunction()
   })
   test('useSearchMachine', () => {
     expectTypeOf<typeof useSearchMachine>().toBeFunction()
