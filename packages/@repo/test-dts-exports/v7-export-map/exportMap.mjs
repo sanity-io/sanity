@@ -33,16 +33,21 @@ export const V7_EXPORT_MAP_REPO_PATH =
 const INTERNALS_ENTRY = './_dangerously_use_private_internals_that_do_not_follow_semver'
 
 /**
- * Entries plugins import from. Other `_`-prefixed entries are wiring between Sanity's own packages,
- * and stylesheets carry no exports. `./desk` is a type-only tombstone stub for the removed desk
- * entry (see `packages/sanity/src/_exports/tombstones/`); plugins must import from
- * `sanity/structure` instead, so it is not part of the dual-support map.
+ * Entries plugins import from: the public entries, the internals entry and its subpaths
+ * (`…/structure`, `…/router`, `…/presentation`). Other `_`-prefixed entries are wiring between
+ * Sanity's own packages, and stylesheets carry no exports. `./desk` is a type-only tombstone stub
+ * for the removed desk entry (see `packages/sanity/src/_exports/tombstones/`); plugins must import
+ * from `sanity/structure` instead, so it is not part of the dual-support map.
  *
  * @param {string} subpath - the key in the package.json `exports` map
  */
 function isPluginFacingEntry(subpath) {
   if (subpath === './package.json' || subpath.endsWith('.css') || subpath === './desk') return false
-  return subpath === INTERNALS_ENTRY || !subpath.startsWith('./_')
+  return (
+    subpath === INTERNALS_ENTRY ||
+    subpath.startsWith(`${INTERNALS_ENTRY}/`) ||
+    !subpath.startsWith('./_')
+  )
 }
 
 /**

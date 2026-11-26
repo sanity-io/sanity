@@ -1,5 +1,5 @@
 diff --git a/dist/index.js b/dist/index.js
-index 84b9f1f85ae0ae930cdb63235e9a46ced26a5d86..dc9a42a900ab0c0a8f458ec7d6b26df1bec57a2b 100644
+index 84b9f1f85ae0ae930cdb63235e9a46ced26a5d86..828331ba79322efdb16ebccaf28f4a686e28d532 100644
 --- a/dist/index.js
 +++ b/dist/index.js
 @@ -3,7 +3,8 @@ import { c } from "react/compiler-runtime";
@@ -12,10 +12,13 @@ index 84b9f1f85ae0ae930cdb63235e9a46ced26a5d86..dc9a42a900ab0c0a8f458ec7d6b26df1
  import { LANGUAGE_FIELD_NAME, internationalizedArray } from "sanity-plugin-internationalized-array";
  import { Badge, Box, Button, Card, Dialog, Flex, Grid, Inline, Spinner, Stack, Text, TextInput, useClickOutsideEvent } from "@sanity/ui";
  import { Feedback, useListeningQuery } from "sanity-plugin-utils";
-@@ -13,6 +14,7 @@ import { uuid } from "@sanity/uuid";
+@@ -12,7 +13,9 @@ import { CopyIcon } from "@sanity/icons/Copy";
+ import { uuid } from "@sanity/uuid";
  import { filter, firstValueFrom } from "rxjs";
  import { useRouter } from "sanity/router";
- import { structureLocaleNamespace, useDocumentPane, usePaneRouter } from "sanity/structure";
+-import { structureLocaleNamespace, useDocumentPane, usePaneRouter } from "sanity/structure";
++import { structureLocaleNamespace, useDocumentPane } from "sanity/structure";
++import { usePaneRouter } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure";
 +import { PatchEvent, Preview, TextWithTone, getDraftId, getVersionFromId, getVersionId, isVersionId, pathToString, useDocumentOperation, useDocumentPairPermissions, useDocumentStore, useEditState, useSchema, useUnstableObserveDocument, useValidationStatus, DEFAULT_STUDIO_CLIENT_OPTIONS, InsufficientPermissionsMessage } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver";
  import { TranslateIcon } from "@sanity/icons/Translate";
  import { Popover } from "@sanity/ui/popover";

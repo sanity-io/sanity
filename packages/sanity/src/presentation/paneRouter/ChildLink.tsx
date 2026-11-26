@@ -1,7 +1,7 @@
 import {type RefAttributes} from 'react'
 import {StateLink} from 'sanity/router'
-import {type ChildLinkProps} from 'sanity/structure'
 
+import {type ChildLinkProps} from '../../structure/components/paneRouter/types'
 import {type PresentationSearchParams} from '../types'
 
 export function ChildLink(

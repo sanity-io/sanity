@@ -8,14 +8,9 @@ export {
   type BaseIntentParams,
   type IntentJsonParams,
   type IntentParameters,
-  type InternalSearchParam,
-  type MatchError,
-  type MatchOk,
-  type MatchResult,
   type NavigateBaseOptions,
   type NavigateOptions,
   type NavigateOptionsWithState,
-  type NextStateOrOptions,
   type Route,
   type RouteChildren,
   type Router,
@@ -28,8 +23,6 @@ export {
 } from '../router/types'
 export {useIntentLink, type UseIntentLinkOptions} from '../router/useIntentLink'
 export {useLink, type UseLinkOptions} from '../router/useLink'
-export {RouterContext, useRouter} from '../router/useRouter'
+export {useRouter} from '../router/useRouter'
 export {useRouterState} from '../router/useRouterState'
 export {useStateLink, type UseStateLinkOptions} from '../router/useStateLink'
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export {type WithRouterProps} from '../router/withRouter'

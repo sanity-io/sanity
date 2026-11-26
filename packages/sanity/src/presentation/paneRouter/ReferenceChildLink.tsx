@@ -1,8 +1,8 @@
 import {type RefAttributes} from 'react'
-import {type ReferenceChildLinkProps} from 'sanity/structure'
 
 import {pathToString} from '../../core/field/paths/helpers'
 import {getPublishedId} from '../../core/util/draftUtils'
+import {type ReferenceChildLinkProps} from '../../structure/components/paneRouter/types'
 import {type PresentationSearchParams} from '../types'
 import {ChildLink} from './ChildLink'
 

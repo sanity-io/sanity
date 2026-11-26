@@ -1,8 +1,8 @@
 diff --git a/dist/index.js b/dist/index.js
-index 5e8678b243572674a3ff90158014a51940b386af..d0d68b2afc92610f9aeda044f9d416fe11a54fc4 100644
+index 5e8678b243572674a3ff90158014a51940b386af..7e3b6a56873fcd3c9245d1681a9e8d3be72a87ba 100644
 --- a/dist/index.js
 +++ b/dist/index.js
-@@ -8,7 +8,8 @@ import { RemoveCircleIcon } from "@sanity/icons/RemoveCircle";
+@@ -8,12 +8,13 @@ import { RemoveCircleIcon } from "@sanity/icons/RemoveCircle";
  import { RestoreIcon } from "@sanity/icons/Restore";
  import { Menu, MenuItem } from "@sanity/ui/menu";
  import { useContext, useEffect, useRef, useState } from "react";
@@ -12,3 +12,10 @@ index 5e8678b243572674a3ff90158014a51940b386af..d0d68b2afc92610f9aeda044f9d416fe
  import { createImageUrlBuilder } from "@sanity/image-url";
  import { dequal } from "dequal/lite";
  import { catchError, distinctUntilChanged } from "rxjs/operators";
+-import { RouterContext } from "sanity/router";
+-import { usePaneRouter } from "sanity/structure";
++import { RouterContext } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router";
++import { usePaneRouter } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure";
+ const DEFAULT_PROPS = { tone: "primary" };
+ function Feedback(props) {
+ 	let $ = c(12), t0;

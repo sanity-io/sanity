@@ -12,6 +12,12 @@ export default defineConfig(() => {
           '_singletons': './src/_exports/_singletons.ts',
           '_dangerously_use_private_internals_that_do_not_follow_semver':
             './src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts',
+          '_dangerously_use_private_internals_that_do_not_follow_semver/presentation':
+            './src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/presentation.ts',
+          '_dangerously_use_private_internals_that_do_not_follow_semver/router':
+            './src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/router.ts',
+          '_dangerously_use_private_internals_that_do_not_follow_semver/structure':
+            './src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/structure.ts',
           // 'sanity' module
           'index': './src/_exports/index.ts',
           'i18n': './src/_exports/i18n.ts',

@@ -1,11 +1,12 @@
 import {render, screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {createSchema} from 'sanity'
-import {type ChildLinkProps, PaneRouterContext, type PaneRouterContextValue} from 'sanity/structure'
+import {PaneRouterContext} from 'sanity/_singletons'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
+import {type ChildLinkProps, type PaneRouterContextValue} from '../../paneRouter/types'
 import {PaneItem} from '../PaneItem'
 
 vi.mock('../../../../core/releases/hooks/useDocumentVersions', () => ({

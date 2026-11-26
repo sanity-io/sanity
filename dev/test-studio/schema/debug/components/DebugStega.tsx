@@ -6,7 +6,7 @@ import {vercelStegaDecodeAll} from '@vercel/stega'
 import {useMemo} from 'react'
 import {type InputProps, isDocumentSchemaType} from 'sanity'
 import {useDocumentPane} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
-import {usePaneRouter} from 'sanity/structure'
+import {usePaneRouter} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure'
 import {styled} from 'styled-components'
 import {Box, VStack} from 'ui5'
 

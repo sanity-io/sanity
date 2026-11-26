@@ -6,7 +6,11 @@ import {
   type DocumentPaneNode,
   StructureToolProvider,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
-import {PaneLayout, PaneRouterContext, type PaneRouterContextValue} from 'sanity/structure'
+import {
+  PaneLayout,
+  PaneRouterContext,
+  type PaneRouterContextValue,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure'
 
 import {DOCUMENT_FORM_ONLY_ID, DOCUMENT_FORM_ONLY_TYPE} from './schema'
 

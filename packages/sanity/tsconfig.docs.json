@@ -36,6 +36,15 @@
       "sanity/_dangerously_use_private_internals_that_do_not_follow_semver": [
         "./src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver.ts"
       ],
+      "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/presentation": [
+        "./src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/presentation.ts"
+      ],
+      "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router": [
+        "./src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/router.ts"
+      ],
+      "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure": [
+        "./src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/structure.ts"
+      ],
       "sanity/cli": ["./src/_exports/cli.ts"],
       "sanity/i18n": ["./src/_exports/i18n.ts"],
       "sanity/media-library": ["./src/_exports/media-library.ts"],
