@@ -99,18 +99,20 @@ Analytics team so downstream dbt models and Looker dashboards stay in sync.
 
 The UI surface an interaction happened on.
 
-| Value                      | Description                                                          |
-| -------------------------- | -------------------------------------------------------------------- |
-| `document_pane`            | The main document editor pane                                        |
-| `array_list`               | An array-of-objects list field                                       |
-| `nested_object_dialog`     | A nested object edit dialog or popover (tree editing)                |
-| `variants_overview`        | The Variants tool's list of variant definitions                      |
-| `variant_detail`           | A variant definition's detail page in the Variants tool              |
-| `navbar_menu`              | A perspective menu in the studio navbar                              |
-| `document_group_inventory` | The document group inventory beside the document pane                |
-| `version_context_menu`     | The context menu of a version, on a version chip or an inventory row |
-| `not_in_variant_banner`    | The document pane banner shown when a variant has no version yet     |
-| `schedule_draft_action`    | The schedule draft document action                                   |
+| Value                      | Description                                                              |
+| -------------------------- | ------------------------------------------------------------------------ |
+| `document_pane`            | The main document editor pane                                            |
+| `array_list`               | An array-of-objects list field                                           |
+| `nested_object_dialog`     | A nested object edit dialog or popover (tree editing)                    |
+| `variants_overview`        | The Variants tool's list of variant definitions                          |
+| `variant_detail`           | A variant definition's detail page in the Variants tool                  |
+| `navbar_menu`              | A perspective menu in the studio navbar                                  |
+| `document_group_inventory` | The document group inventory beside the document pane                    |
+| `version_context_menu`     | The context menu of a version, on a version chip or an inventory row     |
+| `not_in_variant_banner`    | The document pane banner shown when a variant has no version yet         |
+| `schedule_draft_action`    | The schedule draft document action                                       |
+| `document_inspector`       | The document group inventory in the document inspector (Manage versions) |
+| `compare_versions_menu`    | The version picker of the compare versions view                          |
 
 ### `position`
 
@@ -360,19 +362,19 @@ Scheduled drafts (cardinality-one releases) emit their own events so their usage
 
 Whether a workspace enables variants is the `variantsEnabled` field of `Workspace Features Observed`. The events below are logged after their action succeeds, so they count what was done in the Studio rather than what other API clients did. Definitions live in `core/variants/__telemetry__/variants.telemetry.ts`, `core/documentGroupInventory/__telemetry__/documentGroupInventory.telemetry.ts`, `core/perspective/navbar/__telemetry__/perspectiveNavbar.telemetry.ts` and, for the publish event, `structure/documentActions/__telemetry__/documentActions.telemetry.ts`.
 
-| Event                                       | When                                                                                 | Payload                                                                                                                       |
-| ------------------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| `Variant Definition Created`                | A definition is created from the create dialog                                       | `{ location: 'variants_overview' \| 'navbar_menu', conditionCount }`                                                          |
-| `Variant Definition Edited`                 | A definition is saved from the edit dialog                                           | `{ location: 'variants_overview' \| 'variant_detail', titleChanged, descriptionChanged, conditionsChanged, priorityChanged }` |
-| `Variant Definition Deleted`                | A definition is deleted                                                              | `{ location: 'variants_overview' \| 'variant_detail' }`                                                                       |
-| `Variants Tool Filtered`                    | A filter in the Variants tool changes                                                | `{ location: 'variants_overview' \| 'variant_detail', activeFilterCount }`                                                    |
-| `Variant Definition Opened`                 | A definition's detail page opens                                                     | none                                                                                                                          |
-| `Variant Definition Document Opened`        | A document is opened from a definition's documents table                             | `{ bundle: 'published' \| 'drafts' \| 'release' }`                                                                            |
-| `Variant Version Created`                   | A version of a document is created in a variant                                      | `{ location, bundle: 'published' \| 'drafts' \| 'release', fromExistingVersion }`                                             |
-| `Variant Document Published`                | A variant document is published from the document pane                               | `{ previouslyPublished }`                                                                                                     |
-| `Document Group Inventory Version Selected` | A version's row is picked in the document group inventory                            | `{ mode: 'manage' \| 'read_only', bundle: 'published' \| 'drafts' \| 'release' \| 'agent', isVariant }`                       |
-| `Document Group Inventory Version Created`  | A version is created from the inventory                                              | `{ action: 'create_variant' \| 'add_to_release' \| 'copy_to_drafts', isVariant }`                                             |
-| `Perspective Detail Link Clicked`           | The detail link beside a release or variant in a navbar perspective menu is followed | `{ perspective: 'release' \| 'variant' }`                                                                                     |
+| Event                                       | When                                                                                 | Payload                                                                                                                             |
+| ------------------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `Variant Definition Created`                | A definition is created from the create dialog                                       | `{ location: 'variants_overview' \| 'navbar_menu', conditionCount }`                                                                |
+| `Variant Definition Edited`                 | A definition is saved from the edit dialog                                           | `{ location: 'variants_overview' \| 'variant_detail', titleChanged, descriptionChanged, conditionsChanged, priorityChanged }`       |
+| `Variant Definition Deleted`                | A definition is deleted                                                              | `{ location: 'variants_overview' \| 'variant_detail' }`                                                                             |
+| `Variants Tool Filtered`                    | A filter in the Variants tool changes                                                | `{ location: 'variants_overview' \| 'variant_detail', activeFilterCount }`                                                          |
+| `Variant Definition Opened`                 | A definition's detail page opens                                                     | none                                                                                                                                |
+| `Variant Definition Document Opened`        | A document is opened from a definition's documents table                             | `{ bundle: 'published' \| 'drafts' \| 'release' }`                                                                                  |
+| `Variant Version Created`                   | A version of a document is created in a variant                                      | `{ location, bundle: 'published' \| 'drafts' \| 'release', fromExistingVersion }`                                                   |
+| `Variant Document Published`                | A variant document is published from the document pane                               | `{ previouslyPublished }`                                                                                                           |
+| `Document Group Inventory Version Selected` | A version's row is picked in the document group inventory                            | `{ location: 'document_inspector' \| 'compare_versions_menu', bundle: 'published' \| 'drafts' \| 'release' \| 'agent', isVariant }` |
+| `Document Group Inventory Version Created`  | A version is created from the inventory                                              | `{ action: 'create_variant' \| 'add_to_release' \| 'copy_to_drafts', isVariant }`                                                   |
+| `Perspective Detail Link Clicked`           | The detail link beside a release or variant in a navbar perspective menu is followed | `{ perspective: 'release' \| 'variant' }`                                                                                           |
 
 `Variant Version Created` carries one of `document_group_inventory`, `version_context_menu`, `not_in_variant_banner` and `schedule_draft_action` as its `location`, or `document_pane` for any other control in the document pane, such as a custom form component. It is logged by `useVariantDocumentOperations`, which every Studio create path goes through, so a variant version created from the inventory logs both it and `Document Group Inventory Version Created`. Typing into the drafts version of a published variant also creates a variant version, through the document store rather than the create action, and logs neither. Copying a variant version to drafts from a version context menu goes through the copy action and does not log `Variant Version Created` either; from the inventory it logs `Document Group Inventory Version Created` with `copy_to_drafts`.
 

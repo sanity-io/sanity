@@ -46,6 +46,7 @@ import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
 import {
+  type DocumentGroupInventoryLocation,
   DocumentGroupInventoryVersionCreated,
   DocumentGroupInventoryVersionSelected,
   getInventoryVersionTelemetry,
@@ -76,6 +77,8 @@ import {VariantCheckbox} from './VariantSet/VariantCheckbox'
 interface DocumentGroupInventoryBaseProps {
   documentId: string
   documentType: string
+  /** Where the inventory is rendered, reported with the versions picked in it. */
+  location: DocumentGroupInventoryLocation
   /**
    * The id of the document version to mark as currently viewed. Defaults to
    * {@link DocumentGroupInventoryBaseProps.documentId}.
@@ -147,7 +150,7 @@ export interface DocumentGroupInventoryHandle {
 export function DocumentGroupInventory(
   props: DocumentGroupInventoryProps & RefAttributes<DocumentGroupInventoryHandle | null>,
 ) {
-  const {ref, documentId, documentType, selectedId = documentId, onSelect} = props
+  const {ref, documentId, documentType, location, selectedId = documentId, onSelect} = props
   const readOnly = props.mode === 'readOnly'
 
   // Read the manage-only props into locals
@@ -171,6 +174,14 @@ export function DocumentGroupInventory(
   const telemetry = useTelemetry()
   const setVariant = useSetVariant()
   const {createVariantDocument} = useVariantDocumentOperations()
+
+  const handleSelect = (document: VersionInfoDocumentStub) => {
+    telemetry.log(DocumentGroupInventoryVersionSelected, {
+      location,
+      ...getInventoryVersionTelemetry(document),
+    })
+    onSelect(document)
+  }
 
   const filterString = useMemo(
     () =>
@@ -397,7 +408,7 @@ export function DocumentGroupInventory(
               documentType={documentType}
               readOnly={readOnly}
               perspectiveList={perspectiveList}
-              onSelect={onSelect}
+              onSelect={handleSelect}
             />
           )}
         </Body>
@@ -530,20 +541,13 @@ const ReadOnlyVariantRow: ComponentType<{
   isSelected: boolean
 }> = ({variant, inventoryRef, onSelect, isSelected}) => {
   const releases = useSelector(inventoryRef, ({context}) => context.releases)
-  const telemetry = useTelemetry()
 
   return (
     <DocumentGroupEntry
       variant={variant}
       releases={releases}
       isSelected={isSelected}
-      onPrimaryAction={() => {
-        telemetry.log(DocumentGroupInventoryVersionSelected, {
-          mode: 'read_only',
-          ...getInventoryVersionTelemetry(variant.document),
-        })
-        onSelect(variant.document)
-      }}
+      onPrimaryAction={() => onSelect(variant.document)}
     />
   )
 }
@@ -593,12 +597,12 @@ const ManagedVariantRow: ComponentType<{
 
   const clearScheduledDraftPerspective = perspectiveList?.clearScheduledDraftPerspective
   const telemetry = useTelemetry()
-  const versionTelemetry = getInventoryVersionTelemetry(document)
+  const variantId = getDocumentVersionVariantId(document)
 
   const handleCopyToDraftsComplete = () => {
     telemetry.log(DocumentGroupInventoryVersionCreated, {
       action: 'copy_to_drafts',
-      isVariant: versionTelemetry.isVariant,
+      isVariant: variantId !== undefined,
     })
     clearScheduledDraftPerspective?.()
   }
@@ -606,7 +610,7 @@ const ManagedVariantRow: ComponentType<{
   const handleAddVersionComplete = () => {
     telemetry.log(DocumentGroupInventoryVersionCreated, {
       action: 'add_to_release',
-      isVariant: versionTelemetry.isVariant,
+      isVariant: variantId !== undefined,
     })
   }
 
@@ -614,7 +618,7 @@ const ManagedVariantRow: ComponentType<{
 
   const pendingReleases = useVariantPendingReleases({
     documentId: documentGroupId,
-    variantId: getDocumentVersionVariantId(document),
+    variantId,
   })
 
   const {
@@ -652,13 +656,7 @@ const ManagedVariantRow: ComponentType<{
         servedStatus={servedStatus}
         primaryActionRef={setReferenceElement}
         onContextMenu={contextMenuHandler}
-        onPrimaryAction={() => {
-          telemetry.log(DocumentGroupInventoryVersionSelected, {
-            mode: 'manage',
-            ...versionTelemetry,
-          })
-          onSelect(document)
-        }}
+        onPrimaryAction={() => onSelect(document)}
         leading={
           <VariantCheckbox
             data-visible={selectedIds.size !== 0}

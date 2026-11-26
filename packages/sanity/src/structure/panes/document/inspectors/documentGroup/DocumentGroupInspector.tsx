@@ -112,6 +112,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
             key={documentId}
             ref={setInventory}
             mode="manage"
+            location="document_inspector"
             documentId={targetDocumentId}
             documentType={documentType}
             portalElementName={DOCUMENT_PANEL_PORTAL_ELEMENT}

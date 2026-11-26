@@ -4,12 +4,14 @@ import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 
+/**
+ * Where the inventory is rendered: the document inspector (Manage versions), or the version picker
+ * of the compare versions view.
+ */
+export type DocumentGroupInventoryLocation = 'document_inspector' | 'compare_versions_menu'
+
 interface DocumentGroupInventoryVersionSelectedInfo {
-  /**
-   * `manage` is the inventory of the document pane, `read_only` a picker that lists the same
-   * versions, such as the compare versions menu
-   */
-  mode: 'manage' | 'read_only'
+  location: DocumentGroupInventoryLocation
   bundle: InventoryVersionBundle
   /** Whether the version belongs to a content variant */
   isVariant: boolean
