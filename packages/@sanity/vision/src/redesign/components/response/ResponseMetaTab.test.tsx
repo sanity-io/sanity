@@ -341,6 +341,12 @@ describe('ResponseMetaTab', () => {
     expect(screen.getByTestId('vision-meta-payload').textContent).toBe('354 kB')
   })
 
+  it('writes the round trip of a remote answer as finely as the history does', async () => {
+    await renderTab({meta: {...meta(cdnMiss), ms: 9, e2eMs: 12.43}})
+    expect(screen.getByTestId('vision-meta-execution').textContent).toBe('9ms')
+    expect(screen.getByTestId('vision-meta-e2e').textContent).toBe('12.4ms')
+  })
+
   it('leaves the info button out once the CDN answers', async () => {
     await renderTab({
       meta: meta(cdnMiss),

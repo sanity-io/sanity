@@ -350,7 +350,7 @@ export function ResponseMetaTab(props: ResponseMetaTabProps) {
                       {t('result.end-to-end-time-label')}
                     </span>{' '}
                     <span data-testid="vision-meta-e2e">
-                      {meta ? formatDuration(meta.e2eMs) : notApplicable}
+                      {meta ? formatMeasuredDuration(meta.e2eMs) : notApplicable}
                     </span>
                   </Text>
                 )}
