@@ -16,7 +16,6 @@ import {DOCUMENT_SYSTEM_FIELD} from './constants'
 import {createObserveDocument, type ObserveDocumentAPIConfig} from './createObserveDocument'
 import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'
-import {createObservePathsDocumentPair} from './documentPair'
 import {createDocumentIdSetObserver, type DocumentIdSetObserverState} from './liveDocumentIdSet'
 import {createObserveDocumentCount} from './observeDocumentCount'
 import {createObserveFields} from './observeFields'
@@ -24,13 +23,11 @@ import {createObserveVersionDocumentIds} from './observeVersionDocumentIds'
 import {
   type ApiConfig,
   type DocumentStackAvailability,
-  type DraftsModelDocument,
   type DraftsModelDocumentAvailability,
   type ObservePathsFn,
   type PreparedSnapshot,
   type Previewable,
   type PreviewableType,
-  type PreviewPath,
 } from './types'
 
 /**
@@ -94,12 +91,6 @@ export interface DocumentPreviewStore {
     id: string,
     perspectiveStack: StackablePerspective[],
   ) => Observable<DocumentStackAvailability[]>
-
-  unstable_observePathsDocumentPair: <T extends SanityDocument = SanityDocument>(
-    id: string,
-    paths: PreviewPath[],
-    options?: {version?: string},
-  ) => Observable<DraftsModelDocument<T>>
 
   /**
    * Observes a set of document IDs that matches the given groq-filter. The document ids are returned in ascending order and will update in real-time
@@ -264,11 +255,6 @@ export function createDocumentPreviewStore({
     observePaths,
   )
 
-  const observePathsDocumentPair = createObservePathsDocumentPair({
-    observeDocumentPairAvailability,
-    observePaths,
-  })
-
   // @todo: explain why the API is like this now, and that it should not be like this in the future!
 
   return {
@@ -284,6 +270,5 @@ export function createDocumentPreviewStore({
       combineLatest(ids.map((id) => observeDocument(id))),
     unstable_observeDocumentPairAvailability: observeDocumentPairAvailability,
     unstable_observeDocumentStackAvailability: observeDocumentStackAvailability,
-    unstable_observePathsDocumentPair: observePathsDocumentPair,
   }
 }

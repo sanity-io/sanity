@@ -117,26 +117,6 @@ export interface DocumentStackAvailability {
 }
 
 /**
- * @hidden
- * @beta */
-export interface DraftsModelDocument<T extends SanityDocumentLike = SanityDocumentLike> {
-  id: string
-  type: string | null
-  draft: {
-    availability: DocumentAvailability
-    snapshot: T | undefined
-  }
-  published: {
-    availability: DocumentAvailability
-    snapshot: T | undefined
-  }
-  version?: {
-    availability: DocumentAvailability
-    snapshot: T | undefined
-  }
-}
-
-/**
  * Event emitted to notify preview subscribers when they need to refetch a document being previewed
  * - 'connected' means fetch now: the listener has connected, either for the first time or again after a connection loss, when changes may have been missed,
  *   or the listener is down and the subscriber has nothing loaded yet. Either way the subscriber loads from scratch
