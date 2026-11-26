@@ -72,6 +72,8 @@ interface ResultLabelContextValue {
   copy: ResultViewCopy | undefined
   /** `_id` and `_ref` values link to their documents when the result is the workspace's */
   linkDocuments: boolean
+  /** Fires when an `_id`/`_ref` IntentLink is clicked; one instance shared across all labels */
+  onDocumentOpened: () => void
 }
 
 // The inspector takes one component for every label, so what it needs comes through context
@@ -84,8 +86,17 @@ export function ResultView(props: {
 }): React.JSX.Element {
   const {data, datasetName, copy} = props
   const workspaceDataset = useDataset()
+  const telemetry = useVisionTelemetry()
   const linkDocuments = workspaceDataset === datasetName
-  const labelContext = useMemo(() => ({data, copy, linkDocuments}), [copy, data, linkDocuments])
+  const labelContext = useMemo(
+    () => ({
+      data,
+      copy,
+      linkDocuments,
+      onDocumentOpened: () => telemetry.documentOpened('result'),
+    }),
+    [copy, data, linkDocuments, telemetry],
+  )
 
   if (isRecord(data) || Array.isArray(data)) {
     return (
@@ -143,18 +154,14 @@ function CopyNodeButton(props: {copy: ResultViewCopy; data: unknown; keypath: st
 }
 
 function DocumentEditLabel(props: {value: string; isKey: boolean; keypath: string}) {
-  const telemetry = useVisionTelemetry()
+  const context = use(ResultLabelContext)
 
   if (props.isKey || (!props.keypath.endsWith('_id') && !props.keypath.endsWith('_ref'))) {
     return null
   }
 
   return (
-    <IntentLink
-      intent="edit"
-      params={{id: props.value}}
-      onClick={() => telemetry.documentOpened('result')}
-    >
+    <IntentLink intent="edit" params={{id: props.value}} onClick={context?.onDocumentOpened}>
       <LinkIcon />
     </IntentLink>
   )
