@@ -5,7 +5,11 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {collectEmissions} from './__fixtures__/collect.fixture'
 import {BASE_TIME, DRAFT_ID, minutesAfterBase} from './__fixtures__/events.fixture'
 import {createMockClient} from './__fixtures__/mockClient'
-import {editTransaction, type TranslogEntry} from './__fixtures__/transactions.fixture'
+import {
+  deleteTransaction,
+  editTransaction,
+  type TranslogEntry,
+} from './__fixtures__/transactions.fixture'
 import {clearDocumentRevisionCache} from './getDocumentAtRevision'
 import {createEditChanges, getTransactionChains, type TransactionChain} from './getEditChanges'
 
@@ -261,6 +265,25 @@ describe('createEditChanges', () => {
     expect(requests.map(({url}) => url)).toEqual([expect.stringContaining('revision=tx-3')])
   })
 
+  it('rebuilds the edits before the document was deleted from the deletion, without requests', () => {
+    const {_rev, ...contentAtTx3} = AT_TX_3
+    const deletion = deleteTransaction({
+      id: 'tx-delete',
+      timestamp: minutesAfterBase(5),
+      before: contentAtTx3,
+    })
+    const {changesOf, requests} = setup({
+      chains: [live(tx1, tx2, tx3, deletion)],
+      liveDocument: null,
+    })
+
+    const {diff} = changesOf('tx-1', 'tx-2').last()!
+
+    expect(diff?.fields.name).toMatchObject({fromValue: 'Ada', toValue: 'Ada Lovelace'})
+    expect(diff?.fields.role).toMatchObject({fromValue: 'developer', toValue: 'designer'})
+    expect(requests).toHaveLength(0)
+  })
+
   it('emits an error when the document of a chain is missing', async () => {
     const {changesOf} = setup({chains: [live(tx3), closed(tx1, tx2)], liveDocument: AT_TX_3})
 
@@ -285,6 +308,7 @@ describe('getTransactionChains', () => {
         fetched: [[older], [tx1, tx2]],
         // The listener replays its last mutation, which can be older than the fetch or part of it.
         remote: [older, tx2, tx3],
+        remoteStartRev: undefined,
         expanded: [[expanded]],
       }),
     ).toEqual([
@@ -294,9 +318,35 @@ describe('getTransactionChains', () => {
     ])
   })
 
-  it('makes the transactions received the live chain before anything was fetched', () => {
-    expect(getTransactionChains({fetched: [], remote: [tx1], expanded: []})).toEqual([
-      {transactions: [tx1], live: true},
+  it('continues the newest fetch with transactions received from a revision it has', () => {
+    expect(
+      getTransactionChains({
+        fetched: [[tx1, tx2]],
+        remote: [tx3, tx4],
+        remoteStartRev: 'tx-2',
+        expanded: [],
+      }),
+    ).toEqual([{transactions: [tx1, tx2, tx3, tx4], live: true}])
+  })
+
+  it('keeps transactions received apart from a fetch they may not follow', () => {
+    // E.g. the listener reconnected from a revision the fetch doesn't have.
+    expect(
+      getTransactionChains({
+        fetched: [[tx1]],
+        remote: [tx3, tx4],
+        remoteStartRev: 'tx-2',
+        expanded: [],
+      }),
+    ).toEqual([
+      {transactions: [tx3, tx4], live: true},
+      {transactions: [tx1], live: false},
     ])
+  })
+
+  it('makes the transactions received the live chain before anything was fetched', () => {
+    expect(
+      getTransactionChains({fetched: [], remote: [tx1], remoteStartRev: undefined, expanded: []}),
+    ).toEqual([{transactions: [tx1], live: true}])
   })
 })

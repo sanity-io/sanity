@@ -71,7 +71,7 @@ export function createEventsStore({
   const initialEvents = getInitialFetchEvents({client, documentId})
   const {expandedEvents$, expandedTransactions$, frozenEditGroups$, handleExpandEvent} =
     getExpandEvents({client, documentId})
-  const {remoteEdits$, remoteTransactions$, liveDocument$, subscribe} =
+  const {remoteEdits$, remoteTransactions$, remoteTransactionsStartRev$, liveDocument$, subscribe} =
     getRemoteTransactionsSubscription({
       client,
       documentId,
@@ -89,9 +89,12 @@ export function createEventsStore({
   const transactionChains$ = combineLatest([
     initialEvents.editTransactions$,
     remoteTransactions$,
+    remoteTransactionsStartRev$,
     expandedTransactions$,
   ]).pipe(
-    map(([fetched, remote, expanded]) => getTransactionChains({fetched, remote, expanded})),
+    map(([fetched, remote, remoteStartRev, expanded]) =>
+      getTransactionChains({fetched, remote, remoteStartRev, expanded}),
+    ),
     shareReplay({bufferSize: 1, refCount: true}),
   )
 

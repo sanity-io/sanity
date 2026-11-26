@@ -1,6 +1,6 @@
 import {type SanityDocument} from '@sanity/types'
 import {applyPatch} from 'mendoza'
-import {of, Subject} from 'rxjs'
+import {defer, of, startWith, Subject} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {type DocumentRemoteMutationEvent} from '../document/buffered-doc/types'
@@ -137,6 +137,17 @@ function createDraftBackend(draftId: string, snapshots$: Subject<RemoteSnapshotV
     return translog.slice(Math.max(from, 0), to === -1 ? undefined : to + 1)
   })
   vi.stubGlobal('fetch', translogStub.fetch)
+  mockRemoteSnapshots.mockImplementation(() =>
+    defer(() =>
+      snapshots$.pipe(
+        startWith<RemoteSnapshotVersionEvent>({
+          type: 'snapshot',
+          version: 'draft',
+          document: head as SanityDocument,
+        }),
+      ),
+    ),
+  )
 
   return {
     translogCalls: translogStub.calls,
@@ -153,7 +164,6 @@ function createDraftBackend(draftId: string, snapshots$: Subject<RemoteSnapshotV
       })
       const {values, subscription} = collectEmissions(store.eventsObservable$)
       const listener = store.remoteTransactionsListener()
-      snapshots$.next({type: 'snapshot', version: 'draft', document: head as SanityDocument})
       return {
         values,
         requests,
@@ -165,8 +175,19 @@ function createDraftBackend(draftId: string, snapshots$: Subject<RemoteSnapshotV
         },
       }
     },
-    /** Commits `transaction`; `nextEvents` is what the events API lists from then on. */
-    commit(transaction: TranslogEntry, nextEvents: DocumentGroupEvent[] = events) {
+    /** The listener reconnecting: it starts again from a snapshot of the current document. */
+    reconnect() {
+      snapshots$.next({type: 'snapshot', version: 'draft', document: head as SanityDocument})
+    },
+    /**
+     * Commits `transaction`; `nextEvents` is what the events API lists from then on. A listener
+     * that is disconnected never delivers it.
+     */
+    commit(
+      transaction: TranslogEntry,
+      nextEvents: DocumentGroupEvent[] = events,
+      {delivered = true}: {delivered?: boolean} = {},
+    ) {
       translog.push(transaction)
       events = nextEvents
       const effects = transaction.effects[draftId]!
@@ -179,6 +200,7 @@ function createDraftBackend(draftId: string, snapshots$: Subject<RemoteSnapshotV
         _rev: transaction.id,
       }
       head = nextHead
+      if (!delivered) return
       snapshots$.next(
         remoteMutationEvent({
           version: 'draft',
@@ -691,6 +713,52 @@ describe('createEventsStore (integration)', () => {
     expect({requests: pane.requests.length, translog: backend.translogCalls.length}).toEqual(
       fetches,
     )
+    pane.close()
+  })
+
+  it('refetches the edits it missed while the listener was disconnected, and rebuilds them', async () => {
+    const draftId = 'drafts.int-reconnect'
+    const backend = createDraftBackend(draftId, snapshots$)
+    const createdEvent = createDocumentVersionEvent({
+      documentId: 'int-reconnect',
+      versionId: draftId,
+      versionRevisionId: 'tx-create',
+    })
+    const setName = (id: string, minutes: number, name: string, previous: string) => ({
+      ...editTransaction({id, documentId: draftId, timestamp: minutesAfterBase(minutes)}),
+      effects: {[draftId]: {apply: [17, name, 'name'], revert: [17, previous, 'name']}},
+    })
+    backend.commit(createTransaction({id: 'tx-create', documentId: draftId}), [createdEvent])
+    backend.commit(setName('tx-edit-1', 1, 'Ada', 'created'))
+    const pane = backend.open()
+    await vi.waitFor(() =>
+      expect(timeline(pane.values.at(-1)?.events)?.[0]).toMatchObject({id: 'tx-edit-1'}),
+    )
+
+    backend.commit(setName('tx-edit-2', 2, 'Ada Lovelace', 'Ada'), undefined, {delivered: false})
+    backend.reconnect()
+    await vi.waitFor(() =>
+      expect(timeline(pane.values.at(-1)?.events)?.[0]).toMatchObject({
+        id: 'tx-edit-2',
+        transactions: ['tx-edit-2', 'tx-edit-1'],
+      }),
+    )
+
+    const missed = collectEmissions(
+      pane.getEditChanges({fromRevisionId: 'tx-edit-2', toRevisionId: 'tx-edit-2'}),
+    )
+    const group = collectEmissions(
+      pane.getEditChanges({fromRevisionId: 'tx-edit-1', toRevisionId: 'tx-edit-2'}),
+    )
+    expect(missed.values.at(-1)?.diff?.fields.name).toMatchObject({
+      fromValue: 'Ada',
+      toValue: 'Ada Lovelace',
+    })
+    expect(group.values.at(-1)?.diff?.fields.name).toMatchObject({
+      fromValue: 'created',
+      toValue: 'Ada Lovelace',
+    })
+    expect(pane.requests.filter(({tag}) => tag === 'get-document-revision')).toHaveLength(0)
     pane.close()
   })
 

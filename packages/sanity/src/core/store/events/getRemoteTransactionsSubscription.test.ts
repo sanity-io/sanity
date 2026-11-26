@@ -26,6 +26,15 @@ vi.mock('../document/document-pair/remoteSnapshots', () => ({
 
 const mockRemoteSnapshots = vi.mocked(remoteSnapshots)
 
+/** The listener's snapshot of the draft at `rev`, as it starts or reconnects. */
+function snapshotAt(rev: string): never {
+  return {
+    type: 'snapshot',
+    version: 'draft',
+    document: {_id: DRAFT_ID, _type: 'testDocument', _rev: rev},
+  } as never
+}
+
 describe('classifyRemoteMutation', () => {
   const createdEffects = effectPair({before: null, after: {_id: DRAFT_ID}})
   const deletedEffects = effectPair({before: {_id: DRAFT_ID}, after: null})
@@ -254,6 +263,34 @@ describe('getRemoteTransactionsSubscription', () => {
     expect(transactionsWhenMoved.at(-1)).toEqual(['tx-remote-1'])
     moves.unsubscribe()
     documentsSubscription.unsubscribe()
+    subscription.unsubscribe()
+  })
+
+  it('refetches and clears when the listener reconnects, and tells where the transactions start', () => {
+    const {remoteTransactions$, remoteTransactionsStartRev$, subscription} = setup(DRAFT_ID)
+    const {values: startRevs, subscription: startRevsSubscription} = collectEmissions(
+      remoteTransactionsStartRev$,
+    )
+
+    snapshots$.next(snapshotAt('tx-initial'))
+    snapshots$.next(remoteMutationEvent({transactionId: 'tx-edit'}))
+    expect(onRefetch).not.toHaveBeenCalled()
+    expect(remoteTransactions$.value.map((tx) => tx.id)).toEqual(['tx-edit'])
+
+    // Mutations made while the listener was disconnected never arrive.
+    snapshots$.next(snapshotAt('tx-reconnected'))
+    expect(onRefetch).toHaveBeenCalledTimes(1)
+    expect(remoteTransactions$.value).toEqual([])
+
+    snapshots$.next(
+      remoteMutationEvent({
+        transactionId: 'tx-delete',
+        effects: effectPair({before: {_id: DRAFT_ID}, after: null}),
+      }),
+    )
+    expect(startRevs).toEqual([undefined, 'tx-initial', 'tx-reconnected', 'tx-delete'])
+
+    startRevsSubscription.unsubscribe()
     subscription.unsubscribe()
   })
 

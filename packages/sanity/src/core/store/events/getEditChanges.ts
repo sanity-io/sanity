@@ -16,6 +16,7 @@ import {
 import {type ObjectDiff} from '../../field/types'
 import {calculateDiff} from './calculateDiff'
 import {getDocumentAtRevision} from './getDocumentAtRevision'
+import {getEffectState} from './getEditEvents'
 
 /** @internal */
 export interface EditChanges {
@@ -56,19 +57,26 @@ const LOADING: EditChanges = {loading: true, diff: null, error: null}
 const SYSTEM_FIELDS = new Set(['_id', '_type', '_createdAt', '_updatedAt'])
 
 /**
- * The chains of the transactions the events store has: the live chain first (the newest fetch for
- * edit events, followed by the remote transactions newer than it), then the fetches for expanded
- * events and the older fetches for edit events.
+ * The chains of the transactions the events store has: the live chain first, then the fetches for
+ * expanded events and the older fetches for edit events.
+ *
+ * The live chain is the newest fetch for edit events followed by the remote transactions newer than
+ * it, when they are known to follow it: they continue from a revision the fetch has
+ * (`remoteStartRev`), or the fetch has some of them already. Otherwise transactions may be missing
+ * between them, so the remote transactions are the live chain on their own and the fetch is
+ * another chain.
  *
  * @internal
  */
 export function getTransactionChains({
   fetched,
   remote,
+  remoteStartRev,
   expanded,
 }: {
   fetched: TransactionLogEventWithEffects[][]
   remote: TransactionLogEventWithEffects[]
+  remoteStartRev: string | undefined
   expanded: TransactionLogEventWithEffects[][]
 }): TransactionChain[] {
   const newestFetch = fetched.at(-1) ?? []
@@ -80,10 +88,16 @@ export function getTransactionChains({
     (transaction) =>
       !fetchedIds.has(transaction.id) && Date.parse(transaction.timestamp) >= fetchedUntil,
   )
+  const followsFetch =
+    received.length === 0 ||
+    (remoteStartRev !== undefined && fetchedIds.has(remoteStartRev)) ||
+    remote.some((transaction) => fetchedIds.has(transaction.id))
+  const others = [...(followsFetch ? [] : [newestFetch]), ...expanded, ...fetched.slice(0, -1)]
   return [
-    {transactions: [...newestFetch, ...received], live: true},
-    ...expanded.map((transactions) => ({transactions, live: false})),
-    ...fetched.slice(0, -1).map((transactions) => ({transactions, live: false})),
+    {transactions: followsFetch ? [...newestFetch, ...received] : received, live: true},
+    ...others
+      .filter((transactions) => transactions.length > 0)
+      .map((transactions) => ({transactions, live: false})),
   ]
 }
 
@@ -113,6 +127,19 @@ function getLiveAnchor(
   if (!chain.live || !liveDocument) return undefined
   const index = chain.transactions.findIndex(({id}) => id === liveDocument._rev)
   return index === -1 ? undefined : {index, content: withoutRev(liveDocument)}
+}
+
+/**
+ * The first transaction deleting the document from the end of a range on: there is no document
+ * after it, and its revert has all of the document before it, so it anchors the range for free.
+ */
+function getDeletionAnchor({chain, toIndex}: ChainRange, documentId: string): Anchor | undefined {
+  for (let index = toIndex; index < chain.transactions.length; index++) {
+    if (getEffectState(chain.transactions[index].effects[documentId]) === 'deleted') {
+      return {index, content: null}
+    }
+  }
+  return undefined
 }
 
 /**
@@ -149,10 +176,11 @@ function omitSystemFields(diff: ObjectDiff): ObjectDiff {
  *
  * The anchor of the live chain is the live document (`liveDocument$`), whose revision is one of its
  * transactions, so the edits of the document as it is now and the ones arriving live need no
- * request: the changes wait for the live document rather than fetching it. Other chains (an
- * expanded publish, a fetch before the document was deleted), and the live chain when the live
- * document isn't the result of one of its transactions, are anchored by the document at their
- * newest transaction, fetched once and shared by all their ranges.
+ * request: the changes wait for the live document rather than fetching it. A transaction deleting
+ * the document after a range anchors it too, as there is no document after it. Other chains (an
+ * expanded publish, an older fetch), and the live chain when the live document isn't the result of
+ * one of its transactions, are anchored by the document at their newest transaction, fetched once
+ * and shared by all their ranges.
  *
  * The content rebuilt before each transaction is kept, for the transactions the store still has,
  * so ranges sharing transactions (a group and the transactions listed under it) rebuild nothing
@@ -259,7 +287,10 @@ export function createEditChanges({
         const range = findRange(chains, fromRevisionId, toRevisionId)
         if (!range || (range.chain.live && liveDocument === undefined)) return undefined
         forgetUnknownTransactions(chains)
-        return {range, anchor: getLiveAnchor(range.chain, liveDocument)}
+        return {
+          range,
+          anchor: getLiveAnchor(range.chain, liveDocument) ?? getDeletionAnchor(range, documentId),
+        }
       }),
       filter((resolved) => resolved !== undefined),
       take(1),
