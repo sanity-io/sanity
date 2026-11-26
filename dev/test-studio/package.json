@@ -50,7 +50,7 @@
     "sanity": "workspace:*",
     "sanity-plugin-asset-source-unsplash": "^7.0.31",
     "sanity-plugin-internationalized-array": "^5.3.10",
-    "sanity-plugin-media": "^6.6.4",
+    "sanity-plugin-media": "^6.6.5",
     "styled-components": "catalog:",
     "ui5": "catalog:"
   },
