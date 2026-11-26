@@ -63,6 +63,36 @@ interface VariantVersionCreatedInfo {
   fromExistingVersion: boolean
 }
 
+/** @internal */
+export interface VariantConditionsLoadedInfo {
+  /** `static` is a fixed list in the config, `function` a callback that returns the list */
+  source: 'static' | 'function'
+  /** Whether the callback returned a promise. Always `false` for a fixed list */
+  async: boolean
+  outcome: 'ready' | 'error' | 'timeout'
+  /** From calling the callback until its list was ready or it failed. `0` for a fixed list */
+  durationMs: number
+  /** Valid condition keys in the list, and the values they allow. `0` unless `ready` */
+  conditionCount: number
+  valueCount: number
+  /** Whether the callback called the `getClient` it was given */
+  usedSanityClient: boolean
+  /**
+   * Hostnames of the requests made while the callback ran, other than Sanity's, Sentry's and the
+   * studio's own. Taken from the browser's resource timing entries, so a request something else
+   * made at the same time is included too.
+   */
+  endpoints: string[]
+}
+
+/** When the conditions of a variant type are loaded from `beta.variants.types` */
+export const VariantConditionsLoaded = defineEvent<VariantConditionsLoadedInfo>({
+  name: 'Variant Conditions Loaded',
+  version: 1,
+  description:
+    'The Studio loaded the conditions of a variant type from the config, a fixed list or a callback',
+})
+
 /** When a variant definition is successfully created */
 export const VariantDefinitionCreated = defineEvent<VariantDefinitionCreatedInfo>({
   name: 'Variant Definition Created',

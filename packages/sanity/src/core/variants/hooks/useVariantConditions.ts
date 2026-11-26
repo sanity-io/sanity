@@ -1,7 +1,17 @@
-import {useMemo} from 'react'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {useCallback, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {combineLatest, defer, type Observable, of, Subject} from 'rxjs'
-import {catchError, map, shareReplay, startWith, switchMap, timeout} from 'rxjs/operators'
+import {
+  catchError,
+  finalize,
+  map,
+  shareReplay,
+  startWith,
+  switchMap,
+  tap,
+  timeout,
+} from 'rxjs/operators'
 
 import {
   type VariantConditionMap,
@@ -15,6 +25,10 @@ import {memoize} from '../../store/document/utils/createMemoizer'
 import {useWorkspace} from '../../studio/workspace'
 import {getPrintableType} from '../../util/getPrintableType'
 import {isRecord} from '../../util/isRecord'
+import {
+  VariantConditionsLoaded,
+  type VariantConditionsLoadedInfo,
+} from '../__telemetry__/variants.telemetry'
 import {
   type ConditionMismatch,
   getVariantConditionMismatches,
@@ -30,6 +44,7 @@ import {
   isVariantTypeKey,
   variantTypeLabel,
 } from '../util/variantType'
+import {getStaticConditionsLoadInfo, trackConditionsLoad} from './trackConditionsLoad'
 
 /**
  * @internal
@@ -65,6 +80,8 @@ const RESOLVE_VARIANT_CONDITIONS_TIMEOUT_MS = 30_000
 type ConditionsResolver = Exclude<VariantConditions, unknown[]>
 type TypesResolver = Exclude<VariantTypesConfig, {variant?: VariantTypeConfig}>
 
+type ReportConditionsLoaded = (info: VariantConditionsLoadedInfo) => void
+
 const LOADING_CONDITIONS: UseVariantConditionsResult = {mode: 'mapped', status: 'loading'}
 const LOADING_TYPES: UseVariantTypesResult = {status: 'loading'}
 const NOOP = () => undefined
@@ -78,6 +95,7 @@ let nextStaticConditionId = 0
 interface ResolverCacheScope {
   context: VariantConditionsContext
   workspaceName: string
+  report: ReportConditionsLoaded
 }
 
 function resolverIdentity(resolver: ConditionsResolver | TypesResolver): number {
@@ -156,6 +174,15 @@ function toConditionsError(
   return {mode: 'mapped', status: 'error', error, retry}
 }
 
+function isPromiseLike(value: unknown): value is PromiseLike<unknown> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'then' in value &&
+    typeof value.then === 'function'
+  )
+}
+
 function isConditionsValue(value: unknown): value is VariantConditions {
   return Array.isArray(value) || typeof value === 'function'
 }
@@ -202,26 +229,39 @@ function resolveConditions$(
   resolver: ConditionsResolver,
   context: VariantConditionsContext,
   retry: () => void,
+  report: ReportConditionsLoaded,
 ): Observable<UseVariantConditionsResult> {
-  return defer(() => Promise.resolve(resolver(context))).pipe(
-    timeout({first: RESOLVE_VARIANT_CONDITIONS_TIMEOUT_MS}),
-    map((value) => toReadyConditions(value, context.type)),
-    catchError((resolveError: unknown) => of(toConditionsError(resolveError, retry, context.type))),
-    startWith(LOADING_CONDITIONS),
-  )
+  return defer(() => {
+    const load = trackConditionsLoad(context)
+
+    return defer(() => {
+      const value = resolver(load.context)
+      load.setAsync(isPromiseLike(value))
+      return Promise.resolve(value)
+    }).pipe(
+      timeout({first: RESOLVE_VARIANT_CONDITIONS_TIMEOUT_MS}),
+      map((value) => toReadyConditions(value, context.type)),
+      tap((result) => report(load.finish(result.definitions))),
+      catchError((resolveError: unknown) => {
+        report(load.finish(undefined, resolveError))
+        return of(toConditionsError(resolveError, retry, context.type))
+      }),
+      finalize(load.stop),
+    )
+  }).pipe(startWith(LOADING_CONDITIONS))
 }
 
 const getResolverResult$ = memoize(function getResolverResult$(
   resolver: ConditionsResolver,
   scope: ResolverCacheScope,
 ): Observable<UseVariantConditionsResult> {
-  const {context} = scope
+  const {context, report} = scope
   const retry$ = new Subject<void>()
   const retry = () => retry$.next()
 
   return retry$.pipe(
     startWith(undefined),
-    switchMap(() => resolveConditions$(resolver, context, retry)),
+    switchMap(() => resolveConditions$(resolver, context, retry, report)),
     shareReplay({bufferSize: 1, refCount: false}),
   )
 }, resolverKey)
@@ -233,29 +273,37 @@ const getResolverResult$ = memoize(function getResolverResult$(
 const getStaticResult$ = memoize(function getStaticResult$(
   conditions: readonly VariantConditionMap[],
   type: string,
+  report: ReportConditionsLoaded,
 ): Observable<UseVariantConditionsResult> {
-  try {
-    return of(toReadyConditions(conditions, type))
-  } catch (error) {
-    return of(toConfigError(error, type))
-  }
+  return defer(() => {
+    let result: UseVariantConditionsResult
+    try {
+      result = toReadyConditions(conditions, type)
+      report(getStaticConditionsLoadInfo(result.definitions))
+    } catch (error) {
+      result = toConfigError(error, type)
+      report(getStaticConditionsLoadInfo(undefined))
+    }
+    return of(result)
+  }).pipe(shareReplay({bufferSize: 1, refCount: false}))
 }, staticConditionsKey)
 
 function getVariantConditions$(
   conditions: VariantConditions | undefined,
   context: VariantConditionsContext,
   workspaceName: string,
+  report: ReportConditionsLoaded,
 ): Observable<UseVariantConditionsResult> {
   if (typeof conditions === 'undefined') {
     return of({mode: 'freeform'})
   }
 
   if (Array.isArray(conditions)) {
-    return getStaticResult$(conditions, context.type)
+    return getStaticResult$(conditions, context.type, report)
   }
 
   if (typeof conditions === 'function') {
-    return getResolverResult$(conditions, {context, workspaceName})
+    return getResolverResult$(conditions, {context, workspaceName, report})
   }
 
   return of({
@@ -315,15 +363,16 @@ function resolveTypeEntries$(
   record: Record<string, VariantTypeConfig>,
   context: VariantTypeContext,
   workspaceName: string,
+  report: ReportConditionsLoaded,
 ): Observable<UseVariantTypesResult> {
   const entries = Object.entries(record)
 
   if (entries.length === 0) {
-    return resolveTypeEntries$(defaultVariantTypesRecord(), context, workspaceName)
+    return resolveTypeEntries$(defaultVariantTypesRecord(), context, workspaceName, report)
   }
 
   const streams = entries.map(([key, config]) =>
-    getVariantConditions$(config.conditions, {...context, type: key}, workspaceName).pipe(
+    getVariantConditions$(config.conditions, {...context, type: key}, workspaceName, report).pipe(
       map((conditions): ResolvedVariantType => ({
         key,
         label: variantTypeLabel(key, config.label),
@@ -342,6 +391,7 @@ function resolveTypesFunction$(
   resolver: TypesResolver,
   context: VariantTypeContext,
   workspaceName: string,
+  report: ReportConditionsLoaded,
 ): Observable<UseVariantTypesResult> {
   const retry$ = new Subject<void>()
   const retry = () => retry$.next()
@@ -351,7 +401,9 @@ function resolveTypesFunction$(
     switchMap(() =>
       defer(() => Promise.resolve(resolver(context))).pipe(
         timeout({first: RESOLVE_VARIANT_CONDITIONS_TIMEOUT_MS}),
-        switchMap((value) => resolveTypeEntries$(readTypesRecord(value), context, workspaceName)),
+        switchMap((value) =>
+          resolveTypeEntries$(readTypesRecord(value), context, workspaceName, report),
+        ),
         catchError((resolveError: unknown) => {
           const error = toError(resolveError)
           console.error('[sanity] Failed to resolve `beta.variants.types`', error)
@@ -365,9 +417,9 @@ function resolveTypesFunction$(
 
 const getTypesResolverResult$ = memoize(function getTypesResolverResult$(
   resolver: TypesResolver,
-  scope: {context: VariantTypeContext; workspaceName: string},
+  scope: {context: VariantTypeContext; workspaceName: string; report: ReportConditionsLoaded},
 ): Observable<UseVariantTypesResult> {
-  return resolveTypesFunction$(resolver, scope.context, scope.workspaceName).pipe(
+  return resolveTypesFunction$(resolver, scope.context, scope.workspaceName, scope.report).pipe(
     shareReplay({bufferSize: 1, refCount: false}),
   )
 }, typesResolverKey)
@@ -380,16 +432,17 @@ function getVariantTypes$(
   types: VariantTypesConfig | undefined,
   context: VariantTypeContext,
   workspaceName: string,
+  report: ReportConditionsLoaded,
 ): Observable<UseVariantTypesResult> {
   if (typeof types === 'undefined') {
-    return resolveTypeEntries$(defaultVariantTypesRecord(), context, workspaceName)
+    return resolveTypeEntries$(defaultVariantTypesRecord(), context, workspaceName, report)
   }
 
   if (isTypesResolver(types)) {
-    return getTypesResolverResult$(types, {context, workspaceName})
+    return getTypesResolverResult$(types, {context, workspaceName, report})
   }
 
-  return resolveTypeEntries$(readTypesRecord(types), context, workspaceName)
+  return resolveTypeEntries$(readTypesRecord(types), context, workspaceName, report)
 }
 
 function variantTypeContext(workspace: {
@@ -413,11 +466,18 @@ const VARIANT_TYPES_LOADING = {status: 'loading'} as const
  */
 export function useVariantTypes(): UseVariantTypesResult {
   const workspace = useWorkspace()
+  const telemetry = useTelemetry()
   const types = workspace.beta?.variants?.types
   const context = useMemo(() => variantTypeContext(workspace), [workspace])
+  // The resolves are cached per workspace and outlive the hook, so they report through the
+  // logger of the first hook that asked for them
+  const reportConditionsLoaded = useCallback<ReportConditionsLoaded>(
+    (info) => telemetry.log(VariantConditionsLoaded, info),
+    [telemetry],
+  )
   const result$ = useMemo(
-    () => getVariantTypes$(types, context, workspace.name),
-    [context, types, workspace.name],
+    () => getVariantTypes$(types, context, workspace.name, reportConditionsLoaded),
+    [context, reportConditionsLoaded, types, workspace.name],
   )
 
   return useObservable(result$, VARIANT_TYPES_LOADING)
