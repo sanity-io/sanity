@@ -38,7 +38,7 @@ vi.stubGlobal(
 )
 
 const theme = buildTheme()
-const EXPERIENCE: VisionExperience = {layout: 'columns', switchToClassic: () => {}}
+const EXPERIENCE: VisionExperience = {layout: 'columns'}
 
 /** Renders the test id of the boundary element its overlays would be kept inside */
 function BoundaryProbe({testId}: {testId: string}) {

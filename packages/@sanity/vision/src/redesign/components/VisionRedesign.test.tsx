@@ -576,7 +576,6 @@ function renderRedesign(
   const mockClient = createMockClient()
   sanityMocks.setPerspective(perspective)
   sanityMocks.useClient.mockReturnValue(mockClient.client)
-  const onSwitchToClassic = vi.fn()
 
   // Inside an Activity boundary, as the studio keeps recent tools mounted (`reactActivityMode`)
   const ui = (mode: 'visible' | 'hidden') => (
@@ -589,7 +588,6 @@ function renderRedesign(
               datasets={DEFAULTS.datasets}
               projectId={PROJECT_ID}
               defaultDataset="test"
-              onSwitchToClassic={onSwitchToClassic}
             />
           </Activity>
         </LayerProvider>
@@ -601,7 +599,6 @@ function renderRedesign(
   return {
     ...view,
     ...mockClient,
-    onSwitchToClassic,
     setPerspective: (next: PerspectiveContextValue) => {
       act(() => sanityMocks.setPerspective(next))
     },
@@ -873,10 +870,11 @@ describe('VisionRedesign', () => {
   })
 
   it('turns Live on and off without fetching, with Fetch still fetching meanwhile', async () => {
-    const {fetchCalls} = renderRedesign()
+    const {fetchCalls, liveEvents} = renderRedesign()
     const actions = screen.getByTestId('vision-query-actions')
     const live = within(actions).getByTestId('vision-auto-refetch')
     expect(text(live)).toBe('vision.live.button')
+    expect(live.hasAttribute('data-live-status')).toBe(false)
     // Like Fetch, it needs something to fetch
     expect(isDisabled(live)).toBe(true)
     // It replaces the menu item
@@ -888,6 +886,12 @@ describe('VisionRedesign', () => {
     // Turning it on only starts listening: nothing is fetched and the result stays empty
     fireEvent.click(live)
     expect(text(live)).toBe('vision.live.stop')
+    // Stop live shows at once, while the subscription is still connecting
+    await waitFor(() => expect(live.getAttribute('data-live-status')).toBe('connecting'))
+    act(() => {
+      liveEvents.next({type: 'welcome'})
+    })
+    expect(live.getAttribute('data-live-status')).toBe('connected')
     await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(true))
     await new Promise((resolve) => setTimeout(resolve, 50))
     expect(fetchCalls).toHaveLength(0)
@@ -906,6 +910,7 @@ describe('VisionRedesign', () => {
     // Turning it off fetches nothing either
     fireEvent.click(live)
     expect(text(live)).toBe('vision.live.button')
+    await waitFor(() => expect(live.hasAttribute('data-live-status')).toBe(false))
     await waitFor(() => expect(getStoredState().tabs[0].autoRefetch).toBe(false))
     await new Promise((resolve) => setTimeout(resolve, 50))
     expect(fetchCalls).toHaveLength(1)
@@ -941,7 +946,6 @@ describe('VisionRedesign', () => {
     expect(queryEditor).toBeTruthy()
     const header = within(queryEditor).getByText('query.label')
     expect(header.closest('[data-ui="Label"]')?.getAttribute('aria-label')).toBe('query.label')
-    expect(within(queryEditor).queryByText('vision.query.label')).toBeNull()
     expect(visionLocaleStrings['query.label']).toBe('Query')
     expect(screen.getByTestId('vision-params-editor')).toBeTruthy()
     expect(screen.queryByTestId('vision-options')).toBeNull()
@@ -3910,9 +3914,6 @@ describe('VisionRedesign', () => {
     fireEvent.click(within(shownTab()).getByTestId('vision-auto-refetch'))
     await waitFor(() => expect(liveSubscriptionCount()).toBe(1))
     expect(fetchCalls).toHaveLength(1)
-    // The bottom bar's Stop live is what shows the tab is live; neither the tab nor the result
-    // carries a badge for it
-    expect(screen.queryByText('vision.live.active')).toBeNull()
 
     respondWith({result: [{title: 'Updated'}], ms: 3, syncTags: ['s1:def']})
     act(() => {
@@ -3961,7 +3962,6 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(fetchCalls).toHaveLength(4))
     await waitFor(() => expect(text(screen.getByTestId('result-json'))).toContain('Caught up'))
     expect(liveSubscriptionCount()).toBe(1)
-    expect(screen.queryByText('vision.live.active')).toBeNull()
     expect(within(shownTab()).getByTestId('vision-auto-refetch').textContent).toContain(
       'vision.live.stop',
     )
@@ -4196,7 +4196,6 @@ describe('VisionRedesign', () => {
       expect(writeText).toHaveBeenCalledWith('*[_type == "author"]')
       expect(text(copy())).toBe('')
       expect(copy().querySelector('[data-sanity-icon="checkmark"]')).not.toBeNull()
-      expect(screen.queryByText('vision.query.copied')).toBeNull()
       // The params' Copy button is not the one that copied
       expect(within(shownTab()).getByTestId('vision-params-copy').getAttribute('aria-label')).toBe(
         'vision.params.copy',
@@ -5200,7 +5199,7 @@ describe('VisionRedesign', () => {
   )
 
   it('clears the storage from the settings dialog', {timeout: 15_000}, async () => {
-    const {onSwitchToClassic} = renderRedesign()
+    renderRedesign()
     typeQuery('*[_type == "author"]')
     fireEvent.click(screen.getByTestId('vision-new-tab'))
     await waitFor(() => expect(getStoredState().tabs).toHaveLength(2))
@@ -5217,7 +5216,9 @@ describe('VisionRedesign', () => {
       expect(stored.tabs).toHaveLength(1)
       expect(stored.tabs[0].query).toBe('')
     })
-    expect(onSwitchToClassic).toHaveBeenCalledTimes(1)
+    // The tool stays open, with the drawer closed
+    expect(screen.getByTestId('vision-root')).toBeTruthy()
+    expect(screen.queryByTestId('vision-drawer-settings')).toBeNull()
   })
 
   it('leaves a saved query alone while a share or unshare is moving it', async () => {
@@ -5277,19 +5278,6 @@ describe('VisionRedesign', () => {
     fireEvent.mouseEnter(screen.getByTestId('vision-sidebar-saved'))
     await act(() => new Promise((resolve) => setTimeout(resolve, 50)))
     expect(tooltip('vision.sidebar.saved-queries')).toBeDefined()
-  })
-
-  it('switches back to the classic tool from the sidebar and from the settings dialog', async () => {
-    const {onSwitchToClassic} = renderRedesign()
-
-    fireEvent.click(screen.getByTestId('vision-sidebar-classic'))
-    expect(onSwitchToClassic).toHaveBeenCalledTimes(1)
-
-    fireEvent.click(screen.getByTestId('vision-sidebar-settings'))
-    fireEvent.click(await screen.findByTestId('vision-settings-classic'))
-    expect(onSwitchToClassic).toHaveBeenCalledTimes(2)
-    // Switching back keeps the stored tabs for the next visit
-    await waitFor(() => expect(getStoredState().tabs).toHaveLength(1))
   })
 
   it('sets the fields hidden from history diffs in the settings', async () => {

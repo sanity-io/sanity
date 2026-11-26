@@ -7,14 +7,6 @@ import {parseApiQueryString} from './parseApiQueryString'
 import {validateApiVersion} from './validateApiVersion'
 
 /**
- * Matches Content Lake query and listen URLs on any domain (custom CDN domains included),
- * capturing the API version, the dataset and the query string. Not anchored: the classic tool's
- * paste handler has always picked the URL out of the pasted text with it. `parseQueryUrl` is
- * stricter and takes the whole text to be the URL.
- */
-export const SANITY_QUERY_URL = /\/(vX|v1|v\d{4}-\d\d-\d\d)\/.*?(?:query|listen)\/(.*?)\?(.*)/
-
-/**
  * The path of a query or listen URL: the API version, whole segments in between (`data`), the
  * `query` or `listen` segment and the dataset
  */

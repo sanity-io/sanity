@@ -1,16 +1,8 @@
-import {isPlainObject} from './isPlainObject'
-
-/** Every `localStorage` key Vision writes (classic and redesign alike) starts with this prefix */
+/** Every `localStorage` key Vision writes starts with this prefix */
 export const VISION_STORAGE_KEY_PREFIX = 'sanityVision:'
 
 const hasLocalStorage = supportsLocalStorage()
 const clearListeners = new Set<() => void>()
-
-export interface LocalStorageish {
-  get: <T>(key: string, defaultVal: T) => T
-  set: <T>(key: string, value: T) => T
-  merge: <T>(props: T) => T
-}
 
 /** The `localStorage` instance when it is available and writable, `undefined` otherwise */
 export function getStorage(): Storage | undefined {
@@ -40,52 +32,6 @@ export function clearLocalStorage() {
   }
   // In-memory copies exist even without a storage backend, so they are told either way
   clearListeners.forEach((listener) => listener())
-}
-
-export function getLocalStorage(namespace: string): LocalStorageish {
-  const storageKey = `${VISION_STORAGE_KEY_PREFIX}${namespace}`
-  let loadedState: Record<string, unknown> | null = null
-
-  return {get, set, merge}
-
-  function get<T>(key: string, defaultVal: T): T {
-    const state = ensureState()
-    return typeof state[key] === 'undefined' ? defaultVal : (state[key] as T)
-  }
-
-  function set<T>(key: string, value: T): T {
-    const state = ensureState()
-    state[key] = value
-    localStorage.setItem(storageKey, JSON.stringify(loadedState))
-    return value
-  }
-
-  function merge<T>(props: T): T {
-    const state = {...ensureState(), ...props}
-    localStorage.setItem(storageKey, JSON.stringify(state))
-    return state
-  }
-
-  function ensureState(): Record<string, unknown> {
-    if (loadedState === null) {
-      loadedState = loadState()
-    }
-
-    return loadedState
-  }
-
-  function loadState() {
-    if (!hasLocalStorage) {
-      return {}
-    }
-
-    try {
-      const stored = JSON.parse(localStorage.getItem(storageKey) || '{}')
-      return isPlainObject(stored) ? stored : {}
-    } catch {
-      return {}
-    }
-  }
 }
 
 function supportsLocalStorage() {
