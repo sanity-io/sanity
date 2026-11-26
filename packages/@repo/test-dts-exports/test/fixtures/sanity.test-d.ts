@@ -239,6 +239,7 @@ import type {
   DefineArrayMemberBase,
   defineAssetAspect,
   defineConfig,
+  defineDocumentFieldAction,
   defineDocumentInspector,
   defineField,
   definePlugin,
@@ -1702,6 +1703,9 @@ describe('sanity', () => {
   })
   test('defineConfig', () => {
     expectTypeOf<typeof defineConfig>().toBeFunction()
+  })
+  test('defineDocumentFieldAction', () => {
+    expectTypeOf<typeof defineDocumentFieldAction>().toBeFunction()
   })
   test('defineDocumentInspector', () => {
     expectTypeOf<typeof defineDocumentInspector>().toBeFunction()

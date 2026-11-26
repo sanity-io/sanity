@@ -13,6 +13,7 @@ exports[`exports snapshot 1`] = `
     "defineArrayMember": "function",
     "defineAssetAspect": "function",
     "defineConfig": "function",
+    "defineDocumentFieldAction": "function",
     "defineDocumentInspector": "function",
     "defineField": "function",
     "definePlugin": "function",
