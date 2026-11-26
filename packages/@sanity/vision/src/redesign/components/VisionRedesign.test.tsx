@@ -89,7 +89,6 @@ const sanityMocks = vi.hoisted(() => {
     },
     getPerspective: () => perspective,
     useClient: vi.fn(),
-    clearQueries: vi.fn(() => Promise.resolve()),
     saveQuery: vi.fn((_query: {url: string}) => Promise.resolve('saved-key')),
     // What the mocked saved queries hook lists and reports as being moved
     savedQueries: {queries: [] as unknown[], moving: [] as string[]},
@@ -310,14 +309,19 @@ vi.mock('sanity/router', () => ({
 }))
 
 vi.mock('../../hooks/useSavedQueries', () => ({
-  useSavedQueries: () => ({
+  useSavedQueries: ({
+    onCreatePersonalQuery,
+  }: {onCreatePersonalQuery?: (key: string) => void} = {}) => ({
     queries: sanityMocks.savedQueries.queries,
-    saveQuery: sanityMocks.saveQuery,
+    // Reports the key `saveQuery` resolves with before it does, as the hook does before writing
+    saveQuery: (query: {url: string; shared?: boolean}) => {
+      if (!query.shared) onCreatePersonalQuery?.('saved-key')
+      return sanityMocks.saveQuery(query)
+    },
     updateQuery: vi.fn(),
     deleteQuery: vi.fn(),
     shareQuery: vi.fn(),
     unshareQuery: vi.fn(),
-    clearQueries: sanityMocks.clearQueries,
     saving: false,
     deleting: [],
     moving: sanityMocks.savedQueries.moving,
@@ -729,6 +733,26 @@ function isItemDisabled(element: HTMLElement): boolean {
 
 function getStoredState() {
   return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
+}
+
+/**
+ * Stores the state of a browser that opened these saved queries as tabs before and closed them,
+ * so the tests of the saved queries drawer start with one empty tab
+ */
+function recordOpenedSavedQueries(keys: string[]) {
+  saveVisionState(PROJECT_ID, {...createInitialState(DEFAULTS), openedSavedQueries: keys})
+}
+
+/** A personal saved query of a request to the `staging` dataset on the `published` perspective */
+function personalSavedQuery(key: string, title: string, query: string, savedAt: string) {
+  const search = new URLSearchParams({query, perspective: 'published'})
+  return {
+    _key: key,
+    shared: false,
+    title,
+    url: `https://${PROJECT_ID}.api.sanity.io/v2025-02-19/data/query/staging?${search}`,
+    savedAt,
+  }
 }
 
 /** Switches the Content Source Map features on in the stored settings, before rendering */
@@ -4326,6 +4350,7 @@ describe('VisionRedesign', () => {
       ],
       moving: [],
     }
+    recordOpenedSavedQueries(['saved-pages'])
     const {fetchCalls} = renderRedesign()
     typeQuery('*[_type == "author"]')
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
@@ -4769,6 +4794,7 @@ describe('VisionRedesign', () => {
       ],
       moving: [],
     }
+    recordOpenedSavedQueries(['saved-french'])
     renderRedesign({...BASE_PERSPECTIVE, selectedVariantNames: ['french']})
     fireEvent.paste(document.body, {clipboardData: {getData: () => url}})
     await waitFor(() => expect(getQueryEditor().value).toBe('*'))
@@ -5128,6 +5154,7 @@ describe('VisionRedesign', () => {
         ],
         moving: [],
       }
+      recordOpenedSavedQueries(['saved-french'])
       renderRedesign()
       fireEvent.click(screen.getByTestId('vision-sidebar-saved'))
       const open = await screen.findByTestId('vision-saved-query-open')
@@ -5175,6 +5202,7 @@ describe('VisionRedesign', () => {
         ],
         moving: [],
       }
+      recordOpenedSavedQueries(['saved-1'])
       renderRedesign()
       typeQuery('*')
       openRequestTab('options')
@@ -5198,28 +5226,201 @@ describe('VisionRedesign', () => {
     },
   )
 
-  it('clears the storage from the settings dialog', {timeout: 15_000}, async () => {
-    renderRedesign()
-    typeQuery('*[_type == "author"]')
-    fireEvent.click(screen.getByTestId('vision-new-tab'))
-    await waitFor(() => expect(getStoredState().tabs).toHaveLength(2))
+  it(
+    'opens the personal saved queries as tabs once each, newest first, after the open tab',
+    {timeout: 15_000},
+    async () => {
+      sanityMocks.savedQueries = {
+        // Newest first, as the saved queries hook lists them
+        queries: [
+          {
+            _key: 'shared-1',
+            shared: true,
+            authorId: 'user-2',
+            isOwnedByCurrentUser: false,
+            title: 'Shared',
+            url: `https://${PROJECT_ID}.api.sanity.io/v2025-02-19/data/query/test?query=*`,
+            savedAt: '2026-03-01T00:00:00Z',
+          },
+          personalSavedQuery('saved-pages', 'Pages', '*[_type == "page"]', '2026-02-01T00:00:00Z'),
+          personalSavedQuery('saved-posts', 'Posts', '*[_type == "post"]', '2026-01-02T00:00:00Z'),
+          // The same request saved twice opens one tab
+          personalSavedQuery('saved-again', 'Again', '*[_type == "post"]', '2026-01-01T00:00:00Z'),
+          {
+            _key: 'saved-broken',
+            shared: false,
+            title: 'Broken',
+            url: 'not a query URL',
+            savedAt: '2025-12-01T00:00:00Z',
+          },
+        ],
+        moving: [],
+      }
+      renderRedesign()
 
-    fireEvent.click(screen.getByTestId('vision-sidebar-settings'))
-    fireEvent.click(await screen.findByTestId('vision-clear-storage'))
-    fireEvent.click(screen.getByTestId('vision-clear-storage-confirm'))
+      await waitFor(() => expect(screen.getAllByTestId('vision-tab')).toHaveLength(3))
+      const tabs = screen.getAllByTestId('vision-tab')
+      expect(text(tabs[1])).toContain('Pages')
+      expect(text(tabs[2])).toContain('Posts')
+      // The tab the tool opened on stays the shown one
+      expect(getQueryEditor().value).toBe('')
+      expect(await screen.findByText('vision.saved.opened-as-tabs')).toBeTruthy()
+      await waitFor(() =>
+        expect(getStoredState().openedSavedQueries).toEqual([
+          'saved-pages',
+          'saved-posts',
+          'saved-again',
+          'saved-broken',
+        ]),
+      )
+      expect(getStoredState().tabs.slice(1)).toMatchObject([
+        {
+          title: 'Pages',
+          query: '*[_type == "page"]',
+          options: {datasetMode: 'override', dataset: 'staging', perspective: 'published'},
+        },
+        {title: 'Posts', query: '*[_type == "post"]'},
+      ])
 
-    await waitFor(() => expect(screen.getAllByTestId('vision-tab')).toHaveLength(1))
-    expect(getQueryEditor().value).toBe('')
-    expect(sanityMocks.clearQueries).toHaveBeenCalledTimes(1)
-    await waitFor(() => {
-      const stored = getStoredState()
-      expect(stored.tabs).toHaveLength(1)
-      expect(stored.tabs[0].query).toBe('')
-    })
-    // The tool stays open, with the drawer closed
-    expect(screen.getByTestId('vision-root')).toBeTruthy()
-    expect(screen.queryByTestId('vision-drawer-settings')).toBeNull()
+      // A reload opens nothing again
+      cleanup()
+      renderRedesign()
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      expect(screen.getAllByTestId('vision-tab')).toHaveLength(3)
+      expect(screen.queryByText('vision.saved.opened-as-tabs')).toBeNull()
+
+      // A closed one stays closed
+      fireEvent.click(
+        within(screen.getAllByTestId('vision-tab')[2]).getByTestId('vision-tab-close'),
+      )
+      await waitFor(() => expect(getStoredState().tabs).toHaveLength(2))
+      cleanup()
+      renderRedesign()
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      expect(screen.getAllByTestId('vision-tab')).toHaveLength(2)
+      expect(screen.queryByText('vision.saved.opened-as-tabs')).toBeNull()
+    },
+  )
+
+  it('opens the saved queries that arrive after the tool opened', async () => {
+    const {show} = renderRedesign()
+    expect(screen.getAllByTestId('vision-tab')).toHaveLength(1)
+
+    sanityMocks.savedQueries = {
+      queries: [
+        personalSavedQuery('saved-pages', 'Pages', '*[_type == "page"]', '2026-01-01T00:00:00Z'),
+      ],
+      moving: [],
+    }
+    show()
+
+    await waitFor(() => expect(screen.getAllByTestId('vision-tab')).toHaveLength(2))
+    expect(text(screen.getAllByTestId('vision-tab')[1])).toContain('Pages')
+    await waitFor(() => expect(getStoredState().openedSavedQueries).toEqual(['saved-pages']))
   })
+
+  it('records a saved query a tab already shows without opening it again', async () => {
+    const initial = createInitialState(DEFAULTS)
+    const tab = createTab(initial.settings, {
+      id: 'pages',
+      query: '*[_type == "page"]',
+      options: {
+        datasetMode: 'override',
+        dataset: 'staging',
+        apiVersion: 'v2025-02-19',
+        perspective: 'published',
+        variant: 'none',
+      },
+    })
+    saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'pages'})
+    sanityMocks.savedQueries = {
+      queries: [
+        personalSavedQuery('saved-pages', 'Pages', '*[_type == "page"]', '2026-01-01T00:00:00Z'),
+      ],
+      moving: [],
+    }
+    renderRedesign()
+
+    await waitFor(() => expect(getStoredState().openedSavedQueries).toEqual(['saved-pages']))
+    expect(screen.getAllByTestId('vision-tab')).toHaveLength(1)
+    expect(screen.queryByText('vision.saved.opened-as-tabs')).toBeNull()
+  })
+
+  it('does not open a query saved here as a tab of its own when the list shows it', async () => {
+    const {show} = renderRedesign()
+    typeQuery('*[_type == "page"]')
+    await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
+    fireEvent.click(screen.getByTestId('vision-query-menu-button'))
+    fireEvent.click(screen.getByTestId('vision-save-query'))
+    await waitFor(() => expect(sanityMocks.saveQuery).toHaveBeenCalledTimes(1))
+    const [[{url}]] = sanityMocks.saveQuery.mock.calls
+
+    // The tab changes before the list shows the saved query
+    typeQuery('*[_type == "post"]')
+    sanityMocks.savedQueries = {
+      queries: [
+        {_key: 'saved-key', shared: false, title: 'Pages', url, savedAt: '2026-01-01T00:00:00Z'},
+      ],
+      moving: [],
+    }
+    show()
+
+    await waitFor(() => expect(getStoredState().openedSavedQueries).toEqual(['saved-key']))
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(screen.getAllByTestId('vision-tab')).toHaveLength(1)
+    expect(screen.queryByText('vision.saved.opened-as-tabs')).toBeNull()
+  })
+
+  it('opens on the query the classic tool last showed', () => {
+    localStorage.setItem(
+      `sanityVision:${PROJECT_ID}`,
+      JSON.stringify({query: '*[_type == "movie"]'}),
+    )
+    renderRedesign()
+
+    expect(screen.getAllByTestId('vision-tab')).toHaveLength(1)
+    expect(getQueryEditor().value).toBe('*[_type == "movie"]')
+  })
+
+  it(
+    'clears the storage from the settings dialog, keeping the saved queries',
+    {timeout: 15_000},
+    async () => {
+      const pages = personalSavedQuery(
+        'saved-pages',
+        'Pages',
+        '*[_type == "page"]',
+        '2026-01-01T00:00:00Z',
+      )
+      sanityMocks.savedQueries = {queries: [pages], moving: []}
+      renderRedesign()
+      await waitFor(() => expect(screen.getAllByTestId('vision-tab')).toHaveLength(2))
+      typeQuery('*[_type == "author"]')
+      fireEvent.click(screen.getByTestId('vision-new-tab'))
+      await waitFor(() => expect(getStoredState().tabs).toHaveLength(3))
+
+      fireEvent.click(screen.getByTestId('vision-sidebar-settings'))
+      fireEvent.click(await screen.findByTestId('vision-clear-storage'))
+      // The list arrives again, as it does whenever the saved queries change
+      sanityMocks.savedQueries = {queries: [pages], moving: []}
+      fireEvent.click(screen.getByTestId('vision-clear-storage-confirm'))
+
+      // The saved query stays saved, and the tab it opened stays closed
+      await waitFor(() => expect(screen.getAllByTestId('vision-tab')).toHaveLength(1))
+      expect(getQueryEditor().value).toBe('')
+      await waitFor(() => {
+        const stored = getStoredState()
+        expect(stored.tabs).toHaveLength(1)
+        expect(stored.tabs[0].query).toBe('')
+        expect(stored.openedSavedQueries).toEqual(['saved-pages'])
+      })
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      expect(screen.getAllByTestId('vision-tab')).toHaveLength(1)
+      // The tool stays open, with the drawer closed
+      expect(screen.getByTestId('vision-root')).toBeTruthy()
+      expect(screen.queryByTestId('vision-drawer-settings')).toBeNull()
+    },
+  )
 
   it('leaves a saved query alone while a share or unshare is moving it', async () => {
     const shared = {

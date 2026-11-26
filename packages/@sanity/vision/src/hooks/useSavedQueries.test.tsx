@@ -75,7 +75,7 @@ describe('useSavedQueries', () => {
     snapshot = []
   })
 
-  function setup() {
+  function setup(options?: Parameters<typeof useSavedQueries>[0]) {
     publish()
     let created = 0
     mocks.create.mockImplementation(async (doc: Record<string, unknown>) => {
@@ -86,8 +86,39 @@ describe('useSavedQueries', () => {
     mocks.deleteDoc.mockImplementation(async () => {
       await wait(5)
     })
-    return renderHook(() => useSavedQueries())
+    return renderHook(() => useSavedQueries(options))
   }
+
+  it('reports each personal query a save or an unshare creates before writing it', async () => {
+    mocks.sharedDocs = [
+      {_id: 'shared-a', authorId: 'user-1', savedAt: '2026-01-01T00:00:00Z', url: 'https://a'},
+    ]
+    const created: string[] = []
+    const {result} = setup({
+      onCreatePersonalQuery: (key) => {
+        // Not written yet, so the list cannot show it
+        expect(mocks.items.has(key)).toBe(false)
+        created.push(key)
+      },
+    })
+    await waitFor(() => expect(result.current.queries).toHaveLength(1))
+
+    let savedKey = ''
+    await act(async () => {
+      savedKey = await result.current.saveQuery({url: 'https://b', savedAt: '2026-01-02T00:00:00Z'})
+      await result.current.saveQuery({
+        shared: true,
+        url: 'https://c',
+        savedAt: '2026-01-03T00:00:00Z',
+      })
+      await result.current.unshareQuery('shared-a')
+    })
+
+    expect(created).toHaveLength(2)
+    expect(created[0]).toBe(savedKey)
+    // The other is the personal copy the unshare made
+    expect([...mocks.items.keys()].toSorted()).toEqual(created.toSorted())
+  })
 
   it('stays saving until the last of two overlapping saves has settled', async () => {
     const {result} = setup()

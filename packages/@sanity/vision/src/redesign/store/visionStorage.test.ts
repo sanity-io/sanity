@@ -8,6 +8,7 @@ import {
   createTab,
   createTabOptions,
   DEFAULT_PARAMS,
+  getClassicVisionStorageKey,
   getLegacyVisionStorageKey,
   getVisionStorageKey,
   loadVisionState,
@@ -175,10 +176,103 @@ describe('visionStorage', () => {
         hidden: ['next-sanity' as const, 'nuxt' as const],
       },
       functions: [{id: 'ex::author', declaration: 'fn ex::author($ref) = $ref->{name}'}],
+      openedSavedQueries: ['saved-pages', 'saved-posts'],
     }
     saveVisionState('proj', saved)
 
     expect(loadVisionState('proj', defaults)).toEqual(saved)
+  })
+
+  it('records each saved query opened as a tab once, and none for state saved before', () => {
+    const state = createInitialState(defaults)
+    expect(state.openedSavedQueries).toEqual([])
+    localStorage.setItem(
+      getVisionStorageKey('proj'),
+      JSON.stringify({...state, openedSavedQueries: ['a', 'b', 'a', 7, null]}),
+    )
+    expect(loadVisionState('proj', defaults).openedSavedQueries).toEqual(['a', 'b'])
+
+    const {openedSavedQueries: _recorded, ...before} = state
+    localStorage.setItem(getVisionStorageKey('before'), JSON.stringify(before))
+    expect(loadVisionState('before', defaults).openedSavedQueries).toEqual([])
+  })
+
+  it('opens the query the classic tool last showed when nothing is stored yet', () => {
+    // Under the key the classic tool writes it to
+    localStorage.setItem(
+      'sanityVision:proj',
+      JSON.stringify({
+        query: '*[_type == "movie"]',
+        params: '{"limit": 10}',
+        dataset: 'staging',
+        apiVersion: 'v2021-10-21',
+        perspective: 'pinnedRelease',
+      }),
+    )
+
+    const loaded = loadVisionState('proj', defaults)
+    expect(loaded.tabs).toHaveLength(1)
+    expect(loaded.activeTabId).toBe(loaded.tabs[0].id)
+    expect(loaded.tabs[0]).toMatchObject({
+      title: undefined,
+      query: '*[_type == "movie"]',
+      rawParams: '{"limit": 10}',
+      options: {
+        datasetMode: 'override',
+        dataset: 'staging',
+        apiVersion: 'v2021-10-21',
+        perspective: 'global',
+      },
+    })
+    // The classic tool still reads it on releases that have it
+    expect(localStorage.getItem(getClassicVisionStorageKey('proj'))).not.toBeNull()
+  })
+
+  it('runs a query from the classic tool on raw and the workspace dataset unless it picked others', () => {
+    localStorage.setItem(getClassicVisionStorageKey('proj'), JSON.stringify({query: '*'}))
+
+    expect(loadVisionState('proj', defaults).tabs[0]).toMatchObject({
+      query: '*',
+      rawParams: DEFAULT_PARAMS,
+      options: {
+        datasetMode: 'auto',
+        dataset: 'production',
+        apiVersion: 'v2025-02-19',
+        perspective: 'raw',
+      },
+    })
+  })
+
+  it('keeps the custom API version and the renamed drafts perspective the classic tool stored', () => {
+    // The classic tool stored a custom version typed under Other as its API version, and the
+    // drafts perspective as `previewDrafts` until the API renamed it
+    localStorage.setItem(
+      getClassicVisionStorageKey('proj'),
+      JSON.stringify({query: '*', apiVersion: 'v2023-05-03', perspective: 'previewDrafts'}),
+    )
+
+    expect(loadVisionState('proj', defaults).tabs[0].options).toMatchObject({
+      apiVersion: 'v2023-05-03',
+      perspective: 'drafts',
+    })
+  })
+
+  it('leaves the classic tool out once a state is stored, and when it left no query', () => {
+    localStorage.setItem(getClassicVisionStorageKey('stored'), JSON.stringify({query: '*'}))
+    saveVisionState('stored', createInitialState(defaults))
+    expect(loadVisionState('stored', defaults).tabs[0].query).toBe('')
+
+    localStorage.setItem(
+      getClassicVisionStorageKey('blank'),
+      JSON.stringify({query: '  ', dataset: 'staging'}),
+    )
+    expect(loadVisionState('blank', defaults).tabs[0]).toMatchObject({
+      query: '',
+      options: {datasetMode: 'auto', dataset: 'production'},
+    })
+
+    localStorage.setItem(getClassicVisionStorageKey('broken'), '{not json')
+    expect(loadVisionState('broken', defaults).tabs[0].query).toBe('')
   })
 
   it('keeps the drawers the sidebar has, and forgets any other', () => {
