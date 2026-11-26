@@ -20,6 +20,7 @@ import {
 import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 
+import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
 import {useOnValueChange} from '../../hooks/useOnValueChange'
 import {type VisionDrawer} from '../../store/types'
@@ -128,6 +129,7 @@ export interface VisionSidebarProps {
 export function VisionSidebar({shownDrawer}: VisionSidebarProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const actorRef = useVisionActor()
+  const telemetry = useVisionTelemetry()
   const {layout, switchToClassic} = useVisionExperience()
   const railExpanded = useVisionSelector((snapshot) => snapshot.matches({sidebar: 'expanded'}))
   const drawer = useVisionSelector(selectOpenDrawer)
@@ -145,9 +147,10 @@ export function VisionSidebar({shownDrawer}: VisionSidebarProps) {
   const toggleDrawer = useCallback(
     (target: VisionDrawer, event: MouseEvent<HTMLElement>) => {
       if (drawer === null) openerRef.current = event.currentTarget
+      if (drawer !== target) telemetry.drawerOpened(target)
       actorRef.send({type: 'drawer.toggle', drawer: target})
     },
-    [actorRef, drawer],
+    [actorRef, drawer, telemetry],
   )
   useOnValueChange(shownDrawer, (next, previous) => {
     if (previous === null || next !== null) return
@@ -219,7 +222,10 @@ export function VisionSidebar({shownDrawer}: VisionSidebarProps) {
               expanded={expanded}
               icon={BoltIcon}
               label={t('vision.sidebar.shortcuts')}
-              onClick={() => actorRef.send({type: 'dialog.open', dialog: 'shortcuts'})}
+              onClick={() => {
+                telemetry.dialogOpened('shortcuts')
+                actorRef.send({type: 'dialog.open', dialog: 'shortcuts'})
+              }}
               testId="vision-sidebar-shortcuts"
             />
             <SidebarItem
@@ -234,7 +240,7 @@ export function VisionSidebar({shownDrawer}: VisionSidebarProps) {
               expanded={expanded}
               icon={RestoreIcon}
               label={t('vision.redesign.switch-to-classic')}
-              onClick={switchToClassic}
+              onClick={() => switchToClassic('controls')}
               testId="vision-sidebar-classic"
             />
           </Flex>
@@ -250,7 +256,10 @@ export function VisionSidebar({shownDrawer}: VisionSidebarProps) {
               expanded={expanded}
               icon={expanded ? DoubleChevronLeftIcon : DoubleChevronRightIcon}
               label={expanded ? t('vision.sidebar.collapse') : t('vision.sidebar.expand')}
-              onClick={() => actorRef.send({type: 'sidebar.toggle'})}
+              onClick={() => {
+                telemetry.panelToggled('sidebar', !railExpanded)
+                actorRef.send({type: 'sidebar.toggle'})
+              }}
               testId="vision-sidebar-toggle"
             />
           </Flex>

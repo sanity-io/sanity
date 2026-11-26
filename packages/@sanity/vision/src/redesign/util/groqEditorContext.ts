@@ -44,6 +44,8 @@ export interface GroqEditorLabels {
   paramNotSet: string
   /** Called when a lint suggestion or a library declaration is applied */
   onApplySuggestion?: () => void
+  /** Called when a projection is extracted to a function, from its button or the shortcut */
+  onExtractFunction?: (via: 'button' | 'shortcut') => void
 }
 
 const NO_FUNCTIONS: readonly VisionSavedFunction[] = []

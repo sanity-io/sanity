@@ -33,6 +33,7 @@ import {
 import {useTranslation} from 'sanity/i18n'
 import {Flex, Box} from 'ui5'
 
+import {useVisionTelemetry} from '../__telemetry__/useVisionTelemetry'
 import {API_VERSIONS, DEFAULT_API_VERSION, VARIANTS_API_VERSION} from '../apiVersions'
 import {groqExtensions} from '../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../codemirror/VisionCodeMirror'
@@ -45,7 +46,6 @@ import {
   isVirtualPerspective,
   type SupportedPerspective,
 } from '../perspectives'
-import {useVisionTelemetry} from '../telemetry/useVisionTelemetry'
 import {type VisionProps} from '../types'
 import {encodeQueryString} from '../util/encodeQueryString'
 import {isVisionPasteTarget} from '../util/isVisionPasteTarget'
@@ -271,6 +271,7 @@ export function VisionGui(props: VisionGuiProps) {
         cancelQuerySubscription()
         cancelListenerSubscription()
         setQueryInProgress(false)
+        if (options?.trigger) telemetry.queryCancelled('fetch')
         return
       }
 
@@ -479,6 +480,7 @@ export function VisionGui(props: VisionGuiProps) {
     if (listenInProgress) {
       cancelListenerSubscription()
       setListenInProgress(false)
+      telemetry.queryCancelled('listen')
       return
     }
 
@@ -643,6 +645,7 @@ export function VisionGui(props: VisionGuiProps) {
       // Only cancel the native paste once the clipboard is known to hold a query URL Vision can
       // load, so unrelated content still pastes as usual.
       evt.preventDefault()
+      telemetry.queryUrlPasted()
       setStateFromParsedUrl(urlState)
       toast.push({
         closable: true,
@@ -651,7 +654,7 @@ export function VisionGui(props: VisionGuiProps) {
         title: 'Parsed URL to query',
       })
     },
-    [getStateFromUrl, setStateFromParsedUrl, toast],
+    [getStateFromUrl, setStateFromParsedUrl, telemetry, toast],
   )
 
   const handleKeyDown = useCallback(
@@ -848,7 +851,10 @@ export function VisionGui(props: VisionGuiProps) {
                 zIndex: 100,
                 pointerEvents: 'auto',
               }}
-              onClick={() => setIsQueryRecallCollapsed(!isQueryRecallCollapsed)}
+              onClick={() => {
+                telemetry.panelToggled('saved-queries', isQueryRecallCollapsed)
+                setIsQueryRecallCollapsed(!isQueryRecallCollapsed)
+              }}
             >
               <div style={{display: 'flex', alignItems: 'center', height: '100%'}}>
                 {isQueryRecallCollapsed ? <ChevronLeftIcon /> : <ChevronRightIcon />}

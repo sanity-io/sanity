@@ -14,6 +14,8 @@ import {
 import {useTranslation} from 'sanity/i18n'
 import {Box, Flex} from 'ui5'
 
+import {useVisionTelemetry} from '../../__telemetry__/useVisionTelemetry'
+import {type VisionPanelTab} from '../../__telemetry__/vision.telemetry'
 import {visionLocaleNamespace} from '../../i18n'
 import {useContentSize} from '../hooks/useContentSize'
 import {useVisionExperience, type VisionLayout} from '../store/VisionActorContext'
@@ -94,6 +96,7 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
     fitOnTabDoubleClick = false,
     ref,
   } = props
+  const telemetry = useVisionTelemetry()
   const {t} = useTranslation(visionLocaleNamespace)
   const {layout} = useVisionExperience()
   const [uncontrolled, setUncontrolled] = useState<BottomPanelState>(() => ({
@@ -122,17 +125,22 @@ export function SplitWithBottomPanel(props: SplitWithBottomPanelProps) {
 
   const selectTab = useCallback(
     (tabId: string) => {
+      if (tabId !== panelState.activeTabId) {
+        // The panels' tab ids are the telemetry's tab names
+        telemetry.panelTabOpened(tabId as VisionPanelTab)
+      }
       setPanelState((current) =>
         current.activeTabId === tabId ? current : {...current, activeTabId: tabId},
       )
     },
-    [setPanelState],
+    [panelState.activeTabId, setPanelState, telemetry],
   )
   const toggle = useCallback(() => {
+    telemetry.panelToggled(column, panelState.collapsed)
     startLayoutTransition(PANEL_TRANSITION, () =>
       setPanelState((current) => ({...current, collapsed: !current.collapsed})),
     )
-  }, [setPanelState])
+  }, [panelState.collapsed, setPanelState, telemetry, column])
   const requestFit = useCallback(
     (tabId?: string) => {
       const update = () => {

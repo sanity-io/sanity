@@ -7,6 +7,7 @@ import {type MouseEvent, type ReactElement, useEffect, useMemo, useState} from '
 import {useTranslation} from 'sanity/i18n'
 import {useIntentLink} from 'sanity/router'
 
+import {useVisionTelemetry} from '../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../i18n'
 import {COPIED_FEEDBACK_MS} from '../redesign/components/response/CopyResultButton'
 import * as styles from './ResultView.module.css'
@@ -33,6 +34,7 @@ export function ResultViewRowActions(props: {
 
 function CopyValueButton({label, onCopy}: {label: string; onCopy: () => Promise<boolean>}) {
   const {t} = useTranslation(visionLocaleNamespace)
+  const telemetry = useVisionTelemetry()
   // When the last copy succeeded, so a second copy while the checkmark shows keeps it longer
   const [copiedAt, setCopiedAt] = useState<number | null>(null)
   useEffect(() => {
@@ -46,7 +48,10 @@ function CopyValueButton({label, onCopy}: {label: string; onCopy: () => Promise<
     // The button sits in the line's label, which toggles the node when clicked
     event.preventDefault()
     event.stopPropagation()
-    if (await onCopy()) setCopiedAt(Date.now())
+    if (await onCopy()) {
+      telemetry.copied('result')
+      setCopiedAt(Date.now())
+    }
   }
 
   return (
@@ -69,6 +74,7 @@ function EditDocumentButton({id}: {id: string}) {
   const {t} = useTranslation(visionLocaleNamespace)
   const params = useMemo(() => ({id}), [id])
   const {href, onClick} = useIntentLink({intent: 'edit', params})
+  const telemetry = useVisionTelemetry()
   const label = t('vision.result.edit-document')
   return (
     <RowActionTooltip label={label}>
@@ -80,6 +86,7 @@ function EditDocumentButton({id}: {id: string}) {
         onClick={(event) => {
           // Keeps the line's label from toggling the node; the intent link navigates
           event.stopPropagation()
+          telemetry.documentOpened('result')
           onClick(event)
         }}
       >

@@ -31,9 +31,6 @@ import {
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
-import {editorContentPaddingTop, editorLineHeight} from '../../codemirror/editorMetrics'
-import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
-import visionLocaleStrings from '../../i18n/resources'
 import {
   VisionAgentActionInvoked,
   VisionApiVersionChanged,
@@ -46,7 +43,10 @@ import {
   VisionQueryRun,
   VisionSnippetCopied,
   VisionTabsChanged,
-} from '../../telemetry/vision.telemetry'
+} from '../../__telemetry__/vision.telemetry'
+import {editorContentPaddingTop, editorLineHeight} from '../../codemirror/editorMetrics'
+import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
+import visionLocaleStrings from '../../i18n/resources'
 import {type VisionAiConfig} from '../../types'
 import {QUERY_URL_SIZE_LIMIT} from '../../util/queryRequestMethod'
 import {resetAiCredits} from '../hooks/useAiCredits'

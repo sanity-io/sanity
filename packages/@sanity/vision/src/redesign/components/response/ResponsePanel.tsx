@@ -7,6 +7,7 @@ import {useSchema} from 'sanity/_dangerously_use_private_internals_that_do_not_f
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex} from 'ui5'
 
+import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {firstEditorLineStyle} from '../../../codemirror/editorMetrics'
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {QueryErrorDialog} from '../../../components/QueryErrorDialog'
@@ -152,6 +153,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
   const delta = useDeltaPanel()
   const mutate = useMutatePanel()
   const actorRef = useVisionActor()
+  const telemetry = useVisionTelemetry()
   // The last view picked in any tab, JSON until one is. The result's shape never picks one.
   const storedResultView = useVisionSelector(selectResultView)
   const parsedDocuments = useMemo(
@@ -174,13 +176,21 @@ export function ResponsePanel(props: ResponsePanelProps) {
     parsedDocuments?.ok === false && documentsPickedFor !== settledQuery ? 'json' : storedResultView
   const setResultView = useCallback(
     (view: VisionResultView) => {
+      if (view !== resultView) telemetry.viewChanged('result', view)
       setDocumentsPickedFor(view === 'documents' ? settledQuery : undefined)
       actorRef.send({type: 'result.view', view})
     },
-    [actorRef, settledQuery],
+    [actorRef, resultView, settledQuery, telemetry],
   )
   // The source map's view is the panel's own, and starts on the tree it always showed
-  const [sourceMapView, setSourceMapView] = useState<SourceMapView>('tree')
+  const [sourceMapView, setSourceMapViewState] = useState<SourceMapView>('tree')
+  const setSourceMapView = useCallback(
+    (view: SourceMapView) => {
+      if (view !== sourceMapView) telemetry.viewChanged('source-map', view)
+      setSourceMapViewState(view)
+    },
+    [sourceMapView, telemetry],
+  )
   const sourceMapViews = useMemo(
     (): ResultViewOption<SourceMapView>[] => [
       {id: 'json', label: t('vision.result.view.json')},
@@ -235,9 +245,11 @@ export function ResponsePanel(props: ResponsePanelProps) {
   const {scrolled: resultScrolled, setScroller: setResultScroller} = useScrolledFromTop()
   const copyToClipboard = useCopyToClipboard()
   // Same text as the JSON view (depth-truncated / soft-capped); never a bare misleading `null`
-  const copyResult = useCallback(() => {
-    return copyToClipboard(stringifyResultJson(result).text)
-  }, [copyToClipboard, result])
+  const copyResult = useCallback(async () => {
+    const copied = await copyToClipboard(stringifyResultJson(result).text)
+    if (copied) telemetry.copied('result')
+    return copied
+  }, [copyToClipboard, result, telemetry])
   // Text is copied as it is (an ID, a slug) and everything else as indented JSON
   const copyValue = useMemo(
     (): ResultViewCopy => ({
@@ -353,6 +365,7 @@ export function ResponsePanel(props: ResponsePanelProps) {
       resultDataset,
       revealSourceMapOption,
       sourceMap,
+      setSourceMapView,
       sourceMapContentId,
       sourceMapView,
       sourceMapViews,

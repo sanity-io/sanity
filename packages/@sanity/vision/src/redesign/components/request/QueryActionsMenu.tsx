@@ -6,6 +6,7 @@ import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {useCallback, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
 
+import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type QueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
@@ -32,6 +33,7 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
   const {tab, request, buildRequest, resolved} = props
   const {t} = useTranslation(visionLocaleNamespace)
   const pendingEdits = usePendingEdits()
+  const telemetry = useVisionTelemetry()
   const [exportOpen, setExportOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const moreActions = t('vision.actions.more')
@@ -41,8 +43,9 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
     // Params typed within the debounce window belong to the exported request; committing them
     // re-renders the dialog with the request built from them
     pendingEdits.commit()
+    telemetry.dialogOpened('export-query')
     setExportOpen(true)
-  }, [pendingEdits])
+  }, [pendingEdits, telemetry])
 
   return (
     <>

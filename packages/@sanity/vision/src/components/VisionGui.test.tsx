@@ -15,7 +15,7 @@ import {
   VisionParamsUsed,
   VisionPerspectiveChanged,
   VisionQueryRun,
-} from '../telemetry/vision.telemetry'
+} from '../__telemetry__/vision.telemetry'
 import {VisionGui} from './VisionGui'
 
 const theme = buildTheme()

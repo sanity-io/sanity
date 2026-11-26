@@ -8,6 +8,7 @@ import {type TFunction} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Box, Flex, Grid} from 'ui5'
 
+import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {DelayedSpinner} from '../../../components/DelayedSpinner'
 import {visionLocaleNamespace} from '../../../i18n'
 import {useAiFeatures} from '../../aiFeatures'
@@ -330,6 +331,7 @@ export interface MutateTabProps {
 export function MutateTab(props: MutateTabProps) {
   const {mutate, client, dataset, canRequest, result, hiddenFields} = props
   const {t} = useTranslation(visionLocaleNamespace)
+  const telemetry = useVisionTelemetry()
   const {state} = mutate
   const tabElementId = useTabElementId()
   const {generateMutations: canGenerate} = useAiFeatures()
@@ -361,10 +363,13 @@ export function MutateTab(props: MutateTabProps) {
 
   const addTemplate = (template: MutationTemplate) => {
     const next = addMutation(state.text, createMutationTemplate(template, documents))
-    if (next !== undefined) mutate.setText(next)
+    if (next === undefined) return
+    telemetry.mutateUsed(`add-${template}`)
+    mutate.setText(next)
   }
   const applyPreviewed = async () => {
     if (!run || !previewIsCurrent) return
+    telemetry.mutateUsed('apply')
     await mutate.apply(client, run, dataset)
   }
   const hasOutcome =
@@ -588,7 +593,11 @@ export function MutateTab(props: MutateTabProps) {
               fontSize={1}
               loading={state.pending === 'preview'}
               mode="ghost"
-              onClick={() => run && void mutate.preview(client, run)}
+              onClick={() => {
+                if (!run) return
+                telemetry.mutateUsed('preview')
+                void mutate.preview(client, run)
+              }}
               padding={2}
               text={t('vision.mutate.preview')}
             />
