@@ -2,7 +2,17 @@ import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import groupBy from 'lodash-es/groupBy.js'
 import {concat, defer, EMPTY, merge, type Observable, of, throwError} from 'rxjs'
-import {catchError, concatMap, filter, map, mergeMap, scan, share, tap} from 'rxjs/operators'
+import {
+  catchError,
+  concatMap,
+  filter,
+  finalize,
+  map,
+  mergeMap,
+  scan,
+  share,
+  tap,
+} from 'rxjs/operators'
 
 import {shareReplayLatest} from '../../preview/utils/shareReplayLatest'
 import {RELEASES_STUDIO_CLIENT_OPTIONS} from '../../releases/util/releasesClient'
@@ -12,6 +22,7 @@ import {reconnectListener} from '../../util/reconnectListener'
 import {pauseWhileDocumentHidden} from '../listenerGate/listenerGate'
 import {type StoreRequestErrorHandler} from '../requestErrorHandler'
 import {debug} from './debug'
+import {getShardInfo$} from './document-pair/getShardInfo'
 import {
   type IdPair,
   type MutationEvent,
@@ -105,6 +116,33 @@ export interface SyncErrorRecoveryTelemetryInfo {
 }
 
 /** @internal */
+export interface ListenerWelcomeTimeTelemetryEvent {
+  /** Time in milliseconds from listener subscription to welcome event */
+  durationMs: number
+  /** The shard that handled the connection, if known */
+  shard?: string
+}
+
+/** @internal */
+export interface ListenerResumeTimeTelemetryEvent {
+  /** Time in milliseconds from reconnect to welcomeback event */
+  durationMs: number
+  /** The shard that handled the connection, if known */
+  shard?: string
+}
+
+/** @internal */
+export interface ListenerResumePayloadTelemetryEvent {
+  /**
+   * Number of mutations received after a resume until the next connection event.
+   * Includes both replayed mutations and any live mutations in that window.
+   */
+  mutationsAfterResumeCount: number
+  /** The shard that handled the connection, if known */
+  shard?: string
+}
+
+/** @internal */
 export interface DocumentStoreExtraOptions {
   tag?: string
 
@@ -136,6 +174,12 @@ export interface DocumentStoreExtraOptions {
   onCommitRetriesEnded?: (event: CommitRetriesEndedTelemetryEvent) => void
   /** Called when a pair is torn down while local mutations are pending */
   onPairTornDownWithPendingMutations?: () => void
+  /** Called when the listener receives its initial welcome event */
+  onListenerWelcomeTime?: (event: ListenerWelcomeTimeTelemetryEvent) => void
+  /** Called when the listener successfully resumes after a reconnection */
+  onListenerResumeTime?: (event: ListenerResumeTimeTelemetryEvent) => void
+  /** Called after a listener resumes, with the count of replayed mutations */
+  onListenerResumePayload?: (event: ListenerResumePayloadTelemetryEvent) => void
 }
 
 /** @internal */
@@ -189,8 +233,23 @@ export function getPairListener(
   // credential the store keeps accepting.
   let credentialChecks = 0
 
-  const sharedEvents = defer(() =>
-    (
+  // Timing state for listener telemetry
+  let subscriptionStartedAt: number | null = null
+  let hasReceivedFirstWelcome = false
+  let reconnectStartedAt: number | null = null
+  let isCountingResumePayload = false
+  let resumePayloadMutationCount = 0
+
+  // Shard info for telemetry context - fetched once per client, shared across listeners
+  let currentShard: string | undefined
+  const shardSubscription = getShardInfo$(client).subscribe((shard) => {
+    currentShard = shard
+  })
+
+  const sharedEvents = defer(() => {
+    // Track when the subscription starts for time-to-welcome measurement
+    subscriptionStartedAt = Date.now()
+    return (
       client.observable.listen(
         `*[_id in $ids]`,
         {
@@ -214,6 +273,54 @@ export function getPairListener(
         if (event.type === 'welcome' || event.type === 'welcomeback') credentialChecks = 0
       }),
       dedupeListenerEvents(),
+      // Listener timing telemetry
+      tap((event) => {
+        if (
+          event.type === 'welcome' &&
+          !hasReceivedFirstWelcome &&
+          subscriptionStartedAt !== null
+        ) {
+          // Time to welcome: first welcome after subscription
+          hasReceivedFirstWelcome = true
+          const durationMs = Date.now() - subscriptionStartedAt
+          options.onListenerWelcomeTime?.({durationMs, shard: currentShard})
+        } else if (event.type === 'reconnect') {
+          // Track when reconnect starts for time-to-resume measurement
+          reconnectStartedAt = Date.now()
+          // If we were counting resume payload, finalize it (reconnect interrupts the replay)
+          if (isCountingResumePayload) {
+            options.onListenerResumePayload?.({
+              mutationsAfterResumeCount: resumePayloadMutationCount,
+              shard: currentShard,
+            })
+          }
+          isCountingResumePayload = false
+          resumePayloadMutationCount = 0
+        } else if (event.type === 'welcomeback' && reconnectStartedAt !== null) {
+          // Time to resume: welcomeback after reconnect
+          const durationMs = Date.now() - reconnectStartedAt
+          options.onListenerResumeTime?.({durationMs, shard: currentShard})
+          reconnectStartedAt = null
+          // Start counting mutations for resume payload measurement
+          isCountingResumePayload = true
+          resumePayloadMutationCount = 0
+        } else if (event.type === 'mutation' && isCountingResumePayload) {
+          // Count mutations during resume replay
+          resumePayloadMutationCount++
+        } else if (
+          isCountingResumePayload &&
+          event.type !== 'mutation' &&
+          event.type !== 'welcomeback'
+        ) {
+          // Non-mutation event signals end of replay, report payload size (including zero)
+          options.onListenerResumePayload?.({
+            mutationsAfterResumeCount: resumePayloadMutationCount,
+            shard: currentShard,
+          })
+          isCountingResumePayload = false
+          resumePayloadMutationCount = 0
+        }
+      }),
       map((event): WelcomeEvent | MutationEvent | ReconnectEvent | WelcomeBackEvent | ResetEvent =>
         event.type === 'mutation'
           ? {
@@ -231,8 +338,8 @@ export function getPairListener(
           event.type === 'reset' ||
           event.type === 'welcomeback',
       }),
-    ),
-  )
+    )
+  })
 
   const pairEvents$ = defer(() => {
     let hasSnapshots = false
@@ -381,6 +488,10 @@ export function getPairListener(
       }
 
       return throwError(() => err)
+    }),
+    finalize(() => {
+      // Clean up shard subscription when listener is torn down
+      shardSubscription.unsubscribe()
     }),
   )
 
