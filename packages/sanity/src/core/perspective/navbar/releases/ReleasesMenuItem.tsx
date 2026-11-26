@@ -98,9 +98,15 @@ export function ReleasesMenuItem(
     menuItemProps?: ReleasesNavMenuItemPropsGetter
     /** Called when the release's detail link is followed. Without it, the release has no link. */
     onNavigateToRelease?: () => void
+    /**
+     * The default perspective's stack line reaches into the section below to meet the first
+     * release's line. Set to `false` when another row sits between them, so the line does not
+     * run into it.
+     */
+    joinsSectionBelow?: boolean
   } & RefAttributes<HTMLDivElement>,
 ) {
-  const {ref, release, rangePosition, onNavigateToRelease} = props
+  const {ref, release, rangePosition, onNavigateToRelease, joinsSectionBelow = true} = props
   const {menuItemProps: detailLinkMenuItemProps, linkProps: detailLinkProps} =
     usePerspectiveDetailLink()
 
@@ -248,7 +254,7 @@ export function ReleasesMenuItem(
 
   return (
     <ReleasesMenuItemIndicator
-      $isDefaultPerspective={isDefaultPerspective}
+      $isDefaultPerspective={isDefaultPerspective && joinsSectionBelow}
       $first={rangePosition === 'first'}
       $last={rangePosition === 'last'}
       $inRange={Boolean(rangePosition)}

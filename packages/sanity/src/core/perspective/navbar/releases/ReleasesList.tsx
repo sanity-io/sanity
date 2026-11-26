@@ -177,6 +177,7 @@ export function ReleasesList({
                 rangePosition={rangePosition(0)}
                 release={PUBLISHED}
                 menuItemProps={menuItemProps}
+                joinsSectionBelow={!showAgentBundle}
               />
             )}
             {showDrafts && (
@@ -184,6 +185,7 @@ export function ReleasesList({
                 rangePosition={rangePosition(1)}
                 release={LATEST}
                 menuItemProps={menuItemProps}
+                joinsSectionBelow={!showAgentBundle}
               />
             )}
           </VStack>
