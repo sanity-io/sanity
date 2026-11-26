@@ -110,7 +110,7 @@ export const documentGroupInventoryMachine = setup({
     }),
     deletionRef: spawn(input.deletionMachine, {
       systemId: 'deletion',
-      input: {readOnly: input.readOnly},
+      input: {readOnly: input.readOnly, variantsEnabled: input.variantsEnabled ?? false},
     }),
     variantCreationRef: spawn(input.variantCreationMachine, {
       systemId: 'variantCreation',
@@ -161,9 +161,8 @@ export const documentGroupInventoryMachine = setup({
           ({context}) => context.deletionRef,
           ({context, event}) => {
             const versions = context.sets.flatMap((set) => set.variants)
-            // Variants are counted from every version of the group, not only the listed ones:
-            // with Content Variants off the inventory leaves variant versions out, but they still
-            // need the Default, so deleting it stays blocked.
+            // Variants are counted from every version of the group, not only the listed ones.
+            // With Content Variants off the deletion machine ignores them and deletes as main does.
             const allDocuments =
               event.snapshot.context?.versionState.versions ??
               versions.map(({document}) => document)

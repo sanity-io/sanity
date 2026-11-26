@@ -71,7 +71,148 @@ interface Props {
   components: DocumentGroupInventoryComponents
 }
 
-export const ConfirmDeleteDialog: ComponentType<Props> = ({
+/**
+ * The open beta dialog (option C) belongs to Content Variants. With Variants off, the dialog is
+ * main's, even when the inventory itself is on.
+ */
+export const ConfirmDeleteDialog: ComponentType<Props> = (props) => {
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+  return variantsEnabled ? (
+    <VariantsConfirmDeleteDialog {...props} />
+  ) : (
+    <MainConfirmDeleteDialog {...props} />
+  )
+}
+
+/** The dialog as it is on main, kept for studios that run without Content Variants. */
+const MainConfirmDeleteDialog: ComponentType<Props> = ({
+  documentId,
+  documentType,
+  deletionRef,
+  selectionRef,
+  portalElementName,
+  components,
+}) => {
+  const {t} = useTranslation(studioLocaleNamespace)
+  const {DocTitle, ReferencePreviewLink, VersionsPreviewList} = components
+
+  const variantIds = useSelector(selectionRef, ({context}) => context.selectedIds)
+
+  const internalReferences =
+    useSelector(deletionRef, ({context}) => context.internalReferences) ?? EMPTY_INTERNAL_REFERENCES
+
+  const crossDatasetReferences =
+    useSelector(deletionRef, ({context}) => context.crossDatasetReferences) ??
+    EMPTY_CROSS_DATASET_REFERENCES
+
+  const datasetNames = useSelector(deletionRef, ({context}) => context.datasetNames)
+
+  const hasUnknownDatasetNames = useSelector(
+    deletionRef,
+    ({context}) => context.hasUnknownDatasetNames,
+  )
+  const warnIncomingReferences = useSelector(deletionRef, (snapshot) =>
+    snapshot.hasTag('warnIncomingReferences'),
+  )
+  const isDeletionError = useSelector(deletionRef, (snapshot) =>
+    snapshot.matches({active: {deletion: 'error'}}),
+  )
+
+  const deletionError = useSelector(deletionRef, ({context}) => context.error)
+  const error = isDeletionError ? deletionError : undefined
+
+  const canConfirmDeletion = useSelector(deletionRef, (snapshot) =>
+    snapshot.can({type: 'delete.confirm'}),
+  )
+
+  const subjectCount = variantIds.size
+  const subject = t('document-group.subject.version', {count: subjectCount})
+
+  const totalCount = internalReferences.totalCount + crossDatasetReferences.totalCount
+
+  const documentTitle = (
+    <DocTitle
+      document={useMemo(
+        () => ({
+          _id: documentId,
+          _type: documentType,
+        }),
+        [documentId, documentType],
+      )}
+    />
+  )
+
+  return (
+    <Dialog
+      id="confirmVariantDeletion"
+      width={1}
+      portal={portalElementName}
+      header={t('document-group.delete.title', {count: subjectCount, subject})}
+      footer={{
+        cancelButton: {
+          onClick: () => deletionRef.send({type: 'delete.cancel'}),
+          text: t('document-group.delete.cancel-button.text'),
+        },
+        confirmButton: {
+          text: t('document-group.delete.confirm-button.text'),
+          onClick: () => deletionRef.send({type: 'delete.confirm'}),
+          disabled: !canConfirmDeletion,
+        },
+      }}
+      onClose={() => deletionRef.send({type: 'delete.cancel'})}
+    >
+      <VStack gap={4}>
+        {error ? (
+          <Card tone="critical" padding={3}>
+            <Text size={1} as="div" trim={true} tone="critical">
+              {t('document-group.delete.error.message')}
+            </Text>
+          </Card>
+        ) : null}
+        <VersionsPreviewList documentType={documentType} documentVersions={[...variantIds]} />
+        {warnIncomingReferences && (
+          <>
+            <Card padding={3} radius={2} tone="caution" flex="none">
+              <Flex>
+                <Icon
+                  icon={WarningOutlineIcon}
+                  aria-hidden="true"
+                  size={1}
+                  style={{margin: '-0.375rem'}}
+                  tone="caution"
+                />
+                <Box flexBasis="0%" flexGrow={1} marginLeft={3}>
+                  <Text size={1} as="div" trim={true} tone="caution">
+                    <Translate
+                      i18nKey="document-group.delete.referring-document-count.text"
+                      components={{DocumentTitle}}
+                      componentProps={{documentTitle}}
+                      t={t}
+                      values={{count: totalCount}}
+                    />
+                  </Text>
+                </Box>
+              </Flex>
+            </Card>
+            <References
+              documentId={documentId}
+              documentTitle={documentTitle}
+              isStrengthKnown={false}
+              internalReferences={internalReferences}
+              crossDatasetReferences={crossDatasetReferences}
+              datasetNames={datasetNames}
+              hasUnknownDatasetNames={hasUnknownDatasetNames}
+              ReferencePreviewLink={ReferencePreviewLink}
+            />
+          </>
+        )}
+      </VStack>
+    </Dialog>
+  )
+}
+
+/** The open beta dialog (option C): names the Default, and splits what is deleted from what stays. */
+const VariantsConfirmDeleteDialog: ComponentType<Props> = ({
   documentId,
   documentType,
   deletionRef,
@@ -82,8 +223,6 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
   const {t} = useTranslation(studioLocaleNamespace)
   const {DocTitle, ReferencePreviewLink} = components
   const blockedReasonId = useId()
-  // Without Content Variants there is no Default to name: the published document is just that.
-  const variantsEnabled = useWorkspace().beta?.variants?.enabled === true
 
   const selectedIdSet = useSelector(selectionRef, ({context}) => context.selectedIds)
   const variants = useSelector(selectionRef, ({context}) => context.variants)
@@ -156,7 +295,7 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
   const isDefaultBlocked = blockedIds.length > 0
   const hasLinks = description.totalLinkCount > 0
 
-  const header = getHeader({t, description, selectedCount: selectedIds.length, variantsEnabled})
+  const header = getHeader({t, description, selectedCount: selectedIds.length})
 
   const confirmButton = isDefaultBlocked
     ? {
@@ -230,7 +369,6 @@ export const ConfirmDeleteDialog: ComponentType<Props> = ({
           <BlockedNotice
             id={blockedReasonId}
             showHeading={deletableIds.length > 0}
-            variantsEnabled={variantsEnabled}
             variantCount={description.blockingVariantCount}
             requiredLinkCount={description.requiredLinkCount}
           />
@@ -321,20 +459,16 @@ function getHeader({
   t,
   description,
   selectedCount,
-  variantsEnabled,
 }: {
   t: TFunction
   description: DeletionDescription
   selectedCount: number
-  variantsEnabled: boolean
 }): string {
   const {includesDefault, deletableIds, blockedIds} = description
   // Only the blocked Default is selected: the title says it can't be deleted, rather than asking a
   // question the notice below then answers with no.
   if (blockedIds.length > 0 && deletableIds.length === 0) {
-    return variantsEnabled
-      ? t('document-group.delete.blocked.heading')
-      : t('document-group.delete.blocked.document-heading')
+    return t('document-group.delete.blocked.heading')
   }
   if (blockedIds.length > 0 && deletableIds.length > 0) {
     // The title counts what the button deletes, out of what was selected.
@@ -342,11 +476,6 @@ function getHeader({
       count: deletableIds.length,
       total: selectedCount,
     })
-  }
-  if (includesDefault && !variantsEnabled) {
-    return selectedCount === 1
-      ? t('document-group.delete.published-title')
-      : t('document-group.delete.with-published-title', {count: selectedCount})
   }
   if (includesDefault) {
     return selectedCount === 1
@@ -484,14 +613,12 @@ function VersionChipRow({id, variant}: {id: string; variant: Variant | undefined
 function BlockedNotice({
   id,
   showHeading,
-  variantsEnabled,
   variantCount,
   requiredLinkCount,
 }: {
   id: string
   /** Off when the dialog's title already says the document can't be deleted yet. */
   showHeading: boolean
-  variantsEnabled: boolean
   variantCount: number
   requiredLinkCount: number
 }) {
@@ -510,9 +637,7 @@ function BlockedNotice({
           <VStack gap={3}>
             {showHeading && (
               <Text size={1} as="div" trim={true} weight="medium" tone="critical">
-                {variantsEnabled
-                  ? t('document-group.delete.blocked.heading')
-                  : t('document-group.delete.blocked.document-heading')}
+                {t('document-group.delete.blocked.heading')}
               </Text>
             )}
             {/* Variants first: they are the reason that can always be resolved from here. */}
@@ -520,11 +645,7 @@ function BlockedNotice({
               {variantCount > 0 && (
                 <li data-testid="blocked-by-variants">
                   <Text size={1} as="div" trim={true}>
-                    {variantsEnabled
-                      ? t('document-group.delete.blocked.variants-reason', {count: variantCount})
-                      : t('document-group.delete.blocked.variants-off-reason', {
-                          count: variantCount,
-                        })}
+                    {t('document-group.delete.blocked.variants-reason', {count: variantCount})}
                   </Text>
                 </li>
               )}
@@ -628,6 +749,10 @@ const References: ComponentType<ReferencesProps> = ({
   const renderPreviewItem = useCallback(
     (item: IncomingReference) => {
       const type = schema.get(item._type)
+      // While the strength is unknown (always, with Content Variants off) the row is main's.
+      if (type && !isStrengthKnown) {
+        return <ReferencePreviewLink type={type} value={item} onClick={onReferenceLinkClick} />
+      }
       if (type) {
         const preview = (
           <ReferencePreviewLink
@@ -663,7 +788,7 @@ const References: ComponentType<ReferencesProps> = ({
         </Box>
       )
     },
-    [schema, t, onReferenceLinkClick, ReferencePreviewLink],
+    [schema, t, onReferenceLinkClick, ReferencePreviewLink, isStrengthKnown],
   )
 
   if (internalReferences.totalCount === 0 && crossDatasetReferences.totalCount === 0) {
@@ -706,7 +831,10 @@ const References: ComponentType<ReferencesProps> = ({
         <Flex flexDirection="column">
           {internalReferences.totalCount > 0 && (
             <VStack as="ul" gap={2} data-testid="internal-references">
-              {sortRequiredFirst(internalReferences.references).map((item) => (
+              {(isStrengthKnown
+                ? sortRequiredFirst(internalReferences.references)
+                : internalReferences.references
+              ).map((item) => (
                 <Box key={item._id} as="li">
                   {renderPreviewItem(item)}
                 </Box>

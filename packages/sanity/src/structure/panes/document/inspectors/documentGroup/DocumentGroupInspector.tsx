@@ -69,6 +69,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
 
   // Once the last version is gone there is no document left to show: close the pane, as the
   // document menu's delete does, rather than leave an empty, editable form behind.
+  // With Content Variants off the pane stays open, as on main.
   function handleAllVersionsDeleted() {
     paneRouter.closeCurrentAndAfter()
   }
@@ -137,7 +138,7 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
             referringDocuments$={referringDocuments$}
             components={documentGroupInventoryComponents}
             onSelect={selectDocumentGroupVariant}
-            onAllVersionsDeleted={handleAllVersionsDeleted}
+            onAllVersionsDeleted={variantsEnabled ? handleAllVersionsDeleted : undefined}
           />
         )}
       </div>

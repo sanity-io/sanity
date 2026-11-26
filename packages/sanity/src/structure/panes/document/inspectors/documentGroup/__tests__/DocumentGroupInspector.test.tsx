@@ -117,12 +117,14 @@ const PANE_LAYOUT: PaneLayoutContextValue = {
 const COLLAPSED_PANE_LAYOUT: PaneLayoutContextValue = {...PANE_LAYOUT, collapsed: true}
 
 const test = baseTest
-  .extend('TestProvider', {scope: 'file'}, () =>
+  .extend('variantsEnabled', () => false)
+  .extend('TestProvider', ({variantsEnabled}) =>
     createTestProvider({
       resources: [structureUsEnglishLocaleBundle],
       config: {
         beta: {
           documentGroupInventory: {enabled: true},
+          ...(variantsEnabled ? {variants: {enabled: true}} : {}),
         },
       },
     }),
@@ -190,16 +192,32 @@ const test = baseTest
   })
 
 describe('DocumentGroupInspector', () => {
-  test('closes the document pane once a delete leaves no versions', async ({renderInspector}) => {
-    const {closeCurrentAndAfter} = await renderInspector()
+  describe('with Content Variants on', () => {
+    test.override('variantsEnabled', () => true)
+
+    test('closes the document pane once a delete leaves no versions', async ({renderInspector}) => {
+      const {closeCurrentAndAfter} = await renderInspector()
+      const {onAllVersionsDeleted} = lastInventoryProps() as Extract<
+        DocumentGroupInventoryProps,
+        {mode: 'manage'}
+      >
+
+      act(() => onAllVersionsDeleted?.())
+
+      expect(closeCurrentAndAfter).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  test('leaves the document pane open after a delete when Content Variants is off, as on main', async ({
+    renderInspector,
+  }) => {
+    await renderInspector()
     const {onAllVersionsDeleted} = lastInventoryProps() as Extract<
       DocumentGroupInventoryProps,
       {mode: 'manage'}
     >
 
-    act(() => onAllVersionsDeleted?.())
-
-    expect(closeCurrentAndAfter).toHaveBeenCalledTimes(1)
+    expect(onAllVersionsDeleted).toBeUndefined()
   })
 
   test('renders the inspector header and closes the inspector from it', async ({

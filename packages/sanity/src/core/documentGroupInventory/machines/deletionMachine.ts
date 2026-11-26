@@ -98,6 +98,11 @@ interface DeletionContext {
   versionIdsAtDelete: string[]
   /** Whether this instance may never delete anything. */
   readOnly: boolean
+  /**
+   * Whether Content Variants is on. Off, the machine deletes the way it did before the open beta:
+   * no blocked published document, no partial delete, and no `allVersionsDeleted` event.
+   */
+  variantsEnabled: boolean
 }
 
 type DeletionEvents =
@@ -113,7 +118,7 @@ export const deletionMachine = setup({
   types: {} as {
     context: DeletionContext
     events: DeletionEvents
-    input: {readOnly?: boolean} | undefined
+    input: {readOnly?: boolean; variantsEnabled?: boolean} | undefined
     tags: 'awaitingDeletionConfirmation' | 'warnIncomingReferences'
     emitted: {type: 'allVersionsDeleted'}
   },
@@ -141,9 +146,13 @@ export const deletionMachine = setup({
       context.ids.some(isPublishedId) && hasRequiredReferences(context.internalReferences),
     publishedBlockedByVariants: ({context}) =>
       context.ids.some(isPublishedId) && context.variantIds.length > 0,
-    publishedBlocked: or([
-      'publishedBlockedByVariants',
-      and(['hasCheckedIncomingReferences', 'publishedBlockedByRequiredReferences']),
+    variantsEnabled: ({context}) => context.variantsEnabled,
+    publishedBlocked: and([
+      'variantsEnabled',
+      or([
+        'publishedBlockedByVariants',
+        and(['hasCheckedIncomingReferences', 'publishedBlockedByRequiredReferences']),
+      ]),
     ]),
     hasUnpublishedSelection: ({context}) => context.ids.some((id) => !isPublishedId(id)),
     canConfirmDeletion: and([
@@ -160,6 +169,7 @@ export const deletionMachine = setup({
     deletedEveryVersion: ({context}) => {
       const deleted = new Set(context.deletingIds)
       return (
+        context.variantsEnabled &&
         context.versionIdsAtDelete.length > 0 &&
         context.versionIdsAtDelete.every((id) => deleted.has(id))
       )
@@ -186,6 +196,7 @@ export const deletionMachine = setup({
     deletingIds: [],
     versionIdsAtDelete: [],
     readOnly: input?.readOnly ?? false,
+    variantsEnabled: input?.variantsEnabled ?? false,
   }),
   on: {
     'selection.changed': {

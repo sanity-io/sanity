@@ -35,7 +35,12 @@ function referringDocuments(references: IncomingReference[]): ReferringDocuments
 function start(
   references: IncomingReference[],
   selectedIds: string[],
-  options?: {failFirstDelete?: boolean; versionIds?: string[]; variantIds?: string[]},
+  options?: {
+    failFirstDelete?: boolean
+    versionIds?: string[]
+    variantIds?: string[]
+    variantsEnabled?: boolean
+  },
 ) {
   const deleted: string[][] = []
   const deletion = deletionMachine.provide({
@@ -55,7 +60,11 @@ function start(
         events: {type: 'deletion.activated'} | {type: 'deletion.deactivated'}
       },
     }).createMachine({
-      context: ({spawn}) => ({deletionRef: spawn(deletion, {input: undefined})}),
+      context: ({spawn}) => ({
+        deletionRef: spawn(deletion, {
+          input: {variantsEnabled: options?.variantsEnabled ?? true},
+        }),
+      }),
       on: {'deletion.activated': {}, 'deletion.deactivated': {}},
     }),
   ).start()
@@ -227,6 +236,56 @@ describe('deletionMachine', () => {
     await waitFor(actor, (snapshot) => snapshot.matches('idle'))
 
     expect(emitted).toEqual(['allVersionsDeleted'])
+    parent.stop()
+  })
+})
+
+describe('deletionMachine with Content Variants off', () => {
+  const OFF = {variantsEnabled: false}
+
+  it('is off unless the input turns Content Variants on', () => {
+    const actor = createActor(deletionMachine, {input: undefined})
+    expect(actor.getSnapshot().context.variantsEnabled).toBe(false)
+  })
+
+  it('lets the published document go despite required links, as on main', async () => {
+    const {actor, parent, deleted} = start([REQUIRED], [PUBLISHED_ID, DRAFT_ID], OFF)
+    await waitFor(actor, (snapshot) => snapshot.context.incomingReferencesChecked)
+
+    expect(actor.getSnapshot().can({type: 'delete.confirm'})).toBe(true)
+    expect(actor.getSnapshot().can({type: 'delete.confirmExcludingPublished'})).toBe(false)
+    actor.send({type: 'delete.confirm'})
+    await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+
+    expect(deleted).toEqual([[PUBLISHED_ID, DRAFT_ID]])
+    parent.stop()
+  })
+
+  it('lets the published document go while variants exist, as on main', async () => {
+    const {actor, parent, deleted} = start([], [PUBLISHED_ID], {...OFF, variantIds: ['scope-a']})
+    await waitFor(actor, (snapshot) => snapshot.context.incomingReferencesChecked)
+
+    expect(actor.getSnapshot().can({type: 'delete.confirm'})).toBe(true)
+    expect(actor.getSnapshot().can({type: 'delete.confirmExcludingPublished'})).toBe(false)
+    actor.send({type: 'delete.confirm'})
+    await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+
+    expect(deleted).toEqual([[PUBLISHED_ID]])
+    parent.stop()
+  })
+
+  it('does not report an emptied document', async () => {
+    const {actor, parent, deleted, emitted} = start([], [PUBLISHED_ID, DRAFT_ID], {
+      ...OFF,
+      versionIds: [PUBLISHED_ID, DRAFT_ID],
+    })
+    await waitFor(actor, (snapshot) => snapshot.context.incomingReferencesChecked)
+
+    actor.send({type: 'delete.confirm'})
+    await waitFor(actor, (snapshot) => snapshot.matches('idle'))
+
+    expect(deleted).toEqual([[PUBLISHED_ID, DRAFT_ID]])
+    expect(emitted).toEqual([])
     parent.stop()
   })
 })
