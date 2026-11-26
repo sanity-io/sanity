@@ -1,5 +1,5 @@
 import {useCallback, useLayoutEffect, useRef} from 'react'
-import {getDraftId, getPublishedId, getVersionId, usePerspective, useWorkspace} from 'sanity'
+import {usePerspective, useWorkspace} from 'sanity'
 import {useRouter} from 'sanity/router'
 
 import {COMMENTS_INSPECTOR_NAME} from '../../../../core/comments-v2/constants'
@@ -11,6 +11,7 @@ import {CommentsEnabledProvider as CommentsEnabledProviderLegacy} from '../../..
 import {useCommentsEnabled as useCommentsEnabledLegacy} from '../../../../core/comments/hooks/useCommentsEnabled'
 import {getTargetScopeId} from '../../../../core/hooks/useTargetDocumentState'
 import {getDefaultVariant} from '../../../../core/perspective/getDefaultVariant'
+import {getDraftId, getPublishedId, getVersionId} from '../../../../core/util/draftUtils'
 import {encodeVariantLinkParam} from '../../../../core/variants/util/variantSelection'
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {useDocumentPane} from '../useDocumentPane'

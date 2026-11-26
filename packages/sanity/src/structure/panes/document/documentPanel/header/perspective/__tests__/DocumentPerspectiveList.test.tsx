@@ -1,13 +1,6 @@
 import {render, screen} from '@testing-library/react'
 import {type HTMLProps} from 'react'
-import {
-  getDraftId,
-  getVersionId,
-  type ReleaseDocument,
-  type ReleaseId,
-  useDocumentVersions,
-  usePerspective,
-} from 'sanity'
+import {type ReleaseDocument, type ReleaseId, usePerspective} from 'sanity'
 import {SingleDocReleaseContext} from 'sanity/_singletons'
 import {type IntentLinkProps} from 'sanity/router'
 import {
@@ -23,7 +16,9 @@ import {
 
 import {createTestProvider} from '../../../../../../../../test/testUtils/TestProvider'
 import {useFilteredReleases} from '../../../../../../../core/hooks/useFilteredReleases'
+import {useDocumentVersions} from '../../../../../../../core/releases/hooks/useDocumentVersions'
 import {useActiveReleases} from '../../../../../../../core/releases/store/useActiveReleases'
+import {getDraftId, getVersionId} from '../../../../../../../core/util/draftUtils'
 import {
   type DocumentPaneContextValue,
   type DocumentPaneInfoContextValue,
@@ -34,15 +29,23 @@ import {DocumentPerspectiveList} from '../DocumentPerspectiveList'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useOnlyHasVersions: vi.fn().mockReturnValue(false),
   usePerspective: vi.fn(),
+  SANITY_VERSION: '0.0.0',
+}))
+
+vi.mock('../../../../../../../core/releases/hooks/useOnlyHasVersions', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useOnlyHasVersions: vi.fn().mockReturnValue(false),
+}))
+
+vi.mock('../../../../../../../core/releases/hooks/useDocumentVersions', async (importOriginal) => ({
+  ...(await importOriginal()),
   useDocumentVersions: vi.fn().mockReturnValue({
     data: [],
     error: null,
     loading: true,
     versions: [],
   }),
-  SANITY_VERSION: '0.0.0',
 }))
 vi.mock('../../../../../../../core/hooks/useFilteredReleases', async (importOriginal) => ({
   ...(await importOriginal()),

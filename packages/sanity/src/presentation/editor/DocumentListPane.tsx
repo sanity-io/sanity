@@ -1,12 +1,12 @@
 import {Card, Label} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {type ErrorInfo, useCallback, useEffect, useMemo, useState} from 'react'
-import {getPublishedId} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {PaneLayout} from 'sanity/structure'
 import {styled} from 'styled-components'
 import {Flex, VStack} from 'ui5'
 
+import {getPublishedId} from '../../core/util/draftUtils'
 import {ORDER_BY_IDS_PARAM_FIELD} from '../../structure/panes/documentList/orderByIdsParam'
 import {PaneContainer as StructureDocumentListPane} from '../../structure/panes/documentList/PaneContainer'
 import {StructureToolProvider} from '../../structure/StructureToolProvider'

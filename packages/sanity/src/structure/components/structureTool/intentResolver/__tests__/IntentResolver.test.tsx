@@ -33,7 +33,7 @@ const {mockNavigate, mockRouter, mockResolveTypeForDocument, mockResolveIntent, 
     }
   })
 
-vi.mock('sanity', async (importOriginal) => ({
+vi.mock('../../../../../core/store/datastores', async (importOriginal) => ({
   ...(await importOriginal()),
   useDocumentStore: () =>
     ({

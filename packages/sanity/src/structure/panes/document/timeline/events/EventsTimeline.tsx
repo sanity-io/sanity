@@ -1,20 +1,20 @@
 import {Spinner} from '@sanity/ui'
 import {motion, type Variants} from 'motion/react'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {
-  type DocumentGroupEvent,
-  getDocumentVariantType,
-  isCreateDocumentVersionEvent,
-  isDeleteDocumentVersionEvent,
-  isEditDocumentVersionEvent,
-  isPublishDocumentVersionEvent,
-} from 'sanity'
+import {type DocumentGroupEvent} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box} from 'ui5'
 
 import {CommandList} from '../../../../../core/components/commandList/CommandList'
 import {type CommandListRenderItemCallback} from '../../../../../core/components/commandList/types'
 import {LoadingBlock} from '../../../../../core/components/loadingBlock/LoadingBlock'
+import {
+  isCreateDocumentVersionEvent,
+  isDeleteDocumentVersionEvent,
+  isEditDocumentVersionEvent,
+  isPublishDocumentVersionEvent,
+} from '../../../../../core/store/events/types'
+import {getDocumentVariantType} from '../../../../../core/util/getDocumentVariantType'
 import {TIMELINE_LIST_WRAPPER_ID} from '../../constants'
 import {ExpandableTimelineItemButton} from '../expandableTimelineItemButton'
 import {ListWrapper, Root} from '../timeline.styled'

@@ -2,13 +2,9 @@ import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {defer, isObservable, map, type Observable, of, tap} from 'rxjs'
 import {startWith} from 'rxjs/operators'
-import {
-  type ObjectSchemaType,
-  type PreviewableType,
-  useDocumentPreviewStore,
-  useDocumentStore,
-} from 'sanity'
+import {type ObjectSchemaType, type PreviewableType} from 'sanity'
 
+import {useDocumentPreviewStore, useDocumentStore} from '../core/store/datastores'
 import {
   type DocumentLocationResolver,
   type DocumentLocationResolvers,

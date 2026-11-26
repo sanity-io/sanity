@@ -4,18 +4,18 @@ import {
   type DocumentActionComponent,
   type DocumentActionModalDialogProps,
   useCurrentUser,
-  useDocumentOperation,
-  useDocumentPairPermissions,
   usePerspective,
 } from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 
 import {InsufficientPermissionsMessage} from '../../core/components/InsufficientPermissionsMessage'
+import {useDocumentOperation} from '../../core/hooks/useDocumentOperation'
 import {
   getPairTarget,
   getTargetScopeId,
   getTargetSiblings,
 } from '../../core/hooks/useTargetDocumentState'
+import {useDocumentPairPermissions} from '../../core/store/grants/documentPairPermissions'
 import {ConfirmDeleteDialog} from '../components/confirmDeleteDialog'
 import {structureLocaleNamespace} from '../i18n'
 import {useDocumentPane} from '../panes/document/useDocumentPane'

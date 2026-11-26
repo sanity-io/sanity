@@ -21,8 +21,14 @@ const schema = Schema.compile({
 
 vi.mock('sanity', () => ({
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
-  useSchema: () => schema,
 }))
+vi.mock(
+  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useSchema: () => schema,
+  }),
+)
 vi.mock('sanity/i18n', () => ({
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
   InlineCode: ({children}: {children?: ReactNode}) => <code>{children}</code>,

@@ -1,7 +1,7 @@
 import {memo, useCallback} from 'react'
-import {getPublishedId} from 'sanity'
 
 import {SingleDocReleaseProvider} from '../../../core/singleDocRelease/context/SingleDocReleaseProvider'
+import {getPublishedId} from '../../../core/util/draftUtils'
 import {usePaneRouter} from '../../components/paneRouter/usePaneRouter'
 import {DocumentEventsPane} from './DocumentEventsPane'
 import {DocumentPerspectiveProvider} from './DocumentPerspectiveProvider'

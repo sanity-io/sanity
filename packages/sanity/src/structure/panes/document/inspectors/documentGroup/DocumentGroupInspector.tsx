@@ -1,11 +1,5 @@
 import {useMemo, useState} from 'react'
-import {
-  type DocumentInspectorProps,
-  getReleaseIdFromReleaseDocumentId,
-  readVersionType,
-  useClient,
-  useDocumentStore,
-} from 'sanity'
+import {type DocumentInspectorProps, useClient} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Flex} from 'ui5'
 
@@ -17,9 +11,12 @@ import {DocumentGroupInventoryFeedbackAction} from '../../../../../core/document
 import {type DocumentGroupInventoryComponents} from '../../../../../core/documentGroupInventory/types'
 import {useSetVariant} from '../../../../../core/perspective/useSetVariant'
 import {type VersionInfoDocumentStub} from '../../../../../core/releases/store/types'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../../../../../core/releases/util/isGoingToUnpublish'
+import {useDocumentStore} from '../../../../../core/store/datastores'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../core/studioClient'
 import {getDocumentVersionVariantId} from '../../../../../core/util/getDocumentVersionVariant'
+import {readVersionType} from '../../../../../core/util/versionsUtils'
 import {ReferencePreviewLink} from '../../../../components/confirmDeleteDialog/ReferencePreviewLink'
 import {referringDocuments} from '../../../../components/confirmDeleteDialog/useReferringDocuments'
 import {VersionsPreviewList} from '../../../../components/confirmDeleteDialog/VersionsPreviewList'

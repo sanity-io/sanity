@@ -7,8 +7,8 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {PresenceOverlay} from 'sanity'
 import {
+  PresenceOverlay,
   type DocumentPresence,
   FieldPresence,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'

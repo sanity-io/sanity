@@ -7,10 +7,10 @@ import {
   defineField,
   defineType,
   type FieldProps,
-  getPublishedId,
   type ItemProps,
   useFormValue,
 } from 'sanity'
+import {getPublishedId} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Text} from 'ui5'
 
 const DOCUMENT_TYPE = 'sdkProjectionNoSuspense'

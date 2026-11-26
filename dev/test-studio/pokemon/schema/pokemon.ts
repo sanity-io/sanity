@@ -1,4 +1,5 @@
-import {defineArrayMember, defineField, defineType, getPublishedId} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
+import {getPublishedId} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {
   EGG_GROUPS,

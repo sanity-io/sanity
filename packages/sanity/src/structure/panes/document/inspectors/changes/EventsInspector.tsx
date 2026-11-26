@@ -4,14 +4,7 @@ import {BoundaryElementProvider, Card, Spinner} from '@sanity/ui'
 import {motion} from 'motion/react'
 import {type ReactElement, type ReactNode, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
-import {
-  type DocumentGroupEvent,
-  isNonSelectableTerminalEvent,
-  type ObjectDiff,
-  type ObjectSchemaType,
-  useEditState,
-  usePerspective,
-} from 'sanity'
+import {type DocumentGroupEvent, type ObjectSchemaType, usePerspective} from 'sanity'
 import {DocumentChangeContext} from 'sanity/_singletons'
 import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box, Grid} from 'ui5'
@@ -23,9 +16,12 @@ import {ChangeList} from '../../../../../core/field/diff/components/ChangeList'
 import {ChangesError} from '../../../../../core/field/diff/components/ChangesError'
 import {NoChanges} from '../../../../../core/field/diff/components/NoChanges'
 import {type DocumentChangeContextInstance} from '../../../../../core/field/diff/contexts/DocumentChangeContext'
+import {type ObjectDiff} from '../../../../../core/field/types'
+import {useEditState} from '../../../../../core/hooks/useEditState'
 import {getTargetSiblings} from '../../../../../core/hooks/useTargetDocumentState'
 import {isReleaseDocument} from '../../../../../core/releases/store/types'
 import {useEvents} from '../../../../../core/store/events/EventsProvider'
+import {isNonSelectableTerminalEvent} from '../../../../../core/store/events/types'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {EventsTimelineMenu} from '../../timeline/events/EventsTimelineMenu'
 import {useDocumentPane} from '../../useDocumentPane'

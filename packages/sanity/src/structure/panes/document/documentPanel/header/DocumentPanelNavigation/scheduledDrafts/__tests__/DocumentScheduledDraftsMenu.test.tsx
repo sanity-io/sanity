@@ -1,10 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {render, screen, within} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
-import {useDocumentVersions, usePerspective} from 'sanity'
+import {usePerspective} from 'sanity'
 import {afterEach, beforeAll, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../../../test/testUtils/TestProvider'
+import {useDocumentVersions} from '../../../../../../../../core/releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../../../../../../../../core/releases/store/types'
 import {useActiveReleases} from '../../../../../../../../core/releases/store/useActiveReleases'
 import {useScheduledDraftsEnabled} from '../../../../../../../../core/singleDocRelease/hooks/useScheduledDraftsEnabled'
@@ -24,9 +25,16 @@ import {DocumentScheduledDraftsMenu} from '../DocumentScheduledDraftsMenu'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
-  useDocumentVersions: vi.fn(),
   usePerspective: vi.fn(),
 }))
+
+vi.mock(
+  '../../../../../../../../core/releases/hooks/useDocumentVersions',
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    useDocumentVersions: vi.fn(),
+  }),
+)
 
 vi.mock('../../../../../../../../core/releases/store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(),

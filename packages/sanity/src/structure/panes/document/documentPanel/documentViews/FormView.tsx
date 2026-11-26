@@ -10,15 +10,10 @@ import {
 } from 'react'
 import {tap} from 'rxjs/operators'
 import {
-  createPatchChannel,
   type DocumentMutationEvent,
   type DocumentRebaseEvent,
   type FormDocumentValue,
-  fromMutationPatches,
   type PatchMsg,
-  PresenceOverlay,
-  useDocumentPresence,
-  useDocumentStore,
   usePerspective,
 } from 'sanity'
 import {useTranslation} from 'sanity/i18n'
@@ -27,9 +22,14 @@ import {Text, Flex, Box} from 'ui5'
 import {Delay} from '../../../../../core/components/Delay'
 import {FormContainer} from '../../../../../core/form/components/layout/FormContainer'
 import {FormRow} from '../../../../../core/form/components/layout/FormRow'
+import {createPatchChannel} from '../../../../../core/form/patch/PatchChannel'
 import {FormBuilder} from '../../../../../core/form/studio/FormBuilder'
+import {fromMutationPatches} from '../../../../../core/form/utils/mutationPatch'
 import {useConditionalToast} from '../../../../../core/hooks/useConditionalToast'
 import {getTargetScopeId} from '../../../../../core/hooks/useTargetDocumentState'
+import {PresenceOverlay} from '../../../../../core/presence/overlay/PresenceOverlay'
+import {useDocumentStore} from '../../../../../core/store/datastores'
+import {useDocumentPresence} from '../../../../../core/store/presence/useDocumentPresence'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {isDocumentLoading} from '../../isDocumentLoading'
 import {useDocumentPane} from '../../useDocumentPane'

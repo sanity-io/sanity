@@ -1,6 +1,7 @@
+import {isValidationError} from '@sanity/types'
 import {Select} from '@sanity/ui'
 import {useCallback, useState, type RefAttributes} from 'react'
-import {isValidationError, type ObjectInputProps, type ObjectSchemaType, set, unset} from 'sanity'
+import {type ObjectInputProps, type ObjectSchemaType, set, unset} from 'sanity'
 
 type Value = {title: string; value: string}
 

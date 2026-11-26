@@ -19,9 +19,39 @@ const schema = {
 }
 
 vi.mock('sanity', () => ({
-  useSchema: () => schema,
   useDataset: () => 'workspace-dataset',
   useProjectId: () => 'workspace-project',
+}))
+
+const previews = new Map<string, {title?: string; subtitle?: string}>()
+const useValuePreview = vi.fn(
+  ({value}: {value: {_id: string}; schemaType: unknown; perspectiveStack: unknown}) => {
+    const preview = previews.get(value._id)
+    return preview ? {isLoading: false, value: preview} : {isLoading: true}
+  },
+)
+
+vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
+  CommandList: ({
+    items,
+    renderItem,
+  }: {
+    items: unknown[]
+    renderItem: (item: unknown, context: {activeIndex: number}) => ReactNode
+  }) => (
+    <div data-testid="command-list">
+      {items.map((item, index) => (
+        // oxlint-disable-next-line react/no-array-index-key -- a stand-in for the virtualized list
+        <div key={index}>{renderItem(item, {activeIndex: index})}</div>
+      ))}
+    </div>
+  ),
+  useValuePreview: (props: {
+    value: {_id: string}
+    schemaType: unknown
+    perspectiveStack: unknown
+  }) => useValuePreview(props),
+  useSchema: () => schema,
   getPublishedId: (id: string) => id.replace(/^(drafts\.|versions\.[^.]+\.)/, ''),
   isDraftId: (id: string) => id.startsWith('drafts.'),
   getVersionFromId: (id: string) => /^versions\.([^.]+)\./.exec(id)?.[1],
@@ -59,36 +89,6 @@ vi.mock('sanity', () => ({
     ) : (
       <div>{children}</div>
     ),
-}))
-
-const previews = new Map<string, {title?: string; subtitle?: string}>()
-const useValuePreview = vi.fn(
-  ({value}: {value: {_id: string}; schemaType: unknown; perspectiveStack: unknown}) => {
-    const preview = previews.get(value._id)
-    return preview ? {isLoading: false, value: preview} : {isLoading: true}
-  },
-)
-
-vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', () => ({
-  CommandList: ({
-    items,
-    renderItem,
-  }: {
-    items: unknown[]
-    renderItem: (item: unknown, context: {activeIndex: number}) => ReactNode
-  }) => (
-    <div data-testid="command-list">
-      {items.map((item, index) => (
-        // oxlint-disable-next-line react/no-array-index-key -- a stand-in for the virtualized list
-        <div key={index}>{renderItem(item, {activeIndex: index})}</div>
-      ))}
-    </div>
-  ),
-  useValuePreview: (props: {
-    value: {_id: string}
-    schemaType: unknown
-    perspectiveStack: unknown
-  }) => useValuePreview(props),
 }))
 
 vi.mock('sanity/router', () => ({

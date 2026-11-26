@@ -1,9 +1,5 @@
 import {memo} from 'react'
 import {
-  getDraftId,
-  getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
-  getVersionId,
   type ReleaseDocument,
   type SanityDocumentLike,
   useDateTimeFormat,
@@ -17,9 +13,11 @@ import {VersionChip} from '../../../../../../core/releases/components/documentHe
 import {ReleaseTitle} from '../../../../../../core/releases/components/ReleaseTitle'
 import {useFormatRelativeLocalePublishDate} from '../../../../../../core/releases/hooks/useFormatRelativeLocalePublishDate'
 import {useActiveReleases} from '../../../../../../core/releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../../../../../core/releases/util/getReleaseTone'
 import {isGoingToUnpublish} from '../../../../../../core/releases/util/isGoingToUnpublish'
 import {isReleaseScheduledOrScheduling} from '../../../../../../core/releases/util/util'
+import {getDraftId, getPublishedId, getVersionId} from '../../../../../../core/util/draftUtils'
 import {useDocumentPerspectiveList} from '../../../../../hooks/useDocumentPerspectiveList'
 import {useDocumentPane} from '../../../useDocumentPane'
 import {useDocumentPaneInfo} from '../../../useDocumentPaneInfo'

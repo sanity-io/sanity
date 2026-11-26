@@ -7,7 +7,8 @@ import {describe, expect, it, vi} from 'vitest'
 import {type DocumentLocationsState} from '../types'
 import {useDocumentLocations} from '../useDocumentLocations'
 
-vi.mock('sanity', () => ({
+vi.mock('../../core/store/datastores', async (importOriginal) => ({
+  ...(await importOriginal()),
   useDocumentStore: () => ({}),
   useDocumentPreviewStore: () => ({}),
 }))

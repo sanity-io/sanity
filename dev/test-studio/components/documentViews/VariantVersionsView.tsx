@@ -1,24 +1,21 @@
+import {type SanityClient} from '@sanity/client'
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Button, Card, Dialog, Inline} from '@sanity/ui'
 import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, of, type Observable} from 'rxjs'
-import {
-  getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
-  isRecord,
-  useClient,
-  useDateTimeFormat,
-  useDocumentPreviewStore,
-  useDocumentVersions,
-  usePerspective,
-} from 'sanity'
+import {useClient, useDateTimeFormat, usePerspective} from 'sanity'
 import {
   getDefaultVariant,
+  getPublishedId,
+  getReleaseIdFromReleaseDocumentId,
   getTargetDocument,
   getVariantTitle,
+  isRecord,
   useActiveReleases,
+  useDocumentPreviewStore,
+  useDocumentVersions,
   VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Text, Box, Grid, VStack, Icon, Link} from 'ui5'
@@ -67,8 +64,7 @@ const INITIAL_DOCUMENT_JSON_STATE: DocumentJsonState = {
   loading: true,
 }
 
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-function buildDocumentQueryUrl(client: ReturnType<typeof useClient>, documentId: string): string {
+function buildDocumentQueryUrl(client: SanityClient, documentId: string): string {
   const searchParams = new URLSearchParams()
   searchParams.set('query', DOCUMENT_QUERY)
   searchParams.set('$id', JSON.stringify(documentId))

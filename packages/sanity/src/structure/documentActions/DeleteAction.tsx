@@ -2,20 +2,17 @@ import {TrashIcon} from '@sanity/icons/Trash'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useMemo, useState} from 'react'
 import {catchError, filter, firstValueFrom, map, of, timeout} from 'rxjs'
-import {
-  type DocumentActionComponent,
-  useCurrentUser,
-  useDocumentOperation,
-  useDocumentPairPermissions,
-  useDocumentStore,
-  useDocumentVersionTypeSortedList,
-} from 'sanity'
+import {type DocumentActionComponent, useCurrentUser} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 
 import {InsufficientPermissionsMessage} from '../../core/components/InsufficientPermissionsMessage'
+import {useDocumentOperation} from '../../core/hooks/useDocumentOperation'
 import {getPairTarget, getTargetScopeId} from '../../core/hooks/useTargetDocumentState'
+import {useDocumentVersionTypeSortedList} from '../../core/releases/hooks/useDocumentVersionTypeSortedList'
 import {isReleaseScheduledOrScheduling} from '../../core/releases/util/util'
 import {isAgentBundleName} from '../../core/store/agent/createAgentBundlesStore'
+import {useDocumentStore} from '../../core/store/datastores'
+import {useDocumentPairPermissions} from '../../core/store/grants/documentPairPermissions'
 import {ConfirmDeleteDialog} from '../components/confirmDeleteDialog'
 import {type DeleteReferenceCounts} from '../components/confirmDeleteDialog/ConfirmDeleteDialog'
 import {structureLocaleNamespace} from '../i18n'

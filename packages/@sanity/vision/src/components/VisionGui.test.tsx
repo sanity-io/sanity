@@ -58,7 +58,6 @@ vi.mock('sanity', () => ({
   usePerspective: sanityMocks.usePerspective,
   useClient: sanityMocks.useClient,
   useWorkspace: () => sanityMocks.workspace,
-  getReleaseIdFromReleaseDocumentId: (id: string) => id.replace(/^_.releases./, ''),
 }))
 vi.mock('sanity/i18n', () => ({
   useTranslation: () => ({t: (key: string) => key}),

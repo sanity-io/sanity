@@ -1,14 +1,13 @@
 import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {WarningOutlineIcon} from '@sanity/icons/WarningOutline'
+import {isValidationError, isValidationWarning} from '@sanity/types'
 import {useMemo} from 'react'
 import {
   type DocumentInspector,
   type DocumentInspectorMenuItem,
   type DocumentInspectorUseMenuItemProps,
   type FormNodeValidation,
-  isValidationError,
-  isValidationWarning,
 } from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 

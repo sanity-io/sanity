@@ -1,0 +1,14 @@
+diff --git a/dist/index.js b/dist/index.js
+index 5e8678b243572674a3ff90158014a51940b386af..d0d68b2afc92610f9aeda044f9d416fe11a54fc4 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -8,7 +8,8 @@ import { RemoveCircleIcon } from "@sanity/icons/RemoveCircle";
+ import { RestoreIcon } from "@sanity/icons/Restore";
+ import { Menu, MenuItem } from "@sanity/ui/menu";
+ import { useContext, useEffect, useRef, useState } from "react";
+-import { UserAvatar, useClient, useDocumentStore, useWorkspace } from "sanity";
++import { useClient, useWorkspace } from "sanity";
++import { UserAvatar, useDocumentStore } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver";
+ import { createImageUrlBuilder } from "@sanity/image-url";
+ import { dequal } from "dequal/lite";
+ import { catchError, distinctUntilChanged } from "rxjs/operators";

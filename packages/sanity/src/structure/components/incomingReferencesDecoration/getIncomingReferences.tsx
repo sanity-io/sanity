@@ -1,13 +1,9 @@
 import {dequal} from 'dequal/lite'
 import {catchError, distinctUntilChanged, filter, map, type Observable, of, switchMap} from 'rxjs'
 import {mergeMapArray} from 'rxjs-mergemap-array'
-import {
-  type DocumentPreviewStore,
-  getPublishedId,
-  type SanityClient,
-  type SanityDocument,
-} from 'sanity'
+import {type DocumentPreviewStore, type SanityClient, type SanityDocument} from 'sanity'
 
+import {getPublishedId} from '../../../core/util/draftUtils'
 import {type IncomingReferencesFilterResolver, type IncomingReferencesOptions} from './types'
 
 async function resolveRawFilterCallback(
