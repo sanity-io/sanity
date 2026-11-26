@@ -352,9 +352,18 @@ export const VisionSettingsChanged = defineEvent<{section: VisionSettingsSection
 
 /**
  * Keyboard shortcuts. Running the query by shortcut is also Vision Query Run with
- * trigger `shortcut`.
+ * trigger `shortcut`. Opening and closing a tab by shortcut is also Vision Tabs Changed, and
+ * switching tabs by shortcut is also Vision Tab Used with action `select`.
  */
-export type VisionShortcut = 'fetch' | 'prettify' | 'copy-query' | 'extract-function'
+export type VisionShortcut =
+  | 'fetch'
+  | 'prettify'
+  | 'copy-query'
+  | 'extract-function'
+  | 'new-tab'
+  | 'close-tab'
+  | 'next-tab'
+  | 'previous-tab'
 
 export const VisionShortcutUsed = defineEvent<{shortcut: VisionShortcut}>({
   name: 'Vision Shortcut Used',

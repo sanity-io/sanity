@@ -4,8 +4,27 @@ import {Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {useVisionActor} from '../../store/VisionActorContext'
-import {EDITOR_SHORTCUTS, VISION_SHORTCUT_LIST} from '../../util/shortcuts'
+import {
+  EDITOR_SHORTCUTS,
+  VISION_SHORTCUT_LIST,
+  VISION_TAB_SHORTCUT_LIST,
+} from '../../util/shortcuts'
 import * as themeStyles from '../themeTokens.module.css'
+
+const VSCODE_TAB_KEYS = VISION_TAB_SHORTCUT_LIST.map(({vscodeKeys}) => vscodeKeys.join('+')).join(
+  ', ',
+)
+
+function ShortcutRow({keys, label}: {keys: string[]; label: string}) {
+  return (
+    <Flex alignItems="center" gap={3} justifyContent="space-between">
+      <Text size={1} as="div" trim={true}>
+        {label}
+      </Text>
+      <Hotkeys fontSize={1} keys={keys} />
+    </Flex>
+  )
+}
 
 export function ShortcutsDialog() {
   const {t} = useTranslation(visionLocaleNamespace)
@@ -24,25 +43,24 @@ export function ShortcutsDialog() {
     >
       <Box className={themeStyles.themeTokens} padding={4}>
         <Stack gap={4}>
-          {[...VISION_SHORTCUT_LIST, ...EDITOR_SHORTCUTS].map((shortcut) => (
-            <Flex
-              alignItems="center"
-              gap={3}
-              justifyContent="space-between"
+          {[...VISION_SHORTCUT_LIST, ...VISION_TAB_SHORTCUT_LIST].map((shortcut) => (
+            <ShortcutRow
               key={shortcut.labelKey}
-            >
-              <Text size={1} as="div" trim={true}>
-                {t(shortcut.labelKey)}
-              </Text>
-              <Hotkeys fontSize={1} keys={shortcut.keys} />
-            </Flex>
+              keys={shortcut.keys}
+              label={t(shortcut.labelKey)}
+            />
           ))}
-          <Flex alignItems="center" gap={3} justifyContent="space-between">
-            <Text size={1} as="div" trim={true}>
-              {t('vision.shortcuts.close')}
-            </Text>
-            <Hotkeys fontSize={1} keys={['Esc']} />
-          </Flex>
+          <Text muted size={1} as="div">
+            {t('vision.shortcuts.tabs-app-window', {keys: VSCODE_TAB_KEYS})}
+          </Text>
+          {EDITOR_SHORTCUTS.map((shortcut) => (
+            <ShortcutRow
+              key={shortcut.labelKey}
+              keys={shortcut.keys}
+              label={t(shortcut.labelKey)}
+            />
+          ))}
+          <ShortcutRow keys={['Esc']} label={t('vision.shortcuts.close')} />
         </Stack>
       </Box>
     </Dialog>
