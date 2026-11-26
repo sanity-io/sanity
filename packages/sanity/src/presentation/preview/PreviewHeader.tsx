@@ -4,7 +4,7 @@ import {PanelLeftIcon} from '@sanity/icons/PanelLeft'
 import {RefreshIcon} from '@sanity/icons/Refresh'
 import {Card, Hotkeys, Switch} from '@sanity/ui'
 import {useSelector} from '@xstate/react'
-import {type RefObject, useCallback, useMemo} from 'react'
+import {type RefObject, useCallback, useMemo, ViewTransition, type ViewTransitionClass} from 'react'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box} from 'ui5'
 
@@ -12,12 +12,18 @@ import {Button} from '../../ui-components/button/Button'
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'
 import {presentationLocaleNamespace} from '../i18n'
 import {type HeaderOptions} from '../types'
-import {useId} from '../useId'
+import {IFRAME_VIEWPORT_TRANSITION} from './IFrame'
 import {OpenPreviewButton} from './OpenPreviewButton'
 import {type PreviewProps} from './Preview'
 import {PreviewLocationInput} from './PreviewLocationInput'
 import {resolvePreviewLocationRoute} from './resolvePreviewLocationRoute'
 import {SharePreviewMenu} from './SharePreviewMenu'
+
+/*
+ * The toggle's tooltip is open while the iframe resizes, and has to be part of the transition to
+ * stay above the iframe's snapshot
+ */
+const VIEWPORT_TOGGLE: ViewTransitionClass = {default: 'none', [IFRAME_VIEWPORT_TRANSITION]: 'auto'}
 
 /** @public */
 export interface PreviewHeaderProps extends PreviewProps {
@@ -88,8 +94,6 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
     () => resolvePreviewLocationRoute(previewUrl, targetOrigin),
     [previewUrl, targetOrigin],
   )
-
-  const perspectiveToggleTooltipId = useId()
 
   /**
    * If the preview URL machine is busy it means it's about to change the target origin and reload the iframe,
@@ -224,32 +228,31 @@ const PreviewHeaderDefault = (props: Omit<PreviewHeaderProps, 'renderDefault'>) 
       </Box>
 
       <Flex alignItems="center" flexBasis="auto" flexGrow={0} flexShrink={0} gap={1}>
-        <Tooltip
-          animate
-          ref={(node) => {
-            node?.style.setProperty('view-transition-name', perspectiveToggleTooltipId)
-          }}
-          content={
-            <Text size={1} as="div" trim={true}>
-              {t('preview-frame.viewport-button.tooltip', {
-                context: viewport === 'desktop' ? 'narrow' : 'full',
-              })}
-            </Text>
-          }
-          fallbackPlacements={['bottom-start']}
-          placement="bottom"
-          portal
-        >
-          <Button
-            data-testid="preview-viewport-toggle"
-            data-viewport={viewport}
-            aria-label={t('preview-frame.viewport-button.aria-label')}
-            icon={viewport === 'desktop' ? MobileDeviceIcon : DesktopIcon}
-            mode="bleed"
-            onClick={toggleViewportSize}
-            tooltipProps={null}
-          />
-        </Tooltip>
+        <ViewTransition default={VIEWPORT_TOGGLE}>
+          <Tooltip
+            animate
+            content={
+              <Text size={1} as="div" trim={true}>
+                {t('preview-frame.viewport-button.tooltip', {
+                  context: viewport === 'desktop' ? 'narrow' : 'full',
+                })}
+              </Text>
+            }
+            fallbackPlacements={['bottom-start']}
+            placement="bottom"
+            portal
+          >
+            <Button
+              data-testid="preview-viewport-toggle"
+              data-viewport={viewport}
+              aria-label={t('preview-frame.viewport-button.aria-label')}
+              icon={viewport === 'desktop' ? MobileDeviceIcon : DesktopIcon}
+              mode="bleed"
+              onClick={toggleViewportSize}
+              tooltipProps={null}
+            />
+          </Tooltip>
+        </ViewTransition>
       </Flex>
 
       {canSharePreviewAccess && (
