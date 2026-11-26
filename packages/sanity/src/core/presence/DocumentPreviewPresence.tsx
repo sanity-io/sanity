@@ -9,15 +9,33 @@ import {useTranslation} from '../i18n/hooks/useTranslation'
 import {useActiveReleases} from '../releases/store/useActiveReleases'
 import {getReleaseIdFromReleaseDocumentId} from '../releases/util/getReleaseIdFromReleaseDocumentId'
 import {type DocumentPresence} from '../store/presence/types'
+import {useWorkspace} from '../studio/workspace'
 import {getVersionFromId} from '../util/draftUtils'
 import {isNonNullable} from '../util/isNonNullable'
 
 /** @internal */
 export interface DocumentPreviewPresenceProps {
   presence: Omit<DocumentPresence, 'path'>[]
+  /**
+   * Whether hovering the avatars opens a tooltip that says who is editing. Document list rows with
+   * the versions flyout pass `false`: the flyout is the row's only overlay, and says who is editing
+   * in its first line. Defaults to `true`.
+   */
+  tooltip?: boolean
 }
 
 const PRESENCE_MENU_POPOVER_PROPS: TooltipProps = {
+  portal: true,
+}
+
+/**
+ * With Variants on, the tooltip opens to the left of the avatars, over its own row's title, so it
+ * never covers the next row in a document list. Above or below only when there is no room on the
+ * left. With Variants off it keeps main's placement.
+ */
+const VARIANTS_PRESENCE_MENU_POPOVER_PROPS: TooltipProps = {
+  fallbackPlacements: ['top', 'bottom'],
+  placement: 'left',
   portal: true,
 }
 
@@ -31,10 +49,11 @@ const AvatarStackBox = styled.div((props) => {
 
 /** @internal */
 export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
-  const {presence} = props
+  const {presence, tooltip = true} = props
   // Previews render in every studio, with or without the releases plugin, so these strings live
   // in the always registered `studio` namespace
   const {t} = useTranslation()
+  const isVariantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
 
   const {data: releases} = useActiveReleases()
 
@@ -74,15 +93,29 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
     return undefined
   }, [releases, t, uniquePresence])
 
+  const avatars = (
+    <AvatarStackBox>
+      <AvatarStack maxLength={2} aria-label={tooltipContent} size={0}>
+        {uniquePresence.map((item) => (
+          // With Variants on, the tooltip and the stack's `aria-label` name everyone, so each avatar
+          // leaves out the browser's own name tooltip, which would show as a third layer over the
+          // row. With Variants off each avatar keeps it, as on main.
+          <UserAvatar hideTitle={isVariantsEnabled} key={item.user.id} size={0} user={item.user} />
+        ))}
+      </AvatarStack>
+    </AvatarStackBox>
+  )
+
+  if (!tooltip) {
+    return avatars
+  }
+
   return (
-    <Tooltip content={tooltipContent} {...PRESENCE_MENU_POPOVER_PROPS}>
-      <AvatarStackBox>
-        <AvatarStack maxLength={2} aria-label={tooltipContent} size={0}>
-          {uniquePresence.map((item) => (
-            <UserAvatar key={item.user.id} size={0} user={item.user} />
-          ))}
-        </AvatarStack>
-      </AvatarStackBox>
+    <Tooltip
+      content={tooltipContent}
+      {...(isVariantsEnabled ? VARIANTS_PRESENCE_MENU_POPOVER_PROPS : PRESENCE_MENU_POPOVER_PROPS)}
+    >
+      {avatars}
     </Tooltip>
   )
 }

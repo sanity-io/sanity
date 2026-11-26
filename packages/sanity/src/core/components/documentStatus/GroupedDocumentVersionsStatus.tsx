@@ -1,34 +1,20 @@
-import {useMemo} from 'react'
 import {Box, Flex, Text} from 'ui5'
 
 import {useCompactTimeAgo} from '../../hooks/useRelativeTime'
 import {useSchema} from '../../hooks/useSchema'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
-import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {readVersionType} from '../../util/versionsUtils'
-import {useAllVariants} from '../../variants/store/useAllVariants'
-import {getVariantId, getVariantTitle} from '../../variants/tool/util'
 import {DocumentStatusIcon} from '../documentStatusIndicator/DocumentVersionsStatusIndicator'
+import {getAudienceName} from './getAudienceName'
 import {getGroupedDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
 import {lineIcons, lineName, root} from './GroupedDocumentVersionsStatus.css'
-import {
-  type DocumentVersionStatusGroup,
-  type DocumentVersionStatusItem,
-  groupDocumentVersionsForStatus,
-  SHOW_AGENT_VERSIONS_IN_STATUS,
-} from './sortDocumentVersionsForStatus'
+import {type DocumentVersionStatusGroup} from './sortDocumentVersionsForStatus'
+import {latestEdit, useDocumentVersionStatusGroups} from './useDocumentVersionStatusGroups'
 
 const MAX_LINES = 7
 
 /** The order of the document list's status icons, which keeps published at the right edge. */
 const ICON_KINDS = ['release', 'draft', 'published'] as const
-
-const editedAt = (item: DocumentVersionStatusItem) => Date.parse(item.version._updatedAt) || 0
-
-function latestEdit(group: DocumentVersionStatusGroup): DocumentVersionStatusItem {
-  return group.items.reduce((latest, item) => (editedAt(item) > editedAt(latest) ? item : latest))
-}
 
 /**
  * Displays the versions of a document grouped by variant definition: one line per audience, the
@@ -41,22 +27,11 @@ function latestEdit(group: DocumentVersionStatusGroup): DocumentVersionStatusIte
  */
 export function GroupedDocumentVersionsStatus({documentGroupId}: {documentGroupId: string}) {
   const {t} = useTranslation()
-  const {byId: releasesById} = useActiveReleases()
-  const {byId: variantsById, loading: variantsLoading} = useAllVariants()
-  const {loading, versions} = useDocumentVersions({documentId: documentGroupId})
+  const {groups, loading} = useDocumentVersionStatusGroups(documentGroupId, {
+    variantsEnabled: true,
+  })
 
-  const groups = useMemo(() => {
-    const allGroups = groupDocumentVersionsForStatus(versions, releasesById, variantsById, {
-      variantsEnabled: true,
-      showAgentVersions: SHOW_AGENT_VERSIONS_IN_STATUS,
-    })
-    const audiences = allGroups
-      .filter((group) => group.variantId)
-      .toSorted((left, right) => editedAt(latestEdit(right)) - editedAt(latestEdit(left)))
-    return [...allGroups.filter((group) => !group.variantId), ...audiences]
-  }, [releasesById, variantsById, versions])
-
-  if (loading || variantsLoading) {
+  if (loading) {
     return (
       <Box padding={2}>
         <Text muted size={1} as="div" trim={true}>
@@ -98,14 +73,11 @@ export function GroupedDocumentVersionsStatus({documentGroupId}: {documentGroupI
 function AudienceLine({group, index}: {group: DocumentVersionStatusGroup; index: number}) {
   const {t} = useTranslation()
   const schema = useSchema()
-  const {version} = latestEdit(group)
+  const latest = latestEdit(group)
+  const {version} = latest
   const liveEdit = Boolean(schema.get(version._type)?.liveEdit)
   const timeAgo = useCompactTimeAgo(version._updatedAt)
-  const variant = group.items[0]?.variant
-  let name = t('document-group.base-variant')
-  if (group.variantId) {
-    name = variant ? getVariantTitle(variant) : getVariantId(group.variantId)
-  }
+  const name = getAudienceName({group, latest, t, variantsEnabled: true})
 
   return (
     <Flex

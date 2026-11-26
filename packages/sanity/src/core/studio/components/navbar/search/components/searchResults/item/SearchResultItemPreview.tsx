@@ -5,6 +5,7 @@ import {useObservable} from 'react-rx'
 import {styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
 
+import {DocumentVersionsMarks} from '../../../../../../../components/documentStatus/DocumentVersionsMarks'
 import {DocumentVersionsStatus} from '../../../../../../../components/documentStatus/DocumentVersionsStatus'
 import {DocumentVersionsStatusIndicator} from '../../../../../../../components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {type GeneralPreviewLayoutKey} from '../../../../../../../components/previews/types'
@@ -16,6 +17,7 @@ import {getPreviewValueWithFallback} from '../../../../../../../preview/utils/ge
 import {useDocumentVersions} from '../../../../../../../releases/hooks/useDocumentVersions'
 import {useDocumentPreviewStore} from '../../../../../../../store/datastores'
 import {type DocumentPresence} from '../../../../../../../store/presence/types'
+import {useWorkspace} from '../../../../../../workspace'
 
 interface SearchResultItemPreviewProps {
   documentId: string
@@ -29,6 +31,11 @@ interface SearchResultItemPreviewProps {
   variant?: string
   schemaType: SchemaType
   showBadge?: boolean
+  /**
+   * With the document group inventory enabled: no versions tooltip on the row (it opened below the
+   * row, over the other results), and the marks carry a spoken summary of the versions instead.
+   */
+  quietVersionsStatus?: boolean
 }
 
 const INITIAL_PREVIEW_STATE = {
@@ -61,8 +68,11 @@ export function SearchResultItemPreview({
   showBadge = true,
   perspective,
   variant,
+  quietVersionsStatus = false,
 }: SearchResultItemPreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
+  const inventoryEnabled = useWorkspace().beta?.documentGroupInventory?.enabled === true
+  const quiet = quietVersionsStatus && inventoryEnabled
 
   const observable = useMemo(() => {
     return getPreviewStateObservable(
@@ -90,12 +100,18 @@ export function SearchResultItemPreview({
       <Flex alignItems="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
         {showBadge && <Badge>{schemaType.title}</Badge>}
-        <DocumentVersionsStatusIndicator documentVersions={versions} />
+        {quiet ? (
+          <DocumentVersionsMarks versionCount={versions.length}>
+            <DocumentVersionsStatusIndicator documentVersions={versions} />
+          </DocumentVersionsMarks>
+        ) : (
+          <DocumentVersionsStatusIndicator documentVersions={versions} />
+        )}
       </Flex>
     )
-  }, [isLoading, presence, schemaType.title, showBadge, versions])
+  }, [isLoading, presence, quiet, schemaType.title, showBadge, versions])
 
-  const tooltip = <DocumentVersionsStatus documentGroupId={documentId} />
+  const tooltip = quiet ? undefined : <DocumentVersionsStatus documentGroupId={documentId} />
 
   return (
     <SearchResultItemPreviewBox>

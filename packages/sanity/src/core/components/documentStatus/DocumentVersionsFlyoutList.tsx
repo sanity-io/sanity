@@ -1,0 +1,713 @@
+import {type ReleaseDocument} from '@sanity/client'
+import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
+import {DocumentsIcon} from '@sanity/icons/Documents'
+import {LockIcon} from '@sanity/icons/Lock'
+import {AvatarCounter, AvatarStack, Card} from '@sanity/ui'
+import {type ReactNode, useMemo, useState} from 'react'
+import {Flex, Icon, Text} from 'ui5'
+
+import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
+import {VariantMark} from '../../../ui-components/variantMark'
+import {useCompactTimeAgo} from '../../hooks/useRelativeTime'
+import {useSchema} from '../../hooks/useSchema'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {getDefaultVariant} from '../../perspective/getDefaultVariant'
+import {type ReleaseId} from '../../perspective/types'
+import {usePerspective} from '../../perspective/usePerspective'
+import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
+import {useFormatRelativeLocalePublishDate} from '../../releases/hooks/useFormatRelativeLocalePublishDate'
+import {isReleaseScheduledOrScheduling} from '../../releases/util/util'
+import {type DocumentPresence} from '../../store/presence/types'
+import {useWorkspace} from '../../studio/workspace'
+import {type SystemBundle} from '../../util/draftUtils'
+import {readVersionType} from '../../util/versionsUtils'
+import {getVersionFilterLabel} from '../../variants/plugin/components/getVersionFilterLabel'
+import {getVariantId} from '../../variants/tool/util'
+import {PreviewCard} from '../previewCard/PreviewCard'
+import {UserAvatar} from '../userAvatar/UserAvatar'
+import {
+  audienceDetail,
+  audienceLead,
+  audienceLine,
+  audienceSeparator,
+  root,
+} from './DocumentVersionsFlyoutList.css'
+import {
+  type AudienceLine,
+  type AudienceLineDetail,
+  type AudienceLineLead,
+  getAudienceLine,
+} from './getAudienceLine'
+import {getAudienceName} from './getAudienceName'
+import {getDocumentVersionStatusTimestampKey} from './getDocumentVersionStatusTimestampKey'
+import {getReleasePerspective} from './getReleasePerspective'
+import {getVersionRowPerspective} from './getVersionRowPerspective'
+import {
+  audienceKey,
+  groupPresenceByAudience,
+  groupPresenceByVersion,
+} from './groupPresenceByAudience'
+import {hasMoreInInventory} from './hasMoreInInventory'
+import {
+  type DocumentVersionStatusGroup,
+  type DocumentVersionStatusItem,
+} from './sortDocumentVersionsForStatus'
+import {latestEdit, useDocumentVersionStatusGroups} from './useDocumentVersionStatusGroups'
+
+type RowPresence = Omit<DocumentPresence, 'path'>
+
+/** Audiences the flyout lists before its footer row. */
+const MAX_AUDIENCES = 5
+
+/** The trailing column of status marks: as wide on every row, so the marks line up at the right edge. */
+const MARK_COLUMN_WIDTH = 25
+
+/**
+ * The avatar column just before the marks, on a row with someone on it. Wide enough for two avatars
+ * and a count. A row with no one has no column, so its trailing text keeps its place.
+ */
+const AVATAR_COLUMN_WIDTH = 52
+
+/** The people on a row, or none: only a row with someone on it gets the avatar column. */
+function nonEmpty(people: RowPresence[] | undefined): RowPresence[] | undefined {
+  return people && people.length > 0 ? people : undefined
+}
+
+/** At most this many avatars, then a count of the others. */
+const MAX_AVATARS = 2
+
+/**
+ * People as overlapping avatars: at most two, then a count of the others. Who they are is the
+ * stack's accessible name, and a tooltip on the avatars themselves (not the row): to the left of
+ * them, so it does not cover the rows above and below.
+ */
+function PresenceAvatars({people}: {people: RowPresence[]}) {
+  const {t} = useTranslation()
+  const shown = people.slice(0, MAX_AVATARS)
+  const hidden = people.length - shown.length
+  const [first] = people
+  const names =
+    people.length === 1
+      ? t('document-group.flyout.avatars.one', {displayName: first.user.displayName})
+      : t('document-group.flyout.avatars.other', {
+          displayName: first.user.displayName,
+          count: people.length - 1,
+        })
+  return (
+    <Tooltip content={names} fallbackPlacements={['top']} placement="left">
+      <span
+        aria-label={names}
+        data-testid="document-versions-flyout-avatars"
+        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- can't be an img: the stack is markup, named as one image for screen readers
+        role="img"
+        style={{display: 'inline-flex'}}
+      >
+        {/* `maxLength` above the number of children, so the stack draws exactly what is given */}
+        <AvatarStack maxLength={MAX_AVATARS + 2} size={0}>
+          {shown.map((person) => (
+            // The stack has its own tooltip, so the avatars set no browser title on top of it
+            <UserAvatar hideTitle key={person.user.id} size={0} user={person.user} />
+          ))}
+          {hidden > 0 ? <AvatarCounter count={hidden} /> : null}
+        </AvatarStack>
+      </span>
+    </Tooltip>
+  )
+}
+
+/**
+ * The flyout's colours: the ones the document list and the version inventory use. Grey is for
+ * moving through the rows (hover and keyboard focus), the strong blue is for the version that is
+ * open, and the open version stays blue when it is hovered or focused. UI 5 declares these
+ * variables on `:root`; where a token is only defined per tone (`.sui-tone-*`), the value is the
+ * palette steps that token resolves to, as in the inventory. The selected blue names the blue
+ * primitives directly: UI 5 moved its `--active-*` tokens from blue to grey in 5.0.0-alpha.24, and
+ * Studio keeps the blue, at the steps those tokens used up to alpha.23.
+ */
+const COLORS = {
+  /** The open version's row: the strong selected blue (blue-600 / blue-400). */
+  viewedBackground: 'light-dark(var(--blue-600), var(--blue-400))',
+  /** Its title: white / black on that blue. */
+  viewedTitle: 'light-dark(var(--white), var(--black))',
+  /** Its subtitle: the low-emphasis selected foreground step of the blue (blue-100 / blue-900). */
+  viewedSubtitle: 'light-dark(var(--blue-100), var(--blue-900))',
+  /** Its variant diamond: the suggest tone's `--foreground-low-emphasized` (purple-100 / purple-900). */
+  viewedMark: 'light-dark(var(--purple-100), var(--purple-900))',
+  /**
+   * The row of the variant picked in the studio, on a document that is not open: the inventory's
+   * checked-row tint, the pale selected blue (blue-50 / blue-950). Quieter than the open version's
+   * blue, since nothing is open there yet; picking the row opens it in that variant.
+   */
+  pickedBackground: 'light-dark(var(--blue-50), var(--blue-950))',
+  /**
+   * A hovered or focused row: `--background-low` (gray-50) in light. In dark that token is gray-950,
+   * the panel's own background, so dark takes the next step, gray-900.
+   */
+  hoverBackground: 'light-dark(var(--gray-50), var(--gray-900))',
+  /** Keyboard focus, on any row: UI 5's focus outline, drawn just outside the row. */
+  focusOutline: 'var(--focus-outline)',
+} as const
+
+function FlyoutRow(props: {
+  testId: string
+  title: ReactNode
+  /** A string is trimmed to one line; any other node handles its own truncation. */
+  subtitle?: ReactNode
+  renderMedia?: () => ReactNode
+  /**
+   * The people editing this row's audience (on the footer, everyone not on a listed row), in a
+   * column just before the marks column. Set on every row (an empty array for nobody), so the
+   * column is as wide on every row; left unset when nobody is editing the document, so no row
+   * spends the room.
+   */
+  presence?: RowPresence[]
+  /**
+   * The row's status marks (the variant diamond), in a column at the right edge that is as wide on
+   * every row, so the marks line up like the document list's and the inventory's. Rows without a
+   * mark keep the empty column.
+   */
+  renderTrailing?: (viewed: boolean) => ReactNode
+  onClick: () => void
+  /** The version the pane is viewing: the strong selected blue, also while hovered or focused. */
+  viewed?: boolean
+  /**
+   * The audience picked in the studio (the navbar's variant), on a document that is not open: the
+   * pale selected blue, also while hovered or focused. Ignored on a viewed row.
+   */
+  picked?: boolean
+}) {
+  const viewed = Boolean(props.viewed)
+  const picked = !viewed && Boolean(props.picked)
+  // Hover and keyboard focus are the grey of moving through the rows; the open version keeps its
+  // blue, and focus also draws the focus outline, so it shows on the blue row too.
+  const [hovered, setHovered] = useState(false)
+  const [focused, setFocused] = useState(false)
+  let backgroundColor: string | undefined
+  if (viewed) backgroundColor = COLORS.viewedBackground
+  else if (picked) backgroundColor = COLORS.pickedBackground
+  else if (hovered || focused) backgroundColor = COLORS.hoverBackground
+
+  return (
+    <PreviewCard
+      aria-current={viewed || picked ? 'true' : undefined}
+      as="button"
+      data-testid={props.testId}
+      data-focused={focused ? '' : undefined}
+      data-hovered={hovered ? '' : undefined}
+      data-viewed={viewed ? '' : undefined}
+      data-picked={picked ? '' : undefined}
+      onBlur={() => setFocused(false)}
+      onClick={props.onClick}
+      // Only keyboard focus draws the outline and the grey: a mouse press also focuses the button,
+      // and the row should not show an outline while the button is held down
+      onFocus={(event) => setFocused(event.currentTarget.matches(':focus-visible'))}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      radius={2}
+      role="menuitem"
+      sizing="border"
+      style={{
+        display: 'block',
+        width: '100%',
+        textAlign: 'left',
+        cursor: 'pointer',
+        backgroundColor,
+        color: viewed ? COLORS.viewedTitle : undefined,
+        outline: focused ? COLORS.focusOutline : undefined,
+        // Outside the row, on the panel, so it shows on the blue of the open version too
+        outlineOffset: focused ? 2 : undefined,
+      }}
+      tabIndex={-1}
+      tone="inherit"
+      type="button"
+    >
+      {/* The same box as a document list row (`DefaultPreview`): 8px padding, a 33px media slot, a title and a muted subtitle 8px apart, both trimmed. */}
+      <Flex alignItems="center" padding={2} paddingLeft={props.renderMedia ? 2 : 3}>
+        <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2} style={{minHeight: 33}}>
+          {props.renderMedia ? (
+            <Flex
+              alignItems="center"
+              flexBasis="auto"
+              flexGrow={0}
+              flexShrink={0}
+              justifyContent="center"
+              style={{width: 33, height: 33}}
+            >
+              {props.renderMedia()}
+            </Flex>
+          ) : null}
+          <Flex flexBasis="0%" flexDirection="column" flexGrow={1} gap={2} style={{minWidth: 0}}>
+            {props.title}
+            {props.subtitle ? (
+              <Text
+                as="div"
+                muted
+                size={1}
+                style={{color: viewed ? COLORS.viewedSubtitle : 'var(--card-muted-fg-color)'}}
+                trim
+                truncate={typeof props.subtitle === 'string' ? 1 : undefined}
+              >
+                {props.subtitle}
+              </Text>
+            ) : null}
+          </Flex>
+          {props.presence ? (
+            <Flex
+              alignItems="center"
+              data-testid="document-versions-flyout-row-presence"
+              flexBasis="auto"
+              flexGrow={0}
+              flexShrink={0}
+              justifyContent="flex-end"
+              style={{width: AVATAR_COLUMN_WIDTH}}
+            >
+              {props.presence.length > 0 ? <PresenceAvatars people={props.presence} /> : null}
+            </Flex>
+          ) : null}
+          <Flex
+            alignItems="center"
+            aria-hidden
+            data-testid="document-versions-flyout-row-marks"
+            flexBasis="auto"
+            flexGrow={0}
+            flexShrink={0}
+            justifyContent="center"
+            style={{width: MARK_COLUMN_WIDTH}}
+          >
+            {props.renderTrailing?.(viewed)}
+          </Flex>
+        </Flex>
+      </Flex>
+    </PreviewCard>
+  )
+}
+
+/** The release's own name, or the placeholder for an untitled one. */
+function useReleaseTitle(): (release: ReleaseDocument) => string {
+  const {t} = useTranslation()
+  return (release) => release.metadata.title || t('release.placeholder-untitled-release')
+}
+
+/**
+ * An audience row's subtitle with Variants on: a lead and a detail ("Update scheduled Fri 28 Nov,
+ * 9:00 · Black Friday"). When the line is too long the detail is cut short first, so the lead and
+ * its date always show.
+ */
+function AudienceLineText({line, fallbackTime}: {line: AudienceLine; fallbackTime: string}) {
+  const {t} = useTranslation()
+  const formatPublishDate = useFormatRelativeLocalePublishDate()
+  const releaseTitle = useReleaseTitle()
+  // One relative time per line at most: the lead's or the detail's
+  let at = fallbackTime
+  if ('at' in line.lead) at = line.lead.at
+  else if (line.detail && 'at' in line.detail) at = line.detail.at
+  const timeAgo = useCompactTimeAgo(at)
+
+  const leadText = (lead: AudienceLineLead): string => {
+    switch (lead.kind) {
+      case 'update-scheduled':
+        return t('document-group.flyout.audience.lead.update-scheduled', {
+          date: formatPublishDate(lead.release),
+        })
+      case 'first-publish-scheduled':
+        return t('document-group.flyout.audience.lead.first-publish-scheduled', {
+          date: formatPublishDate(lead.release),
+        })
+      case 'unpublished-edits':
+        return t('document-group.flyout.audience.lead.unpublished-edits')
+      case 'not-published-yet':
+        return t('document-group.flyout.audience.lead.not-published-yet')
+      case 'update-waiting':
+        return t('document-group.flyout.audience.lead.update-waiting', {
+          releaseTitle: releaseTitle(lead.release),
+        })
+      case 'published':
+        return t('document-group.flyout.audience.lead.published', {date: timeAgo})
+      case 'updated':
+        return t('document-group.flyout.audience.lead.updated', {date: timeAgo})
+      default: {
+        const unknownLead: never = lead
+        return unknownLead
+      }
+    }
+  }
+
+  const detailText = (detail: AudienceLineDetail): string => {
+    switch (detail.kind) {
+      case 'time-ago':
+        return timeAgo
+      case 'edited':
+        return t('document-group.flyout.audience.detail.edited', {date: timeAgo})
+      case 'release-name':
+        return releaseTitle(detail.release)
+      case 'in-release':
+        return t('document-group.flyout.audience.detail.in-release', {
+          releaseTitle: releaseTitle(detail.release),
+        })
+      case 'unpublished-edits':
+        return t('document-group.flyout.audience.detail.unpublished-edits')
+      case 'more-releases':
+        return t('document-group.flyout.audience.detail.more-releases', {count: detail.count})
+      case 'no-date-set':
+        return t('document-group.flyout.audience.detail.no-date-set')
+      default: {
+        const unknownDetail: never = detail
+        return unknownDetail
+      }
+    }
+  }
+
+  return (
+    <span className={audienceLine} data-testid="document-versions-flyout-row-line">
+      <span className={audienceLead} data-testid="document-versions-flyout-row-lead">
+        {leadText(line.lead)}
+      </span>
+      {line.detail ? (
+        <span className={audienceDetail} data-testid="document-versions-flyout-row-detail">
+          <span aria-hidden className={audienceSeparator}>
+            {' · '}
+          </span>
+          {detailText(line.detail)}
+        </span>
+      ) : null}
+    </span>
+  )
+}
+
+function AudienceRow({
+  group,
+  now,
+  onClick,
+  presence,
+  viewed,
+  picked,
+}: {
+  group: DocumentVersionStatusGroup
+  now: number
+  onClick: () => void
+  presence?: RowPresence[]
+  viewed: boolean
+  picked: boolean
+}) {
+  const {t} = useTranslation()
+  const latest = latestEdit(group)
+  const name = getAudienceName({group, latest, t, variantsEnabled: true})
+
+  return (
+    <FlyoutRow
+      onClick={onClick}
+      presence={presence}
+      subtitle={
+        <AudienceLineText
+          fallbackTime={latest.version._updatedAt}
+          line={getAudienceLine(group, now)}
+        />
+      }
+      viewed={viewed}
+      picked={picked}
+      testId="document-versions-flyout-row"
+      renderTrailing={(isViewed) => (
+        <span style={{display: 'flex', height: 25, alignItems: 'center'}}>
+          {group.variantId ? (
+            <VariantMark
+              size="row"
+              style={{
+                marginInline: '-0.375rem',
+                ...(isViewed ? {color: COLORS.viewedMark} : undefined),
+              }}
+            />
+          ) : null}
+        </span>
+      )}
+      title={
+        <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
+          {name}
+        </Text>
+      }
+    />
+  )
+}
+
+/**
+ * A release version's timing, in the words of the version menus: "As soon as possible",
+ * "Scheduled for Fri 28 Nov, 9:00" or "Undecided".
+ */
+function useReleaseTiming(): (release: ReleaseDocument) => string {
+  const {t} = useTranslation()
+  const formatPublishDate = useFormatRelativeLocalePublishDate()
+  return (release) => {
+    switch (release.metadata.releaseType) {
+      case 'asap':
+        return t('release.type.asap')
+      case 'scheduled':
+        return release.publishAt || release.metadata.intendedPublishAt
+          ? t('release.chip.tooltip.scheduled-for-date', {date: formatPublishDate(release)})
+          : t('release.chip.tooltip.unknown-date')
+      case 'undecided':
+      default:
+        return t('release.type.undecided')
+    }
+  }
+}
+
+/**
+ * A version row, with Variants off: the version's name in the words of the document header
+ * pills (Published, Draft, the release's title), when it last changed or, for a release, its
+ * timing, and the version's own mark at the right edge, with a lock on a scheduled release, as in
+ * the perspective menu.
+ */
+function VersionRow({
+  item,
+  onClick,
+  presence,
+  viewed,
+}: {
+  item: DocumentVersionStatusItem
+  onClick: () => void
+  presence?: RowPresence[]
+  viewed: boolean
+}) {
+  const {t} = useTranslation()
+  const schema = useSchema()
+  const releaseTiming = useReleaseTiming()
+  const {version, release} = item
+  const perspective = getReleasePerspective({release, version})
+  const name = getVersionFilterLabel(perspective, t, []).displayTitle
+  const timeAgo = useCompactTimeAgo(version._updatedAt)
+  const liveEdit = Boolean(schema.get(version._type)?.liveEdit)
+  const type = readVersionType(version)
+
+  let subtitle: string
+  if (type === 'release') {
+    subtitle = release ? releaseTiming(release) : t('release.type.undecided')
+  } else if (type === 'published' && !liveEdit) {
+    // The name already says Published: the line only says when
+    subtitle = timeAgo
+  } else {
+    subtitle = t(getDocumentVersionStatusTimestampKey(version, liveEdit), {date: timeAgo})
+  }
+
+  return (
+    <FlyoutRow
+      onClick={onClick}
+      presence={presence}
+      subtitle={subtitle}
+      viewed={viewed}
+      testId="document-versions-flyout-version-row"
+      renderTrailing={() => (
+        <span
+          data-testid="document-versions-flyout-version-mark"
+          data-version-type={type}
+          style={{display: 'flex', height: 25, alignItems: 'center', gap: 4}}
+        >
+          {release && isReleaseScheduledOrScheduling(release) ? (
+            <Icon
+              data-testid="document-versions-flyout-version-lock"
+              icon={LockIcon}
+              muted
+              size={1}
+              style={{margin: '-0.375rem'}}
+            />
+          ) : null}
+          <ReleaseAvatarIcon fontSize={1} release={perspective} size="small" />
+        </span>
+      )}
+      title={
+        <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
+          {name}
+        </Text>
+      }
+    />
+  )
+}
+
+/**
+ * The content of the versions flyout on a document list row: one row per audience, with its latest
+ * event as the subtitle and the variant diamond in a trailing column at the right edge, and a last row that opens the document group
+ * inventory. When there are more audiences than the flyout lists, that last row counts the others
+ * ("See 2 more in the inventory"). The last row shows only when the inventory has more to see: a
+ * document with only Published and/or Draft has none (see `hasMoreInInventory`). Rows are menu items, so the host can move focus between them with the arrow keys.
+ *
+ * @internal
+ */
+export function DocumentVersionsFlyoutList(props: {
+  documentGroupId: string
+  /** Called with the audience of the row that was picked (`null` for the default one). */
+  onPick: (variantId: string | null) => void
+  /**
+   * Called with the perspective of the version row that was picked, with Variants off: `published`,
+   * `drafts` or a release id. Without it, a version row opens the document like `onPick(null)`.
+   */
+  onPickVersion?: (perspective: SystemBundle | ReleaseId) => void
+  onOpenInventory: () => void
+  /**
+   * Who is editing the document, any version. Each person's avatar sits on the audience row that
+   * holds the version they have open; a person on an audience the flyout does not list, or on no
+   * audience row, sits on the footer row, so everyone editing shows once.
+   */
+  presence?: RowPresence[]
+  /** Whether the document of this row is the one open in the pane, which marks the version it shows. */
+  viewingDocument?: boolean
+}) {
+  const {
+    documentGroupId,
+    onOpenInventory,
+    onPick,
+    onPickVersion,
+    presence,
+    viewingDocument = false,
+  } = props
+  const {selectedVariantNames, selectedPerspectiveName} = usePerspective()
+  const viewedVariantId = getDefaultVariant(selectedVariantNames)
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+  const {t} = useTranslation()
+  const {groups, loading} = useDocumentVersionStatusGroups(documentGroupId)
+  // The flyout is open for moments at a time, so the time it opened is close enough for the lines
+  const [now] = useState(() => Date.now())
+
+  const people = useMemo(() => {
+    const seen = new Set<string>()
+    return (presence ?? []).filter((entry) => {
+      if (seen.has(entry.user.id)) return false
+      seen.add(entry.user.id)
+      return true
+    })
+  }, [presence])
+  const presenceByAudience = useMemo(
+    () => groupPresenceByAudience(groups, people),
+    [groups, people],
+  )
+  const shownGroups = groups.slice(0, MAX_AUDIENCES)
+  // With Variants off there are no audiences: the rows are the document's versions, Published,
+  // Draft, then each release it is in, in the order of the header pills
+  const versionItems = useMemo(
+    () => (variantsEnabled ? [] : groups.flatMap((group) => group.items)),
+    [groups, variantsEnabled],
+  )
+  const shownItems = versionItems.slice(0, MAX_AUDIENCES)
+  const presenceByVersion = useMemo(
+    () => groupPresenceByVersion(versionItems, people),
+    [versionItems, people],
+  )
+  // Everyone not on a listed row goes on the footer, which opens the inventory where they are
+  const footerPeople = useMemo(() => {
+    const onRows = new Set<string>()
+    const rowPeople = variantsEnabled
+      ? groups
+          .slice(0, MAX_AUDIENCES)
+          .flatMap((group) => presenceByAudience.get(audienceKey(group)) ?? [])
+      : versionItems
+          .slice(0, MAX_AUDIENCES)
+          .flatMap((item) => presenceByVersion.get(item.version._id) ?? [])
+    for (const person of rowPeople) onRows.add(person.user.id)
+    return people.filter((person) => !onRows.has(person.user.id))
+  }, [groups, people, presenceByAudience, presenceByVersion, variantsEnabled, versionItems])
+
+  // Rows past the first ones: the footer counts them, since that is where they are
+  const hiddenCount = Math.max(
+    0,
+    (variantsEnabled ? groups.length : versionItems.length) - MAX_AUDIENCES,
+  )
+  // The version the pane shows, with Variants off: its perspective, Drafts when none is picked
+  const viewedPerspective = selectedPerspectiveName ?? 'drafts'
+  // The footer always opens the inventory, which is also where variants are created and versions
+  // compared or deleted. "Manage all versions" when the inventory lists more than these rows (rows
+  // past the cap, a release version or a variant), and "Manage versions", the name of the
+  // document's own button for the inventory, when it does not. Rows past the cap are counted
+  // apart, at the row's end, so the words stay the same.
+  const footerTitle = hasMoreInInventory(groups, hiddenCount)
+    ? t('document-group.flyout.manage-all-versions')
+    : t('document-group-inventory.action.manage-versions')
+
+  if (loading) {
+    return (
+      <Card
+        aria-label={t('document-group.flyout.title')}
+        border
+        data-testid="document-versions-flyout-loading"
+        padding={3}
+        radius={3}
+      >
+        <Text muted size={1}>
+          {t('common.loading')}
+        </Text>
+      </Card>
+    )
+  }
+
+  return (
+    <Card
+      aria-label={t('document-group.flyout.title')}
+      border
+      data-testid="document-versions-flyout"
+      radius={3}
+      role="menu"
+    >
+      <div className={root}>
+        {variantsEnabled
+          ? null
+          : shownItems.map((item) => {
+              const perspective = getVersionRowPerspective(item)
+              return (
+                <VersionRow
+                  item={item}
+                  key={item.version._id}
+                  onClick={() => (onPickVersion ? onPickVersion(perspective) : onPick(null))}
+                  presence={nonEmpty(presenceByVersion.get(item.version._id))}
+                  viewed={viewingDocument && perspective === viewedPerspective}
+                />
+              )
+            })}
+        {(variantsEnabled ? shownGroups : []).map((group) => (
+          <AudienceRow
+            group={group}
+            key={audienceKey(group)}
+            now={now}
+            onClick={() => onPick(group.variantId ?? null)}
+            presence={nonEmpty(presenceByAudience.get(audienceKey(group)))}
+            viewed={
+              viewingDocument &&
+              (group.variantId ? getVariantId(group.variantId) : undefined) === viewedVariantId
+            }
+            // With a variant picked in the studio, its row is marked on every document, so the
+            // flyout says which audience a pick opens. Default is not marked: with no variant
+            // picked, a studio without variants would tint every flyout's only row.
+            picked={
+              viewedVariantId !== undefined &&
+              group.variantId !== undefined &&
+              getVariantId(group.variantId) === viewedVariantId
+            }
+          />
+        ))}
+        <FlyoutRow
+          renderMedia={() => <Icon icon={DocumentsIcon} size={2} />}
+          onClick={onOpenInventory}
+          presence={nonEmpty(footerPeople)}
+          testId="document-versions-flyout-inventory"
+          title={
+            <Flex alignItems="center" gap={2} justifyContent="space-between">
+              <Text as="div" size={1} style={{color: 'inherit'}} trim truncate={1} weight="medium">
+                {footerTitle}
+              </Text>
+              {hiddenCount > 0 ? (
+                <Text
+                  as="span"
+                  aria-label={t('document-group.flyout.footer.hidden-count.aria-label', {
+                    count: hiddenCount,
+                  })}
+                  data-testid="document-versions-flyout-hidden-count"
+                  muted
+                  size={1}
+                  trim
+                >
+                  {t('document-group.flyout.footer.hidden-count', {count: hiddenCount})}
+                </Text>
+              ) : null}
+            </Flex>
+          }
+          renderTrailing={() => <Icon icon={ChevronRightIcon} size={1} />}
+        />
+      </div>
+    </Card>
+  )
+}

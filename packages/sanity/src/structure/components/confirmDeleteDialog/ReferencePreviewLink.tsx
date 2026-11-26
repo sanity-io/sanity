@@ -41,6 +41,7 @@ export function ReferencePreviewLink(props: ReferencePreviewLinkProps) {
         icon={type?.icon}
         layout="compact"
         presence={documentPresence?.length > 0 ? documentPresence : EMPTY_ARRAY}
+        quietVersionsStatus
         schemaType={type}
         value={value}
       />

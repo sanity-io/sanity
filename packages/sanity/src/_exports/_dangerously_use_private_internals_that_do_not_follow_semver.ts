@@ -68,7 +68,10 @@ export {
   type CollapseMenuButtonProps,
   type CommonProps,
 } from '../core/components/collapseMenu/CollapseMenuButton'
-export {CommandList} from '../core/components/commandList/CommandList'
+export {
+  COMMAND_LIST_ACTIVATE_ITEM_EVENT,
+  CommandList,
+} from '../core/components/commandList/CommandList'
 export {
   type CommandListElementType,
   type CommandListGetItemDisabledCallback,
@@ -82,6 +85,7 @@ export {
 export {ContextMenuButton} from '../core/components/contextMenuButton/ContextMenuButton'
 export {Delay} from '../core/components/Delay'
 export {DocumentVersionIcons} from '../core/components/documentStatus/DocumentVersionIcons'
+export {DocumentVersionsFlyoutList} from '../core/components/documentStatus/DocumentVersionsFlyoutList'
 export {DocumentVersionsStatus} from '../core/components/documentStatus/DocumentVersionsStatus'
 export {DocumentVersionsStatusIndicator} from '../core/components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 export {ErrorActions, type ErrorActionsProps} from '../core/components/errorActions/ErrorActions'
