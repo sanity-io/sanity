@@ -1,7 +1,13 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
-import {type Placement, PortalProvider, useClickOutsideEvent, useGlobalKeyDown} from '@sanity/ui'
+import {
+  type Placement,
+  PortalProvider,
+  useClickOutsideEvent,
+  useGlobalKeyDown,
+  useLayer,
+} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
-import {useCallback, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {
   type DocumentGroupEvent,
   isDeleteDocumentGroupEvent,
@@ -41,6 +47,40 @@ const transactionFormatParams = {
   timestamp: {dateStyle: 'medium', timeStyle: 'medium'},
 }
 
+/**
+ * Closes the menu on Escape, Tab or a click outside of it, but only while it is the top layer: a
+ * popover opened from the menu (the changes of an edit) is outside of it, and interacting with it
+ * must not close the menu.
+ */
+function TimelineMenuContent({
+  button,
+  children,
+  onClose,
+  popover,
+}: {
+  button: HTMLButtonElement | null
+  children: ReactNode
+  onClose: () => void
+  popover: HTMLElement | null
+}) {
+  const {isTopLayer} = useLayer()
+
+  useGlobalKeyDown(
+    useCallback(
+      (event: KeyboardEvent) => {
+        if (isTopLayer && (event.key === 'Escape' || event.key === 'Tab')) {
+          onClose()
+          button?.focus()
+        }
+      },
+      [button, isTopLayer, onClose],
+    ),
+  )
+  useClickOutsideEvent(isTopLayer && onClose, () => [button, popover])
+
+  return children
+}
+
 export function EventsTimelineMenu({event, events, mode, placement}: TimelineMenuProps) {
   const {setTimelineRange} = useDocumentPane()
   const [open, setOpen] = useState(false)
@@ -66,19 +106,6 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
   const handleClose = useCallback(() => {
     setOpen(false)
   }, [])
-
-  const handleGlobalKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (open && (e.key === 'Escape' || e.key === 'Tab')) {
-        handleClose()
-        button?.focus()
-      }
-    },
-    [button, handleClose, open],
-  )
-
-  useGlobalKeyDown(handleGlobalKeyDown)
-  useClickOutsideEvent(open && handleClose, () => [button, popoverRef])
 
   const selectRev = useCallback(
     (revEvent: DocumentGroupEvent) => {
@@ -189,7 +216,13 @@ export function EventsTimelineMenu({event, events, mode, placement}: TimelineMen
         className={root}
         data-testid="timeline-menu"
         constrainSize
-        content={open && content}
+        content={
+          open && (
+            <TimelineMenuContent button={button} onClose={handleClose} popover={popoverRef}>
+              {content}
+            </TimelineMenuContent>
+          )
+        }
         data-ui="versionMenu"
         open={open}
         placement={placement}

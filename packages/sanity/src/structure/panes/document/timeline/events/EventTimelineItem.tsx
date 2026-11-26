@@ -14,7 +14,11 @@ import {
 } from 'sanity'
 import {Box, Flex} from 'ui5'
 
-import {Tooltip, type TooltipProps} from '../../../../../ui-components/tooltip/Tooltip'
+import {
+  HoverPopover,
+  type HoverPopoverProps,
+} from '../../../../../ui-components/hoverPopover/HoverPopover'
+import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {useDocumentPane} from '../../useDocumentPane'
 import {ChangedFieldTitles} from './ChangedFieldTitles'
 import {EditEventChanges} from './EditEventChanges'
@@ -28,13 +32,15 @@ export interface TimelineItemProps {
 }
 
 // The timeline sits at the right edge of the pane, so the changes show next to it, over the form.
-// They are fetched when shown, so they wait a bit longer than other tooltips while the pointer
-// moves along the list.
-const CHANGES_TOOLTIP_PROPS: Partial<TooltipProps> = {
-  delay: {open: 600},
+// They wait a bit longer than tooltips before opening while the pointer moves along the list,
+// and only the changes of one edit are open at a time, in any timeline.
+const CHANGES_POPOVER_PROPS = {
+  openDelay: 600,
   placement: 'left',
   fallbackPlacements: ['left-start', 'left-end', 'right', 'bottom'],
-}
+  group: 'edit-changes',
+  portal: true,
+} satisfies Partial<HoverPopoverProps>
 
 /** An edit event, with the titles of the fields it changed once they are loaded. */
 function EditEvent({event}: {event: EditDocumentVersionEvent}) {
@@ -104,16 +110,16 @@ export function EventTimelineItem({event, isSelected, onSelect, optionsMenu}: Ti
       {isEditDocumentVersionEvent(event) ? (
         // The timeline's scroller is the boundary otherwise, which leaves no room on the left.
         <BoundaryElementProvider element={null}>
-          <Tooltip
-            {...CHANGES_TOOLTIP_PROPS}
+          <HoverPopover
+            {...CHANGES_POPOVER_PROPS}
             content={
-              <Box padding={3} style={{width: 360, maxHeight: '50vh', overflow: 'hidden'}}>
+              <Box padding={3} style={{width: 360, maxHeight: '50vh', overflowY: 'auto'}}>
                 <EditEventChanges event={event} />
               </Box>
             }
           >
             {card}
-          </Tooltip>
+          </HoverPopover>
         </BoundaryElementProvider>
       ) : (
         <Tooltip content={isSelectable ? '' : t('changes.not-selectable')} disabled={isSelectable}>

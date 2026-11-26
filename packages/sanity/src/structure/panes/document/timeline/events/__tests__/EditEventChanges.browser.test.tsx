@@ -164,6 +164,22 @@ describe('EventTimelineItem changes', () => {
     ).toHaveLength(0)
   })
 
+  it('keeps the changes open while the pointer is on them, so long ones can be scrolled', async () => {
+    const {changes$} = renderItem(EDIT_EVENT)
+
+    await userEvent.hover(page.getByTestId('timeline-item-button'))
+    changes$.next({loading: false, diff: DIFF, error: null})
+    const changes = page.getByTestId('edit-event-changes')
+    await expect.element(changes).toBeVisible()
+
+    await userEvent.hover(changes)
+    await new Promise((resolve) => setTimeout(resolve, 800))
+    await expect.element(changes).toBeVisible()
+    const scroller = changes.element().parentElement!
+    expect(getComputedStyle(scroller).overflowY).toBe('auto')
+    expect(getComputedStyle(scroller).maxHeight).not.toBe('none')
+  })
+
   it('shows additions on a green background and removals on a red one', async () => {
     const {changes$} = renderItem(EDIT_EVENT)
 
@@ -256,8 +272,10 @@ describe('EventTimelineItem changes', () => {
     const line = titles.element().firstElementChild!
     expect(line.scrollWidth).toBeGreaterThan(line.clientWidth)
     expect(card.element().getBoundingClientRect().height).toBe(rowHeight)
+    let container = card.element().parentElement!
+    while (getComputedStyle(container).display === 'contents') container = container.parentElement!
     expect(card.element().getBoundingClientRect().right).toBeLessThanOrEqual(
-      card.element().parentElement!.getBoundingClientRect().right,
+      container.getBoundingClientRect().right,
     )
   })
 
