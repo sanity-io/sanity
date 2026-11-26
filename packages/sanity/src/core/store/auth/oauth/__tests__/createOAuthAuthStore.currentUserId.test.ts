@@ -28,7 +28,8 @@ function createStore(clientId: string) {
     projectId: PROJECT_ID,
     dataset: 'test-dataset',
     clientId,
-    clientFactory: (config: SanityClientConfig) => ({config: () => config}) as SanityClient,
+    clientFactory: (config: SanityClientConfig) =>
+      ({config: () => config}) as unknown as SanityClient,
     endpoints,
     ...createEnvironment(),
   })

@@ -3,10 +3,9 @@ import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {ControlsIcon} from '@sanity/icons/Controls'
 import {LinkIcon} from '@sanity/icons/Link'
 import {Card} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useState} from 'react'
 import {usePaneRouter, type UserComponent} from 'sanity/structure'
-import {Text, Flex, Box, VStack, Icon} from 'ui5'
+import {Code, Text, Flex, Box, VStack, Icon} from 'ui5'
 
 const CHILD_LINK_PARAMETERS: Record<string, string> = {}
 const PARAMETERIZED_LINK_PARAMS: Record<string, string> = {param1: 'test'}
@@ -99,7 +98,7 @@ export const DebugPane: UserComponent = function DebugPane(props) {
       </Card>
 
       <Card padding={4}>
-        <Code language="json" size={1}>
+        <Code language="json" size={1} trim>
           {JSON.stringify(
             {
               paneRouter: {

@@ -25,6 +25,10 @@ export function Iframe(props: IframeProps & RefAttributes<HTMLIFrameElement>) {
       <iframe
         ref={forwardedRef}
         src={src}
+        // Media Library runs on another origin. Without this, the browser's
+        // permissions policy blocks navigator.clipboard.writeText in the frame,
+        // so "copy link" and other copy actions fail silently.
+        allow="clipboard-write"
         style={{
           overflow: 'hidden',
           flexGrow: 1,

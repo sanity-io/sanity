@@ -1,9 +1,8 @@
 import {SparklesIcon} from '@sanity/icons/Sparkles'
 import {Button, Card, Label, Stack} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useMemo} from 'react'
 import {InlineCode, type TFunction, useTranslation} from 'sanity'
-import {Text, Box, Flex} from 'ui5'
+import {Code, Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {useAiCredits} from '../../hooks/useAiCredits'
@@ -151,7 +150,9 @@ export function ExplainTab(props: ExplainTabProps) {
                     {describeInsight(insight, t)}
                   </Text>
                   {insight.kind === 'filter-in-memory' && (
-                    <Code size={1}>{insight.expression}</Code>
+                    <Code size={1} trim>
+                      {insight.expression}
+                    </Code>
                   )}
                 </Stack>
               </Card>
@@ -170,7 +171,9 @@ export function ExplainTab(props: ExplainTabProps) {
             <Label muted size={0}>
               {t('vision.explain.plan-title')}
             </Label>
-            <Code size={1}>{plan.text}</Code>
+            <Code size={1} trim>
+              {plan.text}
+            </Code>
           </Stack>
         )}
       </Stack>

@@ -1,10 +1,10 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {type ObjectSchemaType} from '@sanity/types'
-import {Heading, Inline} from '@sanity/ui'
+import {Inline} from '@sanity/ui'
 import {type MouseEvent} from 'react'
 import {useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
-import {Text, Box, PressArea, VStack} from 'ui5'
+import {Heading, Text, Box, PressArea, VStack} from 'ui5'
 
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -96,7 +96,13 @@ export const FormHeader = ({documentId, schemaType, title, onTitleClick}: Docume
           )}
         </Inline>
       )}
-      <Heading as="h2" data-heading muted={!title} data-testid="document-panel-document-title">
+      <Heading
+        as="h2"
+        data-heading
+        style={title ? undefined : {color: 'var(--foreground-low)'}}
+        data-testid="document-panel-document-title"
+        trim
+      >
         {onTitleClick ? (
           // The heading wraps the button rather than sitting inside it: a button's children are
           // presentational, so a heading inside one loses its role. The text keeps the heading's

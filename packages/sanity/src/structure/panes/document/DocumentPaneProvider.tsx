@@ -40,7 +40,6 @@ import {
   useCreatableVariantInitialValue,
   useDocumentDivergences,
   useDocumentForm,
-  useDocumentIdStack,
   usePerspective,
   useSchema,
   useSource,
@@ -70,6 +69,7 @@ import {
   type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
   type HistoryStoreProps,
 } from './types'
+import {useCompareVersionsDocuments} from './useCompareVersionsDocuments'
 import {useDocumentApplicationContext} from './useDocumentApplicationContext'
 import {useDocumentInitialLoadTelemetry} from './useDocumentInitialLoadTelemetry'
 import {useDocumentPaneInitialValue} from './useDocumentPaneInitialValue'
@@ -440,12 +440,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     [getDisplayed, value],
   )
 
-  const {previousId} = useDocumentIdStack({
-    strict: true,
-    displayed,
-    documentId,
-    editState,
-  })
+  const compareVersionsDocuments = useCompareVersionsDocuments({displayed, documentId, editState})
 
   const setTimelineRange = useCallback(
     (newSince: string, newRev: string | null) => {
@@ -481,7 +476,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       }
 
       if (item.action === 'reviewChanges') {
-        handleHistoryOpen()
+        handleHistoryOpen('pane_menu')
         return true
       }
 
@@ -492,16 +487,16 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         handleInspectorAction(item)
       }
 
-      if (item.action === 'compareVersions' && typeof previousId !== 'undefined') {
+      if (item.action === 'compareVersions' && typeof compareVersionsDocuments !== 'undefined') {
         diffViewRouter.navigateDiffView({
           mode: 'version',
           previousDocument: {
             type: documentType,
-            id: previousId,
+            id: compareVersionsDocuments.previousId,
           },
           nextDocument: {
             type: documentType,
-            id: value._id,
+            id: compareVersionsDocuments.nextId,
           },
         })
         return true
@@ -516,12 +511,11 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     },
     [
       previewUrl,
-      previousId,
+      compareVersionsDocuments,
       documentType,
       handleHistoryOpen,
       handleInspectorAction,
       diffViewRouter,
-      value._id,
       toggleInlineChanges,
     ],
   )

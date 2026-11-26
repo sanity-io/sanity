@@ -2,16 +2,12 @@ import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {EarthAmericasIcon} from '@sanity/icons/EarthAmericas'
 import {JsonIcon} from '@sanity/icons/Json'
 import {TransferIcon} from '@sanity/icons/Transfer'
-import {
-  type DocumentIdStack,
-  type DocumentInspector,
-  type DocumentInspectorMenuItem,
-  type TFunction,
-} from 'sanity'
+import {type DocumentInspector, type DocumentInspectorMenuItem, type TFunction} from 'sanity'
 
 import {type PaneMenuItem, type StructureToolFeatures} from '../../types'
 import {HiddenCheckmarkIcon} from './components/HiddenCheckmarkIcon'
 import {INSPECT_ACTION_PREFIX} from './constants'
+import {type CompareVersionsDocuments} from './useCompareVersionsDocuments'
 
 interface GetMenuItemsParams {
   currentInspector?: DocumentInspector
@@ -19,7 +15,7 @@ interface GetMenuItemsParams {
   hasValue: boolean
   inspectors: DocumentInspector[]
   previewUrl?: string | null
-  documentIdStack?: DocumentIdStack
+  compareVersionsDocuments?: CompareVersionsDocuments
   inspectorMenuItems: DocumentInspectorMenuItem[]
   t: TFunction
   displayInlineChanges: boolean
@@ -64,10 +60,10 @@ function getInspectItem({hasValue, t}: GetMenuItemsParams): PaneMenuItem {
 }
 
 export function getCompareVersionsItem({
-  documentIdStack,
+  compareVersionsDocuments,
   t,
-}: Pick<GetMenuItemsParams, 'documentIdStack' | 't'>): PaneMenuItem {
-  const disabled = typeof documentIdStack?.previousId === 'undefined' && {
+}: Pick<GetMenuItemsParams, 'compareVersionsDocuments' | 't'>): PaneMenuItem {
+  const disabled = typeof compareVersionsDocuments === 'undefined' && {
     reason: t('compare-versions.menu-item.disabled-reason'),
   }
 

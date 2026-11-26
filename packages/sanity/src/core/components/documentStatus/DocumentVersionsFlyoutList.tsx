@@ -32,7 +32,6 @@ import {
   audienceSeparator,
   root,
 } from './DocumentVersionsFlyoutList.css'
-import {latestEdit, useDocumentVersionStatusGroups} from './DocumentVersionsStatus'
 import {
   type AudienceLine,
   type AudienceLineDetail,
@@ -53,6 +52,7 @@ import {
   type DocumentVersionStatusGroup,
   type DocumentVersionStatusItem,
 } from './sortDocumentVersionsForStatus'
+import {latestEdit, useDocumentVersionStatusGroups} from './useDocumentVersionStatusGroups'
 
 type RowPresence = Omit<DocumentPresence, 'path'>
 

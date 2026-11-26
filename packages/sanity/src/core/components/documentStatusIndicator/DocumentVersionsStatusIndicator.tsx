@@ -2,6 +2,7 @@ import {type ReactNode} from 'react'
 import {styled} from 'styled-components'
 import {Flex, Icon} from 'ui5'
 
+import {VariantMark} from '../../../ui-components/variantMark'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {getDefaultVariant} from '../../perspective/getDefaultVariant'
 import {type TargetPerspective} from '../../perspective/types'
@@ -10,7 +11,6 @@ import {ReleaseAvatar} from '../../releases/components/ReleaseAvatar'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {getVariantTitle} from '../../variants/tool/util'
 import {CircleSmallIcon} from '../temporary-icons/CircleSmall'
-import {RhombusIcon, RhombusOutlineIcon} from '../temporary-icons/Rhombus'
 import {RingIcon} from '../temporary-icons/Ring'
 import {type DocumentStatusIconKind, resolveDocumentStatusIcons} from './resolveDocumentStatusIcons'
 
@@ -115,13 +115,13 @@ export function DocumentStatusIcon({
     case 'variant':
       return (
         <IconSlot status="variant" label={label}>
-          <Icon icon={RhombusIcon} size={2} />
+          <VariantMark size="inline" />
         </IconSlot>
       )
     case 'variant-empty':
       return (
         <IconSlot status="variant" label={label}>
-          <Icon icon={RhombusOutlineIcon} size={2} />
+          <VariantMark size="inline" fill="outline" />
         </IconSlot>
       )
     case 'release':

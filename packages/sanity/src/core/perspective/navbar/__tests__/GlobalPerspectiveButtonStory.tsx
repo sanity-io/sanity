@@ -2,9 +2,8 @@ import {Card} from '@sanity/ui'
 import {Flex, Text} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
-import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
+import {VariantMark} from '../../../../ui-components/variantMark'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
-import {suggestIconColor} from '../variants/VariantsNav.css'
 
 /** The selected chip only needs the control mounted; the story does not change selection. */
 function handleClearPerspective() {
@@ -28,10 +27,7 @@ export function GlobalPerspectiveButtonStory() {
               No selection
             </Text>
             <div data-testid="global-perspective-button-idle">
-              <GlobalPerspectiveButton
-                icon={<RhombusIcon className={suggestIconColor} />}
-                text="Default"
-              />
+              <GlobalPerspectiveButton icon={<VariantMark />} text="Default" />
             </div>
           </Flex>
           <Flex alignItems="flex-start" flexDirection="column" gap={2}>
@@ -41,7 +37,7 @@ export function GlobalPerspectiveButtonStory() {
             <div data-testid="global-perspective-button-selected">
               <GlobalPerspectiveButton
                 handleClearPerspective={handleClearPerspective}
-                icon={<RhombusIcon className={suggestIconColor} />}
+                icon={<VariantMark />}
                 text="Norwegian market"
               />
             </div>

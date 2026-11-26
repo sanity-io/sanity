@@ -36,11 +36,21 @@ export function refreshTokenTag(token: string | undefined | null): string {
 /** A one-line description of a token pair for the log. */
 export function describeTokens(
   tokens:
-    | {accessToken: string; refreshToken?: string; expiresAt: number; refreshAt: number}
+    | {
+        accessToken: string
+        refreshToken?: string
+        expiresAt: number
+        refreshAt: number
+        refreshTokenExpiresAt?: number
+      }
     | undefined,
 ): string {
   if (!tokens) return 'no tokens'
   const now = Date.now()
   const inSeconds = (at: number) => `${Math.round((at - now) / 1000)}s`
-  return `access ${tokenTag(tokens.accessToken)} (expires in ${inSeconds(tokens.expiresAt)}, renews in ${inSeconds(tokens.refreshAt)}), refresh ${refreshTokenTag(tokens.refreshToken)}`
+  const timeout =
+    tokens.refreshTokenExpiresAt === undefined
+      ? ''
+      : ` (redeemable for ${inSeconds(tokens.refreshTokenExpiresAt)})`
+  return `access ${tokenTag(tokens.accessToken)} (expires in ${inSeconds(tokens.expiresAt)}, renews in ${inSeconds(tokens.refreshAt)}), refresh ${refreshTokenTag(tokens.refreshToken)}${timeout}`
 }

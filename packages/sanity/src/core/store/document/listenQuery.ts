@@ -1,18 +1,15 @@
 import {type ClientPerspective, type SanityClient} from '@sanity/client'
 import {asyncScheduler, defer, merge, type Observable, of, partition, throwError, timer} from 'rxjs'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {filter, mergeMap, share, skipWhile, take, throttleTime, timeout} from 'rxjs/operators'
+import {filter, mergeMap, share, throttleTime} from 'rxjs/operators'
 
 import {type InvalidationChannelEvent} from '../../preview/types'
 import {versionedClient} from '../../studioClient'
+import {retryTransientFetch} from '../../util/fetchErrors'
+import {reconnectListener} from '../../util/reconnectListener'
 import {variantApiVersion} from '../../variants/util/variantApiVersion'
+import {pauseWhileDocumentHidden} from '../listenerGate/listenerGate'
 import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from './types'
-
-const CONNECT_TIMEOUT_MS = 30_000
-
-class TimeoutError extends Error {
-  readonly name = 'TimeoutError'
-}
 
 /** @internal */
 export type ListenQueryParams = Record<string, string | number | boolean | string[]>
@@ -62,22 +59,34 @@ const listen = (
       includeAllVersions: true,
       tag: options.tag,
     }),
-  ) as Observable<ReconnectEvent | WelcomeEvent | MutationEvent>
+  ).pipe(reconnectListener()) as Observable<ReconnectEvent | WelcomeEvent | MutationEvent>
 
-function isWelcomeEvent(
-  event: MutationEvent | ReconnectEvent | WelcomeEvent,
-): event is WelcomeEvent {
-  return event.type === 'welcome'
+/**
+ * The listener failed before it welcomed: the query is fetched for it as it is for `welcome`, and
+ * fetched again once the listener welcomes.
+ */
+const LISTENER_UNAVAILABLE = {type: 'unavailable'} as const
+
+type ListenQueryEvent = MutationEvent | ReconnectEvent | WelcomeEvent | typeof LISTENER_UNAVAILABLE
+
+function isFetchTrigger(
+  event: ListenQueryEvent,
+): event is WelcomeEvent | typeof LISTENER_UNAVAILABLE {
+  return event.type === 'welcome' || event.type === 'unavailable'
 }
 
 const DEFAULT_THROTTLE_TIME = 1000
 
-type FetchTrigger = WelcomeEvent | ReconnectEvent | MutationEvent | InvalidationChannelEvent
+type FetchTrigger = ListenQueryEvent | InvalidationChannelEvent
 
 /**
  * Fetches on every `immediate$` event, and on `throttled$` events at most once per `throttleMs`
  * (leading and trailing). One fetch runs at a time: events that arrive during a fetch queue one
  * more after it.
+ *
+ * A fetch that fails transiently (see `isTransientFetchError`) is retried with backoff until it
+ * succeeds, so the result stays live, and the last result stays in place meanwhile. Any other
+ * failure is passed on.
  */
 function fetchOnEvents<Result>(
   immediate$: Observable<FetchTrigger>,
@@ -85,6 +94,8 @@ function fetchOnEvents<Result>(
   doFetch: () => Observable<Result>,
   throttleMs: number,
 ): Observable<Result> {
+  const fetchWithRetry = () => doFetch().pipe(retryTransientFetch())
+
   return merge(
     immediate$,
     throttled$.pipe(throttleTime(throttleMs, asyncScheduler, {leading: true, trailing: true})),
@@ -94,9 +105,9 @@ function fetchOnEvents<Result>(
         // Even though the listener request specifies visibility=query, the events are not guaranteed to be delivered with visibility=query
         // If the event we are responding to arrives with visibility != query, we add a little delay to allow for the updated document to be available for queries
         // See https://www.sanity.io/docs/listening#visibility-c4786e55c3ff
-        return timer(1200).pipe(mergeMap(doFetch))
+        return timer(1200).pipe(mergeMap(fetchWithRetry))
       }
-      return doFetch()
+      return fetchWithRetry()
     }),
   )
 }
@@ -112,31 +123,22 @@ export function listenQuery(
   const listenerQuery = typeof query === 'string' ? query : query.listen
 
   const events$ = listen(client, listenerQuery, params, options).pipe(
-    // A 'reconnect' before 'welcome' means the client is retrying the connection, so keep waiting
-    skipWhile((ev) => ev.type === 'reconnect'),
-    timeout({
-      first: CONNECT_TIMEOUT_MS,
-      with: () =>
-        throwError(
-          () =>
-            new TimeoutError(
-              `Timed out after ${CONNECT_TIMEOUT_MS}ms waiting for the listener to connect`,
-            ),
-        ),
-    }),
-    mergeMap((ev, i) => {
-      const isFirst = i === 0
-      if (isFirst && !isWelcomeEvent(ev)) {
-        // if the first event is not welcome, something is very wrong
-        return throwError(() => new Error(`Received unexpected type of first event "${ev.type}"`))
+    mergeMap((ev, i): Observable<ListenQueryEvent> => {
+      if (i > 0 || ev.type === 'welcome') {
+        return of(ev)
       }
-      return of(ev)
+      // A reconnect before welcome means the listener could not connect
+      if (ev.type === 'reconnect') {
+        return of(LISTENER_UNAVAILABLE)
+      }
+      // if the first event is neither welcome nor reconnect, something is very wrong
+      return throwError(() => new Error(`Received unexpected type of first event "${ev.type}"`))
     }),
     share(),
   )
 
-  const [welcome$, mutationAndReconnect$] = partition(events$, isWelcomeEvent)
-  const isRelevantEvent = (event: MutationEvent | ReconnectEvent | WelcomeEvent): boolean => {
+  const [fetchTriggers$, mutationAndReconnect$] = partition(events$, isFetchTrigger)
+  const isRelevantEvent = (event: ListenQueryEvent): boolean => {
     if (!options.transitions || event.type !== 'mutation') {
       return true
     }
@@ -145,10 +147,17 @@ export function listenQuery(
   }
 
   return fetchOnEvents(
-    welcome$.pipe(take(1)),
+    // Every `welcome` refetches: a listener that welcomes again after a reconnect has missed the
+    // mutations made while it was disconnected.
+    fetchTriggers$,
     mutationAndReconnect$.pipe(filter(isRelevantEvent)),
     () => fetch(client, fetchQuery, params, options),
     options.throttleTime || DEFAULT_THROTTLE_TIME,
+  ).pipe(
+    // Around the whole query, not just the listener: only the first `welcome` of a subscription
+    // fetches, so a resumed listener has to start a new subscription. A paused query emits
+    // nothing, and consumers keep its last result until the new connection's fetch replaces it.
+    pauseWhileDocumentHidden(),
   )
 }
 

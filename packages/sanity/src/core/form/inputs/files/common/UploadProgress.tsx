@@ -1,14 +1,15 @@
 import {type UploadState} from '@sanity/types'
 import {Card, Inline} from '@sanity/ui'
 import {useEffect} from 'react'
-import {Text, Flex} from 'ui5'
+import {Code, Text, Flex} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {LinearProgress} from '../../../../components/progress/LinearProgress'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../i18n/Translate'
 import {STALE_UPLOAD_MS} from '../constants'
-import {CardWrapper, CodeWrapper, FlexWrapper, LeftSection} from './UploadProgress.styled'
+import {codeWrapper} from './UploadProgress.css'
+import {CardWrapper, FlexWrapper, LeftSection} from './UploadProgress.styled'
 
 type Props = {
   uploadState: UploadState
@@ -18,7 +19,11 @@ type Props = {
 const elapsedMs = (date: string): number => new Date().getTime() - new Date(date).getTime()
 
 function FileName({filename}: {children?: React.ReactNode; filename?: string}) {
-  return <CodeWrapper size={1}>{filename ? filename : '…'}</CodeWrapper>
+  return (
+    <Code className={codeWrapper} size={1} trim>
+      {filename ? filename : '…'}
+    </Code>
+  )
 }
 
 export function UploadProgress({uploadState, onCancel, onStale}: Props) {

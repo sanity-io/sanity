@@ -9,6 +9,12 @@ export interface OAuthTokenResponse {
   token_type: string
   expires_in: number
   refresh_token?: string
+  /**
+   * How many seconds the refresh token can go unused before it expires
+   * (draft-ietf-oauth-refresh-token-expiration). Every renewal gives a new refresh token with the
+   * full timeout.
+   */
+  refresh_token_timeout?: number
 }
 
 /**
@@ -116,7 +122,19 @@ function toTokenResponse(body: unknown): OAuthTokenResponse {
   ) {
     throw new Error('OAuth token endpoint returned a malformed token response')
   }
-  return {access_token, token_type, expires_in, refresh_token}
+  const {refresh_token_timeout} = response
+  return {
+    access_token,
+    token_type,
+    expires_in,
+    refresh_token,
+    // Ignore a value that is not a positive number. The tokens are still good.
+    ...(typeof refresh_token_timeout === 'number' &&
+    Number.isFinite(refresh_token_timeout) &&
+    refresh_token_timeout > 0
+      ? {refresh_token_timeout}
+      : {}),
+  }
 }
 
 /** @internal */
@@ -126,6 +144,8 @@ export interface OAuthEndpoints {
     redirectUri: string
     codeChallenge: string
     state: string
+    /** `login` asks the authorization server for its login form, even with a session there. */
+    prompt?: 'login'
   }) => string
   exchangeCode: (params: {
     clientId: string
@@ -212,9 +232,9 @@ export function createOAuthEndpoints(
   }
 
   return {
-    authorizeUrl: ({clientId, redirectUri, codeChallenge, state}) => {
+    authorizeUrl: ({clientId, redirectUri, codeChallenge, state, prompt}) => {
       const url = new URL(endpoint('authorize'))
-      url.search = new URLSearchParams({
+      const params = new URLSearchParams({
         response_type: 'code',
         client_id: clientId,
         redirect_uri: redirectUri,
@@ -226,7 +246,11 @@ export function createOAuthEndpoints(
         // the resource with the grant and reuses it for the code exchange and every refresh, so
         // only this request names it.
         resource: `urn:io.sanity:project:${projectId}`,
-      }).toString()
+      })
+      // OpenID Connect `prompt=login`: show the login form instead of signing the user straight
+      // in with an existing sanity.io session.
+      if (prompt) params.set('prompt', prompt)
+      url.search = params.toString()
       return url.toString()
     },
 

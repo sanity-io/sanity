@@ -368,6 +368,7 @@ export {
   type PluginOptions,
   type PreparedConfig,
   type ReleaseActionsResolver,
+  type ReleaseMetadataConfig,
   type ResolveProductionUrlContext,
   type SanityFormConfig,
   type ScheduledPublishingPluginOptions,
@@ -1142,6 +1143,7 @@ export {useOnlyHasVersions} from '../core/releases/hooks/useOnlyHasVersions'
 export {useVersionOperations} from '../core/releases/hooks/useVersionOperations'
 export {sortReleases} from '../core/releases/hooks/utils'
 export {RELEASES_INTENT} from '../core/releases/plugin'
+export {RELEASE_DOCUMENT_TYPE} from '../core/releases/store/constants'
 export {isReleaseDocument, type VersionInfoDocumentStub} from '../core/releases/store/types'
 export {useActiveReleases} from '../core/releases/store/useActiveReleases'
 export {useAllReleases} from '../core/releases/store/useAllReleases'
@@ -1462,6 +1464,13 @@ export {
 export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
 /* oxlint-enable no-deprecated */
+export {
+  LISTENER_PAUSE_GRACE_PERIOD,
+  type ListenerGate,
+  listenerGate,
+  pauseWhileDocumentHidden,
+  type PauseWhileDocumentHiddenOptions,
+} from '../core/store/listenerGate/listenerGate'
 export {createPresenceStore, type PresenceStore} from '../core/store/presence/presence-store'
 export {
   type DocumentPresence,
@@ -1781,6 +1790,8 @@ export {isString} from '../core/util/isString'
 export {isTruthy} from '../core/util/isTruthy'
 export {measureFirstEmission, measureFirstMatch} from '../core/util/measureFirstEmission'
 export {type PartialExcept} from '../core/util/PartialExcept'
+export {retryTransientFetch} from '../core/util/fetchErrors'
+export {reconnectListener, type ReconnectListenerOptions} from '../core/util/reconnectListener'
 export {
   type CardinalityOneRelease,
   isCardinalityOnePerspective,

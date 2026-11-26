@@ -19,16 +19,26 @@ import {useCurrentUser} from '../user/hooks'
  * fallback. `set(undefined)` removes the user's value. A write shows at once, and a failed one is
  * logged and rolled back.
  *
+ * Pass `{refetchInterval: false}` to disable background polling (defaults to the SDK's 60-second
+ * interval), or a number of milliseconds to override it.
+ *
  * Unlike the SDK's own hooks this never suspends: the nearest boundary is the Studio's loading
  * screen.
  *
  * @internal
  */
-export function useStudioPreference<K extends PreferenceKey>(key: K) {
+export function useStudioPreference<K extends PreferenceKey>(
+  key: K,
+  options?: {refetchInterval?: number | false},
+) {
   const {instance, userId} = usePreferenceOwner()
+  const refetchInterval = options?.refetchInterval
   const state = useMemo(
-    () => userPreference.getState(instance, userId, key),
-    [instance, userId, key],
+    () =>
+      refetchInterval === undefined
+        ? userPreference.getState(instance, userId, key)
+        : userPreference.getState(instance, userId, key, {refetchInterval}),
+    [instance, userId, key, refetchInterval],
   )
   const {data, status} = useSyncExternalStore(state.subscribe, state.getCurrent)
   const set = useCallback(
