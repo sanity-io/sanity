@@ -1778,16 +1778,12 @@ export type VariantTypesConfig =
  * */
 export interface BetaFeatures {
   /**
-   * Config for the history events API .
+   * Config for the history events API.
    *
-   * If enabled, it will use the new events API to fetch history.
+   * Document history always uses the events API. `releases` enables it for the release activity
+   * feed.
    */
   eventsAPI?: {
-    /**
-     * @deprecated The events API is now always used for document history. This option has no
-     * effect and will be removed in a future release.
-     */
-    documents?: boolean
     releases?: boolean
   }
   /**

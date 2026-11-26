@@ -685,8 +685,6 @@ function resolveSource({
 
   const beta: BetaFeatures = {
     eventsAPI: {
-      // oxlint-disable-next-line no-deprecated -- always `true` for code that still reads the resolved flag
-      documents: true,
       releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
     },
     variants: {

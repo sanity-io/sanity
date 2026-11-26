@@ -455,18 +455,6 @@ describe('beta eventsAPI config', () => {
   const projectId = 'ppsg7ml5'
   const dataset = 'production'
 
-  it('always resolves the deprecated documents option to true', async () => {
-    const source = await createSourceFromConfig({
-      projectId,
-      dataset,
-      // oxlint-disable-next-line no-deprecated -- asserts that the deprecated option is ignored
-      beta: {eventsAPI: {documents: false}},
-    })
-
-    // oxlint-disable-next-line no-deprecated -- asserts that the deprecated option is ignored
-    expect(source.beta?.eventsAPI?.documents).toBe(true)
-  })
-
   it('resolves releases from root config', async () => {
     const source = await createSourceFromConfig({
       projectId,
