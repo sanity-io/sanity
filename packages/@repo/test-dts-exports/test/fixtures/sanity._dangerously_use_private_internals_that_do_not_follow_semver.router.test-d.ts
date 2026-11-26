@@ -9,7 +9,6 @@ import type {
   MatchResult,
   NextStateOrOptions,
   RouterContext,
-  WithRouterProps,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router'
 import {describe, expectTypeOf, test} from 'vitest'
 
@@ -31,8 +30,5 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver/ro
   })
   test('RouterContext', () => {
     expectTypeOf<typeof RouterContext>().not.toBeNever()
-  })
-  test('WithRouterProps', () => {
-    expectTypeOf<WithRouterProps>().toBeObject()
   })
 })

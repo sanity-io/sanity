@@ -60,11 +60,11 @@ export declare const RouterContext: never
  */
 export declare const STICKY_PARAMS: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Removed in v7. Use the `useRouter` hook from `sanity/router` instead: `const router = useRouter()`.
  */
 export declare const WithRouter: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. This export is `@internal` and `@deprecated`, and can change or disappear in any release.
+ * @deprecated Removed in v7 with `withRouter` and `WithRouter`. Use the `useRouter` hook from `sanity/router` instead; its return value is typed as `RouterContextValue` from `sanity/router`.
  */
 export type WithRouterProps = never
 /**
@@ -80,7 +80,7 @@ export declare const decodeJsonParams: never
  */
 export declare const encodeJsonParams: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Removed in v7. Use the `useRouter` hook from `sanity/router` instead: `const router = useRouter()`.
  */
 export declare const withRouter: never
 // </tombstones>
