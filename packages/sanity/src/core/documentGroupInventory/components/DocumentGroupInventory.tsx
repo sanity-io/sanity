@@ -61,6 +61,7 @@ import {ConfirmDeleteDialog} from './ConfirmDeleteDialog'
 import {Container} from './Container'
 import {CreateVariant} from './CreateVariant/CreateVariant'
 import {getNearestBaseVersion} from './CreateVariant/getNearestBaseVersion'
+import {useCreateVariantRequest} from './CreateVariant/useCreateVariantRequest'
 import {DocumentGroupEntry, resolveVariantRelease} from './DocumentGroupEntry'
 import {DocumentGroupSet} from './DocumentGroupSet'
 import {InventoryHeader} from './InventoryHeader'
@@ -108,6 +109,25 @@ export interface DocumentGroupInventoryManageProps extends DocumentGroupInventor
    * Pane-coupled presentational components injected by the consumer.
    */
   components: DocumentGroupInventoryComponents
+  /**
+   * A variant to create: when set, the inventory opens its Create variant form with Variant set
+   * to this variant id (Add to and Start from keep their own defaults: the current perspective and
+   * the nearest version), and focus goes to the form's Create button. The structure tool sets it
+   * from the document pane's `createVariant` param.
+   */
+  createVariantId?: string
+  /**
+   * Called once the form that `createVariantId` opened closes, by creating the variant or by
+   * cancelling, or straight away when the form cannot open. The consumer clears its request here.
+   */
+  onCreateVariantClose?: () => void
+  /**
+   * Whether another action in the view is its one filled button, so the inventory's Create variant
+   * steps down to a secondary button. The structure tool sets it while the document pane's banner
+   * shows Add to release (a release is selected and the document, or the selected variant, is not
+   * in it). Otherwise Create variant is the filled button.
+   */
+  createVariantSecondary?: boolean
 }
 
 /**
@@ -149,9 +169,14 @@ export function DocumentGroupInventory(
   const perspectiveList = props.mode === 'readOnly' ? undefined : props.perspectiveList
   const referringDocuments$ = props.mode === 'readOnly' ? undefined : props.referringDocuments$
   const components = props.mode === 'readOnly' ? undefined : props.components
+  const createVariantId = props.mode === 'readOnly' ? undefined : props.createVariantId
+  const onCreateVariantClose = props.mode === 'readOnly' ? undefined : props.onCreateVariantClose
+  const createVariantSecondary =
+    props.mode === 'readOnly' ? false : Boolean(props.createVariantSecondary)
 
-  const {beta} = useWorkspace()
+  const {beta, document: documentConfig} = useWorkspace()
   const variantsEnabled = beta?.variants?.enabled
+  const draftsEnabled = documentConfig.drafts.enabled
   const {t} = useTranslation(studioLocaleNamespace)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema().get(documentType)
@@ -246,17 +271,22 @@ export function DocumentGroupInventory(
                         ? {type: 'drafts'}
                         : {type: 'release', releaseId: input.bundle._id}
 
-                    // Live-edit documents have no drafts sibling: create the variant-of-published
-                    // even when the selected bundle is drafts. Release bundles still target the release.
-                    const createPerspective =
-                      schema?.liveEdit && input.bundle === ('drafts' satisfies SystemBundle)
-                        ? 'published'
-                        : input.bundle
+                    // Live-edit documents, and every document in a workspace with drafts off, have
+                    // no drafts sibling: the drafts option creates the variant-of-published (the
+                    // form labels it Published). Release bundles still target the release.
+                    const targetsPublished =
+                      (schema?.liveEdit || !draftsEnabled) &&
+                      input.bundle === ('drafts' satisfies SystemBundle)
+                    const createPerspective = targetsPublished ? 'published' : input.bundle
 
+                    // With drafts off there is no drafts perspective to select (it would read as a
+                    // release id); live-edit keeps the drafts perspective, which shows published.
                     const perspective =
-                      typeof input.bundle === 'string'
-                        ? input.bundle
-                        : getReleaseIdFromReleaseDocumentId(input.bundle._id)
+                      targetsPublished && !draftsEnabled
+                        ? 'published'
+                        : typeof input.bundle === 'string'
+                          ? input.bundle
+                          : getReleaseIdFromReleaseDocumentId(input.bundle._id)
 
                     const readVersions = async () => {
                       const versionSnapshot = await firstValueFrom(
@@ -326,6 +356,7 @@ export function DocumentGroupInventory(
           documentId,
           schema,
           versionState,
+          draftsEnabled,
         ],
       ),
     },
@@ -348,6 +379,15 @@ export function DocumentGroupInventory(
     snapshot.matches({active: 'creating'}),
   )
 
+  const isCreateVariantOpen = isVariantCreationActive || isVariantCreationPending
+
+  useCreateVariantRequest({
+    variantCreationRef,
+    variantId: createVariantId,
+    isOpen: isCreateVariantOpen,
+    onClose: onCreateVariantClose,
+  })
+
   const titleDocument = useMemo(
     () => ({_id: documentId, _type: documentType}),
     [documentId, documentType],
@@ -358,11 +398,13 @@ export function DocumentGroupInventory(
   return (
     <>
       <Container data-testid={readOnly ? 'document-group-picker' : 'document-group-inventory'}>
-        {isVariantCreationActive || isVariantCreationPending ? (
+        {isCreateVariantOpen ? (
           <CreateVariant
+            focusCreate={typeof createVariantId !== 'undefined'}
             variantCreationRef={variantCreationRef}
             sets={sets}
             documentTitle={components && <components.DocTitle document={titleDocument} />}
+            targetsPublished={!draftsEnabled}
           />
         ) : (
           !readOnly && (
@@ -371,6 +413,7 @@ export function DocumentGroupInventory(
               deletionRef={deletionRef}
               variantCreationRef={variantCreationRef}
               components={components}
+              createVariantSecondary={createVariantSecondary}
             />
           )
         )}

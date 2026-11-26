@@ -23,7 +23,9 @@ import {
 import {Text, Flex, Box} from 'ui5'
 import {useEffectEvent} from 'use-effect-event'
 
+import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
+import {CREATE_VARIANT_PARAM} from '../../constants'
 import {isDocumentLoading} from '../../isDocumentLoading'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
@@ -181,6 +183,9 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
 
   const [formRef, setFormRef] = useState<null | HTMLFormElement>(null)
   const [hasFocusedAnyPath, setHasFocusedAnyPath] = useState(false)
+  // While the document inventory's Create variant form is open for the pane (see
+  // CREATE_VARIANT_PARAM), focus belongs to its Create button, and the form must not take it.
+  const creatingVariant = Boolean(usePaneRouter().params?.[CREATE_VARIANT_PARAM])
 
   useEffect(() => {
     // Only auto-focus if no path has been focused yet.
@@ -189,7 +194,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
     // auto-focusing the first descendant after blurring a path that was focused
     // for any reason (e.g. by this auto-focus mechanism itself, or by
     // navigating to a deep-link).
-    if (hasFocusedAnyPath || !ready || formState?.focusPath.length || !formRef) {
+    if (hasFocusedAnyPath || creatingVariant || !ready || formState?.focusPath.length || !formRef) {
       return undefined
     }
     if (focusFirstDescendant(formRef)) {
@@ -216,7 +221,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
       observer.disconnect()
       ownerDocument.removeEventListener('focusin', handleFocusIn, true)
     }
-  }, [hasFocusedAnyPath, formRef, formState?.focusPath.length, ready])
+  }, [hasFocusedAnyPath, creatingVariant, formRef, formState?.focusPath.length, ready])
 
   useEffect(() => {
     if (focusPath.length !== 0) {

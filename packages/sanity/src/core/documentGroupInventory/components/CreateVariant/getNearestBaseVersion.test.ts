@@ -49,6 +49,21 @@ describe('getNearestBaseVersion', () => {
     )
   })
 
+  it("names only the variant's own published version while no bundle is picked", () => {
+    const versions = [PUBLISHED, DRAFT, IN_ASAP]
+    expect(
+      getNearestBaseVersion({
+        variantId: SUMMER_SALE,
+        bundle: undefined,
+        versions: [...versions, SUMMER_SALE_PUBLISHED],
+      }),
+    ).toBe(SUMMER_SALE_PUBLISHED)
+    // The Default's version depends on the bundle, so there is nothing to name yet
+    expect(
+      getNearestBaseVersion({variantId: SUMMER_SALE, bundle: undefined, versions}),
+    ).toBeUndefined()
+  })
+
   it('starts a draft from the default draft, then the default published version', () => {
     expect(
       getNearestBaseVersion({
@@ -84,5 +99,14 @@ describe('getNearestBaseVersion', () => {
     expect(
       getNearestBaseVersion({variantId: SUMMER_SALE, bundle: ASAP, versions: [PUBLISHED, DRAFT]}),
     ).toBeUndefined()
+  })
+
+  it('starts from the default version of the bundle while no variant is picked', () => {
+    const versions = [PUBLISHED, DRAFT, IN_ASAP, SUMMER_SALE_PUBLISHED]
+
+    expect(getNearestBaseVersion({variantId: undefined, bundle: {type: 'drafts'}, versions})).toBe(
+      DRAFT,
+    )
+    expect(getNearestBaseVersion({variantId: undefined, bundle: ASAP, versions})).toBe(IN_ASAP)
   })
 })

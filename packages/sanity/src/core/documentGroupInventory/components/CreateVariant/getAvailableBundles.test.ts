@@ -84,4 +84,48 @@ describe('getAvailableBundles', () => {
       activeUndecidedRelease._id,
     ])
   })
+
+  it('never offers a scheduled draft', () => {
+    const scheduledDraft: ReleaseDocument = {
+      ...activeASAPRelease,
+      _id: '_.releases.rScheduledDraft',
+      name: 'rScheduledDraft',
+      metadata: {...activeASAPRelease.metadata, cardinality: 'one'},
+    }
+    const bundles = getAvailableBundles({
+      variantId: SUMMER_SALE,
+      releases: new Map([[scheduledDraft._id, scheduledDraft]]),
+      existingVariants: [],
+    })
+
+    expect(bundles.map(getBundleKey)).toEqual(['drafts'])
+  })
+
+  describe('with drafts off (the drafts option creates a published version)', () => {
+    const published = version(`summer-sale-published`, {
+      variants: [{_ref: SUMMER_SALE, _key: 'summer-sale'}],
+    })
+
+    it('keeps the option while the variant has no published version', () => {
+      const bundles = getAvailableBundles({
+        variantId: SUMMER_SALE,
+        releases: new Map(),
+        existingVariants: [summerSaleIn('drafts')],
+        targetsPublished: true,
+      })
+
+      expect(bundles.map(getBundleKey)).toEqual(['drafts'])
+    })
+
+    it('leaves it out once the variant is published', () => {
+      const bundles = getAvailableBundles({
+        variantId: SUMMER_SALE,
+        releases: new Map(),
+        existingVariants: [published],
+        targetsPublished: true,
+      })
+
+      expect(bundles).toEqual([])
+    })
+  })
 })
