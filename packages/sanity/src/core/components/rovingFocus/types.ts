@@ -1,11 +1,13 @@
 /**
  * @hidden
- * @beta */
+ * @internal
+ */
 export type RovingFocusNavigationType = 'arrows' | 'tab'
 
 /**
  * @hidden
- * @beta */
+ * @internal
+ */
 export interface RovingFocusProps {
   direction?: 'horizontal' | 'vertical'
   initialFocus?: 'first' | 'last'

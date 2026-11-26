@@ -753,6 +753,8 @@ import type {
   RevertChangesConfirmDialog,
   RouterContext,
   RouterPaneSiblingContext,
+  RovingFocusNavigationType,
+  RovingFocusProps,
   SANITY_PATCH_TYPE,
   SanityDefaultPreview,
   SanityDefaultPreviewProps,
@@ -807,6 +809,7 @@ import type {
   SourceProviderProps,
   Status,
   StatusButton,
+  StatusButtonProps,
   STICKY_PARAMS,
   StoreRequestErrorHandler,
   StrictVersionLayeringOptions,
@@ -999,6 +1002,7 @@ import type {
   useProjectDatasets,
   useProjectStore,
   UserAvatar,
+  UserAvatarProps,
   UserColor,
   UserColorHue,
   UserColorManager,
@@ -3368,6 +3372,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('RouterPaneSiblingContext', () => {
     expectTypeOf<RouterPaneSiblingContext>().toBeObject()
   })
+  test('RovingFocusNavigationType', () => {
+    expectTypeOf<RovingFocusNavigationType>().not.toBeNever()
+  })
+  test('RovingFocusProps', () => {
+    expectTypeOf<RovingFocusProps>().toBeObject()
+  })
   test('SANITY_PATCH_TYPE', () => {
     expectTypeOf<typeof SANITY_PATCH_TYPE>().not.toBeNever()
   })
@@ -3529,6 +3539,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('StatusButton', () => {
     expectTypeOf<typeof StatusButton>().toBeFunction()
+  })
+  test('StatusButtonProps', () => {
+    expectTypeOf<StatusButtonProps>().not.toBeNever()
   })
   test('STICKY_PARAMS', () => {
     expectTypeOf<typeof STICKY_PARAMS>().not.toBeNever()
@@ -4106,6 +4119,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('UserAvatar', () => {
     expectTypeOf<typeof UserAvatar>().toBeFunction()
+  })
+  test('UserAvatarProps', () => {
+    expectTypeOf<UserAvatarProps>().toBeObject()
   })
   test('UserColor', () => {
     expectTypeOf<UserColor>().toBeObject()

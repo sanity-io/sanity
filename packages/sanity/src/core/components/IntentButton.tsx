@@ -4,9 +4,8 @@ import {IntentLink, type IntentLinkProps} from 'sanity/router'
 import {Button, type ButtonProps} from '../../ui-components/button/Button'
 
 /**
- *
  * @hidden
- * @beta
+ * @internal
  */
 export function IntentButton(
   props: IntentLinkProps & ButtonProps & Omit<HTMLProps<HTMLButtonElement>, 'ref' | 'size' | 'as'>,
