@@ -13,7 +13,8 @@ import {formFieldGutter} from './FormFieldGutter.css'
 export type FormFieldGutterProps = Pick<BaseFieldProps, 'path' | 'changedFromBaseVariant'> & {
   /**
    * Whether the field has a title row to line a base variant mark up with. Without one the mark
-   * keeps following the input.
+   * keeps following the input. Left undefined when the form compares nothing with a base variant
+   * (every document outside Variants), so the gutter adds nothing for the mark.
    */
   labelAnchored?: boolean
 }
@@ -26,7 +27,7 @@ export type FormFieldGutterProps = Pick<BaseFieldProps, 'path' | 'changedFromBas
 export const FormFieldGutter: ComponentType<FormFieldGutterProps> = ({
   path,
   changedFromBaseVariant,
-  labelAnchored = false,
+  labelAnchored,
 }) => {
   // `FormField` and `FormFieldSet` are exported from `sanity`, and `path` only became a required
   // prop in v5.17. Custom inputs written before that still render them without one, so the gutter
@@ -47,10 +48,14 @@ export const FormFieldGutter: ComponentType<FormFieldGutterProps> = ({
               // Which of the two the gutter follows is decided in CSS by the child it shows
               // (`formFieldAnchor`), never by `changedFromBaseVariant`: the mark keeps its place
               // while it fades out, and a divergence indicator shown first stays on the input.
-              [formFieldLabelAnchorPath]: pathToAnchorIdent(
-                labelAnchored ? 'label' : 'input',
-                path,
-              ),
+              ...(labelAnchored === undefined
+                ? {}
+                : {
+                    [formFieldLabelAnchorPath]: pathToAnchorIdent(
+                      labelAnchored ? 'label' : 'input',
+                      path,
+                    ),
+                  }),
             } as CSSProperties)
           : undefined
       }

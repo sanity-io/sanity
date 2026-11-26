@@ -15,7 +15,9 @@ import {
   useMemo,
   useRef,
   type RefAttributes,
+  useContext,
 } from 'react'
+import {BaseVariantComparisonContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 import {Text, VStack, Flex, Box} from 'ui5'
 
@@ -192,6 +194,9 @@ export function FormFieldSet(
     readOnly,
     ...restProps
   } = props
+  // Only a form that compares with a base variant (Variants) needs the title row as an anchor for
+  // the field mark. Everywhere else the field renders as on main.
+  const comparesWithBaseVariant = useContext(BaseVariantComparisonContext) !== undefined
 
   const {focused, hovered, onMouseEnter, onMouseLeave} = useFieldActions()
 
@@ -238,7 +243,7 @@ export function FormFieldSet(
         <FormFieldGutter
           path={path}
           changedFromBaseVariant={changedFromBaseVariant}
-          labelAnchored={Boolean(title)}
+          labelAnchored={comparesWithBaseVariant ? Boolean(title) : undefined}
         />
       }
     >
@@ -262,9 +267,11 @@ export function FormFieldSet(
               <VStack gap={3}>
                 <HeaderRow
                   alignItems="center"
-                  style={{
-                    anchorName: Array.isArray(path) ? pathToAnchorIdent('label', path) : undefined,
-                  }}
+                  style={
+                    comparesWithBaseVariant && Array.isArray(path)
+                      ? {anchorName: pathToAnchorIdent('label', path)}
+                      : undefined
+                  }
                 >
                   {title && (
                     <FormFieldSetLegend

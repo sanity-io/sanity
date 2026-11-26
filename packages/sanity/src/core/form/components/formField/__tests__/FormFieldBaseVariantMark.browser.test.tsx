@@ -1,3 +1,4 @@
+import {BaseVariantComparisonContext} from 'sanity/_singletons'
 import {describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page} from 'vitest/browser'
@@ -38,9 +39,13 @@ function Harness({
       </FormField>
     </div>
   )
+  // The form builder sets the compared slot whenever it compares with a base variant; without it
+  // a field renders as it does outside Variants.
   return (
     <TestWrapper schemaTypes={[]}>
-      {divergent ? <WithEnabledDivergences>{field}</WithEnabledDivergences> : field}
+      <BaseVariantComparisonContext.Provider value="published">
+        {divergent ? <WithEnabledDivergences>{field}</WithEnabledDivergences> : field}
+      </BaseVariantComparisonContext.Provider>
     </TestWrapper>
   )
 }
@@ -111,5 +116,20 @@ describe('FormField base variant mark', () => {
       .toBe(false)
     await expect.element(page.getByTestId('base-variant-diff-mark')).not.toBeVisible()
     expect(Math.abs(centreY(gutter) - valueCentre())).toBeLessThanOrEqual(2)
+  })
+
+  it('adds no anchor to the title row when the form compares nothing (outside Variants)', async () => {
+    await render(
+      <TestWrapper schemaTypes={[]}>
+        <FormField path={['title']} title="Title" inputId="title">
+          <input id="title" />
+        </FormField>
+      </TestWrapper>,
+    )
+    const gutterLocator = page.getByTestId('form-field-gutter')
+    await expect.element(gutterLocator).toBeInTheDocument()
+    const gutter = gutterLocator.element() as HTMLElement
+    expect(gutter.style.getPropertyValue('--form-field-label-anchor-path')).toBe('')
+    expect(document.querySelector('[style*="anchor-name"]')).toBeNull()
   })
 })

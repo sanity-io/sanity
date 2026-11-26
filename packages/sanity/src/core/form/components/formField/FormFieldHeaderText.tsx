@@ -56,7 +56,11 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
 
   return (
     <VStack gap={3}>
-      <Flex alignItems="center" paddingY={1} style={{anchorName: labelAnchorName}}>
+      <Flex
+        alignItems="center"
+        paddingY={1}
+        style={labelAnchorName ? {anchorName: labelAnchorName} : undefined}
+      >
         <Flex alignItems="center">
           <Text as="label" htmlFor={inputId} weight="medium" size={1} trim={true} tone={tone}>
             {title || (
