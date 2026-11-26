@@ -441,7 +441,12 @@ describe('DocumentGroupSet', () => {
   it('renders no status track, and still renders a row whose release document is not found', async () => {
     const {settleChromaticEndState} = testHelpers()
     // Neither the variant nor the release list carries the release document.
-    const withoutRelease = {...SUMMER_SALE, releaseDocument: undefined}
+    // Edited after it was created, so the status line reads "Edited" rather than "Created".
+    const withoutRelease = {
+      ...SUMMER_SALE,
+      releaseDocument: undefined,
+      document: {...SUMMER_SALE.document, _updatedAt: '2026-01-02T00:00:00.000Z'},
+    }
     void render(<SetHarness releases={new Map()} variants={[withoutRelease]} />)
 
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
