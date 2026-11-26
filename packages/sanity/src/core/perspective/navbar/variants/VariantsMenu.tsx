@@ -3,6 +3,7 @@ import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {SearchIcon} from '@sanity/icons/Search'
 import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
+import {clsx} from 'clsx'
 import {
   type RefAttributes,
   type SVGProps,
@@ -18,8 +19,10 @@ import {useIntentLink} from 'sanity/router'
 import {Text, Flex, Box} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {menuOverflowScroller} from '../../../../ui-components/menuButton/menuOverflow.css'
+import {useFocusSearchOnOpen} from '../../../../ui-components/menuButton/useFocusSearchOnOpen'
+import {useMenuOverflow} from '../../../../ui-components/menuButton/useMenuOverflow'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
-import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {getConditionMismatchMessage} from '../../../variants/components/ConditionMismatchIndicator'
@@ -39,6 +42,7 @@ import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../../variants/util/v
 import {usePerspective} from '../../usePerspective'
 import {useSetVariant} from '../../useSetVariant'
 import {FilterNoMatches} from '../FilterNoMatches'
+import {MenuSectionDivider} from '../MenuSectionDivider'
 import {
   PerspectiveDetailLink,
   renderWithDetailLinkSpace,
@@ -46,11 +50,42 @@ import {
   usePerspectiveDetailLinkTrigger,
 } from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
-import {variantMenuItemRow, variantsMenu} from './VariantsMenu.css'
-import {suggestIconColor} from './VariantsNav.css'
+import {
+  conditionMismatchIcon,
+  variantMenuItemIconColor,
+  variantMenuItemRow,
+  variantsMenu,
+} from './VariantsMenu.css'
 
+/**
+ * The space between the end of a row and the button at its end: 8px, the same as between the
+ * menu's edge and its rows.
+ */
+const ROW_END_INSET = 8
+
+/**
+ * ui5 `Icon` clones the icon with its own class, so the variant colour is merged with it rather
+ * than passed first, where the spread `className` would replace it.
+ */
 const VariantMenuItemIcon = (props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>) => {
-  return <RhombusIconLarge className={suggestIconColor} {...props} />
+  return <RhombusIconLarge {...props} className={clsx(props.className, variantMenuItemIconColor)} />
+}
+
+/**
+ * Passed to the menu item as a component, not as an element in a wrapper, so the menu item's
+ * `Icon` sizes and colours the svg itself: a wrapper took the colour (grey) in its place and,
+ * holding the svg inline, added a line box under it that lifted the icon off the row's centre.
+ */
+const ConditionMismatchMenuIcon = (
+  props: SVGProps<SVGSVGElement> & RefAttributes<SVGSVGElement>,
+) => {
+  return (
+    <ErrorOutlineIcon
+      {...props}
+      className={clsx(props.className, conditionMismatchIcon)}
+      data-testid="variant-condition-mismatch"
+    />
+  )
 }
 
 function VariantMenuItem(props: {
@@ -65,7 +100,7 @@ function VariantMenuItem(props: {
   const mismatchMessage =
     mismatches.length > 0 ? getConditionMismatchMessage(t, mismatches) : undefined
   const {menuItemProps: detailLinkMenuItemProps, linkProps: detailLinkProps} =
-    usePerspectiveDetailLink()
+    usePerspectiveDetailLink({selected: isSelected})
   const variantId = getVariantId(variant._id)
   const title = getVariantTitle(variant)
 
@@ -76,13 +111,7 @@ function VariantMenuItem(props: {
         aria-checked={isSelected}
         data-testid={`variant-${variantId}`}
         icon={VariantMenuItemIcon}
-        iconRight={
-          mismatches.length > 0 ? (
-            <Box paddingRight={1} data-testid="variant-condition-mismatch">
-              <ToneIcon icon={ErrorOutlineIcon} tone="critical" />
-            </Box>
-          ) : undefined
-        }
+        iconRight={mismatches.length > 0 ? ConditionMismatchMenuIcon : undefined}
         onClick={() => onSelect(variant)}
         pressed={isSelected}
         renderMenuItem={renderWithDetailLinkSpace}
@@ -103,15 +132,14 @@ function VariantMenuItem(props: {
       />
       <PerspectiveDetailLink
         {...detailLinkProps}
-        // `paddingRight` mirrors the studio menu item's own; its text row is shorter than the
-        // link, so the link centers on the item instead of mirroring its top padding
-        alignItems="center"
         aria-label={t('navbar.variant.menu.view-variant-aria-label', {title})}
         data-testid={`variant-detail-link-${variantId}`}
         intent={VARIANTS_INTENT}
         onNavigate={onNavigate}
-        paddingRight={3}
         params={{id: variantId}}
+        // The link's box sits 8px from the row's right edge, inside the menu item's 12px padding,
+        // and the menu item's 12px gap then separates it from a mismatch icon
+        style={{paddingRight: ROW_END_INSET}}
         tooltip={t('navbar.variant.menu.view-variant')}
       />
     </div>
@@ -159,6 +187,8 @@ export function VariantsMenu({
   const {data: variants} = useAllVariants()
   const [filterQuery, setFilterQuery] = useState('')
   const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
+  const scrollerRef = useMenuOverflow()
+  const focusSearchField = useFocusSearchOnOpen()
   const {selectedVariants} = usePerspective()
   const typeVariants = useMemo(
     () => variants.filter((variant) => getVariantType(variant) === typeKey),
@@ -204,6 +234,7 @@ export function VariantsMenu({
   const {triggerRef, handleNavigate: handleNavigateToVariant} = usePerspectiveDetailLinkTrigger()
 
   const isDefaultSelected = !selectedVariant
+  const isFiltering = filterQuery.trim().length > 0
 
   const {href: viewAllHref, onClick: handleViewAll} = useIntentLink({
     intent: VARIANTS_INTENT,
@@ -248,7 +279,8 @@ export function VariantsMenu({
             ref={menuRef}
             style={menuStyle}
           >
-            <Box flexShrink={0} paddingX={3} paddingTop={3} paddingBottom={2}>
+            {/* 4px below the field plus the list's 4px top padding: an 8px gap to the first row */}
+            <Box flexShrink={0} paddingX={2} paddingTop={2} paddingBottom={1}>
               <TextInput
                 aria-label={t('navbar.variant.filter-placeholder')}
                 fontSize={1}
@@ -256,6 +288,7 @@ export function VariantsMenu({
                 onChange={handleFilterChange}
                 placeholder={t('navbar.variant.filter-placeholder')}
                 radius={2}
+                ref={focusSearchField}
                 value={filterQuery}
               />
             </Box>
@@ -263,23 +296,33 @@ export function VariantsMenu({
               <FilterNoMatches filter={filterQuery.trim()} />
             ) : (
               <Flex
+                className={menuOverflowScroller}
                 flexDirection="column"
                 flexGrow={1}
                 flexShrink={1}
                 minHeight="0"
                 overflowY="auto"
-                paddingX={3}
-                paddingBottom={2}
+                ref={scrollerRef}
               >
                 {/* Menu items are flex children with min-height: 0, so they collapse
                 when they sit directly in this scroller. Keep them in a column
                 that sizes to its content. */}
-                <Flex flexDirection="column" flexShrink={0} gap={1}>
+                <Flex
+                  flexDirection="column"
+                  flexShrink={0}
+                  gap={1}
+                  paddingX={2}
+                  paddingTop={1}
+                  // With the footer hidden by a filter, the last row is 8px from the menu's bottom
+                  paddingBottom={isFiltering ? 2 : 1}
+                >
                   {filteredVariants.map((variant) =>
                     isDefaultVariant(variant) ? (
                       <MenuItem
                         aria-checked={isDefaultSelected}
                         data-testid="variant-default"
+                        // The same diamond as every other variant row and the navbar chip
+                        icon={VariantMenuItemIcon}
                         key={variant._id}
                         onClick={handleSelectDefault}
                         pressed={isDefaultSelected}
@@ -300,30 +343,25 @@ export function VariantsMenu({
                 </Flex>
               </Flex>
             )}
-            <Flex
-              flexDirection="column"
-              flexShrink={0}
-              gap={1}
-              borderTop
-              paddingX={3}
-              paddingTop={2}
-              paddingBottom={3}
-              hidden={filterQuery.trim().length > 0}
-            >
-              <MenuItem
-                as="a"
-                data-testid="view-all"
-                href={viewAllHref}
-                icon={RhombusIconLarge}
-                onClick={handleViewAll}
-                text={t('navbar.variant.menu.view-all')}
-              />
-              {allowCreate && (
-                <Suspense fallback={null}>
-                  <NewVariantMenuItem onCreate={handleNewAudience} />
-                </Suspense>
-              )}
-            </Flex>
+            {/* 8px below the last row: the menu's bottom inset */}
+            <Box flexShrink={0} paddingX={2} paddingTop={1} paddingBottom={2} hidden={isFiltering}>
+              <MenuSectionDivider placement="start" />
+              <Flex flexDirection="column" gap={1}>
+                <MenuItem
+                  as="a"
+                  data-testid="view-all"
+                  href={viewAllHref}
+                  icon={RhombusIconLarge}
+                  onClick={handleViewAll}
+                  text={t('navbar.variant.menu.view-all')}
+                />
+                {allowCreate && (
+                  <Suspense fallback={null}>
+                    <NewVariantMenuItem onCreate={handleNewAudience} />
+                  </Suspense>
+                )}
+              </Flex>
+            </Box>
           </Menu>
         }
         popover={{

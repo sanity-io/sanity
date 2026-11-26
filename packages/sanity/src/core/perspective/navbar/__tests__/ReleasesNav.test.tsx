@@ -18,6 +18,7 @@ import {
   useReleasePermissionsMockReturn,
   useReleasesPermissionsMockReturnTrue,
 } from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
+import {GlobalPerspectiveNav} from '../GlobalPerspectiveNav'
 import {ReleasesNav} from '../releases/ReleasesNav'
 
 vi.mock('../../../releases/store/useReleasePermissions', () => ({
@@ -130,6 +131,29 @@ describe('ReleasesNav', () => {
     expect(screen.queryByTestId('global-perspective-button-clear')).toBeNull()
   })
 
+  it("keeps main's classic pill and releases tool in the navbar when variants are off", async () => {
+    useActiveReleasesMockReturn.data = [activeScheduledRelease]
+    const wrapper = await createTestProvider({resources: []})
+    currentRenderedInstance = render(<GlobalPerspectiveNav />, {wrapper})
+
+    // The classic pill: the releases tool, the current perspective label and the chevron
+    expect(screen.getByTestId('releases-tool-link')).toHaveAttribute('href', '/')
+    screen.getByText('Drafts')
+    expect(screen.getByTestId('global-perspective-menu-button')).toHaveAccessibleName(
+      'Open releases',
+    )
+    // Not the variants beta's chip
+    expect(screen.queryByRole('button', {name: 'Drafts'})).toBeNull()
+    expect(screen.queryByTestId('global-perspective-button-clear')).toBeNull()
+
+    // main's menu: its search copy and no release detail links
+    await userEvent.click(screen.getByTestId('global-perspective-menu-button'))
+    await waitFor(() => {
+      screen.getByPlaceholderText('Find a version or release')
+    })
+    expect(screen.queryByTestId('release-detail-link-rActive')).toBeNull()
+  })
+
   it('omits the releases tool unless the navbar asks for it', async () => {
     await renderTest({withReleasesToolButton: false})
 
@@ -230,7 +254,8 @@ describe('ReleasesNav', () => {
 
       await renderVariants()
 
-      const truncated = `${'A'.repeat(50)}\u2026`
+      // The navbar chip cuts its label at 32 characters
+      const truncated = `${'A'.repeat(32)}\u2026`
       screen.getByText(truncated)
       screen.getByRole('button', {name: longTitle})
       screen.getByText(longTitle)

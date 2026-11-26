@@ -1,7 +1,8 @@
 import {css, styled} from 'styled-components'
 import {Box} from 'ui5'
 
-const INDICATOR_LEFT_OFFSET = 20
+// The centre of the 21px leading column of a menu row, less half the line's width
+const INDICATOR_LEFT_OFFSET = 16
 const INDICATOR_WIDTH = 1
 const INDICATOR_COLOR_VAR_NAME = '--card-border-color'
 const INDICATOR_BOTTOM_OFFSET = 4
@@ -106,8 +107,8 @@ export const ReleasesMenuItemIndicator = styled.div<{
 export const ReleasesMenuLabelIndicator = styled(Box)<{$withinRange: boolean}>(
   ({$withinRange}) => css`
     position: relative;
-    // 4px padding + 33px release indicator width + 4px gap
-    padding-left: 41px;
+    // Starts the label where the release titles start, 41px from the menu's edge (ReleasesMenuItem)
+    padding-left: 33px;
 
     ${
       $withinRange &&

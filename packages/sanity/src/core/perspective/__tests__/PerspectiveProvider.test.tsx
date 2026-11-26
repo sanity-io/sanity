@@ -27,8 +27,13 @@ vi.mock('../../variants/store/useVariantsStore', () => ({
   }),
 }))
 
-async function renderPerspective(selectedVariantName: string | undefined) {
-  const TestProvider = await createTestProvider()
+async function renderPerspective(
+  selectedVariantName: string | undefined,
+  {variantsEnabled = true}: {variantsEnabled?: boolean} = {},
+) {
+  const TestProvider = await createTestProvider({
+    config: variantsEnabled ? {beta: {variants: {enabled: true}}} : {},
+  })
 
   function Wrapper({children}: PropsWithChildren) {
     return (
@@ -83,6 +88,17 @@ describe('PerspectiveProvider variant sticky param', () => {
       expect(result.current.selectedVariants[1]).toBe(variantAlphaAudience)
     })
     expect(result.current.selectedVariants[0]).toBeUndefined()
+    // oxlint-disable-next-line typescript/no-deprecated -- asserts the deprecated first-variant alias
+    expect(result.current.selectedVariant).toBeUndefined()
+  })
+
+  it('ignores the sticky param while variants are off', async () => {
+    const {result} = await renderPerspective('variant:alpha-audience', {variantsEnabled: false})
+
+    expect(result.current.selectedVariantNames).toEqual([])
+    expect(result.current.selectedVariants).toEqual([])
+    // oxlint-disable-next-line typescript/no-deprecated -- asserts the deprecated first-variant alias
+    expect(result.current.selectedVariantName).toBeUndefined()
     // oxlint-disable-next-line typescript/no-deprecated -- asserts the deprecated first-variant alias
     expect(result.current.selectedVariant).toBeUndefined()
   })

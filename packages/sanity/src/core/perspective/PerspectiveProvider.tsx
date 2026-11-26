@@ -32,10 +32,12 @@ export function PerspectiveProvider({
   const {byId: variantsById} = useAllVariants()
 
   const {
+    beta,
     document: {
       drafts: {enabled: isDraftModelEnabled},
     },
   } = useWorkspace()
+  const variantsEnabled = Boolean(beta?.variants?.enabled)
 
   const selectedPerspective = useMemo(
     () => getSelectedPerspective(selectedPerspectiveName, releases),
@@ -53,9 +55,14 @@ export function PerspectiveProvider({
     [releases, selectedPerspectiveName, excludedPerspectives, isDraftModelEnabled],
   )
 
+  // A sticky `?variant=` left in the URL (a shared link, a studio that switched variants off)
+  // selects nothing while variants are off, so nothing downstream acts on it.
   const selectedVariantNames = useMemo(
-    () => parseVariantStickyParam(selectedVariantName).map((selection) => selection.name),
-    [selectedVariantName],
+    () =>
+      variantsEnabled
+        ? parseVariantStickyParam(selectedVariantName).map((selection) => selection.name)
+        : EMPTY_ARRAY,
+    [selectedVariantName, variantsEnabled],
   )
   const selectedVariants = useMemo(
     () =>

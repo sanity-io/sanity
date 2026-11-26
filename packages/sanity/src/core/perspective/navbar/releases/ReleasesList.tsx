@@ -14,6 +14,7 @@ import {useWorkspace} from '../../../studio/workspace'
 import {isCardinalityOneRelease} from '../../../util/releaseUtils'
 import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {FilterNoMatches} from '../FilterNoMatches'
+import {MenuSectionDivider} from '../MenuSectionDivider'
 import {AgentBundleMenuItem} from './AgentBundleMenuItem'
 import {getRangePosition, ReleasesMenuItem, type LayerRange} from './ReleasesMenuItem'
 import {ReleaseTypeMenuSection} from './ReleaseTypeMenuSection'
@@ -167,10 +168,24 @@ export function ReleasesList({
     return <FilterNoMatches filter={filterQuery.trim()} />
   }
 
+  // Rules go between groups, never after the last one. The pinned groups carry their own, so it
+  // stays with them while the releases scroll under them: the header's below it when releases
+  // follow, the footer's above it. A scrolling group draws one above itself unless it comes first
+  // or right below the header.
+  const showTop = showPublished || showDrafts
+  const showBottom = !isFiltering
+  const firstReleaseType = areReleasesEnabled
+    ? orderedReleaseTypes.find((releaseType) => sortedReleaseTypeReleases[releaseType].length > 0)
+    : undefined
+  const hasScrollingGroups =
+    Boolean(showAgentBundle && agentBundles[0]) || Boolean(firstReleaseType)
+
   return (
-    <Card radius={3}>
-      {(showPublished || showDrafts) && (
-        <StickyTopCard borderBottom padding={1}>
+    // Without the pinned footer, the last group's 4px plus these 4px keep the rows 8px from the
+    // menu's bottom edge
+    <Card radius={3} paddingBottom={showBottom ? 0 : 1}>
+      {showTop && (
+        <StickyTopCard paddingX={2} paddingY={1}>
           <VStack gap={1}>
             {showPublished && (
               <ReleasesMenuItem
@@ -187,10 +202,11 @@ export function ReleasesList({
               />
             )}
           </VStack>
+          {hasScrollingGroups && <MenuSectionDivider placement="end" />}
         </StickyTopCard>
       )}
       {showAgentBundle && agentBundles[0] && (
-        <Card borderBottom padding={1}>
+        <Card paddingX={2} paddingY={1}>
           <VStack gap={1}>
             <AgentBundleMenuItem bundle={agentBundles[0]} />
           </VStack>
@@ -207,18 +223,23 @@ export function ReleasesList({
               currentGlobalBundleMenuItemRef={scrollElementRef}
               menuItemProps={menuItemProps}
               onNavigateToRelease={onNavigateToRelease}
+              showDivider={
+                Boolean(showAgentBundle && agentBundles[0]) || releaseType !== firstReleaseType
+              }
               showStackLine={showStackLine}
             />
           ))}
         </VStack>
       )}
       {!isFiltering && (
-        <StickyBottomCard borderTop paddingY={1} paddingX={2}>
+        // 8px below the last row: the menu's bottom inset
+        <StickyBottomCard paddingX={2} paddingTop={1} paddingBottom={2}>
+          <MenuSectionDivider placement="start" />
           <VStack gap={1}>
-            <ScheduledDraftsMenuItem />
+            <ScheduledDraftsMenuItem text={t('release.menu.scheduled-drafts-variants')} />
             {areReleasesEnabled && (
               <>
-                <ViewContentReleasesMenuItem />
+                <ViewContentReleasesMenuItem text={t('release.menu.view-releases-variants')} />
                 <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
               </>
             )}

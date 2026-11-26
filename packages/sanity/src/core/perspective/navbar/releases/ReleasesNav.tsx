@@ -8,6 +8,7 @@ import {ReleasesToolLink} from '../../ReleasesToolLink'
 import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {usePerspective} from '../../usePerspective'
 import {CurrentGlobalPerspectiveLabel} from '../currentGlobalPerspectiveLabel'
+import {ClassicReleasesMenu} from './classic/ClassicReleasesMenu'
 import {ReleasesMenu} from './ReleasesMenu'
 
 const ReleasesNavContainer = styled(Card)`
@@ -52,8 +53,9 @@ interface Props {
 /**
  * Releases perspective picker.
  *
- * Without variants this is the classic pill: the releases tool, the current
- * perspective label, and a chevron menu. With variants it is the single chip.
+ * Without variants this is the classic pill, exactly as on `main`: the releases tool, the current
+ * perspective label, and a chevron menu with `main`'s rows. With the variants beta it is the single
+ * chip and the beta's restyled menu. The one branch below is the whole switch.
  *
  * @internal
  */
@@ -68,25 +70,29 @@ export const ReleasesNav: ComponentType<Props> = ({
   const variantsEnabled = Boolean(beta?.variants?.enabled)
   const isReleasesEnabled = !!releases?.enabled
   const {selectedPerspective, selectedPerspectiveName} = usePerspective()
+  const areReleasesEnabled = releasesToolAvailable && isReleasesEnabled
 
-  const menu = (
-    <ReleasesMenu
-      areReleasesEnabled={releasesToolAvailable && isReleasesEnabled}
-      fullWidth={variantsEnabled ? fullWidth : undefined}
-      menuItemProps={menuItemProps}
-      selectedPerspectiveName={selectedPerspectiveName}
-      showDetailLinks={variantsEnabled && showDetailLinks}
-      variantsEnabled={variantsEnabled}
-    />
-  )
-
-  if (variantsEnabled) return menu
+  if (variantsEnabled) {
+    return (
+      <ReleasesMenu
+        areReleasesEnabled={areReleasesEnabled}
+        fullWidth={fullWidth}
+        menuItemProps={menuItemProps}
+        selectedPerspectiveName={selectedPerspectiveName}
+        showDetailLinks={showDetailLinks}
+      />
+    )
+  }
 
   return (
     <ReleasesNavContainer border data-ui="ReleasesNav" flex="none" radius="full" tone="inherit">
       {withReleasesToolButton && releasesToolAvailable && <ReleasesToolLink />}
       <CurrentGlobalPerspectiveLabel selectedPerspective={selectedPerspective} />
-      {menu}
+      <ClassicReleasesMenu
+        areReleasesEnabled={areReleasesEnabled}
+        menuItemProps={menuItemProps}
+        selectedPerspectiveName={selectedPerspectiveName}
+      />
     </ReleasesNavContainer>
   )
 }

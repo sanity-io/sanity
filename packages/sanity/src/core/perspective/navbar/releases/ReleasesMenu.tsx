@@ -1,22 +1,23 @@
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {SearchIcon} from '@sanity/icons/Search'
-// oxlint-disable-next-line no-restricted-imports -- the chevron trigger needs the hit-area style only @sanity/ui Button accepts
-import {Button, TextInput} from '@sanity/ui'
+import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type ChangeEvent, useCallback, useState} from 'react'
-import {styled} from 'styled-components'
 import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
+import {menuOverflowScroller} from '../../../../ui-components/menuButton/menuOverflow.css'
+import {useFocusSearchOnOpen} from '../../../../ui-components/menuButton/useFocusSearchOnOpen'
+import {useMenuOverflow} from '../../../../ui-components/menuButton/useMenuOverflow'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {CreateReleaseDialog} from '../../../releases/components/dialog/CreateReleaseDialog'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
 import {useReleasesUpsell} from '../../../releases/contexts/upsell/useReleasesUpsell'
-import {oversizedButtonStyle} from '../../styles'
+import {isReleaseDocument} from '../../../releases/store/types'
 import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {useGetDefaultPerspective} from '../../useGetDefaultPerspective'
 import {useSetPerspective} from '../../useSetPerspective'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
+import {MenuSectionDivider} from '../MenuSectionDivider'
 import {usePerspectiveDetailLinkTrigger} from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
 import {ReleasesList} from './ReleasesList'
@@ -24,24 +25,25 @@ import {globalPerspectiveMenu, releasesMenuItemIcon} from './ReleasesMenu.css'
 import {useReleasesLabel} from './useReleasesLabel'
 import {useScrollIndicatorVisibility} from './useScrollIndicatorVisibility'
 
-const OversizedButton = styled(Button)`
-  ${oversizedButtonStyle}
-`
-
 /**
- * Labelled chip used when variants are on. The classic pill keeps its own
- * label beside a chevron, so this hook work stays off that path.
+ * The labelled chip that opens the releases menu, in every studio.
  */
 function ReleasesMenuChip({
   fullWidth,
   ...rest
 }: {fullWidth?: boolean} & React.HTMLAttributes<HTMLButtonElement>) {
+  const {t} = useTranslation()
   const setPerspective = useSetPerspective()
   const defaultPerspective = useGetDefaultPerspective()
   const {displayTitle, fullTitle, selectedPerspective} = useReleasesLabel()
   // Drafts disabled coerces the default name to `published`, so a truthy name
   // is not enough to tell a selection from the default perspective.
   const canClearPerspective = selectedPerspective !== defaultPerspective
+  // The tooltip names what kind of value the chip shows, as the variants chip names its type:
+  // a release, or a version of the document (Drafts, Published)
+  const pickerLabel = isReleaseDocument(selectedPerspective)
+    ? t('release.navbar.chip-label.release')
+    : t('release.navbar.chip-label.version')
 
   const handleClearPerspective = useCallback(() => {
     setPerspective(undefined)
@@ -61,6 +63,7 @@ function ReleasesMenuChip({
         />
       }
       text={displayTitle}
+      pickerLabel={pickerLabel}
       {...rest}
     />
   )
@@ -72,7 +75,6 @@ export function ReleasesMenu({
   areReleasesEnabled = true,
   menuItemProps,
   showDetailLinks = false,
-  variantsEnabled = false,
 }: {
   /** Stretches the trigger to its parent's width. */
   fullWidth?: boolean
@@ -84,18 +86,19 @@ export function ReleasesMenu({
    * does: a picker that chooses a perspective for something else must not navigate away.
    */
   showDetailLinks?: boolean
-  /**
-   * Which trigger to render. Variants studios get the labelled chip.
-   * Everyone else gets the chevron that sits in the classic releases pill.
-   */
-  variantsEnabled?: boolean
 }): React.JSX.Element {
   const {t} = useTranslation()
+  // With releases off the menu lists no releases, so the search doesn't offer to find any.
+  const filterPlaceholder = areReleasesEnabled
+    ? t('release.navbar.filter-placeholder-variants')
+    : t('release.navbar.filter-placeholder-no-releases')
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const [filterQuery, setFilterQuery] = useState('')
   const {handleOpenDialog: handleOpenReleasesUpsellDialog, mode: releasesUpsellMode} =
     useReleasesUpsell()
   const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
+  const scrollerRef = useMenuOverflow()
+  const focusSearchField = useFocusSearchOnOpen()
 
   const {isRangeVisible, resetRangeVisibility, setScrollContainer, scrollElementRef} =
     useScrollIndicatorVisibility()
@@ -126,20 +129,7 @@ export function ReleasesMenu({
   return (
     <>
       <MenuButton
-        button={
-          variantsEnabled ? (
-            <ReleasesMenuChip fullWidth={fullWidth} />
-          ) : (
-            <OversizedButton
-              aria-label={t('release.navbar.open-releases')}
-              data-testid="global-perspective-menu-button"
-              iconRight={ChevronDownIcon}
-              mode="bleed"
-              padding={2}
-              radius="full"
-            />
-          )
-        }
+        button={<ReleasesMenuChip fullWidth={fullWidth} />}
         id="releases-menu"
         onClose={handleMenuClose}
         onOpen={lockMenuWidth}
@@ -152,18 +142,28 @@ export function ReleasesMenu({
             padding={0}
             style={menuStyle}
           >
-            <Box flexShrink={0} padding={2} borderBottom>
+            {/* 4px below the field, the rule, then the first section's 4px top padding: an 8px gap
+            to the first row */}
+            <Box flexShrink={0} paddingX={2} paddingTop={2} paddingBottom={1}>
               <TextInput
+                aria-label={filterPlaceholder}
                 data-testid="global-perspective-filter"
                 fontSize={1}
                 icon={SearchIcon}
                 onChange={handleFilterChange}
-                placeholder={t('release.navbar.filter-placeholder')}
+                placeholder={filterPlaceholder}
                 radius={2}
+                ref={focusSearchField}
                 value={filterQuery}
               />
+              <MenuSectionDivider placement="end" />
             </Box>
-            <Flex flexDirection="column" overflowY="auto">
+            <Flex
+              className={menuOverflowScroller}
+              flexDirection="column"
+              overflowY="auto"
+              ref={scrollerRef}
+            >
               <ReleasesList
                 areReleasesEnabled={areReleasesEnabled}
                 filterQuery={filterQuery}
