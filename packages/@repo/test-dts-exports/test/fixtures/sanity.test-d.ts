@@ -771,6 +771,8 @@ import type {
   ResolvedUploader,
   ResolveProductionUrlContext,
   Role,
+  RovingFocusNavigationType,
+  RovingFocusProps,
   Rule,
   RuleBuilder,
   RuleClass,
@@ -847,6 +849,7 @@ import type {
   SpanTextObjectField,
   StateTree,
   StaticLocaleResourceBundle,
+  StatusButtonProps,
   StrictDefinition,
   StrictVersionLayeringOptions,
   StringComponents,
@@ -942,6 +945,7 @@ import type {
   User,
   UserAttributeType,
   UserAttributeValue,
+  UserAvatarProps,
   useReferringDocuments,
   UserListWithPermissionsHookValue,
   UserListWithPermissionsOptions,
@@ -3306,6 +3310,12 @@ describe('sanity', () => {
   test('Role', () => {
     expectTypeOf<Role>().toBeObject()
   })
+  test('RovingFocusNavigationType', () => {
+    expectTypeOf<RovingFocusNavigationType>().toBeNever()
+  })
+  test('RovingFocusProps', () => {
+    expectTypeOf<RovingFocusProps>().toBeNever()
+  })
   test('Rule', () => {
     expectTypeOf<Rule>().toBeObject()
   })
@@ -3534,6 +3544,9 @@ describe('sanity', () => {
   })
   test('StaticLocaleResourceBundle', () => {
     expectTypeOf<StaticLocaleResourceBundle>().not.toBeNever()
+  })
+  test('StatusButtonProps', () => {
+    expectTypeOf<StatusButtonProps>().toBeNever()
   })
   test('StrictDefinition', () => {
     expectTypeOf<StrictDefinition>().not.toBeNever()
@@ -3823,6 +3836,9 @@ describe('sanity', () => {
   })
   test('UserAttributeValue', () => {
     expectTypeOf<UserAttributeValue>().not.toBeNever()
+  })
+  test('UserAvatarProps', () => {
+    expectTypeOf<UserAvatarProps>().toBeNever()
   })
   test('useReferringDocuments', () => {
     expectTypeOf<typeof useReferringDocuments>().toBeFunction()
