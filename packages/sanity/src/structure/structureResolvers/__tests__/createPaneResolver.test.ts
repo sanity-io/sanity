@@ -2,9 +2,11 @@ import {generateHelpUrl} from '@sanity/generate-help-url'
 import {lastValueFrom, of as observableOf} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {SerializeError} from '../../structureBuilder/SerializeError'
 import {type StructureContext} from '../../structureBuilder/types'
 import {type PaneNode} from '../../types'
 import {createResolvedPaneNodeStream} from '../createResolvedPaneNodeStream'
+import {PaneResolutionError} from '../PaneResolutionError'
 
 const structureContext = {} as StructureContext
 
@@ -41,5 +43,36 @@ describe('createResolvedPaneNodeStream missing child warning', () => {
     expect(String(message)).not.toContain(generateHelpUrl('structure-item-returned-no-child'))
     expect(String(message)).not.toContain('structure-item-returned-no-child')
     expect(resolvedPanes.map((pane) => pane.routerPaneSibling.id)).toEqual(['root'])
+  })
+})
+
+describe('createResolvedPaneNodeStream async child errors', () => {
+  it('wraps an error from an async child resolver in a PaneResolutionError', async () => {
+    const childError = new SerializeError('Failed to resolve document', [], 'item')
+    const resolution = lastValueFrom(
+      createResolvedPaneNodeStream({
+        routerPanesStream: observableOf([[{id: 'item'}]]),
+        rootPaneNode: createRootPane(() => Promise.reject(childError)),
+        structureContext,
+      }),
+    )
+
+    await expect(resolution).rejects.toBeInstanceOf(PaneResolutionError)
+    await expect(resolution).rejects.toMatchObject({cause: childError})
+  })
+
+  it('leaves a failed dynamic import of an async child resolver unwrapped', async () => {
+    const importError = new TypeError(
+      'Failed to fetch dynamically imported module: https://example.com/chunk.js',
+    )
+    const resolution = lastValueFrom(
+      createResolvedPaneNodeStream({
+        routerPanesStream: observableOf([[{id: 'item'}]]),
+        rootPaneNode: createRootPane(() => Promise.reject(importError)),
+        structureContext,
+      }),
+    )
+
+    await expect(resolution).rejects.toBe(importError)
   })
 })

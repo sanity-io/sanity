@@ -456,6 +456,9 @@ export function checkoutPair(
     onCommitCancelled,
     onCommitRetriesEnded,
     onPairTornDownWithPendingMutations,
+    onListenerWelcomeTime,
+    onListenerResumeTime,
+    onListenerResumePayload,
     snapshotFetchErrorHandler,
     tag,
   } = options
@@ -473,6 +476,33 @@ export function checkoutPair(
       ? (error) => {
           try {
             onSyncErrorRecovery(error, {hadPendingMutations: hasPendingMutations()})
+          } catch {
+            // Telemetry callbacks must never kill the document pipeline
+          }
+        }
+      : undefined,
+    onListenerWelcomeTime: onListenerWelcomeTime
+      ? (event) => {
+          try {
+            onListenerWelcomeTime(event)
+          } catch {
+            // Telemetry callbacks must never kill the document pipeline
+          }
+        }
+      : undefined,
+    onListenerResumeTime: onListenerResumeTime
+      ? (event) => {
+          try {
+            onListenerResumeTime(event)
+          } catch {
+            // Telemetry callbacks must never kill the document pipeline
+          }
+        }
+      : undefined,
+    onListenerResumePayload: onListenerResumePayload
+      ? (event) => {
+          try {
+            onListenerResumePayload(event)
           } catch {
             // Telemetry callbacks must never kill the document pipeline
           }

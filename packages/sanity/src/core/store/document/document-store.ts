@@ -196,6 +196,9 @@ export function createDocumentStore({
     onCommitCancelled,
     onCommitRetriesEnded,
     onPairTornDownWithPendingMutations,
+    onListenerWelcomeTime,
+    onListenerResumeTime,
+    onListenerResumePayload,
   } = extraOptions
   const ctx = {
     client,
@@ -221,6 +224,9 @@ export function createDocumentStore({
         onCommitCancelled,
         onCommitRetriesEnded,
         onPairTornDownWithPendingMutations,
+        onListenerWelcomeTime,
+        onListenerResumeTime,
+        onListenerResumePayload,
       })
     },
     initialValue(opts, context) {

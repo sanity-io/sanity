@@ -1,6 +1,7 @@
-import {from, isObservable, type Observable, of as observableOf} from 'rxjs'
-import {publishReplay, refCount, switchMap} from 'rxjs/operators'
+import {from, isObservable, type Observable, of as observableOf, throwError} from 'rxjs'
+import {catchError, publishReplay, refCount, switchMap} from 'rxjs/operators'
 import {isRecord} from 'sanity'
+import {isImportError} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 import {type PaneNode, type RouterPaneSiblingContext, type UnresolvedPaneNode} from '../types'
 import {PaneResolutionError} from './PaneResolutionError'
@@ -29,25 +30,38 @@ export type PaneResolver = (
 
 export type PaneResolverMiddleware = (paneResolveFn: PaneResolver) => PaneResolver
 
+function toPaneResolutionError(error: unknown, context: RouterPaneSiblingContext) {
+  if (error instanceof PaneResolutionError) return error
+
+  return new PaneResolutionError({
+    message: error instanceof Error ? error.message : String(error),
+    context,
+    cause: error instanceof Error ? error : undefined,
+  })
+}
+
 const rethrowWithPaneResolutionErrors: PaneResolverMiddleware =
   (next) => (unresolvedPane, context, flatIndex) => {
     try {
       return next(unresolvedPane, context, flatIndex)
     } catch (e) {
-      // re-throw errors that are already `PaneResolutionError`s
-      if (e instanceof PaneResolutionError) {
-        throw e
-      }
-
-      // anything else, wrap with `PaneResolutionError` and set the underlying
-      // error as a the `cause`
-      throw new PaneResolutionError({
-        message: typeof e?.message === 'string' ? e.message : '',
-        context,
-        cause: e,
-      })
+      throw toPaneResolutionError(e, context)
     }
   }
+
+// only the structure tool stream wraps async errors; intent resolution needs raw request errors
+export function withAsyncPaneResolutionErrors(resolvePane: PaneResolver): PaneResolver {
+  return (unresolvedPane, context, flatIndex) =>
+    resolvePane(unresolvedPane, context, flatIndex).pipe(
+      catchError((error) =>
+        throwError(() =>
+          error instanceof Error && isImportError(error)
+            ? error
+            : toPaneResolutionError(error, context),
+        ),
+      ),
+    )
+}
 
 const wrapWithPublishReplay: PaneResolverMiddleware =
   (next) =>

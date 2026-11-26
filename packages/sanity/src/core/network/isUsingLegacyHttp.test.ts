@@ -3,7 +3,63 @@ import {firstValueFrom} from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClientAsClient} from '../../../test/mocks/mockSanityClient'
-import {getApiNetworkDiagnostic, getCachedApiProtocol, isUsingLegacyHttp} from './isUsingLegacyHttp'
+import {
+  getApiNetworkDiagnostic,
+  getCachedApiProtocol,
+  getMeasuredApiProtocol,
+  isUsingLegacyHttp,
+} from './isUsingLegacyHttp'
+
+function stubProtocolProbe(nextHopProtocol: string): void {
+  const mockEntry = {
+    connectEnd: 0,
+    connectStart: 0,
+    decodedBodySize: 0,
+    domainLookupEnd: 0,
+    domainLookupStart: 0,
+    duration: 1,
+    encodedBodySize: 0,
+    initiatorType: 'fetch',
+    name: 'https://test.api.sanity.io/v2025-02-19/ping?tag=sanity.studio.protocol-check',
+    nextHopProtocol,
+    redirectEnd: 0,
+    redirectStart: 0,
+    requestStart: 0,
+    responseEnd: 0,
+    responseStart: 0,
+    secureConnectionStart: 0,
+    serverTiming: [],
+    startTime: 0,
+    transferSize: 0,
+  }
+
+  // oxlint-disable-next-line typescript/no-extraneous-class
+  class FakePerformanceResourceTiming {}
+  vi.stubGlobal('PerformanceResourceTiming', FakePerformanceResourceTiming)
+
+  vi.mocked(fetch).mockResolvedValue(new Response('pong'))
+  vi.stubGlobal(
+    'PerformanceObserver',
+    class {
+      callback: (list: {getEntries: () => unknown[]}) => void
+      constructor(callback: (list: {getEntries: () => unknown[]}) => void) {
+        this.callback = callback
+      }
+      observe() {
+        setTimeout(() => {
+          const entry = Object.setPrototypeOf(
+            {...mockEntry, startTime: performance.now()},
+            FakePerformanceResourceTiming.prototype,
+          )
+          this.callback({getEntries: () => [entry]})
+        }, 0)
+      }
+      disconnect() {
+        // noop
+      }
+    },
+  )
+}
 
 describe('isUsingLegacyHttp', () => {
   let originalPerformanceObserver: typeof PerformanceObserver
@@ -203,51 +259,7 @@ describe('isUsingLegacyHttp', () => {
     })
 
     it('keeps the legacy HTTP check mapped to the detailed probe', async () => {
-      const mockEntry = {
-        connectEnd: 0,
-        connectStart: 0,
-        decodedBodySize: 0,
-        domainLookupEnd: 0,
-        domainLookupStart: 0,
-        duration: 1,
-        encodedBodySize: 0,
-        initiatorType: 'fetch',
-        name: 'https://test.api.sanity.io/v2025-02-19/ping?tag=sanity.studio.protocol-check',
-        nextHopProtocol: 'http/1.1',
-        redirectEnd: 0,
-        redirectStart: 0,
-        requestStart: 0,
-        responseEnd: 0,
-        responseStart: 0,
-        secureConnectionStart: 0,
-        serverTiming: [],
-        startTime: 0,
-        transferSize: 0,
-      }
-
-      vi.mocked(fetch).mockResolvedValue(new Response('pong'))
-      vi.stubGlobal(
-        'PerformanceObserver',
-        class {
-          callback: (list: {getEntries: () => unknown[]}) => void
-          constructor(callback: (list: {getEntries: () => unknown[]}) => void) {
-            this.callback = callback
-          }
-          observe() {
-            setTimeout(() => {
-              mockEntry.startTime = performance.now()
-              this.callback({getEntries: () => [mockEntry]})
-            }, 0)
-          }
-          disconnect() {
-            // noop
-          }
-        },
-      )
-      // oxlint-disable-next-line typescript/no-extraneous-class
-      const FakePerformanceResourceTiming = class FakePerformanceResourceTiming {}
-      vi.stubGlobal('PerformanceResourceTiming', FakePerformanceResourceTiming)
-      Object.setPrototypeOf(mockEntry, FakePerformanceResourceTiming.prototype)
+      stubProtocolProbe('http/1.1')
 
       const client = {
         getUrl: (path: string) => `https://test.api.sanity.io/v2025-02-19${path}`,
@@ -329,6 +341,23 @@ describe('isUsingLegacyHttp', () => {
         timedOut: false,
       })
       expect(fetch).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('getMeasuredApiProtocol', () => {
+    it('records the probe result against the configured root API host once it resolves', async () => {
+      stubProtocolProbe('h3')
+      const client = {
+        config: () => ({apiHost: 'https://api.sanity.example'}),
+        getUrl: (path: string) => `https://test.api.sanity.io/v2025-02-19${path}`,
+      } as unknown as SanityClient
+
+      expect(getMeasuredApiProtocol('api.sanity.example')).toBeUndefined()
+      await firstValueFrom(isUsingLegacyHttp(client))
+
+      expect(getMeasuredApiProtocol('api.sanity.example')).toBe('h3')
+      expect(getMeasuredApiProtocol('abc123.api.sanity.example')).toBe('h3')
+      expect(getMeasuredApiProtocol('sanity.example')).toBeUndefined()
     })
   })
 })

@@ -11,6 +11,7 @@ const MESSAGES = [
  * Checks whether an error is caused by a failed dynamic import
  * Note: this is best effort, based on matching the error string and should not be trusted for critical stuff
  * @param error - {@link Error} the error to test
+ * @internal
  */
 export function isImportError(error: Error) {
   return (
