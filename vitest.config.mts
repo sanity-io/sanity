@@ -53,6 +53,7 @@ export default defineConfig({
       'packages/@repo/oxlint-plugin-i18n',
       'packages/@repo/oxlint-plugin-studio',
       'packages/@repo/release-notes',
+      'packages/@repo/stable-suggestion',
       'packages/@repo/bundle-manager',
       'packages/@repo/package.bundle',
       'packages/@repo/utils',

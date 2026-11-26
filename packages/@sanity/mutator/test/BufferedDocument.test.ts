@@ -1,6 +1,39 @@
-import {expect, test} from 'vitest'
+import {afterEach, expect, test, vi} from 'vitest'
 
+import {BufferedDocument, Mutation} from '../src/document'
+import {type CommitHandlerMessage} from '../src/document/BufferedDocument'
 import {BufferedDocumentTester} from './util/BufferedDocumentTester'
+
+afterEach(() => {
+  vi.useRealTimers()
+})
+
+/** A buffered document whose commit requests are collected instead of sent. */
+function lostResponseDocument() {
+  const doc = new BufferedDocument({_id: 'a', _type: 't', _rev: '1', title: 'Hello'})
+  const sent: CommitHandlerMessage[] = []
+  doc.commitHandler = (msg) => sent.push(msg)
+  return {doc, sent}
+}
+
+const setTitle = (title: string) => new Mutation({mutations: [{patch: {id: 'a', set: {title}}}]})
+
+/** The listener's echo of a commit request that landed on `previousRev`. */
+const echoOf = ({mutation}: CommitHandlerMessage, previousRev: string) =>
+  new Mutation({
+    transactionId: mutation.transactionId,
+    resultRev: mutation.transactionId,
+    previousRev,
+    mutations: mutation.mutations,
+  })
+
+const remoteSet = (transactionId: string, previousRev: string, set: Record<string, unknown>) =>
+  new Mutation({
+    transactionId,
+    resultRev: transactionId,
+    previousRev,
+    mutations: [{patch: {id: 'a', set}}],
+  })
 
 test('simple edit cycle', () => {
   new BufferedDocumentTester({
@@ -340,4 +373,58 @@ test('pending local patch on an array index removed by a remote patch rebases cl
     })
     .didRebase()
     .assertLOCAL('items', [{title: 'one'}])
+})
+
+test('a commit whose echo arrives during its retry backoff is not applied again locally', async () => {
+  // The commit lands but its response is lost, so it waits to be retried. Its echo then arrives,
+  // and the user keeps typing. The retry reuses the transaction id and is answered as already
+  // existing, which the commit handler reports as success.
+  vi.useFakeTimers()
+  const {doc, sent} = lostResponseDocument()
+  doc.add(setTitle('Hello world'))
+  const committed = doc.commit()
+  sent[0]!.failure()
+  doc.arrive(echoOf(sent[0]!, '1'))
+
+  expect(doc.LOCAL).toMatchObject({title: 'Hello world'})
+
+  doc.add(setTitle('Hello world!'))
+  void doc.commit()
+  vi.advanceTimersByTime(1000)
+  expect(sent[1]!.mutation.transactionId).toBe(sent[0]!.mutation.transactionId)
+  sent[1]!.success()
+  await committed
+
+  // The user's next edit goes out against the server's copy, which has " world" once.
+  const next = sent[2]!.mutation
+  expect(
+    next.apply({_id: 'a', _type: 't', _rev: sent[0]!.mutation.transactionId, title: 'Hello world'}),
+  ).toMatchObject({
+    title: 'Hello world!',
+  })
+  expect(doc.LOCAL).toMatchObject({title: 'Hello world!'})
+})
+
+test('a commit whose echo arrived while it was in flight is not applied again while retried', async () => {
+  // The echo arrives before the request fails, then another user edits during the backoff and
+  // again while the retry is in flight.
+  vi.useFakeTimers()
+  const {doc, sent} = lostResponseDocument()
+  doc.add(setTitle('Hello world'))
+  const committed = doc.commit()
+  const transactionId = sent[0]!.mutation.transactionId!
+  doc.arrive(echoOf(sent[0]!, '1'))
+  sent[0]!.failure()
+  doc.arrive(remoteSet('b1', transactionId, {subtitle: 'B'}))
+
+  expect(doc.LOCAL).toMatchObject({title: 'Hello world', subtitle: 'B'})
+
+  vi.advanceTimersByTime(1000)
+  doc.arrive(remoteSet('b2', 'b1', {subtitle: 'BB'}))
+  expect(doc.LOCAL).toMatchObject({title: 'Hello world', subtitle: 'BB'})
+
+  sent[1]!.success()
+  await committed
+  expect(doc.document.isConsistent()).toBe(true)
+  expect(doc.LOCAL).toMatchObject({title: 'Hello world', subtitle: 'BB'})
 })

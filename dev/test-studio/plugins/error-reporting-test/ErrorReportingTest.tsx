@@ -1,6 +1,5 @@
 import {type ClientError, ServerError} from '@sanity/client'
-import {Button, Card, Heading, Tab, TabList, TabPanel} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
+import {Button, Card, Tab, TabList, TabPanel} from '@sanity/ui'
 import {lazy, type ReactNode, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useClient, useProjectId} from 'sanity'
 import {
@@ -8,7 +7,7 @@ import {
   CorsOriginErrorScreen,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useRouter} from 'sanity/router'
-import {Text, Container, Flex, Box, VStack} from 'ui5'
+import {Heading, Code, Text, Container, Flex, Box, VStack} from 'ui5'
 
 import {
   installCheckCorsFetchInterceptor,
@@ -231,7 +230,9 @@ function DemoSection(props: {heading: string; description?: ReactNode; demos: De
     <Card padding={4} radius={3} shadow={1}>
       <VStack gap={4}>
         <VStack gap={3}>
-          <Heading size={2}>{props.heading}</Heading>
+          <Heading as="h2" size={2} trim>
+            {props.heading}
+          </Heading>
           {props.description && (
             <Text muted size={1} as="div" trim={true}>
               {props.description}
@@ -283,7 +284,7 @@ function DemoRow({demo}: {demo: DemoEntry}) {
               <Text muted size={0} weight="semibold" as="div" trim={true}>
                 Result
               </Text>
-              <Code size={1} style={{whiteSpace: 'pre-wrap'}}>
+              <Code size={1} style={{whiteSpace: 'pre-wrap'}} trim>
                 {demo.result}
               </Code>
             </VStack>
@@ -657,7 +658,9 @@ function RequestErrorsDemo() {
     <Card padding={4} radius={3} shadow={1}>
       <VStack gap={4}>
         <VStack gap={3}>
-          <Heading size={2}>Request errors</Heading>
+          <Heading as="h2" size={2} trim>
+            Request errors
+          </Heading>
           <Text muted size={1} as="div" trim={true}>
             Each button issues a real request through the studio&apos;s client pipeline. The call
             site decides per request whether to handle errors locally or delegate them to the

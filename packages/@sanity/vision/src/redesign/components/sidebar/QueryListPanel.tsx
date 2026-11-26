@@ -5,9 +5,7 @@ import {RetrieveIcon} from '@sanity/icons/Retrieve'
 import {SearchIcon} from '@sanity/icons/Search'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
-import {UsersIcon} from '@sanity/icons/Users'
-import {Button, Card, Dialog, TextInput} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
+import {Button, Card, TextInput} from '@sanity/ui'
 import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
@@ -17,7 +15,7 @@ import {
   ContextMenuButton,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
-import {Text, Box, Flex} from 'ui5'
+import {Code, Text, Box, Flex} from 'ui5'
 
 import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {type QueryConfig} from '../../../hooks/useSavedQueries'
@@ -25,13 +23,17 @@ import {visionLocaleNamespace} from '../../../i18n'
 import {type ParsedQueryUrl, parseQueryUrl} from '../../../util/parseQueryUrl'
 import {useOnValueChange} from '../../hooks/useOnValueChange'
 import {useQueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
-import {resolveRequestOptions, useRequestEnvironment} from '../../hooks/useResolvedRequest'
+import {
+  type RequestEnvironment,
+  resolveRequestOptions,
+  useRequestEnvironment,
+} from '../../hooks/useResolvedRequest'
 import {useSaveCurrentQuery} from '../../hooks/useSaveCurrentQuery'
 import {type VisionDrawer, type VisionTab} from '../../store/types'
 import {useSavedQueriesApi, useVisionActor, useVisionSelector} from '../../store/VisionActorContext'
 import {selectActiveTab, selectDatasets} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
-import {savedQueryToTabInit, tabMatchesParsedQuery} from '../../util/savedQueryTab'
+import {findSharedQuery, savedQueryToTabInit, tabMatchesParsedQuery} from '../../util/savedQueryTab'
 import * as styles from '../redesign.module.css'
 import * as themeStyles from '../themeTokens.module.css'
 import {VisionTooltip} from '../VisionTooltip'
@@ -49,6 +51,28 @@ interface QueryListItem {
   preview: string
 }
 
+// A saved URL is the request its tab sent, so tabs are matched through the request they would
+// send now (the navbar's perspective for `global`, the variants API version while a variant is selected)
+function findMatchingTab(
+  tabs: VisionTab[],
+  parsed: ParsedQueryUrl,
+  environment: RequestEnvironment,
+): VisionTab | undefined {
+  return tabs.find((tab) =>
+    tabMatchesParsedQuery(tab, parsed, resolveRequestOptions(tab.options, environment)),
+  )
+}
+
+/** Whether a query is one the current user shared, so a tab can be shared as it */
+function isOwnSharedQuery(query: QueryConfig): boolean {
+  return Boolean(query.shared && query.isOwnedByCurrentUser)
+}
+
+/**
+ * The drawer listing the personal saved queries, or the shared tabs: the tabs stored as shared
+ * queries, which everyone using the dataset can open. A tab opened or loaded from a shared tab
+ * the user shared is linked to it (`VisionTab.sharedId`), as is the tab they shared it from.
+ */
 export function QueryListPanel({mode}: QueryListPanelProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const toast = useToast()
@@ -59,25 +83,24 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
   const datasets = useVisionSelector(selectDatasets)
   const environment = useRequestEnvironment()
   const requestBuilder = useQueryRequestBuilder(activeTab)
-  const {queries, updateQuery, deleteQuery, deleteQueryError, moving, shareQuery, unshareQuery} =
-    useSavedQueriesApi()
+  const {queries, updateQuery, deleteQuery, deleteQueryError, unshareQuery} = useSavedQueriesApi()
   const {saveCurrent, canSave} = useSaveCurrentQuery(activeTab, requestBuilder)
   const formatDate = useDateTimeFormat({dateStyle: 'medium', timeStyle: 'short'})
 
   const [search, setSearch] = useState('')
   const [editingKey, setEditingKey] = useState<string | null>(null)
   const [editingTitle, setEditingTitle] = useState('')
-  const [shareCandidate, setShareCandidate] = useState<QueryConfig | null>(null)
+  const isShared = mode === 'shared'
 
   const items = useMemo((): QueryListItem[] => {
     return queries
-      .filter((query) => (mode === 'shared' ? query.shared : !query.shared))
+      .filter((query) => (isShared ? query.shared : !query.shared))
       .map((query) => {
         const parsed = parseQueryUrl(query.url, datasets)
         const preview = (parsed?.query || '').split('\n')[0].split('{')[0].trim()
         return {query, parsed, preview}
       })
-  }, [datasets, mode, queries])
+  }, [datasets, isShared, queries])
 
   const visibleItems = useMemo(() => {
     const term = search.trim().toLowerCase()
@@ -89,18 +112,13 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
     )
   }, [items, search])
 
-  // A saved URL is the request its tab sent, so tabs are matched through the request they would
-  // send now (the navbar's perspective for `global`, the variants API version while a variant is selected)
+  // The tab shared as a shared tab shows it even after it changed; any other query is shown by
+  // a tab that would send the same request
   const findTabShowing = useCallback(
-    (parsed: ParsedQueryUrl) =>
-      tabs.find((tab: VisionTab) =>
-        tabMatchesParsedQuery(tab, parsed, resolveRequestOptions(tab.options, environment)),
-      ),
+    ({query, parsed}: QueryListItem) =>
+      (isOwnSharedQuery(query) ? tabs.find((tab) => tab.sharedId === query._key) : undefined) ??
+      (parsed === null ? undefined : findMatchingTab(tabs, parsed, environment)),
     [environment, tabs],
-  )
-  const isOpenInTab = useCallback(
-    (parsed: ParsedQueryUrl | null) => parsed !== null && findTabShowing(parsed) !== undefined,
-    [findTabShowing],
   )
 
   const reportError = useCallback(
@@ -156,28 +174,49 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
   )
 
   const openInNewTab = useCallback(
-    ({query, parsed}: QueryListItem) => {
+    (item: QueryListItem) => {
+      const {query, parsed} = item
       if (!parsed) return
-      telemetry.savedQuery('open-in-new-tab', Boolean(query.shared))
-      const existing = findTabShowing(parsed)
+      if (isShared) {
+        telemetry.sharedTab('open')
+      } else {
+        telemetry.savedQuery('open-in-new-tab', false)
+      }
+      const own = isOwnSharedQuery(query)
+      const existing = findTabShowing(item)
       if (existing) {
         actorRef.send({type: 'tab.select', id: existing.id})
+        // A tab showing a query the user shared, and shared as nothing else, is that shared tab
+        if (own && !findSharedQuery(existing, queries)) {
+          actorRef.send({type: 'tab.setSharedId', id: existing.id, sharedId: query._key})
+        }
       } else {
-        actorRef.send({type: 'tab.add', tab: savedQueryToTabInit(query, parsed)})
+        actorRef.send({
+          type: 'tab.add',
+          tab: {...savedQueryToTabInit(query, parsed), sharedId: own ? query._key : undefined},
+        })
         warnAboutUnrepresentable(parsed)
       }
     },
-    [actorRef, findTabShowing, telemetry, warnAboutUnrepresentable],
+    [actorRef, findTabShowing, isShared, queries, telemetry, warnAboutUnrepresentable],
   )
 
+  // Loading a saved query edits the tab, which stays shared as whatever it was shared as; loading
+  // a shared tab makes the tab that shared tab
   const loadIntoCurrentTab = useCallback(
     ({query, parsed}: QueryListItem) => {
       if (!parsed) return
-      telemetry.savedQuery('load', Boolean(query.shared))
-      actorRef.send({type: 'tab.load', id: activeTab.id, tab: savedQueryToTabInit(query, parsed)})
+      const tab = savedQueryToTabInit(query, parsed)
+      if (isShared) {
+        telemetry.sharedTab('load')
+        tab.sharedId = isOwnSharedQuery(query) ? query._key : undefined
+      } else {
+        telemetry.savedQuery('load', false)
+      }
+      actorRef.send({type: 'tab.load', id: activeTab.id, tab})
       warnAboutUnrepresentable(parsed)
     },
-    [actorRef, activeTab.id, telemetry, warnAboutUnrepresentable],
+    [actorRef, activeTab.id, isShared, telemetry, warnAboutUnrepresentable],
   )
 
   // Enter and Escape unmount the rename field while it has focus; a blur delivered on the way
@@ -205,45 +244,58 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
       if (!title || title === query.title) return
       try {
         await updateQuery({...query, title})
-        telemetry.savedQuery('rename', Boolean(query.shared))
       } catch (err) {
         reportError(err)
+        return
+      }
+      if (!query.shared) {
+        telemetry.savedQuery('rename', false)
+        return
+      }
+      telemetry.sharedTab('rename')
+      // The tab shared as it takes the new title too, so it is not shown as changed by it
+      for (const tab of actorRef.getSnapshot().context.tabs) {
+        if (tab.sharedId === query._key) actorRef.send({type: 'tab.rename', id: tab.id, title})
       }
     },
-    [editingTitle, reportError, telemetry, updateQuery],
+    [actorRef, editingTitle, reportError, telemetry, updateQuery],
   )
 
-  const handleConfirmShare = useCallback(async () => {
-    if (!shareCandidate) return
-    const candidate = shareCandidate
-    setShareCandidate(null)
-    try {
-      await shareQuery(candidate._key)
-      telemetry.savedQuery('share', true)
-      toast.push({closable: true, status: 'success', title: t('save-query.shared-success')})
-    } catch (err) {
-      reportError(err)
-    }
-  }, [reportError, shareCandidate, shareQuery, t, telemetry, toast])
-
+  // Unsharing deletes the shared query; the tab shared as it stays open, unlinked, and a query
+  // no tab shows is opened in one, so that unsharing never loses it
   const handleUnshare = useCallback(
-    async (query: QueryConfig) => {
+    async ({query, parsed}: QueryListItem) => {
       try {
         await unshareQuery(query._key)
-        telemetry.savedQuery('unshare', false)
-        toast.push({closable: true, status: 'success', title: t('save-query.unshared-success')})
       } catch (err) {
-        reportError(err)
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('vision.tabs.unshare-failed'),
+          description: err instanceof Error ? err.message : String(err),
+        })
+        return
       }
+      const {tabs: currentTabs} = actorRef.getSnapshot().context
+      const linked = currentTabs.filter((tab) => tab.sharedId === query._key)
+      for (const tab of linked) {
+        actorRef.send({type: 'tab.setSharedId', id: tab.id, sharedId: undefined})
+      }
+      if (linked.length === 0 && parsed && !findMatchingTab(currentTabs, parsed, environment)) {
+        actorRef.send({type: 'tab.add', tab: savedQueryToTabInit(query, parsed)})
+        warnAboutUnrepresentable(parsed)
+      }
+      telemetry.sharedTab('unshare')
+      toast.push({closable: true, status: 'success', title: t('vision.tabs.unshare-success')})
     },
-    [reportError, t, telemetry, toast, unshareQuery],
+    [actorRef, environment, t, telemetry, toast, unshareQuery, warnAboutUnrepresentable],
   )
 
   const emptyText = search.trim()
     ? t('vision.saved.empty-search')
-    : mode === 'saved'
-      ? t('vision.saved.empty')
-      : t('vision.shared.empty')
+    : isShared
+      ? t('vision.shared.empty')
+      : t('vision.saved.empty')
 
   return (
     <Flex flexBasis="0%" flexDirection="column" flexGrow={1} minHeight="0">
@@ -254,7 +306,13 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
             icon={SearchIcon}
             onChange={(event) => {
               const next = event.currentTarget.value
-              if (!search && next) telemetry.savedQueriesFiltered('search')
+              if (!search && next) {
+                if (isShared) {
+                  telemetry.sharedTabsSearched()
+                } else {
+                  telemetry.savedQueriesFiltered('search')
+                }
+              }
               setSearch(next)
             }}
             padding={2}
@@ -262,7 +320,7 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
             value={search}
           />
         </Box>
-        {mode === 'saved' && (
+        {!isShared && (
           <VisionTooltip content={t('vision.saved.save-current')}>
             <Button
               aria-label={t('vision.saved.save-current')}
@@ -290,10 +348,8 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
             {visibleItems.map((item) => {
               const {query, parsed, preview} = item
               const canMutate = !query.shared || query.isOwnedByCurrentUser
-              // A query on its way to the other list is left alone until it has arrived there
-              const isMoving = moving.includes(query._key)
               const isEditing = editingKey === query._key
-              const isOpen = isOpenInTab(parsed)
+              const isOpen = findTabShowing(item) !== undefined
 
               return (
                 <Card
@@ -338,7 +394,9 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                             </Text>
                             {preview && (
                               <Box className={styles.previewCode}>
-                                <Code size={0}>{preview}</Code>
+                                <Code size={0} trim>
+                                  {preview}
+                                </Code>
                               </Box>
                             )}
                             <Flex alignItems="center" gap={2}>
@@ -375,38 +433,28 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                               <>
                                 <MenuDivider />
                                 <MenuItem
-                                  disabled={isMoving}
                                   icon={EditIcon}
                                   onClick={() => startRename(query)}
                                   text={t('vision.saved.rename')}
                                 />
                                 {query.shared ? (
                                   <MenuItem
-                                    data-testid="vision-saved-query-unshare"
-                                    disabled={isMoving}
+                                    data-testid="vision-shared-tab-unshare"
                                     icon={UnpublishIcon}
-                                    onClick={() => void handleUnshare(query)}
-                                    text={t('action.unshare')}
+                                    onClick={() => void handleUnshare(item)}
+                                    text={t('vision.tabs.unshare')}
                                   />
                                 ) : (
                                   <MenuItem
-                                    data-testid="vision-saved-query-share"
-                                    disabled={isMoving}
-                                    icon={UsersIcon}
-                                    onClick={() => setShareCandidate(query)}
-                                    text={t('label.share')}
+                                    icon={TrashIcon}
+                                    onClick={() => {
+                                      telemetry.savedQuery('delete', false)
+                                      void deleteQuery(query._key)
+                                    }}
+                                    text={t('action.delete')}
+                                    tone="critical"
                                   />
                                 )}
-                                <MenuItem
-                                  disabled={isMoving}
-                                  icon={TrashIcon}
-                                  onClick={() => {
-                                    telemetry.savedQuery('delete', Boolean(query.shared))
-                                    void deleteQuery(query._key)
-                                  }}
-                                  text={t('action.delete')}
-                                  tone="critical"
-                                />
                               </>
                             )}
                           </Menu>
@@ -421,36 +469,6 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
           </Flex>
         )}
       </Box>
-
-      {shareCandidate && (
-        <Dialog
-          animate
-          footer={
-            <Flex gap={2} justifyContent="flex-end" padding={3}>
-              <Button
-                mode="bleed"
-                onClick={() => setShareCandidate(null)}
-                text={t('action.query-cancel')}
-              />
-              <Button
-                onClick={() => void handleConfirmShare()}
-                text={t('action.save-shared-query')}
-                tone="primary"
-              />
-            </Flex>
-          }
-          header={t('label.share')}
-          id="vision-share-query-dialog"
-          onClose={() => setShareCandidate(null)}
-          width={0}
-        >
-          <Box className={themeStyles.themeTokens} padding={4}>
-            <Text size={1} as="div" trim={true}>
-              {t('save-query.share-warning')}
-            </Text>
-          </Box>
-        </Dialog>
-      )}
     </Flex>
   )
 }

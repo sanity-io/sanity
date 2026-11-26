@@ -1,7 +1,6 @@
 import {Card} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {Translate, useTranslation} from 'sanity/i18n'
-import {Text, VStack} from 'ui5'
+import {Code, Text, VStack} from 'ui5'
 
 import {isDev} from '../../../../core/environment'
 import {structureLocaleNamespace} from '../../../i18n'
@@ -59,7 +58,7 @@ export function DocumentLayoutError(props: DocumentLayoutErrorProps) {
             </Text>
 
             <Card padding={3} overflow="auto" radius={2} shadow={1} tone="inherit">
-              <Code language="json" size={[1, 1, 2]}>
+              <Code language="json" size={[1, 1, 2]} trim>
                 {JSON.stringify(value, null, 2)}
               </Code>
             </Card>

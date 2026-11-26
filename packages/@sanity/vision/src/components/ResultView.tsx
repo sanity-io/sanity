@@ -1,11 +1,11 @@
 import {JsonInspector} from '@rexxars/react-json-inspector'
 import {LinkIcon} from '@sanity/icons/Link'
 import {rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import LRU from 'quick-lru'
 import {createContext, type CSSProperties, type ReactNode, use, useMemo} from 'react'
 import {useDataset} from 'sanity'
 import {IntentLink} from 'sanity/router'
+import {Code} from 'ui5'
 
 import {getAtKeypath} from '../util/getAtKeypath'
 import * as styles from './ResultView.module.css'
@@ -110,7 +110,11 @@ export function ResultView(props: {
     )
   }
 
-  return <Code language="json">{JSON.stringify(data)}</Code>
+  return (
+    <Code language="json" trim>
+      {JSON.stringify(data)}
+    </Code>
+  )
 }
 
 interface InteractiveLabelProps {

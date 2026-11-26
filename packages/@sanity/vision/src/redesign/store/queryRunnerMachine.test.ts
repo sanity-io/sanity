@@ -1,4 +1,4 @@
-import {type LiveEvent, type RawQueryResponse, type SanityClient} from '@sanity/client'
+import {createClient, type LiveEvent, type RawQueryResponse} from '@sanity/client'
 import {concat, NEVER, of, Subject} from 'rxjs'
 import {describe, expect, it} from 'vitest'
 import {createActor, fromObservable, fromPromise, waitFor} from 'xstate'
@@ -13,6 +13,17 @@ import {
   selectLiveConnected,
 } from './queryRunnerMachine'
 import {type QueryRequest} from './types'
+
+function createTestClient() {
+  return createClient({
+    projectId: 'test',
+    dataset: 'test',
+    apiVersion: '2025-02-19',
+    useCdn: false,
+  })
+}
+
+const testClient = createTestClient()
 
 interface Deferred {
   request: QueryRequest
@@ -66,7 +77,7 @@ function createHarness() {
   actor.start()
 
   const request = (overrides: Partial<QueryRequest> = {}): QueryRequest => ({
-    client: {} as SanityClient,
+    client: testClient,
     query: '*[_type == "author"]',
     params: {},
     resultSourceMap: undefined,
@@ -243,7 +254,7 @@ describe('queryRunnerMachine', () => {
     expect(context.url).toBe('https://x/a')
 
     // A live restart replays the request whose result is shown, not the cancelled one
-    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.actor.send({type: 'live.enable', client: testClient})
     harness.liveEvents.next({type: 'restart', id: 'r'})
     expect(harness.fetches[2].request).toBe(first)
   })
@@ -263,7 +274,7 @@ describe('queryRunnerMachine', () => {
     expect(context.syncTags).toBeUndefined()
     expect(context.history).toHaveLength(1)
 
-    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.actor.send({type: 'live.enable', client: testClient})
     harness.liveEvents.next({type: 'restart', id: 'r'})
     harness.liveEvents.next({type: 'message', id: '1', tags: ['s1:a']})
     expect(harness.fetches).toHaveLength(1)
@@ -280,7 +291,7 @@ describe('queryRunnerMachine', () => {
     await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'failed'}))
     expect(harness.snapshot().context.meta).toBeUndefined()
 
-    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.actor.send({type: 'live.enable', client: testClient})
     harness.liveEvents.next({type: 'message', id: '1', tags: ['s1:other']})
     expect(harness.fetches).toHaveLength(2)
     harness.liveEvents.next({type: 'message', id: '2', tags: ['s1:a']})
@@ -306,7 +317,7 @@ describe('queryRunnerMachine', () => {
     expect(harness.snapshot().context.syncTags).toBeUndefined()
 
     // A change to the first query's documents says nothing about the second query
-    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.actor.send({type: 'live.enable', client: testClient})
     harness.liveEvents.next({type: 'message', id: '1', tags: ['s1:a']})
     expect(harness.fetches).toHaveLength(2)
     // A restart still replays the failed request, as it does for any request
@@ -414,7 +425,7 @@ describe('queryRunnerMachine', () => {
     harness.fetches[0].resolve({result: 1, syncTags: ['s1:a', 's1:b']})
     await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'settled'}))
 
-    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.actor.send({type: 'live.enable', client: testClient})
     expect(harness.snapshot().matches({live: 'on'})).toBe(true)
     expect(harness.liveSubscriptionCount()).toBe(1)
 
@@ -452,7 +463,7 @@ describe('queryRunnerMachine', () => {
     harness.actor.send({type: 'fetch', request: harness.request(), reason: {type: 'manual'}})
     harness.fetches[0].resolve({result: 1, syncTags: ['s1:a']})
     await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'settled'}))
-    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.actor.send({type: 'live.enable', client: testClient})
 
     // Another query is fetched while the first response is still the one shown
     const other = harness.request({query: '*[_type == "book"]', url: 'https://other'})
@@ -481,7 +492,7 @@ describe('queryRunnerMachine', () => {
 
   it('refetches on a restart event and ignores events without a prior fetch', () => {
     const harness = createHarness()
-    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.actor.send({type: 'live.enable', client: testClient})
     harness.liveEvents.next({type: 'restart', id: 'r'})
     expect(harness.fetches).toHaveLength(0)
 
@@ -506,7 +517,7 @@ describe('queryRunnerMachine', () => {
     harness.fetches[0].resolve({result: 1, syncTags: ['s1:a']})
     await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'settled'}))
 
-    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.actor.send({type: 'live.enable', client: testClient})
     harness.liveEvents.next({type: 'message', id: 'event-7', tags: ['s1:a']})
     expect(harness.fetches).toHaveLength(2)
     expect(harness.fetches[1].request).toBe(request)
@@ -516,7 +527,7 @@ describe('queryRunnerMachine', () => {
   it('refetches after the live connection reconnects, since changes in between sent nothing', () => {
     const harness = createHarness()
     harness.actor.send({type: 'fetch', request: harness.request(), reason: {type: 'manual'}})
-    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.actor.send({type: 'live.enable', client: testClient})
     harness.liveEvents.next({type: 'welcome'})
     expect(harness.fetches).toHaveLength(1)
     harness.liveEvents.next({type: 'reconnect'})
@@ -527,7 +538,7 @@ describe('queryRunnerMachine', () => {
   it('is connected from the welcome of its subscription until a reconnect, go-away or stop', () => {
     const harness = createHarness()
     const connected = () => selectLiveConnected(harness.snapshot())
-    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.actor.send({type: 'live.enable', client: createTestClient()})
     expect(harness.snapshot().matches({live: 'on'})).toBe(true)
     expect(connected()).toBe(false)
 
@@ -553,7 +564,7 @@ describe('queryRunnerMachine', () => {
     expect(connected()).toBe(true)
 
     // Another client means another subscription, which has to connect first
-    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.actor.send({type: 'live.enable', client: createTestClient()})
     expect(connected()).toBe(false)
     harness.liveEvents.next({type: 'welcome'})
     expect(connected()).toBe(true)
@@ -572,15 +583,15 @@ describe('queryRunnerMachine', () => {
     })
     const actor = createActor(machine, {input: {tabId: 'tab-1'}})
     actor.start()
-    actor.send({type: 'live.enable', client: {} as SanityClient})
+    actor.send({type: 'live.enable', client: testClient})
     expect(selectLiveConnected(actor.getSnapshot())).toBe(true)
     actor.stop()
   })
 
   it('resubscribes when live is re-enabled with a new client and stops when disabled', () => {
     const harness = createHarness()
-    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
-    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.actor.send({type: 'live.enable', client: createTestClient()})
+    harness.actor.send({type: 'live.enable', client: createTestClient()})
     expect(harness.liveSubscriptionCount()).toBe(2)
 
     harness.actor.send({type: 'live.disable'})
@@ -591,7 +602,7 @@ describe('queryRunnerMachine', () => {
   describe('while paused', () => {
     async function liveHarness() {
       const harness = createHarness()
-      const client = {} as SanityClient
+      const client = createTestClient()
       harness.actor.send({type: 'fetch', request: harness.request(), reason: {type: 'manual'}})
       harness.fetches[0].resolve({result: 1, syncTags: ['s1:a', 's1:b']})
       await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'settled'}))
@@ -693,7 +704,7 @@ describe('queryRunnerMachine', () => {
       harness.actor.send({type: 'live.pause'})
       harness.liveEvents.next({type: 'message', id: '1', tags: ['s1:a']})
 
-      harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+      harness.actor.send({type: 'live.enable', client: createTestClient()})
       expect(harness.liveSubscriptionCount()).toBe(2)
       expect(harness.snapshot().context.liveMissed).toBeUndefined()
       expect(harness.fetches).toHaveLength(1)
@@ -702,7 +713,7 @@ describe('queryRunnerMachine', () => {
 
   it('reports live subscription errors and recovers when re-enabled', () => {
     const harness = createHarness()
-    harness.actor.send({type: 'live.enable', client: {} as SanityClient})
+    harness.actor.send({type: 'live.enable', client: testClient})
     harness.liveEvents.next({type: 'welcome'})
     harness.liveEvents.error(new Error('offline'))
 

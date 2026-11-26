@@ -59,9 +59,9 @@ function createFakeObservableClient(
 ): ObservableSanityClient {
   return {
     listen: createFakeListen(config, scheduleConnection),
-    withConfig: (newConfig) =>
+    withConfig: (newConfig: Partial<ClientConfig>) =>
       createFakeObservableClient({...config, ...newConfig}, scheduleConnection),
-  } as ObservableSanityClient
+  } as unknown as ObservableSanityClient
 }
 
 function createFakeClient(
@@ -70,9 +70,10 @@ function createFakeClient(
 ): SanityClient {
   return {
     listen: createFakeListen(config, scheduleConnection),
-    withConfig: (newConfig) => createFakeClient({...config, ...newConfig}, scheduleConnection),
+    withConfig: (newConfig: Partial<ClientConfig>) =>
+      createFakeClient({...config, ...newConfig}, scheduleConnection),
     observable: createFakeObservableClient(config, scheduleConnection),
-  } as SanityClient
+  } as unknown as SanityClient
 }
 
 function getListenerCountSubscriber(): ListenerCountSubscriber {
@@ -259,7 +260,7 @@ describe('listener count warning', () => {
       listen: createFakeClient().listen,
       withConfig: () => partialClient,
       observable: {listen: createFakeObservableClient().listen},
-    } as SanityClient
+    } as unknown as SanityClient
     const {listen} = partialClient
 
     expect(listenerCountWarning.attributeListeners(partialClient)).toBe(partialClient)

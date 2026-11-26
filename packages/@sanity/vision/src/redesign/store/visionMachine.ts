@@ -99,6 +99,8 @@ export type VisionEvent =
   | {type: 'tab.setParams'; id: string; rawParams: string}
   | {type: 'tab.setAutoRefetch'; id: string; autoRefetch: boolean}
   | {type: 'tab.setOptions'; id: string; options: Partial<VisionTabOptions>}
+  /** Links the tab to the shared query it is shared as, or unlinks it (see `VisionTab.sharedId`) */
+  | {type: 'tab.setSharedId'; id: string; sharedId: string | undefined}
   /**
    * `fetch` has the tab fetch the loaded query (it is the active tab, so right away), as a query
    * from that source
@@ -393,6 +395,14 @@ export const visionMachine = setup({
             ...tab,
             options: {...tab.options, ...event.options},
           })),
+      }),
+    },
+    'tab.setSharedId': {
+      actions: assign({
+        tabs: ({context, event}) =>
+          updateTab(context.tabs, event.id, (tab) =>
+            tab.sharedId === event.sharedId ? tab : {...tab, sharedId: event.sharedId},
+          ),
       }),
     },
     'tab.load': {

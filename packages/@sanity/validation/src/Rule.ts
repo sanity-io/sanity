@@ -74,12 +74,12 @@ const fallbackCodeForRule = (flag: string) => {
  */
 // export class Rule extends BaseRule implements IRule {
 export const Rule: RuleClass = class Rule extends BaseRule implements IRule {
-  static array = (def?: SchemaType): Rule => new Rule(def).type('Array')
-  static object = (def?: SchemaType): Rule => new Rule(def).type('Object')
-  static string = (def?: SchemaType): Rule => new Rule(def).type('String')
-  static number = (def?: SchemaType): Rule => new Rule(def).type('Number')
-  static boolean = (def?: SchemaType): Rule => new Rule(def).type('Boolean')
-  static dateTime = (def?: SchemaType): Rule => new Rule(def).type('Date')
+  static array = (def?: SchemaType): IRule => new Rule(def).type('Array')
+  static object = (def?: SchemaType): IRule => new Rule(def).type('Object')
+  static string = (def?: SchemaType): IRule => new Rule(def).type('String')
+  static number = (def?: SchemaType): IRule => new Rule(def).type('Number')
+  static boolean = (def?: SchemaType): IRule => new Rule(def).type('Boolean')
+  static dateTime = (def?: SchemaType): IRule => new Rule(def).type('Date')
 
   clone(): Rule {
     const rule = new Rule()

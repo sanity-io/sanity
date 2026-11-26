@@ -1,10 +1,9 @@
 import {JsonInspector} from '@rexxars/react-json-inspector'
 import {type SanityDocument} from '@sanity/types'
 import {Card, TabList, TabPanel} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useCallback} from 'react'
 import {Translate, useTranslation} from 'sanity/i18n'
-import {Flex} from 'ui5'
+import {Code, Flex} from 'ui5'
 
 import {Dialog} from '../../../../ui-components/dialog/Dialog'
 import {Tab} from '../../../../ui-components/tab/Tab'
@@ -133,6 +132,7 @@ export function InspectDialog(props: InspectDialogProps) {
               onKeyDown={maybeSelectAll}
               onDoubleClick={select}
               size={1}
+              trim
             >
               {JSON.stringify(value, null, 2)}
             </Code>

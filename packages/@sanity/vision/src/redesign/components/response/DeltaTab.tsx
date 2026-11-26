@@ -1,8 +1,7 @@
 import {Badge, Button, Card, Label, Select, Stack, TextInput} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useCallback, useEffect, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
-import {Text, Box, Flex, Grid} from 'ui5'
+import {Code, Text, Box, Flex, Grid} from 'ui5'
 
 import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
@@ -92,10 +91,11 @@ export function useDeltaPanel(): DeltaPanel {
         beforeText: toText(before),
       }))
     } catch (error) {
+      const loadError = error instanceof Error ? error.message : String(error)
       setState((current) => ({
         ...current,
         loading: false,
-        loadError: error instanceof Error ? error.message : String(error),
+        loadError,
       }))
     }
   }, [])
@@ -116,9 +116,10 @@ export function useDeltaPanel(): DeltaPanel {
           current[key] === revision ? {...current, [textKey]: toText(document)} : current,
         )
       } catch (error) {
+        const loadError = error instanceof Error ? error.message : String(error)
         setState((current) => ({
           ...current,
-          loadError: error instanceof Error ? error.message : String(error),
+          loadError,
         }))
       }
     },
@@ -427,7 +428,7 @@ function DeltaResult(props: {
       )}
       {evaluation.status === 'done' && typeof evaluation.value !== 'boolean' && (
         <Card border className={styles.drawerScroller} padding={3} radius={2}>
-          <Code data-testid="vision-delta-value" size={1}>
+          <Code data-testid="vision-delta-value" size={1} trim>
             {JSON.stringify(evaluation.value, null, 2) ?? 'null'}
           </Code>
         </Card>

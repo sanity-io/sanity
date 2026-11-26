@@ -26,7 +26,12 @@ import {DocumentCommitRetriesEnded} from './document/__telemetry__/commitRetries
 import {DocumentDesynced} from './document/__telemetry__/documentOutOfSyncEvents.telemetry'
 import {DocumentPairLoadingMeasured} from './document/__telemetry__/documentPairLoading.telemetry'
 import {DocumentRebaseOccurred} from './document/__telemetry__/documentRebase.telemetry'
-import {HighListenerLatencyOccurred} from './document/__telemetry__/listenerLatency.telemetry'
+import {
+  HighListenerLatencyOccurred,
+  ListenerResumePayloadMeasured,
+  ListenerResumeTimeMeasured,
+  ListenerWelcomeTimeMeasured,
+} from './document/__telemetry__/listenerLatency.telemetry'
 import {MutationPerformanceMeasured} from './document/__telemetry__/mutationPerformance.telemetry'
 import {DocumentPairTornDownWithPendingMutations} from './document/__telemetry__/pendingMutations.telemetry'
 import {createDocumentStore, type DocumentStore} from './document/document-store'
@@ -36,6 +41,9 @@ import {
   type DocumentPairLoadedEvent,
   type DocumentRebaseTelemetryEvent,
   type LatencyReportEvent,
+  type ListenerResumePayloadTelemetryEvent,
+  type ListenerResumeTimeTelemetryEvent,
+  type ListenerWelcomeTimeTelemetryEvent,
   type MutationPerformanceEvent,
   type SyncErrorRecoveryTelemetryInfo,
 } from './document/getPairListener'
@@ -297,6 +305,27 @@ export function useDocumentStore(): DocumentStore {
     telemetry.log(DocumentPairTornDownWithPendingMutations)
   }, [telemetry])
 
+  const handleListenerWelcomeTime = useCallback(
+    (event: ListenerWelcomeTimeTelemetryEvent) => {
+      telemetry.log(ListenerWelcomeTimeMeasured, event)
+    },
+    [telemetry],
+  )
+
+  const handleListenerResumeTime = useCallback(
+    (event: ListenerResumeTimeTelemetryEvent) => {
+      telemetry.log(ListenerResumeTimeMeasured, event)
+    },
+    [telemetry],
+  )
+
+  const handleListenerResumePayload = useCallback(
+    (event: ListenerResumePayloadTelemetryEvent) => {
+      telemetry.log(ListenerResumePayloadMeasured, event)
+    },
+    [telemetry],
+  )
+
   return useMemo(() => {
     const documentStore =
       resourceCache.get<DocumentStore>({
@@ -330,6 +359,9 @@ export function useDocumentStore(): DocumentStore {
           onCommitCancelled: handleCommitCancelled,
           onCommitRetriesEnded: handleCommitRetriesEnded,
           onPairTornDownWithPendingMutations: handlePairTornDownWithPendingMutations,
+          onListenerWelcomeTime: handleListenerWelcomeTime,
+          onListenerResumeTime: handleListenerResumeTime,
+          onListenerResumePayload: handleListenerResumePayload,
           snapshotFetchErrorHandler: errorHandler,
         },
       })
@@ -369,6 +401,9 @@ export function useDocumentStore(): DocumentStore {
     handleCommitCancelled,
     handleCommitRetriesEnded,
     handlePairTornDownWithPendingMutations,
+    handleListenerWelcomeTime,
+    handleListenerResumeTime,
+    handleListenerResumePayload,
     errorHandler,
   ])
 }

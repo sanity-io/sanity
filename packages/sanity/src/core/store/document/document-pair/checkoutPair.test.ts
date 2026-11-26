@@ -290,6 +290,51 @@ describe('checkoutPair -- failed commit routing', () => {
     sub.unsubscribe()
   })
 
+  test('a retried commit reuses its transaction id', async () => {
+    const serverError = Object.assign(new Error('Internal Server Error'), {statusCode: 500})
+    mockedActionRequest.mockImplementationOnce(() => throwError(() => serverError) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
+    const sub = merge(draft.events, published.events).subscribe()
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'new title'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(mockedActionRequest).toHaveBeenCalledTimes(2)
+    const calls = mockedActionRequest.mock.calls as unknown as [unknown, {transactionId: string}][]
+    expect(calls[1][1].transactionId).toBe(calls[0][1].transactionId)
+
+    sub.unsubscribe()
+  })
+
+  test('a 409 transactionAlreadyExistsError counts as success, not a cancel', async () => {
+    // A retry reuses its transaction id, so this answer means an earlier attempt landed.
+    const alreadyExists = Object.assign(new Error('Conflict'), {
+      statusCode: 409,
+      response: {body: {error: {type: 'transactionAlreadyExistsError'}}},
+    })
+    mockedActionRequest.mockImplementation(() => throwError(() => alreadyExists) as any)
+
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
+    const sub = merge(draft.events, published.events).subscribe()
+    const consistency = collectConsistency(draft.consistency$)
+    await vi.advanceTimersByTimeAsync(0)
+
+    draft.mutate(draft.patch([{set: {title: 'landed'}}]))
+    draft.commit()
+    await vi.advanceTimersByTimeAsync(60_000)
+
+    // Not retried, and not cancelled: a cancel resets to HEAD and reports consistent at once,
+    // while a success keeps the mutation until the listener confirms it.
+    expect(mockedActionRequest).toHaveBeenCalledTimes(1)
+    expect(consistency.values.at(-1)).toBe(false)
+
+    consistency.sub.unsubscribe()
+    sub.unsubscribe()
+  })
+
   test('a network commit failure is retried, not cancelled', async () => {
     // Network errors have no statusCode → transient → failure/retry path.
     const networkError = Object.assign(new Error('Request error'), {isNetworkError: true})

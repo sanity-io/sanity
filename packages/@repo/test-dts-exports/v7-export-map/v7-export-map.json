@@ -2201,6 +2201,7 @@
     "isFieldChange": "value",
     "isGoingToUnpublish": "value",
     "isGroupChange": "value",
+    "isImportError": "value",
     "isIndexSegment": "value",
     "isIndexTuple": "value",
     "isInvalidSessionError": "value",

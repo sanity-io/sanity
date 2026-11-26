@@ -5,11 +5,23 @@ import {
   useImperativeHandle,
   useRef,
   type RefAttributes,
+  ViewTransition,
+  type ViewTransitionClass,
 } from 'react'
-import {createGlobalStyle, styled} from 'styled-components'
+import {styled} from 'styled-components'
 import {Box} from 'ui5'
 
-import {useId} from '../useId'
+/** Switching the preview between the desktop and mobile viewports */
+export const IFRAME_VIEWPORT_TRANSITION = 'sanity-iframe-viewport'
+
+/*
+ * Keyed by transition type, with `none` for every other type: a transition elsewhere in the studio
+ * pictures the iframe with the rest of the page.
+ */
+const IFRAME_VIEWPORT: ViewTransitionClass = {
+  default: 'none',
+  [IFRAME_VIEWPORT_TRANSITION]: 'auto',
+}
 
 interface IFrameProps {
   animate: VariantLabels
@@ -53,24 +65,20 @@ export function IFrame(props: IFrameProps & RefAttributes<HTMLIFrameElement>) {
     }
   }, [])
 
-  const viewTransitionName = useId()
-
   return (
     <>
-      <IFrameElement
-        style={{
-          ...style,
-          viewTransitionName,
-        }}
-        animate={animate}
-        initial={initial}
-        onLoad={onLoad}
-        ref={ref}
-        src={src}
-        variants={variants}
-      />
+      <ViewTransition default={IFRAME_VIEWPORT}>
+        <IFrameElement
+          style={style}
+          animate={animate}
+          initial={initial}
+          onLoad={onLoad}
+          ref={ref}
+          src={src}
+          variants={variants}
+        />
+      </ViewTransition>
       {preventClick && <IFrameOverlay />}
-      <GlobalViewTransition />
     </>
   )
 }
@@ -80,26 +88,10 @@ const IFrameElement = motion.create(styled.iframe`
   border: 0;
   max-height: 100%;
   width: 100%;
-  view-transition-class: presentation-tool-iframe;
 `)
 
 const IFrameOverlay = styled(Box)`
   position: absolute;
   inset: 0;
   background: transparent;
-`
-
-const GlobalViewTransition = createGlobalStyle`
-html:active-view-transition-type(sanity-iframe-viewport) {
-  view-transition-name: none;
-  &::view-transition {
-    pointer-events: none;
-  }
-  /* &::view-transition-old(root) {
-    display: none;
-  }
-  &::view-transition-new(root) {
-    animation: none;
-  } */
-}
 `

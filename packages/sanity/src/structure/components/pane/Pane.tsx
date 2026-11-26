@@ -1,5 +1,4 @@
 import {BoundaryElementProvider, Card, type CardProps} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {
   type HTMLProps,
   type ReactNode,
@@ -13,7 +12,7 @@ import {
 } from 'react'
 import {PaneContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
-import {Flex} from 'ui5'
+import {Code, Flex} from 'ui5'
 
 import {LegacyLayerProvider} from '../../../core/components/transitional/LegacyLayerProvider'
 import {IsLastPaneProvider} from '../../../core/tasks/context/isLastPane/IsLastPaneProvider'
@@ -213,7 +212,7 @@ export function Pane(
             >
               {PANE_DEBUG && (
                 <Card padding={4} tone={expanded ? 'primary' : 'caution'}>
-                  <Code size={1}>
+                  <Code size={1} trim>
                     {[
                       `#${paneIndex}`,
                       `collapsed=${collapsed}`,

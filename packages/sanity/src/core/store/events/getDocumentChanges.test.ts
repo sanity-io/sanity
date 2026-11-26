@@ -3,6 +3,7 @@ import {type SanityDocument} from '@sanity/types'
 import {BehaviorSubject, filter, firstValueFrom, of} from 'rxjs'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {createMockSanityClientAsClient} from '../../../../test/mocks/mockSanityClient'
 import {collectEmissions} from './__fixtures__/collect.fixture'
 import {
   createDocumentVersionEvent,
@@ -101,7 +102,7 @@ async function collectDiff(
       }),
       remoteTransactions$: of([staleDraftTx]),
       documentId: DRAFT_ID,
-      client: {} as SanityClient,
+      client: createMockSanityClientAsClient(),
     }).pipe(filter((value) => !value.loading)),
   )
 }
@@ -444,7 +445,7 @@ describe('getDocumentChanges', () => {
         }),
         remoteTransactions$: of([staleDraftTx]),
         documentId: DRAFT_ID,
-        client: {} as SanityClient,
+        client: createMockSanityClientAsClient(),
       })
       const {values, subscription} = collectEmissions(changes$)
 

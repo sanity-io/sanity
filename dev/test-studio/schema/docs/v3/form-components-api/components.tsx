@@ -1,5 +1,5 @@
 import {hues} from '@sanity/color'
-import {Button, Heading, Inline} from '@sanity/ui'
+import {Button, Inline} from '@sanity/ui'
 import {useCallback} from 'react'
 import {
   type ArrayInputFunctionsProps,
@@ -11,7 +11,7 @@ import {
   type PreviewProps,
 } from 'sanity'
 import {ArrayOfPrimitivesFunctions} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
-import {Text, Box, Flex, Grid, VStack} from 'ui5'
+import {Heading, Text, Box, Flex, Grid, VStack} from 'ui5'
 
 const COMPONENT_COLORS = {
   input: hues.blue[400].hex,
@@ -25,7 +25,9 @@ export function FormInput(props: InputProps) {
     <Flex gap={5} padding={3} flexDirection="column">
       <VStack gap={4}>
         <VStack gap={4}>
-          <Heading>Form components API test</Heading>
+          <Heading as="h2" trim>
+            Form components API test
+          </Heading>
           <Text size={1} as="div" trim={true}>
             The borders are configured in the schema, and the backgrounds are configured in the
             config and in a plugin.

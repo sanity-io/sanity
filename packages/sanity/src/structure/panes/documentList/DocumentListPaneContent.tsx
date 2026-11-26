@@ -1,10 +1,10 @@
 import {type SanityDocument} from '@sanity/types'
-import {Container, Heading} from '@sanity/ui'
+import {Container} from '@sanity/ui'
 import {clsx} from 'clsx'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {type GeneralPreviewLayoutKey} from 'sanity'
 import {Translate, useTranslation} from 'sanity/i18n'
-import {Text, Flex, Box} from 'ui5'
+import {Heading, Text, Flex, Box} from 'ui5'
 
 import {CommandList} from '../../../core/components/commandList/CommandList'
 import {type CommandListRenderItemCallback} from '../../../core/components/commandList/types'
@@ -209,7 +209,9 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
         <Flex alignItems="center" flexDirection="column" height="100%" justifyContent="center">
           <Container width={1}>
             <Flex paddingX={4} paddingY={5} gap={4} flexDirection="column">
-              <Heading as="h3">{t('panes.document-list-pane.error.title')}</Heading>
+              <Heading as="h3" trim>
+                {t('panes.document-list-pane.error.title')}
+              </Heading>
               <Text as="p" trim={true}>
                 {isDev ? (
                   <Translate

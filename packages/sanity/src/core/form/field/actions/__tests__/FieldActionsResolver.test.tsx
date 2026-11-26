@@ -44,12 +44,12 @@ const tickStore = {
 const unmemoizedAction = defineDocumentFieldAction({
   name: 'test/unmemoized',
   useAction({documentId}) {
-    const current = useSyncExternalStore(tickStore.subscribe, tickStore.getSnapshot)
+    useSyncExternalStore(tickStore.subscribe, tickStore.getSnapshot)
     return {
       type: 'action',
       title: `Open ${documentId}`,
       onAction() {
-        void current
+        tickStore.getSnapshot()
       },
     }
   },

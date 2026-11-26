@@ -6,9 +6,8 @@ import {
   isReferenceSchemaType,
 } from '@sanity/types'
 import {Card} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo} from 'react'
-import {Text, Box, VStack} from 'ui5'
+import {Code, Text, Box, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {isDev} from '../../../environment'
@@ -131,7 +130,9 @@ function UnknownField({
   return (
     <Card as="li" overflow="hidden" radius={2} shadow={1} tone="caution">
       <Card padding={3} shadow={1} tone="inherit">
-        <Code size={1}>{fieldName}</Code>
+        <Code size={1} trim>
+          {fieldName}
+        </Code>
       </Card>
 
       {isReferenceValue && (
@@ -149,7 +150,7 @@ function UnknownField({
       )}
 
       <Box overflow="auto" padding={3}>
-        <Code language="json" size={1}>
+        <Code language="json" size={1} trim>
           {JSON.stringify(value, null, 2)}
         </Code>
       </Box>

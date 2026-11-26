@@ -12,26 +12,25 @@ import {
   type VercelSetBypassCookieValue,
 } from '@sanity/preview-url-secret/constants'
 import {Card, Label, Spinner, usePrefersReducedMotion} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useToast} from '@sanity/ui/toast'
 import {useSelector} from '@xstate/react'
 import {AnimatePresence, motion, MotionConfig} from 'motion/react'
 import {
+  addTransitionType,
   memo,
+  startTransition,
   useCallback,
   useEffect,
   useImperativeHandle,
   useMemo,
   useRef,
   useState,
-  useSyncExternalStore,
   type RefAttributes,
   useEffectEvent,
 } from 'react'
-import {flushSync} from 'react-dom'
 import {useCurrentUser} from 'sanity'
 import {Translate, useTranslation} from 'sanity/i18n'
-import {Text, Flex, VStack} from 'ui5'
+import {Code, Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
@@ -50,7 +49,7 @@ import {useAllowPatterns} from '../useAllowPatterns'
 import {usePresentationNavigate} from '../usePresentationNavigate'
 import {usePresentationTool} from '../usePresentationTool'
 import {encodeStudioPerspective} from '../util/encodeStudioPerspective'
-import {IFrame} from './IFrame'
+import {IFRAME_VIEWPORT_TRANSITION, IFrame} from './IFrame'
 import {MissingPreviewAccessCard} from './MissingPreviewAccessCard'
 import {PreviewHeader} from './PreviewHeader'
 
@@ -183,8 +182,6 @@ export const Preview = memo(function PreviewComponent(
   const prefersReducedMotion = usePrefersReducedMotion()
   const ref = useRef<HTMLIFrameElement | null>(null)
 
-  const previewHeader = <PreviewHeader {...props} iframeRef={ref} options={header} />
-
   // Forward the iframe ref to the parent component
   useImperativeHandle<HTMLIFrameElement | null, HTMLIFrameElement | null>(
     forwardedRef,
@@ -268,48 +265,32 @@ export const Preview = memo(function PreviewComponent(
     presentationRef.send({type: 'iframe loaded'})
   }, [presentationRef])
 
-  const canUseViewTransition = useSyncExternalStore(
-    useCallback(() => () => {}, []),
-    () => CSS.supports(`(view-transition-name: test)`),
-  )
   const iframeAnimations = useMemo(() => {
     return [
       preventIframeInteraction ? 'background' : 'active',
       isLoading ? 'reloading' : 'idle',
-      // If CSS View Transitions are supported, then transition iframe viewport dimensions with that instead of Motion
-      canUseViewTransition ? '' : viewport,
       showOverlaysConnectionStatus ? 'timedOut' : '',
     ]
-  }, [
-    canUseViewTransition,
-    isLoading,
-    preventIframeInteraction,
-    showOverlaysConnectionStatus,
-    viewport,
-  ])
+  }, [isLoading, preventIframeInteraction, showOverlaysConnectionStatus])
 
+  // The viewport comes from the router, whose updates are never transitions, so it is mirrored
+  // here to resize the iframe in one
   const [currentViewport, setCurrentViewport] = useState(viewport)
-  const [iframeStyle, setIframeStyle] = useState(iframeVariants[viewport])
   useEffect(() => {
-    if (canUseViewTransition && viewport !== currentViewport) {
-      const update = () => {
+    if (viewport === currentViewport) return
+    if (prefersReducedMotion) {
+      setCurrentViewport(viewport)
+    } else {
+      startTransition(() => {
+        addTransitionType(IFRAME_VIEWPORT_TRANSITION)
         setCurrentViewport(viewport)
-        setIframeStyle(iframeVariants[viewport])
-      }
-      if (
-        !prefersReducedMotion &&
-        'startViewTransition' in document &&
-        typeof document.startViewTransition === 'function'
-      ) {
-        document.startViewTransition({
-          update: () => flushSync(() => update()),
-          types: ['sanity-iframe-viewport'],
-        })
-      } else {
-        update()
-      }
+      })
     }
-  }, [canUseViewTransition, prefersReducedMotion, currentViewport, viewport])
+  }, [prefersReducedMotion, currentViewport, viewport])
+
+  const previewHeader = (
+    <PreviewHeader {...props} iframeRef={ref} options={header} viewport={currentViewport} />
+  )
 
   const toast = useToast()
   const allowOrigins = useAllowPatterns(previewUrlRef)
@@ -443,7 +424,7 @@ export const Preview = memo(function PreviewComponent(
             alignItems="center"
             height="100%"
             justifyContent="center"
-            padding={(canUseViewTransition ? currentViewport : viewport) === 'desktop' ? 0 : 2}
+            padding={currentViewport === 'desktop' ? 0 : 2}
             style={{
               position: 'relative',
               cursor: iframeIsBusy ? 'wait' : undefined,
@@ -496,7 +477,7 @@ export const Preview = memo(function PreviewComponent(
                   }}
                 >
                   <Flex
-                    style={{...sizes[viewport]}}
+                    style={sizes[currentViewport]}
                     justifyContent="center"
                     alignItems="center"
                     flexDirection="column"
@@ -561,7 +542,7 @@ export const Preview = memo(function PreviewComponent(
                   }}
                 >
                   <Flex
-                    style={{...sizes[viewport]}}
+                    style={sizes[currentViewport]}
                     justifyContent="center"
                     alignItems="center"
                     flexDirection="column"
@@ -604,7 +585,7 @@ export const Preview = memo(function PreviewComponent(
                               <Label muted size={0}>
                                 {t('preview-frame.overlay.connection-status.label')}
                               </Label>
-                              <Code size={1}>
+                              <Code size={1} trim>
                                 {t('channel.status', {context: overlaysConnection})}
                               </Code>
                             </VStack>
@@ -617,7 +598,7 @@ export const Preview = memo(function PreviewComponent(
                               <Label muted size={0}>
                                 {t('preview-frame.loader.connection-status.label')}
                               </Label>
-                              <Code size={1}>
+                              <Code size={1} trim>
                                 {t('channel.status', {context: loadersConnection})}
                               </Code>
                             </VStack>
@@ -636,7 +617,7 @@ export const Preview = memo(function PreviewComponent(
               preventClick={preventIframeInteraction}
               ref={ref}
               src={previewUrl.toString()}
-              style={iframeStyle}
+              style={iframeViewportStyles[currentViewport]}
               variants={iframeVariants}
             />
           </Flex>
@@ -669,7 +650,7 @@ const errorVariants = {
   exit: {opacity: [1, 0, 0]},
 }
 
-const iframeVariants = {
+const iframeViewportStyles = {
   desktop: {
     ...sizes.desktop,
     boxShadow: '0 0 0 0px var(--card-border-color)',
@@ -678,6 +659,9 @@ const iframeVariants = {
     ...sizes.mobile,
     boxShadow: '0 0 0 1px var(--card-border-color)',
   },
+}
+
+const iframeVariants = {
   background: {
     opacity: 0,
     scale: 1,

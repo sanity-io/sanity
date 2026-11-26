@@ -1,9 +1,8 @@
 import {Card, Label} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {type ErrorInfo, useCallback, useEffect, useMemo, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
 import {styled} from 'styled-components'
-import {Flex, VStack} from 'ui5'
+import {Code, Flex, VStack} from 'ui5'
 
 import {getPublishedId} from '../../core/util/draftUtils'
 import {PaneLayout} from '../../structure/components/pane/PaneLayout'
@@ -166,7 +165,9 @@ export function DocumentListPane(props: {
               <Label muted size={0}>
                 {t('presentation-error.label')}
               </Label>
-              <WrappedCode size={1}>{errorParams.error.message}</WrappedCode>
+              <WrappedCode size={1} trim>
+                {errorParams.error.message}
+              </WrappedCode>
             </VStack>
           </Card>
         )}

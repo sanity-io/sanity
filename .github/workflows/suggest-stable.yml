@@ -1,0 +1,108 @@
+name: Suggest @stable
+run-name: Suggest @stable (${{ github.event_name }})
+
+on:
+  workflow_run: # zizmor: ignore[dangerous-triggers] runs main's own code, reads nothing from the triggering run
+    workflows: ["Release @latest"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      as-of:
+        description: "Evaluate as of this ISO date-time (UTC). Empty means now. A past date never posts."
+        required: false
+        type: string
+        default: ""
+      dry-run:
+        description: "Skip Slack"
+        required: false
+        type: boolean
+        default: false
+
+permissions: {}
+
+jobs:
+  suggest:
+    name: Build the shortlist
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      issues: read
+      actions: read
+    env:
+      HAS_SUGGESTION_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_STABLE_SUGGESTION != '' }}
+      HAS_CI_ALERTS_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS != '' }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/workflows/tag-stable.yml
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - name: Decide whether this run is live
+        id: mode
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DRY_RUN: ${{ inputs.dry-run }}
+          AS_OF: ${{ inputs.as-of }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_run" ] || { [ "$DRY_RUN" = "false" ] && [ -z "$AS_OF" ]; }; then
+            echo "live=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "live=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Collect evidence
+        env:
+          AS_OF: ${{ inputs.as-of }}
+          RADAR_SANITY_READ_TOKEN: ${{ secrets.RADAR_SANITY_READ_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/stable-suggestion"
+          pnpm stable-suggestion collect ${AS_OF:+--as-of "$AS_OF"} --out "$RUNNER_TEMP/stable-suggestion/evidence.json"
+      - name: Recommend
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.RELEASE_NOTES_CLAUDE_API_KEY }}
+          STABLE_SUGGESTION_MODEL: ${{ vars.STABLE_SUGGESTION_MODEL }}
+        run: |
+          pnpm stable-suggestion recommend "$RUNNER_TEMP/stable-suggestion/evidence.json" \
+            --out-dir "$RUNNER_TEMP/stable-suggestion" --run-url "$RUN_URL" --workflow-url "$WORKFLOW_URL"
+          cat "$RUNNER_TEMP/stable-suggestion/summary.md" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: stable-suggestion
+          path: ${{ runner.temp }}/stable-suggestion/
+          retention-days: 90
+      - name: Choose the Slack route
+        id: route
+        if: steps.mode.outputs.live == 'true'
+        run: pnpm stable-suggestion slack-route
+      - name: Post the shortlist
+        if: steps.route.outputs.route == 'webhook-trigger'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          # Fields: headline, text, cli, run_url (SUGGESTION_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts). run_url is the tag-stable workflow page
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_STABLE_SUGGESTION }}
+          webhook-type: webhook-trigger
+          payload-file-path: ${{ runner.temp }}/stable-suggestion/slack-webhook.json
+      - name: Post the shortlist (CI alerts fallback)
+        if: steps.route.outputs.route == 'incoming-webhook'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          # Fields: text (CI_ALERTS_WEBHOOK_FIELDS in packages/@repo/stable-suggestion/src/render.ts)
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
+          payload-file-path: ${{ runner.temp }}/stable-suggestion/slack-fallback.json
+      - name: Alert on failure
+        if: failure() && steps.mode.outputs.live == 'true'
+        uses: slackapi/slack-github-action@0d95c9a7becc1e6e297d76df9bc735c44f4cbcbc # v3.0.5
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL_CI_ALERTS }}
+          webhook-type: incoming-webhook
+          payload: |
+            {"text": ":alert-dot: Suggest @stable failed before posting a shortlist (<${{ env.RUN_URL }}|View Run>)"}

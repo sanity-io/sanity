@@ -5,6 +5,7 @@ import {type ReactNode} from 'react'
 import {VisibleWorkspacesContext, WorkspacesContext} from 'sanity/_singletons'
 import {describe, expect, it, onTestFinished, vi} from 'vitest'
 
+import {createMockSanityClientAsClient} from '../../../../../test/mocks/mockSanityClient'
 import {type WorkspaceSummary} from '../../../config/types'
 import {takeStashedAuthorizationResponse} from '../../../store/auth/oauth/authorizationResponse'
 import {OAUTH_AUTH_STORE} from '../../../store/auth/oauth/createOAuthAuthStore'
@@ -67,7 +68,7 @@ function createAuthState(overrides: Partial<AuthState> = {}): AuthState {
       roles: [{name: 'administrator', title: 'Administrator'}],
       profileImage: '',
     },
-    client: {} as AuthState['client'],
+    client: createMockSanityClientAsClient(),
     ...overrides,
   }
 }

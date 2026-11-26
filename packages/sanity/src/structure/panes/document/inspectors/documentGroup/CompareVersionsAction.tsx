@@ -4,6 +4,7 @@ import {useDocumentIdStack} from '../../../../../core/hooks/useDocumentIdStack'
 import {Button} from '../../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {getCompareVersionsItem} from '../../menuItems'
+import {useCompareVersionsDocuments} from '../../useCompareVersionsDocuments'
 import {useDocumentPane} from '../../useDocumentPane'
 
 /**
@@ -16,8 +17,8 @@ import {useDocumentPane} from '../../useDocumentPane'
 export function CompareVersionsAction() {
   const {displayed, documentId, editState, onMenuAction} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
-  const documentIdStack = useDocumentIdStack({displayed, documentId, editState})
-  const item = getCompareVersionsItem({documentIdStack, t})
+  const compareVersionsDocuments = useCompareVersionsDocuments({displayed, documentId, editState})
+  const item = getCompareVersionsItem({compareVersionsDocuments, t})
 
   return (
     <Button

@@ -1,7 +1,6 @@
 import {Card, Label, Stack} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import noop from 'lodash-es/noop.js'
-import {Text} from 'ui5'
+import {Code, Text} from 'ui5'
 
 import {TestWrapper} from '../../../../test/browser/TestWrapper'
 import {presentationUsEnglishLocaleBundle} from '../../i18n'
@@ -18,7 +17,9 @@ const DEV_DETAILS = (
       <Label muted size={0}>
         Error details
       </Label>
-      <Code size={1}>Cannot read properties of undefined (reading &apos;_id&apos;)</Code>
+      <Code size={1} trim>
+        Cannot read properties of undefined (reading &apos;_id&apos;)
+      </Code>
     </Stack>
   </Card>
 )

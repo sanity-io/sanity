@@ -30,6 +30,8 @@ import {
   VisionSavedQueriesFiltered,
   VisionSavedQueryUsed,
   VisionSettingsChanged,
+  VisionSharedTabsSearched,
+  VisionSharedTabUsed,
   VisionShortcutUsed,
   VisionSnippetCopied,
   VisionTabsChanged,
@@ -51,6 +53,7 @@ import {
   type VisionSavedQueriesFilter,
   type VisionSavedQueryAction,
   type VisionSettingsSection,
+  type VisionSharedTabAction,
   type VisionShortcut,
   type VisionSnippet,
   type VisionTabAction,
@@ -76,6 +79,8 @@ export interface VisionTelemetry {
   panelToggled: (panel: VisionPanel, open: boolean) => void
   tabsChanged: (count: number, action: 'open' | 'add' | 'close') => void
   tabUsed: (action: VisionTabAction) => void
+  sharedTab: (action: VisionSharedTabAction) => void
+  sharedTabsSearched: () => void
   drawerOpened: (drawer: VisionDrawerId) => void
   dialogOpened: (dialog: VisionDialogId) => void
   panelTabOpened: (tab: VisionPanelTab) => void
@@ -119,6 +124,8 @@ export function useVisionTelemetry(): VisionTelemetry {
       panelToggled: (panel, open) => telemetry.log(VisionPanelToggled, {panel, open}),
       tabsChanged: (count, action) => telemetry.log(VisionTabsChanged, {count, action}),
       tabUsed: (action) => telemetry.log(VisionTabUsed, {action}),
+      sharedTab: (action) => telemetry.log(VisionSharedTabUsed, {action}),
+      sharedTabsSearched: () => telemetry.log(VisionSharedTabsSearched),
       drawerOpened: (drawer) => telemetry.log(VisionDrawerOpened, {drawer}),
       dialogOpened: (dialog) => telemetry.log(VisionDialogOpened, {dialog}),
       panelTabOpened: (tab) => telemetry.log(VisionPanelTabOpened, {tab}),

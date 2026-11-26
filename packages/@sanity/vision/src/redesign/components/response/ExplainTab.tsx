@@ -4,11 +4,10 @@ import {CheckmarkCircleIcon} from '@sanity/icons/CheckmarkCircle'
 import {ChevronRightIcon} from '@sanity/icons/ChevronRight'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Button, Card, type CardTone, Label, Stack} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {type ComponentType, useId, useMemo, useState} from 'react'
 import {type TFunction} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
-import {Text, Box, Flex} from 'ui5'
+import {Code, Text, Box, Flex} from 'ui5'
 
 import {visionLocaleNamespace} from '../../../i18n'
 import {useAiFeatures} from '../../aiFeatures'
@@ -319,7 +318,11 @@ export function ExplainTab(props: ExplainTabProps) {
                   <Text size={1} as="div" trim={true} tone={insight.tone}>
                     {t(insight.message)}
                   </Text>
-                  {insight.expression && <Code size={1}>{insight.expression}</Code>}
+                  {insight.expression && (
+                    <Code size={1} trim>
+                      {insight.expression}
+                    </Code>
+                  )}
                 </Stack>
               </Card>
             ))}
@@ -341,7 +344,9 @@ export function ExplainTab(props: ExplainTabProps) {
             <Label muted size={0}>
               {t('vision.explain.plan-title')}
             </Label>
-            <Code size={1}>{plan.result}</Code>
+            <Code size={1} trim>
+              {plan.result}
+            </Code>
           </Stack>
         )}
       </Stack>
