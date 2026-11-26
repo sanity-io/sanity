@@ -93,13 +93,11 @@ function clusterWidth(row: number): number {
 
 /** The diamond glyph of a row, filled or outline. */
 function diamond(row: number): {kind: 'filled' | 'outline'; x: number} | undefined {
-  const el = document.querySelector(
-    `[data-testid="row-${row}"] [data-sanity-icon="rhombus"], [data-testid="row-${row}"] [data-sanity-icon="rhombus-outline"]`,
-  )
+  const el = document.querySelector(`[data-testid="row-${row}"] [data-ui="VariantMark"]`)
   if (!el) return undefined
   const rect = el.getBoundingClientRect()
   return {
-    kind: el.getAttribute('data-sanity-icon') === 'rhombus' ? 'filled' : 'outline',
+    kind: el.getAttribute('data-fill') === 'outline' ? 'outline' : 'filled',
     x: rect.left + rect.width / 2,
   }
 }

@@ -60,8 +60,8 @@ describe('ReferencePreview', () => {
 
     // The document is not in the variant, so the reference says it shows Default, as a list row does
     expect(container.querySelector('[data-sanity-icon="circle-small"]')).not.toBeNull()
-    expect(container.querySelector('[data-sanity-icon="rhombus-outline"]')).not.toBeNull()
-    expect(container.querySelector('[data-sanity-icon="rhombus"]')).toBeNull()
+    expect(container.querySelector('[data-ui="VariantMark"][data-fill="outline"]')).not.toBeNull()
+    expect(container.querySelector('[data-ui="VariantMark"][data-fill="filled"]')).toBeNull()
   })
 
   describe('versions status with the inventory', () => {
