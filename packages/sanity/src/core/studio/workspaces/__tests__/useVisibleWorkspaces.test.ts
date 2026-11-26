@@ -1,5 +1,6 @@
 import {describe, expect, it, vi} from 'vitest'
 
+import {createMockSanityClientAsClient} from '../../../../../test/mocks/mockSanityClient'
 import {type WorkspaceHiddenContext, type WorkspaceSummary} from '../../../config/types'
 import {type AuthState} from '../../../store/auth/types'
 import {evaluateWorkspaceHidden} from '../useVisibleWorkspaces'
@@ -21,7 +22,7 @@ function createAuthState(overrides: Partial<AuthState> = {}): AuthState {
       role: '',
       roles: [],
     },
-    client: {} as AuthState['client'],
+    client: createMockSanityClientAsClient(),
     ...overrides,
   }
 }

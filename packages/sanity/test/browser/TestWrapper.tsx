@@ -1,4 +1,5 @@
 import {type SanityClient} from '@sanity/client'
+import {ResourceProvider} from '@sanity/sdk-react'
 import {Card, LayerProvider, ThemeProvider} from '@sanity/ui'
 import {buildTheme, type RootTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
@@ -132,36 +133,43 @@ const TestWrapperContents = (
         <ToastProvider>
           <LayerProvider>
             <WorkspaceProvider workspace={mockWorkspace}>
-              <ResourceCacheProvider>
-                <SourceProvider source={mockWorkspace.unstable_sources[0]}>
-                  <AssetLimitUpsellProvider>
-                    <CopyPasteProvider>
-                      <ColorSchemeProvider>
-                        <UserColorManagerProvider>
-                          <StyledChangeConnectorRoot
-                            isReviewChangesOpen={false}
-                            onOpenReviewChanges={noop}
-                            onSetFocus={noop}
-                          >
-                            <PerspectiveProvider
-                              selectedPerspectiveName={undefined}
-                              excludedPerspectives={EMPTY_ARRAY}
+              {/* The App SDK instance WorkspaceLoader mounts for the Studio's primary workspace */}
+              <ResourceProvider
+                projectId={mockWorkspace.projectId}
+                dataset={mockWorkspace.dataset}
+                fallback={null}
+              >
+                <ResourceCacheProvider>
+                  <SourceProvider source={mockWorkspace.unstable_sources[0]}>
+                    <AssetLimitUpsellProvider>
+                      <CopyPasteProvider>
+                        <ColorSchemeProvider>
+                          <UserColorManagerProvider>
+                            <StyledChangeConnectorRoot
+                              isReviewChangesOpen={false}
+                              onOpenReviewChanges={noop}
+                              onSetFocus={noop}
                             >
-                              <PaneLayout height="fill">
-                                <Pane id="test-pane">
-                                  <PaneContent>
-                                    <Card padding={3}>{children}</Card>
-                                  </PaneContent>
-                                </Pane>
-                              </PaneLayout>
-                            </PerspectiveProvider>
-                          </StyledChangeConnectorRoot>
-                        </UserColorManagerProvider>
-                      </ColorSchemeProvider>
-                    </CopyPasteProvider>
-                  </AssetLimitUpsellProvider>
-                </SourceProvider>
-              </ResourceCacheProvider>
+                              <PerspectiveProvider
+                                selectedPerspectiveName={undefined}
+                                excludedPerspectives={EMPTY_ARRAY}
+                              >
+                                <PaneLayout height="fill">
+                                  <Pane id="test-pane">
+                                    <PaneContent>
+                                      <Card padding={3}>{children}</Card>
+                                    </PaneContent>
+                                  </Pane>
+                                </PaneLayout>
+                              </PerspectiveProvider>
+                            </StyledChangeConnectorRoot>
+                          </UserColorManagerProvider>
+                        </ColorSchemeProvider>
+                      </CopyPasteProvider>
+                    </AssetLimitUpsellProvider>
+                  </SourceProvider>
+                </ResourceCacheProvider>
+              </ResourceProvider>
             </WorkspaceProvider>
           </LayerProvider>
         </ToastProvider>

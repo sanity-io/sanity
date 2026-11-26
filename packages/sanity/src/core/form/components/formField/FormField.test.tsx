@@ -1,5 +1,7 @@
 import {defineType} from '@sanity/types'
 import {render, screen} from '@testing-library/react'
+import {type ReactNode} from 'react'
+import {BaseVariantComparisonContext} from 'sanity/_singletons'
 import {describe, expect, it} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
@@ -84,5 +86,121 @@ describe('FormFieldSet', () => {
     )
 
     expect(screen.getByTestId('tags-input')).toBeInTheDocument()
+  })
+})
+
+// The gutter carries both anchors, and CSS picks the label one while the child it shows is the
+// base variant mark (`formFieldAnchor`). That is checked by its geometry in
+// `FormFieldBaseVariantMark.browser.test.tsx`; jsdom has no anchor positioning, so these tests check
+// the inputs to that rule.
+// The form builder sets the compared slot whenever it compares with a base variant. A field outside
+// that renders as on main.
+function Comparing({children}: {children: ReactNode}) {
+  return (
+    <BaseVariantComparisonContext.Provider value="published">
+      {children}
+    </BaseVariantComparisonContext.Provider>
+  )
+}
+
+describe('the base variant mark', () => {
+  const anchorsOf = (gutter: HTMLElement) => ({
+    input: gutter.style.getPropertyValue('--form-field-anchor-path'),
+    label: gutter.style.getPropertyValue('--form-field-label-anchor-path'),
+  })
+  const shownChildIsLabelAnchored = (gutter: HTMLElement) =>
+    gutter.firstElementChild?.hasAttribute('data-gutter-label-anchored') ?? false
+
+  it('follows the title row of a field, not its input', async () => {
+    const TestProvider = await createTestProvider()
+
+    render(
+      <TestProvider>
+        <Comparing>
+          <FormField title="Body" inputId="body" path={['body']} changedFromBaseVariant>
+            <input id="body" />
+          </FormField>
+        </Comparing>
+      </TestProvider>,
+    )
+
+    const gutter = screen.getByTestId('form-field-gutter')
+    expect(anchorsOf(gutter)).toEqual({input: '--input_body', label: '--label_body'})
+    expect(shownChildIsLabelAnchored(gutter)).toBe(true)
+  })
+
+  it('follows the title row of a field set too', async () => {
+    const TestProvider = await createTestProvider()
+
+    render(
+      <TestProvider>
+        <Comparing>
+          <FormFieldSet
+            title="Settings"
+            inputId="settings"
+            path={['settings']}
+            changedFromBaseVariant
+          >
+            <input id="settings" />
+          </FormFieldSet>
+        </Comparing>
+      </TestProvider>,
+    )
+
+    const gutter = screen.getByTestId('form-field-gutter')
+    expect(anchorsOf(gutter)).toEqual({input: '--input_settings', label: '--label_settings'})
+    expect(shownChildIsLabelAnchored(gutter)).toBe(true)
+  })
+
+  it('keeps following the input when the field does not differ from its base variant', async () => {
+    const TestProvider = await createTestProvider()
+
+    render(
+      <TestProvider>
+        <Comparing>
+          <FormField title="Body" inputId="body" path={['body']}>
+            <input id="body" />
+          </FormField>
+        </Comparing>
+      </TestProvider>,
+    )
+
+    const gutter = screen.getByTestId('form-field-gutter')
+    expect(anchorsOf(gutter).input).toBe('--input_body')
+    expect(shownChildIsLabelAnchored(gutter)).toBe(false)
+  })
+
+  it('keeps following the input when the field has no title row', async () => {
+    const TestProvider = await createTestProvider()
+
+    render(
+      <TestProvider>
+        <Comparing>
+          <FormField inputId="body" path={['body']} changedFromBaseVariant>
+            <input id="body" />
+          </FormField>
+        </Comparing>
+      </TestProvider>,
+    )
+
+    expect(anchorsOf(screen.getByTestId('form-field-gutter'))).toEqual({
+      input: '--input_body',
+      label: '--input_body',
+    })
+  })
+  it('adds nothing for the mark when the form compares nothing (outside Variants)', async () => {
+    const TestProvider = await createTestProvider()
+
+    render(
+      <TestProvider>
+        <FormField title="Body" inputId="body" path={['body']}>
+          <input id="body" />
+        </FormField>
+      </TestProvider>,
+    )
+
+    const gutter = screen.getByTestId('form-field-gutter')
+    expect(anchorsOf(gutter)).toEqual({input: '--input_body', label: ''})
+    expect(document.querySelector('[style*="anchor-name"]')).toBeNull()
   })
 })

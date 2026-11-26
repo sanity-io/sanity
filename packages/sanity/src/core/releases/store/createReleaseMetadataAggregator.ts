@@ -19,6 +19,7 @@ import {
   tap,
 } from 'rxjs'
 
+import {pauseWhileDocumentHidden} from '../../store/listenerGate/listenerGate'
 import {getVersionFromId} from '../../util/draftUtils'
 import {getReleaseDocumentIdFromReleaseId} from '../util/getReleaseDocumentIdFromReleaseId'
 import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
@@ -204,7 +205,15 @@ export const createReleaseMetadataAggregator = (client: SanityClient | null) => 
     // change while a fetch is in flight are collected here and fetched together once it completes
     const pendingReleaseDocumentIds = new Set<string>()
 
-    return merge(of(releaseDocumentIds), mutatedReleaseDocumentIds$(releaseDocumentIds)).pipe(
+    // The listener only reports mutations, so those missed while it was paused for a hidden page
+    // are caught up on by fetching every release again when it resumes. That includes its first
+    // connection on a page opened in the background, which comes after the initial fetch. The
+    // fetch is never the first, so the metadata stays on screen until the new one arrives.
+    const listenerMutations$ = defer(() => mutatedReleaseDocumentIds$(releaseDocumentIds)).pipe(
+      pauseWhileDocumentHidden({onResume: () => releaseDocumentIds}),
+    )
+
+    return merge(of(releaseDocumentIds), listenerMutations$).pipe(
       tap((mutatedReleaseDocumentIds) => {
         for (const releaseDocumentId of mutatedReleaseDocumentIds) {
           pendingReleaseDocumentIds.add(releaseDocumentId)

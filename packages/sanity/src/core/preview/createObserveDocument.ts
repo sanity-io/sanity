@@ -1,4 +1,4 @@
-import {type MutationEvent, type SanityClient, type WelcomeEvent} from '@sanity/client'
+import {type MutationEvent, type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import memoize from 'lodash-es/memoize.js'
 import uniq from 'lodash-es/uniq.js'
@@ -10,6 +10,7 @@ import {
   OutOfSyncError,
   sequentializeListenerEvents,
 } from '../store/document/utils/sequentializeListenerEvents'
+import {retryTransientFetch} from '../util/fetchErrors'
 import {applyMutationEventEffects} from './utils/applyMendozaPatch'
 import {debounceCollect} from './utils/debounceCollect'
 
@@ -43,7 +44,8 @@ export function createObserveDocument({
   client,
 }: {
   client: SanityClient
-  mutationChannel: Observable<WelcomeEvent | ListenerMutationEventLike>
+  /** `connected` loads the document from scratch, see `InvalidationChannelEvent` */
+  mutationChannel: Observable<{type: 'connected'} | ListenerMutationEventLike>
 }) {
   const getBatchFetcher = memoize(
     function getBatchFetcher(apiConfig: {dataset: string; projectId: string; apiVersion: string}) {
@@ -52,7 +54,12 @@ export function createObserveDocument({
       function batchFetchDocuments(ids: [string][]) {
         return _client.observable
           .fetch(`*[_id in $ids]`, {ids: uniq(ids.flat())}, {tag: 'preview.observe-document'})
-          .pipe(map((result) => ids.map(([id]) => result.find((r: {_id: string}) => r._id === id))))
+          .pipe(
+            // A failed fetch would error every document in the batch, and they would stop
+            // following the listener.
+            retryTransientFetch(),
+            map((result) => ids.map(([id]) => result.find((r: {_id: string}) => r._id === id))),
+          )
       }
       return debounceCollect(batchFetchDocuments, 100)
     },
@@ -70,7 +77,7 @@ export function createObserveDocument({
     const fetchDocument = getBatchFetcher(_apiConfig)
     return mutationChannel.pipe(
       concatMap((event): Observable<DocumentEvent> => {
-        if (event.type === 'welcome') {
+        if (event.type === 'connected') {
           return fetchDocument(id).pipe(
             map((document) => ({type: 'snapshot' as const, document: document ?? null})),
           )

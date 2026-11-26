@@ -22,10 +22,10 @@
   "devDependencies": {
     "@repo/test-config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@stryker-mutator/api": "10.0.0",
-    "@stryker-mutator/core": "10.0.0",
-    "@stryker-mutator/instrumenter": "10.0.0",
-    "@stryker-mutator/vitest-runner": "10.0.0",
+    "@stryker-mutator/api": "10.1.1",
+    "@stryker-mutator/core": "10.1.1",
+    "@stryker-mutator/instrumenter": "10.1.1",
+    "@stryker-mutator/vitest-runner": "10.1.1",
     "@types/node": "catalog:",
     "vitest": "catalog:"
   }

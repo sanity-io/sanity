@@ -123,10 +123,20 @@ async function resolveAssetSources(overrides: Partial<SingleWorkspace>) {
  * the federated vs iframe implementation. Invoking it only builds the element
  * (no hooks run).
  */
-function mediaLibraryDialogComponent(sources: {name: string; component?: unknown}[]): unknown {
+function mediaLibraryDialogElement(sources: {name: string; component?: unknown}[]): {
+  type: unknown
+  props: Record<string, unknown>
+} {
   const source = sources.find((s) => s.name === 'sanity-media-library')
-  const render = source?.component as (props: unknown) => {type: unknown}
-  return render({}).type
+  const render = source?.component as (props: unknown) => {
+    type: unknown
+    props: Record<string, unknown>
+  }
+  return render({})
+}
+
+function mediaLibraryDialogComponent(sources: {name: string; component?: unknown}[]): unknown {
+  return mediaLibraryDialogElement(sources).type
 }
 
 beforeEach(() => {
@@ -253,5 +263,70 @@ describe('prepareConfig — federatedAssetSources composition', () => {
 
     expect(file.map((s) => s.name)).toEqual(['sanity-media-library', 'sanity-default'])
     expect(image.map((s) => s.name)).toEqual(['sanity-media-library', 'sanity-default'])
+  })
+})
+
+describe('prepareConfig — Media Library asset source resolution reported to telemetry', () => {
+  it('passes no resolution to the federated source, which reports its own outcome', async () => {
+    publishViews(defaultEntries())
+
+    const {file, image} = await resolveAssetSources({mediaLibrary: {enabled: true}})
+
+    for (const sources of [file, image]) {
+      const view = mediaLibraryDialogElement(sources)
+      expect(view.type).toBe(FederatedMediaLibraryAssetSource)
+      expect(view.props.resolution).toBeUndefined()
+    }
+  })
+
+  it.each([
+    {
+      name: 'the opt-out flag',
+      setup: () => publishViews(defaultEntries()),
+      federatedAssetSource: false,
+      resolution: {outcome: 'iframe_opt_out', reason: null},
+    },
+    {
+      name: 'a Studio outside the workbench',
+      setup: () => {},
+      federatedAssetSource: undefined,
+      resolution: {outcome: 'iframe_unsupported', reason: 'standalone_studio'},
+    },
+    {
+      name: 'a cold start before the application list is published',
+      setup: () => stubMessageBusHost(),
+      federatedAssetSource: undefined,
+      resolution: {outcome: 'iframe_fallback', reason: 'cold_start'},
+    },
+    {
+      name: 'an error published for the application list',
+      setup: () => stubMessageBusHost().publish('applications.list', {ok: false}),
+      federatedAssetSource: undefined,
+      resolution: {outcome: 'iframe_fallback', reason: 'applications_list_failed'},
+    },
+    {
+      name: 'an application list without a Media Library view',
+      setup: () =>
+        publishViews([appWithView({id: 'stock-app', name: 'stock-photos', viewName: 'stock'})]),
+      federatedAssetSource: undefined,
+      resolution: {outcome: 'iframe_fallback', reason: 'no_view'},
+    },
+  ])('passes the iframe source its resolution for $name', async (testCase) => {
+    testCase.setup()
+
+    const {file, image} = await resolveAssetSources({
+      mediaLibrary: {
+        enabled: true,
+        ...(testCase.federatedAssetSource === undefined
+          ? {}
+          : {__internal: {federatedAssetSource: testCase.federatedAssetSource}}),
+      },
+    })
+
+    for (const sources of [file, image]) {
+      const view = mediaLibraryDialogElement(sources)
+      expect(view.type).toBe(MediaLibraryAssetSource)
+      expect(view.props.resolution).toEqual(testCase.resolution)
+    }
   })
 })

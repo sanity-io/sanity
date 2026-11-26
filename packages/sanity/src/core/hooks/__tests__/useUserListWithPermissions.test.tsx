@@ -1,9 +1,9 @@
-import {type SanityClient} from '@sanity/client'
 import {type User} from '@sanity/types'
 import {renderHook, waitFor} from '@testing-library/react'
 import {of} from 'rxjs'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
+import {createMockSanityClientAsClient} from '../../../../test/mocks/mockSanityClient'
 import {useProjectStore, useUserStore} from '../../store/datastores'
 import {grantsPermissionOn} from '../../store/grants/grantsStore'
 import {type ProjectData, type ProjectStore} from '../../store/project/types'
@@ -41,7 +41,7 @@ function setup() {
     getUsers: vi.fn().mockResolvedValue(users),
   } as unknown as UserStore)
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  vi.mocked(useClient).mockReturnValue({observable: {}} as SanityClient)
+  vi.mocked(useClient).mockReturnValue(createMockSanityClientAsClient())
   vi.mocked(grantsPermissionOn).mockImplementation(async (_userId, grants) => {
     if (grants.some((grant) => grant.filter.includes('user::attributes()'))) {
       throw new Error('not implemented')

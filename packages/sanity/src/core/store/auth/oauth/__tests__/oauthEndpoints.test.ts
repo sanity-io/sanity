@@ -91,6 +91,19 @@ describe('oauthEndpoints', () => {
     expect(url.searchParams.getAll('resource')).toEqual(['urn:io.sanity:project:p1'])
   })
 
+  it('asks for the login form only when told to', () => {
+    const params = {clientId: 'oc-1', redirectUri: 'http://localhost:3333', codeChallenge: 'c'}
+    const endpoints = createOAuthEndpoints(HOSTS)
+    expect(
+      new URL(endpoints.authorizeUrl({...params, state: 's'})).searchParams.has('prompt'),
+    ).toBe(false)
+    expect(
+      new URL(endpoints.authorizeUrl({...params, state: 's', prompt: 'login'})).searchParams.getAll(
+        'prompt',
+      ),
+    ).toEqual(['login'])
+  })
+
   it('leaves the resource indicator off the token, refresh and revoke requests', async () => {
     // The server keeps the resource with the grant and applies it to every token it issues
     // from it, so only the authorization request names it.
@@ -123,6 +136,58 @@ describe('oauthEndpoints', () => {
     await expect(endpoints.refresh({clientId: 'oc-1', refreshToken: 'r'})).rejects.toThrow(
       'malformed token response',
     )
+  })
+
+  it('reads how long the refresh token may be held unused', async () => {
+    // draft-ietf-oauth-refresh-token-expiration: integer seconds, relative to the response.
+    const endpoints = createOAuthEndpoints(
+      HOSTS,
+      respond(200, {
+        access_token: 'a',
+        token_type: 'bearer',
+        expires_in: 3600,
+        refresh_token: 'r',
+        refresh_token_timeout: 7_776_000,
+      }),
+    )
+    await expect(endpoints.refresh({clientId: 'oc-1', refreshToken: 'r'})).resolves.toEqual({
+      access_token: 'a',
+      token_type: 'bearer',
+      expires_in: 3600,
+      refresh_token: 'r',
+      refresh_token_timeout: 7_776_000,
+    })
+    await expect(endpoints.exchangeCode(EXCHANGE)).resolves.toMatchObject({
+      refresh_token_timeout: 7_776_000,
+    })
+  })
+
+  it.each([
+    ['missing', undefined],
+    ['zero', 0],
+    ['negative', -60],
+    ['a string', '7776000'],
+    ['null', null],
+  ])('ignores a refresh token timeout that is %s', async (_label, timeout) => {
+    // The tokens are still good, so the response is used as if it had no timeout.
+    const endpoints = createOAuthEndpoints(
+      HOSTS,
+      respond(200, {
+        access_token: 'a',
+        token_type: 'bearer',
+        expires_in: 3600,
+        refresh_token: 'r',
+        refresh_token_timeout: timeout,
+      }),
+    )
+    const response = await endpoints.refresh({clientId: 'oc-1', refreshToken: 'r'})
+    expect(response).toEqual({
+      access_token: 'a',
+      token_type: 'bearer',
+      expires_in: 3600,
+      refresh_token: 'r',
+    })
+    expect(response).not.toHaveProperty('refresh_token_timeout')
   })
 
   it('reports the OAuth error code of a failed request', async () => {

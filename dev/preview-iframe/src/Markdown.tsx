@@ -1,10 +1,9 @@
 import {stegaClean} from '@sanity/client/stega'
 import {Card} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {createDataAttribute} from '@sanity/visual-editing/create-data-attribute'
 import {registerLanguage} from 'react-refractor'
 import markdown from 'refractor/markdown'
-import {Text, Box, VStack} from 'ui5'
+import {Code, Text, Box, VStack} from 'ui5'
 
 import {useQuery} from './loader'
 
@@ -42,6 +41,7 @@ export function Markdown(): React.JSX.Element {
                 data-sanity={dataAttribute('markdown')}
                 language="markdown"
                 style={{overflowX: 'auto', overflowY: 'clip', paddingBlock: '1rem'}}
+                trim
               >
                 {stegaClean(item.markdown)}
               </Code>

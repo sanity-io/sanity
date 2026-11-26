@@ -1,18 +1,17 @@
 import {css} from '#styled-system/css'
 
-export const root = css({
-  maxWidth: '440px',
-  minWidth: '400px',
-  width: 'max-content',
+export const titleStack = css({
+  minWidth: 0,
+  width: '100%',
 })
 
-export const lineName = css({
-  flex: '1 1 auto',
-  minWidth: '96px',
-})
-
-export const lineIcons = css({
-  display: 'flex',
+export const updatedAtText = css({
   flex: 'none',
-  gap: '2px',
+  whiteSpace: 'nowrap',
+})
+
+export const versionStatusItem = css({
+  '&&': {
+    padding: '2px 0',
+  },
 })

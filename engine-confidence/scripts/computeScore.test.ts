@@ -305,7 +305,7 @@ describe('buildRunDocument', () => {
     const document = buildRunDocument(scoreInputs())
 
     expect(document.config).toMatchObject({
-      version: 1,
+      version: 2,
       hash: 'hash',
       strykerVersion: '10.0.0',
       vitestVersion: '5.0.4',
@@ -320,7 +320,7 @@ describe('renderSummary', () => {
     const summary = renderSummary(buildRunDocument(scoreInputs()))
 
     expect(summary).toContain('### Engine confidence 2026-W42')
-    expect(summary).toContain('Total engine: **52.3%** · Core Studio engine: **29.6%** (config v1)')
+    expect(summary).toContain('Total engine: **52.3%** · Core Studio engine: **29.6%** (config v2)')
     expect(summary).toContain(
       '| Total engine score (Studio + @sanity/mutator) | 52.3% (23 detected',
     )

@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {
   concat,
-  type ConnectableObservable,
+  connectable,
   defer,
   EMPTY,
   firstValueFrom,
@@ -13,7 +13,7 @@ import {
   throwError,
   timer,
 } from 'rxjs'
-import {buffer, filter, map, publish, takeWhile} from 'rxjs/operators'
+import {buffer, filter, map, takeWhile} from 'rxjs/operators'
 import {beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createMockSanityClient} from '../../../../../test/mocks/mockSanityClient'
@@ -94,7 +94,7 @@ function createSubscription(
     observeDocument = () => EMPTY,
   } = options
 
-  const stream = validation(
+  const source$ = validation(
     {
       client,
       getClient,
@@ -111,12 +111,11 @@ function createSubscription(
     undefined,
     undefined,
     listener,
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  ).pipe(publish())
+  )
 
   // Publish and connect this for the tests
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  ;(stream as ConnectableObservable<unknown>).connect()
+  const stream = connectable(source$, {connector: () => new Subject(), resetOnDisconnect: false})
+  stream.connect()
 
   // Create a subject we can use to notify via `done.next()`
   const done = new Subject<void>()
@@ -160,7 +159,7 @@ function createVersionSubscription(
 ) {
   const getClient = () => client
 
-  const stream = validation(
+  const source$ = validation(
     {
       client,
       getClient,
@@ -172,12 +171,11 @@ function createVersionSubscription(
     {publishedId: 'example-id', draftId: 'drafts.example-id', versionId},
     'movie',
     'version',
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  ).pipe(publish())
+  )
 
   // Publish and connect this for the tests
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  ;(stream as ConnectableObservable<unknown>).connect()
+  const stream = connectable(source$, {connector: () => new Subject(), resetOnDisconnect: false})
+  stream.connect()
 
   // Create a subject we can use to notify via `done.next()`
   const done = new Subject<void>()

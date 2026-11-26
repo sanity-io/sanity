@@ -1,11 +1,13 @@
 import {
+  ClientError,
   createClient,
   type MutationEvent,
   type ReconnectEvent,
+  ServerError,
   type WelcomeEvent,
 } from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
-import {firstValueFrom, of, skip, Subject, throwError} from 'rxjs'
+import {defer, firstValueFrom, of, skip, Subject, throwError} from 'rxjs'
 import {take} from 'rxjs/operators'
 import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from 'vitest'
 
@@ -157,11 +159,11 @@ function observeThroughGlobalListener() {
     return {emitted, errors}
   }
 
-  return {dataset, listener, fetch, warn, observe}
+  return {dataset, stored, listener, fetch, warn, observe, observeDocument}
 }
 
 describe(createObserveDocument.name, () => {
-  it('fetches the current version of the document when receiving welcome event', async () => {
+  it('fetches the current version of the document when receiving a connected event', async () => {
     const mockedClient = createClient({
       projectId: 'abc',
       dataset: 'production',
@@ -174,7 +176,7 @@ describe(createObserveDocument.name, () => {
     )
     vi.spyOn(mockedClient, 'withConfig').mockImplementation(() => mockedClient)
 
-    const mutationChannel = new Subject<WelcomeEvent | ListenerMutationEventLike>()
+    const mutationChannel = new Subject<{type: 'connected'} | ListenerMutationEventLike>()
 
     const observeDocument = createObserveDocument({
       mutationChannel,
@@ -183,7 +185,7 @@ describe(createObserveDocument.name, () => {
 
     const initial = firstValueFrom(observeDocument('foo').pipe(take(1)))
 
-    mutationChannel.next({type: 'welcome', listenerName: 'preview.global'})
+    mutationChannel.next({type: 'connected'})
 
     expect(await initial).toEqual({_id: 'foo', fetched: true})
   })
@@ -199,7 +201,7 @@ describe(createObserveDocument.name, () => {
     vi.spyOn(mockedClient.observable, 'fetch').mockImplementation(() => of([]) as any)
     vi.spyOn(mockedClient, 'withConfig').mockImplementation(() => mockedClient)
 
-    const mutationChannel = new Subject<WelcomeEvent | ListenerMutationEventLike>()
+    const mutationChannel = new Subject<{type: 'connected'} | ListenerMutationEventLike>()
 
     const observeDocument = createObserveDocument({
       mutationChannel,
@@ -208,7 +210,7 @@ describe(createObserveDocument.name, () => {
 
     const initial = firstValueFrom(observeDocument('foo').pipe(take(1)))
 
-    mutationChannel.next({type: 'welcome', listenerName: 'preview.global'})
+    mutationChannel.next({type: 'connected'})
 
     expect(await initial).toEqual(undefined)
   })
@@ -236,7 +238,7 @@ describe(createObserveDocument.name, () => {
     )
     vi.spyOn(mockedClient, 'withConfig').mockImplementation(() => mockedClient)
 
-    const mutationChannel = new Subject<WelcomeEvent | ListenerMutationEventLike>()
+    const mutationChannel = new Subject<{type: 'connected'} | ListenerMutationEventLike>()
 
     const observeDocument = createObserveDocument({
       mutationChannel,
@@ -245,7 +247,7 @@ describe(createObserveDocument.name, () => {
 
     const final = firstValueFrom(observeDocument('1c32390c').pipe(skip(1), take(1)))
 
-    mutationChannel.next({type: 'welcome', listenerName: 'preview.global'})
+    mutationChannel.next({type: 'connected'})
     mutationChannel.next({
       type: 'mutation',
       documentId: '1c32390c',
@@ -456,6 +458,101 @@ describe(createObserveDocument.name, () => {
       await fetchBatch()
 
       expect(movie.errors).toEqual([new Error('Request failed')])
+    })
+
+    it('fetches the batch again when it fails transiently, and goes on following the listener', async () => {
+      const {dataset, stored, listener, fetch, observe} = observeThroughGlobalListener()
+      dataset.save('movie', 'r1')
+      dataset.save('other', 'o1')
+      const serverError = new ServerError({
+        statusCode: 503,
+        headers: {},
+        body: {},
+        url: 'https://abc.api.sanity.io',
+        method: 'GET',
+      })
+      // A request observable sends its request again when it is subscribed again, which is how
+      // it is retried.
+      let requests = 0
+      fetch.mockImplementationOnce(
+        () =>
+          defer(() => {
+            requests += 1
+            return requests === 1 ? throwError(() => serverError) : of([...stored.values()])
+          }) as never,
+      )
+      const movie = observe('movie')
+      const other = observe('other')
+      listener.welcome()
+      await fetchBatch()
+      expect(movie.emitted).toEqual([])
+
+      // The longest first retry delay (`reconnectDelay(0)`).
+      await vi.advanceTimersByTimeAsync(1_000)
+      // One retried query serves the whole batch.
+      expect(requests).toBe(2)
+      expect(movie.emitted).toEqual([documentAt('r1')])
+      expect(other.emitted).toEqual([documentAt('o1', 'other')])
+
+      listener.deliver(dataset.save('movie', 'r2'))
+      expect(movie.emitted.at(-1)).toEqual(documentAt('r2'))
+      expect(movie.errors).toEqual([])
+    })
+
+    it('stops fetching again once nothing observes the document', async () => {
+      const {listener, fetch, observeDocument} = observeThroughGlobalListener()
+      const serverError = new ServerError({
+        statusCode: 503,
+        headers: {},
+        body: {},
+        url: 'https://abc.api.sanity.io',
+        method: 'GET',
+      })
+      let requests = 0
+      fetch.mockImplementation(
+        () =>
+          defer(() => {
+            requests += 1
+            return throwError(() => serverError)
+          }) as never,
+      )
+      const subscription = observeDocument('movie').subscribe()
+      listener.welcome()
+      await fetchBatch()
+      // The longest first retry delay (`reconnectDelay(0)`).
+      await vi.advanceTimersByTimeAsync(1_000)
+      expect(requests).toBe(2)
+
+      subscription.unsubscribe()
+      await vi.advanceTimersByTimeAsync(60_000)
+
+      expect(requests).toBe(2)
+    })
+
+    it('errors without fetching again when the fetch is denied', async () => {
+      const {listener, fetch, observe} = observeThroughGlobalListener()
+      const denied = new ClientError({
+        statusCode: 403,
+        headers: {},
+        body: {},
+        url: 'https://abc.api.sanity.io',
+        method: 'GET',
+      })
+      let requests = 0
+      fetch.mockImplementationOnce(
+        () =>
+          defer(() => {
+            requests += 1
+            return throwError(() => denied)
+          }) as never,
+      )
+      const movie = observe('movie')
+      listener.welcome()
+      await fetchBatch()
+      await vi.advanceTimersByTimeAsync(1_000)
+
+      expect(movie.errors).toEqual([denied])
+      expect(requests).toBe(1)
     })
 
     it('errors when a mutation event comes without effects', async () => {

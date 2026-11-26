@@ -394,7 +394,7 @@ function normalizeValidationOptions(
     environment: 'cli',
     getClient: client
       ? // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- runtime-compatible clients may come from another major
-        ({apiVersion}) => client.withConfig({apiVersion}) as SanityClient
+        ({apiVersion}) => client.withConfig({apiVersion}) as unknown as SanityClient
       : throwClientUnavailable,
     getDocumentExists: getDocumentExists || (client ? undefined : throwClientUnavailable),
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- translation sources may use another compatible i18next version

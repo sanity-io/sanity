@@ -7,10 +7,11 @@
     "github>sanity-io/renovate-config:dedupe",
     "github>sanity-io/renovate-config:schedule"
   ],
+  "baseBranchPatterns": ["main", "next-major"],
   "dependencyDashboardApproval": false,
   "branchConcurrentLimit": 4,
   "prConcurrentLimit": 4,
-  "minimumReleaseAge": "1 day",
+  "minimumReleaseAge": "3 days",
   "packageRules": [
     {
       "description": "Exclude @sanity/* packages from minimumReleaseAge (no delay for internal packages)",

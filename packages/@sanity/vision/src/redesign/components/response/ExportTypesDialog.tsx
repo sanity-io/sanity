@@ -1,9 +1,8 @@
 import {CopyIcon} from '@sanity/icons/Copy'
 import {Button, Card, Dialog, Stack} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useMemo} from 'react'
 import {useSchema, useTranslation} from 'sanity'
-import {Text, Box, Flex} from 'ui5'
+import {Code, Text, Box, Flex} from 'ui5'
 
 import {parseParams} from '../../../components/ParamsEditor'
 import {visionLocaleNamespace} from '../../../i18n'
@@ -121,7 +120,7 @@ export function ExportTypesDialog({
                 radius={2}
                 tone="transparent"
               >
-                <Code data-testid="vision-export-types-code" language="typescript" size={1}>
+                <Code data-testid="vision-export-types-code" language="typescript" size={1} trim>
                   {output.code}
                 </Code>
               </Card>

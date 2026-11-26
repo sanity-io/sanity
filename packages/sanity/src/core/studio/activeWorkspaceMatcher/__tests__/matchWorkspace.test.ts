@@ -3,6 +3,7 @@ import assert from 'node:assert'
 
 import {describe, expect, it} from 'vitest'
 
+import {createMockSanityClientAsClient} from '../../../../../test/mocks/mockSanityClient'
 import {type AuthState} from '../../../store/auth/types'
 import {type WorkspaceLike} from '../../workspaces/types'
 import {createCommonBasePathRegex} from '../createCommonBasePathRegex'
@@ -21,7 +22,7 @@ function createAuthState(overrides: Partial<AuthState> = {}): AuthState {
       roles: [{name: 'administrator', title: 'Administrator'}],
       profileImage: '',
     },
-    client: {} as AuthState['client'],
+    client: createMockSanityClientAsClient(),
     ...overrides,
   }
 }

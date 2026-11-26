@@ -1,7 +1,8 @@
 /* oxlint-disable no-deprecated -- this module implements the deprecated legacy document timeline */
 import {type Diff} from '@sanity/diff'
 import {type TransactionLogEventWithEffects} from '@sanity/types'
-import {applyPatch, incremental} from 'mendoza'
+import {applyPatch} from 'mendoza'
+import * as incremental from 'mendoza/incremental'
 
 import {type Annotation, type Chunk} from '../../../field/types'
 import {chunkFromTransaction, mergeChunk} from './chunker'
