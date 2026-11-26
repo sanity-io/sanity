@@ -17,5 +17,3 @@ export {
   type NextStateOrOptions,
 } from '../../router/types'
 export {RouterContext} from '../../router/useRouter'
-// oxlint-disable-next-line no-deprecated -- moved here so it can be removed with the private internals
-export {type WithRouterProps} from '../../router/withRouter'

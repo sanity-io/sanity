@@ -1111,14 +1111,6 @@ export {
   type NextStateOrOptions,
 } from '../router/types'
 export {decodeJsonParams, encodeJsonParams} from '../router/utils/jsonParamsEncoding'
-export {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  withRouter,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  WithRouter,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  type WithRouterProps,
-} from '../router/withRouter'
 
 // Retagged public in this PR, kept here as well. `sanity@6.17.0` through 6.20.0 shipped these on
 // this entry and told consumers to migrate to it, so removing them one minor later would break
@@ -1418,6 +1410,14 @@ export type TimelineStore = never
  */
 export declare const WithReferringDocuments: never
 /**
+ * @deprecated Removed in v7. Read the router with the `useRouter` hook, or select state with `useRouterState`, from `sanity/router` instead.
+ */
+export declare const WithRouter: never
+/**
+ * @deprecated Removed in v7 with `withRouter`. Type the router as `RouterContextValue` from `sanity/router`, returned by the `useRouter` hook.
+ */
+export type WithRouterProps = never
+/**
  * @deprecated Removed in v7. Pass the same options on the workspace `auth` config key directly instead of wrapping them in `createAuthStore()`.
  */
 export declare const _createAuthStore: never
@@ -1429,4 +1429,8 @@ export declare const useTimelineSelector: never
  * @deprecated Removed in v7 with the legacy document history timeline. Document history always uses the events API: `useEventsStore` and `EventsStore` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release).
  */
 export declare const useTimelineStore: never
+/**
+ * @deprecated Removed in v7. Read the router with the `useRouter` hook, or select state with `useRouterState`, from `sanity/router` instead.
+ */
+export declare const withRouter: never
 // </tombstones>

@@ -2011,8 +2011,6 @@
     "VirtualizerScrollInstanceProvider": "value",
     "VisibleWorkspacesContextValue": "type",
     "VisibleWorkspacesProvider": "value",
-    "WithRouter": "value",
-    "WithRouterProps": "type",
     "WorkspaceLike": "type",
     "WorkspaceLoader": "value",
     "WorkspaceProvider": "value",
@@ -2489,8 +2487,7 @@
     "validateStructureNodeId": "value",
     "validateWorkspaces": "value",
     "validation": "value",
-    "visitDiff": "value",
-    "withRouter": "value"
+    "visitDiff": "value"
   },
   "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1": {
     "Studio": "value",
@@ -2512,8 +2509,7 @@
     "MatchOk": "type",
     "MatchResult": "type",
     "NextStateOrOptions": "type",
-    "RouterContext": "value",
-    "WithRouterProps": "type"
+    "RouterContext": "value"
   },
   "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/structure": {
     "BackLinkProps": "type",
