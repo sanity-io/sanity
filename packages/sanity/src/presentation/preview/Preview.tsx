@@ -59,6 +59,7 @@ export interface PreviewProps {
   canSharePreviewAccess: boolean
   canToggleSharePreviewAccess: boolean
   canUseSharedPreviewAccess: boolean
+  documentPanelOpen: boolean
   header?: HeaderOptions
   initialUrl: URL
   loadersConnection: ConnectionStatus
@@ -80,6 +81,7 @@ export interface PreviewProps {
   previewUrl?: string
   setViewport: (mode: 'desktop' | 'mobile') => void
   targetOrigin: string
+  toggleDocumentPanel: () => void
   toggleNavigator?: () => void
   toggleOverlay: () => void
   viewport: PresentationViewport

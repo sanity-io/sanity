@@ -64,6 +64,10 @@ export default defineLocalesResources('presentation', {
   'preview-frame.continue-button.text': 'Continue anyway',
   /** The label for the loader's connection status */
   'preview-frame.loader.connection-status.label': 'Loader connection status',
+  /** The `aria-label` for the document panel toggle button */
+  'preview-frame.document-panel.toggle-button.aria-label': 'Toggle document panel',
+  /** The tooltip text for the document panel toggle button */
+  'preview-frame.document-panel.toggle-button.tooltip': 'Toggle document panel',
   /** The `aria-label` for the navigator toggle button */
   'preview-frame.navigator.toggle-button.aria-label': 'Toggle navigator',
   /** The tooltip text for the navigator toggle button */
