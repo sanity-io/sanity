@@ -194,6 +194,10 @@ Covered behavior:
 
 Deleting a variant definition is validated server-side: `sanity.action.variant.definition.delete` fails while documents still reference the definition, and when the user lacks permission (see `ACTIONS.md`). In the Studio, both the overview row menu and the detail menu share `hooks/useVariantDeleteAction.ts`, which disables the delete action while the variant's document count is unknown or greater than zero, or while a dry run of the delete (`store/useVariantPermissions.ts`, mirroring the releases permission guard) reports missing permission, and asks for confirmation before deleting. If the server still refuses, the error toast reuses the same "contains documents" / "no permission" copy.
 
+## Telemetry
+
+Studio usage of variants is measured with telemetry events defined in `__telemetry__/variants.telemetry.ts` (plus the inventory, navbar and publish events listed under "Content Variants" in `docs/TELEMETRY.md`). Each "from where" dimension is a required `location` prop or option on the shared piece that logs it: `CreateVariantDialog`, `EditVariantDialog`, `useVariantDeleteAction` and `useVariantDocumentOperations().createVariantDocument`. A new call site picks a value from the `location` vocabulary in `docs/TELEMETRY.md`.
+
 ## Test Coverage
 
 Focused unit/integration coverage lives under `packages/sanity/src/core/variants`.
