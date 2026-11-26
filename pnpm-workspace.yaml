@@ -102,6 +102,8 @@ minimumReleaseAgeExclude:
   - '@portabletext/*'
   # Fresh patch; exclude so 1.7.1 can install before the age gate
   - '@pierre/diffs@1.7.1'
+  # Fresh release; exclude so 6.7.0 can install before the age gate
+  - 'styled-components@6.7.0'
   - '@sanity/*'
   - '@sanity-labs/*'
   - '@yuku-codegen/*'
@@ -155,8 +157,6 @@ minimumReleaseAgeExclude:
   - 'sanity-plugin-media'
   - 'sanity-plugin-asset-source-unsplash'
   - 'sanity-plugin-utils'
-  # Fresh patch; exclude so 6.6.0 can install before the 3-day age gate
-  - 'styled-components@6.6.0'
   - 'tsx'
   - 'tsdown'
   # Ships with tsdown and pins that release as its peer, so it is younger than the age gate on the same bumps
