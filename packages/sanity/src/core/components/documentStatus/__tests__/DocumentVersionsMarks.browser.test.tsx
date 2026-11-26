@@ -9,6 +9,7 @@ import {page, userEvent} from 'vitest/browser'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
 import {ReferencePreview} from '../../../form/inputs/ReferenceInput/ReferencePreview'
 import {useSchema} from '../../../hooks/useSchema'
+import {LocaleProvider} from '../../../i18n/components/LocaleProvider'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {activeASAPRelease} from '../../../releases/__fixtures__/release.fixture'
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
@@ -100,9 +101,18 @@ function Harness(props: {inventory: boolean; children: ReactNode}) {
       betaFeatures={{documentGroupInventory: {enabled: props.inventory}}}
       schemaTypes={schemaTypes}
     >
-      {props.children}
+      {/* The versions tooltip's relative times read the studio locale */}
+      <LocaleProvider>{props.children}</LocaleProvider>
     </TestWrapper>
   )
+}
+
+/** The text of the tooltips and popovers on screen. */
+function shownOverlayText() {
+  return [...document.querySelectorAll('[data-ui="Tooltip"], [data-ui="Popover"]')]
+    .filter((element) => element.checkVisibility())
+    .map((element) => element.textContent ?? '')
+    .join(' ')
 }
 
 /** Whether any popover (a tooltip or a flyout) is on screen. */
@@ -183,7 +193,8 @@ describe.each([
     await expect.element(page.getByText('Ada Lovelace')).toBeVisible()
     expect(page.getByTestId('document-versions-marks').elements()).toHaveLength(0)
     await userEvent.hover(page.getByText('Ada Lovelace'))
-    await expect.poll(anyPopoverShown, {timeout: 3000}).toBe(true)
-    await expect.element(page.getByTestId('document-versions-status')).toBeVisible()
+    // Main's tooltip with variants off: one line per version, as before variants
+    await expect.poll(shownOverlayText, {timeout: 3000}).toContain('Published')
+    expect(shownOverlayText()).toContain('Draft')
   })
 })
