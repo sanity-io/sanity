@@ -11,12 +11,16 @@ export type VariantDefinitionCreatedLocation =
   | Extract<VariantsToolLocation, 'variants_overview'>
   | 'navbar_menu'
 
-/** The control a variant version was created from */
+/**
+ * The control a variant version was created from. `document_pane` is any other control in the
+ * document pane, such as a custom form component.
+ */
 export type VariantVersionCreatedLocation =
   | 'document_group_inventory'
   | 'version_context_menu'
   | 'not_in_variant_banner'
   | 'schedule_draft_action'
+  | 'document_pane'
 
 interface VariantDefinitionCreatedInfo {
   location: VariantDefinitionCreatedLocation
