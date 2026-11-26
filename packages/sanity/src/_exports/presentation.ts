@@ -41,7 +41,7 @@ export {
 // Type-only: every symbol is `export declare` / `export type … = never`. Nothing here may
 // emit runtime JavaScript. See AGENTS.md ("Export tombstones (v7)").
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/presentation`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Removed in v7 with the function form of the Presentation tool's `previewUrl` option. Pass `previewUrl` as a string or as an object with `initial` and `previewMode`.
  */
 export type PreviewUrlResolver = never
 // </tombstones>

@@ -5,7 +5,6 @@ import {useRouter} from 'sanity/router'
 import {fromObservable} from 'xstate'
 
 import {useGrantsStore} from '../core/store/datastores'
-import {useActiveWorkspace} from '../core/studio/activeWorkspaceMatcher/useActiveWorkspace'
 import {defineCreatePreviewSecretActor} from './actors/create-preview-secret'
 import {defineReadSharedSecretActor} from './actors/read-shared-secret'
 import {defineResolveAllowPatternsActor} from './actors/resolve-allow-patterns'
@@ -26,8 +25,6 @@ export function usePreviewUrlActorRef(
   const client = useClient({apiVersion: API_VERSION})
   const currentUser = useCurrentUser()
   const currentUserId = currentUser?.id
-  const workspace = useActiveWorkspace()
-  const studioBasePath = workspace?.activeWorkspace?.basePath || '/'
   const router = useRouter()
   const routerSearchParams = new URLSearchParams(router.state._searchParams)
   const previewSearchParam = routerSearchParams.get('preview')
@@ -46,24 +43,12 @@ export function usePreviewUrlActorRef(
           client,
           allowOption,
         }),
-        'resolve initial url': defineResolveInitialUrlActor({
-          client,
-          studioBasePath,
-          previewUrlOption,
-          perspective,
-          variant,
-        }),
+        'resolve initial url': defineResolveInitialUrlActor({client, previewUrlOption}),
         'resolve preview mode': defineResolvePreviewModeActor({
           client,
           previewUrlOption,
         }),
-        'resolve preview mode url': defineResolvePreviewModeUrlActor({
-          client,
-          studioBasePath,
-          previewUrlOption,
-          perspective,
-          variant,
-        }),
+        'resolve preview mode url': defineResolvePreviewModeUrlActor({perspective, variant}),
         'check permission': fromObservable(({input}) =>
           grantsStore.checkDocumentPermission(input.checkPermissionName, input.document),
         ),

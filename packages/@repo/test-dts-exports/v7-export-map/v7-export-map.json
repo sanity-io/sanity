@@ -2503,9 +2503,6 @@
     "renderStudio": "value",
     "useSchema": "value"
   },
-  "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/presentation": {
-    "PreviewUrlResolver": "type"
-  },
   "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router": {
     "InternalSearchParam": "type",
     "MatchError": "type",

@@ -60,10 +60,6 @@
       "monorepo": "./src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/1.ts",
       "default": "./lib/_dangerously_use_private_internals_that_do_not_follow_semver/1.js"
     },
-    "./_dangerously_use_private_internals_that_do_not_follow_semver/presentation": {
-      "monorepo": "./src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/presentation.ts",
-      "default": "./lib/_dangerously_use_private_internals_that_do_not_follow_semver/presentation.js"
-    },
     "./_dangerously_use_private_internals_that_do_not_follow_semver/router": {
       "monorepo": "./src/_exports/_dangerously_use_private_internals_that_do_not_follow_semver/router.ts",
       "default": "./lib/_dangerously_use_private_internals_that_do_not_follow_semver/router.js"
@@ -135,7 +131,6 @@
       ".": "./lib/index.js",
       "./_dangerously_use_private_internals_that_do_not_follow_semver": "./lib/_dangerously_use_private_internals_that_do_not_follow_semver.js",
       "./_dangerously_use_private_internals_that_do_not_follow_semver/1": "./lib/_dangerously_use_private_internals_that_do_not_follow_semver/1.js",
-      "./_dangerously_use_private_internals_that_do_not_follow_semver/presentation": "./lib/_dangerously_use_private_internals_that_do_not_follow_semver/presentation.js",
       "./_dangerously_use_private_internals_that_do_not_follow_semver/router": "./lib/_dangerously_use_private_internals_that_do_not_follow_semver/router.js",
       "./_dangerously_use_private_internals_that_do_not_follow_semver/structure": "./lib/_dangerously_use_private_internals_that_do_not_follow_semver/structure.js",
       "./_internal": "./lib/_internal.js",
