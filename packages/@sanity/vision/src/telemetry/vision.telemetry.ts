@@ -171,10 +171,10 @@ export const VisionDocumentOpened = defineEvent<{source: VisionDocumentOpenSourc
 /**
  * - `saved-queries`: the classic tool's saved queries pane
  * - `sidebar`: the redesign's sidebar
- * - `params`, `options`: the redesign's panels below the query editor
- * - `response`: the redesign's response panel
+ * - `request`: the redesign's tabbed panel below the query editor
+ * - `response`: the redesign's tabbed panel below the result
  */
-export type VisionPanel = 'saved-queries' | 'sidebar' | 'params' | 'options' | 'response'
+export type VisionPanel = 'saved-queries' | 'sidebar' | 'request' | 'response'
 
 export const VisionPanelToggled = defineEvent<{panel: VisionPanel; open: boolean}>({
   name: 'Vision Panel Toggled',
