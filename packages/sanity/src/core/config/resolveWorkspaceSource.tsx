@@ -685,8 +685,6 @@ function resolveSource({
 
   const beta: BetaFeatures = {
     eventsAPI: {
-      // oxlint-disable-next-line no-deprecated -- still resolved so the legacy timeline opt-out keeps working until the next major
-      documents: eventsAPIReducer({config, initialValue: true, key: 'documents'}),
       releases: eventsAPIReducer({config, initialValue: false, key: 'releases'}),
     },
     variants: {

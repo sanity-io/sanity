@@ -12,7 +12,6 @@ import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box, Icon} from 'ui5'
 
 import {isReleaseDocument} from '../../../../../core/releases/store/types'
-import {useSource} from '../../../../../core/studio/source'
 import {Button} from '../../../../../ui-components/button/Button'
 import {Tab} from '../../../../../ui-components/tab/Tab'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
@@ -23,16 +22,12 @@ import {
   HISTORY_INSPECTOR_NAME,
   resolveChangesInspectorTab,
 } from '../../constants'
-import {ChangesInspector} from './ChangesInspector'
 import {fadeInFlex} from './ChangesTabs.css'
 import {EventsInspector} from './EventsInspector'
 import {EventsSelector} from './EventsSelector'
-import {HistorySelector} from './HistorySelector'
 
 export function ChangesTabs(props: DocumentInspectorProps) {
   const {params, setParams} = usePaneRouter()
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const source = useSource()
   const [parentRef, setParentRef] = useState<HTMLDivElement | null>(null)
   const {t} = useTranslation(structureLocaleNamespace)
   const {t: tCore} = useTranslation()
@@ -119,12 +114,7 @@ export function ChangesTabs(props: DocumentInspectorProps) {
         hidden={paneRouterTab !== 'history'}
         id="history-panel"
       >
-        {/* oxlint-disable-next-line no-deprecated -- the legacy timeline opt-out keeps working until the next major */}
-        {source.beta?.eventsAPI?.documents ? (
-          <EventsSelector showList={paneRouterTab === 'history'} />
-        ) : (
-          <HistorySelector showList={paneRouterTab === 'history'} />
-        )}
+        <EventsSelector showList={paneRouterTab === 'history'} />
       </TabPanel>
 
       <TabPanel
@@ -133,16 +123,9 @@ export function ChangesTabs(props: DocumentInspectorProps) {
         id="review-panel"
         height="fill"
       >
-        {/* oxlint-disable-next-line no-deprecated -- the legacy timeline opt-out keeps working until the next major */}
-        {source.beta?.eventsAPI?.documents ? (
-          <>
-            {paneRouterTab === 'review' ? (
-              <EventsInspector showChanges={paneRouterTab === 'review'} />
-            ) : null}
-          </>
-        ) : (
-          <ChangesInspector showChanges={paneRouterTab === 'review'} />
-        )}
+        {paneRouterTab === 'review' ? (
+          <EventsInspector showChanges={paneRouterTab === 'review'} />
+        ) : null}
       </TabPanel>
     </Flex>
   )

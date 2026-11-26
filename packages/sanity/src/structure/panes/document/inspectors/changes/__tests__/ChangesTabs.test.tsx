@@ -21,7 +21,6 @@ vi.mock('sanity', () => ({
   // ChangesTabs imports `structureLocaleNamespace` from the structure i18n barrel, which calls
   // this at module load time to define `structureUsEnglishLocaleBundle`.
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
-  useSource: () => ({beta: {eventsAPI: {documents: false}}}),
   usePerspective: () => ({selectedPerspective: 'drafts'}),
   // Identity translations keep the i18n Suspense from swapping the tabs for a loading spinner.
   useTranslation: () => ({t: (key: string) => key}),
@@ -29,10 +28,8 @@ vi.mock('sanity', () => ({
 }))
 
 // The tab bodies are heavy and irrelevant here; only the tab list behaviour is under test.
-vi.mock('../HistorySelector', () => ({HistorySelector: () => null}))
 vi.mock('../EventsSelector', () => ({EventsSelector: () => null}))
 vi.mock('../EventsInspector', () => ({EventsInspector: () => null}))
-vi.mock('../ChangesInspector', () => ({ChangesInspector: () => null}))
 
 let wrapper: React.ComponentType<{children: React.ReactNode}>
 

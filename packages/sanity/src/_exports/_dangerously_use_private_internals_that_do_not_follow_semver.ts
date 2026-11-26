@@ -751,18 +751,6 @@ export {
   type HistoryStoreOptions,
   removeMissingReferences,
 } from '../core/store/history/createHistoryStore'
-export {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  useTimelineSelector,
-} from '../core/store/history/useTimelineSelector'
-export {
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  type TimelineState,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  type TimelineStore,
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  useTimelineStore,
-} from '../core/store/history/useTimelineStore'
 // oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
 export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
 // oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major

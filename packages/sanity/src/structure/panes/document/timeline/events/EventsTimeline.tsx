@@ -15,6 +15,7 @@ import {Text, Flex, Box} from 'ui5'
 import {CommandList} from '../../../../../core/components/commandList/CommandList'
 import {type CommandListRenderItemCallback} from '../../../../../core/components/commandList/types'
 import {LoadingBlock} from '../../../../../core/components/loadingBlock/LoadingBlock'
+import {TIMELINE_LIST_WRAPPER_ID} from '../../constants'
 import {ExpandableTimelineItemButton} from '../expandableTimelineItemButton'
 import {ListWrapper, Root} from '../timeline.styled'
 import {EventTimelineItem} from './EventTimelineItem'
@@ -47,8 +48,6 @@ const CHILDREN_ITEMS_VARIANTS: Variants = {
 }
 
 const ITEM_HEIGHT = 57
-
-const TIMELINE_LIST_WRAPPER_ID = 'timeline-list-wrapper'
 
 export const EventsTimeline = ({
   events: allEvents,

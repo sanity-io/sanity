@@ -731,8 +731,6 @@ import type {
   TextWithToneProps,
   TimeAgoOpts,
   TIMELINE_ITEM_I18N_KEY_MAPPING,
-  TimelineState,
-  TimelineStore,
   ToastParams,
   toMutationPatches,
   TooltipOfDisabled,
@@ -891,8 +889,6 @@ import type {
   useTemplatePermissionsFromHookFactory,
   useThrottledCallback,
   useTimeAgo,
-  useTimelineSelector,
-  useTimelineStore,
   useTimeZone,
   useTrackerStore,
   useTrackerStoreReporter,
@@ -3141,12 +3137,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('TIMELINE_ITEM_I18N_KEY_MAPPING', () => {
     expectTypeOf<typeof TIMELINE_ITEM_I18N_KEY_MAPPING>().not.toBeNever()
   })
-  test('TimelineState', () => {
-    expectTypeOf<TimelineState>().toBeObject()
-  })
-  test('TimelineStore', () => {
-    expectTypeOf<TimelineStore>().toBeObject()
-  })
   test('ToastParams', () => {
     expectTypeOf<ToastParams>().toBeObject()
   })
@@ -3622,12 +3612,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useTimeAgo', () => {
     expectTypeOf<typeof useTimeAgo>().toBeFunction()
-  })
-  test('useTimelineSelector', () => {
-    expectTypeOf<typeof useTimelineSelector>().toBeFunction()
-  })
-  test('useTimelineStore', () => {
-    expectTypeOf<typeof useTimelineStore>().toBeFunction()
   })
   test('useTimeZone', () => {
     expectTypeOf<typeof useTimeZone>().not.toBeNever()
