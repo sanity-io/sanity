@@ -381,6 +381,18 @@ function submitCommitRequest(
       // session-expiry 401s, network errors — fails, so the mutator keeps
       // the buffer and retries with backoff.
       const statusCode = getStatusCode(error)
+      // A retry reuses its commit's transaction id, so this answer means an earlier attempt
+      // landed but its response was lost: the commit succeeded.
+      const transactionId = request.mutation.params.transactionId
+      if (
+        statusCode === 409 &&
+        transactionId &&
+        getResponseErrorType(error) === 'transactionAlreadyExistsError'
+      ) {
+        observer.beforeSuccess(request)
+        request.success()
+        return of<CommitAttemptResult>({type: 'success', result: {transactionId}})
+      }
       if (
         statusCode !== undefined &&
         TERMINAL_COMMIT_STATUSES.has(statusCode) &&
@@ -444,6 +456,9 @@ export function checkoutPair(
     onCommitCancelled,
     onCommitRetriesEnded,
     onPairTornDownWithPendingMutations,
+    onListenerWelcomeTime,
+    onListenerResumeTime,
+    onListenerResumePayload,
     snapshotFetchErrorHandler,
     tag,
   } = options
@@ -461,6 +476,33 @@ export function checkoutPair(
       ? (error) => {
           try {
             onSyncErrorRecovery(error, {hadPendingMutations: hasPendingMutations()})
+          } catch {
+            // Telemetry callbacks must never kill the document pipeline
+          }
+        }
+      : undefined,
+    onListenerWelcomeTime: onListenerWelcomeTime
+      ? (event) => {
+          try {
+            onListenerWelcomeTime(event)
+          } catch {
+            // Telemetry callbacks must never kill the document pipeline
+          }
+        }
+      : undefined,
+    onListenerResumeTime: onListenerResumeTime
+      ? (event) => {
+          try {
+            onListenerResumeTime(event)
+          } catch {
+            // Telemetry callbacks must never kill the document pipeline
+          }
+        }
+      : undefined,
+    onListenerResumePayload: onListenerResumePayload
+      ? (event) => {
+          try {
+            onListenerResumePayload(event)
           } catch {
             // Telemetry callbacks must never kill the document pipeline
           }

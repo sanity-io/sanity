@@ -549,6 +549,7 @@ exports[`exports snapshot 1`] = `
     "isFieldChange": "function",
     "isGoingToUnpublish": "function",
     "isGroupChange": "function",
+    "isImportError": "function",
     "isIndexSegment": "function",
     "isIndexTuple": "function",
     "isInvalidSessionError": "function",

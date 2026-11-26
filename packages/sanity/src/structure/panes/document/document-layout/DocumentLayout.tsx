@@ -31,6 +31,7 @@ import {DocumentPanel} from '../documentPanel/DocumentPanel'
 import {DocumentPanelHeader} from '../documentPanel/header/DocumentPanelHeader'
 import {DocumentActionShortcuts} from '../keyboardShortcuts/DocumentActionShortcuts'
 import {getMenuItems} from '../menuItems'
+import {useCompareVersionsDocuments} from '../useCompareVersionsDocuments'
 import {useDocumentPane} from '../useDocumentPane'
 import {changeConnectorRoot} from './DocumentLayout.css'
 import {DocumentLayoutError} from './DocumentLayoutError'
@@ -114,7 +115,7 @@ export function DocumentLayout() {
     [inspectors, inspector?.name],
   )
 
-  const documentIdStack = useDocumentIdStack({displayed, documentId, editState})
+  const compareVersionsDocuments = useCompareVersionsDocuments({displayed, documentId, editState})
 
   const hasValue = Boolean(value)
 
@@ -127,13 +128,13 @@ export function DocumentLayout() {
         inspectorMenuItems,
         inspectors,
         previewUrl,
-        documentIdStack,
+        compareVersionsDocuments,
         t,
         displayInlineChanges: stickyParams.displayInlineChanges === 'true',
       }),
     [
       currentInspector,
-      documentIdStack,
+      compareVersionsDocuments,
       features,
       hasValue,
       inspectorMenuItems,

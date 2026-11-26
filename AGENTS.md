@@ -461,6 +461,27 @@ pnpm engine-confidence unit                              # the package's unit te
 - **Refreshing a patch the PR check flagged:** rebase the patch onto the changed engine code, confirm with `git apply --check`, then run `catalogue --only <id>` to confirm the verdict. `engine-confidence/README.md` has the steps.
 - **Where it shows:** the Radar "Engine confidence" tab (`dev/radar`, `/trends?tab=engine`). `?source=demo` renders it offline. To see a real local run there, copy `engine-confidence/reports/engine-confidence-run.json` into the gitignored `dev/radar/tools/trends/__local__/`; demo mode uses it as the newest week.
 
+### Stable promotion suggestion (`suggest-stable.yml`)
+
+After each `sanity` release reaches npm `latest`, `.github/workflows/suggest-stable.yml` (triggered by `Release @latest` completing on `main`, or by manual dispatch) collects evidence (npm, Radar, GitHub issues), applies the rules in `packages/@repo/stable-suggestion` to list the eligible versions newest first, shortlists the top 3 and asks Claude for a per-candidate reason and an overall promote or hold call. A version needs 7 days on npm `latest` before it is eligible, or 3 days when it is on a newer major than the current stable, or 1 day when it patches the current stable's minor or fixes a broken stable. Versions that a `tag-latest.yml` run rolled latest back below are excluded, and the shortlist message warns when the `stable` tag differs across packages. Claude can only reorder or trim within the eligible set; if it is down the shortlist is deterministic, and if Radar is down the answer is hold. The message links to the `tag-stable.yml` workflow page, where a person runs the workflow with the version they chose; nothing is promoted by `suggest-stable.yml` itself. The package README has the rules, the evidence model and the backtest method. To tune the prompt, edit `packages/@repo/stable-suggestion/prompts/system.md` or toggle `EVIDENCE_SECTIONS` in `src/evidenceSections.ts`; the README's "Changing the prompt" section says how to try a change with `backtest --llm-sample`.
+
+```bash
+# Run from the repo root. The script runs inside the package directory, so --out, --out-dir and --history take absolute paths.
+export RADAR_SANITY_READ_TOKEN=...   # from `pnpm exec sanity debug --secrets`, never print or commit it
+export ANTHROPIC_API_KEY=...         # optional locally; add --no-llm to skip the Claude step
+pnpm stable-suggestion collect --out "$PWD/.context/evidence.json"           # also: --as-of <ISO>, --history <file>
+pnpm stable-suggestion recommend "$PWD/.context/evidence.json" --out-dir "$PWD/.context/out" --run-url https://example.invalid/run --workflow-url https://example.invalid/workflow --no-llm
+pnpm stable-suggestion backtest --out "$PWD/.context/backtest.md"            # replays every Tuesday since 2025-12-09; --llm-sample <dates> --max-llm-calls 4 adds Claude on chosen dates
+pnpm vitest run --project=@repo/stable-suggestion --maxWorkers=2
+```
+
+- **Secrets and variables.** `RADAR_SANITY_READ_TOKEN`, `RELEASE_NOTES_CLAUDE_API_KEY` (passed as `ANTHROPIC_API_KEY`), `SLACK_WEBHOOK_URL_STABLE_SUGGESTION`, `SLACK_WEBHOOK_URL_STABLE_RESULT`, `SLACK_WEBHOOK_URL_CI_ALERTS` and the secrets `tag-stable.yml` already needs. The optional variable `STABLE_SUGGESTION_MODEL` overrides the model id in `src/config.ts`.
+- **Slack.** Two Workflow Builder webhooks, because the workflow inserts each variable as it is: the text carries no `*`, backticks or `<url|label>`, only bare URLs, and the bold and code styling come from the Workflow Builder step.
+  - `SLACK_WEBHOOK_URL_STABLE_SUGGESTION` carries the shortlist from `suggest-stable.yml` with `{headline, text, cli, run_url}`. `headline` is the first line (bold), `text` the body, `cli` the `gh workflow run tag-stable.yml -f version=<pick>` command (code-styled, `-` when empty) and `run_url` the `tag-stable.yml` workflow page behind the "Open github workflow" button.
+  - `SLACK_WEBHOOK_URL_STABLE_RESULT` carries the `tag-stable.yml` confirmation with `{headline, text}`: `headline` is `<version> promoted to @stable by @<actor>: succeeded|failed` and `text` is `Previously was <previous>.`, a blank line and `Run: <run url>`.
+  - If a secret is unset, its message goes to the CI-alerts incoming webhook (`SLACK_WEBHOOK_URL_CI_ALERTS`) as `{text}` with the headline in `*bold*`, a blank line and the body. The workflows choose the route from `HAS_*` booleans in job `env`, never from `secrets` in an `if:`, and each Slack step names exactly one secret.
+- **Promoting.** Open the link in the message, click Run workflow and enter the version, or run `gh workflow run tag-stable.yml -f version=X.Y.Z`. `tag-stable.yml` validates the version, tags every package, updates the bundle manifest and posts the confirmation through the result webhook. Anyone with write access can dispatch it.
+
 ### Sync tests (No Auth Required)
 
 A sync test runs the real Studio document engine (`checkoutPair`, `getPairListener`, `sequentializeListenerEvents`, the buffered document and `@sanity/mutator`) with two or more clients against an in-memory fake Content Lake, on fake timers and with no browser. Each test ends in the oracles in `packages/sanity/test/sync/oracles.ts`: every client converged on the server copy, revisions agree, no stream errored or stayed locked, and no array item was lost or duplicated. A bench test (`perf/bench`) runs a built studio in a real browser and measures time, and a unit test exercises one piece of code with stub inputs. Never call sync tests "scenarios": bench uses that word for its runs.
@@ -1562,7 +1583,7 @@ pnpm add -w -D <package>
 
 Catalog versions live in `pnpm-workspace.yaml`. After changing a catalog specifier, run `pnpm install` to refresh `pnpm-lock.yaml`.
 
-The workspace sets `minimumReleaseAge: 1440` (1 day) and also rejects **already-locked** versions younger than that. If `pnpm install` fails with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` (pnpm 12: `ERR_PNPM_NO_MATURE_MATCHING_VERSION`) for a package you intentionally bumped, add that package to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` with a short comment. Do not disable the age gate globally. `@tsdown/css` ships in lockstep with `tsdown` and is excluded beside it. `tsdown` 0.23.7 depends on `rolldown-plugin-dts@^0.30.0`, so the workspace does not override that package. Declaration emit still uses the TypeScript 7 `tsgo` CLI (`dts.generator: 'tsgo'` in `@repo/tsdown.config`).
+The workspace sets `minimumReleaseAge: 4320` (3 days, matching `minimumReleaseAge` in `.github/renovate.json`) and also rejects **already-locked** versions younger than that. If `pnpm install` fails with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION` (pnpm 12: `ERR_PNPM_NO_MATURE_MATCHING_VERSION`) for a package you intentionally bumped, add that package to `minimumReleaseAgeExclude` in `pnpm-workspace.yaml` with a short comment. Do not disable the age gate globally. `@tsdown/css` ships in lockstep with `tsdown` and is excluded beside it. `tsdown` 0.23.7 depends on `rolldown-plugin-dts@^0.30.0`, so the workspace does not override that package. Declaration emit still uses the TypeScript 7 `tsgo` CLI (`dts.generator: 'tsgo'` in `@repo/tsdown.config`).
 
 ### Testing an Unreleased Dependency Fix (pnpm patch)
 

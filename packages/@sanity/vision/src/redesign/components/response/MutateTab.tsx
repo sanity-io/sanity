@@ -121,11 +121,12 @@ export function useMutatePanel(): MutatePanel {
       const result = await previewMutations(client, run.mutations, run.options)
       setState((current) => ({...current, pending: undefined, preview: {key: run.key, result}}))
     } catch (error) {
+      const failure = readMutationFailure(error)
       setState((current) => ({
         ...current,
         pending: undefined,
         preview: undefined,
-        failure: {action: 'preview', failure: readMutationFailure(error)},
+        failure: {action: 'preview', failure},
       }))
     }
   }, [])
@@ -147,10 +148,11 @@ export function useMutatePanel(): MutatePanel {
       }))
       return true
     } catch (error) {
+      const failure = readMutationFailure(error)
       setState((current) => ({
         ...current,
         pending: undefined,
-        failure: {action: 'apply', failure: readMutationFailure(error)},
+        failure: {action: 'apply', failure},
       }))
       return false
     }

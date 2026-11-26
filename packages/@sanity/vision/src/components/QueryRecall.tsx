@@ -5,7 +5,6 @@ import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {UsersIcon} from '@sanity/icons/Users'
 import {Badge, Button, Card, Dialog, Tab, TabList, TextInput} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {Tooltip} from '@sanity/ui/tooltip'
@@ -17,7 +16,7 @@ import {
   ContextMenuButton,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
-import {Text, Flex, Box, VStack, type VStackProps} from 'ui5'
+import {Code, Text, Flex, Box, VStack, type VStackProps} from 'ui5'
 
 import {useVisionTelemetry} from '../__telemetry__/useVisionTelemetry'
 import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
@@ -601,16 +600,20 @@ export function QueryRecall({
                           padding={2}
                           style={{maxWidth: '420px', maxHeight: '220px', overflow: 'auto'}}
                         >
-                          <Code size={1}>{fullQueryPreview}</Code>
+                          <Code size={1} trim>
+                            {fullQueryPreview}
+                          </Code>
                         </Box>
                       }
                       placement="top"
                       portal
                     >
-                      <Code size={1}>{shortQueryPreview}</Code>
+                      <Code size={1} trim>
+                        {shortQueryPreview}
+                      </Code>
                     </Tooltip>
                   ) : (
-                    <Code />
+                    <Code trim />
                   )}
 
                   {compactMode ? (

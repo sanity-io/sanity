@@ -1,0 +1,420 @@
+{
+  "sessions": [
+    {
+      "_createdAt": "2026-09-07T15:48:46Z",
+      "_id": "bisect-session-4bfb578b-c6f2-4df6-9c03-d1d54c216764",
+      "_updatedAt": "2026-09-07T15:48:46Z",
+      "bad": "v6.12.0",
+      "firstBadCommittedAt": "2026-08-26T10:09:28+01:00",
+      "firstBadSha": "3e47892c55acf46d04515f81992734b4b422e850",
+      "firstBadTag": null,
+      "fixedIn": null,
+      "good": "v6.7.0",
+      "regression": null,
+      "severity": null
+    },
+    {
+      "_createdAt": "2026-09-16T10:38:27Z",
+      "_id": "bisect-session-6968f3f8-605b-4b16-972f-c0c93fe35110",
+      "_updatedAt": "2026-09-21T13:35:47Z",
+      "bad": "v6.9.2",
+      "firstBadCommittedAt": "2026-08-07T09:32:56+02:00",
+      "firstBadSha": "b83b4c755d645bb15a90c57cf37eafeb3a1ffc34",
+      "firstBadTag": null,
+      "fixedIn": "v6.14.1",
+      "good": "v6.9.1",
+      "regression": true,
+      "severity": "critical"
+    },
+    {
+      "_createdAt": "2026-09-16T10:24:47Z",
+      "_id": "bisect-session-6a814667-8d80-4c3a-9022-f642eb93b0f2",
+      "_updatedAt": "2026-09-21T13:33:06Z",
+      "bad": "v6.14.0",
+      "firstBadCommittedAt": "2026-08-11T18:04:52+02:00",
+      "firstBadSha": "dc445a37fb2c023ada5798051ef9563ba71806b0",
+      "firstBadTag": "v6.9.2",
+      "fixedIn": "v6.14.1",
+      "good": "v5.0.0",
+      "regression": true,
+      "severity": null
+    },
+    {
+      "_createdAt": "2026-09-14T09:53:06Z",
+      "_id": "bisect-session-c29447fd-5d69-43fd-a04c-f1e01047133d",
+      "_updatedAt": "2026-09-14T09:55:50Z",
+      "bad": "v6.13.2",
+      "firstBadCommittedAt": "2026-09-07T15:46:56+01:00",
+      "firstBadSha": "9f65aa6bddae163638a36830cca337c7aaa74cc6",
+      "firstBadTag": null,
+      "fixedIn": null,
+      "good": "v6.11.0",
+      "regression": null,
+      "severity": null
+    },
+    {
+      "_createdAt": "2026-09-17T13:12:28Z",
+      "_id": "bisect-session-caa67a2f-36f1-49e0-a678-38a7c29b102c",
+      "_updatedAt": "2026-09-22T09:49:03Z",
+      "bad": "v6.13.2",
+      "firstBadCommittedAt": "2026-09-11T15:14:44+02:00",
+      "firstBadSha": "bf5bb03b566400d342a0d1d17ed2fb27dda1914d",
+      "firstBadTag": "v6.13.2",
+      "fixedIn": "v6.15.0",
+      "good": "v6.13.1",
+      "regression": true,
+      "severity": null
+    },
+    {
+      "_createdAt": "2026-09-17T08:17:56Z",
+      "_id": "bisect-session-d4dc4d56-bc58-48f8-a085-c45b5d55ab0c",
+      "_updatedAt": "2026-09-22T07:03:24Z",
+      "bad": "v6.11.0",
+      "firstBadCommittedAt": "2026-08-20T16:04:08-04:00",
+      "firstBadSha": "109fc0284c6a92ccca5b85eacdbd3d0046602990",
+      "firstBadTag": null,
+      "fixedIn": "v6.14.1",
+      "good": "v6.10.1",
+      "regression": true,
+      "severity": null
+    },
+    {
+      "_createdAt": "2026-10-02T21:24:09Z",
+      "_id": "bisect-session-dbcc34dd-4dc6-4df2-90a6-21f1911028f8",
+      "_updatedAt": "2026-10-02T21:24:09Z",
+      "bad": null,
+      "firstBadCommittedAt": null,
+      "firstBadSha": null,
+      "firstBadTag": null,
+      "fixedIn": null,
+      "good": "v6.0.0",
+      "regression": null,
+      "severity": null
+    },
+    {
+      "_createdAt": "2026-09-10T13:13:11Z",
+      "_id": "bisect-session-dd2c46eb-595b-4ee3-8e4e-88dfbf033c2b",
+      "_updatedAt": "2026-09-22T09:49:19Z",
+      "bad": "v6.13.1",
+      "firstBadCommittedAt": "2026-09-03T11:24:31-04:00",
+      "firstBadSha": "37ed1334c87ffc1332df8237e3f58fd9ffd23e8f",
+      "firstBadTag": null,
+      "fixedIn": "v6.15.0",
+      "good": "v6.11.0",
+      "regression": true,
+      "severity": null
+    }
+  ],
+  "tags": [
+    {
+      "sha": "ac05aa3e3e45221d10bdfbf1ee822f95eb2aa54d",
+      "tag": "v6.10.0",
+      "taggedAt": "2026-08-18T15:10:53Z",
+      "onMainline": true
+    },
+    {
+      "sha": "bd5182dc40b5cef9e1c42aa6e906a85d3f02d299",
+      "tag": "v6.10.1",
+      "taggedAt": "2026-08-18T21:56:56Z",
+      "onMainline": true
+    },
+    {
+      "sha": "24cdd2a0a80ed20db622508f47cd17197e3c3e74",
+      "tag": "v6.11.0",
+      "taggedAt": "2026-08-25T17:03:38Z",
+      "onMainline": true
+    },
+    {
+      "sha": "04dcf0fa45dbc5f0ca9e2f9f383c9646f3992f17",
+      "tag": "v6.12.0",
+      "taggedAt": "2026-09-01T15:22:19Z",
+      "onMainline": true
+    },
+    {
+      "sha": "55fd0580ebcee43ae09e27820e0da24a20190b7d",
+      "tag": "v6.13.0",
+      "taggedAt": "2026-09-08T15:04:42Z",
+      "onMainline": true
+    },
+    {
+      "sha": "b318878fc726ca0ac491edad6222b2e9e527016f",
+      "tag": "v6.13.1",
+      "taggedAt": "2026-09-09T14:46:15Z",
+      "onMainline": true
+    },
+    {
+      "sha": "bf5bb03b566400d342a0d1d17ed2fb27dda1914d",
+      "tag": "v6.13.2",
+      "taggedAt": "2026-09-11T13:16:07Z",
+      "onMainline": true
+    },
+    {
+      "sha": "3d791dabdf4af61686ccb5c47bc70f3527da8d9b",
+      "tag": "v6.14.0",
+      "taggedAt": "2026-09-15T14:37:40Z",
+      "onMainline": true
+    },
+    {
+      "sha": "27d0eb758ea14863fd479668a5ef0f628779d7e9",
+      "tag": "v6.14.1",
+      "taggedAt": "2026-09-16T08:53:45Z",
+      "onMainline": true
+    },
+    {
+      "sha": "338d3ebdba6ca180215c3eb373a27f8e4b7d4a47",
+      "tag": "v6.15.0",
+      "taggedAt": "2026-09-17T13:32:22Z",
+      "onMainline": true
+    },
+    {
+      "sha": "584242af90d95fa149c75d83ab2c3c0246d4f060",
+      "tag": "v6.16.0",
+      "taggedAt": "2026-09-22T14:32:10Z",
+      "onMainline": true
+    },
+    {
+      "sha": "a9944b05746aae5b2dbd0b8c6a41aa4f669320fc",
+      "tag": "v6.17.0",
+      "taggedAt": "2026-09-29T16:40:40Z",
+      "onMainline": true
+    },
+    {
+      "sha": "27989fca8198af3c411125bef36bf3c8592c1d9e",
+      "tag": "v6.18.0",
+      "taggedAt": "2026-10-06T15:42:01Z",
+      "onMainline": true
+    },
+    {
+      "sha": "65999c9f634bea46fc815aff04460e65a5c2adfa",
+      "tag": "v6.19.0",
+      "taggedAt": "2026-10-13T15:26:30Z",
+      "onMainline": true
+    },
+    {
+      "sha": "08d497a3731ba605c3b331e8d4062f0328264a43",
+      "tag": "v6.20.0",
+      "taggedAt": "2026-10-19T16:21:59Z",
+      "onMainline": true
+    },
+    {
+      "sha": "010d6f20e0add047198862c76e5ee68a35fac77f",
+      "tag": "v6.21.0",
+      "taggedAt": "2026-10-29T07:58:49Z",
+      "onMainline": true
+    },
+    {
+      "sha": "8e979b9732fa4dd38c2bb19a2af2b1f1f6b1b9e9",
+      "tag": "v6.22.0",
+      "taggedAt": "2026-11-03T15:07:42Z",
+      "onMainline": true
+    },
+    {
+      "sha": "7c32014e2695aba636154f70ed62791086d26d76",
+      "tag": "v6.23.0",
+      "taggedAt": "2026-11-10T16:13:52Z",
+      "onMainline": true
+    },
+    {
+      "sha": "79382ab0e80196c0ee0716091bf1b063ed544f92",
+      "tag": "v6.24.0",
+      "taggedAt": "2026-11-17T17:34:00Z",
+      "onMainline": true
+    },
+    {
+      "sha": "80a23806ea8d5a8c3c6e217fe38066530cacc9af",
+      "tag": "v6.9.0",
+      "taggedAt": "2026-08-04T14:02:50Z",
+      "onMainline": true
+    },
+    {
+      "sha": "22b46c6aa4b71e3ec039ad700eb89cb3c29f3031",
+      "tag": "v6.9.1",
+      "taggedAt": "2026-08-06T14:14:55Z",
+      "onMainline": true
+    },
+    {
+      "sha": "dc445a37fb2c023ada5798051ef9563ba71806b0",
+      "tag": "v6.9.2",
+      "taggedAt": "2026-08-11T16:06:18Z",
+      "onMainline": true
+    }
+  ],
+  "sqrl": [
+    {
+      "_createdAt": "2026-10-29T08:44:29Z",
+      "formulaVersion": 1,
+      "regressedInputs": [],
+      "reliabilityEvents": 2,
+      "score": 115.04735209347153,
+      "scoreCommit": 110.92075791127158,
+      "sha": "010d6f20e0add047198862c76e5ee68a35fac77f"
+    },
+    {
+      "_createdAt": "2026-10-21T05:50:54Z",
+      "formulaVersion": 1,
+      "regressedInputs": [],
+      "reliabilityEvents": 2,
+      "score": 113.87482040822663,
+      "scoreCommit": 129.5002500487063,
+      "sha": "08d497a3731ba605c3b331e8d4062f0328264a43"
+    },
+    {
+      "_createdAt": "2026-10-21T05:50:52Z",
+      "formulaVersion": 1,
+      "regressedInputs": [],
+      "reliabilityEvents": 2,
+      "score": 100.61950681024555,
+      "scoreCommit": 88.69440572996463,
+      "sha": "27989fca8198af3c411125bef36bf3c8592c1d9e"
+    },
+    {
+      "_createdAt": "2026-10-21T05:50:52Z",
+      "formulaVersion": 1,
+      "regressedInputs": ["cls"],
+      "reliabilityEvents": 2,
+      "score": 93.22545464518916,
+      "scoreCommit": 94.15102678253903,
+      "sha": "338d3ebdba6ca180215c3eb373a27f8e4b7d4a47"
+    },
+    {
+      "_createdAt": "2026-10-21T05:50:52Z",
+      "formulaVersion": 1,
+      "regressedInputs": [],
+      "reliabilityEvents": 2,
+      "score": 99.79741782100814,
+      "scoreCommit": 91.41383985800753,
+      "sha": "584242af90d95fa149c75d83ab2c3c0246d4f060"
+    },
+    {
+      "_createdAt": "2026-10-21T05:50:54Z",
+      "formulaVersion": 1,
+      "regressedInputs": [],
+      "reliabilityEvents": 2,
+      "score": 104.3624867560095,
+      "scoreCommit": 103.69848602590997,
+      "sha": "65999c9f634bea46fc815aff04460e65a5c2adfa"
+    },
+    {
+      "_createdAt": "2026-11-17T18:20:36Z",
+      "formulaVersion": 1,
+      "regressedInputs": ["listeners"],
+      "reliabilityEvents": 0,
+      "score": 138.54659828139367,
+      "scoreCommit": 129.87305456124494,
+      "sha": "79382ab0e80196c0ee0716091bf1b063ed544f92"
+    },
+    {
+      "_createdAt": "2026-11-10T16:59:26Z",
+      "formulaVersion": 1,
+      "regressedInputs": ["listeners"],
+      "reliabilityEvents": 0,
+      "score": 138.622190890502,
+      "scoreCommit": 121.90238502733473,
+      "sha": "7c32014e2695aba636154f70ed62791086d26d76"
+    },
+    {
+      "_createdAt": "2026-11-03T15:56:17Z",
+      "formulaVersion": 1,
+      "regressedInputs": ["articleInp"],
+      "reliabilityEvents": 2,
+      "score": 114.41629687771568,
+      "scoreCommit": 116.27943934129303,
+      "sha": "8e979b9732fa4dd38c2bb19a2af2b1f1f6b1b9e9"
+    },
+    {
+      "_createdAt": "2026-10-21T05:50:52Z",
+      "formulaVersion": 1,
+      "regressedInputs": [],
+      "reliabilityEvents": 2,
+      "score": 101.60237070891016,
+      "scoreCommit": 86.34073015041417,
+      "sha": "a9944b05746aae5b2dbd0b8c6a41aa4f669320fc"
+    }
+  ],
+  "bench": [
+    {
+      "_createdAt": "2026-10-29T08:43:37Z",
+      "calibrationMs": 6.300000000046566,
+      "initialJsBytes": 60109,
+      "sha": "010d6f20e0add047198862c76e5ee68a35fac77f",
+      "totalJsBytes": 2507184
+    },
+    {
+      "_createdAt": "2026-10-19T16:57:15Z",
+      "calibrationMs": 6.800000000046566,
+      "initialJsBytes": 58923,
+      "sha": "08d497a3731ba605c3b331e8d4062f0328264a43",
+      "totalJsBytes": 2494023
+    },
+    {
+      "_createdAt": "2026-10-06T16:18:24Z",
+      "calibrationMs": 5.399999999906868,
+      "initialJsBytes": 59428,
+      "sha": "27989fca8198af3c411125bef36bf3c8592c1d9e",
+      "totalJsBytes": 2522223
+    },
+    {
+      "_createdAt": "2026-09-17T14:08:47Z",
+      "calibrationMs": 7,
+      "initialJsBytes": 27756,
+      "sha": "338d3ebdba6ca180215c3eb373a27f8e4b7d4a47",
+      "totalJsBytes": 2443552
+    },
+    {
+      "_createdAt": "2026-09-21T21:14:13Z",
+      "calibrationMs": 8.29999999993015,
+      "initialJsBytes": 28409,
+      "sha": "338d3ebdba6ca180215c3eb373a27f8e4b7d4a47",
+      "totalJsBytes": 2467490
+    },
+    {
+      "_createdAt": "2026-09-21T21:14:26Z",
+      "calibrationMs": 7.599999999976717,
+      "initialJsBytes": 28407,
+      "sha": "338d3ebdba6ca180215c3eb373a27f8e4b7d4a47",
+      "totalJsBytes": 2467437
+    },
+    {
+      "_createdAt": "2026-09-22T15:06:27Z",
+      "calibrationMs": 5.400000000023283,
+      "initialJsBytes": 28363,
+      "sha": "584242af90d95fa149c75d83ab2c3c0246d4f060",
+      "totalJsBytes": 2462788
+    },
+    {
+      "_createdAt": "2026-10-13T15:58:53Z",
+      "calibrationMs": 5.699999999953434,
+      "initialJsBytes": 58833,
+      "sha": "65999c9f634bea46fc815aff04460e65a5c2adfa",
+      "totalJsBytes": 2483472
+    },
+    {
+      "_createdAt": "2026-11-17T18:19:50Z",
+      "calibrationMs": 7.7999999998137355,
+      "initialJsBytes": 50257,
+      "sha": "79382ab0e80196c0ee0716091bf1b063ed544f92",
+      "totalJsBytes": 2573653
+    },
+    {
+      "_createdAt": "2026-11-10T16:58:21Z",
+      "calibrationMs": 5.899999999906868,
+      "initialJsBytes": 60720,
+      "sha": "7c32014e2695aba636154f70ed62791086d26d76",
+      "totalJsBytes": 2539475
+    },
+    {
+      "_createdAt": "2026-11-03T15:55:27Z",
+      "calibrationMs": 8.100000000093132,
+      "initialJsBytes": 60721,
+      "sha": "8e979b9732fa4dd38c2bb19a2af2b1f1f6b1b9e9",
+      "totalJsBytes": 2528429
+    },
+    {
+      "_createdAt": "2026-09-29T17:21:32Z",
+      "calibrationMs": 7.7999999998137355,
+      "initialJsBytes": 59478,
+      "sha": "a9944b05746aae5b2dbd0b8c6a41aa4f669320fc",
+      "totalJsBytes": 2449611
+    }
+  ]
+}

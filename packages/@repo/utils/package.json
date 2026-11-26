@@ -9,6 +9,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./engine-confidence": "./src/engineConfidence.ts",
+    "./github-token": "./src/githubToken.ts",
     "./radar-ids": "./src/radarIds.ts",
     "./soak-settle": "./src/soakSettle.ts",
     "./style-systems": "./src/styleSystems.ts"
@@ -17,9 +18,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "dotenv": "^17.4.2",
+    "dotenv": "^18.0.10",
     "lodash-es": "^4.18.1",
-    "ora": "^9.4.1"
+    "ora": "^10.0.0"
   },
   "devDependencies": {
     "@repo/test-config": "workspace:*",

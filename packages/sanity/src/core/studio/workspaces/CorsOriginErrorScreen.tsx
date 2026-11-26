@@ -1,9 +1,9 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Heading} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {type ReactNode, useMemo} from 'react'
 import {styled} from 'styled-components'
-import {Text, Flex, VStack, Grid, Box} from 'ui5'
+import {Heading, Text, Flex, VStack, Grid, Box} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 import {isProd} from '../../environment'
@@ -154,7 +154,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
         <CenteredContainer alignItems="center" justifyContent="center" padding={4}>
           <ContentWrapper paddingBottom={5}>
             <VStack gap={5}>
-              <Heading as="h1" size={2}>
+              <Heading as="h1" size={2} trim>
                 Enable credentials for this Studio
               </Heading>
 
@@ -194,7 +194,7 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
       <CenteredContainer alignItems="center" justifyContent="center" padding={4}>
         <ContentWrapper paddingBottom={5}>
           <VStack gap={5}>
-            <Heading as="h1" size={2}>
+            <Heading as="h1" size={2} trim>
               Connect this Studio to your project
             </Heading>
             <Text size={2} muted as="div" trim={true}>

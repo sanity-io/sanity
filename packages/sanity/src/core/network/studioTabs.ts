@@ -1,7 +1,7 @@
 import {uuid} from '@sanity/uuid'
 import debounce from 'lodash-es/debounce.js'
 
-import {getListenerCounts, subscribeListenerCounts} from './listenerCount'
+import {getListenerCountForScope, subscribeListenerCounts} from './listenerCount'
 
 const TAB_LOCK_PREFIX = 'sanity-listener-tab:'
 const TAB_CHANNEL_NAME = 'sanity-studio-tabs'
@@ -9,12 +9,14 @@ const TAB_OPENED_MESSAGE = 'opened'
 const REPUBLISH_DEBOUNCE_MS = 250
 const REPUBLISH_MAX_WAIT_MS = 1000
 const UNKNOWN_SCOPE = 'unknown'
+const STALLED_FLAG = 's'
 
 /** @internal */
 export interface StudioTabLock {
   scope: string
   tabId: string
   count: number
+  isStalled: boolean
 }
 
 const studioTabs: {
@@ -22,7 +24,10 @@ const studioTabs: {
   trackerCount: number
   stopTracking: (() => void) | undefined
   tabId: string | undefined
+  scope: string | undefined
   publishedCount: number | undefined
+  isStalled: boolean
+  publishedIsStalled: boolean | undefined
   releasePublished: (() => void) | undefined
   publishChain: Promise<void>
 } = {
@@ -30,7 +35,10 @@ const studioTabs: {
   trackerCount: 0,
   stopTracking: undefined,
   tabId: undefined,
+  scope: undefined,
   publishedCount: undefined,
+  isStalled: false,
+  publishedIsStalled: undefined,
   releasePublished: undefined,
   publishChain: Promise.resolve(),
 }
@@ -43,6 +51,15 @@ const studioTabs: {
  */
 export function getPeakStudioTabCount(): number | undefined {
   return studioTabs.peak
+}
+
+/**
+ * The scope this tab publishes its listener count in, or `undefined` until tracking starts.
+ *
+ * @internal
+ */
+export function getTrackedStudioTabScope(): string | undefined {
+  return studioTabs.scope
 }
 
 /**
@@ -71,16 +88,18 @@ export function getStudioTabScope(apiHost: string | undefined): string {
 
 /**
  * Reads a tab lock name written by {@link startTrackingStudioTabs}, or `undefined` for any other
- * lock. Fields after the count are ignored.
+ * lock. Fields after the stalled flag are ignored.
  *
  * @internal
  */
 export function parseStudioTabLock(name: string): StudioTabLock | undefined {
-  const [encodedScope = '', tabId, count = ''] = name.startsWith(TAB_LOCK_PREFIX)
+  const [encodedScope = '', tabId, count = '', flag] = name.startsWith(TAB_LOCK_PREFIX)
     ? name.slice(TAB_LOCK_PREFIX.length).split(':')
     : []
   const scope = decodeScope(encodedScope)
-  return scope && tabId && /^\d+$/.test(count) ? {scope, tabId, count: Number(count)} : undefined
+  return scope && tabId && /^\d+$/.test(count)
+    ? {scope, tabId, count: Number(count), isStalled: flag === STALLED_FLAG}
+    : undefined
 }
 
 function decodeScope(encodedScope: string): string | undefined {
@@ -91,8 +110,9 @@ function decodeScope(encodedScope: string): string | undefined {
   }
 }
 
-function formatStudioTabLock({scope, tabId, count}: StudioTabLock): string {
-  return `${TAB_LOCK_PREFIX}${encodeURIComponent(scope)}:${tabId}:${count}`
+function formatStudioTabLock({scope, tabId, count, isStalled}: StudioTabLock): string {
+  const name = `${TAB_LOCK_PREFIX}${encodeURIComponent(scope)}:${tabId}:${count}`
+  return isStalled ? `${name}:${STALLED_FLAG}` : name
 }
 
 /**
@@ -125,6 +145,7 @@ export function startTrackingStudioTabs(scope: string): () => void {
 
 function trackStudioTabs(scope: string): () => void {
   const session = {isActive: true}
+  studioTabs.scope = scope
 
   // The count of open tabs only ever rises when a tab opens, so every tab samples it then.
   const channel = new BroadcastChannel(TAB_CHANNEL_NAME)
@@ -145,12 +166,27 @@ function trackStudioTabs(scope: string): () => void {
 
   return function stopTrackingSession() {
     session.isActive = false
+    studioTabs.scope = undefined
     unsubscribe()
     republish.cancel()
     channel.close()
     // Queued behind any swap in flight, so the lock it takes is the one released.
     studioTabs.publishChain = studioTabs.publishChain.then(releasePublishedLock)
   }
+}
+
+/**
+ * Flags this tab's presence lock as stalled behind the connection limit, or clears the flag,
+ * republished like a count change. Records the flag even before tracking starts, so a stall
+ * detected ahead of the first listener is already set when {@link startTrackingStudioTabs}
+ * publishes this tab's first lock.
+ *
+ * @internal
+ */
+export function setStalled(isStalled: boolean): void {
+  if (studioTabs.isStalled === isStalled) return
+  studioTabs.isStalled = isStalled
+  if (studioTabs.scope !== undefined) void publishListenerCount(studioTabs.scope)
 }
 
 function publishListenerCount(scope: string): Promise<void> {
@@ -161,17 +197,19 @@ function publishListenerCount(scope: string): Promise<void> {
 // The new name is held before the old one is released, so the tab is never missing from
 // `navigator.locks.query()`; readers dedupe the brief overlap by tab id.
 async function replaceTabLock(scope: string): Promise<void> {
-  const {open} = getListenerCounts()
-  if (studioTabs.publishedCount === open) return
+  const count = getListenerCountForScope(scope)
+  const {isStalled} = studioTabs
+  if (studioTabs.publishedCount === count && studioTabs.publishedIsStalled === isStalled) return
 
   const releaseNext = await holdLock(
-    formatStudioTabLock({scope, tabId: getStudioTabId(), count: open}),
+    formatStudioTabLock({scope, tabId: getStudioTabId(), count, isStalled}),
   )
   if (releaseNext === undefined) return
 
   const releasePrevious = studioTabs.releasePublished
   studioTabs.releasePublished = releaseNext
-  studioTabs.publishedCount = open
+  studioTabs.publishedCount = count
+  studioTabs.publishedIsStalled = isStalled
   releasePrevious?.()
 }
 
@@ -179,6 +217,7 @@ function releasePublishedLock(): void {
   studioTabs.releasePublished?.()
   studioTabs.releasePublished = undefined
   studioTabs.publishedCount = undefined
+  studioTabs.publishedIsStalled = undefined
 }
 
 // The browser releases the lock when the tab closes or crashes, so a held lock is an open tab.

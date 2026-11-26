@@ -18,6 +18,10 @@ import {type ListenerEvent, getPairListener} from './getPairListener'
 import {type IdPair, type MutationEvent} from './types'
 import {DeadlineExceededError, OutOfSyncError} from './utils/sequentializeListenerEvents'
 
+vi.mock('./document-pair/getShardInfo', () => ({
+  getShardInfo$: vi.fn(() => of('test-shard')),
+}))
+
 function createMutationEvent(
   overrides: Partial<MutationEvent> & Pick<MutationEvent, 'documentId'>,
 ): MutationEvent {
@@ -1060,6 +1064,155 @@ describe('getPairListener', () => {
       expect(getDocuments).toHaveBeenCalledTimes(2)
       expect(snapshotsOf(events, DRAFT_ID)).toEqual(['draft-rev', 'draft-rev-3'])
       expect(mutationsOf(events, DRAFT_ID)).toEqual(['draft-rev-3 -> draft-rev-4'])
+
+      sub.unsubscribe()
+    })
+  })
+
+  describe('listener timing telemetry', () => {
+    test('reports time to welcome on first welcome event with shard', async () => {
+      const welcomeTimeCalls: {durationMs: number; shard?: string}[] = []
+      const onListenerWelcomeTime = vi.fn((event) => welcomeTimeCalls.push(event))
+
+      const sub = getPairListener(client, idPair, {onListenerWelcomeTime}).subscribe()
+
+      // Should not have been called yet
+      expect(onListenerWelcomeTime).not.toHaveBeenCalled()
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+
+      // Should be called once with a duration and shard
+      expect(onListenerWelcomeTime).toHaveBeenCalledTimes(1)
+      expect(welcomeTimeCalls[0].durationMs).toBeGreaterThanOrEqual(0)
+      expect(welcomeTimeCalls[0].shard).toBe('test-shard')
+
+      // Should NOT be called again on subsequent welcomes
+      listener$.next({type: 'reconnect'})
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+
+      expect(onListenerWelcomeTime).toHaveBeenCalledTimes(1)
+
+      sub.unsubscribe()
+    })
+
+    test('reports time to resume on welcomeback after reconnect with shard', async () => {
+      const resumeTimeCalls: {durationMs: number; shard?: string}[] = []
+      const onListenerResumeTime = vi.fn((event) => resumeTimeCalls.push(event))
+
+      const sub = getPairListener(client, idPair, {onListenerResumeTime}).subscribe()
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+
+      // Should not have been called yet
+      expect(onListenerResumeTime).not.toHaveBeenCalled()
+
+      // Reconnect followed by welcomeback
+      listener$.next({type: 'reconnect'})
+      listener$.next({type: 'welcomeback', listenerName: 'test'})
+      await nextTick()
+
+      // Should be called once with a duration and shard
+      expect(onListenerResumeTime).toHaveBeenCalledTimes(1)
+      expect(resumeTimeCalls[0].durationMs).toBeGreaterThanOrEqual(0)
+      expect(resumeTimeCalls[0].shard).toBe('test-shard')
+
+      sub.unsubscribe()
+    })
+
+    test('does not report resume time for welcomeback without prior reconnect', async () => {
+      const onListenerResumeTime = vi.fn()
+
+      const sub = getPairListener(client, idPair, {onListenerResumeTime}).subscribe()
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+
+      // A welcomeback without a prior reconnect should not trigger resume time telemetry
+      listener$.next({type: 'welcomeback', listenerName: 'test'})
+      await nextTick()
+
+      expect(onListenerResumeTime).not.toHaveBeenCalled()
+
+      sub.unsubscribe()
+    })
+
+    test('reports resume payload count after welcomeback with shard', async () => {
+      const resumePayloadCalls: {mutationsAfterResumeCount: number; shard?: string}[] = []
+      const onListenerResumePayload = vi.fn((event) => resumePayloadCalls.push(event))
+
+      const sub = getPairListener(client, idPair, {onListenerResumePayload}).subscribe()
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+
+      // Reconnect and welcomeback
+      listener$.next({type: 'reconnect'})
+      listener$.next({type: 'welcomeback', listenerName: 'test'})
+      await nextTick()
+
+      // Should not have been called yet (no mutations replayed)
+      expect(onListenerResumePayload).not.toHaveBeenCalled()
+
+      // Emit mutations that would be replayed during resume - use unique transaction IDs
+      // to avoid deduplication
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-replay-1',
+          previousRev: 'rev-1',
+          resultRev: 'rev-2',
+        }),
+      )
+      listener$.next(
+        createMutationEvent({
+          documentId: DRAFT_ID,
+          transactionId: 'tx-replay-2',
+          previousRev: 'rev-2',
+          resultRev: 'rev-3',
+        }),
+      )
+      listener$.next(
+        createMutationEvent({
+          documentId: PUBLISHED_ID,
+          transactionId: 'tx-replay-3',
+          previousRev: 'pub-rev-1',
+          resultRev: 'pub-rev-2',
+        }),
+      )
+
+      // A non-mutation event signals end of replay
+      listener$.next({type: 'reconnect'})
+      await nextTick()
+
+      expect(onListenerResumePayload).toHaveBeenCalledTimes(1)
+      expect(resumePayloadCalls[0].mutationsAfterResumeCount).toBe(3)
+      expect(resumePayloadCalls[0].shard).toBe('test-shard')
+
+      sub.unsubscribe()
+    })
+
+    test('reports zero-mutation resume payload', async () => {
+      const resumePayloadCalls: {mutationsAfterResumeCount: number; shard?: string}[] = []
+      const onListenerResumePayload = vi.fn((event) => resumePayloadCalls.push(event))
+
+      const sub = getPairListener(client, idPair, {onListenerResumePayload}).subscribe()
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await nextTick()
+
+      // Reconnect and welcomeback with no mutations replayed
+      listener$.next({type: 'reconnect'})
+      listener$.next({type: 'welcomeback', listenerName: 'test'})
+      listener$.next({type: 'reconnect'}) // End payload counting immediately
+      await nextTick()
+
+      // Should be called with count of 0 - zero is meaningful data
+      expect(onListenerResumePayload).toHaveBeenCalledTimes(1)
+      expect(resumePayloadCalls[0].mutationsAfterResumeCount).toBe(0)
+      expect(resumePayloadCalls[0].shard).toBe('test-shard')
 
       sub.unsubscribe()
     })

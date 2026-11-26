@@ -4,6 +4,7 @@ import {BehaviorSubject, Subject} from 'rxjs'
 import {WorkspacesContext} from 'sanity/_singletons'
 import {describe, expect, it} from 'vitest'
 
+import {createMockSanityClientAsClient} from '../../../../../test/mocks/mockSanityClient'
 import {type WorkspaceSummary} from '../../../config/types'
 import {type AuthState} from '../../../store/auth/types'
 import {useVisibleWorkspaces} from '../useVisibleWorkspaces'
@@ -21,7 +22,7 @@ function createAuthState(overrides: Partial<AuthState> = {}): AuthState {
       roles: [],
       profileImage: '',
     },
-    client: {} as AuthState['client'],
+    client: createMockSanityClientAsClient(),
     ...overrides,
   }
 }

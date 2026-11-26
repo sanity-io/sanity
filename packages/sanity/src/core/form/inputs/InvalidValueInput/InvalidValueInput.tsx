@@ -1,8 +1,7 @@
 import {Card} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import isPlainObject from 'lodash-es/isPlainObject.js'
 import {useCallback, useImperativeHandle, useMemo, type RefAttributes} from 'react'
-import {Text, Flex, VStack} from 'ui5'
+import {Code, Text, Flex, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {isDev} from '../../../environment'
@@ -147,7 +146,7 @@ export function InvalidValueInput(props: InvalidValueProps & RefAttributes<{focu
             </Text>
 
             <Card border padding={2} radius={2} tone="inherit">
-              <Code language="json" size={1}>
+              <Code language="json" size={1} trim>
                 {JSON.stringify(value, null, 2)}
               </Code>
             </Card>

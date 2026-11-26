@@ -1,6 +1,6 @@
-import {Card, Heading} from '@sanity/ui'
+import {Card} from '@sanity/ui'
 import {format} from 'date-fns/format'
-import {Text, Flex, VStack} from 'ui5'
+import {Heading, Text, Flex, VStack} from 'ui5'
 
 import {type ScheduleState} from '../../types'
 import BigIconComingSoon from './BigIconComingSoon'
@@ -56,7 +56,7 @@ const EmptySchedules = (props: Props) => {
         <Flex justifyContent="center">{BigIcon && <BigIcon />}</Flex>
         <VStack gap={4}>
           {heading && (
-            <Heading align="center" size={1}>
+            <Heading as="h2" align="center" size={1} trim>
               {heading}
             </Heading>
           )}
