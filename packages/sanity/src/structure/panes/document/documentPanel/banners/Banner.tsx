@@ -1,6 +1,7 @@
 import {type ButtonMode, type ButtonTone, Card, type CardTone} from '@sanity/ui'
 import {type ComponentType, type ElementType, type ReactNode} from 'react'
-import {Box, Icon} from 'ui5'
+import {useWorkspace} from 'sanity'
+import {Box, Flex, Icon} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {
@@ -60,7 +61,68 @@ export function BannerPrimaryAction(props: {children: ReactNode}) {
   )
 }
 
+/**
+ * With Variants on, the banners use the open beta layout: the text capped and wrapping, the action
+ * in its own column, a filled action as the neutral default primary. With Variants off a Studio
+ * looks exactly like it did before, so the banner keeps its earlier one-row layout.
+ */
 export function Banner(props: BannerProps) {
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
+  if (!variantsEnabled) return <ClassicBanner {...props} />
+  return <OpenBetaBanner {...props} />
+}
+
+/** The banner as it is with Variants off: one row, the action inline after the text. */
+function ClassicBanner(props: BannerProps) {
+  const {
+    action,
+    actions,
+    content,
+    icon: BannerIcon,
+    tone = 'transparent',
+    paddingY = 2,
+    ...rest
+  } = props
+  const iconTone =
+    tone === 'default' || tone === 'inherit' || tone === 'primary' || tone === 'transparent'
+      ? undefined
+      : tone
+
+  return (
+    <Box padding={1}>
+      <Card radius={3} paddingX={2} paddingY={paddingY} tone={tone} {...rest}>
+        <Flex alignItems="center" gap={3} paddingX={2}>
+          {BannerIcon && (
+            <Icon
+              muted={!(tone === 'inherit' || tone === 'primary')}
+              size={0}
+              icon={BannerIcon}
+              tone={iconTone}
+              style={{
+                margin: '-0.3125rem',
+                ...((tone === 'inherit' || tone === 'primary') && {
+                  color: 'var(--card-icon-color)',
+                }),
+              }}
+            />
+          )}
+
+          <Flex alignItems="center" flexBasis="0%" flexGrow={1} gap={2} paddingY={2}>
+            {content}
+          </Flex>
+
+          {actions && !action && actions}
+
+          {action && (
+            <Button {...action} mode={action.mode || 'ghost'} tone={action.tone || 'default'} />
+          )}
+        </Flex>
+      </Card>
+    </Box>
+  )
+}
+
+function OpenBetaBanner(props: BannerProps) {
   const {
     action,
     actions,

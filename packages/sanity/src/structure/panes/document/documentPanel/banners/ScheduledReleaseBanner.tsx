@@ -8,6 +8,7 @@ import {
   useFormatRelativeLocalePublishDate,
   usePauseToEditScheduledDraft,
   useTranslation,
+  useWorkspace,
 } from 'sanity'
 import {Text, type TextProps} from 'ui5'
 
@@ -20,6 +21,8 @@ export function ScheduledReleaseBanner({
   currentRelease: ReleaseDocument
 }): React.JSX.Element {
   const tone = getReleaseTone(currentRelease ?? LATEST)
+  // With Variants off the action keeps the release's tone; with Variants on it is the neutral primary
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
 
   const {t: tCore} = useTranslation()
   const formatPublishDate = useFormatRelativeLocalePublishDate()
@@ -53,6 +56,7 @@ export function ScheduledReleaseBanner({
               onClick: pauseToEdit,
               disabled: isPausing,
               mode: 'default',
+              tone: variantsEnabled ? undefined : tone,
             }
           : undefined
       }
