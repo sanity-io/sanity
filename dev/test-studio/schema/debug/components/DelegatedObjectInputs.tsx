@@ -1,7 +1,6 @@
 import {Card} from '@sanity/ui'
 import {type ReactNode} from 'react'
 import {
-  ArrayOfObjectsInput,
   type ArrayOfObjectsInputProps,
   type ArrayOfPrimitivesInputProps,
   type BooleanInputProps,
@@ -10,27 +9,28 @@ import {
   type DateTimeInputProps,
   type FileInputProps,
   type ImageInputProps,
-  NumberInput,
   type NumberInputProps,
-  ObjectInput,
   type ObjectInputProps,
-  PortableTextInput,
   type PortableTextInputProps,
-  ReferenceInput,
   type ReferenceInputProps,
+  type SlugInputProps,
+  type StringInputProps,
+  type UrlInputProps,
+} from 'sanity'
+import {
+  ArrayOfObjectsInput,
+  NumberInput,
+  ObjectInput,
+  PortableTextInput,
+  ReferenceInput,
   SelectInput,
   SlugInput,
-  type SlugInputProps,
   StringInput,
-  type StringInputProps,
   TagsArrayInput,
   TelephoneInput,
   TextInput,
   UniversalArrayInput,
   UrlInput,
-  type UrlInputProps,
-} from 'sanity'
-import {
   ArrayOfOptionsInput,
   ArrayOfPrimitivesInput,
   BooleanInput,

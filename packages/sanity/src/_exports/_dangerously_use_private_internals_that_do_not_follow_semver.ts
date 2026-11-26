@@ -1147,11 +1147,8 @@ export {type GenerateStudioManifestOptions} from '../core/studio/manifest/genera
 export {InsufficientPermissionsMessage} from '../core/components/InsufficientPermissionsMessage'
 export {type ListenQueryParams} from '../core/store/document/listenQuery'
 export {type ManifestWorkspaceInput} from '../core/studio/manifest/types'
-export {MemberField} from '../core/form/members/object/MemberField'
-export {MemberFieldError} from '../core/form/members/object/MemberFieldError'
 export {MemberItemError} from '../core/form/members/array/MemberItemError'
 export {type ObjectDiff} from '../core/field/types'
-export {ObjectInputMember} from '../core/form/members/object/ObjectInputMember'
 export {PresenceOverlay} from '../core/presence/overlay/PresenceOverlay'
 export {Preview} from '../core/preview/components/Preview'
 export {PreviewCard} from '../core/components/previewCard/PreviewCard'
@@ -1270,3 +1267,135 @@ export {
   ImageInput,
   PortableTextInput as BlockEditor,
 } from '../core/form/lazy'
+
+export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
+export {useCommentsMode} from '../core/comments-v2/hooks/useCommentsMode'
+export {useCommentsMode as useCommentsModeLegacy} from '../core/comments/hooks/useCommentsMode'
+export {StatusButton} from '../core/components/StatusButton'
+export {TemplatePreview} from '../core/components/previews/template/TemplatePreview'
+export {useRovingFocus} from '../core/components/rovingFocus/useRovingFocus'
+export {UserAvatar} from '../core/components/userAvatar/UserAvatar'
+export {useDidUpdate} from '../core/form/hooks/useDidUpdate'
+export {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
+export {SelectInput} from '../core/form/inputs/SelectInput'
+export {TelephoneInput} from '../core/form/inputs/TelephoneInput'
+export {TextInput} from '../core/form/inputs/TextInput'
+export {UrlInput} from '../core/form/inputs/UrlInput'
+export {
+  ArrayOfObjectsInput,
+  ObjectInput,
+  PortableTextInput,
+  ReferenceInput,
+  SlugInput,
+  StringInput,
+  TagsArrayInput,
+  UniversalArrayInput,
+  MemberField,
+  MemberFieldError,
+  ObjectInputMember,
+} from '../core/form/lazy'
+export {PatchEvent} from '../core/form/patch/PatchEvent'
+export {useFormBuilder} from '../core/form/useFormBuilder'
+export {TransformPatches} from '../core/form/utils/TransformPatches'
+export {useDialogStack} from '../core/hooks/useDialogStack'
+export {useDocumentVersionTitle} from '../core/hooks/useDocumentVersionTitle'
+export {useSchema} from '../core/hooks/useSchema'
+export {useSetImmediateValidation} from '../core/hooks/useSetImmediateValidation'
+export {useTemplates} from '../core/hooks/useTemplates'
+export {useTools} from '../core/hooks/useTools'
+export {useUserListWithPermissions} from '../core/hooks/useUserListWithPermissions'
+export {useWorkspaceSchemaId} from '../core/hooks/useWorkspaceSchemaId'
+export {useGetDefaultPerspective} from '../core/perspective/useGetDefaultPerspective'
+export {ReleaseAvatar, ReleaseAvatarIcon} from '../core/releases/components/ReleaseAvatar'
+export {useDocumentVersionTypeSortedList} from '../core/releases/hooks/useDocumentVersionTypeSortedList'
+export {useDocumentVersions} from '../core/releases/hooks/useDocumentVersions'
+export {useOnlyHasVersions} from '../core/releases/hooks/useOnlyHasVersions'
+export {RELEASE_DOCUMENT_TYPE} from '../core/releases/store/constants'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+export {useDocumentVersionInfo} from '../core/releases/store/useDocumentVersionInfo'
+export {getDocumentIsInPerspective} from '../core/releases/util/util'
+// oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API kept until it is removed
+export {useScheduleAction as ScheduleAction} from '../core/scheduled-publishing/plugin/documentActions/schedule/ScheduleAction'
+// oxlint-disable-next-line eslint/no-restricted-imports, no-deprecated -- deprecated scheduled-publishing API kept until it is removed
+export {ScheduledBadge} from '../core/scheduled-publishing/plugin/documentBadges/scheduled/ScheduledBadge'
+export {
+  useDocumentPreviewStore,
+  useDocumentStore,
+  useGrantsStore,
+  useHistoryStore,
+  usePresenceStore,
+  useProjectStore,
+  useUserStore,
+} from '../core/store/datastores'
+export {
+  isCreateDocumentVersionEvent,
+  isCreateLiveDocumentEvent,
+  isDeleteDocumentGroupEvent,
+  isDeleteDocumentVersionEvent,
+  isEditDocumentVersionEvent,
+  isNonSelectableTerminalEvent,
+  isPublishDocumentVersionEvent,
+  isScheduleDocumentVersionEvent,
+  isUnpublishDocumentEvent,
+  isUnscheduleDocumentVersionEvent,
+  isUpdateLiveDocumentEvent,
+} from '../core/store/events/types'
+export {getDocumentPairPermissions} from '../core/store/grants/documentPairPermissions'
+export {Studio} from '../core/studio/Studio'
+export {StudioLayout} from '../core/studio/StudioLayout'
+export {StudioProvider} from '../core/studio/StudioProvider'
+export {useAddonDataset} from '../core/studio/addonDataset/useAddonDataset'
+export {useColorSchemeSetValue, useColorSchemeValue} from '../core/studio/colorScheme'
+export {StudioNavbar, StudioToolMenu} from '../core/studio/components/navbar/LazyStudioNavbar'
+export {StudioLogo} from '../core/studio/components/navbar/StudioLogo'
+export {ToolLink} from '../core/studio/components/navbar/tools/ToolLink'
+export {useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
+export {isTimeoutError} from '../core/studio/requestErrors/classify'
+export {useStudioErrorHandler} from '../core/studio/requestErrors/useStudioErrorHandler'
+// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+export {buildLegacyTheme} from '../core/theme/_legacy/theme'
+export {
+  VERSION_FOLDER,
+  documentIdEquals,
+  getDraftId,
+  getPublishedId,
+  getVersionFromId,
+  getVersionId,
+  isDraftId,
+  isPublishedId,
+  isVersionId,
+  systemBundles,
+} from '../core/util/draftUtils'
+export {getDocumentVariantType} from '../core/util/getDocumentVariantType'
+export {getReferencePaths} from '../core/util/getReferencePaths'
+export {userHasRole} from '../core/util/userHasRole'
+export {
+  isDraftVersion,
+  isPublishedVersion,
+  isReleaseVersion,
+  isVariantVersion,
+  readVersionType,
+} from '../core/util/versionsUtils'
+export {getProviderTitle} from '@sanity/access-ui'
+export {
+  isCreateIfNotExistsMutation,
+  isCreateMutation,
+  isCreateOrReplaceMutation,
+  isCreateSquashedMutation,
+  isDeleteMutation,
+  isIndexSegment,
+  isIndexTuple,
+  isKeySegment,
+  isKeyedObject,
+  isPatchMutation,
+  isSearchStrategy,
+  isTitledListValue,
+  isValidationError,
+  isValidationErrorMarker,
+  isValidationInfo,
+  isValidationInfoMarker,
+  isValidationWarning,
+  isValidationWarningMarker,
+  searchStrategies,
+  typed,
+} from '@sanity/types'

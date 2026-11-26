@@ -2,19 +2,17 @@ import {type ReleaseDocument} from '@sanity/client'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {UnlockIcon} from '@sanity/icons/Unlock'
 import {useCallback, useMemo, useState} from 'react'
-import {
-  getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
-  ReleaseAvatar,
-  useDocumentVersions,
-  usePerspective,
-} from 'sanity'
+import {usePerspective} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 
+import {ReleaseAvatar} from '../../../../../../../core/releases/components/ReleaseAvatar'
+import {useDocumentVersions} from '../../../../../../../core/releases/hooks/useDocumentVersions'
 import {isReleaseDocument} from '../../../../../../../core/releases/store/types'
 import {useActiveReleases} from '../../../../../../../core/releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../../../../../../core/releases/util/getReleaseTone'
 import {useScheduledDraftsEnabled} from '../../../../../../../core/singleDocRelease/hooks/useScheduledDraftsEnabled'
+import {getPublishedId} from '../../../../../../../core/util/draftUtils'
 import {
   isCardinalityOneRelease,
   isPausedCardinalityOneRelease,

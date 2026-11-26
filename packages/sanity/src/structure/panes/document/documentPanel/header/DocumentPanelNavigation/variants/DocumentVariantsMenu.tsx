@@ -1,25 +1,23 @@
 import {DocumentsIcon} from '@sanity/icons/Documents'
 import {Text} from '@sanity/ui'
 import {type RefAttributes, type SVGProps, useCallback, useMemo, useState} from 'react'
-import {
-  getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
-  getVersionFromId,
-  getVersionId,
-  type SystemVariant,
-  useDocumentVersions,
-  useListFormat,
-  usePerspective,
-} from 'sanity'
+import {type SystemVariant, useListFormat, usePerspective} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Flex} from 'ui5'
 
 import {useSetVariant} from '../../../../../../../core/perspective/useSetVariant'
+import {useDocumentVersions} from '../../../../../../../core/releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../../../../../../../core/releases/store/types'
 import {useActiveReleases} from '../../../../../../../core/releases/store/useActiveReleases'
 import {LATEST, PUBLISHED} from '../../../../../../../core/releases/util/const'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
 import {isAgentBundleName} from '../../../../../../../core/store/agent/createAgentBundlesStore'
 import {useAgentVersionDisplay} from '../../../../../../../core/store/agent/useAgentVersionDisplay'
+import {
+  getPublishedId,
+  getVersionFromId,
+  getVersionId,
+} from '../../../../../../../core/util/draftUtils'
 import {useAllVariants} from '../../../../../../../core/variants/store/useAllVariants'
 import {
   filterVariantsForSearch,

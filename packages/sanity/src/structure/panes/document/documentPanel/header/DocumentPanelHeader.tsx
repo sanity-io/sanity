@@ -15,7 +15,7 @@ import {
   useState,
   type RefAttributes,
 } from 'react'
-import {type DocumentActionDescription, useDocumentPresence, useWorkspace} from 'sanity'
+import {type DocumentActionDescription, useWorkspace} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {css, styled} from 'styled-components'
 import {Flex, Box} from 'ui5'
@@ -23,6 +23,7 @@ import {Flex, Box} from 'ui5'
 import {useZIndex} from '../../../../../core/components/zOffsets/useZIndex'
 import {useFieldActions} from '../../../../../core/form/field/actions/useFieldActions'
 import {FieldPresenceInner} from '../../../../../core/presence/FieldPresence'
+import {useDocumentPresence} from '../../../../../core/store/presence/useDocumentPresence'
 import {Button} from '../../../../../ui-components/button/Button'
 import {TooltipDelayGroupProvider} from '../../../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 import {PaneContextMenuButton} from '../../../../components/pane/PaneContextMenuButton'

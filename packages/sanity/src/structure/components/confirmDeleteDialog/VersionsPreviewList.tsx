@@ -1,25 +1,22 @@
 import {Card} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
-import {
-  getDocumentVariantType,
-  getPreviewStateObservable,
-  getPreviewValueWithFallback,
-  getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
-  getVersionFromId,
-  ReleaseAvatarIcon,
-  SanityDefaultPreview,
-  type SchemaType,
-  useDocumentPreviewStore,
-  useSchema,
-} from 'sanity'
+import {type SchemaType} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, VStack, type TextProps} from 'ui5'
 
+import {useSchema} from '../../../core/hooks/useSchema'
+import {SanityDefaultPreview} from '../../../core/preview/components/SanityDefaultPreview'
+import {getPreviewStateObservable} from '../../../core/preview/utils/getPreviewStateObservable'
+import {getPreviewValueWithFallback} from '../../../core/preview/utils/getPreviewValueWithFallback'
+import {ReleaseAvatarIcon} from '../../../core/releases/components/ReleaseAvatar'
 import {ReleaseTitle} from '../../../core/releases/components/ReleaseTitle'
 import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../../core/releases/util/getReleaseTone'
+import {useDocumentPreviewStore} from '../../../core/store/datastores'
+import {getPublishedId, getVersionFromId} from '../../../core/util/draftUtils'
+import {getDocumentVariantType} from '../../../core/util/getDocumentVariantType'
 import {ellipsisText} from './VersionsPreviewList.css'
 
 const VersionItemPreview = ({

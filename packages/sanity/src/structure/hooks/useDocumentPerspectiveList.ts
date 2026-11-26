@@ -1,24 +1,17 @@
 import {type BadgeTone} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {
-  getVersionFromId,
-  isDraftId,
-  isPublishedId,
-  isVersionId,
-  type TargetPerspective,
-  useDocumentVersions,
-  usePerspective,
-  useSchema,
-  useWorkspace,
-} from 'sanity'
+import {type TargetPerspective, usePerspective, useWorkspace} from 'sanity'
 
 import {useFilteredReleases} from '../../core/hooks/useFilteredReleases'
+import {useSchema} from '../../core/hooks/useSchema'
 import {useSetVariant} from '../../core/perspective/useSetVariant'
+import {useDocumentVersions} from '../../core/releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../../core/releases/store/types'
 import {isGoingToUnpublish} from '../../core/releases/util/isGoingToUnpublish'
 import {isPublishedPerspective} from '../../core/releases/util/util'
 import {useSingleDocRelease} from '../../core/singleDocRelease/context/SingleDocReleaseProvider'
 import {useAgentVersionDisplay} from '../../core/store/agent/useAgentVersionDisplay'
+import {getVersionFromId, isDraftId, isPublishedId, isVersionId} from '../../core/util/draftUtils'
 import {getDocumentVersionVariantId} from '../../core/util/getDocumentVersionVariant'
 import {useAllVariants} from '../../core/variants/store/useAllVariants'
 import {getVariantTitle} from '../../core/variants/tool/util'

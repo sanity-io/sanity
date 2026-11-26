@@ -13,12 +13,12 @@ import {
   type DocumentLanguageFilterComponent,
   type EditStateFor,
   type NodeChronologyProps,
-  type PatchEvent,
   type PermissionCheckResult,
   type ReleaseId,
   type StateTree,
 } from 'sanity'
 
+import {type PatchEvent} from '../../../core/form/patch/PatchEvent'
 import {type DocumentFormNode} from '../../../core/form/store/types/nodes'
 import {type DocumentSyncState} from '../../../core/hooks/useDocumentSyncState'
 import {type TargetDocumentState} from '../../../core/hooks/useTargetDocumentState'

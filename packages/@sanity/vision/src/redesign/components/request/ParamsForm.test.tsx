@@ -45,6 +45,18 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', (
   createSearch: (types: {name: string}[], client: unknown, options: unknown) =>
     createSearch(types, client, options),
   useValuePreview: (props: {value: {_id: string}}) => useValuePreview(props),
+  useSchema: () => schema,
+  isDraftId: (id: string) => id.startsWith('drafts.'),
+  getVersionFromId: (id: string) => {
+    const match = /^versions\.([^.]+)\./.exec(id)
+    return match ? match[1] : undefined
+  },
+  SanityDefaultPreview: ({title, subtitle}: {title?: string; subtitle?: string}) => (
+    <span>
+      {title}
+      {subtitle ? ` ${subtitle}` : ''}
+    </span>
+  ),
 }))
 
 const schema = Schema.compile({
@@ -67,19 +79,7 @@ const schema = Schema.compile({
 
 vi.mock('sanity', () => ({
   defineLocalesResources: (_namespace: string, resources: unknown) => resources,
-  useSchema: () => schema,
   useClient: () => searchClient,
-  isDraftId: (id: string) => id.startsWith('drafts.'),
-  getVersionFromId: (id: string) => {
-    const match = /^versions\.([^.]+)\./.exec(id)
-    return match ? match[1] : undefined
-  },
-  SanityDefaultPreview: ({title, subtitle}: {title?: string; subtitle?: string}) => (
-    <span>
-      {title}
-      {subtitle ? ` ${subtitle}` : ''}
-    </span>
-  ),
 }))
 vi.mock('sanity/i18n', () => ({
   defineLocaleResourceBundle: (bundle: unknown) => bundle,

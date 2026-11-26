@@ -12,7 +12,8 @@ import {type CurrentUser} from '@sanity/types'
  * @example
  * Fetch the current user and check if they have the role "administrator":
  * ```ts
- * import {userHasRole, useCurrentUser} from 'sanity'
+ * import {useCurrentUser} from 'sanity'
+ * import {userHasRole} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
  *
  * export function MyComponent() {
  *   const user = useCurrentUser()

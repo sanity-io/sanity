@@ -14,9 +14,11 @@ import {
   take,
   timeout,
 } from 'rxjs'
-import {getPublishedId, useDocumentStore, useStudioErrorHandler} from 'sanity'
 import {useRouter, useRouterState} from 'sanity/router'
 
+import {useDocumentStore} from '../../../../core/store/datastores'
+import {useStudioErrorHandler} from '../../../../core/studio/requestErrors/useStudioErrorHandler'
+import {getPublishedId} from '../../../../core/util/draftUtils'
 import {isRecord} from '../../../../core/util/isRecord'
 import {type StructureContext} from '../../../structureBuilder/types'
 import {resolveIntent} from '../../../structureResolvers/resolveIntent'

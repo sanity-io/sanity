@@ -14,7 +14,8 @@ import {type LegacyThemeProps} from './types'
  *
  * @example
  * ```tsx
- * import {buildLegacyTheme, defineConfig} from 'sanity'
+ * import {defineConfig} from 'sanity'
+ * import {buildLegacyTheme} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
  *
  * export default defineConfig({
  *   // project configuration ...

@@ -1,13 +1,8 @@
 import {type SanityDocument} from '@sanity/client'
 import {lazy, Suspense} from 'react'
-import {
-  definePlugin,
-  getPublishedId,
-  getVersionFromId,
-  type InputProps,
-  isDocumentSchemaType,
-} from 'sanity'
+import {definePlugin, type InputProps, isDocumentSchemaType} from 'sanity'
 
+import {getPublishedId, getVersionFromId} from '../core/util/draftUtils'
 import {
   DEFAULT_TOOL_ICON,
   DEFAULT_TOOL_NAME,

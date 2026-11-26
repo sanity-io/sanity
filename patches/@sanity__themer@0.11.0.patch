@@ -1,0 +1,28 @@
+diff --git a/dist/ResizableSidebar-DZoSW3hb.js b/dist/ResizableSidebar-DZoSW3hb.js
+index 662d348adb2414468d0dd28b2d132a3db7c6208a..1e8e388f99041049b5a918ac5dbde63ef88cc30d 100644
+--- a/dist/ResizableSidebar-DZoSW3hb.js
++++ b/dist/ResizableSidebar-DZoSW3hb.js
+@@ -2,7 +2,8 @@ import { a as displayTitle, c as resolveThemes, l as addThemerTransitionType, n
+ import { a as DEFAULT_ACCENT, c as deriveTextColor, d as hexToHsl, f as hslToHex, i as buildPalette, l as resolveThemeOptions, o as DEFAULT_BACKGROUND, p as relativeLuminance, r as buildBasePalettes, s as SCHEMES, u as isColor } from "./presets-0DdJOpZi.js";
+ import { multiply, parseColor, rgbToHex, screen } from "@sanity/ui/theme";
+ import { c } from "react/compiler-runtime";
+-import { useClient, useColorSchemeValue } from "sanity";
++import { useClient } from "sanity";
++import { useColorSchemeValue } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver";
+ import { Badge, BoundaryElementProvider, Box, Button, Card, Dialog, Flex, Layer, Stack, Text, TextArea, TextInput, useMediaIndex, useRootTheme, useTheme_v2 } from "@sanity/ui";
+ import { Tooltip } from "@sanity/ui/tooltip";
+ import { Activity, createContext, startTransition, useContext, useEffect, useId, useRef, useState } from "react";
+diff --git a/dist/tool.js b/dist/tool.js
+index 5b3b0b12d3ab2e06b7e57ec29a1e4a0a29763549..02ed952deb33798985b1ed0e3689f07aa7c46194 100644
+--- a/dist/tool.js
++++ b/dist/tool.js
+@@ -2,7 +2,8 @@ import "@sanity/themer/bundle.css";
+ import { a as displayTitle, c as resolveThemes, d as NAVBAR_SELECTOR, i as createCustomTheme, l as addThemerTransitionType, n as CONFIG_TITLE, o as duplicateTitle, s as initialThemerState, u as viewTransitionClasses } from "./themes-CcM3_GBB.js";
+ import { n as buildTheme, s as SCHEMES, t as presets, u as isColor } from "./presets-0DdJOpZi.js";
+ import { c } from "react/compiler-runtime";
+-import { definePlugin, useColorSchemeValue } from "sanity";
++import { definePlugin } from "sanity";
++import { useColorSchemeValue } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver";
+ import { ColorWheelIcon } from "@sanity/icons/ColorWheel";
+ import { BoundaryElementProvider, Box, Button, Card, Flex, Text, ThemeProvider, useMediaIndex, usePrefersReducedMotion } from "@sanity/ui";
+ import { Tooltip } from "@sanity/ui/tooltip";

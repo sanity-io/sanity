@@ -20,20 +20,15 @@ import {
   type DocumentActionsContext,
   type DocumentFieldAction,
   type EditStateFor,
-  getPublishedId,
-  getReleaseIdFromReleaseDocumentId,
-  isVersionId,
   type PartialContext,
-  pathToString,
-  useCopyPaste,
   usePerspective,
-  useSchema,
   useWorkspace,
 } from 'sanity'
 import {DocumentPaneContext, DocumentPaneInfoContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
 import {getDocumentVersionType} from '../../../core/config/document/useConfiguredDocumentActionIds'
+import {pathToString} from '../../../core/field/paths/helpers'
 import {
   DivergencesProvider,
   useDocumentDivergences,
@@ -41,6 +36,7 @@ import {
 import {ParseErrorsProvider} from '../../../core/form/studio/contexts/ParseErrors'
 import {useDocumentForm} from '../../../core/form/useDocumentForm'
 import {useDocumentIdStack} from '../../../core/hooks/useDocumentIdStack'
+import {useSchema} from '../../../core/hooks/useSchema'
 import {
   getCreatableVariantTarget,
   useTargetDocumentState,
@@ -48,9 +44,12 @@ import {
 import {getDefaultVariant} from '../../../core/perspective/getDefaultVariant'
 import {isPerspectiveWriteable} from '../../../core/perspective/isPerspectiveWriteable'
 import {useActiveReleases} from '../../../core/releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
 import {isGoingToUnpublish} from '../../../core/releases/util/isGoingToUnpublish'
 import {selectUpstreamVersion} from '../../../core/store/document/selectUpstreamVersion'
+import {useCopyPaste} from '../../../core/studio/copyPaste/CopyPasteProvider'
 import {useSource} from '../../../core/studio/source'
+import {getPublishedId, isVersionId} from '../../../core/util/draftUtils'
 import {EMPTY_ARRAY} from '../../../core/util/empty'
 import {
   isCardinalityOneRelease,

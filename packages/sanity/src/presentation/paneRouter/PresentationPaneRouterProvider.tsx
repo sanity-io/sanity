@@ -1,6 +1,5 @@
 import {toString as pathToString} from '@sanity/util/paths'
 import {type PropsWithChildren, useCallback, use, useMemo, type RefAttributes} from 'react'
-import {getPublishedId} from 'sanity'
 import {PresentationPaneLinksContext} from 'sanity/_singletons'
 import {StateLink, useRouter} from 'sanity/router'
 import {
@@ -11,6 +10,7 @@ import {
   type ReferenceChildLinkProps,
 } from 'sanity/structure'
 
+import {getPublishedId} from '../../core/util/draftUtils'
 import {useUnique} from '../../core/util/useUnique'
 import {
   type PresentationNavigate,

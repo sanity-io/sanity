@@ -34,7 +34,6 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('sanity', () => ({
   useDateTimeFormat: () => ({format: () => 'a date'}),
-  UserAvatar: () => null,
 }))
 vi.mock('sanity/i18n', () => ({
   defineLocaleResourceBundle: (bundle: unknown) => bundle,
@@ -45,6 +44,7 @@ vi.mock('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', (
   ContextMenuButton: (props: Record<string, unknown>) => (
     <button type="button" data-testid="query-menu" {...props} />
   ),
+  UserAvatar: () => null,
 }))
 
 const personal: QueryConfig = {

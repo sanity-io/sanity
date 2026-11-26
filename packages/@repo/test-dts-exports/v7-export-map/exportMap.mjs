@@ -118,6 +118,28 @@ function getExportKind(symbol) {
 }
 
 /**
+ * A name an `export * from` / `export type * from` declaration provides resolves straight to its
+ * declaration, with no alias that `getExportKind` could find `type` on. It is only a type when
+ * every star export that provides it is type-only (`export type * from '@sanity/types'`).
+ *
+ * @param {import('ts-morph').SourceFile} sourceFile
+ * @param {import('ts-morph').Symbol} symbol
+ */
+function isOnlyTypeStarExport(sourceFile, symbol) {
+  if (symbol.isAlias()) return false
+  const providers = sourceFile
+    .getExportDeclarations()
+    .filter((declaration) => !declaration.hasNamedExports() && !declaration.getNamespaceExport())
+    .filter((declaration) =>
+      declaration
+        .getModuleSpecifierSourceFile()
+        ?.getExportSymbols()
+        .some((exported) => exported.getName() === symbol.getName()),
+    )
+  return providers.length > 0 && providers.every((declaration) => declaration.isTypeOnly())
+}
+
+/**
  * Reads the export map of the built packages (their `lib/**\/*.d.ts`), so run a build first.
  *
  * @returns {ExportMap}
@@ -146,7 +168,9 @@ export function readExportMap() {
         .toSorted((a, b) => (a.getName() < b.getName() ? -1 : a.getName() > b.getName() ? 1 : 0))
       for (const symbol of exported) {
         if (isTombstoneExport(symbol)) continue
-        names[symbol.getName()] = getExportKind(symbol)
+        names[symbol.getName()] = isOnlyTypeStarExport(sourceFile, symbol)
+          ? 'type'
+          : getExportKind(symbol)
       }
       map[path.posix.join(packageName, subpath)] = names
     }

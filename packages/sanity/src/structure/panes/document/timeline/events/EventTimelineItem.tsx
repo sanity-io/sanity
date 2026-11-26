@@ -1,17 +1,17 @@
 import {Card} from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
+import {type DocumentGroupEvent} from 'sanity'
+import {useTranslation} from 'sanity/i18n'
+import {Flex} from 'ui5'
+
+import {Event} from '../../../../../core/field/diff/components/Event'
 import {
-  type DocumentGroupEvent,
   isDeleteDocumentGroupEvent,
   isDeleteDocumentVersionEvent,
   isScheduleDocumentVersionEvent,
   isUnpublishDocumentEvent,
   isUnscheduleDocumentVersionEvent,
-} from 'sanity'
-import {useTranslation} from 'sanity/i18n'
-import {Flex} from 'ui5'
-
-import {Event} from '../../../../../core/field/diff/components/Event'
+} from '../../../../../core/store/events/types'
 import {Tooltip} from '../../../../../ui-components/tooltip/Tooltip'
 
 export interface TimelineItemProps {

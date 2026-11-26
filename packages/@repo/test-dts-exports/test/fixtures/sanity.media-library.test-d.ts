@@ -3,6 +3,8 @@
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
 import type {
+  createSanityMediaLibraryFileSource,
+  createSanityMediaLibraryImageSource,
   defineVideoField,
   VideoDefinition,
   VideoOptions,
@@ -12,6 +14,12 @@ import type {
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/media-library', () => {
+  test('createSanityMediaLibraryFileSource', () => {
+    expectTypeOf<typeof createSanityMediaLibraryFileSource>().toBeFunction()
+  })
+  test('createSanityMediaLibraryImageSource', () => {
+    expectTypeOf<typeof createSanityMediaLibraryImageSource>().toBeFunction()
+  })
   test('defineVideoField', () => {
     expectTypeOf<typeof defineVideoField>().toBeFunction()
   })

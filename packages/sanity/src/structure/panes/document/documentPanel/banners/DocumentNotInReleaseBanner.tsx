@@ -1,6 +1,6 @@
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useState} from 'react'
-import {getReleaseIdFromReleaseDocumentId, type SystemBundle, type TargetPerspective} from 'sanity'
+import {type SystemBundle, type TargetPerspective} from 'sanity'
 import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, type TextProps} from 'ui5'
 
@@ -9,6 +9,7 @@ import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle
 import {VersionInlineBadge} from '../../../../../core/releases/components/VersionInlineBadge'
 import {useVersionOperations} from '../../../../../core/releases/hooks/useVersionOperations'
 import {LATEST} from '../../../../../core/releases/util/const'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
 import {isAgentBundleName} from '../../../../../core/store/agent/createAgentBundlesStore'
 import {structureLocaleNamespace} from '../../../../i18n'

@@ -1,8 +1,9 @@
 import userEvent from '@testing-library/user-event'
 import {act, type ReactNode} from 'react'
-import {PatchEvent, set, useFormValue} from 'sanity'
+import {set, useFormValue} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {PatchEvent} from '../../../core/form/patch/PatchEvent'
 import {type IslandHandle, mountIsland} from '../islandRuntime'
 
 describe('mountIsland', () => {

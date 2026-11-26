@@ -1,5 +1,4 @@
-import {getPublishedId} from 'sanity'
-
+import {getPublishedId} from '../../../core/util/draftUtils'
 import {type DocumentListPaneItem, type SortOrder} from './types'
 
 /**

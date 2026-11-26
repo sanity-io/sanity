@@ -39,7 +39,7 @@ import {
   useState,
 } from 'react'
 import {createRoot} from 'react-dom/client'
-import {type Locale, PatchEvent, set, unset} from 'sanity'
+import {type Locale, set, unset} from 'sanity'
 import {
   DocumentIdContext,
   FormValueContext,
@@ -50,6 +50,7 @@ import {
 import {Text} from 'ui5'
 
 import {ChangeIndicatorsTracker} from '../../core/changeIndicators/tracker'
+import {PatchEvent} from '../../core/form/patch/PatchEvent'
 import {defaultLocale} from '../../core/i18n/locales'
 
 /** Module-level so every mount shares one theme object (hosts push `scheme` as plain data). */

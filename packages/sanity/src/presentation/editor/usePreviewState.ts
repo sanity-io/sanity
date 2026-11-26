@@ -2,15 +2,11 @@ import {type SchemaType} from '@sanity/types'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {of} from 'rxjs'
-import {
-  getPreviewStateObservable,
-  type PreviewValue,
-  type SanityDocument,
-  useDocumentPreviewStore,
-  usePerspective,
-} from 'sanity'
+import {type PreviewValue, type SanityDocument, usePerspective} from 'sanity'
 
 import {getDefaultVariant} from '../../core/perspective/getDefaultVariant'
+import {getPreviewStateObservable} from '../../core/preview/utils/getPreviewStateObservable'
+import {useDocumentPreviewStore} from '../../core/store/datastores'
 
 interface PreviewState {
   isLoading?: boolean

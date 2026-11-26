@@ -181,22 +181,19 @@ trustPolicyExclude:
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0
 patchedDependencies:
-  # Imports FormBuilder / FormCallbacksProvider / FormFieldHeaderText / FormInput from the sanity
-  # root; those now live on the private internals entry (SAPP-5036). Drop once a plugin release
-  # that imports from the internals entry ships.
+  # The patches below rewrite imports of names that v7 no longer exports from the sanity root to the
+  # private internals entry. Drop each one once a release of the plugin that supports this sanity
+  # major ships.
   '@sanity/assist@6.3.0': patches/@sanity__assist@6.3.0.patch
-  # Rewrites defineLocaleResourceBundle / useTranslation to sanity/i18n, and
-  # DEFAULT_STUDIO_CLIENT_OPTIONS / InsufficientPermissionsMessage to the private internals entry
-  # (SAPP-5036). Drop once a release of the plugin that supports this sanity major ships.
+  '@sanity/code-input@7.3.16': patches/@sanity__code-input@7.3.16.patch
+  # Also rewrites defineLocaleResourceBundle / useTranslation to sanity/i18n.
   '@sanity/document-internationalization@6.3.1': patches/@sanity__document-internationalization@6.3.1.patch
-  # Imports ChangeIndicator / DiffFromTo from the sanity root; those now live on the private
-  # internals entry (SAPP-5036). Drop once a plugin release that imports from the internals entry
-  # ships.
   '@sanity/google-maps-input@6.1.18': patches/@sanity__google-maps-input@6.1.18.patch
-  # Imports ArrayOfObjectsItem from the sanity root; that now lives on the private internals entry
-  # (SAPP-5036). Drop once a plugin release that imports from the internals entry ships.
+  '@sanity/language-filter@5.0.24': patches/@sanity__language-filter@5.0.24.patch
+  '@sanity/themer@0.11.0': patches/@sanity__themer@0.11.0.patch
   sanity-plugin-internationalized-array@5.3.10: patches/sanity-plugin-internationalized-array@5.3.10.patch
-  # 6.6.3 imports WithReferringDocuments from 'sanity', which v7 no longer exports. The patch
-  # declares the same render-prop wrapper inside the plugin on top of useReferringDocuments(id, []),
-  # so behavior is unchanged. Drop once a plugin release that uses the hook ships
+  # 6.6.3 also imports WithReferringDocuments, which v7 no longer exports at all. The patch declares
+  # the same render-prop wrapper inside the plugin on top of useReferringDocuments(id, []), so
+  # behavior is unchanged.
   sanity-plugin-media@6.6.3: patches/sanity-plugin-media@6.6.3.patch
+  sanity-plugin-utils@2.0.24: patches/sanity-plugin-utils@2.0.24.patch

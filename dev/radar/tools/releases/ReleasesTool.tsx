@@ -21,7 +21,8 @@ import {
 } from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, map, of} from 'rxjs'
-import {useClient, useCurrentUser, useDocumentStore} from 'sanity'
+import {useClient, useCurrentUser} from 'sanity'
+import {useDocumentStore} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useIntentLink} from 'sanity/router'
 import {Text, Container, Flex, VStack, Icon, Link} from 'ui5'
 

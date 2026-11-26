@@ -1,7 +1,6 @@
 import {type ClientPerspective, type ReleaseDocument, type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
 import {
-  getReleaseIdFromReleaseDocumentId,
   type PerspectiveContextValue,
   type PerspectiveStack,
   useClient,
@@ -9,6 +8,7 @@ import {
   useWorkspace,
 } from 'sanity'
 import {
+  getReleaseIdFromReleaseDocumentId,
   getDefaultVariant,
   isCardinalityOneRelease,
   sortReleases,

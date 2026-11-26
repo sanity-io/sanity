@@ -3,26 +3,18 @@ import {type SanityDocumentLike} from '@sanity/types'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
 import {map, type Observable} from 'rxjs'
-import {
-  getPublishedId,
-  isDraftId,
-  isPublishedId,
-  isVersionId,
-  type SanityClient,
-  type SchemaType,
-  type SearchStrategy,
-  useClient,
-  useDocumentPreviewStore,
-  useSchema,
-} from 'sanity'
+import {type SanityClient, type SchemaType, type SearchStrategy, useClient} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Grid, Box, Flex} from 'ui5'
 
 import {ReferenceAutocomplete} from '../../../core/form/inputs/ReferenceInput/ReferenceAutocomplete'
+import {useSchema} from '../../../core/hooks/useSchema'
 import {createSearch} from '../../../core/search/search'
 import {useSearchMachine} from '../../../core/search/useSearchMachine'
+import {useDocumentPreviewStore} from '../../../core/store/datastores'
 import {useSource} from '../../../core/studio/source'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../core/studioClient'
+import {getPublishedId, isDraftId, isPublishedId, isVersionId} from '../../../core/util/draftUtils'
 import {structureLocaleNamespace} from '../../i18n'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
 import {LinkToExistingPreview} from './LinkToExistingPreview'

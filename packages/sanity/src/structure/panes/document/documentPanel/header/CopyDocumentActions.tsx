@@ -5,7 +5,7 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {Menu} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
-import {getDraftId, usePerspective} from 'sanity'
+import {usePerspective} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {useRouter} from 'sanity/router'
 
@@ -15,6 +15,7 @@ import {
   useTargetDocumentState,
 } from '../../../../../core/hooks/useTargetDocumentState'
 import {getDefaultVariant} from '../../../../../core/perspective/getDefaultVariant'
+import {getDraftId} from '../../../../../core/util/draftUtils'
 import {getDocumentVersionVariantId} from '../../../../../core/util/getDocumentVersionVariant'
 import {encodeVariantLinkParam} from '../../../../../core/variants/util/variantSelection'
 import {Button} from '../../../../../ui-components/button/Button'

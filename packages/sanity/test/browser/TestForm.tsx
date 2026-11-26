@@ -8,16 +8,11 @@ import {
 import {BoundaryElementProvider} from '@sanity/ui'
 import {useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState} from 'react'
 import {
-  createPatchChannel,
   type DocumentFieldAction,
   type FormBuilderProps,
   type FormNodePresence,
-  type PatchEvent,
   type StateTree,
-  useCopyPaste,
   useWorkspace,
-  validateDocument,
-  VirtualizerScrollInstanceProvider,
   type Workspace,
 } from 'sanity'
 import {
@@ -33,9 +28,14 @@ import {
 import {css, styled} from 'styled-components'
 import {Box} from 'ui5'
 
+import {VirtualizerScrollInstanceProvider} from '../../src/core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 import {applyAll} from '../../src/core/form/patch/applyPatch'
+import {createPatchChannel} from '../../src/core/form/patch/PatchChannel'
+import {type PatchEvent} from '../../src/core/form/patch/PatchEvent'
 import {PresenceProvider} from '../../src/core/form/studio/contexts/Presence'
 import {type FormDocumentValue} from '../../src/core/form/types/formDocumentValue'
+import {useCopyPaste} from '../../src/core/studio/copyPaste/CopyPasteProvider'
+import {validateDocument} from '../../src/core/validation'
 import {createMockSanityClient} from './createMockSanityClient'
 import {setValidationPending} from './validationPending'
 

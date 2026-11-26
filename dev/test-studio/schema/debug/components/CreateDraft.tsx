@@ -1,7 +1,8 @@
 import {Button} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {getDraftId, useClient, usePerspective} from 'sanity'
+import {useClient, usePerspective} from 'sanity'
 import {
+  getDraftId,
   getDefaultVariant,
   getTargetSiblings,
   useVariantDocumentOperations,

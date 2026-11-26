@@ -5,7 +5,7 @@ import {ParentSize} from '@visx/responsive'
 import {useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, type Observable, of} from 'rxjs'
-import {useDocumentStore} from 'sanity'
+import {useDocumentStore} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Text, Flex, Grid, VStack, Link} from 'ui5'
 
 import {CALIBRATION_EXPLAINER, type TrendTag} from './data'

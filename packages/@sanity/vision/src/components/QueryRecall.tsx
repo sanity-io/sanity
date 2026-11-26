@@ -11,8 +11,11 @@ import {useToast} from '@sanity/ui/toast'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {dequal as isEqual} from 'dequal/lite'
 import {type ComponentProps, type ReactElement, useCallback, useState} from 'react'
-import {UserAvatar, useDateTimeFormat} from 'sanity'
-import {ContextMenuButton} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {useDateTimeFormat} from 'sanity'
+import {
+  UserAvatar,
+  ContextMenuButton,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box, VStack, type VStackProps} from 'ui5'
 

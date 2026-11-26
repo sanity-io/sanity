@@ -1,19 +1,16 @@
 import {useCallback, useMemo} from 'react'
-import {
-  getReleaseIdFromReleaseDocumentId,
-  getVersionFromId,
-  isVersionId,
-  useDocumentVersions,
-  useOnlyHasVersions,
-} from 'sanity'
 import {Translate, useTranslation} from 'sanity/i18n'
 import {Text, Flex, type TextProps} from 'ui5'
 
 import {useSetPerspective} from '../../../../../core/perspective/useSetPerspective'
 import {ReleaseTitle} from '../../../../../core/releases/components/ReleaseTitle'
 import {VersionInlineBadge} from '../../../../../core/releases/components/VersionInlineBadge'
+import {useDocumentVersions} from '../../../../../core/releases/hooks/useDocumentVersions'
+import {useOnlyHasVersions} from '../../../../../core/releases/hooks/useOnlyHasVersions'
 import {useActiveReleases} from '../../../../../core/releases/store/useActiveReleases'
+import {getReleaseIdFromReleaseDocumentId} from '../../../../../core/releases/util/getReleaseIdFromReleaseDocumentId'
 import {getReleaseTone} from '../../../../../core/releases/util/getReleaseTone'
+import {getVersionFromId, isVersionId} from '../../../../../core/util/draftUtils'
 import {isCardinalityOneRelease} from '../../../../../core/util/releaseUtils'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
