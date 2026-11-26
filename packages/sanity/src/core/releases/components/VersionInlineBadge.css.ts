@@ -1,13 +1,19 @@
 import {css} from '#styled-system/css'
 
-// An inline name chip in running text. The glyph and the name sit inside one box that never
-// breaks: the chip wraps to the next line as a unit, and a name longer than the line truncates
-// with an ellipsis (the full name stays in the DOM, and in the title while it is cut short).
 const base = css.raw({
   borderRadius: '3px',
   textDecoration: 'none',
   padding: '0px 2px',
   fontWeight: 500,
+})
+
+/**
+ * The variant banners' chip (with a glyph or `truncate`). The glyph and the name sit inside one
+ * box that never breaks: the chip wraps to the next line as a unit, and a name longer than the
+ * line truncates with an ellipsis (the full name stays in the DOM, and in the title while it is
+ * cut short).
+ */
+export const versionInlineBadgeChip = css({
   display: 'inline-flex',
   alignItems: 'center',
   whiteSpace: 'nowrap',

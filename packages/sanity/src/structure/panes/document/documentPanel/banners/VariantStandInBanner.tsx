@@ -24,6 +24,7 @@ export function VariantStandInBanner() {
 
   return (
     <Banner
+      truncateChips
       tone="neutral"
       icon={InfoOutlineIcon}
       content={

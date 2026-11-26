@@ -679,7 +679,7 @@ describe('document panel banners', () => {
       })
 
       await render(
-        <TestWrapper schemaTypes={schemaTypes}>
+        <TestWrapper schemaTypes={schemaTypes} betaFeatures={VARIANTS_ON}>
           <div data-testid="narrow-banners" style={{width}}>
             <Banners variant={variant} />
           </div>
@@ -750,7 +750,7 @@ describe('document panel banners', () => {
     })
 
     await render(
-      <TestWrapper schemaTypes={schemaTypes}>
+      <TestWrapper schemaTypes={schemaTypes} betaFeatures={VARIANTS_ON}>
         <BannerHarness perspective={withVariant(draftsPerspective)}>
           <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'drafts'}} />
         </BannerHarness>
@@ -826,7 +826,7 @@ describe('document panel banners', () => {
         )
       }
       await render(
-        <TestWrapper schemaTypes={schemaTypes}>
+        <TestWrapper schemaTypes={schemaTypes} betaFeatures={VARIANTS_ON}>
           <div style={{width}}>
             <Toggling />
           </div>
@@ -887,7 +887,7 @@ describe('document panel banners', () => {
       )
     }
     await render(
-      <TestWrapper schemaTypes={schemaTypes}>
+      <TestWrapper schemaTypes={schemaTypes} betaFeatures={VARIANTS_ON}>
         <Toggling />
       </TestWrapper>,
     )
@@ -932,7 +932,7 @@ describe('document panel banners', () => {
     )
 
     await render(
-      <TestWrapper schemaTypes={schemaTypes}>
+      <TestWrapper schemaTypes={schemaTypes} betaFeatures={VARIANTS_ON}>
         {/* Closed inventory: the filled button */}
         <BannerHarness perspective={withVariant(draftsPerspective)}>
           <DocumentNotInVariantBanner bannerCase={{kind: 'create', perspective: 'drafts'}} />

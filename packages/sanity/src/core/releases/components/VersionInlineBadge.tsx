@@ -15,24 +15,39 @@ import {LATEST} from '../util/const'
 import {getReleaseTone} from '../util/getReleaseTone'
 import {
   versionInlineBadge,
+  versionInlineBadgeChip,
   versionInlineBadgeIcon,
   versionInlineBadgeName,
 } from './VersionInlineBadge.css'
 
 /**
- * An inline name chip in running text (a release, a variant, a perspective): the glyph, when
- * there is one, and the name in one box that wraps to the next line as a unit and never splits
- * between them. A name longer than the line truncates with an ellipsis; the full name stays in the
- * DOM for assistive technology, and shows as the chip's title while it is cut short.
+ * An inline name chip in running text (a release, a perspective): a span in the version's tone.
+ *
+ * With an `icon` (a variant's diamond) or `truncate`, the chip is the variant banners' layout: the
+ * glyph and the name in one box that wraps to the next line as a unit and never splits between
+ * them. A name longer than the line truncates with an ellipsis; the full name stays in the DOM for
+ * assistive technology, and shows as the chip's title while it is cut short.
  *
  * @internal
  */
 export function VersionInlineBadge(
   props: ComponentProps<'span'> & {
     $tone?: BadgeTone
-    /** The chip's glyph (a variant's diamond, a release's mark), drawn inside the chip. */
+    /** The chip's glyph (a variant's diamond), drawn inside the chip. Implies `truncate`. */
     icon?: ReactNode
+    /** Keep the chip on one line and truncate a long name, as the variant banners do. */
+    truncate?: boolean
   },
+) {
+  const {$tone, className, icon, truncate, ...rest} = props
+  if (!icon && !truncate) {
+    return <span {...rest} className={clsx(versionInlineBadge[$tone ?? 'default'], className)} />
+  }
+  return <TruncatingInlineBadge {...rest} $tone={$tone} className={className} icon={icon} />
+}
+
+function TruncatingInlineBadge(
+  props: ComponentProps<'span'> & {$tone?: BadgeTone; icon?: ReactNode},
 ) {
   const {$tone, className, icon, children, title, onPointerEnter, ...rest} = props
   const nameRef = useRef<HTMLSpanElement>(null)
@@ -53,7 +68,7 @@ export function VersionInlineBadge(
       data-inline-chip=""
       title={title ?? truncatedTitle}
       onPointerEnter={handlePointerEnter}
-      className={clsx(versionInlineBadge[$tone ?? 'default'], className)}
+      className={clsx(versionInlineBadge[$tone ?? 'default'], versionInlineBadgeChip, className)}
     >
       {icon ? (
         <span className={versionInlineBadgeIcon} aria-hidden="true" data-inline-chip-icon="">

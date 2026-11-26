@@ -544,7 +544,11 @@ describe('DocumentPanel Add to release', () => {
         setParams: vi.fn(),
       } as unknown as ReturnType<typeof usePaneRouter>)
 
-      const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
+      const wrapper = await createTestProvider({
+        resources: [structureUsEnglishLocaleBundle],
+        // The open beta banner layout (one filled action) only shows with Variants on
+        config: {beta: {variants: {enabled: true}}},
+      })
       render(
         <PerspectiveContext.Provider
           value={

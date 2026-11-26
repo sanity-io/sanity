@@ -49,12 +49,18 @@ export function VariantBadge({children, variantLead}: VariantBannerChipProps) {
 export function ReleaseBadge({children, releaseLead, releaseTone}: VariantBannerChipProps) {
   return (
     <Lead lead={releaseLead}>
-      <VersionInlineBadge $tone={releaseTone}>{children}</VersionInlineBadge>
+      <VersionInlineBadge $tone={releaseTone} truncate>
+        {children}
+      </VersionInlineBadge>
     </Lead>
   )
 }
 
 /** Drafts, where the Published banners point: a display chip, not a control. */
 export function DraftsBadge({children, draftsTone}: VariantBannerChipProps) {
-  return <VersionInlineBadge $tone={draftsTone}>{children}</VersionInlineBadge>
+  return (
+    <VersionInlineBadge $tone={draftsTone} truncate>
+      {children}
+    </VersionInlineBadge>
+  )
 }

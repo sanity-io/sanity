@@ -27,6 +27,7 @@ export function VariantDefinitionNotFoundBanner({
 
   return (
     <Banner
+      truncateChips
       tone="caution"
       icon={WarningOutlineIcon}
       content={

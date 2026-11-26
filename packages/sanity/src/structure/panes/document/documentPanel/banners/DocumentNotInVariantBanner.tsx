@@ -261,6 +261,7 @@ export function DocumentNotInVariantBanner({bannerCase}: {bannerCase: NotInVaria
 
   return (
     <Banner
+      truncateChips
       tone="neutral"
       icon={InfoOutlineIcon}
       content={

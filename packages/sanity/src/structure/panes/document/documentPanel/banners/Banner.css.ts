@@ -42,17 +42,22 @@ export const icon = css({
 
 /** The text column: it wraps, in roughly equal lines (a progressive enhancement, inherited by the text). */
 export const content = css({
-  'display': 'flex',
-  'alignItems': 'center',
-  'flexWrap': 'wrap',
-  'gap': '8px',
-  'flex': '1 1 0%',
-  'minWidth': 0,
-  'paddingTop': '8px',
-  'paddingBottom': '8px',
-  'textWrap': 'balance',
-  // The sentence may narrow below its longest unbreakable run (an inline name chip), so a chip
-  // truncates inside the banner instead of widening it
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  gap: '8px',
+  flex: '1 1 0%',
+  minWidth: 0,
+  paddingTop: '8px',
+  paddingBottom: '8px',
+  textWrap: 'balance',
+})
+
+/**
+ * For the variant banners: the sentence may narrow below its longest unbreakable run (an inline
+ * name chip), so a chip truncates inside the banner instead of widening it.
+ */
+export const contentTruncatesChips = css({
   '& > *': {
     minWidth: 0,
     maxWidth: '100%',

@@ -186,6 +186,8 @@ async function renderBanner(
 ) {
   const wrapper = await createTestProvider({
     resources: [structureUsEnglishLocaleBundle],
+    // The variant banners are an open beta surface: they only show with Variants on
+    config: {beta: {variants: {enabled: true}}},
   })
 
   return render(

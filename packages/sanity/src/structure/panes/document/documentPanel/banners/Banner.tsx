@@ -8,6 +8,7 @@ import {
   action as actionSlot,
   actionGroup,
   content as contentColumn,
+  contentTruncatesChips,
   icon as iconCell,
   root,
   row,
@@ -30,6 +31,11 @@ interface BannerProps {
    */
   actions?: ReactNode
   content: ReactNode
+  /**
+   * Let an inline name chip in the sentence truncate inside the banner instead of widening it
+   * (the variant banners, whose chips truncate). Only applies with Variants on.
+   */
+  truncateChips?: boolean
   icon?: ComponentType
   tone?: CardTone
   paddingY?: number
@@ -81,6 +87,8 @@ function ClassicBanner(props: BannerProps) {
     icon: BannerIcon,
     tone = 'transparent',
     paddingY = 2,
+    // The classic layout has no chip truncation
+    truncateChips: _truncateChips,
     ...rest
   } = props
   const iconTone =
@@ -130,6 +138,7 @@ function OpenBetaBanner(props: BannerProps) {
     icon: BannerIcon,
     tone = 'transparent',
     paddingY = 2,
+    truncateChips,
     ...rest
   } = props
   const iconTone =
@@ -161,7 +170,13 @@ function OpenBetaBanner(props: BannerProps) {
                   />
                 </div>
               )}
-              <div className={contentColumn}>{content}</div>
+              <div
+                className={
+                  truncateChips ? `${contentColumn} ${contentTruncatesChips}` : contentColumn
+                }
+              >
+                {content}
+              </div>
             </div>
             {actions && !action && (
               <div className={actionSlot}>
