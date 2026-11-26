@@ -71,6 +71,35 @@ describe('getChangedFieldTitles', () => {
     ).toEqual([['Translations', 'Norwegian']])
   })
 
+  it('heads every change of an object with its title when it changed several fields', () => {
+    expect(
+      getChangedFieldTitles(authorType, diff({}, {translations: {sv: 'Ada', no: 'Ada'}})),
+    ).toEqual([
+      ['Translations', 'Swedish'],
+      ['Translations', 'Norwegian'],
+    ])
+  })
+
+  it('heads every item of an array with its title when several items changed', () => {
+    expect(
+      getChangedFieldTitles(
+        authorType,
+        diff(
+          {},
+          {
+            reviews: [
+              {_key: 'a', _type: 'review', title: 'Good'},
+              {_key: 'b', _type: 'review', title: 'Great'},
+            ],
+          },
+        ),
+      ),
+    ).toEqual([
+      ['Reviews', '#1', 'Title'],
+      ['Reviews', '#2', 'Title'],
+    ])
+  })
+
   it('heads a field of an array item with the position of the item', () => {
     expect(
       getChangedFieldTitles(
