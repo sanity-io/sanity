@@ -1,3 +1,4 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ChangeEvent,
@@ -44,6 +45,11 @@ import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
 import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
+import {
+  DocumentGroupInventoryVersionCreated,
+  DocumentGroupInventoryVersionSelected,
+  getInventoryVersionTelemetry,
+} from '../__telemetry__/documentGroupInventory.telemetry'
 import {deletionMachine, type ReferringDocuments} from '../machines/deletionMachine'
 import {documentGroupInventoryMachine} from '../machines/documentGroupInventoryMachine'
 import {selectionMachine, type Variant} from '../machines/selectionMachine'
@@ -162,6 +168,7 @@ export function DocumentGroupInventory(
 
   const filterStringEvent = useMemo(() => new Subject<ChangeEvent<HTMLInputElement>>(), [])
   const {feedbackDialogOpened} = useFeedbackTelemetry()
+  const telemetry = useTelemetry()
   const setVariant = useSetVariant()
   const {createVariantDocument} = useVariantDocumentOperations()
 
@@ -309,6 +316,10 @@ export function DocumentGroupInventory(
                         location: 'document_group_inventory',
                       })
                     }
+                    telemetry.log(DocumentGroupInventoryVersionCreated, {
+                      action: 'create_variant',
+                      isVariant: true,
+                    })
 
                     // TODO: Would this be better encapsulated as a machine effect?
                     setVariant({
@@ -327,6 +338,7 @@ export function DocumentGroupInventory(
           documentType,
           documentId,
           schema,
+          telemetry,
           versionState,
         ],
       ),
@@ -518,13 +530,20 @@ const ReadOnlyVariantRow: ComponentType<{
   isSelected: boolean
 }> = ({variant, inventoryRef, onSelect, isSelected}) => {
   const releases = useSelector(inventoryRef, ({context}) => context.releases)
+  const telemetry = useTelemetry()
 
   return (
     <DocumentGroupEntry
       variant={variant}
       releases={releases}
       isSelected={isSelected}
-      onPrimaryAction={() => onSelect(variant.document)}
+      onPrimaryAction={() => {
+        telemetry.log(DocumentGroupInventoryVersionSelected, {
+          mode: 'read_only',
+          ...getInventoryVersionTelemetry(variant.document),
+        })
+        onSelect(variant.document)
+      }}
     />
   )
 }
@@ -573,6 +592,23 @@ const ManagedVariantRow: ComponentType<{
   const releases = useSelector(inventoryRef, ({context}) => context.releases)
 
   const clearScheduledDraftPerspective = perspectiveList?.clearScheduledDraftPerspective
+  const telemetry = useTelemetry()
+  const versionTelemetry = getInventoryVersionTelemetry(document)
+
+  const handleCopyToDraftsComplete = () => {
+    telemetry.log(DocumentGroupInventoryVersionCreated, {
+      action: 'copy_to_drafts',
+      isVariant: versionTelemetry.isVariant,
+    })
+    clearScheduledDraftPerspective?.()
+  }
+
+  const handleAddVersionComplete = () => {
+    telemetry.log(DocumentGroupInventoryVersionCreated, {
+      action: 'add_to_release',
+      isVariant: versionTelemetry.isVariant,
+    })
+  }
 
   const release = resolveVariantRelease(variant, releases)
 
@@ -601,7 +637,8 @@ const ManagedVariantRow: ComponentType<{
     documentVersionInfoStub: document,
     documentType,
     disabled: isLocked,
-    onCopyToDraftsComplete: clearScheduledDraftPerspective,
+    onCopyToDraftsComplete: handleCopyToDraftsComplete,
+    onAddVersionComplete: handleAddVersionComplete,
   })
 
   const contextMenuHandler = isLocked || !releasesToolAvailable ? undefined : handleContextMenu
@@ -615,7 +652,13 @@ const ManagedVariantRow: ComponentType<{
         servedStatus={servedStatus}
         primaryActionRef={setReferenceElement}
         onContextMenu={contextMenuHandler}
-        onPrimaryAction={() => onSelect(document)}
+        onPrimaryAction={() => {
+          telemetry.log(DocumentGroupInventoryVersionSelected, {
+            mode: 'manage',
+            ...versionTelemetry,
+          })
+          onSelect(document)
+        }}
         leading={
           <VariantCheckbox
             data-visible={selectedIds.size !== 0}

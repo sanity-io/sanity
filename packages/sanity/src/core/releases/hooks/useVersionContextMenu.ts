@@ -64,6 +64,8 @@ interface UseVersionContextMenuBaseOptions {
    * when needed.
    */
   onCopyToDraftsComplete?: () => void
+  /** Called after a version was successfully created in a release (after navigating to it). */
+  onAddVersionComplete?: () => void
 }
 /**
  * @internal
@@ -142,6 +144,7 @@ export function useVersionContextMenu(
     disabled = false,
     documentVersionInfoStub: _documentVersionInfoStub,
     onCopyToDraftsComplete,
+    onAddVersionComplete,
   } = options
 
   const {map: releasesMap} = useAllReleases()
@@ -270,6 +273,7 @@ export function useVersionContextMenu(
         } else {
           setPerspective(perspective)
         }
+        onAddVersionComplete?.()
       } catch (err) {
         toast.push({
           closable: true,
@@ -285,6 +289,7 @@ export function useVersionContextMenu(
       closeContextMenu,
       createVersion,
       documentGroupId,
+      onAddVersionComplete,
       setPerspective,
       setVariant,
       variantId,
