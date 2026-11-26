@@ -35,6 +35,7 @@ import {
   selectSourceMapRequest,
   selectWorkspaceDataset,
 } from '../../store/visionMachine'
+import {fetchOnOpenReason} from '../../util/aiQueryChange'
 import {cx} from '../../util/cx'
 import {formatParams} from '../../util/formatParams'
 import {type TextRange} from '../../util/groqFunctions'
@@ -419,7 +420,8 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
     const source = actorRef.getSnapshot().context.fetchOnOpen[tab.id]
     if (!source) return
     actorRef.send({type: 'tab.fetchedOnOpen', id: tab.id})
-    if (source === 'generated') {
+    const reason = fetchOnOpenReason(source)
+    if (reason.type === 'generated') {
       let previousColumns: number | undefined
       let settledFrames = 0
       for (let frame = 0; frame < MAX_LAYOUT_FRAMES; frame++) {
@@ -431,7 +433,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
       }
       await formatQuery().catch(() => undefined)
     }
-    run({type: source})
+    run(reason)
   })
   useEffect(() => {
     resumeAutoRefetch()

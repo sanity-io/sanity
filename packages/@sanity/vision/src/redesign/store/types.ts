@@ -195,6 +195,33 @@ export interface VisionPersistedState {
   functions: VisionSavedFunction[]
 }
 
+/** A lint finding as the Lint tab listed it when Fix with AI was asked to fix it */
+export interface AiLintFinding {
+  /** 1-based, like the editor's gutter */
+  line: number
+  column: number
+  severity: 'error' | 'warning' | 'info' | 'hint'
+  message: string
+}
+
+/** An AI action that writes a tab's query, and what it was given */
+export type AiQueryAction =
+  | {action: 'generate'; prompt: string}
+  | {action: 'edit'; prompt: string}
+  | {action: 'fix-lint'; findings: AiLintFinding[]}
+  | {action: 'improve'; summary: string; suggestions: string[]}
+  | {action: 'fit-document-list'}
+
+/**
+ * The AI action that wrote a generated query, and what it was given: the user's prompt, the lint
+ * findings, or the explanation the improvement followed. Kept on the fetch's history entry, since
+ * the prompt bars and panels clear once the query is in the editor.
+ */
+export type AiQueryChange = AiQueryAction & {
+  /** The tab's query when the action started, which the result replaced */
+  fromQuery: string
+}
+
 export type FetchReason =
   | {type: 'manual'}
   | {type: 'shortcut'}
@@ -203,8 +230,11 @@ export type FetchReason =
   | {type: 'load'}
   /** A tab that refetches automatically was shown again, with nothing current to replay */
   | {type: 'resume'}
-  /** A tab opened with a generated query, fetched as it is shown */
-  | {type: 'generated'}
+  /**
+   * A tab opened with a generated query, fetched as it is shown; `ai` says which AI action wrote
+   * it, and is missing for a query an agent outside the tool opened
+   */
+  | {type: 'generated'; ai?: AiQueryChange}
   /** A query URL pasted into the tab, run as pasted, as the classic tool does */
   | {type: 'paste'}
   /** A query URL a link to the tool named, opened in a tab of its own and run as written */

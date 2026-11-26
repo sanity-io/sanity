@@ -1450,6 +1450,16 @@ describe('VisionRedesign', () => {
       await waitFor(() => expect(view.fetchCalls).toHaveLength(2))
       // The explanation was for the query that was there
       await waitFor(() => expect(screen.queryByTestId('vision-explanation')).toBeNull())
+      // History keeps the explanation the improvement followed
+      fireEvent.click(document.getElementById('vision-response-history-tab') as HTMLElement)
+      const [entry] = screen.getAllByTestId('vision-history-entry')
+      expect(text(entry)).toContain('vision.history.reason.ai.improve')
+      expect(text(entry)).toContain('It finds posts.')
+      expect(
+        within(within(entry).getByTestId('vision-history-ai-suggestions'))
+          .getAllByRole('listitem')
+          .map((item) => item.textContent),
+      ).toEqual(['1.Filter on _type before the join.', '2.Add a slice such as [0...10].'])
     })
 
     it('shows the verdict and suggestions but no Improve query with editQuery off', async () => {
@@ -3022,9 +3032,12 @@ describe('VisionRedesign', () => {
     // The query has text in it now, so Edit takes Generate's place
     expect(screen.queryByTestId('vision-generate-query')).toBeNull()
     expect(screen.getByTestId('vision-edit-query')).toBeTruthy()
+    // History keeps the action and the prompt, which the bar no longer shows
     fireEvent.click(document.getElementById('vision-response-history-tab') as HTMLElement)
-    expect(text(screen.getByTestId('vision-history-entry'))).toContain(
-      'vision.history.reason.generated',
+    const entry = screen.getByTestId('vision-history-entry')
+    expect(text(entry)).toContain('vision.history.reason.ai.generate')
+    expect(text(within(entry).getByTestId('vision-history-ai-prompt'))).toBe(
+      'The 10 most recent authors',
     )
   })
 
