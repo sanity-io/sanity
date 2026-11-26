@@ -1,5 +1,6 @@
 import {type Path, type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {type HTMLProps, memo, type ReactNode} from 'react'
+import {type HTMLProps, memo, type ReactNode, useContext} from 'react'
+import {BaseVariantComparisonContext} from 'sanity/_singletons'
 import {Box, VStack} from 'ui5'
 
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
@@ -78,6 +79,9 @@ export const FormField = memo(function FormField(
     deprecated,
     ...restProps
   } = props
+  // Only a form that compares with a base variant (Variants) needs the title row as an anchor for
+  // the field mark. Everywhere else the field renders as on main.
+  const comparesWithBaseVariant = useContext(BaseVariantComparisonContext) !== undefined
   const {focused, hovered, onMouseEnter, onMouseLeave} = useFieldActions()
 
   return (
@@ -87,7 +91,7 @@ export const FormField = memo(function FormField(
           <FormFieldGutter
             path={path}
             changedFromBaseVariant={changedFromBaseVariant}
-            labelAnchored={Boolean(title)}
+            labelAnchored={comparesWithBaseVariant ? Boolean(title) : undefined}
           />
         }
       >
@@ -114,7 +118,9 @@ export const FormField = memo(function FormField(
               content={
                 <FormFieldHeaderText
                   labelAnchorName={
-                    Array.isArray(path) ? pathToAnchorIdent('label', path) : undefined
+                    comparesWithBaseVariant && Array.isArray(path)
+                      ? pathToAnchorIdent('label', path)
+                      : undefined
                   }
                   description={description}
                   inputId={inputId}

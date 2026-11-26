@@ -1,5 +1,7 @@
 import {defineType} from '@sanity/types'
 import {render, screen} from '@testing-library/react'
+import {type ReactNode} from 'react'
+import {BaseVariantComparisonContext} from 'sanity/_singletons'
 import {describe, expect, it} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
@@ -91,6 +93,16 @@ describe('FormFieldSet', () => {
 // base variant mark (`formFieldAnchor`). That is checked by its geometry in
 // `FormFieldBaseVariantMark.browser.test.tsx`; jsdom has no anchor positioning, so these tests check
 // the inputs to that rule.
+// The form builder sets the compared slot whenever it compares with a base variant. A field outside
+// that renders as on main.
+function Comparing({children}: {children: ReactNode}) {
+  return (
+    <BaseVariantComparisonContext.Provider value="published">
+      {children}
+    </BaseVariantComparisonContext.Provider>
+  )
+}
+
 describe('the base variant mark', () => {
   const anchorsOf = (gutter: HTMLElement) => ({
     input: gutter.style.getPropertyValue('--form-field-anchor-path'),
@@ -104,9 +116,11 @@ describe('the base variant mark', () => {
 
     render(
       <TestProvider>
-        <FormField title="Body" inputId="body" path={['body']} changedFromBaseVariant>
-          <input id="body" />
-        </FormField>
+        <Comparing>
+          <FormField title="Body" inputId="body" path={['body']} changedFromBaseVariant>
+            <input id="body" />
+          </FormField>
+        </Comparing>
       </TestProvider>,
     )
 
@@ -120,14 +134,16 @@ describe('the base variant mark', () => {
 
     render(
       <TestProvider>
-        <FormFieldSet
-          title="Settings"
-          inputId="settings"
-          path={['settings']}
-          changedFromBaseVariant
-        >
-          <input id="settings" />
-        </FormFieldSet>
+        <Comparing>
+          <FormFieldSet
+            title="Settings"
+            inputId="settings"
+            path={['settings']}
+            changedFromBaseVariant
+          >
+            <input id="settings" />
+          </FormFieldSet>
+        </Comparing>
       </TestProvider>,
     )
 
@@ -141,9 +157,11 @@ describe('the base variant mark', () => {
 
     render(
       <TestProvider>
-        <FormField title="Body" inputId="body" path={['body']}>
-          <input id="body" />
-        </FormField>
+        <Comparing>
+          <FormField title="Body" inputId="body" path={['body']}>
+            <input id="body" />
+          </FormField>
+        </Comparing>
       </TestProvider>,
     )
 
@@ -157,9 +175,11 @@ describe('the base variant mark', () => {
 
     render(
       <TestProvider>
-        <FormField inputId="body" path={['body']} changedFromBaseVariant>
-          <input id="body" />
-        </FormField>
+        <Comparing>
+          <FormField inputId="body" path={['body']} changedFromBaseVariant>
+            <input id="body" />
+          </FormField>
+        </Comparing>
       </TestProvider>,
     )
 
@@ -167,5 +187,20 @@ describe('the base variant mark', () => {
       input: '--input_body',
       label: '--input_body',
     })
+  })
+  it('adds nothing for the mark when the form compares nothing (outside Variants)', async () => {
+    const TestProvider = await createTestProvider()
+
+    render(
+      <TestProvider>
+        <FormField title="Body" inputId="body" path={['body']}>
+          <input id="body" />
+        </FormField>
+      </TestProvider>,
+    )
+
+    const gutter = screen.getByTestId('form-field-gutter')
+    expect(anchorsOf(gutter)).toEqual({input: '--input_body', label: ''})
+    expect(document.querySelector('[style*="anchor-name"]')).toBeNull()
   })
 })
