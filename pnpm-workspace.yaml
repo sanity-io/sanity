@@ -185,6 +185,8 @@ minimumReleaseAgeExclude:
   - 'zod@4.6.7'
 
 overrides:
+  # Keep styled-components CSSObject compatible with @sanity/ui's responsive styles.
+  'styled-components@6.6.0>csstype': 3.2.4
   vitest: 'catalog:'
 
 preferWorkspacePackages: true

@@ -309,6 +309,7 @@ catalogs:
       version: 2.3.0
 
 overrides:
+  styled-components@6.6.0>csstype: 3.2.4
   vitest: ^5.1.1
 
 importers:
@@ -11685,9 +11686,6 @@ packages:
   cssstyle@6.2.0:
     resolution: {integrity: sha512-Fm5NvhYathRnXNVndkUsCCuR63DCLVVwGOOwQw782coXFi5HhkXdu289l59HlXZBawsyNccXfWRYvLzcDCdDig==}
     engines: {node: '>=20'}
-
-  csstype@3.2.3:
-    resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
 
   csstype@3.2.4:
     resolution: {integrity: sha512-PoKaoPzQapnEoqUSnHx1u6W6ku8CVEgKsnpmmzU3m1nwkidpPBQ8V/Zq2+bWNrsOKoKLwTGdbx6xF7BXP1zLVQ==}
@@ -26257,8 +26255,6 @@ snapshots:
       css-tree: 3.2.1
       lru-cache: 11.5.3
 
-  csstype@3.2.3: {}
-
   csstype@3.2.4: {}
 
   csv-parse@6.2.1: {}
@@ -31454,7 +31450,7 @@ snapshots:
       '@emotion/is-prop-valid': 1.4.0
       '@types/stylis': 4.2.7
       css-to-react-native: 3.2.0
-      csstype: 3.2.3
+      csstype: 3.2.4
       react: 19.3.1
       stylis: 4.3.6
     optionalDependencies:
