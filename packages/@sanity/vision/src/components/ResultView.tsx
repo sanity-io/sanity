@@ -8,6 +8,7 @@ import {useDataset} from 'sanity'
 import {IntentLink} from 'sanity/router'
 import {Code} from 'ui5'
 
+import {useVisionTelemetry} from '../telemetry/useVisionTelemetry'
 import {getAtKeypath} from '../util/getAtKeypath'
 import * as styles from './ResultView.module.css'
 
@@ -142,12 +143,18 @@ function CopyNodeButton(props: {copy: ResultViewCopy; data: unknown; keypath: st
 }
 
 function DocumentEditLabel(props: {value: string; isKey: boolean; keypath: string}) {
+  const telemetry = useVisionTelemetry()
+
   if (props.isKey || (!props.keypath.endsWith('_id') && !props.keypath.endsWith('_ref'))) {
     return null
   }
 
   return (
-    <IntentLink intent="edit" params={{id: props.value}}>
+    <IntentLink
+      intent="edit"
+      params={{id: props.value}}
+      onClick={() => telemetry.documentOpened('result')}
+    >
       <LinkIcon />
     </IntentLink>
   )

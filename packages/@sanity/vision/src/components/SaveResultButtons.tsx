@@ -4,6 +4,7 @@ import {Tooltip} from '@sanity/ui/tooltip'
 import {useTranslation} from 'sanity'
 
 import {visionLocaleNamespace} from '../i18n'
+import {useVisionTelemetry} from '../telemetry/useVisionTelemetry'
 
 interface SaveButtonProps {
   blobUrl: string | undefined
@@ -11,6 +12,7 @@ interface SaveButtonProps {
 
 export function SaveCsvButton({blobUrl}: SaveButtonProps) {
   const {t} = useTranslation(visionLocaleNamespace)
+  const telemetry = useVisionTelemetry()
 
   // An anchor cannot be disabled, so when there is nothing to download we render a plain
   // disabled button (which also prevents the click natively) instead of a disabled link.
@@ -36,6 +38,7 @@ export function SaveCsvButton({blobUrl}: SaveButtonProps) {
       href={blobUrl}
       icon={DocumentSheetIcon}
       mode="ghost"
+      onClick={() => telemetry.resultExported('csv')}
       // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
       text="CSV" // String is a File extension
       tone="default"
@@ -44,6 +47,8 @@ export function SaveCsvButton({blobUrl}: SaveButtonProps) {
 }
 
 export function SaveJsonButton({blobUrl}: SaveButtonProps) {
+  const telemetry = useVisionTelemetry()
+
   return (
     <Button
       as="a"
@@ -51,6 +56,7 @@ export function SaveJsonButton({blobUrl}: SaveButtonProps) {
       href={blobUrl}
       icon={DocumentSheetIcon}
       mode="ghost"
+      onClick={() => telemetry.resultExported('json')}
       // oxlint-disable-next-line @sanity/i18n/no-attribute-string-literals
       text="JSON" // String is a File extension
       tone="default"

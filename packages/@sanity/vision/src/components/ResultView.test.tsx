@@ -6,6 +6,9 @@ import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {ResultView} from './ResultView'
 
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: () => ({log: vi.fn()}),
+}))
 vi.mock('sanity', () => ({useDataset: () => 'test'}))
 vi.mock('sanity/router', () => ({
   IntentLink: (props: {children: ReactNode}) => <a data-testid="intent-link">{props.children}</a>,

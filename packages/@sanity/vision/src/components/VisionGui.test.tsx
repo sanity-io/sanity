@@ -4,7 +4,7 @@ import {buildTheme} from '@sanity/ui/theme'
 import {ToastProvider} from '@sanity/ui/toast'
 import {cleanup, fireEvent, render, screen, waitFor} from '@testing-library/react'
 import {type ReactNode} from 'react'
-import {of} from 'rxjs'
+import {NEVER, of} from 'rxjs'
 import {type PerspectiveContextValue} from 'sanity'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
@@ -12,8 +12,10 @@ import {
   VisionApiVersionChanged,
   VisionCopied,
   VisionDatasetChanged,
+  VisionOpened,
   VisionParamsUsed,
   VisionPerspectiveChanged,
+  VisionQueryCancelled,
   VisionQueryRun,
 } from '../telemetry/vision.telemetry'
 import {VisionGui} from './VisionGui'
@@ -125,7 +127,10 @@ const VISION_STORAGE_KEY = 'sanityVision:test-project'
 
 type ClientConfig = Record<string, unknown>
 
-function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19'}): {
+function createMockClient(
+  initial: ClientConfig = {apiVersion: 'v2025-02-19'},
+  options: {hangFetch?: boolean} = {},
+): {
   client: SanityClient
   fetchConfigs: ClientConfig[]
 } {
@@ -140,6 +145,9 @@ function createMockClient(initial: ClientConfig = {apiVersion: 'v2025-02-19'}): 
       observable: {
         fetch: vi.fn(() => {
           fetchConfigs.push(config)
+          if (options.hangFetch) {
+            return NEVER
+          }
           return of({result: [{title: 'Variant title'}], ms: 12})
         }),
       },
@@ -164,9 +172,9 @@ function seedVisionStorage(state: Record<string, unknown>) {
 
 function renderVision(
   perspective: PerspectiveContextValue = BASE_PERSPECTIVE,
-  options: {datasets?: string[]} = {},
+  options: {datasets?: string[]; hangFetch?: boolean} = {},
 ) {
-  const mockClient = createMockClient()
+  const mockClient = createMockClient({apiVersion: 'v2025-02-19'}, {hangFetch: options.hangFetch})
   sanityMocks.usePerspective.mockReturnValue(perspective)
   sanityMocks.useClient.mockReturnValue(mockClient.client)
 
@@ -421,6 +429,7 @@ describe('VisionGui adoption telemetry', () => {
       apiVersion: 'v2025-02-19',
     })
     renderVision(NO_STACK)
+    telemetry.log.mockClear()
 
     fireEvent.click(screen.getByRole('button', {name: 'action.query-execute'}))
 
@@ -433,6 +442,7 @@ describe('VisionGui adoption telemetry', () => {
   it('records a fetch without parameters once, and not a params event', () => {
     seedVisionStorage({query: '*[_type == "book"]', params: '{}', apiVersion: 'v2025-02-19'})
     renderVision(NO_STACK)
+    telemetry.log.mockClear()
 
     fireEvent.click(screen.getByRole('button', {name: 'action.query-execute'}))
 
@@ -442,9 +452,21 @@ describe('VisionGui adoption telemetry', () => {
     expect(events('Vision Params Used')).toEqual([])
   })
 
+  it('records cancelling an in-flight fetch', () => {
+    seedVisionStorage({query: '*[_type == "book"]', params: '{}', apiVersion: 'v2025-02-19'})
+    renderVision(NO_STACK, {hangFetch: true})
+    telemetry.log.mockClear()
+
+    fireEvent.click(screen.getByRole('button', {name: 'action.query-execute'}))
+    fireEvent.click(screen.getByRole('button', {name: 'action.query-cancel'}))
+
+    expect(events('Vision Query Cancelled')).toEqual([[VisionQueryCancelled, {mode: 'fetch'}]])
+  })
+
   it('records the keyboard shortcut as its own trigger, still once', () => {
     seedVisionStorage({query: '*[_type == "book"]', params: '{}', apiVersion: 'v2025-02-19'})
     renderVision(NO_STACK)
+    telemetry.log.mockClear()
 
     fireEvent.keyDown(screen.getByTestId('vision-root'), {
       key: 'Enter',
@@ -458,9 +480,17 @@ describe('VisionGui adoption telemetry', () => {
     ])
   })
 
-  it('records one listen, and does not record cancelling it', () => {
+  it('records opening the classic tool once on mount', () => {
     seedVisionStorage({query: '*[_type == "book"]', params: '{}', apiVersion: 'v2025-02-19'})
     renderVision(NO_STACK)
+
+    expect(events('Vision Opened')).toEqual([[VisionOpened, {ui: 'classic'}]])
+  })
+
+  it('records one listen, and records cancelling it separately', () => {
+    seedVisionStorage({query: '*[_type == "book"]', params: '{}', apiVersion: 'v2025-02-19'})
+    renderVision(NO_STACK)
+    telemetry.log.mockClear()
 
     const listen = screen.getByRole('button', {name: 'action.listen-execute'})
     fireEvent.click(listen)
@@ -469,11 +499,13 @@ describe('VisionGui adoption telemetry', () => {
     expect(events('Vision Query Run')).toEqual([
       [VisionQueryRun, {mode: 'listen', trigger: 'button', hasParams: false}],
     ])
+    expect(events('Vision Query Cancelled')).toEqual([[VisionQueryCancelled, {mode: 'listen'}]])
   })
 
   it('does not record a fetch that never starts', () => {
     seedVisionStorage({query: '   ', params: '{}', apiVersion: 'v2025-02-19'})
     renderVision(NO_STACK)
+    telemetry.log.mockClear()
 
     fireEvent.click(screen.getByRole('button', {name: 'action.query-execute'}))
 
@@ -489,6 +521,7 @@ describe('VisionGui adoption telemetry', () => {
       apiVersion: 'v2025-02-19',
     })
     renderVision(NO_STACK, {datasets: ['test', 'staging']})
+    telemetry.log.mockClear()
 
     fireEvent.change(screen.getAllByRole('combobox')[0], {target: {value: 'staging'}})
     expect(events('Vision Dataset Changed')).toEqual([[VisionDatasetChanged]])
