@@ -12,7 +12,7 @@ import {
 } from '../../variants/__fixtures__/variants.fixture'
 import {type SystemVariant} from '../../variants/types'
 import {type Meta} from '../machines/documentGroupInventoryMachine'
-import {computeSets} from './computeSets'
+import {computeSets, type InventorySetPlacement} from './computeSets'
 
 const t = ((key: string) => key) as unknown as TFunction
 
@@ -116,6 +116,64 @@ function createMeta({
   }
 }
 
+// A release document as the releases store holds it, keyed by its document id.
+function release(
+  releaseId: string,
+  metadata: Partial<ReleaseDocument['metadata']>,
+  createdAt = '2026-01-01T00:00:00.000Z',
+): ReleaseDocument {
+  return {
+    _id: getReleaseDocumentIdFromReleaseId(releaseId),
+    _type: 'system.release',
+    _rev: 'rev',
+    _createdAt: createdAt,
+    _updatedAt: createdAt,
+    name: releaseId,
+    state: 'active',
+    metadata: {title: releaseId, releaseType: 'undecided', ...metadata},
+  } as ReleaseDocument
+}
+
+function releaseMap(releases: ReleaseDocument[]): Map<string, ReleaseDocument> {
+  return new Map(releases.map((doc) => [doc._id, doc]))
+}
+
+// A spread of every kind of bundle, handed over in an order that matches none of the sorted ones.
+const ORDER_RELEASES = [
+  release('rUndecided', {releaseType: 'undecided'}),
+  release('rLate', {releaseType: 'scheduled', intendedPublishAt: '2026-03-01T00:00:00.000Z'}),
+  release('rScheduledDraft', {
+    releaseType: 'scheduled',
+    cardinality: 'one',
+    intendedPublishAt: '2026-02-01T00:00:00.000Z',
+  }),
+  release('rAsap', {releaseType: 'asap'}),
+  release('rEarly', {releaseType: 'scheduled', intendedPublishAt: '2026-01-15T00:00:00.000Z'}),
+]
+
+function orderVersions(): VersionInfoDocumentStub[] {
+  return [
+    published(),
+    releaseVersion('rUndecided'),
+    releaseVersion('rLate'),
+    agentVersion(AGENT_BUNDLE_ID),
+    releaseVersion('rScheduledDraft'),
+    draft(),
+    releaseVersion('rAsap'),
+    releaseVersion('rEarly'),
+  ]
+}
+
+function orderMeta(): Meta {
+  return createMeta({
+    versions: orderVersions(),
+    releases: releaseMap(ORDER_RELEASES),
+    bundles: [{id: AGENT_BUNDLE_ID, applicationKey: 'application-key'}],
+  })
+}
+
+const releaseKey = getReleaseDocumentIdFromReleaseId
+
 describe('computeSets', () => {
   describe('when Content Variants is not enabled', () => {
     it('assembles a single set from draft, published, release, and agent documents', () => {
@@ -145,8 +203,8 @@ describe('computeSets', () => {
               name: 'version.agent-bundle.proposed-changes',
               document: versions[3],
             },
-            {id: `drafts.${PUBLISHED_ID}`, name: 'release.chip.draft', document: versions[0]},
             {id: PUBLISHED_ID, name: 'release.chip.published', document: versions[1]},
+            {id: `drafts.${PUBLISHED_ID}`, name: 'release.chip.draft', document: versions[0]},
             {
               id: `versions.${RELEASE_ID}.${PUBLISHED_ID}`,
               name: 'My release',
@@ -197,31 +255,6 @@ describe('computeSets', () => {
           ],
         },
         {
-          key: 'drafts',
-          name: 'release.chip.draft',
-          bundle: {type: 'perspective', perspective: 'drafts'},
-          variants: [
-            {
-              id: `drafts.${PUBLISHED_ID}`,
-              name: 'document-group.base-variant',
-              releaseDocument: undefined,
-              document: versions[0],
-            },
-            {
-              id: `drafts.scopeA.${PUBLISHED_ID}`,
-              name: 'Alpha audience',
-              releaseDocument: undefined,
-              document: versions[1],
-            },
-            {
-              id: `drafts.scopeB.${PUBLISHED_ID}`,
-              name: 'Norwegian market',
-              releaseDocument: undefined,
-              document: versions[2],
-            },
-          ],
-        },
-        {
           key: 'published',
           name: 'release.chip.published',
           bundle: {type: 'perspective', perspective: 'published'},
@@ -243,6 +276,31 @@ describe('computeSets', () => {
               name: 'Norwegian market',
               releaseDocument: undefined,
               document: versions[5],
+            },
+          ],
+        },
+        {
+          key: 'drafts',
+          name: 'release.chip.draft',
+          bundle: {type: 'perspective', perspective: 'drafts'},
+          variants: [
+            {
+              id: `drafts.${PUBLISHED_ID}`,
+              name: 'document-group.base-variant',
+              releaseDocument: undefined,
+              document: versions[0],
+            },
+            {
+              id: `drafts.scopeA.${PUBLISHED_ID}`,
+              name: 'Alpha audience',
+              releaseDocument: undefined,
+              document: versions[1],
+            },
+            {
+              id: `drafts.scopeB.${PUBLISHED_ID}`,
+              name: 'Norwegian market',
+              releaseDocument: undefined,
+              document: versions[2],
             },
           ],
         },
@@ -353,6 +411,115 @@ describe('computeSets', () => {
         'document-group.base-variant',
         'Alpha audience',
       ])
+    })
+  })
+  describe('order', () => {
+    it('lists Proposed changes, Published, Drafts, then releases by when they go out', () => {
+      const sets = computeSets({meta: orderMeta(), current: [], t, variantsEnabled: true})
+
+      expect(sets.map(({key}) => key)).toEqual([
+        'studio:content-agent',
+        'published',
+        'drafts',
+        releaseKey('rAsap'),
+        releaseKey('rEarly'),
+        releaseKey('rScheduledDraft'),
+        releaseKey('rLate'),
+        releaseKey('rUndecided'),
+      ])
+    })
+
+    it('counts the versions in every set', () => {
+      const sets = computeSets({meta: orderMeta(), current: [], t, variantsEnabled: true})
+
+      expect(sets.map(({variants}) => variants.length)).toEqual([1, 1, 1, 1, 1, 1, 1, 1])
+    })
+
+    it('keeps a release that has not loaded among the releases', () => {
+      const meta = createMeta({
+        versions: [published(), releaseVersion('rMissing'), releaseVersion('rAsap'), draft()],
+        releases: releaseMap([release('rAsap', {releaseType: 'asap'})]),
+      })
+
+      const sets = computeSets({meta, current: [], t, variantsEnabled: true})
+
+      expect(sets.map(({key}) => key)).toEqual([
+        'published',
+        'drafts',
+        releaseKey('rAsap'),
+        releaseKey('rMissing'),
+      ])
+    })
+
+    it('orders the rows of the single set the same way while Content Variants is off', () => {
+      const sets = computeSets({meta: orderMeta(), current: [], t, variantsEnabled: false})
+
+      expect(sets).toHaveLength(1)
+      expect(sets[0]?.variants.map(({id}) => id)).toEqual([
+        `versions.${AGENT_BUNDLE_ID}.${PUBLISHED_ID}`,
+        PUBLISHED_ID,
+        `drafts.${PUBLISHED_ID}`,
+        `versions.rAsap.${PUBLISHED_ID}`,
+        `versions.rEarly.${PUBLISHED_ID}`,
+        `versions.rScheduledDraft.${PUBLISHED_ID}`,
+        `versions.rLate.${PUBLISHED_ID}`,
+        `versions.rUndecided.${PUBLISHED_ID}`,
+      ])
+    })
+
+    describe('with the placement pending the Q3 decision changed', () => {
+      const placement: InventorySetPlacement = {
+        proposedChanges: 'afterDrafts',
+        scheduledDrafts: 'afterReleases',
+      }
+
+      it('moves Proposed changes after Drafts and scheduled drafts after the releases', () => {
+        const sets = computeSets({
+          meta: orderMeta(),
+          current: [],
+          t,
+          variantsEnabled: true,
+          placement,
+        })
+
+        expect(sets.map(({key}) => key)).toEqual([
+          'published',
+          'drafts',
+          'studio:content-agent',
+          releaseKey('rAsap'),
+          releaseKey('rEarly'),
+          releaseKey('rLate'),
+          releaseKey('rUndecided'),
+          releaseKey('rScheduledDraft'),
+        ])
+      })
+
+      it('applies to the single set while Content Variants is off', () => {
+        const sets = computeSets({
+          meta: orderMeta(),
+          current: [],
+          t,
+          variantsEnabled: false,
+          placement,
+        })
+
+        expect(sets[0]?.variants.slice(0, 3).map(({id}) => id)).toEqual([
+          PUBLISHED_ID,
+          `drafts.${PUBLISHED_ID}`,
+          `versions.${AGENT_BUNDLE_ID}.${PUBLISHED_ID}`,
+        ])
+      })
+
+      it('puts Proposed changes first when there are no drafts', () => {
+        const meta = createMeta({
+          versions: [published(), agentVersion(AGENT_BUNDLE_ID)],
+          bundles: [{id: AGENT_BUNDLE_ID, applicationKey: 'application-key'}],
+        })
+
+        const sets = computeSets({meta, current: [], t, variantsEnabled: true, placement})
+
+        expect(sets.map(({key}) => key)).toEqual(['studio:content-agent', 'published'])
+      })
     })
   })
 })

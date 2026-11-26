@@ -1,5 +1,4 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {getVersionFromId} from '@sanity/client/csm'
 import {type DocumentSystem} from '@sanity/types'
 import {useMemo} from 'react'
 import {useSyncObservable} from 'react-rx'
@@ -18,19 +17,18 @@ import {
   timer,
 } from 'rxjs'
 
-import {randomKey} from '../../form/utils/randomKey'
 import {useDataset} from '../../hooks/useDataset'
 import {useProjectId} from '../../hooks/useProjectId'
 import {DOCUMENT_SYSTEM_FIELD} from '../../preview/constants'
 import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {useDocumentPreviewStore} from '../../store/datastores'
-import {isDraftId, getPublishedId} from '../../util/draftUtils'
+import {getPublishedId} from '../../util/draftUtils'
 import {isRecord} from '../../util/isRecord'
 import {createSWR} from '../../util/rxSwr'
 import {type VersionInfoDocumentStub} from '../store/types'
 import {useReleasesStore} from '../store/useReleasesStore'
 import {ARCHIVED_RELEASE_STATES} from '../util/const'
-import {getReleaseIdFromReleaseDocumentId} from '../util/getReleaseIdFromReleaseDocumentId'
+import {resolveVersionSystem} from '../util/resolveVersionSystem'
 
 export interface DocumentPerspectiveProps {
   documentId: string
@@ -126,68 +124,6 @@ export function useDocumentVersionsObservable(
   )
 
   return observable
-}
-
-/**
- * Temporarily builds the document _system for a given document id.
- * This is used until the documents are migrated to the new _system.
- * And only if the documents are not variant documents.
- *
- * Variants will include the _system field.
- */
-const buildDocumentSystem = (id: string, releases: ReleaseDocument[]): DocumentSystem => {
-  const versionId = getVersionFromId(id)
-  if (versionId) {
-    const releaseDocument = releases.find(
-      (release) => getReleaseIdFromReleaseDocumentId(release._id) === versionId,
-    )
-    return {
-      bundleId: versionId,
-      release: releaseDocument ? {_ref: releaseDocument._id, _weak: true} : undefined,
-      group: {
-        _ref: getPublishedId(id),
-        _weak: true,
-      },
-      scopeId: versionId,
-    }
-  }
-
-  return {
-    bundleId: isDraftId(id) ? 'drafts' : undefined,
-    group: {_ref: getPublishedId(id), _weak: true},
-  }
-}
-
-/**
- * Canonicalizes the variant reference to `_system.variants`: documents that have not been
- * migrated yet carry the legacy single `_system.variant` reference, which is folded into the
- * array so every stub consumer can read `variants[0]`.
- */
-const normalizeVariants = (system: DocumentSystem): DocumentSystem => {
-  // oxlint-disable-next-line typescript/no-deprecated - we need to destructure the variant fallback field.
-  const {variant, ...rest} = system
-  // Document has the new shape, remove legacy field and return the rest.
-  if (system.variants?.[0]) return rest
-
-  // Document has the legacy shape, create the variants array with the legacy variant reference, strips the legacy field.
-  if (variant) {
-    return {...rest, variants: [{_ref: variant._ref, _key: randomKey()}]}
-  }
-
-  // Document has no variant reference, return the rest.
-  return rest
-}
-
-const resolveVersionSystem = (
-  version: VersionInfoDocumentStub,
-  releases: ReleaseDocument[],
-): DocumentSystem => {
-  if (version._system?.group) return normalizeVariants(version._system)
-
-  return normalizeVariants({
-    ...version._system,
-    ...buildDocumentSystem(version._id, releases),
-  })
 }
 
 const DOCUMENT_STUB_PATHS = ['_id', '_type', '_rev', '_createdAt', '_updatedAt', '_system']
