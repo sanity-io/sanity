@@ -202,13 +202,13 @@ describe('EventTimelineItem changes', () => {
     await userEvent.hover(card)
     const label = page.getByText('Added', {exact: true})
     await expect.element(label).toBeVisible()
-    const tooltip = page.elementLocator(label.element().closest('[data-ui="Tooltip"]')!)
-    const author = tooltip.getByText('Doug', {exact: true})
-    await expect.element(author).toBeVisible()
     // The changes stay open under the author's tooltip.
     await expect.element(changes).toBeVisible()
-    // The card has the color of its author, the one of the author's pill in the tooltip.
-    const pill = author.element().closest<HTMLElement>('[style*="background-color"]')!
+    // The card has the color of its author, the one of the author's pill (avatar and name, which
+    // may still be loading) in the tooltip.
+    const tooltip = label.element().closest('[data-ui="Tooltip"]')!
+    const pill = tooltip.querySelector<HTMLElement>('[style*="background-color"]')!
+    expect(pill.querySelector('[data-ui="Avatar"]')).not.toBeNull()
     expect(getComputedStyle(card).backgroundColor).toBe(getComputedStyle(pill).backgroundColor)
     expect(getComputedStyle(card).backgroundColor).not.toBe(resolvedColor(card, '--card-bg-color'))
   })

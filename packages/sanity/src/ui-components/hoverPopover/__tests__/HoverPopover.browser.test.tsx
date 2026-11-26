@@ -8,14 +8,14 @@ import {HoverPopover} from '../HoverPopover'
 
 const OPEN_DELAY = 50
 
-function Trigger({label}: {label: string}) {
+function Trigger({label, openDelay}: {label: string; openDelay: number}) {
   return (
     <HoverPopover
       closeDelay={1000}
       content={<Text>{`${label} content`}</Text>}
       group={label === 'Ungrouped' ? undefined : 'test'}
       fallbackPlacements={[]}
-      openDelay={OPEN_DELAY}
+      openDelay={openDelay}
       padding={3}
       placement="right"
       portal
@@ -25,14 +25,14 @@ function Trigger({label}: {label: string}) {
   )
 }
 
-function Harness() {
+function Harness({openDelay = OPEN_DELAY}: {openDelay?: number}) {
   return (
     <TestWrapper schemaTypes={[]}>
       {/* Stacked and opening to the right, so no popover covers another element. */}
       <Flex flexDirection="column" alignItems="flex-start" gap={7} padding={4}>
-        <Trigger label="First" />
-        <Trigger label="Second" />
-        <Trigger label="Ungrouped" />
+        <Trigger label="First" openDelay={openDelay} />
+        <Trigger label="Second" openDelay={openDelay} />
+        <Trigger label="Ungrouped" openDelay={openDelay} />
       </Flex>
       <div data-testid="elsewhere" style={{marginTop: 400, height: 40}} />
     </TestWrapper>
@@ -62,11 +62,13 @@ describe('HoverPopover', () => {
   })
 
   it('does not open when the pointer leaves before the open delay', async () => {
-    void render(<Harness />)
+    // Longer than moving the pointer away takes, which can be hundreds of milliseconds in CI.
+    const openDelay = 1500
+    void render(<Harness openDelay={openDelay} />)
 
     await userEvent.hover(page.getByRole('button', {name: 'First'}))
     await userEvent.hover(page.getByTestId('elsewhere'))
-    await sleep(OPEN_DELAY * 4)
+    await sleep(openDelay + 500)
     expect(content('First').elements()).toHaveLength(0)
   })
 
