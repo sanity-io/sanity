@@ -4,7 +4,6 @@ import {useToast} from '@sanity/ui/toast'
 import {useCallback, useMemo} from 'react'
 import {map, type Observable} from 'rxjs'
 import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
   getPublishedId,
   isDraftId,
   isPublishedId,
@@ -23,6 +22,7 @@ import {ReferenceAutocomplete} from '../../../core/form/inputs/ReferenceInput/Re
 import {createSearch} from '../../../core/search/search'
 import {useSearchMachine} from '../../../core/search/useSearchMachine'
 import {useSource} from '../../../core/studio/source'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../core/studioClient'
 import {structureLocaleNamespace} from '../../i18n'
 import {CreateNewIncomingReference} from './CreateNewIncomingReference'
 import {LinkToExistingPreview} from './LinkToExistingPreview'

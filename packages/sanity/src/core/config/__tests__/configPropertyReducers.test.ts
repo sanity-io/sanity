@@ -332,7 +332,7 @@ describe('documentCommentsEnabledReducer', () => {
 
 describe('eventsAPIReducer', () => {
   it('returns the initial value when eventsAPI is not configured', () => {
-    expect(eventsAPIReducer({config: {name: 'test'}, initialValue: false, key: 'documents'})).toBe(
+    expect(eventsAPIReducer({config: {name: 'test'}, initialValue: false, key: 'releases'})).toBe(
       false,
     )
   })
@@ -347,16 +347,6 @@ describe('eventsAPIReducer', () => {
         },
         initialValue: false,
         key: 'releases',
-      }),
-    ).toBe(true)
-  })
-
-  it('still reduces the documents key', () => {
-    expect(
-      eventsAPIReducer({
-        config: {name: 'test', beta: {eventsAPI: {documents: true} as never}},
-        initialValue: false,
-        key: 'documents',
       }),
     ).toBe(true)
   })
@@ -378,7 +368,7 @@ describe('eventsAPIReducer', () => {
       eventsAPIReducer({
         config: {name: 'test', beta: {eventsAPI: {enabled: false} as never}},
         initialValue: true,
-        key: 'documents',
+        key: 'releases',
       }),
     ).toBe(true)
   })

@@ -869,7 +869,9 @@ export interface WorkspaceOptions extends SourceOptions {
     legacy?: boolean
   }
   /**
-   * @internal
+   * Enables or disables tasks in this workspace. Enabled by default.
+   *
+   * @public
    */
   tasks?: DefaultPluginsWorkspaceOptions['tasks']
   /**
@@ -1306,7 +1308,11 @@ export interface Source {
      */
     schemaDescriptorId: Promise<string | undefined>
   }
-  /** @beta */
+  /**
+   * Whether tasks are enabled for this source.
+   *
+   * @public
+   */
   tasks?: WorkspaceOptions['tasks']
 
   scheduledDrafts?: {
@@ -1781,18 +1787,12 @@ export type VariantTypesConfig =
  * */
 export interface BetaFeatures {
   /**
-   * Config for the history events API .
+   * Config for the history events API.
    *
-   * If enabled, it will use the new events API to fetch document history.
-   *
-   * If it is not enabled, it will continue using the legacy Timeline.
+   * Document history always uses the events API. `releases` enables it for the release activity
+   * feed.
    */
   eventsAPI?: {
-    /**
-     * @deprecated This option will be removed in the next major version, after which document
-     * history will always use the events API and the legacy Timeline will no longer be available.
-     */
-    documents?: boolean
     releases?: boolean
   }
   /**

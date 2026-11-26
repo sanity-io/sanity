@@ -1,7 +1,8 @@
 import {Card, Heading} from '@sanity/ui'
 import {useMemo, useState} from 'react'
-import {createPatchChannel, FormBuilder} from 'sanity'
+import {createPatchChannel} from 'sanity'
 import {
+  FormBuilder,
   ChangeIndicatorsTracker,
   useDocumentForm,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'

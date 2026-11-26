@@ -5,7 +5,6 @@ import {motion} from 'motion/react'
 import {type ReactElement, type ReactNode, useMemo, useState} from 'react'
 import {useSyncObservable} from 'react-rx'
 import {
-  ChangeList,
   type DocumentGroupEvent,
   isNonSelectableTerminalEvent,
   type ObjectDiff,
@@ -20,6 +19,7 @@ import {Text, Flex, Box, Grid} from 'ui5'
 import {ChangeFieldWrapper} from '../../../../../core/changeIndicators/ChangeFieldWrapper'
 import {LoadingBlock} from '../../../../../core/components/loadingBlock/LoadingBlock'
 import {ScrollContainer} from '../../../../../core/components/scroll/scrollContainer'
+import {ChangeList} from '../../../../../core/field/diff/components/ChangeList'
 import {ChangesError} from '../../../../../core/field/diff/components/ChangesError'
 import {NoChanges} from '../../../../../core/field/diff/components/NoChanges'
 import {type DocumentChangeContextInstance} from '../../../../../core/field/diff/contexts/DocumentChangeContext'

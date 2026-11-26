@@ -1,4 +1,5 @@
-import {ALL_FIELDS_GROUP, defineField, defineType} from 'sanity'
+import {defineField, defineType} from 'sanity'
+import {ALL_FIELDS_GROUP} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 export const allFieldsGroupHidden = defineType({
   name: 'allFieldsGroupHidden',

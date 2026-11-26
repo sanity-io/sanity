@@ -3,21 +3,12 @@ import {type ReactNode} from 'react'
 import {
   ArrayOfObjectsInput,
   type ArrayOfObjectsInputProps,
-  ArrayOfOptionsInput,
-  ArrayOfPrimitivesInput,
   type ArrayOfPrimitivesInputProps,
-  BooleanInput,
   type BooleanInputProps,
-  CrossDatasetReferenceInput,
   type CrossDatasetReferenceInputProps,
-  DateInput,
   type DateInputProps,
-  DateTimeInput,
   type DateTimeInputProps,
-  EmailInput,
-  FileInput,
   type FileInputProps,
-  ImageInput,
   type ImageInputProps,
   NumberInput,
   type NumberInputProps,
@@ -39,6 +30,17 @@ import {
   UrlInput,
   type UrlInputProps,
 } from 'sanity'
+import {
+  ArrayOfOptionsInput,
+  ArrayOfPrimitivesInput,
+  BooleanInput,
+  CrossDatasetReferenceInput,
+  DateInput,
+  DateTimeInput,
+  EmailInput,
+  FileInput,
+  ImageInput,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 /* These ensure that all the native inputs are exported and assignable to defineField.components.input*/
 function DelegateBorder({children}: {children?: ReactNode | undefined}) {

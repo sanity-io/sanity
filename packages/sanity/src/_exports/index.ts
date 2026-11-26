@@ -4,7 +4,6 @@ import '@sanity/ui/styles.css'
 import '../core/form/types/definitionExtensions'
 
 export {useCanvasCompanionDoc} from '../core/canvas/actions/useCanvasCompanionDoc'
-export {ChangeIndicator, type ChangeIndicatorProps} from '../core/changeIndicators/ChangeIndicator'
 export {type ConnectorContextValue} from '../core/changeIndicators/ConnectorContext'
 export {type ChangeConnectorRootProps} from '../core/changeIndicators/overlay/ChangeConnectorRoot'
 export {
@@ -94,44 +93,9 @@ export {
   type CommandListProps,
   type CommandListRenderItemCallback,
 } from '../core/components/commandList/types'
-// oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
-export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
-// oxlint-disable-next-line no-deprecated -- preserved for backwards compatibility
-export {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
 export {type ErrorActionsProps} from '../core/components/errorActions/ErrorActions'
 export {type ErrorWithId} from '../core/components/errorActions/types'
-export {Hotkeys, type HotkeysProps} from '../core/components/Hotkeys'
-export {
-  InsufficientPermissionsMessage,
-  type InsufficientPermissionsMessageProps,
-} from '../core/components/InsufficientPermissionsMessage'
-export {IntentButton} from '../core/components/IntentButton'
 export {PreviewCard, type PreviewCardContextValue} from '../core/components/previewCard/PreviewCard'
-export {
-  CompactPreview,
-  type CompactPreviewProps,
-} from '../core/components/previews/general/CompactPreview'
-export {
-  DefaultPreview,
-  type DefaultPreviewProps,
-} from '../core/components/previews/general/DefaultPreview'
-export {
-  DetailPreview,
-  type DetailPreviewProps,
-} from '../core/components/previews/general/DetailPreview'
-export {
-  MediaPreview,
-  type MediaPreviewProps,
-} from '../core/components/previews/general/MediaPreview'
-export {
-  BlockImagePreview,
-  type BlockImagePreviewProps,
-} from '../core/components/previews/portableText/BlockImagePreview'
-export {BlockPreview} from '../core/components/previews/portableText/BlockPreview'
-export {
-  InlinePreview,
-  type InlinePreviewProps,
-} from '../core/components/previews/portableText/InlinePreview'
 export {
   TemplatePreview,
   type TemplatePreviewProps,
@@ -145,8 +109,6 @@ export {
   type PreviewMediaDimensions,
   type PreviewProps,
 } from '../core/components/previews/types'
-export {CircularProgress} from '../core/components/progress/CircularProgress'
-export {LinearProgress} from '../core/components/progress/LinearProgress'
 export {
   type TrackerContextGetSnapshot,
   type TrackerContextStore,
@@ -168,11 +130,7 @@ export {StatusButton, type StatusButtonProps} from '../core/components/StatusBut
 export {TextWithTone, type TextWithToneProps} from '../core/components/textWithTone/TextWithTone'
 export {type ToastParams} from '../core/components/transitional/ImperativeToast'
 export {type ZIndexContextValueKey} from '../core/components/transitional/LegacyLayerProvider'
-export {
-  AvatarSkeleton,
-  UserAvatar,
-  type UserAvatarProps,
-} from '../core/components/userAvatar/UserAvatar'
+export {UserAvatar, type UserAvatarProps} from '../core/components/userAvatar/UserAvatar'
 export {type ZIndexContextValue} from '../core/components/zOffsets/types'
 export {
   type AuthConfig,
@@ -351,20 +309,12 @@ export {
 } from '../core/feedback/types'
 export {type DiffVisitor, getDiffAtPath} from '../core/field/diff/annotations/helpers'
 export {useAnnotationColor, useDiffAnnotationColor} from '../core/field/diff/annotations/hooks'
-export {ChangeList, type ChangeListProps} from '../core/field/diff/components/ChangeList'
 export {type ChangeResolverProps} from '../core/field/diff/components/ChangeResolver'
-export {DiffCard, type DiffCardProps} from '../core/field/diff/components/DiffCard'
 export {
   type DiffErrorBoundaryProps,
   type DiffErrorBoundaryState,
 } from '../core/field/diff/components/DiffErrorBoundary'
-export {DiffFromTo, type DiffFromToProps} from '../core/field/diff/components/DiffFromTo'
 export {type DiffInspectWrapperProps} from '../core/field/diff/components/DiffInspectWrapper'
-export {
-  DiffTooltip,
-  type DiffTooltipProps,
-  type DiffTooltipWithAnnotationsProps,
-} from '../core/field/diff/components/DiffTooltip'
 export {type FromToProps} from '../core/field/diff/components/FromTo'
 export {type FromToArrowDirection} from '../core/field/diff/components/FromToArrow'
 export {type MetaInfoProps} from '../core/field/diff/components/MetaInfo'
@@ -403,18 +353,9 @@ export {
 } from '../core/field/types'
 export {type FieldValueError} from '../core/field/validation'
 export {type FIXME} from '../core/FIXME'
-export {EditPortal} from '../core/form/components/EditPortal'
-export {type FormFieldProps} from '../core/form/components/formField/FormField'
-export {
-  FormFieldHeaderText,
-  type FormFieldHeaderTextProps,
-} from '../core/form/components/formField/FormFieldHeaderText'
+
 export {type FormFieldSetProps} from '../core/form/components/formField/FormFieldSet'
 export {type FieldStatusProps} from '../core/form/components/formField/FormFieldStatus'
-export {
-  FormFieldValidationStatus,
-  type FormFieldValidationStatusProps,
-} from '../core/form/components/formField/FormFieldValidationStatus'
 export {
   type FormFieldValidation,
   type FormFieldValidationError,
@@ -431,32 +372,14 @@ export {type FieldActionMenuProps} from '../core/form/field/actions/FieldActionM
 export {type FieldActionsProps} from '../core/form/field/actions/FieldActionsResolver'
 export {type FormBuilderContextValue} from '../core/form/FormBuilderContext'
 export {useDidUpdate} from '../core/form/hooks/useDidUpdate'
-export {ArrayOfObjectsFunctions} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
 // Code-split facades. Same names and props; the implementation loads on first render so the
 // form runtime and the Portable Text editor are not in the login screen's import graph.
 export {
-  ArrayOfObjectOptionsInput,
   ArrayOfObjectsInput,
-  ArrayOfObjectsItem,
-  ArrayOfOptionsInput,
-  ArrayOfPrimitiveOptionsInput,
-  ArrayOfPrimitivesInput,
-  ArrayOfPrimitivesItem,
-  CrossDatasetReferenceInput,
-  DateInput,
-  DateTimeInput,
-  EnhancedObjectDialog,
-  FileInput,
-  FormBuilder,
-  FormField,
-  FormInput,
-  FormProvider,
-  ImageInput,
   MemberField,
   MemberFieldError,
   ObjectInput,
   ObjectInputMember,
-  PortableTextInput as BlockEditor,
   PortableTextInput,
   ReferenceInput,
   SlugInput,
@@ -466,11 +389,10 @@ export {
 } from '../core/form/lazy'
 export {type VirtualizerScrollInstance} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/useVirtualizerScrollInstance'
 export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-export {ArrayOfPrimitivesFunctions} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesFunctions'
-export {BooleanInput} from '../core/form/inputs/BooleanInput'
+
 export {type DateInputProps} from '../core/form/inputs/DateInputs/DateInput'
 export {type DateTimeInputProps} from '../core/form/inputs/DateInputs/DateTimeInput'
-export {EmailInput, type EmailInputProps} from '../core/form/inputs/EmailInput'
+export {type EmailInputProps} from '../core/form/inputs/EmailInput'
 export {type AssetAccessPolicy} from '../core/form/inputs/files/types'
 export {NumberInput} from '../core/form/inputs/NumberInput/NumberInput'
 export {type PortableTextMemberItem} from '../core/form/inputs/PortableText/PortableTextInput'
@@ -514,7 +436,6 @@ export {
   type FormUnsetPatch,
   type PatchArg,
 } from '../core/form/patch/types'
-export {ALL_FIELDS_GROUP} from '../core/form/store/constants'
 export {type ProvenanceDiffAnnotation} from '../core/form/store/types/diff'
 export {type FormFieldGroup} from '../core/form/store/types/fieldGroup'
 export {type FieldsetMembers, type FieldsetState} from '../core/form/store/types/fieldsetState'
@@ -570,11 +491,7 @@ export {
   createSanityMediaLibraryFileSource,
   createSanityMediaLibraryImageSource,
 } from '../core/form/studio/assetSourceMediaLibrary/createAssetSource'
-export {
-  FormCallbacksProvider,
-  type FormCallbacksValue,
-  useFormCallbacks,
-} from '../core/form/studio/contexts/FormCallbacks'
+export {type FormCallbacksValue, useFormCallbacks} from '../core/form/studio/contexts/FormCallbacks'
 export {
   type EditReferenceLinkComponentProps,
   type EditReferenceOptions,
@@ -598,14 +515,19 @@ export {
   type UploadProgressEvent,
 } from '../core/form/studio/uploads/types'
 export {
-  type ArrayInputFunctionsProps, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  type ArrayInputFunctionsProps,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type FormBuilderCustomMarkersComponent,
   type FormBuilderFilterFieldFn,
   type FormBuilderInputComponentMap,
-  type FormBuilderMarkersComponent, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  type PortableTextMarker, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  type RenderBlockActionsCallback, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  type RenderBlockActionsProps, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  type FormBuilderMarkersComponent,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  type PortableTextMarker,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  type RenderBlockActionsCallback,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  type RenderBlockActionsProps,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type RenderCustomMarkers,
 } from '../core/form/types/_transitional'
 export {
@@ -637,7 +559,8 @@ export {
   type ArrayFieldProps,
   type ArrayOfPrimitivesFieldProps,
   type BaseFieldProps,
-  type BooleanFieldProps, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  type BooleanFieldProps,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type FieldCommentsProps,
   type FieldProps,
   type NumberFieldProps,
@@ -766,16 +689,13 @@ export {
   type PerspectiveContextValue,
   type PerspectiveStack,
   type ReleaseId,
-  type ReleasesNavMenuItemPropsGetter, // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
+  type ReleasesNavMenuItemPropsGetter,
+  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
   type SelectedPerspective,
   type TargetPerspective,
 } from '../core/perspective/types'
 export {useGetDefaultPerspective} from '../core/perspective/useGetDefaultPerspective'
 export {usePerspective} from '../core/perspective/usePerspective'
-export {
-  DocumentPreviewPresence,
-  type DocumentPreviewPresenceProps,
-} from '../core/presence/DocumentPreviewPresence'
 export {type FieldPresenceInnerProps, type FieldPresenceProps} from '../core/presence/FieldPresence'
 export {PresenceOverlay, type PresenceOverlayProps} from '../core/presence/overlay/PresenceOverlay'
 export {type PresenceScopeProps} from '../core/presence/PresenceScope'
@@ -1009,24 +929,6 @@ export {
   type HistoryStore,
   type HistoryStoreOptions,
 } from '../core/store/history/createHistoryStore'
-/* oxlint-disable no-deprecated -- the legacy document timeline stays exported while deprecated; removing it is a breaking change deferred to the next major */
-export {
-  type ParsedTimeRef,
-  Timeline,
-  type TimelineOptions,
-} from '../core/store/history/history/Timeline'
-export {
-  type SelectionState,
-  TimelineController,
-  type TimelineControllerOptions,
-} from '../core/store/history/history/TimelineController'
-export {
-  type CombinedDocument,
-  type DocumentRemoteMutationVersionEvent,
-  type Transaction,
-} from '../core/store/history/history/types'
-export {type TimelineState, type TimelineStore} from '../core/store/history/useTimelineStore'
-/* oxlint-enable no-deprecated */
 /* oxlint-disable no-deprecated -- the key-value store types stay exported while deprecated, until their removal lands */
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
 /* oxlint-enable no-deprecated */
@@ -1061,7 +963,6 @@ export {
   type MatchWorkspaceResult,
 } from '../core/studio/activeWorkspaceMatcher/matchWorkspace'
 export {useActiveWorkspace} from '../core/studio/activeWorkspaceMatcher/useActiveWorkspace'
-export {AddonDatasetProvider} from '../core/studio/addonDataset/AddonDatasetProvider'
 export {type AddonDatasetContextValue} from '../core/studio/addonDataset/types'
 export {useAddonDataset} from '../core/studio/addonDataset/useAddonDataset'
 export {
@@ -1100,7 +1001,7 @@ export {
 export {StudioNavbar, StudioToolMenu} from '../core/studio/components/navbar/LazyStudioNavbar'
 export {StudioLogo} from '../core/studio/components/navbar/StudioLogo'
 export {ToolLink, type ToolLinkProps} from '../core/studio/components/navbar/tools/ToolLink'
-export {CopyPasteProvider, useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
+export {useCopyPaste} from '../core/studio/copyPaste/CopyPasteProvider'
 export {
   type BaseOptions,
   type CopyOptions,
@@ -1152,7 +1053,6 @@ export {
   type CorsProbeOutcome,
   type WorkspacesProviderProps,
 } from '../core/studio/workspaces/WorkspacesProvider'
-export {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../core/studioClient'
 export {type Serializeable} from '../core/templates/resolve'
 export {
   type InitialValueTemplateItem,
@@ -1191,7 +1091,6 @@ export {
   type CollatedHit,
   documentIdEquals,
   type DraftId,
-  DRAFTS_FOLDER,
   getDraftId,
   getPublishedId,
   getVersionFromId,
@@ -1239,11 +1138,307 @@ export {
   type WelcomeEvent,
 } from '@sanity/client'
 export {type ImageUrlBuilder} from '@sanity/image-url'
-export {
-  DEFAULT_ANNOTATIONS,
-  DEFAULT_BLOCK_STYLES,
-  DEFAULT_DECORATORS,
-  DEFAULT_LIST_TYPES,
-} from '@sanity/schema'
-export * from '@sanity/types'
+export type * from '@sanity/types'
+export * from './reexports/sanityTypes.runtime'
 export {type TFunction} from 'i18next'
+
+// <tombstones-pending-sapp-5036>
+// Pending type-only tombstones for SAPP-5036. Slot into tombstones/manifest.json (SAPP-5034 / #16525)
+// once that PR merges, then delete this block and regenerate. Never emit runtime JS.
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ALL_FIELDS_GROUP: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const AddonDatasetProvider: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ArrayOfObjectOptionsInput: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ArrayOfObjectsFunctions: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ArrayOfObjectsItem: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ArrayOfOptionsInput: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ArrayOfPrimitiveOptionsInput: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ArrayOfPrimitivesFunctions: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ArrayOfPrimitivesInput: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ArrayOfPrimitivesItem: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const AvatarSkeleton: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const BlockEditor: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const BlockImagePreview: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type BlockImagePreviewProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const BlockPreview: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const BooleanInput: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ChangeIndicator: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type ChangeIndicatorProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ChangeList: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type ChangeListProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const CircularProgress: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const CompactPreview: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type CompactPreviewProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const CopyPasteProvider: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const CrossDatasetReferenceInput: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DEFAULT_ANNOTATIONS: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DEFAULT_BLOCK_STYLES: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DEFAULT_DECORATORS: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DEFAULT_LIST_TYPES: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DEFAULT_STUDIO_CLIENT_OPTIONS: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DRAFTS_FOLDER: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DateInput: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DateTimeInput: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DefaultPreview: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type DefaultPreviewProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DetailPreview: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type DetailPreviewProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DiffCard: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type DiffCardProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DiffFromTo: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type DiffFromToProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DiffTooltip: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type DiffTooltipProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type DiffTooltipWithAnnotationsProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DocumentPreviewPresence: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type DocumentPreviewPresenceProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DocumentStatus: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const DocumentStatusIndicator: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const EditPortal: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const EmailInput: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const EnhancedObjectDialog: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FileInput: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormBuilder: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormCallbacksProvider: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormField: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormFieldHeaderText: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type FormFieldHeaderTextProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type FormFieldProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormFieldValidationStatus: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type FormFieldValidationStatusProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormInput: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const FormProvider: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const Hotkeys: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type HotkeysProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const ImageInput: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const InlinePreview: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type InlinePreviewProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const InsufficientPermissionsMessage: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type InsufficientPermissionsMessageProps = never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const IntentButton: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const LinearProgress: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const MediaPreview: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ */
+export type MediaPreviewProps = never
+// </tombstones-pending-sapp-5036>

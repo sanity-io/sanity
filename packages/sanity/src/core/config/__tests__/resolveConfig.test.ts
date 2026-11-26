@@ -451,6 +451,21 @@ describe('createSourceFromConfig', () => {
   })
 })
 
+describe('beta eventsAPI config', () => {
+  const projectId = 'ppsg7ml5'
+  const dataset = 'production'
+
+  it('resolves releases from root config', async () => {
+    const source = await createSourceFromConfig({
+      projectId,
+      dataset,
+      beta: {eventsAPI: {releases: true}},
+    })
+
+    expect(source.beta?.eventsAPI?.releases).toBe(true)
+  })
+})
+
 const rootTypes = (context: {dataset: string}) => ({
   variant: {conditions: [{name: 'audience', values: [context.dataset]}]},
 })

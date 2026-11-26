@@ -5,18 +5,16 @@ import {
 } from '@sanity/ui'
 import {AnimatePresence, motion} from 'motion/react'
 import {useCallback, useEffect, useLayoutEffect, useState} from 'react'
-import {AvatarSkeleton, usePerspective, UserAvatar, useRelativeTime, useSyncState} from 'sanity'
+import {usePerspective, UserAvatar, useRelativeTime, useSyncState} from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {Text, Flex, Box} from 'ui5'
 
+import {AvatarSkeleton} from '../../../../core/components/userAvatar/UserAvatar'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from '../../../../core/field/diff/components/constants'
 import {getTargetScopeId} from '../../../../core/hooks/useTargetDocumentState'
 import {isPublishedPerspective} from '../../../../core/releases/util/util'
 import {useEvents} from '../../../../core/store/events/EventsProvider'
-import {useTimelineSelector} from '../../../../core/store/history/useTimelineSelector'
-import {useSource} from '../../../../core/studio/source'
 import {HISTORY_INSPECTOR_NAME} from '../constants'
-import {TIMELINE_ITEM_I18N_KEY_MAPPING as TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY} from '../timeline/timelineI18n'
 import {useDocumentPane} from '../useDocumentPane'
 import {useDocumentPaneInfo} from '../useDocumentPaneInfo'
 import {DocumentStatusPulse} from './DocumentStatusPulse/DocumentStatusPulse'
@@ -162,31 +160,6 @@ const EventsStatus = () => {
   )
 }
 
-/* oxlint-disable no-deprecated -- renders the deprecated legacy document timeline */
-const TimelineStatus = () => {
-  const {timelineStore} = useDocumentPane()
-  const chunks = useTimelineSelector(timelineStore, (state) => state.chunks)
-  const loading = useTimelineSelector(timelineStore, (state) => state.isLoading)
-  const event = chunks?.[0]
-
-  if (!event && loading) {
-    return <ButtonSkeleton />
-  }
-  if (!event) {
-    return <FallbackStatus />
-  }
-
-  const author = Array.from(event.authors)[0]
-  return (
-    <DocumentStatusButton
-      author={author}
-      translationKey={getDocumentStatusKey(TIMELINE_ITEM_I18N_KEY_MAPPING_LEGACY[event.type])}
-      timestamp={event.endTimestamp}
-    />
-  )
-}
-/* oxlint-enable no-deprecated */
-
 const SYNCING_TIMEOUT = 1000
 const SAVED_TIMEOUT = 3000
 
@@ -194,10 +167,6 @@ export function DocumentStatusLine() {
   const {value, targetDocumentState} = useDocumentPane()
   const {documentId, documentType} = useDocumentPaneInfo()
   const [status, setStatus] = useState<'saved' | 'syncing' | null>(null)
-  // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-  const source = useSource()
-  // oxlint-disable-next-line no-deprecated -- the legacy timeline opt-out keeps working until the next major
-  const eventsEnabled = source.beta?.eventsAPI?.documents
 
   // The scope of the document targeted by the selected perspective (undefined while the target is
   // resolving or when the draft/published pair applies).
@@ -250,7 +219,7 @@ export function DocumentStatusLine() {
           <DocumentStatusPulse status={status || undefined} />
         </MotionBox>
       ) : (
-        <>{eventsEnabled ? <EventsStatus /> : <TimelineStatus />}</>
+        <EventsStatus />
       )}
     </AnimatePresence>
   )

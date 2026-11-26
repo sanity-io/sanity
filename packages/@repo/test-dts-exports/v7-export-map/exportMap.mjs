@@ -34,13 +34,45 @@ const INTERNALS_ENTRY = './_dangerously_use_private_internals_that_do_not_follow
 
 /**
  * Entries plugins import from. Other `_`-prefixed entries are wiring between Sanity's own packages,
- * and stylesheets carry no exports.
+ * and stylesheets carry no exports. `./desk` is a type-only tombstone stub for the removed desk
+ * entry (see `packages/sanity/src/_exports/tombstones/`); plugins must import from
+ * `sanity/structure` instead, so it is not part of the dual-support map.
  *
  * @param {string} subpath - the key in the package.json `exports` map
  */
 function isPluginFacingEntry(subpath) {
-  if (subpath === './package.json' || subpath.endsWith('.css')) return false
+  if (subpath === './package.json' || subpath.endsWith('.css') || subpath === './desk') return false
   return subpath === INTERNALS_ENTRY || !subpath.startsWith('./_')
+}
+
+/**
+ * v7 keeps removed/moved names as `@deprecated` `never` tombstones in the `.d.ts` so TypeScript
+ * can name the replacement. They must not appear in this map: the map is the dual-support
+ * contract of real exports, and tombstones have no runtime value for `@repo/test-exports` to
+ * import.
+ *
+ * Entry barrels re-export tombstones through rolldown-plugin-dts mangled aliases (`Event` →
+ * `Event$1`, short names in the chunk), so walk aliases to the underlying declaration the same
+ * way `getExportKind` does.
+ *
+ * @param {import('ts-morph').Symbol} symbol
+ */
+function isTombstoneExport(symbol) {
+  let current = symbol
+  for (let depth = 0; depth < 100 && current.isAlias(); depth++) {
+    const next = current.getImmediatelyAliasedSymbol()
+    if (!next) break
+    current = next
+  }
+  return current.getDeclarations().some((declaration) => {
+    if (Node.isTypeAliasDeclaration(declaration)) {
+      return declaration.getTypeNode()?.getText() === 'never'
+    }
+    if (!Node.isVariableDeclaration(declaration)) return false
+    if (declaration.getTypeNode()?.getText() !== 'never') return false
+    const statement = declaration.getFirstAncestor(Node.isVariableStatement)
+    return Boolean(statement?.hasDeclareKeyword())
+  })
 }
 
 /** @param {import('ts-morph').Node} node */
@@ -113,6 +145,7 @@ export function readExportMap() {
         .getExportSymbols()
         .toSorted((a, b) => (a.getName() < b.getName() ? -1 : a.getName() > b.getName() ? 1 : 0))
       for (const symbol of exported) {
+        if (isTombstoneExport(symbol)) continue
         names[symbol.getName()] = getExportKind(symbol)
       }
       map[path.posix.join(packageName, subpath)] = names

@@ -7,7 +7,6 @@ import {
 import {type ComponentType, useMemo} from 'react'
 import {useObservable} from 'react-rx'
 import {
-  DocumentPreviewPresence,
   type DocumentPreviewStore,
   type GeneralPreviewLayoutKey,
   getPreviewStateObservable,
@@ -22,6 +21,7 @@ import {Flex} from 'ui5'
 import {DocumentVersionsStatus} from '../../../core/components/documentStatus/DocumentVersionsStatus'
 import {DocumentVersionsStatusIndicator} from '../../../core/components/documentStatusIndicator/DocumentVersionsStatusIndicator'
 import {getDefaultVariant} from '../../../core/perspective/getDefaultVariant'
+import {DocumentPreviewPresence} from '../../../core/presence/DocumentPreviewPresence'
 import {type DocumentPresence} from '../../../core/store/presence/types'
 import {TooltipDelayGroupProvider} from '../../../ui-components/tooltipDelayGroupProvider/TooltipDelayGroupProvider'
 

@@ -1,9 +1,10 @@
 import {LayerProvider} from '@sanity/ui'
 import {lazy, memo, Suspense, use, useEffect, useMemo, useState} from 'react'
-import {Hotkeys, isSanityDefinedAction, usePerspective} from 'sanity'
+import {isSanityDefinedAction, usePerspective} from 'sanity'
 import {TasksModePromiseContext} from 'sanity/_singletons'
 import {Text, Flex, VStack} from 'ui5'
 
+import {Hotkeys} from '../../../../core/components/Hotkeys'
 import {usePausedScheduledDraft} from '../../../../core/singleDocRelease/hooks/usePausedScheduledDraft'
 import {Button} from '../../../../ui-components/button/Button'
 import {Tooltip} from '../../../../ui-components/tooltip/Tooltip'

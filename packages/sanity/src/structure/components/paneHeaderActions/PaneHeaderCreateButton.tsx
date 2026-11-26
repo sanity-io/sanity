@@ -7,11 +7,11 @@ import {
   type Template,
   usePerspective,
   useTemplates,
-  IntentButton,
 } from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 import {IntentLink, type IntentLinkProps} from 'sanity/router'
 
+import {IntentButton} from '../../../core/components/IntentButton'
 import {useGetI18nText} from '../../../core/i18n/hooks/useGetI18nText'
 import {
   type TemplatePermissionsResult,

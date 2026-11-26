@@ -22,7 +22,6 @@ import {
 import {type DocumentFormNode} from '../../../core/form/store/types/nodes'
 import {type DocumentSyncState} from '../../../core/hooks/useDocumentSyncState'
 import {type TargetDocumentState} from '../../../core/hooks/useTargetDocumentState'
-import {type TimelineStore} from '../../../core/store/history/useTimelineStore'
 import {type View} from '../../structureBuilder/types'
 import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'
 import {type DocumentHistoryOpenPath} from './__telemetry__/documentPanes.telemetry'
@@ -85,11 +84,6 @@ export interface DocumentPaneContextValue extends Pick<NodeChronologyProps, 'has
    */
   targetDocumentState: TargetDocumentState
   timelineError: Error | null
-  /**
-   * @deprecated Use the events API instead. The legacy document timeline will be removed in the next major version.
-   */
-  // oxlint-disable-next-line no-deprecated -- part of the deprecated legacy document timeline
-  timelineStore?: TimelineStore
   title: string | null
   validation: ValidationMarker[]
   value: SanityDocumentLike
