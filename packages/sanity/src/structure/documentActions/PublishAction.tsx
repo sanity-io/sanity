@@ -15,7 +15,6 @@ import {
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
-  useDocumentStore,
   useEditState,
   usePerspective,
   useRelativeTime,
@@ -33,10 +32,8 @@ import {
   PublishButtonDisabledComplete,
   PublishButtonDisabledStart,
   PublishButtonClicked,
-  VariantDocumentPublished,
 } from './__telemetry__/documentActions.telemetry'
 import {PUBLISH_DISABLED_REASON} from './operationDisabledReasons'
-import {reportVariantPublish} from './reportVariantPublish'
 
 const PUBLISHED_STATE = {status: 'published'} as const
 
@@ -117,19 +114,12 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const currentPublishRevision = publishedInfo?._rev
 
   const telemetry = useTelemetry()
-  const documentStore = useDocumentStore()
 
   const doPublish = useCallback(() => {
-    if (isVariantTarget) {
-      const previouslyPublished = currentPublishRevision !== undefined
-      reportVariantPublish(`${type}:${id}`, documentStore.pair.operationEvents(id, type), () =>
-        telemetry.log(VariantDocumentPublished, {previouslyPublished}),
-      )
-    }
     publish.execute(isVariantTarget ? {publishedRevisionId: currentPublishRevision} : undefined)
     telemetry.log(PublishButtonClicked, {documentId: id, stage: 'started'})
     setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
-  }, [publish, isVariantTarget, currentPublishRevision, telemetry, id, type, documentStore])
+  }, [publish, isVariantTarget, currentPublishRevision, telemetry, id])
 
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
@@ -228,13 +218,21 @@ export const usePublishAction: DocumentActionComponent = (props) => {
     telemetry.log(DocumentPublished, {
       publishedImmediately,
       previouslyPublished,
+      isVariant: isVariantTarget,
     })
     if (shouldSetPublishScheduledRef.current) {
       setPublishScheduled(true)
     } else {
       doPublish()
     }
-  }, [publishedImmediately, previouslyPublished, telemetry, setPublishScheduled, doPublish])
+  }, [
+    publishedImmediately,
+    previouslyPublished,
+    isVariantTarget,
+    telemetry,
+    setPublishScheduled,
+    doPublish,
+  ])
 
   return useMemo(() => {
     if (isPublishedPerspective(selectedPerspective)) {

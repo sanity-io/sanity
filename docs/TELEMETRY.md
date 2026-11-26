@@ -310,11 +310,11 @@ Tracked automatically via `web-vitals/attribution` library:
 
 ### Document Actions
 
-| Event                                                 | When                                                |
-| ----------------------------------------------------- | --------------------------------------------------- |
-| `Document Published`                                  | Publish action completes                            |
-| `Publish Button Clicked`                              | Publish operation stages (started/completed/failed) |
-| `Publish Button Becomes Disabled - Started/Completed` | Publish button state transitions                    |
+| Event                                                 | When                                                         |
+| ----------------------------------------------------- | ------------------------------------------------------------ |
+| `Document Published`                                  | Publish button clicked (`isVariant` marks variant documents) |
+| `Publish Button Clicked`                              | Publish operation stages (started/completed/failed)          |
+| `Publish Button Becomes Disabled - Started/Completed` | Publish button state transitions                             |
 
 ### Document History and Changes
 
@@ -360,7 +360,7 @@ Scheduled drafts (cardinality-one releases) emit their own events so their usage
 
 ### Content Variants
 
-Whether a workspace enables variants is the `variantsEnabled` field of `Workspace Features Observed`. The events below are logged after their action succeeds, so they count what was done in the Studio rather than what other API clients did. Definitions live in `core/variants/__telemetry__/variants.telemetry.ts`, `core/documentGroupInventory/__telemetry__/documentGroupInventory.telemetry.ts`, `core/perspective/navbar/__telemetry__/perspectiveNavbar.telemetry.ts` and, for the publish event, `structure/documentActions/__telemetry__/documentActions.telemetry.ts`.
+Whether a workspace enables variants is the `variantsEnabled` field of `Workspace Features Observed`. The events below are logged after their action succeeds, so they count what was done in the Studio rather than what other API clients did. Definitions live in `core/variants/__telemetry__/variants.telemetry.ts`, `core/documentGroupInventory/__telemetry__/documentGroupInventory.telemetry.ts` and `core/perspective/navbar/__telemetry__/perspectiveNavbar.telemetry.ts`. Publishing a variant document is `Document Published` with `isVariant: true`.
 
 | Event                                       | When                                                                                 | Payload                                                                                                                             |
 | ------------------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
@@ -371,7 +371,6 @@ Whether a workspace enables variants is the `variantsEnabled` field of `Workspac
 | `Variant Definition Opened`                 | A definition's detail page opens                                                     | none                                                                                                                                |
 | `Variant Definition Document Opened`        | A document is opened from a definition's documents table                             | `{ bundle: 'published' \| 'drafts' \| 'release' }`                                                                                  |
 | `Variant Version Created`                   | A version of a document is created in a variant                                      | `{ location, bundle: 'published' \| 'drafts' \| 'release', fromExistingVersion }`                                                   |
-| `Variant Document Published`                | A variant document is published from the document pane                               | `{ previouslyPublished }`                                                                                                           |
 | `Document Group Inventory Version Selected` | A version's row is picked in the document group inventory                            | `{ location: 'document_inspector' \| 'compare_versions_menu', bundle: 'published' \| 'drafts' \| 'release' \| 'agent', isVariant }` |
 | `Document Group Inventory Version Created`  | A version is created from the inventory                                              | `{ action: 'create_variant' \| 'add_to_release' \| 'copy_to_drafts', isVariant }`                                                   |
 | `Perspective Detail Link Clicked`           | The detail link beside a release or variant in a navbar perspective menu is followed | `{ perspective: 'release' \| 'variant' }`                                                                                           |
@@ -382,7 +381,7 @@ Whether a workspace enables variants is the `variantsEnabled` field of `Workspac
 
 `Variant Definition Opened` fires when the detail page has resolved its definition, whatever led there, including deep links and reloads; a page for a definition that does not exist logs nothing. When `beta.reactActivityMode` keeps the tool mounted, revealing it again fires the event again.
 
-`Variant Document Published` fires when the publish operation succeeds. Publishing removes the variant draft, and the document pane can swap out the publish action while it resolves the new target, so for variants `Publish Button Clicked` sometimes stays at `started` even though the publish landed; this event does not depend on it. Variant versions in a content release are published with the release and never reach it.
+`Document Published` fires when Publish is clicked, like for any document, so it counts publishes started rather than publishes that landed. For variants, `Publish Button Clicked` can stay at `started` even when the publish landed: publishing removes the variant draft, and the document pane can swap out the publish action while it resolves the new target. Variant versions in a content release are published with the release and never reach either event.
 
 ### Comments
 

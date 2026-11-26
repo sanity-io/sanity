@@ -20,7 +20,6 @@ import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../i18n'
 import {useDocumentPane} from '../../panes/document/useDocumentPane'
 import {usePublishAction} from '../PublishAction'
-import {reportVariantPublish} from '../reportVariantPublish'
 
 vi.mock('sanity', async (importOriginal) => ({
   ...(await importOriginal()),
@@ -36,9 +35,6 @@ vi.mock('../../panes/document/useDocumentPane')
 
 const telemetry = vi.hoisted(() => ({log: vi.fn()}))
 vi.mock('@sanity/telemetry/react', () => ({useTelemetry: () => telemetry}))
-
-vi.mock('../reportVariantPublish', () => ({reportVariantPublish: vi.fn()}))
-const mockReportVariantPublish = vi.mocked(reportVariantPublish)
 
 const mockUseDocumentOperation = useDocumentOperation as Mock<typeof useDocumentOperation>
 const mockUseDocumentPairPermissions = useDocumentPairPermissions as Mock<
@@ -187,8 +183,8 @@ beforeAll(async () => {
   wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
 })
 
-function variantPublishedEvents() {
-  return telemetry.log.mock.calls.filter(([event]) => event.name === 'Variant Document Published')
+function documentPublishedEvents() {
+  return telemetry.log.mock.calls.filter(([event]) => event.name === 'Document Published')
 }
 
 async function renderPublishAction(props: DocumentActionProps) {
@@ -272,7 +268,7 @@ describe('usePublishAction', () => {
       ['replaces an earlier published version', 'published-variant-1', true],
       ['publishes the variant for the first time', undefined, false],
     ] as const)(
-      'reports the publish once its operation succeeds when it %s',
+      'reports a variant publish when it %s',
       async (_, publishedRevision, previouslyPublished) => {
         const state = variantKeystroke('1', publishedRevision)
         applyKeystroke(state)
@@ -283,19 +279,16 @@ describe('usePublishAction', () => {
         expect(operations.publish.execute).toHaveBeenCalledWith({
           publishedRevisionId: publishedRevision,
         })
-        expect(mockReportVariantPublish).toHaveBeenCalledTimes(1)
-        const [key, , onPublished] = mockReportVariantPublish.mock.calls[0]!
-        expect(key).toBe(`author:${ID}`)
-        expect(variantPublishedEvents()).toHaveLength(0)
-
-        onPublished()
-        expect(variantPublishedEvents()).toEqual([
-          [expect.objectContaining({name: 'Variant Document Published'}), {previouslyPublished}],
+        expect(documentPublishedEvents()).toEqual([
+          [
+            expect.objectContaining({name: 'Document Published'}),
+            expect.objectContaining({previouslyPublished, isVariant: true}),
+          ],
         ])
       },
     )
 
-    it('does not report publishing a document outside a variant', async () => {
+    it('reports a publish outside a variant as not in a variant', async () => {
       const state = keystroke('1')
       applyKeystroke(state)
       const {result} = await renderPublishAction(state.props)
@@ -303,7 +296,12 @@ describe('usePublishAction', () => {
       act(() => result.current?.onHandle?.())
 
       expect(operations.publish.execute).toHaveBeenCalledTimes(1)
-      expect(mockReportVariantPublish).not.toHaveBeenCalled()
+      expect(documentPublishedEvents()).toEqual([
+        [
+          expect.objectContaining({name: 'Document Published'}),
+          {publishedImmediately: false, previouslyPublished: true, isVariant: false},
+        ],
+      ])
     })
   })
 })
