@@ -730,9 +730,10 @@ describe('beta document group inventory config', () => {
   const projectId = 'ppsg7ml5'
   const dataset = 'production'
 
-  it('defaults document group inventory to false', async () => {
+  it('defaults document group inventory to false when variants is off', async () => {
     const source = await createSourceFromConfig({projectId, dataset})
 
+    expect(source.beta?.variants?.enabled).toBe(false)
     expect(source.beta?.documentGroupInventory?.enabled).toBe(false)
   })
 
