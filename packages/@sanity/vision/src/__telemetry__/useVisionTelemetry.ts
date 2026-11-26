@@ -25,7 +25,6 @@ import {
   VisionQueryPrettified,
   VisionQueryRun,
   VisionQueryUrlPasted,
-  VisionRedesignPromptDismissed,
   VisionPanelTabOpened,
   VisionResultExported,
   VisionSavedQueriesFiltered,
@@ -35,7 +34,6 @@ import {
   VisionSnippetCopied,
   VisionTabsChanged,
   VisionTabUsed,
-  VisionUiSwitched,
   VisionViewChanged,
   type VisionAgentAction,
   type VisionCopyTarget,
@@ -58,7 +56,6 @@ import {
   type VisionTabAction,
   type VisionToggleOption,
   type VisionUi,
-  type VisionUiSwitchSource,
   type VisionView,
   type VisionViewTarget,
 } from './vision.telemetry'
@@ -77,8 +74,6 @@ export interface VisionTelemetry {
   resultExported: (format: VisionResultExportFormat) => void
   documentOpened: (source: VisionDocumentOpenSource) => void
   panelToggled: (panel: VisionPanel, open: boolean) => void
-  uiSwitched: (to: VisionUi, source: VisionUiSwitchSource) => void
-  redesignPromptDismissed: () => void
   tabsChanged: (count: number, action: 'open' | 'add' | 'close') => void
   tabUsed: (action: VisionTabAction) => void
   drawerOpened: (drawer: VisionDrawerId) => void
@@ -122,8 +117,6 @@ export function useVisionTelemetry(): VisionTelemetry {
       resultExported: (format) => telemetry.log(VisionResultExported, {format}),
       documentOpened: (source) => telemetry.log(VisionDocumentOpened, {source}),
       panelToggled: (panel, open) => telemetry.log(VisionPanelToggled, {panel, open}),
-      uiSwitched: (to, source) => telemetry.log(VisionUiSwitched, {to, source}),
-      redesignPromptDismissed: () => telemetry.log(VisionRedesignPromptDismissed),
       tabsChanged: (count, action) => telemetry.log(VisionTabsChanged, {count, action}),
       tabUsed: (action) => telemetry.log(VisionTabUsed, {action}),
       drawerOpened: (drawer) => telemetry.log(VisionDrawerOpened, {drawer}),

@@ -4,7 +4,6 @@ import {CogIcon} from '@sanity/icons/Cog'
 import {DoubleChevronLeftIcon} from '@sanity/icons/DoubleChevronLeft'
 import {DoubleChevronRightIcon} from '@sanity/icons/DoubleChevronRight'
 import {EditIcon} from '@sanity/icons/Edit'
-import {RestoreIcon} from '@sanity/icons/Restore'
 import {TransferIcon} from '@sanity/icons/Transfer'
 import {UsersIcon} from '@sanity/icons/Users'
 import {Button} from '@sanity/ui'
@@ -130,7 +129,7 @@ export function VisionSidebar({shownDrawer}: VisionSidebarProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const actorRef = useVisionActor()
   const telemetry = useVisionTelemetry()
-  const {layout, switchToClassic} = useVisionExperience()
+  const {layout} = useVisionExperience()
   const railExpanded = useVisionSelector((snapshot) => snapshot.matches({sidebar: 'expanded'}))
   const drawer = useVisionSelector(selectOpenDrawer)
   const isMobile = layout === 'mobile'
@@ -235,13 +234,6 @@ export function VisionSidebar({shownDrawer}: VisionSidebarProps) {
               onClick={(event) => toggleDrawer('settings', event)}
               selected={drawer === 'settings'}
               testId="vision-sidebar-settings"
-            />
-            <SidebarItem
-              expanded={expanded}
-              icon={RestoreIcon}
-              label={t('vision.redesign.switch-to-classic')}
-              onClick={() => switchToClassic('controls')}
-              testId="vision-sidebar-classic"
             />
           </Flex>
           {/* A bottom bar, so its top rule continues the action bar's and the tab header's */}

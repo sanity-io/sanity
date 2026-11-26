@@ -99,7 +99,7 @@ export function resolveWorkspaceDataset(defaults: VisionStorageDefaults): string
     : defaults.datasets[0]
 }
 
-/** Lives under the classic tool's prefix so its error boundary's "Clear cache" resets both */
+/** Lives under Vision's prefix, so the error boundary's "Clear cache" resets it too */
 export function getVisionStorageKey(projectId: string): string {
   return `${VISION_STORAGE_KEY_PREFIX}state:${projectId}`
 }

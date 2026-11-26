@@ -21,8 +21,8 @@ import {Box, Flex} from 'ui5'
 import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {groqExtensions} from '../../../codemirror/extensions'
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
-import {type Params} from '../../../components/VisionGui'
 import {visionLocaleNamespace} from '../../../i18n'
+import {type Params} from '../../../util/parseParams'
 import {useAiFeatures} from '../../aiFeatures'
 import {useCanFormatQuery} from '../../hooks/useCanFormatQuery'
 import {useContentSize} from '../../hooks/useContentSize'
@@ -94,6 +94,8 @@ export interface RequestPanelProps {
   buildRequest: QueryRequestBuilder['buildRequest']
   resolved: ResolvedRequest
   isFetching: boolean
+  /** Live fetch is on and its subscription connected, so changes from now on refetch */
+  liveConnected: boolean
   queryEditorRef: RefObject<VisionCodeMirrorHandle | null>
   paramsEditorRef: RefObject<VisionCodeMirrorHandle | null>
   onQueryChange: (query: string) => void
@@ -166,6 +168,7 @@ export function RequestPanel(props: RequestPanelProps) {
     buildRequest,
     resolved,
     isFetching,
+    liveConnected,
     queryEditorRef,
     paramsEditorRef,
     onQueryChange,
@@ -734,6 +737,7 @@ export function RequestPanel(props: RequestPanelProps) {
           <LiveButton
             active={tab.autoRefetch}
             canFetch={request !== null}
+            connected={liveConnected}
             onToggle={onToggleAutoRefetch}
             supported={resolved.supportsSyncTags}
           />

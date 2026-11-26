@@ -12,58 +12,128 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'action.copy-url-to-clipboard': 'Copy to clipboard',
   /** Label for deleting a query */
   'action.delete': 'Delete',
-  /** Label for editing a query's title */
+  /**
+   * Label for editing a query's title
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'action.edit-title': 'Edit title',
-  /** Label for stopping an ongoing listen operation */
+  /**
+   * Label for stopping an ongoing listen operation
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'action.listen-cancel': 'Stop',
-  /** Label for setting up a listener */
+  /**
+   * Label for setting up a listener
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'action.listen-execute': 'Listen',
-  /** Label for query loading table */
+  /**
+   * Label for query loading table
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'action.load-queries': 'Load queries',
-  /** Label for loading a query */
+  /**
+   * Label for loading a query
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'action.load-query': 'Load query',
   /** Label for cancelling an ongoing query */
   'action.query-cancel': 'Cancel',
   /** Label for executing the query, eg doing a fetch */
   'action.query-execute': 'Fetch',
-  /** Label for saving a query */
+  /**
+   * Label for saving a query
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'action.save-personal-copy': 'Save personal copy',
-  /** Label for saving a personal query */
+  /**
+   * Label for saving a personal query
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'action.save-personal-query': 'Save as personal',
-  /** Label for saving a query */
+  /**
+   * Label for saving a query
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'action.save-query': 'Save query',
   /** Label for saving a shared query */
   'action.save-shared-query': 'Save as shared',
   /** Label for unsharing a query */
   'action.unshare': 'Unshare',
-  /** Label for updating a query */
+  /**
+   * Label for updating a query
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'action.update': 'Update',
 
-  /** Label for actions user can take */
+  /**
+   * Label for actions user can take
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'label.actions': 'Actions',
-  /** Label for all saved queries */
+  /**
+   * Label for all saved queries
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'label.all': 'All',
-  /** Label for saved queries that have been edited */
+  /**
+   * Label for saved queries that have been edited
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'label.edited': 'Edited',
 
   /**
    * Some features has a "New" label indicating that the feature was recently introduced.
    * This defines what the text of that label is. Keep it short and sweet.
+   * @deprecated no longer in use
    */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'label.new': 'New',
-  /** Label for query type "personal" */
+  /**
+   * Label for query type "personal"
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'label.personal': 'Personal',
-  /** Label for savedAt date */
+  /**
+   * Label for savedAt date
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'label.saved-at': 'Saved at',
-  /** Saved queries */
+  /**
+   * Saved queries
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'label.saved-queries': 'Saved queries',
   /** Search queries */
   'label.search-queries': 'Search queries',
   /** Share query */
   'label.share': 'Share',
-  /** Label for query type "shared" */
+  /**
+   * Label for query type "shared"
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'label.shared': 'Shared',
-  /** Label for saved query type "team" */
+  /**
+   * Label for saved query type "team"
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'label.team': 'Team',
   /** Label for untitled query fallback */
   'label.untitled-query': 'Untitled',
@@ -96,7 +166,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'result.label': 'Result',
   /** Tooltip text shown when the query result is not encodable as CSV */
   'result.save-result-as-csv.not-csv-encodable': 'Result cannot be encoded as CSV',
-  /** Label for "Save result as" result action */
+  /**
+   * Label for "Save result as" result action
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'result.save-result-as-format': 'Save result as <SaveResultButtons/>',
   /**
    * "Not applicable" message for when there is no Execution time or End to End time information
@@ -108,7 +182,11 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'save-query.already-saved': 'Query already saved',
   /** Save error label */
   'save-query.error': 'Error saving query',
-  /** Save personal copy success label */
+  /**
+   * Save personal copy success label
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'save-query.personal-copy-success': 'Personal copy saved',
   /** Warning displayed before sharing a query */
   'save-query.share-warning':
@@ -125,47 +203,73 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Tooltip shown when the API version selector is locked because a variant is selected */
   'settings.api-version-locked-for-variant':
     'When a variant is selected, the API version needs to be {{apiVersion}}.',
-  /** Label for the "Custom API version" input in settings, shown when "other" is chosen as API version */
+  /**
+   * Label for the "Custom API version" input in settings, shown when "other" is chosen as API version
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'settings.custom-api-version-label': 'Custom API version',
   /** Label for the "Dataset" dropdown in vision settings */
   'settings.dataset-label': 'Dataset',
   /** Error label for when the API version in 'Custom API version' input is invalid */
   'settings.error.invalid-api-version': 'Invalid API version',
-  /** Label for the "other" versions within the "API version" dropdown */
+  /**
+   * Label for the "other" versions within the "API version" dropdown
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'settings.other-api-version-label': 'Other',
   /**
    * Label for the "Perspective" dropdown in vision settings
    * @see {@link https://www.sanity.io/docs/perspectives}
    */
   'settings.perspective-label': 'Perspective',
-  /** Notification about previewDrafts to drafts rename */
+  /**
+   * Notification about previewDrafts to drafts rename
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'settings.perspective.preview-drafts-renamed-to-drafts.description':
     'The "<code>previewDrafts</code>" perspective has been renamed to "<code>drafts</code>" and is now deprecated. This change is effective for all versions with perspective support (>= v2021-03-25).',
-  /** Call to action to read the docs related to "Perspectives" */
+  /**
+   * Call to action to read the docs related to "Perspectives"
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'settings.perspectives.action.docs-link': 'Read docs',
   /** Option for selecting default perspective */
   'settings.perspectives.default': 'No perspective (API default)',
-  /** Description for popover that explains what "Perspectives" are */
+  /**
+   * Description for popover that explains what "Perspectives" are
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'settings.perspectives.description':
     'Perspectives allow your query to run against different "views" of the content in your dataset',
-  /** Description for upcoming default perspective change */
+  /**
+   * Description for upcoming default perspective change
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'settings.perspectives.new-default.description':
     'The default perspective will change from "<code>raw</code>" to "<code>published</code>" in an upcoming API version. Please consult docs for more details.',
-  /** Label for the pinned release perspective */
+  /**
+   * Label for the pinned release perspective
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'settings.perspectives.pinned-release-label': 'Pinned release',
   /** Label for the scheduled drafts perspective */
   'settings.perspectives.scheduled-drafts': 'Scheduled drafts',
-  /** Title for popover that explains what "Perspectives" are */
+  /**
+   * Title for popover that explains what "Perspectives" are
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'settings.perspectives.title': 'Perspectives',
 
   /** Copy button of a pane header, for a moment after it copied */
   'vision.copied': 'Copied',
-  /**
-   * Copy button of a pane header, copying what the pane shows
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.copy': 'Copy',
   /** Label of the document after the change in the Delta panel */
   'vision.delta.after': 'After',
   /** Label of the document before the change in the Delta panel */
@@ -206,12 +310,6 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.drawer.close': 'Close panel',
   /** The Copy button in the corner of the query and params editors, for a few seconds after a copy */
   'vision.editor.copied': 'Copied',
-  /**
-   * Button in the corner of the query and params editors that copies their text
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.editor.copy': 'Copy',
   /** Button in the corner of the query and params editors that reformats their text */
   'vision.editor.format': 'Format',
   /** Tooltip and accessible label of the `…` buttons that open a menu of more actions */
@@ -235,25 +333,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Note under a snippet that reads an API token, because its perspective includes drafts or releases */
   'vision.export-query.token-env-note':
     'The {{perspective}} perspective returns drafts or release versions, which only an authenticated request can read. Set SANITY_API_TOKEN to a token with read access, on the server only.',
-  /**
-   * Note about authentication in the export query dialog
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.export-query.token-note':
-    'Private datasets need an API token. Public datasets can drop the Authorization header.',
   /** Toast shown after the generated code was copied */
   'vision.export-types.copied': 'Code copied to clipboard',
   /** Label for the button that copies the generated code */
   'vision.export-types.copy': 'Copy code',
   /** Shown in the types dialog when there is neither a schema evaluation nor a result */
   'vision.export-types.empty': 'Fetch the query first so there is a result to derive types from.',
-  /**
-   * Why the workspace schema could not be used for the types; shown with the result fallback
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.export-types.schema-error': 'Schema evaluation failed: {{message}}',
   /** Why the workspace schema could not be used for the types; shown under the result fallback note */
   'vision.export-types.schema-unavailable':
     'The workspace schema could not be used for this query: {{message}}',
@@ -550,23 +635,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.history.reason.ai.improve': 'Improved with AI from the explanation',
   /** History reason: a link to the tool named a query URL, which opened in a tab and ran */
   'vision.history.reason.link': 'Opened link',
-  /**
-   * History reason: mutations were applied from the Mutate panel
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.history.reason.mutation': 'Mutations applied',
   /** History reason: a live event matched the query's sync tags */
   'vision.history.reason.live': 'Live update',
   /** History reason: the live connection asked every client to refetch */
   'vision.history.reason.live-restart': 'Live connection restarted',
-  /**
-   * History reason: the Live fetch button was pressed, which fetches and then refetches
-   * automatically
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.history.reason.live-start': 'Live fetch started',
   /** History reason: a saved query was loaded into a tab that refetches automatically */
   'vision.history.reason.load': 'Query loaded',
   /** History reason: the fetch button was pressed */
@@ -643,12 +715,6 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.webmcp.preview-mutations': 'Preview mutations in Vision',
   /** Title the browser shows for the WebMCP tool that runs a query */
   'vision.webmcp.run-query': 'Run a GROQ query in Vision',
-  /**
-   * Badge shown while a tab refetches automatically
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.live.active': 'Live',
   /** Button in the request column's action bar that refetches automatically */
   'vision.live.button': 'Live fetch',
   /** Tooltip of the Live button while automatic refetching is off */
@@ -757,13 +823,6 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.network.cache.miss': 'Miss, as far as this session can tell',
   /** The API answered, which caches nothing */
   'vision.network.cache.none': 'None, the API answers every request with fresh content',
-  /**
-   * Shown in the Network panel while there is no response
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.network.empty':
-    'Fetch the query to see which endpoint answered it, whether from a cache, and where it ran.',
   /** In the Response panel: the endpoint that answered */
   'vision.network.endpoint': 'Answered by',
   /** The live API answered */
@@ -785,12 +844,6 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.network.region.unknown': 'Not reported',
   /** In the Response panel: the round trip and the time on the server */
   'vision.network.timing': 'Time',
-  /**
-   * The round trip and the server's time for the query, already formatted (`1.17s`, `888ms`)
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.network.timing.value': '{{e2e}} round trip, {{server}} on the server',
   /** In the Response panel: the trace of the request, for Sanity support */
   'vision.network.trace': 'Trace ID',
   /** Tooltip next to the endpoint in the Response panel while queries go to the API */
@@ -800,12 +853,6 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.network.use-cdn-hint.label': 'About the API CDN',
   /** Label of the browser's marker on the Response panel's globe, placed from its time zone */
   'vision.network.you': 'You',
-  /**
-   * Next to the newest dated version in the API version list
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.options.api-version.latest': 'Latest',
   /** Heading of the API version list's dated versions, below its Today option */
   'vision.options.api-version.dated': 'Dated versions',
   /** Under the first option of the API version list, which is today's date */
@@ -822,67 +869,19 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.options.auto.button': 'Auto ({{name}})',
   /** Under the dataset menu's Auto option: the workspace's dataset, which it follows */
   'vision.options.dataset.auto.subtitle': 'Workspace dataset: {{dataset}}',
-  /**
-   * Heading of the dataset menu's entry for the dataset the current workspace uses
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.options.dataset.current-workspace': 'Current workspace',
-  /**
-   * In the pin button's tooltip while the tab follows the workspace's dataset
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.options.dataset.follows-workspace': 'Follows the workspace',
   /** Shown in the dataset menu when the search matches no dataset */
   'vision.options.dataset.no-matches': 'No datasets match',
-  /**
-   * Button that pins the current dataset so the tab stops following the workspace
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.options.dataset.pin': 'Pin a dataset',
-  /**
-   * In the pin button's tooltip while a dataset is pinned
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.options.dataset.pinned': 'Pinned; the workspace may use another dataset',
   /** Placeholder of the search field at the top of the dataset menu */
   'vision.options.dataset.search-placeholder': 'Search datasets',
   /** Heading of the dataset menu's datasets no workspace of this project uses */
   'vision.options.dataset.other-datasets': 'Other datasets',
   /** Heading of the dataset menu's datasets the other workspaces of this project use */
   'vision.options.dataset.workspace-datasets': 'Workspace datasets',
-  /**
-   * Heading of the dataset menu's group of datasets other workspaces of this project use
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.options.dataset.used-by-workspaces': 'Used by workspaces',
-  /**
-   * Heading of the dataset menu's group of datasets no workspace of this project uses
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.options.dataset.unused': 'Not used by any workspaces',
-  /**
-   * Button that makes the tab follow the workspace's dataset again
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.options.dataset.use-workspace': 'Use the workspace dataset',
   /** Label for the "Include content source map" switch */
   'vision.options.include-source-map': 'Include content source map',
   /** Description for the "Include content source map" switch, in its info tooltip */
   'vision.options.include-source-map.description':
     'Adds resultSourceMap to the response, shown in the Content Source Map tab.',
-  /**
-   * The short line under the "Include content source map" switch; the rest is in its tooltip
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.options.include-source-map.summary': 'Adds resultSourceMap to the response',
   /** Label of the Options field that holds the API CDN switch */
   'vision.options.caching-label': 'Caching',
   /** Label of the switch that sends queries to the API CDN */
@@ -905,24 +904,6 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.options.use-cdn.summary': 'Cached responses, for published and raw',
   /** Button in the API CDN notice switching the tab to the published perspective */
   'vision.options.use-cdn.use-published': 'Use the published perspective',
-  /**
-   * Perspective option following the studio navbar; the name is the release, published or drafts
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.options.perspective.global': 'Global ({{name}})',
-  /**
-   * Variant option sending the navbar's variant, named
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.options.variant.global': 'Global ({{name}})',
-  /**
-   * Variant option sending the navbar's variant while none is selected there
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.options.variant.global-none': 'Global (none selected)',
   /** Under the perspective menu's Auto option; the name is the navbar's perspective */
   'vision.options.perspective.auto.subtitle': 'Follows the studio: {{name}}',
   /** Under the perspective menu's API default option */
@@ -965,22 +946,10 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.panel.collapse': 'Collapse panel',
   /** Accessible label for expanding a bottom panel */
   'vision.panel.expand': 'Expand panel',
-  /**
-   * Tooltip of a control that sizes its bottom panel to the open tab
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.panel.fit-content': 'Double-click to fit the panel to its content',
   /** Label of the "Explain" tab in the response panel: the query plan and an explanation */
   'vision.panel.explain': 'Explain',
   /** Label of the Functions tab in the request panel */
   'vision.panel.functions': 'Functions',
-  /**
-   * Label of the Network tab in the response panel
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.panel.network': 'Network',
   /** Label of the Delta tab in the response panel, which tests the query in delta mode */
   'vision.panel.delta': 'Delta',
   /** Label of the Mutate tab in the response panel, which runs and applies mutations */
@@ -1038,12 +1007,6 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.item-label': '${{name}}, item {{index}}',
   /** Placeholder of an item input of a list param in the params form */
   'vision.params-form.item-placeholder': 'Item',
-  /**
-   * Under a params form field whose param has no value
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.params-form.missing': 'Not set: the query fails until it has a value',
   /** Shown in the params form when the workspace schema could not be read */
   'vision.params-form.no-schema':
     'Types come from the query alone: the workspace schema could not be read.',
@@ -1056,12 +1019,6 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** In the dialog of an object param whose keys are neither read by the query nor set */
   'vision.params-form.object.empty':
     'The query reads no keys of this param. Use the params JSON to add some.',
-  /**
-   * Button setting a date and time param to the current time
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.params-form.now': 'Now',
   /** Button removing a param the query does not use from the params */
   'vision.params-form.remove': 'Remove',
   /** Button removing every param the query does not use from the params */
@@ -1109,19 +1066,6 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params-form.unused': 'Not used by the query',
   /** Before the expressions that use a param, in the params form */
   'vision.params-form.used-in': 'Used in',
-  /**
-   * Value announced for the params resize handle while the panel sizes itself to its content
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.params.fit-height': 'Sized to the content, {{height}} pixels',
-  /**
-   * Accessible label and tooltip of the handle for resizing the params panel
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.params.resize':
-    'Resize params: drag or use the arrow keys; double-click or press Enter to fit the content again',
   /** Accessible label of the `…` menu next to the params view tabs */
   'vision.params.actions': 'Params actions',
   /** Accessible label of the button next to the params view tabs that copies the params */
@@ -1174,30 +1118,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Tooltip when automatic refetching is not available for the API version */
   'vision.query.auto-refetch.unsupported':
     'Refetching automatically needs API version v2021-03-25 or later.',
-  /**
-   * Toast shown after the query was copied
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.query.copied': 'Query copied to clipboard',
   /** Accessible label of the button in the query editor's corner that copies the query */
   'vision.query.copy': 'Copy query',
   /** Menu item opening the export query dialog */
   'vision.query.export': 'Export query…',
   /** Accessible label of the button in the query editor's corner that reformats the query */
   'vision.query.format': 'Format query',
-  /**
-   * Label floating over the GROQ editor
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.query.label': 'Query',
-  /**
-   * Menu item reformatting the query
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.query.prettify': 'Prettify query',
   /** Toast shown when the query could not be reformatted */
   'vision.query.prettify.failed': 'Could not format the query',
   /** Menu item saving the query to the personal saved queries */
@@ -1206,27 +1132,19 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.query.stop': 'Stop',
   /** Tooltip and accessible label of the Stop button, which stops the running fetch only */
   'vision.query.stop.description': 'Stop fetching',
-  /** Explanation in the settings section about the redesigned experience */
-  'vision.redesign.settings.description':
-    'You are using the redesigned Vision tool. Switching back keeps your tabs and settings in this browser for the next time you try it.',
-  /** Title of the settings section about the redesigned experience */
-  'vision.redesign.settings.title': 'Redesigned Vision (beta)',
-  /** Sidebar item and settings button that return to the classic Vision tool */
-  'vision.redesign.switch-to-classic': 'Switch to classic Vision',
-  /** Toast button that switches to the redesigned tool */
-  'vision.redesign.toast.accept': 'Try it now',
-  /** Button next to Fetch in the classic tool that switches to the redesigned one */
+  /**
+   * Button next to Fetch in the classic tool that switches to the redesigned one
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.redesign.try': 'Try the redesign',
-  /** Tooltip of the button next to Fetch in the classic tool that switches to the redesign */
+  /**
+   * Tooltip of the button next to Fetch in the classic tool that switches to the redesign
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
   'vision.redesign.try.description':
     'Switch to the redesigned Vision, in beta. You can switch back at any time from its sidebar.',
-  /** Body of the toast inviting users of the classic tool to try the redesign */
-  'vision.redesign.toast.description':
-    'Query tabs, live refetching, response details and exports. You can switch back at any time.',
-  /** Toast button that hides the invitation */
-  'vision.redesign.toast.dismiss': 'Not now',
-  /** Title of the toast inviting users of the classic tool to try the redesign */
-  'vision.redesign.toast.title': 'Try the redesigned Vision',
   /** Empty state of the response panel before anything was fetched */
   'vision.response.empty': 'Nothing fetched yet',
   /** Label for the payload size in the response tab */
@@ -1258,12 +1176,6 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Under the query URL when the request went out as a POST body rather than that URL */
   'vision.response.url.sent-as-post':
     'Sent as a POST body: the query and params are too long for a URL, so @sanity/client sent them as JSON. Pasting this URL into Vision still loads the query.',
-  /**
-   * Accessible label for the result actions menu
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.actions': 'Result actions',
   /** Toast shown after the whole result was copied from the result tree or graph */
   'vision.result.copied': 'Result copied to clipboard',
   /** Toast shown after a value in the result was copied, with its path such as [0].author.name */
@@ -1280,20 +1192,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.result.documents.copy-id': 'Copy ID',
   /** Toast confirming the document list copied a document's ID */
   'vision.result.documents.copied-id': 'Copied {{id}}',
-  /**
-   * Number of documents the document list shows, while a search or a type narrows it
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.count-of': '{{shown}} of {{count}}',
   /** Empty state of a document list whose result lists no documents */
   'vision.result.documents.empty': 'The result lists no documents',
-  /**
-   * Shown when the documents of the document list could not be fetched
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.error': 'The documents could not be loaded: {{message}}',
   /** Button in the document list that has Agent Actions change the query for the list to show it */
   'vision.result.documents.fit': 'Update query with AI',
   /** Shown beside the button over a list whose rows lack attributes the list shows, which it names */
@@ -1312,157 +1212,12 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Shown when some items of the result have no _id, with how many and how many items there are */
   'vision.result.documents.invalid.missing-id':
     '{{count}} of {{total}} items have no _id, so Documents cannot list them. _id is required. _type, title, subtitle and media are optional. Expected shape:',
-  /**
-   * Accessible label of the menu choosing how the document list lays out its documents
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.layout.aria-label': 'Change layout',
-  /**
-   * Layout of the document list as cards with large media
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.layout.card': 'Cards',
-  /**
-   * Layout of the document list with one line per document
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.layout.compact': 'Compact view',
-  /**
-   * Layout of the document list with a title and a subtitle per document
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.layout.default': 'Default view',
-  /**
-   * Layout of the document list with a title, a subtitle and a description per document
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.layout.detail': 'Detailed view',
-  /**
-   * Layout of the document list as a grid of media tiles
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.layout.media': 'Media grid',
-  /**
-   * Row of the document list for an ID no document has in the current perspective
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.missing': 'Not found in the current perspective',
-  /**
-   * Shown instead of rows when a search or a type matches none of the listed documents
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.no-match': 'No documents match',
   /** Button on a row of the document list opening the document in a new browser tab */
   'vision.result.documents.open-new-tab': 'Open in new tab',
-  /**
-   * Shown instead of the document list when the result is from another dataset than the workspace's
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.other-dataset':
-    'Documents are listed from the workspace dataset, {{workspaceDataset}}, and this result is from {{dataset}}. Switch the dataset to {{workspaceDataset}} to list them.',
-  /**
-   * Accessible label of the search field of the document list
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.search.aria-label': 'Search list',
-  /**
-   * Placeholder of the search field of the document list
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.search.placeholder': 'Search list',
-  /**
-   * Notice of a document list result with items that are not IDs, which are left out
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.skipped': 'Items without an ID left out: {{count}}',
-  /**
-   * Accessible label of the menu choosing how the document list is sorted
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.sort.aria-label': 'Sort documents',
-  /**
-   * Sort option of the document list: the newest documents first
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.sort.created': 'Recently created',
-  /**
-   * Sort option of the document list: the ordering the result gives as `defaultOrdering`
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.sort.custom': 'Query ordering',
-  /**
-   * Label of the sort menu of the document list, with the selected sort
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.sort.label': 'Sorted by {{order}}',
-  /**
-   * Sort option of the document list: the order the result lists the documents in
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.sort.result': 'Result order',
-  /**
-   * Sort option of the document list: by preview title, alphabetically
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.sort.title': 'Title A–Z',
-  /**
-   * Sort option of the document list: by document type
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.sort.type': 'Schema type',
-  /**
-   * Sort option of the document list: the most recently edited documents first
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.sort.updated': 'Recently updated',
-  /**
-   * Accessible label of the buttons narrowing the document list to one document type
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.types.aria-label': 'Filter by type',
-  /**
-   * Button showing documents of every type in the document list
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.types.all': 'All',
-  /**
-   * Row of the document list for a document of a type the schema does not have
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.documents.unknown-type': 'Unknown type: {{type}}',
   /** Tooltip and accessible label of the button after an `_id` or `_ref` in the result tree, opening that document */
   'vision.result.edit-document': 'Edit document',
   /** Empty state of the result view */
   'vision.result.empty': 'Run the query to see its result here',
-  /**
-   * Button opening the menu of ways to export the result
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- locale keys are kept for studios on older versions
-  'vision.result.export': 'Export…',
   /** Menu item saving the result as a CSV file */
   'vision.result.export-csv': 'Save as CSV…',
   /** Button on a graph node hiding the objects and arrays it holds */
@@ -1572,7 +1327,7 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.settings.clear-storage.confirm': 'Yes, clear storage',
   /** Explanation of what clearing the storage does */
   'vision.settings.clear-storage.description':
-    'Deletes your personal saved queries and the functions library, resets the open tabs and these defaults in this browser, and returns to the classic Vision tool. Shared queries are kept.',
+    'Deletes your personal saved queries and the functions library, and resets the open tabs and these defaults in this browser. Shared queries are kept.',
   /** Toast shown when the saved queries could not be cleared */
   'vision.settings.clear-storage.error': 'Could not clear the saved queries',
   /** Toast shown after the storage was cleared */

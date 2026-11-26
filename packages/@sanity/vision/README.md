@@ -34,7 +34,7 @@ export default defineConfig({
 
 ### Turning off AI features
 
-The redesigned Vision has AI features that use your organization's AI credits, all of them on by default. The `ai` option turns them off, all at once or one at a time:
+Vision has AI features that use your organization's AI credits, all of them on by default. The `ai` option turns them off, all at once or one at a time:
 
 ```ts
 // No AI features at all

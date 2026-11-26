@@ -20,7 +20,7 @@ import {useLiveSubscription} from '../../hooks/useLiveSubscription'
 import {useOnValueChange} from '../../hooks/useOnValueChange'
 import {useQueryRequestBuilder} from '../../hooks/useQueryRequestBuilder'
 import {useVisionDocumentEvents} from '../../hooks/useVisionDocumentEvents'
-import {selectIsFetching} from '../../store/queryRunnerMachine'
+import {selectIsFetching, selectLiveConnected} from '../../store/queryRunnerMachine'
 import {type FetchReason, type VisionTab, type VisionTabOptions} from '../../store/types'
 import {
   usePendingEdits,
@@ -167,6 +167,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
   const sourceMapPreference = useVisionSelector(selectSourceMapRequest)
   const isVariantsEnabled = useVariantsEnabled()
   const isFetching = useSelector(runnerRef, selectIsFetching)
+  const liveConnected = useSelector(runnerRef, selectLiveConnected)
 
   const setQuery = useCallback(
     (query: string) => actorRef.send({type: 'tab.setQuery', id: tab.id, query}),
@@ -580,6 +581,7 @@ export function QueryTab({animateFirstShow, tab, rootElement}: QueryTabProps) {
       buildRequest={buildRequest}
       formatForEditor={formatForEditor}
       isFetching={isFetching}
+      liveConnected={liveConnected}
       onCancel={cancel}
       copied={copied}
       onCopyParams={copyParams}

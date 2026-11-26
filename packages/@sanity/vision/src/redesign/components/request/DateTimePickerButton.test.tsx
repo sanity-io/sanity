@@ -5,7 +5,7 @@ import {act, cleanup, fireEvent, render, screen, within} from '@testing-library/
 import {type KeyboardEventHandler, type ReactNode, useState} from 'react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
-import {type Params} from '../../../components/VisionGui'
+import {type Params} from '../../../util/parseParams'
 import {ParamsForm} from './ParamsForm'
 
 const schema = Schema.compile({name: 'test', types: []})
