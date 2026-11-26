@@ -54,6 +54,12 @@ export interface VisionTab {
   rawParams: string
   options: VisionTabOptions
   autoRefetch: boolean
+  /**
+   * The shared query (a `vision.sharedQuery` document) the tab is shared as: the user shared the
+   * tab, or opened a query they shared from the Shared tabs drawer. Edits keep it, so the tab can
+   * be shared again or unshared after it changed.
+   */
+  sharedId: string | undefined
 }
 
 /** Fields for creating a tab or loading a query into one; everything unspecified keeps its value */

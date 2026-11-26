@@ -175,6 +175,25 @@ describe('visionMachine', () => {
     })
   })
 
+  it('links a tab to the shared query it is shared as, through edits and until unlinked', () => {
+    const harness = createHarness()
+    const [tab] = harness.tabs()
+
+    harness.actor.send({type: 'tab.setSharedId', id: tab.id, sharedId: 'shared-a'})
+    harness.actor.send({type: 'tab.setQuery', id: tab.id, query: '*[_type == "x"]'})
+    harness.actor.send({type: 'tab.load', id: tab.id, tab: {query: '*[_type == "y"]'}})
+    expect(harness.tabs()[0]).toMatchObject({query: '*[_type == "y"]', sharedId: 'shared-a'})
+
+    const before = harness.tabs()
+    harness.actor.send({type: 'tab.setSharedId', id: tab.id, sharedId: 'shared-a'})
+    expect(harness.tabs()).toBe(before)
+
+    harness.actor.send({type: 'tab.load', id: tab.id, tab: {query: '*', sharedId: 'shared-b'}})
+    expect(harness.tabs()[0].sharedId).toBe('shared-b')
+    harness.actor.send({type: 'tab.setSharedId', id: tab.id, sharedId: undefined})
+    expect(harness.tabs()[0].sharedId).toBeUndefined()
+  })
+
   it('does not produce a new tabs array for a no-op query change', () => {
     const harness = createHarness()
     const [tab] = harness.tabs()

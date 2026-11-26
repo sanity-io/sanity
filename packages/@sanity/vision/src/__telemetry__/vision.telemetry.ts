@@ -206,6 +206,32 @@ export const VisionTabUsed = defineEvent<{action: VisionTabAction}>({
     'User switched to, renamed or reordered a Vision query tab. Titles are not recorded.',
 })
 
+/**
+ * A shared tab is stored as a shared query, which everyone using the dataset can open
+ * - `share`: shared a tab
+ * - `update`: shared a shared tab again after changing it, replacing what was shared
+ * - `unshare`: stopped sharing a tab, from its menu or from the Shared tabs drawer
+ * - `open`: opened a shared tab from the drawer
+ * - `load`: loaded a shared tab into the current tab
+ * - `rename`: renamed a shared tab in the drawer
+ */
+export type VisionSharedTabAction = 'share' | 'update' | 'unshare' | 'open' | 'load' | 'rename'
+
+export const VisionSharedTabUsed = defineEvent<{action: VisionSharedTabAction}>({
+  name: 'Vision Shared Tab Used',
+  version: 1,
+  description:
+    'User shared, updated, unshared, opened, loaded or renamed a shared Vision tab. ' +
+    'The query and its title are not recorded.',
+})
+
+/** User started filtering the Shared tabs drawer by text, once per search rather than per keystroke */
+export const VisionSharedTabsSearched = defineEvent({
+  name: 'Vision Shared Tabs Searched',
+  version: 1,
+  description: 'User searched the shared Vision tabs. The search text is not recorded.',
+})
+
 /** The sidebar's drawers */
 export type VisionDrawerId = 'saved' | 'shared' | 'delta' | 'mutate' | 'settings'
 

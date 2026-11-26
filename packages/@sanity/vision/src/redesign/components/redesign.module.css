@@ -627,6 +627,11 @@
   min-width: 0;
 }
 
+.tabSharedIcon {
+  flex-shrink: 0;
+  margin-right: 6px;
+}
+
 .tabCloseButton {
   flex-shrink: 0;
   opacity: 0;
