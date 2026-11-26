@@ -7,13 +7,12 @@ import {TrashIcon} from '@sanity/icons/Trash'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {UsersIcon} from '@sanity/icons/Users'
 import {Button, Card, Dialog, TextInput} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {Tooltip} from '@sanity/ui/tooltip'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {ContextMenuButton, UserAvatar, useDateTimeFormat, useTranslation} from 'sanity'
-import {Text, Box, Flex} from 'ui5'
+import {Code, Text, Box, Flex} from 'ui5'
 
 import {type QueryConfig} from '../../../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../../../i18n'
@@ -325,7 +324,9 @@ export function QueryListPanel({mode}: QueryListPanelProps) {
                             </Text>
                             {preview && (
                               <Box className={styles.previewCode}>
-                                <Code size={0}>{preview}</Code>
+                                <Code size={0} trim>
+                                  {preview}
+                                </Code>
                               </Box>
                             )}
                             <Flex alignItems="center" gap={2}>

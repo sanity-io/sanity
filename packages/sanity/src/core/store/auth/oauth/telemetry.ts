@@ -30,12 +30,14 @@ export type OAuthFailure =
 
 /**
  * Why a session ended. `refresh-refused`: the store ended it when the refresh token was refused.
+ * `refresh-expired`: the store signed out without a request, because the refresh token had expired.
  * `session-expired` and `session-not-found`: the Studio logged the user out when the API rejected
  * the session even after a renewal.
  */
 export type OAuthSessionEndReason =
   | 'user-signed-out'
   | 'refresh-refused'
+  | 'refresh-expired'
   | 'session-expired'
   | 'session-not-found'
 

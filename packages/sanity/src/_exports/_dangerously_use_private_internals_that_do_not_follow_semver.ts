@@ -804,6 +804,13 @@ export {createKeyValueStore} from '../core/store/key-value/keyValueStore'
 // oxlint-disable-next-line no-deprecated -- the key-value store stays exported until the next major
 export {type KeyValueStore, type KeyValueStoreValue} from '../core/store/key-value/types'
 export {
+  LISTENER_PAUSE_GRACE_PERIOD,
+  type ListenerGate,
+  listenerGate,
+  pauseWhileDocumentHidden,
+  type PauseWhileDocumentHiddenOptions,
+} from '../core/store/listenerGate/listenerGate'
+export {
   useStudioPreference,
   useStudioPreferenceList,
 } from '../core/store/preferences/useStudioPreference'
@@ -1049,6 +1056,8 @@ export {isString} from '../core/util/isString'
 export {isTruthy} from '../core/util/isTruthy'
 export {measureFirstEmission, measureFirstMatch} from '../core/util/measureFirstEmission'
 export {type PartialExcept} from '../core/util/PartialExcept'
+export {retryTransientFetch} from '../core/util/fetchErrors'
+export {reconnectListener, type ReconnectListenerOptions} from '../core/util/reconnectListener'
 export {
   type CardinalityOneRelease,
   isCardinalityOnePerspective,

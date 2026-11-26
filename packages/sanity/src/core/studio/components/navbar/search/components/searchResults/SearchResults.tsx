@@ -13,7 +13,6 @@ import {useRecentSearchesStore} from '../../datastores/recentSearches'
 import {NoResults} from '../NoResults'
 import {SearchError} from '../SearchError'
 import {SortMenu} from '../SortMenu'
-import {DebugOverlay} from './item/DebugOverlay'
 import {type ItemSelectHandler, SearchResultItem} from './item/SearchResultItem'
 import {loadingFirstPage, searchResultsInnerFlex} from './SearchResults.css'
 
@@ -42,7 +41,7 @@ export function SearchResults({
     dispatch,
     onClose,
     setSearchCommandList,
-    state: {debug, filters, fullscreen, lastActiveIndex, result, terms, cursor},
+    state: {filters, fullscreen, lastActiveIndex, result, terms, cursor},
   } = useSearchState()
   const {t} = useTranslation()
   const recentSearchesStore = useRecentSearchesStore()
@@ -79,29 +78,19 @@ export function SearchResults({
   const renderItem = useCallback<CommandListRenderItemCallback<WeightedHit>>(
     (item) => {
       return (
-        <>
-          <SearchResultItem
-            disableIntentLink={disableIntentLink}
-            documentId={item.hit._id || ''}
-            documentType={item.hit._type}
-            onClick={handleSearchResultClick}
-            onItemSelect={onItemSelect}
-            previewPerspective={previewPerspective}
-            previewVariant={previewVariant}
-            paddingY={1}
-          />
-          {debug && <DebugOverlay data={item} />}
-        </>
+        <SearchResultItem
+          disableIntentLink={disableIntentLink}
+          documentId={item.hit._id || ''}
+          documentType={item.hit._type}
+          onClick={handleSearchResultClick}
+          onItemSelect={onItemSelect}
+          previewPerspective={previewPerspective}
+          previewVariant={previewVariant}
+          paddingY={1}
+        />
       )
     },
-    [
-      debug,
-      disableIntentLink,
-      handleSearchResultClick,
-      onItemSelect,
-      previewPerspective,
-      previewVariant,
-    ],
+    [disableIntentLink, handleSearchResultClick, onItemSelect, previewPerspective, previewVariant],
   )
 
   return (

@@ -30,6 +30,7 @@ import {type KnownEnvVar} from '../types'
 export function createStorageClient(): Storage {
   return new Storage({
     projectId: readEnv<KnownEnvVar>('GOOGLE_PROJECT_ID'),
+    // oxlint-disable-next-line typescript/no-deprecated -- the deprecation warns about unvalidated credentials from untrusted sources; this is our own CI secret
     credentials: JSON.parse(readEnv<KnownEnvVar>('GCLOUD_SERVICE_KEY')),
     clientOptions: {transporterOptions: {agent: new Agent({keepAlive: false})}},
   })

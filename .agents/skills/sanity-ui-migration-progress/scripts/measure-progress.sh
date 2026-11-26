@@ -77,6 +77,15 @@ SEARCH_DIR="${SEARCH_DIR:-.}"
 
 command -v rg >/dev/null || { echo "ripgrep (rg) required" >&2; exit 1; }
 
+# Regex for an import source: PACKAGE itself or any subpath entry of it, quoted either way.
+# `@sanity/ui` must also match `@sanity/ui/code`: v4 ships some components only from subpaths.
+# The package name is escaped so `.` or `+` in an alias match literally.
+pkg_pattern() {
+  local escaped
+  escaped=$(printf '%s' "$1" | sed 's/[][\.+*?(){}|^$]/\\&/g')
+  printf "['\"]%s(/[^'\"]+)?['\"]" "$escaped"
+}
+
 # The nearest package.json at or above SEARCH_DIR, if any. A scanned subdirectory usually has
 # none of its own; the alias is declared by the package (or workspace root) that contains it.
 nearest_package_json() {
@@ -107,7 +116,7 @@ rg_package_json() {
 
 # Discover the v5 alias from package.json when the default is used and ui5 imports are absent.
 # -o --no-filename so only the captured alias is printed, not the path and the rest of the line.
-if [ "$V5_PKG" = "ui5" ] && ! rg -q "from ['\"]ui5['\"]" --glob '*.{ts,tsx}' "$SEARCH_DIR" 2>/dev/null; then
+if [ "$V5_PKG" = "ui5" ] && ! rg -q "from $(pkg_pattern ui5)" --glob '*.{ts,tsx}' "$SEARCH_DIR" 2>/dev/null; then
   detected=$(rg_package_json -o --no-filename '"([^"]+)":\s*"npm:@sanity/ui@' -r '$1' | head -1)
   [ -n "$detected" ] && V5_PKG="$detected"
 fi
@@ -120,7 +129,7 @@ has_v5_alias() {
 discover_components() {
   # --no-filename: when scanning a directory rg prefixes each match with its path, which would
   # swallow the first specifier of every import in the sed/tr pipeline below.
-  rg -U --multiline -o --no-filename "import \{([^}]+)\} from ['\"]${V5_PKG}['\"]" \
+  rg -U --multiline -o --no-filename "import \{([^}]+)\} from $(pkg_pattern "$V5_PKG")" \
     --glob '*.ts' --glob '*.tsx' "$SEARCH_DIR" 2>/dev/null \
     | sed 's/^import {//;s/} from.*//' \
     | tr ',' '\n' \
@@ -135,7 +144,7 @@ discover_components() {
 count_import_files() {
   local component="$1" package="$2"
   rg -lU --multiline \
-    "import \{[^}]*?\b${component}\b[^}]*?\} from ['\"]${package}['\"]" \
+    "import \{[^}]*?\b${component}\b[^}]*?\} from $(pkg_pattern "$package")" \
     --glob '*.ts' --glob '*.tsx' "$SEARCH_DIR" 2>/dev/null \
     | wc -l | tr -d ' '
 }
@@ -143,15 +152,16 @@ count_import_files() {
 # file<TAB>localName for COMPONENT imported from PACKAGE (alias-aware).
 resolve_bindings() {
   local component="$1" package="$2"
-  local f local_name
+  local f local_name pattern
+  pattern=$(pkg_pattern "$package")
   while IFS= read -r f; do
     local_name=$(rg -oU --multiline \
-      "import \{[^}]*?\b${component}\b(\s+as\s+(\w+))?[^}]*?\} from ['\"]${package}['\"]" \
+      "import \{[^}]*?\b${component}\b(\s+as\s+(\w+))?[^}]*?\} from ${pattern}" \
       -r '$2' "$f" 2>/dev/null | head -1)
     [ -z "$local_name" ] && local_name="$component"
     printf '%s\t%s\n' "$f" "$local_name"
   done < <(rg -lU --multiline \
-    "import \{[^}]*?\b${component}\b[^}]*?\} from ['\"]${package}['\"]" \
+    "import \{[^}]*?\b${component}\b[^}]*?\} from ${pattern}" \
     --glob '*.ts' --glob '*.tsx' "$SEARCH_DIR" 2>/dev/null)
 }
 
@@ -183,10 +193,10 @@ count_total_import_files() {
   local component="$1"
   {
     rg -lU --multiline \
-      "import \{[^}]*?\b${component}\b[^}]*?\} from ['\"]${V5_PKG}['\"]" \
+      "import \{[^}]*?\b${component}\b[^}]*?\} from $(pkg_pattern "$V5_PKG")" \
       --glob '*.ts' --glob '*.tsx' "$SEARCH_DIR" 2>/dev/null
     rg -lU --multiline \
-      "import \{[^}]*?\b${component}\b[^}]*?\} from ['\"]${LEGACY_PKG}['\"]" \
+      "import \{[^}]*?\b${component}\b[^}]*?\} from $(pkg_pattern "$LEGACY_PKG")" \
       --glob '*.ts' --glob '*.tsx' "$SEARCH_DIR" 2>/dev/null
   } | sort -u | wc -l | tr -d ' '
 }
@@ -304,7 +314,7 @@ fi
 
 echo
 echo "Legend:"
-echo "  v5 imp / leg imp  — files with a value import from the v5 alias / @sanity/ui"
+echo "  v5 imp / leg imp  — files with a value import from the v5 alias / @sanity/ui (subpaths included)"
 echo "  imp tot           — union of v5 + legacy import files for that component"
 echo "  jsx mig / unm     — <LocalName> hits via alias-resolved bindings per file"
 echo "  jsx %             — migrated JSX / total JSX instances"

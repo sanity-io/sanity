@@ -12,7 +12,7 @@ import {
   type SearchOperatorDefinitionDictionary,
 } from '../../definitions/operators'
 import {type SearchFilter, type SearchOrdering} from '../../types'
-import {debugWithName, isDebugMode} from '../../utils/debug'
+import {debugWithName} from '../../utils/debug'
 import {
   generateFilterQuery,
   getFieldFromFilter,
@@ -29,7 +29,6 @@ interface PaginationState {
 
 export type SearchReducerState = PaginationState & {
   currentUser: CurrentUser | null
-  debug: boolean
   definitions: SearchDefinitions
   documentTypesNarrowed: string[]
   filters: SearchFilter[]
@@ -76,7 +75,6 @@ export function initialSearchState({
 }: InitialSearchState): SearchReducerState {
   return {
     currentUser,
-    debug: isDebugMode(),
     documentTypesNarrowed: [],
     filters: [],
     filtersVisible: true,
