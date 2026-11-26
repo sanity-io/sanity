@@ -139,6 +139,7 @@ export function useScheduleDraftOperations(): ScheduleDraftOperationsValue {
           documentGroupId: getPublishedId(documentId),
           variant: {_id: variant.variantId},
           selectedPerspective: releaseId,
+          location: 'schedule_draft_action',
         })
       } else {
         await releaseOperations.createVersion(releaseId, getDraftId(documentId), opts)

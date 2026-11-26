@@ -107,6 +107,7 @@ describe('useScheduleDraftOperations', () => {
       documentGroupId: 'documentId',
       variant: {_id: '_.variants.loyal'},
       selectedPerspective: getReleaseIdFromReleaseDocumentId(mockReleaseId),
+      location: 'schedule_draft_action',
     })
     expect(useReleaseOperationsMockReturn.createVersion).not.toHaveBeenCalled()
     expect(useReleaseOperationsMockReturn.schedule).toHaveBeenCalledWith(

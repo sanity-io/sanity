@@ -249,6 +249,7 @@ export function useVersionContextMenu(
             documentGroupId,
             variant: {_id: variantId},
             selectedPerspective: perspective,
+            location: 'version_context_menu',
           })
         } else {
           // Skip navigation here — the hook navigates once after creation so we

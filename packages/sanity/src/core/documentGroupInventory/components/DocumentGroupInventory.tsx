@@ -297,6 +297,7 @@ export function DocumentGroupInventory(
                         variant: variantDefinition,
                         selectedPerspective: createPerspective,
                         signal,
+                        location: 'document_group_inventory',
                       })
                     } else {
                       await createVariantDocument({
@@ -305,6 +306,7 @@ export function DocumentGroupInventory(
                         variant: variantDefinition,
                         selectedPerspective: createPerspective,
                         signal,
+                        location: 'document_group_inventory',
                       })
                     }
 
