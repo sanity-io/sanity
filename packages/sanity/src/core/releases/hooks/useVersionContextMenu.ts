@@ -231,6 +231,7 @@ export function useVersionContextMenu(
   const {handleCopyToDrafts} = useCopyToDrafts({
     documentGroupId,
     documentVersionInfoStub,
+    location: 'version_context_menu',
     onNavigate: handleCopyToDraftsNavigate,
     onConfirmationRequest: () => setDialogState('copy-to-drafts'),
   })
