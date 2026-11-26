@@ -123,6 +123,8 @@ describe('ConfirmDeleteDialog', () => {
     const wrapper = await createTestProvider({
       resources: [structureUsEnglishLocaleBundle],
       config: {
+        // Link strengths are an open beta feature: they only show with Variants on
+        beta: {variants: {enabled: true}},
         schema: {
           types: [
             defineType({
@@ -148,6 +150,32 @@ describe('ConfirmDeleteDialog', () => {
     // The row names the release that holds the link, so the reader knows which release fails
     expect(screen.getByTestId('fails-later-reference-release')).toHaveTextContent('in Black Friday')
     expect(screen.getByText('Delete document')).toBeInTheDocument()
+  })
+
+  it('keeps main behaviour with Variants off: no link strengths, Confirm offered anyway', async () => {
+    mockUseDocumentVersions.mockReturnValue(withVersions(1))
+    // Even if a reference arrived marked required, with Variants off the dialog ignores it
+    mockUseReferringDocuments.mockReturnValue({
+      ...noReferences,
+      internalReferences: {
+        totalCount: 1,
+        references: [{_id: 'publisher-1', _type: 'publisher', required: true}],
+      },
+      totalCount: 1,
+    } as unknown as ReturnType<typeof useReferringDocuments>)
+    const wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
+
+    render(<ConfirmDeleteDialog id="doc1" type="post" onCancel={vi.fn()} onConfirm={vi.fn()} />, {
+      wrapper,
+    })
+
+    expect(await screen.findByText('Delete anyway')).toBeInTheDocument()
+    expect(screen.queryByTestId('required-reference-badge')).not.toBeInTheDocument()
+    // No extra read of the referring documents
+    expect(mockUseReferringDocuments).toHaveBeenCalledWith('doc1', {
+      enabled: true,
+      withReferenceStrength: false,
+    })
   })
 
   it('hides the confirm button while the version count loads', async () => {
@@ -181,7 +209,10 @@ describe('ConfirmDeleteDialog', () => {
       {wrapper},
     )
 
-    expect(mockUseReferringDocuments).toHaveBeenCalledWith('doc1', {enabled: false})
+    expect(mockUseReferringDocuments).toHaveBeenCalledWith('doc1', {
+      enabled: false,
+      withReferenceStrength: false,
+    })
     expect(await screen.findByText('Unpublish now')).toBeInTheDocument()
     expect(screen.queryByText('Unpublish anyway')).not.toBeInTheDocument()
     expect(screen.getByRole('dialog')).toHaveTextContent(

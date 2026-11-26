@@ -1,5 +1,11 @@
 import {useCallback, useId, useMemo} from 'react'
-import {getPublishedId, LoadingBlock, useDocumentVersions, useTranslation} from 'sanity'
+import {
+  getPublishedId,
+  LoadingBlock,
+  useDocumentVersions,
+  useTranslation,
+  useWorkspace,
+} from 'sanity'
 import {Box, Flex} from 'ui5'
 
 import {Dialog} from '../../../ui-components/dialog/Dialog'
@@ -7,7 +13,7 @@ import {structureLocaleNamespace} from '../../i18n'
 import {DocTitle} from '../DocTitle'
 import {dialogBody, loadingContainer} from './ConfirmDeleteDialog.css'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
-import {getLinkStrength} from './getLinkStrength'
+import {getLinkStrength, type LinkStrength} from './getLinkStrength'
 import {useReferringDocuments} from './useReferringDocuments'
 
 /**
@@ -65,6 +71,9 @@ export function ConfirmDeleteDialog({
   onConfirm,
 }: ConfirmDeleteDialogProps) {
   const {t} = useTranslation(structureLocaleNamespace)
+  // With Variants off the dialog is main's: no link strengths, so no extra read of the referring
+  // documents, no Required badges and Confirm offered whatever the links
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   const dialogId = `deletion-confirmation-${useId()}`
   const {
     internalReferences,
@@ -74,7 +83,10 @@ export function ConfirmDeleteDialog({
     projectIds,
     datasetNames,
     hasUnknownDatasetNames,
-  } = useReferringDocuments(id, {enabled: checkIncomingReferences})
+  } = useReferringDocuments(id, {
+    enabled: checkIncomingReferences,
+    withReferenceStrength: variantsEnabled,
+  })
   const documentTitle = <DocTitle document={useMemo(() => ({_id: id, _type: type}), [id, type])} />
   const {data: documentVersions, loading: versionsLoading} = useDocumentVersions({
     documentId: getPublishedId(id),
@@ -82,7 +94,9 @@ export function ConfirmDeleteDialog({
   // Wait for the version count too, so the button copy doesn't flash from
   // "Delete all versions" to "Delete document" while the count loads. If incoming
   // references are disabled, show the confirm button immediately.
-  const linkStrength = getLinkStrength({internalReferences, crossDatasetReferences})
+  const linkStrength: LinkStrength = variantsEnabled
+    ? getLinkStrength({internalReferences, crossDatasetReferences})
+    : 'unknown'
   // Content Lake refuses the action while a required link points at the document: no button
   const showConfirmButton =
     !checkIncomingReferences || (!isLoading && !versionsLoading && linkStrength !== 'required')

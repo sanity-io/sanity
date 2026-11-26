@@ -14,6 +14,7 @@ import {
   useDocumentStore,
   useSetVariant,
   useTranslation,
+  useWorkspace,
   type VersionInfoDocumentStub,
 } from 'sanity'
 import {Flex} from 'ui5'
@@ -49,9 +50,18 @@ export function DocumentGroupInspector(props: DocumentInspectorProps): React.JSX
   const perspectiveList = useDocumentPerspectiveList()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentStore = useDocumentStore()
+  // Link strengths (an extra read of the referring documents) are an open beta feature: the
+  // inventory can be on without Content Variants, and then it stays as it was
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
   const referringDocuments$ = useMemo(
-    () => referringDocuments({documentId, versionedClient: client, documentStore}),
-    [documentId, client, documentStore],
+    () =>
+      referringDocuments({
+        documentId,
+        versionedClient: client,
+        documentStore,
+        withReferenceStrength: variantsEnabled,
+      }),
+    [documentId, client, documentStore, variantsEnabled],
   )
 
   const setVariant = useSetVariant()

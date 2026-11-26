@@ -188,6 +188,12 @@ export interface ReferringDocumentsOptions {
   documentId: string
   versionedClient: SanityClient
   documentStore: DocumentStore
+  /**
+   * When `true`, reads the referring documents once more to mark each internal reference as
+   * `required` or `failsLater`. Only the open beta delete dialog (Content Variants on) uses it; by
+   * default the references stay unmarked and nothing more is fetched.
+   */
+  withReferenceStrength?: boolean
 }
 
 /**
@@ -202,15 +208,15 @@ export function referringDocuments({
   documentId,
   versionedClient,
   documentStore,
+  withReferenceStrength: markReferenceStrength = false,
 }: ReferringDocumentsOptions): Observable<ReferringDocuments> {
   const publishedId = getPublishedId(documentId)
 
+  const internalReferencesSource$ = fetchInternalReferences(publishedId, documentStore)
   const internalReferences$ = withLoadingState(
-    withReferenceStrength(
-      fetchInternalReferences(publishedId, documentStore),
-      publishedId,
-      versionedClient,
-    ),
+    markReferenceStrength
+      ? withReferenceStrength(internalReferencesSource$, publishedId, versionedClient)
+      : internalReferencesSource$,
   )
 
   const crossDatasetReferences$ = withLoadingState(
@@ -291,6 +297,8 @@ export interface UseReferringDocumentsOptions {
    * state
    */
   enabled?: boolean
+  /** See {@link ReferringDocumentsOptions.withReferenceStrength} */
+  withReferenceStrength?: boolean
 }
 
 export function useReferringDocuments(
@@ -298,6 +306,7 @@ export function useReferringDocuments(
   options?: UseReferringDocumentsOptions,
 ): ReferringDocuments {
   const enabled = options?.enabled ?? true
+  const withReferenceStrength = options?.withReferenceStrength ?? false
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const documentStore = useDocumentStore()
 
@@ -305,8 +314,8 @@ export function useReferringDocuments(
     if (!enabled) {
       return of(EMPTY_READY_STATE)
     }
-    return referringDocuments({documentId, versionedClient, documentStore})
-  }, [documentId, documentStore, enabled, versionedClient])
+    return referringDocuments({documentId, versionedClient, documentStore, withReferenceStrength})
+  }, [documentId, documentStore, enabled, versionedClient, withReferenceStrength])
 
   return useObservable(referringDocuments$, enabled ? INITIAL_STATE : EMPTY_READY_STATE)
 }

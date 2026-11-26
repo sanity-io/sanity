@@ -15,6 +15,7 @@ import {
   useDocumentStore,
   useDocumentVersionTypeSortedList,
   useTranslation,
+  useWorkspace,
 } from 'sanity'
 
 import {ConfirmDeleteDialog} from '../components/confirmDeleteDialog'
@@ -51,6 +52,8 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft}) => {
   const telemetry = useTelemetry()
 
   const {t} = useTranslation(structureLocaleNamespace)
+  // With Variants off the disabled Delete keeps main's tooltip behaviour
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
 
   const {sortedDocumentList} = useDocumentVersionTypeSortedList({documentId: id})
   const hasScheduledRelease = sortedDocumentList.some(isReleaseScheduledOrScheduling)
@@ -139,7 +142,7 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft}) => {
       }
       // Every disabled state says why, including while the perspective's target document (a
       // release copy or a variant) is still resolving, so Delete is never greyed out silently.
-      if (!isTargetReady || isPermissionsLoading) {
+      if (variantsEnabled && (!isTargetReady || isPermissionsLoading)) {
         return t(DISABLED_REASON_TITLE_KEY.NOT_READY)
       }
       return ''
@@ -188,6 +191,7 @@ export const useDeleteAction: DocumentActionComponent = ({id, type, draft}) => {
     permissions?.granted,
     t,
     type,
+    variantsEnabled,
   ])
 }
 

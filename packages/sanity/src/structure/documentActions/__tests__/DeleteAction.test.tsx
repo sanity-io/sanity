@@ -71,13 +71,21 @@ function applyTargetState(status: 'ready' | 'resolving') {
 }
 
 let wrapper: React.ComponentType<{children: React.ReactNode}>
+let variantsOffWrapper: React.ComponentType<{children: React.ReactNode}>
 
 beforeAll(async () => {
-  wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
+  wrapper = await createTestProvider({
+    resources: [structureUsEnglishLocaleBundle],
+    config: {beta: {variants: {enabled: true}}},
+  })
+  variantsOffWrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
 })
 
-async function renderDeleteAction() {
-  const rendered = renderHook(useDeleteAction, {wrapper, initialProps: PROPS})
+async function renderDeleteAction(variantsEnabled = true) {
+  const rendered = renderHook(useDeleteAction, {
+    wrapper: variantsEnabled ? wrapper : variantsOffWrapper,
+    initialProps: PROPS,
+  })
   await waitFor(() => expect(rendered.result.current).not.toBeNull())
   return rendered
 }
@@ -101,5 +109,12 @@ describe('useDeleteAction on a variant draft', () => {
     const {result} = await renderDeleteAction()
 
     expect(result.current).toMatchObject({disabled: true, title: 'Operation not ready'})
+  })
+
+  it('keeps main behaviour with Variants off: disabled while resolving, with no reason given', async () => {
+    applyTargetState('resolving')
+    const {result} = await renderDeleteAction(false)
+
+    expect(result.current).toMatchObject({disabled: true, title: ''})
   })
 })
