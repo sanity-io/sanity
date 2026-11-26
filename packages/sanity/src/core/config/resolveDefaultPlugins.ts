@@ -10,6 +10,7 @@ import {SINGLE_DOC_RELEASE_NAME, singleDocRelease} from '../singleDocRelease/plu
 import {tasks, TASKS_NAME} from '../tasks/plugin'
 import {variants, VARIANTS_NAME} from '../variants/plugin'
 import {scheduledDraftsEnabledReducer} from './configPropertyReducers'
+import {resolveReleaseMetadataConfig} from './releases/metadataFields'
 import {
   type AppsOptions,
   type DefaultPluginsWorkspaceOptions,
@@ -23,7 +24,7 @@ const defaultPlugins = (options: DefaultPluginsOptions) => [
   options.comments.v2 ? commentsV2() : commentsCurrent(),
   tasks(),
   scheduledPublishing(),
-  releases(),
+  releases({metadata: options.releases.metadata}),
   canvasIntegration(),
   mediaLibrary(),
   schedules(options),
@@ -92,6 +93,9 @@ export function getDefaultPluginsOptions(
     releases: {
       ...workspace.releases,
       enabled: workspace.releases?.enabled ?? true,
+      // Reduced across the workspace's plugins, so the releases plugin adds the same metadata
+      // to the schema as the resolved `Source.releases.metadata` describes
+      metadata: resolveReleaseMetadataConfig(workspace as PluginOptions),
     },
     apps: {
       canvas: {

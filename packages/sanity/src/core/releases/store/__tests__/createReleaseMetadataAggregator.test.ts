@@ -13,10 +13,14 @@ import {
 } from 'rxjs'
 import {afterEach, beforeEach, describe, expect, it, type Mock, onTestFinished, vi} from 'vitest'
 
+import {stubDocumentVisibility} from '../../../../../test/testUtils/documentVisibility'
+import {LISTENER_PAUSE_GRACE_PERIOD, listenerGate} from '../../../store/listenerGate/listenerGate'
 import {
   createReleaseMetadataAggregator,
   type MetadataWrapper,
 } from '../createReleaseMetadataAggregator'
+
+let releaseListenerGate: (() => void) | undefined
 
 const UPDATED_AT = '2024-01-02T00:00:00Z'
 const VARIANT_ID = 'versions.Tqa2GgX2epJOVp3Q.doc'
@@ -585,6 +589,94 @@ describe('createReleaseMetadataAggregator', () => {
 
       expect(mockClient.observable.fetch).toHaveBeenCalledTimes(3)
       expect(getProjectedReleaseDocumentIds(getFetchedQuery(2))).toEqual(['_.releases.rDEF'])
+    })
+  })
+
+  describe('on a hidden page', () => {
+    afterEach(() => {
+      releaseListenerGate?.()
+      vi.useRealTimers()
+      vi.restoreAllMocks()
+    })
+
+    it('stops listening while paused, and refetches every release without a loading state when shown', () => {
+      vi.useFakeTimers()
+      releaseListenerGate = listenerGate.enable()
+      const documentVisibility = stubDocumentVisibility()
+      const listener$ = new Subject<never>()
+      mockClient.observable.listen.mockReturnValue(listener$)
+      mockClient.observable.fetch
+        // The release map the aggregator's query projects, not the raw response the mock is typed as
+        .mockReturnValueOnce(of({'_.releases.r1': {updatedAt: '1', documentIds: ['a']}}) as never)
+        .mockReturnValueOnce(
+          of({'_.releases.r1': {updatedAt: '2', documentIds: ['a', 'b']}}) as never,
+        )
+
+      const values: MetadataWrapper[] = []
+      const subscription = createReleaseMetadataAggregator(mockClient)(['_.releases.r1']).subscribe(
+        (value) => values.push(value),
+      )
+
+      documentVisibility.set('hidden')
+      vi.advanceTimersByTime(LISTENER_PAUSE_GRACE_PERIOD)
+      expect(listener$.observed).toBe(false)
+
+      documentVisibility.set('visible')
+      expect(listener$.observed).toBe(true)
+      expect(values).toEqual([
+        {loading: true, data: null, error: null},
+        {
+          loading: false,
+          error: null,
+          data: {'_.releases.r1': {updatedAt: '1', documentIds: ['a'], documentCount: 1}},
+        },
+        {
+          loading: false,
+          error: null,
+          data: {'_.releases.r1': {updatedAt: '2', documentIds: ['a', 'b'], documentCount: 2}},
+        },
+      ])
+      subscription.unsubscribe()
+    })
+
+    it('refetches every release when a page opened in the background is first shown', () => {
+      releaseListenerGate = listenerGate.enable()
+      const documentVisibility = stubDocumentVisibility('hidden')
+      const listener$ = new Subject<never>()
+      mockClient.observable.listen.mockReturnValue(listener$)
+      mockClient.observable.fetch
+        // The release map the aggregator's query projects, not the raw response the mock is typed as
+        .mockReturnValueOnce(of({'_.releases.r1': {updatedAt: '1', documentIds: ['a']}}) as never)
+        .mockReturnValueOnce(
+          of({'_.releases.r1': {updatedAt: '2', documentIds: ['a', 'b']}}) as never,
+        )
+
+      const values: MetadataWrapper[] = []
+      const subscription = createReleaseMetadataAggregator(mockClient)(['_.releases.r1']).subscribe(
+        (value) => values.push(value),
+      )
+
+      // The initial fetch runs while the page is hidden, but the listener does not connect
+      expect(mockClient.observable.fetch).toHaveBeenCalledTimes(1)
+      expect(listener$.observed).toBe(false)
+
+      documentVisibility.set('visible')
+      expect(listener$.observed).toBe(true)
+      expect(mockClient.observable.fetch).toHaveBeenCalledTimes(2)
+      expect(values).toEqual([
+        {loading: true, data: null, error: null},
+        {
+          loading: false,
+          error: null,
+          data: {'_.releases.r1': {updatedAt: '1', documentIds: ['a'], documentCount: 1}},
+        },
+        {
+          loading: false,
+          error: null,
+          data: {'_.releases.r1': {updatedAt: '2', documentIds: ['a', 'b'], documentCount: 2}},
+        },
+      ])
+      subscription.unsubscribe()
     })
   })
 })

@@ -1,13 +1,12 @@
 import {type ContentSourceMap, type ContentSourceMapDocuments, studioPath} from '@sanity/client/csm'
 import {stegaEncodeSourceMap} from '@sanity/client/stega'
 import {Button, Card, Label} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {vercelStegaDecodeAll} from '@vercel/stega'
 import {useMemo} from 'react'
 import {type InputProps, isDocumentSchemaType} from 'sanity'
 import {useDocumentPane, usePaneRouter} from 'sanity/structure'
 import {styled} from 'styled-components'
-import {Box, VStack} from 'ui5'
+import {Code, Box, VStack} from 'ui5'
 
 export function StegaDebugger(props: InputProps) {
   if (isDocumentSchemaType(props.schemaType)) {
@@ -56,7 +55,9 @@ function DocumentDebugger() {
       <VStack gap={2}>
         <Label size={0}>current focus path</Label>
         <Box overflow="auto" padding={1}>
-          <Code size={0}>{studioPath.toString(focusPath) || 'undefined'}</Code>
+          <Code size={0} trim>
+            {studioPath.toString(focusPath) || 'undefined'}
+          </Code>
         </Box>
       </VStack>
     </HoverCard>
@@ -147,7 +148,9 @@ function InputDebugger(props: InputProps) {
                     }
                   }}
                 >
-                  <Code size={0}>{prettyPath || href}</Code>
+                  <Code size={0} trim>
+                    {prettyPath || href}
+                  </Code>
                 </Button>
               )
             })}

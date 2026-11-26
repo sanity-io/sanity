@@ -17,6 +17,7 @@ import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
 import {DashboardRouteHandler} from './components/DashboardRouteHandler'
 import {Z_OFFSET} from './constants'
+import {ListenerGateController} from './listenerGate/ListenerGateController'
 import {LiveUserApplicationProvider} from './liveUserApplication/LiveUserApplicationProvider'
 import {LiveManifestRegisterProvider} from './manifest'
 import {PackageVersionStatusProvider} from './packageVersionStatus/PackageVersionStatusProvider'
@@ -86,6 +87,7 @@ export function StudioProvider({
                 <ResourceCacheProvider>
                   <StudioTelemetryProvider>
                     <AppIdCacheProvider>
+                      <ListenerGateController />
                       <DashboardRouteHandler />
                       <StudioAnnouncementsProvider>
                         <GlobalPerspectiveProvider>

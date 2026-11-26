@@ -1,8 +1,9 @@
-import {useDocumentIdStack, useTranslation} from 'sanity'
+import {useTranslation, useWorkspace} from 'sanity'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {getCompareVersionsItem} from '../../menuItems'
+import {useCompareVersionsDocuments} from '../../useCompareVersionsDocuments'
 import {useDocumentPane} from '../../useDocumentPane'
 
 /**
@@ -15,10 +16,10 @@ import {useDocumentPane} from '../../useDocumentPane'
 export function CompareVersionsAction() {
   const {displayed, documentId, editState, onMenuAction} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
-  const documentIdStack = useDocumentIdStack({displayed, documentId, editState})
-  // The inventory is on wherever this renders, so the action works on any version, the first in its
-  // group included
-  const item = getCompareVersionsItem({compareWithoutPrevious: true, documentIdStack, t})
+  const compareVersionsDocuments = useCompareVersionsDocuments({displayed, documentId, editState})
+  // With Variants on, the action works on any version, the first in its group included
+  const compareWithoutPrevious = Boolean(useWorkspace().beta?.variants?.enabled)
+  const item = getCompareVersionsItem({compareVersionsDocuments, compareWithoutPrevious, t})
 
   return (
     <Button

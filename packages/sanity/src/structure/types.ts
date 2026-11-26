@@ -389,6 +389,8 @@ export interface PaneListItem<TParams = unknown> {
   params?: TParams
   /** Document schema type to show a live count for. See {@link ListItemCount} */
   count?: ListItemCount
+  /** Id of the singleton document, shown as a status indicator in the compact item */
+  singletonDocumentId?: string
 }
 
 /** @internal */

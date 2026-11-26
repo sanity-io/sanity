@@ -1,13 +1,18 @@
-import {ConnectionFailedError, type SanityClient} from '@sanity/client'
-import {of, retry, Subject, throwError} from 'rxjs'
-import {afterEach, beforeEach, describe, expect, test, vi} from 'vitest'
+import {ChannelError, ClientError, type SanityClient, ServerError} from '@sanity/client'
+import {defer, NEVER, of, Subject, throwError} from 'rxjs'
+import {afterEach, beforeEach, describe, expect, vi} from 'vitest'
 
+import {stubDocumentVisibility} from '../../../../test/testUtils/documentVisibility'
+import {test} from '../../../../test/testUtils/listenerErrorHandlerTest'
 import {type InvalidationChannelEvent} from '../../preview/types'
 import {VARIANTS_STUDIO_CLIENT_OPTIONS} from '../../variants/store/constants'
+import {LISTENER_PAUSE_GRACE_PERIOD, listenerGate} from '../listenerGate/listenerGate'
 import {listenQuery, listenQueryOnGlobalListener} from './listenQuery'
 import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from './types'
 
 type ListenerEvent = WelcomeEvent | ReconnectEvent | MutationEvent
+
+let releaseListenerGate: (() => void) | undefined
 
 function createMutationEvent(overrides: Partial<MutationEvent> = {}): MutationEvent {
   return {
@@ -43,6 +48,33 @@ function createMockClient(listenerEvents$: Subject<ListenerEvent>) {
     withConfig: client.withConfig,
   }
 }
+
+// Every subscription opens a new connection, as `client.listen()` does.
+function openConnections(listen: ReturnType<typeof vi.fn>) {
+  const connections: Subject<ListenerEvent>[] = []
+  listen.mockImplementation(() =>
+    defer(() => {
+      const connection = new Subject<ListenerEvent>()
+      connections.push(connection)
+      return connection
+    }),
+  )
+  return {connections, current: () => connections[connections.length - 1]}
+}
+
+function responseError(statusCode: number) {
+  const res = {
+    statusCode,
+    headers: {},
+    body: {},
+    url: 'https://example.api.sanity.io',
+    method: 'GET',
+  }
+  return statusCode >= 500 ? new ServerError(res) : new ClientError(res)
+}
+
+// The longest first retry delay (`reconnectDelay(0)`), plus the scheduler ticks that deliver it.
+const FIRST_RETRY_MS = 1000 + 10
 
 async function flushScheduled() {
   // exhaustMapWithTrailing schedules work on RxJS asyncScheduler (setInterval(0)).
@@ -125,7 +157,8 @@ describe('listenQuery', () => {
     sub.unsubscribe()
   })
 
-  test('keeps waiting for welcome when the listener reconnects before it', async () => {
+  test('fetches when the listener fails before it welcomes, and again once it welcomes', async () => {
+    fetch.mockReturnValueOnce(of({n: 1})).mockReturnValueOnce(of({n: 2}))
     const values: unknown[] = []
     const errors: unknown[] = []
     const sub = listenQuery(client, '*').subscribe({
@@ -135,121 +168,12 @@ describe('listenQuery', () => {
 
     listener$.next({type: 'reconnect'})
     await flushScheduled()
-    listener$.next({type: 'reconnect'})
-    await vi.advanceTimersByTimeAsync(2000)
-
-    expect(errors).toEqual([])
-    expect(values).toEqual([])
-    expect(fetch).not.toHaveBeenCalled()
+    expect(values).toEqual([{n: 1}])
 
     listener$.next({type: 'welcome', listenerName: 'test'})
     await flushScheduled()
-
+    expect(values).toEqual([{n: 1}, {n: 2}])
     expect(errors).toEqual([])
-    expect(fetch).toHaveBeenCalledTimes(1)
-    expect(values).toEqual([{ok: true}])
-
-    sub.unsubscribe()
-  })
-
-  test('errors when the first event after reconnects is not welcome', async () => {
-    const errors: unknown[] = []
-    const sub = listenQuery(client, '*').subscribe({error: (error) => errors.push(error)})
-
-    listener$.next({type: 'reconnect'})
-    await flushScheduled()
-    listener$.next(createMutationEvent())
-    await flushScheduled()
-
-    expect(errors).toHaveLength(1)
-    expect((errors[0] as Error).message).toBe('Received unexpected type of first event "mutation"')
-    expect(fetch).not.toHaveBeenCalled()
-
-    sub.unsubscribe()
-  })
-
-  test('errors when no welcome arrives within 30 seconds', async () => {
-    const errors: unknown[] = []
-    const sub = listenQuery(client, '*').subscribe({error: (error) => errors.push(error)})
-
-    // Reconnects while waiting do not restart the timeout
-    await vi.advanceTimersByTimeAsync(10_000)
-    listener$.next({type: 'reconnect'})
-    await vi.advanceTimersByTimeAsync(10_000)
-    listener$.next({type: 'reconnect'})
-    await vi.advanceTimersByTimeAsync(9_999)
-    expect(errors).toEqual([])
-
-    await vi.advanceTimersByTimeAsync(1)
-    expect(errors).toHaveLength(1)
-    expect((errors[0] as Error).name).toBe('TimeoutError')
-    expect((errors[0] as Error).message).toBe(
-      'Timed out after 30000ms waiting for the listener to connect',
-    )
-    expect(fetch).not.toHaveBeenCalled()
-
-    sub.unsubscribe()
-  })
-
-  test('does not time out once welcome has arrived', async () => {
-    const errors: unknown[] = []
-    const sub = listenQuery(client, '*').subscribe({error: (error) => errors.push(error)})
-
-    await vi.advanceTimersByTimeAsync(29_000)
-    listener$.next({type: 'welcome', listenerName: 'test'})
-    await flushScheduled()
-    await vi.advanceTimersByTimeAsync(60_000)
-
-    expect(errors).toEqual([])
-    expect(fetch).toHaveBeenCalledTimes(1)
-
-    sub.unsubscribe()
-  })
-
-  test('leaves no timer behind when unsubscribed before welcome', async () => {
-    const sub = listenQuery(client, '*').subscribe()
-    listener$.next({type: 'reconnect'})
-    await flushScheduled()
-    expect(vi.getTimerCount()).toBeGreaterThan(0)
-
-    sub.unsubscribe()
-
-    expect(vi.getTimerCount()).toBe(0)
-  })
-
-  test('starts a new timeout when resubscribed after timing out', async () => {
-    const errors: unknown[] = []
-    const sub = listenQuery(client, '*')
-      .pipe(retry(1))
-      .subscribe({error: (error) => errors.push(error)})
-
-    await vi.advanceTimersByTimeAsync(30_000)
-    expect(listen).toHaveBeenCalledTimes(2)
-    expect(errors).toEqual([])
-
-    await vi.advanceTimersByTimeAsync(29_999)
-    expect(errors).toEqual([])
-
-    await vi.advanceTimersByTimeAsync(1)
-    expect(errors).toHaveLength(1)
-    expect((errors[0] as Error).name).toBe('TimeoutError')
-
-    sub.unsubscribe()
-  })
-
-  test('errors at once when the connection fails before welcome', async () => {
-    const connectionError = new ConnectionFailedError('EventSource connection failed', {
-      status: 401,
-    })
-    const errors: unknown[] = []
-    const sub = listenQuery(client, '*').subscribe({error: (error) => errors.push(error)})
-
-    listener$.next({type: 'reconnect'})
-    await flushScheduled()
-    listener$.error(connectionError)
-    await flushScheduled()
-
-    expect(errors).toEqual([connectionError])
 
     sub.unsubscribe()
   })
@@ -293,6 +217,25 @@ describe('listenQuery', () => {
     await flushScheduled()
 
     expect(fetch).toHaveBeenCalledTimes(2)
+
+    sub.unsubscribe()
+  })
+
+  test('refetches when the listener welcomes again after a reconnect', async () => {
+    fetch.mockReturnValueOnce(of({n: 1})).mockReturnValueOnce(of({n: 2}))
+    const values: unknown[] = []
+    const sub = listenQuery(client, '*').subscribe((value) => values.push(value))
+
+    listener$.next({type: 'welcome', listenerName: 'test'})
+    await flushScheduled()
+    listener$.next({type: 'reconnect'})
+    await vi.advanceTimersByTimeAsync(1000)
+    listener$.next({type: 'welcome', listenerName: 'test'})
+    await flushScheduled()
+
+    // Welcome, reconnect, welcome again.
+    expect(fetch).toHaveBeenCalledTimes(3)
+    expect(values).toEqual([{n: 1}, {n: 2}, {ok: true}])
 
     sub.unsubscribe()
   })
@@ -443,6 +386,80 @@ describe('listenQuery', () => {
     sub.unsubscribe()
   })
 
+  describe('when the listener fails', () => {
+    test('fetches after a channel error, and again once a new connection welcomes', async () => {
+      const {connections, current} = openConnections(listen)
+      fetch.mockReturnValueOnce(of({n: 1})).mockReturnValueOnce(of({n: 2}))
+      const values: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe((value) => values.push(value))
+
+      current().error(new ChannelError('Internal error', {error: {description: 'Internal error'}}))
+      await flushScheduled()
+      expect(values).toEqual([{n: 1}])
+
+      await vi.advanceTimersByTimeAsync(1000)
+      expect(connections).toHaveLength(2)
+      current().next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+      expect(values).toEqual([{n: 1}, {n: 2}])
+
+      sub.unsubscribe()
+    })
+
+    test('fetches when the listener does not welcome in time', async () => {
+      listen.mockImplementation(() => NEVER)
+      const values: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe((value) => values.push(value))
+
+      // The fetch is subscribed and delivered on two further async scheduler ticks.
+      await vi.advanceTimersByTimeAsync(10_000 + 10)
+      expect(values).toEqual([{ok: true}])
+
+      sub.unsubscribe()
+    })
+
+    test('keeps its result when the registered error handler takes over a listener that fails irrecoverably', async ({
+      listenerErrorHandler,
+    }) => {
+      const {connections, current} = openConnections(listen)
+      const values: unknown[] = []
+      const errors: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe({
+        next: (value) => values.push(value),
+        error: (error) => errors.push(error),
+      })
+      current().next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+
+      const error = new ChannelError('Denied', {error: {type: 'permissionDeniedError'}})
+      current().error(error)
+      await vi.advanceTimersByTimeAsync(60_000)
+
+      expect(listenerErrorHandler.handle).toHaveBeenCalledWith(error)
+      expect(errors).toEqual([])
+      // The outage's `reconnect` refetches, as every `reconnect` does.
+      expect(values).toEqual([{ok: true}, {ok: true}])
+      expect(connections).toHaveLength(1)
+
+      sub.unsubscribe()
+    })
+
+    test('still errors on an error in the query', async () => {
+      const {current} = openConnections(listen)
+      const errors: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe({error: (error) => errors.push(error)})
+
+      const error = new ChannelError('Bad query', {error: {type: 'queryParseError'}})
+      current().error(error)
+      await flushScheduled()
+
+      expect(errors).toEqual([error])
+      expect(fetch).not.toHaveBeenCalled()
+
+      sub.unsubscribe()
+    })
+  })
+
   test('propagates a fetch error after welcome', async () => {
     const fetchError = new Error('GROQ failed')
     fetch.mockReturnValueOnce(throwError(() => fetchError))
@@ -455,6 +472,137 @@ describe('listenQuery', () => {
     expect(errors).toEqual([fetchError])
 
     sub.unsubscribe()
+  })
+
+  describe('when a fetch fails', () => {
+    test.each([
+      ['a 503', () => responseError(503)],
+      ['a 429', () => responseError(429)],
+      ['a network failure', () => new TypeError('Failed to fetch')],
+    ])('retries after %s, and keeps refetching on mutations', async (_, createError) => {
+      fetch
+        .mockReturnValueOnce(of({n: 1}))
+        .mockReturnValueOnce(throwError(createError))
+        .mockReturnValueOnce(of({n: 2}))
+        .mockReturnValueOnce(of({n: 3}))
+      const values: unknown[] = []
+      const errors: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe({
+        next: (value) => values.push(value),
+        error: (error) => errors.push(error),
+      })
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+      listener$.next(createMutationEvent())
+      await flushScheduled()
+      // The last result stays in place while the fetch fails.
+      expect(values).toEqual([{n: 1}])
+
+      await vi.advanceTimersByTimeAsync(FIRST_RETRY_MS)
+      expect(values).toEqual([{n: 1}, {n: 2}])
+
+      // The listener is still subscribed and still drives refetches.
+      listener$.next(createMutationEvent({transactionId: 'tx-2'}))
+      await vi.advanceTimersByTimeAsync(1000)
+      expect(values).toEqual([{n: 1}, {n: 2}, {n: 3}])
+      expect(errors).toEqual([])
+
+      sub.unsubscribe()
+    })
+
+    test('backs off between retries while the fetch keeps failing', async () => {
+      fetch.mockReturnValue(throwError(() => responseError(503)))
+      const errors: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe({error: (error) => errors.push(error)})
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+      expect(fetch).toHaveBeenCalledTimes(1)
+
+      // Ceilings of 1s, 2s and 4s: by 7s at most three retries have run, and at least two.
+      await vi.advanceTimersByTimeAsync(7000)
+      expect(fetch.mock.calls.length).toBeGreaterThanOrEqual(3)
+      expect(fetch.mock.calls.length).toBeLessThanOrEqual(4)
+      expect(errors).toEqual([])
+
+      sub.unsubscribe()
+    })
+
+    test('stops retrying on unsubscribe', async () => {
+      fetch.mockReturnValue(throwError(() => responseError(503)))
+      const sub = listenQuery(client, '*').subscribe()
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+      sub.unsubscribe()
+
+      await vi.advanceTimersByTimeAsync(60_000)
+      expect(fetch).toHaveBeenCalledTimes(1)
+    })
+
+    test.each([400, 403])('errors without retrying on a %d', async (status) => {
+      const error = responseError(status)
+      fetch.mockReturnValueOnce(throwError(() => error))
+      const errors: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe({error: (err) => errors.push(err)})
+
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await vi.advanceTimersByTimeAsync(FIRST_RETRY_MS)
+
+      expect(errors).toEqual([error])
+      expect(fetch).toHaveBeenCalledTimes(1)
+
+      sub.unsubscribe()
+    })
+  })
+
+  describe('on a hidden page', () => {
+    beforeEach(() => {
+      releaseListenerGate = listenerGate.enable()
+    })
+
+    afterEach(() => {
+      releaseListenerGate?.()
+      vi.restoreAllMocks()
+    })
+
+    test('disconnects while paused, keeps the last result, and fetches again when shown', async () => {
+      const documentVisibility = stubDocumentVisibility()
+      fetch.mockReturnValueOnce(of({n: 1})).mockReturnValueOnce(of({n: 2}))
+      const values: unknown[] = []
+      const sub = listenQuery(client, '*').subscribe((value) => values.push(value))
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+
+      documentVisibility.set('hidden')
+      await vi.advanceTimersByTimeAsync(LISTENER_PAUSE_GRACE_PERIOD)
+      expect(listener$.observed).toBe(false)
+      expect(values).toEqual([{n: 1}])
+
+      documentVisibility.set('visible')
+      expect(listen).toHaveBeenCalledTimes(2)
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+
+      expect(fetch).toHaveBeenCalledTimes(2)
+      expect(values).toEqual([{n: 1}, {n: 2}])
+      sub.unsubscribe()
+    })
+
+    test('does not connect on a page opened in the background until it is shown', async () => {
+      const documentVisibility = stubDocumentVisibility('hidden')
+      const sub = listenQuery(client, '*').subscribe()
+      expect(listen).not.toHaveBeenCalled()
+
+      documentVisibility.set('visible')
+      listener$.next({type: 'welcome', listenerName: 'test'})
+      await flushScheduled()
+
+      expect(listen).toHaveBeenCalledTimes(1)
+      expect(fetch).toHaveBeenCalledTimes(1)
+      sub.unsubscribe()
+    })
   })
 })
 
@@ -538,6 +686,24 @@ describe('listenQueryOnGlobalListener', () => {
     })
     await flushScheduled()
     expect(fetch).toHaveBeenCalledTimes(2)
+
+    sub.unsubscribe()
+  })
+
+  test('retries a fetch that fails transiently', async () => {
+    fetch.mockReturnValueOnce(throwError(() => responseError(502))).mockReturnValueOnce(of({n: 1}))
+    const values: unknown[] = []
+    const errors: unknown[] = []
+    const sub = listenQueryOnGlobalListener(client, '*', {
+      invalidationChannel,
+      shouldRefetch: () => true,
+    }).subscribe({next: (value) => values.push(value), error: (error) => errors.push(error)})
+
+    invalidationChannel.next({type: 'connected'})
+    await vi.advanceTimersByTimeAsync(FIRST_RETRY_MS)
+
+    expect(values).toEqual([{n: 1}])
+    expect(errors).toEqual([])
 
     sub.unsubscribe()
   })

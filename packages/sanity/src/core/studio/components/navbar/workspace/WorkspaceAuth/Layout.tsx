@@ -1,7 +1,7 @@
 import {SanityLogo} from '@sanity/logos'
-import {Card, Heading, usePrefersDark} from '@sanity/ui'
+import {Card, usePrefersDark} from '@sanity/ui'
 import {Fragment, type ReactNode} from 'react'
-import {Text, Box, Flex, VStack, Icon, Link} from 'ui5'
+import {Heading, Text, Box, Flex, VStack, Icon, Link} from 'ui5'
 
 import {footerLink} from './Layout.css'
 
@@ -45,7 +45,7 @@ export function Layout(props: LayoutProps) {
           {typeof header === 'object' && <Box>{header}</Box>}
           {typeof header === 'string' && (
             <Box paddingY={4}>
-              <Heading align="center" size={1}>
+              <Heading as="h1" align="center" size={1} trim>
                 {header}
               </Heading>
             </Box>

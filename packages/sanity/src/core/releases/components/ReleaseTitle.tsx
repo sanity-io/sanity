@@ -1,4 +1,4 @@
-import {type CSSProperties, type ReactElement, type ReactNode} from 'react'
+import {type ReactElement, type ReactNode} from 'react'
 import {Text, type TextProps, Box} from 'ui5'
 
 import {Tooltip} from '../../../ui-components/tooltip/Tooltip'
@@ -18,7 +18,7 @@ export interface ReleaseTitleProps {
   enableTooltip?: boolean
   tooltipMaxWidth?: string
   children?: (details: ReleaseTitleDetails) => ReactElement
-  textProps?: Omit<TextProps, 'children'> & {style?: CSSProperties}
+  textProps?: Omit<TextProps<'div'>, 'children' | 'as'>
 }
 
 const DEFAULT_TOOLTIP_MAX_WIDTH = '300px'

@@ -32,6 +32,16 @@ async function openTab(): Promise<Tab> {
   return {frame, studioTabs, listenerCount}
 }
 
+// Firefox intermittently evaluates an empty module (`doesn't provide an export named`) when
+// several frames load the same module URLs at once, so tabs load one after another.
+async function openTabs(count: number): Promise<Tab[]> {
+  const tabs: Tab[] = []
+  for (let index = 0; index < count; index++) {
+    tabs.push(await openTab())
+  }
+  return tabs
+}
+
 function uniqueScope(): string {
   return `${crypto.randomUUID()}.api.sanity.test`
 }
@@ -79,7 +89,7 @@ describe('studio tab locks (real Web Locks)', () => {
 
   test('a count change settles on exactly one lock per tab with the new count', async () => {
     const scope = uniqueScope()
-    const tabs = await Promise.all([openTab(), openTab()])
+    const tabs = await openTabs(2)
     tabs.forEach((tab) => tab.studioTabs.startTrackingStudioTabs(scope))
     await expect.poll(async () => (await heldTabLocks(scope)).length).toBe(2)
 
@@ -138,7 +148,7 @@ describe('studio tab locks (real Web Locks)', () => {
 
   test('six tabs starting together each see six, and seven once another opens', async () => {
     const scope = uniqueScope()
-    const tabs = await Promise.all(Array.from({length: 6}, () => openTab()))
+    const tabs = await openTabs(6)
 
     tabs.forEach((tab) => tab.studioTabs.startTrackingStudioTabs(scope))
     tabs.forEach((tab) => tab.listenerCount.openListener())

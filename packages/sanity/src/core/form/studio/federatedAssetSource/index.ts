@@ -1,2 +1,6 @@
 export {createFederatedAssetSource} from './createFederatedAssetSource'
-export {getCurrentFederatedAssetSourceViews, isMediaLibraryView} from './discovery'
+export {
+  discoverFederatedAssetSourceViews,
+  type FederatedAssetSourceDiscovery,
+  isMediaLibraryView,
+} from './discovery'

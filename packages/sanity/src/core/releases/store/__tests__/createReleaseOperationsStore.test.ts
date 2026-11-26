@@ -52,7 +52,7 @@ describe('createReleaseOperationsStore', () => {
     expect(mockClient.releases.create).toHaveBeenCalledWith(
       {
         releaseId: 'rASAP',
-        metadata: release.metadata,
+        metadata: {...release.metadata, _type: 'sanity.releaseMetadata'},
       },
       undefined,
     )
@@ -66,7 +66,23 @@ describe('createReleaseOperationsStore', () => {
       {
         releaseId: 'rActive',
         patch: {
-          set: {metadata: release.metadata},
+          set: {metadata: {...release.metadata, _type: 'sanity.releaseMetadata'}},
+          unset: [],
+        },
+      },
+      undefined,
+    )
+  })
+
+  it('should keep the metadata type of a release that already has it', async () => {
+    const store = createStore()
+    const metadata = {...activeScheduledRelease.metadata, _type: 'sanity.releaseMetadata'}
+    await store.updateRelease({...activeScheduledRelease, metadata})
+    expect(mockClient.releases.edit).toHaveBeenCalledWith(
+      {
+        releaseId: 'rActive',
+        patch: {
+          set: {metadata},
           unset: [],
         },
       },
@@ -169,7 +185,12 @@ describe('createReleaseOperationsStore', () => {
       expect(mockClient.releases.create).toHaveBeenCalledWith(
         {
           releaseId: revertReleaseId,
-          metadata: {...releaseMetadata, releaseType: 'asap', cardinality: 'many'},
+          metadata: {
+            ...releaseMetadata,
+            releaseType: 'asap',
+            cardinality: 'many',
+            _type: 'sanity.releaseMetadata',
+          },
         },
         undefined,
       )
@@ -212,7 +233,12 @@ describe('createReleaseOperationsStore', () => {
       expect(mockClient.releases.create).toHaveBeenCalledWith(
         {
           releaseId: revertReleaseId,
-          metadata: {...releaseMetadata, releaseType: 'asap', cardinality: 'many'},
+          metadata: {
+            ...releaseMetadata,
+            releaseType: 'asap',
+            cardinality: 'many',
+            _type: 'sanity.releaseMetadata',
+          },
         },
         undefined,
       )
@@ -456,7 +482,7 @@ describe('createReleaseOperationsStore', () => {
     expect(mockClient.releases.create).toHaveBeenCalledWith(
       {
         releaseId: 'rASAP',
-        metadata: release.metadata,
+        metadata: {...release.metadata, _type: 'sanity.releaseMetadata'},
       },
       opts,
     )
@@ -471,7 +497,7 @@ describe('createReleaseOperationsStore', () => {
       {
         releaseId: 'rActive',
         patch: {
-          set: {metadata: release.metadata},
+          set: {metadata: {...release.metadata, _type: 'sanity.releaseMetadata'}},
           unset: [],
         },
       },
@@ -582,7 +608,7 @@ describe('createReleaseOperationsStore', () => {
       expect(mockClient.releases.create).toHaveBeenCalledWith(
         {
           releaseId: 'rASAP-copy',
-          metadata: metadataWithCopySuffix,
+          metadata: {...metadataWithCopySuffix, _type: 'sanity.releaseMetadata'},
         },
         undefined,
       )

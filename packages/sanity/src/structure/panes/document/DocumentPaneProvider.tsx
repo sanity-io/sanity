@@ -40,7 +40,6 @@ import {
   useCreatableVariantInitialValue,
   useDocumentDivergences,
   useDocumentForm,
-  useDocumentIdStack,
   usePerspective,
   useSchema,
   useSource,
@@ -70,6 +69,7 @@ import {
   type DocumentPaneProviderProps as DocumentPaneProviderWrapperProps,
   type HistoryStoreProps,
 } from './types'
+import {useCompareVersionsDocuments} from './useCompareVersionsDocuments'
 import {useDocumentApplicationContext} from './useDocumentApplicationContext'
 import {useDocumentInitialLoadTelemetry} from './useDocumentInitialLoadTelemetry'
 import {useDocumentPaneInitialValue} from './useDocumentPaneInitialValue'
@@ -143,7 +143,11 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const workspace = useWorkspace()
   const advancedVersionControlEnabled = workspace.advancedVersionControl.enabled
   const isDraftModelEnabled = workspace.document.drafts.enabled
-  const hasDocumentGroupInventory = workspace.beta?.documentGroupInventory?.enabled === true
+  // The comparison can open on one version alone only with Variants on: the inventory's picker fills
+  // the other side. Without Variants, Studio keeps main's behaviour.
+  const canCompareWithoutPrevious =
+    Boolean(workspace.beta?.variants?.enabled) &&
+    workspace.beta?.documentGroupInventory?.enabled === true
 
   const enhancedObjectDialogEnabled = true
 
@@ -441,12 +445,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     [getDisplayed, value],
   )
 
-  const {previousId} = useDocumentIdStack({
-    strict: true,
-    displayed,
-    documentId,
-    editState,
-  })
+  const compareVersionsDocuments = useCompareVersionsDocuments({displayed, documentId, editState})
 
   const setTimelineRange = useCallback(
     (newSince: string, newRev: string | null) => {
@@ -482,7 +481,7 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       }
 
       if (item.action === 'reviewChanges') {
-        handleHistoryOpen()
+        handleHistoryOpen('pane_menu')
         return true
       }
 
@@ -493,24 +492,24 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         handleInspectorAction(item)
       }
 
-      if (item.action === 'compareVersions' && typeof previousId !== 'undefined') {
+      if (item.action === 'compareVersions' && typeof compareVersionsDocuments !== 'undefined') {
         diffViewRouter.navigateDiffView({
           mode: 'version',
           previousDocument: {
             type: documentType,
-            id: previousId,
+            id: compareVersionsDocuments.previousId,
           },
           nextDocument: {
             type: documentType,
-            id: value._id,
+            id: compareVersionsDocuments.nextId,
           },
         })
         return true
       }
 
       // Nothing comes before the open version: open the view with it alone, and let the next side
-      // be picked there. Only with the inventory, whose picker can fill an empty side.
-      if (item.action === 'compareVersions' && hasDocumentGroupInventory) {
+      // be picked there. Only with Variants on, whose inventory picker can fill an empty side.
+      if (item.action === 'compareVersions' && canCompareWithoutPrevious) {
         diffViewRouter.navigateDiffView({
           mode: 'version',
           previousDocument: {
@@ -532,14 +531,14 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
     },
     [
       previewUrl,
-      previousId,
+      compareVersionsDocuments,
       documentType,
       handleHistoryOpen,
       handleInspectorAction,
       diffViewRouter,
-      value._id,
       toggleInlineChanges,
-      hasDocumentGroupInventory,
+      canCompareWithoutPrevious,
+      value._id,
     ],
   )
 

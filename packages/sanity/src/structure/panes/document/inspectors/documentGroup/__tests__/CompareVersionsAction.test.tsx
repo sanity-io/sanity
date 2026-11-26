@@ -1,6 +1,7 @@
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {test as baseTest, describe, expect, type MockedFunction, vi} from 'vitest'
+import {useDocumentVersions} from 'sanity'
+import {test as baseTest, beforeEach, describe, expect, type MockedFunction, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../../i18n'
@@ -11,6 +12,18 @@ import {CompareVersionsAction} from '../CompareVersionsAction'
 vi.mock('../../../useDocumentPane', () => ({
   useDocumentPane: vi.fn(),
 }))
+
+let variantsEnabled = false
+
+vi.mock('sanity', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  useDocumentVersions: vi.fn(),
+  useWorkspace: () => ({beta: {variants: {enabled: variantsEnabled}}}),
+}))
+
+function mockGroupDocumentIds(ids: string[]) {
+  vi.mocked(useDocumentVersions).mockReturnValue({data: ids, versions: [], loading: false})
+}
 
 const mockUseDocumentPane = useDocumentPane as MockedFunction<typeof useDocumentPane>
 
@@ -61,6 +74,11 @@ const test = baseTest
   })
 
 describe('CompareVersionsAction', () => {
+  beforeEach(() => {
+    variantsEnabled = false
+    mockGroupDocumentIds(['doc-123', 'drafts.doc-123'])
+  })
+
   test('dispatches the pane menu item that opens the comparison', async ({renderAction}) => {
     const {button, onMenuAction} = await renderAction()
 
@@ -73,11 +91,23 @@ describe('CompareVersionsAction', () => {
     )
   })
 
-  describe('when the displayed version has no earlier version to compare with', () => {
+  describe('when the displayed version is the only document in the group', () => {
     test.override('hasDraft', () => false)
 
-    // The comparison opens with this version alone, and the other side is picked in the view
-    test('still opens the comparison', async ({renderAction}) => {
+    test('is disabled with Variants off, as on main', async ({renderAction}) => {
+      mockGroupDocumentIds(['doc-123'])
+      const {button, onMenuAction} = await renderAction()
+
+      expect(button).toBeDisabled()
+      await userEvent.click(button)
+      expect(onMenuAction).not.toHaveBeenCalled()
+    })
+
+    // With Variants on, the comparison opens with this version alone, and the other side is picked
+    // in the view
+    test('still opens the comparison with Variants on', async ({renderAction}) => {
+      mockGroupDocumentIds(['doc-123'])
+      variantsEnabled = true
       const {button, onMenuAction} = await renderAction()
 
       expect(button).toBeEnabled()
@@ -85,6 +115,19 @@ describe('CompareVersionsAction', () => {
       expect(onMenuAction).toHaveBeenCalledWith(
         expect.objectContaining({action: 'compareVersions'}),
       )
+    })
+  })
+
+  describe('when the published document has no draft but has a variant', () => {
+    test.override('hasDraft', () => false)
+
+    test('is enabled', async ({renderAction}) => {
+      mockGroupDocumentIds(['doc-123', 'versions.a1b2c3.doc-123'])
+      const {button, onMenuAction} = await renderAction()
+
+      expect(button).toBeEnabled()
+      await userEvent.click(button)
+      expect(onMenuAction).toHaveBeenCalledTimes(1)
     })
   })
 })

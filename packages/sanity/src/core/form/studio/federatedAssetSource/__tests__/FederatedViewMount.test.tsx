@@ -26,12 +26,23 @@ const VIEW: FederatedAssetSourceView = {
   moduleId: 'stock-app/views/stock/asset_source',
   interface: {
     id: 'stock-app-stock',
-    type: 'asset_source',
+    surface: 'asset_source',
     name: 'stock',
     title: 'Stock photos',
     version: '1',
     moduleId: 'views/stock',
     metadata: null,
+    application: {
+      id: 'stock-app',
+      type: 'coreApp',
+      isLocal: false,
+      name: 'stock-photos',
+      title: 'Stock Photos',
+      reference: '',
+      icon: null,
+      slug: null,
+      organizationId: 'org-1',
+    },
   },
 }
 

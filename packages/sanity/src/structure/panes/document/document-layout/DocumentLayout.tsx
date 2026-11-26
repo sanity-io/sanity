@@ -10,7 +10,6 @@ import {
   FieldActionsResolver,
   GetFormValueProvider,
   type Path,
-  useDocumentIdStack,
   useGlobalCopyPasteElementHandler,
   useTranslation,
   useWorkspace,
@@ -36,6 +35,7 @@ import {DocumentPanel} from '../documentPanel/DocumentPanel'
 import {DocumentPanelHeader} from '../documentPanel/header/DocumentPanelHeader'
 import {DocumentActionShortcuts} from '../keyboardShortcuts/DocumentActionShortcuts'
 import {getMenuItems} from '../menuItems'
+import {useCompareVersionsDocuments} from '../useCompareVersionsDocuments'
 import {useDocumentPane} from '../useDocumentPane'
 import {changeConnectorRoot} from './DocumentLayout.css'
 import {DocumentLayoutError} from './DocumentLayoutError'
@@ -119,8 +119,13 @@ export function DocumentLayout() {
     [inspectors, inspector?.name],
   )
 
-  const documentIdStack = useDocumentIdStack({displayed, documentId, editState})
-  const compareWithoutPrevious = useWorkspace().beta?.documentGroupInventory?.enabled === true
+  const compareVersionsDocuments = useCompareVersionsDocuments({displayed, documentId, editState})
+  // With Variants on, the comparison can open on the displayed version alone: the inventory's picker
+  // fills the other side. Without Variants, Studio keeps main's behaviour.
+  const workspaceBeta = useWorkspace().beta
+  const compareWithoutPrevious =
+    Boolean(workspaceBeta?.variants?.enabled) &&
+    workspaceBeta?.documentGroupInventory?.enabled === true
 
   const hasValue = Boolean(value)
 
@@ -133,7 +138,7 @@ export function DocumentLayout() {
         inspectorMenuItems,
         inspectors,
         previewUrl,
-        documentIdStack,
+        compareVersionsDocuments,
         t,
         displayInlineChanges: stickyParams.displayInlineChanges === 'true',
         compareWithoutPrevious,
@@ -141,7 +146,7 @@ export function DocumentLayout() {
     [
       compareWithoutPrevious,
       currentInspector,
-      documentIdStack,
+      compareVersionsDocuments,
       features,
       hasValue,
       inspectorMenuItems,
@@ -174,6 +179,12 @@ export function DocumentLayout() {
       onFocus(path)
     },
     [onPathOpen, onFocus],
+  )
+
+  // Wrapped so the change-bar's onClick MouseEvent isn't passed through as the telemetry path.
+  const handleOpenReviewChanges = useCallback(
+    () => onHistoryOpen('change_indicator'),
+    [onHistoryOpen],
   )
 
   if (!schemaType) {
@@ -234,7 +245,7 @@ export function DocumentLayout() {
                 <StyledChangeConnectorRoot
                   data-testid="change-connector-root"
                   isReviewChangesOpen={changesOpen && paneParams?.changesInspectorTab === 'review'}
-                  onOpenReviewChanges={onHistoryOpen}
+                  onOpenReviewChanges={handleOpenReviewChanges}
                   onSetFocus={onConnectorSetFocus}
                 >
                   <DocumentPanel

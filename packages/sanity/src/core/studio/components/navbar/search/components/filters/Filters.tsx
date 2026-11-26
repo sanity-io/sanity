@@ -3,12 +3,9 @@ import {Flex} from 'ui5'
 
 import {Button} from '../../../../../../../ui-components/button/Button'
 import {useTranslation} from '../../../../../../i18n/hooks/useTranslation'
-import {DEBUG_MODE} from '../../constants'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {getFilterKey} from '../../utils/filterUtils'
 import {AddFilterButton} from './addFilter/AddFilterButton'
-import {DebugDocumentTypesNarrowed} from './debug/_DebugDocumentTypesNarrowed'
-import {DebugFilterQuery} from './debug/_DebugFilterQuery'
 import {DocumentTypesButton} from './documentTypes/DocumentTypesButton'
 import {FilterButton} from './filter/FilterButton'
 
@@ -78,14 +75,6 @@ export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
           <AddFilterButton />
           {clearFiltersButtonVisible && clearFiltersButton}
         </Flex>
-      )}
-
-      {/* Debug panels */}
-      {DEBUG_MODE && (
-        <>
-          <DebugFilterQuery />
-          <DebugDocumentTypesNarrowed />
-        </>
       )}
     </>
   )

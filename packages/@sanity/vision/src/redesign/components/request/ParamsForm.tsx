@@ -5,7 +5,7 @@ import {dequal} from 'dequal/lite'
 import JSON5 from 'json5'
 import {useId, useState} from 'react'
 import {InlineCode, type TFunction, useTranslation} from 'sanity'
-import {Text, Box, Flex, Code} from 'ui5'
+import {Text, Box, Flex} from 'ui5'
 
 import {type Params} from '../../../components/VisionGui'
 import {visionLocaleNamespace} from '../../../i18n'

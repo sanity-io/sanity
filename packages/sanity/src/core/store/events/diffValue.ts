@@ -7,7 +7,7 @@ import {
   wrap,
 } from '@sanity/diff'
 import {type SanityDocument, type TransactionLogEventWithEffects} from '@sanity/types'
-import {type incremental} from 'mendoza'
+import type * as incremental from 'mendoza/incremental'
 
 import {type Annotation} from '../../field/types'
 import {type DocumentGroupEvent} from './types'
