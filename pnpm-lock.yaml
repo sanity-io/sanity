@@ -1140,7 +1140,7 @@ importers:
         specifier: ^3.0.3
         version: 3.0.3
       chromatic:
-        specifier: ^18.15.1
+        specifier: ^18.15.2
         version: 18.15.3(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.4)
       fflate:
         specifier: ^0.8.3
@@ -2680,7 +2680,7 @@ importers:
         specifier: ^9.0.20240710
         version: 9.0.20240710
       chromatic:
-        specifier: ^18.15.1
+        specifier: ^18.15.2
         version: 18.15.3(@chromatic-com/playwright@1.0.0)(@chromatic-com/vitest@1.0.4)
       fast-check:
         specifier: ^4.11.0
