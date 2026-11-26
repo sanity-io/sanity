@@ -58,7 +58,7 @@ catalog:
   react-rx: ^7.1.0
   rimraf: ^6.1.4
   storybook: ^10.6.8
-  styled-components: ^6.6.0
+  styled-components: ^6.7.0
   # Exact version on purpose (like @sanity/workbench): bumps are explicit so published
   # packages ship the version we validated instead of whatever the alpha dist-tag points to
   ui5: npm:@sanity/ui@5.0.0-alpha.28
@@ -106,6 +106,8 @@ minimumReleaseAgeExclude:
   - '@storybook/react@10.6.9'
   - 'chromatic@18.15.3'
   - 'storybook@10.6.9'
+  # Fresh release; exclude so 6.7.0 can install before the age gate
+  - 'styled-components@6.7.0'
   - '@sanity/*'
   - '@sanity-labs/*'
   - '@yuku-codegen/*'
@@ -159,8 +161,6 @@ minimumReleaseAgeExclude:
   - 'sanity-plugin-media'
   - 'sanity-plugin-asset-source-unsplash'
   - 'sanity-plugin-utils'
-  # Fresh patch; exclude so 6.6.0 can install before the 3-day age gate
-  - 'styled-components@6.6.0'
   - 'tsx'
   - 'tsdown'
   # Ships with tsdown and pins that release as its peer, so it is younger than the age gate on the same bumps
@@ -182,7 +182,7 @@ minimumReleaseAgeExclude:
 
 overrides:
   # Keep styled-components CSSObject compatible with @sanity/ui's responsive styles.
-  'styled-components@6.6.0>csstype': 3.2.4
+  'styled-components@6.7.0>csstype': 3.2.4
   vitest: 'catalog:'
 
 preferWorkspacePackages: true
