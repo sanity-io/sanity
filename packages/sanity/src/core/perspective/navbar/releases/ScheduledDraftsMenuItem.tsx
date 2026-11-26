@@ -11,7 +11,10 @@ import {useScheduledDraftsEnabled} from '../../../singleDocRelease/hooks/useSche
 import {RELEASES_SCHEDULED_DRAFTS_INTENT} from '../../../singleDocRelease/plugin'
 import {useWorkspace} from '../../../studio/workspace'
 
-export const ScheduledDraftsMenuItem: ComponentType = () => {
+export const ScheduledDraftsMenuItem: ComponentType<{
+  /** Replaces the default label. The variants beta's menu uses its own copy. */
+  text?: string
+}> = ({text}) => {
   const {t} = useTranslation()
   const telemetry = useTelemetry()
   const isScheduledDraftsEnabled = useScheduledDraftsEnabled()
@@ -40,7 +43,7 @@ export const ScheduledDraftsMenuItem: ComponentType = () => {
       href={href}
       onClick={onClick}
       icon={CalendarIcon}
-      text={t('release.menu.scheduled-drafts')}
+      text={text ?? t('release.menu.scheduled-drafts')}
       data-testid="scheduled-drafts-menu-item"
     />
   )

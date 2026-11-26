@@ -236,10 +236,10 @@ export function ReleasesList({
         <StickyBottomCard paddingX={2} paddingTop={1} paddingBottom={2}>
           <MenuSectionDivider placement="start" />
           <VStack gap={1}>
-            <ScheduledDraftsMenuItem />
+            <ScheduledDraftsMenuItem text={t('release.menu.scheduled-drafts-variants')} />
             {areReleasesEnabled && (
               <>
-                <ViewContentReleasesMenuItem />
+                <ViewContentReleasesMenuItem text={t('release.menu.view-releases-variants')} />
                 <CreateReleaseMenuItem onCreateRelease={handleOpenBundleDialog} />
               </>
             )}

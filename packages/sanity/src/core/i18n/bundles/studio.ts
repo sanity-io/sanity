@@ -1858,11 +1858,15 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for the release menu */
   'release.menu.label': 'Release menu',
   /** Menu item label for scheduled drafts */
-  'release.menu.scheduled-drafts': 'View scheduled drafts',
+  'release.menu.scheduled-drafts': 'View Scheduled Drafts',
+  /** Menu item label for scheduled drafts, in the releases menu of a studio with the variants beta */
+  'release.menu.scheduled-drafts-variants': 'View scheduled drafts',
   /** Tooltip for the release menu */
   'release.menu.tooltip': 'Actions',
   /** Menu item label for viewing content releases */
-  'release.menu.view-releases': 'View content releases',
+  'release.menu.view-releases': 'View Content Releases',
+  /** Menu item label for viewing content releases, in the releases menu of a studio with the variants beta */
+  'release.menu.view-releases-variants': 'View content releases',
   /** Label above a release's title in the navbar perspective chip's tooltip */
   'release.navbar.chip-label.release': 'Release',
   /** Label above "Drafts" or "Published" in the navbar perspective chip's tooltip */
@@ -1870,22 +1874,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for draft perspective in navbar */
   'release.navbar.drafts': 'Drafts',
   /** Placeholder for the releases perspective filter. */
-  'release.navbar.filter-placeholder': 'Search versions and releases…',
+  'release.navbar.filter-placeholder': 'Find a version or release',
   /** Placeholder for the perspective filter in a studio with content releases off, where the menu lists no releases. */
   'release.navbar.filter-placeholder-no-releases': 'Search versions…',
-  /**
-   * Accessible name for the chevron that opens the releases menu
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions
+  /** Placeholder for the releases perspective filter in a studio with the variants beta. */
+  'release.navbar.filter-placeholder-variants': 'Search versions and releases…',
+  /** Accessible name for the chevron that opens the releases menu */
   'release.navbar.open-releases': 'Open releases',
   /** Label for published releases in navbar */
   'release.navbar.published': 'Published',
-  /**
-   * Tooltip for releases navigation in navbar
-   * @deprecated no longer in use
-   */
-  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions
+  /** Tooltip for releases navigation in navbar */
   'release.navbar.tooltip': 'View scheduling',
   /** Accessible label for the link that opens a release's page from the global perspective menu */
   'release.navbar.view-release-aria-label': 'View release {{title}}',

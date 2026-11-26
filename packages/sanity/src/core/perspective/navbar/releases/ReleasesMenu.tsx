@@ -90,7 +90,7 @@ export function ReleasesMenu({
   const {t} = useTranslation()
   // With releases off the menu lists no releases, so the search doesn't offer to find any.
   const filterPlaceholder = areReleasesEnabled
-    ? t('release.navbar.filter-placeholder')
+    ? t('release.navbar.filter-placeholder-variants')
     : t('release.navbar.filter-placeholder-no-releases')
   const [createBundleDialogOpen, setCreateBundleDialogOpen] = useState(false)
   const [filterQuery, setFilterQuery] = useState('')

@@ -18,6 +18,7 @@ import {
   useReleasePermissionsMockReturn,
   useReleasesPermissionsMockReturnTrue,
 } from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
+import {GlobalPerspectiveNav} from '../GlobalPerspectiveNav'
 import {ReleasesNav} from '../releases/ReleasesNav'
 
 vi.mock('../../../releases/store/useReleasePermissions', () => ({
@@ -84,6 +85,7 @@ const renderTest = async (
     releasesEnabled?: boolean
     showDetailLinks?: boolean
     variantsEnabled?: boolean
+    withReleasesToolButton?: boolean
   } = {},
 ) => {
   const wrapper = await createTestProvider({
@@ -95,12 +97,18 @@ const renderTest = async (
         : {}),
     },
   })
-  currentRenderedInstance = render(<ReleasesNav showDetailLinks={options.showDetailLinks} />, {
-    wrapper,
-  })
+  currentRenderedInstance = render(
+    <ReleasesNav
+      showDetailLinks={options.showDetailLinks}
+      withReleasesToolButton={options.withReleasesToolButton ?? true}
+    />,
+    {wrapper},
+  )
 
   return currentRenderedInstance
 }
+
+const renderVariants = () => renderTest({variantsEnabled: true})
 
 describe('ReleasesNav', () => {
   beforeEach(() => {
@@ -112,18 +120,57 @@ describe('ReleasesNav', () => {
     usePerspectiveMockReturn.selectedPerspectiveName = undefined
   })
 
-  it('renders the chip, not the classic pill, when variants are off', async () => {
+  it('shows the drafts label, the releases tool, and the menu chevron', async () => {
     await renderTest()
 
-    screen.getByRole('button', {name: 'Drafts'})
-    expect(screen.getByTestId('global-perspective-menu-button')).toBeInTheDocument()
-    expect(screen.queryByTestId('releases-tool-link')).toBeNull()
-    expect(screen.queryByRole('button', {name: 'Open releases'})).toBeNull()
+    screen.getByText('Drafts')
+    expect(screen.getByTestId('releases-tool-link')).toHaveAttribute('href', '/')
+    expect(screen.getByTestId('global-perspective-menu-button')).toHaveAccessibleName(
+      'Open releases',
+    )
+    expect(screen.queryByTestId('global-perspective-button-clear')).toBeNull()
   })
 
-  it('leaves release detail links out unless the caller asks for them', async () => {
+  it("keeps main's classic pill and releases tool in the navbar when variants are off", async () => {
     useActiveReleasesMockReturn.data = [activeScheduledRelease]
-    await renderTest()
+    const wrapper = await createTestProvider({resources: []})
+    currentRenderedInstance = render(<GlobalPerspectiveNav />, {wrapper})
+
+    // The classic pill: the releases tool, the current perspective label and the chevron
+    expect(screen.getByTestId('releases-tool-link')).toHaveAttribute('href', '/')
+    screen.getByText('Drafts')
+    expect(screen.getByTestId('global-perspective-menu-button')).toHaveAccessibleName(
+      'Open releases',
+    )
+    // Not the variants beta's chip
+    expect(screen.queryByRole('button', {name: 'Drafts'})).toBeNull()
+    expect(screen.queryByTestId('global-perspective-button-clear')).toBeNull()
+
+    // main's menu: its search copy and no release detail links
+    await userEvent.click(screen.getByTestId('global-perspective-menu-button'))
+    await waitFor(() => {
+      screen.getByPlaceholderText('Find a version or release')
+    })
+    expect(screen.queryByTestId('release-detail-link-rActive')).toBeNull()
+  })
+
+  it('omits the releases tool unless the navbar asks for it', async () => {
+    await renderTest({withReleasesToolButton: false})
+
+    expect(screen.queryByTestId('releases-tool-link')).toBeNull()
+    screen.getByText('Drafts')
+    screen.getByTestId('global-perspective-menu-button')
+  })
+
+  it('hides the releases tool when it is not in the workspace', async () => {
+    await renderTest({releasesEnabled: false})
+
+    expect(screen.queryByTestId('releases-tool-link')).toBeNull()
+  })
+
+  it('does not show release detail links', async () => {
+    useActiveReleasesMockReturn.data = [activeScheduledRelease]
+    await renderTest({showDetailLinks: true})
 
     await userEvent.click(screen.getByTestId('global-perspective-menu-button'))
     await waitFor(() => {
@@ -133,16 +180,23 @@ describe('ReleasesNav', () => {
     expect(screen.queryByTestId('release-detail-link-rActive')).toBeNull()
   })
 
-  describe.each([
-    ['off', false],
-    ['on', true],
-  ])('when variants are %s', (_label, variantsEnabled) => {
-    const renderChip = (options: {showDetailLinks?: boolean} = {}) =>
-      renderTest({...options, variantsEnabled})
+  it('links the chosen release from its label', async () => {
+    usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
+    usePerspectiveMockReturn.selectedPerspectiveName = 'rActive'
 
+    await renderTest()
+
+    expect(screen.getByRole('link', {name: 'active Release'})).toHaveAttribute(
+      'href',
+      '/intent/release',
+    )
+    expect(screen.queryByTestId('global-perspective-button-clear')).toBeNull()
+  })
+
+  describe('when variants are enabled', () => {
     it('shows a detail link for each release', async () => {
       useActiveReleasesMockReturn.data = [activeScheduledRelease]
-      await renderChip({showDetailLinks: true})
+      await renderTest({showDetailLinks: true, variantsEnabled: true})
 
       await userEvent.click(screen.getByTestId('global-perspective-menu-button'))
       await waitFor(() => {
@@ -153,7 +207,7 @@ describe('ReleasesNav', () => {
     })
 
     it('shows the drafts label on the chip', async () => {
-      await renderChip()
+      await renderVariants()
 
       screen.getByRole('button', {name: 'Drafts'})
       expect(screen.queryByTestId('releases-tool-link')).toBeNull()
@@ -165,7 +219,7 @@ describe('ReleasesNav', () => {
       usePerspectiveMockReturn.selectedPerspective = 'published'
       usePerspectiveMockReturn.selectedPerspectiveName = 'published'
 
-      await renderChip()
+      await renderVariants()
 
       expect(screen.queryByTestId('global-perspective-button-clear')).toBeNull()
     })
@@ -174,7 +228,7 @@ describe('ReleasesNav', () => {
       usePerspectiveMockReturn.selectedPerspective = 'published'
       usePerspectiveMockReturn.selectedPerspectiveName = 'published'
 
-      await renderChip()
+      await renderVariants()
 
       expect(screen.getByTestId('global-perspective-button-clear')).toBeInTheDocument()
     })
@@ -183,7 +237,7 @@ describe('ReleasesNav', () => {
       usePerspectiveMockReturn.selectedPerspective = activeScheduledRelease
       usePerspectiveMockReturn.selectedPerspectiveName = 'rActive'
 
-      await renderChip()
+      await renderVariants()
 
       await userEvent.click(screen.getByTestId('global-perspective-button-clear'))
 
@@ -198,7 +252,7 @@ describe('ReleasesNav', () => {
       }
       usePerspectiveMockReturn.selectedPerspectiveName = 'rActive'
 
-      await renderChip()
+      await renderVariants()
 
       // The navbar chip cuts its label at 32 characters
       const truncated = `${'A'.repeat(32)}\u2026`
@@ -459,7 +513,7 @@ describe('ReleasesNav', () => {
           expect(releaseMenuElement.querySelector('[data-stack-line="true"]')).toBeTruthy()
 
           await userEvent.type(
-            releaseMenu.getByPlaceholderText('Search versions and releases…'),
+            releaseMenu.getByPlaceholderText('Find a version or release'),
             'ACTIVE',
           )
 
@@ -484,7 +538,7 @@ describe('ReleasesNav', () => {
           const releaseMenu = within(releaseMenuElement)
 
           await userEvent.type(
-            releaseMenu.getByPlaceholderText('Search versions and releases…'),
+            releaseMenu.getByPlaceholderText('Find a version or release'),
             'draft',
           )
 
@@ -494,7 +548,7 @@ describe('ReleasesNav', () => {
           expect(releaseMenu.queryByText('active Release')).toBeNull()
           expect(releaseMenuElement.querySelector('[data-stack-line="true"]')).toBeNull()
 
-          await userEvent.clear(releaseMenu.getByPlaceholderText('Search versions and releases…'))
+          await userEvent.clear(releaseMenu.getByPlaceholderText('Find a version or release'))
 
           releaseMenu.getByText('Published')
           releaseMenu.getByText('Drafts')

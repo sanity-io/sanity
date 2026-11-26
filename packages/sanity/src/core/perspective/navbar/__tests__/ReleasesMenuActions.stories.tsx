@@ -3,7 +3,7 @@ import {type Meta, type StoryObj} from '@storybook/react-vite'
 import {ReleasesMenuActionsStory} from './ReleasesMenuActionsStory'
 
 /**
- * Reuses the in-package harness: the releases menu's "View content releases"
+ * Reuses the in-package harness: the releases menu's "View Content Releases"
  * action row. The menu stays closed as a static list.
  */
 const meta = {

@@ -8,7 +8,10 @@ import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {NavigatedToReleasesOverview} from '../../../releases/__telemetry__/navigation.telemetry'
 import {RELEASES_INTENT} from '../../../releases/plugin'
 
-export const ViewContentReleasesMenuItem: ComponentType = () => {
+export const ViewContentReleasesMenuItem: ComponentType<{
+  /** Replaces the default label. The variants beta's menu uses its own copy. */
+  text?: string
+}> = ({text}) => {
   const {t} = useTranslation()
   const telemetry = useTelemetry()
 
@@ -28,7 +31,7 @@ export const ViewContentReleasesMenuItem: ComponentType = () => {
       href={href}
       onClick={onClick}
       icon={CalendarIcon}
-      text={t('release.menu.view-releases')}
+      text={text ?? t('release.menu.view-releases')}
       data-testid="view-content-releases-menu-item"
     />
   )
