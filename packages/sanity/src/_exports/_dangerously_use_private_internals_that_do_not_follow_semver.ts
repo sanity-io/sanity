@@ -152,7 +152,6 @@ export {Resizable} from '../core/components/resizer/Resizable'
 export {useOnScroll} from '../core/components/scroll/hooks'
 export {ScrollContainer, type ScrollContainerProps} from '../core/components/scroll/scrollContainer'
 export {type ScrollContextValue, type ScrollEventHandler} from '../core/components/scroll/types'
-export {type TextWithToneProps} from '../core/components/textWithTone/TextWithTone'
 export {TooltipOfDisabled} from '../core/components/TooltipOfDisabled'
 export {
   // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
@@ -834,10 +833,6 @@ export {SearchDialog} from '../core/studio/components/navbar/search/SearchDialog
 export {CONTENT_RELEASES_TIME_ZONE_SCOPE} from '../core/studio/constants'
 export {type StudioDiagnostics} from '../core/studio/diagnostics/gatherStudioDiagnostics'
 export {parseStudioDiagnostics} from '../core/studio/diagnostics/parseStudioDiagnostics'
-export {
-  StudioDiagnosticsBridge,
-  type StudioDiagnosticsBridgeApi,
-} from '../core/studio/diagnostics/StudioDiagnosticsBridge'
 export {StudioFeedbackProvider} from '../core/studio/feedback/StudioFeedbackProvider'
 export {LiveManifestRegisterProvider} from '../core/studio/manifest/LiveManifestRegisterProvider'
 export {
@@ -1157,7 +1152,6 @@ export {SanityDefaultPreview} from '../core/preview/components/SanityDefaultPrev
 export {SchemaError} from '../core/config/SchemaError'
 export {type StudioManifest} from '../core/studio/manifest/types'
 export {type StudioWorkspaceManifest} from '../core/studio/manifest/types'
-export {TextWithTone} from '../core/components/textWithTone/TextWithTone'
 export {VirtualizerScrollInstanceProvider} from '../core/form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 export {collate} from '../core/util/draftUtils'
 export {createDefaultIcon} from '../core/config/createDefaultIcon'
@@ -1174,8 +1168,6 @@ export {isDev} from '../core/environment'
 export {isRecord} from '../core/util/isRecord'
 export {pathToString} from '../core/field/paths/helpers'
 export {pathsAreEqual} from '../core/field/paths/helpers'
-// oxlint-disable-next-line no-deprecated -- deprecated overload stays available on the internals entry until it is removed
-export {renderStudio} from '../core/studio/renderStudio'
 export {resolveConfig} from '../core/config/resolveConfig'
 export {stringToPath} from '../core/field/paths/helpers'
 export {truncateString} from '../core/util/unicodeString'
@@ -1303,7 +1295,6 @@ export {useFormBuilder} from '../core/form/useFormBuilder'
 export {TransformPatches} from '../core/form/utils/TransformPatches'
 export {useDialogStack} from '../core/hooks/useDialogStack'
 export {useDocumentVersionTitle} from '../core/hooks/useDocumentVersionTitle'
-export {useSchema} from '../core/hooks/useSchema'
 export {useSetImmediateValidation} from '../core/hooks/useSetImmediateValidation'
 export {useTemplates} from '../core/hooks/useTemplates'
 export {useTools} from '../core/hooks/useTools'
@@ -1345,9 +1336,6 @@ export {
   isUpdateLiveDocumentEvent,
 } from '../core/store/events/types'
 export {getDocumentPairPermissions} from '../core/store/grants/documentPairPermissions'
-export {Studio} from '../core/studio/Studio'
-export {StudioLayout} from '../core/studio/StudioLayout'
-export {StudioProvider} from '../core/studio/StudioProvider'
 export {useAddonDataset} from '../core/studio/addonDataset/useAddonDataset'
 export {useColorSchemeSetValue, useColorSchemeValue} from '../core/studio/colorScheme'
 export {StudioNavbar, StudioToolMenu} from '../core/studio/components/navbar/LazyStudioNavbar'

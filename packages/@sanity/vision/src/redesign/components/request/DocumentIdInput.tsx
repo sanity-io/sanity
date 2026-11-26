@@ -22,12 +22,12 @@ import {
 import {
   getVersionFromId,
   isDraftId,
-  useSchema,
   SanityDefaultPreview,
   createSearch,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   useValuePreview,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {useSchema} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1'
 
 import {cx} from '../../util/cx'
 import {getDocumentTypeNames} from '../../util/documentTypes'

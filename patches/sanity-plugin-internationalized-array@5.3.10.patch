@@ -1,8 +1,8 @@
 diff --git a/dist/index.js b/dist/index.js
-index 56519ec695ee317090e6e9e1f0a287648a1f5308..9402489df50ba619c3269369319f1ae9b17cf4f1 100644
+index 56519ec695ee317090e6e9e1f0a287648a1f5308..171f8b4f986fc14a3cb2ae6bf36a2dc438b2b7c2 100644
 --- a/dist/index.js
 +++ b/dist/index.js
-@@ -1,6 +1,6 @@
+@@ -1,24 +1,28 @@
  import "@sanity/ui/styles.css";
  import { languageFilter, useLanguageFilterStudioContext } from "@sanity/language-filter";
 -import { ArrayOfObjectsItem, MemberItemError, PatchEvent, defineDocumentFieldAction, defineField, definePlugin, insert, isDocumentSchemaType, isObjectInputProps, isSanityDocument, set, setIfMissing, unset, useClient, useFormValue, useGetFormValue, useSchema, useWorkspace } from "sanity";
@@ -10,11 +10,53 @@ index 56519ec695ee317090e6e9e1f0a287648a1f5308..9402489df50ba619c3269369319f1ae9
  import { c } from "react/compiler-runtime";
  import { Box, Button, Card, Flex, Grid, Label, Spinner, Stack, Text } from "@sanity/ui";
  import { useToast } from "@sanity/ui/toast";
-@@ -14,6 +14,7 @@ import { TranslateIcon } from "@sanity/icons/Translate";
+ import { randomKey } from "@sanity/util/content";
+ import { useDocumentPane } from "sanity/structure";
+ import { AddIcon } from "@sanity/icons/Add";
+-import { createContext, createElement, use, useCallback, useContext, useDeferredValue, useEffect, useId } from "react";
++import { createContext, createElement, lazy, use, useCallback, useContext, useDeferredValue, useEffect, useId } from "react";
+ import get from "lodash-es/get.js";
+ import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+ import { TranslateIcon } from "@sanity/icons/Translate";
  import camelCase from "lodash-es/camelCase.js";
  import upperFirst from "lodash-es/upperFirst.js";
  import { EventsContext } from "sanity/_singletons";
-+import { MemberItemError, PatchEvent, useSchema, ArrayOfObjectsItem } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver";
++import { useSchema } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1";
  import { Menu, MenuButton, MenuDivider, MenuItem } from "@sanity/ui/menu";
  import { Code } from "@sanity/ui/code";
  import { WarningOutlineIcon } from "@sanity/icons/WarningOutline";
+ import { RemoveCircleIcon } from "@sanity/icons/RemoveCircle";
+ import { Tooltip } from "@sanity/ui/tooltip";
++const loadFormInternals = () => import("sanity/_dangerously_use_private_internals_that_do_not_follow_semver");
++const ArrayOfObjectsItem = lazy(() => loadFormInternals().then((module) => ({ default: module.ArrayOfObjectsItem })));
++const MemberItemError = lazy(() => loadFormInternals().then((module) => ({ default: module.MemberItemError })));
+ const namespace = "sanity-plugin-internationalized-array", functionKeyCache = /* @__PURE__ */ new WeakMap(), promiseCache = /* @__PURE__ */ new Map(), functionCache = /* @__PURE__ */ new Map();
+ function stringifyCacheKey(key) {
+ 	return JSON.stringify(key);
+@@ -319,7 +323,7 @@ function DocumentAddButtons() {
+ 			}], "after", [...path, -1]);
+ 			patches.push(ifMissing), patches.push(insertValue);
+ 		}
+-		onChange(PatchEvent.from(patches.flat()));
++		void loadFormInternals().then(({ PatchEvent }) => onChange(PatchEvent.from(patches.flat())));
+ 	}, $[2] = filteredLanguages, $[3] = getFormValue, $[4] = getInitialValueForType, $[5] = onChange, $[6] = toast, $[7] = t1) : t1 = $[7];
+ 	let handleDocumentButtonClick = t1, t2;
+ 	$[8] === Symbol.for("react.memo_cache_sentinel") ? (t2 = /* @__PURE__ */ jsx(Box, { children: /* @__PURE__ */ jsx(Text, {
+@@ -488,7 +492,7 @@ const createTranslateFieldActions = (fieldActionProps, { languages, filteredLang
+ 			value,
+ 			path
+ 		});
+-		onChange(PatchEvent.from([setIfMissing([], path), ...patches]));
++		void loadFormInternals().then(({ PatchEvent }) => onChange(PatchEvent.from([setIfMissing([], path), ...patches])));
+ 	}, [
+ 		language.id,
+ 		value,
+@@ -512,7 +516,7 @@ const createTranslateFieldActions = (fieldActionProps, { languages, filteredLang
+ 			value,
+ 			path
+ 		});
+-		onChange(PatchEvent.from([setIfMissing([], path), ...patches]));
++		void loadFormInternals().then(({ PatchEvent }) => onChange(PatchEvent.from([setIfMissing([], path), ...patches])));
+ 	}, [
+ 		fieldActionProps,
+ 		filteredLanguages,

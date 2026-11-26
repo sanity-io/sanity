@@ -8,7 +8,7 @@ index 00865842b7442baf23a26d0e32f951f9e2ff9fe9..6a6513c5aba4c19bb227395626bafe2f
  import { catchError, defer, from, of } from "rxjs";
 -import { TextWithTone, definePlugin, isObjectSchemaType, useClient, useFormValue, useSchema } from "sanity";
 +import { definePlugin, isObjectSchemaType, useClient, useFormValue } from "sanity";
-+import { TextWithTone, useSchema } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver";
++import { TextWithTone, useSchema } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1";
  import { Fragment, jsx, jsxs } from "react/jsx-runtime";
  import { CheckmarkCircleIcon } from "@sanity/icons/CheckmarkCircle";
  import { CircleIcon } from "@sanity/icons/Circle";
