@@ -13,13 +13,10 @@ export interface VisionProps {
  */
 export interface VisionBetaConfig {
   /**
-   * Has no effect: Vision always shows the classic tool.
-   *
-   * @deprecated Has no effect and can be removed from the config.
+   * @deprecated Remove this option: this version of Vision is the classic tool only. The
+   * redesigned Vision ships in the stable `@sanity/vision@^7` release, where it needs no option.
    */
-  redesign?: {
-    enabled?: boolean
-  }
+  redesign?: never
 }
 
 export interface VisionConfig {
