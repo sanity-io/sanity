@@ -169,7 +169,7 @@ describe('visionMachine', () => {
       options: {
         datasetMode: 'override',
         dataset: 'staging',
-        perspective: 'global',
+        perspective: 'published',
         variant: 'global',
       },
     })
@@ -571,7 +571,7 @@ describe('visionMachine', () => {
     expect(tabs).toHaveLength(1)
     expect(tabs[0].id).not.toBe(original.id)
     expect(tabs[0].query).toBe('')
-    expect(harness.snapshot().context.settings.perspective).toBe('global')
+    expect(harness.snapshot().context.settings.perspective).toBe('published')
     expect(harness.runnerIds()).toEqual([tabs[0].id])
     expect(harness.snapshot().matches({sidebar: 'collapsed'})).toBe(true)
     expect(isPanelExpanded(harness.snapshot(), 'params')).toBe(true)
