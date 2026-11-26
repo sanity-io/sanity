@@ -15,12 +15,20 @@ import {type Locale} from '../types'
 const fallbackI18n = getFallbackI18nInstance()
 
 /**
- * Provides the synchronous core translations needed before a workspace source is available.
+ * Provides the core translations needed before a workspace source is available.
+ *
+ * The studio's own strings load on demand, so a `useTranslation` above
+ * `ActiveWorkspaceLocaleProvider` (the workspace loading, not found and config error screens)
+ * suspends until they have arrived. The loading block without text needs no translation.
  *
  * @internal
  */
 export function FallbackLocaleProvider({children}: PropsWithChildren) {
-  return <I18nextProvider i18n={fallbackI18n}>{children}</I18nextProvider>
+  return (
+    <Suspense fallback={<LoadingBlock />}>
+      <I18nextProvider i18n={fallbackI18n}>{children}</I18nextProvider>
+    </Suspense>
+  )
 }
 
 /**
