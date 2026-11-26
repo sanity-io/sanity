@@ -3,7 +3,6 @@ import {useSelector} from '@xstate/react'
 
 import {Button} from '../../../ui-components/button/Button'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {feedbackLocaleNamespace} from '../../i18n/localeNamespaces'
 import {type DocumentGroupInventoryHandle} from './DocumentGroupInventory'
 
 /**
@@ -26,7 +25,7 @@ export interface DocumentGroupInventoryFeedbackActionProps {
 export function DocumentGroupInventoryFeedbackAction({
   inventory,
 }: DocumentGroupInventoryFeedbackActionProps) {
-  const {t} = useTranslation(feedbackLocaleNamespace)
+  const {t} = useTranslation()
 
   const canBeginFeedback = useSelector(inventory, (snapshot) =>
     snapshot.can({type: 'feedback.begin'}),
@@ -34,12 +33,12 @@ export function DocumentGroupInventoryFeedbackAction({
 
   return (
     <Button
-      aria-label={t('feedback.menu-item')}
+      aria-label={t('content-variants.feedback.action')}
       disabled={!canBeginFeedback}
       icon={FeedbackIcon}
       mode="bleed"
       onClick={() => inventory.send({type: 'feedback.begin'})}
-      tooltipProps={{content: t('feedback.menu-item')}}
+      tooltipProps={{content: t('content-variants.feedback.action')}}
     />
   )
 }

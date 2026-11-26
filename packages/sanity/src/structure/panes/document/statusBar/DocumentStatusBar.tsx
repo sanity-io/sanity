@@ -7,12 +7,14 @@ import {
   isPublishedPerspective,
   isReleaseDocument,
   usePerspective,
+  useWorkspace,
 } from 'sanity'
 import {Flex} from 'ui5'
 
 import {usePaneRouter} from '../../../components/paneRouter/usePaneRouter'
 import {SpacerButton} from '../../../components/spacerButton/SpacerButton'
 import {EMPTY_PARAMS} from '../constants'
+import {DocumentGroupInventoryButton} from '../documentPanel/header/DocumentGroupInventoryButton'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentBadges} from './DocumentBadges'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
@@ -36,6 +38,21 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const selectedVariantName = getDefaultVariant(selectedVariantNames)
 
   const showingRevision = Boolean(params.rev)
+  const {beta} = useWorkspace()
+  // The way into the document group inventory sits in the bottom bar, before the actions
+  // (Variants open beta, 27 Oct), and stays usable in every state of the bar.
+  const inventoryButton =
+    beta?.documentGroupInventory?.enabled === true && !showingRevision ? (
+      <DocumentGroupInventoryButton />
+    ) : null
+  // The bar is always there (team call, 29 Oct): when the chosen variant has no document in this
+  // perspective, there is no status line and the actions show greyed, so the layout does not
+  // change between states.
+  const variantNotReady = Boolean(
+    selectedVariantName &&
+    targetDocumentState.status !== 'ready' &&
+    !getCreatableVariantTarget(targetDocumentState),
+  )
   const [collapsed, setCollapsed] = useState<boolean | null>(null)
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 
@@ -133,10 +150,37 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
             style={{flexShrink: 0, marginLeft: 'auto'}}
           >
             <SpacerButton />
-            {actions}
+            <Flex alignItems="center" gap={2}>
+              {inventoryButton}
+              {actions}
+            </Flex>
           </Flex>
         </Flex>
       )}
+      {/* Nothing to show in the bar (a variant with no document here, the published perspective with
+          no published document, a release the document is not in): Manage versions stays, and the
+          actions grey only for a variant that is not ready. */}
+      {!shouldRender &&
+      !showingRevision &&
+      editState?.ready &&
+      (variantNotReady || inventoryButton) ? (
+        <Flex
+          alignItems="stretch"
+          gap={1}
+          justifyContent="flex-end"
+          paddingLeft={1}
+          paddingRight={1}
+          data-testid={variantNotReady ? 'document-status-bar-greyed' : 'document-status-bar-empty'}
+        >
+          <Flex alignItems="flex-start" justifyContent="flex-end" style={{flexShrink: 0}}>
+            <SpacerButton />
+            <Flex alignItems="center" gap={2}>
+              {inventoryButton}
+              {variantNotReady ? <DocumentStatusBarActions disabled /> : null}
+            </Flex>
+          </Flex>
+        </Flex>
+      ) : null}
     </AnimatedCard>
   )
 }

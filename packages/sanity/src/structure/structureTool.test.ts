@@ -104,6 +104,10 @@ describe('inspectors', () => {
     expect(resolveInspectors([], documentGroupInventoryContext)).toContain(documentGroupInspector)
   })
 
+  it('lists the document group inspector first, so the inventory leads the document menu', () => {
+    expect(resolveInspectors([], documentGroupInventoryContext)[0]).toBe(documentGroupInspector)
+  })
+
   it('preserves inspectors added by other plugins', () => {
     expect(resolveInspectors([pluginInspector], documentGroupInventoryContext)[0]).toBe(
       pluginInspector,

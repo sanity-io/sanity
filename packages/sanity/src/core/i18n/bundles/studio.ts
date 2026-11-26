@@ -578,11 +578,32 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'divergence.unresolved-divergence_other':
     '{{count}} unresolved changes in {{versionName}} version',
 
+  /** --- Content Variants open beta feedback --- */
+
+  /** The label and tooltip for the icons that open the Content Variants feedback dialog */
+  'content-variants.feedback.action': 'Send feedback to Sanity',
+  /** The question in the Content Variants feedback dialog that asks how easy the feature is to use */
+  'content-variants.feedback.sentiment-label':
+    'How easy or difficult is it to create and manage document versions and variants?',
+  /** The title of the Content Variants feedback dialog */
+  'content-variants.feedback.title': 'Share feedback with Sanity on versions and variants',
+  /** The question in the version inventory's feedback dialog in a studio without Content Variants */
+  'document-group-inventory.feedback.versions-sentiment-label':
+    'How easy or difficult is it to create and manage document versions?',
+  /** The title of the version inventory's feedback dialog in a studio without Content Variants */
+  'document-group-inventory.feedback.versions-title': 'Share feedback with Sanity on versions',
+
   /** --- Document inventory --- */
 
   /** The label for the button that opens the document group inventory */
   'document-group-inventory.action.manage-versions': 'Manage versions',
-  /** The label used in the feedback dialog asking how easy the document group inventory is to use */
+  /** The title of the document group inventory panel, in its header */
+  'document-group-inventory.panel-title': 'Document inventory',
+  /**
+   * The label used in the feedback dialog asking how easy the document group inventory is to use
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
   'document-group-inventory.feedback.sentiment-label':
     'How easy or difficult is the new version inventory to use?',
   /** The label for the input that filters the variants in the document group inventory */
@@ -600,6 +621,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** The label given to a document group's base variant */
   'document-group.base-variant': 'Default',
+  /** The button in the inventory's action bar that clears the selection */
+  'document-group.clear-selection': 'Clear',
   /** The text of the actions that open the variant creation form and confirm the creation */
   'document-group.create-variant': 'Create version',
   /** Describes the variant creation form's picker for the version the new variant starts from */
@@ -684,6 +707,66 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The label for the action that clears every selected variant in the document group inventory */
   'document-group.deselect-all': 'Deselect all',
   /** The number of variants currently selected in the document group inventory */
+  /** Accessible name of a group checkbox in the document group inventory, which selects every version in the group */
+  'document-group.select-group': 'Select all in {{name}}',
+  /** Accessible name of a version's checkbox in the document group inventory */
+  'document-group.select-version': 'Select {{name}}',
+  /**
+   * The second line of a set header in the document group inventory when none of its versions can be selected because its release is scheduled. Short, so it fits the narrow panel; the checkbox's tooltip has the full reason
+   * @deprecated no longer in use
+   */
+  // oxlint-disable-next-line no-deprecated -- kept for studios on older versions that still read it
+  'document-group.select.blocked.scheduled-release-note': "Scheduled, so it can't be changed",
+  /** Why a version in a scheduled release cannot be selected for deletion in the document group inventory */
+  'document-group.select.blocked.scheduled-release':
+    'Scheduled · unschedule the release to change this version',
+  /** The tooltip on the lock of a set header whose release is scheduled, so none of its versions can be selected */
+  'document-group.select.blocked.scheduled-release-group':
+    'Scheduled · unschedule the release to change these versions',
+  /** Why a version in a scheduled draft (a release of one document) cannot be selected for deletion in the document group inventory */
+  'document-group.select.blocked.scheduled-draft':
+    'Scheduled to publish · pause the schedule to change this version',
+  /** The tooltip on the lock of a set header whose scheduled draft is scheduled, so none of its versions can be selected */
+  'document-group.select.blocked.scheduled-draft-group':
+    'Scheduled to publish · pause the schedule to change these versions',
+  /** The action in the header of a scheduled release's set in the inventory: opens a dialog that unschedules the release */
+  'document-group.release.unschedule.action': 'Unschedule',
+  /** The tooltip of that action */
+  'document-group.release.unschedule.tooltip':
+    'Unschedule the release so its versions can be changed',
+  /** The title of the dialog that unschedules a release from the inventory. `title` is the release's title */
+  'document-group.release.unschedule.title': 'Unschedule {{title}}?',
+  /** The text of that dialog: unscheduling acts on every document in the release */
+  'document-group.release.unschedule.description':
+    'Every document in this release stops being scheduled, not only this one. You can schedule the release again from Releases.',
+  /** The confirm button of that dialog */
+  'document-group.release.unschedule.confirm': 'Unschedule release',
+  /** The toast when unscheduling a release from the inventory fails. `title` is the release's title */
+  'document-group.release.unschedule.error': 'Could not unschedule {{title}}',
+  /** The action in the header of a scheduled draft's set in the inventory: opens a dialog that pauses its schedule, as Studio calls unscheduling a scheduled draft */
+  'document-group.scheduled-draft.pause.action': 'Pause',
+  /** The tooltip of that action */
+  'document-group.scheduled-draft.pause.tooltip':
+    'Pause the schedule so this document can be changed',
+  /** The title of the dialog that pauses a scheduled draft from the inventory */
+  'document-group.scheduled-draft.pause.title': 'Pause the scheduled publish?',
+  /** The text of that dialog: only this document is affected, and the publish date is kept */
+  'document-group.scheduled-draft.pause.description':
+    'This document stops being scheduled. Its publish date is kept, so you can schedule it again from Scheduled drafts.',
+  /** The confirm button of that dialog */
+  'document-group.scheduled-draft.pause.confirm': 'Pause schedule',
+  /** The toast when pausing a scheduled draft from the inventory fails */
+  'document-group.scheduled-draft.pause.error': 'Could not pause the scheduled publish',
+  /** The action in the header of a paused scheduled draft's set in the inventory: opens the schedule dialog to schedule it again */
+  'document-group.scheduled-draft.schedule.action': 'Schedule',
+  /** The tooltip of that action */
+  'document-group.scheduled-draft.schedule.tooltip': 'Schedule this document to publish again',
+  /** The tooltip of that action while the version has validation errors, which keep it from being scheduled */
+  'document-group.scheduled-draft.schedule.validation-errors':
+    'Fix the validation errors in this version before you schedule it',
+  /** The toast when scheduling a paused scheduled draft from the inventory fails */
+  'document-group.scheduled-draft.schedule.error': 'Could not schedule the publish',
+  /** The number of variants currently selected in the document group inventory */
   'document-group.selected-count': '{{count}} selected',
   /** Last line of the document versions popover, counting the versions it does not list (singular) */
   'document-group.status.more_one': 'and {{count}} more version',
@@ -699,6 +782,17 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'document-group.subject.version_other': 'versions',
   /** A version that was never published: its status line, with `status` the usual edited text, followed by a note */
   'document-group.version.not-published-yet': '{{status}} · not published yet',
+  /**
+   * The second line of the inventory's ghost row: in Drafts, the open audience has no draft yet, and
+   * the first edit in the form creates it
+   */
+  'document-group.version.pending-draft': 'Not created yet',
+  /** The tooltip on the inventory's ghost row, which says how its draft gets created */
+  'document-group.version.pending-draft.tooltip': 'Edit the form to create this draft',
+  /** Accessible name of the avatars on a version row in the document group inventory, naming the people who have that version open (singular) */
+  'document-group.version.presence_one': '{{names}} has this version open',
+  /** Accessible name of the avatars on a version row in the document group inventory, naming the people who have that version open (plural) */
+  'document-group.version.presence_other': '{{names}} have this version open',
   /** The label text that indicates a version in the document group is served for the selected perspective and variant */
   'document-group.version.served': 'Served',
   /** The label text that indicates a base version in the document group is served because the selected variant has no version */

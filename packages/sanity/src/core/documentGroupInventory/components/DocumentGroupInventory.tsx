@@ -1,10 +1,15 @@
+import {type ReleaseDocument} from '@sanity/client'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ChangeEvent,
   type ComponentType,
+  type ReactNode,
   type RefAttributes,
+  useEffect,
   useImperativeHandle,
   useMemo,
+  useRef,
+  useState,
 } from 'react'
 import {
   combineLatest,
@@ -19,8 +24,6 @@ import {
 } from 'rxjs'
 import {type ActorRefFromLogic, fromObservable, fromPromise} from 'xstate'
 
-import {STUDIO_DSN} from '../../error/sentry/sentryErrorReporter'
-import {StudioFeedbackDialog} from '../../feedback/components/StudioFeedbackDialog'
 import {useFeedbackTelemetry} from '../../feedback/hooks/useFeedbackTelemetry'
 import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
@@ -31,17 +34,19 @@ import {useSetVariant} from '../../perspective/useSetVariant'
 import {VersionContextMenuDialogs} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuDialogs'
 import {VersionContextMenuPopover} from '../../releases/components/documentHeader/contextMenu/VersionContextMenuPopover'
 import {useDocumentVersionsObservable} from '../../releases/hooks/useDocumentVersions'
+import {useReleasesEnabled} from '../../releases/hooks/useReleasesEnabled'
 import {useVersionContextMenu} from '../../releases/hooks/useVersionContextMenu'
-import {type VersionInfoDocumentStub} from '../../releases/store/types'
+import {isReleaseDocument, type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {useReleasesStore} from '../../releases/store/useReleasesStore'
 import {getReleaseIdFromReleaseDocumentId} from '../../releases/util/getReleaseIdFromReleaseDocumentId'
-import {useReleasesToolAvailable} from '../../schedules/hooks/useReleasesToolAvailable'
 import {useAgentBundlesStore} from '../../store/agent/useAgentBundles'
+import {useDocumentPresence} from '../../store/presence/useDocumentPresence'
 import {useWorkspace} from '../../studio/workspace'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
 import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
+import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
 import {deletionMachine, type ReferringDocuments} from '../machines/deletionMachine'
@@ -55,7 +60,27 @@ import {
   type DocumentGroupInventoryComponents,
   type DocumentGroupInventoryPerspectiveList,
 } from '../types'
+import {
+  getVersionPresence,
+  groupPresenceByVersion,
+  type VersionPresence,
+} from '../utils/groupPresenceByVersion'
 import {resolveServedVersion, type ServedStatus} from '../utils/resolveServedVersion'
+import {
+  getBlockedSelectedIds,
+  getRowToggle,
+  getSetSelection,
+  type RangeAnchor,
+  SELECTION_BLOCKED_GROUP_KEYS,
+  SELECTION_BLOCKED_REASON_KEYS,
+  type SelectionBlockedReason,
+} from '../utils/selection'
+import {metaWithoutReleases, withoutReleases} from '../utils/withoutReleases'
+import {
+  type DisplayedVariantSet,
+  type PendingDraft,
+  withPendingDraft,
+} from '../utils/withPendingDraft'
 import {Body} from './Body'
 import {ConfirmDeleteDialog} from './ConfirmDeleteDialog'
 import {Container} from './Container'
@@ -63,7 +88,11 @@ import {CreateVariant} from './CreateVariant/CreateVariant'
 import {getNearestBaseVersion} from './CreateVariant/getNearestBaseVersion'
 import {DocumentGroupEntry, resolveVariantRelease} from './DocumentGroupEntry'
 import {DocumentGroupSet} from './DocumentGroupSet'
+import {InventoryFeedbackDialog} from './InventoryFeedbackDialog'
 import {InventoryHeader} from './InventoryHeader'
+import {PendingDraftEntry} from './PendingDraftEntry'
+import {ScheduleDraftAction} from './ScheduleDraftAction'
+import {UnscheduleReleaseAction} from './UnscheduleReleaseAction'
 import {useVariantPendingReleases} from './useVariantPendingReleases'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
 
@@ -72,9 +101,16 @@ interface DocumentGroupInventoryBaseProps {
   documentType: string
   /**
    * The id of the document version to mark as currently viewed. Defaults to
-   * {@link DocumentGroupInventoryBaseProps.documentId}.
+   * {@link DocumentGroupInventoryBaseProps.documentId}. `null` marks no version, for when the
+   * viewed version is not known yet.
    */
-  selectedId?: string
+  selectedId?: string | null
+  /**
+   * A draft the form is about to create: in Drafts, the open audience has no draft yet and the
+   * first edit creates it. Drawn as a ghost row in the Draft set, marked open. Pass its id as
+   * `selectedId` too.
+   */
+  pendingDraft?: PendingDraft
   /**
    * Called when a version's primary action fires. What "picking" a version
    * means is the consumer's decision: switching the studio's perspective,
@@ -141,7 +177,7 @@ export interface DocumentGroupInventoryHandle {
 export function DocumentGroupInventory(
   props: DocumentGroupInventoryProps & RefAttributes<DocumentGroupInventoryHandle | null>,
 ) {
-  const {ref, documentId, documentType, selectedId = documentId, onSelect} = props
+  const {ref, documentId, documentType, selectedId = documentId, onSelect, pendingDraft} = props
   const readOnly = props.mode === 'readOnly'
 
   // Read the manage-only props into locals
@@ -156,7 +192,13 @@ export function DocumentGroupInventory(
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema().get(documentType)
   const versionState = useDocumentVersionsObservable({documentId})
-  const {state$: releases} = useReleasesStore()
+  const {state$: releasesState$} = useReleasesStore()
+  // With content releases off, the inventory and Create variant only know scheduled drafts.
+  const releasesEnabled = useReleasesEnabled()
+  const releases = useMemo(
+    () => (releasesEnabled ? releasesState$ : releasesState$.pipe(map(withoutReleases))),
+    [releasesEnabled, releasesState$],
+  )
   const {state$: agentBundles} = useAgentBundlesStore()
   const {state$: variants} = useVariantsStore()
 
@@ -182,14 +224,16 @@ export function DocumentGroupInventory(
       documentGroupInventoryMachine.provide({
         actors: {
           meta: fromObservable(() =>
-            combineLatest({versionState, releases, variants, agentBundles}),
+            combineLatest({versionState, releases, variants, agentBundles}).pipe(
+              map((meta) => (releasesEnabled ? meta : metaWithoutReleases(meta))),
+            ),
           ),
         },
         actions: {
           onFeedbackBegin: feedbackDialogOpened,
         },
       }),
-    [versionState, releases, variants, agentBundles, feedbackDialogOpened],
+    [versionState, releases, variants, agentBundles, feedbackDialogOpened, releasesEnabled],
   )
 
   const inventoryRef = useActorRef(inventoryMachine, {
@@ -377,9 +421,15 @@ export function DocumentGroupInventory(
         <Body>
           {schema && (
             <Select
+              // Groups collapse per document, for the session. Keyed by the document group, not the
+              // open version: the first edit turns the open version from a published one into a
+              // new draft, and a key on the version would rebuild the whole list at that moment.
+              key={getPublishedId(documentId)}
+              documentId={documentId}
               machine={selectionRef}
               inventoryRef={inventoryRef}
               selectedId={selectedId}
+              pendingDraft={pendingDraft}
               documentType={documentType}
               readOnly={readOnly}
               perspectiveList={perspectiveList}
@@ -401,29 +451,71 @@ export function DocumentGroupInventory(
           />
         )}
       {isFeedbackActive && (
-        <StudioFeedbackDialog
-          dsn={STUDIO_DSN}
-          feedbackVersion="1"
-          source="document-group-inventory"
-          onClose={() => inventoryRef.send({type: 'feedback.end'})}
-          sentimentLabel={t('document-group-inventory.feedback.sentiment-label')}
-        />
+        <InventoryFeedbackDialog onClose={() => inventoryRef.send({type: 'feedback.end'})} />
       )}
     </>
   )
 }
 
 const Select: ComponentType<{
+  /** Any id in the document group. Presence is read for every version of the group. */
+  documentId: string
   machine: ActorRefFromLogic<typeof selectionMachine>
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
-  selectedId: string
+  selectedId: string | null
+  pendingDraft: PendingDraft | undefined
   documentType: string
   onSelect: (document: VersionInfoDocumentStub) => void
   readOnly: boolean
   /** Absent in read-only mode, where the version context menu is not rendered. */
   perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
-}> = ({machine, inventoryRef, selectedId, documentType, onSelect, readOnly, perspectiveList}) => {
-  const sets = useSelector(inventoryRef, ({context}) => context.sets)
+}> = ({
+  documentId,
+  machine,
+  inventoryRef,
+  selectedId,
+  pendingDraft,
+  documentType,
+  onSelect,
+  readOnly,
+  perspectiveList,
+}) => {
+  const {t} = useTranslation(studioLocaleNamespace)
+  const versionSets = useSelector(inventoryRef, ({context}) => context.sets)
+  // The first edit creates the draft, and the pane can learn that before the version list has it,
+  // with a moment in between where it marks no version open while it resolves the new draft. The
+  // ghost row stays through both, until the real row takes its place (`withPendingDraft` then
+  // leaves the sets alone) or another version is opened, so the row changes in place rather than
+  // going and coming back.
+  const [heldDraft, setHeldDraft] = useState(pendingDraft)
+  if (pendingDraft && pendingDraft.id !== heldDraft?.id) {
+    setHeldDraft(pendingDraft)
+  }
+  // Whether the held draft was the open version when the open version was last known
+  const [heldOpen, setHeldOpen] = useState(true)
+  const nextHeldOpen =
+    Boolean(pendingDraft) || selectedId === null
+      ? heldOpen || Boolean(pendingDraft)
+      : selectedId === heldDraft?.id
+  if (nextHeldOpen !== heldOpen) setHeldOpen(nextHeldOpen)
+  const shownDraft =
+    pendingDraft ??
+    // While the pane resolves the new draft it marks no version open (`null`); that holds the
+    // ghost row only while it was the open version, not after another version was opened
+    (heldDraft && (selectedId === heldDraft.id || (selectedId === null && heldOpen))
+      ? heldDraft
+      : undefined)
+  // The draft the form is about to create joins the Draft set as a ghost row
+  const sets = useMemo(
+    () => withPendingDraft(versionSets, shownDraft, t('release.chip.draft')),
+    [versionSets, shownDraft, t],
+  )
+  // Everyone in any version of the group, grouped by the exact version each person has open
+  const documentPresence = useDocumentPresence(documentId)
+  const presenceByVersion = useMemo(
+    () => groupPresenceByVersion(documentPresence),
+    [documentPresence],
+  )
   const variantsEnabled = useSelector(inventoryRef, ({context}) => context.variantsEnabled)
   const perspective = usePerspective()
 
@@ -450,61 +542,158 @@ const Select: ComponentType<{
     ({context}) => context.filterMatchingVariantIds,
   )
 
+  const releases = useSelector(inventoryRef, ({context}) => context.releases)
+
+  const rangeAnchorRef = useRef<RangeAnchor>(null)
+
+  // A selected version can become blocked, as when its release is scheduled. Its checkbox then
+  // shows unchecked, so it leaves the selection too, rather than staying in the count and the
+  // deletion out of sight.
+  const blockedSelectedIds = getBlockedSelectedIds({
+    variants: sets.flatMap(({variants}) => variants),
+    selectedIds,
+    getRelease: (variant) => resolveVariantRelease(variant, releases),
+  })
+  const blockedSelectedKey = blockedSelectedIds.join(',')
+  // The machine ignores changes while a deletion holds the selection, so this retries on unlock.
+  useEffect(() => {
+    if (blockedSelectedKey === '' || isLocked) return
+    machine.send({type: 'selection.removeMany', variantIds: blockedSelectedKey.split(',')})
+  }, [blockedSelectedKey, isLocked, machine])
+
   return (
     <>
       {sets.map((set) => {
-        const variantIds = set.variants.map(({id}) => id)
+        const visibleVariants = set.variants.filter(
+          ({id}) => !hasFilterString || filterMatchingVariantIds.has(id),
+        )
+        const getRelease = (variant: (typeof set.variants)[number]) =>
+          resolveVariantRelease(variant, releases)
+        const shownSelection = getSetSelection({variants: visibleVariants, selectedIds, getRelease})
+        // Whether the whole group is locked is the set's, not the filter's: a filter that hides
+        // every row of a scheduled set leaves its lock and its unschedule action in place
+        const setSelection = {
+          ...shownSelection,
+          groupBlockedReason: getSetSelection({variants: set.variants, selectedIds, getRelease})
+            .groupBlockedReason,
+        }
+
+        const toggleVariant = (variantId: string, shiftKey: boolean) => {
+          const toggle = getRowToggle({
+            setKey: set.key,
+            selectableIds: setSelection.selectableIds,
+            selectedIds,
+            anchor: rangeAnchorRef.current,
+            variantId,
+            shiftKey,
+          })
+          machine.send(toggle.event)
+          rangeAnchorRef.current = toggle.anchor
+        }
 
         return (
           <DocumentGroupSet
             key={set.key}
             name={set.name}
             // The single set shown while Content Variants is off has no bundle, and its name
-            // already carries the count.
-            count={set.bundle ? set.variants.length : undefined}
+            // already carries the count. A ghost row is not counted, and a set that holds only a
+            // ghost row shows no count and has nothing to select.
+            count={set.bundle && set.variants.length > 0 ? set.variants.length : undefined}
             bundle={set.bundle}
             readOnly={readOnly}
+            nothingToSelect={set.variants.length === 0}
             locked={isLocked}
-            selectedIds={selectedIds}
-            checked={variantIds.length !== 0 && variantIds.every((id) => selectedIds.has(id))}
+            containsOpen={Boolean(set.pending) || set.variants.some(({id}) => id === selectedId)}
+            selectionState={setSelection.state}
+            // A scheduled release's or scheduled draft's set: a lock in place of the checkbox, the
+            // reason on hover, and a way to unschedule (or pause) it, rather than a second line
+            // under the name
+            blockedReason={
+              setSelection.groupBlockedReason
+                ? t(SELECTION_BLOCKED_GROUP_KEYS[setSelection.groupBlockedReason])
+                : undefined
+            }
+            headerActions={
+              // Scheduled: a way to unschedule (pause). A paused scheduled draft: a way to
+              // schedule it again, so both directions happen where the lock shows
+              !readOnly &&
+              set.bundle?.type === 'perspective' &&
+              isReleaseDocument(set.bundle.perspective) ? (
+                setSelection.groupBlockedReason !== undefined ? (
+                  <UnscheduleReleaseAction release={set.bundle.perspective} />
+                ) : isPausedCardinalityOneRelease(set.bundle.perspective) && set.variants[0] ? (
+                  <ScheduleDraftAction
+                    documentType={documentType}
+                    release={set.bundle.perspective}
+                    versionId={set.variants[0].id}
+                  />
+                ) : undefined
+              ) : undefined
+            }
             onCheckedChange={(checked) =>
-              machine.send({
-                type: checked ? 'selection.addMany' : 'selection.removeMany',
-                variantIds,
-              })
+              machine.send(
+                checked
+                  ? {type: 'selection.addMany', variantIds: setSelection.selectableIds}
+                  : // Clearing the group clears it whole, rows hidden by the filter included, so
+                    // nothing it held stays selected out of sight.
+                    {type: 'selection.removeMany', variantIds: set.variants.map(({id}) => id)},
+              )
             }
           >
-            {set.variants
-              .filter(({id}) => !hasFilterString || filterMatchingVariantIds.has(id))
-              // The version context menu is a hook, so the two rows have to be
+            {withPendingRow(
+              visibleVariants,
+              // Hidden while the list is filtered: it is not a version the filter can match
+              hasFilterString ? undefined : set.pending,
+            ).map((variant) =>
+              'pendingDraft' in variant ? (
+                <PendingDraftEntry
+                  key={variant.pendingDraft.id}
+                  draft={variant.pendingDraft}
+                  selectable={!readOnly}
+                />
+              ) : // The version context menu is a hook, so the two rows have to be
               // separate components rather than one row that skips the actions.
-              .map((variant) =>
-                readOnly ? (
-                  <ReadOnlyVariantRow
-                    key={variant.id}
-                    variant={variant}
-                    documentVersions={documentVersions}
-                    inventoryRef={inventoryRef}
-                    onSelect={onSelect}
-                    isSelected={selectedId === variant.id}
-                  />
-                ) : (
-                  <ManagedVariantRow
-                    key={variant.id}
-                    variant={variant}
-                    documentVersions={documentVersions}
-                    machine={machine}
-                    inventoryRef={inventoryRef}
-                    documentType={documentType}
-                    onSelect={onSelect}
-                    isSelected={selectedId === variant.id}
-                    servedStatus={
-                      servedVersion?.id === variant.id ? servedVersion.status : undefined
-                    }
-                    perspectiveList={perspectiveList}
-                  />
-                ),
-              )}
+              readOnly ? (
+                <ReadOnlyVariantRow
+                  key={variant.id}
+                  variant={variant}
+                  presence={getVersionPresence(presenceByVersion, variant.id)}
+                  documentVersions={documentVersions}
+                  inventoryRef={inventoryRef}
+                  onSelect={onSelect}
+                  isSelected={selectedId === variant.id}
+                />
+              ) : (
+                <ManagedVariantRow
+                  key={variant.id}
+                  variant={variant}
+                  presence={getVersionPresence(presenceByVersion, variant.id)}
+                  documentVersions={documentVersions}
+                  machine={machine}
+                  inventoryRef={inventoryRef}
+                  documentType={documentType}
+                  onSelect={onSelect}
+                  isSelected={selectedId === variant.id}
+                  servedStatus={servedVersion?.id === variant.id ? servedVersion.status : undefined}
+                  perspectiveList={perspectiveList}
+                  selectionBlockedReason={setSelection.blockedReasons.get(variant.id)}
+                  onToggleSelection={(shiftKey) => toggleVariant(variant.id, shiftKey)}
+                  // The single list shown with Content Variants off has no set headers, so a
+                  // scheduled row offers its own Unschedule (Pause), and a paused scheduled draft
+                  // its own Schedule, where the set header would have.
+                  actions={
+                    set.bundle
+                      ? undefined
+                      : getScheduleRowAction({
+                          release: getRelease(variant),
+                          blocked: setSelection.blockedReasons.has(variant.id),
+                          documentType,
+                          versionId: variant.id,
+                        })
+                  }
+                />
+              ),
+            )}
           </DocumentGroupSet>
         )
       })}
@@ -513,16 +702,60 @@ const Select: ComponentType<{
 }
 
 /**
+ * The way out of a schedule for one row: Unschedule (Pause, for a scheduled draft) while its
+ * release is scheduled, Schedule again once a scheduled draft is paused. The set header offers the
+ * same when the inventory shows sets.
+ */
+function getScheduleRowAction({
+  release,
+  blocked,
+  documentType,
+  versionId,
+}: {
+  release: ReleaseDocument | undefined
+  blocked: boolean
+  documentType: string
+  versionId: string
+}): ReactNode {
+  if (!release) return undefined
+  if (blocked) return <UnscheduleReleaseAction release={release} />
+  if (isPausedCardinalityOneRelease(release)) {
+    return (
+      <ScheduleDraftAction documentType={documentType} release={release} versionId={versionId} />
+    )
+  }
+  return undefined
+}
+
+/**
+ * Whether a version row opens the version context menu on right-click. Off for the open beta: the
+ * menu was cut off at the panel's edge and duplicated actions found elsewhere, so it returns once
+ * it is designed for the inventory.
+ */
+const INVENTORY_ROW_CONTEXT_MENU = false
+
+/** The rows of a set in order, with a pending draft's ghost row at its place. */
+function withPendingRow(
+  variants: Variant[],
+  pending: DisplayedVariantSet['pending'],
+): Array<Variant | {pendingDraft: PendingDraft}> {
+  if (!pending) return variants
+  const index = Math.min(pending.index, variants.length)
+  return [...variants.slice(0, index), {pendingDraft: pending.draft}, ...variants.slice(index)]
+}
+
+/**
  * A version row with no actions attached: the primary action reports the pick
  * to the consumer and nothing else is offered.
  */
 const ReadOnlyVariantRow: ComponentType<{
   variant: Variant
+  presence: VersionPresence
   documentVersions: VersionInfoDocumentStub[]
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
   onSelect: (document: VersionInfoDocumentStub) => void
   isSelected: boolean
-}> = ({variant, documentVersions, inventoryRef, onSelect, isSelected}) => {
+}> = ({variant, presence, documentVersions, inventoryRef, onSelect, isSelected}) => {
   const releases = useSelector(inventoryRef, ({context}) => context.releases)
 
   return (
@@ -531,6 +764,7 @@ const ReadOnlyVariantRow: ComponentType<{
       releases={releases}
       documentVersions={documentVersions}
       isSelected={isSelected}
+      presence={presence}
       onPrimaryAction={() => onSelect(variant.document)}
     />
   )
@@ -538,6 +772,7 @@ const ReadOnlyVariantRow: ComponentType<{
 
 const ManagedVariantRow: ComponentType<{
   variant: Variant
+  presence: VersionPresence
   documentVersions: VersionInfoDocumentStub[]
   machine: ActorRefFromLogic<typeof selectionMachine>
   inventoryRef: ActorRefFromLogic<typeof documentGroupInventoryMachine>
@@ -550,8 +785,15 @@ const ManagedVariantRow: ComponentType<{
    * so the caller can pick the row by mode rather than by prop presence.
    */
   perspectiveList: DocumentGroupInventoryPerspectiveList | undefined
+  /** Why this version cannot be selected for deletion, if it cannot. */
+  selectionBlockedReason: SelectionBlockedReason | undefined
+  /** Toggles this version's selection; with Shift, selects a range within its group. */
+  onToggleSelection: (shiftKey: boolean) => void
+  /** Buttons at the row's end. */
+  actions?: ReactNode
 }> = ({
   variant,
+  presence,
   documentVersions,
   machine,
   inventoryRef,
@@ -560,8 +802,12 @@ const ManagedVariantRow: ComponentType<{
   isSelected,
   servedStatus,
   perspectiveList,
+  selectionBlockedReason,
+  onToggleSelection,
+  actions,
 }) => {
-  const releasesToolAvailable = useReleasesToolAvailable()
+  const {t} = useTranslation(studioLocaleNamespace)
+  const releasesToolAvailable = useReleasesEnabled()
   const {loading: releasesLoading} = useActiveReleases()
   // Derived from `_system` rather than the id, because `_system` is authoritative: it
   // distinguishes a variant-scoped draft (`versions.<scope>.<id>` with `bundleId: 'drafts'`)
@@ -613,7 +859,8 @@ const ManagedVariantRow: ComponentType<{
     onCopyToDraftsComplete: clearScheduledDraftPerspective,
   })
 
-  const contextMenuHandler = isLocked || !releasesToolAvailable ? undefined : handleContextMenu
+  const contextMenuHandler =
+    INVENTORY_ROW_CONTEXT_MENU && !isLocked && releasesToolAvailable ? handleContextMenu : undefined
 
   return (
     <>
@@ -622,21 +869,32 @@ const ManagedVariantRow: ComponentType<{
         releases={releases}
         documentVersions={documentVersions}
         isSelected={isSelected}
+        presence={presence}
         servedStatus={servedStatus}
+        actions={actions}
         primaryActionRef={setReferenceElement}
         onContextMenu={contextMenuHandler}
         onPrimaryAction={() => onSelect(document)}
+        onToggleSelection={
+          isLocked || selectionBlockedReason ? undefined : () => onToggleSelection(false)
+        }
+        selectionBlockedReason={
+          selectionBlockedReason
+            ? t(SELECTION_BLOCKED_REASON_KEYS[selectionBlockedReason])
+            : undefined
+        }
         leading={
           <VariantCheckbox
-            data-visible={selectedIds.size !== 0}
+            label={t('document-group.select-version', {name: variant.name})}
+            tabbable={false}
             checked={selectedIds.has(variant.id)}
-            readOnly={isLocked}
-            onChange={() => {
-              machine.send({
-                type: 'selection.toggle',
-                variantId: variant.id,
-              })
-            }}
+            locked={isLocked}
+            blockedReason={
+              selectionBlockedReason
+                ? t(SELECTION_BLOCKED_REASON_KEYS[selectionBlockedReason])
+                : undefined
+            }
+            onChange={(_checked, {shiftKey}) => onToggleSelection(shiftKey)}
           />
         }
       />

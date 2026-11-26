@@ -1,10 +1,27 @@
-import {type ComponentType, type ReactNode} from 'react'
+import {type BadgeTone} from '@sanity/ui'
+import {
+  type ComponentType,
+  type CSSProperties,
+  type MouseEvent,
+  type ReactNode,
+  useId,
+  useState,
+} from 'react'
 import {Flex, Text} from 'ui5'
 
-import {ReleaseAvatarIcon} from '../../releases/components/ReleaseAvatar'
+import {type StatusMarkName} from '../../../ui-components/statusMark/statusMarkGeometry'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {studioLocaleNamespace} from '../../i18n/localeNamespaces'
+import {isReleaseDocument} from '../../releases/store/types'
+import {getReleaseTone} from '../../releases/util/getReleaseTone'
+import {isDraftPerspective, isPublishedPerspective} from '../../releases/util/util'
+import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
+import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
 import {type VariantSetBundle} from '../machines/documentGroupInventoryMachine'
+import {type GroupSelectionState} from '../utils/selection'
+import {LeadingGlyph} from './VariantSet/LeadingGlyph'
 import {VariantCheckbox} from './VariantSet/VariantCheckbox'
-import {VariantSet} from './VariantSet/VariantSet'
+import {VariantSet, VariantSetRows} from './VariantSet/VariantSet'
 import {VariantSetHeader} from './VariantSet/VariantSetHeader'
 
 /**
@@ -20,61 +37,179 @@ export const DocumentGroupSet: ComponentType<{
   headerActions?: ReactNode
   children: ReactNode
   bundle?: VariantSetBundle
-  selectedIds: ReadonlySet<string>
-  /** Whether every version in the set is selected. */
-  checked: boolean
+  /** The group checkbox's state, from the selectable versions in the set. */
+  selectionState: GroupSelectionState
+  /** Called with `true` to select every selectable version in the set, `false` to deselect them. */
   onCheckedChange: (checked: boolean) => void
+  /** Why no version in the set can be selected. Shown on the group checkbox. */
+  blockedReason?: string
+  /**
+   * The same reason in a few words, shown as the header's second line, so the reason is on screen
+   * without hovering the checkbox. It also describes the header's toggle.
+   */
+  blockedNote?: string
   /** Whether the set's versions can never be selected, as in the picker. Omits the checkbox. */
   readOnly?: boolean
+  /**
+   * Whether the set has no version to select yet, as a Draft set that holds only the ghost row of a
+   * draft not created yet. Its checkbox cell stays, empty, so the set lines up with the others.
+   */
+  nothingToSelect?: boolean
   /** Whether the selection is frozen, as it is while a deletion is in flight. */
   locked?: boolean
+  /** Whether the version open in the form is in this set. A collapsed set then says so. */
+  containsOpen?: boolean
 }> = ({
   name,
   count,
   headerActions,
   children,
   bundle,
-  selectedIds,
-  checked,
+  selectionState,
   onCheckedChange,
+  blockedReason,
+  blockedNote,
   readOnly,
+  nothingToSelect,
   locked,
-}) => (
-  <VariantSet data-variant-set={name}>
-    <VariantSetHeader as="header">
-      <div className="variant-set-leading">
-        {!readOnly && (
-          <VariantCheckbox
-            data-visible={selectedIds.size !== 0}
-            checked={checked}
-            readOnly={locked}
-            onChange={(event) => onCheckedChange(event.currentTarget.checked)}
-          />
-        )}
-        <div className="variant-set-icon">
-          {bundle?.type === 'agent' && (
-            // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-            <ReleaseAvatarIcon tone="suggest" />
-          )}
-          {bundle?.type === 'perspective' && <ReleaseAvatarIcon release={bundle.perspective} />}
-        </div>
-      </div>
-      <div className="row-content">
-        <Flex className="variant-set-title" gap={2} alignItems="center">
-          <div className="version-title">
-            <Text size={1} weight="medium" as="div" trim={true}>
-              {name}
-            </Text>
+  containsOpen,
+}) => {
+  const {t} = useTranslation(studioLocaleNamespace)
+  // Expanded by default. The state lives for the session; the inventory remounts per document.
+  const [expanded, setExpanded] = useState(true)
+  const rowsId = useId()
+  const nameId = useId()
+  const countId = useId()
+  const noteId = useId()
+  const note = readOnly ? undefined : blockedNote
+
+  return (
+    <VariantSet
+      data-variant-set={name}
+      data-selectable={!readOnly}
+      // A set that exists only for a ghost row is outlined as one not-yet-created whole
+      data-ghost-set={nothingToSelect ? '' : undefined}
+    >
+      <VariantSetHeader
+        as="header"
+        data-collapsed={expanded ? undefined : ''}
+        data-open-inside={!expanded && containsOpen ? '' : undefined}
+        data-pending={nothingToSelect ? '' : undefined}
+      >
+        {/* The toggle covers the header; the checkbox and header actions sit above it */}
+        <button
+          type="button"
+          className="group-toggle"
+          aria-expanded={expanded}
+          aria-controls={rowsId}
+          aria-labelledby={typeof count === 'number' ? `${nameId} ${countId}` : nameId}
+          aria-describedby={note ? noteId : undefined}
+          onClick={() => setExpanded((current) => !current)}
+        />
+        {!readOnly && nothingToSelect && <div className="atom" />}
+        {!readOnly && !nothingToSelect && (
+          // The checkbox never toggles the group
+          <div className="atom" onClick={stopPropagation}>
+            <VariantCheckbox
+              label={t('document-group.select-group', {name})}
+              checked={selectionState === 'checked'}
+              indeterminate={selectionState === 'indeterminate'}
+              locked={locked}
+              blockedReason={blockedReason}
+              onChange={(checked) => onCheckedChange(checked)}
+            />
           </div>
-          {typeof count === 'number' && (
-            <Text size={1} muted as="div" trim={true} data-testid="variant-set-count">
-              {count}
-            </Text>
-          )}
-        </Flex>
-        {headerActions}
-      </div>
-    </VariantSetHeader>
-    {children}
-  </VariantSet>
-)
+        )}
+        <LeadingGlyph
+          className="variant-set-icon"
+          data-testid="variant-set-icon"
+          {...(bundle ? bundleMark(bundle) : {})}
+        />
+        <div className="variant-set-text">
+          {/* The name and count, then any header action on the same line, at the end */}
+          <Flex alignItems="center" gap={2}>
+            <div style={TEXT_STYLE}>
+              {/* Read once, as the toggle's name */}
+              <Flex gap={2} alignItems="center" aria-hidden style={NAME_LINE_STYLE}>
+                {/* A long name ends in an ellipsis, like a row's; the count stays whole */}
+                <div className="version-title">
+                  <Text
+                    size={1}
+                    weight="medium"
+                    as="div"
+                    trim={true}
+                    id={nameId}
+                    data-testid="variant-set-name"
+                  >
+                    {name}
+                  </Text>
+                </div>
+                {typeof count === 'number' && (
+                  <Text
+                    size={1}
+                    muted
+                    as="div"
+                    trim={true}
+                    id={countId}
+                    data-testid="variant-set-count"
+                  >
+                    {count}
+                  </Text>
+                )}
+              </Flex>
+              {note && (
+                <Text
+                  size={1}
+                  muted
+                  as="div"
+                  id={noteId}
+                  data-testid="variant-set-blocked-note"
+                  style={NOTE_STYLE}
+                >
+                  {note}
+                </Text>
+              )}
+            </div>
+            {headerActions && <div className="header-actions">{headerActions}</div>}
+          </Flex>
+        </div>
+      </VariantSetHeader>
+      <VariantSetRows id={rowsId} hidden={!expanded}>
+        {children}
+      </VariantSetRows>
+    </VariantSet>
+  )
+}
+
+/** The name and count take the room left by a header action. */
+const TEXT_STYLE: CSSProperties = {flex: 1, minWidth: 0}
+const NAME_LINE_STYLE: CSSProperties = {minWidth: 0}
+
+/** The second line sits 8px under the name, as a row's second line does. */
+const NOTE_STYLE: CSSProperties = {marginTop: 8}
+
+function stopPropagation(event: MouseEvent) {
+  event.stopPropagation()
+}
+
+/**
+ * A set's status mark: Published is a disc, Draft a ring, a release its type's pictogram (a
+ * paused release the clock), an agent bundle the sparkle. A release keeps the tone it has
+ * elsewhere, so an archived or paused one does not take its type's tone.
+ */
+function bundleMark(bundle: VariantSetBundle): {mark: StatusMarkName; tone?: BadgeTone} {
+  if (bundle.type === 'agent') return {mark: 'agent'}
+  const {perspective} = bundle
+  if (isReleaseDocument(perspective)) {
+    return {
+      mark: isPausedCardinalityOneRelease(perspective)
+        ? 'scheduled'
+        : perspective.metadata.releaseType,
+      tone: getReleaseTone(perspective),
+    }
+  }
+  if (isPublishedPerspective(perspective)) return {mark: 'published'}
+  if (isDraftPerspective(perspective)) return {mark: 'draft'}
+  if (isAgentBundleName(perspective)) return {mark: 'agent'}
+  return {mark: 'undecided', tone: getReleaseTone(perspective)}
+}

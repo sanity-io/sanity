@@ -6,11 +6,13 @@ import {page, userEvent} from 'vitest/browser'
 
 import {isShown, testHelpers} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {Button} from '../../../../ui-components/button/Button'
 import {type WorkspaceOptions} from '../../../config/types'
 import {activeASAPRelease} from '../../../releases/__fixtures__/release.fixture'
 import {type VersionInfoDocumentStub} from '../../../releases/store/types'
 import {type Variant} from '../../machines/selectionMachine'
 import {type ServedVersion} from '../../utils/resolveServedVersion'
+import {type GroupSelectionState} from '../../utils/selection'
 import {DocumentGroupEntry} from '../DocumentGroupEntry'
 import {DocumentGroupSet} from '../DocumentGroupSet'
 import {VariantCheckbox} from '../VariantSet/VariantCheckbox'
@@ -56,12 +58,12 @@ const NOTHING_SELECTED: ReadonlySet<string> = new Set()
 const NOOP = () => undefined
 
 /**
- * Renders a set the way the inventory's `Select` does: each version row leads
- * with a checkbox, and every checkbox is revealed once anything is selected.
+ * Renders a set the way the inventory's `Select` does: the set header and each
+ * version row lead with a checkbox, always there.
  */
 function SetHarness({
   selectedIds = NOTHING_SELECTED,
-  checked = false,
+  selectionState = 'unchecked',
   onCheckedChange = NOOP,
   onPrimaryAction = NOOP,
   onToggle = NOOP,
@@ -69,6 +71,7 @@ function SetHarness({
   locked,
   editingId,
   servedVersion,
+  showStatusBadges,
   count,
   releases = RELEASES,
   variants = VARIANTS,
@@ -78,8 +81,9 @@ function SetHarness({
   count?: number
   editingId?: string
   servedVersion?: ServedVersion
+  showStatusBadges?: boolean
   selectedIds?: ReadonlySet<string>
-  checked?: boolean
+  selectionState?: GroupSelectionState
   onCheckedChange?: (checked: boolean) => void
   onPrimaryAction?: (entry: Variant) => void
   onToggle?: (entry: Variant) => void
@@ -92,8 +96,7 @@ function SetHarness({
         name={SET_NAME}
         count={count}
         bundle={{type: 'perspective', perspective: activeASAPRelease}}
-        selectedIds={selectedIds}
-        checked={checked}
+        selectionState={selectionState}
         onCheckedChange={onCheckedChange}
         readOnly={readOnly}
         locked={locked}
@@ -105,13 +108,15 @@ function SetHarness({
             releases={releases}
             isSelected={entry.id === editingId}
             servedStatus={servedVersion?.id === entry.id ? servedVersion.status : undefined}
+            showStatusBadges={showStatusBadges}
             onPrimaryAction={() => onPrimaryAction(entry)}
             leading={
               readOnly ? undefined : (
                 <VariantCheckbox
-                  data-visible={selectedIds.size !== 0}
+                  label={`Select ${entry.name}`}
+                  tabbable={false}
                   checked={selectedIds.has(entry.id)}
-                  readOnly={locked}
+                  locked={locked}
                   onChange={() => onToggle(entry)}
                 />
               )
@@ -170,8 +175,7 @@ function UnreleasedHarness({
     >
       <DocumentGroupSet
         name="Unreleased"
-        selectedIds={NOTHING_SELECTED}
-        checked={false}
+        selectionState="unchecked"
         onCheckedChange={NOOP}
         readOnly
       >
@@ -248,50 +252,86 @@ function getRowCheckbox(entry: Variant): HTMLInputElement {
 }
 
 describe('DocumentGroupSet', () => {
-  it('shows the set icon instead of the checkboxes while nothing is selected', async () => {
+  it('hides every checkbox at rest in a reserved gutter, with the set mark in the trailing column', async () => {
     const {settleChromaticEndState} = testHelpers()
     void render(<SetHarness />)
 
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
     await settleChromaticEndState()
 
+    // Hidden, but still taking up its gutter, so nothing moves when it shows
+    for (const checkbox of [getSetCheckbox()!, ...VARIANTS.map(getRowCheckbox)]) {
+      expect(getComputedStyle(checkbox.closest('.selection-checkbox')!).visibility).toBe('hidden')
+      expect(checkbox.getBoundingClientRect().width).toBeGreaterThan(0)
+    }
     expect(isShown(getSetIcon())).toBe(true)
-    expect(isShown(getSetCheckbox()!)).toBe(false)
-    expect(VARIANTS.some((entry) => isShown(getRowCheckbox(entry)))).toBe(false)
-    // The icon overlays the checkbox's spot, so revealing the checkbox swaps one for the other.
-    expect(getComputedStyle(getSetIcon()).position).toBe('absolute')
+    // The mark trails: its column ends at the set's 12px padding
+    expect(
+      Math.round(
+        getSet().getBoundingClientRect().right - getSetIcon().getBoundingClientRect().right,
+      ),
+    ).toBe(12)
+    expect(getSetIcon().getBoundingClientRect().left).toBeGreaterThan(
+      getSet().querySelector('header .variant-set-text')!.getBoundingClientRect().left,
+    )
   })
 
-  it('reveals the set checkbox in place of the set icon while the set heading is hovered', async () => {
+  it('shows the set checkbox while the set heading is hovered, without moving the set mark', async () => {
     void render(<SetHarness />)
 
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
-    await userEvent.hover(page.getByText(SET_NAME))
+    const before = getSetIcon().getBoundingClientRect()
+    await userEvent.hover(page.elementLocator(getSet().querySelector('header')!))
 
     await expect.poll(() => isShown(getSetCheckbox()!)).toBe(true)
-    expect(isShown(getSetIcon())).toBe(false)
+    expect(getSetIcon().getBoundingClientRect()).toEqual(before)
   })
 
-  it('reveals a version checkbox while focus is within its row, so it can be reached by keyboard', async () => {
+  it("shows a row's checkbox while that row is hovered, and only that row's", async () => {
     void render(<SetHarness />)
 
-    const $summerSale = page.getByRole('button', {name: SUMMER_SALE.name})
-    await expect.element($summerSale).toBeInTheDocument()
+    await expect.element(page.getByText(SET_NAME)).toBeVisible()
+    await userEvent.hover(page.elementLocator(getRow(SUMMER_SALE)))
 
-    // The hidden checkboxes are out of the tab order, so the first stop is the
-    // row's primary action. Focus within the row reveals its checkbox, which
-    // then precedes the primary action in the tab order.
-    await userEvent.tab()
-    await expect.element($summerSale).toHaveFocus()
     await expect.poll(() => isShown(getRowCheckbox(SUMMER_SALE))).toBe(true)
     expect(isShown(getRowCheckbox(WINTER_SALE))).toBe(false)
-
-    await userEvent.tab({shift: true})
-    expect(document.activeElement).toBe(getRowCheckbox(SUMMER_SALE))
-    expect(isShown(getRowCheckbox(SUMMER_SALE))).toBe(true)
   })
 
-  it('toggles a revealed version checkbox with the pointer instead of activating its row', async () => {
+  it('makes the set toggle, the set checkbox and each row tab stops, but not the row checkboxes', async () => {
+    void render(<SetHarness />)
+
+    await expect.element(page.getByText(SET_NAME)).toBeVisible()
+
+    // The header's collapse toggle, then its checkbox, which shows as focus enters the header. Then
+    // each row: the row is the tab stop, and Space on it toggles its checkbox.
+    await userEvent.tab()
+    expect(document.activeElement).toBe(getSet().querySelector('header .group-toggle'))
+    await userEvent.tab()
+    expect(document.activeElement).toBe(getSetCheckbox())
+    expect(isShown(getSetCheckbox()!)).toBe(true)
+    await userEvent.tab()
+    await expect.element(page.getByRole('button', {name: SUMMER_SALE.name})).toHaveFocus()
+    // The focused row shows its checkbox
+    expect(isShown(getRowCheckbox(SUMMER_SALE))).toBe(true)
+    await userEvent.tab()
+    await expect.element(page.getByRole('button', {name: WINTER_SALE.name})).toHaveFocus()
+    expect(getRowCheckbox(SUMMER_SALE).tabIndex).toBe(-1)
+  })
+
+  it('names each checkbox after what it selects', async () => {
+    void render(<SetHarness />)
+
+    await expect.element(page.getByText(SET_NAME)).toBeVisible()
+    expect(getSetCheckbox()).toHaveAttribute('aria-label', `Select all in ${SET_NAME}`)
+    expect(getRowCheckbox(SUMMER_SALE)).toHaveAttribute('aria-label', `Select ${SUMMER_SALE.name}`)
+    // Announced once shown
+    await userEvent.hover(page.elementLocator(getRow(SUMMER_SALE)))
+    await expect
+      .element(page.getByRole('checkbox', {name: `Select ${SUMMER_SALE.name}`}))
+      .toBeInTheDocument()
+  })
+
+  it('toggles a version checkbox with the pointer instead of activating its row', async () => {
     const {settleChromaticEndState} = testHelpers()
     const onPrimaryAction = vi.fn<(entry: Variant) => void>()
     const onToggle = vi.fn<(entry: Variant) => void>()
@@ -299,7 +339,6 @@ describe('DocumentGroupSet', () => {
 
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
     await userEvent.hover(page.elementLocator(getRow(SUMMER_SALE)))
-    await expect.poll(() => isShown(getRowCheckbox(SUMMER_SALE))).toBe(true)
 
     // The row's primary action is an invisible overlay spanning the whole row,
     // and it follows the checkbox in the tree. The checkbox must still be the
@@ -322,52 +361,83 @@ describe('DocumentGroupSet', () => {
     await settleChromaticEndState()
   })
 
-  it('reveals every checkbox once anything is selected', async () => {
+  it('shows a partly selected set as indeterminate', async () => {
     const {settleChromaticEndState} = testHelpers()
-    void render(<SetHarness selectedIds={new Set([SUMMER_SALE.id])} />)
+    void render(
+      <SetHarness selectedIds={new Set([SUMMER_SALE.id])} selectionState="indeterminate" />,
+    )
 
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
     await settleChromaticEndState()
 
-    expect(isShown(getSetCheckbox()!)).toBe(true)
-    expect(isShown(getSetIcon())).toBe(false)
-    expect(VARIANTS.every((entry) => isShown(getRowCheckbox(entry)))).toBe(true)
     expect(getSetCheckbox()).not.toBeChecked()
+    expect(getSetCheckbox()!.indeterminate).toBe(true)
     expect(getRowCheckbox(SUMMER_SALE)).toBeChecked()
+    expect(getRowCheckbox(WINTER_SALE)).not.toBeChecked()
   })
 
   it('reports the whole set as selected or deselected from its checkbox', async () => {
     const onCheckedChange = vi.fn<(checked: boolean) => void>()
     const {rerender} = await render(
-      <SetHarness selectedIds={new Set([SUMMER_SALE.id])} onCheckedChange={onCheckedChange} />,
+      <SetHarness
+        selectedIds={new Set([SUMMER_SALE.id])}
+        selectionState="indeterminate"
+        onCheckedChange={onCheckedChange}
+      />,
     )
 
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
+    await userEvent.hover(page.elementLocator(getSet().querySelector('header')!))
     await userEvent.click(page.elementLocator(getSetCheckbox()!))
     expect(onCheckedChange).toHaveBeenLastCalledWith(true)
 
     await rerender(
       <SetHarness
         selectedIds={new Set(VARIANTS.map(({id}) => id))}
-        checked
+        selectionState="checked"
         onCheckedChange={onCheckedChange}
       />,
     )
 
     await expect.poll(() => getSetCheckbox()?.checked).toBe(true)
+    await userEvent.hover(page.elementLocator(getSet().querySelector('header')!))
     await userEvent.click(page.elementLocator(getSetCheckbox()!))
     expect(onCheckedChange).toHaveBeenLastCalledWith(false)
   })
 
   it('locks the set checkbox while the selection is frozen', async () => {
     const {settleChromaticEndState} = testHelpers()
-    void render(<SetHarness selectedIds={new Set([SUMMER_SALE.id])} locked />)
+    void render(
+      <SetHarness selectedIds={new Set([SUMMER_SALE.id])} selectionState="indeterminate" locked />,
+    )
+
+    await expect.element(page.getByText(SET_NAME)).toBeVisible()
+    await userEvent.hover(page.elementLocator(getSet().querySelector('header')!))
+    await expect.poll(() => isShown(getSetCheckbox()!)).toBe(true)
+    await settleChromaticEndState()
+
+    expect(getSetCheckbox()).toBeDisabled()
+  })
+
+  it('hides the Editing and Served badges by default, for the Open Beta', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    void render(
+      <SetHarness
+        editingId={SUMMER_SALE.id}
+        servedVersion={{id: WINTER_SALE.id, status: 'secondary'}}
+      />,
+    )
 
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
     await settleChromaticEndState()
 
-    expect(isShown(getSetCheckbox()!)).toBe(true)
-    expect(getSetCheckbox()).toBeDisabled()
+    expect(getSet().querySelector('[data-badge]')).toBeNull()
+    expect(getRow(SUMMER_SALE).textContent).not.toContain('Editing')
+    expect(getRow(WINTER_SALE).textContent).not.toContain('Served')
+    // Without the badge, the row carries no description of it either
+    expect(getRow(WINTER_SALE).querySelector('.primary-action')).not.toHaveAttribute(
+      'aria-describedby',
+    )
   })
 
   it('badges the served version alongside the version being edited', async () => {
@@ -376,6 +446,7 @@ describe('DocumentGroupSet', () => {
       <SetHarness
         editingId={SUMMER_SALE.id}
         servedVersion={{id: SUMMER_SALE.id, status: 'primary'}}
+        showStatusBadges
       />,
     )
 
@@ -394,6 +465,7 @@ describe('DocumentGroupSet', () => {
       <SetHarness
         editingId={SUMMER_SALE.id}
         servedVersion={{id: WINTER_SALE.id, status: 'secondary'}}
+        showStatusBadges
       />,
     )
 
@@ -411,12 +483,22 @@ describe('DocumentGroupSet', () => {
     void render(<SetHarness readOnly />)
 
     await expect.element(page.getByText(SET_NAME)).toBeVisible()
-    await userEvent.hover(page.getByText(SET_NAME))
+    await userEvent.hover(page.elementLocator(getSet().querySelector('header')!))
 
     expect(getSetCheckbox()).toBeNull()
     expect(isShown(getSetIcon())).toBe(true)
-    // With no checkbox to overlay, the icon takes up its own space.
-    expect(getComputedStyle(getSetIcon()).position).toBe('static')
+    // With no checkbox gutter, the text starts at the set's padding, and the mark still trails
+    expect(
+      Math.round(
+        getSet().querySelector('header .variant-set-text')!.getBoundingClientRect().left -
+          getSet().getBoundingClientRect().left,
+      ),
+    ).toBe(12)
+    expect(
+      Math.round(
+        getSet().getBoundingClientRect().right - getSetIcon().getBoundingClientRect().right,
+      ),
+    ).toBe(12)
 
     await settleChromaticEndState()
   })
@@ -495,15 +577,15 @@ describe('DocumentGroupSet', () => {
     )!
     const defaultMark = getRow(DRAFT, 'Unreleased').querySelector<HTMLElement>('.variant-mark')!
 
-    expect(variantMark.querySelector('[data-ui="VariantMark"]')).not.toBeNull()
+    expect(variantMark.querySelector('[data-ui="StatusMark"][data-mark="variant"]')).not.toBeNull()
     expect(defaultMark.querySelector('svg')).toBeNull()
     // Reserved, so the names line up
     expect(defaultMark.getBoundingClientRect().width).toBe(
       variantMark.getBoundingClientRect().width,
     )
-    // The width of the leading slot of the document list's versions flyout
-    expect(defaultMark.getBoundingClientRect().width).toBe(25)
-    // The column spans both lines, and the diamond is centred on the whole block
+    // The shared leading column, the width of the navbar menus' leading column
+    expect(defaultMark.getBoundingClientRect().width).toBe(21)
+    // The column spans the row, and the diamond is centred on the whole row
     const text = variantMark.parentElement!.getBoundingClientRect()
     const diamond = variantMark.querySelector('svg')!.getBoundingClientRect()
     expect(Math.abs(diamond.top + diamond.height / 2 - (text.top + text.height / 2))).toBeLessThan(
@@ -525,5 +607,66 @@ describe('DocumentGroupSet', () => {
     )!
     expect(variantMark.querySelector('svg')).toBeNull()
     expect(variantMark.dataset.testid).toBeUndefined()
+  })
+})
+
+describe('DocumentGroupSet header action', () => {
+  it('centres the action on the header, level with the set mark, without growing the header', async () => {
+    const plain = await render(
+      <TestWrapper schemaTypes={SCHEMA_TYPES}>
+        <DocumentGroupSet
+          name={SET_NAME}
+          count={1}
+          bundle={{type: 'perspective', perspective: activeASAPRelease}}
+          selectionState="unchecked"
+          onCheckedChange={NOOP}
+        >
+          {null}
+        </DocumentGroupSet>
+      </TestWrapper>,
+    )
+    await expect.element(page.getByTestId('variant-set-name')).toBeVisible()
+    const plainHeight = document
+      .querySelector('[data-variant-set] header')!
+      .getBoundingClientRect().height
+    await plain.unmount()
+
+    await render(
+      <TestWrapper schemaTypes={SCHEMA_TYPES}>
+        <DocumentGroupSet
+          name={SET_NAME}
+          count={1}
+          bundle={{type: 'perspective', perspective: activeASAPRelease}}
+          selectionState="unchecked"
+          onCheckedChange={NOOP}
+          headerActions={
+            // With a tooltip, as the real action has: Studio wraps the button for it
+            <Button
+              mode="ghost"
+              text="Unschedule"
+              data-testid="header-action"
+              tooltipProps={{content: 'Unschedule the release'}}
+            />
+          }
+        >
+          {null}
+        </DocumentGroupSet>
+      </TestWrapper>,
+    )
+    const action = page.getByTestId('header-action')
+    await expect.element(action).toBeVisible()
+    const header = document.querySelector('[data-variant-set] header')!.getBoundingClientRect()
+    const mark = page.getByTestId('variant-set-icon').element().getBoundingClientRect()
+    const box = action.element().getBoundingClientRect()
+    const centre = (rect: DOMRect) => rect.top + rect.height / 2
+    expect(Math.abs(centre(box) - centre(mark))).toBeLessThanOrEqual(0.5)
+    expect(Math.abs(centre(box) - centre(header))).toBeLessThanOrEqual(0.5)
+    // Its box is the button's own height: nothing pushes the button off the centre inside it
+    const actionBox = action.element().closest('.header-actions')!.getBoundingClientRect()
+    expect(Math.abs(actionBox.height - box.height)).toBeLessThanOrEqual(0.5)
+    // The action does not make the header taller than one without it
+    expect(header.height).toBe(plainHeight)
+    // It ends before the mark, with room between them
+    expect(mark.left - box.right).toBeGreaterThanOrEqual(8)
   })
 })

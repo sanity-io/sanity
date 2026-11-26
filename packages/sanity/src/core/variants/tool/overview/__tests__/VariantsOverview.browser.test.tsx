@@ -3,7 +3,7 @@ import {type ReactNode, useState} from 'react'
 import {of} from 'rxjs'
 import {VariantsModePromiseContext} from 'sanity/_singletons'
 import {route, RouterProvider} from 'sanity/router'
-import {describe, expect, it} from 'vitest'
+import {beforeEach, describe, expect, it} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
 
@@ -93,6 +93,13 @@ async function expectRowsSettled(count: number) {
   await expect.poll(() => table.element().querySelectorAll('[data-ui="Skeleton"]').length).toBe(0)
 }
 
+const BANNER_DISMISSED_KEY = 'sanityStudio:variants:open-beta-feedback-banner:dismissed:v1'
+
+// The open beta banner's dismissal is kept in local storage, so every test starts with it shown.
+beforeEach(() => {
+  window.localStorage.removeItem(BANNER_DISMISSED_KEY)
+})
+
 describe('VariantsOverview', () => {
   it('lists every variant definition with its conditions and document count', async () => {
     void render(<VariantsOverviewHarness />)
@@ -141,5 +148,59 @@ describe('VariantsOverview', () => {
 
     await settleChromaticEndState()
     await expect.element(search).toHaveValue('Norwegian')
+  })
+})
+
+describe('VariantsOverview open beta feedback', () => {
+  it('shows the open beta banner, whose link opens the feedback dialog', async () => {
+    void render(<VariantsOverviewHarness />)
+    await expectRowsSettled(2)
+
+    const banner = page.getByTestId('variants-beta-banner')
+    await expect
+      .element(banner)
+      .toHaveTextContent('Content Variants is in open beta. Share feedback with Sanity')
+    await expect.element(page.getByTestId('variants-feedback-button')).not.toBeInTheDocument()
+
+    await userEvent.click(banner.getByRole('button', {name: 'Share feedback with Sanity'}))
+    const dialog = page.getByRole('dialog')
+    await expect
+      .element(dialog.getByText('Share feedback with Sanity on versions and variants'))
+      .toBeVisible()
+    await expect
+      .element(
+        dialog.getByText(
+          'How easy or difficult is it to create and manage document versions and variants?',
+        ),
+      )
+      .toBeVisible()
+  })
+
+  it('swaps the banner for a header icon once dismissed, and remembers the dismissal', async () => {
+    const {unmount} = await render(<VariantsOverviewHarness />)
+    await expectRowsSettled(2)
+
+    await userEvent.click(page.getByTestId('variants-beta-banner-dismiss'))
+    await expect.element(page.getByTestId('variants-beta-banner')).not.toBeInTheDocument()
+    const icon = page.getByTestId('variants-feedback-button')
+    await expect.element(icon).toBeVisible()
+    await expect.element(icon).toHaveAttribute('aria-label', 'Send feedback to Sanity')
+    expect(window.localStorage.getItem(BANNER_DISMISSED_KEY)).toBe('true')
+
+    await userEvent.click(icon)
+    await expect
+      .element(
+        page.getByRole('dialog').getByText('Share feedback with Sanity on versions and variants'),
+      )
+      .toBeVisible()
+    await userEvent.keyboard('{Escape}')
+
+    // A later visit starts with the icon, not the banner
+    await unmount()
+    void render(<VariantsOverviewHarness />)
+    await expectRowsSettled(2)
+    await expect.element(page.getByTestId('variants-feedback-button')).toBeVisible()
+    await expect.element(page.getByTestId('variants-beta-banner')).not.toBeInTheDocument()
+    await settleChromaticEndState()
   })
 })
