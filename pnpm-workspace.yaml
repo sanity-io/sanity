@@ -100,6 +100,14 @@ minimumReleaseAgeExclude:
   - '@vite/*'
   - '@vitejs/plugin-react'
   - '@portabletext/*'
+  # Fresh Storybook and Chromatic patches; exclude so these updates can install before the age gate
+  - '@storybook/addon-vitest@10.6.9'
+  - '@storybook/builder-vite@10.6.9'
+  - '@storybook/react-dom-shim@10.6.9'
+  - '@storybook/react-vite@10.6.9'
+  - '@storybook/react@10.6.9'
+  - 'chromatic@18.15.3'
+  - 'storybook@10.6.9'
   # Fresh patch; exclude so 1.7.1 can install before the age gate
   - '@pierre/diffs@1.7.1'
   - '@sanity/*'
