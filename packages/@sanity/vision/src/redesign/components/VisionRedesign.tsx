@@ -16,6 +16,8 @@ import {useSavedQueries} from '../../hooks/useSavedQueries'
 import {useVisionTelemetry} from '../../telemetry/useVisionTelemetry'
 import {type VisionConfig} from '../../types'
 import {useContentSize} from '../hooks/useContentSize'
+import {useSyncVisionPreferences} from '../preferences/useSyncVisionPreferences'
+import {useVisionPreferences} from '../preferences/VisionPreferencesContext'
 import {type VisionTab} from '../store/types'
 import {
   createPendingEdits,
@@ -130,10 +132,17 @@ export function VisionRedesign(props: VisionRedesignProps) {
     [datasets, defaultDataset, config.defaultApiVersion],
   )
 
+  const preferences = useVisionPreferences()
   // `useActorRef` reads the input once, on mount, so the persisted state is loaded right then
-  const [persisted] = useState(() => loadVisionState(projectId, defaults))
+  const [persisted] = useState(() =>
+    loadVisionState(projectId, defaults, {
+      settings: preferences.get('settings'),
+      layout: preferences.get('layout'),
+    }),
+  )
   const actorRef = useActorRef(visionMachine, {input: {projectId, persisted, defaults}})
   usePersistVisionState(actorRef, projectId)
+  useSyncVisionPreferences(actorRef, preferences, defaults)
 
   const activeTab = useSelector(actorRef, selectActiveTab)
   const tabs = useSelector(actorRef, (snapshot) => snapshot.context.tabs)

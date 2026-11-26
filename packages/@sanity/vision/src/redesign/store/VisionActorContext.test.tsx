@@ -24,10 +24,18 @@ function startActor() {
   return actor
 }
 
-/** The perspective the stored settings hold, or `null` while nothing is stored */
+/** The perspective the stored tab holds, or `null` while nothing is stored */
 function storedPerspective(): unknown {
   const raw = localStorage.getItem(getVisionStorageKey('proj'))
-  return raw === null ? null : JSON.parse(raw).settings.perspective
+  return raw === null ? null : JSON.parse(raw).tabs[0].options.perspective
+}
+
+function setPerspective(
+  actor: ReturnType<typeof startActor>,
+  perspective: 'drafts' | 'published' | 'raw',
+) {
+  const id = actor.getSnapshot().context.activeTabId
+  actor.send({type: 'tab.setOptions', id, options: {perspective}})
 }
 
 describe('usePersistVisionState', () => {
@@ -44,12 +52,12 @@ describe('usePersistVisionState', () => {
     const actor = startActor()
     const {unmount} = renderHook(() => usePersistVisionState(actor, 'proj'))
 
-    actor.send({type: 'settings.update', settings: {perspective: 'drafts'}})
+    setPerspective(actor, 'drafts')
     expect(storedPerspective()).toBeNull()
     vi.runOnlyPendingTimers()
     expect(storedPerspective()).toBe('drafts')
 
-    actor.send({type: 'settings.update', settings: {perspective: 'published'}})
+    setPerspective(actor, 'published')
     unmount()
     expect(storedPerspective()).toBe('published')
     actor.stop()
@@ -58,7 +66,7 @@ describe('usePersistVisionState', () => {
   it('drops a write pending when the storage is cleared, so the cleared state stays gone', () => {
     const actor = startActor()
     const {unmount} = renderHook(() => usePersistVisionState(actor, 'proj'))
-    actor.send({type: 'settings.update', settings: {perspective: 'drafts'}})
+    setPerspective(actor, 'drafts')
 
     // "Clear cache and retry" while that write is pending: neither the debounce nor leaving the
     // tool afterwards may put the edit back
@@ -67,11 +75,11 @@ describe('usePersistVisionState', () => {
     expect(storedPerspective()).toBeNull()
 
     // What changes after the clear is persisted like anything else
-    actor.send({type: 'settings.update', settings: {perspective: 'raw'}})
+    setPerspective(actor, 'raw')
     vi.runOnlyPendingTimers()
     expect(storedPerspective()).toBe('raw')
 
-    actor.send({type: 'settings.update', settings: {perspective: 'published'}})
+    setPerspective(actor, 'published')
     clearLocalStorage()
     unmount()
     expect(storedPerspective()).toBeNull()

@@ -51,6 +51,12 @@ import {type VisionAiConfig} from '../../types'
 import {QUERY_URL_SIZE_LIMIT} from '../../util/queryRequestMethod'
 import {resetAiCredits} from '../hooks/useAiCredits'
 import {
+  createVisionPreferences,
+  getLocalPreferenceKey,
+  type VisionPreferenceName,
+} from '../preferences/visionPreferences'
+import {VisionPreferencesContext} from '../preferences/VisionPreferencesContext'
+import {
   createInitialState,
   DEFAULT_PARAMS,
   createTab,
@@ -575,6 +581,7 @@ function renderRedesign(
   sanityMocks.setPerspective(perspective)
   sanityMocks.useClient.mockReturnValue(mockClient.client)
   const onSwitchToClassic = vi.fn()
+  const preferences = createVisionPreferences({projectId: PROJECT_ID, sdk: null})
 
   // Inside an Activity boundary, as the studio keeps recent tools mounted (`reactActivityMode`)
   const ui = (mode: 'visible' | 'hidden') => (
@@ -582,13 +589,15 @@ function renderRedesign(
       <ToastProvider>
         <LayerProvider>
           <Activity mode={mode}>
-            <VisionRedesign
-              config={{defaultApiVersion: '2025-02-19', ai}}
-              datasets={DEFAULTS.datasets}
-              projectId={PROJECT_ID}
-              defaultDataset="test"
-              onSwitchToClassic={onSwitchToClassic}
-            />
+            <VisionPreferencesContext.Provider value={preferences}>
+              <VisionRedesign
+                config={{defaultApiVersion: '2025-02-19', ai}}
+                datasets={DEFAULTS.datasets}
+                projectId={PROJECT_ID}
+                defaultDataset="test"
+                onSwitchToClassic={onSwitchToClassic}
+              />
+            </VisionPreferencesContext.Provider>
           </Activity>
         </LayerProvider>
       </ToastProvider>
@@ -600,6 +609,7 @@ function renderRedesign(
     ...view,
     ...mockClient,
     onSwitchToClassic,
+    preferences,
     setPerspective: (next: PerspectiveContextValue) => {
       act(() => sanityMocks.setPerspective(next))
     },
@@ -742,6 +752,15 @@ function enableSourceMaps(response: Record<string, unknown> = {}) {
       response: {sourceMapEnabled: true, ...response},
     }),
   )
+}
+
+/** The SDK does not declare Vision's keys yet, so the store keeps them in localStorage */
+function getStoredPreference(name: VisionPreferenceName) {
+  return JSON.parse(localStorage.getItem(getLocalPreferenceKey(name, PROJECT_ID)) || 'null')
+}
+
+function storePreference(name: VisionPreferenceName, value: unknown) {
+  localStorage.setItem(getLocalPreferenceKey(name, PROJECT_ID), JSON.stringify(value))
 }
 
 function text(element: HTMLElement): string {
@@ -996,7 +1015,7 @@ describe('VisionRedesign', () => {
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
     expect(fetchCalls[0].params).toEqual({limit: 3, type: 'author'})
-    await waitFor(() => expect(getStoredState().panels.paramsView).toBe('form'))
+    await waitFor(() => expect(getStoredPreference('layout').panels.paramsView).toBe('form'))
 
     unmount()
     renderRedesign()
@@ -1896,7 +1915,7 @@ describe('VisionRedesign', () => {
         'false',
       ])
       fireEvent.keyDown(viewMenu, {key: 'Escape'})
-      await waitFor(() => expect(getStoredState()?.panels.resultViewer).toBe('json'))
+      await waitFor(() => expect(getStoredPreference('layout').panels.resultViewer).toBe('json'))
 
       // Copy, the view dropdown and the "More actions" menu, in that order
       const actions = screen.getByTestId('vision-result-actions')
@@ -1920,11 +1939,11 @@ describe('VisionRedesign', () => {
       expect(screen.getByTestId('result-json')).toBeTruthy()
       expect(screen.queryByTestId('vision-result-json')).toBeNull()
       expect(text(screen.getByTestId('vision-result-view-button'))).toBe('vision.result.view.tree')
-      await waitFor(() => expect(getStoredState().panels.resultViewer).toBe('tree'))
+      await waitFor(() => expect(getStoredPreference('layout').panels.resultViewer).toBe('tree'))
 
       await pickResultView('graph')
       expect(screen.queryByTestId('result-json')).toBeNull()
-      await waitFor(() => expect(getStoredState().panels.resultViewer).toBe('graph'))
+      await waitFor(() => expect(getStoredPreference('layout').panels.resultViewer).toBe('graph'))
     } finally {
       if (clipboard) Object.defineProperty(navigator, 'clipboard', clipboard)
       else Reflect.deleteProperty(navigator, 'clipboard')
@@ -1951,7 +1970,7 @@ describe('VisionRedesign', () => {
 
     await pickResultView('documents')
     expect(text(screen.getByTestId('vision-document-list-mock'))).toBe('a,drafts.b')
-    await waitFor(() => expect(getStoredState().panels.resultViewer).toBe('documents'))
+    await waitFor(() => expect(getStoredPreference('layout').panels.resultViewer).toBe('documents'))
 
     // A new tab opens on the remembered view
     fireEvent.click(screen.getByTestId('vision-new-tab'))
@@ -1976,7 +1995,7 @@ describe('VisionRedesign', () => {
     })
     fireEvent.click(within(menu as HTMLElement).getByTestId('vision-result-view-tree'))
     await waitFor(() => expect(within(shownTab()).getByTestId('result-json')).toBeTruthy())
-    await waitFor(() => expect(getStoredState().panels.resultViewer).toBe('tree'))
+    await waitFor(() => expect(getStoredPreference('layout').panels.resultViewer).toBe('tree'))
   })
 
   it('opens on the remembered Documents view after a reload, and shows other results as JSON without forgetting it', async () => {
@@ -1997,7 +2016,7 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(screen.getByTestId('vision-result-json')).toBeTruthy())
     expect(screen.queryByTestId('vision-document-list-mock')).toBeNull()
     expect(text(screen.getByTestId('vision-result-view-button'))).toBe('vision.result.view.json')
-    expect(getStoredState()?.panels?.resultViewer ?? 'documents').toBe('documents')
+    expect(getStoredPreference('layout').panels.resultViewer).toBe('documents')
 
     respondWith({result: [{_id: 'b', _type: 'author'}], ms: 3})
     typeQuery('*[_type == "author"]{_id, _type}')
@@ -2132,7 +2151,9 @@ describe('VisionRedesign', () => {
       expect(settings.queryByTestId('vision-settings-include-source-map')).toBeNull()
       expect(settings.queryByTestId('vision-settings-source-map-format')).toBeNull()
       fireEvent.click(settings.getByTestId('vision-settings-source-map-enabled'))
-      await waitFor(() => expect(getStoredState().response).toMatchObject({sourceMapEnabled: true}))
+      await waitFor(() =>
+        expect(getStoredPreference('settings').response).toMatchObject({sourceMapEnabled: true}),
+      )
       expect(settings.getByTestId('vision-settings-include-source-map')).toBeTruthy()
       expect(settings.getByTestId('vision-settings-source-map-format')).toBeTruthy()
       expect(screen.getByTestId('vision-option-source-map')).toBeTruthy()
@@ -2243,7 +2264,9 @@ describe('VisionRedesign', () => {
       expect(format.value).toBe('true')
       fireEvent.change(format, {target: {value: 'withKeyArraySelector'}})
       await waitFor(() =>
-        expect(getStoredState().response).toMatchObject({resultSourceMap: 'withKeyArraySelector'}),
+        expect(getStoredPreference('settings').response).toMatchObject({
+          resultSourceMap: 'withKeyArraySelector',
+        }),
       )
 
       await fetchQuery()
@@ -2871,7 +2894,7 @@ describe('VisionRedesign', () => {
       fireEvent.click(settings.getByTestId('vision-settings-ai-generateQuery'))
       await waitFor(() => expect(screen.queryByTestId('vision-generate-query')).toBeNull())
       await waitFor(() =>
-        expect(getStoredState().ai).toEqual({
+        expect(getStoredPreference('settings').ai).toEqual({
           enabled: true,
           generateQuery: false,
           editQuery: true,
@@ -2898,7 +2921,9 @@ describe('VisionRedesign', () => {
       const toggle = openSettings().getByTestId('vision-settings-resolve-sync-tags')
       expect(isChecked(toggle)).toBe(true)
       fireEvent.click(toggle)
-      await waitFor(() => expect(getStoredState().response).toMatchObject({resolveSyncTags: false}))
+      await waitFor(() =>
+        expect(getStoredPreference('settings').response).toMatchObject({resolveSyncTags: false}),
+      )
       expect(isChecked(toggle)).toBe(false)
 
       view.unmount()
@@ -2912,7 +2937,7 @@ describe('VisionRedesign', () => {
       const view = renderRedesign()
       const settings = openSettings()
       fireEvent.click(settings.getByTestId('vision-settings-ai-enabled'))
-      await waitFor(() => expect(getStoredState().ai.enabled).toBe(false))
+      await waitFor(() => expect(getStoredPreference('settings').ai.enabled).toBe(false))
       // The per-feature switches read as off and wait for the switch for all of them
       for (const id of [
         'generateQuery',
@@ -2925,7 +2950,7 @@ describe('VisionRedesign', () => {
         expect(isChecked(toggle)).toBe(false)
         expect(isDisabled(toggle)).toBe(true)
       }
-      expect(getStoredState().ai.generateQuery).toBe(true)
+      expect(getStoredPreference('settings').ai.generateQuery).toBe(true)
       view.unmount()
 
       const {shown, webMcpTools, creditNotes, view: next} = await shownAiControls(undefined)
@@ -2942,17 +2967,21 @@ describe('VisionRedesign', () => {
 
     it('never turns on a feature the config turns off, and gives it no switch', async () => {
       const initial = createInitialState(DEFAULTS)
-      saveVisionState(PROJECT_ID, {
-        ...initial,
-        ai: {
-          enabled: true,
-          generateQuery: true,
-          editQuery: true,
-          fixLint: true,
-          generateMutations: false,
-          explainQuery: true,
-        },
-      })
+      // Written as an earlier release stored it: the preference does not exist yet
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          ...initial,
+          ai: {
+            enabled: true,
+            generateQuery: true,
+            editQuery: true,
+            fixLint: true,
+            generateMutations: false,
+            explainQuery: true,
+          },
+        }),
+      )
       const {shown} = await shownAiControls({explainQuery: false, fixLint: false})
       expect(shown).toEqual({
         generateQuery: true,
@@ -3869,12 +3898,8 @@ describe('VisionRedesign', () => {
       query: '*[_type == "book"]',
       options: {datasetMode: 'override', dataset: 'staging', perspective: 'drafts'},
     })
-    saveVisionState(PROJECT_ID, {
-      ...initial,
-      tabs: [tab],
-      activeTabId: 'restored',
-      sidebar: {expanded: true, drawer: null},
-    })
+    saveVisionState(PROJECT_ID, {...initial, tabs: [tab], activeTabId: 'restored'})
+    storePreference('layout', {sidebarExpanded: true})
 
     renderRedesign()
 
@@ -3884,6 +3909,65 @@ describe('VisionRedesign', () => {
     expect(selectValue('vision-option-dataset-select')).toBe('staging')
     expect(selectValue('vision-option-perspective-select')).toBe('drafts')
     expect(text(screen.getByTestId('vision-sidebar-toggle'))).toContain('vision.sidebar.collapse')
+  })
+
+  it('reads the settings and layout an earlier release kept with the tabs, and moves them to the preferences', () => {
+    const initial = createInitialState(DEFAULTS)
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        ...initial,
+        settings: {...initial.settings, useCdn: true},
+        sidebar: {expanded: true, drawer: null},
+        panels: {...initial.panels, resultViewer: 'graph'},
+        historyDiff: {hiddenFields: ['_rev']},
+        ai: {...initial.ai, explainQuery: false},
+      }),
+    )
+
+    renderRedesign()
+
+    expect(text(screen.getByTestId('vision-sidebar-toggle'))).toContain('vision.sidebar.collapse')
+    expect(getStoredPreference('settings')).toMatchObject({
+      settings: {useCdn: true},
+      historyDiff: {hiddenFields: ['_rev']},
+      ai: {explainQuery: false},
+    })
+    expect(getStoredPreference('layout')).toMatchObject({
+      sidebarExpanded: true,
+      panels: {resultViewer: 'graph'},
+    })
+  })
+
+  it('keeps only the tabs, the open drawer and the functions with the tabs', async () => {
+    renderRedesign()
+    fireEvent.click(screen.getByTestId('vision-sidebar-toggle'))
+    typeQuery('*[_type == "author"]')
+
+    await waitFor(() => expect(getStoredState()?.tabs[0].query).toBe('*[_type == "author"]'))
+    expect(Object.keys(getStoredState()).toSorted()).toEqual([
+      'activeTabId',
+      'functions',
+      'sidebar',
+      'tabs',
+      'version',
+    ])
+    expect(getStoredState().sidebar).toEqual({drawer: null})
+    expect(getStoredPreference('layout').sidebarExpanded).toBe(true)
+  })
+
+  it('applies settings changed in another tab or browser', () => {
+    const {preferences} = renderRedesign()
+    expect(screen.getByTestId('vision-generate-query')).toBeTruthy()
+
+    act(() => {
+      preferences.set('settings', {
+        ...getStoredPreference('settings'),
+        ai: {enabled: false, generateQuery: true, generateMutations: true, explainQuery: true},
+      })
+    })
+
+    expect(screen.queryByTestId('vision-generate-query')).toBeNull()
   })
 
   it('refetches from live events that carry one of the response sync tags', async () => {
@@ -4103,7 +4187,9 @@ describe('VisionRedesign', () => {
       const {editorElement} = await renderFormattedForWidth(80)
       fireEvent.click(screen.getByTestId('vision-sidebar-settings'))
       fireEvent.click(await screen.findByTestId('vision-settings-auto-format-on-resize'))
-      await waitFor(() => expect(getStoredState().editor.autoFormatOnResize).toBe(false))
+      await waitFor(() =>
+        expect(getStoredPreference('settings').editor.autoFormatOnResize).toBe(false),
+      )
       const before = getQueryEditor().value
 
       editorMocks.visibleColumns = 30
@@ -4596,7 +4682,7 @@ describe('VisionRedesign', () => {
 
     expect(await exportTabs()).toEqual(['@sanity/astro'])
     await waitFor(() =>
-      expect(getStoredState().exportSnippets).toEqual({
+      expect(getStoredPreference('settings').exportSnippets).toEqual({
         order: ['astro', 'client', 'curl', 'next-sanity', 'sveltekit', 'nuxt'],
         hidden: ['client', 'next-sanity', 'sveltekit', 'nuxt', 'curl'],
       }),
@@ -5290,7 +5376,7 @@ describe('VisionRedesign', () => {
     expect(fields.value).toBe('_rev\n')
     fireEvent.change(fields, {target: {value: '_rev\n meta.version , _key'}})
     await waitFor(() =>
-      expect(getStoredState().historyDiff).toEqual({
+      expect(getStoredPreference('settings').historyDiff).toEqual({
         hiddenFields: ['_rev', 'meta.version', '_key'],
       }),
     )
@@ -5298,7 +5384,7 @@ describe('VisionRedesign', () => {
     fireEvent.click(reset)
     expect(fields.value).toBe('_rev\n_updatedAt\n_system.base.rev')
     await waitFor(() =>
-      expect(getStoredState().historyDiff.hiddenFields).toEqual([
+      expect(getStoredPreference('settings').historyDiff.hiddenFields).toEqual([
         '_rev',
         '_updatedAt',
         '_system.base.rev',

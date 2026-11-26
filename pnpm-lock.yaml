@@ -2167,6 +2167,12 @@ importers:
       '@sanity/schema':
         specifier: workspace:*
         version: link:../schema
+      '@sanity/sdk':
+        specifier: 'catalog:'
+        version: 3.15.0(@types/react@19.3.0)(immer@11.1.21)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.1.1)(xstate@5.33.4)
+      '@sanity/sdk-react':
+        specifier: 'catalog:'
+        version: 3.15.0(@types/react@19.3.0)(immer@11.1.21)(react-dom@19.3.1)(react@19.3.1)(use-sync-external-store@1.7.0)(vitest@5.1.1)(xstate@5.33.4)
       '@sanity/telemetry':
         specifier: 'catalog:'
         version: 1.1.0(react@19.3.1)
