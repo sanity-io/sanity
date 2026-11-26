@@ -5,10 +5,12 @@ import {
   useClient,
   type DocumentActionComponent,
   type DocumentActionDescription,
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
   getPublishedId,
 } from 'sanity'
-import {useSetPerspective} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  useSetPerspective,
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {useDocumentPane} from 'sanity/structure'
 import {Text, Flex, VStack} from 'ui5'
 

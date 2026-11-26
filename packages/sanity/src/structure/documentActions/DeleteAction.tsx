@@ -4,7 +4,6 @@ import {useCallback, useMemo, useState} from 'react'
 import {catchError, filter, firstValueFrom, map, of, timeout} from 'rxjs'
 import {
   type DocumentActionComponent,
-  InsufficientPermissionsMessage,
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
@@ -13,6 +12,7 @@ import {
 } from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 
+import {InsufficientPermissionsMessage} from '../../core/components/InsufficientPermissionsMessage'
 import {getPairTarget, getTargetScopeId} from '../../core/hooks/useTargetDocumentState'
 import {isReleaseScheduledOrScheduling} from '../../core/releases/util/util'
 import {isAgentBundleName} from '../../core/store/agent/createAgentBundlesStore'

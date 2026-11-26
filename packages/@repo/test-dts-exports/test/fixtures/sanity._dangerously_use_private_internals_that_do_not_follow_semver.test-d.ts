@@ -10,23 +10,39 @@ import type {
   ActiveWorkspaceMatcher,
   ActiveWorkspaceMatcherContextValue,
   ActiveWorkspaceMatcherProps,
+  AddonDatasetProvider,
   AgentVersionDisplay,
+  ALL_FIELDS_GROUP,
   ArrayDiff,
   ArrayItemMetadata,
+  ArrayOfObjectOptionsInput,
+  ArrayOfObjectsFunctions,
   ArrayOfObjectsInputMember,
   ArrayOfObjectsInputMembers,
   ArrayOfObjectsInputMembersProps,
+  ArrayOfObjectsItem,
   ArrayOfObjectsMemberProps,
+  ArrayOfOptionsInput,
+  ArrayOfPrimitiveOptionsInput,
+  ArrayOfPrimitivesFunctions,
+  ArrayOfPrimitivesInput,
+  ArrayOfPrimitivesItem,
   asLoadable,
   AsyncConfigPropertyReducer,
   AutoCollapseMenu,
   AvailabilityReason,
   AvailabilityResponse,
+  AvatarSkeleton,
   BaseResolvedPaneNode,
   BetaBadge,
   BetaBadgeProps,
   BetaFeatures,
+  BlockEditor,
+  BlockImagePreview,
+  BlockImagePreviewProps,
+  BlockPreview,
   BooleanDiff,
+  BooleanInput,
   BufferedDocumentWrapper,
   buildCommentRangeDecorations,
   buildCommentRangeDecorationsLegacy,
@@ -56,6 +72,7 @@ import type {
   ChangeTitleSegment,
   checkoutPair,
   Chip,
+  CircularProgress,
   classifyConfigError,
   classifyRequestError,
   CollapseMenu,
@@ -108,6 +125,8 @@ import type {
   CommitFunction,
   CommitRequest,
   CommonProps,
+  CompactPreview,
+  CompactPreviewProps,
   compileFieldPath,
   component,
   ConcreteRuleClass,
@@ -132,6 +151,7 @@ import type {
   CONTENT_RELEASES_TIME_ZONE_SCOPE,
   ContextMenuButton,
   CookielessCompatibleLoginMethod,
+  CopyPasteProvider,
   CorsCheckResult,
   CorsOriginErrorScreen,
   CorsProbeOutcome,
@@ -163,19 +183,28 @@ import type {
   createUserStore,
   createWorkspaceFromConfig,
   CreateWorkspaceFromConfigOptions,
+  CrossDatasetReferenceInput,
   CrossDatasetReferencePreview,
   CustomComponentPaneNode,
   DashboardLink,
+  DateInput,
   DatePicker,
+  DateTimeInput,
   decodeJsonParams,
   decodePath,
+  DEFAULT_ANNOTATIONS,
+  DEFAULT_BLOCK_STYLES,
+  DEFAULT_DECORATORS,
   DEFAULT_INTENT_HANDLER,
+  DEFAULT_LIST_TYPES,
   DEFAULT_MAX_RECURSION_DEPTH,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   DEFAULT_VARIANT_TYPE_KEY,
   defaultInitialValueTemplateItems,
   defaultIntentChecker,
   defaultLocale,
+  DefaultPreview,
+  DefaultPreviewProps,
   defaultRenderAnnotation,
   defaultRenderBlock,
   defaultRenderField,
@@ -191,6 +220,8 @@ import type {
   defineSearchMachine,
   Delay,
   deriveDocumentSyncState,
+  DetailPreview,
+  DetailPreviewProps,
   DiagnosticsReport,
   DiagnosticsReportProps,
   Diff,
@@ -246,6 +277,8 @@ import type {
   DocumentPreviewPresenceProps,
   DocumentPreviewStoreOptions,
   DocumentRebaseTelemetryEvent,
+  DocumentStatus,
+  DocumentStatusIndicator,
   DocumentStoreExtraOptions,
   DocumentStoreOptions,
   DocumentSyncState,
@@ -256,10 +289,13 @@ import type {
   DocumentVersionSnapshots,
   DocumentVersionsStatus,
   DocumentVersionsStatusIndicator,
+  DRAFTS_FOLDER,
+  EditPortal,
   EditReferenceLinkComponentProps,
   EditReferenceOptions,
   EditScheduleForm,
   editState,
+  EmailInput,
   emitOperation,
   EMPTY_ARRAY,
   EMPTY_OBJECT,
@@ -267,6 +303,7 @@ import type {
   encodeJsonParams,
   encodePath,
   encodeVariantLinkParam,
+  EnhancedObjectDialog,
   ErrorActions,
   ErrorActionsProps,
   ErrorMessage,
@@ -307,6 +344,7 @@ import type {
   FieldPreviewComponent,
   FieldStatusProps,
   FieldValueError,
+  FileInput,
   Filters,
   filterVariantsForSearch,
   findIndex,
@@ -315,6 +353,7 @@ import type {
   form,
   formatRelativeLocale,
   formatRelativeLocalePublishDate,
+  FormBuilder,
   FormBuilderComponentResolverContext,
   FormBuilderFilterFieldFn,
   FormCallbacksProvider,
@@ -337,6 +376,7 @@ import type {
   FormInput,
   FormInputAbsolutePathArg,
   FormInputRelativePathArg,
+  FormProvider,
   FormRow,
   FormState,
   FormValueContextValue,
@@ -411,17 +451,23 @@ import type {
   HexColor,
   HiddenField,
   HistoryStoreOptions,
+  Hotkeys,
+  HotkeysProps,
   HoveredFieldProvider,
   I18nNode,
   Id,
   idMatchesPerspective,
   IdPair,
+  ImageInput,
   ImperativeToast,
   initialDocumentFieldActions,
   InitialSnapshotEvent,
   InitialValueState,
+  InlinePreview,
+  InlinePreviewProps,
   InsufficientPermissionsMessage,
   InsufficientPermissionsMessageProps,
+  IntentButton,
   InternalSearchParam,
   InterpolationProp,
   isAddedItemDiff,
@@ -480,6 +526,7 @@ import type {
   LegacyCallbackResult,
   LegacyLayerProvider,
   LegacyThemeTints,
+  LinearProgress,
   LISTENER_PAUSE_GRACE_PERIOD,
   ListenerEvent,
   listenerGate,
@@ -509,6 +556,9 @@ import type {
   maybeSerializeView,
   measureFirstEmission,
   measureFirstMatch,
+  MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME,
+  MediaPreview,
+  MediaPreviewProps,
   MemberField,
   MemberFieldError,
   MemberFieldProps,
@@ -971,14 +1021,26 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('ActiveWorkspaceMatcherProps', () => {
     expectTypeOf<ActiveWorkspaceMatcherProps>().toBeObject()
   })
+  test('AddonDatasetProvider', () => {
+    expectTypeOf<typeof AddonDatasetProvider>().toBeFunction()
+  })
   test('AgentVersionDisplay', () => {
     expectTypeOf<AgentVersionDisplay>().not.toBeNever()
+  })
+  test('ALL_FIELDS_GROUP', () => {
+    expectTypeOf<typeof ALL_FIELDS_GROUP>().not.toBeNever()
   })
   test('ArrayDiff', () => {
     expectTypeOf<ArrayDiff<any>>().not.toBeNever()
   })
   test('ArrayItemMetadata', () => {
     expectTypeOf<ArrayItemMetadata>().toBeObject()
+  })
+  test('ArrayOfObjectOptionsInput', () => {
+    expectTypeOf<typeof ArrayOfObjectOptionsInput>().not.toBeNever()
+  })
+  test('ArrayOfObjectsFunctions', () => {
+    expectTypeOf<typeof ArrayOfObjectsFunctions>().toBeFunction()
   })
   test('ArrayOfObjectsInputMember', () => {
     expectTypeOf<typeof ArrayOfObjectsInputMember>().toBeFunction()
@@ -989,8 +1051,26 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('ArrayOfObjectsInputMembersProps', () => {
     expectTypeOf<ArrayOfObjectsInputMembersProps>().toBeObject()
   })
+  test('ArrayOfObjectsItem', () => {
+    expectTypeOf<typeof ArrayOfObjectsItem>().not.toBeNever()
+  })
   test('ArrayOfObjectsMemberProps', () => {
     expectTypeOf<ArrayOfObjectsMemberProps>().toBeObject()
+  })
+  test('ArrayOfOptionsInput', () => {
+    expectTypeOf<typeof ArrayOfOptionsInput>().not.toBeNever()
+  })
+  test('ArrayOfPrimitiveOptionsInput', () => {
+    expectTypeOf<typeof ArrayOfPrimitiveOptionsInput>().not.toBeNever()
+  })
+  test('ArrayOfPrimitivesFunctions', () => {
+    expectTypeOf<typeof ArrayOfPrimitivesFunctions>().toBeFunction()
+  })
+  test('ArrayOfPrimitivesInput', () => {
+    expectTypeOf<typeof ArrayOfPrimitivesInput>().not.toBeNever()
+  })
+  test('ArrayOfPrimitivesItem', () => {
+    expectTypeOf<typeof ArrayOfPrimitivesItem>().not.toBeNever()
   })
   test('asLoadable', () => {
     expectTypeOf<typeof asLoadable>().toBeFunction()
@@ -1007,6 +1087,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('AvailabilityResponse', () => {
     expectTypeOf<AvailabilityResponse>().toBeObject()
   })
+  test('AvatarSkeleton', () => {
+    expectTypeOf<typeof AvatarSkeleton>().not.toBeNever()
+  })
   test('BaseResolvedPaneNode', () => {
     expectTypeOf<BaseResolvedPaneNode<any>>().toBeObject()
   })
@@ -1019,8 +1102,23 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('BetaFeatures', () => {
     expectTypeOf<BetaFeatures>().toBeObject()
   })
+  test('BlockEditor', () => {
+    expectTypeOf<typeof BlockEditor>().not.toBeNever()
+  })
+  test('BlockImagePreview', () => {
+    expectTypeOf<typeof BlockImagePreview>().toBeFunction()
+  })
+  test('BlockImagePreviewProps', () => {
+    expectTypeOf<BlockImagePreviewProps>().not.toBeNever()
+  })
+  test('BlockPreview', () => {
+    expectTypeOf<typeof BlockPreview>().toBeFunction()
+  })
   test('BooleanDiff', () => {
     expectTypeOf<BooleanDiff>().not.toBeNever()
+  })
+  test('BooleanInput', () => {
+    expectTypeOf<typeof BooleanInput>().toBeFunction()
   })
   test('BufferedDocumentWrapper', () => {
     expectTypeOf<BufferedDocumentWrapper>().toBeObject()
@@ -1108,6 +1206,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('Chip', () => {
     expectTypeOf<typeof Chip>().toBeFunction()
+  })
+  test('CircularProgress', () => {
+    expectTypeOf<typeof CircularProgress>().toBeFunction()
   })
   test('classifyConfigError', () => {
     expectTypeOf<typeof classifyConfigError>().toBeFunction()
@@ -1265,6 +1366,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('CommonProps', () => {
     expectTypeOf<CommonProps>().toBeObject()
   })
+  test('CompactPreview', () => {
+    expectTypeOf<typeof CompactPreview>().toBeFunction()
+  })
+  test('CompactPreviewProps', () => {
+    expectTypeOf<CompactPreviewProps>().not.toBeNever()
+  })
   test('compileFieldPath', () => {
     expectTypeOf<typeof compileFieldPath>().toBeFunction()
   })
@@ -1336,6 +1443,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('CookielessCompatibleLoginMethod', () => {
     expectTypeOf<CookielessCompatibleLoginMethod>().not.toBeNever()
+  })
+  test('CopyPasteProvider', () => {
+    expectTypeOf<typeof CopyPasteProvider>().not.toBeNever()
   })
   test('CorsCheckResult', () => {
     expectTypeOf<CorsCheckResult>().not.toBeNever()
@@ -1431,6 +1541,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('CreateWorkspaceFromConfigOptions', () => {
     expectTypeOf<CreateWorkspaceFromConfigOptions>().not.toBeNever()
   })
+  test('CrossDatasetReferenceInput', () => {
+    expectTypeOf<typeof CrossDatasetReferenceInput>().not.toBeNever()
+  })
   test('CrossDatasetReferencePreview', () => {
     expectTypeOf<typeof CrossDatasetReferencePreview>().toBeFunction()
   })
@@ -1440,8 +1553,14 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('DashboardLink', () => {
     expectTypeOf<typeof DashboardLink>().toBeFunction()
   })
+  test('DateInput', () => {
+    expectTypeOf<typeof DateInput>().toBeFunction()
+  })
   test('DatePicker', () => {
     expectTypeOf<typeof DatePicker>().toBeFunction()
+  })
+  test('DateTimeInput', () => {
+    expectTypeOf<typeof DateTimeInput>().toBeFunction()
   })
   test('decodeJsonParams', () => {
     expectTypeOf<typeof decodeJsonParams>().toBeFunction()
@@ -1449,8 +1568,20 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('decodePath', () => {
     expectTypeOf<typeof decodePath>().toBeFunction()
   })
+  test('DEFAULT_ANNOTATIONS', () => {
+    expectTypeOf<typeof DEFAULT_ANNOTATIONS>().not.toBeNever()
+  })
+  test('DEFAULT_BLOCK_STYLES', () => {
+    expectTypeOf<typeof DEFAULT_BLOCK_STYLES>().not.toBeNever()
+  })
+  test('DEFAULT_DECORATORS', () => {
+    expectTypeOf<typeof DEFAULT_DECORATORS>().not.toBeNever()
+  })
   test('DEFAULT_INTENT_HANDLER', () => {
     expectTypeOf<typeof DEFAULT_INTENT_HANDLER>().not.toBeNever()
+  })
+  test('DEFAULT_LIST_TYPES', () => {
+    expectTypeOf<typeof DEFAULT_LIST_TYPES>().not.toBeNever()
   })
   test('DEFAULT_MAX_RECURSION_DEPTH', () => {
     expectTypeOf<typeof DEFAULT_MAX_RECURSION_DEPTH>().not.toBeNever()
@@ -1469,6 +1600,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('defaultLocale', () => {
     expectTypeOf<typeof defaultLocale>().not.toBeNever()
+  })
+  test('DefaultPreview', () => {
+    expectTypeOf<typeof DefaultPreview>().toBeFunction()
+  })
+  test('DefaultPreviewProps', () => {
+    expectTypeOf<DefaultPreviewProps>().toBeObject()
   })
   test('defaultRenderAnnotation', () => {
     expectTypeOf<typeof defaultRenderAnnotation>().not.toBeNever()
@@ -1514,6 +1651,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('deriveDocumentSyncState', () => {
     expectTypeOf<typeof deriveDocumentSyncState>().toBeFunction()
+  })
+  test('DetailPreview', () => {
+    expectTypeOf<typeof DetailPreview>().toBeFunction()
+  })
+  test('DetailPreviewProps', () => {
+    expectTypeOf<DetailPreviewProps>().not.toBeNever()
   })
   test('DiagnosticsReport', () => {
     expectTypeOf<typeof DiagnosticsReport>().toBeFunction()
@@ -1680,6 +1823,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('DocumentRebaseTelemetryEvent', () => {
     expectTypeOf<DocumentRebaseTelemetryEvent>().toBeObject()
   })
+  test('DocumentStatus', () => {
+    expectTypeOf<typeof DocumentStatus>().toBeFunction()
+  })
+  test('DocumentStatusIndicator', () => {
+    expectTypeOf<typeof DocumentStatusIndicator>().toBeFunction()
+  })
   test('DocumentStoreExtraOptions', () => {
     expectTypeOf<DocumentStoreExtraOptions>().toBeObject()
   })
@@ -1710,6 +1859,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('DocumentVersionsStatusIndicator', () => {
     expectTypeOf<typeof DocumentVersionsStatusIndicator>().toBeFunction()
   })
+  test('DRAFTS_FOLDER', () => {
+    expectTypeOf<typeof DRAFTS_FOLDER>().not.toBeNever()
+  })
+  test('EditPortal', () => {
+    expectTypeOf<typeof EditPortal>().toBeFunction()
+  })
   test('EditReferenceLinkComponentProps', () => {
     expectTypeOf<EditReferenceLinkComponentProps>().toBeObject()
   })
@@ -1721,6 +1876,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('editState', () => {
     expectTypeOf<typeof editState>().not.toBeNever()
+  })
+  test('EmailInput', () => {
+    expectTypeOf<typeof EmailInput>().toBeFunction()
   })
   test('emitOperation', () => {
     expectTypeOf<typeof emitOperation>().toBeFunction()
@@ -1742,6 +1900,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('encodeVariantLinkParam', () => {
     expectTypeOf<typeof encodeVariantLinkParam>().toBeFunction()
+  })
+  test('EnhancedObjectDialog', () => {
+    expectTypeOf<typeof EnhancedObjectDialog>().not.toBeNever()
   })
   test('ErrorActions', () => {
     expectTypeOf<typeof ErrorActions>().not.toBeNever()
@@ -1863,6 +2024,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('FieldValueError', () => {
     expectTypeOf<FieldValueError>().toBeObject()
   })
+  test('FileInput', () => {
+    expectTypeOf<typeof FileInput>().not.toBeNever()
+  })
   test('Filters', () => {
     expectTypeOf<typeof Filters>().toBeFunction()
   })
@@ -1886,6 +2050,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('formatRelativeLocalePublishDate', () => {
     expectTypeOf<typeof formatRelativeLocalePublishDate>().toBeFunction()
+  })
+  test('FormBuilder', () => {
+    expectTypeOf<typeof FormBuilder>().toBeFunction()
   })
   test('FormBuilderComponentResolverContext', () => {
     expectTypeOf<FormBuilderComponentResolverContext>().toBeObject()
@@ -1952,6 +2119,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('FormInputRelativePathArg', () => {
     expectTypeOf<FormInputRelativePathArg>().not.toBeNever()
+  })
+  test('FormProvider', () => {
+    expectTypeOf<typeof FormProvider>().toBeFunction()
   })
   test('FormRow', () => {
     expectTypeOf<typeof FormRow>().not.toBeNever()
@@ -2176,6 +2346,12 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('HistoryStoreOptions', () => {
     expectTypeOf<HistoryStoreOptions>().toBeObject()
   })
+  test('Hotkeys', () => {
+    expectTypeOf<typeof Hotkeys>().toBeFunction()
+  })
+  test('HotkeysProps', () => {
+    expectTypeOf<HotkeysProps>().not.toBeNever()
+  })
   test('HoveredFieldProvider', () => {
     expectTypeOf<typeof HoveredFieldProvider>().not.toBeNever()
   })
@@ -2191,6 +2367,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('IdPair', () => {
     expectTypeOf<IdPair>().toBeObject()
   })
+  test('ImageInput', () => {
+    expectTypeOf<typeof ImageInput>().not.toBeNever()
+  })
   test('ImperativeToast', () => {
     expectTypeOf<typeof ImperativeToast>().toBeFunction()
   })
@@ -2203,11 +2382,20 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('InitialValueState', () => {
     expectTypeOf<InitialValueState>().toBeObject()
   })
+  test('InlinePreview', () => {
+    expectTypeOf<typeof InlinePreview>().toBeFunction()
+  })
+  test('InlinePreviewProps', () => {
+    expectTypeOf<InlinePreviewProps>().not.toBeNever()
+  })
   test('InsufficientPermissionsMessage', () => {
     expectTypeOf<typeof InsufficientPermissionsMessage>().toBeFunction()
   })
   test('InsufficientPermissionsMessageProps', () => {
     expectTypeOf<InsufficientPermissionsMessageProps>().toBeObject()
+  })
+  test('IntentButton', () => {
+    expectTypeOf<typeof IntentButton>().toBeFunction()
   })
   test('InternalSearchParam', () => {
     expectTypeOf<InternalSearchParam>().not.toBeNever()
@@ -2383,6 +2571,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('LegacyThemeTints', () => {
     expectTypeOf<LegacyThemeTints>().not.toBeNever()
   })
+  test('LinearProgress', () => {
+    expectTypeOf<typeof LinearProgress>().toBeFunction()
+  })
   test('LISTENER_PAUSE_GRACE_PERIOD', () => {
     expectTypeOf<typeof LISTENER_PAUSE_GRACE_PERIOD>().not.toBeNever()
   })
@@ -2469,6 +2660,15 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('measureFirstMatch', () => {
     expectTypeOf<typeof measureFirstMatch>().toBeFunction()
+  })
+  test('MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME', () => {
+    expectTypeOf<typeof MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME>().not.toBeNever()
+  })
+  test('MediaPreview', () => {
+    expectTypeOf<typeof MediaPreview>().toBeFunction()
+  })
+  test('MediaPreviewProps', () => {
+    expectTypeOf<MediaPreviewProps>().not.toBeNever()
   })
   test('MemberField', () => {
     expectTypeOf<typeof MemberField>().not.toBeNever()

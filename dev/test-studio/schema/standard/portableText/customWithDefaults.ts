@@ -1,17 +1,15 @@
 import {HighlightIcon} from '@sanity/icons/Highlight'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 import {
   DEFAULT_ANNOTATIONS,
   DEFAULT_DECORATORS,
-  defineArrayMember,
-  defineField,
-  defineType,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 /**
  * Example schema demonstrating how to extend Portable Text with custom
  * annotations and decorators while preserving the built-in defaults.
  *
- * Uses the newly exported DEFAULT_ANNOTATIONS and DEFAULT_DECORATORS from 'sanity'.
+ * Uses DEFAULT_ANNOTATIONS and DEFAULT_DECORATORS from the private internals entry.
  */
 export const ptCustomWithDefaultsType = defineType({
   type: 'document',

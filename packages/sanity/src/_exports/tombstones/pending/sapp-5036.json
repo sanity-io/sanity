@@ -1,0 +1,374 @@
+{
+  "root": [
+    {
+      "name": "ALL_FIELDS_GROUP",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "AddonDatasetProvider",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "ArrayOfObjectOptionsInput",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "ArrayOfObjectsFunctions",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "ArrayOfObjectsItem",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "ArrayOfOptionsInput",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "ArrayOfPrimitiveOptionsInput",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "ArrayOfPrimitivesFunctions",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "ArrayOfPrimitivesInput",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "ArrayOfPrimitivesItem",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "AvatarSkeleton",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "BlockEditor",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "BlockImagePreview",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "BlockImagePreviewProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "BlockPreview",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "BooleanInput",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "ChangeIndicator",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "ChangeIndicatorProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "ChangeList",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "ChangeListProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "CircularProgress",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "CompactPreview",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "CompactPreviewProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "CopyPasteProvider",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "CrossDatasetReferenceInput",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DEFAULT_ANNOTATIONS",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DEFAULT_BLOCK_STYLES",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DEFAULT_DECORATORS",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DEFAULT_LIST_TYPES",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DEFAULT_STUDIO_CLIENT_OPTIONS",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DRAFTS_FOLDER",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DateInput",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DateTimeInput",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DefaultPreview",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DefaultPreviewProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DetailPreview",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DetailPreviewProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DiffCard",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DiffCardProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DiffFromTo",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DiffFromToProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DiffTooltip",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DiffTooltipProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DiffTooltipWithAnnotationsProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DocumentPreviewPresence",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DocumentPreviewPresenceProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DocumentStatus",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "DocumentStatusIndicator",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "EditPortal",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "EmailInput",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "EnhancedObjectDialog",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "FileInput",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "FormBuilder",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "FormCallbacksProvider",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "FormField",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "FormFieldHeaderText",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "FormFieldHeaderTextProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "FormFieldProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "FormFieldValidationStatus",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "FormFieldValidationStatusProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "FormInput",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "FormProvider",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "Hotkeys",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "HotkeysProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "ImageInput",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "InlinePreview",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "InlinePreviewProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "InsufficientPermissionsMessage",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "InsufficientPermissionsMessageProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "IntentButton",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "LinearProgress",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "MediaPreview",
+      "kind": "value",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "MediaPreviewProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    }
+  ]
+}

@@ -3,7 +3,6 @@ import {useCallback, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionModalDialogProps,
-  InsufficientPermissionsMessage,
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
@@ -11,6 +10,7 @@ import {
 } from 'sanity'
 import {useTranslation} from 'sanity/i18n'
 
+import {InsufficientPermissionsMessage} from '../../core/components/InsufficientPermissionsMessage'
 import {
   getPairTarget,
   getTargetScopeId,

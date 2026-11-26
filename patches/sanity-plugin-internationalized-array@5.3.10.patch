@@ -1,0 +1,13 @@
+diff --git a/dist/index.js b/dist/index.js
+index 56519ec695ee317090e6e9e1f0a287648a1f5308..6951d9d16eeb72655530da890cdcd16492c2a2ea 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1,6 +1,7 @@
+ import "@sanity/ui/styles.css";
+ import { languageFilter, useLanguageFilterStudioContext } from "@sanity/language-filter";
+-import { ArrayOfObjectsItem, MemberItemError, PatchEvent, defineDocumentFieldAction, defineField, definePlugin, insert, isDocumentSchemaType, isObjectInputProps, isSanityDocument, set, setIfMissing, unset, useClient, useFormValue, useGetFormValue, useSchema, useWorkspace } from "sanity";
++import { MemberItemError, PatchEvent, defineDocumentFieldAction, defineField, definePlugin, insert, isDocumentSchemaType, isObjectInputProps, isSanityDocument, set, setIfMissing, unset, useClient, useFormValue, useGetFormValue, useSchema, useWorkspace } from "sanity";
++import { ArrayOfObjectsItem } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver";
+ import { c } from "react/compiler-runtime";
+ import { Box, Button, Card, Flex, Grid, Label, Spinner, Stack, Text } from "@sanity/ui";
+ import { useToast } from "@sanity/ui/toast";

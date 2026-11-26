@@ -1141,10 +1141,8 @@ export {DocumentInspectorHeader} from '../structure/panes/document/documentInspe
 export {DocumentPaneProviderWrapper as DocumentPaneProvider} from '../structure/panes/document/DocumentPaneProviderWrapper'
 export {DocumentPreviewPresence} from '../core/presence/DocumentPreviewPresence'
 export {FormCallbacksProvider} from '../core/form/studio/contexts/FormCallbacks'
-export {FormField} from '../core/form/components/formField/FormField'
 export {FormFieldHeaderText} from '../core/form/components/formField/FormFieldHeaderText'
 export {FormFieldValidationStatus} from '../core/form/components/formField/FormFieldValidationStatus'
-export {FormInput} from '../core/form/components/FormInput'
 export {type GenerateStudioManifestOptions} from '../core/studio/manifest/generateStudioManifest'
 export {InsufficientPermissionsMessage} from '../core/components/InsufficientPermissionsMessage'
 export {type ListenQueryParams} from '../core/store/document/listenQuery'
@@ -1206,3 +1204,69 @@ export {useUnstableObserveDocument} from '../core/preview/useObserveDocument'
 export {useUserColorManager} from '../core/user-color/hooks'
 // oxlint-disable-next-line no-deprecated -- only the boolean overload is deprecated
 export {useValidationStatus} from '../core/hooks/useValidationStatus'
+
+export {type HotkeysProps} from '../core/components/Hotkeys'
+
+export {type BlockImagePreviewProps} from '../core/components/previews/portableText/BlockImagePreview'
+
+export {type CompactPreviewProps} from '../core/components/previews/general/CompactPreview'
+
+export {type DefaultPreviewProps} from '../core/components/previews/general/DefaultPreview'
+
+export {type DetailPreviewProps} from '../core/components/previews/general/DetailPreview'
+
+export {type MediaPreviewProps} from '../core/components/previews/general/MediaPreview'
+
+export {type InlinePreviewProps} from '../core/components/previews/portableText/InlinePreview'
+
+// SAPP-5036: moved off the public `sanity` root entry
+export {ALL_FIELDS_GROUP} from '../core/form/store/constants'
+export {AddonDatasetProvider} from '../core/studio/addonDataset/AddonDatasetProvider'
+export {ArrayOfObjectsFunctions} from '../core/form/inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
+export {ArrayOfPrimitivesFunctions} from '../core/form/inputs/arrays/ArrayOfPrimitivesInput/ArrayOfPrimitivesFunctions'
+export {AvatarSkeleton} from '../core/components/userAvatar/UserAvatar'
+export {BlockImagePreview} from '../core/components/previews/portableText/BlockImagePreview'
+export {BlockPreview} from '../core/components/previews/portableText/BlockPreview'
+export {BooleanInput} from '../core/form/inputs/BooleanInput'
+export {CircularProgress} from '../core/components/progress/CircularProgress'
+export {CompactPreview} from '../core/components/previews/general/CompactPreview'
+export {CopyPasteProvider} from '../core/studio/copyPaste/CopyPasteProvider'
+export {
+  DEFAULT_ANNOTATIONS,
+  DEFAULT_BLOCK_STYLES,
+  DEFAULT_DECORATORS,
+  DEFAULT_LIST_TYPES,
+} from '@sanity/schema'
+export {DRAFTS_FOLDER} from '../core/util/draftUtils'
+export {DefaultPreview} from '../core/components/previews/general/DefaultPreview'
+export {DetailPreview} from '../core/components/previews/general/DetailPreview'
+// oxlint-disable-next-line no-deprecated -- deprecated API stays available on the internals entry until it is removed
+export {DocumentStatus} from '../core/components/documentStatus/DocumentStatus'
+// oxlint-disable-next-line no-deprecated -- deprecated API stays available on the internals entry until it is removed
+export {DocumentStatusIndicator} from '../core/components/documentStatusIndicator/DocumentStatusIndicator'
+export {EditPortal} from '../core/form/components/EditPortal'
+export {EmailInput} from '../core/form/inputs/EmailInput'
+export {FormBuilder, FormProvider} from '../core/form/lazy'
+export {Hotkeys} from '../core/components/Hotkeys'
+export {InlinePreview} from '../core/components/previews/portableText/InlinePreview'
+export {IntentButton} from '../core/components/IntentButton'
+export {LinearProgress} from '../core/components/progress/LinearProgress'
+export {MEDIA_LIBRARY_ASSET_ASPECT_TYPE_NAME} from '@sanity/types'
+export {MediaPreview} from '../core/components/previews/general/MediaPreview'
+export {
+  ArrayOfObjectOptionsInput,
+  ArrayOfObjectsItem,
+  ArrayOfOptionsInput,
+  ArrayOfPrimitiveOptionsInput,
+  ArrayOfPrimitivesInput,
+  ArrayOfPrimitivesItem,
+  CrossDatasetReferenceInput,
+  DateInput,
+  DateTimeInput,
+  EnhancedObjectDialog,
+  FileInput,
+  FormField,
+  FormInput,
+  ImageInput,
+  PortableTextInput as BlockEditor,
+} from '../core/form/lazy'

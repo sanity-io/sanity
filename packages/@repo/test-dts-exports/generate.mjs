@@ -4,7 +4,7 @@ import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 import rootJson from '@repo/test-dts-exports/package.json' with {type: 'json'}
-import {Project} from 'ts-morph'
+import {Node, Project} from 'ts-morph'
 
 const diagnosticsEnvFlag = process.env.TEST_DTS_EXPORTS_DIAGNOSTICS || 'none'
 const diagnostics =
@@ -96,7 +96,9 @@ describe(${JSON.stringify(bareIdentifier)}, () => {
       const genericParamsCount = decl.getTypeParameters?.().length ?? 0
       const genericParams =
         genericParamsCount > 0 ? `<${Array(genericParamsCount).fill('any').join(', ')}>` : ''
-      const testContentDecl = getTestContent(syntaxKindName, exportName, genericParams)
+      const testContentDecl = isTombstoneDeclaration(decl)
+        ? getTombstoneTestContent(syntaxKindName, exportName)
+        : getTestContent(syntaxKindName, exportName, genericParams)
       if (!dedupeTestContent.has(testContentDecl)) {
         testContent += testContentDecl
         dedupeTestContent.add(testContentDecl)
@@ -121,6 +123,52 @@ describe(${JSON.stringify(bareIdentifier)}, () => {
 `
 
   await writeFile(fixturePath, testContent)
+}
+
+/**
+ * Type-only `@deprecated` `never` tombstones for removed/moved exports (see AGENTS.md
+ * "Export tombstones (v7)"). Fixtures must assert `.toBeNever()`, not the live-export checks.
+ * Walks aliases the same way `v7-export-map/exportMap.mjs` does: entry barrels re-export
+ * tombstones through rolldown-plugin-dts mangled chunk names.
+ *
+ * @param {import('ts-morph').ExportedDeclarations} decl
+ */
+function isTombstoneDeclaration(decl) {
+  let symbol = decl.getSymbol?.() ?? null
+  if (symbol) {
+    for (let depth = 0; depth < 100 && symbol.isAlias(); depth++) {
+      const next = symbol.getImmediatelyAliasedSymbol()
+      if (!next) break
+      symbol = next
+    }
+    return symbol.getDeclarations().some(declarationIsTombstone)
+  }
+  return declarationIsTombstone(decl)
+}
+
+/** @param {import('ts-morph').Node} declaration */
+function declarationIsTombstone(declaration) {
+  if (Node.isTypeAliasDeclaration(declaration)) {
+    return declaration.getTypeNode()?.getText() === 'never'
+  }
+  if (!Node.isVariableDeclaration(declaration)) return false
+  if (declaration.getTypeNode()?.getText() !== 'never') return false
+  const statement = declaration.getFirstAncestor(Node.isVariableStatement)
+  return Boolean(statement?.hasDeclareKeyword())
+}
+
+function getTombstoneTestContent(syntaxKindName, exportName) {
+  switch (syntaxKindName) {
+    case 'TypeAliasDeclaration':
+      return `expectTypeOf<${exportName}>().toBeNever();
+`
+    case 'VariableDeclaration':
+      return `expectTypeOf<typeof ${exportName}>().toBeNever();
+`
+    default:
+      return `// FIXME: tombstone ${syntaxKindName} isn't implemented in generate.mjs yet
+`
+  }
 }
 
 function getTestContent(syntaxKindName, exportName, genericParams) {

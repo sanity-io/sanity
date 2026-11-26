@@ -5,7 +5,6 @@ import {useToast} from '@sanity/ui/toast'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentActionComponent,
-  InsufficientPermissionsMessage,
   type TFunction,
   useCurrentUser,
   useDocumentOperation,
@@ -20,6 +19,7 @@ import {
 import {useTranslation} from 'sanity/i18n'
 import {Text} from 'ui5'
 
+import {InsufficientPermissionsMessage} from '../../core/components/InsufficientPermissionsMessage'
 import {
   getPairTarget,
   getTargetScopeId,

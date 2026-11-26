@@ -1,0 +1,12 @@
+diff --git a/dist/index.js b/dist/index.js
+index 83373412f20dd5d82438874e867a751f0c023d88..23d498964e380a5f591bf2169de5f45baaf6d6cb 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1,5 +1,6 @@
+ import "@sanity/ui/styles.css";
+-import { FormBuilder, FormCallbacksProvider, FormFieldHeaderText, FormInput, MemberFieldError, ObjectInputMember, PatchEvent, PerspectiveProvider, PresenceOverlay, StatusButton, VirtualizerScrollInstanceProvider, createPatchChannel, defineArrayMember, defineField, definePlugin, defineType, fromMutationPatches, getDraftId, getPublishedId, getVersionFromId, getVersionId, insert, isArrayOfObjectsSchemaType, isArraySchemaType, isDocumentSchemaType, isKeySegment, isObjectSchemaType, isRecord, isVersionId, pathToString, set, setIfMissing, stringToPath, typed, unset, useClient, useColorSchemeValue, useCurrentUser, useDocumentPresence, useDocumentStore, useEditState, useFormCallbacks, usePerspective, useSchema, useSyncState, useWorkspaceSchemaId } from "sanity";
++import { MemberFieldError, ObjectInputMember, PatchEvent, PerspectiveProvider, PresenceOverlay, StatusButton, VirtualizerScrollInstanceProvider, createPatchChannel, defineArrayMember, defineField, definePlugin, defineType, fromMutationPatches, getDraftId, getPublishedId, getVersionFromId, getVersionId, insert, isArrayOfObjectsSchemaType, isArraySchemaType, isDocumentSchemaType, isKeySegment, isObjectSchemaType, isRecord, isVersionId, pathToString, set, setIfMissing, stringToPath, typed, unset, useClient, useColorSchemeValue, useCurrentUser, useDocumentPresence, useDocumentStore, useEditState, useFormCallbacks, usePerspective, useSchema, useSyncState, useWorkspaceSchemaId } from "sanity";
++import { FormBuilder, FormCallbacksProvider, FormFieldHeaderText, FormInput } from "sanity/_dangerously_use_private_internals_that_do_not_follow_semver";
+ import { c } from "react/compiler-runtime";
+ import { Box, Button, Card, Checkbox, Container, Dialog, ErrorBoundary, Flex, Label, Radio, Spinner, Stack, Switch, Text, TextArea, ThemeProvider, focusFirstDescendant, rgba, useClickOutsideEvent, useGlobalKeyDown, useLayer, useTheme } from "@sanity/ui";
+ import { DocumentInspectorHeader, DocumentPaneProvider, PaneRouterContext, useDocumentPane, usePaneRouter } from "sanity/structure";

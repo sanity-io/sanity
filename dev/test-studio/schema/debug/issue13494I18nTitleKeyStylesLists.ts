@@ -1,10 +1,8 @@
+import {defineArrayMember, defineField, defineType} from 'sanity'
 import {
   DEFAULT_BLOCK_STYLES,
   DEFAULT_LIST_TYPES,
-  defineArrayMember,
-  defineField,
-  defineType,
-} from 'sanity'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 
 /**
  * Repro for https://github.com/sanity-io/sanity/issues/13494.

@@ -183,10 +183,21 @@ trustPolicyExclude:
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0
 patchedDependencies:
-  # 6.3.1 imports defineLocaleResourceBundle and useTranslation from the 'sanity' root, which only
-  # exports them from 'sanity/i18n' since the i18n runtime exports moved. The patch rewrites those
-  # two imports. Drop once a release of the plugin that supports this sanity major ships
+  # Imports FormBuilder / FormCallbacksProvider / FormFieldHeaderText / FormInput from the sanity
+  # root; those now live on the private internals entry (SAPP-5036). Drop once a plugin release
+  # that imports from the internals entry ships.
+  '@sanity/assist@6.3.0': patches/@sanity__assist@6.3.0.patch
+  # Rewrites defineLocaleResourceBundle / useTranslation to sanity/i18n, and
+  # DEFAULT_STUDIO_CLIENT_OPTIONS / InsufficientPermissionsMessage to the private internals entry
+  # (SAPP-5036). Drop once a release of the plugin that supports this sanity major ships.
   '@sanity/document-internationalization@6.3.1': patches/@sanity__document-internationalization@6.3.1.patch
+  # Imports ChangeIndicator / DiffFromTo from the sanity root; those now live on the private
+  # internals entry (SAPP-5036). Drop once a plugin release that imports from the internals entry
+  # ships.
+  '@sanity/google-maps-input@6.1.18': patches/@sanity__google-maps-input@6.1.18.patch
+  # Imports ArrayOfObjectsItem from the sanity root; that now lives on the private internals entry
+  # (SAPP-5036). Drop once a plugin release that imports from the internals entry ships.
+  sanity-plugin-internationalized-array@5.3.10: patches/sanity-plugin-internationalized-array@5.3.10.patch
   # 6.6.3 imports WithReferringDocuments from 'sanity', which v7 no longer exports. The patch
   # declares the same render-prop wrapper inside the plugin on top of useReferringDocuments(id, []),
   # so behavior is unchanged. Drop once a plugin release that uses the hook ships
