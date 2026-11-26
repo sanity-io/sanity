@@ -136,6 +136,7 @@ describe('visionStorage', () => {
         dataset: 'staging',
         useCdn: true,
       },
+      sharedId: 'shared-authors',
     })
     const saved = {
       ...state,
@@ -343,6 +344,21 @@ describe('visionStorage', () => {
       JSON.stringify({...state, tabs: [], functions: [author]}),
     )
     expect(loadVisionState('proj', defaults).functions).toEqual([author])
+  })
+
+  it('keeps the shared query a tab is shared as, and reads other tabs as not shared', () => {
+    const state = createInitialState(defaults)
+    const shared = createTab(state.settings, {id: 'shared', sharedId: 'shared-authors'})
+    const before = {...createTab(state.settings, {id: 'before'}), sharedId: 7}
+    localStorage.setItem(
+      getVisionStorageKey('proj'),
+      JSON.stringify({...state, tabs: [shared, before], activeTabId: 'shared'}),
+    )
+
+    expect(loadVisionState('proj', defaults).tabs.map((tab) => [tab.id, tab.sharedId])).toEqual([
+      ['shared', 'shared-authors'],
+      ['before', undefined],
+    ])
   })
 
   it('keeps only the first of the tabs sharing an id', () => {

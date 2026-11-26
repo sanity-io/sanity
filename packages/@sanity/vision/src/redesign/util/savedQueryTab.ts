@@ -47,6 +47,18 @@ export function savedQueryToTabInit(saved: QueryConfig, parsed: ParsedQueryUrl):
   return {...parsedQueryToTabInit(parsed), title: saved.title}
 }
 
+/**
+ * The shared query a tab is shared as (`VisionTab.sharedId`), while it is still shared and the
+ * current user is its author
+ */
+export function findSharedQuery(tab: VisionTab, queries: QueryConfig[]): QueryConfig | undefined {
+  const {sharedId} = tab
+  if (sharedId === undefined) return undefined
+  return queries.find(
+    (query) => query._key === sharedId && query.shared && query.isOwnedByCurrentUser,
+  )
+}
+
 /** The request a tab would send right now, as far as a saved URL states it (`resolveRequestOptions`) */
 export interface EffectiveRequestOptions {
   dataset: string
