@@ -672,6 +672,7 @@ const ManagedVariantRow: ComponentType<{
         }
       />
       <VersionContextMenuPopover
+        releaseLinkLocation="document_inspector"
         contextMenu={contextMenu}
         popoverRef={popoverRef}
         referenceElement={referenceElement}

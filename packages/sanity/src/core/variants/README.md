@@ -196,7 +196,7 @@ Deleting a variant definition is validated server-side: `sanity.action.variant.d
 
 ## Telemetry
 
-Studio usage of variants is measured with telemetry events defined in `__telemetry__/variants.telemetry.ts` (plus the inventory, navbar and publish events listed under "Content Variants" in `docs/TELEMETRY.md`). Each "from where" dimension is a required `location` prop or option on the shared piece that logs it: `CreateVariantDialog`, `EditVariantDialog`, `useVariantDeleteAction`, `useVariantDocumentOperations().createVariantDocument` and `useCopyToDrafts`. A new call site picks a value from the `location` vocabulary in `docs/TELEMETRY.md`.
+Studio usage of variants is measured with telemetry events defined in `__telemetry__/variants.telemetry.ts` (plus the inventory, release detail link and publish events listed under "Content Variants" in `docs/TELEMETRY.md`). Each "from where" dimension is a required `location` prop or option on the shared piece that logs it: `CreateVariantDialog`, `EditVariantDialog`, `useVariantDeleteAction`, `useVariantDocumentOperations().createVariantDocument` and `useCopyToDrafts`. A new call site picks a value from the `location` vocabulary in `docs/TELEMETRY.md`.
 
 ## Test Coverage
 

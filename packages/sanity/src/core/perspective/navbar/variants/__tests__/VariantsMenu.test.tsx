@@ -160,8 +160,8 @@ describe('VariantsMenu', () => {
 
     expect(telemetryMock.log).toHaveBeenCalledTimes(1)
     expect(telemetryMock.log).toHaveBeenCalledWith(
-      expect.objectContaining({name: 'Perspective Detail Link Clicked'}),
-      {perspective: 'variant'},
+      expect.objectContaining({name: 'Variant Detail Link Clicked'}),
+      {location: 'navbar_menu'},
     )
     expect(setVariant).not.toHaveBeenCalled()
   })

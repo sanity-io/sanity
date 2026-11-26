@@ -199,8 +199,8 @@ describe('ReleasesNav', () => {
 
       expect(telemetryMock.log).toHaveBeenCalledTimes(1)
       expect(telemetryMock.log).toHaveBeenCalledWith(
-        expect.objectContaining({name: 'Perspective Detail Link Clicked'}),
-        {perspective: 'release'},
+        expect.objectContaining({name: 'Release Detail Link Clicked'}),
+        {location: 'navbar_menu'},
       )
       expect(mockedSetPerspective).not.toHaveBeenCalled()
     })

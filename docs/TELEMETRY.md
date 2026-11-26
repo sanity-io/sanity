@@ -113,6 +113,13 @@ The UI surface an interaction happened on.
 | `schedule_draft_action`    | The schedule draft document action                                       |
 | `document_inspector`       | The document group inventory in the document inspector (Manage versions) |
 | `compare_versions_menu`    | The version picker of the compare versions view                          |
+| `navbar_label`             | The current perspective's label in the studio navbar                     |
+| `releases_overview`        | The Releases tool's list of releases                                     |
+| `document_header`          | A version chip in the document header                                    |
+| `document_history`         | The document's history timeline                                          |
+| `duplicate_release_toast`  | The toast shown after a release is duplicated                            |
+| `revert_release_toast`     | The toast shown after a release is reverted                              |
+| `variant_dialog`           | The dialog that creates or edits a variant definition                    |
 
 ### `position`
 
@@ -347,6 +354,9 @@ These events cover the history / review changes side pane. `Document History Ins
 | `Release Link/ID/Title Copied`      | Clipboard actions                                                                                                          |
 | `Navigated to Releases Overview`    | Navigation                                                                                                                 |
 | `Navigated to Scheduled Drafts`     | Navigation                                                                                                                 |
+| `Release Detail Link Clicked`       | A link to a release's detail page is followed. Payload `{ location }`                                                      |
+
+`Release Detail Link Clicked` carries where the link was: `navbar_menu` (the detail link beside a release in the navbar's releases menu), `navbar_label` (the current perspective's label), `releases_overview` (a release's title in the overview), `variant_detail` (a release chip in a variant definition's documents table), `document_inspector` or `document_header` (View release in the context menu of a version, in the inventory or on a version chip), `document_history` (a release published event in the history timeline), `duplicate_release_toast` or `revert_release_toast`. Only link clicks count; arriving on the page through a deep link or a reload logs nothing.
 
 ### Scheduled Drafts
 
@@ -360,7 +370,7 @@ Scheduled drafts (cardinality-one releases) emit their own events so their usage
 
 ### Content Variants
 
-Whether a workspace enables variants is the `variantsEnabled` field of `Workspace Features Observed`. The events below are logged after their action succeeds, so they count what was done in the Studio rather than what other API clients did. Definitions live in `core/variants/__telemetry__/variants.telemetry.ts`, `core/documentGroupInventory/__telemetry__/documentGroupInventory.telemetry.ts` and `core/perspective/navbar/__telemetry__/perspectiveNavbar.telemetry.ts`. Publishing a variant document is `Document Published` with `isVariant: true`.
+Whether a workspace enables variants is the `variantsEnabled` field of `Workspace Features Observed`. The events below are logged after their action succeeds, so they count what was done in the Studio rather than what other API clients did. Definitions live in `core/variants/__telemetry__/variants.telemetry.ts` and `core/documentGroupInventory/__telemetry__/documentGroupInventory.telemetry.ts`; links to a release's detail page are `Release Detail Link Clicked` (see [Releases](#releases)). Publishing a variant document is `Document Published` with `isVariant: true`.
 
 | Event                                       | When                                                                                     | Payload                                                                                                                                                    |
 | ------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -373,7 +383,7 @@ Whether a workspace enables variants is the `variantsEnabled` field of `Workspac
 | `Variant Version Created`                   | A version of a document is created in a variant                                          | `{ location, bundle: 'published' \| 'drafts' \| 'release', fromExistingVersion }`                                                                          |
 | `Document Group Inventory Version Selected` | A version's row is picked in the document group inventory                                | `{ location: 'document_inspector' \| 'compare_versions_menu', bundle: 'published' \| 'drafts' \| 'release' \| 'agent', isVariant }`                        |
 | `Document Group Inventory Version Created`  | A version is created from the inventory                                                  | `{ action: 'create_variant' \| 'add_to_release' \| 'copy_to_drafts', isVariant }`                                                                          |
-| `Perspective Detail Link Clicked`           | The detail link beside a release or variant in a navbar perspective menu is followed     | `{ perspective: 'release' \| 'variant' }`                                                                                                                  |
+| `Variant Detail Link Clicked`               | A link to a definition's detail page is followed                                         | `{ location: 'navbar_menu' \| 'variants_overview' \| 'variant_dialog' }`                                                                                   |
 | `Variant Conditions Loaded`                 | The conditions of a variant type are loaded from `beta.variants.types.<type>.conditions` | `{ source: 'static' \| 'function', async, outcome: 'ready' \| 'error' \| 'timeout', durationMs, conditionCount, valueCount, usedSanityClient, endpoints }` |
 
 `Variant Version Created` carries one of `document_group_inventory`, `version_context_menu`, `not_in_variant_banner` and `schedule_draft_action` as its `location`, or `document_pane` for any other control in the document pane, such as a custom form component. It is logged by `useVariantDocumentOperations`, which the Studio's create paths go through, and by `useCopyToDrafts` when a version context menu copies a variant version to drafts, so a variant version created from the inventory logs both it and `Document Group Inventory Version Created`. Typing into the drafts version of a published variant also creates a variant version, through the document store rather than the create action, and logs neither. Copying a variant version to drafts logs it with `location: 'version_context_menu'` and `bundle: 'drafts'`, also when the copy replaces an existing variant draft; from the inventory it also logs `Document Group Inventory Version Created` with `copy_to_drafts`.
@@ -381,6 +391,8 @@ Whether a workspace enables variants is the `variantsEnabled` field of `Workspac
 `Variant Conditions Loaded` fires once per workspace and variant type when a variant surface first needs the conditions, and again on every retry of a callback that failed. A fixed list reports `source: 'static'`. A callback reports whether it returned a promise, how long it took, whether it called the `getClient` it is given, and in `endpoints` the hostnames (no path, query or port) of the other requests made while it ran. These come from the browser's resource timing entries, minus Sanity's hosts, Sentry and the studio's own origin. A request counts once its response has finished loading before the callback settles, so a request whose body the callback never reads can be missed, and a request something else in the studio made during the same window is included. The hostnames can be the customer's own API hosts.
 
 `Variants Tool Filtered` reports the condition filters of the overview, and the bundle filter of a definition's documents table on the detail page, where `activeFilterCount` is `0` or `1`. Free-text search is not reported.
+
+`Variant Detail Link Clicked` reports the detail link beside a variant in the navbar's variants menu (`navbar_menu`), a definition's title in the overview (`variants_overview`) and the link to an existing definition with the same conditions in the create and edit dialogs (`variant_dialog`). `Variant Definition Opened` counts every arrival on the detail page, links or not.
 
 `Variant Definition Opened` fires when the detail page has resolved its definition, whatever led there, including deep links and reloads; a page for a definition that does not exist logs nothing. When `beta.reactActivityMode` keeps the tool mounted, revealing it again fires the event again.
 

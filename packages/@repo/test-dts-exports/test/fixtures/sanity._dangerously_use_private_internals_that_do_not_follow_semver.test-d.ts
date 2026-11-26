@@ -586,6 +586,7 @@ import type {
   RelativeTime,
   RelativeTimeOptions,
   RelativeTimeProps,
+  ReleaseDetailLinkClicked,
   RELEASES_INTENT,
   RELEASES_STUDIO_CLIENT_OPTIONS,
   ReleasesNav,
@@ -2669,6 +2670,9 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('RelativeTimeProps', () => {
     expectTypeOf<RelativeTimeProps>().toBeObject()
+  })
+  test('ReleaseDetailLinkClicked', () => {
+    expectTypeOf<typeof ReleaseDetailLinkClicked>().not.toBeNever()
   })
   test('RELEASES_INTENT', () => {
     expectTypeOf<typeof RELEASES_INTENT>().not.toBeNever()

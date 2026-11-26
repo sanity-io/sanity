@@ -23,6 +23,7 @@ import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
 import {ToneIcon} from '../../../../ui-components/toneIcon/ToneIcon'
 import {RhombusIconLarge} from '../../../components/temporary-icons/Rhombus'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {VariantDetailLinkClicked} from '../../../variants/__telemetry__/variants.telemetry'
 import {getConditionMismatchMessage} from '../../../variants/components/ConditionMismatchIndicator'
 import {CreateVariantDialog} from '../../../variants/components/dialog/CreateVariantDialog'
 import {useVariantsUpsell} from '../../../variants/contexts/upsell/useVariantsUpsell'
@@ -39,7 +40,6 @@ import {isVariantId, type SystemVariant} from '../../../variants/types'
 import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../../variants/util/variantType'
 import {usePerspective} from '../../usePerspective'
 import {useSetVariant} from '../../useSetVariant'
-import {PerspectiveDetailLinkClicked} from '../__telemetry__/perspectiveNavbar.telemetry'
 import {FilterNoMatches} from '../FilterNoMatches'
 import {
   PerspectiveDetailLink,
@@ -206,7 +206,7 @@ export function VariantsMenu({
   const {triggerRef, handleNavigate: closeMenuAfterNavigate} = usePerspectiveDetailLinkTrigger()
   const telemetry = useTelemetry()
   const handleNavigateToVariant = useCallback(() => {
-    telemetry.log(PerspectiveDetailLinkClicked, {perspective: 'variant'})
+    telemetry.log(VariantDetailLinkClicked, {location: 'navbar_menu'})
     closeMenuAfterNavigate()
   }, [closeMenuAfterNavigate, telemetry])
 

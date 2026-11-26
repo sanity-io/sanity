@@ -10,6 +10,7 @@ import {Box, Flex} from 'ui5'
 
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {ReleaseDetailLinkClicked} from '../../../releases/__telemetry__/releases.telemetry'
 import {CreateReleaseDialog} from '../../../releases/components/dialog/CreateReleaseDialog'
 import {ReleaseAvatarIcon} from '../../../releases/components/ReleaseAvatar'
 import {useReleasesUpsell} from '../../../releases/contexts/upsell/useReleasesUpsell'
@@ -17,7 +18,6 @@ import {oversizedButtonStyle} from '../../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {useGetDefaultPerspective} from '../../useGetDefaultPerspective'
 import {useSetPerspective} from '../../useSetPerspective'
-import {PerspectiveDetailLinkClicked} from '../__telemetry__/perspectiveNavbar.telemetry'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
 import {usePerspectiveDetailLinkTrigger} from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
@@ -126,7 +126,7 @@ export function ReleasesMenu({
   const {triggerRef, handleNavigate: closeMenuAfterNavigate} = usePerspectiveDetailLinkTrigger()
   const telemetry = useTelemetry()
   const handleNavigateToRelease = useCallback(() => {
-    telemetry.log(PerspectiveDetailLinkClicked, {perspective: 'release'})
+    telemetry.log(ReleaseDetailLinkClicked, {location: 'navbar_menu'})
     closeMenuAfterNavigate()
   }, [closeMenuAfterNavigate, telemetry])
 

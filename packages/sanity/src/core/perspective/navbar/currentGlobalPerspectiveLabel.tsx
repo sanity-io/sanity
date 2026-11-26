@@ -1,4 +1,5 @@
 import {type ReleaseDocument} from '@sanity/client'
+import {useTelemetry} from '@sanity/telemetry/react'
 // oxlint-disable-next-line no-restricted-imports -- Bundle Button requires more fine-grained styling than studio button
 import {Button} from '@sanity/ui'
 import {IntentLink} from 'sanity/router'
@@ -6,6 +7,7 @@ import {styled} from 'styled-components'
 import {Text, Box} from 'ui5'
 
 import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {ReleaseDetailLinkClicked} from '../../releases/__telemetry__/releases.telemetry'
 import {ReleaseTitle} from '../../releases/components/ReleaseTitle'
 import {RELEASES_INTENT} from '../../releases/plugin'
 import {isReleaseDocument} from '../../releases/store/types'
@@ -23,6 +25,7 @@ const OversizedButton = styled(IntentLink)`
 
 const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocument}) => {
   const {t} = useTranslation()
+  const telemetry = useTelemetry()
 
   return (
     <ReleaseTitle
@@ -36,6 +39,7 @@ const ReleasesLink = ({selectedPerspective}: {selectedPerspective: ReleaseDocume
           rel="noopener noreferrer"
           intent={RELEASES_INTENT}
           params={{id: getReleaseIdFromReleaseDocumentId(selectedPerspective._id)}}
+          onClick={() => telemetry.log(ReleaseDetailLinkClicked, {location: 'navbar_label'})}
           mode="bleed"
           padding={2}
           radius="full"

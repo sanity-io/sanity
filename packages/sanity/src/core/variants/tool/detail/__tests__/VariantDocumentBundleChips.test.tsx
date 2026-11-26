@@ -1,10 +1,19 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {render, screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type DocumentInVariantGroup} from '../types'
 import {VariantDocumentBundleChips} from '../variantDocumentTable/VariantDocumentBundleChips'
+
+const telemetryMock = vi.hoisted(() => ({
+  log: vi.fn(),
+}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => telemetryMock),
+}))
 
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
@@ -115,6 +124,24 @@ describe('VariantDocumentBundleChips', () => {
     expect(screen.getByText('Summer launch')).toBeInTheDocument()
     expect(screen.getByTestId('release-intent-link')).toHaveAttribute('data-intent', 'release')
     expect(screen.queryByTestId('variant-bundle-chips-overflow')).not.toBeInTheDocument()
+  })
+
+  it('reports following a release chip to the release detail page', async () => {
+    const wrapper = await createTestProvider()
+
+    render(
+      <VariantDocumentBundleChips
+        versions={[groupedRow.versions[2]!]}
+        releasesById={releasesById}
+      />,
+      {wrapper},
+    )
+    await userEvent.click(screen.getByTestId('release-intent-link'))
+
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Release Detail Link Clicked'}),
+      {location: 'variant_detail'},
+    )
   })
 
   it('shows the primary bundle chip first when versions are not in sort order', async () => {

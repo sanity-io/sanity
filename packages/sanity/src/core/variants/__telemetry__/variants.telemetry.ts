@@ -93,6 +93,25 @@ export const VariantConditionsLoaded = defineEvent<VariantConditionsLoadedInfo>(
     'The Studio loaded the conditions of a variant type from the config, a fixed list or a callback',
 })
 
+/** Where a link to a variant definition's detail page was followed from */
+export type VariantDetailLinkLocation =
+  /** The detail link next to a variant in the navbar variants menu */
+  | 'navbar_menu'
+  | 'variants_overview'
+  /** The link to a duplicate definition in the create or edit dialog */
+  | 'variant_dialog'
+
+interface VariantDetailLinkClickedInfo {
+  location: VariantDetailLinkLocation
+}
+
+/** When the user follows a link to the detail page of a variant definition */
+export const VariantDetailLinkClicked = defineEvent<VariantDetailLinkClickedInfo>({
+  name: 'Variant Detail Link Clicked',
+  version: 1,
+  description: 'User followed a link to the detail page of a variant definition',
+})
+
 /** When a variant definition is successfully created */
 export const VariantDefinitionCreated = defineEvent<VariantDefinitionCreatedInfo>({
   name: 'Variant Definition Created',

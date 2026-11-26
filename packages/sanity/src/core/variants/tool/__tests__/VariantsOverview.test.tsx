@@ -73,6 +73,7 @@ vi.mock('sanity/router', async (importOriginal) => ({
         ref={ref as Ref<HTMLAnchorElement>}
         href={state?.variantId ? `/variants/${state.variantId}` : '/variants'}
         onClick={(event) => {
+          rest.onClick?.(event)
           event.preventDefault()
           mockNavigate(state)
         }}
@@ -276,6 +277,10 @@ describe('VariantsOverview', () => {
     expect(mockNavigate).toHaveBeenCalledWith({
       variantId: getVariantId(variantAlphaAudience._id),
     })
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Detail Link Clicked'}),
+      {location: 'variants_overview'},
+    )
   })
 
   it('deletes a variant from the row actions menu', async () => {

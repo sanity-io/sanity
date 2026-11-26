@@ -1290,6 +1290,7 @@ import type {
   ReleaseActionsResolver,
   ReleaseAvatar,
   ReleaseAvatarIcon,
+  ReleaseDetailLinkClicked,
   ReleaseDocument,
   ReleaseId,
   ReleaseMetadataConfig,
@@ -5781,6 +5782,9 @@ describe('sanity', () => {
   })
   test('ReleaseAvatarIcon', () => {
     expectTypeOf<typeof ReleaseAvatarIcon>().not.toBeNever()
+  })
+  test('ReleaseDetailLinkClicked', () => {
+    expectTypeOf<typeof ReleaseDetailLinkClicked>().not.toBeNever()
   })
   test('ReleaseDocument', () => {
     expectTypeOf<ReleaseDocument>().toBeObject()
