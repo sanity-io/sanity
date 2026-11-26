@@ -11,13 +11,14 @@ import {
   waitFor,
 } from 'xstate'
 
+import {createMockSanityClientAsClient} from '../../../../test/mocks/mockSanityClient'
 import {promiseWithResolvers} from '../../../core/util/promiseWithResolvers'
 import {defineResolvePreviewModeActor} from '../../actors/resolve-preview-mode'
 import {type PreviewUrlOption, type PreviewUrlPreviewMode} from '../../types'
 import {openPreviewUrlMachine} from '../open-preview-url'
 import {type CheckPermissionInput} from '../preview-url'
 
-const client = {} as SanityClient
+const client = createMockSanityClientAsClient()
 const secretTtl = 1000 * 60 * 60
 const enabledOrigin = 'http://localhost:3000'
 const disabledOrigin = 'http://localhost:3333'

@@ -5,9 +5,8 @@ import {page} from 'vitest/browser'
 
 import {expectStable} from '../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
-import {RhombusIcon} from '../../../components/temporary-icons/Rhombus'
+import {VariantMark} from '../../../../ui-components/variantMark'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
-import {suggestIconColor} from '../variants/VariantsNav.css'
 
 const LONG_LABEL = 'A release title long enough to overflow the drawer pill'
 const CONTAINER_WIDTH = 220
@@ -21,7 +20,7 @@ describe('GlobalPerspectiveButton', () => {
             data-testid="full-width-trigger"
             fullWidth
             handleClearPerspective={noop}
-            icon={<RhombusIcon className={suggestIconColor} />}
+            icon={<VariantMark />}
             text={LONG_LABEL}
           />
         </div>

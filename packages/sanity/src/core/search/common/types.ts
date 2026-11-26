@@ -47,15 +47,6 @@ export interface SearchSpec {
 /**
  * @internal
  */
-export interface SearchStory {
-  path: string
-  score: number
-  why: string
-}
-
-/**
- * @internal
- */
 export interface SearchHit {
   hit: SanityDocumentLike
 }
@@ -66,7 +57,6 @@ export interface SearchHit {
 export interface WeightedHit extends SearchHit {
   resultIndex: number
   score: number
-  stories: SearchStory[]
 }
 
 /**

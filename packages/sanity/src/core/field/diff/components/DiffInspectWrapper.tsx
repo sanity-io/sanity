@@ -1,8 +1,7 @@
 import {Card} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import {type ExecutionProps, styled} from 'styled-components'
-import {Text, VStack, Box, type BoxProps} from 'ui5'
+import {Code, Text, VStack, Box, type BoxProps} from 'ui5'
 
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {pathToString} from '../../paths/helpers'
@@ -72,7 +71,7 @@ function DiffInspector({change}: {change: FieldChangeNode}): React.JSX.Element |
     <VStack gap={3}>
       <Card padding={3} tone="transparent" as={CodeWrapper} radius={1}>
         <MetaLabel title={t('changes.inspector.meta-label')} />
-        <Code language="json" size={1}>
+        <Code language="json" size={1} trim>
           {printMeta({
             path: pathToString(change.path),
             fromIndex: change.itemDiff?.fromIndex,
@@ -85,7 +84,7 @@ function DiffInspector({change}: {change: FieldChangeNode}): React.JSX.Element |
       </Card>
       <Card as={CodeWrapper} tone="critical" padding={3} radius={1}>
         <MetaLabel title={t('changes.inspector.from-label')} />
-        <Code language="json" size={1}>
+        <Code language="json" size={1} trim>
           {jsonify(change.diff.fromValue)}
         </Code>
       </Card>
@@ -94,7 +93,7 @@ function DiffInspector({change}: {change: FieldChangeNode}): React.JSX.Element |
       </Card>
       <Card as={CodeWrapper} tone="positive" padding={3} radius={1}>
         <MetaLabel title={t('changes.inspector.to-label')} />
-        <Code language="json" size={1}>
+        <Code language="json" size={1} trim>
           {jsonify(change.diff.toValue)}
         </Code>
       </Card>

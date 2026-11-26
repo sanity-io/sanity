@@ -6,14 +6,24 @@ import {encodeJsonParams} from 'sanity/router'
 import {useClient} from '../../../../hooks/useClient'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../../studio/workspace'
+import {type MediaLibraryAssetSourceIframeResolution} from '../__telemetry__/mediaLibraryAssetSource.telemetry'
 import {DEFAULT_API_VERSION} from '../constants'
+import {useReportAssetSourceResolved} from '../hooks/useReportAssetSourceResolved'
 import {MediaLibraryProvider} from './MediaLibraryProvider'
 import {OpenInSourceDialog} from './OpenInSourceDialog'
 import {SelectAssetsDialog} from './SelectAssetsDialog'
 import {UploadAssetsDialog} from './UploadAssetDialog'
 
 function MediaLibraryAssetSourceComponent(
-  props: AssetSourceComponentProps & {libraryId: string | null} & RefAttributes<HTMLDivElement>,
+  props: AssetSourceComponentProps & {
+    libraryId: string | null
+    /**
+     * Why the iframe is used, as decided when the Studio resolved its asset
+     * sources. Reported when the source opens. Absent for the fallback
+     * inside the federated source, which reports the outcome itself.
+     */
+    resolution?: MediaLibraryAssetSourceIframeResolution
+  } & RefAttributes<HTMLDivElement>,
 ) {
   const {
     ref,
@@ -27,10 +37,16 @@ function MediaLibraryAssetSourceComponent(
     onChangeAction,
     onClose,
     onSelect,
+    resolution,
     selectedAssets, // TODO: allow for pre-selected assets?
     schemaType,
     uploader,
   } = props
+
+  const reportResolved = useReportAssetSourceResolved(action)
+  useEffect(() => {
+    if (resolution) reportResolved({...resolution, durationMs: null})
+  }, [reportResolved, resolution])
 
   const {t} = useTranslation()
   const client = useClient({apiVersion: DEFAULT_API_VERSION})

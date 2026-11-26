@@ -1,6 +1,6 @@
 import {Card} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useI18nText} from 'sanity'
+import {Code} from 'ui5'
 
 import {Pane} from '../../components/pane/Pane'
 import {_DEBUG} from '../../constants'
@@ -41,7 +41,7 @@ export function ListPane(props: ListPaneProps) {
     >
       {_DEBUG && (
         <Card padding={4} tone="transparent">
-          <Code>{pane.source || '(none)'}</Code>
+          <Code trim>{pane.source || '(none)'}</Code>
         </Card>
       )}
 

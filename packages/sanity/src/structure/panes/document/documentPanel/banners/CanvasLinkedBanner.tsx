@@ -1,7 +1,7 @@
 import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {LaunchIcon} from '@sanity/icons/Launch'
-import {Card, Container, Heading, useClickOutsideEvent} from '@sanity/ui'
+import {Card, Container, useClickOutsideEvent} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {
   getDocumentVariantType,
@@ -10,7 +10,7 @@ import {
   useNavigateToCanvasDoc,
   useTranslation,
 } from 'sanity'
-import {Text, Flex, Box, Icon} from 'ui5'
+import {Heading, Text, Flex, Box, Icon} from 'ui5'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {Popover} from '../../../../../ui-components/popover/Popover'
@@ -55,7 +55,9 @@ const CanvasPopoverContent = ({
             <Icon size={1} muted icon={ComposeSparklesIcon} style={{margin: '-0.375rem'}} />
           </Flex>
           <Box paddingTop={3}>
-            <Heading size={1}>{popoverHeading}</Heading>
+            <Heading as="h2" size={1} trim>
+              {popoverHeading}
+            </Heading>
           </Box>
           <Box paddingTop={4}>
             <Text size={1} as="div" trim={true}>

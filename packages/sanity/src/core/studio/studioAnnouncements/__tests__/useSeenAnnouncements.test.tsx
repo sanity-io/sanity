@@ -38,7 +38,9 @@ describe('useSeenAnnouncements', () => {
 
     stored(['announcement1'], 'success')
     expect(renderHook(() => useSeenAnnouncements()).result.current[0]).toEqual(['announcement1'])
-    expect(useStudioPreferenceMock).toHaveBeenCalledWith('studio.announcement.seen')
+    expect(useStudioPreferenceMock).toHaveBeenCalledWith('studio.announcement.seen', {
+      refetchInterval: false,
+    })
   })
 
   test.each([

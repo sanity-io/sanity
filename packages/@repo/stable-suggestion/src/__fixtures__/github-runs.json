@@ -1,0 +1,117 @@
+[
+  {
+    "display_title": "Tag @stable - 6.15.0",
+    "created_at": "2026-09-29T17:02:35Z",
+    "conclusion": "success"
+  },
+  {
+    "display_title": "Tag @stable - 6.15.0",
+    "created_at": "2026-09-29T16:41:50Z",
+    "conclusion": "failure"
+  },
+  {
+    "display_title": "Tag @stable - 6.11.0",
+    "created_at": "2026-09-02T08:21:48Z",
+    "conclusion": "failure"
+  },
+  {
+    "display_title": "Tag @stable - 6.7.0",
+    "created_at": "2026-08-07T12:24:06Z",
+    "conclusion": "success"
+  },
+  {
+    "display_title": "Tag @stable - 6.6.0",
+    "created_at": "2026-07-28T14:52:23Z",
+    "conclusion": "success"
+  },
+  {
+    "display_title": "Tag @stable - 6.5.0",
+    "created_at": "2026-07-25T22:23:30Z",
+    "conclusion": "success"
+  },
+  {
+    "display_title": "Tag @stable - 6.1.0",
+    "created_at": "2026-06-25T09:37:51Z",
+    "conclusion": "success"
+  },
+  {
+    "display_title": "Tag @stable - 6.1.0",
+    "created_at": "2026-06-25T08:34:06Z",
+    "conclusion": "failure"
+  },
+  {
+    "display_title": "Tag @stable - 6.0.0",
+    "created_at": "2026-06-16T15:27:48Z",
+    "conclusion": "success"
+  },
+  {
+    "display_title": "Tag @stable - 5.30.0",
+    "created_at": "2026-06-10T18:22:04Z",
+    "conclusion": "success"
+  },
+  {
+    "display_title": "Tag @stable - 5.25.1",
+    "created_at": "2026-05-20T08:41:33Z",
+    "conclusion": "success"
+  },
+  {
+    "display_title": "Tag @stable - 5.24.0",
+    "created_at": "2026-05-12T15:03:51Z",
+    "conclusion": "success"
+  },
+  {
+    "display_title": "Tag @stable - 5.23.0",
+    "created_at": "2026-05-05T13:26:31Z",
+    "conclusion": "success"
+  },
+  {
+    "display_title": "Tag @stable - 5.21.0",
+    "created_at": "2026-04-22T10:07:31Z",
+    "conclusion": "success"
+  },
+  {
+    "display_title": "Tag @stable - 5.19.0",
+    "created_at": "2026-04-07T12:51:49Z",
+    "conclusion": "success"
+  },
+  {
+    "display_title": "Tag @stable - 5.18.0",
+    "created_at": "2026-04-01T14:32:15Z",
+    "conclusion": "success"
+  },
+  {
+    "display_title": "Tag @stable - 5.9.0",
+    "created_at": "2026-02-17T15:35:35Z",
+    "conclusion": "success"
+  },
+  {
+    "display_title": "Tag @stable - 5.7.0",
+    "created_at": "2026-02-10T14:34:40Z",
+    "conclusion": "success"
+  },
+  {
+    "display_title": "Tag @stable - 5.7.1",
+    "created_at": "2026-02-10T14:32:38Z",
+    "conclusion": "failure"
+  },
+  {
+    "display_title": "Tag @stable - 5.5.0",
+    "created_at": "2026-01-27T13:26:50Z",
+    "conclusion": "success"
+  },
+  {
+    "display_title": "Tag @stable - 5.6.0",
+    "created_at": "2026-01-27T13:25:49Z",
+    "conclusion": "cancelled"
+  },
+  {
+    "display_title": "Tag @stable - 5.1.0",
+    "created_at": "2026-01-07T13:58:36Z",
+    "conclusion": "success"
+  },
+  {
+    "display_title": "Tag @stable - 4.20.3",
+    "created_at": "2025-12-09T14:17:50Z",
+    "conclusion": "success"
+  }
+]

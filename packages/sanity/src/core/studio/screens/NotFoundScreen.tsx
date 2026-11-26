@@ -1,6 +1,6 @@
 /* oxlint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {Card, Heading, Inline} from '@sanity/ui'
-import {VStack, Flex} from 'ui5'
+import {Card, Inline} from '@sanity/ui'
+import {Heading, VStack, Flex} from 'ui5'
 
 import {Button} from '../../../ui-components/button/Button'
 
@@ -15,7 +15,9 @@ export function NotFoundScreen(props: {onNavigateToDefaultWorkspace: () => void}
         alignItems="center"
       >
         <VStack gap={4}>
-          <Heading as="h1">Workspace not found</Heading>
+          <Heading as="h1" trim>
+            Workspace not found
+          </Heading>
           <Inline>
             <Button
               text="Go to default workspace"

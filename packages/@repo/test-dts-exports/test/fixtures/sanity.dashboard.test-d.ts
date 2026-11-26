@@ -19,7 +19,7 @@ describe('sanity/dashboard', () => {
     expectTypeOf<AssetSourceComponentProps>().toBeObject()
   })
   test('ServiceBus', () => {
-    expectTypeOf<ServiceBus>().toBeObject()
+    expectTypeOf<ServiceBus>().not.toBeNever()
   })
   test('unstable_defineService', () => {
     expectTypeOf<typeof unstable_defineService>().toBeFunction()

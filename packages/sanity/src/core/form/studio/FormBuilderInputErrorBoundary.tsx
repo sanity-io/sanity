@@ -1,7 +1,6 @@
 import {Card} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useState} from 'react'
-import {Text, VStack, Box} from 'ui5'
+import {Code, Text, VStack, Box} from 'ui5'
 import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {ErrorBoundary} from '../../../ui-components/errorBoundary/ErrorBoundary'
@@ -73,7 +72,7 @@ function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () =
               </Text>
               <Card border radius={2} overflow="auto" padding={4} tone="inherit">
                 {callStack && (
-                  <Code size={1} style={{maxHeight: '40vh'}}>
+                  <Code size={1} style={{maxHeight: '40vh'}} trim>
                     {callStack}
                   </Code>
                 )}
@@ -89,7 +88,7 @@ function ErrorCard(props: {error: unknown; info?: React.ErrorInfo; onRetry: () =
               </Text>
               <Card border radius={2} overflow="auto" padding={4} tone="inherit">
                 {componentStack && (
-                  <Code size={1} style={{maxHeight: '40vh'}}>
+                  <Code size={1} style={{maxHeight: '40vh'}} trim>
                     {componentStack}
                   </Code>
                 )}
