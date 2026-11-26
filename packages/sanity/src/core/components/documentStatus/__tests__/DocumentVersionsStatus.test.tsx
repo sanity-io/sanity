@@ -174,25 +174,24 @@ describe('DocumentVersionsStatus', () => {
     vi.useRealTimers()
   })
 
-  it('lists one line per version, Published, Draft then each release, when variants are disabled', async () => {
+  it('shows one Default line with no release names when variants are disabled, as on main', async () => {
     await renderStatus({
       versions: [
-        inRelease(activeASAPRelease, hoursAgo(5)),
         published(hoursAgo(48)),
         draft(hoursAgo(3)),
+        inRelease(activeASAPRelease, hoursAgo(5)),
         published(hoursAgo(1), variantAlphaAudience._id),
       ],
       variants: [variantAlphaAudience],
     })
 
-    const lines = getLines()
-    expect(lines).toHaveLength(3)
-    expect(lines[0]).toHaveTextContent('PublishedPublished 2 days ago')
-    expect(lines[1]).toHaveTextContent('DraftEdited 3 hr ago')
-    expect(lines[2]).toHaveTextContent(`${activeASAPRelease.metadata.title}Edited 5 hr ago`)
-    expect(lines.map(getIcons)).toEqual([['published'], ['draft'], ['release']])
-    expect(screen.queryByText('Default')).not.toBeInTheDocument()
+    const [line] = getLines()
+    expect(getLines()).toHaveLength(1)
+    expect(within(line).getByText('Edited 3 hr ago')).toBeInTheDocument()
+    expect(getIcons(line)).toEqual(['release', 'draft', 'published'])
+    expect(line).toHaveTextContent('DefaultEdited 3 hr ago')
     expect(screen.queryByText(/Alpha audience/)).not.toBeInTheDocument()
+    expect(screen.queryByText(activeASAPRelease.metadata.title)).not.toBeInTheDocument()
   })
 
   it('keeps the Default name for the line of no variant when variants are enabled', async () => {

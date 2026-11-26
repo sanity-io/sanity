@@ -31,10 +31,13 @@ const presence = (
   documentId,
 })
 
-const renderPresence = async (documentId: string) => {
+const renderPresence = async (documentId: string, {variants = false} = {}) => {
   // Only the always registered bundles: previews also render in studios without the releases
   // plugin, which is the only thing that registers the `releases` namespace (SAPP-4649)
-  const wrapper = await createTestProvider({resources: [studioDefaultLocaleResources]})
+  const wrapper = await createTestProvider({
+    resources: [studioDefaultLocaleResources],
+    ...(variants ? {config: {beta: {variants: {enabled: true}}}} : {}),
+  })
 
   render(<DocumentPreviewPresence presence={[presence(documentId)]} />, {wrapper})
 
@@ -78,9 +81,15 @@ describe('DocumentPreviewPresence', () => {
     ).toBeInTheDocument()
   })
 
-  it('leaves out the browser name tooltip on each avatar, since the stack names everyone', async () => {
-    await renderPresence('drafts.thesis-1')
+  it('leaves out the browser name tooltip on each avatar with Variants on, since the stack names everyone', async () => {
+    await renderPresence('drafts.thesis-1', {variants: true})
 
     expect(screen.getByTestId('user-avatar')).toHaveAttribute('data-hide-title', 'true')
+  })
+
+  it('keeps the browser name tooltip on each avatar, as on main, with Variants off', async () => {
+    await renderPresence('drafts.thesis-1')
+
+    expect(screen.getByTestId('user-avatar')).toHaveAttribute('data-hide-title', 'false')
   })
 })
