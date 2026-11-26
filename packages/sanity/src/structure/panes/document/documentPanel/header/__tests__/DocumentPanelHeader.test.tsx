@@ -93,11 +93,7 @@ async function mountHeader(
 }
 
 beforeAll(async () => {
-  // The inventory is on by default, so the tests of the perspective list switch it off.
-  wrapper = await createTestProvider({
-    resources: [structureUsEnglishLocaleBundle],
-    config: {beta: {documentGroupInventory: {enabled: false}}},
-  })
+  wrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
 })
 
 describe('DocumentPanelHeader', () => {
@@ -148,14 +144,6 @@ describe('DocumentPanelHeader', () => {
 
     await screen.findByTestId('copy-document-actions')
     expect(screen.queryByTestId('action-document-group-inventory')).toBeNull()
-  })
-
-  it('renders the inventory navigation by default, with variants off', async () => {
-    const defaultWrapper = await createTestProvider({resources: [structureUsEnglishLocaleBundle]})
-
-    await mountHeader({container: 'document-panel-navigation', wrapper: defaultWrapper})
-
-    expect(screen.queryByTestId('document-perspective-list')).toBeNull()
   })
 
   it('renders the perspective list when neither variants nor the inventory are enabled', async () => {
