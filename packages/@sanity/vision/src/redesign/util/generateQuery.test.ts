@@ -1,7 +1,8 @@
 import {type PromptRequest} from '@sanity/client'
 import {parse} from 'groq-js'
-import {describe, expect, it, vi} from 'vitest'
+import {afterEach, describe, expect, it, vi} from 'vitest'
 
+import {resetDatasetEmbeddings} from './embeddings'
 import {
   describeDiagnostics,
   editQuery,
@@ -23,11 +24,32 @@ function queryError(description: string) {
   })
 }
 
-function createClient(options: {replies: unknown[]; rejections?: Record<string, Error>}) {
+function createClient(options: {
+  replies: unknown[]
+  rejections?: Record<string, Error>
+  /** What the dataset's embeddings settings read as; an error rejects the reading */
+  embeddings?: unknown
+  apiVersion?: string
+  perspective?: string | string[]
+}) {
   const prompts: PromptRequest[] = []
   const checks: {query: string; params: Record<string, unknown>}[] = []
   const apiVersions: string[] = []
+  const settingsReads: string[] = []
   const client: GenerateQueryClient = {
+    config: () => ({
+      projectId: 'project',
+      dataset: 'dataset',
+      apiVersion: options.apiVersion ?? 'v2025-02-19',
+      perspective: options.perspective,
+    }),
+    datasets: {
+      getEmbeddingsSettings: async (dataset) => {
+        settingsReads.push(dataset)
+        if (options.embeddings instanceof Error) throw options.embeddings
+        return options.embeddings ?? {enabled: false, status: 'disabled'}
+      },
+    },
     withConfig: ({apiVersion}) => {
       apiVersions.push(apiVersion)
       return {
@@ -50,8 +72,12 @@ function createClient(options: {replies: unknown[]; rejections?: Record<string, 
       return null
     },
   }
-  return {client, prompts, checks, apiVersions}
+  return {client, prompts, checks, apiVersions, settingsReads}
 }
+
+afterEach(() => {
+  resetDatasetEmbeddings()
+})
 
 const request = 'The 10 most recent authors by last name'
 const schema = '- author: firstName: string, lastName: string'
@@ -156,6 +182,8 @@ describe('generateQuery', () => {
         },
       }),
       fetch: () => Promise.resolve(null),
+      config: () => ({projectId: 'project', dataset: 'dataset'}),
+      datasets: {getEmbeddingsSettings: () => Promise.resolve({enabled: false})},
     }
     await expect(generateQuery({request, schema, client})).rejects.toThrow(
       'Agent Actions are not enabled for this project',
@@ -291,6 +319,67 @@ describe('fitQueryToDocumentList', () => {
   })
 })
 
+describe('the GROQ reference in the prompt', () => {
+  const semanticQuery = 'text::semanticSimilarity($description)'
+
+  async function referenceFor(options: Omit<Parameters<typeof createClient>[0], 'replies'>) {
+    const created = createClient({...options, replies: [{query: 'count(*)', params: {}}]})
+    await generateQuery({request, schema, client: created.client})
+    return {reference: String(created.prompts[0].instructionParams?.reference), ...created}
+  }
+
+  it('teaches semantic and hybrid search on a dataset with embeddings ready', async () => {
+    const {reference} = await referenceFor({embeddings: {enabled: true, status: 'ready'}})
+
+    expect(reference).toContain(semanticQuery)
+    expect(reference).toContain('Hybrid search')
+    expect(reference).toContain('text::semanticSimilarity(<string>) <number>')
+  })
+
+  it.each([
+    ['disabled', {enabled: false, status: 'disabled'}],
+    ['still being set up', {enabled: true, status: 'indexing'}],
+    ['unreadable', new Error('Forbidden')],
+  ])('teaches keyword search alone when the embeddings settings are %s', async (_, embeddings) => {
+    const {reference} = await referenceFor({embeddings})
+
+    expect(reference).not.toContain(semanticQuery)
+    expect(reference).not.toContain('Hybrid search')
+    expect(reference).toContain('has no embeddings')
+    expect(reference).toContain('match text::query($terms)')
+    expect(reference).toContain('Expanding search terms')
+  })
+
+  it('leaves semantic search out on an API version that cannot parse it', async () => {
+    const {reference} = await referenceFor({
+      embeddings: {enabled: true, status: 'ready'},
+      apiVersion: 'v1',
+    })
+
+    expect(reference).not.toContain(semanticQuery)
+  })
+
+  it('reads the settings once for every prompt on the same dataset', async () => {
+    const {client, settingsReads} = createClient({
+      embeddings: {enabled: true, status: 'ready'},
+      replies: [
+        {query: 'count(*)', params: {}},
+        {query: 'count(*)', params: {}},
+      ],
+    })
+    await generateQuery({request, schema, client})
+    await editQuery({query: 'count(*)', params: {}, request, schema, client})
+
+    expect(settingsReads).toEqual(['dataset'])
+  })
+
+  it('names the perspective the query runs with', async () => {
+    const {reference} = await referenceFor({perspective: 'raw'})
+
+    expect(reference).toContain('The query runs with the raw perspective')
+  })
+})
+
 describe('editQuery', () => {
   const current = '// Generated with the prompt: authors\n*[_type == $type]'
 
@@ -324,6 +413,7 @@ describe('editQuery', () => {
     expect(prompts[0].instruction).toContain('$query')
     expect(prompts[0].instruction).toContain('$request')
     expect(prompts[0].instruction).not.toContain('Sort by last name')
+    expect(prompts[0].instruction).toContain('Make the smallest change that does what is asked')
     expect(checks).toEqual([{query: `select(false => (\n${edited}\n))`, params: {type: 'author'}}])
   })
 
