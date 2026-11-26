@@ -50,7 +50,9 @@ for (const [bareIdentifier, [dtsFilePath, fixturePath]] of fixtures) {
     continue
   }
 
-  const allExports = Array.from(exps.keys()).sort((a, b) => a.localeCompare(b))
+  const allExports = Array.from(exps.keys())
+    .filter((name) => !exps.get(name)?.some(isTombstoneDeclaration))
+    .sort((a, b) => a.localeCompare(b))
   const importsWithDecls = allExports.filter((name) => {
     const decls = exps.get(name)
     return decls && decls.length > 0
@@ -96,9 +98,7 @@ describe(${JSON.stringify(bareIdentifier)}, () => {
       const genericParamsCount = decl.getTypeParameters?.().length ?? 0
       const genericParams =
         genericParamsCount > 0 ? `<${Array(genericParamsCount).fill('any').join(', ')}>` : ''
-      const testContentDecl = isTombstoneDeclaration(decl)
-        ? getTombstoneTestContent(syntaxKindName, exportName)
-        : getTestContent(syntaxKindName, exportName, genericParams)
+      const testContentDecl = getTestContent(syntaxKindName, exportName, genericParams)
       if (!dedupeTestContent.has(testContentDecl)) {
         testContent += testContentDecl
         dedupeTestContent.add(testContentDecl)
@@ -126,10 +126,9 @@ describe(${JSON.stringify(bareIdentifier)}, () => {
 }
 
 /**
- * Type-only `@deprecated` `never` tombstones for removed/moved exports (see AGENTS.md
- * "Export tombstones (v7)"). Fixtures must assert `.toBeNever()`, not the live-export checks.
- * Walks aliases the same way `v7-export-map/exportMap.mjs` does: entry barrels re-export
- * tombstones through rolldown-plugin-dts mangled chunk names.
+ * Type-only `@deprecated` `never` tombstones for removed and moved exports are not real exports,
+ * so the fixtures leave them out; `test/tombstones.test.ts` covers them. Entry barrels re-export
+ * them through rolldown-plugin-dts aliases, so walk to the underlying declaration.
  *
  * @param {import('ts-morph').ExportedDeclarations} decl
  */
@@ -155,20 +154,6 @@ function declarationIsTombstone(declaration) {
   if (declaration.getTypeNode()?.getText() !== 'never') return false
   const statement = declaration.getFirstAncestor(Node.isVariableStatement)
   return Boolean(statement?.hasDeclareKeyword())
-}
-
-function getTombstoneTestContent(syntaxKindName, exportName) {
-  switch (syntaxKindName) {
-    case 'TypeAliasDeclaration':
-      return `expectTypeOf<${exportName}>().toBeNever();
-`
-    case 'VariableDeclaration':
-      return `expectTypeOf<typeof ${exportName}>().toBeNever();
-`
-    default:
-      return `// FIXME: tombstone ${syntaxKindName} isn't implemented in generate.mjs yet
-`
-  }
 }
 
 function getTestContent(syntaxKindName, exportName, genericParams) {
