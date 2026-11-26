@@ -36,8 +36,10 @@ describe('DocumentStatusBar', () => {
   let TestProvider: ComponentType<{children: React.ReactNode}>
 
   beforeEach(async () => {
-    // The default config: the inventory is on, and variants are off.
-    TestProvider = await createTestProvider()
+    // The inventory is off by default, so these tests switch it on.
+    TestProvider = await createTestProvider({
+      config: {beta: {documentGroupInventory: {enabled: true}}},
+    })
     mockUsePaneRouter.mockReturnValue({params: {}} as never)
     mockPerspective.selectedPerspective = 'published'
     mockPerspective.selectedVariantNames = []
@@ -58,16 +60,18 @@ describe('DocumentStatusBar', () => {
     expect(screen.queryByTestId('actions')).toBeNull()
   })
 
-  it('shows Manage versions with the default config, where variants are off', async () => {
+  it('leaves out Manage versions with the default config, where the inventory is off', async () => {
+    const DefaultProvider = await createTestProvider()
     mockUseDocumentPane.mockReturnValue({
       editState: {ready: true, published: null},
       revisionNotFound: false,
       targetDocumentState: {status: 'ready', targetDocument: null},
     } as never)
 
-    render(<DocumentStatusBar />, {wrapper: TestProvider})
+    const {container} = render(<DocumentStatusBar />, {wrapper: DefaultProvider})
 
-    expect(await screen.findByText('Manage versions')).toBeTruthy()
+    await expect.poll(() => container.firstChild).toBeTruthy()
+    expect(screen.queryByText('Manage versions')).toBeNull()
   })
 
   it('leaves out Manage versions when the studio switches the inventory off', async () => {

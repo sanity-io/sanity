@@ -1129,14 +1129,14 @@ const UI5 = {
   },
   dark: {
     open: [117, 149, 255], // blue-400
-    openTitle: [19, 20, 27], // black
+    openTitle: [13, 14, 18], // black (#0d0e12 since ui5 5.0.0-alpha.28)
     openSubtitle: [22, 26, 65], // blue-900
     openVariantMark: [35, 23, 63], // suggest --foreground-low-emphasized: purple-900
     checked: [16, 18, 40], // blue-950
     checkedHeader: [25, 36, 87], // blue-800
     hover: [27, 29, 39], // gray-900: --background-low is gray-950, the panel's own background
     checkboxFill: [117, 149, 255], // blue-400
-    checkboxTick: [19, 20, 27], // black
+    checkboxTick: [13, 14, 18], // black (#0d0e12 since ui5 5.0.0-alpha.28)
   },
 } as const
 
