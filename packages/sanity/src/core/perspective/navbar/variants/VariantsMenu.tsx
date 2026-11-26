@@ -1,6 +1,7 @@
 import {AddIcon} from '@sanity/icons/Add'
 import {ErrorOutlineIcon} from '@sanity/icons/ErrorOutline'
 import {SearchIcon} from '@sanity/icons/Search'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {
@@ -38,6 +39,7 @@ import {isVariantId, type SystemVariant} from '../../../variants/types'
 import {DEFAULT_VARIANT_TYPE_KEY, getVariantType} from '../../../variants/util/variantType'
 import {usePerspective} from '../../usePerspective'
 import {useSetVariant} from '../../useSetVariant'
+import {PerspectiveDetailLinkClicked} from '../__telemetry__/perspectiveNavbar.telemetry'
 import {FilterNoMatches} from '../FilterNoMatches'
 import {
   PerspectiveDetailLink,
@@ -201,7 +203,12 @@ export function VariantsMenu({
     setFilterQuery('')
   }, [resetMenuWidth])
 
-  const {triggerRef, handleNavigate: handleNavigateToVariant} = usePerspectiveDetailLinkTrigger()
+  const {triggerRef, handleNavigate: closeMenuAfterNavigate} = usePerspectiveDetailLinkTrigger()
+  const telemetry = useTelemetry()
+  const handleNavigateToVariant = useCallback(() => {
+    telemetry.log(PerspectiveDetailLinkClicked, {perspective: 'variant'})
+    closeMenuAfterNavigate()
+  }, [closeMenuAfterNavigate, telemetry])
 
   const isDefaultSelected = !selectedVariant
 

@@ -1,5 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {SearchIcon} from '@sanity/icons/Search'
+import {useTelemetry} from '@sanity/telemetry/react'
 // oxlint-disable-next-line no-restricted-imports -- the chevron trigger needs the hit-area style only @sanity/ui Button accepts
 import {Button, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
@@ -16,6 +17,7 @@ import {oversizedButtonStyle} from '../../styles'
 import {type ReleasesNavMenuItemPropsGetter} from '../../types'
 import {useGetDefaultPerspective} from '../../useGetDefaultPerspective'
 import {useSetPerspective} from '../../useSetPerspective'
+import {PerspectiveDetailLinkClicked} from '../__telemetry__/perspectiveNavbar.telemetry'
 import {GlobalPerspectiveButton} from '../GlobalPerspectiveButton'
 import {usePerspectiveDetailLinkTrigger} from '../PerspectiveDetailLink'
 import {useStableMenuWidth} from '../useStableMenuWidth'
@@ -121,7 +123,12 @@ export function ReleasesMenu({
     setFilterQuery('')
   }, [resetMenuWidth, resetRangeVisibility])
 
-  const {triggerRef, handleNavigate: handleNavigateToRelease} = usePerspectiveDetailLinkTrigger()
+  const {triggerRef, handleNavigate: closeMenuAfterNavigate} = usePerspectiveDetailLinkTrigger()
+  const telemetry = useTelemetry()
+  const handleNavigateToRelease = useCallback(() => {
+    telemetry.log(PerspectiveDetailLinkClicked, {perspective: 'release'})
+    closeMenuAfterNavigate()
+  }, [closeMenuAfterNavigate, telemetry])
 
   return (
     <>

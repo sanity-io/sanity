@@ -20,6 +20,14 @@ import {
 } from '../../../releases/store/__tests__/__mocks/useReleasePermissions.mock'
 import {ReleasesNav} from '../releases/ReleasesNav'
 
+const telemetryMock = vi.hoisted(() => ({
+  log: vi.fn(),
+}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => telemetryMock),
+}))
+
 vi.mock('../../../releases/store/useReleasePermissions', () => ({
   useReleasePermissions: vi.fn(() => useReleasePermissionsMockReturn),
 }))
@@ -180,6 +188,21 @@ describe('ReleasesNav', () => {
       })
 
       expect(screen.getByTestId('release-detail-link-rActive')).toBeInTheDocument()
+    })
+
+    it('reports following the detail link of a release', async () => {
+      useActiveReleasesMockReturn.data = [activeScheduledRelease]
+      await renderTest({showDetailLinks: true, variantsEnabled: true})
+
+      await userEvent.click(screen.getByTestId('global-perspective-menu-button'))
+      await userEvent.click(await screen.findByTestId('release-detail-link-rActive'))
+
+      expect(telemetryMock.log).toHaveBeenCalledTimes(1)
+      expect(telemetryMock.log).toHaveBeenCalledWith(
+        expect.objectContaining({name: 'Perspective Detail Link Clicked'}),
+        {perspective: 'release'},
+      )
+      expect(mockedSetPerspective).not.toHaveBeenCalled()
     })
 
     it('shows the drafts label on the chip', async () => {

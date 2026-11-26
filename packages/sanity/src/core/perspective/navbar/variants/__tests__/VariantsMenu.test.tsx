@@ -151,6 +151,21 @@ describe('VariantsMenu', () => {
     expect(screen.getByTestId('view-all')).toHaveAttribute('href', `/intent/${VARIANTS_INTENT}`)
   })
 
+  it('reports following the detail link of a variant', async () => {
+    await renderMenu()
+
+    await userEvent
+      .setup()
+      .click(screen.getByTestId(`variant-detail-link-${getVariantId(variantAlphaAudience._id)}`))
+
+    expect(telemetryMock.log).toHaveBeenCalledTimes(1)
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Perspective Detail Link Clicked'}),
+      {perspective: 'variant'},
+    )
+    expect(setVariant).not.toHaveBeenCalled()
+  })
+
   it('names the unselected option Default', async () => {
     await renderMenu()
 
