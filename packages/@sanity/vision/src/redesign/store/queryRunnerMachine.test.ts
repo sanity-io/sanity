@@ -14,12 +14,16 @@ import {
 } from './queryRunnerMachine'
 import {type QueryRequest} from './types'
 
-const testClient = createClient({
-  projectId: 'test',
-  dataset: 'test',
-  apiVersion: '2025-02-19',
-  useCdn: false,
-})
+function createTestClient() {
+  return createClient({
+    projectId: 'test',
+    dataset: 'test',
+    apiVersion: '2025-02-19',
+    useCdn: false,
+  })
+}
+
+const testClient = createTestClient()
 
 interface Deferred {
   request: QueryRequest
@@ -534,7 +538,7 @@ describe('queryRunnerMachine', () => {
   it('is connected from the welcome of its subscription until a reconnect, go-away or stop', () => {
     const harness = createHarness()
     const connected = () => selectLiveConnected(harness.snapshot())
-    harness.actor.send({type: 'live.enable', client: testClient})
+    harness.actor.send({type: 'live.enable', client: createTestClient()})
     expect(harness.snapshot().matches({live: 'on'})).toBe(true)
     expect(connected()).toBe(false)
 
@@ -560,7 +564,7 @@ describe('queryRunnerMachine', () => {
     expect(connected()).toBe(true)
 
     // Another client means another subscription, which has to connect first
-    harness.actor.send({type: 'live.enable', client: testClient})
+    harness.actor.send({type: 'live.enable', client: createTestClient()})
     expect(connected()).toBe(false)
     harness.liveEvents.next({type: 'welcome'})
     expect(connected()).toBe(true)
@@ -586,8 +590,8 @@ describe('queryRunnerMachine', () => {
 
   it('resubscribes when live is re-enabled with a new client and stops when disabled', () => {
     const harness = createHarness()
-    harness.actor.send({type: 'live.enable', client: testClient})
-    harness.actor.send({type: 'live.enable', client: testClient})
+    harness.actor.send({type: 'live.enable', client: createTestClient()})
+    harness.actor.send({type: 'live.enable', client: createTestClient()})
     expect(harness.liveSubscriptionCount()).toBe(2)
 
     harness.actor.send({type: 'live.disable'})
@@ -598,7 +602,7 @@ describe('queryRunnerMachine', () => {
   describe('while paused', () => {
     async function liveHarness() {
       const harness = createHarness()
-      const client = testClient
+      const client = createTestClient()
       harness.actor.send({type: 'fetch', request: harness.request(), reason: {type: 'manual'}})
       harness.fetches[0].resolve({result: 1, syncTags: ['s1:a', 's1:b']})
       await waitFor(harness.actor, (snapshot) => snapshot.matches({request: 'settled'}))
@@ -700,7 +704,7 @@ describe('queryRunnerMachine', () => {
       harness.actor.send({type: 'live.pause'})
       harness.liveEvents.next({type: 'message', id: '1', tags: ['s1:a']})
 
-      harness.actor.send({type: 'live.enable', client: testClient})
+      harness.actor.send({type: 'live.enable', client: createTestClient()})
       expect(harness.liveSubscriptionCount()).toBe(2)
       expect(harness.snapshot().context.liveMissed).toBeUndefined()
       expect(harness.fetches).toHaveLength(1)
