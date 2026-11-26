@@ -13,6 +13,7 @@ export {
   ChangeIndicatorTrackerContextStore,
 } from '../_singletons/context/ChangeIndicatorTrackerContexts'
 export {ColorSchemeSetValueContext} from '../_singletons/context/ColorSchemeSetValueContext'
+export {ColorSchemeSystemValueContext} from '../_singletons/context/ColorSchemeSystemValueContext'
 export {ColorSchemeValueContext} from '../_singletons/context/ColorSchemeValueContext'
 export {CommentInputContext} from '../_singletons/context/CommentInputContext'
 export {CommentInputContextV2} from '../_singletons/context/CommentInputContextV2'

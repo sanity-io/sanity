@@ -1,12 +1,14 @@
 import {act, render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
+import {Suspense} from 'react'
+import {hydrateRoot} from 'react-dom/client'
+import {renderToString} from 'react-dom/server'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
 import {afterEach, beforeEach, describe, expect, onTestFinished, test, vi} from 'vitest'
 
 import {stubMessageBusHost} from '../../../../test/testUtils/stubMessageBusHost'
 import {Button} from '../../../ui-components/button/Button'
 import {ColorSchemeLocalStorageProvider, ColorSchemeProvider} from '../colorScheme'
-import {setSnapshot} from '../colorSchemeStore'
 
 function SchemeProbe() {
   return (
@@ -114,7 +116,6 @@ describe('ColorScheme', () => {
 
     test('runtime scheme changes follow, and system leaves the document unset', async () => {
       mockLocalStorage.getItem.mockReturnValue(null)
-      setSnapshot('system')
 
       render(
         <ColorSchemeLocalStorageProvider>
@@ -148,7 +149,6 @@ describe('ColorScheme', () => {
 
     test('a host-set color-scheme survives system mode and returns after a pinned scheme', async () => {
       mockLocalStorage.getItem.mockReturnValue(null)
-      setSnapshot('system')
       document.documentElement.style.colorScheme = 'dark'
 
       render(
@@ -181,17 +181,13 @@ describe('ColorScheme', () => {
       expect(document.documentElement.style.colorScheme).toBe('dark')
     })
 
-    test('a cold mount without a resolved store snapshot writes nothing', async () => {
+    test('a cold mount with nothing stored writes nothing', () => {
       mockLocalStorage.getItem.mockReturnValue(null)
-      // a fresh module pair reproduces the first-ever render, where the store snapshot is
-      // undefined until the subscribe effect initialises it
-      vi.resetModules()
-      const {ColorSchemeLocalStorageProvider: FreshProvider} = await import('../colorScheme')
 
       render(
-        <FreshProvider>
+        <ColorSchemeLocalStorageProvider>
           <div data-testid="child">Test</div>
-        </FreshProvider>,
+        </ColorSchemeLocalStorageProvider>,
       )
 
       expect(document.documentElement.style.colorScheme).toBe('')
@@ -262,6 +258,42 @@ describe('ColorScheme', () => {
       )
 
       expect(screen.getByTestId('scheme')).toHaveTextContent('light')
+    })
+  })
+
+  describe('server rendering', () => {
+    test('suspends on the server, so a server render needs a Suspense boundary above it', () => {
+      expect(() =>
+        renderToString(
+          <ColorSchemeProvider>
+            <SchemeProbe />
+          </ColorSchemeProvider>,
+        ),
+      ).toThrow(/client rendering was requested outside a Suspense boundary/)
+    })
+
+    test('the server renders the fallback, and hydration renders the stored scheme', async () => {
+      const consoleError = vi.spyOn(console, 'error')
+      mockLocalStorage.getItem.mockReturnValue('dark')
+      const node = document.createElement('div')
+      document.body.appendChild(node)
+      onTestFinished(() => node.remove())
+      const app = (
+        <Suspense fallback={null}>
+          <ColorSchemeProvider>
+            <SchemeProbe />
+          </ColorSchemeProvider>
+        </Suspense>
+      )
+
+      node.innerHTML = renderToString(app)
+      expect(node.querySelector('[data-testid="scheme"]')).toBeNull()
+
+      const root = await act(() => hydrateRoot(node, app))
+      onTestFinished(() => act(() => root.unmount()))
+
+      expect(screen.getByTestId('scheme')).toHaveTextContent('dark')
+      expect(consoleError).not.toHaveBeenCalled()
     })
   })
 })
