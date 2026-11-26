@@ -380,7 +380,7 @@ Whether a workspace enables variants is the `variantsEnabled` field of `Workspac
 
 `Variant Definition Opened` fires when the detail page has resolved its definition, whatever led there, including deep links and reloads; a page for a definition that does not exist logs nothing. When `beta.reactActivityMode` keeps the tool mounted, revealing it again fires the event again.
 
-`Variant Document Published` fires with the `completed` stage of `Publish Button Clicked`. Variant versions in a content release are published with the release and never reach it.
+`Variant Document Published` fires when the publish operation succeeds. Publishing removes the variant draft, and the document pane can swap out the publish action while it resolves the new target, so for variants `Publish Button Clicked` sometimes stays at `started` even though the publish landed; this event does not depend on it. Variant versions in a content release are published with the release and never reach it.
 
 ### Comments
 

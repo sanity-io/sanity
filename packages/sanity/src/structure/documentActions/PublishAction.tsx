@@ -15,6 +15,7 @@ import {
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
+  useDocumentStore,
   useEditState,
   usePerspective,
   useRelativeTime,
@@ -35,6 +36,7 @@ import {
   VariantDocumentPublished,
 } from './__telemetry__/documentActions.telemetry'
 import {PUBLISH_DISABLED_REASON} from './operationDisabledReasons'
+import {reportVariantPublish} from './reportVariantPublish'
 
 const PUBLISHED_STATE = {status: 'published'} as const
 
@@ -66,9 +68,7 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const {selectedPerspective, selectedVariantNames} = usePerspective()
   const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const [publishState, setPublishState] = useState<
-    | {status: 'publishing'; publishRevision: string | undefined; isVariantTarget: boolean}
-    | {status: 'published'}
-    | null
+    {status: 'publishing'; publishRevision: string | undefined} | {status: 'published'} | null
   >(null)
 
   const {changesOpen, documentId, documentType, value, targetDocumentState} = useDocumentPane()
@@ -117,16 +117,19 @@ export const usePublishAction: DocumentActionComponent = (props) => {
   const currentPublishRevision = publishedInfo?._rev
 
   const telemetry = useTelemetry()
+  const documentStore = useDocumentStore()
 
   const doPublish = useCallback(() => {
+    if (isVariantTarget) {
+      const previouslyPublished = currentPublishRevision !== undefined
+      reportVariantPublish(`${type}:${id}`, documentStore.pair.operationEvents(id, type), () =>
+        telemetry.log(VariantDocumentPublished, {previouslyPublished}),
+      )
+    }
     publish.execute(isVariantTarget ? {publishedRevisionId: currentPublishRevision} : undefined)
     telemetry.log(PublishButtonClicked, {documentId: id, stage: 'started'})
-    setPublishState({
-      status: 'publishing',
-      publishRevision: currentPublishRevision,
-      isVariantTarget,
-    })
-  }, [publish, isVariantTarget, currentPublishRevision, telemetry, id])
+    setPublishState({status: 'publishing', publishRevision: currentPublishRevision})
+  }, [publish, isVariantTarget, currentPublishRevision, telemetry, id, type, documentStore])
 
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
@@ -173,11 +176,6 @@ export const usePublishAction: DocumentActionComponent = (props) => {
 
     if (didPublish) {
       telemetry.log(PublishButtonClicked, {documentId: id, stage: 'completed'})
-      if (publishState.isVariantTarget) {
-        telemetry.log(VariantDocumentPublished, {
-          previouslyPublished: publishState.publishRevision !== undefined,
-        })
-      }
     }
 
     const nextState = didPublish ? PUBLISHED_STATE : null

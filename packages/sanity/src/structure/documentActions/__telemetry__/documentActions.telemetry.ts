@@ -49,9 +49,10 @@ interface VariantDocumentPublishedInfo {
 }
 
 /**
- * Logged next to the `completed` stage of {@link PublishButtonClicked} when the published
- * document belongs to a content variant. Variant versions in a release are published with the
- * release, not from the document pane, so they never reach this event.
+ * Logged when the publish operation of a document in a content variant succeeds. It does not
+ * wait for {@link PublishButtonClicked} to reach `completed`, which the action can miss when the
+ * pane swaps it out while the variant target re-resolves. Variant versions in a release are
+ * published with the release, not from the document pane, so they never reach this event.
  */
 export const VariantDocumentPublished = defineEvent<VariantDocumentPublishedInfo>({
   name: 'Variant Document Published',
