@@ -2439,8 +2439,8 @@ importers:
         specifier: workspace:*
         version: link:../@sanity/validation
       '@sentry/react':
-        specifier: ^11.16.0
-        version: 11.16.0(react@19.3.1)
+        specifier: ^11.17.0
+        version: 11.17.0(react@19.3.1)
       '@tanstack/react-virtual':
         specifier: ^3.14.28
         version: 3.14.28(react-dom@19.3.1)(react@19.3.1)
@@ -9238,28 +9238,28 @@ packages:
   '@sec-ant/readable-stream@0.4.1':
     resolution: {integrity: sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==}
 
-  '@sentry/browser-utils@11.16.0':
-    resolution: {integrity: sha512-MUTnIZ7LjLEsx5br+xQsoybztbN1cV3bEXp6AEf/Pawz1avUb07J9nKuOyMVPWksqDpoIIkFJ8GyQvxllWQ+7Q==}
+  '@sentry/browser-utils@11.17.0':
+    resolution: {integrity: sha512-+0JIKG68z7ziTiCbtgX0H6jsUNvEruyforiQ3rOebW9k52j6RK2X6vlcDByPMzQW/w/AI2WryswnYU4sCL+xBA==}
     engines: {node: '>=20.19.0 <22.0.0 || >=22.12.0 <23.0.0 || >=23.2.0'}
 
-  '@sentry/browser@11.16.0':
-    resolution: {integrity: sha512-pl6Q4PGOiEebtr8aOyjslgmSoI5dG9VtGZZwPxApryydy/ravsdD0UxfQ/OSiOBRm1nUv106uxd6haypSGWc4w==}
+  '@sentry/browser@11.17.0':
+    resolution: {integrity: sha512-6zxDfbpb2qgsgiAIkgRx+QuF3EFowEHEwf1tcx2WSrbn8VJ2ViUN4OUOFpB525vJaiOou2MwOxbw80FBQpOkvA==}
     engines: {node: '>=20.19.0 <22.0.0 || >=22.12.0 <23.0.0 || >=23.2.0'}
 
-  '@sentry/conventions@0.34.0':
-    resolution: {integrity: sha512-sGYLaq/zyRTOCoadW3Z66q6WHp16stnwezGK45B50mGO6QUTl/ttzsPpy+oxZlj2pKARyOohZ1pX9grdpMxo2Q==}
+  '@sentry/conventions@0.35.0':
+    resolution: {integrity: sha512-bq2ecu6zaBni0gG5bHN9cY7fmUsOW49ntjGZ6VA69PVAa1Uk1NvgF1SdTGoVC0zkqQKziTnxzOs9KuuVlpb26w==}
     engines: {node: '>=14'}
 
-  '@sentry/core@11.16.0':
-    resolution: {integrity: sha512-hu7gw///rDLwVYKmkAgztXUx0sFkpxG1zDwnuHBYCXqHRaEwzEJ/ntBZfAmLbjOSIsg5dcM07AI09KSicFeXBw==}
+  '@sentry/core@11.17.0':
+    resolution: {integrity: sha512-Tf9XOBEMeGdZZNaCBzFTk1lN/q9gzSnWtnNRZW9IYtokM99VVfx4wTWVeg6qZ++c6mNybmhUbltnN7b87RqOwQ==}
     engines: {node: '>=20.19.0 <22.0.0 || >=22.12.0 <23.0.0 || >=23.2.0'}
 
-  '@sentry/feedback@11.16.0':
-    resolution: {integrity: sha512-0+p7DRQqCLrqHG/PWOCSfSKJGJQUeRqm00pijJSI431Jkm0GEGoCWeLBpr4zdb0KQ+D1Ybof+cjkByA7Jqp2ig==}
+  '@sentry/feedback@11.17.0':
+    resolution: {integrity: sha512-hLAZZYzWOs8Bc44QyxNzqd5o3/9bM0oV8n9G66qtqOGyxFLgeuwb6LLUeqmnY5tom6unkjSnKtKRIthk+M3KkQ==}
     engines: {node: '>=20.19.0 <22.0.0 || >=22.12.0 <23.0.0 || >=23.2.0'}
 
-  '@sentry/react@11.16.0':
-    resolution: {integrity: sha512-QMS986vIg1cWCZTkJMftvPmLXdMMw2M/7pYSJX7dWiBZy+IvS7ZhNMBAlnOh6p1VTe19LazDOqFa/wjdwgqTKQ==}
+  '@sentry/react@11.17.0':
+    resolution: {integrity: sha512-pXVZTM5nbwKEpdbQRwQvcxFoxGgiKmxI9h3TvnsV0xReE7A0J0ebGfBQvd1JO10mDVx2+rp8mxg0VAJbBPhx2g==}
     engines: {node: '>=20.19.0 <22.0.0 || >=22.12.0 <23.0.0 || >=23.2.0'}
     peerDependencies:
       react: 17.x || 18.x || 19.x
@@ -9268,12 +9268,12 @@ packages:
       react-router:
         optional: true
 
-  '@sentry/replay-canvas@11.16.0':
-    resolution: {integrity: sha512-EIdOIKKQO6TpqgPF4Sj6+Pu3b3uArti3101o4LCw1fOIoeVSH/6UpE4nkh0LfBw5Ri2A+inYuSAeoyjjI5JPOg==}
+  '@sentry/replay-canvas@11.17.0':
+    resolution: {integrity: sha512-pyYzfa+OogDMlh5QWWkaNGXzdbuPXsFhRtiJrcry/9xFsZXESS9FgoaJQgmxjD0TRQKgsRA3oTso4hmnw7rf2g==}
     engines: {node: '>=20.19.0 <22.0.0 || >=22.12.0 <23.0.0 || >=23.2.0'}
 
-  '@sentry/replay@11.16.0':
-    resolution: {integrity: sha512-oDdQjitHHhPcGXTOLWOaQAY1wsCiWVr2SELFQpxs4EZgb3o+uLGWq3DivpJOBjSH5njN13AQu9SMRBtGOjlgOw==}
+  '@sentry/replay@11.17.0':
+    resolution: {integrity: sha512-TUunibV0YUkcoVNRBPbY171n4yDn6OqZjzmDqWyZfl7vBchnglslwj4CkBaHyQfZJMfytx5Uput6vlqnfkLJCw==}
     engines: {node: '>=20.19.0 <22.0.0 || >=22.12.0 <23.0.0 || >=23.2.0'}
 
   '@shikijs/engine-oniguruma@3.23.0':
@@ -23145,7 +23145,7 @@ snapshots:
       '@sanity/mutate': 0.18.4(vitest@5.1.1)(xstate@5.33.4)
       '@sanity/telemetry': 1.1.0(react@19.3.1)
       '@sanity/types': link:packages/@sanity/types
-      '@sentry/browser': 11.16.0
+      '@sentry/browser': 11.17.0
       groq: link:packages/groq
       groq-js: 2.0.3
       reselect: 5.3.0
@@ -23402,47 +23402,47 @@ snapshots:
 
   '@sec-ant/readable-stream@0.4.1': {}
 
-  '@sentry/browser-utils@11.16.0':
+  '@sentry/browser-utils@11.17.0':
     dependencies:
-      '@sentry/conventions': 0.34.0
-      '@sentry/core': 11.16.0
+      '@sentry/conventions': 0.35.0
+      '@sentry/core': 11.17.0
       web-vitals: 6.2.3
 
-  '@sentry/browser@11.16.0':
+  '@sentry/browser@11.17.0':
     dependencies:
-      '@sentry/browser-utils': 11.16.0
-      '@sentry/conventions': 0.34.0
-      '@sentry/core': 11.16.0
-      '@sentry/feedback': 11.16.0
-      '@sentry/replay': 11.16.0
-      '@sentry/replay-canvas': 11.16.0
+      '@sentry/browser-utils': 11.17.0
+      '@sentry/conventions': 0.35.0
+      '@sentry/core': 11.17.0
+      '@sentry/feedback': 11.17.0
+      '@sentry/replay': 11.17.0
+      '@sentry/replay-canvas': 11.17.0
 
-  '@sentry/conventions@0.34.0': {}
+  '@sentry/conventions@0.35.0': {}
 
-  '@sentry/core@11.16.0':
+  '@sentry/core@11.17.0':
     dependencies:
-      '@sentry/conventions': 0.34.0
+      '@sentry/conventions': 0.35.0
 
-  '@sentry/feedback@11.16.0':
+  '@sentry/feedback@11.17.0':
     dependencies:
-      '@sentry/core': 11.16.0
+      '@sentry/core': 11.17.0
 
-  '@sentry/react@11.16.0(react@19.3.1)':
+  '@sentry/react@11.17.0(react@19.3.1)':
     dependencies:
-      '@sentry/browser': 11.16.0
-      '@sentry/conventions': 0.34.0
-      '@sentry/core': 11.16.0
+      '@sentry/browser': 11.17.0
+      '@sentry/conventions': 0.35.0
+      '@sentry/core': 11.17.0
       react: 19.3.1
 
-  '@sentry/replay-canvas@11.16.0':
+  '@sentry/replay-canvas@11.17.0':
     dependencies:
-      '@sentry/core': 11.16.0
-      '@sentry/replay': 11.16.0
+      '@sentry/core': 11.17.0
+      '@sentry/replay': 11.17.0
 
-  '@sentry/replay@11.16.0':
+  '@sentry/replay@11.17.0':
     dependencies:
-      '@sentry/browser-utils': 11.16.0
-      '@sentry/core': 11.16.0
+      '@sentry/browser-utils': 11.17.0
+      '@sentry/core': 11.17.0
 
   '@shikijs/engine-oniguruma@3.23.0':
     dependencies:
