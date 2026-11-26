@@ -229,6 +229,7 @@ describe('DocumentPerspectiveList', () => {
     })
 
     global.HTMLElement.prototype.scrollIntoView = vi.fn()
+    Element.prototype.scroll = vi.fn()
   })
   describe('enabled chips', () => {
     it('should render "Published" and "Draft" chips when it has no other version', async () => {

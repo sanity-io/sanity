@@ -458,6 +458,12 @@
       }
     },
     {
+      "files": ["packages/@repo/stable-suggestion/**/*"],
+      "rules": {
+        "eslint/no-console": "off"
+      }
+    },
+    {
       "files": ["packages/sanity/test/cli/**/*", "packages/sanity/src/core/config/__tests__/**/*"],
       "rules": {
         "tsdoc/syntax": "off"

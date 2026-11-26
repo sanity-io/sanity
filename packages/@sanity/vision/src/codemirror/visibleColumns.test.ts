@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest'
+import {afterEach, describe, expect, it} from 'vitest'
 
 import {getVisibleColumns, lineNumberDigits, type MeasurableEditorView} from './visibleColumns'
 
@@ -17,7 +17,8 @@ interface FakeEditorOptions {
 /**
  * The DOM CodeMirror lays out, with the sizes jsdom cannot compute defined by hand: the
  * scroller's visible width and height, the gutters' width, and the insets the theme puts
- * around the text.
+ * around the text. The tree is attached to the document, since `getComputedStyle` resolves
+ * nothing for a detached element.
  */
 function createFakeEditor({
   scrollerWidth,
@@ -48,6 +49,7 @@ function createFakeEditor({
   contentDOM.append(line)
 
   scrollDOM.append(gutters, contentDOM)
+  document.body.append(scrollDOM)
   return {
     scrollDOM,
     contentDOM,
@@ -56,6 +58,10 @@ function createFakeEditor({
     state: {doc: {lines}},
   }
 }
+
+afterEach(() => {
+  document.body.replaceChildren()
+})
 
 describe('lineNumberDigits', () => {
   it('reserves the digits of 9, 99, 999 for the gutter, as CodeMirror does', () => {

@@ -1,7 +1,8 @@
-import {Card, Heading, Stack, Text} from '@sanity/ui'
+import {Card, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
+import {Heading} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -71,7 +72,7 @@ export function createOAuthLoginComponent({
 
     return (
       <Stack gap={4}>
-        <Heading align="center" size={1}>
+        <Heading as="h2" align="center" size={1} trim>
           {t('login.oauth.title')}
         </Heading>
         {startError && (
@@ -86,20 +87,24 @@ export function createOAuthLoginComponent({
         )}
         {callbackError && (
           <Card data-testid="oauth-login-error" padding={3} radius={2} tone="critical">
-            <Stack gap={2}>
-              <Text size={1} weight="medium">
-                {t('login.oauth.authorization-failed')}
-              </Text>
-              <Text size={1}>{callbackError.description ?? callbackError.error}</Text>
-              {callbackError.error === 'invalid_target' && (
-                // The server's description does not say why it refused the project, on purpose.
-                <Text data-testid="oauth-login-error-hint" size={1}>
-                  {t('login.oauth.invalid-target-hint')}
+            <Stack gap={3}>
+              <Stack gap={2}>
+                <Text size={1} weight="medium">
+                  {t('login.oauth.authorization-failed')}
                 </Text>
-              )}
-              {callbackError.description && (
+                {callbackError.error === 'invalid_target' ? (
+                  // In place of the server's description, which on purpose does not say why it
+                  // refused the project, and calls the project a "resource".
+                  <Text data-testid="oauth-login-error-hint" size={1}>
+                    {t('login.oauth.invalid-target-hint')}
+                  </Text>
+                ) : (
+                  <Text size={1}>{callbackError.description ?? callbackError.error}</Text>
+                )}
+              </Stack>
+              {(callbackError.description || callbackError.error === 'invalid_target') && (
                 <Text muted size={0}>
-                  {callbackError.error}
+                  {t('login.oauth.error-code', {code: callbackError.error})}
                 </Text>
               )}
             </Stack>

@@ -158,6 +158,58 @@ describe('ListItemBuilder.singleton()', () => {
     expect(item.id).toBe('settingsSingleton')
     expect((item.child as DocumentNode).options.id).toBe('settingsDocument')
   })
+
+  it('carries the singleton document id without setting _id', async () => {
+    const S = await createBuilder()
+    const item = S.listItem().singleton('settingsSingleton').serialize()
+
+    expect(item).toMatchObject({singletonDocumentId: 'settingsDocument'})
+    expect('_id' in item).toBe(false)
+  })
+
+  it('keeps the singleton document id when the id is overridden after singleton()', async () => {
+    const S = await createBuilder()
+    const item = S.listItem().singleton('settingsSingleton').id('custom').serialize()
+
+    expect(item).toMatchObject({id: 'custom', singletonDocumentId: 'settingsDocument'})
+  })
+
+  it('clears the singleton document id when the child is overridden after singleton()', async () => {
+    const S = await createBuilder()
+    const item = S.listItem()
+      .singleton('settingsSingleton')
+      .child(S.documentTypeList('article'))
+      .serialize()
+
+    expect(item.singletonDocumentId).toBeUndefined()
+  })
+
+  it('clears the singleton document id when the schema type is overridden after singleton()', async () => {
+    const S = await createBuilder()
+    const item = S.listItem().singleton('settingsSingleton').schemaType('article').serialize()
+
+    expect(item.singletonDocumentId).toBeUndefined()
+  })
+
+  it('carries the document id when id equals documentId', async () => {
+    const S = await createBuilder()
+    const item = S.listItem().singleton('siteSettings').serialize()
+
+    expect(item).toMatchObject({singletonDocumentId: 'siteSettings'})
+  })
+
+  it('carries the singleton document id on every item of list().singletons()', async () => {
+    const S = await createBuilder()
+    const list = S.list()
+      .id('singletons')
+      .singletons(['siteSettings', 'settingsSingleton'])
+      .serialize()
+
+    expect(list.items).toMatchObject([
+      {singletonDocumentId: 'siteSettings'},
+      {singletonDocumentId: 'settingsDocument'},
+    ])
+  })
 })
 
 /**

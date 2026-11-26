@@ -236,6 +236,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-sources.dataset.file.title': 'Workspace files',
   'asset-sources.dataset.image.title': 'Workspace images',
 
+  /** Accessible label for the button that closes a federated (workbench-brokered) asset source dialog */
+  'asset-sources.federated.dialog.close-label': 'Close dialog',
   /** Error message shown when a federated (workbench-brokered) asset source view fails to load */
   'asset-sources.federated.error.unavailable':
     'This asset source failed to load. Close the dialog and try again.',
@@ -402,6 +404,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Value error: Value is of type "<code>{{actualType}}</code>", expected "<code>{{expectedType}}</code>"',
   /** File diff: Fallback title for the meta info section when there is no original filename to use  */
   'changes.file.meta-info-fallback-title': 'Untitled',
+  /** The base-variant mark's tooltip, before the chips naming the base variant and the compared version: "Differs from [Default] [Draft]" */
+  'changes.from-base-variant.differs-from': 'Differs from',
   /** The label displayed to indicate a document's value is different to its base variant. */
   'changes.from-base-variant.label': 'Changed from base variant',
   /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */
@@ -508,6 +512,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Default text in shared loader text / spinner lockup */
   'common.loading': 'Loading',
 
+  /** The description of the reconnecting toast, explaining why documents can't be edited */
+  'common.reconnecting.toast.description':
+    'Documents are read-only until the connection is restored.',
   /** The title of the reconnecting toast */
   'common.reconnecting.toast.title': 'Trying to connect…',
 
@@ -1665,14 +1672,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title of the banner shown above the login form after the studio logs the user out */
   'login.logged-out.title': "You've been logged out",
   /** Shown above the authorization server's reason when it refused the sign-in */
-  'login.oauth.authorization-failed': 'Sign-in was not completed',
-  /** Shown below the authorization server's reason when it refused to sign in to the workspace's project (`invalid_target`) */
+  'login.oauth.authorization-failed': "Couldn't sign in",
+  /** Reference below the reason the sign-in was refused, with the OAuth error code the authorization server returned (eg `invalid_target`) */
+  'login.oauth.error-code': 'Error code: {{code}}',
+  /** Shown in place of the authorization server's reason when it refused to sign in to the workspace's project (`invalid_target`) */
   'login.oauth.invalid-target-hint':
-    "You don't have access to this project, or this Studio isn't allowed to sign in to it. Contact your project admin.",
+    "This account doesn't have access to this project, or the project doesn't allow signing in through this Studio. Sign in with another account, or contact your project admin.",
   /** Button on the login screen of a Studio that signs in with OAuth */
   'login.oauth.sign-in': 'Sign in with Sanity',
   /** Shown above the reason when the Studio could not start signing in with OAuth */
-  'login.oauth.sign-in-failed': 'Could not start signing in',
+  'login.oauth.sign-in-failed': "Couldn't start signing in",
   /** Heading on the login screen of a Studio that signs in with OAuth */
   'login.oauth.title': 'Sign in to continue',
 

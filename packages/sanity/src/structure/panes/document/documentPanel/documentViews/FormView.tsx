@@ -26,6 +26,7 @@ import {useEffectEvent} from 'use-effect-event'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {CREATE_VARIANT_PARAM} from '../../constants'
+import {isDocumentLoading} from '../../isDocumentLoading'
 import {useDocumentPane} from '../../useDocumentPane'
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {useDocumentTitleField} from '../useDocumentTitleField'
@@ -253,7 +254,7 @@ export function FormView(props: FormViewProps & RefAttributes<HTMLFormElement>) 
           data-testid="form-view"
           data-read-only={isReadOnly ? 'true' : undefined}
         >
-          {connectionState === 'connecting' && !editState?.draft && !editState?.published ? (
+          {isDocumentLoading(editState) ? (
             <Delay ms={300}>
               {/* TODO: replace with loading block */}
               <Flex

@@ -51,6 +51,7 @@ export default defineConfig({
       'packages/@repo/debug-proxy',
       'packages/@repo/oxlint-plugin-i18n',
       'packages/@repo/release-notes',
+      'packages/@repo/stable-suggestion',
       'packages/@repo/bundle-manager',
       'packages/@repo/package.bundle',
       'packages/@repo/utils',

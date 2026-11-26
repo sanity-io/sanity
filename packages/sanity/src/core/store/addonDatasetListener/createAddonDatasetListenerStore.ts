@@ -22,6 +22,7 @@ import {
 
 import {type CommentDocument} from '../../comments/types'
 import {type TaskDocument} from '../../tasks/types'
+import {pauseWhileDocumentHidden} from '../listenerGate/listenerGate'
 import {shareListenerEvents} from '../sharedListener/shareListenerEvents'
 
 /** @internal */
@@ -79,6 +80,9 @@ export function createAddonDatasetListenerStore({
         (event: ListenEvent<AddonDatasetDocument>): event is AddonDatasetListenerEvent =>
           event.type === 'welcome' || event.type === 'reconnect' || event.type === 'mutation',
       ),
+      // A paused listener reconnects like a dropped one: the comments and tasks refetch on its
+      // `welcome`, and a subscriber that arrives while it is paused waits for that `welcome`
+      pauseWhileDocumentHidden({onPause: (): ReconnectEvent => ({type: 'reconnect'})}),
       shareListenerEvents(),
     )
 

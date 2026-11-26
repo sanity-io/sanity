@@ -35,8 +35,7 @@ test.describe('Cookie auth: cross-tab sync', () => {
     await page1.getByText('Sign out').click()
 
     // Page1 should show the login screen
-    // Note: Sanity UI's <Heading> renders as a <div>, not an <h1>–<h6>,
-    // so we use a data-ui selector + text match instead of getByRole("heading")
+    // The login screen heading is matched by its data-ui attribute and text
     await expect(
       page1.locator('[data-ui="Heading"]:has-text("Choose login provider")'),
     ).toBeVisible()
