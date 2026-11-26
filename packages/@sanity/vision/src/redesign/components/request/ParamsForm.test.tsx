@@ -15,7 +15,7 @@ import JSON5 from 'json5'
 import {type ReactNode, useState} from 'react'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
-import {type Params} from '../../../components/VisionGui'
+import {type Params} from '../../../util/parseParams'
 import * as fieldGrid from '../fieldGrid.module.css'
 import {ObjectParamInput} from './ObjectParamInput'
 import {ParamsForm} from './ParamsForm'

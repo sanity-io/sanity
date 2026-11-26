@@ -185,29 +185,8 @@ export const VisionPanelToggled = defineEvent<{panel: VisionPanel; open: boolean
 /* -------------------------------------------------------------------------------------------
  * Redesign only
  *
- * The redesign ships behind `beta.redesign`. These events cover what only it can do, and the
- * switch between it and the classic tool.
+ * The redesign is the only Vision tool from v7 on. These events cover what only it can do.
  * ------------------------------------------------------------------------------------------- */
-
-/**
- * Where the switch was made: the prompt the classic tool shows about the redesign, the classic
- * tool's controls, or the redesign's settings
- */
-export type VisionUiSwitchSource = 'prompt' | 'controls' | 'settings'
-
-/** User switched between the classic tool and the redesign; `to` is the UI they switched to */
-export const VisionUiSwitched = defineEvent<{to: VisionUi; source: VisionUiSwitchSource}>({
-  name: 'Vision UI Switched',
-  version: 1,
-  description: 'User switched between the classic Vision tool and the redesign.',
-})
-
-/** User dismissed the prompt the classic tool shows about the redesign, without trying it */
-export const VisionRedesignPromptDismissed = defineEvent({
-  name: 'Vision Redesign Prompt Dismissed',
-  version: 1,
-  description: 'User dismissed the prompt to try the redesigned Vision tool.',
-})
 
 export const VisionTabsChanged = defineEvent<{count: number; action: 'open' | 'add' | 'close'}>({
   name: 'Vision Tabs Changed',

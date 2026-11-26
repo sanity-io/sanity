@@ -369,6 +369,26 @@
       "name": "MediaPreviewProps",
       "kind": "type",
       "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "RovingFocusNavigationType",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "RovingFocusProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "StatusButtonProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+    },
+    {
+      "name": "UserAvatarProps",
+      "kind": "type",
+      "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
     }
   ]
 }

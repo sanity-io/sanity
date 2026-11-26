@@ -30,7 +30,7 @@ export const openVisionTool = async (page: Page) => {
   // Wait for both CodeMirror content nodes to be attached and marked editable
   // (CodeMirror sets `contenteditable="true"` once the view is ready for input).
   const queryEditor = page.getByTestId('vision-query-editor').locator('.cm-content')
-  const paramsEditor = page.getByTestId('params-editor').locator('.cm-content')
+  const paramsEditor = page.getByTestId('vision-params-editor').locator('.cm-content')
 
   await expect(queryEditor).toBeVisible()
   await expect(paramsEditor).toBeVisible()
@@ -41,8 +41,22 @@ export const openVisionTool = async (page: Page) => {
 export const getVisionRegions = async (page: Page) => {
   const queryEditorRegion = page.getByTestId('vision-query-editor')
   const queryEditor = queryEditorRegion.locator('.cm-content')
-  const paramsRegion = page.getByTestId('params-editor')
+  // The query's text: the editor's content also holds the Generate or Edit button under the
+  // last line, so the content's text is more than the query
+  const queryLines = queryEditor.locator('.cm-line')
+  const paramsRegion = page.getByTestId('vision-params-editor')
   const paramsEditor = paramsRegion.locator('.cm-content')
   const resultRegion = page.getByTestId('vision-result')
-  return {queryEditorRegion, queryEditor, paramsRegion, paramsEditor, resultRegion}
+  const fetchButton = page.getByTestId('vision-fetch-button')
+  const liveButton = page.getByTestId('vision-auto-refetch')
+  return {
+    queryEditorRegion,
+    queryEditor,
+    queryLines,
+    paramsRegion,
+    paramsEditor,
+    resultRegion,
+    fetchButton,
+    liveButton,
+  }
 }

@@ -13,7 +13,6 @@ import {
 import {Flex} from 'ui5'
 
 import {useVisionTelemetry} from '../../__telemetry__/useVisionTelemetry'
-import {type VisionUiSwitchSource} from '../../__telemetry__/vision.telemetry'
 import {useSavedQueries} from '../../hooks/useSavedQueries'
 import {type VisionConfig} from '../../types'
 import {useContentSize} from '../hooks/useContentSize'
@@ -107,11 +106,10 @@ export interface VisionRedesignProps {
   datasets: string[]
   projectId: string
   defaultDataset: string
-  onSwitchToClassic: (source?: VisionUiSwitchSource) => void
 }
 
 export function VisionRedesign(props: VisionRedesignProps) {
-  const {config, datasets, projectId, defaultDataset, onSwitchToClassic} = props
+  const {config, datasets, projectId, defaultDataset} = props
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const rootSize = useContentSize(rootElement)
   const [tabsElement, setTabsElement] = useState<HTMLDivElement | null>(null)
@@ -152,10 +150,7 @@ export function VisionRedesign(props: VisionRedesignProps) {
     else if (tabCount < previous) telemetry.tabsChanged(tabCount, 'close')
   }, [tabCount, telemetry])
   const openDrawer = useSelector(actorRef, selectOpenDrawer)
-  const experience = useMemo(
-    (): VisionExperience => ({layout, switchToClassic: onSwitchToClassic}),
-    [layout, onSwitchToClassic],
-  )
+  const experience = useMemo((): VisionExperience => ({layout}), [layout])
   const savedQueries = useSavedQueries()
   const [pendingEdits] = useState(createPendingEdits)
   const shownDrawer = useShownInSidebar(openDrawer, layout === 'mobile')

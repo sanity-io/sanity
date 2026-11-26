@@ -2159,9 +2159,6 @@ importers:
       '@rexxars/react-json-inspector':
         specifier: ^9.0.1
         version: 9.0.1(react@19.3.1)
-      '@rexxars/react-split-pane':
-        specifier: ^1.0.0
-        version: 1.0.0(react-dom@19.3.1)(react@19.3.1)
       '@sanity-labs/groq-wasm':
         specifier: ^1.3.1
         version: 1.3.1
@@ -8406,12 +8403,6 @@ packages:
     resolution: {integrity: sha512-4uZ4RnrVoOGOShIKKcPoF+qhwDCZJsPPqyoEoW/8HRdzNknN9Q2yhlbEgTX1lMZunF1fv7iHzAs+n1vgIgfg/g==}
     peerDependencies:
       react: ^18 || ^19
-
-  '@rexxars/react-split-pane@1.0.0':
-    resolution: {integrity: sha512-Ewl8ugA2VQd+idzcg65WFbYh/oCLPOFjeDKpebexPgFDDX8ZwsHZWy5jNwiIWI8txDidVmRP98lsnmBHlIywWA==}
-    peerDependencies:
-      react: ^18 || ^19
-      react-dom: ^18 || ^19
 
   '@rolldown/binding-android-arm-eabi@1.2.19':
     resolution: {integrity: sha512-e+Ebe0WT+9tbXmNKPIiC8YrWAHYwug3m6i4p3rZGGulfZri1jtI4HslT+OZnFf/OIHowWF71DTlHwXBP2SiA7A==}
@@ -22381,11 +22372,6 @@ snapshots:
       debounce: 1.2.1
       md5-o-matic: 0.1.1
       react: 19.3.1
-
-  '@rexxars/react-split-pane@1.0.0(react-dom@19.3.1)(react@19.3.1)':
-    dependencies:
-      react: 19.3.1
-      react-dom: 19.3.1(react@19.3.1)
 
   '@rolldown/binding-android-arm-eabi@1.2.19':
     optional: true

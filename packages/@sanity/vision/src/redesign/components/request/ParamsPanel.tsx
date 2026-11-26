@@ -3,7 +3,7 @@ import {type RefObject, useEffect, useMemo} from 'react'
 import {Text} from 'ui5'
 
 import {VisionCodeMirror, type VisionCodeMirrorHandle} from '../../../codemirror/VisionCodeMirror'
-import {type Params} from '../../../components/VisionGui'
+import {type Params} from '../../../util/parseParams'
 import {useParamsInference} from '../../hooks/useParamsInference'
 import {redesignParamsExtensions} from '../../util/editorTheme'
 import {paramsJsonActiveParam} from '../../util/paramHighlight'

@@ -53,10 +53,7 @@ export const groqExtensions: Extension[] = [groq(), ...sharedExtensions]
 
 export const paramsExtensions: Extension[] = [javascriptLanguage, ...sharedExtensions]
 
-/**
- * A result's JSON: read only, but focusable and selectable. Folding is up to the caller — the
- * redesign adds its own fold gutter; classic Vision has no result JSON editor.
- */
+/** A result's JSON: read only, but focusable and selectable. Folding is up to the caller. */
 export const readOnlyJsonExtensions: Extension[] = [
   javascriptLanguage,
   ...sharedExtensions,

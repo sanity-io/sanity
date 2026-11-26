@@ -1,10 +1,9 @@
 import {useCallback, useMemo} from 'react'
 import {useTranslation} from 'sanity/i18n'
 
-import {parseParams} from '../../components/ParamsEditor'
-import {type Params} from '../../components/VisionGui'
 import {visionLocaleNamespace} from '../../i18n'
 import {encodeQueryString} from '../../util/encodeQueryString'
+import {type Params, parseParams} from '../../util/parseParams'
 import {type QueryRequest, type VisionTab} from '../store/types'
 import {useVisionSelector} from '../store/VisionActorContext'
 import {selectSourceMapRequest} from '../store/visionMachine'

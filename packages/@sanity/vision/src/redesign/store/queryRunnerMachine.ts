@@ -68,6 +68,11 @@ export interface QueryRunnerContext {
   liveClient: SanityClient | undefined
   liveError: Error | undefined
   /**
+   * Whether the subscription is connected: the Live Content API sent its welcome, and neither a
+   * reconnect nor a go-away since. A change made before then refetches nothing
+   */
+  liveConnected: boolean
+  /**
    * What the paused subscription heard that would have refetched the query: the matched sync
    * tags of every relevant event and the latest event's id, replayed as one refetch on resume
    */
@@ -94,6 +99,17 @@ function toError(value: unknown): Error {
 
 function liveEventId(event: LiveEvent | undefined): string | undefined {
   return event && 'id' in event && typeof event.id === 'string' ? event.id : undefined
+}
+
+/**
+ * Whether the subscription is connected once it has delivered `event`: the welcome comes once
+ * the connection reports changes, and a reconnect or a go-away (the server closed or turned down
+ * the connection) means it reports none until the next welcome
+ */
+function isLiveConnectedAfter(event: LiveEvent | undefined, connected: boolean): boolean {
+  if (event?.type === 'welcome') return true
+  if (event?.type === 'reconnect' || event?.type === 'goaway') return false
+  return connected
 }
 
 /**
@@ -222,6 +238,9 @@ export const queryRunnerMachine = setup({
       liveError: undefined,
     }),
     clearLiveMissed: assign({liveMissed: undefined}),
+    trackLiveConnection: assign(({context}, params: {liveEvent: LiveEvent | undefined}) => ({
+      liveConnected: isLiveConnectedAfter(params.liveEvent, context.liveConnected),
+    })),
   },
 }).createMachine({
   id: 'queryRunner',
@@ -242,6 +261,7 @@ export const queryRunnerMachine = setup({
     history: [],
     liveClient: undefined,
     liveError: undefined,
+    liveConnected: false,
     liveMissed: undefined,
   }),
   states: {
@@ -359,13 +379,15 @@ export const queryRunnerMachine = setup({
       initial: 'off',
       states: {
         off: {
-          entry: assign({liveError: undefined, liveMissed: undefined}),
+          entry: assign({liveError: undefined, liveConnected: false, liveMissed: undefined}),
           on: {
             'live.enable': {target: 'on', actions: 'storeLiveClient'},
           },
         },
         on: {
           initial: 'active',
+          // A new subscription, which connects once its welcome arrives
+          entry: assign({liveConnected: false}),
           invoke: {
             src: 'liveEvents',
             input: ({context}) => ({client: context.liveClient as SanityClient}),
@@ -376,19 +398,25 @@ export const queryRunnerMachine = setup({
                   ({context, event}) =>
                     relevantLiveTags(context, event.snapshot.context, {paused: false}) !== null,
                 ]),
-                actions: raise(({context, event}) => {
-                  const liveEvent = event.snapshot.context
-                  const eventId = liveEventId(liveEvent)
-                  return {
-                    type: 'fetch' as const,
-                    request: context.request as QueryRequest,
-                    reason: {
-                      type: 'live' as const,
-                      matchedTags: relevantLiveTags(context, liveEvent, {paused: false}) ?? [],
-                      ...(eventId === undefined ? {} : {eventId}),
-                    },
-                  }
-                }),
+                actions: [
+                  {
+                    type: 'trackLiveConnection',
+                    params: ({event}) => ({liveEvent: event.snapshot.context}),
+                  },
+                  raise(({context, event}) => {
+                    const liveEvent = event.snapshot.context
+                    const eventId = liveEventId(liveEvent)
+                    return {
+                      type: 'fetch' as const,
+                      request: context.request as QueryRequest,
+                      reason: {
+                        type: 'live' as const,
+                        matchedTags: relevantLiveTags(context, liveEvent, {paused: false}) ?? [],
+                        ...(eventId === undefined ? {} : {eventId}),
+                      },
+                    }
+                  }),
+                ],
               },
               {
                 guard: and([
@@ -396,22 +424,35 @@ export const queryRunnerMachine = setup({
                   ({context, event}) =>
                     relevantLiveTags(context, event.snapshot.context, {paused: true}) !== null,
                 ]),
-                actions: assign({
-                  liveMissed: ({context, event}) => {
-                    const liveEvent = event.snapshot.context
-                    const matched = relevantLiveTags(context, liveEvent, {paused: true}) ?? []
-                    const previous = context.liveMissed?.matchedTags ?? []
-                    return {
-                      matchedTags: [...new Set([...previous, ...matched])],
-                      eventId: liveEventId(liveEvent) ?? context.liveMissed?.eventId,
-                    }
+                actions: [
+                  {
+                    type: 'trackLiveConnection',
+                    params: ({event}) => ({liveEvent: event.snapshot.context}),
                   },
-                }),
+                  assign({
+                    liveMissed: ({context, event}) => {
+                      const liveEvent = event.snapshot.context
+                      const matched = relevantLiveTags(context, liveEvent, {paused: true}) ?? []
+                      const previous = context.liveMissed?.matchedTags ?? []
+                      return {
+                        matchedTags: [...new Set([...previous, ...matched])],
+                        eventId: liveEventId(liveEvent) ?? context.liveMissed?.eventId,
+                      }
+                    },
+                  }),
+                ],
+              },
+              // An event that refetches nothing still tells whether the subscription is connected
+              {
+                actions: {
+                  type: 'trackLiveConnection',
+                  params: ({event}) => ({liveEvent: event.snapshot.context}),
+                },
               },
             ],
             onError: {
               target: 'failed',
-              actions: assign({liveError: ({event}) => toError(event.error)}),
+              actions: assign({liveError: ({event}) => toError(event.error), liveConnected: false}),
             },
           },
           on: {
@@ -474,4 +515,9 @@ export function selectRequestStatus(snapshot: QueryRunnerSnapshot): RequestStatu
 
 export function selectIsFetching(snapshot: QueryRunnerSnapshot): boolean {
   return snapshot.matches({request: 'fetching'})
+}
+
+/** Live refetching is on and its subscription connected, so changes from now on refetch */
+export function selectLiveConnected(snapshot: QueryRunnerSnapshot): boolean {
+  return snapshot.matches({live: 'on'}) && snapshot.context.liveConnected
 }

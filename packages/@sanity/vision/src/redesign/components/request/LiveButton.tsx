@@ -15,14 +15,18 @@ export interface LiveButtonProps {
   supported: boolean
   /** There is a request to fetch, as for the Fetch button */
   canFetch: boolean
+  /** The Live Content API subscription is connected, so changes from now on refetch */
+  connected: boolean
   onToggle: () => void
 }
 
 /**
  * Live fetch: fetches the last request again whenever the documents in its result change
- * (through the Live Content API's sync tags), until Stop live. Turning it on or off fetches nothing
+ * (through the Live Content API's sync tags), until Stop live. Turning it on or off fetches nothing.
+ * While on, `data-live-status` says whether the subscription has connected yet: the button reads
+ * Stop live from the click on, and a change made before the connection refetches nothing
  */
-export function LiveButton({active, supported, canFetch, onToggle}: LiveButtonProps) {
+export function LiveButton({active, supported, canFetch, connected, onToggle}: LiveButtonProps) {
   const {t} = useTranslation(visionLocaleNamespace)
   const hintId = useId()
   const live = active && supported
@@ -46,6 +50,7 @@ export function LiveButton({active, supported, canFetch, onToggle}: LiveButtonPr
       >
         <Button
           aria-hidden={unavailable || undefined}
+          data-live-status={live ? (connected ? 'connected' : 'connecting') : undefined}
           data-testid="vision-auto-refetch"
           // Like Fetch it needs something to fetch, but a running session can always be stopped
           disabled={unavailable || (!live && !canFetch)}
