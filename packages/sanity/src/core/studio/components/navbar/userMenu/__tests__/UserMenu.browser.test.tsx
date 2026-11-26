@@ -1,4 +1,5 @@
 import {BoundaryElementProvider} from '@sanity/ui'
+import {WorkspacesContext} from 'sanity/_singletons'
 import {describe, expect, test} from 'vitest'
 import {render} from 'vitest-browser-react'
 import {page, userEvent} from 'vitest/browser'
@@ -6,6 +7,7 @@ import {page, userEvent} from 'vitest/browser'
 import {testHelpers} from '../../../../../../../test/browser/testHelpers'
 import {TestWrapper} from '../../../../../../../test/browser/TestWrapper'
 import {LocaleProvider} from '../../../../../i18n/components/LocaleProvider'
+import {createWorkspaceSummaries} from '../../__tests__/workspaceSummaryFixtures'
 import {UserMenu} from '../UserMenu'
 
 // `LocaleMenu` reads `LocaleContext`, which the shared mock studio does not
@@ -13,14 +15,21 @@ import {UserMenu} from '../UserMenu'
 // The navbar has no pane above it, so its menus measure `constrainSize`
 // against the viewport in the studio. The wrapper's pane is only as tall as
 // its content (one button) and would clamp the open menu to a few pixels.
+// The sign-out row signs out of every workspace in `WorkspacesContext`.
+const WORKSPACES = createWorkspaceSummaries([
+  {name: 'default', title: 'Test Studio', projectId: 'test', dataset: 'test'},
+])
+
 function UserMenuHarness() {
   return (
     <TestWrapper schemaTypes={[]}>
-      <BoundaryElementProvider element={window.document.body}>
-        <LocaleProvider>
-          <UserMenu />
-        </LocaleProvider>
-      </BoundaryElementProvider>
+      <WorkspacesContext.Provider value={WORKSPACES}>
+        <BoundaryElementProvider element={window.document.body}>
+          <LocaleProvider>
+            <UserMenu />
+          </LocaleProvider>
+        </BoundaryElementProvider>
+      </WorkspacesContext.Provider>
     </TestWrapper>
   )
 }

@@ -25,6 +25,12 @@ export interface CommitHandlerMessage {
 class Commit {
   mutations: Mutation[]
   tries: number
+  /**
+   * Assigned on the first attempt and reused on every retry. If an attempt lands but its
+   * response is lost, the retry then fails with `transactionAlreadyExistsError` instead of
+   * applying the same mutations a second time.
+   */
+  transactionId?: string
   resolve: () => void
   reject: (error: Error) => void
 
@@ -44,7 +50,13 @@ class Commit {
 
   squash(doc: Doc | null) {
     const result = Mutation.squash(doc, this.mutations)
-    result.assignRandomTransactionId()
+    if (this.transactionId) {
+      result.params.transactionId = this.transactionId
+      result.params.resultRev = this.transactionId
+    } else {
+      result.assignRandomTransactionId()
+      this.transactionId = result.transactionId
+    }
     return result
   }
 }
@@ -323,7 +335,11 @@ export class BufferedDocument {
     }
 
     const oldLocal = this.LOCAL
-    this.LOCAL = this.commits.reduce((doc, commit) => commit.apply(doc), this.document.EDGE)
+    // A commit waiting to be retried may already have landed, with its response lost. Its echo
+    // is in EDGE then, and the retry is answered as already existing, so it is not applied again.
+    this.LOCAL = this.commits
+      .filter((commit) => !commit.transactionId || !this.document.hasApplied(commit.transactionId))
+      .reduce((doc, commit) => commit.apply(doc), this.document.EDGE)
     this.LOCAL = this.buffer.rebase(this.LOCAL)
 
     // Copy over rev, since we don't care if it changed, we only care about the content

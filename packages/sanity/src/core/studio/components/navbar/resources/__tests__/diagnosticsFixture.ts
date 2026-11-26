@@ -27,6 +27,7 @@ export const DIAGNOSTICS_FIXTURE: StudioDiagnostics = {
   generatedAt: '2026-08-21T12:00:00.128Z',
   network: {
     listen: {first: listen, secondWhileFirstOpen: listen},
+    listeners: {open: 6, peak: 9},
     protocol: {
       durationMs: 42,
       protocol: 'h2',

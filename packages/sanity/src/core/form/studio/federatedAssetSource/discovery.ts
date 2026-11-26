@@ -1,6 +1,6 @@
 import {type ApplicationInterface} from '@sanity/sdk'
 import {getApplicationOrigin} from '@sanity/sdk/_internal'
-import {type DashboardTopics, type ValueOf} from '@sanity/sdk/dashboard'
+import {type DashboardTopics, type ValueOf, type ViewApplication} from '@sanity/sdk/dashboard'
 
 import {getMessageBusConnection} from '../../../store/messageBus/getMessageBusConnection'
 import {type FederatedAssetSourceView} from './types'
@@ -39,7 +39,7 @@ function toManifestUrl(origin: string): string {
 }
 
 function toViews(
-  application: {id: string; name: string; title: string},
+  application: ViewApplication,
   origin: string | null,
   interfaces: readonly ApplicationInterface[] | null | undefined,
 ): FederatedAssetSourceView[] {
@@ -47,6 +47,7 @@ function toViews(
   const views: FederatedAssetSourceView[] = []
   for (const extension of interfaces ?? []) {
     if (extension.type !== ASSET_SOURCE_SLOT) continue
+    const {type: _type, ...rest} = extension
     const moduleId = `${application.id}/${extension.moduleId}`
     views.push({
       applicationId: application.id,
@@ -54,7 +55,11 @@ function toViews(
       applicationTitle: application.title,
       name: extension.name,
       title: extension.title,
-      interface: extension,
+      interface: {
+        ...rest,
+        surface: ASSET_SOURCE_SLOT,
+        application,
+      },
       remote: {name: application.id, entry: toManifestUrl(origin)},
       // Deployed interface records carry `views/<name>`; the expose path adds
       // the component slot (`asset_source` is its only component).
@@ -88,7 +93,17 @@ function findAssetSourceViews(entries: ApplicationsList): FederatedAssetSourceVi
       // built with a federation manifest; local dev servers always are.
       const loadable = local || entry.config?.mfManifest !== undefined
       return toViews(
-        entry,
+        {
+          id: entry.id,
+          type: entry.type,
+          isLocal: local,
+          name: entry.name,
+          title: entry.title,
+          reference: entry.reference,
+          icon: entry.icon,
+          slug: entry.slug,
+          organizationId: entry.organizationId,
+        },
         getApplicationOrigin(entry),
         loadable ? entry.activeDeployment?.interfaces : null,
       )
@@ -98,7 +113,17 @@ function findAssetSourceViews(entries: ApplicationsList): FederatedAssetSourceVi
     const {application} = entry
     if (localNames.has(application.name)) return []
     return toViews(
-      {id: entry.id, name: application.name, title: application.title},
+      {
+        id: entry.id,
+        type: 'installation',
+        isLocal: false,
+        name: application.name,
+        title: application.title,
+        reference: application.reference,
+        icon: application.icon,
+        slug: application.slug,
+        organizationId: application.organizationId,
+      },
       getApplicationOrigin({
         externalUrl: null,
         slug: application.slug,
@@ -111,20 +136,34 @@ function findAssetSourceViews(entries: ApplicationsList): FederatedAssetSourceVi
 }
 
 /**
- * The brokered `asset_source` views currently published by the workbench, or
- * `undefined` when the Studio is not running as a federated remote inside the
- * workbench (no message bus).
- *
- * Read synchronously off the bus's state topic because `prepareConfig`
- * resolves asset sources once: on a cold start in which the workbench has not
- * yet published `applications.list`, this returns `[]` — callers must resolve
- * that to today's iframe behavior, never to a missing Media Library source.
+ * The state of the workbench's `applications.list` topic, as read by
+ * {@link discoverFederatedAssetSourceViews}:
+ * - `standalone`: no message bus, the Studio is not running inside the workbench.
+ * - `pending`: the workbench has not published the list yet (cold start).
+ * - `failed`: the workbench published an error instead of the list.
+ * - `published`: the list, mapped to its `asset_source` views.
  *
  * @internal
  */
-export function getCurrentFederatedAssetSourceViews(): FederatedAssetSourceView[] | undefined {
+export type FederatedAssetSourceDiscovery =
+  | {status: 'standalone'}
+  | {status: 'pending'}
+  | {status: 'failed'}
+  | {status: 'published'; views: FederatedAssetSourceView[]}
+
+/**
+ * Reads the brokered `asset_source` views synchronously off the bus's state
+ * topic, because `prepareConfig` resolves asset sources once. Anything but
+ * `published` must resolve to today's iframe behavior, never to a missing
+ * Media Library source.
+ *
+ * @internal
+ */
+export function discoverFederatedAssetSourceViews(): FederatedAssetSourceDiscovery {
   const connection = getMessageBusConnection()
-  if (!connection) return undefined
+  if (!connection) return {status: 'standalone'}
   const result = connection.subscribe('applications.list').getCurrent()
-  return result?.ok ? findAssetSourceViews(result.value) : []
+  if (!result) return {status: 'pending'}
+  if (!result.ok) return {status: 'failed'}
+  return {status: 'published', views: findAssetSourceViews(result.value)}
 }

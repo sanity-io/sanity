@@ -1,6 +1,5 @@
 import {LaunchIcon} from '@sanity/icons/Launch'
 import {Button, Card, Dialog, Inline} from '@sanity/ui'
-import {Code} from '@sanity/ui/code'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
 import {catchError, combineLatest, map, of, type Observable} from 'rxjs'
@@ -19,7 +18,7 @@ import {
   usePerspective,
   VARIANTS_STUDIO_CLIENT_OPTIONS,
 } from 'sanity'
-import {Text, Box, Grid, VStack, Icon, Link} from 'ui5'
+import {Code, Text, Box, Grid, VStack, Icon, Link} from 'ui5'
 
 const DOCUMENT_QUERY = '*[_id == $id][0]'
 
@@ -298,7 +297,7 @@ function DocumentJsonDialog(props: {documentId: string; label: string; onClose: 
           </Text>
         )}
         {!loading && !error && (
-          <Code language="json" size={1}>
+          <Code language="json" size={1} trim>
             {JSON.stringify(document, null, 2)}
           </Code>
         )}

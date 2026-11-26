@@ -10,7 +10,6 @@ import {
   FieldActionsResolver,
   GetFormValueProvider,
   type Path,
-  useDocumentIdStack,
   useGlobalCopyPasteElementHandler,
   useTranslation,
   useZIndex,
@@ -35,6 +34,7 @@ import {DocumentPanel} from '../documentPanel/DocumentPanel'
 import {DocumentPanelHeader} from '../documentPanel/header/DocumentPanelHeader'
 import {DocumentActionShortcuts} from '../keyboardShortcuts/DocumentActionShortcuts'
 import {getMenuItems} from '../menuItems'
+import {useCompareVersionsDocuments} from '../useCompareVersionsDocuments'
 import {useDocumentPane} from '../useDocumentPane'
 import {changeConnectorRoot} from './DocumentLayout.css'
 import {DocumentLayoutError} from './DocumentLayoutError'
@@ -118,7 +118,7 @@ export function DocumentLayout() {
     [inspectors, inspector?.name],
   )
 
-  const documentIdStack = useDocumentIdStack({displayed, documentId, editState})
+  const compareVersionsDocuments = useCompareVersionsDocuments({displayed, documentId, editState})
 
   const hasValue = Boolean(value)
 
@@ -131,13 +131,13 @@ export function DocumentLayout() {
         inspectorMenuItems,
         inspectors,
         previewUrl,
-        documentIdStack,
+        compareVersionsDocuments,
         t,
         displayInlineChanges: stickyParams.displayInlineChanges === 'true',
       }),
     [
       currentInspector,
-      documentIdStack,
+      compareVersionsDocuments,
       features,
       hasValue,
       inspectorMenuItems,
@@ -170,6 +170,12 @@ export function DocumentLayout() {
       onFocus(path)
     },
     [onPathOpen, onFocus],
+  )
+
+  // Wrapped so the change-bar's onClick MouseEvent isn't passed through as the telemetry path.
+  const handleOpenReviewChanges = useCallback(
+    () => onHistoryOpen('change_indicator'),
+    [onHistoryOpen],
   )
 
   if (!schemaType) {
@@ -230,7 +236,7 @@ export function DocumentLayout() {
                 <StyledChangeConnectorRoot
                   data-testid="change-connector-root"
                   isReviewChangesOpen={changesOpen && paneParams?.changesInspectorTab === 'review'}
-                  onOpenReviewChanges={onHistoryOpen}
+                  onOpenReviewChanges={handleOpenReviewChanges}
                   onSetFocus={onConnectorSetFocus}
                 >
                   <DocumentPanel

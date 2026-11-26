@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.25.0](https://github.com/sanity-io/sanity/compare/v6.24.0...v6.25.0) (2026-11-24)
+
+### Bug Fixes
+
+* **deps:** update storybook monorepo to ^10.6.8 ([#16275](https://github.com/sanity-io/sanity/issues/16275)) ([c544497](https://github.com/sanity-io/sanity/commit/c5444977f3615fd7d1715b8c0f236942fc75f619))
 ## [6.24.0](https://github.com/sanity-io/sanity/compare/v6.23.0...v6.24.0) (2026-11-17)
 
 ### Bug Fixes

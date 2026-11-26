@@ -1,6 +1,13 @@
-import {describe, expect, test} from 'vitest'
+import {createClient, type LiveEvent} from '@sanity/client'
+import {act, renderHook} from '@testing-library/react'
+import {Subject} from 'rxjs'
+import {LISTENER_PAUSE_GRACE_PERIOD, listenerGate} from 'sanity'
+import {afterEach, describe, expect, test, vi} from 'vitest'
 
-import {initialState, reducer} from '../useLiveEvents'
+import {stubDocumentVisibility} from '../../../../test/testUtils/documentVisibility'
+import {initialState, reducer, useLiveEvents} from '../useLiveEvents'
+
+let releaseListenerGate: (() => void) | undefined
 
 describe('useLiveEvents', () => {
   const msg1 = {type: 'message' as const, id: '123', tags: ['s1:abc' as const]}
@@ -41,6 +48,66 @@ describe('useLiveEvents', () => {
     expect(state.messages).toHaveLength(100)
     expect(state.messages.at(0)?.id).toBe('20')
     expect(state.messages.at(-1)?.id).toBe('119')
+  })
+
+  describe('on a hidden page', () => {
+    afterEach(() => {
+      releaseListenerGate?.()
+      vi.useRealTimers()
+      vi.restoreAllMocks()
+    })
+
+    test('stops listening while paused, and resets when the page is shown', () => {
+      vi.useFakeTimers()
+      releaseListenerGate = listenerGate.enable()
+      const documentVisibility = stubDocumentVisibility()
+      const client = createClient({
+        projectId: 'abc',
+        dataset: 'production',
+        apiVersion: '2025-02-19',
+        useCdn: false,
+      })
+      const events = new Subject<LiveEvent>()
+      vi.spyOn(client.live, 'events').mockReturnValue(events as never)
+
+      const {result, unmount} = renderHook(() => useLiveEvents(client))
+      act(() => events.next(msg1))
+      expect(result.current).toEqual({messages: [msg1], resets: 0})
+
+      act(() => documentVisibility.set('hidden'))
+      act(() => {
+        vi.advanceTimersByTime(LISTENER_PAUSE_GRACE_PERIOD)
+      })
+      expect(events.observed).toBe(false)
+
+      act(() => documentVisibility.set('visible'))
+      expect(events.observed).toBe(true)
+      expect(result.current).toEqual({messages: [], resets: 1})
+      unmount()
+    })
+
+    test('resets when a page opened in the background is first shown', () => {
+      releaseListenerGate = listenerGate.enable()
+      const documentVisibility = stubDocumentVisibility('hidden')
+      const client = createClient({
+        projectId: 'abc',
+        dataset: 'production',
+        apiVersion: '2025-02-19',
+        useCdn: false,
+      })
+      const events = new Subject<LiveEvent>()
+      vi.spyOn(client.live, 'events').mockReturnValue(events as never)
+
+      // The loader's queries fetch on mount, while live events are not connected yet
+      const {result, unmount} = renderHook(() => useLiveEvents(client))
+      expect(events.observed).toBe(false)
+      expect(result.current).toEqual({messages: [], resets: 0})
+
+      act(() => documentVisibility.set('visible'))
+      expect(events.observed).toBe(true)
+      expect(result.current).toEqual({messages: [], resets: 1})
+      unmount()
+    })
   })
 
   test('throws on unknown event types', () => {

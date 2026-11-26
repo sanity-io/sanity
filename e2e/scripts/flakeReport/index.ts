@@ -13,6 +13,7 @@ import os from 'node:os'
 import path from 'node:path'
 import {parseArgs} from 'node:util'
 
+import {resolveGitHubToken} from '@repo/utils/github-token'
 import {strFromU8, unzipSync} from 'fflate'
 
 import {
@@ -28,7 +29,7 @@ import {
   DEFAULT_THRESHOLDS,
   findClusters,
 } from './classify'
-import {GitHubClient, resolveGitHubToken} from './github'
+import {GitHubClient} from './github'
 import {renderMarkdown} from './render'
 import {
   type Artifact,

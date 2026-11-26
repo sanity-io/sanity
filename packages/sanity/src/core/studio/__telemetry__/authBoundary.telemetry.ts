@@ -82,11 +82,16 @@ export const OAuthTokenRenewed = defineEvent<{
 
 /**
  * Fired when an OAuth session ends in this tab: the user signed out, the refresh token was
- * refused, or the Studio logged the user out because the API rejected the session as expired or
- * not found. `sessionAge` is a coarse bucket of the time since sign-in.
+ * refused or had expired, or the Studio logged the user out because the API rejected the session
+ * as expired or not found. `sessionAge` is a coarse bucket of the time since sign-in.
  */
 export const OAuthSessionEnded = defineEvent<{
-  reason: 'user-signed-out' | 'refresh-refused' | 'session-expired' | 'session-not-found'
+  reason:
+    | 'user-signed-out'
+    | 'refresh-refused'
+    | 'refresh-expired'
+    | 'session-expired'
+    | 'session-not-found'
   sessionAge?: '<1h' | '1-24h' | '1-7d' | '>7d'
 }>({
   name: 'OAuth Session Ended',

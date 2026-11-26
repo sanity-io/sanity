@@ -1,10 +1,13 @@
-import {type QueryParams, type SanityClient} from '@sanity/client'
+import {type QueryParams, type ReconnectEvent, type SanityClient} from '@sanity/client'
 import sortedIndex from 'lodash-es/sortedIndex.js'
 import {of} from 'rxjs'
 import {distinctUntilChanged, filter, map, mergeMap, scan, tap} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../config/types'
+import {pauseWhileDocumentHidden} from '../store/listenerGate/listenerGate'
 import {versionedClient} from '../studioClient'
+import {retryTransientFetch} from '../util/fetchErrors'
+import {reconnectListener} from '../util/reconnectListener'
 
 export type DocumentIdSetObserverState = {
   status: 'reconnecting' | 'connected'
@@ -31,6 +34,8 @@ export function createDocumentIdSetObserver(client: SanityClient) {
           tag: 'preview.observe-document-set.fetch',
         })
         .pipe(
+          // A failed fetch would end the set, and close its listener with it.
+          retryTransientFetch(),
           tap((result) => {
             if (!Array.isArray(result)) {
               throw new Error(
@@ -50,10 +55,16 @@ export function createDocumentIdSetObserver(client: SanityClient) {
         tag: 'preview.observe-document-set.listen',
       })
       .pipe(
-        mergeMap((event) => {
-          return event.type === 'welcome'
-            ? fetchFilter().pipe(map((result) => ({type: 'fetch' as const, result})))
-            : of(event)
+        reconnectListener(),
+        pauseWhileDocumentHidden({onPause: (): ReconnectEvent => ({type: 'reconnect'})}),
+        mergeMap((event, index) => {
+          const live = event.type === 'welcome'
+          // A reconnect before welcome: the listener is down before it delivered anything, so the
+          // set is fetched without it, and fetched again once the listener welcomes.
+          if (live || (index === 0 && event.type === 'reconnect')) {
+            return fetchFilter().pipe(map((result) => ({type: 'fetch' as const, result, live})))
+          }
+          return of(event)
         }),
         scan(
           (
@@ -68,7 +79,15 @@ export function createDocumentIdSetObserver(client: SanityClient) {
               }
             }
             if (event.type === 'fetch') {
-              return {...state, status: 'connected' as const, documentIds: event.result}
+              // A fetch made while the listener was down never replaces what a live one loaded.
+              if (!event.live && state?.status === 'connected') {
+                return state
+              }
+              return {
+                ...state,
+                status: event.live ? ('connected' as const) : ('reconnecting' as const),
+                documentIds: event.result,
+              }
             }
             if (event.type === 'mutation') {
               if (event.transition === 'update') {
