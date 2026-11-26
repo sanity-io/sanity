@@ -22,6 +22,7 @@ import {
   ChangeIndicatorsTracker,
   createPatchChannel,
   FormBuilder,
+  type EditStateFor,
   getPublishedId,
   getVersionFromId,
   isDraftId,
@@ -35,15 +36,21 @@ import {
   useDocumentForm,
   useEditState,
   useMiddlewareComponents,
+  useTranslation,
+  useWorkspace,
   VirtualizerScrollInstanceProvider,
 } from 'sanity'
 import {CommentsEnabledContext, ReviewChangesContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
+import {Text} from 'ui5'
 
+import {structureLocaleNamespace} from '../../i18n'
 import {pickDocumentLayoutComponent} from '../../panes/document/document-layout/pickDocumentLayoutComponent'
 import {usePathSyncChannel} from '../hooks/usePathSyncChannel'
 import {type PathSyncChannel} from '../types/pathSyncChannel'
 import {findRelease} from '../utils/findRelease'
+import {readOnlyPane} from './DiffViewPane.css'
+import {missingVersion} from './EmptyDiffViewPane.css'
 import {Scroller} from './Scroller'
 
 const DiffViewPaneLayout = styled(Card)`
@@ -79,6 +86,8 @@ export function DiffViewPane({
   const containerElement = useRef<HTMLDivElement | null>(null)
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
+  // The read-only sides and their styling belong to Content Variants; without it, main's panes
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
 
   const DocumentLayout = useMiddlewareComponents({
     pick: pickDocumentLayoutComponent,
@@ -115,6 +124,7 @@ export function DiffViewPane({
         >
           <BoundaryElementProvider element={boundaryElement}>
             <DiffViewPaneLayout
+              className={variantsEnabled ? readOnlyPane : undefined}
               ref={setBoundaryElement}
               style={{
                 '--grid-area': `${role}-document`,
@@ -173,8 +183,12 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
   const {data: releases} = useActiveReleases()
   const [patchChannel] = useState(() => createPatchChannel())
   const perspective = useMemo(() => findRelease(documentId, releases), [documentId, releases])
+  // The comparison view's open beta behaviour (read-only sides, marks against the Reference, the
+  // missing version message) belongs to Content Variants. Without it, the panes are main's.
+  const variantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
 
   const {
+    editState,
     formState,
     onChange,
     onFocus,
@@ -197,9 +211,18 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
     releaseId: getVersionFromId(documentId),
     comparisonValue: compareValue,
     displayInlineChanges: true,
+    // With Variants, compare is for reading: neither side can be edited from here
+    readOnly: variantsEnabled,
+    // With Variants, the Comparing with side marks the fields that differ from the Reference, in
+    // place of the base variant; the Reference side marks nothing
+    fieldMarkBase: variantsEnabled ? (role === 'next' ? (compareValue ?? null) : null) : undefined,
   })
 
   const isLoading = formState === null || !ready
+  // A URL can name a version that no longer exists (discarded, or published and gone). The form
+  // would show an empty new document; say so instead.
+  const isMissing =
+    variantsEnabled && !isLoading && pickVersion(documentId, editState) === undefined
 
   const pathSyncChannel = usePathSyncChannel({
     id: role,
@@ -222,6 +245,10 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
     return () => subscription.unsubscribe()
     // oxlint-disable-next-line react/exhaustive-effect-dependencies -- pre-existing violation, to be fixed in a follow-up
   }, [onPathOpenFromForm, onProgrammaticFocus, pathSyncChannel.path, role])
+
+  if (isMissing) {
+    return <MissingVersion />
+  }
 
   return isLoading ? (
     <LoadingBlock showText />
@@ -251,7 +278,11 @@ const DiffViewDocument: ComponentType<DiffViewPaneProps> = ({
         changedFromBaseVariant={formState.changedFromBaseVariant}
         baseVariantValue={formState.baseVariantValue}
         hasBaseVariant={formState.hasBaseVariant}
+        fieldMarksCompareWithReference={variantsEnabled}
         presence={formState.presence}
+        // The whole form is read-only, which the form's own members read from here (closing an
+        // empty array item, for one, then never tries to patch it)
+        readOnly={variantsEnabled || undefined}
         schemaType={schemaType}
         value={value}
         compareValue={compareValue}
@@ -287,26 +318,32 @@ function useCompareValue({compareDocument}: UseCompareValueOptions): SanityDocum
     getVersionFromId(compareDocument.id),
   )
 
-  return useMemo(() => {
-    if (isVersionId(compareDocument.id)) {
-      return compareDocumentEditState.version ?? undefined
-    }
+  return useMemo(
+    () => pickVersion(compareDocument.id, compareDocumentEditState),
+    [compareDocument.id, compareDocumentEditState],
+  )
+}
 
-    if (isDraftId(compareDocument.id)) {
-      return compareDocumentEditState.draft ?? undefined
-    }
+/** The document an id names, out of the version, draft and published of its edit state. */
+function pickVersion(
+  id: string,
+  editState: Pick<EditStateFor, 'version' | 'draft' | 'published'>,
+): SanityDocument | undefined {
+  if (isVersionId(id)) return editState.version ?? undefined
+  if (isDraftId(id)) return editState.draft ?? undefined
+  if (isPublishedId(id)) return editState.published ?? undefined
+  return undefined
+}
 
-    if (isPublishedId(compareDocument.id)) {
-      return compareDocumentEditState.published ?? undefined
-    }
-
-    return undefined
-  }, [
-    compareDocument.id,
-    compareDocumentEditState.draft,
-    compareDocumentEditState.published,
-    compareDocumentEditState.version,
-  ])
+function MissingVersion() {
+  const {t} = useTranslation(structureLocaleNamespace)
+  return (
+    <div className={missingVersion}>
+      <Text muted size={1} data-testid="diff-view-missing-version">
+        {t('compare-versions.missing-version')}
+      </Text>
+    </div>
+  )
 }
 
 // TODO: Refactor `findRelease` to return a type compatible with `TargetPerspective` (`"draft"` must be `"drafts"`), so that `sanitizeBundleName` can be removed.

@@ -1,4 +1,4 @@
-import {useTranslation} from 'sanity'
+import {useTranslation, useWorkspace} from 'sanity'
 
 import {Button} from '../../../../../ui-components/button/Button'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -17,7 +17,9 @@ export function CompareVersionsAction() {
   const {displayed, documentId, editState, onMenuAction} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
   const compareVersionsDocuments = useCompareVersionsDocuments({displayed, documentId, editState})
-  const item = getCompareVersionsItem({compareVersionsDocuments, t})
+  // With Variants on, the action works on any version, the first in its group included
+  const compareWithoutPrevious = Boolean(useWorkspace().beta?.variants?.enabled)
+  const item = getCompareVersionsItem({compareVersionsDocuments, compareWithoutPrevious, t})
 
   return (
     <Button

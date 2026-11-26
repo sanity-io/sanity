@@ -12,6 +12,7 @@ import {
   type Path,
   useGlobalCopyPasteElementHandler,
   useTranslation,
+  useWorkspace,
   useZIndex,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -119,6 +120,12 @@ export function DocumentLayout() {
   )
 
   const compareVersionsDocuments = useCompareVersionsDocuments({displayed, documentId, editState})
+  // With Variants on, the comparison can open on the displayed version alone: the inventory's picker
+  // fills the other side. Without Variants, Studio keeps main's behaviour.
+  const workspaceBeta = useWorkspace().beta
+  const compareWithoutPrevious =
+    Boolean(workspaceBeta?.variants?.enabled) &&
+    workspaceBeta?.documentGroupInventory?.enabled === true
 
   const hasValue = Boolean(value)
 
@@ -134,8 +141,10 @@ export function DocumentLayout() {
         compareVersionsDocuments,
         t,
         displayInlineChanges: stickyParams.displayInlineChanges === 'true',
+        compareWithoutPrevious,
       }),
     [
+      compareWithoutPrevious,
       currentInspector,
       compareVersionsDocuments,
       features,

@@ -408,6 +408,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'changes.from-base-variant.differs-from': 'Differs from',
   /** The label displayed to indicate a document's value is different to its base variant. */
   'changes.from-base-variant.label': 'Changed from base variant',
+  /** In the comparison view, the field mark's tooltip chip naming the version the field is compared with: "Differs from [Reference]" */
+  'changes.from-reference.reference': 'Reference',
   /** Image diff: Text shown in tooltip when hovering hotspot that has changed in diff view */
   'changes.image.crop-changed': 'Crop changed',
   /** Image diff: Text shown if the previous image asset was deleted (shouldn't theoretically happen) */

@@ -47,4 +47,14 @@ describe('FormBaseVariantDiffIndicator tooltip', () => {
     expect(tooltipText()).toContain('rUnknown')
     expect(tooltipText()).not.toContain('Draft')
   })
+
+  it('names the Reference, not the base variant, in the comparison view', async () => {
+    await renderMark('reference')
+    expect(tooltipText()).toContain('Differs from')
+    expect(tooltipText()).toContain('Reference')
+    expect(tooltipText()).not.toContain('Default')
+    expect(screen.getAllByTestId('base-variant-diff-mark')[0].getAttribute('aria-label')).toBe(
+      'Differs from Reference',
+    )
+  })
 })

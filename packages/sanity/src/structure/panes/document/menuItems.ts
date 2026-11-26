@@ -19,6 +19,11 @@ interface GetMenuItemsParams {
   inspectorMenuItems: DocumentInspectorMenuItem[]
   t: TFunction
   displayInlineChanges: boolean
+  /**
+   * With the document group inventory, Compare versions opens even when nothing comes before the
+   * open version: the view shows it alone and asks for the version to compare with.
+   */
+  compareWithoutPrevious?: boolean
 }
 
 function getInspectorItems({
@@ -61,11 +66,16 @@ function getInspectItem({hasValue, t}: GetMenuItemsParams): PaneMenuItem {
 
 export function getCompareVersionsItem({
   compareVersionsDocuments,
+  compareWithoutPrevious,
   t,
-}: Pick<GetMenuItemsParams, 'compareVersionsDocuments' | 't'>): PaneMenuItem {
-  const disabled = typeof compareVersionsDocuments === 'undefined' && {
-    reason: t('compare-versions.menu-item.disabled-reason'),
-  }
+}: Pick<
+  GetMenuItemsParams,
+  'compareVersionsDocuments' | 'compareWithoutPrevious' | 't'
+>): PaneMenuItem {
+  const disabled = !compareWithoutPrevious &&
+    typeof compareVersionsDocuments === 'undefined' && {
+      reason: t('compare-versions.menu-item.disabled-reason'),
+    }
 
   return {
     action: 'compareVersions',

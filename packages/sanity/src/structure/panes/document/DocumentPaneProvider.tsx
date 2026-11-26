@@ -143,6 +143,11 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
   const workspace = useWorkspace()
   const advancedVersionControlEnabled = workspace.advancedVersionControl.enabled
   const isDraftModelEnabled = workspace.document.drafts.enabled
+  // The comparison can open on one version alone only with Variants on: the inventory's picker fills
+  // the other side. Without Variants, Studio keeps main's behaviour.
+  const canCompareWithoutPrevious =
+    Boolean(workspace.beta?.variants?.enabled) &&
+    workspace.beta?.documentGroupInventory?.enabled === true
 
   const enhancedObjectDialogEnabled = true
 
@@ -502,6 +507,21 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
         return true
       }
 
+      // Nothing comes before the open version: open the view with it alone, and let the next side
+      // be picked there. Only with Variants on, whose inventory picker can fill an empty side.
+      if (item.action === 'compareVersions' && canCompareWithoutPrevious) {
+        diffViewRouter.navigateDiffView({
+          mode: 'version',
+          previousDocument: {
+            type: documentType,
+            id: value._id,
+          },
+          // Clear a right side left in the URL, so the view opens empty on that side
+          nextDocument: null,
+        })
+        return true
+      }
+
       if (item.action === 'toggleInlineChanges') {
         toggleInlineChanges()
         return true
@@ -517,6 +537,8 @@ export function DocumentPaneProvider(props: DocumentPaneProviderProps) {
       handleInspectorAction,
       diffViewRouter,
       toggleInlineChanges,
+      canCompareWithoutPrevious,
+      value._id,
     ],
   )
 
