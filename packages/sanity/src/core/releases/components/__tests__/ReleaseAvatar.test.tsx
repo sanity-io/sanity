@@ -1,6 +1,8 @@
 import {render, screen} from '@testing-library/react'
+import {WorkspaceContext} from 'sanity/_singletons'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
+import {type Workspace} from '../../../config/types'
 import {
   activeASAPRelease,
   activeScheduledRelease,
@@ -108,8 +110,23 @@ describe('ReleaseAvatarIcon', () => {
     )
   })
 
-  it('renders a grey dot, not a question mark, for undecided releases when size is small', () => {
+  it('renders the unknown-small icon for undecided releases when size is small and Variants is off', () => {
     render(<ReleaseAvatarIcon release={activeUndecidedRelease} size="small" />)
+
+    expect(screen.getByTestId('release-avatar-neutral')).toHaveAttribute(
+      'data-sanity-icon',
+      'unknown-small',
+    )
+  })
+
+  it('renders a grey dot, not a question mark, for undecided releases when size is small and Variants is on', () => {
+    render(
+      <WorkspaceContext.Provider
+        value={{beta: {variants: {enabled: true}}} as unknown as Workspace}
+      >
+        <ReleaseAvatarIcon release={activeUndecidedRelease} size="small" />
+      </WorkspaceContext.Provider>,
+    )
 
     expect(screen.getByTestId('release-avatar-neutral')).toHaveAttribute(
       'data-sanity-icon',

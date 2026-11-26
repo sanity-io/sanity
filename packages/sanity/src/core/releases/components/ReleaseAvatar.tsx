@@ -5,7 +5,8 @@ import {DotIcon} from '@sanity/icons/Dot'
 import SparkleIcon from '@sanity/icons/Sparkle'
 import {type BadgeTone} from '@sanity/ui'
 import {clsx} from 'clsx'
-import {type CSSProperties} from 'react'
+import {type CSSProperties, useContext} from 'react'
+import {WorkspaceContext} from 'sanity/_singletons'
 import {Flex, Icon, type IconProps as UIIconProps, type Space} from 'ui5'
 
 import {BoltSmallIcon} from '../../components/temporary-icons/BoltSmall'
@@ -13,6 +14,7 @@ import {CircleSmallIcon} from '../../components/temporary-icons/CircleSmall'
 import {CircleXsIcon} from '../../components/temporary-icons/CircleXs'
 import {ClockSmallIcon} from '../../components/temporary-icons/ClockSmall'
 import {RingIcon} from '../../components/temporary-icons/Ring'
+import {UnknownSmallIcon} from '../../components/temporary-icons/UnknownSmall'
 import {type TargetPerspective} from '../../perspective/types'
 import {isAgentBundleName} from '../../store/agent/createAgentBundlesStore'
 import {isPausedCardinalityOneRelease} from '../../util/releaseUtils'
@@ -33,6 +35,7 @@ function renderReleaseTypeIcon(
   releaseType: ReleaseType,
   iconProps: IconProps,
   size: IconSize = 'default',
+  isVariantsEnabled = false,
 ) {
   switch (releaseType) {
     case 'asap':
@@ -48,11 +51,13 @@ function renderReleaseTypeIcon(
         <Icon icon={ClockSmallIcon} {...iconProps} />
       )
     case 'undecided':
-      // A plain grey dot at both sizes: a question mark read as a missing icon
-      return size === 'default' ? (
-        <Icon icon={DotIcon} {...iconProps} />
-      ) : (
+      // With Variants on, a plain grey dot at both sizes: a question mark read as a missing icon.
+      // With Variants off, the small size keeps main's question mark.
+      if (size === 'default') return <Icon icon={DotIcon} {...iconProps} />
+      return isVariantsEnabled ? (
         <Icon icon={CircleSmallIcon} {...iconProps} />
+      ) : (
+        <Icon icon={UnknownSmallIcon} {...iconProps} />
       )
     default:
       return size === 'default' ? (
@@ -102,6 +107,9 @@ export const ReleaseAvatarIcon = ({
   fontSize = 1,
   className = '',
 }: ReleaseAvatarIconProps) => {
+  // Read the context directly rather than `useWorkspace()`: the icon also renders outside a
+  // workspace (e.g. in isolated tests), where it falls back to main's icons.
+  const isVariantsEnabled = Boolean(useContext(WorkspaceContext)?.beta?.variants?.enabled)
   const resolvedTone =
     tone ??
     (releaseType
@@ -126,7 +134,7 @@ export const ReleaseAvatarIcon = ({
   if (isAgentBundleName(release)) return <Icon icon={SparkleIcon} {...iconProps} />
 
   if (releaseType) {
-    return renderReleaseTypeIcon(releaseType, iconProps, size)
+    return renderReleaseTypeIcon(releaseType, iconProps, size, isVariantsEnabled)
   }
 
   if (isReleaseDocument(release)) {
@@ -138,7 +146,7 @@ export const ReleaseAvatarIcon = ({
       )
     }
 
-    return renderReleaseTypeIcon(release.metadata.releaseType, iconProps, size)
+    return renderReleaseTypeIcon(release.metadata.releaseType, iconProps, size, isVariantsEnabled)
   }
 
   if (release && isDraftPerspective(release)) {

@@ -106,9 +106,13 @@ const mockCurrent: ReleaseDocument = {
   state: 'scheduled',
 }
 
-const getTestProvider = async ({liveEdit}: {liveEdit?: boolean} = {}) => {
+const getTestProvider = async ({
+  liveEdit,
+  variants,
+}: {liveEdit?: boolean; variants?: boolean} = {}) => {
   const BaseWrapper = await createTestProvider({
     config: {
+      ...(variants ? {beta: {variants: {enabled: true}}} : {}),
       schema: {
         types: [
           {
@@ -316,13 +320,33 @@ describe('DocumentPerspectiveList', () => {
         ...usePerspectiveMockValue,
         selectedPerspectiveName: 'published',
       })
+      const wrapper = await getTestProvider({liveEdit: true, variants: true})
+
+      render(<DocumentPerspectiveList />, {wrapper})
+
+      expect(screen.getByRole('button', {name: 'Published'})).not.toBeDisabled()
+      // With Variants on, live edit types have no drafts, so the Draft chip is not rendered at all.
+      expect(screen.queryByRole('button', {name: 'Draft'})).not.toBeInTheDocument()
+    })
+
+    it('keeps the "Draft" chip disabled, as on main, on a live edit document with no draft when Variants is off', async () => {
+      mockUseDocumentPane.mockReturnValue(
+        // @ts-expect-error -- pre-existing, fix later
+        getPaneMock({
+          displayedVersion: 'published',
+          editStateDocuments: ['published'],
+        }),
+      )
+      mockUsePerspective.mockReturnValue({
+        ...usePerspectiveMockValue,
+        selectedPerspectiveName: 'published',
+      })
       const wrapper = await getTestProvider({liveEdit: true})
 
       render(<DocumentPerspectiveList />, {wrapper})
 
       expect(screen.getByRole('button', {name: 'Published'})).not.toBeDisabled()
-      // Live edit types have no drafts, so the Draft chip is not rendered at all.
-      expect(screen.queryByRole('button', {name: 'Draft'})).not.toBeInTheDocument()
+      expect(screen.getByRole('button', {name: 'Draft'})).toBeDisabled()
     })
 
     it('should still show the "Draft" chip on a live edit document that has an existing draft', async () => {
@@ -430,7 +454,7 @@ describe('DocumentPerspectiveList', () => {
             isCreatingDocument: true,
           }),
         )
-        const wrapper = await getTestProvider({liveEdit: true})
+        const wrapper = await getTestProvider({liveEdit: true, variants: true})
         render(<DocumentPerspectiveList />, {wrapper})
         const publishedChip = screen.getByRole('button', {name: 'Published'})
         // draft is not rendered, the document is live edit and draft doesn't exist.
@@ -452,7 +476,7 @@ describe('DocumentPerspectiveList', () => {
           ...usePerspectiveMockValue,
           selectedPerspectiveName: 'published',
         })
-        const wrapper = await getTestProvider({liveEdit: true})
+        const wrapper = await getTestProvider({liveEdit: true, variants: true})
         render(<DocumentPerspectiveList />, {wrapper})
         const publishedChip = screen.getByRole('button', {name: 'Published'})
         // draft is not rendered, the document is live edit and draft doesn't exist.
@@ -477,7 +501,7 @@ describe('DocumentPerspectiveList', () => {
           selectedPerspectiveName: 'rSpringDrop',
           selectedReleaseId: 'rSpringDrop',
         })
-        const wrapper = await getTestProvider({liveEdit: true})
+        const wrapper = await getTestProvider({liveEdit: true, variants: true})
         render(<DocumentPerspectiveList />, {wrapper})
         // The user is creating a live edit document with no draft, so the draft chip is not rendered
         expect(screen.queryByRole('button', {name: 'Draft'})).not.toBeInTheDocument()
