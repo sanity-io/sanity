@@ -5,6 +5,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {type VariantConditions} from '../../../../config/types'
 import {variantAlphaAudience, variantNorwegianMarket} from '../../../__fixtures__/variants.fixture'
+import {type VariantDefinitionCreatedLocation} from '../../../__telemetry__/variants.telemetry'
 import {variantsUsEnglishLocaleBundle} from '../../../i18n'
 import {VARIANTS_INTENT} from '../../../plugin'
 import {type SystemVariant} from '../../../types'
@@ -26,6 +27,14 @@ const variantsMock = vi.hoisted(() => ({
   byId: new Map<string, SystemVariant>(),
   loading: false,
   error: undefined as Error | undefined,
+}))
+
+const telemetryMock = vi.hoisted(() => ({
+  log: vi.fn(),
+}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => telemetryMock),
 }))
 
 vi.mock('@sanity/ui/toast', async (importOriginal) => ({
@@ -54,12 +63,20 @@ describe('CreateVariantDialog', () => {
     variantOperationsMock.createVariant.mockResolvedValue(undefined)
   })
 
-  const renderDialog = async (type?: string) => {
+  const renderDialog = async (
+    type?: string,
+    location: VariantDefinitionCreatedLocation = 'variants_overview',
+  ) => {
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
     const result = render(
-      <CreateVariantDialog onCancel={onCancel} onSubmit={onSubmit} type={type} />,
+      <CreateVariantDialog
+        location={location}
+        onCancel={onCancel}
+        onSubmit={onSubmit}
+        type={type}
+      />,
       {wrapper},
     )
     await screen.findByRole('dialog', {name: 'Create variant definition'})
@@ -410,6 +427,35 @@ describe('CreateVariantDialog', () => {
     expect(onSubmit).toHaveBeenCalledWith(createdVariant._id, 'language')
   })
 
+  it.each(['variants_overview', 'navbar_menu'] as const)(
+    'reports the created definition with its condition count when opened from %s',
+    async (location) => {
+      const user = userEvent.setup()
+
+      await renderDialog(undefined, location)
+
+      await user.type(screen.getByTestId('variant-form-title'), 'Loyal customers')
+      await user.type(screen.getByRole('combobox', {name: 'Key'}), 'audience')
+      await user.type(screen.getByRole('combobox', {name: 'Value'}), 'loyal-customers')
+      await waitFor(() => {
+        expect(screen.getByRole('button', {name: 'Add condition'})).toBeEnabled()
+      })
+      await user.click(screen.getByRole('button', {name: 'Add condition'}))
+      await user.type(screen.getAllByTestId('variant-form-condition-key')[1]!, 'locale')
+      await user.type(screen.getAllByTestId('variant-form-condition-value')[1]!, 'en-US')
+      await user.click(screen.getByTestId('submit-variant-button'))
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledTimes(1)
+      })
+      expect(telemetryMock.log).toHaveBeenCalledTimes(1)
+      expect(telemetryMock.log).toHaveBeenCalledWith(
+        expect.objectContaining({name: 'Variant Definition Created'}),
+        {location, conditionCount: 2},
+      )
+    },
+  )
+
   // Real IntentLink: TestProvider only has /intent routes, not a variants tool — the crash path this change fixes.
   it('blocks submit and links to the duplicate when the title matches an existing variant', async () => {
     const user = userEvent.setup()
@@ -523,6 +569,7 @@ describe('CreateVariantDialog', () => {
     )
     expect(onCancel).not.toHaveBeenCalled()
     expect(onSubmit).not.toHaveBeenCalled()
+    expect(telemetryMock.log).not.toHaveBeenCalled()
     expect(screen.getByRole('dialog', {name: 'Create variant definition'})).toBeInTheDocument()
 
     consoleError.mockRestore()
@@ -587,9 +634,10 @@ describe('CreateVariantDialog mapped conditions', () => {
       },
       resources: [variantsUsEnglishLocaleBundle],
     })
-    const result = render(<CreateVariantDialog onCancel={onCancel} onSubmit={onSubmit} />, {
-      wrapper,
-    })
+    const result = render(
+      <CreateVariantDialog location="variants_overview" onCancel={onCancel} onSubmit={onSubmit} />,
+      {wrapper},
+    )
     await screen.findByRole('dialog', {name: 'Create variant definition'})
     return result
   }

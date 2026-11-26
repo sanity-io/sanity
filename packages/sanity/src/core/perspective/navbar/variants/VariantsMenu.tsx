@@ -341,6 +341,7 @@ export function VariantsMenu({
       />
       {creatingVariant ? (
         <CreateVariantDialog
+          location="navbar_menu"
           onCancel={handleCancelCreate}
           onSubmit={handleCreated}
           type={typeKey}

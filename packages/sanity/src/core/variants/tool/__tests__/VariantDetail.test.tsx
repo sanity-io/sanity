@@ -50,6 +50,14 @@ const toastMock = vi.hoisted(() => ({
   push: vi.fn(),
 }))
 
+const telemetryMock = vi.hoisted(() => ({
+  log: vi.fn(),
+}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => telemetryMock),
+}))
+
 vi.mock('@sanity/ui/toast', async (importOriginal) => ({
   ...(await importOriginal()),
   useToast: vi.fn(() => toastMock),
@@ -208,6 +216,19 @@ describe('VariantDetail', () => {
     expect(screen.getByTestId('variant-detail-actions')).toBeInTheDocument()
   })
 
+  it('reports the opened definition once', async () => {
+    routerState.variantId = getVariantId(variantAlphaAudience._id)
+    setVariants([variantAlphaAudience])
+
+    await renderDetail()
+
+    await screen.findByRole('heading', {level: 1, name: 'Alpha audience'})
+    const openedEvents = telemetryMock.log.mock.calls.filter(
+      ([event]) => event.name === 'Variant Definition Opened',
+    )
+    expect(openedEvents).toHaveLength(1)
+  })
+
   it('opens the edit dialog with existing variant values', async () => {
     routerState.variantId = getVariantId(variantAlphaAudience._id)
     setVariants([variantAlphaAudience])
@@ -268,6 +289,16 @@ describe('VariantDetail', () => {
         screen.queryByRole('dialog', {name: 'Edit variant definition'}),
       ).not.toBeInTheDocument()
     })
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Definition Edited'}),
+      {
+        location: 'variant_detail',
+        titleChanged: true,
+        descriptionChanged: true,
+        conditionsChanged: true,
+        priorityChanged: false,
+      },
+    )
     // The heading reflecting the new title is driven by the live `useAllVariants` store
     // subscription re-rendering the page; the static test mock doesn't re-emit, so the save itself
     // (updateVariant called with the edited values + dialog closed, asserted above) is what's
@@ -378,6 +409,10 @@ describe('VariantDetail', () => {
       expect(variantOperationsMock.deleteVariant).toHaveBeenCalledWith(variantAlphaAudience._id)
       expect(mockNavigate).toHaveBeenCalledWith({})
     })
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Definition Deleted'}),
+      {location: 'variant_detail'},
+    )
   })
 
   it('disables delete in the detail menu when the user lacks permission', async () => {
@@ -442,6 +477,9 @@ describe('VariantDetail', () => {
     expect(
       screen.getByText('The requested variant definition could not be found.'),
     ).toBeInTheDocument()
+    expect(telemetryMock.log).not.toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Definition Opened'}),
+    )
   })
 
   it('navigates back to overview when Back is pressed', async () => {

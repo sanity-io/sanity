@@ -20,6 +20,14 @@ const toastMock = vi.hoisted(() => ({
   push: vi.fn(),
 }))
 
+const telemetryMock = vi.hoisted(() => ({
+  log: vi.fn(),
+}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => telemetryMock),
+}))
+
 vi.mock('@sanity/ui/toast', async (importOriginal) => ({
   ...(await importOriginal()),
   useToast: vi.fn(() => toastMock),
@@ -51,7 +59,11 @@ describe('useVariantDeleteAction', () => {
     variantPermissionsMock.checkWithPermissionGuard.mockResolvedValue(true)
   })
 
-  const renderDeleteAction = async (options?: Parameters<typeof useVariantDeleteAction>[1]) => {
+  const renderDeleteAction = async (
+    deleteOptions: Partial<Parameters<typeof useVariantDeleteAction>[1]>,
+  ) => {
+    const options = {location: 'variants_overview' as const, ...deleteOptions}
+
     const wrapper = await createTestProvider({
       resources: [variantsUsEnglishLocaleBundle],
     })
@@ -107,6 +119,29 @@ describe('useVariantDeleteAction', () => {
       expect(result.current.isDeleteDialogOpen).toBe(false)
     })
   })
+
+  it.each(['variants_overview', 'variant_detail'] as const)(
+    'reports a deletion from %s',
+    async (location) => {
+      const {result} = await renderDeleteAction({documentCount: 0, location})
+
+      await waitFor(() => {
+        expect(result.current.deleteDisabled).toBe(false)
+      })
+      act(() => {
+        result.current.handleDelete()
+      })
+      await act(async () => {
+        await result.current.handleConfirmDelete()
+      })
+
+      expect(telemetryMock.log).toHaveBeenCalledTimes(1)
+      expect(telemetryMock.log).toHaveBeenCalledWith(
+        expect.objectContaining({name: 'Variant Definition Deleted'}),
+        {location},
+      )
+    },
+  )
 
   it('disables delete until the permission check has answered', async () => {
     let resolvePermission!: (allowed: boolean) => void
@@ -242,6 +277,7 @@ describe('useVariantDeleteAction', () => {
     it('shows a generic toast', async () => {
       const toast = await confirmDelete(new Error('delete failed'))
 
+      expect(telemetryMock.log).not.toHaveBeenCalled()
       expect(toast).toEqual(
         expect.objectContaining({
           status: 'error',

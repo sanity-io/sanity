@@ -34,6 +34,14 @@ const variantOperationsMock = vi.hoisted(() => ({
   deleteVariant: vi.fn(),
 }))
 
+const telemetryMock = vi.hoisted(() => ({
+  log: vi.fn(),
+}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => telemetryMock),
+}))
+
 vi.mock('../../../../perspective/useSetVariant', () => ({
   useSetVariant: vi.fn(() => setVariant),
 }))
@@ -257,6 +265,10 @@ describe('VariantsMenu', () => {
       type: 'language',
       variantId: createdVariant._id,
     })
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Definition Created'}),
+      {location: 'navbar_menu', conditionCount: 1},
+    )
     expect(
       screen.queryByRole('dialog', {name: 'Create variant definition'}),
     ).not.toBeInTheDocument()
