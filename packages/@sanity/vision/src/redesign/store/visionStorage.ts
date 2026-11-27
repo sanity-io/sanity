@@ -33,10 +33,10 @@ const STATE_VERSION = 1
 
 export {DEFAULT_PARAMS}
 
-/** Every panel starts out expanded */
+/** The params start out expanded, the Options, Lint and Functions panel collapsed */
 const DEFAULT_PANELS: VisionPanelsState = {
   params: true,
-  options: true,
+  request: false,
   paramsView: 'json',
   resultViewer: 'json',
 }
@@ -316,7 +316,8 @@ function sanitizeSidebar(value: unknown): VisionSidebarState {
 }
 
 /**
- * A panel stays expanded unless it was explicitly collapsed, the params show as JSON unless the
+ * The params stay expanded unless they were explicitly collapsed, the Options, Lint and Functions
+ * panel stays collapsed unless it was explicitly expanded, the params show as JSON unless the
  * form was chosen, and the result as JSON unless another view was; state saved before any of them
  * existed reads that way
  */
@@ -324,7 +325,7 @@ function sanitizePanels(value: unknown): VisionPanelsState {
   const panels = isPlainObject(value) ? value : {}
   return {
     params: panels.params !== false,
-    options: panels.options !== false,
+    request: panels.request === true,
     paramsView: panels.paramsView === 'form' ? 'form' : 'json',
     resultViewer: sanitizeResultViewer(panels),
   }

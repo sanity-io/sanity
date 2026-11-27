@@ -5,19 +5,16 @@ import {
   type SetStateAction,
   use,
   useCallback,
+  useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 
+import {type VisionPanel} from '../store/types'
 import {useVisionActor, type VisionLayout} from '../store/VisionActorContext'
 import {isPanelExpanded} from '../store/visionMachine'
 import {type BottomPanelState} from './SplitWithBottomPanel'
-
-const INITIAL_REQUEST_PANEL: BottomPanelState = {
-  activeTabId: 'options',
-  collapsed: false,
-  bottomSizes: {},
-}
 
 /** Collapsed, so the result gets the whole column until a tab is picked */
 const INITIAL_RESPONSE_PANEL: BottomPanelState = {
@@ -68,14 +65,20 @@ const QueryTabLayoutContext = createContext<QueryTabLayoutContextValue | null>(n
  */
 export function QueryTabLayoutProvider({children}: {children: ReactNode}) {
   const actorRef = useVisionActor()
-  const [requestState, setRequestState] = useState<BottomPanelState>(INITIAL_REQUEST_PANEL)
+  // The collapsed flags are held as React state, so collapsing and expanding can animate as a
+  // transition; the stored flags in the machine seed them and follow them
+  const [requestState, setRequestState] = useState<BottomPanelState>(() => ({
+    activeTabId: 'options',
+    collapsed: !isPanelExpanded(actorRef.getSnapshot(), 'request'),
+    bottomSizes: {},
+  }))
   const [responseState, setResponseState] = useState<BottomPanelState>(INITIAL_RESPONSE_PANEL)
-  // Held as React state, so collapsing and expanding can animate as a transition; the stored
-  // flag in the machine only seeds it and follows it
   const [paramsState, setParamsState] = useState<ParamsSectionState>(() => ({
     collapsed: !isPanelExpanded(actorRef.getSnapshot(), 'params'),
     sizes: {},
   }))
+  useStoredCollapsed('request', requestState.collapsed, setRequestState)
+  useStoredCollapsed('params', paramsState.collapsed, setParamsState)
   const [splitSizes, setSplitSizes] = useState<SplitSizes>({})
   const [splitSnapped, setSplitSnapped] = useState(false)
   const setParamsSizes = useCallback((update: SetStateAction<ParamsSectionState['sizes']>) => {
@@ -84,17 +87,11 @@ export function QueryTabLayoutProvider({children}: {children: ReactNode}) {
       sizes: typeof update === 'function' ? update(current.sizes) : update,
     }))
   }, [])
-  const setParamsCollapsed = useCallback(
-    (collapsed: boolean) => {
-      setParamsState((current) =>
-        current.collapsed === collapsed ? current : {...current, collapsed},
-      )
-      if (isPanelExpanded(actorRef.getSnapshot(), 'params') === collapsed) {
-        actorRef.send({type: 'panel.toggle', panel: 'params'})
-      }
-    },
-    [actorRef],
-  )
+  const setParamsCollapsed = useCallback((collapsed: boolean) => {
+    setParamsState((current) =>
+      current.collapsed === collapsed ? current : {...current, collapsed},
+    )
+  }, [])
   const value = useMemo(
     (): QueryTabLayoutContextValue => ({
       request: {state: requestState, setState: setRequestState},
@@ -116,6 +113,38 @@ export function QueryTabLayoutProvider({children}: {children: ReactNode}) {
     ],
   )
   return <QueryTabLayoutContext value={value}>{children}</QueryTabLayoutContext>
+}
+
+/**
+ * Keeps a panel's stored flag in step with its collapsed state, and the state with the stored
+ * flag when that changes on its own: resetting Vision's stored state expands or collapses the
+ * panel to its default
+ */
+function useStoredCollapsed<State extends {collapsed: boolean}>(
+  panel: VisionPanel,
+  collapsed: boolean,
+  setState: Dispatch<SetStateAction<State>>,
+): void {
+  const actorRef = useVisionActor()
+  const storedExpanded = useRef(isPanelExpanded(actorRef.getSnapshot(), panel))
+  useEffect(() => {
+    if (storedExpanded.current !== collapsed) return
+    storedExpanded.current = !collapsed
+    if (isPanelExpanded(actorRef.getSnapshot(), panel) === collapsed) {
+      actorRef.send({type: 'panel.toggle', panel})
+    }
+  }, [actorRef, collapsed, panel])
+  useEffect(() => {
+    const subscription = actorRef.subscribe((snapshot) => {
+      const expanded = isPanelExpanded(snapshot, panel)
+      if (expanded === storedExpanded.current) return
+      storedExpanded.current = expanded
+      setState((current) =>
+        current.collapsed === !expanded ? current : {...current, collapsed: !expanded},
+      )
+    })
+    return () => subscription.unsubscribe()
+  }, [actorRef, panel, setState])
 }
 
 function useQueryTabLayout(): QueryTabLayoutContextValue {

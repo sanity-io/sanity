@@ -1131,6 +1131,41 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(getStoredState().panels.params).toBe(true))
   })
 
+  it('starts the request panel collapsed until it is opened, and opens it again on the next visit', async () => {
+    const first = renderRedesign()
+    const requestToggle = () => within(shownTab()).getByTestId('vision-request-panel-toggle')
+    await screen.findByTestId('vision-request-column-split')
+    expect(requestToggle().getAttribute('aria-expanded')).toBe('false')
+    await waitFor(() => expect(getStoredState().panels.request).toBe(false))
+
+    fireEvent.click(requestToggle())
+    await waitFor(() => expect(requestToggle().getAttribute('aria-expanded')).toBe('true'))
+    await waitFor(() => expect(getStoredState().panels.request).toBe(true))
+    first.unmount()
+
+    renderRedesign()
+    await screen.findByTestId('vision-request-column-split')
+    expect(requestToggle().getAttribute('aria-expanded')).toBe('true')
+  })
+
+  it('collapses the request panel and expands the params again when the stored state is cleared', async () => {
+    renderRedesign()
+    const requestToggle = () => within(shownTab()).getByTestId('vision-request-panel-toggle')
+    const paramsToggle = () => within(shownTab()).getByTestId('vision-params-toggle')
+    await screen.findByTestId('vision-request-column-split')
+    fireEvent.click(requestToggle())
+    fireEvent.click(paramsToggle())
+    await waitFor(() =>
+      expect(getStoredState().panels).toMatchObject({params: false, request: true}),
+    )
+
+    fireEvent.click(screen.getByTestId('vision-sidebar-settings'))
+    fireEvent.click(await screen.findByTestId('vision-clear-storage'))
+    fireEvent.click(screen.getByTestId('vision-clear-storage-confirm'))
+    await waitFor(() => expect(requestToggle().getAttribute('aria-expanded')).toBe('false'))
+    expect(paramsToggle().getAttribute('aria-expanded')).toBe('true')
+  })
+
   it('snaps the params shut when their divider leaves less than a line of them, as the bottom panels do', async () => {
     // Every box measures 800 × 600, so the divider has room to move
     const ResizeObserverBefore = globalThis.ResizeObserver
@@ -6326,7 +6361,7 @@ describe('VisionRedesign', () => {
     await waitFor(() =>
       expect(transitionTypes()).toEqual([['vision-panel', 'sanity-studio-resize']]),
     )
-    await waitFor(() => expect(toggle.getAttribute('aria-expanded')).toBe('false'))
+    await waitFor(() => expect(toggle.getAttribute('aria-expanded')).toBe('true'))
 
     fireEvent.click(screen.getByTestId('vision-sidebar-closed-tabs'))
     await screen.findByTestId('vision-drawer-closed-tabs')
@@ -6588,13 +6623,16 @@ describe('VisionRedesign', () => {
       renderRedesign()
       const split = await screen.findByTestId('vision-request-column-split')
       const bottomPane = split.lastElementChild as HTMLElement
-      const initialFlex = bottomPane.style.flex
       const tab = document.getElementById(`vision-request-${id}-tab`) as HTMLElement
       expect(tab.hasAttribute('title')).toBe(false)
 
+      // The panel starts out collapsed, and the first click opens it at its default height
       fireEvent.click(tab)
-      expect(tab.getAttribute('aria-selected')).toBe('true')
-      expect(bottomPane.style.flex).toBe(initialFlex)
+      await waitFor(() => expect(tab.getAttribute('aria-selected')).toBe('true'))
+      const openFlex = bottomPane.style.flex
+      expect(openFlex).not.toBe('0 0 35px')
+      fireEvent.click(tab)
+      expect(bottomPane.style.flex).toBe(openFlex)
 
       fireEvent.doubleClick(tab)
       await waitFor(() => expect(bottomPane.style.flex).toBe('0 0 335px'))

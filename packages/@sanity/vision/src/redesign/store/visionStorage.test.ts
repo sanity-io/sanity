@@ -150,7 +150,7 @@ describe('visionStorage', () => {
       sidebar: {expanded: true, drawer: 'closed-tabs' as const},
       panels: {
         params: true,
-        options: false,
+        request: false,
         paramsView: 'form' as const,
         resultViewer: 'tree' as const,
       },
@@ -433,13 +433,13 @@ describe('visionStorage', () => {
     expect(loaded.activeTabId).toBe('dup')
   })
 
-  it('reads state saved before the panels existed as having them expanded, params as JSON, the result as JSON', () => {
+  it('reads state saved before the panels existed as having the params expanded, the request panel collapsed, params as JSON, the result as JSON', () => {
     const {panels: _panels, ...withoutPanels} = createInitialState(defaults)
     localStorage.setItem(getVisionStorageKey('proj'), JSON.stringify(withoutPanels))
 
     expect(loadVisionState('proj', defaults).panels).toEqual({
       params: true,
-      options: true,
+      request: false,
       paramsView: 'json',
       resultViewer: 'json',
     })
@@ -453,10 +453,25 @@ describe('visionStorage', () => {
     )
     expect(loadVisionState('proj', defaults).panels).toEqual({
       params: false,
-      options: true,
+      request: false,
       paramsView: 'json',
       resultViewer: 'json',
     })
+  })
+
+  it('keeps the request panel collapsed for state that saved the unused options flag, and expanded once it was opened', () => {
+    const state = createInitialState(defaults)
+    localStorage.setItem(
+      getVisionStorageKey('proj'),
+      JSON.stringify({...state, panels: {params: true, options: true, paramsView: 'json'}}),
+    )
+    expect(loadVisionState('proj', defaults).panels.request).toBe(false)
+
+    localStorage.setItem(
+      getVisionStorageKey('proj'),
+      JSON.stringify({...state, panels: {...state.panels, request: true}}),
+    )
+    expect(loadVisionState('proj', defaults).panels.request).toBe(true)
   })
 
   it('shows the result as JSON for state saved while the tree was the default, unless the graph was chosen', () => {

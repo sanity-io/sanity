@@ -564,7 +564,7 @@ export const visionMachine = setup({
         '.paramsPanel.expanded',
         '.paramsView.json',
         '.resultView.json',
-        '.optionsPanel.expanded',
+        '.requestPanel.collapsed',
         '.drawer.closed',
         '.dialog.closed',
       ],
@@ -652,19 +652,19 @@ export const visionMachine = setup({
         documents: {},
       },
     },
-    optionsPanel: {
+    requestPanel: {
       initial: 'restoring',
       states: {
         restoring: {
           always: [
-            {guard: {type: 'wasPanelExpanded', params: {panel: 'options'}}, target: 'expanded'},
+            {guard: {type: 'wasPanelExpanded', params: {panel: 'request'}}, target: 'expanded'},
             {target: 'collapsed'},
           ],
         },
         collapsed: {
           on: {
             'panel.toggle': {
-              guard: {type: 'isPanel', params: {panel: 'options'}},
+              guard: {type: 'isPanel', params: {panel: 'request'}},
               target: 'expanded',
             },
           },
@@ -672,7 +672,7 @@ export const visionMachine = setup({
         expanded: {
           on: {
             'panel.toggle': {
-              guard: {type: 'isPanel', params: {panel: 'options'}},
+              guard: {type: 'isPanel', params: {panel: 'request'}},
               target: 'collapsed',
             },
           },
@@ -722,7 +722,7 @@ export function selectPersistedState(snapshot: VisionSnapshot): VisionPersistedS
     },
     panels: {
       params: isPanelExpanded(snapshot, 'params'),
-      options: isPanelExpanded(snapshot, 'options'),
+      request: isPanelExpanded(snapshot, 'request'),
       paramsView: selectParamsView(snapshot),
       resultViewer: selectResultView(snapshot),
     },
@@ -774,7 +774,7 @@ export function selectResultView(snapshot: VisionSnapshot): VisionResultView {
 export function isPanelExpanded(snapshot: VisionSnapshot, panel: VisionPanel): boolean {
   return panel === 'params'
     ? snapshot.matches({paramsPanel: 'expanded'})
-    : snapshot.matches({optionsPanel: 'expanded'})
+    : snapshot.matches({requestPanel: 'expanded'})
 }
 
 export function selectActiveTab(snapshot: VisionSnapshot): VisionTab {

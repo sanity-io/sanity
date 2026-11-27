@@ -15,12 +15,15 @@ import {usePanelSnapShut} from '../panelSnapShut'
 import {PANEL_PANE, PANEL_TRANSITION, startLayoutTransition} from '../panelTransitions'
 import {useParamsSection} from '../queryTabLayout'
 import * as styles from '../redesign.module.css'
-import {ResizableSplit} from '../ResizableSplit'
+import {ResizableSplit, SPLIT_HANDLE_SIZE} from '../ResizableSplit'
 import {useTabElementId} from '../tabs/queryTabShown'
 import {VisionTooltip} from '../VisionTooltip'
 
 /** The query editor keeps this much of the main area while the params are dragged taller */
 const MIN_QUERY_HEIGHT = 120
+
+/** The query editor at its smallest, above the header of the collapsed params */
+export const MIN_QUERY_PARAMS_HEIGHT = MIN_QUERY_HEIGHT + SPLIT_HANDLE_SIZE + PANEL_HEADER_HEIGHT
 
 /** How tall the expanded params start out, header included, per layout */
 const DEFAULT_PARAMS_HEIGHT: Record<VisionLayout, number> = {
