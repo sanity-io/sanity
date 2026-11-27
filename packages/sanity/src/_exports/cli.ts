@@ -4,7 +4,7 @@ import {firstValueFrom, type ObservedValueOf} from 'rxjs'
 
 import {
   type createDefaultIcon,
-  type createSchema,
+  type createSchemaForCli,
   type generateStudioManifest,
   type resolveConfig,
   type StudioManifest,
@@ -51,7 +51,9 @@ export function defineCliConfig(config: CliConfig): CliConfig {
  */
 export interface StudioCliTooling {
   /** Compiles a schema definition. */
-  compileSchema: (definition: Parameters<typeof createSchema>[0]) => ReturnType<typeof createSchema>
+  compileSchema: (
+    definition: Parameters<typeof createSchemaForCli>[0],
+  ) => ReturnType<typeof createSchemaForCli>
 
   /** Creates the icon used for a workspace or tool that does not define one. */
   createDefaultIcon: (title: string, subtitle: string) => ReturnType<typeof createDefaultIcon>
@@ -83,7 +85,7 @@ export async function getStudioCliTooling(): Promise<StudioCliTooling> {
   const internals = await import('./_dangerously_use_private_internals_that_do_not_follow_semver')
 
   return {
-    compileSchema: (definition) => internals.createSchema(definition),
+    compileSchema: (definition) => internals.createSchemaForCli(definition),
     createDefaultIcon: (title, subtitle) => internals.createDefaultIcon(title, subtitle),
     generateStudioManifest: (options) => internals.generateStudioManifest(options),
     getSchemaValidation: (error) =>

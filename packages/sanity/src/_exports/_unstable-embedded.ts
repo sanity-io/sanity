@@ -27,7 +27,7 @@ export type BaseFormNode = never
  */
 export declare const ChangeIndicatorsTracker: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. Import `{CopyPasteProvider}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity`. Import `{CopyPasteProvider}` from `sanity` instead of `sanity/_unstable-embedded`.
  */
 export declare const CopyPasteProvider: never
 /**
@@ -151,7 +151,7 @@ export type ObjectSchemaType = never
  */
 export type PatchArg = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{PatchEvent}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity`. Import `{PatchEvent}` from `sanity` instead of `sanity/_unstable-embedded`.
  */
 export declare const PatchEvent: never
 /**
@@ -207,7 +207,7 @@ export type StringInputProps = never
  */
 export type StudioLocaleResourceKeys = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{TransformPatches}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity`. Import `{TransformPatches}` from `sanity` instead of `sanity/_unstable-embedded`.
  */
 export declare const TransformPatches: never
 /**

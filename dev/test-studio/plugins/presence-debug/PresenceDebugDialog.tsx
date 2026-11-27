@@ -1,10 +1,8 @@
 import {Box, Button, Card, Dialog, Spinner} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {useCurrentUser, useUserListWithPermissions} from 'sanity'
+import {useCurrentUser, useUserListWithPermissions, UserAvatar, usePresenceStore} from 'sanity'
 import {
   pathToString,
-  UserAvatar,
-  usePresenceStore,
   type PresenceLocation,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {Text, Flex, VStack} from 'ui5'

@@ -2,7 +2,10 @@ import {type Path, type SanityDocument} from '@sanity/types'
 
 import {type BaseStructureToolPaneProps} from '../types'
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export type DocumentPaneProviderProps = {
   children?: React.ReactNode
   onFocusPath?: (path: Path) => void

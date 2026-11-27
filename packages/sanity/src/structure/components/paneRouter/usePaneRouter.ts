@@ -8,9 +8,8 @@ import {type PaneRouterContextValue} from './types'
 export {PaneRouterContext}
 
 /**
- *
  * @hidden
- * @internal
+ * @beta
  */
 export function usePaneRouter(): PaneRouterContextValue {
   return use(PaneRouterContext)

@@ -112,7 +112,7 @@ describe('createDefaultConfig() preload', () => {
         createDefaultConfig({
           ...OPTIONS,
           styles: 'panda',
-          preload: {entry: 'index', lazyBoundaries: ['./boundary.js']},
+          preload: {entry: 'index', packageName: 'pkg', lazyBoundaries: ['./boundary.js']},
         }).plugins,
       ),
     ).toContain('sanity/preload-modules')
@@ -135,6 +135,7 @@ describe('preloadModulesPlugin()', () => {
   }
   const OPTIONS_FOR_FILES: PreloadModulesOptions = {
     entry: 'index',
+    packageName: 'pkg',
     lazyBoundaries: ['./boundary.js'],
   }
 
@@ -156,6 +157,7 @@ describe('preloadModulesPlugin()', () => {
         build: {
           write: false,
           minify: false,
+          rolldownOptions: {external: ['pkg', /^pkg\//]},
           lib: {
             entry: {index: './index.js', other: './other.js'},
             formats: ['es'],
@@ -193,6 +195,25 @@ describe('preloadModulesPlugin()', () => {
     )
     expect(output.map((asset) => asset.fileName).filter((file) => file.endsWith('.json'))).toEqual(
       [],
+    )
+  })
+
+  it('leaves out what the entry loads through a bare import of another entry', async () => {
+    const output = await buildFixture({
+      ...FILES,
+      'index.js': `import {other} from 'pkg/other'\nexport const usesOther = other\n${FILES['index.js']}`,
+      'other.js': "import {dep} from './dep.js'\nexport function other() { return dep() }\n",
+    })
+    const list = preloadList(output)
+
+    // `dep` is loaded at boot through the `other` entry chunk, so only the boundary is left
+    expect(list).toHaveLength(1)
+    const chunks = output.filter((chunk) => chunk.type === 'chunk')
+    const [boundary] = list.map((specifier) =>
+      chunks.find((c) => c.fileName === specifier.slice(2)),
+    )
+    expect(boundary?.type === 'chunk' && boundary.facadeModuleId?.endsWith('boundary.js')).toBe(
+      true,
     )
   })
 

@@ -21,11 +21,8 @@ export {
   StudioDiagnosticsBridge,
   type StudioDiagnosticsBridgeApi,
 } from '../core/studio/diagnostics/StudioDiagnosticsBridge'
-export {Studio} from '../core/studio/Studio'
-export {StudioProvider} from '../core/studio/StudioProvider'
 export {
   STUDIO_RESIZE_TRANSITION_TYPE,
   STUDIO_SCHEME_TRANSITION_TYPE,
   STUDIO_SKIP_TRANSITION_TYPE,
 } from '../core/viewTransitions/transitionTypes'
-export {useDocumentPane} from '../structure/panes/document/useDocumentPane'

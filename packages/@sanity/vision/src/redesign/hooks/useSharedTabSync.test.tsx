@@ -17,11 +17,14 @@ const mocks = vi.hoisted(() => ({
   toast: vi.fn(),
 }))
 
+vi.mock('sanity', async (importOriginal) => ({
+  ...(await importOriginal()),
+  useDocumentStore: () => ({checkoutPair: mocks.checkoutPair}),
+}))
 vi.mock(
   'sanity/_dangerously_use_private_internals_that_do_not_follow_semver',
   async (importOriginal) => ({
     ...(await importOriginal()),
-    useDocumentStore: () => ({checkoutPair: mocks.checkoutPair}),
     getIdPair: (id: string) => ({publishedId: id, draftId: `drafts.${id}`}),
   }),
 )

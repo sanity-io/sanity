@@ -1,8 +1,6 @@
 import {useEffect} from 'react'
-import {
-  useDocumentPresence,
-  usePresenceStore,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {usePresenceStore} from 'sanity'
+import {useDocumentPresence} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
 import {FieldPresenceInner} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
 import {Box} from 'ui5'
 

@@ -1,6 +1,6 @@
 import {DescriptorConverter} from '@sanity/schema/_internal'
 import {defineArrayMember, defineField, defineType, type Schema} from '@sanity/types'
-import {createSchema} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {createSchema} from 'sanity'
 import {describe, test} from 'vitest'
 
 import {expectManifestSchemaConversion} from './utils'

@@ -1,16 +1,14 @@
 import './documentFormOnly.css'
 
 import {useMemo, useState} from 'react'
+import {StructureToolProvider} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
+import {PaneRouterContext} from 'sanity/_singletons'
 import {
   DocumentPane,
-  StructureToolProvider,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
-import {
   type DocumentPaneNode,
   PaneLayout,
   type PaneRouterContextValue,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure'
-import {PaneRouterContext} from 'sanity/_singletons'
+} from 'sanity/structure'
 
 import {DOCUMENT_FORM_ONLY_ID, DOCUMENT_FORM_ONLY_TYPE} from './schema'
 

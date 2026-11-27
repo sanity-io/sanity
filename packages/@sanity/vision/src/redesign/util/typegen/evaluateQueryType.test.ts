@@ -1,6 +1,5 @@
 import {Schema} from '@sanity/schema'
-import {defineArrayMember, defineField, defineType} from 'sanity'
-import {createSchema} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {defineArrayMember, defineField, defineType, createSchema} from 'sanity'
 import {describe, expect, it} from 'vitest'
 
 import {evaluateQueryType} from './evaluateQueryType'

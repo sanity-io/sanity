@@ -11,7 +11,10 @@ export const builtinSchema: Schema = SchemaBuilder.compile({
 })
 inferValidation(builtinSchema)
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export function createSchema(schemaDef: {name: string; types: any[]}): Schema {
   const validated = validateSchema(schemaDef.types).getTypes()
   const validation = groupProblems(validated)
@@ -27,4 +30,13 @@ export function createSchema(schemaDef: {name: string; types: any[]}): Schema {
   ;(compiled as any)._validation = validation
 
   return inferValidation(compiled as Schema)
+}
+
+/**
+ * `createSchema` for the tooling in `sanity/cli`, which may only import the internals entry.
+ *
+ * @internal
+ */
+export function createSchemaForCli(schemaDef: Parameters<typeof createSchema>[0]): Schema {
+  return createSchema(schemaDef)
 }

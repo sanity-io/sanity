@@ -4,7 +4,8 @@ import {type LogoProps} from '../../../config/studio/types'
 
 /**
  * @hidden
- * @internal */
+ * @beta
+ */
 export function StudioLogo(props: LogoProps) {
   const {title} = props
 

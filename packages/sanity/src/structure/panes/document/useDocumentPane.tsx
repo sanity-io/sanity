@@ -3,7 +3,10 @@ import {DocumentPaneContext} from 'sanity/_singletons'
 
 import {type DocumentPaneContextValue} from './DocumentPaneContext'
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export function useDocumentPane(): DocumentPaneContextValue {
   const documentPane = use(DocumentPaneContext)
 

@@ -160,7 +160,7 @@ export type DocumentGroupEvent =
 
 /**
  * @hidden
- * @internal
+ * @beta
  */
 export const isCreateDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -168,7 +168,7 @@ export const isCreateDocumentVersionEvent = (
 
 /**
  * @hidden
- * @internal
+ * @beta
  */
 export const isDeleteDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -176,7 +176,7 @@ export const isDeleteDocumentVersionEvent = (
 
 /**
  * @hidden
- * @internal
+ * @beta
  */
 export const isPublishDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -184,7 +184,7 @@ export const isPublishDocumentVersionEvent = (
 
 /**
  * @hidden
- * @internal
+ * @beta
  */
 export const isUnpublishDocumentEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -192,7 +192,7 @@ export const isUnpublishDocumentEvent = (
 
 /**
  * @hidden
- * @internal
+ * @beta
  */
 export const isScheduleDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -200,7 +200,7 @@ export const isScheduleDocumentVersionEvent = (
 
 /**
  * @hidden
- * @internal
+ * @beta
  */
 export const isUnscheduleDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -208,7 +208,7 @@ export const isUnscheduleDocumentVersionEvent = (
 
 /**
  * @hidden
- * @internal
+ * @beta
  */
 export const isDeleteDocumentGroupEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -219,9 +219,8 @@ export const isDeleteDocumentGroupEvent = (
  * Deleting the document group (or the last remaining draft, per the events
  * lifecycle docs) emits `deleteDocumentGroup`. Neither is selectable in Review
  * Changes; treat both as a terminal event for the live revision.
- *
  * @hidden
- * @internal
+ * @beta
  */
 export const isNonSelectableTerminalEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -230,7 +229,7 @@ export const isNonSelectableTerminalEvent = (
 
 /**
  * @hidden
- * @internal
+ * @beta
  */
 export const isCreateLiveDocumentEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -238,7 +237,7 @@ export const isCreateLiveDocumentEvent = (
 
 /**
  * @hidden
- * @internal
+ * @beta
  */
 export const isUpdateLiveDocumentEvent = (
   event: Partial<DocumentGroupEvent>,
@@ -246,7 +245,7 @@ export const isUpdateLiveDocumentEvent = (
 
 /**
  * @hidden
- * @internal
+ * @beta
  */
 export const isEditDocumentVersionEvent = (
   event: Partial<DocumentGroupEvent>,

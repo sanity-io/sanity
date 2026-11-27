@@ -3,23 +3,17 @@
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
 import type {
-  Studio,
   STUDIO_RESIZE_TRANSITION_TYPE,
   STUDIO_SCHEME_TRANSITION_TYPE,
   STUDIO_SKIP_TRANSITION_TYPE,
   StudioDiagnosticsBridge,
   StudioDiagnosticsBridgeApi,
-  StudioProvider,
   TextWithTone,
   TextWithToneProps,
-  useDocumentPane,
 } from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1', () => {
-  test('Studio', () => {
-    expectTypeOf<typeof Studio>().toBeFunction()
-  })
   test('STUDIO_RESIZE_TRANSITION_TYPE', () => {
     expectTypeOf<typeof STUDIO_RESIZE_TRANSITION_TYPE>().not.toBeNever()
   })
@@ -35,16 +29,10 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
   test('StudioDiagnosticsBridgeApi', () => {
     expectTypeOf<StudioDiagnosticsBridgeApi>().toBeObject()
   })
-  test('StudioProvider', () => {
-    expectTypeOf<typeof StudioProvider>().toBeFunction()
-  })
   test('TextWithTone', () => {
     expectTypeOf<typeof TextWithTone>().toBeFunction()
   })
   test('TextWithToneProps', () => {
     expectTypeOf<TextWithToneProps>().not.toBeNever()
-  })
-  test('useDocumentPane', () => {
-    expectTypeOf<typeof useDocumentPane>().toBeFunction()
   })
 })

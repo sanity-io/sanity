@@ -14,8 +14,8 @@ interface CommentsEnabledProviderProps {
  * Resolves whether comments are enabled for the document from the workspace's
  * `document.comments.enabled` config. Synchronous: the plan check only decides the mode, which
  * `useCommentsMode()` hands out as a promise from the plugin's `CommentsModePromiseContext`.
- *
- * @internal
+ * @hidden
+ * @beta
  */
 export const CommentsEnabledProvider = memo(function CommentsEnabledProvider(
   props: CommentsEnabledProviderProps,

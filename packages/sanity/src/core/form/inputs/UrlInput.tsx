@@ -11,9 +11,8 @@ import {getValidationRule} from '../utils/getValidationRule'
 export type UrlInputProps = StringInputProps
 
 /**
- *
  * @hidden
- * @internal
+ * @beta
  */
 export function UrlInput(props: UrlInputProps) {
   const {schemaType, validationError, elementProps} = props

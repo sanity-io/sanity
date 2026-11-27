@@ -6,8 +6,7 @@
 import {parseArgs} from 'node:util'
 
 import {createClient, type SanityClient} from '@sanity/client'
-import {type Schema} from 'sanity'
-import {createSchema} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver'
+import {type Schema, createSchema} from 'sanity'
 
 import {describeDocumentListFields} from '../../../../packages/@sanity/vision/src/redesign/util/documentListFields'
 import {resetDatasetEmbeddings} from '../../../../packages/@sanity/vision/src/redesign/util/embeddings'

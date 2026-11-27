@@ -1,6 +1,9 @@
 import {type SerializePath} from './StructureNodes'
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export class SerializeError extends Error {
   public readonly path: SerializePath
   public helpId?: (typeof HELP_URL)[keyof typeof HELP_URL]
@@ -23,7 +26,10 @@ export class SerializeError extends Error {
   }
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export const HELP_URL = {
   ID_REQUIRED: 'structure-node-id-required' as const,
   TITLE_REQUIRED: 'structure-title-required' as const,

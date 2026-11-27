@@ -8,7 +8,10 @@ import {DEFAULT_ORDERING_OPTIONS} from './Sort'
 import {type Serializable, type SerializeOptions, type SerializePath} from './StructureNodes'
 import {type StructureContext} from './types'
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export function maybeSerializeMenuItem(
   item: MenuItem | MenuItemBuilder,
   index: number,
@@ -337,14 +340,20 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
   }
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export interface SortMenuItem extends MenuItem {
   params: {
     by: SortOrderingItem[]
   }
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export function getOrderingMenuItem(
   context: StructureContext,
   {by, title, i18n}: SortOrdering,
@@ -369,7 +378,10 @@ export function getOrderingMenuItem(
   return builder
 }
 
-/** @internal */
+/**
+ * @hidden
+ * @beta
+ */
 export function getOrderingMenuItemsForSchemaType(
   context: StructureContext,
   typeName: SchemaType | string,

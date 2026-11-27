@@ -6,8 +6,8 @@ import {CommentsEnabledContext} from 'sanity/_singletons'
  * config. Synchronous and plan-independent: whether the plan has the feature only decides the
  * mode, which `useCommentsMode()` hands out as a promise. `false` outside any
  * `CommentsEnabledProvider`, such as a form rendered without the plugin.
- *
- * @internal
+ * @hidden
+ * @beta
  */
 export function useCommentsEnabled(): boolean {
   return use(CommentsEnabledContext)

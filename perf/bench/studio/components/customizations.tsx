@@ -7,11 +7,11 @@ import {
   type InputProps,
   useClient,
   useFormValue,
+  useDocumentPreviewStore,
+  useDocumentStore,
 } from 'sanity'
 import {
   getPublishedId,
-  useDocumentPreviewStore,
-  useDocumentStore,
   useDocumentOperation,
   useDocumentPairPermissions,
   useDocumentValues,

@@ -11,9 +11,8 @@ import {type BooleanInputProps} from '../types/inputProps'
 import {centerAlignedBox} from './BooleanInput.css'
 
 /**
- *
  * @hidden
- * @internal
+ * @beta
  */
 export function BooleanInput(props: BooleanInputProps) {
   const {t} = useTranslation()

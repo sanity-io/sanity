@@ -3,20 +3,10 @@
 // If you need to investigate where new imports are coming from run `TEST_DTS_EXPORTS_DIAGNOSTICS=full pnpm generate:dts-exports`
 
 import type {
-  ArrayOfObjectOptionsInput,
-  ArrayOfObjectsFunctions,
-  ArrayOfObjectsInput,
   ArrayOfObjectsInputMember,
   ArrayOfObjectsInputMembers,
   ArrayOfObjectsInputMembersProps,
-  ArrayOfObjectsItem,
   ArrayOfObjectsMemberProps,
-  ArrayOfOptionsInput,
-  ArrayOfPrimitiveOptionsInput,
-  ArrayOfPrimitivesFunctions,
-  ArrayOfPrimitivesInput,
-  ArrayOfPrimitivesItem,
-  BooleanInput,
   buildCommentRangeDecorations,
   buildCommentRangeDecorationsLegacy,
   buildRangeDecorationSelectionsFromComments,
@@ -38,7 +28,6 @@ import type {
   ChangesError,
   ChangeTitleSegment,
   Chip,
-  CommentDeleteDialog,
   CommentDeleteDialogLegacy,
   CommentDisabledIcon,
   CommentDisabledIconLegacy,
@@ -52,12 +41,8 @@ import type {
   CommentInputPropsLegacy,
   COMMENTS_INSPECTOR_NAME,
   COMMENTS_INSPECTOR_NAME_LEGACY,
-  CommentsAuthoringPathProvider,
   CommentsAuthoringPathProviderLegacy,
-  CommentsEnabledProvider,
   CommentsEnabledProviderLegacy,
-  CommentsIntentProvider,
-  CommentsList,
   CommentsListLegacy,
   CommentsProvider,
   CommentsProviderLegacy,
@@ -65,16 +50,12 @@ import type {
   CommentsSelectedPathLegacy,
   CommentsSelectedPathProvider,
   CommentsSelectedPathProviderLegacy,
-  ConfirmDeleteDialog,
   ConnectorContextValue,
   createPatchChannel,
   CreateReferenceButton,
   CreateReferenceOption,
-  CrossDatasetReferenceInput,
   CrossDatasetReferencePreview,
-  DateInput,
   DatePicker,
-  DateTimeInput,
   decodePath,
   defaultRenderAnnotation,
   defaultRenderBlock,
@@ -109,8 +90,6 @@ import type {
   DocumentGroupInventoryPerspectiveList,
   DocumentGroupInventoryProps,
   DocumentGroupInventoryReferencePreviewLinkProps,
-  DocumentListPane,
-  DocumentPane,
   DocumentPreviewPresence,
   DocumentPreviewPresenceProps,
   DocumentStatus,
@@ -119,9 +98,7 @@ import type {
   DocumentVersionsStatus,
   DocumentVersionsStatusIndicator,
   EditReferenceLinkComponentProps,
-  EditReferenceOptions,
   EditScheduleForm,
-  EmailInput,
   emptyValuesByType,
   encodePath,
   Event,
@@ -143,7 +120,6 @@ import type {
   FieldPresenceWithOverlay,
   FieldStatusProps,
   FieldValueError,
-  FileInput,
   FormBuilder,
   FormBuilderFilterFieldFn,
   FormCallbacksProvider,
@@ -190,7 +166,6 @@ import type {
   hasCommentMessageValueLegacy,
   HiddenField,
   HoveredFieldProvider,
-  ImageInput,
   isAddedItemDiff,
   IsEqualFunction,
   isFieldChange,
@@ -211,8 +186,6 @@ import type {
   MutationPatch,
   NoChanges,
   noop,
-  NumberInput,
-  ObjectInput,
   ObjectInputMember,
   ObjectInputMemberProps,
   ObjectInputMembers,
@@ -223,7 +196,6 @@ import type {
   PaneContent,
   ParseError,
   ParseErrorsProvider,
-  PatchEvent,
   PortableTextMemberItem,
   prefixPath,
   PresenceOverlay,
@@ -232,7 +204,6 @@ import type {
   PresenceScopeProps,
   PrimitiveFieldProps,
   ReferenceAutocomplete,
-  ReferenceInput,
   ReferenceInputOptions,
   ReferenceInputOptionsProvider,
   Reported,
@@ -242,43 +213,29 @@ import type {
   RevertChangesButton,
   RevertChangesConfirmDialog,
   SANITY_PATCH_TYPE,
-  SelectInput,
   SetActiveGroupOperation,
   setAtPath,
-  SlugInput,
-  StringInput,
   StructureToolProvider,
   StructureToolProviderProps,
-  TagsArrayInput,
-  TelephoneInput,
   TemplateOption,
-  TemplatePreview,
-  TextInput,
   TIMELINE_ITEM_I18N_KEY_MAPPING,
   toMutationPatches,
   TrackedArea,
   TrackedChange,
   TrackerContextGetSnapshot,
   TrackerContextStore,
-  TransformPatches,
-  UniversalArrayInput,
   UpdateReadOnlyPlugin,
   UploaderDef,
-  UrlInput,
   useAnnotationColor,
   useChangeIndicatorsReportedValues,
   useChangeIndicatorsReporter,
-  useComments,
-  useCommentsEnabled,
   useCommentsEnabledLegacy,
   useCommentsLegacy,
-  useCommentsMode,
   useCommentsModeLegacy,
   useCommentsSelectedPath,
   useCommentsSelectedPathLegacy,
   useCommentsTelemetry,
   useCommentsTelemetryLegacy,
-  useDidUpdate,
   useDiffAnnotationColor,
   useDivergenceNavigator,
   useDocumentChange,
@@ -287,7 +244,6 @@ import type {
   useDocumentPreviewValues,
   useEnhancedObjectDialog,
   useFieldActions,
-  useFormBuilder,
   useFormCallbacks,
   useFormState,
   UseFormStateOptions,
@@ -316,15 +272,6 @@ import type {
 import {describe, expectTypeOf, test} from 'vitest'
 
 describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2', () => {
-  test('ArrayOfObjectOptionsInput', () => {
-    expectTypeOf<typeof ArrayOfObjectOptionsInput>().not.toBeNever()
-  })
-  test('ArrayOfObjectsFunctions', () => {
-    expectTypeOf<typeof ArrayOfObjectsFunctions>().toBeFunction()
-  })
-  test('ArrayOfObjectsInput', () => {
-    expectTypeOf<typeof ArrayOfObjectsInput>().not.toBeNever()
-  })
   test('ArrayOfObjectsInputMember', () => {
     expectTypeOf<typeof ArrayOfObjectsInputMember>().toBeFunction()
   })
@@ -334,29 +281,8 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   test('ArrayOfObjectsInputMembersProps', () => {
     expectTypeOf<ArrayOfObjectsInputMembersProps>().toBeObject()
   })
-  test('ArrayOfObjectsItem', () => {
-    expectTypeOf<typeof ArrayOfObjectsItem>().not.toBeNever()
-  })
   test('ArrayOfObjectsMemberProps', () => {
     expectTypeOf<ArrayOfObjectsMemberProps>().toBeObject()
-  })
-  test('ArrayOfOptionsInput', () => {
-    expectTypeOf<typeof ArrayOfOptionsInput>().not.toBeNever()
-  })
-  test('ArrayOfPrimitiveOptionsInput', () => {
-    expectTypeOf<typeof ArrayOfPrimitiveOptionsInput>().not.toBeNever()
-  })
-  test('ArrayOfPrimitivesFunctions', () => {
-    expectTypeOf<typeof ArrayOfPrimitivesFunctions>().toBeFunction()
-  })
-  test('ArrayOfPrimitivesInput', () => {
-    expectTypeOf<typeof ArrayOfPrimitivesInput>().not.toBeNever()
-  })
-  test('ArrayOfPrimitivesItem', () => {
-    expectTypeOf<typeof ArrayOfPrimitivesItem>().not.toBeNever()
-  })
-  test('BooleanInput', () => {
-    expectTypeOf<typeof BooleanInput>().toBeFunction()
   })
   test('buildCommentRangeDecorations', () => {
     expectTypeOf<typeof buildCommentRangeDecorations>().toBeFunction()
@@ -421,9 +347,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   test('Chip', () => {
     expectTypeOf<typeof Chip>().toBeFunction()
   })
-  test('CommentDeleteDialog', () => {
-    expectTypeOf<typeof CommentDeleteDialog>().toBeFunction()
-  })
   test('CommentDeleteDialogLegacy', () => {
     expectTypeOf<typeof CommentDeleteDialogLegacy>().toBeFunction()
   })
@@ -463,23 +386,11 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   test('COMMENTS_INSPECTOR_NAME_LEGACY', () => {
     expectTypeOf<typeof COMMENTS_INSPECTOR_NAME_LEGACY>().not.toBeNever()
   })
-  test('CommentsAuthoringPathProvider', () => {
-    expectTypeOf<typeof CommentsAuthoringPathProvider>().toBeFunction()
-  })
   test('CommentsAuthoringPathProviderLegacy', () => {
     expectTypeOf<typeof CommentsAuthoringPathProviderLegacy>().toBeFunction()
   })
-  test('CommentsEnabledProvider', () => {
-    expectTypeOf<typeof CommentsEnabledProvider>().not.toBeNever()
-  })
   test('CommentsEnabledProviderLegacy', () => {
     expectTypeOf<typeof CommentsEnabledProviderLegacy>().not.toBeNever()
-  })
-  test('CommentsIntentProvider', () => {
-    expectTypeOf<typeof CommentsIntentProvider>().not.toBeNever()
-  })
-  test('CommentsList', () => {
-    expectTypeOf<typeof CommentsList>().not.toBeNever()
   })
   test('CommentsListLegacy', () => {
     expectTypeOf<typeof CommentsListLegacy>().not.toBeNever()
@@ -502,9 +413,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   test('CommentsSelectedPathProviderLegacy', () => {
     expectTypeOf<typeof CommentsSelectedPathProviderLegacy>().not.toBeNever()
   })
-  test('ConfirmDeleteDialog', () => {
-    expectTypeOf<typeof ConfirmDeleteDialog>().toBeFunction()
-  })
   test('ConnectorContextValue', () => {
     expectTypeOf<ConnectorContextValue>().toBeObject()
   })
@@ -517,20 +425,11 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   test('CreateReferenceOption', () => {
     expectTypeOf<CreateReferenceOption>().toBeObject()
   })
-  test('CrossDatasetReferenceInput', () => {
-    expectTypeOf<typeof CrossDatasetReferenceInput>().not.toBeNever()
-  })
   test('CrossDatasetReferencePreview', () => {
     expectTypeOf<typeof CrossDatasetReferencePreview>().toBeFunction()
   })
-  test('DateInput', () => {
-    expectTypeOf<typeof DateInput>().not.toBeNever()
-  })
   test('DatePicker', () => {
     expectTypeOf<typeof DatePicker>().toBeFunction()
-  })
-  test('DateTimeInput', () => {
-    expectTypeOf<typeof DateTimeInput>().not.toBeNever()
   })
   test('decodePath', () => {
     expectTypeOf<typeof decodePath>().toBeFunction()
@@ -634,12 +533,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   test('DocumentGroupInventoryReferencePreviewLinkProps', () => {
     expectTypeOf<DocumentGroupInventoryReferencePreviewLinkProps>().toBeObject()
   })
-  test('DocumentListPane', () => {
-    expectTypeOf<typeof DocumentListPane>().not.toBeNever()
-  })
-  test('DocumentPane', () => {
-    expectTypeOf<typeof DocumentPane>().not.toBeNever()
-  })
   test('DocumentPreviewPresence', () => {
     expectTypeOf<typeof DocumentPreviewPresence>().toBeFunction()
   })
@@ -664,14 +557,8 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   test('EditReferenceLinkComponentProps', () => {
     expectTypeOf<EditReferenceLinkComponentProps>().toBeObject()
   })
-  test('EditReferenceOptions', () => {
-    expectTypeOf<EditReferenceOptions>().toBeObject()
-  })
   test('EditScheduleForm', () => {
     expectTypeOf<typeof EditScheduleForm>().toBeFunction()
-  })
-  test('EmailInput', () => {
-    expectTypeOf<typeof EmailInput>().toBeFunction()
   })
   test('emptyValuesByType', () => {
     expectTypeOf<typeof emptyValuesByType>().not.toBeNever()
@@ -735,9 +622,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   })
   test('FieldValueError', () => {
     expectTypeOf<FieldValueError>().toBeObject()
-  })
-  test('FileInput', () => {
-    expectTypeOf<typeof FileInput>().not.toBeNever()
   })
   test('FormBuilder', () => {
     expectTypeOf<typeof FormBuilder>().not.toBeNever()
@@ -877,9 +761,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   test('HoveredFieldProvider', () => {
     expectTypeOf<typeof HoveredFieldProvider>().not.toBeNever()
   })
-  test('ImageInput', () => {
-    expectTypeOf<typeof ImageInput>().not.toBeNever()
-  })
   test('isAddedItemDiff', () => {
     expectTypeOf<typeof isAddedItemDiff>().toBeFunction()
   })
@@ -940,12 +821,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   test('noop', () => {
     expectTypeOf<typeof noop>().toBeFunction()
   })
-  test('NumberInput', () => {
-    expectTypeOf<typeof NumberInput>().toBeFunction()
-  })
-  test('ObjectInput', () => {
-    expectTypeOf<typeof ObjectInput>().not.toBeNever()
-  })
   test('ObjectInputMember', () => {
     expectTypeOf<typeof ObjectInputMember>().not.toBeNever()
   })
@@ -976,9 +851,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   test('ParseErrorsProvider', () => {
     expectTypeOf<typeof ParseErrorsProvider>().toBeFunction()
   })
-  test('PatchEvent', () => {
-    expectTypeOf<PatchEvent>().not.toBeNever()
-  })
   test('PortableTextMemberItem', () => {
     expectTypeOf<PortableTextMemberItem>().toBeObject()
   })
@@ -1002,9 +874,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   })
   test('ReferenceAutocomplete', () => {
     expectTypeOf<typeof ReferenceAutocomplete>().toBeFunction()
-  })
-  test('ReferenceInput', () => {
-    expectTypeOf<typeof ReferenceInput>().not.toBeNever()
   })
   test('ReferenceInputOptions', () => {
     expectTypeOf<ReferenceInputOptions>().toBeObject()
@@ -1033,20 +902,11 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   test('SANITY_PATCH_TYPE', () => {
     expectTypeOf<typeof SANITY_PATCH_TYPE>().not.toBeNever()
   })
-  test('SelectInput', () => {
-    expectTypeOf<typeof SelectInput>().toBeFunction()
-  })
   test('SetActiveGroupOperation', () => {
     expectTypeOf<SetActiveGroupOperation>().toBeObject()
   })
   test('setAtPath', () => {
     expectTypeOf<typeof setAtPath>().toBeFunction()
-  })
-  test('SlugInput', () => {
-    expectTypeOf<typeof SlugInput>().not.toBeNever()
-  })
-  test('StringInput', () => {
-    expectTypeOf<typeof StringInput>().not.toBeNever()
   })
   test('StructureToolProvider', () => {
     expectTypeOf<typeof StructureToolProvider>().toBeFunction()
@@ -1054,20 +914,8 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   test('StructureToolProviderProps', () => {
     expectTypeOf<StructureToolProviderProps>().toBeObject()
   })
-  test('TagsArrayInput', () => {
-    expectTypeOf<typeof TagsArrayInput>().not.toBeNever()
-  })
-  test('TelephoneInput', () => {
-    expectTypeOf<typeof TelephoneInput>().toBeFunction()
-  })
   test('TemplateOption', () => {
     expectTypeOf<TemplateOption>().toBeObject()
-  })
-  test('TemplatePreview', () => {
-    expectTypeOf<typeof TemplatePreview>().toBeFunction()
-  })
-  test('TextInput', () => {
-    expectTypeOf<typeof TextInput>().toBeFunction()
   })
   test('TIMELINE_ITEM_I18N_KEY_MAPPING', () => {
     expectTypeOf<typeof TIMELINE_ITEM_I18N_KEY_MAPPING>().not.toBeNever()
@@ -1087,20 +935,11 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   test('TrackerContextStore', () => {
     expectTypeOf<TrackerContextStore<any>>().toBeObject()
   })
-  test('TransformPatches', () => {
-    expectTypeOf<typeof TransformPatches>().not.toBeNever()
-  })
-  test('UniversalArrayInput', () => {
-    expectTypeOf<typeof UniversalArrayInput>().not.toBeNever()
-  })
   test('UpdateReadOnlyPlugin', () => {
     expectTypeOf<typeof UpdateReadOnlyPlugin>().toBeFunction()
   })
   test('UploaderDef', () => {
     expectTypeOf<UploaderDef>().not.toBeNever()
-  })
-  test('UrlInput', () => {
-    expectTypeOf<typeof UrlInput>().toBeFunction()
   })
   test('useAnnotationColor', () => {
     expectTypeOf<typeof useAnnotationColor>().toBeFunction()
@@ -1111,20 +950,11 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   test('useChangeIndicatorsReporter', () => {
     expectTypeOf<typeof useChangeIndicatorsReporter>().not.toBeNever()
   })
-  test('useComments', () => {
-    expectTypeOf<typeof useComments>().toBeFunction()
-  })
-  test('useCommentsEnabled', () => {
-    expectTypeOf<typeof useCommentsEnabled>().toBeFunction()
-  })
   test('useCommentsEnabledLegacy', () => {
     expectTypeOf<typeof useCommentsEnabledLegacy>().toBeFunction()
   })
   test('useCommentsLegacy', () => {
     expectTypeOf<typeof useCommentsLegacy>().toBeFunction()
-  })
-  test('useCommentsMode', () => {
-    expectTypeOf<typeof useCommentsMode>().toBeFunction()
   })
   test('useCommentsModeLegacy', () => {
     expectTypeOf<typeof useCommentsModeLegacy>().toBeFunction()
@@ -1140,9 +970,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   })
   test('useCommentsTelemetryLegacy', () => {
     expectTypeOf<typeof useCommentsTelemetryLegacy>().toBeFunction()
-  })
-  test('useDidUpdate', () => {
-    expectTypeOf<typeof useDidUpdate>().toBeFunction()
   })
   test('useDiffAnnotationColor', () => {
     expectTypeOf<typeof useDiffAnnotationColor>().toBeFunction()
@@ -1167,9 +994,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
   })
   test('useFieldActions', () => {
     expectTypeOf<typeof useFieldActions>().toBeFunction()
-  })
-  test('useFormBuilder', () => {
-    expectTypeOf<typeof useFormBuilder>().toBeFunction()
   })
   test('useFormCallbacks', () => {
     expectTypeOf<typeof useFormCallbacks>().toBeFunction()

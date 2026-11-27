@@ -230,7 +230,7 @@ function CommentsListInner(props: CommentsListProps & RefAttributes<HTMLUListEle
 }
 
 /**
- * @internal
  * @hidden
+ * @beta
  */
 export const CommentsList = memo(CommentsListInner)
