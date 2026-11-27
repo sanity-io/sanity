@@ -599,8 +599,6 @@ export {
   type TypeTarget,
 } from '../core/templates/types'
 // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-export {type LegacyThemeProps} from '../core/theme/_legacy/types'
-// oxlint-disable-next-line no-deprecated -- will fix in follow up PR
 export {type StudioTheme, type StudioThemeColorSchemeKey} from '../core/theme/types'
 export {type DraftId, type PublishedId, type SystemBundle} from '../core/util/draftUtils'
 export {type DocumentVariantType} from '../core/util/getDocumentVariantType'
@@ -1922,7 +1920,11 @@ export type LegacyCallbackResult = never
  */
 export declare const LegacyLayerProvider: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Removed in v7. Build custom studio themes with `buildTheme` from `@sanity/themer` (or `buildTheme` from `@sanity/ui/theme`) and pass the result to the workspace `theme` config key.
+ */
+export type LegacyThemeProps = never
+/**
+ * @deprecated Removed in v7. Build custom studio themes with `buildTheme` from `@sanity/themer` (or `buildTheme` from `@sanity/ui/theme`) and pass the result to the workspace `theme` config key.
  */
 export type LegacyThemeTints = never
 /**
@@ -3038,7 +3040,7 @@ export declare const asLoadable: never
  */
 export declare const buildCommentRangeDecorations: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Removed in v7. Build custom studio themes with `buildTheme` from `@sanity/themer` (or `buildTheme` from `@sanity/ui/theme`) and pass the result to the workspace `theme` config key.
  */
 export declare const buildLegacyTheme: never
 /**
