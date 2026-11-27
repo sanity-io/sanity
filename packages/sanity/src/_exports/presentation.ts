@@ -39,7 +39,7 @@ export {
 // Type-only: every symbol is `export declare` / `export type … = never`. Nothing here may
 // emit runtime JavaScript. See AGENTS.md ("Export tombstones (v7)").
 /**
- * @deprecated Removed from `sanity/presentation`: it was a different `PreviewProps` than the one `sanity` exports, and every export name now comes from exactly one entry. Use the `PreviewProps` from `sanity`.
+ * @deprecated Removed in v7. The props of the Presentation tool's preview pane are no longer exported; `sanity` exports an unrelated `PreviewProps` for document previews.
  */
 export type PreviewProps = never
 /**
@@ -47,7 +47,7 @@ export type PreviewProps = never
  */
 export type PreviewUrlResolver = never
 /**
- * @deprecated Removed from `sanity/presentation`: it was a different `Serializable` than the one `sanity/structure` exports, and every export name now comes from exactly one entry. Use the `Serializable` from `sanity/structure`.
+ * @deprecated Removed from `sanity/presentation`: `sanity/structure` now owns the name `Serializable` for an unrelated type. This one was `Serializable` from `@sanity/presentation-comlink`, the union of `SerializablePrimitive`, `SerializableObject` and `SerializableArray`; import it from `@sanity/presentation-comlink`, or use that union with the three types from `sanity/presentation`.
  */
 export type Serializable = never
 // </tombstones>

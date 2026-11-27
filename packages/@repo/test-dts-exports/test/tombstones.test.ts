@@ -14,6 +14,7 @@ import {
   findBrokenReplacementImports,
   formatSurfaceDiff,
   parseReplacementImports,
+  isSameType,
   readManifest,
   readSurface,
   type Surface,
@@ -152,8 +153,8 @@ describe('diffSurfaces', () => {
       },
     })
     expect(diff.missing).toEqual([
-      {entry: '.', name: 'moved', kind: 'value', exportedFrom: ['./new']},
-      {entry: '.', name: 'removed', kind: 'value', exportedFrom: []},
+      {entry: '.', name: 'moved', kind: 'value', exportedFrom: ['./new'], unrelated: []},
+      {entry: '.', name: 'removed', kind: 'value', exportedFrom: [], unrelated: []},
     ])
     expect(diff.stale).toEqual([])
     expect(formatSurfaceDiff(diff, '1.0.0')).toMatch(
@@ -203,7 +204,14 @@ describe('diffSurfaces', () => {
       manifest: {removedEntries: [], tombstones: {}},
     })
     expect(diff.missing).toEqual([
-      {entry: '.', name: 'demoted', kind: 'value', exportedFrom: ['./new'], typeOnly: true},
+      {
+        entry: '.',
+        name: 'demoted',
+        kind: 'value',
+        exportedFrom: ['./new'],
+        unrelated: [],
+        typeOnly: true,
+      },
     ])
   })
 
@@ -237,6 +245,71 @@ describe('diffSurfaces', () => {
     expect(formatSurfaceDiff(diff, '1.0.0')).toMatch(
       /- moved in sanity points at sanity\/old-home, but it is exported from sanity\/new-home\. Suggested: "Moved to `sanity\/new-home`\./,
     )
+  })
+
+  it('reports tombstones that point at an entry exporting a different type of that name', () => {
+    const typed = (...shape: string[]) => ({...real, kind: 'type', shape}) as const
+    const diff = diffSurfaces({
+      published: {
+        '.': {
+          Same: typed('id', 'author', 'timestamp'),
+          Other: typed('id', 'author', 'timestamp'),
+          Gone: typed('id', 'author', 'timestamp'),
+        },
+      },
+      workspace: {
+        '.': {Same: tombstone, Other: tombstone, Gone: tombstone},
+        './new': {
+          Same: typed('id', 'author', 'timestamp', 'added'),
+          Other: typed('id', 'mutations', 'type'),
+          Gone: typed('mutations', 'type'),
+        },
+      },
+      manifest: {
+        removedEntries: [],
+        tombstones: {
+          '.': [
+            {name: 'Same', kind: 'type', message: 'Moved to `sanity/new`.'},
+            {name: 'Other', kind: 'type', message: 'Moved to `sanity/new`.'},
+            {name: 'Gone', kind: 'type', message: 'Removed in v7.'},
+          ],
+        },
+      },
+    })
+    expect(diff.unrelated).toEqual([{entry: '.', name: 'Other', target: './new'}])
+    expect(diff.misdirected).toEqual([])
+    expect(formatSurfaceDiff(diff, '1.0.0')).toMatch(
+      /- Other in sanity points at sanity\/new, whose Other is not the type sanity@1\.0\.0 exported/,
+    )
+  })
+
+  it('suggests a removal when the only export of the name is an unrelated type', () => {
+    const typed = (...shape: string[]) => ({...real, kind: 'type', shape}) as const
+    const diff = diffSurfaces({
+      published: {'.': {Name: typed('a', 'b', 'c')}},
+      workspace: {'.': {}, './new': {Name: typed('x', 'y', 'z')}},
+      manifest: {removedEntries: [], tombstones: {}},
+    })
+    expect(diff.missing).toEqual([
+      {entry: '.', name: 'Name', kind: 'type', exportedFrom: [], unrelated: ['./new']},
+    ])
+    expect(formatSurfaceDiff(diff, '1.0.0')).toMatch(
+      /Add to "tombstones"\["\."\]: \{"name":"Name","kind":"type","message":"Removed in v7\. `sanity\/new` exports an unrelated `Name`\./,
+    )
+  })
+})
+
+describe('isSameType', () => {
+  it('accepts declarations that share at least half the names of the smaller one', () => {
+    expect(isSameType(['a', 'b', 'c'], ['a', 'b', 'c', 'd', 'e', 'f'])).toBe(true)
+    expect(isSameType(['a', 'b'], ['a', 'x', 'y', 'z'])).toBe(true)
+    expect(isSameType(['a', 'b', 'c'], ['a', 'x', 'y'])).toBe(false)
+    expect(isSameType(['a', 'b'], ['x', 'y'])).toBe(false)
+  })
+
+  it('never tells apart declarations without a shape', () => {
+    expect(isSameType(undefined, ['a'])).toBe(true)
+    expect(isSameType(['a'], [])).toBe(true)
   })
 })
 
