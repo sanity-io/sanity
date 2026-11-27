@@ -11,6 +11,7 @@ import {useVisionExperience, type VisionLayout} from '../../store/VisionActorCon
 import {cx} from '../../util/cx'
 import {PANEL_HEADER_HEIGHT, PanelToggle} from '../CollapsiblePanel'
 import * as motion from '../CollapsiblePanel.module.css'
+import {bottomPanelSizeToFit} from '../fitPanelSize'
 import {usePanelSnapShut} from '../panelSnapShut'
 import {PANEL_PANE, PANEL_TRANSITION, startLayoutTransition} from '../panelTransitions'
 import {useParamsSection} from '../queryTabLayout'
@@ -47,7 +48,7 @@ export interface QueryParamsSplitProps {
  * The query editor above the params, as old Vision had them: Params is a section of its own,
  * with a header like the query's and the result's, resized by the divider between them and
  * collapsed to that header the way the bottom panels collapse to their tabs: by its toggle, or by
- * dragging it below one line of params.
+ * dragging it below one line of params. Double-clicking the divider sizes it to the params.
  */
 export function QueryParamsSplit(props: QueryParamsSplitProps) {
   const {query, actions, invalid, children} = props
@@ -82,6 +83,26 @@ export function QueryParamsSplit(props: QueryParamsSplitProps) {
     defaultSize,
     collapse: collapseShrunk,
   })
+  // As the bottom panels fit their open tab: the header and the params' own height, no taller
+  // than the query editor leaves room for
+  const fitToContent = useCallback(() => {
+    const container = containerRef.current
+    const split = container?.querySelector<HTMLElement>('[data-testid="vision-query-params-split"]')
+    const header = container?.querySelector<HTMLElement>('[data-testid="vision-params-toolbar"]')
+    const content = container?.querySelector<HTMLElement>('[data-vision-params-fit-content]')
+    if (!split || !header || !content) return
+    const fitted = bottomPanelSizeToFit({
+      headerHeight: header.offsetHeight,
+      contentHeight: content.offsetHeight,
+      containerHeight: split.clientHeight,
+      minMainHeight: MIN_QUERY_HEIGHT,
+      handleSize: SPLIT_HANDLE_SIZE,
+    })
+    if (fitted === null || fitted === size) return
+    startLayoutTransition(PANEL_TRANSITION, () =>
+      setSizes((current) => ({...current, [layout]: fitted})),
+    )
+  }, [layout, setSizes, size])
 
   return (
     <Box className={styles.splitPaneContainer} ref={containerRef}>
@@ -91,6 +112,7 @@ export function QueryParamsSplit(props: QueryParamsSplitProps) {
         minSecondarySize={MIN_QUERY_HEIGHT}
         minSize={PANEL_HEADER_HEIGHT}
         onChange={(next) => setSizes((current) => ({...current, [layout]: next}))}
+        onDoubleClick={fitToContent}
         onResizeEnd={snapShut}
         onReset={() => setSizes((current) => ({...current, [layout]: undefined}))}
         primary="second"
@@ -137,7 +159,13 @@ export function QueryParamsSplit(props: QueryParamsSplitProps) {
             </div>
             {!collapsed && (
               <div className={cx(motion.body, styles.paneScroll)} id={bodyId} ref={setScroller}>
-                {children}
+                {/*
+                  Not stretched to the section: its height is the params', which fitting to the
+                  content measures
+                */}
+                <div className={styles.panelContent} data-vision-params-fit-content="">
+                  {children}
+                </div>
               </div>
             )}
           </Flex>

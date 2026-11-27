@@ -1215,6 +1215,41 @@ describe('VisionRedesign', () => {
     expect(screen.getByTestId('vision-params-editor')).toBeTruthy()
   })
 
+  it.each([
+    ['their content', 120, '0 0 155px'],
+    ['what the query editor leaves when they are taller', 1000, '0 0 479px'],
+  ])(
+    'fits the params to %s on a double-click of their divider, as the bottom panels fit a tab',
+    async (_, contentHeight, flex) => {
+      const offsetHeight = vi
+        .spyOn(HTMLElement.prototype, 'offsetHeight', 'get')
+        .mockImplementation(function (this: HTMLElement) {
+          if (this.hasAttribute('data-vision-params-fit-content')) return contentHeight
+          return this.dataset.testid === 'vision-params-toolbar' ? 35 : 0
+        })
+      const clientHeight = vi
+        .spyOn(HTMLElement.prototype, 'clientHeight', 'get')
+        .mockImplementation(function (this: HTMLElement) {
+          return this.dataset.testid === 'vision-query-params-split' ? 600 : 0
+        })
+      onTestFinished(() => {
+        offsetHeight.mockRestore()
+        clientHeight.mockRestore()
+      })
+      renderRedesign()
+      const split = screen.getByTestId('vision-query-params-split')
+      const paramsPane = split.lastElementChild as HTMLElement
+      const initialFlex = paramsPane.style.flex
+      const handle = screen.getByTestId('vision-query-params-split-handle')
+
+      fireEvent.click(handle)
+      expect(paramsPane.style.flex).toBe(initialFlex)
+
+      fireEvent.doubleClick(handle)
+      await waitFor(() => expect(paramsPane.style.flex).toBe(flex))
+    },
+  )
+
   it('edits the params in the form inferred from the query', async () => {
     const {fetchCalls, unmount} = renderRedesign()
     const paramsEditor = () =>
