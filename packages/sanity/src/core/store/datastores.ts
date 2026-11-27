@@ -105,7 +105,8 @@ export function useUserStore(): UserStore {
 /**
  * Returns the {@link GrantsStore} for checking the current user's document permissions.
  *
- * @internal
+ * @hidden
+ * @beta
  */
 export function useGrantsStore(): GrantsStore {
   // `currentUser` is read from the source directly (instead of via `useCurrentUser` from

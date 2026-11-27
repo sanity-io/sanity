@@ -607,7 +607,6 @@ import type {
   useFormatRelativeLocalePublishDate,
   useGetI18nText,
   useGlobalPresence,
-  useGrantsStore,
   useHistoryStore,
   useI18nText,
   useInitialValue,
@@ -674,7 +673,6 @@ import type {
   useThrottledCallback,
   useTimeAgo,
   useTimeZone,
-  useTools,
   useUnique,
   useUnstableObserveDocument,
   useUpsellData,
@@ -2539,9 +2537,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   test('useGlobalPresence', () => {
     expectTypeOf<typeof useGlobalPresence>().toBeFunction()
   })
-  test('useGrantsStore', () => {
-    expectTypeOf<typeof useGrantsStore>().toBeFunction()
-  })
   test('useHistoryStore', () => {
     expectTypeOf<typeof useHistoryStore>().toBeFunction()
   })
@@ -2741,9 +2736,6 @@ describe('sanity/_dangerously_use_private_internals_that_do_not_follow_semver', 
   })
   test('useTimeZone', () => {
     expectTypeOf<typeof useTimeZone>().not.toBeNever()
-  })
-  test('useTools', () => {
-    expectTypeOf<typeof useTools>().toBeFunction()
   })
   test('useUnique', () => {
     expectTypeOf<typeof useUnique>().toBeFunction()

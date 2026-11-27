@@ -416,6 +416,8 @@ export {useNumberFormat, type UseNumberFormatOptions} from '../core/hooks/useNum
 export {useProjectId} from '../core/hooks/useProjectId'
 export {type DocumentField, useReferringDocuments} from '../core/hooks/useReferringDocuments'
 export {useSchema} from '../core/hooks/useSchema'
+export {useTools} from '../core/hooks/useTools'
+export {useGrantsStore} from '../core/store/datastores'
 export {useSetImmediateValidation} from '../core/hooks/useSetImmediateValidation'
 export {
   type FormattableMeasurementUnit,
@@ -4395,10 +4397,6 @@ export declare const useGlobalPresence: never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
-export declare const useGrantsStore: never
-/**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
- */
 export declare const useHistoryStore: never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
@@ -4636,10 +4634,6 @@ export declare const useTimelineSelector: never
  * @deprecated Removed in v7 with the legacy document history timeline. Document history always uses the events API: `useEventsStore` and `EventsStore` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release).
  */
 export declare const useTimelineStore: never
-/**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
- */
-export declare const useTools: never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */

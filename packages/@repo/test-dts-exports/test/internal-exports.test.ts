@@ -32,6 +32,7 @@
  *
  * Symbols re-exported from dependencies are skipped: their release tags belong to the dependency.
  */
+import fs from 'node:fs'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
@@ -281,20 +282,23 @@ describe('structure, router and presentation keep their internals on subpaths', 
 })
 
 /**
- * Every internals entry: the base entry, its numbered entries (`-1`, `-2`) and the `-router` and
- * `-structure` subpaths.
+ * Every internals entry the package exports: the base entry, its numbered entries (`-1`, `-2`)
+ * and the `-router` and `-structure` subpaths, read from its exports map so that a new one is
+ * covered as soon as it is added.
  */
-const INTERNALS_ENTRIES = {
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver': INTERNALS_ENTRY_DTS,
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1':
-    '_dangerously_use_private_internals_that_do_not_follow_semver-1.d.ts',
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2':
-    '_dangerously_use_private_internals_that_do_not_follow_semver-2.d.ts',
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router':
-    '_dangerously_use_private_internals_that_do_not_follow_semver-router.d.ts',
-  'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-structure':
-    '_dangerously_use_private_internals_that_do_not_follow_semver-structure.d.ts',
-} as const
+const INTERNALS_ENTRIES = Object.fromEntries(
+  Object.keys(
+    (
+      JSON.parse(
+        fs.readFileSync(path.resolve(__dirname, '../../../sanity/package.json'), 'utf8'),
+      ) as {exports: Record<string, unknown>}
+    ).exports,
+  )
+    .filter((subpath) =>
+      subpath.startsWith('./_dangerously_use_private_internals_that_do_not_follow_semver'),
+    )
+    .map((subpath) => [`sanity/${subpath.slice(2)}`, `${subpath.slice(2)}.d.ts`]),
+)
 
 const PUBLIC_TAGS = new Set(['public', 'beta', 'alpha'])
 
@@ -320,6 +324,10 @@ function publicTagsOf(declaration: ExportedDeclarations): string[] {
  * internals entry as `valueFrom` (the Structure Builder classes).
  */
 describe('the internals entries export nothing tagged @public, @beta or @alpha', () => {
+  test('covers every internals entry', () => {
+    expect(Object.keys(INTERNALS_ENTRIES).length).toBeGreaterThanOrEqual(5)
+  })
+
   const project = new Project({skipAddingFilesFromTsConfig: true})
 
   for (const [entry, dtsFile] of Object.entries(INTERNALS_ENTRIES)) {
