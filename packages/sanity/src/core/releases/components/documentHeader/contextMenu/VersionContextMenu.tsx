@@ -9,6 +9,7 @@ import {
 import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
 import {useDocumentPairPermissions} from '../../../../store/grants/documentPairPermissions'
 import {getVersionFromId, isPublishedId} from '../../../../util/draftUtils'
+import {type ReleaseDetailLinkLocation} from '../../../__telemetry__/releases.telemetry'
 import {type CopyToDraftsOptions} from '../../../hooks/useCopyToDrafts'
 import {useReleaseOperations} from '../../../store/useReleaseOperations'
 import {useReleasePermissions} from '../../../store/useReleasePermissions'
@@ -18,6 +19,8 @@ import {ScheduledDraftContextMenu} from './ScheduledDraftContextMenu'
 
 interface VersionContextMenuProps {
   documentGroupId: string
+  /** Where the menu is opened, reported when "View release" is followed */
+  releaseLinkLocation: Extract<ReleaseDetailLinkLocation, 'document_inspector' | 'document_header'>
   releases: ReleaseDocument[]
   releasesLoading: boolean
   fromRelease: string
@@ -59,6 +62,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
     isScheduledDraft,
     scheduledDraftMenuActions,
     isDiscardable = true,
+    releaseLinkLocation,
   } = props
   const isPublished = isPublishedId(versionId)
   const versionName = getVersionFromId(versionId)
@@ -133,6 +137,7 @@ export const VersionContextMenu = memo(function VersionContextMenu(props: Versio
 
   return (
     <CanonicalReleaseContextMenu
+      releaseLinkLocation={releaseLinkLocation}
       releases={releases}
       releasesLoading={releasesLoading}
       bundleId={fromRelease}

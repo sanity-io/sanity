@@ -11,7 +11,7 @@ import {Button} from '../../../../../../ui-components/button/Button'
 import {Dialog} from '../../../../../../ui-components/dialog/Dialog'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {Translate} from '../../../../../i18n/Translate'
-import {RevertRelease} from '../../../../__telemetry__/releases.telemetry'
+import {ReleaseDetailLinkClicked, RevertRelease} from '../../../../__telemetry__/releases.telemetry'
 import {useReleasesUpsell} from '../../../../contexts/upsell/useReleasesUpsell'
 import {useCreateReleaseAvailability} from '../../../../hooks/useCreateReleaseAvailability'
 import {useWorkspaceReleaseLimitGuard} from '../../../../hooks/useWorkspaceReleaseLimit'
@@ -93,9 +93,11 @@ const ConfirmReleaseDialog = ({
   const blockAtWorkspaceReleaseLimit = useWorkspaceReleaseLimitGuard()
 
   const navigateToRevertRelease = useCallback(
-    (revertReleaseId: string) => () =>
-      router.navigate({releaseId: getReleaseIdFromReleaseDocumentId(revertReleaseId)}),
-    [router],
+    (revertReleaseId: string) => () => {
+      telemetry.log(ReleaseDetailLinkClicked, {location: 'revert_release_toast'})
+      router.navigate({releaseId: getReleaseIdFromReleaseDocumentId(revertReleaseId)})
+    },
+    [router, telemetry],
   )
 
   const handleRevertRelease = useCallback(async () => {

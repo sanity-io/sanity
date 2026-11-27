@@ -1,4 +1,5 @@
 import {AddIcon} from '@sanity/icons/Add'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Card} from '@sanity/ui'
 import {useToast} from '@sanity/ui/toast'
 import {use, useCallback, useMemo, useState} from 'react'
@@ -8,6 +9,7 @@ import {Text, Container, Flex, VStack} from 'ui5'
 import {Button} from '../../../../ui-components/button/Button'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {DocumentTable} from '../../../releases/tool/components/Table/DocumentTable'
+import {VariantsToolFiltered} from '../../__telemetry__/variants.telemetry'
 import {CreateVariantDialog} from '../../components/dialog/CreateVariantDialog'
 import {useVariantsMode} from '../../contexts/mode/useVariantsMode'
 import {useVariantsUpsell} from '../../contexts/upsell/useVariantsUpsell'
@@ -44,9 +46,24 @@ export function VariantsOverview(): React.JSX.Element {
   const mode = use(useVariantsMode())
   const {handleOpenDialog: handleOpenUpsellDialog, upsellDialogOpen} = useVariantsUpsell()
   const toast = useToast()
+  const telemetry = useTelemetry()
   const {data: variants, error, loading} = useAllVariants()
   const [isCreateVariantDialogOpen, setIsCreateVariantDialogOpen] = useState(false)
   const [conditionFilters, setConditionFilters] = useState<Record<string, string[]>>({})
+
+  const handleConditionFiltersChange = useCallback(
+    (nextFilters: Record<string, string[]>) => {
+      setConditionFilters(nextFilters)
+      telemetry.log(VariantsToolFiltered, {
+        location: 'variants_overview',
+        activeFilterCount: Object.values(nextFilters).reduce(
+          (count, values) => count + values.length,
+          0,
+        ),
+      })
+    },
+    [telemetry],
+  )
 
   const handleCreateVariant = useCallback(() => {
     if (mode === null) {
@@ -226,7 +243,7 @@ export function VariantsOverview(): React.JSX.Element {
           facets.length > 0 ? (
             <VariantConditionFilters
               facets={facets}
-              onChange={setConditionFilters}
+              onChange={handleConditionFiltersChange}
               value={conditionFilters}
             />
           ) : undefined
@@ -244,6 +261,7 @@ export function VariantsOverview(): React.JSX.Element {
 
       {isCreateVariantDialogOpen && (
         <CreateVariantDialog
+          location="variants_overview"
           onCancel={() => setIsCreateVariantDialogOpen(false)}
           onSubmit={handleOnCreateVariant}
         />

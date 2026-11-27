@@ -269,6 +269,7 @@ export {
 } from '../core/preview/useValuePreview'
 export {getPreviewPaths} from '../core/preview/utils/getPreviewPaths'
 export {prepareForPreview} from '../core/preview/utils/prepareForPreview'
+export {ReleaseDetailLinkClicked} from '../core/releases/__telemetry__/releases.telemetry'
 export {ReleaseTitle} from '../core/releases/components/ReleaseTitle'
 export {useFormatRelativeLocalePublishDate} from '../core/releases/hooks/useFormatRelativeLocalePublishDate'
 export {useIsReleaseActive} from '../core/releases/hooks/useIsReleaseActive'

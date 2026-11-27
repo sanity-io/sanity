@@ -47,6 +47,7 @@ export function VariantMenuButton({
   } = useVariantDeleteAction(variant._id, {
     documentCount,
     documentsLoading,
+    location: 'variant_detail',
     onDeleted: () => router.navigate({}),
     variantTitle,
   })

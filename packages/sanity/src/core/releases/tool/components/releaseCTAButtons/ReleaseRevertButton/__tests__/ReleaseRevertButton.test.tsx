@@ -1,5 +1,6 @@
 import {act, render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
+import {useRouter} from 'sanity/router'
 import {beforeEach, describe, expect, type Mock, test, vi} from 'vitest'
 
 import {findByDataUi} from '../../../../../../../../test/setup/customQueries'
@@ -23,6 +24,14 @@ import {type DocumentInRelease} from '../../../../detail/types'
 import {ReleaseRevertButton} from '../ReleaseRevertButton'
 import {type DocumentRevertStates, useDocumentRevertStates} from '../useDocumentRevertStates'
 import {usePostPublishTransactions} from '../usePostPublishTransactions'
+
+const telemetryMock = vi.hoisted(() => ({
+  log: vi.fn(),
+}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => telemetryMock),
+}))
 
 vi.mock('../../../../../store/useActiveReleases', () => ({
   useActiveReleases: vi.fn(() => useActiveReleasesMockReturn),
@@ -156,6 +165,22 @@ describe('ReleaseRevertButton', () => {
         expect.objectContaining({releaseType: 'asap'}),
         'staged',
       )
+    })
+  })
+
+  test('reports following the link to the revert release from the success toast', async () => {
+    mockUseDocumentRevertStates.mockReturnValue(resolvedStates)
+    await openConfirmRevertDialog()
+    await userEvent.click(screen.getByTestId('confirm-button'))
+
+    await userEvent.click(await screen.findByTestId('revert-stage-success-link'))
+
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Release Detail Link Clicked'}),
+      {location: 'revert_release_toast'},
+    )
+    expect(vi.mocked(useRouter)().navigate).toHaveBeenCalledWith({
+      releaseId: expect.any(String),
     })
   })
 

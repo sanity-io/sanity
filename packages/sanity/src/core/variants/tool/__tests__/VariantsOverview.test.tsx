@@ -43,6 +43,14 @@ const documentCountsMock = vi.hoisted(() => ({
   error: null as Error | null,
 }))
 
+const telemetryMock = vi.hoisted(() => ({
+  log: vi.fn(),
+}))
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: vi.fn(() => telemetryMock),
+}))
+
 vi.mock('sanity/router', async (importOriginal) => ({
   ...(await importOriginal()),
   useRouter: vi.fn(() => ({
@@ -65,6 +73,7 @@ vi.mock('sanity/router', async (importOriginal) => ({
         ref={ref as Ref<HTMLAnchorElement>}
         href={state?.variantId ? `/variants/${state.variantId}` : '/variants'}
         onClick={(event) => {
+          rest.onClick?.(event)
           event.preventDefault()
           mockNavigate(state)
         }}
@@ -268,6 +277,10 @@ describe('VariantsOverview', () => {
     expect(mockNavigate).toHaveBeenCalledWith({
       variantId: getVariantId(variantAlphaAudience._id),
     })
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Detail Link Clicked'}),
+      {location: 'variants_overview'},
+    )
   })
 
   it('deletes a variant from the row actions menu', async () => {
@@ -349,6 +362,36 @@ describe('VariantsOverview', () => {
       'No variant definitions match the active filters',
     )
     expect(screen.queryByTestId('variants-empty-state')).not.toBeInTheDocument()
+  })
+
+  it('reports every condition filter change with the number of active values', async () => {
+    setVariants([variantAlphaAudience, variantNorwegianMarket])
+    const user = userEvent.setup()
+
+    await renderOverview()
+
+    await waitFor(() => expect(screen.getAllByTestId('table-row')).toHaveLength(2))
+
+    await user.click(screen.getByRole('button', {name: 'Add filter'}))
+    await screen.findByLabelText('Find a dimension…')
+
+    await user.click(screen.getByTestId('variant-filter-dimension-audience'))
+    await user.click(screen.getByTestId('variant-filter-value-audience-alpha'))
+    await user.click(screen.getByTestId('variant-filter-dimension-locale'))
+    await user.click(screen.getByTestId('variant-filter-value-locale-en-US'))
+    await user.keyboard('{Escape}')
+    await user.click(screen.getByRole('button', {name: 'Remove filter Locale: en-US'}))
+    await user.click(screen.getByRole('button', {name: 'Clear filters'}))
+
+    const filterEvents = telemetryMock.log.mock.calls.filter(
+      ([event]) => event.name === 'Variants Tool Filtered',
+    )
+    expect(filterEvents.map(([, data]) => data)).toEqual([
+      {location: 'variants_overview', activeFilterCount: 1},
+      {location: 'variants_overview', activeFilterCount: 2},
+      {location: 'variants_overview', activeFilterCount: 1},
+      {location: 'variants_overview', activeFilterCount: 0},
+    ])
   })
 
   it('exposes the add filter popover state, its toggles, and returns focus on Escape', async () => {
@@ -450,6 +493,10 @@ describe('VariantsOverview', () => {
         variantId: getVariantId(createdVariant._id),
       })
     })
+    expect(telemetryMock.log).toHaveBeenCalledWith(
+      expect.objectContaining({name: 'Variant Definition Created'}),
+      {location: 'variants_overview', conditionCount: 1},
+    )
   })
 
   it('shows a mismatch error when a stored condition is not in the configured list', async () => {

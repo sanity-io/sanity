@@ -1,6 +1,7 @@
 import {type ReleaseDocument} from '@sanity/client'
 import {CalendarIcon} from '@sanity/icons/Calendar'
 import {TrashIcon} from '@sanity/icons/Trash'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Spinner} from '@sanity/ui'
 import {Menu, MenuDivider} from '@sanity/ui/menu'
 import {memo} from 'react'
@@ -9,6 +10,10 @@ import {IntentLink} from 'sanity/router'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useWorkspace} from '../../../../studio/workspace'
+import {
+  ReleaseDetailLinkClicked,
+  type ReleaseDetailLinkLocation,
+} from '../../../__telemetry__/releases.telemetry'
 import {type CopyToDraftsOptions} from '../../../hooks/useCopyToDrafts'
 import {RELEASES_INTENT} from '../../../plugin'
 import {isReleaseScheduledOrScheduling} from '../../../util/util'
@@ -17,6 +22,8 @@ import {CopyToReleaseMenuGroup} from './CopyToReleaseMenuGroup'
 
 interface CanonicalReleaseContextMenuProps {
   bundleId: string
+  /** Where the menu is opened, reported when "View release" is followed */
+  releaseLinkLocation: Extract<ReleaseDetailLinkLocation, 'document_inspector' | 'document_header'>
   release?: ReleaseDocument
   onDiscard: () => void
   onCreateRelease: () => void
@@ -58,9 +65,11 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
     hasDiscardPermission,
     isPublished,
     isDiscardable = true,
+    releaseLinkLocation,
     documentType,
   } = props
   const {t} = useTranslation()
+  const telemetry = useTelemetry()
   const hasCopyToDraftOption = useHasCopyToDraftOption(documentType, bundleId)
 
   const isCopyToReleaseDisabled = disabled || !hasCreatePermission || isGoingToUnpublish
@@ -75,6 +84,7 @@ export const CanonicalReleaseContextMenu = memo(function CanonicalReleaseContext
         <IntentLink
           intent={RELEASES_INTENT}
           params={{id: bundleId}}
+          onClick={() => telemetry.log(ReleaseDetailLinkClicked, {location: releaseLinkLocation})}
           rel="noopener noreferrer"
           style={{textDecoration: 'none'}}
           disabled={disabled}

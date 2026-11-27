@@ -1,3 +1,4 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {useActorRef, useSelector} from '@xstate/react'
 import {
   type ChangeEvent,
@@ -44,6 +45,12 @@ import {getPublishedId, type SystemBundle} from '../../util/draftUtils'
 import {getDocumentVersionVariantId} from '../../util/getDocumentVersionVariant'
 import {useVariantDocumentOperations} from '../../variants/hooks/useVariantDocumentOperations'
 import {useVariantsStore} from '../../variants/store/useVariantsStore'
+import {
+  type DocumentGroupInventoryLocation,
+  DocumentGroupInventoryVersionCreated,
+  DocumentGroupInventoryVersionSelected,
+  getInventoryVersionTelemetry,
+} from '../__telemetry__/documentGroupInventory.telemetry'
 import {deletionMachine, type ReferringDocuments} from '../machines/deletionMachine'
 import {documentGroupInventoryMachine} from '../machines/documentGroupInventoryMachine'
 import {selectionMachine, type Variant} from '../machines/selectionMachine'
@@ -70,6 +77,8 @@ import {VariantCheckbox} from './VariantSet/VariantCheckbox'
 interface DocumentGroupInventoryBaseProps {
   documentId: string
   documentType: string
+  /** Where the inventory is rendered, reported with the versions picked in it. */
+  location: DocumentGroupInventoryLocation
   /**
    * The id of the document version to mark as currently viewed. Defaults to
    * {@link DocumentGroupInventoryBaseProps.documentId}.
@@ -141,7 +150,7 @@ export interface DocumentGroupInventoryHandle {
 export function DocumentGroupInventory(
   props: DocumentGroupInventoryProps & RefAttributes<DocumentGroupInventoryHandle | null>,
 ) {
-  const {ref, documentId, documentType, selectedId = documentId, onSelect} = props
+  const {ref, documentId, documentType, location, selectedId = documentId, onSelect} = props
   const readOnly = props.mode === 'readOnly'
 
   // Read the manage-only props into locals
@@ -162,8 +171,17 @@ export function DocumentGroupInventory(
 
   const filterStringEvent = useMemo(() => new Subject<ChangeEvent<HTMLInputElement>>(), [])
   const {feedbackDialogOpened} = useFeedbackTelemetry()
+  const telemetry = useTelemetry()
   const setVariant = useSetVariant()
   const {createVariantDocument} = useVariantDocumentOperations()
+
+  const handleSelect = (document: VersionInfoDocumentStub) => {
+    telemetry.log(DocumentGroupInventoryVersionSelected, {
+      location,
+      ...getInventoryVersionTelemetry(document),
+    })
+    onSelect(document)
+  }
 
   const filterString = useMemo(
     () =>
@@ -297,6 +315,7 @@ export function DocumentGroupInventory(
                         variant: variantDefinition,
                         selectedPerspective: createPerspective,
                         signal,
+                        location: 'document_group_inventory',
                       })
                     } else {
                       await createVariantDocument({
@@ -305,8 +324,13 @@ export function DocumentGroupInventory(
                         variant: variantDefinition,
                         selectedPerspective: createPerspective,
                         signal,
+                        location: 'document_group_inventory',
                       })
                     }
+                    telemetry.log(DocumentGroupInventoryVersionCreated, {
+                      action: 'create_variant',
+                      isVariant: true,
+                    })
 
                     // TODO: Would this be better encapsulated as a machine effect?
                     setVariant({
@@ -325,6 +349,7 @@ export function DocumentGroupInventory(
           documentType,
           documentId,
           schema,
+          telemetry,
           versionState,
         ],
       ),
@@ -383,7 +408,7 @@ export function DocumentGroupInventory(
               documentType={documentType}
               readOnly={readOnly}
               perspectiveList={perspectiveList}
-              onSelect={onSelect}
+              onSelect={handleSelect}
             />
           )}
         </Body>
@@ -571,12 +596,29 @@ const ManagedVariantRow: ComponentType<{
   const releases = useSelector(inventoryRef, ({context}) => context.releases)
 
   const clearScheduledDraftPerspective = perspectiveList?.clearScheduledDraftPerspective
+  const telemetry = useTelemetry()
+  const variantId = getDocumentVersionVariantId(document)
+
+  const handleCopyToDraftsComplete = () => {
+    telemetry.log(DocumentGroupInventoryVersionCreated, {
+      action: 'copy_to_drafts',
+      isVariant: variantId !== undefined,
+    })
+    clearScheduledDraftPerspective?.()
+  }
+
+  const handleAddVersionComplete = () => {
+    telemetry.log(DocumentGroupInventoryVersionCreated, {
+      action: 'add_to_release',
+      isVariant: variantId !== undefined,
+    })
+  }
 
   const release = resolveVariantRelease(variant, releases)
 
   const pendingReleases = useVariantPendingReleases({
     documentId: documentGroupId,
-    variantId: getDocumentVersionVariantId(document),
+    variantId,
   })
 
   const {
@@ -599,7 +641,8 @@ const ManagedVariantRow: ComponentType<{
     documentVersionInfoStub: document,
     documentType,
     disabled: isLocked,
-    onCopyToDraftsComplete: clearScheduledDraftPerspective,
+    onCopyToDraftsComplete: handleCopyToDraftsComplete,
+    onAddVersionComplete: handleAddVersionComplete,
   })
 
   const contextMenuHandler = isLocked || !releasesToolAvailable ? undefined : handleContextMenu
@@ -629,6 +672,7 @@ const ManagedVariantRow: ComponentType<{
         }
       />
       <VersionContextMenuPopover
+        releaseLinkLocation="document_inspector"
         contextMenu={contextMenu}
         popoverRef={popoverRef}
         referenceElement={referenceElement}

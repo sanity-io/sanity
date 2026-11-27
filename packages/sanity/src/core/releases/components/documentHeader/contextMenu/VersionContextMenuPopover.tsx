@@ -3,6 +3,7 @@ import {memo, type RefObject} from 'react'
 
 import {Popover} from '../../../../../ui-components/popover/Popover'
 import {type UseScheduledDraftMenuActionsReturn} from '../../../../singleDocRelease/hooks/useScheduledDraftMenuActions'
+import {type ReleaseDetailLinkLocation} from '../../../__telemetry__/releases.telemetry'
 import {type CopyToDraftsOptions} from '../../../hooks/useCopyToDrafts'
 import {type VersionContextMenuState} from '../../../hooks/useVersionContextMenu'
 import {VersionContextMenu} from './VersionContextMenu'
@@ -19,6 +20,8 @@ export interface VersionContextMenuPopoverProps {
   referenceElement: HTMLElement | null
   documentGroupId: string
   documentType: string
+  /** Where the menu is opened, reported when "View release" is followed */
+  releaseLinkLocation: Extract<ReleaseDetailLinkLocation, 'document_inspector' | 'document_header'>
   /** The perspective the menu acts on: 'published', 'draft', or a release ID. */
   bundleId: string
   releases: ReleaseDocument[]
@@ -79,6 +82,7 @@ export const VersionContextMenuPopover = memo(function VersionContextMenuPopover
     scheduledDraftMenuActions,
     isDiscardable = true,
     portal = true,
+    releaseLinkLocation,
   } = props
 
   return (
@@ -87,6 +91,7 @@ export const VersionContextMenuPopover = memo(function VersionContextMenuPopover
       content={
         <VersionContextMenu
           documentGroupId={documentGroupId}
+          releaseLinkLocation={releaseLinkLocation}
           releases={releases}
           releasesLoading={releasesLoading}
           fromRelease={bundleId}

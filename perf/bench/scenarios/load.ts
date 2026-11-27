@@ -13,10 +13,12 @@ import {defineScenario, type StepSelector} from './types'
 const SOURCE_FILE = 'perf/bench/scenarios/load.ts'
 
 /** The login screen's provider link (the mock serves one provider). */
-const LOGIN_BUTTON: StepSelector = {css: `a[href^="${AUTH_PROVIDERS.providers[0].url}"]`}
+export const LOGIN_BUTTON_CSS = `a[href^="${AUTH_PROVIDERS.providers[0].url}"]`
+const LOGIN_BUTTON: StepSelector = {css: LOGIN_BUTTON_CSS}
 
 /** The structure tool's root list pane has rendered its items. */
-const TOOL_VISIBLE: StepSelector = {css: '[data-testid^="pane-item-"]'}
+export const TOOL_VISIBLE_CSS = '[data-testid^="pane-item-"]'
+const TOOL_VISIBLE: StepSelector = {css: TOOL_VISIBLE_CSS}
 
 /** The empty tool (studio/components/emptyTool.tsx) has rendered. */
 const EMPTY_TOOL_VISIBLE: StepSelector = {testId: 'bench-empty-tool'}

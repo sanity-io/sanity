@@ -2,8 +2,9 @@ import {DocumentsIcon} from '@sanity/icons/Documents'
 import {EditIcon} from '@sanity/icons/Edit'
 import {SortIcon} from '@sanity/icons/Sort'
 import {UserIcon} from '@sanity/icons/User'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Card, Skeleton} from '@sanity/ui'
-import {useMemo} from 'react'
+import {useEffect, useMemo} from 'react'
 import {useRouter} from 'sanity/router'
 import {Text, Container, Flex, Box, VStack, Icon} from 'ui5'
 
@@ -16,6 +17,7 @@ import {
 import {LoadingBlock} from '../../../components/loadingBlock/LoadingBlock'
 import {RelativeTime} from '../../../components/RelativeTime'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {VariantDefinitionOpened} from '../../__telemetry__/variants.telemetry'
 import {ConditionMismatchIndicator} from '../../components/ConditionMismatchIndicator'
 import {useVariantConditionMismatches, useVariantTypes} from '../../hooks/useVariantConditions'
 import {useVariantDocuments} from '../../hooks/useVariantDocuments'
@@ -36,6 +38,7 @@ import {VariantDocumentsTable} from './VariantDocumentsTable'
 export function VariantDetail() {
   const router = useRouter()
   const {t} = useTranslation(variantsLocaleNamespace)
+  const telemetry = useTelemetry()
   const variantTypes = useVariantTypes()
   const showVariantType = variantTypes.status === 'ready' && variantTypes.types.length > 1
   const variantIdRaw =
@@ -44,6 +47,11 @@ export function VariantDetail() {
   const {byId, loading} = useAllVariants()
 
   const variant = variantId ? byId.get(variantId) : undefined
+  const variantFound = variant !== undefined
+  useEffect(() => {
+    if (variantFound) telemetry.log(VariantDefinitionOpened)
+  }, [telemetry, variantFound])
+
   const conditionMismatches = useVariantConditionMismatches(
     variant?.conditions ?? {},
     getVariantType(variant),
