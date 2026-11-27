@@ -17,6 +17,7 @@
     "start": "pnpm --filter studio-e2e-testing preview",
     "test": "playwright test",
     "test:auth": "playwright test --config=playwright.auth.config.ts",
+    "test:cdn": "playwright test --config=playwright.cdn.config.ts",
     "test:unit": "vitest run",
     "version-compare": "tsx scripts/versionCompare/index.ts"
   },
@@ -29,6 +30,7 @@
     "@sanity/client": "catalog:",
     "@sanity/uuid": "^3.0.3",
     "chromatic": "^18.15.1",
+    "esbuild": "catalog:",
     "fflate": "^0.8.3",
     "tsx": "^4.23.15",
     "vitest": "catalog:"
