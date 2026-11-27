@@ -6085,6 +6085,11 @@
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
       },
       {
+        "name": "STICKY_PARAMS",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
         "name": "SchedulesContext",
         "kind": "value",
         "message": "Moved to `sanity/_singletons`. Import `{SchedulesContext}` from `sanity/_singletons` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
@@ -6230,6 +6235,11 @@
         "message": "Removed in v7. Pass the same options on the workspace `auth` config key directly instead of wrapping them in `createAuthStore()`."
       },
       {
+        "name": "_createNode",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release."
+      },
+      {
         "name": "buildCommentRangeDecorations",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
@@ -6248,6 +6258,11 @@
         "name": "createPatchChannel",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "decodeJsonParams",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "decodePath",
@@ -6293,6 +6308,11 @@
         "name": "emptyValuesByType",
         "kind": "value",
         "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release."
+      },
+      {
+        "name": "encodeJsonParams",
+        "kind": "value",
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "encodePath",
@@ -6804,7 +6824,7 @@
       {
         "name": "STICKY_PARAMS",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "WithRouter",
@@ -6819,17 +6839,17 @@
       {
         "name": "_createNode",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "decodeJsonParams",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "encodeJsonParams",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release."
       },
       {
         "name": "withRouter",

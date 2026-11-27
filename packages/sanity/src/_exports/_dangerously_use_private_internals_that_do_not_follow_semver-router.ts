@@ -9,6 +9,8 @@
  * `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` applies here too.
  */
 
+export {_createNode} from '../router/route'
+export {STICKY_PARAMS} from '../router/stickyParams'
 export {
   type InternalSearchParam,
   type MatchError,
@@ -16,3 +18,4 @@ export {
   type MatchResult,
   type NextStateOrOptions,
 } from '../router/types'
+export {decodeJsonParams, encodeJsonParams} from '../router/utils/jsonParamsEncoding'

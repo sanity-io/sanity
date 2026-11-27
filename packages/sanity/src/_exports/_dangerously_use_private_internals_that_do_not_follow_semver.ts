@@ -749,11 +749,6 @@ export {HELP_URL, SerializeError} from '../structure/structureBuilder/SerializeE
 export {component, form} from '../structure/structureBuilder/views'
 export {maybeSerializeView} from '../structure/structureBuilder/views/View'
 
-// From `sanity/router`
-export {_createNode} from '../router/route'
-export {STICKY_PARAMS} from '../router/stickyParams'
-export {decodeJsonParams, encodeJsonParams} from '../router/utils/jsonParamsEncoding'
-
 // Retagged public in this PR, kept here as well. `sanity@6.17.0` through 6.20.0 shipped these on
 // this entry and told consumers to migrate to it, so removing them one minor later would break
 // exactly the people who followed that advice. A re-export costs nothing at runtime, so this
@@ -1693,6 +1688,10 @@ export type RouterPaneSiblingContext = never
  */
 export declare const SANITY_PATCH_TYPE: never
 /**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const STICKY_PARAMS: never
+/**
  * @deprecated Moved to `sanity/_singletons`. Import `{SchedulesContext}` from `sanity/_singletons` instead of `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const SchedulesContext: never
@@ -1845,6 +1844,10 @@ export type WithRouterProps = never
  */
 export declare const _createAuthStore: never
 /**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const _createNode: never
+/**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const buildCommentRangeDecorations: never
@@ -1864,6 +1867,10 @@ export declare const createDefaultIcon: never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const createPatchChannel: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const decodeJsonParams: never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
@@ -1904,6 +1911,10 @@ export declare const defineDocumentFieldAction: never
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
 export declare const emptyValuesByType: never
+/**
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-router`. This export is `@internal` and can change or disappear in any release.
+ */
+export declare const encodeJsonParams: never
 /**
  * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import it only from code that is loaded lazily (a tool, an input, a document component). This export is `@internal` and can change or disappear in any release.
  */
