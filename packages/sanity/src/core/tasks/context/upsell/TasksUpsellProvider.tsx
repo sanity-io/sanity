@@ -1,6 +1,7 @@
 import {Suspense, use} from 'react'
 import {TasksUpsellContext} from 'sanity/_singletons'
 
+import {FEATURES, useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
 import {type UpsellContextValue, useUpsellContext} from '../../../hooks/useUpsellContext'
 import {UpsellContextDialog} from '../../../studio/upsell/UpsellContextDialog'
 import {useTasksMode} from '../enabled/useTasksMode'
@@ -15,9 +16,11 @@ import {useTasksMode} from '../enabled/useTasksMode'
  * @hidden
  */
 export function TasksUpsellProvider(props: {children: React.ReactNode}) {
+  const {enabled, isLoading, error} = useFeatureEnabled(FEATURES.sanityTasks)
   const contextValue = useUpsellContext({
     dataUri: '/journey/tasks',
     feature: 'tasks',
+    preLoadData: !isLoading && !error && !enabled,
   })
 
   return (

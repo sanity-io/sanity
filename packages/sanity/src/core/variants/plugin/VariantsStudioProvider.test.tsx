@@ -13,6 +13,14 @@ const {useUpsellDataMock} = vi.hoisted(() => ({useUpsellDataMock: vi.fn()}))
 vi.mock('../../hooks/useFeatureEnabled', async (importOriginal) => ({
   ...(await importOriginal()),
   useFeatureEnabledObservable: vi.fn(),
+  // The upsell provider reads the check synchronously. This harness has no source context, so the
+  // real hook cannot run; the mode itself comes from the observable mock below.
+  useFeatureEnabled: vi.fn(() => ({
+    enabled: true,
+    isLoading: true,
+    error: null,
+    features: [],
+  })),
 }))
 
 // The provider mounts the upsell hook, which reads the source. This harness only settles the mode,
@@ -22,7 +30,7 @@ vi.mock('../../hooks/useUpsellData', async (importOriginal) => {
   const {Observable} = await import('rxjs')
   // One observable for every render: react-rx caches the promise by identity.
   const upsellData$ = new Observable((subscriber) => {
-    subscriber.next(original.NO_UPSELL_DATA)
+    subscriber.next({upsellData: null, hasError: false})
     subscriber.complete()
   })
   const telemetryLogs = {
