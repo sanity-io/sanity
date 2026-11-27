@@ -1125,13 +1125,15 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.params.export-unavailable': 'The query uses no params to export types for',
   /** Menu item in the params `…` menu exporting a Zod schema for the params */
   'vision.params.export-zod': 'Export Zod…',
-  /** Accessible label of the button next to the params view tabs that reformats the params JSON */
+  /** Accessible label of the button next to the params view menu that reformats the params JSON */
   'vision.params.format': 'Format params',
-  /** Tab showing the params as a form inferred from the query */
+  /** Accessible label of the params view dropdown, with the view it shows such as JSON */
+  'vision.params.view.button': 'Edit params as: {{view}}',
+  /** Menu item editing the params as a form inferred from the query */
   'vision.params.view.form': 'Form',
-  /** Tab showing the params as JSON */
+  /** Menu item editing the params as JSON */
   'vision.params.view.json': 'JSON',
-  /** Accessible label of the tabs switching how the params are edited */
+  /** Accessible label of the menu switching how the params are edited */
   'vision.params.view.label': 'Edit params as',
   /** Toast shown after a query URL was pasted and loaded into the tab */
   'vision.paste.parsed': 'Loaded query from pasted URL',

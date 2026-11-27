@@ -738,6 +738,12 @@ async function pickResultView(view: string) {
   fireEvent.click(within(menu).getByTestId(`vision-result-view-${view}`))
 }
 
+/** Picks JSON or Form from the params header's view dropdown */
+async function pickParamsView(view: 'json' | 'form') {
+  const menu = await openMenu('vision-params-view-button', 'vision-params-view-menu')
+  fireEvent.click(within(menu).getByTestId(`vision-params-view-${view}`))
+}
+
 function isItemDisabled(element: HTMLElement): boolean {
   return isDisabled(element) || element.getAttribute('aria-disabled') === 'true'
 }
@@ -1074,7 +1080,7 @@ describe('VisionRedesign', () => {
     typeQuery('*[_type == $type][0...$limit]')
     // An edit still waiting in the debounce comes along to the form
     fireEvent.change(paramsEditor(), {target: {value: '{"limit": 3}'}})
-    fireEvent.click(document.getElementById('vision-params-view-form') as HTMLElement)
+    await pickParamsView('form')
     expect(screen.queryByTestId('vision-params-editor')).toBeNull()
     expect(formInput('limit').value).toBe('3')
     expect(text(screen.getByTestId('vision-params-form-limit-type'))).toBe(
@@ -1091,7 +1097,7 @@ describe('VisionRedesign', () => {
     renderRedesign()
     expect(formInput('type').value).toBe('author')
     // The editor shows what the form wrote
-    fireEvent.click(document.getElementById('vision-params-view-json') as HTMLElement)
+    await pickParamsView('json')
     expect(JSON.parse(paramsEditor().value)).toEqual({limit: 3, type: 'author'})
   })
 
@@ -1100,7 +1106,7 @@ describe('VisionRedesign', () => {
     const formInput = (name: string) =>
       screen.getByTestId(`vision-params-form-${name}`).querySelector('input') as HTMLInputElement
     typeQuery('*[description match $description][0...$limit]')
-    fireEvent.click(document.getElementById('vision-params-view-form') as HTMLElement)
+    await pickParamsView('form')
 
     fireEvent.change(formInput('description'), {target: {value: 'electric'}})
     // Enter that ends an IME composition belongs to the composition
@@ -4347,7 +4353,7 @@ describe('VisionRedesign', () => {
 
     fireEvent.change(getParamsEditor(), {target: {value: '{"id":"a"}'}})
     await tab().findByTestId('vision-params-format', undefined, {timeout: 3000})
-    fireEvent.click(document.getElementById('vision-params-view-form') as HTMLElement)
+    await pickParamsView('form')
     expect(tab().queryByTestId('vision-params-format')).toBeNull()
     expect(tab().getByTestId('vision-params-copy')).toBeTruthy()
   })
@@ -6335,32 +6341,40 @@ describe('VisionRedesign', () => {
     },
   )
 
-  it('places the params view tabs between copy and the params menu, as the result view menu is', async () => {
+  it('places the params view menu between copy and the params menu, as the result view menu is', async () => {
     renderRedesign()
     await screen.findByTestId('vision-request-column-split')
     fireEvent.click(document.getElementById('vision-request-params-tab') as HTMLElement)
 
     const actions = screen.getByTestId('vision-params-toolbar-actions')
-    const order = [
-      within(actions).getByTestId('vision-params-copy'),
-      document.getElementById('vision-params-view-json'),
-      document.getElementById('vision-params-view-form'),
-      within(actions).getByTestId('vision-params-menu-button'),
-    ]
-    for (const element of order) expect(actions.contains(element)).toBe(true)
-    for (let index = 1; index < order.length; index++) {
-      expect(
-        order[index - 1]!.compareDocumentPosition(order[index]!) & Node.DOCUMENT_POSITION_FOLLOWING,
-      ).toBeTruthy()
-    }
+    const viewButton = within(actions).getByTestId('vision-params-view-button')
+    expect(text(viewButton)).toBe('vision.params.view.json')
+    expect(viewButton.getAttribute('aria-label')).toBe('vision.params.view.button')
+    expect(
+      Array.from(actions.querySelectorAll('[data-testid]'), (element) =>
+        element.getAttribute('data-testid'),
+      ).filter((id) =>
+        ['vision-params-copy', 'vision-params-view-button', 'vision-params-menu-button'].includes(
+          id ?? '',
+        ),
+      ),
+    ).toEqual(['vision-params-copy', 'vision-params-view-button', 'vision-params-menu-button'])
+
+    const menu = await openMenu('vision-params-view-button', 'vision-params-view-menu')
+    const items = within(menu).getAllByRole('menuitemradio', {hidden: true})
+    expect(items.map((item) => item.getAttribute('data-testid'))).toEqual([
+      'vision-params-view-json',
+      'vision-params-view-form',
+    ])
+    expect(items.map((item) => item.getAttribute('aria-checked'))).toEqual(['true', 'false'])
   })
 
-  it('shows no fit tooltip on the panel tabs or the params view tabs', async () => {
+  it('shows no fit tooltip on the panel tabs', async () => {
     renderRedesign()
     await screen.findByTestId('vision-request-column-split')
     fireEvent.click(document.getElementById('vision-request-params-tab') as HTMLElement)
 
-    expect(document.getElementById('vision-params-view-json')).not.toBeNull()
+    expect(screen.getByTestId('vision-params-view-button')).toBeTruthy()
     expect(document.getElementById('vision-response-response-tab')).not.toBeNull()
     const titled = [...document.querySelectorAll('[role="tab"][title]')].map((tab) => tab.id)
     expect(titled).toEqual([])

@@ -1,8 +1,7 @@
 import {PlayIcon} from '@sanity/icons/Play'
 import {StopIcon} from '@sanity/icons/Stop'
-import {Badge, Button, Label, Tab, TabList} from '@sanity/ui'
+import {Badge, Button, Label} from '@sanity/ui'
 import {
-  type MouseEvent,
   type RefObject,
   type SetStateAction,
   useCallback,
@@ -67,6 +66,7 @@ import {useRequestBottomPanel} from '../queryTabLayout'
 import * as styles from '../redesign.module.css'
 import {FunctionsTab, type QueryEdit} from '../response/FunctionsTab'
 import {LintTab, severityTone} from '../response/LintTab'
+import {type ResultViewOption, ResultViewMenu} from '../response/ResultViewMenu'
 import {
   type BottomPanelState,
   SplitWithBottomPanel,
@@ -306,8 +306,14 @@ export function RequestPanel(props: RequestPanelProps) {
   const {highlightParam, formFocusProps} = useParamHighlight(queryEditorRef)
   const tabElementId = useTabElementId()
   const paramsContentId = tabElementId('vision-request-params-content')
-  const paramsJsonTabId = tabElementId('vision-params-view-json')
-  const paramsFormTabId = tabElementId('vision-params-view-form')
+  const paramsViewMenuId = tabElementId('vision-params-view-menu')
+  const paramsViews = useMemo(
+    (): ResultViewOption<VisionParamsView>[] => [
+      {id: 'json', label: t('vision.params.view.json')},
+      {id: 'form', label: t('vision.params.view.form')},
+    ],
+    [t],
+  )
   const setParamsView = useCallback(
     (view: VisionParamsView) => {
       if (view !== paramsView) telemetry.viewChanged('params', view)
@@ -487,11 +493,6 @@ export function RequestPanel(props: RequestPanelProps) {
     ],
   )
 
-  const fitParams = useCallback((event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    panelRef.current?.fitToContent()
-  }, [])
-
   // Format is offered only where it would change something: never for text that does not parse,
   // and again after the editor is resized, since formatting wraps to its width
   const [queryEditorElement, setQueryEditorElement] = useState<HTMLDivElement | null>(null)
@@ -545,28 +546,20 @@ export function RequestPanel(props: RequestPanelProps) {
                 onFormat={onFormatParams}
                 testIdPrefix="vision-params"
               />
-              <TabList aria-label={t('vision.params.view.label')} gap={1}>
-                <Tab
-                  aria-controls={paramsContentId}
-                  fontSize={1}
-                  id={paramsJsonTabId}
-                  label={t('vision.params.view.json')}
-                  onClick={() => setParamsView('json')}
-                  onDoubleClick={fitParams}
-                  padding={2}
-                  selected={paramsView === 'json'}
-                />
-                <Tab
-                  aria-controls={paramsContentId}
-                  fontSize={1}
-                  id={paramsFormTabId}
-                  label={t('vision.params.view.form')}
-                  onClick={() => setParamsView('form')}
-                  onDoubleClick={fitParams}
-                  padding={2}
-                  selected={paramsView === 'form'}
-                />
-              </TabList>
+              <ResultViewMenu
+                buttonLabel={t('vision.params.view.button', {
+                  view:
+                    paramsViews.find((view) => view.id === paramsView)?.label ??
+                    t('vision.params.view.json'),
+                })}
+                controls={paramsContentId}
+                id={paramsViewMenuId}
+                menuLabel={t('vision.params.view.label')}
+                onChange={setParamsView}
+                testId="vision-params-view"
+                value={paramsView}
+                views={paramsViews}
+              />
               <ParamsActionsMenu params={paramValues} tab={tab} />
             </Flex>
           </Flex>
@@ -676,7 +669,6 @@ export function RequestPanel(props: RequestPanelProps) {
     canFormatParams,
     copied,
     declaredFunctions,
-    fitParams,
     formFocusProps,
     highlightParam,
     lintAgent,
@@ -698,9 +690,9 @@ export function RequestPanel(props: RequestPanelProps) {
     paramValues,
     paramsContentId,
     paramsEditorRef,
-    paramsFormTabId,
-    paramsJsonTabId,
     paramsView,
+    paramsViewMenuId,
+    paramsViews,
     removeFunction,
     resolved,
     saveFunction,
