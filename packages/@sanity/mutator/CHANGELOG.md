@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+## [6.26.0](https://github.com/sanity-io/sanity/compare/v6.25.0...v6.26.0) (2026-11-27)
+
+### Bug Fixes
+
+* **core:** keep a commit's transaction id across retries ([#16250](https://github.com/sanity-io/sanity/issues/16250)) ([1eb6dce](https://github.com/sanity-io/sanity/commit/1eb6dce1bdfe08e43feb446855ff2a2cd143eefd))
 ## [6.16.0](https://github.com/sanity-io/sanity/compare/v6.15.0...v6.16.0) (2026-09-22)
 
 ### Bug Fixes
