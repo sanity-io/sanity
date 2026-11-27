@@ -1,16 +1,15 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
 import {CloseIcon} from '@sanity/icons/Close'
 import {SelectIcon} from '@sanity/icons/Select'
+import {Menu} from '@sanity/ui/menu'
 import {format} from 'date-fns/format'
 import {useRouter} from 'sanity/router'
 import {Flex, Box} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
-import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../../../ui-components/menuItem/MenuItem'
-import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {SCHEDULE_FILTERS, SCHEDULE_STATE_TITLE_KEYS} from '../../constants'
+import {SCHEDULE_FILTERS, SCHEDULE_STATE_DICTIONARY} from '../../constants'
 import {useFilteredSchedules} from '../../hooks/useFilteredSchedules'
 import {useSchedules} from '../contexts/schedules'
 import ScheduleFilter from './ScheduleFilter'
@@ -24,7 +23,6 @@ export const ScheduleFilters = (props: ScheduleFiltersProps) => {
   const {onClearDate, selectedDate} = props
   const {navigate} = useRouter()
   const {schedules, scheduleState} = useSchedules()
-  const {t} = useTranslation()
 
   const handleMenuClick = (state: Record<string, unknown>) => {
     navigate(state)
@@ -51,7 +49,7 @@ export const ScheduleFilters = (props: ScheduleFiltersProps) => {
               <Button
                 iconRight={SelectIcon}
                 mode="ghost"
-                text={`${t(SCHEDULE_STATE_TITLE_KEYS[scheduleState])} (${
+                text={`${SCHEDULE_STATE_DICTIONARY[scheduleState].title} (${
                   currentSchedules?.length || 0
                 })`}
                 tone="default"
@@ -65,7 +63,7 @@ export const ScheduleFilters = (props: ScheduleFiltersProps) => {
                     key={filter}
                     iconRight={filter === scheduleState ? CheckmarkIcon : undefined}
                     onClick={handleMenuClick.bind(undefined, {state: filter})}
-                    text={t(SCHEDULE_STATE_TITLE_KEYS[filter])}
+                    text={SCHEDULE_STATE_DICTIONARY[filter].title}
                   />
                 ))}
               </Menu>
