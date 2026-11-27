@@ -158,12 +158,6 @@ export function SlugInput(props: SlugInputProps) {
             {...elementProps}
             ref={inputRef}
           />
-
-          {generateState?.status === 'error' && (
-            <Card padding={2} tone="critical">
-              {generateState.error.message}
-            </Card>
-          )}
         </Box>
         {sourceField && (
           <Button
@@ -180,6 +174,12 @@ export function SlugInput(props: SlugInputProps) {
           />
         )}
       </Flex>
+
+      {generateState?.status === 'error' && (
+        <Card padding={2} tone="critical">
+          {generateState.error.message}
+        </Card>
+      )}
     </VStack>
   )
 }
