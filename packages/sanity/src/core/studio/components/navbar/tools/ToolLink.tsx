@@ -7,7 +7,7 @@ import {useInactiveToolState} from '../../../mountedTools/useInactiveToolState'
  * @hidden
  * @beta */
 export interface ToolLinkProps {
-  children: ReactNode
+  children?: ReactNode
   name: string
 }
 

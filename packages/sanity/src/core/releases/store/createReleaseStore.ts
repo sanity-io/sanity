@@ -4,24 +4,19 @@ import {
   catchError,
   concat,
   concatWith,
-  count,
   filter,
-  from,
   merge,
   type Observable,
   of,
-  type OperatorFunction,
-  pipe,
   ReplaySubject,
   scan,
   share,
-  shareReplay,
   Subject,
   switchMap,
   tap,
   timer,
 } from 'rxjs'
-import {distinctUntilChanged, map, startWith} from 'rxjs/operators'
+import {map, startWith} from 'rxjs/operators'
 
 import {listenQueryOnGlobalListener} from '../../store/document/listenQuery'
 import {type GlobalListenerStore} from '../../store/globalListener/createGlobalListenerStore'
@@ -170,35 +165,11 @@ export function createReleaseStore(context: {
     }),
   )
 
-  // Derived from the replayed state, so it can let go of `state$` right away:
-  // a grace period of its own would stack on top of the listener's.
-  const errorCount$ = state$.pipe(
-    releaseStoreErrorCount(),
-    shareReplay({bufferSize: 1, refCount: true}),
-  )
-
   const getMetadataStateForSlugs$ = createReleaseMetadataAggregator(client)
 
   return {
     state$,
-    errorCount$,
     getMetadataStateForSlugs$,
     dispatch,
   }
-}
-
-/**
- * @internal
- */
-function releaseStoreErrorCount(): OperatorFunction<ReleasesReducerState, number> {
-  return pipe(
-    switchMap(({releases}) =>
-      from(releases.values()).pipe(
-        filter((release) => release.state === 'active'),
-        filter((release) => typeof release.error !== 'undefined'),
-        count(),
-      ),
-    ),
-    distinctUntilChanged(),
-  )
 }
