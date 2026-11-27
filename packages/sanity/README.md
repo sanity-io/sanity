@@ -82,6 +82,10 @@ Sanity Studio v7 supports the browsers of [Baseline 2026](https://web.dev/baseli
 
 The browserslist query is [`baseline 2026 with downstream`](https://browsersl.ist/#q=baseline+2026+with+downstream), which the published packages declare in their `browserslist` field. Plugin authors can use the same query to target the same browsers. Contributors can rely on any feature that is part of Baseline 2026 without a fallback or a polyfill.
 
+## Supported versions
+
+See [Studio versions and support](https://www.sanity.io/docs/studio/studio-versions-and-support) for which major versions of Sanity Studio get fixes, and until when.
+
 ## Stay up to date
 
 - Follow us on [X](https://x.com/sanity_io)
