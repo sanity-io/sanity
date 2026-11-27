@@ -1,0 +1,33 @@
+{
+  "name": "preview-politico",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "clean": "rimraf dist",
+    "dev": "vite --port 3335",
+    "preview": "vite preview --port 3335",
+    "start": "pnpm preview"
+  },
+  "dependencies": {
+    "@sanity/client": "catalog:",
+    "@sanity/image-url": "^2.1.1",
+    "@sanity/react-loader": "^2.3.0",
+    "@sanity/types": "workspace:*",
+    "@sanity/visual-editing": "^6.2.1",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-router-dom": "^7.18.1"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "oxc-transform-react": "catalog:",
+    "rimraf": "catalog:",
+    "vite": "catalog:"
+  }
+}

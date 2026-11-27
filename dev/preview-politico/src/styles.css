@@ -1,0 +1,370 @@
+:root {
+  --ink: #1a1a1a;
+  --paper: #ffffff;
+  --muted: #5c5c5c;
+  --line: #e2e2e2;
+  --red: #a3242a;
+  --navy: #14213d;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.app-shell {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.25rem 4rem;
+}
+
+/* Header */
+
+.site-header-group {
+  border-bottom: 3px solid var(--ink);
+  margin-bottom: 1.5rem;
+}
+
+.site-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 1.5rem 0 1rem;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.brand-mark {
+  font-family: var(--font-serif);
+  font-weight: 800;
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.brand-badge {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+}
+
+.site-header nav a {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Demo controls */
+
+.demo-controls-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.demo-controls-menu {
+  position: relative;
+}
+
+.demo-controls-menu-toggle {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: #f7f7f7;
+  cursor: pointer;
+}
+
+.demo-controls-menu-panel {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  left: 0;
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.75rem 1rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  min-width: 180px;
+}
+
+.demo-variant-switcher,
+.demo-language-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.demo-variant-switcher label,
+.demo-language-switcher label {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.demo-variant-switcher select,
+.demo-language-switcher select {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.4rem;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+}
+
+.demo-variant-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+.demo-debug-panel {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #f7f7f7;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+
+.demo-debug-section h3 {
+  margin: 0 0 0.25rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.demo-debug-panel pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 0.75rem;
+}
+
+/* State blocks */
+
+.state-block {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+.state-block.error {
+  color: var(--red);
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  margin: 0 auto;
+  border-radius: 50%;
+  border: 3px solid var(--line);
+  border-top-color: var(--navy);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Article grid / cards */
+
+.section {
+  padding: 1.5rem 0;
+}
+
+.article-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.article-card {
+  display: block;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1rem;
+}
+
+.article-card-body h3 {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  margin: 0.3rem 0;
+}
+
+.cover {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+  background: #efefef;
+}
+
+.cover-card {
+  aspect-ratio: 16 / 10;
+}
+
+.cover-hero {
+  aspect-ratio: 16 / 8;
+  margin: 1rem 0;
+}
+
+.cover-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+
+.section-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--red);
+  margin-bottom: 0.3rem;
+}
+
+.kicker {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--navy);
+  margin: 0 0 0.3rem;
+}
+
+.dek {
+  font-size: 1.05rem;
+  color: var(--muted);
+  margin: 0.25rem 0 0.75rem;
+}
+
+.byline {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* Article page */
+
+.back-link {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.article-hero h1 {
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  line-height: 1.15;
+  margin: 0.3rem 0;
+}
+
+.prose p {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin: 0 0 1.1rem;
+}
+
+.context-box,
+.sponsored-insert,
+.member-analysis {
+  margin: 1.75rem 0;
+  padding: 1.25rem 1.5rem;
+  border-radius: 10px;
+}
+
+.context-box {
+  background: #eef1f7;
+  border-left: 4px solid var(--navy);
+}
+
+.context-box h3 {
+  margin-top: 0;
+}
+
+.sponsored-insert {
+  background: #fbf6ea;
+  border: 1px solid #e6d9b0;
+}
+
+.sponsored-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8a6d1f;
+  margin-bottom: 0.4rem;
+}
+
+.member-analysis {
+  background: #f4eaea;
+  border: 1px solid #dcbcbc;
+}
+
+.pro-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--paper);
+  background: var(--red);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.pro-teaser p {
+  font-style: italic;
+  color: var(--muted);
+}
+
+.button {
+  display: inline-block;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.button-accent {
+  background: var(--red);
+}

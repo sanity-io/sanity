@@ -4,6 +4,7 @@ import book from './book'
 import {commentsCI} from './ci/comments'
 import conditionalFieldset from './ci/conditionalFieldset'
 import validationTest from './ci/validationCI'
+import {coffeeShopSchemaTypes} from './coffeeShop'
 import actions from './debug/actions'
 import {allFieldsGroupHidden} from './debug/allFieldsGroupHidden'
 import {allNativeInputComponents} from './debug/allNativeInputComponents'
@@ -203,6 +204,8 @@ const codeInputType = {
 
 export function createSchemaTypes(projectId: string) {
   return [
+    // Brew & Bean coffee shop Presentation demo (see schema/coffeeShop)
+    ...coffeeShopSchemaTypes,
     // Test documents with standard inputs
     arrays,
     topLevelArrayType,

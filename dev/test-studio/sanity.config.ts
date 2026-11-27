@@ -19,7 +19,7 @@ import {
 import {unsplashAssetSource, UnsplashIcon} from 'sanity-plugin-asset-source-unsplash'
 import {internationalizedArray} from 'sanity-plugin-internationalized-array'
 import {media} from 'sanity-plugin-media'
-import {defineDocuments, defineLocations, presentationTool} from 'sanity/presentation'
+import {defineLocations, presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 
 import {imageAssetSource} from './assetSources/imageAssetSource'
@@ -48,6 +48,7 @@ import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
 import {documentFormOnly} from './plugins/document-form-only/plugin'
+import {coffeeShopSeedTool} from './plugins/coffee-shop-seed'
 import {errorReportingTestPlugin} from './plugins/error-reporting-test/plugin'
 import {formBuilderReproTool} from './plugins/form-builder-repro/plugin'
 import {autoCloseBrackets} from './plugins/input/auto-close-brackets-plugin'
@@ -58,7 +59,13 @@ import {routerDebugTool} from './plugins/router-debug/plugin'
 import {styleOutline} from './plugins/style-outline/plugin'
 import {useArchiveAndDeleteCustomAction} from './releases/customReleaseActions'
 import {createSchemaTypes} from './schema'
+import {coffeeShopSchemaTypes} from './schema/coffeeShop'
+import {coffeeShopPresentationResolve, coffeeShopPreviewUrl} from './schema/coffeeShop/presentation'
+import {coffeeShopStructure} from './schema/coffeeShop/structure'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
+import {politicoSchemaTypes} from './schema/politico'
+import {politicoPresentationResolve, politicoPreviewUrl} from './schema/politico/presentation'
+import {politicoStructure} from './schema/politico/structure'
 import {CustomNavigator} from './schema/presentation/CustomNavigator'
 import {types as presentationNextSanitySchemaTypes} from './schema/presentation/next-sanity'
 import {types as presentationPreviewKitSchemaTypes} from './schema/presentation/preview-kit'
@@ -179,36 +186,11 @@ const sharedSettings = ({projectId}: {projectId: string}) => {
       debugSecrets(),
       presentationTool({
         allowOrigins: ['https://*.sanity.dev', 'http://localhost:*'],
-        previewUrl: {
-          origin:
-            process.env.SANITY_STUDIO_PREVIEW_IFRAME_ORIGIN ??
-            (process.env.NODE_ENV === 'development'
-              ? 'http://localhost:3334'
-              : 'https://test-studio-preview-iframe.sanity.dev'),
-          preview: '/',
-        },
+        previewUrl: coffeeShopPreviewUrl,
         resolve: {
-          mainDocuments: defineDocuments([
-            {
-              route: '/',
-              filter: `_type == "simpleBlock" && isMain`,
-            },
-          ]),
+          ...coffeeShopPresentationResolve,
           locations: {
-            simpleBlock: defineLocations({
-              select: {title: 'title'},
-              resolve: (doc) => {
-                if (!doc?.title) return {}
-                return {
-                  locations: [
-                    {
-                      title: doc.title,
-                      href: `/?${new URLSearchParams({title: doc.title})}`,
-                    },
-                  ],
-                }
-              },
-            }),
+            ...coffeeShopPresentationResolve.locations,
             // Test document type for verifying DocumentLocation icon and showHref properties
             locationResolverTest: defineLocations({
               select: {title: 'title', slug: 'slug.current'},
@@ -883,5 +865,76 @@ export default defineConfig([
     auth: sanitySandboxAuth,
     basePath: '/document-form-only',
     plugins: [documentFormOnly()],
+  },
+  {
+    name: 'coffee-shop',
+    title: 'Coffee Shop',
+    basePath: '/coffee-shop',
+    projectId: 'ppsg7ml5',
+    dataset: 'coffee-shop',
+    ...envConfig.production,
+    schema: {types: coffeeShopSchemaTypes},
+    plugins: [
+      structureTool({structure: coffeeShopStructure}),
+      presentationTool({
+        allowOrigins: ['https://*.sanity.dev', 'http://localhost:*'],
+        previewUrl: coffeeShopPreviewUrl,
+        resolve: coffeeShopPresentationResolve,
+      }),
+      coffeeShopSeedTool(),
+      visionTool(),
+      internationalizedArray({
+        languages: [
+          {id: 'en', title: 'English'},
+          {id: 'de', title: 'German'},
+          {id: 'fr', title: 'French'},
+        ],
+        defaultLanguages: ['en'],
+        fieldTypes: ['string'],
+      }),
+    ],
+    mediaLibrary: {
+      enabled: true,
+    },
+    beta: {
+      variants: {
+        enabled: true,
+      },
+    },
+  },
+  {
+    name: 'politico',
+    title: 'POLITICO',
+    basePath: '/politico',
+    projectId: 'ttfgug5v',
+    dataset: 'production',
+    schema: {types: politicoSchemaTypes},
+    plugins: [
+      structureTool({structure: politicoStructure}),
+      presentationTool({
+        allowOrigins: ['https://*.sanity.dev', 'http://localhost:*'],
+        previewUrl: politicoPreviewUrl,
+        resolve: politicoPresentationResolve,
+      }),
+      visionTool(),
+      internationalizedArray({
+        languages: [
+          {id: 'en', title: 'English'},
+          {id: 'fr', title: 'French'},
+          {id: 'es', title: 'Spanish'},
+          {id: 'de', title: 'German'},
+        ],
+        defaultLanguages: ['en'],
+        fieldTypes: ['string'],
+      }),
+    ],
+    mediaLibrary: {
+      enabled: true,
+    },
+    beta: {
+      variants: {
+        enabled: true,
+      },
+    },
   },
 ]) as WorkspaceOptions[]

@@ -614,30 +614,64 @@ importers:
       '@sanity/types':
         specifier: workspace:*
         version: link:../../packages/@sanity/types
-      '@sanity/ui':
-        specifier: 'catalog:'
-        version: 4.4.12(react-dom@19.3.1)(react@19.3.1)(styled-components@6.6.0)
       '@sanity/visual-editing':
         specifier: ^6.2.1
-        version: 6.2.1(@sanity/client@8.16.0)(react-dom@19.3.1)(react@19.3.1)(styled-components@6.6.0)(typescript@7.0.2)(vitest@5.1.0)
+        version: 6.2.1(@sanity/client@8.16.0)(react-dom@19.3.1)(react-router@7.18.7)(react@19.3.1)(styled-components@6.6.0)(typescript@7.0.2)(vitest@5.1.0)
       react:
         specifier: 'catalog:'
         version: 19.3.1
       react-dom:
         specifier: 'catalog:'
         version: 19.3.1(react@19.3.1)
-      react-refractor:
-        specifier: ^4.0.0
-        version: 4.0.0(react@19.3.1)
-      refractor:
-        specifier: ^5.0.0
-        version: 5.0.0
-      styled-components:
+      react-router-dom:
+        specifier: ^7.18.1
+        version: 7.18.7(@types/react@19.3.0)(react-dom@19.3.1)(react@19.3.1)
+    devDependencies:
+      '@types/react':
         specifier: 'catalog:'
-        version: 6.6.0(react-dom@19.3.1)(react@19.3.1)
-      ui5:
+        version: 19.3.0
+      '@types/react-dom':
         specifier: 'catalog:'
-        version: '@sanity/ui@5.0.0-alpha.23(react-dom@19.3.1)(react@19.3.1)'
+        version: 19.3.0(@types/react@19.3.0)
+      '@vitejs/plugin-react':
+        specifier: 'catalog:'
+        version: 6.3.0(@rolldown/plugin-babel@0.2.4)(oxc-transform-react@0.158.0)(vite@8.3.8)
+      oxc-transform-react:
+        specifier: 'catalog:'
+        version: 0.158.0
+      rimraf:
+        specifier: 'catalog:'
+        version: 6.1.4
+      vite:
+        specifier: 'catalog:'
+        version: 8.3.8(@types/node@24.19.2)(@vitejs/devtools@0.8.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)
+
+  dev/preview-politico:
+    dependencies:
+      '@sanity/client':
+        specifier: 'catalog:'
+        version: 8.16.0(vitest@5.1.0)
+      '@sanity/image-url':
+        specifier: ^2.1.1
+        version: 2.1.1
+      '@sanity/react-loader':
+        specifier: ^2.3.0
+        version: 2.3.0(@sanity/types@packages+@sanity+types)(react@19.3.1)(typescript@7.0.2)(vitest@5.1.0)
+      '@sanity/types':
+        specifier: workspace:*
+        version: link:../../packages/@sanity/types
+      '@sanity/visual-editing':
+        specifier: ^6.2.1
+        version: 6.2.1(@sanity/client@8.16.0)(react-dom@19.3.1)(react-router@7.18.7)(react@19.3.1)(styled-components@6.6.0)(typescript@7.0.2)(vitest@5.1.0)
+      react:
+        specifier: 'catalog:'
+        version: 19.3.1
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.3.1(react@19.3.1)
+      react-router-dom:
+        specifier: ^7.18.1
+        version: 7.18.7(@types/react@19.3.0)(react-dom@19.3.1)(react@19.3.1)
     devDependencies:
       '@types/react':
         specifier: 'catalog:'
@@ -2490,7 +2524,7 @@ importers:
         version: link:../@sanity/validation
       '@sentry/react':
         specifier: ^11.12.0
-        version: 11.12.0(react@19.3.1)
+        version: 11.12.0(react-router@7.18.7)(react@19.3.1)
       '@tanstack/react-virtual':
         specifier: ^3.14.26
         version: 3.14.26(react-dom@19.3.1)(react@19.3.1)
@@ -11554,6 +11588,10 @@ packages:
     resolution: {integrity: sha512-yki5XnKuf750l50uGTllt6kKILY4nQ1eNIQatoXEByZ5dWgnKqbnqmTrBE5B4N7lrMJKQ2ytWMiTO2o0v6Ew/w==}
     engines: {node: '>= 0.6'}
 
+  cookie@1.1.1:
+    resolution: {integrity: sha512-ei8Aos7ja0weRpFzJnEA9UHJ/7XQmqglbRwnf2ATjcB9Wq874VKH9kfjjirM6UhU2/E5fFYadylyhFldcqSidQ==}
+    engines: {node: '>=18'}
+
   copy-to-clipboard@3.3.3:
     resolution: {integrity: sha512-2KV8NhB5JqC3ky0r9PMCAZKbUHSwtEo4CwCs0KXgruG43gX5PMqDEBbVU4OUzw2MuAWUfsuFmWvEKG5QRfSnJA==}
 
@@ -15250,6 +15288,26 @@ packages:
     peerDependencies:
       react: '>=18.0.0'
 
+  react-router-dom@7.18.7:
+    resolution: {integrity: sha512-EBWBKV1TjvScebAIvidowN0Bfh9Bg7p54IDBRVJkFXz0wBKTBblDNLxUvCewx/GdzTiC7VWV/MOjWqsLWEMygA==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  react-router@7.18.7:
+    resolution: {integrity: sha512-nXl672FFobymVY/Ywbo0DnlXV/+VXOB5pOslCeuVqoegwwL7sau2yASdyGoWHvPRxAoqUBrAiFZRdli4nT7Wow==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      '@types/react': '>=18'
+      react: '>=18'
+      react-dom: '>=18'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      react-dom:
+        optional: true
+
   react-rx@7.1.0:
     resolution: {integrity: sha512-22bBSdI1KgeOZ9ucV3Wdyhs3/aZF6KSLD3iqrN2dXRXPMuXhOIDdpM1Dt2rOMZwrX6VWXJTK1RnM917HIkgUIw==}
     engines: {node: '>=22.12'}
@@ -15667,6 +15725,9 @@ packages:
   serve-static@2.2.1:
     resolution: {integrity: sha512-xRXBn0pPqQTVQiC8wyQrKs2MOlX24zQ0POGaj0kultvoOCstBQM5yvOhAVSUwOMjQtTvsPWoNCHfPGwaaQJhTw==}
     engines: {node: '>= 18'}
+
+  set-cookie-parser@2.7.3:
+    resolution: {integrity: sha512-irZHtTqurLna57KQG/s+fzOwv/J6XSH4cs8M/vsrY3uCaQ3S6+QJguAH0WdN47SXlk82voMZ4naWMQf8fdEoIg==}
 
   set-function-length@1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
@@ -23339,7 +23400,7 @@ snapshots:
     optionalDependencies:
       '@sanity/types': link:packages/@sanity/types
 
-  '@sanity/visual-editing@6.2.1(@sanity/client@8.16.0)(react-dom@19.3.1)(react@19.3.1)(styled-components@6.6.0)(typescript@7.0.2)(vitest@5.1.0)':
+  '@sanity/visual-editing@6.2.1(@sanity/client@8.16.0)(react-dom@19.3.1)(react-router@7.18.7)(react@19.3.1)(styled-components@6.6.0)(typescript@7.0.2)(vitest@5.1.0)':
     dependencies:
       '@sanity/comlink': 4.0.3
       '@sanity/icons': 5.3.0(react@19.3.1)
@@ -23362,6 +23423,7 @@ snapshots:
       xstate: 5.33.4
     optionalDependencies:
       '@sanity/client': 8.16.0(vitest@5.1.0)
+      react-router: 7.18.7(@types/react@19.3.0)(react-dom@19.3.1)(react@19.3.1)
     transitivePeerDependencies:
       - remix
       - typescript
@@ -23475,12 +23537,14 @@ snapshots:
     dependencies:
       '@sentry/core': 11.12.0
 
-  '@sentry/react@11.12.0(react@19.3.1)':
+  '@sentry/react@11.12.0(react-router@7.18.7)(react@19.3.1)':
     dependencies:
       '@sentry/browser': 11.12.0
       '@sentry/conventions': 0.32.0
       '@sentry/core': 11.12.0
       react: 19.3.1
+    optionalDependencies:
+      react-router: 7.18.7(@types/react@19.3.0)(react-dom@19.3.1)(react@19.3.1)
 
   '@sentry/replay-canvas@11.12.0':
     dependencies:
@@ -26030,6 +26094,8 @@ snapshots:
   cookie-signature@1.2.2: {}
 
   cookie@0.7.2: {}
+
+  cookie@1.1.1: {}
 
   copy-to-clipboard@3.3.3:
     dependencies:
@@ -30180,6 +30246,23 @@ snapshots:
       unist-util-filter: 5.0.1
       unist-util-visit-parents: 6.0.2
 
+  react-router-dom@7.18.7(@types/react@19.3.0)(react-dom@19.3.1)(react@19.3.1):
+    dependencies:
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+      react-router: 7.18.7(@types/react@19.3.0)(react-dom@19.3.1)(react@19.3.1)
+    transitivePeerDependencies:
+      - '@types/react'
+
+  react-router@7.18.7(@types/react@19.3.0)(react-dom@19.3.1)(react@19.3.1):
+    dependencies:
+      cookie: 1.1.1
+      react: 19.3.1
+      set-cookie-parser: 2.7.3
+    optionalDependencies:
+      '@types/react': 19.3.0
+      react-dom: 19.3.1(react@19.3.1)
+
   react-rx@7.1.0(react@19.3.1)(rxjs@7.8.2):
     dependencies:
       react: 19.3.1
@@ -30793,6 +30876,8 @@ snapshots:
       send: 1.2.1(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
+
+  set-cookie-parser@2.7.3: {}
 
   set-function-length@1.2.2:
     dependencies:
