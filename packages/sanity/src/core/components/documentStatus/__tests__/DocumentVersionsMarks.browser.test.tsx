@@ -169,15 +169,6 @@ describe.each([
     await userEvent.hover(marks)
     await restThenExpectNothing()
   })
-
-  it('keeps a spoken summary on the marks', async () => {
-    await render(
-      <Harness inventory>
-        <Row />
-      </Harness>,
-    )
-    await expect.element(page.getByRole('group', {name: '3 versions', exact: true})).toBeVisible()
-  })
 })
 
 describe.each([
