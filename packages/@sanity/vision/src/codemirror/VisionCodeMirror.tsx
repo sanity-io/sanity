@@ -50,8 +50,9 @@ function EditorRoot({
   const {sanity} = useTheme()
   const style: EditorRootStyle = {
     '--vision-editor-font-size': `${EDITOR_FONT_SIZE}px`,
-    // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
-    '--vision-editor-line-padding-left': `${rem(sanity.space[3])}`,
+    // With the line-number gutter's fold column, it makes the space after a line number as wide
+    // as the space before it (`redesignEditorTheme`)
+    '--vision-editor-line-padding-left': `${rem(6)}`,
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR
     '--vision-editor-content-border-right-width': `${rem(sanity.space[4])}`,
     // oxlint-disable-next-line no-deprecated -- will fix in follow up PR

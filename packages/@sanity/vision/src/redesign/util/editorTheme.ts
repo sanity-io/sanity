@@ -74,8 +74,11 @@ export const redesignEditorTheme: Extension = [
         'boxShadow': '-1px 0 0 var(--card-bg-color)',
         'color': 'color-mix(in srgb, var(--card-muted-fg-color) 70%, transparent)',
       },
+      // A line number is as far from the gutters' left edge as from the text: the padding after
+      // it, the fold column and the line's left padding (`VisionCodeMirror`) add up to the 1.25rem
+      // before it
       '&.cm-editor .cm-lineNumbers .cm-gutterElement': {
-        padding: '0 0.25rem 0 0.75rem',
+        padding: '0 2px 0 1.25rem',
         minWidth: '2ch',
       },
       '&.cm-editor .cm-activeLine, &.cm-editor .cm-activeLineGutter': {
@@ -116,15 +119,15 @@ export const redesignEditorTheme: Extension = [
           'inset 0 0 0 1px color-mix(in srgb, var(--card-badge-critical-fg-color) 45%, transparent)',
       },
       // The fold column is as wide on every line, and each chevron is centered in it and on its
-      // line's height, which puts it level with the line number beside it. It is muted like the
-      // line numbers and takes the text color under the pointer.
+      // line's height, which puts it level with the line number beside it. The column is narrower
+      // than the icon's box, which only paints its stroke in the middle. It is muted like the line
+      // numbers and takes the text color under the pointer.
       '&.cm-editor .cm-foldGutter .cm-gutterElement': {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        boxSizing: 'content-box',
-        width: 'var(--vision-fold-icon-size)',
-        padding: '0 0.25rem 0 0',
+        width: '12px',
+        padding: '0',
       },
       [`&.cm-editor .cm-foldGutter .${FOLD_MARKER_CLASS}`]: {
         display: 'flex',
