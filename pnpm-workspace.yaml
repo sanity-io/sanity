@@ -184,7 +184,9 @@ minimumReleaseAgeExclude:
   - 'zod@4.6.7'
 
 overrides:
-  # Keep styled-components CSSObject compatible with @sanity/ui's responsive styles.
+  # Keep styled-components CSSObject compatible with @sanity/ui's responsive styles: both pin
+  # csstype 3.2.3 while @types/react resolves 3.2.4, so align them on the one csstype in the tree.
+  '@sanity/ui@4.4.14>csstype': 3.2.4
   'styled-components@6.7.0>csstype': 3.2.4
   vitest: 'catalog:'
 

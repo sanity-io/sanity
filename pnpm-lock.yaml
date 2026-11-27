@@ -318,6 +318,7 @@ catalogs:
       version: 4.6.7
 
 overrides:
+  '@sanity/ui@4.4.14>csstype': 3.2.4
   styled-components@6.7.0>csstype: 3.2.4
   vitest: ^5.1.1
 
@@ -11773,9 +11774,6 @@ packages:
   cssstyle@6.2.0:
     resolution: {integrity: sha512-Fm5NvhYathRnXNVndkUsCCuR63DCLVVwGOOwQw782coXFi5HhkXdu289l59HlXZBawsyNccXfWRYvLzcDCdDig==}
     engines: {node: '>=20'}
-
-  csstype@3.2.3:
-    resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
 
   csstype@3.2.4:
     resolution: {integrity: sha512-PoKaoPzQapnEoqUSnHx1u6W6ku8CVEgKsnpmmzU3m1nwkidpPBQ8V/Zq2+bWNrsOKoKLwTGdbx6xF7BXP1zLVQ==}
@@ -23557,7 +23555,7 @@ snapshots:
       '@sanity/color': 3.0.9
       '@sanity/icons': 5.4.0(react@19.3.1)
       clsx: 2.1.1
-      csstype: 3.2.3
+      csstype: 3.2.4
       motion: 14.14.0(react-dom@19.3.1)(react@19.3.1)
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
@@ -26335,8 +26333,6 @@ snapshots:
       '@csstools/css-syntax-patches-for-csstree': 1.1.15(css-tree@3.2.1)
       css-tree: 3.2.1
       lru-cache: 11.5.3
-
-  csstype@3.2.3: {}
 
   csstype@3.2.4: {}
 
