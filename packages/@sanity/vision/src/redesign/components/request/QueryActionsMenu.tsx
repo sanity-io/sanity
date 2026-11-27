@@ -3,7 +3,7 @@ import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {UsersIcon} from '@sanity/icons/Users'
 import {Button, Dialog} from '@sanity/ui'
-import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
+import {MenuButton} from '@sanity/ui/menu'
 import {useCallback, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
 import {Box, Flex, Text} from 'ui5'
@@ -15,9 +15,9 @@ import {type ResolvedRequest} from '../../hooks/useResolvedRequest'
 import {useShareTab} from '../../hooks/useShareTab'
 import {type QueryRequest, type VisionTab} from '../../store/types'
 import {usePendingEdits} from '../../store/VisionActorContext'
-import {cx} from '../../util/cx'
 import * as styles from '../redesign.module.css'
 import * as themeStyles from '../themeTokens.module.css'
+import {VISION_MENU_POPOVER, VisionMenu, VisionMenuItem} from '../VisionMenu'
 import {VisionTooltip} from '../VisionTooltip'
 import {ExportQueryDialog} from './ExportQueryDialog'
 
@@ -70,11 +70,8 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
             }
             id={`vision-query-menu-${tab.id}`}
             menu={
-              <Menu
-                className={cx(styles.popoverScroll, themeStyles.themeTokens)}
-                data-testid="vision-query-menu"
-              >
-                <MenuItem
+              <VisionMenu data-testid="vision-query-menu">
+                <VisionMenuItem
                   data-testid="vision-export-query"
                   disabled={!request}
                   icon={CodeIcon}
@@ -82,7 +79,7 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
                   text={t('vision.query.export')}
                 />
                 {shareTab.canShare && (
-                  <MenuItem
+                  <VisionMenuItem
                     data-testid="vision-share-tab"
                     disabled={!shareTab.shareEnabled}
                     icon={UsersIcon}
@@ -91,14 +88,14 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
                   />
                 )}
                 {shareTab.sharedQuery && (
-                  <MenuItem
+                  <VisionMenuItem
                     data-testid="vision-unshare-tab"
                     icon={UnpublishIcon}
                     onClick={() => void shareTab.unshare()}
                     text={t('vision.tabs.unshare')}
                   />
                 )}
-              </Menu>
+              </VisionMenu>
             }
             onClose={() => setMenuOpen(false)}
             onOpen={() => {
@@ -107,7 +104,7 @@ export function QueryActionsMenu(props: QueryActionsMenuProps) {
               pendingEdits.commit()
               setMenuOpen(true)
             }}
-            popover={{animate: true, portal: true, placement: 'bottom-end'}}
+            popover={{...VISION_MENU_POPOVER, placement: 'bottom-end'}}
           />
         </span>
       </VisionTooltip>

@@ -2,7 +2,7 @@ import {CodeIcon} from '@sanity/icons/Code'
 import {EllipsisHorizontalIcon} from '@sanity/icons/EllipsisHorizontal'
 import {PackageIcon} from '@sanity/icons/Package'
 import {Button} from '@sanity/ui'
-import {Menu, MenuButton, MenuItem, type MenuItemProps} from '@sanity/ui/menu'
+import {MenuButton, type MenuItemProps} from '@sanity/ui/menu'
 import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'sanity/i18n'
 
@@ -10,11 +10,10 @@ import {useVisionTelemetry} from '../../../__telemetry__/useVisionTelemetry'
 import {visionLocaleNamespace} from '../../../i18n'
 import {type VisionTab} from '../../store/types'
 import {usePendingEdits} from '../../store/VisionActorContext'
-import {cx} from '../../util/cx'
 import {findParamNames} from '../../util/paramInference'
 import * as styles from '../redesign.module.css'
 import {type TypesExportFormat} from '../response/ExportTypesDialog'
-import * as themeStyles from '../themeTokens.module.css'
+import {VISION_MENU_POPOVER, VisionMenu, VisionMenuItem} from '../VisionMenu'
 import {VisionTooltip} from '../VisionTooltip'
 import {ExportParamsTypesDialog} from './ExportParamsTypesDialog'
 
@@ -67,10 +66,7 @@ export function ParamsActionsMenu({tab, params}: ParamsActionsMenuProps) {
             }
             id={`vision-params-menu-${tab.id}`}
             menu={
-              <Menu
-                className={cx(styles.popoverScroll, themeStyles.themeTokens)}
-                data-testid="vision-params-menu"
-              >
+              <VisionMenu data-testid="vision-params-menu">
                 <ExportMenuItem
                   data-testid="vision-params-export-typescript"
                   disabled={!hasParams}
@@ -85,11 +81,11 @@ export function ParamsActionsMenu({tab, params}: ParamsActionsMenuProps) {
                   onClick={() => openExport('zod')}
                   text={t('vision.params.export-zod')}
                 />
-              </Menu>
+              </VisionMenu>
             }
             onClose={() => setMenuOpen(false)}
             onOpen={() => setMenuOpen(true)}
-            popover={{animate: true, portal: true, placement: 'bottom-end'}}
+            popover={{...VISION_MENU_POPOVER, placement: 'bottom-end'}}
           />
         </span>
       </VisionTooltip>
@@ -116,11 +112,11 @@ function ExportMenuItem(
   },
 ) {
   const {t} = useTranslation(visionLocaleNamespace)
-  if (!props.disabled) return <MenuItem {...props} />
+  if (!props.disabled) return <VisionMenuItem {...props} />
   return (
     <VisionTooltip content={t('vision.params.export-unavailable')} placement="left">
       <div className={styles.disabledMenuItemTarget}>
-        <MenuItem {...props} />
+        <VisionMenuItem {...props} />
       </div>
     </VisionTooltip>
   )

@@ -4,7 +4,7 @@ import {RetrieveIcon} from '@sanity/icons/Retrieve'
 import {SearchIcon} from '@sanity/icons/Search'
 import {UnpublishIcon} from '@sanity/icons/Unpublish'
 import {Button, Card, TextInput} from '@sanity/ui'
-import {Menu, MenuButton, MenuDivider, MenuItem} from '@sanity/ui/menu'
+import {MenuButton} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {useDateTimeFormat} from 'sanity'
@@ -30,7 +30,7 @@ import {selectActiveTab, selectDatasets} from '../../store/visionMachine'
 import {cx} from '../../util/cx'
 import {findSharedQuery, savedQueryToTabInit, tabMatchesParsedQuery} from '../../util/savedQueryTab'
 import * as styles from '../redesign.module.css'
-import * as themeStyles from '../themeTokens.module.css'
+import {VISION_MENU_POPOVER, VisionMenu, VisionMenuDivider, VisionMenuItem} from '../VisionMenu'
 import * as sidebarStyles from './sidebar.module.css'
 
 /** A shared query with its URL parsed once, so rendering and matching do not parse it again */
@@ -366,26 +366,26 @@ export function QueryListPanel() {
                         }
                         id={`vision-saved-query-menu-${query._key}`}
                         menu={
-                          <Menu className={cx(styles.popoverScroll, themeStyles.themeTokens)}>
-                            <MenuItem
+                          <VisionMenu>
+                            <VisionMenuItem
                               icon={LaunchIcon}
                               onClick={() => openInNewTab(item)}
                               text={t('vision.saved.open-in-new-tab')}
                             />
-                            <MenuItem
+                            <VisionMenuItem
                               icon={RetrieveIcon}
                               onClick={() => loadIntoCurrentTab(item)}
                               text={t('vision.saved.load-in-current-tab')}
                             />
                             {query.isOwnedByCurrentUser && (
                               <>
-                                <MenuDivider />
-                                <MenuItem
+                                <VisionMenuDivider />
+                                <VisionMenuItem
                                   icon={EditIcon}
                                   onClick={() => startRename(query)}
                                   text={t('vision.saved.rename')}
                                 />
-                                <MenuItem
+                                <VisionMenuItem
                                   data-testid="vision-shared-tab-unshare"
                                   icon={UnpublishIcon}
                                   onClick={() => void handleUnshare(item)}
@@ -393,9 +393,9 @@ export function QueryListPanel() {
                                 />
                               </>
                             )}
-                          </Menu>
+                          </VisionMenu>
                         }
-                        popover={{animate: true, portal: true, placement: 'bottom-end'}}
+                        popover={{...VISION_MENU_POPOVER, placement: 'bottom-end'}}
                       />
                     </Box>
                   </Flex>
