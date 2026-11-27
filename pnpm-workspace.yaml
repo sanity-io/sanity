@@ -200,3 +200,43 @@ trustPolicyExclude:
   - rxjs@7.8.2
   - semver@5.7.2 || 6.3.1
   - undici@5.29.0
+  # vercel 64.7.0 and the @vercel packages it pins were published by the trusted
+  # publisher without provenance attestations. Earlier releases shipped
+  # provenance, so trustPolicy: no-downgrade rejects them.
+  - vercel@64.7.0
+  - '@vercel/backends@20.0.0'
+  - '@vercel/build-utils@14.22.0'
+  - '@vercel/cervel@0.1.84'
+  - '@vercel/cli-auth@0.3.10'
+  - '@vercel/cli-config@0.3.1'
+  - '@vercel/cli-exec@1.0.1'
+  - '@vercel/container@20.0.0'
+  - '@vercel/detect-agent@1.2.7'
+  - '@vercel/elysia@20.0.0'
+  - '@vercel/error-utils@2.2.1'
+  - '@vercel/express@20.0.0'
+  - '@vercel/fastify@20.0.0'
+  - '@vercel/gatsby-plugin-vercel-analytics@1.0.12'
+  - '@vercel/gatsby-plugin-vercel-builder@2.2.76'
+  - '@vercel/go@23.0.0'
+  - '@vercel/h3@20.0.0'
+  - '@vercel/hono@20.0.0'
+  - '@vercel/hydrogen@21.0.0'
+  - '@vercel/koa@20.0.0'
+  - '@vercel/nestjs@20.0.0'
+  - '@vercel/next@24.0.0'
+  - '@vercel/node@25.0.0'
+  - '@vercel/oidc@3.8.10'
+  - '@vercel/python@26.0.1'
+  - '@vercel/python-analysis@0.15.1'
+  - '@vercel/redwood@22.0.0'
+  - '@vercel/remix-builder@25.0.0'
+  - '@vercel/ruby@22.0.0'
+  - '@vercel/rust@21.0.0'
+  - '@vercel/static-build@22.0.0'
+  - '@vercel/static-config@3.4.4'
+  - '@vercel/vc-native-darwin-arm64@64.7.0'
+  - '@vercel/vc-native-darwin-x64@64.7.0'
+  - '@vercel/vc-native-linux-arm64@64.7.0'
+  - '@vercel/vc-native-linux-x64@64.7.0'
+  - '@vercel/vc-native-win32-x64@64.7.0'
