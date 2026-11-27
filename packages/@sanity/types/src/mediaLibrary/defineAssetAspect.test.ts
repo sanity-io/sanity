@@ -74,4 +74,16 @@ describe('defineAssetAspect', () => {
 
     expect(aspect._id).toBe('someAspect')
   })
+
+  it('accepts image and file aspects', () => {
+    const imageAspect = defineAssetAspect({
+      name: 'thumbnail',
+      type: 'image',
+      fields: [defineField({name: 'caption', type: 'string'})],
+    })
+    const fileAspect = defineAssetAspect({name: 'attachment', type: 'file'})
+
+    expect(imageAspect.definition.type).toBe('image')
+    expect(fileAspect.definition.type).toBe('file')
+  })
 })

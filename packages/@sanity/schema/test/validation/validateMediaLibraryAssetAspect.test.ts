@@ -19,32 +19,6 @@ describe('validateMediaLibraryAssetAspect', () => {
       expect(errors[0][0].message).toContain('Type unsupported in Media Library aspects: document')
     })
 
-    test('should error on image type', () => {
-      const aspect = {
-        type: 'image',
-        name: 'myImage',
-      }
-
-      const [isValid, errors] = validateMediaLibraryAssetAspect(aspect)
-
-      expect(isValid).toBe(false)
-      expect(errors).toHaveLength(1)
-      expect(errors[0][0].message).toContain('Type unsupported in Media Library aspects: image')
-    })
-
-    test('should error on file type', () => {
-      const aspect = {
-        type: 'file',
-        name: 'myFile',
-      }
-
-      const [isValid, errors] = validateMediaLibraryAssetAspect(aspect)
-
-      expect(isValid).toBe(false)
-      expect(errors).toHaveLength(1)
-      expect(errors[0][0].message).toContain('Type unsupported in Media Library aspects: file')
-    })
-
     test('should error on reference type', () => {
       const aspect = {
         type: 'reference',
@@ -75,6 +49,92 @@ describe('validateMediaLibraryAssetAspect', () => {
       expect(errors[0][0].message).toContain(
         'Type unsupported in Media Library aspects: cross dataset reference',
       )
+    })
+  })
+
+  describe('image and file types', () => {
+    test.each(['image', 'file'])('should pass for a bare %s field', (type) => {
+      const [isValid, errors] = validateMediaLibraryAssetAspect({type, name: 'myAsset'})
+
+      expect(isValid).toBe(true)
+      expect(errors).toHaveLength(0)
+    })
+
+    test.each(['image', 'file'])('should pass for an array of %s', (type) => {
+      const aspect = {
+        type: 'array',
+        name: 'myAssets',
+        of: [{type}],
+      }
+
+      const [isValid, errors] = validateMediaLibraryAssetAspect(aspect)
+
+      expect(isValid).toBe(true)
+      expect(errors).toHaveLength(0)
+    })
+
+    test('should pass for image and file fields nested in an object', () => {
+      const aspect = {
+        type: 'object',
+        name: 'myObject',
+        fields: [
+          {name: 'photo', type: 'image', fields: [{name: 'caption', type: 'string'}]},
+          {name: 'attachment', type: 'file'},
+        ],
+      }
+
+      const [isValid, errors] = validateMediaLibraryAssetAspect(aspect)
+
+      expect(isValid).toBe(true)
+      expect(errors).toHaveLength(0)
+    })
+
+    test.each(['asset', 'hotspot', 'crop'])('should error on an image field named %s', (name) => {
+      const aspect = {
+        type: 'image',
+        name: 'myImage',
+        fields: [{name, type: 'string'}],
+      }
+
+      const [isValid, errors] = validateMediaLibraryAssetAspect(aspect)
+
+      expect(isValid).toBe(false)
+      expect(errors[0][0].message).toContain('are invalid field names for type `image`')
+    })
+
+    test('should error on a reference field nested in an image', () => {
+      const aspect = {
+        type: 'image',
+        name: 'myImage',
+        fields: [{name: 'credit', type: 'reference', to: [{type: 'person'}]}],
+      }
+
+      const [isValid, errors] = validateMediaLibraryAssetAspect(aspect)
+
+      expect(isValid).toBe(false)
+      expect(errors).toHaveLength(1)
+      expect(errors[0][0].message).toContain('Type unsupported in Media Library aspects: reference')
+    })
+  })
+
+  describe('video type', () => {
+    test.each(['video', 'sanity.video'])('should error on %s type', (type) => {
+      const [isValid, errors] = validateMediaLibraryAssetAspect({type, name: 'myVideo'})
+
+      expect(isValid).toBe(false)
+      expect(errors).toHaveLength(1)
+    })
+
+    test('should error on an array of sanity.video', () => {
+      const aspect = {
+        type: 'array',
+        name: 'myVideos',
+        of: [{type: 'sanity.video'}],
+      }
+
+      const [isValid] = validateMediaLibraryAssetAspect(aspect)
+
+      expect(isValid).toBe(false)
     })
   })
 
