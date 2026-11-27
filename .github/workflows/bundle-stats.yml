@@ -26,6 +26,14 @@ jobs:
 
       - uses: ./.github/actions/setup
         if: steps.changes.outputs.has_changes == 'true'
+      # bundle-stats checks out the base commit with its errors silenced, and git refuses
+      # that checkout when the install has modified a tracked file (pnpm-workspace.yaml)
+      # that differs between the base and the pull request.
+      - name: Discard install-time changes to tracked files
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git diff --stat
+          git checkout -- .
       # Held on v1: v2 bundles with Rolldown, which cannot bundle CSS and does not
       # externalize it, so every scenario that reaches `sanity/bundle.css` fails.
       # See the renovate.json rule that blocks v2 for the upgrade conditions.
@@ -33,6 +41,8 @@ jobs:
         if: steps.changes.outputs.has_changes == 'true'
         with:
           packages: packages/sanity
-          build-command: pnpm build
+          # The action switches from the baseline to the head commit after building; a build
+          # that rewrites tracked files (such as the lockfile) would block that checkout.
+          build-command: pnpm build && git checkout -- .
           only: "."
           compare-npm: latest
