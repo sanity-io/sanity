@@ -59,6 +59,7 @@ import {getTargetDocument} from '../util/getTargetDocument'
 import {useUnique} from '../util/useUnique'
 import {CreatedDraft} from './__telemetry__/form.telemetry'
 import {type PatchEvent} from './patch/PatchEvent'
+import {resolveStackedVersionScopeId} from './resolveStackedVersionScopeId'
 import {type NodeChronologyProps} from './store/types/nodes'
 import {type StateTree} from './store/types/state'
 import {type FormState, useFormState} from './store/useFormState'
@@ -166,7 +167,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const {versions: documentVersionStubs, loading: documentVersionsLoading} = useDocumentVersions({
     documentId,
   })
-  const {selectedVariantNames, bundle} = usePerspective()
+  const {selectedVariantNames, bundle, perspectiveStack} = usePerspective()
   const selectedVariantName = getDefaultVariant(selectedVariantNames)
   const targetDocumentState = useTargetDocumentState(documentId)
   const creatableVariantTarget = getCreatableVariantTarget(targetDocumentState)
@@ -188,6 +189,25 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
 
   const editState = useEditState(documentId, documentType, 'default', targetScopeId)
 
+  const selectedReleaseVersion =
+    editState.version && getVersionFromId(editState.version._id) === releaseId
+      ? editState.version
+      : undefined
+
+  const hasSelectedReleaseVersion = Boolean(selectedReleaseVersion)
+  const stackedVersionScopeId = useMemo(
+    () =>
+      resolveStackedVersionScopeId({
+        releaseId,
+        hasSelectedReleaseVersion,
+        perspectiveStack,
+        documentVersionStubs,
+      }),
+    [releaseId, hasSelectedReleaseVersion, perspectiveStack, documentVersionStubs],
+  )
+
+  const stackedEditState = useEditState(documentId, documentType, 'default', stackedVersionScopeId)
+
   const connectionState = useConnectionState(documentId, documentType, targetScopeId)
   useReconnectingToast(connectionState === 'reconnecting')
 
@@ -208,10 +228,19 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     if (releaseId && !isSystemBundle(releaseId)) {
       // in cases where the current version is going to be unpublished, we need to show the published document
       // this way, instead of showing the version that will stop existing, we show instead the published document with a fall back
-      if (editState.version && isGoingToUnpublish(editState.version)) {
+      if (selectedReleaseVersion && isGoingToUnpublish(selectedReleaseVersion)) {
         return editState.published || baseValue
       }
-      return editState.version || editState.draft || editState.published || baseValue
+      const fallbackVersion =
+        editState.version && isGoingToUnpublish(editState.version) ? undefined : editState.version
+      const selectedReleaseFormValue =
+        selectedReleaseVersion ||
+        stackedEditState.version ||
+        editState.draft ||
+        editState.published ||
+        fallbackVersion ||
+        baseValue
+      return selectedReleaseFormValue
     }
     if (selectedPerspectiveName && isPublishedPerspective(selectedPerspectiveName)) {
       return (
@@ -238,6 +267,8 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
     editState.draft,
     editState.published,
     editState.version,
+    selectedReleaseVersion,
+    stackedEditState.version,
     initialValue,
     releaseId,
     liveEdit,
@@ -374,6 +405,7 @@ export function useDocumentForm(options: DocumentFormOptions): DocumentFormValue
   const ready =
     connectionState === 'connected' &&
     editState.ready &&
+    (stackedVersionScopeId === undefined || stackedEditState.ready) &&
     !initialValue?.loading &&
     !documentVersionsLoading
 
