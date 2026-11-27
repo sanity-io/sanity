@@ -230,6 +230,14 @@ export default defineConfig([
     auth: {experimental_oauth: {clientId: 'oc-3f7b8ef7fb70'}},
   } satisfies WorkspaceOptions,
   {
+    ...production.ppsg7ml5,
+    name: `noTools`,
+    title: `No tools`,
+    basePath: `/ppsg7ml5/noTools`,
+    tools: [],
+    schema: {types: []},
+  } satisfies WorkspaceOptions,
+  {
     ...shared,
     ...production.ppsg7ml5,
     name: `noProviders`,
