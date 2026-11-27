@@ -1,10 +1,10 @@
+import {act, render, screen} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {RouterProvider} from 'sanity/router'
 import {PaneRouterContext, type PaneRouterContextValue} from 'sanity/structure'
 import {describe, expect, it, type Mock, vi} from 'vitest'
-import {render} from 'vitest-browser-react'
-import {page} from 'vitest/browser'
 
-import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {
   CREATE_VARIANT_PARAM,
   DOCUMENT_GROUP_INSPECTOR_NAME,
@@ -50,21 +50,29 @@ function renderList({onPick}: PaneItemVersionsFlyoutActions) {
 
 type OnNavigate = Mock<(opts: {path: string; replace?: boolean}) => void>
 
-function renderRow(onNavigate: OnNavigate) {
-  void render(
-    <TestWrapper schemaTypes={[]}>
-      <RouterProvider router={router} state={{panes: [[{id: 'book'}]]}} onNavigate={onNavigate}>
-        <PaneRouterContext.Provider value={paneRouterContextValue}>
-          <div style={{padding: 40}}>
-            <a data-pane-item-row="" data-testid="row" href="#row" tabIndex={-1}>
-              Riften
-              <PaneItemVersionsFlyout childId="riften" renderList={renderList} />
-            </a>
-          </div>
-        </PaneRouterContext.Provider>
-      </RouterProvider>
-    </TestWrapper>,
+/** Renders the row, opens its flyout from the keyboard and picks `name`. */
+async function pick(name: string) {
+  const onNavigate: OnNavigate = vi.fn()
+  const wrapper = await createTestProvider()
+  const user = userEvent.setup({delay: null})
+  render(
+    <RouterProvider router={router} state={{panes: [[{id: 'book'}]]}} onNavigate={onNavigate}>
+      <PaneRouterContext.Provider value={paneRouterContextValue}>
+        <a data-pane-item-row="" data-testid="row" href="#row" tabIndex={-1}>
+          Riften
+          <PaneItemVersionsFlyout childId="riften" renderList={renderList} />
+        </a>
+      </PaneRouterContext.Provider>
+    </RouterProvider>,
+    {wrapper},
   )
+  screen.getByTestId('row').focus()
+  await user.keyboard('{ArrowRight}')
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 100))
+  })
+  await user.click(screen.getByRole('menuitem', {name, hidden: true}))
+  return onNavigate
 }
 
 function lastPane(onNavigate: OnNavigate) {
@@ -78,10 +86,7 @@ function lastPane(onNavigate: OnNavigate) {
 
 describe('PaneItemVersionsFlyout: create variant', () => {
   it('opens a variant missing in the release with Manage versions asked to create it', async () => {
-    const onNavigate: OnNavigate = vi.fn()
-    renderRow(onNavigate)
-    await page.getByTestId('row').hover()
-    await page.getByRole('menuitem', {name: 'German'}).click()
+    const onNavigate = await pick('German')
 
     const {pane, variant} = lastPane(onNavigate)
     expect(onNavigate).toHaveBeenCalledTimes(1)
@@ -94,10 +99,7 @@ describe('PaneItemVersionsFlyout: create variant', () => {
   })
 
   it('opens a variant that has a version in the release without the param', async () => {
-    const onNavigate: OnNavigate = vi.fn()
-    renderRow(onNavigate)
-    await page.getByTestId('row').hover()
-    await page.getByRole('menuitem', {name: 'French'}).click()
+    const onNavigate = await pick('French')
 
     const {pane, variant} = lastPane(onNavigate)
     expect(pane?.params).toEqual({inspect: DOCUMENT_GROUP_INSPECTOR_NAME})

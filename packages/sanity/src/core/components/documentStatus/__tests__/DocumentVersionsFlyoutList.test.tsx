@@ -3,6 +3,7 @@ import {userEvent} from '@testing-library/user-event'
 import {afterEach, beforeEach, describe, expect, it, type Mock, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {PerspectiveProvider} from '../../../perspective/PerspectiveProvider'
 import {
   activeASAPRelease,
   activeScheduledRelease,
@@ -11,6 +12,10 @@ import {
 import {useDocumentVersions} from '../../../releases/hooks/useDocumentVersions'
 import {type VersionInfoDocumentStub} from '../../../releases/store/types'
 import {useActiveReleases} from '../../../releases/store/useActiveReleases'
+import {type DocumentPresence} from '../../../store/presence/types'
+import {ColorSchemeProvider} from '../../../studio/colorScheme'
+import {UserColorManagerProvider} from '../../../user-color/provider'
+import {createMockVariant} from '../../../variants/__fixtures__/createMockVariant'
 import {useAllVariants} from '../../../variants/store/useAllVariants'
 import {DocumentVersionsFlyoutList} from '../DocumentVersionsFlyoutList'
 
@@ -292,5 +297,292 @@ describe('DocumentVersionsFlyoutList version rows, with variants off', () => {
 
     expect(versionRows()).toHaveLength(5)
     expect(screen.getByTestId('document-versions-flyout-hidden-count')).toHaveTextContent('+1')
+  })
+})
+
+describe('DocumentVersionsFlyoutList audiences', () => {
+  const german = {...createMockVariant('german'), metadata: {title: 'German'}}
+  const swedish = {...createMockVariant('swedish', 1), metadata: {title: 'Swedish'}}
+
+  function audienceVersion(id: string, variantId?: string): VersionInfoDocumentStub {
+    const stub = version(id, 'drafts')
+    return variantId
+      ? {...stub, _system: {...stub._system, variants: [{_ref: variantId, _key: variantId}]}}
+      : stub
+  }
+
+  const audienceVersions = [
+    audienceVersion(`drafts.${GROUP_ID}`),
+    audienceVersion(`versions.german.${GROUP_ID}`, german._id),
+    audienceVersion(`versions.swedish.${GROUP_ID}`, swedish._id),
+  ]
+
+  function mockVersions(list: VersionInfoDocumentStub[]) {
+    ;(useDocumentVersions as Mock<typeof useDocumentVersions>).mockReturnValue({
+      data: list.map((v) => v._id),
+      versions: list,
+      error: null,
+      loading: false,
+    })
+  }
+
+  function mockVariants(variants: ReturnType<typeof createMockVariant>[]) {
+    ;(useAllVariants as Mock<typeof useAllVariants>).mockReturnValue({
+      data: variants,
+      byId: new Map(variants.map((variant) => [variant._id, variant])),
+      loading: false,
+      error: undefined,
+    })
+  }
+
+  function person(id: string, displayName: string, documentId: string) {
+    return {
+      user: {id, displayName},
+      sessionId: `session-${id}`,
+      documentId,
+      lastActiveAt: '2026-10-22T11:00:00.000Z',
+    }
+  }
+
+  async function renderAudiences(
+    options: {
+      onPick?: Mock
+      onOpenInventory?: Mock
+      presence?: Omit<DocumentPresence, 'path'>[]
+      /** The audience the studio is in, as the `variant` sticky param holds it. */
+      selectedVariantName?: string
+      viewingDocument?: boolean
+    } = {},
+  ) {
+    const wrapper = await createTestProvider({config: {beta: {variants: {enabled: true}}}})
+    render(
+      <ColorSchemeProvider scheme="light">
+        <UserColorManagerProvider>
+          <PerspectiveProvider
+            selectedPerspectiveName={undefined}
+            selectedVariantName={options.selectedVariantName}
+          >
+            <DocumentVersionsFlyoutList
+              documentGroupId={GROUP_ID}
+              onOpenInventory={options.onOpenInventory ?? vi.fn()}
+              onPick={options.onPick ?? vi.fn()}
+              presence={options.presence}
+              viewingDocument={options.viewingDocument}
+            />
+          </PerspectiveProvider>
+        </UserColorManagerProvider>
+      </ColorSchemeProvider>,
+      {wrapper},
+    )
+    await screen.findByTestId('document-versions-flyout')
+  }
+
+  const menuItem = (name: RegExp) => screen.getByRole('menuitem', {name})
+
+  beforeEach(() => {
+    ;(useActiveReleases as Mock<typeof useActiveReleases>).mockReturnValue({
+      data: [activeASAPRelease],
+      byId: new Map([[activeASAPRelease._id, activeASAPRelease]]),
+      loading: false,
+      error: undefined,
+    } as ReturnType<typeof useActiveReleases>)
+    mockVariants([german, swedish])
+    mockVersions(audienceVersions)
+  })
+
+  it('picks the audience of the row, and the footer opens the inventory', async () => {
+    const onPick = vi.fn()
+    const onOpenInventory = vi.fn()
+    await renderAudiences({onPick, onOpenInventory})
+    const user = userEvent.setup()
+
+    await user.click(menuItem(/German/))
+    expect(onPick).toHaveBeenLastCalledWith(german._id)
+    await user.click(menuItem(/Default/))
+    expect(onPick).toHaveBeenLastCalledWith(null)
+    await user.click(screen.getByTestId('document-versions-flyout-inventory'))
+    expect(onOpenInventory).toHaveBeenCalledTimes(1)
+  })
+
+  describe('the current audience', () => {
+    it('marks the version the pane is viewing', async () => {
+      await renderAudiences({selectedVariantName: 'variant:german', viewingDocument: true})
+      expect(menuItem(/German/)).toHaveAttribute('aria-current', 'true')
+      expect(menuItem(/German/)).toHaveAttribute('data-viewed')
+      expect(menuItem(/Default/)).not.toHaveAttribute('aria-current')
+      expect(menuItem(/Swedish/)).not.toHaveAttribute('aria-current')
+    })
+
+    it('marks the variant picked in the studio on a document that is not open', async () => {
+      await renderAudiences({selectedVariantName: 'variant:german', viewingDocument: false})
+      expect(menuItem(/German/)).toHaveAttribute('aria-current', 'true')
+      expect(menuItem(/German/)).toHaveAttribute('data-picked')
+      expect(menuItem(/German/)).not.toHaveAttribute('data-viewed')
+      expect(menuItem(/Swedish/)).not.toHaveAttribute('aria-current')
+      expect(menuItem(/Default/)).not.toHaveAttribute('aria-current')
+    })
+
+    it('marks Default as viewed when the open document has no version for the picked variant', async () => {
+      mockVersions([audienceVersions[0], audienceVersions[2]])
+      await renderAudiences({selectedVariantName: 'variant:german', viewingDocument: true})
+      expect(menuItem(/Default/)).toHaveAttribute('data-viewed')
+      expect(menuItem(/Swedish/)).not.toHaveAttribute('data-viewed')
+    })
+
+    it('marks nothing with no variant picked', async () => {
+      await renderAudiences({viewingDocument: false})
+      expect(
+        screen
+          .getAllByRole('menuitem')
+          .some((row) => row.hasAttribute('aria-current') || row.hasAttribute('data-picked')),
+      ).toBe(false)
+    })
+  })
+
+  describe('who is editing', () => {
+    it('spends no room on avatars when nobody is editing', async () => {
+      await renderAudiences()
+      expect(screen.queryAllByTestId('document-versions-flyout-row-presence')).toHaveLength(0)
+    })
+
+    it('shows who is editing on the rows, with no first line', async () => {
+      await renderAudiences({
+        presence: [person('madison', 'Madison Baker', `versions.german.${GROUP_ID}`)],
+      })
+      expect(screen.queryByTestId('document-versions-flyout-presence')).toBeNull()
+      expect(screen.getAllByTestId('document-versions-flyout-avatars')).toHaveLength(1)
+    })
+
+    it('puts each avatar on the audience being edited, and leaves other rows alone', async () => {
+      await renderAudiences({
+        presence: [
+          person('madison', 'Madison Baker', `versions.german.${GROUP_ID}`),
+          person('pedro', 'Pedro Hall', `drafts.${GROUP_ID}`),
+          person('ana', 'Ana Ruiz', `drafts.${GROUP_ID}`),
+        ],
+      })
+      expect(screen.getByRole('img', {name: 'Madison Baker is editing'})).toBeInTheDocument()
+      expect(
+        screen.getByRole('img', {name: 'Pedro Hall and 1 other are editing'}),
+      ).toBeInTheDocument()
+
+      const [defaultColumn, germanColumn, swedishColumn] = screen
+        .getAllByTestId('document-versions-flyout-row')
+        .map((row) => row.querySelector('[data-testid="document-versions-flyout-row-presence"]'))
+      const stackSize = (column: Element) =>
+        column.querySelector('[data-ui="AvatarStack"]')?.children.length ?? 0
+      expect(stackSize(defaultColumn!)).toBe(2)
+      expect(stackSize(germanColumn!)).toBe(1)
+      expect(germanColumn!.textContent).toBe('MB')
+      expect(swedishColumn).toBeNull()
+      expect(
+        within(screen.getByTestId('document-versions-flyout-inventory')).queryByTestId(
+          'document-versions-flyout-row-presence',
+        ),
+      ).toBeNull()
+    })
+
+    it('shows at most two avatars, then a count', async () => {
+      await renderAudiences({
+        presence: ['a', 'b', 'c', 'd'].map((id) =>
+          person(id, `Person ${id}`, `drafts.${GROUP_ID}`),
+        ),
+      })
+      expect(
+        screen.getByRole('img', {name: 'Person a and 3 others are editing'}),
+      ).toBeInTheDocument()
+      const [defaultColumn] = screen
+        .getAllByTestId('document-versions-flyout-row')
+        .map((row) => row.querySelector('[data-testid="document-versions-flyout-row-presence"]')!)
+      expect(defaultColumn.textContent).toContain('2')
+      expect(defaultColumn.querySelector('[data-ui="AvatarStack"]')!.children).toHaveLength(3)
+    })
+  })
+
+  it('reads lead · detail on an audience row', async () => {
+    const scheduledRelease = {
+      ...activeASAPRelease,
+      _id: '_.releases.rFriday',
+      name: 'rFriday',
+      state: 'scheduled' as const,
+      publishAt: '2099-11-27T09:00:00.000Z',
+      metadata: {
+        ...activeASAPRelease.metadata,
+        releaseType: 'scheduled' as const,
+        intendedPublishAt: '2099-11-27T09:00:00.000Z',
+        title: 'Friday launch',
+      },
+    }
+    ;(useActiveReleases as Mock<typeof useActiveReleases>).mockReturnValue({
+      data: [scheduledRelease],
+      byId: new Map([[scheduledRelease._id, scheduledRelease]]),
+      loading: false,
+      error: undefined,
+    } as ReturnType<typeof useActiveReleases>)
+    const stub = version(`versions.${scheduledRelease.name}.${GROUP_ID}`, scheduledRelease.name)
+    mockVersions([
+      {...stub, _system: {...stub._system, release: {_ref: scheduledRelease._id, _weak: true}}},
+    ])
+    await renderAudiences()
+
+    const row = menuItem(/Default/)
+    expect(within(row).getByTestId('document-versions-flyout-row-lead').textContent).toMatch(
+      /^First publish scheduled /,
+    )
+    expect(within(row).getByTestId('document-versions-flyout-row-detail').textContent).toContain(
+      'Friday launch',
+    )
+  })
+
+  describe('with more audiences than the flyout lists', () => {
+    const audiences = Array.from({length: 7}, (_, index) => ({
+      ...createMockVariant(`audience-${index}`, index),
+      metadata: {title: `Audience ${index}`},
+    }))
+    const list = audiences.map((audience, index) =>
+      audienceVersion(`versions.audience${index}.${GROUP_ID}`, audience._id),
+    )
+
+    beforeEach(() => {
+      mockVariants(audiences)
+      mockVersions(list)
+    })
+
+    it('shows at most five audiences, and the footer counts the others it opens in the inventory', async () => {
+      const onOpenInventory = vi.fn()
+      await renderAudiences({onOpenInventory})
+
+      const footer = screen.getByTestId('document-versions-flyout-inventory')
+      expect(screen.getAllByTestId('document-versions-flyout-row')).toHaveLength(5)
+      expect(footer.textContent).toMatch(/^Manage all versions/)
+      const hiddenCount = within(footer).getByTestId('document-versions-flyout-hidden-count')
+      expect(hiddenCount).toHaveTextContent('+2')
+      expect(hiddenCount).toHaveAccessibleName('2 more')
+      // Still the last menu item, so the host's arrow keys reach it after the audience rows
+      const rows = screen.getAllByRole('menuitem')
+      expect(rows).toHaveLength(6)
+      expect(rows.at(-1)).toBe(footer)
+
+      await userEvent.setup().click(footer)
+      expect(onOpenInventory).toHaveBeenCalledTimes(1)
+    })
+
+    it('puts the people on audiences it leaves out on the footer row, so nobody disappears', async () => {
+      await renderAudiences({
+        presence: [
+          person('listed', 'Listed Person', list[0]._id),
+          person('six', 'Sixth Person', list[5]._id),
+          person('seven', 'Seventh Person', list[6]._id),
+          person('other', 'Other Person', list[6]._id),
+        ],
+      })
+
+      const footerAvatars = within(
+        screen.getByTestId('document-versions-flyout-inventory'),
+      ).getByTestId('document-versions-flyout-avatars')
+      expect(footerAvatars.getAttribute('aria-label')).toBe('Sixth Person and 2 others are editing')
+      expect(footerAvatars.querySelector('[data-ui="AvatarStack"]')!.children).toHaveLength(3)
+      expect(screen.getAllByRole('img', {name: 'Listed Person is editing'})).toHaveLength(1)
+    })
   })
 })

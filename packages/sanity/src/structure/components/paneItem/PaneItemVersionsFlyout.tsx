@@ -61,6 +61,17 @@ function isFromListOf(event: globalThis.KeyboardEvent, row: HTMLElement): boolea
   return target instanceof HTMLElement && target.contains(row)
 }
 
+/** Whether the element takes typed input, whose arrow keys move its caret. */
+function isTextEntry(element: Element | null): boolean {
+  if (!(element instanceof HTMLElement)) return false
+  return (
+    element.isContentEditable ||
+    element instanceof HTMLInputElement ||
+    element instanceof HTMLTextAreaElement ||
+    element instanceof HTMLSelectElement
+  )
+}
+
 /** The flyout's rows, in order. */
 function menuItems(flyout: HTMLElement | null): HTMLElement[] {
   return [...(flyout?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? [])]
@@ -297,11 +308,13 @@ export function PaneItemVersionsFlyout(props: {
   }, [close, open, restoreFocus, row])
 
   // With the pointer over the open flyout and focus elsewhere, ArrowDown and ArrowUp move focus into
-  // it: to its first and its last row. Hover itself never takes focus.
+  // it: to its first and its last row. Hover itself never takes focus, and a field being typed in
+  // keeps its arrow keys.
   useEffect(() => {
     if (!open) return undefined
     const handleKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+      if (isTextEntry(document.activeElement)) return
       const flyout = flyoutRef.current
       if (!flyout?.matches(':hover') || flyout.contains(document.activeElement)) return
       const items = menuItems(flyout)
@@ -323,13 +336,17 @@ export function PaneItemVersionsFlyout(props: {
     return () => document.removeEventListener('keydown', handleKeyDown, true)
   }, [clearTimers, open, row])
 
-  // Escape and scrolling close it.
+  // Escape and scrolling close it. Escape is the flyout's own only when focus is in the flyout, in
+  // the row's list or nowhere; focus anywhere else (a dialog, an editor) still gets its Escape.
   useEffect(() => {
     if (!open) return undefined
     const handleKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key !== 'Escape') return
-      event.stopPropagation()
-      const hadFocus = flyoutRef.current?.contains(document.activeElement) ?? false
+      const focused = document.activeElement
+      const hadFocus = flyoutRef.current?.contains(focused) ?? false
+      const ownsEscape =
+        hadFocus || !focused || focused === document.body || (row !== null && focused.contains(row))
+      if (ownsEscape) event.stopPropagation()
       close()
       if (hadFocus) restoreFocus()
     }
@@ -348,7 +365,7 @@ export function PaneItemVersionsFlyout(props: {
       document.removeEventListener('scroll', close, true)
       document.removeEventListener('pointerdown', handleTouchOutside, true)
     }
-  }, [close, open, restoreFocus])
+  }, [close, open, restoreFocus, row])
 
   // After a keyboard open, focus lands on the first item as soon as the flyout is on screen.
   useEffect(() => {

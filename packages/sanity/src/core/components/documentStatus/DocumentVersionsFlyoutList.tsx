@@ -144,8 +144,8 @@ const COLORS = {
    * the panel's own background, so dark takes the next step, gray-900.
    */
   hoverBackground: 'light-dark(var(--gray-50), var(--gray-900))',
-  /** Keyboard focus, on any row: UI 5's focus outline, drawn just outside the row. */
-  focusOutline: 'var(--focus-outline)',
+  /** Keyboard focus, on any row: the 1px focus ring the form fields and buttons draw. */
+  focusOutline: '1px solid var(--card-focus-ring-color)',
 } as const
 
 function FlyoutRow(props: {
@@ -214,8 +214,8 @@ function FlyoutRow(props: {
         backgroundColor,
         color: viewed ? COLORS.viewedTitle : undefined,
         outline: focused ? COLORS.focusOutline : undefined,
-        // Outside the row, on the panel, so it shows on the blue of the open version too
-        outlineOffset: focused ? 2 : undefined,
+        // A 1px gap, like a button's focus ring, so it shows on the blue of the open version too
+        outlineOffset: focused ? 1 : undefined,
       }}
       tabIndex={-1}
       tone="inherit"
@@ -578,6 +578,13 @@ export function DocumentVersionsFlyoutList(props: {
     [groups, people],
   )
   const shownGroups = groups.slice(0, MAX_AUDIENCES)
+  // The audience the open pane shows: the picked variant, or Default when the document has no
+  // version for it, as the list row's outline diamond says
+  const viewedAudienceId = groups.some(
+    (group) => group.variantId && getVariantId(group.variantId) === viewedVariantId,
+  )
+    ? viewedVariantId
+    : undefined
   // With Variants off there are no audiences: the rows are the document's versions, Published,
   // Draft, then each release it is in, in the order of the header pills
   const versionItems = useMemo(
@@ -667,7 +674,7 @@ export function DocumentVersionsFlyoutList(props: {
             presence={nonEmpty(presenceByAudience.get(audienceKey(group)))}
             viewed={
               viewingDocument &&
-              (group.variantId ? getVariantId(group.variantId) : undefined) === viewedVariantId
+              (group.variantId ? getVariantId(group.variantId) : undefined) === viewedAudienceId
             }
             // With a variant picked in the studio, its row is marked on every document, so the
             // flyout says which audience a pick opens. Default is not marked: with no variant

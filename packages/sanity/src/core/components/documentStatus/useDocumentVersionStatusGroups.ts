@@ -2,7 +2,6 @@ import {type ReleaseDocument} from '@sanity/client'
 import {useMemo} from 'react'
 
 import {useDocumentVersions} from '../../releases/hooks/useDocumentVersions'
-import {useReleasesEnabled} from '../../releases/hooks/useReleasesEnabled'
 import {type VersionInfoDocumentStub} from '../../releases/store/types'
 import {useActiveReleases} from '../../releases/store/useActiveReleases'
 import {getReleaseDocumentIdFromReleaseId} from '../../releases/util/getReleaseDocumentIdFromReleaseId'
@@ -44,9 +43,9 @@ export function useDocumentVersionStatusGroups(
   const {byId: releasesById} = useActiveReleases()
   const {byId: variantsById, loading: variantsLoading} = useAllVariants()
   const {loading, versions: allVersions} = useDocumentVersions({documentId: documentGroupId})
-  const workspaceVariantsEnabled = Boolean(useWorkspace().beta?.variants?.enabled)
-  const variantsEnabled = options.variantsEnabled ?? workspaceVariantsEnabled
-  const releasesEnabled = useReleasesEnabled()
+  const {beta, releases} = useWorkspace()
+  const variantsEnabled = options.variantsEnabled ?? Boolean(beta?.variants?.enabled)
+  const releasesEnabled = Boolean(releases?.enabled)
 
   const groups = useMemo(() => {
     // With content releases off, versions in a release are left out, as the navbar leaves out the
