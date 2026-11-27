@@ -1,7 +1,10 @@
 import {existsSync, readFileSync, statSync} from 'node:fs'
-import {createServer, type Server} from 'node:http'
+import {createServer, type IncomingHttpHeaders} from 'node:http'
+import {createSecureServer} from 'node:http2'
 import path from 'node:path'
 import {brotliCompressSync, constants, gzipSync} from 'node:zlib'
+
+import {getStudioTls, STUDIO_HOST, type StudioTls} from './tls'
 
 const CONTENT_TYPES: Record<string, string> = {
   '.css': 'text/css; charset=utf-8',
@@ -31,28 +34,61 @@ function encode(file: string, encoding: 'br' | 'gzip'): Buffer {
   return body
 }
 
+/** What the HTTP/1.1 and HTTP/2 compatibility APIs have in common. */
+interface ServerRequest {
+  headers: IncomingHttpHeaders
+  url?: string
+}
+
+interface ServerResponse {
+  end(): unknown
+  end(body: Uint8Array): unknown
+  writeHead(status: number, headers?: Record<string, string | number>): unknown
+}
+
+export type HttpVersion = '1.1' | '2'
+
 export interface StaticServer {
+  /** Chromium launch arguments the browser needs to reach this server and trust its certificate. */
+  browserArgs: string[]
   close(): Promise<void>
   /** Serve a different build from the same origin (the project's CORS list is origin-bound). */
   setRoot(root: string): void
   url: string
 }
 
-/** Serves a built studio over plain HTTP, falling back to `index.html` for client-side routes. */
-export function startStaticServer(port: number): Promise<StaticServer> {
+export interface StaticServerOptions {
+  /** `2` serves HTTP/2 over TLS like a CDN does; `1.1` is plain HTTP, six connections per host. */
+  httpVersion: HttpVersion
+  port: number
+  /** Where the HTTP/2 certificate is cached. */
+  certDir: string
+}
+
+/**
+ * Serves a built studio, falling back to `index.html` for client-side routes.
+ *
+ * Browsers speak HTTP/2 only over TLS, and the project's CORS list only admits `https://*.sanity.dev`
+ * on the default port, so the HTTP/2 server is reached as `https://<STUDIO_HOST>`: the browser maps
+ * that host to the local port, and trusts the certificate by its public key.
+ */
+export async function startStaticServer(options: StaticServerOptions): Promise<StaticServer> {
+  const {certDir, httpVersion, port} = options
   let root = ''
-  const server: Server = createServer((req, res) => {
+  const listener = (req: ServerRequest, res: ServerResponse) => {
     const pathname = decodeURIComponent(new URL(req.url ?? '/', 'http://localhost').pathname)
     let file = path.join(root, path.normalize(pathname))
     if (!file.startsWith(root)) {
-      res.writeHead(403).end()
+      res.writeHead(403)
+      res.end()
       return
     }
     if (!existsSync(file) || statSync(file).isDirectory()) {
       file = path.extname(pathname) ? '' : path.join(root, 'index.html')
     }
     if (!file || !existsSync(file)) {
-      res.writeHead(404).end()
+      res.writeHead(404)
+      res.end()
       return
     }
     const extension = path.extname(file)
@@ -71,17 +107,34 @@ export function startStaticServer(port: number): Promise<StaticServer> {
       ...(encoding ? {'content-encoding': encoding, 'vary': 'accept-encoding'} : {}),
     })
     res.end(body)
-  })
+  }
+
+  let tls: StudioTls | undefined
+  if (httpVersion === '2') tls = await getStudioTls(certDir)
+  const server = tls
+    ? createSecureServer({allowHTTP1: true, cert: tls.cert, key: tls.key}, listener)
+    : createServer(listener)
 
   return new Promise((resolve, reject) => {
     server.once('error', reject)
     server.listen(port, '127.0.0.1', () =>
       resolve({
-        close: () => new Promise((done) => server.close(() => done())),
+        browserArgs: tls
+          ? [
+              `--host-resolver-rules=MAP ${STUDIO_HOST} 127.0.0.1:${port}`,
+              `--ignore-certificate-errors-spki-list=${tls.spki}`,
+            ]
+          : [],
+        close: () => {
+          return new Promise((done) => {
+            server.close(() => done())
+            if ('closeAllConnections' in server) server.closeAllConnections()
+          })
+        },
         setRoot: (next) => {
           root = path.resolve(next)
         },
-        url: `http://localhost:${port}`,
+        url: tls ? `https://${STUDIO_HOST}` : `http://localhost:${port}`,
       }),
     )
   })
