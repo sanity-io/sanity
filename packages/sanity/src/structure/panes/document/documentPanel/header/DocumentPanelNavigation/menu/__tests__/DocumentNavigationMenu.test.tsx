@@ -33,8 +33,6 @@ function FilteredMenu(props: {documentItems: string[]; leadingItem?: string}) {
           key: 'document',
           label: 'In the document',
           items: documentItems.filter(matches).map(toItem),
-          alwaysShow: true,
-          tooltip: documentItems.length === 0 ? 'Nothing here yet.' : undefined,
         },
         {
           key: 'other',
@@ -70,26 +68,6 @@ describe('DocumentNavigationMenu', () => {
     vi.unstubAllGlobals()
   })
 
-  it('keeps the width the menu had when it opened while the filter narrows the list', async () => {
-    // jsdom has no layout: the menu "measures" 320px when it opens
-    const offsetWidth = vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(320)
-    try {
-      render(<FilteredMenu documentItems={['Alpha']} />, {wrapper})
-
-      const menu = await openMenu()
-      await waitFor(() => expect(menu).toHaveStyle({width: '320px', minWidth: '320px'}))
-
-      // The rows that are left are narrower, so the menu would shrink without the lock
-      offsetWidth.mockReturnValue(200)
-      await userEvent.type(screen.getByPlaceholderText('Find'), 'alp')
-
-      expect(within(menu).queryByTestId('item-Beta')).not.toBeInTheDocument()
-      expect(menu).toHaveStyle({width: '320px', minWidth: '320px', maxWidth: '320px'})
-    } finally {
-      offsetWidth.mockRestore()
-    }
-  })
-
   it('focuses the filter when the menu opens, and the arrow keys still move into the list', async () => {
     stubPointer({finePointerWithHover: true})
     render(<FilteredMenu documentItems={['Alpha']} />, {wrapper})
@@ -113,20 +91,7 @@ describe('DocumentNavigationMenu', () => {
     expect(screen.getByPlaceholderText('Find')).not.toHaveFocus()
   })
 
-  it('shows an always-shown section while it is empty, with its tooltip', async () => {
-    render(<FilteredMenu documentItems={[]} />, {wrapper})
-
-    const menu = await openMenu()
-
-    const documentSection = within(menu).getByTestId('test-menu-section-document')
-    expect(documentSection).toHaveTextContent('In the document')
-    expect(
-      within(documentSection).getByTestId('test-menu-section-document-tooltip'),
-    ).toHaveAccessibleName('Nothing here yet.')
-    expect(within(menu).getByTestId('test-menu-section-other')).toHaveTextContent('Other')
-  })
-
-  it('hides a section with no items unless it is always shown', async () => {
+  it('hides a section with no items', async () => {
     render(<FilteredMenu documentItems={ITEMS} />, {wrapper})
 
     const menu = await openMenu()
@@ -135,7 +100,7 @@ describe('DocumentNavigationMenu', () => {
     expect(within(menu).queryByTestId('test-menu-section-other')).toBeNull()
   })
 
-  it('hides the empty sections while filtering, and says when nothing matches', async () => {
+  it('hides the sections filtering empties, and says when nothing matches', async () => {
     render(<FilteredMenu documentItems={[]} />, {wrapper})
 
     const menu = await openMenu()

@@ -189,7 +189,6 @@ describe('DocumentReleasesMenu', () => {
     const menu = await openMenu()
 
     expect(within(menu).queryByTestId('document-releases-menu-section-document')).toBeNull()
-    expect(within(menu).queryByTestId('document-releases-menu-section-document-tooltip')).toBeNull()
     expect(menu).not.toHaveTextContent('In 0 releases')
     expect(menu).not.toHaveTextContent('Releases with this document')
 

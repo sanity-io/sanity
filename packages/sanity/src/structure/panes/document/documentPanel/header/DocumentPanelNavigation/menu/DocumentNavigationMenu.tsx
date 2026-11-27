@@ -1,4 +1,3 @@
-import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Label, Text, TextInput} from '@sanity/ui'
 import {Menu} from '@sanity/ui/menu'
 import {type ChangeEvent, type ReactElement, type ReactNode, useCallback, useId} from 'react'
@@ -9,8 +8,6 @@ import {MenuButton} from '../../../../../../../ui-components/menuButton/MenuButt
 import {menuOverflowScroller} from '../../../../../../../ui-components/menuButton/menuOverflow.css'
 import {useFocusSearchOnOpen} from '../../../../../../../ui-components/menuButton/useFocusSearchOnOpen'
 import {useMenuOverflow} from '../../../../../../../ui-components/menuButton/useMenuOverflow'
-import {useStableMenuWidth} from '../../../../../../../ui-components/menuButton/useStableMenuWidth'
-import {Tooltip} from '../../../../../../../ui-components/tooltip/Tooltip'
 import {documentNavigationMenu, menuSectionLabel} from './DocumentNavigationMenu.css'
 
 /** @internal */
@@ -19,15 +16,11 @@ export interface DocumentNavigationMenuSection {
   key: string
   label: string
   items: ReactNode[]
-  /** Shown while nothing is being filtered even when it has no items, e.g. "Has 0 variants". */
-  alwaysShow?: boolean
-  /** Explains the section, behind an info icon beside the label. */
-  tooltip?: string
 }
 
 /** @internal */
 export interface DocumentNavigationMenuProps {
-  /** Test id of the menu; sections, the empty filter result and the tooltip derive from it. */
+  /** Test id of the menu; sections and the empty filter result derive from it. */
   testId: string
   /** The trigger, usually a `DropdownButton`. */
   button: ReactElement
@@ -40,13 +33,8 @@ export interface DocumentNavigationMenuProps {
   sections: DocumentNavigationMenuSection[]
 }
 
-function MenuSection(props: {
-  children?: ReactNode
-  label: string
-  testId: string
-  tooltip?: string
-}) {
-  const {children, label, testId, tooltip} = props
+function MenuSection(props: {children?: ReactNode; label: string; testId: string}) {
+  const {children, label, testId} = props
   return (
     <Flex borderTop data-testid={testId} flexDirection="column" gap={1} paddingTop={1}>
       <Flex
@@ -60,15 +48,6 @@ function MenuSection(props: {
         <Label muted size={1} style={{textTransform: 'uppercase'}}>
           {label}
         </Label>
-        {tooltip ? (
-          <Tooltip content={tooltip} placement="top" portal>
-            <span aria-label={tooltip} data-testid={`${testId}-tooltip`} role="img">
-              <Text muted size={1}>
-                <InfoOutlineIcon />
-              </Text>
-            </span>
-          </Tooltip>
-        ) : null}
       </Flex>
       {children}
     </Flex>
@@ -78,8 +57,7 @@ function MenuSection(props: {
 /**
  * The menu of the document panel navigation pickers: a filter, optional leading items and
  * sections of items with a header each. Filtering is the caller's: it passes the items that match
- * `filterQuery`. A section with no items is hidden while filtering, and when nothing is left the
- * menu says so.
+ * `filterQuery`. A section with no items is hidden, and when nothing is left the menu says so.
  *
  * @internal
  */
@@ -89,38 +67,24 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
   const {t} = useTranslation()
   const menuId = useId()
   const focusSearchField = useFocusSearchOnOpen()
-  const {menuRef, menuStyle, lockMenuWidth, resetMenuWidth} = useStableMenuWidth()
   const scrollerRef = useMenuOverflow()
 
-  const isFiltering = filterQuery.trim().length > 0
-  const visibleSections = sections.filter(
-    (section) => section.items.length > 0 || (section.alwaysShow && !isFiltering),
-  )
+  const visibleSections = sections.filter((section) => section.items.length > 0)
   const hasMatches = Boolean(leadingItems) || visibleSections.length > 0
 
   const handleFilterChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => onFilterChange(event.currentTarget.value),
     [onFilterChange],
   )
-  const handleClose = useCallback(() => {
-    resetMenuWidth()
-    onFilterChange('')
-  }, [onFilterChange, resetMenuWidth])
+  const handleClose = useCallback(() => onFilterChange(''), [onFilterChange])
 
   return (
     <MenuButton
       button={button}
       id={menuId}
       onClose={handleClose}
-      onOpen={lockMenuWidth}
       menu={
-        <Menu
-          className={documentNavigationMenu}
-          data-testid={testId}
-          padding={1}
-          ref={menuRef}
-          style={menuStyle}
-        >
+        <Menu className={documentNavigationMenu} data-testid={testId} padding={1}>
           <Box flexShrink={0} padding={1}>
             <TextInput
               aria-label={filterPlaceholder}
@@ -153,7 +117,6 @@ export function DocumentNavigationMenu(props: DocumentNavigationMenuProps) {
                     key={section.key}
                     label={section.label}
                     testId={`${testId}-section-${section.key}`}
-                    tooltip={section.tooltip}
                   >
                     {section.items}
                   </MenuSection>
