@@ -1,5 +1,5 @@
 import {configure, takeSnapshot} from '@chromatic-com/vitest'
-import {type ReleaseDocument} from '@sanity/client'
+import {type MultipleMutationResult, type ReleaseDocument} from '@sanity/client'
 import {defineField, defineType} from '@sanity/types'
 import {Card, PortalProvider} from '@sanity/ui'
 import {type ComponentType, useMemo, useState} from 'react'
@@ -26,6 +26,7 @@ import {
   activeUndecidedRelease,
 } from '../../../releases/__fixtures__/release.fixture'
 import {type ReleasesReducerState} from '../../../releases/store/reducer'
+import {getDocumentVersionVariantId} from '../../../util/getDocumentVersionVariant'
 import {type VariantStoreState} from '../../../variants/store/reducer'
 import {type SystemVariant} from '../../../variants/types'
 import {deletionMachine, type ReferringDocuments} from '../../machines/deletionMachine'
@@ -125,6 +126,38 @@ const SUMMER_SALE_IN_ASAP = variant(
 )
 const VARIANTS = [PUBLISHED, DRAFT, SUMMER_SALE_IN_ASAP]
 
+const DE_DE: SystemVariant = {...SUMMER_SALE, _id: '_.variants.de-DE', metadata: {title: 'de-DE'}}
+const MEMBERS: SystemVariant = {
+  ...SUMMER_SALE,
+  _id: '_.variants.members',
+  metadata: {title: 'Members'},
+}
+// Variant copies are named by their scope, never by the variant: the dialog must not show this id.
+const DE_DE_DRAFT = variant(`versions.scope-de.${PUBLISHED_ID}`, 'de-DE', {
+  bundleId: 'drafts',
+  variants: [{_ref: DE_DE._id, _key: 'de-DE'}],
+})
+const DE_DE_PUBLISHED = variant(`versions.scope-de-published.${PUBLISHED_ID}`, 'de-DE', {
+  variants: [{_ref: DE_DE._id, _key: 'de-DE'}],
+})
+const MEMBERS_DRAFT = variant(`versions.scope-members.${PUBLISHED_ID}`, 'Members', {
+  bundleId: 'drafts',
+  variants: [{_ref: MEMBERS._id, _key: 'members'}],
+})
+/** The Default's copies plus two variants: de-DE (a draft and a published copy) and Members. */
+const WITH_VARIANTS = [
+  {...PUBLISHED, name: 'Default'},
+  {...DRAFT, name: 'Default'},
+  DE_DE_DRAFT,
+  DE_DE_PUBLISHED,
+  MEMBERS_DRAFT,
+]
+/** The Default's copies and nothing else. */
+const WITHOUT_VARIANTS = [
+  {...PUBLISHED, name: 'Default'},
+  {...DRAFT, name: 'Default'},
+]
+
 // The versions as the inventory groups them while Content Variants is switched on: a set per
 // bundle, its versions named after their variant.
 const VERSION_SETS: VariantSet[] = [
@@ -167,6 +200,16 @@ const REFERRING_DOCUMENTS: ReferringDocuments = {
   },
 }
 
+const NO_LINKS: ReferringDocuments = {
+  isLoading: false,
+  totalCount: 0,
+  projectIds: [],
+  datasetNames: [],
+  hasUnknownDatasetNames: false,
+  internalReferences: {totalCount: 0, references: []},
+  crossDatasetReferences: {totalCount: 0, references: []},
+}
+
 const COMPONENTS: DocumentGroupInventoryComponents = {
   DocTitle: ({document}) => <>{document._id === PUBLISHED_ID ? 'Ursula K. Le Guin' : 'Untitled'}</>,
   ReferencePreviewLink: ({value}) => (
@@ -200,6 +243,7 @@ const COMPONENTS: DocumentGroupInventoryComponents = {
  */
 const harnessMachine = setup({
   types: {} as {
+    input: {referringDocuments: ReferringDocuments}
     context: {
       selectionRef: ActorRefFromLogic<typeof selectionMachine>
       deletionRef: ActorRefFromLogic<typeof deletionMachine>
@@ -214,12 +258,17 @@ const harnessMachine = setup({
   },
 }).createMachine({
   id: 'documentGroupInventoryPanelsHarness',
-  context: ({spawn}) => ({
+  context: ({spawn, input}) => ({
     selectionRef: spawn(selectionMachine, {input: undefined}),
     deletionRef: spawn(
       deletionMachine.provide({
         actors: {
-          referringDocuments: fromObservable(() => new BehaviorSubject(REFERRING_DOCUMENTS)),
+          referringDocuments: fromObservable(() => new BehaviorSubject(input.referringDocuments)),
+          deleteVariants: fromPromise(async ({input: {ids}}) => {
+            deletedIds.push(ids)
+            await deleteGate
+            return {} as MultipleMutationResult
+          }),
         },
       }),
       {input: undefined},
@@ -250,17 +299,47 @@ const harnessMachine = setup({
 type HarnessActor = ReturnType<typeof createActor<typeof harnessMachine>>
 
 let harness: HarnessActor | undefined
+/** What the harness's delete actor was asked to delete, one entry per confirmed delete. */
+let deletedIds: string[][] = []
+/** While set, a confirmed delete stays in flight until it settles. */
+let deleteGate: Promise<void> | undefined
 
-function startHarness() {
-  harness = createActor(harnessMachine).start()
+/** Keeps confirmed deletes in flight; call the returned function to let them settle. */
+function holdDeletes(): () => void {
+  let settle: (() => void) | undefined
+  deleteGate = new Promise<void>((resolve) => {
+    settle = resolve
+  })
+  return () => settle?.()
+}
+
+function startHarness(
+  referringDocuments: ReferringDocuments = REFERRING_DOCUMENTS,
+  variants: Variant[] = VARIANTS,
+) {
+  harness = createActor(harnessMachine, {input: {referringDocuments}}).start()
   const {selectionRef, deletionRef, variantCreationRef} = harness.getSnapshot().context
-  selectionRef.send({type: 'variants.changed', variants: VARIANTS, loaded: true})
+  selectionRef.send({type: 'variants.changed', variants, loaded: true})
+  // What `documentGroupInventoryMachine` tells the deletion machine about the document group.
+  deletionRef.send({
+    type: 'versions.changed',
+    versionIds: variants.map(({id}) => id),
+    variantIds: [
+      ...new Set(
+        variants
+          .map(({document}) => getDocumentVersionVariantId(document))
+          .filter((variantId) => typeof variantId === 'string'),
+      ),
+    ],
+  })
   return {selectionRef, deletionRef, variantCreationRef}
 }
 
 afterEach(() => {
   harness?.stop()
   harness = undefined
+  deletedIds = []
+  deleteGate = undefined
 })
 
 function PanelFrame({children}: {children: React.ReactNode}) {
@@ -273,18 +352,26 @@ function PanelFrame({children}: {children: React.ReactNode}) {
   )
 }
 
+const VARIANTS_ON = {variants: {enabled: true}}
+
 function ConfirmDeleteDialogHarness({
   deletionRef,
   selectionRef,
+  variantsEnabled = true,
 }: {
   deletionRef: ActorRefFromLogic<typeof deletionMachine>
   selectionRef: ActorRefFromLogic<typeof selectionMachine>
+  /** The open beta has Content Variants on; off is a studio that turned it off after using it. */
+  variantsEnabled?: boolean
 }) {
   const [portalElement, setPortalElement] = useState<HTMLDivElement | null>(null)
   const portalElements = useMemo(() => ({[PORTAL_NAME]: portalElement}), [portalElement])
 
   return (
-    <TestWrapper schemaTypes={SCHEMA_TYPES}>
+    <TestWrapper
+      schemaTypes={SCHEMA_TYPES}
+      betaFeatures={variantsEnabled ? VARIANTS_ON : undefined}
+    >
       <PortalProvider __unstable_elements={portalElements}>
         <div ref={setPortalElement} />
         {portalElement && (
@@ -611,27 +698,37 @@ describe('CreateVariant', () => {
   })
 })
 
+const $dialog = page.getByRole('dialog')
+const $cancel = $dialog.getByRole('button', {name: 'Cancel', exact: true})
+
+function selectAndRequest(
+  {selectionRef, deletionRef}: ReturnType<typeof startHarness>,
+  ids: string[],
+) {
+  for (const id of ids) selectionRef.send({type: 'selection.add', variantId: id})
+  deletionRef.send({type: 'delete.request'})
+}
+
 describe('ConfirmDeleteDialog', () => {
   it('warns about incoming references when a published version is selected', async () => {
     const {settleChromaticEndState} = testHelpers()
-    const {selectionRef, deletionRef} = startHarness()
-    selectionRef.send({type: 'selection.add', variantId: PUBLISHED.id})
-    selectionRef.send({type: 'selection.add', variantId: DRAFT.id})
-    deletionRef.send({type: 'delete.request'})
+    const refs = startHarness(REFERRING_DOCUMENTS, WITHOUT_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id, DRAFT.id])
 
     void render(
-      <ConfirmDeleteDialogHarness deletionRef={deletionRef} selectionRef={selectionRef} />,
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
     )
 
-    const $dialog = page.getByRole('dialog')
-    await expect.element($dialog).toBeVisible()
-    await expect.element($dialog.getByText('Delete 2 versions')).toBeVisible()
     await expect
-      .element($dialog.getByTestId('versions-preview-list'))
-      .toHaveTextContent(`${PUBLISHED.id}, ${DRAFT.id}`)
+      .element($dialog.getByText('Delete 2 versions, including the Default?'))
+      .toBeVisible()
     // Fixture: 3 internal + 1 cross-dataset reference, one internal referrer of an
     // unknown type (falls back to the "Preview unavailable" row).
     await expect.element($dialog.getByText(/4 documents refer to/)).toBeVisible()
+    await expect.element($dialog.getByText(/You may not be able to delete/)).toBeVisible()
     await expect.element($dialog.getByTestId('reference-referrer-a')).toBeVisible()
     await expect.element($dialog.getByText('Preview unavailable')).toBeVisible()
     await expect.element($dialog.getByText('1 other reference not show')).toBeVisible()
@@ -641,29 +738,226 @@ describe('ConfirmDeleteDialog', () => {
     await expect.element($crossDataset).toBeVisible()
     await expect.element($crossDataset).toMatchTextContent('1 document in another dataset')
     await expect.element($crossDataset).toMatchTextContent('Dataset: production')
-    await expect.element($dialog.getByRole('button', {name: 'Delete', exact: true})).toBeEnabled()
+    await expect
+      .element($dialog.getByRole('button', {name: 'Delete 2 versions', exact: true}))
+      .toBeEnabled()
 
     await settleChromaticEndState()
   })
 
   it('expands the cross-dataset reference table', async () => {
     const {settleChromaticEndState} = testHelpers()
-    const {selectionRef, deletionRef} = startHarness()
-    selectionRef.send({type: 'selection.add', variantId: PUBLISHED.id})
-    deletionRef.send({type: 'delete.request'})
+    const refs = startHarness(REFERRING_DOCUMENTS, WITHOUT_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id])
 
     void render(
-      <ConfirmDeleteDialogHarness deletionRef={deletionRef} selectionRef={selectionRef} />,
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
     )
 
-    const $dialog = page.getByRole('dialog')
-    await expect.element($dialog.getByText('Delete 1 version')).toBeVisible()
+    await expect.element($dialog.getByText('Delete the Default document?')).toBeVisible()
     await userEvent.click($dialog.getByText('Dataset: production'))
     await expect.element($dialog.getByText('Project ID')).toBeVisible()
     await expect.element($dialog.getByText('remote-doc')).toBeVisible()
-    await expect.element($dialog.getByRole('button', {name: 'Delete', exact: true})).toBeEnabled()
+    await expect
+      .element($dialog.getByRole('button', {name: 'Delete 1 version', exact: true}))
+      .toBeEnabled()
 
     await settleChromaticEndState()
+  })
+})
+
+describe('ConfirmDeleteDialog, open beta baseline', () => {
+  it('names variant versions by variant and bundle, and focuses Cancel (D2)', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const refs = startHarness(REFERRING_DOCUMENTS, WITH_VARIANTS)
+    selectAndRequest(refs, [DE_DE_DRAFT.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
+    )
+
+    await expect.element($dialog.getByText('Delete 1 version?')).toBeVisible()
+    const $row = $dialog.getByTestId(`delete-version-${DE_DE_DRAFT.id}`)
+    await expect.element($row).toMatchTextContent('de-DE')
+    await expect.element($row).toMatchTextContent('Draft')
+    // The copy's raw scope id never shows.
+    await expect.element($dialog).not.toMatchTextContent('scope-de')
+    await expect.element($dialog.getByTestId('default-blocked')).not.toBeInTheDocument()
+    // Links point at the Default, which is not selected.
+    await expect.element($dialog.getByTestId('internal-references')).not.toBeInTheDocument()
+    // The safe action takes the initial focus.
+    await expect.element($cancel).toHaveFocus()
+
+    const $delete = $dialog.getByRole('button', {name: 'Delete 1 version', exact: true})
+    await expect.element($delete).toBeEnabled()
+
+    await settleChromaticEndState()
+  })
+
+  it('with Content Variants off, keeps the Default blocked and asks for an administrator', async () => {
+    const refs = startHarness(REFERRING_DOCUMENTS, WITH_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+        variantsEnabled={false}
+      />,
+    )
+
+    await expect
+      .element($dialog.getByTestId('blocked-by-variants'))
+      .toHaveTextContent(
+        '2 variants of this document exist, and Content Variants is off in this studio. Ask an administrator to delete the variants first.',
+      )
+  })
+
+  it('blocks the Default while variants exist, counting variants, not copies', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const refs = startHarness(REFERRING_DOCUMENTS, WITH_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id, DE_DE_DRAFT.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
+    )
+
+    // The title counts what the button deletes, out of what was selected.
+    await expect.element($dialog.getByText('Delete 1 of 2 versions?')).toBeVisible()
+    await expect
+      .element($dialog.getByTestId('deletable-versions'))
+      .toMatchTextContent(/Will be deleted.*de-DE.*Draft/)
+    await expect
+      .element($dialog.getByTestId('blocked-versions'))
+      .toMatchTextContent(/Can't be deleted yet.*Default.*Published/)
+    // de-DE has a draft and a published copy: one variant. With Members, two.
+    await expect
+      .element($dialog.getByTestId('blocked-by-variants'))
+      .toHaveTextContent('2 variants exist. Delete the variants first.')
+    // The Default is not deleted, so the links to it are not listed.
+    await expect.element($dialog.getByTestId('internal-references')).not.toBeInTheDocument()
+    await expect.element($cancel).toHaveFocus()
+
+    const $delete = $dialog.getByRole('button', {name: 'Delete 1 version', exact: true})
+    await expect.element($delete).toBeEnabled()
+    // The reason the Default stays is read with the button.
+    const describedBy = $delete.element().getAttribute('aria-describedby')
+    expect(describedBy).toBe($dialog.getByTestId('default-blocked').element().id)
+
+    await settleChromaticEndState()
+    await takeSnapshot('blocked-by-variants')
+
+    await userEvent.click($delete)
+    await expect.poll(() => deletedIds).toEqual([[DE_DE_DRAFT.id]])
+  })
+
+  it('keeps Delete disabled, with its reason on screen, when only the blocked Default is selected', async () => {
+    const {settleChromaticEndState} = testHelpers()
+    const refs = startHarness(NO_LINKS, WITH_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
+    )
+
+    // The title says the Default can't be deleted, rather than asking a question the notice
+    // answers with no, and the notice doesn't say it a second time
+    await expect
+      .element($dialog.getByText("The Default document can't be deleted yet"))
+      .toBeVisible()
+    expect($dialog.getByText("The Default document can't be deleted yet").elements()).toHaveLength(
+      1,
+    )
+    const $delete = $dialog.getByRole('button', {name: 'Delete', exact: true})
+    await expect.element($delete).toBeDisabled()
+    await expect
+      .element($dialog.getByTestId('blocked-by-variants'))
+      .toHaveTextContent('2 variants exist. Delete the variants first.')
+    expect($delete.element().getAttribute('aria-describedby')).toBe(
+      $dialog.getByTestId('default-blocked').element().id,
+    )
+
+    await settleChromaticEndState()
+  })
+
+  it('shows Delete busy, not greyed out without a reason, while the delete runs', async () => {
+    configure({disableAutoSnapshot: true})
+    const settleDelete = holdDeletes()
+    const refs = startHarness(NO_LINKS, WITH_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id, DRAFT.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
+    )
+
+    const $delete = $dialog.getByRole('button', {name: 'Delete 1 version', exact: true})
+    // Opened on the blocked Default and its Draft: Delete is ready at once.
+    await expect.element($delete).toBeEnabled()
+    expect($delete.element().querySelector('[data-ui="Spinner"]')).toBeNull()
+
+    await userEvent.click($delete)
+    await expect.poll(() => deletedIds).toEqual([[DRAFT.id]])
+    // In flight: disabled, and the spinner says why.
+    await expect.element($delete).toBeDisabled()
+    expect($delete.element().querySelector('[data-ui="Spinner"]')).not.toBeNull()
+
+    settleDelete()
+    await expect.poll(() => refs.deletionRef.getSnapshot().matches('idle')).toBe(true)
+  })
+
+  it('shows Delete busy while the links to a selected Default are read', async () => {
+    configure({disableAutoSnapshot: true})
+    const refs = startHarness({...NO_LINKS, isLoading: true}, WITHOUT_VARIANTS)
+    selectAndRequest(refs, [PUBLISHED.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
+    )
+
+    const $delete = $dialog.getByRole('button', {name: 'Delete 1 version', exact: true})
+    await expect.element($delete).toBeDisabled()
+    expect($delete.element().querySelector('[data-ui="Spinner"]')).not.toBeNull()
+  })
+
+  it('reports a delete that leaves the document with no versions (D1)', async () => {
+    configure({disableAutoSnapshot: true})
+    const refs = startHarness(NO_LINKS, WITHOUT_VARIANTS)
+    const emptied: string[] = []
+    refs.deletionRef.on('allVersionsDeleted', (event) => emptied.push(event.type))
+    selectAndRequest(refs, [PUBLISHED.id, DRAFT.id])
+
+    void render(
+      <ConfirmDeleteDialogHarness
+        deletionRef={refs.deletionRef}
+        selectionRef={refs.selectionRef}
+      />,
+    )
+
+    await expect
+      .element($dialog.getByText('Delete 2 versions, including the Default?'))
+      .toBeVisible()
+    await userEvent.click($dialog.getByRole('button', {name: 'Delete 2 versions', exact: true}))
+
+    await expect.poll(() => deletedIds).toEqual([[PUBLISHED.id, DRAFT.id]])
+    await expect.poll(() => emptied).toEqual(['allVersionsDeleted'])
   })
 })
 
