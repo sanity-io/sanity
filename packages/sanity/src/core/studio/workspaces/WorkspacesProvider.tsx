@@ -26,6 +26,7 @@ import {prepareConfig} from '../../config/prepareConfig'
 import {type Config, type WorkspaceSummary} from '../../config/types'
 import {type AuthStore} from '../../store/auth/types'
 import {registerListenerErrorHandler} from '../../util/listenerErrorHandlers'
+import {preloadSignedInStudio} from '../preloadSignedInStudio'
 import {getApiErrorCode} from '../requestErrors/classify'
 import {createRequestErrorChannel} from '../requestErrors/createRequestErrorChannel'
 import {createStudioRequestHandler as createStudioRequestHandlerFactory} from '../requestErrors/createStudioRequestHandler'
@@ -199,15 +200,19 @@ export function WorkspacesProvider({
     [corsRetry, requestErrorChannel, requestFailureDiagnostics],
   )
 
-  const workspaces = useDeferredValue(
-    prepareConfig(config, {
-      basePath,
-      createStudioRequestHandler,
-      requestErrorChannel,
-      requestFailureDiagnostics,
-    }).workspaces satisfies WorkspacesContextValue,
-    null,
-  )
+  const preparedWorkspaces = prepareConfig(config, {
+    basePath,
+    createStudioRequestHandler,
+    requestErrorChannel,
+    requestFailureDiagnostics,
+  }).workspaces satisfies WorkspacesContextValue
+  const workspaces = useDeferredValue(preparedWorkspaces, null)
+
+  // Runs after the first commit, before the deferred render mounts the auth boundary.
+  useEffect(() => {
+    const probe = preloadSignedInStudio(preparedWorkspaces, window.location.pathname)
+    return () => probe?.unsubscribe()
+  }, [preparedWorkspaces])
 
   // Takes over the listeners that fail irrecoverably, so the studio shows the connection error
   // dialog for them instead of crashing the tool that listens. See `registerListenerErrorHandler`.
