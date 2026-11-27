@@ -17,9 +17,10 @@ const INITIAL_REQUEST_PANEL: BottomPanelState = {
   bottomSizes: {},
 }
 
+/** Collapsed, so the result gets the whole column until a tab is picked */
 const INITIAL_RESPONSE_PANEL: BottomPanelState = {
   activeTabId: 'response',
-  collapsed: false,
+  collapsed: true,
   bottomSizes: {},
 }
 

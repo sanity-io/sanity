@@ -280,6 +280,11 @@
   white-space: nowrap;
 }
 
+/* As wide as @sanity/ui's `Tab` lets a tab grow */
+.panelTab {
+  max-width: 100%;
+}
+
 /*
  * Option chips in the query column's bottom bar. They scroll sideways when the bar is narrow,
  * the same way the tab strip does, and start at the left so the first chip stays whole. The

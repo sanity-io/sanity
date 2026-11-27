@@ -578,6 +578,11 @@ function createMockClient(
   }
 }
 
+/** The response panel starts collapsed: picking its Response tab opens it there */
+function showResponseTab() {
+  fireEvent.click(document.getElementById('vision-response-response-tab') as HTMLElement)
+}
+
 function renderRedesign(
   perspective: PerspectiveContextValue = BASE_PERSPECTIVE,
   {ai}: {ai?: VisionAiConfig} = {},
@@ -1203,6 +1208,7 @@ describe('VisionRedesign', () => {
     })
     expect(text(screen.getByTestId('result-json'))).toContain('[{"title":"Variant title"}]')
 
+    showResponseTab()
     expect(text(screen.getByTestId('vision-meta-execution'))).toContain('12ms')
     expect(text(screen.getByTestId('vision-meta-sync-tags'))).toContain('s1:abc')
     // Sync tags are resolved without being asked, as the setting is on for a new user
@@ -1308,6 +1314,7 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(isDisabled(screen.getByTestId('vision-fetch-button'))).toBe(false))
     fireEvent.click(screen.getByTestId('vision-fetch-button'))
     await waitFor(() => expect(first.fetchCalls).toHaveLength(1))
+    showResponseTab()
     const activeUrl = (screen.getByTestId('vision-query-url') as HTMLInputElement).value
     first.unmount()
 
@@ -1870,6 +1877,7 @@ describe('VisionRedesign', () => {
     expect(fetchCalls[0].options).toMatchObject({useCdn: true})
     expect(fetchCalls[0].config.perspective).toBe('published')
     await waitFor(() => expect(getStoredState()?.tabs[0].options.useCdn).toBe(true))
+    showResponseTab()
     await waitFor(() =>
       expect((screen.getByTestId('vision-query-url') as HTMLInputElement).value).toMatch(
         /^https:\/\/test\.apicdn\.sanity\.io\//,
@@ -3447,6 +3455,7 @@ describe('VisionRedesign', () => {
     release()
     await waitFor(() => expect(text(screen.getByTestId('result-json'))).toContain('Newer'))
     expect(text(fetchButton)).toBe('action.query-execute')
+    showResponseTab()
     expect(text(screen.getByTestId('vision-meta-execution'))).toContain('34ms')
     expect(isDisabled(screen.getByTestId('vision-copy-result'))).toBe(false)
   })
@@ -4815,6 +4824,7 @@ describe('VisionRedesign', () => {
       perspective: 'published',
       variant: 'french',
     })
+    showResponseTab()
     const url = new URL((screen.getByTestId('vision-query-url') as HTMLInputElement).value)
     expect(url.pathname).toContain('/v2025-08-18/')
     expect(url.searchParams.get('variant')).toBe('french')
@@ -4843,6 +4853,7 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(fetchCalls).toHaveLength(1))
     expect(fetchCalls[0].config.perspective).toBe('raw')
     expect(fetchCalls[0].config.variant).toBeUndefined()
+    showResponseTab()
     const url = new URL((screen.getByTestId('vision-query-url') as HTMLInputElement).value)
     expect(url.searchParams.get('variant')).toBeNull()
 
@@ -4896,6 +4907,7 @@ describe('VisionRedesign', () => {
       perspective: 'published',
     })
     expect(fetchCalls[0].config.variant).toBeUndefined()
+    showResponseTab()
     const url = new URL((screen.getByTestId('vision-query-url') as HTMLInputElement).value)
     expect(url.pathname).toContain('/v2025-02-19/')
     expect(url.searchParams.get('variant')).toBeNull()
@@ -5207,6 +5219,7 @@ describe('VisionRedesign', () => {
     await waitFor(() => expect(screen.getByTestId('result-json')).toBeTruthy())
 
     // The URL field keeps the GET form, which pastes and saves; the note says how it was sent
+    showResponseTab()
     const url = new URL((screen.getByTestId('vision-query-url') as HTMLInputElement).value)
     expect(url.searchParams.get('query')).toBe(query)
     expect(screen.getByTestId('vision-query-url-posted')).toBeTruthy()
@@ -6494,6 +6507,7 @@ describe('VisionRedesign adoption telemetry', () => {
 
       fireEvent.click(screen.getByTestId('vision-fetch-button'))
       await waitFor(() => expect(fetchCalls).toHaveLength(1))
+      showResponseTab()
       fireEvent.click(screen.getByRole('button', {name: 'action.copy-url-to-clipboard'}))
       await waitFor(() =>
         expect(logged(VisionCopied.name)).toEqual([
