@@ -37,6 +37,9 @@ export interface StudioProviderProps extends StudioProps {
 }
 
 /**
+ * Server-rendering `<StudioProvider />` suspends, so the caller must wrap it in its own `<Suspense>`.
+ * See `<Studio />`.
+ *
  * @hidden
  * @beta */
 export function StudioProvider({
