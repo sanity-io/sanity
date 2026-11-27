@@ -96,6 +96,7 @@
     "perf:studio": "cd perf/studio && pnpm preview",
     "perf:studio:build": "pnpm build --filter=perf-studio",
     "perf:studio:dev": "cd perf/studio && pnpm dev",
+    "perf:version-compare": "pnpm --filter e2e version-compare",
     "predev:embedded-studio": "turbo run build --filter=embedded-studio^...",
     "preembedded-studio-vite:dev": "turbo run build --filter=e2e-embedded-studio-vite^...",
     "prepublishOnly": "pnpm build",
