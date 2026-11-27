@@ -1441,6 +1441,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
     'No shared tabs yet. To share one with everyone using this dataset, use Share tab in the More actions menu above its query.',
   /** Shortcut description: close dialogs and menus */
   'vision.shortcuts.close': 'Close dialogs and menus',
+  /** Shortcut description: close the query tab that is showing */
+  'vision.shortcuts.close-tab': 'Close the current tab',
   /** Shortcut that lists the functions matching the name being typed in the query editor */
   'vision.shortcuts.complete': 'Complete a function name',
   /** Shortcut description: copy the query, or the params while they have focus */
@@ -1449,10 +1451,22 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'vision.shortcuts.extract-function': 'Extract the projection at the cursor to a function',
   /** Shortcut description: run the query */
   'vision.shortcuts.fetch': 'Fetch the query',
+  /** Shortcut description: open a new query tab */
+  'vision.shortcuts.new-tab': 'Open a new tab',
   /** Shortcut description: move the cursor to the next lint finding in the query editor */
   'vision.shortcuts.next-finding': 'Jump to the next lint finding',
+  /** Shortcut description: show the query tab after the current one, the first after the last */
+  'vision.shortcuts.next-tab': 'Go to the next tab',
   /** Shortcut description: reformat the query, or the params JSON while it has focus */
   'vision.shortcuts.prettify': 'Format the query, or the params JSON while it has focus',
+  /** Shortcut description: show the query tab before the current one, the last before the first */
+  'vision.shortcuts.previous-tab': 'Go to the previous tab',
+  /**
+   * Note under the tab shortcuts in the keyboard shortcuts dialog. Browsers keep VS Code's keys
+   * for their own tabs, except in an app window, which has none; `keys` lists them, eg "⌘+N, ⌘+W"
+   */
+  'vision.shortcuts.tabs-app-window':
+    'VS Code’s own keys for tabs work in an installed app window too: {{keys}}',
   /** Title of the keyboard shortcuts dialog */
   'vision.shortcuts.title': 'Keyboard shortcuts',
   /** Sidebar toggle: show icons only */

@@ -5190,6 +5190,16 @@
         "message": "Removed in v7. Use `useReferringDocuments` from `sanity` instead (pass `[]` as the second argument to keep the old full-document shape)."
       },
       {
+        "name": "WithRouter",
+        "kind": "value",
+        "message": "Removed in v7. Use the `useRouter` hook from `sanity/router` instead: `const router = useRouter()`."
+      },
+      {
+        "name": "WithRouterProps",
+        "kind": "type",
+        "message": "Removed in v7 with `withRouter` and `WithRouter`. Use the `useRouter` hook from `sanity/router` instead; its return value is typed as `RouterContextValue` from `sanity/router`."
+      },
+      {
         "name": "_createAuthStore",
         "kind": "value",
         "message": "Removed in v7. Pass the same options on the workspace `auth` config key directly instead of wrapping them in `createAuthStore()`."
@@ -5203,6 +5213,11 @@
         "name": "useTimelineStore",
         "kind": "value",
         "message": "Removed in v7 with the legacy document history timeline. Document history always uses the events API: `useEventsStore` and `EventsStore` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` (`@internal`, can change or disappear in any release)."
+      },
+      {
+        "name": "withRouter",
+        "kind": "value",
+        "message": "Removed in v7. Use the `useRouter` hook from `sanity/router` instead: `const router = useRouter()`."
       }
     ],
     "./router": [
@@ -5244,12 +5259,12 @@
       {
         "name": "WithRouter",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Removed in v7. Use the `useRouter` hook from `sanity/router` instead: `const router = useRouter()`."
       },
       {
         "name": "WithRouterProps",
         "kind": "type",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/router`. This export is `@internal` and `@deprecated`, and can change or disappear in any release."
+        "message": "Removed in v7 with `withRouter` and `WithRouter`. Use the `useRouter` hook from `sanity/router` instead; its return value is typed as `RouterContextValue` from `sanity/router`."
       },
       {
         "name": "_createNode",
@@ -5269,7 +5284,7 @@
       {
         "name": "withRouter",
         "kind": "value",
-        "message": "Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver`. This export is `@internal` and can change or disappear in any release."
+        "message": "Removed in v7. Use the `useRouter` hook from `sanity/router` instead: `const router = useRouter()`."
       }
     ],
     "./structure": [

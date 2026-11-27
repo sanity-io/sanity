@@ -46,8 +46,10 @@ import {
   VisionSavedQueryUsed,
   VisionSharedTabsSearched,
   VisionSharedTabUsed,
+  VisionShortcutUsed,
   VisionSnippetCopied,
   VisionTabsChanged,
+  VisionTabUsed,
 } from '../../__telemetry__/vision.telemetry'
 import {editorContentPaddingTop, editorLineHeight} from '../../codemirror/editorMetrics'
 import {type VisionCodeMirrorHandle} from '../../codemirror/VisionCodeMirror'
@@ -400,6 +402,8 @@ vi.mock('../../codemirror/VisionCodeMirror', () => ({
     return (
       <>
         <textarea
+          // The class of the real editor's content element, which the focus is moved into
+          className="cm-content"
           data-testid="codemirror-mock"
           defaultValue={initialValue}
           onChange={(event) => onChange?.(event.target.value)}
@@ -671,6 +675,12 @@ function getQueryEditor(): HTMLTextAreaElement {
 const COPY_KEYS = {key: 'c', ctrlKey: true, shiftKey: true, which: 67, keyCode: 67}
 /** The keys of the Format shortcut, Cmd/Ctrl+Shift+P */
 const FORMAT_KEYS = {key: 'p', ctrlKey: true, shiftKey: true, which: 80, keyCode: 80}
+/** The New tab keys browsers leave to the page, Cmd/Ctrl+Alt+N */
+const NEW_TAB_KEYS = {key: 'n', ctrlKey: true, altKey: true, which: 78, keyCode: 78}
+/** The Close tab keys browsers leave to the page, Cmd/Ctrl+Alt+W */
+const CLOSE_TAB_KEYS = {key: 'w', ctrlKey: true, altKey: true, which: 87, keyCode: 87}
+/** Ctrl+Tab, VS Code's key for the next tab */
+const NEXT_TAB_KEYS = {key: 'Tab', ctrlKey: true, which: 9, keyCode: 9}
 
 /** The shown tab's params JSON editor */
 function getParamsEditor(): HTMLTextAreaElement {
@@ -3765,6 +3775,95 @@ describe('VisionRedesign', () => {
     expect(text(screen.getByTestId('vision-tab-button'))).toContain('vision.tabs.untitled')
   })
 
+  it('opens, switches and closes tabs with the VS Code shortcuts wherever the focus is in the tool', async () => {
+    renderRedesign()
+    const tabButtons = () => screen.getAllByTestId('vision-tab-button')
+    const selectedTab = () =>
+      tabButtons().findIndex((button) => button.getAttribute('aria-selected') === 'true')
+    typeQuery('*[_type == "author"]')
+
+    // The browser's own action for the keys is cancelled
+    expect(fireEvent.keyDown(getQueryEditor(), NEW_TAB_KEYS)).toBe(false)
+    expect(tabButtons()).toHaveLength(2)
+    expect(selectedTab()).toBe(1)
+    expect(getQueryEditor().value).toBe('')
+    // The focus moves into the tab shown now, so the next shortcut lands in the tool too
+    await waitFor(() => expect(document.activeElement).toBe(getQueryEditor()))
+
+    // Switching wraps around at either end. Pressed in the strip, the focus stays on the tabs as
+    // it does with the arrow keys; pressed anywhere else, it goes into the shown tab's editor
+    fireEvent.keyDown(tabButtons()[1], NEXT_TAB_KEYS)
+    expect(selectedTab()).toBe(0)
+    expect(getQueryEditor().value).toBe('*[_type == "author"]')
+    await waitFor(() => expect(document.activeElement).toBe(tabButtons()[0]))
+    fireEvent.keyDown(getParamsEditor(), {...NEXT_TAB_KEYS, shiftKey: true})
+    expect(selectedTab()).toBe(1)
+    await waitFor(() => expect(document.activeElement).toBe(getQueryEditor()))
+    fireEvent.keyDown(getQueryEditor(), {
+      key: 'PageUp',
+      ctrlKey: true,
+      altKey: true,
+      which: 33,
+      keyCode: 33,
+    })
+    expect(selectedTab()).toBe(0)
+    fireEvent.keyDown(getQueryEditor(), {
+      key: 'PageDown',
+      ctrlKey: true,
+      altKey: true,
+      which: 34,
+      keyCode: 34,
+    })
+    expect(selectedTab()).toBe(1)
+
+    // Closing does what the tab's close button does, down to replacing the last tab
+    fireEvent.keyDown(getQueryEditor(), CLOSE_TAB_KEYS)
+    expect(tabButtons()).toHaveLength(1)
+    expect(getQueryEditor().value).toBe('*[_type == "author"]')
+    const last = tabButtons()[0].id
+    fireEvent.keyDown(getQueryEditor(), {key: 'w', ctrlKey: true, which: 87, keyCode: 87})
+    expect(tabButtons()).toHaveLength(1)
+    expect(tabButtons()[0].id).not.toBe(last)
+    expect(getQueryEditor().value).toBe('')
+    await waitFor(() => expect(document.activeElement).toBe(getQueryEditor()))
+    await waitFor(() => expect(getStoredState().tabs).toHaveLength(1))
+
+    // Keys pressed outside the tool are left to the rest of the studio, and to the browser
+    expect(fireEvent.keyDown(document.body, NEW_TAB_KEYS)).toBe(true)
+    expect(tabButtons()).toHaveLength(1)
+  })
+
+  it('leaves the focus where it is when the tab shortcuts have no other tab to switch to', async () => {
+    renderRedesign()
+    const params = getParamsEditor()
+    act(() => params.focus())
+    expect(document.activeElement).toBe(params)
+
+    expect(fireEvent.keyDown(params, NEXT_TAB_KEYS)).toBe(false)
+    fireEvent.keyDown(params, {...NEXT_TAB_KEYS, shiftKey: true})
+    // A switch moves the focus on the next frame
+    await act(() => new Promise<void>((resolve) => requestAnimationFrame(() => resolve())))
+    expect(screen.getAllByTestId('vision-tab-button')).toHaveLength(1)
+    expect(document.activeElement).toBe(params)
+  })
+
+  it('puts the focus on the tab when its editor cannot take it, as in the phone layout with the result shown', async () => {
+    renderRedesign()
+    const root = await screen.findByTestId('vision-root')
+    resizeElement(root, {width: 560, height: 800})
+    expect(root.dataset.visionLayout).toBe('mobile')
+    fireEvent.click(within(shownTab()).getByRole('tab', {name: 'result.label'}))
+
+    // A new tab shows its query, so its editor takes the focus
+    fireEvent.keyDown(getQueryEditor(), NEW_TAB_KEYS)
+    await waitFor(() => expect(document.activeElement).toBe(getQueryEditor()))
+    // The first tab still shows its result, with the query editor hidden behind it
+    fireEvent.keyDown(getQueryEditor(), NEXT_TAB_KEYS)
+    const firstTab = screen.getAllByTestId('vision-tab-button')[0]
+    expect(firstTab.getAttribute('aria-selected')).toBe('true')
+    await waitFor(() => expect(document.activeElement).toBe(firstTab))
+  })
+
   it('keeps every tab pane in place, without moving its DOM node, when the tabs are reordered', () => {
     renderRedesign()
     fireEvent.click(screen.getByTestId('vision-new-tab'))
@@ -6436,5 +6535,28 @@ describe('VisionRedesign adoption telemetry', () => {
     )
     openRequestTab('lint')
     expect(logged(VisionLintUsed.name)).toHaveLength(1)
+  })
+
+  it('records the tab shortcuts, and the tab changes they make as the buttons record theirs', () => {
+    renderRedesign()
+    telemetry.log.mockClear()
+
+    fireEvent.keyDown(getQueryEditor(), NEW_TAB_KEYS)
+    fireEvent.keyDown(getQueryEditor(), NEXT_TAB_KEYS)
+    fireEvent.keyDown(getQueryEditor(), CLOSE_TAB_KEYS)
+    // A single tab is its own next tab: the shortcut counts, the switch does not
+    fireEvent.keyDown(getQueryEditor(), NEXT_TAB_KEYS)
+
+    expect(logged(VisionShortcutUsed.name)).toEqual([
+      [VisionShortcutUsed, {shortcut: 'new-tab'}],
+      [VisionShortcutUsed, {shortcut: 'next-tab'}],
+      [VisionShortcutUsed, {shortcut: 'close-tab'}],
+      [VisionShortcutUsed, {shortcut: 'next-tab'}],
+    ])
+    expect(logged(VisionTabsChanged.name)).toEqual([
+      [VisionTabsChanged, {count: 2, action: 'add'}],
+      [VisionTabsChanged, {count: 1, action: 'close'}],
+    ])
+    expect(logged(VisionTabUsed.name)).toEqual([[VisionTabUsed, {action: 'select'}]])
   })
 })
