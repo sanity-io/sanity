@@ -20,7 +20,6 @@ export function SeeDraftBanner() {
   const {selectedPerspective} = usePerspective()
   const setPerspective = useSetPerspective()
   const workspace = useWorkspace()
-  // With Variants off the banner keeps its earlier purple (suggest) tone
   const variantsEnabled = Boolean(workspace.beta?.variants?.enabled)
   const {params} = usePaneRouter()
   const siblings = getTargetSiblings(targetDocumentState)
@@ -41,38 +40,22 @@ export function SeeDraftBanner() {
     return null
   }
 
-  if (!variantsEnabled) {
-    return (
-      <Banner
-        tone="suggest"
-        data-testid="see-draft-banner"
-        content={
-          <Text size={1} as="div" trim={true} tone="suggest">
-            {t('banners.published.see-draft.text')}
-          </Text>
-        }
-        action={{
-          text: t('banners.published.see-draft.action'),
-          tone: 'suggest',
-          onClick: handleSeeDraft,
-          mode: 'default',
-        }}
-      />
-    )
-  }
+  // Variants on: neutral grey, since purple (suggest) is the variants tone and this banner is about
+  // drafts. Variants off: purple, as before.
+  const tone = variantsEnabled ? 'neutral' : 'suggest'
 
   return (
-    // Neutral: purple (suggest) is the variants tone, and this banner is about drafts.
     <Banner
-      tone="default"
+      tone={tone}
       data-testid="see-draft-banner"
       content={
-        <Text size={1} as="div" trim={true}>
+        <Text size={1} as="div" trim={true} tone={variantsEnabled ? undefined : 'suggest'}>
           {t('banners.published.see-draft.text')}
         </Text>
       }
       action={{
         text: t('banners.published.see-draft.action'),
+        tone: variantsEnabled ? undefined : 'suggest',
         onClick: handleSeeDraft,
         mode: 'default',
       }}
