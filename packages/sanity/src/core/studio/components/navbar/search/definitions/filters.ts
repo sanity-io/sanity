@@ -38,7 +38,10 @@ export interface SearchFilterPinnedDefinition<
 }
 
 /**
- * @beta
+ * A field-based or pinned filter definition for Studio global search.
+ * Field filters apply to a schema field type; pinned filters are always listed in the filter menu.
+ *
+ * @public
  */
 export type SearchFilterDefinition<TOperators = string> =
   | SearchFilterFieldDefinition<TOperators>
