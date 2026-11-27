@@ -578,6 +578,13 @@ export function DocumentVersionsFlyoutList(props: {
     [groups, people],
   )
   const shownGroups = groups.slice(0, MAX_AUDIENCES)
+  // The audience the open pane shows: the picked variant, or Default when the document has no
+  // version for it, as the list row's outline diamond says
+  const viewedAudienceId = groups.some(
+    (group) => group.variantId && getVariantId(group.variantId) === viewedVariantId,
+  )
+    ? viewedVariantId
+    : undefined
   // With Variants off there are no audiences: the rows are the document's versions, Published,
   // Draft, then each release it is in, in the order of the header pills
   const versionItems = useMemo(
@@ -667,7 +674,7 @@ export function DocumentVersionsFlyoutList(props: {
             presence={nonEmpty(presenceByAudience.get(audienceKey(group)))}
             viewed={
               viewingDocument &&
-              (group.variantId ? getVariantId(group.variantId) : undefined) === viewedVariantId
+              (group.variantId ? getVariantId(group.variantId) : undefined) === viewedAudienceId
             }
             // With a variant picked in the studio, its row is marked on every document, so the
             // flyout says which audience a pick opens. Default is not marked: with no variant

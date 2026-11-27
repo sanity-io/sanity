@@ -338,6 +338,22 @@ describe('DocumentVersionsFlyoutList', () => {
       await settleChromaticEndState()
     })
 
+    it('marks Default as viewed when the open document has no version for the picked variant', async () => {
+      ;(useDocumentVersions as Mock<typeof useDocumentVersions>).mockReturnValue({
+        data: [versions[0]._id, versions[2]._id],
+        versions: [versions[0], versions[2]],
+        error: null,
+        loading: false,
+      })
+      await renderFlyoutList({selectedVariantName: 'variant:german', viewingDocument: true})
+      const defaultRow = page.getByRole('menuitem', {name: /Default/})
+      await expect.element(defaultRow).toBeVisible()
+      await expect.element(defaultRow).toHaveAttribute('data-viewed')
+      await expect
+        .element(page.getByRole('menuitem', {name: /Swedish/}))
+        .not.toHaveAttribute('data-viewed')
+    })
+
     it('marks nothing with no variant picked', async () => {
       await renderFlyoutList({viewingDocument: false})
       await expect.element(page.getByRole('menuitem', {name: /German/})).toBeVisible()
