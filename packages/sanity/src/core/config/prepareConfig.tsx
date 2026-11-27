@@ -26,7 +26,11 @@ import {composeRequestHandlers} from './composeRequestHandlers'
 import {ConfigResolutionError} from './ConfigResolutionError'
 import {recordConfigWarning} from './configWarnings'
 import {createDefaultIcon} from './createDefaultIcon'
-import {getDefaultPluginsLocalePlugins, getDefaultPluginsOptions} from './defaultPluginsOptions'
+import {
+  getDefaultPluginsLocalePlugins,
+  getDefaultPluginsOptions,
+  isDefaultPluginIncluded,
+} from './defaultPluginsOptions'
 import {type resolveWorkspaceSource} from './resolveWorkspaceSource'
 import {
   type Config,
@@ -54,6 +58,20 @@ function normalizeIcon(
 }
 
 const preparedWorkspaces = new WeakMap<SingleWorkspace | WorkspaceOptions, WorkspaceSummary>()
+
+// Recorded here because inclusion depends on the root source's declared plugins, which the summary
+// does not carry
+const workspacesWithScheduledPublishing = new WeakSet<WorkspaceSummary>()
+
+/**
+ * Whether the workspace's root source loads the scheduled publishing plugin, as decided when the
+ * source is resolved.
+ *
+ * @internal
+ */
+export function hasScheduledPublishingPlugin(workspace: WorkspaceSummary): boolean {
+  return workspacesWithScheduledPublishing.has(workspace)
+}
 
 const warnedProjectAuthDivergence = new Set<string>()
 
@@ -345,6 +363,15 @@ export function prepareConfig(
         sources: resolvedSources,
       },
       ...defaultPluginsOptions,
+    }
+    if (
+      isDefaultPluginIncluded(
+        'sanity/scheduled-publishing',
+        defaultPluginsOptions,
+        sources[0].declaredPlugins,
+      )
+    ) {
+      workspacesWithScheduledPublishing.add(workspaceSummary)
     }
     preparedWorkspaces.set(rawWorkspace, workspaceSummary)
     return workspaceSummary
