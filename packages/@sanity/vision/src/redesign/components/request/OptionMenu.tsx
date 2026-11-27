@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {SearchIcon} from '@sanity/icons/Search'
-import {Button, Card, Label, TextInput} from '@sanity/ui'
+import {Button, type ButtonProps, Card, Label, TextInput} from '@sanity/ui'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {
   type ChangeEvent,
@@ -29,6 +29,17 @@ const MENU_STYLE = {
   maxWidth: 'min(360px, calc(100vw - 24px))',
   overflow: 'auto',
 } as const
+
+/**
+ * The size and tone of an Options picker's trigger, which the tool's other dropdowns (the result
+ * panel's view menus) share so every dropdown in Vision looks alike
+ */
+export const OPTION_TRIGGER_PROPS = {
+  fontSize: 1,
+  iconRight: ChevronDownIcon,
+  mode: 'ghost',
+  padding: 2,
+} as const satisfies ButtonProps
 
 /** The keys `@sanity/ui`'s menu answers with a focus move, also when they are pressed in the search */
 const MENU_FOCUS_KEYS = new Set(['ArrowDown', 'ArrowUp', 'End', 'Home', 'Tab'])
@@ -140,13 +151,10 @@ export function OptionMenuButton({
     <MenuButton
       button={
         <Button
+          {...OPTION_TRIGGER_PROPS}
           className={styles.trigger}
           data-testid={`${testId}-select`}
-          fontSize={1}
-          iconRight={ChevronDownIcon}
           justify="space-between"
-          mode="ghost"
-          padding={2}
           text={text}
           textAlign="left"
           value={value}

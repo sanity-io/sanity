@@ -1,5 +1,4 @@
 import {CheckmarkIcon} from '@sanity/icons/Checkmark'
-import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {Button} from '@sanity/ui'
 import {Menu, MenuButton, MenuItem} from '@sanity/ui/menu'
 import {useTranslation} from 'sanity/i18n'
@@ -7,6 +6,7 @@ import {useTranslation} from 'sanity/i18n'
 import {visionLocaleNamespace} from '../../../i18n'
 import {cx} from '../../util/cx'
 import * as styles from '../redesign.module.css'
+import {OPTION_TRIGGER_PROPS} from '../request/OptionMenu'
 import * as themeStyles from '../themeTokens.module.css'
 
 /** A way the result panel can show the result */
@@ -30,7 +30,10 @@ export interface ResultViewMenuProps<View extends string> {
   placement?: 'bottom-start' | 'bottom-end'
 }
 
-/** The result panel's view selector: a dropdown naming the shown view, listing the others */
+/**
+ * The result panel's view selector: a dropdown naming the shown view, listing the others, with
+ * the trigger of the Options pickers
+ */
 export function ResultViewMenu<View extends string>({
   id,
   views,
@@ -47,14 +50,10 @@ export function ResultViewMenu<View extends string>({
     <MenuButton
       button={
         <Button
+          {...OPTION_TRIGGER_PROPS}
           aria-controls={controls}
           aria-label={t('vision.result.view.button', {view: active.label})}
           data-testid={`${testId}-button`}
-          fontSize={1}
-          gap={2}
-          iconRight={ChevronDownIcon}
-          mode="bleed"
-          padding={2}
           text={active.label}
         />
       }
