@@ -196,6 +196,10 @@ export function VisionGui(props: VisionGuiProps) {
 
   const {paneSizeOptions, isNarrowBreakpoint} = usePaneSize({visionRootRef})
 
+  useEffect(() => {
+    telemetry.opened('classic')
+  }, [telemetry])
+
   // Compute scheduled drafts perspective stack
   const scheduledDraftsStack = useMemo((): PerspectiveStack | undefined => {
     if (!isScheduledDraftsEnabled) return undefined
@@ -266,6 +270,7 @@ export function VisionGui(props: VisionGuiProps) {
         cancelQuerySubscription()
         cancelListenerSubscription()
         setQueryInProgress(false)
+        telemetry.queryCancelled('fetch')
         return
       }
 
@@ -474,6 +479,7 @@ export function VisionGui(props: VisionGuiProps) {
     if (listenInProgress) {
       cancelListenerSubscription()
       setListenInProgress(false)
+      telemetry.queryCancelled('listen')
       return
     }
 
@@ -639,6 +645,7 @@ export function VisionGui(props: VisionGuiProps) {
       // load, so unrelated content still pastes as usual.
       evt.preventDefault()
       setStateFromParsedUrl(urlState)
+      telemetry.queryUrlPasted()
       toast.push({
         closable: true,
         id: 'vision-paste',
@@ -646,7 +653,7 @@ export function VisionGui(props: VisionGuiProps) {
         title: 'Parsed URL to query',
       })
     },
-    [getStateFromUrl, setStateFromParsedUrl, toast],
+    [getStateFromUrl, setStateFromParsedUrl, telemetry, toast],
   )
 
   const handleKeyDown = useCallback(
@@ -842,7 +849,12 @@ export function VisionGui(props: VisionGuiProps) {
                 zIndex: 100,
                 pointerEvents: 'auto',
               }}
-              onClick={() => setIsQueryRecallCollapsed(!isQueryRecallCollapsed)}
+              onClick={() => {
+                const next = !isQueryRecallCollapsed
+                setIsQueryRecallCollapsed(next)
+                // `open` is true when the pane is shown (not collapsed)
+                telemetry.panelToggled('saved-queries', !next)
+              }}
             >
               <div style={{display: 'flex', alignItems: 'center', height: '100%'}}>
                 {isQueryRecallCollapsed ? <ChevronLeftIcon /> : <ChevronRightIcon />}

@@ -15,9 +15,12 @@ import {Code, Text, Flex, Box, VStack, type VStackProps} from 'ui5'
 
 import {type QueryConfig, useSavedQueries} from '../hooks/useSavedQueries'
 import {visionLocaleNamespace} from '../i18n'
+import {useVisionTelemetry} from '../telemetry/useVisionTelemetry'
 import * as styles from './QueryRecall.module.css'
 import {type ParsedUrlState} from './VisionGui'
 import {StyledLabel} from './VisionGui.styled'
+
+type SavedQueryOwnerFilter = 'all' | 'personal' | 'shared'
 
 function FixedHeader(props: VStackProps) {
   return <VStack {...props} className={styles.fixedHeader} />
@@ -57,8 +60,8 @@ export function QueryRecall({
   generateUrl: (query: string, params: Record<string, unknown>) => string
   compactMode?: boolean
 }): ReactElement {
-  type QueryFilter = 'all' | 'personal' | 'shared'
   const toast = useToast()
+  const telemetry = useVisionTelemetry()
   const {saveQuery, updateQuery, queries, deleteQuery, shareQuery, unshareQuery, saving, deleting} =
     useSavedQueries()
   const {t} = useTranslation(visionLocaleNamespace)
@@ -74,10 +77,36 @@ export function QueryRecall({
   const [editingTitle, setEditingTitle] = useState('')
   const [optimisticTitles, setOptimisticTitles] = useState<Record<string, string>>({})
   const [searchQuery, setSearchQuery] = useState('')
-  const [queryFilter, setQueryFilter] = useState<QueryFilter>('all')
+  const [queryFilter, setQueryFilter] = useState<SavedQueryOwnerFilter>('all')
   const [selectedUrl, setSelectedUrl] = useState<string | undefined>(url)
   const [pendingUnshareKeys, setPendingUnshareKeys] = useState<string[]>([])
   const [shareDialogQuery, setShareDialogQuery] = useState<QueryConfig | null>(null)
+  const [searchLogged, setSearchLogged] = useState(false)
+
+  const handleOwnerFilterChange = useCallback(
+    (filter: SavedQueryOwnerFilter) => {
+      if (filter === queryFilter) return
+      setQueryFilter(filter)
+      telemetry.savedQueriesFiltered(filter)
+    },
+    [queryFilter, telemetry],
+  )
+
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearchQuery(value)
+      // Once per search session: the first non-empty value after being empty, not per keystroke
+      if (value.trim()) {
+        if (!searchLogged) {
+          telemetry.savedQueriesFiltered('search')
+          setSearchLogged(true)
+        }
+      } else {
+        setSearchLogged(false)
+      }
+    },
+    [searchLogged, telemetry],
+  )
 
   const handleSave = useCallback(async () => {
     // Generate the correct URL first
@@ -123,6 +152,7 @@ export function QueryRecall({
         title: t('label.untitled-query'),
       })
       setSelectedUrl(newUrl)
+      telemetry.savedQueryUsed('save', false)
       toast.push({
         closable: true,
         status: 'success',
@@ -146,6 +176,7 @@ export function QueryRecall({
     generateUrl,
     formatDate,
     saveQuery,
+    telemetry,
   ])
 
   const handleShareQuery = useCallback((query: QueryConfig) => {
@@ -159,6 +190,8 @@ export function QueryRecall({
       // One move: when removing the personal copy fails, the shared one is taken back and the
       // move rejects, rather than the query staying in both lists behind a success toast
       await shareQuery(shareDialogQuery._key)
+      // The query acted on was personal (`shared: false`) before the share
+      telemetry.savedQueryUsed('share', false)
       toast.push({
         closable: true,
         status: 'success',
@@ -173,7 +206,7 @@ export function QueryRecall({
       })
     }
     setShareDialogQuery(null)
-  }, [shareDialogQuery, shareQuery, t, toast])
+  }, [shareDialogQuery, shareQuery, t, telemetry, toast])
 
   const handleUnshareQuery = useCallback(
     async (query: QueryConfig) => {
@@ -208,6 +241,7 @@ export function QueryRecall({
       try {
         // One move, like sharing: a personal copy that cannot replace the shared one is taken back
         await unshareQuery(query._key)
+        telemetry.savedQueryUsed('unshare', true)
         toast.push({
           closable: true,
           status: 'success',
@@ -223,12 +257,15 @@ export function QueryRecall({
       }
       clearPending()
     },
-    [formatDate, getStateFromUrl, queries, t, toast, unshareQuery],
+    [formatDate, getStateFromUrl, queries, t, telemetry, toast, unshareQuery],
   )
 
   const handleTitleSave = useCallback(
     async (query: QueryConfig, newTitle: string) => {
       setEditingKey(null)
+      if (newTitle === (query.title || '')) {
+        return
+      }
       setOptimisticTitles((prev) => ({...prev, [query._key]: newTitle}))
 
       try {
@@ -236,6 +273,7 @@ export function QueryRecall({
           ...query,
           title: newTitle,
         })
+        telemetry.savedQueryUsed('rename', Boolean(query.shared))
         // Clear optimistic title on success
         setOptimisticTitles((prev) => {
           const next = {...prev}
@@ -257,7 +295,7 @@ export function QueryRecall({
         })
       }
     },
-    [updateQuery, toast, t],
+    [updateQuery, telemetry, toast, t],
   )
 
   const handleUpdate = useCallback(
@@ -304,6 +342,7 @@ export function QueryRecall({
           savedAt: new Date().toISOString(),
         })
         setSelectedUrl(newUrl)
+        telemetry.savedQueryUsed('update', Boolean(query.shared))
         toast.push({
           closable: true,
           status: 'success',
@@ -324,6 +363,7 @@ export function QueryRecall({
       formatDate,
       generateUrl,
       updateQuery,
+      telemetry,
       toast,
       t,
       queries,
@@ -366,7 +406,7 @@ export function QueryRecall({
             placeholder={t('label.search-queries')}
             icon={SearchIcon}
             value={searchQuery}
-            onChange={(event) => setSearchQuery(event.currentTarget.value)}
+            onChange={(event) => handleSearchChange(event.currentTarget.value)}
           />
         </Box>
         <Box paddingX={3} paddingBottom={2}>
@@ -376,21 +416,21 @@ export function QueryRecall({
               aria-controls="vision-query-recall-list"
               label={t('label.all')}
               selected={queryFilter === 'all'}
-              onClick={() => setQueryFilter('all')}
+              onClick={() => handleOwnerFilterChange('all')}
             />
             <Tab
               id="query-filter-personal"
               aria-controls="vision-query-recall-list"
               label={t('label.personal')}
               selected={queryFilter === 'personal'}
-              onClick={() => setQueryFilter('personal')}
+              onClick={() => handleOwnerFilterChange('personal')}
             />
             <Tab
               id="query-filter-shared"
               aria-controls="vision-query-recall-list"
               label={t('label.shared')}
               selected={queryFilter === 'shared'}
-              onClick={() => setQueryFilter('shared')}
+              onClick={() => handleOwnerFilterChange('shared')}
             />
           </TabList>
         </Box>
@@ -424,6 +464,7 @@ export function QueryRecall({
                   const parsedUrl = getStateFromUrl(q.url)
                   if (parsedUrl) {
                     setStateFromParsedUrl(parsedUrl)
+                    telemetry.savedQueryUsed('load', Boolean(q.shared))
                   }
                 }}
                 style={{
@@ -546,6 +587,8 @@ export function QueryRecall({
                                     text={t('action.delete')}
                                     onClick={(event) => {
                                       event.stopPropagation()
+                                      // deleteQuery swallows failures into deleteQueryError; count the action
+                                      telemetry.savedQueryUsed('delete', Boolean(q.shared))
                                       void deleteQuery(q._key)
                                     }}
                                   />

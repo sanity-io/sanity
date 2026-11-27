@@ -2,11 +2,12 @@ import {JsonInspector} from '@rexxars/react-json-inspector'
 import {LinkIcon} from '@sanity/icons/Link'
 import {rem, useTheme_v2 as useThemeV2} from '@sanity/ui'
 import LRU from 'quick-lru'
-import {type CSSProperties, type ReactNode} from 'react'
+import {createContext, type CSSProperties, type ReactNode, use, useMemo} from 'react'
 import {useDataset} from 'sanity'
 import {IntentLink} from 'sanity/router'
 import {Code} from 'ui5'
 
+import {useVisionTelemetry} from '../telemetry/useVisionTelemetry'
 import * as styles from './ResultView.module.css'
 
 const lru = new LRU({maxSize: 50000})
@@ -51,20 +52,37 @@ function ResultViewWrapper({children}: {children: ReactNode}) {
   )
 }
 
+interface ResultLabelContextValue {
+  /** Fires when an `_id`/`_ref` IntentLink is clicked; one instance shared across all labels */
+  onDocumentOpened: () => void
+}
+
+// The inspector takes one component for every label, so what it needs comes through context
+const ResultLabelContext = createContext<ResultLabelContextValue | null>(null)
+
 export function ResultView(props: {data: unknown; datasetName: string}): React.JSX.Element {
   const {data, datasetName} = props
   const workspaceDataset = useDataset()
+  const telemetry = useVisionTelemetry()
+  const labelContext = useMemo(
+    () => ({
+      onDocumentOpened: () => telemetry.documentOpened('result'),
+    }),
+    [telemetry],
+  )
 
   if (isRecord(data) || Array.isArray(data)) {
     return (
       <ResultViewWrapper>
-        <JsonInspector
-          data={data}
-          search={false}
-          isExpanded={isExpanded}
-          onClick={toggleExpanded}
-          interactiveLabel={workspaceDataset === datasetName ? DocumentEditLabel : undefined}
-        />
+        <ResultLabelContext value={labelContext}>
+          <JsonInspector
+            data={data}
+            search={false}
+            isExpanded={isExpanded}
+            onClick={toggleExpanded}
+            interactiveLabel={workspaceDataset === datasetName ? DocumentEditLabel : undefined}
+          />
+        </ResultLabelContext>
       </ResultViewWrapper>
     )
   }
@@ -77,12 +95,14 @@ export function ResultView(props: {data: unknown; datasetName: string}): React.J
 }
 
 function DocumentEditLabel(props: {value: string; isKey: boolean; keypath: string}) {
+  const context = use(ResultLabelContext)
+
   if (props.isKey || (!props.keypath.endsWith('_id') && !props.keypath.endsWith('_ref'))) {
     return null
   }
 
   return (
-    <IntentLink intent="edit" params={{id: props.value}}>
+    <IntentLink intent="edit" params={{id: props.value}} onClick={context?.onDocumentOpened}>
       <LinkIcon />
     </IntentLink>
   )

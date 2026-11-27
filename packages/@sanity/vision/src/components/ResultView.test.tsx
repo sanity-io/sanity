@@ -1,14 +1,23 @@
 import {ThemeProvider} from '@sanity/ui'
 import {buildTheme} from '@sanity/ui/theme'
-import {cleanup, render, screen} from '@testing-library/react'
+import {cleanup, fireEvent, render, screen} from '@testing-library/react'
 import {type ReactNode} from 'react'
 import {afterEach, describe, expect, it, vi} from 'vitest'
 
 import {ResultView} from './ResultView'
 
+const log = vi.fn()
+
+vi.mock('@sanity/telemetry/react', () => ({
+  useTelemetry: () => ({log}),
+}))
 vi.mock('sanity', () => ({useDataset: () => 'test'}))
 vi.mock('sanity/router', () => ({
-  IntentLink: (props: {children: ReactNode}) => <a data-testid="intent-link">{props.children}</a>,
+  IntentLink: (props: {children: ReactNode; onClick?: () => void}) => (
+    <a data-testid="intent-link" onClick={props.onClick}>
+      {props.children}
+    </a>
+  ),
 }))
 
 // @sanity/ui's ThemeProvider reads the color scheme preference
@@ -38,7 +47,10 @@ function renderResult(datasetName: string) {
 }
 
 describe('ResultView', () => {
-  afterEach(() => cleanup())
+  afterEach(() => {
+    cleanup()
+    log.mockClear()
+  })
 
   it("links document IDs when the result is from the workspace's dataset", () => {
     renderResult('test')
@@ -48,5 +60,16 @@ describe('ResultView', () => {
   it('does not link document IDs from another dataset', () => {
     renderResult('other')
     expect(screen.queryAllByTestId('intent-link')).toHaveLength(0)
+  })
+
+  it('records one document open from a result IntentLink', () => {
+    renderResult('test')
+    fireEvent.click(screen.getByTestId('intent-link'))
+    expect(log).toHaveBeenCalledTimes(1)
+    expect(log.mock.calls[0][0]).toMatchObject({
+      name: 'Vision Document Opened',
+      version: 1,
+    })
+    expect(log.mock.calls[0][1]).toEqual({source: 'result'})
   })
 })
