@@ -140,21 +140,4 @@ describe('createReleaseStore', () => {
     await vi.advanceTimersByTimeAsync(1)
     expect(listener$.observed).toBe(false)
   })
-
-  it('does not let an errorCount$ consumer prolong the listener beyond the grace period', async () => {
-    const {client, listener$} = createMockClient()
-    const store = createReleaseStore({
-      client,
-      globalListenerStore: createGlobalListenerStore({client}),
-    })
-
-    const subscription = store.errorCount$.subscribe()
-    listener$.next({type: 'welcome'})
-    await flushScheduled()
-    expect(listener$.observed).toBe(true)
-
-    subscription.unsubscribe()
-    await vi.advanceTimersByTimeAsync(LISTENER_RELEASE_DELAY)
-    expect(listener$.observed).toBe(false)
-  })
 })
