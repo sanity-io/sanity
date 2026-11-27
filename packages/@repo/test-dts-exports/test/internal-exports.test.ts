@@ -11,19 +11,13 @@
  * 1. **Superset.** Every `@internal` declaration a public entry exports is also exported from the
  *    internals entry, under the same declaration. That makes the internals entry a working import
  *    path for every internal, which is what we tell consumers to migrate to.
- * 2. **Explicit compatibility list.** Every `@internal` *runtime* declaration still reachable from
- *    a public entry is listed in `KEPT_FOR_COMPATIBILITY` below, with the reason. A new one cannot
- *    appear by accident, and the list is the removal checklist for the next major.
+ * 2. **Explicit compatibility list.** Every `@internal` declaration still reachable from a public
+ *    entry, runtime or type-only, is listed in `KEPT_FOR_COMPATIBILITY` below, with the reason. A
+ *    new one cannot appear by accident, and the list is the removal checklist for the next major.
  * 3. **No stale list entries.**
  *
- * Type-only declarations — interfaces and `type` aliases — are deliberately *not* governed by the
- * list. Per SAPP-4893, exports move for two reasons: bundle size, which only applies to runtime
- * exports because types compile away, and discouraging use. A type costs nothing at cold start,
- * so moving one buys no bytes and only costs breakage. They stay on the entry that exported them,
- * and are re-exported from the internals entry as well. A type moves only when it describes
- * something nobody outside Sanity should need, and even then leaving it is acceptable.
- * `sanity/structure`, `sanity/router` and `sanity/presentation` are the exception: Studio 7 moves
- * their types too, to subpaths of the internals entry (see the last test in this file).
+ * `sanity/structure`, `sanity/router` and `sanity/presentation` also keep `@hidden` and
+ * `@deprecated` declarations off the entry (see the last test in this file).
  *
  * The internals entry is deliberately *not* checked for "nothing but `@internal` here": versions
  * 6.17.0 through 6.20.0 shipped it as the migration target for names that have since become
@@ -34,7 +28,7 @@
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
-import {type ExportedDeclarations, Node, Project} from 'ts-morph'
+import {type ExportedDeclarations, Node, Project, type SourceFile} from 'ts-morph'
 import {beforeAll, describe, expect, test} from 'vitest'
 
 import {isTombstoneDeclaration} from '../tombstones/surface.mjs'
@@ -53,12 +47,11 @@ const PUBLIC_ENTRIES = {
 }
 
 /**
- * `@internal` *runtime* declarations that stay reachable from a public entry, and why. Everything
+ * `@internal` declarations that stay reachable from a public entry, and why. Everything
  * listed here must also be exported from the internals entry, which is the path to migrate to.
  *
  * Studio v7 keeps none: the names v6 kept for published plugins are only on the internals entry,
  * so a plugin that still imports one from a public entry fails to link until it moves the import.
- * Type-only declarations are not listed here — see the note at the top of the file.
  */
 const KEPT_FOR_COMPATIBILITY: Record<string, Readonly<Record<string, string>>> = {}
 
@@ -85,15 +78,14 @@ function ownDeclarations(declarations: ExportedDeclarations[]): ExportedDeclarat
   )
 }
 
-/**
- * An interface or a `type` alias: it exists only in the type system, so a public entry can keep
- * exporting it without costing a studio any bytes at cold start.
- */
-function isTypeOnly(declarations: ExportedDeclarations[]): boolean {
-  return declarations.every(
-    (declaration) =>
-      Node.isInterfaceDeclaration(declaration) || Node.isTypeAliasDeclaration(declaration),
-  )
+function internalExportNames(sourceFile: SourceFile): string[] {
+  return [...sourceFile.getExportedDeclarations()]
+    .filter(([, declarations]) => ownDeclarations(declarations).some(isInternal))
+    .map(([name]) => name)
+}
+
+function unlistedInternalExports(sourceFile: SourceFile, allowed: ReadonlySet<string>): string[] {
+  return internalExportNames(sourceFile).filter((name) => allowed.has(name) === false)
 }
 
 function sameDeclaration(a: ExportedDeclarations[], b: ExportedDeclarations[]): boolean {
@@ -113,6 +105,7 @@ describe('the internals entry is a superset, and the public compatibility list i
 
   for (const [entry, dtsFile] of Object.entries(PUBLIC_ENTRIES)) {
     const kept = KEPT_FOR_COMPATIBILITY[entry] ?? {}
+    const allowed = new Set(Object.keys(kept))
 
     test(`every @internal declaration on ${entry} is also on the internals entry`, () => {
       const sourceFile = project.addSourceFileAtPath(path.join(sanityLibDir, dtsFile))
@@ -140,27 +133,18 @@ describe('the internals entry is a superset, and the public compatibility list i
       ).toEqual([])
     })
 
-    test(`${entry} keeps only the listed @internal runtime declarations`, () => {
+    test(`${entry} keeps only the listed @internal declarations`, () => {
       const sourceFile = project.addSourceFileAtPath(path.join(sanityLibDir, dtsFile))
-      const unlisted: string[] = []
-      for (const [name, declarations] of sourceFile.getExportedDeclarations()) {
-        if (name in kept) continue
-        const own = ownDeclarations(declarations)
-        if (own.length === 0 || !own.some(isInternal)) continue
-        // Types compile away, so they are free to stay here; only runtime exports cost bytes.
-        if (isTypeOnly(own)) continue
-        unlisted.push(name)
-      }
       expect(
-        unlisted,
-        `\`${entry}\` exports @internal runtime declarations that are not in KEPT_FOR_COMPATIBILITY. Either move them to the internals entry, or add them to the list with the package that needs them. (Interfaces and type aliases do not need listing.)`,
+        unlistedInternalExports(sourceFile, allowed),
+        `\`${entry}\` exports @internal declarations that are not in KEPT_FOR_COMPATIBILITY. Move them to the internals entry and leave a tombstone, or add them to the list with the package that needs them.`,
       ).toEqual([])
     })
 
     test(`${entry}'s compatibility list has no stale entries`, () => {
       const sourceFile = project.addSourceFileAtPath(path.join(sanityLibDir, dtsFile))
       const exported = new Set(sourceFile.getExportedDeclarations().keys())
-      const stale = Object.keys(kept).filter((name) => !exported.has(name))
+      const stale = Object.keys(kept).filter((name) => exported.has(name) === false)
       expect(
         stale,
         `KEPT_FOR_COMPATIBILITY lists names \`${entry}\` no longer exports. Drop them from the list.`,
@@ -265,4 +249,36 @@ describe('structure, router and presentation keep their internals on subpaths', 
       ).toEqual([])
     })
   }
+})
+
+describe('unlistedInternalExports', () => {
+  const fixture = new Project({useInMemoryFileSystem: true}).createSourceFile(
+    path.join(sanityLibDir, 'fixture.d.ts'),
+    [
+      '/** @internal */',
+      'interface InternalInterface {}',
+      '/** @internal */',
+      'type InternalAlias = string',
+      '/** @internal */',
+      'declare function internalFunction(): void',
+      '/** @public */',
+      'type PublicAlias = string',
+      'export {InternalInterface, InternalAlias, internalFunction, PublicAlias}',
+    ].join('\n'),
+  )
+
+  test('flags @internal interfaces, type aliases and runtime declarations', () => {
+    expect(unlistedInternalExports(fixture, new Set()).toSorted()).toEqual([
+      'InternalAlias',
+      'InternalInterface',
+      'internalFunction',
+    ])
+  })
+
+  test('skips listed names', () => {
+    expect(unlistedInternalExports(fixture, new Set(['InternalAlias'])).toSorted()).toEqual([
+      'InternalInterface',
+      'internalFunction',
+    ])
+  })
 })
