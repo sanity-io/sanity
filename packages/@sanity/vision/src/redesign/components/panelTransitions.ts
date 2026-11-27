@@ -2,7 +2,7 @@ import {addTransitionType, startTransition, type ViewTransitionClassPerType} fro
 import {
   STUDIO_RESIZE_TRANSITION_TYPE,
   STUDIO_SKIP_TRANSITION_TYPE,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
 
 /** Collapsing, expanding or fitting a bottom panel */
 export const PANEL_TRANSITION = 'vision-panel'

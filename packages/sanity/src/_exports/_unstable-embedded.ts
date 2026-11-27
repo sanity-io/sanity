@@ -23,7 +23,7 @@ export type ArrayDefinition = never
  */
 export type BaseFormNode = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{ChangeIndicatorsTracker}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{ChangeIndicatorsTracker}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const ChangeIndicatorsTracker: never
 /**
@@ -31,7 +31,7 @@ export declare const ChangeIndicatorsTracker: never
  */
 export declare const CopyPasteProvider: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{DivergencesProvider}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{DivergencesProvider}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const DivergencesProvider: never
 /**
@@ -51,7 +51,7 @@ export type FieldDefinition = never
  */
 export type FieldMember = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{FieldPresence}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{FieldPresence}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const FieldPresence: never
 /**
@@ -59,7 +59,7 @@ export declare const FieldPresence: never
  */
 export type FieldProps = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{FormBuilder}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{FormBuilder}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const FormBuilder: never
 /**
@@ -67,11 +67,11 @@ export declare const FormBuilder: never
  */
 export type FormDocumentValue = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{FormFieldHeaderText}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{FormFieldHeaderText}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const FormFieldHeaderText: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{FormInput}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{FormInput}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const FormInput: never
 /**
@@ -151,7 +151,7 @@ export type ObjectSchemaType = never
  */
 export type PatchArg = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{PatchEvent}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{PatchEvent}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const PatchEvent: never
 /**
@@ -167,7 +167,7 @@ export declare const PerspectiveProvider: never
  */
 export type PreparedSnapshot = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{PresenceOverlay}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{PresenceOverlay}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const PresenceOverlay: never
 /**
@@ -207,7 +207,7 @@ export type StringInputProps = never
  */
 export type StudioLocaleResourceKeys = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{TransformPatches}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{TransformPatches}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const TransformPatches: never
 /**
@@ -219,7 +219,7 @@ export declare const Translate: never
  */
 export type ValidationMarker = never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{VirtualizerScrollInstanceProvider}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{VirtualizerScrollInstanceProvider}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const VirtualizerScrollInstanceProvider: never
 /**
@@ -231,7 +231,7 @@ export type Workspace = never
  */
 export declare const WorkspaceProvider: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{createPatchChannel}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{createPatchChannel}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const createPatchChannel: never
 /**
@@ -251,7 +251,7 @@ export declare const defineField: never
  */
 export declare const defineType: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{getExpandOperations}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{getExpandOperations}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const getExpandOperations: never
 /**
@@ -267,7 +267,7 @@ export declare const pathToString: never
  */
 export declare const set: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{setAtPath}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{setAtPath}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const setAtPath: never
 /**
@@ -287,7 +287,7 @@ export declare const useCurrentLocale: never
  */
 export declare const useDateTimeFormat: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2`. Import `{useFormState}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2`. Import `{useFormState}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const useFormState: never
 /**
@@ -295,7 +295,7 @@ export declare const useFormState: never
  */
 export declare const useRelativeTime: never
 /**
- * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1`. Import `{useSchema}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
+ * @deprecated Moved to `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1`. Import `{useSchema}` from `sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1` instead of `sanity/_unstable-embedded`. This export is `@internal` and can change or disappear in any release.
  */
 export declare const useSchema: never
 /**

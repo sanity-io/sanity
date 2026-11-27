@@ -2,7 +2,7 @@ import {ComposeIcon} from '@sanity/icons/Compose'
 import {DropIcon} from '@sanity/icons/Drop'
 import {ImageIcon} from '@sanity/icons/Image'
 import {defineArrayMember, defineField, defineType, type PortableTextInputProps} from 'sanity'
-import {BlockEditor} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/2'
+import {BlockEditor} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-2'
 import {Text, Box} from 'ui5'
 
 function CustomEditor(props: PortableTextInputProps) {

@@ -19,13 +19,13 @@ const tester = new RuleTester()
 tester.run('no-internals-before-sign-in', plugin.rules['no-internals-before-sign-in'], {
   valid: [
     `import {defineConfig} from 'sanity'`,
-    `import {renderStudio, useSchema} from '${INTERNALS}/1'`,
-    `export {TextWithTone} from '${INTERNALS}/1'`,
+    `import {renderStudio, useSchema} from '${INTERNALS}-1'`,
+    `export {TextWithTone} from '${INTERNALS}-1'`,
     ts(`import type {ArrayOfObjectsInputProps} from '${INTERNALS}'`),
-    ts(`import {type ArrayOfObjectsInputProps} from '${INTERNALS}/form'`),
-    ts(`export type {PaneRouterContextValue} from '${INTERNALS}/structure'`),
-    `const Tool = lazy(() => import('${INTERNALS}/structure'))`,
-    `const Input = lazy(() => import('${INTERNALS}/2').then(({FormInput}) => ({default: FormInput})))`,
+    ts(`import {type ArrayOfObjectsInputProps} from '${INTERNALS}-form'`),
+    ts(`export type {PaneRouterContextValue} from '${INTERNALS}-structure'`),
+    `const Tool = lazy(() => import('${INTERNALS}-structure'))`,
+    `const Input = lazy(() => import('${INTERNALS}-2').then(({FormInput}) => ({default: FormInput})))`,
   ],
   invalid: [
     {
@@ -33,20 +33,20 @@ tester.run('no-internals-before-sign-in', plugin.rules['no-internals-before-sign
       errors: [beforeSignIn(INTERNALS)],
     },
     {
-      code: `import {usePaneRouter} from '${INTERNALS}/structure'`,
-      errors: [beforeSignIn(`${INTERNALS}/structure`)],
+      code: `import {usePaneRouter} from '${INTERNALS}-structure'`,
+      errors: [beforeSignIn(`${INTERNALS}-structure`)],
     },
     {
-      code: `import '${INTERNALS}/2'`,
-      errors: [lazyOnly(`${INTERNALS}/2`)],
+      code: `import '${INTERNALS}-2'`,
+      errors: [lazyOnly(`${INTERNALS}-2`)],
     },
     {
       ...ts(`import {type Foo, useBar} from '${INTERNALS}'`),
       errors: [beforeSignIn(INTERNALS)],
     },
     {
-      code: `export * from '${INTERNALS}/form'`,
-      errors: [beforeSignIn(`${INTERNALS}/form`)],
+      code: `export * from '${INTERNALS}-form'`,
+      errors: [beforeSignIn(`${INTERNALS}-form`)],
     },
     {
       code: `export {useClient} from '${INTERNALS}'`,

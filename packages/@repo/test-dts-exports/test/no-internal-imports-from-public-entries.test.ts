@@ -320,7 +320,7 @@ describe('the areas the internals entry re-exports do not import it', () => {
           if (
             specifier &&
             ts.isStringLiteral(specifier) &&
-            (specifier.text === INTERNALS_ENTRY || specifier.text.startsWith(`${INTERNALS_ENTRY}/`))
+            (specifier.text === INTERNALS_ENTRY || specifier.text.startsWith(`${INTERNALS_ENTRY}-`))
           ) {
             offenders.push(path.relative(repoRoot, file))
           }

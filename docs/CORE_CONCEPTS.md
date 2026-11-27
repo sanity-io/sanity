@@ -768,7 +768,7 @@ import {
 import {
   // Hooks
   useSchema,
-} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver/1'
+} from 'sanity/_dangerously_use_private_internals_that_do_not_follow_semver-1'
 ```
 
 ### Directory Structure

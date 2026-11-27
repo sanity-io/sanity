@@ -16,17 +16,17 @@
  * `sanity/_dangerously_use_private_internals_that_do_not_follow_semver` applies here too.
  */
 
-export {TextWithTone, type TextWithToneProps} from '../../core/components/textWithTone/TextWithTone'
-export {useSchema} from '../../core/hooks/useSchema'
+export {TextWithTone, type TextWithToneProps} from '../core/components/textWithTone/TextWithTone'
+export {useSchema} from '../core/hooks/useSchema'
 export {
   StudioDiagnosticsBridge,
   type StudioDiagnosticsBridgeApi,
-} from '../../core/studio/diagnostics/StudioDiagnosticsBridge'
-export {Studio} from '../../core/studio/Studio'
-export {StudioLayout} from '../../core/studio/StudioLayout'
-export {StudioProvider} from '../../core/studio/StudioProvider'
+} from '../core/studio/diagnostics/StudioDiagnosticsBridge'
+export {Studio} from '../core/studio/Studio'
+export {StudioLayout} from '../core/studio/StudioLayout'
+export {StudioProvider} from '../core/studio/StudioProvider'
 export {
   STUDIO_RESIZE_TRANSITION_TYPE,
   STUDIO_SCHEME_TRANSITION_TYPE,
   STUDIO_SKIP_TRANSITION_TYPE,
-} from '../../core/viewTransitions/transitionTypes'
+} from '../core/viewTransitions/transitionTypes'
