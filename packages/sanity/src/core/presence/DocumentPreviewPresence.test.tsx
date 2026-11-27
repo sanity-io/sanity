@@ -1,4 +1,5 @@
 import {render, screen, waitFor} from '@testing-library/react'
+import {userEvent} from '@testing-library/user-event'
 import {describe, expect, it, vi} from 'vitest'
 
 import {createTestProvider} from '../../../test/testUtils/TestProvider'
@@ -31,7 +32,10 @@ const presence = (
   documentId,
 })
 
-const renderPresence = async (documentId: string, {variants = false} = {}) => {
+const renderPresence = async (
+  documentId: string,
+  {variants = false, tooltip}: {variants?: boolean; tooltip?: boolean} = {},
+) => {
   // Only the always registered bundles: previews also render in studios without the releases
   // plugin, which is the only thing that registers the `releases` namespace (SAPP-4649)
   const wrapper = await createTestProvider({
@@ -39,7 +43,9 @@ const renderPresence = async (documentId: string, {variants = false} = {}) => {
     ...(variants ? {config: {beta: {variants: {enabled: true}}}} : {}),
   })
 
-  render(<DocumentPreviewPresence presence={[presence(documentId)]} />, {wrapper})
+  render(<DocumentPreviewPresence presence={[presence(documentId)]} tooltip={tooltip} />, {
+    wrapper,
+  })
 
   await waitFor(() => {
     expect(screen.queryByTestId('loading-block')).not.toBeInTheDocument()
@@ -91,5 +97,27 @@ describe('DocumentPreviewPresence', () => {
     await renderPresence('drafts.thesis-1')
 
     expect(screen.getByTestId('user-avatar')).toHaveAttribute('data-hide-title', 'false')
+  })
+
+  it('says who is editing in a tooltip on hover', async () => {
+    await renderPresence('drafts.thesis-1')
+
+    await userEvent.hover(screen.getByLabelText('Nancy Du is editing this document right now'))
+
+    expect(
+      await screen.findByText('Nancy Du is editing this document right now'),
+    ).toBeInTheDocument()
+  })
+
+  it('opens no tooltip when the tooltip is off, as on a list row with the versions flyout', async () => {
+    await renderPresence('drafts.thesis-1', {tooltip: false})
+
+    await userEvent.hover(screen.getByLabelText('Nancy Du is editing this document right now'))
+    // Longer than the tooltip's open delay
+    await new Promise((resolve) => setTimeout(resolve, 700))
+
+    expect(
+      screen.queryByText('Nancy Du is editing this document right now'),
+    ).not.toBeInTheDocument()
   })
 })
