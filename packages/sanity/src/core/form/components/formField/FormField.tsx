@@ -1,11 +1,13 @@
 import {type Path, type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
-import {type HTMLProps, memo, type ReactNode} from 'react'
+import {type HTMLProps, memo, type ReactNode, useContext} from 'react'
+import {BaseVariantComparisonContext} from 'sanity/_singletons'
 import {Box, VStack} from 'ui5'
 
 import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
 import {type FormNodePresence} from '../../../presence/types'
 import {useFieldActions} from '../../field/actions/useFieldActions'
 import {type FieldCommentsProps} from '../../types/fieldProps'
+import {pathToAnchorIdent} from '../../utils/pathToAnchorIdent'
 import {FormFieldGutter} from '../FormFieldGutter'
 import {FormNodeDivergenceDetail} from '../FormNodeDivergenceDetail'
 import {FormRow} from '../layout/FormRow'
@@ -77,13 +79,20 @@ export const FormField = memo(function FormField(
     deprecated,
     ...restProps
   } = props
+  // Only a form that compares with a base variant (Variants) needs the title row as an anchor for
+  // the field mark. Everywhere else the field renders as on main.
+  const comparesWithBaseVariant = useContext(BaseVariantComparisonContext) !== undefined
   const {focused, hovered, onMouseEnter, onMouseLeave} = useFieldActions()
 
   return (
     <FormNodeDivergenceDetail path={path} readOnly={readOnly}>
       <FormRow
         gutterStartCell={
-          <FormFieldGutter path={path} changedFromBaseVariant={changedFromBaseVariant} />
+          <FormFieldGutter
+            path={path}
+            changedFromBaseVariant={changedFromBaseVariant}
+            labelAnchored={comparesWithBaseVariant ? Boolean(title) : undefined}
+          />
         }
       >
         <VStack
@@ -108,6 +117,11 @@ export const FormField = memo(function FormField(
               inputId={inputId}
               content={
                 <FormFieldHeaderText
+                  labelAnchorName={
+                    comparesWithBaseVariant && Array.isArray(path)
+                      ? pathToAnchorIdent('label', path)
+                      : undefined
+                  }
                   description={description}
                   inputId={inputId}
                   title={title}
