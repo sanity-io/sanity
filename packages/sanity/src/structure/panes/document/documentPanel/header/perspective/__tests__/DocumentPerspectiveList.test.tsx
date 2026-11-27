@@ -106,13 +106,9 @@ const mockCurrent: ReleaseDocument = {
   state: 'scheduled',
 }
 
-const getTestProvider = async ({
-  liveEdit,
-  variants,
-}: {liveEdit?: boolean; variants?: boolean} = {}) => {
+const getTestProvider = async ({liveEdit}: {liveEdit?: boolean} = {}) => {
   const BaseWrapper = await createTestProvider({
     config: {
-      ...(variants ? {beta: {variants: {enabled: true}}} : {}),
       schema: {
         types: [
           {
@@ -308,28 +304,7 @@ describe('DocumentPerspectiveList', () => {
       expect(screen.getByRole('button', {name: 'Draft'})).not.toBeDisabled()
     })
 
-    it('should enable the "Published" chip when there is no published document and IS live edit, draft should be hidden', async () => {
-      mockUseDocumentPane.mockReturnValue(
-        // @ts-expect-error -- pre-existing, fix later
-        getPaneMock({
-          displayedVersion: 'published',
-          editStateDocuments: ['published'],
-        }),
-      )
-      mockUsePerspective.mockReturnValue({
-        ...usePerspectiveMockValue,
-        selectedPerspectiveName: 'published',
-      })
-      const wrapper = await getTestProvider({liveEdit: true, variants: true})
-
-      render(<DocumentPerspectiveList />, {wrapper})
-
-      expect(screen.getByRole('button', {name: 'Published'})).not.toBeDisabled()
-      // With Variants on, live edit types have no drafts, so the Draft chip is not rendered at all.
-      expect(screen.queryByRole('button', {name: 'Draft'})).not.toBeInTheDocument()
-    })
-
-    it('keeps the "Draft" chip disabled, as on main, on a live edit document with no draft when Variants is off', async () => {
+    it('should enable the "Published" chip when there is no published document and IS live edit, draft should be disabled', async () => {
       mockUseDocumentPane.mockReturnValue(
         // @ts-expect-error -- pre-existing, fix later
         getPaneMock({
@@ -347,24 +322,6 @@ describe('DocumentPerspectiveList', () => {
 
       expect(screen.getByRole('button', {name: 'Published'})).not.toBeDisabled()
       expect(screen.getByRole('button', {name: 'Draft'})).toBeDisabled()
-    })
-
-    it('should still show the "Draft" chip on a live edit document that has an existing draft', async () => {
-      mockUseDocumentPane.mockReturnValue(
-        // @ts-expect-error -- pre-existing, fix later
-        getPaneMock({
-          displayedVersion: 'draft',
-          editStateDocuments: ['draft', 'published'],
-        }),
-      )
-      const wrapper = await getTestProvider({liveEdit: true})
-
-      render(<DocumentPerspectiveList />, {wrapper})
-
-      // A draft can exist on a live edit type (e.g. the type was switched to live edit later),
-      // so the chip stays and is selected, which keeps that draft reachable.
-      expect(screen.getByRole('button', {name: 'Draft'})).toHaveAttribute('data-selected')
-      expect(screen.getByRole('button', {name: 'Published'})).toBeEnabled()
     })
 
     it('should enable the "Published" chip when the document is "liveEdit" and published exists', async () => {
@@ -454,11 +411,13 @@ describe('DocumentPerspectiveList', () => {
             isCreatingDocument: true,
           }),
         )
-        const wrapper = await getTestProvider({liveEdit: true, variants: true})
+        const wrapper = await getTestProvider({liveEdit: true})
         render(<DocumentPerspectiveList />, {wrapper})
+        const draftChip = screen.getByRole('button', {name: 'Draft'})
         const publishedChip = screen.getByRole('button', {name: 'Published'})
-        // draft is not rendered, the document is live edit and draft doesn't exist.
-        expect(screen.queryByRole('button', {name: 'Draft'})).not.toBeInTheDocument()
+        // draft is not selected and disabled, the document is live edit and draft doesn't exist.
+        expect(draftChip).not.toHaveAttribute('data-selected')
+        expect(draftChip).toBeDisabled()
         // Published is selected because the user is creating a live edit document
         expect(publishedChip).not.toBeDisabled()
         expect(publishedChip).toHaveAttribute('data-selected')
@@ -476,11 +435,13 @@ describe('DocumentPerspectiveList', () => {
           ...usePerspectiveMockValue,
           selectedPerspectiveName: 'published',
         })
-        const wrapper = await getTestProvider({liveEdit: true, variants: true})
+        const wrapper = await getTestProvider({liveEdit: true})
         render(<DocumentPerspectiveList />, {wrapper})
+        const draftChip = screen.getByRole('button', {name: 'Draft'})
         const publishedChip = screen.getByRole('button', {name: 'Published'})
-        // draft is not rendered, the document is live edit and draft doesn't exist.
-        expect(screen.queryByRole('button', {name: 'Draft'})).not.toBeInTheDocument()
+        // draft is not selected and disabled, the document is live edit and draft doesn't exist.
+        expect(draftChip).not.toHaveAttribute('data-selected')
+        expect(draftChip).toBeDisabled()
         // Published is selected because the user is creating a live edit document
         expect(publishedChip).not.toBeDisabled()
         expect(publishedChip).toHaveAttribute('data-selected')
@@ -501,10 +462,10 @@ describe('DocumentPerspectiveList', () => {
           selectedPerspectiveName: 'rSpringDrop',
           selectedReleaseId: 'rSpringDrop',
         })
-        const wrapper = await getTestProvider({liveEdit: true, variants: true})
+        const wrapper = await getTestProvider({liveEdit: true})
         render(<DocumentPerspectiveList />, {wrapper})
-        // The user is creating a live edit document with no draft, so the draft chip is not rendered
-        expect(screen.queryByRole('button', {name: 'Draft'})).not.toBeInTheDocument()
+        // Perspective is published and the user is creating a live edit document, so the draft chip should be disabled
+        expect(screen.getByRole('button', {name: 'Draft'})).not.toBeEnabled()
         expect(screen.getByRole('button', {name: 'Published'})).not.toBeEnabled()
         expect(screen.getByRole('button', {name: 'Spring Drop'})).toHaveAttribute('data-selected')
       })
