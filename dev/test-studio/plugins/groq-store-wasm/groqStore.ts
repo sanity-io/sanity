@@ -122,6 +122,11 @@ function searchParam(name: string): string | null {
   return typeof location === 'undefined' ? null : new URL(location.href).searchParams.get(name)
 }
 
+/** Playwright, Puppeteer and WebDriver set `navigator.webdriver`. */
+function isAutomatedBrowser(): boolean {
+  return typeof navigator !== 'undefined' && navigator.webdriver
+}
+
 /** Whether the store runs in this browser, and why not if it doesn't. */
 function initialMode(): {enabled: true} | {enabled: false; reason: string} {
   if (process.env.SANITY_STUDIO_GROQ_STORE === 'off') {
@@ -132,7 +137,7 @@ function initialMode(): {enabled: true} | {enabled: false; reason: string} {
   const stored = readStorage('localStorage', ENABLED_KEY)
   if (stored === 'off') return {enabled: false, reason: 'off for this browser'}
   // Keeps e2e runs on Content Lake unless a test opts in with `?groqStore=on`.
-  if (stored !== 'on' && typeof navigator !== 'undefined' && navigator.webdriver) {
+  if (stored !== 'on' && isAutomatedBrowser()) {
     return {enabled: false, reason: 'off in automated browsers (?groqStore=on)'}
   }
   return {enabled: true}
@@ -143,12 +148,16 @@ const DEBUG_BAR_KEY = 'groq-store-wasm:debug-bar'
 /**
  * Whether the debug bar shows in this browser (`?groqDebugBar=on|off`, remembered like
  * `?groqStore`). Hiding it only hides the bar: the store, its service worker and the metrics run
- * as before. Shown unless turned off.
+ * as before. Shown unless turned off, except in an automated browser where the store is off: there
+ * the fixed bar would only cover the page under test, so it needs `?groqDebugBar=on`.
  */
 export function isGroqDebugBarVisible(): boolean {
   const override = searchParam('groqDebugBar')
   if (override === 'on' || override === 'off') writeStorage('localStorage', DEBUG_BAR_KEY, override)
-  return readStorage('localStorage', DEBUG_BAR_KEY) !== 'off'
+  const stored = readStorage('localStorage', DEBUG_BAR_KEY)
+  if (stored === 'on') return true
+  if (stored === 'off') return false
+  return mode.enabled || !isAutomatedBrowser()
 }
 
 function initialGuardOff(): boolean {
