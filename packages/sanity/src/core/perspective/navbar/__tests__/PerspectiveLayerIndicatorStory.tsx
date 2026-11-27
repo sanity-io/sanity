@@ -1,9 +1,9 @@
 import {Card} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
 import {type RefObject} from 'react'
 import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {
   activeASAPRelease,
   activeUndecidedRelease,

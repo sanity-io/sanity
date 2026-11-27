@@ -1,10 +1,10 @@
-import {Menu} from '@sanity/ui/menu'
 import {render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {type ReactNode} from 'react'
 import {afterEach, describe, expect, test, vi} from 'vitest'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {defineConfig} from '../../../config/defineConfig'
 import {WhatsNewHelpMenuItemClicked} from '../__telemetry__/studioAnnouncements.telemetry'
 import {StudioAnnouncementsMenuItem} from '../StudioAnnouncementsMenuItem'

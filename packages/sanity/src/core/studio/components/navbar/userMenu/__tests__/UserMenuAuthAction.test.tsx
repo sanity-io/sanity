@@ -1,5 +1,4 @@
 import {LayerProvider, ThemeProvider} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
 import {buildTheme} from '@sanity/ui/theme'
 import {act, render, screen} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
@@ -9,6 +8,7 @@ import {WorkspacesContext} from 'sanity/_singletons'
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {createMockSanityClientAsClient} from '../../../../../../../test/mocks/mockSanityClient'
+import {Menu} from '../../../../../../ui-components/menu/Menu'
 import {prepareConfig} from '../../../../../config/prepareConfig'
 import {type WorkspaceOptions, type WorkspaceSummary} from '../../../../../config/types'
 import {_createLegacyAuthStore} from '../../../../../store/auth/legacy/createLegacyAuthStore'

@@ -1,8 +1,8 @@
 import {Card} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
 import {Text, VStack} from 'ui5'
 
 import {TestWrapper} from '../../../../../test/browser/TestWrapper'
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {ViewContentReleasesMenuItem} from '../releases/ViewContentReleasesMenuItem'
 
 /**

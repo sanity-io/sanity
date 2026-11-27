@@ -937,6 +937,8 @@
               {
                 "name": "@sanity/ui/menu",
                 "importNames": [
+                  "Menu",
+                  "MenuProps",
                   "MenuButton",
                   "MenuButtonProps",
                   "MenuGroup",
@@ -1073,6 +1075,8 @@
               {
                 "name": "@sanity/ui/menu",
                 "importNames": [
+                  "Menu",
+                  "MenuProps",
                   "MenuButton",
                   "MenuButtonProps",
                   "MenuGroup",

@@ -2,9 +2,10 @@ import {AddIcon} from '@sanity/icons/Add'
 import {PublishIcon} from '@sanity/icons/Publish'
 import {TrashIcon} from '@sanity/icons/Trash'
 import {type ButtonTone, Card, Stack} from '@sanity/ui'
-import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {MenuDivider} from '@sanity/ui/menu'
 import {Text} from 'ui5'
 
+import {Menu} from '../../menu/Menu'
 import {MenuItem} from '../MenuItem'
 
 const TONES: ButtonTone[] = ['default', 'primary', 'positive', 'caution', 'critical']

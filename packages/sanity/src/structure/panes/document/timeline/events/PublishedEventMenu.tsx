@@ -1,7 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type BadgeTone, usePortal} from '@sanity/ui'
 import {
-  Menu,
   // oxlint-disable-next-line no-restricted-imports
   MenuItem,
 } from '@sanity/ui/menu'
@@ -27,6 +26,7 @@ import {
 import {IntentLink} from 'sanity/router'
 import {Text, Flex} from 'ui5'
 
+import {Menu} from '../../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../../ui-components/menuButton/MenuButton'
 import {usePaneRouter} from '../../../../components/paneRouter/usePaneRouter'
 import {structureLocaleNamespace} from '../../../../i18n'

@@ -7,13 +7,13 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {type CardTone} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
 import * as PathUtils from '@sanity/util/paths'
 import {type ReactNode, useCallback, useId} from 'react'
 import {useRouter} from 'sanity/router'
 import {Container, VStack} from 'ui5'
 
 import {Button} from '../../../../ui-components/button/Button'
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {usePublishedId} from '../../hooks/usePublishedId'
 import {useValidationState} from '../../utils/validationUtils'

@@ -9,7 +9,7 @@ import {
 } from '@sanity/preview-url-secret/toggle-preview-access-sharing'
 import {setSecretSearchParams} from '@sanity/preview-url-secret/without-secret-search-params'
 import {Card, Spinner, Switch} from '@sanity/ui'
-import {Menu, MenuDivider} from '@sanity/ui/menu'
+import {MenuDivider} from '@sanity/ui/menu'
 import {useToast} from '@sanity/ui/toast'
 import {AnimatePresence, motion} from 'motion/react'
 import {lazy, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
@@ -17,6 +17,7 @@ import {pauseWhileDocumentHidden, useClient, useCurrentUser, useTranslation} fro
 import {Text, Grid, Box, VStack} from 'ui5'
 
 import {Button} from '../../ui-components/button/Button'
+import {Menu} from '../../ui-components/menu/Menu'
 import {MenuButton} from '../../ui-components/menuButton/MenuButton'
 import {MenuItem} from '../../ui-components/menuItem/MenuItem'
 import {Tooltip} from '../../ui-components/tooltip/Tooltip'

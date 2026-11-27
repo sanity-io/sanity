@@ -2,11 +2,11 @@ import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 import {SearchIcon} from '@sanity/icons/Search'
 // oxlint-disable-next-line no-restricted-imports -- the chevron trigger needs the hit-area style only @sanity/ui Button accepts
 import {Button, TextInput} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
 import {type ChangeEvent, useCallback, useState} from 'react'
 import {styled} from 'styled-components'
 import {Box, Flex} from 'ui5'
 
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../ui-components/menuButton/MenuButton'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {ReleaseDetailLinkClicked} from '../../../releases/__telemetry__/releases.telemetry'

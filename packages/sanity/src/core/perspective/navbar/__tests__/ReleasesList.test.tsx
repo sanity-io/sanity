@@ -1,11 +1,11 @@
 import {type ReleaseDocument} from '@sanity/client'
-import {Menu} from '@sanity/ui/menu'
 import {render, screen, waitFor} from '@testing-library/react'
 import {userEvent} from '@testing-library/user-event'
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 
 import {flushMicrotasksThisIsACodeSmell} from '../../../../../test/testUtils/flushMicrotasks'
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
+import {Menu} from '../../../../ui-components/menu/Menu'
 import {
   activeASAPRelease,
   activeScheduledRelease,

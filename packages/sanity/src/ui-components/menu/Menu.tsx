@@ -1,3 +1,4 @@
+/* oxlint-disable no-restricted-imports */
 import {Menu as UIMenu} from '@sanity/ui/menu'
 import {type ComponentProps, type RefAttributes} from 'react'
 

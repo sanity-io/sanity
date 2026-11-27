@@ -1,7 +1,7 @@
 import {Card} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
 import {Text, VStack} from 'ui5'
 
+import {Menu} from '../../../../../ui-components/menu/Menu'
 import {MenuItem} from '../../../../../ui-components/menuItem/MenuItem'
 import {ReleasesMenuItemIndicator, ReleasesMenuLabelIndicator} from '../ReleasesLayerIndicator'
 

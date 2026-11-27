@@ -1,10 +1,10 @@
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 import {Label, Text, TextInput} from '@sanity/ui'
-import {Menu} from '@sanity/ui/menu'
 import {type ChangeEvent, type ReactElement, type ReactNode, useCallback, useId} from 'react'
 import {useTranslation} from 'sanity'
 import {Box, Flex} from 'ui5'
 
+import {Menu} from '../../../../../../../ui-components/menu/Menu'
 import {MenuButton} from '../../../../../../../ui-components/menuButton/MenuButton'
 import {Tooltip} from '../../../../../../../ui-components/tooltip/Tooltip'
 import {documentNavigationMenu} from './DocumentNavigationMenu.css'
